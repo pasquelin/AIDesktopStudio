@@ -1,5 +1,5 @@
+import { boundsOf } from './objectBounds'
 import {
-  Box3,
   EdgesGeometry,
   LineSegments,
   Mesh,
@@ -343,8 +343,7 @@ export function framingPlacement(
   fieldOfView: number,
   from: Vector3 = FRAME_FROM,
 ): Framing {
-  const bounds = new Box3()
-  for (const object of objects) bounds.expandByObject(object)
+  const bounds = boundsOf(objects)
 
   // A selection of lights and empty groups encloses no box at all, and their placements still
   // average to somewhere worth looking at.

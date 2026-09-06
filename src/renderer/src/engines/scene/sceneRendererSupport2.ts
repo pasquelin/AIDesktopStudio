@@ -173,6 +173,8 @@ export const DEFAULT_VIEW_DISTANCE = 8
  */
 export const GRID_SINKAGE = 0.02
 
+export { boundsOf } from './objectBounds'
+
 /**
  * How far a side view stands off its target. Distance changes nothing an orthographic camera
  * shows — its frustum does that — but it decides what falls behind the near plane, and a camera
