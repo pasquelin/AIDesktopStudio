@@ -114,7 +114,11 @@ function adaptOne(
   return {
     ...wire,
     duration: clip.duration,
-    tracks: wire.tracks.map(track => ({ ...track, name: nodeTrackNameOf(track.name) })),
+    tracks: wire.tracks
+      .map(track => ({ ...track, name: nodeTrackNameOf(track.name) }))
+      .filter(
+        track => request.names[track.name.slice(0, track.name.lastIndexOf('.'))] !== undefined,
+      ),
   }
 }
 

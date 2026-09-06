@@ -1,7 +1,8 @@
 import { AnimationClip, QuaternionKeyframeTrack, VectorKeyframeTrack } from 'three'
 import type * as SkeletonUtilsModule from 'three/addons/utils/SkeletonUtils.js'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
-import { wireClipOf } from './retarget'
+import { profileWithRole, skeletonSignatureOf } from '@shared/domain/skeletonProfile'
+import { retargetPlanOf, wireClipOf } from './retarget'
 import type { RetargetOptions, RetargetResponse, WireBone, WireClip } from './retargetMessage'
 
 /** three's sampling, made to fail on demand: what is under test is what the worker does then. */
@@ -239,6 +240,19 @@ describe('replaying an animation on another skeleton', () => {
     // Unscaled, z is −99 m — the body stands behind the north wall. Folded by 0,01 it is a metre.
     expect(Math.abs(z)).toBeGreaterThan(0.5)
     expect(Math.abs(z)).toBeLessThan(2)
+  })
+
+  it('does not export tracks for a bone explicitly removed from matching', async () => {
+    const signature = skeletonSignatureOf(SOURCE.map(bone => bone.name))
+    const profile = profileWithRole({ signature, roles: {} }, 'mixamorigSpine', null)
+    const plan = retargetPlanOf(SOURCE, SOURCE, [spineTurn()], 30, new Map([[signature, profile]]))
+    self.dispatchEvent(new MessageEvent('message', { data: { id: 81, ...plan } }))
+    await drain()
+    const answer = settled()
+    if (!answer?.done || !answer.ok) throw new Error('missing result')
+    expect(answer.clips[0]?.tracks.map(track => track.name)).not.toContain(
+      'mixamorigSpine.quaternion',
+    )
   })
 
   it('applies explicit scale and can remove horizontal root travel', async () => {

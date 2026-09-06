@@ -6,21 +6,7 @@
  * identical skeletons need no worker at all, and asking for one would replace an exact clip with
  * a resampled approximation of itself.
  */
-import {
-  AnimationClip,
-  Bone,
-  Euler,
-  Matrix4,
-  NumberKeyframeTrack,
-  Quaternion,
-  QuaternionKeyframeTrack,
-  Skeleton,
-  SkinnedMesh,
-  Vector3,
-  VectorKeyframeTrack,
-  type KeyframeTrack,
-  Object3D,
-} from 'three'
+import { type AnimationClip, Euler, Matrix4, Quaternion, Vector3, type Object3D } from 'three'
 import { isFingerRole, type HumanoidRole } from '@shared/domain/humanoid'
 import {
   isSkeletonProfile,
@@ -30,7 +16,6 @@ import {
   type SkeletonProfile,
 } from '@shared/domain/skeletonProfile'
 import { boneRolesOf, type NamedBone } from './boneRoles'
-import { isBoneObject } from './rigState'
 import {
   clipBuffers,
   type RetargetOptions,
@@ -38,9 +23,15 @@ import {
   type RetargetResponse,
   type WireBone,
   type WireClip,
-  type WireTrack,
-  type WireTrackKind,
 } from './retargetMessage'
+import { clipFromWire, wireBonesOf, wireClipOf } from './retargetWire'
+export {
+  clipFromWire,
+  wireBonesOf,
+  wireClipOf,
+  skinnedFromWire,
+  nodeTrackNameOf,
+} from './retargetWire'
 import { createWorkerPort } from '../core/workerPort'
 
 export type Retarget = {
@@ -56,6 +47,8 @@ export type Retarget = {
       onProgress?: (progress: number) => void
       signal?: AbortSignal
       profiles?: readonly SkeletonProfile[]
+      sourceProfile?: SkeletonProfile
+      targetProfile?: SkeletonProfile
       options?: RetargetOptions
     },
   ) => Promise<AnimationClip[] | null>
@@ -90,23 +83,24 @@ export function createRetarget(spawn: () => Worker): Retarget {
     adapt: async (target, source, clips, watch) => {
       if (port.isGone() || watch?.signal?.aborted) return null
 
-      const known = new Map(profiles)
-      for (const profile of watch?.profiles ?? []) rememberProfile(known, profile)
-      const scale = watch?.options?.scale
-      if (scale !== undefined && (!Number.isFinite(scale) || scale <= 0))
-        throw new Error('retarget scale must be finite and positive')
-      const targetBones = alignedBonesOf(wireBonesOf(target), known)
-      const sourceBones = alignedBonesOf(wireBonesOf(source), known)
-      if (
-        sameSkeleton(targetBones, sourceBones) &&
-        scale === undefined &&
-        watch?.options?.rootMotion !== 'inPlace'
-      )
+      const targetKnown = profilesFor(profiles, watch?.profiles, watch?.targetProfile)
+      const sourceKnown = profilesFor(profiles, watch?.profiles, watch?.sourceProfile)
+      validateOptions(watch?.options)
+      const targetBones = alignedBonesOf(wireBonesOf(target), targetKnown)
+      const sourceBones = alignedBonesOf(wireBonesOf(source), sourceKnown)
+      if (exactReplay(targetBones, sourceBones, targetKnown, sourceKnown, watch?.options))
         return [...clips]
 
       const originalTargetProfile = profileOfBones(targetBones, profiles)
       const originalSourceProfile = profileOfBones(sourceBones, profiles)
-      const plan = retargetPlanOf(targetBones, sourceBones, clips.map(wireClipOf), undefined, known)
+      const plan = retargetPlanOf(
+        targetBones,
+        sourceBones,
+        clips.map(wireClipOf),
+        undefined,
+        targetKnown,
+        sourceKnown,
+      )
       const adapted = await port.send(id => {
         const request: RetargetRequest = { id, ...plan, options: watch?.options }
         return { message: request, transfer: clipBuffers(request.clips) }
@@ -131,6 +125,41 @@ export function createRetarget(spawn: () => Worker): Retarget {
   }
 }
 
+function validateOptions(options?: RetargetOptions): void {
+  if (options?.scale !== undefined && (!Number.isFinite(options.scale) || options.scale <= 0))
+    throw new Error('retarget scale must be finite and positive')
+}
+
+function profilesFor(
+  known: ReadonlyMap<string, SkeletonProfile>,
+  common: readonly SkeletonProfile[] = [],
+  override?: SkeletonProfile,
+): Map<string, SkeletonProfile> {
+  const profiles = new Map(known)
+  for (const profile of common) rememberProfile(profiles, profile)
+  if (override) rememberProfile(profiles, override)
+  return profiles
+}
+
+function exactReplay(
+  target: readonly WireBone[],
+  source: readonly WireBone[],
+  targetKnown: ReadonlyMap<string, SkeletonProfile>,
+  sourceKnown: ReadonlyMap<string, SkeletonProfile>,
+  options?: RetargetOptions,
+): boolean {
+  const to = profileOfBones(target, targetKnown)
+  const from = profileOfBones(source, sourceKnown)
+  return (
+    sameSkeleton(target, source) &&
+    options?.scale === undefined &&
+    options?.rootMotion !== 'inPlace' &&
+    !to?.ignored?.length &&
+    !from?.ignored?.length &&
+    JSON.stringify(to?.roles) === JSON.stringify(from?.roles)
+  )
+}
+
 function rememberProfile(profiles: Map<string, SkeletonProfile>, profile: SkeletonProfile): void {
   if (!isSkeletonProfile(profile)) throw new Error('invalid skeleton profile')
   if (JSON.stringify(profiles.get(profile.signature)) === JSON.stringify(profile)) return
@@ -149,13 +178,19 @@ export function retargetPlanOf(
   clips: readonly WireClip[],
   fps?: number,
   known?: ReadonlyMap<string, SkeletonProfile>,
+  sourceKnown = known,
 ): Omit<RetargetRequest, 'id'> {
-  const sourceRoles = rolesOf(source, known)
+  const sourceRoles = rolesOf(source, sourceKnown)
   const sourceByRole = new Map(Object.entries(sourceRoles).map(([name, role]) => [role, name]))
   const sourceNames = new Set(source.map(bone => bone.name))
 
   const names: Record<string, string> = {}
-  for (const bone of target) if (sourceNames.has(bone.name)) names[bone.name] = bone.name
+  const excluded = new Set([
+    ...(profileOfBones(target, known)?.ignored ?? []),
+    ...(profileOfBones(source, sourceKnown)?.ignored ?? []),
+  ])
+  for (const bone of target)
+    if (sourceNames.has(bone.name) && !excluded.has(bone.name)) names[bone.name] = bone.name
 
   for (const [name, role] of Object.entries(rolesOf(target, known))) {
     const from = sourceByRole.get(role)
@@ -227,6 +262,7 @@ function rolesOf(
 ): Record<string, HumanoidRole> {
   const signature = skeletonSignatureOf(bones.map(bone => bone.name))
   const found = boneRolesOf(namedBonesOf(bones))
+  for (const name of profileOfBones(bones, known)?.ignored ?? []) delete found[name]
   const corrections = profileOfBones(bones, known)?.roles
   if (!corrections) return found
 
@@ -397,142 +433,8 @@ export function sameSkeleton(target: readonly WireBone[], source: readonly WireB
  * retargeted instead, which is the safe way round to be wrong.
  */
 const REST_TOLERANCE = 1e-6
+const IDENTITY_ARRAY: readonly number[] = /* @__PURE__ */ new Matrix4().toArray()
 
 function near(a: readonly number[], b: readonly number[]): boolean {
   return a.every((value, index) => Math.abs(value - (b[index] ?? 0)) <= REST_TOLERANCE)
-}
-
-/**
- * Every named bone of a model, parents before children.
- *
- * Deduplicated by name, like `rigState`: a track and a bone map both address a bone by name, and
- * a second bone of the same name is one nothing can reach.
- */
-export function wireBonesOf(root: Object3D): WireBone[] {
-  const bones: WireBone[] = []
-  const indexOf = new Map<string, number>()
-  // Needed by the fold below, and read once: `matrixWorld` is stale on a tree nothing has drawn.
-  root.updateWorldMatrix(false, true)
-  const above = new Matrix4().copy(root.matrixWorld).invert()
-
-  root.traverse(object => {
-    if (!isBoneObject(object) || !object.name) return
-    if (indexOf.has(object.name)) throw new Error(`duplicate bone name: ${object.name}`)
-
-    const parent = parentIndexOf(object, indexOf)
-    indexOf.set(object.name, bones.length)
-    bones.push(parent < 0 ? rootBoneOf(object, above) : localBoneOf(object, parent))
-  })
-
-  return bones
-}
-
-const localBoneOf = (bone: Object3D, parent: number): WireBone => ({
-  name: bone.name,
-  parent,
-  position: bone.position.toArray(),
-  quaternion: bone.quaternion.toArray(),
-  scale: bone.scale.toArray(),
-})
-
-/**
- * A bone with no bone above it NAMES whatever does — the armature a glTF hangs its rig under being
- * an `Object3D` and not a `Bone`. Dropped, its quarter turn and its centimetres go with it:
- * measured 2026-09-06, a half turn played the head 1,08 m under the feet. See `WireBone.frame`.
- */
-function rootBoneOf(bone: Object3D, above: Matrix4): WireBone {
-  const frame = new Matrix4().multiplyMatrices(above, bone.parent?.matrixWorld ?? IDENTITY)
-  const local = localBoneOf(bone, -1)
-
-  return frame.equals(IDENTITY) ? local : { ...local, frame: frame.toArray() }
-}
-
-const IDENTITY = /* @__PURE__ */ new Matrix4()
-
-const IDENTITY_ARRAY: readonly number[] = /* @__PURE__ */ IDENTITY.toArray()
-
-function parentIndexOf(bone: Object3D, indexOf: ReadonlyMap<string, number>): number {
-  let above = bone.parent
-  while (above) {
-    const known = above.name === '' ? undefined : indexOf.get(above.name)
-    if (known !== undefined) return known
-    above = above.parent
-  }
-  return -1
-}
-
-/** The skeleton three needs to sample a clip: a mesh, because `retargetClip` reads `.skeleton`. */
-export function skinnedFromWire(bones: readonly WireBone[]): SkinnedMesh {
-  const built = bones.map(wire => {
-    const bone = new Bone()
-    bone.name = wire.name
-    bone.position.fromArray([...wire.position])
-    bone.quaternion.fromArray([...wire.quaternion])
-    bone.scale.fromArray([...wire.scale])
-    return bone
-  })
-
-  const mesh = new SkinnedMesh()
-  built.forEach((bone, index) => {
-    const wire = bones[index]
-    const parent = wire?.parent ?? -1
-    if (parent >= 0) (built[parent] ?? mesh).add(bone)
-    // A NODE and not a fold — see `WireBone.frame`.
-    else mesh.add(wire?.frame ? framedNode(wire.frame).add(bone) : bone)
-  })
-
-  mesh.updateMatrixWorld(true)
-  mesh.bind(new Skeleton(built))
-  return mesh
-}
-
-function framedNode(frame: readonly number[]): Object3D {
-  const node = new Object3D()
-  node.matrixAutoUpdate = false
-  node.matrix.fromArray(frame)
-
-  return node
-}
-
-export function wireClipOf(clip: AnimationClip): WireClip {
-  return {
-    name: clip.name,
-    duration: clip.duration,
-    tracks: clip.tracks.map(track => ({
-      name: track.name,
-      kind: trackKindOf(track),
-      times: new Float32Array(track.times),
-      values: new Float32Array(track.values),
-    })),
-  }
-}
-
-export function clipFromWire(wire: WireClip): AnimationClip {
-  return new AnimationClip(wire.name, wire.duration, wire.tracks.map(trackFromWire))
-}
-
-function trackFromWire(track: WireTrack): KeyframeTrack {
-  if (track.kind === 'quaternion')
-    return new QuaternionKeyframeTrack(track.name, track.times, track.values)
-  if (track.kind === 'vector') return new VectorKeyframeTrack(track.name, track.times, track.values)
-
-  return new NumberKeyframeTrack(track.name, track.times, track.values)
-}
-
-function trackKindOf(track: KeyframeTrack): WireTrackKind {
-  if (track.ValueTypeName === 'quaternion') return 'quaternion'
-  return track.ValueTypeName === 'vector' ? 'vector' : 'number'
-}
-
-/**
- * `.bones[Hips].quaternion` read as `Hips.quaternion`.
- *
- * `retargetClip` writes the SKELETON spelling, which only binds against an object carrying a
- * `.skeleton`. Every clip this studio plays comes off `GLTFLoader` in the NODE spelling and is
- * bound against the model holder — so a retargeted clip left as three spells it would resolve to
- * nothing, silently, and the character would simply stand still.
- */
-export function nodeTrackNameOf(name: string): string {
-  const match = /^\.bones\[(.+)\]\.(.+)$/.exec(name)
-  return match ? `${match[1]}.${match[2]}` : name
 }

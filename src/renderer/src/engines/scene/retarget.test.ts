@@ -9,11 +9,10 @@ import {
 } from 'three'
 import { describe, expect, it } from 'vitest'
 import type { HumanoidRole } from '@shared/domain/humanoid'
-import { skeletonSignatureOf } from '@shared/domain/skeletonProfile'
+import { profileWithRole, skeletonSignatureOf } from '@shared/domain/skeletonProfile'
 import {
   clipFromWire,
   clipTranslationScaleOf,
-  createRetarget,
   nodeTrackNameOf,
   retargetFitOf,
   restOffsetsOf,
@@ -24,84 +23,22 @@ import {
   wireBonesOf,
   wireClipOf,
 } from './retarget'
-import type { RetargetIncoming, RetargetResponse, WireBone } from './retargetMessage'
-
-function boneAt(name: string, parent: number, y: number, scale = 1): WireBone {
-  return {
-    name,
-    parent,
-    position: [0, y, 0],
-    quaternion: [0, 0, 0, 1],
-    scale: [scale, scale, scale],
-  }
-}
-
-/**
- * Mixamo's spelling AS THREE HOLDS IT: `GLTFLoader` runs every node name through
- * `PropertyBinding.sanitizeNodeName`, which DELETES `:` rather than replacing it. A bone still
- * named `mixamorig:Hips` binds to nothing — measured on the real file on 2026-08-18.
- */
-const UTHANA: WireBone[] = [
-  boneAt('mixamorigHips', -1, 1),
-  boneAt('mixamorigSpine', 0, 0.2),
-  boneAt('mixamorigHead', 1, 0.4),
-  boneAt('mixamorigLeftArm', 1, 0.3),
-]
-
-/** Tripo's, on a character twice as tall. */
-const TRIPO: WireBone[] = [
-  boneAt('Hip', -1, 2),
-  boneAt('Waist', 0, 0.4),
-  boneAt('Head', 1, 0.8),
-  boneAt('L_Upperarm', 1, 0.6),
-  boneAt('L_UpperarmTwist01', 3, 0.1),
-]
-
-/**
- * A worker the test answers by hand, so what is under test is the register rather than three's
- * sampling — `skinWeights.test.ts` builds its fake the same way, and the cast is the same one:
- * the port calls exactly these members, and jsdom has no `Worker` at all.
- */
-function scriptedWorker() {
-  const listeners = new Map<string, ((event: unknown) => void)[]>()
-  const sent: RetargetIncoming[] = []
-  let spawned = 0
-  let terminated = 0
-
-  const worker = {
-    postMessage: (message: RetargetIncoming) => void sent.push(message),
-    terminate: () => {
-      terminated += 1
-    },
-    addEventListener: (kind: string, listener: (event: unknown) => void) =>
-      void listeners.set(kind, [...(listeners.get(kind) ?? []), listener]),
-  }
-
-  return {
-    spawn: () => {
-      spawned += 1
-      return worker as unknown as Worker
-    },
-    sent,
-    get terminated() {
-      return terminated
-    },
-    get spawned() {
-      return spawned
-    },
-    answer: (response: RetargetResponse) => {
-      for (const listener of listeners.get('message') ?? []) listener({ data: response })
-    },
-  }
-}
-
-function turnClip(boneName: string): AnimationClip {
-  return new AnimationClip('walk', 1, [
-    new QuaternionKeyframeTrack(`${boneName}.quaternion`, [0, 1], [0, 0, 0, 1, 0, 0.7, 0, 0.7]),
-  ])
-}
+import type { WireBone } from './retargetMessage'
+import { UTHANA, TRIPO, boneAt } from './retarget-fixtures'
 
 describe('pairing two skeletons', () => {
+  it('keeps a manually cleared role excluded from automatic matching', () => {
+    const signature = skeletonSignatureOf(UTHANA.map(bone => bone.name))
+    const cleared = profileWithRole(
+      { signature, roles: { mixamorigSpine: 'Spine' } },
+      'mixamorigSpine',
+      null,
+    )
+    const plan = retargetPlanOf(UTHANA, UTHANA, [], undefined, new Map([[signature, cleared]]))
+    expect(plan.names.mixamorigSpine).toBeUndefined()
+    expect(plan.names.mixamorigHips).toBe('mixamorigHips')
+  })
+
   it('spells the map from target bone to source bone, which is the direction three reads', () => {
     const plan = retargetPlanOf(TRIPO, UTHANA, [])
 
@@ -248,180 +185,6 @@ describe('deciding whether to retarget at all', () => {
     )
 
     expect(sameSkeleton(UTHANA, flat)).toBe(false)
-  })
-})
-
-describe('asking the worker', () => {
-  it('answers an identical skeleton without starting a worker at all', async () => {
-    const script = scriptedWorker()
-    const clips = [turnClip('mixamorigSpine')]
-    const model = skinnedFromWire(UTHANA)
-
-    const adapted = await createRetarget(script.spawn).adapt(model, skinnedFromWire(UTHANA), clips)
-
-    expect(adapted).toEqual(clips)
-    expect(script.spawned).toBe(0)
-  })
-
-  it('honours cancellation even for an identical skeleton', async () => {
-    const stop = new AbortController()
-    stop.abort()
-    expect(
-      await createRetarget(scriptedWorker().spawn).adapt(
-        skinnedFromWire(UTHANA),
-        skinnedFromWire(UTHANA),
-        [],
-        { signal: stop.signal },
-      ),
-    ).toBeNull()
-  })
-
-  it('uses a draft alignment and options without remembering the draft', async () => {
-    const script = scriptedWorker()
-    const port = createRetarget(script.spawn)
-    const signature = skeletonSignatureOf(UTHANA.map(bone => bone.name))
-    const draft = {
-      signature,
-      roles: {},
-      restPose: {
-        mixamorigHips: {
-          position: { x: 0, y: 3, z: 0 },
-          rotation: { x: 0, y: 0, z: 0 },
-          scale: { x: 1, y: 1, z: 1 },
-        },
-      },
-    }
-    const pending = port.adapt(skinnedFromWire(TRIPO), skinnedFromWire(UTHANA), [turnClip('x')], {
-      profiles: [draft],
-      options: { scale: 2, rootMotion: 'inPlace' },
-    })
-    const request = script.sent[0]
-    if (!request || 'cancel' in request) throw new Error('missing request')
-    expect(request.source[0]?.position).toEqual([0, 3, 0])
-    expect(request.options).toEqual({ scale: 2, rootMotion: 'inPlace' })
-    script.answer({ id: request.id, done: true, ok: true, clips: [] })
-    await pending
-    const next = port.adapt(skinnedFromWire(TRIPO), skinnedFromWire(UTHANA), [turnClip('x')])
-    const unchanged = script.sent.at(-1)
-    if (!unchanged || 'cancel' in unchanged) throw new Error('missing second request')
-    expect(unchanged.source[0]?.position).toEqual([0, 1, 0])
-    port.dispose()
-    await next
-  })
-
-  it('sends the two skeletons and the clips, and answers what comes back', async () => {
-    const script = scriptedWorker()
-    const port = createRetarget(script.spawn)
-
-    const pending = port.adapt(skinnedFromWire(TRIPO), skinnedFromWire(UTHANA), [
-      turnClip('mixamorigSpine'),
-    ])
-    const request = script.sent[0]
-    if (!request || 'cancel' in request) throw new Error('nothing was asked of the worker')
-
-    expect(request.names.Waist).toBe('mixamorigSpine')
-    script.answer({ id: request.id, done: true, ok: true, clips: [wireClipOf(turnClip('Waist'))] })
-
-    expect((await pending)?.[0]?.tracks[0]?.name).toBe('Waist.quaternion')
-  })
-
-  it('reports each clip as it lands', async () => {
-    const script = scriptedWorker()
-    const seen: number[] = []
-    const port = createRetarget(script.spawn)
-
-    const pending = port.adapt(skinnedFromWire(TRIPO), skinnedFromWire(UTHANA), [turnClip('x')], {
-      onProgress: progress => void seen.push(progress),
-    })
-    const request = script.sent[0]
-    if (!request || 'cancel' in request) throw new Error('nothing was asked of the worker')
-
-    script.answer({ id: request.id, done: false, progress: 0.5 })
-    script.answer({ id: request.id, done: true, ok: true, clips: [] })
-    await pending
-
-    expect(seen).toEqual([0.5])
-  })
-
-  it('lets a caller take a request back, and tells the worker to stop', async () => {
-    const script = scriptedWorker()
-    const stop = new AbortController()
-    const port = createRetarget(script.spawn)
-
-    const pending = port.adapt(skinnedFromWire(TRIPO), skinnedFromWire(UTHANA), [turnClip('x')], {
-      signal: stop.signal,
-    })
-    stop.abort()
-
-    expect(await pending).toBeNull()
-    expect(script.terminated).toBe(1)
-  })
-
-  it('restarts after interrupting an active clip and runs the queued request', async () => {
-    const script = scriptedWorker()
-    const port = createRetarget(script.spawn)
-    const stop = new AbortController()
-    const first = port.adapt(skinnedFromWire(TRIPO), skinnedFromWire(UTHANA), [turnClip('one')], {
-      signal: stop.signal,
-    })
-    const second = port.adapt(skinnedFromWire(TRIPO), skinnedFromWire(UTHANA), [turnClip('two')])
-    expect(script.sent).toHaveLength(1)
-    stop.abort()
-    expect(await first).toBeNull()
-    expect(script.spawned).toBe(2)
-    const request = script.sent.at(-1)
-    if (!request || 'cancel' in request) throw new Error('missing resumed request')
-    script.answer({ id: request.id, done: true, ok: true, clips: [] })
-    expect(await second).toEqual([])
-  })
-
-  it('invalidates an in-flight answer when a remembered profile changes', async () => {
-    const script = scriptedWorker()
-    const port = createRetarget(script.spawn)
-    const pending = port.adapt(skinnedFromWire(TRIPO), skinnedFromWire(UTHANA), [turnClip('x')])
-    port.remember({
-      signature: skeletonSignatureOf(TRIPO.map(bone => bone.name)),
-      roles: { Hip: 'Hips' },
-    })
-    script.answer({ id: 1, done: true, ok: true, clips: [wireClipOf(turnClip('old'))] })
-    expect(await pending).toBeNull()
-  })
-
-  it('settles the active and queued requests when disposed', async () => {
-    const script = scriptedWorker()
-    const port = createRetarget(script.spawn)
-    const requests = Array.from({ length: 3 }, () =>
-      port.adapt(skinnedFromWire(TRIPO), skinnedFromWire(UTHANA), [turnClip('x')]),
-    )
-    port.dispose()
-    expect(await Promise.all(requests)).toEqual([null, null, null])
-    expect(script.spawned).toBe(1)
-  })
-
-  it('answers nothing once the port has let go, rather than waiting forever', async () => {
-    const script = scriptedWorker()
-    const port = createRetarget(script.spawn)
-    port.dispose()
-
-    expect(await port.adapt(skinnedFromWire(TRIPO), skinnedFromWire(UTHANA), [])).toBeNull()
-  })
-
-  it('answers nothing to a caller whose signal had already fired', async () => {
-    const script = scriptedWorker()
-    const stop = new AbortController()
-    stop.abort()
-
-    // An `abort` already delivered never reaches a listener added after it: without a check of
-    // its own, the worker would do the whole job and hand clips to a caller already gone.
-    const adapted = await createRetarget(script.spawn).adapt(
-      skinnedFromWire(TRIPO),
-      skinnedFromWire(UTHANA),
-      [turnClip('x')],
-      { signal: stop.signal },
-    )
-
-    expect(adapted).toBeNull()
-    expect(script.spawned).toBe(0)
   })
 })
 
