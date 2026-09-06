@@ -24,6 +24,7 @@ import { PIXEL_ART_SCENARIOS } from './scenariosPixelArt'
 import { OPTIMIZATION_SCENARIOS } from './scenariosOptimization'
 import { COMMENT_SCENARIOS } from './scenariosComments'
 import { CHARACTER_SCENARIOS } from './scenariosCharacter'
+import { PROJECT_FORMAT_SCENARIOS } from './scenariosProjectFormats'
 
 /**
  * The batterie, as something the bench can run — one scenario per request of `BATTERIE.md`, in
@@ -56,4 +57,5 @@ export const SCENARIOS: readonly Scenario[] = [
   ...OPTIMIZATION_SCENARIOS,
   ...COMMENT_SCENARIOS,
   ...CHARACTER_SCENARIOS,
+  ...PROJECT_FORMAT_SCENARIOS,
 ]

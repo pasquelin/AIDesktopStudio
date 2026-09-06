@@ -7,7 +7,7 @@ import { createActionIndex } from './actionIndex'
 describe('ActionIndex', () => {
   it('derives every registered action without maintaining another action list', () => {
     const corpus = actionCorpus()
-    expect(ACTION_REGISTRY).toHaveLength(298)
+    expect(ACTION_REGISTRY).toHaveLength(305)
     expect(corpus.actions).toHaveLength(ACTION_REGISTRY.length)
     expect(corpus.actions.map(action => action.name)).toEqual(
       ACTION_REGISTRY.map(action => action.name),
@@ -29,13 +29,13 @@ describe('ActionIndex', () => {
     onTestFinished(() => database.close())
     const index = createActionIndex(database)
     const corpus = actionCorpus()
-    expect(index.rebuild(corpus)).toMatchObject({ rebuilt: true, count: 298 })
-    expect(index.rebuild(corpus)).toMatchObject({ rebuilt: false, count: 298 })
+    expect(index.rebuild(corpus)).toMatchObject({ rebuilt: true, count: 305 })
+    expect(index.rebuild(corpus)).toMatchObject({ rebuilt: false, count: 305 })
 
     const changed = { ...corpus, fingerprint: 'changed' }
     expect(index.rebuild(changed).rebuilt).toBe(true)
     expect(index.fingerprint()).toBe('changed')
-    expect(index.count()).toBe(298)
+    expect(index.count()).toBe(305)
   })
 
   it('uses FTS5 to rank close action names and descriptions', () => {
@@ -412,7 +412,7 @@ describe('ActionIndex', () => {
     index.rebuild(actionCorpus())
     const ranking = index.inspect({ query: 'open project', limit: 3 })
 
-    expect(ranking).toHaveLength(298)
+    expect(ranking).toHaveLength(305)
     expect(ranking.find(hit => hit.action.name === 'project.open')).toMatchObject({
       included: true,
       rank: 1,

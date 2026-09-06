@@ -53,7 +53,7 @@ import { SETTINGS_HANDLERS } from './settingsHandlers'
 import { SHELL_HANDLERS } from './shellHandlers'
 import { STATE_HANDLERS } from './stateHandlers'
 import { TARGET_HANDLERS } from './targetHandlers'
-
+import { PROJECT_HANDLERS } from './projectHandlers'
 const HANDLERS: ActionHandlers = {
   ...CORE_HANDLERS,
   ...GAME_HANDLERS,
@@ -64,6 +64,7 @@ const HANDLERS: ActionHandlers = {
   ...ASSEMBLY_HANDLERS,
   ...EXPORT_HANDLERS,
   ...TARGET_HANDLERS,
+  ...PROJECT_HANDLERS,
   ...STATE_HANDLERS,
   ...FILE_HANDLERS,
   ...JOB_HANDLERS,
@@ -82,7 +83,6 @@ const HANDLERS: ActionHandlers = {
   ...SHELL_HANDLERS,
   'studio.batch': runBatch,
 }
-
 export function handledActions(): readonly string[] {
   return Object.keys(HANDLERS)
 }

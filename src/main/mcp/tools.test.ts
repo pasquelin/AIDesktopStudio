@@ -18,6 +18,20 @@ const frenchText = (key: string): string => {
 }
 
 describe('the registry, published as tools', () => {
+  it('publishes input maps, animation graphs and retarget measurements', () => {
+    expect(mcpTools().map(tool => tool.name)).toEqual(
+      expect.arrayContaining([
+        'inputMaps_list',
+        'inputMap_read',
+        'inputMap_write',
+        'animationGraphs_list',
+        'animationGraph_read',
+        'animationGraph_write',
+        'animation_retargetStatus',
+      ]),
+    )
+  })
+
   it('offers every action of the wire, and nothing else', () => {
     expect(
       mcpTools()
