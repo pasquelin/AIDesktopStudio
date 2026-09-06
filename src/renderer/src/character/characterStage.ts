@@ -1,4 +1,4 @@
-import type { CharacterExtras } from '@shared/domain/character'
+import { workshopIdOf, type CharacterExtras } from '@shared/domain/character'
 import type { Rig } from '@shared/domain/rig'
 import type { SceneState } from '@/engines/scene/sceneState'
 import { EMPTY_SCENE } from '@/engines/scene/sceneState'
@@ -92,9 +92,4 @@ export function dressCharacterStage(assetId: string, dress: CharacterExtras['dre
     ...scene,
     nodes: [{ ...node, model: { ...node.model, dress } }],
   })
-}
-
-/** The document this window's workshop scene lives under — one per character, in its own store. */
-export function workshopIdOf(assetId: string): string {
-  return `character:${assetId}`
 }

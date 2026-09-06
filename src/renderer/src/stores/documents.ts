@@ -15,6 +15,7 @@ import {
   type NamedDocument,
 } from '@shared/domain/documentName'
 import { foldForFileName, nameFailureOf, safeFileName } from '@shared/domain/fileName'
+import { workshopIdOf } from '@shared/domain/character'
 import { nameOf, parentOf } from '@shared/domain/folder'
 import { DEFAULT_ROLE_PATHS } from '@shared/domain/folderRole'
 import { refFromString } from '@shared/domain/ref'
@@ -153,6 +154,12 @@ export function characterAssetOf(state: DocumentsSlice, documentId: string): str
 export function activeCharacterAssetId(state: DocumentsSlice): string | null {
   const id = activeCharacterId(state)
   return id === null ? null : characterAssetOf(state, id)
+}
+
+/** The scene in front, or the workshop of the character in front — what every 3D dock reads. */
+export function activeSceneOrWorkshopId(state: DocumentsSlice): string | null {
+  const assetId = activeCharacterAssetId(state)
+  return activeSceneId(state) ?? (assetId === null ? null : workshopIdOf(assetId))
 }
 
 /** The image in front, as a selector. Same reason as `activeSceneId`, for the layer stack. */

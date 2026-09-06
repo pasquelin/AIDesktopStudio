@@ -4,8 +4,9 @@ import {
   type DocumentDescriptor,
   type DocumentWrite,
 } from '@shared/domain/document'
+import { workshopIdOf } from '@shared/domain/character'
 import { installFakeBridge } from '@/services/fakeBridge'
-import { documentForAsset, documentsIn, useDocuments } from './documents'
+import { activeSceneOrWorkshopId, documentForAsset, documentsIn, useDocuments } from './documents'
 import { showPanels } from './layout-fixtures'
 import { useLayouts } from './layouts'
 
@@ -314,6 +315,41 @@ describe('documentForAsset', () => {
     })
 
     expect(documentForAsset(useDocuments.getState(), 'asset_42')?.id).toBe(open?.id)
+  })
+})
+describe('activeSceneOrWorkshopId', () => {
+  const inFront = (document: DocumentDescriptor): void =>
+    useDocuments.setState({ documents: { [document.id]: document }, activeId: document.id })
+
+  it('names the scene in front', () => {
+    inFront({
+      id: 'scene-1',
+      kind: 'scene',
+      title: 'Level',
+      workspace: '3d',
+      path: 'documents/Level.gltf',
+    })
+
+    expect(activeSceneOrWorkshopId(useDocuments.getState())).toBe('scene-1')
+  })
+
+  it('names the workshop of the character in front', () => {
+    inFront({
+      id: 'character-1',
+      kind: 'character',
+      title: 'Hero',
+      workspace: '3d',
+      path: 'Modelling/Models/hero.glb',
+      sourceAssetId: 'asset-hero',
+    })
+
+    expect(activeSceneOrWorkshopId(useDocuments.getState())).toBe(workshopIdOf('asset-hero'))
+  })
+
+  it('names nothing for an image in front', () => {
+    inFront(POSTER)
+
+    expect(activeSceneOrWorkshopId(useDocuments.getState())).toBeNull()
   })
 })
 // @vitest-environment jsdom

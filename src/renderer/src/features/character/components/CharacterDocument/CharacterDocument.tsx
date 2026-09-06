@@ -18,7 +18,8 @@ import {
   prepareExtractedModelDress,
   wornModelDress,
 } from '@/features/material/modelDress'
-import { createCharacterStage, dressCharacterStage, workshopIdOf } from '@/character/characterStage'
+import { workshopIdOf } from '@shared/domain/character'
+import { createCharacterStage, dressCharacterStage } from '@/character/characterStage'
 import { noteCharacterSkins } from '@/character/characterSkins'
 import { assetsById, assetVersionOf, useAssets } from '@/stores/assets'
 import { useShortcuts } from '@/hooks/useShortcuts'

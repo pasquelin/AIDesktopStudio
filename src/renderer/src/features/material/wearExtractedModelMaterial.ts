@@ -1,4 +1,5 @@
-import { dressCharacterStage, workshopIdOf } from '@/character/characterStage'
+import { workshopIdOf } from '@shared/domain/character'
+import { dressCharacterStage } from '@/character/characterStage'
 import { wearCharacterMaterialAt } from '@/engines/character/characterCommands'
 import { wearMaterialAt } from '@/engines/scene/commands'
 import { characterOf, useCharacters } from '@/stores/character'

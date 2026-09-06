@@ -9,7 +9,7 @@ import {
   useDocuments,
 } from '@/stores/documents'
 import { AnimationPanel } from '../../../animation/components/Animation/AnimationPanel'
-import { workshopIdOf } from '@/character/characterStage'
+import { workshopIdOf } from '@shared/domain/character'
 import { MontagePanel } from '../MontagePanel'
 import { SoundPanel } from '../Sound/SoundPanel'
 

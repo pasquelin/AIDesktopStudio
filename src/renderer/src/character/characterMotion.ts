@@ -18,7 +18,7 @@ import { animationViewOf } from '@/stores/animationView'
 import { scenePayload } from '@/engines/scene/sceneDocument'
 import { sceneOf } from '@/stores/scenes'
 import { sceneEngineOf } from '@/stores/sceneEngines'
-import { workshopIdOf } from './characterStage'
+import { workshopIdOf } from '@shared/domain/character'
 
 /** What the band has to hold before there is a motion to file: one key on one channel. */
 export function hasMotion(timeline: AnimationTimeline): boolean {

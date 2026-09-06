@@ -2,7 +2,7 @@ import { mdiFileTreeOutline } from '@mdi/js'
 import { useTranslation } from 'react-i18next'
 import { EmptyState } from '@/components/EmptyState'
 import { activeCharacterAssetId, activeSceneId, useDocuments } from '@/stores/documents'
-import { workshopIdOf } from '@/character/characterStage'
+import { workshopIdOf } from '@shared/domain/character'
 import { SceneTree } from './SceneTree'
 
 /**

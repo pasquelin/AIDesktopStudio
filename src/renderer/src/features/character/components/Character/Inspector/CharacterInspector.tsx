@@ -33,7 +33,7 @@ import { useViewportSetting } from '@/hooks/useViewportSetting'
 import { characterViewOf, useCharacterView } from '@/stores/characterView'
 import { sceneOf, useScenes } from '@/stores/scenes'
 import { sceneEngineOf } from '@/stores/sceneEngines'
-import { workshopIdOf } from '@/character/characterStage'
+import { workshopIdOf } from '@shared/domain/character'
 import { saveWorkshopMotion } from '@/character/characterMotion'
 import { CharacterInspectorModel } from './CharacterInspectorModel'
 

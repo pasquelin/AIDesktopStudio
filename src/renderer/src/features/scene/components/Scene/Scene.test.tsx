@@ -8,7 +8,8 @@ import { clearScenes } from '@/stores/scene-fixtures'
 import { useScenes } from '@/stores/scenes'
 import { Scene } from './Scene'
 import { installCharacterDocument } from '@/stores/character-fixtures'
-import { workshopIdOf, workshopScene } from '@/character/characterStage'
+import { workshopIdOf } from '@shared/domain/character'
+import { workshopScene } from '@/character/characterStage'
 
 const scene: DocumentDescriptor = {
   id: 'doc-1',

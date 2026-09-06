@@ -1,6 +1,7 @@
 import type { RecentProject } from '@shared/domain/project'
 import type { WorkspaceId } from '@shared/domain/workspace'
-import { workshopIdOf, workshopScene } from '@/character/characterStage'
+import { workshopIdOf } from '@shared/domain/character'
+import { workshopScene } from '@/character/characterStage'
 import { drawing } from '@/game/game-fixtures'
 import { registerSceneEngine } from '@/stores/sceneEngines'
 import { rigFit } from '@/engines/scene/rigFit'

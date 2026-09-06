@@ -34,7 +34,7 @@ import {
 } from '@/engines/character/characterCommands'
 import { autoRigServiceFor } from '@/engines/character/autoRigBackends'
 import { DEFAULT_AUTO_RIG_OPTIONS } from '@shared/domain/autoRigInference'
-import { workshopIdOf } from '@/character/characterStage'
+import { workshopIdOf } from '@shared/domain/character'
 import { useCharacters } from '@/stores/character'
 import { type ModelNode, type SceneState } from '@/engines/scene/sceneState'
 import { IDENTITY_TRANSFORM } from '@shared/domain/transform'

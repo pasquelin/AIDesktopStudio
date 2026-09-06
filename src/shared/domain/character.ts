@@ -42,6 +42,17 @@ export type CharacterSocket = {
  */
 export type MotionRef = { id: string; name: string; assetId: string }
 
+const WORKSHOP_PREFIX = 'character:'
+
+/** The scene document a character tab lays its model on — one per asset, never a file. */
+export function workshopIdOf(assetId: string): string {
+  return `${WORKSHOP_PREFIX}${assetId}`
+}
+
+export function isWorkshopId(documentId: string): boolean {
+  return documentId.startsWith(WORKSHOP_PREFIX)
+}
+
 /**
  * What the studio writes into a character's own `.glb`, under `extras[STUDIO_METADATA_KEY]`.
  *

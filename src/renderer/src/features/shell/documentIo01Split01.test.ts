@@ -1,4 +1,4 @@
-import { workshopIdOf } from '@/character/characterStage'
+import { workshopIdOf } from '@shared/domain/character'
 import { DEFAULT_CANVAS, pixelLayer } from '@/engines/canvas/canvasState'
 import { addLayer } from '@/engines/canvas/commands'
 import { setCharacterBoneRest } from '@/engines/character/characterCommands'

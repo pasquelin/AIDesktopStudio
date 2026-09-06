@@ -1,6 +1,6 @@
 import { saveCharacterDocument } from '@/character/characterSave'
 import { forgetCharacterSkins } from '@/character/characterSkins'
-import { workshopIdOf } from '@/character/characterStage'
+import { workshopIdOf } from '@shared/domain/character'
 import { chainsOnMontage, EMPTY_AUDIO_EDIT, parseAudioEdits } from '@/engines/audio/edits'
 import { DEFAULT_CANVAS } from '@/engines/canvas/canvasState'
 import { traitsOfCanvas } from '@/engines/canvas/canvasTraits'

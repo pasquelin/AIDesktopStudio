@@ -16,7 +16,7 @@ import {
   saveCharacterMotion,
   saveWorkshopMotion,
 } from './characterMotion'
-import { workshopIdOf } from './characterStage'
+import { workshopIdOf } from '@shared/domain/character'
 import { createDefaultScene } from '@/engines/scene/defaultScene'
 import type { SceneRenderer } from '@/engines/scene/SceneRenderer'
 import { clearScenes } from '@/stores/scene-fixtures'
