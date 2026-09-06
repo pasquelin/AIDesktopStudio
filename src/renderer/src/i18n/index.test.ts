@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import i18next from 'i18next'
+import { LOG_SCOPES } from '@shared/ipc'
 import { initI18n, PSEUDO_LOCALE_FLAG } from './index'
 
 describe('initI18n', () => {
@@ -8,6 +9,16 @@ describe('initI18n', () => {
 
     expect(document.documentElement.lang).toBe('en')
     expect(i18next.language).toBe('en')
+  })
+
+  it('translates every journal scope instead of printing the key', async () => {
+    await initI18n('fr')
+
+    expect(
+      LOG_SCOPES.filter(
+        scope => i18next.t(`activity.scope.${scope}`) === `activity.scope.${scope}`,
+      ),
+    ).toEqual([])
   })
 
   // Idempotent by design — the settings call it again on every language change.

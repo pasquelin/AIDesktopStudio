@@ -104,16 +104,19 @@
     "saidGone": "Ce texte n’est plus gardé : le studio n’en retient qu’une poignée, et repart à zéro à chaque lancement.",
     "saidHint": "Déplie le texte entier de cet aller-retour, gardé en mémoire par le studio",
     "scope": {
-      "scene.model": "Un modèle 3D n’a pas pu être chargé",
-      "scene.bvh": "Un modèle 3D n’a pas pu être préparé pour la sélection",
-      "scene.carved": "Une forme n’a pas pu être percée",
-      "scene.player": "Un second module joueur n’a pas pu être ajouté : une scène n’en porte qu’un",
-      "scene.playerParts": "Cet objet n’a pas pu être retiré : un module joueur garde son corps et sa caméra",
-      "scene.texture": "Une image n’a pas pu être chargée",
-      "scene.animation": "Une animation n’a pas pu être posée sur le personnage",
-      "scene.export": "L’export de la scène a échoué",
-      "scene.post": "La composition de post-traitement n’a pas pu être lue ou écrite",
-      "scene.capture": "La vue 3D n’a pas pu être capturée",
+      "scene": {
+        "model": "Un modèle 3D n’a pas pu être chargé",
+        "bvh": "Un modèle 3D n’a pas pu être préparé pour la sélection",
+        "carved": "Une forme n’a pas pu être percée",
+        "player": "Le module joueur n’a pas pu être lu ou modifié",
+        "playerParts": "Cet objet n’a pas pu être retiré : un module joueur garde son corps et sa caméra",
+        "texture": "Une image n’a pas pu être chargée",
+        "animation": "Une animation n’a pas pu être posée sur le personnage",
+        "export": "L’export de la scène a échoué",
+        "post": "La composition de post-traitement n’a pas pu être lue ou écrite",
+        "capture": "La vue 3D n’a pas pu être capturée",
+        "render": "Le rendu vidéo a échoué"
+      },
       "material.map": "Un canal de matière n’a pas pu être chargé",
       "material.channel": "Une image n’a pas pu entrer dans un canal",
       "material.seam": "Les coutures n’ont pas pu être mesurées",
@@ -153,10 +156,7 @@
       "explorer.open": "Le studio n’a pas pu déterminer ce qu’est ce fichier",
       "sequence.export": "L’export de la séquence a échoué",
       "sequence.import": "L’import du montage a échoué",
-      "document.export": "L’export du document dans le projet a échoué",
-      "scene": {
-        "render": "Le rendu vidéo a échoué"
-      }
+      "document.export": "L’export du document dans le projet a échoué"
     },
     "tagsNotSynced": "Les tags de « {{name}} » n’ont pas rejoint la bibliothèque",
     "topics": {

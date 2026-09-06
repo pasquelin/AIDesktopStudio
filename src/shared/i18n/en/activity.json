@@ -104,16 +104,19 @@
     "saidGone": "This text is no longer held: the studio keeps only a handful, and starts over on each launch.",
     "saidHint": "Unfolds the whole text of this round trip, held in memory by the studio",
     "scope": {
-      "scene.model": "A 3D model could not be loaded",
-      "scene.bvh": "A 3D model could not be prepared for picking",
-      "scene.carved": "A shape could not be carved",
-      "scene.player": "A second player module could not be added: a scene holds only one",
-      "scene.playerParts": "This object could not be removed: a player module keeps its body and its camera",
-      "scene.texture": "An image could not be loaded",
-      "scene.animation": "An animation could not be laid on the character",
-      "scene.export": "Exporting the scene failed",
-      "scene.post": "The post-processing composition could not be read or written",
-      "scene.capture": "Capturing the 3D view failed",
+      "scene": {
+        "model": "A 3D model could not be loaded",
+        "bvh": "A 3D model could not be prepared for picking",
+        "carved": "A shape could not be carved",
+        "player": "The player module could not be read or changed",
+        "playerParts": "This object could not be removed: a player module keeps its body and its camera",
+        "texture": "An image could not be loaded",
+        "animation": "An animation could not be laid on the character",
+        "export": "Exporting the scene failed",
+        "post": "The post-processing composition could not be read or written",
+        "capture": "Capturing the 3D view failed",
+        "render": "Rendering the video failed"
+      },
       "material.map": "A material channel could not be loaded",
       "material.channel": "An image could not go into a channel",
       "material.seam": "The seams could not be measured",
@@ -153,10 +156,7 @@
       "explorer.open": "The studio could not work out what this file is",
       "sequence.export": "Exporting the sequence failed",
       "sequence.import": "Importing the edit failed",
-      "document.export": "Exporting the document into the project failed",
-      "scene": {
-        "render": "Rendering the video failed"
-      }
+      "document.export": "Exporting the document into the project failed"
     },
     "tagsNotSynced": "The tags of “{{name}}” did not reach the library",
     "topics": {

@@ -122,6 +122,29 @@ it.each(CODES)('writes no block twice under two names in %s', code => {
 })
 
 /**
+ * i18next walks dots. A group `scene` next to a key `scene.player` hides the key: the toast
+ * printed `activity.scope.scene.player` while the sentence sat unused — measured 2026-09-06.
+ */
+function dottedCollisions(value: unknown, prefix = ''): string[] {
+  if (!isRecord(value)) return []
+
+  const names = Object.keys(value)
+  const groups = new Set(names.filter(name => isRecord(value[name])))
+  return [
+    ...names.flatMap(name => {
+      const dot = name.indexOf('.')
+      if (dot < 0) return []
+      return groups.has(name.slice(0, dot)) ? [`${prefix}${name}`] : []
+    }),
+    ...[...groups].flatMap(group => dottedCollisions(value[group], `${prefix}${group}.`)),
+  ]
+}
+
+it.each(CODES)('does not nest a group under the same name as a dotted key in %s', code => {
+  expect(dottedCollisions(TRANSLATIONS[code])).toEqual([])
+})
+
+/**
  * A count is text too, and a thousand is not written the same in the two languages: `4 000`
  * against `4,000`. The usage window formatted its figures through `Intl` from the start, but
  * the counts written INSIDE a sentence went out raw, and a library of four thousand assets

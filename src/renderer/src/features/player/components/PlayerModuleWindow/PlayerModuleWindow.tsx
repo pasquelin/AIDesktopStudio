@@ -4,16 +4,17 @@ import { useTranslation } from 'react-i18next'
 import { playerModuleAssetOf } from '@shared/domain/playerModuleWindow'
 import { EmptyState } from '@/components/EmptyState'
 import { WindowShell } from '@/components/WindowShell'
-import { sceneFromGltf } from '@/engines/scene/gltfDocument'
 import { SceneRenderer } from '@/engines/scene/SceneRenderer'
-import { EMPTY_SCENE, type SceneState } from '@/engines/scene/sceneState'
-import { fetchAsset } from '@/helpers/assetFetch'
+import type { SceneState } from '@/engines/scene/sceneState'
+import { assetBytes } from '@/helpers/assetFetch'
 import { useAppliedSettings } from '@/hooks/useAppliedSettings'
 import { useConnections } from '@/hooks/useConnections'
+import { getBridge } from '@/services/bridge'
 import { reportFailure } from '@/services/diagnostics'
 import { assetVersionOf } from '@/stores/assets'
 import { useProject } from '@/stores/project'
 import { useSettings } from '@/stores/settings'
+import { sceneFromModuleFile } from '@/features/player/sceneFromModuleFile'
 
 /**
  * A player module on its own. It reads the FILE its route names rather than a scene: a second
@@ -27,7 +28,7 @@ export function PlayerModuleWindow() {
   const engine = useRef<SceneRenderer | null>(null)
   // Both carry the module they answer FOR: a window turned towards another one must not show the
   // one before it while the new file is being read, and clearing them in the effect cascades.
-  const [read, setRead] = useState<{ id: string; scene: SceneState } | null>(null)
+  const [read, setRead] = useState<{ id: string; scene: SceneState; title: string } | null>(null)
   const [failure, setFailure] = useState<string | null>(null)
   useAppliedSettings()
   const [assetId, setAssetId] = useState(playerModuleAssetOf(window.location.hash))
@@ -72,17 +73,35 @@ export function PlayerModuleWindow() {
   }, [three])
 
   useEffect(() => {
-    if (assetId) void readModule(assetId, setRead, setFailure)
+    if (!assetId) return
+    let cancelled = false
+    void readModule(
+      assetId,
+      read => {
+        if (!cancelled) setRead(read)
+      },
+      id => {
+        if (!cancelled) setFailure(id)
+      },
+    )
+    return () => {
+      cancelled = true
+    }
   }, [assetId])
 
   const state = read?.id === assetId ? read.scene : null
+  const title = read?.id === assetId && read.title ? read.title : t('playerWindow.title')
 
   useEffect(() => {
     if (state) engine.current?.apply(state)
   }, [state])
 
+  useEffect(() => {
+    document.title = title
+  }, [title])
+
   return (
-    <WindowShell title={t('playerWindow.title')}>
+    <WindowShell title={title}>
       <div className="relative h-full">
         <div ref={hostRef} className="absolute inset-0" />
         {!state && (
@@ -99,14 +118,24 @@ export function PlayerModuleWindow() {
 /** Read off the file the route names — and SAID on screen, never only to the journal. */
 async function readModule(
   assetId: string,
-  into: (read: { id: string; scene: SceneState }) => void,
+  into: (read: { id: string; scene: SceneState; title: string }) => void,
   onFailure: (assetId: string) => void,
 ): Promise<void> {
   try {
-    const text = await (await fetchAsset(assetId)).text()
-    into({ id: assetId, scene: { ...EMPTY_SCENE, nodes: sceneFromGltf(JSON.parse(text)).nodes } })
+    const scene = sceneFromModuleFile(await assetBytes(assetId), assetId)
+    into({ id: assetId, scene, title: (await nameOf(assetId)) ?? scene.nodes[0]?.name ?? '' })
   } catch (error) {
     onFailure(assetId)
     reportFailure('scene.player', assetId, error)
+  }
+}
+
+/** Caption only: a catalogue miss must not blank a file that parsed. */
+async function nameOf(assetId: string): Promise<string | null> {
+  try {
+    const [asset] = (await getBridge()?.assets.search({ ids: [assetId], limit: 1 })) ?? []
+    return asset?.name ?? null
+  } catch {
+    return null
   }
 }
