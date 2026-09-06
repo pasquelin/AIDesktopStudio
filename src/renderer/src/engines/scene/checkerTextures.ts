@@ -22,6 +22,7 @@ import { getBridge } from '@/services/bridge'
 import { DEFAULT_MATERIAL } from './sceneState'
 
 const installed = new Map<CheckerTextureId, string>()
+const paths = new Map<string, string>()
 
 /** The install in flight, by project — so ten open scenes ask the main process once. */
 let running: { path: string; work: Promise<void> } | null = null
@@ -62,13 +63,23 @@ export function ensureCheckerTextures(path: string): Promise<void> {
 /** Replaces what is known, so leaving a project cannot leave its ids behind for the next one. */
 export function rememberCheckerTextures(textures: readonly InstalledCheckerTexture[]): void {
   installed.clear()
-  for (const texture of textures) installed.set(texture.id, texture.assetId)
+  paths.clear()
+  for (const texture of textures) {
+    installed.set(texture.id, texture.assetId)
+    if (texture.path) paths.set(texture.assetId, texture.path)
+  }
 }
 
 /** Everything, the memo included: what is forgotten has to be asked for again, not assumed done. */
 export function forgetCheckerTextures(): void {
   installed.clear()
+  paths.clear()
   running = null
+}
+
+/** The file that id became, so a save can name it by uri without waiting for the shelf. */
+export function checkerTexturePath(assetId: string): string | null {
+  return paths.get(assetId) ?? null
 }
 
 export function checkerTextureRef(id: CheckerTextureId): TextureRef | null {

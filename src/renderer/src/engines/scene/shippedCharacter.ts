@@ -12,6 +12,7 @@ import { DEFAULT_CHARACTER_LEVEL } from '@shared/domain/characterLevel'
 import { getBridge } from '@/services/bridge'
 
 let assetId: string | null = null
+let assetPath: string | null = null
 
 /** The install in flight, by project — so ten open scenes ask the main process once. */
 let running: { path: string; work: Promise<void> } | null = null
@@ -42,7 +43,10 @@ async function install(path: string): Promise<void> {
 
   try {
     const installed = await getBridge()?.assets.installBundledCharacter(DEFAULT_CHARACTER_LEVEL)
-    if (isCurrent()) assetId = installed?.assetId ?? null
+    if (isCurrent()) {
+      assetId = installed?.assetId ?? null
+      assetPath = installed?.path ?? null
+    }
   } catch {
     // A project that cannot be written to is the one case a module still comes out as boxes. The
     // main process is where that failure is logged; here it is forgotten rather than kept, so the
@@ -51,12 +55,14 @@ async function install(path: string): Promise<void> {
   }
 }
 
-export function rememberShippedCharacter(id: string | null): void {
+export function rememberShippedCharacter(id: string | null, path: string | null = null): void {
   assetId = id
+  assetPath = path
 }
 
 export function forgetShippedCharacter(): void {
   assetId = null
+  assetPath = null
   running = null
 }
 
@@ -66,4 +72,9 @@ export function forgetShippedCharacter(): void {
  */
 export function shippedCharacterAssetId(): string | null {
   return assetId
+}
+
+/** The file that id became, so a save can name it by uri without waiting for the shelf. */
+export function shippedCharacterPath(id: string): string | null {
+  return id === assetId ? assetPath : null
 }

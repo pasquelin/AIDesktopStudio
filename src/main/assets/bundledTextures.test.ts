@@ -160,7 +160,11 @@ describe('the working textures shipped with the app', () => {
 
       const installed = await install(shippedFolder())
 
-      expect(installed[0]).toEqual({ id: 'gridLarge', assetId: former.id })
+      expect(installed[0]).toEqual({
+        id: 'gridLarge',
+        assetId: former.id,
+        path: former.path,
+      })
       expect(written.map(asset => asset.path)).toEqual([
         '.resources/Materials/GridSmall.png',
         '.resources/Materials/CheckerLarge.png',

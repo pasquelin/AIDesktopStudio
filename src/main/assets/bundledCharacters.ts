@@ -46,7 +46,7 @@ export function registerBundledCharacterHandlers({ folder, ...deps }: BundledCha
     if (!level) return null
 
     const asset = await installBundledResource(deps, folder(), resourceOf(level))
-    return { level, assetId: asset.id }
+    return { level, assetId: asset.id, ...(asset.path ? { path: asset.path } : {}) }
   }
 
   handle(CHANNELS.charactersInstallBundled, install)

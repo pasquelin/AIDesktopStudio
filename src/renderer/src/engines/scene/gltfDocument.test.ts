@@ -11,7 +11,7 @@ import {
 } from './gltfDocument'
 import { loadHeightmap } from './heightmap'
 import { openExrFloatY } from './openExr-fixtures'
-import { cameraNodeFixture, lightNodeFixture, meshNode } from './scene-fixtures'
+import { cameraNodeFixture, lightNodeFixture, meshNode, modelNodeFixture } from './scene-fixtures'
 import { EMPTY_SCENE, type SceneState } from './sceneState'
 
 const WRITTEN: GltfDocumentOptions = { documentId: 'doc-1', documentKind: 'scene' }
@@ -43,6 +43,44 @@ describe('gltfDocumentOf', () => {
 
     expect(isGltfDocument(document)).toBe(true)
     expect(document.scene).toBe(0)
+  })
+
+  it('names the model another application follows, by uri', () => {
+    const uri = '.resources/Modelling/Models/HeroMedium.glb'
+    const document = gltfDocumentOf(
+      { ...EMPTY_SCENE, nodes: [modelNodeFixture('Character', 'asset-hero')] },
+      { ...WRITTEN, uriOf: id => (id === 'asset-hero' ? uri : null) },
+    )
+    if (!isRecord(document)) throw new Error('not a document')
+
+    expect(nodesOf(document)[0]?.extras).toEqual({ uri })
+  })
+
+  it('points at the pictures a mesh wears', () => {
+    const floor = meshNode('floor')
+    floor.material = { ...floor.material, map: { assetId: 'tex-1' } }
+    const document = gltfDocumentOf(
+      { ...EMPTY_SCENE, nodes: [floor] },
+      { ...WRITTEN, uriOf: id => (id === 'tex-1' ? '.resources/Materials/GridLarge.png' : null) },
+    )
+    if (!isRecord(document)) throw new Error('not a document')
+
+    expect(document.images).toEqual([{ uri: '.resources/Materials/GridLarge.png' }])
+  })
+
+  it('keeps pictures it composed, and names extras a save would drop', () => {
+    const floor = meshNode('floor')
+    floor.material = { ...floor.material, map: { assetId: 'tex-1' } }
+    const composed = gltfDocumentOf(
+      { ...EMPTY_SCENE, nodes: [floor] },
+      { ...WRITTEN, uriOf: () => 'grid.png' },
+    )
+    if (!isRecord(composed)) throw new Error('not a document')
+
+    expect(sceneHoldsMore(composed)).not.toContain('images')
+    expect(sceneHoldsMore({ ...write(EMPTY_SCENE), images: [{ uri: 'foreign.png' }] })).toContain(
+      'images',
+    )
   })
 
   it('says which document it is, and which kind, where the file name cannot', () => {

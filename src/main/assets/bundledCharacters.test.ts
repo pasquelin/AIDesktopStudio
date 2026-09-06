@@ -95,7 +95,11 @@ describe('the character shipped with the app', () => {
   it('puts ONE density into the project, under the studio’s own folder', async () => {
     const installed = await install(shippedFolder(), 'medium')
 
-    expect(installed).toEqual({ level: 'medium', assetId: 'asset_1' })
+    expect(installed).toEqual({
+      level: 'medium',
+      assetId: 'asset_1',
+      path: '.resources/Modelling/Models/HeroMedium.glb',
+    })
     expect(written.map(asset => asset.path)).toEqual(['.resources/Modelling/Models/HeroMedium.glb'])
   })
 

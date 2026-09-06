@@ -168,7 +168,7 @@ export function runSceneCommand(documentId: string, command: CommandId): Command
         sceneEngineOf(documentId)?.frameFollow()
         return true
       case 'scene.exportGame':
-        if (sceneEngineOf(documentId)) openGameExportDialog(documentId)
+        openGameExportDialog(documentId)
         return true
       case 'scene.viewFront':
       case 'scene.viewBack':

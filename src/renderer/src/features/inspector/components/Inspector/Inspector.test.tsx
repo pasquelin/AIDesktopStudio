@@ -16,8 +16,11 @@ import { selectTrackIn, sequenceOf, useSequences } from '@/stores/sequences'
 import { useLayouts } from '@/stores/layouts'
 import { useSelection } from '@/stores/selection'
 import { withQueries } from '@/features/shell/components/query-fixtures'
-import { installCharacterDocument } from '@/stores/character-fixtures'
+import { clearCharacters, installCharacterDocument } from '@/stores/character-fixtures'
 import { seedCharacter } from '@/stores/character'
+import { modelNodeFixture } from '@/engines/scene/scene-fixtures'
+import { EMPTY_SCENE } from '@/engines/scene/sceneState'
+import { installScene } from '@/stores/scene-fixtures'
 import { Inspector } from './Inspector'
 
 const asset = (overrides: Partial<Asset> = {}): Asset => ({
@@ -52,6 +55,23 @@ describe('Inspector, on the document in front', () => {
 
     expect(screen.getByText('Squelette')).toBeInTheDocument()
     expect(screen.getByText(/pas encore animable/)).toBeInTheDocument()
+  })
+
+  it('lists the motions of a character selected in a scene', () => {
+    clearCharacters()
+    installDocument('doc-1', '3d')
+    installScene('doc-1', {
+      ...EMPTY_SCENE,
+      nodes: [modelNodeFixture('Character', 'asset-hero')],
+      selectedIds: ['Character'],
+    })
+    seedCharacter('asset-hero', null, {
+      motions: [{ id: 'motion-1', name: 'Walk', assetId: 'asset-walk' }],
+    })
+    render(withQueries(<Inspector />))
+
+    expect(screen.getByText('Mouvements')).toBeInTheDocument()
+    expect(screen.getByText('Walk')).toBeInTheDocument()
   })
 
   it('asks for a selection when there is none', () => {

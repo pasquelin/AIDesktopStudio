@@ -58,4 +58,4 @@ export function bundledTextureUrl(id: CheckerTextureId): string {
 }
 
 /** What one of them lands in the project as: the id it was given, and the row it now has. */
-export type InstalledCheckerTexture = { id: CheckerTextureId; assetId: string }
+export type InstalledCheckerTexture = { id: CheckerTextureId; assetId: string; path?: string }

@@ -37,4 +37,4 @@ export function bundledCharacterUrl(level: CharacterLevel): string {
 }
 
 /** What one of them lands in the project as: the level it stands for, and the row it now has. */
-export type InstalledCharacter = { level: CharacterLevel; assetId: string }
+export type InstalledCharacter = { level: CharacterLevel; assetId: string; path?: string }

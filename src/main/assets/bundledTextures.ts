@@ -69,7 +69,7 @@ export function registerBundledTextureHandlers({
     // reads the disk to pick a free name — four concurrent writers would each read « free ».
     for (const id of CHECKER_TEXTURE_IDS) {
       const asset = await installBundledResource(deps, folder(), resourceOf(id, roles()))
-      installed.push({ id, assetId: asset.id })
+      installed.push({ id, assetId: asset.id, ...(asset.path ? { path: asset.path } : {}) })
     }
 
     return installed

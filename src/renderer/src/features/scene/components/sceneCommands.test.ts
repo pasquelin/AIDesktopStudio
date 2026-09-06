@@ -72,6 +72,12 @@ it('opens the game export report from a live scene', () => {
   forgetSceneEngine(DOCUMENT)
 })
 
+it('opens the game export report even when the viewport is not mounted', () => {
+  runSceneCommand(DOCUMENT, 'scene.exportGame')
+
+  expect(useGameExportDialog.getState().documentId).toBe(DOCUMENT)
+})
+
 /**
  * Delete is an accelerator of the native Édition menu, so it never reaches the band's own
  * `onKeyDown`: clicking a shot while its camera stood selected deleted THE CAMERA. Seen on

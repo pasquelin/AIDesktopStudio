@@ -33,9 +33,9 @@ import {
 import { isRecord } from '@shared/guards'
 import { isComponentType } from '@shared/domain/componentRegistry'
 import { byCodeUnit } from '@shared/text'
-import type { LightDescriptor, Transform } from '@shared/domain/scene'
+import { TEXTURE_SLOTS, type LightDescriptor, type Transform } from '@shared/domain/scene'
 import { scenePayload, sceneFromPayload, timelineRowsLost } from './sceneDocument'
-import type { SceneState } from './sceneState'
+import { carriesMaterial, type SceneState } from './sceneState'
 
 type WrittenNode = GltfNode & {
   name: string
@@ -68,6 +68,11 @@ export type GltfDocumentOptions = {
   documentId: string
   /** Which of the two kinds this container serves. The file name cannot say. */
   documentKind: DocumentKind
+  /**
+   * Project-relative URL of an asset, or `null` when this window has not been shown the row.
+   * Absent, the file names nothing another application can follow — geometry stays unbaked.
+   */
+  uriOf?: (assetId: string) => string | null
 }
 
 /**
@@ -77,7 +82,7 @@ export type GltfDocumentOptions = {
  */
 export function gltfDocumentOf(
   state: SceneState,
-  { documentId, documentKind }: GltfDocumentOptions,
+  { documentId, documentKind, uriOf }: GltfDocumentOptions,
 ): unknown {
   const cameras: GltfCamera[] = []
   const lights: GltfLight[] = []
@@ -116,8 +121,15 @@ export function gltfDocumentOf(
       lights.push(light)
     }
 
+    if (node.type === 'model') {
+      const uri = uriOf?.(node.model.assetId)
+      if (uri) written.extras = { uri }
+    }
+
     return written
   })
+
+  const images = imagesOf(state, uriOf)
 
   return {
     asset: { version: GLTF_VERSION, generator: GLTF_GENERATOR },
@@ -135,6 +147,7 @@ export function gltfDocumentOf(
       },
     ],
     nodes,
+    ...(images.length > 0 ? { images } : {}),
     ...(cameras.length > 0 ? { cameras } : {}),
     ...(lights.length > 0
       ? {
@@ -143,6 +156,20 @@ export function gltfDocumentOf(
         }
       : {}),
   }
+}
+
+function imagesOf(state: SceneState, uriOf: GltfDocumentOptions['uriOf']): { uri: string }[] {
+  if (!uriOf) return []
+
+  const seen = new Set<string>()
+  const images: { uri: string }[] = []
+  for (const assetId of textureAssetIdsOf(state.nodes)) {
+    const uri = uriOf(assetId)
+    if (!uri || seen.has(uri)) continue
+    seen.add(uri)
+    images.push({ uri })
+  }
+  return images
 }
 
 /**
@@ -165,6 +192,7 @@ const COMPOSED = new Set([
   'scene',
   'scenes',
   'nodes',
+  'images',
   'cameras',
   'extensionsUsed',
   'extensions',
@@ -185,14 +213,13 @@ export function sceneHoldsMore(document: unknown): string[] {
   const scenes = document.scenes
   if (Array.isArray(scenes) && scenes.length > 1) held.push('scenes')
 
-  // A node ADDED elsewhere brings no new root key of its own — a Blender empty is one `nodes`
-  // entry and nothing else, and a camera adds only to `cameras`, both of them composed. The file
-  // is compared against what the studio state holds, which is the only thing that can tell them
-  // apart: more nodes in the file than in the state means the extra ones came from somewhere else.
+  // A Blender empty is one `nodes` entry and no new root key — count against the extras' own.
   const held3d = gltfStudioMetadata(document)[GLTF_SCENE_STATE]
   const known = isRecord(held3d) && Array.isArray(held3d.nodes) ? held3d.nodes.length : 0
   const written = Array.isArray(document.nodes) ? document.nodes.length : 0
   if (written > known) held.push('nodes')
+
+  held.push(...extraPictures(document, held3d))
 
   // The default scene's extras are recomposed whole, exactly as the sky's are: a key another
   // application left beside ours there is dropped by the next save.
@@ -206,6 +233,43 @@ export function sceneHoldsMore(document: unknown): string[] {
   held.push(...gltfForeignExtensions(document, KHR_LIGHTS_PUNCTUAL))
 
   return held
+}
+
+function extraPictures(document: Record<string, unknown>, held3d: unknown): string[] {
+  const written = Array.isArray(document.images) ? document.images.length : 0
+  return written > textureAssetIdsIn(held3d).length ? ['images'] : []
+}
+
+function textureAssetIdsOf(nodes: SceneState['nodes']): string[] {
+  const ids: string[] = []
+  const seen = new Set<string>()
+  for (const node of nodes) {
+    if (!carriesMaterial(node)) continue
+    for (const slot of TEXTURE_SLOTS) {
+      const assetId = node.material[slot]?.assetId
+      if (!assetId || seen.has(assetId)) continue
+      seen.add(assetId)
+      ids.push(assetId)
+    }
+  }
+  return ids
+}
+
+function textureAssetIdsIn(held3d: unknown): string[] {
+  if (!isRecord(held3d) || !Array.isArray(held3d.nodes)) return []
+  const ids: string[] = []
+  const seen = new Set<string>()
+  for (const node of held3d.nodes) {
+    if (!isRecord(node) || !isRecord(node.material)) continue
+    for (const slot of TEXTURE_SLOTS) {
+      const ref = node.material[slot]
+      const assetId = isRecord(ref) && typeof ref.assetId === 'string' ? ref.assetId : ''
+      if (!assetId || seen.has(assetId)) continue
+      seen.add(assetId)
+      ids.push(assetId)
+    }
+  }
+  return ids
 }
 
 /**
