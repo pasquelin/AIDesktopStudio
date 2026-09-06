@@ -10,6 +10,7 @@ import { clamp } from '@shared/numeric'
 import {
   welcomeGroveAllows,
   welcomeGroveOpens,
+  welcomeYardAlong,
   welcomeYardOffset,
   WELCOME_SLACK,
   WELCOME_YARD,
@@ -89,6 +90,23 @@ const INSIDE = 0.7
 
 /** What is left of a stand when the camera moves: enough to read as a beat, not as a freeze. */
 const WOKEN = 0.25
+
+/**
+ * Radians the goal swings by per slide, over and above the camera's own bearing. A third of a
+ * turn, so a carousel of seven never sends the walker to the same corner twice.
+ */
+const SLIDE_TURN = 1.9
+
+/**
+ * A suggestion from the carousel; the stroll may choose another goal when this one cannot
+ * be reached naturally from the current heading.
+ */
+export const welcomeSlideGoal = (
+  trees: readonly WelcomeTree[],
+  azimuth: number,
+  slide: number,
+): { x: number; z: number } =>
+  welcomeYardAlong(trees, azimuth + slide * SLIDE_TURN + (slide % 2) * Math.PI)
 
 /**
  * A goal handed from OUTSIDE — the carousel moved, and the walker comes round to meet it.
@@ -243,7 +261,7 @@ export function welcomeNextClip(
   if (state.clip === 'WalkStop') return null
 
   const opens = (aim: number, reach: number, turn = 0): boolean =>
-    welcomeGroveOpens(trees, { x: state.x, z: state.z, heading: state.heading + aim }, reach, turn)
+    welcomeGroveOpens(trees, { ...state, heading: state.heading + aim }, reach, { turn })
   // The path the walker will actually take, steering included: read along the bare heading, a walk
   // one hair off its goal line reports a planter it is already curving past.
   const ahead = (reach: number): boolean => opens(0, reach, steerTo(state))
@@ -284,14 +302,14 @@ function outOf(state: WelcomeWalkState, trees: readonly WelcomeTree[]): WelcomeC
   const error = headingErrorOf(state, WELCOME_YARD_AT)
   if (Math.abs(error) > Math.PI - QUARTER) return 'TurnAround'
   if (Math.abs(error) > SPREAD) return turnOf(error)
-  if (!welcomeGroveOpens(trees, state, WALK_REACH, 0, 0)) return turnOf(error === 0 ? 1 : error)
+  if (!welcomeGroveOpens(trees, state, WALK_REACH, { slack: 0 })) return turnOf(error)
 
   return state.clip ? 'Walk' : 'WalkStart'
 }
 
 type Opens = (aim: number, reach: number, turn?: number) => boolean
 
-const turnOf = (side: number): WelcomeClipName => (side > 0 ? 'TurnLeft' : 'TurnRight')
+const turnOf = (side: number): WelcomeClipName => (side >= 0 ? 'TurnLeft' : 'TurnRight')
 
 /** Which way there is room to swing, or `null` for a walker boxed in on both sides. */
 function sideThatOpens(opens: Opens, roll: WelcomeRoll): number | null {
@@ -316,7 +334,7 @@ function reaches(
   const error = headingErrorOf(state, goal)
   if (reach < SHORTEST_WALK || Math.abs(error) > SPREAD) return false
 
-  return welcomeGroveOpens(trees, { x: state.x, z: state.z, heading: state.heading }, reach, error)
+  return welcomeGroveOpens(trees, state, reach, { turn: error })
 }
 
 /**

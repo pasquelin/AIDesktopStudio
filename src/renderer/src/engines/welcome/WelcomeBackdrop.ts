@@ -210,7 +210,7 @@ export class WelcomeBackdrop {
 
   setSlide(index: number): void {
     this.wantedAzimuth = welcomeAzimuth(index)
-    this.hero.faceEye(welcomePose(0, this.wantedAzimuth).eye, index)
+    this.hero.faceSlide(this.wantedAzimuth, index)
     this.start()
   }
 

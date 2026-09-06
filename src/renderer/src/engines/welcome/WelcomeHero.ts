@@ -23,7 +23,7 @@ import { skeletonBonesOf, type SkeletonBone } from '../scene/rigState'
 import { rootTrackOf } from '../scene/rootMotion'
 import type { GltfSource } from '../scene/gltfSource'
 import type { Retarget } from '../scene/retarget'
-import { WELCOME_GROVE, welcomeGroveAllows, welcomeYardStop, WELCOME_SLACK } from './welcomeGrove'
+import { WELCOME_GROVE, welcomeGroveAllows, WELCOME_SLACK } from './welcomeGrove'
 import {
   welcomeRootFit,
   welcomeRootHeld,
@@ -33,6 +33,7 @@ import {
 } from './welcomeRoot'
 import {
   welcomeAdvance,
+  welcomeSlideGoal,
   welcomeToward,
   welcomeFadeOf,
   welcomeTurnOver,
@@ -123,8 +124,8 @@ export class WelcomeHero {
    * The carousel moved: the walker comes round to the side the camera now watches from. Only the
    * GOAL changes, so a slide flicked through faster than a stride never restarts a gait.
    */
-  faceEye(eye: { x: number; z: number }, slide: number): void {
-    this.walk = welcomeToward(this.walk, welcomeYardStop(WELCOME_GROVE, eye, slide))
+  faceSlide(azimuth: number, slide: number): void {
+    this.walk = welcomeToward(this.walk, welcomeSlideGoal(WELCOME_GROVE, azimuth, slide))
   }
 
   /** The still a reduced-motion window shows: standing in the open, where the walk begins. */
@@ -246,6 +247,7 @@ export class WelcomeHero {
     const body = this.body
     if (!walk || !body) return
 
+    const pendingWalk = this.walk
     let lowest = Infinity
     for (let step = 0; step <= PLANT_STEPS; step += 1) {
       this.walk = { ...this.walk, clip: 'Walk', time: (step / PLANT_STEPS) * walk.duration }
@@ -255,7 +257,7 @@ export class WelcomeHero {
     }
 
     this.floor = Number.isFinite(lowest) ? lowest : 0
-    this.walk = welcomeWalkStart()
+    this.walk = pendingWalk
   }
 
   /** How high the body rides this frame — the walk's bounce, and the whole arc of a jump. */

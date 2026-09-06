@@ -1,15 +1,17 @@
+import { WELCOME_YARD_AT } from './welcomeGrove'
+
 /** A point of the welcome scene, in world units. Plain numbers so the arithmetic is testable. */
 export type WelcomePoint = { x: number; y: number; z: number }
 
 export type WelcomePose = { eye: WelcomePoint; target: WelcomePoint }
 
 /**
- * What the camera ORBITS and aims at, standing OVER the middle of the yard and BELOW the eye — a
- * level camera renders a band of nothing where the floor has to read as a viewport. 🛑 Orbited
- * around the origin instead, a yard three metres behind it swept sideways as the carousel turned:
- * measured 2026-09-06, the walker had left the frame by the seventh slide.
+ * What the camera ORBITS and aims at: the middle of the yard, and BELOW the eye — a level camera
+ * renders a band of nothing where the floor has to read as a viewport. 🛑 DERIVED, never written
+ * twice: orbited around the origin while the yard stood three metres behind, the walker had left
+ * the frame by the seventh slide — measured 2026-09-06.
  */
-export const WELCOME_TARGET: WelcomePoint = { x: 0, y: 2.15, z: -3 }
+export const WELCOME_TARGET: WelcomePoint = { ...WELCOME_YARD_AT, y: 2.15 }
 
 export const WELCOME_HEIGHT = 3.8
 
