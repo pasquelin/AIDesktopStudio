@@ -18,7 +18,7 @@ export type BundledAnimation = {
 }
 
 /** The clip files an animation folder may hold, lowercase and with their dot. */
-export const ANIMATION_EXTENSIONS: readonly string[] = ['.glb', '.gltf', '.fbx']
+export const ANIMATION_EXTENSIONS: readonly string[] = ['.glb', '.gltf', '.fbx', '.bvh']
 
 /** The still a folder may hold beside its clip, under this name and no other. */
 export const ANIMATION_THUMBNAIL = 'thumb.png'

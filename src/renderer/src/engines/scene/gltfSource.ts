@@ -1,5 +1,5 @@
-import { Mesh, MeshStandardMaterial, type Material, type Object3D } from 'three'
-import type { BufferGeometry, Texture, WebGLRenderer } from 'three'
+import { Group, Mesh, MeshStandardMaterial, type Material, type Object3D } from 'three'
+import type { AnimationClip, BufferGeometry, Skeleton, Texture, WebGLRenderer } from 'three'
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js'
 import { GLTFLoader, type GLTF } from 'three/addons/loaders/GLTFLoader.js'
 import { KTX2Loader } from 'three/addons/loaders/KTX2Loader.js'
@@ -174,7 +174,25 @@ async function parseWith(format: Exclude<MeshFormat, 'gltf'>, bytes: ArrayBuffer
       const { USDLoader } = await import('three/addons/loaders/USDLoader.js')
       return new USDLoader().parse(bytes, baseOf(url))
     }
+    case 'bvh': {
+      const { BVHLoader } = await import('three/addons/loaders/BVHLoader.js')
+      return bvhRootOf(new BVHLoader().parse(text()))
+    }
   }
+}
+
+/**
+ * A BVH is a skeleton and one clip, and nothing to hang them on: the root bone becomes the
+ * object's child so that the exporter and the scene see an ordinary hierarchy. The clip's tracks
+ * name their bones the way three's own `.bones[Name]` spelling does; `PropertyBinding` resolves
+ * that against the bone's name, which is why nothing is renamed here.
+ */
+function bvhRootOf(parsed: { skeleton: Skeleton; clip: AnimationClip }): Object3D {
+  const root = new Group()
+  const first = parsed.skeleton.bones[0]
+  if (first) root.add(first)
+  root.animations = [parsed.clip]
+  return root
 }
 
 /**

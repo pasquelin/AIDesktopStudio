@@ -17,6 +17,11 @@ describe('filingTypeOf', () => {
     expect(filingTypeOf('walk.glb', DEFAULT_ROLE_PATHS.animations, ROLES)).toBe('animation')
   })
 
+  it('files a BVH as a motion whatever folder it was dropped on, having no mesh to be', () => {
+    expect(filingTypeOf('walk.bvh', '', ROLES)).toBe('animation')
+    expect(filingTypeOf('walk.bvh', DEFAULT_ROLE_PATHS.models, ROLES)).toBe('animation')
+  })
+
   it('keeps a glTF a scene document, except in the animations folder', () => {
     expect(filingTypeOf('Level.gltf', '', ROLES)).toBeNull()
     expect(filingTypeOf('Level.gltf', DEFAULT_ROLE_PATHS.scenes, ROLES)).toBeNull()

@@ -17,7 +17,8 @@ function inRole(folder: string, role: FolderRole, roles: RoleFolders): boolean {
  *
  * glb/gltf/fbx name both a model and a motion. The animations/models role is how the user tells
  * them apart; every other kind still reads from the extension alone. A window drop has no folder
- * (`''`): `.fbx` files as motion, `.glb` as a model.
+ * (`''`): `.fbx` files as motion, `.glb` as a model — a default the CONTENT corrects once the
+ * file is read (`meshImport.ts`). A `.bvh` holds no mesh, so no folder can make it a model.
  */
 export function filingTypeOf(
   fileName: string,
@@ -25,6 +26,7 @@ export function filingTypeOf(
   roles: RoleFolders,
 ): AssetType | null {
   const extension = extensionOf(fileName).toLowerCase()
+  if (extension === '.bvh') return 'animation'
   if (ANIMATION_EXTENSIONS.includes(extension)) {
     if (inRole(folder, 'animations', roles)) return 'animation'
     if (extension === '.gltf') return null

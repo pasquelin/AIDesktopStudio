@@ -102,6 +102,7 @@ export function pickMedia(language: Language): Promise<string[]> {
       audio: t.audio,
       image: t.image,
       mesh: t.mesh,
+      animation: t.animation,
     }),
   })
 }

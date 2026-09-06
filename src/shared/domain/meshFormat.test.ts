@@ -57,6 +57,10 @@ describe('what a file of shapes is, by its bytes', () => {
     expect(meshFormatOf(bytesOf('<?xml version="1.0"?>\n<svg width="10">'))).toBeNull()
   })
 
+  it('reads a BVH capture by the word its hierarchy opens on', () => {
+    expect(meshFormatOf(bytesOf('HIERARCHY\nROOT Hips\n{\n'))).toBe('bvh')
+  })
+
   it('answers nothing for what it does not know, rather than guessing', () => {
     expect(meshFormatOf(bytesOf('PNG\r\n\n'))).toBeNull()
     expect(meshFormatOf(new Uint8Array(0))).toBeNull()

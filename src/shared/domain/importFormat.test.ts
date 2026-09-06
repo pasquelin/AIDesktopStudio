@@ -22,6 +22,11 @@ describe('import formats', () => {
     expect(isImportableFile('README')).toBe(false)
   })
 
+  it('takes a Collada model as a model and a BVH capture as a motion', () => {
+    expect(importableAssetTypeOf('Statue.dae')).toBe('mesh')
+    expect(importableAssetTypeOf('walk.bvh')).toBe('animation')
+  })
+
   it('accepts the standard documents the studio writes back to disk', () => {
     for (const extension of IMPORTABLE_DOCUMENT_EXTENSIONS) {
       expect(isImportableFile(`document.${extension}`)).toBe(true)

@@ -29,14 +29,14 @@ describe('media kind from a file name', () => {
     }
   })
 
-  /**
-   * Announced nowhere rather than accepted and then failing in the viewport: an asset is served
-   * flat as `ia-studio://asset/<id>`, so a file naming its buffers or its textures beside itself
-   * would 404 on every one and show an empty model with nothing said.
-   */
-  it('leaves out a shape that points at files beside it', () => {
+  /** A glTF is a document of the studio's own, never linked as a flat mesh. */
+  it('leaves out a glTF, which is a document', () => {
     expect(assetTypeOf('/props/chair.gltf')).toBeNull()
-    expect(assetTypeOf('/props/chair.dae')).toBeNull()
+  })
+
+  /** Its textures beside it are copied on import and folded into the `.glb` the conversion writes. */
+  it('takes a Collada model, whose neighbours the import now brings along', () => {
+    expect(assetTypeOf('/props/chair.dae')).toBe('mesh')
   })
 })
 
@@ -69,6 +69,7 @@ describe('import dialog filters', () => {
     audio: 'Audio',
     image: 'Image',
     mesh: 'Modèle 3D',
+    animation: 'Animation',
   }
 
   it('offers every media kind first, then one filter per kind, in the user language', () => {
@@ -78,6 +79,7 @@ describe('import dialog filters', () => {
       'Audio',
       'Image',
       'Modèle 3D',
+      'Animation',
     ])
   })
 
@@ -88,7 +90,7 @@ describe('import dialog filters', () => {
 
   it('offers every kind in the first filter, so one pick can mix rushes and takes', () => {
     expect(mediaFilters(labels)[0]?.extensions).toEqual(
-      expect.arrayContaining(['mov', 'mxf', 'wav', 'aiff', 'png', 'ora', 'hdr', 'obj']),
+      expect.arrayContaining(['mov', 'mxf', 'wav', 'aiff', 'png', 'ora', 'hdr', 'obj', 'dae', 'bvh']),
     )
   })
 })
