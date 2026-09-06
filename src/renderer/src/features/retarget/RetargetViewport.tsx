@@ -1,3 +1,7 @@
+import { createRetargetModelSource } from './retargetModelSource'
+import { useTranslation } from 'react-i18next'
+import { Toolbar } from '@/components/Toolbar/Toolbar'
+import { PANE_TOOLBAR } from '@/components/panelStyles'
 import { reportFailure } from '@/services/diagnostics'
 import { useLatest } from '@/hooks/useLatest'
 import { useEffect, useRef } from 'react'
@@ -38,10 +42,13 @@ export function RetargetViewport({
 }: RetargetViewportProps) {
   const view = useSettings(state => state.settings.three)
   const engine = useRef<SceneRenderer | null>(null)
+  const sourceMode = sourceUrl !== undefined
+  const switching = useRef<ReturnType<typeof createRetargetModelSource> | null>(null)
   const [speed, setSpeed] = useState<number | null>(null)
   useEffect(() => {
     engine.current?.configure({ ...view, showGrid: true })
   }, [view])
+  const { t } = useTranslation()
   const host = useRef<HTMLDivElement>(null)
   const callbacks = useLatest({ onReady, onFailure, onNavigatingChange })
   useEffect(() => {
@@ -50,7 +57,23 @@ export function RetargetViewport({
     const nodeId = scene.nodes[0]?.id
     if (!nodeId) return
     let alive = true
-    const source = sourceUrl ? createGltfSource(() => null) : null
+    let framed = false
+    const source = sourceMode
+      ? createRetargetModelSource(
+          createGltfSource(() => null),
+          key =>
+            renderer.apply({
+              ...scene,
+              nodes: scene.nodes.map(node =>
+                node.type === 'model' ? { ...node, model: { ...node.model, assetId: key } } : node,
+              ),
+            }),
+          () => {
+            if (alive) callbacks.current.onFailure()
+          },
+        )
+      : null
+    switching.current = source
     const renderer = new SceneRenderer({
       onSelect: () => {},
       onTransform: () => {},
@@ -59,16 +82,7 @@ export function RetargetViewport({
       onNavigatingChange: value => {
         callbacks.current.onNavigatingChange?.(value)
       },
-      ...(source && {
-        loadModel: async () => {
-          try {
-            return await source.loadAnimation(sourceUrl ?? '')
-          } catch (error) {
-            if (alive) callbacks.current.onFailure()
-            throw error
-          }
-        },
-      }),
+      ...(source && { loadModel: source.load }),
       onCharacter: () => {
         void ready()
       },
@@ -90,8 +104,8 @@ export function RetargetViewport({
             if (!applied) throw new Error('incompatible skin bindings')
           } else await renderer.skinModel(nodeId, snapshot.rig)
         }
-        if (!alive) return
-        renderer.frameContents()
+        if (!alive || (source && !source.current())) return
+        if (!framed) framed = renderer.frameContents()
         const motion = renderer.inspectMotion(nodeId)
         if (motion) callbacks.current.onReady({ engine: renderer, nodeId, ...motion })
         else callbacks.current.onFailure()
@@ -106,7 +120,7 @@ export function RetargetViewport({
     renderer.mount(host.current)
     renderer.configure({ ...useSettings.getState().settings.three, showGrid: true })
     renderer.setSkeletons(true)
-    renderer.apply(scene)
+    if (!source) renderer.apply(scene)
     return () => {
       alive = false
       callbacks.current.onReady(null)
@@ -114,13 +128,29 @@ export function RetargetViewport({
       renderer.releaseNavigation()
       renderer.dispose()
       source?.dispose()
+      switching.current = null
     }
-  }, [assetId, sourceUrl, snapshot])
+  }, [assetId, sourceMode, snapshot])
+  useEffect(() => {
+    if (!sourceUrl || !switching.current) return
+    callbacks.current.onReady(null)
+    void switching.current.select(sourceUrl)
+  }, [sourceUrl, assetId, snapshot, callbacks])
   return (
-    <div className="relative flex min-h-0 min-w-0 flex-1 flex-col">
-      <div ref={host} className="relative min-h-0 min-w-0 flex-1 overflow-hidden" />
+    <div className="relative flex min-h-0 min-w-0 flex-1 flex-col p-2">
+      <div
+        ref={host}
+        className="relative min-h-0 min-w-0 flex-1 overflow-hidden rounded-(--pnl-radius)"
+      />
       {navigating && <SceneNavigationHint speed={speed} />}
-      <SceneSpeedControl speed={speed} onSpeed={value => engine.current?.setFlySpeed(value)} />
+      <Toolbar
+        orientation="horizontal"
+        label={t('character.cameraSpeed')}
+        className={`${PANE_TOOLBAR} m-2`}
+        extras={
+          <SceneSpeedControl speed={speed} onSpeed={value => engine.current?.setFlySpeed(value)} />
+        }
+      />
     </div>
   )
 }

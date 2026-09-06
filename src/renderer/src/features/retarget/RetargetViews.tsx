@@ -35,7 +35,6 @@ export function RetargetViews({
           <PanelHeader title={t('character.retarget.source')} />
           {sourceUrl ? (
             <RetargetViewport
-              key={sourceUrl}
               assetId="retarget-source"
               sourceUrl={sourceUrl}
               onReady={sourceReady}
