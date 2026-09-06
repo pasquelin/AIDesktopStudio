@@ -12,6 +12,7 @@ import type { Matrix4, SkinnedMesh } from 'three'
 import { messageOf } from '@shared/guards'
 import {
   clipFromWire,
+  clipTranslationScaleOf,
   nodeTrackNameOf,
   restOffsetsOf,
   skeletonScaleOf,
@@ -52,7 +53,7 @@ async function run(request: RetargetRequest): Promise<void> {
     const source = skinnedFromWire(request.source)
     // Measured HERE rather than on the caller's objects, so the size read is the one of the very
     // skeletons three is about to sample — the same space, whatever the scene did to the models.
-    const scale = skeletonScaleOf(target, source)
+    const scale = skeletonScaleOf(target, source) * clipTranslationScaleOf(source, request.hip)
     // Read while both skeletons still stand at rest: `retargetClip` poses the source on its first
     // frame before anything is sampled.
     const offsets = restOffsetsOf(target, source, request.names)

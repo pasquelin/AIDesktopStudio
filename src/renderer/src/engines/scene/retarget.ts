@@ -229,6 +229,21 @@ export function skeletonScaleOf(target: Object3D, source: Object3D): number {
   return to > 0 && from > 0 ? to / from : 1
 }
 
+/**
+ * How far a clip's hip translation must be scaled to match the skeleton `rootBoneOf` built.
+ *
+ * 🛑 A node's own scale does not multiply its own position, so Mixamo hips at −99 replay 99 m
+ * behind the body — measured 2026-09-06, Walk y at 100 m, Jump at 349 m.
+ */
+export function clipTranslationScaleOf(source: Object3D, hip?: string): number {
+  if (!hip) return 1
+  const bone = source.getObjectByName(hip)
+  if (!bone || bone.parent !== source) return 1
+
+  const sx = bone.scale.x
+  return Number.isFinite(sx) && sx > 0 ? sx : 1
+}
+
 function torsoLengthOf(root: Object3D): number {
   const roles = boneRolesOf(namedBonesOf(wireBonesOf(root)))
   const hips = boneFilling(root, roles, 'Hips')

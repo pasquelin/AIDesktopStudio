@@ -211,6 +211,34 @@ describe('a game running inside the studio', () => {
 
     expect(reports.at(-1)?.tick).toBe(played + 12)
   })
+
+  it('seeks the band on the game clock, so a clip without an Animator still plays', () => {
+    const seekClips = vi.fn()
+    const frames = handDriven()
+    startPlay({
+      documentId: 'doc-1',
+      renderer: drawnBy({}),
+      animate: {
+        poseNode: vi.fn(),
+        releaseNode: vi.fn(),
+        clipLengthsOf: () => ({}),
+        useGraphClips: vi.fn(),
+        seekClips,
+      },
+      editState: () => scene(),
+      input: new EventTarget(),
+      frames: frames.driver,
+      onReport: () => {},
+    })
+
+    frames.advance(0)
+    frames.advance(1 / 60)
+    frames.advance(1)
+    const last = seekClips.mock.calls.at(-1)?.[0] ?? 0
+
+    expect(seekClips.mock.calls.length).toBeGreaterThan(1)
+    expect(last).toBeGreaterThan(0)
+  })
 })
 
 describe('the camera a game borrows', () => {

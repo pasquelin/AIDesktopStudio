@@ -151,6 +151,41 @@ describe('what a state machine plays', () => {
     expect(again.time).toBeGreaterThan(0.4)
   })
 
+  it('holds a bool any-state while it stays true, rather than flipping back to idle', () => {
+    const dancing = animationGraphOf({
+      version: ANIMATION_GRAPH_VERSION,
+      id: 'character',
+      parameters: [{ id: 'dance', kind: 'boolean' }],
+      layers: [
+        {
+          id: 'base',
+          initial: 'idle',
+          states: [
+            { id: 'idle', source: { kind: 'bundled', name: 'Idle' } },
+            { id: 'jump', source: { kind: 'bundled', name: 'Jump' }, loop: false },
+          ],
+          transitions: [
+            { to: 'idle', fade: 0.2, when: [{ param: 'speed', op: '<=', value: 0.1 }] },
+            { to: 'jump', fade: 0, when: [{ param: 'dance', op: '==', value: true }] },
+          ],
+        },
+      ],
+    }).layers[0]
+    if (!dancing) throw new Error('a graph always holds its layer')
+    const opened = ran(dancing, freshAnimator(dancing), { dance: true, speed: 0 }, 1).held
+    const held = ran(dancing, opened, { dance: true, speed: 0 }, 30).held
+
+    expect(opened.state).toBe('jump')
+    expect(held.state).toBe('jump')
+    expect(held.time).toBeGreaterThan(0.4)
+
+    const letGo = ran(dancing, held, { dance: false, speed: 0 }, 2).held
+    expect(letGo.state).toBe('idle')
+
+    const again = ran(dancing, letGo, { dance: true, speed: 0 }, 2).held
+    expect(again.state).toBe('jump')
+  })
+
   it('plays a state at the pace a parameter says', () => {
     const walking = ran(WALKING, freshAnimator(WALKING), { speed: 2 }, 1).held
     const fast = ran(WALKING, walking, { speed: 2 }, 60).held

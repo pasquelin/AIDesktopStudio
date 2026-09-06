@@ -192,6 +192,53 @@ describe('replaying an animation on another skeleton', () => {
     expect(Math.abs(travel.values[travel.values.length - 3] ?? 0)).toBeGreaterThan(1.5)
   })
 
+  it('scales Mixamo centimetres on a root hip down to the target’s metres', async () => {
+    const centimetres: WireBone[] = [
+      {
+        name: 'mixamorigHips',
+        parent: -1,
+        position: [0, 0.99, 0],
+        quaternion: [0, 0, 0, 1],
+        scale: [0.01, 0.01, 0.01],
+      },
+      boneAt('mixamorigSpine', 0, 20),
+      boneAt('mixamorigHead', 1, 40),
+    ]
+    const metres: WireBone[] = [
+      boneAt('Hip', -1, 0.99),
+      boneAt('Waist', 0, 0.2),
+      boneAt('Head', 1, 0.4),
+    ]
+    const clip = wireClipOf(
+      new AnimationClip('walk', 1, [
+        new VectorKeyframeTrack('mixamorigHips.position', [0, 1], [0, 99, 0, 0, 99, -99]),
+      ]),
+    )
+    self.dispatchEvent(
+      new MessageEvent('message', {
+        data: {
+          id: 1,
+          target: metres,
+          source: centimetres,
+          clips: [clip],
+          names: { Hip: 'mixamorigHips', Waist: 'mixamorigSpine', Head: 'mixamorigHead' },
+          hip: 'mixamorigHips',
+          fps: 30,
+        },
+      }),
+    )
+    await drain()
+
+    const answer = settled()
+    if (!answer?.done || !answer.ok) throw new Error('the worker did not answer with clips')
+    const travel = answer.clips[0]?.tracks.find(track => track.name === 'Hip.position')
+    const z = travel?.values[travel.values.length - 1] ?? 0
+
+    // Unscaled, z is −99 m — the body stands behind the north wall. Folded by 0,01 it is a metre.
+    expect(Math.abs(z)).toBeGreaterThan(0.5)
+    expect(Math.abs(z)).toBeLessThan(2)
+  })
+
   it('keeps the length the source was authored at', async () => {
     ask(1, [spineTurn()])
     await drain()

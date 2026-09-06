@@ -12,6 +12,7 @@ function viewport(): SceneAnimate & { released: string[] } {
     releaseNode: (nodeId: string) => void released.push(nodeId),
     clipLengthsOf: () => ({ walk: 1 }),
     useGraphClips: vi.fn(),
+    seekClips: vi.fn(),
   }
 }
 

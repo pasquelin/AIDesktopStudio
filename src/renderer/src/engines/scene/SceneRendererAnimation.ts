@@ -109,6 +109,15 @@ export abstract class SceneRendererAnimation extends SceneRendererLifecycle {
     this.animations.release(nodeId)
   }
 
+  /**
+   * Puts every band-driven mixer on the GAME clock. The editor playhead stays where it is: a
+   * running game must not write an undo entry per frame, and a body an Animator drives has
+   * already left the band.
+   */
+  seekClips(time: Us): void {
+    if (this.animations.seek(time)) this.refreshWithoutShadows()
+  }
+
   /** How long each clip that model can play runs, by key — what a state machine cannot guess. */
   clipLengthsOf(nodeId: string): Readonly<Record<string, number>> {
     return this.animations.lengthsOf(nodeId)

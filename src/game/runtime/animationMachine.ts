@@ -32,6 +32,18 @@ export type AnimatorState = {
   fired: readonly string[]
   /** Whether a script forced this state, so the machine leaves it alone until it is let go. */
   forced: boolean
+  /**
+   * The any-state way in that is still true. While it holds, a second any-state of equal or
+   * lower priority cannot pull the body back — a held bool would otherwise flip every tick.
+   */
+  via: HeldVia | null
+}
+
+/** The any-state transition that put the machine here, kept so it can hold the body. */
+type HeldVia = {
+  to: string
+  priority: number
+  when: readonly AnimationCondition[]
 }
 
 /** What crossing a step made happen, put on the bus by whoever ran the machine. */
@@ -52,7 +64,16 @@ export function clipKeyOf(source: ClipSource): string {
 }
 
 export function freshAnimator(layer: AnimationLayer): AnimatorState {
-  return { state: layer.initial, time: 0, from: null, fade: 0, faded: 0, fired: [], forced: false }
+  return {
+    state: layer.initial,
+    time: 0,
+    from: null,
+    fade: 0,
+    faded: 0,
+    fired: [],
+    forced: false,
+    via: null,
+  }
 }
 
 /**
@@ -84,7 +105,10 @@ export function advanceAnimator(
   const taken = wayOut(layer, free, reading, lengths)
   if (!taken) return { next: free.forced ? { ...free, forced: false } : free, happened }
 
-  return { next: entered(free, taken.to, taken.fade, false), happened }
+  return {
+    next: entered(free, taken.to, taken.fade, false, nextVia(free, reading, taken)),
+    happened,
+  }
 }
 
 /** Every clip showing right now, the state being entered over the one being left. */
@@ -240,12 +264,43 @@ function wayOut(
   reading: ParameterReading,
   lengths: ClipLengths,
 ): AnimationTransition | null {
+  const locked = viaHolds(held, reading)
   let taken: AnimationTransition | null = null
   for (const transition of layer.transitions) {
     if (!opens(layer, transition, held, reading, lengths)) continue
+    if (locked && transition.from === '' && transition.priority <= held.via.priority) continue
     if (taken === null || transition.priority > taken.priority) taken = transition
   }
   return taken
+}
+
+function viaHolds(
+  held: AnimatorState,
+  reading: ParameterReading,
+): held is AnimatorState & { via: HeldVia } {
+  const via = held.via
+  if (!via || via.to !== held.state) return false
+  for (const condition of via.when)
+    if (!conditionHolds(condition, reading[condition.param])) return false
+  return true
+}
+
+function viaOf(transition: AnimationTransition): HeldVia {
+  return { to: transition.to, priority: transition.priority, when: transition.when }
+}
+
+/**
+ * A fallback any-state taken because the previous lock lapsed is not itself a lock — otherwise
+ * idle would hold the body against the next dance.
+ */
+function nextVia(
+  held: AnimatorState,
+  reading: ParameterReading,
+  taken: AnimationTransition,
+): HeldVia | null {
+  if (taken.from !== '') return null
+  if (held.via === null || viaHolds(held, reading)) return viaOf(taken)
+  return null
 }
 
 function opens(
@@ -278,11 +333,17 @@ function fractionOf(layer: AnimationLayer, held: AnimatorState, lengths: ClipLen
   return state?.loop ? (held.time % length) / length : clamp(held.time / length, 0, 1)
 }
 
-function entered(held: AnimatorState, to: string, fade: number, forced: boolean): AnimatorState {
+function entered(
+  held: AnimatorState,
+  to: string,
+  fade: number,
+  forced: boolean,
+  via: HeldVia | null = null,
+): AnimatorState {
   // Onto ITSELF is a restart, and it fades from nothing: a clip blended with its own earlier
   // frames reads as a body sliding rather than as a move beginning again.
   const from = to === held.state ? null : { state: held.state, time: held.time }
-  return { state: to, time: 0, from, fade: from ? fade : 0, faded: 0, fired: [], forced }
+  return { state: to, time: 0, from, fade: from ? fade : 0, faded: 0, fired: [], forced, via }
 }
 
 const stateOf = (layer: AnimationLayer, id: string): AnimationState | undefined =>

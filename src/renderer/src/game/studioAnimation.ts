@@ -5,7 +5,7 @@ import type { SceneRenderer } from '@/engines/scene/SceneRenderer'
  * same reason: a test drives this without a WebGL context. */
 export type SceneAnimate = Pick<
   SceneRenderer,
-  'poseNode' | 'releaseNode' | 'clipLengthsOf' | 'useGraphClips'
+  'poseNode' | 'releaseNode' | 'clipLengthsOf' | 'useGraphClips' | 'seekClips'
 >
 
 /**

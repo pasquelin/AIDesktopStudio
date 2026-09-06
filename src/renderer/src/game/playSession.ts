@@ -32,6 +32,7 @@ import { heightmapsOf } from './heightmapsOf'
 import { worldFromScene } from './worldFromScene'
 import type { InputMap } from '@shared/domain/inputMap'
 import { createInputControls } from '@game/runtime/inputControls'
+import { secondsToUs } from '@shared/domain/time'
 /** How often the game says what it is doing. Six times a second, and that is a decision — see
  * `publish`. */
 const REPORT_MS = 160
@@ -281,6 +282,9 @@ export function startPlay(deps: PlaySessionDeps): PlaySession {
                     }
                     /** Between the two steps the frame falls between, which is what stops a 60 Hz picture juddering. */
                     const draw = (alpha: number): void => {
+                      // 🛑 Before place: a still body makes `place` skip the apply, and a seek
+                      // after a draw would pose bones the picture has already left behind.
+                      deps.animate?.seekClips(secondsToUs(world.time.elapsed))
                       world.ports.render.place(placementsOf(world, placements, alpha))
                     }
                     let liftVeil: () => void

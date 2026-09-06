@@ -1,6 +1,7 @@
 import { AnimationClip, Object3D, VectorKeyframeTrack } from 'three'
 import { describe, expect, it } from 'vitest'
 import { clipLane, embeddedClip } from '@shared/domain/scene'
+import { SECOND } from '@shared/domain/time'
 import type { PosedClip } from '@game/ports/animationPort'
 import { SceneAnimations } from './animation'
 
@@ -68,6 +69,21 @@ describe('a model a state machine drives', () => {
 
     animations.release('node-1')
     expect(driving(animations, 'node-1').map(one => one.name)).toEqual(['idle'])
+  })
+
+  it('leaves a posed model where the machine put it when the head moves', () => {
+    const animations = new SceneAnimations()
+    const source = model('walk', 'idle')
+    const cube = source.children[0]
+    if (!cube) throw new Error('the fixture builds one child')
+    animations.add('node-1', source, source.animations)
+    animations.apply('node-1', [clipLane('main', [embeddedClip('block-1', 'idle')])])
+    animations.pose('node-1', [posed('walk', 1, 0)])
+
+    animations.seek(0.5 * SECOND)
+
+    expect(cube.position.x).toBeCloseTo(0)
+    expect(driving(animations, 'node-1').map(one => one.name)).toEqual(['walk'])
   })
 
   it('drops a clip it is no longer posed', () => {
