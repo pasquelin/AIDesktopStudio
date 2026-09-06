@@ -10,6 +10,7 @@ export type WindowShellProps = {
   /** Under everything, across the full width: the settings draft bar and nothing else so far. */
   footer?: ReactNode
   children: ReactNode
+  content?: 'document' | 'panels'
 } & WindowColumn
 
 /**
@@ -61,6 +62,7 @@ export function WindowShell({
   nav,
   footer,
   children,
+  content = 'document',
 }: WindowShellProps) {
   return (
     <div className="bg-chassis text-base-content flex h-full flex-col">
@@ -76,7 +78,15 @@ export function WindowShell({
           </nav>
         )}
 
-        <main className="min-w-0 flex-1 overflow-auto px-6 py-4">{children}</main>
+        <main
+          className={
+            content === 'panels'
+              ? 'min-h-0 min-w-0 flex-1 overflow-hidden'
+              : 'min-w-0 flex-1 overflow-auto px-6 py-4'
+          }
+        >
+          {children}
+        </main>
       </div>
 
       {footer}

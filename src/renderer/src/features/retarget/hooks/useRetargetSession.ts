@@ -10,6 +10,8 @@ export function useRetargetSession() {
   const [status, setStatus] = useState<'idle' | 'saving' | 'saved' | 'failed'>('idle')
   const channel = useRef<BroadcastChannel | null>(null)
   const pending = useRef<string | null>(null)
+  const latestRef = useRef<RetargetSnapshot | null>(null)
+  const applied = useRef(false)
   useEffect(() => {
     const id = retargetSessionOf(window.location.hash)
     if (!id) {
@@ -21,16 +23,35 @@ export function useRetargetSession() {
     port.onmessage = event => {
       const message = retargetMessageOf(event.data)
       if (message?.kind === 'gone') {
+        applied.current = false
+        latestRef.current = null
         setGone(true)
-        setStatus('failed')
+        setSnapshot(null)
+        setLatest(null)
+        if (pending.current) setStatus('failed')
+        pending.current = null
+      }
+      if (message?.kind === 'changed') {
+        const next = (current: RetargetSnapshot | null) =>
+          current && { ...current, revision: message.revision, incarnation: message.incarnation }
+        setLatest(current => {
+          const value = next(current)
+          latestRef.current = value
+          return value
+        })
+        if (applied.current) setSnapshot(current => next(current))
       }
       if (message?.kind === 'snapshot') {
+        setGone(false)
+        latestRef.current = message.snapshot
         setLatest(message.snapshot)
         setSnapshot(current => current ?? message.snapshot)
       }
       if (message?.kind === 'answer' && message.requestId === pending.current) {
         pending.current = null
+        applied.current = message.ok
         setStatus(message.ok ? 'saved' : 'failed')
+        if (message.ok && latestRef.current) setSnapshot(latestRef.current)
       }
     }
     port.postMessage({ kind: 'ask' })
@@ -49,9 +70,18 @@ export function useRetargetSession() {
     gone,
     stale,
     status,
+    editRig: () => {
+      if (!snapshot || gone) return
+      channel.current?.postMessage({ kind: 'editRig', incarnation: snapshot.incarnation })
+    },
     refresh: () => {
+      applied.current = false
       setSnapshot(latest)
       setStatus('idle')
+    },
+    idle: () => {
+      applied.current = false
+      setStatus(current => (current === 'saved' || current === 'failed' ? 'idle' : current))
     },
     apply: (name: string, glb: Uint8Array, profiles?: readonly SkeletonProfile[]) => {
       if (!snapshot || stale || gone || pending.current || !channel.current) return
@@ -69,6 +99,7 @@ export function useRetargetSession() {
         setStatus('failed')
         return
       }
+      applied.current = false
       pending.current = requestId
       setStatus('saving')
       channel.current.postMessage(message)

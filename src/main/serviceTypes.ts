@@ -1,5 +1,5 @@
 import type { AccountSummary } from '@shared/domain/account'
-import type { AiOverview } from '@shared/domain/aiOverview'
+import type { AiOverview, OwnModelProfile } from '@shared/domain/aiOverview'
 import type { Asset, AssetType } from '@shared/domain/asset'
 import type { ExternalFileImport } from '@shared/domain/externalFile'
 import type { FolderRole } from '@shared/domain/folderRole'
@@ -95,7 +95,7 @@ export type Services = {
   cloud: () => CloudBackend
   ownerScope: OwnerScope
   /** Drops the file an asset owns, leaving a linked one where it lies. */
-  removeAssetFile: (asset: Asset) => Promise<void>
+  removeAssetFile: (asset: Asset, expectedProjectPath?: string) => Promise<void>
   project: ProjectStore
   /** What the assistant has learned — the open project's, and the machine's own. */
   memory: MemoryHost
@@ -148,7 +148,7 @@ export type Services = {
   ai: AiManager
   autoRig: AutoRigHost
   /** Rank 3's gesture, whole: a picker, a GGUF header, an entry. Rejects on a file it cannot read. */
-  addOwnAiModel: () => Promise<AiOverview>
+  addOwnAiModel: (profile?: OwnModelProfile, watch?: TaskWatch) => Promise<AiOverview>
   /** Speaking instead of typing. Holds the engine, the model and the state of a session. */
   dictation: DictationSession
   /**

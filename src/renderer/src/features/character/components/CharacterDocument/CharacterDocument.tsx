@@ -1,3 +1,7 @@
+import { Button } from '@/components/Button'
+import { SceneSpeedControl } from '@/features/scene/components/Scene/SceneSpeedControl'
+import { useRetargetHost } from '@/features/retarget/hooks/useRetargetHost'
+import { restoreStoredRig } from '@/character/restoreStoredRig'
 import { mdiSkull } from '@mdi/js'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -34,7 +38,6 @@ import { useModelFiles } from '@/stores/modelFiles'
 import { useSceneRendererResources } from '@/features/scene/components/Scene/Document/hooks/useSceneRendererResources'
 import { SceneClock } from '@/features/scene/components/Scene/SceneClock'
 import { SceneNavigationHint } from '@/features/scene/components/Scene/SceneNavigationHint'
-import { SceneSpeedControl } from '@/features/scene/components/Scene/SceneSpeedControl'
 import { CHARACTER_EDIT_REST, CHARACTER_STATE_TOOLS, CHARACTER_TOOLS } from './characterTools'
 
 /**
@@ -75,6 +78,7 @@ export function CharacterDocument({ documentId }: { documentId: string }) {
   const { t } = useTranslation()
 
   const assetId = useDocuments(state => characterAssetOf(state, documentId)) ?? ''
+  const openRetarget = useRetargetHost(assetId)
   const three = useSettings(state => state.settings.three)
   const hostRef = useRef<HTMLDivElement>(null)
   const engineRef = useRef<SceneRenderer | null>(null)
@@ -101,9 +105,6 @@ export function CharacterDocument({ documentId }: { documentId: string }) {
   /** Metres per second the wheel left the flight at, or `null` while it has said nothing. */
   const [flySpeed, setFlySpeed] = useState<number | null>(null)
 
-  // Its OWN scope and not the scene's: ⌘Z on this tab must not reach the scene open beside it.
-  // ⌘S is not here — `commandRouter` routes it to the document in front, and this kind writes
-  // the model's own container.
   useShortcuts({
     scope: 'character',
     enabled: inFront,
@@ -167,18 +168,7 @@ export function CharacterDocument({ documentId }: { documentId: string }) {
       engine.clearRig(nodeId)
       return
     }
-    if (character.autoRigBindings)
-      void engine.applyAutoRig(nodeId, {
-        rig: character.rig,
-        bindings: character.autoRigBindings,
-        metadata: {
-          backendId: 'stored',
-          sourceInfluences: character.rig.bones.length,
-          outputInfluences: 4,
-          fingers: false,
-        },
-      })
-    else void engine.skinModel(nodeId, character.rig)
+    void restoreStoredRig(engine, nodeId, character.rig, character.autoRigBindings)
   }, [character.rig, character.autoRigBindings, nodeId, live, landedAssetId, assetId])
 
   useEffect(() => {
@@ -301,10 +291,13 @@ export function CharacterDocument({ documentId }: { documentId: string }) {
         label={t('character.cameraSpeed')}
         className={PANE_TOOLBAR_ASIDE}
         extras={
-          <SceneSpeedControl
-            speed={flySpeed}
-            onSpeed={speed => engineRef.current?.setFlySpeed(speed)}
-          />
+          <>
+            <Button onClick={() => void openRetarget()}>{t('character.retarget.title')}</Button>
+            <SceneSpeedControl
+              speed={flySpeed}
+              onSpeed={speed => engineRef.current?.setFlySpeed(speed)}
+            />
+          </>
         }
       />
       {navigating && <SceneNavigationHint speed={flySpeed} />}

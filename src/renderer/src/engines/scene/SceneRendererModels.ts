@@ -11,7 +11,7 @@ import { applyShadowFlags } from './shadows'
 import type { Rig } from '@shared/domain/rig'
 import type { HumanoidRole } from '@shared/domain/humanoid'
 import { skeletonTopologySignatureOf } from '@shared/domain/skeletonProfile'
-import { clipFromWire, wireBonesOf, wireClipOf } from './retarget'
+import { clipFromWire, rigProfileOf, wireBonesOf, wireClipOf } from './retarget'
 import type { WireBone, WireClip } from './retargetMessage'
 import { characterOf } from './rigRead'
 import { meshSampleOf } from './rigSnap'
@@ -176,10 +176,8 @@ export abstract class SceneRendererModels extends SceneRendererGeometry {
     const roles: Record<string, HumanoidRole> = { ...corrected }
     for (const bone of rig.bones) if (bone.role) roles[bone.name] = bone.role
     if (Object.keys(roles).length === 0) return
-    const profile = {
-      signature: skeletonTopologySignatureOf(rig.bones),
-      roles,
-    }
+    const signature = skeletonTopologySignatureOf(rig.bones)
+    const profile = rigProfileOf(signature, roles, this.retarget.profileOf(signature))
     this.retarget.remember(profile)
     // Out to whoever keeps them: a mapping put right in one document is the same mapping the
     // next document of this project needs, and the port dies with the viewport.

@@ -1,8 +1,9 @@
+import { hasRetargetHost, openRetargetForAsset } from '@/character/retargetHosts'
 import { mdiClose, mdiCloseBoxMultipleOutline, mdiRenameOutline, mdiTrashCanOutline } from '@mdi/js'
 import type { TFunction } from 'i18next'
 import { isFiledKind } from '@shared/domain/document'
 import { showContextMenu } from '@/helpers/contextMenu'
-import { useDocuments } from '@/stores/documents'
+import { characterAssetOf, useDocuments } from '@/stores/documents'
 import { reportFailure } from '@/services/diagnostics'
 import { closeTab, closeTabAsking } from './closeTab'
 import { deleteDocument } from '../../../documentIo'
@@ -29,9 +30,20 @@ export function openDocumentTabMenu({ documentId, t, onRename }: DocumentTabMenu
   // 🛑 A tab with no file in the project is named and removed in the LIBRARY: a character rigs a
   // model that lives there, so both gestures belong to the shelf and neither would land here.
   const kind = useDocuments.getState().documents[documentId]?.kind
+  const character = characterAssetOf(useDocuments.getState(), documentId)
   const filed = kind !== undefined && isFiledKind(kind)
 
   void showContextMenu([
+    ...(character
+      ? [
+          {
+            label: t('character.retarget.title'),
+            tooltip: t('character.retarget.title'),
+            disabled: !hasRetargetHost(character),
+            onSelect: () => void openRetargetForAsset(character),
+          },
+        ]
+      : []),
     {
       label: t('documents.rename'),
       icon: mdiRenameOutline,

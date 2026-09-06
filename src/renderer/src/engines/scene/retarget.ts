@@ -67,6 +67,8 @@ export type Retarget = {
    * thing this closes. Profiles a project remembered are handed back the same way.
    */
   remember: (profile: SkeletonProfile) => void
+  /** The profile a signature is remembered under, if any. */
+  profileOf: (signature: string) => SkeletonProfile | undefined
   dispose: () => void
 }
 
@@ -118,6 +120,8 @@ export function createRetarget(spawn: () => Worker): Retarget {
 
     remember: profile => rememberProfile(profiles, profile),
 
+    profileOf: signature => profiles.get(signature),
+
     dispose: () => {
       profiles.clear()
       port.dispose()
@@ -160,6 +164,25 @@ function exactReplay(
   )
 }
 
+/**
+ * A file's own roles laid over what the project already corrected for that rig: the exclusions
+ * and the aligned rest pose only a window can set survive, minus any bone the file now names.
+ */
+export function rigProfileOf(
+  signature: string,
+  roles: Readonly<Record<string, HumanoidRole>>,
+  held?: SkeletonProfile,
+): SkeletonProfile {
+  const ignored = held?.ignored?.filter(name => !(name in roles))
+  return {
+    signature,
+    roles: { ...roles },
+    ...(held?.provider && { provider: held.provider }),
+    ...(held?.restPose && { restPose: held.restPose }),
+    ...(ignored?.length && { ignored }),
+  }
+}
+
 function rememberProfile(profiles: Map<string, SkeletonProfile>, profile: SkeletonProfile): void {
   if (!isSkeletonProfile(profile)) throw new Error('invalid skeleton profile')
   if (JSON.stringify(profiles.get(profile.signature)) === JSON.stringify(profile)) return
@@ -197,7 +220,30 @@ export function retargetPlanOf(
     if (from) names[name] = from
   }
 
-  return { target, source, clips, names, hip: sourceByRole.get('Hips'), fps }
+  const targetByRole = new Map(
+    Object.entries(rolesOf(target, known)).map(([name, role]) => [role, name]),
+  )
+  const torso = torsoOf(targetByRole, sourceByRole)
+  return {
+    target,
+    source,
+    clips,
+    names,
+    hip: sourceByRole.get('Hips'),
+    fps,
+    ...(torso && { torso }),
+  }
+}
+
+function torsoOf(
+  target: ReadonlyMap<HumanoidRole, string>,
+  source: ReadonlyMap<HumanoidRole, string>,
+): RetargetRequest['torso'] | undefined {
+  const named = [target, source].map(side => [side.get('Hips'), side.get('Head')])
+  const [to, from] = named
+  return to?.[0] && to[1] && from?.[0] && from[1]
+    ? { target: [to[0], to[1]], source: [from[0], from[1]] }
+    : undefined
 }
 
 /**
@@ -294,13 +340,12 @@ function alignedBonesOf(
   return bones.map(bone => {
     const rest = restPose[bone.name]
     if (!rest) return bone
+    // Rotation only: a signature names a rig, and the proportions belong to each file of it.
     return {
       ...bone,
-      position: [rest.position.x, rest.position.y, rest.position.z],
       quaternion: new Quaternion()
         .setFromEuler(new Euler(rest.rotation.x, rest.rotation.y, rest.rotation.z))
         .toArray(),
-      scale: [rest.scale.x, rest.scale.y, rest.scale.z],
     }
   })
 }
@@ -315,9 +360,13 @@ function alignedBonesOf(
  * the ORIGIN, measured on the real file on 2026-08-18 — hips to head is intrinsic to a rig and
  * survives that, as it survives the rest rotations 46 of its 52 bones carry.
  */
-export function skeletonScaleOf(target: Object3D, source: Object3D): number {
-  const to = torsoLengthOf(target)
-  const from = torsoLengthOf(source)
+export function skeletonScaleOf(
+  target: Object3D,
+  source: Object3D,
+  torso?: RetargetRequest['torso'],
+): number {
+  const to = torsoLengthOf(target, torso?.target)
+  const from = torsoLengthOf(source, torso?.source)
 
   // A rig with no head, or two bones in one place: reading it as a size would be worse than not.
   return to > 0 && from > 0 ? to / from : 1
@@ -338,10 +387,10 @@ export function clipTranslationScaleOf(source: Object3D, hip?: string): number {
   return Number.isFinite(sx) && sx > 0 ? sx : 1
 }
 
-function torsoLengthOf(root: Object3D): number {
-  const roles = boneRolesOf(namedBonesOf(wireBonesOf(root)))
-  const hips = boneFilling(root, roles, 'Hips')
-  const head = boneFilling(root, roles, 'Head')
+function torsoLengthOf(root: Object3D, named?: readonly [string, string]): number {
+  const roles = named ? undefined : boneRolesOf(namedBonesOf(wireBonesOf(root)))
+  const hips = named ? root.getObjectByName(named[0]) : roles && boneFilling(root, roles, 'Hips')
+  const head = named ? root.getObjectByName(named[1]) : roles && boneFilling(root, roles, 'Head')
   if (!hips || !head) return 0
 
   root.updateWorldMatrix(false, true)

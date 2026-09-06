@@ -12,6 +12,7 @@ dependencies = []
 # alive. The `llm`, `diffusion`, `audio` and `3d` groups land with the worker that needs them.
 core = []
 motion = [
+  "pydantic>=2",
   "torch>=2.6",
   "numpy>=1.26",
   "scipy>=1.10",
@@ -19,7 +20,6 @@ motion = [
   "peft>=0.18",
   "safetensors>=0.4",
   "einops>=0.7",
-  "hydra-core>=1.3",
   "omegaconf>=2.3",
   "tqdm>=4.0",
 ]

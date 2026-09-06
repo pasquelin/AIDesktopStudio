@@ -13,6 +13,11 @@ import { EMPTY_AI_OVERVIEW } from './fakeAiOverview'
 import { fakeBridgeGit } from './fakeBridgeGit'
 import { fakeBridgeMissions } from './fakeBridgeMissions'
 import { fakeBridgeUpdates } from './fakeBridgeUpdates'
+const fakeRetargetWindow = (overrides: BridgeOverrides): StudioBridge['retargetWindow'] => ({
+  open: async () => {},
+  focusOrigin: async () => {},
+  ...overrides.retargetWindow,
+})
 const noSubscription = (): (() => void) => () => {}
 const nothingMoved = (): Promise<FileOutcome> =>
   Promise.resolve({ done: [], refused: [], batch: 'batch-fake' })
@@ -421,8 +426,8 @@ const fakeNews = (overrides: BridgeOverrides): StudioBridge['news'] => ({
   ...overrides.news,
 })
 
-export function installFakeBridge(overrides: BridgeOverrides = {}): StudioBridge {
-  const bridge: StudioBridge = {
+function fakeBridge(overrides: BridgeOverrides): StudioBridge {
+  return {
     settings: fakeSettings(overrides),
     memory: fakeMemory(overrides),
     mcp: fakeMcp(overrides),
@@ -456,6 +461,7 @@ export function installFakeBridge(overrides: BridgeOverrides = {}): StudioBridge
     autoRig: { run: () => Promise.reject(new Error('no Auto Rig backend')), ...overrides.autoRig },
     dictation: fakeDictation(overrides),
     mirror: fakeMirror(overrides),
+    retargetWindow: fakeRetargetWindow(overrides),
     playerModuleWindow: fakePlayerModuleWindow(overrides),
     gameWindow: fakeGameWindow(overrides),
     help: fakeHelp(overrides),
@@ -468,6 +474,10 @@ export function installFakeBridge(overrides: BridgeOverrides = {}): StudioBridge
     news: fakeNews(overrides),
     updates: fakeBridgeUpdates(overrides.updates),
   }
+}
+
+export function installFakeBridge(overrides: BridgeOverrides = {}): StudioBridge {
+  const bridge = fakeBridge(overrides)
   vi.stubGlobal('studio', bridge)
   return bridge
 }

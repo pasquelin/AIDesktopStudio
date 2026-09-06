@@ -216,8 +216,12 @@ export type AnimationRef = {
  */
 export type ClipSource =
   | { kind: 'embedded'; name: string }
-  | { kind: 'bundled'; name: string }
-  | { kind: 'asset'; assetId: string; name: string }
+  | { kind: 'bundled'; name: string; clipIndex?: number }
+  | { kind: 'asset'; assetId: string; name: string; clipIndex?: number }
+
+export function isClipIndex(value: unknown): value is number {
+  return typeof value === 'number' && Number.isSafeInteger(value) && value >= 0
+}
 
 export const CLIP_SOURCES: readonly ClipSource['kind'][] = ['embedded', 'bundled', 'asset']
 
@@ -243,7 +247,8 @@ export const MAX_CLIP_FADE = 1
 export function clipKeyOf(source: ClipSource): string {
   if (source.kind === 'embedded') return source.name
   // The id and not the name: two library clips may well be called the same thing.
-  return source.kind === 'asset' ? `asset:${source.assetId}` : `bundled:${source.name}`
+  const key = source.kind === 'asset' ? `asset:${source.assetId}` : `bundled:${source.name}`
+  return source.clipIndex ? `${key}:clip:${source.clipIndex}` : key
 }
 
 /**

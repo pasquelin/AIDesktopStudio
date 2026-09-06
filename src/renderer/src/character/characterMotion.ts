@@ -75,6 +75,8 @@ export async function saveCharacterMotion(
   name: string,
   glb: Uint8Array,
   replaces?: string,
+  canLink: () => boolean = () => true,
+  expectedProjectPath?: string,
 ): Promise<string | null> {
   const bridge = getBridge()
   if (!bridge) return null
@@ -85,6 +87,13 @@ export async function saveCharacterMotion(
     glb,
     ...(replaces ? { replaces } : {}),
   })
+  if (!canLink()) {
+    if (!replaces) {
+      if (expectedProjectPath === undefined) await bridge.assets.remove([asset.id], false)
+      else await bridge.assets.remove([asset.id], false, expectedProjectPath)
+    }
+    return null
+  }
   // Already known when the file was rewritten: a second entry would list the same motion twice.
   if (!replaces) {
     useCharacters

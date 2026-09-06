@@ -238,8 +238,8 @@ const bridge: StudioBridge = {
     installBundledCharacter: level => ipcRenderer.invoke(CHANNELS.charactersInstallBundled, level),
     extractTextures: assetId => ipcRenderer.invoke(CHANNELS.assetsExtractTextures, assetId),
     update: (assetId, changes) => ipcRenderer.invoke(CHANNELS.assetsUpdate, assetId, changes),
-    remove: (assetIds, alsoRemote) =>
-      ipcRenderer.invoke(CHANNELS.assetsRemove, assetIds, alsoRemote),
+    remove: (assetIds, alsoRemote, expectedProjectPath) =>
+      ipcRenderer.invoke(CHANNELS.assetsRemove, assetIds, alsoRemote, expectedProjectPath),
     describe: assetIds => ipcRenderer.invoke(CHANNELS.assetsDescribe, assetIds),
   },
   cloud: {
@@ -339,14 +339,14 @@ const bridge: StudioBridge = {
     cancelInstall: () => ipcRenderer.invoke(CHANNELS.aiCancelInstall),
     installOllama: () => ipcRenderer.invoke(CHANNELS.aiInstallOllama),
     cancelInstallOllama: () => ipcRenderer.invoke(CHANNELS.aiCancelInstallOllama),
-    readEngine: () => ipcRenderer.invoke(CHANNELS.aiReadEngine),
-    installEngine: () => ipcRenderer.invoke(CHANNELS.aiInstallEngine),
+    readEngine: profile => ipcRenderer.invoke(CHANNELS.aiReadEngine, profile),
+    installEngine: profile => ipcRenderer.invoke(CHANNELS.aiInstallEngine, profile),
     cancelInstallEngine: () => ipcRenderer.invoke(CHANNELS.aiCancelInstallEngine),
     remove: modelId => ipcRenderer.invoke(CHANNELS.aiRemove, modelId),
     load: modelId => ipcRenderer.invoke(CHANNELS.aiLoad, modelId),
     cancelLoad: () => ipcRenderer.invoke(CHANNELS.aiCancelLoad),
     unload: modelId => ipcRenderer.invoke(CHANNELS.aiUnload, modelId),
-    addOwnModel: () => ipcRenderer.invoke(CHANNELS.aiAddOwnModel),
+    addOwnModel: (profile, taskId) => ipcRenderer.invoke(CHANNELS.aiAddOwnModel, profile, taskId),
     onChanged: callback => subscribe<AiOverview>(EVENTS.ai, callback),
   },
   autoRig: {
@@ -365,6 +365,10 @@ const bridge: StudioBridge = {
   },
   mirror: {
     open: () => ipcRenderer.invoke(CHANNELS.mirrorOpen),
+  },
+  retargetWindow: {
+    focusOrigin: () => ipcRenderer.invoke(CHANNELS.retargetWindowFocusOrigin),
+    open: sessionId => ipcRenderer.invoke(CHANNELS.retargetWindowOpen, sessionId),
   },
   playerModuleWindow: {
     open: assetId => ipcRenderer.invoke(CHANNELS.playerModuleWindowOpen, assetId),

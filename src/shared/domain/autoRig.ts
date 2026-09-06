@@ -106,7 +106,7 @@ export function autoRigResultFaultOf(
   return targets.size === expected.size ? null : 'invalid-binding-target'
 }
 
-function autoRigBindingFaultOf(
+export function autoRigBindingFaultOf(
   binding: AutoRigSkinBinding,
   vertexCount: number | undefined,
   boneCount: number,

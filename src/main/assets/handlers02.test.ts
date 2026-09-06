@@ -127,6 +127,7 @@ function setup(
   const described: Asset[] = []
 
   registerAssetHandlers({
+    projectPath: () => '/project',
     catalog: () => catalog,
     remote: overrides.open ?? (() => remote),
     cloud: () => cloud,
@@ -379,6 +380,15 @@ describe('removing assets', () => {
 
   beforeEach(() => {
     harness = setup()
+  })
+
+  it('refuses rollback from a different project without touching this project', async () => {
+    await harness.catalog.add(localAsset())
+    await expect(invoke(CHANNELS.assetsRemove, ['asset_1'], false, '/old-project')).rejects.toThrow(
+      'project',
+    )
+    expect(harness.removedFiles).toEqual([])
+    expect(await harness.catalog.find('asset_1')).not.toBeNull()
   })
 
   it('drops the row and the file it owns', async () => {

@@ -1,4 +1,4 @@
-import type { AiOverview, ChoiceScope } from './domain/aiOverview'
+import type { AiOverview, ChoiceScope, OwnModelProfile } from './domain/aiOverview'
 import type { AiRoleId, RoleProvider } from './domain/aiRole'
 import type { NewDocumentAnswer, NewDocumentAsk } from './domain/newDocument'
 import type { NewsPage, NewsTopic } from './domain/news'
@@ -56,9 +56,9 @@ export type StudioBridgeShell = {
     installOllama: () => Promise<AiOverview>
     cancelInstallOllama: () => Promise<AiOverview>
     /** Asks the local engine what its tensor libraries are missing. Wakes no door. */
-    readEngine: () => Promise<AiOverview>
+    readEngine: (profile?: OwnModelProfile) => Promise<AiOverview>
     /** Installs exactly what it named, with the interpreter the app ships. Cancellable. */
-    installEngine: () => Promise<AiOverview>
+    installEngine: (profile?: OwnModelProfile) => Promise<AiOverview>
     cancelInstallEngine: () => Promise<AiOverview>
     /**
      * Deletes the files. The choices that named it are left alone — they fall back on their own.
@@ -80,10 +80,10 @@ export type StudioBridgeShell = {
      * Asks for a weights file and records what its header says — rank 3 of ADR-20.
      *
      * The picker is opened by the MAIN process, which is where a native dialog belongs, so this
-     * takes nothing: the gesture IS the argument. Answers the overview unchanged when the person
+     * accepts only the import profile. Answers the overview unchanged when the person
      * closed the dialog, and rejects when the file is not one the studio can read.
      */
-    addOwnModel: () => Promise<AiOverview>
+    addOwnModel: (profile?: OwnModelProfile, taskId?: string) => Promise<AiOverview>
     onChanged: (callback: (overview: AiOverview) => void) => Unsubscribe
   }
 
@@ -175,6 +175,11 @@ export type StudioBridgeShell = {
    * The module window. Same line as `mirror`: what it EDITS it reads for itself off the file the
    * route names, and the only thing this side owns is opening the window on one.
    */
+  retargetWindow: {
+    focusOrigin: () => Promise<void>
+    open: (sessionId: string) => Promise<void>
+  }
+
   playerModuleWindow: {
     open: (assetId: string) => Promise<void>
   }

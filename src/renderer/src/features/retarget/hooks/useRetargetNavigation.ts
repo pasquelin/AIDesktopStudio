@@ -15,7 +15,7 @@ type Side = 'source' | 'target'
 
 /** One keyboard owner for both existing scene engines. */
 export function useRetargetNavigation(source: Navigation | null, target: Navigation | null) {
-  const [active, activate] = useState<Side | null>(null)
+  const [active, activate] = useState<Side>('target')
   const [navigating, setNavigating] = useState(false)
   const engine = active === 'source' ? source : active === 'target' ? target : null
   const { heldMotion } = useShortcuts({

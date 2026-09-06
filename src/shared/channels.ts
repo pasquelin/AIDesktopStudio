@@ -268,6 +268,8 @@ export type Channels = {
 
   /** Opens the game window, or reveals the one already open. See `GAME_ROUTE`. */
   gameWindowOpen: 'game:open-window'
+  retargetWindowFocusOrigin: 'character:focus-retarget-origin'
+  retargetWindowOpen: 'character:open-retarget-window'
   playerModuleWindowOpen: 'player:open-module-window'
   /** Closes it. What a Stop pressed in the studio does — the window is the main process's. */
   gameWindowClose: 'game:close-window'

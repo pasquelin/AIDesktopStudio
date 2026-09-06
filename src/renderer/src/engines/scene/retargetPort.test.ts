@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { profileWithRole, skeletonSignatureOf } from '@shared/domain/skeletonProfile'
+import { Euler, Quaternion } from 'three'
 import { createRetarget, skinnedFromWire, wireClipOf } from './retarget'
 import { UTHANA, TRIPO, scriptedWorker, turnClip } from './retarget-fixtures'
 
@@ -59,7 +60,7 @@ describe('asking the worker', () => {
       restPose: {
         mixamorigHips: {
           position: { x: 0, y: 3, z: 0 },
-          rotation: { x: 0, y: 0, z: 0 },
+          rotation: { x: 0, y: 0, z: Math.PI },
           scale: { x: 1, y: 1, z: 1 },
         },
       },
@@ -70,14 +71,15 @@ describe('asking the worker', () => {
     })
     const request = script.sent[0]
     if (!request || 'cancel' in request) throw new Error('missing request')
-    expect(request.source[0]?.position).toEqual([0, 3, 0])
+    expect(request.source[0]?.quaternion[3]).toBeCloseTo(0, 6)
+    expect(request.source[0]?.position).toEqual([0, 1, 0])
     expect(request.options).toEqual({ scale: 2, rootMotion: 'inPlace' })
     script.answer({ id: request.id, done: true, ok: true, clips: [] })
     await pending
     const next = port.adapt(skinnedFromWire(TRIPO), skinnedFromWire(UTHANA), [turnClip('x')])
     const unchanged = script.sent.at(-1)
     if (!unchanged || 'cancel' in unchanged) throw new Error('missing second request')
-    expect(unchanged.source[0]?.position).toEqual([0, 1, 0])
+    expect(unchanged.source[0]?.quaternion).toEqual([0, 0, 0, 1])
     port.dispose()
     await next
   })
@@ -195,5 +197,34 @@ describe('asking the worker', () => {
 
     expect(adapted).toBeNull()
     expect(script.spawned).toBe(0)
+  })
+})
+
+describe('an aligned rest pose', () => {
+  it('turns the bone it names and leaves the proportions of the file alone', async () => {
+    const script = scriptedWorker()
+    const port = createRetarget(script.spawn)
+    const profile = {
+      signature: skeletonSignatureOf(UTHANA.map(bone => bone.name)),
+      roles: {},
+      restPose: {
+        mixamorigSpine: {
+          position: { x: 9, y: 9, z: 9 },
+          rotation: { x: 0, y: 0, z: Math.PI / 2 },
+          scale: { x: 3, y: 3, z: 3 },
+        },
+      },
+    }
+    void port.adapt(skinnedFromWire(UTHANA), skinnedFromWire(TRIPO), [turnClip('mixamorigSpine')], {
+      targetProfile: profile,
+    })
+    const request = script.sent[0]
+    if (!request || 'cancel' in request) throw new Error('no request sent')
+    const spine = request.target.find(bone => bone.name === 'mixamorigSpine')
+    expect(spine?.position).toEqual([0, 0.2, 0])
+    expect(spine?.scale).toEqual([1, 1, 1])
+    const turned = new Quaternion().setFromEuler(new Euler(0, 0, Math.PI / 2)).toArray()
+    spine?.quaternion.forEach((value, index) => expect(value).toBeCloseTo(turned[index] ?? 0, 6))
+    port.dispose()
   })
 })

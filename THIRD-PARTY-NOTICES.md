@@ -22,6 +22,7 @@ The terms below govern these components. They are not affected by the licence of
 | ACE-Step 1.5 XL Turbo | 200ba991ae448051e14b0183157e35c2d27c9fb0 | MIT |
 | ag-psd | 31.0.2 | MIT |
 | annotated-doc | 0.0.5 | MIT |
+| annotated-types | 0.8.0 | MIT |
 | anyio | 4.15.0 | MIT |
 | better-sqlite3 | 13.0.3 | MIT |
 | certifi | 2026.7.22 | MPL-2.0 |
@@ -50,7 +51,6 @@ The terms below govern these components. They are not affected by the licence of
 | httpcore | 1.0.9 | BSD-3-Clause |
 | httpx | 0.28.1 | BSD-3-Clause |
 | huggingface-hub | 1.30.0 | Apache-2.0 |
-| hydra-core | 1.3.6 | MIT |
 | i18next | 26.4.2 | MIT |
 | IBM Plex Mono | shipped with the application | OFL-1.1 |
 | IBM Plex Serif | shipped with the application | OFL-1.1 |
@@ -96,6 +96,8 @@ The terms below govern these components. They are not affected by the licence of
 | pip | 26.2.1 | MIT |
 | pixi.js | 8.20.1 | MIT |
 | psutil | 7.2.2 | BSD-3-Clause |
+| pydantic | 2.13.5 | MIT |
+| pydantic-core | 2.46.5 | MIT |
 | pygments | 2.21.0 | BSD-2-Clause |
 | pyyaml | 6.0.3 | MIT |
 | quickjs-emscripten-core | 0.32.0 | MIT |
@@ -151,6 +153,7 @@ The terms below govern these components. They are not affected by the licence of
 | typer | 0.27.2 | MIT |
 | typescript | 6.0.2 | Apache-2.0 |
 | typing-extensions | 4.16.0 | PSF-2.0 |
+| typing-inspection | 0.4.4 | MIT |
 | UniPano | 451f4fe16113bff5a5d2269ed5ad43b0592e9a14 | other |
 | urllib3 | 2.7.0 | MIT |
 | utif | 3.1.0 | MIT |
@@ -551,6 +554,23 @@ Part of the environment a local generation runs in. It is NOT shipped with the a
 
 Licensed under MIT.
 Source: https://github.com/fastapi/annotated-doc
+```
+## annotated-types
+
+Version: 0.8.0
+Licence: MIT
+
+Corresponding sources:
+
+```
+https://github.com/annotated-types/annotated-types
+```
+
+```
+Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.
+
+Licensed under MIT.
+Source: https://github.com/annotated-types/annotated-types
 ```
 ## anyio
 
@@ -1115,23 +1135,6 @@ Part of the environment a local generation runs in. It is NOT shipped with the a
 
 Licensed under Apache-2.0.
 Source: https://github.com/huggingface/huggingface_hub
-```
-## hydra-core
-
-Version: 1.3.6
-Licence: MIT
-
-Corresponding sources:
-
-```
-https://github.com/facebookresearch/hydra
-```
-
-```
-Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.
-
-Licensed under MIT.
-Source: https://github.com/facebookresearch/hydra
 ```
 ## i18next
 
@@ -1791,7 +1794,7 @@ https://huggingface.co/nvidia/Kimodo-SOMA-RP-v1.1
 ```
 
 ```
-Requires local Meta Llama 3 8B weights and the optional motion engine package., one of the models the studio generates with on this machine.
+Text-to-motion generation on a humanoid skeleton, with local Meta Llama 3 8B weights and the optional motion engine package, one of the models the studio generates with on this machine.
 It is NOT shipped with the application: it is fetched on request into the user data folder,
 against a published digest, and removed from the model manager.
 
@@ -3388,6 +3391,40 @@ Part of the environment a local generation runs in. It is NOT shipped with the a
 Licensed under BSD-3-Clause.
 Source: https://github.com/giampaolo/psutil
 ```
+## pydantic
+
+Version: 2.13.5
+Licence: MIT
+
+Corresponding sources:
+
+```
+https://github.com/pydantic/pydantic
+```
+
+```
+Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.
+
+Licensed under MIT.
+Source: https://github.com/pydantic/pydantic
+```
+## pydantic-core
+
+Version: 2.46.5
+Licence: MIT
+
+Corresponding sources:
+
+```
+https://github.com/pydantic/pydantic/tree/main/pydantic-core
+```
+
+```
+Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.
+
+Licensed under MIT.
+Source: https://github.com/pydantic/pydantic/tree/main/pydantic-core
+```
 ## pygments
 
 Version: 2.21.0
@@ -4578,6 +4615,23 @@ Part of the embedded Auto Rig runtime. It IS shipped with the macOS ARM64 applic
 
 Licensed under PSF-2.0.
 Source: https://github.com/python/typing_extensions
+```
+## typing-inspection
+
+Version: 0.4.4
+Licence: MIT
+
+Corresponding sources:
+
+```
+https://github.com/pydantic/typing-inspection
+```
+
+```
+Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.
+
+Licensed under MIT.
+Source: https://github.com/pydantic/typing-inspection
 ```
 ## UniPano
 

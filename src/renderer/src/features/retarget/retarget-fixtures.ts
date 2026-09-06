@@ -3,7 +3,7 @@ import { vi } from 'vitest'
 import { SceneRenderer } from '@/engines/scene/SceneRenderer'
 import { modelNodeFixture } from '@/engines/scene/scene-fixtures'
 import { EMPTY_SCENE } from '@/engines/scene/sceneState'
-import type { MotionView } from './RetargetViewport'
+import type { MotionView } from './components/Retarget/RetargetViewport'
 
 export function motionClip(distance: number): AnimationClip {
   return new AnimationClip('same', 1, [

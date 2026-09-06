@@ -7,9 +7,10 @@ import type { CloudBackend } from './cloudBackend'
 
 export type AssetHandlerDeps = {
   catalog: () => AsyncCatalog
+  projectPath?: () => string
   remote: () => RemoteAssetCatalog
   cloud: () => CloudBackend
-  removeFile: (asset: Asset) => Promise<void>
+  removeFile: (asset: Asset, expectedProjectPath?: string) => Promise<void>
   renameFile: (asset: Asset, name: string) => Promise<string | undefined>
   activeOwnerId: () => string | null
   journal: () => ActivityLog

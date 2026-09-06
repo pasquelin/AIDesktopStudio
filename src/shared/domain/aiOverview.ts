@@ -15,6 +15,8 @@ import { fitAllowsUse, type FitObstacle } from './modelFit'
 /** Where a choice came from, which is what tells "inherited" from "set here". */
 export type ChoiceScope = 'app' | 'project'
 
+export type OwnModelProfile = 'motion'
+
 /** The values beside the type: the scope selector composes a key per member, and a guard reads it. */
 export const CHOICE_SCOPES: readonly ChoiceScope[] = ['app', 'project']
 
@@ -174,6 +176,7 @@ export type AiOverview = {
  * answered yet knows nothing, and a nothing must never be shown as a clean bill of health.
  */
 export type EngineOffer = {
+  readonly profile?: OwnModelProfile
   readonly known: boolean
   /** Absent or older than declared, by name. What the button installs, and what it says. */
   readonly missing: readonly string[]

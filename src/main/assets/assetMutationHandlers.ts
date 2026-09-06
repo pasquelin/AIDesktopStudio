@@ -83,22 +83,30 @@ async function removeAssets(
   deps: AssetHandlerDeps,
   assetIds: unknown,
   alsoRemote: unknown,
+  expectedProjectPath?: string,
 ): Promise<void> {
-  const found = await findMany(deps.catalog, parseAssetIds(assetIds))
+  if (
+    expectedProjectPath !== undefined &&
+    (typeof expectedProjectPath !== 'string' || expectedProjectPath !== deps.projectPath?.())
+  )
+    throw new Error('asset rollback belongs to another project')
+  const catalog = deps.catalog()
+  const found = await findMany(() => catalog, parseAssetIds(assetIds))
   if (parseAlsoRemote(alsoRemote)) {
     const twins = found.map(asset => asset.remoteAssetId).filter(id => id !== undefined)
     if (twins.length > 0) await reduced(() => deps.remote().deleteMany(twins))
   }
   for (const asset of found) {
-    await deps.removeFile(asset)
-    await deps.catalog().remove(asset.id)
+    if (expectedProjectPath === undefined) await deps.removeFile(asset)
+    else await deps.removeFile(asset, expectedProjectPath)
+    await catalog.remove(asset.id)
   }
 }
 
 export function registerAssetMutationHandlers(deps: AssetHandlerDeps): void {
   handle(CHANNELS.assetsUpdate, (_event, assetId, changes) => updateAsset(deps, assetId, changes))
-  handle(CHANNELS.assetsRemove, (_event, assetIds, alsoRemote) =>
-    removeAssets(deps, assetIds, alsoRemote),
+  handle(CHANNELS.assetsRemove, (_event, assetIds, alsoRemote, expectedProjectPath) =>
+    removeAssets(deps, assetIds, alsoRemote, expectedProjectPath),
   )
   handle(CHANNELS.assetsDescribe, async (_event, assetIds) => {
     const found = await Promise.all(

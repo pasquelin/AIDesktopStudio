@@ -11,6 +11,7 @@ import { clipsOfNode, useModelFiles } from '@/stores/modelFiles'
 import { assetIcon } from '@/helpers/workspaces'
 
 export type CharacterMotionPickerLibraryProps = {
+  selected?: ClipSource | null
   documentId: string
   nodeId: string
   onChoose: (source: ClipSource, label: string) => void
@@ -24,6 +25,7 @@ export type CharacterMotionPickerLibraryProps = {
  * question — and only the choice decides what a block ends up reading.
  */
 export function CharacterMotionPickerLibrary({
+  selected,
   documentId,
   nodeId,
   onChoose,
@@ -69,6 +71,15 @@ export function CharacterMotionPickerLibrary({
     <Collection
       label={t('inspector.animationLibrary')}
       items={offered}
+      selectedIds={offered
+        .filter(
+          motion =>
+            selected?.kind === motion.source.kind &&
+            (selected.kind === 'asset' && motion.source.kind === 'asset'
+              ? selected.assetId === motion.source.assetId
+              : selected.name === motion.source.name),
+        )
+        .map(motion => motion.id)}
       onSelect={motion => onChoose(motion.source, motion.label)}
       renderRow={motion => <Row icon={motion.icon} title={motion.shown} />}
       empty={

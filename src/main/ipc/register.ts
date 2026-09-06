@@ -135,7 +135,7 @@ function registerCreativeIpc(
     said: services.said,
   })
   registerMemoryHandlers({ host: services.memory, vectors: services.memoryVectors })
-  registerAiHandlers({ manager: services.ai, addOwnModel: services.addOwnAiModel })
+  registerAiHandlers({ manager: services.ai, addOwnModel: services.addOwnAiModel, running })
   registerAutoRigHandlers(services.autoRig, running)
   registerDictationHandlers({
     session: services.dictation,
@@ -186,6 +186,7 @@ export function registerIpc(services: Services): void {
   })
   registerGitIpc(services)
   registerAssetHandlers({
+    projectPath: () => services.project.path(),
     catalog: () => services.project.catalog(),
     remote: services.remote,
     cloud: services.cloud,

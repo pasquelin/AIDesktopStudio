@@ -1,3 +1,4 @@
+import { URL } from 'node:url'
 import { readFileSync } from 'node:fs'
 
 const text = name => readFileSync(new URL(`./licence-texts/${name}.txt`, import.meta.url), 'utf8')

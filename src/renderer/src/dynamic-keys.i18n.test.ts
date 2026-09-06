@@ -6,7 +6,7 @@ import { PICTURE_TRAITS } from '@shared/domain/formatCapability'
 import { FOLDER_ROLES } from '@shared/domain/folderRole'
 import { roleLabelKey } from '@/helpers/workspaces'
 import { WORKSPACE_IDS } from '@shared/domain/workspace'
-import { BODY_PARTS } from '@shared/domain/humanoid'
+import { BODY_PARTS, HUMANOID_ROLES } from '@shared/domain/humanoid'
 import { GROUND_MATERIAL_CHANNELS, ROOT_MOTIONS, SCATTER_CATEGORIES } from '@shared/domain/scene'
 import { EASINGS } from '@shared/domain/animation'
 import { OPTIMIZATION_MODES } from '@shared/domain/scene'
@@ -102,6 +102,12 @@ const COMPOSED_KEYS: readonly string[] = [
   ...CLOUD_IDS.map(doorLabelKey),
   doorLabelKey('local'),
   ...ADJUSTMENT_KINDS.map(kind => `adjustment.${kind}`),
+  // Every humanoid role, group and side the transfer window names from a template literal: a
+  // role lost from a bundle would put its raw key on every row of the bone mapping.
+  ...HUMANOID_ROLES.map(role => `character.retarget.roles.${role}`),
+  ...['torso', 'arms', 'legs', 'fingers'].map(group => `character.retarget.groups.${group}`),
+  ...['source', 'target'].map(side => `character.retarget.${side}`),
+  ...['source', 'target'].map(side => `character.retarget.${side}Alignment`),
   // What a format could not carry, named in the flatten dialogue. The PICTURE traits alone: the
   // image is the one kind with a `traitsOf`, so no other family can reach that sentence — the day
   // a second kind gains one, its traits belong here too.

@@ -66,6 +66,8 @@ export type RetargetRequest = {
   names: Readonly<Record<string, string>>
   /** The hips, under their SOURCE name — the one bone whose translation is carried over. */
   hip?: string
+  /** Hips then head on each side, under their own names: what the size of a skeleton is read from. */
+  torso?: { target: readonly [string, string]; source: readonly [string, string] }
   /**
    * How finely the source is sampled, or nothing to sample it at its own density.
    *

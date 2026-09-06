@@ -1,6 +1,6 @@
 import { profileOfBones } from '@/engines/scene/retarget'
 import { motionProfile } from './retargetDraft'
-import type { MotionView } from './RetargetViewport'
+import type { MotionView } from './components/Retarget/RetargetViewport'
 import { profileWithRole, type SkeletonProfile } from '@shared/domain/skeletonProfile'
 import type { Rig } from '@shared/domain/rig'
 

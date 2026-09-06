@@ -5496,7 +5496,7 @@
       "runtimeStatus": "supported",
       "distribution": "user-import",
       "distributionStatus": "blocked",
-      "summary": "Requires local Meta Llama 3 8B weights and the optional motion engine package.",
+      "summary": "Text-to-motion generation on a humanoid skeleton, with local Meta Llama 3 8B weights and the optional motion engine package",
       "releasedAt": "2026-04-10"
     }
   ]

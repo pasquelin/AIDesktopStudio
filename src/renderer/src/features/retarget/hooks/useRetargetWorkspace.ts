@@ -6,7 +6,7 @@ import { assetUrl } from '@shared/domain/asset'
 import type { ClipSource } from '@shared/domain/scene'
 import type { SkeletonProfile } from '@shared/domain/skeletonProfile'
 import { clipSourceUrl } from '@/engines/scene/clipSources'
-import type { MotionView } from '../RetargetViewport'
+import type { MotionView } from '../components/Retarget/RetargetViewport'
 import { useRetargetSession } from './useRetargetSession'
 import { useRetargetPreview } from './useRetargetPreview'
 import { exportRetarget } from '../retargetDraft'
@@ -18,6 +18,7 @@ export function useRetargetWorkspace() {
   const [chosen, setChosen] = useState<ClipSource | null>(null)
   const [name, setName] = useState('')
   const [source, setSource] = useState<MotionView | null>(null)
+  const [sourceLoading, setSourceLoading] = useState(false)
   const [target, setTarget] = useState<MotionView | null>(null)
   const [sourceProfile, setSourceProfile] = useState<SkeletonProfile | null>(null)
   const [targetProfile, setTargetProfile] = useState<SkeletonProfile | null>(null)
@@ -27,7 +28,7 @@ export function useRetargetWorkspace() {
   const [failure, setFailure] = useState(false)
   const [exporting, setExporting] = useState(false)
   const preview = useRetargetPreview(
-    source,
+    sourceLoading ? null : source,
     target,
     clipIndex,
     sourceProfile,
@@ -37,20 +38,20 @@ export function useRetargetWorkspace() {
   )
   const choose = (value: ClipSource, label: string) => {
     preview.cancel()
+    session.idle()
     setChosen(value)
     setName(label)
     setClipIndex('clipIndex' in value ? (value.clipIndex ?? 0) : 0)
     setFailure(false)
   }
   const apply = async () => {
-    if (!target || !preview.result) return
+    const result = preview.result
+    if (!target || !result || !preview.current(result)) return
     setExporting(true)
     try {
-      session.apply(
-        name,
-        await exportRetarget(target.bones, preview.result.clip),
-        confirmedProfiles(sourceProfile, targetProfile),
-      )
+      const glb = await exportRetarget(target.bones, result.clip)
+      if (!preview.current(result)) return
+      session.apply(name, glb, confirmedProfiles(sourceProfile, targetProfile))
     } catch {
       setFailure(true)
     } finally {
@@ -65,7 +66,10 @@ export function useRetargetWorkspace() {
         )
       : undefined
   const sourceReady = (view: MotionView | null) => {
+    setSourceLoading(view === null)
+    if (!view) return
     setSource(view)
+    setClipIndex(index => Math.min(index, Math.max(0, view.clips.length - 1)))
     setSourceProfile(profileForView(view, session.snapshot?.profiles))
   }
   const targetReady = (view: MotionView | null) => {
@@ -74,6 +78,8 @@ export function useRetargetWorkspace() {
   }
   return {
     session,
+    chosen,
+    sourceLoading,
     source,
     target,
     sourceProfile,
@@ -83,7 +89,10 @@ export function useRetargetWorkspace() {
     name,
     setName,
     clipIndex,
-    setClipIndex,
+    setClipIndex: (index: number) => {
+      session.idle()
+      setClipIndex(index)
+    },
     scale,
     setScale,
     rootMotion,

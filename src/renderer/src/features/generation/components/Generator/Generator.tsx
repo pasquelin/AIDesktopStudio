@@ -1,3 +1,4 @@
+import { useCompletedGeneration } from '@/hooks/useCompletedGeneration'
 import { mdiCreationOutline } from '@mdi/js'
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -60,12 +61,15 @@ import { DynamicForm } from '@/components/dynamicFormLazy'
  * No field here is written for any particular model (invariant 5), and nothing about any
  * particular operation either: both come from the contract and the descriptor.
  */
-export function Generator() {
+export function Generator({
+  fixedRole,
+  onCompleted,
+}: { fixedRole?: AiRoleId; onCompleted?: (job: Job) => void } = {}) {
   const { t } = useTranslation()
 
   const forced = useGeneration(state => state.forcedCapability)
   const forceCapability = useGeneration(state => state.forceCapability)
-  const { inputs, capability, withdraw } = useGenerationContext(forced)
+  const { inputs, capability, withdraw } = useGenerationContext(fixedRole ?? forced)
 
   const prepared = useModels(state =>
     capability.chosen ? state.preset[capability.chosen] : undefined,
@@ -180,12 +184,6 @@ export function Generator() {
     [runGeneration],
   )
 
-  /**
-   * The last door before the spend, for everything that arms a model without opening the picker:
-   * a stored default, "recreate", "regenerate with these parameters", a Spark idea and the canvas
-   * edits all land here. Greying the picker alone would leave every one of them to discover the
-   * 403.
-   */
   const refusal = refusalFor(descriptor.data?.requiredPlanLevel)
 
   useEffect(() => {
@@ -214,6 +212,8 @@ export function Generator() {
     fields,
     refusal,
   ])
+
+  useCompletedGeneration(running, onCompleted)
 
   const watchValues = cost.onValuesChange
   const onValuesChange = useCallback(
@@ -272,7 +272,9 @@ export function Generator() {
         if (remember) void setValue('generation.landing', target)
         void runGeneration(values, target)
       }}
-      capability={capability}
+      capability={
+        fixedRole ? { chosen: fixedRole, reachable: [fixedRole], forced: false } : capability
+      }
       onForce={forceCapability}
       model={{ capability: chosen, modelId, name: descriptor.data?.name, plan }}
       descriptor={{

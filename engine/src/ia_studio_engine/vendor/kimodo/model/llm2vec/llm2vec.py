@@ -1,3 +1,4 @@
+# Modified by IA Studio: only the pinned Llama SOMA text encoder is supported.
 # SPDX-FileCopyrightText: Copyright (c) 2024 McGill NLP
 # SPDX-License-Identifier: MIT
 #
@@ -51,11 +52,8 @@ from transformers import (
     AutoConfig,
     AutoModel,
     AutoTokenizer,
-    GemmaConfig,
     LlamaConfig,
-    MistralConfig,
     PretrainedConfig,
-    Qwen2Config,
 )
 
 logger = logging.getLogger(__name__)
@@ -92,24 +90,11 @@ class LLM2Vec(nn.Module):
     def _get_model_class(cls, config_class_name, enable_bidirectional):
         if not enable_bidirectional:
             return AutoModel
-        if config_class_name == "MistralConfig":
-            from .models.bidirectional_mistral import MistralBiModel
+        if config_class_name != "LlamaConfig":
+            raise ValueError(f"{config_class_name} is not supported by the local SOMA encoder.")
+        from .models.bidirectional_llama import LlamaBiModel
 
-            return MistralBiModel
-        elif config_class_name == "LlamaConfig":
-            from .models.bidirectional_llama import LlamaBiModel
-
-            return LlamaBiModel
-        elif config_class_name == "GemmaConfig":
-            from .models.bidirectional_gemma import GemmaBiModel
-
-            return GemmaBiModel
-        elif config_class_name == "Qwen2Config":
-            from .models.bidirectional_qwen2 import Qwen2BiModel
-
-            return Qwen2BiModel
-        else:
-            raise ValueError(f"{config_class_name} is not supported yet with bidirectional models.")
+        return LlamaBiModel
 
     @classmethod
     def from_pretrained(
@@ -173,29 +158,11 @@ class LLM2Vec(nn.Module):
         if self.model.config._name_or_path == "meta-llama/Meta-Llama-3-8B-Instruct":
             text = "<|start_header_id|>user<|end_header_id|>\n\n" + text.strip() + "<|eot_id|>"
             return text
-        if self.model.config._name_or_path in [
-            "mistralai/Mistral-7B-Instruct-v0.2",
-            "meta-llama/Llama-2-7b-chat-hf",
-        ]:
-            text = "[INST] " + text.strip() + " [/INST]"
-        if self.model.config._name_or_path in [
-            "google/gemma-2-9b-it",
-        ]:
-            text = "<bos><start_of_turn>user\n" + text.strip() + "<end_of_turn>"
-        if self.model.config._name_or_path in [
-            "Qwen/Qwen2-1.5B-Instruct",
-            "Qwen/Qwen2-7B-Instruct",
-        ]:
-            text = "<|im_start|>user\n" + text.strip() + "<|im_end|>"
         if self.pooling_mode == "eos_token":
             if self.model.config._name_or_path == "meta-llama/Meta-Llama-3-8B":
                 text = text.strip() + "<|end_of_text|>"
-            elif isinstance(self.model.config, LlamaConfig) or isinstance(self.model.config, MistralConfig):
+            elif isinstance(self.model.config, LlamaConfig):
                 text = text.strip() + " </s>"
-            elif isinstance(self.model.config, GemmaConfig):
-                text = text.strip() + "<eos>"
-            elif isinstance(self.model.config, Qwen2Config):
-                text = text.strip() + "<|endoftext|>"
         return text
 
     def tokenize(self, texts):

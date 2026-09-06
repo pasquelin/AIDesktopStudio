@@ -16,7 +16,7 @@ const NEWLINE = 0x0a
  * would drop a whole new kind of text file in silence.
  */
 const BINARY =
-  /\.(png|webp|jpe?g|gif|ico|icns|mp4|mov|webm|mp3|wav|ogg|glb|fbx|npz|ttf|otf|woff2?|wasm|zip|pdf)$/i
+  /\.(png|webp|jpe?g|gif|ico|icns|mp4|mov|webm|mp3|wav|ogg|glb|fbx|npz|npy|p|ttf|otf|woff2?|wasm|zip|pdf)$/i
 
 /**
  * 🛑 The one tracked file that is a BINARY wearing a text name: the physics engine the studio

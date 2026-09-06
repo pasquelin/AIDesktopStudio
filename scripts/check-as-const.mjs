@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process'
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import ts from 'typescript'
 
 const files =
@@ -12,6 +12,7 @@ const files =
 const findings = []
 
 for (const filename of files) {
+  if (!existsSync(filename)) continue
   const source = readFileSync(filename, 'utf8')
   const tree = ts.createSourceFile(filename, source, ts.ScriptTarget.Latest, true)
   const visit = node => {

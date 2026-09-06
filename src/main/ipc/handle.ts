@@ -252,6 +252,8 @@ type ChannelMethod = {
 
   [CHANNELS.mirrorOpen]: StudioBridge['mirror']['open']
   [CHANNELS.gameWindowOpen]: StudioBridge['gameWindow']['open']
+  [CHANNELS.retargetWindowFocusOrigin]: StudioBridge['retargetWindow']['focusOrigin']
+  [CHANNELS.retargetWindowOpen]: StudioBridge['retargetWindow']['open']
   [CHANNELS.playerModuleWindowOpen]: StudioBridge['playerModuleWindow']['open']
   [CHANNELS.gameWindowClose]: StudioBridge['gameWindow']['close']
 

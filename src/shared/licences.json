@@ -95,6 +95,13 @@
     "sources": "https://github.com/fastapi/annotated-doc"
   },
   {
+    "name": "annotated-types",
+    "version": "0.8.0",
+    "spdx": "MIT",
+    "text": "Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.\n\nLicensed under MIT.\nSource: https://github.com/annotated-types/annotated-types",
+    "sources": "https://github.com/annotated-types/annotated-types"
+  },
+  {
     "name": "anyio",
     "version": "4.15.0",
     "spdx": "MIT",
@@ -284,13 +291,6 @@
     "sources": "https://github.com/huggingface/huggingface_hub"
   },
   {
-    "name": "hydra-core",
-    "version": "1.3.6",
-    "spdx": "MIT",
-    "text": "Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.\n\nLicensed under MIT.\nSource: https://github.com/facebookresearch/hydra",
-    "sources": "https://github.com/facebookresearch/hydra"
-  },
-  {
     "name": "i18next",
     "version": "26.4.2",
     "spdx": "MIT",
@@ -380,7 +380,7 @@
     "name": "Kimodo SOMA RP v1.1",
     "version": "6c9233af1180b8151e3c4703477104af5dce9dd5",
     "spdx": "other",
-    "text": "Requires local Meta Llama 3 8B weights and the optional motion engine package., one of the models the studio generates with on this machine.\nIt is NOT shipped with the application: it is fetched on request into the user data folder,\nagainst a published digest, and removed from the model manager.\n\nThe SOMA motion weights use the NVIDIA Open Model License; the inference code uses Apache-2.0.\nThe shared text encoder uses Meta Llama 3 and LLM2Vec adapters. Their complete terms are\nincluded in the Kimodo SOMA weights, Meta Llama 3 and LLM2Vec entries of this offline notice.\nThe SMPL-X variant is not included.\n\nLicensed under other. Full terms: https://www.nvidia.com/en-us/agreements/enterprise-software/nvidia-open-model-license/",
+    "text": "Text-to-motion generation on a humanoid skeleton, with local Meta Llama 3 8B weights and the optional motion engine package, one of the models the studio generates with on this machine.\nIt is NOT shipped with the application: it is fetched on request into the user data folder,\nagainst a published digest, and removed from the model manager.\n\nThe SOMA motion weights use the NVIDIA Open Model License; the inference code uses Apache-2.0.\nThe shared text encoder uses Meta Llama 3 and LLM2Vec adapters. Their complete terms are\nincluded in the Kimodo SOMA weights, Meta Llama 3 and LLM2Vec entries of this offline notice.\nThe SMPL-X variant is not included.\n\nLicensed under other. Full terms: https://www.nvidia.com/en-us/agreements/enterprise-software/nvidia-open-model-license/",
     "sources": "https://huggingface.co/nvidia/Kimodo-SOMA-RP-v1.1"
   },
   {
@@ -595,6 +595,20 @@
     "spdx": "BSD-3-Clause",
     "text": "Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.\n\nLicensed under BSD-3-Clause.\nSource: https://github.com/giampaolo/psutil",
     "sources": "https://github.com/giampaolo/psutil"
+  },
+  {
+    "name": "pydantic",
+    "version": "2.13.5",
+    "spdx": "MIT",
+    "text": "Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.\n\nLicensed under MIT.\nSource: https://github.com/pydantic/pydantic",
+    "sources": "https://github.com/pydantic/pydantic"
+  },
+  {
+    "name": "pydantic-core",
+    "version": "2.46.5",
+    "spdx": "MIT",
+    "text": "Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.\n\nLicensed under MIT.\nSource: https://github.com/pydantic/pydantic/tree/main/pydantic-core",
+    "sources": "https://github.com/pydantic/pydantic/tree/main/pydantic-core"
   },
   {
     "name": "pygments",
@@ -962,6 +976,13 @@
     "spdx": "PSF-2.0",
     "text": "Part of the embedded Auto Rig runtime. It IS shipped with the macOS ARM64 application.\n\nLicensed under PSF-2.0.\nSource: https://github.com/python/typing_extensions",
     "sources": "https://github.com/python/typing_extensions"
+  },
+  {
+    "name": "typing-inspection",
+    "version": "0.4.4",
+    "spdx": "MIT",
+    "text": "Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.\n\nLicensed under MIT.\nSource: https://github.com/pydantic/typing-inspection",
+    "sources": "https://github.com/pydantic/typing-inspection"
   },
   {
     "name": "UniPano",

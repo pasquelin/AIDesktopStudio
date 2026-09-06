@@ -1,15 +1,12 @@
 import { retargetFitOf, wireClipOf } from './retarget'
 import { AnimationClip, Bone, Group, Mesh, SphereGeometry, VectorKeyframeTrack } from 'three'
 import type { Object3D } from 'three'
+import { IDENTITY_TRANSFORM } from '@shared/domain/transform'
 import { describe, expect, it, vi } from 'vitest'
 import { assetClip, bundledClip, clipLane, type ClipRef } from '@shared/domain/scene'
 import { bundledAnimationUrl } from '@shared/domain/animationLibrary'
 import { assetUrl } from '@shared/domain/asset'
-import {
-  skeletonSignatureOf,
-  skeletonTopologySignatureOf,
-  type SkeletonProfile,
-} from '@shared/domain/skeletonProfile'
+import { skeletonTopologySignatureOf, type SkeletonProfile } from '@shared/domain/skeletonProfile'
 import { SceneRenderer } from './SceneRenderer'
 import type { BvhBuilder } from './bvhBuilder'
 import type { Retarget } from './retarget'
@@ -87,6 +84,7 @@ describe('SceneRenderer and the animations the app ships with', () => {
       // Read through the corrections a transfer would use — the double has none to apply.
       fitOf: (target, source) => retargetFitOf(target, source),
       remember: profile => void learnt.push(profile),
+      profileOf: signature => learnt.findLast(profile => profile.signature === signature),
       dispose: () => {},
     }
   }
@@ -307,7 +305,15 @@ describe('SceneRenderer and the animations the app ships with', () => {
   // The port dies with the viewport, so a mapping worked out in one document would be worked out
   // again in the next: the project keeps it, and hands it back before anything is read.
   it('hands what a project already learnt to the port, and reports what it learns', async () => {
-    const known: SkeletonProfile = { signature: skeletonSignatureOf(['x']), roles: { x: 'Hips' } }
+    const known: SkeletonProfile = {
+      signature: skeletonTopologySignatureOf([
+        { name: 'b0', parent: null },
+        { name: 'b1', parent: 'b0' },
+      ]),
+      roles: { b1: 'Spine' },
+      ignored: ['b0'],
+      restPose: { b1: IDENTITY_TRANSFORM },
+    }
     const retarget = straightThrough()
     const learnt: SkeletonProfile[] = []
     const engine = new SceneRenderer({
@@ -324,7 +330,9 @@ describe('SceneRenderer and the animations the app ships with', () => {
 
     expect(retarget.learnt[0]).toEqual(known)
     await vi.waitFor(() => expect(learnt).toHaveLength(1))
-    expect(learnt[0]?.roles).toEqual({ b0: 'Hips' })
+    // The file names b0, so its exclusion goes; the rest pose only a window can set survives.
+    expect(learnt[0]).toEqual({ ...known, roles: { b0: 'Hips' }, ignored: undefined })
+    expect(learnt[0]).not.toHaveProperty('ignored')
     engine.dispose()
   })
 

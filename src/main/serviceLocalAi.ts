@@ -1,5 +1,5 @@
 import type { EngineFailure } from '@shared/domain/failure'
-import type { AiOverview } from '@shared/domain/aiOverview'
+import type { AiOverview, OwnModelProfile } from '@shared/domain/aiOverview'
 import { chatModelOf, CLOUD_PROVIDERS, type HttpChat } from '@shared/domain/aiCloud'
 import { STT_MODEL } from '@shared/domain/dictation'
 import type { LocalModel } from '@shared/domain/localModel'
@@ -7,7 +7,7 @@ import { needsOwnFolder } from '@shared/domain/localModel'
 import type { WorkspaceId } from '@shared/domain/workspace'
 import { app, systemPreferences } from 'electron'
 import { spawn } from 'node:child_process'
-import { chmod, rm, stat } from 'node:fs/promises'
+import { chmod, rm } from 'node:fs/promises'
 import { existsSync } from 'node:fs'
 import { totalmem } from 'node:os'
 import { join } from 'node:path'
@@ -36,7 +36,7 @@ import { notAnswering, pythonRuntime } from './ai/pythonRuntime'
 import { createPythonSupervisor, EngineMissingError } from './ai/pythonSupervisor'
 import { createAutoRigHost } from './ai/autoRigHost'
 import { fileRuntime, type LocalRuntimes } from './ai/localRuntimes'
-import { ownModelFrom } from './ai/ownModel'
+import { createOwnModelAdder } from './ai/ownModelAdder'
 import { fetchModel, modelIsComplete } from './ai/modelInstall'
 import {
   createDownloadHost,
@@ -61,7 +61,6 @@ import { createHttpChatBrain } from './assistant/brainHttp'
 import { activeProvidersOf } from '@shared/domain/account'
 import { broadcast } from './ipc/broadcast'
 import { EVENTS } from '@shared/ipc'
-import { firstBytes } from './persistence'
 import { log } from './log'
 import type { Language } from '@shared/i18n'
 
@@ -88,7 +87,7 @@ type LocalAiDeps = {
   memory: MemoryHost
   fromManager: FromManager
   language: () => Language
-  pickWeights: (language: Language) => Promise<string | null>
+  pickWeights: (language: Language, profile?: OwnModelProfile) => Promise<string | null>
   providerBrain: () => AssistantBrain
   schedule: (run: () => void, delayMs: number) => () => void
 }
@@ -99,7 +98,8 @@ export function createLocalAiServices(deps: LocalAiDeps) {
   void migratePreviousModelFolder(modelFolder())
   const downloads = createDownloadHost()
   const folderFor = (model: LocalModel): string =>
-    needsOwnFolder(model.loader) ? join(modelFolder(), model.id) : modelFolder()
+    model.weightsPath ??
+    (needsOwnFolder(model.loader) ? join(modelFolder(), model.id) : modelFolder())
   const fetchedFiles = createFileRuntime(folderFor, downloads)
   const llama = electronLlamaPort()
   let hold =
@@ -398,18 +398,18 @@ function createManager(
     log: (level, message) => log[level]('ai', message),
     now: Date.now,
     ollamaInstalled: ollama.installed,
-    engineMissing: async () => {
+    engineMissing: async profile => {
       const client = await engine.supervisor.engine()
       if (!client) return null
-      const needs = await client.requirements()
+      const needs = await client.requirements(profile)
       return [...needs.absent.map(one => one.name), ...needs.stale.map(one => one.name)]
     },
-    installEngine: async (onProgress, signal) => {
+    installEngine: async (onProgress, signal, profile) => {
       const client = await engine.supervisor.engine()
       if (!client) throw notAnswering(engine.supervisor.whyNot())
       await installEngineLibraries({
         python: enginePython(),
-        declaration: (await client.requirements()).declaration,
+        declaration: (await client.requirements(profile)).declaration,
         spawn: spawnLines,
         onProgress,
         signal,
@@ -449,19 +449,6 @@ function createVectors(
       onTrouble: why => log.warn('memory', why),
       closeEmbedder: false,
     }),
-  }
-}
-
-function createOwnModelAdder(deps: LocalAiDeps, ai: AiManager) {
-  return async (): Promise<AiOverview> => {
-    const picked = await deps.pickWeights(deps.language())
-    if (picked === null) return await ai.overview()
-    return await ai.addOwnModel(
-      await ownModelFrom(picked, {
-        readHead: firstBytes,
-        sizeOf: async path => (await stat(path)).size,
-      }),
-    )
   }
 }
 

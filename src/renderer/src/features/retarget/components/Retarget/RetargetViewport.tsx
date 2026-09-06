@@ -1,4 +1,5 @@
-import { createRetargetModelSource } from './retargetModelSource'
+import { createRetargetModelSource } from '../../retargetModelSource'
+import { restoreStoredRig } from '@/character/restoreStoredRig'
 import { useTranslation } from 'react-i18next'
 import { Toolbar } from '@/components/Toolbar/Toolbar'
 import { PANE_TOOLBAR } from '@/components/panelStyles'
@@ -13,7 +14,7 @@ import { SceneRenderer } from '@/engines/scene/SceneRenderer'
 import { createGltfSource } from '@/engines/scene/gltfSource'
 import { workshopScene } from '@/character/characterStage'
 import type { WireBone, WireClip } from '@/engines/scene/retargetMessage'
-import type { RetargetSnapshot } from './retargetChannel'
+import type { RetargetSnapshot } from '../../retargetChannel'
 
 export type MotionView = {
   engine: SceneRenderer
@@ -23,6 +24,7 @@ export type MotionView = {
 }
 export type RetargetViewportProps = {
   assetId: string
+  clipIndex?: number
   sourceUrl?: string
   snapshot?: RetargetSnapshot
   onReady: (view: MotionView | null) => void
@@ -33,6 +35,7 @@ export type RetargetViewportProps = {
 
 export function RetargetViewport({
   assetId,
+  clipIndex = 0,
   sourceUrl,
   snapshot,
   onReady,
@@ -50,7 +53,7 @@ export function RetargetViewport({
   }, [view])
   const { t } = useTranslation()
   const host = useRef<HTMLDivElement>(null)
-  const callbacks = useLatest({ onReady, onFailure, onNavigatingChange })
+  const callbacks = useLatest({ onReady, onFailure, onNavigatingChange, clipIndex, snapshot })
   useEffect(() => {
     if (!host.current) return
     const scene = workshopScene(assetId)
@@ -89,26 +92,16 @@ export function RetargetViewport({
     })
     const ready = async () => {
       try {
-        if (snapshot?.rig) {
-          if (snapshot.bindings) {
-            const applied = await renderer.applyAutoRig(nodeId, {
-              rig: snapshot.rig,
-              bindings: snapshot.bindings,
-              metadata: {
-                backendId: 'stored',
-                sourceInfluences: snapshot.rig.bones.length,
-                outputInfluences: 4,
-                fingers: false,
-              },
-            })
-            if (!applied) throw new Error('incompatible skin bindings')
-          } else await renderer.skinModel(nodeId, snapshot.rig)
-        }
+        await restoreRig(renderer, nodeId, callbacks.current.snapshot)
         if (!alive || (source && !source.current())) return
         if (!framed) framed = renderer.frameContents()
         const motion = renderer.inspectMotion(nodeId)
-        if (motion) callbacks.current.onReady({ engine: renderer, nodeId, ...motion })
-        else callbacks.current.onFailure()
+        if (!motion) {
+          callbacks.current.onFailure()
+          return
+        }
+        if (source) poseInitially(renderer, nodeId, motion.clips[callbacks.current.clipIndex])
+        callbacks.current.onReady({ engine: renderer, nodeId, ...motion })
       } catch (error) {
         if (alive) {
           reportFailure('scene.animation', assetId, error)
@@ -130,27 +123,45 @@ export function RetargetViewport({
       source?.dispose()
       switching.current = null
     }
-  }, [assetId, sourceMode, snapshot])
+  }, [assetId, sourceMode, snapshot?.incarnation, snapshot?.rig, snapshot?.bindings])
   useEffect(() => {
     if (!sourceUrl || !switching.current) return
     callbacks.current.onReady(null)
     void switching.current.select(sourceUrl)
-  }, [sourceUrl, assetId, snapshot, callbacks])
+  }, [sourceUrl, assetId, callbacks])
   return (
-    <div className="relative flex min-h-0 min-w-0 flex-1 flex-col p-2">
+    <div className="relative flex min-h-0 min-w-0 flex-1 flex-col p-(--sc-gutter)">
       <div
         ref={host}
-        className="relative min-h-0 min-w-0 flex-1 overflow-hidden rounded-(--pnl-radius)"
+        className="relative min-h-0 min-w-0 flex-1 overflow-hidden rounded-(--radius-sc-lg)"
       />
       {navigating && <SceneNavigationHint speed={speed} />}
       <Toolbar
         orientation="horizontal"
         label={t('character.cameraSpeed')}
-        className={`${PANE_TOOLBAR} m-2`}
+        className={`${PANE_TOOLBAR} m-(--sc-gutter)`}
         extras={
           <SceneSpeedControl speed={speed} onSpeed={value => engine.current?.setFlySpeed(value)} />
         }
       />
     </div>
   )
+}
+
+async function restoreRig(
+  renderer: SceneRenderer,
+  nodeId: string,
+  snapshot: RetargetSnapshot | undefined,
+): Promise<void> {
+  if (!snapshot?.rig) return
+  if (!(await restoreStoredRig(renderer, nodeId, snapshot.rig, snapshot.bindings)))
+    throw new Error('incompatible skin bindings')
+}
+
+/** Holds the first frame of the chosen clip so the source never shows its bind pose. */
+function poseInitially(renderer: SceneRenderer, nodeId: string, clip: WireClip | undefined): void {
+  if (!clip) return
+  const key = 'retarget-initial-pose'
+  renderer.installMotion(nodeId, key, clip)
+  renderer.poseNode(nodeId, [{ key, time: 0, weight: 1, part: 'all', rootMotion: 'travel' }])
 }

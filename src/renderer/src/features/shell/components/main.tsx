@@ -1,3 +1,4 @@
+import { isRetargetRoute } from '@shared/domain/retargetWindow'
 import { orElse } from '@shared/promises'
 import { lazy, StrictMode, Suspense, type ReactNode } from 'react'
 import { createRoot } from 'react-dom/client'
@@ -36,6 +37,10 @@ const language = await orElse(getBridge()?.window.language(), UNKNOWN_SYSTEM_LAN
 await initI18n(language)
 
 /** Same reason as the licences below, for another window's folder: registry, sections, draft. */
+const RetargetWindow = lazy(async () => ({
+  default: (await import('@/features/retarget/components/Retarget/RetargetWindow')).RetargetWindow,
+}))
+
 const SettingsWindow = lazy(async () => ({
   default: (await import('@/features/settings/components/SettingsWindow/SettingsWindow'))
     .SettingsWindow,
@@ -111,6 +116,7 @@ function Route({ hash }: { hash: string }) {
 }
 
 function windowFor(hash: string): ReactNode {
+  if (isRetargetRoute(hash)) return <RetargetWindow />
   if (isSettingsRoute(hash)) return <SettingsWindow />
   if (isJournalRoute(hash)) return <JournalWindow />
   if (isLicencesRoute(hash)) return <LicencesWindow />

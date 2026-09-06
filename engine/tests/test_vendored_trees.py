@@ -17,6 +17,7 @@ VENDOR = Path(__file__).resolve().parents[1] / "src/ia_studio_engine/vendor"
 # as `tsr`, the name its own imports use, so the pair cannot be derived from either half.
 LICENCE_OF = {
     "craftsman": "CRAFTSMAN-LICENSE",
+    "kimodo": "kimodo/LICENSE",
     "instantmesh": "INSTANTMESH-LICENSE",
     "lgm": "LGM-LICENSE",
     "triposg": "TRIPOSG-LICENSE",
@@ -90,6 +91,7 @@ def test_no_vendored_tree_is_left_without_a_licence() -> None:
 
 
 ADAPTER = Path(__file__).resolve().parents[1] / "src/ia_studio_engine/adapters/plugin_adapter.py"
+MOTION = Path(__file__).resolve().parents[1] / "src/ia_studio_engine/motion/plugin.py"
 AUTORIG = Path(__file__).resolve().parents[1] / "src/ia_studio_engine/autorig/make_it_animatable.py"
 
 #: Reached by a NAME read from a checkpoint's config rather than by an import, so no static reader
@@ -124,7 +126,7 @@ def _module_of(path: Path) -> Path | None:
 def _entry_points() -> set[str]:
     """What `plugin_adapter.py` opens: its own imports, plus the modules `_require` names."""
     named: set[str] = set()
-    for entry_point in (ADAPTER, AUTORIG):
+    for entry_point in (ADAPTER, AUTORIG, MOTION):
         for node in ast.walk(ast.parse(entry_point.read_text())):
             if isinstance(node, ast.Import):
                 named |= {alias.name for alias in node.names}

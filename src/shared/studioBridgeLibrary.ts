@@ -363,7 +363,11 @@ export type StudioBridgeLibrary = {
      * `alsoRemote` is not undone by anything: the API has no single-asset delete and no undo,
      * so the confirmation belongs to whoever calls this.
      */
-    remove: (assetIds: readonly string[], alsoRemote: boolean) => Promise<void>
+    remove: (
+      assetIds: readonly string[],
+      alsoRemote: boolean,
+      expectedProjectPath?: string,
+    ) => Promise<void>
     /**
      * Names the chosen pictures from what the API sees in them, and answers how many it named.
      *

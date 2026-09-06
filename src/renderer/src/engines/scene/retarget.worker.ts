@@ -54,7 +54,7 @@ async function run(request: RetargetRequest): Promise<void> {
     // Measured HERE rather than on the caller's objects, so the size read is the one of the very
     // skeletons three is about to sample — the same space, whatever the scene did to the models.
     const scale =
-      (request.options?.scale ?? skeletonScaleOf(target, source)) *
+      (request.options?.scale ?? skeletonScaleOf(target, source, request.torso)) *
       clipTranslationScaleOf(source, request.hip)
     // Read while both skeletons still stand at rest: `retargetClip` poses the source on its first
     // frame before anything is sampled.

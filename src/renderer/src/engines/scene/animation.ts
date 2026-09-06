@@ -100,7 +100,13 @@ export class SceneAnimations {
   removeClip(nodeId: string, key: string): void {
     const player = this.players.get(nodeId)
     if (!player || player.fileNames.includes(key)) return
-    this.release(nodeId)
+    if (player.graphDriven) {
+      // Leave the posed action: uncacheing it restores the bind pose for a frame.
+      player.clips.delete(key)
+      delete player.lengths[key]
+      player.rootTracks.delete(key)
+      return
+    }
     const clip = player.clips.get(key)
     if (clip) player.mixer.uncacheClip(clip)
     player.clips.delete(key)

@@ -17,7 +17,9 @@ it('routes scene navigation to one view and releases held motion on switch and u
   const source = engine()
   const target = engine()
   const hook = renderHook(() => useRetargetNavigation(source, target))
+  expect(hook.result.current.active).toBe('target')
   act(() => hook.result.current.activate('source'))
+  expect(target.releaseNavigation).toHaveBeenCalledOnce()
   act(() => {
     fireEvent.keyDown(window, { code: 'KeyW' })
   })
@@ -38,5 +40,5 @@ it('routes scene navigation to one view and releases held motion on switch and u
   })
   expect(target.setMotion).not.toHaveBeenCalled()
   hook.unmount()
-  expect(target.releaseNavigation).toHaveBeenCalledOnce()
+  expect(target.releaseNavigation).toHaveBeenCalledTimes(2)
 })

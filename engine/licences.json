@@ -9,6 +9,11 @@
     "spdx": "MIT",
     "home": "https://github.com/fastapi/annotated-doc"
   },
+  "annotated-types": {
+    "version": "0.8.0",
+    "spdx": "MIT",
+    "home": "https://github.com/annotated-types/annotated-types"
+  },
   "anyio": {
     "version": "4.15.0",
     "spdx": "MIT",
@@ -73,11 +78,6 @@
     "version": "1.30.0",
     "spdx": "Apache-2.0",
     "home": "https://github.com/huggingface/huggingface_hub"
-  },
-  "hydra-core": {
-    "version": "1.3.6",
-    "spdx": "MIT",
-    "home": "https://github.com/facebookresearch/hydra"
   },
   "idna": {
     "version": "3.19",
@@ -153,6 +153,16 @@
     "version": "7.2.2",
     "spdx": "BSD-3-Clause",
     "home": "https://github.com/giampaolo/psutil"
+  },
+  "pydantic": {
+    "version": "2.13.5",
+    "spdx": "MIT",
+    "home": "https://github.com/pydantic/pydantic"
+  },
+  "pydantic-core": {
+    "version": "2.46.5",
+    "spdx": "MIT",
+    "home": "https://github.com/pydantic/pydantic/tree/main/pydantic-core"
   },
   "pygments": {
     "version": "2.21.0",
@@ -238,6 +248,11 @@
     "version": "4.16.0",
     "spdx": "PSF-2.0",
     "home": "https://github.com/python/typing_extensions"
+  },
+  "typing-inspection": {
+    "version": "0.4.4",
+    "spdx": "MIT",
+    "home": "https://github.com/pydantic/typing-inspection"
   },
   "urllib3": {
     "version": "2.7.0",

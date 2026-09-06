@@ -195,6 +195,30 @@ describe('reading how much bigger one skeleton is than another', () => {
     expect(skeletonScaleOf(skinnedFromWire(twice), skinnedFromWire(UTHANA))).toBeCloseTo(2, 5)
   })
 
+  it('measures a rig whose names say nothing through the roles the plan corrected', () => {
+    const muted = UTHANA.map((bone, index) => ({ ...bone, name: `b${index}` }))
+    const twice = muted.map(bone => ({
+      ...bone,
+      position: [0, bone.position[1] * 2, 0] satisfies WireBone['position'],
+    }))
+    const known = new Map([
+      [
+        skeletonSignatureOf(twice.map(bone => bone.name)),
+        {
+          signature: 'corrected',
+          roles: { b0: 'Hips', b2: 'Head' } satisfies Record<string, HumanoidRole>,
+        },
+      ],
+    ])
+    const plan = retargetPlanOf(twice, UTHANA, [], undefined, known)
+
+    expect(plan.torso).toEqual({ target: ['b0', 'b2'], source: ['mixamorigHips', 'mixamorigHead'] })
+    expect(
+      skeletonScaleOf(skinnedFromWire(twice), skinnedFromWire(UTHANA), plan.torso),
+    ).toBeCloseTo(2, 5)
+    expect(skeletonScaleOf(skinnedFromWire(twice), skinnedFromWire(UTHANA))).toBe(1)
+  })
+
   it('answers one when a skeleton has no head to measure to', () => {
     const headless = UTHANA.filter(bone => !bone.name.endsWith('Head'))
 

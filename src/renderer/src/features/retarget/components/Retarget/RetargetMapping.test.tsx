@@ -3,8 +3,8 @@ import { useState } from 'react'
 import { expect, it } from 'vitest'
 import { isSkeletonProfile, type SkeletonProfile } from '@shared/domain/skeletonProfile'
 import { RetargetMapping } from './RetargetMapping'
-import { motionView } from './retarget-fixtures'
-import { motionProfile } from './retargetDraft'
+import { motionView } from '../../retarget-fixtures'
+import { motionProfile } from '../../retargetDraft'
 
 it('keeps cleared roles locked during automatic matching and never assigns one bone twice', async () => {
   const view = await motionView()
@@ -26,6 +26,12 @@ it('keeps cleared roles locked during automatic matching and never assigns one b
     )
   }
   const { container, getByRole, unmount } = render(<Mapping />)
+  expect(getByRole('button', { name: 'Bras (8)' })).toHaveAttribute('aria-expanded', 'false')
+  expect(container.querySelectorAll('select')).toHaveLength(12)
+  fireEvent.change(getByRole('searchbox'), { target: { value: 'Main' } })
+  expect(getByRole('button', { name: 'Bras (2)' })).toHaveAttribute('aria-expanded', 'true')
+  expect(container.querySelectorAll('select')).toHaveLength(4)
+  fireEvent.change(getByRole('searchbox'), { target: { value: '' } })
   const field = (role: string) => {
     const found = container.querySelector(`[data-sc="field:retarget.source.${role}"]`)
     if (!found) throw new Error(`missing role ${role}`)

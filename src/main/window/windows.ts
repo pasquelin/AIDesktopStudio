@@ -109,14 +109,14 @@ const auxiliaryWindows = new Map<string, BrowserWindow>()
  * Reveals the window a route already has, or builds it. Settings does not come through here: it
  * carries a section to announce and a close it may refuse, neither of which the other two have.
  */
-function openAuxiliaryWindow(hash: string, size: WindowSize): BrowserWindow {
+export function openAuxiliaryWindow(hash: string, size: WindowSize, title?: string): BrowserWindow {
   const held = auxiliaryWindows.get(hash)
   if (held && !held.isDestroyed()) {
     revealWindow(held)
     return held
   }
 
-  const window = auxiliaryWindow(size)
+  const window = auxiliaryWindow(size, title)
   // Identity-checked, as `createMainWindow` is: an older window closing must not clear a slot a
   // newer one now holds.
   window.on('closed', () => {

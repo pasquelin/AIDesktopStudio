@@ -221,6 +221,8 @@ export const CHANNELS: Channels = {
   windowResumeLeave: 'window:resume-leave',
   mirrorOpen: 'mirror:open',
   gameWindowOpen: 'game:open-window',
+  retargetWindowFocusOrigin: 'character:focus-retarget-origin',
+  retargetWindowOpen: 'character:open-retarget-window',
   playerModuleWindowOpen: 'player:open-module-window',
   gameWindowClose: 'game:close-window',
   helpOpen: 'help:open',
