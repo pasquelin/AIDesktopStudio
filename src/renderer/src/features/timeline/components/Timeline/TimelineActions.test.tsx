@@ -5,6 +5,7 @@ import { canUndo } from '@/engines/core/history'
 import { addClip } from '@/engines/timeline/commands'
 import { clipFixture } from '@/engines/timeline/timeline-fixtures'
 import { DEFAULT_VIDEO_TOOL } from '@/features/video/components/videoTools'
+import { installCharacterDocument } from '@/stores/character-fixtures'
 import { useDocuments } from '@/stores/documents'
 import { installSequence } from '@/stores/sequence-fixtures'
 import { sequenceHistoryOf, sequenceOf, useSequences } from '@/stores/sequences'
@@ -73,6 +74,15 @@ describe('TimelineActions', () => {
 
     expect(useVideoTool.getState().tool).toBe(DEFAULT_VIDEO_TOOL)
     expect(canUndo(sequenceHistoryOf(useSequences.getState(), 'doc-1'))).toBe(true)
+  })
+
+  // The panel tested `activeSceneId` alone, so a model tab in front had a band with no bar at all.
+  it('offers the band tools to a model tab, without the film button its workshop cannot use', () => {
+    installCharacterDocument('doc-hero', 'asset-hero')
+    render(<TimelineActions />)
+
+    expect(screen.getByRole('button', { name: /Retour au début/ })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /Rendre en vidéo/ })).not.toBeInTheDocument()
   })
 
   // The Edit menu carries `sequence.undo`; a second pair on the title bar said otherwise.

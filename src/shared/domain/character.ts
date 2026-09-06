@@ -53,6 +53,11 @@ export function isWorkshopId(documentId: string): boolean {
   return documentId.startsWith(WORKSHOP_PREFIX)
 }
 
+/** The asset a workshop id was minted for, or `null` for any other document id. */
+export function workshopAssetOf(documentId: string): string | null {
+  return isWorkshopId(documentId) ? documentId.slice(WORKSHOP_PREFIX.length) : null
+}
+
 /**
  * What the studio writes into a character's own `.glb`, under `extras[STUDIO_METADATA_KEY]`.
  *

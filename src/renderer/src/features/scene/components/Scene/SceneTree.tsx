@@ -13,6 +13,8 @@ import { SceneNodeRow } from '@/features/scene/components/Scene/SceneNodeRow'
 import { VisibilityToggle } from '@/features/scene/components/VisibilityToggle'
 import { canMoveNode, multi, reorderNodes, reparentNode } from '@/engines/scene/commands'
 import { commandId } from '@/engines/core/history'
+import { isWorkshopId } from '@shared/domain/character'
+import { openWorkshopNodeMenu } from '@/features/character/components/CharacterDocument/workshopNodeMenu'
 import { openSceneNodeMenu } from '@/features/scene/components/Scene/sceneNodeMenu'
 import { runSceneCommand, toggleNodeVisible } from '@/features/scene/components/sceneCommands'
 import { sceneEngineOf } from '@/stores/sceneEngines'
@@ -219,6 +221,11 @@ export function SceneTree({ documentId, modelContents = false }: SceneTreeProps)
           onContextMenu={item => {
             if (!item.node) return
             const node = item.node
+            // The workshop's one model is not a node to delete or duplicate: its menu moves the view.
+            if (isWorkshopId(documentId)) {
+              openWorkshopNodeMenu({ workshopId: documentId, t })
+              return
+            }
             openSceneNodeMenu({
               node,
               canFrame: sceneEngineOf(documentId) !== undefined,

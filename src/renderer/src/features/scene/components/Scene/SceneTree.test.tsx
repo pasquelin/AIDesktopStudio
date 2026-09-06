@@ -11,6 +11,7 @@ import { SceneTree } from './SceneTree'
 import { SceneActions } from './SceneActions'
 import { modelNodeFixture } from '@/engines/scene/scene-fixtures'
 import { useModelFiles } from '@/stores/modelFiles'
+import { workshopIdOf } from '@shared/domain/character'
 
 /** jsdom implements no `DataTransfer`; the tree reads exactly these three members of one. */
 function dragData() {
@@ -369,6 +370,21 @@ describe('SceneTree', () => {
     // The root is a row but not a node: it stands for the scene, which has no name and no delete.
     fireEvent.contextMenu(screen.getByText('Scène'))
     expect(menu.raised).toHaveLength(1)
+  })
+
+  // The workshop of a model tab lists that one model: a scene menu there offered to delete it.
+  it('raises the workshop menu, not the scene one, on the model of a character tab', () => {
+    const workshop = workshopIdOf('asset-hero')
+    const model = modelNodeFixture('character')
+    useScenes.getState().replace(workshop, { ...EMPTY_SCENE, nodes: [model] })
+    const menu = fakeMenu()
+    installFakeBridge({ menu: menu.bridge })
+    render(<SceneTree documentId={workshop} modelContents />)
+
+    fireEvent.contextMenu(screen.getByText(model.name))
+
+    expect(menu.labels()).toContain('Afficher les os')
+    expect(menu.labels()).not.toContain('Supprimer')
   })
 
   /**

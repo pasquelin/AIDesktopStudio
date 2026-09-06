@@ -1,5 +1,7 @@
 import i18next from 'i18next'
+import { isWorkshopId } from '@shared/domain/character'
 import type { PathDescriptor, Vector3 as PlainVector3 } from '@shared/domain/scene'
+import { openWorkshopNodeMenu } from '@/features/character/components/CharacterDocument/workshopNodeMenu'
 import { movesToCommand } from '@/engines/scene/animationCommands'
 import {
   withMovedHandle,
@@ -65,6 +67,8 @@ export function movePathPoint(
 }
 
 export function openNodeMenu(documentId: string, nodeId: string | null): void {
+  // A workshop holds one model and saves no scene: its menu moves the view, never the document.
+  if (isWorkshopId(documentId)) return openWorkshopNodeMenu({ workshopId: documentId, t: i18next.t })
   if (nodeId === null) {
     return openSceneAddMenu({ t: i18next.t, onAdd: kind => addNodeTo(documentId, kind) })
   }
