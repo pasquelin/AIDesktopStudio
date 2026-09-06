@@ -152,6 +152,7 @@ type ChannelMethod = {
   [CHANNELS.assetsSavePlayerModule]: StudioBridge['assets']['savePlayerModule']
   [CHANNELS.assetsSaveLayered]: StudioBridge['assets']['saveLayered']
   [CHANNELS.assetsSaveMesh]: StudioBridge['assets']['saveMesh']
+  [CHANNELS.assetsSaveConverted]: StudioBridge['assets']['saveConverted']
   [CHANNELS.assetsSaveAnimation]: StudioBridge['assets']['saveAnimation']
   [CHANNELS.assetsReadLayered]: StudioBridge['assets']['readLayered']
   [CHANNELS.assetsSaveTexture]: StudioBridge['assets']['saveTexture']

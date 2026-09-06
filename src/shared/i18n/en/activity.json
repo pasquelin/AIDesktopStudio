@@ -63,6 +63,15 @@
     "jobCancelled": "Generation “{{name}}” cancelled",
     "jobFailed": "Generation “{{name}}” failed",
     "jobWaitsForProject": "“{{label}}” has finished. Its result is waiting in the {{project}} project: reopen it within seven days to collect it.",
+    "meshConverted": "“{{name}}” converted to binary glTF from {{from}}",
+    "meshConverting": "Converting 3D models",
+    "meshConversionFailed": "Could not convert “{{name}}” to binary glTF: {{reason}}",
+    "meshConversionLost": "“{{name}}” converted without {{losses}}",
+    "importLoss": {
+      "materials": "its materials",
+      "textures": "some of its textures",
+      "shading": "its original shading, approximated as PBR"
+    },
     "missionStateChanged": "The mission state changed.",
     "levels": {
       "info": "Information",

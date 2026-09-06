@@ -19,6 +19,7 @@ import {
   type MediaProbe,
 } from '@shared/domain/asset'
 import { isPbrChannel } from '@shared/domain/material'
+import { MESH_IMPORT_LOSSES } from '@shared/domain/meshImport'
 import { LOG_SCOPES } from '@shared/ipc'
 import type { SqlRow } from './sqlite'
 import { optionalNumber, optionalText, text } from './sqlRow'
@@ -98,6 +99,9 @@ export function assetOf(row: SqlRow, tags: string[]): Asset {
       posterPath: optionalText(row, 'poster_path'),
       modelTextureUses: parsedJson(optionalText(row, 'model_texture_uses'), z.array(textureUse)),
       modelMaterialIds: parsedJson(optionalText(row, 'model_material_ids'), z.array(z.string())),
+      convertedFrom: optionalText(row, 'converted_from'),
+      // A loss this build no longer names is dropped rather than making the row unreadable.
+      importLosses: parsedJson(optionalText(row, 'import_losses'), z.array(z.enum(MESH_IMPORT_LOSSES))),
     }),
     // The column is a free string in SQLite; a channel this build no longer knows leaves the
     // asset as an ordinary picture rather than making the whole row unreadable.

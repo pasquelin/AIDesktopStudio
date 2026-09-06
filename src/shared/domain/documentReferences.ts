@@ -72,12 +72,61 @@ function mtlxReferences(text: string): unknown[] {
   return found
 }
 
+/** The material libraries a Wavefront OBJ names — `mtllib a.mtl b.mtl`, several to a line. */
+function objReferences(text: string): unknown[] {
+  const found: string[] = []
+  for (const line of text.match(/^\s*mtllib\s+.+$/gm) ?? []) {
+    found.push(...line.trim().slice('mtllib'.length).trim().split(/\s+/))
+  }
+  return found
+}
+
+/**
+ * The pictures a material library names — `map_Kd`, `bump`, `disp`, `refl`, `norm`…: the file
+ * is the LAST word of the line, everything between the keyword and it being options (`-bm 1`).
+ */
+function mtlReferences(text: string): unknown[] {
+  const found: string[] = []
+  for (const line of text.match(/^\s*(map_\w+|bump|disp|decal|refl|norm)\s+.+$/gm) ?? []) {
+    const words = line.trim().split(/\s+/)
+    const last = words[words.length - 1]
+    if (last) found.push(last)
+  }
+  return found
+}
+
+/** The pictures a Collada file hangs on its images: `<init_from>` text, or `<ref>` inside it in 1.5. */
+function daeReferences(text: string): unknown[] {
+  const found: string[] = []
+  for (const tag of text.match(/<init_from>[\s\S]*?<\/init_from>/g) ?? []) {
+    const inner = tag.replace(/<\/?init_from>/g, '').replace(/<\/?ref>/g, '').trim()
+    if (inner) found.push(unescapeXml(inner))
+  }
+  return found
+}
+
+function referencesIn(extension: string, text: string): unknown[] {
+  switch (extension) {
+    case 'gltf':
+      return gltfReferences(text)
+    case 'mtlx':
+      return mtlxReferences(text)
+    case 'obj':
+      return objReferences(text)
+    case 'mtl':
+      return mtlReferences(text)
+    case 'dae':
+      return daeReferences(text)
+    default:
+      return []
+  }
+}
+
 export function documentReferencesOf(extension: string, text: string): readonly string[] {
   if (text.length > SCANNED_BYTES) return []
 
   try {
-    const found =
-      extension === 'gltf' ? gltfReferences(text) : extension === 'mtlx' ? mtlxReferences(text) : []
+    const found = referencesIn(extension, text)
     return [...new Set(found.flatMap(one => followable(one) ?? []))]
   } catch {
     // A file that will not parse points at nothing, and the import refuses it a moment later.

@@ -173,11 +173,28 @@ export const POSTER_HOST = 'poster'
 export const THUMB_HOST = 'thumb'
 
 /**
+ * A file of the project by its relative PATH — what a loader reading a model's neighbours needs
+ * as a base to resolve `textures/wood.png` against. Served for anything inside the project, the
+ * hidden `.sources` folder included, since that is where an imported model's neighbours are kept.
+ */
+export const FILE_HOST = 'file'
+
+/**
  * `ia-studio://<host>/<id>`. One scheme, one host per kind of thing it serves — the favourites
  * keep their stills outside any project, so they answer on a host of their own.
  */
 export function hostedUrl(host: string, id: string): string {
   return `${ASSET_SCHEME}://${host}/${encodeURIComponent(id)}`
+}
+
+/**
+ * Segment by segment rather than as one id: a loader appends `textures/wood.png` to the folder
+ * url it was given, and the resolver reads the whole path back through `decodeURIComponent`.
+ * Hand a folder with its trailing slash so that appending a name lands inside it.
+ */
+export function projectFileUrl(relativePath: string): string {
+  const encoded = relativePath.split('/').map(encodeURIComponent).join('/')
+  return `${ASSET_SCHEME}://${FILE_HOST}/${encoded}`
 }
 
 /** What a URL of the scheme names, or null when it is not one of ours. */

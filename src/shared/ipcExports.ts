@@ -1,3 +1,4 @@
+import type { ConvertibleType, MeshImportLoss } from './domain/meshImport'
 import type { OraDocument } from './domain/openRaster'
 import type { ExportFormat } from './domain/scene'
 import type { ExportTargetId } from './domain/exportRegistry'
@@ -48,6 +49,20 @@ export type SaveMeshRequest = {
   replaces: string
   /** The whole container, patched by the renderer that read it. */
   glb: Uint8Array
+}
+
+/**
+ * A 3D file that arrived as something else, back from the window as the `.glb` it is from now on.
+ *
+ * `type` is what the CONTENT said — the folder's guess, corrected where it was impossible
+ * (`convertedTypeOf`) — and the main refiles the row when the two differ. The original is kept
+ * beside the new file, out of the catalogue, and `losses` is what the conversion could not carry.
+ */
+export type ConvertMeshRequest = {
+  replaces: string
+  glb: Uint8Array
+  type: ConvertibleType
+  losses: readonly MeshImportLoss[]
 }
 
 /**

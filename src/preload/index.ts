@@ -230,6 +230,7 @@ const bridge: StudioBridge = {
     saveLayered: request => ipcRenderer.invoke(CHANNELS.assetsSaveLayered, request),
     saveMesh: request => ipcRenderer.invoke(CHANNELS.assetsSaveMesh, request),
     saveAnimation: request => ipcRenderer.invoke(CHANNELS.assetsSaveAnimation, request),
+    saveConverted: request => ipcRenderer.invoke(CHANNELS.assetsSaveConverted, request),
     animationThumbnailModel: () => ipcRenderer.invoke(CHANNELS.animationThumbnailModel),
     saveAnimationThumbnail: request => ipcRenderer.invoke(CHANNELS.animationThumbnailSave, request),
     readLayered: assetId => ipcRenderer.invoke(CHANNELS.assetsReadLayered, assetId),

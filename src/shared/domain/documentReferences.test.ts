@@ -82,6 +82,32 @@ describe('documentReferencesOf', () => {
     expect(documentReferencesOf('gltf', '{ pas du json')).toEqual([])
   })
 
+  it('names the material libraries an OBJ asks for, several to a line', () => {
+    const text = '# robot\nmtllib robot.mtl extra.mtl\nv 0 0 0\nusemtl skin\nf 1 1 1\n'
+
+    expect(documentReferencesOf('obj', text)).toEqual(['robot.mtl', 'extra.mtl'])
+  })
+
+  it('names the pictures a material library maps, options and all', () => {
+    const text = [
+      'newmtl skin',
+      'Kd 0.8 0.8 0.8',
+      'map_Kd textures/skin.png',
+      'bump -bm 0.5 textures/skin_n.png',
+      'map_Ks textures/skin.png',
+    ].join('\n')
+
+    expect(documentReferencesOf('mtl', text)).toEqual(['textures/skin.png', 'textures/skin_n.png'])
+  })
+
+  it('names the pictures a Collada file initialises its images from, in both spellings', () => {
+    const text =
+      '<COLLADA><library_images><image id="a"><init_from>tex/a.png</init_from></image>' +
+      '<image id="b"><init_from><ref>tex/b&amp;c.png</ref></init_from></image></library_images></COLLADA>'
+
+    expect(documentReferencesOf('dae', text)).toEqual(['tex/a.png', 'tex/b&c.png'])
+  })
+
   it('reads nothing out of an extension that carries its parts inside itself', () => {
     expect(documentReferencesOf('ora', gltf({ buffers: [{ uri: 'a.bin' }] }))).toEqual([])
   })

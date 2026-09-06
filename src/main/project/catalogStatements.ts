@@ -12,9 +12,10 @@ export function assetStatements(driver: SqliteDriver) {
        created_at, derived_from, source_path, hash, probe, proxy_path, peaks_path, poster_path,
        map, map_inverted, packed_slot, model_id, model_label, prompt, seed, gen_params,
        remote_owner_id, remote_updated_at, remote_synced_at, local_changed_at,
-       sync_state, sync_error, group_id, output_index, model_texture_uses, model_material_ids)
+       sync_state, sync_error, group_id, output_index, model_texture_uses, model_material_ids,
+       converted_from, import_losses)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
-            ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `)
   return {
     insertAsset,

@@ -197,6 +197,14 @@ const MIGRATIONS: readonly string[] = [
   ALTER TABLE assets ADD COLUMN model_texture_uses TEXT;
   ALTER TABLE assets ADD COLUMN model_material_ids TEXT;
   `,
+  `
+  -- A 3D file that arrived as something else — an FBX, an OBJ, a USDZ — is converted once into
+  -- the .glb this row now points at. Where the original was kept, and what the conversion could
+  -- not carry, both out of the catalogue's own reading: the presence of the first is what tells
+  -- an arrival already converted from one still waiting. No index: read for one row at a time.
+  ALTER TABLE assets ADD COLUMN converted_from TEXT;
+  ALTER TABLE assets ADD COLUMN import_losses  TEXT;
+  `,
 ]
 
 export const CATALOG_DEFAULT_LIMIT = 200

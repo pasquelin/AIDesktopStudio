@@ -1,5 +1,6 @@
 import type { Asset } from '@shared/domain/asset'
 import { ASSET_HOST, MASTER_HOST, POSTER_HOST, THUMB_HOST } from '@shared/domain/asset'
+import { FILE_HOST } from '@shared/domain/assetAccess'
 import { ANIMATION_HOST } from '@shared/domain/animationLibrary'
 import { CHARACTER_HOST } from '@shared/domain/bundledCharacter'
 import { TEMPLATE_HOST } from '@shared/domain/sceneTemplate'
@@ -7,7 +8,13 @@ import { FAVORITE_HOST } from '@shared/domain/favorite'
 import { MODEL_HOST } from '@shared/domain/localModel'
 import { TEXTURE_HOST } from '@shared/domain/checkerTexture'
 import { orWhenGone } from '@main/project/store'
-import { exportFileOf, posterFileOf, servedFileOf, type AssetResolvers } from './protocol'
+import {
+  assetFilePath,
+  exportFileOf,
+  posterFileOf,
+  servedFileOf,
+  type AssetResolvers,
+} from './protocol'
 
 /** What the hosts read, each behind the narrowest port that answers for it. */
 export type AssetResolverDeps = {
@@ -56,6 +63,12 @@ export function createAssetResolvers(deps: AssetResolverDeps): AssetResolvers {
     // most of what it draws the catalogue has never heard of. `assetFilePath` refuses whatever
     // walks out of the project, exactly as it does for a row.
     [THUMB_HOST]: relative => deps.thumbnailOf(relative),
+    // The file ITSELF, by path: a model's neighbours — its `.mtl`, its pictures — which a loader
+    // fetches against the folder it was handed. Same containment as a row's path.
+    [FILE_HOST]: relative => {
+      const root = deps.projectPath()
+      return Promise.resolve(root ? assetFilePath(root, relative) : null)
+    },
     // A folder's name alone means its clip, a name going deeper means that very file: the
     // document holds the animation's NAME, and nothing in it says which file is inside.
     [ANIMATION_HOST]: id => deps.bundledAnimation(id),

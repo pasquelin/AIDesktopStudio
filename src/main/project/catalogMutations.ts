@@ -64,5 +64,7 @@ function remoteValues(asset: Asset): SqlValue[] {
     asset.outputIndex ?? null,
     asset.modelTextureUses ? JSON.stringify(asset.modelTextureUses) : null,
     asset.modelMaterialIds ? JSON.stringify(asset.modelMaterialIds) : null,
+    asset.convertedFrom ?? null,
+    asset.importLosses ? JSON.stringify(asset.importLosses) : null,
   ]
 }

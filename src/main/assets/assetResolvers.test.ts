@@ -7,6 +7,7 @@ vi.mock('electron', () => ({ net: {}, protocol: {} }))
 
 const { createAssetResolvers } = await import('./assetResolvers')
 const { ASSET_HOST, POSTER_HOST, THUMB_HOST } = await import('@shared/domain/asset')
+const { FILE_HOST } = await import('@shared/domain/assetAccess')
 const { FAVORITE_HOST } = await import('@shared/domain/favorite')
 const { TEMPLATE_HOST } = await import('@shared/domain/sceneTemplate')
 const { ANIMATION_HOST } = await import('@shared/domain/animationLibrary')
@@ -47,6 +48,16 @@ const hostsWith = (overrides: Partial<Deps> = {}) =>
 const resolversReading = (findAsset: () => Promise<Asset | null>) => hostsWith({ findAsset })
 
 describe('what the asset scheme resolves', () => {
+  it('serves a file of the project by its path, kept sources included, and nothing outside', async () => {
+    const hosts = hostsWith()
+
+    expect(await hosts[FILE_HOST]?.('models/robot/.sources/robot.mtl')).toBe(
+      `${PROJECT}/models/robot/.sources/robot.mtl`,
+    )
+    expect(await hosts[FILE_HOST]?.('../elsewhere/secret.txt')).toBeNull()
+    expect(await hostsWith({ projectPath: () => null })[FILE_HOST]?.('models/robot.mtl')).toBeNull()
+  })
+
   it('serves the file a row names, and the still beside it, off the same identifier', async () => {
     const resolvers = resolversReading(() =>
       Promise.resolve(asset({ path: 'assets/rush.mp4', posterPath: '.index/posters/a.jpg' })),

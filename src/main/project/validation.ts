@@ -21,11 +21,13 @@ import { isPrivatePath } from '@shared/domain/folder'
 import { isFolderRole, type FolderRole } from '@shared/domain/folderRole'
 import { isOraSurfacePath, type OraStack } from '@shared/domain/openRaster'
 import { isPbrChannel, type PbrChannel } from '@shared/domain/material'
+import { MESH_IMPORT_LOSSES } from '@shared/domain/meshImport'
 import type {
   SaveAudioRequest,
   SaveAnimationRequest,
   SaveLayeredRequest,
   SaveMeshRequest,
+  ConvertMeshRequest,
   SavePictureRequest,
   SavePlayerModuleRequest,
   SaveTextureRequest,
@@ -319,6 +321,17 @@ const saveMesh = z.object({
 
 export function parseSaveMesh(value: unknown): SaveMeshRequest {
   return saveMesh.parse(value)
+}
+
+const saveConverted = z.object({
+  replaces: assetId,
+  glb: z.instanceof(Uint8Array).refine(bytes => bytes.byteLength <= MAX_MESH_BYTES),
+  type: z.enum(['mesh', 'animation']),
+  losses: z.array(z.enum(MESH_IMPORT_LOSSES)).max(MESH_IMPORT_LOSSES.length),
+})
+
+export function parseSaveConverted(value: unknown): ConvertMeshRequest {
+  return saveConverted.parse(value)
 }
 
 const saveAnimation = z.object({

@@ -35,6 +35,7 @@ import type {
   SaveAudioRequest,
   SaveLayeredRequest,
   SaveMeshRequest,
+  ConvertMeshRequest,
   SavePictureRequest,
   SavePlayerModuleRequest,
   SaveTextureRequest,
@@ -311,6 +312,12 @@ export type StudioBridgeLibrary = {
      * names: what makes a motion reusable is being a file no character owns.
      */
     saveAnimation: (request: SaveAnimationRequest) => Promise<Asset>
+    /**
+     * Lands the `.glb` the window converted a 3D file into: the row now points at it, the
+     * original is kept beside it under `.sources`, and the row is refiled when the content said
+     * another role than the folder did. Answers the row as it stands after that.
+     */
+    saveConverted: (request: ConvertMeshRequest) => Promise<Asset>
     animationThumbnailModel: () => Promise<Uint8Array>
     saveAnimationThumbnail: (request: SaveAnimationThumbnailRequest) => Promise<void>
     /**

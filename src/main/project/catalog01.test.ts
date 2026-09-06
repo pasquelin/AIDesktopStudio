@@ -69,6 +69,24 @@ describe('catalog', () => {
     expect(catalog.find('asset_mesh')?.type).toBe('mesh')
   })
 
+  it('keeps where a converted model came from, and what the conversion lost, through a round trip', () => {
+    catalog.add(
+      asset({
+        id: 'asset_robot',
+        type: 'mesh',
+        path: 'models/robot.glb',
+        convertedFrom: 'models/.sources/robot.fbx',
+        importLosses: ['textures'],
+      }),
+    )
+
+    expect(catalog.find('asset_robot')).toMatchObject({
+      convertedFrom: 'models/.sources/robot.fbx',
+      importLosses: ['textures'],
+    })
+    expect(catalog.find('asset_1')?.convertedFrom).toBeUndefined()
+  })
+
   it('holds an OpenEXR heightmap as an image', () => {
     catalog.add(asset({ id: 'asset_height', name: 'height', path: 'World/height.exr' }))
 

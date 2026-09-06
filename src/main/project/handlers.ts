@@ -16,6 +16,7 @@ import {
 } from '@shared/domain/asset'
 import type { FileOutcome } from '@shared/domain/fileOp'
 import { assetFilePath, ownFileOf } from '@main/assets/protocol'
+import { landConvertedMesh } from '@main/assets/convertedMesh'
 import { parseAssetId, parseAssetIds } from '@main/assets/validation'
 import { broadcast } from '@main/ipc/broadcast'
 import { handle } from '@main/ipc/handle'
@@ -55,6 +56,7 @@ import {
   parseProjectTitle,
   parseSaveAudio,
   parseSaveAnimation,
+  parseSaveConverted,
   parseSaveLayered,
   parseSaveMesh,
   parseSavePicture,
@@ -362,6 +364,28 @@ export function registerProjectHandlers({
     const request = parseSaveMesh(value)
     if (!glbChunksOf(request.glb)) throw new Error('expected a binary glTF payload')
     return replaceGlb(request.replaces, request.glb, 'mesh')
+  })
+  handle(CHANNELS.assetsSaveConverted, async (_event, value) => {
+    const request = parseSaveConverted(value)
+    if (!glbChunksOf(request.glb)) throw new Error('expected a binary glTF payload')
+    const landed = await landConvertedMesh(request, {
+      projectPath: () => project.path(),
+      find: id => project.catalog().find(id),
+      add: asset => project.catalog().add(asset),
+      remove: id => project.catalog().remove(id),
+      replaceBytes: assets.replaceBytes,
+      importFromBytes: assets.importFromBytes,
+    })
+    record({
+      level: 'info',
+      topic: 'import',
+      messageKey: 'activity.meshConverted',
+      params: { name: landed.name, from: landed.convertedFrom ?? '' },
+      assetId: landed.id,
+    })
+    // The row the backend announced lacked what this wrote on it — said again, whole.
+    broadcast(EVENTS.assetsChanged, [landed])
+    return withoutSourcePath(landed)
   })
   handle(CHANNELS.animationThumbnailModel, async () => {
     return new Uint8Array(

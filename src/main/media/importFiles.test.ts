@@ -340,6 +340,41 @@ describe('importFiles', () => {
     expect(imported.documents).toEqual([document])
   })
 
+  it('keeps the library and the pictures an OBJ names under .sources, beside it and uncatalogued', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'ia-studio-import-'))
+    const outside = await mkdtemp(join(tmpdir(), 'ia-studio-source-'))
+    const source = join(outside, 'Robot.obj')
+    await writeFile(source, 'mtllib Robot.mtl\nv 0 0 0\nf 1 1 1\n')
+    await writeFile(join(outside, 'Robot.mtl'), 'newmtl skin\nmap_Kd textures/skin.png\n')
+    await mkdir(join(outside, 'textures'))
+    await writeFile(join(outside, 'textures', 'skin.png'), 'image')
+    const adopt = vi.fn(async (path: string): Promise<Asset | null> => ({
+      id: 'asset-1',
+      name: 'Robot',
+      type: 'mesh',
+      location: 'local',
+      path,
+      tags: [],
+      createdAt: '2026-09-06T00:00:00.000Z',
+    }))
+
+    const imported = await importFiles([source], '', {
+      projectPath: () => root,
+      names: async () => [],
+      adopt,
+      documents: async () => [],
+      importBundle: async () => null,
+    })
+
+    const nest = under('models', 'Robot')
+    expect(await readFile(join(root, nest, 'Robot.obj'), 'utf8')).toContain('mtllib')
+    expect(await readFile(join(root, nest, '.sources/Robot.mtl'), 'utf8')).toContain('map_Kd')
+    expect(await readFile(join(root, nest, '.sources/textures/skin.png'), 'utf8')).toBe('image')
+    expect(adopt).toHaveBeenCalledTimes(1)
+    expect(adopt).toHaveBeenCalledWith(`${nest}/Robot.obj`)
+    expect(imported.assets).toHaveLength(1)
+  })
+
   it('catalogues a picture a document points at, which is what relinks it to its texture', async () => {
     const root = await mkdtemp(join(tmpdir(), 'ia-studio-import-'))
     const outside = await mkdtemp(join(tmpdir(), 'ia-studio-source-'))

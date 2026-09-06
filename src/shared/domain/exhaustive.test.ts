@@ -211,6 +211,7 @@ const ACTIVITY_MESSAGE_SET: Record<ActivityMessage, true> = {
   jobCancelled: true,
   jobFailed: true,
   jobWaitsForProject: true,
+  meshConverted: true,
   missionStateChanged: true,
   projectAccountMissing: true,
   projectAccountRestored: true,

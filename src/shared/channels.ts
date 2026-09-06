@@ -159,6 +159,8 @@ export type Channels = {
   assetsSaveMesh: 'assets:save-mesh'
   /** Files a motion in the project's `animations` folder, as a file of its own. */
   assetsSaveAnimation: 'assets:save-animation'
+  /** Lands the `.glb` a 3D file was converted into, keeping the original. See `ConvertMeshRequest`. */
+  assetsSaveConverted: 'assets:save-converted'
   assetsReadLayered: 'assets:read-layered'
   assetsSaveTexture: 'assets:save-texture'
   texturesInstallBundled: 'textures:install-bundled'
