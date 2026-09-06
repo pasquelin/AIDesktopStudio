@@ -32,6 +32,8 @@ export function playView(
 ): CameraView | null {
   if (play.camera === 'orbit') return null
 
+  // The one VIEW serves every shot: an arm's lens left here would stick to a third-person one.
+  VIEW.fieldOfView = undefined
   VIEW.target.x = feet.x
   VIEW.target.y = feet.y + play.eyeHeight
   VIEW.target.z = feet.z
@@ -83,10 +85,12 @@ export function armView(
   at: Vector3,
   rotation: Vector3,
   axes: Axes,
+  fieldOfView?: number,
 ): CameraView | null {
   if (play.camera === 'orbit') return null
 
   const { forward } = axesOfEuler(rotation, axes)
+  VIEW.fieldOfView = fieldOfView
   copyAxes(VIEW.position, at)
   VIEW.target.x = at.x + forward.x
   VIEW.target.y = at.y + forward.y

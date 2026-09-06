@@ -27,6 +27,8 @@ export type PlayCameraOptions = {
    * shapes: the runtime holds no tree, so who hangs under what is answered where it is known.
    */
   playerBodyId?: string | null
+  /** The lens of the node an arm films through, in degrees — the runtime holds no camera. */
+  lensOf?: (entity: Entity) => number | undefined
 }
 
 /**
@@ -35,7 +37,7 @@ export type PlayCameraOptions = {
  * sliding sideways.
  */
 export function createPlayCameraSystem(options: PlayCameraOptions): System {
-  const { characters, worldOf, pilots, rigs, playerBodyId } = options
+  const { characters, worldOf, pilots, rigs, playerBodyId, lensOf } = options
   const chase: Look = { yaw: 0, pitch: 0 }
   const axes = restingAxes()
 
@@ -75,7 +77,9 @@ export function createPlayCameraSystem(options: PlayCameraOptions): System {
       // is framed exactly as it was, and one with an arm is framed through the node it placed.
       if (armed) {
         const shot = worldOf ? worldOf(armed, armed.transform) : armed.transform
-        world.ports.render.view(armView(world.play, shot.position, shot.rotation, axes))
+        world.ports.render.view(
+          armView(world.play, shot.position, shot.rotation, axes, lensOf?.(armed)),
+        )
         return
       }
 

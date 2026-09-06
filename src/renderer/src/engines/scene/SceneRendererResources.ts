@@ -53,6 +53,8 @@ export abstract class SceneRendererResources extends SceneRendererState {
 
   /** Whether a running game is writing the camera — a third gesture that owns it, see `placeView`. */
   protected viewDriven = false
+  /** The lens the driven view asked for, which a `configure` must not undo while it is held. */
+  protected drivenLens: number | null = null
 
   /** Where the head looks while the pointer is captured. Read off the camera when the mode opens. */
   protected look: SphericalAngles = DEFAULT_LOOK

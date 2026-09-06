@@ -48,12 +48,16 @@ export const sameVector3 = (one: Vector3, other: Vector3): boolean =>
   one.x === other.x && one.y === other.y && one.z === other.z
 
 /** Both engines drop a view that has not moved — `placeView` and `draw` each ask for a frame. */
-export function sameCameraView(
-  one: { position: Vector3; target: Vector3 },
-  other: { position: Vector3; target: Vector3 },
-): boolean {
-  return sameVector3(one.position, other.position) && sameVector3(one.target, other.target)
+export function sameCameraView(one: CameraViewLike, other: CameraViewLike): boolean {
+  return (
+    one.fieldOfView === other.fieldOfView &&
+    sameVector3(one.position, other.position) &&
+    sameVector3(one.target, other.target)
+  )
 }
+
+/** The three things a shot is made of: where from, what at, and through which lens. */
+type CameraViewLike = { position: Vector3; target: Vector3; fieldOfView?: number }
 
 /** Whether two poses are the same one. Read per entity per frame — no allocation on the way. */
 export function sameTransform(one: Transform, other: Transform): boolean {

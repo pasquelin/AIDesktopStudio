@@ -5,8 +5,7 @@ import { WindowDragBand } from '@/components/WindowDragBand'
 import type { RuntimeReport } from '@shared/domain/gameRuntime'
 import { EmptyState } from '@/components/EmptyState'
 import { SceneRenderer } from '@/engines/scene/SceneRenderer'
-import { leaveProject } from '@/helpers/leaveProject'
-import { DEFAULT_SETTINGS } from '@shared/domain/settings'
+import { useConnections } from '@/hooks/useConnections'
 import { environmentDressOf } from '@/features/skybox/components/environmentDress'
 import {
   extractedModelDress,
@@ -16,6 +15,8 @@ import {
 import { createGameStage } from '@/game/gameStage'
 import { assetVersionOf } from '@/stores/assets'
 import { useProject } from '@/stores/project'
+import { useSettings } from '@/stores/settings'
+import { gameViewport } from '../../gameViewport'
 import { GameWindowDebug } from './GameWindowDebug'
 
 /**
@@ -26,15 +27,18 @@ export function GameWindow() {
   const { t } = useTranslation()
   const hostRef = useRef<HTMLDivElement>(null)
   const [report, setReport] = useState<RuntimeReport | null>(null)
+  const connectProject = useProject(state => state.connect)
+  const connectSettings = useSettings(state => state.connect)
+
+  // 🛑 The project, and not just the scene: a model wears the material and the sky of OTHER
+  // documents, and the ports that read them walk this window's own stores. Without it a game
+  // draws every model in its raw file dress. And the settings: a window of its own opens on the
+  // defaults, and a game drawn from them opens on another lens than the editor it left.
+  useConnections([connectProject, connectSettings])
 
   useEffect(() => {
     const element = hostRef.current
     if (!element) return
-
-    // 🛑 The project, and not just the scene: a model wears the material and the sky of OTHER
-    // documents, and the ports that read them walk this window's own stores. Without it a game
-    // draws every model in its raw file dress.
-    const leaving = useProject.getState().connect()
 
     const renderer = new SceneRenderer({
       // A game is played, never picked: nothing here selects, transforms or opens a menu.
@@ -48,15 +52,12 @@ export function GameWindow() {
       environmentDress: environmentDressOf,
     })
     renderer.mount(element)
-    // A game wants the scene, not the workshop it was built in. `chrome: false` above holds the
-    // furniture the settings cannot reach — bodies, frustums, rails; these three are the ones a
-    // person can turn on, and a game must not inherit them from the studio's preferences.
-    renderer.configure({
-      ...DEFAULT_SETTINGS.three,
-      showGrid: false,
-      lightHelpers: 'off',
-      cameraHelpers: 'off',
-      boundingBoxes: 'off',
+    renderer.configure(gameViewport(useSettings.getState().settings.three))
+    // Followed, not read once: the settings land after the window opens, and the person may
+    // change the lens while the game runs. Compared by identity — the store writes on every read.
+    const unfollow = useSettings.subscribe((state, previous) => {
+      if (state.settings.three === previous.settings.three) return
+      renderer.configure(gameViewport(state.settings.three))
     })
 
     // 🛑 Aimed ONCE per game: nothing here ever dragged a viewport, so without it the window
@@ -80,9 +81,9 @@ export function GameWindow() {
     })
 
     return () => {
+      unfollow()
       stage.close()
       renderer.dispose()
-      void leaveProject(leaving)
     }
   }, [])
 

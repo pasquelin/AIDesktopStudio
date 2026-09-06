@@ -23,6 +23,7 @@ const fake = vi.hoisted(() => {
     autoClear = true
     ratio = 1
     frames: unknown[] = []
+    lenses: number[] = []
     passes = 0
     mapsDrawn = 0
     setPixelRatio(ratio: number): void {
@@ -33,7 +34,10 @@ const fake = vi.hoisted(() => {
     }
     setSize(): void {}
     dispose(): void {}
-    render(scene: { traverse: (visit: (object: object) => void) => void }): void {
+    render(
+      scene: { traverse: (visit: (object: object) => void) => void },
+      camera: { fov: number },
+    ): void {
       const drawing =
         this.shadowMap.enabled && (this.shadowMap.autoUpdate || this.shadowMap.needsUpdate)
       if (drawing) {
@@ -46,6 +50,7 @@ const fake = vi.hoisted(() => {
         })
       }
       this.frames.push(scene)
+      this.lenses.push(camera.fov)
     }
   }
   const renderers: FakeRenderer[] = []
@@ -154,6 +159,22 @@ describe('what an exported game pays for an image', () => {
 
     expect(renderer.frames).toHaveLength(2)
     expect(renderer.passes).toBe(1)
+  })
+
+  /** A shot through a camera node draws through ITS lens; one from a pair of feet, the author's. */
+  it('draws through the lens a shot carries, and back through the policy without one', async () => {
+    const { render, renderer } = await stagedGame({ ...DEFAULT_RENDER_POLICY, fieldOfView: 60 })
+    const shot = { position: { x: 0, y: 5, z: 10 }, target: { x: 0, y: 0, z: 0 } }
+    render.draw()
+
+    render.view({ ...shot, fieldOfView: 35 })
+    render.draw()
+    render.view({ ...shot, fieldOfView: 35 })
+    render.draw()
+    render.view(shot)
+    render.draw()
+
+    expect(renderer.lenses).toEqual([60, 35, 60])
   })
 
   it('draws again on a size that changed, and on a veil that moved', async () => {

@@ -21,6 +21,20 @@ function drawing(state: SceneState = scene()) {
 }
 
 describe('what draws a running game inside the studio', () => {
+  /** Two shots that differ by the lens alone are two shots: the viewport must see the second. */
+  it('hands the viewport the lens a shot carries, and a lens moved on its own', () => {
+    const { placeView, render } = drawing()
+    const shot = { position: { x: 0, y: 5, z: 10 }, target: { x: 0, y: 0, z: 0 } }
+
+    render.view({ ...shot, fieldOfView: 35 })
+    render.view({ ...shot, fieldOfView: 35 })
+    render.view(shot)
+
+    expect(placeView).toHaveBeenCalledTimes(2)
+    expect(placeView.mock.calls[0]?.[0]).toMatchObject({ fieldOfView: 35 })
+    expect(placeView.mock.calls[1]?.[0]?.fieldOfView).toBeUndefined()
+  })
+
   it('redraws the scene with the object where the step put it', () => {
     const { apply, render, state } = drawing()
 

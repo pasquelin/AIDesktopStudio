@@ -30,7 +30,7 @@ import { createScriptSystem, type ScriptSystemOptions } from '@game/runtime/syst
 import { createTimelineSystem } from '@game/runtime/systems/timeline'
 import { createWorld, type System, type World } from '@game/runtime/world'
 import type { ColliderShape } from '@game/physics/shape'
-import type { SceneState } from '@/engines/scene/sceneState'
+import type { SceneNode, SceneState } from '@/engines/scene/sceneState'
 import { colliderFromNode } from './colliderFromNode'
 import { colliderFromRelief } from './colliderFromRelief'
 import { createHierarchy } from './hierarchy'
@@ -267,6 +267,7 @@ function systemsFor(
             pilots,
             rigs,
             playerBodyId: player?.body?.id ?? null,
+            lensOf: entity => cameraLensOf(byId.get(entity.id)),
           }),
         ]
       }
@@ -276,6 +277,11 @@ function systemsFor(
   }
   return systemsForStep1()
 }
+/** What a camera node sees through, and nothing for a node that is not one. */
+function cameraLensOf(node: SceneNode | undefined): number | undefined {
+  return node?.type === 'camera' ? node.camera.fov : undefined
+}
+
 /** The scene's ground as a slab, its top face at zero — where the studio draws it. */
 function staticsOf(
   state: SceneState,

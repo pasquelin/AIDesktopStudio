@@ -6,6 +6,7 @@ import { createExportHost } from '@game/host/exportHost'
 import { loadJoltPhysics } from '@game/host/joltPhysics'
 import { notedPhysics } from '@game/physics/physics-fixtures'
 import type { PhysicsPort } from '@game/ports/physicsPort'
+import type { CameraView, RenderPort } from '@game/ports/renderPort'
 import type { GameApi } from '@game/api/gameApi'
 import { meshNode } from '@/engines/scene/scene-fixtures'
 import { EMPTY_SCENE, type SceneState } from '@/engines/scene/sceneState'
@@ -14,11 +15,12 @@ import type { InputMap } from '@shared/domain/inputMap'
 import { playerModuleNodes } from '@/engines/scene/nodeFactory'
 import { worldFromScene } from './worldFromScene'
 
-const ports = (physics?: PhysicsPort): GameApi => ({
+const ports = (physics?: PhysicsPort, render?: RenderPort): GameApi => ({
   ...createExportHost({
     input: new EventTarget(),
     player: { id: 'p1', name: 'Alba', local: true },
     files: {},
+    ...(render ? { render } : {}),
   }),
   ...(physics ? { physics } : {}),
 })
@@ -385,6 +387,32 @@ describe('a scene holding a player module', () => {
 
     expect(arm?.subject).toBe(idOf(state, 'Capsule'))
     expect(arm?.camera).toBe(idOf(state, 'Camera'))
+  })
+
+  /** The runtime holds no camera: what the node sees through is answered here, off the tree. */
+  it('films through the lens the camera node carries', () => {
+    const state: SceneState = {
+      ...EMPTY_SCENE,
+      world: { ...EMPTY_SCENE.world, play: { ...DEFAULT_PLAY, camera: 'thirdPerson' } },
+      nodes: playerModuleNodes().map(node =>
+        node.type === 'camera' ? { ...node, camera: { ...node.camera, fov: 35 } } : node,
+      ),
+    }
+    const views: (CameraView | null)[] = []
+    const world = worldFromScene(
+      'doc-1',
+      state,
+      ports(undefined, {
+        place: () => {},
+        view: view => views.push(view),
+        veil: () => {},
+      }),
+    )
+
+    world.step(1 / 60)
+    world.lateUpdate(0, 1 / 60)
+
+    expect(views.at(-1)?.fieldOfView).toBe(35)
   })
 })
 

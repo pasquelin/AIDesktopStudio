@@ -2,7 +2,8 @@
 
 import { describe, expect, it } from 'vitest'
 import { DEFAULT_PLAY, type PlayCamera } from '@shared/domain/scene'
-import { playView } from './playView'
+import { restingAxes } from '../physics/quaternion'
+import { armView, playView } from './playView'
 
 const FEET = { x: 0, y: 0, z: 0 }
 const AHEAD = { yaw: 0, pitch: 0 }
@@ -57,5 +58,34 @@ describe('where a scene is watched from while it is played', () => {
     )
 
     expect(view?.position).toEqual({ x: 2, y: 6, z: -3 })
+  })
+})
+
+describe('the shot a camera node makes', () => {
+  const REST = { x: 0, y: 0, z: 0 }
+  const shot = (fieldOfView?: number) =>
+    armView(
+      { ...DEFAULT_PLAY, camera: 'thirdPerson' },
+      { x: 2, y: 3, z: 4 },
+      REST,
+      restingAxes(),
+      fieldOfView,
+    )
+
+  it('stands where the node stands, looks where it is turned, and carries its lens', () => {
+    const view = shot(35)
+
+    expect(view?.position).toEqual({ x: 2, y: 3, z: 4 })
+    expect(view?.target.z).toBeCloseTo(3, 6)
+    expect(view?.fieldOfView).toBe(35)
+  })
+
+  /** One view serves every shot: a lens left over from an arm would stick to a pair of feet. */
+  it('leaves no lens on the shot a pair of feet makes after it', () => {
+    shot(35)
+
+    expect(
+      playView({ ...DEFAULT_PLAY, camera: 'thirdPerson' }, FEET, AHEAD)?.fieldOfView,
+    ).toBeUndefined()
   })
 })

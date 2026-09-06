@@ -139,14 +139,9 @@ export function createWebRender(
     view: (view: CameraView | null) => {
       // Dropped when it has not MOVED, as the studio drops it; `aim` is what it last looked at.
       if (!view) return
-      if (aimed && sameVector3(camera.position, view.position) && sameVector3(aim, view.target)) {
-        return
-      }
-
+      const moved = aimCamera(camera, aim, view, view.fieldOfView ?? policy.fieldOfView)
+      if (!moved && aimed) return
       aimed = true
-      aim.set(view.target.x, view.target.y, view.target.z)
-      camera.position.set(view.position.x, view.position.y, view.position.z)
-      camera.lookAt(view.target.x, view.target.y, view.target.z)
       pictureStale = true
     },
 
@@ -322,6 +317,23 @@ function tuneSceneShadows(built: GameScene, policy: RenderPolicy): ShadowThrow |
     () => ({ bounds: built.shadowBounds, floor: policy.gridSize }),
   )
   return tuned ? throwsOf(tuned.framed, built.shadowBounds, tuned.reach) : null
+}
+
+/** Points the camera and swaps its lens, and says whether any of it moved. */
+function aimCamera(camera: PerspectiveCamera, aim: Vector3, view: CameraView, lens: number) {
+  const still =
+    camera.fov === lens &&
+    sameVector3(camera.position, view.position) &&
+    sameVector3(aim, view.target)
+  if (still) return false
+  aim.set(view.target.x, view.target.y, view.target.z)
+  camera.position.set(view.position.x, view.position.y, view.position.z)
+  camera.lookAt(view.target.x, view.target.y, view.target.z)
+  if (camera.fov !== lens) {
+    camera.fov = lens
+    camera.updateProjectionMatrix()
+  }
+  return true
 }
 
 /** A black sheet across the frame, drawn over the scene at the veil's own opacity. */

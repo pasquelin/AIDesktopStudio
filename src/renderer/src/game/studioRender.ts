@@ -136,6 +136,7 @@ export function createStudioRender(
       if (!wanted || sameCameraView(watched, wanted)) return
       watched.position = { ...wanted.position }
       watched.target = { ...wanted.target }
+      watched.fieldOfView = wanted.fieldOfView
       renderer.placeView(wanted)
     },
 

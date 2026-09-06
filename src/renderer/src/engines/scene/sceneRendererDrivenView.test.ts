@@ -17,6 +17,14 @@ describe('SceneRenderer and the camera a running game writes', () => {
     expect(method('releaseView')).toContain('this.syncPaneFreeze()')
   })
 
+  /** The lens is the node's while a game films through it, and the person's own again after. */
+  it('draws through the lens a placed view carries, and gives the settings back on release', () => {
+    const placed = method('placeView', 'placement: CameraPlacement')
+    expect(placed).toContain('this.drivenLens = placement.fieldOfView ?? null')
+    expect(placed).toContain('setFieldOfView(this.drivenLens ?? this.view.fieldOfView)')
+    expect(method('releaseView')).toContain('setFieldOfView(this.view.fieldOfView)')
+  })
+
   /** The flag alone would freeze nothing: the freeze is composed in one place, and reads all four. */
   it('counts a driven view among the gestures that freeze the panes', () => {
     const freeze = source.match(/protected syncPaneFreeze\(\): void \{[\s\S]*?\n {2}\}/)?.[0] ?? ''
