@@ -9,14 +9,6 @@ import { attribute, unescapeXml } from './xmlText'
  * this studio, on something any application may have written.
  */
 
-/**
- * A document that points at siblings is small; above this it is one that CARRIES them.
- *
- * It also bounds the main process, which is where this parses: 4,1 Mo of glTF took 20,2 ms on
- * this Mac, so the ceiling costs about 40 ms once per imported document.
- */
-export const SCANNED_BYTES = 8 * 1024 * 1024
-
 const SCHEME = /^[a-zA-Z][a-zA-Z0-9+.-]*:/
 
 function decoded(uri: string): string | null {
@@ -87,10 +79,21 @@ function objReferences(text: string): unknown[] {
  */
 function mtlReferences(text: string): unknown[] {
   const found: string[] = []
+  const options: readonly [string, number][] = [
+    ['-bm', 1],
+    ['-mm', 2],
+    ['-s', 3],
+    ['-o', 3],
+  ]
   for (const line of text.match(/^\s*(map_\w+|bump|disp|decal|refl|norm)\s+.+$/gm) ?? []) {
     const words = line.trim().split(/\s+/)
-    const last = words[words.length - 1]
-    if (last) found.push(last)
+    words.shift()
+    for (const [option, parameters] of options) {
+      const at = words.indexOf(option)
+      if (at >= 0) words.splice(at, parameters + 1)
+    }
+    const path = words.join(' ').trim()
+    if (path) found.push(path)
   }
   return found
 }
@@ -99,7 +102,10 @@ function mtlReferences(text: string): unknown[] {
 function daeReferences(text: string): unknown[] {
   const found: string[] = []
   for (const tag of text.match(/<init_from>[\s\S]*?<\/init_from>/g) ?? []) {
-    const inner = tag.replace(/<\/?init_from>/g, '').replace(/<\/?ref>/g, '').trim()
+    const inner = tag
+      .replace(/<\/?init_from>/g, '')
+      .replace(/<\/?ref>/g, '')
+      .trim()
     if (inner) found.push(unescapeXml(inner))
   }
   return found
@@ -123,8 +129,6 @@ function referencesIn(extension: string, text: string): unknown[] {
 }
 
 export function documentReferencesOf(extension: string, text: string): readonly string[] {
-  if (text.length > SCANNED_BYTES) return []
-
   try {
     const found = referencesIn(extension, text)
     return [...new Set(found.flatMap(one => followable(one) ?? []))]

@@ -105,6 +105,7 @@ export type ProjectStore = {
   folderFor: (role: FolderRole) => Promise<string>
   touch: () => void
   settled: () => Promise<void>
+  duringWrite: <T>(write: (root: string, catalog: AsyncCatalog) => Promise<T>) => Promise<T>
   close: () => Promise<void>
 }
 async function writeManifest({ path, manifest }: Project): Promise<void> {
@@ -349,6 +350,11 @@ export function createProjectStore({
         })
     },
     settled: writes.settled,
+    duringWrite: write =>
+      writes.next(async () => {
+        if (!project || !catalog) throw new NoProjectError()
+        return await write(project.path, catalog)
+      }),
     close: async () => {
       const leaving = project?.path
       if (leaving === undefined) return

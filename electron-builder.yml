@@ -43,7 +43,9 @@ fileAssociations:
       - fbx
       - stl
       - ply
+      - dae
       - usdz
+      - bvh
       - gltf
       - png
       - ora

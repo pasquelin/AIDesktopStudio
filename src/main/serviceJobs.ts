@@ -1,7 +1,13 @@
 import { orElse } from '@shared/promises'
 import { parentOf } from '@shared/domain/folder'
+import { nameOf } from '@shared/domain/folder'
+import { stemOf } from '@shared/domain/fileName'
+import { SOURCES_FOLDER } from '@shared/domain/meshImport'
+import { isOwnAnimationFolder } from '@shared/domain/animationLibrary'
 import { CLOUD_PROVIDERS } from '@shared/domain/aiCloud'
 import type { Asset } from '@shared/domain/asset'
+import { roleForAsset } from '@shared/domain/asset'
+import type { RoleFolders } from '@shared/domain/folderRole'
 import type { JobProgress } from '@shared/domain/job'
 import { outputExtensionOf } from '@shared/domain/localFields'
 import type { LocalModel } from '@shared/domain/localModel'
@@ -273,8 +279,46 @@ function createCloudAssets(
   })
 }
 
-async function removeFiles(
-  deps: JobDeps,
+type RemovalProject = { current: () => { path: string } | null; roles: () => RoleFolders }
+
+function ownsAssetFolder(project: RemovalProject, asset: Asset, folder: string | null): boolean {
+  const roleFolder = project.roles()[roleForAsset(asset)]
+  return (
+    asset.path !== undefined &&
+    roleFolder !== undefined &&
+    folder !== roleFolder &&
+    (isOwnAnimationFolder(asset.path) ||
+      (asset.type === 'mesh' && nameOf(folder ?? '') === stemOf(nameOf(asset.path))))
+  )
+}
+
+async function removeConvertedSources(
+  root: string,
+  asset: Asset,
+  assetFolder: string | null,
+  ownsFolder: boolean,
+): Promise<void> {
+  const converted = asset.convertedFrom ? assetFilePath(root, asset.convertedFrom) : null
+  if (converted) await rm(converted, { force: true })
+  const sourceFolder = asset.convertedFrom ? parentOf(asset.convertedFrom) : null
+  if (!sourceFolder) return
+  const absolute = assetFilePath(root, sourceFolder)
+  if (!absolute) return
+  const packageParent = parentOf(sourceFolder)
+  const ownsNested = ownsFolder && sourceFolder === `${assetFolder}/${SOURCES_FOLDER}`
+  const ownsRefiled = nameOf(packageParent ?? '') === SOURCES_FOLDER
+  if (!ownsRefiled && !(ownsNested && nameOf(sourceFolder) === SOURCES_FOLDER)) {
+    return await orElse(rmdir(absolute), undefined)
+  }
+  await rm(absolute, { recursive: true })
+  if (ownsRefiled && packageParent) {
+    const parent = assetFilePath(root, packageParent)
+    if (parent) await orElse(rmdir(parent), undefined)
+  }
+}
+
+export async function removeFiles(
+  deps: { project: RemovalProject },
   asset: Asset,
   expectedProjectPath?: string,
 ): Promise<void> {
@@ -286,10 +330,12 @@ async function removeFiles(
     const file = stored ? assetFilePath(current.path, stored) : null
     if (file) await rm(file, { force: true })
   }
-  // An animation owns its folder, so what is left of it goes too. `rmdir` and not `rm -r`: it
-  // refuses a folder holding anything else, which is the guard against taking a user's own.
-  const own = asset.path && asset.type === 'animation' ? parentOf(asset.path) : null
-  const folder = own ? assetFilePath(current.path, own) : null
+  const assetFolder = asset.path ? parentOf(asset.path) : null
+  const ownsFolder = ownsAssetFolder(deps.project, asset, assetFolder)
+  await removeConvertedSources(current.path, asset, assetFolder, ownsFolder)
+  // A packaged conversion owns its folder, so what is left of it goes too. `rmdir` and not
+  // `rm -r`: it refuses a folder holding anything else, the guard against taking a user's own.
+  const folder = ownsFolder && assetFolder ? assetFilePath(current.path, assetFolder) : null
   if (folder) await orElse(rmdir(folder), undefined)
 }
 

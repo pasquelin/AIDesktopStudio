@@ -1,3 +1,6 @@
+import { mkdir, mkdtemp, realpath, symlink, writeFile } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 import { describe, expect, it, vi } from 'vitest'
 import type { Asset } from '@shared/domain/asset'
 
@@ -48,14 +51,58 @@ const hostsWith = (overrides: Partial<Deps> = {}) =>
 const resolversReading = (findAsset: () => Promise<Asset | null>) => hostsWith({ findAsset })
 
 describe('what the asset scheme resolves', () => {
-  it('serves a file of the project by its path, kept sources included, and nothing outside', async () => {
-    const hosts = hostsWith()
+  it('serves only the neighbours of the asset named by the file capability', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'ia-studio-file-host-'))
+    const outside = await mkdtemp(join(tmpdir(), 'ia-studio-file-outside-'))
+    await mkdir(join(root, 'Models/Robot/.sources'), { recursive: true })
+    await writeFile(join(root, 'Models/Robot/.sources/robot.mtl'), 'material')
+    await writeFile(join(outside, 'secret.txt'), 'secret')
+    await symlink(outside, join(root, 'Models/Robot/.sources/escape'))
+    const hosts = hostsWith({
+      projectPath: () => root,
+      findAsset: id =>
+        Promise.resolve(
+          id === 'asset-1' ? asset({ type: 'mesh', path: 'Models/Robot/Robot.obj' }) : null,
+        ),
+    })
 
-    expect(await hosts[FILE_HOST]?.('models/robot/.sources/robot.mtl')).toBe(
-      `${PROJECT}/models/robot/.sources/robot.mtl`,
+    expect(await hosts[FILE_HOST]?.('asset-1/robot.mtl')).toBe(
+      await realpath(join(root, 'Models/Robot/.sources/robot.mtl')),
     )
-    expect(await hosts[FILE_HOST]?.('../elsewhere/secret.txt')).toBeNull()
-    expect(await hostsWith({ projectPath: () => null })[FILE_HOST]?.('models/robot.mtl')).toBeNull()
+    expect(await hosts[FILE_HOST]?.('asset-1/../secret.txt')).toBeNull()
+    expect(await hosts[FILE_HOST]?.('asset-1/escape/secret.txt')).toBeNull()
+    expect(await hosts[FILE_HOST]?.('another-asset/robot.mtl')).toBeNull()
+    expect(
+      await hostsWith({ projectPath: () => null })[FILE_HOST]?.('asset-1/robot.mtl'),
+    ).toBeNull()
+  })
+
+  it('does not turn a shared role .sources folder into a file capability', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'ia-studio-file-host-'))
+    await mkdir(join(root, 'Models/.sources'), { recursive: true })
+    await writeFile(join(root, 'Models/.sources/Other.fbx'), 'other source')
+    const hosts = hostsWith({
+      projectPath: () => root,
+      findAsset: () => Promise.resolve(asset({ type: 'mesh', path: 'Models/Robot.obj' })),
+    })
+
+    await expect(hosts[FILE_HOST]?.('asset-1/Other.fbx')).resolves.toBeNull()
+  })
+
+  it('refuses a source package whose parent symlink leaves the project', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'ia-studio-file-host-'))
+    const outside = await mkdtemp(join(tmpdir(), 'ia-studio-file-outside-'))
+    await mkdir(join(root, 'Models'), { recursive: true })
+    await mkdir(join(outside, '.sources'), { recursive: true })
+    await writeFile(join(outside, 'Robot.obj'), 'mesh')
+    await writeFile(join(outside, '.sources/secret.txt'), 'secret')
+    await symlink(outside, join(root, 'Models/Robot'))
+    const hosts = hostsWith({
+      projectPath: () => root,
+      findAsset: () => Promise.resolve(asset({ type: 'mesh', path: 'Models/Robot/Robot.obj' })),
+    })
+
+    await expect(hosts[FILE_HOST]?.('asset-1/secret.txt')).resolves.toBeNull()
   })
 
   it('serves the file a row names, and the still beside it, off the same identifier', async () => {

@@ -12,6 +12,21 @@
  */
 export type MeshFormat = 'gltf' | 'fbx' | 'obj' | 'stl' | 'ply' | 'collada' | 'usd' | 'bvh'
 
+const FORMAT_BY_EXTENSION: Readonly<Record<string, MeshFormat>> = {
+  gltf: 'gltf',
+  fbx: 'fbx',
+  obj: 'obj',
+  stl: 'stl',
+  ply: 'ply',
+  dae: 'collada',
+  usdz: 'usd',
+  bvh: 'bvh',
+}
+
+export function meshFormatForExtension(extension: string): MeshFormat | null {
+  return FORMAT_BY_EXTENSION[extension.toLowerCase()] ?? null
+}
+
 /** How many leading bytes `meshFormatOf` looks at as text. An OBJ may open on a long comment. */
 const TEXT_BYTES = 1024
 

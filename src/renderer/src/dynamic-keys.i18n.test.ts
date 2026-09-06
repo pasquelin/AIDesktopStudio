@@ -1,3 +1,4 @@
+import { MESH_IMPORT_LOSSES } from '@shared/domain/meshImport'
 import { describe, expect, it } from 'vitest'
 import { isRecord } from '@shared/guards'
 import { LANGUAGES, TRANSLATIONS, type Language } from '@shared/i18n'
@@ -80,6 +81,9 @@ function explained(prefix: string, values: readonly string[]): string[] {
  * `inspector.layerKind_text` where a word belongs.
  */
 const COMPOSED_KEYS: readonly string[] = [
+  // What a model's conversion to glb could not carry — one sentence per loss, composed from the
+  // row's own list.
+  ...MESH_IMPORT_LOSSES.map(loss => `activity.importLoss.${loss}`),
   ...SCATTER_CATEGORIES.map(category => `world.scatterCategory_${category}`),
   ...GROUND_MATERIAL_CHANNELS.map(channel => `world.groundChannel_${channel}`),
   // Every optimization mode a person can choose, and every reason a node is left out of one.

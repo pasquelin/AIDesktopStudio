@@ -60,6 +60,11 @@ function assetType(row: SqlRow): AssetType {
   return isAssetType(value) ? value : 'image'
 }
 
+/** A loss this build no longer names is dropped rather than making the row unreadable. */
+function importLossesOf(row: SqlRow) {
+  return parsedJson(optionalText(row, 'import_losses'), z.array(z.enum(MESH_IMPORT_LOSSES)))
+}
+
 export function assetOf(row: SqlRow, tags: string[]): Asset {
   const map = optionalText(row, 'map')
   const packedSlot = optionalText(row, 'packed_slot')
@@ -79,8 +84,6 @@ export function assetOf(row: SqlRow, tags: string[]): Asset {
       remoteUpdatedAt: optionalText(row, 'remote_updated_at'),
       remoteSyncedAt: optionalText(row, 'remote_synced_at'),
       localChangedAt: optionalText(row, 'local_changed_at'),
-      // Free strings in SQLite: a state this build no longer knows is dropped rather than
-      // carried into a union that does not contain it.
       syncStatus: isSyncStatus(syncState) ? syncState : undefined,
       syncError: optionalText(row, 'sync_error'),
       jobId: optionalText(row, 'job_id'),
@@ -100,11 +103,8 @@ export function assetOf(row: SqlRow, tags: string[]): Asset {
       modelTextureUses: parsedJson(optionalText(row, 'model_texture_uses'), z.array(textureUse)),
       modelMaterialIds: parsedJson(optionalText(row, 'model_material_ids'), z.array(z.string())),
       convertedFrom: optionalText(row, 'converted_from'),
-      // A loss this build no longer names is dropped rather than making the row unreadable.
-      importLosses: parsedJson(optionalText(row, 'import_losses'), z.array(z.enum(MESH_IMPORT_LOSSES))),
+      importLosses: importLossesOf(row),
     }),
-    // The column is a free string in SQLite; a channel this build no longer knows leaves the
-    // asset as an ordinary picture rather than making the whole row unreadable.
     ...(isPbrChannel(map)
       ? { map, ...(optionalNumber(row, 'map_inverted') === 1 ? { mapInverted: true } : {}) }
       : {}),

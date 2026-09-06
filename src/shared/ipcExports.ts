@@ -60,6 +60,8 @@ export type SaveMeshRequest = {
  */
 export type ConvertMeshRequest = {
   replaces: string
+  /** The project whose bytes were parsed; the main refuses a request after a project switch. */
+  projectPath: string
   glb: Uint8Array
   type: ConvertibleType
   losses: readonly MeshImportLoss[]

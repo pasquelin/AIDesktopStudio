@@ -22,6 +22,13 @@ describe('filingTypeOf', () => {
     expect(filingTypeOf('walk.bvh', DEFAULT_ROLE_PATHS.models, ROLES)).toBe('animation')
   })
 
+  it('lets the models and animations folders classify every convertible 3D format', () => {
+    expect(filingTypeOf('Walking.dae', DEFAULT_ROLE_PATHS.animations, ROLES)).toBe('animation')
+    expect(filingTypeOf('Prop.obj', DEFAULT_ROLE_PATHS.animations, ROLES)).toBe('animation')
+    expect(filingTypeOf('Walking.dae', DEFAULT_ROLE_PATHS.models, ROLES)).toBe('mesh')
+    expect(filingTypeOf('Prop.usdz', DEFAULT_ROLE_PATHS.models, ROLES)).toBe('mesh')
+  })
+
   it('keeps a glTF a scene document, except in the animations folder', () => {
     expect(filingTypeOf('Level.gltf', '', ROLES)).toBeNull()
     expect(filingTypeOf('Level.gltf', DEFAULT_ROLE_PATHS.scenes, ROLES)).toBeNull()

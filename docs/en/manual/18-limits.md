@@ -388,14 +388,17 @@ above white is clipped.
 | **Video** | `mp4` `mov` `mkv` `webm` `avi` `mxf` `m4v` |
 | **Audio** | `wav` `mp3` `aac` `flac` `m4a` `ogg` `aiff` |
 | **Image** | `png` `ora` `jpg` `jpeg` `webp` `avif` `gif` `svg` `tif` `tiff` `exr` `hdr` |
-| **3D** | `glb` `obj` `fbx` `stl` `ply` `usdz` |
+| **3D** | `glb` `obj` `fbx` `stl` `ply` `dae` `usdz` — and `bvh` for a motion capture |
 | **Documents** | `ora` `gltf` `otio` `mtlx` |
 | **Montage with media** | `otioz` |
 
 ### What cannot
 
-- **models with neighbouring files** — a `.gltf` that is not an IA Studio document, `.dae`, `.usd`, `.usda`, `.usdc`;
-- **materials and textures beside an `.obj`** — only its geometry enters for now.
+- **a separate `.gltf` that is not an IA Studio document**, as well as `.usd`, `.usda` and `.usdc`
+  outside their `.usdz` archive.
+
+Every accepted 3D file is converted to `.glb` on import; the original is kept in a `.sources`
+folder beside it, out of the catalogue — see [Assets](07-assets.md#what-can-be-imported).
 
 An `.exr` does import, but it is catalogued as an **image**, not as a sky. It still works as a source
 for a *skybox*: you simply have to go and find it among the images.
@@ -405,10 +408,11 @@ The clip drops onto a track and keeps its duration, but the monitor says "This c
 shown" in place of the picture. The studio does not convert them: see
 [The Video workspace](10-video-workspace.md#when-a-clip-cannot-be-shown).
 
-### The file is not copied — on import
+### Audio, video and image media are not copied — on import
 
-On import, the studio creates a **link** to your file, where it sits. Moving or deleting the
-original breaks the link.
+For audio, video and images, the studio creates a **link** to your file, where it sits. Moving or
+deleting the original breaks the link. 3D is the exception: the file is copied into the project
+before it is converted to `.glb`.
 
 That is not a defect but a choice: copying multi-gigabyte rushes into every project would fill your
 disk for nothing.
@@ -537,7 +541,7 @@ If you only remember four things from this chapter:
 2. **a crop only half undoes** — `⌘Z` gives the frame back, never the cropped pixels; export
    before cropping hard;
 3. **the video export comes out silent** — the final file is deliverable, the edit's sound is not in it;
-4. **a model that depends on neighbouring files** does not gather them on import yet.
+4. **a separate `.gltf` that is not an IA Studio document** is not imported as a model.
 
 Everything else is comfort.
 

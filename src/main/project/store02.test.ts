@@ -196,6 +196,27 @@ describe('project store', () => {
     expect(settled).toBe(true)
   })
 
+  it('keeps the project open until a registered file and catalogue write settles', async () => {
+    await store.create(root)
+    let release = (): void => {}
+    const held = new Promise<void>(resolve => {
+      release = resolve
+    })
+    const writing = store.duringWrite(async (projectRoot, catalog) => {
+      expect(projectRoot).toBe(root)
+      expect(catalog).toBe(store.catalog())
+      await held
+    })
+
+    const closing = store.close()
+    await Promise.resolve()
+    expect(store.current()).not.toBeNull()
+    release()
+    await Promise.all([writing, closing])
+
+    expect(store.current()).toBeNull()
+  })
+
   /**
    * `touch` replaces the project with a new object carrying a fresh stamp on every document
    * saved, and `autosaveOpenDocuments` fires on a timer from any window. Read by identity, the

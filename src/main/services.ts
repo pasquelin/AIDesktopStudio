@@ -63,10 +63,8 @@ export type { Services } from './serviceTypes'
 import type { Services } from './serviceTypes'
 /** Two cores left to the interface and to whatever else the machine is doing — CLAUDE.md § 6. */
 const spareCores = (): number => Math.max(1, availableParallelism() - 2)
-
 const timestamp = (): string => new Date().toISOString()
 const newAssetId = (): string => `${ASSET_ID_PREFIX}${randomUUID()}`
-
 /**
  * Our entry added to the checkout's client configuration, which is the PROJECT's file and not
  * ours. A malformed one is left exactly as it is: the throw lands here rather than overwriting it.
@@ -80,11 +78,9 @@ async function leaveClientConfig(path: string, launch: McpLaunch): Promise<void>
     log.warn('mcp', `could not leave a client configuration at ${path}: ${String(error)}`)
   }
 }
-
 /** The one wait of the main process. Cancellable, which `setTimeout` in a promise is not. */
 const delay = (ms: number, signal?: AbortSignal): Promise<void> =>
   sleepFor(ms, undefined, { signal })
-
 /** `net.fetch` rather than the global one: it goes through Electron's own network stack. */
 async function download(url: string): Promise<Uint8Array> {
   const response = await net.fetch(url)
@@ -349,10 +345,14 @@ export function createServices(settings: SettingsStore): Services {
     }
   }
   function systemServices() {
-    const adopt = (relative: string): Promise<Asset | null> =>
+    const adoptInto = (
+      root: string,
+      catalog: ReturnType<typeof project.catalog>,
+      relative: string,
+    ): Promise<Asset | null> =>
       adoptFile(relative, {
-        projectPath: () => project.path(),
-        catalog: () => project.catalog(),
+        projectPath: () => root,
+        catalog: () => catalog,
         newAssetId,
         now: timestamp,
         hash: hashOrNull,
@@ -361,6 +361,8 @@ export function createServices(settings: SettingsStore): Services {
         onAdopted: onAssetLanded,
         record: report => journal.record(report),
       })
+    const adopt = (relative: string): Promise<Asset | null> =>
+      adoptInto(project.path(), project.catalog(), relative)
     return serviceSlice({
       openMicrophoneSettings: () => openMicrophoneSettings(url => void shell.openExternal(url)),
       link: async (source, type) =>
@@ -369,31 +371,32 @@ export function createServices(settings: SettingsStore): Services {
           .add(linkedAsset(source, { id: newAssetId(), type, now: timestamp() })),
       adopt,
       importPaths: (paths, target, watch) =>
-        importFiles(
-          paths,
-          target,
-          {
-            projectPath: () => project.path(),
-            names: folder.names,
-            adopt,
-            documents: documents.list,
-            importBundle: (source, root, target, bundleWatch) =>
-              importMontageArchive(
-                source,
-                root,
-                target,
-                bundleWatch.signal ?? new AbortController().signal,
-                { bundles, adopt, onProgress: bundleWatch.onStep },
-              ),
-            roles: () => project.roles(),
-            folderFor: role => project.folderFor(role),
-          },
-          watch,
-        ),
+        project.duringWrite(async (root, catalog) => {
+          const heldAdopt = (relative: string): Promise<Asset | null> =>
+            adoptInto(root, catalog, relative)
+          return await importFiles(
+            paths,
+            target,
+            {
+              projectPath: () => root,
+              names: folder.names,
+              adopt: heldAdopt,
+              documents: documents.list,
+              importBundle: (source, projectRoot, folderTarget, bundleWatch) =>
+                importMontageArchive(
+                  source,
+                  projectRoot,
+                  folderTarget,
+                  bundleWatch.signal ?? new AbortController().signal,
+                  { bundles, adopt: heldAdopt, onProgress: bundleWatch.onStep },
+                ),
+              roles: () => project.roles(),
+              folderFor: role => project.folderFor(role),
+            },
+            watch,
+          )
+        }),
       claimExternalFiles,
-      // Asked, not cached: this is what the settings pane consults after the user installed the
-      // binary it just said was missing. Run rather than looked for — a half-written download and
-      // a binary built for the other architecture both exist on disk and encode nothing.
       capabilities: async () => {
         ffmpeg.invalidate()
         forgetBinaries()

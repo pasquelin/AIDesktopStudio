@@ -241,9 +241,16 @@ describe('where an imported animation lands', () => {
     const path = await freeAnimationPath(root, 'assets/img', 'Jump', '.glb')
     await put(path)
     await put('assets/img/Jump/thumb.png')
+    await mkdir(join(root, 'assets/img/Jump/.sources'))
+    await put('assets/img/Jump/.sources/Jump.fbx')
 
     expect(await moveAssetFile(root, motion(path), 'Saut')).toBe('assets/img/Saut/animation.glb')
-    expect(await readdir(join(root, 'assets/img/Saut'))).toEqual(['animation.glb', 'thumb.png'])
+    expect((await readdir(join(root, 'assets/img/Saut'))).sort()).toEqual([
+      '.sources',
+      'animation.glb',
+      'thumb.png',
+    ])
+    expect(await readdir(join(root, 'assets/img/Saut/.sources'))).toEqual(['Jump.fbx'])
   })
 
   it('refuses a rename onto a folder another animation holds', async () => {

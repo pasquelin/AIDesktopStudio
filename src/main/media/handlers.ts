@@ -2,6 +2,7 @@ import { withoutSourcePath, type Asset } from '@shared/domain/asset'
 import type { ExternalFileImport } from '@shared/domain/externalFile'
 import type { FolderRole } from '@shared/domain/folderRole'
 import type { MediaCapabilities } from '@shared/domain/media'
+import { isConvertibleType } from '@shared/domain/meshImport'
 import { taskRatio, type TaskWatch } from '@shared/domain/taskProgress'
 import { CHANNELS, EVENTS } from '@shared/ipc'
 import { handle } from '@main/ipc/handle'
@@ -60,10 +61,17 @@ export function registerMediaHandlers({
 
   handle(CHANNELS.mediaIngest, async () => {
     const assets: Asset[] = []
+    const models: string[] = []
+    let copied = EMPTY_IMPORT
 
     for (const source of await pickMedia()) {
       const type = assetTypeOf(source)
       if (!type) continue
+      // A rush stays where it lies; a 3D file is copied so the conversion can write a `.glb`.
+      if (isConvertibleType(type)) {
+        models.push(source)
+        continue
+      }
 
       const asset = await link(source, type)
       assets.push(withoutSourcePath(asset))
@@ -71,8 +79,12 @@ export function registerMediaHandlers({
       // twenty-minute rush goes on reporting through `evt:media-progress`.
       void media.ingest(asset.id, source, type)
     }
+    if (models.length > 0) {
+      copied = await importPaths(models, '', {})
+      assets.push(...copied.assets.map(withoutSourcePath))
+    }
 
-    return assets
+    return { ...copied, assets }
   })
 
   handle(CHANNELS.mediaIngestPaths, async (event, requestId, folder, taskId) => {

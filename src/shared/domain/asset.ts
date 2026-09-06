@@ -6,7 +6,6 @@ import type { ModelTextureUse } from './modelTextureUse'
 
 import type { AssetLocation, AssetType, SyncStatus } from './assetTypes'
 import { PICTURES } from './assetAccess'
-
 export type { AssetLocation, AssetType, SyncStatus } from './assetTypes'
 export type { ModelTextureUse } from './modelTextureUse'
 
@@ -278,11 +277,7 @@ export type Asset = {
   posterPath?: string
   /** Absent for an imported file, and for a generated one the catalogue predates. */
   generation?: AssetGeneration
-  /**
-   * The 3D file this `.glb` was converted from, kept beside it and out of the catalogue —
-   * relative to the project folder. Set once, by the conversion; its presence is what says
-   * « already converted » to whoever reads arrivals.
-   */
+  /** The original 3D file, kept under `.sources`. Presence means the row is already converted. */
   convertedFrom?: string
   /** What that conversion could not carry, measured while converting. Empty when it carried all. */
   importLosses?: readonly MeshImportLoss[]

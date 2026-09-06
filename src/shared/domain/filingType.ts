@@ -27,14 +27,15 @@ export function filingTypeOf(
 ): AssetType | null {
   const extension = extensionOf(fileName).toLowerCase()
   if (extension === '.bvh') return 'animation'
-  if (ANIMATION_EXTENSIONS.includes(extension)) {
+  const imported = importableAssetTypeOf(fileName)
+  if (ANIMATION_EXTENSIONS.includes(extension) || imported === 'mesh') {
     if (inRole(folder, 'animations', roles)) return 'animation'
     if (extension === '.gltf') return null
     if (inRole(folder, 'models', roles)) return 'mesh'
     return extension === '.fbx' ? 'animation' : 'mesh'
   }
 
-  return importableAssetTypeOf(fileName)
+  return imported
 }
 
 /** Role a window drop files under — the write door is `folderFor`, not this path. */

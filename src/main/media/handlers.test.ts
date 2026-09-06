@@ -46,12 +46,14 @@ describe('media handlers', () => {
     const injected = deps({ pickMedia: async () => ['/rushes/a.mov', '/takes/b.wav'] })
     registerMediaHandlers(injected)
 
-    const assets = await invoke(CHANNELS.mediaIngest)
+    const imported = await invoke(CHANNELS.mediaIngest)
 
-    expect(assets).toMatchObject([
-      { name: 'a', type: 'video' },
-      { name: 'b', type: 'audio' },
-    ])
+    expect(imported).toMatchObject({
+      assets: [
+        { name: 'a', type: 'video' },
+        { name: 'b', type: 'audio' },
+      ],
+    })
     expect(injected.link).toHaveBeenCalledTimes(2)
   })
 
@@ -60,9 +62,11 @@ describe('media handlers', () => {
   it('tells the window everything about a linked file except where it is', async () => {
     registerMediaHandlers(deps({ pickMedia: async () => ['/Volumes/Rushes/a.mov'] }))
 
-    const assets = await invoke(CHANNELS.mediaIngest)
+    const imported = await invoke(CHANNELS.mediaIngest)
 
-    expect(assets).toEqual([expect.not.objectContaining({ sourcePath: expect.anything() })])
+    expect(imported).toMatchObject({
+      assets: [expect.not.objectContaining({ sourcePath: expect.anything() })],
+    })
   })
 
   it('starts an ingest per linked file, without waiting for it to finish', async () => {
@@ -84,17 +88,53 @@ describe('media handlers', () => {
     const injected = deps({ pickMedia: async () => ['/notes.txt', '/rushes/a.mov'] })
     registerMediaHandlers(injected)
 
-    const assets = await invoke(CHANNELS.mediaIngest)
+    const imported = await invoke(CHANNELS.mediaIngest)
 
-    expect(assets).toHaveLength(1)
+    expect(imported).toMatchObject({ assets: [expect.anything()] })
     expect(injected.link).toHaveBeenCalledOnce()
+  })
+
+  it('copies a picked 3D file into the project rather than linking it where it lies', async () => {
+    const imported = linkedAsset('/outside/Robot.fbx', {
+      id: 'asset-mesh',
+      type: 'mesh',
+      now: '2026-09-06T10:00:00.000Z',
+    })
+    const importPaths = vi.fn(async () => ({
+      assets: [imported],
+      documents: [],
+      montages: [],
+      refused: [{ name: 'Broken.fbx', extension: 'fbx' }],
+      failed: ['skin.png'],
+    }))
+    const injected = deps({
+      pickMedia: async () => ['/outside/Robot.fbx', '/rushes/a.mov'],
+      importPaths,
+    })
+    registerMediaHandlers(injected)
+
+    const result = await invoke(CHANNELS.mediaIngest)
+
+    expect(importPaths).toHaveBeenCalledWith(['/outside/Robot.fbx'], '', {})
+    expect(injected.link).toHaveBeenCalledOnce()
+    expect(result).toMatchObject({
+      assets: [{ type: 'video' }, { type: 'mesh' }],
+      refused: [{ name: 'Broken.fbx', extension: 'fbx' }],
+      failed: ['skin.png'],
+    })
   })
 
   it('answers an empty list when the dialog was dismissed', async () => {
     const injected = deps({ pickMedia: async () => [] })
     registerMediaHandlers(injected)
 
-    await expect(invoke(CHANNELS.mediaIngest)).resolves.toEqual([])
+    await expect(invoke(CHANNELS.mediaIngest)).resolves.toEqual({
+      assets: [],
+      documents: [],
+      montages: [],
+      refused: [],
+      failed: [],
+    })
     expect(injected.media.ingest).not.toHaveBeenCalled()
   })
 

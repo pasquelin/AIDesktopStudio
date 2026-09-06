@@ -11,7 +11,12 @@ export async function fetchAsset(assetId: string): Promise<Response> {
 
 /** An asset's bytes, which is what every container reader here asks for. */
 export async function assetBytes(assetId: string): Promise<Uint8Array> {
-  return new Uint8Array(await (await fetchAsset(assetId)).arrayBuffer())
+  return new Uint8Array(await assetArrayBuffer(assetId))
+}
+
+/** The same, as the one buffer a parser takes whole — no view, no copy. */
+export async function assetArrayBuffer(assetId: string): Promise<ArrayBuffer> {
+  return (await fetchAsset(assetId)).arrayBuffer()
 }
 
 /** The original, for an export that must not play the 720p proxy. */

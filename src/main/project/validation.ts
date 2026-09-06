@@ -325,6 +325,7 @@ export function parseSaveMesh(value: unknown): SaveMeshRequest {
 
 const saveConverted = z.object({
   replaces: assetId,
+  projectPath,
   glb: z.instanceof(Uint8Array).refine(bytes => bytes.byteLength <= MAX_MESH_BYTES),
   type: z.enum(['mesh', 'animation']),
   losses: z.array(z.enum(MESH_IMPORT_LOSSES)).max(MESH_IMPORT_LOSSES.length),

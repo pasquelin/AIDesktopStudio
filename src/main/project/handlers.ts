@@ -4,7 +4,7 @@ import { bundledCharacters, resourcesRoot } from '@main/resources'
 import { bundledCharacterFile } from '@shared/domain/bundledCharacter'
 import { join } from 'node:path'
 import { PLAYER_MODULE_FORMAT, PLAYER_MODULE_SEGMENT } from '@shared/domain/playerModuleFile'
-import { projectName } from '@shared/domain/project'
+import { projectName, withRecentDocument } from '@shared/domain/project'
 import { CHANNELS, EVENTS } from '@shared/ipc'
 import { glbChunksOf } from '@shared/domain/glbContainer'
 import {
@@ -16,7 +16,7 @@ import {
 } from '@shared/domain/asset'
 import type { FileOutcome } from '@shared/domain/fileOp'
 import { assetFilePath, ownFileOf } from '@main/assets/protocol'
-import { landConvertedMesh } from '@main/assets/convertedMesh'
+import { saveConverted } from '@main/assets/convertedMesh'
 import { parseAssetId, parseAssetIds } from '@main/assets/validation'
 import { broadcast } from '@main/ipc/broadcast'
 import { handle } from '@main/ipc/handle'
@@ -34,10 +34,9 @@ import {
   askOverwriteDocument,
 } from './documentDialogs'
 import { askLeaveWithJobs, askTrashFiles, askUseOccupiedFolder } from './projectDialogs'
-import { withRecentDocument } from '@shared/domain/project'
 import { holdsAProject, openFailureKey, orWhenGone } from './store'
 import type { ProjectHandlerDeps } from './handlerTypes'
-export type { ProjectHandlerDeps } from './handlerTypes'
+export type { ProjectHandlerDeps }
 import {
   parseAssetQuery,
   parseContextCards,
@@ -68,7 +67,6 @@ import {
 const WAV_EXTENSION = '.wav'
 const PNG_EXTENSION = '.png'
 const ORA_EXTENSION = '.ora'
-const GLB_EXTENSION = '.glb'
 export function registerProjectHandlers({
   project,
   settings,
@@ -358,35 +356,16 @@ export function registerProjectHandlers({
   const replaceGlb = async (assetId: string, glb: Uint8Array, type: AssetType): Promise<Asset> => {
     const replaced = await project.catalog().find(assetId)
     if (replaced?.type !== type) throw new Error(`asset ${assetId} is not a ${type} to overwrite`)
-    return withoutSourcePath(await assets.replaceBytes(assetId, glb, GLB_EXTENSION))
+    return withoutSourcePath(await assets.replaceBytes(assetId, glb, '.glb'))
   }
   handle(CHANNELS.assetsSaveMesh, async (_event, value) => {
     const request = parseSaveMesh(value)
     if (!glbChunksOf(request.glb)) throw new Error('expected a binary glTF payload')
     return replaceGlb(request.replaces, request.glb, 'mesh')
   })
-  handle(CHANNELS.assetsSaveConverted, async (_event, value) => {
-    const request = parseSaveConverted(value)
-    if (!glbChunksOf(request.glb)) throw new Error('expected a binary glTF payload')
-    const landed = await landConvertedMesh(request, {
-      projectPath: () => project.path(),
-      find: id => project.catalog().find(id),
-      add: asset => project.catalog().add(asset),
-      remove: id => project.catalog().remove(id),
-      replaceBytes: assets.replaceBytes,
-      importFromBytes: assets.importFromBytes,
-    })
-    record({
-      level: 'info',
-      topic: 'import',
-      messageKey: 'activity.meshConverted',
-      params: { name: landed.name, from: landed.convertedFrom ?? '' },
-      assetId: landed.id,
-    })
-    // The row the backend announced lacked what this wrote on it — said again, whole.
-    broadcast(EVENTS.assetsChanged, [landed])
-    return withoutSourcePath(landed)
-  })
+  handle(CHANNELS.assetsSaveConverted, async (_event, value) =>
+    saveConverted(parseSaveConverted(value), project, record),
+  )
   handle(CHANNELS.animationThumbnailModel, async () => {
     return new Uint8Array(
       await readFile(join(bundledCharacters(resourcesRoot()), bundledCharacterFile('medium'))),
@@ -412,7 +391,7 @@ export function registerProjectHandlers({
           id: newAssetId(),
           name: request.name,
           type: 'animation',
-          extension: GLB_EXTENSION,
+          extension: '.glb',
           ...(request.derivedFrom ? { derivedFrom: request.derivedFrom } : {}),
         },
         request.glb,

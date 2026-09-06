@@ -16,6 +16,7 @@ import {
   ANIMATION_THUMBNAIL,
   isOwnAnimationFolder,
 } from '@shared/domain/animationLibrary'
+import { SOURCES_FOLDER } from '@shared/domain/meshImport'
 import { exists } from '@main/persistence'
 import { assetFilePath } from './protocol'
 import type { AssetType } from '@shared/domain/asset'
@@ -178,7 +179,7 @@ async function ownAnimationFolderOf(root: string, clipPath: string): Promise<str
   const folder = isOwnAnimationFolder(clipPath) ? parentOf(clipPath) : null
   if (folder === null) return null
 
-  const ours = new Set([nameOf(clipPath), ANIMATION_THUMBNAIL])
+  const ours = new Set([nameOf(clipPath), ANIMATION_THUMBNAIL, SOURCES_FOLDER])
   const held = await orElse(readdir(join(root, folder)), [])
   return held.length > 0 && held.every(entry => ours.has(entry)) ? folder : null
 }

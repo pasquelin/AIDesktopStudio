@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import i18next from 'i18next'
 import { ANIMATION_EXTENSIONS } from '@shared/domain/animationLibrary'
+import { needsMeshConversion } from '@shared/domain/meshImport'
 import type { ClipSource } from '@shared/domain/scene'
 import { Button } from '@/components/Button'
 import { QuietNote } from '@/components/QuietNote'
@@ -36,12 +37,16 @@ export function CharacterMotionPickerImport({ onChoose }: CharacterMotionPickerI
 
     reportImportNotices(imported)
     if (imported.assets.length > 0) await useAssets.getState().refresh()
+    const { convertArrivedModels } = await import('@/services/meshConversion')
+    const assets = await convertArrivedModels(imported.assets)
     // Not awaited, and after the refresh: the shelf shows what came in at once, and each still
     // lands as it is drawn — the pass refreshes again itself and reports its own failures.
     const { generateAnimationThumbnails } = await import('@/services/animationThumbnails')
-    void generateAnimationThumbnails(imported.assets)
+    void generateAnimationThumbnails(assets)
 
-    const motions = imported.assets.filter(asset => asset.type === 'animation')
+    const motions = assets.filter(
+      asset => asset.type === 'animation' && !needsMeshConversion(asset),
+    )
     if (motions.length === 0) {
       const attempted =
         imported.assets.length > 0 || imported.refused.length > 0 || imported.failed.length > 0

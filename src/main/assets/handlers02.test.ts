@@ -314,6 +314,7 @@ describe('renaming and tagging', () => {
         type: 'animation',
         path: 'assets/img/Jump/animation.glb',
         posterPath: 'assets/img/Jump/thumb.png',
+        convertedFrom: 'assets/img/Jump/.sources/Jump.fbx',
       }),
     )
 
@@ -322,10 +323,10 @@ describe('renaming and tagging', () => {
     expect(updated).toMatchObject({
       path: 'assets/img/Saut/animation.glb',
       posterPath: 'assets/img/Saut/thumb.png',
+      convertedFrom: 'assets/img/Saut/.sources/Jump.fbx',
     })
   })
 
-  /** Tagging is not renaming: a row whose name nobody touched has no file to move. */
   it('leaves the file alone when only the tags changed', async () => {
     await harness.catalog.add(localAsset({ path: 'assets/img/asset_1.png' }))
     await invoke(CHANNELS.assetsUpdate, 'asset_1', { tags: ['hero'] })
@@ -333,8 +334,7 @@ describe('renaming and tagging', () => {
     expect(harness.renamedFiles).toEqual([])
   })
 
-  /**
-   * A linked rush keeps its bytes where the user left them, and its row keeps the path it had —
+  /** A linked rush keeps its bytes where the user left them, and its row keeps the path it had —
    * `undefined` from the move must not erase it.
    */
   it('keeps the path of an asset whose file is not ours to move', async () => {

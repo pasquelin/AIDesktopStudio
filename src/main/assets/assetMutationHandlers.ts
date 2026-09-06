@@ -2,6 +2,7 @@ import { CHANNELS } from '@shared/ipc'
 import { animationPosterPathOf } from '@shared/domain/animationLibrary'
 import { withoutSourcePath, type Asset } from '@shared/domain/asset'
 import { checkAssetName } from '@shared/domain/assetName'
+import { parentOf } from '@shared/domain/folder'
 import { handle } from '@main/ipc/handle'
 import { log } from '@main/log'
 import { describeFailure, persistableFailure, reducedBy } from '@main/provider/client'
@@ -62,10 +63,21 @@ async function updateAsset(
       : { modelMaterialIds: [...parsed.modelMaterialIds] }),
     ...(path === undefined ? {} : { path }),
     ...posterAfterRename(asset, path),
+    ...sourceAfterRename(asset, path),
   }
   const saved = await deps.catalog().add(updated)
   await updateRemoteTags(deps, asset, updated, parsed.tags)
   return withoutSourcePath(saved)
+}
+
+function sourceAfterRename(asset: Asset, path: string | undefined): Partial<Asset> {
+  if (!path || !asset.path || !asset.convertedFrom) return {}
+  const before = parentOf(asset.path)
+  const after = parentOf(path)
+  if (!before || !after || before === after || !asset.convertedFrom.startsWith(`${before}/`)) {
+    return {}
+  }
+  return { convertedFrom: `${after}${asset.convertedFrom.slice(before.length)}` }
 }
 
 /**

@@ -105,7 +105,10 @@ export function createCatalog(driver: SqliteDriver): Catalog {
        */
       if (isUnder(target, source)) return
 
-      paths.movePaths.run(target, source, ...underPath(source))
+      transaction(driver, () => {
+        paths.movePaths.run(target, source, ...underPath(source))
+        paths.moveConvertedSources.run(target, source, ...underPath(source))
+      })
     },
 
     filed: () =>

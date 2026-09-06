@@ -1,7 +1,13 @@
 import { describe, expect, it } from 'vitest'
-import { meshFormatOf } from './meshFormat'
+import { meshFormatForExtension, meshFormatOf } from './meshFormat'
 
 const bytesOf = (text: string): Uint8Array => new TextEncoder().encode(text)
+
+it('maps imported extensions to the loader that validates their content', () => {
+  expect(meshFormatForExtension('OBJ')).toBe('obj')
+  expect(meshFormatForExtension('dae')).toBe('collada')
+  expect(meshFormatForExtension('usdz')).toBe('usd')
+})
 
 /** A binary STL of `triangles` faces: 80 bytes of header, the count, then 50 bytes each. */
 function binaryStl(triangles: number, header = 'exported by something'): Uint8Array {

@@ -63,13 +63,13 @@
     "jobCancelled": "Génération « {{name}} » annulée",
     "jobFailed": "La génération « {{name}} » a échoué",
     "jobWaitsForProject": "« {{label}} » est terminée. Son résultat vous attend dans le projet {{project}} : rouvrez-le dans les sept jours pour le récupérer.",
-    "meshConverted": "« {{name}} » converti en glTF binaire depuis {{from}}",
+    "meshConverted": "« {{name}} » converti en glTF binaire depuis {{from}}",
     "meshConverting": "Conversion des modèles 3D",
-    "meshConversionFailed": "Impossible de convertir « {{name}} » en glTF binaire : {{reason}}",
-    "meshConversionLost": "« {{name}} » converti sans {{losses}}",
+    "meshConversionFailed": "Impossible de convertir « {{name}} » en glTF binaire : {{reason}}",
+    "meshConversionLost": "« {{name}} » converti sans {{losses}}",
     "importLoss": {
       "materials": "ses matières",
-      "textures": "certaines de ses textures",
+      "textures": "certaines de ses images",
       "shading": "son ombrage d’origine, ramené au PBR"
     },
     "missionStateChanged": "L’état de la mission a changé.",

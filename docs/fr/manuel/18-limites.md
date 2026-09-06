@@ -402,14 +402,17 @@ dépasse le blanc est écrêté.
 | **Vidéo** | `mp4` `mov` `mkv` `webm` `avi` `mxf` `m4v` |
 | **Audio** | `wav` `mp3` `aac` `flac` `m4a` `ogg` `aiff` |
 | **Image** | `png` `ora` `jpg` `jpeg` `webp` `avif` `gif` `svg` `tif` `tiff` `exr` `hdr` |
-| **3D** | `glb` `obj` `fbx` `stl` `ply` `usdz` |
+| **3D** | `glb` `obj` `fbx` `stl` `ply` `dae` `usdz` — et `bvh` pour une capture de mouvement |
 | **Documents** | `ora` `gltf` `otio` `mtlx` |
 | **Montage avec médias** | `otioz` |
 
 ### Ce qui ne s’importe pas
 
-- **les modèles à fichiers voisins** — un `.gltf` qui n’est pas un document IA Studio, `.dae`, `.usd`, `.usda`, `.usdc` ;
-- **les matières et textures voisines d’un `.obj`** — seule sa géométrie entre pour l’instant.
+- **un `.gltf` séparé qui n’est pas un document IA Studio**, ainsi que `.usd`, `.usda` et `.usdc`
+  hors de leur archive `.usdz`.
+
+Tout fichier 3D accepté est converti en `.glb` à l’import ; l’original est gardé dans un dossier
+`.sources` à côté, hors catalogue — voir [Les assets](07-assets.md#ce-qui-simporte).
 
 Un `.exr` s’importe, mais il est catalogué comme **image**, pas comme ciel. Il fonctionne quand
 même comme source pour une *skybox* : il faut simplement aller le chercher dans les images.
@@ -419,10 +422,11 @@ même comme source pour une *skybox* : il faut simplement aller le chercher dans
 l’image « Ce clip n’a pas pu être affiché ». Le studio ne les convertit pas : voir
 [L’espace Vidéo](10-espace-video.md#quand-un-clip-ne-peut-pas-safficher).
 
-### Le fichier n’est pas copié — à l’import
+### Les médias audio, vidéo et image ne sont pas copiés — à l’import
 
-À l’import, le studio crée un **lien** vers votre fichier, là où il se trouve. Déplacer ou
-supprimer l’original casse le lien.
+Pour l’audio, la vidéo et les images, le studio crée un **lien** vers votre fichier, là où il se
+trouve. Déplacer ou supprimer l’original casse le lien. La 3D fait exception : le fichier est
+copié dans le projet avant sa conversion en `.glb`.
 
 Ce n’est pas un défaut mais un choix : copier des rushes de plusieurs gigaoctets dans chaque
 projet remplirait votre disque pour rien.
@@ -556,7 +560,7 @@ Si vous ne deviez retenir que quatre choses de ce chapitre :
 2. **un recadrage ne se défait qu’à moitié** — `⌘Z` rend le cadre, jamais les pixels rognés ;
    exportez avant de rogner large ;
 3. **l’export vidéo sort muet** — le fichier final est livrable, le son du montage n’y est pas ;
-4. **un modèle qui dépend de fichiers voisins** ne les rassemble pas encore à l’import.
+4. **un `.gltf` séparé qui n’est pas un document IA Studio** ne s’importe pas comme modèle.
 
 Tout le reste est du confort.
 

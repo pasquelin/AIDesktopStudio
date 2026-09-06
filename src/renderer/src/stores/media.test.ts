@@ -5,6 +5,15 @@ import { installFakeBridge } from '@/services/fakeBridge'
 import { useAssets } from './assets'
 import { useMedia } from './media'
 
+const importedMedia = vi.hoisted(() => ({
+  notices: vi.fn(),
+  convert: vi.fn(async (assets: readonly Asset[]) => assets),
+  failure: vi.fn(),
+}))
+vi.mock('@/services/externalFiles', () => ({ reportImportNotices: importedMedia.notices }))
+vi.mock('@/services/meshConversion', () => ({ convertArrivedModels: importedMedia.convert }))
+vi.mock('@/services/diagnostics', () => ({ reportFailure: importedMedia.failure }))
+
 const asset = (id: string): Asset => ({
   id,
   name: id,
@@ -23,6 +32,7 @@ const progress = (assetId: string, stage: IngestProgress['stage']): IngestProgre
 
 describe('media store', () => {
   beforeEach(() => {
+    vi.clearAllMocks()
     useMedia.setState({ progress: {}, capabilities: { ffmpeg: true } })
     useAssets.setState({ items: [] })
   })
@@ -30,11 +40,53 @@ describe('media store', () => {
   it('shows the imported assets at once, without waiting for their ingest', async () => {
     const refresh = vi.fn(async () => undefined)
     useAssets.setState({ refresh })
-    installFakeBridge({ media: { ingest: () => Promise.resolve([asset('a'), asset('b')]) } })
+    installFakeBridge({
+      media: {
+        ingest: () =>
+          Promise.resolve({
+            assets: [asset('a'), asset('b')],
+            documents: [],
+            montages: [],
+            refused: [],
+            failed: [],
+          }),
+      },
+    })
 
     await useMedia.getState().importMedia()
 
     expect(refresh).toHaveBeenCalledOnce()
+  })
+
+  it('reports picker failures and converts copied 3D assets before returning', async () => {
+    const mesh: Asset = { ...asset('robot'), type: 'mesh', path: 'Models/robot.fbx' }
+    const imported = {
+      assets: [mesh],
+      documents: [],
+      montages: [],
+      refused: [{ name: 'bad.fbx', extension: 'fbx' }],
+      failed: ['missing.png'],
+    }
+    installFakeBridge({ media: { ingest: () => Promise.resolve(imported) } })
+
+    await useMedia.getState().importMedia()
+
+    expect(importedMedia.notices).toHaveBeenCalledWith(imported)
+    expect(importedMedia.convert).toHaveBeenCalledWith([mesh])
+  })
+
+  it('reports a picker failure instead of swallowing it', async () => {
+    installFakeBridge({
+      media: { ingest: () => Promise.reject(new Error('picker unavailable')) },
+    })
+
+    await useMedia.getState().importMedia()
+
+    expect(importedMedia.failure).toHaveBeenCalledWith(
+      'assets.copy',
+      'media-picker',
+      expect.any(Error),
+    )
   })
 
   it('follows an ingest through its stages', () => {

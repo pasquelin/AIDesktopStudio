@@ -112,22 +112,26 @@ async function handImported(
   }
 
   if (imported.assets.length > 0) await useAssets.getState().refresh()
+  // BEFORE the stills and before the tabs: both read the file, and a `.fbx` that is about to
+  // become a `.glb` is not the file either should read. The rows come back as they now stand.
+  const { convertArrivedModels } = await import('./meshConversion')
+  const assets = await convertArrivedModels(imported.assets)
   // AFTER the refresh and after the montages: a render costs seconds each, and awaiting the
   // batch first held a dropped `.otioz` behind fifty clips. The pass refreshes again itself.
   const { generateAnimationThumbnails } = await import('./animationThumbnails')
-  await generateAnimationThumbnails(imported.assets)
+  await generateAnimationThumbnails(assets)
   if (imported.documents.length > 0) {
     await useDocuments.getState().relist()
     const { openDocument } = await import('@/features/shell/components/dockviewApi')
     for (const document of imported.documents) openDocument(document)
   }
   if (onImported) {
-    const unhandled = imported.assets.filter(asset => onImported(asset) === false)
+    const unhandled = assets.filter(asset => onImported(asset) === false)
     if (unhandled.length === 0) return
     await openExternalAssets(unhandled)
     return
   }
-  await openExternalAssets(imported.assets)
+  await openExternalAssets(assets)
 }
 
 async function openExternalAssets(assets: readonly Asset[]): Promise<void> {

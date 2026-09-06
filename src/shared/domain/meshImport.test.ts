@@ -24,21 +24,21 @@ describe('convertedTypeOf', () => {
 })
 
 describe('needsMeshConversion', () => {
-  const row = { location: 'local' as const, type: 'mesh' as const }
+  const row: Parameters<typeof needsMeshConversion>[0] = { location: 'local', type: 'mesh' }
 
   it('names every local 3D file that is not yet a glb, model or motion alike', () => {
     expect(needsMeshConversion({ ...row, path: 'models/robot.fbx' })).toBe(true)
     expect(needsMeshConversion({ ...row, path: 'models/robot.USDZ' })).toBe(true)
-    expect(needsMeshConversion({ ...row, type: 'animation', path: 'anim/walk/animation.bvh' })).toBe(
-      true,
-    )
+    expect(
+      needsMeshConversion({ ...row, type: 'animation', path: 'anim/walk/animation.bvh' }),
+    ).toBe(true)
   })
 
   it('leaves a glb, a converted row, a cloud row and every other kind alone', () => {
     expect(needsMeshConversion({ ...row, path: 'models/robot.glb' })).toBe(false)
-    expect(
-      needsMeshConversion({ ...row, path: 'models/robot.fbx', convertedFrom: 'x.fbx' }),
-    ).toBe(false)
+    expect(needsMeshConversion({ ...row, path: 'models/robot.fbx', convertedFrom: 'x.fbx' })).toBe(
+      false,
+    )
     expect(needsMeshConversion({ ...row, location: 'cloud', path: 'models/robot.fbx' })).toBe(false)
     expect(needsMeshConversion({ ...row, type: 'image', path: 'pictures/robot.png' })).toBe(false)
     expect(needsMeshConversion(row)).toBe(false)

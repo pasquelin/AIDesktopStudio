@@ -124,6 +124,20 @@ describe('catalog', () => {
       expect(pathOf('asset_3')).toBe('Stills/A003.png')
     })
 
+    it('refiles the source recorded for a converted asset with its folder', () => {
+      catalog.add(
+        asset({
+          id: 'asset_1',
+          path: 'Rushes/Robot/Robot.glb',
+          convertedFrom: 'Rushes/Robot/.sources/Robot.fbx',
+        }),
+      )
+
+      catalog.repath('Rushes', 'Models')
+
+      expect(catalog.find('asset_1')?.convertedFrom).toBe('Models/Robot/.sources/Robot.fbx')
+    })
+
     // What makes a replayed move journal safe: the second pass finds nothing where the first
     // one already moved everything.
     it('writes nothing the second time, and nothing for a path no row is at', () => {

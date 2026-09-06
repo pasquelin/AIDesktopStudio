@@ -69,7 +69,7 @@
     "meshConversionLost": "“{{name}}” converted without {{losses}}",
     "importLoss": {
       "materials": "its materials",
-      "textures": "some of its textures",
+      "textures": "some of its images",
       "shading": "its original shading, approximated as PBR"
     },
     "missionStateChanged": "The mission state changed.",

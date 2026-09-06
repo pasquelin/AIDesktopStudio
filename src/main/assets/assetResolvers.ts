@@ -9,7 +9,7 @@ import { MODEL_HOST } from '@shared/domain/localModel'
 import { TEXTURE_HOST } from '@shared/domain/checkerTexture'
 import { orWhenGone } from '@main/project/store'
 import {
-  assetFilePath,
+  conversionNeighbourPath,
   exportFileOf,
   posterFileOf,
   servedFileOf,
@@ -63,11 +63,14 @@ export function createAssetResolvers(deps: AssetResolverDeps): AssetResolvers {
     // most of what it draws the catalogue has never heard of. `assetFilePath` refuses whatever
     // walks out of the project, exactly as it does for a row.
     [THUMB_HOST]: relative => deps.thumbnailOf(relative),
-    // The file ITSELF, by path: a model's neighbours — its `.mtl`, its pictures — which a loader
-    // fetches against the folder it was handed. Same containment as a row's path.
-    [FILE_HOST]: relative => {
+    // The asset id is the capability: only its own canonical `.sources` tree can be read.
+    [FILE_HOST]: async requested => {
       const root = deps.projectPath()
-      return Promise.resolve(root ? assetFilePath(root, relative) : null)
+      if (!root) return null
+      const [assetId, ...parts] = requested.split('/')
+      if (!assetId || parts.length === 0) return null
+      const asset = await orWhenGone(() => deps.findAsset(assetId), null)
+      return asset ? await conversionNeighbourPath(root, asset, parts.join('/')) : null
     },
     // A folder's name alone means its clip, a name going deeper means that very file: the
     // document holds the animation's NAME, and nothing in it says which file is inside.

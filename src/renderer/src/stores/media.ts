@@ -7,6 +7,9 @@ import {
 } from '@shared/domain/media'
 import { withoutKey } from '@/helpers/objects'
 import { connectThroughBridge, getBridge } from '@/services/bridge'
+import { reportFailure } from '@/services/diagnostics'
+import { reportImportNotices } from '@/services/externalFiles'
+import { convertArrivedModels } from '@/services/meshConversion'
 import { useAssets } from './assets'
 
 type MediaState = {
@@ -47,12 +50,14 @@ export const useMedia = create<MediaState>()((set, get) => ({
   importMedia: async () => {
     try {
       const imported = await getBridge()?.media.ingest()
+      if (!imported) return
+      reportImportNotices(imported)
       // The rows exist as soon as the dialog closes, probe or no probe: the browser shows the
       // file straight away, and the ingest fills in what it learns.
-      if (imported?.length) await useAssets.getState().refresh()
-    } catch {
-      // The project was closed while the picker was open: nothing was linked, and there is
-      // nothing to say beyond leaving the browser as it was.
+      if (imported.assets.length > 0) await useAssets.getState().refresh()
+      await convertArrivedModels(imported.assets)
+    } catch (error) {
+      reportFailure('assets.copy', 'media-picker', error)
     }
   },
 

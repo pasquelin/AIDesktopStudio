@@ -12,6 +12,11 @@ import { EMPTY_SCENE } from '@/engines/scene/sceneState'
 import { modelNodeFixture } from '@/engines/scene/scene-fixtures'
 import { CharacterMotionPicker } from './CharacterMotionPicker'
 
+const conversion = vi.hoisted(() => ({
+  arrived: vi.fn(async (assets: readonly Asset[]) => assets),
+}))
+vi.mock('@/services/meshConversion', () => ({ convertArrivedModels: conversion.arrived }))
+
 const DOCUMENT = 'doc-1'
 
 const bundled = [{ name: 'Capoeira', thumbnail: true }]
@@ -45,6 +50,7 @@ function show(laid: { clipId: string; source: ClipSource } | null = null) {
 }
 
 beforeEach(() => {
+  conversion.arrived.mockImplementation(async assets => assets)
   installFakeBridge({ animations: { list: () => Promise.resolve(bundled) } })
   useAssets.setState({ items: [] })
   useModelFiles.setState({ clips: {}, rigs: {}, lengths: {}, fits: {} })
@@ -214,6 +220,59 @@ describe('choosing an animation', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Choisir un fichier…' }))
 
     await waitFor(() => expect(importPicked).toHaveBeenCalled())
+    expect(onChoose).not.toHaveBeenCalled()
+  })
+
+  it('does not choose a file that conversion reclassifies as a model', async () => {
+    const filed: Asset = {
+      ...JIG,
+      path: 'Animations/Jig/animation.fbx',
+    }
+    conversion.arrived.mockResolvedValue([
+      { ...filed, type: 'mesh', path: 'Models/Jig.glb', convertedFrom: 'Models/.sources/Jig.fbx' },
+    ])
+    installFakeBridge({
+      animations: { list: () => Promise.resolve(bundled) },
+      media: {
+        importPicked: async () => ({
+          assets: [filed],
+          documents: [],
+          montages: [],
+          refused: [],
+          failed: [],
+        }),
+      },
+    })
+    const { onChoose } = show()
+
+    await userEvent.click(screen.getByRole('tab', { name: 'Import' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Choisir un fichier…' }))
+
+    await waitFor(() => expect(conversion.arrived).toHaveBeenCalledWith([filed]))
+    expect(onChoose).not.toHaveBeenCalled()
+  })
+
+  it('does not choose an animation whose required conversion failed', async () => {
+    const filed: Asset = { ...JIG, path: 'Animations/Jig.fbx' }
+    conversion.arrived.mockResolvedValue([filed])
+    installFakeBridge({
+      animations: { list: () => Promise.resolve(bundled) },
+      media: {
+        importPicked: async () => ({
+          assets: [filed],
+          documents: [],
+          montages: [],
+          refused: [],
+          failed: [],
+        }),
+      },
+    })
+    const { onChoose } = show()
+
+    await userEvent.click(screen.getByRole('tab', { name: 'Import' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Choisir un fichier…' }))
+
+    await waitFor(() => expect(conversion.arrived).toHaveBeenCalledWith([filed]))
     expect(onChoose).not.toHaveBeenCalled()
   })
 })

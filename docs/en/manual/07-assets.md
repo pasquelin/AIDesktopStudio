@@ -435,7 +435,7 @@ and not at a row, which is why it lives under the blank, next to **New folder**.
 | **Video** | `mp4` `mov` `mkv` `webm` `avi` `mxf` `m4v` |
 | **Audio** | `wav` `mp3` `aac` `flac` `m4a` `ogg` `aiff` |
 | **Image** | `png` `ora` `jpg` `jpeg` `webp` `avif` `gif` `svg` `tif` `tiff` `exr` `hdr` |
-| **3D** | `glb` `obj` `fbx` `stl` `ply` `usdz` |
+| **3D** | `glb` `obj` `fbx` `stl` `ply` `dae` `usdz` — and `bvh` for a motion capture |
 | **Documents** | `ora` `gltf` `otio` `mtlx` |
 | **Montage with media** | `otioz` |
 
@@ -446,14 +446,28 @@ compatible target is outlined in blue; a refused format is outlined in red and t
 the files that did not enter. In a mixed batch, accepted files enter and the rest are reported
 together.
 
-> An `.obj` enters with its geometry. Its optional `.mtl` and referenced textures are not gathered
-> with it yet. A `.gltf` model that is not an IA Studio document, or a `.dae` or `.usd` model that
-> references neighbouring files, is not imported yet for the same reason.
+**A 3D file becomes a `.glb` as it enters.** The studio works with one 3D container only, binary
+glTF: an `.obj`, an `.fbx`, a `.dae`, a `.usdz`, an `.stl`, a `.ply` or a `.bvh` is converted once,
+on import, and that `.glb` is what the catalogue, the scene, the character editor and the game
+export read from then on. The original is not thrown away: it is filed in a `.sources` folder
+beside the converted file, together with what it referenced — an `.obj`'s `.mtl` and textures, a
+`.dae`'s pictures — out of the catalogue. What the conversion could not keep is said in the journal
+as the file enters: missing materials for an `.stl`, textures that could not be found, shading
+that was not physically based and was approximated.
 
-### The file is not copied — on import
+**Model or animation?** The folder the file is dropped in decides first — Models or Animations —
+then the content corrects what is impossible: a file with no clip at all is not an animation, a
+file with no mesh at all is not a model. A Mixamo `.fbx`, which carries a character and its walk,
+stays the animation it was filed as. A `.bvh` is always an animation. Files already in a project
+before this rule are left untouched.
 
-**Important.** The **Import media** picker does not copy your file into the project: it creates a
-**link** to where it sits.
+> A separate `.gltf` that is not an IA Studio document is not imported as a model yet.
+
+### Audio, video and image media are not copied — on import
+
+**Important.** For audio, video and images, the **Import media** picker does not copy your file into
+the project: it creates a **link** to where it sits. 3D files are the exception: they are copied
+and then converted as described above.
 
 Two consequences:
 

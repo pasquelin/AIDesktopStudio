@@ -1,4 +1,4 @@
-import { lstat, mkdir, readdir, readFile, realpath, stat } from 'node:fs/promises'
+import { lstat, mkdir, readdir, readFile, realpath } from 'node:fs/promises'
 import { basename, dirname, extname, isAbsolute, join, posix, resolve } from 'node:path'
 import type { Asset } from '@shared/domain/asset'
 import type { DocumentDescriptor } from '@shared/domain/document'
@@ -6,7 +6,7 @@ import type { ExternalFileImport, ExternalFileRefusal } from '@shared/domain/ext
 import { filingFolderOf, filingRoleOf, filingTypeOf } from '@shared/domain/filingType'
 import { foldForFileName } from '@shared/domain/fileName'
 import { isHiddenEntry, pathIn } from '@shared/domain/folder'
-import { documentReferencesOf, SCANNED_BYTES } from '@shared/domain/documentReferences'
+import { documentReferencesOf } from '@shared/domain/documentReferences'
 import type { FolderRole, RoleFolders } from '@shared/domain/folderRole'
 import {
   IMPORTABLE_BUNDLE_EXTENSIONS,
@@ -162,19 +162,15 @@ async function importBundle(
   else if (!watch.signal?.aborted) state.refusedBundles.push({ name: basename(source), extension })
 }
 
-/** The files the source points at, read off its own text — none for a file too big to hold one. */
+/** The files the source points at, read off its own text before any dependency is copied. */
 async function textReferencesOf(source: string, extension: string): Promise<readonly string[]> {
-  const size = (await orElse(stat(source), null))?.size ?? 0
-  if (size === 0 || size > SCANNED_BYTES) return []
   const text = await orElse(readFile(source, 'utf8'), null)
   return text === null ? [] : documentReferencesOf(extension, text)
 }
 
-/**
- * The same, one level deeper for an OBJ: it names its material libraries, and THOSE name the
- * pictures — relative to the library, which is why each is joined under the library's folder.
- */
+/** Reads an OBJ's material libraries too; their pictures are relative to each library's folder. */
 async function referencesOf(source: string, extension: string): Promise<readonly string[]> {
+  if (!['dae', 'gltf', 'mtlx', 'obj'].includes(extension)) return []
   const direct = await textReferencesOf(source, extension)
   if (extension !== 'obj') return direct
 
@@ -200,6 +196,11 @@ function nestName(stem: string, taken: Set<string>): string {
   return freeName(taken, pathSegment.safeParse(stem).success ? stem : 'document')
 }
 
+function nestedSourceName(canonicalName: string, stem: string, nest: string): string {
+  const collision = pathSegment.safeParse(stem).success && nest !== stem
+  return collision ? `${nest}${extname(canonicalName)}` : canonicalName
+}
+
 /**
  * A document that points at siblings takes a folder of its own: its references keep the spelling
  * the file holds, so nothing rewrites it and no neighbour collides with what the project has.
@@ -218,7 +219,8 @@ function landingFor(
     nest = nestName('document', taken)
     into = join(target, nest)
   }
-  const name = nest === '' ? freeName(taken, canonicalName) : canonicalName
+  const name =
+    nest === '' ? freeName(taken, canonicalName) : nestedSourceName(canonicalName, stem, nest)
   taken.add(foldForFileName(nest === '' ? name : nest))
   return {
     nest,
@@ -240,20 +242,45 @@ async function neighbourAt(from: string, reference: string): Promise<string | nu
   return resolved !== null && pathIsInside(from, resolved) ? resolved : null
 }
 
-/**
- * Where a neighbour is kept. Beside a DOCUMENT, under its own spelling, so nothing rewrites the
- * file; under `.sources` for a MODEL, whose neighbours are read once by the conversion and then
- * kept out of sight with the original — a loose `.mtl` in the models folder is nobody's file.
- */
+/** Documents keep neighbours beside them; models keep them under `.sources`, outside the catalogue. */
 type NeighbourKeeping = 'beside' | 'sources'
 
-/**
- * The siblings, under their own spelling — so nothing rewrites the file.
- *
- * A document's picture is ADOPTED as well as copied: a sky and a material relink through the
- * catalogue (`assetIdOf`), so one that is merely on disk leaves the document without its texture.
- * A model's is not: it is folded into the `.glb` the conversion writes.
- */
+/** Copies a neighbour and adopts it only when a document needs catalogue relinking. */
+async function copyOneNeighbour(
+  from: string,
+  reference: string,
+  landing: Landing,
+  under: string,
+  folder: string,
+  keeping: NeighbourKeeping,
+  watch: TaskWatch,
+  deps: ImportFilesDeps,
+  state: ImportState,
+): Promise<void> {
+  const neighbour = await neighbourAt(from, reference)
+  if (neighbour === null) {
+    state.failed.push(basename(reference))
+    return
+  }
+  const destination = resolve(under, reference)
+  if (!pathIsInside(landing.into, destination)) {
+    state.failed.push(basename(reference))
+    return
+  }
+  await mkdir(dirname(destination), { recursive: true })
+  const copied = await orElse(
+    copyExternalFile(neighbour, destination, watch, { follow: false }),
+    false,
+  )
+  if (!copied) {
+    state.failed.push(basename(reference))
+    return
+  }
+  if (keeping === 'sources' || !importableAssetTypeOf(reference)) return
+  const asset = await deps.adopt(pathIn(folder, `${landing.nest}/${reference}`))
+  if (asset) state.assets.push(asset)
+}
+
 async function copyNeighbours(
   source: string,
   references: readonly string[],
@@ -269,28 +296,7 @@ async function copyNeighbours(
   const under = keeping === 'beside' ? landing.into : join(landing.into, SOURCES_FOLDER)
   for (const reference of references) {
     if (watch.signal?.aborted) return
-    const neighbour = await neighbourAt(from, reference)
-    if (neighbour === null) {
-      state.failed.push(basename(reference))
-      continue
-    }
-    const destination = resolve(under, reference)
-    if (!pathIsInside(landing.into, destination)) {
-      state.failed.push(basename(reference))
-      continue
-    }
-    await mkdir(dirname(destination), { recursive: true })
-    const copied = await orElse(
-      copyExternalFile(neighbour, destination, watch, { follow: false }),
-      false,
-    )
-    if (!copied) {
-      state.failed.push(basename(reference))
-      continue
-    }
-    if (keeping === 'sources' || !importableAssetTypeOf(reference)) continue
-    const asset = await deps.adopt(pathIn(folder, `${landing.nest}/${reference}`))
-    if (asset) state.assets.push(asset)
+    await copyOneNeighbour(from, reference, landing, under, folder, keeping, watch, deps, state)
   }
 }
 
@@ -330,6 +336,38 @@ async function landed(
   state.documentPaths.set(landing.relative, basename(source))
 }
 
+async function placeCopy(source: string, landing: Landing, watch: TaskWatch): Promise<boolean> {
+  if (landing.nest !== '') await mkdir(landing.into, { recursive: true })
+  if (await copyExternalFile(source, landing.destination, watch)) return true
+  if (landing.nest !== '') await removeExternalFolder(landing.into, landing.bound)
+  return false
+}
+
+function gathersNeighbours(isDocument: boolean, sourceName: string, extension: string): boolean {
+  if (isDocument || extension === 'gltf') return true
+  const kind = importableAssetTypeOf(sourceName)
+  return kind === 'mesh' || kind === 'animation'
+}
+
+async function landOrUndo(
+  source: string,
+  references: readonly string[],
+  landing: Landing,
+  folder: string,
+  isDocument: boolean,
+  watch: TaskWatch,
+  deps: ImportFilesDeps,
+  state: ImportState,
+): Promise<void> {
+  try {
+    await landed(source, references, landing, folder, isDocument, watch, deps, state)
+  } catch (error) {
+    if (landing.nest === '') await removeExternalCopy(landing.destination)
+    else await removeExternalFolder(landing.into, landing.bound)
+    throw error
+  }
+}
+
 async function importAssetOrDocument(
   source: string,
   target: string,
@@ -346,12 +384,9 @@ async function importAssetOrDocument(
   const isDocument =
     IMPORTABLE_DOCUMENT_EXTENSIONS.includes(extension) &&
     filingTypeOf(sourceName, folder, roles) !== 'animation'
-  // A model names its neighbours too — an OBJ its `.mtl`, a Collada its pictures — and takes
-  // a folder of its own for them, exactly as a document does.
-  const references =
-    isDocument || importableAssetTypeOf(sourceName) === 'mesh'
-      ? await referencesOf(source, extension)
-      : []
+  const references = gathersNeighbours(isDocument, sourceName, extension)
+    ? await referencesOf(source, extension)
+    : []
   const landing = landingFor(
     isDocument ? `${stem}.${extension}` : sourceName,
     stem,
@@ -360,20 +395,8 @@ async function importAssetOrDocument(
     folder,
     taken,
   )
-
-  if (landing.nest !== '') await mkdir(landing.into, { recursive: true })
-  if (!(await copyExternalFile(source, landing.destination, watch))) {
-    if (landing.nest !== '') await removeExternalFolder(landing.into, landing.bound)
-    return
-  }
-
-  try {
-    await landed(source, references, landing, folder, isDocument, watch, deps, state)
-  } catch (error) {
-    if (landing.nest === '') await removeExternalCopy(landing.destination)
-    else await removeExternalFolder(landing.into, landing.bound)
-    throw error
-  }
+  if (!(await placeCopy(source, landing, watch))) return
+  await landOrUndo(source, references, landing, folder, isDocument, watch, deps, state)
 }
 
 const removeImported = async (

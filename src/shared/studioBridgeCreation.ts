@@ -8,6 +8,7 @@ import type {
   AssistantWindow,
 } from './domain/assistant'
 import type { IngestProgress, MediaCapabilities } from './domain/media'
+import type { ExternalFileImport } from './domain/externalFile'
 import type { TaskProgress } from './domain/taskProgress'
 import type {
   AssistantActionRequest,
@@ -154,7 +155,7 @@ export type StudioBridgeCreation = {
      * twenty-minute rush costs a catalogue row. Resolves once the assets exist, while their
      * ingest runs on and reports through `onProgress`.
      */
-    ingest: () => Promise<Asset[]>
+    ingest: () => Promise<ExternalFileImport>
     /**
      * Gives a file the project ALREADY holds a row in the catalogue, so the studio can open it
      * instead of handing it to the system — the explorer's double-click on a `.jpg` somebody

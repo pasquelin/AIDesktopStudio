@@ -21,6 +21,7 @@ import { useModels } from '@/stores/models'
 import { useProject } from '@/stores/project'
 import { useSettings } from '@/stores/settings'
 import { takeExternalFiles } from '@/services/externalFiles'
+import { connectMeshConversion } from '@/services/meshConversion'
 
 type SceneMenuState = { checked: MenuCheck[]; abilities: MenuAbility[] }
 
@@ -229,6 +230,8 @@ export function useNativeMenu(): void {
     const stopOpenRecent = bridge.menu.onOpenRecent(request => void openRecent(request))
     const stopExternalFiles = bridge.externalFiles?.onOpen(() => void takeExternalFiles())
     if (bridge.externalFiles) void takeExternalFiles()
+    // Every 3D file that lands — generated, adopted, asked for over the MCP — becomes a `.glb`.
+    const stopMeshConversion = connectMeshConversion()
 
     // The same path the toolbar and the panels take: two ways of adding a node would drift.
     const stopSceneAdd = bridge.menu.onSceneAdd(({ kind }) => {
@@ -250,6 +253,7 @@ export function useNativeMenu(): void {
       stopDocumentNew()
       stopOpenRecent()
       stopExternalFiles?.()
+      stopMeshConversion()
       stopSceneAdd()
       stopSceneDisplay()
       for (const stop of stopPublishing) stop()

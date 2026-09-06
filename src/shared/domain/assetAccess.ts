@@ -173,9 +173,8 @@ export const POSTER_HOST = 'poster'
 export const THUMB_HOST = 'thumb'
 
 /**
- * A file of the project by its relative PATH — what a loader reading a model's neighbours needs
- * as a base to resolve `textures/wood.png` against. Served for anything inside the project, the
- * hidden `.sources` folder included, since that is where an imported model's neighbours are kept.
+ * A neighbour of one imported 3D asset. The path after its id is resolved only inside that row's
+ * hidden `.sources` folder; it is not a general door onto project files.
  */
 export const FILE_HOST = 'file'
 
@@ -188,13 +187,11 @@ export function hostedUrl(host: string, id: string): string {
 }
 
 /**
- * Segment by segment rather than as one id: a loader appends `textures/wood.png` to the folder
- * url it was given, and the resolver reads the whole path back through `decodeURIComponent`.
- * Hand a folder with its trailing slash so that appending a name lands inside it.
+ * Capability for the neighbours of one imported 3D asset. The loader appends their relative paths;
+ * the main resolves them only inside that row's canonical `.sources` directory.
  */
-export function projectFileUrl(relativePath: string): string {
-  const encoded = relativePath.split('/').map(encodeURIComponent).join('/')
-  return `${ASSET_SCHEME}://${FILE_HOST}/${encoded}`
+export function projectFileUrl(assetId: string): string {
+  return `${hostedUrl(FILE_HOST, assetId)}/`
 }
 
 /** What a URL of the scheme names, or null when it is not one of ours. */

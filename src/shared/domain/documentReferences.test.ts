@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { documentReferencesOf, SCANNED_BYTES } from './documentReferences'
+import { documentReferencesOf } from './documentReferences'
 
 const gltf = (body: Record<string, unknown>): string =>
   JSON.stringify({ asset: { version: '2.0' }, ...body })
@@ -70,14 +70,6 @@ describe('documentReferencesOf', () => {
     expect(documentReferencesOf('gltf', text)).toEqual(['Niveau.bin'])
   })
 
-  it('reads nothing out of a file too big to be one that points at siblings', () => {
-    const padding = ' '.repeat(SCANNED_BYTES)
-
-    expect(
-      documentReferencesOf('gltf', `${gltf({ buffers: [{ uri: 'a.bin' }] })}${padding}`),
-    ).toEqual([])
-  })
-
   it('reads nothing out of a document that does not parse, leaving the refusal to the import', () => {
     expect(documentReferencesOf('gltf', '{ pas du json')).toEqual([])
   })
@@ -94,10 +86,15 @@ describe('documentReferencesOf', () => {
       'Kd 0.8 0.8 0.8',
       'map_Kd textures/skin.png',
       'bump -bm 0.5 textures/skin_n.png',
+      'map_Kd -s 1 1 1 -o 0 0 0 textures/metal body.png',
       'map_Ks textures/skin.png',
     ].join('\n')
 
-    expect(documentReferencesOf('mtl', text)).toEqual(['textures/skin.png', 'textures/skin_n.png'])
+    expect(documentReferencesOf('mtl', text)).toEqual([
+      'textures/skin.png',
+      'textures/skin_n.png',
+      'textures/metal body.png',
+    ])
   })
 
   it('names the pictures a Collada file initialises its images from, in both spellings', () => {

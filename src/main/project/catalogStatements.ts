@@ -48,6 +48,10 @@ export function pathStatements(driver: SqliteDriver) {
     movePaths: driver.prepare(`
       UPDATE assets SET path = ? || substr(path, length(?) + 1) WHERE ${UNDER_PATH}
     `),
+    moveConvertedSources: driver.prepare(`
+      UPDATE assets SET converted_from = ? || substr(converted_from, length(?) + 1)
+      WHERE converted_from IS NOT NULL AND (${UNDER_PATH.replaceAll('path', 'converted_from')})
+    `),
     missUnder: driver.prepare(
       `UPDATE assets SET missing_at = ? WHERE missing_at IS NULL AND (${UNDER_PATH})`,
     ),
