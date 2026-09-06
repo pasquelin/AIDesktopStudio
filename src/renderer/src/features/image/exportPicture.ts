@@ -3,7 +3,8 @@ import type { LayerPixels } from '@/engines/canvas/CanvasEngine'
 import { bytesToBase64 } from '@shared/base64'
 import { getBridge } from '@/services/bridge'
 import { canvasOf, useCanvases } from '@/stores/canvases'
-import { documentExportName, useDocuments } from '@/stores/documents'
+import { useDocuments } from '@/stores/documents'
+import { documentExportName } from '@/stores/documentExportName'
 
 /** The engine seen from an export: the flatten, plus every layer's pixels for the layered way. */
 export type ExportHost = {

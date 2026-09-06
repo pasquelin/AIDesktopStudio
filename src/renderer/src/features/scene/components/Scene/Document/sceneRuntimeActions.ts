@@ -68,7 +68,8 @@ export function movePathPoint(
 
 export function openNodeMenu(documentId: string, nodeId: string | null): void {
   // A workshop holds one model and saves no scene: its menu moves the view, never the document.
-  if (isWorkshopId(documentId)) return openWorkshopNodeMenu({ workshopId: documentId, t: i18next.t })
+  if (isWorkshopId(documentId))
+    return openWorkshopNodeMenu({ workshopId: documentId, t: i18next.t })
   if (nodeId === null) {
     return openSceneAddMenu({ t: i18next.t, onAdd: kind => addNodeTo(documentId, kind) })
   }

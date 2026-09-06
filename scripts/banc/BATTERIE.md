@@ -1041,3 +1041,18 @@ visent l’image entière ou un calque, puis disparaissent après l’envoi.
 - [ ] « Sur le calque Bateau, note pour la génération : garde exactement cette coque. »
 - [ ] « Remplace la note de génération par : éclaire seulement l'arrière-plan. »
 - [ ] « Retire la note de génération en attente. »
+
+## 71. L'onglet modèle
+
+Le chevalier ouvert dans son onglet Modèle, en avant :
+
+- [ ] « Que contient l'onglet modèle ? »
+- [ ] « Passe le modèle en filaire. »
+- [ ] « Masque le squelette du modèle. »
+- [ ] « Capture la vue du modèle. »
+- [ ] « Ajoute un cube à côté du modèle. »
+
+🛑 **La dernière demande est REFUSÉE, et c'est ce que le scénario mesure** : l'atelier d'un modèle
+est dessiné, jamais enregistré — un cube posé là serait perdu en silence. Le studio répond
+`wrongSurface` et dit où un nœud peut aller. Ce n'est pas un décor qui se pose avec un refus :
+le décor est le chevalier ouvert, la demande est ce qui est refusé.

@@ -1,3 +1,4 @@
+import type { CommandId } from '@shared/domain/command'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { SceneRenderer } from '@/engines/scene/SceneRenderer'
 import { characterViewOf, useCharacterView } from '@/stores/characterView'
@@ -67,8 +68,8 @@ describe('runWorkshopCommand', () => {
   it('leaves what edits a document to someone else, touching nothing', () => {
     const before = useSceneViews.getState().views
 
-    for (const command of ['scene.undo', 'scene.redo', 'scene.scale', 'scene.delete'] as const)
-      expect(runWorkshopCommand(command, context())).toBe(false)
+    const edits: CommandId[] = ['scene.undo', 'scene.redo', 'scene.scale', 'scene.delete']
+    for (const command of edits) expect(runWorkshopCommand(command, context())).toBe(false)
 
     expect(useSceneViews.getState().views).toBe(before)
     expect(characterViewOf(useCharacterView.getState(), ASSET).mode).toBe('translate')

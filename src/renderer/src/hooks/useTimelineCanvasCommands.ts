@@ -14,7 +14,8 @@ import {
   runSequenceCommand,
   shownSequence,
 } from '@/features/video/components/TimelineCanvas/sequenceCommands'
-import { documentExportName, useDocuments } from '@/stores/documents'
+import { useDocuments } from '@/stores/documents'
+import { documentExportName } from '@/stores/documentExportName'
 import { sequenceOf, useSequences } from '@/stores/sequences'
 import { runTask } from '@/stores/tasks'
 import { useShortcuts } from './useShortcuts'

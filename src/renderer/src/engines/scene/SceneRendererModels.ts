@@ -40,11 +40,6 @@ export abstract class SceneRendererModels extends SceneRendererGeometry {
   protected abstract tuneShadowsIfMoved(): void
   protected abstract applyDisplay(object: Object3D): void
   protected abstract accelerateOrReport(object: Object3D, subject: string): Promise<void>
-  /**
-   * A model arrives long after the frame that asked for it, so what goes into the scene now is
-   * an empty holder the file fills in. The alternative — adding nothing until it lands — leaves
-   * a node the outliner lists, the gizmo cannot find, and a click cannot select.
-   */
   /** Weighs one morph target of a model on every mesh carrying the name — a preview. Answers whether any did. */
   setMorphInfluence(nodeId: string, name: string, value: number): boolean {
     const holder = this.objects.get(nodeId)
@@ -53,6 +48,11 @@ export abstract class SceneRendererModels extends SceneRendererGeometry {
     return written
   }
 
+  /**
+   * A model arrives long after the frame that asked for it, so what goes into the scene now is
+   * an empty holder the file fills in. The alternative — adding nothing until it lands — leaves
+   * a node the outliner lists, the gizmo cannot find, and a click cannot select.
+   */
   protected buildModel(node: ModelNode): Object3D {
     const holder = new Object3D()
     const { assetId } = node.model

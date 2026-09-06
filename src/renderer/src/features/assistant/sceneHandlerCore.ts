@@ -11,7 +11,8 @@ import {
 } from '@/engines/scene/sceneState'
 import { sceneKeyingAt } from '@/helpers/sceneKeyingAt'
 import { useCharacters } from '@/stores/character'
-import { activeSceneId, useDocuments } from '@/stores/documents'
+import { activeSceneOrWorkshopId, useDocuments } from '@/stores/documents'
+import { isWorkshopId } from '@shared/domain/character'
 import { sceneOf, useScenes } from '@/stores/scenes'
 import type { AnimationTimeline as SceneAnimation } from '@shared/domain/animation'
 import { refused, type ActionOutcome } from '@shared/domain/assistant'
@@ -45,9 +46,19 @@ export const NO_SCENE =
   'the document in front is no scene — documents.list answers what is open and of which kind, and ' +
   'document.activate brings a scene forward'
 
-/** The scene in front and its state, or nothing — which reads as `wrongSurface`. */
+/** Why a model tab takes no node: its workshop is drawn, never saved. Said to every editing door. */
+export const NO_EDIT_ON_MODEL =
+  'the model tab in front holds one model and saves no scene — open the model in a scene to add ' +
+  'or edit nodes; what reaches it here is the view: scene.state, view.setDisplayMode, scene.capture'
+
+/** A refusal for an edit aimed at a workshop, or nothing for a scene — read before any `runCommand`. */
+export function editRefusal(open: { documentId: string }): ActionOutcome | null {
+  return isWorkshopId(open.documentId) ? refused('wrongSurface', NO_EDIT_ON_MODEL) : null
+}
+
+/** The scene in front — or the workshop of the model tab in front — and its state, or nothing. */
 export function mounted(): { documentId: string; state: SceneState } | null {
-  const documentId = activeSceneId(useDocuments.getState())
+  const documentId = activeSceneOrWorkshopId(useDocuments.getState())
   return documentId === null
     ? null
     : { documentId, state: sceneOf(useScenes.getState(), documentId) }
@@ -56,6 +67,8 @@ export function mounted(): { documentId: string; state: SceneState } | null {
 export function edit(build: () => Command<SceneState>): ActionOutcome {
   const open = mounted()
   if (!open) return refused('wrongSurface', NO_SCENE)
+  const barred = editRefusal(open)
+  if (barred) return barred
 
   useScenes.getState().runCommand(open.documentId, build())
   return { ok: true }
@@ -73,6 +86,8 @@ export function editNode(
 ): ActionOutcome {
   const open = mounted()
   if (!open) return refused('wrongSurface', NO_SCENE)
+  const barred = editRefusal(open)
+  if (barred) return barred
 
   const named = textOf(input, 'nodeId') ?? ''
   const node = nodeAimed(open.state, named)

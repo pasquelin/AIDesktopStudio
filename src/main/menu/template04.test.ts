@@ -383,7 +383,14 @@ describe('the View menu of a model tab', () => {
   it('offers navigation, the way of drawing, the capture and the skeletons — and no scene row', () => {
     const labels = rows().map(row => row.label)
 
-    expect(labels).toEqual(expect.arrayContaining(['Navigation', 'Mode de rendu', 'Capturer la vue', 'Afficher les squelettes']))
+    expect(labels).toEqual(
+      expect.arrayContaining([
+        'Navigation',
+        'Mode de rendu',
+        'Capturer la vue',
+        'Afficher les squelettes',
+      ]),
+    )
     expect(labels).not.toContain('Projection')
     expect(labels).not.toContain('Quatre vues')
     expect(labels).not.toContain('Point de vue')
@@ -391,7 +398,9 @@ describe('the View menu of a model tab', () => {
   })
 
   it('ticks the skeletons off what the window reports', () => {
-    expect(rows(['scene.skeletons']).find(row => row.label === 'Afficher les squelettes')?.checked).toBe(true)
+    expect(
+      rows(['scene.skeletons']).find(row => row.label === 'Afficher les squelettes')?.checked,
+    ).toBe(true)
     expect(rows().find(row => row.label === 'Afficher les squelettes')?.checked).toBe(false)
   })
 })

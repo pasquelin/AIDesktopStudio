@@ -6,13 +6,8 @@ import {
 } from '@shared/domain/document'
 import { workshopIdOf } from '@shared/domain/character'
 import { installFakeBridge } from '@/services/fakeBridge'
-import {
-  activeSceneOrWorkshopId,
-  documentExportName,
-  documentForAsset,
-  documentsIn,
-  useDocuments,
-} from './documents'
+import { activeSceneOrWorkshopId, documentForAsset, documentsIn, useDocuments } from './documents'
+import { documentExportName } from './documentExportName'
 import { showPanels } from './layout-fixtures'
 import { useLayouts } from './layouts'
 

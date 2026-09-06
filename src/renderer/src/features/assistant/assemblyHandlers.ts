@@ -12,6 +12,7 @@ import { documentById, sceneDocumentNamed, useDocuments } from '@/stores/documen
 import { sceneOf, sceneStore, useScenes } from '@/stores/scenes'
 import type { ActionHandlers } from './actionHandler'
 import { numberOf, textOf } from './actionInputs'
+import { editRefusal } from './sceneHandlerCore'
 import { mounted, NO_SCENE } from './sceneHandlers'
 import { messageOf } from '@shared/guards'
 
@@ -29,6 +30,9 @@ export const ASSEMBLY_HANDLERS: ActionHandlers = {
         'badInput',
         `no scene template "${wanted}" — the "template" field of this action lists the ones it takes`,
       )
+
+    const barred = editRefusal(open)
+    if (barred) return barred
 
     const { seedTemplateFiles } = await import('@/features/game/seedTemplateFiles')
     const seeded = await seedTemplateFiles(wanted)
@@ -59,6 +63,8 @@ export const ASSEMBLY_HANDLERS: ActionHandlers = {
     // disk answered would have the nodes land in the document that WAS in front.
     const open = mounted()
     if (!open) return refused('wrongSurface', NO_SCENE)
+    const barred = editRefusal(open)
+    if (barred) return barred
     if (open.documentId === documentId) {
       return refused('badInput', `"${named}" is the scene in front: it cannot instance itself`)
     }

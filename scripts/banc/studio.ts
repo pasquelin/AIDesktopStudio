@@ -26,7 +26,16 @@ import { useModels } from '@/stores/models'
 import { noContext } from '@shared/domain/projectContext'
 import { useProjectContext } from '@/stores/projectContext'
 import { useTasks } from '@/stores/tasks'
-import { documentById, frontDocumentIn, useDocuments } from '@/stores/documents'
+import {
+  activeCharacterAssetId,
+  documentById,
+  frontDocumentIn,
+  useDocuments,
+} from '@/stores/documents'
+import { workshopIdOf } from '@shared/domain/character'
+import { runWorkshopCommand } from '@/features/character/components/CharacterDocument/workshopCommands'
+import { sceneViewChromeOf } from '@/stores/sceneViewChrome'
+import { useSceneViews } from '@/stores/sceneViews'
 import {
   commandDescriptor,
   scopeOfWorkspace,
@@ -95,9 +104,28 @@ const EXPLORER: ScopeRunner = command =>
     folderName: i18next.t('explorer.newFolderName'),
   })
 
+/**
+ * The model tab listens on the scene scope too, for what moves its VIEW — the same door the tab
+ * itself opens. A menu row never flies the camera, so the navigation setter has nothing to set.
+ */
+const onWorkshop: ScopeRunner = (command, to) => {
+  const assetId = activeCharacterAssetId(useDocuments.getState())
+  if (assetId === null || to !== null) return false
+  const workshopId = workshopIdOf(assetId)
+  return runWorkshopCommand(command, {
+    assetId,
+    workshopId,
+    setNavigating: () => {},
+    view: sceneViewChromeOf(useSceneViews.getState(), workshopId),
+  })
+}
+
 /** The scopes a headless run can answer, each by the function its own tab calls. */
 const SCOPE_RUNNERS: ScopeRunners = {
-  scene: onDocument('scene', runSceneCommand),
+  scene: (command, to) => {
+    const documentId = addressedBy('scene', to)
+    return documentId !== null ? runSceneCommand(documentId, command) : onWorkshop(command, to)
+  },
   gui: onDocument('gui', runGuiDocumentCommand),
   skybox: onDocument('skybox', runSkyboxCommand),
   material: onDocument('material', runMaterialCommand),
@@ -272,7 +300,13 @@ function followCommandBus(): () => void {
   let disarm: (() => void) | null = null
   const followTheFront = (): void => {
     const scope = scopeOf(frontDocument())
-    const answered = scope !== null && SCOPE_RUNNERS[scope] !== null ? scope : null
+    // A model tab arms the scene scope, as the real tab does — see `onWorkshop`.
+    const answered =
+      scope === 'character'
+        ? 'scene'
+        : scope !== null && SCOPE_RUNNERS[scope] !== null
+          ? scope
+          : null
     if (answered === armedScope) return
     disarm?.()
     armedScope = answered

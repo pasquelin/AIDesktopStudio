@@ -12,6 +12,8 @@ import { useTasks } from '@/stores/tasks'
 import { canvasOf, useCanvases } from '@/stores/canvases'
 import { useModelFiles } from '@/stores/modelFiles'
 import { sceneOf, useScenes } from '@/stores/scenes'
+import { useDocuments } from '@/stores/documents'
+import { useSceneViews } from '@/stores/sceneViews'
 import { sequenceOf, useSequences } from '@/stores/sequences'
 import { SECOND } from './oracle'
 import type { Studio } from './studio'
@@ -356,4 +358,31 @@ export const playedScene = async (studio: Studio): Promise<void> => {
   await cubeScene(studio)
   await studio.run('play.start', {})
   await studio.playing()
+}
+
+/**
+ * The knight opened on its own model tab, in front: what section 71 asks of the VIEW of a model.
+ * The tab is a document of the window and not of the project, so it is laid in the store the way
+ * `openCharacter` lays it, on top of the scene `modelScene` measured.
+ */
+export const characterTab = async (studio: Studio): Promise<void> => {
+  await modelScene(studio)
+  const assetId = assetOf(studio, 'knight in plate armour, character.glb')
+  const id = `character-${assetId}`
+  useDocuments.setState(state => ({
+    documents: {
+      ...state.documents,
+      [id]: {
+        id,
+        kind: 'character',
+        workspace: '3d',
+        title: 'Knight',
+        path: 'Modelling/Models/knight in plate armour, character.glb',
+        sourceAssetId: assetId,
+      },
+    },
+    activeId: id,
+  }))
+  // Armed as the real tab arms it at mount: a request to HIDE the bones has to find them shown.
+  useSceneViews.getState().setSkeletons(workshopIdOf(assetId), true)
 }
