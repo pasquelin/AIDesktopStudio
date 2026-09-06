@@ -160,8 +160,12 @@ export class WelcomeHero {
     const loading = WELCOME_CLIP_NAMES.map(name =>
       this.deps.gltf.loadAnimation(bundledAnimationUrl(name)),
     )
-    const body = await this.deps.gltf.load(bundledCharacterUrl(WELCOME_LEVEL))
-    const files = await Promise.all(loading)
+    // Awaited TOGETHER: awaited after the body, a clip that fails while the body is still in
+    // flight is a rejection nothing is watching, and one the body's own failure never observes.
+    const [body, files] = await Promise.all([
+      this.deps.gltf.load(bundledCharacterUrl(WELCOME_LEVEL)),
+      Promise.all(loading),
+    ])
     const mixer = new AnimationMixer(body)
     const adapted = await Promise.all(
       files.map(async file => (await this.deps.retarget.adapt(body, file, clipsOf(file)))?.[0]),

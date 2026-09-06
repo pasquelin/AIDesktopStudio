@@ -11,7 +11,6 @@ import {
   HemisphereLight,
   Mesh,
   MeshStandardMaterial,
-  PCFSoftShadowMap,
   PerspectiveCamera,
   PlaneGeometry,
   PointLight,
@@ -24,7 +23,7 @@ import { clamp } from '@shared/numeric'
 import { reportFailure } from '@/services/diagnostics'
 import { onPaletteChange, tokenAsHex } from '../core/palette'
 import { createGltfSource } from '../scene/gltfSource'
-import { fitShadowCamera, resizeShadowMap } from '../scene/shadows'
+import { applyShadowQuality, fitShadowCamera, resizeShadowMap } from '../scene/shadows'
 import { createRetarget } from '../scene/retarget'
 import RetargetWorker from '../scene/retarget.worker?worker'
 import { WelcomeHero } from './WelcomeHero'
@@ -168,7 +167,10 @@ export class WelcomeBackdrop {
     // stop under the token it is painted with.
     this.renderer.toneMappingExposure = 1.3
     this.renderer.shadowMap.enabled = true
-    this.renderer.shadowMap.type = PCFSoftShadowMap
+    // 🛑 By the studio's own setting, never `PCFSoftShadowMap`: three 0.185 defines a shadow type
+    // for PCF and VSM only, so that one compiles down to an UNFILTERED compare — and `shadow.radius`
+    // with it, which the fragment shader reads inside the PCF branch alone.
+    applyShadowQuality(this.renderer, 'soft')
 
     this.hero = new WelcomeHero({
       gltf: this.gltf,
@@ -271,9 +273,8 @@ export class WelcomeBackdrop {
     // Soft rather than stamped: a hard black wedge under a crown reads as a hole in the plate.
     light.shadow.radius = 4
     light.shadow.intensity = 0.55
-    // Nothing to frame but the reach around the target: the grove stands where the light aims.
-    fitShadowCamera(light, { bounds: new Box3(), floor: 2 * SHADOW_REACH })
     light.shadow.camera.far = 34
+    fitShadowCamera(light, { bounds: new Box3(), floor: 2 * SHADOW_REACH })
     // Along the surface rather than into it: at this grazing angle a plain bias detaches a crown
     // from the shadow it casts, and a normal one leaves the contact where the foot is.
     light.shadow.normalBias = 0.03
