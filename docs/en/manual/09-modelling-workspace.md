@@ -1487,10 +1487,14 @@ A context also carries a **priority** and an **Active at startup** flag. The *ch
 and *flight* contexts are active from the start — no action name is shared between them, so they
 do not tread on one another.
 
-Two starting points need their map to exist at all. The *menu* context **primes** over the rest,
-and it is for a script to push when a menu opens: with no map, the ask does nothing. The *studio*
-one describes walking the studio's own interface, which the setting drives directly — rebinding
-it changes nothing yet.
+The *menu* context needs its map to exist at all: it **primes** over the rest, and it is for a
+script to push when a menu opens — with no map, the ask does nothing.
+
+The *studio* starting point describes no game: it describes **walking the studio's own interface
+with a controller**, the one Settings ▸ Devices switches on. Creating its map, rebinding it and
+saving changes that walk **on saving**, with no need to reopen the project. Its five actions are
+`navigate` (the left stick), `next` and `previous` (the d-pad), `confirm` and `back`. With no
+`studio` map in the project, the starting point answers.
 
 A script reads those same actions by name, never a key:
 

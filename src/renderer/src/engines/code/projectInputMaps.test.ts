@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: MIT
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import type { InputMap } from '@shared/domain/inputMap'
 import { installFakeBridge } from '@/services/fakeBridge'
 import {
   inputMapIdConflict,
   projectInputMaps,
+  inputMapsChanged,
   isDuplicateInputMapId,
+  onInputMapsChanged,
   withoutDuplicateInputMapIds,
 } from './projectInputMaps'
 
@@ -97,5 +99,19 @@ describe('what a game is handed when two files carry one context', () => {
 
     expect(isDuplicateInputMapId(maps, 'vehicle')).toBe(true)
     expect(isDuplicateInputMapId(maps, 'flight')).toBe(false)
+  })
+})
+
+/** The bridge has list, read and write and no event — this is what stands in for one. */
+describe('being told a control map was written', () => {
+  it('tells a listener until it lets go', () => {
+    const told = vi.fn()
+    const forget = onInputMapsChanged(told)
+
+    inputMapsChanged()
+    forget()
+    inputMapsChanged()
+
+    expect(told).toHaveBeenCalledOnce()
   })
 })

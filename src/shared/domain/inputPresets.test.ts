@@ -7,6 +7,8 @@ describe('input presets', () => {
     expect(INPUT_PRESET_IDS).toEqual(['studio', 'character', 'vehicle', 'flight', 'menu'])
     expect(inputMapPreset('studio').actions.map(action => action.id)).toEqual([
       'navigate',
+      'next',
+      'previous',
       'confirm',
       'back',
     ])
