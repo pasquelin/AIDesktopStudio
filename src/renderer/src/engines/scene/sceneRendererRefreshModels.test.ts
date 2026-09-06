@@ -1,12 +1,28 @@
-import { BoxGeometry, Mesh, MeshStandardMaterial, Object3D } from 'three'
+import { Bone, BoxGeometry, Mesh, MeshStandardMaterial, Object3D } from 'three'
 import { describe, expect, it, vi } from 'vitest'
+import { STUDIO_METADATA_KEY } from '@shared/domain/studioMetadata'
 import { SceneRenderer } from './SceneRenderer'
-import { groupNodeFixture, modelNodeFixture } from './scene-fixtures'
-import { EMPTY_SCENE } from './sceneState'
+import { groupNodeFixture, meshNode, modelNodeFixture } from './scene-fixtures'
+import { EMPTY_SCENE, IDENTITY_TRANSFORM } from './sceneState'
 
 function source(): Object3D {
   const root = new Object3D()
   root.add(new Mesh(new BoxGeometry(), new MeshStandardMaterial()))
+  return root
+}
+
+function riggedWithSocket(): Object3D {
+  const root = new Object3D()
+  const bone = new Bone()
+  bone.name = 'b1'
+  root.add(bone)
+  root.userData = {
+    [STUDIO_METADATA_KEY]: {
+      character: {
+        sockets: [{ id: 'hand', name: 'Main', bone: 'b1', rest: IDENTITY_TRANSFORM }],
+      },
+    },
+  }
   return root
 }
 
@@ -123,6 +139,36 @@ describe('once the catalogue says its file was rewritten', () => {
 
     expect(scene.getObjectByName('a')?.parent?.name).toBe('group')
     expect(scene.getObjectByName('child')?.parent?.name).toBe('a')
+    renderer.dispose()
+  })
+
+  // Sockets are read off the file: hanging children in `refreshModels` itself puts them on the
+  // empty holder, and nothing else applies after the instance lands.
+  it('hangs a socket-attached child on the bone once the rewritten file lands', async () => {
+    versions['asset-a'] = 'a'
+    const load = vi.fn(async () => riggedWithSocket())
+    const renderer = rendererVersioned(load)
+    const { scene } = (renderer as unknown as { viewport: { scene: Object3D } }).viewport
+    const sword = { ...meshNode('sword'), parentId: 'a', attach: { socket: 'hand' } }
+
+    renderer.apply({
+      ...EMPTY_SCENE,
+      nodes: [modelNodeFixture('a', 'asset-a'), sword],
+      selectedIds: [],
+    })
+    await vi.waitFor(() => expect(load).toHaveBeenCalledTimes(1))
+
+    versions['asset-a'] = 'b'
+    renderer.refreshModels()
+
+    await vi.waitFor(() =>
+      expect(
+        scene
+          .getObjectByName('a')
+          ?.getObjectByName('b1')
+          ?.children.map(child => child.name),
+      ).toContain('sword'),
+    )
     renderer.dispose()
   })
 })

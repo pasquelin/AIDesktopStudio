@@ -83,10 +83,9 @@ export abstract class SceneRendererHierarchy extends SceneRendererShadows {
         // two owes the reference.
         // `has`, never `delete`: consuming the token here left `recut` believing the reference had
         // already been given back, and neither side ever returned it.
-        // Given back once: `recut` may still be in flight, and `cutting` is what says which of the
-        if (applied?.type === 'carved' && !this.cutting.has(id)) this.csg.release(applied.carved) // Before the instance goes: a mixer holding actions keeps every bone of a released model
-        // alive with it.
+        if (applied?.type === 'carved' && !this.cutting.has(id)) this.csg.release(applied.carved)
         // Before the instance goes: a mixer holding actions keeps every bone of a released model
+        // alive with it.
         this.animations.remove(id)
         const releaseStep2 = () => {
           // Its share of every animation file it played: the last node to let go frees the parse.

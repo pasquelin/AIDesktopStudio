@@ -63,4 +63,16 @@ describe('the scene actions over a model tab', () => {
     expect(answer).toMatchObject({ ok: false, refusal: 'wrongSurface' })
     expect(sceneOf(useScenes.getState(), WORKSHOP).nodes).toHaveLength(1)
   })
+
+  it('refuses a timeline cue, and leaves the workshop animation untouched', async () => {
+    const before = sceneOf(useScenes.getState(), WORKSHOP).animation
+    const answer = await runAction('timeline.addSceneCue', {
+      list: 'events',
+      at: 0,
+      what: 'Opened',
+    })
+
+    expect(answer).toMatchObject({ ok: false, refusal: 'wrongSurface' })
+    expect(sceneOf(useScenes.getState(), WORKSHOP).animation).toEqual(before)
+  })
 })

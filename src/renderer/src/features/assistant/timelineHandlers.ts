@@ -15,7 +15,7 @@ import { newId } from '@/helpers/ids'
 import { sceneOf, useScenes } from '@/stores/scenes'
 import type { ActionHandlers } from './actionHandler'
 import { numberOf, textOf } from './actionInputs'
-import { mounted, NO_SCENE } from './sceneHandlers'
+import { mountedScene } from './sceneHandlerCore'
 
 /**
  * What a timeline CUES, driven from outside the window.
@@ -28,8 +28,8 @@ export const TIMELINE_HANDLERS: ActionHandlers = {
   'timeline.addSceneCue': addSceneCue,
 
   'timeline.removeSceneCue': input => {
-    const open = mounted()
-    if (!open) return refused('wrongSurface', NO_SCENE)
+    const open = mountedScene()
+    if ('ok' in open) return open
 
     const list = textOf(input, 'list') ?? ''
     if (!TIMELINE_LISTS.includes(list)) return refused('badInput', `no list "${list}"`)
@@ -39,8 +39,8 @@ export const TIMELINE_HANDLERS: ActionHandlers = {
   },
 
   'timeline.setPanelRows': input => {
-    const open = mounted()
-    if (!open) return refused('wrongSurface', NO_SCENE)
+    const open = mountedScene()
+    if ('ok' in open) return open
 
     const template = textOf(input, 'template') ?? ''
     if (!TIMELINE_TEMPLATES.includes(template as TimelineTemplate)) {
@@ -55,8 +55,8 @@ export const TIMELINE_HANDLERS: ActionHandlers = {
 }
 
 function addSceneCue(input: Record<string, unknown>): ActionOutcome {
-  const open = mounted()
-  if (!open) return refused('wrongSurface', NO_SCENE)
+  const open = mountedScene()
+  if ('ok' in open) return open
 
   const list = textOf(input, 'list') ?? ''
   if (!TIMELINE_LISTS.includes(list)) return refused('badInput', `no list "${list}"`)

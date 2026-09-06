@@ -73,6 +73,10 @@ export abstract class SceneRendererModels extends SceneRendererGeometry {
     // another node is still cloning.
     if (this.objects.get(node.id) !== holder || !source) return
     holder.add(instanceOf(source))
+    // Sockets live in the file: children attached to one hung on this empty holder until now.
+    for (const child of this.applied.values()) {
+      if (child.parentId === node.id) this.hangFromParent(child)
+    }
     // Here rather than in `syncNode`: what arrives lands after the sync that built the holder,
     // and the next one skips an unchanged node — the model would throw nothing until edited.
     const applied = this.applied.get(node.id) ?? node
