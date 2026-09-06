@@ -373,3 +373,25 @@ describe('the navigation schemes', () => {
     expect(shown.map(row => row.label)).not.toContain('Navigation')
   })
 })
+
+describe('the View menu of a model tab', () => {
+  const rows = (checked: MenuOptions['checked'] = []) =>
+    submenuOf(menuTemplate(options({ kind: 'character', checked })), 'Affichage')
+
+  // The model tab moves its view and nothing else: a row that answered `false` would sit active
+  // and do nothing, which is what the menu context promises it never does.
+  it('offers navigation, the way of drawing, the capture and the skeletons — and no scene row', () => {
+    const labels = rows().map(row => row.label)
+
+    expect(labels).toEqual(expect.arrayContaining(['Navigation', 'Mode de rendu', 'Capturer la vue', 'Afficher les squelettes']))
+    expect(labels).not.toContain('Projection')
+    expect(labels).not.toContain('Quatre vues')
+    expect(labels).not.toContain('Point de vue')
+    expect(labels).not.toContain('Mode pose')
+  })
+
+  it('ticks the skeletons off what the window reports', () => {
+    expect(rows(['scene.skeletons']).find(row => row.label === 'Afficher les squelettes')?.checked).toBe(true)
+    expect(rows().find(row => row.label === 'Afficher les squelettes')?.checked).toBe(false)
+  })
+})

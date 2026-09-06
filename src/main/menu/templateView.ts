@@ -95,6 +95,23 @@ function sceneMenuItems(context: MenuContext): MenuItemConstructorOptions[] {
   ]
 }
 
+/**
+ * The model tab's share of the scene rows: what moves its VIEW and nothing that would answer
+ * `false` there — no projection, quad, side views, camera or pose mode on a one-model workshop.
+ */
+function workshopMenuItems(context: MenuContext): MenuItemConstructorOptions[] {
+  if (context.options.scope !== 'character') return []
+  const { t } = context
+  return [
+    { type: 'separator' },
+    { label: t.menu.sceneNavigation, submenu: navigationItems(context) },
+    { label: t.menu.sceneDisplay, submenu: sceneDisplayItems(context) },
+    { label: t.menu.sceneCapture, submenu: sceneCaptureItems(context) },
+    { type: 'separator' },
+    toggleItem(context, 'scene.skeletons', t.commands.sceneSkeletons.title),
+  ]
+}
+
 function developerItems(context: MenuContext): MenuItemConstructorOptions[] {
   if (!context.options.isDevelopment) return []
   return [
@@ -125,6 +142,7 @@ export function viewMenu(context: MenuContext): MenuItemConstructorOptions {
       context.commandItem('layout.reset', context.t.menu.resetLayout),
       ...canvasViewItems(context),
       ...sceneMenuItems(context),
+      ...workshopMenuItems(context),
       { type: 'separator' },
       {
         label: context.t.menu.fullScreen,

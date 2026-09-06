@@ -15,7 +15,7 @@ import {
   type NamedDocument,
 } from '@shared/domain/documentName'
 import { foldForFileName, nameFailureOf, safeFileName } from '@shared/domain/fileName'
-import { workshopIdOf } from '@shared/domain/character'
+import { workshopAssetOf, workshopIdOf } from '@shared/domain/character'
 import { nameOf, parentOf } from '@shared/domain/folder'
 import { DEFAULT_ROLE_PATHS } from '@shared/domain/folderRole'
 import { refFromString } from '@shared/domain/ref'
@@ -457,7 +457,15 @@ export function documentExportName(
   documentId: string,
   fallback: string,
 ): string {
-  return safeFileName(state.documents[documentId]?.title ?? '', fallback)
+  // A workshop is no document: the file it exports is named after the model tab opened on it.
+  const asset = workshopAssetOf(documentId)
+  const document =
+    asset === null
+      ? state.documents[documentId]
+      : Object.values(state.documents).find(
+          one => one.kind === 'character' && one.sourceAssetId === asset,
+        )
+  return safeFileName(document?.title ?? '', fallback)
 }
 
 /**

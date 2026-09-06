@@ -10,7 +10,7 @@ import { openRecent } from '@/features/shell/openRecent'
 import { canMaskFromSelection, canMergeDown } from '@/engines/canvas/canvasState'
 import { canvasOf, useCanvases } from '@/stores/canvases'
 import { selectionOf, useCanvasViews } from '@/stores/canvasViews'
-import { activeIdOfKind, useDocuments } from '@/stores/documents'
+import { activeIdOfKind, activeSceneOrWorkshopId, useDocuments } from '@/stores/documents'
 import { closableTabId } from '@/features/shell/components/dockviewApi'
 import { displayOfPane } from '@/stores/sceneViewChrome'
 import { MAIN_SCENE_PANE, sceneViewOf, useSceneViews } from '@/stores/sceneViews'
@@ -33,7 +33,8 @@ type SceneMenuState = { checked: MenuCheck[]; abilities: MenuAbility[] }
  * one, and a menu has a single row to say it with — the bar has the same limit, see `SceneDocument`.
  */
 function sceneMenuState(): SceneMenuState {
-  const documentId = activeIdOfKind(useDocuments.getState(), 'scene')
+  // The model tab's workshop too: its View rows tick off the same view store.
+  const documentId = activeSceneOrWorkshopId(useDocuments.getState())
   if (!documentId) return { checked: [], abilities: [] }
 
   const view = sceneViewOf(useSceneViews.getState(), documentId)
@@ -232,13 +233,14 @@ export function useNativeMenu(): void {
     // The same path the toolbar and the panels take: two ways of adding a node would drift.
     const stopSceneAdd = bridge.menu.onSceneAdd(({ kind }) => {
       // Of the right kind: the menu is app-wide, and a node written under an image document
-      // would give it a scene and a history it has no editor for.
+      // would give it a scene and a history it has no editor for. A model tab's workshop takes
+      // no node either — nothing saves one yet.
       const documentId = activeIdOfKind(useDocuments.getState(), 'scene')
       if (documentId) addNodeTo(documentId, kind)
     })
 
     const stopSceneDisplay = bridge.menu.onSceneDisplay(({ mode }) => {
-      const documentId = activeIdOfKind(useDocuments.getState(), 'scene')
+      const documentId = activeSceneOrWorkshopId(useDocuments.getState())
       if (documentId) useSceneViews.getState().setDisplay(documentId, MAIN_SCENE_PANE, mode)
     })
 

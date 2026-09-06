@@ -57,7 +57,8 @@ function sequenceExportItems(
 
 function exportSubmenu(context: MenuContext): MenuItemConstructorOptions[] {
   const { options, t } = context
-  if (options.scope === 'scene') {
+  // The model tab exports its workshop through the same rows: one model, written as a scene of one.
+  if (options.scope === 'scene' || options.scope === 'character') {
     return [
       { label: t.menu.exportScene, submenu: sceneExportItems(context, 'scene') },
       {

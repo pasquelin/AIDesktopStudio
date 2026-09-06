@@ -106,6 +106,14 @@ describe('the export menu', () => {
     expect(file('gui')).not.toContain('Exporter')
   })
 
+  // A model tab writes its one model out through the scene rows; nothing there is ever selected.
+  it('offers the scene formats to a model tab, with the selection row greyed', () => {
+    const exports = exportsIn(menuTemplate(options({ workspace: '3d', kind: 'character' })))
+
+    expect(submenuOf(exports, 'Scène')).toHaveLength(EXPORT_FORMATS.length)
+    expect(exports.find(item => item.label === 'Sélection')?.enabled).toBe(false)
+  })
+
   it('offers every declared format, for the scene and for the selection', () => {
     const exports = exportsIn(menuTemplate(options()))
 

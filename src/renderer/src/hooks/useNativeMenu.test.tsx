@@ -3,6 +3,8 @@ import { renderHook } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { MenuAbility, MenuCheck } from '@shared/domain/command'
 import type { SceneAddRequest, SceneDisplayRequest, Unsubscribe } from '@shared/ipc'
+import { workshopIdOf } from '@shared/domain/character'
+import { installCharacterDocument } from '@/stores/character-fixtures'
 import { installScene } from '@/stores/scene-fixtures'
 import type { CommandId } from '@shared/domain/command'
 import type { ToolId, ToolSurface } from '@shared/domain/tool'
@@ -341,6 +343,16 @@ describe('what the native menu is told', () => {
       expect(lastPublished().checked).toContain('scene.display:matcap')
     })
 
+    // A model tab has no scene id, so its View rows read the view of its workshop.
+    it('reads the workshop of the model tab in front', () => {
+      installCharacterDocument('doc-hero', 'asset-hero')
+      renderHook(() => useNativeMenu())
+      useSceneViews.getState().setSkeletons(workshopIdOf('asset-hero'), true)
+      useSceneViews.getState().setDisplay(workshopIdOf('asset-hero'), 0, 'wireframe')
+
+      expect(lastPublished().checked).toEqual(['scene.display:wireframe', 'scene.skeletons'])
+    })
+
     /**
      * `useSceneViews` carries the animation playhead, written on every frame of a running
      * animation. Published without a comparison, a played scene would send sixty messages a
@@ -451,5 +463,16 @@ describe('what the native View menu asks of the scene', () => {
     menu.emit({ mode: 'wireframe' })
 
     expect(displayOfPane(sceneViewOf(useSceneViews.getState(), 'doc-1').displays, 0)).toBe('shaded')
+  })
+
+  it('draws the workshop of the model tab in front', () => {
+    installCharacterDocument('doc-hero', 'asset-hero')
+    const menu = captureSceneDisplay()
+    renderHook(() => useNativeMenu())
+
+    menu.emit({ mode: 'matcap' })
+
+    const workshop = sceneViewOf(useSceneViews.getState(), workshopIdOf('asset-hero'))
+    expect(displayOfPane(workshop.displays, 0)).toBe('matcap')
   })
 })
