@@ -87,6 +87,24 @@ const SHORTEST_WALK = 2.4
 /** The share of the yard a goal is preferred to land within, so the stroll keeps to the middle. */
 const INSIDE = 0.7
 
+/** What is left of a stand when the camera moves: enough to read as a beat, not as a freeze. */
+const WOKEN = 0.25
+
+/**
+ * A goal handed from OUTSIDE — the carousel moved, and the walker comes round to meet it.
+ *
+ * 🛑 Never touches `clip` nor `time`. A slide flicked through faster than a stride would otherwise
+ * restart a gait on every step, and a walker restarted twice a second reads as a flicker.
+ */
+export const welcomeToward = (
+  state: WelcomeWalkState,
+  goal: { x: number; z: number },
+): WelcomeWalkState => ({
+  ...state,
+  goal,
+  pause: state.clip ? state.pause : Math.min(state.pause, WOKEN),
+})
+
 export function welcomeWalkStart(): WelcomeWalkState {
   return {
     x: WELCOME_YARD_AT.x,
@@ -221,7 +239,7 @@ export function welcomeNextClip(
   trees: readonly WelcomeTree[],
   roll: WelcomeRoll,
 ): WelcomeClipName | null {
-  if (strandedIn(state, trees)) return outOf(state)
+  if (strandedIn(state, trees)) return outOf(state, trees)
   if (state.clip === 'WalkStop') return null
 
   const opens = (aim: number, reach: number, turn = 0): boolean =>
@@ -258,17 +276,15 @@ const strandedIn = (state: WelcomeWalkState, trees: readonly WelcomeTree[]): boo
   !welcomeGroveAllows(trees, state.x, state.z, WELCOME_SLACK)
 
 /**
- * The way back to the middle, taken on faith rather than on a look-ahead. 🛑 A walker who can only
- * ever refuse turns on the spot for the rest of the session: measured 2026-09-06 over ten strolls
- * of a quarter of an hour, two ended theirs doing exactly that, one of them well inside the yard.
+ * The way back to the middle. 🛑 Read at CONTACT and not at the look-ahead's slack: the walker is
+ * already inside that ring, so asking for it again answers shut and strands them there for the
+ * rest of the session — measured 2026-09-06, two strolls of ten ended theirs doing exactly that.
  */
-function outOf(state: WelcomeWalkState): WelcomeClipName {
-  const error = shortWay(
-    state.heading,
-    Math.atan2(WELCOME_YARD_AT.x - state.x, WELCOME_YARD_AT.z - state.z),
-  )
+function outOf(state: WelcomeWalkState, trees: readonly WelcomeTree[]): WelcomeClipName {
+  const error = headingErrorOf(state, WELCOME_YARD_AT)
   if (Math.abs(error) > Math.PI - QUARTER) return 'TurnAround'
   if (Math.abs(error) > SPREAD) return turnOf(error)
+  if (!welcomeGroveOpens(trees, state, WALK_REACH, 0, 0)) return turnOf(error === 0 ? 1 : error)
 
   return state.clip ? 'Walk' : 'WalkStart'
 }

@@ -4,16 +4,17 @@ export type WelcomePoint = { x: number; y: number; z: number }
 export type WelcomePose = { eye: WelcomePoint; target: WelcomePoint }
 
 /**
- * What the camera ORBITS and aims at: BELOW the eye, since a level camera renders a band of nothing
- * where the floor has to read as a viewport, and in FRONT of the yard, since the middle of the
- * frame belongs to the sheet of copy — aimed at the walker, the walker stands behind it.
+ * What the camera ORBITS and aims at, standing OVER the middle of the yard and BELOW the eye — a
+ * level camera renders a band of nothing where the floor has to read as a viewport. 🛑 Orbited
+ * around the origin instead, a yard three metres behind it swept sideways as the carousel turned:
+ * measured 2026-09-06, the walker had left the frame by the seventh slide.
  */
-export const WELCOME_TARGET: WelcomePoint = { x: 0, y: 1, z: 2.2 }
+export const WELCOME_TARGET: WelcomePoint = { x: 0, y: 2.15, z: -3 }
 
-export const WELCOME_HEIGHT = 3.9
+export const WELCOME_HEIGHT = 3.8
 
-/** Far enough that a walker reaching the near edge of the yard is a figure, not a close-up. */
-export const WELCOME_RADIUS = 11.5
+/** Near enough that the walker is the SUBJECT of this window, not a detail of its floor. */
+export const WELCOME_RADIUS = 10.5
 
 /**
  * How far the viewpoint swings for ONE carousel step, in radians — about seven degrees. Sliding
@@ -43,9 +44,9 @@ export function welcomePose(elapsed: number, azimuth: number): WelcomePose {
   const radius = WELCOME_RADIUS + Math.cos(elapsed * 0.07) * WELCOME_DRIFT
   return {
     eye: {
-      x: Math.sin(angle) * radius,
+      x: WELCOME_TARGET.x + Math.sin(angle) * radius,
       y: WELCOME_HEIGHT + Math.sin(elapsed * 0.06) * WELCOME_DRIFT * 0.4,
-      z: Math.cos(angle) * radius,
+      z: WELCOME_TARGET.z + Math.cos(angle) * radius,
     },
     target: WELCOME_TARGET,
   }

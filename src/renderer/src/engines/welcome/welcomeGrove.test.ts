@@ -3,9 +3,11 @@ import {
   welcomeClearanceOf,
   welcomeGroveAllows,
   welcomeGroveOpens,
+  welcomeYardStop,
   WELCOME_GROVE,
   WELCOME_YARD,
   WELCOME_YARD_AT,
+  type WelcomeTree,
 } from './welcomeGrove'
 
 describe('the welcome grove', () => {
@@ -43,11 +45,46 @@ describe('the welcome grove', () => {
     ).toBe(false)
   })
 
+  it('sends a walker somewhere they can stand, whatever the slide', () => {
+    for (let slide = 0; slide < 7; slide += 1) {
+      const stop = welcomeYardStop(WELCOME_GROVE, { x: 0, z: 8 }, slide)
+
+      expect(welcomeGroveAllows(WELCOME_GROVE, stop.x, stop.z)).toBe(true)
+    }
+  })
+
+  it('crosses the plate from one slide to the next, rather than fidgeting on one spot', () => {
+    const stops = [0, 1, 2, 3, 4, 5, 6].map(slide =>
+      welcomeYardStop(WELCOME_GROVE, { x: 0, z: 8 }, slide),
+    )
+
+    for (const [index, stop] of stops.entries()) {
+      const next = stops[index + 1]
+      if (next) expect(Math.hypot(next.x - stop.x, next.z - stop.z)).toBeGreaterThan(4)
+    }
+  })
+
+  it('falls back into the yard rather than onto a planter standing on that bearing', () => {
+    const ahead: WelcomeTree = {
+      x: WELCOME_YARD_AT.x,
+      z: WELCOME_YARD_AT.z + WELCOME_YARD.z * 0.82,
+      height: 1,
+      crown: 1,
+      planter: 0.6,
+      turn: 0,
+    }
+
+    const stop = welcomeYardStop([ahead], { x: 0, z: 8 }, 0)
+
+    expect(welcomeGroveAllows([ahead], stop.x, stop.z)).toBe(true)
+  })
+
   it('reads a heading as blocked when the tree is ahead rather than merely near', () => {
     const from = { x: WELCOME_YARD_AT.x, z: WELCOME_YARD_AT.z }
     const tree = { ...from, z: from.z + 3, height: 1, crown: 1, planter: 0.6, turn: 0 }
 
     expect(welcomeGroveOpens([tree], { ...from, heading: 0 }, 2.5)).toBe(false)
-    expect(welcomeGroveOpens([tree], { ...from, heading: Math.PI }, 2.5)).toBe(true)
+    // Along the LONG axis, which is the only bearing a 2.5 m look-ahead fits inside the yard on.
+    expect(welcomeGroveOpens([tree], { ...from, heading: Math.PI / 2 }, 2.5)).toBe(true)
   })
 })

@@ -35,6 +35,7 @@ const FALLBACK_CHASSIS = 0x2b2d30
 const FALLBACK_VIEWPORT = 0x33363b
 const FALLBACK_VIEWPORT_LINE = 0x494d54
 const FALLBACK_MESH = 0x868a91
+const FALLBACK_ELEVATED = 0x3c3f44
 const FALLBACK_ACCENT = 0x346ef2
 const FALLBACK_FOLIAGE = 0x6fb79b
 
@@ -209,6 +210,7 @@ export class WelcomeBackdrop {
 
   setSlide(index: number): void {
     this.wantedAzimuth = welcomeAzimuth(index)
+    this.hero.faceEye(welcomePose(0, this.wantedAzimuth).eye, index)
     this.start()
   }
 
@@ -224,7 +226,13 @@ export class WelcomeBackdrop {
     this.floor.material.color.copy(ground)
     this.grid.material.color.copy(line)
     this.motes.material.color.copy(mesh)
-    this.trees.paint(mesh, hexColor(this.canvas, '--color-foliage', FALLBACK_FOLIAGE), this.wall)
+    // A planter is a SURFACE of this app, not its wall: painted in the chassis it read as a black
+    // hole in the plate, since the floor beside it is lit and the chassis is not.
+    this.trees.paint(
+      mesh,
+      hexColor(this.canvas, '--color-foliage', FALLBACK_FOLIAGE),
+      hexColor(this.canvas, '--color-elevated', FALLBACK_ELEVATED),
+    )
     this.sky.color.copy(line)
     // The LINE and not the ground: a hemisphere's lower half is the bounce off the floor, and the
     // floor here is LIT. Handed the raw ground token it returned nothing, and every facet that
