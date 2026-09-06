@@ -37,7 +37,7 @@ import { CameraPostSection } from '../Camera/CameraPostSection'
 import { PostProcessingSection } from '../Post/PostProcessingSection'
 import { MaterialSection } from '../../../material/components/Material/MaterialSection'
 import { ModelDressSection } from '../ModelDressSection/ModelDressSection'
-import { workshopIdOf } from '@/character/characterStage'
+import { workshopIdOf } from '@shared/domain/character'
 import { CharacterMotionList } from '../../../character/components/Character/Motion/CharacterMotionList'
 import {
   fileTexturesOfNode,
