@@ -2,18 +2,18 @@ import { mdiAccountOutline } from '@mdi/js'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { playerModuleAssetOf } from '@shared/domain/playerModuleWindow'
-import { DEFAULT_SETTINGS } from '@shared/domain/settings'
 import { EmptyState } from '@/components/EmptyState'
 import { WindowShell } from '@/components/WindowShell'
 import { sceneFromGltf } from '@/engines/scene/gltfDocument'
 import { SceneRenderer } from '@/engines/scene/SceneRenderer'
 import { EMPTY_SCENE, type SceneState } from '@/engines/scene/sceneState'
 import { fetchAsset } from '@/helpers/assetFetch'
-import { leaveProject } from '@/helpers/leaveProject'
 import { useAppliedSettings } from '@/hooks/useAppliedSettings'
+import { useConnections } from '@/hooks/useConnections'
 import { reportFailure } from '@/services/diagnostics'
 import { assetVersionOf } from '@/stores/assets'
 import { useProject } from '@/stores/project'
+import { useSettings } from '@/stores/settings'
 
 /**
  * A player module on its own. It reads the FILE its route names rather than a scene: a second
@@ -31,6 +31,13 @@ export function PlayerModuleWindow() {
   const [failure, setFailure] = useState<string | null>(null)
   useAppliedSettings()
   const [assetId, setAssetId] = useState(playerModuleAssetOf(window.location.hash))
+  const connectProject = useProject(state => state.connect)
+  const connectSettings = useSettings(state => state.connect)
+  const three = useSettings(state => state.settings.three)
+
+  // The project, not just the module: a mesh wears the material of OTHER documents, read off this
+  // window's own stores. And the settings, or the window shows the defaults' theme and lens.
+  useConnections([connectProject, connectSettings])
 
   // 🛑 The main process turns THIS window towards another module by reloading its fragment, which
   // Chromium treats as a same-document navigation: nothing re-renders, so the window went on
@@ -45,24 +52,25 @@ export function PlayerModuleWindow() {
     const element = hostRef.current
     if (!element) return
 
-    // The project, not just the module: a mesh wears the material of OTHER documents, and the
-    // ports that read them walk this window's own stores — see `GameWindow`.
-    const leaving = useProject.getState().connect()
     const renderer = new SceneRenderer({
       onSelect: () => {},
       onTransform: () => {},
       assetVersion: assetVersionOf,
     })
     renderer.mount(element)
-    renderer.configure(DEFAULT_SETTINGS.three)
+    renderer.configure(useSettings.getState().settings.three)
     engine.current = renderer
 
     return () => {
       engine.current = null
       renderer.unmount()
-      void leaveProject(leaving)
     }
   }, [])
+
+  // Its own effect: the one that mounts the renderer must not run again for a preference.
+  useEffect(() => {
+    engine.current?.configure(three)
+  }, [three])
 
   useEffect(() => {
     if (assetId) void readModule(assetId, setRead, setFailure)

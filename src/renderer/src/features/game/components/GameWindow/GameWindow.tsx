@@ -27,12 +27,13 @@ export function GameWindow() {
   const { t } = useTranslation()
   const hostRef = useRef<HTMLDivElement>(null)
   const [report, setReport] = useState<RuntimeReport | null>(null)
+  const engineRef = useRef<SceneRenderer | null>(null)
   const connectProject = useProject(state => state.connect)
   const connectSettings = useSettings(state => state.connect)
+  const three = useSettings(state => state.settings.three)
 
-  // 🛑 The project, and not just the scene: a model wears the material and the sky of OTHER
-  // documents, and the ports that read them walk this window's own stores. Without it a game
-  // draws every model in its raw file dress. And the settings: a window of its own opens on the
+  // 🛑 The project, not just the scene: a model wears the material and the sky of OTHER documents,
+  // read off this window's own stores. And the settings: a window of its own opens on the
   // defaults, and a game drawn from them opens on another lens than the editor it left.
   useConnections([connectProject, connectSettings])
 
@@ -53,12 +54,7 @@ export function GameWindow() {
     })
     renderer.mount(element)
     renderer.configure(gameViewport(useSettings.getState().settings.three))
-    // Followed, not read once: the settings land after the window opens, and the person may
-    // change the lens while the game runs. Compared by identity — the store writes on every read.
-    const unfollow = useSettings.subscribe((state, previous) => {
-      if (state.settings.three === previous.settings.three) return
-      renderer.configure(gameViewport(state.settings.three))
-    })
+    engineRef.current = renderer
 
     // 🛑 Aimed ONCE per game: nothing here ever dragged a viewport, so without it the window
     // opens on the engine's default angle — and re-aiming per frame makes the camera chase a
@@ -81,11 +77,16 @@ export function GameWindow() {
     })
 
     return () => {
-      unfollow()
+      engineRef.current = null
       stage.close()
       renderer.dispose()
     }
   }, [])
+
+  // Its own effect: the one that mounts the game must not run again for a preference.
+  useEffect(() => {
+    engineRef.current?.configure(gameViewport(three))
+  }, [three])
 
   return (
     <div className="bg-monitor relative h-full w-full">

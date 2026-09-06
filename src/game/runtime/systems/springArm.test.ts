@@ -34,7 +34,7 @@ const armed = (over: Record<string, JsonValue> = {}): Component => {
 
 function rigged(
   over: Record<string, JsonValue> = {},
-  filmable: (entity: Entity) => boolean = () => true,
+  lensOf: (entity: Entity) => number | null = () => 50,
   ported: PhysicsPort | null = null,
 ): {
   world: World
@@ -59,7 +59,7 @@ function rigged(
         // Flat: every node of these cases hangs from nothing, so its own frame IS the world's.
         worldOf: (_, own) => own,
         localOf: () => null,
-        filmable,
+        lensOf,
       }),
     ],
   })
@@ -235,7 +235,7 @@ describe('the arm a camera hangs on', () => {
    * inside the model — measured, before the window was asked what a camera is.
    */
   it('places a node that is not a camera without filming through it', () => {
-    const { world, rigs, eye } = rigged({ length: 4, height: 1.6 }, () => false)
+    const { world, rigs, eye } = rigged({ length: 4, height: 1.6 }, () => null)
 
     world.lateUpdate(0, FRAME)
 
@@ -421,7 +421,7 @@ describe('the arm against the physics it will be ridden with', () => {
         transform: restingAt(-1, 1.5, 2),
       }),
     ])
-    const { world, hero, eye } = rigged({ length: 4, height: 1.6 }, () => true, physics)
+    const { world, hero, eye } = rigged({ length: 4, height: 1.6 }, () => 50, physics)
 
     const reach: number[] = []
     // Walking left at the scene's own pace, straight past the post.

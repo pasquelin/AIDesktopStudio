@@ -148,7 +148,7 @@ describe('what an exported game pays for an image', () => {
     expect(renderer.passes).toBe(2)
   })
 
-  it('draws again on a lens that moved, without a depth pass, and not on the same lens again', async () => {
+  it('draws again on an eye that moved, without a depth pass, and not on the same eye again', async () => {
     const { render, renderer } = await stagedGame()
     render.draw()
 

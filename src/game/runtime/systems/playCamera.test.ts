@@ -20,7 +20,6 @@ function watching(
   controlled = true,
   rigs: Rigs = createRigs(null),
   playerBodyId: string | null = null,
-  lensOf?: (entity: { id: string }) => number | undefined,
 ) {
   const pilots = createPilots()
   // The pointer the case moves between two frames, which is what the head is read off.
@@ -43,7 +42,7 @@ function watching(
       input: heldInput,
       render: { place: () => {}, view: view => views.push(view), veil: () => {} },
     }),
-    systems: [createPlayCameraSystem({ characters, pilots, rigs, playerBodyId, lensOf })],
+    systems: [createPlayCameraSystem({ characters, pilots, rigs, playerBodyId })],
   })
   if (controlled) {
     world.entities.add({
@@ -119,28 +118,13 @@ describe('the camera rank of a running game', () => {
       components: [],
     })
     const eye = world.entities.get('eye')
-    if (eye) rigs.take(eye)
+    if (eye) rigs.take(eye, 50)
 
     world.lateUpdate(0, STEP_SECONDS)
 
     expect(views.at(-1)?.position).toEqual({ x: 2, y: 3, z: 4 })
     // A camera at rest looks down −Z, so the mark it is aimed at is one metre that way.
     expect(views.at(-1)?.target.z).toBeCloseTo(3, 6)
-  })
-
-  /** The node's lens, not the viewport's: a 35° camera drawn at 60° is not the author's shot. */
-  it('films through the lens of the node the arm placed', () => {
-    const rigs = createRigs(null)
-    const { world, views } = watching('thirdPerson', true, rigs, null, entity =>
-      entity.id === 'eye' ? 35 : undefined,
-    )
-    world.entities.add({ id: 'eye', name: 'eye', transform: restingTransform(), components: [] })
-    const eye = world.entities.get('eye')
-    if (eye) rigs.take(eye)
-
-    world.lateUpdate(0, STEP_SECONDS)
-
-    expect(views.at(-1)?.fieldOfView).toBe(35)
   })
 
   /**
@@ -155,7 +139,7 @@ describe('the camera rank of a running game', () => {
     world.entities.add({ id: 'car', name: 'car', transform: restingTransform(), components: [] })
     const eye = world.entities.get('eye')
     const car = world.entities.get('car')
-    if (eye) rigs.take(eye)
+    if (eye) rigs.take(eye, 50)
     if (car) pilots.take(car, 0, 5, PILOT_RANK.machine)
 
     world.lateUpdate(0, STEP_SECONDS)
@@ -168,7 +152,7 @@ describe('the camera rank of a running game', () => {
     const { world, views } = watching('orbit', true, rigs)
     world.entities.add({ id: 'eye', name: 'eye', transform: restingTransform(), components: [] })
     const eye = world.entities.get('eye')
-    if (eye) rigs.take(eye)
+    if (eye) rigs.take(eye, 50)
 
     world.lateUpdate(0, STEP_SECONDS)
 

@@ -1,17 +1,17 @@
-import type { Settings } from '@shared/domain/settings'
+import { renderPolicyOf } from '@shared/domain/renderPolicy'
+import { DEFAULT_SETTINGS, type Settings } from '@shared/domain/settings'
 
 /**
- * A game wants the scene, not the workshop it was built in: the person's lens, quality and
- * shadows, with every aid they can turn on turned off — `chrome: false` holds the rest.
+ * What a game window draws with: the policy an export carries — lens, quality, shadows — and
+ * not one editor aid, whatever the studio shows. `chrome: false` holds the rest.
  */
 export function gameViewport(three: Settings['three']): Settings['three'] {
   return {
-    ...three,
+    ...DEFAULT_SETTINGS.three,
+    ...renderPolicyOf(three),
     showGrid: false,
     lightHelpers: 'off',
     cameraHelpers: 'off',
     boundingBoxes: 'off',
-    origins: false,
-    normals: false,
   }
 }

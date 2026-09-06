@@ -64,7 +64,7 @@ export abstract class SceneRendererPreview extends SceneRendererSkinning {
     camera.lookAt(placement.target.x, placement.target.y, placement.target.z)
     this.viewport.orbit?.target.set(placement.target.x, placement.target.y, placement.target.z)
     this.drivenLens = placement.fieldOfView ?? null
-    this.viewport.setFieldOfView(this.drivenLens ?? this.view.fieldOfView)
+    this.driveLens()
     // On the TRANSITION: this runs every frame of a game, for a value that changes twice a session.
     if (!this.viewDriven) {
       this.viewDriven = true
@@ -77,7 +77,7 @@ export abstract class SceneRendererPreview extends SceneRendererSkinning {
   releaseView(): void {
     this.viewDriven = false
     this.drivenLens = null
-    this.viewport.setFieldOfView(this.view.fieldOfView)
+    this.driveLens()
     this.syncPaneFreeze()
   }
 

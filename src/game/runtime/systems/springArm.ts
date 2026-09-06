@@ -26,10 +26,11 @@ export type SpringArmOptions = {
   /** A world pose written back into a node's own frame — nothing when it hangs from nothing. */
   localOf: (entity: Entity, position: Vector3, rotation: Vector3) => Transform | null
   /**
-   * Whether a node can be SEEN THROUGH. An arm places whatever it is pointed at, but only a
-   * camera takes the shot — filming through a mesh takes the picture from inside the model.
+   * The lens of a node that can be SEEN THROUGH, in degrees, and nothing for one that cannot. An
+   * arm places whatever it is pointed at, but only a camera takes the shot — filming through a
+   * mesh takes the picture from inside the model.
    */
-  filmable: (entity: Entity) => boolean
+  lensOf: (entity: Entity) => number | null
 }
 
 /**
@@ -44,7 +45,7 @@ type Held = { look: Look; at: Vector3; aim: number; free: number }
  * step it would run twice as fast on a screen drawing twice as often.
  */
 export function createSpringArmSystem(options: SpringArmOptions): System {
-  const { characters, rigs, worldOf, localOf, filmable } = options
+  const { characters, rigs, worldOf, localOf, lensOf } = options
   // Two caches, because `createTargets` keeps ONE name per follower and an arm names two.
   const subjects = createTargets()
   const cameras = createTargets()
@@ -75,7 +76,8 @@ export function createSpringArmSystem(options: SpringArmOptions): System {
     const towards = BACK.x === 0 && BACK.y === 0 && BACK.z === 0 ? AHEAD : BACK
     turnTowards(TURNED, towards, 0)
     place(camera, PLACED, TURNED)
-    if (filmable(camera)) rigs.take(camera)
+    const lens = lensOf(camera)
+    if (lens !== null) rigs.take(camera, lens)
   }
 
   const updateArm = (world: World, entity: Entity, alpha: number, dt: number): void => {

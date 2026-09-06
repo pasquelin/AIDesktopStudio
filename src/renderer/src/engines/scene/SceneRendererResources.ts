@@ -56,6 +56,10 @@ export abstract class SceneRendererResources extends SceneRendererState {
   /** The lens the driven view asked for, which a `configure` must not undo while it is held. */
   protected drivenLens: number | null = null
 
+  protected driveLens(): void {
+    this.viewport.setFieldOfView(this.drivenLens ?? this.view.fieldOfView)
+  }
+
   /** Where the head looks while the pointer is captured. Read off the camera when the mode opens. */
   protected look: SphericalAngles = DEFAULT_LOOK
 

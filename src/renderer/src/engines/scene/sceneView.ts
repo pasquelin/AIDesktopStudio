@@ -18,6 +18,7 @@ import {
   type Vector3 as PlainVector3,
   type ViewDirection,
 } from '@shared/domain/scene'
+import type { CameraView as Shot } from '@shared/domain/transform'
 import { centreOf, transformOf } from './pivot'
 
 /**
@@ -296,12 +297,7 @@ export type Framing = { target: Vector3; position: Vector3 }
  * The same pair as plain numbers, for whoever has to store or hand it across — a store holds no
  * three.js object, and a placement read back into a fresh engine must survive the trip.
  */
-export type CameraPlacement = {
-  position: PlainVector3
-  target: PlainVector3
-  /** In degrees. Absent, the viewport keeps the lens its settings give it. */
-  fieldOfView?: number
-}
+export type CameraPlacement = Shot
 
 /**
  * One block watched on a clock of its own — which block, from where, and whether it runs.

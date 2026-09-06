@@ -14,7 +14,7 @@ import {
 import { clamp } from '@shared/numeric'
 import type { AssetPort } from '@game/ports/assetPort'
 import type { CameraView, EntityPlacement, RenderPort } from '@game/ports/renderPort'
-import { sameVector3 } from '@shared/domain/transform'
+import { copyCameraView, sameCameraView } from '@shared/domain/transform'
 import { applyToneMapping } from '@/engines/scene/worldBinding'
 import { applyShadowPolicy, throwsOf, tuneShadowMaps } from '@/engines/scene/shadows'
 import type { ShadowThrow } from '@/engines/scene/grouping'
@@ -78,7 +78,7 @@ export function createWebRender(
   /** The canvas differs from the next frame for a reason the scene cannot see: size, lens, veil. */
   let pictureStale = true
   let cast: ShadowThrow | null = null
-  const aim = new Vector3()
+  const watched: CameraView = { position: { ...NOWHERE }, target: { ...NOWHERE } }
   /** 🛑 Dynamic: its three.js passes are weight every game without effects would carry for nothing. */
   const chain = composerHold(renderer, assets)
   /** Seconds, off the game's own clock: grain and tape jitter advance on it, never on a wall. */
@@ -137,10 +137,10 @@ export function createWebRender(
     },
 
     view: (view: CameraView | null) => {
-      // Dropped when it has not MOVED, as the studio drops it; `aim` is what it last looked at.
-      if (!view) return
-      const moved = aimCamera(camera, aim, view, view.fieldOfView ?? policy.fieldOfView)
-      if (!moved && aimed) return
+      // Dropped when it has not MOVED, as the studio drops it.
+      if (!view || sameCameraView(watched, view)) return
+      copyCameraView(watched, view)
+      aimCamera(camera, view, view.fieldOfView ?? policy.fieldOfView)
       aimed = true
       pictureStale = true
     },
@@ -319,22 +319,16 @@ function tuneSceneShadows(built: GameScene, policy: RenderPolicy): ShadowThrow |
   return tuned ? throwsOf(tuned.framed, built.shadowBounds, tuned.reach) : null
 }
 
-/** Points the camera and swaps its lens, and says whether any of it moved. */
-function aimCamera(camera: PerspectiveCamera, aim: Vector3, view: CameraView, lens: number) {
-  const still =
-    camera.fov === lens &&
-    sameVector3(camera.position, view.position) &&
-    sameVector3(aim, view.target)
-  if (still) return false
-  aim.set(view.target.x, view.target.y, view.target.z)
+function aimCamera(camera: PerspectiveCamera, view: CameraView, lens: number): void {
   camera.position.set(view.position.x, view.position.y, view.position.z)
   camera.lookAt(view.target.x, view.target.y, view.target.z)
-  if (camera.fov !== lens) {
-    camera.fov = lens
-    camera.updateProjectionMatrix()
-  }
-  return true
+  if (camera.fov === lens) return
+  camera.fov = lens
+  camera.updateProjectionMatrix()
 }
+
+/** Off the scene, so the first view a game asks for is never mistaken for the one already held. */
+const NOWHERE = { x: Number.NaN, y: Number.NaN, z: Number.NaN }
 
 /** A black sheet across the frame, drawn over the scene at the veil's own opacity. */
 function veilPass() {

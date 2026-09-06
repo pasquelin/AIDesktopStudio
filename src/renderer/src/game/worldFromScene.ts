@@ -90,7 +90,7 @@ export function worldFromScene(
   animationGraphs: readonly AnimationGraphModule[] = [],
 ): World {
   // A module's arm reads the TREE rather than its two written names. It rewrites the STATE where
-  // `filmable` and the seat stay closure arguments: `springArm` reads its two fields off the
+  // `lensOf` and the seat stay closure arguments: `springArm` reads its two fields off the
   // ENTITY, so what the tree says has to be in the components an entity is built from.
   const state: SceneState = {
     ...given,
@@ -258,7 +258,7 @@ function systemsFor(
             worldOf: placedAt,
             localOf: (entity, position, rotation) =>
               hierarchy.localOf(entity.id, position, rotation),
-            filmable: entity => byId.get(entity.id)?.type === 'camera',
+            lensOf: entity => cameraLensOf(byId.get(entity.id)),
           }),
           createAnimatorSystem({ graphOf, characters, animators }),
           createPlayCameraSystem({
@@ -267,7 +267,6 @@ function systemsFor(
             pilots,
             rigs,
             playerBodyId: player?.body?.id ?? null,
-            lensOf: entity => cameraLensOf(byId.get(entity.id)),
           }),
         ]
       }
@@ -277,9 +276,9 @@ function systemsFor(
   }
   return systemsForStep1()
 }
-/** What a camera node sees through, and nothing for a node that is not one. */
-function cameraLensOf(node: SceneNode | undefined): number | undefined {
-  return node?.type === 'camera' ? node.camera.fov : undefined
+/** The REST lens of a camera node — a game plays no timeline, so `lensAt` is never asked. */
+function cameraLensOf(node: SceneNode | undefined): number | null {
+  return node?.type === 'camera' ? node.camera.fov : null
 }
 
 /** The scene's ground as a slab, its top face at zero — where the studio draws it. */

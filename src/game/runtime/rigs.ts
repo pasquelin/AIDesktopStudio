@@ -8,21 +8,28 @@ import type { Entity } from './entity'
  * with two and no module turns one off by clearing its `camera`.
  */
 export type Rigs = {
-  take: (camera: Entity) => void
+  /** The node, and the lens it is seen through in degrees — the runtime holds no camera. */
+  take: (camera: Entity, lens: number) => void
   leader: () => Entity | null
+  /** The leader's lens. Read once the shot is composed, never before a `take`. */
+  lens: () => number
   /** Emptied once the shot is composed, so an arm destroyed mid-game stops being filmed. */
   release: () => void
 }
 
 export function createRigs(preferred: string | null): Rigs {
   let held: Entity | null = null
+  let lens = 0
 
   return {
-    take: camera => {
+    take: (camera, through) => {
       // Which arm the sweep met first is not a choice an author can see, let alone make.
-      if (held === null || camera.id === preferred) held = camera
+      if (held !== null && camera.id !== preferred) return
+      held = camera
+      lens = through
     },
     leader: () => held,
+    lens: () => lens,
     release: () => {
       held = null
     },

@@ -19,10 +19,10 @@ describe('SceneRenderer and the camera a running game writes', () => {
 
   /** The lens is the node's while a game films through it, and the person's own again after. */
   it('draws through the lens a placed view carries, and gives the settings back on release', () => {
-    const placed = method('placeView', 'placement: CameraPlacement')
-    expect(placed).toContain('this.drivenLens = placement.fieldOfView ?? null')
-    expect(placed).toContain('setFieldOfView(this.drivenLens ?? this.view.fieldOfView)')
-    expect(method('releaseView')).toContain('setFieldOfView(this.view.fieldOfView)')
+    expect(method('placeView', 'placement: CameraPlacement')).toContain(
+      'this.drivenLens = placement.fieldOfView ?? null',
+    )
+    expect(method('releaseView')).toContain('this.drivenLens = null')
   })
 
   /** The flag alone would freeze nothing: the freeze is composed in one place, and reads all four. */
