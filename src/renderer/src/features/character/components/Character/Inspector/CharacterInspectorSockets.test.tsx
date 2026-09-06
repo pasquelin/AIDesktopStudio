@@ -77,6 +77,19 @@ describe('where an object can be hung on a character', () => {
     expect(screen.getByText(/aucun point d’attache/i)).toBeInTheDocument()
   })
 
+  it('adds nothing under a name already taken, and keeps what was typed', async () => {
+    seedCharacter(ASSET, RIG, {
+      sockets: [{ id: 's1', name: 'Main Droite', bone: 'Hips', rest: IDENTITY_TRANSFORM }],
+    })
+    show()
+
+    await userEvent.type(screen.getByLabelText('Nom'), 'Main Droite')
+    await userEvent.click(screen.getByRole('button', { name: 'Ajouter un point d’attache' }))
+
+    expect(sockets()).toHaveLength(1)
+    expect(screen.getByLabelText('Nom')).toHaveValue('Main Droite')
+  })
+
   it('adds nothing without a name', async () => {
     show()
 

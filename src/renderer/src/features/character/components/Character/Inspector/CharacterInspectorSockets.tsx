@@ -44,10 +44,17 @@ export function CharacterInspectorSockets({ assetId, rig }: CharacterInspectorSo
   const add = (): void => {
     if (!bone) return
 
-    run(
-      assetId,
-      addCharacterSocket({ id: newId(), name: name.trim(), bone, rest: IDENTITY_TRANSFORM }),
-    )
+    const command = addCharacterSocket({
+      id: newId(),
+      name: name.trim(),
+      bone,
+      rest: IDENTITY_TRANSFORM,
+    })
+    // A name already taken is refused, not written: the field keeps it rather than emptying as
+    // if a point had been made.
+    if (command.refuses?.(characterOf(useCharacters.getState(), assetId))) return
+
+    run(assetId, command)
     setName('')
   }
 
