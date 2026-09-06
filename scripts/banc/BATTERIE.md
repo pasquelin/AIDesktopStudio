@@ -34,7 +34,7 @@ répond pas, fût-ce par une liste vide. `coverage.test.ts` tient le reste — u
 nomme aucun scénario, et le rôle de ce qui reste sans mesure, **écrit en toutes lettres plutôt que
 compté** : un compte reste vert le jour où un trou se comble pendant qu'un autre se creuse.
 
-**Déclaré n'est pas mesuré**, et le rapport du banc écrit les deux : `MCP reached: N/305` compte ce
+**Déclaré n'est pas mesuré**, et le rapport du banc écrit les deux : `MCP reached: N/310` compte ce
 qu'une passe a vraiment appelé, et la ligne `declared covered, never reached` nomme les actions que
 `coverage.ts` promettait et qu'aucun run n'a touchées.
 
@@ -668,6 +668,7 @@ Sur l'image du bateau ouverte :
 - [x] « Duplique le calque Bateau. »
 - [x] « Verrouille le calque Bateau pour ne plus y toucher. »
 - [x] « Ajoute un calque de texte qui dit Bonjour. »
+- [x] « Prépare ce document pour une impression en niveaux de gris à 300 ppp et 16 bits. »
 
 ## 40. Les pistes et la tête de lecture
 
@@ -718,6 +719,8 @@ Sur un montage vidéo portant deux plans et un fond sonore :
 - [x] « Quels comptes ai-je enregistrés ? »
 - [ ] « Bascule sur mon deuxième compte. »
 - [ ] « Renomme ce compte Studio Perso. »
+- [x] « Quels modèles IA locaux sont installés et lequel peut servir l’assistant ? »
+- [x] « Vérifie si le moteur local de mouvement est prêt et ce qui lui manque. »
 
 ## 44. Générations en cours
 
@@ -772,6 +775,7 @@ Dans la scène Test MCP, avec Camera Test :
 - [x] « Ajoute un brouillard léger. »
 - [ ] « Ajoute un sol sous mes objets. »
 - [ ] « Passe le rendu en qualité maximale. »
+- [ ] « Ajoute une couche de semis d’arbres à cette scène. »
 
 ## 49. Animation — le reste
 

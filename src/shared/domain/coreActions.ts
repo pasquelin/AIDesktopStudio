@@ -3,7 +3,24 @@ import { action, type ActionCommitment, type AssistantAction } from './assistant
 import { COMMAND_REGISTRY, type CommandId } from './command'
 import { LANDING_TARGETS } from './landingTarget'
 import { MODEL_FAMILIES } from './model'
+import { allRoles } from './aiRole'
+import { CHOICE_SCOPES } from './aiOverview'
 import { WORKSPACE_IDS } from './workspace'
+
+const AI_MANAGEMENT_OPERATIONS = [
+  'choose',
+  'install',
+  'cancelInstall',
+  'remove',
+  'load',
+  'cancelLoad',
+  'unload',
+  'readEngine',
+  'installEngine',
+  'cancelEngineInstall',
+  'installRuntime',
+  'cancelRuntimeInstall',
+]
 
 /**
  * The commands that upload a picture before they prepare anything.
@@ -39,6 +56,60 @@ export function commitmentOfCommand(id: string): ActionCommitment {
  * program that read `tools/list`, and reaches `mcp` alone.
  */
 export const CORE_ACTIONS: readonly AssistantAction[] = [
+  action({
+    name: 'ai.localState',
+    titleKey: 'assistant.actions.aiLocalState.title',
+    descriptionKey: 'assistant.actions.aiLocalState.description',
+    commitment: 'none',
+    repeatable: true,
+    reach: 'mcp',
+    fields: [],
+  }),
+  action({
+    name: 'ai.manageLocalRuntime',
+    titleKey: 'assistant.actions.aiManageLocalRuntime.title',
+    descriptionKey: 'assistant.actions.aiManageLocalRuntime.description',
+    commitment: 'none',
+    raises: input => (input.operation === 'readEngine' ? 'none' : 'studio'),
+    repeatable: true,
+    reach: 'mcp',
+    fields: [
+      {
+        key: 'operation',
+        kind: 'choice',
+        labelKey: 'assistant.fields.aiOperation',
+        required: true,
+        options: AI_MANAGEMENT_OPERATIONS,
+      },
+      {
+        key: 'localId',
+        kind: 'text',
+        labelKey: 'assistant.fields.localId',
+        required: false,
+      },
+      {
+        key: 'role',
+        kind: 'choice',
+        labelKey: 'assistant.fields.aiRole',
+        required: false,
+        options: allRoles(),
+      },
+      {
+        key: 'scope',
+        kind: 'choice',
+        labelKey: 'assistant.fields.aiScope',
+        required: false,
+        options: CHOICE_SCOPES,
+      },
+      {
+        key: 'profile',
+        kind: 'choice',
+        labelKey: 'assistant.fields.aiProfile',
+        required: false,
+        options: ['motion'],
+      },
+    ],
+  }),
   action({
     name: 'command.runStudioCommand',
     titleKey: 'assistant.actions.commandRunStudioCommand.title',

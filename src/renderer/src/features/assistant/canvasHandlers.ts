@@ -31,6 +31,9 @@ import {
   resizeImage,
   rotateImage,
   setLayerMask,
+  setCanvasBitDepth,
+  setCanvasColorMode,
+  setCanvasDpi,
   ungroupLayer,
 } from '@/engines/canvas/commands'
 import type { Command } from '@/engines/core/history'
@@ -86,6 +89,8 @@ function readState(): ActionOutcome {
       width: open.state.width,
       height: open.state.height,
       dpi: open.state.dpi,
+      colorMode: open.state.colorMode,
+      bitDepth: open.state.bitDepth,
       // Derived rather than stored, and the only thing a client needs in order to place a cell:
       // asked to work it out from a size and a cell, a model gets it wrong one time in three.
       ...(grid === null ? {} : { pixelArt: grid }),
@@ -130,6 +135,24 @@ function readState(): ActionOutcome {
       })),
     },
   }
+}
+
+function setDocumentProperties(input: Record<string, unknown>): ActionOutcome {
+  const dpi = numberOf(input, 'dpi')
+  const colorMode = oneOf(input, 'colorMode', ['rgb', 'grayscale'])
+  const bitDepth = oneOf(input, 'bitDepth', [8, 16, 32])
+  const named = dpi !== null || colorMode !== null || bitDepth !== null
+  if (!named || (dpi !== null && dpi < 1))
+    return refused('badInput', 'name at least one valid document property')
+
+  return editCanvas(
+    () => [
+      ...(dpi === null ? [] : [setCanvasDpi(dpi)]),
+      ...(colorMode === null ? [] : [setCanvasColorMode(colorMode)]),
+      ...(bitDepth === null ? [] : [setCanvasBitDepth(bitDepth)]),
+    ],
+    'this call changes no document property',
+  )
 }
 
 function pointOf(value: unknown): Point | null {
@@ -383,6 +406,7 @@ export const CANVAS_HANDLERS: ActionHandlers = {
   ...CANVAS_LAYER_HANDLERS,
   ...CANVAS_PIXEL_HANDLERS,
   'canvas.state': readState,
+  'canvas.setDocumentProperties': setDocumentProperties,
   'img.pin': generationComment,
   'canvas.resize': resize,
   'canvas.crop': crop,

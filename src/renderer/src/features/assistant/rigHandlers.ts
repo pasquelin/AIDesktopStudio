@@ -52,6 +52,7 @@ import { NO_SCENE } from './sceneHandlers'
 import { maybeBoolOf, numberOf, oneOf, textOf } from './actionInputs'
 import { nodeAimed } from './nodeAimed'
 import { RIG_KEY_HANDLERS } from './rigKeyHandlers'
+import { reopenCharacterMotion } from '@/character/characterMotion'
 
 /**
  * The skeleton of a character, the handles its joints reach for, and the blocks laid on its band.
@@ -81,6 +82,24 @@ function noModel(input: Record<string, unknown>): ActionOutcome {
         'notFound',
         `no model node "${textOf(input, 'nodeId') ?? ''}" in the scene in front — scene.state answers "nodes", and only the ones of type "model" carry a rig or a band`,
       )
+}
+
+async function reopenMotion(input: Record<string, unknown>): Promise<ActionOutcome> {
+  const open = model(input)
+  if (!open) return noModel(input)
+
+  const assetId = textOf(input, 'assetId')
+  if (!assetId) return refused('badInput', '"assetId" is required to reopen a motion')
+
+  try {
+    await reopenCharacterMotion(open.documentId, open.node.id, assetId)
+    return { ok: true }
+  } catch {
+    return refused(
+      'badInput',
+      'this animation cannot reopen the motion workbench for that model — use animations.list to choose a compatible motion',
+    )
+  }
 }
 
 /** Runs one command on the model named, refusing before it rather than writing nothing. */
@@ -442,6 +461,7 @@ export const RIG_HANDLERS: ActionHandlers = {
     }, '"chainId" must name a handle of this character — rig.state answers "ik" with their ids'),
 
   'animations.list': listAnimations,
+  'animation.reopenMotion': reopenMotion,
   'animation.addBlock': addAnimation,
   'animation.setBlockSettings': editBlock,
 

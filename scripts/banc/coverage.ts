@@ -22,6 +22,8 @@ export const COVERAGE: Record<ActionName, readonly string[]> = {
   'workspace.open': ['5.1', '5.2', '5.3'],
   'models.search': ['20.1'],
   'models.select': ['20.1'],
+  'ai.localState': ['43.11'],
+  'ai.manageLocalRuntime': ['43.12'],
   'generator.prepare': ['20.1', '22.1', '66.1', '66.2', '66.3', '66.4'],
   'generator.readArmedGeneration': ['66.3'],
   'generator.submit': [
@@ -100,6 +102,7 @@ export const COVERAGE: Record<ActionName, readonly string[]> = {
   'assets.removeFromLibrary': ['43.2'],
 
   'canvas.state': ['39.1', '68.2'],
+  'canvas.setDocumentProperties': ['39.7'],
   'img.pin': ['70.1', '70.2', '70.3', '70.4'],
   'canvas.resize': ['39.2'],
   'canvas.setPixelArt': ['68.1', '68.9'],
@@ -283,6 +286,7 @@ export const COVERAGE: Record<ActionName, readonly string[]> = {
   'world.setBackground': ['10.6'],
   'world.setFog': ['48.2'],
   'world.setGroundPlane': ['48.3'],
+  'world.setLayers': ['48.5'],
   'world.setToneMapping': ['48.4'],
 
   // The composition. Every one of them is exercised on the SCENE's stack, which is what a first
@@ -319,6 +323,7 @@ export const COVERAGE: Record<ActionName, readonly string[]> = {
   'ik.remove': ['50.9'],
 
   'animations.list': ['49.1'],
+  'animation.reopenMotion': ['49.1'],
   'animation.addBlock': ['13.5'],
   'animation.removeBlock': ['13.6'],
   'animation.setBlockSettings': ['49.2'],

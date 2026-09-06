@@ -191,6 +191,18 @@ export const RIG_ACTIONS: readonly AssistantAction[] = [
     fields: [NODE],
   }),
   action({
+    name: 'animation.reopenMotion',
+    titleKey: 'assistant.actions.animationReopenMotion.title',
+    descriptionKey: 'assistant.actions.animationReopenMotion.description',
+    commitment: 'none',
+    repeatable: true,
+    reach: 'mcp',
+    fields: [
+      NODE,
+      { key: 'assetId', kind: 'text', labelKey: 'assistant.fields.assetId', required: true },
+    ],
+  }),
+  action({
     /**
      * A block laid on the band, from any of the three sources. `assetId` names a clip of the
      * library and `clipName` one of the two others, so exactly one of them belongs to a call.

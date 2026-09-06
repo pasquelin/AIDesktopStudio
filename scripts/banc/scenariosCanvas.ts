@@ -52,6 +52,15 @@ export const CANVAS_SCENARIOS: readonly Scenario[] = [
     setup: boatImage,
     passed: run => read.layers(run).some(one => read.captionOf(one) === 'Bonjour'),
   },
+  {
+    name: '39.7 sets the image document for grayscale print',
+    said: ['Prépare ce document pour une impression en niveaux de gris à 300 ppp et 16 bits.'],
+    setup: boatImage,
+    passed: run => {
+      const image = read.canvas(run)
+      return image?.dpi === 300 && image.colorMode === 'grayscale' && image.bitDepth === 16
+    },
+  },
 
   {
     name: '40.1 puts the playhead at 3 seconds',

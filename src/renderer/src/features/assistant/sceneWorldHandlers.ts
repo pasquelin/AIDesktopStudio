@@ -1,5 +1,5 @@
 import { setWorld } from '@/engines/scene/commands'
-import { backgroundOfKind, fogOfKind } from '@/engines/scene/sceneWorld'
+import { backgroundOfKind, fogOfKind, readWorld } from '@/engines/scene/sceneWorld'
 import { useScenes } from '@/stores/scenes'
 import { refused, type ActionOutcome } from '@shared/domain/assistant'
 import { readColor } from '@shared/domain/color'
@@ -130,9 +130,22 @@ function worldGround(input: Record<string, unknown>): ActionOutcome {
   }, 'this call named nothing to write on the ground: visible, color, size, opacity or receiveShadow')
 }
 
+function worldLayers(input: Record<string, unknown>): ActionOutcome {
+  const open = mountedScene()
+  if ('ok' in open) return open
+  try {
+    const world = readWorld({ ...open.state.world, layers: input.layers }, undefined)
+    useScenes.getState().runCommand(open.documentId, setWorld({ layers: world.layers }))
+    return { ok: true }
+  } catch {
+    return refused('badInput', '"layers" must be a complete valid terrain or scatter layer list')
+  }
+}
+
 export const SCENE_WORLD_HANDLERS: ActionHandlers = {
   'world.setSceneLighting': worldEnvironment,
   'world.setBackground': worldBackground,
   'world.setFog': worldFog,
   'world.setGroundPlane': worldGround,
+  'world.setLayers': worldLayers,
 }
