@@ -57,7 +57,7 @@ describe('Action search service', () => {
       onTrouble: vi.fn(),
     })
     await service.search('make a project')
-    expect(fixture.written.count).toBe(298)
+    expect(fixture.written.count).toBe(305)
     expect(fixture.searches[0]).toMatchObject({
       query: 'make a project',
       embedding: { model: 'fixture-model' },

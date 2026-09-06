@@ -16,7 +16,7 @@ git et doit le rester : une clé commitée survit dans l'historique au commit qu
 
 ## Où en est le banc
 
-La liste ci-dessous compte **454 demandes, et le banc en joue 454** (compté le 2026-09-03) — une par case, dans cet ordre.
+La liste ci-dessous compte **472 demandes, et le banc en joue 472** (compté le 2026-09-07) — une par case, dans cet ordre.
 `batterie.test.ts` tient les deux listes à la même longueur et dans le même ordre : une demande
 ajoutée ici sans scénario fait rougir la porte, et un scénario écrit pour rien aussi. C'est ce qui
 rend « on en est où ? » répondable.
@@ -34,7 +34,7 @@ répond pas, fût-ce par une liste vide. `coverage.test.ts` tient le reste — u
 nomme aucun scénario, et le rôle de ce qui reste sans mesure, **écrit en toutes lettres plutôt que
 compté** : un compte reste vert le jour où un trou se comble pendant qu'un autre se creuse.
 
-**Déclaré n'est pas mesuré**, et le rapport du banc écrit les deux : `MCP reached: N/230` compte ce
+**Déclaré n'est pas mesuré**, et le rapport du banc écrit les deux : `MCP reached: N/305` compte ce
 qu'une passe a vraiment appelé, et la ligne `declared covered, never reached` nomme les actions que
 `coverage.ts` promettait et qu'aucun run n'a touchées.
 
@@ -1041,3 +1041,13 @@ visent l’image entière ou un calque, puis disparaissent après l’envoi.
 - [ ] « Sur le calque Bateau, note pour la génération : garde exactement cette coque. »
 - [ ] « Remplace la note de génération par : éclaire seulement l'arrière-plan. »
 - [ ] « Retire la note de génération en attente. »
+
+## 71. Contrôler les entrées, graphes et retargeting d’animation
+
+- [ ] « Liste les cartes de contrôles du projet, avec les commandes clavier et manette. »
+- [ ] « Lis la carte de contrôles Controls/character.input.json. »
+- [ ] « Écris cette carte de contrôles dans Controls/character.input.json. »
+- [ ] « Liste les graphes d’animation du projet. »
+- [ ] « Lis le graphe d’animation Animation/character.anim.json. »
+- [ ] « Écris ce graphe d’animation dans Animation/character.anim.json. »
+- [ ] « Vérifie comment le mouvement bundled idle s’adapte au personnage sélectionné. »

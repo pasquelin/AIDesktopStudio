@@ -319,6 +319,14 @@ export const COVERAGE: Record<ActionName, readonly string[]> = {
   'channel.remove': ['13.6'],
   'channel.setMuteSoloLock': ['49.7'],
 
+  'inputMaps.list': ['71.1'],
+  'inputMap.read': ['71.2'],
+  'inputMap.write': ['71.3'],
+  'animationGraphs.list': ['71.4'],
+  'animationGraph.read': ['71.5'],
+  'animationGraph.write': ['71.6'],
+  'animation.retargetStatus': ['71.7'],
+
   'git.status': ['58.1'],
   'git.log': ['58.2'],
   'git.listCommitFiles': ['58.3'],

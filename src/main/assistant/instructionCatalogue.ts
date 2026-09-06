@@ -75,7 +75,7 @@ let namesHeld: string | null = null
 
 export const namesPrinted = (): string =>
   (namesHeld ??= ACTION_FAMILIES.map(
-    family => `  [${family.name}] ${family.actions.map(one => one.name).join(', ')}`,
+    family => `  [${family.name}] ${family.actions.map(one => one.name).join(',')}`,
   ).join('\n'))
 
 /**

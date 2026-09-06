@@ -1,6 +1,34 @@
 {
   "assistant": {
     "actions": {
+      "inputMapsList": {
+        "title": "Lister les cartes de contrôles",
+        "description": "Liste les cartes de contrôles du projet, avec les liaisons clavier et manette. Ne change rien."
+      },
+      "inputMapRead": {
+        "title": "Lire une carte de contrôles",
+        "description": "Lit une carte de contrôles du projet par son chemin, avec ses actions nommées et ses liaisons clavier ou manette."
+      },
+      "inputMapWrite": {
+        "title": "Écrire une carte de contrôles",
+        "description": "Écrit une carte de contrôles validée dans le projet. Cela modifie un fichier du projet."
+      },
+      "animationGraphsList": {
+        "title": "Lister les graphes d’animation",
+        "description": "Liste les fichiers de graphes d’animation du projet. Ne change rien."
+      },
+      "animationGraphRead": {
+        "title": "Lire un graphe d’animation",
+        "description": "Lit un graphe d’animation par son chemin, avec ses états, transitions et paramètres."
+      },
+      "animationGraphWrite": {
+        "title": "Écrire un graphe d’animation",
+        "description": "Écrit un graphe d’animation validé dans le projet. Cela modifie un fichier du projet."
+      },
+      "animationRetargetStatus": {
+        "title": "Lire le retargeting d’une animation",
+        "description": "Lit l’adaptation d’un mouvement au personnage choisi, avec les articulations absentes de chaque squelette."
+      },
       "commandRunStudioCommand": {
         "title": "Lancer une commande",
         "description": "Déclenche une commande du studio par son identifiant, exactement comme un raccourci clavier ou une entrée de menu. Le document visé doit être devant. Un identifiant s’écrit <portée>.<verbe>, et studio.state répond la portée de ce qui est devant : reprendre une modification d’un document, c’est <portée>.undo — scene.undo, canvas.undo, sequence.undo — et la remettre <portée>.redo. UN appel reprend UN geste, donc un second reprend celui d’avant : relire le document plutôt que de l’envoyer deux fois. Aucune autre action n’annule une modification, files.undoFileOperation ne couvrant que les fichiers du projet."
@@ -1456,6 +1484,9 @@
       "tilesPerMetre": "Répétitions des cartes par mètre",
       "textures": "Cartes par emplacement, un identifiant vide retirant celle qui y était",
       "map": "Identifiant de l’image, ou rien pour n’en mettre aucune",
+      "path": "Chemin du fichier relatif au projet",
+      "inputMap": "Carte de contrôles clavier et manette validée",
+      "animationGraph": "Graphe d’animation validé",
       "value": "Mots à écrire",
       "textSize": "Corps des lettres, en unités de scène",
       "textDepth": "Épaisseur du relief des lettres, 0 les laissant plates",

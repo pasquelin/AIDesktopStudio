@@ -56,7 +56,7 @@ describe('ActionIndex client', () => {
       ok: true,
       value: { rebuilt: true, count: corpus.actions.length, fingerprint: corpus.fingerprint },
     })
-    await expect(pending).resolves.toMatchObject({ rebuilt: true, count: 298 })
+    await expect(pending).resolves.toMatchObject({ rebuilt: true, count: 305 })
     expect(fake.sent[0]).toMatchObject({ op: 'rebuild', corpus })
   })
 })

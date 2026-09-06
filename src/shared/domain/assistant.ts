@@ -32,7 +32,7 @@ import { SETTINGS_ACTIONS } from './settingsActions'
 import { SHELL_ACTIONS } from './shellActions'
 import { TARGET_ACTIONS } from './targetActions'
 import { STATE_ACTIONS } from './stateActions'
-
+import { PROJECT_ACTIONS } from './projectActions'
 /**
  * What the assistant is allowed to do on the user's behalf, and how each thing is described to
  * the model that chooses it — see spec § 9.
@@ -41,7 +41,6 @@ import { STATE_ACTIONS } from './stateActions'
  * which is shown every NAME and asks for the manuals it needs — `studioBriefing` — and the MCP
  * server, which publishes all of it as tools.
  */
-
 export * from './assistantAction'
 export * from './actionCapabilities'
 export * from './actionReach'
@@ -146,6 +145,7 @@ export const ACTION_FAMILIES: readonly ActionFamily[] = [
   },
   { name: 'assembly', actions: ASSEMBLY_ACTIONS },
   { name: 'export', actions: EXPORT_ACTIONS },
+  { name: 'project', actions: PROJECT_ACTIONS },
   {
     name: 'context',
     actions: actionsWithCapabilities(CONTEXT_ACTIONS, { targets: ['projectContext'] }),

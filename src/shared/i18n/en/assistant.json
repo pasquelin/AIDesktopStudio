@@ -1,6 +1,34 @@
 {
   "assistant": {
     "actions": {
+      "inputMapsList": {
+        "title": "List input maps",
+        "description": "Lists keyboard/gamepad input maps."
+      },
+      "inputMapRead": {
+        "title": "Read an input map",
+        "description": "Reads a keyboard/gamepad input map by path."
+      },
+      "inputMapWrite": {
+        "title": "Write an input map",
+        "description": "Writes a validated input map."
+      },
+      "animationGraphsList": {
+        "title": "List animation graphs",
+        "description": "Lists project animation graphs."
+      },
+      "animationGraphRead": {
+        "title": "Read an animation graph",
+        "description": "Reads an animation graph by path."
+      },
+      "animationGraphWrite": {
+        "title": "Write an animation graph",
+        "description": "Writes a validated animation graph."
+      },
+      "animationRetargetStatus": {
+        "title": "Read animation retargeting",
+        "description": "Reads measured retarget fit for a motion."
+      },
       "commandRunStudioCommand": {
         "title": "Run a command",
         "description": "Fires a studio command by its identifier, exactly as a keyboard shortcut or a menu item would. The document it applies to has to be in front. An identifier reads <scope>.<verb>, and studio.state answers the scope of what is in front: taking an edit of a document back is <scope>.undo — scene.undo, canvas.undo, sequence.undo — and putting it back <scope>.redo. ONE call takes back ONE gesture, so a second takes back the one before it: read the document again rather than sending it twice. No other action undoes an edit, files.undoFileOperation covering project files alone."
@@ -1456,6 +1484,9 @@
       "tilesPerMetre": "Repeats of the maps per metre",
       "textures": "Maps by slot, an empty id taking off the one that was there",
       "map": "Image identifier, or nothing for none at all",
+      "path": "Project-relative file path",
+      "inputMap": "Validated keyboard and gamepad input map",
+      "animationGraph": "Validated animation graph",
       "value": "Words to set",
       "textSize": "Size of the letters, in scene units",
       "textDepth": "Depth of the letters out of their own surface, 0 leaving them flat",
