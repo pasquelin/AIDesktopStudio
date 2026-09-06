@@ -16,7 +16,7 @@ const pointerDown = handler('onPointerDown', 'event: PointerEvent')
 const pointerUp = handler('onPointerUp', 'event: PointerEvent')
 const endFlight =
   source.match(
-    /protected endFlight\(button: number, event: PointerEvent\): void \{[\s\S]*?\n {2}\}/,
+    /protected endFlight\(button: number, event: Pick<PointerEvent, 'buttons'>\): void \{[\s\S]*?\n {2}\}/,
   )?.[0] ?? ''
 const draggingChanged = handler('onDraggingChanged', '')
 

@@ -73,7 +73,13 @@ export abstract class SceneRendererPointer extends SceneRendererPose {
 
   /** `buttons === 0` is the reading that cannot lie: pressing both and letting go out of order
    * would otherwise leave a flight armed under a hand that holds nothing. */
-  protected endFlight(button: number, event: PointerEvent): void {
+  releaseNavigation(): void {
+    this.setNavigating(false)
+    this.setMotion(new Set())
+    this.endFlight(this.flownWith ?? 0, { buttons: 0 })
+  }
+
+  protected endFlight(button: number, event: Pick<PointerEvent, 'buttons'>): void {
     if (this.flownWith !== button && event.buttons !== 0) return
 
     const froze = this.flownWith === 2
