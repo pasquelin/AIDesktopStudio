@@ -275,7 +275,7 @@ function rolesOf(
   return { ...profile.roles }
 }
 
-function profileOfBones(
+export function profileOfBones(
   bones: readonly WireBone[],
   known?: ReadonlyMap<string, SkeletonProfile>,
 ): SkeletonProfile | undefined {
