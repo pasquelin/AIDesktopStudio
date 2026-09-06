@@ -11,7 +11,6 @@ import {
   HemisphereLight,
   Mesh,
   MeshStandardMaterial,
-  PCFSoftShadowMap,
   PerspectiveCamera,
   PlaneGeometry,
   PointLight,
@@ -24,7 +23,7 @@ import { clamp } from '@shared/numeric'
 import { reportFailure } from '@/services/diagnostics'
 import { onPaletteChange, tokenAsHex } from '../core/palette'
 import { createGltfSource } from '../scene/gltfSource'
-import { fitShadowCamera, resizeShadowMap } from '../scene/shadows'
+import { applyShadowQuality, fitShadowCamera, resizeShadowMap } from '../scene/shadows'
 import { createRetarget } from '../scene/retarget'
 import RetargetWorker from '../scene/retarget.worker?worker'
 import { WelcomeHero } from './WelcomeHero'
@@ -36,6 +35,7 @@ const FALLBACK_CHASSIS = 0x2b2d30
 const FALLBACK_VIEWPORT = 0x33363b
 const FALLBACK_VIEWPORT_LINE = 0x494d54
 const FALLBACK_MESH = 0x868a91
+const FALLBACK_ELEVATED = 0x3c3f44
 const FALLBACK_ACCENT = 0x346ef2
 const FALLBACK_FOLIAGE = 0x6fb79b
 
@@ -168,7 +168,10 @@ export class WelcomeBackdrop {
     // stop under the token it is painted with.
     this.renderer.toneMappingExposure = 1.3
     this.renderer.shadowMap.enabled = true
-    this.renderer.shadowMap.type = PCFSoftShadowMap
+    // 🛑 By the studio's own setting, never `PCFSoftShadowMap`: three 0.185 defines a shadow type
+    // for PCF and VSM only, so that one compiles down to an UNFILTERED compare — and `shadow.radius`
+    // with it, which the fragment shader reads inside the PCF branch alone.
+    applyShadowQuality(this.renderer, 'soft')
 
     this.hero = new WelcomeHero({
       gltf: this.gltf,
@@ -207,6 +210,7 @@ export class WelcomeBackdrop {
 
   setSlide(index: number): void {
     this.wantedAzimuth = welcomeAzimuth(index)
+    this.hero.faceSlide(this.wantedAzimuth, index)
     this.start()
   }
 
@@ -222,7 +226,13 @@ export class WelcomeBackdrop {
     this.floor.material.color.copy(ground)
     this.grid.material.color.copy(line)
     this.motes.material.color.copy(mesh)
-    this.trees.paint(mesh, hexColor(this.canvas, '--color-foliage', FALLBACK_FOLIAGE), this.wall)
+    // A planter is a SURFACE of this app, not its wall: painted in the chassis it read as a black
+    // hole in the plate, since the floor beside it is lit and the chassis is not.
+    this.trees.paint(
+      mesh,
+      hexColor(this.canvas, '--color-foliage', FALLBACK_FOLIAGE),
+      hexColor(this.canvas, '--color-elevated', FALLBACK_ELEVATED),
+    )
     this.sky.color.copy(line)
     // The LINE and not the ground: a hemisphere's lower half is the bounce off the floor, and the
     // floor here is LIT. Handed the raw ground token it returned nothing, and every facet that
@@ -271,9 +281,8 @@ export class WelcomeBackdrop {
     // Soft rather than stamped: a hard black wedge under a crown reads as a hole in the plate.
     light.shadow.radius = 4
     light.shadow.intensity = 0.55
-    // Nothing to frame but the reach around the target: the grove stands where the light aims.
-    fitShadowCamera(light, { bounds: new Box3(), floor: 2 * SHADOW_REACH })
     light.shadow.camera.far = 34
+    fitShadowCamera(light, { bounds: new Box3(), floor: 2 * SHADOW_REACH })
     // Along the surface rather than into it: at this grazing angle a plain bias detaches a crown
     // from the shadow it casts, and a normal one leaves the contact where the foot is.
     light.shadow.normalBias = 0.03

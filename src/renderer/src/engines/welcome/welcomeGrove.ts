@@ -17,33 +17,28 @@ export type WelcomeTree = {
 }
 
 /**
- * The ground the walk keeps to: an ELLIPSE, wide and shallow.
- *
- * 🛑 Both halves of that shape are the window's, not the world's. The welcome's sheet of copy owns
- * the middle of the frame, so the yard stands BEHIND the camera's mark — where the floor projects
- * above the sheet — and it is stretched sideways because that band is wide and short.
+ * The ground the walk keeps to: an ELLIPSE, and the point the camera BOTH orbits and aims at —
+ * `WELCOME_TARGET` stands over it. Orbited around anything else, the yard sweeps out of frame as
+ * the carousel turns. Deep rather than wide: near and far is the only amplitude a single frame
+ * holds, since the camera sees barely four metres of width at this range.
  */
-export const WELCOME_YARD_AT = { x: 0, z: -5.5 }
+export const WELCOME_YARD_AT = { x: 0, z: -3 }
 
-export const WELCOME_YARD = { x: 7, z: 3.2 }
+export const WELCOME_YARD = { x: 3.9, z: 5 }
 
 /** How wide a walker is, for the purpose of not clipping a planter. */
 const WELCOME_WALKER_WIDTH = 0.42
 
-/**
- * The composition. Four, well apart (Alban): a grove reads as a place, a thicket reads as a wall.
- *
- * Two stand NEAR the camera for depth and two far, and the near pair is pushed out to the sides:
- * the walk owns the middle of the band, and a crown in front of it hides the one thing on screen.
- *
- * 🛑 The near band is left BARE. A crown between the camera and the walker hides the one thing the
- * screen is for, and at this angle a tree three metres nearer covers a walker whole.
- */
+/** One foreground tree shows the foliage up close; the others frame the yard. */
 export const WELCOME_GROVE: readonly WelcomeTree[] = [
-  { x: -8.2, z: 1.4, height: 1.34, crown: 1.02, planter: 0.66, turn: 0.9 },
-  { x: 9, z: 0.2, height: 1.22, crown: 0.9, planter: 0.6, turn: 4.8 },
-  { x: -4.6, z: -7.8, height: 1.16, crown: 0.86, planter: 0.56, turn: 0.3 },
-  { x: 3.8, z: -8.6, height: 1.02, crown: 0.74, planter: 0.5, turn: 2.4 },
+  { x: 1.7, z: 3.5, height: 0.85, crown: 0.65, planter: 0.41, turn: 0.9 },
+  { x: 6.6, z: -2.8, height: 1.22, crown: 0.9, planter: 0.6, turn: 4.8 },
+  { x: -8.6, z: -5.6, height: 0.96, crown: 0.72, planter: 0.46, turn: 3.7 },
+  { x: 8.2, z: -5.2, height: 1.08, crown: 0.8, planter: 0.5, turn: 1.1 },
+  { x: -5.4, z: -7.4, height: 1.18, crown: 0.88, planter: 0.56, turn: 2.1 },
+  { x: 5.2, z: -7.8, height: 1.36, crown: 1.04, planter: 0.66, turn: 0.4 },
+  { x: -2.8, z: -11.2, height: 1.3, crown: 0.98, planter: 0.62, turn: 5.2 },
+  { x: 2.4, z: -11.8, height: 1.1, crown: 0.82, planter: 0.52, turn: 1.4 },
 ]
 
 /**
@@ -52,6 +47,33 @@ export const WELCOME_GROVE: readonly WelcomeTree[] = [
  */
 export const welcomeYardOffset = (x: number, z: number): number =>
   Math.hypot((x - WELCOME_YARD_AT.x) / WELCOME_YARD.x, (z - WELCOME_YARD_AT.z) / WELCOME_YARD.z)
+
+/** How far out a spot is taken, as shares of the yard's half-width, from the rim inward. */
+const SHARES = [0.82, 0.62, 0.42, 0.22]
+
+/**
+ * The first spot along a BEARING a walker can stand on, taken from the rim and backed off toward
+ * the middle until the ground is clear. Nothing here knows the camera or the carousel — this is
+ * the yard answering a direction, and `welcomeSlideGoal` is what chooses the direction.
+ */
+export function welcomeYardAlong(
+  trees: readonly WelcomeTree[],
+  bearing: number,
+): { x: number; z: number } {
+  const sin = Math.sin(bearing)
+  const cos = Math.cos(bearing)
+  const rim = 1 / Math.hypot(sin / WELCOME_YARD.x, cos / WELCOME_YARD.z)
+
+  for (const share of SHARES) {
+    const at = {
+      x: WELCOME_YARD_AT.x + sin * rim * share,
+      z: WELCOME_YARD_AT.z + cos * rim * share,
+    }
+    if (welcomeGroveAllows(trees, at.x, at.z, WELCOME_SLACK)) return at
+  }
+
+  return { ...WELCOME_YARD_AT }
+}
 
 /** How far a walker must stay from a tree's centre: its planter, plus their own width. */
 export function welcomeClearanceOf(tree: WelcomeTree): number {
@@ -93,7 +115,7 @@ export function welcomeGroveOpens(
   trees: readonly WelcomeTree[],
   from: { x: number; z: number; heading: number },
   distance: number,
-  turn = 0,
+  { turn = 0, slack = WELCOME_SLACK }: { turn?: number; slack?: number } = {},
 ): boolean {
   const steps = 12
   let { x, z, heading } = from
@@ -104,7 +126,7 @@ export function welcomeGroveOpens(
     x += (Math.sin(along) * distance) / steps
     z += (Math.cos(along) * distance) / steps
     heading += turn / steps
-    if (!welcomeGroveAllows(trees, x, z, WELCOME_SLACK)) return false
+    if (!welcomeGroveAllows(trees, x, z, slack)) return false
   }
 
   return true

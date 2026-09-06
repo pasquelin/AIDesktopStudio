@@ -13,6 +13,14 @@ export type WireBone = {
   position: readonly [number, number, number]
   quaternion: readonly [number, number, number, number]
   scale: readonly [number, number, number]
+  /**
+   * On a ROOT only, and only when something stands above it: the sixteen numbers of whatever a
+   * glTF hangs the rig under. 🛑 BESIDE the bone, never folded into it — `retargetClip` writes
+   * each local as `parent.matrixWorld⁻¹ · global`, so a folded frame comes back out unremoved and
+   * the real armature applies it twice: measured 2026-09-06, a hip at (0, 0, 1) replayed at
+   * (0, −0,01, 0). `skinnedFromWire` hangs it as a node, and three undoes it on its own.
+   */
+  frame?: readonly number[]
 }
 
 /** Which `KeyframeTrack` to rebuild. Carried rather than guessed from the property name. */

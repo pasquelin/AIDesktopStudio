@@ -136,6 +136,25 @@ function tick(hero: WelcomeHero, seconds: number): void {
 }
 
 describe('WelcomeHero', () => {
+  it('reacts to a slide selected while the character is loading', async () => {
+    const hero = await new Promise<WelcomeHero>((resolve, reject) => {
+      const pending = new WelcomeHero({
+        gltf: gltfOf(rig(), clipsOf()),
+        retarget: retargetOf(),
+        roll: () => 0.5,
+        onReady: () => resolve(pending),
+        onFailure: reject,
+      })
+      pending.faceSlide(0, 0)
+    })
+    const start = hero.group.position.clone()
+
+    tick(hero, 0.6)
+
+    expect(hero.group.position.distanceTo(start)).toBeGreaterThan(0.1)
+    hero.dispose()
+  })
+
   it('carries the clip’s root travel on the group, not on the hip', async () => {
     const hero = await readyHero(clipsOf(), { roll: () => 0 })
     const start = hero.group.position.clone()

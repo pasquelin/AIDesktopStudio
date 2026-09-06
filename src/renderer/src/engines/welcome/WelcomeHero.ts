@@ -33,6 +33,8 @@ import {
 } from './welcomeRoot'
 import {
   welcomeAdvance,
+  welcomeSlideGoal,
+  welcomeToward,
   welcomeFadeOf,
   welcomeTurnOver,
   welcomeWalkStart,
@@ -118,6 +120,14 @@ export class WelcomeHero {
     this.pose()
   }
 
+  /**
+   * The carousel moved: the walker comes round to the side the camera now watches from. Only the
+   * GOAL changes, so a slide flicked through faster than a stride never restarts a gait.
+   */
+  faceSlide(azimuth: number, slide: number): void {
+    this.walk = welcomeToward(this.walk, welcomeSlideGoal(WELCOME_GROVE, azimuth, slide))
+  }
+
   /** The still a reduced-motion window shows: standing in the open, where the walk begins. */
   settle(): void {
     this.walk = welcomeWalkStart()
@@ -160,8 +170,12 @@ export class WelcomeHero {
     const loading = WELCOME_CLIP_NAMES.map(name =>
       this.deps.gltf.loadAnimation(bundledAnimationUrl(name)),
     )
-    const body = await this.deps.gltf.load(bundledCharacterUrl(WELCOME_LEVEL))
-    const files = await Promise.all(loading)
+    // Awaited TOGETHER: awaited after the body, a clip that fails while the body is still in
+    // flight is a rejection nothing is watching, and one the body's own failure never observes.
+    const [body, files] = await Promise.all([
+      this.deps.gltf.load(bundledCharacterUrl(WELCOME_LEVEL)),
+      Promise.all(loading),
+    ])
     const mixer = new AnimationMixer(body)
     const adapted = await Promise.all(
       files.map(async file => (await this.deps.retarget.adapt(body, file, clipsOf(file)))?.[0]),
@@ -233,6 +247,7 @@ export class WelcomeHero {
     const body = this.body
     if (!walk || !body) return
 
+    const pendingWalk = this.walk
     let lowest = Infinity
     for (let step = 0; step <= PLANT_STEPS; step += 1) {
       this.walk = { ...this.walk, clip: 'Walk', time: (step / PLANT_STEPS) * walk.duration }
@@ -242,7 +257,7 @@ export class WelcomeHero {
     }
 
     this.floor = Number.isFinite(lowest) ? lowest : 0
-    this.walk = welcomeWalkStart()
+    this.walk = pendingWalk
   }
 
   /** How high the body rides this frame — the walk's bounce, and the whole arc of a jump. */

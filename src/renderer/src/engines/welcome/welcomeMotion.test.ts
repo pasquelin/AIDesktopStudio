@@ -14,8 +14,9 @@ import {
 /** A sine crosses its own bound by an ulp at the top of the swing, and the bound is the claim. */
 const ROUNDING = 1e-9
 
+/** Read from what the camera ORBITS, which is the target and not the world's origin. */
 const groundDistance = (pose: ReturnType<typeof welcomePose>): number =>
-  Math.hypot(pose.eye.x, pose.eye.z)
+  Math.hypot(pose.eye.x - WELCOME_TARGET.x, pose.eye.z - WELCOME_TARGET.z)
 
 describe('the welcome camera', () => {
   it('stands above what it looks at, so the floor fills the frame rather than a horizon band', () => {

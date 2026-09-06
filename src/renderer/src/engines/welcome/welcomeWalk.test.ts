@@ -10,6 +10,8 @@ import {
   welcomeAdvance,
   welcomeFadeOf,
   welcomeNextClip,
+  welcomeSlideGoal,
+  welcomeToward,
   welcomeTurnOver,
   welcomeWalkStart,
   type WelcomeWalkState,
@@ -128,6 +130,36 @@ describe('a walker taking one clip', () => {
     }
 
     expect(welcomeAdvance(state, { x: 0, z: 0.4, turned: 0 }, 0.1).heading).toBeGreaterThan(0)
+  })
+})
+
+describe('a goal handed by the carousel', () => {
+  it('crosses the plate from one slide to the next, rather than fidgeting on one spot', () => {
+    const goals = [0, 1, 2, 3, 4, 5, 6].map(slide => welcomeSlideGoal(WELCOME_GROVE, 0, slide))
+
+    for (const [index, goal] of goals.entries()) {
+      const next = goals[index + 1]
+      if (next) expect(Math.hypot(next.x - goal.x, next.z - goal.z)).toBeGreaterThan(4)
+    }
+  })
+
+  it('never restarts the gait, which is what a slide flicked through would look like', () => {
+    const walking: WelcomeWalkState = { ...welcomeWalkStart(), clip: 'Walk', time: 0.4, pause: 0 }
+
+    let moved = walking
+    for (let slide = 0; slide < 8; slide += 1) {
+      moved = welcomeToward(moved, { x: slide, z: -3 })
+    }
+
+    expect(moved.clip).toBe('Walk')
+    expect(moved.time).toBe(0.4)
+    expect(moved.goal).toEqual({ x: 7, z: -3 })
+  })
+
+  it('cuts a stand short, so a change of slide shows rather than passing unseen', () => {
+    const standing: WelcomeWalkState = { ...welcomeWalkStart(), clip: null, pause: 2.5 }
+
+    expect(welcomeToward(standing, { x: 0, z: -3 }).pause).toBeLessThan(standing.pause)
   })
 })
 
