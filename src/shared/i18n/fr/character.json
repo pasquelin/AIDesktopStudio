@@ -19,6 +19,7 @@
     "restPose": "Pose de repos",
     "poseMode": "Mode pose",
     "showBones": "Afficher les os",
+    "showBonesHint": "Dessine les os du squelette par-dessus le modèle ; presser à nouveau les masque",
     "hideBones": "Masquer les os",
     "borrow": "Reprendre le squelette de…",
     "borrowHint": "Le squelette est copié et ajusté à ce personnage. Il lui appartient ensuite.",

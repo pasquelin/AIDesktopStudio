@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { bindingOf } from '@shared/domain/command'
+import { bindingOf, commandFor, type BindingOverrides } from '@shared/domain/command'
 import { DEFAULT_SETTINGS } from '@shared/domain/settings'
 import type { CustomNavigation } from '@shared/domain/navigationPreset'
 import { currentOverrides, motionFor, resolveBindings } from './bindings'
@@ -57,6 +57,20 @@ describe('resolving navigation bindings', () => {
     const permanent = currentOverrides()
     expect(permanent).not.toBe(unity)
     expect(permanent['scene.scale']).toBe('KeyT')
+  })
+
+  // A settings file outlives the commands of the build that wrote it: `character.navigate` left
+  // on 2026-09-06, and a key someone had put on it must not take the whole table down.
+  it('carries a remap persisted on a command this build no longer declares', () => {
+    // What a persisted file holds, which the type of this build cannot name any more.
+    const stale = { 'character.navigate': 'KeyN' } as BindingOverrides
+    useSettings.setState(state => ({
+      settings: { ...state.settings, shortcuts: { ...state.settings.shortcuts, overrides: stale } },
+    }))
+
+    expect(bindingOf('scene.navigate', currentOverrides())).toBe('Backquote')
+    expect(commandFor('Backquote', 'scene', currentOverrides())).toBe('scene.navigate')
+    expect(commandFor('KeyN', 'character', currentOverrides())).toBeNull()
   })
 })
 

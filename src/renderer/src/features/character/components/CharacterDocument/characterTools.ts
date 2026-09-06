@@ -1,49 +1,43 @@
-import {
-  mdiArrowAll,
-  mdiAxisArrow,
-  mdiBone,
-  mdiCursorDefaultOutline,
-  mdiHumanHandsup,
-} from '@mdi/js'
-import type { TransformMode } from '@/engines/scene/gizmoTarget'
+import { mdiBone, mdiBoneOff, mdiHumanHandsup } from '@mdi/js'
+import type { DisplayMode } from '@shared/domain/scene'
 import type { ToolbarItem } from '@/components/Toolbar/tools'
+import {
+  NAVIGATE_TOOL,
+  SCENE_TOOLS,
+  type SceneTool,
+} from '@/features/scene/components/Scene/sceneTools'
+import { displayOfPane } from '@/stores/sceneViewChrome'
+import { MAIN_SCENE_PANE } from '@/stores/sceneViews'
 
 /**
- * The bar of the skeleton window: the three ways a hand acts on the joint it picked.
- *
- * The scene's own words, deliberately — these are the same verbs, and a second set of keys would
- * be sentences free to drift from the ones they translate.
- *
- * 🛑 No SCALE, and that is the arbitration rather than an omission: a joint is a point and a
- * length, and there is nothing about one to enlarge — a scaled bone scales everything hanging
- * off it, which is a deformation of the character and never an edit of its skeleton.
- *
- * Buttons and no flyout, for the reason `SCENE_TOOLS` gives: one switches between them by the
- * minute. Placing a joint is `translate`, which is why the window opens on it and not on
- * `select` — a skeleton read off a bounding box is a skeleton one immediately corrects.
+ * The scene's own tools this workshop offers, by id — the bar reads `SCENE_TOOLS`, so a rename
+ * there follows here. No SCALE: a joint is a point and a length, and there is nothing about one
+ * to enlarge. No selection verbs either — the workshop holds one node nobody adds to or deletes.
  */
-export const CHARACTER_TOOLS: readonly (ToolbarItem & { mode: TransformMode })[] = [
-  {
-    id: 'select',
-    mode: 'select',
-    labelKey: 'sceneTools.select',
-    descriptionKey: 'sceneTools.selectHint',
-    icon: mdiCursorDefaultOutline,
-  },
-  {
-    id: 'translate',
-    mode: 'translate',
-    labelKey: 'sceneTools.translate',
-    descriptionKey: 'sceneTools.translateHint',
-    icon: mdiArrowAll,
-  },
-  {
-    id: 'rotate',
-    mode: 'rotate',
-    labelKey: 'sceneTools.rotate',
-    descriptionKey: 'sceneTools.rotateHint',
-    icon: mdiAxisArrow,
-  },
+export const WORKSHOP_TOOL_IDS: readonly string[] = [
+  'select',
+  NAVIGATE_TOOL,
+  'translate',
+  'rotate',
+  'display',
+  'frame',
+]
+
+/** Lit from the first frame: this tab is ABOUT the bones, where a scene draws them on demand. */
+export const SKELETONS_TOOL: SceneTool = {
+  id: 'skeletons',
+  command: 'scene.skeletons',
+  labelKey: 'character.showBones',
+  descriptionKey: 'character.showBonesHint',
+  icon: mdiBoneOff,
+}
+
+export const WORKSHOP_TOOLS: readonly SceneTool[] = [
+  ...SCENE_TOOLS.filter(tool => WORKSHOP_TOOL_IDS.includes(tool.id)).map(tool =>
+    // Nothing stands above `select` here: the divider under the add tools has nothing to divide.
+    tool.id === 'select' ? { ...tool, separatorBefore: false } : tool,
+  ),
+  SKELETONS_TOOL,
 ]
 
 /**
@@ -73,3 +67,22 @@ export const CHARACTER_STATE_TOOLS: readonly ToolbarItem[] = [
     icon: mdiBone,
   },
 ]
+
+/** What the bar draws: the scene's tools wearing this view's state, then the two states. */
+export function workshopBar(
+  view: { displays: readonly DisplayMode[]; skeletons: boolean },
+  editingRest: boolean,
+): ToolbarItem[] {
+  return [
+    ...WORKSHOP_TOOLS.map(tool => ({
+      ...tool,
+      pressed: tool.id === SKELETONS_TOOL.id ? view.skeletons : undefined,
+      activeMode: tool.id === 'display' ? displayOfPane(view.displays, MAIN_SCENE_PANE) : undefined,
+    })),
+    // Exactly one lit, like the verbs above: the two states are exclusive.
+    ...CHARACTER_STATE_TOOLS.map(tool => ({
+      ...tool,
+      pressed: (tool.id === CHARACTER_EDIT_REST) === editingRest,
+    })),
+  ]
+}

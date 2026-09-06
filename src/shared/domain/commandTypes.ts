@@ -181,7 +181,6 @@ export type CommandId =
   | 'gui.redo'
   | 'character.undo'
   | 'character.redo'
-  | 'character.navigate'
 
 /**
  * A menu row that draws a state: a command that toggles, or one mode of a command that cycles.

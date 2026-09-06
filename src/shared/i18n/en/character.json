@@ -19,6 +19,7 @@
     "restPose": "Rest pose",
     "poseMode": "Pose mode",
     "showBones": "Show bones",
+    "showBonesHint": "Draws the bones of the skeleton over the model; press again to hide them",
     "hideBones": "Hide bones",
     "borrow": "Take the skeleton of…",
     "borrowHint": "The skeleton is copied and fitted to this character. It belongs to it afterwards.",

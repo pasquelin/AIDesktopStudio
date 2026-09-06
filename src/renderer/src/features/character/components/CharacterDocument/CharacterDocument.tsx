@@ -1,12 +1,10 @@
 import { Button } from '@/components/Button'
-import { SceneSpeedControl } from '@/features/scene/components/Scene/SceneSpeedControl'
-import { useRetargetHost } from '@/features/retarget/hooks/useRetargetHost'
-import { restoreStoredRig } from '@/character/restoreStoredRig'
 import { mdiSkull } from '@mdi/js'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useShallow } from 'zustand/react/shallow'
 import type { CommandId } from '@shared/domain/command'
-import { DEFAULT_SETTINGS, type Settings } from '@shared/domain/settings'
+import { isDisplayMode } from '@shared/domain/scene'
 import type { Transform } from '@shared/domain/transform'
 import { EmptyState } from '@/components/EmptyState'
 import { Toolbar } from '@/components/Toolbar/Toolbar'
@@ -19,7 +17,7 @@ import {
   wornModelDress,
 } from '@/features/material/modelDress'
 import { workshopIdOf } from '@shared/domain/character'
-import { createCharacterStage, dressCharacterStage } from '@/character/characterStage'
+import { createCharacterStage } from '@/character/characterStage'
 import { noteCharacterSkins } from '@/character/characterSkins'
 import { assetsById, assetVersionOf, useAssets } from '@/stores/assets'
 import { useShortcuts } from '@/hooks/useShortcuts'
@@ -35,37 +33,31 @@ import { nodeById } from '@/engines/scene/sceneState'
 import { renameNode } from '@/engines/scene/commands'
 import { forgetSceneEngine, registerSceneEngine } from '@/stores/sceneEngines'
 import { sceneOf, useScenes } from '@/stores/scenes'
+import { sceneViewChromeOf } from '@/stores/sceneViewChrome'
+import { MAIN_SCENE_PANE, useSceneViews } from '@/stores/sceneViews'
 import { useModelFiles } from '@/stores/modelFiles'
 import { useSceneRendererResources } from '@/features/scene/components/Scene/Document/hooks/useSceneRendererResources'
+import { useSceneDocumentExports } from '@/features/scene/components/Scene/Document/hooks/useSceneDocumentExports'
+import { NAVIGATE_TOOL } from '@/features/scene/components/Scene/sceneTools'
 import { SceneClock } from '@/features/scene/components/Scene/SceneClock'
 import { SceneNavigationHint } from '@/features/scene/components/Scene/SceneNavigationHint'
-import { CHARACTER_EDIT_REST, CHARACTER_STATE_TOOLS, CHARACTER_TOOLS } from './characterTools'
+import { SceneSpeedControl } from '@/features/scene/components/Scene/SceneSpeedControl'
+import { useRetargetHost } from '@/features/retarget/hooks/useRetargetHost'
+import {
+  CHARACTER_EDIT_REST,
+  CHARACTER_STATE_TOOLS,
+  WORKSHOP_TOOLS,
+  workshopBar,
+} from './characterTools'
+import { useCharacterEngineState } from './hooks/useCharacterEngineState'
+import { useCharacterRig } from './hooks/useCharacterRig'
+import { useWorkshopViewState } from './hooks/useWorkshopViewState'
+import { runWorkshopCommand } from './workshopCommands'
 
-/**
- * The decor is this tab's own — it shows bones on a grid, never the studio's helpers. The two
- * NAVIGATION preferences are the person's, and follow them here as they do in a scene.
- */
-function characterViewport(three: Settings['three']): Settings['three'] {
-  return {
-    ...DEFAULT_SETTINGS.three,
-    orbitAroundSelection: three.orbitAroundSelection,
-    orbitUnderCursor: three.orbitUnderCursor,
-    showGrid: true,
-    lightHelpers: 'off',
-    cameraHelpers: 'off',
-    boundingBoxes: 'off',
-  }
-}
-
-function runCharacterCommand(
-  assetId: string,
-  command: CommandId,
-  setNavigating: (update: (current: boolean) => boolean) => void,
-): void {
+function runCharacterCommand(assetId: string, command: CommandId): void {
   const store = useCharacters.getState()
   if (command === 'character.undo') store.undo(assetId)
   if (command === 'character.redo') store.redo(assetId)
-  if (command === 'character.navigate') setNavigating(current => !current)
 }
 
 /**
@@ -94,7 +86,8 @@ export function CharacterDocument({ documentId }: { documentId: string }) {
   const workshopId = workshopIdOf(assetId)
   const nodeId = useScenes(state => sceneOf(state, workshopId).nodes[0]?.id)
   const duration = useScenes(state => sceneOf(state, workshopId).animation.duration)
-  const view = useCharacterView(state => characterViewOf(state, assetId))
+  const characterView = useCharacterView(state => characterViewOf(state, assetId))
+  const view = useSceneViews(useShallow(state => sceneViewChromeOf(state, workshopId)))
   const inFront = useDocumentIsInFront(documentId)
   useDocumentTitle(
     documentId,
@@ -102,46 +95,39 @@ export function CharacterDocument({ documentId }: { documentId: string }) {
   )
   useRestoredDocument(documentId)
   useSceneRendererResources(engineRef, { models: false }) // reloading its own file loses the pose
+  // On the WORKSHOP, which is the scene document the export rows address — the file they write
+  // takes the asset's name, which the menu side of it settles.
+  useSceneDocumentExports(inFront, workshopId)
   const [navigating, setNavigating] = useState(false)
   /** Metres per second the wheel left the flight at, or `null` while it has said nothing. */
   const [flySpeed, setFlySpeed] = useState<number | null>(null)
+  // Rebuilt every render on purpose: a command reads the view of the render it fires in.
+  const context = { assetId, workshopId, setNavigating, view }
 
+  // Its OWN scope and not the scene's: ⌘Z on this tab must not reach the scene open beside it.
+  // ⌘S is not here — `commandRouter` routes it to the document in front, and this kind writes
+  // the model's own container.
   useShortcuts({
     scope: 'character',
     enabled: inFront,
-    onCommand: command => runCharacterCommand(assetId, command, setNavigating),
+    onCommand: command => runCharacterCommand(assetId, command),
     // 🛑 The same camera as the studio's viewport. Without these two the keys reached no engine
     // at all: this surface orbited and nothing else, where every other 3D one flies.
     onMotionChange: held => engineRef.current?.setMotion(held),
     isFlying: () => engineRef.current?.flying ?? false,
   })
+  // The scene's keys and menu rows too, for what moves the VIEW: the bar declares the same
+  // commands, and a document edit answers `false` here — see `runWorkshopCommand`.
+  useShortcuts({
+    scope: 'scene',
+    enabled: inFront,
+    documentId: workshopId,
+    onCommand: command => runWorkshopCommand(command, context),
+  })
 
-  useEffect(() => {
-    engineRef.current?.setNavigating(navigating)
-  }, [navigating, live])
-
-  useEffect(() => {
-    engineRef.current?.setMode(view.mode)
-  }, [view.mode, live])
-
-  // 🛑 The padlocks reach the DRAG, not just the release: unheld for the length of a gesture, a
-  // joint leaves the axis a hand meant to keep it on — seen on screen the 2026-09-02.
-  useEffect(() => {
-    engineRef.current?.setHeldBoneAxes(view.heldAxes)
-  }, [view.heldAxes, live])
-
-  // 🛑 The rest is put back BEFORE the engine measures the skins against it: a bone left where a
-  // pose placed it would be bound there, and that pose would become the character's own shape.
-  useEffect(() => {
-    const engine = engineRef.current
-    if (!engine || !nodeId) return
-
-    if (view.editingRest)
-      for (const bone of characterOf(useCharacters.getState(), assetId).rig?.bones ?? [])
-        engine.poseBone(nodeId, bone.name, bone.rest)
-
-    engine.setRestEditing(view.editingRest)
-  }, [view.editingRest, assetId, nodeId, live])
+  useCharacterEngineState(live, assetId, nodeId, characterView, navigating, three)
+  useWorkshopViewState(live, view)
+  useCharacterRig(live, assetId, nodeId, landedAssetId === assetId, character)
 
   useEffect(() => {
     if (!nodeId || name === assetId) return
@@ -151,35 +137,6 @@ export function CharacterDocument({ documentId }: { documentId: string }) {
 
     useScenes.getState().runCommand(workshopId, renameNode(nodeId, name))
   }, [assetId, name, nodeId, workshopId])
-
-  // 🛑 What puts a gizmo on a joint, and paints it as the chosen one. Without it the engine hears
-  // its own pick back from nobody: a bone could be named by the panel and still not be held.
-  useEffect(() => {
-    engineRef.current?.setPickedBone(
-      view.pickedBone && nodeId ? { nodeId, bone: view.pickedBone } : null,
-    )
-  }, [view.pickedBone, nodeId, live])
-
-  // 🛑 The skeleton the store holds, put ON the model. Without this a fitted rig lives in a
-  // state nobody draws, no weights are ever worked out, and ⌘S writes bones bound to nothing.
-  useEffect(() => {
-    const engine = engineRef.current
-    if (!engine || !nodeId || landedAssetId !== assetId) return
-    if (!character.rig) {
-      engine.clearRig(nodeId)
-      return
-    }
-    void restoreStoredRig(engine, nodeId, character.rig, character.autoRigBindings)
-  }, [character.rig, character.autoRigBindings, nodeId, live, landedAssetId, assetId])
-
-  useEffect(() => {
-    dressCharacterStage(assetId, character.dress)
-  }, [assetId, character.dress])
-
-  // Its own effect: the one that mounts the renderer must not run again for a preference.
-  useEffect(() => {
-    engineRef.current?.configure(characterViewport(three))
-  }, [three])
 
   useEffect(() => {
     const element = hostRef.current
@@ -239,12 +196,11 @@ export function CharacterDocument({ documentId }: { documentId: string }) {
     // Published under the WORKSHOP, which is the document every other surface names it by: the
     // inspector and the band both sit in docks, outside this tab.
     registerSceneEngine(workshopId, renderer)
-    renderer.configure(characterViewport(useSettings.getState().settings.three))
 
-    // Armed from the first frame: this tab is ABOUT the bones, where a scene draws them on
-    // demand. A click picks a joint, and the gizmo it hands it to MOVES it — a skeleton is
-    // edited by placing its joints, where a scene poses one by turning them.
-    renderer.setSkeletons(true)
+    // Armed from the first frame, and through the VIEW so the bar can put it out: this tab is
+    // ABOUT the bones. The pose mode is forced rather than offered — a click picks a joint, and
+    // the gizmo it hands it to MOVES it, which is how a skeleton is edited.
+    useSceneViews.getState().setSkeletons(workshopId, true)
     renderer.setPoseMode(true)
 
     const stage = createCharacterStage({ renderer, assetId })
@@ -265,24 +221,20 @@ export function CharacterDocument({ documentId }: { documentId: string }) {
       <Toolbar
         className={PANE_TOOLBAR}
         label={t('character.tools')}
-        tools={[
-          ...CHARACTER_TOOLS,
-          // Exactly one lit, like the verbs above: the two states are exclusive.
-          ...CHARACTER_STATE_TOOLS.map(tool => ({
-            ...tool,
-            pressed: (tool.id === CHARACTER_EDIT_REST) === view.editingRest,
-          })),
-        ]}
-        activeTool={view.mode}
+        tools={workshopBar(view, characterView.editingRest)}
+        activeTool={navigating ? NAVIGATE_TOOL : characterView.mode}
         onTool={id => {
-          const store = useCharacterView.getState()
           if (CHARACTER_STATE_TOOLS.some(tool => tool.id === id)) {
-            store.editCharacterRest(assetId, id === CHARACTER_EDIT_REST)
+            useCharacterView.getState().editCharacterRest(assetId, id === CHARACTER_EDIT_REST)
             return
           }
 
-          const chosen = CHARACTER_TOOLS.find(tool => tool.id === id)
-          if (chosen) store.setCharacterMode(assetId, chosen.mode)
+          const chosen = WORKSHOP_TOOLS.find(tool => tool.id === id)
+          if (chosen) runWorkshopCommand(chosen.command, context)
+        }}
+        onMode={(_toolId, modeId) => {
+          if (isDisplayMode(modeId))
+            useSceneViews.getState().setDisplay(workshopId, MAIN_SCENE_PANE, modeId)
         }}
       />
       {/* How fast the camera travels, the studio's own control: a workshop is a metre across and

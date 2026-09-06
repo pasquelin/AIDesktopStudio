@@ -10,6 +10,10 @@ import { characterOf, seedCharacter, useCharacters } from '@/stores/character'
 import { clearCharacters, installCharacterDocument } from '@/stores/character-fixtures'
 import { characterViewOf, useCharacterView } from '@/stores/characterView'
 import { useAnimationViews } from '@/stores/animationView'
+import { publishCommand } from '@/services/commandBus'
+import { useDocuments } from '@/stores/documents'
+import { sceneViewOf, useSceneViews } from '@/stores/sceneViews'
+import { workshopIdOf } from '@shared/domain/character'
 import { useSettings } from '@/stores/settings'
 import { CharacterDocument } from './CharacterDocument'
 
@@ -36,7 +40,12 @@ const configured = vi.hoisted((): Record<string, unknown>[] => [])
 
 /** Live engines, so a case can read skin/clear calls that the constructor planted on `this`. */
 const engines = vi.hoisted(
-  (): Array<{ skinModel: ReturnType<typeof vi.fn>; clearRig: ReturnType<typeof vi.fn> }> => [],
+  (): Array<{
+    skinModel: ReturnType<typeof vi.fn>
+    clearRig: ReturnType<typeof vi.fn>
+    setSkeletons: ReturnType<typeof vi.fn>
+    setDisplayModes: ReturnType<typeof vi.fn>
+  }> => [],
 )
 
 vi.mock('@/engines/scene/SceneRenderer', () => ({
@@ -53,6 +62,7 @@ vi.mock('@/engines/scene/SceneRenderer', () => ({
       configured.push(next)
     }
     setSkeletons = vi.fn()
+    setDisplayModes = vi.fn()
     setPoseMode = vi.fn()
     setSculptMode = vi.fn()
     setArmedRelief = vi.fn()
@@ -92,6 +102,7 @@ vi.mock('@/engines/scene/SceneRenderer', () => ({
 
 const ASSET = 'asset-hero'
 const DOCUMENT = 'doc-hero'
+const WORKSHOP = workshopIdOf(ASSET)
 
 /** The tab, on the model it was opened from — what the dock and the shell both address it by. */
 const showTab = (): void => {
@@ -127,6 +138,8 @@ beforeEach(() => {
   // before was what made the next one pass, and the leak showed only when the bar moved.
   useCharacterView.setState({ views: {} })
   useAnimationViews.setState({ views: {} })
+  // The workshop's own view is keyed on the asset: the bones a case put out would stay out.
+  useSceneViews.setState({ views: {} })
   installFakeBridge()
 })
 
@@ -164,9 +177,9 @@ it('offers the ways of acting on a joint, opens on placing one, and offers no sc
 
   const bar = screen.getByRole('toolbar', { name: 'Outils du squelette' })
 
-  // Three verbs and the two states. No padlock on the lengths: posing turns the bone arriving at
-  // a joint, and editing a skeleton is where one shortens a bone that came out too long.
-  expect(within(bar).getAllByRole('button')).toHaveLength(5)
+  // The scene's six view tools, the bones, and the two states. No padlock on the lengths: posing
+  // turns the bone arriving at a joint, and editing a skeleton is where one shortens a bone.
+  expect(within(bar).getAllByRole('button')).toHaveLength(9)
   expect(within(bar).queryByRole('button', { name: /longueurs/i })).toBeNull()
   // A joint is a point and a length: there is nothing about one to enlarge.
   expect(within(bar).queryByRole('button', { name: /échelle/i })).toBeNull()
@@ -194,14 +207,14 @@ it('lights one state at a time, and hands the held axes to the engine', async ()
       .filter(one => one.getAttribute('aria-pressed') === 'true')
       .map(one => one.getAttribute('aria-label'))
 
-  expect(pressedIn()).toEqual(['Déplacer', 'Manipuler'])
+  expect(pressedIn()).toEqual(['Déplacer', 'Afficher les os', 'Manipuler'])
   // 🛑 The engine, not just the store: a padlock applied on release alone lets a joint leave the
   // axis a hand meant to keep it on for the whole of a gesture.
   expect(holds.at(-1)).toEqual([])
 
   await userEvent.click(within(bar).getByRole('button', { name: /squelette/i }))
 
-  expect(pressedIn()).toEqual(['Déplacer', 'Modifier le squelette'])
+  expect(pressedIn()).toEqual(['Déplacer', 'Afficher les os', 'Modifier le squelette'])
   expect(characterViewOf(useCharacterView.getState(), ASSET).editingRest).toBe(true)
 })
 
@@ -318,4 +331,76 @@ it('arms the flight again after the engine has left it on its own', async () => 
   })
 
   expect(navigated.at(-1)).toBe(true)
+})
+
+/**
+ * Through the VIEW and not straight into the engine: written on the renderer alone, the bar had
+ * nothing to read and no way to put the bones out.
+ */
+it('arms the bones on the workshop view when it mounts, and lets the bar put them out', async () => {
+  showTab()
+  await waitFor(() => expect(engines[0]?.setSkeletons).toHaveBeenLastCalledWith(true))
+  expect(sceneViewOf(useSceneViews.getState(), WORKSHOP).skeletons).toBe(true)
+
+  const bones = within(screen.getByRole('toolbar', { name: 'Outils du squelette' })).getByRole(
+    'button',
+    { name: 'Afficher les os' },
+  )
+  await userEvent.click(bones)
+
+  expect(engines[0]?.setSkeletons).toHaveBeenLastCalledWith(false)
+  expect(bones).toHaveAttribute('aria-pressed', 'false')
+})
+
+// The bones a previous visit left on: a view the store already holds has to reach a NEW engine.
+it('hands a view the store already held to the engine that mounts after it', async () => {
+  useSceneViews.getState().setSkeletons(WORKSHOP, true)
+  useSceneViews.getState().setDisplay(WORKSHOP, 0, 'wireframe')
+  showTab()
+
+  await waitFor(() => expect(engines[0]?.setSkeletons).toHaveBeenLastCalledWith(true))
+  expect(engines[0]?.setDisplayModes).toHaveBeenLastCalledWith(['wireframe'], false)
+})
+
+it('changes what the workshop draws from the flyout', async () => {
+  showTab()
+
+  await userEvent.hover(screen.getByRole('button', { name: /Rendu/ }))
+  await userEvent.click(await screen.findByRole('menuitemradio', { name: /^Filaire/ }))
+
+  expect(engines[0]?.setDisplayModes).toHaveBeenLastCalledWith(['wireframe'], false)
+})
+
+// The scene's own commands reach this tab, from the menu or an MCP client — while it is in front.
+it('takes a scene view command in front, and none in the background', async () => {
+  showTab()
+
+  expect(publishCommand('scene.skeletons')).toBe(true)
+  expect(sceneViewOf(useSceneViews.getState(), WORKSHOP).skeletons).toBe(false)
+
+  act(() => useDocuments.setState({ activeId: 'doc-other' }))
+
+  expect(publishCommand('scene.skeletons')).toBe(false)
+})
+
+/**
+ * ⌘Z reaches the character, and only it: the scene's undo answers that nothing here took it,
+ * where `true` would have told a client its edit was undone.
+ */
+it('undoes the character on its own key, and leaves the scene undo unanswered', async () => {
+  seedCharacter(ASSET, RIG, {})
+  showTab()
+  await userEvent.click(
+    within(screen.getByRole('toolbar', { name: 'Outils du squelette' })).getByRole('button', {
+      name: /Modifier le squelette/,
+    }),
+  )
+  act(() => built[0]?.onTransform?.([{ id: 'node-1', bone: 'Spine', transform: raised(0.2) }]))
+  expect(restOfSpine()?.position.y).toBeCloseTo(0.2, 5)
+
+  expect(publishCommand('scene.undo')).toBe(false)
+  expect(restOfSpine()?.position.y).toBeCloseTo(0.2, 5)
+
+  expect(publishCommand('character.undo')).toBe(true)
+  expect(restOfSpine()?.position.y).toBe(0)
 })
