@@ -54,7 +54,7 @@ export abstract class SceneRendererAids extends SceneRendererValidation {
           this.scheme = schemeFor(next.navigationPreset, customFrom(next))
           // Through the viewport rather than onto the camera: the orthographic frustum is derived
           // from this very field of view, and has to be resized with it.
-          if (lensMoved) this.viewport.setFieldOfView(next.fieldOfView)
+          if (lensMoved) this.driveLens()
           const configureStep3 = () => {
             // Unconditional, both of them: a step changed while snapping is off has to be waiting when
             // it comes on, and the handles are rebuilt from `size` on the frame after it moves.

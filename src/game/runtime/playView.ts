@@ -83,15 +83,17 @@ export function armView(
   at: Vector3,
   rotation: Vector3,
   axes: Axes,
+  fieldOfView: number,
 ): CameraView | null {
   if (play.camera === 'orbit') return null
 
   const { forward } = axesOfEuler(rotation, axes)
-  copyAxes(VIEW.position, at)
-  VIEW.target.x = at.x + forward.x
-  VIEW.target.y = at.y + forward.y
-  VIEW.target.z = at.z + forward.z
-  return VIEW
+  ARM_VIEW.fieldOfView = fieldOfView
+  copyAxes(ARM_VIEW.position, at)
+  ARM_VIEW.target.x = at.x + forward.x
+  ARM_VIEW.target.y = at.y + forward.y
+  ARM_VIEW.target.z = at.z + forward.z
+  return ARM_VIEW
 }
 
 /** Where a rotation POINTS, as the yaw and pitch a shot is built from. */
@@ -103,4 +105,6 @@ export function lookOf(rotation: Vector3, axes: Axes, into: Look): Look {
 }
 
 const VIEW: CameraView = { position: { x: 0, y: 0, z: 0 }, target: { x: 0, y: 0, z: 0 } }
+/** Its own, with a lens: a shot from a pair of feet never carries one. */
+const ARM_VIEW: CameraView = { position: { x: 0, y: 0, z: 0 }, target: { x: 0, y: 0, z: 0 } }
 const AHEAD: Vector3 = { x: 0, y: 0, z: 0 }

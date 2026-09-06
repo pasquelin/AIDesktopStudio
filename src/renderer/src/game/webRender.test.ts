@@ -23,6 +23,7 @@ const fake = vi.hoisted(() => {
     autoClear = true
     ratio = 1
     frames: unknown[] = []
+    lenses: number[] = []
     passes = 0
     mapsDrawn = 0
     setPixelRatio(ratio: number): void {
@@ -33,7 +34,10 @@ const fake = vi.hoisted(() => {
     }
     setSize(): void {}
     dispose(): void {}
-    render(scene: { traverse: (visit: (object: object) => void) => void }): void {
+    render(
+      scene: { traverse: (visit: (object: object) => void) => void },
+      camera: { fov: number },
+    ): void {
       const drawing =
         this.shadowMap.enabled && (this.shadowMap.autoUpdate || this.shadowMap.needsUpdate)
       if (drawing) {
@@ -46,6 +50,7 @@ const fake = vi.hoisted(() => {
         })
       }
       this.frames.push(scene)
+      this.lenses.push(camera.fov)
     }
   }
   const renderers: FakeRenderer[] = []
@@ -143,7 +148,7 @@ describe('what an exported game pays for an image', () => {
     expect(renderer.passes).toBe(2)
   })
 
-  it('draws again on a lens that moved, without a depth pass, and not on the same lens again', async () => {
+  it('draws again on an eye that moved, without a depth pass, and not on the same eye again', async () => {
     const { render, renderer } = await stagedGame()
     render.draw()
 
@@ -154,6 +159,49 @@ describe('what an exported game pays for an image', () => {
 
     expect(renderer.frames).toHaveLength(2)
     expect(renderer.passes).toBe(1)
+  })
+
+  /** A shot through a camera node draws through ITS lens; one from a pair of feet, the author's. */
+  it('draws through the lens a shot carries, and back through the policy without one', async () => {
+    const { render, renderer } = await stagedGame({ ...DEFAULT_RENDER_POLICY, fieldOfView: 60 })
+    const shot = { position: { x: 0, y: 5, z: 10 }, target: { x: 0, y: 0, z: 0 } }
+    render.draw()
+
+    render.view({ ...shot, fieldOfView: 35 })
+    render.draw()
+    render.view({ ...shot, fieldOfView: 35 })
+    render.draw()
+    render.view(shot)
+    render.draw()
+
+    expect(renderer.lenses).toEqual([60, 35, 60])
+  })
+
+  /** Loaded into a set flown by hand, a game must not go on drawing through the last node's lens. */
+  it('draws through the policy again once the scene is flown by hand', async () => {
+    const { render, renderer } = await stagedGame({ ...DEFAULT_RENDER_POLICY, fieldOfView: 60 })
+    render.view({ position: { x: 0, y: 5, z: 10 }, target: { x: 0, y: 0, z: 0 }, fieldOfView: 35 })
+    render.draw()
+
+    render.view(null)
+    render.draw()
+    render.view(null)
+    render.draw()
+
+    expect(renderer.lenses).toEqual([35, 60])
+  })
+
+  /** A node whose lens IS the policy's: giving it back must not swallow a resize the frame owes. */
+  it('still draws a size that changed when the lens given back was the policy one already', async () => {
+    const { render, renderer } = await stagedGame({ ...DEFAULT_RENDER_POLICY, fieldOfView: 60 })
+    render.view({ position: { x: 0, y: 5, z: 10 }, target: { x: 0, y: 0, z: 0 }, fieldOfView: 60 })
+    render.draw()
+
+    render.resize(800, 450)
+    render.view(null)
+    render.draw()
+
+    expect(renderer.frames).toHaveLength(2)
   })
 
   it('draws again on a size that changed, and on a veil that moved', async () => {

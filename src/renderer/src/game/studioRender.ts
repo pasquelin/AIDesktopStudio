@@ -1,5 +1,10 @@
 import { clamp } from '@shared/numeric'
-import { copyTransform, sameCameraView, sameTransform } from '@shared/domain/transform'
+import {
+  copyCameraView,
+  copyTransform,
+  sameCameraView,
+  sameTransform,
+} from '@shared/domain/transform'
 import type { CameraView, EntityPlacement, RenderPort } from '@game/ports/renderPort'
 import type { SceneRenderer } from '@/engines/scene/SceneRenderer'
 import type { SceneNode, SceneState } from '@/engines/scene/sceneState'
@@ -84,7 +89,7 @@ export function createStudioRender(
   onVeil: (amount: number) => void = () => {},
 ): RenderPort {
   const shadow = new Map<string, SceneNode>()
-  const watched: CameraView = { position: NOWHERE, target: NOWHERE }
+  const watched: CameraView = { position: { ...NOWHERE }, target: { ...NOWHERE } }
   let byId = new Map<string, SceneNode>()
   let bakedById = new Map<string, string>()
   let source: SceneState | null = null
@@ -133,9 +138,15 @@ export function createStudioRender(
     // fight whoever is dragging it. A view that has not MOVED is dropped too — `placeView` asks
     // for a frame, so a character standing still would repaint the viewport sixty times a second.
     view: (wanted: CameraView | null) => {
-      if (!wanted || sameCameraView(watched, wanted)) return
-      watched.position = { ...wanted.position }
-      watched.target = { ...wanted.target }
+      if (!wanted) {
+        // Flown by hand after a node filmed: the eye stays, the lens is the person's again.
+        if (watched.fieldOfView === undefined) return
+        watched.fieldOfView = undefined
+        renderer.placeView(watched)
+        return
+      }
+      if (sameCameraView(watched, wanted)) return
+      copyCameraView(watched, wanted)
       renderer.placeView(wanted)
     },
 

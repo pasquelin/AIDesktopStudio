@@ -47,12 +47,30 @@ export function movedParts(transform: Transform): Partial<Transform> {
 export const sameVector3 = (one: Vector3, other: Vector3): boolean =>
   one.x === other.x && one.y === other.y && one.z === other.z
 
+/**
+ * Where the eye stands and what it looks at, in the scene's own frame. `fieldOfView`, in degrees,
+ * is the lens of the camera node a shot goes through; absent, the drawer keeps the viewport's own.
+ */
+export type CameraView = { position: Vector3; target: Vector3; fieldOfView?: number }
+
 /** Both engines drop a view that has not moved — `placeView` and `draw` each ask for a frame. */
-export function sameCameraView(
-  one: { position: Vector3; target: Vector3 },
-  other: { position: Vector3; target: Vector3 },
-): boolean {
-  return sameVector3(one.position, other.position) && sameVector3(one.target, other.target)
+export function sameCameraView(one: CameraView, other: CameraView): boolean {
+  return (
+    sameVector3(one.position, other.position) &&
+    sameVector3(one.target, other.target) &&
+    one.fieldOfView === other.fieldOfView
+  )
+}
+
+/** Written in place: a view is kept once a frame, and a fresh pair of vectors per frame is not. */
+export function copyCameraView(into: CameraView, from: CameraView): void {
+  into.position.x = from.position.x
+  into.position.y = from.position.y
+  into.position.z = from.position.z
+  into.target.x = from.target.x
+  into.target.y = from.target.y
+  into.target.z = from.target.z
+  into.fieldOfView = from.fieldOfView
 }
 
 /** Whether two poses are the same one. Read per entity per frame — no allocation on the way. */

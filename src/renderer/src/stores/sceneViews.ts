@@ -3,6 +3,7 @@ import type { SculptTool } from '@/engines/scene/reliefStroke'
 export type { SculptTool }
 import { create } from 'zustand'
 import { snapToFrame, type Us } from '@shared/domain/time'
+import { sameCameraView } from '@shared/domain/transform'
 import {
   DEFAULT_PANE_VIEWS,
   type CameraPlacement,
@@ -426,15 +427,7 @@ const sceneViewsStore = create<SceneViewsState>()(set => ({
 export const useSceneViews = sceneViewsStore
 
 function samePlacement(left: CameraPlacement | null, right: CameraPlacement): boolean {
-  if (!left) return false
-  return (
-    left.position.x === right.position.x &&
-    left.position.y === right.position.y &&
-    left.position.z === right.position.z &&
-    left.target.x === right.target.x &&
-    left.target.y === right.target.y &&
-    left.target.z === right.target.z
-  )
+  return left !== null && sameCameraView(left, right)
 }
 
 /** A document nobody has looked at yet is looked at the default way. */

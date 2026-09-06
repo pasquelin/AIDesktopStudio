@@ -20,7 +20,9 @@ function watching(
   controlled = true,
   rigs: Rigs = createRigs(null),
   playerBodyId: string | null = null,
+  views?: (CameraView | null)[],
 ) {
+  const seen = views ?? []
   const pilots = createPilots()
   // The pointer the case moves between two frames, which is what the head is read off.
   const held: Pointer = { x: 0, y: 0, down: false }
@@ -30,7 +32,6 @@ function watching(
     endStep: () => {},
     detach: () => {},
   }
-  const views: (CameraView | null)[] = []
   const characters = createCharacters(
     createPossessions(),
     entity => entity.transform,
@@ -40,7 +41,7 @@ function watching(
     play: { ...DEFAULT_PLAY, camera },
     ports: testPorts({
       input: heldInput,
-      render: { place: () => {}, view: view => views.push(view), veil: () => {} },
+      render: { place: () => {}, view: view => seen.push(view), veil: () => {} },
     }),
     systems: [createPlayCameraSystem({ characters, pilots, rigs, playerBodyId })],
   })
@@ -55,7 +56,7 @@ function watching(
 
   // Through the character system's own sweep: the camera watches whoever it named first.
   characters.intents(world, 1 / 60)
-  return { world, views, held, pilots }
+  return { world, views: seen, held, pilots }
 }
 
 describe('the camera rank of a running game', () => {
@@ -118,7 +119,7 @@ describe('the camera rank of a running game', () => {
       components: [],
     })
     const eye = world.entities.get('eye')
-    if (eye) rigs.take(eye)
+    if (eye) rigs.take(eye, 50)
 
     world.lateUpdate(0, STEP_SECONDS)
 
@@ -139,7 +140,7 @@ describe('the camera rank of a running game', () => {
     world.entities.add({ id: 'car', name: 'car', transform: restingTransform(), components: [] })
     const eye = world.entities.get('eye')
     const car = world.entities.get('car')
-    if (eye) rigs.take(eye)
+    if (eye) rigs.take(eye, 50)
     if (car) pilots.take(car, 0, 5, PILOT_RANK.machine)
 
     world.lateUpdate(0, STEP_SECONDS)
@@ -152,19 +153,43 @@ describe('the camera rank of a running game', () => {
     const { world, views } = watching('orbit', true, rigs)
     world.entities.add({ id: 'eye', name: 'eye', transform: restingTransform(), components: [] })
     const eye = world.entities.get('eye')
-    if (eye) rigs.take(eye)
+    if (eye) rigs.take(eye, 50)
 
     world.lateUpdate(0, STEP_SECONDS)
 
     expect(views).toEqual([null])
   })
 
-  it('says nothing at all about a scene nobody walks', () => {
+  it('gives the lens back when nobody walks', () => {
     const { world, views } = watching('firstPerson', false)
 
     world.lateUpdate(0, STEP_SECONDS)
 
-    expect(views).toEqual([])
+    expect(views).toEqual([null])
+  })
+
+  /**
+   * 🛑 After a node filmed, an orbit still / menu / turntable has no arm and no seat — without
+   * a `view(null)` the last node's lens stays on the shared port.
+   */
+  it('gives the lens back when a later scene has nobody to film', () => {
+    const views: (CameraView | null)[] = []
+    const rigs = createRigs(null)
+    const filmed = watching('thirdPerson', true, rigs, null, views)
+    filmed.world.entities.add({
+      id: 'eye',
+      name: 'eye',
+      transform: { ...restingTransform(), position: { x: 2, y: 3, z: 4 } },
+      components: [],
+    })
+    const eye = filmed.world.entities.get('eye')
+    if (eye) rigs.take(eye, 50)
+    filmed.world.lateUpdate(0, STEP_SECONDS)
+    expect(views.at(-1)?.fieldOfView).toBe(50)
+
+    watching('orbit', false, createRigs(null), null, views).world.lateUpdate(0, STEP_SECONDS)
+
+    expect(views.at(-1)).toBeNull()
   })
 })
 

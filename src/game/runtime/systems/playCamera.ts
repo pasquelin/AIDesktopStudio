@@ -23,7 +23,7 @@ export type PlayCameraOptions = {
   /** The camera node a spring arm placed, empty when the scene holds no arm. */
   rigs: Rigs
   /**
-   * The body the scene's player module designates, resolved by the WINDOW like `filmable` and the
+   * The body the scene's player module designates, resolved by the WINDOW like `lensOf` and the
    * shapes: the runtime holds no tree, so who hangs under what is answered where it is known.
    */
   playerBodyId?: string | null
@@ -75,11 +75,17 @@ export function createPlayCameraSystem(options: PlayCameraOptions): System {
       // is framed exactly as it was, and one with an arm is framed through the node it placed.
       if (armed) {
         const shot = worldOf ? worldOf(armed, armed.transform) : armed.transform
-        world.ports.render.view(armView(world.play, shot.position, shot.rotation, axes))
+        world.ports.render.view(
+          armView(world.play, shot.position, shot.rotation, axes, rigs.lens()),
+        )
         return
       }
 
-      if (!seat) return
+      // A later scene with nobody to film must still give the lens back.
+      if (!seat) {
+        world.ports.render.view(null)
+        return
+      }
 
       // 🛑 The world transform for BOTH: framed at a composed point from a rotation read in a
       // parent's frame, a chase camera sits in the wrong direction behind a parented machine. And
