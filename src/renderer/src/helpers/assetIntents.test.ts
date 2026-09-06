@@ -2,8 +2,15 @@ import { describe, expect, it } from 'vitest'
 import { ASSET_TYPES, PICTURES, type Asset } from '@shared/domain/asset'
 import { workspaceOfType } from '@shared/domain/assetKind'
 import { kindForWorkspace } from '@shared/domain/document'
+import { IMPORTABLE_EXTENSIONS } from '@shared/domain/importFormat'
 import { WORKSPACES } from './workspaces'
-import { ASSET_INTENTS, editorIntent, intentsFor, pixelEditorIntent } from './assetIntents'
+import {
+  ASSET_INTENTS,
+  editorIntent,
+  intentsFor,
+  opensAsCharacter,
+  pixelEditorIntent,
+} from './assetIntents'
 
 const picture = (overrides: Partial<Asset> = {}): Asset => ({
   id: 'asset_1',
@@ -123,5 +130,34 @@ describe('where an asset is edited', () => {
 
     expect(pixelEditorIntent(picture({ location: 'cloud' }))).toBeNull()
     expect(pixelEditorIntent(picture({ type: 'mesh' }))).toBeNull()
+  })
+})
+
+describe('what opens as a model', () => {
+  const mesh = (name: string, overrides: Partial<Asset> = {}): Asset =>
+    picture({ type: 'mesh', name, ...overrides })
+
+  // One list, read rather than copied: the meshes the studio imports are the models it edits.
+  it('opens every importable mesh on a model tab', () => {
+    for (const extension of IMPORTABLE_EXTENSIONS.mesh) {
+      expect(opensAsCharacter(mesh(`knight.${extension}`))).toBe(true)
+    }
+  })
+
+  it('leaves a `.gltf` to the scene, since it is a document', () => {
+    expect(opensAsCharacter(mesh('chair.gltf'))).toBe(false)
+  })
+
+  // MEASURED on a real project: a catalogued row is named `tripo-character`, and only the path
+  // behind it carries the extension.
+  it('reads the extension off the path when the name carries none', () => {
+    expect(opensAsCharacter(mesh('tripo-character', { path: 'Models/tripo-character.glb' }))).toBe(
+      true,
+    )
+  })
+
+  it('opens nothing the cloud still holds, nor a picture', () => {
+    expect(opensAsCharacter(mesh('knight.glb', { location: 'cloud' }))).toBe(false)
+    expect(opensAsCharacter(picture())).toBe(false)
   })
 })

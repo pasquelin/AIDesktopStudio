@@ -136,10 +136,10 @@ describe('opening an asset', () => {
     expect(editPixelsOf(null)).toBeNull()
   })
 
-  // A container the studio writes a skeleton back into: it opens on the FILE, and every other
-  // mesh still lands in a scene.
-  it('opens a mesh in a scene, and a `.glb` on a character tab instead', async () => {
-    await openAsset(asset({ id: 'mesh-1', type: 'mesh', name: 'chair.fbx' }))
+  // A `.gltf` is a document and lands in a scene; an importable mesh opens on its FILE, in a
+  // model tab of its own.
+  it('opens a `.gltf` in a scene, and a `.glb` on a character tab instead', async () => {
+    await openAsset(asset({ id: 'mesh-1', type: 'mesh', name: 'chair.gltf' }))
     const nodes = sceneOf(useScenes.getState(), opened().id).nodes
     expect(nodes.filter(node => node.type === 'model')).toHaveLength(1)
     expect(useLayouts.getState().activeWorkspace).toBe('3d')

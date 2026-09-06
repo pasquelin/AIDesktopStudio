@@ -117,7 +117,7 @@ describe('opening an asset', () => {
   it('lets the tab load before writing into it', async () => {
     installFakeBridge({ documents: { read: () => Promise.resolve(null) } })
 
-    await openAsset(asset({ id: 'mesh-1', type: 'mesh', name: 'chair.fbx' }))
+    await openAsset(asset({ id: 'mesh-1', type: 'mesh', name: 'chair.gltf' }))
 
     // A new scene is born lit, and a document read from disk brings its own nodes. Writing
     // before either happened left the tab holding nothing but the asset.

@@ -14,7 +14,7 @@ import { restoreDocument } from '@/features/shell/documentIo'
 import { loadTake } from '@/features/audio/components/TakeEditor/loadTake'
 import { becomeAsset, placeAsset } from '@/features/image/placeAsset'
 import { placeMaterialChannel } from '@/features/material/components/placeChannel'
-import { extensionOf } from '@shared/domain/fileName'
+import { importableAssetTypeOf } from '@shared/domain/importFormat'
 import { sourceNatureOf } from '@shared/domain/fileRole'
 import { documentOfKind, useDocuments } from '@/stores/documents'
 import { addAnimationTo, addModelTo } from '@/stores/scenes'
@@ -264,21 +264,15 @@ export function intentsFor(type: AssetType): readonly AssetIntent[] {
 }
 
 /**
- * Whether this asset is edited as a CHARACTER — in a window of its own, on the file itself.
- *
- * `.glb` alone, and that is the arbitration: it is the container the studio writes a skeleton
- * back into. An `.fbx` still opens as a scene, and a row the cloud holds opens as nothing —
- * `assetUrl` answers 404 for one, and the window would sit on a file it cannot read.
- *
- * The extension is read off the PATH: a catalogued row is named `tripo-character`, and the
- * extension lives on the file behind it — reading the name alone answered `false` for every
- * character a project actually holds.
+ * The importable meshes ARE the models the studio edits; a `.gltf` is not among them, it is a
+ * document. Read off the PATH — a catalogued row is named without its extension — and never for a
+ * row the cloud holds, which has no file for the tab to read.
  */
 export function opensAsCharacter(asset: Asset): boolean {
   return (
     asset.type === 'mesh' &&
     asset.location === 'local' &&
-    extensionOf(asset.path ?? asset.name).toLowerCase() === '.glb'
+    importableAssetTypeOf(asset.path ?? asset.name) === 'mesh'
   )
 }
 
