@@ -82,8 +82,7 @@ export function GameWindow() {
     }
   }, [])
 
-  // Its own effect, and the only configure: declared after the mount, it runs on the fresh engine
-  // first, and again for a preference without the game having to be rebuilt.
+  // After the mount, so a preference does not rebuild the game.
   useEffect(() => {
     engineRef.current?.configure(gameViewport(three))
   }, [three])

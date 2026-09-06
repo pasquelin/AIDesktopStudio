@@ -19,10 +19,12 @@ describe('SceneRenderer and the camera a running game writes', () => {
 
   /** The lens is the node's while a game films through it, and the person's own again after. */
   it('draws through the lens a placed view carries, and gives the settings back on release', () => {
-    expect(method('placeView', 'placement: CameraPlacement')).toContain(
-      'this.drivenLens = placement.fieldOfView ?? null',
-    )
-    expect(method('releaseView')).toContain('this.drivenLens = null')
+    const placed = method('placeView', 'placement: CameraPlacement')
+    const released = method('releaseView')
+    expect(placed).toContain('this.drivenLens = placement.fieldOfView ?? null')
+    expect(placed).toContain('this.driveLens()')
+    expect(released).toContain('this.drivenLens = null')
+    expect(released).toContain('this.driveLens()')
   })
 
   /** Or a preference edited mid-game undoes the node's lens until the camera next moves. */

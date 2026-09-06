@@ -66,8 +66,7 @@ export function PlayerModuleWindow() {
     }
   }, [])
 
-  // Its own effect, and the only configure: declared after the mount, it runs on the fresh engine
-  // first, and again for a preference without the renderer having to be rebuilt.
+  // After the mount, so a preference does not rebuild the renderer.
   useEffect(() => {
     engine.current?.configure(three)
   }, [three])

@@ -1,8 +1,12 @@
-import { render, waitFor } from '@testing-library/react'
-import { act } from 'react'
-import { expect, it, vi } from 'vitest'
+import { act, render, waitFor } from '@testing-library/react'
+import { afterEach, expect, it, vi } from 'vitest'
+import { DEFAULT_SETTINGS } from '@shared/domain/settings'
 import { useSettings } from '@/stores/settings'
 import { GameWindow } from './GameWindow'
+
+afterEach(() => {
+  useSettings.setState({ settings: DEFAULT_SETTINGS })
+})
 
 /** Every viewport dressing handed to the engine, in order. */
 const configured = vi.hoisted((): Record<string, unknown>[] => [])

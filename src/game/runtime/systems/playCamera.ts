@@ -81,7 +81,11 @@ export function createPlayCameraSystem(options: PlayCameraOptions): System {
         return
       }
 
-      if (!seat) return
+      // A later scene with nobody to film must still give the lens back.
+      if (!seat) {
+        world.ports.render.view(null)
+        return
+      }
 
       // 🛑 The world transform for BOTH: framed at a composed point from a rotation read in a
       // parent's frame, a chase camera sits in the wrong direction behind a parented machine. And
