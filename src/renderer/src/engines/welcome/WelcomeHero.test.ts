@@ -100,6 +100,7 @@ function retargetOf(
   return {
     adapt,
     fitOf: () => ({ matched: [], missingInSource: [], missingInTarget: [] }),
+    profileOf: () => undefined,
     remember: () => {},
     dispose: () => {},
   }

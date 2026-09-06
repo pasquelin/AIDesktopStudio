@@ -131,7 +131,6 @@ function setup(
     catalog: () => catalog,
     remote: overrides.open ?? (() => remote),
     cloud: () => cloud,
-    // The real one is exercised in `autoCaption.test.ts`; here it must only stay out of the way.
     captionArrivals: async () => {},
     describeAssets: async assets => {
       described.push(...assets)
@@ -140,8 +139,7 @@ function setup(
     removeFile: async asset => {
       calls.removedFiles.push(asset.id)
     },
-    // The disk itself is exercised in `assetFile.test.ts`; what this harness has to show is
-    // that the handler moves the file BEFORE the row, and files the path it comes back with.
+    // This harness proves the handler moves the file before its catalogue row.
     renameFile:
       overrides.renameFile ??
       (async (asset, name) => {

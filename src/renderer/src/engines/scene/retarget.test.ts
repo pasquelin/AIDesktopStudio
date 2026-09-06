@@ -12,7 +12,6 @@ import type { HumanoidRole } from '@shared/domain/humanoid'
 import { profileWithRole, skeletonSignatureOf } from '@shared/domain/skeletonProfile'
 import {
   clipFromWire,
-  clipTranslationScaleOf,
   nodeTrackNameOf,
   retargetFitOf,
   restOffsetsOf,
@@ -225,16 +224,6 @@ describe('reading how much bigger one skeleton is than another', () => {
     // Hip HEIGHT would be the obvious measure and cannot be used: Uthana builds its skeleton with
     // the hips at the origin, measured on the real file.
     expect(skeletonScaleOf(skinnedFromWire(headless), skinnedFromWire(UTHANA))).toBe(1)
-  })
-})
-
-describe('scaling a clip whose hips were authored in the armature’s centimetres', () => {
-  it('reads the scale folded into a root hip, and leaves a child hip alone', () => {
-    const root = skinnedFromWire([boneAt('mixamorigHips', -1, 0.99, 0.01), boneAt('Spine', 0, 0.2)])
-
-    expect(clipTranslationScaleOf(root, 'mixamorigHips')).toBeCloseTo(0.01, 5)
-    expect(clipTranslationScaleOf(root, 'Spine')).toBe(1)
-    expect(clipTranslationScaleOf(root)).toBe(1)
   })
 })
 

@@ -12,7 +12,6 @@ import { Vector3, type Matrix4, type SkinnedMesh } from 'three'
 import { messageOf } from '@shared/guards'
 import {
   clipFromWire,
-  clipTranslationScaleOf,
   nodeTrackNameOf,
   restOffsetsOf,
   skeletonScaleOf,
@@ -86,6 +85,17 @@ async function run(request: RetargetRequest): Promise<void> {
     running.delete(request.id)
     cancelled.delete(request.id)
   }
+}
+
+// A root bone's own scale does not multiply its translation: Mixamo Walk replayed at 100 m and
+// Jump at 349 m before applying it, measured 2026-09-06.
+function clipTranslationScaleOf(source: SkinnedMesh, hip?: string): number {
+  if (!hip) return 1
+  const bone = source.getObjectByName(hip)
+  if (!bone || bone.parent !== source) return 1
+
+  const sx = bone.scale.x
+  return Number.isFinite(sx) && sx > 0 ? sx : 1
 }
 
 function adaptOne(
