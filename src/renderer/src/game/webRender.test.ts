@@ -177,6 +177,20 @@ describe('what an exported game pays for an image', () => {
     expect(renderer.lenses).toEqual([60, 35, 60])
   })
 
+  /** Loaded into a set flown by hand, a game must not go on drawing through the last node's lens. */
+  it('draws through the policy again once the scene is flown by hand', async () => {
+    const { render, renderer } = await stagedGame({ ...DEFAULT_RENDER_POLICY, fieldOfView: 60 })
+    render.view({ position: { x: 0, y: 5, z: 10 }, target: { x: 0, y: 0, z: 0 }, fieldOfView: 35 })
+    render.draw()
+
+    render.view(null)
+    render.draw()
+    render.view(null)
+    render.draw()
+
+    expect(renderer.lenses).toEqual([35, 60])
+  })
+
   it('draws again on a size that changed, and on a veil that moved', async () => {
     const { render, renderer } = await stagedGame()
     render.draw()

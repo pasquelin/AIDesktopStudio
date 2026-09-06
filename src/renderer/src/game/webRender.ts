@@ -137,10 +137,19 @@ export function createWebRender(
     },
 
     view: (view: CameraView | null) => {
+      // Flown by hand: the eye stays where it is, and the lens is the author's again.
+      if (!view) {
+        if (watched.fieldOfView === undefined) return
+        watched.fieldOfView = undefined
+        pictureStale = setLens(camera, policy.fieldOfView)
+        return
+      }
       // Dropped when it has not MOVED, as the studio drops it.
-      if (!view || sameCameraView(watched, view)) return
+      if (sameCameraView(watched, view)) return
       copyCameraView(watched, view)
-      aimCamera(camera, view, view.fieldOfView ?? policy.fieldOfView)
+      camera.position.set(view.position.x, view.position.y, view.position.z)
+      camera.lookAt(view.target.x, view.target.y, view.target.z)
+      setLens(camera, view.fieldOfView ?? policy.fieldOfView)
       aimed = true
       pictureStale = true
     },
@@ -319,12 +328,12 @@ function tuneSceneShadows(built: GameScene, policy: RenderPolicy): ShadowThrow |
   return tuned ? throwsOf(tuned.framed, built.shadowBounds, tuned.reach) : null
 }
 
-function aimCamera(camera: PerspectiveCamera, view: CameraView, lens: number): void {
-  camera.position.set(view.position.x, view.position.y, view.position.z)
-  camera.lookAt(view.target.x, view.target.y, view.target.z)
-  if (camera.fov === lens) return
+/** Swaps the lens, and says whether it moved — three.js never reads `fov` back on its own. */
+function setLens(camera: PerspectiveCamera, lens: number): boolean {
+  if (camera.fov === lens) return false
   camera.fov = lens
   camera.updateProjectionMatrix()
+  return true
 }
 
 /** Off the scene, so the first view a game asks for is never mistaken for the one already held. */

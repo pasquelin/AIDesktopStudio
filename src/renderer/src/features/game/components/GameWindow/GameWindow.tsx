@@ -53,7 +53,6 @@ export function GameWindow() {
       environmentDress: environmentDressOf,
     })
     renderer.mount(element)
-    renderer.configure(gameViewport(useSettings.getState().settings.three))
     engineRef.current = renderer
 
     // 🛑 Aimed ONCE per game: nothing here ever dragged a viewport, so without it the window
@@ -83,7 +82,8 @@ export function GameWindow() {
     }
   }, [])
 
-  // Its own effect: the one that mounts the game must not run again for a preference.
+  // Its own effect, and the only configure: declared after the mount, it runs on the fresh engine
+  // first, and again for a preference without the game having to be rebuilt.
   useEffect(() => {
     engineRef.current?.configure(gameViewport(three))
   }, [three])

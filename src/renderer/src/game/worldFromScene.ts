@@ -276,6 +276,7 @@ function systemsFor(
   }
   return systemsForStep1()
 }
+
 /** The REST lens of a camera node — a game plays no timeline, so `lensAt` is never asked. */
 function cameraLensOf(node: SceneNode | undefined): number | null {
   return node?.type === 'camera' ? node.camera.fov : null

@@ -58,7 +58,6 @@ export function PlayerModuleWindow() {
       assetVersion: assetVersionOf,
     })
     renderer.mount(element)
-    renderer.configure(useSettings.getState().settings.three)
     engine.current = renderer
 
     return () => {
@@ -67,7 +66,8 @@ export function PlayerModuleWindow() {
     }
   }, [])
 
-  // Its own effect: the one that mounts the renderer must not run again for a preference.
+  // Its own effect, and the only configure: declared after the mount, it runs on the fresh engine
+  // first, and again for a preference without the renderer having to be rebuilt.
   useEffect(() => {
     engine.current?.configure(three)
   }, [three])

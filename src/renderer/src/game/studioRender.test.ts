@@ -35,6 +35,21 @@ describe('what draws a running game inside the studio', () => {
     expect(placeView.mock.calls[1]?.[0]?.fieldOfView).toBeUndefined()
   })
 
+  /** A set flown by hand after a node filmed it: the person orbits through their own lens. */
+  it('gives the lens back once the scene is flown by hand, and only once', () => {
+    const { placeView, render } = drawing()
+    render.view({ position: { x: 0, y: 5, z: 10 }, target: { x: 0, y: 0, z: 0 }, fieldOfView: 35 })
+
+    render.view(null)
+    render.view(null)
+
+    expect(placeView).toHaveBeenCalledTimes(2)
+    expect(placeView.mock.calls[1]?.[0]).toMatchObject({
+      position: { x: 0, y: 5, z: 10 },
+      fieldOfView: undefined,
+    })
+  })
+
   it('redraws the scene with the object where the step put it', () => {
     const { apply, render, state } = drawing()
 

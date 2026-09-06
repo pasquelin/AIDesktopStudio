@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest'
-import { DEFAULT_SETTINGS } from '@shared/domain/settings'
+import { DEFAULT_SETTINGS, type Settings } from '@shared/domain/settings'
 import { gameViewport } from './gameViewport'
 
 describe('what a game window draws with', () => {
   it('keeps the lens, the quality and the shadows the person set for the studio', () => {
-    const three = {
+    const three: Settings['three'] = {
       ...DEFAULT_SETTINGS.three,
       fieldOfView: 35,
-      quality: 'high' as const,
+      quality: 'high',
       shadows: false,
     }
 

@@ -138,7 +138,14 @@ export function createStudioRender(
     // fight whoever is dragging it. A view that has not MOVED is dropped too — `placeView` asks
     // for a frame, so a character standing still would repaint the viewport sixty times a second.
     view: (wanted: CameraView | null) => {
-      if (!wanted || sameCameraView(watched, wanted)) return
+      if (!wanted) {
+        // Flown by hand after a node filmed: the eye stays, the lens is the person's again.
+        if (watched.fieldOfView === undefined) return
+        watched.fieldOfView = undefined
+        renderer.placeView(watched)
+        return
+      }
+      if (sameCameraView(watched, wanted)) return
       copyCameraView(watched, wanted)
       renderer.placeView(wanted)
     },

@@ -25,6 +25,14 @@ describe('SceneRenderer and the camera a running game writes', () => {
     expect(method('releaseView')).toContain('this.drivenLens = null')
   })
 
+  /** Or a preference edited mid-game undoes the node's lens until the camera next moves. */
+  it('lets a driven lens win over a preference edited while it is held', () => {
+    expect(source).toContain('setFieldOfView(this.drivenLens ?? this.view.fieldOfView)')
+    expect(
+      source.match(/configure\(next: ViewportOptions\): void \{[\s\S]*?\n {2}\}/)?.[0],
+    ).toContain('this.driveLens()')
+  })
+
   /** The flag alone would freeze nothing: the freeze is composed in one place, and reads all four. */
   it('counts a driven view among the gestures that freeze the panes', () => {
     const freeze = source.match(/protected syncPaneFreeze\(\): void \{[\s\S]*?\n {2}\}/)?.[0] ?? ''
