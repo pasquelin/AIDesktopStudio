@@ -430,6 +430,19 @@ const BUILDERS: Record<SceneTemplateId, (scriptFolder: string) => Template> = {
 /** Who the set's beacon and drone watch here, the stand-in being nowhere on this template. */
 const CAR_NAME = 'Car'
 
+/** The seeded file, named on every Animator the template laid down — empty stays the shipped preset. */
+function withAnimatorGraph(nodes: readonly SceneNode[], graph: string): SceneNode[] {
+  return nodes.map(node => {
+    if (!node.components?.some(one => one.type === 'Animator')) return node
+    return {
+      ...node,
+      components: node.components.map(one =>
+        one.type === 'Animator' ? withComponentField(one, 'graph', graph) : one,
+      ),
+    }
+  })
+}
+
 /** `cameraRig` needs the pair typed as a non-empty tuple, which `scriptedFirst` cannot promise. */
 function scriptedCar(folder: string): [SceneNode, ...SceneNode[]] {
   const [body, ...rest] = carNodes(CIRCUIT_START, CAR_NAME, CIRCUIT_START_YAW)
@@ -446,13 +459,14 @@ const CRUISE_ALTITUDE = 120
 export function sceneFromTemplate(
   id: SceneTemplateId = DEFAULT_SCENE_TEMPLATE,
   scriptFolder: string = DEFAULT_ROLE_PATHS.code,
+  graph?: string,
 ): SceneState {
   // Checked although the type says it cannot be wrong: the id crosses the boundary from the
   // naming window, and one this build has never heard of would throw on `BUILDERS[id]()`.
   const template = BUILDERS[isSceneTemplateId(id) ? id : DEFAULT_SCENE_TEMPLATE](scriptFolder)
 
   return {
-    nodes: [...template.nodes],
+    nodes: graph ? withAnimatorGraph(template.nodes, graph) : [...template.nodes],
     selectedIds: [],
     world: {
       ...DEFAULT_WORLD,

@@ -17,7 +17,7 @@ import { messageOf } from '@shared/guards'
 
 /** What puts a whole game together in one gesture — a template, or a prefab of the project. */
 export const ASSEMBLY_HANDLERS: ActionHandlers = {
-  'game.applyTemplate': input => {
+  'game.applyTemplate': async input => {
     const open = mounted()
     if (!open) return refused('wrongSurface', NO_SCENE)
 
@@ -30,8 +30,12 @@ export const ASSEMBLY_HANDLERS: ActionHandlers = {
         `no scene template "${wanted}" — the "template" field of this action lists the ones it takes`,
       )
 
+    const { seedTemplateFiles } = await import('@/features/game/seedTemplateFiles')
+    const seeded = await seedTemplateFiles(wanted)
     const before = open.state.nodes.length
-    useScenes.getState().runCommand(open.documentId, layOutTemplate(wanted))
+    useScenes
+      .getState()
+      .runCommand(open.documentId, layOutTemplate(wanted, seeded.scripts, seeded.graph))
     // What was ADDED, as `prefab.instantiate` answers too: a scene's own total would have a
     // client reading « 52 objects » where 38 were laid down.
     return {

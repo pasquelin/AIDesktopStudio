@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, onTestFinished } from 'vitest'
 import { DEFAULT_CHECKER_TEXTURE } from '@shared/domain/checkerTexture'
 import { SCENE_SUBJECT_ID } from '@shared/domain/animation'
 import { SCENE_TEMPLATE_IDS, type SceneTemplateId } from '@shared/domain/sceneTemplate'
@@ -10,6 +10,7 @@ import { textOf } from '@game/runtime/componentFields'
 import { createHierarchy } from '@/game/hierarchy'
 import { aimedFrom, armRest } from './nodeFactory'
 import { isPlayerModule, playerPartsOf } from './playerModule'
+import { forgetShippedCharacter, rememberShippedCharacter } from './shippedCharacter'
 import { pitchTowards, sceneFromTemplate } from './sceneTemplates'
 import { subtreesOf, type SceneNode } from './sceneState'
 
@@ -128,6 +129,18 @@ describe('sceneFromTemplate', () => {
     expect(parts?.module.name).toBe('Player_Module')
     expect(parts?.body?.transform.position.y).toBeCloseTo(0.9)
     expect(nodes.filter(node => node.type === 'camera')).toHaveLength(1)
+  })
+
+  it('points the character animator at the graph the template seeded', () => {
+    rememberShippedCharacter('asset-hero')
+    onTestFinished(forgetShippedCharacter)
+    const graph = 'Motions/character.anim.json'
+    const { nodes } = sceneFromTemplate('thirdPerson', 'Scripts', graph)
+    const animator = nodes
+      .flatMap(node => node.components ?? [])
+      .find(one => one.type === 'Animator')
+
+    expect(animator).toMatchObject({ graph })
   })
 
   it('gives the character templates feet on the ground, which nothing reads yet', () => {

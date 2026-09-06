@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { animationGraphPreset } from '@shared/domain/animationPresets'
 import { EXPORTED_GAME_FILE, type ExportedGame } from '@shared/domain/gameExport'
 import type { GameExportRequest } from '@shared/domain/gameExport'
 import { gunzipSync, strFromU8 } from 'fflate'
@@ -83,6 +84,25 @@ describe('a game written to run with no studio', () => {
     await writeExportedGame(ports, ASKED)
 
     expect(manifestOf(written).inputMaps).toEqual(ASKED.inputMaps)
+  })
+
+  it('copies the shipped clips a graph names and rewrites it onto those copies', async () => {
+    const clip = new Uint8Array([7, 8, 9])
+    const { ports, written } = writing({
+      bundledClip: () => Promise.resolve(clip),
+    })
+
+    await writeExportedGame(ports, {
+      ...ASKED,
+      animationGraphs: [{ path: '', graph: animationGraphPreset('character') }],
+    })
+
+    const manifest = manifestOf(written)
+    const idle = manifest.animationGraphs?.[0]?.graph.layers[0]?.states.find(
+      state => state.id === 'idle',
+    )
+    expect(idle?.source).toMatchObject({ kind: 'asset', assetId: 'clip:Idle' })
+    expect(manifest.assets['clip:Idle']).toMatch(/^assets\/Idle\.glb/)
   })
 
   it('writes the page, the bundle, the manifest, the scenes and the scripts', async () => {

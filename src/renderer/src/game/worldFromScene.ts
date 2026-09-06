@@ -35,7 +35,12 @@ import { colliderFromNode } from './colliderFromNode'
 import { colliderFromRelief } from './colliderFromRelief'
 import { createHierarchy } from './hierarchy'
 import { graphNamed } from './animatedNodes'
-import { playerPartsOf, withBoundPlayerArm } from '@/engines/scene/playerModule'
+import {
+  animatorTargetOf,
+  partsOfModule,
+  playerPartsOf,
+  withBoundPlayerArm,
+} from '@/engines/scene/playerModule'
 import { bakedRuntimeNodes } from '@/engines/scene/bakedRuntimeNodes'
 import { scatterGroundOf, scatterTerrainsOf } from '@shared/domain/scatterGround'
 import { scatterCollisionOf } from './scatterCollision'
@@ -156,13 +161,11 @@ function scriptOptionsFor(
   intents: Intents,
   animators: Animators,
 ): ScriptSystemOptions {
-  const played = playerPartsOf(state.nodes)
   return {
     modules: scripts.modules ?? [],
     intents,
-    bodyIdOf: moduleId => (moduleId === played?.module.id ? (played.body?.id ?? null) : null),
-    animatorIdOf: moduleId =>
-      moduleId === played?.module.id ? (played.animated?.id ?? null) : null,
+    bodyIdOf: moduleId => partsOfModule(state.nodes, moduleId)?.body?.id ?? null,
+    animatorIdOf: moduleId => animatorTargetOf(state.nodes, moduleId),
     animators,
     // 🛑 The game's own log rather than nothing: without a studio listening, a fault that goes
     // nowhere is a script that silently never ran — and a caller passing an empty one is how

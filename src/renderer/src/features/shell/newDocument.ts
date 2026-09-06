@@ -181,7 +181,8 @@ async function seedCreated(
     const { seedTemplateFiles } = await import('@/features/game/seedTemplateFiles')
     // The files FIRST: they answer the folder the role resolved to, and the scene's `Script`
     // components must name the very paths that were just written.
-    seedSceneTemplate(created.id, scene, await seedTemplateFiles(scene))
+    const seeded = await seedTemplateFiles(scene)
+    seedSceneTemplate(created.id, scene, seeded.scripts, seeded.graph)
   }
   if (created.kind === 'gui') {
     seedGuiTemplate(created.id, isUiTemplateId(template) ? template : DEFAULT_UI_TEMPLATE)

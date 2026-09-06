@@ -463,11 +463,16 @@ const pageFor = (title: string): string => `<!doctype html>
     <p id="trouble" hidden></p>
     <script type="module">
       import { startExportedGame } from './runtime.js'
-      startExportedGame(document.getElementById('game')).catch(error => {
-        const said = document.getElementById('trouble')
-        said.hidden = false
-        said.textContent = String(error)
-      })
+      const start = async () => {
+        try {
+          await startExportedGame(document.getElementById('game'))
+        } catch (error) {
+          const said = document.getElementById('trouble')
+          said.hidden = false
+          said.textContent = String(error)
+        }
+      }
+      void start()
     </script>
   </body>
 </html>

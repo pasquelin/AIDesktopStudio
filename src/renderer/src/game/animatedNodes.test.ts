@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { ANIMATION_GRAPH_VERSION, type AnimationGraph } from '@shared/domain/animationGraph'
 import { animationGraphPreset } from '@shared/domain/animationPresets'
 import type { SceneNode } from '@/engines/scene/sceneState'
-import { animatedNodesOf, graphNamed } from './animatedNodes'
+import { animatedNodesOf, graphNamed, graphsHeldForExport } from './animatedNodes'
 
 const OWN: AnimationGraph = {
   version: ANIMATION_GRAPH_VERSION,
@@ -70,5 +70,24 @@ describe('the nodes of a scene a state machine animates', () => {
 
   it('leaves out a node whose graph no file answers', () => {
     expect(animatedNodesOf([node('hero', 'Motions/typo.anim.json')], named)).toEqual([])
+  })
+})
+
+describe('the graphs a standalone game has to carry', () => {
+  it('files the shipped preset under the empty name when a node still plays it', () => {
+    const held = graphsHeldForExport([node('hero', '')], [])
+
+    expect(held).toHaveLength(1)
+    expect(held[0]?.path).toBe('')
+    expect(held[0]?.graph).toEqual(animationGraphPreset('character'))
+  })
+
+  it('leaves a project graph that already occupies the empty name alone', () => {
+    const own = { path: '', graph: OWN }
+    expect(graphsHeldForExport([node('hero', '')], [own])).toEqual([own])
+  })
+
+  it('adds nothing when nobody plays the shipped preset', () => {
+    expect(graphsHeldForExport([node('crowd', 'Motions/wander.anim.json')], [])).toEqual([])
   })
 })

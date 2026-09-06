@@ -70,13 +70,17 @@ describe('the files a scene template lays down', () => {
   })
 
   it('writes the control map and the script of what the template plays', async () => {
-    await seedTemplateFiles('thirdPerson')
+    const seeded = await seedTemplateFiles('thirdPerson')
 
     expect(written.maps.map(([path]) => path)).toEqual([`Controls/character${INPUT_MAP_EXTENSION}`])
     expect(written.graphs.map(([path]) => path)).toEqual([
       `Motions/character${ANIMATION_GRAPH_EXTENSION}`,
     ])
     expect(written.scripts.map(([path]) => path)).toEqual(['Scripts/player.ts'])
+    expect(seeded).toEqual({
+      scripts: 'Scripts',
+      graph: `Motions/character${ANIMATION_GRAPH_EXTENSION}`,
+    })
   })
 
   it('names the context after the FILE, so a scene resolves its actions against it', async () => {
@@ -113,9 +117,18 @@ describe('the files a scene template lays down', () => {
   })
 
   it('lays nothing down for a template nobody plays', async () => {
-    await seedTemplateFiles('photoStudio')
+    expect(await seedTemplateFiles('photoStudio')).toEqual({ scripts: 'Scripts' })
 
     expect(written.maps).toEqual([])
     expect(written.scripts).toEqual([])
+  })
+
+  it('still names a graph the project already holds, so the scene can point at it', async () => {
+    takenGraphs = [`Motions/character${ANIMATION_GRAPH_EXTENSION}`]
+
+    const seeded = await seedTemplateFiles('thirdPerson')
+
+    expect(written.graphs).toEqual([])
+    expect(seeded.graph).toBe(`Motions/character${ANIMATION_GRAPH_EXTENSION}`)
   })
 })

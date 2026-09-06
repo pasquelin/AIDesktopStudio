@@ -1,7 +1,9 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, onTestFinished } from 'vitest'
 import { copiesOf } from './commands'
 import { armRest, cameraNode, groupNode, playerModuleNodes } from './nodeFactory'
+import { forgetShippedCharacter, rememberShippedCharacter } from './shippedCharacter'
 import {
+  animatorTargetOf,
   leavesPlayerModule,
   nodesByWord,
   playerModuleFileOf,
@@ -68,6 +70,22 @@ describe('what a module points its arm at', () => {
 
   it('names nothing at all where the scene holds no module', () => {
     expect(playerPartsOf([cameraNode()])).toBeNull()
+  })
+
+  it('routes a module script to that module’s animated mesh, not the first player in the list', () => {
+    rememberShippedCharacter('asset-hero')
+    onTestFinished(forgetShippedCharacter)
+    const first = playerModuleNodes()
+    const second = playerModuleNodes().map(node =>
+      node.name === 'Player_Module' ? { ...node, name: 'Other' } : node,
+    )
+    const nodes = [...first, ...second]
+    const other = nodes.find(node => node.name === 'Other')
+    const mesh = playerPartsOf(second)?.animated
+
+    expect(animatorTargetOf(nodes, first[0]?.id ?? '')).toBe(playerPartsOf(first)?.animated?.id)
+    expect(animatorTargetOf(nodes, other?.id ?? '')).toBe(mesh?.id)
+    expect(animatorTargetOf(nodes, other?.id ?? '')).not.toBe(playerPartsOf(first)?.animated?.id)
   })
 
   /**

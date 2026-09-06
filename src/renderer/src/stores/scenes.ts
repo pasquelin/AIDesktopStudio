@@ -31,8 +31,9 @@ export function seedSceneTemplate(
   documentId: string,
   template: SceneTemplateId,
   scriptFolder?: string,
+  graph?: string,
 ): void {
-  store.use.getState().ensure(documentId, () => sceneFromTemplate(template, scriptFolder))
+  store.use.getState().ensure(documentId, () => sceneFromTemplate(template, scriptFolder, graph))
 }
 
 /**

@@ -40,3 +40,18 @@ export function graphNamed(
   // it, with its clips rewritten to assets of the bundle — see `bundledGraphs`.
   return ref => byPath.get(ref) ?? (ref === '' ? animationGraphPreset('character') : null)
 }
+
+/**
+ * 🛑 Without the empty-path copy, a template whose `graph` field is empty exports no machine at
+ * all — clips are never copied, and the character stands in the rest pose, silently.
+ */
+export function graphsHeldForExport(
+  nodes: readonly SceneNode[],
+  held: readonly AnimationGraphModule[],
+): readonly AnimationGraphModule[] {
+  const playsPreset = nodes.some(node =>
+    node.components?.some(one => one.type === 'Animator' && textOf(one, 'graph', '') === ''),
+  )
+  if (!playsPreset || held.some(one => one.path === '')) return held
+  return [...held, { path: '', graph: animationGraphPreset('character') }]
+}

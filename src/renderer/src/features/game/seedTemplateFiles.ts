@@ -25,6 +25,9 @@ const PLAYED: Partial<
   plane: { script: 'plane', map: 'flight' },
 }
 
+/** Folders a template just wrote, so the scene's components can name the same paths. */
+export type SeededTemplateFiles = { scripts: string; graph?: string }
+
 /**
  * The files a scene template lays down beside itself: the control map its actions are bound by,
  * and the script its pilot carries.
@@ -35,18 +38,18 @@ const PLAYED: Partial<
  * Never overwritten: a second scene from the same template joins the files the first laid down,
  * which is what makes a control map a project's rather than a scene's.
  */
-export async function seedTemplateFiles(template: SceneTemplateId): Promise<string> {
+export async function seedTemplateFiles(template: SceneTemplateId): Promise<SeededTemplateFiles> {
   const played = PLAYED[template]
   const bridge = getBridge()
-  const folder = await orElse(bridge?.project.folderFor('code'), DEFAULT_ROLE_PATHS.code)
-  if (!played || !bridge) return folder
+  const scripts = await orElse(bridge?.project.folderFor('code'), DEFAULT_ROLE_PATHS.code)
+  if (!played || !bridge) return { scripts }
 
-  await Promise.all([
+  const [, , graph] = await Promise.all([
     seedPreset('input', INPUT_MAP_EXTENSION, played.map, bridge.inputMaps, {
       ...structuredClone(inputMapPreset(played.map)),
       id: played.map,
     }),
-    writeScript(played.script, folder),
+    writeScript(played.script, scripts),
     played.graph
       ? seedPreset(
           'animations',
@@ -55,10 +58,10 @@ export async function seedTemplateFiles(template: SceneTemplateId): Promise<stri
           bridge.animationGraphs,
           structuredClone(animationGraphPreset(played.graph)),
         )
-      : Promise.resolve(),
+      : Promise.resolve(undefined),
   ])
   await useDocuments.getState().relist()
-  return folder
+  return graph ? { scripts, graph } : { scripts }
 }
 
 /**
@@ -74,13 +77,13 @@ async function seedPreset<T>(
   name: string,
   files: { list: () => Promise<string[]>; write: (path: string, value: T) => Promise<boolean> },
   value: T,
-): Promise<void> {
+): Promise<string | undefined> {
   const folder = await orElse(getBridge()?.project.folderFor(role), DEFAULT_ROLE_PATHS[role])
   const path = `${folder}/${name}${extension}`
   const taken = await orElse(files.list(), [])
-  if (taken.some(one => one.toLowerCase() === path.toLowerCase())) return
+  if (taken.some(one => one.toLowerCase() === path.toLowerCase())) return path
 
-  await files.write(path, value)
+  return (await files.write(path, value)) ? path : undefined
 }
 
 async function writeScript(script: TemplateScriptId, folder: string): Promise<void> {

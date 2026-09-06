@@ -169,10 +169,8 @@ export abstract class SceneRendererModels extends SceneRendererGeometry {
    * The clips a running game's state machine needs on this model, beside whatever its band names.
    * An empty list gives them back, which is what stopping a game does.
    *
-   * 🛑 Blind spot: `adopt` leaves early for a model that has not landed, and the key is already
-   * marked — so a clip asked for before its model arrives never lands, and the state holds and
-   * poses nothing. The window is narrow (a game waits on Jolt and the sandbox first) and closed
-   * by nothing.
+   * 🛑 Asked before the mixer exists, `ensureBundled` waits: a key taken then was never adopted,
+   * and the later load skipped it as already held.
    */
   useGraphClips(nodeId: string, clips: readonly ForeignClip[]): void {
     if (clips.length === 0) this.graphClips.delete(nodeId)
@@ -186,6 +184,8 @@ export abstract class SceneRendererModels extends SceneRendererGeometry {
    * be dropped long after the file it plays on landed.
    */
   protected ensureBundled(nodeId: string, lanes: readonly ClipLane[]): void {
+    // Mixer not here yet: keep the asked keys, load them from `buildModel` once it is.
+    if (!this.animations.has(nodeId)) return
     const held = this.bundled.get(nodeId) ?? new Map<string, string>()
     this.bundled.set(nodeId, held)
     // 🛑 The band's clips AND the state machine's, in one list: they share this node's holdings,

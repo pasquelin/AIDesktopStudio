@@ -49,6 +49,19 @@ export function playerPartsOf(nodes: readonly SceneNode[]): PlayerParts | null {
   return allPartsOf(nodes)[0] ?? null
 }
 
+/** The module that wears this id, or nothing — a second player is another module, not the first. */
+export function partsOfModule(nodes: readonly SceneNode[], moduleId: string): PlayerParts | null {
+  return allPartsOf(nodes).find(parts => parts.module.id === moduleId) ?? null
+}
+
+/**
+ * Where `self.anim` writes: the module's animated mesh, a descendant that carries `Animator`,
+ * or nothing — a script on a body with no machine must not invent a target.
+ */
+export function animatorTargetOf(nodes: readonly SceneNode[], entityId: string): string | null {
+  return subtreesOf(nodes, [entityId]).find(node => carries(node, 'Animator'))?.id ?? null
+}
+
 /**
  * What a field naming a node may be pointed at: what shares its MODULE, or the whole scene when it
  * belongs to none — which is the list `withBoundPlayerArm` will resolve the name against.

@@ -1,6 +1,5 @@
-import { animationGraphPreset } from '@shared/domain/animationPresets'
 import type { AnimationGraphModule } from '@shared/domain/animationGraph'
-import { textOf } from '@game/runtime/componentFields'
+import { graphsHeldForExport } from './animatedNodes'
 import {
   hasVisualChanges,
   type GameExportOutcome,
@@ -30,6 +29,7 @@ import { runtimeAssetIds, runtimeModelAssetIds, runtimeTextureAssetIds } from '.
 import { analyzeLossyWorld, type OptimizationPlan } from '@/engines/scene/worldAnalyzer'
 import { runtimeArtifactsOf } from '@/engines/scene/runtimeWorldCompiler'
 import { sceneEngineOf } from '@/stores/sceneEngines'
+import type { SceneState } from '@/engines/scene/sceneState'
 
 export type GameOptimizationEstimate = {
   scenes: number
@@ -180,7 +180,7 @@ async function compileExportRequest(
     entryScene,
     compiled.modules,
     compiled.inputMaps,
-    graphsToExport(compiled.animationGraphs, projectScenes.playsPreset),
+    graphsHeldForExport(projectScenes.nodes, compiled.animationGraphs),
     [...textureOverrides, ...modelTextureOverrides],
   )
   return { request, troubles: compiled.troubles.map(trouble => trouble.script) }
@@ -219,28 +219,10 @@ function exportRequestOf(
 
 type CompiledProjectScenes = {
   scenes: GameExportRequest['scenes']
-  /** Whether any node plays the SHIPPED graph — a component naming no file of its own. */
-  playsPreset: boolean
+  nodes: SceneState['nodes']
   textureAssetIds: readonly string[]
   modelAssets: NonNullable<GameExportRequest['modelAssets']>
   modelAssetIds: readonly string[]
-}
-
-/**
- * The graphs a game has to carry: the project's own, and the SHIPPED one under the empty name
- * when a node plays it.
- *
- * 🛑 Without it the module a template lays down — whose `graph` field is empty — would carry no
- * graph at all into the bundle, and its clips would never be copied. Measured by reading the
- * export twice: the character stood in his rest pose, silently.
- */
-function graphsToExport(
-  held: readonly AnimationGraphModule[],
-  playsPreset: boolean,
-): readonly AnimationGraphModule[] {
-  if (!playsPreset || held.some(one => one.path === '')) return held
-
-  return [...held, { path: '', graph: animationGraphPreset('character') }]
 }
 
 async function compileProjectScenes(
@@ -249,9 +231,6 @@ async function compileProjectScenes(
 ): Promise<CompiledProjectScenes> {
   const loaded = await loadedScenes()
   const allNodes = loaded.flatMap(one => one.state.nodes)
-  const playsPreset = allNodes.some(node =>
-    node.components?.some(one => one.type === 'Animator' && textOf(one, 'graph', '') === ''),
-  )
   const modelAssetIds = runtimeModelAssetIds(allNodes)
   const modelPlans = await compileLossyModels(
     modelAssetIds.map(id => ({
@@ -295,7 +274,7 @@ async function compileProjectScenes(
     if (signal?.aborted) throw new DOMException('World compilation aborted', 'AbortError')
     return {
       scenes,
-      playsPreset,
+      nodes: allNodes,
       textureAssetIds: runtimeTextureAssetIds(allNodes),
       modelAssets: Object.fromEntries(modelPlans),
       modelAssetIds,

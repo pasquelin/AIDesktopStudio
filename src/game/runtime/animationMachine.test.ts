@@ -6,6 +6,7 @@ import {
   animationGraphOf,
   type AnimationLayer,
 } from '@shared/domain/animationGraph'
+import { animationGraphPreset } from '@shared/domain/animationPresets'
 import {
   CLIP_SPEED,
   clipKeyOf as studioClipKeyOf,
@@ -65,12 +66,13 @@ function ran(
   reading: ParameterReading,
   steps: number,
   asked?: { forced?: string; letGo?: boolean },
+  lengths: Readonly<Record<string, number>> = LENGTHS,
 ): { held: AnimatorState; happened: string[] } {
   let current = held
   const happened: string[] = []
   for (let index = 0; index < steps; index += 1) {
     // Asked on the FIRST step only: a script calls `play` once, not sixty times a second.
-    const step = advanceAnimator(layer, current, reading, LENGTHS, STEP, index === 0 ? asked : {})
+    const step = advanceAnimator(layer, current, reading, lengths, STEP, index === 0 ? asked : {})
     current = step.next
     for (const one of step.happened)
       happened.push(one.kind === 'marker' ? `marker:${one.name}` : `finished:${one.state}`)
@@ -171,6 +173,40 @@ describe('what a state machine plays', () => {
 
     const released = ran(WALKING, forced, { speed: 2 }, 2, { letGo: true }).held
     expect(released.state).toBe('walk')
+  })
+})
+
+describe('the shipped character graph', () => {
+  const layer = animationGraphPreset('character').layers[0]
+  if (!layer) throw new Error('the character graph holds its layer')
+  const lengths = {
+    'bundled:Idle': 4,
+    'bundled:Walk': 1,
+    'bundled:StrafeLeft': 1,
+    'bundled:StrafeRight': 1,
+    'bundled:Jump': 2,
+  }
+  const stepping = { grounded: true, speed: 4, strafe: 4 }
+
+  it('keeps a side step from flipping back to walk every frame', () => {
+    const opened = ran(layer, freshAnimator(layer), stepping, 1, undefined, lengths).held
+    expect(opened.state).toBe('stepRight')
+
+    const held = ran(layer, opened, stepping, 30, undefined, lengths).held
+    expect(held.state).toBe('stepRight')
+    expect(held.time).toBeGreaterThan(0.4)
+  })
+
+  it('walks when the body goes forward without stepping aside', () => {
+    const { held } = ran(
+      layer,
+      freshAnimator(layer),
+      { grounded: true, speed: 4, strafe: 0.4 },
+      3,
+      undefined,
+      lengths,
+    )
+    expect(held.state).toBe('walk')
   })
 })
 

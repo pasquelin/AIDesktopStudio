@@ -77,7 +77,17 @@ const PRESETS: Record<AnimationPresetId, AnimationGraph> = {
         ],
         transitions: [
           into('idle', 0, onGround({ param: 'speed', op: '<=', value: STANDING }), 0.2),
-          into('walk', 1, onGround({ param: 'speed', op: '>', value: STANDING })),
+          // |strafe| bounded so an any-state Walk cannot reopen on a body that is stepping aside —
+          // both conditions were true together, and the machine flipped every step.
+          into(
+            'walk',
+            1,
+            onGround(
+              { param: 'speed', op: '>', value: STANDING },
+              { param: 'strafe', op: '>=', value: -STEPPING_ASIDE },
+              { param: 'strafe', op: '<=', value: STEPPING_ASIDE },
+            ),
+          ),
           into('stepLeft', 2, onGround({ param: 'strafe', op: '<', value: -STEPPING_ASIDE })),
           into('stepRight', 2, onGround({ param: 'strafe', op: '>', value: STEPPING_ASIDE })),
           // Highest, and off the ground it is the only one left: a jump interrupts whatever the
