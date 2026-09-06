@@ -92,6 +92,8 @@ export type SceneRendererOptions = {
     hasFileTextures: boolean,
     sourceIndices: readonly (number | null)[],
   ) => void
+  /** The morph targets a model's file carries, by name. Same reason as `onClips`: file facts. */
+  onMorphs?: (nodeId: string, names: readonly string[]) => void
   /**
    * How well a clip from elsewhere fits this character, once both skeletons are in hand. Only
    * the engine ever holds the two at once, so nothing else could work it out.

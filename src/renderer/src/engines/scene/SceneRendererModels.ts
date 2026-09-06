@@ -7,6 +7,7 @@ import { clipLengthsOf, clipNamesOf, clipsOf, foreignClipsOf, type ForeignClip }
 import { rigStateOf } from './rigState'
 import { instanceableOf, markInstanceable } from './instanceableModel'
 import { instanceOf, modelKeyOf } from './modelCache'
+import { morphNamesOf, setMorphInfluenceOn } from './modelMorphs'
 import { applyShadowFlags } from './shadows'
 import type { Rig } from '@shared/domain/rig'
 import type { HumanoidRole } from '@shared/domain/humanoid'
@@ -44,6 +45,14 @@ export abstract class SceneRendererModels extends SceneRendererGeometry {
    * an empty holder the file fills in. The alternative — adding nothing until it lands — leaves
    * a node the outliner lists, the gizmo cannot find, and a click cannot select.
    */
+  /** Weighs one morph target of a model on every mesh carrying the name — a preview. Answers whether any did. */
+  setMorphInfluence(nodeId: string, name: string, value: number): boolean {
+    const holder = this.objects.get(nodeId)
+    const written = holder !== undefined && setMorphInfluenceOn(holder, name, value)
+    if (written) this.redraw()
+    return written
+  }
+
   protected buildModel(node: ModelNode): Object3D {
     const holder = new Object3D()
     const { assetId } = node.model
@@ -91,6 +100,7 @@ export abstract class SceneRendererModels extends SceneRendererGeometry {
           maps.hasFileTextures(),
           maps.sourceIndices(),
         )
+        this.options.onMorphs?.(node.id, morphNamesOf(holder))
         const sceneTask1Step2 = () => {
           this.dressModel(node.id)
           // The clips come from the cached SOURCE rather than the clone: `Object3D.copy` does not

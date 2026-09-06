@@ -183,6 +183,7 @@ export function CharacterDocument({ documentId }: { documentId: string }) {
           .reportMaterials(workshopId, id, count, names, parts, hasFileTextures, sourceIndices)
       },
       onStats: stats => useModelFiles.getState().reportStats(workshopId, stats),
+      onMorphs: (id, names) => useModelFiles.getState().reportMorphs(workshopId, id, names),
       // Kept for ⌘S: only the engine ever weighs a mesh against a rig, and the save runs from
       // `documentIo` — outside this tab.
       onSkinning: (_nodeId, weighed) => noteCharacterSkins(assetId, weighed),

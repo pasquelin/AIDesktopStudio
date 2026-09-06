@@ -228,6 +228,8 @@ const DOM_BOUND = [
   'src/renderer/src/features/image/components/Layer/List/layerMenu.test.ts',
   'src/renderer/src/features/scene/components/Scene/Document/sceneAddMenu.test.ts',
   'src/renderer/src/features/scene/components/Scene/sceneNodeMenu.test.ts',
+  'src/renderer/src/features/character/components/CharacterDocument/workshopNodeMenu.test.ts',
+  'src/renderer/src/engines/scene/sceneRendererMorphs.test.ts',
   'src/renderer/src/helpers/modelForCapability.test.ts',
   'src/renderer/src/helpers/toolRegistry.test.ts',
   'src/renderer/src/helpers/typing.test.ts',

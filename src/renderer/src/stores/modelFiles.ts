@@ -51,6 +51,9 @@ type ModelFilesState = {
     hasFileTextures?: boolean,
     sourceIndices?: readonly (number | null)[],
   ) => void
+  /** The morph targets each model's file carries, by node — names only, the weights are a view. */
+  morphs: Record<string, Record<string, readonly string[]>>
+  reportMorphs: (documentId: string, nodeId: string, names: readonly string[]) => void
   stats: Record<string, SceneStats>
   reportStats: (documentId: string, stats: SceneStats) => void
   /**
@@ -153,6 +156,15 @@ export const useModelFiles = create<ModelFilesState>()(set => ({
             },
     })),
 
+  morphs: {},
+  reportMorphs: (documentId, nodeId, names) =>
+    set(state => ({
+      morphs: {
+        ...state.morphs,
+        [documentId]: { ...state.morphs[documentId], [nodeId]: names },
+      },
+    })),
+
   reportStats: (documentId, stats) =>
     set(state => ({ stats: { ...state.stats, [documentId]: stats } })),
 
@@ -183,6 +195,7 @@ export const useModelFiles = create<ModelFilesState>()(set => ({
       parts: withoutKey(state.parts, documentId),
       selectedParts: withoutKey(state.selectedParts, documentId),
       stats: withoutKey(state.stats, documentId),
+      morphs: withoutKey(state.morphs, documentId),
     })),
 }))
 
@@ -196,6 +209,14 @@ export function modelStatsOf(state: ModelFilesState, documentId: string): SceneS
  * the loop then never settles, which is the very trap `SceneInspector` carries a note about.
  */
 const NO_CLIPS: readonly string[] = []
+
+export function morphNamesOfNode(
+  state: ModelFilesState,
+  documentId: string,
+  nodeId: string,
+): readonly string[] {
+  return state.morphs[documentId]?.[nodeId] ?? NO_CLIPS
+}
 const NO_SOURCE_INDICES: readonly (number | null)[] = []
 
 /** The clips a node can be asked to play, or none — a model still loading has none yet. */

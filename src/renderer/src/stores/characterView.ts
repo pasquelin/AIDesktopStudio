@@ -33,6 +33,11 @@ export type CharacterView = {
    * holding the engine.
    */
   sample: MeshSample | null
+  /**
+   * The weight given to each morph target, by name — a PREVIEW of the session, like a pose:
+   * nothing writes it into the file until a save recomposes the model.
+   */
+  morphs: Readonly<Record<string, number>>
 }
 
 const DEFAULT_CHARACTER_VIEW: CharacterView = {
@@ -41,6 +46,7 @@ const DEFAULT_CHARACTER_VIEW: CharacterView = {
   heldAxes: [],
   editingRest: false,
   sample: null,
+  morphs: {},
 }
 
 type CharacterViewsState = {
@@ -52,6 +58,7 @@ type CharacterViewsState = {
   holdCharacterAxis: (assetId: string, axis: BoneAxis, held: boolean) => void
   editCharacterRest: (assetId: string, editing: boolean) => void
   noteCharacterSample: (assetId: string, sample: MeshSample | null) => void
+  setCharacterMorph: (assetId: string, name: string, value: number) => void
   forgetCharacterView: (assetId: string) => void
 }
 
@@ -84,6 +91,9 @@ export const useCharacterView = create<CharacterViewsState>()(set => ({
   noteCharacterSample: (assetId, sample) =>
     set(state => written(state, assetId, () => ({ sample }))),
 
+  setCharacterMorph: (assetId, name, value) =>
+    set(state => written(state, assetId, view => ({ morphs: { ...view.morphs, [name]: value } }))),
+
   forgetCharacterView: assetId =>
     set(state => {
       const { [assetId]: gone, ...left } = state.views
@@ -112,4 +122,5 @@ const KEYS: readonly (keyof CharacterView)[] = [
   'heldAxes',
   'editingRest',
   'sample',
+  'morphs',
 ]

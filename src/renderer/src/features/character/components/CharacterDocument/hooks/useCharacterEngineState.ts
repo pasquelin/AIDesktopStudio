@@ -54,4 +54,11 @@ export function useCharacterEngineState(
   useEffect(() => {
     engine?.setPickedBone(view.pickedBone && nodeId ? { nodeId, bone: view.pickedBone } : null)
   }, [engine, view.pickedBone, nodeId])
+
+  // The weights are a preview of this view, pushed like a pose: the file never carries them.
+  useEffect(() => {
+    if (!engine || !nodeId) return
+    for (const [name, value] of Object.entries(view.morphs))
+      engine.setMorphInfluence(nodeId, name, value)
+  }, [engine, view.morphs, nodeId])
 }
