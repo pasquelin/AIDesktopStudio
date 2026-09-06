@@ -18,7 +18,7 @@ import {
   Vector3,
   VectorKeyframeTrack,
   type KeyframeTrack,
-  type Object3D,
+  Object3D,
 } from 'three'
 import { isFingerRole, type HumanoidRole } from '@shared/domain/humanoid'
 import {
@@ -308,6 +308,7 @@ export function sameSkeleton(target: readonly WireBone[], source: readonly WireB
   return target.every((bone, index) => {
     const other = source[index]
     if (!other || bone.name !== other.name || bone.parent !== other.parent) return false
+    if (!near(bone.frame ?? IDENTITY_ARRAY, other.frame ?? IDENTITY_ARRAY)) return false
 
     return (
       near(bone.position, other.position) &&
@@ -316,6 +317,8 @@ export function sameSkeleton(target: readonly WireBone[], source: readonly WireB
     )
   })
 }
+
+const IDENTITY_ARRAY: readonly number[] = /* @__PURE__ */ new Matrix4().toArray()
 
 /**
  * An ABSOLUTE tolerance, which suits a rig measured in metres — the three measured provider files
@@ -361,25 +364,24 @@ const localBoneOf = (bone: Object3D, parent: number): WireBone => ({
 })
 
 /**
- * A bone with no bone above it carries whatever DOES stand above it, up to `root` — the armature a
+ * A bone with no bone above it names whatever DOES stand above it, up to `root` — the armature a
  * glTF hangs its rig under being an `Object3D` and not a `Bone`. 🛑 Dropped, its quarter turn and
- * its centimetres went with it: measured 2026-09-06, a half turn played the head 1,08 m under the
+ * its centimetres go with it: measured 2026-09-06, a half turn played the head 1,08 m under the
  * feet. Relative to `root` and never to the world, which is what `restOffsetsOf` reads.
+ *
+ * 🛑 BESIDE the bone, never folded INTO it. `retargetClip` writes each bone's local as
+ * `parent.matrixWorld⁻¹ · global`, so a frame folded into the bone comes back out unremoved and
+ * the real armature applies it a second time — measured 2026-09-06, a hip at (0, 0, 1) replayed
+ * at (0, −0.01, 0). `skinnedFromWire` hangs it as a NODE, and three undoes it on its own.
  */
 function rootBoneOf(bone: Object3D, above: Matrix4): WireBone {
-  const position = new Vector3()
-  const quaternion = new Quaternion()
-  const scale = new Vector3()
-  new Matrix4().multiplyMatrices(above, bone.matrixWorld).decompose(position, quaternion, scale)
+  const frame = new Matrix4().multiplyMatrices(above, bone.parent?.matrixWorld ?? IDENTITY)
+  const local = localBoneOf(bone, -1)
 
-  return {
-    name: bone.name,
-    parent: -1,
-    position: position.toArray(),
-    quaternion: quaternion.toArray(),
-    scale: scale.toArray(),
-  }
+  return frame.equals(IDENTITY) ? local : { ...local, frame: frame.toArray() }
 }
+
+const IDENTITY = /* @__PURE__ */ new Matrix4()
 
 function parentIndexOf(bone: Object3D, indexOf: ReadonlyMap<string, number>): number {
   let above = bone.parent
@@ -404,13 +406,25 @@ export function skinnedFromWire(bones: readonly WireBone[]): SkinnedMesh {
 
   const mesh = new SkinnedMesh()
   built.forEach((bone, index) => {
-    const above = bones[index]?.parent ?? -1
-    ;(above < 0 ? mesh : (built[above] ?? mesh)).add(bone)
+    const wire = bones[index]
+    const above = wire?.parent ?? -1
+    if (above >= 0) return void (built[above] ?? mesh).add(bone)
+    // A NODE and not a fold: three writes a bone's local against its parent's world, so the frame
+    // this carries is taken back off every track on the way out.
+    mesh.add(wire?.frame ? framedNode(wire.frame).add(bone) : bone)
   })
 
   mesh.updateMatrixWorld(true)
   mesh.bind(new Skeleton(built))
   return mesh
+}
+
+function framedNode(frame: readonly number[]): Object3D {
+  const node = new Object3D()
+  node.matrixAutoUpdate = false
+  node.matrix.fromArray([...frame])
+
+  return node
 }
 
 export function wireClipOf(clip: AnimationClip): WireClip {

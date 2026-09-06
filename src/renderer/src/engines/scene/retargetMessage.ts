@@ -13,6 +13,12 @@ export type WireBone = {
   position: readonly [number, number, number]
   quaternion: readonly [number, number, number, number]
   scale: readonly [number, number, number]
+  /**
+   * On a ROOT only, and only when something stands above it: the sixteen numbers of whatever a
+   * glTF hangs the rig under — an `Armature`, which is an `Object3D` and not a `Bone`. Carried
+   * beside the bone rather than folded into it, so the frame is undone on the way OUT as well.
+   */
+  frame?: readonly number[]
 }
 
 /** Which `KeyframeTrack` to rebuild. Carried rather than guessed from the property name. */

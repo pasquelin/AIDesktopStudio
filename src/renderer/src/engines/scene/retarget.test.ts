@@ -4,6 +4,7 @@ import {
   Matrix4,
   Object3D,
   QuaternionKeyframeTrack,
+  Vector3,
   VectorKeyframeTrack,
 } from 'three'
 import { describe, expect, it } from 'vitest'
@@ -373,6 +374,32 @@ describe('cancelling the difference of rest poses', () => {
   })
 })
 
+/** A rig hung under an armature that turns and shrinks it — the shape every Blender export has. */
+function armatured(): { root: Object3D; hips: Bone } {
+  const root = new Object3D()
+  const armature = new Object3D()
+  armature.name = 'Armature'
+  armature.quaternion.setFromAxisAngle(new Vector3(1, 0, 0), Math.PI / 2)
+  armature.scale.setScalar(0.01)
+  const hips = new Bone()
+  hips.name = 'Hips'
+  hips.position.set(0, 100, 0)
+  root.add(armature)
+  armature.add(hips)
+  root.updateMatrixWorld(true)
+
+  return { root, hips }
+}
+
+const worldOf = (object: Object3D | undefined): number[] => {
+  if (!object) throw new Error('no such object')
+
+  return new Vector3()
+    .setFromMatrixPosition(object.matrixWorld)
+    .toArray()
+    .map(one => +one.toFixed(5))
+}
+
 describe('crossing the wire', () => {
   it('reads a skeleton off a model, parents before children', () => {
     const bones = wireBonesOf(skinnedFromWire(TRIPO))
@@ -381,26 +408,30 @@ describe('crossing the wire', () => {
     expect(bones.every((bone, index) => bone.parent < index)).toBe(true)
   })
 
-  it('folds an armature Object3D above the first bone into that bone, relative to root', () => {
-    const root = new Object3D()
-    const armature = new Object3D()
-    armature.name = 'Armature'
-    armature.rotation.y = Math.PI / 2
-    armature.position.set(0.1, 0.2, 0.3)
-    const hips = new Bone()
-    hips.name = 'Hips'
-    hips.position.set(0, 1, 0)
-    root.add(armature)
-    armature.add(hips)
+  it('carries the armature above the first bone, so the wire skeleton stands where the model does', () => {
+    const { root, hips } = armatured()
+    const wired = skinnedFromWire(wireBonesOf(root))
+    wired.updateMatrixWorld(true)
 
-    const [bone] = wireBonesOf(root)
+    expect(worldOf(wired.getObjectByName('Hips'))).toEqual(worldOf(hips))
+  })
 
-    expect(bone?.parent).toBe(-1)
-    expect(bone?.position[0]).toBeCloseTo(0.1, 5)
-    expect(bone?.position[1]).toBeCloseTo(1.2, 5)
-    expect(bone?.position[2]).toBeCloseTo(0.3, 5)
-    expect(bone?.quaternion[1]).toBeCloseTo(Math.sin(Math.PI / 4), 5)
-    expect(bone?.quaternion[3]).toBeCloseTo(Math.cos(Math.PI / 4), 5)
+  it('gives that armature back on the way out, so the real one never applies it twice', () => {
+    const { root, hips } = armatured()
+    const wired = skinnedFromWire(wireBonesOf(root))
+    wired.updateMatrixWorld(true)
+    const sampled = wired.getObjectByName('Hips')
+    if (!sampled) throw new Error('the wire skeleton has no hips')
+    const stood = worldOf(hips)
+
+    // What a retargeted track writes back: the local three sampled off the wire skeleton, played
+    // on the model, where the hips still hang under the armature.
+    hips.position.copy(sampled.position)
+    hips.quaternion.copy(sampled.quaternion)
+    hips.scale.copy(sampled.scale)
+    root.updateMatrixWorld(true)
+
+    expect(worldOf(hips)).toEqual(stood)
   })
 
   it('carries a clip out and back unchanged', () => {
