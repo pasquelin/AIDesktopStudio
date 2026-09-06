@@ -13,16 +13,16 @@ The **+** button on the left rail creates a fresh scene. A project must be open.
 The window that opens asks for a name, then **what the scene opens on**: ten templates, under
 the name. The choice applies at creation only — an open scene does not change template.
 
-| Template | What it lays down |
-|---|---|
-| **Empty** | three lights and nothing else. The starting point for building everything yourself |
-| **Basic** | a floor, a sun, a fill light, a camera, and a one-metre cube — the cube says how big a metre is, so delete it as soon as an object of your own arrives |
-| **Photo studio** | a white curved backdrop, a floor, and three lights placed as in a studio |
-| **Cinematic** | a wide floor, a raking light, a camera and its **rail** — the shot is already a move |
-| **Architecture** | a very wide floor, a low sun, a sky, and a camera at eye height |
-| **First person**, **Third person**, **Top down** | all three open on the **test level** below, and differ only in where the camera stands |
-| **Car** | the same test level, with a car parked at the start — four suspended wheels, an engine, steering. `W` `S` accelerate and brake, `A` `D` steer, `Space` is the hand brake |
-| **Aircraft** | an airfield, a runway, and a plane **already flying** at 120 m. `W` `S` pitch down and up, `A` `D` roll, `Q` `E` yaw, `⇧ Shift` and `Ctrl` open and close the throttle |
+| Template                                         | What it lays down                                                                                                                                                        |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Empty**                                        | three lights and nothing else. The starting point for building everything yourself                                                                                       |
+| **Basic**                                        | a floor, a sun, a fill light, a camera, and a one-metre cube — the cube says how big a metre is, so delete it as soon as an object of your own arrives                   |
+| **Photo studio**                                 | a white curved backdrop, a floor, and three lights placed as in a studio                                                                                                 |
+| **Cinematic**                                    | a wide floor, a raking light, a camera and its **rail** — the shot is already a move                                                                                     |
+| **Architecture**                                 | a very wide floor, a low sun, a sky, and a camera at eye height                                                                                                          |
+| **First person**, **Third person**, **Top down** | all three open on the **test level** below, and differ only in where the camera stands                                                                                   |
+| **Car**                                          | the same test level, with a car parked at the start — four suspended wheels, an engine, steering. `W` `S` accelerate and brake, `A` `D` steer, `Space` is the hand brake |
+| **Aircraft**                                     | an airfield, a runway, and a plane **already flying** at 120 m. `W` `S` pitch down and up, `A` `D` roll, `Q` `E` yaw, `⇧ Shift` and `Ctrl` open and close the throttle   |
 
 A scene is black until a light is placed: that is normal, and the Lights panel says so. Only the
 **Empty** template can take you there, by deleting its lights.
@@ -49,16 +49,16 @@ Three ways to move, which coexist.
 
 ### Orbiting the scene — the mouse alone
 
-| Gesture | Effect |
-|---|---|
-| **Alt + left-click + drag** | turns the view |
-| **Left-click + drag** | draws a **selection rectangle** — see *Selecting more than one object* |
-| **Middle button + drag** | slides the view sideways |
-| **Shift + Alt + left-click + drag** | the same, for a trackpad with no middle button |
-| **Wheel** | moves forward and back, **towards whatever the pointer aims at** |
-| **Alt + right-click + drag** | moves forward and back, towards the point the view turns around |
-| **Two fingers** on a touch screen | pinching moves in and out, dragging slides sideways |
-| **Right-click + drag** *(see below)* | flies |
+| Gesture                              | Effect                                                                 |
+| ------------------------------------ | ---------------------------------------------------------------------- |
+| **Alt + left-click + drag**          | turns the view                                                         |
+| **Left-click + drag**                | draws a **selection rectangle** — see _Selecting more than one object_ |
+| **Middle button + drag**             | slides the view sideways                                               |
+| **Shift + Alt + left-click + drag**  | the same, for a trackpad with no middle button                         |
+| **Wheel**                            | moves forward and back, **towards whatever the pointer aims at**       |
+| **Alt + right-click + drag**         | moves forward and back, towards the point the view turns around        |
+| **Two fingers** on a touch screen    | pinching moves in and out, dragging slides sideways                    |
+| **Right-click + drag** _(see below)_ | flies                                                                  |
 
 This is the default mode. You turn **around** the scene, as if walking round it. These are the
 gestures of Unity, Unreal and Maya: if you come from any of the three, there is nothing to relearn.
@@ -73,8 +73,8 @@ gestures of Unity, Unreal and Maya: if you come from any of the three, there is 
 This is the question that loses you your scene when nobody answers it. Three answers, in order:
 
 1. **What is selected**, while it is on screen — the very point the gizmo sits on. That is the
-   *Orbit around selection* setting, on out of the box;
-2. **What the pointer is over** as the gesture begins, if you turned *Orbit under the cursor* on
+   _Orbit around selection_ setting, on out of the box;
+2. **What the pointer is over** as the gesture begins, if you turned _Orbit under the cursor_ on
    in the settings;
 3. otherwise, **the last point looked at** — the one the wheel, a sideways slide or <kbd>F</kbd>
    put there.
@@ -96,14 +96,14 @@ Coming from Unreal, Unity, Blender or Roblox Studio, there is nothing to relearn
 Navigation** in the menu, or **Settings ▸ Workspaces ▸ Modelling**, changes the scheme of
 gestures AND of shortcuts in one go.
 
-| Scheme | Turn | Slide sideways | Move in and out | WASD | Move / Rotate / Scale |
-|---|---|---|---|---|---|
-| **IA Studio** | Alt + left | middle | Alt + right | a button held | `G` `R` `S` |
-| **Unreal** | Alt + left | middle, or **right added to left** | Alt + right | **right button held** | `W` `E` `R` |
-| **Unity** | Alt + left | middle | Alt + right | **right button held** | `W` `E` `R` |
-| **Blender** | **middle** | **Shift + middle** | **Ctrl + middle** | Walk/Fly mode, on <kbd>Shift</kbd>+<kbd>`</kbd> | `G` `R` `S` |
-| **Roblox Studio** | Alt + left | middle | Alt + right | **always** | `G` `R` `T` |
-| **Custom** | your choice | your choice | your choice | your choice | yours |
+| Scheme            | Turn        | Slide sideways                     | Move in and out   | WASD                                            | Move / Rotate / Scale |
+| ----------------- | ----------- | ---------------------------------- | ----------------- | ----------------------------------------------- | --------------------- |
+| **IA Studio**     | Alt + left  | middle                             | Alt + right       | a button held                                   | `G` `R` `S`           |
+| **Unreal**        | Alt + left  | middle, or **right added to left** | Alt + right       | **right button held**                           | `W` `E` `R`           |
+| **Unity**         | Alt + left  | middle                             | Alt + right       | **right button held**                           | `W` `E` `R`           |
+| **Blender**       | **middle**  | **Shift + middle**                 | **Ctrl + middle** | Walk/Fly mode, on <kbd>Shift</kbd>+<kbd>`</kbd> | `G` `R` `S`           |
+| **Roblox Studio** | Alt + left  | middle                             | Alt + right       | **always**                                      | `G` `R` `T`           |
+| **Custom**        | your choice | your choice                        | your choice       | your choice                                     | yours                 |
 
 **The bare left button no longer turns the view, under any scheme**: it draws the selection
 rectangle, as it does in Unity and Blender. Turning is Alt + left — the gesture three of the five
@@ -121,7 +121,7 @@ hand the view back to a sideways slide.
 > to: choosing it gives each command the key the software declares.
 
 **Roblox moves two shortcuts, and it cannot be helped.** There the letters belong to the camera
-with nothing held, so `S` can no longer scale: it moves to `T`, and *Add* moves from <kbd>⇧A</kbd>
+with nothing held, so `S` can no longer scale: it moves to `T`, and _Add_ moves from <kbd>⇧A</kbd>
 to <kbd>⇧N</kbd>. Avoiding exactly this is why Unity and Unreal ask for the right button. The
 arrow keys stay with the interface in every case.
 
@@ -139,13 +139,13 @@ itself is customised from the shortcuts screen, whichever scheme is chosen.
 
 **Hold a mouse button**, left or right, and the keys below move the camera. Without letting go:
 
-| Key | Movement |
-|---|---|
+| Key             | Movement                   |
+| --------------- | -------------------------- |
 | `W` `A` `S` `D` | forward, left, back, right |
-| `↑` `←` `↓` `→` | the same four directions |
-| `E` | up |
-| `Q` | down |
-| `⇧ Shift` | boost |
+| `↑` `←` `↓` `→` | the same four directions   |
+| `E`             | up                         |
+| `Q`             | down                       |
+| `⇧ Shift`       | boost                      |
 
 You move **through** the scene instead of around it, as in a video game. Release the button and
 the camera returns to its normal mode.
@@ -175,38 +175,38 @@ The keys are recalled for a few seconds at the bottom of the viewport each time 
 
 Three settings govern flying: **Settings ▸ Workspaces ▸ Modelling**
 
-| Setting | What it does | Default |
-|---|---|---|
-| **Fly speed** | metres per second | 4 |
-| **Boost factor** | what Shift multiplies the speed by | 3 |
-| **Field of view** | what the camera takes in, in degrees | 60 |
+| Setting           | What it does                         | Default |
+| ----------------- | ------------------------------------ | ------- |
+| **Fly speed**     | metres per second                    | 4       |
+| **Boost factor**  | what Shift multiplies the speed by   | 3       |
+| **Field of view** | what the camera takes in, in degrees | 60      |
 
 ---
 
 ## The toolbar
 
-| Tool | Shortcut | What it does |
-|---|---|---|
-| **Select** | `V` | picks an object without arming a handle |
-| **Move** | `G` | drags the object along the coloured arrows |
-| **Rotate** | `R` | turns the object with the coloured circles |
-| **Scale** | `S` | grows or shrinks it with the handles |
-| **All snaps** | `M` | turns all four snaps on or off at once; a second press gives back the ones that were on |
-| **Local frame** | `L` | lines the handles up with the **object's** orientation rather than the world's |
-| **Display mode** | `Z` | cycles the nine ways of drawing; hovering offers them one by one |
-| **Frame selection** | `F` | recentres the camera on the chosen object |
-| **Navigate** | `` ` `` | arms continuous flight: the mouse holds the view, the keys travel |
+| Tool                | Shortcut | What it does                                                                            |
+| ------------------- | -------- | --------------------------------------------------------------------------------------- |
+| **Select**          | `V`      | picks an object without arming a handle                                                 |
+| **Move**            | `G`      | drags the object along the coloured arrows                                              |
+| **Rotate**          | `R`      | turns the object with the coloured circles                                              |
+| **Scale**           | `S`      | grows or shrinks it with the handles                                                    |
+| **All snaps**       | `M`      | turns all four snaps on or off at once; a second press gives back the ones that were on |
+| **Local frame**     | `L`      | lines the handles up with the **object's** orientation rather than the world's          |
+| **Display mode**    | `Z`      | cycles the nine ways of drawing; hovering offers them one by one                        |
+| **Frame selection** | `F`      | recentres the camera on the chosen object                                               |
+| **Navigate**        | `` ` ``  | arms continuous flight: the mouse holds the view, the keys travel                       |
 
 The bar carries only what the hand asks for **without letting go of the mouse**. The rest is in
 the native menu:
 
-| What is not in the bar | Where to find it |
-|---|---|
-| Projection, four views, quad edges, skeletons, pose mode | **View**, as ticked rows |
-| The six sides, the nine display modes | **View ▸ Point of view** and **▸ Display mode** |
-| Adding a mesh, a light, an object | **Add** |
-| Duplicate, group, delete | **Edit** |
-| Copy, cut, paste | **the keys alone** — see below |
+| What is not in the bar                                   | Where to find it                                |
+| -------------------------------------------------------- | ----------------------------------------------- |
+| Projection, four views, quad edges, skeletons, pose mode | **View**, as ticked rows                        |
+| The six sides, the nine display modes                    | **View ▸ Point of view** and **▸ Display mode** |
+| Adding a mesh, a light, an object                        | **Add**                                         |
+| Duplicate, group, delete                                 | **Edit**                                        |
+| Copy, cut, paste                                         | **the keys alone** — see below                  |
 
 **Snapping is for lining things up.** Without it an object lands 1.0374 m from the previous one;
 with it, at a round 1 m.
@@ -214,7 +214,7 @@ with it, at a round 1 m.
 ### The bar at the top — what you set while manipulating
 
 A second bar floats **at the top of the viewport**, horizontal. It carries no tools but
-**behaviours**: what you change *while* manipulating, without letting go of the mouse.
+**behaviours**: what you change _while_ manipulating, without letting go of the mouse.
 
 Each entry is a group of **two zones**. The icon, on the left, **turns that one snap** on or off
 and nothing else. The value, on the right, **opens a menu** on hover, as the tool bar's own menus
@@ -225,13 +225,13 @@ The steps are laid out **in columns**, not as a list: a value is found by eye, a
 nine steps covered the very scene it was about to change. The step in force is **painted where it
 stands** — not marked by a tick at the other end of a list.
 
-| Entry | What the icon toggles | What the menu sets |
-|---|---|---|
-| **Camera speed** | *(nothing: it has no toggle)* | rungs from 0.5 to 20 m/s, and a free run between them |
-| **Surface snap** | lays what you drag on the first surface below it | whether it follows the slope, and how far above it floats |
-| **Grid snap** | advances a move in even steps | the step, from 1 cm to 10 m |
-| **Angle snap** | turns in even steps | the angle, as an increment or as a division of a full turn |
-| **Scale snap** | changes the scale in even steps | the ratio |
+| Entry            | What the icon toggles                            | What the menu sets                                         |
+| ---------------- | ------------------------------------------------ | ---------------------------------------------------------- |
+| **Camera speed** | _(nothing: it has no toggle)_                    | rungs from 0.5 to 20 m/s, and a free run between them      |
+| **Surface snap** | lays what you drag on the first surface below it | whether it follows the slope, and how far above it floats  |
+| **Grid snap**    | advances a move in even steps                    | the step, from 1 cm to 10 m                                |
+| **Angle snap**   | turns in even steps                              | the angle, as an increment or as a division of a full turn |
+| **Scale snap**   | changes the scale in even steps                  | the ratio                                                  |
 
 The bar sits at the **top right** of the viewport; the tool column already owns the left.
 
@@ -267,11 +267,11 @@ car forwards along the way it faces.
 When a manipulation tool is armed and an object is chosen, handles appear around it. The colour
 code is universal:
 
-| Colour | Axis | Direction |
-|---|---|---|
-| **Red** | X | left ↔ right |
-| **Green** | Y | down ↔ up |
-| **Blue** | Z | forward ↔ back |
+| Colour    | Axis | Direction      |
+| --------- | ---- | -------------- |
+| **Red**   | X    | left ↔ right   |
+| **Green** | Y    | down ↔ up      |
+| **Blue**  | Z    | forward ↔ back |
 
 Drag an arrow to move along that axis only.
 
@@ -293,13 +293,13 @@ The object lands at the **scene origin** — the centre of the world, where the 
 ### Bringing in an existing model
 
 The shapes below are the ones the studio can **build**. A model from elsewhere — generated by a
-*text to 3D* model, or imported from a `.glb` — comes in through the Explorer:
+_text to 3D_ model, or imported from a `.glb` — comes in through the Explorer:
 
-| Gesture | Result |
-|---|---|
-| **Double-click** a mesh in the Explorer | a **scene of its own** opens, with the mesh inside |
-| **Drag and drop** onto the 3D view | it enters the scene **in front of you** — anywhere on the view, toolbar included |
-| **Right-click ▸ Add to the scene** | the same, without aiming at the view — a scene open anywhere is enough |
+| Gesture                                 | Result                                                                                                                              |
+| --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| **Double-click** a mesh in the Explorer | the **Model tab** opens on the file — `.glb`, `.fbx`, `.obj`, `.stl`, `.ply` or `.usdz`. A `.gltf` is a **scene**, and opens as one |
+| **Drag and drop** onto the 3D view      | it enters the scene **in front of you** — anywhere on the view, toolbar included                                                    |
+| **Right-click ▸ Add to the scene**      | the same, without aiming at the view — a scene open anywhere is enough                                                              |
 
 **Double-click never looks at the tab in front**: it opens the asset in the workspace of its kind,
 whatever is on screen. It is the studio-wide rule, described in [Assets](07-assets.md) — to bring a
@@ -315,25 +315,25 @@ that in one gesture, and `F` frames the camera on it.
 
 ### The available meshes
 
-A *mesh* is a geometric object.
+A _mesh_ is a geometric object.
 
-| Shape | What it looks like |
-|---|---|
-| **Box** | a box |
-| **Sphere** | a ball |
-| **Capsule** | a cylinder with rounded ends, like a pill |
-| **Circle** | a flat disc |
-| **Cylinder** | a solid tube |
-| **Plane** | a flat sheet |
-| **Ring** | a disc with a hole |
-| **Torus** | a doughnut |
-| **Torus knot** | an interwoven doughnut |
-| **Tube** | a bent pipe |
-| **Lathe** | a shape made by spinning a profile |
-| **Tetrahedron** | 4 triangular faces |
-| **Octahedron** | 8 faces |
-| **Dodecahedron** | 12 faces |
-| **Icosahedron** | 20 faces |
+| Shape            | What it looks like                        |
+| ---------------- | ----------------------------------------- |
+| **Box**          | a box                                     |
+| **Sphere**       | a ball                                    |
+| **Capsule**      | a cylinder with rounded ends, like a pill |
+| **Circle**       | a flat disc                               |
+| **Cylinder**     | a solid tube                              |
+| **Plane**        | a flat sheet                              |
+| **Ring**         | a disc with a hole                        |
+| **Torus**        | a doughnut                                |
+| **Torus knot**   | an interwoven doughnut                    |
+| **Tube**         | a bent pipe                               |
+| **Lathe**        | a shape made by spinning a profile        |
+| **Tetrahedron**  | 4 triangular faces                        |
+| **Octahedron**   | 8 faces                                   |
+| **Dodecahedron** | 12 faces                                  |
+| **Icosahedron**  | 20 faces                                  |
 
 ### Text — words in volume
 
@@ -362,18 +362,18 @@ is not rewritten — go back to the machine that has the font, and the scene is 
 
 ### The sprite — a picture facing the camera
 
-A *sprite* is not a mesh: it is a flat picture that always turns towards you, whatever the view
+A _sprite_ is not a mesh: it is a flat picture that always turns towards you, whatever the view
 does. It is what you use for a spark, a glow, a marker, a label above an object — anything that
 has to stay readable from wherever you look.
 
 **Add ▸ Object ▸ Sprite** puts one at the origin. It arrives with no picture: choose one in the Inspector,
 under **Sprite**, from the project's own images — the same ones a material takes into a channel.
 
-| Setting | What it does |
-|---|---|
-| **Colour** | tints the picture. On a sprite with none, it is the colour of the quad itself |
-| **Opacity** | from transparent to opaque |
-| **Image** | the picture shown, taken from the project's assets |
+| Setting     | What it does                                                                  |
+| ----------- | ----------------------------------------------------------------------------- |
+| **Colour**  | tints the picture. On a sprite with none, it is the colour of the quad itself |
+| **Opacity** | from transparent to opaque                                                    |
+| **Image**   | the picture shown, taken from the project's assets                            |
 
 Four things to know:
 
@@ -394,7 +394,7 @@ Four things to know:
 
 ### The path — a camera's rail
 
-A *path* is a curve laid into the scene. It never shows up in a rendered picture: it is a rail, and
+A _path_ is a curve laid into the scene. It never shows up in a rendered picture: it is a rail, and
 a camera can run along it during a shot.
 
 **Add ▸ Object ▸ Path** puts one at the origin, with two points. Its **knobs** — one bead per
@@ -403,12 +403,12 @@ rides it during a shot. They keep their size on screen, wherever the view stands
 
 Four gestures, in the scene:
 
-| Gesture | What it does |
-|---|---|
-| **Click a knob**, path selected | picks it: the move handles attach to it, and it is dragged like an object |
-| **⌥ + click on the curve** | puts a new point in the stretch clicked, and picks it straight away |
-| **⌥ ⇧ + click anywhere** | **extends the path**: the point lands at its end, where you just aimed. This is the gesture that draws a trajectory click after click |
-| **Delete**, or right-click a knob | takes the picked point away. A path always keeps its last two points |
+| Gesture                           | What it does                                                                                                                          |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| **Click a knob**, path selected   | picks it: the move handles attach to it, and it is dragged like an object                                                             |
+| **⌥ + click on the curve**        | puts a new point in the stretch clicked, and picks it straight away                                                                   |
+| **⌥ ⇧ + click anywhere**          | **extends the path**: the point lands at its end, where you just aimed. This is the gesture that draws a trajectory click after click |
+| **Delete**, or right-click a knob | takes the picked point away. A path always keeps its last two points                                                                  |
 
 **⌥ ⇧ + click lands on whatever you click** — the floor, a wall, a crate. Where the ray meets
 nothing, the point lands **at the height of the point before it**, which keeps a trajectory level
@@ -433,13 +433,13 @@ to the first one.
 
 Without a light, the scene stays black.
 
-| Light | What it does | When to use it |
-|---|---|---|
-| **Ambient** | lights everything, evenly, with no shadow | to lift the blacks |
-| **Directional** | parallel rays, like the sun | the main light of an outdoor scene |
-| **Hemisphere** | one colour from the sky, another from the ground | a soft, natural outdoor look |
-| **Point** | radiates in every direction from a point | a bulb, a candle |
-| **Spot** | a cone of light | a stage spot, a lighthouse |
+| Light           | What it does                                     | When to use it                     |
+| --------------- | ------------------------------------------------ | ---------------------------------- |
+| **Ambient**     | lights everything, evenly, with no shadow        | to lift the blacks                 |
+| **Directional** | parallel rays, like the sun                      | the main light of an outdoor scene |
+| **Hemisphere**  | one colour from the sky, another from the ground | a soft, natural outdoor look       |
+| **Point**       | radiates in every direction from a point         | a bulb, a candle                   |
+| **Spot**        | a cone of light                                  | a stage spot, a lighthouse         |
 
 **To start with**: a **directional** for the main light, plus a weak **ambient** so the shadows are
 not completely black. That is the classic recipe.
@@ -471,17 +471,17 @@ Together with the orthographic projection, that is the classic plan view — the
 
 ### Display mode — `Z`, or **View ▸ Display mode**
 
-| Mode | What is drawn |
-|---|---|
-| **Shaded** | surfaces painted by their material, edges left out |
-| **Wireframe** | the edges alone — which is what shows how dense the mesh is |
-| **Shaded and wireframe** | surfaces painted, with the edges drawn over them |
-| **Solid** | plain clay on every surface: the shape, without the materials |
-| **Material preview** | the materials under the studio light alone, with the scene’s own lights out |
-| **Matcap** | lighting captured on a sphere: it is the relief that reads, not the colour |
-| **Density** | green to red by triangles per unit of surface: what is red is what to optimise |
-| **Translucent** | surfaces barely there, so the joints inside can be seen |
-| **Skeleton only** | no surface at all: the bones are all that is left, to be put right without guessing |
+| Mode                     | What is drawn                                                                       |
+| ------------------------ | ----------------------------------------------------------------------------------- |
+| **Shaded**               | surfaces painted by their material, edges left out                                  |
+| **Wireframe**            | the edges alone — which is what shows how dense the mesh is                         |
+| **Shaded and wireframe** | surfaces painted, with the edges drawn over them                                    |
+| **Solid**                | plain clay on every surface: the shape, without the materials                       |
+| **Material preview**     | the materials under the studio light alone, with the scene’s own lights out         |
+| **Matcap**               | lighting captured on a sphere: it is the relief that reads, not the colour          |
+| **Density**              | green to red by triangles per unit of surface: what is red is what to optimise      |
+| **Translucent**          | surfaces barely there, so the joints inside can be seen                             |
+| **Skeleton only**        | no surface at all: the bones are all that is left, to be put right without guessing |
 
 The button wears the current mode and cycles it on each click; its menu picks one directly. `Z`
 does the same from the keyboard — **and in four views, on the quarter under the
@@ -528,14 +528,14 @@ surface the reconstruction is wrong** and erases an edge the modeller meant to k
 **A click replaces the selection. A click with `⇧`, `⌘` or `Ctrl` adds to it or removes from it** —
 clicking an already-chosen object again takes it out of the selection.
 
-| Gesture | Effect |
-|---|---|
-| **Click** an object | it becomes the selection, alone |
-| **`⇧`/`⌘`/`Ctrl` + click** | it joins the selection, or leaves it if it was in |
-| **Click in the void** | everything is deselected |
-| **`⇧`/`⌘`/`Ctrl` + click in the void** | **nothing changes** — a miss must not undo patient sorting |
-| **Left-click + drag** | draws a rectangle: everything it touches is chosen |
-| **`⇧`/`⌘`/`Ctrl` + drag** | the rectangle **adds** to the selection instead of replacing it |
+| Gesture                                | Effect                                                          |
+| -------------------------------------- | --------------------------------------------------------------- |
+| **Click** an object                    | it becomes the selection, alone                                 |
+| **`⇧`/`⌘`/`Ctrl` + click**             | it joins the selection, or leaves it if it was in               |
+| **Click in the void**                  | everything is deselected                                        |
+| **`⇧`/`⌘`/`Ctrl` + click in the void** | **nothing changes** — a miss must not undo patient sorting      |
+| **Left-click + drag**                  | draws a rectangle: everything it touches is chosen              |
+| **`⇧`/`⌘`/`Ctrl` + drag**              | the rectangle **adds** to the selection instead of replacing it |
 
 **The rectangle takes what it touches**, not only what it encloses whole: a floor is always
 larger than the rectangle drawn on it. A drag that crosses nothing empties the selection, as a
@@ -580,14 +580,14 @@ the tools that carve it, and the order of the clicks changes nothing.
 
 One way to mark, three to combine, and two to go back:
 
-| Button | What it does |
-|---|---|
-| **Negate** | marks the chosen shapes as **tools** — they turn red and translucent |
-| **Carve** | cuts the smaller shapes out of the biggest one — the cube opens the window |
-| **Join** | merges the shapes into a single solid |
-| **Keep overlap** | keeps only the part where the shapes overlap |
-| **Separate** | gives the original shapes back, each where it stood |
-| **Flip the fold** | `I` — folds the same shapes the other way round, with no undo |
+| Button            | What it does                                                               |
+| ----------------- | -------------------------------------------------------------------------- |
+| **Negate**        | marks the chosen shapes as **tools** — they turn red and translucent       |
+| **Carve**         | cuts the smaller shapes out of the biggest one — the cube opens the window |
+| **Join**          | merges the shapes into a single solid                                      |
+| **Keep overlap**  | keeps only the part where the shapes overlap                               |
+| **Separate**      | gives the original shapes back, each where it stood                        |
+| **Flip the fold** | `I` — folds the same shapes the other way round, with no undo              |
 
 **If the fold runs backwards, do not look for the reason: press `I`.** Flip the fold runs the same
 fold the other way round — what was carved becomes the matter — in one click and with no undo. It
@@ -623,15 +623,15 @@ material, and the window follows the wall when you move it.
 
 ## Duplicate, copy, paste
 
-The four shortcuts you already know. **Duplicate** has its row in **Edit**; the *Cut*, *Copy* and
-*Paste* rows you will see higher up there **are not the scene's**.
+The four shortcuts you already know. **Duplicate** has its row in **Edit**; the _Cut_, _Copy_ and
+_Paste_ rows you will see higher up there **are not the scene's**.
 
-| Gesture | Shortcut | What it does |
-|---|---|---|
-| **Duplicate** | `⌘D` | puts a copy of the selection at the same place, and selects it |
-| **Copy** | `⌘C` | holds the selection without touching the scene |
-| **Cut** | `⌘X` | holds it and takes it out of the scene |
-| **Paste** | `⌘V` | puts what was held into the current scene |
+| Gesture       | Shortcut | What it does                                                   |
+| ------------- | -------- | -------------------------------------------------------------- |
+| **Duplicate** | `⌘D`     | puts a copy of the selection at the same place, and selects it |
+| **Copy**      | `⌘C`     | holds the selection without touching the scene                 |
+| **Cut**       | `⌘X`     | holds it and takes it out of the scene                         |
+| **Paste**     | `⌘V`     | puts what was held into the current scene                      |
 
 > **The Edit menu's rows act on TEXT**, not on the scene: they are what lets you copy the name of
 > a layer you are renaming. The keys know the difference — highlighted text keeps `⌘C`,
@@ -678,30 +678,30 @@ its radius, a torus shows its tube, a spot shows its angle.
 
 ### For an object
 
-| Section | What it holds |
-|---|---|
-| **Identity** | the name, editable |
+| Section       | What it holds                                                                                                                               |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Identity**  | the name, editable                                                                                                                          |
 | **Transform** | Position, Rotation, Scale — three numbers each (X, Y, Z). A childless sprite selected on its own has no Rotation row: it would show nowhere |
-| **Geometry** | what defines the shape: radius, width, segments… |
-| **Material** | Colour, Roughness, Metalness, Tiles per metre, and five image slots |
+| **Geometry**  | what defines the shape: radius, width, segments…                                                                                            |
+| **Material**  | Colour, Roughness, Metalness, Tiles per metre, and five image slots                                                                         |
 
 #### Every geometry field
 
 You will never see them all at once: each shape shows its own.
 
-| Field | What it sets | On which shapes |
-|---|---|---|
-| **Width**, **Height**, **Depth** | the three sides of a box | Box, Plane |
-| **Radius** | the size of a round shape | Sphere, Circle, Capsule, Torus, Knot, polyhedra |
-| **Top radius**, **Bottom radius** | the two ends of a cylinder — make them unequal for a cone | Cylinder |
-| **Inner radius**, **Outer radius** | the hole and the rim | Ring |
-| **Tube** | the thickness of the ring | Torus, Torus knot, Tube |
-| **Segments** | the number of facets | most round shapes |
-| **Radial segments** | the facets all the way round | Cylinder, Capsule, Torus, Tube |
-| **Tubular segments** | the facets along the ring | Torus, Torus knot |
-| **Width segments**, **Height segments** | the fineness in each direction | Sphere, Plane |
-| **Cap segments** | the fineness of the rounded ends | Capsule |
-| **P windings**, **Q windings** | how many times the knot turns through itself | Torus knot |
+| Field                                   | What it sets                                              | On which shapes                                 |
+| --------------------------------------- | --------------------------------------------------------- | ----------------------------------------------- |
+| **Width**, **Height**, **Depth**        | the three sides of a box                                  | Box, Plane                                      |
+| **Radius**                              | the size of a round shape                                 | Sphere, Circle, Capsule, Torus, Knot, polyhedra |
+| **Top radius**, **Bottom radius**       | the two ends of a cylinder — make them unequal for a cone | Cylinder                                        |
+| **Inner radius**, **Outer radius**      | the hole and the rim                                      | Ring                                            |
+| **Tube**                                | the thickness of the ring                                 | Torus, Torus knot, Tube                         |
+| **Segments**                            | the number of facets                                      | most round shapes                               |
+| **Radial segments**                     | the facets all the way round                              | Cylinder, Capsule, Torus, Tube                  |
+| **Tubular segments**                    | the facets along the ring                                 | Torus, Torus knot                               |
+| **Width segments**, **Height segments** | the fineness in each direction                            | Sphere, Plane                                   |
+| **Cap segments**                        | the fineness of the rounded ends                          | Capsule                                         |
+| **P windings**, **Q windings**          | how many times the knot turns through itself              | Torus knot                                      |
 
 **Segments** deserve a word: it is the number of facets that make up a round shape. Few segments =
 angular and light; many = smooth and heavy. 32 is a good compromise for a sphere.
@@ -713,10 +713,10 @@ result you cannot predict without trying.
 
 **Roughness and Metalness** are the two settings that make a material's whole appearance:
 
-| Setting | At 0 | At 1 |
-|---|---|---|
-| **Roughness** | perfect mirror | fully matte |
-| **Metalness** | plastic, wood, stone | metal |
+| Setting       | At 0                 | At 1        |
+| ------------- | -------------------- | ----------- |
+| **Roughness** | perfect mirror       | fully matte |
+| **Metalness** | plastic, wood, stone | metal       |
 
 The five image slots — **Image**, **Normals**, **Roughness map**, **Metalness map**, **Ambient
 occlusion** — take images from the project. The **Choose an image** button opens the list;
@@ -736,26 +736,26 @@ object looked at close up.
 
 ### For a light
 
-| Field | What it does |
-|---|---|
-| **Colour** | the light's hue |
-| **Intensity** | its power |
-| **Range** | how far it reaches — point and spot |
-| **Decay** | how fast it fades with distance |
-| **Angle** | the cone's opening — spot only |
-| **Penumbra** | the softness of the cone's edge — spot only |
-| **Target** | what it points at |
-| **Sky colour** / **Ground colour** | hemisphere only |
+| Field                              | What it does                                |
+| ---------------------------------- | ------------------------------------------- |
+| **Colour**                         | the light's hue                             |
+| **Intensity**                      | its power                                   |
+| **Range**                          | how far it reaches — point and spot         |
+| **Decay**                          | how fast it fades with distance             |
+| **Angle**                          | the cone's opening — spot only              |
+| **Penumbra**                       | the softness of the cone's edge — spot only |
+| **Target**                         | what it points at                           |
+| **Sky colour** / **Ground colour** | hemisphere only                             |
 
 ### For a camera
 
 A camera has **its lens**, and, as soon as a shot covers it, **what that shot has it do**.
 
-| Field | What it sets |
-|---|---|
+| Field             | What it sets                                                                                                       |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------ |
 | **Field of view** | how much the camera takes in, in degrees. This is the zoom: a small angle is a telephoto, a large one a wide angle |
-| **Near distance** | nearer than this, nothing is drawn. Never zero — depth sorting would have no range left |
-| **Far distance** | further than this, nothing is drawn |
+| **Near distance** | nearer than this, nothing is drawn. Never zero — depth sorting would have no range left                            |
+| **Far distance**  | further than this, nothing is drawn                                                                                |
 
 The **Put this camera where the view is looking** button gives it the place and the direction of
 the current view: frame it with the mouse, click, and the camera is there.
@@ -766,13 +766,13 @@ This section carries **the shot covering the playhead**: what **moves** the came
 shot, and what it **looks at**. While no shot covers the head, it shows nothing but the **Create a
 path for this camera** button — which then opens the shot and lays the rail in one gesture.
 
-| Field | What it does |
-|---|---|
-| **Path** | the rail the camera rides during this shot. **None** leaves it wherever its placement and its keys put it |
-| **Create a path for this camera** | lays a path in front of the camera, down its line of sight, and binds it to this shot. **One `⌘Z` undoes both** — and where no shot covers the head, the button opens one in the same gesture |
-| **Speed curve** | **Steady**, **Soft start**, **Soft finish**, **Soft start and finish**. Without one, the camera move starts and stops dead |
-| **Start on the path** / **End on the path** | from 0 to 1, the stretch of rail actually taken. **A start greater than the end runs the rail backwards** |
-| **Target** | **Free** — the camera looks where its own rotation turns it · **A point** — it aims at coordinates, set by **Aim point** · **an object's name** — it follows that object, even one that is itself animated |
+| Field                                       | What it does                                                                                                                                                                                               |
+| ------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Path**                                    | the rail the camera rides during this shot. **None** leaves it wherever its placement and its keys put it                                                                                                  |
+| **Create a path for this camera**           | lays a path in front of the camera, down its line of sight, and binds it to this shot. **One `⌘Z` undoes both** — and where no shot covers the head, the button opens one in the same gesture              |
+| **Speed curve**                             | **Steady**, **Soft start**, **Soft finish**, **Soft start and finish**. Without one, the camera move starts and stops dead                                                                                 |
+| **Start on the path** / **End on the path** | from 0 to 1, the stretch of rail actually taken. **A start greater than the end runs the rail backwards**                                                                                                  |
+| **Target**                                  | **Free** — the camera looks where its own rotation turns it · **A point** — it aims at coordinates, set by **Aim point** · **an object's name** — it follows that object, even one that is itself animated |
 
 **The speed is steady along the rail**, whatever the distances between its points: halfway
 through the shot the camera has covered half the **length** of the path, not half its segments.
@@ -784,16 +784,16 @@ one shot and stand still in the next, watch the statue here and the door there.
 
 Two switches, on every object that can have them:
 
-| Switch | What it does |
-|---|---|
-| **Casts a shadow** | the object blocks light and lays its shadow on the rest |
-| **Catches shadows** | other objects' shadows are drawn on it |
+| Switch              | What it does                                            |
+| ------------------- | ------------------------------------------------------- |
+| **Casts a shadow**  | the object blocks light and lays its shadow on the rest |
+| **Catches shadows** | other objects' shadows are drawn on it                  |
 
 **Both are decided object by object**, because a shadow costs computation for every light casting
 it. A floor catches without casting; a small piece of set far from the camera can do neither
 without anyone noticing.
 
-> **The section does not always appear.** A *sprite* plays no part in shadows at all, and an
+> **The section does not always appear.** A _sprite_ plays no part in shadows at all, and an
 > ambient or hemisphere light casts none: rather than show a switch with no effect, the studio
 > shows nothing.
 
@@ -805,10 +805,10 @@ whole scene in **Settings ▸ Workspaces ▸ Modelling**.
 **This section shows even when nothing is selected**, because it belongs to the whole scene rather
 than to an object.
 
-| Value | What you get |
-|---|---|
-| **Studio** *(start)* | a neutral, computed lighting, there before you have generated anything |
-| *a skybox from the project* | the chosen sky lights the scene **and** is reflected in the materials |
+| Value                       | What you get                                                           |
+| --------------------------- | ---------------------------------------------------------------------- |
+| **Studio** _(start)_        | a neutral, computed lighting, there before you have generated anything |
+| _a skybox from the project_ | the chosen sky lights the scene **and** is reflected in the materials  |
 
 This is the bridge between the two workspaces: a sky made in the **Skyboxes** workspace becomes
 your scene's light here. A sunset lays a raking orange light over everything, without you placing
@@ -829,10 +829,10 @@ at what height. It appears in no render.
 
 **Settings ▸ Workspaces ▸ Modelling**:
 
-| Setting | What it does | Default |
-|---|---|---|
-| **Show the grid** | shows or hides it | on |
-| **Grid size** | its extent in metres — one square is always 1 m | 20 |
+| Setting           | What it does                                    | Default |
+| ----------------- | ----------------------------------------------- | ------- |
+| **Show the grid** | shows or hides it                               | on      |
+| **Grid size**     | its extent in metres — one square is always 1 m | 20      |
 
 Hide it to judge an image with nothing around it.
 
@@ -850,12 +850,12 @@ the light markers: a picture, not a screenshot.
 
 The button's menu offers four sizes:
 
-| Choice | Height of the picture |
-|---|---|
+| Choice        | Height of the picture      |
+| ------------- | -------------------------- |
 | **View size** | the panel's own, on screen |
-| **1080p** | 1080 pixels |
-| **1440p** | 1440 pixels |
-| **4K** | 2160 pixels |
+| **1080p**     | 1080 pixels                |
+| **1440p**     | 1440 pixels                |
+| **4K**        | 2160 pixels                |
 
 **Only the height is imposed**: the width follows the shape of the panel, so the picture shows
 exactly what you were looking at — no more, no less. A narrow panel therefore gives a narrow
@@ -870,11 +870,11 @@ The picture appears among the project's assets like any other.
 **File ▸ Export ▸ Scene** writes everything the document holds. **File ▸ Export ▸ Selection**
 writes only the chosen objects — a group takes along whatever hangs from it.
 
-| Format | What it is | When to use it |
-|---|---|---|
-| **Binary glTF (`.glb`)** | one file, geometries included | the default, and what most engines read |
-| **glTF (`.gltf`)** | the same thing as readable JSON | to inspect or diff what is in it |
-| **USDZ (`.usdz`)** | the format Apple's viewers open | to look at the scene on an iPhone or a Mac |
+| Format                   | What it is                      | When to use it                             |
+| ------------------------ | ------------------------------- | ------------------------------------------ |
+| **Binary glTF (`.glb`)** | one file, geometries included   | the default, and what most engines read    |
+| **glTF (`.gltf`)**       | the same thing as readable JSON | to inspect or diff what is in it           |
+| **USDZ (`.usdz`)**       | the format Apple's viewers open | to look at the scene on an iPhone or a Mac |
 
 A save dialogue opens to choose where the file goes. Its name is the document's; the extension
 follows the chosen format.
@@ -924,19 +924,19 @@ width of the screen.
 
 ### What a model already brings
 
-A character generated remotely — by a *text to motion* model, or captured from a video — arrives
+A character generated remotely — by a _text to motion_ model, or captured from a video — arrives
 with its **animation clips** inside the file. Select it, and the Inspector offers the **Animation**
 section:
 
-| Control | What it does |
-|---|---|
-| **Clip** | picks which one plays, among those the file carries |
-| **▶ / ⏸** | shows the block in the view, on a clock of its own |
-| **Speed** | a multiplier, from 0.1 to 4 |
-| **Loop** | starts over at the end, or holds the last pose |
-| **Transition** | how long the fade lasts at **both ends** of the block, up to one second |
+| Control                | What it does                                                                                                                    |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| **Clip**               | picks which one plays, among those the file carries                                                                             |
+| **▶ / ⏸**              | shows the block in the view, on a clock of its own                                                                              |
+| **Speed**              | a multiplier, from 0.1 to 4                                                                                                     |
+| **Loop**               | starts over at the end, or holds the last pose                                                                                  |
+| **Transition**         | how long the fade lasts at **both ends** of the block, up to one second                                                         |
 | **Character movement** | whether this motion carries the character along, or walks it on the spot — **Automatic**, **In place**, **The animation’s own** |
-| **Drives** | which half of the body this block animates — **The whole body**, **The upper body**, **The lower body** |
+| **Drives**             | which half of the body this block animates — **The whole body**, **The upper body**, **The lower body**                         |
 
 **All seven controls act on THE BLOCK YOU CHOSE on the band**: press a block to choose it, and the
 section switches over to it — while you have chosen none, it is the first. A model carrying several
@@ -952,28 +952,28 @@ and the others do not move.
 saved are the blocks — where they sit on the band, their speed, their loop, their transition, their
 movement and what they drive.
 
-**One slider for both ends, and that is deliberate**: what *Transition* sets is the way this motion
+**One slider for both ends, and that is deliberate**: what _Transition_ sets is the way this motion
 **joins its neighbours**, and a block whose two ends faded over different lengths would describe no
 such thing. The fade is zero by default, and one second at most.
 
-***Character movement* settles one question only: does this motion carry the character across the
+**_Character movement_ settles one question only: does this motion carry the character across the
 floor?** A recorded walk does; laid as it is on an object the band already takes from one point to
 another, the character covers the ground **twice** and arrives past the mark.
 
-| Value | What it does |
-|---|---|
-| **Automatic** | the block carries the character, **unless** a trajectory on the band already moves it. This is what stops the double displacement, and it is the default |
-| **In place** | the motion never travels: it is played on the spot |
-| **The animation’s own** | the file’s own travel is always used, trajectory or not |
+| Value                   | What it does                                                                                                                                             |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Automatic**           | the block carries the character, **unless** a trajectory on the band already moves it. This is what stops the double displacement, and it is the default |
+| **In place**            | the motion never travels: it is played on the spot                                                                                                       |
+| **The animation’s own** | the file’s own travel is always used, trajectory or not                                                                                                  |
 
 > **"In place" does not nail the character to the floor**: only the **horizontal** travel is taken
 > out. The height of the hips and their bounce stay, without which a walk would sink into the floor
 > or slide instead of stepping.
 
 > **What counts as a trajectory is TWO position keys at least**, on the object itself. A single key
-> places the character, it does not move it, and *Automatic* then lets the motion carry it.
+> places the character, it does not move it, and _Automatic_ then lets the motion carry it.
 
-> **A trajectory muted still counts.** *Automatic* looks at whether those keys **exist**, not at
+> **A trajectory muted still counts.** _Automatic_ looks at whether those keys **exist**, not at
 > whether they play: muting a trajectory stops the character, it does not hand the travel back to
 > the motion and send it walking off on its own.
 
@@ -1021,10 +1021,10 @@ up before making it animatable." In the second case, stand it up and the button 
 
 The button opens a small panel beside it, with two settings.
 
-| Setting | What it offers |
-|---|---|
-| **Character type** | **Automatic**, **Human**, **Animal**, **Other** |
-| **Service** | **Automatic — the studio**, then the remote services that can do it |
+| Setting            | What it offers                                                      |
+| ------------------ | ------------------------------------------------------------------- |
+| **Character type** | **Automatic**, **Human**, **Animal**, **Other**                     |
+| **Service**        | **Automatic — the studio**, then the remote services that can do it |
 
 **The studio only lays a HUMANOID skeleton** — hips, spine, two arms, two legs. Choosing **Animal**
 or **Other** shows the reason and **greys out Create the skeleton**: better said than laying hips
@@ -1040,18 +1040,39 @@ model has been given a skeleton." The Animation section stops saying it cannot b
 character is ready to animate." — and **pose mode** finally grabs its bones, which did not exist
 before.
 
+### The Model tab
+
+A model is edited **on a tab of its own**, opened by the double-click above or by the **Edit the
+skeleton** button of the Inspector. It shows the file alone, on a grid, and its bar carries what
+moves the **view**: select, navigate, translate, rotate, the **display mode** (wireframe, matcap,
+density…), **Show bones**, and **Frame**. The two buttons on the right choose what the gizmo does
+to a joint — pose it, or edit the skeleton.
+
+A **right-click** on the model, in the view as in the Scene panel, offers the same gestures: frame,
+show or hide the bones, the display mode, capture the view. The **View** and **File ▸ Export**
+menus serve the tab as they serve a scene; the exported file takes the tab's name.
+
+The Inspector adds two sections to the skeleton and the motions. **Attachment points** name, on a
+bone, where an object of a scene will hang. **Shapes** weighs each morph target the file carries,
+with a slider — **a preview**: the weight is not written into the file yet.
+
+> **This tab adds nothing to the model.** A shape, a light or a text are placed in a scene, never
+> here: what saves from the tab is the model's own file, skeleton included. And ⌘S only knows how
+> to rewrite a `.glb`: on an `.fbx` or an `.obj` it says so, rather than writing a file nothing
+> would read back.
+
 ### Adding an animation
 
 The **Animation** section holds the way in itself: the **Add an animation** link drops a panel
 underneath it, with three tabs.
 
-| Tab | What it offers |
-|---|---|
+| Tab         | What it offers                                                                                                                                                      |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Library** | everything already at hand, in a single list: the clips the character's own file brought, the ones shipped with the studio, and the animations filed in the project |
-| **Import** | a file taken from disk — `.glb`, `.gltf`, `.fbx` |
-| **AI** | the remote models that **make** a motion |
+| **Import**  | a file taken from disk — `.glb`, `.gltf`, `.fbx`                                                                                                                    |
+| **AI**      | the remote models that **make** a motion                                                                                                                            |
 
-**The Library tab is not the *Animations* panel** described further down, and the two lists are not
+**The Library tab is not the _Animations_ panel** described further down, and the two lists are not
 the same: the tab counts one source more — the animations filed in the project — and it **lays**
 what you choose, where the panel is dragged onto the band.
 
@@ -1069,17 +1090,17 @@ Cancel. **Switching to another application is not one** — the studio closes th
 the block, exactly as if you had pressed Keep, rather than taking it back while you are looking
 elsewhere.
 
-**Below the list, the preview carries its own controls**: *Back to the start*, *Play the preview*,
-*Go to end*, then **Position**, **Speed** and **Loop** — the last two being the section's own
+**Below the list, the preview carries its own controls**: _Back to the start_, _Play the preview_,
+_Go to end_, then **Position**, **Speed** and **Loop** — the last two being the section's own
 settings, written into the block you have just laid. Like the ▶ of the Inspector, this preview runs
 on a clock of its own and does not move the playhead.
 
 **Position HOLDS the pose where you leave it**, instead of running everything back to the start:
-that is what lets you judge a pose rather than a move, and playback then picks up from there. *Go
-to end* shows the motion's last pose — the one that matters for what the next block picks up from.
+that is what lets you judge a pose rather than a move, and playback then picks up from there. _Go
+to end_ shows the motion's last pose — the one that matters for what the next block picks up from.
 
 **The panel then says whether the motion fits the skeleton**, in one line: "The character can play this
-motion.", or that it is not a perfect fit. **No bone name is shown up front** — *See the joints concerned*
+motion.", or that it is not a perfect fit. **No bone name is shown up front** — _See the joints concerned_
 opens the list, and those are **roles**, never bone names: that vocabulary is the only one two
 skeletons share. Each row says what happens to the joint — "stays at rest" for a joint of your
 character the motion does not animate, "not carried over" for a joint of the motion your character
@@ -1109,7 +1130,7 @@ straight away: the Inspector then describes what you have just laid down.
 > **Only a sub-track accepts a drop.** A key line holds keys, an object's own line is the object
 > itself, and the ruler at the top is not a track: dropping on any of the three does nothing.
 
-**Each row also carries a ▶ — *Play it on the character*** — and that is the way to try an
+**Each row also carries a ▶ — _Play it on the character_** — and that is the way to try an
 animation without aiming at a sub-track. **It lays a REAL block** on the selected character, with
 the same starting settings a drag would give it, and plays it at once. **It lays it at the START of
 the first sub-track**, where dragging lets you choose the line and the spot.
@@ -1117,8 +1138,8 @@ the first sub-track**, where dragging lets you choose the line and the spot.
 > **This is not the Inspector's ▶**, which watches a block **already laid** without ever writing
 > anything. This one lays the block itself, and can take it back.
 
-**A second press stops it AND takes the block off**: the button says so, *Stop and take the block
-off*. Pressing the ▶ of **another** row takes **the one playing** away first — never two previews
+**A second press stops it AND takes the block off**: the button says so, _Stop and take the block
+off_. Pressing the ▶ of **another** row takes **the one playing** away first — never two previews
 at a time.
 
 > **What is left depends on how it stopped**, and that is the one subtlety of this button. Stopped
@@ -1156,16 +1177,16 @@ parts, and the pose you get is their mean — that is, neither of them. Lay them
 run one after the other: outside its own block a motion holds its edge pose, and the next one
 takes over.
 
-**To play them together, give each its own line.** The **+** button on the last sub-track — *Add a
-sub-track* — opens one below it, and a sub-track left on its own cannot be removed: it is what
+**To play them together, give each its own line.** The **+** button on the last sub-track — _Add a
+sub-track_ — opens one below it, and a sub-track left on its own cannot be removed: it is what
 receives whatever is dropped on the object. They are reordered by dragging their header, and
 **that changes only where they are drawn** — unlike camera shots, no sub-track comes in front of
 another.
 
-**This is where *Drives* earns its place.** Two blocks set to **The whole body** have nothing more
+**This is where _Drives_ earns its place.** Two blocks set to **The whole body** have nothing more
 to give than their mean, even on two lines: they are competing for the same bones. Set one to
 **The upper body** and the other to **The lower body**, and each keeps its half whole — walking
-*and* raising the arms becomes both at once, instead of half a step with the arms halfway up.
+_and_ raising the arms becomes both at once, instead of half a step with the arms halfway up.
 
 > **The hips go with the legs**, and that is deliberate: they carry where the character stands, so
 > an upper-body block would otherwise walk it away from where its legs put it.
@@ -1181,11 +1202,11 @@ to give than their mean, even on two lines: they are competing for the same bone
 **A chosen block answers to three gestures**, and right-clicking the block carries all three —
 without that menu, none of them would ever be found.
 
-| Gesture | Key | What it does |
-|---|---|---|
-| **Duplicate** | `⌘D` | lays a copy of the block **right after it**, end to end |
-| **Split block** | `S` | cuts the block in two where the playhead stands |
-| **Remove** | `Delete` | takes the block off the band. **The animation itself is untouched** |
+| Gesture         | Key      | What it does                                                        |
+| --------------- | -------- | ------------------------------------------------------------------- |
+| **Duplicate**   | `⌘D`     | lays a copy of the block **right after it**, end to end             |
+| **Split block** | `S`      | cuts the block in two where the playhead stands                     |
+| **Remove**      | `Delete` | takes the block off the band. **The animation itself is untouched** |
 
 **The cut leaves no fade at the joint**, exactly as the montage's own does: the two halves read as
 one move, and a ramp in the middle would melt the pose where nothing happens. The second half picks
@@ -1218,20 +1239,20 @@ picks bones instead of objects.
 the model the Inspector describes. While no bone is picked, the section keeps the character's
 state, **Add the hands** if it has anything to do, and **Remove the skeleton**.
 
-| Setting or button | What it does |
-|---|---|
-| **Name** | renames the picked bone. A name already taken is refused, and nothing changes |
-| **Joint** | which role this bone fills in a human body — or **None** |
-| **Add a child bone** | lays a bone under the picked one, exactly where it stands |
-| **Remove this bone** | takes the picked bone out of the skeleton |
-| **Add a handle to follow** | gives this joint a handle it reaches for |
-| **Add the hands** | lays fingers on the hands of a character that has none |
-| **Remove the skeleton** | returns the model to its bare mesh state |
+| Setting or button          | What it does                                                                  |
+| -------------------------- | ----------------------------------------------------------------------------- |
+| **Name**                   | renames the picked bone. A name already taken is refused, and nothing changes |
+| **Joint**                  | which role this bone fills in a human body — or **None**                      |
+| **Add a child bone**       | lays a bone under the picked one, exactly where it stands                     |
+| **Remove this bone**       | takes the picked bone out of the skeleton                                     |
+| **Add a handle to follow** | gives this joint a handle it reaches for                                      |
+| **Add the hands**          | lays fingers on the hands of a character that has none                        |
+| **Remove the skeleton**    | returns the model to its bare mesh state                                      |
 
 **Renaming matters more than it looks**: a skeleton arrives with the names its file spells, and
 `mixamorigHips` is nobody's choice. The name is the one you will read everywhere afterwards.
 
-***Joint* is what makes a motion transposable.** It is through those roles — not through the
+**_Joint_ is what makes a motion transposable.** It is through those roles — not through the
 names — that the studio makes your character play an animation authored for another: that
 vocabulary is the only one two skeletons share. A bone filling none stays on **None** and gets in
 the way of nothing.
@@ -1279,24 +1300,24 @@ properties **folded underneath**. The folded line shows every key of the object,
 properties merged; unfolding separates them. **Folding never loses a key**, it only changes what
 is shown.
 
-| On the bar | What it does |
-|---|---|
-| **Back to the start** | brings the playhead to zero |
-| **Play** / **Pause** | runs the timeline |
-| **Auto-key** | moving an object **writes a key** instead of shifting its rest pose |
-| **Duration** and **FPS** | how long the timeline runs, and at what rate |
-| **Bone** | on a rigged model: the bone the next key will drive, or **The whole model**. A bone **clicked in the view** in pose mode wins over this choice |
-| **Key everything animated** | the same gesture, on everything **already** animated — greyed out until something is |
-| **Render to video** | see below — greyed out until a camera is in the scene |
+| On the bar                  | What it does                                                                                                                                   |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Back to the start**       | brings the playhead to zero                                                                                                                    |
+| **Play** / **Pause**        | runs the timeline                                                                                                                              |
+| **Auto-key**                | moving an object **writes a key** instead of shifting its rest pose                                                                            |
+| **Duration** and **FPS**    | how long the timeline runs, and at what rate                                                                                                   |
+| **Bone**                    | on a rigged model: the bone the next key will drive, or **The whole model**. A bone **clicked in the view** in pose mode wins over this choice |
+| **Key everything animated** | the same gesture, on everything **already** animated — greyed out until something is                                                           |
+| **Render to video**         | see below — greyed out until a camera is in the scene                                                                                          |
 
 **Each line carries its own**, to the left of the band:
 
-| On a line's header | What it does |
-|---|---|
-| the chevron | **Show or hide the animated properties** |
-| **Key *(the name)*** | records the movement made since, on every property of that object. **The same button toggles**: where a key already stands, it lights up and reads **Remove *(the name)*’s key** |
-| **Mute** / **Solo** / **Lock** | the three switches a line carries, the same as in Video |
-| **Remove track *(the name)*** | on a property line, takes it away with its keys |
+| On a line's header             | What it does                                                                                                                                                                     |
+| ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| the chevron                    | **Show or hide the animated properties**                                                                                                                                         |
+| **Key _(the name)_**           | records the movement made since, on every property of that object. **The same button toggles**: where a key already stands, it lights up and reads **Remove _(the name)_’s key** |
+| **Mute** / **Solo** / **Lock** | the three switches a line carries, the same as in Video                                                                                                                          |
+| **Remove track _(the name)_**  | on a property line, takes it away with its keys                                                                                                                                  |
 
 **The playhead is grabbed and dragged** along the ruler, and **keys are dragged** along their
 line. **Past the duration the band is dimmed**: the head goes no further, and no key can be laid
@@ -1361,9 +1382,9 @@ closes it.
 This is not a working view but a **rendered picture**: no grid, no handles, no skeletons, no light
 or camera markers — exactly what the video file will hold.
 
-| Gesture | What it does |
-|---|---|
-| **Drag the inset** | moves it around the view, if it is in the way |
+| Gesture                                | What it does                                                                                                  |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| **Drag the inset**                     | moves it around the view, if it is in the way                                                                 |
 | **Grow the preview to the whole view** | the inset takes the whole surface. The same button, now **Put the preview back in its corner**, sends it home |
 
 **The "On air" badge** lights up when the selected camera is also the one the montage names at
@@ -1416,13 +1437,13 @@ the browser's requirement, not the studio's.
 
 **On foot**
 
-| Action | Keyboard | Gamepad |
-|---|---|---|
-| Walk | <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> or the arrows | left stick |
-| Run | <kbd>Shift</kbd> | left stick click |
-| Look | mouse, **button held**, not rebindable | right stick, **nothing held** |
-| Jump | <kbd>Space</kbd> | ✕ / A |
-| Interact | <kbd>E</kbd> | ▢ / X |
+| Action   | Keyboard                                                          | Gamepad                       |
+| -------- | ----------------------------------------------------------------- | ----------------------------- |
+| Walk     | <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> or the arrows | left stick                    |
+| Run      | <kbd>Shift</kbd>                                                  | left stick click              |
+| Look     | mouse, **button held**, not rebindable                            | right stick, **nothing held** |
+| Jump     | <kbd>Space</kbd>                                                  | ✕ / A                         |
+| Interact | <kbd>E</kbd>                                                      | ▢ / X                         |
 
 > **Interact and Get out do nothing on their own.** The studio reads those two and hands them to
 > your script: what interacting with the thing in front of you means, and what getting out of a
@@ -1430,22 +1451,22 @@ the browser's requirement, not the studio's.
 
 **Driving**
 
-| Action | Keyboard | Gamepad |
-|---|---|---|
-| Accelerate | <kbd>W</kbd> or <kbd>↑</kbd> | right trigger |
-| Brake, reverse | <kbd>S</kbd> or <kbd>↓</kbd> | left trigger |
-| Steer | <kbd>A</kbd> <kbd>D</kbd> or <kbd>←</kbd> <kbd>→</kbd> | left stick |
-| Hand brake | <kbd>Space</kbd> | ✕ / A |
-| Get out | <kbd>F</kbd> | ▢ / X |
+| Action         | Keyboard                                               | Gamepad       |
+| -------------- | ------------------------------------------------------ | ------------- |
+| Accelerate     | <kbd>W</kbd> or <kbd>↑</kbd>                           | right trigger |
+| Brake, reverse | <kbd>S</kbd> or <kbd>↓</kbd>                           | left trigger  |
+| Steer          | <kbd>A</kbd> <kbd>D</kbd> or <kbd>←</kbd> <kbd>→</kbd> | left stick    |
+| Hand brake     | <kbd>Space</kbd>                                       | ✕ / A         |
+| Get out        | <kbd>F</kbd>                                           | ▢ / X         |
 
 **Flying**
 
-| Action | Keyboard | Gamepad |
-|---|---|---|
-| Pitch | <kbd>↓</kbd> noses up, <kbd>↑</kbd> noses down | left stick, **pulled back to climb** |
-| Roll | <kbd>A</kbd> <kbd>D</kbd> | left stick |
-| Yaw | <kbd>Q</kbd> <kbd>E</kbd> | shoulder buttons |
-| Throttle | <kbd>Shift</kbd> opens, <kbd>Ctrl</kbd> closes | triggers |
+| Action   | Keyboard                                       | Gamepad                              |
+| -------- | ---------------------------------------------- | ------------------------------------ |
+| Pitch    | <kbd>↓</kbd> noses up, <kbd>↑</kbd> noses down | left stick, **pulled back to climb** |
+| Roll     | <kbd>A</kbd> <kbd>D</kbd>                      | left stick                           |
+| Yaw      | <kbd>Q</kbd> <kbd>E</kbd>                      | shoulder buttons                     |
+| Throttle | <kbd>Shift</kbd> opens, <kbd>Ctrl</kbd> closes | triggers                             |
 
 > **A stick is analogue, a key is not.** A stick held halfway walks at half the pace; a key knows
 > nothing but zero and everything. It is the one thing a gamepad can say that a keyboard cannot.
@@ -1475,7 +1496,7 @@ them — showing you that is what they are for. A second scene from the same tem
 files rather than rewriting them: a control map belongs to the project, not to the scene.
 
 The **New control map** button in the Explorer creates one by hand, from any of the five standard
-starting points — *studio*, *character*, *vehicle*, *flight*, *menu*. They are filed under **Game
+starting points — _studio_, _character_, _vehicle_, _flight_, _menu_. They are filed under **Game
 controls** — `Controls/` on disk — at the top of the project, as interfaces are.
 
 A map names **actions** — `move`, `look`, `jump`, `run`, `interact` for a character — and says
@@ -1483,8 +1504,8 @@ which keys, sticks and buttons reach them. **What the project's map declares win
 out keeps the default behaviour.** A project with no map at all therefore plays exactly as the
 tables above.
 
-A context also carries a **priority** and an **Active at startup** flag. The *character*, *vehicle*
-and *flight* contexts are active from the start — no action name is shared between them, so they
+A context also carries a **priority** and an **Active at startup** flag. The _character_, _vehicle_
+and _flight_ contexts are active from the start — no action name is shared between them, so they
 do not tread on one another.
 
 The *menu* context needs its map to exist at all: it **primes** over the rest, and it is for a
@@ -1516,13 +1537,13 @@ The same script then answers the keyboard **and** the gamepad, without knowing w
 Reading the controls is not always enough: a script can also **ask** the body to move, and the
 studio's controller carries it out — with gravity, slopes and walls.
 
-| Ask | What it does |
-|---|---|
-| `self.walk(x, z)` | walks in that **direction** — the pace comes from the component |
-| `self.jump()` | jumps, with the same ground tolerance a button gets |
-| `self.look(yaw, pitch)` | turns the look, in the shape a stick speaks |
-| `self.drive(throttle, steer, handBrake)` | drives **this** vehicle |
-| `self.fly(pitch, roll, yaw, throttle)` | flies **this** aircraft |
+| Ask                                      | What it does                                                    |
+| ---------------------------------------- | --------------------------------------------------------------- |
+| `self.walk(x, z)`                        | walks in that **direction** — the pace comes from the component |
+| `self.jump()`                            | jumps, with the same ground tolerance a button gets             |
+| `self.look(yaw, pitch)`                  | turns the look, in the shape a stick speaks                     |
+| `self.drive(throttle, steer, handBrake)` | drives **this** vehicle                                         |
+| `self.fly(pitch, roll, yaw, throttle)`   | flies **this** aircraft                                         |
 
 > **Do not move a character with `moveBy`.** That one puts the node where you say, asking nobody —
 > so through the wall the physics has not seen yet. `walk` asks, and what is impossible does not

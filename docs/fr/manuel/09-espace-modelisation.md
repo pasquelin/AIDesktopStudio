@@ -14,16 +14,16 @@ Le bouton **+** du rail gauche crée une scène neuve. Un projet doit être ouve
 La fenêtre qui s’ouvre demande un nom, puis **sur quoi la scène ouvre** : dix modèles, sous le
 nom. Le choix ne s’applique qu’à la création — une scène déjà ouverte ne change pas de modèle.
 
-| Modèle | Ce qu’il pose |
-|---|---|
-| **Vide** | trois lumières, rien d’autre. Le point de départ pour tout construire soi-même |
-| **Base** | un sol, un soleil, une lumière d’appoint, une caméra, et un cube d’un mètre — le cube dit l’échelle, supprimez-le dès qu’un objet à vous arrive |
-| **Studio photo** | un fond blanc incurvé, un sol, et trois lumières placées comme en studio |
-| **Cinéma** | un grand sol, une lumière rasante, une caméra et son **rail** — le plan est déjà un mouvement |
-| **Architecture** | un sol très large, un soleil bas, un ciel, et une caméra à hauteur d’œil |
-| **1re personne**, **3e personne**, **Vue de dessus** | les trois ouvrent sur le **niveau de test** ci-dessous, et ne diffèrent que par où se place la caméra |
-| **Voiture** | le même niveau de test, avec une voiture posée au départ — quatre roues suspendues, un moteur, une direction. `W` `S` accélèrent et freinent, `A` `D` braquent, `Espace` est le frein à main |
-| **Avion** | un terrain, une piste, et un avion **déjà en vol** à 120 m. `W` `S` piquent et cabrent, `A` `D` inclinent, `Q` `E` lacent, `⇧ Maj` et `Ctrl` ouvrent et ferment les gaz |
+| Modèle                                               | Ce qu’il pose                                                                                                                                                                                |
+| ---------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Vide**                                             | trois lumières, rien d’autre. Le point de départ pour tout construire soi-même                                                                                                               |
+| **Base**                                             | un sol, un soleil, une lumière d’appoint, une caméra, et un cube d’un mètre — le cube dit l’échelle, supprimez-le dès qu’un objet à vous arrive                                              |
+| **Studio photo**                                     | un fond blanc incurvé, un sol, et trois lumières placées comme en studio                                                                                                                     |
+| **Cinéma**                                           | un grand sol, une lumière rasante, une caméra et son **rail** — le plan est déjà un mouvement                                                                                                |
+| **Architecture**                                     | un sol très large, un soleil bas, un ciel, et une caméra à hauteur d’œil                                                                                                                     |
+| **1re personne**, **3e personne**, **Vue de dessus** | les trois ouvrent sur le **niveau de test** ci-dessous, et ne diffèrent que par où se place la caméra                                                                                        |
+| **Voiture**                                          | le même niveau de test, avec une voiture posée au départ — quatre roues suspendues, un moteur, une direction. `W` `S` accélèrent et freinent, `A` `D` braquent, `Espace` est le frein à main |
+| **Avion**                                            | un terrain, une piste, et un avion **déjà en vol** à 120 m. `W` `S` piquent et cabrent, `A` `D` inclinent, `Q` `E` lacent, `⇧ Maj` et `Ctrl` ouvrent et ferment les gaz                      |
 
 Une scène est noire tant qu’aucune lumière n’y est posée : c’est normal, et le panneau Lumières
 le dit. Seul le modèle **Vide** peut vous y amener, en supprimant ses lumières.
@@ -50,16 +50,16 @@ Trois façons de se déplacer, qui coexistent.
 
 ### Tourner autour de la scène — la souris seule
 
-| Geste | Effet |
-|---|---|
-| **Alt + clic gauche + glisser** | fait tourner la vue |
-| **Clic gauche + glisser** | trace un **rectangle de sélection** — voir *Choisir plusieurs objets* |
-| **Bouton du milieu + glisser** | déplace la vue latéralement |
-| **Maj + Alt + clic gauche + glisser** | la même chose, pour un trackpad qui n’a pas de bouton du milieu |
-| **Molette** | avance et recule **vers ce que vise le pointeur** |
-| **Alt + clic droit + glisser** | avance et recule, vers le point autour duquel la vue tourne |
-| **Deux doigts** sur un écran tactile | pincer avance et recule, glisser déplace latéralement |
-| **Clic droit + glisser** *(voir ci-dessous)* | fait voler |
+| Geste                                        | Effet                                                                 |
+| -------------------------------------------- | --------------------------------------------------------------------- |
+| **Alt + clic gauche + glisser**              | fait tourner la vue                                                   |
+| **Clic gauche + glisser**                    | trace un **rectangle de sélection** — voir _Choisir plusieurs objets_ |
+| **Bouton du milieu + glisser**               | déplace la vue latéralement                                           |
+| **Maj + Alt + clic gauche + glisser**        | la même chose, pour un trackpad qui n’a pas de bouton du milieu       |
+| **Molette**                                  | avance et recule **vers ce que vise le pointeur**                     |
+| **Alt + clic droit + glisser**               | avance et recule, vers le point autour duquel la vue tourne           |
+| **Deux doigts** sur un écran tactile         | pincer avance et recule, glisser déplace latéralement                 |
+| **Clic droit + glisser** _(voir ci-dessous)_ | fait voler                                                            |
 
 C’est le mode par défaut. On tourne **autour** de la scène, comme si on en faisait le tour. Ces
 gestes sont ceux d’Unity, d’Unreal et de Maya : si vous venez de l’un des trois, vous n’avez rien
@@ -76,9 +76,9 @@ C’est la question qui fait perdre sa scène quand on ne s’en occupe pas. Tro
 l’ordre :
 
 1. **Ce qui est sélectionné**, si c’est visible à l’écran — le point même où se pose le gizmo.
-   C’est le réglage *Tourner autour de la sélection*, activé d’origine ;
-2. **Ce que le pointeur survole** au début du geste, si vous avez activé *Tourner sous le
-   curseur* dans les réglages ;
+   C’est le réglage _Tourner autour de la sélection_, activé d’origine ;
+2. **Ce que le pointeur survole** au début du geste, si vous avez activé _Tourner sous le
+   curseur_ dans les réglages ;
 3. sinon, **le dernier point regardé** — celui que la molette, un déplacement latéral ou
    <kbd>F</kbd> ont posé.
 
@@ -99,14 +99,14 @@ Si vous venez d’Unreal, d’Unity, de Blender ou de Roblox Studio, vous n’av
 **Affichage ▸ Navigation** dans le menu, ou **Réglages ▸ Espaces de travail ▸ Modélisation**, change le
 schéma de gestes ET de raccourcis d’un coup.
 
-| Schéma | Tourner | Déplacer latéralement | Avancer / reculer | ZQSD | Déplacer / Tourner / Redimensionner |
-|---|---|---|---|---|---|
-| **IA Studio** | Alt + gauche | milieu | Alt + droit | un bouton tenu | `G` `R` `S` |
-| **Unreal** | Alt + gauche | milieu, ou **droit ajouté au gauche** | Alt + droit | **bouton droit tenu** | `W` `E` `R` |
-| **Unity** | Alt + gauche | milieu | Alt + droit | **bouton droit tenu** | `W` `E` `R` |
-| **Blender** | **milieu** | **Maj + milieu** | **Ctrl + milieu** | mode Walk/Fly, en <kbd>Maj</kbd>+<kbd>`</kbd> | `G` `R` `S` |
-| **Roblox Studio** | Alt + gauche | milieu | Alt + droit | **en permanence** | `G` `R` `T` |
-| **Personnalisé** | au choix | au choix | au choix | au choix | les vôtres |
+| Schéma            | Tourner      | Déplacer latéralement                 | Avancer / reculer | ZQSD                                          | Déplacer / Tourner / Redimensionner |
+| ----------------- | ------------ | ------------------------------------- | ----------------- | --------------------------------------------- | ----------------------------------- |
+| **IA Studio**     | Alt + gauche | milieu                                | Alt + droit       | un bouton tenu                                | `G` `R` `S`                         |
+| **Unreal**        | Alt + gauche | milieu, ou **droit ajouté au gauche** | Alt + droit       | **bouton droit tenu**                         | `W` `E` `R`                         |
+| **Unity**         | Alt + gauche | milieu                                | Alt + droit       | **bouton droit tenu**                         | `W` `E` `R`                         |
+| **Blender**       | **milieu**   | **Maj + milieu**                      | **Ctrl + milieu** | mode Walk/Fly, en <kbd>Maj</kbd>+<kbd>`</kbd> | `G` `R` `S`                         |
+| **Roblox Studio** | Alt + gauche | milieu                                | Alt + droit       | **en permanence**                             | `G` `R` `T`                         |
+| **Personnalisé**  | au choix     | au choix                              | au choix          | au choix                                      | les vôtres                          |
 
 **Le clic gauche seul ne tourne plus la vue, dans aucun schéma** : il trace le rectangle de
 sélection, comme chez Unity et Blender. Pour tourner, c’est Alt + gauche — le geste que trois des
@@ -126,7 +126,7 @@ rend pas la main au déplacement latéral.
 
 **Roblox déplace deux raccourcis, et c’est inévitable.** Chez lui les lettres appartiennent à la
 caméra sans qu’on tienne rien, donc `S` ne peut plus redimensionner : il passe sur `T`, et
-*Ajouter* passe de <kbd>⇧A</kbd> à <kbd>⇧N</kbd>. C’est exactement pour éviter ça qu’Unity et
+_Ajouter_ passe de <kbd>⇧A</kbd> à <kbd>⇧N</kbd>. C’est exactement pour éviter ça qu’Unity et
 Unreal exigent le bouton droit. Les flèches, elles, restent à l’interface dans tous les cas.
 
 **Blender donne aussi son pavé numérique.** Sous ce schéma seul :
@@ -145,13 +145,13 @@ caméra. Le clavier, lui, se personnalise depuis l’écran des raccourcis, quel
 **Maintenez un bouton de la souris**, gauche ou droit, et les touches ci-dessous déplacent la
 caméra. Sans lâcher :
 
-| Touche | Mouvement |
-|---|---|
+| Touche          | Mouvement                        |
+| --------------- | -------------------------------- |
 | `W` `A` `S` `D` | avancer, gauche, reculer, droite |
-| `↑` `←` `↓` `→` | les mêmes quatre directions |
-| `E` | monter |
-| `Q` | descendre |
-| `⇧ Maj` | accélérer |
+| `↑` `←` `↓` `→` | les mêmes quatre directions      |
+| `E`             | monter                           |
+| `Q`             | descendre                        |
+| `⇧ Maj`         | accélérer                        |
 
 On se déplace **à travers** la scène au lieu d’en faire le tour, comme dans un jeu vidéo.
 Relâchez le bouton, la caméra reprend son mode normal.
@@ -180,37 +180,37 @@ Les touches sont rappelées quelques secondes en bas du viewport à chaque fois 
 
 Trois réglages gouvernent le vol : **Réglages ▸ Espaces de travail ▸ Modélisation**
 
-| Réglage | Ce qu’il fait | Défaut |
-|---|---|---|
-| **Vitesse de déplacement** | mètres par seconde | 4 |
-| **Accélération** | par combien Maj multiplie la vitesse | 3 |
-| **Angle de vue** | ce que la caméra embrasse, en degrés | 60 |
+| Réglage                    | Ce qu’il fait                        | Défaut |
+| -------------------------- | ------------------------------------ | ------ |
+| **Vitesse de déplacement** | mètres par seconde                   | 4      |
+| **Accélération**           | par combien Maj multiplie la vitesse | 3      |
+| **Angle de vue**           | ce que la caméra embrasse, en degrés | 60     |
 
 ---
 
 ## La barre d’outils
 
-| Outil | Raccourci | Ce qu’il fait |
-|---|---|---|
-| **Sélectionner** | `V` | choisit un objet sans armer de poignée |
-| **Déplacer** | `G` | tire l’objet le long des flèches de couleur |
-| **Pivoter** | `R` | fait pivoter l’objet avec les cercles de couleur |
-| **Redimensionner** | `S` | agrandit ou rétrécit avec les poignées |
-| **Tous les magnétismes** | `M` | allume ou éteint les quatre magnétismes d’un coup ; une seconde pression rend ceux qui étaient allumés |
-| **Repère local** | `L` | aligne les poignées sur l’orientation de **l’objet** plutôt que sur celle du monde |
-| **Mode de rendu** | `Z` | fait défiler les neuf façons de dessiner ; le survol les offre une à une |
-| **Cadrer la sélection** | `F` | recentre la caméra sur l’objet choisi |
-| **Naviguer** | `` ` `` | arme le vol continu : la souris tient le regard, les touches déplacent |
+| Outil                    | Raccourci | Ce qu’il fait                                                                                          |
+| ------------------------ | --------- | ------------------------------------------------------------------------------------------------------ |
+| **Sélectionner**         | `V`       | choisit un objet sans armer de poignée                                                                 |
+| **Déplacer**             | `G`       | tire l’objet le long des flèches de couleur                                                            |
+| **Pivoter**              | `R`       | fait pivoter l’objet avec les cercles de couleur                                                       |
+| **Redimensionner**       | `S`       | agrandit ou rétrécit avec les poignées                                                                 |
+| **Tous les magnétismes** | `M`       | allume ou éteint les quatre magnétismes d’un coup ; une seconde pression rend ceux qui étaient allumés |
+| **Repère local**         | `L`       | aligne les poignées sur l’orientation de **l’objet** plutôt que sur celle du monde                     |
+| **Mode de rendu**        | `Z`       | fait défiler les neuf façons de dessiner ; le survol les offre une à une                               |
+| **Cadrer la sélection**  | `F`       | recentre la caméra sur l’objet choisi                                                                  |
+| **Naviguer**             | `` ` ``   | arme le vol continu : la souris tient le regard, les touches déplacent                                 |
 
 La barre ne porte que ce qui se réclame **sans lâcher la souris**. Le reste est au menu natif :
 
-| Ce qui n’est pas dans la barre | Où le trouver |
-|---|---|
-| Projection, quatre vues, arêtes de quads, squelettes, mode pose | **Affichage**, en cases à cocher |
-| Les six côtés, les neuf modes de rendu | **Affichage ▸ Point de vue** et **▸ Mode de rendu** |
-| Ajouter une maille, une lumière, un objet | **Ajouter** |
-| Dupliquer, grouper, supprimer | **Édition** |
-| Copier, couper, coller | **les touches seules** — voir plus bas |
+| Ce qui n’est pas dans la barre                                  | Où le trouver                                       |
+| --------------------------------------------------------------- | --------------------------------------------------- |
+| Projection, quatre vues, arêtes de quads, squelettes, mode pose | **Affichage**, en cases à cocher                    |
+| Les six côtés, les neuf modes de rendu                          | **Affichage ▸ Point de vue** et **▸ Mode de rendu** |
+| Ajouter une maille, une lumière, un objet                       | **Ajouter**                                         |
+| Dupliquer, grouper, supprimer                                   | **Édition**                                         |
+| Copier, couper, coller                                          | **les touches seules** — voir plus bas              |
 
 **Le magnétisme sert à aligner.** Sans lui, un objet se pose à 1,0374 m du précédent ; avec lui,
 à 1 m tout rond.
@@ -218,7 +218,7 @@ La barre ne porte que ce qui se réclame **sans lâcher la souris**. Le reste es
 ### La barre du haut — ce qui se règle en manipulant
 
 Une seconde barre flotte **en haut du viewport**, horizontale. Elle ne porte pas des outils mais
-des **comportements** : ce qu’on change *pendant* qu’on manipule, sans lâcher la souris.
+des **comportements** : ce qu’on change _pendant_ qu’on manipule, sans lâcher la souris.
 
 Chaque entrée est un groupe de **deux zones**. L’icône, à gauche, **allume ou éteint** ce
 magnétisme-là et rien d’autre. La valeur, à droite, **ouvre un menu** au survol, comme les menus
@@ -230,13 +230,13 @@ Les crans s’affichent **en colonnes**, pas en liste : une valeur se cherche du
 colonne de neuf pas recouvrait la scène qu’on s’apprête à changer. Le cran actif est **peint**,
 là où il est — pas signalé par une coche à l’autre bout de la liste.
 
-| Entrée | Ce que l’icône bascule | Ce que le menu règle |
-|---|---|---|
-| **Vitesse de caméra** | *(rien : elle n’a pas de bascule)* | des paliers de 0,5 à 20 m/s, et un curseur libre entre eux |
+| Entrée                    | Ce que l’icône bascule                                    | Ce que le menu règle                                       |
+| ------------------------- | --------------------------------------------------------- | ---------------------------------------------------------- |
+| **Vitesse de caméra**     | _(rien : elle n’a pas de bascule)_                        | des paliers de 0,5 à 20 m/s, et un curseur libre entre eux |
 | **Magnétisme de surface** | poser ce qu’on déplace sur la première surface en dessous | s’orienter selon la pente, et de combien flotter au-dessus |
-| **Magnétisme de grille** | faire avancer un déplacement par pas réguliers | le pas, de 1 cm à 10 m |
-| **Magnétisme d’angle** | faire tourner par crans | l’angle, en incréments ou en divisions du tour |
-| **Magnétisme d’échelle** | faire varier l’échelle par crans | le ratio |
+| **Magnétisme de grille**  | faire avancer un déplacement par pas réguliers            | le pas, de 1 cm à 10 m                                     |
+| **Magnétisme d’angle**    | faire tourner par crans                                   | l’angle, en incréments ou en divisions du tour             |
+| **Magnétisme d’échelle**  | faire varier l’échelle par crans                          | le ratio                                                   |
 
 La barre est en **haut à droite** du viewport ; la colonne d’outils tient déjà le côté gauche.
 
@@ -274,11 +274,11 @@ veut pour avancer une voiture dans le sens où elle roule.
 Quand un outil de manipulation est armé et qu’un objet est choisi, des poignées apparaissent
 autour de lui. Le code de couleur est universel :
 
-| Couleur | Axe | Direction |
-|---|---|---|
-| **Rouge** | X | gauche ↔ droite |
-| **Vert** | Y | bas ↔ haut |
-| **Bleu** | Z | avant ↔ arrière |
+| Couleur   | Axe | Direction       |
+| --------- | --- | --------------- |
+| **Rouge** | X   | gauche ↔ droite |
+| **Vert**  | Y   | bas ↔ haut      |
+| **Bleu**  | Z   | avant ↔ arrière |
 
 Tirez sur une flèche pour déplacer le long de cet axe seulement.
 
@@ -300,14 +300,14 @@ L’objet se pose à **l’origine de la scène** — le centre du monde, là o�
 ### Faire entrer un modèle existant
 
 Les formes ci-dessous sont celles que le studio sait **construire**. Un modèle qui vient
-d’ailleurs — généré par un modèle *texte vers 3D*, ou importé depuis un `.glb` — entre par
+d’ailleurs — généré par un modèle _texte vers 3D_, ou importé depuis un `.glb` — entre par
 l’Explorateur :
 
-| Geste | Résultat |
-|---|---|
-| **Double-clic** sur une maille dans l’Explorateur | une **scène à elle** s’ouvre, avec la maille dedans |
-| **Glisser-déposer** sur la vue 3D | elle entre dans la scène **ouverte devant vous** — n’importe où sur la vue, la barre d’outils comprise |
-| **Clic droit ▸ Ajouter à la scène** | idem, sans viser la vue — il suffit qu’une scène soit ouverte quelque part |
+| Geste                                             | Résultat                                                                                                                                             |
+| ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Double-clic** sur une maille dans l’Explorateur | l’**onglet Modèle** s’ouvre sur le fichier — `.glb`, `.fbx`, `.obj`, `.stl`, `.ply` ou `.usdz`. Un `.gltf` est une **scène**, et s’ouvre comme telle |
+| **Glisser-déposer** sur la vue 3D                 | elle entre dans la scène **ouverte devant vous** — n’importe où sur la vue, la barre d’outils comprise                                               |
+| **Clic droit ▸ Ajouter à la scène**               | idem, sans viser la vue — il suffit qu’une scène soit ouverte quelque part                                                                           |
 
 **Le double-clic ne regarde jamais l’onglet en avant** : il ouvre l’asset dans l’espace de son
 type, quoi qu’il y ait à l’écran. C’est la règle de tout le studio, décrite dans
@@ -325,25 +325,25 @@ d’échelle (`S`) règle cela en un geste, et `F` recadre la caméra dessus.
 
 ### Les mailles disponibles
 
-Une *maille* (ou *mesh*) est un objet géométrique.
+Une _maille_ (ou _mesh_) est un objet géométrique.
 
-| Forme | À quoi ça ressemble |
-|---|---|
-| **Cube** | une boîte |
-| **Sphère** | une balle |
-| **Capsule** | un cylindre à bouts arrondis, comme une gélule |
-| **Cercle** | un disque plat |
-| **Cylindre** | un tube plein |
-| **Plan** | une feuille plate |
-| **Anneau** | un disque percé |
-| **Tore** | un donut |
-| **Nœud de tore** | un donut entrelacé |
-| **Tube** | un tuyau courbé |
-| **Révolution** | une forme obtenue en faisant tourner un profil |
-| **Tétraèdre** | 4 faces triangulaires |
-| **Octaèdre** | 8 faces |
-| **Dodécaèdre** | 12 faces |
-| **Icosaèdre** | 20 faces |
+| Forme            | À quoi ça ressemble                            |
+| ---------------- | ---------------------------------------------- |
+| **Cube**         | une boîte                                      |
+| **Sphère**       | une balle                                      |
+| **Capsule**      | un cylindre à bouts arrondis, comme une gélule |
+| **Cercle**       | un disque plat                                 |
+| **Cylindre**     | un tube plein                                  |
+| **Plan**         | une feuille plate                              |
+| **Anneau**       | un disque percé                                |
+| **Tore**         | un donut                                       |
+| **Nœud de tore** | un donut entrelacé                             |
+| **Tube**         | un tuyau courbé                                |
+| **Révolution**   | une forme obtenue en faisant tourner un profil |
+| **Tétraèdre**    | 4 faces triangulaires                          |
+| **Octaèdre**     | 8 faces                                        |
+| **Dodécaèdre**   | 12 faces                                       |
+| **Icosaèdre**    | 20 faces                                       |
 
 ### Le texte — des mots en volume
 
@@ -373,7 +373,7 @@ police, et la scène redevient ce qu’elle était.
 
 ### Le sprite — une image face à la caméra
 
-Un *sprite* n’est pas une maille : c’est une image plate qui se tourne toujours vers vous, quel
+Un _sprite_ n’est pas une maille : c’est une image plate qui se tourne toujours vers vous, quel
 que soit l’angle de la vue. C’est ce qu’on emploie pour une étincelle, une lueur, un repère, une
 étiquette au-dessus d’un objet — tout ce qui doit rester lisible d’où qu’on regarde.
 
@@ -381,11 +381,11 @@ que soit l’angle de la vue. C’est ce qu’on emploie pour une étincelle, un
 l’Inspecteur, section **Sprite**, parmi les images du projet — les mêmes que celles qu’une
 matière accepte dans un canal.
 
-| Réglage | Ce qu’il fait |
-|---|---|
+| Réglage     | Ce qu’il fait                                                                |
+| ----------- | ---------------------------------------------------------------------------- |
 | **Couleur** | teinte l’image. Sur un sprite sans image, c’est la couleur du carré lui-même |
-| **Opacité** | de transparent à opaque |
-| **Image** | l’image affichée, prise dans les assets du projet |
+| **Opacité** | de transparent à opaque                                                      |
+| **Image**   | l’image affichée, prise dans les assets du projet                            |
 
 Quatre choses à savoir :
 
@@ -409,7 +409,7 @@ Quatre choses à savoir :
 
 ### Le chemin — le rail d’une caméra
 
-Un *chemin* est une courbe posée dans la scène. Il ne se voit pas dans une image rendue : c’est
+Un _chemin_ est une courbe posée dans la scène. Il ne se voit pas dans une image rendue : c’est
 un rail, le long duquel une caméra peut courir pendant un plan.
 
 **Ajouter ▸ Objet ▸ Chemin** en pose un à l’origine, avec deux points. Ses **poignées** — une
@@ -419,12 +419,12 @@ vue.
 
 Quatre gestes, dans la scène :
 
-| Geste | Ce qu’il fait |
-|---|---|
-| **Cliquer une poignée**, chemin sélectionné | la choisit : les flèches de déplacement s’y accrochent, et on la déplace comme un objet |
-| **⌥ + clic sur la courbe** | pose un nouveau point dans la portion cliquée, et le choisit aussitôt |
-| **⌥ ⇧ + clic n’importe où** | **allonge le chemin** : le point se pose au bout, là où l’on vient de viser. C’est le geste qui trace un trajet clic après clic |
-| **Suppr**, ou clic droit sur une poignée | retire le point choisi. Un chemin garde toujours ses deux derniers points |
+| Geste                                       | Ce qu’il fait                                                                                                                   |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| **Cliquer une poignée**, chemin sélectionné | la choisit : les flèches de déplacement s’y accrochent, et on la déplace comme un objet                                         |
+| **⌥ + clic sur la courbe**                  | pose un nouveau point dans la portion cliquée, et le choisit aussitôt                                                           |
+| **⌥ ⇧ + clic n’importe où**                 | **allonge le chemin** : le point se pose au bout, là où l’on vient de viser. C’est le geste qui trace un trajet clic après clic |
+| **Suppr**, ou clic droit sur une poignée    | retire le point choisi. Un chemin garde toujours ses deux derniers points                                                       |
 
 **⌥ ⇧ + clic se pose sur ce qu’on clique** — le sol, un mur, une caisse. Si le rayon ne rencontre
 rien, le point se pose **à la hauteur du point précédent**, ce qui garde un trajet à plat quand
@@ -450,13 +450,13 @@ premier.
 
 Sans lumière, la scène reste noire.
 
-| Lumière | Ce qu’elle fait | Quand l’utiliser |
-|---|---|---|
-| **Ambiante** | éclaire tout, uniformément, sans ombre | pour déboucher les noirs |
-| **Directionnelle** | des rayons parallèles, comme le soleil | l’éclairage principal d’une scène extérieure |
-| **Hémisphérique** | une couleur venant du ciel, une autre du sol | un rendu extérieur doux et naturel |
-| **Ponctuelle** | rayonne dans toutes les directions depuis un point | une ampoule, une bougie |
-| **Projecteur** | un cône de lumière | un spot de théâtre, un phare |
+| Lumière            | Ce qu’elle fait                                    | Quand l’utiliser                             |
+| ------------------ | -------------------------------------------------- | -------------------------------------------- |
+| **Ambiante**       | éclaire tout, uniformément, sans ombre             | pour déboucher les noirs                     |
+| **Directionnelle** | des rayons parallèles, comme le soleil             | l’éclairage principal d’une scène extérieure |
+| **Hémisphérique**  | une couleur venant du ciel, une autre du sol       | un rendu extérieur doux et naturel           |
+| **Ponctuelle**     | rayonne dans toutes les directions depuis un point | une ampoule, une bougie                      |
+| **Projecteur**     | un cône de lumière                                 | un spot de théâtre, un phare                 |
 
 **Pour commencer** : une **directionnelle** pour l’éclairage principal, plus une **ambiante**
 faible pour que les ombres ne soient pas complètement noires. C’est la recette classique.
@@ -491,17 +491,17 @@ aligne.
 
 ### Mode de rendu — `Z`, ou **Affichage ▸ Mode de rendu**
 
-| Mode | Ce qui est dessiné |
-|---|---|
-| **Rendu** | les surfaces peintes par leur matière, sans les arêtes |
-| **Filaire** | les arêtes seules — ce qui montre la densité du maillage |
-| **Rendu et filaire** | les surfaces peintes, et les arêtes par-dessus |
-| **Solide** | une argile unie sur toutes les surfaces : la forme, sans les matières |
-| **Aperçu matière** | les matières sous le seul éclairage du studio, sans les lumières de la scène |
-| **Matcap** | un éclairage capté sur une sphère : c’est le relief qui se lit, pas la couleur |
-| **Densité** | du vert au rouge selon les triangles par unité de surface : le rouge est à optimiser |
-| **Translucide** | les surfaces à peine posées, pour voir les articulations à l’intérieur |
-| **Squelette seul** | plus aucune surface — il ne reste que les os, pour les corriger sans rien deviner |
+| Mode                 | Ce qui est dessiné                                                                   |
+| -------------------- | ------------------------------------------------------------------------------------ |
+| **Rendu**            | les surfaces peintes par leur matière, sans les arêtes                               |
+| **Filaire**          | les arêtes seules — ce qui montre la densité du maillage                             |
+| **Rendu et filaire** | les surfaces peintes, et les arêtes par-dessus                                       |
+| **Solide**           | une argile unie sur toutes les surfaces : la forme, sans les matières                |
+| **Aperçu matière**   | les matières sous le seul éclairage du studio, sans les lumières de la scène         |
+| **Matcap**           | un éclairage capté sur une sphère : c’est le relief qui se lit, pas la couleur       |
+| **Densité**          | du vert au rouge selon les triangles par unité de surface : le rouge est à optimiser |
+| **Translucide**      | les surfaces à peine posées, pour voir les articulations à l’intérieur               |
+| **Squelette seul**   | plus aucune surface — il ne reste que les os, pour les corriger sans rien deviner    |
 
 Le bouton porte le mode en cours et le fait défiler à chaque clic ; son menu permet d’en choisir un
 directement. `Z` fait la même chose au clavier — **et en quatre vues, sur le
@@ -550,14 +550,14 @@ modeleur avait voulue.
 **Un clic remplace la sélection. Un clic avec `⇧`, `⌘` ou `Ctrl` l’ajoute ou la retire** —
 recliquer un objet déjà choisi le sort de la sélection.
 
-| Geste | Effet |
-|---|---|
-| **Clic** sur un objet | il devient la sélection, seul |
-| **`⇧`/`⌘`/`Ctrl` + clic** | il entre dans la sélection, ou en sort s’il y était |
-| **Clic dans le vide** | tout est désélectionné |
+| Geste                                  | Effet                                                           |
+| -------------------------------------- | --------------------------------------------------------------- |
+| **Clic** sur un objet                  | il devient la sélection, seul                                   |
+| **`⇧`/`⌘`/`Ctrl` + clic**              | il entre dans la sélection, ou en sort s’il y était             |
+| **Clic dans le vide**                  | tout est désélectionné                                          |
 | **`⇧`/`⌘`/`Ctrl` + clic dans le vide** | **rien ne change** — un raté ne doit pas défaire un tri patient |
-| **Clic gauche + glisser** | trace un rectangle : tout ce qu’il touche est choisi |
-| **`⇧`/`⌘`/`Ctrl` + glisser** | le rectangle **ajoute** à la sélection au lieu de la remplacer |
+| **Clic gauche + glisser**              | trace un rectangle : tout ce qu’il touche est choisi            |
+| **`⇧`/`⌘`/`Ctrl` + glisser**           | le rectangle **ajoute** à la sélection au lieu de la remplacer  |
 
 **Le rectangle prend ce qu’il touche**, pas seulement ce qu’il enferme entièrement : un sol est
 toujours plus grand que le rectangle qu’on trace dessus. Un glisser qui ne traverse rien vide la
@@ -602,14 +602,14 @@ matière**, les autres sont les outils qui la creusent, et l’ordre des clics n
 
 Une façon de marquer, trois de combiner, et deux pour revenir en arrière :
 
-| Bouton | Ce qu’il fait |
-|---|---|
-| **Négatif** | marque les formes choisies comme **outils** — elles deviennent rouges et translucides |
-| **Percer** | creuse les plus petites formes dans la plus grosse — le cube ouvre la fenêtre |
-| **Fusionner** | réunit les formes en un seul solide |
-| **Garder le commun** | ne garde que la partie où les formes se chevauchent |
-| **Séparer** | rend les formes d’origine, chacune là où elle était |
-| **Inverser le pli** | `I` — refait le pli à l’envers, sans annuler |
+| Bouton               | Ce qu’il fait                                                                         |
+| -------------------- | ------------------------------------------------------------------------------------- |
+| **Négatif**          | marque les formes choisies comme **outils** — elles deviennent rouges et translucides |
+| **Percer**           | creuse les plus petites formes dans la plus grosse — le cube ouvre la fenêtre         |
+| **Fusionner**        | réunit les formes en un seul solide                                                   |
+| **Garder le commun** | ne garde que la partie où les formes se chevauchent                                   |
+| **Séparer**          | rend les formes d’origine, chacune là où elle était                                   |
+| **Inverser le pli**  | `I` — refait le pli à l’envers, sans annuler                                          |
 
 **Si le pli part à l’envers, ne cherchez pas pourquoi : pressez `I`.** « Inverser le pli »
 refait le même pli dans l’autre sens — ce qui avait été creusé devient la matière — en un clic et
@@ -648,15 +648,15 @@ s’habille d’une matière, et la fenêtre suit le mur quand vous le déplacez
 ## Dupliquer, copier, coller
 
 Les quatre raccourcis que vous connaissez déjà. **Dupliquer** a sa ligne dans **Édition** ; les
-lignes *Couper*, *Copier* et *Coller* que vous y verrez plus haut **ne sont pas celles de la
+lignes _Couper_, _Copier_ et _Coller_ que vous y verrez plus haut **ne sont pas celles de la
 scène**.
 
-| Geste | Raccourci | Ce qu’il fait |
-|---|---|---|
-| **Dupliquer** | `⌘D` | pose une copie de la sélection au même endroit, et la sélectionne |
-| **Copier** | `⌘C` | retient la sélection sans toucher à la scène |
-| **Couper** | `⌘X` | la retient et la retire de la scène |
-| **Coller** | `⌘V` | pose ce qui a été retenu dans la scène en cours |
+| Geste         | Raccourci | Ce qu’il fait                                                     |
+| ------------- | --------- | ----------------------------------------------------------------- |
+| **Dupliquer** | `⌘D`      | pose une copie de la sélection au même endroit, et la sélectionne |
+| **Copier**    | `⌘C`      | retient la sélection sans toucher à la scène                      |
+| **Couper**    | `⌘X`      | la retient et la retire de la scène                               |
+| **Coller**    | `⌘V`      | pose ce qui a été retenu dans la scène en cours                   |
 
 > **Les lignes du menu Édition agissent sur le TEXTE**, pas sur la scène : elles servent à copier
 > un nom qu’on est en train de renommer. Les touches, elles, font la différence — un texte
@@ -705,30 +705,30 @@ montre son rayon, un tore montre son tube, un projecteur montre son angle.
 
 ### Pour un objet
 
-| Section | Ce qu’elle contient |
-|---|---|
-| **Identité** | le nom, modifiable |
+| Section            | Ce qu’elle contient                                                                                                                                               |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Identité**       | le nom, modifiable                                                                                                                                                |
 | **Transformation** | Position, Rotation, Échelle — trois nombres chacune (X, Y, Z). Un sprite sans enfant, sélectionné seul, n’a pas de ligne Rotation : elle ne se verrait nulle part |
-| **Géométrie** | ce qui définit la forme : rayon, largeur, segments… |
-| **Matière** | Couleur, Rugosité, Métallicité, Répétition au mètre, et cinq emplacements d’images |
+| **Géométrie**      | ce qui définit la forme : rayon, largeur, segments…                                                                                                               |
+| **Matière**        | Couleur, Rugosité, Métallicité, Répétition au mètre, et cinq emplacements d’images                                                                                |
 
 #### Les champs de géométrie, tous
 
 Vous ne les verrez jamais tous en même temps : chaque forme montre les siens.
 
-| Champ | Ce qu’il règle | Sur quelles formes |
-|---|---|---|
-| **Largeur**, **Hauteur**, **Profondeur** | les trois côtés d’une boîte | Cube, Plan |
-| **Rayon** | la taille d’une forme ronde | Sphère, Cercle, Capsule, Tore, Nœud, polyèdres |
-| **Rayon supérieur**, **Rayon inférieur** | les deux bouts d’un cylindre — inégaux, on obtient un cône | Cylindre |
-| **Rayon intérieur**, **Rayon extérieur** | le trou et le bord | Anneau |
-| **Tube** | l’épaisseur du boudin | Tore, Nœud de tore, Tube |
-| **Segments** | le nombre de facettes | la plupart des formes rondes |
-| **Segments radiaux** | les facettes tout autour | Cylindre, Capsule, Tore, Tube |
-| **Segments tubulaires** | les facettes le long du boudin | Tore, Nœud de tore |
-| **Segments en largeur**, **en hauteur** | la finesse dans chaque direction | Sphère, Plan |
-| **Segments de calotte** | la finesse des bouts arrondis | Capsule |
-| **Enroulements P**, **Enroulements Q** | combien de fois le nœud tourne sur lui-même | Nœud de tore |
+| Champ                                    | Ce qu’il règle                                             | Sur quelles formes                             |
+| ---------------------------------------- | ---------------------------------------------------------- | ---------------------------------------------- |
+| **Largeur**, **Hauteur**, **Profondeur** | les trois côtés d’une boîte                                | Cube, Plan                                     |
+| **Rayon**                                | la taille d’une forme ronde                                | Sphère, Cercle, Capsule, Tore, Nœud, polyèdres |
+| **Rayon supérieur**, **Rayon inférieur** | les deux bouts d’un cylindre — inégaux, on obtient un cône | Cylindre                                       |
+| **Rayon intérieur**, **Rayon extérieur** | le trou et le bord                                         | Anneau                                         |
+| **Tube**                                 | l’épaisseur du boudin                                      | Tore, Nœud de tore, Tube                       |
+| **Segments**                             | le nombre de facettes                                      | la plupart des formes rondes                   |
+| **Segments radiaux**                     | les facettes tout autour                                   | Cylindre, Capsule, Tore, Tube                  |
+| **Segments tubulaires**                  | les facettes le long du boudin                             | Tore, Nœud de tore                             |
+| **Segments en largeur**, **en hauteur**  | la finesse dans chaque direction                           | Sphère, Plan                                   |
+| **Segments de calotte**                  | la finesse des bouts arrondis                              | Capsule                                        |
+| **Enroulements P**, **Enroulements Q**   | combien de fois le nœud tourne sur lui-même                | Nœud de tore                                   |
 
 **Les segments** méritent un mot : c’est le nombre de facettes qui composent une forme ronde.
 Peu de segments = anguleux et léger ; beaucoup = lisse et lourd. 32 est un bon compromis pour
@@ -741,10 +741,10 @@ on ne peut pas prévoir le résultat sans essayer.
 
 **Rugosité et Métallicité** sont les deux réglages qui font tout l’aspect d’une matière :
 
-| Réglage | À 0 | À 1 |
-|---|---|---|
-| **Rugosité** | miroir parfait | mat complet |
-| **Métallicité** | plastique, bois, pierre | métal |
+| Réglage         | À 0                     | À 1         |
+| --------------- | ----------------------- | ----------- |
+| **Rugosité**    | miroir parfait          | mat complet |
+| **Métallicité** | plastique, bois, pierre | métal       |
 
 Les cinq emplacements d’images — **Image**, **Normales**, **Carte de rugosité**, **Carte de
 métallicité**, **Occlusion ambiante** — reçoivent des images du projet. Le bouton **Choisir une
@@ -764,26 +764,26 @@ taille. Montez à `2` pour un objet qu’on regarde de près.
 
 ### Pour une lumière
 
-| Champ | Ce qu’il fait |
-|---|---|
-| **Couleur** | la teinte de la lumière |
-| **Intensité** | sa puissance |
-| **Portée** | jusqu’où elle éclaire — ponctuelle et projecteur |
-| **Atténuation** | à quelle vitesse elle faiblit avec la distance |
-| **Angle** | l’ouverture du cône — projecteur seulement |
-| **Pénombre** | la douceur du bord du cône — projecteur seulement |
-| **Cible** | vers quoi elle pointe |
-| **Couleur du ciel** / **Couleur du sol** | hémisphérique seulement |
+| Champ                                    | Ce qu’il fait                                     |
+| ---------------------------------------- | ------------------------------------------------- |
+| **Couleur**                              | la teinte de la lumière                           |
+| **Intensité**                            | sa puissance                                      |
+| **Portée**                               | jusqu’où elle éclaire — ponctuelle et projecteur  |
+| **Atténuation**                          | à quelle vitesse elle faiblit avec la distance    |
+| **Angle**                                | l’ouverture du cône — projecteur seulement        |
+| **Pénombre**                             | la douceur du bord du cône — projecteur seulement |
+| **Cible**                                | vers quoi elle pointe                             |
+| **Couleur du ciel** / **Couleur du sol** | hémisphérique seulement                           |
 
 ### Pour une caméra
 
 Une caméra a **son objectif**, et, dès qu’un plan la couvre, **ce que ce plan lui fait faire**.
 
-| Champ | Ce qu’il règle |
-|---|---|
-| **Angle de vue** | ce que la caméra embrasse, en degrés. C’est le zoom : petit angle = téléobjectif, grand angle = grand-angle |
-| **Distance proche** | en deçà, plus rien n’est dessiné. Jamais zéro — le tri des profondeurs n’aurait plus de marge |
-| **Distance lointaine** | au-delà, plus rien n’est dessiné |
+| Champ                  | Ce qu’il règle                                                                                              |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------- |
+| **Angle de vue**       | ce que la caméra embrasse, en degrés. C’est le zoom : petit angle = téléobjectif, grand angle = grand-angle |
+| **Distance proche**    | en deçà, plus rien n’est dessiné. Jamais zéro — le tri des profondeurs n’aurait plus de marge               |
+| **Distance lointaine** | au-delà, plus rien n’est dessiné                                                                            |
 
 Le bouton **Poser cette caméra là où regarde la vue** lui donne la place et la direction de la
 vue en cours : cadrez à la souris, cliquez, la caméra y est.
@@ -795,13 +795,13 @@ pendant ce plan, et ce qu’elle **regarde**. Tant qu’aucun plan ne couvre la 
 que le bouton **Créer un chemin pour cette caméra** — qui ouvre alors le plan et pose le rail du
 même geste.
 
-| Champ | Ce qu’il fait |
-|---|---|
-| **Chemin** | le rail que la caméra emprunte pendant ce plan. **Aucun** la laisse là où son emplacement et ses clés la mettent |
-| **Créer un chemin pour cette caméra** | pose un chemin devant la caméra, dans son axe de visée, et le lie à ce plan. **Un seul `⌘Z` annule les deux** — et si aucun plan ne couvre la tête, le bouton en ouvre un du même geste |
-| **Courbe de vitesse** | **Constante**, **Départ doux**, **Arrivée douce**, **Départ et arrivée doux**. Sans elle, un travelling démarre et s’arrête net |
-| **Départ sur le chemin** / **Arrivée sur le chemin** | de 0 à 1, la portion de rail réellement parcourue. **Un départ plus grand que l’arrivée fait rouler le rail à l’envers** |
-| **Cible** | **Libre** — la caméra regarde là où sa rotation la tourne · **Un point** — elle vise des coordonnées, réglées par **Point visé** · **le nom d’un objet** — elle le suit, même si cet objet est lui-même animé |
+| Champ                                                | Ce qu’il fait                                                                                                                                                                                                 |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Chemin**                                           | le rail que la caméra emprunte pendant ce plan. **Aucun** la laisse là où son emplacement et ses clés la mettent                                                                                              |
+| **Créer un chemin pour cette caméra**                | pose un chemin devant la caméra, dans son axe de visée, et le lie à ce plan. **Un seul `⌘Z` annule les deux** — et si aucun plan ne couvre la tête, le bouton en ouvre un du même geste                       |
+| **Courbe de vitesse**                                | **Constante**, **Départ doux**, **Arrivée douce**, **Départ et arrivée doux**. Sans elle, un travelling démarre et s’arrête net                                                                               |
+| **Départ sur le chemin** / **Arrivée sur le chemin** | de 0 à 1, la portion de rail réellement parcourue. **Un départ plus grand que l’arrivée fait rouler le rail à l’envers**                                                                                      |
+| **Cible**                                            | **Libre** — la caméra regarde là où sa rotation la tourne · **Un point** — elle vise des coordonnées, réglées par **Point visé** · **le nom d’un objet** — elle le suit, même si cet objet est lui-même animé |
 
 **La vitesse est régulière le long du rail**, quelles que soient les distances entre ses points :
 à la moitié du plan la caméra a parcouru la moitié de la **longueur** du chemin, pas la moitié de
@@ -814,16 +814,16 @@ travelling dans un plan et rester fixe dans le suivant, viser la statue ici et l
 
 Deux interrupteurs, sur chaque objet qui peut en avoir :
 
-| Interrupteur | Ce qu’il fait |
-|---|---|
+| Interrupteur           | Ce qu’il fait                                            |
+| ---------------------- | -------------------------------------------------------- |
 | **Projette une ombre** | l’objet bloque la lumière et pose son ombre sur le reste |
-| **Reçoit les ombres** | les ombres des autres se dessinent sur lui |
+| **Reçoit les ombres**  | les ombres des autres se dessinent sur lui               |
 
 **Les deux se décident objet par objet**, parce qu’une ombre coûte du calcul à chaque lumière qui
 la projette. Un sol reçoit sans projeter ; une petite pièce de décor loin de la caméra peut ne
 faire ni l’un ni l’autre sans que cela se voie.
 
-> **La section n’apparaît pas toujours.** Un *sprite* ne joue pas du tout avec les ombres, une
+> **La section n’apparaît pas toujours.** Un _sprite_ ne joue pas du tout avec les ombres, une
 > lumière ambiante ou hémisphérique n’en projette aucune : plutôt que d’afficher un interrupteur
 > sans effet, le studio n’affiche rien.
 
@@ -835,10 +835,10 @@ la scène dans **Réglages ▸ Espaces de travail ▸ Modélisation**.
 **Cette section s’affiche même quand rien n’est sélectionné**, parce qu’elle appartient à la
 scène entière et non à un objet.
 
-| Valeur | Ce que ça donne |
-|---|---|
-| **Studio** *(départ)* | un éclairage neutre, calculé, qui existe avant que vous n’ayez rien généré |
-| *une skybox du projet* | le ciel choisi éclaire la scène **et** se reflète dans les matières |
+| Valeur                 | Ce que ça donne                                                            |
+| ---------------------- | -------------------------------------------------------------------------- |
+| **Studio** _(départ)_  | un éclairage neutre, calculé, qui existe avant que vous n’ayez rien généré |
+| _une skybox du projet_ | le ciel choisi éclaire la scène **et** se reflète dans les matières        |
 
 C’est le pont entre les deux espaces : un ciel fabriqué dans l’espace **Skyboxes** devient ici la
 lumière de votre scène. Un coucher de soleil pose une lumière orange rasante sur tout, sans que
@@ -860,10 +860,10 @@ choses et à quelle hauteur. Il n’apparaît dans aucun rendu.
 
 **Réglages ▸ Espaces de travail ▸ Modélisation** :
 
-| Réglage | Ce qu’il fait | Défaut |
-|---|---|---|
-| **Afficher la grille** | l’affiche ou la cache | activée |
-| **Taille de la grille** | son étendue en mètres — un carreau vaut toujours 1 m | 20 |
+| Réglage                 | Ce qu’il fait                                        | Défaut  |
+| ----------------------- | ---------------------------------------------------- | ------- |
+| **Afficher la grille**  | l’affiche ou la cache                                | activée |
+| **Taille de la grille** | son étendue en mètres — un carreau vaut toujours 1 m | 20      |
 
 Cachez-la pour juger une image sans rien autour.
 
@@ -881,12 +881,12 @@ transformation, les rails et les repères de lumière : une image, pas une copie
 
 Le menu du bouton offre quatre définitions :
 
-| Choix | Hauteur de l’image |
-|---|---|
+| Choix                | Hauteur de l’image          |
+| -------------------- | --------------------------- |
 | **Taille de la vue** | celle du panneau, à l’écran |
-| **1080p** | 1080 pixels |
-| **1440p** | 1440 pixels |
-| **4K** | 2160 pixels |
+| **1080p**            | 1080 pixels                 |
+| **1440p**            | 1440 pixels                 |
+| **4K**               | 2160 pixels                 |
 
 **Seule la hauteur est imposée** : la largeur suit la forme du panneau, pour que l’image montre
 exactement ce que vous voyiez — ni plus, ni moins. Un panneau étroit donne donc une image étroite,
@@ -902,11 +902,11 @@ L’image apparaît dans les assets du projet comme n’importe quelle autre.
 **Fichier ▸ Exporter ▸ Sélection** n’écrit que les objets choisis — un groupe emmène ce qui pend
 dessous.
 
-| Format | Ce que c’est | Quand l’employer |
-|---|---|---|
+| Format                    | Ce que c’est                          | Quand l’employer                                                |
+| ------------------------- | ------------------------------------- | --------------------------------------------------------------- |
 | **glTF binaire (`.glb`)** | un seul fichier, géométries comprises | le choix par défaut, et celui que lisent la plupart des moteurs |
-| **glTF (`.gltf`)** | la même chose en JSON, lisible | pour inspecter ou comparer le contenu |
-| **USDZ (`.usdz`)** | le format des visionneuses d’Apple | pour ouvrir la scène sur un iPhone ou un Mac |
+| **glTF (`.gltf`)**        | la même chose en JSON, lisible        | pour inspecter ou comparer le contenu                           |
+| **USDZ (`.usdz`)**        | le format des visionneuses d’Apple    | pour ouvrir la scène sur un iPhone ou un Mac                    |
 
 Une boîte d’enregistrement s’ouvre pour choisir où le fichier va. Son nom est celui du document ;
 l’extension suit le format choisi.
@@ -957,19 +957,19 @@ largeur de l’écran.
 
 ### Ce qu’un modèle apporte déjà
 
-Un personnage généré à distance — par un modèle *texte vers mouvement*, ou une capture depuis une
+Un personnage généré à distance — par un modèle _texte vers mouvement_, ou une capture depuis une
 vidéo — arrive avec ses **séquences d’animation** dans le fichier. Sélectionnez-le, et l’Inspecteur
 offre la section **Animation** :
 
-| Contrôle | Ce qu’il fait |
-|---|---|
-| **Clip** | choisit lequel jouer, parmi ceux que le fichier porte |
-| **▶ / ⏸** | montre le bloc dans la vue, sur une horloge à lui |
-| **Vitesse** | un multiplicateur, de 0,1 à 4 |
-| **En boucle** | recommence à la fin, ou s’arrête sur la dernière pose |
-| **Transition** | la durée du fondu **aux deux bouts** du bloc, jusqu’à une seconde |
+| Contrôle                      | Ce qu’il fait                                                                                                                 |
+| ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| **Clip**                      | choisit lequel jouer, parmi ceux que le fichier porte                                                                         |
+| **▶ / ⏸**                     | montre le bloc dans la vue, sur une horloge à lui                                                                             |
+| **Vitesse**                   | un multiplicateur, de 0,1 à 4                                                                                                 |
+| **En boucle**                 | recommence à la fin, ou s’arrête sur la dernière pose                                                                         |
+| **Transition**                | la durée du fondu **aux deux bouts** du bloc, jusqu’à une seconde                                                             |
 | **Déplacement du personnage** | si ce mouvement emmène le personnage, ou le fait marcher sur place — **Automatique**, **Sur place**, **Celui de l’animation** |
-| **Pilote** | quelle moitié du corps ce bloc anime — **Tout le corps**, **Le haut du corps**, **Le bas du corps** |
+| **Pilote**                    | quelle moitié du corps ce bloc anime — **Tout le corps**, **Le haut du corps**, **Le bas du corps**                           |
 
 **Ces sept contrôles portent sur LE BLOC CHOISI sur la bande** : appuyez sur un bloc pour le
 choisir, et la section bascule dessus — tant que vous n’en avez choisi aucun, c’est le premier.
@@ -985,30 +985,30 @@ s’écrivent dans celui que vous regardez, et les autres ne bougent pas.
 enregistré, ce sont les blocs — leur place sur la bande, leur vitesse, leur boucle, leur transition,
 leur déplacement et ce qu’ils pilotent.
 
-**Un seul curseur pour les deux bouts, et c’est délibéré** : ce que *Transition* règle est la façon
+**Un seul curseur pour les deux bouts, et c’est délibéré** : ce que _Transition_ règle est la façon
 dont ce mouvement **rejoint ses voisins**, et un bloc dont les deux bouts fondraient sur des durées
 différentes ne décrirait rien de tel. Le fondu vaut zéro par défaut, et une seconde au maximum.
 
-**Le *Déplacement du personnage* règle une seule question : ce mouvement fait-il avancer le
+**Le _Déplacement du personnage_ règle une seule question : ce mouvement fait-il avancer le
 personnage sur le sol ?** Une marche enregistrée le fait ; posée telle quelle sur un objet que la
 bande emmène déjà d’un point à un autre, le personnage couvre le terrain **deux fois** et arrive
 au-delà.
 
-| Valeur | Ce qu’elle fait |
-|---|---|
-| **Automatique** | le bloc emmène le personnage, **sauf** si une trajectoire de la bande le déplace déjà. C’est le réglage qui évite le double déplacement, et le défaut |
-| **Sur place** | le mouvement n’avance jamais : il est joué sur place |
-| **Celui de l’animation** | le déplacement du fichier est toujours utilisé, trajectoire ou pas |
+| Valeur                   | Ce qu’elle fait                                                                                                                                       |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Automatique**          | le bloc emmène le personnage, **sauf** si une trajectoire de la bande le déplace déjà. C’est le réglage qui évite le double déplacement, et le défaut |
+| **Sur place**            | le mouvement n’avance jamais : il est joué sur place                                                                                                  |
+| **Celui de l’animation** | le déplacement du fichier est toujours utilisé, trajectoire ou pas                                                                                    |
 
 > **« Sur place » ne cloue pas le personnage au sol** : seul le déplacement **horizontal** est
 > retiré. La hauteur des hanches et leur rebond restent, sans quoi une marche s’enfoncerait dans le
 > sol ou glisserait au lieu de marcher.
 
 > **Ce qui compte comme trajectoire, ce sont DEUX clés de position au moins** sur l’objet lui-même.
-> Une clé isolée place le personnage, elle ne le déplace pas, et *Automatique* laisse alors le
+> Une clé isolée place le personnage, elle ne le déplace pas, et _Automatique_ laisse alors le
 > mouvement l’emmener.
 
-> **Une trajectoire rendue muette compte quand même.** *Automatique* regarde si ces clés
+> **Une trajectoire rendue muette compte quand même.** _Automatique_ regarde si ces clés
 > **existent**, pas si elles jouent : rendre une trajectoire muette arrête le personnage, ça ne
 > rend pas la main au mouvement pour l’envoyer marcher tout seul.
 
@@ -1061,10 +1061,10 @@ bouton revient.
 
 Le bouton ouvre un petit volet, à côté de lui, avec deux réglages.
 
-| Réglage | Ce qu’il propose |
-|---|---|
-| **Type de personnage** | **Automatique**, **Humain**, **Animal**, **Autre** |
-| **Service** | **Automatique — le studio**, puis les services distants qui savent le faire |
+| Réglage                | Ce qu’il propose                                                            |
+| ---------------------- | --------------------------------------------------------------------------- |
+| **Type de personnage** | **Automatique**, **Humain**, **Animal**, **Autre**                          |
+| **Service**            | **Automatique — le studio**, puis les services distants qui savent le faire |
 
 **Le studio ne pose qu’un squelette HUMANOÏDE** — hanches, colonne, deux bras, deux jambes. Choisir
 **Animal** ou **Autre** affiche la raison et **grise Créer le squelette** : mieux vaut le dire que
@@ -1080,18 +1080,41 @@ puis « Ce modèle a reçu un squelette. » La section Animation cesse de dire q
 animable — « Ce personnage est prêt à être animé. » — et le **mode pose** attrape enfin ses os, qui
 n’existaient pas avant.
 
+### L’onglet Modèle
+
+Un modèle s’édite **sur son propre onglet**, ouvert par le double-clic ci-dessus ou par le bouton
+**Éditer le squelette** de l’Inspecteur. Il montre le fichier seul, posé sur une grille, et sa barre
+porte ce qui bouge la **vue** : sélection, navigation, déplacer, tourner, le **mode de rendu**
+(filaire, matcap, densité…), **Afficher les os**, et **Cadrer**. Les deux boutons de droite
+choisissent ce que le gizmo fait d’une articulation — la poser, ou modifier le squelette.
+
+Le **clic droit** sur le modèle, dans la vue comme dans le panneau Scène, offre les mêmes gestes :
+cadrer, afficher ou masquer les os, le mode de rendu, capturer la vue. Les menus **Affichage** et
+**Fichier ▸ Exporter** servent l’onglet comme ils servent une scène ; le fichier exporté prend le
+nom de l’onglet.
+
+L’Inspecteur ajoute deux sections à celles du squelette et des mouvements. **Points d’attache**
+nomme, sur un os, l’endroit où un objet d’une scène viendra s’accrocher. **Formes** pèse chaque
+cible de morphing que le fichier porte, d’un curseur — **un aperçu** : ce poids n’est pas encore
+écrit dans le fichier.
+
+> **Cet onglet n’ajoute rien au modèle.** Une forme, une lumière ou un texte se posent dans une
+> scène, jamais ici : ce qui s’enregistre depuis l’onglet est le fichier du modèle, squelette
+> compris. Et ⌘S ne sait réécrire qu’un `.glb` : sur un `.fbx` ou un `.obj` il le dit, plutôt que
+> d’écrire un fichier que rien ne relirait.
+
 ### Ajouter une animation
 
 La section **Animation** ouvre elle-même de quoi en choisir une : le lien **Ajouter une animation**
 déroule un volet sous lui, avec trois onglets.
 
-| Onglet | Ce qu’il offre |
-|---|---|
+| Onglet           | Ce qu’il offre                                                                                                                                                                    |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Bibliothèque** | tout ce qui est déjà sous la main, en une seule liste : les séquences que le fichier du personnage porte, celles livrées avec le studio, et les animations rangées dans le projet |
-| **Import** | un fichier pris sur le disque — `.glb`, `.gltf`, `.fbx` |
-| **IA** | les modèles distants qui **fabriquent** un mouvement |
+| **Import**       | un fichier pris sur le disque — `.glb`, `.gltf`, `.fbx`                                                                                                                           |
+| **IA**           | les modèles distants qui **fabriquent** un mouvement                                                                                                                              |
 
-**L’onglet Bibliothèque n’est pas le panneau *Animations*** décrit plus bas, et les deux listes ne
+**L’onglet Bibliothèque n’est pas le panneau _Animations_** décrit plus bas, et les deux listes ne
 se valent pas : l’onglet compte une source de plus — les animations rangées dans le projet — et il
 **pose** ce qu’on choisit, là où le panneau se glisse sur la bande.
 
@@ -1109,18 +1132,18 @@ Annuler. **Passer à une autre application n’en est pas une** — le studio re
 **gardant** le bloc, exactement comme si vous aviez appuyé sur Garder, plutôt que de le reprendre
 pendant que vous regardez ailleurs.
 
-**Sous la liste, l’aperçu porte ses propres contrôles** : *Revenir au début*, *Jouer l’aperçu*,
-*Aller à la fin*, puis **Position**, **Vitesse** et **En boucle** — ces deux derniers étant les
+**Sous la liste, l’aperçu porte ses propres contrôles** : _Revenir au début_, _Jouer l’aperçu_,
+_Aller à la fin_, puis **Position**, **Vitesse** et **En boucle** — ces deux derniers étant les
 réglages de la section, écrits dans le bloc que vous venez de poser. Comme le ▶ de l’Inspecteur,
 cet aperçu tourne sur une horloge à lui et ne déplace pas la tête de lecture.
 
 **Position TIENT la pose où vous la laissez**, au lieu de tout ramener au début : c’est ce qui
-permet de juger une pose plutôt qu’un mouvement, et la lecture repart ensuite de là. *Aller à la
-fin* montre la dernière pose du mouvement — celle qui compte pour enchaîner sur le bloc suivant.
+permet de juger une pose plutôt qu’un mouvement, et la lecture repart ensuite de là. _Aller à la
+fin_ montre la dernière pose du mouvement — celle qui compte pour enchaîner sur le bloc suivant.
 
 **Le volet dit ensuite si le mouvement va au squelette**, en une ligne : « Le personnage sait jouer
 ce mouvement. », ou bien qu’il ne lui va pas parfaitement. **Aucun nom d’os n’est affiché
-d’emblée** — *Voir les articulations concernées* ouvre la liste, et ce sont des **rôles**, jamais
+d’emblée** — _Voir les articulations concernées_ ouvre la liste, et ce sont des **rôles**, jamais
 des noms d’os : deux squelettes ne partagent que ce vocabulaire-là. Chaque ligne dit ce qui arrive à
 l’articulation — « reste au repos » pour une articulation de votre personnage que le mouvement
 n’anime pas, « non reprise » pour une articulation du mouvement que votre personnage n’a pas.
@@ -1150,7 +1173,7 @@ choisi aussitôt : l’Inspecteur décrit alors ce que vous venez de poser.
 > est l’objet lui-même, et la règle du haut n’est pas une piste : lâcher sur l’une des trois ne
 > fait rien.
 
-**Chaque ligne porte aussi un ▶ — *Jouer sur le personnage*** — et c’est le moyen d’essayer une
+**Chaque ligne porte aussi un ▶ — _Jouer sur le personnage_** — et c’est le moyen d’essayer une
 animation sans viser une sous-piste. **Il pose un VRAI bloc** sur le personnage sélectionné, avec
 les mêmes réglages de départ qu’un glisser, et le joue aussitôt. **Il le pose au DÉBUT de la
 première sous-piste**, là où le glisser vous laisse choisir la ligne et l’endroit.
@@ -1158,7 +1181,7 @@ première sous-piste**, là où le glisser vous laisse choisir la ligne et l’e
 > **Ce n’est pas le ▶ de l’Inspecteur**, qui regarde un bloc **déjà posé** sans jamais rien écrire.
 > Celui-ci pose le bloc lui-même, et peut le reprendre.
 
-**Un second appui l’arrête ET retire le bloc** : le bouton le dit, *Arrêter et retirer le bloc*.
+**Un second appui l’arrête ET retire le bloc** : le bouton le dit, _Arrêter et retirer le bloc_.
 Appuyer sur le ▶ d’une **autre** ligne retire d’abord **celui qui joue** — jamais deux aperçus à la
 fois.
 
@@ -1198,14 +1221,14 @@ l’un ni l’autre. Posez-les **bout à bout** pour les enchaîner : hors de so
 tient sa pose de bord, et c’est le suivant qui prend la main.
 
 **Pour les jouer ensemble, donnez-leur chacun une ligne.** Le bouton **+** de la dernière
-sous-piste — *Ajouter une sous-piste* — en ouvre une en dessous, et une sous-piste restée seule ne
+sous-piste — _Ajouter une sous-piste_ — en ouvre une en dessous, et une sous-piste restée seule ne
 se supprime pas : c’est elle qui reçoit ce qu’on dépose sur l’objet. Leur ordre se change en
 glissant leur en-tête, et **il ne change que l’endroit où elles sont dessinées** — contrairement
 aux plans de caméra, aucune sous-piste ne passe devant une autre.
 
-**C’est là que *Pilote* sert.** Deux blocs réglés sur **Tout le corps** n’ont rien de plus à donner
+**C’est là que _Pilote_ sert.** Deux blocs réglés sur **Tout le corps** n’ont rien de plus à donner
 que leur moyenne, même sur deux lignes : ils se disputent les mêmes os. Réglez l’un sur **Le haut
-du corps** et l’autre sur **Le bas du corps**, et chacun garde sa moitié entière — marcher *et*
+du corps** et l’autre sur **Le bas du corps**, et chacun garde sa moitié entière — marcher _et_
 lever les bras devient les deux à la fois, au lieu d’un demi-pas les bras à mi-hauteur.
 
 > **Les hanches vont avec les jambes**, et c’est délibéré : elles portent le placement du
@@ -1222,11 +1245,11 @@ lever les bras devient les deux à la fois, au lieu d’un demi-pas les bras à 
 **Un bloc choisi répond à trois gestes**, et le clic droit sur le bloc les porte tous les trois —
 sans ce menu, aucun ne se découvrirait.
 
-| Geste | Touche | Ce qu’il fait |
-|---|---|---|
-| **Dupliquer** | `⌘D` | pose une copie du bloc **juste après lui**, bout à bout |
-| **Couper le bloc** | `S` | coupe le bloc en deux là où se trouve la tête de lecture |
-| **Supprimer** | `Suppr` | retire le bloc de la bande. **L’animation elle-même n’est pas touchée** |
+| Geste              | Touche  | Ce qu’il fait                                                           |
+| ------------------ | ------- | ----------------------------------------------------------------------- |
+| **Dupliquer**      | `⌘D`    | pose une copie du bloc **juste après lui**, bout à bout                 |
+| **Couper le bloc** | `S`     | coupe le bloc en deux là où se trouve la tête de lecture                |
+| **Supprimer**      | `Suppr` | retire le bloc de la bande. **L’animation elle-même n’est pas touchée** |
 
 **La coupe ne pose aucun fondu au joint**, exactement comme celle du montage : les deux moitiés se
 lisent comme un seul mouvement, et une rampe au milieu ferait fondre la pose là où il ne se passe
@@ -1259,20 +1282,20 @@ cesse alors de choisir des objets et choisit des os.
 au modèle que l’Inspecteur décrit. Tant qu’aucun os n’est choisi, la section garde l’état du
 personnage, **Ajouter les mains** s’il a quelque chose à faire, et **Retirer le squelette**.
 
-| Réglage ou bouton | Ce qu’il fait |
-|---|---|
-| **Nom** | renomme l’os choisi. Un nom déjà pris est refusé, et rien ne change |
-| **Articulation** | quel rôle cet os tient dans un corps humain — ou **Aucune** |
-| **Ajouter un os enfant** | pose un os sous celui qui est choisi, exactement à sa place |
-| **Retirer cet os** | retire l’os choisi du squelette |
-| **Ajouter une poignée à suivre** | donne à cette articulation une poignée qu’elle cherche à atteindre |
-| **Ajouter les mains** | pose des doigts sur les mains d’un personnage qui n’en a pas |
-| **Retirer le squelette** | rend le modèle à son état de maille |
+| Réglage ou bouton                | Ce qu’il fait                                                       |
+| -------------------------------- | ------------------------------------------------------------------- |
+| **Nom**                          | renomme l’os choisi. Un nom déjà pris est refusé, et rien ne change |
+| **Articulation**                 | quel rôle cet os tient dans un corps humain — ou **Aucune**         |
+| **Ajouter un os enfant**         | pose un os sous celui qui est choisi, exactement à sa place         |
+| **Retirer cet os**               | retire l’os choisi du squelette                                     |
+| **Ajouter une poignée à suivre** | donne à cette articulation une poignée qu’elle cherche à atteindre  |
+| **Ajouter les mains**            | pose des doigts sur les mains d’un personnage qui n’en a pas        |
+| **Retirer le squelette**         | rend le modèle à son état de maille                                 |
 
 **Renommer sert plus qu’on ne croit** : un squelette arrive avec les noms de son fichier, et
 `mixamorigHips` n’est le choix de personne. Le nom est celui que vous lirez ensuite partout.
 
-***Articulation* est ce qui rend un mouvement transposable.** C’est par ces rôles — et non par les
+**_Articulation_ est ce qui rend un mouvement transposable.** C’est par ces rôles — et non par les
 noms — que le studio fait jouer à votre personnage une animation montée pour un autre : deux
 squelettes ne partagent que ce vocabulaire. Un os qui n’en tient aucun reste sur **Aucune** et ne
 gêne rien.
@@ -1321,24 +1344,24 @@ animées **repliées dessous**. La ligne repliée montre toutes les clés de l�
 trois propriétés confondues ; la déplier les sépare. **Replier ne perd jamais une clé**, cela ne
 change que ce qui est montré.
 
-| Contrôle de la barre | Ce qu’il fait |
-|---|---|
-| **Revenir au début** | ramène la tête de lecture à zéro |
-| **Lire** / **Mettre en pause** | joue la timeline |
-| **Enregistrement automatique** | bouger un objet **pose une clé** au lieu de déplacer sa pose de repos |
-| **Durée** et **Images/s** | la longueur de la timeline, et sa cadence |
-| **Os** | sur un modèle à squelette : l’os que la prochaine clé animera, ou **Le modèle entier**. Un os **cliqué dans la vue** en mode pose l’emporte sur ce choix |
-| **Poser une clé sur tout ce qui est animé** | le même geste, sur tout ce qui est **déjà** animé — grisé tant que rien ne l’est |
-| **Rendre en vidéo** | voir plus bas — grisé tant qu’aucune caméra n’est dans la scène |
+| Contrôle de la barre                        | Ce qu’il fait                                                                                                                                            |
+| ------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Revenir au début**                        | ramène la tête de lecture à zéro                                                                                                                         |
+| **Lire** / **Mettre en pause**              | joue la timeline                                                                                                                                         |
+| **Enregistrement automatique**              | bouger un objet **pose une clé** au lieu de déplacer sa pose de repos                                                                                    |
+| **Durée** et **Images/s**                   | la longueur de la timeline, et sa cadence                                                                                                                |
+| **Os**                                      | sur un modèle à squelette : l’os que la prochaine clé animera, ou **Le modèle entier**. Un os **cliqué dans la vue** en mode pose l’emporte sur ce choix |
+| **Poser une clé sur tout ce qui est animé** | le même geste, sur tout ce qui est **déjà** animé — grisé tant que rien ne l’est                                                                         |
+| **Rendre en vidéo**                         | voir plus bas — grisé tant qu’aucune caméra n’est dans la scène                                                                                          |
 
 **Chaque ligne porte les siens**, à gauche de la bande :
 
-| Sur l’en-tête d’une ligne | Ce qu’il fait |
-|---|---|
-| le chevron | **Afficher ou masquer les propriétés animées** |
-| **Poser une clé sur *(le nom)*** | enregistre le déplacement fait depuis, sur toutes les propriétés de cet objet. **Le même bouton bascule** : là où une clé se tient déjà, il s’allume et devient **Retirer la clé de *(le nom)*** |
-| **Rendre muette** / **Écouter seule** / **Verrouiller** | les trois interrupteurs d’une ligne, les mêmes qu’en Vidéo |
-| **Supprimer la piste *(le nom)*** | sur une ligne de propriété, la retire avec ses clés |
+| Sur l’en-tête d’une ligne                               | Ce qu’il fait                                                                                                                                                                                    |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| le chevron                                              | **Afficher ou masquer les propriétés animées**                                                                                                                                                   |
+| **Poser une clé sur _(le nom)_**                        | enregistre le déplacement fait depuis, sur toutes les propriétés de cet objet. **Le même bouton bascule** : là où une clé se tient déjà, il s’allume et devient **Retirer la clé de _(le nom)_** |
+| **Rendre muette** / **Écouter seule** / **Verrouiller** | les trois interrupteurs d’une ligne, les mêmes qu’en Vidéo                                                                                                                                       |
+| **Supprimer la piste _(le nom)_**                       | sur une ligne de propriété, la retire avec ses clés                                                                                                                                              |
 
 **La tête de lecture s’attrape et se déplace** sur la règle graduée, et **les clés se déplacent**
 sur leur ligne. **Au-delà de la durée, la bande est assombrie** : la tête ne va pas plus loin, et aucune clé ne
@@ -1405,9 +1428,9 @@ en désélectionnant la caméra.
 Ce n’est pas une vue de travail mais une **image de rendu** : ni grille, ni poignées, ni
 squelettes, ni repères de lumières ou de caméras — exactement ce que le fichier vidéo contiendra.
 
-| Geste | Ce qu’il fait |
-|---|---|
-| **Glisser l’encart** | le déplace dans la vue, s’il gêne |
+| Geste                                | Ce qu’il fait                                                                                                         |
+| ------------------------------------ | --------------------------------------------------------------------------------------------------------------------- |
+| **Glisser l’encart**                 | le déplace dans la vue, s’il gêne                                                                                     |
 | **Agrandir l’aperçu à toute la vue** | l’encart prend toute la surface. Le même bouton, devenu **Remettre l’aperçu dans son coin**, le renvoie d’où il vient |
 
 **La pastille « À l’antenne »** s’allume quand la caméra choisie est aussi celle que le montage
@@ -1461,13 +1484,13 @@ le navigateur qui l’exige, pas le studio.
 
 **À pied**
 
-| Geste | Clavier | Manette |
-|---|---|---|
-| Marcher | <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> ou les flèches | stick gauche |
-| Courir | <kbd>Maj</kbd> | clic du stick gauche |
-| Regarder | souris, **bouton maintenu**, non rebindable | stick droit, **sans rien tenir** |
-| Sauter | <kbd>Espace</kbd> | ✕ / A |
-| Interagir | <kbd>E</kbd> | ▢ / X |
+| Geste     | Clavier                                                            | Manette                          |
+| --------- | ------------------------------------------------------------------ | -------------------------------- |
+| Marcher   | <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> ou les flèches | stick gauche                     |
+| Courir    | <kbd>Maj</kbd>                                                     | clic du stick gauche             |
+| Regarder  | souris, **bouton maintenu**, non rebindable                        | stick droit, **sans rien tenir** |
+| Sauter    | <kbd>Espace</kbd>                                                  | ✕ / A                            |
+| Interagir | <kbd>E</kbd>                                                       | ▢ / X                            |
 
 > **Interagir et Sortir n’agissent pas d’eux-mêmes.** Le studio lit ces deux commandes et les
 > passe à votre script : ce que « interagir » veut dire devant un objet, et ce que sortir d’une
@@ -1476,22 +1499,22 @@ le navigateur qui l’exige, pas le studio.
 
 **Au volant**
 
-| Geste | Clavier | Manette |
-|---|---|---|
-| Accélérer | <kbd>W</kbd> ou <kbd>↑</kbd> | gâchette droite |
-| Freiner, reculer | <kbd>S</kbd> ou <kbd>↓</kbd> | gâchette gauche |
-| Braquer | <kbd>A</kbd> <kbd>D</kbd> ou <kbd>←</kbd> <kbd>→</kbd> | stick gauche |
-| Frein à main | <kbd>Espace</kbd> | ✕ / A |
-| Sortir | <kbd>F</kbd> | ▢ / X |
+| Geste            | Clavier                                                | Manette         |
+| ---------------- | ------------------------------------------------------ | --------------- |
+| Accélérer        | <kbd>W</kbd> ou <kbd>↑</kbd>                           | gâchette droite |
+| Freiner, reculer | <kbd>S</kbd> ou <kbd>↓</kbd>                           | gâchette gauche |
+| Braquer          | <kbd>A</kbd> <kbd>D</kbd> ou <kbd>←</kbd> <kbd>→</kbd> | stick gauche    |
+| Frein à main     | <kbd>Espace</kbd>                                      | ✕ / A           |
+| Sortir           | <kbd>F</kbd>                                           | ▢ / X           |
 
 **Aux commandes d’un avion**
 
-| Geste | Clavier | Manette |
-|---|---|---|
-| Cabrer, piquer | <kbd>↓</kbd> cabre, <kbd>↑</kbd> pique | stick gauche, **tiré vers soi pour cabrer** |
-| Incliner | <kbd>A</kbd> <kbd>D</kbd> | stick gauche |
-| Lacet | <kbd>Q</kbd> <kbd>E</kbd> | gâchettes d’épaule |
-| Gaz | <kbd>Maj</kbd> ouvre, <kbd>Ctrl</kbd> réduit | gâchettes |
+| Geste          | Clavier                                      | Manette                                     |
+| -------------- | -------------------------------------------- | ------------------------------------------- |
+| Cabrer, piquer | <kbd>↓</kbd> cabre, <kbd>↑</kbd> pique       | stick gauche, **tiré vers soi pour cabrer** |
+| Incliner       | <kbd>A</kbd> <kbd>D</kbd>                    | stick gauche                                |
+| Lacet          | <kbd>Q</kbd> <kbd>E</kbd>                    | gâchettes d’épaule                          |
+| Gaz            | <kbd>Maj</kbd> ouvre, <kbd>Ctrl</kbd> réduit | gâchettes                                   |
 
 > **Le stick est analogique, la touche ne l’est pas.** Un stick poussé à mi-course marche à mi-
 > vitesse ; une touche ne connaît que zéro et tout. C’est la seule chose qu’une manette sait dire
@@ -1524,7 +1547,7 @@ montrer. Une seconde scène du même modèle **rejoint** ces fichiers au lieu de
 carte appartient au projet, pas à la scène.
 
 Le bouton **Nouvelle carte de contrôles** de l’Explorateur en crée une à la main, depuis l’un des
-cinq points de départ standards — *studio*, *personnage*, *véhicule*, *vol*, *menu*. Elles se
+cinq points de départ standards — _studio_, _personnage_, _véhicule_, _vol_, _menu_. Elles se
 rangent dans le dossier **Contrôles du jeu** — `Controls/` sur le disque — au sommet du projet,
 comme les interfaces.
 
@@ -1534,7 +1557,7 @@ déclare l’emporte ; ce qu’elle laisse de côté garde le comportement par d
 aucune carte marche donc exactement comme le tableau ci-dessus.
 
 Un contexte porte aussi une **priorité** et un drapeau **Actif au démarrage**. Les contextes
-*personnage*, *véhicule* et *vol* sont actifs d’emblée — aucun nom d’action ne leur est commun,
+_personnage_, _véhicule_ et _vol_ sont actifs d’emblée — aucun nom d’action ne leur est commun,
 donc ils ne se marchent pas dessus.
 
 Le contexte *menu* demande qu’on crée sa carte pour exister : il **prime** sur les autres, et c’est
@@ -1566,13 +1589,13 @@ Le même script répond alors au clavier **et** à la manette, sans savoir leque
 Lire les commandes ne suffit pas toujours : un script peut aussi **demander** au corps de bouger,
 et c'est le contrôleur du studio qui exécute — avec la gravité, les pentes et les murs.
 
-| Demande | Ce qu'elle fait |
-|---|---|
-| `self.walk(x, z)` | marche dans cette **direction** — l'allure vient du composant |
-| `self.jump()` | saute, avec la même tolérance au sol qu'un bouton |
-| `self.look(lacet, tangage)` | tourne le regard, dans la forme d'un stick |
-| `self.drive(gaz, braquage, frein)` | conduit **ce** véhicule |
-| `self.fly(tangage, roulis, lacet, gaz)` | pilote **cet** appareil |
+| Demande                                 | Ce qu'elle fait                                               |
+| --------------------------------------- | ------------------------------------------------------------- |
+| `self.walk(x, z)`                       | marche dans cette **direction** — l'allure vient du composant |
+| `self.jump()`                           | saute, avec la même tolérance au sol qu'un bouton             |
+| `self.look(lacet, tangage)`             | tourne le regard, dans la forme d'un stick                    |
+| `self.drive(gaz, braquage, frein)`      | conduit **ce** véhicule                                       |
+| `self.fly(tangage, roulis, lacet, gaz)` | pilote **cet** appareil                                       |
 
 > **Ne déplacez pas un personnage avec `moveBy`.** Celle-là pose le nœud où vous dites, sans rien
 > demander à personne — donc à travers le mur que la physique n'a pas encore vu. `walk` demande,
