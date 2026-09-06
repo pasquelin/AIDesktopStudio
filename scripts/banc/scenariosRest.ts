@@ -258,6 +258,16 @@ export const REST_SCENARIOS: readonly Scenario[] = [
     said: ['Renomme ce compte Studio Perso.'],
     passed: run => run.studio.shell.accounts().some(one => one.name === 'Studio Perso'),
   },
+  {
+    name: '43.11 reads local AI models before choosing one',
+    said: ['Quels modèles IA locaux sont installés et lequel peut servir l’assistant ?'],
+    passed: run => read.idle(run) && read.answeredWith(run, 'ai.localState'),
+  },
+  {
+    name: '43.12 checks what the local AI engine needs',
+    said: ['Vérifie si le moteur local de mouvement est prêt et ce qui lui manque.'],
+    passed: run => read.idle(run) && read.answeredWith(run, 'ai.manageLocalRuntime'),
+  },
 
   {
     name: '44.1 says where the generations stand',

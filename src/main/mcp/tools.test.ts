@@ -87,6 +87,7 @@ describe('the registry, published as tools', () => {
     // Named rather than counted: a `filter` that empties leaves the loop below green while every
     // tool it guarded goes back to announcing an immediate run.
     expect(marked.map(action => action.name).sort()).toEqual([
+      'ai.manageLocalRuntime',
       'assets.removeFromLibrary',
       'command.runStudioCommand',
       'context.writeProjectCard',

@@ -269,6 +269,22 @@
         "title": "Read the image being edited",
         "description": "Answers the image in front — its size, its resolution, its guides, and every layer of the stack flattened: id, name, kind, and what each carries. A field STANDING AT ITS DEFAULT is left out, and absent means that default: a layer is drawn, whole, unlocked, blended normally, uncut and untransformed."
       },
+      "animationReopenMotion": {
+        "title": "Reopen a character motion",
+        "description": "Replaces the animation workbench with the motion saved in an animation asset for the named model. The asset must carry motion data created by this studio."
+      },
+      "aiLocalState": {
+        "title": "Read local AI runtime",
+        "description": "Returns local AI candidates, installed and loaded state, roles, machine fit, downloads and runtime readiness."
+      },
+      "aiManageLocalRuntime": {
+        "title": "Manage local AI runtime",
+        "description": "Chooses, installs, removes, loads or unloads a local AI candidate, or reads and repairs its runtime. Read ai.localState first. Every operation except reading the engine changes the studio and requires confirmation."
+      },
+      "canvasSetDocumentProperties": {
+        "title": "Set image document properties",
+        "description": "Changes the print resolution, colour mode or bit depth of the image in front. Read canvas.state first; values not named stay unchanged."
+      },
       "canvasGenerationComment": {
         "title": "Manage image generation comments",
         "description": "Adds, updates or removes an instruction for the next generation on the image in front. Coordinates and an optional polygon use document pixels. A layer id scopes a new note to that layer; without one it applies to the whole image. canvas.state returns pending comments and their identifiers."
@@ -909,6 +925,10 @@
         "title": "Set the ground of the scene",
         "description": "Shows or hides the ground the scene owns, and sets its colour, its side, its opacity and whether shadows land on it. This is how a ground is ADDED to a scene: a plane added as an object is scenery, not the ground. That ground belongs to the document, unlike the grid, which is a setting of the application."
       },
+      "worldSetLayers": {
+        "title": "Replace terrain and scatter entries",
+        "description": "Replaces the scene’s durable terrain and scatter entry list with a complete validated list. Use scene.state to read the current entries before changing one."
+      },
       "worldSetToneMapping": {
         "title": "Set how the scene is rendered",
         "description": "Chooses how high dynamic range is brought down to the screen, and by how many stops it is exposed. Both belong to the document rather than to the window that happens to be looking at it."
@@ -1263,6 +1283,10 @@
       "query": "Keywords",
       "family": "Generation family",
       "modelId": "Model identifier",
+      "aiOperation": "Local model operation",
+      "aiRole": "AI role",
+      "aiScope": "Choice scope",
+      "aiProfile": "Local runtime profile",
       "operation": "Operation, e.g. code2code",
       "parameters": "Model parameters",
       "landing": "Where the result goes",
@@ -1304,6 +1328,10 @@
       "offset": "How many entries to skip",
       "alsoRemote": "Remove from the remote library too",
       "layerId": "Layer identifier",
+      "dpi": "Print resolution, in dots per inch",
+      "colorMode": "Colour mode",
+      "bitDepth": "Bit depth",
+      "localId": "Local AI candidate identifier",
       "layerIds": "Layer identifiers",
       "exportFolder": "One folder name inside the project to write into, or a picker asks when it is left out",
       "generateLods": "Generate distance levels (visual changes possible)",
@@ -1454,6 +1482,7 @@
       "fogDensity": "Density of the exponential haze",
       "groundSize": "Side of the ground, in scene units",
       "receiveShadow": "Shadows land on the ground",
+      "worldLayers": "Complete terrain and scatter entry list",
       "toneMapping": "How high dynamic range is brought down to the screen",
       "toneExposure": "Exposure multiplier of the render, 1 leaving it as it is",
       "depth": "Depth",

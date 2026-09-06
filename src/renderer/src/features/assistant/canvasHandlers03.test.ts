@@ -61,6 +61,24 @@ describe('the padlocks of a layer', () => {
   })
 })
 
+describe('document image properties', () => {
+  it('sets print resolution, colour mode and bit depth through one MCP action', async () => {
+    expect(
+      await runAction('canvas.setDocumentProperties', {
+        dpi: 300,
+        colorMode: 'grayscale',
+        bitDepth: 16,
+      }),
+    ).toEqual({ ok: true })
+
+    expect(canvas()).toMatchObject({ dpi: 300, colorMode: 'grayscale', bitDepth: 16 })
+    expect(await runAction('canvas.state', {})).toMatchObject({
+      ok: true,
+      data: { dpi: 300, colorMode: 'grayscale', bitDepth: 16 },
+    })
+  })
+})
+
 describe('repainting a shape long after it was drawn', () => {
   const drawn = async (): Promise<string> => {
     const made = await runAction('layer.add', {

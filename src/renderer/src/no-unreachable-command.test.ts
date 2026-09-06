@@ -142,6 +142,9 @@ const SPREAD_OVER_A_SELECTION: readonly string[] = ['setGeometryOn', 'setLightOn
 const THROUGH_A_GESTURE: Readonly<Record<string, string>> = {
   // Laying a block also CHOOSES it — `stores/scenes.ts`, and `animation.addBlock` performs it.
   addModelClip: 'laySceneClip',
+  // Reopening a motion also selects its workbench — `characterMotion.ts`, and
+  // `animation.reopenMotion` performs it through that one path.
+  loadAnimation: 'reopenCharacterMotion',
   // Saving a ground stroke creates its picture asset before the document can point at it.
   setTerrainGroundWeights: 'saveGroundPaint',
 }
@@ -220,14 +223,6 @@ const NOT_PUBLISHED: readonly string[] = [
   // one entry keeps the last apply. An action names the transform whole and goes through
   // `setLayerTransform` — a second door onto the same edit is an edit published twice.
   'translateLayer',
-  // The inspector's document face is their one door: `canvas.resize` is what a call asks for,
-  // and it names neither a density nor a depth.
-  'setCanvasDpi',
-  'setCanvasColorMode',
-  'setCanvasBitDepth',
-  // Taking a filed motion back onto the band. Nothing stands in the way of an action here — the
-  // gesture is `reopenCharacterMotion`, and it names an asset — it is simply not published yet.
-  'loadAnimation',
   // The grip's half of the pair `layer.editTextLayer` and `layer.transform` already publish: it writes a
   // caption's box AND its corner in ONE entry, because a north or west grip pulls both at once.
   // A call names them one after the other and pays two undos, which no hand can do.

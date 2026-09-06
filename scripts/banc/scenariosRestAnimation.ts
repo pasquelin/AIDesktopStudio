@@ -87,6 +87,12 @@ export const REST_ANIMATION_SCENARIOS: readonly Scenario[] = [
     setup: cubeScene,
     passed: run => read.world(run)?.toneMapping !== 'none',
   },
+  {
+    name: '48.5 adds a scatter layer to the world',
+    said: ['Ajoute une couche de semis d’arbres à cette scène.'],
+    setup: cubeScene,
+    passed: run => read.world(run)?.layers.some(layer => layer.kind === 'scatter') === true,
+  },
 
   {
     name: '49.1 names the animations the scene carries',

@@ -43,6 +43,36 @@ beforeEach(() => {
 })
 
 describe('the world of the scene', () => {
+  it('replaces its durable terrain and scatter layers through one MCP action', async () => {
+    const outcome = await runAction('world.setLayers', {
+      layers: [
+        {
+          kind: 'scatter',
+          id: 'trees',
+          name: 'Trees',
+          enabled: true,
+          locked: false,
+          assets: [],
+          rules: { density: 1, scale: { min: 1, max: 1 }, rotation: { min: 0, max: 0 } },
+          seed: 1,
+          category: 'prop',
+          collision: false,
+          followRelief: true,
+        },
+      ],
+    })
+
+    expect(outcome).toEqual({ ok: true })
+    expect(scene().world.layers).toMatchObject([{ kind: 'scatter', id: 'trees', name: 'Trees' }])
+  })
+
+  it('uses the scene reader defaults for a sparse scatter entry', async () => {
+    expect(await runAction('world.setLayers', { layers: [{ kind: 'scatter' }] })).toEqual({
+      ok: true,
+    })
+    expect(scene().world.layers).toMatchObject([{ kind: 'scatter', assets: [], enabled: true }])
+  })
+
   /**
    * 🛑 What CHANGED, never the whole of it: a member still as a fresh scene has it is left out and
    * absent reads as that default. Written whole, the world spent 355 characters carrying no id at

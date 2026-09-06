@@ -1,7 +1,8 @@
 import { findActions, refused, type ActionOutcome } from '@shared/domain/assistant'
 import type { ApiFailure } from '@shared/domain/failure'
 import { commandDescriptor } from '@shared/domain/command'
-import { primaryRoleOf } from '@shared/domain/aiRole'
+import { allRoles, primaryRoleOf } from '@shared/domain/aiRole'
+import { CHOICE_SCOPES } from '@shared/domain/aiOverview'
 import { LANDING_TARGETS } from '@shared/domain/landingTarget'
 import { CAPABILITIES_BY_FAMILY, MODEL_FAMILIES } from '@shared/domain/model'
 import { SCENE_TEMPLATE_IDS } from '@shared/domain/sceneTemplate'
@@ -263,7 +264,44 @@ function catalogueRefusal(code: ApiFailure): ActionOutcome {
   )
 }
 
+function localModelManagement(
+  input: Record<string, unknown>,
+): Promise<ActionOutcome> | ActionOutcome {
+  const operation = textOf(input, 'operation')
+  const localId = textOf(input, 'localId')
+  const profile = oneOf(input, 'profile', ['motion'])
+  const needsModel = ['choose', 'install', 'remove', 'load', 'unload'].includes(operation ?? '')
+  if (needsModel && !localId) return refused('badInput', '"localId" is required for this operation')
+
+  if (operation === 'choose') {
+    const role = allRoles().find(candidate => candidate === textOf(input, 'role'))
+    const scope = oneOf(input, 'scope', CHOICE_SCOPES)
+    return role && scope && localId
+      ? withBridge(bridge => bridge.ai.choose(role, { kind: 'local', modelId: localId }, scope))
+      : refused('badInput', '"role", "localId" and "scope" are required to choose a local model')
+  }
+
+  if (operation === 'install' && localId) return withBridge(bridge => bridge.ai.install(localId))
+  if (operation === 'cancelInstall') return withBridge(bridge => bridge.ai.cancelInstall())
+  if (operation === 'remove' && localId) return withBridge(bridge => bridge.ai.remove(localId))
+  if (operation === 'load' && localId) return withBridge(bridge => bridge.ai.load(localId))
+  if (operation === 'cancelLoad') return withBridge(bridge => bridge.ai.cancelLoad())
+  if (operation === 'unload' && localId) return withBridge(bridge => bridge.ai.unload(localId))
+  if (operation === 'readEngine')
+    return withBridge(bridge => bridge.ai.readEngine(profile ?? undefined))
+  if (operation === 'installEngine')
+    return withBridge(bridge => bridge.ai.installEngine(profile ?? undefined))
+  if (operation === 'cancelEngineInstall')
+    return withBridge(bridge => bridge.ai.cancelInstallEngine())
+  if (operation === 'installRuntime') return withBridge(bridge => bridge.ai.installOllama())
+  if (operation === 'cancelRuntimeInstall')
+    return withBridge(bridge => bridge.ai.cancelInstallOllama())
+  return refused('badInput', '"operation" is not a local model lifecycle operation')
+}
+
 export const CORE_HANDLERS: ActionHandlers = {
+  'ai.localState': () => withBridge(bridge => bridge.ai.overview()),
+  'ai.manageLocalRuntime': localModelManagement,
   'command.runStudioCommand': runCommand,
   'actions.find': findInCatalogue,
   'workspace.open': openWorkspace,

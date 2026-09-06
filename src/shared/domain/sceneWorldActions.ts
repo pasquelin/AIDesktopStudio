@@ -214,6 +214,23 @@ export const SCENE_WORLD_ACTIONS: readonly AssistantAction[] = [
     ],
   }),
   action({
+    name: 'world.setLayers',
+    titleKey: 'assistant.actions.worldSetLayers.title',
+    descriptionKey: 'assistant.actions.worldSetLayers.description',
+    commitment: 'none',
+    repeatable: true,
+    reach: 'mcp',
+    fields: [
+      {
+        key: 'layers',
+        kind: 'raw',
+        labelKey: 'assistant.fields.worldLayers',
+        required: true,
+        repeated: true,
+      },
+    ],
+  }),
+  action({
     name: 'world.setToneMapping',
     titleKey: 'assistant.actions.worldSetToneMapping.title',
     descriptionKey: 'assistant.actions.worldSetToneMapping.description',

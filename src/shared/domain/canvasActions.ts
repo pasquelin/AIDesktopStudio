@@ -33,6 +33,31 @@ const CANVAS_ACTIONS_FIRST: readonly AssistantAction[] = [
     fields: [],
   }),
   action({
+    name: 'canvas.setDocumentProperties',
+    titleKey: 'assistant.actions.canvasSetDocumentProperties.title',
+    descriptionKey: 'assistant.actions.canvasSetDocumentProperties.description',
+    commitment: 'none',
+    repeatable: true,
+    reach: 'mcp',
+    fields: [
+      { key: 'dpi', kind: 'number', labelKey: 'assistant.fields.dpi', required: false, min: 1 },
+      {
+        key: 'colorMode',
+        kind: 'choice',
+        labelKey: 'assistant.fields.colorMode',
+        required: false,
+        options: ['rgb', 'grayscale'],
+      },
+      {
+        key: 'bitDepth',
+        kind: 'choice',
+        labelKey: 'assistant.fields.bitDepth',
+        required: false,
+        options: [8, 16, 32],
+      },
+    ],
+  }),
+  action({
     name: 'layer.add',
     titleKey: 'assistant.actions.layerAdd.title',
     descriptionKey: 'assistant.actions.layerAdd.description',

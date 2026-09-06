@@ -269,6 +269,22 @@
         "title": "Lire l’image en cours d’édition",
         "description": "Répond l’image en avant — sa taille, sa résolution, ses repères, et chaque calque de la pile à plat : identifiant, nom, sorte, et ce que chacun porte. Un champ À SON DÉFAUT est omis, et son absence signifie ce défaut : un calque est visible, opaque, déverrouillé, en fondu normal, non rogné et non transformé."
       },
+      "animationReopenMotion": {
+        "title": "Rouvrir un mouvement de personnage",
+        "description": "Remplace l’atelier d’animation par le mouvement enregistré dans un asset d’animation pour le modèle nommé. L’asset doit porter des données de mouvement créées par ce studio."
+      },
+      "aiLocalState": {
+        "title": "Lire le runtime IA local",
+        "description": "Rend les candidats IA locaux, leur installation et chargement, les rôles, l’adéquation à la machine, les téléchargements et l’état du runtime."
+      },
+      "aiManageLocalRuntime": {
+        "title": "Gérer le runtime IA local",
+        "description": "Choisit, installe, retire, charge ou décharge un candidat IA local, ou lit et répare son runtime. Lire d’abord ai.localState. Toute opération sauf la lecture du moteur modifie le studio et demande confirmation."
+      },
+      "canvasSetDocumentProperties": {
+        "title": "Régler les propriétés du document image",
+        "description": "Change la résolution d’impression, le mode colorimétrique ou la profondeur de bits de l’image devant. Lire d’abord canvas.state ; les valeurs non nommées restent inchangées."
+      },
       "canvasGenerationComment": {
         "title": "Gérer les commentaires de génération sur l’image",
         "description": "Ajoute, modifie ou retire une instruction pour la prochaine génération sur l’image devant. Les coordonnées et le polygone facultatif sont en pixels du document. Un identifiant de calque limite une nouvelle note à ce calque ; sans lui, elle porte sur l’image entière. canvas.state rend les commentaires en attente et leurs identifiants."
@@ -909,6 +925,10 @@
         "title": "Régler le sol de la scène",
         "description": "Montre ou masque le sol que la scène possède, et règle sa couleur, son côté, son opacité et si les ombres s’y posent. C’est ainsi qu’un sol s’AJOUTE à une scène : une surface ajoutée comme objet reste un objet parmi les autres, pas le sol. Ce sol appartient au document, contrairement à la grille, qui est un réglage de l’application."
       },
+      "worldSetLayers": {
+        "title": "Remplacer les couches de relief et de semis",
+        "description": "Remplace la liste complète et validée des couches de relief et de semis de la scène. Lire d’abord les couches présentes avec scene.state avant d’en modifier une."
+      },
       "worldSetToneMapping": {
         "title": "Régler le rendu de la scène",
         "description": "Choisit comment la plage dynamique est ramenée sur l’écran, et de combien de diaphragmes elle est exposée. Les deux appartiennent au document, pas à la fenêtre qui le regarde."
@@ -1263,6 +1283,10 @@
       "query": "Mots-clés",
       "family": "Famille de génération",
       "modelId": "Identifiant du modèle",
+      "aiOperation": "Opération sur le modèle local",
+      "aiRole": "Rôle IA",
+      "aiScope": "Portée du choix",
+      "aiProfile": "Profil de runtime local",
       "operation": "Emploi, ex. code2code",
       "parameters": "Paramètres du modèle",
       "landing": "Où va le résultat",
@@ -1304,6 +1328,10 @@
       "offset": "Nombre d’entrées à sauter",
       "alsoRemote": "Retirer aussi de la bibliothèque distante",
       "layerId": "Identifiant du calque",
+      "dpi": "Résolution d’impression, en points par pouce",
+      "colorMode": "Mode colorimétrique",
+      "bitDepth": "Profondeur de bits",
+      "localId": "Identifiant du candidat IA local",
       "layerIds": "Identifiants des calques",
       "exportFolder": "Nom d’un dossier du projet où écrire, à défaut un sélecteur demande",
       "generateLods": "Générer les niveaux de distance (changements visuels possibles)",
@@ -1454,6 +1482,7 @@
       "fogDensity": "Densité de la brume exponentielle",
       "groundSize": "Côté du sol, en unités de scène",
       "receiveShadow": "Le sol reçoit les ombres",
+      "worldLayers": "Liste complète des couches de relief et de semis",
       "toneMapping": "Façon de ramener la plage dynamique sur l’écran",
       "toneExposure": "Multiplicateur d’exposition du rendu, 1 laissant tel quel",
       "depth": "Profondeur",
