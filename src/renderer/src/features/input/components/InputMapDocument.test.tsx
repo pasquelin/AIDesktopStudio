@@ -3,6 +3,7 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 import type { InputMap } from '@shared/domain/inputMap'
+import { onInputMapsChanged } from '@/engines/code/projectInputMaps'
 import { installFakeBridge } from '@/services/fakeBridge'
 import { InputMapDocument } from './InputMapDocument'
 
@@ -61,6 +62,25 @@ describe('the input map editor', () => {
         priority: 20,
       }),
     )
+  })
+
+  /**
+   * 🛑 The bridge has no change event, so without this a rebound `studio` map would only reach
+   * the studio's own gamepad navigation once the project had been closed and opened again.
+   */
+  it('tells the surfaces that read control maps, so a rebind takes effect on saving', async () => {
+    installFakeBridge({
+      inputMaps: { read: () => Promise.resolve(CHARACTER), write: () => Promise.resolve(true) },
+    })
+    const told = vi.fn()
+    const forget = onInputMapsChanged(told)
+    render(<InputMapDocument path="Controls/character.input.json" />)
+    await screen.findByText('jump')
+
+    await userEvent.click(screen.getByRole('button', { name: 'Enregistrer' }))
+
+    await vi.waitFor(() => expect(told).toHaveBeenCalled())
+    forget()
   })
 
   it('keeps invalid JSON off disk and explains the refusal', async () => {
