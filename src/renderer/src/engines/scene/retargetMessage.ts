@@ -6,10 +6,7 @@
  */
 
 /** One bone, flattened. Parents come before their children, so `parent` always points backwards. */
-export type WireBone = {
-  name: string
-  /** An index into the same list; `-1` for a root. */
-  parent: number
+export type WireTransform = {
   position: readonly [number, number, number]
   quaternion: readonly [number, number, number, number]
   scale: readonly [number, number, number]
@@ -21,6 +18,14 @@ export type WireBone = {
    * (0, −0,01, 0). `skinnedFromWire` hangs it as a node, and three undoes it on its own.
    */
   frame?: readonly number[]
+}
+
+export type WireBone = WireTransform & {
+  name: string
+  /** An index into the same list; `-1` for a root. */
+  parent: number
+  /** Asset-local non-joint ancestors, outermost first; scene placement is excluded. */
+  parentFrames?: readonly WireTransform[]
 }
 
 /** Which `KeyframeTrack` to rebuild. Carried rather than guessed from the property name. */

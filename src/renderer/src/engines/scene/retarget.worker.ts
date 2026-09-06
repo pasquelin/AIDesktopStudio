@@ -59,12 +59,13 @@ async function run(request: RetargetRequest): Promise<void> {
     // Read while both skeletons still stand at rest: `retargetClip` poses the source on its first
     // frame before anything is sampled.
     const offsets = restOffsetsOf(target, source, request.names)
+    const hipPosition = hipOffsetOf(request, target, source, scale)
     const adapted: WireClip[] = []
 
     for (const [index, clip] of request.clips.entries()) {
       if (cancelled.delete(request.id)) return
 
-      adapted.push(adaptOne(request, target, source, clip, scale, offsets))
+      adapted.push(adaptOne(request, target, source, clip, scale, offsets, hipPosition))
       post({ id: request.id, done: false, progress: (index + 1) / request.clips.length })
       // Yields the queue: without it a cancellation sent mid-request would sit unread until the
       // whole run it was meant to stop had finished.
@@ -94,6 +95,7 @@ function adaptOne(
   clip: WireClip,
   scale: number,
   localOffsets: Record<string, Matrix4>,
+  hipPosition: Vector3,
 ): WireClip {
   // A FRESH object per clip — `retargetClip` WRITES its defaults back into what it is handed, so a
   // shared one would fix every later clip at the first one's rate — and held in a variable because
@@ -104,6 +106,7 @@ function adaptOne(
     fps: request.fps,
     scale,
     localOffsets,
+    hipPosition,
     ...(request.options?.rootMotion === 'inPlace' && { hipInfluence: new Vector3(0, 1, 0) }),
   }
   const sampled = retargetClip(target, source, clipFromWire(clip), options)
@@ -124,4 +127,23 @@ function adaptOne(
 
 function post(response: RetargetResponse): void {
   self.postMessage(response)
+}
+
+/** Carry animated displacement from the source rest, anchored at the target rest. */
+function hipOffsetOf(
+  request: RetargetRequest,
+  target: SkinnedMesh,
+  source: SkinnedMesh,
+  scale: number,
+): Vector3 {
+  const name = Object.keys(request.names).find(name => request.names[name] === request.hip)
+  const to = name && target.getObjectByName(name)
+  const from = request.hip && source.getObjectByName(request.hip)
+  if (!to || !from) return new Vector3()
+  const rest = from.getWorldPosition(new Vector3())
+  if (request.options?.rootMotion === 'inPlace') {
+    rest.x = 0
+    rest.z = 0
+  }
+  return to.getWorldPosition(new Vector3()).divideScalar(scale).sub(rest)
 }

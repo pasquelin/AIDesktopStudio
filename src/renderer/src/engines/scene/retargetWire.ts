@@ -10,64 +10,99 @@ import {
   type Object3D,
 } from 'three'
 import { isBoneObject } from './rigState'
-import type { WireBone, WireClip, WireTrack, WireTrackKind } from './retargetMessage'
+import type { WireBone, WireClip, WireTrack, WireTrackKind, WireTransform } from './retargetMessage'
 
 /**
  * Every named bone of a model, parents before children.
  *
  * Duplicate names are refused: both animation tracks and mapping profiles bind bones by name.
  */
+const virtualFrames = new WeakSet<Object3D>()
+
 export function wireBonesOf(root: Object3D): WireBone[] {
   const bones: WireBone[] = []
-  const indexOf = new Map<string, number>()
-
+  const indexOf = new Map<Object3D, number>()
+  const names = new Set<string>()
   root.traverse(object => {
-    if (!isBoneObject(object) || !object.name) return
-    if (indexOf.has(object.name)) throw new Error(`duplicate bone name: ${object.name}`)
-
-    indexOf.set(object.name, bones.length)
-    bones.push({
-      name: object.name,
-      parent: parentIndexOf(object, indexOf),
-      position: object.position.toArray(),
-      quaternion: object.quaternion.toArray(),
-      scale: object.scale.toArray(),
-    })
+    if (!isBoneObject(object) || virtualFrames.has(object) || !object.name) return
+    if (names.has(object.name)) throw new Error(`duplicate bone name: ${object.name}`)
+    names.add(object.name)
+    const ancestors = parentFramesOf(object, root, indexOf)
+    indexOf.set(object, bones.length)
+    bones.push({ name: object.name, ...ancestors, ...transformOf(object) })
   })
-
   return bones
 }
 
-function parentIndexOf(bone: Object3D, indexOf: ReadonlyMap<string, number>): number {
-  let above = bone.parent
-  while (above) {
-    const known = above.name === '' ? undefined : indexOf.get(above.name)
-    if (known !== undefined) return known
-    above = above.parent
+function transformOf(object: Object3D): WireTransform {
+  return {
+    position: object.position.toArray(),
+    quaternion: object.quaternion.toArray(),
+    scale: object.scale.toArray(),
   }
-  return -1
 }
 
-/** The skeleton three needs to sample a clip: a mesh, because `retargetClip` reads `.skeleton`. */
+function parentFramesOf(
+  object: Object3D,
+  root: Object3D,
+  known: ReadonlyMap<Object3D, number>,
+): Pick<WireBone, 'parent' | 'parentFrames'> {
+  const frames: WireTransform[] = []
+  let above = object.parent
+  while (above && above !== root && !known.has(above)) {
+    if (
+      above.position.lengthSq() !== 0 ||
+      above.quaternion.x !== 0 ||
+      above.quaternion.y !== 0 ||
+      above.quaternion.z !== 0 ||
+      above.quaternion.w !== 1 ||
+      above.scale.x !== 1 ||
+      above.scale.y !== 1 ||
+      above.scale.z !== 1
+    )
+      frames.unshift(transformOf(above))
+    above = above.parent
+  }
+  return {
+    parent: above ? (known.get(above) ?? -1) : -1,
+    ...(frames.length > 0 && { parentFrames: frames }),
+  }
+}
+
+/** Virtual parent bones let Skeleton.pose restore the same local frames on every sample. */
 export function skinnedFromWire(bones: readonly WireBone[]): SkinnedMesh {
-  const built = bones.map(wire => {
-    const bone = new Bone()
-    bone.name = wire.name
-    bone.position.fromArray([...wire.position])
-    bone.quaternion.fromArray([...wire.quaternion])
-    bone.scale.fromArray([...wire.scale])
-    return bone
-  })
-
+  const built: Bone[] = []
+  const joints: Bone[] = []
   const mesh = new SkinnedMesh()
-  built.forEach((bone, index) => {
-    const above = bones[index]?.parent ?? -1
-    ;(above < 0 ? mesh : (built[above] ?? mesh)).add(bone)
-  })
-
+  const names = new Set(bones.map(bone => bone.name))
+  for (const [index, wire] of bones.entries()) {
+    let parent: Object3D = joints[wire.parent] ?? mesh
+    for (const [frameIndex, frame] of (wire.parentFrames ?? []).entries()) {
+      let name = `__retarget_frame_${index}_${frameIndex}`
+      while (names.has(name)) name += '_'
+      const helper = boneFromTransform(name, frame)
+      virtualFrames.add(helper)
+      parent.add(helper)
+      built.push(helper)
+      parent = helper
+    }
+    const bone = boneFromTransform(wire.name, wire)
+    parent.add(bone)
+    built.push(bone)
+    joints.push(bone)
+  }
   mesh.updateMatrixWorld(true)
   mesh.bind(new Skeleton(built))
   return mesh
+}
+
+function boneFromTransform(name: string, wire: WireTransform): Bone {
+  const bone = new Bone()
+  bone.name = name
+  bone.position.fromArray(wire.position)
+  bone.quaternion.fromArray(wire.quaternion)
+  bone.scale.fromArray(wire.scale)
+  return bone
 }
 
 export function wireClipOf(clip: AnimationClip): WireClip {

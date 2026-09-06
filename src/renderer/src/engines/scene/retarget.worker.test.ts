@@ -1,8 +1,17 @@
-import { AnimationClip, QuaternionKeyframeTrack, VectorKeyframeTrack } from 'three'
+import {
+  AnimationMixer,
+  Vector3,
+  LoopOnce,
+  Bone,
+  Group,
+  AnimationClip,
+  QuaternionKeyframeTrack,
+  VectorKeyframeTrack,
+} from 'three'
 import type * as SkeletonUtilsModule from 'three/addons/utils/SkeletonUtils.js'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { profileWithRole, skeletonSignatureOf } from '@shared/domain/skeletonProfile'
-import { retargetPlanOf, wireClipOf } from './retarget'
+import { retargetPlanOf, wireClipOf, wireBonesOf, clipFromWire } from './retarget'
 import type { RetargetOptions, RetargetResponse, WireBone, WireClip } from './retargetMessage'
 
 /** three's sampling, made to fail on demand: what is under test is what the worker does then. */
@@ -339,3 +348,70 @@ describe('when a run goes wrong or is taken back', () => {
     expect(settled()).toBeDefined()
   })
 })
+
+function walkArmature(): Group {
+  const model = new Group()
+  const armature = new Group()
+  armature.quaternion.set(0.7071068287, 0, 0, 0.7071068287).normalize()
+  armature.scale.setScalar(0.01)
+  const hips = new Bone()
+  hips.name = 'Hips'
+  hips.position.set(0, 0, -99.7919)
+  model.add(armature)
+  armature.add(hips)
+  return model
+}
+
+it.each([false, true])(
+  'transfers Walk forward at target rest height (converted target: %s)',
+  async converted => {
+    const model = walkArmature()
+    const clip = wireClipOf(
+      new AnimationClip('Walk', 1, [
+        new VectorKeyframeTrack(
+          'Hips.position',
+          [0, 1],
+          [-0.07555, 0.0721, -97.9534, -0.07555, 177.0242, -97.95345],
+        ),
+      ]),
+    )
+    const targetModel = new Group()
+    const targetFrame = new Group()
+    const targetHips = new Bone()
+    targetHips.name = 'Hips'
+    targetHips.position.y = converted ? 1.5736 : 0.7868
+    if (converted) {
+      targetFrame.rotation.y = Math.PI / 2
+      targetFrame.scale.setScalar(0.5)
+    }
+    targetModel.add(targetFrame)
+    targetFrame.add(targetHips)
+    self.dispatchEvent(
+      new MessageEvent('message', {
+        data: {
+          id: 99,
+          ...retargetPlanOf(wireBonesOf(targetModel), wireBonesOf(model), [clip], 30),
+          options: { scale: 1 },
+        },
+      }),
+    )
+    await drain()
+    const answer = settled()
+    if (!answer?.done || !answer.ok) throw new Error('missing transfer')
+    const adapted = answer.clips[0]
+    if (!adapted) throw new Error('missing clip')
+    const mixer = new AnimationMixer(targetModel)
+    const action = mixer.clipAction(clipFromWire(adapted)).setLoop(LoopOnce, 1)
+    action.clampWhenFinished = true
+    action.play()
+    mixer.setTime(0)
+    const first = targetHips.getWorldPosition(new Vector3())
+    mixer.setTime(1)
+    const last = targetHips.getWorldPosition(new Vector3())
+    expect(first.y).toBeCloseTo(0.7868 + 0.979534 - 0.997919, 4)
+    expect(last.y - first.y).toBeCloseTo(0, 4)
+    expect(last.z - first.z).toBeGreaterThan(1.7)
+    expect(Math.abs(last.x - first.x)).toBeLessThan(0.0001)
+    expect(adapted.tracks.every(track => track.name.startsWith('Hips.'))).toBe(true)
+  },
+)

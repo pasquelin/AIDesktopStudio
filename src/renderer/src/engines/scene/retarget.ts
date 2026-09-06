@@ -422,7 +422,8 @@ export function sameSkeleton(target: readonly WireBone[], source: readonly WireB
       near(bone.frame ?? IDENTITY_ARRAY, other.frame ?? IDENTITY_ARRAY) &&
       near(bone.position, other.position) &&
       near(bone.quaternion, other.quaternion) &&
-      near(bone.scale, other.scale)
+      near(bone.scale, other.scale) &&
+      sameFrames(bone.parentFrames ?? [], other.parentFrames ?? [])
     )
   })
 }
@@ -437,4 +438,22 @@ const IDENTITY_ARRAY: readonly number[] = /* @__PURE__ */ new Matrix4().toArray(
 
 function near(a: readonly number[], b: readonly number[]): boolean {
   return a.every((value, index) => Math.abs(value - (b[index] ?? 0)) <= REST_TOLERANCE)
+}
+
+function sameFrames(
+  a: readonly Pick<WireBone, 'position' | 'quaternion' | 'scale'>[],
+  b: readonly Pick<WireBone, 'position' | 'quaternion' | 'scale'>[],
+): boolean {
+  return (
+    a.length === b.length &&
+    a.every((frame, index) => {
+      const other = b[index]
+      return (
+        other !== undefined &&
+        near(frame.position, other.position) &&
+        near(frame.quaternion, other.quaternion) &&
+        near(frame.scale, other.scale)
+      )
+    })
+  )
 }
