@@ -362,27 +362,19 @@ export const playedScene = async (studio: Studio): Promise<void> => {
 
 /**
  * The knight opened on its own model tab, in front: what section 71 asks of the VIEW of a model.
- * The tab is a document of the window and not of the project, so it is laid in the store the way
- * `openCharacter` lays it, on top of the scene `modelScene` measured.
+ * Through the studio's own `create`, as `openCharacter` does — the decor imitates nothing.
  */
 export const characterTab = async (studio: Studio): Promise<void> => {
   await modelScene(studio)
   const assetId = assetOf(studio, 'knight in plate armour, character.glb')
-  const id = `character-${assetId}`
-  useDocuments.setState(state => ({
-    documents: {
-      ...state.documents,
-      [id]: {
-        id,
-        kind: 'character',
-        workspace: '3d',
-        title: 'Knight',
-        path: 'Modelling/Models/knight in plate armour, character.glb',
-        sourceAssetId: assetId,
-      },
-    },
-    activeId: id,
-  }))
+  const created = await useDocuments.getState().create('3d', {
+    title: 'Knight',
+    sourceAssetId: assetId,
+    kind: 'character',
+    path: 'Modelling/Models/knight in plate armour, character.glb',
+  })
+  if (!created) throw new Error('the studio refused to open the model tab')
+  useDocuments.getState().activate(created.id)
   // Armed as the real tab arms it at mount: a request to HIDE the bones has to find them shown.
   useSceneViews.getState().setSkeletons(workshopIdOf(assetId), true)
 }

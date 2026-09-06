@@ -14,7 +14,7 @@ import { MAIN_SCENE_PANE } from '@/stores/sceneViews'
  * there follows here. No SCALE: a joint is a point and a length, and there is nothing about one
  * to enlarge. No selection verbs either — the workshop holds one node nobody adds to or deletes.
  */
-export const WORKSHOP_TOOL_IDS: readonly string[] = [
+const WORKSHOP_TOOL_IDS: readonly string[] = [
   'select',
   NAVIGATE_TOOL,
   'translate',
@@ -24,7 +24,7 @@ export const WORKSHOP_TOOL_IDS: readonly string[] = [
 ]
 
 /** Lit from the first frame: this tab is ABOUT the bones, where a scene draws them on demand. */
-export const SKELETONS_TOOL: SceneTool = {
+const SKELETONS_TOOL: SceneTool = {
   id: 'skeletons',
   command: 'scene.skeletons',
   labelKey: 'character.showBones',

@@ -51,24 +51,29 @@ export const NO_EDIT_ON_MODEL =
   'the model tab in front holds one model and saves no scene — open the model in a scene to add ' +
   'or edit nodes; what reaches it here is the view: scene.state, view.setDisplayMode, scene.capture'
 
-/** A refusal for an edit aimed at a workshop, or nothing for a scene — read before any `runCommand`. */
-export function editRefusal(open: { documentId: string }): ActionOutcome | null {
-  return isWorkshopId(open.documentId) ? refused('wrongSurface', NO_EDIT_ON_MODEL) : null
-}
+export type Mounted = { documentId: string; state: SceneState }
 
 /** The scene in front — or the workshop of the model tab in front — and its state, or nothing. */
-export function mounted(): { documentId: string; state: SceneState } | null {
+export function mounted(): Mounted | null {
   const documentId = activeSceneOrWorkshopId(useDocuments.getState())
   return documentId === null
     ? null
     : { documentId, state: sceneOf(useScenes.getState(), documentId) }
 }
 
-export function edit(build: () => Command<SceneState>): ActionOutcome {
+/**
+ * The scene in front for a door that WRITES, or the refusal to answer with: a model tab's workshop
+ * is drawn and never saved, so every `runCommand` of this folder opens here rather than on `mounted`.
+ */
+export function mountedScene(): Mounted | ActionOutcome {
   const open = mounted()
   if (!open) return refused('wrongSurface', NO_SCENE)
-  const barred = editRefusal(open)
-  if (barred) return barred
+  return isWorkshopId(open.documentId) ? refused('wrongSurface', NO_EDIT_ON_MODEL) : open
+}
+
+export function edit(build: () => Command<SceneState>): ActionOutcome {
+  const open = mountedScene()
+  if ('ok' in open) return open
 
   useScenes.getState().runCommand(open.documentId, build())
   return { ok: true }
@@ -84,10 +89,8 @@ export function editNode(
   /** What the call answers, read off the node AFTER the command — see `movedOf`. */
   answer?: (node: SceneNode, documentId: string) => unknown,
 ): ActionOutcome {
-  const open = mounted()
-  if (!open) return refused('wrongSurface', NO_SCENE)
-  const barred = editRefusal(open)
-  if (barred) return barred
+  const open = mountedScene()
+  if ('ok' in open) return open
 
   const named = textOf(input, 'nodeId') ?? ''
   const node = nodeAimed(open.state, named)

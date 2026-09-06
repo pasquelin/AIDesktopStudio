@@ -27,13 +27,14 @@ import { boolOf, composedNumber, namedOf, numberOf, oneOf, textOf } from './acti
 import {
   editNode,
   mounted,
+  mountedScene,
   namedFields,
   NO_SCENE,
   numbersFor,
   TARGET_AXES,
+  type Specs,
   vectorOf,
   withinSpec,
-  type Specs,
 } from './sceneHandlerCore'
 import { editShot, openShot } from './sceneNodeActions'
 import { editWorld } from './sceneWorldHandlers'
@@ -148,8 +149,8 @@ export const SCENE_CAMERA_VIEW_HANDLERS: ActionHandlers = {
     ),
 
   'camera.reorder': input => {
-    const open = mounted()
-    if (!open) return refused('wrongSurface', NO_SCENE)
+    const open = mountedScene()
+    if ('ok' in open) return open
 
     const nodeId = textOf(input, 'nodeId') ?? ''
     // `shotsWithCameraMoved` answers `null` for a camera with no line on the band, and reports

@@ -1,4 +1,5 @@
 import type { MenuItemConstructorOptions } from 'electron'
+import { viewsScene } from '@shared/domain/command'
 import { EXPORT_FORMATS } from '@shared/domain/scene'
 import { MATERIAL_EXPORT_TARGETS } from '@shared/domain/materialExport'
 import { FACE_SIZES, SKY_PANORAMAS } from '@shared/domain/skybox'
@@ -57,8 +58,7 @@ function sequenceExportItems(
 
 function exportSubmenu(context: MenuContext): MenuItemConstructorOptions[] {
   const { options, t } = context
-  // The model tab exports its workshop through the same rows: one model, written as a scene of one.
-  if (options.scope === 'scene' || options.scope === 'character') {
+  if (viewsScene(options.scope)) {
     return [
       { label: t.menu.exportScene, submenu: sceneExportItems(context, 'scene') },
       {

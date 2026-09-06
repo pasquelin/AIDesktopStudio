@@ -77,7 +77,8 @@ export const NAVIGATE_TOOL = 'navigate'
 /** Every tool of this bar carries one now: the two groups that acted through rows have left. */
 export type SceneTool = ToolbarItem & { command: CommandId }
 
-const DISPLAY_TOOL_MODES: readonly ToolMode[] = DISPLAY_MODES.map(mode => ({
+/** One row per way of drawing, as the bar's flyout and the workshop's menu both list them. */
+export const DISPLAY_TOOL_MODES: readonly ToolMode[] = DISPLAY_MODES.map(mode => ({
   id: mode,
   labelKey: `sceneDisplay.${mode}`,
   descriptionKey: `sceneDisplay.${mode}Hint`,

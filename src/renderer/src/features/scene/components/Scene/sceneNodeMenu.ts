@@ -14,10 +14,10 @@ import {
   mdiTrashCanOutline,
 } from '@mdi/js'
 import type { TFunction } from 'i18next'
-import { commandDescriptor, type CommandId } from '@shared/domain/command'
+import type { CommandId } from '@shared/domain/command'
 import { canInvertCarve, canNegate } from '@/engines/csg/carve'
 import type { SceneNode } from '@/engines/scene/sceneState'
-import { showContextMenu, type ContextMenuRow } from '@/helpers/contextMenu'
+import { commandRow, showContextMenu, type ContextMenuRow } from '@/helpers/contextMenu'
 
 export type SceneNodeMenuProps = {
   /** The node the pointer is over. Already selected by the caller — see below. */
@@ -44,21 +44,6 @@ export type SceneNodeMenuProps = {
    * menu of changing length is about the second, which no row here breaks.
    */
   onRename?: () => void
-}
-
-function commandRow(
-  id: CommandId,
-  icon: string,
-  t: TFunction,
-  run: (command: CommandId) => void,
-): ContextMenuRow {
-  const descriptor = commandDescriptor(id)
-  return {
-    label: descriptor ? t(descriptor.titleKey) : id,
-    icon,
-    tooltip: descriptor ? t(descriptor.helpKey) : id,
-    onSelect: () => run(id),
-  }
 }
 
 /**

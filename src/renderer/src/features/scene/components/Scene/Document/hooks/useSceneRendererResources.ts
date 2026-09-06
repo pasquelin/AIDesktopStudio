@@ -14,8 +14,9 @@ export function useSceneRendererResources(
   { models = true }: { models?: boolean } = {},
 ): void {
   useShelfRefresh(() => {
-    engine.current?.refreshTextures()
+    // Models first: a holder about to be reloaded is not worth dressing again.
     if (models) engine.current?.refreshModels()
+    engine.current?.refreshTextures()
   })
   useMaterialRefresh(materialIds => engine.current?.dressModels(materialIds))
   useSkyRefresh(() => engine.current?.lightAgain())

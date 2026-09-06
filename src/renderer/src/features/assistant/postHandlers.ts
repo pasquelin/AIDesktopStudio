@@ -38,6 +38,7 @@ import type { ActionHandlers } from './actionHandler'
 import { maybeBoolOf, numberOf, oneOf, textOf } from './actionInputs'
 import { nodeAimed } from './nodeAimed'
 import { mounted, NO_SCENE } from './sceneHandlers'
+import { mountedScene } from './sceneHandlerCore'
 
 /**
  * The composition, driven by value. Nothing here knows what a bloom is: both the effect and the
@@ -94,8 +95,8 @@ function withStack(
     documentId: string
   }) => ActionOutcome,
 ): ActionOutcome {
-  const open = mounted()
-  if (!open) return refused('wrongSurface', NO_SCENE)
+  const open = mountedScene()
+  if ('ok' in open) return open
 
   const target = targetOf(input, open.state)
   if (typeof target === 'string') return lookupRefusal(target)
@@ -380,8 +381,8 @@ export const POST_HANDLERS: ActionHandlers = {
   },
 
   'post.setCameraStackMode': input => {
-    const open = mounted()
-    if (!open) return refused('wrongSurface', NO_SCENE)
+    const open = mountedScene()
+    if ('ok' in open) return open
 
     const named = textOf(input, 'nodeId') ?? ''
     const node = nodeAimed(open.state, named)

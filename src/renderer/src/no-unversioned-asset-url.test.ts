@@ -13,6 +13,12 @@ const BUILDERS = new Set(['assetUrl', 'assetMasterUrl'])
 const VERSIONED = 'versionedUrl'
 
 /**
+ * The model cache's key builder versions inside itself, so a call handing it ONE argument is a
+ * bare URL wearing another name — read here as one, or the scatter's three sites vanish from view.
+ */
+const MODEL_KEY = 'modelKeyOf'
+
+/**
  * Where a bare asset URL is what happens today, one SITE each — the file and the line's own text,
  * not the file alone: exempting a whole module hides the next bare URL somebody adds to it.
  *
@@ -20,6 +26,18 @@ const VERSIONED = 'versionedUrl'
  * count stays green the day one is closed while another opens.
  */
 const ALLOWED = new Map<string, string>([
+  [
+    'engines/scene/scatterSurface.ts | const acquired = models.acquire(modelKeyOf(assetId))',
+    'hole: a scattered model never reloads — the scatter keys its share on the bare url',
+  ],
+  [
+    'engines/scene/scatterSurface.ts | for (const assetId of state.assets.held) models.release(modelKeyOf(assetId))',
+    'the UNLOAD path of that hole: it frees exactly the key `sourceOf` took',
+  ],
+  [
+    'engines/scene/scatterSurface.ts | models.release(modelKeyOf(assetId))',
+    'the same unload, when a layer lets one asset go',
+  ],
   [
     "engines/scene/clipSources.ts | return source.kind === 'asset' ? assetUrl(source.assetId) : null",
     'hole: a rewritten animation never reloads — clipSources keys on the bare URL',
@@ -114,13 +132,10 @@ function sitesIn(relative: string, code: string): string[] {
   const found: string[] = []
 
   const walk = (node: ts.Node): void => {
-    if (
-      ts.isCallExpression(node) &&
-      ts.isIdentifier(node.expression) &&
-      BUILDERS.has(node.expression.text) &&
-      !insideVersioned(node)
-    ) {
-      found.push(siteOf(relative, source, node))
+    if (ts.isCallExpression(node) && ts.isIdentifier(node.expression)) {
+      const bareBuilder = BUILDERS.has(node.expression.text) && !insideVersioned(node)
+      const bareKey = node.expression.text === MODEL_KEY && node.arguments.length === 1
+      if (bareBuilder || bareKey) found.push(siteOf(relative, source, node))
     }
     ts.forEachChild(node, walk)
   }

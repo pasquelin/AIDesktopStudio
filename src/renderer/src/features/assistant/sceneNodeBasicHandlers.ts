@@ -26,8 +26,8 @@ import {
   aimedNodes,
   editNode,
   mounted,
+  mountedScene,
   movedOf,
-  NO_SCENE,
   socketIdOf,
   vectorOf,
 } from './sceneHandlerCore'
@@ -73,8 +73,8 @@ export const SCENE_NODE_BASIC_HANDLERS: ActionHandlers = {
    * runs, so both doors read one rule — `carvePlan` says what a mark means.
    */
   'node.markAsCuttingTool': input => {
-    const open = mounted()
-    if (!open) return refused('wrongSurface', NO_SCENE)
+    const open = mountedScene()
+    if ('ok' in open) return open
 
     const named = textsOf(input, 'nodeIds')
     const picked = aimedNodes(open.state, input)
@@ -97,8 +97,8 @@ export const SCENE_NODE_BASIC_HANDLERS: ActionHandlers = {
    * names the matter outright, for the rare cut that runs the other way.
    */
   'node.combineIntoSolid': input => {
-    const open = mounted()
-    if (!open) return refused('wrongSurface', NO_SCENE)
+    const open = mountedScene()
+    if ('ok' in open) return open
 
     const operation = oneOf(input, 'operation', CSG_OPERATIONS)
     const command =
@@ -130,8 +130,8 @@ export const SCENE_NODE_BASIC_HANDLERS: ActionHandlers = {
     ),
 
   'node.separate': input => {
-    const open = mounted()
-    if (!open) return refused('wrongSurface', NO_SCENE)
+    const open = mountedScene()
+    if ('ok' in open) return open
 
     const node = nodeAimed(open.state, textOf(input, 'nodeId') ?? '')
     if (node?.type !== 'carved')

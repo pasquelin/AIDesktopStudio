@@ -3,7 +3,7 @@ import { DISPLAY_MODES, VIEW_DIRECTIONS } from '@shared/domain/scene'
 import { placementIn } from '@shared/domain/tool'
 import { NAVIGATION_PRESETS } from '@shared/domain/navigationPreset'
 import { CAPTURE_QUALITIES, DEFAULT_CAPTURE_QUALITY } from '@shared/domain/sceneCapture'
-import { SIDE_VIEW_COMMAND, type CommandId } from '@shared/domain/command'
+import { SIDE_VIEW_COMMAND, viewsScene, type CommandId } from '@shared/domain/command'
 import type { MenuContext } from './templateContext'
 
 function canvasViewItems(context: MenuContext): MenuItemConstructorOptions[] {
@@ -76,39 +76,30 @@ function navigationItems(context: MenuContext): MenuItemConstructorOptions[] {
   }))
 }
 
-function sceneMenuItems(context: MenuContext): MenuItemConstructorOptions[] {
-  if (context.options.scope !== 'scene') return []
-  const { t } = context
-  return [
-    { type: 'separator' },
-    { label: t.menu.sceneNavigation, submenu: navigationItems(context) },
-    { label: t.menu.sceneDisplay, submenu: sceneDisplayItems(context) },
-    { label: t.menu.sceneView, submenu: sceneViewItems(context) },
-    { label: t.menu.sceneCapture, submenu: sceneCaptureItems(context) },
-    { type: 'separator' },
-    toggleItem(context, 'scene.projection', t.commands.sceneProjection.title),
-    toggleItem(context, 'scene.quad', t.commands.sceneQuad.title),
-    toggleItem(context, 'scene.quadEdges', t.commands.sceneQuadEdges.title),
-    { type: 'separator' },
-    toggleItem(context, 'scene.skeletons', t.commands.sceneSkeletons.title),
-    toggleItem(context, 'scene.poseMode', t.commands.scenePoseMode.title),
-  ]
-}
-
 /**
- * The model tab's share of the scene rows: what moves its VIEW and nothing that would answer
- * `false` there — no projection, quad, side views, camera or pose mode on a one-model workshop.
+ * The scene's View rows. A model tab shows the ones that move its VIEW and no other: a row that
+ * answered nothing there would sit active and do nothing, which the menu context promises against.
  */
-function workshopMenuItems(context: MenuContext): MenuItemConstructorOptions[] {
-  if (context.options.scope !== 'character') return []
+function sceneMenuItems(context: MenuContext): MenuItemConstructorOptions[] {
+  const { scope } = context.options
+  if (!viewsScene(scope)) return []
   const { t } = context
+  const workshop = scope === 'character'
+  const sceneOnly = (row: MenuItemConstructorOptions): MenuItemConstructorOptions[] =>
+    workshop ? [] : [row]
   return [
     { type: 'separator' },
     { label: t.menu.sceneNavigation, submenu: navigationItems(context) },
     { label: t.menu.sceneDisplay, submenu: sceneDisplayItems(context) },
+    ...sceneOnly({ label: t.menu.sceneView, submenu: sceneViewItems(context) }),
     { label: t.menu.sceneCapture, submenu: sceneCaptureItems(context) },
     { type: 'separator' },
+    ...sceneOnly(toggleItem(context, 'scene.projection', t.commands.sceneProjection.title)),
+    ...sceneOnly(toggleItem(context, 'scene.quad', t.commands.sceneQuad.title)),
+    ...sceneOnly(toggleItem(context, 'scene.quadEdges', t.commands.sceneQuadEdges.title)),
+    ...sceneOnly({ type: 'separator' }),
     toggleItem(context, 'scene.skeletons', t.commands.sceneSkeletons.title),
+    ...sceneOnly(toggleItem(context, 'scene.poseMode', t.commands.scenePoseMode.title)),
   ]
 }
 
@@ -142,7 +133,6 @@ export function viewMenu(context: MenuContext): MenuItemConstructorOptions {
       context.commandItem('layout.reset', context.t.menu.resetLayout),
       ...canvasViewItems(context),
       ...sceneMenuItems(context),
-      ...workshopMenuItems(context),
       { type: 'separator' },
       {
         label: context.t.menu.fullScreen,

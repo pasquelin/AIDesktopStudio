@@ -101,8 +101,7 @@ export function CharacterDocument({ documentId }: { documentId: string }) {
   const [navigating, setNavigating] = useState(false)
   /** Metres per second the wheel left the flight at, or `null` while it has said nothing. */
   const [flySpeed, setFlySpeed] = useState<number | null>(null)
-  // Rebuilt every render on purpose: a command reads the view of the render it fires in.
-  const context = { assetId, workshopId, setNavigating, view }
+  const context = { workshopId, assetId, setNavigating }
 
   // Its OWN scope and not the scene's: ⌘Z on this tab must not reach the scene open beside it.
   // ⌘S is not here — `commandRouter` routes it to the document in front, and this kind writes

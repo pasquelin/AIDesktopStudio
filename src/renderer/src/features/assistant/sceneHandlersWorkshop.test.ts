@@ -46,6 +46,16 @@ describe('the scene actions over a model tab', () => {
     expect(sceneOf(useScenes.getState(), WORKSHOP).nodes).toHaveLength(1)
   })
 
+  // Every door that writes opens on `mountedScene`: a world patch or a boolean mark used to slip by.
+  it('refuses the scene edits that never went through the node doors', async () => {
+    const [model] = sceneOf(useScenes.getState(), WORKSHOP).nodes
+    const world = await runAction('world.setBackground', { kind: 'color', color: '#112233' })
+    const mark = await runAction('node.markAsCuttingTool', { nodeIds: [model?.id ?? ''] })
+
+    expect(world).toMatchObject({ ok: false, refusal: 'wrongSurface' })
+    expect(mark).toMatchObject({ ok: false, refusal: 'wrongSurface' })
+  })
+
   it('refuses to edit the model node itself', async () => {
     const [model] = sceneOf(useScenes.getState(), WORKSHOP).nodes
     const answer = await runAction('node.remove', { nodeId: model?.id ?? '' })

@@ -10,7 +10,6 @@ import { AssetDropTarget } from '@/components/AssetDropTarget'
 import { PANE_TOOLBAR } from '@/components/styles'
 import { Toolbar } from '@/components/Toolbar/Toolbar'
 import { hideIn, NOTHING_ISOLATED, type Isolation } from '@/engines/scene/isolation'
-import { nextDisplayMode } from '@/engines/scene/sceneView'
 import type { SceneNode } from '@/engines/scene/sceneState'
 import type { TransformMode } from '@/engines/scene/SceneRenderer'
 import { toggledIsolation } from '@/engines/scene/sceneVisibility'
@@ -22,11 +21,12 @@ import { useRestoredDocument } from '@/hooks/useRestoredDocument'
 import { useShortcuts } from '@/hooks/useShortcuts'
 import { useDocumentIsInFront } from '@/stores/documents'
 import { addModelTo, isSceneDirty, sceneOf, useScenes } from '@/stores/scenes'
-import { displayOfPane, sceneViewChromeOf } from '@/stores/sceneViewChrome'
+import { sceneViewChromeOf } from '@/stores/sceneViewChrome'
 import { sceneViewOf, useSceneViews } from '@/stores/sceneViews'
 import { useSettings } from '@/stores/settings'
 import { CameraPreview } from '../../Camera/CameraPreview'
 import { runSceneCommand } from '../../sceneCommands'
+import { cycleSceneDisplay, toggleSceneSkeletons } from '../../sceneViewCommands'
 import { SceneClock } from '../SceneClock'
 import { SceneCounters } from '../SceneCounters'
 import { SceneNavigationHint } from '../SceneNavigationHint'
@@ -116,7 +116,7 @@ function runViewToggleCommand(command: CommandId, context: DocumentCommandContex
   const { documentId, view } = context
   switch (command) {
     case 'scene.skeletons':
-      return useSceneViews.getState().setSkeletons(documentId, !view.skeletons)
+      return toggleSceneSkeletons(documentId)
     case 'scene.poseMode':
       return useSceneViews.getState().setPoseMode(documentId, !view.poseMode)
     case 'scene.quad':
@@ -172,13 +172,10 @@ export function SceneDocument({ documentId }: { documentId: string }) {
    * package reads it. The engine is asked rather than React tracking it — the pointer is the
    * viewport's own business, and a second tally here is a second answer free to disagree.
    */
-  const cycleDisplay = useCallback(() => {
-    const pane = paneInHand()
-    const displays = sceneViewOf(useSceneViews.getState(), documentId).displays
-    useSceneViews
-      .getState()
-      .setDisplay(documentId, pane, nextDisplayMode(displayOfPane(displays, pane)))
-  }, [documentId, paneInHand])
+  const cycleDisplay = useCallback(
+    () => cycleSceneDisplay(documentId, paneInHand()),
+    [documentId, paneInHand],
+  )
 
   // Single dispatch: the toolbar and the keyboard both resolve to a `CommandId` first, so a new
   // tool is declared once in `SCENE_TOOLS` and handled once here.

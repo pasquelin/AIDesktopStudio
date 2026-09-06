@@ -1,20 +1,22 @@
 import type { Dispatch, SetStateAction } from 'react'
 import type { CommandId } from '@shared/domain/command'
 import { DEFAULT_CAPTURE_QUALITY } from '@shared/domain/sceneCapture'
-import { nextDisplayMode } from '@/engines/scene/sceneView'
 import type { TransformMode } from '@/engines/scene/gizmoTarget'
+import {
+  cycleSceneDisplay,
+  toggleSceneSkeletons,
+} from '@/features/scene/components/sceneViewCommands'
 import { captureSceneView } from '@/helpers/captureSceneView'
 import type { CommandAnswer } from '@/services/commandBus'
 import { useCharacterView } from '@/stores/characterView'
 import { sceneEngineOf } from '@/stores/sceneEngines'
-import { displayOfPane, type sceneViewChromeOf } from '@/stores/sceneViewChrome'
-import { MAIN_SCENE_PANE, useSceneViews } from '@/stores/sceneViews'
+import { MAIN_SCENE_PANE } from '@/stores/sceneViews'
 
+/** The tab passes the two it alone holds; a menu row or the bench passes the workshop and nothing else. */
 export type WorkshopCommandContext = {
-  assetId: string
   workshopId: string
-  setNavigating: Dispatch<SetStateAction<boolean>>
-  view: ReturnType<typeof sceneViewChromeOf>
+  assetId?: string
+  setNavigating?: Dispatch<SetStateAction<boolean>>
 }
 
 const MODE_OF: Partial<Record<CommandId, TransformMode>> = {
@@ -23,37 +25,14 @@ const MODE_OF: Partial<Record<CommandId, TransformMode>> = {
   'scene.rotate': 'rotate',
 }
 
-/**
- * The scene's commands this workshop takes: the ones that move the view, never the document.
- * Answers `false` for a command it leaves to someone else — undo belongs to the character scope.
- */
-export function runWorkshopCommand(
-  command: CommandId,
-  context: WorkshopCommandContext,
-): CommandAnswer {
-  const { assetId, workshopId, setNavigating, view } = context
-  const mode = MODE_OF[command]
-  if (mode) {
-    useCharacterView.getState().setCharacterMode(assetId, mode)
-    setNavigating(false)
-    return true
-  }
-
+/** What moves the VIEW of a workshop, from its id alone — a menu row and the bench reach these. */
+function runWorkshopViewCommand(command: CommandId, workshopId: string): CommandAnswer {
   switch (command) {
-    case 'scene.navigate':
-      setNavigating(current => !current)
-      return true
     case 'scene.display':
-      useSceneViews
-        .getState()
-        .setDisplay(
-          workshopId,
-          MAIN_SCENE_PANE,
-          nextDisplayMode(displayOfPane(view.displays, MAIN_SCENE_PANE)),
-        )
+      cycleSceneDisplay(workshopId, MAIN_SCENE_PANE)
       return true
     case 'scene.skeletons':
-      useSceneViews.getState().setSkeletons(workshopId, !view.skeletons)
+      toggleSceneSkeletons(workshopId)
       return true
     case 'scene.frame':
       // The whole model, not a selection: the workshop has none, and `runSceneCommand` would
@@ -65,4 +44,27 @@ export function runWorkshopCommand(
     default:
       return false
   }
+}
+
+/**
+ * The scene's commands this workshop takes: the ones that move the view, never the document.
+ * Answers `false` for a command it leaves to someone else — undo belongs to the character scope.
+ */
+export function runWorkshopCommand(
+  command: CommandId,
+  { workshopId, assetId, setNavigating }: WorkshopCommandContext,
+): CommandAnswer {
+  const mode = MODE_OF[command]
+  if (mode) {
+    if (assetId === undefined) return false
+    useCharacterView.getState().setCharacterMode(assetId, mode)
+    setNavigating?.(false)
+    return true
+  }
+  if (command === 'scene.navigate') {
+    if (!setNavigating) return false
+    setNavigating(current => !current)
+    return true
+  }
+  return runWorkshopViewCommand(command, workshopId)
 }

@@ -22,7 +22,7 @@ import { SECOND } from '@shared/domain/time'
 import { numberOf, textOf, textsOf } from './actionInputs'
 import { nodeAimed } from './nodeAimed'
 
-import { edit, editNode, mounted, NO_SCENE, vectorOf } from './sceneHandlerCore'
+import { edit, editNode, mounted, mountedScene, NO_SCENE, vectorOf } from './sceneHandlerCore'
 export function editPath(
   input: Record<string, unknown>,
   change: (path: PathDescriptor) => PathDescriptor,
@@ -45,8 +45,8 @@ export function editShot(
   /** What a caller does when the shot IS there and the build still declines. */
   nothing: string,
 ): ActionOutcome {
-  const open = mounted()
-  if (!open) return refused('wrongSurface', NO_SCENE)
+  const open = mountedScene()
+  if ('ok' in open) return open
 
   const shotId = textOf(input, 'shotId') ?? ''
   const shot = open.state.animation.shots.find(held => held.id === shotId)
@@ -65,8 +65,8 @@ export function editShot(
 
 /** A shot opened for a camera, answering the id it was born with — a client edits it by that. */
 export function openShot(input: Record<string, unknown>): ActionOutcome {
-  const open = mounted()
-  if (!open) return refused('wrongSurface', NO_SCENE)
+  const open = mountedScene()
+  if ('ok' in open) return open
 
   const nodeId = textOf(input, 'nodeId') ?? ''
   if (nodeAimed(open.state, nodeId)?.type !== 'camera') {
@@ -112,8 +112,8 @@ export function add(input: Record<string, unknown>): ActionOutcome {
       `no node kind "${textOf(input, 'kind') ?? ''}" can be built — the "kind" field of this action lists the ones that can`,
     )
 
-  const open = mounted()
-  if (!open) return refused('wrongSurface', NO_SCENE)
+  const open = mountedScene()
+  if ('ok' in open) return open
   if (bringsSecondPlayer(open.state.nodes, built))
     return refused(
       'badInput',

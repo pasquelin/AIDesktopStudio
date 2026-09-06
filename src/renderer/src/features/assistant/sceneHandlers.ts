@@ -9,7 +9,7 @@ import { useScenes } from '@/stores/scenes'
 import type { ActionHandlers } from './actionHandler'
 import { oneOf, textsOf } from './actionInputs'
 import { SCENE_CAMERA_VIEW_HANDLERS } from './sceneCameraViewHandlers'
-import { aimedNodes, mounted, NO_SCENE, noSuchNode } from './sceneHandlerCore'
+import { aimedNodes, mounted, mountedScene, NO_SCENE, noSuchNode } from './sceneHandlerCore'
 import { nodeTargets, selectNode } from './sceneNodeActions'
 import { SCENE_NODE_APPEARANCE_HANDLERS } from './sceneNodeAppearanceHandlers'
 import { SCENE_NODE_BASIC_HANDLERS } from './sceneNodeBasicHandlers'
@@ -46,8 +46,8 @@ async function optimizationAnalysis(
 }
 
 function optimizeNodes(scope: 'selection' | 'world'): ActionOutcome {
-  const open = mounted()
-  if (!open) return refused('wrongSurface', NO_SCENE)
+  const open = mountedScene()
+  if ('ok' in open) return open
   const candidates =
     scope === 'world'
       ? open.state.nodes
@@ -65,8 +65,8 @@ function setOptimizationMode(
   input: Record<string, unknown>,
   forced?: OptimizationMode,
 ): ActionOutcome {
-  const open = mounted()
-  if (!open) return refused('wrongSurface', NO_SCENE)
+  const open = mountedScene()
+  if ('ok' in open) return open
   const named = textsOf(input, 'nodeIds')
   const nodes = aimedNodes(open.state, input)
   if (nodes.length !== named.length)

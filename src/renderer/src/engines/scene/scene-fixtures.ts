@@ -1,6 +1,13 @@
 import type { Object3D } from 'three'
 import type { SmoothPath } from '@shared/domain/scene'
-import { Texture, type ColorSpace } from 'three'
+import {
+  BoxGeometry,
+  Float32BufferAttribute,
+  Mesh,
+  MeshStandardMaterial,
+  Texture,
+  type ColorSpace,
+} from 'three'
 import {
   DEFAULT_CAMERA,
   DEFAULT_PATH,
@@ -246,4 +253,17 @@ export async function gltfNodesOf(renderer: {
   const file = new TextDecoder().decode(await renderer.exportTo('gltf', 'scene'))
   // `as`: a `.gltf` file holds glTF, and `nodes` is the field this reads.
   return (JSON.parse(file) as { nodes?: GltfNode[] }).nodes ?? []
+}
+
+/** A mesh carrying the morph targets named, the way `GLTFLoader` hands one back. */
+export function morphedMesh(...names: string[]): Mesh {
+  const geometry = new BoxGeometry()
+  geometry.morphAttributes.position = names.map(
+    () =>
+      new Float32BufferAttribute(new Float32Array(geometry.getAttribute('position').count * 3), 3),
+  )
+  const mesh = new Mesh(geometry, new MeshStandardMaterial())
+  mesh.updateMorphTargets()
+  mesh.morphTargetDictionary = Object.fromEntries(names.map((name, index) => [name, index]))
+  return mesh
 }

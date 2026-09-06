@@ -7,7 +7,7 @@ import { clipLengthsOf, clipNamesOf, clipsOf, foreignClipsOf, type ForeignClip }
 import { rigStateOf } from './rigState'
 import { instanceableOf, markInstanceable } from './instanceableModel'
 import { instanceOf, modelKeyOf } from './modelCache'
-import { morphNamesOf, setMorphInfluenceOn } from './modelMorphs'
+import { morphNamesOf, setMorphInfluencesOn } from './modelMorphs'
 import { applyShadowFlags } from './shadows'
 import type { Rig } from '@shared/domain/rig'
 import type { HumanoidRole } from '@shared/domain/humanoid'
@@ -40,11 +40,11 @@ export abstract class SceneRendererModels extends SceneRendererGeometry {
   protected abstract tuneShadowsIfMoved(): void
   protected abstract applyDisplay(object: Object3D): void
   protected abstract accelerateOrReport(object: Object3D, subject: string): Promise<void>
-  /** Weighs one morph target of a model on every mesh carrying the name — a preview. Answers whether any did. */
-  setMorphInfluence(nodeId: string, name: string, value: number): boolean {
+  /** Weighs the morph targets of a model, by name — a preview. Answers how many the model carries. */
+  setMorphInfluences(nodeId: string, weights: Readonly<Record<string, number>>): number {
     const holder = this.objects.get(nodeId)
-    const written = holder !== undefined && setMorphInfluenceOn(holder, name, value)
-    if (written) this.redraw()
+    const written = holder === undefined ? 0 : setMorphInfluencesOn(holder, weights)
+    if (written > 0) this.redraw()
     return written
   }
 
@@ -186,23 +186,40 @@ export abstract class SceneRendererModels extends SceneRendererGeometry {
   }
   /** Loads again every model whose file moved since it was read — the door `useShelfRefresh` pushes. */
   refreshModels(): void {
-    let reloaded = false
-    for (const [id, held] of [...this.modelKeys]) {
-      const node = this.applied.get(id)
-      if (node?.type !== 'model') continue
-      const fresh = modelKeyOf(node.model.assetId, this.options.assetVersion?.(node.model.assetId))
-      if (fresh === held) continue
-      this.release(id)
+    const stale = this.staleModels()
+    if (stale.length === 0) return
+    for (const node of stale) {
+      this.release(node.id)
       this.syncNode(node)
-      reloaded = true
     }
-    if (!reloaded) return
     // `release` unhung the old holder with the children under it, and `syncNode` hangs the new one
-    // from the scene: the second pass of `apply`, which nothing here calls.
-    for (const node of this.applied.values()) this.hangFromParent(node)
+    // from the scene: the second pass of `apply` — for the reloaded models and their children only.
+    const reloaded = new Set(stale.map(node => node.id))
+    for (const node of this.applied.values()) {
+      if (reloaded.has(node.id) || (node.parentId !== null && reloaded.has(node.parentId)))
+        this.hangFromParent(node)
+    }
     this.hangAll = false
     // The gizmo holds the OBJECT it was aimed at, and a selected model's holder just went.
     this.attachGizmo()
+  }
+
+  /**
+   * The models whose file moved since they were read. Pushed on every relisting of the shelf, so
+   * the common case allocates nothing: the version is asked once per asset, the stale alone kept.
+   */
+  private staleModels(): ModelNode[] {
+    const fresh = new Map<string, string>()
+    const stale: ModelNode[] = []
+    for (const [id, held] of this.modelKeys) {
+      const node = this.applied.get(id)
+      if (node?.type !== 'model') continue
+      const { assetId } = node.model
+      const key = fresh.get(assetId) ?? modelKeyOf(assetId, this.options.assetVersion?.(assetId))
+      fresh.set(assetId, key)
+      if (key !== held) stale.push(node)
+    }
+    return stale
   }
   /** Told once per skeleton, not per model: it is filed by what its bones ARE. */
   protected learnRig(rig: Rig, corrected?: Readonly<Record<string, HumanoidRole>>): void {

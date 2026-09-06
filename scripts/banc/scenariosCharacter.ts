@@ -1,6 +1,7 @@
 import type { Scenario } from './run'
 import * as read from './oracle'
-import { refusedWith, workshopView } from './oracleWorkshop'
+import { refusedWith } from './oracleActions'
+import { workshopView } from './oracleWorkshop'
 import { characterTab } from './setups'
 
 /**
@@ -18,13 +19,13 @@ export const CHARACTER_SCENARIOS: readonly Scenario[] = [
     name: '71.2 draws the model as a wireframe',
     said: ['Passe le modèle en filaire.'],
     setup: characterTab,
-    passed: run => workshopView(run)?.displays.includes('wireframe') === true,
+    passed: () => workshopView()?.displays.includes('wireframe') === true,
   },
   {
     name: '71.3 hides the skeleton of the model',
     said: ['Masque le squelette du modèle.'],
     setup: characterTab,
-    passed: run => workshopView(run)?.skeletons === false,
+    passed: () => workshopView()?.skeletons === false,
   },
   {
     name: '71.4 captures the view of the model',

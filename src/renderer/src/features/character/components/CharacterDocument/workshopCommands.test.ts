@@ -3,7 +3,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { SceneRenderer } from '@/engines/scene/SceneRenderer'
 import { characterViewOf, useCharacterView } from '@/stores/characterView'
 import { forgetSceneEngine, registerSceneEngine } from '@/stores/sceneEngines'
-import { sceneViewChromeOf } from '@/stores/sceneViewChrome'
 import { sceneViewOf, useSceneViews } from '@/stores/sceneViews'
 import { runWorkshopCommand, type WorkshopCommandContext } from './workshopCommands'
 
@@ -13,10 +12,9 @@ const WORKSHOP = 'workshop-hero'
 const setNavigating = vi.fn()
 
 const context = (): WorkshopCommandContext => ({
-  assetId: ASSET,
   workshopId: WORKSHOP,
+  assetId: ASSET,
   setNavigating,
-  view: sceneViewChromeOf(useSceneViews.getState(), WORKSHOP),
 })
 
 const workshopView = () => sceneViewOf(useSceneViews.getState(), WORKSHOP)
@@ -63,6 +61,16 @@ describe('runWorkshopCommand', () => {
 
     expect(runWorkshopCommand('scene.frame', context())).toBe(true)
     expect(frameContents).toHaveBeenCalledOnce()
+  })
+
+  // A menu row or the bench hands over the workshop alone: what needs the tab answers `false`.
+  it('takes the view commands from the workshop id alone, and leaves the modes to the tab', () => {
+    useSceneViews.getState().setSkeletons(WORKSHOP, true)
+
+    expect(runWorkshopCommand('scene.skeletons', { workshopId: WORKSHOP })).toBe(true)
+    expect(workshopView().skeletons).toBe(false)
+    expect(runWorkshopCommand('scene.rotate', { workshopId: WORKSHOP })).toBe(false)
+    expect(runWorkshopCommand('scene.navigate', { workshopId: WORKSHOP })).toBe(false)
   })
 
   it('leaves what edits a document to someone else, touching nothing', () => {

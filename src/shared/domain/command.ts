@@ -93,6 +93,14 @@ const SCOPE_BY_KIND: Record<DocumentKind, CommandScope | null> = {
 }
 
 /**
+ * Whether a scope LOOKS AT a scene: the scene itself, and the model tab whose workshop is one.
+ * Read by the native menu's View and Export rows and by the bench — one rule, not four copies.
+ */
+export function viewsScene(scope: CommandScope | null): boolean {
+  return scope === 'scene' || scope === 'character'
+}
+
+/**
  * The surface a workspace edits through, or `null` where nothing is undoable — which the home
  * is: it covers the spaces rather than editing one, so it holds no history of its own.
  */

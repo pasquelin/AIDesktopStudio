@@ -8,14 +8,14 @@ import { type ActionHandlers } from './actionHandler'
 import { boolOf, numberOf, oneOf } from './actionInputs'
 import { environmentFromInput } from './environmentInput'
 
-import { mounted, NO_SCENE } from './sceneHandlerCore'
+import { mountedScene } from './sceneHandlerCore'
 export function editWorld(
   build: (world: SceneWorld) => Partial<SceneWorld>,
   /** What a caller does when the patch comes back empty — the fields differ from action to action. */
   nothing: string,
 ): ActionOutcome {
-  const open = mounted()
-  if (!open) return refused('wrongSurface', NO_SCENE)
+  const open = mountedScene()
+  if ('ok' in open) return open
 
   const patch = build(open.state.world)
   if (Object.keys(patch).length === 0) return refused('badInput', nothing)

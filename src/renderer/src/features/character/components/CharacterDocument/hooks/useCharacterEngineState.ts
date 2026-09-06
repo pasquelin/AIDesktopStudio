@@ -57,8 +57,6 @@ export function useCharacterEngineState(
 
   // The weights are a preview of this view, pushed like a pose: the file never carries them.
   useEffect(() => {
-    if (!engine || !nodeId) return
-    for (const [name, value] of Object.entries(view.morphs))
-      engine.setMorphInfluence(nodeId, name, value)
+    if (engine && nodeId) engine.setMorphInfluences(nodeId, view.morphs)
   }, [engine, view.morphs, nodeId])
 }

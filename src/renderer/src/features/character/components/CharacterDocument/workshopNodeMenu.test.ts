@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { workshopIdOf } from '@shared/domain/character'
 import { DISPLAY_MODES } from '@shared/domain/scene'
 import { fakeMenu } from '@/helpers/menu-fixtures'
+import { flush } from '@/stores/generation-fixtures'
 import { installFakeBridge } from '@/services/fakeBridge'
 import { registerSceneEngine, forgetSceneEngine } from '@/stores/sceneEngines'
 import type { SceneRenderer } from '@/engines/scene/SceneRenderer'
@@ -13,9 +14,6 @@ const WORKSHOP = workshopIdOf('asset-hero')
 
 let menu = fakeMenu()
 const frameContents = vi.fn(() => true)
-
-/** Waits for the popup promise the menu resolves its pick through. */
-const settled = () => new Promise(resolve => setTimeout(resolve, 0))
 
 describe('what a right-click offers on the model of a workshop', () => {
   beforeEach(() => {
@@ -52,7 +50,7 @@ describe('what a right-click offers on the model of a workshop', () => {
     useSceneViews.getState().setSkeletons(WORKSHOP, true)
     menu.picks(i18next.t('character.hideBones'))
     openWorkshopNodeMenu({ workshopId: WORKSHOP, t: i18next.t })
-    await settled()
+    await flush()
 
     expect(sceneViewOf(useSceneViews.getState(), WORKSHOP).skeletons).toBe(false)
   })
@@ -60,7 +58,7 @@ describe('what a right-click offers on the model of a workshop', () => {
   it('draws the model in the way a row of the group chooses, and greys the way in force', async () => {
     menu.picks(i18next.t('sceneDisplay.wireframe'))
     openWorkshopNodeMenu({ workshopId: WORKSHOP, t: i18next.t })
-    await settled()
+    await flush()
 
     expect(sceneViewOf(useSceneViews.getState(), WORKSHOP).displays[0]).toBe('wireframe')
     expect(menu.offers(i18next.t('sceneDisplay.shaded'))).toBe(false)
@@ -69,7 +67,7 @@ describe('what a right-click offers on the model of a workshop', () => {
   it('frames the whole model rather than a selection the workshop has not got', async () => {
     menu.picks(i18next.t('commands.sceneFrame.title'))
     openWorkshopNodeMenu({ workshopId: WORKSHOP, t: i18next.t })
-    await settled()
+    await flush()
 
     expect(frameContents).toHaveBeenCalledOnce()
   })

@@ -27,6 +27,10 @@ export const declined = (run: Run, name: ActionName): boolean =>
 export const tried = (run: Run, name: ActionName): boolean =>
   run.called.some(one => one.action === name)
 
+/** Whether the studio REFUSED that action — what a scenario about a closed door measures. */
+export const refusedWith = (run: Run, name: ActionName): boolean =>
+  run.called.some(one => one.action === name && one.answer?.startsWith('refused') === true)
+
 /** The successful answer of one action; refusals are deliberately excluded. */
 export const answerOf = (run: Run, name: ActionName): string | null => {
   const held = run.called.find(one => one.action === name)?.answer

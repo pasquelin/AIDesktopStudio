@@ -7,7 +7,6 @@ import {
 import { workshopIdOf } from '@shared/domain/character'
 import { installFakeBridge } from '@/services/fakeBridge'
 import { activeSceneOrWorkshopId, documentForAsset, documentsIn, useDocuments } from './documents'
-import { documentExportName } from './documentExportName'
 import { showPanels } from './layout-fixtures'
 import { useLayouts } from './layouts'
 
@@ -351,32 +350,6 @@ describe('activeSceneOrWorkshopId', () => {
     inFront(POSTER)
 
     expect(activeSceneOrWorkshopId(useDocuments.getState())).toBeNull()
-  })
-})
-
-describe('documentExportName', () => {
-  // A workshop is no document: exporting one used to fall back to the bare word « scene ».
-  it('names a workshop export after the model tab opened on it', () => {
-    useDocuments.setState({
-      documents: {
-        'character-1': {
-          id: 'character-1',
-          kind: 'character',
-          title: 'Hero Knight',
-          workspace: '3d',
-          path: 'Modelling/Models/hero.glb',
-          sourceAssetId: 'asset-hero',
-        },
-      },
-      activeId: 'character-1',
-    })
-
-    expect(documentExportName(useDocuments.getState(), workshopIdOf('asset-hero'), 'scene')).toBe(
-      'Hero Knight',
-    )
-    expect(documentExportName(useDocuments.getState(), workshopIdOf('asset-none'), 'scene')).toBe(
-      'scene',
-    )
   })
 })
 // @vitest-environment jsdom

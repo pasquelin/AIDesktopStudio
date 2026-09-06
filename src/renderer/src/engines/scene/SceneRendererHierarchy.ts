@@ -10,7 +10,7 @@ import {
 import { type LightDescriptor } from '@shared/domain/scene'
 import { type SceneNode } from './sceneState'
 import { lightBody } from './lightBodies'
-import { disposeTree, modelKeyOf } from './modelCache'
+import { disposeTree } from './modelCache'
 import { centreOf } from './pivot'
 import { applyWireOverlay } from './sceneView'
 import { characterExtrasIn } from './rigRead'
@@ -76,8 +76,8 @@ export abstract class SceneRendererHierarchy extends SceneRendererShadows {
     const applied = this.applied.get(id)
     const releaseStep1 = () => {
       const releaseStep1 = () => {
-        if (applied?.type === 'model')
-          this.modelCache.release(this.modelKeys.get(id) ?? modelKeyOf(applied.model.assetId))
+        const key = this.modelKeys.get(id)
+        if (applied?.type === 'model' && key !== undefined) this.modelCache.release(key)
         this.modelKeys.delete(id)
         // Given back once: `recut` may still be in flight, and `cutting` is what says which of the
         // two owes the reference.

@@ -1,11 +1,11 @@
 import { mdiBone, mdiBoneOff, mdiCamera, mdiCropFree, mdiHexagonOutline } from '@mdi/js'
 import type { TFunction } from 'i18next'
-import { workshopAssetOf } from '@shared/domain/character'
-import { commandDescriptor, type CommandId } from '@shared/domain/command'
-import { DISPLAY_MODES } from '@shared/domain/scene'
-import { showContextMenu, type ContextMenuAction } from '@/helpers/contextMenu'
-import { displayOfPane, sceneViewChromeOf } from '@/stores/sceneViewChrome'
-import { MAIN_SCENE_PANE, useSceneViews } from '@/stores/sceneViews'
+import type { CommandId } from '@shared/domain/command'
+import { isDisplayMode } from '@shared/domain/scene'
+import { DISPLAY_TOOL_MODES } from '@/features/scene/components/Scene/sceneTools'
+import { commandRow, showContextMenu, type ContextMenuAction } from '@/helpers/contextMenu'
+import { displayOfPane } from '@/stores/sceneViewChrome'
+import { MAIN_SCENE_PANE, sceneViewOf, useSceneViews } from '@/stores/sceneViews'
 import { runWorkshopCommand } from './workshopCommands'
 
 export type WorkshopNodeMenuProps = {
@@ -15,37 +15,23 @@ export type WorkshopNodeMenuProps = {
   t: TFunction
 }
 
-function commandRow(id: CommandId, icon: string, t: TFunction, run: (command: CommandId) => void) {
-  const descriptor = commandDescriptor(id)
-  return {
-    label: descriptor ? t(descriptor.titleKey) : id,
-    icon,
-    tooltip: descriptor ? t(descriptor.helpKey) : id,
-    onSelect: () => run(id),
-  }
-}
-
 /**
  * What a right-click offers on the model of a workshop: the VIEW, never the document. A scene's
  * node menu would offer to delete or duplicate the one node this tab is about.
  */
 export function openWorkshopNodeMenu({ workshopId, t }: WorkshopNodeMenuProps): void {
-  const view = sceneViewChromeOf(useSceneViews.getState(), workshopId)
+  const view = sceneViewOf(useSceneViews.getState(), workshopId)
   const display = displayOfPane(view.displays, MAIN_SCENE_PANE)
-  // A menu row never flies the camera, so the navigation setter has nothing to set.
-  const run = (command: CommandId): void =>
-    void runWorkshopCommand(command, {
-      assetId: workshopAssetOf(workshopId) ?? '',
-      workshopId,
-      setNavigating: () => {},
-      view,
-    })
+  const run = (command: CommandId): void => void runWorkshopCommand(command, { workshopId })
 
-  const modes: ContextMenuAction[] = DISPLAY_MODES.map(mode => ({
-    label: t(`sceneDisplay.${mode}`),
-    tooltip: t(`sceneDisplay.${mode}Hint`),
-    disabled: mode === display,
-    onSelect: () => useSceneViews.getState().setDisplay(workshopId, MAIN_SCENE_PANE, mode),
+  const modes: ContextMenuAction[] = DISPLAY_TOOL_MODES.map(mode => ({
+    label: t(mode.labelKey),
+    tooltip: t(mode.descriptionKey ?? mode.labelKey),
+    disabled: mode.id === display,
+    onSelect: () => {
+      if (isDisplayMode(mode.id))
+        useSceneViews.getState().setDisplay(workshopId, MAIN_SCENE_PANE, mode.id)
+    },
   }))
 
   void showContextMenu([

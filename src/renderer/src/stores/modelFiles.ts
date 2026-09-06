@@ -208,14 +208,14 @@ export function modelStatsOf(state: ModelFilesState, documentId: string): SceneS
  * read through a zustand selector, and a fresh array per call is a new snapshot every render —
  * the loop then never settles, which is the very trap `SceneInspector` carries a note about.
  */
-const NO_CLIPS: readonly string[] = []
+const NO_NAMES: readonly string[] = []
 
 export function morphNamesOfNode(
   state: ModelFilesState,
   documentId: string,
   nodeId: string,
 ): readonly string[] {
-  return state.morphs[documentId]?.[nodeId] ?? NO_CLIPS
+  return state.morphs[documentId]?.[nodeId] ?? NO_NAMES
 }
 const NO_SOURCE_INDICES: readonly (number | null)[] = []
 
@@ -225,7 +225,7 @@ export function clipsOfNode(
   documentId: string,
   nodeId: string,
 ): readonly string[] {
-  return state.clips[documentId]?.[nodeId] ?? NO_CLIPS
+  return state.clips[documentId]?.[nodeId] ?? NO_NAMES
 }
 
 /** How long one clip of a node runs, in seconds, or nothing while its file has not landed. */
@@ -261,7 +261,7 @@ export function materialNamesOfNode(
   documentId: string,
   nodeId: string,
 ): readonly string[] {
-  return state.materialNames[documentId]?.[nodeId] ?? NO_CLIPS
+  return state.materialNames[documentId]?.[nodeId] ?? NO_NAMES
 }
 
 export function materialSourceIndicesOfNode(
@@ -315,5 +315,5 @@ export function bonesOfNode(
   documentId: string,
   nodeId: string,
 ): readonly string[] {
-  return state.rigs[documentId]?.[nodeId]?.boneNames ?? NO_CLIPS
+  return state.rigs[documentId]?.[nodeId]?.boneNames ?? NO_NAMES
 }

@@ -92,7 +92,11 @@ export const useCharacterView = create<CharacterViewsState>()(set => ({
     set(state => written(state, assetId, () => ({ sample }))),
 
   setCharacterMorph: (assetId, name, value) =>
-    set(state => written(state, assetId, view => ({ morphs: { ...view.morphs, [name]: value } }))),
+    set(state =>
+      written(state, assetId, view =>
+        view.morphs[name] === value ? {} : { morphs: { ...view.morphs, [name]: value } },
+      ),
+    ),
 
   forgetCharacterView: assetId =>
     set(state => {

@@ -23,15 +23,20 @@ export function morphNamesOf(root: Object3D): readonly string[] {
   return [...names]
 }
 
-/** Writes one target's weight on every mesh that carries it. Answers whether any did. */
-export function setMorphInfluenceOn(root: Object3D, name: string, value: number): boolean {
-  let written = false
+/** Writes every named weight on every mesh carrying the name, in one walk. Answers how many landed. */
+export function setMorphInfluencesOn(
+  root: Object3D,
+  weights: Readonly<Record<string, number>>,
+): number {
+  let written = 0
   root.traverse(object => {
     if (!isMorphed(object)) return
-    const index = object.morphTargetDictionary[name]
-    if (index === undefined) return
-    object.morphTargetInfluences[index] = value
-    written = true
+    for (const [name, value] of Object.entries(weights)) {
+      const index = object.morphTargetDictionary[name]
+      if (index === undefined) continue
+      object.morphTargetInfluences[index] = value
+      written += 1
+    }
   })
   return written
 }

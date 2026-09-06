@@ -12,15 +12,15 @@ import { documentById, sceneDocumentNamed, useDocuments } from '@/stores/documen
 import { sceneOf, sceneStore, useScenes } from '@/stores/scenes'
 import type { ActionHandlers } from './actionHandler'
 import { numberOf, textOf } from './actionInputs'
-import { editRefusal } from './sceneHandlerCore'
 import { mounted, NO_SCENE } from './sceneHandlers'
+import { mountedScene } from './sceneHandlerCore'
 import { messageOf } from '@shared/guards'
 
 /** What puts a whole game together in one gesture — a template, or a prefab of the project. */
 export const ASSEMBLY_HANDLERS: ActionHandlers = {
   'game.applyTemplate': async input => {
-    const open = mounted()
-    if (!open) return refused('wrongSurface', NO_SCENE)
+    const open = mountedScene()
+    if ('ok' in open) return open
 
     // The choice field has already refused anything else, and names the three in doing so; this
     // is the narrowing TypeScript asks for, not a second gate.
@@ -30,9 +30,6 @@ export const ASSEMBLY_HANDLERS: ActionHandlers = {
         'badInput',
         `no scene template "${wanted}" — the "template" field of this action lists the ones it takes`,
       )
-
-    const barred = editRefusal(open)
-    if (barred) return barred
 
     const { seedTemplateFiles } = await import('@/features/game/seedTemplateFiles')
     const seeded = await seedTemplateFiles(wanted)
@@ -61,10 +58,8 @@ export const ASSEMBLY_HANDLERS: ActionHandlers = {
 
     // Read AGAIN after the await: an MCP call is not user-driven, and a tab switched while the
     // disk answered would have the nodes land in the document that WAS in front.
-    const open = mounted()
-    if (!open) return refused('wrongSurface', NO_SCENE)
-    const barred = editRefusal(open)
-    if (barred) return barred
+    const open = mountedScene()
+    if ('ok' in open) return open
     if (open.documentId === documentId) {
       return refused('badInput', `"${named}" is the scene in front: it cannot instance itself`)
     }
