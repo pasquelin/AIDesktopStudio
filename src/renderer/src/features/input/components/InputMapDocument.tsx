@@ -5,7 +5,11 @@ import { inputMapOf, type InputMap } from '@shared/domain/inputMap'
 import { Button } from '@/components/Button'
 import { Chip } from '@/components/Chip'
 import { getBridge } from '@/services/bridge'
-import { isDuplicateInputMapId, projectInputMaps } from '@/engines/code/projectInputMaps'
+import {
+  inputMapsChanged,
+  isDuplicateInputMapId,
+  projectInputMaps,
+} from '@/engines/code/projectInputMaps'
 import {
   fileViewPanelId,
   registerFileViewSave,
@@ -100,6 +104,7 @@ export function InputMapDocument({ path }: InputMapDocumentProps) {
       const next = mode === 'json' ? inputMapOf(JSON.parse(source)) : inputMapOf(map)
       const written = await getBridge()?.inputMaps.write(path, next)
       if (!written) throw new Error('write refused')
+      inputMapsChanged()
       const unchanged = revision.current === savedRevision
       if (unchanged) {
         setMap(next)

@@ -1,5 +1,16 @@
 // SPDX-License-Identifier: MIT
 import { useEffect } from 'react'
+import type { InputMap } from '@shared/domain/inputMap'
+import { inputMapPreset } from '@shared/domain/inputPresets'
+import { readGamepads } from '@game/host/domInput'
+import { createInputActions, type InputActions } from '@game/runtime/inputActions'
+import {
+  onInputMapsChanged,
+  projectInputMaps,
+  withoutDuplicateInputMapIds,
+} from '@/engines/code/projectInputMaps'
+import { useProject } from '@/stores/project'
+import { useReloadKey } from './useReloadKey'
 import { useSettings } from '@/stores/settings'
 
 export type GamepadNavigationState = {
@@ -15,6 +26,14 @@ const RESTING: GamepadNavigationState = {
   confirm: false,
   back: false,
 }
+
+/** Where a pushed stick starts counting as a direction, well past any dead zone. */
+const PUSHED = 0.5
+
+const STUDIO = 'studio'
+const ACTIVE: readonly string[] = [STUDIO]
+const NO_KEYS: readonly string[] = []
+
 const FOCUSABLE = [
   'button:not(:disabled)',
   'input:not(:disabled)',
@@ -72,40 +91,61 @@ export function applyGamepadNavigation(
     document.activeElement.blur()
 }
 
-function navigationState(gamepads: readonly (Gamepad | null)[]): GamepadNavigationState {
-  return gamepads.reduce<GamepadNavigationState>(
-    (state, gamepad) => ({
-      next:
-        state.next ||
-        gamepad?.buttons[13]?.pressed === true ||
-        gamepad?.buttons[15]?.pressed === true ||
-        (gamepad?.axes[0] ?? 0) > 0.5 ||
-        (gamepad?.axes[1] ?? 0) > 0.5,
-      previous:
-        state.previous ||
-        gamepad?.buttons[12]?.pressed === true ||
-        gamepad?.buttons[14]?.pressed === true ||
-        (gamepad?.axes[0] ?? 0) < -0.5 ||
-        (gamepad?.axes[1] ?? 0) < -0.5,
-      confirm: state.confirm || gamepad?.buttons[0]?.pressed === true,
-      back: state.back || gamepad?.buttons[1]?.pressed === true,
-    }),
-    RESTING,
-  )
+/**
+ * 🛑 Read through the RESOLVED `studio` map, never off raw button indices. `useGamepadNavigation`
+ * used to test `buttons[0]`, `[12]`–`[15]` and `axes[0..1]` in place, so the `studio` preset —
+ * offered in « New control map » beside the four others — could be rebound and saved with nothing
+ * whatsoever changing. The stick and the d-pad both answer, as they always did.
+ */
+export function navigationState(actions: InputActions): GamepadNavigationState {
+  const navigate = actions.axis2('navigate')
+  return {
+    next: actions.button('next') || navigate.x > PUSHED || navigate.y > PUSHED,
+    previous: actions.button('previous') || navigate.x < -PUSHED || navigate.y < -PUSHED,
+    confirm: actions.button('confirm'),
+    back: actions.button('back'),
+  }
+}
+
+/** The project's own `studio` context if it wrote one, the preset otherwise. */
+export async function studioInputMaps(): Promise<readonly InputMap[]> {
+  const written = withoutDuplicateInputMapIds(await projectInputMaps())
+  return [written.find(one => one.map.id === STUDIO)?.map ?? inputMapPreset(STUDIO)]
 }
 
 export function useGamepadNavigation(): void {
   const enabled = useSettings(state => state.settings.input.gamepadNavigation)
+  const path = useProject(state => state.project?.path)
+  const [written, again] = useReloadKey()
+
+  useEffect(() => onInputMapsChanged(again), [again])
 
   useEffect(() => {
     if (!enabled || typeof navigator.getGamepads !== 'function') return
-    let previous = RESTING
-    let frame = requestAnimationFrame(function poll() {
-      const current = navigationState(Array.from(navigator.getGamepads()))
-      applyGamepadNavigation(current, previous)
-      previous = current
-      frame = requestAnimationFrame(poll)
-    })
-    return () => cancelAnimationFrame(frame)
-  }, [enabled])
+    let frame = 0
+    let stopped = false
+
+    // Named and `await`ed rather than a `.then`: the maps are read from disk ONCE, before the
+    // frame loop starts, and the same array is handed over every frame — `inputActions` holds
+    // its selection by identity, and a fresh array each frame would redo it sixty times a second.
+    const start = async (): Promise<void> => {
+      const maps = await studioInputMaps()
+      if (stopped) return
+      const actions = createInputActions()
+      let previous = RESTING
+      frame = requestAnimationFrame(function poll() {
+        actions.sample(maps, ACTIVE, { held: NO_KEYS, gamepads: readGamepads() })
+        const current = navigationState(actions)
+        applyGamepadNavigation(current, previous)
+        previous = current
+        frame = requestAnimationFrame(poll)
+      })
+    }
+    void start()
+
+    return () => {
+      stopped = true
+      if (frame !== 0) cancelAnimationFrame(frame)
+    }
+  }, [enabled, path, written])
 }

@@ -32,6 +32,9 @@ const AHEAD = ['KeyW', 'ArrowUp']
 const BACK = ['KeyS', 'ArrowDown']
 
 const PRESETS: Record<InputPresetId, InputMap> = {
+  // 🛑 The five the studio's own focus navigation reads. `next` and `previous` are BUTTONS: a
+  // two-way stick is the only thing an `axis2` takes, so the d-pad could not live on `navigate`
+  // — and it is what a person navigating a panel reaches for first.
   studio: {
     version: 1,
     id: 'studio',
@@ -40,10 +43,22 @@ const PRESETS: Record<InputPresetId, InputMap> = {
     actions: [
       { id: 'navigate', kind: 'axis2', bindings: [{ device: 'gamepad', control: 'leftStick' }] },
       {
-        id: 'confirm',
+        id: 'next',
         kind: 'button',
-        bindings: [{ device: 'gamepad', control: 'south' }],
+        bindings: [
+          { device: 'gamepad', control: 'dpadDown' },
+          { device: 'gamepad', control: 'dpadRight' },
+        ],
       },
+      {
+        id: 'previous',
+        kind: 'button',
+        bindings: [
+          { device: 'gamepad', control: 'dpadUp' },
+          { device: 'gamepad', control: 'dpadLeft' },
+        ],
+      },
+      { id: 'confirm', kind: 'button', bindings: [{ device: 'gamepad', control: 'south' }] },
       { id: 'back', kind: 'button', bindings: [{ device: 'gamepad', control: 'east' }] },
     ],
   },

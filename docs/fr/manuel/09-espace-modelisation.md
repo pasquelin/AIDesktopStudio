@@ -1537,10 +1537,14 @@ Un contexte porte aussi une **priorité** et un drapeau **Actif au démarrage**.
 *personnage*, *véhicule* et *vol* sont actifs d’emblée — aucun nom d’action ne leur est commun,
 donc ils ne se marchent pas dessus.
 
-Deux préréglages demandent qu’on crée leur carte pour exister. Le contexte *menu* **prime** sur les
-autres, et c’est à un script de le pousser quand un menu s’ouvre : sans la carte, la demande ne
-fait rien. Le préréglage *studio*, lui, décrit la navigation de l’interface du studio, que le
-réglage des préférences pilote directement — le rebinder ne change encore rien.
+Le contexte *menu* demande qu’on crée sa carte pour exister : il **prime** sur les autres, et c’est
+à un script de le pousser quand un menu s’ouvre — sans la carte, la demande ne fait rien.
+
+Le préréglage *studio* ne décrit pas un jeu : il décrit la **navigation à la manette de l’interface
+du studio**, celle que Réglages ▸ Périphériques active. Créer sa carte, la rebinder et
+l’enregistrer change la navigation **à l’enregistrement**, sans rouvrir le projet. Ses cinq actions
+sont `navigate` (le stick gauche), `next` et `previous` (la croix), `confirm` et `back`. Sans carte
+`studio` dans le projet, c’est le préréglage qui répond.
 
 Un script lit ces mêmes actions par leur nom, jamais une touche :
 

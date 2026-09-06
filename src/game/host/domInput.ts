@@ -17,7 +17,7 @@ export type GamepadReader = () => readonly GamepadState[]
  */
 export function createDomInput(
   target: DomInputTarget,
-  gamepads: GamepadReader = gamepadsOf,
+  gamepads: GamepadReader = readGamepads,
 ): InputPort {
   const held = new Set<string>()
   const pressed = new Set<string>()
@@ -105,7 +105,8 @@ export function createDomInput(
   }
 }
 
-function gamepadsOf(): readonly GamepadState[] {
+/** Every connected pad in the shape a map is resolved against — the studio reads it too. */
+export function readGamepads(): readonly GamepadState[] {
   if (typeof navigator === 'undefined' || typeof navigator.getGamepads !== 'function') return []
   return Array.from(navigator.getGamepads()).flatMap(gamepad =>
     gamepad
