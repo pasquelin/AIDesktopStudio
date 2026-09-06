@@ -224,6 +224,8 @@
   /* The room every property line keeps at its end, drawn into or not — two controls, the most any
      line asks for: padlock and reset on Scale, browse and clear on a link. */
   --sc-row-actions: calc(var(--sc-control) * 2);
+  /* Ten property rows and their nine standard gaps before a long interactive group scrolls. */
+  --sc-field-list: calc(var(--sc-control) * 10 + 72px);
   /* Where a surface laid BESIDE the pane's tool column starts. Derived, so a density that moves
      the control moves it too: `left-2` under the column (8px), its border and `p-1` on both
      sides (10px), and 8px of air between the two. */
@@ -361,4 +363,9 @@ html,
 body,
 #root {
   height: 100%;
+}
+
+.virtual-field-list {
+  height: var(--sc-field-list);
+  overflow-y: auto;
 }

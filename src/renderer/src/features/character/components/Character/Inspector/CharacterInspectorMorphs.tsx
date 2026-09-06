@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { PropertySection } from '@/components/PropertySection'
 import { QuietNote } from '@/components/QuietNote'
 import { SliderField } from '@/components/SliderField'
+import { VirtualFieldList } from '@/components/VirtualFieldList'
 import { characterViewOf, useCharacterView } from '@/stores/characterView'
 import { morphNamesOfNode, useModelFiles } from '@/stores/modelFiles'
 
@@ -28,17 +29,24 @@ export function CharacterInspectorMorphs({
     <PropertySection title={t('character.morphs')} scId="character.morphs">
       {names.length === 0 && <QuietNote>{t('character.morphsEmpty')}</QuietNote>}
       {names.length > 0 && <QuietNote>{t('character.morphsHint')}</QuietNote>}
-      {names.map(name => (
-        <SliderField
-          key={name}
-          label={name}
-          value={weights[name] ?? 0}
-          {...WEIGHT}
-          onChange={value => weigh(assetId, name, value)}
-          onReset={() => weigh(assetId, name, 0)}
-          scId="character.morph"
+      {names.length > 0 && (
+        <VirtualFieldList
+          key={`${documentId}:${nodeId}`}
+          items={names}
+          keyOf={name => name}
+          label={t('character.morphs')}
+          renderItem={name => (
+            <SliderField
+              label={name}
+              value={weights[name] ?? 0}
+              {...WEIGHT}
+              onChange={value => weigh(assetId, name, value)}
+              onReset={() => weigh(assetId, name, 0)}
+              scId="character.morph"
+            />
+          )}
         />
-      ))}
+      )}
     </PropertySection>
   )
 }
