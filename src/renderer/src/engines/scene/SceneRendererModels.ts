@@ -7,7 +7,7 @@ import { clipLengthsOf, clipNamesOf, clipsOf, foreignClipsOf, type ForeignClip }
 import { rigStateOf } from './rigState'
 import { instanceableOf, markInstanceable } from './instanceableModel'
 import { instanceOf, modelKeyOf } from './modelCache'
-import { morphNamesOf, setMorphInfluencesOn } from './modelMorphs'
+import { MorphPreviews, morphNamesOf } from './modelMorphs'
 import { applyShadowFlags } from './shadows'
 import type { Rig } from '@shared/domain/rig'
 import type { HumanoidRole } from '@shared/domain/humanoid'
@@ -38,6 +38,8 @@ function staleModelsOf(
 }
 
 export abstract class SceneRendererModels extends SceneRendererGeometry {
+  private readonly morphPreviews = new MorphPreviews()
+
   /** A copy of the loaded motion data; callers cannot pose the live skeleton through it. */
   inspectMotion(nodeId: string): { bones: WireBone[]; clips: WireClip[] } | null {
     const object = this.objects.get(nodeId)
@@ -62,16 +64,12 @@ export abstract class SceneRendererModels extends SceneRendererGeometry {
   /** Weighs the morph targets of a model, by name — a preview. Answers how many the model carries. */
   setMorphInfluences(nodeId: string, weights: Readonly<Record<string, number>>): number {
     const holder = this.objects.get(nodeId)
-    const written = holder === undefined ? 0 : setMorphInfluencesOn(holder, weights)
+    const written = holder === undefined ? 0 : this.morphPreviews.set(holder, weights)
     if (written > 0) this.redraw()
     return written
   }
 
-  /**
-   * A model arrives long after the frame that asked for it, so what goes into the scene now is
-   * an empty holder the file fills in. The alternative — adding nothing until it lands — leaves
-   * a node the outliner lists, the gizmo cannot find, and a click cannot select.
-   */
+  /** Adds an empty holder immediately so selection can address a model while its file loads. */
   protected buildModel(node: ModelNode): Object3D {
     const holder = new Object3D()
     const { assetId } = node.model
@@ -92,6 +90,7 @@ export abstract class SceneRendererModels extends SceneRendererGeometry {
     // another node is still cloning.
     if (this.objects.get(node.id) !== holder || !source) return
     holder.add(instanceOf(source))
+    this.morphPreviews.apply(holder)
     // Sockets live in the file: children attached to one hung on this empty holder until now.
     for (const child of this.applied.values()) {
       if (child.parentId === node.id) this.hangFromParent(child)
@@ -212,8 +211,10 @@ export abstract class SceneRendererModels extends SceneRendererGeometry {
     const stale = staleModelsOf(this.modelKeys, this.applied, this.options.assetVersion)
     if (stale.length === 0) return
     for (const node of stale) {
+      const holder = this.objects.get(node.id)
       this.release(node.id)
       this.syncNode(node)
+      this.morphPreviews.transfer(holder, this.objects.get(node.id))
     }
     // `release` unhung the old holder with the children under it, and `syncNode` hangs the new one
     // from the scene: the second pass of `apply` — for the reloaded models and their children only.

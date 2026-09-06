@@ -2,7 +2,7 @@ import {
   DirectionalLight,
   type Light,
   Mesh,
-  type Object3D,
+  Object3D,
   SpotLight,
   Sprite,
   Vector3 as ThreeVector3,
@@ -11,14 +11,17 @@ import { type LightDescriptor } from '@shared/domain/scene'
 import { type SceneNode } from './sceneState'
 import { lightBody } from './lightBodies'
 import { disposeTree } from './modelCache'
-import { centreOf } from './pivot'
+import { applyTransform, centreOf } from './pivot'
 import { applyWireOverlay } from './sceneView'
 import { characterExtrasIn } from './rigRead'
 import './bvhPatches'
 import { unhang } from './grouping'
 import { disposeMaterial } from './sceneRendererSupport2'
 import { SceneRendererShadows } from './SceneRendererShadows'
+import type { CharacterSocket } from '@shared/domain/character'
 export abstract class SceneRendererHierarchy extends SceneRendererShadows {
+  private readonly socketHangers = new WeakMap<CharacterSocket, Object3D>()
+
   /** The body a lamp is drawn as, built from its descriptor and put in place of the last one. */
   protected dressLight(id: string, light: Light, descriptor: LightDescriptor): void {
     const worn = this.markers.get(id)
@@ -47,7 +50,17 @@ export abstract class SceneRendererHierarchy extends SceneRendererShadows {
     const parent = node.parentId ? this.objects.get(node.parentId) : this.viewport.scene
     if (!parent || !node.attach) return parent ?? null
     const socket = characterExtrasIn(parent)?.sockets?.find(one => one.id === node.attach?.socket)
-    return (socket && parent.getObjectByName(socket.bone)) ?? parent
+    const bone = socket && parent.getObjectByName(socket.bone)
+    if (!socket || !bone) return parent
+
+    let hanger = this.socketHangers.get(socket)
+    if (!hanger) {
+      hanger = new Object3D()
+      this.socketHangers.set(socket, hanger)
+    }
+    applyTransform(hanger, socket.rest)
+    if (hanger.parent !== bone) bone.add(hanger)
+    return hanger
   }
   /**
    * Puts an object under the one that stands for its parent, or back under the scene.

@@ -250,12 +250,17 @@ describe('SceneRenderer and the bones a rig carries', () => {
    * A sword in a hand: the node still hangs from the CHARACTER, and the socket says which of its
    * bones to follow. Hung from the model itself, it stood still while the arm swung.
    */
-  it('hangs a node attached to a socket on the bone that socket names', async () => {
+  it('hangs a node at the socket transform on the bone that socket names', async () => {
     const loaded = riggedModel([walk()])
+    const rest = {
+      ...IDENTITY_TRANSFORM,
+      position: { x: 0.2, y: 0.3, z: 0.4 },
+      rotation: { x: 0.1, y: 0.2, z: 0.3 },
+    }
     loaded.userData = {
       [STUDIO_METADATA_KEY]: {
         character: {
-          sockets: [{ id: 'hand', name: 'Main', bone: 'b1', rest: IDENTITY_TRANSFORM }],
+          sockets: [{ id: 'hand', name: 'Main', bone: 'b1', rest }],
         },
       },
     }
@@ -266,9 +271,11 @@ describe('SceneRenderer and the bones a rig carries', () => {
     await vi.waitFor(() => expect(loaded.parent).not.toBeNull())
     engine.apply({ ...EMPTY_SCENE, nodes: [modelNode(null), sword] })
 
-    await vi.waitFor(() =>
-      expect(loaded.getObjectByName('b1')?.children.map(child => child.name)).toContain('sword'),
-    )
+    await vi.waitFor(() => expect(loaded.getObjectByName('sword')?.parent?.parent?.name).toBe('b1'))
+    expect(loaded.getObjectByName('sword')?.parent?.position.toArray()).toEqual([0.2, 0.3, 0.4])
+    expect(loaded.getObjectByName('sword')?.parent?.rotation.toArray().slice(0, 3)).toEqual([
+      0.1, 0.2, 0.3,
+    ])
     engine.dispose()
   })
 

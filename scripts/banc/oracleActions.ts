@@ -1,4 +1,4 @@
-import type { ActionName } from '@shared/domain/assistant'
+import type { ActionName, ActionRefusal } from '@shared/domain/assistant'
 import type { Run } from './run'
 
 /** A menu command actually run, matched case-insensitively against the command id. */
@@ -27,9 +27,22 @@ export const declined = (run: Run, name: ActionName): boolean =>
 export const tried = (run: Run, name: ActionName): boolean =>
   run.called.some(one => one.action === name)
 
-/** Whether the studio REFUSED that action — what a scenario about a closed door measures. */
-export const refusedWith = (run: Run, name: ActionName): boolean =>
-  run.called.some(one => one.action === name && one.answer?.startsWith('refused') === true)
+/** Whether the studio refused that action for the expected reason and corrective detail. */
+export const refusedWith = (
+  run: Run,
+  name: ActionName,
+  refusal: ActionRefusal,
+  detail?: string,
+): boolean => {
+  const prefix = `refused ${refusal}`
+  return run.called.some(
+    one =>
+      one.action === name &&
+      (detail === undefined
+        ? one.answer === prefix || one.answer?.startsWith(`${prefix} (`) === true
+        : one.answer?.startsWith(`${prefix} (`) === true && one.answer.includes(detail)),
+  )
+}
 
 /** The successful answer of one action; refusals are deliberately excluded. */
 export const answerOf = (run: Run, name: ActionName): string | null => {

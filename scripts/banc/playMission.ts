@@ -191,7 +191,7 @@ function tracedActions(
           ? outcome.data === undefined
             ? 'ok'
             : `ok ${JSON.stringify(outcome.data)}`
-          : `refused ${outcome.refusal}`,
+          : `refused ${outcome.refusal}${outcome.detail === undefined ? '' : ` (${outcome.detail})`}`,
       })
       return outcome
     },

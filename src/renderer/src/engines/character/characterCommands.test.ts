@@ -81,6 +81,22 @@ describe('editing a character', () => {
     expect(command.apply(RIGGED)).toEqual(RIGGED)
   })
 
+  it('refuses to rename a bone carrying an attachment point', () => {
+    const state = { ...RIGGED, sockets: [SOCKET] }
+    const command = renameCharacterBone('LeftFoot', 'RightFoot')
+
+    expect(command.refuses?.(state)).toBe(true)
+    expect(command.apply(state)).toEqual(state)
+  })
+
+  it('refuses to remove a bone carrying an attachment point', () => {
+    const state = { ...RIGGED, sockets: [SOCKET] }
+    const command = removeCharacterBone('LeftFoot')
+
+    expect(command.refuses?.(state)).toBe(true)
+    expect(command.apply(state)).toEqual(state)
+  })
+
   it('takes a role from whichever bone held it, a rig holding one twice being unreadable', () => {
     const after = setCharacterBoneRole('LeftFoot', 'Hips').apply(RIGGED)
 

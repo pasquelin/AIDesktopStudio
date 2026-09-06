@@ -1,11 +1,13 @@
 import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { act } from 'react'
+import i18next from 'i18next'
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import { IDENTITY_TRANSFORM, type Transform } from '@shared/domain/transform'
 import type { Rig } from '@shared/domain/rig'
 import type { SceneRendererOptions } from '@/engines/scene/SceneRenderer'
 import { installFakeBridge } from '@/services/fakeBridge'
+import { fakeMenu } from '@/helpers/menu-fixtures'
 import { characterOf, seedCharacter, useCharacters } from '@/stores/character'
 import { clearCharacters, installCharacterDocument } from '@/stores/character-fixtures'
 import { characterViewOf, useCharacterView } from '@/stores/characterView'
@@ -370,6 +372,16 @@ it('changes what the workshop draws from the flyout', async () => {
   await userEvent.click(await screen.findByRole('menuitemradio', { name: /^Filaire/ }))
 
   expect(engines[0]?.setDisplayModes).toHaveBeenLastCalledWith(['wireframe'], false)
+})
+
+it('opens the workshop view menu from a right-click on the model', () => {
+  const menu = fakeMenu()
+  installFakeBridge({ menu: menu.bridge })
+  showTab()
+
+  act(() => built[0]?.onContextMenu?.('node-1'))
+
+  expect(menu.labels()).toContain(i18next.t('commands.sceneFrame.title'))
 })
 
 // The scene's own commands reach this tab, from the menu or an MCP client — while it is in front.

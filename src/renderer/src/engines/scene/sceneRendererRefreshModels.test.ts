@@ -162,12 +162,7 @@ describe('once the catalogue says its file was rewritten', () => {
     renderer.refreshModels()
 
     await vi.waitFor(() =>
-      expect(
-        scene
-          .getObjectByName('a')
-          ?.getObjectByName('b1')
-          ?.children.map(child => child.name),
-      ).toContain('sword'),
+      expect(scene.getObjectByName('a')?.getObjectByName('sword')?.parent?.parent?.name).toBe('b1'),
     )
     renderer.dispose()
   })

@@ -53,6 +53,7 @@ import { useCharacterEngineState } from './hooks/useCharacterEngineState'
 import { useCharacterRig } from './hooks/useCharacterRig'
 import { useWorkshopViewState } from './hooks/useWorkshopViewState'
 import { runWorkshopCommand } from './workshopCommands'
+import { openWorkshopNodeMenu } from './workshopNodeMenu'
 
 function runCharacterCommand(assetId: string, command: CommandId): void {
   const store = useCharacters.getState()
@@ -189,6 +190,7 @@ export function CharacterDocument({ documentId }: { documentId: string }) {
       // A bone is not a node: it has no id in any document, and it is picked apart from anything
       // a scene would select — which is why the engine reports it on its own channel.
       onSelectBone: bone => useCharacterView.getState().pickBone(assetId, bone?.bone ?? null),
+      onContextMenu: () => openWorkshopNodeMenu({ workshopId, t }),
     })
     renderer.mount(element)
     engineRef.current = renderer

@@ -38,6 +38,6 @@ export const CHARACTER_SCENARIOS: readonly Scenario[] = [
     name: '71.5 refuses to add a shape beside the model, and says where one can go',
     said: ['Ajoute un cube à côté du modèle.'],
     setup: characterTab,
-    passed: run => refusedWith(run, 'node.add'),
+    passed: run => refusedWith(run, 'node.add', 'wrongSurface', 'open the model in a scene'),
   },
 ]

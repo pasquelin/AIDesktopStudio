@@ -1093,10 +1093,10 @@ cadrer, afficher ou masquer les os, le mode de rendu, capturer la vue. Les menus
 **Fichier ▸ Exporter** servent l’onglet comme ils servent une scène ; le fichier exporté prend le
 nom de l’onglet.
 
-L’Inspecteur ajoute deux sections à celles du squelette et des mouvements. **Points d’attache**
-nomme, sur un os, l’endroit où un objet d’une scène viendra s’accrocher. **Formes** pèse chaque
-cible de morphing que le fichier porte, d’un curseur — **un aperçu** : ce poids n’est pas encore
-écrit dans le fichier.
+L’Inspecteur ajoute deux sections à celles du squelette et des mouvements. La section **Points
+d’attache** nomme, sur un os, l’endroit où un objet d’une scène viendra s’accrocher. La section
+**Formes** pondère chaque cible de morphing que le fichier porte avec un curseur — **un aperçu** :
+ce poids n’est pas encore écrit dans le fichier.
 
 > **Cet onglet n’ajoute rien au modèle.** Une forme, une lumière ou un texte se posent dans une
 > scène, jamais ici : ce qui s’enregistre depuis l’onglet est le fichier du modèle, squelette

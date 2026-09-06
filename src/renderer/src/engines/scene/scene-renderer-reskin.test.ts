@@ -34,6 +34,10 @@ const WITH_FINGER: Rig = {
   origin: 'local',
   bones: [bone('Hips', null), bone('LeftThumb1', 'Hips')],
 }
+const WITH_TOE: Rig = {
+  origin: 'local',
+  bones: [bone('Hips', null), bone('LeftToe', 'Hips')],
+}
 
 /** Weights that land at once, all vertices on the first joint. Nothing here tests the maths. */
 const skin: SkinWeights = {
@@ -102,6 +106,47 @@ async function rigged(): Promise<{ engine: SceneRenderer; model: Object3D }> {
 }
 
 describe('a rig laid on a model that already wears one', () => {
+  it('lets only the latest of three overlapping skinning requests change the model', async () => {
+    const model = source()
+    const settlers: Array<() => void> = []
+    const deferredSkin: SkinWeights = {
+      bind: (positions, _rig, watch) =>
+        new Promise(resolve => {
+          settlers.push(() => {
+            if (watch?.signal?.aborted) return resolve(null)
+            const vertices = positions.length / 3
+            resolve({
+              skinIndex: new Uint16Array(vertices * 4),
+              skinWeight: new Float32Array(vertices * 4).map((_, at) => (at % 4 === 0 ? 1 : 0)),
+            })
+          })
+        }),
+      dispose: () => {},
+    }
+    const engine = new SceneRenderer({
+      onSelect: vi.fn(),
+      onTransform: vi.fn(),
+      loadModel: () => Promise.resolve(model),
+      skin: deferredSkin,
+      bvh: trees(),
+    })
+    engine.apply(holding('a'))
+    await vi.waitFor(() => expect(model.parent).not.toBeNull())
+
+    const first = engine.skinModel('a', HIPS)
+    const second = engine.skinModel('a', WITH_FINGER)
+    settlers[0]?.()
+    await first
+    const third = engine.skinModel('a', WITH_TOE)
+    settlers[2]?.()
+    await third
+    settlers[1]?.()
+    await second
+
+    expect(boneNamesOf(model)).toEqual(['Hips', 'LeftToe'])
+    engine.dispose()
+  })
+
   it('keeps runtime placement while a model loads and is rigged, then restores its authored pose', async () => {
     const model = source()
     let settle = (object: Object3D): void => void object

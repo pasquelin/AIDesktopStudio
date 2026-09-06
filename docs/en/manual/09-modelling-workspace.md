@@ -1052,9 +1052,9 @@ A **right-click** on the model, in the view as in the Scene panel, offers the sa
 show or hide the bones, the display mode, capture the view. The **View** and **File ▸ Export**
 menus serve the tab as they serve a scene; the exported file takes the tab's name.
 
-The Inspector adds two sections to the skeleton and the motions. **Attachment points** name, on a
-bone, where an object of a scene will hang. **Shapes** weighs each morph target the file carries,
-with a slider — **a preview**: the weight is not written into the file yet.
+The Inspector adds two sections to the skeleton and the motions. The **Attachment points** section
+names, on a bone, where an object of a scene will hang. The **Shapes** section weighs each morph
+target the file carries with a slider — **a preview**: the weight is not written into the file yet.
 
 > **This tab adds nothing to the model.** A shape, a light or a text are placed in a scene, never
 > here: what saves from the tab is the model's own file, skeleton included. And ⌘S only knows how

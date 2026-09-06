@@ -102,6 +102,8 @@ function editBones(
   return edit(id, state => {
     const next = state.rig && change(state.rig.bones)
     if (!state.rig || !next || rigFaultOf(next) !== null) return null
+    const names = new Set(next.map(bone => bone.name))
+    if (state.sockets.some(socket => !names.has(socket.bone))) return null
 
     return { ...state, rig: { ...state.rig, bones: next }, autoRigBindings: undefined }
   })

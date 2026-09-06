@@ -23,6 +23,31 @@ import { autoRigInputFor } from '../character/autoRigInput'
 import type { MeshSample } from './rigSnap'
 import { rigSnappedTo } from './rigSnap'
 import { rigFit } from './rigFit'
+import type { SkinWeights } from '../character/skinWeights'
+
+type BoundMesh = { mesh: Mesh; binding: SkinBinding }
+
+async function bindMeshes(
+  skin: SkinWeights,
+  meshes: readonly Mesh[],
+  holder: Object3D,
+  rig: Rig,
+  stop: AbortController,
+  current: () => boolean,
+  onProgress: (index: number, progress: number) => void,
+): Promise<BoundMesh[] | null> {
+  const bound: BoundMesh[] = []
+  for (const [index, mesh] of meshes.entries()) {
+    const binding = await skin.bind(positionsIn(mesh, holder), rig, {
+      signal: stop.signal,
+      onProgress: progress => onProgress(index, progress),
+    })
+    if (!binding || !current()) return null
+    bound.push({ mesh, binding })
+  }
+  return bound
+}
+
 export abstract class SceneRendererSkinning extends SceneRendererRig {
   protected abstract redraw(): void
   protected abstract accelerateOrReport(object: Object3D, subject: string): Promise<void>
@@ -148,37 +173,43 @@ export abstract class SceneRendererSkinning extends SceneRendererRig {
     const stop = new AbortController()
     this.skinning.set(nodeId, stop)
     try {
-      const bound: { mesh: Mesh; binding: SkinBinding }[] = []
-      for (const [index, mesh] of meshes.entries()) {
-        const binding = await this.skin.bind(positionsIn(mesh, holder), rig, {
-          signal: stop.signal,
-          onProgress: progress =>
-            this.options.onRigProgress?.(nodeId, (index + progress) / meshes.length),
-        })
-        if (!binding) return
-        bound.push({ mesh, binding })
-      }
-      if (this.objects.get(nodeId) !== holder) return
-      applyRig(holder, rig, bound)
-      this.bindIk(nodeId, holder, rig)
-      this.options.onSkinning?.(
-        nodeId,
-        bound.map((one, index) => ({
-          mesh: index,
-          primitive: 0,
-          joints: one.binding.skinIndex,
-          weights: one.binding.skinWeight,
-        })),
+      const current = () => this.skinning.get(nodeId) === stop
+      const bound = await bindMeshes(this.skin, meshes, holder, rig, stop, current, (index, part) =>
+        this.options.onRigProgress?.(nodeId, (index + part) / meshes.length),
       )
-      void this.accelerateOrReport(holder, nodeId)
-      this.bindSkeleton(nodeId, holder, true)
-      this.options.onRig?.(nodeId, rigStateOf(holder, this.animations.clipsOf(nodeId)))
-      await this.precompile()
-      this.redraw()
+      if (!bound) return
+      if (this.objects.get(nodeId) !== holder || this.skinning.get(nodeId) !== stop) return
+      await this.applySkinning(nodeId, holder, rig, bound)
     } finally {
-      this.skinning.delete(nodeId)
-      this.options.onRigProgress?.(nodeId, 1)
+      if (this.skinning.get(nodeId) === stop) {
+        this.skinning.delete(nodeId)
+        this.options.onRigProgress?.(nodeId, 1)
+      }
     }
+  }
+
+  private async applySkinning(
+    nodeId: string,
+    holder: Object3D,
+    rig: Rig,
+    bound: readonly BoundMesh[],
+  ): Promise<void> {
+    applyRig(holder, rig, bound)
+    this.bindIk(nodeId, holder, rig)
+    this.options.onSkinning?.(
+      nodeId,
+      bound.map((one, index) => ({
+        mesh: index,
+        primitive: 0,
+        joints: one.binding.skinIndex,
+        weights: one.binding.skinWeight,
+      })),
+    )
+    void this.accelerateOrReport(holder, nodeId)
+    this.bindSkeleton(nodeId, holder, true)
+    this.options.onRig?.(nodeId, rigStateOf(holder, this.animations.clipsOf(nodeId)))
+    await this.precompile()
+    this.redraw()
   }
   /**
    * The chains this model reaches with, if any — solved once a frame in `advance`.
