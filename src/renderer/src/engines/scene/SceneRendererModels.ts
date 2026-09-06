@@ -1,4 +1,4 @@
-import { Object3D } from 'three'
+import { Object3D, type AnimationClip } from 'three'
 import { type ClipLane } from '@shared/domain/scene'
 import { receivesShadow, type ModelNode } from './sceneState'
 import { createModelTextures } from './modelTextures'
@@ -10,12 +10,32 @@ import { instanceOf } from './modelCache'
 import { applyShadowFlags } from './shadows'
 import type { Rig } from '@shared/domain/rig'
 import type { HumanoidRole } from '@shared/domain/humanoid'
-import { skeletonSignatureOf } from '@shared/domain/skeletonProfile'
+import { skeletonTopologySignatureOf } from '@shared/domain/skeletonProfile'
+import { clipFromWire, wireBonesOf, wireClipOf } from './retarget'
+import type { WireBone, WireClip } from './retargetMessage'
 import { characterOf } from './rigRead'
 import { meshSampleOf } from './rigSnap'
 import './bvhPatches'
 import { SceneRendererGeometry } from './SceneRendererGeometry'
 export abstract class SceneRendererModels extends SceneRendererGeometry {
+  /** A copy of the loaded motion data; callers cannot pose the live skeleton through it. */
+  inspectMotion(nodeId: string): { bones: WireBone[]; clips: WireClip[] } | null {
+    const object = this.objects.get(nodeId)
+    if (!object || !this.animations.has(nodeId)) return null
+    return { bones: wireBonesOf(object), clips: this.animations.clipsOf(nodeId).map(wireClipOf) }
+  }
+
+  /** Installs a session clip under a revision-specific key, on the model's existing mixer. */
+  installMotion(nodeId: string, key: string, clip: WireClip): boolean {
+    if (!this.animations.has(nodeId)) return false
+    this.animations.addClip(nodeId, key, clipFromWire(clip))
+    return true
+  }
+
+  removeMotion(nodeId: string, key: string): void {
+    this.animations.removeClip(nodeId, key)
+  }
+
   protected abstract tuneShadowsIfMoved(): void
   protected abstract applyDisplay(object: Object3D): void
   protected abstract accelerateOrReport(object: Object3D, subject: string): Promise<void>
@@ -157,7 +177,7 @@ export abstract class SceneRendererModels extends SceneRendererGeometry {
     for (const bone of rig.bones) if (bone.role) roles[bone.name] = bone.role
     if (Object.keys(roles).length === 0) return
     const profile = {
-      signature: skeletonSignatureOf(rig.bones.map(bone => bone.name)),
+      signature: skeletonTopologySignatureOf(rig.bones),
       roles,
     }
     this.retarget.remember(profile)
@@ -201,11 +221,18 @@ export abstract class SceneRendererModels extends SceneRendererGeometry {
       // Acquired HERE and not inside the adoption: released while the read is still in flight,
       // a reference taken afterwards would never be given back.
       held.set(clip.key, clip.url)
-      void this.adopt(nodeId, clip, this.clipSources.acquire(clip.url))
+      const requests = this.retargeting.get(nodeId) ?? new Map<string, AbortController>()
+      this.retargeting.set(nodeId, requests)
+      const stop = new AbortController()
+      requests.set(clip.key, stop)
+      void this.adopt(nodeId, clip, this.clipSources.acquire(clip.url), stop)
     }
     for (const [key, url] of [...held]) {
       if (wanted.has(key)) continue
+      this.retargeting.get(nodeId)?.get(key)?.abort()
+      this.retargeting.get(nodeId)?.delete(key)
       held.delete(key)
+      this.animations.removeClip(nodeId, key)
       this.clipSources.release(url)
     }
   }
@@ -213,35 +240,44 @@ export abstract class SceneRendererModels extends SceneRendererGeometry {
    * Replays a clip the model's own file never held on THIS model's skeleton, which is the whole
    * point: it was authored for a rig nobody here has.
    */
-  protected async adopt(nodeId: string, clip: ForeignClip, loading: Promise<Object3D | null>) {
+  protected async adopt(
+    nodeId: string,
+    clip: ForeignClip,
+    loading: Promise<Object3D | null>,
+    stop: AbortController,
+  ) {
     const holder = this.objects.get(nodeId)
     if (!holder) return
     try {
       // Nothing of the source ever enters the scene: a file dropped for its animation carries a
       // whole character with it, and only its skeleton is any use here.
       const source = await loading
-      if (!source) return
-      // The first clip and only it: one file IS one animation, however many it spells.
-      const first = clipsOf(source)[0]
-      if (!first) throw new Error('this file carries no animation')
+      if (!source || stop.signal.aborted || this.objects.get(nodeId) !== holder) return
+      const selected = clipsOf(source)[clip.clipIndex ?? 0]
+      if (!selected) throw new Error('the selected animation does not exist in this file')
       // Before the retarget and not after: it is the only moment both skeletons are in hand, and
       // it is what lets the screen say WHICH joint the motion has nothing to drive.
       this.options.onClipFit?.(nodeId, clip.key, this.retarget.fitOf(holder, source))
-      const adapted = (await this.retarget.adapt(holder, source, [first]))?.[0]
-      if (!adapted || this.objects.get(nodeId) !== holder) return
-      // Named by the studio, always: Tripo spells its only clip `NlaTrack` and Uthana's spells
-      // nothing at all, and neither may reach the screen.
-      adapted.name = clip.label
-      this.animations.addClip(nodeId, clip.key, adapted)
-      this.options.onClips?.(
-        nodeId,
-        this.animations.fileNamesOf(nodeId),
-        this.animations.lengthsOf(nodeId),
-      )
-      this.redraw()
+      const adapted = await this.retarget.adapt(holder, source, [selected], { signal: stop.signal })
+      if (!adapted?.[0] || stop.signal.aborted || this.objects.get(nodeId) !== holder) return
+      this.publishMotion(nodeId, clip, adapted[0])
     } catch (error) {
       // Under a scope of its own: a failing animation must not swallow what a failing model says.
-      reportFailure('scene.animation', clip.url, error)
+      if (!stop.signal.aborted) reportFailure('scene.animation', clip.url, error)
+    } finally {
+      const requests = this.retargeting.get(nodeId)
+      if (requests?.get(clip.key) === stop) requests.delete(clip.key)
     }
+  }
+  private publishMotion(nodeId: string, clip: ForeignClip, adapted: AnimationClip): void {
+    const named = adapted.clone()
+    named.name = clip.label
+    this.animations.addClip(nodeId, clip.key, named)
+    this.options.onClips?.(
+      nodeId,
+      this.animations.fileNamesOf(nodeId),
+      this.animations.lengthsOf(nodeId),
+    )
+    this.redraw()
   }
 }

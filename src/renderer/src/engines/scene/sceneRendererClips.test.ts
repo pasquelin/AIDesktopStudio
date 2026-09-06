@@ -1,11 +1,15 @@
-import { retargetFitOf } from './retarget'
+import { retargetFitOf, wireClipOf } from './retarget'
 import { AnimationClip, Bone, Group, Mesh, SphereGeometry, VectorKeyframeTrack } from 'three'
 import type { Object3D } from 'three'
 import { describe, expect, it, vi } from 'vitest'
 import { assetClip, bundledClip, clipLane, type ClipRef } from '@shared/domain/scene'
 import { bundledAnimationUrl } from '@shared/domain/animationLibrary'
 import { assetUrl } from '@shared/domain/asset'
-import { skeletonSignatureOf, type SkeletonProfile } from '@shared/domain/skeletonProfile'
+import {
+  skeletonSignatureOf,
+  skeletonTopologySignatureOf,
+  type SkeletonProfile,
+} from '@shared/domain/skeletonProfile'
 import { SceneRenderer } from './SceneRenderer'
 import type { BvhBuilder } from './bvhBuilder'
 import type { Retarget } from './retarget'
@@ -111,6 +115,62 @@ describe('SceneRenderer and the animations the app ships with', () => {
 
   const shippedBlock = (extra: Partial<ClipRef> = {}): ClipRef =>
     bundledClip('block-1', 'Capoeira', extra)
+
+  it('keeps duplicate source names in file order and releases preview clips', async () => {
+    const { engine } = withShipped(
+      animatedModel([walk('same'), new AnimationClip('same', 2, [])]),
+      animatedModel([]),
+      straightThrough(),
+    )
+    engine.apply({ ...EMPTY_SCENE, nodes: [modelNode(null)] })
+    await vi.waitFor(() => expect(engine.inspectMotion('a')).not.toBeNull())
+    expect(engine.inspectMotion('a')?.clips.map(clip => clip.duration)).toEqual([1, 2])
+    engine.installMotion('a', 'preview', wireClipOf(walk()))
+    expect(engine.clipLengthsOf('a').preview).toBe(1)
+    engine.removeMotion('a', 'preview')
+    expect(engine.clipLengthsOf('a').preview).toBeUndefined()
+    engine.dispose()
+  })
+
+  it('transfers the selected source clip instead of the first clip', async () => {
+    const retarget = straightThrough()
+    const { engine } = withShipped(
+      animatedModel([]),
+      animatedModel([walk('first'), walk('second')]),
+      retarget,
+    )
+    engine.apply({ ...EMPTY_SCENE, nodes: [modelNode(null)] })
+    await vi.waitFor(() => expect(engine.inspectMotion('a')).not.toBeNull())
+    engine.useGraphClips('a', [
+      { key: 'chosen', url: assetUrl('motion'), label: 'Chosen', clipIndex: 1 },
+    ])
+    await vi.waitFor(() => expect(retarget.asked[0]?.clips).toEqual(['second']))
+    engine.dispose()
+  })
+
+  it('aborts a removed request and refuses its late result after the same key returns', async () => {
+    const retarget = straightThrough()
+    const answers: ((clips: AnimationClip[]) => void)[] = []
+    const signals: (AbortSignal | undefined)[] = []
+    retarget.adapt = (_target, _source, _clips, watch) =>
+      new Promise(resolve => {
+        answers.push(resolve)
+        signals.push(watch?.signal)
+      })
+    const { engine } = withShipped(animatedModel([]), animatedModel([walk()]), retarget)
+    engine.apply({ ...EMPTY_SCENE, nodes: [modelNode(shippedBlock())] })
+    await vi.waitFor(() => expect(answers).toHaveLength(1))
+    engine.apply({ ...EMPTY_SCENE, nodes: [modelNode(null)] })
+    expect(signals[0]?.aborted).toBe(true)
+    engine.apply({ ...EMPTY_SCENE, nodes: [modelNode(shippedBlock())] })
+    await vi.waitFor(() => expect(answers).toHaveLength(2))
+    answers[0]?.([walk('stale')])
+    await Promise.resolve()
+    expect(engine.clipLengthsOf('a')['bundled:Capoeira']).toBeUndefined()
+    answers[1]?.([walk('fresh')])
+    await vi.waitFor(() => expect(engine.clipLengthsOf('a')['bundled:Capoeira']).toBe(1))
+    engine.dispose()
+  })
 
   // The whole point of the feature: a character brings no such clip, and the file that does was
   // authored for another skeleton entirely.
@@ -235,7 +295,10 @@ describe('SceneRenderer and the animations the app ships with', () => {
 
     await vi.waitFor(() => expect(retarget.learnt).toHaveLength(1))
     expect(retarget.learnt[0]).toEqual({
-      signature: skeletonSignatureOf(['b0', 'b1']),
+      signature: skeletonTopologySignatureOf([
+        { name: 'b0', parent: null },
+        { name: 'b1', parent: 'b0' },
+      ]),
       roles: { b0: 'Hips' },
     })
     engine.dispose()

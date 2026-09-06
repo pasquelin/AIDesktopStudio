@@ -106,3 +106,9 @@ export function isTransform(value: unknown): value is Transform {
   if (!isRecord(value)) return false
   return isVector3(value.position) && isVector3(value.rotation) && isVector3(value.scale)
 }
+
+export function finiteTransform(transform: Transform): boolean {
+  return [transform.position, transform.rotation, transform.scale].every(vector =>
+    [vector.x, vector.y, vector.z].every(Number.isFinite),
+  )
+}

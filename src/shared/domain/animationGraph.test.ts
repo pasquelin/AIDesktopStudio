@@ -34,6 +34,20 @@ const refused = (change: Record<string, unknown>): (() => unknown) =>
   }
 
 describe('reading an animation graph', () => {
+  it('preserves the selected clip and refuses a negative selection', () => {
+    const source = { kind: 'asset', name: 'Multi', assetId: 'a', clipIndex: 2 }
+    const layer = { id: 'base', initial: 'idle', states: [{ id: 'idle', source }], transitions: [] }
+    expect(animationGraphOf({ ...walking, layers: [layer] }).layers[0]?.states[0]?.source).toEqual(
+      source,
+    )
+    expect(() =>
+      animationGraphOf({
+        ...walking,
+        layers: [{ ...layer, states: [{ id: 'idle', source: { ...source, clipIndex: -1 } }] }],
+      }),
+    ).toThrow('clip index')
+  })
+
   it('fills what a state leaves unsaid', () => {
     const graph = animationGraphOf(walking)
     const [idle] = graph.layers[0]?.states ?? []

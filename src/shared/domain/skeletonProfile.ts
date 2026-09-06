@@ -13,7 +13,7 @@ import { isRecord } from '../guards'
 import { digest } from '../hash'
 import { byCodeUnit } from '../text'
 import { isHumanoidRole, type HumanoidRole } from './humanoid'
-import { isTransform, type Transform } from './transform'
+import { isTransform, finiteTransform, type Transform } from './transform'
 
 export type SkeletonProfile = {
   /** A fingerprint of the sorted bone names: two files of one rig answer the same. */
@@ -37,6 +37,14 @@ export function skeletonSignatureOf(boneNames: Iterable<string>): string {
   const sorted = [...new Set(boneNames)].sort(byCodeUnit)
 
   return `${sorted.length}-${digest(sorted.join('\n'))}`
+}
+
+/** A versioned identity for name-based binding, including the hierarchy. */
+export function skeletonTopologySignatureOf(
+  bones: Iterable<{ name: string; parent: string | null }>,
+): string {
+  const sorted = [...bones].sort((a, b) => byCodeUnit(a.name, b.name))
+  return `v2-${sorted.length}-${digest(JSON.stringify(sorted.map(bone => [bone.name, bone.parent])))}`
 }
 
 /**
@@ -69,9 +77,14 @@ export function isSkeletonProfile(value: unknown): value is SkeletonProfile {
 }
 
 function isRoleMap(value: unknown): value is Record<string, HumanoidRole> {
-  return isRecord(value) && Object.values(value).every(isHumanoidRole)
+  if (!isRecord(value) || Object.keys(value).some(name => name.length === 0)) return false
+  const roles = Object.values(value)
+  return roles.every(isHumanoidRole) && new Set(roles).size === roles.length
 }
 
 function isRestPose(value: unknown): value is Record<string, Transform> {
-  return isRecord(value) && Object.values(value).every(isTransform)
+  return (
+    isRecord(value) &&
+    Object.values(value).every(transform => isTransform(transform) && finiteTransform(transform))
+  )
 }

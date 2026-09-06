@@ -1,6 +1,6 @@
 import { isRecord } from '../guards'
 import { isHumanoidRole, type HumanoidRole } from './humanoid'
-import { IDENTITY_TRANSFORM, isTransform, type Transform } from './transform'
+import { IDENTITY_TRANSFORM, isTransform, finiteTransform, type Transform } from './transform'
 
 /**
  * A skeleton the studio owns, as the document holds it.
@@ -82,12 +82,6 @@ export function rigFaultOf(bones: readonly RigBone[]): RigFault | null {
   }
 
   return hasCycle(bones, byName) ? 'cycle' : null
-}
-
-function finiteTransform(transform: Transform): boolean {
-  return [transform.position, transform.rotation, transform.scale].every(vector =>
-    [vector.x, vector.y, vector.z].every(Number.isFinite),
-  )
 }
 
 /**

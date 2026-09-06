@@ -2,6 +2,7 @@ import { isRecord } from '../guards'
 import { BODY_PARTS, WHOLE_BODY, type BodyPart } from './humanoid'
 import {
   CLIP_SOURCES,
+  isClipIndex,
   CLIP_SPEED,
   MAX_CLIP_FADE,
   ROOT_MOTIONS,
@@ -293,12 +294,21 @@ function clipSourceOf(value: unknown): ClipSource {
   if (!isClipKind(kind)) throw new Error('invalid clip source kind')
   if (typeof name !== 'string' || name.length === 0) throw new Error('clip source name is required')
 
+  const clipIndex = value.clipIndex
+  if (clipIndex !== undefined && !isClipIndex(clipIndex)) throw new Error('invalid clip index')
   if (kind === 'asset') {
     if (typeof value.assetId !== 'string' || value.assetId.length === 0)
       throw new Error('clip source assetId is required')
-    return { kind: 'asset', assetId: value.assetId, name }
+    return {
+      kind: 'asset',
+      assetId: value.assetId,
+      name,
+      ...(clipIndex !== undefined && { clipIndex }),
+    }
   }
-  return { kind: kind === 'bundled' ? 'bundled' : 'embedded', name }
+  return kind === 'bundled'
+    ? { kind, name, ...(clipIndex !== undefined && { clipIndex }) }
+    : { kind, name }
 }
 
 function rootMotionOf(value: unknown): RootMotion {

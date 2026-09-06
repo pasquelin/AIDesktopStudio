@@ -4,7 +4,7 @@ import { clipKeyOf, type ClipLane, type ClipSource } from '@shared/domain/scene'
 import type { AnimationGraph } from '@shared/domain/animationGraph'
 
 /** A clip a model's blocks name that its own file did not bring: where to read it, what to call it. */
-export type ForeignClip = { key: string; url: string; label: string }
+export type ForeignClip = { key: string; url: string; label: string; clipIndex?: number }
 
 /** Where a clip that did not come with the model is read from — `null` for the model's own. */
 export function clipSourceUrl(source: ClipSource): string | null {
@@ -24,7 +24,13 @@ export function foreignClipsOf(lanes: readonly ClipLane[]): ForeignClip[] {
   for (const clip of lanes.flatMap(lane => lane.clips)) {
     const url = clipSourceUrl(clip.source)
     const key = clipKeyOf(clip.source)
-    if (url && !found.has(key)) found.set(key, { key, url, label: clip.label })
+    if (url && !found.has(key))
+      found.set(key, {
+        key,
+        url,
+        label: clip.label,
+        ...('clipIndex' in clip.source && { clipIndex: clip.source.clipIndex }),
+      })
   }
   return [...found.values()]
 }
@@ -46,6 +52,15 @@ export function graphSourcesOf(graph: AnimationGraph): ClipSource[] {
 export function graphClipsOf(graph: AnimationGraph): ForeignClip[] {
   return graphSourcesOf(graph).flatMap(source => {
     const url = clipSourceUrl(source)
-    return url ? [{ key: clipKeyOf(source), url, label: source.name }] : []
+    return url
+      ? [
+          {
+            key: clipKeyOf(source),
+            url,
+            label: source.name,
+            ...('clipIndex' in source && { clipIndex: source.clipIndex }),
+          },
+        ]
+      : []
   })
 }

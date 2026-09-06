@@ -256,6 +256,7 @@ describe('the key a clip is filed under', () => {
     { kind: 'bundled', name: 'Walk' },
     { kind: 'embedded', name: 'Walk' },
     { kind: 'asset', assetId: 'a1', name: 'Walk' },
+    { kind: 'asset', assetId: 'a1', name: 'Walk', clipIndex: 2 },
   ]
 
   it.each(SOURCES)('says what the studio says for %o', source => {

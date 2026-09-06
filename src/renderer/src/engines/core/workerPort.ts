@@ -59,11 +59,14 @@ export function createWorkerPort<T, R extends PortResponse>(
   spawn: () => Worker,
   what: string,
   valueOf: (answer: Answered<R>) => T,
+  interruptible = false,
 ): WorkerPort<T> {
   const waiting = new Map<number, PortSlot<T>>()
   let worker: Worker | null = null
   let gone = false
   let nextId = 0
+  const queued: (() => void)[] = []
+  let active = false
 
   const settle = (response: R): void => {
     const slot = waiting.get(response.id)
@@ -86,8 +89,9 @@ export function createWorkerPort<T, R extends PortResponse>(
 
     worker.terminate()
     worker = null
-    for (const slot of waiting.values()) slot.reject(new Error(reason))
+    const abandoned = [...waiting.values()]
     waiting.clear()
+    for (const slot of abandoned) slot.reject(new Error(reason))
   }
 
   const port: WorkerPort<T> = {
@@ -97,7 +101,9 @@ export function createWorkerPort<T, R extends PortResponse>(
       if (worker) return worker
 
       const started = spawn()
-      started.addEventListener('message', (event: MessageEvent<R>) => settle(event.data))
+      started.addEventListener('message', (event: MessageEvent<R>) => {
+        if (worker === started) settle(event.data)
+      })
       started.addEventListener('error', event =>
         abandon(started, `${what} worker failed: ${event.message}`),
       )
@@ -116,49 +122,75 @@ export function createWorkerPort<T, R extends PortResponse>(
 
     send: (request, watch) =>
       new Promise((resolve, reject) => {
-        if (gone) {
+        if (gone || (interruptible && watch?.signal?.aborted)) {
           resolve(null)
           return
         }
 
-        const id = nextId + 1
-        nextId += 1
-        const running = port.running()
-        const { message, transfer } = request(id)
-        // Posted before it is recorded: a payload the structured clone cannot carry throws with
-        // no slot left behind.
-        running.postMessage(message, transfer ?? [])
-
-        const give = (): void => {
-          if (!waiting.delete(id)) return
+        let started = false
+        let finished = false
+        let id = 0
+        let running: Worker | null = null
+        const finish = (): void => {
+          finished = true
           watch?.signal?.removeEventListener('abort', give)
-          running.postMessage({ id, cancel: true })
+          if (interruptible && started) {
+            active = false
+            queued.shift()?.()
+          }
+        }
+        const give = (): void => {
+          if (finished) return
+          if (!started) {
+            const index = queued.indexOf(start)
+            if (index >= 0) queued.splice(index, 1)
+          } else if (!waiting.delete(id)) return
+          if (running) {
+            if (interruptible) {
+              running.terminate()
+              if (worker === running) worker = null
+            } else running.postMessage({ id, cancel: true })
+          }
+          finish()
           resolve(null)
         }
-
-        // Wrapped rather than dropped at each exit: a request leaves the register by four paths,
-        // and one that forgot its listener would leak with nothing to say so.
-        const settled =
-          <V>(hand: (value: V) => void) =>
-          (value: V): void => {
-            watch?.signal?.removeEventListener('abort', give)
-            hand(value)
+        const start = (): void => {
+          started = true
+          if (interruptible) active = true
+          if (gone) {
+            finish()
+            resolve(null)
+            return
           }
-
-        waiting.set(id, {
-          resolve: settled(resolve),
-          reject: settled(reject),
-          onProgress: watch?.onProgress,
-        })
-
-        // Abandoned before it was even asked: an `abort` already delivered never calls the
-        // listener below, which would outlive the request on a signal one caller keeps.
-        if (watch?.signal?.aborted) {
-          give()
-          return
+          id = port.claim()
+          try {
+            running = port.running()
+            const { message, transfer } = request(id)
+            running.postMessage(message, transfer ?? [])
+            waiting.set(id, {
+              resolve: value => {
+                finish()
+                resolve(value)
+              },
+              reject: error => {
+                finish()
+                reject(error)
+              },
+              onProgress: watch?.onProgress,
+            })
+          } catch (error) {
+            finish()
+            reject(error)
+          }
         }
-
-        watch?.signal?.addEventListener('abort', give)
+        if (!watch?.signal?.aborted) watch?.signal?.addEventListener('abort', give)
+        if (interruptible && active) {
+          if (queued.length >= 32) {
+            finish()
+            reject(new Error(`${what} queue is full`))
+          } else queued.push(start)
+        } else start()
+        if (watch?.signal?.aborted) give()
       }),
 
     dispose: () => {
@@ -166,8 +198,9 @@ export function createWorkerPort<T, R extends PortResponse>(
       worker?.terminate()
       worker = null
       // Resolved, not rejected: a window closing is nobody's failure.
-      for (const slot of waiting.values()) slot.resolve(null)
+      const abandoned = [...waiting.values()]
       waiting.clear()
+      for (const slot of abandoned) slot.resolve(null)
     },
   }
 

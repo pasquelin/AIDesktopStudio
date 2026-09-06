@@ -221,6 +221,16 @@ export abstract class SceneRendererResources extends SceneRendererState {
    * Which foreign clips a node holds a reference on, by key, and where each was read from. A
    * block plays nothing until its clip lands, and every `apply` would otherwise load again.
    */
+  protected retargeting = new Map<string, Map<string, AbortController>>()
+
+  protected cancelRetargets(nodeId?: string): void {
+    for (const [id, requests] of this.retargeting) {
+      if (nodeId !== undefined && id !== nodeId) continue
+      for (const request of requests.values()) request.abort()
+      this.retargeting.delete(id)
+    }
+  }
+
   protected bundled = new Map<string, Map<string, string>>()
   /** What a running game's state machine needs on each model, beside what its band names. */
   protected graphClips = new Map<string, readonly ForeignClip[]>()

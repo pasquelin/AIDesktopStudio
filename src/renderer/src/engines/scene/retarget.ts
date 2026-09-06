@@ -9,6 +9,7 @@
 import {
   AnimationClip,
   Bone,
+  Euler,
   Matrix4,
   NumberKeyframeTrack,
   Quaternion,
@@ -22,7 +23,9 @@ import {
 } from 'three'
 import { isFingerRole, type HumanoidRole } from '@shared/domain/humanoid'
 import {
+  isSkeletonProfile,
   profileWithRole,
+  skeletonTopologySignatureOf,
   skeletonSignatureOf,
   type SkeletonProfile,
 } from '@shared/domain/skeletonProfile'
@@ -30,6 +33,7 @@ import { boneRolesOf, type NamedBone } from './boneRoles'
 import { isBoneObject } from './rigState'
 import {
   clipBuffers,
+  type RetargetOptions,
   type RetargetRequest,
   type RetargetResponse,
   type WireBone,
@@ -48,7 +52,12 @@ export type Retarget = {
     target: Object3D,
     source: Object3D,
     clips: readonly AnimationClip[],
-    watch?: { onProgress?: (progress: number) => void; signal?: AbortSignal },
+    watch?: {
+      onProgress?: (progress: number) => void
+      signal?: AbortSignal
+      profiles?: readonly SkeletonProfile[]
+      options?: RetargetOptions
+    },
   ) => Promise<AnimationClip[] | null>
   /**
    * How well a motion fits this character, read through the very corrections a transfer uses.
@@ -73,42 +82,59 @@ export function createRetarget(spawn: () => Worker): Retarget {
     spawn,
     'retargeting',
     answer => answer.clips,
+    true,
   )
   const profiles = new Map<string, SkeletonProfile>()
 
   return {
     adapt: async (target, source, clips, watch) => {
-      if (port.isGone()) return null
+      if (port.isGone() || watch?.signal?.aborted) return null
 
-      const targetBones = wireBonesOf(target)
-      const sourceBones = wireBonesOf(source)
-      // Nothing to replay: the clips already speak this skeleton's language, exactly.
-      if (sameSkeleton(targetBones, sourceBones)) return [...clips]
-
-      const plan = retargetPlanOf(
-        targetBones,
-        sourceBones,
-        clips.map(wireClipOf),
-        undefined,
-        profiles,
+      const known = new Map(profiles)
+      for (const profile of watch?.profiles ?? []) rememberProfile(known, profile)
+      const scale = watch?.options?.scale
+      if (scale !== undefined && (!Number.isFinite(scale) || scale <= 0))
+        throw new Error('retarget scale must be finite and positive')
+      const targetBones = alignedBonesOf(wireBonesOf(target), known)
+      const sourceBones = alignedBonesOf(wireBonesOf(source), known)
+      if (
+        sameSkeleton(targetBones, sourceBones) &&
+        scale === undefined &&
+        watch?.options?.rootMotion !== 'inPlace'
       )
+        return [...clips]
+
+      const originalTargetProfile = profileOfBones(targetBones, profiles)
+      const originalSourceProfile = profileOfBones(sourceBones, profiles)
+      const plan = retargetPlanOf(targetBones, sourceBones, clips.map(wireClipOf), undefined, known)
       const adapted = await port.send(id => {
-        const request: RetargetRequest = { id, ...plan }
+        const request: RetargetRequest = { id, ...plan, options: watch?.options }
         return { message: request, transfer: clipBuffers(request.clips) }
       }, watch)
 
+      if (
+        originalTargetProfile !== profileOfBones(targetBones, profiles) ||
+        originalSourceProfile !== profileOfBones(sourceBones, profiles)
+      )
+        return null
       return adapted && adapted.map(clipFromWire)
     },
 
     fitOf: (target, source) => retargetFitOf(target, source, profiles),
 
-    remember: profile => void profiles.set(profile.signature, profile),
+    remember: profile => rememberProfile(profiles, profile),
 
     dispose: () => {
       profiles.clear()
       port.dispose()
     },
   }
+}
+
+function rememberProfile(profiles: Map<string, SkeletonProfile>, profile: SkeletonProfile): void {
+  if (!isSkeletonProfile(profile)) throw new Error('invalid skeleton profile')
+  if (JSON.stringify(profiles.get(profile.signature)) === JSON.stringify(profile)) return
+  profiles.set(profile.signature, profile)
 }
 
 /**
@@ -201,14 +227,46 @@ function rolesOf(
 ): Record<string, HumanoidRole> {
   const signature = skeletonSignatureOf(bones.map(bone => bone.name))
   const found = boneRolesOf(namedBonesOf(bones))
-  const corrections = known?.get(signature)?.roles
+  const corrections = profileOfBones(bones, known)?.roles
   if (!corrections) return found
 
   let profile: SkeletonProfile = { signature, roles: found }
+  const names = new Set(bones.map(bone => bone.name))
   for (const [name, role] of Object.entries(corrections)) {
+    if (!names.has(name)) continue
     profile = profileWithRole(profile, name, role)
   }
   return { ...profile.roles }
+}
+
+function profileOfBones(
+  bones: readonly WireBone[],
+  known?: ReadonlyMap<string, SkeletonProfile>,
+): SkeletonProfile | undefined {
+  return (
+    known?.get(skeletonTopologySignatureOf(namedBonesOf(bones))) ??
+    known?.get(skeletonSignatureOf(bones.map(bone => bone.name)))
+  )
+}
+
+function alignedBonesOf(
+  bones: WireBone[],
+  known: ReadonlyMap<string, SkeletonProfile>,
+): WireBone[] {
+  const restPose = profileOfBones(bones, known)?.restPose
+  if (!restPose) return bones
+  return bones.map(bone => {
+    const rest = restPose[bone.name]
+    if (!rest) return bone
+    return {
+      ...bone,
+      position: [rest.position.x, rest.position.y, rest.position.z],
+      quaternion: new Quaternion()
+        .setFromEuler(new Euler(rest.rotation.x, rest.rotation.y, rest.rotation.z))
+        .toArray(),
+      scale: [rest.scale.x, rest.scale.y, rest.scale.z],
+    }
+  })
 }
 
 /**
@@ -358,7 +416,8 @@ export function wireBonesOf(root: Object3D): WireBone[] {
   const above = new Matrix4().copy(root.matrixWorld).invert()
 
   root.traverse(object => {
-    if (!isBoneObject(object) || !object.name || indexOf.has(object.name)) return
+    if (!isBoneObject(object) || !object.name) return
+    if (indexOf.has(object.name)) throw new Error(`duplicate bone name: ${object.name}`)
 
     const parent = parentIndexOf(object, indexOf)
     indexOf.set(object.name, bones.length)

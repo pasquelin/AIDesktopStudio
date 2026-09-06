@@ -27,7 +27,8 @@ export async function loadModelAnimations(
     if (!url) continue
     try {
       const loaded = await loadModel(url)
-      if (loaded.animations[0]) animations.addClip(nodeId, key, loaded.animations[0])
+      const selected = loaded.animations[source.clipIndex ?? 0]
+      if (selected) animations.addClip(nodeId, key, selected)
       disposeTree(loaded)
     } catch {
       continue

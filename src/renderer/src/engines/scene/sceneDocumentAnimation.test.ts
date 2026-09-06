@@ -7,8 +7,8 @@ import {
 } from '@shared/domain/postProcessing'
 import { stackFromPreset } from '@shared/domain/postPresets'
 import { describe, expect, it } from 'vitest'
-import { DEFAULT_CAMERA, DEFAULT_WORLD } from '@shared/domain/scene'
-import { meshNode as mesh } from './scene-fixtures'
+import { assetClip, clipLane, DEFAULT_CAMERA, DEFAULT_WORLD } from '@shared/domain/scene'
+import { modelNodeFixture, meshNode as mesh } from './scene-fixtures'
 import { carvedNode } from './nodeFactory'
 import { scenePayload, sceneFromPayload } from './sceneDocument'
 import {
@@ -440,4 +440,31 @@ describe('what a timeline carries beyond moving something', () => {
 
     expect('template' in sceneFromPayload(written).animation).toBe(false)
   })
+})
+
+it('preserves a selected animation through save and rejects an invalid index', () => {
+  const selected = assetClip('clip', 'motion', 'Multi')
+  const node = {
+    ...modelNodeFixture('a'),
+    model: {
+      assetId: 'character',
+      lanes: [
+        clipLane('lane', [
+          {
+            ...selected,
+            source: { kind: 'asset', assetId: 'motion', name: 'Multi', clipIndex: 2 },
+          },
+        ]),
+      ],
+    },
+  }
+  expect(reread({ ...EMPTY_SCENE, nodes: [node] }).nodes).toHaveLength(1)
+  const payload = scenePayload({ ...EMPTY_SCENE, nodes: [node] })
+  node.model.lanes[0]!.clips[0]!.source = {
+    kind: 'asset',
+    assetId: 'motion',
+    name: 'Multi',
+    clipIndex: -1,
+  }
+  expect(sceneFromPayload({ ...payload, nodes: [node] }).nodes).toHaveLength(0)
 })

@@ -28,6 +28,7 @@ export type Player = {
   clips: Map<string, AnimationClip>
   /** The names the model's OWN file spells, which is what a panel offers a choice from. */
   fileNames: readonly string[]
+  fileClips: readonly AnimationClip[]
   /** The bones the clips play on, kept so a clip arriving later can be read against them. */
   bones: readonly SkeletonBone[]
   /**

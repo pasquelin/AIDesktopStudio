@@ -8,7 +8,7 @@
  * that is pure arithmetic with no DOM and no GPU, which is exactly what invariant 6 sends away.
  */
 import { retargetClip, type RetargetClipOptions } from 'three/addons/utils/SkeletonUtils.js'
-import type { Matrix4, SkinnedMesh } from 'three'
+import { Vector3, type Matrix4, type SkinnedMesh } from 'three'
 import { messageOf } from '@shared/guards'
 import {
   clipFromWire,
@@ -53,7 +53,9 @@ async function run(request: RetargetRequest): Promise<void> {
     const source = skinnedFromWire(request.source)
     // Measured HERE rather than on the caller's objects, so the size read is the one of the very
     // skeletons three is about to sample — the same space, whatever the scene did to the models.
-    const scale = skeletonScaleOf(target, source) * clipTranslationScaleOf(source, request.hip)
+    const scale =
+      (request.options?.scale ?? skeletonScaleOf(target, source)) *
+      clipTranslationScaleOf(source, request.hip)
     // Read while both skeletons still stand at rest: `retargetClip` poses the source on its first
     // frame before anything is sampled.
     const offsets = restOffsetsOf(target, source, request.names)
@@ -102,6 +104,7 @@ function adaptOne(
     fps: request.fps,
     scale,
     localOffsets,
+    ...(request.options?.rootMotion === 'inPlace' && { hipInfluence: new Vector3(0, 1, 0) }),
   }
   const sampled = retargetClip(target, source, clipFromWire(clip), options)
   const wire = wireClipOf(sampled)

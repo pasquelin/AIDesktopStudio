@@ -285,7 +285,15 @@ function pointedAtCopies(
       ...layer,
       states: layer.states.map(state => {
         const id = state.source.kind === 'bundled' ? filed.get(state.source.name) : undefined
-        return id ? { ...state, source: copied(state.source.name, id) } : state
+        return id
+          ? {
+              ...state,
+              source: {
+                ...copied(state.source.name, id),
+                ...('clipIndex' in state.source && { clipIndex: state.source.clipIndex }),
+              },
+            }
+          : state
       }),
     })),
   }

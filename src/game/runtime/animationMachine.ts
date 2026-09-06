@@ -60,7 +60,8 @@ export type AnimationStep = { next: AnimatorState; happened: readonly AnimationH
  */
 export function clipKeyOf(source: ClipSource): string {
   if (source.kind === 'embedded') return source.name
-  return source.kind === 'asset' ? `asset:${source.assetId}` : `bundled:${source.name}`
+  const key = source.kind === 'asset' ? `asset:${source.assetId}` : `bundled:${source.name}`
+  return source.clipIndex ? `${key}:clip:${source.clipIndex}` : key
 }
 
 export function freshAnimator(layer: AnimationLayer): AnimatorState {

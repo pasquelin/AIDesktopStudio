@@ -70,6 +70,7 @@ export class SceneAnimations {
       mixer: new AnimationMixer(root),
       clips: byName,
       fileNames: [...byName.keys()],
+      fileClips: [...clips],
       bones,
       driven: new Map(),
       lengths: lengthsOf([...byName.values()]),
@@ -92,6 +93,19 @@ export class SceneAnimations {
     player.clips.set(key, clip)
     player.lengths[key] = clip.duration
     player.rootTracks.set(key, rootTrackOf(clip, player.bones))
+    this.apply(nodeId, player.lanes)
+  }
+
+  /** Releases a transient clip and its actions from this model's single mixer. */
+  removeClip(nodeId: string, key: string): void {
+    const player = this.players.get(nodeId)
+    if (!player || player.fileNames.includes(key)) return
+    this.release(nodeId)
+    const clip = player.clips.get(key)
+    if (clip) player.mixer.uncacheClip(clip)
+    player.clips.delete(key)
+    delete player.lengths[key]
+    player.rootTracks.delete(key)
     this.apply(nodeId, player.lanes)
   }
 
@@ -136,7 +150,7 @@ export class SceneAnimations {
 
     // Its OWN, never what was retargeted onto it: a rig describes the file, and an animation
     // dropped on a character says nothing about the character.
-    return player.fileNames.flatMap(name => player.clips.get(name) ?? [])
+    return [...player.fileClips]
   }
 
   /**

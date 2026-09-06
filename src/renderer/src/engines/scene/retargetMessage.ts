@@ -40,7 +40,14 @@ export type WireClip = {
   tracks: readonly WireTrack[]
 }
 
+export type RetargetOptions = {
+  /** Omitted means measured from the two skeletons. */
+  scale?: number
+  rootMotion?: 'travel' | 'inPlace'
+}
+
 export type RetargetRequest = {
+  options?: RetargetOptions
   id: number
   /** The skeleton the clips will play on. */
   target: readonly WireBone[]

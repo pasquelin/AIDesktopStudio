@@ -5,6 +5,7 @@ import {
   ROOT_MOTIONS,
   TEXTURE_SLOTS,
 } from '@shared/domain/scene'
+import { isClipIndex } from '@shared/domain/sceneModel'
 import { CSG_OPERATIONS } from '@shared/domain/csg'
 import { BODY_PARTS } from '@shared/domain/humanoid'
 import { isRecord } from '@shared/guards'
@@ -220,6 +221,7 @@ function isClip(value: unknown): boolean {
 
 function isClipSource(value: unknown): boolean {
   if (!isRecord(value) || typeof value.name !== 'string') return false
+  if (value.clipIndex !== undefined && !isClipIndex(value.clipIndex)) return false
   if (value.kind === 'embedded' || value.kind === 'bundled') return true
 
   return value.kind === 'asset' && typeof value.assetId === 'string' && value.assetId !== ''

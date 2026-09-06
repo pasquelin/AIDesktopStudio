@@ -108,6 +108,7 @@ export abstract class SceneRendererMaterials extends SceneRendererFlight {
                                 this.bvh.dispose()
                                 const disposeStep14 = () => {
                                   this.skin.dispose()
+                                  this.cancelRetargets()
                                   this.retarget.dispose()
                                   this.clipSources.dispose()
                                   const disposeStep15 = () => {

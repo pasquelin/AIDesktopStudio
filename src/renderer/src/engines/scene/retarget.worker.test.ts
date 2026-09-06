@@ -2,7 +2,7 @@ import { AnimationClip, QuaternionKeyframeTrack, VectorKeyframeTrack } from 'thr
 import type * as SkeletonUtilsModule from 'three/addons/utils/SkeletonUtils.js'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { wireClipOf } from './retarget'
-import type { RetargetResponse, WireBone, WireClip } from './retargetMessage'
+import type { RetargetOptions, RetargetResponse, WireBone, WireClip } from './retargetMessage'
 
 /** three's sampling, made to fail on demand: what is under test is what the worker does then. */
 const sampling = vi.hoisted(() => ({ fails: false }))
@@ -67,6 +67,7 @@ function ask(
   clips: readonly WireClip[],
   fps: number | null = 30,
   source: readonly WireBone[] = SOURCE,
+  options?: RetargetOptions,
 ): void {
   self.dispatchEvent(
     new MessageEvent('message', {
@@ -78,6 +79,7 @@ function ask(
         names: { Hip: 'mixamorigHips', Waist: 'mixamorigSpine', Head: 'mixamorigHead' },
         hip: 'mixamorigHips',
         fps: fps ?? undefined,
+        options,
       },
     }),
   )
@@ -237,6 +239,23 @@ describe('replaying an animation on another skeleton', () => {
     // Unscaled, z is −99 m — the body stands behind the north wall. Folded by 0,01 it is a metre.
     expect(Math.abs(z)).toBeGreaterThan(0.5)
     expect(Math.abs(z)).toBeLessThan(2)
+  })
+
+  it('applies explicit scale and can remove horizontal root travel', async () => {
+    ask(41, [hipTravel()], 30, SOURCE, { scale: 3 })
+    await drain()
+    const scaled = settled()
+    if (!scaled?.done || !scaled.ok) throw new Error('missing scaled result')
+    const travel = scaled.clips[0]?.tracks.find(track => track.name === 'Hip.position')
+    expect(travel?.values.at(-3)).toBeGreaterThan(2.5)
+    posted.length = 0
+    ask(42, [hipTravel()], 30, SOURCE, { rootMotion: 'inPlace' })
+    await drain()
+    const stationary = settled()
+    if (!stationary?.done || !stationary.ok) throw new Error('missing stationary result')
+    const hips = stationary.clips[0]?.tracks.find(track => track.name === 'Hip.position')
+    expect(hips?.values.at(-3)).toBeCloseTo(0)
+    expect(hips?.values.at(-2)).toBeGreaterThan(0)
   })
 
   it('keeps the length the source was authored at', async () => {
