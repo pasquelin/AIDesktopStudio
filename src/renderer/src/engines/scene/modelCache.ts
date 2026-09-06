@@ -1,6 +1,6 @@
 import type { Object3D } from 'three'
 import { clone as cloneSkinned } from 'three/addons/utils/SkeletonUtils.js'
-import { assetUrl } from '@shared/domain/asset'
+import { assetUrl, versionedUrl } from '@shared/domain/assetAccess'
 import { createRefCache, type RefCache } from '../core/refCache'
 
 /** A port rather than a hard-wired `GLTFLoader`, like `TextureSource`: jsdom decodes no GLB. */
@@ -8,18 +8,22 @@ export type ModelSource = (url: string) => Promise<Object3D>
 
 export type ModelCache = RefCache<Object3D>
 
+/** One key per FILE VERSION: a model ⌘S rewrote is another entry, freed when its last node lets go. */
+export function modelKeyOf(assetId: string, version?: string): string {
+  return versionedUrl(assetUrl(assetId), version)
+}
+
 /**
- * One parse per asset, however many nodes point at it — a hundred trees are one file read once.
- *
- * What `acquire` hands back is the shared source; the caller clones it for the scene. A clone
- * shares geometries and materials, which is the whole point: the GPU uploads them once, and
- * freeing the source at the last release frees them for every clone at the same time.
+ * One parse per key, however many nodes point at it — a hundred trees are one file read once.
+ * What `acquire` hands back is the shared source; the caller clones it, sharing geometries and
+ * materials, so the GPU uploads them once and the last release frees them for every clone.
  */
 export function createModelCache(
   load: ModelSource,
-  onFailure: (assetId: string, error: unknown) => void,
+  onFailure: (key: string, error: unknown) => void,
 ): ModelCache {
-  return createRefCache({ load: assetId => load(assetUrl(assetId)), free: disposeTree, onFailure })
+  // The key IS the url: `load` needs nothing translated.
+  return createRefCache({ load, free: disposeTree, onFailure })
 }
 
 /**

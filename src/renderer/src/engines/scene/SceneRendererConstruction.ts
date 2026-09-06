@@ -4,6 +4,7 @@ import { studioFonts } from '@/services/fonts'
 import { createGltfSource } from './gltfSource'
 import { createRefCache } from '../core/refCache'
 import { createModelCache, disposeTree } from './modelCache'
+import { assetIdFromUrl } from '@shared/domain/assetAccess'
 import BvhWorker from './bvh.worker?worker'
 import CsgWorker from '../csg/csg.worker?worker'
 import SkinWorker from '../character/skinWeights.worker?worker'
@@ -71,7 +72,7 @@ export class SceneRendererConstruction extends SceneRendererFrame {
         this.gltf.load,
         // The node stays in the outliner and draws nothing: a corrupt or compressed GLB is
         // otherwise indistinguishable from one that was never asked for.
-        (assetId, error) => reportFailure('scene.model', assetId, error),
+        (key, error) => reportFailure('scene.model', assetIdFromUrl(key) ?? key, error),
       )
       this.scatter = createScatterSurface(this.viewport.scene, {
         models: this.modelCache,

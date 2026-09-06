@@ -21,10 +21,6 @@ const VERSIONED = 'versionedUrl'
  */
 const ALLOWED = new Map<string, string>([
   [
-    'engines/scene/modelCache.ts | return createRefCache({ load: assetId => load(assetUrl(assetId)), free: disposeTree, onFailure })',
-    'hole: a rewritten .glb never reloads — no refreshModels, no version in the key',
-  ],
-  [
     "engines/scene/clipSources.ts | return source.kind === 'asset' ? assetUrl(source.assetId) : null",
     'hole: a rewritten animation never reloads — clipSources keys on the bare URL',
   ],

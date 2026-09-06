@@ -208,6 +208,8 @@ export abstract class SceneRendererState {
   protected textureCache!: TextureCache
 
   protected modelCache!: ModelCache
+  /** The cache key each model node holds: versioned, so `release` gives back what was taken. */
+  protected modelKeys = new Map<string, string>()
 
   protected gltf!: GltfSource
 

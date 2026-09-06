@@ -1,6 +1,6 @@
 import { BoxGeometry, Mesh, MeshStandardMaterial, Object3D, Texture } from 'three'
 import { describe, expect, it, vi } from 'vitest'
-import { createModelCache, disposeTree, instanceOf } from './modelCache'
+import { createModelCache, disposeTree, instanceOf, modelKeyOf } from './modelCache'
 
 /** The failure port, silent unless a test watches it — the renderer's log is not this module's. */
 const silent = () => {}
@@ -12,29 +12,39 @@ function loaded(): Object3D {
   return root
 }
 
+describe('modelKeyOf', () => {
+  // A ⌘S that rewrote the file must be another entry, or every scene keeps the model it read.
+  it('tells two versions of one asset apart', () => {
+    expect(modelKeyOf('mesh-1', 'v2')).not.toBe(modelKeyOf('mesh-1', 'v1'))
+  })
+
+  it('is the bare studio url when no version is known', () => {
+    expect(modelKeyOf('mesh-1')).toBe('ia-studio://asset/mesh-1')
+  })
+})
+
 // The counting itself is `ref-cache`'s, and tested there. What is this module's is the url it
 // asks for and what it frees.
 describe('createModelCache', () => {
-  it('reads the asset through the studio protocol, never a bare id', async () => {
+  it('reads the file at the key, which is its url', async () => {
     const urls: string[] = []
     await createModelCache(async url => {
       urls.push(url)
       return loaded()
-    }, silent).acquire('mesh-1')
+    }, silent).acquire(modelKeyOf('mesh-1', 'v1'))
 
-    expect(urls[0]).toContain('mesh-1')
-    expect(urls[0]).toMatch(/^ia-studio:/)
+    expect(urls).toEqual(['ia-studio://asset/mesh-1?v=v1'])
   })
 
   // A compressed or corrupt GLB leaves a node in the outliner drawing nothing: what the engine
-  // is told is the only trace there is.
-  it('tells which model failed to load, by asset rather than by url', async () => {
+  // is told is the only trace there is — by key; the engine turns it back into an asset.
+  it('tells which key failed to load', async () => {
     const onFailure = vi.fn()
     const gone = new Error('unreadable')
 
-    await createModelCache(() => Promise.reject(gone), onFailure).acquire('mesh-1')
+    await createModelCache(() => Promise.reject(gone), onFailure).acquire(modelKeyOf('mesh-1'))
 
-    expect(onFailure).toHaveBeenCalledWith('mesh-1', gone)
+    expect(onFailure).toHaveBeenCalledWith(modelKeyOf('mesh-1'), gone)
   })
 
   it('frees the whole tree at the last release, not just its root', async () => {
@@ -43,8 +53,8 @@ describe('createModelCache', () => {
     const dispose = mesh instanceof Mesh ? vi.spyOn(mesh.geometry, 'dispose') : null
     const cache = createModelCache(async () => object, silent)
 
-    await cache.acquire('mesh-1')
-    cache.release('mesh-1')
+    await cache.acquire(modelKeyOf('mesh-1'))
+    cache.release(modelKeyOf('mesh-1'))
 
     expect(dispose).toHaveBeenCalled()
   })

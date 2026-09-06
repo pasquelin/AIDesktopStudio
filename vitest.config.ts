@@ -189,6 +189,7 @@ const DOM_BOUND = [
   // A stage opens an off-screen host before anything else, and a host is a div in a document.
   'src/renderer/src/engines/scene/sceneStage.test.ts',
   'src/renderer/src/engines/scene/scene-models.test.ts',
+  'src/renderer/src/engines/scene/sceneRendererRefreshModels.test.ts',
   // Constructs SceneRenderer, which draws a matcap on a canvas.
   'src/renderer/src/engines/scene/instanceableModel.test.ts',
   'src/renderer/src/engines/scene/scene-renderer-animation.test.ts',

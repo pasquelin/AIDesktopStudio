@@ -101,7 +101,7 @@ export function CharacterDocument({ documentId }: { documentId: string }) {
     useCharacters(state => isCharacterDirty(state, assetId)),
   )
   useRestoredDocument(documentId)
-  useSceneRendererResources(engineRef)
+  useSceneRendererResources(engineRef, { models: false }) // reloading its own file loses the pose
   const [navigating, setNavigating] = useState(false)
   /** Metres per second the wheel left the flight at, or `null` while it has said nothing. */
   const [flySpeed, setFlySpeed] = useState<number | null>(null)

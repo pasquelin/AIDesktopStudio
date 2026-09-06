@@ -6,7 +6,7 @@ import { reportFailure } from '@/services/diagnostics'
 import { clipLengthsOf, clipNamesOf, clipsOf, foreignClipsOf, type ForeignClip } from './animation'
 import { rigStateOf } from './rigState'
 import { instanceableOf, markInstanceable } from './instanceableModel'
-import { instanceOf } from './modelCache'
+import { instanceOf, modelKeyOf } from './modelCache'
 import { applyShadowFlags } from './shadows'
 import type { Rig } from '@shared/domain/rig'
 import type { HumanoidRole } from '@shared/domain/humanoid'
@@ -52,8 +52,11 @@ export abstract class SceneRendererModels extends SceneRendererGeometry {
   }
 
   private async loadModelInto(node: ModelNode, holder: Object3D, assetId: string): Promise<void> {
+    const key = modelKeyOf(assetId, this.options.assetVersion?.(assetId))
+    // Noted BEFORE the acquire: released while the read is in flight, `release` must know the key.
+    this.modelKeys.set(node.id, key)
     const [source] = await Promise.all([
-      this.modelCache.acquire(assetId),
+      this.modelCache.acquire(key),
       this.options.prepareModelDress?.(assetId),
     ])
     // A freshness test and nothing more: `release` owns the reference, as `clear` does in
@@ -170,6 +173,26 @@ export abstract class SceneRendererModels extends SceneRendererGeometry {
       return sceneTask1Step1()
     }
     return sceneTask1Step1()
+  }
+  /** Loads again every model whose file moved since it was read — the door `useShelfRefresh` pushes. */
+  refreshModels(): void {
+    let reloaded = false
+    for (const [id, held] of [...this.modelKeys]) {
+      const node = this.applied.get(id)
+      if (node?.type !== 'model') continue
+      const fresh = modelKeyOf(node.model.assetId, this.options.assetVersion?.(node.model.assetId))
+      if (fresh === held) continue
+      this.release(id)
+      this.syncNode(node)
+      reloaded = true
+    }
+    if (!reloaded) return
+    // `release` unhung the old holder with the children under it, and `syncNode` hangs the new one
+    // from the scene: the second pass of `apply`, which nothing here calls.
+    for (const node of this.applied.values()) this.hangFromParent(node)
+    this.hangAll = false
+    // The gizmo holds the OBJECT it was aimed at, and a selected model's holder just went.
+    this.attachGizmo()
   }
   /** Told once per skeleton, not per model: it is filed by what its bones ARE. */
   protected learnRig(rig: Rig, corrected?: Readonly<Record<string, HumanoidRole>>): void {

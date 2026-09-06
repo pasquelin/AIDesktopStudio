@@ -228,7 +228,7 @@ export function helperVisibilityMoved(held: ViewportOptions, next: ViewportOptio
  * Whether a model has to be built again rather than patched.
  *
  * A FILE that changed is not read here: it is not an edit of a document and cannot be seen in a
- * comparison of two states. `reloadAsset` is the door for that, and it is imperative on purpose.
+ * comparison of two states. `refreshModels` is the door for that, and it is imperative on purpose.
  */
 export function pointsElsewhere(previous: ModelNode, node: SceneNode): boolean {
   if (node.type !== 'model') return true

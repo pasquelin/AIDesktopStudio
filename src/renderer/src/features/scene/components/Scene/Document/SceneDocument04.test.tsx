@@ -90,6 +90,7 @@ vi.mock('@/engines/scene/SceneRenderer', () => ({
     setPlayhead = setPlayhead
     setPreview = setPreview
     refreshTextures = refreshTextures
+    refreshModels = vi.fn()
     viewFrom = viewFrom
     frameSelection = frameSelection
     exportTo = exportTo

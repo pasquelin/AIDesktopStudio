@@ -30,7 +30,7 @@ import {
   type CellKey,
   type WorldPartition,
 } from './worldPartition'
-import type { ModelCache } from './modelCache'
+import { modelKeyOf, type ModelCache } from './modelCache'
 import { clipsOf } from './animation'
 import { meshesOf } from './instanceableModel'
 import { rigStateOf } from './rigState'
@@ -404,7 +404,8 @@ function sourceOf(
   const loading = assets.loading.get(assetId)
   if (loading) return loading
   assets.held.add(assetId)
-  const acquired = models.acquire(assetId)
+  // Unversioned on purpose: the scatter does not read a rewritten model again — see its test.
+  const acquired = models.acquire(modelKeyOf(assetId))
   assets.loading.set(assetId, acquired)
   return acquired
 }
@@ -419,7 +420,7 @@ function releaseRemoved(
     assets.held.delete(assetId)
     assets.sources.delete(assetId)
     assets.loading.delete(assetId)
-    models.release(assetId)
+    models.release(modelKeyOf(assetId))
   }
 }
 
@@ -466,7 +467,7 @@ function disposeDrawn(object: Object3D): void {
 function disposeScatter(state: ScatterState, models: ModelCache): void {
   state.assets.revision += 1
   for (const object of [...state.cells.group.children]) disposeDrawn(object)
-  for (const assetId of state.assets.held) models.release(assetId)
+  for (const assetId of state.assets.held) models.release(modelKeyOf(assetId))
   state.assets.held.clear()
   state.assets.sources.clear()
   state.assets.loading.clear()
