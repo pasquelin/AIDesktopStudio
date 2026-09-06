@@ -102,7 +102,11 @@ describe('what a character is made of', () => {
     const [shown] = screen.getAllByText('Hips')
     await userEvent.dblClick(shown as HTMLElement)
 
-    const field = screen.getByLabelText('Nom')
+    // The bone's own field, not the name of a new attachment point further down: both read
+    // « Nom », and `find` alone cannot promise one.
+    const field = screen
+      .getAllByLabelText('Nom')
+      .find(one => one.getAttribute('data-sc') === 'field:rename') as HTMLElement
     await userEvent.clear(field)
     await userEvent.type(field, 'Bassin{Enter}')
 

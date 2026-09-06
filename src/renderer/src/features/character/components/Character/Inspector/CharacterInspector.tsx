@@ -27,6 +27,7 @@ import { rigHandBones } from '@/engines/scene/rigHandBones'
 import type { MeshSample } from '@/engines/scene/rigSnap'
 import { CharacterMotionList } from '../Motion/CharacterMotionList'
 import { CharacterInspectorFit } from './CharacterInspectorFit'
+import { CharacterInspectorSockets } from './CharacterInspectorSockets'
 import { characterOf, useCharacters } from '@/stores/character'
 import { HINT_LEFT } from '@/helpers/tooltip'
 import { useViewportSetting } from '@/hooks/useViewportSetting'
@@ -197,6 +198,8 @@ export function CharacterInspector({ assetId }: CharacterInspectorProps) {
           t,
         )}
       </PropertySection>
+
+      <CharacterInspectorSockets assetId={assetId} rig={rig} />
 
       <PropertySection title={t('character.motions')} scId="character.motions">
         <CharacterMotionList
