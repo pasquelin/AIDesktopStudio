@@ -18,6 +18,25 @@ const eula = readFileSync(join(ROOT, 'EULA.md'), 'utf8')
 const gameLicence = readFileSync(join(ROOT, 'src', 'game', 'LICENSE'), 'utf8')
 
 describe('the notice the repository carries', () => {
+  it('embeds the complete local motion terms and required attribution offline', () => {
+    const snapshots = [
+      ['Kimodo code', 'kimodo-apache'],
+      ['Kimodo SOMA weights', 'nvidia-open-model'],
+      ['Meta Llama 3', 'meta-llama3'],
+      ['Meta Llama 3', 'meta-llama3-use-policy'],
+      ['LLM2Vec motion encoder adapters', 'llm2vec-mit'],
+    ]
+    for (const [name, file] of snapshots) {
+      const fullText = readFileSync(join(ROOT, 'scripts', 'licence-texts', `${file}.txt`), 'utf8')
+      expect(fullText.length).toBeGreaterThan(1000)
+      expect(entries.find(entry => entry.name === name)?.text).toContain(fullText)
+      expect(notices).toContain(fullText.replace(/\r\n?/g, '\n').replace(/[ \t]+$/gm, ''))
+    }
+    expect(entries.find(entry => entry.name === 'Meta Llama 3')?.attribution).toBe(
+      'Built with Meta Llama 3',
+    )
+  })
+
   // A stale copy would credit the wrong versions to whoever reads the repository, not the app.
   it('mirrors every entry of the window, version and licence included', () => {
     for (const entry of entries) {

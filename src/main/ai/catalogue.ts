@@ -185,7 +185,7 @@ export function modelsForWith(
 ): readonly LocalModel[] {
   const shipped = shippedModelsFor(role)
   const extra = [
-    ...(role === OWN_MODEL_ROLE ? own : []),
+    ...own.filter(model => discoveredServes(model, role)),
     ...discovered.filter(model => discoveredServes(model, role)),
   ]
   return extra.length === 0 ? shipped : [...shipped, ...extra]

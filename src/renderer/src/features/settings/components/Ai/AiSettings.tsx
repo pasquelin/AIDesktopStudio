@@ -20,7 +20,7 @@ import { machineSummary } from '@/helpers/machineSummary'
 import { useAiModels } from '@/stores/aiModels'
 import { SettingLine } from '../Setting/SettingLine'
 import { SETTING_COLUMN } from '../settingStyles'
-import { WindowButton } from '@/components/WindowButton'
+import { AiOwnModels } from './AiOwnModels'
 import { WindowSelect } from '@/components/WindowSelect'
 import { AiEngineOffer } from './AiEngineOffer'
 import { AiOllamaOffer } from './AiOllamaOffer'
@@ -90,8 +90,6 @@ export function AiSettings({ family }: AiSettingsProps) {
   const { t } = useTranslation()
   const bytes = useBytes()
   const overview = useAiModels(state => state.overview)
-  const addOwnAiModel = useAiModels(state => state.addOwnAiModel)
-  const ownModelFailure = useAiModels(state => state.ownModelFailure)
   // One control for the screen rather than one per row: the question is asked once — "these
   // choices are for what?" — and answered once. Seeded from what the rows say, so somebody whose
   // choices are project-scoped does not reopen on the other side.
@@ -137,11 +135,21 @@ export function AiSettings({ family }: AiSettingsProps) {
         )}
 
         {shown(
-          overviewPane,
+          overviewPane ||
+            rows.some(row =>
+              row.candidates.some(
+                candidate =>
+                  candidate.model.loader === 'plugin' || candidate.model.loader === 'diffusers',
+              ),
+            ),
           <section className="mb-6">
             <h3 className={cn(WINDOW_GROUP_LABEL, 'mb-2')}>{t('aiModels.sourceEngine')}</h3>
             <p className={WINDOW_CAPTION}>{t('aiModels.sourceEngineHelp')}</p>
-            <AiEngineOffer offer={overview.engine} busy={busy} />
+            <AiEngineOffer
+              offer={overview.engine}
+              busy={busy}
+              profile={family === '3d' ? 'motion' : undefined}
+            />
           </section>,
         )}
 
@@ -196,21 +204,7 @@ export function AiSettings({ family }: AiSettingsProps) {
           />
         ))}
 
-        {shown(
-          overviewPane,
-          <>
-            <SettingLine title={t('aiModels.ownModel')} help={t('aiModels.ownModelHelp')}>
-              <WindowButton data-sc="field:ai.ownModel" onClick={() => void addOwnAiModel()}>
-                {t('aiModels.addOwnModel')}
-              </WindowButton>
-            </SettingLine>
-            {ownModelFailure !== null && (
-              <p className={WINDOW_HELP} role="status">
-                {t('aiModels.ownModelUnreadable')}
-              </p>
-            )}
-          </>,
-        )}
+        <AiOwnModels family={family} busy={busy} />
       </div>
     )
   }

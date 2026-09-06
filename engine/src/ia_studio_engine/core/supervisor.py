@@ -36,7 +36,7 @@ Handler = Callable[[dict[str, Any]], Any]
 
 def _requirements(params: dict[str, Any]) -> dict[str, Any]:
     profile = params.get("profile", DOOR_EXTRA)
-    if profile not in {DOOR_EXTRA, "autorig"}:
+    if profile not in {DOOR_EXTRA, "autorig", "motion"}:
         raise ValueError(f"unknown runtime profile: {profile}")
     return survey(profile)
 

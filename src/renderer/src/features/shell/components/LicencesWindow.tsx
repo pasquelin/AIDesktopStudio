@@ -26,6 +26,14 @@ export function LicencesWindow() {
     <WindowShell title={t('licences.title')}>
       <p className={cn(WINDOW_CAPTION, 'pb-3')}>{t('licences.intro')}</p>
 
+      {entries
+        .filter(entry => entry.attribution)
+        .map(entry => (
+          <p key={entry.name} className="text-body pb-3">
+            {entry.attribution}
+          </p>
+        ))}
+
       <ul>
         {entries.map(entry => (
           <li key={entry.name} className="border-base-300 border-b last:border-b-0">

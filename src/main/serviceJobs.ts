@@ -106,7 +106,8 @@ export function createJobServices(deps: JobDeps) {
     fields: async id => (await deps.models.describe(id)).fields,
     resolvePictureIds: assetInputs.resolvePictureIds,
   })
-  const removeAssetFile = async (asset: Asset): Promise<void> => await removeFiles(deps, asset)
+  const removeAssetFile = async (asset: Asset, expectedProjectPath?: string): Promise<void> =>
+    await removeFiles(deps, asset, expectedProjectPath)
   const localJobs = createLocalJobs(deps)
   const codeJobs = createCodeJobs(deps)
   const tripoApi = createTripoApi({
@@ -272,8 +273,14 @@ function createCloudAssets(
   })
 }
 
-async function removeFiles(deps: JobDeps, asset: Asset): Promise<void> {
+async function removeFiles(
+  deps: JobDeps,
+  asset: Asset,
+  expectedProjectPath?: string,
+): Promise<void> {
   const current = deps.project.current()
+  if (expectedProjectPath !== undefined && current?.path !== expectedProjectPath)
+    throw new Error('asset rollback belongs to another project')
   if (!current) return
   for (const stored of [asset.path, asset.posterPath]) {
     const file = stored ? assetFilePath(current.path, stored) : null
@@ -302,7 +309,7 @@ function createLocalJobs(deps: JobDeps) {
           fields: request.fields,
           destination: join(
             await deps.generationFolder(),
-            `${request.jobId}.${outputExtensionOf(request.modality)}`,
+            `${request.jobId}.${model.outputExtension ?? outputExtensionOf(request.modality)}`,
           ),
           onProgress: request.onProgress,
           signal: request.signal,

@@ -5,6 +5,7 @@ import { WINDOW_CAPTION, WINDOW_HELP } from '@/components/windowStyles'
 import { WindowChip } from '@/components/WindowChip'
 import { employmentLabelOf } from '@/features/home/components/ModelInventory/inventory'
 import { useModelFit } from '@/hooks/useModelFit'
+import { aiRoleId } from '@shared/domain/aiRole'
 import { aiDiskBusy } from '@shared/domain/aiOverview'
 import { useAiModels } from '@/stores/aiModels'
 import { WelcomeCopy } from './WelcomeCopy'
@@ -70,6 +71,10 @@ export function WelcomeSlideModels() {
       {/* A floor under the list: a section holding one model shrank the sheet to half its
           height, and the sheet jumping on every chip is what a carousel must not do. */}
       <div className="min-h-48">
+        {chosen.family === '3d' &&
+          overview.roles.some(row => row.role === aiRoleId('3d', 'motion')) && (
+            <p className={cn(WINDOW_HELP, 'mb-3')}>{t('welcome.models.motionOptional')}</p>
+          )}
         <ul className={cn('grid gap-3', models.length > PAIRED ? 'grid-cols-2' : 'grid-cols-1')}>
           {models.map(candidate => (
             <WelcomeModelRow

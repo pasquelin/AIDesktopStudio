@@ -233,7 +233,7 @@ describe('the families the engine opens itself', () => {
   )
   const body = table.split('PLUGINS: dict[str, Plugin] = {')[1]?.split('\n}')[0] ?? ''
   const declared = body.split(/\n(?= {4}")/).flatMap(entry => {
-    const id = /^ {4}"([a-z0-9-]+)":/.exec(entry)?.[1]
+    const id = /^ {4}"([a-z0-9.-]+)":/.exec(entry)?.[1]
     return id ? [{ id, needsCuda: entry.includes('needs_cuda=True') }] : []
   })
 

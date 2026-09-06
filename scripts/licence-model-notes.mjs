@@ -1,5 +1,11 @@
 /** Per-model attribution details that do not belong to the catalogue schema. */
 export const MODEL_NOTES = {
+  'kimodo-soma-rp-v1.1': [
+    'The SOMA motion weights use the NVIDIA Open Model License; the inference code uses Apache-2.0.',
+    'The shared text encoder uses Meta Llama 3 and LLM2Vec adapters. Their complete terms are',
+    'included in the Kimodo SOMA weights, Meta Llama 3 and LLM2Vec entries of this offline notice.',
+    'The SMPL-X variant is not included.',
+  ],
   'make-it-animatable': [
     'The Hugging Face repository declares Apache-2.0 for these files. The provenance and',
     'redistribution rights of the training data and derived checkpoints remain unconfirmed;',

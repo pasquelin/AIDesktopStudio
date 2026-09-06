@@ -11,6 +11,18 @@ dependencies = []
 # which is why the core stays at the 10 ms of a bare interpreter. Workers pay it, once, and stay
 # alive. The `llm`, `diffusion`, `audio` and `3d` groups land with the worker that needs them.
 core = []
+motion = [
+  "torch>=2.6",
+  "numpy>=1.26",
+  "scipy>=1.10",
+  "transformers==5.15.1",
+  "peft>=0.18",
+  "safetensors>=0.4",
+  "einops>=0.7",
+  "hydra-core>=1.3",
+  "omegaconf>=2.3",
+  "tqdm>=4.0",
+]
 # The production Auto Rig door. It intentionally excludes the diffusion, training, demo and
 # Blender stacks: MIA inference imports only these three distributions directly.
 autorig = [

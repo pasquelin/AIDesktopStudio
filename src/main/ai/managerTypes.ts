@@ -1,4 +1,4 @@
-import type { AiOverview, ChoiceScope } from '@shared/domain/aiOverview'
+import type { AiOverview, ChoiceScope, OwnModelProfile } from '@shared/domain/aiOverview'
 import type { AiRoleId, RoleProvider } from '@shared/domain/aiRole'
 import type { MemorySnapshot, RuntimeOccupancy } from '@shared/domain/aiMemory'
 import type { RuntimeEndpointId } from '@shared/domain/aiRuntime'
@@ -51,9 +51,13 @@ export type ManagerDeps = {
    * Asked of the ENGINE and never computed here: the declaration lives in `pyproject.toml`, and a
    * second reading of it in TypeScript would drift from the one `uv` resolves.
    */
-  engineMissing: () => Promise<readonly string[] | null>
+  engineMissing: (profile?: OwnModelProfile) => Promise<readonly string[] | null>
   /** Installs exactly what the engine named, with the interpreter the app ships. */
-  installEngine: (onProgress: (ratio: number) => void, signal: AbortSignal) => Promise<void>
+  installEngine: (
+    onProgress: (ratio: number) => void,
+    signal: AbortSignal,
+    profile?: OwnModelProfile,
+  ) => Promise<void>
 }
 
 export type AiManager = {
@@ -94,9 +98,9 @@ export type AiManager = {
   installOllama: () => Promise<AiOverview>
   cancelInstallOllama: () => Promise<AiOverview>
   /** Asks the engine what its environment lacks. Answered by the core, so it wakes no door. */
-  readEngine: () => Promise<AiOverview>
+  readEngine: (profile?: OwnModelProfile) => Promise<AiOverview>
   /** Installs what it named. Long: 682 MB on macOS, 4.7 GB on Linux, and cancellable. */
-  installEngine: () => Promise<AiOverview>
+  installEngine: (profile?: OwnModelProfile) => Promise<AiOverview>
   cancelInstallEngine: () => Promise<AiOverview>
   remove: (modelId: string) => Promise<AiOverview>
   /**

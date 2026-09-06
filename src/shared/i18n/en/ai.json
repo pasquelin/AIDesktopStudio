@@ -233,7 +233,18 @@
     "verdict": "{{word}} — {{detail}}",
     "cloudModel": "Model",
     "cloudModelHelp": "The exact model name at that service. Left empty, the studio uses the one it offers.",
-    "studioModelHelp": "The same choice as in the assistant’s own window. The four differ by price."
+    "studioModelHelp": "The same choice as in the assistant’s own window. The four differ by price.",
+    "motionSetup": "The motion model and its text encoder install together. The download is optional and animation retargeting remains available without it. Check the publisher page for access requirements; complete terms are available in Help → Licences.",
+    "motionFolder": "Local motion model",
+    "addMotionFolder": "Add a motion folder",
+    "motionFolderHelp": "Select a complete folder obtained from the publishers, including motion weights, the text encoder and its adapters. Files stay in their current location.",
+    "motionTerms": "Confirm that you hold the required rights and access for these files and accept their publishers’ licences. Complete terms are available in Help → Licences.",
+    "motionAccept": "Accept and add",
+    "motionFolderUnreadable": "This folder is missing required files, or their integrity could not be verified.",
+    "readEngine": "Check engine",
+    "readEngineHint": "Checks the libraries required for this generation",
+    "cancelVerification": "Stops verification of the supplied files",
+    "verifyingModel": "Verifying model files…"
   },
   "aiCloudGroups": {
     "generation": "Generation",

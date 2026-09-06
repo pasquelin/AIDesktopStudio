@@ -1,6 +1,7 @@
 import {
   canServe,
   type AiOverview,
+  type OwnModelProfile,
   type InstallRefusal,
   type LoadRefusal,
   type ModelCandidate,
@@ -58,6 +59,7 @@ export type OverviewInput = {
   readonly ollamaNames: readonly string[]
   readonly ollamaProgress: number | null
   readonly ollamaFailed: boolean
+  readonly engineProfile?: OwnModelProfile
   readonly engineKnown: boolean
   readonly engineMissing: readonly string[]
   readonly engineProgress: number | null
@@ -174,6 +176,7 @@ export function aiOverviewOf(input: OverviewInput): AiOverview {
     },
     engine: {
       known: input.engineKnown,
+      ...(input.engineProfile ? { profile: input.engineProfile } : {}),
       missing: input.engineMissing,
       progress: input.engineProgress,
       failed: input.engineFailed,

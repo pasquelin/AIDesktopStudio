@@ -47,9 +47,10 @@
     },
     "models": {
       "title": "Les modèles, section par section",
-      "body": "Le studio télécharge les poids et les fait tourner ici : ni compte, ni connexion. La taille dit ce que votre machine peut tenir.",
+      "body": "Le studio télécharge les poids, puis les fait tourner ici. Certains modèles demandent un accès auprès de leur éditeur. La taille indique l’espace disque nécessaire.",
       "sectionHint": "Montre les modèles de : {{name}}",
-      "more": "Le catalogue complet est dans les réglages."
+      "more": "Le catalogue complet est dans les réglages.",
+      "motionOptional": "La génération de mouvements est optionnelle. Installez un modèle maintenant, ou continuez et retrouvez-le dans Réglages → IA → 3D. Le transfert d’animation fonctionne sans IA."
     },
     "account": {
       "title": "Un service, si vous en avez un",

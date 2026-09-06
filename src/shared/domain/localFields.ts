@@ -375,12 +375,33 @@ export type LocalFieldOverrides = Readonly<
  * The form, in the reader's language. `translate` is handed in rather than imported: this runs in
  * the main process, where the language is a service and never a module-level read.
  */
+const MOTION_FIELDS: readonly LocalFieldTemplate[] = [
+  PROMPT,
+  {
+    key: 'seconds',
+    kind: 'number',
+    labelKey: 'localFields.seconds',
+    required: false,
+    default: 5,
+    min: 1,
+    max: 30,
+    step: 0.5,
+  },
+  steps({ default: 50, max: 100 }),
+  SEED,
+]
+
 export function localFieldsOf(
   modality: LocalModality,
   overrides: LocalFieldOverrides,
   translate: (key: string) => string,
+  profile?: 'motion',
 ): FieldDescriptor[] {
-  return fieldsFrom(TEMPLATES[modality], translate, overrides)
+  return fieldsFrom(
+    profile === 'motion' ? MOTION_FIELDS : TEMPLATES[modality],
+    translate,
+    overrides,
+  )
 }
 
 /**

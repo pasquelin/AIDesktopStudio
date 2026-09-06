@@ -233,7 +233,18 @@
     "verdict": "{{word}} — {{detail}}",
     "cloudModel": "Modèle",
     "cloudModelHelp": "Le nom exact du modèle chez ce service. Laissé vide, le studio prend celui qu’il propose.",
-    "studioModelHelp": "Le même choix que dans la fenêtre de l’assistant. Les quatre diffèrent par le prix."
+    "studioModelHelp": "Le même choix que dans la fenêtre de l’assistant. Les quatre diffèrent par le prix.",
+    "motionSetup": "Le modèle de mouvement et son encodeur de texte s’installent ensemble. Leur téléchargement est optionnel et ne conditionne pas le transfert d’animation. Consultez la fiche éditeur pour les conditions d’accès ; les textes complets se trouvent dans Aide → Licences.",
+    "motionFolder": "Modèle de mouvement local",
+    "addMotionFolder": "Ajouter un dossier de mouvement",
+    "motionFolderHelp": "Sélectionnez un dossier complet obtenu auprès des éditeurs, avec les poids du mouvement, de l’encodeur et de ses adaptateurs. Les fichiers restent à leur emplacement.",
+    "motionTerms": "Confirmez que vous disposez des droits et accès requis pour ces fichiers et que vous acceptez les licences de leurs éditeurs. Les textes complets sont disponibles dans Aide → Licences.",
+    "motionAccept": "Accepter et ajouter",
+    "motionFolderUnreadable": "Ce dossier ne contient pas tous les fichiers attendus, ou leur intégrité n’a pas pu être vérifiée.",
+    "readEngine": "Vérifier le moteur",
+    "readEngineHint": "Vérifie les bibliothèques nécessaires à cette génération",
+    "cancelVerification": "Arrête la vérification des fichiers fournis",
+    "verifyingModel": "Vérification des fichiers du modèle…"
   },
   "aiCloudGroups": {
     "generation": "Génération",

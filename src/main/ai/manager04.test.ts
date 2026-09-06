@@ -239,3 +239,22 @@ describe('what a compose costs', () => {
     expect(await ai.unservedRoles(roles)).toEqual(roles)
   })
 })
+
+describe('motion engine requirements', () => {
+  it('keeps the requested profile through inspection and installation', async () => {
+    const engineMissing = vi.fn(async () => ['peft'])
+    const installEngine = vi.fn(async () => {})
+    const ai = manager({ engineMissing, installEngine })
+    expect((await ai.readEngine('motion')).engine).toMatchObject({
+      profile: 'motion',
+      missing: ['peft'],
+    })
+    await ai.installEngine('motion')
+    expect(installEngine).toHaveBeenCalledWith(
+      expect.any(Function),
+      expect.any(AbortSignal),
+      'motion',
+    )
+    expect(engineMissing).toHaveBeenLastCalledWith('motion')
+  })
+})

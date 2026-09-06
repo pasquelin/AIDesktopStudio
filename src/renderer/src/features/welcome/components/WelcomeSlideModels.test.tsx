@@ -72,6 +72,15 @@ describe('WelcomeSlideModels', () => {
     expect(screen.queryByText('Qwen2.5 0.5B Instruct')).toBeNull()
   })
 
+  it('offers optional motion without starting a download', async () => {
+    const install = vi.fn()
+    installFakeBridge({ ai: { install } })
+    show(overview({ roles: [row(aiRoleId('3d', 'motion'), [candidate('motion', 'Motion')])] }))
+    expect(screen.getByText(/La génération de mouvements est optionnelle/)).toBeVisible()
+    expect(screen.getByRole('button', { name: 'Installer' })).toBeEnabled()
+    expect(install).not.toHaveBeenCalled()
+  })
+
   it('downloads the model the reader asks for', async () => {
     const install = vi.fn().mockResolvedValue(overview())
     installFakeBridge({ ai: { install } })

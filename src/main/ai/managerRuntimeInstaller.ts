@@ -1,4 +1,4 @@
-import type { AiOverview } from '@shared/domain/aiOverview'
+import type { AiOverview, OwnModelProfile } from '@shared/domain/aiOverview'
 import type { RuntimeReading } from './localRuntimes'
 import type { ModelLoader } from '@shared/domain/localModel'
 import { DownloadCancelled } from './modelInstall'
@@ -9,6 +9,7 @@ type InstallerView = {
   ollamaInstalled: boolean
   ollamaProgress: number | null
   ollamaFailed: boolean
+  engineProfile?: OwnModelProfile
   engineKnown: boolean
   engineMissing: readonly string[]
   engineProgress: number | null
@@ -19,8 +20,8 @@ export type RuntimeInstaller = {
   view: (readings: ReadonlyMap<ModelLoader, RuntimeReading>) => InstallerView
   installOllama: () => Promise<AiOverview>
   cancelOllama: () => Promise<AiOverview>
-  readEngine: () => Promise<AiOverview>
-  installEngine: () => Promise<AiOverview>
+  readEngine: (profile?: OwnModelProfile) => Promise<AiOverview>
+  installEngine: (profile?: OwnModelProfile) => Promise<AiOverview>
   cancelEngine: () => Promise<AiOverview>
   isInstallingOllama: () => boolean
 }
@@ -39,6 +40,8 @@ export function createRuntimeInstaller(deps: ManagerDeps, host: InstallerHost): 
   let ollamaProgress: number | null = null
   let ollamaFailed = false
   let ollamaDone: Promise<AiOverview> | null = null
+  let engineProfile: OwnModelProfile | undefined
+  let engineReadVersion = 0
   let engineMissing: readonly string[] | null = null
   let engineProgress: number | null = null
   let engineFailed = false
@@ -56,17 +59,20 @@ export function createRuntimeInstaller(deps: ManagerDeps, host: InstallerHost): 
     engineProgress = ratio
     const current = host.current()
     if (current === null) void host.announce()
-    else host.republish({ engine: { ...current.engine, progress: ratio } })
+    else host.republish({ engine: { ...current.engine, profile: engineProfile, progress: ratio } })
   }
 
-  async function runEngineInstall(): Promise<AiOverview> {
+  async function runEngineInstall(profile?: OwnModelProfile): Promise<AiOverview> {
+    engineReadVersion += 1
+    engineProfile = profile
+    engineMissing = null
     engineAbort = new AbortController()
     engineProgress = 0
     engineFailed = false
     void host.announce()
     try {
-      await deps.installEngine(reportEngineProgress, engineAbort.signal)
-      engineMissing = await deps.engineMissing()
+      await deps.installEngine(reportEngineProgress, engineAbort.signal, profile)
+      engineMissing = await deps.engineMissing(profile)
     } catch (error) {
       engineFailed = true
       deps.log('warn', `the engine repair stopped: ${String(error)}`)
@@ -97,9 +103,9 @@ export function createRuntimeInstaller(deps: ManagerDeps, host: InstallerHost): 
     return host.announce()
   }
 
-  async function trackedEngineInstall(): Promise<AiOverview> {
+  async function trackedEngineInstall(profile?: OwnModelProfile): Promise<AiOverview> {
     try {
-      return await runEngineInstall()
+      return await runEngineInstall(profile)
     } finally {
       engineDone = null
     }
@@ -119,6 +125,7 @@ export function createRuntimeInstaller(deps: ManagerDeps, host: InstallerHost): 
       ollamaInstalled: deps.ollamaInstalled(),
       ollamaProgress,
       ollamaFailed,
+      ...(engineProfile ? { engineProfile } : {}),
       engineKnown: engineMissing !== null,
       engineMissing: engineMissing ?? [],
       engineProgress,
@@ -137,13 +144,19 @@ export function createRuntimeInstaller(deps: ManagerDeps, host: InstallerHost): 
       ollamaAbort?.abort()
       return host.current() ?? host.compose()
     },
-    readEngine: async () => {
-      engineMissing = await deps.engineMissing()
+    readEngine: async profile => {
+      if (engineDone) return host.current() ?? host.compose()
+      const revision = ++engineReadVersion
+      const missing = await deps.engineMissing(profile)
+      if (revision === engineReadVersion && !engineDone) {
+        engineProfile = profile
+        engineMissing = missing
+      }
       return host.compose()
     },
-    installEngine: () => {
+    installEngine: profile => {
       if (engineDone) return engineDone
-      engineDone = trackedEngineInstall()
+      engineDone = trackedEngineInstall(profile)
       return engineDone
     },
     cancelEngine: async () => {

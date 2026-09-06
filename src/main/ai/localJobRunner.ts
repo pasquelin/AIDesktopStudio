@@ -13,7 +13,7 @@ import {
   codeChatPrompt,
   unfencedCode,
 } from '@shared/domain/codeGeneration'
-import { capabilitiesIn, type LocalModel } from '@shared/domain/localModel'
+import { capabilitiesIn, distributionStatusOf, type LocalModel } from '@shared/domain/localModel'
 import { CODE_FAMILY } from '@shared/domain/model'
 import type { JobRunner, RemoteJob } from '@main/provider/jobManager'
 import type { ChatRequest, ChatTurn, GenerateResult } from './localRuntimes'
@@ -210,7 +210,13 @@ export function createLocalJobRunner(deps: LocalJobDeps): LocalJobRunner {
       signal: job.abort.signal,
     })
 
-    job.produced = { ...written, type: assetTypeOfModality(modality), prompt: promptOf(body) }
+    job.produced = {
+      ...written,
+      type: capabilitiesIn(model, '3d')?.includes('motion')
+        ? 'animation'
+        : assetTypeOfModality(modality),
+      prompt: promptOf(body),
+    }
   }
 
   const run = async (
@@ -220,6 +226,7 @@ export function createLocalJobRunner(deps: LocalJobDeps): LocalJobRunner {
     body: Record<string, unknown>,
   ): Promise<void> => {
     try {
+      if (distributionStatusOf(model) === 'blocked') throw new Error('distribution-blocked')
       // The manifest says which, and a modality it does not carry is a conversation — the only
       // thing this ran before there was anything else to run.
       if (model.modality && producesFile(model.modality)) {

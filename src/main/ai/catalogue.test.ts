@@ -132,7 +132,10 @@ describe('the shipped catalogue', () => {
   it('opens every generating model rather than leaving it plugin-required', () => {
     const closed = shippedModels()
       .filter(model => model.modality && model.modality !== 'text')
-      .filter(model => model.runtimeStatus === 'plugin-required')
+      .filter(
+        model =>
+          model.runtimeStatus === 'plugin-required' && model.distributionStatus !== 'blocked',
+      )
       .map(model => model.id)
 
     expect(closed).toEqual([])

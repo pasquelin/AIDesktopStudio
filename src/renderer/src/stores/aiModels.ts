@@ -1,5 +1,7 @@
+import i18next from 'i18next'
+import { runTask } from './tasks'
 import { create } from 'zustand'
-import type { AiOverview, ChoiceScope } from '@shared/domain/aiOverview'
+import type { AiOverview, ChoiceScope, OwnModelProfile } from '@shared/domain/aiOverview'
 import type { AiRoleId, RoleProvider } from '@shared/domain/aiRole'
 import type { StudioBridge } from '@shared/ipc'
 import { connectThroughBridge, getBridge } from '@/services/bridge'
@@ -31,8 +33,8 @@ type AiModelsState = {
   cancelAiInstall: () => Promise<void>
   installOllama: () => Promise<void>
   cancelInstallOllama: () => Promise<void>
-  readEngine: () => Promise<void>
-  installEngine: () => Promise<void>
+  readEngine: (profile?: OwnModelProfile) => Promise<void>
+  installEngine: (profile?: OwnModelProfile) => Promise<void>
   cancelInstallEngine: () => Promise<void>
   removeAiModel: (modelId: string) => Promise<void>
   /** Holds the weights in memory, or leaves `overview.loadFailure` saying why it could not. */
@@ -45,8 +47,10 @@ type AiModelsState = {
    * The only command of this store that can FAIL in a way the overview cannot carry: the gesture
    * belongs to one window, so its refusal is kept here rather than broadcast to every other.
    */
-  addOwnAiModel: () => Promise<void>
+  addOwnAiModel: (profile?: OwnModelProfile) => Promise<void>
   /** Why the last supplied file was refused, or nothing. Cleared by the next attempt. */
+  ownModelTaskId: string | null
+  ownModelBusy: boolean
   ownModelFailure: 'unreadable' | null
 }
 
@@ -64,6 +68,8 @@ export const useAiModels = create<AiModelsState>()(set => {
   return {
     overview: null,
     ownModelFailure: null,
+    ownModelBusy: false,
+    ownModelTaskId: null,
 
     connect: connectThroughBridge(async bridge => {
       let pushed = false
@@ -88,8 +94,8 @@ export const useAiModels = create<AiModelsState>()(set => {
       command(bridge => bridge.ai.choose(role, provider, scope)),
     installAiModel: modelId => command(bridge => bridge.ai.install(modelId)),
     cancelAiInstall: () => command(bridge => bridge.ai.cancelInstall()),
-    readEngine: () => command(bridge => bridge.ai.readEngine()),
-    installEngine: () => command(bridge => bridge.ai.installEngine()),
+    readEngine: profile => command(bridge => bridge.ai.readEngine(profile)),
+    installEngine: profile => command(bridge => bridge.ai.installEngine(profile)),
     cancelInstallEngine: () => command(bridge => bridge.ai.cancelInstallEngine()),
     installOllama: () => command(bridge => bridge.ai.installOllama()),
     cancelInstallOllama: () => command(bridge => bridge.ai.cancelInstallOllama()),
@@ -98,14 +104,22 @@ export const useAiModels = create<AiModelsState>()(set => {
     cancelAiLoad: () => command(bridge => bridge.ai.cancelLoad()),
     unloadAiModel: modelId => command(bridge => bridge.ai.unload(modelId)),
 
-    addOwnAiModel: async () => {
-      set({ ownModelFailure: null })
+    addOwnAiModel: async profile => {
+      set({ ownModelFailure: null, ownModelBusy: true })
       try {
-        await command(bridge => bridge.ai.addOwnModel())
+        const bridge = getBridge()
+        if (!bridge) return
+        const overview = await runTask(i18next.t('aiModels.verifyingModel'), id => {
+          set({ ownModelTaskId: id })
+          return bridge.ai.addOwnModel(profile, id)
+        })
+        if (overview) set({ overview })
       } catch {
         // One reason, and it is the only one a person can act on: the file they pointed at is not
         // a weights file this studio can read. The journal holds what actually happened.
         set({ ownModelFailure: 'unreadable' })
+      } finally {
+        set({ ownModelBusy: false, ownModelTaskId: null })
       }
     },
   }

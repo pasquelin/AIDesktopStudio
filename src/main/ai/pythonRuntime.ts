@@ -123,7 +123,11 @@ export function pythonRuntime(deps: PythonRuntimeDeps): LocalRuntime {
       // frames inside a worker, which reaches the person as a door that died. The core answers
       // this off `.dist-info` folders, so it imports nothing and starts no process.
       const needs = await engine.requirements(
-        model.backendId === 'make-it-animatable' ? 'autorig' : 'diffusion',
+        model.fieldProfile === 'motion'
+          ? 'motion'
+          : model.backendId === 'make-it-animatable'
+            ? 'autorig'
+            : 'diffusion',
       )
       if (!needs.complete) {
         throw new Error(`the local AI engine is missing: ${whatIsMissing(needs)}`)
@@ -136,7 +140,7 @@ export function pythonRuntime(deps: PythonRuntimeDeps): LocalRuntime {
         const settled = await engine.job(
           'models.load',
           {
-            modelId: model.id,
+            modelId: model.backendId ?? model.id,
             // The BASE's folder where this only completes it: the door loads that one, and the
             // attachment is grafted onto the pipeline it holds.
             folder: deps.folderFor(base ?? model),

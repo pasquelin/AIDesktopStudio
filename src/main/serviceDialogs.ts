@@ -1,4 +1,5 @@
 import { TRANSLATIONS, type Language } from '@shared/i18n'
+import type { OwnModelProfile } from '@shared/domain/aiOverview'
 import type { PathKind } from '@shared/domain/settingsRegistry'
 import { BrowserWindow, dialog } from 'electron'
 import { writeFile } from 'node:fs/promises'
@@ -64,7 +65,26 @@ export async function pickImportPath(
   return chosen[0] ?? null
 }
 
-export async function pickWeights(language: Language): Promise<string | null> {
+export async function pickWeights(
+  language: Language,
+  profile?: OwnModelProfile,
+): Promise<string | null> {
+  if (profile === 'motion') {
+    const t = TRANSLATIONS[language]
+    const selected = await openDialog({
+      properties: ['openDirectory'],
+      title: t.aiModels.motionFolder,
+    })
+    if (!selected[0]) return null
+    const accepted = await askUser({
+      message: t.aiModels.motionFolder,
+      detail: t.aiModels.motionTerms,
+      buttons: [t.aiModels.motionAccept, t.actions.cancel],
+      defaultId: 1,
+      cancelId: 1,
+    })
+    return accepted === 0 ? selected[0] : null
+  }
   const chosen = await openDialog({
     properties: ['openFile'],
     filters: [{ name: TRANSLATIONS[language].dialog.weights, extensions: ['gguf'] }],

@@ -1,6 +1,6 @@
 import { memo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { AUTO_RIG_ROLE } from '@shared/domain/aiRole'
+import { aiRoleId, AUTO_RIG_ROLE } from '@shared/domain/aiRole'
 import type { AiOverview, ChoiceScope, ModelCandidate, RoleRow } from '@shared/domain/aiOverview'
 import { WindowTag } from '@/components/WindowTag'
 import { WINDOW_CAPTION } from '@/components/windowStyles'
@@ -62,6 +62,9 @@ export const AiRoleRow = memo(function AiRoleRow({
 
       <fieldset className="pt-3 pb-4">
         <legend className="sr-only">{t('aiModels.candidates', { role: label })}</legend>
+        {row.role === aiRoleId('3d', 'motion') && (
+          <p className={WINDOW_CAPTION}>{t('aiModels.motionSetup')}</p>
+        )}
         <AiRoleOptions {...{ row, installing, loading, busy, scope, fitOf }} />
       </fieldset>
     </details>

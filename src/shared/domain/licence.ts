@@ -14,6 +14,8 @@ export type Licence = {
   spdx: string
   /** Full licence text, so the window is the notice rather than a link to it. */
   text: string
+  /** Required publisher wording, always visible even when the full text is folded. */
+  attribution?: string
   /** Where the corresponding sources are — a URL, never a sentence about one. */
   sources?: string
   /** Marks a source offered as the very version shipped, untouched. */

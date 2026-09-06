@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { AiOverview, ModelCandidate, RoleRow } from '@shared/domain/aiOverview'
 import { aiRoleId, DICTATION_ROLE } from '@shared/domain/aiRole'
@@ -70,6 +70,89 @@ describe('AiSettings', () => {
   beforeEach(() => {
     installFakeBridge({})
     useAiModels.setState({ overview: null })
+  })
+
+  it('imports a motion bundle through the shared model manager', async () => {
+    const addOwnModel = vi.fn().mockResolvedValue(overview())
+    installFakeBridge({ ai: { addOwnModel } })
+    show(overview(), '3d')
+    fireEvent.click(screen.getByRole('button', { name: 'Ajouter un dossier de mouvement' }))
+    await vi.waitFor(() => expect(addOwnModel).toHaveBeenCalledWith('motion', expect.any(String)))
+  })
+
+  it('shows progress and stops verification of a supplied folder', async () => {
+    let report = (_progress: { id: string; ratio: number }) => {}
+    let resolve!: (value: AiOverview) => void
+    const addOwnModel = vi.fn(
+      (_profile, _taskId) =>
+        new Promise<AiOverview>(done => {
+          resolve = done
+        }),
+    )
+    const cancel = vi.fn().mockResolvedValue(true)
+    installFakeBridge({
+      ai: { addOwnModel },
+      tasks: {
+        cancel,
+        onProgress: callback => {
+          report = callback
+          return () => {}
+        },
+      },
+    })
+    show(overview(), '3d')
+    fireEvent.click(screen.getByRole('button', { name: 'Ajouter un dossier de mouvement' }))
+    const id = addOwnModel.mock.calls[0]?.[1]
+    expect(typeof id).toBe('string')
+    act(() => report({ id, ratio: 0.5 }))
+    expect(screen.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '50')
+    fireEvent.click(screen.getByRole('button', { name: 'Annuler' }))
+    await vi.waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+    expect(cancel).toHaveBeenCalledWith(id)
+    expect(screen.getByRole('button', { name: 'Ajouter un dossier de mouvement' })).toBeEnabled()
+    await act(async () => resolve(overview()))
+  })
+
+  it('shows local engine setup beside motion models before choosing one', async () => {
+    const installEngine = vi.fn().mockResolvedValue(overview())
+    installFakeBridge({ ai: { installEngine } })
+    show(
+      overview({
+        roles: [
+          row({
+            role: aiRoleId('3d', 'motion'),
+            provider: null,
+            candidates: [
+              {
+                ...PARAKEET,
+                installed: false,
+                model: localModel({
+                  id: 'motion',
+                  name: 'Motion',
+                  loader: 'plugin',
+                  licence: 'Apache-2.0',
+                }),
+              },
+            ],
+          }),
+        ],
+        engine: {
+          profile: 'motion',
+          known: true,
+          missing: ['torch'],
+          progress: null,
+          failed: false,
+        },
+      }),
+      '3d',
+    )
+    expect(screen.getByRole('button', { name: 'Installer les bibliothèques' })).toBeEnabled()
+    fireEvent.click(screen.getByText('3D · Animation'))
+    expect(screen.getByText(/Le modèle de mouvement et son encodeur/)).toBeVisible()
+    expect(screen.getByText(/Apache-2.0/)).toBeVisible()
+    expect(screen.getByRole('link', { name: 'Fiche éditeur' })).toBeVisible()
+    fireEvent.click(screen.getByRole('button', { name: 'Installer les bibliothèques' }))
+    await vi.waitFor(() => expect(installEngine).toHaveBeenCalledWith('motion'))
   })
 
   it('puts the catalogue line under a candidate, not only its size', () => {

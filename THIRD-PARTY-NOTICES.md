@@ -7,15 +7,15 @@ The terms below govern these components. They are not affected by the licence of
 
 | Component | Version | Licence |
 | --- | --- | --- |
-| @hookform/resolvers | 5.7.1 | MIT |
+| @hookform/resolvers | 5.9.1 | MIT |
 | @jitl/quickjs-singlefile-browser-release-sync | 0.32.0 | MIT |
 | @mdi/js | 7.4.47 | Apache-2.0 |
 | @mdi/react | 1.6.1 | MIT |
 | @modelcontextprotocol/sdk | 1.30.0 | MIT |
 | @pasquelin/panels | 0.4.1 | MIT |
-| @scenario-labs/sdk | 3.0.0 | MIT |
-| @tanstack/react-query | 5.101.4 | MIT |
-| @tanstack/react-virtual | 3.14.9 | MIT |
+| @scenario-labs/sdk | 3.1.0 | MIT |
+| @tanstack/react-query | 5.102.8 | MIT |
+| @tanstack/react-virtual | 3.14.10 | MIT |
 | accelerate | 1.14.0 | Apache |
 | ACE-Step 1.5 XL | 8f40447d21ee59ad4dcee6c99ce248027410bfec | MIT |
 | ACE-Step 1.5 XL SFT | 4bf7b60a63b27144f539f980927eeb89f5f912b0 | MIT |
@@ -31,12 +31,12 @@ The terms below govern these components. They are not affected by the licence of
 | ControlNet Canny SDXL | 1271357eda52d54b857c650cacb5b51144643ccb | Apache-2.0 |
 | CPython | 3.12.14 | PSF-2.0 |
 | CraftsMan3D | df4ddf7544cc2e75c5d24cb8605d8e91f0fa4abc | CreativeML Open RAIL-M |
-| daisyui | 5.7.16 | MIT |
+| daisyui | 5.7.28 | MIT |
 | diffusers | 0.40.0 | Apache 2.0 License |
 | Diffusion360 | d20770f5ec0000a2aaa579a1209d11dc92ddb08a | Apache-2.0 |
-| dockview-react | 8.1.0 | MIT |
+| dockview-react | 8.2.0 | MIT |
 | einops | 0.8.2 | MIT |
-| electron | 43.4.0 | MIT |
+| electron | 44.2.0 | MIT |
 | electron-store | 11.0.2 | MIT |
 | electron-updater | 6.8.9 | MIT |
 | EmbeddingGemma 300M | Q8_0 | other |
@@ -50,31 +50,37 @@ The terms below govern these components. They are not affected by the licence of
 | httpcore | 1.0.9 | BSD-3-Clause |
 | httpx | 0.28.1 | BSD-3-Clause |
 | huggingface-hub | 1.30.0 | Apache-2.0 |
-| i18next | 26.3.6 | MIT |
+| hydra-core | 1.3.6 | MIT |
+| i18next | 26.4.2 | MIT |
 | IBM Plex Mono | shipped with the application | OFL-1.1 |
 | IBM Plex Serif | shipped with the application | OFL-1.1 |
 | idna | 3.19 | BSD-3-Clause |
 | imageio | 2.37.4 | BSD-2-Clause |
 | imageio-ffmpeg | 0.6.0 | BSD-2-Clause |
-| immer | 11.1.16 | MIT |
+| immer | 11.1.18 | MIT |
 | importlib-metadata | 9.0.1 | Apache-2.0 |
 | InstantMesh | 2da07e89919e1a130c9b5add1584c70c7aa065fd | Apache-2.0 |
 | IP-Adapter SDXL | 018e402774aeeddd60609b4ecdb7e298259dc729 | Apache-2.0 |
 | jinja2 | 3.1.6 | BSD-3-Clause |
 | jolt-physics | 1.1.0-simd.3e3b5ff | MIT |
+| Kimodo code | 1aece8c124d73d255ceff5086d983b844c9f4e94 | Apache-2.0 |
+| Kimodo SOMA RP v1.1 | 6c9233af1180b8151e3c4703477104af5dce9dd5 | other |
+| Kimodo SOMA weights | 6c9233af1180b8151e3c4703477104af5dce9dd5 | LicenseRef-NVIDIA-Open-Model |
 | Lato | shipped with the application | OFL-1.1 |
 | LGM | 73a034178e748421506492e91790cc62d6aefef5 | MIT |
+| LLM2Vec motion encoder adapters | 31474e395ada192e8ed1586db6be79fb3b70c9c0 / baa8ebf04a1c2500e61288e7dad65e8ae42601a7 | MIT / LicenseRef-Meta-Llama-3 |
 | Make-It-Animatable | eb12b71253361fd1a7216625a95144af3c58263e | Apache-2.0 |
 | Make-It-Animatable code | d60cc7e01ff8da46448e458dbf450e8967b34e77 | MIT |
 | markdown-it-py | 4.2.0 | MIT License |
 | markupsafe | 3.0.3 | BSD-3-Clause |
 | mdurl | 0.1.2 | MIT License |
-| mediabunny | 1.53.1 | MPL-2.0 |
+| mediabunny | 1.55.7 | MPL-2.0 |
+| Meta Llama 3 | 8afb486c1db24fe5011ec46dfbe5b5dccdb575c2 | LicenseRef-Meta-Llama-3 |
 | MMAudio Large | eb13a1a98fdbec91753775c57b074ccdfc60587c | CC-BY-NC-4.0 |
 | MMAudio Medium | eb13a1a98fdbec91753775c57b074ccdfc60587c | CC-BY-NC-4.0 |
 | MMAudio Small | eb13a1a98fdbec91753775c57b074ccdfc60587c | CC-BY-NC-4.0 |
 | Mochi 1 | 14be5fcea23095ed330cb214647916a451e38b6e | Apache-2.0 |
-| monaco-editor | 0.52.2 | MIT |
+| monaco-editor | 0.56.0 | MIT |
 | mpmath | 1.3.0 | BSD-3-Clause |
 | MVDiffusion | 451f4fe16113bff5a5d2269ed5ad43b0592e9a14 | other |
 | networkx | 3.6.1 | BSD-3-Clause |
@@ -85,9 +91,10 @@ The terms below govern these components. They are not affected by the licence of
 | packaging | 26.3 | Apache-2.0 OR BSD-2-Clause |
 | PanFusion | 451f4fe16113bff5a5d2269ed5ad43b0592e9a14 | other |
 | Parakeet TDT 0.6b v3 | int8 | CC-BY-4.0 |
+| peft | 0.20.0 | Apache |
 | pillow | 12.3.0 | MIT-CMU |
 | pip | 26.2.1 | MIT |
-| pixi.js | 8.19.0 | MIT |
+| pixi.js | 8.20.1 | MIT |
 | psutil | 7.2.2 | BSD-3-Clause |
 | pygments | 2.21.0 | BSD-2-Clause |
 | pyyaml | 6.0.3 | MIT |
@@ -102,8 +109,8 @@ The terms below govern these components. They are not affected by the licence of
 | Qwen2.5-Coder 7B Instruct | Q4_K_M | Apache-2.0 |
 | react | 19.2.8 | MIT |
 | react-dom | 19.2.8 | MIT |
-| react-hook-form | 7.85.0 | MIT |
-| react-i18next | 17.0.11 | MIT |
+| react-hook-form | 7.87.0 | MIT |
+| react-i18next | 17.0.13 | MIT |
 | react-is | 19.2.8 | MIT |
 | react-markdown | 10.1.0 | MIT |
 | react-tooltip | 6.0.8 | MIT |
@@ -120,7 +127,7 @@ The terms below govern these components. They are not affected by the licence of
 | Shap-E | 7bd337afdea1c17842e1c3cc45c4e268356dba40 | MIT |
 | Shap-E Image | 0e0aba80f08d368aaf6af9cb93583707481cc29b | MIT |
 | shellingham | 1.5.4 | ISC License |
-| sherpa-onnx-node | 1.13.5 | Apache-2.0 |
+| sherpa-onnx-node | 1.13.7 | Apache-2.0 |
 | Silero VAD | v5 | MIT |
 | simple-git | 3.36.0 | MIT |
 | SSD-1B | 60987f37e94cd59c36b1cba832b9f97b57395a10 | Apache-2.0 |
@@ -142,7 +149,7 @@ The terms below govern these components. They are not affected by the licence of
 | TripoSG | 2c1c516d22d58db486a058d98d31bb6177344e06 | MIT |
 | TripoSR | 5b521936b01fbe1890f6f9baed0254ab6351c04a | MIT |
 | typer | 0.27.2 | MIT |
-| typescript | 6.0.3 | Apache-2.0 |
+| typescript | 6.0.2 | Apache-2.0 |
 | typing-extensions | 4.16.0 | PSF-2.0 |
 | UniPano | 451f4fe16113bff5a5d2269ed5ad43b0592e9a14 | other |
 | urllib3 | 2.7.0 | MIT |
@@ -152,12 +159,12 @@ The terms below govern these components. They are not affected by the licence of
 | Wan 2.2 TI2V 5B | b8fff7315c768468a5333511427288870b2e9635 | Apache-2.0 |
 | wavesurfer.js | 7.12.11 | BSD-3-Clause |
 | zipp | 4.1.0 | MIT |
-| zod | 4.4.3 | MIT |
+| zod | 4.5.4 | MIT |
 | zustand | 5.0.15 | MIT |
 
 ## @hookform/resolvers
 
-Version: 5.7.1
+Version: 5.9.1
 Licence: MIT
 
 ```
@@ -350,7 +357,7 @@ SOFTWARE.
 ```
 ## @scenario-labs/sdk
 
-Version: 3.0.0
+Version: 3.1.0
 Licence: MIT
 
 ```
@@ -364,7 +371,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 ```
 ## @tanstack/react-query
 
-Version: 5.101.4
+Version: 5.102.8
 Licence: MIT
 
 ```
@@ -392,7 +399,7 @@ SOFTWARE.
 ```
 ## @tanstack/react-virtual
 
-Version: 3.14.9
+Version: 3.14.10
 Licence: MIT
 
 ```
@@ -733,7 +740,7 @@ Licensed under CreativeML Open RAIL-M. Full terms: https://huggingface.co/spaces
 ```
 ## daisyui
 
-Version: 5.7.16
+Version: 5.7.28
 Licence: MIT
 
 ```
@@ -800,7 +807,7 @@ Licensed under Apache-2.0. Full terms: https://www.apache.org/licenses/LICENSE-2
 ```
 ## dockview-react
 
-Version: 8.1.0
+Version: 8.2.0
 Licence: MIT
 
 ```
@@ -825,7 +832,7 @@ Source: https://github.com/arogozhnikov/einops
 ```
 ## electron
 
-Version: 43.4.0
+Version: 44.2.0
 Licence: MIT
 
 ```
@@ -1109,9 +1116,26 @@ Part of the environment a local generation runs in. It is NOT shipped with the a
 Licensed under Apache-2.0.
 Source: https://github.com/huggingface/huggingface_hub
 ```
+## hydra-core
+
+Version: 1.3.6
+Licence: MIT
+
+Corresponding sources:
+
+```
+https://github.com/facebookresearch/hydra
+```
+
+```
+Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.
+
+Licensed under MIT.
+Source: https://github.com/facebookresearch/hydra
+```
 ## i18next
 
-Version: 26.3.6
+Version: 26.4.2
 Licence: MIT
 
 ```
@@ -1402,7 +1426,7 @@ Source: https://github.com/imageio/imageio-ffmpeg
 ```
 ## immer
 
-Version: 11.1.16
+Version: 11.1.18
 Licence: MIT
 
 ```
@@ -1540,6 +1564,420 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
+## Kimodo code
+
+Version: 1aece8c124d73d255ceff5086d983b844c9f4e94
+Licence: Apache-2.0
+
+Corresponding sources:
+
+```
+https://github.com/nv-tlabs/kimodo/tree/1aece8c124d73d255ceff5086d983b844c9f4e94
+```
+
+```
+                                 Apache License
+                           Version 2.0, January 2004
+                        http://www.apache.org/licenses/
+
+   TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
+
+   1. Definitions.
+
+      "License" shall mean the terms and conditions for use, reproduction,
+      and distribution as defined by Sections 1 through 9 of this document.
+
+      "Licensor" shall mean the copyright owner or entity authorized by
+      the copyright owner that is granting the License.
+
+      "Legal Entity" shall mean the union of the acting entity and all
+      other entities that control, are controlled by, or are under common
+      control with that entity. For the purposes of this definition,
+      "control" means (i) the power, direct or indirect, to cause the
+      direction or management of such entity, whether by contract or
+      otherwise, or (ii) ownership of fifty percent (50%) or more of the
+      outstanding shares, or (iii) beneficial ownership of such entity.
+
+      "You" (or "Your") shall mean an individual or Legal Entity
+      exercising permissions granted by this License.
+
+      "Source" form shall mean the preferred form for making modifications,
+      including but not limited to software source code, documentation
+      source, and configuration files.
+
+      "Object" form shall mean any form resulting from mechanical
+      transformation or translation of a Source form, including but
+      not limited to compiled object code, generated documentation,
+      and conversions to other media types.
+
+      "Work" shall mean the work of authorship, whether in Source or
+      Object form, made available under the License, as indicated by a
+      copyright notice that is included in or attached to the work
+      (an example is provided in the Appendix below).
+
+      "Derivative Works" shall mean any work, whether in Source or Object
+      form, that is based on (or derived from) the Work and for which the
+      editorial revisions, annotations, elaborations, or other modifications
+      represent, as a whole, an original work of authorship. For the purposes
+      of this License, Derivative Works shall not include works that remain
+      separable from, or merely link (or bind by name) to the interfaces of,
+      the Work and Derivative Works thereof.
+
+      "Contribution" shall mean any work of authorship, including
+      the original version of the Work and any modifications or additions
+      to that Work or Derivative Works thereof, that is intentionally
+      submitted to Licensor for inclusion in the Work by the copyright owner
+      or by an individual or Legal Entity authorized to submit on behalf of
+      the copyright owner. For the purposes of this definition, "submitted"
+      means any form of electronic, verbal, or written communication sent
+      to the Licensor or its representatives, including but not limited to
+      communication on electronic mailing lists, source code control systems,
+      and issue tracking systems that are managed by, or on behalf of, the
+      Licensor for the purpose of discussing and improving the Work, but
+      excluding communication that is conspicuously marked or otherwise
+      designated in writing by the copyright owner as "Not a Contribution."
+
+      "Contributor" shall mean Licensor and any individual or Legal Entity
+      on behalf of whom a Contribution has been received by Licensor and
+      subsequently incorporated within the Work.
+
+   2. Grant of Copyright License. Subject to the terms and conditions of
+      this License, each Contributor hereby grants to You a perpetual,
+      worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+      copyright license to reproduce, prepare Derivative Works of,
+      publicly display, publicly perform, sublicense, and distribute the
+      Work and such Derivative Works in Source or Object form.
+
+   3. Grant of Patent License. Subject to the terms and conditions of
+      this License, each Contributor hereby grants to You a perpetual,
+      worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+      (except as stated in this section) patent license to make, have made,
+      use, offer to sell, sell, import, and otherwise transfer the Work,
+      where such license applies only to those patent claims licensable
+      by such Contributor that are necessarily infringed by their
+      Contribution(s) alone or by combination of their Contribution(s)
+      with the Work to which such Contribution(s) was submitted. If You
+      institute patent litigation against any entity (including a
+      cross-claim or counterclaim in a lawsuit) alleging that the Work
+      or a Contribution incorporated within the Work constitutes direct
+      or contributory patent infringement, then any patent licenses
+      granted to You under this License for that Work shall terminate
+      as of the date such litigation is filed.
+
+   4. Redistribution. You may reproduce and distribute copies of the
+      Work or Derivative Works thereof in any medium, with or without
+      modifications, and in Source or Object form, provided that You
+      meet the following conditions:
+
+      (a) You must give any other recipients of the Work or
+          Derivative Works a copy of this License; and
+
+      (b) You must cause any modified files to carry prominent notices
+          stating that You changed the files; and
+
+      (c) You must retain, in the Source form of any Derivative Works
+          that You distribute, all copyright, patent, trademark, and
+          attribution notices from the Source form of the Work,
+          excluding those notices that do not pertain to any part of
+          the Derivative Works; and
+
+      (d) If the Work includes a "NOTICE" text file as part of its
+          distribution, then any Derivative Works that You distribute must
+          include a readable copy of the attribution notices contained
+          within such NOTICE file, excluding those notices that do not
+          pertain to any part of the Derivative Works, in at least one
+          of the following places: within a NOTICE text file distributed
+          as part of the Derivative Works; within the Source form or
+          documentation, if provided along with the Derivative Works; or,
+          within a display generated by the Derivative Works, if and
+          wherever such third-party notices normally appear. The contents
+          of the NOTICE file are for informational purposes only and
+          do not modify the License. You may add Your own attribution
+          notices within Derivative Works that You distribute, alongside
+          or as an addendum to the NOTICE text from the Work, provided
+          that such additional attribution notices cannot be construed
+          as modifying the License.
+
+      You may add Your own copyright statement to Your modifications and
+      may provide additional or different license terms and conditions
+      for use, reproduction, or distribution of Your modifications, or
+      for any such Derivative Works as a whole, provided Your use,
+      reproduction, and distribution of the Work otherwise complies with
+      the conditions stated in this License.
+
+   5. Submission of Contributions. Unless You explicitly state otherwise,
+      any Contribution intentionally submitted for inclusion in the Work
+      by You to the Licensor shall be under the terms and conditions of
+      this License, without any additional terms or conditions.
+      Notwithstanding the above, nothing herein shall supersede or modify
+      the terms of any separate license agreement you may have executed
+      with Licensor regarding such Contributions.
+
+   6. Trademarks. This License does not grant permission to use the trade
+      names, trademarks, service marks, or product names of the Licensor,
+      except as required for reasonable and customary use in describing the
+      origin of the Work and reproducing the content of the NOTICE file.
+
+   7. Disclaimer of Warranty. Unless required by applicable law or
+      agreed to in writing, Licensor provides the Work (and each
+      Contributor provides its Contributions) on an "AS IS" BASIS,
+      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+      implied, including, without limitation, any warranties or conditions
+      of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A
+      PARTICULAR PURPOSE. You are solely responsible for determining the
+      appropriateness of using or redistributing the Work and assume any
+      risks associated with Your exercise of permissions under this License.
+
+   8. Limitation of Liability. In no event and under no legal theory,
+      whether in tort (including negligence), contract, or otherwise,
+      unless required by applicable law (such as deliberate and grossly
+      negligent acts) or agreed to in writing, shall any Contributor be
+      liable to You for damages, including any direct, indirect, special,
+      incidental, or consequential damages of any character arising as a
+      result of this License or out of the use or inability to use the
+      Work (including but not limited to damages for loss of goodwill,
+      work stoppage, computer failure or malfunction, or any and all
+      other commercial damages or losses), even if such Contributor
+      has been advised of the possibility of such damages.
+
+   9. Accepting Warranty or Additional Liability. While redistributing
+      the Work or Derivative Works thereof, You may choose to offer,
+      and charge a fee for, acceptance of support, warranty, indemnity,
+      or other liability obligations and/or rights consistent with this
+      License. However, in accepting such obligations, You may act only
+      on Your own behalf and on Your sole responsibility, not on behalf
+      of any other Contributor, and only if You agree to indemnify,
+      defend, and hold each Contributor harmless for any liability
+      incurred by, or claims asserted against, such Contributor by reason
+      of your accepting any such warranty or additional liability.
+
+   END OF TERMS AND CONDITIONS
+
+   APPENDIX: How to apply the Apache License to your work.
+
+      To apply the Apache License to your work, attach the following
+      boilerplate notice, with the fields enclosed by brackets "[]"
+      replaced with your own identifying information. (Don't include
+      the brackets!)  The text should be enclosed in the appropriate
+      comment syntax for the file format. We also recommend that a
+      file or class name and description of purpose be included on the
+      same "printed page" as the copyright notice for easier
+      identification within third-party archives.
+
+   Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+
+```
+## Kimodo SOMA RP v1.1
+
+Version: 6c9233af1180b8151e3c4703477104af5dce9dd5
+Licence: other
+
+Corresponding sources:
+
+```
+https://huggingface.co/nvidia/Kimodo-SOMA-RP-v1.1
+```
+
+```
+Requires local Meta Llama 3 8B weights and the optional motion engine package., one of the models the studio generates with on this machine.
+It is NOT shipped with the application: it is fetched on request into the user data folder,
+against a published digest, and removed from the model manager.
+
+The SOMA motion weights use the NVIDIA Open Model License; the inference code uses Apache-2.0.
+The shared text encoder uses Meta Llama 3 and LLM2Vec adapters. Their complete terms are
+included in the Kimodo SOMA weights, Meta Llama 3 and LLM2Vec entries of this offline notice.
+The SMPL-X variant is not included.
+
+Licensed under other. Full terms: https://www.nvidia.com/en-us/agreements/enterprise-software/nvidia-open-model-license/
+```
+## Kimodo SOMA weights
+
+Version: 6c9233af1180b8151e3c4703477104af5dce9dd5
+Licence: LicenseRef-NVIDIA-Open-Model
+
+Corresponding sources:
+
+```
+https://huggingface.co/nvidia/Kimodo-SOMA-RP-v1.1/blob/6c9233af1180b8151e3c4703477104af5dce9dd5/LICENSE
+```
+
+```
+Reference: https://www.nvidia.com/en-us/agreements/enterprise-software/nvidia-open-model-license/
+
+NVIDIA Open Model License Agreement
+
+This NVIDIA Open Model License Agreement (the "Agreement") is a legal agreement
+between the Legal Entity You represent, or if no entity is identified, You and
+NVIDIA Corporation and its Affiliates ("NVIDIA") and governs Your use of the
+Models that NVIDIA provides to You under this Agreement. NVIDIA and You are each
+a "party" and collectively the "parties."
+
+NVIDIA models released under this Agreement are intended to be used permissively
+and enable the further development of AI technologies. Subject to the terms of
+this Agreement, NVIDIA confirms that:
+- Models are commercially usable.
+- You are free to create and distribute Derivative Models.
+- NVIDIA does not claim ownership to any outputs generated using the Models or
+  Derivative Models.
+
+By using, reproducing, modifying, distributing, performing or displaying any
+portion or element of the Model or Derivative Model, or otherwise accepting the
+terms of this Agreement, you agree to be bound by this Agreement.
+
+1. Definitions. The following definitions apply to this Agreement:
+1.1. "Derivative Model" means all (a) modifications to the Model, (b) works
+based on the Model, and (c) any other derivative works of the Model. An output
+is not a Derivative Model.
+1.2. "Legal Entity" means the union of the acting entity and all other entities
+that control, are controlled by, or are under common control with that entity.
+For the purposes of this definition, "control" means (a) the power, direct or
+indirect, to cause the direction or management of such entity, whether by
+contract or otherwise, or (b) ownership of fifty percent (50%) or more of the
+outstanding shares, or (c) beneficial ownership of such entity.
+1.3. "Model" means the machine learning model, software, checkpoints, learnt
+weights, algorithms, parameters, configuration files and documentation shared
+under this Agreement.
+1.4. "NVIDIA Cosmos Model" means a multimodal Model shared under this Agreement.
+1.5. "Special-Purpose Model" means a Model that is only competent in a narrow
+set of purpose-specific tasks and should not be used for unintended or
+general-purpose applications.
+1.6. "You" or "Your" means an individual or Legal Entity exercising permissions
+granted by this Agreement.
+
+2. Conditions for Use, License Grant, AI Ethics and IP Ownership.
+2.1. Conditions for Use. The Model and any Derivative Model are subject to
+additional terms as described in Section 2 and Section 3 of this Agreement and
+govern Your use. If You institute copyright or patent litigation against any
+entity (including a cross-claim or counterclaim in a lawsuit) alleging that the
+Model or a Derivative Model constitutes direct or contributory copyright or
+patent infringement, then any licenses granted to You under this Agreement for
+that Model or Derivative Model will terminate as of the date such litigation is
+filed. If You bypass, disable, reduce the efficacy of, or circumvent any
+technical limitation, safety guardrail or associated safety guardrail
+hyperparameter, encryption, security, digital rights management, or
+authentication mechanism (collectively "Guardrail") contained in the Model
+without a substantially similar Guardrail appropriate for your use case, your
+rights under this Agreement will automatically terminate. NVIDIA may indicate in
+relevant documentation that a Model is a Special-Purpose Model. NVIDIA may
+update this Agreement to comply with legal and regulatory requirements at any
+time and You agree to either comply with any updated license or cease Your
+copying, use, and distribution of the Model and any Derivative Model.
+2.2. License Grant. The rights granted herein are explicitly conditioned on Your
+full compliance with the terms of this Agreement. Subject to the terms and
+conditions of this Agreement, NVIDIA hereby grants to You a perpetual,
+worldwide, non-exclusive, no-charge, royalty-free, revocable (as stated in
+Section 2.1) license to publicly perform, publicly display, reproduce, use,
+create derivative works of, make, have made, sell, offer for sale, distribute
+(through multiple tiers of distribution) and import the Model.
+2.3. AI Ethics. Use of the Models under the Agreement must be consistent with
+NVIDIA's Trustworthy AI terms found at
+https://www.nvidia.com/en-us/agreements/trustworthy-ai/terms/.
+2.4. NVIDIA owns the Model and any Derivative Models created by NVIDIA. Subject
+to NVIDIA's underlying ownership rights in the Model or its Derivative Models,
+You are and will be the owner of Your Derivative Models. NVIDIA claims no
+ownership rights in outputs. You are responsible for outputs and their
+subsequent uses. Except as expressly granted in this Agreement, (a) NVIDIA
+reserves all rights, interests and remedies in connection with the Model and
+(b) no other license or right is granted to you by implication, estoppel or
+otherwise.
+
+3. Redistribution. You may reproduce and distribute copies of the Model or
+Derivative Models thereof in any medium, with or without modifications, provided
+that You meet the following conditions:
+3.1. If you distribute the Model, You must give any other recipients of the
+Model a copy of this Agreement and include the following attribution notice
+within a "Notice" text file with such copies: "Licensed by NVIDIA Corporation
+under the NVIDIA Open Model License";
+3.2. If you distribute or make available a NVIDIA Cosmos Model, or a product or
+service (including an AI model) that contains or uses a NVIDIA Cosmos Model, use
+a NVIDIA Cosmos Model to create a Derivative Model, or use a NVIDIA Cosmos Model
+or its outputs to create, train, fine tune, or otherwise improve an AI model,
+you will include "Built on NVIDIA Cosmos" on a related website, user interface,
+blogpost, about page, or product documentation; and
+3.3. You may add Your own copyright statement to Your modifications and may
+provide additional or different license terms and conditions for use,
+reproduction, or distribution of Your modifications, or for any such Derivative
+Models as a whole, provided Your use, reproduction, and distribution of the
+Model otherwise complies with the conditions stated in this Agreement.
+
+4. Separate Components. The Models may include or be distributed with components
+provided with separate legal notices or terms that accompany the components,
+such as an Open Source Software License or other third-party license. The
+components are subject to the applicable other licenses, including any
+proprietary notices, disclaimers, requirements and extended use rights; except
+that this Agreement will prevail regarding the use of third-party Open Source
+Software License, unless a third-party Open Source Software License requires its
+license terms to prevail. "Open Source Software License" means any software,
+data or documentation subject to any license identified as an open source
+license by the Open Source Initiative (https://opensource.org), Free Software
+Foundation (https://www.fsf.org) or other similar open source organization or
+listed by the Software Package Data Exchange (SPDX) Workgroup under the Linux
+Foundation (https://www.spdx.org).
+
+5. Trademarks. This Agreement does not grant permission to use the trade names,
+trademarks, service marks, or product names of NVIDIA, except as required for
+reasonable and customary use in describing the origin of the Model and
+reproducing the content of the "Notice" text file.
+
+6. Disclaimer of Warranty. Unless required by applicable law or agreed to in
+writing, NVIDIA provides the Model on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied, including, without
+limitation, any warranties or conditions of TITLE, NON-INFRINGEMENT,
+MERCHANTABILITY, or FITNESS FOR A PARTICULAR PURPOSE. You are solely
+responsible for reviewing Model documentation, including any Special-Purpose
+Model limitations, and determining the appropriateness of using or
+redistributing the Model, Derivative Models and outputs. You assume any risks
+associated with Your exercise of permissions under this Agreement.
+
+7. Limitation of Liability. In no event and under no legal theory, whether in
+tort (including negligence), contract, or otherwise, unless required by
+applicable law (such as deliberate and grossly negligent acts) or agreed to in
+writing, will NVIDIA be liable to You for damages, including any direct,
+indirect, special, incidental, or consequential damages of any character
+arising as a result of this Agreement or out of the use or inability to use the
+Model, Derivative Models or outputs (including but not limited to damages for
+loss of goodwill, work stoppage, computer failure or malfunction, or any and all
+other commercial damages or losses), even if NVIDIA has been advised of the
+possibility of such damages.
+
+8. Indemnity. You will indemnify and hold harmless NVIDIA from and against any
+claim by any third party arising out of or related to your use or distribution
+of the Model, Derivative Models or outputs.
+
+9. Feedback. NVIDIA appreciates your feedback, and You agree that NVIDIA may use
+it without restriction or compensation to You.
+
+10. Governing Law. This Agreement will be governed in all respects by the laws
+of the United States and the laws of the State of Delaware, without regard to
+conflict of laws principles or the United Nations Convention on Contracts for
+the International Sale of Goods. The state and federal courts residing in Santa
+Clara County, California will have exclusive jurisdiction over any dispute or
+claim arising out of or related to this Agreement, and the parties irrevocably
+consent to personal jurisdiction and venue in those courts; except that, either
+party may apply for injunctive remedies or an equivalent type of urgent legal
+relief in any jurisdiction.
+
+11. Trade and Compliance. You agree to comply with all applicable export,
+import, trade and economic sanctions laws and regulations, as amended, including
+without limitation U.S. Export Administration Regulations and Office of Foreign
+Assets Control regulations. These laws include restrictions on destinations,
+end-users and end-use.
+
+Version Release Date: October 24, 2025
+
+```
 ## Lato
 
 Version: shipped with the application
@@ -1673,6 +2111,211 @@ is a rasterizer whose licence forbids commercial use, and it is not fetched or s
 
 Licensed under MIT. Full terms: https://opensource.org/licenses/MIT
 ```
+## LLM2Vec motion encoder adapters
+
+Version: 31474e395ada192e8ed1586db6be79fb3b70c9c0 / baa8ebf04a1c2500e61288e7dad65e8ae42601a7
+Licence: MIT / LicenseRef-Meta-Llama-3
+
+Corresponding sources:
+
+```
+https://huggingface.co/McGill-NLP/LLM2Vec-Meta-Llama-3-8B-Instruct-mntp/tree/31474e395ada192e8ed1586db6be79fb3b70c9c0
+https://huggingface.co/McGill-NLP/LLM2Vec-Meta-Llama-3-8B-Instruct-mntp-supervised/tree/baa8ebf04a1c2500e61288e7dad65e8ae42601a7
+```
+
+```
+LLM2Vec MIT License https://github.com/McGill-NLP/llm2vec Copyright (c) 2024 McGill NLP
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+
+META LLAMA 3 COMMUNITY LICENSE AGREEMENT
+Meta Llama 3 Version Release Date: April 18, 2024
+
+“Agreement” means the terms and conditions for use, reproduction, distribution and modification of the
+Llama Materials set forth herein.
+
+“Documentation” means the specifications, manuals and documentation accompanying Meta Llama 3
+distributed by Meta at https://llama.meta.com/get-started/.
+
+“Licensee” or “you” means you, or your employer or any other person or entity (if you are entering into
+this Agreement on such person or entity’s behalf), of the age required under applicable laws, rules or
+regulations to provide legal consent and that has legal authority to bind your employer or such other
+person or entity if you are entering in this Agreement on their behalf.
+
+“Meta Llama 3” means the foundational large language models and software and algorithms, including
+machine-learning model code, trained model weights, inference-enabling code, training-enabling code,
+fine-tuning enabling code and other elements of the foregoing distributed by Meta at
+https://llama.meta.com/llama-downloads.
+
+“Llama Materials” means, collectively, Meta’s proprietary Meta Llama 3 and Documentation (and any
+portion thereof) made available under this Agreement.
+
+“Meta” or “we” means Meta Platforms Ireland Limited (if you are located in or, if you are an entity, your
+principal place of business is in the EEA or Switzerland) and Meta Platforms, Inc. (if you are located
+outside of the EEA or Switzerland).
+
+By clicking “I Accept” below or by using or distributing any portion or element of the Llama Materials,
+you agree to be bound by this Agreement.
+
+1. License Rights and Redistribution.
+
+  a. Grant of Rights. You are granted a non-exclusive, worldwide, non-transferable and royalty-free
+limited license under Meta’s intellectual property or other rights owned by Meta embodied in the Llama
+Materials to use, reproduce, distribute, copy, create derivative works of, and make modifications to the
+Llama Materials.
+
+  b. Redistribution and Use.
+
+      i. If you distribute or make available the Llama Materials (or any derivative works
+thereof), or a product or service that uses any of them, including another AI model, you shall (A) provide
+a copy of this Agreement with any such Llama Materials; and (B) prominently display “Built with Meta
+Llama 3” on a related website, user interface, blogpost, about page, or product documentation. If you
+use the Llama Materials to create, train, fine tune, or otherwise improve an AI model, which is
+distributed or made available, you shall also include “Llama 3” at the beginning of any such AI model
+name.
+
+      ii. If you receive Llama Materials, or any derivative works thereof, from a Licensee as part
+of an integrated end user product, then Section 2 of this Agreement will not apply to you.
+
+      iii. You must retain in all copies of the Llama Materials that you distribute the following
+attribution notice within a “Notice” text file distributed as a part of such copies: “Meta Llama 3 is
+licensed under the Meta Llama 3 Community License, Copyright © Meta Platforms, Inc. All Rights
+Reserved.”
+
+      iv. Your use of the Llama Materials must comply with applicable laws and regulations
+(including trade compliance laws and regulations) and adhere to the Acceptable Use Policy for the Llama
+Materials (available at https://llama.meta.com/llama3/use-policy), which is hereby incorporated by
+reference into this Agreement.
+
+      v. You will not use the Llama Materials or any output or results of the Llama Materials to
+improve any other large language model (excluding Meta Llama 3 or derivative works thereof).
+
+2. Additional Commercial Terms. If, on the Meta Llama 3 version release date, the monthly active users
+of the products or services made available by or for Licensee, or Licensee’s affiliates, is greater than 700
+million monthly active users in the preceding calendar month, you must request a license from Meta,
+which Meta may grant to you in its sole discretion, and you are not authorized to exercise any of the
+rights under this Agreement unless or until Meta otherwise expressly grants you such rights.
+
+3. Disclaimer of Warranty. UNLESS REQUIRED BY APPLICABLE LAW, THE LLAMA MATERIALS AND ANY
+OUTPUT AND RESULTS THEREFROM ARE PROVIDED ON AN “AS IS” BASIS, WITHOUT WARRANTIES OF
+ANY KIND, AND META DISCLAIMS ALL WARRANTIES OF ANY KIND, BOTH EXPRESS AND IMPLIED,
+INCLUDING, WITHOUT LIMITATION, ANY WARRANTIES OF TITLE, NON-INFRINGEMENT,
+MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE. YOU ARE SOLELY RESPONSIBLE FOR
+DETERMINING THE APPROPRIATENESS OF USING OR REDISTRIBUTING THE LLAMA MATERIALS AND
+ASSUME ANY RISKS ASSOCIATED WITH YOUR USE OF THE LLAMA MATERIALS AND ANY OUTPUT AND
+RESULTS.
+
+4. Limitation of Liability. IN NO EVENT WILL META OR ITS AFFILIATES BE LIABLE UNDER ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, TORT, NEGLIGENCE, PRODUCTS LIABILITY, OR OTHERWISE, ARISING
+OUT OF THIS AGREEMENT, FOR ANY LOST PROFITS OR ANY INDIRECT, SPECIAL, CONSEQUENTIAL,
+INCIDENTAL, EXEMPLARY OR PUNITIVE DAMAGES, EVEN IF META OR ITS AFFILIATES HAVE BEEN ADVISED
+OF THE POSSIBILITY OF ANY OF THE FOREGOING.
+
+5. Intellectual Property.
+
+  a. No trademark licenses are granted under this Agreement, and in connection with the Llama
+Materials, neither Meta nor Licensee may use any name or mark owned by or associated with the other
+or any of its affiliates, except as required for reasonable and customary use in describing and
+redistributing the Llama Materials or as set forth in this Section 5(a). Meta hereby grants you a license to
+use “Llama 3” (the “Mark”) solely as required to comply with the last sentence of Section 1.b.i. You will
+comply with Meta’s brand guidelines (currently accessible at
+https://about.meta.com/brand/resources/meta/company-brand/ ). All goodwill arising out of your use
+of the Mark will inure to the benefit of Meta.
+
+  b. Subject to Meta’s ownership of Llama Materials and derivatives made by or for Meta, with
+respect to any derivative works and modifications of the Llama Materials that are made by you, as
+between you and Meta, you are and will be the owner of such derivative works and modifications.
+
+  c. If you institute litigation or other proceedings against Meta or any entity (including a
+cross-claim or counterclaim in a lawsuit) alleging that the Llama Materials or Meta Llama 3 outputs or
+results, or any portion of any of the foregoing, constitutes infringement of intellectual property or other
+rights owned or licensable by you, then any licenses granted to you under this Agreement shall
+terminate as of the date such litigation or claim is filed or instituted. You will indemnify and hold
+harmless Meta from and against any claim by any third party arising out of or related to your use or
+distribution of the Llama Materials.
+
+6. Term and Termination. The term of this Agreement will commence upon your acceptance of this
+Agreement or access to the Llama Materials and will continue in full force and effect until terminated in
+accordance with the terms and conditions herein. Meta may terminate this Agreement if you are in
+breach of any term or condition of this Agreement. Upon termination of this Agreement, you shall delete
+and cease use of the Llama Materials. Sections 3, 4 and 7 shall survive the termination of this
+Agreement.
+
+7. Governing Law and Jurisdiction. This Agreement will be governed and construed under the laws of
+the State of California without regard to choice of law principles, and the UN Convention on Contracts
+for the International Sale of Goods does not apply to this Agreement. The courts of California shall have
+exclusive jurisdiction of any dispute arising out of this Agreement.
+
+
+# Meta Llama 3 Acceptable Use Policy
+
+Meta is committed to promoting safe and fair use of its tools and features, including Llama 3. If you access or use Llama 3, you agree to this Acceptable Use Policy (“Policy”). The most recent copy of this policy can be found at [ai.meta.com/llama/use-policy](http://ai.meta.com/llama/use-policy).
+
+## Prohibited Uses
+We want everyone to use Llama 3 safely and responsibly. You agree you will not use, or allow others to use, Llama 3 to:
+
+1. Violate the law or others’ rights, including to:
+    1. Engage in, promote, generate, contribute to, encourage, plan, incite, or further illegal or unlawful activity or content, such as:
+        1. Violence or terrorism
+        2. Exploitation or harm to children, including the solicitation, creation, acquisition, or dissemination of child exploitative content or failure to report Child Sexual Abuse Material
+        3. Human trafficking, exploitation, and sexual violence
+        4. The illegal distribution of information or materials to minors, including obscene materials, or failure to employ legally required age-gating in connection with such information or materials.
+        5. Sexual solicitation
+        6. Any other criminal activity
+    2. Engage in, promote, incite, or facilitate the harassment, abuse, threatening, or bullying of individuals or groups of individuals
+    3. Engage in, promote, incite, or facilitate discrimination or other unlawful or harmful conduct in the provision of employment, employment benefits, credit, housing, other economic benefits, or other essential goods and services
+    4. Engage in the unauthorized or unlicensed practice of any profession including, but not limited to, financial, legal, medical/health, or related professional practices
+    5. Collect, process, disclose, generate, or infer health, demographic, or other sensitive personal or private information about individuals without rights and consents required by applicable laws
+    6. Engage in or facilitate any action or generate any content that infringes, misappropriates, or otherwise violates any third-party rights, including the outputs or results of any products or services using the Llama 3 Materials
+    7. Create, generate, or facilitate the creation of malicious code, malware, computer viruses or do anything else that could disable, overburden, interfere with or impair the proper working, integrity, operation or appearance of a website or computer system
+
+
+
+2. Engage in, promote, incite, facilitate, or assist in the planning or development of activities that present a risk of death or bodily harm to individuals, including use of Llama 3 related to the following:
+    1. Military, warfare, nuclear industries or applications, espionage, use for materials or activities that are subject to the International Traffic Arms Regulations (ITAR) maintained by the United States Department of State
+    2. Guns and illegal weapons (including weapon development)
+    3. Illegal drugs and regulated/controlled substances
+    4. Operation of critical infrastructure, transportation technologies, or heavy machinery
+    5. Self-harm or harm to others, including suicide, cutting, and eating disorders
+    6. Any content intended to incite or promote violence, abuse, or any infliction of bodily harm to an individual
+
+
+
+3. Intentionally deceive or mislead others, including use of Llama 3 related to the following:
+    1. Generating, promoting, or furthering fraud or the creation or promotion of disinformation
+    2. Generating, promoting, or furthering defamatory content, including the creation of defamatory statements, images, or other content
+    3. Generating, promoting, or further distributing spam
+    4. Impersonating another individual without consent, authorization, or legal right
+    5. Representing that the use of Llama 3 or outputs are human-generated
+    6. Generating or facilitating false online engagement, including fake reviews and other means of fake online engagement
+4. Fail to appropriately disclose to end users any known dangers of your AI system
+
+Please report any violation of this Policy, software “bug,” or other problems that could lead to a violation of this Policy through one of the following means:
+
+* Reporting issues with the model: [github.com/facebookresearch/llama](http://github.com/facebookresearch/llama)
+* Reporting risky content generated by the model: [developers.facebook.com/llama_output_feedback](http://developers.facebook.com/llama_output_feedback)
+* Reporting bugs and security concerns: [facebook.com/whitehat/info](http://facebook.com/whitehat/info)
+* Reporting violations of the Acceptable Use Policy or unlicensed uses of Llama: [LlamaUseReport@meta.com](mailto:LlamaUseReport@meta.com)
+
+
+```
 ## Make-It-Animatable
 
 Version: eb12b71253361fd1a7216625a95144af3c58263e
@@ -1765,7 +2408,7 @@ Source: https://github.com/executablebooks/mdurl
 ```
 ## mediabunny
 
-Version: 1.53.1
+Version: 1.55.7
 Licence: MPL-2.0
 
 Corresponding sources, unmodified:
@@ -2149,6 +2792,194 @@ Exhibit B - "Incompatible With Secondary Licenses" Notice
   This Source Code Form is "Incompatible With Secondary Licenses", as
   defined by the Mozilla Public License, v. 2.0.
 ```
+## Meta Llama 3
+
+Version: 8afb486c1db24fe5011ec46dfbe5b5dccdb575c2
+Licence: LicenseRef-Meta-Llama-3
+
+Corresponding sources:
+
+```
+https://huggingface.co/meta-llama/Meta-Llama-3-8B-Instruct/blob/8afb486c1db24fe5011ec46dfbe5b5dccdb575c2/LICENSE
+https://github.com/meta-llama/llama3/blob/a0940f9cf7065d45bb6675660f80d305c041a754/USE_POLICY.md
+```
+
+```
+Built with Meta Llama 3
+
+Meta Llama 3 is licensed under the Meta Llama 3 Community License, Copyright © Meta Platforms, Inc. All Rights Reserved.
+
+META LLAMA 3 COMMUNITY LICENSE AGREEMENT
+Meta Llama 3 Version Release Date: April 18, 2024
+
+“Agreement” means the terms and conditions for use, reproduction, distribution and modification of the
+Llama Materials set forth herein.
+
+“Documentation” means the specifications, manuals and documentation accompanying Meta Llama 3
+distributed by Meta at https://llama.meta.com/get-started/.
+
+“Licensee” or “you” means you, or your employer or any other person or entity (if you are entering into
+this Agreement on such person or entity’s behalf), of the age required under applicable laws, rules or
+regulations to provide legal consent and that has legal authority to bind your employer or such other
+person or entity if you are entering in this Agreement on their behalf.
+
+“Meta Llama 3” means the foundational large language models and software and algorithms, including
+machine-learning model code, trained model weights, inference-enabling code, training-enabling code,
+fine-tuning enabling code and other elements of the foregoing distributed by Meta at
+https://llama.meta.com/llama-downloads.
+
+“Llama Materials” means, collectively, Meta’s proprietary Meta Llama 3 and Documentation (and any
+portion thereof) made available under this Agreement.
+
+“Meta” or “we” means Meta Platforms Ireland Limited (if you are located in or, if you are an entity, your
+principal place of business is in the EEA or Switzerland) and Meta Platforms, Inc. (if you are located
+outside of the EEA or Switzerland).
+
+By clicking “I Accept” below or by using or distributing any portion or element of the Llama Materials,
+you agree to be bound by this Agreement.
+
+1. License Rights and Redistribution.
+
+  a. Grant of Rights. You are granted a non-exclusive, worldwide, non-transferable and royalty-free
+limited license under Meta’s intellectual property or other rights owned by Meta embodied in the Llama
+Materials to use, reproduce, distribute, copy, create derivative works of, and make modifications to the
+Llama Materials.
+
+  b. Redistribution and Use.
+
+      i. If you distribute or make available the Llama Materials (or any derivative works
+thereof), or a product or service that uses any of them, including another AI model, you shall (A) provide
+a copy of this Agreement with any such Llama Materials; and (B) prominently display “Built with Meta
+Llama 3” on a related website, user interface, blogpost, about page, or product documentation. If you
+use the Llama Materials to create, train, fine tune, or otherwise improve an AI model, which is
+distributed or made available, you shall also include “Llama 3” at the beginning of any such AI model
+name.
+
+      ii. If you receive Llama Materials, or any derivative works thereof, from a Licensee as part
+of an integrated end user product, then Section 2 of this Agreement will not apply to you.
+
+      iii. You must retain in all copies of the Llama Materials that you distribute the following
+attribution notice within a “Notice” text file distributed as a part of such copies: “Meta Llama 3 is
+licensed under the Meta Llama 3 Community License, Copyright © Meta Platforms, Inc. All Rights
+Reserved.”
+
+      iv. Your use of the Llama Materials must comply with applicable laws and regulations
+(including trade compliance laws and regulations) and adhere to the Acceptable Use Policy for the Llama
+Materials (available at https://llama.meta.com/llama3/use-policy), which is hereby incorporated by
+reference into this Agreement.
+
+      v. You will not use the Llama Materials or any output or results of the Llama Materials to
+improve any other large language model (excluding Meta Llama 3 or derivative works thereof).
+
+2. Additional Commercial Terms. If, on the Meta Llama 3 version release date, the monthly active users
+of the products or services made available by or for Licensee, or Licensee’s affiliates, is greater than 700
+million monthly active users in the preceding calendar month, you must request a license from Meta,
+which Meta may grant to you in its sole discretion, and you are not authorized to exercise any of the
+rights under this Agreement unless or until Meta otherwise expressly grants you such rights.
+
+3. Disclaimer of Warranty. UNLESS REQUIRED BY APPLICABLE LAW, THE LLAMA MATERIALS AND ANY
+OUTPUT AND RESULTS THEREFROM ARE PROVIDED ON AN “AS IS” BASIS, WITHOUT WARRANTIES OF
+ANY KIND, AND META DISCLAIMS ALL WARRANTIES OF ANY KIND, BOTH EXPRESS AND IMPLIED,
+INCLUDING, WITHOUT LIMITATION, ANY WARRANTIES OF TITLE, NON-INFRINGEMENT,
+MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE. YOU ARE SOLELY RESPONSIBLE FOR
+DETERMINING THE APPROPRIATENESS OF USING OR REDISTRIBUTING THE LLAMA MATERIALS AND
+ASSUME ANY RISKS ASSOCIATED WITH YOUR USE OF THE LLAMA MATERIALS AND ANY OUTPUT AND
+RESULTS.
+
+4. Limitation of Liability. IN NO EVENT WILL META OR ITS AFFILIATES BE LIABLE UNDER ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, TORT, NEGLIGENCE, PRODUCTS LIABILITY, OR OTHERWISE, ARISING
+OUT OF THIS AGREEMENT, FOR ANY LOST PROFITS OR ANY INDIRECT, SPECIAL, CONSEQUENTIAL,
+INCIDENTAL, EXEMPLARY OR PUNITIVE DAMAGES, EVEN IF META OR ITS AFFILIATES HAVE BEEN ADVISED
+OF THE POSSIBILITY OF ANY OF THE FOREGOING.
+
+5. Intellectual Property.
+
+  a. No trademark licenses are granted under this Agreement, and in connection with the Llama
+Materials, neither Meta nor Licensee may use any name or mark owned by or associated with the other
+or any of its affiliates, except as required for reasonable and customary use in describing and
+redistributing the Llama Materials or as set forth in this Section 5(a). Meta hereby grants you a license to
+use “Llama 3” (the “Mark”) solely as required to comply with the last sentence of Section 1.b.i. You will
+comply with Meta’s brand guidelines (currently accessible at
+https://about.meta.com/brand/resources/meta/company-brand/ ). All goodwill arising out of your use
+of the Mark will inure to the benefit of Meta.
+
+  b. Subject to Meta’s ownership of Llama Materials and derivatives made by or for Meta, with
+respect to any derivative works and modifications of the Llama Materials that are made by you, as
+between you and Meta, you are and will be the owner of such derivative works and modifications.
+
+  c. If you institute litigation or other proceedings against Meta or any entity (including a
+cross-claim or counterclaim in a lawsuit) alleging that the Llama Materials or Meta Llama 3 outputs or
+results, or any portion of any of the foregoing, constitutes infringement of intellectual property or other
+rights owned or licensable by you, then any licenses granted to you under this Agreement shall
+terminate as of the date such litigation or claim is filed or instituted. You will indemnify and hold
+harmless Meta from and against any claim by any third party arising out of or related to your use or
+distribution of the Llama Materials.
+
+6. Term and Termination. The term of this Agreement will commence upon your acceptance of this
+Agreement or access to the Llama Materials and will continue in full force and effect until terminated in
+accordance with the terms and conditions herein. Meta may terminate this Agreement if you are in
+breach of any term or condition of this Agreement. Upon termination of this Agreement, you shall delete
+and cease use of the Llama Materials. Sections 3, 4 and 7 shall survive the termination of this
+Agreement.
+
+7. Governing Law and Jurisdiction. This Agreement will be governed and construed under the laws of
+the State of California without regard to choice of law principles, and the UN Convention on Contracts
+for the International Sale of Goods does not apply to this Agreement. The courts of California shall have
+exclusive jurisdiction of any dispute arising out of this Agreement.
+
+
+# Meta Llama 3 Acceptable Use Policy
+
+Meta is committed to promoting safe and fair use of its tools and features, including Llama 3. If you access or use Llama 3, you agree to this Acceptable Use Policy (“Policy”). The most recent copy of this policy can be found at [ai.meta.com/llama/use-policy](http://ai.meta.com/llama/use-policy).
+
+## Prohibited Uses
+We want everyone to use Llama 3 safely and responsibly. You agree you will not use, or allow others to use, Llama 3 to:
+
+1. Violate the law or others’ rights, including to:
+    1. Engage in, promote, generate, contribute to, encourage, plan, incite, or further illegal or unlawful activity or content, such as:
+        1. Violence or terrorism
+        2. Exploitation or harm to children, including the solicitation, creation, acquisition, or dissemination of child exploitative content or failure to report Child Sexual Abuse Material
+        3. Human trafficking, exploitation, and sexual violence
+        4. The illegal distribution of information or materials to minors, including obscene materials, or failure to employ legally required age-gating in connection with such information or materials.
+        5. Sexual solicitation
+        6. Any other criminal activity
+    2. Engage in, promote, incite, or facilitate the harassment, abuse, threatening, or bullying of individuals or groups of individuals
+    3. Engage in, promote, incite, or facilitate discrimination or other unlawful or harmful conduct in the provision of employment, employment benefits, credit, housing, other economic benefits, or other essential goods and services
+    4. Engage in the unauthorized or unlicensed practice of any profession including, but not limited to, financial, legal, medical/health, or related professional practices
+    5. Collect, process, disclose, generate, or infer health, demographic, or other sensitive personal or private information about individuals without rights and consents required by applicable laws
+    6. Engage in or facilitate any action or generate any content that infringes, misappropriates, or otherwise violates any third-party rights, including the outputs or results of any products or services using the Llama 3 Materials
+    7. Create, generate, or facilitate the creation of malicious code, malware, computer viruses or do anything else that could disable, overburden, interfere with or impair the proper working, integrity, operation or appearance of a website or computer system
+
+
+
+2. Engage in, promote, incite, facilitate, or assist in the planning or development of activities that present a risk of death or bodily harm to individuals, including use of Llama 3 related to the following:
+    1. Military, warfare, nuclear industries or applications, espionage, use for materials or activities that are subject to the International Traffic Arms Regulations (ITAR) maintained by the United States Department of State
+    2. Guns and illegal weapons (including weapon development)
+    3. Illegal drugs and regulated/controlled substances
+    4. Operation of critical infrastructure, transportation technologies, or heavy machinery
+    5. Self-harm or harm to others, including suicide, cutting, and eating disorders
+    6. Any content intended to incite or promote violence, abuse, or any infliction of bodily harm to an individual
+
+
+
+3. Intentionally deceive or mislead others, including use of Llama 3 related to the following:
+    1. Generating, promoting, or furthering fraud or the creation or promotion of disinformation
+    2. Generating, promoting, or furthering defamatory content, including the creation of defamatory statements, images, or other content
+    3. Generating, promoting, or further distributing spam
+    4. Impersonating another individual without consent, authorization, or legal right
+    5. Representing that the use of Llama 3 or outputs are human-generated
+    6. Generating or facilitating false online engagement, including fake reviews and other means of fake online engagement
+4. Fail to appropriately disclose to end users any known dangers of your AI system
+
+Please report any violation of this Policy, software “bug,” or other problems that could lead to a violation of this Policy through one of the following means:
+
+* Reporting issues with the model: [github.com/facebookresearch/llama](http://github.com/facebookresearch/llama)
+* Reporting risky content generated by the model: [developers.facebook.com/llama_output_feedback](http://developers.facebook.com/llama_output_feedback)
+* Reporting bugs and security concerns: [facebook.com/whitehat/info](http://facebook.com/whitehat/info)
+* Reporting violations of the Acceptable Use Policy or unlicensed uses of Llama: [LlamaUseReport@meta.com](mailto:LlamaUseReport@meta.com)
+
+
+```
 ## MMAudio Large
 
 Version: eb13a1a98fdbec91753775c57b074ccdfc60587c
@@ -2237,7 +3068,7 @@ Licensed under Apache-2.0. Full terms: https://www.apache.org/licenses/LICENSE-2
 ```
 ## monaco-editor
 
-Version: 0.52.2
+Version: 0.56.0
 Licence: MIT
 
 ```
@@ -2468,6 +3299,23 @@ sherpa-onnx project.
 
 Full terms: https://creativecommons.org/licenses/by/4.0/legalcode
 ```
+## peft
+
+Version: 0.20.0
+Licence: Apache
+
+Corresponding sources:
+
+```
+https://github.com/huggingface/peft
+```
+
+```
+Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.
+
+Licensed under Apache.
+Source: https://github.com/huggingface/peft
+```
 ## pillow
 
 Version: 12.3.0
@@ -2497,7 +3345,7 @@ Licensed under MIT.
 ```
 ## pixi.js
 
-Version: 8.19.0
+Version: 8.20.1
 Licence: MIT
 
 ```
@@ -2814,7 +3662,7 @@ SOFTWARE.
 ```
 ## react-hook-form
 
-Version: 7.85.0
+Version: 7.87.0
 Licence: MIT
 
 ```
@@ -2842,7 +3690,7 @@ SOFTWARE.
 ```
 ## react-i18next
 
-Version: 17.0.11
+Version: 17.0.13
 Licence: MIT
 
 ```
@@ -3223,7 +4071,7 @@ Source: https://github.com/sarugaku/shellingham
 ```
 ## sherpa-onnx-node
 
-Version: 1.13.5
+Version: 1.13.7
 Licence: Apache-2.0
 
 ```
@@ -3654,7 +4502,7 @@ Source: https://github.com/fastapi/typer
 ```
 ## typescript
 
-Version: 6.0.3
+Version: 6.0.2
 Licence: Apache-2.0
 
 ```
@@ -3914,7 +4762,7 @@ Source: https://github.com/jaraco/zipp
 ```
 ## zod
 
-Version: 4.4.3
+Version: 4.5.4
 Licence: MIT
 
 ```

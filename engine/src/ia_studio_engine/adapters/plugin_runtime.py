@@ -10,6 +10,16 @@ from ia_studio_engine.adapters.loading import LoadedModel, LoadRefusedError
 from ia_studio_engine.core.jobqueue import CancelledError
 
 
+def _device_for(model_id, plugin, on):
+    if plugin.needs_cuda and on != "cuda":
+        raise LoadRefusedError(f"{model_id} needs CUDA, this machine is {on}")
+    if plugin.devices is not None and on not in plugin.devices:
+        if plugin.fallback_device in plugin.devices:
+            return plugin.fallback_device
+        raise LoadRefusedError(f"{model_id} does not support {on}")
+    return on
+
+
 class PluginAdapter:
     """Hold and run one model-family plugin at a time."""
 
@@ -49,11 +59,7 @@ class PluginAdapter:
         plugin = plugin_adapter.PLUGINS.get(model_id)
         if plugin is None:
             raise LoadRefusedError(f"no plugin adapter for {model_id}")
-        on = plugin_adapter.device()
-        if plugin.needs_cuda and on != "cuda":
-            raise LoadRefusedError(f"{model_id} needs CUDA, this machine is {on}")
-        if plugin.devices is not None and on not in plugin.devices:
-            raise LoadRefusedError(f"{model_id} does not support {on}")
+        on = _device_for(model_id, plugin, plugin_adapter.device())
         self.unload()
         started = time.perf_counter_ns()
         handle = plugin_adapter.quietened(plugin.load(folder, on))
@@ -84,10 +90,18 @@ class PluginAdapter:
             raise LoadRefusedError("no model is loaded")
         if stopping is not None and stopping():
             raise CancelledError("the generation was cancelled")
-        if on_step is not None:
-            on_step(1, 1)
         started = time.perf_counter_ns()
-        plugin_adapter.PLUGINS[held.model_id].run(held.pipeline, params, destination, held.device)
+        plugin = plugin_adapter.PLUGINS[held.model_id]
+        if plugin.run_cancellable is not None:
+            plugin.run_cancellable(
+                held.pipeline, params, destination, held.device, on_step, stopping
+            )
+        else:
+            if on_step is not None:
+                on_step(1, 1)
+            plugin.run(held.pipeline, params, destination, held.device)
+        if stopping is not None and stopping():
+            raise CancelledError("the generation was cancelled")
         elapsed = (time.perf_counter_ns() - started) / 1e6
         return plugin_adapter.result_frame(door, held.device, self.backend(), destination, elapsed)
 

@@ -126,10 +126,11 @@ async function responseFor(
 }
 
 async function seedDigest(
-  host: DownloadHost,
+  host: Pick<DownloadHost, 'readBack'>,
   part: string,
   resuming: boolean,
   signal: AbortSignal | undefined,
+  onBytes?: (bytes: number) => void,
 ): Promise<{ digest: ReturnType<typeof createHash>; received: number }> {
   const digest = createHash('sha256')
   let received = 0
@@ -138,8 +139,19 @@ async function seedDigest(
       abortIfCancelled(signal)
       digest.update(chunk)
       received += chunk.byteLength
+      onBytes?.(chunk.byteLength)
     }
   return { digest, received }
+}
+
+export async function fingerprintModelFile(
+  readBack: DownloadHost['readBack'],
+  path: string,
+  signal?: AbortSignal,
+  onBytes?: (bytes: number) => void,
+): Promise<{ bytes: number; sha256: string }> {
+  const { digest, received } = await seedDigest({ readBack }, path, true, signal, onBytes)
+  return { bytes: received, sha256: digest.digest('hex') }
 }
 
 async function writeResponse(
@@ -279,7 +291,8 @@ export async function modelIsComplete(
 ): Promise<boolean> {
   // A model the person supplied is installed exactly while THEIR file is there: nothing was
   // fetched into the model folder, and looking for it in there would read as never installed.
-  if (isSuppliedModel(model)) return await host.exists(model.weightsPath)
+  if (isSuppliedModel(model) && !needsOwnFolder(model.loader))
+    return await host.exists(model.weightsPath)
 
   // `every` of nothing is true. Right for Ollama, which lists what it holds; a lie for a card
   // listed before its engine exists.

@@ -20,3 +20,5 @@ class Plugin:
     needs_cuda: bool = False
     auto_rig: AutoRigger | None = None
     devices: tuple[str, ...] | None = None
+    fallback_device: str | None = None
+    run_cancellable: Callable | None = None

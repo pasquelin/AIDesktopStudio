@@ -1,13 +1,4 @@
-/**
- * Collects the licence of everything the studio redistributes into `src/shared/licences.json`,
- * which the Help ▸ Licences window reads, and into `THIRD-PARTY-NOTICES.md` for readers of the
- * repository and the release page.
- *
- * What is shipped comes from `SHIPPED`; the licence guards keep it aligned with the manifests.
- *
- * The texts themselves are read from `node_modules`, never copied by hand — a version bump
- * brings its own wording.
- */
+/** Builds the offline notices from shipped manifests and canonical publisher texts. */
 import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -20,6 +11,7 @@ import { VAD as STT_VAD } from './fetch-stt.mjs'
 import { isCopyleft, NO_VERSION } from '../src/shared/domain/licence.ts'
 import { SHIPPED } from '../src/main/shippedPackages.ts'
 import { BUILD_ONLY_PYTHON, ENGINE_PACKAGE, INTERPRETER } from '../src/main/pythonPackages.ts'
+import { kimodoLicences } from './kimodo-licences.mjs'
 import { MODEL_NOTES } from './licence-model-notes.mjs'
 import { makeItAnimatableLicence } from './make-it-animatable-licence.mjs'
 
@@ -249,6 +241,7 @@ function modelLicences() {
       sources: 'https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3',
     },
     makeItAnimatableLicence,
+    ...kimodoLicences,
     ...extraModelLicences(),
   ]
 }
@@ -422,6 +415,7 @@ function renderNotices(entries) {
         : []),
       '',
       '```',
+      ...(entry.attribution ? [entry.attribution, ''] : []),
       entry.text,
       '```',
     ].join('\n'),

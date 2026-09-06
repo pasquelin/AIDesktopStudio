@@ -30,6 +30,7 @@ from ia_studio_engine.adapters.params import filled, knob, text
 from ia_studio_engine.adapters.plugin_contract import Plugin
 from ia_studio_engine.adapters.plugin_runtime import PluginAdapter
 from ia_studio_engine.autorig import plugin as autorig_plugin
+from ia_studio_engine.motion import plugin as motion_plugin
 
 __all__ = [
     "PLUGINS",
@@ -457,6 +458,13 @@ def _run_mmaudio(handle: dict[str, Any], params: dict[str, Any], destination: st
 #: whether it demands CUDA. Anything narrower than a family — a TRELLIS variant, an MMAudio
 #: architecture — is BOUND HERE, so no loader reads the id it was dispatched by.
 PLUGINS: dict[str, Plugin] = {
+    "kimodo-soma-rp-v1.1": Plugin(
+        motion_plugin.load,
+        motion_plugin.generate,
+        devices=("cpu", "cuda"),
+        run_cancellable=motion_plugin.run_motion,
+        fallback_device="cpu",
+    ),
     "make-it-animatable": Plugin(
         autorig_plugin.load,
         autorig_plugin.generate,

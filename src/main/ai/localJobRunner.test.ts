@@ -290,3 +290,39 @@ describe('what a modality decides', () => {
     expect(runner.producedBy(submitted.jobId)?.type).toBe('mesh')
   })
 })
+
+describe('unavailable local model', () => {
+  it('refuses a blocked distribution before invoking any runtime', async () => {
+    const generate = vi.fn()
+    const runner = runnerWith({
+      modelOf: () => localModel({ modality: 'mesh', distributionStatus: 'blocked' }),
+      generate,
+    })
+    const job = await runner.submit(TARGET, { prompt: 'walk' })
+    await settled()
+    expect((await runner.poll(job.jobId, TARGET)).status).toBe('failure')
+    expect(generate).not.toHaveBeenCalled()
+  })
+})
+
+describe('generated motion collection', () => {
+  it('files a motion model output as animation in the existing collector contract', async () => {
+    const model = localModel({
+      id: 'motion',
+      loader: 'plugin',
+      modality: 'mesh',
+      family: '3d',
+      capabilities: ['motion'],
+    })
+    const runner = runnerWith({
+      modelOf: () => model,
+      generate: async () => ({ path: '/tmp/motion.glb', device: 'cpu', backend: 'pytorch' }),
+    })
+    const job = await runner.submit({ id: model.id }, { prompt: 'walk' })
+    await settled()
+    expect(runner.producedBy(job.jobId)).toMatchObject({
+      type: 'animation',
+      path: '/tmp/motion.glb',
+    })
+  })
+})

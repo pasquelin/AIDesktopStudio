@@ -47,9 +47,10 @@
     },
     "models": {
       "title": "Models, section by section",
-      "body": "The studio downloads the weights and runs them here: no account, no connection. The size says what your machine can hold.",
+      "body": "The studio downloads the weights, then runs them here. Some models require access from their publisher. The size shows the disk space needed.",
       "sectionHint": "Shows the models of: {{name}}",
-      "more": "The full catalogue lives in the settings."
+      "more": "The full catalogue lives in the settings.",
+      "motionOptional": "Motion generation is optional. Install a model now, or continue and find it later in Settings → AI → 3D. Animation retargeting works without AI."
     },
     "account": {
       "title": "A cloud, if you have one",

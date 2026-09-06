@@ -437,3 +437,27 @@ describe('a door whose environment is incomplete', () => {
     expect(held.job).not.toHaveBeenCalled()
   })
 })
+
+describe('a supplied motion model', () => {
+  it('checks motion dependencies and loads the registered backend from its local folder', async () => {
+    const held = harness({}, { folderFor: model => model.weightsPath ?? '/unused' })
+    const model = localModel({
+      id: 'own-motion',
+      backendId: 'kimodo-soma-rp-v1.1',
+      fieldProfile: 'motion',
+      loader: 'plugin',
+      modality: 'mesh',
+      weightsPath: '/weights/motion',
+    })
+    await held.runtime.load?.(model, { onProgress: () => {} })
+    expect(held.requirements).toHaveBeenCalledWith('motion')
+    expect(held.job).toHaveBeenCalledWith(
+      'models.load',
+      expect.objectContaining({
+        modelId: 'kimodo-soma-rp-v1.1',
+        folder: '/weights/motion',
+      }),
+      expect.anything(),
+    )
+  })
+})
