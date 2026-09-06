@@ -1,6 +1,6 @@
 import { Object3D, type AnimationClip } from 'three'
 import { type ClipLane } from '@shared/domain/scene'
-import { receivesShadow, type ModelNode } from './sceneState'
+import { receivesShadow, type ModelNode, type SceneNode } from './sceneState'
 import { createModelTextures } from './modelTextures'
 import { reportFailure } from '@/services/diagnostics'
 import { clipLengthsOf, clipNamesOf, clipsOf, foreignClipsOf, type ForeignClip } from './animation'
@@ -18,6 +18,25 @@ import { characterOf } from './rigRead'
 import { meshSampleOf } from './rigSnap'
 import './bvhPatches'
 import { SceneRendererGeometry } from './SceneRendererGeometry'
+
+function staleModelsOf(
+  modelKeys: ReadonlyMap<string, string>,
+  applied: ReadonlyMap<string, SceneNode>,
+  assetVersion?: (assetId: string) => string | undefined,
+): ModelNode[] {
+  const fresh = new Map<string, string>()
+  const stale: ModelNode[] = []
+  for (const [id, held] of modelKeys) {
+    const node = applied.get(id)
+    if (node?.type !== 'model') continue
+    const { assetId } = node.model
+    const key = fresh.get(assetId) ?? modelKeyOf(assetId, assetVersion?.(assetId))
+    fresh.set(assetId, key)
+    if (key !== held) stale.push(node)
+  }
+  return stale
+}
+
 export abstract class SceneRendererModels extends SceneRendererGeometry {
   /** A copy of the loaded motion data; callers cannot pose the live skeleton through it. */
   inspectMotion(nodeId: string): { bones: WireBone[]; clips: WireClip[] } | null {
@@ -190,7 +209,7 @@ export abstract class SceneRendererModels extends SceneRendererGeometry {
   }
   /** Loads again every model whose file moved since it was read — the door `useShelfRefresh` pushes. */
   refreshModels(): void {
-    const stale = this.staleModels()
+    const stale = staleModelsOf(this.modelKeys, this.applied, this.options.assetVersion)
     if (stale.length === 0) return
     for (const node of stale) {
       this.release(node.id)
@@ -208,23 +227,6 @@ export abstract class SceneRendererModels extends SceneRendererGeometry {
     this.attachGizmo()
   }
 
-  /**
-   * The models whose file moved since they were read. Pushed on every relisting of the shelf, so
-   * the common case allocates nothing: the version is asked once per asset, the stale alone kept.
-   */
-  private staleModels(): ModelNode[] {
-    const fresh = new Map<string, string>()
-    const stale: ModelNode[] = []
-    for (const [id, held] of this.modelKeys) {
-      const node = this.applied.get(id)
-      if (node?.type !== 'model') continue
-      const { assetId } = node.model
-      const key = fresh.get(assetId) ?? modelKeyOf(assetId, this.options.assetVersion?.(assetId))
-      fresh.set(assetId, key)
-      if (key !== held) stale.push(node)
-    }
-    return stale
-  }
   /** Told once per skeleton, not per model: it is filed by what its bones ARE. */
   protected learnRig(rig: Rig, corrected?: Readonly<Record<string, HumanoidRole>>): void {
     const roles: Record<string, HumanoidRole> = { ...corrected }
