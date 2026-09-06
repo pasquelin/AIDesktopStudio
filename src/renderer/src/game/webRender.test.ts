@@ -191,6 +191,19 @@ describe('what an exported game pays for an image', () => {
     expect(renderer.lenses).toEqual([35, 60])
   })
 
+  /** A node whose lens IS the policy's: giving it back must not swallow a resize the frame owes. */
+  it('still draws a size that changed when the lens given back was the policy one already', async () => {
+    const { render, renderer } = await stagedGame({ ...DEFAULT_RENDER_POLICY, fieldOfView: 60 })
+    render.view({ position: { x: 0, y: 5, z: 10 }, target: { x: 0, y: 0, z: 0 }, fieldOfView: 60 })
+    render.draw()
+
+    render.resize(800, 450)
+    render.view(null)
+    render.draw()
+
+    expect(renderer.frames).toHaveLength(2)
+  })
+
   it('draws again on a size that changed, and on a veil that moved', async () => {
     const { render, renderer } = await stagedGame()
     render.draw()

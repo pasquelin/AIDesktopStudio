@@ -141,7 +141,7 @@ export function createWebRender(
       if (!view) {
         if (watched.fieldOfView === undefined) return
         watched.fieldOfView = undefined
-        pictureStale = setLens(camera, policy.fieldOfView)
+        if (setLens(camera, policy.fieldOfView)) pictureStale = true
         return
       }
       // Dropped when it has not MOVED, as the studio drops it.
