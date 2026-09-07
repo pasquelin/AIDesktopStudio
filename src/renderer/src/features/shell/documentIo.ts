@@ -370,7 +370,19 @@ async function whileSettling<T>(body: () => Promise<T>): Promise<T> {
 }
 async function askAboutUnsavedWork(documentId: string): Promise<CloseChoice> {
   const title = useDocuments.getState().documents[documentId]?.title ?? ''
-  return (await getBridge()?.documents.confirmClose(title)) ?? 'cancel'
+  const choice = await getBridge()?.documents.confirmClose(title)
+  // 🛑 Nobody answered — no bridge, or a dialog that gave nothing back. Read as `cancel` because
+  // that is the only safe reading of an unanswered question about unsaved work, but SAID: the
+  // caller that stops on it announces nothing of its own, and the gesture dies where it stood.
+  if (choice === undefined) {
+    reportFailure(
+      'document.close',
+      title,
+      new Error('the question about unsaved work went unanswered'),
+    )
+    return 'cancel'
+  }
+  return choice
 }
 export async function closeDocument(documentId: string): Promise<boolean> {
   return await whileSettling(async () => {

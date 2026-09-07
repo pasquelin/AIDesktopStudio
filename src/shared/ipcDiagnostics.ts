@@ -94,6 +94,11 @@ export type LogScope =
   | 'project.forget'
   | 'project.close'
   | 'project.rename'
+  // The two gestures that go through a PICKER: the folder is chosen, everything on screen closes
+  // over it, and a refusal past that point had nowhere left to appear — the window swallowed it,
+  // and the journal it named cannot hold it either, no project being open to carry one.
+  | 'project.open'
+  | 'project.create'
   | 'font.face'
   // Not a document's: a render that threw and a stored layout React refused belong to the shell
   // holding the documents, and both used to leave nothing behind in a packaged build.
@@ -196,6 +201,8 @@ export const LOG_SCOPES: readonly LogScope[] = [
   'project.forget',
   'project.close',
   'project.rename',
+  'project.open',
+  'project.create',
   'font.face',
   'shell.render',
   'shell.layout',

@@ -27,6 +27,11 @@ const GESTURE_SCOPES: ReadonlySet<LogScope> = new Set<LogScope>([
   // second press, a capture that writes nothing looks exactly like one that worked.
   'scene.capture',
   'image.export',
+  // A picker is a gesture, and the one whose refusal is least visible: everything on screen has
+  // closed over the chosen folder. Silenced from the second press, "Nouveau projet" that does
+  // nothing looks exactly like a studio that ignores the menu — which is how it was reported.
+  'project.open',
+  'project.create',
   'document.save',
   'document.close',
   'document.delete',

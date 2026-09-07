@@ -18,7 +18,7 @@ import {
   registerFileViewSave,
   settleFileViews,
 } from './dockviewApi'
-import { installFakeBridge } from '@/services/fakeBridge'
+import { bridgeWatchingLogs, installFakeBridge } from '@/services/fakeBridge'
 
 const scene: DocumentDescriptor = {
   id: 'doc-1',
@@ -335,6 +335,25 @@ describe('a file view tab', () => {
     await expect(settleFileViews()).resolves.toBe(false)
 
     expect(panels[0]?.api.close).not.toHaveBeenCalled()
+    setDocumentTitle('file:Controls/character.input.json', 'character', false)
+  })
+
+  /**
+   * 🛑 A `false` nobody was asked for. The caller — leaving a project, quitting — reads it as
+   * "the person said no", so the whole gesture stopped with the dialog already dismissed and
+   * nothing on screen to explain it.
+   */
+  it('says so when the answer is to save and the view has no way to', async () => {
+    const { entries } = bridgeWatchingLogs({
+      documents: { confirmClose: () => Promise.resolve('save') },
+    })
+    mount()
+    openFileView(controls)
+    setDocumentTitle('file:Controls/character.input.json', 'character', true)
+
+    await expect(settleFileViews()).resolves.toBe(false)
+
+    expect(entries().map(entry => entry.scope)).toContain('document.save')
     setDocumentTitle('file:Controls/character.input.json', 'character', false)
   })
 

@@ -188,11 +188,16 @@ async function settleLeaving(bridge: StudioBridge): Promise<boolean> {
  * that does not happen: no bridge, a cancelled dialog, a folder the main process refused.
  *
  * The refusal is swallowed rather than raised: every caller of the two gestures below does
- * `void openPicked()`, so a rejection left to travel was an unhandled one, and the main
- * process has already written the reason in the journal on its way past. Nothing to undo
+ * `void openPicked()`, so a rejection left to travel was an unhandled one. Nothing to undo
  * either — the project that was open is still the one that is open.
+ *
+ * 🛑 It is REPORTED on its way past, and that is not decoration. The main writes its own line
+ * into the journal, which lives in the OPEN project's catalogue — so the one case that most
+ * needs a word, a studio holding no project, is exactly the one where nothing was written and
+ * the gesture died in silence: the folder chosen, the picker closed, and the studio unmoved.
  */
 async function pickedProject(
+  scope: 'project.open' | 'project.create',
   from: (bridge: StudioBridge, folder: string) => Promise<Project | null>,
 ): Promise<Project | null> {
   const bridge = getBridge()
@@ -212,7 +217,8 @@ async function pickedProject(
 
   try {
     return await from(bridge, folder)
-  } catch {
+  } catch (error) {
+    reportFailure(scope, folder, error)
     return null
   }
 }
@@ -469,14 +475,18 @@ const projectState: ProjectState = {
   },
 
   openPicked: async () => {
-    const picked = await pickedProject((bridge, folder) => bridge.project.open(folder))
+    const picked = await pickedProject('project.open', (bridge, folder) =>
+      bridge.project.open(folder),
+    )
     if (picked) useProject.setState({ project: picked, known: true })
   },
 
   createPicked: async () => {
     // The folder chosen IS the project, and it names itself. What the main process makes of it —
     // a fresh project, the one already there, or a refusal — is its call, not the window's.
-    const picked = await pickedProject((bridge, folder) => bridge.project.create(folder))
+    const picked = await pickedProject('project.create', (bridge, folder) =>
+      bridge.project.create(folder),
+    )
     if (picked) useProject.setState({ project: picked, known: true })
   },
 }
