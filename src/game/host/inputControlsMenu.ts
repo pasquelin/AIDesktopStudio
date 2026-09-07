@@ -164,7 +164,7 @@ export function createInputControlsMenu(options: InputControlsMenuOptions): Inpu
       const fresh = signals.find(signal => !held.includes(signal))
       held = signals
       if (!fresh) return
-      const binding = gamepadBinding(fresh, wanted.kind)
+      const binding = gamepadBinding(fresh, wanted)
       if (binding) finishCapture(binding)
     }, 50)
   }
@@ -325,17 +325,36 @@ const BUTTON_CONTROLS: readonly GamepadControl[] = [
   'home',
 ]
 
-function gamepadBinding(signal: string, kind: InputActionKind): InputBinding | null {
+/**
+ * 🛑 The WAY a half-axis pushes, carried over from what it replaces: `throttle` and `yaw` are two
+ * buttons scaled apart, and a capture that dropped the scale made the pair add up instead of
+ * cancelling — both halves reading +1, the lever pinned open.
+ */
+function shapeOf(previous: InputBinding | undefined): { scale?: number; invert?: boolean } {
+  if (previous?.device !== 'gamepad') return {}
+  return {
+    ...(previous.scale === undefined ? {} : { scale: previous.scale }),
+    ...(previous.invert === undefined ? {} : { invert: previous.invert }),
+  }
+}
+
+function gamepadBinding(signal: string, capture: Capture): InputBinding | null {
   const [source, rawIndex] = signal.split(':')
   const index = Number(rawIndex)
-  if (source === 'button' && kind === 'button') {
+  const shape = shapeOf(capture.previous)
+  // A BUTTON serves a half-axis too: a trigger drives `accelerate` and a shoulder `yaw` in the
+  // shipped contexts, and refusing one left those four slots stuck on « capturing… » for ever.
+  if (source === 'button' && (capture.kind === 'button' || capture.kind === 'axis1')) {
     const control = BUTTON_CONTROLS[index]
-    return control ? { device: 'gamepad', control } : null
+    if (!control) return null
+    return capture.kind === 'button'
+      ? { device: 'gamepad', control }
+      : { device: 'gamepad', control, ...shape }
   }
   if (source !== 'axis' || index < 0 || index > 3) return null
-  if (kind === 'axis2')
+  if (capture.kind === 'axis2')
     return { device: 'gamepad', control: index < 2 ? 'leftStick' : 'rightStick' }
-  if (kind !== 'axis1') return null
+  if (capture.kind !== 'axis1') return null
   const controls: readonly GamepadControl[] = [
     'leftStickX',
     'leftStickY',
@@ -343,5 +362,5 @@ function gamepadBinding(signal: string, kind: InputActionKind): InputBinding | n
     'rightStickY',
   ]
   const control = controls[index]
-  return control ? { device: 'gamepad', control } : null
+  return control ? { device: 'gamepad', control, ...shape } : null
 }
