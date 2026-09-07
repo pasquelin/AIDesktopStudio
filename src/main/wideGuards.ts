@@ -32,9 +32,10 @@ import { resolveSpecifier } from './sourceFiles.ts'
  * net; 112 against 126 the same day, when the name list became a resolved hop into the module;
  * 122 against 132 on 2026-09-06, when `manualInputActions.test.ts` read the manual chapters; 123
  * against 133 the same day, the animation graph having brought its own beside them; 124 against
- * 134 the same day, the welcome reading its shipped clip folders off the disk.
+ * 134 the same day, the welcome reading its shipped clip folders off the disk; 125 against 135 on
+ * 2026-09-07, when `no-unpainted-framing` swept the renderer for framings that draw nothing.
  */
-export const LEAST_GUARDS = 124
+export const LEAST_GUARDS = 125
 
 /**
  * How far the floor may sit below the real count before it stops meaning anything.

@@ -37,7 +37,7 @@ function runWorkshopViewCommand(command: CommandId, workshopId: string): Command
     case 'scene.frame':
       // The whole model, not a selection: the workshop has none, and `runSceneCommand` would
       // frame the void.
-      return sceneEngineOf(workshopId)?.frameContents() ?? false
+      return sceneEngineOf(workshopId)?.frameAll() ?? false
     case 'scene.capture':
       void captureSceneView(workshopId, DEFAULT_CAPTURE_QUALITY)
       return true

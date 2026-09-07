@@ -109,7 +109,7 @@ export abstract class SceneRendererPreview extends SceneRendererSkinning {
    * frame has no one dragging it, and the orbit's target would only be read on the next drag.
    * It asks for no render of its own, unlike `frameSelection`: its caller draws the very next
    * line, and a frame loop woken per aim would run the viewport's pass forever behind a canvas
-   * nobody is looking at.
+   * nobody is looking at. A hand has no next line — it calls `frameAll`.
    *
    * Answers whether it actually framed SOMETHING — false while every model is still a node with
    * no file behind it, which encloses no box at all. That is what lets a caller aim once and
@@ -136,6 +136,21 @@ export abstract class SceneRendererPreview extends SceneRendererSkinning {
     camera.position.copy(position)
     camera.lookAt(target)
     this.viewport.orbit?.target.copy(target)
+    return true
+  }
+
+  /**
+   * `frameContents`, for a HAND: a button has no next line to draw on, so this asks for one.
+   *
+   * PERSPECTIVE only — it moves the perspective camera and never refits an orthographic frustum,
+   * where a move shows nothing new. An orthographic pane is `frameSelection`'s, which refits.
+   */
+  frameAll(): boolean {
+    if (!this.frameContents()) return false
+    // A DISARMED orbit is never updated by the frame loop, which reads `enabled` first — and a
+    // pane one has left owns exactly that.
+    this.viewport.orbit?.update()
+    this.repaint()
     return true
   }
 

@@ -55,12 +55,12 @@ describe('runWorkshopCommand', () => {
 
   // The whole model, never a selection: the workshop has none, and framing it would frame the void.
   it('frames the whole workshop on its engine', () => {
-    const frameContents = vi.fn(() => true)
+    const frameAll = vi.fn(() => true)
     // The one method the command reaches — a live renderer needs a canvas this test has not.
-    registerSceneEngine(WORKSHOP, { frameContents } as unknown as SceneRenderer)
+    registerSceneEngine(WORKSHOP, { frameAll } as unknown as SceneRenderer)
 
     expect(runWorkshopCommand('scene.frame', context())).toBe(true)
-    expect(frameContents).toHaveBeenCalledOnce()
+    expect(frameAll).toHaveBeenCalledOnce()
   })
 
   // A menu row or the bench hands over the workshop alone: what needs the tab answers `false`.
