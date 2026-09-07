@@ -3,10 +3,14 @@
 Run through Blender, which is the only reader here for FBX:
 
     /Applications/Blender.app/Contents/MacOS/Blender --background --factory-startup \
-        --python scripts/make-character-assets.py -- <source folder> <resources folder> [names...]
+        --python scripts/make-character-assets.py \
+            -- <source folder> <resources folder> <chest texture> [names...]
 
 Naming what to build restricts the run to those clips or hero levels; with none it builds the
 whole of both tables.
+
+The chest texture is the brand emblem the hero wears, `build/character-chest.png`: it lives here
+rather than beside the sources, so a rebuild needs nothing but this checkout and the meshes.
 
 The source folder holds `game/` — `character.glb` and Mixamo FBX clips — beside `optimization/`,
 which holds the decimations of that same mesh. What
@@ -315,7 +319,7 @@ def build_hero(source, target, height, texture):
         export_glb(target)
         written = glb_height(target)
 
-    return before, after, written, factor
+    return before, after, written
 
 
 CLIPS = {
@@ -376,7 +380,7 @@ def main():
         if wanted and name not in wanted:
             continue
         target = os.path.join(characters, f"{name}.glb")
-        before, after, measured, _factor = build_hero(
+        before, after, measured = build_hero(
             os.path.join(source, folder, file), target, HERO_HEIGHT, texture
         )
         print(
