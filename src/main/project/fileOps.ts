@@ -1,7 +1,7 @@
-import { ASSET_SEARCH_LIMIT_MAX, type Asset } from '@shared/domain/asset'
+import type { Asset } from '@shared/domain/asset'
 import type { FileOutcome, PathChange } from '@shared/domain/fileOp'
 import { filingTypeOf } from '@shared/domain/filingType'
-import { isUnder, nameOf, parentOf } from '@shared/domain/folder'
+import { nameOf, parentOf } from '@shared/domain/folder'
 import type { RoleFolders } from '@shared/domain/folderRole'
 import { moveAssetFile, moveAssetFileToFree } from '@main/assets/assetFile'
 import type { AsyncCatalog } from './catalogClient'
@@ -21,21 +21,21 @@ import type { FolderReader, FolderWriter } from './folder'
 /**
  * The rows a batch of moves refiled, once for the WHOLE batch.
  *
- * 🛑 Every destination in one read: called per move, it fetched the whole catalogue again each
- * time — 50 files moved meant 50 round trips of 500 rows through the worker. The repaths all land
- * before it runs, so one read sees them all.
+ * 🛑 Asked BY PREFIX and unbounded: it read the whole catalogue once per move — fifty files meant
+ * fifty round trips of five hundred rows — and, worse, the rows past that cap kept the type of the
+ * folder they came FROM, in silence, on exactly the projects large enough to have them. The
+ * repaths all land before this runs, so one read sees them all.
  */
 async function retargetMoved(
   catalog: AsyncCatalog,
   destinations: readonly string[],
   roles: RoleFolders,
 ): Promise<number> {
-  if (destinations.length === 0) return 0
-  const rows = await catalog.search({ limit: ASSET_SEARCH_LIMIT_MAX })
+  const rows = await catalog.assetsUnder(destinations)
   let changed = 0
   for (const row of rows) {
     const path = row.path
-    if (!path || !destinations.some(to => path === to || isUnder(path, to))) continue
+    if (!path) continue
     const type = filingTypeOf(nameOf(path), parentOf(path) ?? '', roles)
     if (!type || type === row.type) continue
     await catalog.add({ ...row, type })

@@ -22,6 +22,7 @@ export type CatalogRequest =
   | { id: number; op: 'remove'; assetId: string }
   | { id: number; op: 'repath'; from: string; to: string }
   | { id: number; op: 'forgetUnder'; path: string }
+  | { id: number; op: 'assetsUnder'; folders: readonly string[] }
   | { id: number; op: 'appendActivity'; entries: readonly ActivityDraft[] }
   | { id: number; op: 'readActivity'; query: ActivityQuery }
 
@@ -37,6 +38,7 @@ export type CatalogResults = {
   remove: void
   repath: void
   forgetUnder: number
+  assetsUnder: Asset[]
   appendActivity: ActivityEntry[]
   readActivity: ActivityEntry[]
 }

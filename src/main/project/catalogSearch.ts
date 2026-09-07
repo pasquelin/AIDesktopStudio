@@ -5,6 +5,7 @@ import type { SqliteDriver, SqlValue } from './sqlite'
 import { text } from './sqlRow'
 import { assetOf } from './catalogRows'
 import { CATALOG_DEFAULT_LIMIT } from './catalogSchema'
+import { underPath, UNDER_PATH } from './catalogStatements'
 
 type TagsByAsset = (assetIds: readonly string[]) => Map<string, string[]>
 type SearchParts = { conditions: string[]; params: SqlValue[] }
@@ -88,4 +89,25 @@ function tagFilter(parts: SearchParts, tags: readonly string[]): void {
     GROUP BY asset_id HAVING COUNT(DISTINCT tag) = ?
   )`)
   parts.params.push(...tags, tags.length)
+}
+
+/**
+ * Every filed row under any of these folders, with NO bound.
+ *
+ * 🛑 Apart from `searchAssets` precisely because it must not be paged: its caller refiles what a
+ * move landed, and the search's 500-row cap left the rows past it carrying the type of the folder
+ * they came FROM — silently, on exactly the projects large enough to notice.
+ */
+export function assetsUnder(
+  driver: SqliteDriver,
+  tagsByAsset: TagsByAsset,
+  folders: readonly string[],
+): Asset[] {
+  if (folders.length === 0) return []
+  const where = folders.map(() => `(${UNDER_PATH})`).join(' OR ')
+  const rows = driver
+    .prepare(`SELECT * FROM assets WHERE missing_at IS NULL AND ${NOT_PRIVATE} AND (${where})`)
+    .all(...folders.flatMap(folder => underPath(folder)))
+  const tags = tagsByAsset(rows.map(row => text(row, 'id')))
+  return rows.map(row => assetOf(row, tags.get(text(row, 'id')) ?? []))
 }

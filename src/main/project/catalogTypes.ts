@@ -102,6 +102,13 @@ export type Catalog = {
    */
   forgetUnder: (path: string) => number
   /**
+   * Every filed row under any of these folders, with NO bound.
+   *
+   * Apart from `search` because it must not be PAGED: refiling what a move landed under a capped
+   * page left the rows past the cap carrying the type of the folder they came from, in silence.
+   */
+  assetsUnder: (folders: readonly string[]) => Asset[]
+  /**
    * Every row that names a file, and only what reconciling the catalogue with the disk reads of
    * one. The whole table at once rather than a query per file: a project of a hundred thousand
    * assets is one statement here and a hundred thousand round trips the other way.

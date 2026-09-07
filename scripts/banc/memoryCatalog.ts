@@ -84,6 +84,14 @@ export function createMemoryCatalog(
     findByRemoteId: remoteAssetId =>
       Promise.resolve(rows.find(one => one.remoteAssetId === remoteAssetId) ?? null),
 
+    assetsUnder: folders =>
+      Promise.resolve(
+        rows.filter(one => {
+          const path = one.path
+          return Boolean(path) && folders.some(to => path === to || path?.startsWith(`${to}/`))
+        }),
+      ),
+
     search: query => {
       const words = searchWords(query.text ?? '')
       const found = rows.filter(one => matches(one, query, words))

@@ -9,7 +9,7 @@ import { activityOf, assetOf, isUnder, withoutTrailingSlash } from './catalogRow
 import { CATALOG_DEFAULT_LIMIT, migrate } from './catalogSchema'
 import type { Catalog } from './catalogTypes'
 import { addAsset } from './catalogMutations'
-import { searchAssets } from './catalogSearch'
+import { assetsUnder, searchAssets } from './catalogSearch'
 import { activityStatements, assetStatements, pathStatements, underPath } from './catalogStatements'
 
 export { migrate } from './catalogSchema'
@@ -166,6 +166,7 @@ export function createCatalog(driver: SqliteDriver): Catalog {
     },
 
     search: query => searchAssets(driver, tagsByAsset, query),
+    assetsUnder: folders => assetsUnder(driver, tagsByAsset, folders),
     countByType: () => {
       const counts = emptyAssetCounts()
 

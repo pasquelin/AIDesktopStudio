@@ -1,7 +1,8 @@
 import { NOT_PRIVATE } from './sqlText'
 import type { SqliteDriver } from './sqlite'
 
-const UNDER_PATH = 'path = ? OR (path >= ? AND path < ?)'
+/** A folder and everything below it, by range rather than `LIKE` — the index answers it. */
+export const UNDER_PATH = 'path = ? OR (path >= ? AND path < ?)'
 
 export const underPath = (path: string): [string, string, string] => [path, `${path}/`, `${path}0`]
 

@@ -56,6 +56,8 @@ export type AsyncCatalog = {
    * Answers how many rows went, so a caller knows whether anything is worth telling a window.
    */
   forgetUnder: (path: string) => Promise<number>
+  /** Every filed row under any of these folders, with no bound — see `assetsUnder`. */
+  assetsUnder: (folders: readonly string[]) => Promise<Asset[]>
   /**
    * Reconciles the catalogue with the project folder, in the thread that holds it.
    *
@@ -260,6 +262,7 @@ export function createCatalogClient(port: CatalogPort): AsyncCatalog {
       }),
 
     forgetUnder: path => send<'forgetUnder'>(id => ({ id, op: 'forgetUnder', path })),
+    assetsUnder: folders => send<'assetsUnder'>(id => ({ id, op: 'assetsUnder', folders })),
 
     appendActivity: entries =>
       send<'appendActivity'>(id => ({ id, op: 'appendActivity', entries })),
