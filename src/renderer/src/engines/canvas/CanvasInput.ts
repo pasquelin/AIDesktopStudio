@@ -6,6 +6,7 @@ import { maskKey } from './compositor'
 import { type Affine } from './layerSpace'
 import { cornersOfRect, hitTest, HANDLE_GRAB, ROTATE_REACH, type HandleHit } from './handles'
 import { UPRIGHT } from './cursors'
+import { box } from './shapeGeometry'
 import type { Point } from '../core/geometry'
 import { wheelStep, toDocument, zoomCanvasAt } from './viewport'
 import type { LayerSurface } from './canvasEngineSupport1'
@@ -38,7 +39,10 @@ export abstract class CanvasInput extends CanvasPointerTracking {
     if (gesture.kind === 'paint') this.endPixels()
     if (gesture.kind === 'shape') this.commitShape(gesture.from, gesture.to)
     if (gesture.kind === 'text') this.commitText(gesture.from, gesture.to)
-    if (gesture.kind === 'smartSelectBox') this.smartBox(gesture.from, gesture.to)
+    if (gesture.kind === 'smartSelect') {
+      this.smartSelection(gesture.from, gesture.to)
+      this.overlay.invalidate()
+    }
     if (gesture.kind === 'comment') {
       this.options.onComment(gesture.at, gesture.points.length > 2 ? gesture.points : undefined)
       this.overlay.invalidate()
@@ -48,16 +52,12 @@ export abstract class CanvasInput extends CanvasPointerTracking {
     if (gesture.kind === 'select' && isEmptySelection(this.selection)) this.publishSelection(null)
   }
 
-  private smartBox(from: Point, to: Point): void {
-    const box = this.gridBox(from, to)
-    this.options.onSmartSelect({
-      box: {
-        x: box.from.x,
-        y: box.from.y,
-        width: box.to.x - box.from.x,
-        height: box.to.y - box.from.y,
-      },
-    })
+  private smartSelection(from: Point, to: Point): void {
+    const corners = this.gridBox(from, to)
+    const prompt = box(corners.from, corners.to, false)
+    if (prompt.width === 0 || prompt.height === 0)
+      return this.options.onSmartSelect({ point: from })
+    this.options.onSmartSelect({ box: prompt })
   }
 
   /**

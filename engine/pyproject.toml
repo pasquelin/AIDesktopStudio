@@ -90,6 +90,9 @@ plugin = [
   "typeguard>=4.0",
 ]
 
+[tool.ia-studio]
+embedded-profiles = ["autorig", "selection"]
+
 [dependency-groups]
 # numpy and Pillow, and nothing heavier: `skybox_fill` is pure array work, and leaving it
 # untested was the one algorithmic file of this engine with no guard. Together they are ~37 MB installed —

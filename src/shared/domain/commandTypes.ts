@@ -154,7 +154,6 @@ export type CommandId =
   | 'canvas.toolSelectEllipse'
   | 'canvas.toolSelectLasso'
   | 'canvas.toolSmartSelect'
-  | 'canvas.toolSmartSelectBox'
   | 'canvas.toolShapeRectangle'
   | 'canvas.toolShapeLine'
   | 'canvas.toolShapeArrow'

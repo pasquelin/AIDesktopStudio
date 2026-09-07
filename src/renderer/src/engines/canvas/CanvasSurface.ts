@@ -5,6 +5,7 @@ import { tokenAsFont } from '../core/palette'
 import { type Rect, onPixelGrid } from './canvasState'
 import { selectionOutline } from './canvasSelection'
 import { type Corners } from './handles'
+import { box } from './shapeGeometry'
 import { RULER_SIZE, type OverlayScene, type PendingShape, type ToolChrome } from './CanvasOverlay'
 import { fitTo, onDevicePixels, type Viewport } from './viewport'
 import { strokeWidth } from './canvasEngineSupport1'
@@ -167,11 +168,14 @@ export abstract class CanvasSurface extends CanvasEditing {
   }
 
   private toolChrome(): ToolChrome {
+    const smartDrag =
+      this.gesture.kind === 'smartSelect' ? this.gridBox(this.gesture.from, this.gesture.to) : null
     return {
       crop: this.cropping,
       handles: this.activeCorners(),
       lit: this.hover?.kind === 'handle' ? this.hover.id : null,
       pending: this.pendingShape(),
+      smartBox: smartDrag ? box(smartDrag.from, smartDrag.to, false) : null,
       textBox: this.textBox,
       overflowing: this.overflowing.has(this.state?.activeLayerId ?? ''),
       selection: this.selection,
@@ -214,7 +218,10 @@ export abstract class CanvasSurface extends CanvasEditing {
    */
   protected marching(): boolean {
     return (
-      selectionOutline(this.selection).length > 0 || this.cropping !== null || this.textBox !== null
+      selectionOutline(this.selection).length > 0 ||
+      this.cropping !== null ||
+      this.textBox !== null ||
+      this.gesture.kind === 'smartSelect'
     )
   }
 

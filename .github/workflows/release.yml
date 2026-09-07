@@ -37,15 +37,18 @@ jobs:
         include:
           - os: macos-latest
             platform: mac
+            architectures: --arm64 --x64
             electron-cache: ~/Library/Caches/electron
           - os: windows-latest
             platform: win
+            architectures: --x64
             electron-cache: ~\AppData\Local\electron\Cache
           # Pinned, NOT `ubuntu-latest`. An AppImage inherits the glibc of the machine that
           # built it and refuses to start on anything older. Raising this drops every user on a
           # distribution older than the runner — do not "fix" it. See TROUBLESHOOTING.md §9.2.
           - os: ubuntu-22.04
             platform: linux
+            architectures: --x64
             electron-cache: ~/.cache/electron
 
     steps:
@@ -148,11 +151,11 @@ jobs:
             export CSC_IDENTITY_AUTO_DISCOVERY=false
           fi
 
-          # Architectures come from electron-builder.yml — macOS builds arm64 *and* x64 from this
-          # arm64 runner, which a bare `--mac` would otherwise not do. `--publish never` because
+          # Architectures are explicit here: a local `--mac --arm64` must not prepare x64 resources,
+          # while the release runner intentionally builds both native macOS targets. `--publish never` because
           # only the release job publishes (ADR-06); the latest*.yml manifests are written either
           # way, since a `publish` provider is configured.
-          pnpm exec electron-builder --${{ matrix.platform }} --publish never
+          pnpm exec electron-builder --${{ matrix.platform }} ${{ matrix.architectures }} --publish never
 
       - uses: actions/upload-artifact@v7
         with:

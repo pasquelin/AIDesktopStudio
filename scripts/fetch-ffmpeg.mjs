@@ -44,6 +44,8 @@ import {
 } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
+import { performance } from 'node:perf_hooks'
+import { replaceDirectory } from '../src/main/artefact.ts'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
@@ -205,11 +207,24 @@ function flag(name, fallback) {
 }
 
 async function download(url, into) {
-  const response = await fetch(url, { redirect: 'follow' }).catch(cause => {
-    throw new Error(`Could not reach ${url}: ${cause.message}`)
-  })
+  const started = performance.now()
+  let response
+  try {
+    response = await fetch(url, { redirect: 'follow' })
+  } catch (cause) {
+    throw new Error(`Could not reach ${url}: ${cause.message}`, { cause })
+  }
   if (!response.ok) throw new Error(`${url} answered ${response.status}`)
-  writeFileSync(into, new Uint8Array(await response.arrayBuffer()))
+  const length = response.headers.get('content-length')
+  const bytes = new Uint8Array(await response.arrayBuffer())
+  console.log(
+    `  ${response.url} ${response.status} ${response.headers.get('content-type') ?? 'unknown'} ` +
+      `${bytes.byteLength} bytes in ${Math.round(performance.now() - started)} ms`,
+  )
+  if (length !== null && bytes.byteLength !== Number(length)) {
+    throw new Error(`${response.url} closed at ${bytes.byteLength} bytes, expected ${length}`)
+  }
+  writeFileSync(into, bytes)
 }
 
 /** Pulls one member out of the archive into `work`, and answers where it landed. */
@@ -250,12 +265,12 @@ function verifyDigest(key, name, seen, target) {
   )
 }
 
-async function installArchives(target, key, work, destination, verify) {
+async function installArchives(target, key, work, destination, verify, downloadArchive = download) {
   const seen = {}
   for (const archive of target.archives) {
     const file = join(work, 'archive')
     console.log(`Fetching ${archive.url}`)
-    await download(archive.url, file)
+    await downloadArchive(archive.url, file)
     for (const [name, member] of Object.entries(archive.members)) {
       const extracted = extract(file, member, work)
       seen[name] = digestOf(extracted)
@@ -301,7 +316,7 @@ function writeNotice(destination, target, key, platform) {
  */
 export async function fetchFfmpeg(platform, arch, options = {}) {
   const key = `${platform}-${arch}`
-  const target = TARGETS[key]
+  const target = options.target ?? TARGETS[key]
   if (!target) {
     throw new Error(
       `No ffmpeg build declared for ${key}. Known: ${Object.keys(TARGETS).join(', ')}`,
@@ -310,19 +325,16 @@ export async function fetchFfmpeg(platform, arch, options = {}) {
 
   const destination = options.destination ?? DESTINATION
   const verify = options.verify ?? true
-  rmSync(destination, { recursive: true, force: true })
-  mkdirSync(destination, { recursive: true })
   const work = mkdtempSync(join(tmpdir(), 'ia-studio-ffmpeg-'))
 
   try {
-    const seen = await installArchives(target, key, work, destination, verify)
-    writeNotice(destination, target, key, platform)
-    return finishFetch(seen, destination, platform, arch)
-  } catch (failure) {
-    // Half a fetch looks like a whole one: an `ffmpeg` without its `ffprobe` resolves fine and
-    // then fails per file. Leave nothing rather than something that reads as complete.
-    rmSync(destination, { recursive: true, force: true })
-    throw failure
+    let seen = {}
+    await replaceDirectory(destination, async staging => {
+      seen = await installArchives(target, key, work, staging, verify, options.download)
+      writeNotice(staging, target, key, platform)
+      finishFetch(seen, staging, platform, arch)
+    })
+    return seen
   } finally {
     rmSync(work, { recursive: true, force: true })
   }

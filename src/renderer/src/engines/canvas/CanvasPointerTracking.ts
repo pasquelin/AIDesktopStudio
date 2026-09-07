@@ -50,8 +50,9 @@ export abstract class CanvasPointerTracking extends CanvasPainting {
         return this.trackMove(gesture, point)
       case 'select':
         return this.trackSelection(gesture, point, constrained)
-      case 'smartSelectBox':
+      case 'smartSelect':
         gesture.to = point
+        this.overlay.invalidate()
         return
       case 'comment':
         if (gesture.points.length < GENERATION_COMMENT_OUTLINE_MAX) gesture.points.push(point)
@@ -223,8 +224,12 @@ export abstract class CanvasPointerTracking extends CanvasPainting {
     // used to close it, and a guide let go over the canvas was thrown away by the ruler test.
     if (event.buttons !== 0) return
 
+    const host = this.toHost(event)
+    if (this.gesture.kind === 'smartSelect') {
+      this.gesture.to = toDocument(this.shownViewport(), host)
+    }
     // The corner counts: a guide dropped anywhere on the chrome is a guide thrown away.
-    const onChrome = this.inRuler(this.toHost(event)) !== null
+    const onChrome = this.inRuler(host) !== null
     this.forgetHover()
     this.endGesture(onChrome)
   }

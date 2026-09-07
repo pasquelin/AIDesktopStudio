@@ -262,13 +262,6 @@ export const CANVAS_COMMANDS: readonly CommandDescriptor[] = [
     defaultBinding: null,
   }),
   command({
-    id: 'canvas.toolSmartSelectBox',
-    scope: 'canvas',
-    titleKey: 'commands.canvasToolSmartSelectBox.title',
-    helpKey: 'commands.canvasToolSmartSelectBox.help',
-    defaultBinding: null,
-  }),
-  command({
     id: 'canvas.toolShapeRectangle',
     scope: 'canvas',
     titleKey: 'commands.canvasToolShapeRectangle.title',

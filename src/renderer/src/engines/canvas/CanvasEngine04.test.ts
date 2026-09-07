@@ -1,15 +1,6 @@
 import { describe, expect, it, onTestFinished } from 'vitest'
 import { DEFAULT_CANVAS, groupLayer, pixelLayer, textLayer, type CanvasState } from './canvasState'
 
-/**
- * jsdom has no WebGL context, so Pixi is doubled. What is tested here is what the engine
- * *decides* — which surfaces it builds, which gesture a click starts, what it publishes — never
- * what lands on the GPU, which only a real renderer could tell.
- *
- * It exists because the alternative was believed for a while: that this file could not be tested
- * at all. A guard added to `apply` then silently stopped a freshly opened document from ever
- * building a texture, and nothing caught it.
- */
 import {
   CanvasEngine,
   canvasGpu,
@@ -30,7 +21,7 @@ describe('carving out a selection', () => {
     engine.setTool('smartSelect')
 
     press(host, 120, 80)
-    release()
+    release(120, 80)
     await nextFrame()
 
     expect(smartPrompts).toEqual([{ point: { x: 120, y: 80 } }])
@@ -39,14 +30,44 @@ describe('carving out a selection', () => {
 
   it('sends the approximate box as a prompt, never as the resulting selection', async () => {
     const { engine, host, selections, smartPrompts } = await mounted()
-    engine.setTool('smartSelectBox')
+    engine.setTool('smartSelect')
 
     press(host, 120, 80)
     drag(host, 320, 280)
-    release()
+    release(320, 280)
 
     expect(smartPrompts).toEqual([{ box: { x: 120, y: 80, width: 200, height: 200 } }])
     expect(selections).toEqual([])
+  })
+
+  it('uses the release point when an intelligent box drag has no intervening move event', async () => {
+    const { engine, host, smartPrompts } = await mounted()
+    engine.setTool('smartSelect')
+
+    press(host, 120, 80)
+    release(320, 280)
+
+    expect(smartPrompts).toEqual([{ box: { x: 120, y: 80, width: 200, height: 200 } }])
+  })
+
+  it('uses a point prompt instead of an invalid intelligent box for a click', async () => {
+    const { engine, host, smartPrompts } = await mounted()
+    engine.setTool('smartSelect')
+
+    press(host, 120, 80)
+    release(120, 80)
+
+    expect(smartPrompts).toEqual([{ point: { x: 120, y: 80 } }])
+  })
+
+  it('normalizes an intelligent box dragged toward its origin', async () => {
+    const { engine, host, smartPrompts } = await mounted()
+    engine.setTool('smartSelect')
+
+    press(host, 320, 280)
+    release(120, 80)
+
+    expect(smartPrompts).toEqual([{ box: { x: 120, y: 80, width: 200, height: 200 } }])
   })
 
   it('publishes a box drawn between the two corners of a drag', async () => {
@@ -76,7 +97,6 @@ describe('carving out a selection', () => {
     expect(selections.at(-1)?.kind).toBe('ellipse')
   })
 
-  // A lasso follows the hand rather than spanning a box: every move adds a point.
   it('grows a lasso point by point', async () => {
     const { engine, host, selections } = await mounted()
     engine.setTool('select')
@@ -92,7 +112,6 @@ describe('carving out a selection', () => {
     expect(last?.kind === 'lasso' && last.points).toHaveLength(4)
   })
 
-  // The three modes are one tool; only the bar knows which gesture is armed.
   it('draws whatever shape was armed last', async () => {
     const { engine, host, selections } = await mounted()
     engine.setTool('select')
@@ -106,11 +125,6 @@ describe('carving out a selection', () => {
     expect(selections.at(-1)?.kind).toBe('rect')
   })
 
-  /**
-   * The one that bricked the document: a click carved a zero-area rectangle, which is a stencil
-   * nothing gets through — and every later stroke wrote nothing while looking like a broken
-   * brush, with nowhere in the app to deselect from.
-   */
   it('drops a selection a click carved nothing out of', async () => {
     const { engine, host, selections } = await mounted()
     engine.setTool('select')
@@ -122,7 +136,6 @@ describe('carving out a selection', () => {
     expect(selections.at(-1)).toBeNull()
   })
 
-  // A drag that did carve something out survives the pointer coming up.
   it('keeps one a drag actually made', async () => {
     const { engine, host, selections } = await mounted()
     engine.setTool('select')
@@ -135,7 +148,6 @@ describe('carving out a selection', () => {
     expect(selections.at(-1)).not.toBeNull()
   })
 
-  // Sixty pointer moves in a second must not be sixty React commits — the viewport's own rule.
   it('tells React once a frame rather than once per pointer move', async () => {
     const { engine, host, selections } = await mounted()
     engine.setTool('select')
@@ -245,12 +257,9 @@ describe('making a mask of a selection', () => {
     canvasGpu().painted = []
     engine.apply(masked())
 
-    // Twice into the mask: the white it is born with, then the region that was waiting. Once
-    // only would mean the region was dropped on the floor.
     expect(canvasGpu().painted.filter(id => id === 1)).toHaveLength(2)
   })
 
-  // What a click meant must not change because the pointer moved in between.
   it('paints the region it was asked for, not the one selected by then', async () => {
     const { engine, host } = await mounted()
     engine.setSelection({ kind: 'rect', rect: { x: 0, y: 0, width: 40, height: 40 } })

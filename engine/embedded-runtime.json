@@ -1,0 +1,155 @@
+{
+  "schemaVersion": 1,
+  "platform": "darwin",
+  "arch": "arm64",
+  "python": "Python 3.12.14",
+  "profiles": ["autorig", "selection"],
+  "files": 17633,
+  "bytes": 684634375,
+  "distributions": [
+    {
+      "name": "einops",
+      "version": "0.8.2",
+      "licence": "MIT",
+      "wheelFilename": "einops-0.8.2-py3-none-any.whl",
+      "native": false,
+      "bytes": 232744
+    },
+    {
+      "name": "filelock",
+      "version": "3.32.3",
+      "licence": "MIT",
+      "wheelFilename": "filelock-3.32.3-py3-none-any.whl",
+      "native": false,
+      "bytes": 352179
+    },
+    {
+      "name": "flatbuffers",
+      "version": "25.12.19",
+      "licence": "Apache 2.0",
+      "wheelFilename": "flatbuffers-25.12.19-py2-none-any.whl",
+      "native": false,
+      "bytes": 88178
+    },
+    {
+      "name": "fsspec",
+      "version": "2026.7.0",
+      "licence": "BSD-3-Clause",
+      "wheelFilename": "fsspec-2026.7.0-py3-none-any.whl",
+      "native": false,
+      "bytes": 752611
+    },
+    {
+      "name": "jinja2",
+      "version": "3.1.6",
+      "licence": "BSD License",
+      "wheelFilename": "jinja2-3.1.6-py3-none-any.whl",
+      "native": false,
+      "bytes": 497066
+    },
+    {
+      "name": "markupsafe",
+      "version": "3.0.3",
+      "licence": "BSD-3-Clause",
+      "wheelFilename": "markupsafe-3.0.3-cp312-cp312-macosx_11_0_arm64.whl",
+      "native": true,
+      "bytes": 73879
+    },
+    {
+      "name": "mpmath",
+      "version": "1.3.0",
+      "licence": "BSD",
+      "wheelFilename": "mpmath-1.3.0-py3-none-any.whl",
+      "native": false,
+      "bytes": 1950371
+    },
+    {
+      "name": "networkx",
+      "version": "3.6.1",
+      "licence": "BSD-3-Clause",
+      "wheelFilename": "networkx-3.6.1-py3-none-any.whl",
+      "native": false,
+      "bytes": 7038797
+    },
+    {
+      "name": "numpy",
+      "version": "2.5.2",
+      "licence": "BSD-3-Clause AND 0BSD AND MIT AND Zlib AND CC0-1.0",
+      "wheelFilename": "numpy-2.5.2-cp312-cp312-macosx_14_0_arm64.whl",
+      "native": true,
+      "bytes": 20420670
+    },
+    {
+      "name": "onnxruntime",
+      "version": "1.29.0",
+      "licence": "MIT License",
+      "wheelFilename": "onnxruntime-1.29.0-cp312-cp312-macosx_14_0_arm64.whl",
+      "native": true,
+      "bytes": 78342123
+    },
+    {
+      "name": "packaging",
+      "version": "26.3",
+      "licence": "Apache-2.0 OR BSD-2-Clause",
+      "wheelFilename": "packaging-26.3-py3-none-any.whl",
+      "native": false,
+      "bytes": 499357
+    },
+    {
+      "name": "pillow",
+      "version": "12.3.0",
+      "licence": "MIT-CMU",
+      "wheelFilename": "pillow-12.3.0-cp312-cp312-macosx_11_0_arm64.whl",
+      "native": true,
+      "bytes": 13266292
+    },
+    {
+      "name": "pip",
+      "version": "26.2.1",
+      "licence": "MIT",
+      "wheelFilename": "pip-26.2.1-py3-none-any.whl",
+      "native": false,
+      "bytes": 5691419
+    },
+    {
+      "name": "protobuf",
+      "version": "7.36.1",
+      "licence": "3-Clause BSD License",
+      "wheelFilename": "protobuf-7.36.1-cp310-abi3-macosx_10_9_universal2.whl",
+      "native": true,
+      "bytes": 1662142
+    },
+    {
+      "name": "setuptools",
+      "version": "84.0.0",
+      "licence": "MIT",
+      "wheelFilename": "setuptools-84.0.0-py3-none-any.whl",
+      "native": false,
+      "bytes": 2773813
+    },
+    {
+      "name": "sympy",
+      "version": "1.14.0",
+      "licence": "BSD",
+      "wheelFilename": "sympy-1.14.0-py3-none-any.whl",
+      "native": false,
+      "bytes": 26842516
+    },
+    {
+      "name": "torch",
+      "version": "2.14.0",
+      "licence": "Apache-2.0 AND Apache-2.0 WITH LLVM-exception AND BSD-2-Clause AND BSD-3-Clause AND BSL-1.0 AND MIT",
+      "wheelFilename": "torch-2.14.0-cp312-cp312-macosx_14_0_arm64.whl",
+      "native": true,
+      "bytes": 523977116
+    },
+    {
+      "name": "typing-extensions",
+      "version": "4.16.0",
+      "licence": "PSF-2.0",
+      "wheelFilename": "typing_extensions-4.16.0-py3-none-any.whl",
+      "native": false,
+      "bytes": 182965
+    }
+  ]
+}

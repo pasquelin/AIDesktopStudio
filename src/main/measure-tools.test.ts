@@ -88,9 +88,9 @@ const dryTs = (): Record<string, unknown> => {
  * shells out to it and names it when it is missing. The two macOS ones belong to
  * `dev-app-identity.mjs`.
  *
- * `before-pack.mjs` is called by `electron-builder.yml` through its `beforePack` hook, which is
- * configuration. Deleting it on knip's word would stop ffmpeg being fetched at packaging time, and
- * the build would ship without an encoder rather than fail.
+ * `before-pack.mjs` and `after-pack.mjs` are called by `electron-builder.yml` through configuration.
+ * Deleting the first would stop ffmpeg being fetched; deleting the second would let an unusable
+ * embedded AI runtime ship.
  *
  * `site/assets/js/*.js` and the stylesheet beside them are loaded by `site/template.html` — the
  * public site, which knip does not parse. The scripts are entry points because they hold code; the
@@ -115,7 +115,7 @@ const dryTs = (): Record<string, unknown> => {
 const KNIP_CONFIG = {
   $schema: 'https://unpkg.com/knip@6/schema.json',
   ignoreBinaries: ['sips', 'iconutil', 'uv'],
-  entry: ['scripts/before-pack.mjs', 'site/assets/js/*.js'],
+  entry: ['scripts/before-pack.mjs', 'scripts/after-pack.mjs', 'site/assets/js/*.js'],
   ignore: ['site/assets/css/**', 'vendor/**', '.agents/**', 'scripts/*.d.mts'],
 }
 
@@ -165,8 +165,9 @@ describe('the dead-code detector still looking at the tree', () => {
    * the hook would leave the two pointing at different files, and the packaging failure would
    * surface as a build shipping without an encoder.
    */
-  it('names the script electron-builder actually calls before packing', () => {
+  it('names both scripts electron-builder calls around packaging', () => {
     expect(read('electron-builder.yml')).toContain('beforePack: scripts/before-pack.mjs')
+    expect(read('electron-builder.yml')).toContain('afterPack: scripts/after-pack.mjs')
   })
 
   /**

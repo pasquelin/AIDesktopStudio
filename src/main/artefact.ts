@@ -15,8 +15,17 @@
  * `decoderUrls.test.ts`, inside `pnpm validate`, that keeps those from coming back.
  */
 import { createHash } from 'node:crypto'
-import { readdirSync, readFileSync, statSync } from 'node:fs'
-import { join, relative, sep } from 'node:path'
+import {
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readdirSync,
+  readFileSync,
+  renameSync,
+  rmSync,
+  statSync,
+} from 'node:fs'
+import { basename, dirname, join, relative, sep } from 'node:path'
 
 /**
  * Below this the walk found something other than a build — an emptied folder, a wrong root — and
@@ -82,4 +91,26 @@ export function wastedBytes(groups: ShippedTwice[]): number {
 /** Whether a build exists to be judged at all. */
 export function isBuilt(folder: string): boolean {
   return statSync(folder, { throwIfNoEntry: false })?.isDirectory() === true
+}
+
+export async function replaceDirectory(
+  destination: string,
+  populate: (staging: string) => Promise<void>,
+): Promise<void> {
+  mkdirSync(dirname(destination), { recursive: true })
+  const staging = mkdtempSync(join(dirname(destination), `.${basename(destination)}-`))
+  try {
+    await populate(staging)
+    const previous = `${staging}-previous`
+    if (existsSync(destination)) renameSync(destination, previous)
+    try {
+      renameSync(staging, destination)
+    } catch (error) {
+      if (existsSync(previous)) renameSync(previous, destination)
+      throw error
+    }
+    rmSync(previous, { recursive: true, force: true })
+  } finally {
+    rmSync(staging, { recursive: true, force: true })
+  }
 }

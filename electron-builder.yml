@@ -106,6 +106,7 @@ asarUnpack:
 # be packed, so a run building several of them gives each its own. Outside the asar on purpose:
 # a binary has to be executable on disk to be spawned.
 beforePack: scripts/before-pack.mjs
+afterPack: scripts/after-pack.mjs
 
 extraResources:
   # Le runtime qu'un jeu exporté embarque — un module ES bâti par `pnpm game:runtime`. Hors de
@@ -202,11 +203,9 @@ mac:
     - Contents/Resources/ffmpeg/ffmpeg
     - Contents/Resources/ffmpeg/ffprobe
   target:
-    - target: dmg
-      arch: [arm64, x64]
+    - dmg
     # Not for distribution: electron-updater consumes the zip, and it is cheap to keep.
-    - target: zip
-      arch: [arm64, x64]
+    - zip
 
 dmg:
   contents:
