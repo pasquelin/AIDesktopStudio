@@ -146,6 +146,23 @@ describe('SceneRenderer and the animations the app ships with', () => {
     engine.dispose()
   })
 
+  /**
+   * 🛑 `adapt` hands the SOURCE clip back when the two skeletons already agree, and the label is
+   * written onto what it gave: renaming it in place would rename the file's own clip, and the
+   * panel that lists what the file carries would read the block's label instead.
+   */
+  it('leaves the source file its own clip name when nothing had to be retargeted', async () => {
+    // Named OTHERWISE than the block: the two spelled alike, an in-place rename is invisible.
+    const source = animatedModel([walk('Danse au sol')])
+    const { engine } = withShipped(animatedModel([]), source, straightThrough())
+    engine.apply({ ...EMPTY_SCENE, nodes: [modelNode(shippedBlock())] })
+
+    await vi.waitFor(() => expect(engine.clipLengthsOf('a')['bundled:Capoeira']).toBe(1))
+
+    expect(source.animations[0]?.name).toBe('Danse au sol')
+    engine.dispose()
+  })
+
   it('aborts a removed request and refuses its late result after the same key returns', async () => {
     const retarget = straightThrough()
     const answers: ((clips: AnimationClip[]) => void)[] = []
