@@ -5,7 +5,7 @@ from pathlib import Path
 import numpy
 from PIL import Image
 
-from ia_studio_engine.adapters.selection import write_mask
+from aidesktopstudio_engine.adapters.selection import write_mask
 
 
 def test_writes_the_mask_as_a_png_and_names_it(tmp_path: Path) -> None:
