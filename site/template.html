@@ -111,8 +111,10 @@
   <section class="hero">
     <div class="wrap">
       <p class="eyebrow" data-fx data-rise="16" data-delay="60">{{hero.eyebrow}}</p>
+      <!-- `dir="ltr"` on the two-word line, and there only: in an RTL page the runs of a latin
+           name swap, and the heading read "Desktop AI". The block keeps the page's alignment. -->
       <h1>
-        <span class="l1" data-fx data-split data-delay="140">AI Desktop</span>
+        <span class="l1" dir="ltr" data-fx data-split data-delay="140">AI Desktop</span>
         <span class="l2" data-fx data-split data-delay="240">Studio</span>
       </h1>
       <p class="lede" data-fx data-rise="22" data-delay="520">{{hero.lede}}</p>
