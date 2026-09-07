@@ -264,7 +264,7 @@ export function playerModuleNodes(): readonly SceneNode[] {
     // Half the controller's own height: a capsule stands ON the ground, and its node is its centre.
     ...groupNode(transformAt({ x: 0, y: WALKER_HEIGHT / 2, z: 0 }), 'Capsule'),
     parentId: module.id,
-    components: [newComponent('CharacterController')],
+    components: [{ ...newComponent('CharacterController'), bodyTurnSpeed: 720 }],
   }
   // 🛑 A figure and not a capsule: what stands in a walking body is a BODY, and a capsule inside
   // a capsule showed nothing a cage does not already draw. Every part of it stays an editable

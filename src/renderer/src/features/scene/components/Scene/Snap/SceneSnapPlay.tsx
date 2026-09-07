@@ -4,7 +4,7 @@ import { faultsOf } from '@shared/domain/gameRuntime'
 import { ToolButton } from '@/components/ToolButton'
 import { tipFor } from '@/helpers/tooltip'
 import { openScriptAt } from '@/helpers/openScript'
-import { playReportOf, usePlay } from '@/stores/play'
+import { playReportOf, startOrResumePlay, usePlay } from '@/stores/play'
 
 /** Enough to read the cause and what it caused; the button's label carries the true count. */
 const FAULTS_SHOWN = 6
@@ -22,13 +22,6 @@ export function SceneSnapPlay({ documentId }: SceneSnapPlayProps) {
   // The last one an editor can OPEN. A log line names no line, so it opens nothing.
   const addressable = report.errors.findLast(one => one.line > 0) ?? null
 
-  const play = (): void => {
-    // The game runs in a window of its own, which reads its own keyboard: nothing of this
-    // viewport is handed over, and a resumed game is not a started one.
-    if (report.state === 'paused') void usePlay.getState().resume(documentId)
-    else usePlay.getState().start(documentId)
-  }
-
   return (
     <>
       <ToolButton
@@ -38,7 +31,7 @@ export function SceneSnapPlay({ documentId }: SceneSnapPlayProps) {
         description={t('game.play.startHint')}
         tooltip={tipFor('horizontal')}
         disabled={report.state === 'playing'}
-        onClick={play}
+        onClick={() => startOrResumePlay(documentId)}
       />
 
       <ToolButton

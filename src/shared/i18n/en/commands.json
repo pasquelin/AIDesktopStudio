@@ -1,5 +1,9 @@
 {
   "commands": {
+    "scenePlay": {
+      "title": "Play scene",
+      "help": "Starts or resumes the scene in the game window."
+    },
     "appNew": {
       "title": "New…",
       "help": "Opens the window that makes a project or a document, from any screen"

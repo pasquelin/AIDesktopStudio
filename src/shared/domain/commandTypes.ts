@@ -60,6 +60,7 @@ export type CommandId =
   | 'scene.translate'
   | 'scene.rotate'
   | 'scene.scale'
+  | 'scene.play'
   | 'scene.frame'
   | 'scene.isolate'
   | 'scene.hide'

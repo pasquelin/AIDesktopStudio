@@ -29,6 +29,7 @@ import { newId } from '@/helpers/ids'
 import { reportFailure } from '@/services/diagnostics'
 import { animationViewOf, useAnimationViews } from '@/stores/animationView'
 import { sceneEngineOf } from '@/stores/sceneEngines'
+import { startOrResumePlay } from '@/stores/play'
 import { useSceneClipboard } from '@/stores/sceneClipboard'
 import type { CommandAnswer } from '@/services/commandBus'
 import { runHistoryCommand } from '@/services/historyCommand'
@@ -166,6 +167,9 @@ export function runSceneCommand(documentId: string, command: CommandId): Command
   const picked = selectedNodes(nodes, selectedIds)
   const framingAndViews = () => {
     switch (command) {
+      case 'scene.play':
+        startOrResumePlay(documentId)
+        return true
       case 'scene.frame':
         sceneEngineOf(documentId)?.frameSelection()
         return true

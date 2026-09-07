@@ -2,6 +2,13 @@ import type { CommandDescriptor } from './commandTypes'
 import { command } from './commandTypes'
 
 export const SCENE_COMMANDS: readonly CommandDescriptor[] = [
+  command({
+    id: 'scene.play',
+    scope: 'scene',
+    titleKey: 'commands.scenePlay.title',
+    helpKey: 'commands.scenePlay.help',
+    defaultBinding: 'Meta+Enter',
+  }),
   // `Backquote` as in Blender's walk mode. It is the one key near the letters that no tool and
   // no direction claims, which matters here: this mode hands the letters to the camera.
   command({
