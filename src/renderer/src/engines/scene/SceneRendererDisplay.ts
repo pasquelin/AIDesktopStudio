@@ -14,6 +14,7 @@ import { dressForPane } from './paneDress'
 import { applyWireOverlay, showsEdges } from './sceneView'
 import { type DisplayMode } from '@shared/domain/scene'
 import './bvhPatches'
+import { playerPartsOf } from './playerModule'
 import { SceneRendererExport } from './SceneRendererExport'
 
 export abstract class SceneRendererDisplay extends SceneRendererExport {
@@ -156,6 +157,13 @@ export abstract class SceneRendererDisplay extends SceneRendererExport {
       this.paneMemory,
       camera,
       studio => this.environment?.borrowStudio(studio),
+    )
+    const body =
+      this.options.chrome === false && this.world.play.camera === 'firstPerson'
+        ? playerPartsOf(this.documentOrder)?.body
+        : undefined
+    this.firstPersonBody.sync(body ? this.objects.get(body.id) : undefined, signature =>
+      this.retarget.profileOf(signature),
     )
     return dressed || zoned
   }
