@@ -16,7 +16,15 @@
  */
 import { execFileSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
-import { existsSync, mkdtempSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs'
+import {
+  existsSync,
+  mkdtempSync,
+  readdirSync,
+  readFileSync,
+  renameSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs'
 import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
@@ -40,6 +48,20 @@ const ICON_SIZES = [
   [512, 'icon_512x512'],
   [1024, 'icon_512x512@2x'],
 ]
+
+/**
+ * The one entry of a folder that answers `wanted`, or nothing when it holds none or several.
+ *
+ * 🛑 Whatever it is CALLED, never `Electron.app` by name: the bundle carries the product's name
+ * once this has run, so after the product is RENAMED it sits under the previous one — and a
+ * script looking for Electron's finds neither and exits without a word. Measured on the rebrand
+ * of 2026-09-07, which left the menu bar reading the old name for weeks of `pnpm start`, beside
+ * an « About » item carrying the new one.
+ */
+function onlyIn(folder, wanted) {
+  const found = existsSync(folder) ? readdirSync(folder).filter(wanted) : []
+  return found.length === 1 ? join(folder, found[0]) : null
+}
 
 // Nothing to dress up on a runner: no one looks at the Dock, and electron-builder writes the
 // shipped bundle from scratch. `CI` rather than `GITHUB_ACTIONS` — every platform sets it.
@@ -142,18 +164,18 @@ try {
 
   if (existsSync(bundle) && stamped() && sealed() && wired()) process.exit(0)
 
-  const original = join(dist, 'Electron.app')
   if (!existsSync(bundle)) {
-    if (!existsSync(original)) process.exit(0)
+    const original = onlyIn(dist, one => one.endsWith('.app'))
+    if (!original) process.exit(0)
     renameSync(original, bundle)
   }
 
   // The process name — what the Dock and `ps` show — comes from the executable, so the bundle
   // alone is not enough: renamed bundle, unrenamed binary, and macOS still says Electron.
   const executable = join(bundle, 'Contents', 'MacOS', PRODUCT_NAME)
-  const originalExecutable = join(bundle, 'Contents', 'MacOS', 'Electron')
-  if (!existsSync(executable) && existsSync(originalExecutable)) {
-    renameSync(originalExecutable, executable)
+  if (!existsSync(executable)) {
+    const original = onlyIn(join(bundle, 'Contents', 'MacOS'), () => true)
+    if (original) renameSync(original, executable)
   }
 
   plistBuddy(`Set :CFBundleName ${PRODUCT_NAME}`)

@@ -71,4 +71,18 @@ describe('the product name', () => {
     expect(script).toContain('productName: PRODUCT_NAME')
     expect(script).not.toContain(`'${APP_NAME}'`)
   })
+
+  /**
+   * 🛑 The bundle it renames wears the PREVIOUS product's name, not Electron's — this script gave
+   * it that name the first time it ran. Looking for `Electron.app` finds neither it nor the new
+   * name, and the script exits without a word: every `pnpm start` then shows the name the studio
+   * used to have, beside an « About » item carrying the new one. What it costs to find out is a
+   * screenshot from someone who noticed.
+   */
+  it('renames whatever bundle is there, never one it expects by name', () => {
+    const script = fileAt('scripts/dev-app-identity.mjs')
+
+    expect(script).not.toContain("'Electron.app'")
+    expect(script).toContain("one.endsWith('.app')")
+  })
 })
