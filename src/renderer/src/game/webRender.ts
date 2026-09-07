@@ -11,8 +11,10 @@ import {
   Vector3,
   WebGLRenderer,
 } from 'three'
+import { messageOf } from '@shared/guards'
 import { clamp } from '@shared/numeric'
 import type { AssetPort } from '@game/ports/assetPort'
+import type { LogPort } from '@game/ports/logPort'
 import type { CameraView, EntityPlacement, RenderPort } from '@game/ports/renderPort'
 import { copyCameraView, NOWHERE, sameCameraView } from '@shared/domain/transform'
 import { applyToneMapping } from '@/engines/scene/worldBinding'
@@ -22,6 +24,7 @@ import { frameOwesDraw, frameOwesShadows } from './gameSceneFrame'
 import { pixelRatioFor, shadowMapSizeFor } from '@/engines/scene/viewportQuality'
 import {
   DEFAULT_RENDER_POLICY,
+  readRenderPolicy,
   VIEW_DISTANCE,
   type RenderPolicy,
 } from '@shared/domain/renderPolicy'
@@ -65,8 +68,10 @@ export function createWebRender(
   assets: AssetPort,
   /** What the author saw. An older export carries less, or nothing: the defaults fill the rest. */
   carried: Partial<RenderPolicy> = {},
+  /** Where a fault goes. A game that draws without its grading has to SAY so, not play on. */
+  say: LogPort['write'] = () => {},
 ): WebRender {
-  const policy: RenderPolicy = { ...DEFAULT_RENDER_POLICY, ...carried }
+  const policy = readRenderPolicy({ ...DEFAULT_RENDER_POLICY, ...carried })
   const renderer = new WebGLRenderer({ canvas, antialias: true })
   const gltf = createGltfSource(() => renderer)
   applyShadowPolicy(renderer, policy)
@@ -80,7 +85,7 @@ export function createWebRender(
   let cast: ShadowThrow | null = null
   const watched: CameraView = { position: { ...NOWHERE }, target: { ...NOWHERE } }
   /** 🛑 Dynamic: its three.js passes are weight every game without effects would carry for nothing. */
-  const chain = composerHold(renderer, assets)
+  const chain = composerHold(renderer, assets, say)
   /** Seconds, off the game's own clock: grain and tape jitter advance on it, never on a wall. */
   let played = 0
   let sought: Us | null = null
@@ -248,7 +253,7 @@ export function createWebRender(
  * never arrives showed no game at all. The rejected promise is dropped, so a later scene retries.
  * A composer that lands after `dispose` is dropped too, rather than kept on a renderer that went.
  */
-function composerHold(renderer: WebGLRenderer, assets: AssetPort) {
+function composerHold(renderer: WebGLRenderer, assets: AssetPort, say: LogPort['write']) {
   let held: PostComposer | null = null
   let loading: Promise<PostComposer> | null = null
 
@@ -261,7 +266,10 @@ function composerHold(renderer: WebGLRenderer, assets: AssetPort) {
         // Still the load in flight, or `dispose` ran meanwhile and the renderer it was built on went.
         if (loading === mine) held = built
         else built.dispose()
-      } catch {
+      } catch (error) {
+        // Said and not swallowed: a chain that will not build makes every frame of this game play
+        // without its grading, and nothing else would ever mention it.
+        say('error', `the effect chain did not build: ${messageOf(error)}`)
         loading = null
       }
     },
