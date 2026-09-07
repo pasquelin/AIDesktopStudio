@@ -1,7 +1,6 @@
 import { ASSET_TYPES, type AssetType } from './asset'
 import { typeOfWorkspace } from './assetKind'
 import { documentExtensionOf, kindForExtension, workspaceForKind } from './document'
-import { folderForRole, type RoleFolders } from './folderRole'
 import { importableAssetTypeOf } from './importFormat'
 
 /**
@@ -170,13 +169,3 @@ export function sourceNatureOf(fileName: string): SourceNature {
  * rather than a kind of bytes.
  */
 export const FILE_DOMAINS: readonly FileDomain[] = [...ASSET_TYPES, 'material', 'other']
-
-/**
- * A picture filed under the skyboxes folder is a skybox: the folder says the role, where the
- * extension alone read « ma première skybox » as an image (2.6, 10.2, 37.2 — 2026-09-06).
- */
-export function typeInRoleFolder(relative: string, type: AssetType, roles: RoleFolders): AssetType {
-  return type === 'image' && relative.startsWith(`${folderForRole('skyboxes', roles)}/`)
-    ? 'skybox'
-    : type
-}

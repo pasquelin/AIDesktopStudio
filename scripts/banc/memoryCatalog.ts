@@ -7,8 +7,9 @@ import {
   type AssetQuery,
   type AssetType,
 } from '@shared/domain/asset'
-import { natureOf, typeInRoleFolder } from '@shared/domain/fileRole'
-import { isUnder, nameOf, type FileKind } from '@shared/domain/folder'
+import { filingTypeOf } from '@shared/domain/filingType'
+import { natureOf } from '@shared/domain/fileRole'
+import { isUnder, nameOf, parentOf, type FileKind } from '@shared/domain/folder'
 import { matchesWords, searchWords } from '@shared/text'
 import { WHEN } from './project'
 
@@ -26,11 +27,14 @@ function rowFor(path: string, at: number): Asset | null {
   const domain = natureOf(path).domain
   if (!ASSET_TYPES.some(one => one === domain)) return null
 
+  // The bench's project keeps the default folders, so the role map is empty here.
+  const type = filingTypeOf(nameOf(path), parentOf(path) ?? '', {}, domain as AssetType)
+  if (!type) return null
+
   return {
     id: `asset-${at + 1}`,
     name: nameOf(path),
-    // The bench's project keeps the default folders, so the role map is empty here.
-    type: typeInRoleFolder(path, domain as AssetType, {}),
+    type,
     location: 'local',
     path,
     tags: [],

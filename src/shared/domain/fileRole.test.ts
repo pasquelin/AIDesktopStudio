@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { EXTENSIONS_BY_KIND } from './document'
-import { FILE_DOMAINS, natureOf, opensInStudio, sourceNatureOf, typeInRoleFolder } from './fileRole'
+import { FILE_DOMAINS, natureOf, opensInStudio, sourceNatureOf } from './fileRole'
 
 describe('natureOf', () => {
   /**
@@ -129,14 +129,5 @@ describe('opensInStudio', () => {
 
   it('folds the case, as the source table it reads does', () => {
     expect(opensInStudio('FACADE.JPG')).toBe(true)
-  })
-})
-
-describe('typeInRoleFolder', () => {
-  it('files a picture under the skyboxes folder as a skybox, and leaves the rest alone', () => {
-    expect(typeInRoleFolder('Skyboxes/noon.png', 'image', {})).toBe('skybox')
-    expect(typeInRoleFolder('Ciels/noon.png', 'image', { skyboxes: 'Ciels' })).toBe('skybox')
-    expect(typeInRoleFolder('Images/noon.png', 'image', {})).toBe('image')
-    expect(typeInRoleFolder('Skyboxes/notes.glb', 'mesh', {})).toBe('mesh')
   })
 })

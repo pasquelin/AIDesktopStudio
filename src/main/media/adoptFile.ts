@@ -5,7 +5,6 @@ import type { Asset, MediaProbe } from '@shared/domain/asset'
 import { domainFromSignature, SIGNATURE_BYTES } from '@shared/domain/domainFromSignature'
 import { filingTypeOf } from '@shared/domain/filingType'
 import { stemOf } from '@shared/domain/fileName'
-import { sourceNatureOf, typeInRoleFolder } from '@shared/domain/fileRole'
 import { isPrivatePath, parentOf } from '@shared/domain/folder'
 import type { RoleFolders } from '@shared/domain/folderRole'
 import { assetFilePath } from '@main/assets/protocol'
@@ -34,14 +33,13 @@ export type AdoptFileDeps = {
 
 /**
  * Which domain a file in the project belongs to, or nothing when the studio has no editor for
- * it. The extension answers when there is one — even when it lies, which is what every system
- * does — and the first bytes answer when there is none.
+ * it. A suffix the person wrote answers alone — even when it lies, which is what every system
+ * does — and the first bytes answer for a name that carries none.
  *
- * Asked of the SOURCE table alone. A document wears the extension of an open format now, so an
- * `.ora` painted in another application reads as an edit — and refusing it here is what stopped
- * the studio from ever opening one. Nothing is lost by dropping that refusal: a document written
- * as a folder is not a file, and the three other document spellings carry no source domain, so
- * neither can be adopted by accident.
+ * A document wears the extension of an open format now, so an `.ora` painted in another
+ * application reads as an edit — and refusing it here is what stopped the studio from ever
+ * opening one. Nothing is lost by dropping that refusal: a document written as a folder is not a
+ * file, and the three other document spellings carry no source domain.
  */
 async function domainOf(
   relative: string,
@@ -49,20 +47,14 @@ async function domainOf(
   absolute: string,
   roles: RoleFolders,
 ): Promise<Asset['type'] | null> {
-  const filed = filingTypeOf(fileName, parentOf(relative) ?? '', roles)
-  if (filed) return typeInRoleFolder(relative, filed, roles)
-  if (fileName.includes('.')) {
-    const source = sourceNatureOf(fileName)
-    const domain = source.catalogable && source.domain !== 'other' ? source.domain : null
-    return domain ? typeInRoleFolder(relative, domain, roles) : null
-  }
+  const folder = parentOf(relative) ?? ''
+  if (fileName.includes('.')) return filingTypeOf(fileName, folder, roles)
 
   const handle = await open(absolute)
   try {
     const head = new Uint8Array(SIGNATURE_BYTES)
     await handle.read(head, 0, SIGNATURE_BYTES, 0)
-    const fromBytes = domainFromSignature(head)
-    return fromBytes ? typeInRoleFolder(relative, fromBytes, roles) : null
+    return filingTypeOf(fileName, folder, roles, domainFromSignature(head))
   } finally {
     await handle.close()
   }
@@ -134,9 +126,8 @@ async function createAdoptedAsset(
 
 async function retargetKnown(known: Asset, relative: string, deps: AdoptFileDeps): Promise<Asset> {
   const roles = deps.roles()
-  const filed = filingTypeOf(basename(relative), parentOf(relative) ?? '', roles)
-  const type = typeInRoleFolder(relative, filed ?? known.type, roles)
-  if (type === known.type) return known
+  const type = filingTypeOf(basename(relative), parentOf(relative) ?? '', roles, known.type)
+  if (!type || type === known.type) return known
   const updated = await deps.catalog().add({ ...known, type })
   deps.onAdopted(updated)
   return updated

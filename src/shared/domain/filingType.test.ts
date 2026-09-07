@@ -45,6 +45,22 @@ describe('filingTypeOf', () => {
     expect(filingTypeOf('walk.glb', 'Motions', { animations: 'Motions' })).toBe('animation')
     expect(filingTypeOf('walk.glb', 'Motions/mixamo', { animations: 'Motions' })).toBe('animation')
   })
+
+  it('files a picture under the skyboxes folder as a skybox, and leaves the rest alone', () => {
+    expect(filingTypeOf('noon.png', DEFAULT_ROLE_PATHS.skyboxes, ROLES)).toBe('skybox')
+    expect(filingTypeOf('noon.png', 'Skyboxes/dusk', ROLES)).toBe('skybox')
+    expect(filingTypeOf('noon.png', 'Ciels', { skyboxes: 'Ciels' })).toBe('skybox')
+    expect(filingTypeOf('noon.png', DEFAULT_ROLE_PATHS.image, ROLES)).toBe('image')
+    expect(filingTypeOf('notes.glb', DEFAULT_ROLE_PATHS.skyboxes, ROLES)).toBe('mesh')
+  })
+
+  it('files what another route already read, and only where the name says nothing', () => {
+    expect(filingTypeOf('noon', DEFAULT_ROLE_PATHS.skyboxes, ROLES, 'image')).toBe('skybox')
+    expect(filingTypeOf('noon', DEFAULT_ROLE_PATHS.image, ROLES, 'image')).toBe('image')
+    expect(filingTypeOf('Level.gltf', DEFAULT_ROLE_PATHS.scenes, ROLES, 'mesh')).toBe('mesh')
+    expect(filingTypeOf('Walking.fbx', DEFAULT_ROLE_PATHS.models, ROLES, 'animation')).toBe('mesh')
+    expect(filingTypeOf('noon', DEFAULT_ROLE_PATHS.skyboxes, ROLES)).toBeNull()
+  })
 })
 
 describe('filingRoleOf', () => {
