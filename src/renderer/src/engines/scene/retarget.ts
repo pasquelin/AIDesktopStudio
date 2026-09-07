@@ -305,22 +305,27 @@ function rolesOf(
   bones: readonly WireBone[],
   known?: ReadonlyMap<string, SkeletonProfile>,
 ): Record<string, HumanoidRole> {
-  const signature = skeletonSignatureOf(bones.map(bone => bone.name))
   const found = boneRolesOf(namedBonesOf(bones))
   const stored = profileOfBones(bones, known)
   for (const name of stored?.ignored ?? []) delete found[name]
-  const corrections = stored?.roles
-  if (!corrections) return found
+  if (!stored) return found
 
-  let profile: SkeletonProfile = { signature, roles: found }
+  let profile: SkeletonProfile = { signature: stored.signature, roles: found }
   const names = new Set(bones.map(bone => bone.name))
-  for (const [name, role] of Object.entries(corrections)) {
+  for (const [name, role] of Object.entries(stored.roles)) {
     if (!names.has(name)) continue
     profile = profileWithRole(profile, name, role)
   }
   return { ...profile.roles }
 }
 
+/**
+ * What was recorded for a skeleton of exactly these bones, under either identity it may wear.
+ *
+ * 🛑 The second `get` is a MIGRATION DOOR, not a fallback that never closes: v1.0.0 filed
+ * corrections under a name-only key, and a stored profile carries no parents, so it can only be
+ * re-keyed when a skeleton is READ. `profileForView` is where that happens.
+ */
 export function profileOfBones(
   bones: readonly WireBone[],
   known?: ReadonlyMap<string, SkeletonProfile>,
