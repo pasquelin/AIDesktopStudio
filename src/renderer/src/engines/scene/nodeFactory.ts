@@ -305,6 +305,8 @@ function playerArm(view: 'firstPerson' | 'thirdPerson', subject: string): Compon
     ...(view === 'firstPerson'
       ? {
           length: 0,
+          positionLag: 0,
+          rotationLag: 0,
           height: DEFAULT_PLAY.eyeHeight - WALKER_HEIGHT / 2,
           collision: false,
           pitchMin: -89,
