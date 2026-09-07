@@ -240,6 +240,26 @@ describe('the zone a camera holds', () => {
       expect(groups.follow?.(looking(0, 500))).toBe(false)
     })
 
+    /**
+     * 🛑 A capture and a film both follow with NO camera, and `drawEvery` puts every cell back on
+     * screen. The follow that restores the pane afterwards asks the very question the memo last
+     * answered: without forgetting it, it answers « nothing moved » and the scene stays uncelled
+     * until the eye happens to move.
+     */
+    it('forgets what it answered when a capture put every cell back on screen', () => {
+      const { scene, groups } = twoCells()
+      const camera = looking(0, 500)
+      groups.follow?.(camera)
+      expect(standingIn(scene)).toEqual([0])
+
+      groups.follow?.(null)
+      expect(standingIn(scene)).toHaveLength(2)
+
+      groups.follow?.(camera)
+
+      expect(standingIn(scene)).toEqual([0])
+    })
+
     it('sees the eye move, and takes the cell it left out of the scene', () => {
       const { scene, groups } = twoCells()
       groups.follow?.(looking(0, 100000))

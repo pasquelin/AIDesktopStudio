@@ -113,7 +113,11 @@ export function createWorkerPort<T, R extends PortResponse>(
       running.postMessage({ id, cancel: true })
       return
     }
-    abandon(running, `${what} request taken back`)
+    // 🛑 Killed whatever the port holds NOW: `abandon` leaves alone a worker it no longer owns —
+    // one replaced since the post, by an error that respawned it — and that worker would run its
+    // request to the end for nobody. Terminated once either way, which its suite counts.
+    if (worker === running) abandon(running, `${what} request taken back`)
+    else running.terminate()
   }
 
   const port: WorkerPort<T> = {

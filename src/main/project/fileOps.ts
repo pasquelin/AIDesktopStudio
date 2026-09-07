@@ -36,7 +36,10 @@ async function retargetMoved(
   for (const row of rows) {
     const path = row.path
     if (!path) continue
-    const type = filingTypeOf(nameOf(path), parentOf(path) ?? '', roles)
+    // What the catalogue already holds over it, which is what `known` was written for: a file
+    // whose name says nothing — adopted by its first bytes — is otherwise skipped and keeps the
+    // type of the folder it came FROM.
+    const type = filingTypeOf(nameOf(path), parentOf(path) ?? '', roles, row.type)
     if (!type || type === row.type) continue
     await catalog.add({ ...row, type })
     changed += 1

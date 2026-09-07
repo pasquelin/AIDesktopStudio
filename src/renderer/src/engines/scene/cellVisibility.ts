@@ -64,7 +64,13 @@ export function followCells(
 ): boolean {
   // Removing far cells avoids 0.97 ms of matrix walking for 6,912 meshes on 500,000 bodies.
   const radius = camera ? seenFrom(camera) + context.queryReach : Infinity
-  if (!camera || !Number.isFinite(radius)) return context.drawEvery()
+  if (!camera || !Number.isFinite(radius)) {
+    // 🛑 FORGOTTEN, because `drawEvery` puts every cell back on screen: a capture and a film both
+    // come through here with no camera, and the follow that restores the pane afterwards asks the
+    // very question the memo last answered — it would answer `false` and leave the scene uncelled.
+    context.memory.answered = -1
+    return context.drawEvery()
+  }
   // Before the comparison, never after: the matrix this reads is the one `prepareCamera` would
   // have refreshed, and comparing a stale one would skip a frame the eye did move on.
   camera.updateWorldMatrix(true, false)

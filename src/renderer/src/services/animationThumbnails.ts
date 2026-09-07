@@ -94,11 +94,15 @@ async function renderBatch(assets: readonly Asset[], redraw: boolean): Promise<v
   })
 }
 
-/** The still the app knows how to take of a clip it ships with, if this is one of them. */
-const posterFor = (stem: string) => {
-  const held = BUNDLED_ANIMATION_POSTERS[stem]
-  return held ? { poster: held } : {}
-}
+/**
+ * The still the app knows how to take of a clip it ships with, if this is one of them.
+ *
+ * 🛑 `Object.hasOwn`, never a bare index: the stem is whatever a person named their file, and
+ * `constructor.fbx` walked the prototype chain — a function spread into a `postMessage`, which
+ * throws `DataCloneError` and fails the thumbnail naming nothing.
+ */
+const posterFor = (stem: string) =>
+  Object.hasOwn(BUNDLED_ANIMATION_POSTERS, stem) ? { poster: BUNDLED_ANIMATION_POSTERS[stem] } : {}
 
 type Pass = { drawn: number; failed: number }
 
