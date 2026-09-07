@@ -113,6 +113,8 @@ export type AiManager = {
    * weights, or nothing.
    */
   ensureLoaded: (modelId: string) => Promise<void>
+  /** Changes only after this model's weights have entered a runtime anew. */
+  loadedEpoch?: (modelId: string) => number | null
   cancelLoad: () => Promise<AiOverview>
   unload: (modelId: string) => Promise<AiOverview>
   /** Rearms idle unload and the admission LRU. */

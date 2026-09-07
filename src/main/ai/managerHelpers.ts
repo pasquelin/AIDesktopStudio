@@ -3,10 +3,15 @@ import { ENGINE_FAILURES } from '@shared/domain/failure'
 import { codeIn } from '@shared/guards'
 import type { AiRoleId, RoleChoices, RoleProvider } from '@shared/domain/aiRole'
 import type { RuntimeEndpointId } from '@shared/domain/aiRuntime'
-import { MODEL_LOADERS, type DownloadProgress, type ModelLoader } from '@shared/domain/localModel'
-import { endpointsOf } from './localRuntimes'
+import {
+  MODEL_LOADERS,
+  type DownloadProgress,
+  type LocalModel,
+  type ModelLoader,
+} from '@shared/domain/localModel'
+import { endpointOf, endpointsOf, type RuntimeReading } from './localRuntimes'
 import { ChecksumMismatch, NetworkInterrupted, isNetworkError } from './modelInstall'
-import type { ManagerDeps } from './managerTypes'
+import type { HeldRuntime, ManagerDeps } from './managerTypes'
 
 export type RunningInstall = {
   modelId: string
@@ -19,6 +24,39 @@ export type RunningInstall = {
 export const DEFAULT_FACTS_TTL_MS = 3000
 export const DEFAULT_IDLE_UNLOAD_MINUTES = 10
 export const LOAD_STEP = 0.01
+
+export async function afterTurn(run: () => Promise<void>): Promise<void> {
+  await Promise.resolve()
+  await run()
+}
+
+export function createLoadEpochs(
+  modelOf: (modelId: string) => LocalModel | null,
+  occupancy: ReadonlyMap<RuntimeEndpointId, HeldRuntime>,
+): { note: (endpoint: RuntimeEndpointId) => void; read: (modelId: string) => number | null } {
+  const values = new Map<RuntimeEndpointId, number>()
+  return {
+    note: endpoint => values.set(endpoint, (values.get(endpoint) ?? 0) + 1),
+    read: modelId => {
+      const model = modelOf(modelId)
+      if (!model) return null
+      const endpoint = endpointOf(model.loader, model.modality)
+      return occupancy.get(endpoint)?.modelId === modelId ? (values.get(endpoint) ?? null) : null
+    },
+  }
+}
+
+export async function modelIsStillHeld(
+  model: LocalModel,
+  occupancy: Map<RuntimeEndpointId, HeldRuntime>,
+  readingsOf: (models: readonly LocalModel[]) => Promise<ReadonlyMap<ModelLoader, RuntimeReading>>,
+): Promise<boolean> {
+  const endpoint = endpointOf(model.loader, model.modality)
+  if (occupancy.get(endpoint)?.modelId !== model.id) return false
+  if ((await readingsOf([model])).get(model.loader)?.loaded.has(model.id)) return true
+  occupancy.delete(endpoint)
+  return false
+}
 
 export function scheduleWith(
   deps: Pick<ManagerDeps, 'schedule'>,

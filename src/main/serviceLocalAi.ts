@@ -192,6 +192,7 @@ function localHosts(
       ensureLoaded,
       hold,
       engine: () => engine.supervisor.engine(),
+      epoch: () => ai.loadedEpoch?.('efficient-sam-ti') ?? null,
     }),
   }
 }

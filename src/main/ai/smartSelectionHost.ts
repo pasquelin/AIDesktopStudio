@@ -16,8 +16,9 @@ export function createSmartSelectionHost(deps: {
   ensureLoaded: (modelId: string) => Promise<void>
   hold: (modelId: string) => () => void
   engine: () => Promise<PythonClient | null>
+  epoch: () => number | null
 }): SmartSelectionHost {
-  let encodedRevision: string | null = null
+  let encoded: { revision: string; epoch: number | null; engine: PythonClient } | null = null
   const queue = writeQueue()
   const run = async (
     request: SmartSelectionRequest,
@@ -30,14 +31,18 @@ export function createSmartSelectionHost(deps: {
       await deps.ensureLoaded('efficient-sam-ti')
       const engine = await deps.engine()
       if (!engine) throw new Error('the local AI engine is not answering')
-      // The picture only touches the disk for an encoding the engine does not hold yet.
-      if (encodedRevision !== request.revision) {
+      const epoch = deps.epoch()
+      if (
+        encoded?.revision !== request.revision ||
+        encoded.epoch !== epoch ||
+        encoded.engine !== engine
+      ) {
         folder = await mkdtemp(join(tmpdir(), 'ia-studio-selection-'))
         const image = join(folder, 'composite.png')
         await writeFile(image, request.png)
         await engine.job('selection.encode', { door: 'engine/selection', image }, { signal })
         signal.throwIfAborted()
-        encodedRevision = request.revision
+        encoded = { revision: request.revision, epoch, engine }
       }
       const decoded = await engine.job(
         'selection.decode',
@@ -51,6 +56,7 @@ export function createSmartSelectionHost(deps: {
       if (folder) await rm(folder, { recursive: true, force: true })
     }
   }
+
   return {
     run: (request, signal) => queue.next(() => run(request, signal)),
   }

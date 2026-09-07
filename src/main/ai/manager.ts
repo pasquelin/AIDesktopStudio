@@ -67,6 +67,7 @@ export function createAiManager(deps: ManagerDeps): AiManager {
   }
   const modelOf = (modelId: string): LocalModel | null =>
     modelWith(modelId, deps.settings().ai.ownModels, lastDiscovered)
+  const loadedEpochs = managerHelpers.createLoadEpochs(modelOf, occupancy)
   let cachedFacts: {
     at: number
     facts: Promise<HardwareFacts>
@@ -198,10 +199,6 @@ export function createAiManager(deps: ManagerDeps): AiManager {
       }
     }
   }
-  async function fetchAfterTurn(model: LocalModel, abort: AbortController): Promise<void> {
-    await Promise.resolve()
-    await fetchFiles(model, abort)
-  }
   function start(model: LocalModel): managerHelpers.RunningInstall {
     installFailure = null
     const abort = new AbortController()
@@ -210,7 +207,7 @@ export function createAiManager(deps: ManagerDeps): AiManager {
       progress: { received: 0, total: 0 },
       abort,
       watchers: [],
-      done: fetchAfterTurn(model, abort),
+      done: managerHelpers.afterTurn(() => fetchFiles(model, abort)),
     }
     running = entry
     void announce()
@@ -359,6 +356,7 @@ export function createAiManager(deps: ManagerDeps): AiManager {
           signal: abort.signal,
         })
         occupancy.set(endpoint, { bytes, reclaimable: true, modelId: model.id })
+        loadedEpochs.note(endpoint)
         lastUsedAt.set(endpoint, deps.now())
         armIdle()
       } catch (error) {
@@ -457,13 +455,14 @@ export function createAiManager(deps: ManagerDeps): AiManager {
     ensureLoaded: async modelId => {
       const model = modelOf(modelId)
       if (model === null) throw new Error(`${modelId} is not in the catalogue`)
-      if (occupancy.get(endpointOf(model.loader, model.modality))?.modelId === modelId) return
+      if (await managerHelpers.modelIsStillHeld(model, occupancy, readingsOf)) return
       while (loadFlight && loading?.modelId !== modelId) await orElse(loadFlight, undefined)
       if (disposed) throw new Error(`${modelId} was asked for after the manager was disposed`)
       await runLoad(model)
       await announce()
       if (loadFailure !== null) throw managerHelpers.loadThrowOf(loadFailure)
     },
+    loadedEpoch: loadedEpochs.read,
     cancelLoad: async () => {
       loading?.abort.abort()
       return published ?? compose()

@@ -127,6 +127,35 @@ describe('holding a model in memory', () => {
     expect(load).toHaveBeenCalledOnce()
   })
 
+  it('reloads a model after its runtime lost the resident weights', async () => {
+    let resident = false
+    const load = vi.fn<NonNullable<LocalRuntime['load']>>(async () => {
+      resident = true
+      return 3 * GIBI
+    })
+    const ai = manager({
+      runtimes: {
+        'sherpa-onnx': {
+          read: async models => ({
+            ready: true,
+            installed: new Set(models.map(model => model.id)),
+            loaded: resident ? new Set([QWEN.id]) : new Set(),
+          }),
+          install: async () => {},
+          remove: async () => {},
+          load,
+        },
+      },
+    })
+
+    await ai.ensureLoaded(QWEN.id)
+    resident = false
+    await ai.ensureLoaded(QWEN.id)
+
+    expect(load).toHaveBeenCalledTimes(2)
+    expect(ai.loadedEpoch?.(QWEN.id)).toBe(2)
+  })
+
   // Alban's call: a turn asked while the Settings load another model answers late, never with
   // `busy loading`.
   it('waits for the load in flight before loading the model a turn asks for', async () => {
