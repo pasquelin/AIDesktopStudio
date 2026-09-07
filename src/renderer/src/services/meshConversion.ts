@@ -19,15 +19,16 @@ import { useAssets } from '@/stores/assets'
 import { useProject } from '@/stores/project'
 import { runTask } from '@/stores/tasks'
 
-/** Converts announced 3D arrivals; a project that predates the rule stays untouched. */
-
 /** One answer per live conversion, shared by announcements and their explicit importer. */
 const converting = new Map<string, Promise<Asset | null>>()
 const completed = new Map<string, Asset>()
 let completedProject = ''
 let preceding = Promise.resolve()
 
-/** Converts what needs it among these rows. Never rejects: failures are reported inside. */
+/**
+ * Converts what needs it among these ANNOUNCED rows — a project that predates the rule stays
+ * untouched. Never rejects: failures are reported inside.
+ */
 export async function convertArrivedModels(assets: readonly Asset[]): Promise<Asset[]> {
   const projectPath = useProject.getState().project?.path ?? ''
   if (projectPath !== completedProject) {
@@ -44,7 +45,7 @@ export async function convertArrivedModels(assets: readonly Asset[]): Promise<As
   return await Promise.all(
     assets.map(async asset => {
       const key = keyOf(asset)
-      return (await converting.get(key)) ?? completed.get(key) ?? landed.get(asset.id) ?? asset
+      return (await converting.get(key)) ?? completed.get(key) ?? asset
     }),
   )
 }

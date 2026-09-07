@@ -6,6 +6,7 @@ import math
 from pathlib import Path
 
 from aidesktopstudio_engine.adapters.loading import LoadRefusedError
+from aidesktopstudio_engine.adapters.params import text
 from aidesktopstudio_engine.core.jobqueue import CancelledError
 from aidesktopstudio_engine.motion.gltf import motion_glb
 
@@ -122,11 +123,14 @@ def generate(model, params, destination, on):
 
 
 def _parameters(params):
-    prompt = params.get("prompt")
+    # `text` as both other adapters read a prompt: `""` travels as ABSENT, and a number where
+    # words were expected is absent rather than `"7"`. The numbers keep their own checks — `knob`
+    # would coerce `7.5` steps to `7` and `0` seconds to the default rather than refuse them.
+    prompt = text(params, "prompt")
     seconds = params.get("seconds", 5)
     steps = params.get("steps", 50)
     seed = params.get("seed", 1)
-    if not isinstance(prompt, str) or not prompt.strip() or len(prompt) > 4000:
+    if prompt is None or not prompt.strip() or len(prompt) > 4000:
         raise LoadRefusedError("motion generation needs a prompt")
     if (
         not isinstance(seconds, (int, float))

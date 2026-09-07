@@ -22,17 +22,23 @@ export function foreignClipsOf(lanes: readonly ClipLane[]): ForeignClip[] {
   const found = new Map<string, ForeignClip>()
 
   for (const clip of lanes.flatMap(lane => lane.clips)) {
-    const url = clipSourceUrl(clip.source)
-    const key = clipKeyOf(clip.source)
-    if (url && !found.has(key))
-      found.set(key, {
-        key,
-        url,
-        label: clip.label,
-        ...('clipIndex' in clip.source && { clipIndex: clip.source.clipIndex }),
-      })
+    const foreign = foreignClipOf(clip.source, clip.label)
+    if (foreign && !found.has(foreign.key)) found.set(foreign.key, foreign)
   }
   return [...found.values()]
+}
+
+/** `null` for a clip the model's own file brought — there is nothing to read from elsewhere. */
+function foreignClipOf(source: ClipSource, label: string): ForeignClip | null {
+  const url = clipSourceUrl(source)
+  return url
+    ? {
+        key: clipKeyOf(source),
+        url,
+        label,
+        ...('clipIndex' in source && { clipIndex: source.clipIndex }),
+      }
+    : null
 }
 
 /**
@@ -50,17 +56,5 @@ export function graphSourcesOf(graph: AnimationGraph): ClipSource[] {
 }
 
 export function graphClipsOf(graph: AnimationGraph): ForeignClip[] {
-  return graphSourcesOf(graph).flatMap(source => {
-    const url = clipSourceUrl(source)
-    return url
-      ? [
-          {
-            key: clipKeyOf(source),
-            url,
-            label: source.name,
-            ...('clipIndex' in source && { clipIndex: source.clipIndex }),
-          },
-        ]
-      : []
-  })
+  return graphSourcesOf(graph).flatMap(source => foreignClipOf(source, source.name) ?? [])
 }

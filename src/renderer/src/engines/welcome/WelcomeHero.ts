@@ -146,23 +146,19 @@ export class WelcomeHero {
   }
 
   private async load(): Promise<void> {
-    let body: Object3D | undefined
-    let files: Object3D[] = []
-    let mixer: AnimationMixer | undefined
+    // Held until `mount` takes it: what is still here in the `finally` is what nobody owns.
+    let unowned: Brought | null = null
     try {
-      const brought = await this.bring()
-      body = brought.body
-      files = brought.files
-      mixer = brought.mixer
+      unowned = await this.bring()
       if (this.disposed) return
-      this.mount(brought)
-      body = undefined
-      mixer = undefined
-      files = []
+      this.mount(unowned)
+      unowned = null
     } catch (error) {
       if (!this.disposed) this.deps.onFailure(error)
     } finally {
-      if (this.disposed || !this.mixer) dropLoaded(body, files, mixer)
+      // The second half matters on a PARTIAL mount: what `mount` already took belongs to `this`.
+      if (unowned && (this.disposed || !this.mixer))
+        dropLoaded(unowned.body, unowned.files, unowned.mixer)
     }
   }
 

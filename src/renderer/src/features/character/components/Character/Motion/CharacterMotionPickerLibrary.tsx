@@ -1,6 +1,7 @@
 import { mdiFileOutline, mdiPackageVariantClosed } from '@mdi/js'
 import { useTranslation } from 'react-i18next'
 import type { ClipSource } from '@shared/domain/scene'
+import { clipKeyOf } from '@shared/domain/sceneModel'
 import { Collection } from '@/components/Collection/Collection'
 import { EmptyState } from '@/components/EmptyState'
 import { Row } from '@/components/Row'
@@ -71,14 +72,10 @@ export function CharacterMotionPickerLibrary({
     <Collection
       label={t('inspector.animationLibrary')}
       items={offered}
+      // By `clipKeyOf`, the identity of a `ClipSource` the repo already writes: matched by hand
+      // it ignored `clipIndex`, so two clips of one asset lit up together.
       selectedIds={offered
-        .filter(
-          motion =>
-            selected?.kind === motion.source.kind &&
-            (selected.kind === 'asset' && motion.source.kind === 'asset'
-              ? selected.assetId === motion.source.assetId
-              : selected.name === motion.source.name),
-        )
+        .filter(motion => selected && clipKeyOf(motion.source) === clipKeyOf(selected))
         .map(motion => motion.id)}
       onSelect={motion => onChoose(motion.source, motion.label)}
       renderRow={motion => <Row icon={motion.icon} title={motion.shown} />}
