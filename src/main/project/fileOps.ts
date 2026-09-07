@@ -18,16 +18,24 @@ import {
 import { inverseBatch, steppedStacks, UNDO_DEPTH, type UndoStacks } from './fileStacks'
 import type { FolderReader, FolderWriter } from './folder'
 
+/**
+ * The rows a batch of moves refiled, once for the WHOLE batch.
+ *
+ * 🛑 Every destination in one read: called per move, it fetched the whole catalogue again each
+ * time — 50 files moved meant 50 round trips of 500 rows through the worker. The repaths all land
+ * before it runs, so one read sees them all.
+ */
 async function retargetMoved(
   catalog: AsyncCatalog,
-  to: string,
+  destinations: readonly string[],
   roles: RoleFolders,
 ): Promise<number> {
+  if (destinations.length === 0) return 0
   const rows = await catalog.search({ limit: ASSET_SEARCH_LIMIT_MAX })
   let changed = 0
   for (const row of rows) {
     const path = row.path
-    if (!path || (path !== to && !isUnder(path, to))) continue
+    if (!path || !destinations.some(to => path === to || isUnder(path, to))) continue
     const type = filingTypeOf(nameOf(path), parentOf(path) ?? '', roles)
     if (!type || type === row.type) continue
     await catalog.add({ ...row, type })
@@ -103,13 +111,14 @@ export function createFileOps({
   }
   const follow = async (root: string, done: readonly PathChange[]): Promise<void> => {
     let forgotten = 0
-    let retargeted = 0
+    const moved: string[] = []
     for (const { from, to } of done) {
       if (from && to) {
         await catalog().repath(from, to)
-        retargeted += await retargetMoved(catalog(), to, roles())
+        moved.push(to)
       } else if (from) forgotten += await catalog().forgetUnder(from)
     }
+    const retargeted = await retargetMoved(catalog(), moved, roles())
     if (done.some(({ from, to }) => from && to)) await clearJournal(root)
     if (forgotten > 0 || retargeted > 0) assetsChanged()
     if (done.length > 0) pathsChanged(done)

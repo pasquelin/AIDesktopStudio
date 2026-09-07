@@ -25,6 +25,9 @@ export type PythonPort = {
  */
 const SHUTDOWN_GRACE_MS = 15_000
 
+/** What separates two frames on the socket. */
+const NEWLINE = 0x0a
+
 export type PythonProcessOptions = {
   /** The interpreter. Passed in rather than resolved here: packaging is not this file's business. */
   command: string
@@ -94,20 +97,28 @@ export function openPythonProcess({
     }
 
     connection = socket
-    // Control frames are small and answered one at a time: Nagle would hold each one back.
+    // Answered one at a time: Nagle would hold each frame back.
     socket.setNoDelay(true)
 
-    let pending = ''
-    socket.on('data', chunk => {
-      // The tail is whatever follows the last newline, and it waits here for the rest of its frame.
-      const lines = (pending + chunk.toString('utf8')).split('\n')
-      pending = lines.pop() ?? ''
+    // 🛑 Chunks HELD, never a string rebuilt per event: a frame is not always small — a selection
+    // mask crosses at one byte a pixel, and macOS delivers 4 MiB as ~512 packets of 8 KiB. Concat
+    // then `split` rescanned the whole accumulation each time: 281 ms of main process per click,
+    // against 3,1 held and cut once. The bytes are copied when a line COMPLETES, not before.
+    const held: Buffer[] = []
+    socket.on('data', (chunk: Buffer) => {
+      held.push(chunk)
+      if (!chunk.includes(NEWLINE)) return
 
-      for (const line of lines.map(read => read.trim()).filter(Boolean)) {
+      let buffer = Buffer.concat(held.splice(0))
+      for (let cut = buffer.indexOf(NEWLINE); cut >= 0; cut = buffer.indexOf(NEWLINE)) {
+        const line = buffer.subarray(0, cut).toString('utf8').trim()
+        buffer = buffer.subarray(cut + 1)
+        if (!line) continue
         const frame = readFrame(line)
         if (!frame) log.warn('engine', `dropped a frame it could not read: ${line.slice(0, 200)}`)
         else for (const listener of frameListeners) listener(frame)
       }
+      if (buffer.length > 0) held.push(buffer)
     })
     socket.on('error', error => fail(error))
 
