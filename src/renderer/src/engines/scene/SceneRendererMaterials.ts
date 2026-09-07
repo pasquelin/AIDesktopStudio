@@ -93,6 +93,7 @@ export abstract class SceneRendererMaterials extends SceneRendererFlight {
   }
 
   private releaseSceneContents(): void {
+    this.firstPersonBody.dispose()
     for (const id of [...this.objects.keys()]) this.release(id)
     this.sky.release()
     this.environment?.dispose()

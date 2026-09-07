@@ -35,9 +35,11 @@ import { type InstancedGroups, type ShadowThrow } from './grouping'
 import { type TransformMode, type TransformSpace } from './gizmoTarget'
 import { NOTHING_SNAPPED, type Snapping } from '@shared/domain/snap'
 import type { Marquee } from './sceneRendererSupport1'
+import { FirstPersonBody } from './FirstPersonBody'
 import { SceneRendererState } from './SceneRendererState'
 
 export abstract class SceneRendererResources extends SceneRendererState {
+  protected readonly firstPersonBody = new FirstPersonBody()
   /**
    * Whether the camera actually moved while the button was down. The pointer alone cannot say:
    * a flight is driven by the keyboard, so letting go of `W` before the button — the ordinary

@@ -351,7 +351,7 @@ describe('what a settled frame answers', () => {
   })
 })
 
-it('keeps the first-person robot shadow without drawing its head over the camera', async () => {
+it('keeps first-person body materials and shadows intact', async () => {
   rememberShippedCharacter('hero')
   onTestFinished(forgetShippedCharacter)
   const state = sceneFromTemplate('firstPerson')
@@ -377,8 +377,8 @@ it('keeps the first-person robot shadow without drawing its head over the camera
   for (const mesh of meshes) {
     expect(mesh.visible && mesh.castShadow).toBe(true)
     for (const held of Array.isArray(mesh.material) ? mesh.material : [mesh.material]) {
-      expect(held.colorWrite).toBe(false)
-      expect(held.depthWrite).toBe(false)
+      expect(held.colorWrite).toBe(true)
+      expect(held.depthWrite).toBe(true)
     }
   }
   expect(material.colorWrite).toBe(true)
