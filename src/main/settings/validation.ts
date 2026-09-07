@@ -414,6 +414,10 @@ function currentOwnModel(model: unknown): unknown {
   if (!isRecord(model)) return model
 
   const brought: Record<string, unknown> = { ...model }
+  // 🛑 A motion used to be a `mesh` that a `fieldProfile` took back, and the schema no longer
+  // names either field — so a model imported before the change came back off the disk as a plain
+  // mesh: gated on the 682 MB diffusion group, written `.ply`, filed as a mesh, with no word.
+  if (model.fieldProfile === 'motion') brought.modality = 'motion'
   if (typeof model.family === 'string') brought.family = currentModelFamily(model.family)
   if (Array.isArray(model.serves)) {
     brought.serves = model.serves.map(role =>

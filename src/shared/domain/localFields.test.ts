@@ -160,6 +160,16 @@ describe('a default that cannot be typed back in', () => {
     expect(offGrid).toEqual([])
   })
 
+  // 🛑 `localFields.secondsHelp` speaks of a SOUND, and a motion is a length on a skeleton. Held
+  // in the shared `seconds` helper, it explained the audio field under the motion one.
+  it('explains a duration only where the sentence is about that duration', () => {
+    const durationOf = (modality: 'audio' | 'motion') =>
+      localFieldsOf(modality, {}, key => key).find(field => field.key === 'seconds')
+
+    expect(durationOf('audio')?.help).toBe('localFields.secondsHelp')
+    expect(durationOf('motion')?.help).toBeUndefined()
+  })
+
   // 🛑 A seed is 32 bits unsigned: the local motion engine raises on anything wider, and nothing
   // on the `generate` path was catching it — the job simply failed.
   it('bounds every seed field to what a seed IS, rather than leaving it open', () => {

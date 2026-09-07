@@ -90,6 +90,8 @@ export function inputMapPreset(id: InputPresetId): InputMap {
  * runtime's, read from there rather than written a second time.
  */
 export function completedInputMap(map: InputMap): InputMap {
-  const preset = PRESETS[map.id as InputPresetId]
-  return preset ? completedAgainst(map, preset) : map
+  // 🛑 `Object.hasOwn`: see `completed` on the game side — an id read out of a file walks the
+  // prototype chain, and `'constructor'` is truthy.
+  if (!Object.hasOwn(PRESETS, map.id)) return map
+  return completedAgainst(map, PRESETS[map.id as InputPresetId])
 }

@@ -181,9 +181,12 @@ export function withDefaultInputMaps(maps: readonly InputMap[]): readonly InputM
   return [...maps.map(completed), ...built.filter(map => !declared.has(map.id))]
 }
 
+// 🛑 `Object.hasOwn`, never a bare index: the id is read out of a project `.input.json`, and
+// `map.id === 'constructor'` walked the prototype chain — truthy, then `built.actions` on a
+// function. The `find` this replaced could not be reached that way.
 function completed(map: InputMap): InputMap {
-  const built = PLAYED_INPUT_PRESETS[map.id as PlayedPreset]
-  return built ? completedAgainst(map, built) : map
+  if (!Object.hasOwn(PLAYED_INPUT_PRESETS, map.id)) return map
+  return completedAgainst(map, PLAYED_INPUT_PRESETS[map.id as PlayedPreset])
 }
 
 /**

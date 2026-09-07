@@ -200,13 +200,17 @@ const NEGATIVE_PROMPT: LocalFieldTemplate = {
   group: ADVANCED_GROUP,
 }
 
-/** Written once and shared: two modalities ask for a duration, with bounds of their own. */
-function seconds(base: { default: number; max: number }): LocalFieldTemplate {
+/**
+ * Written once and shared: two modalities ask for a duration, with bounds of their own.
+ *
+ * 🛑 The help is PASSED, not built in: `localFields.secondsHelp` speaks of a sound, and a motion
+ * is a length on a skeleton. Held in the helper, it explained the audio field under the motion one.
+ */
+function seconds(base: { default: number; max: number; helpKey?: string }): LocalFieldTemplate {
   return {
     key: 'seconds',
     kind: 'number',
     labelKey: 'localFields.seconds',
-    helpKey: 'localFields.secondsHelp',
     required: false,
     min: 1,
     step: 0.5,
@@ -356,7 +360,7 @@ const TEMPLATES: Record<LocalModality, readonly LocalFieldTemplate[]> = {
     SOURCE_AUDIO,
     SOURCE_VIDEO,
     LYRICS,
-    seconds({ default: 10, max: 600 }),
+    seconds({ default: 10, max: 600, helpKey: 'localFields.secondsHelp' }),
     steps({ default: 8, max: 200 }),
     cfgScale({ default: 3.5, max: 20 }),
     SEED,
