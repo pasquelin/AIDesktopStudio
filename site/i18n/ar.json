@@ -352,7 +352,7 @@
         "state": "النسخة قادمة"
       }
     },
-    "note": "يخضع المثبّت لـ<a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">شروط الاستخدام</a>؛ أمّا الشيفرة المصدرية فتخضع لرخصة <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial&nbsp;1.0.0</a>. ولا يمنح التطبيق أيّ وصول إلى خدمة توليد: فهو يستعمل مفتاح الواجهة البرمجية الذي تقدّمه أنت، تحت حسابك وعلى نفقتك."
+    "note": "يخضع المثبّت لـ<a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">شروط الاستخدام</a>؛ أمّا الشيفرة المصدرية فتخضع لرخصة <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial&nbsp;1.0.0</a>. ولا يمنح التطبيق أيّ وصول إلى خدمة توليد: فهو يستعمل مفتاح الواجهة البرمجية الذي تقدّمه أنت، تحت حسابك وعلى نفقتك."
   },
   "foot": {
     "groups": {
@@ -366,7 +366,7 @@
       "0": "التنزيل",
       "1": "الرخصة"
     },
-    "legal": "الشيفرة المصدرية تحت رخصة <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial 1.0.0</a> · والتطبيق يُوزَّع وفق <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">شروط الاستخدام</a> الخاصة به · ومكوّنات الأطراف الثالثة مذكورة في <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/THIRD-PARTY-NOTICES.md\" target=\"_blank\" rel=\"noopener\">الإشعارات</a>. © 2026 Alban Pasquelin.",
+    "legal": "الشيفرة المصدرية تحت رخصة <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial 1.0.0</a> · والتطبيق يُوزَّع وفق <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">شروط الاستخدام</a> الخاصة به · ومكوّنات الأطراف الثالثة مذكورة في <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/THIRD-PARTY-NOTICES.md\" target=\"_blank\" rel=\"noopener\">الإشعارات</a>. © 2026 Alban Pasquelin.",
     "docsLink": "التوثيق",
     "changelog": "سجل التغييرات",
     "docsFr": "التوثيق 🇫🇷",

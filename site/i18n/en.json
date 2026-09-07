@@ -351,7 +351,7 @@
         "state": "Release to come"
       }
     },
-    "note": "The installer is governed by the <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">terms of use</a>; the source code, by the <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial&nbsp;1.0.0</a> licence. The application gives access to no generation service: it uses the API key you provide, under your account and at your expense."
+    "note": "The installer is governed by the <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">terms of use</a>; the source code, by the <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial&nbsp;1.0.0</a> licence. The application gives access to no generation service: it uses the API key you provide, under your account and at your expense."
   },
   "foot": {
     "groups": {
@@ -365,7 +365,7 @@
       "0": "Download",
       "1": "Licence"
     },
-    "legal": "Source code under the <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial 1.0.0</a> licence · application distributed under its <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">terms of use</a> · third-party components listed in the <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/THIRD-PARTY-NOTICES.md\" target=\"_blank\" rel=\"noopener\">notices</a>. © 2026 Alban Pasquelin.",
+    "legal": "Source code under the <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial 1.0.0</a> licence · application distributed under its <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">terms of use</a> · third-party components listed in the <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/THIRD-PARTY-NOTICES.md\" target=\"_blank\" rel=\"noopener\">notices</a>. © 2026 Alban Pasquelin.",
     "docsLink": "Documentation",
     "changelog": "Changelog",
     "docsFr": "Docs 🇫🇷",

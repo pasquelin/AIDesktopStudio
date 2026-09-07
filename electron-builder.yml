@@ -1,4 +1,4 @@
-appId: com.pasquelin.iastudio
+appId: com.aidesktopstudio.app
 # `productName` is deliberately absent: electron-builder would prefer it over the one in
 # package.json, which is the copy `shared/constants.test.ts` pins to APP_NAME. Declaring it
 # here would leave the shipped name unguarded.

@@ -351,7 +351,7 @@
         "state": "버전 준비 중"
       }
     },
-    "note": "설치 파일은 <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">이용 약관</a>을 따르고, 소스 코드는 <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial&nbsp;1.0.0</a> 라이선스를 따릅니다. 이 애플리케이션은 어떤 생성 서비스에 대한 접근도 제공하지 않습니다. 당신이 제공한 API 키를, 당신의 계정으로, 당신의 비용으로 사용합니다."
+    "note": "설치 파일은 <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">이용 약관</a>을 따르고, 소스 코드는 <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial&nbsp;1.0.0</a> 라이선스를 따릅니다. 이 애플리케이션은 어떤 생성 서비스에 대한 접근도 제공하지 않습니다. 당신이 제공한 API 키를, 당신의 계정으로, 당신의 비용으로 사용합니다."
   },
   "foot": {
     "groups": {
@@ -365,7 +365,7 @@
       "0": "내려받기",
       "1": "라이선스"
     },
-    "legal": "소스 코드는 <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial 1.0.0</a> 라이선스 · 애플리케이션은 그 <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">이용 약관</a>에 따라 배포 · 서드파티 구성 요소는 <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/THIRD-PARTY-NOTICES.md\" target=\"_blank\" rel=\"noopener\">고지</a>에 명시. © 2026 Alban Pasquelin.",
+    "legal": "소스 코드는 <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial 1.0.0</a> 라이선스 · 애플리케이션은 그 <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">이용 약관</a>에 따라 배포 · 서드파티 구성 요소는 <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/THIRD-PARTY-NOTICES.md\" target=\"_blank\" rel=\"noopener\">고지</a>에 명시. © 2026 Alban Pasquelin.",
     "docsLink": "문서",
     "changelog": "변경 내역",
     "docsFr": "문서 🇫🇷",

@@ -351,7 +351,7 @@
         "state": "Sürüm yolda"
       }
     },
-    "note": "Kurulum dosyası <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">kullanım koşullarına</a> tabidir; kaynak kod ise <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial&nbsp;1.0.0</a> lisansına. Uygulama hiçbir üretim hizmetine erişim vermez: sizin sağladığınız API anahtarını, sizin hesabınız altında ve sizin masrafınızla kullanır."
+    "note": "Kurulum dosyası <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">kullanım koşullarına</a> tabidir; kaynak kod ise <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial&nbsp;1.0.0</a> lisansına. Uygulama hiçbir üretim hizmetine erişim vermez: sizin sağladığınız API anahtarını, sizin hesabınız altında ve sizin masrafınızla kullanır."
   },
   "foot": {
     "groups": {
@@ -365,7 +365,7 @@
       "0": "İndirme",
       "1": "Lisans"
     },
-    "legal": "Kaynak kod <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial 1.0.0</a> lisansı altında · uygulama kendi <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">kullanım koşullarıyla</a> dağıtılır · üçüncü taraf bileşenler <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/THIRD-PARTY-NOTICES.md\" target=\"_blank\" rel=\"noopener\">bildirimlerde</a> listelenmiştir. © 2026 Alban Pasquelin.",
+    "legal": "Kaynak kod <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial 1.0.0</a> lisansı altında · uygulama kendi <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">kullanım koşullarıyla</a> dağıtılır · üçüncü taraf bileşenler <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/THIRD-PARTY-NOTICES.md\" target=\"_blank\" rel=\"noopener\">bildirimlerde</a> listelenmiştir. © 2026 Alban Pasquelin.",
     "docsLink": "Belgeler",
     "changelog": "Değişiklikler",
     "docsFr": "Belgeler 🇫🇷",

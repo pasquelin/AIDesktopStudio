@@ -351,7 +351,7 @@
         "state": "संस्करण आने वाला है"
       }
     },
-    "note": "इंस्टॉलर <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">उपयोग की शर्तों</a> के अधीन है; स्रोत कोड <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial&nbsp;1.0.0</a> लाइसेंस के अधीन। यह अनुप्रयोग किसी भी जनन सेवा तक पहुँच नहीं देता: यह आपकी दी हुई API कुंजी का उपयोग करता है, आपके खाते पर और आपके ही खर्च पर।"
+    "note": "इंस्टॉलर <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">उपयोग की शर्तों</a> के अधीन है; स्रोत कोड <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial&nbsp;1.0.0</a> लाइसेंस के अधीन। यह अनुप्रयोग किसी भी जनन सेवा तक पहुँच नहीं देता: यह आपकी दी हुई API कुंजी का उपयोग करता है, आपके खाते पर और आपके ही खर्च पर।"
   },
   "foot": {
     "groups": {
@@ -365,7 +365,7 @@
       "0": "डाउनलोड",
       "1": "लाइसेंस"
     },
-    "legal": "स्रोत कोड <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial 1.0.0</a> लाइसेंस के अधीन · अनुप्रयोग अपनी <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">उपयोग की शर्तों</a> के तहत वितरित · तृतीय-पक्ष घटक <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/THIRD-PARTY-NOTICES.md\" target=\"_blank\" rel=\"noopener\">सूचनाओं</a> में सूचीबद्ध। © 2026 Alban Pasquelin।",
+    "legal": "स्रोत कोड <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial 1.0.0</a> लाइसेंस के अधीन · अनुप्रयोग अपनी <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">उपयोग की शर्तों</a> के तहत वितरित · तृतीय-पक्ष घटक <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/THIRD-PARTY-NOTICES.md\" target=\"_blank\" rel=\"noopener\">सूचनाओं</a> में सूचीबद्ध। © 2026 Alban Pasquelin।",
     "docsLink": "दस्तावेज़ी",
     "changelog": "बदलाव सूची",
     "docsFr": "दस्तावेज़ 🇫🇷",

@@ -351,7 +351,7 @@
         "state": "版本待发布"
       }
     },
-    "note": "安装包受<a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">使用条款</a>约束；源代码则依 <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial&nbsp;1.0.0</a> 许可。本应用不提供任何生成服务的访问权限：它使用你自己提供的 API 密钥，记在你的账户下，费用由你承担。"
+    "note": "安装包受<a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">使用条款</a>约束；源代码则依 <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial&nbsp;1.0.0</a> 许可。本应用不提供任何生成服务的访问权限：它使用你自己提供的 API 密钥，记在你的账户下，费用由你承担。"
   },
   "foot": {
     "groups": {
@@ -365,7 +365,7 @@
       "0": "下载",
       "1": "许可"
     },
-    "legal": "源代码依 <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial 1.0.0</a> 许可 · 应用依其<a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">使用条款</a>分发 · 第三方组件列于<a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/THIRD-PARTY-NOTICES.md\" target=\"_blank\" rel=\"noopener\">声明</a>。© 2026 Alban Pasquelin。",
+    "legal": "源代码依 <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial 1.0.0</a> 许可 · 应用依其<a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">使用条款</a>分发 · 第三方组件列于<a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/THIRD-PARTY-NOTICES.md\" target=\"_blank\" rel=\"noopener\">声明</a>。© 2026 Alban Pasquelin。",
     "docsLink": "文档",
     "changelog": "更新日志",
     "docsFr": "文档 🇫🇷",

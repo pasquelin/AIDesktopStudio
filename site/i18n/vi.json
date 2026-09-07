@@ -351,7 +351,7 @@
         "state": "Phiên bản sắp có"
       }
     },
-    "note": "Bộ cài chịu sự điều chỉnh của <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">điều khoản sử dụng</a>; còn mã nguồn thì theo giấy phép <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial&nbsp;1.0.0</a>. Ứng dụng không cho truy cập bất kỳ dịch vụ tạo sinh nào: nó dùng khoá API do chính bạn cung cấp, trên tài khoản của bạn và bạn chịu chi phí."
+    "note": "Bộ cài chịu sự điều chỉnh của <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">điều khoản sử dụng</a>; còn mã nguồn thì theo giấy phép <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial&nbsp;1.0.0</a>. Ứng dụng không cho truy cập bất kỳ dịch vụ tạo sinh nào: nó dùng khoá API do chính bạn cung cấp, trên tài khoản của bạn và bạn chịu chi phí."
   },
   "foot": {
     "groups": {
@@ -365,7 +365,7 @@
       "0": "Tải về",
       "1": "Giấy phép"
     },
-    "legal": "Mã nguồn theo giấy phép <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial 1.0.0</a> · ứng dụng phân phối theo <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">điều khoản sử dụng</a> của nó · các thành phần bên thứ ba được liệt kê trong <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/THIRD-PARTY-NOTICES.md\" target=\"_blank\" rel=\"noopener\">phần ghi chú</a>. © 2026 Alban Pasquelin.",
+    "legal": "Mã nguồn theo giấy phép <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial 1.0.0</a> · ứng dụng phân phối theo <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">điều khoản sử dụng</a> của nó · các thành phần bên thứ ba được liệt kê trong <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/THIRD-PARTY-NOTICES.md\" target=\"_blank\" rel=\"noopener\">phần ghi chú</a>. © 2026 Alban Pasquelin.",
     "docsLink": "Tài liệu",
     "changelog": "Nhật ký thay đổi",
     "docsFr": "Tài liệu 🇫🇷",

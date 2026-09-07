@@ -351,7 +351,7 @@
         "state": "リリース準備中"
       }
     },
-    "note": "インストーラーは<a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">利用規約</a>に従い、ソースコードは <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial&nbsp;1.0.0</a> ライセンスに従います。本アプリはいかなる生成サービスへのアクセスも提供しません。あなたが用意した API キーを、あなたのアカウントで、あなたの負担のもとに使います。"
+    "note": "インストーラーは<a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">利用規約</a>に従い、ソースコードは <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial&nbsp;1.0.0</a> ライセンスに従います。本アプリはいかなる生成サービスへのアクセスも提供しません。あなたが用意した API キーを、あなたのアカウントで、あなたの負担のもとに使います。"
   },
   "foot": {
     "groups": {
@@ -365,7 +365,7 @@
       "0": "ダウンロード",
       "1": "ライセンス"
     },
-    "legal": "ソースコードは <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial 1.0.0</a> ライセンス · アプリは<a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">利用規約</a>のもとで配布 · サードパーティ製コンポーネントは<a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/THIRD-PARTY-NOTICES.md\" target=\"_blank\" rel=\"noopener\">表示</a>に記載。© 2026 Alban Pasquelin。",
+    "legal": "ソースコードは <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial 1.0.0</a> ライセンス · アプリは<a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">利用規約</a>のもとで配布 · サードパーティ製コンポーネントは<a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/THIRD-PARTY-NOTICES.md\" target=\"_blank\" rel=\"noopener\">表示</a>に記載。© 2026 Alban Pasquelin。",
     "docsLink": "ドキュメント",
     "changelog": "変更履歴",
     "docsFr": "ドキュメント 🇫🇷",

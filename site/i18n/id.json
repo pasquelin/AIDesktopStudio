@@ -351,7 +351,7 @@
         "state": "Versi menyusul"
       }
     },
-    "note": "Pemasang tunduk pada <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">ketentuan penggunaan</a>; kode sumbernya, pada lisensi <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial&nbsp;1.0.0</a>. Aplikasi ini tidak memberi akses ke layanan generasi mana pun: ia memakai kunci API yang Anda sediakan, atas akun Anda dan atas biaya Anda."
+    "note": "Pemasang tunduk pada <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">ketentuan penggunaan</a>; kode sumbernya, pada lisensi <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial&nbsp;1.0.0</a>. Aplikasi ini tidak memberi akses ke layanan generasi mana pun: ia memakai kunci API yang Anda sediakan, atas akun Anda dan atas biaya Anda."
   },
   "foot": {
     "groups": {
@@ -365,7 +365,7 @@
       "0": "Unduhan",
       "1": "Lisensi"
     },
-    "legal": "Kode sumber di bawah lisensi <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial 1.0.0</a> · aplikasi didistribusikan menurut <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">ketentuan penggunaan</a> miliknya · komponen pihak ketiga tercantum dalam <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/THIRD-PARTY-NOTICES.md\" target=\"_blank\" rel=\"noopener\">pemberitahuan</a>. © 2026 Alban Pasquelin.",
+    "legal": "Kode sumber di bawah lisensi <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial 1.0.0</a> · aplikasi didistribusikan menurut <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">ketentuan penggunaan</a> miliknya · komponen pihak ketiga tercantum dalam <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/THIRD-PARTY-NOTICES.md\" target=\"_blank\" rel=\"noopener\">pemberitahuan</a>. © 2026 Alban Pasquelin.",
     "docsLink": "Dokumentasi",
     "changelog": "Riwayat perubahan",
     "docsFr": "Dokumen 🇫🇷",
