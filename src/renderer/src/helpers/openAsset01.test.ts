@@ -4,6 +4,7 @@ import type { DocumentDescriptor } from '@shared/domain/document'
 import type { Project } from '@shared/domain/project'
 import { installFakeBridge } from '@/services/fakeBridge'
 import { installDocument } from '@/stores/document-fixtures'
+import { useAssets } from '@/stores/assets'
 import { useDocuments } from '@/stores/documents'
 import { useLayouts } from '@/stores/layouts'
 import { useProject } from '@/stores/project'
@@ -14,6 +15,10 @@ import { canvasOf, useCanvases } from '@/stores/canvases'
 import { lendPictureMeasure } from '@/features/image/pictureSize'
 import { forgetReportedFailures } from '@/services/diagnostics'
 import { editPixelsOf, openAsset } from './openAsset'
+
+/** The converter parses with three.js and reads the file; what it ANSWERS is what this measures. */
+const convertArrived = vi.hoisted(() => vi.fn())
+vi.mock('@/services/meshConversion', () => ({ convertArrivedModels: convertArrived }))
 
 /** Written out rather than taken from the home's fixture, which pulls in a DOM this never uses. */
 const PROJECT: Project = {
@@ -34,6 +39,17 @@ const asset = (overrides: Partial<Asset> = {}): Asset => ({
   createdAt: '2026-08-07T10:00:00.000Z',
   ...overrides,
 })
+
+/** A model of a project that predates the conversion rule: its tab has to convert it first. */
+const FBX: Asset = {
+  id: 'mesh-6',
+  name: 'knight.fbx',
+  type: 'mesh',
+  location: 'local',
+  tags: [],
+  createdAt: '2026-08-07T10:00:00.000Z',
+  path: 'Modelling/Models/knight.fbx',
+}
 
 const picture = (overrides: Partial<Asset> = {}): Asset =>
   asset({ id: 'asset-sky', name: 'dusk.png', type: 'image', ...overrides })
@@ -175,6 +191,31 @@ describe('opening an asset', () => {
 
     expect(opened().kind).toBe('character')
     expect(opened().sourceAssetId).toBe('mesh-4')
+  })
+
+  // 🛑 ⌘S patches a `.glb` container: a tab opened on an `.fbx` of a project that predates the
+  // conversion rule could never be saved, and said nothing.
+  it('turns a model that is not a `.glb` into one before opening its tab', async () => {
+    useAssets.setState({ items: [FBX] })
+    convertArrived.mockResolvedValueOnce([
+      asset({ id: 'mesh-7', type: 'mesh', name: 'knight.glb' }),
+    ])
+
+    await openAsset(FBX)
+
+    expect(convertArrived).toHaveBeenCalledWith([FBX])
+    expect(opened().sourceAssetId).toBe('mesh-7')
+  })
+
+  it('opens no tab for a model whose conversion to `.glb` failed', async () => {
+    useAssets.setState({ items: [FBX] })
+    convertArrived.mockResolvedValueOnce([FBX])
+
+    await openAsset(FBX)
+
+    expect(Object.values(useDocuments.getState().documents).map(one => one.kind)).not.toContain(
+      'character',
+    )
   })
 
   // The file behind it is what the tab reads, and a row the cloud holds has none.

@@ -132,6 +132,25 @@ describe('which studio map the navigation walks by', () => {
     expect(await studioInputMaps()).toEqual([mine])
   })
 
+  // 🛑 A map rebinding ONE action would otherwise replace the whole preset: `button('confirm')`
+  // read an action nobody declared and answered false, and the navigation lost confirm and back.
+  it('completes a partial context with the actions the preset carries', async () => {
+    const preset = inputMapPreset('studio')
+    const only = preset.actions.filter(action => action.id === 'navigate')
+    installFakeBridge({
+      inputMaps: {
+        list: () => Promise.resolve(['Controls/mine.input.json']),
+        read: () => Promise.resolve({ ...preset, actions: only }),
+      },
+    })
+
+    const [map] = await studioInputMaps()
+
+    expect([...(map?.actions ?? [])].map(action => action.id).sort()).toEqual(
+      preset.actions.map(action => action.id).sort(),
+    )
+  })
+
   it('falls back to the starting point when the project declares none', async () => {
     installFakeBridge({
       inputMaps: { list: () => Promise.resolve([]), read: () => Promise.resolve(null) },

@@ -223,3 +223,20 @@ const PRESETS: Record<InputPresetId, InputMap> = {
 export function inputMapPreset(id: InputPresetId): InputMap {
   return PRESETS[id]
 }
+
+/**
+ * A written map, completed action by ACTION from the preset it names.
+ *
+ * 🛑 A map a project wrote before an action existed — or one rebinding a single action — would
+ * otherwise REPLACE the preset: `axis2`/`button` answer zero for an action nobody declared, and
+ * the studio's own navigation lost confirm and back with no word. Mirrors `withDefaultInputMaps`
+ * of the game runtime, which cannot be imported here — that tree ships MIT and this one does not.
+ */
+export function completedInputMap(map: InputMap): InputMap {
+  if (!INPUT_PRESET_IDS.includes(map.id as InputPresetId)) return map
+  const declared = new Set(map.actions.map(action => action.id))
+  const missing = PRESETS[map.id as InputPresetId].actions.filter(
+    action => !declared.has(action.id),
+  )
+  return missing.length === 0 ? map : { ...map, actions: [...map.actions, ...missing] }
+}

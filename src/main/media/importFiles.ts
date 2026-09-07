@@ -1,12 +1,11 @@
-import { lstat, mkdir, readdir, readFile, realpath } from 'node:fs/promises'
-import { basename, dirname, extname, isAbsolute, join, posix, resolve } from 'node:path'
+import { lstat, mkdir, readdir, realpath } from 'node:fs/promises'
+import { basename, dirname, extname, isAbsolute, join, resolve } from 'node:path'
 import type { Asset } from '@shared/domain/asset'
 import type { DocumentDescriptor } from '@shared/domain/document'
 import type { ExternalFileImport, ExternalFileRefusal } from '@shared/domain/externalFile'
 import { filingFolderOf, filingRoleOf, filingTypeOf } from '@shared/domain/filingType'
 import { foldForFileName } from '@shared/domain/fileName'
 import { isHiddenEntry, pathIn } from '@shared/domain/folder'
-import { documentReferencesOf } from '@shared/domain/documentReferences'
 import type { FolderRole, RoleFolders } from '@shared/domain/folderRole'
 import {
   IMPORTABLE_BUNDLE_EXTENSIONS,
@@ -23,6 +22,7 @@ import { freeName } from '@main/project/filePlan'
 import { folderInsideProject } from '@main/project/folderInsideProject'
 import { pathSegment } from '@main/validation'
 import { copyExternalFile, removeExternalCopy, removeExternalFolder } from './copyExternalFile'
+import { referencesOf } from './importedReferences'
 
 export type ImportFilesDeps = {
   projectPath: () => string
@@ -160,26 +160,6 @@ async function importBundle(
   const montage = await deps.importBundle(source, root, folder, watch)
   if (montage) state.montages.push(montage)
   else if (!watch.signal?.aborted) state.refusedBundles.push({ name: basename(source), extension })
-}
-
-/** The files the source points at, read off its own text before any dependency is copied. */
-async function textReferencesOf(source: string, extension: string): Promise<readonly string[]> {
-  const text = await orElse(readFile(source, 'utf8'), null)
-  return text === null ? [] : documentReferencesOf(extension, text)
-}
-
-/** Reads an OBJ's material libraries too; their pictures are relative to each library's folder. */
-async function referencesOf(source: string, extension: string): Promise<readonly string[]> {
-  if (!['dae', 'gltf', 'mtlx', 'obj'].includes(extension)) return []
-  const direct = await textReferencesOf(source, extension)
-  if (extension !== 'obj') return direct
-
-  const deeper: string[] = []
-  for (const library of direct.filter(one => one.toLowerCase().endsWith('.mtl'))) {
-    const pictures = await textReferencesOf(resolve(dirname(source), library), 'mtl')
-    deeper.push(...pictures.map(picture => posix.join(posix.dirname(library), picture)))
-  }
-  return [...new Set([...direct, ...deeper])]
 }
 
 /** Where a copy lands, and whether it brought a folder of its own with it. */

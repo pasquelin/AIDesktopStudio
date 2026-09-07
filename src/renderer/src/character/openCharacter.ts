@@ -1,5 +1,7 @@
+import { needsMeshConversion } from '@shared/domain/meshImport'
 import { openDocument } from '@/features/shell/components/dockviewApi'
 import { reportFailure } from '@/services/diagnostics'
+import { convertArrivedModels } from '@/services/meshConversion'
 import { assetsById, useAssets } from '@/stores/assets'
 import { documentForAsset, useDocuments } from '@/stores/documents'
 
@@ -9,7 +11,10 @@ import { documentForAsset, useDocuments } from '@/stores/documents'
  * A second call comes back to that tab rather than opening another: two tabs on one model are
  * two skeletons of it, and the second ⌘S would write over the first.
  */
-export async function openCharacter(assetId: string): Promise<boolean> {
+export async function openCharacter(wanted: string): Promise<boolean> {
+  const assetId = await convertedFirst(wanted)
+  if (!assetId) return false
+
   const already = documentForAsset(useDocuments.getState(), assetId, 'character')
   if (already) {
     openDocument(already)
@@ -36,4 +41,17 @@ export async function openCharacter(assetId: string): Promise<boolean> {
 
   openDocument(created)
   return true
+}
+
+/**
+ * 🛑 The row this tab may be SAVED on: ⌘S patches a `.glb` container, so a file that is not one
+ * has to become one first — the very conversion an arrival gets, paid here for a project that
+ * predates the rule. Answers nothing when it fails, `convertArrivedModels` having said why.
+ */
+async function convertedFirst(assetId: string): Promise<string | null> {
+  const asset = assetsById(useAssets.getState()).get(assetId)
+  if (!asset || !needsMeshConversion(asset)) return assetId
+
+  const [converted] = await convertArrivedModels([asset])
+  return converted && !needsMeshConversion(converted) ? converted.id : null
 }
