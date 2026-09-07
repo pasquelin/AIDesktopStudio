@@ -14,6 +14,10 @@ describe('SceneRenderer and the grouping of repeated shapes', () => {
     new RegExp(`protected ${name}\\([^)]*\\): [\\w<>[\\]| ]+ \\{[\\s\\S]*?\\n {2}\\}`).exec(
       source,
     )?.[0] ?? ''
+  const privateBody = (name: string): string =>
+    new RegExp(`private ${name}\\([\\s\\S]*?\\): [\\w<>[\\]| ]+ \\{[\\s\\S]*?\\n {2}\\}`).exec(
+      source,
+    )?.[0] ?? ''
 
   it('groups outside the switch that only turns the counters off', () => {
     // Turning statistics off gives back a walk over every geometry. It must not also stop the
@@ -62,13 +66,15 @@ describe('SceneRenderer and the grouping of repeated shapes', () => {
     const settled = source
       .replace(body('markContentChanged'), '')
       .replace(body('syncNode'), '')
+      .replace(privateBody('noteWhatMoved'), '')
       .split('\n')
       .map((line, at) => ({ line: line.trim(), at: at + 1 }))
       .filter(({ line }) => line === 'this.contentChanged = true')
 
     expect(settled).toEqual([])
-    expect(body('syncNode')).toContain('keepsItsGroup')
-    expect(body('syncNode')).toContain('this.movedNodes.add')
+    expect(body('syncNode')).toContain('this.noteWhatMoved(previous, node)')
+    expect(privateBody('noteWhatMoved')).toContain('keepsItsGroup')
+    expect(privateBody('noteWhatMoved')).toContain('this.movedNodes.add')
     expect(body('markContentChanged')).toContain('this.groupingStale = true')
   })
 

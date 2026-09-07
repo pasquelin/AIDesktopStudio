@@ -6,6 +6,9 @@ import {
   type SpriteNode,
   type CarvedNode,
   type MeshNode,
+  type LightNode,
+  type CameraNode,
+  type PathNode,
   type TextNode,
 } from './sceneState'
 import { railOf } from './nodeRail'
@@ -44,6 +47,36 @@ export abstract class SceneRendererNodeFactory extends SceneRendererSync {
   protected abstract buildText(node: TextNode): Mesh
   protected abstract railColours(): RailColours
   protected abstract buildCarved(node: CarvedNode): Mesh
+  /** A shape whose geometry or tiling moved is re-worn; its paint follows either way. */
+  private syncMesh(object: Mesh, previous: SceneNode | undefined, node: MeshNode): void {
+    const before = previous?.type === 'mesh' ? previous : null
+    if (
+      before?.geometry !== node.geometry ||
+      before.material.tilesPerMetre !== node.material.tilesPerMetre
+    ) {
+      const worn = wearGeometry(
+        object,
+        this.shapes.acquire(node.geometry, node.material.tilesPerMetre),
+      )
+      if (worn) this.freeGeometry(worn)
+      else this.shapes.release(object.geometry)
+      if (this.needsEdges()) this.applyDisplay(object)
+      const rail = railOf(node)
+      if (rail) applyPath(object, rail, this.meshColor)
+    }
+    this.paintShape(object, node, before)
+  }
+
+  /** The body a lamp is found by is re-dressed only when the KIND changed — it is a new shape. */
+  private syncLight(object: Light, previous: SceneNode | undefined, node: LightNode): void {
+    const before = previous?.type === 'light' ? previous : null
+    if (before?.light === node.light) return
+    applyLight(object, node.light)
+    const marker = this.markers.get(node.id)
+    if (marker && before?.light.kind === node.light.kind) applyLightBody(marker, node.light)
+    else this.dressLight(node.id, object, node.light)
+  }
+
   /**
    * What an edit changed on the object already in the scene. Compared against the node last
    * applied rather than against the three.js object: a descriptor is one reference, and an edit
@@ -54,81 +87,59 @@ export abstract class SceneRendererNodeFactory extends SceneRendererSync {
     previous: SceneNode | undefined,
     node: SceneNode,
   ): void {
-    const syncMesh = (): boolean => {
-      if (node.type !== 'mesh' || !(object instanceof Mesh)) return false
-      const before = previous?.type === 'mesh' ? previous : null
-      if (
-        before?.geometry !== node.geometry ||
-        before.material.tilesPerMetre !== node.material.tilesPerMetre
-      ) {
-        const worn = wearGeometry(
-          object,
-          this.shapes.acquire(node.geometry, node.material.tilesPerMetre),
-        )
-        if (worn) this.freeGeometry(worn)
-        else this.shapes.release(object.geometry)
-        if (this.needsEdges()) this.applyDisplay(object)
-        const rail = railOf(node)
-        if (rail) applyPath(object, rail, this.meshColor)
-      }
-      this.paintShape(object, node, before)
-      return true
+    if (node.type === 'mesh' && object instanceof Mesh) this.syncMesh(object, previous, node)
+    else if (node.type === 'light' && object instanceof Light)
+      this.syncLight(object, previous, node)
+    else if (node.type === 'sprite' && object instanceof Sprite)
+      this.syncSprite(object, previous, node)
+    else if (node.type === 'model') this.syncModel(previous, node)
+    else if (node.type === 'camera' && object instanceof PerspectiveCamera)
+      this.syncCamera(object, previous, node)
+    else if (node.type === 'path') this.syncPath(object, previous, node)
+    else if (node.type === 'carved' && object instanceof Mesh)
+      this.syncCarved(object, previous, node)
+    else if (node.type === 'text' && object instanceof Mesh) this.syncText(object, previous, node)
+  }
+
+  private syncSprite(object: Sprite, previous: SceneNode | undefined, node: SpriteNode): void {
+    const before = previous?.type === 'sprite' ? previous : null
+    if (before?.sprite === node.sprite) return
+    applySprite(object.material, node.sprite, this.meshColor)
+    this.spriteMaps.get(node.id)?.apply(node.sprite)
+  }
+
+  private syncModel(previous: SceneNode | undefined, node: ModelNode): void {
+    const before = previous?.type === 'model' ? previous : null
+    if (before?.model.dress !== node.model.dress) this.dressModel(node.id)
+  }
+
+  private syncCamera(
+    object: PerspectiveCamera,
+    previous: SceneNode | undefined,
+    node: CameraNode,
+  ): void {
+    const before = previous?.type === 'camera' ? previous : null
+    if (before?.camera !== node.camera) applyCamera(object, node.camera)
+  }
+
+  private syncPath(object: Object3D, previous: SceneNode | undefined, node: PathNode): void {
+    const before = previous?.type === 'path' ? previous : null
+    if (before?.path !== node.path) applyPath(object, node.path, this.meshColor)
+  }
+
+  private syncCarved(object: Mesh, previous: SceneNode | undefined, node: CarvedNode): void {
+    const before = previous?.type === 'carved' ? previous : null
+    if (before?.carved !== node.carved) void this.recut(node, object)
+    this.paintShape(object, node, before)
+  }
+
+  private syncText(object: Mesh, previous: SceneNode | undefined, node: TextNode): void {
+    const before = previous?.type === 'text' ? previous : null
+    if (before?.text !== node.text) void this.reshapeText(node)
+    const material = standardMaterialOf(object)
+    if (material && before?.material !== node.material) {
+      applyMaterial(material, node.material, this.meshColor)
     }
-    if (syncMesh()) return
-    if (node.type === 'light' && object instanceof Light) {
-      const before = previous?.type === 'light' ? previous : null
-      if (before?.light === node.light) return
-      applyLight(object, node.light)
-      const marker = this.markers.get(node.id)
-      if (marker && before?.light.kind === node.light.kind) applyLightBody(marker, node.light)
-      else this.dressLight(node.id, object, node.light)
-      return
-    }
-    if (node.type === 'sprite' && object instanceof Sprite) {
-      const before = previous?.type === 'sprite' ? previous : null
-      if (before?.sprite === node.sprite) return
-      applySprite(object.material, node.sprite, this.meshColor)
-      this.spriteMaps.get(node.id)?.apply(node.sprite)
-      return
-    }
-    const syncDescriptorsStep1 = () => {
-      const syncDescriptorsStep1 = () => {
-        if (node.type === 'model') {
-          const before = previous?.type === 'model' ? previous : null
-          if (before?.model.dress !== node.model.dress) this.dressModel(node.id)
-          return
-        }
-        if (node.type === 'camera' && object instanceof PerspectiveCamera) {
-          const before = previous?.type === 'camera' ? previous : null
-          if (before?.camera !== node.camera) applyCamera(object, node.camera)
-          return
-        }
-        if (node.type === 'path') {
-          const before = previous?.type === 'path' ? previous : null
-          if (before?.path !== node.path) applyPath(object, node.path, this.meshColor)
-          return
-        }
-        const syncDescriptorsStep2 = () => {
-          if (node.type === 'carved' && object instanceof Mesh) {
-            const before = previous?.type === 'carved' ? previous : null
-            if (before?.carved !== node.carved) void this.recut(node, object)
-            this.paintShape(object, node, before)
-            return
-          }
-          if (node.type === 'text' && object instanceof Mesh) {
-            const before = previous?.type === 'text' ? previous : null
-            if (before?.text !== node.text) void this.reshapeText(node)
-            const material = standardMaterialOf(object)
-            if (material && before?.material !== node.material) {
-              applyMaterial(material, node.material, this.meshColor)
-            }
-          }
-        }
-        return syncDescriptorsStep2()
-      }
-      return syncDescriptorsStep1()
-    }
-    return syncDescriptorsStep1()
   }
   /**
    * What a shape is painted with — its material, then the TOOL MARK that overrides it.

@@ -39,44 +39,40 @@ export abstract class SceneRendererAnimation extends SceneRendererLifecycle {
     // scene without this. `selected` stays the default and the paragraph above says why.
     const shows = (visibility: HelperVisibility, id: string): boolean =>
       showsAid(visibility, selected, id) && (this.objects.get(id)?.visible ?? false)
-    const showAidsForSelectionStep1 = () => {
-      const showAidsForSelectionStep1 = () => {
-        for (const [id, frustum] of this.frustums) {
-          const node = this.applied.get(id)
-          const camera = this.objects.get(id)
-          if (node?.type !== 'camera' || !(camera instanceof PerspectiveCamera)) continue
-          applyCamera(camera, node.camera, FRUSTUM_REACH)
-          frustum.visible = chrome && shows(this.view.cameraHelpers, id)
-        }
-        for (const [id, helper] of this.helpers) {
-          helper.visible = chrome && shows(this.view.lightHelpers, id)
-        }
-        // The body of a camera and the bulb of a lamp stand where the thing they draw stands, so a
-        // game would be played looking at the marker somebody put there to find the light by.
-        if (!chrome) for (const marker of this.markers.values()) marker.visible = false
-        const showAidsForSelectionStep2 = () => {
-          const rails = this.workedRailIds()
-          for (const [id, node] of this.applied) {
-            if (!railOf(node)) continue
-            const rail = this.objects.get(id)
-            if (!rail) continue
-            // A rail node is nothing BUT its line, so hiding the chrome hides it whole. A band is a
-            // surface of the scene: only its aids go.
-            if (!chrome && node.type === 'path') rail.visible = false
-            const worked = chrome && rails.has(id)
-            showPathKnobs(rail, worked)
-            if (node.type !== 'path') showRailLine(rail, worked)
-            // The pair of the ANCHOR being worked on, and of no other — see `showPathHandles`. The
-            // index whichever of the three is held: taking a tangent must not put its own pair away.
-            const held = this.pickedPathPoint
-            showPathHandles(rail, chrome && held?.nodeId === id ? held.index : null)
-          }
-        }
-        return showAidsForSelectionStep2()
-      }
-      return showAidsForSelectionStep1()
+    for (const [id, frustum] of this.frustums) {
+      const node = this.applied.get(id)
+      const camera = this.objects.get(id)
+      if (node?.type !== 'camera' || !(camera instanceof PerspectiveCamera)) continue
+      applyCamera(camera, node.camera, FRUSTUM_REACH)
+      frustum.visible = chrome && shows(this.view.cameraHelpers, id)
     }
-    return showAidsForSelectionStep1()
+    for (const [id, helper] of this.helpers) {
+      helper.visible = chrome && shows(this.view.lightHelpers, id)
+    }
+    // The body of a camera and the bulb of a lamp stand where the thing they draw stands, so a
+    // game would be played looking at the marker somebody put there to find the light by.
+    if (!chrome) for (const marker of this.markers.values()) marker.visible = false
+    this.showRailAids(chrome)
+  }
+
+  /** The lines and knobs of every rail: drawn on the one being worked, put away on the others. */
+  private showRailAids(chrome: boolean): void {
+    const rails = this.workedRailIds()
+    for (const [id, node] of this.applied) {
+      if (!railOf(node)) continue
+      const rail = this.objects.get(id)
+      if (!rail) continue
+      // A rail node is nothing BUT its line, so hiding the chrome hides it whole. A band is a
+      // surface of the scene: only its aids go.
+      if (!chrome && node.type === 'path') rail.visible = false
+      const worked = chrome && rails.has(id)
+      showPathKnobs(rail, worked)
+      if (node.type !== 'path') showRailLine(rail, worked)
+      // The pair of the ANCHOR being worked on, and of no other — see `showPathHandles`. The
+      // index whichever of the three is held: taking a tangent must not put its own pair away.
+      const held = this.pickedPathPoint
+      showPathHandles(rail, chrome && held?.nodeId === id ? held.index : null)
+    }
   }
   /**
    * The rails being worked on — `railsInUse` holds the rule, so this side and the selection

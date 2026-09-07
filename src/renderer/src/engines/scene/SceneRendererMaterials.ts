@@ -46,120 +46,87 @@ export abstract class SceneRendererMaterials extends SceneRendererFlight {
     return this.flightHeld
   }
   dispose(): void {
+    this.stopWhatRuns()
+    this.unhookInput()
+    this.dropGizmo()
+    this.releaseSceneContents()
+    this.disposeEngines()
+    this.viewport.dispose()
+  }
+
+  private stopWhatRuns(): void {
     // A preview left running would keep posing a model whose caches this method is about to drop.
     cancelAnimationFrame(this.previewFrame)
     this.previewFrame = 0
     this.heldPreview = null
-    const disposeStep1 = () => {
-      const disposeStep1 = () => {
-        this.stopPaletteWatch?.()
-        this.stopPaletteWatch = null
-        // Or the last drag's roots outlive every node they name.
-        this.surfaceScope.length = 0
-        const disposeStep2 = () => {
-          const canvas = this.viewport.canvas
-          this.setNavigating(false)
-          // Or the frame it left pending publishes an outline into a host that has already gone.
-          this.dropMarquee()
-          const disposeStep3 = () => {
-            canvas?.removeEventListener('pointerdown', this.onPointerDown)
-            canvas?.removeEventListener('contextmenu', this.onContextMenu)
-            window.removeEventListener('pointermove', this.onPointerMove)
-            const disposeStep4 = () => {
-              window.removeEventListener('pointerup', this.onPointerUp)
-              window.removeEventListener('pointercancel', this.onPointerCancel)
-              this.gizmo?.removeEventListener('axis-changed', this.onGizmoAxisChanged)
-              this.gizmo?.removeEventListener('dragging-changed', this.onDraggingChanged)
-              const disposeStep5 = () => {
-                this.gizmo?.removeEventListener('objectChange', this.onGizmoChange)
-                this.gizmo?.removeEventListener('mouseDown', this.onGizmoGrab)
-                this.gizmo?.removeEventListener('mouseUp', this.onGizmoRelease)
-                const disposeStep6 = () => {
-                  this.gizmo?.detach()
-                  this.gizmo?.dispose()
-                  this.gizmo = null
-                  const disposeStep7 = () => {
-                    release(this.pivot, this.viewport.scene)
-                    this.pivot.removeFromParent()
-                    this.viewHelper?.dispose()
-                    const disposeStep8 = () => {
-                      this.viewHelper = null
-                      for (const id of [...this.objects.keys()]) this.release(id)
-                      this.sky.release()
-                      const disposeStep9 = () => {
-                        this.environment?.dispose()
-                        this.environment = null
-                        this.animations.clear()
-                        const disposeStep10 = () => {
-                          for (const id of [...this.boneSolids.keys()]) this.unbindSkeleton(id)
-                          this.post?.dispose()
-                          this.post = null
-                          const disposeStep11 = () => {
-                            this.textureCache.dispose()
-                            this.modelCache.dispose()
-                            this.csg.dispose()
-                            const disposeStep12 = () => {
-                              this.shapes.dispose()
-                              this.instances.dispose()
-                              this.gltf.dispose()
-                              const disposeStep13 = () => {
-                                this.wireMaterial.dispose()
-                                this.paneMaterials.dispose()
-                                this.bvh.dispose()
-                                const disposeStep14 = () => {
-                                  this.skin.dispose()
-                                  this.cancelRetargets()
-                                  this.retarget.dispose()
-                                  this.clipSources.dispose()
-                                  const disposeStep15 = () => {
-                                    this.bundled.clear()
-                                    this.iks.clear()
-                                    this.grid?.dispose()
-                                    const disposeStep16 = () => {
-                                      this.grid = null
-                                      this.ground.dispose()
-                                      this.relief.dispose()
-                                      this.scatter.dispose()
-                                      const disposeStep17 = () => {
-                                        this.sun.dispose()
-                                        this.aids.dispose()
-                                        this.viewport.dispose()
-                                      }
-                                      return disposeStep17()
-                                    }
-                                    return disposeStep16()
-                                  }
-                                  return disposeStep15()
-                                }
-                                return disposeStep14()
-                              }
-                              return disposeStep13()
-                            }
-                            return disposeStep12()
-                          }
-                          return disposeStep11()
-                        }
-                        return disposeStep10()
-                      }
-                      return disposeStep9()
-                    }
-                    return disposeStep8()
-                  }
-                  return disposeStep7()
-                }
-                return disposeStep6()
-              }
-              return disposeStep5()
-            }
-            return disposeStep4()
-          }
-          return disposeStep3()
-        }
-        return disposeStep2()
-      }
-      return disposeStep1()
-    }
-    return disposeStep1()
+    this.stopPaletteWatch?.()
+    this.stopPaletteWatch = null
+    // Or the last drag's roots outlive every node they name.
+    this.surfaceScope.length = 0
+    this.setNavigating(false)
+    // Or the frame it left pending publishes an outline into a host that has already gone.
+    this.dropMarquee()
+  }
+
+  private unhookInput(): void {
+    const canvas = this.viewport.canvas
+    canvas?.removeEventListener('pointerdown', this.onPointerDown)
+    canvas?.removeEventListener('contextmenu', this.onContextMenu)
+    window.removeEventListener('pointermove', this.onPointerMove)
+    window.removeEventListener('pointerup', this.onPointerUp)
+    window.removeEventListener('pointercancel', this.onPointerCancel)
+    this.gizmo?.removeEventListener('axis-changed', this.onGizmoAxisChanged)
+    this.gizmo?.removeEventListener('dragging-changed', this.onDraggingChanged)
+    this.gizmo?.removeEventListener('objectChange', this.onGizmoChange)
+    this.gizmo?.removeEventListener('mouseDown', this.onGizmoGrab)
+    this.gizmo?.removeEventListener('mouseUp', this.onGizmoRelease)
+  }
+
+  private dropGizmo(): void {
+    this.gizmo?.detach()
+    this.gizmo?.dispose()
+    this.gizmo = null
+    release(this.pivot, this.viewport.scene)
+    this.pivot.removeFromParent()
+    this.viewHelper?.dispose()
+    this.viewHelper = null
+  }
+
+  private releaseSceneContents(): void {
+    for (const id of [...this.objects.keys()]) this.release(id)
+    this.sky.release()
+    this.environment?.dispose()
+    this.environment = null
+    this.animations.clear()
+    for (const id of [...this.boneSolids.keys()]) this.unbindSkeleton(id)
+  }
+
+  /** In the order they were written: a pass disposed before what feeds it takes the target with it. */
+  private disposeEngines(): void {
+    this.post?.dispose()
+    this.post = null
+    this.textureCache.dispose()
+    this.modelCache.dispose()
+    this.csg.dispose()
+    this.shapes.dispose()
+    this.instances.dispose()
+    this.gltf.dispose()
+    this.wireMaterial.dispose()
+    this.paneMaterials.dispose()
+    this.bvh.dispose()
+    this.skin.dispose()
+    this.cancelRetargets()
+    this.retarget.dispose()
+    this.clipSources.dispose()
+    this.bundled.clear()
+    this.iks.clear()
+    this.grid?.dispose()
+    this.grid = null
+    this.ground.dispose()
+    this.relief.dispose()
+    this.scatter.dispose()
+    this.sun.dispose()
+    this.aids.dispose()
   }
   /**
    * One model wearing what it should. Read from `applied` rather than taken as an argument: the

@@ -1,4 +1,4 @@
-import { PerspectiveCamera, WebGLRenderTarget } from 'three'
+import { PerspectiveCamera, WebGLRenderTarget, type WebGLRenderer } from 'three'
 import type { MotionId } from '@shared/domain/shortcut'
 import { anglesFromDirection } from '@shared/domain/angles'
 import { aimAlong, turnBy } from '../viewport/lookAround'
@@ -16,6 +16,27 @@ export abstract class SceneRendererFlight extends SceneRendererFilm {
   protected abstract syncPaneFreeze(): void
   public abstract get flying(): boolean
   /**
+   * What a still is captured AT, in buffer pixels.
+   *
+   * The pane in hand when there are four of them; the whole canvas when there is one — a quad
+   * layout captured at the canvas's shape would show more scene than the pane it was asked of.
+   * Times the device ratio, both measures above being CSS pixels while the frame on screen is
+   * drawn at the buffer's own: « view size » on a 2× display gave back half the definition.
+   */
+  private captureShape(
+    gl: WebGLRenderer,
+    quality: CaptureQuality,
+  ): { width: number; height: number } {
+    const canvas = gl.domElement
+    const shown = this.viewport.activePaneRegion() ?? {
+      width: canvas.clientWidth,
+      height: canvas.clientHeight,
+    }
+    const ratio = gl.getPixelRatio()
+    return captureSize({ width: shown.width * ratio, height: shown.height * ratio }, quality)
+  }
+
+  /**
    * One still of the view being worked in, encoded as a PNG — what is posted, and what a
    * template thumbnail is drawn with.
    *
@@ -30,71 +51,41 @@ export abstract class SceneRendererFlight extends SceneRendererFilm {
     const gl = this.viewport.gl
     if (!gl) throw new Error('this scene has no viewport mounted to capture from')
     const camera = this.cameraInHand()
-    const captureStillStep1 = async () => {
-      const captureStillStep1 = async () => {
-        const canvas = gl.domElement
-        // The pane in hand when there are four of them; the whole canvas when there is one. A quad
-        // layout captured at the canvas's shape would show more scene than the pane it was asked of.
-        const pane = this.viewport.activePaneRegion()
-        const shown = pane ?? {
-          width: canvas.clientWidth,
-          height: canvas.clientHeight,
-        }
-        const captureStillStep2 = async () => {
-          // Times the device ratio, because both measures above are CSS pixels while the frame on
-          // screen is drawn at the buffer's own: « view size » on a 2× display gave back half the
-          // definition of what was being looked at.
-          const ratio = gl.getPixelRatio()
-          const { width, height } = captureSize(
-            { width: shown.width * ratio, height: shown.height * ratio },
-            quality,
-          )
-          // Antialiased, unlike a film's frames: a still is looked at, and the resolve happens at the
-          // end of `render` — so the read below already has the resolved texture. Capped at four,
-          // which is where the eye stops paying for the memory a 4K target multiplies.
-          const samples = Math.min(4, gl.capabilities.maxSamples)
-          const captureStillStep3 = async () => {
-            const target = new WebGLRenderTarget(width, height, { samples })
-            const restore = this.hideWorkshop()
-            const captureStillStep4 = async () => {
-              const loan = aspectLoan(width, height)
-              try {
-                // Only a perspective one is lent an aspect, and only for the rounding: the size asked for
-                // keeps the view's own shape, so an orthographic frustum is already framed for it.
-                if (camera instanceof PerspectiveCamera) loan.frame(camera)
-                const composed = this.viewport.drawScene({
-                  scene: this.viewport.scene,
-                  camera,
-                  surface: 'offscreen',
-                  paneIndex: 0,
-                  // The view in hand rather than a camera of the document, so the composition is the
-                  // SCENE's — which is exactly what is on screen.
-                  cameraNodeId: null,
-                  target,
-                  rect: null,
-                  width,
-                  height,
-                })
-                const pixels = readRenderPixels(gl, target, width, height)
-                return await encodeFilmFrameOffThread(pixels, width, height, composed)
-              } finally {
-                gl.setRenderTarget(null)
-                target.dispose()
-                this.post?.releaseSurface('offscreen')
-                loan.restore()
-                restore()
-                this.redraw()
-              }
-            }
-            return captureStillStep4()
-          }
-          return captureStillStep3()
-        }
-        return captureStillStep2()
-      }
-      return captureStillStep1()
+    const { width, height } = this.captureShape(gl, quality)
+    // Antialiased, unlike a film's frames: a still is looked at, and the resolve happens at the
+    // end of `render` — so the read below already has the resolved texture. Capped at four,
+    // which is where the eye stops paying for the memory a 4K target multiplies.
+    const samples = Math.min(4, gl.capabilities.maxSamples)
+    const target = new WebGLRenderTarget(width, height, { samples })
+    const restore = this.hideWorkshop()
+    const loan = aspectLoan(width, height)
+    try {
+      // Only a perspective one is lent an aspect, and only for the rounding: the size asked for
+      // keeps the view's own shape, so an orthographic frustum is already framed for it.
+      if (camera instanceof PerspectiveCamera) loan.frame(camera)
+      const composed = this.viewport.drawScene({
+        scene: this.viewport.scene,
+        camera,
+        surface: 'offscreen',
+        paneIndex: 0,
+        // The view in hand rather than a camera of the document, so the composition is the
+        // SCENE's — which is exactly what is on screen.
+        cameraNodeId: null,
+        target,
+        rect: null,
+        width,
+        height,
+      })
+      const pixels = readRenderPixels(gl, target, width, height)
+      return await encodeFilmFrameOffThread(pixels, width, height, composed)
+    } finally {
+      gl.setRenderTarget(null)
+      target.dispose()
+      this.post?.releaseSurface('offscreen')
+      loan.restore()
+      restore()
+      this.redraw()
     }
-    return captureStillStep1()
   }
   /**
    * Arms the persistent navigation mode: the pointer is captured, the mouse becomes the head and

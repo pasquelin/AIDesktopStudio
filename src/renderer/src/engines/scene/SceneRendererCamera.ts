@@ -18,6 +18,38 @@ export abstract class SceneRendererCamera extends SceneRendererAnimation {
   protected abstract redraw(): void
   protected abstract applySnap(): void
   /**
+   * The cameras a shot still names, plus the ones just let go that could not be put back yet.
+   *
+   * Nothing else in the engine writes a camera's position, so a shot deleted — or the undo of one
+   * that opened — would leave its camera wherever the rail last put it, and the film would go on
+   * being taken from there. One held over is a camera the gizmo carries, whose shot an undo took
+   * away mid-drag: forfeiting the one attempt makes the rail its rest pose on release, and a
+   * camera the document has lost leaves `applied`, so this cannot pile up.
+   */
+  private restedAndStillHeld(named: ReadonlySet<string>): Set<string> {
+    const held = new Set(named)
+    for (const cameraId of this.railedCameras) {
+      if (named.has(cameraId)) continue
+      if (!this.restCamera(cameraId) && this.applied.has(cameraId)) held.add(cameraId)
+    }
+    return held
+  }
+
+  /** Each named camera at its rest pose, paired with the shot covering the playhead. */
+  private shotsDrivingNow(named: ReadonlySet<string>): { object: Object3D; shot: CameraShot }[] {
+    const driven: { object: Object3D; shot: CameraShot }[] = []
+    for (const cameraId of named) {
+      // Where the document holds it, before any shot has its say: unbinding a rail, or deleting
+      // it, leaves a shot that covers the head and moves nothing.
+      const object = this.restCamera(cameraId)
+      if (!object) continue
+      const shot = shotOfCameraAt(this.timeline, cameraId, this.playhead)
+      if (shot) driven.push({ object, shot })
+    }
+    return driven
+  }
+
+  /**
    * Where the shots put their cameras at the instant the head stands on: along a rail, aimed at
    * a target, or both.
    *
@@ -32,52 +64,18 @@ export abstract class SceneRendererCamera extends SceneRendererAnimation {
     // Walked from the SHOTS rather than from the nodes, exactly as `applyLenses` is: a camera no
     // shot names is one this pass has nothing to do to, and this ran over every node per frame.
     const named = new Set(shotCameras(shots))
-    const applyCameraShotsStep1 = () => {
-      const applyCameraShotsStep1 = () => {
-        const held = new Set(named)
-        // The ones the shots have just let go of. Nothing else in the engine writes a camera's
-        // position, so a shot deleted — or the undo of one that opened — would leave its camera
-        // wherever the rail last put it, and the film would go on being taken from there.
-        for (const cameraId of this.railedCameras) {
-          if (named.has(cameraId)) continue
-          // Held for the next pass when it could not be written — a camera the gizmo carries, whose
-          // shot an undo took away mid-drag. Forfeiting the one attempt makes the rail its rest pose
-          // on release; a camera the document has lost leaves `applied`, so this cannot pile up.
-          if (!this.restCamera(cameraId) && this.applied.has(cameraId)) held.add(cameraId)
-        }
-        this.railedCameras = held
-        const applyCameraShotsStep2 = () => {
-          if (named.size === 0) return
-          const driven: {
-            object: Object3D
-            shot: CameraShot
-          }[] = []
-          for (const cameraId of named) {
-            // Where the document holds it, before any shot has its say: unbinding a rail, or deleting
-            // it, leaves a shot that covers the head and moves nothing.
-            const object = this.restCamera(cameraId)
-            if (!object) continue
-            const shot = shotOfCameraAt(this.timeline, cameraId, this.playhead)
-            if (shot) driven.push({ object, shot })
-          }
-          const applyCameraShotsStep3 = () => {
-            // Every rail before any aim, and not one camera at a time: a shot may watch a camera that is
-            // itself riding one, and aiming at where that camera stood BEFORE its rail ran is wrong for
-            // the whole length of the shot rather than by one scrub step.
-            for (const { object, shot } of driven) {
-              if (shot.motion) this.railCamera(object, shot, shot.motion)
-            }
-            for (const { object, shot } of driven) {
-              if (shot.target) this.aimCamera(object, shot.target)
-            }
-          }
-          return applyCameraShotsStep3()
-        }
-        return applyCameraShotsStep2()
-      }
-      return applyCameraShotsStep1()
+    this.railedCameras = this.restedAndStillHeld(named)
+    if (named.size === 0) return
+    const driven = this.shotsDrivingNow(named)
+    // Every rail before any aim, and not one camera at a time: a shot may watch a camera that is
+    // itself riding one, and aiming at where that camera stood BEFORE its rail ran is wrong for
+    // the whole length of the shot rather than by one scrub step.
+    for (const { object, shot } of driven) {
+      if (shot.motion) this.railCamera(object, shot, shot.motion)
     }
-    return applyCameraShotsStep1()
+    for (const { object, shot } of driven) {
+      if (shot.target) this.aimCamera(object, shot.target)
+    }
   }
   /**
    * A camera put back where the document holds it, tracks included, and the object it stands for.

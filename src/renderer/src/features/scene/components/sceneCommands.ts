@@ -155,11 +155,16 @@ function lookThroughCamera(
   const camera = picked.find(node => node.type === 'camera') ?? nodes.find(n => n.type === 'camera')
   if (camera) views.setPaneView(documentId, pane, { kind: 'camera', nodeId: camera.id })
 }
+/**
+ * 🛑 Split into named halves, never one switch: the size guard caps a function of this complexity
+ * at thirty lines. Each half answers `null` for what it does not know, and the next one is asked —
+ * so a command may be moved between them freely, and only the ORDER of a shared case matters.
+ */
 export function runSceneCommand(documentId: string, command: CommandId): CommandAnswer {
   const store = useScenes.getState()
   const { nodes, selectedIds } = sceneOf(store, documentId)
   const picked = selectedNodes(nodes, selectedIds)
-  const runSceneCommandStep1 = () => {
+  const framingAndViews = () => {
     switch (command) {
       case 'scene.frame':
         sceneEngineOf(documentId)?.frameSelection()
@@ -184,9 +189,9 @@ export function runSceneCommand(documentId: string, command: CommandId): Command
         return null
     }
   }
-  let answer: CommandAnswer | null = runSceneCommandStep1()
+  let answer: CommandAnswer | null = framingAndViews()
   if (answer !== null) return answer
-  const runSceneCommandStep2 = () => {
+  const cameraSheetAndPanels = () => {
     switch (command) {
       case 'scene.viewCamera':
         lookThroughCamera(documentId, nodes, picked)
@@ -213,9 +218,9 @@ export function runSceneCommand(documentId: string, command: CommandId): Command
         return null
     }
   }
-  answer = runSceneCommandStep2()
+  answer = cameraSheetAndPanels()
   if (answer !== null) return answer
-  const runSceneCommandStep3 = () => {
+  const removingAndCopying = () => {
     switch (command) {
       case 'scene.delete':
         // A picked control point is taken first: point and rail are one selection seen at two
@@ -239,9 +244,9 @@ export function runSceneCommand(documentId: string, command: CommandId): Command
         return null
     }
   }
-  answer = runSceneCommandStep3()
+  answer = removingAndCopying()
   if (answer !== null) return answer
-  const runSceneCommandStep4 = () => {
+  const pastingAndGrouping = () => {
     switch (command) {
       case 'scene.cut':
         // Checked BEFORE the clipboard is written: a cut that cannot remove must not look copied.
@@ -268,9 +273,9 @@ export function runSceneCommand(documentId: string, command: CommandId): Command
         return null
     }
   }
-  answer = runSceneCommandStep4()
+  answer = pastingAndGrouping()
   if (answer !== null) return answer
-  const runSceneCommandStep5 = () => {
+  const solidOperations = () => {
     switch (command) {
       case 'scene.negate':
         if (canNegate(picked)) store.runCommand(documentId, negateNodes(picked))
@@ -294,9 +299,9 @@ export function runSceneCommand(documentId: string, command: CommandId): Command
         return null
     }
   }
-  answer = runSceneCommandStep5()
+  answer = solidOperations()
   if (answer !== null) return answer
-  const runSceneCommandStep6 = () => {
+  const separatingAndHistory = () => {
     switch (command) {
       case 'scene.separate': {
         const solid = picked[0]
@@ -316,7 +321,7 @@ export function runSceneCommand(documentId: string, command: CommandId): Command
         return null
     }
   }
-  answer = runSceneCommandStep6()
+  answer = separatingAndHistory()
   if (answer !== null) return answer
   return false
 }

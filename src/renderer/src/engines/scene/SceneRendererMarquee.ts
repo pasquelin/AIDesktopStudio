@@ -24,111 +24,104 @@ export abstract class SceneRendererMarquee extends SceneRendererPointer {
   protected onPointerUp = (event: PointerEvent): void => {
     if (this.flightPointer && event.pointerId !== this.flightPointer.pointerId) return
     if (event.button === 2) {
-      // A right button that never flew and never moved was a click, not a flight: that is the
-      // one gesture left for a menu in this viewport, the button itself being taken by the fly
-      // camera.
-      const still = !this.flew && this.held.size === 0 && wasClick(this.flownFrom, event)
-      this.endFlight(2, event)
-      // Never in pose mode: there a click names a bone, and a bone is not a node the menu could
-      // act on. And never through the preview, for the reason the left button gives below: it is
-      // drawn through another camera, so a ray cast from the pane underneath names whatever the
-      // picture happens to be covering.
-      if (still && !this.poseMode && !this.sculptMode && !this.viewport.insetHasPointer(event)) {
-        // A knob raises the menu of its POINT, and picks it on the way: what the menu acts on is
-        // then what the gizmo holds, rather than two different things under one pointer.
-        const knob = this.pathPointAt(event)
-        if (knob) {
-          this.options.onSelectPathPoint?.(knob)
-          this.options.onPathPointMenu?.(knob.nodeId, knob.index)
-          return
-        }
-        this.options.onContextMenu?.(this.nodeAt(event) ?? null)
-      }
+      this.endRightButton(event)
       return
     }
-    if (event.button !== 0) return
+    if (event.button === 0) this.endLeftButton(event)
+  }
+
+  private endLeftButton(event: PointerEvent): void {
     const pressed = this.pressed
-    const onPointerUpStep1 = () => {
-      const onPointerUpStep1 = () => {
-        const flew = this.flew
-        const marquee = this.marquee
-        this.pressed = null
-        const onPointerUpStep2 = () => {
-          this.dropMarquee()
-          this.endFlight(0, event)
-          // A rectangle that travelled takes what it crossed, and publishes even when it crossed
-          // nothing: that is how a sweep through the void clears a selection.
-          if (marquee && !flew && !wasClick(marquee.from, marquee.to)) {
-            this.pickInMarquee(marquee, event)
-            return
-          }
-          const onPointerUpStep3 = () => {
-            // A flight that moved the camera is not a click, even when the pointer never left its pixel:
-            // the keyboard did the moving. The same reading the right button already makes for its menu.
-            if (flew || !wasClick(pressed, event)) return // A click in the preview picks nothing: it is drawn through another camera, so a ray cast
-            // from the pane underneath would select whatever the picture happens to be covering.
-            // A click in the preview picks nothing: it is drawn through another camera, so a ray cast
-            if (this.viewport.insetHasPointer(event)) return
-            if (this.sculptMode) return
-            this.aimGizmo()
-            const onPointerUpStep4 = () => {
-              if (this.poseMode) {
-                const ndc = this.viewport.pointerNdcOf(event)
-                if (!ndc) return
-                const picked = nearestSegment(this.projectedSegments(this.cameraInHand()), {
-                  x: ndc.x,
-                  y: ndc.y,
-                })
-                this.options.onSelectBone?.(
-                  picked ? { nodeId: picked.nodeId, bone: picked.bone } : null,
-                )
-                return
-              }
-              if (event.altKey && event.shiftKey) {
-                const first = this.pathPointAt(event)
-                const run = first ? railOf(this.applied.get(first.nodeId)) : null
-                if (first && !first.part && first.index === 0 && run && !run.closed) {
-                  this.options.onClosePath?.(first.nodeId)
-                  return
-                }
-                const spot = this.railSpotAt(event)
-                if (spot) this.options.onAppendPathPoint?.(spot.nodeId, spot.point)
-                return
-              }
-              const knob = this.pathPointAt(event)
-              const onPointerUpStep5 = () => {
-                if (knob) {
-                  this.options.onSelectPathPoint?.(knob)
-                  return
-                }
-                if (event.altKey) {
-                  const spot = this.pathSegmentAt(event)
-                  if (spot) {
-                    this.options.onAddPathPoint?.(spot.nodeId, spot.index)
-                    return
-                  }
-                }
-                const id = this.nodeAt(event)
-                const onPointerUpStep6 = () => {
-                  this.options.onSelect(
-                    id ? [id] : [],
-                    extendsSelection(event) ? 'toggle' : 'replace',
-                  )
-                  if (this.pickedPathPoint) this.options.onSelectPathPoint?.(null)
-                }
-                return onPointerUpStep6()
-              }
-              return onPointerUpStep5()
-            }
-            return onPointerUpStep4()
-          }
-          return onPointerUpStep3()
-        }
-        return onPointerUpStep2()
-      }
-      return onPointerUpStep1()
+    const flew = this.flew
+    const marquee = this.marquee
+    this.pressed = null
+    this.dropMarquee()
+    this.endFlight(0, event)
+    // A rectangle that travelled takes what it crossed, and publishes even when it crossed
+    // nothing: that is how a sweep through the void clears a selection.
+    if (marquee && !flew && !wasClick(marquee.from, marquee.to)) {
+      this.pickInMarquee(marquee, event)
+      return
     }
-    return onPointerUpStep1()
+    // A flight that moved the camera is not a click, even when the pointer never left its pixel:
+    // the keyboard did the moving. The same reading the right button already makes for its menu.
+    if (flew || !wasClick(pressed, event)) return
+    // A click in the preview picks nothing: it is drawn through another camera, so a ray cast
+    // from the pane underneath would select whatever the picture happens to be covering.
+    if (this.viewport.insetHasPointer(event)) return
+    if (this.sculptMode) return
+    this.aimGizmo()
+    if (this.poseMode) this.pickBoneAt(event)
+    else this.pickAt(event)
+  }
+
+  /**
+   * The right button, whose click is the one gesture left for a menu — the button itself being
+   * taken by the fly camera.
+   *
+   * Never in pose mode: there a click names a bone, and a bone is not a node the menu could act
+   * on. Never through the preview either, for the reason the left button gives: it is drawn
+   * through another camera, so a ray cast from the pane underneath names what the picture covers.
+   */
+  private endRightButton(event: PointerEvent): void {
+    const still = !this.flew && this.held.size === 0 && wasClick(this.flownFrom, event)
+    this.endFlight(2, event)
+    if (!still || this.poseMode || this.sculptMode || this.viewport.insetHasPointer(event)) return
+    // A knob raises the menu of its POINT, and picks it on the way: what the menu acts on is then
+    // what the gizmo holds, rather than two different things under one pointer.
+    const knob = this.pathPointAt(event)
+    if (knob) {
+      this.options.onSelectPathPoint?.(knob)
+      this.options.onPathPointMenu?.(knob.nodeId, knob.index)
+      return
+    }
+    this.options.onContextMenu?.(this.nodeAt(event) ?? null)
+  }
+
+  /** In pose mode a click names a BONE — the nearest projected segment, or nothing. */
+  private pickBoneAt(event: PointerEvent): void {
+    const ndc = this.viewport.pointerNdcOf(event)
+    if (!ndc) return
+    const picked = nearestSegment(this.projectedSegments(this.cameraInHand()), {
+      x: ndc.x,
+      y: ndc.y,
+    })
+    this.options.onSelectBone?.(picked ? { nodeId: picked.nodeId, bone: picked.bone } : null)
+  }
+
+  private pickAt(event: PointerEvent): void {
+    if (this.pickPathGesture(event)) return
+    const id = this.nodeAt(event)
+    this.options.onSelect(id ? [id] : [], extendsSelection(event) ? 'toggle' : 'replace')
+    if (this.pickedPathPoint) this.options.onSelectPathPoint?.(null)
+  }
+
+  /** The rail gestures a modifier arms — closing a run, appending to it, taking or adding a knob. */
+  private pickPathGesture(event: PointerEvent): boolean {
+    if (event.altKey && event.shiftKey) {
+      const first = this.pathPointAt(event)
+      const run = first ? railOf(this.applied.get(first.nodeId)) : null
+      if (first && !first.part && first.index === 0 && run && !run.closed) {
+        this.options.onClosePath?.(first.nodeId)
+        return true
+      }
+      const spot = this.railSpotAt(event)
+      if (spot) this.options.onAppendPathPoint?.(spot.nodeId, spot.point)
+      return true
+    }
+    const knob = this.pathPointAt(event)
+    if (knob) {
+      this.options.onSelectPathPoint?.(knob)
+      return true
+    }
+    if (event.altKey) {
+      const spot = this.pathSegmentAt(event)
+      if (spot) {
+        this.options.onAddPathPoint?.(spot.nodeId, spot.index)
+        return true
+      }
+    }
+    return false
   }
   /** Arms the rectangle on the button the scheme left free and nowhere else: under `custom` the
    * bare left one may still orbit, and the preview picks nothing at all. */

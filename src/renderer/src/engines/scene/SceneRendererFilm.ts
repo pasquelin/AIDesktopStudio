@@ -48,72 +48,82 @@ export abstract class SceneRendererFilm extends SceneRendererPreview {
     }
     // Before the hiding below: this shows nodes again, and a helper hidden after it stays hidden.
     const masked = isolating(this.isolation)
-    const hideWorkshopStep1 = () => {
-      const hideWorkshopStep1 = () => {
-        if (masked) {
-          for (const [id, node] of this.applied) {
-            const object = this.objects.get(id)
-            if (object) object.visible = node.visible
-          }
-        }
-        // A studio VIEW borrows three's neutral room, and only `dressPane` gives it back — which a
-        // film and a capture never go through, since they render the scene directly. Left alone, the
-        // whole film comes out lit by the room instead of by the document's own sky.
-        this.environment?.borrowStudio(false)
-        // For the same reason, and it is the whole of what a zone has to be told. The preview names
-        // ITS camera, and comes here on every frame it is shown: opening the zone in full for it put
-        // the whole level back in the scene, twice a frame. A film and a capture name none, and every
-        // cell is drawn for them.
-        const zonedTo = this.zonedTo
-        const hideWorkshopStep2 = () => {
-          this.instances.follow?.(camera ?? null, this.shadowThrow)
-          for (const helper of this.helpers.values()) hide(helper)
-          for (const joints of this.joints.values()) hide(joints.points)
-          const hideWorkshopStep3 = () => {
-            for (const solids of this.boneSolids.values()) hide(solids.mesh)
-            for (const frustum of this.frustums.values()) hide(frustum)
-            // A body and a bulb are workshop furniture too: they stand where the thing they draw stands,
-            // so a camera aimed at a lamp would otherwise film the bulb somebody drew to find it by.
-            for (const marker of this.markers.values()) hide(marker)
-            const hideWorkshopStep4 = () => {
-              hide(this.grid)
-              // Boxes, origins and normals, in one flag: they hang from a group of their own for this.
-              hide(this.aids.object)
-              // The arrows a person drags an object by. They stand where the object stands, so a camera
-              // aimed at a selected node fills its preview — and its film — with the tool instead.
-              hide(this.gizmo?.getHelper())
-              // Furniture too, but held by a material flag rather than a `visible`, so it is
-              // remembered here rather than pushed onto `hidden`.
-              const tinted = this.relief.showMaskTint?.(false) === true
-              const hideWorkshopStep5 = () => {
-                // A rail is a working aid like the grid, not something a shot puts on screen: drawn, its
-                // line and its knobs would run across every previewed and every rendered frame.
-                for (const node of this.applied.values()) {
-                  if (node.type === 'path') hide(this.objects.get(node.id))
-                }
-                return () => {
-                  for (const object of hidden) object.visible = true
-                  if (tinted) this.relief.showMaskTint?.(true)
-                  if (masked) this.applyVisibility()
-                  // 🛑 The zone back where it was found. Left on the preview's own, the next pane widens it
-                  // again and answers « moved », which redraws every shadow map — every frame a preview is
-                  // shown, on a scene nothing touched.
-                  if (zonedTo) this.instances.follow?.(zonedTo, this.shadowThrow)
-                  this.zonedTo = zonedTo
-                }
-              }
-              return hideWorkshopStep5()
-            }
-            return hideWorkshopStep4()
-          }
-          return hideWorkshopStep3()
-        }
-        return hideWorkshopStep2()
+    if (masked) {
+      for (const [id, node] of this.applied) {
+        const object = this.objects.get(id)
+        if (object) object.visible = node.visible
       }
-      return hideWorkshopStep1()
     }
-    return hideWorkshopStep1()
+    // A studio VIEW borrows three's neutral room, and only `dressPane` gives it back — which a
+    // film and a capture never go through, since they render the scene directly. Left alone, the
+    // whole film comes out lit by the room instead of by the document's own sky.
+    this.environment?.borrowStudio(false)
+    // For the same reason, and it is the whole of what a zone has to be told. The preview names
+    // ITS camera, and comes here on every frame it is shown: opening the zone in full for it put
+    // the whole level back in the scene, twice a frame. A film and a capture name none, and every
+    // cell is drawn for them.
+    const zonedTo = this.zonedTo
+    this.instances.follow?.(camera ?? null, this.shadowThrow)
+    this.hideFurniture(hide)
+    // Furniture too, but held by a material flag rather than a `visible`, so it is remembered
+    // here rather than pushed onto `hidden`.
+    const tinted = this.relief.showMaskTint?.(false) === true
+    return () => {
+      for (const object of hidden) object.visible = true
+      if (tinted) this.relief.showMaskTint?.(true)
+      if (masked) this.applyVisibility()
+      // 🛑 The zone back where it was found. Left on the preview's own, the next pane widens it
+      // again and answers « moved », which redraws every shadow map — every frame a preview is
+      // shown, on a scene nothing touched.
+      if (zonedTo) this.instances.follow?.(zonedTo, this.shadowThrow)
+      this.zonedTo = zonedTo
+    }
   }
+
+  /** Everything a shot must not see, in one pass. Order does not matter: each hides on its own. */
+  private hideFurniture(hide: (object: Object3D | null | undefined) => void): void {
+    for (const helper of this.helpers.values()) hide(helper)
+    for (const joints of this.joints.values()) hide(joints.points)
+    for (const solids of this.boneSolids.values()) hide(solids.mesh)
+    for (const frustum of this.frustums.values()) hide(frustum)
+    // A body and a bulb are workshop furniture too: they stand where the thing they draw stands,
+    // so a camera aimed at a lamp would otherwise film the bulb somebody drew to find it by.
+    for (const marker of this.markers.values()) hide(marker)
+    hide(this.grid)
+    // Boxes, origins and normals, in one flag: they hang from a group of their own for this.
+    hide(this.aids.object)
+    // The arrows a person drags an object by. They stand where the object stands, so a camera
+    // aimed at a selected node fills its preview — and its film — with the tool instead.
+    hide(this.gizmo?.getHelper())
+    // A rail is a working aid like the grid, not something a shot puts on screen: drawn, its
+    // line and its knobs would run across every previewed and every rendered frame.
+    for (const node of this.applied.values()) {
+      if (node.type === 'path') hide(this.objects.get(node.id))
+    }
+  }
+  /** One frame of a film, off screen. Its own method only to keep `renderFilm` readable. */
+  private drawFilmFrame(
+    camera: ViewportCamera,
+    cameraNodeId: string | null,
+    target: WebGLRenderTarget,
+    width: number,
+    height: number,
+  ): boolean {
+    return this.viewport.drawScene({
+      scene: this.viewport.scene,
+      camera,
+      surface: 'offscreen',
+      paneIndex: 0,
+      // Named for THIS frame: a shot hands the film to another camera mid-way, and the
+      // composition that camera films through is the one to resolve.
+      cameraNodeId,
+      target,
+      rect: null,
+      width,
+      height,
+    })
+  }
+
   /**
    * Draws the film one frame at a time, through whichever camera `cameraAt` names for that
    * instant, and hands each one over already encoded as a PNG.
@@ -136,61 +146,34 @@ export abstract class SceneRendererFilm extends SceneRendererPreview {
     const initialCamera = this.cameraObject(cameraAt(0))
     if (!gl || !initialCamera) throw new Error('no camera to render from')
     let camera = initialCamera
-    const renderFilmStep1 = async () => {
-      const renderFilmStep1 = async () => {
-        const { width, height } = evenSize(request)
-        const target = new WebGLRenderTarget(width, height)
-        const renderFilmStep2 = async () => {
-          const restore = this.hideWorkshop()
-          const loan = aspectLoan(width, height)
-          const head = this.playhead
-          const renderFilmStep3 = async () => {
-            try {
-              let index = 0
-              for (const time of frameTimes(request.duration, request.fps)) {
-                if (signal?.aborted) return
-                // Resolved per frame: a shot hands the film to another camera mid-way, and the frame
-                // after a camera is deleted keeps the last one rather than throwing at the encoder.
-                camera = this.cameraObject(cameraAt(time)) ?? camera
-                loan.frame(camera)
-                this.setPlayhead(time)
-                const composed = this.viewport.drawScene({
-                  scene: this.viewport.scene,
-                  camera,
-                  surface: 'offscreen',
-                  paneIndex: 0,
-                  // Named for THIS frame: a shot hands the film to another camera mid-way, and the
-                  // composition that camera films through is the one to resolve.
-                  cameraNodeId: cameraAt(time),
-                  target,
-                  rect: null,
-                  width,
-                  height,
-                })
-                const pixels = readRenderPixels(gl, target, width, height)
-                index += 1
-                await onFrame(
-                  index,
-                  await encodeFilmFrameOffThread(pixels, width, height, composed),
-                )
-              }
-            } finally {
-              gl.setRenderTarget(null)
-              target.dispose()
-              this.post?.releaseSurface('offscreen')
-              loan.restore()
-              restore()
-              // Where the head was before the film was asked for: a render is not an edit.
-              this.setPlayhead(head)
-              this.redraw()
-            }
-          }
-          return renderFilmStep3()
-        }
-        return renderFilmStep2()
+    const { width, height } = evenSize(request)
+    const target = new WebGLRenderTarget(width, height)
+    const restore = this.hideWorkshop()
+    const loan = aspectLoan(width, height)
+    const head = this.playhead
+    try {
+      let index = 0
+      for (const time of frameTimes(request.duration, request.fps)) {
+        if (signal?.aborted) return
+        // Resolved per frame: a shot hands the film to another camera mid-way, and the frame
+        // after a camera is deleted keeps the last one rather than throwing at the encoder.
+        camera = this.cameraObject(cameraAt(time)) ?? camera
+        loan.frame(camera)
+        this.setPlayhead(time)
+        const composed = this.drawFilmFrame(camera, cameraAt(time), target, width, height)
+        const pixels = readRenderPixels(gl, target, width, height)
+        index += 1
+        await onFrame(index, await encodeFilmFrameOffThread(pixels, width, height, composed))
       }
-      return renderFilmStep1()
+    } finally {
+      gl.setRenderTarget(null)
+      target.dispose()
+      this.post?.releaseSurface('offscreen')
+      loan.restore()
+      restore()
+      // Where the head was before the film was asked for: a render is not an edit.
+      this.setPlayhead(head)
+      this.redraw()
     }
-    return renderFilmStep1()
   }
 }

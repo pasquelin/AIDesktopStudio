@@ -123,40 +123,36 @@ export abstract class SceneRendererViews extends SceneRendererCamera {
     this.paneViews = [...views]
     if (this.quadView()) this.placePanes()
   }
+  /** One pane: a camera of the document looks through itself, a side view is aimed at `target`. */
+  private placePane(index: number, view: PaneView, target: ThreeVector3): void {
+    const locked = isCameraView(view) ? this.cameraObject(view.nodeId) : null
+    this.viewport.setPaneCamera(index, locked)
+    const orbit = this.viewport.paneOrbits[index]
+    if (isCameraView(view)) {
+      if (orbit) orbit.enableRotate = true
+      return
+    }
+    this.viewport.setPaneProjection(index, view === 'free' ? 'perspective' : 'orthographic')
+    const camera = this.viewport.paneCameras[index]
+    if (orbit) orbit.enableRotate = view === 'free'
+    if (!camera || view === 'free') return
+    const { x, y, z } = viewPosition(view, target, SIDE_VIEW_DISTANCE)
+    camera.position.set(x, y, z)
+    camera.lookAt(target)
+    if (orbit) {
+      orbit.target.copy(target)
+      orbit.update()
+    }
+  }
+
   protected placePanes(): void {
     const main = this.viewport.perspective
     const pivot = this.viewport.orbit?.target
     // What the MAIN view looks at, never the raw pivot: the sides would otherwise open centred
     // on a point the pointer left off the axis — see `viewPlacement`, which says why.
     const target = pivot ? lookedAtBy(main, pivot) : this.pivot.position
-    const placePanesStep1 = () => {
-      const placePanesStep1 = () => {
-        this.viewport.setPaneHeight(this.sceneHeight())
-        for (const [index, view] of this.paneViews.entries()) {
-          const locked = isCameraView(view) ? this.cameraObject(view.nodeId) : null
-          this.viewport.setPaneCamera(index, locked)
-          if (isCameraView(view)) {
-            const orbit = this.viewport.paneOrbits[index]
-            if (orbit) orbit.enableRotate = true
-            continue
-          }
-          this.viewport.setPaneProjection(index, view === 'free' ? 'perspective' : 'orthographic')
-          const camera = this.viewport.paneCameras[index]
-          const orbit = this.viewport.paneOrbits[index]
-          if (orbit) orbit.enableRotate = view === 'free'
-          if (!camera || view === 'free') continue
-          const { x, y, z } = viewPosition(view, target, SIDE_VIEW_DISTANCE)
-          camera.position.set(x, y, z)
-          camera.lookAt(target)
-          if (orbit) {
-            orbit.target.copy(target)
-            orbit.update()
-          }
-        }
-        this.redraw()
-      }
-      return placePanesStep1()
-    }
-    return placePanesStep1()
+    this.viewport.setPaneHeight(this.sceneHeight())
+    for (const [index, view] of this.paneViews.entries()) this.placePane(index, view, target)
+    this.redraw()
   }
 }
