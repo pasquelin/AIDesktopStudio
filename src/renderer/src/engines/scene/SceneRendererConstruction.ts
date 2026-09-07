@@ -53,83 +53,88 @@ export class SceneRendererConstruction extends SceneRendererFrame {
       options.assetVersion,
       options.livePreview,
     )
-    const sceneTask1Step1 = () => {
-      this.gltf = options.loadModel
-        ? {
-            load: options.loadModel,
-            // A test that hands one stub reads animations off it too, exactly as a `.glb` holding
-            // both would.
-            loadAnimation: options.loadAnimation ?? options.loadModel,
-            dispose: () => {},
-          }
-        : createGltfSource(
-            () => this.viewport.gl,
-            // A `.glb` whose textures do not resolve arrives bare either way; without this line
-            // it is indistinguishable from a model that never had one.
-            (scope, error) => reportFailure('scene.texture', scope, error),
-          )
-      this.modelCache = createModelCache(
-        this.gltf.load,
-        // The node stays in the outliner and draws nothing: a corrupt or compressed GLB is
-        // otherwise indistinguishable from one that was never asked for.
-        (key, error) => reportFailure('scene.model', assetIdFromUrl(key) ?? key, error),
-      )
-      this.scatter = createScatterSurface(this.viewport.scene, {
-        models: this.modelCache,
-        onUnsupported: (assetId, status) =>
-          reportFailure(
-            'scene.model',
-            assetId,
-            new Error(`scatter requires a static model; received ${status}`),
-          ),
-        onReady: () => this.redraw(),
-      })
-      this.clipSources = createRefCache({
-        load: url => this.gltf.loadAnimation(url),
-        free: disposeTree,
-        // Under a scope of its own: a failing animation must not swallow what a failing model says.
-        onFailure: (url, error) => reportFailure('scene.animation', url, error),
-      })
-      const sceneTask1Step2 = () => {
-        this.bvh = options.bvh ?? createBvhBuilder(() => new BvhWorker())
-        this.instances = groupsFor(options)(
-          this.viewport.scene,
-          mesh =>
-            // What the document dresses it in, never what a view left on it: an instance born during
-            // a solid pass would wear the stand-in for good.
-            this.paneMemory.materials.get(mesh) ?? mesh.material,
-        )
-        this.csg = createCsgEvaluator({
-          spawn: () => new CsgWorker(),
-          // The key as subject, so two solids that both fail are two lines rather than one: the node
-          // keeps drawing its raw brushes, and a silent second failure would look like a success.
-          onFailure: (key, error) => reportFailure('scene.carved', key, error),
-        })
-        const sceneTask1Step3 = () => {
-          this.skin = options.skin ?? createSkinWeights(() => new SkinWorker())
-          this.retarget = options.retarget ?? createRetarget(() => new RetargetWorker())
-          // Before any file lands: a skeleton this project has already been taught is recognised on
-          // the first model that carries it, in a document that never saw the correction.
-          for (const profile of options.profiles ?? []) this.retarget.remember(profile)
-          const sceneTask1Step4 = () => {
-            this.sky = createSkyBinding(this.textureCache, () => this.paintBackground())
-            // The studio's own by default: a face parsed for a caption in the image workspace is the
-            // same object a text node extrudes, and half a megabyte of glyph tables is worth sharing.
-            this.fonts = options.fonts ?? studioFonts
-            // No lights here: they are nodes of the state now, so the viewport shows what the outliner
-            // lists — and hiding one actually darkens the scene.
-            this.viewport.camera.position.set(5, 5, 5)
-            const sceneTask1Step5 = () => {
-              this.viewport.camera.lookAt(0, 0, 0)
-            }
-            return sceneTask1Step5()
-          }
-          return sceneTask1Step4()
+    this.buildModelSources(options)
+    this.buildShapeWorkers(options)
+    this.buildRigWorkers(options)
+    this.buildStage(options)
+  }
+
+  /** Where a `.glb` comes from, and the two caches that keep one file read once. */
+  private buildModelSources(options: SceneRendererOptions): void {
+    this.gltf = options.loadModel
+      ? {
+          load: options.loadModel,
+          // A test that hands one stub reads animations off it too, exactly as a `.glb` holding
+          // both would.
+          loadAnimation: options.loadAnimation ?? options.loadModel,
+          dispose: () => {},
         }
-        return sceneTask1Step3()
-      }
-      return sceneTask1Step2()
-    }
-    sceneTask1Step1()
+      : createGltfSource(
+          () => this.viewport.gl,
+          // A `.glb` whose textures do not resolve arrives bare either way; without this line
+          // it is indistinguishable from a model that never had one.
+          (scope, error) => reportFailure('scene.texture', scope, error),
+        )
+    this.modelCache = createModelCache(
+      this.gltf.load,
+      // The node stays in the outliner and draws nothing: a corrupt or compressed GLB is
+      // otherwise indistinguishable from one that was never asked for.
+      (key, error) => reportFailure('scene.model', assetIdFromUrl(key) ?? key, error),
+    )
+    this.scatter = createScatterSurface(this.viewport.scene, {
+      models: this.modelCache,
+      onUnsupported: (assetId, status) =>
+        reportFailure(
+          'scene.model',
+          assetId,
+          new Error(`scatter requires a static model; received ${status}`),
+        ),
+      onReady: () => this.redraw(),
+    })
+    this.clipSources = createRefCache({
+      load: url => this.gltf.loadAnimation(url),
+      free: disposeTree,
+      // Under a scope of its own: a failing animation must not swallow what a failing model says.
+      onFailure: (url, error) => reportFailure('scene.animation', url, error),
+    })
+  }
+
+  /** What cuts and groups geometry — all three behind a worker, none of it on the interface thread. */
+  private buildShapeWorkers(options: SceneRendererOptions): void {
+    this.bvh = options.bvh ?? createBvhBuilder(() => new BvhWorker())
+    this.instances = groupsFor(options)(
+      this.viewport.scene,
+      mesh =>
+        // What the document dresses it in, never what a view left on it: an instance born during
+        // a solid pass would wear the stand-in for good.
+        this.paneMemory.materials.get(mesh) ?? mesh.material,
+    )
+    this.csg = createCsgEvaluator({
+      spawn: () => new CsgWorker(),
+      // The key as subject, so two solids that both fail are two lines rather than one: the node
+      // keeps drawing its raw brushes, and a silent second failure would look like a success.
+      onFailure: (key, error) => reportFailure('scene.carved', key, error),
+    })
+  }
+
+  /** What binds and replays a skeleton, and the corrections this project already made. */
+  private buildRigWorkers(options: SceneRendererOptions): void {
+    this.skin = options.skin ?? createSkinWeights(() => new SkinWorker())
+    this.retarget = options.retarget ?? createRetarget(() => new RetargetWorker())
+    // Before any file lands: a skeleton this project has already been taught is recognised on
+    // the first model that carries it, in a document that never saw the correction.
+    for (const profile of options.profiles ?? []) this.retarget.remember(profile)
+  }
+
+  /** The sky, the glyphs and where the eye starts — what a scene shows before it holds anything. */
+  private buildStage(options: SceneRendererOptions): void {
+    this.sky = createSkyBinding(this.textureCache, () => this.paintBackground())
+    // The studio's own by default: a face parsed for a caption in the image workspace is the
+    // same object a text node extrudes, and half a megabyte of glyph tables is worth sharing.
+    this.fonts = options.fonts ?? studioFonts
+    // No lights here: they are nodes of the state now, so the viewport shows what the outliner
+    // lists — and hiding one actually darkens the scene.
+    this.viewport.camera.position.set(5, 5, 5)
+    this.viewport.camera.lookAt(0, 0, 0)
   }
 }
