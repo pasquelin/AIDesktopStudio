@@ -1,4 +1,5 @@
 import type { Asset, AssetQuery } from '@shared/domain/asset'
+import { chunk } from '@shared/collections'
 import { matchExpression } from './ftsMatch'
 import { escapeLike, holes, NOT_PRIVATE } from './sqlText'
 import type { SqliteDriver, SqlRow, SqlValue } from './sqlite'
@@ -97,7 +98,17 @@ function tagFilter(parts: SearchParts, tags: readonly string[]): void {
 }
 
 /**
- * Every filed row under any of these folders, with NO bound.
+ * 🛑 SQLite parses an OR chain as a tree and refuses one past a depth of 1000 — measured here at
+ * 997 terms, which a move of a thousand files reaches.
+ */
+const UNDER_BATCH = 200
+
+/**
+ * Every filed row AT one of these paths or under it, unpaged. Each is a prefix rather than a
+ * folder: the caller passes one destination per moved FILE, which is why this batches at all.
+ *
+ * 🛑 Unpaged is not unbounded: `tagsByAsset` names the rows in one `IN`, and this driver stops at
+ * 32 766 parameters. One prefix over a folder of more than ~32 700 filed assets still throws.
  *
  * 🛑 Apart from `searchAssets` precisely because it must not be paged: its caller refiles what a
  * move landed, and the search's 500-row cap left the rows past it carrying the type of the folder
@@ -108,11 +119,13 @@ export function assetsUnder(
   tagsByAsset: TagsByAsset,
   folders: readonly string[],
 ): Asset[] {
-  if (folders.length === 0) return []
-  const where = folders.map(() => `(${UNDER_PATH})`).join(' OR ')
-  const rows = driver
-    .prepare(`SELECT * FROM assets WHERE missing_at IS NULL AND ${NOT_PRIVATE} AND (${where})`)
-    .all(...folders.flatMap(folder => underPath(folder)))
-  const tags = tagsByAsset(rows.map(row => text(row, 'id')))
-  return rows.map(row => assetOf(row, tags.get(text(row, 'id')) ?? []))
+  const rows = new Map<string, SqlRow>()
+  for (const batch of chunk(folders, UNDER_BATCH)) {
+    const where = batch.map(() => `(${UNDER_PATH})`).join(' OR ')
+    const found = driver
+      .prepare(`SELECT * FROM assets WHERE missing_at IS NULL AND ${NOT_PRIVATE} AND (${where})`)
+      .all(...batch.flatMap(folder => underPath(folder)))
+    for (const row of found) rows.set(text(row, 'id'), row)
+  }
+  return assetsOf([...rows.values()], tagsByAsset)
 }

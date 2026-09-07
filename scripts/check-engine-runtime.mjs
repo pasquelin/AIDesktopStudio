@@ -10,6 +10,7 @@ const SMOKE = [
   'import threading',
   'from aidesktopstudio_engine.workers.door import serve_selection',
   'parent, child = socket.socketpair()',
+  'parent.settimeout(60)',
   'thread = threading.Thread(target=serve_selection, args=("engine/selection", child.detach()), daemon=True)',
   'thread.start()',
   'hello = parent.recv(4096)',
@@ -59,6 +60,9 @@ export function checkEngineRuntime(runtime, platform = process.platform, arch = 
   execFileSync(command, [...args, '-c', SMOKE], {
     cwd: runtime,
     encoding: 'utf8',
+    // What `settimeout` above cannot bound: a hang at import or in the model's constructor. The
+    // pack hook this runs from would otherwise hold the build until the job timed out.
+    timeout: 180_000,
     env: {
       ...process.env,
       PYTHONDONTWRITEBYTECODE: '1',

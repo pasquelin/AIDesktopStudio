@@ -12,6 +12,8 @@ const TOOLS: ToolbarItem[] = [
   { id: 'brush', labelKey: 'actions.generate', icon: mdiPencil, shortcut: 'B' },
 ]
 
+const UNAVAILABLE: ToolbarItem[] = [TOOLS[0]!, { ...TOOLS[1]!, unavailable: true }]
+
 describe('Toolbar', () => {
   it('renders one button per tool and flags the active one', () => {
     render(<Toolbar tools={TOOLS} activeTool="brush" onTool={vi.fn()} />)
@@ -23,6 +25,34 @@ describe('Toolbar', () => {
       'aria-pressed',
       'false',
     )
+  })
+
+  it('leaves out a tool nothing can receive', () => {
+    render(<Toolbar tools={UNAVAILABLE} onTool={vi.fn()} />)
+
+    expect(screen.getByRole('button', { name: 'Fermer (V)' })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Générer (B)' })).not.toBeInTheDocument()
+  })
+
+  // A bar that ANSWERS a state — the crop frame's Apply and Cancel — is in no menu: dropped, it
+  // leaves nothing on screen to say what the studio is waiting for.
+  it('greys a tool that is merely disabled', () => {
+    const tools: ToolbarItem[] = [TOOLS[0]!, { ...TOOLS[1]!, disabled: true }]
+    render(<Toolbar tools={tools} onTool={vi.fn()} />)
+
+    expect(screen.getByRole('button', { name: 'Générer (B)' })).toBeDisabled()
+  })
+
+  // A group that vanished entirely would otherwise fuse the two around it into one run of icons.
+  it('hands the separator of a dropped tool to the next one shown', () => {
+    const tools: ToolbarItem[] = [
+      TOOLS[0]!,
+      { ...TOOLS[1]!, id: 'gone', separatorBefore: true, unavailable: true },
+      { ...TOOLS[1]!, id: 'after' },
+    ]
+    const { container } = render(<Toolbar tools={tools} onTool={vi.fn()} />)
+
+    expect(container.querySelectorAll('span[aria-hidden="true"].bg-border')).toHaveLength(1)
   })
 
   // A toggle and an armed tool are two questions, drawn the same way: snapping being on says

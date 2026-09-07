@@ -137,10 +137,10 @@ function runtimeManifest(sitePackages, platform, arch) {
   }
 }
 
+const encodeManifest = manifest => `${JSON.stringify(manifest, null, 2)}\n`
+
 function writeRuntimeManifest(manifest) {
-  const encoded = `${JSON.stringify(manifest, null, 2)}\n`
-  writeFileSync(join(RUNTIME, 'runtime-manifest.json'), encoded)
-  writeFileSync(join(ENGINE, 'embedded-runtime.json'), encoded)
+  writeFileSync(join(RUNTIME, 'runtime-manifest.json'), encodeManifest(manifest))
   console.log(
     `Embedded runtime: ${manifest.bytes} bytes (${manifest.distributions
       .map(distribution => `${distribution.name} ${distribution.bytes}`)
@@ -196,4 +196,8 @@ export function prepareEngineRuntime(platform = process.platform, arch = process
   }
 }
 
-if (process.argv[1] === fileURLToPath(import.meta.url)) prepareEngineRuntime()
+// `engine/embedded-runtime.json` is TRACKED: `collect-licences.mjs` reads it and a test pins the
+// distributions it names. A pack for another target would leave that target's list there, on a file
+// nobody edited — so only a deliberate regeneration writes it, never the pack hook.
+if (process.argv[1] === fileURLToPath(import.meta.url))
+  writeFileSync(join(ENGINE, 'embedded-runtime.json'), encodeManifest(prepareEngineRuntime()))

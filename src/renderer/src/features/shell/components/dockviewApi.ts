@@ -6,6 +6,7 @@ import { frontDocumentIn, useDocuments } from '@/stores/documents'
 import { homeIsVisible, useLayouts } from '@/stores/layouts'
 import { noteOpenedDocument } from '../recentDocuments'
 import { getBridge } from '@/services/bridge'
+import { reportFailure } from '@/services/diagnostics'
 
 // In its own file rather than beside `DocumentArea`: a space reaching for `setDocumentTitle`
 // would otherwise import the module that imports every space.
@@ -94,10 +95,23 @@ function modifiedFileViewIds(): string[] {
 async function settleFileView(id: string): Promise<boolean> {
   const view = fileViews.get(id)
   const bridge = getBridge()
-  if (!view || !bridge) return false
+  // 🛑 A `false` nobody was ASKED for: the callers — leaving a project, quitting — all read it as
+  // "the person said no", so a silent one stops the whole gesture with nothing on screen.
+  if (!view) {
+    reportFailure('document.close', id, new Error('the view holding these edits is gone'))
+    return false
+  }
+  if (!bridge) return false
   const choice = await bridge.documents.confirmClose(view.title)
   if (choice === 'cancel') return false
-  if (choice === 'save' && !(await fileViewSaves.get(id)?.())) return false
+  if (choice === 'save') {
+    const save = fileViewSaves.get(id)
+    if (!save) {
+      reportFailure('document.save', view.title, new Error('this view has no way to save'))
+      return false
+    }
+    if (!(await save())) return false
+  }
   noteModified(id, false)
   return true
 }

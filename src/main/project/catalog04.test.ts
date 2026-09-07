@@ -44,6 +44,17 @@ describe('catalog', () => {
     expect(catalog.search({ limit: ASSET_SEARCH_LIMIT_MAX })).toHaveLength(500)
   })
 
+  /**
+   * 🛑 One destination per MOVED FILE reaches the depth SQLite allows an OR chain: measured at 997
+   * terms, and a move of a thousand files threw where the renderer reads nothing.
+   */
+  it('answers for more folders than one statement may name at once', () => {
+    const paths = Array.from({ length: 1200 }, (_at, at) => `Rushes/shot_${at}.png`)
+    for (const [at, path] of paths.entries()) catalog.add(asset({ id: `asset_${at}`, path }))
+
+    expect(catalog.assetsUnder(paths)).toHaveLength(1200)
+  })
+
   it('answers for a folder and everything below it, and for nothing beside it', () => {
     catalog.add(asset({ id: 'asset_in', path: 'Rushes/a.png' }))
     catalog.add(asset({ id: 'asset_deep', path: 'Rushes/day1/b.png' }))

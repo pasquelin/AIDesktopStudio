@@ -39,6 +39,13 @@ export type ToolbarItem = {
   icon: string
   shortcut?: string
   disabled?: boolean
+  /**
+   * Nothing here can receive it right now — no selection, no frame. DROPPED from the bar, where
+   * `disabled` greys: a rail of glyphs waiting on a selection is a rail nobody reads, and the
+   * native menu names every tool at all times. Two words because `disabled` already means
+   * "declared, not wired yet", which must stay visible.
+   */
+  unavailable?: boolean
   /** The host's gauge, when it is not the bar's: a panel's title bar draws a 14px glyph, not 16. */
   variant?: ToolButtonProps['variant']
   /**
@@ -59,4 +66,20 @@ export type ToolbarItem = {
   activeMode?: string
   /** Draws a divider before this tool, so the bar reads as groups and not a run of icons. */
   separatorBefore?: boolean
+}
+
+/**
+ * The bar as it is DRAWN: what nothing can receive is left out, and hands its separator to the
+ * next tool shown — a group gone entirely would otherwise fuse the two around it.
+ */
+export function shownTools(tools: readonly ToolbarItem[]): ToolbarItem[] {
+  const shown: ToolbarItem[] = []
+  let separator = false
+  for (const tool of tools) {
+    if (tool.separatorBefore === true) separator = true
+    if (tool.unavailable === true) continue
+    shown.push(separator ? { ...tool, separatorBefore: true } : tool)
+    separator = false
+  }
+  return shown
 }

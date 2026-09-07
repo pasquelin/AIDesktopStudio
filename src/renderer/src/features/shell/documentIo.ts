@@ -417,6 +417,9 @@ async function settleUnsaved(andForget: boolean): Promise<boolean> {
       answers.push({ documentId, choice })
     }
     for (const { documentId, choice } of answers) {
+      // 🛑 This `false` says BOTH "it failed" and "the person answered no to the overwrite
+      // question", and nothing here tells them apart — so it stays silent rather than call a
+      // deliberate cancel an error. `closeDocument` has the same line, and the same hole.
       if (choice === 'save' && !(await saveDocument(documentId))) return false
       if (andForget) forgetDocument(documentId)
     }

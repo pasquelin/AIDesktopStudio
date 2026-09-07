@@ -1,9 +1,9 @@
-import { Fragment, type CSSProperties, type ReactNode } from 'react'
+import { Fragment, useMemo, type CSSProperties, type ReactNode } from 'react'
 import { cn } from '@/helpers/cn'
 import { tipFor } from '@/helpers/tooltip'
 import { Separator } from '../Separator'
 import { ToolbarTool } from './ToolbarTool'
-import type { ToolbarItem } from './tools'
+import { shownTools, type ToolbarItem } from './tools'
 
 export type ToolbarProps = {
   /**
@@ -51,6 +51,7 @@ export function Toolbar({
   // over the button above and cover the tool the eye is comparing against.
   const tip = tipFor(orientation)
   const divider = <Separator orientation={vertical ? 'horizontal' : 'vertical'} />
+  const shown = useMemo(() => shownTools(tools), [tools])
 
   return (
     <div
@@ -65,7 +66,7 @@ export function Toolbar({
         className,
       )}
     >
-      {tools.map((tool, index) => (
+      {shown.map((tool, index) => (
         <Fragment key={tool.id}>
           {/* `index > 0`: a registry that opens on a separator is one composed with something in
               front of it, and a rule against the edge of the bar separates nothing. */}

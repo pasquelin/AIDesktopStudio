@@ -188,9 +188,8 @@ async function settleLeaving(bridge: StudioBridge): Promise<boolean> {
  * that does not happen: no bridge, a cancelled dialog, a folder the main process refused.
  *
  * The refusal is swallowed rather than raised: every caller of the two gestures below does
- * `void openPicked()`, so a rejection left to travel was an unhandled one, and the main
- * process has already written the reason in the journal on its way past. Nothing to undo
- * either — the project that was open is still the one that is open.
+ * `void openPicked()`, so a rejection left to travel was an unhandled one, and the main has
+ * already recorded the reason — which reaches the screen even with no project open to keep it.
  */
 async function pickedProject(
   from: (bridge: StudioBridge, folder: string) => Promise<Project | null>,
