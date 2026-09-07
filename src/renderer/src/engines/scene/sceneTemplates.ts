@@ -169,8 +169,11 @@ function standIn(): SceneNode {
  * The player module, put down where the stand-in stands. It brings its own body, its own arm and
  * the eye it films through — nothing here names a camera, which is the whole of what it replaces.
  */
-function playerModuleAt(z: number): readonly SceneNode[] {
-  const [root, ...rest] = playerModuleNodes()
+function playerModuleAt(
+  z: number,
+  view: 'firstPerson' | 'thirdPerson' = 'thirdPerson',
+): readonly SceneNode[] {
+  const [root, ...rest] = playerModuleNodes(view)
   return root ? [{ ...root, transform: transformAt({ x: 0, y: 0, z }) }, ...rest] : []
 }
 
@@ -347,11 +350,9 @@ const BUILDERS: Record<SceneTemplateId, (scriptFolder: string) => Template> = {
   // controller reads `play`, rather than somewhere on the floor with the court behind it.
   firstPerson: folder =>
     characterView(
-      [
-        scripted(standIn(), 'player', folder),
-        cameraNode(transformAt({ x: 0, y: EYE_HEIGHT, z: STAND_IN_Z })),
-      ],
+      [...scriptedFirst(playerModuleAt(STAND_IN_Z, 'firstPerson'), 'player', folder)],
       { camera: 'firstPerson' },
+      'Capsule',
     ),
 
   // The camera stands back BEHIND the stand-in, which stands at z = 10 — over the shoulder means

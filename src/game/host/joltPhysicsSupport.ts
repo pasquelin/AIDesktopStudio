@@ -369,7 +369,7 @@ export function walkerOf(
   update.mWalkStairsStepUp = climb
   jolt.destroy(down)
   jolt.destroy(climb)
-  return { character, update, facing: null }
+  return { character, update, facing: null, carried: { x: 0, y: 0, z: 0 } }
 }
 
 /**
@@ -377,3 +377,22 @@ export function walkerOf(
  * counted, so destroying it frees what the parent still owns and the NEXT world reads a
  * corrupted heap. Children are built into SHAPES and composed.
  */
+
+export function carryWalker(
+  walker: Walker,
+  jolt: JoltModule,
+  wanted: Vector3,
+  dt: number,
+  scratch: Scratch,
+): void {
+  walker.character.UpdateGroundVelocity()
+  if (walker.character.GetGroundState() === jolt.EGroundState_OnGround) {
+    writeVector(walker.carried, walker.character.GetGroundVelocity())
+  }
+  scratch.vector.Set(
+    wanted.x / dt + walker.carried.x,
+    wanted.y / dt + walker.carried.y,
+    wanted.z / dt + walker.carried.z,
+  )
+  walker.character.SetLinearVelocity(scratch.vector)
+}

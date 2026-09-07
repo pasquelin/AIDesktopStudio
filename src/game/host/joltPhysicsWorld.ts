@@ -18,6 +18,7 @@ import {
   rideOf,
   sensorOf,
   walkerOf,
+  carryWalker,
   writeContact,
   writePose,
   writeVector,
@@ -34,6 +35,20 @@ export function createJoltPhysics(jolt: JoltModule): PhysicsPort {
   const { broadFilter, layerFilter, bodyFilter, shapeFilter, probe } = context
   const { held, namesById, walking, riding, sensing, targets, refused } = context
   const { pool, poses, contacts, contactPool, moved, motions, motionPool } = context
+
+  // Characters must read the support velocity for this step, before the rigid bodies advance.
+  let preparedStep: number | null = null
+  const prepareKinematics = (dt: number): void => {
+    if (preparedStep === dt) return
+    for (const [name, target] of targets) {
+      const body = held.get(name)
+      if (!body) continue
+      scratch.place.Set(target.position.x, target.position.y, target.position.z)
+      scratch.turn.Set(target.rotation.x, target.rotation.y, target.rotation.z, target.rotation.w)
+      bodies.MoveKinematic(body.id, scratch.place, scratch.turn, dt)
+    }
+    preparedStep = dt
+  }
 
   // Hoisted rather than written at the call: it captures two maps and would be rebuilt sixty
   // times a second.
@@ -236,6 +251,7 @@ export function createJoltPhysics(jolt: JoltModule): PhysicsPort {
     // and the last one would be a guess. Held ALSO covers the frame that says nothing — a Jolt
     // kinematic keeps the velocity it was last handed, and would slide away for ever.
     place: next => {
+      preparedStep = null
       for (const pose of next) {
         const body = held.get(pose.body)
         if (!body || !driven(body.descriptor) || body.walker) continue
@@ -255,6 +271,7 @@ export function createJoltPhysics(jolt: JoltModule): PhysicsPort {
     },
 
     moveCharacters: wanted => {
+      prepareKinematics(CHARACTER_STEP)
       moved.length = 0
       for (const one of wanted) {
         const walker = held.get(one.body)?.walker
@@ -264,12 +281,7 @@ export function createJoltPhysics(jolt: JoltModule): PhysicsPort {
         const fromX = before.GetX()
         const fromY = before.GetY()
         const fromZ = before.GetZ()
-        scratch.vector.Set(
-          one.wanted.x / CHARACTER_STEP,
-          one.wanted.y / CHARACTER_STEP,
-          one.wanted.z / CHARACTER_STEP,
-        )
-        walker.character.SetLinearVelocity(scratch.vector)
+        carryWalker(walker, jolt, one.wanted, CHARACTER_STEP, scratch)
         // Set rather than simulated: a walker's body has its rotation locked, so the heading a
         // system worked out is the only thing that will ever turn it. Sent only when it CHANGED —
         // a walker holding a straight line would else cross into the WebAssembly twice a step.
@@ -358,14 +370,9 @@ export function createJoltPhysics(jolt: JoltModule): PhysicsPort {
 
     step: dt => {
       contacts.length = 0
-      for (const [name, target] of targets) {
-        const body = held.get(name)
-        if (!body) continue
-        scratch.place.Set(target.position.x, target.position.y, target.position.z)
-        scratch.turn.Set(target.rotation.x, target.rotation.y, target.rotation.z, target.rotation.w)
-        bodies.MoveKinematic(body.id, scratch.place, scratch.turn, dt)
-      }
+      prepareKinematics(dt)
       world.Step(dt, COLLISION_STEPS)
+      preparedStep = null
     },
 
     // 🛑 The ACTIVE island, never the whole map: a settled scene of five thousand crates would

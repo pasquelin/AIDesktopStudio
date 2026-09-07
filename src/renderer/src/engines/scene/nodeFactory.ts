@@ -6,7 +6,7 @@ import type {
   Transform,
   Vector3,
 } from '@shared/domain/scene'
-import { DEFAULT_CAMERA, DEFAULT_PATH, type FigureKind } from '@shared/domain/scene'
+import { DEFAULT_CAMERA, DEFAULT_PATH, DEFAULT_PLAY, type FigureKind } from '@shared/domain/scene'
 import type { CsgGraph } from '@shared/domain/csg'
 import type { Component } from '@shared/domain/component'
 import { COMPONENTS, newComponent } from '@shared/domain/componentRegistry'
@@ -255,7 +255,9 @@ export function groupNode(transform = IDENTITY_TRANSFORM, name = 'Group'): Scene
  * The capsule draws nothing of its own: `CharacterController` carries the height and radius the
  * physics feels, and what is SEEN is the figure under it — which a model replaces.
  */
-export function playerModuleNodes(): readonly SceneNode[] {
+export function playerModuleNodes(
+  view: 'firstPerson' | 'thirdPerson' = 'thirdPerson',
+): readonly SceneNode[] {
   const module: SceneNode = {
     ...groupNode(IDENTITY_TRANSFORM, 'Player_Module'),
     components: [newComponent('Player')],
@@ -276,9 +278,10 @@ export function playerModuleNodes(): readonly SceneNode[] {
   // nothing in the editor moves it: an arm only acts once the scene is playing.
   // 🛑 Aimed at the PIVOT and not at the body: `lookAt` defaults to the pivot, so a node turned on
   // the feet made pressing Play tip the shot by 21,8° — measured 2026-09-03.
-  const { pivot, seat } = armRest(capsule.transform.position)
+  const settings = playerArm(view, capsule.name)
+  const { pivot, seat } = armRest(capsule.transform.position, 0, settings)
   const camera: SceneNode = {
-    ...cameraNode(transformAt(seat, aimedFrom(seat, pivot))),
+    ...cameraNode(transformAt(seat, view === 'firstPerson' ? ORIGIN : aimedFrom(seat, pivot))),
     parentId: arm.id,
   }
 
@@ -290,10 +293,26 @@ export function playerModuleNodes(): readonly SceneNode[] {
     ...figure,
     {
       ...arm,
-      components: [{ ...newComponent('SpringArm'), subject: capsule.name, camera: camera.name }],
+      components: [{ ...settings, camera: camera.name }],
     },
     camera,
   ]
+}
+
+function playerArm(view: 'firstPerson' | 'thirdPerson', subject: string): Component {
+  return {
+    ...newComponent('SpringArm'),
+    ...(view === 'firstPerson'
+      ? {
+          length: 0,
+          height: DEFAULT_PLAY.eyeHeight - WALKER_HEIGHT / 2,
+          collision: false,
+          pitchMin: -89,
+          pitchMax: 89,
+        }
+      : {}),
+    subject,
+  }
 }
 
 /** The controller's own defaults, read rather than copied: tuning one there moves the body here. */

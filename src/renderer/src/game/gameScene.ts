@@ -38,6 +38,7 @@ import { loadModelAnimations } from './gameSceneClips'
 import { createSceneResources, type SceneResources } from './gameSceneResources'
 import { drapeWorld, type WorldDrape } from './gameSceneWorld'
 import { dressShadows, lightsOf, shadowBoundsOf } from './gameSceneShadows'
+import { firstPersonShadows } from './firstPersonShadows'
 import { createFrameSettler, type GameFlush } from './gameSceneFrame'
 import {
   createDress,
@@ -189,6 +190,7 @@ function finalizeGameScene(context: FinalizeContext): GameScene {
 
   const lights = lightsOf(state.nodes, byEntity)
   const shadowBounds = shadowBoundsOf(state.nodes, byEntity)
+  const restorePlayer = firstPersonShadows(state, byEntity)
   const frame = createFrameSettler({ drape, instances, resources, lights, shadowBounds })
   return {
     scene,
@@ -203,6 +205,7 @@ function finalizeGameScene(context: FinalizeContext): GameScene {
     releasePose: frame.releasePose,
     clipLengthsOf: nodeId => animations.lengthsOf(nodeId),
     dispose: () => {
+      restorePlayer()
       animations.clear()
       instances.dispose()
       drape.dispose()
