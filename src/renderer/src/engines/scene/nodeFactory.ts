@@ -390,7 +390,8 @@ function figureNodesUnder(bodyId: string, bodyName: string): readonly SceneNode[
         components: [{ ...newComponent('Animator'), body: bodyName }],
         // Down by half the controller's height: the body's node is its CENTRE, and a character's
         // own origin is at its feet — left at the centre it would stand 90 cm in the air.
-        transform: transformAt({ x: 0, y: -WALKER_HEIGHT / 2, z: 0 }),
+        // The shipped mesh faces +Z; the controller walks and faces -Z.
+        transform: transformAt({ x: 0, y: -WALKER_HEIGHT / 2, z: 0 }, { x: 0, y: Math.PI, z: 0 }),
         parentId: bodyId,
       },
     ]

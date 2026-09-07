@@ -129,7 +129,7 @@ describe('the player module', () => {
    * What the shipped character is FOR. The figure of boxes above is the fallback — a project that
    * cannot be written to installs nothing, and a module without a body cannot be seen walking.
    */
-  it('wears the shipped character once the project holds it, feet on the ground', () => {
+  it('wears the shipped character grounded and facing the controller forward direction', () => {
     rememberShippedCharacter('asset_hero')
     onTestFinished(forgetShippedCharacter)
 
@@ -140,6 +140,7 @@ describe('the player module', () => {
     // Down by half the controller's height: the body's node is its centre, a character's origin
     // is at its feet, and left at the centre it would stand 90 cm in the air.
     expect(worn?.transform.position).toEqual({ x: 0, y: -0.9, z: 0 })
+    expect(Math.cos(worn?.transform.rotation.y ?? 0)).toBeCloseTo(-1)
     expect(bornWith('Figure')).toBeUndefined()
   })
 
