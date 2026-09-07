@@ -33,6 +33,7 @@ export {
 import { namedBonesOf, profileOfBones } from './retargetSignatures'
 export { namedBonesOf, profileOfBones } from './retargetSignatures'
 import { createWorkerPort } from '../core/workerPort'
+import { serial } from '../core/serialPort'
 
 export type Retarget = {
   /**
@@ -86,11 +87,16 @@ const bonesOf = (target: Object3D | readonly WireBone[]): readonly WireBone[] =>
   Array.isArray(target) ? (target as readonly WireBone[]) : wireBonesOf(target as Object3D)
 
 export function createRetarget(spawn: () => Worker): Retarget {
-  const port = createWorkerPort<readonly WireClip[], RetargetResponse>(
-    spawn,
-    'retargeting',
-    answer => answer.clips,
-    true,
+  // 🛑 One transfer at a time, and the worker KILLED to take one back: a retarget is a single
+  // call that never reads its mailbox again, so a posted `cancel` would be read after the answer.
+  const port = serial(
+    createWorkerPort<readonly WireClip[], RetargetResponse>(
+      spawn,
+      'retargeting',
+      answer => answer.clips,
+      'terminate',
+    ),
+    { what: 'retargeting', depth: 32 },
   )
   const profiles = new Map<string, SkeletonProfile>()
 
