@@ -470,8 +470,8 @@ export function startPlay(deps: PlaySessionDeps): PlaySession {
       marks.veiled = 0
       ports.physics.dispose()
       ports.script.dispose()
-      // 🛑 Before the repaint: a body still posed would be drawn in the
-      // pose the book.last step left him in, and no gate would say a word.
+      // 🛑 Before the repaint: a body still posed would be drawn in the pose the last step left
+      // him in, and no gate would say a word.
       animation.releaseAll()
       for (const one of animatedIn(sceneNow())) deps.animate?.useGraphClips(one.nodeId, [])
       deps.renderer.apply(deps.editState())

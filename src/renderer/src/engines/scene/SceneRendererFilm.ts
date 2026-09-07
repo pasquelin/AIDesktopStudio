@@ -68,6 +68,7 @@ export abstract class SceneRendererFilm extends SceneRendererPreview {
     // Furniture too, but held by a material flag rather than a `visible`, so it is remembered
     // here rather than pushed onto `hidden`.
     const tinted = this.relief.showMaskTint?.(false) === true
+    this.hideRails(hide)
     return () => {
       for (const object of hidden) object.visible = true
       if (tinted) this.relief.showMaskTint?.(true)
@@ -95,8 +96,15 @@ export abstract class SceneRendererFilm extends SceneRendererPreview {
     // The arrows a person drags an object by. They stand where the object stands, so a camera
     // aimed at a selected node fills its preview — and its film — with the tool instead.
     hide(this.gizmo?.getHelper())
-    // A rail is a working aid like the grid, not something a shot puts on screen: drawn, its
-    // line and its knobs would run across every previewed and every rendered frame.
+  }
+
+  /**
+   * A rail is a working aid like the grid, not something a shot puts on screen: drawn, its line
+   * and its knobs would run across every previewed and every rendered frame.
+   *
+   * Apart from `hideFurniture` only to keep the order the relief tint was written in.
+   */
+  private hideRails(hide: (object: Object3D | null | undefined) => void): void {
     for (const node of this.applied.values()) {
       if (node.type === 'path') hide(this.objects.get(node.id))
     }
