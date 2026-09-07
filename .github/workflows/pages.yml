@@ -57,13 +57,6 @@ on:
 permissions:
   contents: read
 
-# Un seul déploiement à la fois, sans annuler celui en cours : une publication à moitié
-# écrite est pire qu'une publication en retard. `rsync --delete` en particulier ne supporte
-# pas deux passes concurrentes sur le même dossier.
-concurrency:
-  group: vitrine
-  cancel-in-progress: false
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -181,6 +174,18 @@ jobs:
       (github.event_name == 'push' && github.ref == 'refs/heads/main')
     runs-on: ubuntu-latest
     timeout-minutes: 10
+
+    # Un seul déploiement à la fois, sans annuler celui en cours : une publication à moitié
+    # écrite est pire qu'une publication en retard, et `rsync --delete` ne supporte pas deux
+    # passes concurrentes sur le même dossier.
+    #
+    # 🛑 Sur le JOB, pas sur le workflow. GitHub ne garde qu'un run EN ATTENTE par groupe : au
+    # niveau workflow, les builds de pull request partageaient la file des déploiements, et une
+    # release publiée derrière un build en cours se faisait évincer par le build suivant — la
+    # vitrine n'annonçait jamais la version, pour seule trace un run « cancelled ».
+    concurrency:
+      group: vitrine
+      cancel-in-progress: false
 
     steps:
       - uses: actions/download-artifact@v5
