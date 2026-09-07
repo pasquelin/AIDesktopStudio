@@ -72,6 +72,11 @@ jobs:
           # dependency bump throws away ~150 MB and re-downloads it.
           restore-keys: electron-${{ runner.os }}-
 
+      # 🛑 L'empaquetage en a besoin, pas la porte : `beforePack` matérialise le moteur Python
+      # embarqué, et `prepare-engine-runtime.mjs` shelle vers `uv`. Sans cette étape, `Package`
+      # meurt sur `spawnSync uv ENOENT` — mesuré le 2026-09-07, sur les trois plateformes.
+      - uses: astral-sh/setup-uv@v10.0.1
+
       - run: pnpm install --frozen-lockfile
 
       - name: Report signing status

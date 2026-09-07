@@ -52,7 +52,11 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 const DESTINATION = join(ROOT, 'resources', 'ffmpeg')
 
 // A dated autobuild, not the rolling `latest` tag: `latest` moves under a pinned URL.
-const BTBN = 'https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2026-08-07-13-13'
+// 🛑 Un autobuild MENSUEL, jamais un quotidien. BtbN élague les quotidiens au bout d'un mois :
+// `autobuild-2026-08-07-13-13` a répondu 404 sur les trois plateformes le 2026-09-07, bloquant
+// toute publication. Les mensuels — le 31 de chaque mois — sont conservés, et celui-ci porte le
+// MÊME build que l'épingle d'avant, donc les mêmes binaires et les mêmes empreintes.
+const BTBN = 'https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2026-07-31-14-10'
 const BTBN_VERSION = '7.1.5'
 const BTBN_BUILD = 'ffmpeg-n7.1.5-12-g1fdbca85aa'
 
@@ -144,8 +148,8 @@ export const TARGETS = {
       },
     ],
     digests: {
-      'ffmpeg.exe': '7f1699cebe0cf8ce516ca07e344aec1daeb6ee327406210bfeba93d73d79f881',
-      'ffprobe.exe': '4ef8134fd69e58f47760f7096abcd2400907cb273fa661ed48804599787aa20f',
+      'ffmpeg.exe': '3e79ae0855dce679f3911069df641e9da7dc82aec76807205607338218cd956f',
+      'ffprobe.exe': 'ee8e8a69735563cce488d35f719d0b6e41f22ea8f8fd01271583ea5afe154f58',
     },
   },
   'linux-x64': {
@@ -163,8 +167,8 @@ export const TARGETS = {
       },
     ],
     digests: {
-      ffmpeg: '2906d9c9562208328105521968b98688112c3e9c31b65b5f29bfda0593b3de4a',
-      ffprobe: '84412194eb4b87ca0dfe763843a2bb45b51e06042e7128b741c1b6c5a89d04f3',
+      ffmpeg: '1ecd53c642a959896b5b557b76731f6d4c9b62034fbac7c6cbecf3ee695f29a9',
+      ffprobe: '13045903b5c87826890ff4c2ccdf8c84cdbb3c16fe38100dd09cc436b0f05c05',
     },
   },
   'linux-arm64': {
@@ -182,8 +186,8 @@ export const TARGETS = {
       },
     ],
     digests: {
-      ffmpeg: '250065a03c052955963e3ff6724262e5fbffdc0d0325b08f62e2d04571ee4d1a',
-      ffprobe: 'b11d18c6d1a56a66ca75b1b14a3f831b70d6a4c3d1f7d95a9b7c3358e84343c0',
+      ffmpeg: 'f2f19b5788ca1c5eb8ad4db6eda03ade6f59162397eb9e1ce44ddc0dadcca2a7',
+      ffprobe: '4e2e0af085bc0752d0291a8e54e3975af2a41e4d08583481cbf0d9038c8aceea',
     },
   },
 }
