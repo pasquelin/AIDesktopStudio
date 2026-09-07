@@ -17,8 +17,7 @@ import type {
   NewDocumentAsk,
 } from '@shared/domain/newDocument'
 import { DEFAULT_UI_TEMPLATE, isUiTemplateId } from '@shared/domain/uiTemplates'
-import { ensureCheckerTextures } from '@/engines/scene/checkerTextures'
-import { ensureShippedCharacter } from '@/engines/scene/shippedCharacter'
+import { ensureProjectInstalls } from '@/engines/scene/projectInstalls'
 import { seedGuiTemplate } from '@/stores/gui'
 import { seedSceneTemplate } from '@/stores/scenes'
 import { documentAtPath, useDocuments } from '@/stores/documents'
@@ -204,10 +203,7 @@ async function create(kind: DocumentKind, of: NamedCreation): Promise<DocumentDe
 
   // A round trip to the main process, started before the creation and awaited under the seeding
   // below — the shapes of a template are laid down before any editor mounts.
-  const shipped =
-    kind === 'scene'
-      ? Promise.all([ensureCheckerTextures(project.path), ensureShippedCharacter(project.path)])
-      : Promise.resolve()
+  const shipped = kind === 'scene' ? ensureProjectInstalls(project.path) : Promise.resolve()
 
   // The KIND travels: a space opens several, and its head is not always the one asked for.
   const created = await useDocuments.getState().create(workspace, { ...of, kind })

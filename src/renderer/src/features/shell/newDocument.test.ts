@@ -8,7 +8,7 @@ import type {
   NewDocumentAsk,
 } from '@shared/domain/newDocument'
 import { CHECKER_TEXTURE_IDS } from '@shared/domain/checkerTexture'
-import { forgetCheckerTextures } from '@/engines/scene/checkerTextures'
+import { forgetProjectInstalls } from '@/engines/scene/projectInstalls'
 import { installFakeBridge, type BridgeOverrides } from '@/services/fakeBridge'
 import { useDocuments } from '@/stores/documents'
 import { useProject } from '@/stores/project'
@@ -379,7 +379,7 @@ describe('createDocumentIn results', () => {
      * the door has to do, not hoping it already happened.
      */
     it('dresses the shapes a template lays down, however late the textures land', async () => {
-      forgetCheckerTextures()
+      forgetProjectInstalls()
       installFakeBridge({
         assets: {
           installBundledTextures: () =>
