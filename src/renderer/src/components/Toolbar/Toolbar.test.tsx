@@ -25,6 +25,35 @@ describe('Toolbar', () => {
     )
   })
 
+  it('leaves out a tool that is disabled, when the bar asks for it', () => {
+    const tools: ToolbarItem[] = [TOOLS[0]!, { ...TOOLS[1]!, disabled: true }]
+    render(<Toolbar tools={tools} hideDisabled onTool={vi.fn()} />)
+
+    expect(screen.getByRole('button', { name: 'Fermer (V)' })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Générer (B)' })).not.toBeInTheDocument()
+  })
+
+  // A bar that ANSWERS a state — the crop frame's Apply and Cancel — is in no menu: hidden, it
+  // leaves nothing on screen to say what the studio is waiting for.
+  it('greys a disabled tool where the bar has not asked', () => {
+    const tools: ToolbarItem[] = [TOOLS[0]!, { ...TOOLS[1]!, disabled: true }]
+    render(<Toolbar tools={tools} onTool={vi.fn()} />)
+
+    expect(screen.getByRole('button', { name: 'Générer (B)' })).toBeDisabled()
+  })
+
+  // A group that vanished entirely would otherwise fuse the two around it into one run of icons.
+  it('hands the separator of a hidden tool to the next one shown', () => {
+    const tools: ToolbarItem[] = [
+      TOOLS[0]!,
+      { ...TOOLS[1]!, id: 'gone', separatorBefore: true, disabled: true },
+      { ...TOOLS[1]!, id: 'after' },
+    ]
+    const { container } = render(<Toolbar tools={tools} hideDisabled onTool={vi.fn()} />)
+
+    expect(container.querySelectorAll('span[aria-hidden="true"].bg-border')).toHaveLength(1)
+  })
+
   // A toggle and an armed tool are two questions, drawn the same way: snapping being on says
   // nothing about which tool is armed.
   it('draws a pressed toggle without anything being armed', () => {

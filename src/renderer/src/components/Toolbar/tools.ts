@@ -60,3 +60,33 @@ export type ToolbarItem = {
   /** Draws a divider before this tool, so the bar reads as groups and not a run of icons. */
   separatorBefore?: boolean
 }
+
+/**
+ * A rail as it is DRAWN. A disabled tool is DROPPED rather than greyed — Alban's call of the
+ * 2026-09-07: a rail of twenty glyphs waiting on a selection is a rail nobody reads.
+ *
+ * 🛑 Asked for by `hideDisabled`, never the default. The studio's other rule stands where it is
+ * not asked: a bar that ANSWERS a state greys its buttons, a bar whose length changes being one
+ * nobody can learn — `CROP_TOOLS` says so at its own site.
+ *
+ * The usual objection — a hidden tool is a tool nobody discovers — does not hold here, and that
+ * is WHY this is allowed: the native menu names every tool at all times, and the context menu
+ * offers the ones a situation affords. The bar is what is actionable NOW, as in Blender.
+ *
+ * A hidden tool hands its separator to the next one shown, or a group that vanished entirely
+ * would fuse the two around it into one run of icons.
+ *
+ * Items only. A MODE keeps its greying: `ToolMode.disabled` says "not wired yet", and a flyout
+ * that hid those would stop saying what is coming.
+ */
+export function shownTools(tools: readonly ToolbarItem[]): ToolbarItem[] {
+  const shown: ToolbarItem[] = []
+  let separator = false
+  for (const tool of tools) {
+    if (tool.separatorBefore === true) separator = true
+    if (tool.disabled === true) continue
+    shown.push(separator ? { ...tool, separatorBefore: true } : tool)
+    separator = false
+  }
+  return shown
+}
