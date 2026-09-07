@@ -19,6 +19,7 @@ describe('SceneRenderer and the preview it invalidates', () => {
   const REFRESH = /protected refreshWithoutShadows\(\): void \{[\s\S]*?\n {2}\}/
   const SELECTIVE = /protected refreshChangedShadows\(\): void \{[\s\S]*?\n {2}\}/
   const TEXTURE_REFRESH = /protected refreshMaterialTexture\([\s\S]*?\n {2}\}/
+  const FRAME_ALL = /frameAll\(\): boolean \{[\s\S]*?\n {2}\}/
 
   /**
    * The NAME and not the call: `createEnvironment` and the three texture binders are handed
@@ -82,6 +83,14 @@ describe('SceneRenderer and the preview it invalidates', () => {
 
     expect(selective).toContain('this.viewport.invalidateInset()')
     expect(selective).toContain('this.viewport.requestShadowRender()')
+  })
+
+  // 🛑 Without it the Frame button moved the camera and drew nothing until the next gesture.
+  it('asks for the frame a hand-made framing has nobody else to draw', () => {
+    const frameAll = FRAME_ALL.exec(source)?.[0] ?? ''
+
+    expect(frameAll).toContain('this.frameContents()')
+    expect(frameAll).toContain('this.repaint()')
   })
 
   it('invalidates the preview in `redraw`, and leaves it alone in `repaint`', () => {

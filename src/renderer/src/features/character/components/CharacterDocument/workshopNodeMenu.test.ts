@@ -13,7 +13,7 @@ import { openWorkshopNodeMenu } from './workshopNodeMenu'
 const WORKSHOP = workshopIdOf('asset-hero')
 
 let menu = fakeMenu()
-const frameContents = vi.fn(() => true)
+const frameAll = vi.fn(() => true)
 
 describe('what a right-click offers on the model of a workshop', () => {
   beforeEach(() => {
@@ -22,7 +22,7 @@ describe('what a right-click offers on the model of a workshop', () => {
     installFakeBridge({ menu: menu.bridge })
     useSceneViews.setState({ views: {} })
     // Only the one method the frame row reaches: the menu never builds a renderer.
-    registerSceneEngine(WORKSHOP, { frameContents } as unknown as SceneRenderer)
+    registerSceneEngine(WORKSHOP, { frameAll } as unknown as SceneRenderer)
     return () => forgetSceneEngine(WORKSHOP)
   })
 
@@ -69,6 +69,6 @@ describe('what a right-click offers on the model of a workshop', () => {
     openWorkshopNodeMenu({ workshopId: WORKSHOP, t: i18next.t })
     await flush()
 
-    expect(frameContents).toHaveBeenCalledOnce()
+    expect(frameAll).toHaveBeenCalledOnce()
   })
 })

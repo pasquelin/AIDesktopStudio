@@ -4,12 +4,7 @@ import type { SceneRenderer } from '@/engines/scene/SceneRenderer'
 
 type Navigation = Pick<
   SceneRenderer,
-  | 'setMotion'
-  | 'releaseNavigation'
-  | 'setNavigating'
-  | 'frameContents'
-  | 'flying'
-  | 'flightOwnsArrows'
+  'setMotion' | 'releaseNavigation' | 'setNavigating' | 'frameAll' | 'flying' | 'flightOwnsArrows'
 >
 type Side = 'source' | 'target'
 
@@ -27,7 +22,7 @@ export function useRetargetNavigation(source: Navigation | null, target: Navigat
     onCommand: command => {
       if (!engine) return false
       if (command === 'scene.frame') {
-        engine.frameContents()
+        engine.frameAll()
         return true
       }
       if (command !== 'scene.navigate') return false

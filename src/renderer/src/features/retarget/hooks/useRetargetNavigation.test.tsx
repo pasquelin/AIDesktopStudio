@@ -8,7 +8,7 @@ function engine() {
     setMotion: vi.fn(),
     releaseNavigation: vi.fn(),
     setNavigating: vi.fn(),
-    frameContents: vi.fn(),
+    frameAll: vi.fn(),
     flying: true,
     flightOwnsArrows: true,
   }
@@ -28,7 +28,7 @@ it('routes scene navigation to one view and releases held motion on switch and u
   act(() => {
     publishCommand('scene.frame')
   })
-  expect(source.frameContents).toHaveBeenCalledOnce()
+  expect(source.frameAll).toHaveBeenCalledOnce()
   act(() => hook.result.current.activate('target'))
   expect(source.releaseNavigation).toHaveBeenCalledOnce()
   act(() => {

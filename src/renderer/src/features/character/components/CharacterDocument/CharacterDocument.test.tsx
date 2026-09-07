@@ -84,6 +84,7 @@ vi.mock('@/engines/scene/SceneRenderer', () => ({
     applyAutoRig = vi.fn()
     clearRig = vi.fn()
     frameContents = vi.fn()
+    frameAll = vi.fn()
     meshSample = vi.fn()
     // A flight is under way, which is the one state a motion key is read in.
     flying = true
