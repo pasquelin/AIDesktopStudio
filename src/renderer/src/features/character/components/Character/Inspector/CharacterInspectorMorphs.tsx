@@ -1,18 +1,15 @@
 import { useTranslation } from 'react-i18next'
 import { PropertySection } from '@/components/PropertySection'
 import { QuietNote } from '@/components/QuietNote'
-import { SliderField } from '@/components/SliderField'
 import { VirtualFieldList } from '@/components/VirtualFieldList'
-import { characterViewOf, useCharacterView } from '@/stores/characterView'
 import { morphNamesOfNode, useModelFiles } from '@/stores/modelFiles'
+import { CharacterInspectorMorphRow } from './CharacterInspectorMorphRow'
 
 export type CharacterInspectorMorphsProps = {
   assetId: string
   documentId: string
   nodeId: string
 }
-
-const WEIGHT = { min: 0, max: 1, step: 0.01 }
 
 /** One slider per morph target the file carries. The weights are a preview of the view, not an edit. */
 export function CharacterInspectorMorphs({
@@ -21,9 +18,9 @@ export function CharacterInspectorMorphs({
   nodeId,
 }: CharacterInspectorMorphsProps) {
   const { t } = useTranslation()
+  // 🛑 The weights are NOT read here: each row subscribes to its own, or a drag re-rendered the
+  // whole section — see `CharacterInspectorMorphRow`.
   const names = useModelFiles(state => morphNamesOfNode(state, documentId, nodeId))
-  const weights = useCharacterView(state => characterViewOf(state, assetId).morphs)
-  const weigh = useCharacterView(state => state.setCharacterMorph)
 
   return (
     <PropertySection title={t('character.morphs')} scId="character.morphs">
@@ -37,16 +34,7 @@ export function CharacterInspectorMorphs({
             items={names}
             keyOf={name => name}
             label={t('character.morphs')}
-            renderItem={name => (
-              <SliderField
-                label={name}
-                value={weights[name] ?? 0}
-                {...WEIGHT}
-                onChange={value => weigh(assetId, name, value)}
-                onReset={() => weigh(assetId, name, 0)}
-                scId="character.morph"
-              />
-            )}
+            renderItem={name => <CharacterInspectorMorphRow assetId={assetId} name={name} />}
           />
         </>
       )}
