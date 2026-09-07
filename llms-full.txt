@@ -1,4 +1,4 @@
-# IA Studio
+# AI Desktop Studio
 
 > **Multimodal desktop creation studio** for generative models (Electron 43 + React 19 +
 > TypeScript). Six workshops — Image, Video, 3D, Audio, Materials, Skyboxes — in one window
@@ -51,7 +51,7 @@ README
 
 <div align="center">
 
-# IA Studio
+# AI Desktop Studio
 
 **A desktop creation studio for generative models.**
 Generate and edit images, videos, 3D models, audio, textures and skyboxes — in one place, on your machine.
@@ -70,7 +70,7 @@ Generate and edit images, videos, 3D models, audio, textures and skyboxes — in
 </div>
 
 <div align="center">
-  <img src="site/assets/images/studio-3d.png" alt="IA Studio in the Modelling workspace: the model catalogue and the project explorer on the left, a generated car standing in the scene viewport in the centre, the scene outliner and the inspector on the right, and across the bottom the timeline with one row per light and object" width="900">
+  <img src="site/assets/images/studio-3d.png" alt="AI Desktop Studio in the Modelling workspace: the model catalogue and the project explorer on the left, a generated car standing in the scene viewport in the centre, the scene outliner and the inspector on the right, and across the bottom the timeline with one row per light and object" width="900">
 </div>
 
 ---
@@ -252,9 +252,9 @@ the cost is yours.
 User guide
 ==============================================================================
 
-# IA Studio — the manual
+# AI Desktop Studio — the manual
 
-Welcome. This manual explains **everything** IA Studio does, from your first launch to
+Welcome. This manual explains **everything** AI Desktop Studio does, from your first launch to
 everyday work.
 
 It is written to be read by someone who has never opened a creative application, without lying to
@@ -268,7 +268,7 @@ first appears, then repeated in the [glossary](manual/17-glossary.md).
 
 ## In three sentences
 
-IA Studio is an application that installs on your computer. It can **make** images, videos,
+AI Desktop Studio is an application that installs on your computer. It can **make** images, videos,
 sounds, 3D objects, materials and skies — by asking artificial-intelligence models, online, at
 a generation provider. And it can then **assemble, adjust and file them**, on your
 machine, without sending them anywhere.
@@ -408,7 +408,7 @@ accord. Untick it and that stops; [chapter 14](manual/14-settings.md) covers it.
 Architecture
 ==============================================================================
 
-# IA Studio — architecture
+# AI Desktop Studio — architecture
 
 How the studio is built, and why it is built that way. Written for someone picking the codebase
 up. Looking for how to *use* it? See [user-guide.md](user-guide.md).

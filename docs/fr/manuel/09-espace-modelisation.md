@@ -101,7 +101,7 @@ schéma de gestes ET de raccourcis d’un coup.
 
 | Schéma            | Tourner      | Déplacer latéralement                 | Avancer / reculer | ZQSD                                          | Déplacer / Tourner / Redimensionner |
 | ----------------- | ------------ | ------------------------------------- | ----------------- | --------------------------------------------- | ----------------------------------- |
-| **IA Studio**     | Alt + gauche | milieu                                | Alt + droit       | un bouton tenu                                | `G` `R` `S`                         |
+| **AI Desktop Studio**     | Alt + gauche | milieu                                | Alt + droit       | un bouton tenu                                | `G` `R` `S`                         |
 | **Unreal**        | Alt + gauche | milieu, ou **droit ajouté au gauche** | Alt + droit       | **bouton droit tenu**                         | `W` `E` `R`                         |
 | **Unity**         | Alt + gauche | milieu                                | Alt + droit       | **bouton droit tenu**                         | `W` `E` `R`                         |
 | **Blender**       | **milieu**   | **Maj + milieu**                      | **Ctrl + milieu** | mode Walk/Fly, en <kbd>Maj</kbd>+<kbd>`</kbd> | `G` `R` `S`                         |
@@ -117,11 +117,11 @@ cet ordre et pas l’autre — chez nous le bouton droit fait voler la caméra, 
 rend pas la main au déplacement latéral.
 
 > **Un schéma ne remplace que ce que son application fait autrement.** Tout ce dont il ne dit
-> rien garde les touches d’IA Studio — y compris les commandes dont les autres logiciels n’ont
+> rien garde les touches d’AI Desktop Studio — y compris les commandes dont les autres logiciels n’ont
 > aucun équivalent. Et vos propres remappages, faits dans **Réglages ▸ Raccourcis**, passent
 > toujours devant le schéma.
 
-> **Revenir à « IA Studio » remet les raccourcis à zéro.** C’est le schéma sur lequel tous les
+> **Revenir à « AI Desktop Studio » remet les raccourcis à zéro.** C’est le schéma sur lequel tous les
 > autres retombent : le choisir rend à chaque commande la touche que le logiciel déclare.
 
 **Roblox déplace deux raccourcis, et c’est inévitable.** Chez lui les lettres appartiennent à la
@@ -936,7 +936,7 @@ est dans la scène, pas là où il est dans son groupe.
 l’arbre de la scène, le nom et la place de chaque objet, les caméras et les lumières
 directionnelles, ponctuelles et coniques. Ce que le standard ne porte pas — la forme des
 primitives, les matières, les rails, les plans de caméra, l’animation — voyage dans le même
-fichier mais **n’est lu que par IA Studio**. Rien ne se perd d’un enregistrement à l’autre ; ce qui
+fichier mais **n’est lu que par AI Desktop Studio**. Rien ne se perd d’un enregistrement à l’autre ; ce qui
 s’ouvre ailleurs est plus pauvre que ce que vous voyez ici.
 
 Un onglet dont le travail n’est pas encore écrit porte **un point** (`•`) à côté de son nom. Le

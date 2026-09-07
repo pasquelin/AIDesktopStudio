@@ -9,7 +9,7 @@
 Vous décrivez ce que vous voulez, avec des mots. Un ordinateur distant le fabrique. Vous
 récupérez le résultat chez vous, et vous continuez à travailler dessus.
 
-Voilà l’idée entière. Ce qu’IA Studio ajoute par rapport à un site web où l’on tape une
+Voilà l’idée entière. Ce qu’AI Desktop Studio ajoute par rapport à un site web où l’on tape une
 phrase et où l’on télécharge une image, c’est **tout ce qui vient après** :
 
 - vos créations sont **rangées** dans un projet, sur votre disque, pas dans un dossier

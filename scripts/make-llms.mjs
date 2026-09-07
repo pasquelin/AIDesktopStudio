@@ -8,7 +8,7 @@
  * Anglais seulement. Les chapitres français disent la même chose, et doubler le fichier
  * dépenserait le contexte d'un lecteur en traduction plutôt qu'en sujet.
  *
- * CE FICHIER EST PARTAGÉ À L'IDENTIQUE par map3D, panels et IA Studio. La liste des
+ * CE FICHIER EST PARTAGÉ À L'IDENTIQUE par map3D, panels et AI Desktop Studio. La liste des
  * chapitres vit dans `repo.config.json`, jamais ici.
  *
  *   node scripts/make-llms.mjs [--check]

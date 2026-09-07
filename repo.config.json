@@ -1,5 +1,5 @@
 {
-  "name": "IA Studio",
+  "name": "AI Desktop Studio",
   "repo": "pasquelin/IAStudio",
   "author": "Alban Pasquelin",
   "license": "https://polyformproject.org/licenses/noncommercial/1.0.0/",
@@ -59,6 +59,6 @@
       "BlueOak-1.0.0",
       "MPL-2.0"
     ],
-    "_note": "MPL-2.0 est admise ici, et pas dans map3D ni panels : IA Studio distribue une application, pas une bibliothèque, et le copyleft de MPL porte sur le fichier. La condition — ne pas modifier les fichiers concernés — est tenue par scripts/collect-licences.mjs, qui refuse d'écrire les mentions si un paquet MPL est patché. Ce contrôle-ci ne la redouble pas."
+    "_note": "MPL-2.0 est admise ici, et pas dans map3D ni panels : AI Desktop Studio distribue une application, pas une bibliothèque, et le copyleft de MPL porte sur le fichier. La condition — ne pas modifier les fichiers concernés — est tenue par scripts/collect-licences.mjs, qui refuse d'écrire les mentions si un paquet MPL est patché. Ce contrôle-ci ne la redouble pas."
   }
 }

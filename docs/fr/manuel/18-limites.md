@@ -289,7 +289,7 @@ tant que c’est le cas : sans ce refus, enregistrer effacerait ces clips du fic
 médias manquants dans le projet, rouvrez le montage, et l’enregistrement redevient possible.
 
 Et ce que ce format ne porte pas en standard — fondus, gains, liens image/son, scène 3D d’un clip
-vivant — voyage dans le fichier mais **n’est lu que par IA Studio**.
+vivant — voyage dans le fichier mais **n’est lu que par AI Desktop Studio**.
 
 ### Les réglages d’une séquence sont figés
 
@@ -408,7 +408,7 @@ dépasse le blanc est écrêté.
 
 ### Ce qui ne s’importe pas
 
-- **un `.gltf` séparé qui n’est pas un document IA Studio**, ainsi que `.usd`, `.usda` et `.usdc`
+- **un `.gltf` séparé qui n’est pas un document AI Desktop Studio**, ainsi que `.usd`, `.usda` et `.usdc`
   hors de leur archive `.usdz`.
 
 Tout fichier 3D accepté est converti en `.glb` à l’import ; l’original est gardé dans un dossier
@@ -560,7 +560,7 @@ Si vous ne deviez retenir que quatre choses de ce chapitre :
 2. **un recadrage ne se défait qu’à moitié** — `⌘Z` rend le cadre, jamais les pixels rognés ;
    exportez avant de rogner large ;
 3. **l’export vidéo sort muet** — le fichier final est livrable, le son du montage n’y est pas ;
-4. **un `.gltf` séparé qui n’est pas un document IA Studio** ne s’importe pas comme modèle.
+4. **un `.gltf` séparé qui n’est pas un document AI Desktop Studio** ne s’importe pas comme modèle.
 
 Tout le reste est du confort.
 

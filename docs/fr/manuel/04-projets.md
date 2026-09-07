@@ -244,7 +244,7 @@ que vous désignez et cherche ce fichier dedans.
 - **`updatedAt` bouge à chaque document enregistré.** C’est la dernière fois que ce projet a
   travaillé, pas la dernière fois qu’il a été ouvert.
 - **Désigner un dossier qui n’en contient pas** vous vaut « Ce dossier n’est pas un projet
-  IA Studio », dans le journal et dans une bulle en bas à droite — pas un message système.
+  AI Desktop Studio », dans le journal et dans une bulle en bas à droite — pas un message système.
 - **Un fichier tronqué ou modifié à la main** est signalé comme illisible, et le studio ne l’ouvre
   pas plutôt que d’en deviner le contenu.
 - **Un projet créé par une version PLUS RÉCENTE du studio est refusé.** Il n’est pas ouvert « du

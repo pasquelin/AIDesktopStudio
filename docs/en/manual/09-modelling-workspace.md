@@ -98,7 +98,7 @@ gestures AND of shortcuts in one go.
 
 | Scheme            | Turn        | Slide sideways                     | Move in and out   | WASD                                            | Move / Rotate / Scale |
 | ----------------- | ----------- | ---------------------------------- | ----------------- | ----------------------------------------------- | --------------------- |
-| **IA Studio**     | Alt + left  | middle                             | Alt + right       | a button held                                   | `G` `R` `S`           |
+| **AI Desktop Studio**     | Alt + left  | middle                             | Alt + right       | a button held                                   | `G` `R` `S`           |
 | **Unreal**        | Alt + left  | middle, or **right added to left** | Alt + right       | **right button held**                           | `W` `E` `R`           |
 | **Unity**         | Alt + left  | middle                             | Alt + right       | **right button held**                           | `W` `E` `R`           |
 | **Blender**       | **middle**  | **Shift + middle**                 | **Ctrl + middle** | Walk/Fly mode, on <kbd>Shift</kbd>+<kbd>`</kbd> | `G` `R` `S`           |
@@ -114,10 +114,10 @@ order and no other — here the right button flies the camera, and a flight alre
 hand the view back to a sideways slide.
 
 > **A scheme only replaces what its own application does differently.** Everything it says
-> nothing about keeps IA Studio's keys — including the commands the others have no equivalent
+> nothing about keeps AI Desktop Studio's keys — including the commands the others have no equivalent
 > for. And your own remaps, made in **Settings ▸ Shortcuts**, always win over the scheme.
 
-> **Going back to "IA Studio" resets the shortcuts.** It is the scheme every other one falls back
+> **Going back to "AI Desktop Studio" resets the shortcuts.** It is the scheme every other one falls back
 > to: choosing it gives each command the key the software declares.
 
 **Roblox moves two shortcuts, and it cannot be helped.** There the letters belong to the camera
@@ -902,7 +902,7 @@ stands in the scene, not where it stands inside its group.
 **The file written is a `.gltf`, and it is a real glTF**: another application opens it and finds
 the scene tree, the name and place of every object, the cameras, and the directional, point and
 spot lights. What the standard does not carry — the shape of the primitives, the materials, the
-rails, the camera shots, the animation — travels inside the same file but **is read by IA Studio
+rails, the camera shots, the animation — travels inside the same file but **is read by AI Desktop Studio
 alone**. Nothing is lost from one save to the next; what opens elsewhere is poorer than what you
 see here.
 

@@ -20,7 +20,7 @@ chercher plus loin : il nomme l’objet en cause et dit ce qui a échoué.
 | « Impossible d’importer « … » », « « … » est illisible » | Import |
 | « Impossible d’envoyer « … » », « Les tags de « … » n’ont pas rejoint la bibliothèque », « L’API de génération a refusé une requête », « Le fichier n’a pas pu être affiché » | Bibliothèque |
 | « L’enregistrement du document a échoué », « Un calque n’a pas pu être chargé », « L’export de la scène a échoué » | Document |
-| « Ce dossier n’est pas un projet IA Studio », « Le projet n’a pas pu être créé dans ce dossier », « Ce fichier n’a pas pu être ouvert par le système » | Projet |
+| « Ce dossier n’est pas un projet AI Desktop Studio », « Le projet n’a pas pu être créé dans ce dossier », « Ce fichier n’a pas pu être ouvert par le système » | Projet |
 | « Une partie de l’interface n’a pas pu s’afficher », « L’agencement enregistré d’un espace était illisible » | Interface |
 
 Filtrez par **niveau** — information, avertissement, échec — ou par **sujet** : chacun est un

@@ -1,6 +1,6 @@
 <div align="center">
 
-# IA Studio
+# AI Desktop Studio
 
 **A desktop creation studio for generative models.**
 Generate and edit images, videos, 3D models, audio, textures and skyboxes — in one place, on your machine.
@@ -19,7 +19,7 @@ Generate and edit images, videos, 3D models, audio, textures and skyboxes — in
 </div>
 
 <div align="center">
-  <img src="site/assets/images/studio-3d.png" alt="IA Studio in the Modelling workspace: the model catalogue and the project explorer on the left, a generated car standing in the scene viewport in the centre, the scene outliner and the inspector on the right, and across the bottom the timeline with one row per light and object" width="900">
+  <img src="site/assets/images/studio-3d.png" alt="AI Desktop Studio in the Modelling workspace: the model catalogue and the project explorer on the left, a generated car standing in the scene viewport in the centre, the scene outliner and the inspector on the right, and across the bottom the timeline with one row per light and object" width="900">
 </div>
 
 ---

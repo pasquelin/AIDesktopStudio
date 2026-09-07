@@ -1,6 +1,6 @@
 {
   "$id": "https://www.aidesktopstudio.com/schema/ui-1.schema.json",
-  "title": "IA Studio interface",
+  "title": "AI Desktop Studio interface",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "type": "object",
   "properties": {

@@ -1,7 +1,7 @@
 [project]
 name = "ia-studio-engine"
 dynamic = ["version"]
-description = "The local AI engine of IA Studio: a supervised Python process that measures and executes."
+description = "The local AI engine of AI Desktop Studio: a supervised Python process that measures and executes."
 requires-python = ">=3.12"
 dependencies = []
 

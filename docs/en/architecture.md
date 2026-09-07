@@ -1,4 +1,4 @@
-# IA Studio — architecture
+# AI Desktop Studio — architecture
 
 How the studio is built, and why it is built that way. Written for someone picking the codebase
 up. Looking for how to *use* it? See [user-guide.md](user-guide.md).

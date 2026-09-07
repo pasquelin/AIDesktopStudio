@@ -10,13 +10,13 @@ describe('externalPathsFromArguments', () => {
   it('keeps absolute file arguments so a desktop launch can report accepted and refused files', () => {
     expect(
       externalPathsFromArguments([
-        '/Applications/IA Studio',
+        '/Applications/AI Desktop Studio',
         '/work/model.glb',
         '/work/image.png',
         '--inspect',
         'relative.glb',
       ]),
-    ).toEqual(['/Applications/IA Studio', '/work/model.glb', '/work/image.png'])
+    ).toEqual(['/Applications/AI Desktop Studio', '/work/model.glb', '/work/image.png'])
   })
 
   it('keeps unsupported absolute arguments for a visible refusal', () => {
@@ -29,8 +29,8 @@ describe('externalPathsFromArguments', () => {
   it('excludes the executable and application folder from launch candidates', () => {
     expect(
       externalPathsFromArguments(
-        ['/Applications/IA Studio', '/work/model.obj'],
-        new Set(['/Applications/IA Studio']),
+        ['/Applications/AI Desktop Studio', '/work/model.obj'],
+        new Set(['/Applications/AI Desktop Studio']),
       ),
     ).toEqual(['/work/model.obj'])
   })

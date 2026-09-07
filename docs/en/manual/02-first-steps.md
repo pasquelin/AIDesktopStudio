@@ -67,7 +67,7 @@ programs.
 ## Step 3 — Connect your account
 
 1. Open settings: `⌘,` on macOS, `Ctrl+,` on Windows and Linux. Or through the menu —
-   **IA Studio ▸ Settings…** on macOS, **File ▸ Settings…** elsewhere, since only macOS
+   **AI Desktop Studio ▸ Settings…** on macOS, **File ▸ Settings…** elsewhere, since only macOS
    has an application menu.
 2. In the list on the left, click **Account**.
 3. Give it a **name** — whatever you like: "Studio", "Personal", your first name.

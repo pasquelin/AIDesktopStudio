@@ -151,7 +151,7 @@ This is the common case, and it takes three gestures.
 your clipboard:
 
 ```
-claude mcp add <name> -- "/Applications/IA Studio.app/Contents/MacOS/IA Studio" --mcp-stdio=…
+claude mcp add <name> -- "/Applications/AI Desktop Studio.app/Contents/MacOS/AI Desktop Studio" --mcp-stdio=…
 ```
 
 **No port, no token, no address.** What you paste names **the studio as a program to start**, not
@@ -183,7 +183,7 @@ puts the same connection on the clipboard, in the shape a configuration file exp
 {
   "mcpServers": {
     "ia-studio": {
-      "command": "/Applications/IA Studio.app/Contents/MacOS/IA Studio",
+      "command": "/Applications/AI Desktop Studio.app/Contents/MacOS/AI Desktop Studio",
       "args": ["--mcp-stdio=…"]
     }
   }

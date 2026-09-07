@@ -32,7 +32,7 @@ export const mcpStateOf = (endpoint: McpEndpoint | null): McpState => ({
 })
 
 /**
- * 🛑 What a client is registered UNDER, and it may not hold a space: `APP_NAME` is "IA Studio",
+ * 🛑 What a client is registered UNDER, and it may not hold a space: `APP_NAME` is "AI Desktop Studio",
  * so `claude mcp add … ia studio http://…` had the CLI read the name as `ia`, the url as
  * `studio`, and the real url as a stray argument. The JSON block would have named a server
  * "ia studio", which is legal there and inconsistent with the command beside it.
@@ -117,7 +117,7 @@ export function stdioEndpointFrom(argv: readonly string[]): string | null {
 }
 
 /**
- * Quoted because the one path that matters holds a space: `IA Studio.app`.
+ * Quoted because the one path that matters holds a space: `AI Desktop Studio.app`.
  *
  * 🛑 Not `JSON.stringify`, which escapes backslashes: no shell unescapes `\\` inside quotes, so
  * the line copied on Windows named a file that does not exist.

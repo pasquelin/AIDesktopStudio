@@ -461,7 +461,7 @@ file with no mesh at all is not a model. A Mixamo `.fbx`, which carries a charac
 stays the animation it was filed as. A `.bvh` is always an animation. Files already in a project
 before this rule are left untouched.
 
-> A separate `.gltf` that is not an IA Studio document is not imported as a model yet.
+> A separate `.gltf` that is not an AI Desktop Studio document is not imported as a model yet.
 
 ### Audio, video and image media are not copied — on import
 

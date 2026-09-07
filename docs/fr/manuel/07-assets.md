@@ -474,7 +474,7 @@ une animation, un fichier sans aucun maillage n’est pas un modèle. Un `.fbx` 
 personnage et sa marche, reste l’animation qu’il a été rangé comme. Un `.bvh` est toujours une
 animation. Les fichiers déjà présents dans un projet avant cette règle ne sont pas touchés.
 
-> Un `.gltf` séparé qui n’est pas un document IA Studio ne s’importe pas encore comme modèle.
+> Un `.gltf` séparé qui n’est pas un document AI Desktop Studio ne s’importe pas encore comme modèle.
 
 ### Les médias audio, vidéo et image ne sont pas copiés — à l’import
 

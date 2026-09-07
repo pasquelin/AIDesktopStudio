@@ -12,7 +12,7 @@
  * des clés que le build ne remplissait pas, et restait verte pendant que les 15 pages publiaient
  * 141 marqueurs en clair chacune, 121 distincts (mesuré le 04/09). Le build est du Node pur — 0,10 s.
  *
- * CE FICHIER EST PARTAGÉ À L'IDENTIQUE par map3D, panels et IA Studio. Les règles valent
+ * CE FICHIER EST PARTAGÉ À L'IDENTIQUE par map3D, panels et AI Desktop Studio. Les règles valent
  * pour les trois ; ce qui est propre à un dépôt vient de `repo.config.json`.
  *
  *   node scripts/check-site.mjs

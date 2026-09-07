@@ -234,7 +234,7 @@ point it at and looks for this file inside.
 
 - **`updatedAt` moves on every document saved.** It is the last time this project did some work,
   not the last time it was opened.
-- **Pointing at a folder that holds none** gets you "This folder is not an IA Studio project", in the
+- **Pointing at a folder that holds none** gets you "This folder is not an AI Desktop Studio project", in the
   journal and in a toast at the bottom right — not a system message.
 - **A file that was truncated or edited by hand** is reported as unreadable, and the studio refuses
   to open it rather than guessing at what it holds.

@@ -1,6 +1,6 @@
 # Local AI Engine
 
-Le moteur d'IA locale d'IA Studio : un processus Python supervisé par le processus principal
+Le moteur d'IA locale d'AI Desktop Studio : un processus Python supervisé par le processus principal
 d'Electron, qui **mesure et exécute** — jamais un second ordonnanceur.
 
 ## Ce qu'il est aujourd'hui

@@ -1,4 +1,4 @@
-"""The local AI engine of IA Studio."""
+"""The local AI engine of AI Desktop Studio."""
 
 __version__ = "0.1.0"
 

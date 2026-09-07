@@ -1,6 +1,6 @@
 Required Notice: Copyright 2026 Alban Pasquelin (https://github.com/pasquelin/IAStudio)
 
-These terms cover the source code of IA Studio itself — everything under `src/`,
+These terms cover the source code of AI Desktop Studio itself — everything under `src/`,
 `scripts/`, `build/` and the documentation in this repository, with ONE exception:
 `src/game/` is published under the MIT License, whose text is in `src/game/LICENSE`.
 That runtime is what an exported game carries, and the exception is what makes such a
