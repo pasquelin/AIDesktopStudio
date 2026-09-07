@@ -374,7 +374,9 @@ function otioOf(count: number): string {
   return JSON.stringify({
     OTIO_SCHEMA: 'Timeline.1',
     name: 'Bench',
-    metadata: { iastudio: { documentId: 'a3f1', width: 1920, height: 1080, sampleRate: 48_000 } },
+    metadata: {
+      aidesktopstudio: { documentId: 'a3f1', width: 1920, height: 1080, sampleRate: 48_000 },
+    },
     global_start_time: time(0),
     tracks: {
       OTIO_SCHEMA: 'Stack.1',
@@ -391,7 +393,7 @@ function otioOf(count: number): string {
             OTIO_SCHEMA: 'Clip.1',
             name: `Plan ${index}`,
             metadata: {
-              iastudio: {
+              aidesktopstudio: {
                 id: `clip_${index}`,
                 assetId: 'asset_00000000-0000-0000-0000-000000000000',
                 start: index * 1_000_000,

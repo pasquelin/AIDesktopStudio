@@ -71,7 +71,7 @@ describe('the project explorer', () => {
 
       expect((await rowFor('facade.jpg')).querySelector('img')).toHaveAttribute(
         'src',
-        'ia-studio://thumb/facade.jpg',
+        'ai-desktop-studio://thumb/facade.jpg',
       )
       expect((await rowFor('Images')).querySelector('img')).toBeNull()
     })

@@ -1,6 +1,6 @@
 {
-  "name": "ia-studio",
-  "productName": "IA Studio",
+  "name": "ai-desktop-studio",
+  "productName": "AI Desktop Studio",
   "version": "1.0.0",
   "description": "Image, video, 3D, audio, texture and skybox creation studio",
   "author": "Alban Pasquelin",
@@ -57,7 +57,7 @@
     "llms:check": "node scripts/make-llms.mjs --check",
     "licences:check": "node scripts/check-licences.mjs",
     "build:site": "node site/build.mjs _site",
-    "preview:site": "node scripts/serve.mjs _site --base=/IAStudio/"
+    "preview:site": "node scripts/serve.mjs _site --base=/"
   },
   "dependencies": {
     "@jitl/quickjs-singlefile-browser-release-sync": "^0.32.0",

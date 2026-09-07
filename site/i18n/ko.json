@@ -8,9 +8,9 @@
     "ogLocale": "ko_KR"
   },
   "head": {
-    "title": "IA Studio — 여섯 개의 생성 작업실, 하나의 창",
+    "title": "AI Desktop Studio — 여섯 개의 생성 작업실, 하나의 창",
     "description": "멀티모달 데스크톱 애플리케이션. 이미지, 영상, 3D, 오디오, 텍스처, 스카이박스를 도킹 가능한 패널 인터페이스에 담았습니다. 오프라인 받아쓰기와 MCP 서버를 통한 제어를 지원합니다.",
-    "ogTitle": "IA Studio — 여섯 개의 생성 작업실, 하나의 창",
+    "ogTitle": "AI Desktop Studio — 여섯 개의 생성 작업실, 하나의 창",
     "ogDescription": "여섯 개의 생성 작업실을 하나의 창에. Electron, React 19, TypeScript. macOS, Windows, Linux."
   },
   "nav": {
@@ -291,7 +291,7 @@
   "docs": {
     "eyebrow": "문서 &amp; 시연",
     "title": "모든 것이 코드 옆에 적혀 있습니다.",
-    "videoLabel": "IA Studio 시연: 여섯 작업실을 거쳐, 3D 생성부터 편집까지.",
+    "videoLabel": "AI Desktop Studio 시연: 여섯 작업실을 거쳐, 3D 생성부터 편집까지.",
     "links": {
       "0": {
         "text": "스무 장짜리 설명서 — 애플리케이션 안에서도 읽힙니다",
@@ -351,11 +351,11 @@
         "state": "버전 준비 중"
       }
     },
-    "note": "설치 파일은 <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">이용 약관</a>을 따르고, 소스 코드는 <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial&nbsp;1.0.0</a> 라이선스를 따릅니다. 이 애플리케이션은 어떤 생성 서비스에 대한 접근도 제공하지 않습니다. 당신이 제공한 API 키를, 당신의 계정으로, 당신의 비용으로 사용합니다."
+    "note": "설치 파일은 <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">이용 약관</a>을 따르고, 소스 코드는 <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial&nbsp;1.0.0</a> 라이선스를 따릅니다. 이 애플리케이션은 어떤 생성 서비스에 대한 접근도 제공하지 않습니다. 당신이 제공한 API 키를, 당신의 계정으로, 당신의 비용으로 사용합니다."
   },
   "foot": {
     "groups": {
-      "0": "IA Studio",
+      "0": "AI Desktop Studio",
       "1": "작업실",
       "2": "자료",
       "3": "연락처"
@@ -365,7 +365,7 @@
       "0": "내려받기",
       "1": "라이선스"
     },
-    "legal": "소스 코드는 <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial 1.0.0</a> 라이선스 · 애플리케이션은 그 <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">이용 약관</a>에 따라 배포 · 서드파티 구성 요소는 <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/THIRD-PARTY-NOTICES.md\" target=\"_blank\" rel=\"noopener\">고지</a>에 명시. © 2026 Alban Pasquelin.",
+    "legal": "소스 코드는 <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial 1.0.0</a> 라이선스 · 애플리케이션은 그 <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">이용 약관</a>에 따라 배포 · 서드파티 구성 요소는 <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/THIRD-PARTY-NOTICES.md\" target=\"_blank\" rel=\"noopener\">고지</a>에 명시. © 2026 Alban Pasquelin.",
     "docsLink": "문서",
     "changelog": "변경 내역",
     "docsFr": "문서 🇫🇷",

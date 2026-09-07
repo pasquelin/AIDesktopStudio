@@ -356,7 +356,7 @@ describe('exportObjects and the animation a reader plays', () => {
   /** The copy is what the file holds, so the clip has to name that — never the object on screen. */
   const composed = (at: number): Parameters<typeof gltfOf>[1] => ({
     clipsFor: copies => [
-      new AnimationClip('IA Studio', 2, [
+      new AnimationClip('AI Desktop Studio', 2, [
         new VectorKeyframeTrack(`${copies[at]?.uuid}.position`, [0, 2], [0, 0, 0, 5, 0, 0]),
       ]),
     ],
@@ -365,7 +365,7 @@ describe('exportObjects and the animation a reader plays', () => {
   it('carries the document’s own animation, built from the copies', async () => {
     const file = await gltfOf([named('box-1')], composed(0))
 
-    expect(played(file)).toEqual(['IA Studio'])
+    expect(played(file)).toEqual(['AI Desktop Studio'])
     expect(file.animations?.[0]?.channels?.[0]?.target?.path).toBe('translation')
   })
 
@@ -387,7 +387,7 @@ describe('exportObjects and the animation a reader plays', () => {
 
     const file = await gltfOf([box, named('box-2')], composed(1))
 
-    expect(played(file).sort()).toEqual(['IA Studio', 'Walk'])
+    expect(played(file).sort()).toEqual(['AI Desktop Studio', 'Walk'])
   })
 })
 

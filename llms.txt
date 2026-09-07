@@ -1,4 +1,4 @@
-# IA Studio
+# AI Desktop Studio
 
 > **Multimodal desktop creation studio** for generative models (Electron 43 + React 19 +
 > TypeScript). Six workshops — Image, Video, 3D, Audio, Materials, Skyboxes — in one window

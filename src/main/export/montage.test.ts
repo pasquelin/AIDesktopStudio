@@ -123,7 +123,7 @@ describe('the same cut, bundled with the media it points at', () => {
 
   beforeEach(async () => {
     resetHandlers()
-    project = await realpath(await mkdtemp(join(tmpdir(), 'ia-studio-project-')))
+    project = await realpath(await mkdtemp(join(tmpdir(), 'ai-desktop-studio-project-')))
     out = await mkdtemp(join(tmpdir(), 'scenario-out-'))
     rush = join(project, 'plan.mp4')
     await writeFile(rush, new Uint8Array(2048).fill(9))

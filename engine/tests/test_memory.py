@@ -5,7 +5,7 @@ Nothing here imports torch: the numbers a backend produces are proven by the end
 § L.1, and the gate must never download 682 Mo to be green.
 """
 
-from ia_studio_engine.core.memory import DoorMemory, MemoryLedger
+from aidesktopstudio_engine.core.memory import DoorMemory, MemoryLedger
 
 DIFFUSION = DoorMemory(
     door="engine/diffusion",

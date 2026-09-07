@@ -9,4 +9,7 @@ import { dragListChannel } from '@/helpers/drag'
  * source allowed, and `Tree` arms its own channel first — announcing `copy` alone here overwrote
  * that and left every reparenting drag refused in SILENCE, which jsdom cannot see.
  */
-export const sceneNodeDrag = dragListChannel('application/x-ia-studio-scene-node', 'copyMove')
+export const sceneNodeDrag = dragListChannel(
+  'application/x-ai-desktop-studio-scene-node',
+  'copyMove',
+)

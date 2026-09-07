@@ -13,7 +13,7 @@ const NAMESPACE = 'studio'
  * pseudo-locale is a detector, not a language, and a user who found it would face a studio
  * nobody can read.
  */
-export const PSEUDO_LOCALE_FLAG = 'ia-studio.pseudo-locale'
+export const PSEUDO_LOCALE_FLAG = 'ai-desktop-studio.pseudo-locale'
 
 function pseudoRequested(): boolean {
   return import.meta.env.DEV && localStorage.getItem(PSEUDO_LOCALE_FLAG) === 'on'

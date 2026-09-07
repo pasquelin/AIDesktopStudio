@@ -575,7 +575,7 @@ simply not there.
 
 | Menu | What is in it |
 |---|---|
-| **IA Studio** | *macOS only*: About, **Settings…**, and the system's commands |
+| **AI Desktop Studio** | *macOS only*: About, **Settings…**, and the system's commands |
 | **File** | New project…, Open project…, Save, Save as…, Import ▸, Export ▸. **Off macOS, Settings… is here** |
 | **Edit** | Undo, Redo, and the system's text commands |
 | **Tools** | *Image workspace*: the eighteen tools of the bar, plus **Smaller** and **Larger brush** |
@@ -629,7 +629,7 @@ so and points to the settings.
 
 ### The licences window
 
-**Help ▸ Licences** lists the software IA Studio ships with: name, version, and the short
+**Help ▸ Licences** lists the software AI Desktop Studio ships with: name, version, and the short
 licence name (`MIT`, `Apache-2.0`…). Click a row: the **full text** unfolds, and the link to its
 sources appears when the licence requires it.
 

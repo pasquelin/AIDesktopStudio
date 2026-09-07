@@ -56,8 +56,8 @@ describe('Auto Rig release runtime', () => {
     expect(fetchEngine).not.toContain('readFileSync(stamp')
     expect(builder).not.toContain('Contents/Resources/engine/python/lib/**/*.dylib')
     expect(builder).not.toContain('Contents/Resources/engine/python/lib/**/*.so')
-    expect(builder).not.toContain("'!src/ia_studio_engine/autorig/make_it_animatable.py'")
-    expect(builder).not.toContain("'!src/ia_studio_engine/vendor/make_it_animatable/**'")
+    expect(builder).not.toContain("'!src/aidesktopstudio_engine/autorig/make_it_animatable.py'")
+    expect(builder).not.toContain("'!src/aidesktopstudio_engine/vendor/make_it_animatable/**'")
   })
 
   it('keeps an arm64-only macOS invocation from provisioning the Intel runtime', () => {
@@ -88,7 +88,7 @@ describe('Auto Rig release runtime', () => {
 
   it('keeps all checkpoint deserialisation behind digest verification and safe loading', () => {
     const model = shippedModel('make-it-animatable')
-    const loader = read('engine/src/ia_studio_engine/vendor/make_it_animatable/model.py')
+    const loader = read('engine/src/aidesktopstudio_engine/vendor/make_it_animatable/model.py')
 
     expect(model?.licenceStatus).toBe('restricted')
     expect(model?.distribution).toBe('direct-download')

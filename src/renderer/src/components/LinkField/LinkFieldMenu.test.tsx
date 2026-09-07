@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 import { LinkField, type LinkFieldProps } from './LinkField'
 
-const OPTIONS = [{ id: 'tex-1', name: 'Brique', url: 'ia-studio://asset/tex-1' }]
+const OPTIONS = [{ id: 'tex-1', name: 'Brique', url: 'ai-desktop-studio://asset/tex-1' }]
 
 const BROWSE = { label: 'Parcourir', hint: 'Choisir dans tout le projet', run: vi.fn() }
 const OPEN = { label: 'Ouvrir', hint: 'Ouvre la texture', run: vi.fn() }

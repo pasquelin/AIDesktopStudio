@@ -58,7 +58,7 @@ function output(overrides: Partial<MakeItAnimatableOutput> = {}): MakeItAnimatab
 }
 
 describe('Make-It-Animatable adaptation', () => {
-  it('converts global joints into a valid local IA Studio rig', () => {
+  it('converts global joints into a valid local AI Desktop Studio rig', () => {
     const adaptation = adaptMakeItAnimatable(output())
 
     expect(adaptation.fault).toBeNull()
@@ -188,7 +188,7 @@ describe('Make-It-Animatable adaptation', () => {
     ).toBe('invalid-primitive-map')
   })
 
-  it('drives an IA Studio SkinnedMesh after applyRig', () => {
+  it('drives an AI Desktop Studio SkinnedMesh after applyRig', () => {
     const adaptation = adaptMakeItAnimatable(
       output({ primitives: [{ mesh: 0, primitive: 0, vertexOffset: 0, vertexCount: 3 }] }),
     )

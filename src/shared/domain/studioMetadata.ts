@@ -13,4 +13,4 @@
  * MaterialX constrains the shape of every name that derives from it: ASCII letters, digits and
  * `_` only. That is why the word carries no separator.
  */
-export const STUDIO_METADATA_KEY = 'iastudio'
+export const STUDIO_METADATA_KEY = 'aidesktopstudio'

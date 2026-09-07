@@ -32,7 +32,7 @@ describe('following the project folder', () => {
 
   /**
    * Those two and NOT everything under a dot, which is how the explorer decides what to hide:
-   * `.ia-studio/items.json` holds the prompt, model and seed of every asset, it is deliberately
+   * `.ai-desktop-studio/items.json` holds the prompt, model and seed of every asset, it is deliberately
    * versioned, and the studio rewrites it whenever one is generated. Skipped, the version panel
    * would not know the one file no rescan can rebuild had changed.
    */
@@ -45,7 +45,7 @@ describe('following the project folder', () => {
     const { open, emit } = driving()
     watches.push(watchProjectFolder('/projects/demo', announce, open))
 
-    emit('.ia-studio/items.json')
+    emit('.ai-desktop-studio/items.json')
     vi.advanceTimersByTime(5000)
 
     expect(announce).toHaveBeenCalledTimes(1)

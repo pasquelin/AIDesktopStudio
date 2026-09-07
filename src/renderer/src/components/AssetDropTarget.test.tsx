@@ -124,7 +124,7 @@ describe('a surface an asset can be dropped onto', () => {
   it('accepts a drag that announces no kind rather than refusing it', () => {
     // A drop that silently does nothing is worse than one that lands somewhere sensible.
     const dataTransfer = dragTransfer()
-    dataTransfer.setData('application/x-ia-studio-asset', 'asset_1')
+    dataTransfer.setData('application/x-ai-desktop-studio-asset', 'asset_1')
 
     const { surface } = target(['audio'])
 

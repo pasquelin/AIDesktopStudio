@@ -1,4 +1,4 @@
-# IA Studio — architecture
+# AI Desktop Studio — architecture
 
 Comment le studio est bâti, et pourquoi il l’est ainsi. Écrit pour qui reprend le code. Vous
 cherchez plutôt comment _s’en servir_ ? Voir [guide-utilisateur.md](guide-utilisateur.md).
@@ -173,7 +173,7 @@ et de réglages, les missions, l’état des fenêtres, la dictée et les comman
 La séparation n’est pas cosmétique : **chaque `on…` du pont s’abonne à exactement une entrée de
 `EVENTS`**, et chaque méthode d’appel à exactement une de `CHANNELS`.
 
-Les fichiers locaux sont servis au renderer par un protocole `ia-studio://`. L’URL est dérivée de
+Les fichiers locaux sont servis au renderer par un protocole `ai-desktop-studio://`. L’URL est dérivée de
 l’identifiant de l’asset : une grille de vignettes ne coûte donc aucun IPC — et le renderer ne
 manipule toujours aucun chemin de fichier.
 
@@ -218,7 +218,7 @@ src/main/
 │   ├── syncPlan.ts          ce que deux côtés devraient faire l'un de l'autre
 │   ├── collector.ts         ce qu'une génération dépose dans le projet
 │   ├── autoCaption.ts       nommer une image d'après ce que l’API y voit
-│   └── protocol.ts          le protocole ia-studio://
+│   └── protocol.ts          le protocole ai-desktop-studio://
 ├── dictation/               la reconnaissance vocale : permissions, modèle, découpage, handlers
 ├── assistant/               la pensée de l'assistant, derrière un port, et ce qu'on en relit
 ├── mission/                 autorité, store, journal versionné, événements et handlers des missions
@@ -891,7 +891,7 @@ l’assistant. Il vit dans le DOSSIER et non dans les réglages, contrairement �
 Il refuse d’être écrasé quand il est illisible ou d’une version plus récente, l’inverse de
 `jobStore.ts` : ce qu’il porte est le texte de quelqu’un.
 
-Le **rôle d’un dossier** est dit par un marqueur qu’il porte, `.ia-studio-role`, et non par son
+Le **rôle d’un dossier** est dit par un marqueur qu’il porte, `.ai-desktop-studio-role`, et non par son
 nom : dix rôles (`shared/domain/folderRole.ts`), un par endroit où le studio dépose quelque chose.
 `DEFAULT_ROLE_PATHS` dit où chacun COMMENCE — `Images/`, `Modelling/Scenes/`, `Scripts/`… — et rien
 de plus : le dossier est ordinaire dès la première seconde, et un renommage fait dans le Finder ne
@@ -920,7 +920,7 @@ pour qu’un projet reste transportable.
 **Il ne se reconstruit pas.** Rien ne redevine ce qu’un fichier EST : le catalogue se remplit au
 fil des générations et des imports. Le supprimer perd les noms, les étiquettes, les dimensions, la
 recette de génération, `derivedFrom`, le `sourcePath` des médias liés et le journal d’activité —
-les fichiers restent, plus rien ne dit ce qu’ils sont. `.ia-studio/items.json` est ce qui reste à
+les fichiers restent, plus rien ne dit ce qu’ils sont. `.ai-desktop-studio/items.json` est ce qui reste à
 lire ce jour-là : une sauvegarde indexée par empreinte de contenu, écrite après chaque passe de
 réconciliation qui a changé quelque chose, que le studio ne relit jamais de lui-même.
 
@@ -935,7 +935,7 @@ daté, si bien que la corbeille — qui date au lieu d’effacer — rend une li
 en ressort.
 
 Un asset est soit `local` (un fichier du projet), soit `cloud` (encore uniquement chez le fournisseur).
-Une image locale est servie au renderer sous la forme `ia-studio://<id>`.
+Une image locale est servie au renderer sous la forme `ai-desktop-studio://<id>`.
 
 Les **documents** sont des fichiers rangés où l’utilisateur veut — le dossier de leur section
 n’est que là où atterrit une première sauvegarde, et `documents.list()` parcourt le projet entier

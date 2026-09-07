@@ -54,7 +54,7 @@ export type GameCommand =
   | { name: 'step'; steps: number }
   | { name: 'loadScene'; scene: string; fade: number }
 
-const CHANNEL = 'ia-studio.game'
+const CHANNEL = 'ai-desktop-studio.game'
 
 /** Opens the channel. Both ends call this; each posts what the other listens for. */
 export function openGameChannel(): BroadcastChannel {

@@ -9,7 +9,7 @@ let project: string
 let outside: string
 
 beforeEach(async () => {
-  project = await realpath(await mkdtemp(join(tmpdir(), 'ia-studio-project-')))
+  project = await realpath(await mkdtemp(join(tmpdir(), 'ai-desktop-studio-project-')))
   outside = await realpath(await mkdtemp(join(tmpdir(), 'scenario-outside-')))
 })
 

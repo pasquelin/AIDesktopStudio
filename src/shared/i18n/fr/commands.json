@@ -242,7 +242,7 @@
     },
     "sequenceExportCut": {
       "title": "Exporter le montage (OTIO)…",
-      "help": "Écrit le montage lui-même dans un fichier OpenTimelineIO, que d’autres logiciels de montage ouvrent — pistes, clips, points d’entrée, vitesses et liens vers les médias. Les fondus, les gains et les liens image/son y voyagent aussi, mais seul IA Studio les relit."
+      "help": "Écrit le montage lui-même dans un fichier OpenTimelineIO, que d’autres logiciels de montage ouvrent — pistes, clips, points d’entrée, vitesses et liens vers les médias. Les fondus, les gains et les liens image/son y voyagent aussi, mais seul AI Desktop Studio les relit."
     },
     "sequenceExportEdl": {
       "title": "Exporter la liste de montage (EDL)…",

@@ -1,6 +1,6 @@
 import threading
 
-from ia_studio_engine.core.jobqueue import Job, JobQueue
+from aidesktopstudio_engine.core.jobqueue import Job, JobQueue
 
 
 def job(job_id: int) -> Job:

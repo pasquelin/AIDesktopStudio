@@ -11,8 +11,8 @@ const scenes = (relative: string): string => pathIn(DEFAULT_ROLE_PATHS.scenes, r
 
 describe('importFiles nest names', () => {
   it('nests a document named ...gltf inside the project rather than its parent', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'ia-studio-import-'))
-    const outside = await mkdtemp(join(tmpdir(), 'ia-studio-source-'))
+    const root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-import-'))
+    const outside = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-source-'))
     const source = join(outside, '...gltf')
     await writeFile(
       source,
@@ -40,9 +40,9 @@ describe('importFiles nest names', () => {
   })
 
   it('does not delete the project when a ..gltf import is cancelled', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'ia-studio-import-'))
+    const root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-import-'))
     await writeFile(join(root, 'kept.txt'), 'keep')
-    const outside = await mkdtemp(join(tmpdir(), 'ia-studio-source-'))
+    const outside = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-source-'))
     const source = join(outside, '..gltf')
     await writeFile(
       source,
@@ -68,8 +68,8 @@ describe('importFiles nest names', () => {
   })
 
   it('leaves no folder behind when the import is cancelled while copying the neighbours', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'ia-studio-import-'))
-    const outside = await mkdtemp(join(tmpdir(), 'ia-studio-source-'))
+    const root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-import-'))
+    const outside = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-source-'))
     const source = join(outside, 'Lourd.gltf')
     await writeFile(
       source,
@@ -97,9 +97,9 @@ describe('importFiles nest names', () => {
   })
 
   it('does not follow a neighbour that a symbolic link takes out of the source folder', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'ia-studio-import-'))
-    const outside = await mkdtemp(join(tmpdir(), 'ia-studio-source-'))
-    const elsewhere = await mkdtemp(join(tmpdir(), 'ia-studio-elsewhere-'))
+    const root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-import-'))
+    const outside = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-source-'))
+    const elsewhere = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-elsewhere-'))
     await writeFile(join(elsewhere, 'secret.png'), 'private key')
     await symlink(join(elsewhere, 'secret.png'), join(outside, 'peau.png'))
     await symlink(elsewhere, join(outside, 'textures'))

@@ -120,7 +120,7 @@ export async function fetchEngine(platform = process.platform, arch = process.ar
     )
   }
 
-  const work = mkdtempSync(join(tmpdir(), 'ia-studio-engine-'))
+  const work = mkdtempSync(join(tmpdir(), 'ai-desktop-studio-engine-'))
   try {
     const archive = join(work, 'python.tar.gz')
     const digest = await download(urlOf(triple), archive)
@@ -145,7 +145,7 @@ export async function fetchEngine(platform = process.platform, arch = process.ar
 
 async function printDigests() {
   for (const triple of Object.values(TARGETS)) {
-    const work = mkdtempSync(join(tmpdir(), 'ia-studio-engine-'))
+    const work = mkdtempSync(join(tmpdir(), 'ai-desktop-studio-engine-'))
     try {
       const digest = await download(urlOf(triple), join(work, 'python.tar.gz'))
       process.stdout.write(`  '${triple}': '${digest}',\n`)

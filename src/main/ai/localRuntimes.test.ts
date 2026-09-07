@@ -198,13 +198,13 @@ describe('engineDoorOf', () => {
 describe('the doors the engine opens', () => {
   /**
    * 🛑 Two tables, one on each side of the frontier: this file pairs a MODALITY with a door, and
-   * `engine/src/ia_studio_engine/protocol/doors.py` pairs a DOOR with the modality it serves. A
+   * `engine/src/aidesktopstudio_engine/protocol/doors.py` pairs a DOOR with the modality it serves. A
    * name that drifts on one side is refused at generation time, hours after the edit, as
    * `no such door` — nothing else here would see it.
    */
   it('names the same door as the engine, for every modality that writes a file', () => {
     const doorsPy = readFileSync(
-      join(ROOT, 'engine/src/ia_studio_engine/protocol/doors.py'),
+      join(ROOT, 'engine/src/aidesktopstudio_engine/protocol/doors.py'),
       'utf8',
     )
     const declared = Object.fromEntries(
@@ -229,7 +229,7 @@ describe('the families the engine opens itself', () => {
    * day the engine is extracted — taking with it what says a CUDA family must not load on Metal.
    */
   const table = readFileSync(
-    join(ROOT, 'engine/src/ia_studio_engine/adapters/plugin_adapter.py'),
+    join(ROOT, 'engine/src/aidesktopstudio_engine/adapters/plugin_adapter.py'),
     'utf8',
   )
   const body = table.split('PLUGINS: dict[str, Plugin] = {')[1]?.split('\n}')[0] ?? ''

@@ -276,7 +276,7 @@ without that refusal, saving would erase those clips from the file. Bring the mi
 the project, open the edit again, and saving works once more.
 
 And what that format does not carry as a standard — fades, gains, image and sound links, the 3D
-scene behind a live clip — travels in the file but **is read by IA Studio alone**.
+scene behind a live clip — travels in the file but **is read by AI Desktop Studio alone**.
 
 ### A sequence's settings are fixed
 
@@ -394,7 +394,7 @@ above white is clipped.
 
 ### What cannot
 
-- **a separate `.gltf` that is not an IA Studio document**, as well as `.usd`, `.usda` and `.usdc`
+- **a separate `.gltf` that is not an AI Desktop Studio document**, as well as `.usd`, `.usda` and `.usdc`
   outside their `.usdz` archive.
 
 Every accepted 3D file is converted to `.glb` on import; the original is kept in a `.sources`
@@ -541,7 +541,7 @@ If you only remember four things from this chapter:
 2. **a crop only half undoes** — `⌘Z` gives the frame back, never the cropped pixels; export
    before cropping hard;
 3. **the video export comes out silent** — the final file is deliverable, the edit's sound is not in it;
-4. **a separate `.gltf` that is not an IA Studio document** is not imported as a model.
+4. **a separate `.gltf` that is not an AI Desktop Studio document** is not imported as a model.
 
 Everything else is comfort.
 

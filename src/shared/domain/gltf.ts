@@ -17,7 +17,7 @@ import { isRecord } from '../guards'
 
 export const GLTF_VERSION = '2.0'
 
-export const GLTF_GENERATOR = 'IA Studio'
+export const GLTF_GENERATOR = 'AI Desktop Studio'
 
 /** The one extension the studio writes today, and the one three.js reads on both sides. */
 export const KHR_LIGHTS_PUNCTUAL = 'KHR_lights_punctual'

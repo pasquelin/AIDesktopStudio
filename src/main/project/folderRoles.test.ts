@@ -16,7 +16,7 @@ import {
 let root = ''
 
 beforeEach(async () => {
-  root = await mkdtemp(join(tmpdir(), 'ia-studio-roles-'))
+  root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-roles-'))
 })
 
 /** The map a project just laid out answers with, cache written as an open would write it. */

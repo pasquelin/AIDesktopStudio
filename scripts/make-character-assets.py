@@ -3,10 +3,14 @@
 Run through Blender, which is the only reader here for FBX:
 
     /Applications/Blender.app/Contents/MacOS/Blender --background --factory-startup \
-        --python scripts/make-character-assets.py -- <source folder> <resources folder> [names...]
+        --python scripts/make-character-assets.py \
+            -- <source folder> <resources folder> <chest texture> [names...]
 
 Naming what to build restricts the run to those clips or hero levels; with none it builds the
 whole of both tables.
+
+The chest texture is the brand emblem the hero wears, `build/character-chest.png`: it lives here
+rather than beside the sources, so a rebuild needs nothing but this checkout and the meshes.
 
 The source folder holds `game/` — `character.glb` and Mixamo FBX clips — beside `optimization/`,
 which holds the decimations of that same mesh. What
@@ -26,7 +30,7 @@ import sys
 import bpy
 from mathutils import Matrix, Quaternion, Vector
 
-COPYRIGHT = "© IA Studio"
+COPYRIGHT = "© AI Desktop Studio"
 
 # The studio's humanoid roles, keyed by the Mixamo name each one answers to. Mixamo spells a
 # finger `LeftHandIndex1` and the studio `LeftIndex1`; the hand joints are expanded below rather
@@ -132,7 +136,7 @@ def stamp(path, clip_name):
     document = json.loads(data[20 : 20 + length])
     document["asset"] = {
         "version": "2.0",
-        "generator": "IA Studio",
+        "generator": "AI Desktop Studio",
         "copyright": COPYRIGHT,
     }
     if clip_name:
@@ -249,9 +253,42 @@ def merge_by_material():
     return len([obj for obj in bpy.data.objects if obj.type == "MESH"])
 
 
-def build_hero(source, target, height):
+# What the Desktop sources still spell, and what the shipped file must answer to. The sources are
+# not ours to rename, so the rebrand happens here, on the way out.
+BRAND_NAMES = {
+    "IA_Studio_Logo": "AI_Desktop_Studio_Logo",
+    "IA_Studio_Joints_Blue_55": "AI_Desktop_Studio_Joints_Blue_55",
+}
+
+
+def replace_brand_texture(texture):
+    """Replaces the chest emblem before exporting every density of the shipped hero."""
+    material = bpy.data.materials.get("IA_Studio_Logo")
+    if material is None or material.node_tree is None:
+        raise SystemExit("the hero no longer exposes its chest-logo material")
+
+    image = bpy.data.images.load(texture, check_existing=False)
+    image.name = "AI_Desktop_Studio_Logo"
+    for node in material.node_tree.nodes:
+        if node.type == "TEX_IMAGE":
+            node.image = image
+            break
+    else:
+        raise SystemExit("the hero chest-logo material has no image texture")
+
+    # Objects and materials both, and by exact name: the exporter writes each one into the file,
+    # where a leftover spelling is the old brand shipped inside a delivered asset.
+    for holder in (bpy.data.objects, bpy.data.materials):
+        for old, renamed in BRAND_NAMES.items():
+            entry = holder.get(old)
+            if entry is not None:
+                entry.name = renamed
+
+
+def build_hero(source, target, height, texture):
     reset_scene()
     bpy.ops.import_scene.gltf(filepath=source)
+    replace_brand_texture(texture)
 
     before = len([obj for obj in bpy.data.objects if obj.type == "MESH"])
     measured = measured_height()
@@ -282,7 +319,7 @@ def build_hero(source, target, height):
         export_glb(target)
         written = glb_height(target)
 
-    return before, after, written, factor
+    return before, after, written
 
 
 CLIPS = {
@@ -319,11 +356,11 @@ HERO_LEVELS = (
 
 def main():
     argv = sys.argv[sys.argv.index("--") + 1 :]
-    source, resources = argv[0], argv[1]
+    source, resources, texture = argv[0], argv[1], argv[2]
     # Names to build, or everything. A rebuild of what is already shipped is not free: the
     # exporter is not byte-stable across Blender versions, so relaunching for one added clip
     # would rewrite the ten beside it and put them in the diff.
-    wanted = set(argv[2:])
+    wanted = set(argv[3:])
 
     animations = os.path.join(resources, "animations")
     for file, name in CLIPS.items():
@@ -343,8 +380,8 @@ def main():
         if wanted and name not in wanted:
             continue
         target = os.path.join(characters, f"{name}.glb")
-        before, after, measured, factor = build_hero(
-            os.path.join(source, folder, file), target, HERO_HEIGHT
+        before, after, measured = build_hero(
+            os.path.join(source, folder, file), target, HERO_HEIGHT, texture
         )
         print(
             f"[hero] {name}: {measured:.3f} m written (asked {HERO_HEIGHT}), "

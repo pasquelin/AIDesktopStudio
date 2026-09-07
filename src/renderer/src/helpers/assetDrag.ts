@@ -6,7 +6,7 @@ import { useCloud } from '@/stores/cloud'
 import { dragChannel, type DragLike } from './drag'
 
 /** Dragging an asset out of the browser and onto an editor. See `dragChannel` for the why. */
-export const ASSET_DRAG_TYPE = 'application/x-ia-studio-asset'
+export const ASSET_DRAG_TYPE = 'application/x-ai-desktop-studio-asset'
 
 const ASSETS = dragChannel(ASSET_DRAG_TYPE)
 

@@ -31,7 +31,7 @@ export type RetargetMessage =
   | { kind: 'answer'; requestId: string; ok: boolean }
 
 export function openRetargetChannel(sessionId: string): BroadcastChannel {
-  return new BroadcastChannel(`ia-studio.retarget.${sessionId}`)
+  return new BroadcastChannel(`ai-desktop-studio.retarget.${sessionId}`)
 }
 
 export function retargetMessageOf(data: unknown): RetargetMessage | null {

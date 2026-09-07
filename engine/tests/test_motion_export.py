@@ -4,7 +4,7 @@ import struct
 import numpy as np
 import pytest
 
-from ia_studio_engine.motion.gltf import motion_glb
+from aidesktopstudio_engine.motion.gltf import motion_glb
 
 
 def sample():

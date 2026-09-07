@@ -1,4 +1,4 @@
-# IA Studio — architecture
+# AI Desktop Studio — architecture
 
 How the studio is built, and why it is built that way. Written for someone picking the codebase
 up. Looking for how to *use* it? See [user-guide.md](user-guide.md).
@@ -169,7 +169,7 @@ window state, dictation updates and native-menu commands, among other events.
 The split is not cosmetic: **every `on…` on the bridge subscribes to exactly one entry of
 `EVENTS`**, and every call method maps to exactly one of `CHANNELS`.
 
-Local files are served to the renderer over a custom `ia-studio://` protocol. The URL is derived
+Local files are served to the renderer over a custom `ai-desktop-studio://` protocol. The URL is derived
 from the asset identifier, so a grid of thumbnails costs no IPC at all — and the renderer still
 never handles a file path.
 
@@ -214,7 +214,7 @@ src/main/
 │   ├── syncPlan.ts          what two sides would have to do about each other
 │   ├── collector.ts         what a generation drops into the project
 │   ├── autoCaption.ts       naming a picture from what the API sees in it
-│   └── protocol.ts          the ia-studio:// protocol
+│   └── protocol.ts          the ai-desktop-studio:// protocol
 ├── dictation/               speech recognition: permissions, model, segmenting, handlers
 ├── assistant/               the assistant's thinking, behind a port, and how its reply is read
 ├── mission/                 mission authority, store, versioned journal, events and handlers
@@ -808,7 +808,7 @@ the FOLDER rather than in the settings, unlike `settings.ai.projectRoles` — th
 [ADR-24](../ci/adr/ADR-24-ce-qui-voyage-avec-le-projet.md). It refuses to be overwritten when it is
 unreadable or from a newer build, the opposite of `jobStore.ts`: what it holds is somebody's text.
 
-A **folder's role** is told by a marker it carries, `.ia-studio-role`, and not by its name: ten
+A **folder's role** is told by a marker it carries, `.ai-desktop-studio-role`, and not by its name: ten
 roles (`shared/domain/folderRole.ts`), one per place the studio files something. `DEFAULT_ROLE_PATHS`
 says where each one STARTS — `Images/`, `Modelling/Scenes/`, `Scripts/`… — and nothing more: the
 folder is ordinary from the first second, and a rename made in the Finder costs it nothing, the
@@ -835,7 +835,7 @@ can search thousands of items without touching the filesystem, and so a project 
 **It does not rebuild.** Nothing guesses again what a file IS: the catalogue fills up as you
 generate and import. Deleting it loses the names, the tags, the dimensions, the generation recipe,
 `derivedFrom`, the `sourcePath` of linked media and the activity journal — the files remain, and
-nothing says what they are any more. `.ia-studio/items.json` is what is left to read that day: a
+nothing says what they are any more. `.ai-desktop-studio/items.json` is what is left to read that day: a
 backup keyed by content fingerprint, written after every reconciliation pass that changed
 something, which the studio never reads of its own accord.
 
@@ -849,7 +849,7 @@ have. `search` and `countByType` hide what is dated, so the trash — which date
 deletes — gives a whole row back if the file comes out of it.
 
 Assets are either `local` (a file in the project) or `cloud` (still only on the provider). A local
-image is served to the renderer as `ia-studio://<id>`.
+image is served to the renderer as `ai-desktop-studio://<id>`.
 
 **Documents** are files filed wherever the user wants them — their section's folder is only where a
 first save lands, and `documents.list()` walks the whole project to find them. One per document,

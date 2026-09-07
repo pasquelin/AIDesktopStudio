@@ -25,7 +25,7 @@ const row = (fields: Partial<Asset>): Asset => ({
 
 /** A catalogue in a map, and a backend that writes where the real one would. */
 async function studio(rows: readonly Asset[]) {
-  const root = await mkdtemp(join(tmpdir(), 'ia-studio-converted-'))
+  const root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-converted-'))
   const catalog = new Map(rows.map(one => [one.id, one]))
   for (const one of rows) {
     if (!one.path) continue
@@ -212,7 +212,7 @@ describe('landConvertedMesh', () => {
   })
 
   it('refuses a catalogue path that leaves the project before moving its file', async () => {
-    const parent = await mkdtemp(join(tmpdir(), 'ia-studio-converted-escape-'))
+    const parent = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-converted-escape-'))
     const root = join(parent, 'project')
     await mkdir(join(root, 'Models'), { recursive: true })
     await writeFile(join(parent, 'victim.obj'), 'kept')

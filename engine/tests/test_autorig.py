@@ -3,8 +3,8 @@ import json
 import numpy as np
 import pytest
 
-from ia_studio_engine.autorig.fps import farthest_point_indices
-from ia_studio_engine.autorig.make_it_animatable import (
+from aidesktopstudio_engine.autorig.fps import farthest_point_indices
+from aidesktopstudio_engine.autorig.make_it_animatable import (
     JOINT_NAMES,
     PARENTS,
     _focus_surface_on_hands,
@@ -13,7 +13,7 @@ from ia_studio_engine.autorig.make_it_animatable import (
     _skin_weights,
     _write_result,
 )
-from ia_studio_engine.autorig.quality import (
+from aidesktopstudio_engine.autorig.quality import (
     focus_surface_on_hands_with_normals,
     sample_surface_points_with_normals,
 )

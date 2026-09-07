@@ -122,7 +122,7 @@ function runtimeManifest(sitePackages, platform, arch) {
         bytes: distributionBytes(sitePackages, record),
       }
     })
-    .filter(distribution => distribution.name !== 'ia-studio-engine')
+    .filter(distribution => distribution.name !== 'ai-desktop-studio-engine')
     .sort((left, right) => left.name.localeCompare(right.name))
 
   return {
@@ -152,7 +152,7 @@ export function prepareEngineRuntime(platform = process.platform, arch = process
   const python = pythonOf(platform)
   if (!existsSync(python)) throw new Error('Fetch the embedded Python runtime before preparing it')
 
-  const work = mkdtempSync(join(tmpdir(), 'ia-studio-runtime-'))
+  const work = mkdtempSync(join(tmpdir(), 'ai-desktop-studio-runtime-'))
   try {
     const requirements = join(work, 'requirements.txt')
     execFileSync(

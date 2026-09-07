@@ -8,8 +8,8 @@ import { importFiles } from './importFiles'
 
 describe('a source bigger than the reader holds at once', () => {
   it('keeps dependencies declared after eight mebibytes of OBJ geometry', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'ia-studio-import-'))
-    const outside = await mkdtemp(join(tmpdir(), 'ia-studio-source-'))
+    const root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-import-'))
+    const outside = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-source-'))
     const source = join(outside, 'Large.obj')
     await writeFile(source, `${'v 0 0 0\n'.repeat(1024 * 1024 + 1)}mtllib Large.mtl\n`)
     await writeFile(join(outside, 'Large.mtl'), 'newmtl skin\n')
@@ -37,8 +37,8 @@ describe('a source bigger than the reader holds at once', () => {
   // 🛑 A glTF is parsed WHOLE — a 300 Mo file would be a 600 Mo string on the main process, and
   // above the ceiling it carries its buffers inside it and names no neighbour to fetch.
   it('reads no reference out of a glTF past the ceiling, rather than holding all of it', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'ia-studio-import-'))
-    const outside = await mkdtemp(join(tmpdir(), 'ia-studio-source-'))
+    const root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-import-'))
+    const outside = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-source-'))
     const source = join(outside, 'Huge.gltf')
     const document = { asset: { version: '2.0' }, buffers: [{ uri: 'Huge.bin' }] }
     await writeFile(source, `${JSON.stringify(document)}\n${' '.repeat(8 * 1024 * 1024)}`)

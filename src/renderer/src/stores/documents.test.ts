@@ -34,7 +34,7 @@ describe('documents store', () => {
   it('keeps nothing in local storage, the project folder being what says a document exists', async () => {
     await useDocuments.getState().create('3d')
 
-    expect(localStorage.getItem('ia-studio:documents')).toBeNull()
+    expect(localStorage.getItem('ai-desktop-studio:documents')).toBeNull()
   })
 
   // A file per tab opened and never typed in would litter the project with empty documents

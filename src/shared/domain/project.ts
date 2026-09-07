@@ -36,7 +36,7 @@ export const CATALOG_FILE = `${INDEX_FOLDER}/catalog.db`
  * NOT `.index/`, and the difference is the whole reason both exist: `.index/` is a cache the
  * studio's `.gitignore` excludes, this travels with the project and is meant to be committed.
  */
-export const STUDIO_FOLDER = '.ia-studio'
+export const STUDIO_FOLDER = '.ai-desktop-studio'
 
 /**
  * Where what the APP ships lands inside a project — the working textures, the character, the
@@ -46,7 +46,7 @@ export const STUDIO_FOLDER = '.ia-studio'
  *
  * Under a dot for the same reason `.index/` is: it is not the user's to arrange. No surface that
  * BROWSES assets lists it — see `isStudioPrivate` and `NOT_PRIVATE` — and no gesture may move or
- * throw away what it holds. It travels with the project like `.ia-studio/`, being what the
+ * throw away what it holds. It travels with the project like `.ai-desktop-studio/`, being what the
  * project's own scenes point at.
  */
 export const RESOURCES_FOLDER = '.resources'

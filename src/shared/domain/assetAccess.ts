@@ -149,7 +149,7 @@ export type AssetChanges = {
   modelMaterialIds?: readonly string[]
 }
 
-export const ASSET_SCHEME = 'ia-studio'
+export const ASSET_SCHEME = 'ai-desktop-studio'
 export const ASSET_HOST = 'asset'
 
 /**
@@ -179,7 +179,7 @@ export const THUMB_HOST = 'thumb'
 export const FILE_HOST = 'file'
 
 /**
- * `ia-studio://<host>/<id>`. One scheme, one host per kind of thing it serves — the favourites
+ * `ai-desktop-studio://<host>/<id>`. One scheme, one host per kind of thing it serves — the favourites
  * keep their stills outside any project, so they answer on a host of their own.
  */
 export function hostedUrl(host: string, id: string): string {
@@ -281,7 +281,7 @@ export function versionedUrl(url: string, version: string | undefined): string {
   return version ? `${url}?v=${encodeURIComponent(version)}` : url
 }
 
-/** `ia-studio://asset/<id>` → `<id>`. Anything else is not ours to serve. */
+/** `ai-desktop-studio://asset/<id>` → `<id>`. Anything else is not ours to serve. */
 export function assetIdFromUrl(url: string): string | null {
   return hostedIdFromUrl(url, ASSET_HOST)
 }

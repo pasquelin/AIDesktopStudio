@@ -24,7 +24,7 @@ describe('the context a project carries', () => {
   let context: ProjectContextStore
 
   beforeEach(async () => {
-    root = await mkdtemp(join(tmpdir(), 'ia-studio-context-'))
+    root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-context-'))
     context = createProjectContext({ rootOf: () => root })
   })
 

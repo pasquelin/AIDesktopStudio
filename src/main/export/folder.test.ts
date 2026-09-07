@@ -331,7 +331,7 @@ describe('the door that names its destination', () => {
 
   beforeEach(async () => {
     resetHandlers()
-    project = await realpath(await mkdtemp(join(tmpdir(), 'ia-studio-project-')))
+    project = await realpath(await mkdtemp(join(tmpdir(), 'ai-desktop-studio-project-')))
     registerExportHandlers({
       pickFolder: () => Promise.resolve<string | null>(null),
       projectPath: () => project,

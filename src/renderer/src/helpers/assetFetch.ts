@@ -1,7 +1,7 @@
 import { assetMasterUrl, assetUrl } from '@shared/domain/asset'
 
 /**
- * An asset's bytes, over the `ia-studio://` scheme.
+ * An asset's bytes, over the `ai-desktop-studio://` scheme.
  *
  * The renderer never handles a file path: main resolves the id against the catalogue.
  */

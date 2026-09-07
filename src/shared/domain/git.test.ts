@@ -188,6 +188,6 @@ describe('the ignore file written at init', () => {
    * from a clone with its pictures and none of their history.
    */
   it('leaves the provenance backup versioned', () => {
-    expect(defaultIgnore()).not.toContain('.ia-studio')
+    expect(defaultIgnore()).not.toContain('.ai-desktop-studio')
   })
 })

@@ -50,7 +50,7 @@ describe('a library line the catalogue does not hold', () => {
     useCloud.getState().clear()
     menu = fakeMenu()
     installFakeBridge({ menu: menu.bridge })
-    withProject('/Users/someone/Reel.iastudio')
+    withProject('/Users/someone/Reel.aidesktopstudio')
   })
 
   it('offers the one thing the line is for', async () => {
@@ -94,9 +94,9 @@ describe('a library line the catalogue does not hold', () => {
 
     fireEvent.dragStart(screen.getByText('tile').parentElement as Element, { dataTransfer })
 
-    expect(dataTransfer.types).toContain('application/x-ia-studio-asset+mesh')
+    expect(dataTransfer.types).toContain('application/x-ai-desktop-studio-asset+mesh')
     // The marker that tells the drop it has a download to do first.
-    expect(dataTransfer.types).toContain('application/x-ia-studio-asset+library')
+    expect(dataTransfer.types).toContain('application/x-ai-desktop-studio-asset+library')
   })
 
   // The one action the line is for, and the only one it can do: bring the bytes in.

@@ -294,7 +294,7 @@ export const UI_VERSION = 1
  * knowing this studio. Here rather than beside the Zod schema that generates the file: the file
  * layer stamps this on every write, and it must not pull a validator in to do so.
  */
-export const UI_SCHEMA_URL = `https://pasquelin.github.io/IAStudio/schema/ui-${UI_VERSION}.schema.json`
+export const UI_SCHEMA_URL = `https://www.aidesktopstudio.com/schema/ui-${UI_VERSION}.schema.json`
 
 /**
  * Why a file did not open, told apart because the two need different words on screen: one says

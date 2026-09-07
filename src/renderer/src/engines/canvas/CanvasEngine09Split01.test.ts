@@ -37,7 +37,7 @@ describe('the transform grips', () => {
 
   it('puts the grips on the picture the layer holds, not on the surface around it', async () => {
     const { host, engine, layers } = await armed()
-    await engine.loadInto('layer-1', 'ia-studio://asset/take-1')
+    await engine.loadInto('layer-1', 'ai-desktop-studio://asset/take-1')
 
     press(host, 612, 562)
     drag(host, 812, 662)

@@ -1,4 +1,4 @@
-# IA Studio
+# AI Desktop Studio
 
 > **Multimodal desktop creation studio** for generative models (Electron 43 + React 19 +
 > TypeScript). Six workshops — Image, Video, 3D, Audio, Materials, Skyboxes — in one window
@@ -51,7 +51,7 @@ README
 
 <div align="center">
 
-# IA Studio
+# AI Desktop Studio
 
 **A desktop creation studio for generative models.**
 Generate and edit images, videos, 3D models, audio, textures and skyboxes — in one place, on your machine.
@@ -65,12 +65,12 @@ Generate and edit images, videos, 3D models, audio, textures and skyboxes — in
 [![Tests](https://img.shields.io/badge/tests-9000%2B%20passing-2b2d30?logo=vitest&logoColor=6da95f)](#quality-bar)
 [![License](https://img.shields.io/badge/license-PolyForm%20Noncommercial-2b2d30)](#license)
 
-**[→ Presentation site](https://pasquelin.github.io/IAStudio/)**
+**[→ Presentation site](https://www.aidesktopstudio.com/)**
 
 </div>
 
 <div align="center">
-  <img src="site/assets/images/studio-3d.png" alt="IA Studio in the Modelling workspace: the model catalogue and the project explorer on the left, a generated car standing in the scene viewport in the centre, the scene outliner and the inspector on the right, and across the bottom the timeline with one row per light and object" width="900">
+  <img src="site/assets/images/studio-3d.png" alt="AI Desktop Studio in the Modelling workspace: the model catalogue and the project explorer on the left, a generated car standing in the scene viewport in the centre, the scene outliner and the inspector on the right, and across the bottom the timeline with one row per light and object" width="900">
 </div>
 
 ---
@@ -159,7 +159,7 @@ src/
 │   ├── provider/    API client, model registry, job manager, credentials
 │   ├── project/     project folders, manifest, SQLite catalogue
 │   ├── settings/    encrypted store and its handlers
-│   ├── assets/      asset ingestion and the ia-studio:// protocol
+│   ├── assets/      asset ingestion and the ai-desktop-studio:// protocol
 │   ├── media/       ffmpeg-backed media work
 │   ├── menu/        native menu, built from the shared registries
 │   └── window/      window lifecycle, navigation lockdown
@@ -252,9 +252,9 @@ the cost is yours.
 User guide
 ==============================================================================
 
-# IA Studio — the manual
+# AI Desktop Studio — the manual
 
-Welcome. This manual explains **everything** IA Studio does, from your first launch to
+Welcome. This manual explains **everything** AI Desktop Studio does, from your first launch to
 everyday work.
 
 It is written to be read by someone who has never opened a creative application, without lying to
@@ -268,7 +268,7 @@ first appears, then repeated in the [glossary](manual/17-glossary.md).
 
 ## In three sentences
 
-IA Studio is an application that installs on your computer. It can **make** images, videos,
+AI Desktop Studio is an application that installs on your computer. It can **make** images, videos,
 sounds, 3D objects, materials and skies — by asking artificial-intelligence models, online, at
 a generation provider. And it can then **assemble, adjust and file them**, on your
 machine, without sending them anywhere.
@@ -408,7 +408,7 @@ accord. Untick it and that stops; [chapter 14](manual/14-settings.md) covers it.
 Architecture
 ==============================================================================
 
-# IA Studio — architecture
+# AI Desktop Studio — architecture
 
 How the studio is built, and why it is built that way. Written for someone picking the codebase
 up. Looking for how to *use* it? See [user-guide.md](user-guide.md).
@@ -579,7 +579,7 @@ window state, dictation updates and native-menu commands, among other events.
 The split is not cosmetic: **every `on…` on the bridge subscribes to exactly one entry of
 `EVENTS`**, and every call method maps to exactly one of `CHANNELS`.
 
-Local files are served to the renderer over a custom `ia-studio://` protocol. The URL is derived
+Local files are served to the renderer over a custom `ai-desktop-studio://` protocol. The URL is derived
 from the asset identifier, so a grid of thumbnails costs no IPC at all — and the renderer still
 never handles a file path.
 
@@ -624,7 +624,7 @@ src/main/
 │   ├── syncPlan.ts          what two sides would have to do about each other
 │   ├── collector.ts         what a generation drops into the project
 │   ├── autoCaption.ts       naming a picture from what the API sees in it
-│   └── protocol.ts          the ia-studio:// protocol
+│   └── protocol.ts          the ai-desktop-studio:// protocol
 ├── dictation/               speech recognition: permissions, model, segmenting, handlers
 ├── assistant/               the assistant's thinking, behind a port, and how its reply is read
 ├── mission/                 mission authority, store, versioned journal, events and handlers
@@ -1218,7 +1218,7 @@ the FOLDER rather than in the settings, unlike `settings.ai.projectRoles` — th
 [ADR-24](../ci/adr/ADR-24-ce-qui-voyage-avec-le-projet.md). It refuses to be overwritten when it is
 unreadable or from a newer build, the opposite of `jobStore.ts`: what it holds is somebody's text.
 
-A **folder's role** is told by a marker it carries, `.ia-studio-role`, and not by its name: ten
+A **folder's role** is told by a marker it carries, `.ai-desktop-studio-role`, and not by its name: ten
 roles (`shared/domain/folderRole.ts`), one per place the studio files something. `DEFAULT_ROLE_PATHS`
 says where each one STARTS — `Images/`, `Modelling/Scenes/`, `Scripts/`… — and nothing more: the
 folder is ordinary from the first second, and a rename made in the Finder costs it nothing, the
@@ -1245,7 +1245,7 @@ can search thousands of items without touching the filesystem, and so a project 
 **It does not rebuild.** Nothing guesses again what a file IS: the catalogue fills up as you
 generate and import. Deleting it loses the names, the tags, the dimensions, the generation recipe,
 `derivedFrom`, the `sourcePath` of linked media and the activity journal — the files remain, and
-nothing says what they are any more. `.ia-studio/items.json` is what is left to read that day: a
+nothing says what they are any more. `.ai-desktop-studio/items.json` is what is left to read that day: a
 backup keyed by content fingerprint, written after every reconciliation pass that changed
 something, which the studio never reads of its own accord.
 
@@ -1259,7 +1259,7 @@ have. `search` and `countByType` hide what is dated, so the trash — which date
 deletes — gives a whole row back if the file comes out of it.
 
 Assets are either `local` (a file in the project) or `cloud` (still only on the provider). A local
-image is served to the renderer as `ia-studio://<id>`.
+image is served to the renderer as `ai-desktop-studio://<id>`.
 
 **Documents** are files filed wherever the user wants them — their section's folder is only where a
 first save lands, and `documents.list()` walks the whole project to find them. One per document,

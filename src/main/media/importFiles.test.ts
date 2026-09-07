@@ -13,7 +13,7 @@ const under = (role: FolderRole, relative: string): string =>
 
 describe('importFiles', () => {
   it('copies an outside file into the chosen project folder and adopts that copy', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'ia-studio-import-'))
+    const root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-import-'))
     const source = `${root}.obj`
     await mkdir(join(root, 'Models'))
     await writeFile(source, 'mesh')
@@ -42,7 +42,7 @@ describe('importFiles', () => {
   })
 
   it('keeps an existing project file and gives the arriving copy a free name', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'ia-studio-import-'))
+    const root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-import-'))
     const source = `${root}.glb`
     const sourceName = basename(source)
     const models = DEFAULT_ROLE_PATHS.models
@@ -65,7 +65,7 @@ describe('importFiles', () => {
   })
 
   it('keeps a file created after the destination names were listed', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'ia-studio-import-'))
+    const root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-import-'))
     const source = `${root}.glb`
     const destination = join(root, under('models', basename(source)))
     await writeFile(source, 'arriving')
@@ -85,7 +85,7 @@ describe('importFiles', () => {
   })
 
   it('opens an OpenRaster document instead of cataloguing it as a flat image', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'ia-studio-import-'))
+    const root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-import-'))
     const source = `${root}.ora`
     await writeFile(source, 'open raster')
     const path = under('image', basename(source))
@@ -112,7 +112,7 @@ describe('importFiles', () => {
   })
 
   it('canonicalises an uppercase document extension before listing it', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'ia-studio-import-'))
+    const root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-import-'))
     const source = `${root}.MTLX`
     await writeFile(source, '<materialx/>')
     const name = under('materials', basename(source).replace('.MTLX', '.mtlx'))
@@ -137,7 +137,7 @@ describe('importFiles', () => {
   })
 
   it('removes and reports a glTF that is not a readable studio document', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'ia-studio-import-'))
+    const root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-import-'))
     const source = `${root}.gltf`
     await writeFile(source, '{"asset":{"version":"2.0"}}')
     const name = basename(source)
@@ -155,7 +155,7 @@ describe('importFiles', () => {
   })
 
   it('names the file that was dropped in a refusal, not the free name its copy took', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'ia-studio-import-'))
+    const root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-import-'))
     const source = `${root}.gltf`
     const name = basename(source)
     await writeFile(source, '{"asset":{"version":"2.0"}}')
@@ -174,7 +174,7 @@ describe('importFiles', () => {
   })
 
   it('hands an outside montage bundle to its unpacker', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'ia-studio-import-'))
+    const root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-import-'))
     await mkdir(join(root, 'Edits'))
     const montage = { content: '{}', media: [], folder: 'Bande' }
     const importBundle = vi.fn(async () => montage)
@@ -192,7 +192,7 @@ describe('importFiles', () => {
   })
 
   it('returns earlier imports when a later file cannot be copied', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'ia-studio-import-'))
+    const root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-import-'))
     const source = `${root}.png`
     const missing = `${root}-missing.png`
     await writeFile(source, 'picture')
@@ -218,7 +218,7 @@ describe('importFiles', () => {
   })
 
   it('removes a partial copy when the import is cancelled', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'ia-studio-import-'))
+    const root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-import-'))
     const source = `${root}.mp4`
     const controller = new AbortController()
     await writeFile(source, Buffer.alloc(8 * 1024 * 1024))
@@ -244,7 +244,7 @@ describe('importFiles', () => {
   })
 
   it('removes an asset copy when cataloguing it fails', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'ia-studio-import-'))
+    const root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-import-'))
     const source = `${root}.png`
     await writeFile(source, 'picture')
 
@@ -263,7 +263,7 @@ describe('importFiles', () => {
   })
 
   it('removes document copies when listing them fails', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'ia-studio-import-'))
+    const root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-import-'))
     const source = `${root}.mtlx`
     await writeFile(source, '<materialx/>')
 
@@ -284,8 +284,8 @@ describe('importFiles', () => {
   })
 
   it('does not follow a destination symlink outside the project', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'ia-studio-import-'))
-    const outside = await mkdtemp(join(tmpdir(), 'ia-studio-outside-'))
+    const root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-import-'))
+    const outside = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-outside-'))
     const source = `${root}.png`
     await writeFile(source, 'picture')
     await symlink(outside, join(root, 'Escape'))
@@ -303,8 +303,8 @@ describe('importFiles', () => {
   })
 
   it('copies the binary and the pictures a glTF points at into a folder of its own', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'ia-studio-import-'))
-    const outside = await mkdtemp(join(tmpdir(), 'ia-studio-source-'))
+    const root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-import-'))
+    const outside = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-source-'))
     const source = join(outside, 'Niveau.gltf')
     await writeFile(
       source,
@@ -341,8 +341,8 @@ describe('importFiles', () => {
   })
 
   it('keeps the library and the pictures an OBJ names under .sources, beside it and uncatalogued', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'ia-studio-import-'))
-    const outside = await mkdtemp(join(tmpdir(), 'ia-studio-source-'))
+    const root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-import-'))
+    const outside = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-source-'))
     const source = join(outside, 'Robot.obj')
     await writeFile(source, 'mtllib Robot.mtl\nv 0 0 0\nf 1 1 1\n')
     await writeFile(join(outside, 'Robot.mtl'), 'newmtl skin\nmap_Kd textures/skin.png\n')
@@ -376,8 +376,8 @@ describe('importFiles', () => {
   })
 
   it('catalogues a picture a document points at, which is what relinks it to its texture', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'ia-studio-import-'))
-    const outside = await mkdtemp(join(tmpdir(), 'ia-studio-source-'))
+    const root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-import-'))
+    const outside = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-source-'))
     const source = join(outside, 'Bois.mtlx')
     await writeFile(
       source,
@@ -398,14 +398,14 @@ describe('importFiles', () => {
   })
 
   it('imports a document whose neighbour is missing and names the file it could not find', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'ia-studio-import-'))
-    const outside = await mkdtemp(join(tmpdir(), 'ia-studio-source-'))
+    const root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-import-'))
+    const outside = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-source-'))
     const source = join(outside, 'Ciel.gltf')
     await writeFile(
       source,
       JSON.stringify({
         asset: { version: '2.0' },
-        nodes: [{ name: 'Horizon', extras: { iastudio: { source: 'Ciel.hdr' } } }],
+        nodes: [{ name: 'Horizon', extras: { aidesktopstudio: { source: 'Ciel.hdr' } } }],
       }),
     )
     const document: DocumentDescriptor = {
@@ -429,8 +429,8 @@ describe('importFiles', () => {
   })
 
   it('leaves a self-contained glTF where every other import lands', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'ia-studio-import-'))
-    const outside = await mkdtemp(join(tmpdir(), 'ia-studio-source-'))
+    const root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-import-'))
+    const outside = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-source-'))
     const source = join(outside, 'Seul.gltf')
     await writeFile(
       source,
@@ -460,8 +460,8 @@ describe('importFiles', () => {
   })
 
   it('takes the whole folder away when a document that owned one is refused', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'ia-studio-import-'))
-    const outside = await mkdtemp(join(tmpdir(), 'ia-studio-source-'))
+    const root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-import-'))
+    const outside = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-source-'))
     const source = join(outside, 'Cassee.gltf')
     await writeFile(
       source,

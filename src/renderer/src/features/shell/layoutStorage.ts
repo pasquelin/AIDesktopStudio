@@ -3,7 +3,7 @@ import { isRecord, readNumber } from '@shared/guards'
 import { migrateTools } from './migrateTools'
 
 /** 🛑 The key the tools store wrote under, and it does not move: twenty versions live there. */
-export const LAYOUT_KEY = 'ia-studio:tools'
+export const LAYOUT_KEY = 'ai-desktop-studio:tools'
 
 /**
  * The chassis' storage, with the studio's past in front of it: what `zustand/persist` wrote is

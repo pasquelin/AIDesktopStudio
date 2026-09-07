@@ -8,9 +8,9 @@
     "ogLocale": "hi_IN"
   },
   "head": {
-    "title": "IA Studio — छह जनन कार्यशालाएँ, एक ही विंडो",
+    "title": "AI Desktop Studio — छह जनन कार्यशालाएँ, एक ही विंडो",
     "description": "बहुविध डेस्कटॉप अनुप्रयोग: छवि, वीडियो, 3D, ऑडियो, टेक्सचर और स्काईबॉक्स, एक ही डॉक होने योग्य पैनल इंटरफ़ेस में। ऑफ़लाइन श्रुतलेखन और MCP सर्वर से संचालन।",
-    "ogTitle": "IA Studio — छह जनन कार्यशालाएँ, एक ही विंडो",
+    "ogTitle": "AI Desktop Studio — छह जनन कार्यशालाएँ, एक ही विंडो",
     "ogDescription": "छह जनन कार्यशालाएँ, एक ही विंडो में। Electron, React 19, TypeScript। macOS, Windows, Linux।"
   },
   "nav": {
@@ -291,7 +291,7 @@
   "docs": {
     "eyebrow": "दस्तावेज़ी &amp; प्रदर्शन",
     "title": "सब कुछ कोड के बगल में लिखा है।",
-    "videoLabel": "IA Studio का प्रदर्शन: छहों कार्यशालाओं की सैर, एक 3D जनन से लेकर संपादन तक।",
+    "videoLabel": "AI Desktop Studio का प्रदर्शन: छहों कार्यशालाओं की सैर, एक 3D जनन से लेकर संपादन तक।",
     "links": {
       "0": {
         "text": "बीस अध्यायों की नियमावली — अनुप्रयोग के भीतर भी पढ़ी जा सकती है",
@@ -351,11 +351,11 @@
         "state": "संस्करण आने वाला है"
       }
     },
-    "note": "इंस्टॉलर <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">उपयोग की शर्तों</a> के अधीन है; स्रोत कोड <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial&nbsp;1.0.0</a> लाइसेंस के अधीन। यह अनुप्रयोग किसी भी जनन सेवा तक पहुँच नहीं देता: यह आपकी दी हुई API कुंजी का उपयोग करता है, आपके खाते पर और आपके ही खर्च पर।"
+    "note": "इंस्टॉलर <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">उपयोग की शर्तों</a> के अधीन है; स्रोत कोड <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial&nbsp;1.0.0</a> लाइसेंस के अधीन। यह अनुप्रयोग किसी भी जनन सेवा तक पहुँच नहीं देता: यह आपकी दी हुई API कुंजी का उपयोग करता है, आपके खाते पर और आपके ही खर्च पर।"
   },
   "foot": {
     "groups": {
-      "0": "IA Studio",
+      "0": "AI Desktop Studio",
       "1": "कार्यशालाएँ",
       "2": "संसाधन",
       "3": "संपर्क"
@@ -365,7 +365,7 @@
       "0": "डाउनलोड",
       "1": "लाइसेंस"
     },
-    "legal": "स्रोत कोड <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial 1.0.0</a> लाइसेंस के अधीन · अनुप्रयोग अपनी <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">उपयोग की शर्तों</a> के तहत वितरित · तृतीय-पक्ष घटक <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/THIRD-PARTY-NOTICES.md\" target=\"_blank\" rel=\"noopener\">सूचनाओं</a> में सूचीबद्ध। © 2026 Alban Pasquelin।",
+    "legal": "स्रोत कोड <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial 1.0.0</a> लाइसेंस के अधीन · अनुप्रयोग अपनी <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">उपयोग की शर्तों</a> के तहत वितरित · तृतीय-पक्ष घटक <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/THIRD-PARTY-NOTICES.md\" target=\"_blank\" rel=\"noopener\">सूचनाओं</a> में सूचीबद्ध। © 2026 Alban Pasquelin।",
     "docsLink": "दस्तावेज़ी",
     "changelog": "बदलाव सूची",
     "docsFr": "दस्तावेज़ 🇫🇷",

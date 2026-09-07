@@ -89,7 +89,7 @@ export const DEFAULT_ROLE_PATHS: Record<FolderRole, string> = {
  * never wrong. Dotted so every platform hides it, and `hideFromExplorer` gives Windows the
  * attribute it wants on top.
  */
-export const ROLE_MARKER = '.ia-studio-role'
+export const ROLE_MARKER = '.ai-desktop-studio-role'
 
 /**
  * Where the roles were last found, by role. Partial on purpose: a role whose folder was thrown

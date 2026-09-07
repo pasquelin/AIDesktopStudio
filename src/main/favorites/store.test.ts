@@ -104,7 +104,7 @@ describe('the favourites folder', () => {
 
   /**
    * The id reaches this off a URL, and `new URL` does not decode `%2F`: a crafted
-   * `ia-studio://favorite/..%2F..%2Fsecret` arrives here as a real `../../secret`. The scheme is
+   * `ai-desktop-studio://favorite/..%2F..%2Fsecret` arrives here as a real `../../secret`. The scheme is
    * one the window is allowed to fetch, so an unchecked join would hand it any file on disk.
    */
   it('refuses a still whose id would climb out of the folder', () => {

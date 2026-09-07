@@ -47,7 +47,7 @@ function riggedModel(clips: AnimationClip[], roles?: Record<string, string>): Gr
   spine.name = 'b1'
   hips.add(spine)
   root.add(hips)
-  if (roles) root.userData = { iastudio: { roles } }
+  if (roles) root.userData = { aidesktopstudio: { roles } }
 
   return root
 }

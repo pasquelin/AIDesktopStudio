@@ -194,8 +194,8 @@
     },
     "navigationPreset": {
       "title": "Schéma de navigation",
-      "help": "Quelle application 3D ce viewport imite : ses gestes de souris et ses raccourcis. Un schéma ne déplace que ce que son application fait autrement — tout le reste garde les touches d’IA Studio, y compris ce que les autres n’ont pas. Vos propres remappages passent toujours devant.",
-      "studio": "IA Studio",
+      "help": "Quelle application 3D ce viewport imite : ses gestes de souris et ses raccourcis. Un schéma ne déplace que ce que son application fait autrement — tout le reste garde les touches d’AI Desktop Studio, y compris ce que les autres n’ont pas. Vos propres remappages passent toujours devant.",
+      "studio": "AI Desktop Studio",
       "unreal": "Unreal Engine",
       "unity": "Unity",
       "blender": "Blender",

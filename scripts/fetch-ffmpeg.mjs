@@ -294,11 +294,11 @@ function writeNotice(destination, target, key, platform) {
       `Licence: ${target.licence}`,
       `Build: ${target.source}`,
       '',
-      'FFmpeg is a separate program, spawned by IA Studio. It is not linked into it.',
+      'FFmpeg is a separate program, spawned by AI Desktop Studio. It is not linked into it.',
       '',
       'Corresponding sources, as the licence requires:',
       `  ${sources.url}`,
-      `  also attached to every release of IA Studio as ${sources.file}`,
+      `  also attached to every release of AI Desktop Studio as ${sources.file}`,
       '',
       'The build configuration of this very binary is printed by:',
       `  ${platform === 'win32' ? 'ffmpeg.exe' : './ffmpeg'} -buildconf`,
@@ -325,7 +325,7 @@ export async function fetchFfmpeg(platform, arch, options = {}) {
 
   const destination = options.destination ?? DESTINATION
   const verify = options.verify ?? true
-  const work = mkdtempSync(join(tmpdir(), 'ia-studio-ffmpeg-'))
+  const work = mkdtempSync(join(tmpdir(), 'ai-desktop-studio-ffmpeg-'))
 
   try {
     let seen = {}
@@ -353,7 +353,7 @@ function finishFetch(seen, destination, platform, arch) {
 
 /** Fetches every target into a scratch folder and prints what to paste back into `TARGETS`. */
 async function printDigests() {
-  const scratch = mkdtempSync(join(tmpdir(), 'ia-studio-ffmpeg-digests-'))
+  const scratch = mkdtempSync(join(tmpdir(), 'ai-desktop-studio-ffmpeg-digests-'))
   try {
     for (const key of Object.keys(TARGETS)) {
       const [platform, arch] = key.split('-')

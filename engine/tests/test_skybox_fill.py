@@ -4,8 +4,8 @@ import numpy
 import pytest
 from PIL import Image
 
-from ia_studio_engine.adapters import skybox_fill
-from ia_studio_engine.adapters.skybox_fill import (
+from aidesktopstudio_engine.adapters import skybox_fill
+from aidesktopstudio_engine.adapters.skybox_fill import (
     FACES,
     HEIGHT,
     SCALE,

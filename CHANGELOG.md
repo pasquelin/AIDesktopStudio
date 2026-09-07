@@ -28,7 +28,7 @@ qu'on ouvre ailleurs — et le studio tout entier se pilote de l'extérieur.
 
 > **Les installeurs ne sont toujours pas signés.** Ni certificat Apple, ni certificat Windows n'est
 > provisionné à ce jour
-> ([ADR-04](https://github.com/pasquelin/IAStudio/blob/HEAD/docs/ci/adr/ADR-04-strategie-de-signature.md)) :
+> ([ADR-04](https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/docs/ci/adr/ADR-04-strategie-de-signature.md)) :
 > macOS opposera Gatekeeper, Windows affichera SmartScreen. L'auto-update vérifie le condensat du
 > manifeste — il garantit qu'un téléchargement n'a pas été corrompu, pas qu'il vient de nous.
 
@@ -121,7 +121,7 @@ GitHub.
 - Sur Linux, un document dont le nom porte un accent écrit sous forme décomposée — ce que produit
   une archive faite sur macOS — s'affiche dans l'Explorateur sans pouvoir s'ouvrir.
 - La liste complète et par espace :
-  [chapitre 18](https://github.com/pasquelin/IAStudio/blob/HEAD/docs/fr/manuel/18-limites.md).
+  [chapitre 18](https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/docs/fr/manuel/18-limites.md).
 
 ## [0.2.0] — 2026-08-16
 
@@ -130,7 +130,7 @@ documents comme les assets portent enfin le nom qu'on leur donne.
 
 > **Les installeurs ne sont toujours pas signés.** Ni certificat Apple, ni certificat Windows
 > n'est provisionné à ce jour
-> ([ADR-04](https://github.com/pasquelin/IAStudio/blob/HEAD/docs/ci/adr/ADR-04-strategie-de-signature.md)) : macOS opposera
+> ([ADR-04](https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/docs/ci/adr/ADR-04-strategie-de-signature.md)) : macOS opposera
 > Gatekeeper, Windows affichera SmartScreen. L'auto-update vérifie le condensat du manifeste —
 > il garantit qu'un téléchargement n'a pas été corrompu, pas qu'il vient de nous.
 
@@ -170,7 +170,7 @@ l'ingestion n'a pas eu le temps d'en dériver une.
 côté.
 
 **Le site de présentation** montre les captures des six espaces, l'atelier Audio inclus, et une
-vidéo de démonstration : <https://pasquelin.github.io/IAStudio/>.
+vidéo de démonstration : <https://www.aidesktopstudio.com/>.
 
 ### Corrigé
 
@@ -194,18 +194,18 @@ vidéo de démonstration : <https://pasquelin.github.io/IAStudio/>.
 - L'historique d'annulation ne survit pas à la fermeture d'un document.
 - Les installeurs ne sont pas signés — voir l'encadré ci-dessus.
 - La liste complète et par espace :
-  [chapitre 18](https://github.com/pasquelin/IAStudio/blob/HEAD/docs/fr/manuel/18-limites.md).
+  [chapitre 18](https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/docs/fr/manuel/18-limites.md).
 
 ## [0.1.0] — 2026-08-15
 
 Première version publiée. Le studio est complet dans ses six espaces ; ce qui lui manque encore
 est écrit noir sur blanc au chapitre
-[Ce qui n'existe pas encore](https://github.com/pasquelin/IAStudio/blob/HEAD/docs/fr/manuel/18-limites.md),
+[Ce qui n'existe pas encore](https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/docs/fr/manuel/18-limites.md),
 qui est fait pour être lu.
 
 > **Les installeurs ne sont pas signés.** Ni certificat Apple, ni certificat Windows n'est
 > provisionné à ce jour
-> ([ADR-04](https://github.com/pasquelin/IAStudio/blob/HEAD/docs/ci/adr/ADR-04-strategie-de-signature.md)) : macOS opposera
+> ([ADR-04](https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/docs/ci/adr/ADR-04-strategie-de-signature.md)) : macOS opposera
 > Gatekeeper, Windows affichera SmartScreen. L'auto-update vérifie le condensat du manifeste —
 > il garantit qu'un téléchargement n'a pas été corrompu, pas qu'il vient de nous.
 
@@ -229,10 +229,10 @@ les rejoue.
 
 **Un assistant conversationnel** posé sur le studio, avec dictée : la reconnaissance vocale tourne
 sur la machine, hors du processus principal
-([ADR-17](https://github.com/pasquelin/IAStudio/blob/HEAD/docs/ci/adr/ADR-17-moteur-de-dictee-hors-processus.md)).
+([ADR-17](https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/docs/ci/adr/ADR-17-moteur-de-dictee-hors-processus.md)).
 
 **Le studio se pilote de l'extérieur** par un serveur MCP —
-[chapitre 20](https://github.com/pasquelin/IAStudio/blob/HEAD/docs/fr/manuel/20-piloter-de-l-exterieur.md).
+[chapitre 20](https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/docs/fr/manuel/20-piloter-de-l-exterieur.md).
 
 **Le manuel est dans l'application**, pas seulement sur le dépôt : vingt chapitres sous
 Aide ▸ Manuel utilisateur, en français et en anglais.
@@ -253,7 +253,7 @@ système. La fenêtre demande « suis-je authentifié ? », jamais « quelle est
 - L'historique d'annulation ne survit pas à la fermeture d'un document.
 - Les installeurs ne sont pas signés — voir l'encadré ci-dessus.
 - La liste complète et par espace :
-  [chapitre 18](https://github.com/pasquelin/IAStudio/blob/HEAD/docs/fr/manuel/18-limites.md).
+  [chapitre 18](https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/docs/fr/manuel/18-limites.md).
 
-[0.2.0]: https://github.com/pasquelin/IAStudio/releases/tag/v0.2.0
-[0.1.0]: https://github.com/pasquelin/IAStudio/releases/tag/v0.1.0
+[0.2.0]: https://github.com/pasquelin/AIDesktopStudio/releases/tag/v0.2.0
+[0.1.0]: https://github.com/pasquelin/AIDesktopStudio/releases/tag/v0.1.0

@@ -431,7 +431,7 @@ const assetsState: AssetsState = {
 
 export const useAssets = create<AssetsState>()(
   persist(() => assetsState, {
-    name: 'ia-studio:assets',
+    name: 'ai-desktop-studio:assets',
     version: COLLECTION_PERSIST_VERSION,
     /**
      * The store used to persist a bare `view`, before the state became a whole

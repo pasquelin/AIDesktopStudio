@@ -127,7 +127,7 @@ describe('putting a skeleton into a file', () => {
     const file = glbWithSkin(await written(bareCharacter()), patch)
 
     expect((await read(file)).userData).toMatchObject({
-      iastudio: { motions: [{ id: 'm1', name: 'Capoeira', assetId: 'asset-9' }] },
+      aidesktopstudio: { motions: [{ id: 'm1', name: 'Capoeira', assetId: 'asset-9' }] },
     })
   })
 
@@ -140,7 +140,7 @@ describe('putting a skeleton into a file', () => {
     })
 
     expect((await read(file)).userData).toMatchObject({
-      iastudio: { dress: { kind: 'image', assetId: 'texture-1' } },
+      aidesktopstudio: { dress: { kind: 'image', assetId: 'texture-1' } },
     })
     expect(glbChunksOf(file)?.bin).toEqual(glbChunksOf(original)?.bin)
   })

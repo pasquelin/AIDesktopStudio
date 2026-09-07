@@ -23,7 +23,7 @@ const row = (
 
 describe('removeFiles', () => {
   it('removes only one original from a shared flat-animation source folder', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'ia-studio-remove-converted-'))
+    const root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-remove-converted-'))
     await mkdir(join(root, 'Animations/.sources'), { recursive: true })
     await writeFile(join(root, 'Animations/Walk.glb'), 'walk')
     await writeFile(join(root, 'Animations/.sources/Walk.fbx'), 'walk source')
@@ -38,7 +38,7 @@ describe('removeFiles', () => {
   })
 
   it('removes a suffixed source package and all of its neighbours', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'ia-studio-remove-converted-'))
+    const root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-remove-converted-'))
     await mkdir(join(root, 'Models/.sources/Robot 2'), { recursive: true })
     await writeFile(join(root, 'Models/Robot.glb'), 'robot')
     await writeFile(join(root, 'Models/.sources/Robot 2/Robot.fbx'), 'source')
@@ -54,7 +54,7 @@ describe('removeFiles', () => {
   })
 
   it('removes the empty folder owned by a packaged OBJ', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'ia-studio-remove-converted-'))
+    const root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-remove-converted-'))
     await mkdir(join(root, 'Models/Robot/.sources'), { recursive: true })
     await writeFile(join(root, 'Models/Robot/Robot.glb'), 'robot')
     await writeFile(join(root, 'Models/Robot/.sources/Robot.obj'), 'source')
@@ -68,7 +68,7 @@ describe('removeFiles', () => {
   })
 
   it('removes the nested source package and folder of a reclassified animation', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'ia-studio-remove-converted-'))
+    const root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-remove-converted-'))
     await mkdir(join(root, 'Animations/Robot/.sources/Robot'), { recursive: true })
     await writeFile(join(root, 'Animations/Robot/animation.glb'), 'robot')
     await writeFile(join(root, 'Animations/Robot/.sources/Robot/Robot.obj'), 'source')

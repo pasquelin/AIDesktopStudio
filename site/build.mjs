@@ -13,7 +13,7 @@
  *
  *   node site/build.mjs <dossier-de-sortie> [--site=https://hôte/chemin/]
  *
- * CE FICHIER EST PARTAGÉ À L'IDENTIQUE par map3D, panels et IA Studio. Ce qui change
+ * CE FICHIER EST PARTAGÉ À L'IDENTIQUE par map3D, panels et AI Desktop Studio. Ce qui change
  * d'un dépôt à l'autre vit dans `repo.config.json`, jamais ici : une correction faite
  * dans un dépôt doit pouvoir être recopiée telle quelle dans les deux autres.
  *

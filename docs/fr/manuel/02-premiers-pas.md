@@ -69,7 +69,7 @@ passe, réservés aux programmes.
 ## Étape 3 — Brancher votre compte
 
 1. Ouvrez les réglages : `⌘,` sur macOS, `Ctrl+,` sur Windows et Linux. Ou par le menu —
-   **IA Studio ▸ Réglages…** sur macOS, **Fichier ▸ Réglages…** ailleurs, car il n’y a
+   **AI Desktop Studio ▸ Réglages…** sur macOS, **Fichier ▸ Réglages…** ailleurs, car il n’y a
    de menu d’application que sur macOS.
 2. Dans la liste de gauche, cliquez sur **Compte**.
 3. Donnez-lui un **nom** — ce que vous voulez : « Studio », « Perso », votre prénom.

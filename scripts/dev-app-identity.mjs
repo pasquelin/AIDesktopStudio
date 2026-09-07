@@ -67,7 +67,7 @@ const { productName: PRODUCT_NAME } = JSON.parse(
  * development and the icon in a release can never drift apart.
  */
 function buildIcns(target) {
-  const iconset = mkdtempSync(join(tmpdir(), 'ia-studio-icon-')) + '.iconset'
+  const iconset = mkdtempSync(join(tmpdir(), 'ai-desktop-studio-icon-')) + '.iconset'
   execFileSync('mkdir', ['-p', iconset])
 
   try {

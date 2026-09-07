@@ -12,12 +12,12 @@ describe('what a round trip carried', () => {
    * lives in a database the project carries. The text is asked for, and read here.
    */
   it('unfolds the whole text on demand, and asks for it once', async () => {
-    const said = vi.fn(() => Promise.resolve('You drive IA Studio'))
+    const said = vi.fn(() => Promise.resolve('You drive AI Desktop Studio'))
     installFakeBridge({ assistant: { said } })
     render(<ActivityListSaid said="r:7" />)
 
     await userEvent.click(screen.getByRole('button', { name: /envoyé/ }))
-    expect(await screen.findByText('You drive IA Studio')).toBeInTheDocument()
+    expect(await screen.findByText('You drive AI Desktop Studio')).toBeInTheDocument()
 
     await userEvent.click(screen.getByRole('button', { name: /envoyé/ }))
     await userEvent.click(screen.getByRole('button', { name: /envoyé/ }))
@@ -27,12 +27,12 @@ describe('what a round trip carried', () => {
 
   /** Unfolded whole: a scroller inside the journal's own scroller traps the wheel. */
   it('unfolds without a scroller of its own', async () => {
-    installFakeBridge({ assistant: { said: () => Promise.resolve('You drive IA Studio') } })
+    installFakeBridge({ assistant: { said: () => Promise.resolve('You drive AI Desktop Studio') } })
     render(<ActivityListSaid said="r:7" />)
 
     await userEvent.click(screen.getByRole('button', { name: /envoyé/ }))
 
-    const pane = await screen.findByText('You drive IA Studio')
+    const pane = await screen.findByText('You drive AI Desktop Studio')
     expect(pane.className).not.toMatch(/max-h-|overflow-/)
   })
 

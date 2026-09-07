@@ -46,7 +46,7 @@ const otio = (studio: Record<string, unknown>): string =>
   JSON.stringify({
     OTIO_SCHEMA: 'Timeline.1',
     name: 'Bande',
-    metadata: { iastudio: studio },
+    metadata: { aidesktopstudio: studio },
     global_start_time: null,
     tracks: { OTIO_SCHEMA: 'Stack.1', children: [] },
   })
@@ -56,7 +56,7 @@ describe('what one gesture on a montage costs', () => {
   let documents: DocumentFiles
 
   beforeEach(async () => {
-    root = await mkdtemp(join(tmpdir(), 'ia-studio-reads-'))
+    root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-reads-'))
     documents = documentFilesAt(root, NOW)
     await writeFile(
       join(root, 'Rushes.otio'),

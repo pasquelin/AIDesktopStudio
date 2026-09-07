@@ -19,7 +19,7 @@ const ROOT = join(import.meta.dirname, '..', '..', '..')
  */
 describe('the version both sides agree on', () => {
   it('is the same number in the engine as in the studio', () => {
-    const source = readFileSync(join(ROOT, 'engine/src/ia_studio_engine/__init__.py'), 'utf8')
+    const source = readFileSync(join(ROOT, 'engine/src/aidesktopstudio_engine/__init__.py'), 'utf8')
     const declared = /^PROTOCOL_VERSION = (\d+)$/m.exec(source)
 
     expect(Number(declared?.[1])).toBe(PROTOCOL_VERSION)
@@ -27,11 +27,11 @@ describe('the version both sides agree on', () => {
 
   it('names the same requirement profiles as the engine accepts', () => {
     const requirements = readFileSync(
-      join(ROOT, 'engine/src/ia_studio_engine/core/requirements.py'),
+      join(ROOT, 'engine/src/aidesktopstudio_engine/core/requirements.py'),
       'utf8',
     )
     const supervisor = readFileSync(
-      join(ROOT, 'engine/src/ia_studio_engine/core/supervisor.py'),
+      join(ROOT, 'engine/src/aidesktopstudio_engine/core/supervisor.py'),
       'utf8',
     )
     const fallback = /^DOOR_EXTRA = "([a-z]+)"$/m.exec(requirements)?.[1]
@@ -112,7 +112,10 @@ describe('what a door reports about its memory', () => {
   }
 
   /** `MemoryLedger` has an `as_frame` of its own, and it composes `doors` rather than a door. */
-  const source = readFileSync(join(ROOT, 'engine/src/ia_studio_engine/core/memory.py'), 'utf8')
+  const source = readFileSync(
+    join(ROOT, 'engine/src/aidesktopstudio_engine/core/memory.py'),
+    'utf8',
+  )
   const own = source.slice(source.indexOf('class DoorMemory'), source.indexOf('class MemoryLedger'))
   const emitted = [...own.matchAll(/^\s+"(\w+)":/gm)].map(found => found[1] ?? '')
 

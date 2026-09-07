@@ -8,8 +8,8 @@ import { importFiles } from './importFiles'
 
 describe('importFiles neighbour packages', () => {
   it('keeps a colliding package name aligned with its source file capability', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'ia-studio-import-collision-'))
-    const sourceFolder = await mkdtemp(join(tmpdir(), 'ia-studio-import-source-'))
+    const root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-import-collision-'))
+    const sourceFolder = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-import-source-'))
     const source = join(sourceFolder, 'Robot.obj')
     await writeFile(source, 'mtllib Robot.mtl')
     await writeFile(join(sourceFolder, 'Robot.mtl'), 'newmtl Body')

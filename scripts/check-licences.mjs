@@ -6,7 +6,7 @@
  * Écrit parce que ce fichier est une affirmation juridique, et qu'une affirmation que
  * personne ne revérifie dérive à la première montée de version.
  *
- * CE FICHIER EST PARTAGÉ À L'IDENTIQUE par map3D, panels et IA Studio. La liste blanche,
+ * CE FICHIER EST PARTAGÉ À L'IDENTIQUE par map3D, panels et AI Desktop Studio. La liste blanche,
  * les paquets embarqués et la nature du dépôt vivent dans `repo.config.json`.
  */
 import { readFileSync, existsSync } from 'node:fs'

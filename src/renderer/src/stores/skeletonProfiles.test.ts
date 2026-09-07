@@ -45,7 +45,7 @@ describe('what each project knows about the skeletons it has read', () => {
   // is not one of the fifty-two would be a plan built out of nonsense.
   it('drops a stored profile that is not one, and keeps the rest', async () => {
     localStorage.setItem(
-      'ia-studio:skeleton-profiles',
+      'ai-desktop-studio:skeleton-profiles',
       JSON.stringify({
         state: {
           byProject: {

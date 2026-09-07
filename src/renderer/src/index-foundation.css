@@ -377,7 +377,7 @@
  * `default` is what paints the window before the renderer has published the attribute.
  */
 @plugin 'daisyui/theme' {
-  name: 'iastudio-dark';
+  name: 'aidesktopstudio-dark';
   default: true;
   prefersdark: true;
   color-scheme: dark;

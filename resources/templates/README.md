@@ -1,7 +1,7 @@
 # Vignettes des modèles de scène
 
 Une image par modèle, nommée d'après lui — `basic.png`, `photoStudio.png`, `topDown.png`… Elles
-sont livrées avec l'application et servies sur le host `template` du schéma `ia-studio://`.
+sont livrées avec l'application et servies sur le host `template` du schéma `ai-desktop-studio://`.
 
 **Elles se produisent avec l'application, pas avec un script** : chaque vignette est une capture
 de la vue 3D d'un document neuf ouvert sur ce modèle (menu Affichage ▸ Capturer la vue). C'est

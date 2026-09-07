@@ -10,13 +10,13 @@ describe('externalPathsFromArguments', () => {
   it('keeps absolute file arguments so a desktop launch can report accepted and refused files', () => {
     expect(
       externalPathsFromArguments([
-        '/Applications/IA Studio',
+        '/Applications/AI Desktop Studio',
         '/work/model.glb',
         '/work/image.png',
         '--inspect',
         'relative.glb',
       ]),
-    ).toEqual(['/Applications/IA Studio', '/work/model.glb', '/work/image.png'])
+    ).toEqual(['/Applications/AI Desktop Studio', '/work/model.glb', '/work/image.png'])
   })
 
   it('keeps unsupported absolute arguments for a visible refusal', () => {
@@ -29,8 +29,8 @@ describe('externalPathsFromArguments', () => {
   it('excludes the executable and application folder from launch candidates', () => {
     expect(
       externalPathsFromArguments(
-        ['/Applications/IA Studio', '/work/model.obj'],
-        new Set(['/Applications/IA Studio']),
+        ['/Applications/AI Desktop Studio', '/work/model.obj'],
+        new Set(['/Applications/AI Desktop Studio']),
       ),
     ).toEqual(['/work/model.obj'])
   })
@@ -38,9 +38,9 @@ describe('externalPathsFromArguments', () => {
 
 describe('launchedPaths', () => {
   it('cuts the binary whatever path invoked it, so no launch announces a refused executable', () => {
-    expect(launchedPaths(['/usr/local/bin/ia-studio', '/work/model.obj'], '/repo/app')).toEqual([
-      '/work/model.obj',
-    ])
+    expect(
+      launchedPaths(['/usr/local/bin/ai-desktop-studio', '/work/model.obj'], '/repo/app'),
+    ).toEqual(['/work/model.obj'])
   })
 
   it('drops the application folder a development launch passes after the binary', () => {

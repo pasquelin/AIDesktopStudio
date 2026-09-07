@@ -6,7 +6,7 @@
       http-equiv="Content-Security-Policy"
       content="default-src 'none'; style-src 'unsafe-inline'; script-src 'self'"
     />
-    <title>IA Studio</title>
+    <title>AI Desktop Studio</title>
     <style>
       * {
         margin: 0;
@@ -42,8 +42,8 @@
         gap: 14px;
       }
       .mark {
-        width: 96px;
-        height: 96px;
+        width: 148px;
+        height: auto;
         flex: none;
       }
       .name {
@@ -107,23 +107,20 @@
         `splash.test.ts` pins every SHAPE below to `build/icon.svg`; the viewBox that frames them
         is pinned by no one, so a mark that moves inside the 1024 grid crops here, silently.
       -->
-      <svg class="mark" viewBox="247 229 566 566" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="327" cy="351" r="53" fill="#346ef2" />
-        <rect x="276" y="431" width="102" height="295" rx="44" fill="#346ef2" />
+      <svg class="mark" viewBox="149 317 726 436" xmlns="http://www.w3.org/2000/svg">
         <path
-          d="M 414.0 726.0 Q 391.0 726.0 391.0 703.0 L 391.0 635.0 Q 391.0 621.0 397.3 608.5
-             L 504.0 395.0 Q 566.0 271.0 628.0 395.0 L 783.2 705.4 Q 793.5 726.0 770.5 726.0
-             L 714.5 726.0 Q 691.5 726.0 681.2 705.4 L 592.8 528.7 Q 566.0 475.0 539.2 528.7
-             L 450.8 705.4 Q 440.5 726.0 417.5 726.0 Z"
-          fill="#ffffff"
+          d="M165 706 349 350q33-64 66 0l184 356q16 31-19 31h-61q-18 0-26-16L382 506q-7-14-14 0L257 721q-8 16-26 16h-61q-35 0-5-31Z"
+          fill="#fff"
         />
+        <path d="M340 721 382 639l42 82q8 16-10 16h-64q-18 0-10-16Z" fill="#346ef2" />
+        <circle cx="540" cy="379" r="46" fill="#346ef2" />
+        <rect x="494" y="453" width="92" height="284" rx="42" fill="#346ef2" />
         <path
-          d="M 508.0 726.0 Q 488.0 726.0 496.9 708.1 L 541.4 619.2 Q 566.0 570.0 590.6 619.2
-             L 635.1 708.1 Q 644.0 726.0 624.0 726.0 Z"
-          fill="#346ef2"
+          d="M617 453h72q170 0 170 142t-170 142h-72v-70h65q79 0 79-72t-79-72h-65Z"
+          fill="#fff"
         />
       </svg>
-      <div class="name"><b>IA</b> Studio</div>
+      <div class="name"><b>AI</b> Desktop Studio</div>
       <div class="version" id="version"></div>
     </div>
     <div class="track"><div class="fill"></div></div>

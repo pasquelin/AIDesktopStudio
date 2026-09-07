@@ -30,7 +30,7 @@ const TS_SYNTAX_EXTENSIONS = new Set(['.ts', '.tsx', '.mts', '.cts'])
 const CODE_EXTENSIONS = new Set([...TYPESCRIPT_EXTENSIONS, '.py', '.css', '.html'])
 const EXCLUDED_PREFIXES = [
   'vendor/', // Sources owned and versioned by upstream projects.
-  'engine/src/ia_studio_engine/vendor/', // Python model implementations mirrored from upstream.
+  'engine/src/aidesktopstudio_engine/vendor/', // Python model implementations mirrored from upstream.
   'src/renderer/public/', // Draco/KTX2 distributions copied from three.js.
   'docs/', // Generated documentation output.
   'out/',

@@ -20,13 +20,13 @@
 <link rel="apple-touch-icon" href="{{root}}assets/images/apple-touch-icon.png">
 
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://pasquelin.github.io/IAStudio/">
+<meta property="og:url" content="https://www.aidesktopstudio.com/">
 <meta property="og:locale" content="{{ogLocale}}">
 {{localeAlternates}}
 <meta property="og:title" content="{{head.ogTitle}}">
 <meta property="og:description" content="{{head.ogDescription}}">
 <!-- Absolue, et non relative : les robots d'aperçu ne résolvent pas les chemins relatifs. -->
-<meta property="og:image" content="https://pasquelin.github.io/IAStudio/assets/images/accueil.webp">
+<meta property="og:image" content="https://www.aidesktopstudio.com/assets/images/accueil.webp">
 <meta name="twitter:card" content="summary_large_image">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -91,7 +91,7 @@
   <div class="bar-right">
     <a class="chip chip--nav" href="#architecture">{{nav.architecture}}</a>
     <a class="chip chip--nav" href="#docs">{{nav.docs}}</a>
-    <a class="chip chip--nav" href="https://github.com/pasquelin/IAStudio" target="_blank" rel="noopener">{{nav.source}}</a>
+    <a class="chip chip--nav" href="https://github.com/pasquelin/AIDesktopStudio" target="_blank" rel="noopener">{{nav.source}}</a>
     <!-- Le texte est réécrit par main.js depuis assets/release.json, que la CI produit au tag.
          Ce qui est écrit ici est le repli quand aucune version n'a encore été publiée. -->
     <span class="chip chip--build" data-release-tag><span class="dot"></span>{{nav.build}}</span>
@@ -111,8 +111,10 @@
   <section class="hero">
     <div class="wrap">
       <p class="eyebrow" data-fx data-rise="16" data-delay="60">{{hero.eyebrow}}</p>
+      <!-- `dir="ltr"` on the two-word line, and there only: in an RTL page the runs of a latin
+           name swap, and the heading read "Desktop AI". The block keeps the page's alignment. -->
       <h1>
-        <span class="l1" data-fx data-split data-delay="140">IA</span>
+        <span class="l1" dir="ltr" data-fx data-split data-delay="140">AI Desktop</span>
         <span class="l2" data-fx data-split data-delay="240">Studio</span>
       </h1>
       <p class="lede" data-fx data-rise="22" data-delay="520">{{hero.lede}}</p>
@@ -227,12 +229,12 @@
         <!-- `blob/HEAD` suit la branche par défaut du dépôt : un renommage de branche
              ne transforme pas ces six liens en 404. -->
         <ul class="doclist" data-stagger="70" data-stagger-rise="0" data-stagger-shift="-30">
-          <li><a href="https://github.com/pasquelin/IAStudio/blob/HEAD/docs/{{docs}}/{{docs.manualFile}}" target="_blank" rel="noopener"><span>{{docs.links.0.text}}</span><em>{{docs.links.0.label}}</em></a></li>
-          <li><a href="https://github.com/pasquelin/IAStudio/blob/HEAD/docs/{{docs}}/architecture.md" target="_blank" rel="noopener"><span>{{docs.links.1.text}}</span><em>{{docs.links.1.label}}</em></a></li>
-          <li><a href="https://github.com/pasquelin/IAStudio/blob/HEAD/docs/{{docs}}/manuel/20-piloter-de-l-exterieur.md" target="_blank" rel="noopener"><span>{{docs.links.2.text}}</span><em>{{docs.links.2.label}}</em></a></li>
-          <li><a href="https://github.com/pasquelin/IAStudio/tree/HEAD/docs/ci/adr" target="_blank" rel="noopener"><span>{{docs.links.3.text}}</span><em>{{docs.links.3.label}}</em></a></li>
-          <li><a href="https://github.com/pasquelin/IAStudio/blob/HEAD/docs/ci/RELEASE.md" target="_blank" rel="noopener"><span>{{docs.links.4.text}}</span><em>{{docs.links.4.label}}</em></a></li>
-          <li><a href="https://github.com/pasquelin/IAStudio/blob/HEAD/LICENSE" target="_blank" rel="noopener"><span>{{docs.links.5.text}}</span><em>{{docs.links.5.label}}</em></a></li>
+          <li><a href="https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/docs/{{docs}}/{{docs.manualFile}}" target="_blank" rel="noopener"><span>{{docs.links.0.text}}</span><em>{{docs.links.0.label}}</em></a></li>
+          <li><a href="https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/docs/{{docs}}/architecture.md" target="_blank" rel="noopener"><span>{{docs.links.1.text}}</span><em>{{docs.links.1.label}}</em></a></li>
+          <li><a href="https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/docs/{{docs}}/manuel/20-piloter-de-l-exterieur.md" target="_blank" rel="noopener"><span>{{docs.links.2.text}}</span><em>{{docs.links.2.label}}</em></a></li>
+          <li><a href="https://github.com/pasquelin/AIDesktopStudio/tree/HEAD/docs/ci/adr" target="_blank" rel="noopener"><span>{{docs.links.3.text}}</span><em>{{docs.links.3.label}}</em></a></li>
+          <li><a href="https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/docs/ci/RELEASE.md" target="_blank" rel="noopener"><span>{{docs.links.4.text}}</span><em>{{docs.links.4.label}}</em></a></li>
+          <li><a href="https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/LICENSE" target="_blank" rel="noopener"><span>{{docs.links.5.text}}</span><em>{{docs.links.5.label}}</em></a></li>
         </ul>
       </div>
     </div>
@@ -254,27 +256,27 @@
            que la chaîne de publication écrit au moment du tag. Ce qui est écrit ici
            est l'état affiché tant qu'aucune version n'a été publiée. -->
       <div class="dl" data-fx data-rise="28">
-        <a class="dl__item" data-dl="darwin-arm64" href="https://github.com/pasquelin/IAStudio/releases" target="_blank" rel="noopener">
+        <a class="dl__item" data-dl="darwin-arm64" href="https://github.com/pasquelin/AIDesktopStudio/releases" target="_blank" rel="noopener">
           <h3>{{download.items.0.os}}</h3>
           <p>{{download.items.0.kind}}</p>
           <span class="state">{{download.items.0.state}}</span>
         </a>
-        <a class="dl__item" data-dl="darwin-x64" href="https://github.com/pasquelin/IAStudio/releases" target="_blank" rel="noopener">
+        <a class="dl__item" data-dl="darwin-x64" href="https://github.com/pasquelin/AIDesktopStudio/releases" target="_blank" rel="noopener">
           <h3>{{download.items.1.os}}</h3>
           <p>{{download.items.1.kind}}</p>
           <span class="state">{{download.items.1.state}}</span>
         </a>
-        <a class="dl__item" data-dl="win32-x64" href="https://github.com/pasquelin/IAStudio/releases" target="_blank" rel="noopener">
+        <a class="dl__item" data-dl="win32-x64" href="https://github.com/pasquelin/AIDesktopStudio/releases" target="_blank" rel="noopener">
           <h3>{{download.items.2.os}}</h3>
           <p>{{download.items.2.kind}}</p>
           <span class="state">{{download.items.2.state}}</span>
         </a>
-        <a class="dl__item" data-dl="linux-AppImage" href="https://github.com/pasquelin/IAStudio/releases" target="_blank" rel="noopener">
+        <a class="dl__item" data-dl="linux-AppImage" href="https://github.com/pasquelin/AIDesktopStudio/releases" target="_blank" rel="noopener">
           <h3>{{download.items.3.os}}</h3>
           <p>{{download.items.3.kind}}</p>
           <span class="state">{{download.items.3.state}}</span>
         </a>
-        <a class="dl__item" data-dl="linux-deb" href="https://github.com/pasquelin/IAStudio/releases" target="_blank" rel="noopener">
+        <a class="dl__item" data-dl="linux-deb" href="https://github.com/pasquelin/AIDesktopStudio/releases" target="_blank" rel="noopener">
           <h3>{{download.items.4.os}}</h3>
           <p>{{download.items.4.kind}}</p>
           <span class="state">{{download.items.4.state}}</span>
@@ -283,7 +285,7 @@
 
       <p class="dl-note" data-fx data-rise="18" data-delay="120">{{download.note}}</p>
 
-      <pre class="term" data-fx data-rise="22" data-delay="140"><code><b>git</b> clone https://github.com/pasquelin/IAStudio.git
+      <pre class="term" data-fx data-rise="22" data-delay="140"><code><b>git</b> clone https://github.com/pasquelin/AIDesktopStudio.git
 <b>pnpm</b> install
 <b>pnpm</b> start</code></pre>
     </div>
@@ -316,12 +318,12 @@
         <h4>{{foot.groups.2}}</h4>
         <ul>
           <li><a href="#docs">{{foot.docsLink}}</a></li>
-          <li><a href="https://github.com/pasquelin/IAStudio/blob/HEAD/docs/fr/guide-utilisateur.md" target="_blank" rel="noopener" hreflang="fr">{{foot.docsFr}}</a></li>
-          <li><a href="https://github.com/pasquelin/IAStudio/blob/HEAD/docs/en/user-guide.md" target="_blank" rel="noopener" hreflang="en">{{foot.docsEn}}</a></li>
+          <li><a href="https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/docs/fr/guide-utilisateur.md" target="_blank" rel="noopener" hreflang="fr">{{foot.docsFr}}</a></li>
+          <li><a href="https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/docs/en/user-guide.md" target="_blank" rel="noopener" hreflang="en">{{foot.docsEn}}</a></li>
           <li><a href="#architecture">{{nav.architecture}}</a></li>
           <li><a href="#telecharger">{{foot.resources.0}}</a></li>
-          <li><a href="https://github.com/pasquelin/IAStudio/blob/HEAD/LICENSE" target="_blank" rel="noopener">{{foot.resources.1}}</a></li>
-          <li><a href="https://github.com/pasquelin/IAStudio/blob/HEAD/CHANGELOG.md" target="_blank" rel="noopener">{{foot.changelog}}</a></li>
+          <li><a href="https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/LICENSE" target="_blank" rel="noopener">{{foot.resources.1}}</a></li>
+          <li><a href="https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/CHANGELOG.md" target="_blank" rel="noopener">{{foot.changelog}}</a></li>
         </ul>
       </div>
       <div>
@@ -341,7 +343,7 @@
      BARRE DE STATUT — position de lecture, comme dans l'application.
      =================================================================== -->
 <div class="status-bar" role="status" aria-live="off">
-  <span class="hide-s"><b>{{status.project}}</b> ia-studio</span>
+  <span class="hide-s"><b>{{status.project}}</b> ai-desktop-studio</span>
   <span class="hide-s"><b>{{status.workshop}}</b> <span class="cur" data-current>{{nav.home}}</span></span>
   <span class="sp"></span>
   <span><b>{{status.position}}</b> <span class="tc" data-timecode>00:00:00:00</span></span>

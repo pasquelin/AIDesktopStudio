@@ -58,7 +58,7 @@ describe('which memory answers', () => {
     await host.project()
 
     expect(open).toHaveBeenCalledWith(
-      '/projects/film/.ia-studio/memory.ndjson',
+      '/projects/film/.ai-desktop-studio/memory.ndjson',
       '/projects/film/.index/memory.db',
     )
   })
@@ -92,7 +92,7 @@ describe('changing project', () => {
 
     expect(held.close).toHaveBeenCalled()
     expect(open).toHaveBeenLastCalledWith(
-      '/projects/two/.ia-studio/memory.ndjson',
+      '/projects/two/.ai-desktop-studio/memory.ndjson',
       '/projects/two/.index/memory.db',
     )
   })

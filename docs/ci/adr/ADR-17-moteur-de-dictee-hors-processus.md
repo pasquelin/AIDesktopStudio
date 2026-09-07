@@ -27,7 +27,7 @@ mort. Ni le processus principal ni le renderer n'exécutent d'inférence.
 
 ## Alternatives écartées
 
-- **Dans le processus principal.** Il tient SQLite, le `JobManager`, le protocole `ia-studio://`
+- **Dans le processus principal.** Il tient SQLite, le `JobManager`, le protocole `ai-desktop-studio://`
   et le menu natif. Un décodage d'une seconde y gèlerait **toutes** les fenêtres à la fois, et
   le chargement initial de 3,3 s bloquerait le studio entier au moment précis où l'utilisateur
   vient d'appuyer sur une touche. `better-sqlite3` étant synchrone, une requête de catalogue

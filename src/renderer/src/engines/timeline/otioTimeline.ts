@@ -2,7 +2,7 @@
  * A montage, translated to OpenTimelineIO and back.
  *
  * The standard part is the truth: another application edits the cut, not our metadata. The
- * `iastudio` domain only RESTORES what the standard rounded away — an exact microsecond, a fade,
+ * `aidesktopstudio` domain only RESTORES what the standard rounded away — an exact microsecond, a fade,
  * a gain — and it is ignored the moment it disagrees with the frame the standard holds. Trusting
  * it blindly would silently undo a trim made in Resolve.
  */

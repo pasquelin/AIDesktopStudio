@@ -1,7 +1,7 @@
 # Plan d’implémentation du runtime de missions
 
 Vérifié le 4 septembre 2026 sur `develop` au commit `e0b920db8`, à partir de la spécification
-`ia-studio-assistant-mission-context-spec.md`, de l’audit
+`ai-desktop-studio-assistant-mission-context-spec.md`, de l’audit
 `assistant-context-architecture-audit.md` et du code réel.
 
 ## Contraintes confirmées

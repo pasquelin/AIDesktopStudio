@@ -46,7 +46,7 @@ describe('choosing a model', () => {
    */
   describe('what survives a restart', () => {
     const stored = (family: ModelFamily): { selections?: Record<string, readonly string[]> } => {
-      const raw = localStorage.getItem('ia-studio:models')
+      const raw = localStorage.getItem('ai-desktop-studio:models')
       return raw ? (JSON.parse(raw).state?.collections?.[family] ?? {}) : {}
     }
 
@@ -83,7 +83,7 @@ describe('choosing a model', () => {
 describe('a blob written before the material family was renamed', () => {
   it('restores the choice and the browser state under the name they have now', async () => {
     localStorage.setItem(
-      'ia-studio:models',
+      'ai-desktop-studio:models',
       JSON.stringify({
         version: COLLECTION_PERSIST_VERSION + 1,
         state: {
@@ -108,7 +108,7 @@ describe('a blob written before the material family was renamed', () => {
    */
   it('restores a choice filed per family, under the name that family has now', async () => {
     localStorage.setItem(
-      'ia-studio:models',
+      'ai-desktop-studio:models',
       JSON.stringify({
         version: COLLECTION_PERSIST_VERSION,
         state: { selected: { texture: 'model_sdxl', image: 'model_flux' } },

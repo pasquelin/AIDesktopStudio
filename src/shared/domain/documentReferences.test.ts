@@ -20,7 +20,7 @@ describe('documentReferencesOf', () => {
 
   it('names the picture a sky hangs off its node rather than off images', () => {
     const text = gltf({
-      nodes: [{ name: 'Horizon', extras: { iastudio: { source: 'Ciel.hdr' } } }],
+      nodes: [{ name: 'Horizon', extras: { aidesktopstudio: { source: 'Ciel.hdr' } } }],
     })
 
     expect(documentReferencesOf('gltf', text)).toEqual(['Ciel.hdr'])

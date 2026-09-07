@@ -180,7 +180,7 @@ export class CodeEditor {
 const STUDIO_TYPES_PATH = 'file:///node_modules/@studio/index.d.ts'
 const PROJECT_TYPES = 'file:///node_modules/@studio/project.d.ts'
 
-const STUDIO_THEME = 'ia-studio'
+const STUDIO_THEME = 'ai-desktop-studio'
 
 /** 🛑 The caret line is a FILL whose BORDER takes the same colour: Monaco's dark theme draws that
  * one as a rule above and below, which reads as a rectangle around the line. `chassis` and not

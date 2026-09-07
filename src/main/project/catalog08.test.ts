@@ -106,7 +106,7 @@ describe('the two spellings of a private path', () => {
     'Images/Boulder.png',
     '.resources/Materials/GridLarge.png',
     'Modelling/.private/Hidden.png',
-    '.ia-studio/memory.ndjson',
+    '.ai-desktop-studio/memory.ndjson',
     'Images/.hidden/One.png',
     'Images/not.a.folder/Two.png',
     'a.b/c.d/Three.png',

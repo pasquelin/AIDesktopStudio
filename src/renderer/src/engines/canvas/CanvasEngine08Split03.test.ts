@@ -55,7 +55,7 @@ describe('the crop tool', () => {
   it('moves the picture’s grips with the pixels when the document is cropped', async () => {
     const { engine, host, layers } = await mounted(DEFAULT_CANVAS, 'crop')
     // 200 × 100 centred in 1024²: the picture sits at 412,462.
-    await engine.loadInto('layer-1', 'ia-studio://asset/take-1')
+    await engine.loadInto('layer-1', 'ai-desktop-studio://asset/take-1')
 
     press(host, 400, 450)
     drag(host, 700, 600)

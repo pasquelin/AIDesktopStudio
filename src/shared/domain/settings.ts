@@ -51,8 +51,8 @@ export const DENSITIES: readonly Density[] = ['comfortable', 'compact']
  * stylesheet, the renderer that publishes the attribute and the tests all read the same word.
  */
 export const THEME_ATTRIBUTE: Record<ResolvedTheme, string> = {
-  dark: 'iastudio-dark',
-  light: 'iastudio-light',
+  dark: 'aidesktopstudio-dark',
+  light: 'aidesktopstudio-light',
 }
 
 /** What a finished generation does with a document that is already open. */

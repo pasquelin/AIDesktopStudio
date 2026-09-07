@@ -10,7 +10,7 @@ from typing import Any
 
 import pytest
 
-from ia_studio_engine.adapters.modalities import MODALITIES
+from aidesktopstudio_engine.adapters.modalities import MODALITIES
 
 
 def kwargs_of(modality: str, **params: Any) -> dict[str, Any]:
@@ -175,7 +175,7 @@ def test_a_source_take_is_what_gives_a_generation_its_length() -> None:
     `_read_wave` is stood in for: it needs numpy and torch, and the gate installs neither —
     what it reads off a real file is proven by the end-to-end run.
     """
-    import ia_studio_engine.adapters.modalities as modalities
+    import aidesktopstudio_engine.adapters.modalities as modalities
 
     original = modalities._read_wave
     modalities._read_wave = lambda path: f"tensor:{path}"

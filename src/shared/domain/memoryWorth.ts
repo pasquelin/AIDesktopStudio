@@ -324,7 +324,7 @@ export const MEMORY_WORTH: Record<ActionName, MemoryRule> = {
   'git.restore': null,
   /**
    * 🛑 A commit made from the studio leaves the tree DIRTY: this writes to
-   * `.ia-studio/memory.ndjson`, which is versioned on purpose — the memory travels with the
+   * `.ai-desktop-studio/memory.ndjson`, which is versioned on purpose — the memory travels with the
    * project — so the version panel shows a change straight after every commit. True of every
    * rule here; this one just makes it visible on the spot.
    */

@@ -153,7 +153,7 @@ C’est le cas le plus courant, et il tient en trois gestes.
 presse-papiers une ligne de cette forme :
 
 ```
-claude mcp add <nom> -- "/Applications/IA Studio.app/Contents/MacOS/IA Studio" --mcp-stdio=…
+claude mcp add <nom> -- "/Applications/AI Desktop Studio.app/Contents/MacOS/AI Desktop Studio" --mcp-stdio=…
 ```
 
 **Ni port, ni jeton, ni adresse.** Ce que vous collez désigne **le studio comme un programme à
@@ -186,8 +186,8 @@ configuration attend :
 ```json
 {
   "mcpServers": {
-    "ia-studio": {
-      "command": "/Applications/IA Studio.app/Contents/MacOS/IA Studio",
+    "ai-desktop-studio": {
+      "command": "/Applications/AI Desktop Studio.app/Contents/MacOS/AI Desktop Studio",
       "args": ["--mcp-stdio=…"]
     }
   }

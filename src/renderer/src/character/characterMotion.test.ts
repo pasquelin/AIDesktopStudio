@@ -182,7 +182,7 @@ describe('the motion a workshop bakes', () => {
 
     // The sheet PURGED of what the workshop does not hold: the file would otherwise carry the id
     // of an object the scene has lost, and gather one more at every save.
-    expect(carried).toEqual([{ iastudio: { animation: { ...keyed, sheet: [] } } }])
+    expect(carried).toEqual([{ aidesktopstudio: { animation: { ...keyed, sheet: [] } } }])
     expect(saveAnimation.mock.calls[0]?.[0]).toEqual({
       name: 'Nouveau mouvement',
       derivedFrom: ASSET,

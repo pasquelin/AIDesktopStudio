@@ -11,8 +11,8 @@ from typing import Any
 
 import pytest
 
-from ia_studio_engine import PROTOCOL_VERSION
-from ia_studio_engine.core.router import DoorRouter
+from aidesktopstudio_engine import PROTOCOL_VERSION
+from aidesktopstudio_engine.core.router import DoorRouter
 
 IMAGE_DOOR = "engine/diffusion"
 #: Every request names its door — the studio does, and `submit` refuses one that does not.
@@ -142,7 +142,7 @@ def test_a_door_never_asked_for_is_a_process_that_never_ran() -> None:
 
 @pytest.mark.parametrize("job", [None, "", 42])
 def test_a_routed_op_without_its_job_is_refused(job: object) -> None:
-    from ia_studio_engine.core.supervisor import routed_handlers
+    from aidesktopstudio_engine.core.supervisor import routed_handlers
 
     router, _written, _workers = harness()
     handler = routed_handlers(router)["generate"]

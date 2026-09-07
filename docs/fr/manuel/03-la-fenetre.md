@@ -590,7 +590,7 @@ vous éditez une image, Ajouter quand vous éditez une scène. Un menu absent n�
 
 | Menu | Ce qu’on y trouve |
 |---|---|
-| **IA Studio** | *macOS seulement* : À propos, **Réglages…**, et les commandes du système |
+| **AI Desktop Studio** | *macOS seulement* : À propos, **Réglages…**, et les commandes du système |
 | **Fichier** | Nouveau projet…, Ouvrir un projet…, Enregistrer, Enregistrer sous…, Importer ▸, Exporter ▸. **Hors macOS, Réglages… est ici** |
 | **Édition** | Annuler, Rétablir, et les commandes de texte du système |
 | **Outils** | *espace Image* : les dix-huit outils de la barre, plus **Réduire** et **Agrandir le pinceau** |
@@ -647,7 +647,7 @@ le dit et renvoie aux réglages.
 
 ### La fenêtre des licences
 
-**Aide ▸ Licences** liste les logiciels qu’IA Studio embarque : nom, version, et nom court
+**Aide ▸ Licences** liste les logiciels qu’AI Desktop Studio embarque : nom, version, et nom court
 de la licence (`MIT`, `Apache-2.0`…). Cliquez une ligne : le **texte entier** se déplie, et le
 lien vers les sources s’affiche quand la licence l’exige.
 

@@ -8,9 +8,9 @@
     "ogLocale": "vi_VN"
   },
   "head": {
-    "title": "IA Studio — sáu xưởng tạo sinh, một cửa sổ duy nhất",
+    "title": "AI Desktop Studio — sáu xưởng tạo sinh, một cửa sổ duy nhất",
     "description": "Ứng dụng máy tính đa phương thức: hình ảnh, video, 3D, âm thanh, vân bề mặt và skybox trong một giao diện gồm các bảng có thể neo. Đọc chính tả ngoại tuyến và điều khiển qua máy chủ MCP.",
-    "ogTitle": "IA Studio — sáu xưởng tạo sinh, một cửa sổ duy nhất",
+    "ogTitle": "AI Desktop Studio — sáu xưởng tạo sinh, một cửa sổ duy nhất",
     "ogDescription": "Sáu xưởng tạo sinh trong một cửa sổ duy nhất. Electron, React 19, TypeScript. macOS, Windows, Linux."
   },
   "nav": {
@@ -291,7 +291,7 @@
   "docs": {
     "eyebrow": "Tài liệu &amp; trình diễn",
     "title": "Mọi thứ đều được viết ngay cạnh mã nguồn.",
-    "videoLabel": "Bản trình diễn IA Studio: đi qua sáu xưởng, từ một lần tạo sinh 3D cho tới khi dựng xong.",
+    "videoLabel": "Bản trình diễn AI Desktop Studio: đi qua sáu xưởng, từ một lần tạo sinh 3D cho tới khi dựng xong.",
     "links": {
       "0": {
         "text": "Cẩm nang hai mươi chương — đọc được ngay trong ứng dụng",
@@ -351,11 +351,11 @@
         "state": "Phiên bản sắp có"
       }
     },
-    "note": "Bộ cài chịu sự điều chỉnh của <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">điều khoản sử dụng</a>; còn mã nguồn thì theo giấy phép <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial&nbsp;1.0.0</a>. Ứng dụng không cho truy cập bất kỳ dịch vụ tạo sinh nào: nó dùng khoá API do chính bạn cung cấp, trên tài khoản của bạn và bạn chịu chi phí."
+    "note": "Bộ cài chịu sự điều chỉnh của <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">điều khoản sử dụng</a>; còn mã nguồn thì theo giấy phép <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial&nbsp;1.0.0</a>. Ứng dụng không cho truy cập bất kỳ dịch vụ tạo sinh nào: nó dùng khoá API do chính bạn cung cấp, trên tài khoản của bạn và bạn chịu chi phí."
   },
   "foot": {
     "groups": {
-      "0": "IA Studio",
+      "0": "AI Desktop Studio",
       "1": "Xưởng",
       "2": "Tài nguyên",
       "3": "Liên hệ"
@@ -365,7 +365,7 @@
       "0": "Tải về",
       "1": "Giấy phép"
     },
-    "legal": "Mã nguồn theo giấy phép <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial 1.0.0</a> · ứng dụng phân phối theo <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">điều khoản sử dụng</a> của nó · các thành phần bên thứ ba được liệt kê trong <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/THIRD-PARTY-NOTICES.md\" target=\"_blank\" rel=\"noopener\">phần ghi chú</a>. © 2026 Alban Pasquelin.",
+    "legal": "Mã nguồn theo giấy phép <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial 1.0.0</a> · ứng dụng phân phối theo <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">điều khoản sử dụng</a> của nó · các thành phần bên thứ ba được liệt kê trong <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/THIRD-PARTY-NOTICES.md\" target=\"_blank\" rel=\"noopener\">phần ghi chú</a>. © 2026 Alban Pasquelin.",
     "docsLink": "Tài liệu",
     "changelog": "Nhật ký thay đổi",
     "docsFr": "Tài liệu 🇫🇷",

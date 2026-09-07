@@ -64,7 +64,7 @@ describe('convertArrivedModels', () => {
     const after = await convertArrivedModels(arrived)
 
     expect(state.convert).toHaveBeenCalledOnce()
-    expect(state.convert.mock.calls[0]?.[1]).toBe('ia-studio://file/robot/')
+    expect(state.convert.mock.calls[0]?.[1]).toBe('ai-desktop-studio://file/robot/')
     expect(state.saveConverted).toHaveBeenCalledWith(
       expect.objectContaining({
         replaces: 'robot',

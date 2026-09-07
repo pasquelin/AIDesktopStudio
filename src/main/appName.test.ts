@@ -23,6 +23,23 @@ const SPELT_BY_HAND = [
 const fileAt = (path: string): string =>
   readFileSync(new URL(`../../${path}`, import.meta.url), 'utf8')
 
+/**
+ * 🛑 The site's heading, which spells the name and cannot import it either — but across two
+ * elements, so it holds no spelling as a substring and belongs to the reading case alone.
+ */
+const SPLIT_ACROSS_MARKUP = [...SPELT_BY_HAND, 'site/template.html']
+
+/**
+ * 🛑 What a READER sees, tags dropped and whitespace collapsed. A name split across markup holds
+ * neither spelling as a substring: the splash shipped `<b>IA</b> Studio` and the site's heading
+ * `IA` above `Studio`, and every case above passed on both.
+ */
+const readingOf = (source: string): string =>
+  source
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+
 describe('the product name', () => {
   for (const path of SPELT_BY_HAND) {
     it(`is what ${path} carries`, () => {
@@ -36,6 +53,14 @@ describe('the product name', () => {
    */
   it('is the only product name those surfaces carry', () => {
     expect(SPELT_BY_HAND.filter(path => fileAt(path).includes('Scenario Studio'))).toEqual([])
+    expect(SPELT_BY_HAND.filter(path => fileAt(path).includes('IA Studio'))).toEqual([])
+  })
+
+  it('is what those surfaces READ as, markup included', () => {
+    const reading = (path: string): string => readingOf(fileAt(path))
+
+    expect(SPLIT_ACROSS_MARKUP.filter(path => !reading(path).includes(APP_NAME))).toEqual([])
+    expect(SPLIT_ACROSS_MARKUP.filter(path => reading(path).includes('IA Studio'))).toEqual([])
   })
 
   // `dev-app-identity.mjs` used to hold a sixth copy. It reads `package.json` now, so the case

@@ -29,7 +29,7 @@ function deferredSource() {
     })
   }
 
-  const urlOf = (assetId: string) => `ia-studio://asset/${assetId}`
+  const urlOf = (assetId: string) => `ai-desktop-studio://asset/${assetId}`
 
   return {
     load,
@@ -55,7 +55,7 @@ describe('createTextureCache', () => {
     const loading = cache.acquire('tex-1', NoColorSpace)
     const texture = source.settle('tex-1')
 
-    expect(source.calls).toEqual(['ia-studio://asset/tex-1'])
+    expect(source.calls).toEqual(['ai-desktop-studio://asset/tex-1'])
     await expect(loading).resolves.toBe(texture)
   })
 
@@ -223,7 +223,7 @@ describe('createTextureCache', () => {
 
     void cache.acquire('tex-1', NoColorSpace, '2026-08-13T10:00:00.000Z')
 
-    expect(source.calls).toEqual(['ia-studio://asset/tex-1?v=2026-08-13T10%3A00%3A00.000Z'])
+    expect(source.calls).toEqual(['ai-desktop-studio://asset/tex-1?v=2026-08-13T10%3A00%3A00.000Z'])
   })
 
   it('reads the same asset again when its version moved', () => {

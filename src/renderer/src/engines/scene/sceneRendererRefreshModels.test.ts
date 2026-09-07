@@ -66,7 +66,7 @@ describe('once the catalogue says its file was rewritten', () => {
     renderer.refreshModels()
 
     await vi.waitFor(() => expect(load).toHaveBeenCalledTimes(3))
-    expect(load).toHaveBeenLastCalledWith('ia-studio://asset/asset-a?v=b')
+    expect(load).toHaveBeenLastCalledWith('ai-desktop-studio://asset/asset-a?v=b')
     expect(dispose).toHaveBeenCalledTimes(1)
     renderer.dispose()
   })

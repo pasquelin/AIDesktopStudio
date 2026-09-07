@@ -77,11 +77,11 @@ describe('a model the engine loads through its own glTF source', () => {
   it('writes the textures that did not resolve to the journal', async () => {
     const renderer = new SceneRenderer({ onSelect: vi.fn(), onTransform: vi.fn() })
 
-    await renderer['gltf'].load('ia-studio://asset/mesh-1')
+    await renderer['gltf'].load('ai-desktop-studio://asset/mesh-1')
 
     expect(reported).toHaveBeenCalledWith(
       'scene.texture',
-      'ia-studio://asset/mesh-1',
+      'ai-desktop-studio://asset/mesh-1',
       expect.objectContaining({ message: '2/2' }),
     )
     renderer.dispose()

@@ -19,7 +19,7 @@ describe('modelKeyOf', () => {
   })
 
   it('is the bare studio url when no version is known', () => {
-    expect(modelKeyOf('mesh-1')).toBe('ia-studio://asset/mesh-1')
+    expect(modelKeyOf('mesh-1')).toBe('ai-desktop-studio://asset/mesh-1')
   })
 })
 
@@ -33,7 +33,7 @@ describe('createModelCache', () => {
       return loaded()
     }, silent).acquire(modelKeyOf('mesh-1', 'v1'))
 
-    expect(urls).toEqual(['ia-studio://asset/mesh-1?v=v1'])
+    expect(urls).toEqual(['ai-desktop-studio://asset/mesh-1?v=v1'])
   })
 
   // A compressed or corrupt GLB leaves a node in the outliner drawing nothing: what the engine

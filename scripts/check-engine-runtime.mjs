@@ -8,7 +8,7 @@ const SMOKE = [
   'from PIL import Image',
   'import socket',
   'import threading',
-  'from ia_studio_engine.workers.door import serve_selection',
+  'from aidesktopstudio_engine.workers.door import serve_selection',
   'parent, child = socket.socketpair()',
   'thread = threading.Thread(target=serve_selection, args=("engine/selection", child.detach()), daemon=True)',
   'thread.start()',
