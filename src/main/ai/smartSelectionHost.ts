@@ -31,21 +31,36 @@ export function createSmartSelectionHost(deps: {
       const engine = await deps.engine()
       if (!engine) throw new Error('the local AI engine is not answering')
       // The picture only touches the disk for an encoding the engine does not hold yet.
-      if (encodedRevision !== request.revision) {
-        folder = await mkdtemp(join(tmpdir(), 'ia-studio-selection-'))
+      const encode = async (): Promise<void> => {
+        folder ??= await mkdtemp(join(tmpdir(), 'ia-studio-selection-'))
         const image = join(folder, 'composite.png')
         await writeFile(image, request.png)
         await engine.job('selection.encode', { door: 'engine/selection', image }, { signal })
         signal.throwIfAborted()
         encodedRevision = request.revision
       }
-      const decoded = await engine.job(
-        'selection.decode',
-        { door: 'engine/selection', ...promptOf(request) },
-        { signal },
-      )
-      signal.throwIfAborted()
-      return maskOf(decoded)
+      const decode = async (): Promise<unknown> => {
+        const answer = await engine.job(
+          'selection.decode',
+          { door: 'engine/selection', ...promptOf(request) },
+          { signal },
+        )
+        signal.throwIfAborted()
+        return answer
+      }
+
+      if (encodedRevision !== request.revision) await encode()
+      try {
+        return maskOf(await decode())
+      } catch (error) {
+        // 🛑 The engine let the model go between two clicks — an idle unload, or another model
+        // taking the room — and its embedding went with it: only the studio still believed in
+        // one. Encoded again rather than answered with a failure nobody can act on.
+        if (!lostEmbedding(error)) throw error
+        encodedRevision = null
+        await encode()
+        return maskOf(await decode())
+      }
     } finally {
       release()
       if (folder) await rm(folder, { recursive: true, force: true })
@@ -81,3 +96,7 @@ function maskOf(result: unknown): SmartSelectionResult {
     throw new Error('the selection engine returned an invalid mask')
   return { width: result.width, height: result.height, alpha }
 }
+
+/** What the door answers once its model has been unloaded — see `EfficientSam.decode`. */
+const lostEmbedding = (error: unknown): boolean =>
+  error instanceof Error && error.message.includes('no embedding')

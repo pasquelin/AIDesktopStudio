@@ -230,8 +230,7 @@ export abstract class SceneRendererModels extends SceneRendererGeometry {
 
   /** Told once per skeleton, not per model: it is filed by what its bones ARE. */
   protected learnRig(rig: Rig, corrected?: Readonly<Record<string, HumanoidRole>>): void {
-    const roles: Record<string, HumanoidRole> = { ...corrected }
-    for (const bone of rig.bones) if (bone.role) roles[bone.name] = bone.role
+    const roles = rigRoles(rig, corrected)
     if (Object.keys(roles).length === 0) return
     const signature = skeletonTopologySignatureOf(rig.bones)
     const profile = rigProfileOf(signature, roles, this.retarget.profileOf(signature))
@@ -335,4 +334,27 @@ export abstract class SceneRendererModels extends SceneRendererGeometry {
     )
     this.redraw()
   }
+}
+
+/**
+ * What each bone MEANS, the rig first.
+ *
+ * 🛑 A correction naming a bone this rig no longer has may not claim a role the rig already
+ * carries: two names for one role is not a profile, and `remember` REFUSES one — inside the load
+ * chain, where the throw skipped the poses, the shadows and the BVH that follow it. The model
+ * then drew and answered nothing at all.
+ */
+function rigRoles(
+  rig: Rig,
+  corrected?: Readonly<Record<string, HumanoidRole>>,
+): Record<string, HumanoidRole> {
+  const roles: Record<string, HumanoidRole> = {}
+  for (const bone of rig.bones) if (bone.role) roles[bone.name] = bone.role
+  const taken = new Set(Object.values(roles))
+  for (const [name, role] of Object.entries(corrected ?? {})) {
+    if (name in roles || taken.has(role)) continue
+    roles[name] = role
+    taken.add(role)
+  }
+  return roles
 }

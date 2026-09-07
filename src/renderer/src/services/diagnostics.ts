@@ -42,6 +42,9 @@ const GESTURE_SCOPES: ReadonlySet<LogScope> = new Set<LogScope>([
   // Same gesture, same rule — and here silence costs more: each reopening re-arms a ⌘S that
   // would write the document's size back over a bigger picture.
   'canvas.size',
+  // A click that selects nothing is a click the person makes again: the model may be missing, the
+  // engine silent, or the box too thin — silenced from the second, the tool looks simply broken.
+  'canvas.smartSelect',
   // Picking an edit from the Image menu is a gesture too, and it was the one refusal of that menu
   // that said nothing at all — the caller swallowed everything it threw.
   'canvas.edit',

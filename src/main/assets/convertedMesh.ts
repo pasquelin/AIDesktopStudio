@@ -89,7 +89,15 @@ async function targetPath(
   type: ConvertibleType,
   folderFor: ConvertedMeshDeps['folderFor'],
 ): Promise<string> {
-  if (type === existing.type) return withExtension(existing.path, GLB_EXTENSION)
+  // 🛑 A free name, not the source's with another extension: the import deduplicates on the WHOLE
+  // file name, so a `Robot.fbx` lands happily beside an existing `Robot.glb` — and the conversion
+  // then refused itself with « already exists », leaving the `.fbx` unconverted for ever.
+  if (type === existing.type) {
+    const folder = existing.path.slice(0, existing.path.lastIndexOf('/'))
+    const wanted = withExtension(existing.path, GLB_EXTENSION)
+    if (!(await exists(join(root, wanted)))) return wanted
+    return await freeAssetPath(root, folder, existing.name, GLB_EXTENSION)
+  }
   const folder = await folderFor(roleForAsset({ type }))
   if (!assetFilePath(root, folder)) throw new Error('asset path leaves the project')
   await mkdir(join(root, folder), { recursive: true })

@@ -10,7 +10,7 @@ import {
   type Object3D,
 } from 'three'
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js'
-import { documentReferencesOf } from '@shared/domain/documentReferences'
+import { documentReferencesOf, mtlPathsBeside } from '@shared/domain/documentReferences'
 import type { MeshFormat } from '@shared/domain/meshFormat'
 import {
   convertedTypeOf,
@@ -116,7 +116,7 @@ async function materialsFor(
   for (const library of libraries) {
     const material = await ports.readText(`${baseUrl}${library}`)
     if (material === null) missing = true
-    else texts.push(material)
+    else texts.push(mtlPathsBeside(material, library))
   }
   if (texts.length === 0) return { materials: null, missing: libraries.length > 0 }
   const { MTLLoader } = await import('three/addons/loaders/MTLLoader.js')

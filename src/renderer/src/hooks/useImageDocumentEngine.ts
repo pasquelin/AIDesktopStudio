@@ -15,6 +15,12 @@ import { useLatest } from '@/hooks/useLatest'
 import { canvasOf, canvasStore, useCanvases } from '@/stores/canvases'
 import { useCanvasViews } from '@/stores/canvasViews'
 import { getBridge } from '@/services/bridge'
+import { reportFailure } from '@/services/diagnostics'
+import type { SmartSelectionPrompt } from '@shared/domain/smartSelectionInference'
+
+/** A run the click after it cancelled: not a failure, and nothing for a reader to act on. */
+const isAbortError = (error: unknown): boolean =>
+  error instanceof DOMException && error.name === 'AbortError'
 
 type EngineHandle = {
   hostRef: React.RefObject<HTMLDivElement | null>
@@ -41,6 +47,41 @@ export function useImageDocumentEngine(
     if (!element) return
     const views = () => useCanvasViews.getState()
     const pixels = pixelPort(documentId, () => engineRef.current)
+    const smartSelect = async (prompt: SmartSelectionPrompt): Promise<void> => {
+      const previous = smartSelectionTask.current
+      const id = newId()
+      smartSelectionTask.current = id
+      const bridge = getBridge()
+      if (previous) await bridge?.tasks.cancel(previous)
+      const png = await created.flatten()
+      const state = canvasOf(useCanvases.getState(), documentId)
+      if (!png || !bridge?.smartSelection || !state) return
+      const store = useCanvases.getState()
+      const revision = `${canvasStore.incarnationOf(store, documentId) ?? documentId}:${canvasStore.revisionOf(store, documentId)}`
+      const result = await bridge.smartSelection.run({
+        id,
+        revision,
+        png,
+        width: state.width,
+        height: state.height,
+        prompt,
+      })
+      if (smartSelectionTask.current !== id) return
+      created.setSelection({
+        kind: 'raster',
+        bounds: { x: 0, y: 0, width: result.width, height: result.height },
+        width: result.width,
+        height: result.height,
+        alpha: result.alpha,
+      })
+      views().setSelection(documentId, {
+        kind: 'raster',
+        bounds: { x: 0, y: 0, width: result.width, height: result.height },
+        width: result.width,
+        height: result.height,
+        alpha: result.alpha,
+      })
+    }
     const created = new CanvasEngine({
       onPick: color => setBrush(current => ({ ...current, color })),
       onPixels: pixels.record,
@@ -48,41 +89,12 @@ export function useImageDocumentEngine(
       onViewport: viewport => views().setViewport(documentId, viewport),
       onSelection: selection => views().setSelection(documentId, selection),
       onSmartSelect: prompt => {
-        void (async () => {
-          const previous = smartSelectionTask.current
-          const id = newId()
-          smartSelectionTask.current = id
-          const bridge = getBridge()
-          if (previous) await bridge?.tasks.cancel(previous)
-          const png = await created.flatten()
-          const state = canvasOf(useCanvases.getState(), documentId)
-          if (!png || !bridge?.smartSelection || !state) return
-          const store = useCanvases.getState()
-          const revision = `${canvasStore.incarnationOf(store, documentId) ?? documentId}:${canvasStore.revisionOf(store, documentId)}`
-          const result = await bridge.smartSelection.run({
-            id,
-            revision,
-            png,
-            width: state.width,
-            height: state.height,
-            prompt,
-          })
-          if (smartSelectionTask.current !== id) return
-          created.setSelection({
-            kind: 'raster',
-            bounds: { x: 0, y: 0, width: result.width, height: result.height },
-            width: result.width,
-            height: result.height,
-            alpha: result.alpha,
-          })
-          views().setSelection(documentId, {
-            kind: 'raster',
-            bounds: { x: 0, y: 0, width: result.width, height: result.height },
-            width: result.width,
-            height: result.height,
-            alpha: result.alpha,
-          })
-        })()
+        // 🛑 Said and not dropped: a model that is not installed, an engine that does not answer
+        // and a box too thin all rejected into `traceDroppedRejections`, so the click did nothing
+        // and nothing explained why. The cancel of the run before it is not a failure.
+        void smartSelect(prompt).catch(error => {
+          if (!isAbortError(error)) reportFailure('canvas.smartSelect', documentId, error)
+        })
       },
       onComment,
       onHost: size => views().setHost(documentId, size),

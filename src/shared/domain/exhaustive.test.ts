@@ -270,6 +270,7 @@ const LOG_SCOPE_SET: Record<LogScope, true> = {
   'code.land': true,
   'canvas.size': true,
   'canvas.edit': true,
+  'canvas.smartSelect': true,
   'image.export': true,
   'document.load': true,
   'document.save': true,
