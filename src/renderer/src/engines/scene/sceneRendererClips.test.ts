@@ -302,6 +302,25 @@ describe('SceneRenderer and the animations the app ships with', () => {
     engine.dispose()
   })
 
+  // 🛑 A correction naming a bone this rig no longer has, holding a role the rig already carries:
+  // two names for one role is not a profile, and `remember` refused it INSIDE the load chain —
+  // the poses, the shadow flags and the BVH that follow were all skipped, so the model drew and
+  // then answered nothing.
+  it('files a profile the port accepts when the file corrects a bone the rig has lost', async () => {
+    const retarget = straightThrough()
+    const { engine } = withShipped(
+      riggedModel([], { b0: 'Hips', 'b0.old': 'Hips' }),
+      animatedModel([walk('NlaTrack')]),
+      retarget,
+    )
+
+    engine.apply({ ...EMPTY_SCENE, nodes: [modelNode(shippedBlock())] })
+
+    await vi.waitFor(() => expect(retarget.learnt).toHaveLength(1))
+    expect(retarget.learnt[0]?.roles).toEqual({ b0: 'Hips' })
+    engine.dispose()
+  })
+
   // The port dies with the viewport, so a mapping worked out in one document would be worked out
   // again in the next: the project keeps it, and hands it back before anything is read.
   it('hands what a project already learnt to the port, and reports what it learns', async () => {

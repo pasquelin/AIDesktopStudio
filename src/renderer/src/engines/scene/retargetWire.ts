@@ -25,7 +25,11 @@ export function wireBonesOf(root: Object3D): WireBone[] {
   const names = new Set<string>()
   root.traverse(object => {
     if (!isBoneObject(object) || virtualFrames.has(object) || !object.name) return
-    if (names.has(object.name)) throw new Error(`duplicate bone name: ${object.name}`)
+    // 🛑 SKIPPED, never refused, as `rigStateOf` skips it: a second bone of one name is one
+    // nothing can address, and a merged rig carries them. Refusing made every foreign clip of
+    // such a model fail to load, and its transfer window refuse to open at all — while the rig
+    // panel, which skips, showed it as ordinary. Its subtree hangs from the bone above it.
+    if (names.has(object.name)) return
     names.add(object.name)
     const ancestors = parentFramesOf(object, root, indexOf)
     indexOf.set(object, bones.length)

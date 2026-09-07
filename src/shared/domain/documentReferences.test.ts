@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { documentReferencesOf } from './documentReferences'
+import { documentReferencesOf, mtlPathsBeside } from './documentReferences'
 
 const gltf = (body: Record<string, unknown>): string =>
   JSON.stringify({ asset: { version: '2.0' }, ...body })
@@ -107,5 +107,29 @@ describe('documentReferencesOf', () => {
 
   it('reads nothing out of an extension that carries its parts inside itself', () => {
     expect(documentReferencesOf('ora', gltf({ buffers: [{ uri: 'a.bin' }] }))).toEqual([])
+  })
+
+  // 🛑 The import copies a library's pictures RELATIVE TO THE LIBRARY, which is where a `.mtl` in
+  // a subfolder names its own; the conversion resolves everything against the OBJ. Left alone, an
+  // OBJ whose `mtllib` sits in a subfolder lost every texture — and said so, on files just copied.
+  it('rewrites a library’s pictures as the OBJ’s own folder sees them', () => {
+    const material = ['newmtl skin', 'map_Kd skin.png', 'bump -bm 0.5 n.png', 'Kd 1 1 1'].join('\n')
+
+    expect(mtlPathsBeside(material, 'materials/robot.mtl').split('\n')).toEqual([
+      'newmtl skin',
+      'map_Kd materials/skin.png',
+      'bump -bm 0.5 materials/n.png',
+      'Kd 1 1 1',
+    ])
+  })
+
+  it('leaves a library beside the OBJ, and anything already addressed, alone', () => {
+    const material = 'map_Kd skin.png\nmap_Ks https://example.com/s.png\nmap_d /tmp/d.png'
+
+    expect(mtlPathsBeside(material, 'robot.mtl')).toBe(material)
+    expect(mtlPathsBeside(material, 'materials/robot.mtl')).toContain(
+      'map_Ks https://example.com/s.png',
+    )
+    expect(mtlPathsBeside(material, 'materials/robot.mtl')).toContain('map_d /tmp/d.png')
   })
 })

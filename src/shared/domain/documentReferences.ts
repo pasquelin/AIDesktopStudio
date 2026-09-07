@@ -137,3 +137,20 @@ export function documentReferencesOf(extension: string, text: string): readonly 
     return []
   }
 }
+
+/**
+ * A library's picture paths, rewritten as the OBJ's folder sees them.
+ *
+ * 🛑 The import copies them RELATIVE TO THE LIBRARY, which is where a `.mtl` in a subfolder names
+ * its own textures; the loader below resolves everything against the OBJ. Left alone, an OBJ whose
+ * `mtllib` sits in a subfolder lost every texture — and said so, on files it had just copied.
+ */
+export function mtlPathsBeside(material: string, library: string): string {
+  const folder = library.slice(0, library.lastIndexOf('/') + 1)
+  if (folder === '') return material
+  return material.replace(
+    /^(\s*(?:map_\w+|bump|disp|decal|refl|norm)\s+.*?)(\S+)(\s*)$/gm,
+    (whole, head: string, file: string, tail: string) =>
+      SCHEME.test(file) || file.startsWith('/') ? whole : `${head}${folder}${file}${tail}`,
+  )
+}
