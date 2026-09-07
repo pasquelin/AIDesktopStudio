@@ -38,7 +38,7 @@ import {
   type Mobile,
 } from './cellInstancingGeometry'
 import { settleCellBucket } from './cellBucketSettlement'
-import { followCells } from './cellVisibility'
+import { followCells, newFollowMemory } from './cellVisibility'
 /**
  * Draws a repeated shape through one `InstancedMesh` per CELL of the world, and turns off the
  * cells the camera cannot reach.
@@ -76,12 +76,15 @@ export function createCellGroups(
   } = cellGroupState()
   /** The widest body still held in a cell, so a query reaches the ones straddling its edge. */
   let queryReach = index.cellSize / 2
+  /** Its `revision` is bumped by every change a follow must see again — see `FollowMemory`. */
+  const memory = newFollowMemory()
   let pass = 0
   let listed: InstancedMesh[] = []
   let sourcesById: ReadonlyMap<string, Mesh[]> = new Map()
   let listStale = true
   const groupOf = (cell: CellKey | null): Object3D => {
     if (cell === null) return host
+    memory.revision += 1
     const known = cells.get(cell)
     if (known) {
       known.stale = true
@@ -108,6 +111,7 @@ export function createCellGroups(
     if (bucket.cell === null) return
     const held = cells.get(bucket.cell)
     if (!held) return
+    memory.revision += 1
     held.stale = true
     if (held.group.children.length > 0) return
     held.group.removeFromParent()
@@ -319,6 +323,7 @@ export function createCellGroups(
     if (!slots) return
     const object = objectOf(id)
     if (!object) return
+    memory.revision += 1 // A grown box changes a cell's cover without ever marking it stale.
     for (const at of slots) {
       const box = boxes.get(at.instance)
       const cell = owners.get(at.instance)
@@ -389,6 +394,7 @@ export function createCellGroups(
     rebuild: (nodes, objectOf, excluded) => {
       const groups = sweep(nodes, objectOf, host, ownMaterialOf, keyOf, sources, excluded)
       queryReach = measuredReach(groups, index.cellSize / 2)
+      memory.revision += 1
       pass += 1
       /** Which lot each mover belongs to THIS pass, by group key — see `shed`. */
       const seen = new Map<string, string>()
@@ -427,7 +433,7 @@ export function createCellGroups(
     nodeIdOf,
     follow: (camera, cast) =>
       followCells(
-        { host, index, cells, standing, wanted, near, boxes, drawEvery, queryReach },
+        { host, index, cells, standing, wanted, near, boxes, drawEvery, queryReach, memory },
         camera,
         cast,
       ),

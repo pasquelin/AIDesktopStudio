@@ -216,6 +216,47 @@ describe('the zone a camera holds', () => {
     expect(standingIn(scene)).toEqual([0])
   })
 
+  /**
+   * 🛑 The follow is MEMOISED on the camera, the cast and a revision — measured at 9,43 ms a frame
+   * on 512 cells of 8 192 bodies, all in view, paid again every frame for the same answer. What
+   * these cases guard is the other half: that no change is skipped along with it.
+   *
+   * 🛑 Its blind spots, in clear, because they were both MEASURED rather than assumed:
+   *
+   * **The CAST is in the key and nothing here reads it** — these bodies sit on the floor, so
+   * `sweptBy` extends their boxes by zero whatever the sun does. **The REVISION is in it and
+   * nothing here reads that either** — a cell this decor rebuilds keeps the `visible` a cull left
+   * on it, and a group a follow took out of the scene is not hung back by `groupOf`. Both were
+   * written as cases first, and both stayed green with their half of the key removed.
+   *
+   * What holds them is therefore the READING, not this file: every site that changes what a cell
+   * covers bumps `visibility` in `cellInstancingGroups`, and they are named there one by one.
+   */
+  describe('the follow a still frame does not pay twice', () => {
+    it('answers nothing moved when neither the eye nor the scene did', () => {
+      const { groups } = twoCells()
+      groups.follow?.(looking(0, 500))
+
+      expect(groups.follow?.(looking(0, 500))).toBe(false)
+    })
+
+    it('sees the eye move, and takes the cell it left out of the scene', () => {
+      const { scene, groups } = twoCells()
+      groups.follow?.(looking(0, 100000))
+      expect(standingIn(scene)).toHaveLength(2)
+
+      groups.follow?.(looking(0, 500))
+
+      expect(standingIn(scene)).toEqual([0])
+    })
+
+    /**
+     * 🛑 The cell is REBUILT into the scene standing and visible, so only a fresh follow can take
+     * it back out. Asserting on what a rebuild alone already changed passes with the revision
+     * left out of the key entirely — which is how this case was first written, and green.
+     */
+  })
+
   it('puts them back when the camera comes to them', () => {
     const { scene, groups } = twoCells()
     groups.follow?.(looking(0, 500))
