@@ -1,5 +1,5 @@
 import { RenderTexture } from 'pixi.js'
-import { selectionOutline } from './canvasSelection'
+import { isEmptySelection, type CanvasSelection } from './canvasSelection'
 import { maskKey } from './compositor'
 import { type BrushMark } from './CanvasOverlay'
 import type { Point } from '../core/geometry'
@@ -15,7 +15,11 @@ export abstract class CanvasBrush extends CanvasViewport {
 
   protected abstract shownViewport(): Viewport
 
-  protected abstract paintMask(layerId: string, mask: LayerSurface, outline: readonly Point[]): void
+  protected abstract paintMask(
+    layerId: string,
+    mask: LayerSurface,
+    selection: CanvasSelection,
+  ): void
 
   protected abstract dropPending(layerId: string): void
 
@@ -134,18 +138,17 @@ export abstract class CanvasBrush extends CanvasViewport {
   fillMaskFromSelection(layerId: string): void {
     const renderer = this.app?.renderer
     const mask = this.surfaces.get(maskKey(layerId))
-    const outline = selectionOutline(this.selection)
-    const first = outline[0]
-    if (!first || !renderer || !this.state) return
+    const selection = this.selection
+    if (!selection || isEmptySelection(selection) || !renderer || !this.state) return
 
     if (!mask) {
       // The command that gives the layer its mask has only just been run: the surface follows
       // on the next `apply`, one React commit later. Held until then rather than dropped.
-      this.pendingMaskFills.set(layerId, outline)
+      this.pendingMaskFills.set(layerId, selection)
       return
     }
 
-    this.paintMask(layerId, mask, outline)
+    this.paintMask(layerId, mask, selection)
   }
 
   /**

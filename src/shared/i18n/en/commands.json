@@ -441,6 +441,14 @@
       "title": "Lasso",
       "help": "Arms the lasso: the selection follows the hand, freehand."
     },
+    "canvasToolSmartSelect": {
+      "title": "Click Smart Select",
+      "help": "Arms object selection from a click, using the local selection model."
+    },
+    "canvasToolSmartSelectBox": {
+      "title": "Rectangle Smart Select",
+      "help": "Arms object selection from an approximate box, using the local selection model."
+    },
     "canvasToolShapeRectangle": {
       "title": "Rectangle shape",
       "help": "Arms drawing a rectangle on the active layer; Shift makes it a square."

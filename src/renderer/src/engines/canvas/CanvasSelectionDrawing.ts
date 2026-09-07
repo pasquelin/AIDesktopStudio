@@ -1,6 +1,6 @@
-import { Container, Graphics } from 'pixi.js'
+import { Container, type Graphics } from 'pixi.js'
 import { type Rect } from './canvasState'
-import { selectionOutline } from './canvasSelection'
+import { selectionStencil } from './selectionStencil'
 import { mapRect } from './layerSpace'
 import type { Point } from '../core/geometry'
 import { brushRect, grownBy } from './tiles'
@@ -149,17 +149,11 @@ export abstract class CanvasSelectionDrawing extends CanvasInput {
       return held.holder
     }
 
-    const outline = selectionOutline(this.selection)
-    const first = outline[0]
-    if (!first) {
+    const stencil = selectionStencil(this.selection)
+    if (!stencil) {
       this.dropClipping()
       return container
     }
-
-    const stencil = new Graphics()
-    stencil.moveTo(first.x, first.y)
-    for (const point of outline.slice(1)) stencil.lineTo(point.x, point.y)
-    stencil.fill({ color: 0xffffff })
 
     const holder = new Container()
     holder.addChild(stencil)

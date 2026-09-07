@@ -12,8 +12,9 @@ import { layerPort } from '@/features/image/layerPort'
 import { pixelPort } from '@/features/image/pixelPort'
 import { newId } from '@/helpers/ids'
 import { useLatest } from '@/hooks/useLatest'
-import { useCanvases } from '@/stores/canvases'
+import { canvasOf, canvasStore, useCanvases } from '@/stores/canvases'
 import { useCanvasViews } from '@/stores/canvasViews'
+import { getBridge } from '@/services/bridge'
 
 type EngineHandle = {
   hostRef: React.RefObject<HTMLDivElement | null>
@@ -31,6 +32,7 @@ export function useImageDocumentEngine(
   const hostRef = useRef<HTMLDivElement>(null)
   const engineRef = useRef<CanvasEngine | null>(null)
   const [editing, setEditing] = useState<string | null>(null)
+  const smartSelectionTask = useRef<string | null>(null)
   const caption = useLatest(t('imageTools.textName'))
   const shapeName = useLatest((kind: ShapeKind) => t(`layers.shapeName_${kind}`))
 
@@ -45,6 +47,43 @@ export function useImageDocumentEngine(
       onPixelsDropped: pixels.drop,
       onViewport: viewport => views().setViewport(documentId, viewport),
       onSelection: selection => views().setSelection(documentId, selection),
+      onSmartSelect: prompt => {
+        void (async () => {
+          const previous = smartSelectionTask.current
+          const id = newId()
+          smartSelectionTask.current = id
+          const bridge = getBridge()
+          if (previous) await bridge?.tasks.cancel(previous)
+          const png = await created.flatten()
+          const state = canvasOf(useCanvases.getState(), documentId)
+          if (!png || !bridge?.smartSelection || !state) return
+          const store = useCanvases.getState()
+          const revision = `${canvasStore.incarnationOf(store, documentId) ?? documentId}:${canvasStore.revisionOf(store, documentId)}`
+          const result = await bridge.smartSelection.run({
+            id,
+            revision,
+            png,
+            width: state.width,
+            height: state.height,
+            prompt,
+          })
+          if (smartSelectionTask.current !== id) return
+          created.setSelection({
+            kind: 'raster',
+            bounds: { x: 0, y: 0, width: result.width, height: result.height },
+            width: result.width,
+            height: result.height,
+            alpha: result.alpha,
+          })
+          views().setSelection(documentId, {
+            kind: 'raster',
+            bounds: { x: 0, y: 0, width: result.width, height: result.height },
+            width: result.width,
+            height: result.height,
+            alpha: result.alpha,
+          })
+        })()
+      },
       onComment,
       onHost: size => views().setHost(documentId, size),
       onText: asked => {

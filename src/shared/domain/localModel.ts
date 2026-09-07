@@ -19,11 +19,13 @@ export type ModelFormat = 'safetensors' | 'gguf' | 'onnx' | 'pickle'
 export const MODEL_FORMATS: readonly ModelFormat[] = ['safetensors', 'gguf', 'onnx', 'pickle']
 
 /** What opens the weights. The pair, not the format, is what the whitelist is written on. */
-export type ModelLoader = 'sherpa-onnx' | 'ollama' | 'llamacpp' | 'diffusers' | 'plugin'
+export type ModelLoader =
+  'sherpa-onnx' | 'onnx-runtime' | 'ollama' | 'llamacpp' | 'diffusers' | 'plugin'
 
 /** The values beside the type, so a table keyed by loader can be walked without a cast. */
 export const MODEL_LOADERS: readonly ModelLoader[] = [
   'sherpa-onnx',
+  'onnx-runtime',
   'ollama',
   'llamacpp',
   'diffusers',
@@ -256,6 +258,7 @@ export const PART_SUFFIX = '.part'
  */
 const ADMITTED: Record<ModelLoader, readonly ModelFormat[]> = {
   'sherpa-onnx': ['onnx'],
+  'onnx-runtime': ['onnx'],
   ollama: ['gguf', 'safetensors'],
   llamacpp: ['gguf', 'safetensors'],
   /**

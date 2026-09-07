@@ -441,6 +441,14 @@
       "title": "Lasso",
       "help": "Arme le lasso : la sélection suit la main, à main levée."
     },
+    "canvasToolSmartSelect": {
+      "title": "Clic — Sélection intelligente",
+      "help": "Arme la sélection d’objet au clic avec le modèle local."
+    },
+    "canvasToolSmartSelectBox": {
+      "title": "Rectangle — Sélection intelligente",
+      "help": "Arme la sélection d’objet dans un rectangle approximatif avec le modèle local."
+    },
     "canvasToolShapeRectangle": {
       "title": "Forme Rectangle",
       "help": "Arme le tracé d’un rectangle sur le calque actif ; MAJ en fait un carré."

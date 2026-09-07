@@ -12,4 +12,7 @@ DOORS: dict[str, str] = {
     "engine/audio": "audio",
     "engine/3d": "mesh",
     "engine/skybox": "skybox",
+    "engine/selection": "selection",
 }
+
+SPECIAL_DOORS = frozenset({"engine/selection"})

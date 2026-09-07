@@ -11,13 +11,13 @@ import pytest
 
 from ia_studio_engine.adapters.modalities import MODALITIES
 from ia_studio_engine.adapters.routing_adapter import RoutingAdapter
-from ia_studio_engine.protocol.doors import DOORS
+from ia_studio_engine.protocol.doors import DOORS, SPECIAL_DOORS
 from ia_studio_engine.protocol.envelope import frames
 from ia_studio_engine.workers.door import main, serve
 
 
 def test_every_door_names_a_modality_that_exists() -> None:
-    assert set(DOORS.values()) <= set(MODALITIES)
+    assert {value for door, value in DOORS.items() if door not in SPECIAL_DOORS} <= set(MODALITIES)
 
 
 @pytest.mark.parametrize("argv", [["engine/video"], ["engine/nope", "3"]])

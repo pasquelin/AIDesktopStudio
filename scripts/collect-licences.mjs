@@ -174,7 +174,12 @@ function catalogueLicences() {
   const catalogue = JSON.parse(readFileSync(path, 'utf8'))
   return Object.values(catalogue)
     .flat()
-    .filter(model => model.loader === 'diffusers' || model.loader === 'plugin')
+    .filter(
+      model =>
+        model.loader === 'diffusers' ||
+        model.loader === 'plugin' ||
+        model.loader === 'onnx-runtime',
+    )
     .map(model => ({
       name: model.name,
       ...(model.files[0]?.revision ? { version: model.files[0].revision } : {}),

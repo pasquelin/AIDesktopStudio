@@ -11,6 +11,11 @@ dependencies = []
 # which is why the core stays at the 10 ms of a bare interpreter. Workers pay it, once, and stay
 # alive. The `llm`, `diffusion`, `audio` and `3d` groups land with the worker that needs them.
 core = []
+selection = [
+  "onnxruntime>=1.23",
+  "numpy>=1.26",
+  "pillow>=10.0",
+]
 motion = [
   "pydantic>=2",
   "torch>=2.6",

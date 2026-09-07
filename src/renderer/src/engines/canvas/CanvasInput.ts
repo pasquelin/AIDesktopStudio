@@ -38,6 +38,7 @@ export abstract class CanvasInput extends CanvasPointerTracking {
     if (gesture.kind === 'paint') this.endPixels()
     if (gesture.kind === 'shape') this.commitShape(gesture.from, gesture.to)
     if (gesture.kind === 'text') this.commitText(gesture.from, gesture.to)
+    if (gesture.kind === 'smartSelectBox') this.smartBox(gesture.from, gesture.to)
     if (gesture.kind === 'comment') {
       this.options.onComment(gesture.at, gesture.points.length > 2 ? gesture.points : undefined)
       this.overlay.invalidate()
@@ -45,6 +46,18 @@ export abstract class CanvasInput extends CanvasPointerTracking {
     // A click that carved nothing out is how every editor deselects. Left standing, a zero-area
     // selection is a stencil nothing gets through, and the document stops taking paint at all.
     if (gesture.kind === 'select' && isEmptySelection(this.selection)) this.publishSelection(null)
+  }
+
+  private smartBox(from: Point, to: Point): void {
+    const box = this.gridBox(from, to)
+    this.options.onSmartSelect({
+      box: {
+        x: box.from.x,
+        y: box.from.y,
+        width: box.to.x - box.from.x,
+        height: box.to.y - box.from.y,
+      },
+    })
   }
 
   /**

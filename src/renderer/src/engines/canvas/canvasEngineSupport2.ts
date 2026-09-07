@@ -22,6 +22,7 @@ export type Gesture =
   /** `origin` is where the layer stood when the drag began: every step is absolute from it. */
   | { kind: 'move'; id: string; from: Point; origin: Point }
   | { kind: 'select'; from: Point }
+  | { kind: 'smartSelectBox'; from: Point; to: Point }
   | { kind: 'comment'; at: Point; points: Point[] }
   /** Drawing a fresh crop frame from `from`; the frame itself lives on past the drag. */
   | { kind: 'crop'; from: Point }

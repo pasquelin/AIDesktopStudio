@@ -426,6 +426,11 @@ const fakeNews = (overrides: BridgeOverrides): StudioBridge['news'] => ({
   ...overrides.news,
 })
 
+const fakeSmartSelection = (overrides: BridgeOverrides): StudioBridge['smartSelection'] => ({
+  run: () => Promise.reject(new Error('no local selection engine')),
+  ...overrides.smartSelection,
+})
+
 function fakeBridge(overrides: BridgeOverrides): StudioBridge {
   return {
     settings: fakeSettings(overrides),
@@ -441,6 +446,7 @@ function fakeBridge(overrides: BridgeOverrides): StudioBridge {
     game: fakeGame(overrides),
     documents: fakeDocuments(overrides),
     assets: fakeAssets(overrides),
+    smartSelection: fakeSmartSelection(overrides),
     cloud: fakeCloud(overrides),
     favorites: fakeFavorites(overrides),
     styles: fakeStyles(overrides),

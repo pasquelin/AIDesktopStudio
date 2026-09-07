@@ -25,6 +25,30 @@ import {
 } from './canvasEngineTest-fixtures'
 
 describe('carving out a selection', () => {
+  it('sends a click prompt in document coordinates without changing the selection', async () => {
+    const { engine, host, selections, smartPrompts } = await mounted()
+    engine.setTool('smartSelect')
+
+    press(host, 120, 80)
+    release()
+    await nextFrame()
+
+    expect(smartPrompts).toEqual([{ point: { x: 120, y: 80 } }])
+    expect(selections).toEqual([])
+  })
+
+  it('sends the approximate box as a prompt, never as the resulting selection', async () => {
+    const { engine, host, selections, smartPrompts } = await mounted()
+    engine.setTool('smartSelectBox')
+
+    press(host, 120, 80)
+    drag(host, 320, 280)
+    release()
+
+    expect(smartPrompts).toEqual([{ box: { x: 120, y: 80, width: 200, height: 200 } }])
+    expect(selections).toEqual([])
+  })
+
   it('publishes a box drawn between the two corners of a drag', async () => {
     const { engine, host, selections } = await mounted()
     engine.setTool('select')

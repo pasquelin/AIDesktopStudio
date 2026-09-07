@@ -242,6 +242,9 @@ const bridge: StudioBridge = {
       ipcRenderer.invoke(CHANNELS.assetsRemove, assetIds, alsoRemote, expectedProjectPath),
     describe: assetIds => ipcRenderer.invoke(CHANNELS.assetsDescribe, assetIds),
   },
+  smartSelection: {
+    run: request => ipcRenderer.invoke(CHANNELS.smartSelectionRun, request),
+  },
   cloud: {
     browse: query => ipcRenderer.invoke(CHANNELS.cloudBrowse, query),
     explore: query => ipcRenderer.invoke(CHANNELS.cloudExplore, query),

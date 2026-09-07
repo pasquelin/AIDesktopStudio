@@ -1,8 +1,9 @@
 import { type Container, Graphics, Rectangle, Sprite, type Texture } from 'pixi.js'
 import { bytesToBase64 } from '@shared/base64'
 import { layerById, type Layer, type Rect, WHITE } from './canvasState'
+import { drawSelectionStencil } from './selectionStencil'
+import type { CanvasSelection } from './canvasSelection'
 import { compose, invert, type Affine } from './layerSpace'
-import type { Point } from '../core/geometry'
 import { BLEND_BY_MODE, bitmapSourceOf, blobOf } from './canvasEngineSupport1'
 import type { LayerSurface } from './canvasEngineSupport1'
 import { CanvasBrush } from './CanvasBrush'
@@ -76,11 +77,10 @@ export abstract class CanvasPixels extends CanvasBrush {
     this.render()
   }
 
-  protected paintMask(layerId: string, mask: LayerSurface, outline: readonly Point[]): void {
+  protected paintMask(layerId: string, mask: LayerSurface, selection: CanvasSelection): void {
     const renderer = this.app?.renderer
     const layer = this.state && layerById(this.state, layerId)
-    const first = outline[0]
-    if (!renderer || !first || !layer || !this.state) return
+    if (!renderer || !selection || !layer || !this.state) return
 
     // The outline is where the marquee was drawn, in the document; the mask's pixels are its own.
     // Without the way back, a mask made from a selection on a moved layer hides the wrong region.
@@ -92,9 +92,7 @@ export abstract class CanvasPixels extends CanvasBrush {
     // so black hides and white reveals, exactly as painting into it by hand does.
     sheet.rect(0, 0, this.state.width, this.state.height)
     sheet.fill({ color: 0x000000 })
-    sheet.moveTo(first.x, first.y)
-    for (const point of outline.slice(1)) sheet.lineTo(point.x, point.y)
-    sheet.fill({ color: WHITE })
+    drawSelectionStencil(sheet, selection, WHITE)
 
     renderer.render({
       container: this.inSurfaceSpace(toSurface, sheet),
@@ -111,11 +109,11 @@ export abstract class CanvasPixels extends CanvasBrush {
    * the pointer moved between the command and the frame that built the surface.
    */
   protected drainPendingMask(layerId: string, mask: LayerSurface): void {
-    const outline = this.pendingMaskFills.get(layerId)
-    if (!outline) return
+    const selection = this.pendingMaskFills.get(layerId)
+    if (!selection) return
 
     this.pendingMaskFills.delete(layerId)
-    this.paintMask(layerId, mask, outline)
+    this.paintMask(layerId, mask, selection)
   }
 
   /**

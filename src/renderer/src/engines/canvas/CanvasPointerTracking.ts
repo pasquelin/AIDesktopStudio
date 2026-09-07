@@ -50,6 +50,9 @@ export abstract class CanvasPointerTracking extends CanvasPainting {
         return this.trackMove(gesture, point)
       case 'select':
         return this.trackSelection(gesture, point, constrained)
+      case 'smartSelectBox':
+        gesture.to = point
+        return
       case 'comment':
         if (gesture.points.length < GENERATION_COMMENT_OUTLINE_MAX) gesture.points.push(point)
         else gesture.points[gesture.points.length - 1] = point

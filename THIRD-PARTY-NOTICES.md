@@ -36,6 +36,7 @@ The terms below govern these components. They are not affected by the licence of
 | diffusers | 0.40.0 | Apache 2.0 License |
 | Diffusion360 | d20770f5ec0000a2aaa579a1209d11dc92ddb08a | Apache-2.0 |
 | dockview-react | 8.2.0 | MIT |
+| EfficientSAM-Ti | d53228e3f6dee607309453f54a22c40c2a10204c | Apache-2.0 |
 | einops | 0.8.2 | MIT |
 | electron | 44.2.0 | MIT |
 | electron-store | 11.0.2 | MIT |
@@ -44,6 +45,7 @@ The terms below govern these components. They are not affected by the licence of
 | fflate | 0.8.3 | MIT |
 | FFmpeg | 7.1.1 / 7.1.5 | GPL-3.0-or-later / LGPL-2.1-or-later |
 | filelock | 3.32.3 | MIT |
+| flatbuffers | 25.12.19 | Apache 2.0 |
 | fsspec | 2026.7.0 | BSD-3-Clause |
 | GenEx World Initializer | bdf9a02257c4c2728bcd90404d53687a9641e205 | CC-BY-4.0 |
 | h11 | 0.16.0 | MIT |
@@ -87,6 +89,7 @@ The terms below govern these components. They are not affected by the licence of
 | node-llama-cpp | 3.20.0 | MIT |
 | numpy | 2.5.2 | BSD-3-Clause AND 0BSD AND MIT AND Zlib AND CC0-1.0 |
 | ONNX Runtime | 1.27.0 | MIT |
+| onnxruntime | 1.29.0 | MIT License |
 | opentype.js | 2.0.0 | MIT |
 | packaging | 26.3 | Apache-2.0 OR BSD-2-Clause |
 | PanFusion | 451f4fe16113bff5a5d2269ed5ad43b0592e9a14 | other |
@@ -95,6 +98,7 @@ The terms below govern these components. They are not affected by the licence of
 | pillow | 12.3.0 | MIT-CMU |
 | pip | 26.2.1 | MIT |
 | pixi.js | 8.20.1 | MIT |
+| protobuf | 7.36.1 | 3-Clause BSD License |
 | psutil | 7.2.2 | BSD-3-Clause |
 | pydantic | 2.13.5 | MIT |
 | pydantic-core | 2.46.5 | MIT |
@@ -833,6 +837,25 @@ Licence: MIT
 ```
 See README.md of the package.
 ```
+## EfficientSAM-Ti
+
+Version: d53228e3f6dee607309453f54a22c40c2a10204c
+Licence: Apache-2.0
+
+Corresponding sources:
+
+```
+https://github.com/yformer/EfficientSAM
+```
+
+```
+Promptable image selection, Tiny ViT ONNX encoder and decoder, one of the models the studio generates with on this machine.
+It is NOT shipped with the application: it is fetched on request into the user data folder,
+against a published digest, and removed from the model manager.
+
+
+Licensed under Apache-2.0. Full terms: https://www.apache.org/licenses/LICENSE-2.0
+```
 ## einops
 
 Version: 0.8.2
@@ -1014,6 +1037,23 @@ Part of the embedded Auto Rig runtime. It IS shipped with the macOS ARM64 applic
 
 Licensed under MIT.
 Source: https://github.com/tox-dev/py-filelock
+```
+## flatbuffers
+
+Version: 25.12.19
+Licence: Apache 2.0
+
+Corresponding sources:
+
+```
+https://github.com/google/flatbuffers
+```
+
+```
+Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.
+
+Licensed under Apache 2.0.
+Source: https://github.com/google/flatbuffers
 ```
 ## fsspec
 
@@ -3215,6 +3255,23 @@ dynamic libraries the recognition addon loads.
 Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 Full terms: https://github.com/microsoft/onnxruntime/blob/main/LICENSE
 ```
+## onnxruntime
+
+Version: 1.29.0
+Licence: MIT License
+
+Corresponding sources:
+
+```
+https://onnxruntime.ai
+```
+
+```
+Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.
+
+Licensed under MIT License.
+Source: https://onnxruntime.ai
+```
 ## opentype.js
 
 Version: 2.0.0
@@ -3373,6 +3430,23 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
+```
+## protobuf
+
+Version: 7.36.1
+Licence: 3-Clause BSD License
+
+Corresponding sources:
+
+```
+https://developers.google.com/protocol-buffers/
+```
+
+```
+Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.
+
+Licensed under 3-Clause BSD License.
+Source: https://developers.google.com/protocol-buffers/
 ```
 ## psutil
 

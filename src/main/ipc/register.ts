@@ -17,6 +17,7 @@ import { registerAssistantHandlers } from '@main/assistant/handlers'
 import { registerMemoryHandlers } from '@main/memory/handlers'
 import { registerAiHandlers } from '@main/ai/handlers'
 import { registerAutoRigHandlers } from '@main/ai/autoRigHandlers'
+import { registerSmartSelectionHandlers } from '@main/ai/smartSelectionHandlers'
 import { registerDictationHandlers } from '@main/dictation/handlers'
 import { registerMediaHandlers } from '@main/media/handlers'
 import { registerMenuHandlers } from '@main/menu'
@@ -137,6 +138,7 @@ function registerCreativeIpc(
   registerMemoryHandlers({ host: services.memory, vectors: services.memoryVectors })
   registerAiHandlers({ manager: services.ai, addOwnModel: services.addOwnAiModel, running })
   registerAutoRigHandlers(services.autoRig, running)
+  registerSmartSelectionHandlers(services.smartSelection, running)
   registerDictationHandlers({
     session: services.dictation,
     openPrivacySettings: services.openMicrophoneSettings,

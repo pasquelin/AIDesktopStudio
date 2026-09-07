@@ -12,7 +12,17 @@ export type CanvasSelection =
   | { kind: 'rect'; rect: Rect }
   | { kind: 'ellipse'; rect: Rect }
   | { kind: 'lasso'; points: readonly Point[] }
+  | RasterSelection
   | null
+
+/** A pixel-accurate temporary selection in document coordinates. */
+export type RasterSelection = {
+  kind: 'raster'
+  bounds: Rect
+  width: number
+  height: number
+  alpha: Uint8Array
+}
 
 /** Which shape each mode of the region group draws. */
 export type SelectionShape = 'rect' | 'ellipse' | 'lasso'
@@ -44,8 +54,9 @@ export function extendLasso(selection: CanvasSelection, point: Point): CanvasSel
 export function selectionOutline(selection: CanvasSelection): Point[] {
   if (!selection) return []
   if (selection.kind === 'lasso') return [...selection.points]
+  if (selection.kind === 'raster') return rasterOutline(selection)
 
-  const { rect } = selection
+  const rect = selection.rect
   if (selection.kind === 'rect') {
     return [
       { x: rect.x, y: rect.y },
@@ -66,6 +77,85 @@ export function selectionOutline(selection: CanvasSelection): Point[] {
   })
 }
 
+function rasterOutline(selection: Extract<CanvasSelection, { kind: 'raster' }>): Point[] {
+  const { bounds, width, height } = selection
+  const horizontal = bounds.width / width
+  const vertical = bounds.height / height
+  const edges = rasterEdges(selection)
+
+  const first = edges.entries().next().value
+  if (!first) return []
+  const [start, point] = first
+  const [startX, startY] = start.split(':').map(Number)
+  if (startX === undefined || startY === undefined) return []
+  const outline = [{ x: bounds.x + startX * horizontal, y: bounds.y + startY * vertical }]
+  let at = point
+  edges.delete(start)
+  while (edges.size > 0) {
+    outline.push(at)
+    const x = Math.round((at.x - bounds.x) / horizontal)
+    const y = Math.round((at.y - bounds.y) / vertical)
+    const next = edges.get(rasterKey(x, y))
+    if (!next) break
+    edges.delete(rasterKey(x, y))
+    at = next
+  }
+  return outline
+}
+
+function rasterEdges(selection: RasterSelection): Map<string, Point> {
+  const edges = new Map<string, Point>()
+  for (let y = 0; y < selection.height; y += 1) {
+    for (let x = 0; x < selection.width; x += 1) {
+      addRasterEdges(edges, selection, x, y)
+    }
+  }
+  return edges
+}
+
+function addRasterEdges(
+  edges: Map<string, Point>,
+  selection: RasterSelection,
+  x: number,
+  y: number,
+): void {
+  if (!rasterOpaqueAt(selection, x, y)) return
+  if (!rasterOpaqueAt(selection, x, y - 1)) addRasterEdge(edges, selection, x, y, x + 1, y)
+  if (!rasterOpaqueAt(selection, x + 1, y)) addRasterEdge(edges, selection, x + 1, y, x + 1, y + 1)
+  if (!rasterOpaqueAt(selection, x, y + 1)) addRasterEdge(edges, selection, x + 1, y + 1, x, y + 1)
+  if (!rasterOpaqueAt(selection, x - 1, y)) addRasterEdge(edges, selection, x, y + 1, x, y)
+}
+
+function rasterOpaqueAt(selection: RasterSelection, x: number, y: number): boolean {
+  return (
+    x >= 0 &&
+    y >= 0 &&
+    x < selection.width &&
+    y < selection.height &&
+    (selection.alpha[y * selection.width + x] ?? 0) > 0
+  )
+}
+
+function addRasterEdge(
+  edges: Map<string, Point>,
+  selection: RasterSelection,
+  fromX: number,
+  fromY: number,
+  toX: number,
+  toY: number,
+): void {
+  const horizontal = selection.bounds.width / selection.width
+  const vertical = selection.bounds.height / selection.height
+  edges.set(rasterKey(fromX, fromY), {
+    x: selection.bounds.x + toX * horizontal,
+    y: selection.bounds.y + toY * vertical,
+  })
+}
+
+function rasterKey(x: number, y: number): string {
+  return `${x}:${y}`
+}
+
 /**
  * Whether a selection encloses nothing at all — a click that carved no region, or a lasso that
  * never moved. Left standing, such a selection is a stencil nothing gets through, and every
@@ -74,6 +164,7 @@ export function selectionOutline(selection: CanvasSelection): Point[] {
 export function isEmptySelection(selection: CanvasSelection): boolean {
   if (!selection) return false
   if (selection.kind === 'lasso') return selection.points.length < 3
+  if (selection.kind === 'raster') return !selection.alpha.some(alpha => alpha > 0)
 
   return selection.rect.width === 0 || selection.rect.height === 0
 }
@@ -81,6 +172,7 @@ export function isEmptySelection(selection: CanvasSelection): boolean {
 /** The box a selection fits in, which is what a brush stroke is clipped against first. */
 export function selectionBounds(selection: CanvasSelection): Rect | null {
   if (!selection) return null
+  if (selection.kind === 'raster') return selection.bounds
   if (selection.kind !== 'lasso') return selection.rect
 
   const xs = selection.points.map(point => point.x)
@@ -95,6 +187,8 @@ export function selectionBounds(selection: CanvasSelection): Rect | null {
 /** Whether a point falls inside. A lasso is closed on the fly: the last point joins the first. */
 export function selectionHolds(selection: CanvasSelection, point: Point): boolean {
   if (!selection) return true
+
+  if (selection.kind === 'raster') return rasterHolds(selection, point)
 
   if (selection.kind === 'rect') {
     const { rect } = selection
@@ -118,6 +212,17 @@ export function selectionHolds(selection: CanvasSelection, point: Point): boolea
   }
 
   return windsAround(selection.points, point)
+}
+
+function rasterHolds(selection: RasterSelection, point: Point): boolean {
+  const { bounds, width, height, alpha } = selection
+  if (width <= 0 || height <= 0 || bounds.width <= 0 || bounds.height <= 0) return false
+
+  const x = Math.floor(((point.x - bounds.x) / bounds.width) * width)
+  const y = Math.floor(((point.y - bounds.y) / bounds.height) * height)
+  if (x < 0 || y < 0 || x >= width || y >= height) return false
+
+  return (alpha[y * width + x] ?? 0) > 0
 }
 
 /**

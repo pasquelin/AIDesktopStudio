@@ -208,9 +208,10 @@ describe('the doors the engine opens', () => {
       'utf8',
     )
     const declared = Object.fromEntries(
-      [...doorsPy.matchAll(/^ {4}"(engine\/[a-z0-9]+)": "([a-z]+)",$/gm)].map(
-        ([, door, modality]) => [modality, door],
-      ),
+      [...doorsPy.matchAll(/^ {4}"(engine\/[a-z0-9]+)": "([a-z]+)",$/gm)]
+        .map(([, door, modality]) => [door, modality])
+        .filter(([, modality]) => LOCAL_MODALITIES.some(local => local === modality))
+        .map(([door, modality]) => [modality, door]),
     )
     const ours = Object.fromEntries(
       LOCAL_MODALITIES.filter(producesFile).map(modality => [modality, engineDoorOf(modality)]),

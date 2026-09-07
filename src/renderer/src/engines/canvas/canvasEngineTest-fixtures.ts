@@ -57,6 +57,7 @@ type Harness = {
   viewports: Viewport[]
   /** Every selection the engine carved out, in the order it published them. */
   selections: CanvasSelection[]
+  smartPrompts: ({ point: Point } | { box: Rect })[]
   /** Every caption the hand asked for: a layer to edit, or a box to open a fresh one in. */
   captions: ({ layerId: string } | { at: Point; box: Size | null })[]
   /** Every pull of a caption box's grip: the box it reached, and where its corner now sits. */
@@ -91,11 +92,10 @@ async function mounted(
   tool: CanvasTool = 'brush',
   addFace?: FaceRegistrar,
 ): Promise<Harness> {
-  const host = document.createElement('div')
-  document.body.appendChild(host)
-
+  const host = document.body.appendChild(document.createElement('div'))
   const viewports: Viewport[] = []
   const selections: CanvasSelection[] = []
+  const smartPrompts: Harness['smartPrompts'] = []
   const captions: Harness['captions'] = []
   const boxes: Harness['boxes'] = []
   const shapes: { at: Point; drawn: DrawnShape }[] = []
@@ -115,6 +115,7 @@ async function mounted(
       onPixelsDropped: patchId => dropped.push(patchId),
       onViewport: viewport => viewports.push(viewport),
       onSelection: selection => selections.push(selection),
+      onSmartSelect: prompt => smartPrompts.push(prompt),
       onComment: (at, outline) => comments.push({ at, ...(outline ? { outline } : {}) }),
       onText: asked => captions.push(asked),
       onTextBox: (layerId, box, at) => boxes.push({ layerId, box, at }),
@@ -146,6 +147,7 @@ async function mounted(
     host,
     viewports,
     selections,
+    smartPrompts,
     captions,
     boxes,
     shapes,
@@ -322,6 +324,7 @@ function silentOptions(): ConstructorParameters<typeof CanvasEngine>[0] {
     onPixelsDropped: nothing,
     onViewport: nothing,
     onSelection: nothing,
+    onSmartSelect: nothing,
     onComment: nothing,
     onCropFrame: nothing,
     onHost: nothing,

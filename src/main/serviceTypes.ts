@@ -54,6 +54,7 @@ import type { Updates } from './updater'
 import type { AiManager } from './ai/manager'
 import type { AskUser } from './project/documentDialogs'
 import type { AutoRigHost } from './ai/autoRigHost'
+import type { SmartSelectionHost } from './ai/smartSelectionHost'
 import type { MissionManager } from './mission/manager'
 import type { StudioEventBus } from './mission/eventBus'
 import type { ActionSearchService } from './actionIndex/actionSearchService'
@@ -147,6 +148,7 @@ export type Services = {
   /** Which AI serves each role, what the machine holds, and what may be installed. */
   ai: AiManager
   autoRig: AutoRigHost
+  smartSelection: SmartSelectionHost
   /** Rank 3's gesture, whole: a picker, a GGUF header, an entry. Rejects on a file it cannot read. */
   addOwnAiModel: (profile?: OwnModelProfile, watch?: TaskWatch) => Promise<AiOverview>
   /** Speaking instead of typing. Holds the engine, the model and the state of a session. */

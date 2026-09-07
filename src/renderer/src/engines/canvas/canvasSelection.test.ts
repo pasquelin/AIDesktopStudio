@@ -4,6 +4,7 @@ import {
   extendLasso,
   selectionBounds,
   selectionHolds,
+  selectionOutline,
   type CanvasSelection,
 } from './canvasSelection'
 
@@ -17,6 +18,13 @@ const LASSO: CanvasSelection = {
     { x: 100, y: 0 },
     { x: 0, y: 100 },
   ],
+}
+const RASTER: CanvasSelection = {
+  kind: 'raster',
+  bounds: { x: 10, y: 20, width: 2, height: 2 },
+  width: 2,
+  height: 2,
+  alpha: new Uint8Array([255, 0, 0, 255]),
 }
 
 describe('making a selection', () => {
@@ -55,8 +63,27 @@ describe('the box a selection fits in', () => {
     expect(selectionBounds(LASSO)).toEqual({ x: 0, y: 0, width: 100, height: 100 })
   })
 
+  it('keeps the document bounds carried by a raster selection', () => {
+    expect(selectionBounds(RASTER)).toEqual({ x: 10, y: 20, width: 2, height: 2 })
+  })
+
   it('is nothing at all when nothing is selected', () => {
     expect(selectionBounds(null)).toBeNull()
+  })
+})
+
+describe('the outline a selection shows', () => {
+  it('traces opaque raster pixels instead of falling back to their bounding ellipse', () => {
+    const raster: CanvasSelection = {
+      kind: 'raster',
+      bounds: { x: 10, y: 20, width: 3, height: 3 },
+      width: 3,
+      height: 3,
+      alpha: new Uint8Array([255, 0, 0, 255, 0, 0, 255, 255, 255]),
+    }
+
+    expect(selectionOutline(raster)).toContainEqual({ x: 10, y: 21 })
+    expect(selectionOutline(raster)).not.toContainEqual({ x: 13, y: 20 })
   })
 })
 
@@ -80,6 +107,13 @@ describe('what a selection holds', () => {
   it('closes a lasso on the fly rather than needing the hand to', () => {
     expect(selectionHolds(LASSO, { x: 10, y: 10 })).toBe(true)
     expect(selectionHolds(LASSO, { x: 90, y: 90 })).toBe(false)
+  })
+
+  it('holds only opaque pixels of a raster selection', () => {
+    expect(selectionHolds(RASTER, { x: 10, y: 20 })).toBe(true)
+    expect(selectionHolds(RASTER, { x: 11, y: 20 })).toBe(false)
+    expect(selectionHolds(RASTER, { x: 11, y: 21 })).toBe(true)
+    expect(selectionHolds(RASTER, { x: 12, y: 21 })).toBe(false)
   })
 
   it('holds nothing at all when a shape has no area', () => {
