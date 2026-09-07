@@ -16,8 +16,9 @@ export function createSmartSelectionHost(deps: {
   ensureLoaded: (modelId: string) => Promise<void>
   hold: (modelId: string) => () => void
   engine: () => Promise<PythonClient | null>
+  epoch: () => number | null
 }): SmartSelectionHost {
-  let encodedRevision: string | null = null
+  let encoded: { revision: string; epoch: number | null; engine: PythonClient } | null = null
   const queue = writeQueue()
   const run = async (
     request: SmartSelectionRequest,
@@ -31,13 +32,14 @@ export function createSmartSelectionHost(deps: {
       const engine = await deps.engine()
       if (!engine) throw new Error('the local AI engine is not answering')
       // The picture only touches the disk for an encoding the engine does not hold yet.
+      const epoch = deps.epoch()
       const encode = async (): Promise<void> => {
         folder ??= await mkdtemp(join(tmpdir(), 'ia-studio-selection-'))
         const image = join(folder, 'composite.png')
         await writeFile(image, request.png)
         await engine.job('selection.encode', { door: 'engine/selection', image }, { signal })
         signal.throwIfAborted()
-        encodedRevision = request.revision
+        encoded = { revision: request.revision, epoch, engine }
       }
       const decode = async (): Promise<unknown> => {
         const answer = await engine.job(
@@ -49,7 +51,12 @@ export function createSmartSelectionHost(deps: {
         return answer
       }
 
-      if (encodedRevision !== request.revision) await encode()
+      if (
+        encoded?.revision !== request.revision ||
+        encoded.epoch !== epoch ||
+        encoded.engine !== engine
+      )
+        await encode()
       try {
         return maskOf(await decode())
       } catch (error) {
@@ -57,7 +64,7 @@ export function createSmartSelectionHost(deps: {
         // taking the room — and its embedding went with it: only the studio still believed in
         // one. Encoded again rather than answered with a failure nobody can act on.
         if (!lostEmbedding(error)) throw error
-        encodedRevision = null
+        encoded = null
         await encode()
         return maskOf(await decode())
       }
@@ -66,6 +73,7 @@ export function createSmartSelectionHost(deps: {
       if (folder) await rm(folder, { recursive: true, force: true })
     }
   }
+
   return {
     run: (request, signal) => queue.next(() => run(request, signal)),
   }

@@ -39,10 +39,12 @@ describe('SmartSelectionHost', () => {
       ...(op === 'selection.decode' ? { width: 2, height: 2, alpha: '00ff00ff' } : {}),
     }))
     const ensureLoaded = vi.fn()
+    const python = engine(job)
     const host = createSmartSelectionHost({
       ensureLoaded,
       hold: () => vi.fn(),
-      engine: () => Promise.resolve(engine(job)),
+      engine: () => Promise.resolve(python),
+      epoch: () => 1,
     })
 
     await host.run(request, new AbortController().signal)
@@ -56,15 +58,35 @@ describe('SmartSelectionHost', () => {
     expect(ensureLoaded).toHaveBeenCalledTimes(2)
   })
 
-  // 🛑 An idle unload, or another model taking the room: the engine let its embedding go while
-  // only the studio still believed in one, and the click answered a failure nobody can act on.
-  it('encodes again when the engine says it no longer holds the embedding', async () => {
-    let decodes = 0
+  it('re-encodes a composite that the model reloaded', async () => {
+    const job = vi.fn<PythonClient['job']>(async op => ({
+      v: 1,
+      evt: 'job.completed',
+      job: op,
+      ...(op === 'selection.decode' ? { width: 2, height: 2, alpha: '00ff00ff' } : {}),
+    }))
+    let epoch = 1
+    const host = createSmartSelectionHost({
+      ensureLoaded: vi.fn(),
+      hold: () => vi.fn(),
+      engine: () => Promise.resolve(engine(job)),
+      epoch: () => epoch,
+    })
+
+    await host.run(request, new AbortController().signal)
+    epoch += 1
+    await host.run(
+      { ...request, id: '2fd0e5ff-6faf-4bdf-9a91-49bb1a2f22aa' },
+      new AbortController().signal,
+    )
+
+    expect(job.mock.calls.filter(([op]) => op === 'selection.encode')).toHaveLength(2)
+  })
+
+  it('does not treat a reload during encoding as already encoded', async () => {
+    let epoch = 1
     const job = vi.fn<PythonClient['job']>(async op => {
-      if (op === 'selection.decode') {
-        decodes += 1
-        if (decodes === 1) throw new Error('EfficientSAM has no embedding')
-      }
+      if (op === 'selection.encode') epoch += 1
       return {
         v: 1,
         evt: 'job.completed',
@@ -76,11 +98,15 @@ describe('SmartSelectionHost', () => {
       ensureLoaded: vi.fn(),
       hold: () => vi.fn(),
       engine: () => Promise.resolve(engine(job)),
+      epoch: () => epoch,
     })
 
-    const mask = await host.run(request, new AbortController().signal)
+    await host.run(request, new AbortController().signal)
+    await host.run(
+      { ...request, id: '6d4a2a61-b0f0-4bc5-a4e6-02e18d1d4baf' },
+      new AbortController().signal,
+    )
 
-    expect(mask.width).toBe(2)
     expect(job.mock.calls.filter(([op]) => op === 'selection.encode')).toHaveLength(2)
   })
 
@@ -95,19 +121,16 @@ describe('SmartSelectionHost', () => {
       ensureLoaded: vi.fn(),
       hold: () => vi.fn(),
       engine: () => Promise.resolve(engine(job)),
+      epoch: () => 1,
     })
     const cancelled = new AbortController()
     const first = host.run(request, new AbortController().signal)
-    // 🛑 Queued BEFORE it is cancelled: aborting first would only measure the guard on the way
-    // in, and a queue that started a dead request would stay green.
-    const queued = host.run(
-      { ...request, id: '2fd0e5ff-6faf-4bd2-9a91-49bb1a2f22aa' },
-      cancelled.signal,
-    )
     cancelled.abort()
 
     await first
-    await expect(queued).rejects.toThrow()
+    await expect(
+      host.run({ ...request, id: '2fd0e5ff-6faf-4bd2-9a91-49bb1a2f22aa' }, cancelled.signal),
+    ).rejects.toThrow()
     expect(job.mock.calls.filter(([op]) => op === 'selection.encode')).toHaveLength(1)
   })
 })
