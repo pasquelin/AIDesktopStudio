@@ -79,6 +79,22 @@ export function transformOf(object: Object3D): Transform {
   }
 }
 
+/** Whether the object already stands exactly there — `applyTransform` writes these three verbatim. */
+export function standsAt(object: Object3D, transform: Transform): boolean {
+  const { position, rotation, scale } = transform
+  return (
+    object.position.x === position.x &&
+    object.position.y === position.y &&
+    object.position.z === position.z &&
+    object.rotation.x === rotation.x &&
+    object.rotation.y === rotation.y &&
+    object.rotation.z === rotation.z &&
+    object.scale.x === scale.x &&
+    object.scale.y === scale.y &&
+    object.scale.z === scale.z
+  )
+}
+
 /** The other way round: a transform written into an object. Three sites had it copied out. */
 export function applyTransform(object: Object3D, transform: Transform): void {
   const { position, rotation, scale } = transform

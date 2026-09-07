@@ -44,9 +44,12 @@ export type PropertyField = {
   fallback?: FieldValue
 }
 
+/** What a panel can draw — `listFields` skips the rest: a ribbon's rail is edited on the shape. */
+type EditableKeys<T> = { [K in keyof T]-?: T[K] extends FieldValue ? K : never }[keyof T]
+
 type SpecsOf<D extends { kind: string }> = {
   [K in D['kind']]: {
-    [F in Exclude<keyof Extract<D, { kind: K }>, 'kind'>]: PropertySpec
+    [F in Exclude<EditableKeys<Extract<D, { kind: K }>>, 'kind'>]: PropertySpec
   }
 }
 
@@ -78,6 +81,15 @@ export const GEOMETRY_SPECS: SpecsOf<GeometryDescriptor> = {
   lathe: { segments: RING_SEGMENTS },
   octahedron: { radius: SIZE },
   plane: { width: SIZE, height: SIZE },
+  ribbon: {
+    width: SIZE,
+    // A finer step than a size's: a kerb is two decimetres tall, and a painted stripe less.
+    height: { control: 'number', min: 0.001, step: 0.05 },
+    // A band is cut along its whole LENGTH, where every other count goes round an axis: a lap of
+    // six hundred metres wants three hundred and sixty, and a hundred and twenty-eight is a
+    // 4,7 m step — 20° of turn in the hairpin.
+    segments: { control: 'number', min: 2, max: 512, step: 1 },
+  },
   ring: {
     innerRadius: { control: 'number', min: 0, step: 0.1 },
     outerRadius: SIZE,

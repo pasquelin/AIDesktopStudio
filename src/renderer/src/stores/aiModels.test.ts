@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest'
 import type { AiOverview } from '@shared/domain/aiOverview'
 import { installFakeBridge } from '@/services/fakeBridge'
 import { useAiModels } from './aiModels'
+import { useTasks } from './tasks'
 
 const overview = (over: Partial<AiOverview> = {}): AiOverview => ({
   roles: [],
@@ -85,4 +86,30 @@ describe('the AI manager store', () => {
 
     expect(useAiModels.getState().overview?.projectPath).toBe('/held')
   })
+})
+
+it('cancels a supplied model verification without accepting its late result', async () => {
+  let resolve!: (value: AiOverview) => void
+  const addOwnModel = vi.fn(
+    () =>
+      new Promise<AiOverview>(done => {
+        resolve = done
+      }),
+  )
+  const cancel = vi.fn(() => Promise.resolve(true))
+  installFakeBridge({ ai: { addOwnModel }, tasks: { cancel } })
+  useAiModels.setState({ overview: overview({ projectPath: '/held' }) })
+  const pending = useAiModels.getState().addOwnAiModel('motion')
+  const task = Object.values(useTasks.getState().running)[0]
+  expect(task).toBeDefined()
+  if (!task) throw new Error('verification task missing')
+  expect(addOwnModel).toHaveBeenCalledWith('motion', task.id)
+  useTasks.getState().cancelTask(task.id)
+  await pending
+  expect(cancel).toHaveBeenCalledWith(task.id)
+  expect(useAiModels.getState().ownModelBusy).toBe(false)
+  expect(useAiModels.getState().ownModelFailure).toBeNull()
+  resolve(overview({ projectPath: '/late' }))
+  await Promise.resolve()
+  expect(useAiModels.getState().overview?.projectPath).toBe('/held')
 })

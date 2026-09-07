@@ -20,6 +20,8 @@ describe('gpu stats', () => {
       frames: 0,
       geometries: 0,
       textures: 0,
+      renderMs: 0,
+      gpuFrameMs: null,
     })
   })
 
@@ -46,9 +48,9 @@ describe('gpu stats', () => {
   it('replaces the previous frame rather than summing it, and counts frames upwards', () => {
     const stats = emptyGpuStats()
 
-    recordFrame(counters({ calls: 40, triangles: 900 }), stats)
-    recordFrame(counters({ calls: 3, triangles: 12 }), stats)
+    recordFrame(counters({ calls: 40, triangles: 900 }), stats, 4)
+    recordFrame(counters({ calls: 3, triangles: 12 }), stats, 2)
 
-    expect(stats).toMatchObject({ calls: 3, triangles: 12, frames: 2 })
+    expect(stats).toMatchObject({ calls: 3, triangles: 12, frames: 2, renderMs: 2 })
   })
 })

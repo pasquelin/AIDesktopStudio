@@ -1,15 +1,8 @@
 import { aiRoleId } from '@shared/domain/aiRole'
-import { renderHook } from '@testing-library/react'
 import { beforeEach, describe, expect, it } from 'vitest'
+import { shownIn, type OpenByZone, type Slot, type Zone } from '@pasquelin/panels'
 import { DEFAULT_SETTINGS } from '@shared/domain/settings'
-import {
-  HOME_SURFACE,
-  TOOL_PLACEMENTS,
-  type ToolId,
-  type ToolSlot,
-  type ToolSurface,
-  type ToolZone,
-} from '@shared/domain/tool'
+import { HOME_SURFACE, TOOL_PLACEMENTS, type ToolId, type ToolSurface } from '@shared/domain/tool'
 import { WORKSPACE_IDS, type WorkspaceId } from '@shared/domain/workspace'
 import { useModels } from '@/stores/models'
 import { useSettings } from '@/stores/settings'
@@ -17,41 +10,33 @@ import { chooseModels } from '@/stores/models-fixtures'
 import { useGit } from '@/stores/git'
 import { trackByGit } from '@/stores/git-fixtures'
 import { useProject } from '@/stores/project'
-import { useAvailableTools } from '@/hooks/useAvailableTools'
-import { shownTools, toolIcon, toolsAvailableIn, TOOLS, type ToolState } from './toolRegistry'
+import { panelsStore } from '@/stores/panels'
+import { chassisFor } from '@/stores/panels-fixtures'
+import { IN_CENTRE, IN_WORKSPACE, NO_CLOUD, NO_GIT, NO_PROJECT } from './toolRegistry-fixtures'
+import { toolIcon, toolsOffered, toolStateOf, TOOLS, type ToolState } from './toolRegistry'
 
 /**
- * One half, through the resolver every reader uses: `shownTool` is private, precisely so that
- * nothing can ask about a half without the other one being able to silence it.
+ * What a half DRAWS, through the chassis the shell hands these panels to. The studio's own
+ * answer is which panel a surface declares first for a half; resolving one is the library's.
  */
-const shown = (
+function shown(
   tool: ToolId | null | undefined,
-  zone: ToolZone,
-  slot: ToolSlot,
+  zone: Zone,
+  slot: Slot,
   surface: ToolSurface,
   state: ToolState,
-): ToolId | null => shownTools({ [slot]: tool }, zone, surface, state)[slot]
+): ToolId | undefined {
+  const open: OpenByZone<ToolId> = tool === undefined ? {} : { [zone]: { [slot]: tool } }
+  chassisFor(surface, open, state)
+  return shownIn(panelsStore.getState(), zone)[slot]
+}
 
-/** What a workspace answers to: a project is always open in one, by definition. */
-const IN_WORKSPACE: ToolState = {
-  hasProject: true,
-  hasGit: true,
-  hasCloud: true,
-  centreTaken: true,
+/** The panels a surface offers in that zone, in the order the rail stacks them. */
+function idsOf(zone: Zone, surface: WorkspaceId | typeof HOME_SURFACE): string[] {
+  return toolsOffered(surface, toolStateOf())
+    .filter(tool => tool.zone === zone)
+    .map(tool => tool.id)
 }
-/** The home before anything has been opened, which is where a launch starts. */
-const NO_PROJECT: ToolState = {
-  hasProject: false,
-  hasGit: false,
-  hasCloud: true,
-  centreTaken: true,
-}
-/** A project open in a folder git is not tracking, which is every folder until `git init`. */
-const NO_GIT: ToolState = { hasProject: true, hasGit: false, hasCloud: true, centreTaken: true }
-/** No key opening onto a remote library, which is every launch before one is entered. */
-const NO_CLOUD: ToolState = { hasProject: true, hasGit: true, hasCloud: false, centreTaken: true }
-/** A space with no document open: the empty centre holds the conversation, so no panel may. */
-const IN_CENTRE: ToolState = { ...IN_WORKSPACE, centreTaken: false }
 
 /** A project open, which is what the home's Explorer answers to. */
 const openProject = (): void => {
@@ -61,11 +46,6 @@ const openProject = (): void => {
       manifest: { version: 1, createdAt: '', updatedAt: '' },
     },
   })
-}
-
-function idsOf(zone: ToolZone, workspace: WorkspaceId | typeof HOME_SURFACE): string[] {
-  const { result } = renderHook(() => useAvailableTools(zone, workspace))
-  return result.current.map(tool => tool.id)
 }
 
 beforeEach(() => {
@@ -93,8 +73,7 @@ describe('the generator', () => {
   })
 
   // Named for what it checks: a section with no model still shows every panel of its right
-  // column — the two state rules answer for the generator and for the home's Explorer, and for
-  // nothing else.
+  // column — the two state rules answer for the generator and for the home's Explorer.
   it('leaves the right column alone — no model removes anything there', () => {
     expect(idsOf('right', 'materials')).toEqual(['assistant', 'inspector'])
   })
@@ -103,8 +82,7 @@ describe('the generator', () => {
 /**
  * The one panel the HOME offers conditionally. It reads a project folder, and the home is where
  * one is opened: standing there with none, it would say « no project open » beside the very
- * shelf that opens one. Every space keeps it whatever happens — a space IS a project being
- * edited.
+ * shelf that opens one. Every space keeps it — a space IS a project being edited.
  */
 describe('the explorer on the home', () => {
   it('is absent while no project is open, and there the moment one is', () => {
@@ -123,7 +101,7 @@ describe('the explorer on the home', () => {
   // The half falls back to what the surface does put there — and the home has no Models panel
   // to fall back ON, which is what the workspaces' own fallback would have handed it.
   it('leaves its half empty rather than standing something else in it', () => {
-    expect(shown('explorer', 'left', 'secondary', HOME_SURFACE, NO_PROJECT)).toBeNull()
+    expect(shown('explorer', 'left', 'secondary', HOME_SURFACE, NO_PROJECT)).toBeUndefined()
     expect(shown('explorer', 'left', 'secondary', HOME_SURFACE, IN_WORKSPACE)).toBe('explorer')
   })
 })
@@ -165,8 +143,8 @@ describe('the history over a folder git is not tracking', () => {
   // The band would otherwise open on it by itself: it is the only panel that half declares in
   // half the sections, so an untouched layout stood a strip of nothing across the window.
   it('leaves the band empty rather than opening on itself', () => {
-    expect(shown(null, 'bottomRight', 'primary', 'image', NO_GIT)).toBeNull()
-    expect(shown('history', 'bottomRight', 'primary', 'image', NO_GIT)).toBeNull()
+    expect(shown(null, 'bottomRight', 'primary', 'image', NO_GIT)).toBeUndefined()
+    expect(shown('history', 'bottomRight', 'primary', 'image', NO_GIT)).toBeUndefined()
   })
 
   // Where the montage shares the half, it is what the band falls back to — the same substitution
@@ -176,13 +154,15 @@ describe('the history over a folder git is not tracking', () => {
   })
 })
 
-// A half nobody has chosen for holds `null`, and each section answers it on its own: what is
-// open is stored once for all six, while the panel that comes first differs in each.
+/**
+ * A half nobody has chosen for holds `null`, and each section answers it on its own: what is
+ * open is stored once for all six, while the panel that comes first differs in each. WHICH panel
+ * that is, is the studio's answer; that a `null` half resolves at all is the chassis' own.
+ */
 describe('a half open on no panel in particular', () => {
   /**
    * The assistant in every space, since it is declared first in that half: an untouched right
-   * column is the studio waiting to be talked to, whatever the space and whatever else the half
-   * could have shown.
+   * column is the studio waiting to be talked to, whatever the space.
    */
   it('shows the assistant, which every section declares first in the upper right', () => {
     for (const workspace of WORKSPACE_IDS) {
@@ -197,9 +177,9 @@ describe('a half open on no panel in particular', () => {
     expect(shown(null, 'right', 'primary', '3d', IN_CENTRE)).toBe('scene')
     // Neither Skyboxes nor Materials declares anything in that half any more: what a sky is, and
     // what a material is made of, are sections of the inspector.
-    expect(shown(null, 'right', 'primary', 'skyboxes', IN_CENTRE)).toBeNull()
-    expect(shown(null, 'right', 'primary', 'video', IN_CENTRE)).toBeNull()
-    expect(shown(null, 'right', 'primary', 'audio', IN_CENTRE)).toBeNull()
+    expect(shown(null, 'right', 'primary', 'skyboxes', IN_CENTRE)).toBeUndefined()
+    expect(shown(null, 'right', 'primary', 'video', IN_CENTRE)).toBeUndefined()
+    expect(shown(null, 'right', 'primary', 'audio', IN_CENTRE)).toBeUndefined()
   })
 
   it('reads the band as the history or the montage, per section', () => {
@@ -207,24 +187,22 @@ describe('a half open on no panel in particular', () => {
     expect(shown(null, 'bottomRight', 'primary', 'audio', IN_WORKSPACE)).toBe('timeline')
   })
 
-  it('opens on the generator, which the half declares first', () => {
+  it('opens the left column on the generator, and the half under it on the Explorer', () => {
     expect(shown(null, 'left', 'primary', 'image', IN_WORKSPACE)).toBe('generator')
-    expect(shown(null, 'left', 'primary', 'image', IN_WORKSPACE)).toBe('generator')
+    expect(shown(null, 'left', 'secondary', 'image', IN_WORKSPACE)).toBe('explorer')
   })
 
   // The distinction the store draws: an absent key is a closed half, `null` an open one. Reading
   // both as "nothing" would close every half nobody has clicked.
   it('is not a closed half, which shows nothing at all', () => {
-    expect(shown(undefined, 'right', 'primary', 'image', IN_WORKSPACE)).toBeNull()
+    expect(shown(undefined, 'right', 'primary', 'image', IN_WORKSPACE)).toBeUndefined()
   })
 
   it('shows nothing where the section fills no such half', () => {
-    expect(shown(null, 'bottomRight', 'secondary', 'image', IN_WORKSPACE)).toBeNull()
-  })
-
-  // The lower half of the left column, which the Explorer took over.
-  it('opens the lower left on the first panel that half declares', () => {
-    expect(shown(null, 'left', 'secondary', 'image', IN_WORKSPACE)).toBe('explorer')
+    expect(shown(null, 'bottomRight', 'secondary', 'image', IN_WORKSPACE)).toBeUndefined()
+    // Named, too, and not only left unnamed: a band is read across its width, so a layout from
+    // before 17 August still naming the shelf in its second half must draw no phantom there.
+    expect(shown('assets', 'bottomRight', 'secondary', 'image', IN_WORKSPACE)).toBeUndefined()
   })
 })
 
@@ -236,10 +214,6 @@ describe('what a half of a zone shows', () => {
   /**
    * What the user opened is a zone, and it stays that zone across sections: the band holds the
    * montage in Video and the history everywhere else, neither reopened by hand on every switch.
-   *
-   * `assets` is the example on purpose — it is what a layout stored before 17 August still names
-   * in that half, and it no longer sits there in any section. The band falls back rather than
-   * standing empty, which is what keeps such a layout readable without a migration.
    */
   it('shows what this section puts there when the tool it holds sits elsewhere', () => {
     expect(shown('assets', 'bottomRight', 'primary', 'video', IN_WORKSPACE)).toBe('timeline')
@@ -258,7 +232,7 @@ describe('what a half of a zone shows', () => {
    */
   it('keeps the remote browser out of a studio holding no key', () => {
     expect(shown('assets', 'left', 'primary', 'image', NO_CLOUD)).toBe('generator')
-    expect(toolsAvailableIn('left', 'image', NO_CLOUD).map(tool => tool.id)).not.toContain('assets')
+    expect(toolsOffered('image', NO_CLOUD).map(tool => tool.id)).not.toContain('assets')
   })
 
   it('substitutes within the half, never across the separator', () => {
@@ -266,30 +240,12 @@ describe('what a half of a zone shows', () => {
     expect(shown('layers', 'right', 'secondary', 'image', IN_WORKSPACE)).toBe('inspector')
   })
 
-  it('answers null for a half this section does not fill', () => {
-    // A band is read across its width, so it has no second half for anything to substitute into.
-    expect(shown('assets', 'bottomRight', 'secondary', 'image', IN_WORKSPACE)).toBeNull()
-  })
-
-  it('opens on the generator, whatever the half was last showing', () => {
-    expect(shown('inspector', 'left', 'primary', 'image', IN_WORKSPACE)).toBe('generator')
-  })
-
   // Where several tools share a half, the substitute is the first the registry declares. The
   // order of `TOOL_PLACEMENTS` is the choice, so it is spelled out here rather than left to
   // whoever reorders that table next.
   it('substitutes the first tool the half declares when several share it', () => {
     expect(shown('layers', 'right', 'primary', '3d', IN_CENTRE)).toBe('scene')
-    // The other half several tools share, so the rule does not hang on the 3D column alone.
-    expect(shown('layers', 'left', 'primary', 'image', IN_WORKSPACE)).toBe('generator')
-  })
-
-  it('falls back to the models panel where the generator has no model', () => {
-    expect(shown('generator', 'left', 'primary', 'image', IN_WORKSPACE)).toBe('generator')
-  })
-
-  it('shows the generator again as soon as one is there', () => {
-    expect(shown('generator', 'left', 'primary', 'image', IN_WORKSPACE)).toBe('generator')
+    expect(shown('inspector', 'left', 'primary', 'image', IN_WORKSPACE)).toBe('generator')
   })
 })
 
@@ -300,14 +256,12 @@ describe('the glyphs of the rail', () => {
    * a rail, but a rail one reads twice starts exactly there.
    */
   it('gives every panel a glyph of its own', () => {
-    const ids = TOOL_PLACEMENTS.map(placement => placement.id)
     const byIcon = new Map<string, ToolId>()
 
-    for (const id of ids) {
-      const icon = toolIcon(id)
-      const held = byIcon.get(icon)
+    for (const { id } of TOOL_PLACEMENTS) {
+      const held = byIcon.get(toolIcon(id))
       expect(held ?? id).toBe(id)
-      byIcon.set(icon, id)
+      byIcon.set(toolIcon(id), id)
     }
   })
 
@@ -318,27 +272,31 @@ describe('the glyphs of the rail', () => {
 
 /**
  * One half can silence the other, and only this way round: a panel declaring `solo` takes its
- * zone WHOLE. Resolved for both halves at once because each reader — the rail, the frame,
- * `revealTool` — would otherwise have to hold the rule itself, and two of the three would
- * contradict the third.
+ * zone WHOLE. That the chassis honours it is its own suite's business — what is measured here is
+ * that the studio still DECLARES it, on the panel it means to.
  */
 describe('a zone whose first half takes it whole', () => {
   it('draws nothing in the other half', () => {
-    expect(
-      shownTools({ primary: null, secondary: 'inspector' }, 'right', 'image', IN_WORKSPACE),
-    ).toEqual({ primary: 'assistant', secondary: null })
+    chassisFor('image', { right: { primary: null, secondary: 'inspector' } }, IN_WORKSPACE)
+
+    expect(shownIn(panelsStore.getState(), 'right')).toEqual({ primary: 'assistant' })
   })
 
   // The stored half is untouched: what silences it is a reading, so the inspector is back the
   // moment the assistant is not what the column draws.
   it('gives it back once the whole-zone panel is not the one drawn', () => {
-    expect(
-      shownTools({ primary: null, secondary: 'inspector' }, 'right', 'image', IN_CENTRE),
-    ).toEqual({ primary: 'layers', secondary: 'inspector' })
+    chassisFor('image', { right: { primary: null, secondary: 'inspector' } }, IN_CENTRE)
+
+    expect(shownIn(panelsStore.getState(), 'right')).toEqual({
+      primary: 'layers',
+      secondary: 'inspector',
+    })
   })
 
   it('leaves a zone alone where nothing takes it whole', () => {
-    expect(shownTools({ primary: null, secondary: null }, 'left', 'image', IN_WORKSPACE)).toEqual({
+    chassisFor('image', { left: { primary: null, secondary: null } }, IN_WORKSPACE)
+
+    expect(shownIn(panelsStore.getState(), 'left')).toEqual({
       primary: 'generator',
       secondary: 'explorer',
     })

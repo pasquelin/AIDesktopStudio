@@ -30,6 +30,8 @@ export type CanvasView = {
   rulers: boolean
   guides: boolean
   snap: boolean
+  /** The pixel-art grid. Drawn only on a document that is on one — see `CanvasState.pixelCell`. */
+  grid: boolean
 }
 
 export const DEFAULT_VIEW: CanvasView = {
@@ -37,6 +39,7 @@ export const DEFAULT_VIEW: CanvasView = {
   rulers: true,
   guides: true,
   snap: true,
+  grid: true,
 }
 
 export function sameViewport(a: Viewport, b: Viewport): boolean {
@@ -55,6 +58,27 @@ export function clampCanvasScale(scale: number): number {
  */
 export function crisp(value: number): number {
   return Math.round(value) + 0.5
+}
+
+/**
+ * The origin on whole DEVICE pixels: at ×8 a fractional one makes nearest-sampled blocks of 7 and
+ * 9. For what is shown, never what is stored — a pan would accumulate its roundings.
+ */
+export function onDevicePixels(viewport: Viewport, ratio: number): Viewport {
+  return {
+    ...viewport,
+    x: Math.round(viewport.x * ratio) / ratio,
+    y: Math.round(viewport.y * ratio) / ratio,
+  }
+}
+
+/**
+ * The same convention on a DEVICE pixel, for a hairline one device pixel wide. The world's origin
+ * is snapped there (`onDevicePixels`), so a line rounded in CSS pixels lands BESIDE the block it
+ * marks rather than on it — on half the pan positions of a retina screen.
+ */
+export function crispOn(value: number, resolution: number): number {
+  return (Math.round(value * resolution) + 0.5) / resolution
 }
 
 export function toScreen(viewport: Viewport, point: Point): Point {
@@ -76,27 +100,28 @@ export function zoomCanvasAt(viewport: Viewport, scale: number, anchor: Point): 
 }
 
 /**
- * The whole document visible and centred. Never magnifies past 1: fitting is not upscaling.
+ * The whole document visible and centred — never magnified, unless `integral`, where it lands on
+ * the largest whole stop that fits: a 64² sprite fitted at 1 is a postage stamp in a panel.
  *
  * `inset` is what the chrome eats off the top and left — the ruler bands. Without it a document
  * barely smaller than the panel is centred with its first rows under an opaque band, where they
  * cannot be seen and cannot be painted.
  */
-export function fitTo(document: Size, host: Size, inset: number = 0): Viewport {
+export function fitTo(document: Size, host: Size, inset: number = 0, integral = false): Viewport {
   const width = Math.max(1, host.width - inset - FIT_PADDING * 2)
   const height = Math.max(1, host.height - inset - FIT_PADDING * 2)
-  const scale = clampCanvasScale(
-    Math.min(
-      1,
-      Math.min(width / Math.max(1, document.width), height / Math.max(1, document.height)),
-    ),
-  )
-  return centerOn(document, host, scale, inset)
+  const room = Math.min(width / Math.max(1, document.width), height / Math.max(1, document.height))
+  // The tolerance for the same reason `EPSILON` exists: `room` comes out of two divisions, and a
+  // hair under 8 would floor to 6 — a whole stop wrong.
+  const fitted = integral
+    ? (PIXEL_ZOOM_STOPS.findLast(stop => stop <= room + EPSILON) ?? room)
+    : Math.min(1, room)
+  return centerOn(document, host, clampCanvasScale(fitted), inset)
 }
 
 /**
- * A picture laid inside a box, centred, shrunk to fit but never magnified — the same rule as
- * `fitTo`, in document units rather than screen ones. Magnifying an imported picture to fill the
+ * A picture laid inside a box, centred, shrunk to fit but never magnified — the rule `fitTo`
+ * keeps for a photograph, in document units rather than screen ones. Magnifying an imported picture to fill the
  * canvas would blur it on arrival, with no way back to its own pixels.
  */
 export function containIn(source: Size, box: Size): Rect {
@@ -135,15 +160,64 @@ const ZOOM_STOPS: readonly number[] = [
   8, 12, 16, 24, 32, 48, 64,
 ]
 
+/**
+ * The stops a pixel grid walks: a whole number of screen pixels per document one, or an exact
+ * 1/2ⁿ. WRITTEN OUT, not filtered — `0.02` and `0.05` invert to 50 and 20, whole and unwanted,
+ * and 1/32 is not on the ordinary ladder at all. It ends on the bounds, as `ZOOM_STOPS` does.
+ */
+const PIXEL_ZOOM_STOPS: readonly number[] = [
+  0.03125, 0.0625, 0.125, 0.25, 0.5, 1, 2, 3, 4, 5, 6, 8, 12, 16, 24, 32, 48, 64,
+]
+
 /** A hair of tolerance, or a scale of 0.9999999 walks up to the stop it already sits on. */
 const EPSILON = 1e-6
 
-export function nextZoom(scale: number): number {
-  return ZOOM_STOPS.find(stop => stop > scale + EPSILON) ?? CANVAS_MAX_SCALE
+/** `integral` walks the pixel ladder instead — additive, so no existing caller moves. */
+export function nextZoom(scale: number, integral = false): number {
+  const stops = integral ? PIXEL_ZOOM_STOPS : ZOOM_STOPS
+  // The ladder's own top, not the canvas bound: a ladder that ended elsewhere would put a step
+  // off itself, and the next step back would jump.
+  return stops.find(stop => stop > scale + EPSILON) ?? stops.at(-1) ?? CANVAS_MAX_SCALE
 }
 
-export function previousZoom(scale: number): number {
-  return ZOOM_STOPS.findLast(stop => stop < scale - EPSILON) ?? CANVAS_MIN_SCALE
+export function previousZoom(scale: number, integral = false): number {
+  const stops = integral ? PIXEL_ZOOM_STOPS : ZOOM_STOPS
+  return stops.findLast(stop => stop < scale - EPSILON) ?? stops[0] ?? CANVAS_MIN_SCALE
+}
+
+/**
+ * How far a wheel travels before a grid moves one stop. Half a detent, which reports about 100
+ * pixels of `deltaY` — measured in `engines/viewport/dolly.ts`, and the same number serves both.
+ */
+const WHEEL_NOTCH = 50
+
+/**
+ * One wheel event against the pixel ladder. Quantising the exponential result gives a DEAD
+ * wheel — a small notch lands back on the stop it left — so travel accumulates in `debt`.
+ *
+ * The REMAINDER is carried, and a burst spends every stop it paid for: Chromium coalesces a fast
+ * pinch into one event, and dropping what a stop did not consume made the zoom rate depend on how
+ * the browser chunked the gesture rather than on how far the hand went. Aseprite's shape.
+ */
+export function wheelStep(
+  scale: number,
+  debt: number,
+  deltaY: number,
+): { scale: number; debt: number } {
+  // A `deltaY` of zero is a sideways trackpad drift, not a notch: it must not clear what a pinch
+  // has accumulated, which `Math.sign(0)` would.
+  if (deltaY === 0) return { scale, debt }
+
+  // Turned back: a trackpad's return swing would otherwise be swallowed by what it undoes.
+  const travelled = (Math.sign(deltaY) === Math.sign(debt) ? debt : 0) + deltaY
+  const stops = Math.trunc(travelled / WHEEL_NOTCH)
+  if (stops === 0) return { scale, debt: travelled }
+
+  let next = scale
+  for (let step = 0; step < Math.abs(stops); step += 1) {
+    next = stops < 0 ? nextZoom(next, true) : previousZoom(next, true)
+  }
+  return { scale: next, debt: travelled % WHEEL_NOTCH }
 }
 
 /**

@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { createElement } from 'react'
 import { useTranslation } from 'react-i18next'
 import { resetTo } from '@/helpers/resetTo'
 import { ColorField } from '@/components/ColorField'
@@ -12,81 +13,47 @@ import { PictureField } from './PictureField'
 import type { GestureProps } from '@/components/styles'
 import { isVector3 } from '@shared/domain/scene'
 import type { FieldValue, PropertyField } from '@/engines/scene/propertyFields'
-
 export type PropertyControlProps = {
   field: PropertyField
   label: string
   onChange: (value: FieldValue) => void
   gesture: GestureProps
-  /** What the section is called, in code. The field's own name completes it. */
   section: string
-  /** A button acting on the value, drawn before the reset — the keyframe diamond. */
   action?: ReactNode
 }
 
-/**
- * The control a field is rendered with. Chosen from the value's own shape, refined by the spec
- * — never from the name of a shape: a panel with a branch per primitive is the hand-written
- * form invariant 5 forbids.
- *
- * A field no table describes still renders, bare rather than dropped.
- */
-export function PropertyControl({
-  field,
-  label,
-  onChange,
-  gesture,
-  section,
-  action,
-}: PropertyControlProps) {
-  const { t } = useTranslation()
-  const { value, spec, fallback } = field
-  // `field.name` is the descriptor's own key — never translated, which is exactly what a handle
-  // must be. One line here names every parameter of every primitive, light and lens.
-  const scId = `${section}.${field.name}`
+type ControlContext = PropertyControlProps & {
+  scId: string
+  onReset: (() => void) | undefined
+  t: ReturnType<typeof useTranslation>['t']
+}
 
-  // A descriptor with no factory leaves the button inert rather than lying about a default.
-  const onReset = resetTo(value, fallback, onChange)
+function booleanControl({ field, label, onChange, scId, action, onReset }: ControlContext) {
+  if (typeof field.value !== 'boolean') return null
+  return (
+    <ToggleField
+      label={label}
+      value={field.value}
+      onChange={onChange}
+      scId={scId}
+      actions={action}
+      onReset={onReset}
+    />
+  )
+}
 
-  if (typeof value === 'boolean') {
+function numericControl(context: ControlContext) {
+  const { field, label, onChange, scId, action, onReset, gesture } = context
+  if (typeof field.value !== 'number') return null
+  const spec = field.spec
+  if (spec?.control === 'slider')
     return (
-      <ToggleField
+      <SliderField
         label={label}
-        value={value}
-        onChange={onChange}
-        scId={scId}
-        actions={action}
-        onReset={onReset}
-      />
-    )
-  }
-
-  if (typeof value === 'number') {
-    if (spec?.control === 'slider') {
-      return (
-        <SliderField
-          label={label}
-          value={value}
-          min={spec.min}
-          max={spec.max}
-          step={spec.step}
-          onChange={onChange}
-          scId={scId}
-          onReset={onReset}
-          actions={action}
-          {...gesture}
-        />
-      )
-    }
-
-    const { min, max } = spec?.control === 'number' ? spec : {}
-    return (
-      <NumberField
-        label={label}
-        value={value}
-        min={min}
-        max={max}
-        step={spec?.control === 'number' ? spec.step : undefined}
+        value={field.value}
+        min={spec.min}
+        max={spec.max}
+        step={spec.step}
         onChange={onChange}
         scId={scId}
         onReset={onReset}
@@ -94,24 +61,43 @@ export function PropertyControl({
         {...gesture}
       />
     )
-  }
+  const { min, max } = spec?.control === 'number' ? spec : {}
+  return (
+    <NumberField
+      label={label}
+      value={field.value}
+      min={min}
+      max={max}
+      step={spec?.control === 'number' ? spec.step : undefined}
+      onChange={onChange}
+      scId={scId}
+      onReset={onReset}
+      actions={action}
+      {...gesture}
+    />
+  )
+}
 
-  if (isVector3(value)) {
-    const step = spec?.control === 'vector3' ? spec.step : undefined
-    return (
-      <VectorField
-        label={label}
-        value={value}
-        step={step}
-        onChange={onChange}
-        scId={scId}
-        defaults={isVector3(fallback) ? fallback : undefined}
-        {...gesture}
-      />
-    )
-  }
+function vectorControl({ field, label, onChange, scId, gesture }: ControlContext) {
+  if (!isVector3(field.value)) return null
+  return (
+    <VectorField
+      label={label}
+      value={field.value}
+      step={field.spec?.control === 'vector3' ? field.spec.step : undefined}
+      onChange={onChange}
+      scId={scId}
+      defaults={isVector3(field.fallback) ? field.fallback : undefined}
+      {...gesture}
+    />
+  )
+}
 
-  if (spec?.control === 'asset') {
+function stringControl(context: ControlContext) {
+  const { field, label, onChange, scId, action, onReset, gesture, t } = context
+  const { value, spec } = field
+  if (typeof value !== 'string') return null
+  if (spec?.control === 'asset')
     return (
       <PictureField
         label={label}
@@ -120,14 +106,11 @@ export function PropertyControl({
         scId={scId}
       />
     )
-  }
-
-  if (spec?.control === 'choice') {
+  if (spec?.control === 'choice')
     return (
       <SelectField
         label={label}
         value={value}
-        // The value itself when no translation exists, exactly as the label above falls back.
         options={spec.options.map(option => ({
           value: option,
           label: t(`${spec.labelPrefix}${option}`, option),
@@ -137,10 +120,7 @@ export function PropertyControl({
         actions={action}
       />
     )
-  }
-
-  // A hexadecimal is a colour whether or not a table said so — and anything else is text.
-  if (spec?.control === 'color' || value.startsWith('#')) {
+  if (spec?.control === 'color' || value.startsWith('#'))
     return (
       <ColorField
         label={label}
@@ -152,8 +132,6 @@ export function PropertyControl({
         {...gesture}
       />
     )
-  }
-
   return (
     <TextField
       label={label}
@@ -165,4 +143,22 @@ export function PropertyControl({
       {...gesture}
     />
   )
+}
+export function PropertyControl({
+  field,
+  label,
+  onChange,
+  gesture,
+  section,
+  action,
+}: PropertyControlProps) {
+  const { t } = useTranslation()
+  const { value, fallback } = field
+  const scId = `${section}.${field.name}`
+  const onReset = resetTo(value, fallback, onChange)
+  const context = { field, label, onChange, gesture, section, action, scId, onReset, t }
+  if (typeof value === 'boolean') return createElement(booleanControl, context)
+  if (typeof value === 'number') return createElement(numericControl, context)
+  if (isVector3(value)) return createElement(vectorControl, context)
+  return createElement(stringControl, context)
 }

@@ -1,10 +1,16 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { bridgeWatchingLogs } from '@/services/fakeBridge'
 import { forgetReportedFailures } from '@/services/diagnostics'
-import { closeTab } from './closeTab'
+import { closeTab, closeTabAsking } from './closeTab'
 
 const closeDocument = vi.fn((_id: string) => Promise.resolve(true))
 vi.mock('../../../documentIo', () => ({ closeDocument: (id: string) => closeDocument(id) }))
+
+const closeFileView = vi.fn((_id: string) => Promise.resolve(true))
+vi.mock('../../dockviewApi', async importActual => ({
+  ...(await importActual<Record<string, unknown>>()),
+  closeFileView: (id: string) => closeFileView(id),
+}))
 
 beforeEach(() => {
   vi.clearAllMocks()
@@ -21,6 +27,27 @@ describe('closing a tab', () => {
 
     closeTab('doc-1')
     expect(closeDocument).toHaveBeenCalledWith('doc-1')
+  })
+
+  // `closeDocument` finds no io for a file view, so it would ask nothing, drop the edits, and
+  // answer `true`. The four closing gestures come here, which is what keeps one from forgetting.
+  it('hands a file view to the closer that knows how to ask about its edits', () => {
+    bridgeWatchingLogs()
+
+    closeTab('file:Entrées/Clavier.input.json')
+
+    expect(closeFileView).toHaveBeenCalledWith('file:Entrées/Clavier.input.json')
+    expect(closeDocument).not.toHaveBeenCalled()
+  })
+
+  // What "Close other tabs" reads to stop on a cancel — a run that read `true` from a refusal
+  // would close every tab behind the one the user just kept.
+  it('answers the refusal of whichever closer it picked', async () => {
+    bridgeWatchingLogs()
+    closeFileView.mockResolvedValueOnce(false)
+
+    await expect(closeTabAsking('file:Entrées/Clavier.input.json')).resolves.toBe(false)
+    await expect(closeTabAsking('doc-1')).resolves.toBe(true)
   })
 
   it('sends a refusal from the disk to the journal', async () => {

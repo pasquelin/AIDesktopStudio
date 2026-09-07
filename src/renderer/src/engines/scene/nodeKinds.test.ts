@@ -1,15 +1,15 @@
 import i18next from 'i18next'
 import { describe, expect, it } from 'vitest'
-import { LIGHT_ENTRIES, MESH_ENTRIES, OBJECT_ENTRIES } from '@shared/domain/scene'
+import { FIGURE_ENTRIES, LIGHT_ENTRIES, MESH_ENTRIES, OBJECT_ENTRIES } from '@shared/domain/scene'
 import { ADD_ENTRIES, NODE_KINDS } from './nodeKinds'
 
 describe('ADD_ENTRIES', () => {
   it('offers every family in the order the registries declare', () => {
     expect(ADD_ENTRIES).toHaveLength(
-      MESH_ENTRIES.length + LIGHT_ENTRIES.length + OBJECT_ENTRIES.length,
+      MESH_ENTRIES.length + LIGHT_ENTRIES.length + FIGURE_ENTRIES.length + OBJECT_ENTRIES.length,
     )
     expect(ADD_ENTRIES[0]?.entry.kind).toBe('box')
-    expect(ADD_ENTRIES.at(-1)?.entry.kind).toBe('path')
+    expect(ADD_ENTRIES.at(-1)?.entry.kind).toBe('player')
   })
 
   // The key is derived, not declared: a missing string renders as `meshes.torusKnot` in the

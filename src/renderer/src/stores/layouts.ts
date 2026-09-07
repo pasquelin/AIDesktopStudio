@@ -81,7 +81,7 @@ export const useLayouts = create<LayoutsState>()(
         set(state => (state.projectPath === projectPath ? {} : { projectPath, layout: null })),
     }),
     {
-      name: 'ia-studio:layouts',
+      name: 'ai-desktop-studio:layouts',
       // `home` stays out: see the field. Everything else is arrangement, which is the point.
       partialize: ({ activeWorkspace, layout, projectPath }) => ({
         activeWorkspace,

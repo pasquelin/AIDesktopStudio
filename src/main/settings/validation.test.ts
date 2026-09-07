@@ -9,6 +9,22 @@ import {
 import { SCENARIO_CLOUD } from '@shared/domain/aiCloud'
 import { parsePartialSettings, parseStoredAccounts, salvagePartialSettings } from './validation'
 
+/** The bare bones of an imported model, so a case names only what it is about. */
+const own = (held: Record<string, unknown>): unknown => ({
+  id: 'one',
+  name: 'one',
+  format: 'gguf',
+  loader: 'llamacpp',
+  rank: 1,
+  licence: 'MIT',
+  licenceUrl: '',
+  source: '',
+  files: [],
+  diskBytes: 1,
+  reservationBytes: 1,
+  ...held,
+})
+
 /** A value the descriptor itself says is acceptable — no second table of examples to maintain. */
 function acceptable(descriptor: SettingDescriptor): SettingValue {
   switch (descriptor.kind) {
@@ -67,6 +83,12 @@ describe('settings validation', () => {
 
   it('keeps every branch of the defaults, which is what a fresh install writes back', () => {
     expect(parsePartialSettings(DEFAULT_SETTINGS)).toEqual(DEFAULT_SETTINGS)
+  })
+
+  it('keeps explicit gamepad navigation writes', () => {
+    expect(parsePartialSettings({ input: { gamepadNavigation: true } })).toEqual({
+      input: { gamepadNavigation: true },
+    })
   })
 
   it('accepts a partial and keeps only the sections it declares', () => {
@@ -166,28 +188,30 @@ describe('a family renamed since the file was written', () => {
 
   /** `ownModels` carries `.catch([])`: one stale family used to take the whole list down with it. */
   it('keeps an imported model whose family moved, and the ones beside it', () => {
-    const own = (id: string, family: string): unknown => ({
-      id,
-      name: id,
-      format: 'gguf',
-      loader: 'llamacpp',
-      rank: 1,
-      licence: 'MIT',
-      licenceUrl: '',
-      source: '',
-      files: [],
-      diskBytes: 1,
-      reservationBytes: 1,
-      family,
-      serves: [`${family}/txt2img_texture`],
-    })
+    const family = (id: string, family: string): unknown =>
+      own({ id, name: id, family, serves: [`${family}/txt2img_texture`] })
 
     const salvaged = salvagePartialSettings({
-      ai: { ownModels: [own('one', 'texture'), own('two', 'image')] },
+      ai: { ownModels: [family('one', 'texture'), family('two', 'image')] },
     })
 
     expect(salvaged.ai?.ownModels?.map(model => model.family)).toEqual(['material', 'image'])
     expect(salvaged.ai?.ownModels?.[0]?.serves).toEqual(['material/txt2img_texture'])
+  })
+
+  /**
+   * 🛑 A motion was a `mesh` that `fieldProfile` took back, and the schema names neither field
+   * any more — so without this the row comes back a plain mesh: gated on the diffusion group,
+   * written `.ply`, filed as a mesh, and nothing says so.
+   */
+  it('brings a motion model imported before the modality existed onto it', () => {
+    const salvaged = salvagePartialSettings({
+      ai: {
+        ownModels: [own({ modality: 'mesh', fieldProfile: 'motion', outputExtension: 'glb' })],
+      },
+    })
+
+    expect(salvaged.ai?.ownModels?.[0]?.modality).toBe('motion')
   })
 
   it('carries the legacy default model of that family into its employment', () => {

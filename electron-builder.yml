@@ -1,4 +1,4 @@
-appId: com.pasquelin.iastudio
+appId: com.aidesktopstudio.app
 # `productName` is deliberately absent: electron-builder would prefer it over the one in
 # package.json, which is the copy `shared/constants.test.ts` pins to APP_NAME. Declaring it
 # here would leave the shipped name unguarded.
@@ -23,7 +23,7 @@ artifactName: ${name}-${version}-${platform}-${arch}.${ext}
 publish:
   provider: github
   owner: pasquelin
-  repo: IAStudio
+  repo: AIDesktopStudio
   releaseType: draft
 
 files:
@@ -32,6 +32,50 @@ files:
   # Read at runtime by `nativeImage`: window icon on Windows and Linux, About dialog.
   - build/icon.png
   - '!**/*.map'
+
+# Une déclaration alimente les rôles macOS, le registre Windows et les types MIME Linux.
+fileAssociations:
+  - name: Médias AI Desktop Studio
+    role: Editor
+    ext:
+      - glb
+      - obj
+      - fbx
+      - stl
+      - ply
+      - dae
+      - usdz
+      - bvh
+      - gltf
+      - png
+      - ora
+      - jpg
+      - jpeg
+      - webp
+      - avif
+      - gif
+      - svg
+      - tif
+      - tiff
+      - exr
+      - hdr
+      - mp4
+      - mov
+      - mkv
+      - webm
+      - avi
+      - mxf
+      - m4v
+      - wav
+      - mp3
+      - flac
+      - ogg
+      - m4a
+      - aac
+      - aiff
+      - otio
+      - otioz
+      - mtlx
 
 # `devTools: false` is a per-webContents preference; these are process-level switches that
 # would otherwise reopen the same door. `--remote-debugging-port` attaches CDP to the main
@@ -62,6 +106,7 @@ asarUnpack:
 # be packed, so a run building several of them gives each its own. Outside the asar on purpose:
 # a binary has to be executable on disk to be spawned.
 beforePack: scripts/before-pack.mjs
+afterPack: scripts/after-pack.mjs
 
 extraResources:
   # Le runtime qu'un jeu exporté embarque — un module ES bâti par `pnpm game:runtime`. Hors de
@@ -78,14 +123,9 @@ extraResources:
   - from: resources/stt
     to: stt
     filter: ['**/*']
-  # The interpreter the local AI engine runs on, plus the engine's own sources — 67 Mo, fetched
-  # by `pnpm engine:fetch` against a pinned digest. Outside the asar because an interpreter has
-  # to be executable on disk to be spawned, exactly like ffmpeg.
-  #
-  # The tensor libraries are NOT here: measured 2026-08-22 at 682 Mo on macOS, 693 on Windows
-  # and 4,7 Go on Linux. They are fetched on first use — and what is fetched must be an archive
-  # THIS BUILD SIGNED, since an environment resolved on the person's machine will not load under
-  # the hardened runtime.
+  # The interpreter, engine sources and pinned Auto Rig dependencies are materialized by the
+  # before-pack hook for the target architecture. They stay outside the asar because the Python
+  # executable and its native tensor libraries must be spawned and signed with the application.
   - from: resources/engine
     to: engine
     filter: ['**/*']
@@ -94,6 +134,12 @@ extraResources:
   - from: resources/animations
     to: animations
     filter: ['**/*']
+  # The character the app ships with, one GLB per density — the body a player module is born
+  # wearing. Four levels rather than one: a project copies in the level it is asked for, and the
+  # rest stay here rather than in every project folder.
+  - from: resources/characters
+    to: characters
+    filter: ['**/*.glb']
   # The grid and the checker a primitive is born wearing, and the stills drawn of each scene
   # template. Redrawn rather than fetched — `pnpm textures:make` writes them, and they are the
   # only thing a new scene has to show for itself before anything is modelled.
@@ -145,7 +191,7 @@ mac:
     # key is missing when the microphone is first touched. Not localised: an Info.plist string
     # needs an `InfoPlist.strings` per language, which electron-builder does not assemble.
     NSMicrophoneUsageDescription:
-      IA Studio uses the microphone to turn what you say into text, on this computer.
+      AI Desktop Studio uses the microphone to turn what you say into text, on this computer.
       Nothing you say is sent anywhere.
   # `notarize` is deliberately left at its default rather than pinned to false: electron-builder
   # only notarises what it managed to sign, so an unsigned build skips it on its own — and the
@@ -157,11 +203,9 @@ mac:
     - Contents/Resources/ffmpeg/ffmpeg
     - Contents/Resources/ffmpeg/ffprobe
   target:
-    - target: dmg
-      arch: [arm64, x64]
+    - dmg
     # Not for distribution: electron-updater consumes the zip, and it is cheap to keep.
-    - target: zip
-      arch: [arm64, x64]
+    - zip
 
 dmg:
   contents:
@@ -205,7 +249,7 @@ linux:
   # localises the only way it can — one key per locale, `Comment` being the C fallback.
   desktop:
     entry:
-      StartupWMClass: IA Studio
+      StartupWMClass: AI Desktop Studio
       Comment: Image, video, 3D, audio, texture and skybox creation studio
       Comment[fr]: Studio de création d’images, vidéos, modèles 3D, audio, textures et skyboxes
   target: [AppImage, deb]

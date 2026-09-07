@@ -24,6 +24,7 @@ const modelFile = z.object({
 
 export const localModelSchema: z.ZodType<LocalModel> = z.object({
   id: z.string().min(1),
+  backendId: z.string().min(1).optional(),
   name: z.string().min(1),
   format: z.enum(MODEL_FORMATS),
   loader: z.enum(MODEL_LOADERS),
@@ -47,6 +48,7 @@ export const localModelSchema: z.ZodType<LocalModel> = z.object({
     .enum(['commercial', 'non-commercial', 'restricted', 'unsupported-region'])
     .optional(),
   runtimeStatus: z.enum(['supported', 'plugin-required', 'unsupported']).optional(),
+  distributionStatus: z.enum(['public', 'blocked']).optional(),
   needsCuda: z.boolean().optional(),
   attaches: z
     .object({

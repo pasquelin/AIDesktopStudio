@@ -8,7 +8,7 @@ import { registerPostPresetHandlers } from './postPreset'
 
 vi.mock('electron', async () => (await import('@main/ipc/testHarness')).mockElectron())
 
-const STACK = '{"type":"ia-studio.post-processing","version":1,"name":"Nuit","stack":{}}'
+const STACK = '{"type":"ai-desktop-studio.post-processing","version":1,"name":"Nuit","stack":{}}'
 
 describe('carrying a composition to and from a file', () => {
   let folder: string

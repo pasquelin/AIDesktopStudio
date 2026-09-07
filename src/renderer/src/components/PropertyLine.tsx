@@ -23,6 +23,7 @@ export type PropertyLineProps = {
   children: ReactNode
   /** The end column, kept whether it is drawn into or not. `false` for a line that ends none. */
   actions?: ReactNode | false
+  compactActions?: boolean
   className?: string
 }
 
@@ -43,6 +44,7 @@ export function PropertyLine({
   hint,
   children,
   actions,
+  compactActions,
   className,
 }: PropertyLineProps) {
   const Root: ElementType = root
@@ -51,7 +53,7 @@ export function PropertyLine({
     <Root className={cn(FIELD_ROW, className)} {...hint}>
       {name === 'column' && <PropertyLabel label={label} htmlFor={htmlFor} {...nameProps} />}
       {children}
-      {actions !== false && <FieldActions>{actions}</FieldActions>}
+      {actions !== false && <FieldActions compact={compactActions}>{actions}</FieldActions>}
     </Root>
   )
 }

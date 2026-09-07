@@ -47,6 +47,38 @@ function digestOf(file) {
   return createHash('sha256').update(readFileSync(file)).digest('hex')
 }
 
+async function stageVad(work, verify) {
+  const staged = join(work, VAD.name)
+  await download(VAD.url, staged)
+  const seen = digestOf(staged)
+  if (verify && seen !== VAD.digest) {
+    throw new Error(
+      `${VAD.name} does not match its recorded digest.\n` +
+        `  expected ${VAD.digest}\n  got      ${seen}\n` +
+        'Rotate deliberately: update the URL and rerun with --digests.',
+    )
+  }
+  return { staged, seen }
+}
+
+function writeNotice(destination) {
+  writeFileSync(
+    join(destination, 'NOTICE.txt'),
+    [
+      `Silero VAD ${VAD.version}`,
+      `Licence: ${VAD.licence}`,
+      `Source: ${VAD.source}`,
+      '',
+      'A voice activity detector: it decides when someone is speaking, and nothing else.',
+      'It is read by the recognition engine, never executed.',
+      '',
+      'The recognition model itself is NOT here. It is fetched on first use into the user',
+      'data folder.',
+      '',
+    ].join('\n'),
+  )
+}
+
 /**
  * Puts the detector in `resources/stt/`, replacing whatever was there.
  *
@@ -57,44 +89,17 @@ export async function fetchStt(options = {}) {
   const destination = options.destination ?? DESTINATION
   const verify = options.verify ?? true
 
-  const work = mkdtempSync(join(tmpdir(), 'ia-studio-stt-'))
+  const work = mkdtempSync(join(tmpdir(), 'ai-desktop-studio-stt-'))
   rmSync(destination, { recursive: true, force: true })
   mkdirSync(destination, { recursive: true })
 
   try {
-    const staged = join(work, VAD.name)
-    await download(VAD.url, staged)
-
-    // Hashed where it landed, still outside the folder the engine reads: nothing unverified is
-    // ever loadable at the path the application looks at.
-    const seen = digestOf(staged)
-    if (verify && seen !== VAD.digest) {
-      throw new Error(
-        `${VAD.name} does not match its recorded digest.\n` +
-          `  expected ${VAD.digest}\n  got      ${seen}\n` +
-          'Rotate deliberately: update the URL and rerun with --digests.',
-      )
-    }
-
+    const { staged, seen } = await stageVad(work, verify)
     // Copied rather than renamed: the scratch directory and the repository can sit on different
     // volumes, which makes `rename` fail with EXDEV — the same reason `fetch-ffmpeg` copies.
     writeFileSync(join(destination, VAD.name), readFileSync(staged))
 
-    writeFileSync(
-      join(destination, 'NOTICE.txt'),
-      [
-        `Silero VAD ${VAD.version}`,
-        `Licence: ${VAD.licence}`,
-        `Source: ${VAD.source}`,
-        '',
-        'A voice activity detector: it decides when someone is speaking, and nothing else.',
-        'It is read by the recognition engine, never executed.',
-        '',
-        'The recognition model itself is NOT here. It is fetched on first use into the user',
-        'data folder.',
-        '',
-      ].join('\n'),
-    )
+    writeNotice(destination)
 
     if (!existsSync(join(destination, VAD.name))) {
       throw new Error(`${VAD.name} is missing from ${destination} after the fetch`)

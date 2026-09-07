@@ -88,6 +88,11 @@ function takes(state: SequenceState, track: Track, kind: TrackKind): boolean {
   return track.kind === kind && !track.locked && playsThrough(state, track)
 }
 
+export function trackTakesType(state: SequenceState, trackId: string, type: AssetType): boolean {
+  const track = trackById(state, trackId)
+  return track !== null && takes(state, track, kindForType(type))
+}
+
 /** The first track of a kind that would take the drop. */
 function landingTrack(state: SequenceState, kind: TrackKind): Track | null {
   return state.tracks.find(track => takes(state, track, kind)) ?? null

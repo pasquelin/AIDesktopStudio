@@ -12,6 +12,7 @@ export type TaskRow = {
   label: string
   /** 0 to 1 across the whole task. */
   ratio: number
+  phase?: string
 }
 
 type TasksState = {
@@ -38,11 +39,20 @@ const stops = new Map<string, AbortController>()
  * The long tasks in flight — both halves of invariant 6, which nothing but the video render had.
  * A TASK, not an export: the same row carries reading a bundle back in, and the render.
  */
-export const useTasks = create<TasksState>()((set, get) => ({
+export const useTasks = create<TasksState>()(set => ({
   running: {},
 
   connect: () =>
-    getBridge()?.tasks.onProgress(({ id, ratio }) => get().step(id, ratio)) ?? (() => {}),
+    getBridge()?.tasks.onProgress(({ id, ratio, phase }) =>
+      set(state => {
+        const row = state.running[id]
+        // Nothing that has not moved: a bundle steps far more often than a percentage can change,
+        // and each write here is a fresh state every subscriber of this store re-renders on.
+        return row && (row.ratio !== ratio || row.phase !== phase)
+          ? { running: { ...state.running, [id]: { ...row, ratio, phase } } }
+          : state
+      }),
+    ) ?? (() => {}),
 
   cancelTask: id => {
     // Locally first: the abort unwinds whatever loop is drawing here, and the main process is
@@ -91,7 +101,7 @@ export async function runTask<T>(
   })
   // Observed here as well as awaited below, so a failure that arrives after a stop is not an
   // unhandled rejection. It is simply not reported: a stop the person asked for is not a fault.
-  running.catch(() => {})
+  void running.catch(() => {})
 
   try {
     // The press wins the race, rather than the answer to it: a native dialog cannot be dismissed

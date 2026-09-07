@@ -3,6 +3,9 @@
 import type { Component, ComponentType, JsonValue } from '@shared/domain/component'
 import type { Vector3 } from '@shared/domain/transform'
 import type { InputState } from '../ports/inputPort'
+import type { InputActionValue } from '../runtime/inputMaps'
+import type { InputBinding } from '../runtime/inputMap'
+import type { InputBindings } from '../runtime/inputControls'
 
 /**
  * One scripted entity as the sandbox sees it — a COPY, never a handle onto the world.
@@ -19,6 +22,13 @@ export type ScriptEntity = {
   position: Vector3
   rotation: Vector3
   components: readonly Component[]
+  /**
+   * What its animator ended the LAST step on, or nothing for a body no graph animates.
+   *
+   * One step behind, as `position` is: `script` runs before `animator` in the declared order, so
+   * what a script reads is what the frame being drawn actually shows.
+   */
+  anim?: { state: string; time: number }
 }
 
 /** What one hook is given: the clock, the input, and every entity that runs a script. */
@@ -26,6 +36,8 @@ export type ScriptFrame = {
   tick: number
   dt: number
   input: InputState
+  actions: Readonly<Record<string, InputActionValue>>
+  bindings?: InputBindings
   entities: readonly ScriptEntity[]
   /** What survived the last scene load. In the FRAME rather than behind a call: see the kernel. */
   kept: Readonly<Record<string, JsonValue>>
@@ -42,6 +54,11 @@ export type ScriptIntent =
   | { act: 'move'; entity: string; by: Vector3 }
   | { act: 'place'; entity: string; at: Vector3 }
   | { act: 'turn'; entity: string; to: Vector3 }
+  | { act: 'walk'; entity: string; x: number; z: number }
+  | { act: 'jump'; entity: string }
+  | { act: 'look'; entity: string; yaw: number; pitch: number }
+  | { act: 'drive'; entity: string; throttle: number; steer: number; handBrake: boolean }
+  | { act: 'fly'; entity: string; pitch: number; roll: number; yaw: number; throttle: number }
   | { act: 'field'; entity: string; type: ComponentType; key: string; value: JsonValue }
   | { act: 'spawn'; name: string; at: Vector3 | null }
   | { act: 'destroy'; entity: string }
@@ -49,6 +66,18 @@ export type ScriptIntent =
   | { act: 'log'; level: 'info' | 'warn' | 'error'; message: string }
   | { act: 'scene'; scene: string; fade: number }
   | { act: 'keep'; key: string; value: JsonValue }
+  | { act: 'inputContext'; action: 'push' | 'pop'; id: string }
+  | {
+      act: 'inputRebind'
+      context: string
+      action: string
+      index: number
+      binding: InputBinding
+    }
+  | { act: 'inputReset'; context?: string; action?: string }
+  | { act: 'animParam'; entity: string; param: string; value: number | boolean }
+  | { act: 'animPlay'; entity: string; state: string }
+  | { act: 'animStop'; entity: string }
 
 /** What a script did wrong, where an editor could open it. */
 export type ScriptFault = {

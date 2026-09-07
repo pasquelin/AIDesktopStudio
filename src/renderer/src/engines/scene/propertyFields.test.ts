@@ -21,15 +21,22 @@ describe('geometryFields', () => {
     expect(fields[1]?.value).toBe(2)
   })
 
-  // The panel is derived, never written per shape: a primitive with no fields would be a
-  // primitive nobody can edit.
+  /*
+   * The panel is derived, never written per shape: a primitive with no fields would be a
+   * primitive nobody can edit. Counted on what a panel CAN draw — a ribbon's run of points is a
+   * list, edited on the shape — and every one of those still has to carry its spec.
+   */
   it('describes every parameter of every buildable primitive', () => {
     for (const entry of MESH_ENTRIES) {
       const descriptor = primitiveByKind(entry.kind)?.create?.()
       if (!descriptor) continue
 
+      // What a panel can draw: a ribbon carries a whole rail, which is dragged on the shape.
+      const editable = Object.entries(descriptor).filter(
+        ([name, value]) => name !== 'kind' && typeof value !== 'object',
+      )
       const fields = geometryFields(descriptor)
-      expect(fields.length).toBe(Object.keys(descriptor).length - 1)
+      expect(fields.map(field => field.name)).toEqual(editable.map(([name]) => name))
       for (const field of fields) expect(field.spec).toBeDefined()
     }
   })

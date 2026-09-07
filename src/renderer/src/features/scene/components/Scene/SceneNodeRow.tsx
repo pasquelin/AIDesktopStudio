@@ -1,9 +1,11 @@
 import { memo } from 'react'
+import { nameOf } from '@shared/domain/folder'
 import { Row } from '@/components/Row'
 import type { Command } from '@/engines/core/history'
 import { renameNode, setNodeVisible } from '@/engines/scene/commands'
 import { iconOf } from '@/engines/scene/nodeFactory'
 import type { SceneNode, SceneState } from '@/engines/scene/sceneState'
+import { scriptPathOf } from '@/stores/code'
 import { useScenes } from '@/stores/scenes'
 import { InlineRename } from '@/components/InlineRename'
 import { ROW_WRAPPER } from '@/components/styles'
@@ -50,6 +52,7 @@ export const SceneNodeRow = memo(function SceneNodeRow({
 }: SceneNodeRowProps) {
   const run = (command: Command<SceneState>): void =>
     useScenes.getState().runCommand(documentId, command)
+  const script = scriptOn(node)
 
   if (renaming && renameLabel) {
     return (
@@ -71,6 +74,11 @@ export const SceneNodeRow = memo(function SceneNodeRow({
       <Row
         icon={iconOf(node)}
         title={node.name}
+        // What DRIVES it, said on the line, so a reader answers « which script » rather than
+        // « one of them ». `ROW_SUFFIX` never shrinks, so the whole line goes in the tooltip:
+        // an indented row plus a long file name leaves little of the node's own name.
+        suffix={script}
+        hint={script && `${node.name} · ${script}`}
         muted={!node.visible}
         leading={
           visibleLabel && (
@@ -85,3 +93,15 @@ export const SceneNodeRow = memo(function SceneNodeRow({
     </div>
   )
 })
+
+/**
+ * The file a `Script` component names, folders left out — nothing when the node carries none.
+ *
+ * 🛑 Through `scriptPathOf`: the value is a `script:` REFERENCE, and slicing it on the last `/`
+ * showed `script:Walk.ts` whole for anything filed at the root of the project.
+ */
+function scriptOn(node: SceneNode): string | undefined {
+  const held = node.components?.find(one => one.type === 'Script')
+  const named = typeof held?.script === 'string' ? held.script : ''
+  return named === '' ? undefined : nameOf(scriptPathOf(named))
+}

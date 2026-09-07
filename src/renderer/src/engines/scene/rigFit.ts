@@ -7,14 +7,7 @@
  * The body only, twenty-two bones, stopping at the wrists: a bounding box cannot say where a
  * knuckle is, and thirty finger bones dropped at a guess would capture vertices at a guess.
  */
-import {
-  fingerRole,
-  HUMANOID_BODY_ROLES,
-  HUMANOID_FINGER_JOINTS,
-  HUMANOID_FINGERS,
-  HUMANOID_SIDES,
-  type HumanoidBodyRole,
-} from '@shared/domain/humanoid'
+import { HUMANOID_BODY_ROLES, type HumanoidBodyRole } from '@shared/domain/humanoid'
 import type { Rig, RigBone } from '@shared/domain/rig'
 import type { Vector3 } from '@shared/domain/transform'
 
@@ -63,7 +56,11 @@ const SPINE: readonly Placement[] = [
  */
 type LimbParent = { trunk: HumanoidBodyRole } | { sided: string }
 
-/** One side, mirrored by `x`. `Left` is the mesh's own left, which is +X looking down -Z. */
+/**
+ * One side, mirrored by `x`, with the arms hanging DOWN the body. `Left` is the mesh's own left.
+ *
+ * The arms are lifted from here by `ARM_OUT` when the box says they are spread — see `spreadOf`.
+ */
 const LIMB: readonly { part: string; parent: LimbParent; y: number; x: number; z: number }[] = [
   { part: 'Shoulder', parent: { trunk: 'UpperChest' }, y: 0.82, x: 0.05, z: 0 },
   { part: 'UpperArm', parent: { sided: 'Shoulder' }, y: 0.82, x: 0.12, z: 0 },
@@ -74,6 +71,22 @@ const LIMB: readonly { part: string; parent: LimbParent; y: number; x: number; z
   { part: 'Foot', parent: { sided: 'LowerLeg' }, y: 0.04, x: 0.07, z: 0 },
   { part: 'Toes', parent: { sided: 'Foot' }, y: 0.01, x: 0.07, z: 0.06 },
 ]
+
+/** Where the shoulder sits, and where an arm held out stays. */
+const SHOULDER_Y = 0.82
+
+/**
+ * How far out each arm joint reaches at FULL spread, as a fraction of height: an adult's arm span
+ * is about their own height, so half of it at the wrist, less a hand.
+ */
+const ARMS_OUT_REACH = 0.42
+const ARM_OUT: Record<string, number> = { UpperArm: 0.12, LowerArm: 0.27, Hand: ARMS_OUT_REACH }
+
+/**
+ * The widest a figure with its arms DOWN gets, as a fraction of height — shoulders plus the hands
+ * beside them. Past it, the extra span is arms held out.
+ */
+const BODY_HALF_WIDTH = 0.17
 
 /**
  * How much wider than tall a figure may be before it is taken for one lying down.
@@ -100,84 +113,70 @@ export function rigFitFaultOf(bounds: Bounds): RigFitFault | null {
 export function rigFit(bounds: Bounds): Rig {
   const size = sizeOf(bounds)
   const centre = { x: (bounds.min.x + bounds.max.x) / 2, z: (bounds.min.z + bounds.max.z) / 2 }
+  const across = acrossAxisOf(size)
+  const forward = across === 'x' ? 'z' : 'x'
+  const spread = spreadOf(size, across)
 
   const world = new Map<HumanoidBodyRole, Vector3>()
-  const placed: Placement[] = [...SPINE, ...mirrored('Left'), ...mirrored('Right')]
+  const placed: Placement[] = [...SPINE, ...mirrored('Left', spread), ...mirrored('Right', spread)]
 
   for (const placement of placed) {
-    world.set(placement.role, {
-      x: centre.x + placement.x * size.y,
-      y: bounds.min.y + placement.y * size.y,
-      z: centre.z + placement.z * size.y,
-    })
+    const here = { x: centre.x, y: bounds.min.y + placement.y * size.y, z: centre.z }
+    here[across] = centre[across] + placement.x * size.y
+    here[forward] = centre[forward] + placement.z * size.y
+    world.set(placement.role, here)
   }
 
   return { origin: 'local', bones: placed.map(placement => boneOf(placement, world)) }
 }
 
 /**
- * The thirty finger bones, laid AT REST off whatever hands the rig already holds.
+ * Which horizontal axis the shoulders run along — MEASURED, never assumed.
  *
- * At rest and not fitted, which is the whole point and the issue's own wording: a bounding box
- * cannot say where a knuckle is, so these are laid evenly and are meant to be put right at the
- * gizmo. `null` when the rig names no hand, or already carries fingers.
+ * The wider of the two, because a figure is wider across than it is deep, arms out or down. Taking
+ * X for granted laid the whole skeleton across a model authored facing +X: on screen it read as a
+ * rig turned a quarter turn, and no test saw it.
  *
- * Each segment is a sixth of the forearm, so three of them make half a forearm — a hand's own
- * proportion — and the five fingers are spread across the same span.
+ * 🛑 The blind spot is the SIGN: nothing in a bounding box says whether the face points at +Z or
+ * −Z, so the toes of a figure authored backwards point behind it. A joint the gizmo moves is the
+ * answer to that, not a guess here.
  */
-export function rigHandBones(bones: readonly RigBone[]): RigBone[] | null {
-  const added: RigBone[] = []
-
-  for (const side of HUMANOID_SIDES) {
-    const hand = bones.find(bone => bone.role === `${side}Hand`)
-    const arm = bones.find(bone => bone.role === `${side}LowerArm`)
-    if (!hand || !arm) continue
-
-    const segment = lengthOf(hand.rest.position) / 6
-    // A hand that already has fingers is left alone: laying a second set on it would be thirty
-    // names already taken, and `rigWithBones` would refuse the lot for one side's sake.
-    if (segment <= 0 || bones.some(bone => bone.role === `${side}Thumb1`)) continue
-
-    for (const [index, finger] of HUMANOID_FINGERS.entries()) {
-      for (const joint of HUMANOID_FINGER_JOINTS) {
-        added.push({
-          name: `${side}${finger}${joint}`,
-          parent: joint === 1 ? hand.name : `${side}${finger}${joint - 1}`,
-          role: fingerRole(side, finger, joint),
-          rest: {
-            // Along the arm's own direction, so a left hand's fingers point left and a right
-            // hand's right; spread across Z only on the knuckle, the rest of the chain trailing.
-            position: {
-              x: Math.sign(hand.rest.position.x || 1) * segment,
-              y: 0,
-              z: joint === 1 ? (index - 2) * segment * 0.6 : 0,
-            },
-            rotation: { x: 0, y: 0, z: 0 },
-            scale: { x: 1, y: 1, z: 1 },
-          },
-        })
-      }
-    }
-  }
-
-  return added.length > 0 ? added : null
+function acrossAxisOf(size: Vector3): 'x' | 'z' {
+  return size.x >= size.z ? 'x' : 'z'
 }
 
-function lengthOf(position: Vector3): number {
-  return Math.hypot(position.x, position.y, position.z)
+/**
+ * How far the arms are held out, 0 down the body and 1 straight out.
+ *
+ * Read off the box and nothing else: a T-pose spans about as wide as it stands, so span past a
+ * body's own width IS arms. Laid down the body whatever the mesh did, every T-posed character —
+ * the commonest bind pose there is — got a skeleton whose arms ran outside its own.
+ */
+function spreadOf(size: Vector3, across: 'x' | 'z'): number {
+  const reach = size[across] / 2 / size.y
+  const out = (reach - BODY_HALF_WIDTH) / (ARMS_OUT_REACH - BODY_HALF_WIDTH)
+
+  return Math.min(1, Math.max(0, out))
 }
 
-/** One arm and one leg of the given side, with `Left`/`Right` prefixed and `x` signed. */
-function mirrored(side: 'Left' | 'Right'): Placement[] {
+/**
+ * One arm and one leg of the given side, with `Left`/`Right` prefixed, `x` signed, and the arm
+ * raised towards the shoulder line by however much the box says it is spread.
+ */
+function mirrored(side: 'Left' | 'Right', spread: number): Placement[] {
   const sign = side === 'Left' ? 1 : -1
 
-  return LIMB.map(limb => ({
-    role: roleOf(side, limb.part),
-    parent: 'trunk' in limb.parent ? limb.parent.trunk : roleOf(side, limb.parent.sided),
-    y: limb.y,
-    x: limb.x * sign,
-    z: limb.z,
-  }))
+  return LIMB.map(limb => {
+    const out = ARM_OUT[limb.part]
+
+    return {
+      role: roleOf(side, limb.part),
+      parent: 'trunk' in limb.parent ? limb.parent.trunk : roleOf(side, limb.parent.sided),
+      y: out === undefined ? limb.y : limb.y + (SHOULDER_Y - limb.y) * spread,
+      x: (out === undefined ? limb.x : limb.x + (out - limb.x) * spread) * sign,
+      z: limb.z,
+    }
+  })
 }
 
 /** Cast-free: the table's strings are role halves, and this is what makes them a role again. */

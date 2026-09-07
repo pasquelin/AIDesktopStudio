@@ -20,8 +20,8 @@ import { setSkyboxSource, skyboxOf, useSkyboxes } from '@/stores/skyboxes'
 import { skyboxViewOf, useSkyboxViews } from '@/stores/skyboxViews'
 import { useStyles } from '@/stores/styles'
 import { materialOf, useMaterials } from '@/stores/materials'
-import { withAsset, type ActionHandlers } from './actionHandler'
-import { boolOf, numberOf, oneOf, textOf } from './actionInputs'
+import { answered, withAsset, type ActionHandlers } from './actionHandler'
+import { boolOf, composedNamedOf, namedOf, numberOf, oneOf, textOf } from './actionInputs'
 import { environmentFromInput } from './environmentInput'
 
 /**
@@ -60,26 +60,29 @@ function runSky(
   commands: readonly Command<SkyboxContent>[],
   /** What a caller does when it named nothing this sky could write. */
   nothing: string,
+  /** What the call answers, read off the sky AFTER the commands — see `namedOf`. */
+  answer?: (state: SkyboxContent) => unknown,
 ): ActionOutcome {
   const open = skyOpen()
   if (!open) return refused('wrongSurface', NO_SKY)
   if (commands.length === 0) return refused('badInput', nothing)
 
   for (const command of commands) useSkyboxes.getState().runCommand(open.documentId, command)
-  return { ok: true }
+  return answered(answer, () => skyboxOf(useSkyboxes.getState(), open.documentId))
 }
 
 function runMaterial(
   commands: readonly Command<MaterialState>[],
   /** What a caller does when it named nothing this material could write. */
   nothing: string,
+  answer?: (state: MaterialState) => unknown,
 ): ActionOutcome {
   const open = materialOpen()
   if (!open) return refused('wrongSurface', NO_MATERIAL)
   if (commands.length === 0) return refused('badInput', nothing)
 
   for (const command of commands) useMaterials.getState().runCommand(open.documentId, command)
-  return { ok: true }
+  return answered(answer, () => materialOf(useMaterials.getState(), open.documentId))
 }
 
 /**
@@ -122,6 +125,7 @@ const adjust = (input: Record<string, unknown>): ActionOutcome =>
   runSky(
     dialsOf(input, ADJUSTMENTS),
     `this call named no dial — it takes ${Object.keys(ADJUSTMENTS).join(', ')}`,
+    state => namedOf(input, state.adjustments),
   )
 
 const SUN: Dials<SkyboxContent> = {
@@ -140,6 +144,7 @@ function sun(input: Record<string, unknown>): ActionOutcome {
       ...(colour !== null && HEX_COLOR.test(colour) ? [setSunSetting('color', colour)] : []),
     ],
     `this call named no dial of the sun — it takes ${Object.keys(SUN).join(', ')}, color`,
+    state => namedOf(input, state.sun),
   )
 }
 
@@ -243,6 +248,24 @@ function rangeCommands(
   })
 }
 
+/** The fields a call named, the two vectors and the two ranges under the stem their axes carry. */
+function writtenMaterial(
+  input: Record<string, unknown>,
+  material: MaterialState['material'],
+): Partial<MaterialState['material']> {
+  return {
+    ...namedOf(input, material),
+    ...composedNamedOf(input, material, VECTOR_KEYS, ['X', 'Y']),
+    ...composedNamedOf(
+      input,
+      material,
+      RANGES.map(([key]) => key),
+      ['Min', 'Max'],
+      key => key.replace(/Range$/, ''),
+    ),
+  }
+}
+
 function material(input: Record<string, unknown>): ActionOutcome {
   const open = materialOpen()
   if (!open) return refused('wrongSurface', NO_MATERIAL)
@@ -262,6 +285,7 @@ function material(input: Record<string, unknown>): ActionOutcome {
       }),
     ],
     `this call named no setting — it takes ${Object.keys(MATERIAL_DIALS).join(', ')}, color, emissive, invertNormalGreen, tilingX, tilingY, offsetX, offsetY, roughnessMin, roughnessMax, metalnessMin, metalnessMax`,
+    state => writtenMaterial(input, state.material),
   )
 }
 
@@ -374,7 +398,7 @@ async function channel(input: Record<string, unknown>): Promise<ActionOutcome> {
 
 export const MATERIAL_HANDLERS: ActionHandlers = {
   'skybox.state': readSky,
-  'skybox.setViewOptions': skyboxView,
+  'skybox.setViewportOptions': skyboxView,
   'skybox.adjustImage': adjust,
   'skybox.resetAdjustments': () => runSky([resetAdjustments()], 'there was nothing to reset'),
   'skybox.setSun': sun,

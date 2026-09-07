@@ -1,13 +1,14 @@
-import { useCallback, useId, useState } from 'react'
+import { useCallback, useId, useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { providerOfModel, type AiRoleId } from '@shared/domain/aiRole'
-import type { ModelSummary } from '@shared/domain/model'
+import { pixelArtFirst, suitsPixelArt, type ModelSummary } from '@shared/domain/model'
 import type { PlanAccess } from '@shared/domain/plan'
 import { ModelPicker } from '@/components/ModelPicker/ModelPicker'
 import { ModelDownloadDialog } from '@/features/models/components/ModelDownloadDialog'
 import { runtimeLabel } from '@/helpers/runtimeLabel'
 import { FormField } from '@/components/FormField'
 import { useLazyPreviews } from '@/hooks/useLazyPreviews'
+import { usePixelArtGrid } from '@/hooks/usePixelArtGrid'
 import { useModelsForCapability } from '@/hooks/useModelsForCapability'
 import { useModelReach, type ModelRefusalWord } from '@/hooks/useModelReach'
 import { useModels } from '@/stores/models'
@@ -50,7 +51,26 @@ function captionOf(
 export function GeneratorModel({ capability, modelId, name, plan }: GeneratorModelProps) {
   const field = useId()
   const { t } = useTranslation()
-  const models = useModelsForCapability(capability)
+  const listed = useModelsForCapability(capability)
+  const onGrid = usePixelArtGrid() !== null
+
+  /**
+   * A TRI, never a filter: the ones that say they draw pixel art come first and the catalogue's
+   * own order is kept inside each half, so nothing is hidden by not being recognised.
+   *
+   * ⚠️ It only lifts what is ALREADY loaded — `useModelPages` holds 60 of some 640, so a model
+   * at offset 300 will not appear. Seeding the list with a search of its own would be a request
+   * per opening, duplicates, and a list that moves while it is being read.
+   */
+  const models = useMemo(() => (onGrid ? pixelArtFirst(listed) : listed), [listed, onGrid])
+  // Memoised for the caller's sake, not the rows': `ModelPickerRow` is handed the STRING and
+  // compares it by value, so no row memo turns on this identity.
+  const promotedOf = useCallback(
+    (one: ModelSummary) =>
+      onGrid && suitsPixelArt(one) ? t('generation.suitsPixelArt') : undefined,
+    [onGrid, t],
+  )
+
   const select = useModels(state => state.select)
   const chooseAiProvider = useAiModels(state => state.chooseAiProvider)
   const projectPath = useAiModels(state => state.overview?.projectPath ?? null)
@@ -78,6 +98,7 @@ export function GeneratorModel({ capability, modelId, name, plan }: GeneratorMod
         <ModelPicker
           id={field}
           models={models}
+          promotedOf={promotedOf}
           value={modelId}
           onChange={id => {
             const model = models.find(one => one.id === id)

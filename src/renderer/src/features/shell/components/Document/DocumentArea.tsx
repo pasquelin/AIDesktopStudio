@@ -8,6 +8,7 @@ import { homeIsVisible, useLayouts } from '@/stores/layouts'
 import { DocumentOverflow } from './DocumentOverflow'
 import { DocumentTab } from './Tab/DocumentTab'
 import { DOCUMENT_COMPONENTS } from '../documents'
+import { FILE_VIEW_COMPONENTS } from '../fileViewComponents'
 import { DocumentsIdle } from '../Documents/DocumentsIdle'
 import { setDockviewApi } from '../dockviewApi'
 
@@ -119,7 +120,7 @@ export function DocumentArea() {
     >
       <DockviewReact
         key={projectPath ?? ''}
-        components={DOCUMENT_COMPONENTS}
+        components={PANEL_COMPONENTS}
         // Every tab, not a per-panel choice: closing a document has to ask about unsaved work
         // whichever space opened it.
         defaultTabComponent={DocumentTab}
@@ -137,3 +138,5 @@ export function DocumentArea() {
     </AssetDropTarget>
   )
 }
+
+const PANEL_COMPONENTS = { ...DOCUMENT_COMPONENTS, ...FILE_VIEW_COMPONENTS }

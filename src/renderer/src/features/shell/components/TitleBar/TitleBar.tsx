@@ -109,7 +109,9 @@ export function TitleBar({
     <header
       style={DRAGGABLE}
       className={cn(
-        'text-body flex shrink-0 items-center gap-2 pt-2 pr-6 pb-1',
+        // The gauge and no padding of its own: `pt-2 pb-1` around the pills put them 2px under
+        // the traffic lights, and every other window's title 2px above — measured.
+        'text-body flex h-(--sc-title-bar) shrink-0 items-center gap-2 pr-6',
         // The left inset only exists to clear the native traffic lights. macOS removes them
         // in full screen: without this switch, a 96 px gap would remain.
         fullScreen ? 'pl-1.5' : 'pl-24',

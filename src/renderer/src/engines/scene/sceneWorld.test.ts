@@ -1,5 +1,21 @@
 import { describe, expect, it } from 'vitest'
-import { DEFAULT_WORLD, STUDIO_ENVIRONMENT } from '@shared/domain/scene'
+import { withChunkDelta } from '@shared/domain/relief'
+import {
+  DEFAULT_EDIT_NAME,
+  DEFAULT_RELIEF_NAME,
+  DEFAULT_SCATTER_NAME,
+  DEFAULT_SCATTER_RULES,
+  DEFAULT_WORLD,
+  enabledScatters,
+  GROUND_MATERIAL_CHANNELS,
+  reliefLayer,
+  scatterLayer,
+  SCATTER_COLLISION_CAP,
+  SCATTER_MASK_TEXELS,
+  STUDIO_ENVIRONMENT,
+  terrainEditLayer,
+  UNLOCKED_TERRAIN,
+} from '@shared/domain/scene'
 import { backgroundOfKind, environmentOfKind, fogOfKind, readWorld } from './sceneWorld'
 
 describe('reading a world back', () => {
@@ -80,6 +96,170 @@ describe('reading a world back', () => {
     expect(readWorld({ toneMapping: 'agx' }, undefined).toneMapping).toBe('none')
   })
 
+  it('opens a document written before layers existed on none', () => {
+    expect(readWorld({ envIntensity: 1 }, undefined).layers).toEqual([])
+    expect(readWorld(undefined, undefined).layers).toEqual([])
+  })
+
+  it('keeps a relief that names a heightmap, and drops one that does not', () => {
+    const layers = readWorld(
+      { layers: [{ kind: 'relief', heightmap: { assetId: 'asset_height' } }] },
+      undefined,
+    ).layers
+    expect(layers).toHaveLength(1)
+    expect(layers[0]).toMatchObject({
+      kind: 'relief',
+      heightmap: { assetId: 'asset_height' },
+      name: DEFAULT_RELIEF_NAME,
+      enabled: true,
+      locked: UNLOCKED_TERRAIN,
+    })
+    expect(layers[0]?.kind === 'relief' ? layers[0].id.length : 0).toBeGreaterThan(0)
+    expect(readWorld({ layers: [{ kind: 'relief', heightmap: {} }] }, undefined).layers).toEqual([])
+    expect(readWorld({ layers: [{ kind: 'biome' }] }, undefined).layers).toEqual([])
+  })
+
+  it('keeps the placement a relief wrote', () => {
+    expect(
+      readWorld(
+        {
+          layers: [
+            {
+              kind: 'relief',
+              heightmap: { assetId: 'asset_height' },
+              origin: { x: -40, z: 8 },
+              size: { x: 128, z: 64 },
+              elevation: { min: -12, max: 48 },
+            },
+          ],
+        },
+        undefined,
+      ).layers,
+    ).toMatchObject([
+      {
+        kind: 'relief',
+        heightmap: { assetId: 'asset_height' },
+        origin: { x: -40, z: 8 },
+        size: { x: 128, z: 64 },
+        elevation: { min: -12, max: 48 },
+      },
+    ])
+  })
+
+  it('round-trips packed sculpt deltas without expanding them to JSON floats', () => {
+    const samples = { width: 4, height: 4, values: new Float32Array(16) }
+    const sculpt = withChunkDelta(samples, undefined, {
+      column: 0,
+      row: 0,
+      localX: 1,
+      localZ: 1,
+      delta: 2,
+    })
+    const held = readWorld(
+      { layers: [{ kind: 'relief', heightmap: { assetId: 'asset_height' }, sculpt }] },
+      undefined,
+    )
+    const layer = held.layers[0]
+    if (!layer || layer.kind !== 'relief') throw new Error('expected a relief')
+
+    expect(layer.edits).toHaveLength(1)
+    expect(layer.edits[0]?.name).toBe(DEFAULT_EDIT_NAME)
+    expect(layer.edits[0]?.alpha).toBe(1)
+    expect(layer.edits[0]?.enabled).toBe(true)
+    expect(layer.edits[0]?.sculpt).toEqual(sculpt)
+    expect(JSON.stringify(layer)).not.toMatch(/"delta"|2\.0/)
+  })
+
+  it('opens a sculpt-only document as one implicit edit layer named Sculpt', () => {
+    const samples = { width: 4, height: 4, values: new Float32Array(16) }
+    const sculpt = withChunkDelta(samples, undefined, {
+      column: 0,
+      row: 0,
+      localX: 0,
+      localZ: 0,
+      delta: 1,
+    })
+    const held = readWorld(
+      {
+        layers: [
+          {
+            kind: 'relief',
+            heightmap: { assetId: 'asset_height' },
+            sculpt: { grain: 64, chunks: sculpt.chunks },
+          },
+        ],
+      },
+      undefined,
+    )
+    const layer = held.layers[0]
+    if (!layer || layer.kind !== 'relief') throw new Error('expected a relief')
+
+    expect(layer.grain).toBe(64)
+    expect(layer.name).toBe(DEFAULT_RELIEF_NAME)
+    expect(layer.enabled).toBe(true)
+    expect(layer.locked).toEqual(UNLOCKED_TERRAIN)
+    expect(layer.edits).toEqual([
+      expect.objectContaining({
+        name: DEFAULT_EDIT_NAME,
+        enabled: true,
+        locked: false,
+        alpha: 1,
+        sculpt,
+      }),
+    ])
+    expect(layer.id.length).toBeGreaterThan(0)
+    expect(layer.edits[0]?.id.length).toBeGreaterThan(0)
+  })
+
+  it('round-trips a terrain with several named edits, keeping their identity', () => {
+    const samples = { width: 4, height: 4, values: new Float32Array(16) }
+    const hills = withChunkDelta(samples, undefined, {
+      column: 0,
+      row: 0,
+      localX: 1,
+      localZ: 0,
+      delta: 2,
+    })
+    const valley = withChunkDelta(samples, undefined, {
+      column: 0,
+      row: 0,
+      localX: 2,
+      localZ: 0,
+      delta: -1,
+    })
+    const written = reliefLayer(
+      { assetId: 'asset_height' },
+      {
+        id: 'island',
+        name: 'Island',
+        grain: 64,
+        edits: [
+          terrainEditLayer({ id: 'hills', name: 'Hills', sculpt: hills }),
+          terrainEditLayer({ id: 'valley', name: 'Valley', alpha: 0.5, sculpt: valley }),
+        ],
+      },
+    )
+    const held = readWorld({ layers: [written] }, undefined)
+
+    expect(held.layers).toEqual([written])
+  })
+
+  it('round-trips an edit mask', () => {
+    const written = reliefLayer(
+      { assetId: 'asset_height' },
+      {
+        id: 'island',
+        edits: [
+          terrainEditLayer({
+            id: 'hills',
+            mask: { kind: 'height', min: 100, max: 800 },
+          }),
+        ],
+      },
+    )
+    expect(readWorld({ layers: [written] }, undefined).layers).toEqual([written])
+  })
+
   it('gives a ground with no colour the studio one rather than a string', () => {
     expect(readWorld({ ground: { visible: true } }, undefined).ground).toEqual({
       visible: true,
@@ -88,6 +268,141 @@ describe('reading a world back', () => {
       opacity: 1,
       receiveShadow: true,
     })
+  })
+
+  it('round-trips a scatter layer, including inert water and road distances', () => {
+    const written = scatterLayer({
+      id: 'pines',
+      name: 'Pines',
+      assets: [
+        { assetId: 'tree-a', weight: 2 },
+        { assetId: 'tree-b', weight: 1 },
+      ],
+      seed: 17,
+      collision: true,
+      followRelief: 'layer',
+      mask: { kind: 'height', min: 4, max: 40 },
+      rules: {
+        ...DEFAULT_SCATTER_RULES,
+        density: 0.4,
+        spacing: 3,
+        slopeAlign: 60,
+        waterDistance: 8,
+        roadDistance: 2,
+      },
+    })
+    expect(readWorld({ layers: [written] }, undefined).layers).toEqual([written])
+  })
+
+  it('keeps a scatter with no assets, and fills the defaults a file omitted', () => {
+    const layers = readWorld({ layers: [{ kind: 'scatter' }] }, undefined).layers
+    expect(layers).toHaveLength(1)
+    expect(layers[0]).toMatchObject({
+      kind: 'scatter',
+      name: DEFAULT_SCATTER_NAME,
+      enabled: true,
+      locked: false,
+      assets: [],
+      seed: 1,
+      category: 'props',
+      collision: false,
+      followRelief: 'brush',
+      rules: DEFAULT_SCATTER_RULES,
+    })
+    expect(layers[0]?.kind === 'scatter' ? layers[0].id.length : 0).toBeGreaterThan(0)
+  })
+
+  it('normalizes stored grass collision while existing scatters remain props', () => {
+    const layers = readWorld(
+      {
+        layers: [
+          { kind: 'scatter', id: 'legacy', collision: true },
+          { kind: 'scatter', id: 'meadow', category: 'grass', collision: true },
+        ],
+      },
+      undefined,
+    ).layers
+    expect(layers).toMatchObject([
+      { id: 'legacy', category: 'props', collision: true },
+      { id: 'meadow', category: 'grass', collision: false },
+    ])
+  })
+
+  it('loads a relief-only document identically when a scatter kind exists', () => {
+    const written = reliefLayer(
+      { assetId: 'asset_height' },
+      {
+        id: 'island',
+        name: 'Island',
+        grain: 64,
+        edits: [terrainEditLayer({ id: 'hills', name: 'Hills' })],
+      },
+    )
+    expect(readWorld({ layers: [written] }, undefined).layers).toEqual([written])
+  })
+
+  it('keeps mixed relief and scatter in the order they were written', () => {
+    const terrain = reliefLayer({ assetId: 'asset_height' }, { id: 'ground' })
+    const scatter = scatterLayer({ id: 'rocks', assets: [{ assetId: 'boulder', weight: 1 }] })
+    expect(readWorld({ layers: [terrain, scatter] }, undefined).layers).toEqual([terrain, scatter])
+    expect(enabledScatters([terrain, scatter]).map(layer => layer.id)).toEqual(['rocks'])
+  })
+
+  it('round-trips a ground material array reserved for later splat layers', () => {
+    const written = reliefLayer(
+      { assetId: 'asset_height' },
+      {
+        id: 'island',
+        groundMaterials: [{ albedo: { assetId: 'dirt' }, normal: null, channel: 'r' }],
+      },
+    )
+    expect(readWorld({ layers: [written] }, undefined).layers).toEqual([written])
+    expect(
+      readWorld({ layers: [{ kind: 'relief', heightmap: { assetId: 'asset_height' } }] }, undefined)
+        .layers[0],
+    ).toMatchObject({ groundMaterials: [], groundWeights: null })
+  })
+
+  it('migrates a legacy ground picture without enabling splat blending', () => {
+    const layer = readWorld(
+      {
+        layers: [
+          {
+            kind: 'relief',
+            heightmap: { assetId: 'height' },
+            groundMaterials: [{ texture: { assetId: 'painted' }, weight: 1 }],
+          },
+        ],
+      },
+      undefined,
+    ).layers[0]
+
+    expect(layer).toMatchObject({
+      groundMaterials: [{ albedo: { assetId: 'painted' }, normal: null, channel: 'r' }],
+      groundWeights: null,
+    })
+  })
+
+  it('round-trips four channelled materials and shared weights', () => {
+    const written = reliefLayer(
+      { assetId: 'height' },
+      {
+        id: 'terrain',
+        groundMaterials: GROUND_MATERIAL_CHANNELS.map((channel, index) => ({
+          albedo: { assetId: `albedo-${index}` },
+          normal: index === 0 ? null : { assetId: `normal-${index}` },
+          channel,
+        })),
+        groundWeights: { assetId: 'weights' },
+      },
+    )
+
+    expect(readWorld({ layers: [written] }, undefined).layers).toEqual([written])
+  })
+
+  it('publishes the scatter collision cap and the painted-mask texel count', () => {
+    expect(SCATTER_COLLISION_CAP).toBe(4096)
+    expect(SCATTER_MASK_TEXELS).toBe(256)
   })
 })
 

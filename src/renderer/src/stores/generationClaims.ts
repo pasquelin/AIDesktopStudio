@@ -18,7 +18,11 @@ import { claimScriptOnSubmit } from './codeGeneration'
  * `Record<DocumentKind, …>` so the compiler asks for the seventh workspace's line rather than a
  * test noticing it later. The generator serves all of them and knows none.
  */
-type Claim = (into: LandingTarget | undefined, role: AiRoleId | null) => (job: Job | null) => void
+type Claim = (
+  into: LandingTarget | undefined,
+  role: AiRoleId | null,
+  imageLayerId: string | undefined,
+) => (job: Job | null) => void
 
 /**
  * The employment is carried beside the destination because one workspace ACTS on it: a claim is
@@ -35,6 +39,9 @@ const CLAIMS: Record<DocumentKind, Claim | null> = {
   // Nothing generates an interface: it is drawn, and what it SHOWS is claimed by the space the
   // picture belongs to.
   gui: null,
+  // A generated model lands in the library, and a double-click on it opens a tab of its own:
+  // nothing is ever poured INTO the character already open.
+  character: null,
 }
 
 /**
@@ -44,10 +51,11 @@ const CLAIMS: Record<DocumentKind, Claim | null> = {
 export function claimOnSubmit(
   into?: LandingTarget,
   role: AiRoleId | null = null,
+  imageLayerId?: string,
 ): (job: Job | null) => void {
   const claims = Object.values(CLAIMS)
     .filter(claim => claim !== null)
-    .map(claim => claim(into, role))
+    .map(claim => claim(into, role, imageLayerId))
 
   return job => {
     for (const claim of claims) claim(job)

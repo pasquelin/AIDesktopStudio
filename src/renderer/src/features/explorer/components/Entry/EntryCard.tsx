@@ -1,4 +1,4 @@
-import { mdiCircleMedium, mdiFile, mdiFolder } from '@mdi/js'
+import { mdiCircleMedium } from '@mdi/js'
 import { useState, type DragEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { InlineRename } from '@/components/InlineRename'
@@ -6,22 +6,17 @@ import { MediaTile } from '@/components/MediaTile'
 import { rowDrag } from '@/components/rowDrag'
 import { UiIcon } from '@/components/UiIcon'
 import { cn } from '@/helpers/cn'
-import type { DragLike } from '@/helpers/drag'
-
-/**
- * What the card stands for, which decides the SHAPE it draws: a folder, a plain file, or a file
- * the studio opens as a document and which keeps the glyph of its own space.
- */
-export type EntryKind = 'folder' | 'file' | 'document'
-
-/** The tile draws a filled silhouette where the tree draws an outline. */
-const SOLID: Record<Exclude<EntryKind, 'document'>, string> = { folder: mdiFolder, file: mdiFile }
+import { copiesDropTone, warnsDropTone, type DragLike, type DropTone } from '@/helpers/drag'
+import { EntryFace } from './EntryFace'
+import type { EntryKind } from './entryKind'
 
 export type EntryCardProps = {
   /** What the card is called — the document's own name where there is one, the file name else. */
   name: string
-  /** The glyph of a document's space, drawn in place of the file silhouette. */
+  /** The glyph of a document's space, and of the section a folder serves — see `EntryFace`. */
   icon: string
+  /** The section's hue. Only a folder silhouette wears it — see `EntryFace`. */
+  ink?: string
   /** A preview of the file, asked of the main process and rendered there. */
   preview?: string
   /**
@@ -52,6 +47,7 @@ export type EntryCardProps = {
   foreign?: {
     accepts: boolean
     carries: (event: DragLike) => boolean
+    tone?: (event: DragLike) => DropTone
     onDrop: (event: DragEvent<HTMLElement>) => void
   }
   onDropInto: (ids: readonly string[]) => void
@@ -70,6 +66,7 @@ export type EntryCardProps = {
 export function EntryCard({
   name,
   icon,
+  ink,
   preview,
   kind,
   open,
@@ -84,7 +81,7 @@ export function EntryCard({
   onRelease,
 }: EntryCardProps) {
   const { t } = useTranslation()
-  const [over, setOver] = useState(false)
+  const [over, setOver] = useState<DropTone | null>(null)
 
   return (
     <div
@@ -103,23 +100,23 @@ export function EntryCard({
         if (foreign?.carries(event)) {
           if (!foreign.accepts) return
           event.preventDefault()
-          // What leaves the shelf is COPIED into the folder, never taken from it.
-          event.dataTransfer.dropEffect = 'copy'
-          return setOver(true)
+          const tone = foreign.tone?.(event) ?? 'accepted'
+          event.dataTransfer.dropEffect = copiesDropTone(tone) ? 'copy' : 'none'
+          return setOver(tone)
         }
         if (!accepts || !rowDrag.carries(event)) return
         // Without this the browser refuses the drop, and neither callback ever fires.
         event.preventDefault()
         event.dataTransfer.dropEffect = 'move'
-        setOver(true)
+        setOver('accepted')
       }}
-      onDragLeave={() => setOver(false)}
+      onDragLeave={() => setOver(null)}
       onDragEnd={() => {
-        setOver(false)
+        setOver(null)
         onRelease()
       }}
       onDrop={event => {
-        setOver(false)
+        setOver(null)
         // Before the grid's own reading, which answers about what IT picked up — nothing did.
         if (foreign?.carries(event)) {
           event.preventDefault()
@@ -135,7 +132,8 @@ export function EntryCard({
       className={cn(
         'size-full',
         // The outline the tree draws on the row a drop lands in, so one gesture reads alike in both.
-        over && 'outline-accent rounded-(--radius-sc-md) outline -outline-offset-1',
+        over === 'accepted' && 'outline-accent rounded-(--radius-sc-md) outline -outline-offset-1',
+        warnsDropTone(over) && 'outline-danger rounded-(--radius-sc-md) outline -outline-offset-1',
         // Cut, and on its way out. An opacity rather than a quiet ink: what dims is a PICTURE, and
         // there is no ink to quieten on one — exempted by name in `tokens.test.ts`.
         waiting && 'opacity-50',
@@ -148,15 +146,7 @@ export function EntryCard({
         // A thumbnail is cut to the file silhouette rather than framed: the tile then says what
         // the entry IS as plainly as the folder next to it, without hiding what it holds.
         cutout={kind === 'file'}
-        // The alpha `MediaTile` draws its own fallback at — below it, `tokens.test.ts`
-        // refuses the ratio a glyph that INFORMS owes (WCAG 1.4.11).
-        face={
-          <UiIcon
-            path={kind === 'document' ? icon : SOLID[kind]}
-            size="fill"
-            className="text-muted/80"
-          />
-        }
+        face={<EntryFace kind={kind} icon={icon} ink={ink} />}
         {...(onRename
           ? {
               captionField: (

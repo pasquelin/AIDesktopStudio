@@ -100,7 +100,7 @@ fichier modifié devrait lui-même être publié.
 - **Le nom était un sujet ouvert ; il est clos depuis le 21/08.** « Scenario Studio » et
   `com.scenario.app` reprenaient la marque d’un tiers, et l’`EULA.md` n’y opposait qu’une clause
   de non-affiliation — ce qui atténuait sans régler. La décision produit a été rendue : le studio
-  s’appelle **IA Studio**, son `appId` est `com.pasquelin.iastudio`, et plus aucun identifiant du
+  s’appelle **IA Studio**, son `appId` est `com.pasquelin.aidesktopstudio`, et plus aucun identifiant du
   dépôt ne porte le mot. Ce qui subsiste est technique et nominatif — le paquet
   `@scenario-labs/sdk`, les URL `*.scenario.com`, et les valeurs que leur API RENVOIE
   (`PROVIDER_MAINTAINER`, les tags `sc:*`) — tant que l’application appelle cette API. Les

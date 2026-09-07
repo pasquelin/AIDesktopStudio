@@ -1,6 +1,6 @@
 {
-  "$id": "https://pasquelin.github.io/IAStudio/schema/ui-1.schema.json",
-  "title": "IA Studio interface",
+  "$id": "https://www.aidesktopstudio.com/schema/ui-1.schema.json",
+  "title": "AI Desktop Studio interface",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "type": "object",
   "properties": {
@@ -78,19 +78,11 @@
             ]
           },
           "fallback": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "number"
-              },
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "null"
             ]
           }
         },

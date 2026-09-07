@@ -3,77 +3,57 @@ import { cn } from '@/helpers/cn'
 import { withoutTip, type TooltipFactory } from '@/helpers/tooltip'
 import { BUTTON_BASE, TONE_TEXT, type StatusTone } from './styles'
 import { UiIcon } from './UiIcon'
-
-/**
- * What each host costs the button, on one line per host.
- *
- * A table rather than two conditions, because the two do not cut the same way: the BOX separates
- * `row` from the rest, the GLYPH separates `bar` from the rest. Written as a pair of ternaries,
- * a fourth host meant guessing which side of two different partitions it fell on.
- *
- * `row` is the only one that shrinks the box, and the reason is measured: at a bar's gauge, an
- * eye and two padlocks took 68px off the end of a 28px layer line — more than a fifth of a side
- * panel, on the very rows whose name is what one reads.
- */
 const HOSTS = {
   bar: { box: 'size-(--sc-control)', glyph: 16 },
   header: { box: 'size-(--sc-control)', glyph: 14 },
   row: { box: 'size-(--sc-control-inline)', glyph: 14 },
 }
-
 export type ToolButtonProps = Omit<
   ButtonHTMLAttributes<HTMLButtonElement>,
-  // `aria-pressed` among them: it is spread AFTER the one this computes, so a caller passing it
-  // raw would silently win — and the three props below would stop describing what is announced.
   'aria-label' | 'aria-pressed' | 'children' | 'title'
 > & {
-  /**
-   * `@mdi/js` icon path. When absent the button renders only its `children` — for the one
-   * whose preview IS the value it sets, which no glyph can express.
-   */
   icon?: string
-  /** Accessible name and tooltip content. */
   label: string
-  /** Shown in the tooltip in place of the label — for a control whose name is already on screen. */
   description?: string
-  /**
-   * Tooltip factory of the host bar — required: an icon-only button whose action is never
-   * spelled out is a button one has to press to find out what it does.
-   */
   tooltip: TooltipFactory
-  /** Drops the tip while something of this button's own covers it — see `MenuButton`. */
   tipHidden?: boolean
   shortcut?: string | false
-  /** Tool currently in use: neutral background, and `aria-pressed` unless `acts`. */
   active?: boolean
-  /** Acts rather than toggles: no `aria-pressed` — see `ToolbarItem.acts`. */
   acts?: boolean
-  /**
-   * ANNOUNCED without being painted, for a state an icon already draws — the eye of a layer row.
-   * Every row is visible by default, so `active` would light a permanent square on each of them,
-   * in the very colour the row takes under the pointer.
-   */
   told?: boolean
-  /** Tool in use AND whose zone has focus: accented background. */
   accented?: boolean
-  /**
-   * What pressing this button MEANS, in the ink `StatusTone` publishes. 🛑 Dropped while the
-   * button is inert: a disabled control still wearing its colour reads as available.
-   */
   tone?: StatusTone
-  /** Which host the button sits on — see `HOSTS` for what each one costs. */
   variant?: keyof typeof HOSTS
   iconSize?: number
   children?: ReactNode
-  /** The `<button>` itself, so a bar can publish its active button as an anchor. */
   ref?: Ref<HTMLButtonElement>
 }
 
-/**
- * A toolbar button: icon, active and accented states, accessible name carrying the shortcut.
- * The single source of the bars' visual language — without it every site re-copied the active
- * class, the tooltip attributes and the icon size, and a missing `aria-label` went unnoticed.
- */
+function toolButtonClass({
+  icon,
+  children,
+  variant = 'bar',
+  tone,
+  disabled,
+  active,
+  accented,
+  className,
+}: Pick<
+  ToolButtonProps,
+  'icon' | 'children' | 'variant' | 'tone' | 'disabled' | 'active' | 'accented' | 'className'
+>): string {
+  return cn(
+    BUTTON_BASE,
+    icon !== undefined && children !== undefined && 'gap-1.5',
+    'text-muted shrink-0 bg-transparent',
+    HOSTS[variant].box,
+    'hover:bg-elevated',
+    tone && !disabled ? TONE_TEXT[tone] : 'hover:text-text',
+    active && 'bg-elevated text-text',
+    accented && 'bg-accent hover:bg-accent text-accent-content',
+    className,
+  )
+}
 export function ToolButton({
   icon,
   label,
@@ -96,28 +76,22 @@ export function ToolButton({
 }: ToolButtonProps) {
   const named = tooltip(label, shortcut, description)
   const naming = tipHidden ? withoutTip(named) : named
-
   return (
     <button
       type="button"
       ref={ref}
       aria-pressed={acts ? undefined : (told ?? active)}
       disabled={disabled}
-      className={cn(
-        BUTTON_BASE,
-        // A glyph beside words needs the space a square button never did: the journal's filters
-        // read « ⩸Niveau », glyph glued to label. Only where BOTH are drawn.
-        icon !== undefined && children !== undefined && 'gap-1.5',
-        'text-muted shrink-0 bg-transparent',
-        HOSTS[variant].box,
-        'hover:bg-elevated',
-        // The tone survives the pointer: a Play that stops being green under the hand is a
-        // button whose colour answered the pointer instead of the state.
-        tone && !disabled ? TONE_TEXT[tone] : 'hover:text-text',
-        active && 'bg-elevated text-text',
-        accented && 'bg-accent hover:bg-accent text-accent-content',
+      className={toolButtonClass({
+        icon,
+        children,
+        variant,
+        tone,
+        disabled,
+        active,
+        accented,
         className,
-      )}
+      })}
       {...naming}
       {...rest}
     >

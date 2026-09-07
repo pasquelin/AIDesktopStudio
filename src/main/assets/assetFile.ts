@@ -10,9 +10,17 @@ import {
   safeFileName,
   stemForSuffix,
 } from '@shared/domain/fileName'
-import { parentOf } from '@shared/domain/folder'
+import { nameOf, parentOf } from '@shared/domain/folder'
+import {
+  ANIMATION_CLIP_STEM,
+  ANIMATION_THUMBNAIL,
+  isOwnAnimationFolder,
+} from '@shared/domain/animationLibrary'
+import { SOURCES_FOLDER } from '@shared/domain/meshImport'
 import { exists } from '@main/persistence'
 import { assetFilePath } from './protocol'
+import type { AssetType } from '@shared/domain/asset'
+import { extname } from 'node:path'
 
 /**
  * Where an asset's bytes live, now that a row's name is also its file's.
@@ -25,7 +33,7 @@ import { assetFilePath } from './protocol'
  */
 
 /** What a refused rename says. Recognised on the other side, where the field has closed. */
-export const DUPLICATE_NAME: AssetNameFailure = 'duplicate'
+export const ASSET_DUPLICATE_NAME: AssetNameFailure = 'duplicate'
 
 /**
  * The first name in `folder` nobody has taken — `Ruelle bleue`, then `Ruelle bleue 2`.
@@ -86,6 +94,26 @@ export async function freeAssetPath(
 }
 
 /**
+ * The same, for an animation: a FOLDER of its own, holding a clip that carries no name.
+ *
+ * The name is the folder's — that is the whole point, and `resources/animations/` has answered
+ * that way since it shipped. A rig names its only clip `NlaTrack` or nothing at all, so what the
+ * file spells must never reach the screen; and a still then has somewhere to live beside it.
+ */
+export async function freeAnimationPath(
+  root: string,
+  folder: string,
+  name: string,
+  extension: string,
+): Promise<string> {
+  // Asked with no extension, which is what a FOLDER is: `assetFileName` then cleans the name and
+  // `exists` answers for a directory as it does for a file, so the suffixing is the same one.
+  const own = `${folder}/${assetFileName(await freeAssetName(root, folder, name, ''), '')}`
+  await mkdir(join(root, own), { recursive: true })
+  return `${own}/${ANIMATION_CLIP_STEM}${extension}`
+}
+
+/**
  * Moves an asset's file so that it is called after its new name, and answers where it now is.
  *
  * The extension and the folder are kept: a rename is neither a conversion nor a move, and where
@@ -95,7 +123,7 @@ export async function freeAssetPath(
  * one that lives in the library alone. Writing into a folder the user merely pointed at is a
  * gesture the studio does not take, so those keep their name in the catalogue and nowhere else.
  *
- * Throws `DUPLICATE_NAME` rather than overwriting: the file it would replace is another asset's,
+ * Throws `ASSET_DUPLICATE_NAME` rather than overwriting: the file it would replace is another asset's,
  * and `rename` takes it without a word on POSIX.
  */
 export async function moveAssetFile(
@@ -109,22 +137,66 @@ export async function moveAssetFile(
   // serving one. A row pointing outside the project is not a row whose file we move.
   if (!assetFilePath(root, asset.path)) return asset.path
 
-  const folder = parentOf(asset.path)
-  const wanted = assetFileName(name, extensionOf(asset.path))
-  const target = folder === null ? wanted : `${folder}/${wanted}`
-
+  const target = renamedFilePath(asset.path, name)
   if (target === asset.path) return asset.path
 
   // A row whose file somebody deleted by hand still takes its new name: there is nothing to
   // move, and refusing would leave a name uncorrectable on the one row that most needs it.
   if (!(await exists(join(root, asset.path)))) return asset.path
 
-  // Case alone is not a duplicate — one file, this asset's own, changing how it is spelled.
-  const collides = !isSameFileName(target, asset.path) && (await exists(join(root, target)))
-  if (collides) throw new Error(DUPLICATE_NAME)
+  // An animation wears its FOLDER's name, the clip inside carrying none, so that is what moves.
+  const own = asset.type === 'animation' ? await ownAnimationFolderOf(root, asset.path) : null
+  if (own !== null) return await renamedAnimationFolder(root, asset.path, own, name)
 
-  await rename(join(root, asset.path), join(root, target))
+  return await renamedTo(root, asset.path, target)
+}
+
+/** The same path, the last segment renamed and its extension kept. */
+function renamedFilePath(path: string, name: string): string {
+  const folder = parentOf(path)
+  const wanted = assetFileName(name, extensionOf(path))
+  return folder === null ? wanted : `${folder}/${wanted}`
+}
+
+/** The move itself, refused rather than taken when something of another name is already there. */
+async function renamedTo(root: string, from: string, target: string): Promise<string> {
+  // Case alone is not a duplicate — one file, this asset's own, changing how it is spelled.
+  if (!isSameFileName(target, from) && (await exists(join(root, target))))
+    throw new Error(ASSET_DUPLICATE_NAME)
+
+  await rename(join(root, from), join(root, target))
   return target
+}
+
+/**
+ * The folder this clip is alone in, or `null` when it is not one of ours to carry along.
+ *
+ * 🛑 MEASURED rather than deduced from the path. A clip a user dropped in by hand and called
+ * `animation.glb` reads exactly like one the studio laid out, and its parent is then the
+ * animations folder itself — renaming THAT would take every other clip with it.
+ */
+async function ownAnimationFolderOf(root: string, clipPath: string): Promise<string | null> {
+  const folder = isOwnAnimationFolder(clipPath) ? parentOf(clipPath) : null
+  if (folder === null) return null
+
+  const ours = new Set([nameOf(clipPath), ANIMATION_THUMBNAIL, SOURCES_FOLDER])
+  const held = await orElse(readdir(join(root, folder)), [])
+  return held.length > 0 && held.every(entry => ours.has(entry)) ? folder : null
+}
+
+/** The same rename as a file's, one level up: the folder takes the name, the clip keeps its own. */
+async function renamedAnimationFolder(
+  root: string,
+  clipPath: string,
+  folder: string,
+  name: string,
+): Promise<string> {
+  const above = parentOf(folder)
+  const wanted = assetFileName(name, '')
+  const target = above === null ? wanted : `${above}/${wanted}`
+
+  if (target === folder) return clipPath
+  return `${await renamedTo(root, folder, target)}/${nameOf(clipPath)}`
 }
 
 /**
@@ -154,4 +226,35 @@ export async function moveAssetFileToFree(
   // and the row must say what the disk says rather than what was asked for. NOT `stemOf(moved)`
   // — a name may legitimately hold a dot, and `Ruelle v1.2.png` would come back as `Ruelle v1`.
   return moved ? { name: safeFileName(free, FALLBACK_ASSET_NAME), path: moved } : undefined
+}
+
+/** The kind's own extension, for anything that is not a plain one. */
+const FALLBACK_EXTENSION: Record<AssetType, string> = {
+  image: '.png',
+  video: '.mp4',
+  audio: '.mp3',
+  mesh: '.glb',
+  skybox: '.png',
+  animation: '.glb',
+}
+
+/**
+ * Anything that is not a plain extension is refused, and the kind's own is used instead. The
+ * refusal is the point: the string comes from an API response or from the renderer, and
+ * `../../.ssh/id_rsa` appended to an asset id would write outside the project entirely.
+ */
+export function safeExtension(extension: string, type: AssetType): string {
+  return /^\.[a-z0-9]{1,8}$/i.test(extension) ? extension.toLowerCase() : FALLBACK_EXTENSION[type]
+}
+
+/**
+ * The same file, re-suffixed — a take re-encoded on the way out keeps the name it is known by,
+ * and it cannot collide, being the file that is already there. `freeAssetPath` is for one that
+ * does not exist yet.
+ */
+export function withExtension(relativePath: string, extension: string): string {
+  // `extname` and not `stemOf`, which is for a NAME: this takes a path, and only `node:path`
+  // knows that the last dot of `assets/v1.2/take` belongs to a folder rather than to the file.
+  const suffix = extname(relativePath)
+  return `${suffix ? relativePath.slice(0, -suffix.length) : relativePath}${extension}`
 }

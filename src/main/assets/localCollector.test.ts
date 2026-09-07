@@ -20,7 +20,7 @@ const JOB: Job = {
 }
 
 const PRODUCED: CollectableProduction = {
-  path: '/tmp/ia-studio-generations/job_1.png',
+  path: '/tmp/ai-desktop-studio-generations/job_1.png',
   type: 'image',
   prompt: 'a red cube on a white table',
 }

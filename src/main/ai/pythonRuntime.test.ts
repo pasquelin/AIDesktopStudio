@@ -13,6 +13,15 @@ const MODEL = localModel({
   modality: 'image',
 })
 
+const MIA = localModel({
+  id: 'make-it-animatable',
+  backendId: 'make-it-animatable',
+  loader: 'plugin',
+  format: 'pickle',
+  modality: 'mesh',
+  readsTorchWeights: true,
+})
+
 const settled = (over: Partial<EngineSettledJob> = {}): EngineSettledJob => ({
   v: 1,
   evt: 'job.completed',
@@ -47,6 +56,7 @@ function harness(over: Partial<PythonClient> = {}, deps: Partial<PythonRuntimeDe
     baseOf: () => null,
     engine: () => Promise.resolve(client),
     running: () => client,
+    whyNot: () => null,
     log: () => {},
     ...deps,
   })
@@ -161,6 +171,17 @@ describe('loading', () => {
     const held = harness()
 
     expect(await held.runtime.load?.(MODEL, { onProgress: () => {} })).toBe(MODEL.reservationBytes)
+  })
+
+  // Measured 2026-09-06 (Codex by MCP, worktree without `pnpm engine:fetch`): the job ended on the
+  // bare word `rejected`. The supervisor knows why the engine will not come; the throw says it.
+  it('names the reason the engine will not come, so a job says "not installed" rather than "rejected"', async () => {
+    const { runtime } = harness(
+      {},
+      { engine: () => Promise.resolve(null), whyNot: () => 'engine-missing' },
+    )
+
+    await expect(runtime.load?.(MODEL, { onProgress: () => {} })).rejects.toThrow('engine-missing')
   })
 
   it('refuses readably when the engine is not answering', async () => {
@@ -386,6 +407,14 @@ describe('weights that complete another model', () => {
 })
 
 describe('a door whose environment is incomplete', () => {
+  it('checks the embedded Auto Rig profile before loading MIA', async () => {
+    const held = harness()
+
+    await held.runtime.load?.(MIA, { onProgress: () => {} })
+
+    expect(held.requirements).toHaveBeenCalledWith('autorig')
+  })
+
   /**
    * Asked before the door is woken: an absent library fails as an `ImportError` three frames inside
    * a worker, and reaches the person as a door that died with no name to act on.
@@ -406,5 +435,28 @@ describe('a door whose environment is incomplete', () => {
       'torchvision, torch 2.1.0 (needs >=2.6)',
     )
     expect(held.job).not.toHaveBeenCalled()
+  })
+})
+
+describe('a supplied motion model', () => {
+  it('checks motion dependencies and loads the registered backend from its local folder', async () => {
+    const held = harness({}, { folderFor: model => model.weightsPath ?? '/unused' })
+    const model = localModel({
+      id: 'own-motion',
+      backendId: 'kimodo-soma-rp-v1.1',
+      loader: 'plugin',
+      modality: 'motion',
+      weightsPath: '/weights/motion',
+    })
+    await held.runtime.load?.(model, { onProgress: () => {} })
+    expect(held.requirements).toHaveBeenCalledWith('motion')
+    expect(held.job).toHaveBeenCalledWith(
+      'models.load',
+      expect.objectContaining({
+        modelId: 'kimodo-soma-rp-v1.1',
+        folder: '/weights/motion',
+      }),
+      expect.anything(),
+    )
   })
 })

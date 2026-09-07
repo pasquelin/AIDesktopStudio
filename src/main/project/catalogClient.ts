@@ -1,5 +1,6 @@
 import type { ActivityDraft, ActivityEntry, ActivityQuery } from '@shared/domain/activity'
 import type { Asset, AssetCounts, AssetQuery } from '@shared/domain/asset'
+import type { AnimationPosterWrite } from './catalogTypes'
 import {
   ABANDONED,
   isRescanProgress,
@@ -33,6 +34,7 @@ export type CatalogPort = {
  * frozen for that long (CLAUDE.md, invariant 6).
  */
 export type AsyncCatalog = {
+  setAnimationPoster: (write: AnimationPosterWrite) => Promise<boolean>
   add: (asset: Asset) => Promise<Asset>
   find: (assetId: string) => Promise<Asset | null>
   findByHash: (hash: string) => Promise<Asset | null>
@@ -54,6 +56,8 @@ export type AsyncCatalog = {
    * Answers how many rows went, so a caller knows whether anything is worth telling a window.
    */
   forgetUnder: (path: string) => Promise<number>
+  /** Every filed row AT one of these paths or under it — prefixes, see `assetsUnder`. */
+  assetsUnder: (folders: readonly string[]) => Promise<Asset[]>
   /**
    * Reconciles the catalogue with the project folder, in the thread that holds it.
    *
@@ -202,6 +206,8 @@ export function createCatalogClient(port: CatalogPort): AsyncCatalog {
     })
 
   return {
+    setAnimationPoster: write =>
+      send<'setAnimationPoster'>(id => ({ id, op: 'setAnimationPoster', ...write })),
     add: asset => send<'add'>(id => ({ id, op: 'add', asset })),
 
     find: assetId => send<'find'>(id => ({ id, op: 'find', assetId })),
@@ -256,6 +262,7 @@ export function createCatalogClient(port: CatalogPort): AsyncCatalog {
       }),
 
     forgetUnder: path => send<'forgetUnder'>(id => ({ id, op: 'forgetUnder', path })),
+    assetsUnder: folders => send<'assetsUnder'>(id => ({ id, op: 'assetsUnder', folders })),
 
     appendActivity: entries =>
       send<'appendActivity'>(id => ({ id, op: 'appendActivity', entries })),

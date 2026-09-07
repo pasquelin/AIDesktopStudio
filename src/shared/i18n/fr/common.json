@@ -6,6 +6,9 @@
     "generate": "Générer",
     "close": "Fermer",
     "removeTool": "Retirer le module",
+    "resizeZone": "Redimensionner la zone de panneaux",
+    "resizeSplit": "Redimensionner les deux panneaux",
+    "resizeBand": "Redimensionner les panneaux du bas",
     "retry": "Réessayer",
     "retryHint": "Retente le rendu de cette zone, sans redémarrer le studio",
     "generateHint": "Lance la génération avec les réglages ci-dessus ; elle se suit dans la barre des générations",
@@ -37,7 +40,16 @@
     "running_other": "{{count, number}} tâches",
     "open": "Afficher les tâches",
     "openHint": "Ouvre la liste des tâches en cours",
-    "cancel": "Interrompre cette tâche"
+    "cancel": "Interrompre cette tâche",
+    "phases": {
+      "prepare": "Préparation du modèle",
+      "load": "Chargement du moteur",
+      "analyse": "Analyse du personnage",
+      "skeleton": "Génération du squelette",
+      "pose": "Calcul de la pose de repos",
+      "skinning": "Calcul du skinning",
+      "apply": "Application du squelette"
+    }
   },
   "dialog": {
     "allMedia": "Tous les médias",
@@ -45,6 +57,7 @@
     "audio": "Audio",
     "image": "Image",
     "mesh": "Modèle 3D",
+    "animation": "Animation",
     "bundle": "Montage et médias",
     "weights": "Poids de modèle"
   },
@@ -74,13 +87,15 @@
     "invalidValue": "Valeur invalide.",
     "rejected": "La génération a échoué.",
     "incompleteModel": "Les fichiers du modèle sont incomplets. Réinstallez-le, puis relancez la génération.",
+    "engineMissing": "Le moteur d’IA local n’est pas installé sur cette machine, donc rien ici ne peut exécuter le modèle.",
+    "engineFailed": "Le moteur d’IA local n’a pas démarré. Consultez le journal d’activité, puis réessayez.",
     "storage": "Impossible d’enregistrer le résultat sur le disque.",
     "panelCrashed": "Ce panneau a rencontré une erreur.",
     "windowCrashed": "L’application a rencontré une erreur."
   },
   "licences": {
     "title": "Licences",
-    "intro": "IA Studio est livré avec les logiciels ci-dessous. Chacun garde sa propre licence, reproduite ici en entier.",
+    "intro": "AI Desktop Studio est livré avec les logiciels ci-dessous. Chacun garde sa propre licence, reproduite ici en entier.",
     "sources": "Sources correspondantes :",
     "sourcesUnmodified": "Sources correspondantes, sans modification :",
     "bundled": "livré avec l’application",

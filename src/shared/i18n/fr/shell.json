@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "IA Studio"
+    "name": "AI Desktop Studio"
   },
   "workspaces": {
     "navigation": "Espaces de travail",
@@ -22,11 +22,13 @@
     "scenes": "Scènes de la section {{label}}",
     "models": "Modèles de la section {{label}}",
     "animations": "Animations de la section {{label}}",
-    "gui": "Interfaces du jeu"
+    "gui": "Interfaces du jeu",
+    "input": "Contrôles du jeu"
   },
   "panels": {
     "assistant": "Assistant",
     "layers": "Calques",
+    "world": "Relief",
     "meshes": "Mailles",
     "lights": "Lumières",
     "timeline": "Timeline",
@@ -145,6 +147,9 @@
     "front": "Tout ramener au premier plan",
     "toggleDevTools": "Outils de développement",
     "reload": "Recharger",
+    "newDocument": "Nouveau…",
+    "newFile": "Nouveau fichier",
+    "openRecent": "Ouvrir récent",
     "newProject": "Nouveau projet…",
     "openProject": "Ouvrir un projet…",
     "saveDocument": "Enregistrer",
@@ -154,6 +159,7 @@
     "add": "Ajouter",
     "mesh": "Maille",
     "light": "Lumière",
+    "figure": "Figure",
     "object": "Objet",
     "import": "Importer",
     "importBundle": "Montage et médias (OTIOZ)…",
@@ -178,6 +184,7 @@
     "zoomActual": "Taille réelle",
     "rulers": "Règles",
     "guides": "Repères",
+    "grid": "Grille de pixels",
     "clearGuides": "Effacer les repères",
     "snap": "Magnétisme",
     "help": "Aide",
@@ -186,6 +193,8 @@
     "manual": "Manuel utilisateur",
     "imageTools": "Outils",
     "usage": "Consommation…",
+    "welcome": "Bienvenue",
+    "sceneNavigation": "Navigation",
     "sceneDisplay": "Mode de rendu",
     "sceneView": "Point de vue",
     "sceneCapture": "Capturer la vue"

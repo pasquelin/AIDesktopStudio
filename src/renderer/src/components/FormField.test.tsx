@@ -30,4 +30,9 @@ describe('FormField', () => {
 
     expect(box.nextElementSibling?.textContent).toBe('Quads')
   })
+
+  it('announces a required control as required', () => {
+    render(<FormField label="Name" htmlFor="name" required control={<input id="name" />} />)
+    expect(screen.getByRole('textbox')).toHaveAttribute('aria-required', 'true')
+  })
 })

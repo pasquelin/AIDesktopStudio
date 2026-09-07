@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { Spinner } from '@/components/Spinner'
 import { useAssistant } from '@/stores/assistant'
+import { AssistantConversationMissionEvents } from '@/components/AssistantConversationMissionEvents'
 
 /**
  * IN the thread, last of it — where the answer itself will appear, and never down by the field:
@@ -20,24 +21,27 @@ export function AssistantConversationWorking() {
   const promptTokens = useAssistant(state => state.promptTokens)
   const replyTokens = useAssistant(state => state.replyTokens)
 
-  if (!busy || asked !== null || choosing !== null) return null
+  if (!busy || asked !== null || choosing !== null) return <AssistantConversationMissionEvents />
 
   return (
-    <li className="text-muted text-mini m-0 flex flex-col gap-1.5">
-      <span className="flex items-center gap-1.5">
-        <Spinner label={t('assistant.thinking')} size={14} />
-        {stopping
-          ? t('assistant.stopping')
-          : round > 1
-            ? t('assistant.workingRound', { round })
-            : t('assistant.thinking')}
-        {promptTokens > 0 && (
-          <span>{t('assistant.tokens', { prompt: promptTokens, reply: replyTokens })}</span>
-        )}
-      </span>
-      {/* The tail and not the head: what says a model is alive is the words arriving, and the top
+    <>
+      <AssistantConversationMissionEvents />
+      <li className="text-muted text-mini m-0 flex flex-col gap-1.5">
+        <span className="flex items-center gap-1.5">
+          <Spinner label={t('assistant.thinking')} size={14} />
+          {stopping
+            ? t('assistant.stopping')
+            : round > 1
+              ? t('assistant.workingRound', { round })
+              : t('assistant.thinking')}
+          {promptTokens > 0 && (
+            <span>{t('assistant.tokens', { prompt: promptTokens, reply: replyTokens })}</span>
+          )}
+        </span>
+        {/* The tail and not the head: what says a model is alive is the words arriving, and the top
           of a JSON object stops moving after the first line. */}
-      {streamed !== '' && <span className="line-clamp-3 break-all">{streamed}</span>}
-    </li>
+        {streamed !== '' && <span className="line-clamp-3 break-all">{streamed}</span>}
+      </li>
+    </>
   )
 }

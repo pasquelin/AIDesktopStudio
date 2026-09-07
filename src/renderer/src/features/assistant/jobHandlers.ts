@@ -14,8 +14,10 @@ import { numberOf, recordOf, textOf } from './actionInputs'
 
 const DEFAULT_WAIT_MS = 60_000
 
-/** The three windows the API prices, keyed by what a client writes. */
-const PERIODS = new Map<string, UsagePeriod>(USAGE_PERIODS.map(period => [String(period), period]))
+function usagePeriodOf(input: Record<string, unknown>): UsagePeriod {
+  const value = numberOf(input, 'days')
+  return USAGE_PERIODS.find(period => period === value) ?? DEFAULT_USAGE_PERIOD
+}
 
 /** What a caller does about a job nobody answers to — spelled once for the three sites. */
 const noJob = (jobId: string): string =>
@@ -126,10 +128,7 @@ export const JOB_HANDLERS: ActionHandlers = {
       ),
     ),
 
-  'usage.report': input =>
-    withBridge(bridge =>
-      bridge.provider.usageReport(PERIODS.get(textOf(input, 'days') ?? '') ?? DEFAULT_USAGE_PERIOD),
-    ),
+  'usage.report': input => withBridge(bridge => bridge.provider.usageReport(usagePeriodOf(input))),
 
   // `false` says nothing was running under that id, which is a click that arrived late rather
   // than a failure — so it travels as the answer it is.

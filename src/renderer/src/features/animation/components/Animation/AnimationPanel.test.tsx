@@ -104,6 +104,13 @@ describe('AnimationPanel', () => {
     expect(screen.getByTestId('anim-subject-cube-1')).toHaveTextContent('cube-1')
   })
 
+  // 224 px of bordered nothing, on every band holding no block — the skeleton window's holds none.
+  it('leaves out the settings column while no block is picked', () => {
+    render(<AnimationPanel documentId={DOCUMENT} />)
+
+    expect(screen.queryByRole('complementary')).not.toBeInTheDocument()
+  })
+
   it('offers no button to add a track, because there is nothing to add', () => {
     render(<AnimationPanel documentId={DOCUMENT} />)
 

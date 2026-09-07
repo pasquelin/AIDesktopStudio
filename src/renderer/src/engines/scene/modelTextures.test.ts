@@ -1,5 +1,7 @@
 import {
   Mesh,
+  MeshBasicMaterial,
+  MeshPhysicalMaterial,
   MeshStandardMaterial,
   Object3D,
   RepeatWrapping,
@@ -12,7 +14,6 @@ import { scriptedTextureCache } from './scene-fixtures'
 import { instanceOf } from './modelCache'
 import { geometryFor } from './threeFactory'
 
-/** A parsed file: one mesh wearing one material, already dressed with the map it ships. */
 function loadedModel(): { source: Object3D; fileMap: Texture } {
   const fileMap = new Texture()
   const material = new MeshStandardMaterial()
@@ -23,7 +24,6 @@ function loadedModel(): { source: Object3D; fileMap: Texture } {
   return { source, fileMap }
 }
 
-/** The one material of an instance, whatever depth the file put it at. */
 function materialOf(root: Object3D): MeshStandardMaterial {
   let found: MeshStandardMaterial | null = null
   root.traverse(object => {
@@ -35,7 +35,6 @@ function materialOf(root: Object3D): MeshStandardMaterial {
   return found
 }
 
-/** Two meshes, two materials — a car body and its glass, which is the ordinary glTF file. */
 function twoMaterialModel(): Object3D {
   const source = new Object3D()
   for (let made = 0; made < 2; made += 1) {
@@ -63,6 +62,45 @@ beforeEach(() => {
 })
 
 describe('createModelTextures', () => {
+  it('reports material names in the same order as their editable slots', () => {
+    const scripted = scriptedTextureCache()
+    const source = twoMaterialModel()
+    const materials = materialsOf(source)
+    if (materials[0]) materials[0].name = 'Coat'
+    if (materials[1]) materials[1].name = 'Glass'
+
+    const textures = createModelTextures(scripted.cache, instanceOf(source), onChange)
+
+    expect(textures.names()).toEqual(['Coat', 'Glass'])
+  })
+
+  it('reports glTF material indices in runtime slot order', () => {
+    const scripted = scriptedTextureCache()
+    const source = twoMaterialModel()
+    const materials = materialsOf(source)
+    if (materials[0]) materials[0].userData.gltfMaterialIndex = 3
+    if (materials[1]) materials[1].userData.gltfMaterialIndex = 1
+
+    const textures = createModelTextures(scripted.cache, instanceOf(source), onChange)
+
+    expect(textures.sourceIndices()).toEqual([3, 1])
+  })
+
+  it('reports each mesh as a part of the same model root', () => {
+    const scripted = scriptedTextureCache()
+    const source = twoMaterialModel()
+    const meshes = source.children.filter(child => child instanceof Mesh)
+    if (meshes[0]) meshes[0].name = 'Hair'
+    if (meshes[1]) meshes[1].name = 'Head'
+
+    const textures = createModelTextures(scripted.cache, instanceOf(source), onChange)
+
+    expect(textures.parts()).toEqual([
+      { id: 'mesh-0', name: 'Hair', materialSlots: [0] },
+      { id: 'mesh-1', name: 'Head', materialSlots: [1] },
+    ])
+  })
+
   it('puts the project picture over the map the file carries', async () => {
     const scripted = scriptedTextureCache()
     const { source } = loadedModel()
@@ -79,8 +117,6 @@ describe('createModelTextures', () => {
     expect(onChange).toHaveBeenCalled()
   })
 
-  // The point of the whole file: `instanceOf` clones a tree but SHARES its materials, so writing
-  // a map straight into one would repaint every other node built from the same file.
   it('leaves the other instances of the same file alone', async () => {
     const scripted = scriptedTextureCache()
     const { source, fileMap } = loadedModel()
@@ -108,6 +144,83 @@ describe('createModelTextures', () => {
 
     expect(scripted.released).toEqual(['tex-1'])
     expect(materialOf(instance).map).toBe(fileMap)
+  })
+
+  it('removes the file map in textureless mode and restores it when that mode ends', () => {
+    const scripted = scriptedTextureCache()
+    const { source, fileMap } = loadedModel()
+    const instance = instanceOf(source)
+    const textures = createModelTextures(scripted.cache, instance, onChange)
+
+    textures.fileTextures(false)
+    textures.apply(0, {})
+    expect(materialOf(instance).map).toBeNull()
+
+    textures.fileTextures(true)
+    textures.apply(0, {})
+    expect(materialOf(instance).map).toBe(fileMap)
+  })
+
+  it('cannot restore a file map after its source was extracted', () => {
+    const { source } = loadedModel()
+    const instance = instanceOf(source)
+    const textures = createModelTextures(scriptedTextureCache().cache, instance, onChange)
+
+    textures.detachFileTextures()
+    textures.fileTextures(true)
+    textures.apply(0, {})
+
+    expect(materialOf(instance).map).toBeNull()
+  })
+
+  it('reports that extraction consumed its file textures', () => {
+    const { source } = loadedModel()
+    const textures = createModelTextures(scriptedTextureCache().cache, instanceOf(source), onChange)
+
+    expect(textures.hasFileTextures()).toBe(true)
+
+    textures.detachFileTextures()
+
+    expect(textures.hasFileTextures()).toBe(false)
+  })
+
+  it('removes and restores a texture carried by an unlit glTF material', () => {
+    const scripted = scriptedTextureCache()
+    const fileMap = new Texture()
+    const material = new MeshBasicMaterial({ map: fileMap })
+    const source = new Object3D()
+    source.add(new Mesh(geometryFor({ kind: 'box', width: 1, height: 1, depth: 1 }), material))
+    const instance = instanceOf(source)
+    const textures = createModelTextures(scripted.cache, instance, onChange)
+    const object = instance.children[0]
+    if (!(object instanceof Mesh) || !(object.material instanceof MeshBasicMaterial)) {
+      throw new Error('the fixture builds one unlit material')
+    }
+    const clone = object.material
+
+    textures.fileTextures(false)
+    expect(clone.map).toBeNull()
+
+    textures.fileTextures(true)
+    expect(clone.map).toBe(fileMap)
+  })
+
+  it('removes and restores extension maps carried by a physical material', () => {
+    const scripted = scriptedTextureCache()
+    const clearcoatMap = new Texture()
+    const material = new MeshPhysicalMaterial({ clearcoatMap })
+    const source = new Object3D()
+    source.add(new Mesh(geometryFor({ kind: 'box', width: 1, height: 1, depth: 1 }), material))
+    const instance = instanceOf(source)
+    const textures = createModelTextures(scripted.cache, instance, onChange)
+    const clone = materialOf(instance)
+
+    textures.fileTextures(false)
+    expect(clone).toBeInstanceOf(MeshPhysicalMaterial)
+    expect(Reflect.get(clone, 'clearcoatMap')).toBeNull()
+
+    textures.fileTextures(true)
+    expect(Reflect.get(clone, 'clearcoatMap')).toBe(clearcoatMap)
   })
 
   it('gives every reference back when the node goes', async () => {
@@ -371,15 +484,11 @@ describe('a finish a dress no longer names', () => {
     expect(`#${materialOf(instance).color.getHexString()}`).toBe('#204080')
   })
 
-  // `needsUpdate` makes three.js re-derive the program's key, and this runs per slot of every
-  // model on each catalogue refresh — a model wearing what it already wears must not pay for it.
   it('leaves the program alone when nothing moved', () => {
     const instance = instanceOf(loadedModel().source)
     const textures = createModelTextures(scriptedTextureCache().cache, instance, onChange)
 
     textures.dress(0, { roughness: 0.4 })
-    // `needsUpdate` has no getter in three.js — `version` is what it bumps, and what a renderer
-    // compares to decide whether the program has to be derived again.
     const material = materialOf(instance)
     const before = material.version
     textures.dress(0, { roughness: 0.4 })

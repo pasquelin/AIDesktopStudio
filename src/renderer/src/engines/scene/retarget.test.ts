@@ -1,12 +1,20 @@
-import { AnimationClip, Bone, Object3D, QuaternionKeyframeTrack, VectorKeyframeTrack } from 'three'
+import {
+  AnimationClip,
+  Bone,
+  Matrix4,
+  Object3D,
+  QuaternionKeyframeTrack,
+  Vector3,
+  VectorKeyframeTrack,
+} from 'three'
 import { describe, expect, it } from 'vitest'
 import type { HumanoidRole } from '@shared/domain/humanoid'
-import { skeletonSignatureOf } from '@shared/domain/skeletonProfile'
+import { profileWithRole, skeletonSignatureOf } from '@shared/domain/skeletonProfile'
 import {
   clipFromWire,
-  createRetarget,
   nodeTrackNameOf,
   retargetFitOf,
+  restOffsetsOf,
   retargetPlanOf,
   sameSkeleton,
   skeletonScaleOf,
@@ -14,78 +22,22 @@ import {
   wireBonesOf,
   wireClipOf,
 } from './retarget'
-import type { RetargetIncoming, RetargetResponse, WireBone } from './retargetMessage'
-
-function boneAt(name: string, parent: number, y: number, scale = 1): WireBone {
-  return {
-    name,
-    parent,
-    position: [0, y, 0],
-    quaternion: [0, 0, 0, 1],
-    scale: [scale, scale, scale],
-  }
-}
-
-/**
- * Mixamo's spelling AS THREE HOLDS IT: `GLTFLoader` runs every node name through
- * `PropertyBinding.sanitizeNodeName`, which DELETES `:` rather than replacing it. A bone still
- * named `mixamorig:Hips` binds to nothing — measured on the real file on 2026-08-18.
- */
-const UTHANA: WireBone[] = [
-  boneAt('mixamorigHips', -1, 1),
-  boneAt('mixamorigSpine', 0, 0.2),
-  boneAt('mixamorigHead', 1, 0.4),
-  boneAt('mixamorigLeftArm', 1, 0.3),
-]
-
-/** Tripo's, on a character twice as tall. */
-const TRIPO: WireBone[] = [
-  boneAt('Hip', -1, 2),
-  boneAt('Waist', 0, 0.4),
-  boneAt('Head', 1, 0.8),
-  boneAt('L_Upperarm', 1, 0.6),
-  boneAt('L_UpperarmTwist01', 3, 0.1),
-]
-
-/**
- * A worker the test answers by hand, so what is under test is the register rather than three's
- * sampling — `skinWeights.test.ts` builds its fake the same way, and the cast is the same one:
- * the port calls exactly these members, and jsdom has no `Worker` at all.
- */
-function scriptedWorker() {
-  const listeners = new Map<string, ((event: unknown) => void)[]>()
-  const sent: RetargetIncoming[] = []
-  let spawned = 0
-
-  const worker = {
-    postMessage: (message: RetargetIncoming) => void sent.push(message),
-    terminate: () => {},
-    addEventListener: (kind: string, listener: (event: unknown) => void) =>
-      void listeners.set(kind, [...(listeners.get(kind) ?? []), listener]),
-  }
-
-  return {
-    spawn: () => {
-      spawned += 1
-      return worker as unknown as Worker
-    },
-    sent,
-    get spawned() {
-      return spawned
-    },
-    answer: (response: RetargetResponse) => {
-      for (const listener of listeners.get('message') ?? []) listener({ data: response })
-    },
-  }
-}
-
-function turnClip(boneName: string): AnimationClip {
-  return new AnimationClip('walk', 1, [
-    new QuaternionKeyframeTrack(`${boneName}.quaternion`, [0, 1], [0, 0, 0, 1, 0, 0.7, 0, 0.7]),
-  ])
-}
+import type { WireBone } from './retargetMessage'
+import { UTHANA, TRIPO, boneAt } from './retarget-fixtures'
 
 describe('pairing two skeletons', () => {
+  it('keeps a manually cleared role excluded from automatic matching', () => {
+    const signature = skeletonSignatureOf(UTHANA.map(bone => bone.name))
+    const cleared = profileWithRole(
+      { signature, roles: { mixamorigSpine: 'Spine' } },
+      'mixamorigSpine',
+      null,
+    )
+    const plan = retargetPlanOf(UTHANA, UTHANA, [], undefined, new Map([[signature, cleared]]))
+    expect(plan.names.mixamorigSpine).toBeUndefined()
+    expect(plan.names.mixamorigHips).toBe('mixamorigHips')
+  })
+
   it('spells the map from target bone to source bone, which is the direction three reads', () => {
     const plan = retargetPlanOf(TRIPO, UTHANA, [])
 
@@ -187,6 +139,23 @@ describe('how well an animation fits a character', () => {
     expect(retargetFitOf(bare, HUMAN).missingInTarget).toContain('Head')
   })
 
+  /**
+   * 🛑 The screen said « this joint stays at rest » about a joint the transfer went on to drive:
+   * the plan read the corrections and the verdict read the names alone.
+   */
+  it('reads the roles put right by hand, exactly as a transfer does', () => {
+    const odd = treeOf(['b0', 'b1'])
+    const corrected = new Map([
+      [
+        skeletonSignatureOf(['b0', 'b1']),
+        { signature: 'ignored', roles: { b0: 'Hips' as HumanoidRole } },
+      ],
+    ])
+
+    expect(retargetFitOf(odd, HUMAN).matched).toEqual([])
+    expect(retargetFitOf(odd, HUMAN, corrected).matched).toEqual(['Hips'])
+  })
+
   // « Compatible » has to be a measurement rather than a hope: two skeletons of one convention
   // leave nothing on either side.
   it('finds nothing missing between two skeletons of the same convention', () => {
@@ -218,98 +187,35 @@ describe('deciding whether to retarget at all', () => {
   })
 })
 
-describe('asking the worker', () => {
-  it('answers an identical skeleton without starting a worker at all', async () => {
-    const script = scriptedWorker()
-    const clips = [turnClip('mixamorigSpine')]
-    const model = skinnedFromWire(UTHANA)
-
-    const adapted = await createRetarget(script.spawn).adapt(model, skinnedFromWire(UTHANA), clips)
-
-    expect(adapted).toEqual(clips)
-    expect(script.spawned).toBe(0)
-  })
-
-  it('sends the two skeletons and the clips, and answers what comes back', async () => {
-    const script = scriptedWorker()
-    const port = createRetarget(script.spawn)
-
-    const pending = port.adapt(skinnedFromWire(TRIPO), skinnedFromWire(UTHANA), [
-      turnClip('mixamorigSpine'),
-    ])
-    const request = script.sent[0]
-    if (!request || 'cancel' in request) throw new Error('nothing was asked of the worker')
-
-    expect(request.names.Waist).toBe('mixamorigSpine')
-    script.answer({ id: request.id, done: true, ok: true, clips: [wireClipOf(turnClip('Waist'))] })
-
-    expect((await pending)?.[0]?.tracks[0]?.name).toBe('Waist.quaternion')
-  })
-
-  it('reports each clip as it lands', async () => {
-    const script = scriptedWorker()
-    const seen: number[] = []
-    const port = createRetarget(script.spawn)
-
-    const pending = port.adapt(skinnedFromWire(TRIPO), skinnedFromWire(UTHANA), [turnClip('x')], {
-      onProgress: progress => void seen.push(progress),
-    })
-    const request = script.sent[0]
-    if (!request || 'cancel' in request) throw new Error('nothing was asked of the worker')
-
-    script.answer({ id: request.id, done: false, progress: 0.5 })
-    script.answer({ id: request.id, done: true, ok: true, clips: [] })
-    await pending
-
-    expect(seen).toEqual([0.5])
-  })
-
-  it('lets a caller take a request back, and tells the worker to stop', async () => {
-    const script = scriptedWorker()
-    const stop = new AbortController()
-    const port = createRetarget(script.spawn)
-
-    const pending = port.adapt(skinnedFromWire(TRIPO), skinnedFromWire(UTHANA), [turnClip('x')], {
-      signal: stop.signal,
-    })
-    stop.abort()
-
-    expect(await pending).toBeNull()
-    expect(script.sent.at(-1)).toEqual({ id: 1, cancel: true })
-  })
-
-  it('answers nothing once the port has let go, rather than waiting forever', async () => {
-    const script = scriptedWorker()
-    const port = createRetarget(script.spawn)
-    port.dispose()
-
-    expect(await port.adapt(skinnedFromWire(TRIPO), skinnedFromWire(UTHANA), [])).toBeNull()
-  })
-
-  it('answers nothing to a caller whose signal had already fired', async () => {
-    const script = scriptedWorker()
-    const stop = new AbortController()
-    stop.abort()
-
-    // An `abort` already delivered never reaches a listener added after it: without a check of
-    // its own, the worker would do the whole job and hand clips to a caller already gone.
-    const adapted = await createRetarget(script.spawn).adapt(
-      skinnedFromWire(TRIPO),
-      skinnedFromWire(UTHANA),
-      [turnClip('x')],
-      { signal: stop.signal },
-    )
-
-    expect(adapted).toBeNull()
-    expect(script.sent.at(-1)).toEqual({ id: 1, cancel: true })
-  })
-})
-
 describe('reading how much bigger one skeleton is than another', () => {
   it('answers the ratio of their torsos', () => {
     const twice = UTHANA.map(bone => boneAt(bone.name, bone.parent, bone.position[1] * 2))
 
     expect(skeletonScaleOf(skinnedFromWire(twice), skinnedFromWire(UTHANA))).toBeCloseTo(2, 5)
+  })
+
+  it('measures a rig whose names say nothing through the roles the plan corrected', () => {
+    const muted = UTHANA.map((bone, index) => ({ ...bone, name: `b${index}` }))
+    const twice = muted.map(bone => ({
+      ...bone,
+      position: [0, bone.position[1] * 2, 0] satisfies WireBone['position'],
+    }))
+    const known = new Map([
+      [
+        skeletonSignatureOf(twice.map(bone => bone.name)),
+        {
+          signature: 'corrected',
+          roles: { b0: 'Hips', b2: 'Head' } satisfies Record<string, HumanoidRole>,
+        },
+      ],
+    ])
+    const plan = retargetPlanOf(twice, UTHANA, [], undefined, known)
+
+    expect(plan.torso).toEqual({ target: ['b0', 'b2'], source: ['mixamorigHips', 'mixamorigHead'] })
+    expect(
+      skeletonScaleOf(skinnedFromWire(twice), skinnedFromWire(UTHANA), plan.torso),
+    ).toBeCloseTo(2, 5)
+    expect(skeletonScaleOf(skinnedFromWire(twice), skinnedFromWire(UTHANA))).toBe(1)
   })
 
   it('answers one when a skeleton has no head to measure to', () => {
@@ -321,12 +227,91 @@ describe('reading how much bigger one skeleton is than another', () => {
   })
 })
 
+describe('cancelling the difference of rest poses', () => {
+  const TURNED: WireBone[] = UTHANA.map(bone =>
+    bone.name.endsWith('Spine') ? { ...bone, quaternion: [0, 0, 0.383, 0.924] } : bone,
+  )
+
+  it('leaves nothing to cancel between two skeletons resting alike', () => {
+    const names = Object.fromEntries(UTHANA.map(bone => [bone.name, bone.name]))
+    const offsets = restOffsetsOf(skinnedFromWire(UTHANA), skinnedFromWire(UTHANA), names)
+
+    for (const offset of Object.values(offsets)) {
+      expect(offset.elements).toEqual(new Matrix4().elements)
+    }
+  })
+
+  // Two target bones may follow ONE source bone, and the quaternion maths of three writes in
+  // place: the second read a rest the first had already inverted.
+  it('answers the same turn twice when two bones follow one source bone', () => {
+    const spine = UTHANA.find(bone => bone.name.endsWith('Spine'))?.name ?? ''
+    const head = UTHANA.find(bone => bone.name.endsWith('Head'))?.name ?? ''
+    const names = { [spine]: spine, [head]: spine }
+
+    const offsets = restOffsetsOf(skinnedFromWire(UTHANA), skinnedFromWire(TURNED), names)
+
+    expect(offsets[head]?.elements).toEqual(offsets[spine]?.elements)
+  })
+})
+
+/** A rig hung under an armature that turns and shrinks it — the shape every Blender export has. */
+function armatured(): { root: Object3D; hips: Bone } {
+  const root = new Object3D()
+  const armature = new Object3D()
+  armature.name = 'Armature'
+  armature.quaternion.setFromAxisAngle(new Vector3(1, 0, 0), Math.PI / 2)
+  armature.scale.setScalar(0.01)
+  const hips = new Bone()
+  hips.name = 'Hips'
+  hips.position.set(0, 100, 0)
+  root.add(armature)
+  armature.add(hips)
+  root.updateMatrixWorld(true)
+
+  return { root, hips }
+}
+
+const worldOf = (object: Object3D | undefined): number[] => {
+  if (!object) throw new Error('no such object')
+
+  return new Vector3()
+    .setFromMatrixPosition(object.matrixWorld)
+    .toArray()
+    .map(one => +one.toFixed(5))
+}
+
 describe('crossing the wire', () => {
   it('reads a skeleton off a model, parents before children', () => {
     const bones = wireBonesOf(skinnedFromWire(TRIPO))
 
     expect(bones.map(bone => bone.name)).toEqual(TRIPO.map(bone => bone.name))
     expect(bones.every((bone, index) => bone.parent < index)).toBe(true)
+  })
+
+  it('carries the armature above the first bone, so the wire skeleton stands where the model does', () => {
+    const { root, hips } = armatured()
+    const wired = skinnedFromWire(wireBonesOf(root))
+    wired.updateMatrixWorld(true)
+
+    expect(worldOf(wired.getObjectByName('Hips'))).toEqual(worldOf(hips))
+  })
+
+  it('gives that armature back on the way out, so the real one never applies it twice', () => {
+    const { root, hips } = armatured()
+    const wired = skinnedFromWire(wireBonesOf(root))
+    wired.updateMatrixWorld(true)
+    const sampled = wired.getObjectByName('Hips')
+    if (!sampled) throw new Error('the wire skeleton has no hips')
+    const stood = worldOf(hips)
+
+    // What a retargeted track writes back: the local three sampled off the wire skeleton, played
+    // on the model, where the hips still hang under the armature.
+    hips.position.copy(sampled.position)
+    hips.quaternion.copy(sampled.quaternion)
+    hips.scale.copy(sampled.scale)
+    root.updateMatrixWorld(true)
+
+    expect(worldOf(hips)).toEqual(stood)
   })
 
   it('carries a clip out and back unchanged', () => {

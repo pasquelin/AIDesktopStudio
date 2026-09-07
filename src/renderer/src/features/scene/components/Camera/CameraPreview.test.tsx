@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { AA_NON_TEXT, contrastRatio } from '@shared/domain/color'
 import { SECOND } from '@shared/domain/time'
-import stylesheet from '@/index.css?raw'
+import { stylesheet } from '@/indexCss-fixtures'
 import { cameraShot } from '@/engines/scene/animation-fixtures'
 import { cameraNodeFixture, meshNode } from '@/engines/scene/scene-fixtures'
 import { EMPTY_SCENE, type SceneState } from '@/engines/scene/sceneState'
@@ -116,5 +116,21 @@ describe('the camera preview', () => {
 
     await userEvent.click(screen.getByRole('button', { name: /Remettre/ }))
     expect(setCameraPreview).toHaveBeenLastCalledWith(expect.objectContaining({ full: false }))
+  })
+
+  it('stays open across a rectangle that changed, rather than closing and reopening', async () => {
+    install({ nodes: [cameraNodeFixture('cam-a')], selectedIds: ['cam-a'] })
+    const view = render(<CameraPreview documentId={DOCUMENT} />)
+    setCameraPreview.mockClear()
+
+    await userEvent.click(screen.getByRole('button', { name: /Agrandir/ }))
+    await userEvent.click(screen.getByRole('button', { name: /Remettre/ }))
+
+    // Closing frees the chain and the programs compiled for it, and the rectangle follows the
+    // pointer: a `null` between two settings is a rebuild on every move.
+    expect(setCameraPreview.mock.calls.map(call => call[0])).not.toContain(null)
+
+    view.unmount()
+    expect(setCameraPreview).toHaveBeenLastCalledWith(null)
   })
 })

@@ -58,7 +58,7 @@ function write(level: LogLevel, scope: string, message: string): void {
 
   const line = `[${scope}] ${message}`
 
-  /* eslint-disable no-console -- this module IS the main process's logger */
+  /* oxlint-disable no-console -- this module IS the main process's logger */
   if (level === 'error') console.error(line)
   else if (level === 'warn') console.warn(line)
   else console.log(line)

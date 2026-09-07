@@ -101,47 +101,42 @@ function optionsOf(input: ProviderInput): FieldDescriptor['options'] {
  * input: a model Scenario just added must stay usable, and must never make the form
  * disappear — see spec § 6.
  */
+function decorateDescriptor(input: ProviderInput, descriptor: FieldDescriptor): void {
+  const help = input.description ?? input.hint ?? input.placeholder
+  if (help !== undefined) descriptor.help = help
+  if (input.group !== undefined) descriptor.group = input.group
+  if (input.default !== undefined) descriptor.default = input.default
+  if (input.min !== undefined) descriptor.min = input.min
+  if (input.max !== undefined) descriptor.max = input.max
+  if (input.step !== undefined) descriptor.step = input.step
+  if (input.maxSize !== undefined) descriptor.maxSize = input.maxSize
+  if (input.costImpact === true) descriptor.costImpact = true
+
+  if (input.maskFrom !== undefined) descriptor.maskFrom = input.maskFrom
+  if (input.promptSpark === true || input.prompt === true) descriptor.promptSpark = true
+
+  const options = optionsOf(input)
+  if (options) descriptor.options = options
+
+  if (descriptor.group === undefined && foldsByDefault(descriptor)) {
+    descriptor.group = ADVANCED_GROUP
+  }
+}
+
+function descriptorOf(input: ProviderInput): FieldDescriptor {
+  const descriptor: FieldDescriptor = {
+    key: input.name,
+    kind: kindOf(input),
+    label: labelOf(input),
+    required: input.required?.always === true,
+  }
+  decorateDescriptor(input, descriptor)
+
+  return descriptor
+}
+
 export function translateSchema(inputs: readonly ProviderInput[] | undefined): FieldDescriptor[] {
-  if (!inputs) return []
-
-  return inputs.map(input => {
-    const descriptor: FieldDescriptor = {
-      key: input.name,
-      kind: kindOf(input),
-      label: labelOf(input),
-      required: input.required?.always === true,
-    }
-
-    const help = input.description ?? input.hint ?? input.placeholder
-    if (help !== undefined) descriptor.help = help
-    if (input.group !== undefined) descriptor.group = input.group
-    if (input.default !== undefined) descriptor.default = input.default
-    if (input.min !== undefined) descriptor.min = input.min
-    if (input.max !== undefined) descriptor.max = input.max
-    if (input.step !== undefined) descriptor.step = input.step
-    // Carried so a file too big is refused HERE rather than after minutes of upload, and so a
-    // field that moves the price can say it before the run.
-    if (input.maxSize !== undefined) descriptor.maxSize = input.maxSize
-    if (input.costImpact === true) descriptor.costImpact = true
-
-    // The pairing Scenario declares between a mask and the picture it masks: carried through so
-    // an edit action can fill both without knowing either model's field names.
-    if (input.maskFrom !== undefined) descriptor.maskFrom = input.maskFrom
-
-    // The API says which field prompt assistance rewrites, so the studio never has to guess.
-    // `prompt` is the fallback: it marks the same field on models that declare only that one.
-    if (input.promptSpark === true || input.prompt === true) descriptor.promptSpark = true
-
-    const options = optionsOf(input)
-    if (options) descriptor.options = options
-
-    // Last, because two of the three signals it reads are set above.
-    if (descriptor.group === undefined && foldsByDefault(descriptor)) {
-      descriptor.group = ADVANCED_GROUP
-    }
-
-    return descriptor
-  })
+  return inputs?.map(descriptorOf) ?? []
 }
 
 /** Compared without its separators: the same knob is `cfg_scale` on one model and `cfgScale` on the next. */

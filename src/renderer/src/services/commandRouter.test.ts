@@ -5,6 +5,7 @@ import { registerChatPanel } from '@/features/assistant/chatPanel'
 import { installFakeBridge } from '@/services/fakeBridge'
 import { armCommandScope, subscribeToCommands } from '@/services/commandBus'
 import { useDictation } from '@/stores/dictation'
+import { installDocument } from '@/stores/document-fixtures'
 import { useDocuments } from '@/stores/documents'
 import { useLayouts } from '@/stores/layouts'
 import { useProject } from '@/stores/project'
@@ -13,9 +14,10 @@ import { routeCommand } from './commandRouter'
 
 const saveDocument = vi.hoisted(() => vi.fn(() => Promise.resolve(true)))
 const saveDocumentAs = vi.hoisted(() => vi.fn(() => Promise.resolve(true)))
+const closeDocument = vi.hoisted(() => vi.fn(() => Promise.resolve(true)))
 const importOtioz = vi.hoisted(() => vi.fn())
 
-vi.mock('@/features/shell/documentIo', () => ({ saveDocument, saveDocumentAs }))
+vi.mock('@/features/shell/documentIo', () => ({ saveDocument, saveDocumentAs, closeDocument }))
 vi.mock('@/features/shell/otioImport', () => ({ importOtioz }))
 
 const createPicked = vi.fn()
@@ -31,7 +33,7 @@ beforeEach(() => {
 })
 
 /** What the bus heard while one command was routed. */
-function published(command: CommandId): { verdict: string; heard: CommandId[] } {
+function published(command: CommandId): { verdict: unknown; heard: CommandId[] } {
   const heard: CommandId[] = []
   const stop = subscribeToCommands(id => heard.push(id) > 0)
   const verdict = routeCommand(command)
@@ -44,6 +46,15 @@ describe('a command that belongs to a surface', () => {
     const disarm = armCommandScope('explorer')
 
     expect(published('explorer.undo')).toEqual({ verdict: 'ran', heard: ['explorer.undo'] })
+    disarm()
+  })
+
+  it('hands back what the surface made, in place of a bare « ran »', () => {
+    const disarm = armCommandScope('scene')
+    const stop = subscribeToCommands(() => ({ nodeIds: ['copy-1'] }))
+
+    expect(routeCommand('scene.duplicate')).toEqual({ nodeIds: ['copy-1'] })
+    stop()
     disarm()
   })
 
@@ -95,6 +106,39 @@ describe('a command the application performs itself', () => {
 
     expect(routeCommand('document.save')).toBe('ran')
     expect(saveDocument).toHaveBeenCalledWith('doc-1')
+  })
+
+  it('closes the tab in front, and refuses when there is none', () => {
+    expect(routeCommand('document.close')).toBe('noSurface')
+    expect(closeDocument).not.toHaveBeenCalled()
+
+    installDocument('doc-1', '3d')
+
+    expect(routeCommand('document.close')).toBe('ran')
+    expect(closeDocument).toHaveBeenCalledWith('doc-1')
+  })
+
+  // A file view is a tab in front that is not a document: `closeDocument` finds no io for it, so
+  // it would ask nothing and drop the edits. ⌘W takes the same branch the tab's cross takes.
+  it('closes a file view through its own closer, not through the document one', () => {
+    useDocuments.setState({ activeId: 'file:Entrées/Clavier.input.json', documents: {} })
+
+    expect(routeCommand('document.close')).toBe('ran')
+    expect(closeDocument).not.toHaveBeenCalled()
+  })
+
+  // ⌘W closes a tab or it closes nothing — the window is never the fallback, and the document
+  // the home covers is one the reader is not even looking at.
+  it('leaves a tab sitting behind the home alone rather than closing it', () => {
+    const close = vi.fn()
+    vi.stubGlobal('window', { close })
+    useLayouts.setState({ home: true })
+    installDocument('doc-1', '3d')
+
+    expect(routeCommand('document.close')).toBe('noSurface')
+    expect(closeDocument).not.toHaveBeenCalled()
+    expect(close).not.toHaveBeenCalled()
+    vi.unstubAllGlobals()
   })
 })
 

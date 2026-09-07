@@ -6,13 +6,26 @@
  */
 
 /** One bone, flattened. Parents come before their children, so `parent` always points backwards. */
-export type WireBone = {
-  name: string
-  /** An index into the same list; `-1` for a root. */
-  parent: number
+export type WireTransform = {
   position: readonly [number, number, number]
   quaternion: readonly [number, number, number, number]
   scale: readonly [number, number, number]
+  /**
+   * On a ROOT only, and only when something stands above it: the sixteen numbers of whatever a
+   * glTF hangs the rig under. 🛑 BESIDE the bone, never folded into it — `retargetClip` writes
+   * each local as `parent.matrixWorld⁻¹ · global`, so a folded frame comes back out unremoved and
+   * the real armature applies it twice: measured 2026-09-06, a hip at (0, 0, 1) replayed at
+   * (0, −0,01, 0). `skinnedFromWire` hangs it as a node, and three undoes it on its own.
+   */
+  frame?: readonly number[]
+}
+
+export type WireBone = WireTransform & {
+  name: string
+  /** An index into the same list; `-1` for a root. */
+  parent: number
+  /** Asset-local non-joint ancestors, outermost first; scene placement is excluded. */
+  parentFrames?: readonly WireTransform[]
 }
 
 /** Which `KeyframeTrack` to rebuild. Carried rather than guessed from the property name. */
@@ -32,7 +45,14 @@ export type WireClip = {
   tracks: readonly WireTrack[]
 }
 
+export type RetargetOptions = {
+  /** Omitted means measured from the two skeletons. */
+  scale?: number
+  rootMotion?: 'travel' | 'inPlace'
+}
+
 export type RetargetRequest = {
+  options?: RetargetOptions
   id: number
   /** The skeleton the clips will play on. */
   target: readonly WireBone[]
@@ -46,6 +66,8 @@ export type RetargetRequest = {
   names: Readonly<Record<string, string>>
   /** The hips, under their SOURCE name — the one bone whose translation is carried over. */
   hip?: string
+  /** Hips then head on each side, under their own names: what the size of a skeleton is read from. */
+  torso?: { target: readonly [string, string]; source: readonly [string, string] }
   /**
    * How finely the source is sampled, or nothing to sample it at its own density.
    *

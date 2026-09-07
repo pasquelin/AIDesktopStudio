@@ -85,27 +85,14 @@ function nameOf(metadata: Record<string, unknown>, id: string): string {
  * what reading straight off the record already yields. Two functions and a shape parameter said
  * the same thing at the cost of a wrapper that rebuilt the object it had just destructured.
  */
-function cloudAssetOf(value: unknown): CloudAsset | null {
-  if (!isRecord(value)) return null
-
-  const id = text(value, 'id')
-  if (id === undefined) return null
-
-  const kind = text(value, 'kind')
-  const properties = isRecord(value.properties) ? value.properties : undefined
-  const metadata = isRecord(value.metadata) ? value.metadata : {}
-  const mimeType = text(value, 'mimeType')
-  const remoteType = text(metadata, 'type') ?? 'unknown'
-  // A search hit has no top-level kind, but `metadata.kind` survives in it.
-  const type = assetTypeOfRemote({
-    kind: kind ?? text(metadata, 'kind'),
-    metadataType: remoteType,
-    ...defined({ mimeType }),
-  })
-  // Not everything in the library belongs on a shelf: a captioning job's JSON output is data
-  // about an asset, not an asset.
-  if (type === null) return null
-
+function normalizedAsset(
+  value: Record<string, unknown>,
+  metadata: Record<string, unknown>,
+  properties: Record<string, unknown> | undefined,
+  id: string,
+  type: CloudAsset['type'],
+  remoteType: string,
+): CloudAsset {
   const width = probeNumber(properties?.width) ?? probeNumber(metadata.width)
   const height = probeNumber(properties?.height) ?? probeNumber(metadata.height)
   const bytes = probeNumber(properties?.size)
@@ -127,6 +114,23 @@ function cloudAssetOf(value: unknown): CloudAsset | null {
     collectionIds: strings(value.collectionIds),
     ...defined({ url, thumbnailUrl, width, height, bytes, durationSeconds, generation }),
   }
+}
+
+function cloudAssetOf(value: unknown): CloudAsset | null {
+  if (!isRecord(value)) return null
+  const id = text(value, 'id')
+  if (id === undefined) return null
+  const metadata = isRecord(value.metadata) ? value.metadata : {}
+  const remoteType = text(metadata, 'type') ?? 'unknown'
+  const mimeType = text(value, 'mimeType')
+  const type = assetTypeOfRemote({
+    kind: text(value, 'kind') ?? text(metadata, 'kind'),
+    metadataType: remoteType,
+    ...defined({ mimeType }),
+  })
+  if (type === null) return null
+  const properties = isRecord(value.properties) ? value.properties : undefined
+  return normalizedAsset(value, metadata, properties, id, type, remoteType)
 }
 
 /**

@@ -1,6 +1,6 @@
 import { panelIds, useDocuments } from '@/stores/documents'
 import { useLayouts } from '@/stores/layouts'
-import { closePanel } from './components/dockviewApi'
+import { closePanel, panelIsFileView } from './components/dockviewApi'
 
 /**
  * Closes the tabs of documents nothing can open any more — the other half of `refresh`, which
@@ -16,8 +16,12 @@ import { closePanel } from './components/dockviewApi'
 export function closeOrphanTabs(): void {
   const { documents, stored } = useDocuments.getState()
   const known = new Set(stored.map(document => document.id))
+  // A file view is in no listing to be missing from: swept as an orphan, its tab went without
+  // the question `closeFileView` asks, and its edits with it.
   const orphans = new Set(
-    [...panelIds(useLayouts.getState().layout)].filter(id => !documents[id] && !known.has(id)),
+    [...panelIds(useLayouts.getState().layout)].filter(
+      id => !documents[id] && !known.has(id) && !panelIsFileView(id),
+    ),
   )
   if (orphans.size === 0) return
 

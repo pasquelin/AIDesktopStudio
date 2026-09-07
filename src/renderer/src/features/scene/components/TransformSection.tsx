@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { toDegrees, toRadians } from '@shared/domain/angles'
+import { degreesOf, toRadians } from '@shared/domain/angles'
 import type { DisplayUnit, Transform, Vector3 } from '@shared/domain/scene'
 import { PropertySection } from '@/components/PropertySection'
 import { TextField } from '@/components/TextField'
@@ -13,7 +13,7 @@ import {
   type AxisLock,
   type SceneNode,
 } from '@/engines/scene/sceneState'
-import { displayStep, fromDisplayLength, toDisplayLength } from '@shared/domain/units'
+import { displayStep, fromDisplayLength, shownLength } from '@shared/domain/units'
 import { changedFields } from '@/helpers/objects'
 import { HINT_LEFT } from '@/helpers/tooltip'
 import type { SceneEdit } from '@/hooks/useSceneEdit'
@@ -23,19 +23,6 @@ import { useViewportSetting } from '@/hooks/useViewportSetting'
 type AxisPatch = { [K in keyof Transform]?: Partial<Vector3> }
 
 const AXES: readonly (keyof Vector3)[] = ['x', 'y', 'z']
-
-function degreesOf(vector: Vector3): Vector3 {
-  return { x: toDegrees(vector.x), y: toDegrees(vector.y), z: toDegrees(vector.z) }
-}
-
-/** A length of the document, in the unit it is written in. */
-function shownLength(vector: Vector3, unit: DisplayUnit): Vector3 {
-  return {
-    x: toDisplayLength(vector.x, unit),
-    y: toDisplayLength(vector.y, unit),
-    z: toDisplayLength(vector.z, unit),
-  }
-}
 
 /** The axes a field reported, back in what the document holds. Only those, which is the point. */
 function inMetres(shown: Partial<Vector3>, unit: DisplayUnit): Partial<Vector3> {

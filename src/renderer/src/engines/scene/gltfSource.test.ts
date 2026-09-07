@@ -125,8 +125,14 @@ describe('createGltfSource', () => {
   it('points both decoders at the folder the application ships them in', () => {
     createGltfSource(() => null)
 
-    expect(setDecoderPath).toHaveBeenCalledWith('/decoders/draco/')
-    expect(setTranscoderPath).toHaveBeenCalledWith('/decoders/basis/')
+    expect(setDecoderPath).toHaveBeenCalledWith('./decoders/draco/')
+    expect(setTranscoderPath).toHaveBeenCalledWith('./decoders/basis/')
+  })
+
+  it('lets a worker resolve decoders against the app page rather than its bundle directory', () => {
+    createGltfSource(() => null, undefined, 'file:///app/renderer/decoders/')
+    expect(setDecoderPath).toHaveBeenCalledWith('file:///app/renderer/decoders/draco/')
+    expect(setTranscoderPath).toHaveBeenCalledWith('file:///app/renderer/decoders/basis/')
   })
 
   it('hands both decoders to the loader that needs them', () => {
@@ -143,12 +149,12 @@ describe('createGltfSource', () => {
   })
 
   it('reads the scene out of what the loader brings back', async () => {
-    const source = await createGltfSource(() => null).load('ia-studio://asset/mesh-1')
+    const source = await createGltfSource(() => null).load('ai-desktop-studio://asset/mesh-1')
 
     expect(source).toBeInstanceOf(Group)
     // The BASE, which is what `GLTFLoader.load` resolves a file's siblings against — handing it
     // the whole url would look for `…/mesh-1buffer.bin`.
-    expect(parseAsync).toHaveBeenCalledWith(expect.anything(), 'ia-studio://asset/')
+    expect(parseAsync).toHaveBeenCalledWith(expect.anything(), 'ai-desktop-studio://asset/')
   })
 
   /**
@@ -159,11 +165,14 @@ describe('createGltfSource', () => {
   it('reports the textures a file asked for and did not get', async () => {
     parseAsync.mockResolvedValue(parsed({ wants: 2, gets: 0 }))
 
-    await createGltfSource(() => null).load('ia-studio://asset/mesh-1')
+    await createGltfSource(
+      () => null,
+      (scope, error) => reportFailure('scene.texture', scope, error),
+    ).load('ai-desktop-studio://asset/mesh-1')
 
     expect(reportFailure).toHaveBeenCalledWith(
       'scene.texture',
-      'ia-studio://asset/mesh-1',
+      'ai-desktop-studio://asset/mesh-1',
       expect.objectContaining({ message: '2/2' }),
     )
   })
@@ -171,11 +180,14 @@ describe('createGltfSource', () => {
   it('reports the ones missing when only some arrived', async () => {
     parseAsync.mockResolvedValue(parsed({ wants: 3, gets: 2 }))
 
-    await createGltfSource(() => null).load('ia-studio://asset/mesh-1')
+    await createGltfSource(
+      () => null,
+      (scope, error) => reportFailure('scene.texture', scope, error),
+    ).load('ai-desktop-studio://asset/mesh-1')
 
     expect(reportFailure).toHaveBeenCalledWith(
       'scene.texture',
-      'ia-studio://asset/mesh-1',
+      'ai-desktop-studio://asset/mesh-1',
       expect.objectContaining({ message: '1/3' }),
     )
   })
@@ -183,14 +195,14 @@ describe('createGltfSource', () => {
   it('says nothing about a file whose textures all arrived', async () => {
     parseAsync.mockResolvedValue(parsed({ wants: 2, gets: 2 }))
 
-    await createGltfSource(() => null).load('ia-studio://asset/mesh-1')
+    await createGltfSource(() => null).load('ai-desktop-studio://asset/mesh-1')
 
     expect(reportFailure).not.toHaveBeenCalled()
   })
 
   // A model with no texture at all is the ordinary case, not a failure.
   it('says nothing about a file that asks for no texture', async () => {
-    await createGltfSource(() => null).load('ia-studio://asset/mesh-1')
+    await createGltfSource(() => null).load('ai-desktop-studio://asset/mesh-1')
 
     expect(reportFailure).not.toHaveBeenCalled()
   })
@@ -204,7 +216,7 @@ describe('createGltfSource', () => {
     const gltf = parsed({ wants: 1, gets: 1, unreferenced: 3 })
     parseAsync.mockResolvedValue(gltf)
 
-    await createGltfSource(() => null).load('ia-studio://asset/mesh-1')
+    await createGltfSource(() => null).load('ai-desktop-studio://asset/mesh-1')
 
     expect(reportFailure).not.toHaveBeenCalled()
   })
@@ -212,7 +224,7 @@ describe('createGltfSource', () => {
   // The viewport has no renderer until it is mounted, while the source is built in the engine's
   // constructor: asking too early would settle the support table on nothing.
   it('asks the GPU what it can transcode as soon as there is one', async () => {
-    await createGltfSource(fakeGpu).load('ia-studio://asset/mesh-1')
+    await createGltfSource(fakeGpu).load('ai-desktop-studio://asset/mesh-1')
 
     expect(detectSupport).toHaveBeenCalled()
   })
@@ -220,8 +232,8 @@ describe('createGltfSource', () => {
   it('asks it once, however many models are loaded', async () => {
     const source = createGltfSource(fakeGpu)
 
-    await source.load('ia-studio://asset/mesh-1')
-    await source.load('ia-studio://asset/mesh-2')
+    await source.load('ai-desktop-studio://asset/mesh-1')
+    await source.load('ai-desktop-studio://asset/mesh-2')
 
     expect(detectSupport).toHaveBeenCalledTimes(1)
   })
@@ -232,11 +244,11 @@ describe('createGltfSource', () => {
     let gpu: WebGLRenderer | null = null
     const source = createGltfSource(() => gpu)
 
-    await source.load('ia-studio://asset/mesh-1')
+    await source.load('ai-desktop-studio://asset/mesh-1')
     expect(detectSupport).not.toHaveBeenCalled()
 
     gpu = fakeGpu()
-    await source.load('ia-studio://asset/mesh-2')
+    await source.load('ai-desktop-studio://asset/mesh-2')
     expect(detectSupport).toHaveBeenCalledTimes(1)
   })
 
@@ -244,7 +256,7 @@ describe('createGltfSource', () => {
   // rebuilt every time a panel is detached, so nothing else ever ends them.
   it('ends both decoders when it is let go', async () => {
     const source = createGltfSource(fakeGpu)
-    await source.load('ia-studio://asset/mesh-1')
+    await source.load('ai-desktop-studio://asset/mesh-1')
 
     source.dispose()
 
@@ -270,7 +282,7 @@ describe('the shapes that are not glTF', () => {
   it('reads an OBJ without asking the glTF parser anything', async () => {
     holding(new TextEncoder().encode('# cube\nv 0 0 0\nv 1 0 0\nv 0 1 0\nf 1 2 3\n'))
 
-    const model = await createGltfSource(() => null).load('ia-studio://asset/mesh-1')
+    const model = await createGltfSource(() => null).load('ai-desktop-studio://asset/mesh-1')
 
     expect(model.type).toBe('Group')
     expect(parseAsync).not.toHaveBeenCalled()
@@ -282,7 +294,7 @@ describe('the shapes that are not glTF', () => {
     new DataView(stl.buffer).setUint32(80, 1, true)
     holding(stl)
 
-    const model = await createGltfSource(() => null).load('ia-studio://asset/mesh-1')
+    const model = await createGltfSource(() => null).load('ai-desktop-studio://asset/mesh-1')
 
     expect(model).toBeInstanceOf(Mesh)
     expect((model as Mesh).material).toBeInstanceOf(MeshStandardMaterial)
@@ -292,7 +304,7 @@ describe('the shapes that are not glTF', () => {
   it('routes an animation by its bytes, as it routes a model', async () => {
     holding(new TextEncoder().encode('glTF____'))
 
-    await createGltfSource(() => null).loadAnimation('ia-studio://animation/walk')
+    await createGltfSource(() => null).loadAnimation('ai-desktop-studio://animation/walk')
 
     expect(parseAsync).toHaveBeenCalled()
   })

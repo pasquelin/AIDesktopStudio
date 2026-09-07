@@ -9,7 +9,7 @@
 You describe what you want, in words. A distant computer makes it. You get the result on your own
 machine, and you carry on working with it.
 
-That is the whole idea. What IA Studio adds, compared to a website where you type a sentence
+That is the whole idea. What AI Desktop Studio adds, compared to a website where you type a sentence
 and download an image, is **everything that comes after**:
 
 - your creations are **filed** in a project, on your disk, not in an overflowing "Downloads"

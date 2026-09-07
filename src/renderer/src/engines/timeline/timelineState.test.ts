@@ -9,7 +9,6 @@ import {
   clipEnd,
   clipById,
   DEFAULT_TRACK_HEIGHT,
-  parseSequence,
   EMPTY_SEQUENCE,
   frameDuration,
   insertClip,
@@ -32,6 +31,7 @@ import {
   type SequenceState,
   type Track,
 } from './timelineState'
+import { parseSequence } from './timelineParsing'
 
 /** Insertion takes the tail's id from its caller, so the tests can name it and read it back. */
 const TAIL = 'tail-1'

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type RefObject } from 'react'
-import { fitSplit } from '@/stores/tools'
+import { fitSplit } from '@pasquelin/panels'
 
 export type SplitPair = {
   /** Goes on the element holding both panes: it is what everything else is measured against. */

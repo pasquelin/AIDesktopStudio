@@ -6,7 +6,7 @@ const session = createWorkerSession<FilmEncodeRequest, FilmEncodeResponse>(
   () => new FilmEncodeWorker(),
 )
 
-/** Flip + PNG encode off the window's thread. The GL readback still happens here. */
+/** Transfers a disposable GPU readback buffer, then flips and PNG-encodes it off the UI thread. */
 export async function encodeFilmFrameOffThread(
   pixels: Uint8Array,
   width: number,
@@ -14,10 +14,9 @@ export async function encodeFilmFrameOffThread(
   encoded = false,
 ): Promise<Uint8Array> {
   const id = session.nextId()
-  const copy = pixels.slice()
   const answer = await session.send(
-    { id, pixels: copy, width, height, encoded } satisfies FilmEncodeRequest,
-    [copy.buffer],
+    { id, pixels, width, height, encoded } satisfies FilmEncodeRequest,
+    [pixels.buffer],
   )
   if ('failure' in answer) throw new Error(answer.failure)
   return answer.bytes

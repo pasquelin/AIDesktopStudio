@@ -96,13 +96,8 @@ export function assetTypeOfRemote({
   const byKind = kind === undefined ? undefined : TYPE_BY_KIND[kind]
   if (byKind !== undefined && byKind !== 'image') return byKind
 
-  if (metadataType !== undefined) {
-    if (isSkyboxType(metadataType)) return 'skybox'
-    if (isMaterialPicture(metadataType)) return 'image'
-
-    const produced = producedType(metadataType)
-    if (produced !== null) return produced
-  }
+  const byMetadata = metadataType === undefined ? null : metadataAssetType(metadataType)
+  if (byMetadata !== null) return byMetadata
 
   if (byKind !== undefined) return byKind
 
@@ -115,6 +110,12 @@ export function assetTypeOfRemote({
     if (mimeType?.startsWith(prefix)) return type
   }
   return null
+}
+
+function metadataAssetType(metadataType: string): AssetType | null {
+  if (isSkyboxType(metadataType)) return 'skybox'
+  if (isMaterialPicture(metadataType)) return 'image'
+  return producedType(metadataType)
 }
 
 /**

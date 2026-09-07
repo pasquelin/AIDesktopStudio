@@ -9,9 +9,6 @@ import {
   type AssetType,
 } from '@shared/domain/asset'
 import { typeOfWorkspace } from '@shared/domain/assetKind'
-import { Collection } from '@/components/Collection/Collection'
-import { CollectionBar } from '@/components/CollectionBar/CollectionBar'
-import { EmptyState } from '@/components/EmptyState'
 import { cloudPage } from '@/helpers/cloudPage'
 import { filterLocally, isFiltered, setFacetValue } from '@/helpers/collectionState'
 import { applySelection } from '@/helpers/selection'
@@ -40,6 +37,7 @@ import { AssetRow } from '../AssetRow'
 import { OWN_SOURCE, PUBLISHED_SOURCE, SOURCE_FACET, TYPE_FACET } from './facets'
 import { mergeFeed, type FeedSource, type FeedSourceName } from './feed'
 import { markOf, mergeRows, runningRows, typeOfRow, type AssetRowModel } from '../rows'
+import { AssetBrowserList } from './AssetBrowserList'
 
 /** How much of a cloud listing one page asks for. The scroll asks for the next. */
 const LIBRARY_PAGE = 60
@@ -70,11 +68,7 @@ export function AssetBrowser() {
   const project = useProject(state => state.project)
   const workspace = useLayouts(state => state.activeWorkspace)
   const ownerId = useSettings(activeOwnerId)
-  // The key is known to WORK, not merely to be stored: `authState` resolves the credentials the
-  // channels below need, so this is the earliest moment a listing can come back with anything.
   const authenticated = useSettings(state => state.auth.authenticated)
-  // `UNKNOWN_AUTH` spells « not read yet » as « missing », so the two are told apart by this and
-  // nothing else: without it, « configure a key » flashes at every launch for someone who has one.
   const authKnown = useSettings(state => state.authKnown)
   const typeLabels = useTypeLabels()
   const badgeLabels = useBadgeLabels()
@@ -83,50 +77,23 @@ export function AssetBrowser() {
   const jobs = useJobs(state => state.jobs)
   const busy = useCloud(state => state.busy)
   const moving = useCloud(state => state.moving)
-  /**
-   * The kind the space in front MAKES, written into the Type facet — a default that says its own
-   * name, where the narrowing used to be invisible. On the SPACE and never on the collection: it
-   * must not fight the user's own choice, only replace it when they move to another space.
-   */
-  const ownType = typeOfWorkspace(workspace) ?? soleTypeOf(workspace)
+  const ownType = workspaceType(workspace)
   useEffect(() => {
     if (ownType) setCollection(setFacetValue(useAssets.getState().collection, TYPE_FACET, ownType))
   }, [ownType, setCollection])
 
-  /**
-   * What the libraries are ASKED for — the facet's own answer, falling back to everything this
-   * space can take when the facet is cleared.
-   */
   const chosenTypes = collection.selections[TYPE_FACET]
   const scope = useMemo<readonly AssetType[]>(() => {
     const chosen = (chosenTypes ?? []).filter(isAssetType)
     return chosen.length > 0 ? chosen : assetTypesOf(workspace)
   }, [chosenTypes, workspace])
 
-  /** What was typed, held back until the typing stops, and sent to the API from here on. */
   const search = useDebounced(collection.search.trim(), SEARCH_DELAY_MS)
 
-  /**
-   * The same scope, minus what the API has never heard of: there is no animation class over
-   * there, and asking for one would answer a page of characters.
-   */
   const cloudScope = useMemo(() => scope.filter(isCloudAssetType), [scope])
 
-  /**
-   * Which libraries are being read. Nothing chosen reads the account's own, which is what
-   * someone opening the panel is looking for; the feed is ADDED to it rather than replacing it.
-   */
-  const chosenSources = collection.selections[SOURCE_FACET]
-  const wantsPublished = (chosenSources ?? []).includes(PUBLISHED_SOURCE)
-  const wantsOwn = !wantsPublished || (chosenSources ?? []).length > 1
+  const { wantsPublished, wantsOwn } = wantedSources(collection.selections[SOURCE_FACET])
 
-  /**
-   * Keyed on the account, on what is asked for and on the word: another key is another library.
-   *
-   * 🛑 Not read before the key is known to work. The channel answers an EMPTY PAGE when no
-   * credentials resolve (`emptyIfUnauthenticated`), and react-query holds that as a finished
-   * listing — the panel cached « this account owns nothing » with no reason to ask again.
-   */
   const library = usePages(
     ['assets', 'library', ownerId, cloudScope, search],
     from =>
@@ -142,10 +109,6 @@ export function AssetBrowser() {
   )
   const remote = library.items
 
-  /**
-   * What everyone else published, read only while the Source facet asks for it. The feed pages by
-   * ONE kind, and the scope's first is the one on screen.
-   */
   const publishedType = wantsPublished ? (cloudScope[0] ?? null) : null
   const feed = usePages(
     ['assets', 'published', publishedType, search],
@@ -166,16 +129,10 @@ export function AssetBrowser() {
   )
   const published = feed.items
 
-  /** Which row is open. One at a time: two of these is a panel one scrolls twice. */
   const [expanded, setExpanded] = useState<string | null>(null)
-  /**
-   * What is picked, in a store of its own rather than in the selection one: that one names rows
-   * of the PROJECT folder, and none of these lines is in the project until it is downloaded.
-   */
   const picked = useLibraryPick(state => state.picked)
   const setPicked = useLibraryPick(state => state.setPicked)
 
-  /** The two tooltips a cell may carry, built once for the panel — see `RowHints`. */
   const hints = useMemo(
     () => ({
       fetch: HINT_LEFT(t('assets.fetchHint')),
@@ -184,55 +141,32 @@ export function AssetBrowser() {
     [t],
   )
 
-  /**
-   * 🛑 The libraries and the generations are two memos, not one: a job reports its progress every
-   * couple of seconds, and one list would re-sort eight hundred lines for a bar moving on a tile.
-   */
   const settled = useMemo(() => mergeRows({ remote, published, scope }), [remote, published, scope])
   const rows = useMemo(() => [...runningRows(jobs), ...settled], [jobs, settled])
 
-  /** Which of these the project already holds — asked of the catalogue, over the ids listed. */
   const listed = useMemo(
     () => settled.flatMap(row => (row.from === 'remote' ? [row.asset.id] : [])),
     [settled],
   )
   const twins = useRemoteTwins(listed)
 
-  /**
-   * The mark each line wears, BESIDE the lines rather than spread onto them: a fresh object per
-   * row is a fresh identity, and the cells are memoised on it — every arriving page would
-   * re-render every tile on screen, thumbnails included.
-   */
   const badges = useMemo(() => {
     const inFlight = new Set(moving)
 
     return new Map(rows.map(row => [row.id, markOf(row, { inFlight, twins })]))
   }, [rows, moving, twins])
 
-  // The fallback in ONE place: a card and a line drawing the same row must not be able to answer
-  // differently about where it stands.
   const badgeOf = (id: string): AssetBadge => badges.get(id) ?? 'remote-only'
 
   const filtered = useMemo(
     () =>
       filterLocally(rows, collection, {
-        /**
-         * Nothing is matched in memory: the index has already matched these, on a prompt and a
-         * description this side cannot see. Judged again here, a hit found on its PROMPT would
-         * vanish from the very search that turned it up.
-         */
         text: () => null,
         facets: {
-          /**
-           * A running generation holds no kind yet, so it holds them ALL: nothing about it says
-           * it will not be the thing being looked for, and the panel exists to show it.
-           */
           [TYPE_FACET]: row => {
             const type = typeOfRow(row)
             return type ? [type] : ASSET_TYPES
           },
-          // Which library the line came from — the same answer that decided what was READ, so
-          // the filter and the listing behind it cannot disagree.
           [SOURCE_FACET]: row =>
             row.from === 'remote' && row.published ? [PUBLISHED_SOURCE] : SOURCES_OF_OWN,
         },
@@ -240,13 +174,6 @@ export function AssetBrowser() {
     [rows, collection],
   )
 
-  /**
-   * How far each source has been read — only the ones that have ANSWERED, where this panel departs
-   * from `mergeFeed`'s rule: counted from the first render, an opening panel would go blank for as
-   * long as the API takes. What the cut protects is the SCROLL.
-   */
-  // The stamps rather than the lists: a refresh hands back a fresh array of the same rows, and
-  // depending on it would walk the whole timeline again on every generation that lands.
   const libraryReadTo = remote.at(-1)?.createdAt
   const publishedReadTo = published.at(-1)?.createdAt
 
@@ -270,13 +197,8 @@ export function AssetBrowser() {
     ],
   )
 
-  // Cut AFTER the filters: what is hidden has still been read, so the frontier is the same
-  // either way, and cutting first would leave the tail of a filtered list unreachable.
   const { rows: shown, hungry } = useMemo(() => mergeFeed(filtered, sources), [filtered, sources])
 
-  // Asks the source holding the list back, and only it. Read as two booleans, because `mergeFeed`
-  // allocates a fresh list every render: depending on it would re-arm the end-of-list effect on
-  // every keystroke and spend a page on each one.
   const wantsLibrary = hungry.includes('library')
   const wantsFeed = hungry.includes('published')
   // Named apart because `exhaustive-deps` reads `library.more` as a dependency on `library`,
@@ -294,7 +216,7 @@ export function AssetBrowser() {
     key: `${ownerId} ${search} ${scope.join()} ${publishedType}`,
     drawn: shown.length,
     wanted: SURFACE_ROWS,
-    fetching: library.fetching || feed.fetching,
+    fetching: eitherFetching(library.fetching, feed.fetching),
     // A page either of them answers with nothing moves no row on screen, and the panel would
     // stop one pull in with pages still to come.
     answered: `${library.pagesRead} ${feed.pagesRead}`,
@@ -317,99 +239,110 @@ export function AssetBrowser() {
   useEffect(() => () => setPicked([]), [setPicked])
 
   /** No key is asked FIRST: blaming a filter would send someone hunting for one to clear. */
-  const narrowedByHand = isFiltered(
-    chosenTypes?.length === 1 && chosenTypes[0] === ownType
-      ? setFacetValue(collection, TYPE_FACET, null)
-      : collection,
-  )
+  const narrowedByHand = narrowedByUser(collection, chosenTypes, ownType)
   // EITHER source still on its way, not both: a listing nobody asked for is not pending, so
   // reading the record alone said « no match » over a feed whose first page was in flight.
-  const reading = (wantsOwn && library.pending) || (publishedType !== null && feed.pending)
-  const refused = library.refusal !== null || feed.refusal !== null
+  const { reading, refused } = browserStatus(wantsOwn, library, publishedType, feed)
 
   if (authKnown && !authenticated) return <MissingCredentials icon={mdiImageMultipleOutline} />
 
+  const emptyMessage = emptyAssetMessage({ reading, refused, narrowedByHand, t })
   return (
-    <div className="flex h-full min-h-0 flex-col">
-      <CollectionBar scId="assets" state={collection} onChange={setCollection} facets={facets} />
-      <Collection
-        label={t('panels.assets')}
-        multiple
-        items={shown}
-        state={collection}
-        // A line of this panel carries a thumbnail, so it takes the media height rather than a
-        // control's — kept from the batch this one landed on top of.
-        rowHeight="media"
-        // The panel owns its rows' gestures rather than each row wiring its own: that is what
-        // puts these cells in the tab order, and what gives them the range a click could not ask
-        // for. `LibraryAsset` keeps the drag and the menu, which belong to the row itself.
-        selectedIds={picked}
-        onSelect={(_row, ids, mode) => setPicked(applySelection(picked, ids, mode))}
-        onReachEnd={askForMore}
-        // One gesture, one meaning: a line with no bytes here is fetched FIRST and opened after
-        // — stopping at the download left the user guessing that a second gesture was now
-        // needed, and which one.
-        onActivate={row => {
-          if (row.from === 'remote' && project && !busy) void openFetched(row.asset.id)
-        }}
-        renderCard={row => (
-          <AssetCard
-            row={row}
-            badge={badgeOf(row.id)}
-            badgeLabels={badgeLabels}
-            typeLabels={typeLabels}
-            hints={hints}
-          />
-        )}
-        // Held here rather than in the selection: opening a row is reading, not picking, and a
-        // panel that opened whatever it selected would open a row on every arrow press.
-        expandedId={expanded}
-        // A running generation has no asset yet, so it has nothing to open onto.
-        canOpen={row => row.from === 'remote'}
-        onToggleRow={row => setExpanded(current => (current === row.id ? null : row.id))}
-        renderRowDetail={row => (
-          <AssetDetails row={row} twin={row.from === 'remote' ? twins.get(row.asset.id) : null} />
-        )}
-        renderRow={row => (
-          <AssetRow
-            row={row}
-            typeLabel={typeLabelOf(row, typeLabels)}
-            badge={badgeOf(row.id)}
-            badgeLabels={badgeLabels}
-            hints={hints}
-          />
-        )}
-        empty={
-          <EmptyState
-            icon={mdiImageMultipleOutline}
-            message={
-              reading
-                ? t('collection.loading')
-                : refused
-                  ? t('assets.libraryRefused')
-                  : narrowedByHand
-                    ? t('collection.noMatch')
-                    : t('assets.noneRemote')
+    <AssetBrowserList
+      collection={collection}
+      onCollectionChange={setCollection}
+      facets={facets}
+      items={shown}
+      selectedIds={picked}
+      onSelect={(_row, ids, mode) => setPicked(applySelection(picked, ids, mode))}
+      onReachEnd={askForMore}
+      onActivate={row => {
+        if (row.from === 'remote' && project && !busy) void openFetched(row.asset.id)
+      }}
+      renderCard={row => (
+        <AssetCard
+          row={row}
+          badge={badgeOf(row.id)}
+          badgeLabels={badgeLabels}
+          typeLabels={typeLabels}
+          hints={hints}
+        />
+      )}
+      expandedId={expanded}
+      onToggleRow={row => setExpanded(current => (current === row.id ? null : row.id))}
+      renderDetail={row => (
+        <AssetDetails row={row} twin={row.from === 'remote' ? twins.get(row.asset.id) : null} />
+      )}
+      renderRow={row => (
+        <AssetRow
+          row={row}
+          typeLabel={typeLabelOf(row, typeLabels)}
+          badge={badgeOf(row.id)}
+          badgeLabels={badgeLabels}
+          hints={hints}
+        />
+      )}
+      emptyMessage={emptyMessage}
+      retry={
+        refused
+          ? () => {
+              library.retry()
+              feed.retry()
             }
-            // The one emptiness with a way out: the others are answers, this one is a question
-            // that came back unanswered.
-            {...(refused
-              ? {
-                  action: {
-                    label: t('actions.retry'),
-                    hint: t('assets.libraryRefusedHint'),
-                    onClick: () => {
-                      library.retry()
-                      feed.retry()
-                    },
-                  },
-                }
-              : {})}
-          />
-        }
-      />
-    </div>
+          : undefined
+      }
+    />
   )
+}
+
+function workspaceType(workspace: Parameters<typeof typeOfWorkspace>[0]) {
+  return typeOfWorkspace(workspace) ?? soleTypeOf(workspace)
+}
+
+function eitherFetching(library: boolean, feed: boolean): boolean {
+  return library || feed
+}
+
+function wantedSources(chosen: readonly string[] | undefined) {
+  const selections = chosen ?? []
+  const wantsPublished = selections.includes(PUBLISHED_SOURCE)
+  return { wantsPublished, wantsOwn: !wantsPublished || selections.length > 1 }
+}
+
+function narrowedByUser(
+  collection: Parameters<typeof isFiltered>[0],
+  chosen: readonly string[] | undefined,
+  ownType: AssetType | null,
+): boolean {
+  if (chosen?.length === 1 && chosen[0] === ownType)
+    return isFiltered(setFacetValue(collection, TYPE_FACET, null))
+  return isFiltered(collection)
+}
+
+type PageState = { pending: boolean; refusal: unknown }
+
+function browserStatus(
+  wantsOwn: boolean,
+  library: PageState,
+  publishedType: AssetType | null,
+  feed: PageState,
+) {
+  return {
+    reading: (wantsOwn && library.pending) || (publishedType !== null && feed.pending),
+    refused: library.refusal !== null || feed.refusal !== null,
+  }
+}
+
+function emptyAssetMessage(input: {
+  reading: boolean
+  refused: boolean
+  narrowedByHand: boolean
+  t: ReturnType<typeof useTranslation>['t']
+}) {
+  if (input.reading) return input.t('collection.loading')
+  if (input.refused) return input.t('assets.libraryRefused')
+  if (input.narrowedByHand) return input.t('collection.noMatch')
+  return input.t('assets.noneRemote')
 }
 
 /**

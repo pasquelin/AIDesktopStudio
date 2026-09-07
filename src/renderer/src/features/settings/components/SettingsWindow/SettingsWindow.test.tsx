@@ -38,15 +38,15 @@ function childEntry(parent: string, child: string): HTMLElement {
   return within(item).getByRole('button', { name: child })
 }
 
-describe('SettingsWindow', () => {
-  beforeEach(() => {
-    useSettingsDraft.setState({ pending: {}, touched: new Set() })
-  })
+beforeEach(() => {
+  useSettingsDraft.setState({ pending: {}, touched: new Set() })
+})
 
-  afterEach(() => {
-    vi.unstubAllGlobals()
-  })
+afterEach(() => {
+  vi.unstubAllGlobals()
+})
 
+describe('SettingsWindow initial state', () => {
   it('loads the settings the window it opened from never shared with it', async () => {
     const read = vi.fn((): Promise<Settings> =>
       Promise.resolve({
@@ -120,7 +120,9 @@ describe('SettingsWindow', () => {
     act(() => announce?.('appearance'))
     await waitFor(() => expect(screen.getByLabelText(/Thème/)).toBeInTheDocument())
   })
+})
 
+describe('SettingsWindow navigation', () => {
   it('lists the families an employment can be configured for', () => {
     installFakeBridge()
     render(<SettingsWindow />)
@@ -144,6 +146,7 @@ describe('SettingsWindow', () => {
       'Vectorisation',
       'Espaces de travail',
       'Modélisation',
+      'Périphériques',
       'Raccourcis',
       'Dictée',
       'Médias',
@@ -261,7 +264,9 @@ describe('SettingsWindow', () => {
     // Back to what is stored, which is what "cancel" has to mean for the control too.
     expect(screen.getByLabelText(/Densité/)).toHaveValue('comfortable')
   })
+})
 
+describe('SettingsWindow changes and search', () => {
   /**
    * The window subscribed to the same boolean as its draft bar, so the first staged setting
    * re-rendered the whole column the bar exists to keep out of it.

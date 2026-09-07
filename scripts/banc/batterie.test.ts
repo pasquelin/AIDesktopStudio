@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest'
 import { play } from './play'
 import { createStudio, type Studio, type Think } from './studio'
 import { rankOf } from './coverage'
+import { assetOf, boatImage, montage, named, opened } from './setups'
 import { PROJECT } from './project'
 import type { Scenario } from './run'
 import { SCENARIOS } from './scenarios'
@@ -121,6 +122,21 @@ describe('the batterie and the bench', () => {
 
     expect(mute.map(one => one.name)).toEqual([])
   })
+
+  it('judges scene key times in the microseconds stored by the timeline', async () => {
+    const scenario = SCENARIOS.find(one => one.name.startsWith('13.3 '))
+    if (!scenario) throw new Error('scenario 13.3 is missing')
+    const studio = await createStudio(PROJECT)
+    await scenario.setup?.(studio)
+    await studio.run('key.writePoseKeys', {
+      nodeId: named(studio, 'Cube Test'),
+      timeSeconds: 10,
+      property: 'position',
+    })
+
+    expect(scenario.passed({ studio, called: [], refused: 0, said: '', asks: [] })).toBe(true)
+    studio.close()
+  })
 })
 
 /**
@@ -205,5 +221,99 @@ describe('a scenario played out', () => {
     })
 
     expect(seen[0]).toContain('Démo')
+  })
+})
+
+/**
+ * 🛑 The surfaces a headless run stands in for, measured HERE rather than by a paid pass: each of
+ * these refused for want of a window until 2026-09-02 — an image had no engine to hand its pixels
+ * over, a sky and a material had no GPU to draw with, and four scopes were armed by nobody.
+ */
+describe('what a run with no window can still carry out', () => {
+  const asking =
+    (calls: readonly AssistantCall[]): Think =>
+    request =>
+      Promise.resolve({ say: '', calls: request.continuing ? [] : calls, cost: 0 })
+
+  /** What each call answered, in order — `ok`, or the refusal by name. */
+  const answering = async (
+    setup: Scenario['setup'],
+    calls: readonly AssistantCall[],
+  ): Promise<readonly string[]> => {
+    const played = await play(
+      { name: '0.3 nothing', said: ['Fais-le.'], ...(setup ? { setup } : {}), passed: () => true },
+      asking(calls),
+    )
+    played.studio.close()
+    return played.called.map(one => one.answer ?? 'never ran')
+  }
+
+  it('saves and exports the image in front, whose pixels a canvas host stands in for', async () => {
+    const answers = await answering(boatImage, [
+      { action: 'document.save', input: {} },
+      { action: 'document.export', input: {} },
+    ])
+
+    expect(answers).toEqual([expect.stringMatching(/^ok/), expect.stringMatching(/^ok/)])
+  })
+
+  it('exports the sky in front, whose GPU pass a port stands in for', async () => {
+    const answers = await answering(
+      async studio => {
+        await opened('skyboxes', 'Ciel Test')(studio)
+        // A sky with no picture refuses before any pass — its own answer, not a missing surface.
+        await studio.run('skybox.setSourceImage', {
+          assetId: assetOf(studio, 'a clear blue sky at noon.png'),
+        })
+      },
+      [{ action: 'document.export', input: {} }],
+    )
+
+    expect(answers).toEqual([expect.stringMatching(/^ok/)])
+  })
+
+  it('exports the material in front, whose GPU pass a port stands in for', async () => {
+    const answers = await answering(opened('materials', 'Matière Test'), [
+      { action: 'document.export', input: {} },
+    ])
+
+    expect(answers).toEqual([expect.stringMatching(/^ok/)])
+  })
+
+  it('carries a command of the scope the document in front edits through', async () => {
+    const answers = await answering(opened('materials', 'Matière Test'), [
+      { action: 'command.runStudioCommand', input: { command: 'material.undo' } },
+    ])
+
+    // « nothing left to do » and not « nothing in front can carry that »: the scope IS armed, and
+    // an empty history is what an undo finds on a document nobody has edited.
+    expect(answers).toEqual([expect.stringMatching(/nothing left to do/)])
+  })
+
+  it('keeps a selected scene object framed through the headless viewport', async () => {
+    const answers = await answering(
+      SCENARIOS.find(scenario => scenario.name.startsWith('10.9 '))?.setup,
+      [{ action: 'command.runStudioCommand', input: { command: 'scene.frameFollow' } }],
+    )
+
+    expect(answers).toEqual([expect.stringMatching(/^ok/)])
+  })
+
+  it('carries the commands of an image, of a montage and of the project folder', async () => {
+    const canvas = await answering(boatImage, [
+      { action: 'command.runStudioCommand', input: { command: 'canvas.selectAll' } },
+    ])
+    const sequence = await answering(montage(), [
+      { action: 'command.runStudioCommand', input: { command: 'sequence.undo' } },
+    ])
+    // A folder and not an undo: the file stack lives in the main process, so `explorer.undo`
+    // answers before it knows whether there was anything to take back — see `runExplorerCommand`.
+    const explorer = await answering(undefined, [
+      { action: 'command.runStudioCommand', input: { command: 'explorer.newFolder' } },
+    ])
+
+    expect(canvas).toEqual([expect.stringMatching(/^ok/)])
+    expect(sequence).toEqual([expect.stringMatching(/nothing left to do/)])
+    expect(explorer).toEqual([expect.stringMatching(/^ok/)])
   })
 })

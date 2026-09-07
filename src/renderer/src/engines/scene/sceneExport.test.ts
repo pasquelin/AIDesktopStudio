@@ -22,7 +22,6 @@ import { exportTargetOf, lossesExportingTo } from '@shared/domain/exportRegistry
 import { applyWireOverlay } from './sceneView'
 import { exportObjects, placedCopy } from './sceneExport'
 
-/** What a `.gltf` file holds, read back as the JSON it is — the point is to check the file. */
 type GltfFile = {
   meshes?: { name?: string }[]
   nodes?: { name?: string }[]
@@ -72,18 +71,11 @@ describe('exportObjects', () => {
     expect(file.nodes?.map(node => node.name)).toContain('child')
   })
 
-  /**
-   * The whole point of the step, checked on the file rather than assumed: the grid, the
-   * trihedron and the helpers are siblings of the nodes in the viewport, so handing over the
-   * nodes leaves them out. A grid handed over would land in the file — this proves the
-   * difference is the input, not luck.
-   */
   it('leaves out what it was not handed, grid included', async () => {
     const viewport = new Scene()
     const grid = new GridHelper(10, 10)
     grid.name = 'grid'
     const mesh = named('box-1')
-    // Siblings in one scene, exactly as the viewport holds them: only the mesh is handed over.
     viewport.add(grid, mesh)
 
     const file = await gltfOf([mesh])
@@ -93,7 +85,6 @@ describe('exportObjects', () => {
     expect(names).not.toContain('grid')
   })
 
-  // The one thing that *is* a child of a mesh, and the one thing that would slip through.
   it('leaves the wireframe overlay out of the file', async () => {
     const mesh = named('box-1')
     applyWireOverlay(mesh, true, new LineBasicMaterial())
@@ -104,7 +95,6 @@ describe('exportObjects', () => {
     expect(file.nodes?.map(node => node.name)).not.toContain('wireframe-overlay')
   })
 
-  // Copies are handed over: the scene the user is looking at is not touched by an export.
   it('leaves the live objects exactly as they were', async () => {
     const mesh = named('box-1')
     applyWireOverlay(mesh, true, new LineBasicMaterial())
@@ -116,11 +106,6 @@ describe('exportObjects', () => {
     expect(mesh.position.toArray()).toEqual([1, 2, 3])
   })
 
-  /**
-   * The exporters write a *local* transform. Handed the object itself, a selected child would
-   * land in the file where it sits inside its parent — at the origin here — rather than where it
-   * sits in the scene.
-   */
   it('writes a selected child where it stands in the world', async () => {
     const parent = named('parent')
     parent.position.set(10, 0, 0)
@@ -128,8 +113,7 @@ describe('exportObjects', () => {
     parent.add(child)
 
     const bytes = await exportObjects([child], 'gltf')
-    // `as`: what a `.gltf` file holds is glTF, and these are the fields a reader looks at. The
-    // exporter writes a column-major matrix rather than a translation, so x sits at index 12.
+    // `as`: parsed glTF matrices are column-major, with x at index 12.
     const file = JSON.parse(new TextDecoder().decode(bytes)) as {
       nodes?: { name?: string; matrix?: number[]; translation?: number[] }[]
     }
@@ -164,15 +148,15 @@ describe('exportObjects with a compressed texture', () => {
     return new Mesh(new BoxGeometry(), material)
   }
 
-  /**
-   * What is pinned is that the texture reaches the decoder instead of throwing at it. The export
-   * cannot then finish: a decoded texture is canvas-backed, and jsdom encodes no canvas.
-   */
   it('hands it to the decoder', async () => {
     const decompress = vi.fn(() => new Texture())
     const mesh = boxWearing(new CompressedTexture([], 4, 4))
 
-    await exportObjects([mesh], 'gltf', { decoder: { decompress } }).catch(() => {})
+    try {
+      await exportObjects([mesh], 'gltf', { decoder: { decompress } })
+    } catch {
+      // jsdom cannot encode the decoded canvas.
+    }
 
     expect(decompress).toHaveBeenCalled()
   })
@@ -242,11 +226,6 @@ describe('exportObjects and the names a reader sees', () => {
 })
 
 describe('exportObjects and what cannot be written', () => {
-  /**
-   * Both exporters default to `onlyVisible`, so a hidden node produced a valid, EMPTY file and
-   * the studio said the export had worked. Refused out loud instead — the caller is a menu, and
-   * `reportFailure` puts what is thrown here in the journal.
-   */
   it('refuses a selection that is entirely hidden', async () => {
     const hidden = named('box-1')
     hidden.visible = false
@@ -377,7 +356,7 @@ describe('exportObjects and the animation a reader plays', () => {
   /** The copy is what the file holds, so the clip has to name that — never the object on screen. */
   const composed = (at: number): Parameters<typeof gltfOf>[1] => ({
     clipsFor: copies => [
-      new AnimationClip('IA Studio', 2, [
+      new AnimationClip('AI Desktop Studio', 2, [
         new VectorKeyframeTrack(`${copies[at]?.uuid}.position`, [0, 2], [0, 0, 0, 5, 0, 0]),
       ]),
     ],
@@ -386,7 +365,7 @@ describe('exportObjects and the animation a reader plays', () => {
   it('carries the document’s own animation, built from the copies', async () => {
     const file = await gltfOf([named('box-1')], composed(0))
 
-    expect(played(file)).toEqual(['IA Studio'])
+    expect(played(file)).toEqual(['AI Desktop Studio'])
     expect(file.animations?.[0]?.channels?.[0]?.target?.path).toBe('translation')
   })
 
@@ -408,7 +387,7 @@ describe('exportObjects and the animation a reader plays', () => {
 
     const file = await gltfOf([box, named('box-2')], composed(1))
 
-    expect(played(file).sort()).toEqual(['IA Studio', 'Walk'])
+    expect(played(file).sort()).toEqual(['AI Desktop Studio', 'Walk'])
   })
 })
 

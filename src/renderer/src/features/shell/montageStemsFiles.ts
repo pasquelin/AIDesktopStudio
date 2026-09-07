@@ -5,7 +5,8 @@ import type { ExportedFile, FolderExportRequest } from '@shared/ipc'
 import { encodeWav } from '@/engines/audio/wav'
 import { stemsOf, stemsWeight } from '@/engines/timeline/stems'
 import { decodeAsset } from '@/helpers/audioDecode'
-import { documentExportName, useDocuments } from '@/stores/documents'
+import { useDocuments } from '@/stores/documents'
+import { documentExportName } from '@/stores/documentExportName'
 import { sequenceOf, useSequences } from '@/stores/sequences'
 
 /** What a track is called when it was never renamed — a file cannot be named nothing. */

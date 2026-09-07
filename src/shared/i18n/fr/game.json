@@ -1,6 +1,14 @@
 {
   "game": {
     "components": {
+      "Aircraft": {
+        "title": "Avion",
+        "description": "Fait voler l’objet : portance, traînée et poussée calculées sur son propre mouvement, gouvernes qui ne répondent qu’avec du vent."
+      },
+      "Animator": {
+        "title": "Animateur",
+        "description": "Fait jouer au corps le clip qui correspond à ce qu’il fait — marche, saut, arrêt — d’après un graphe d’animation du projet."
+      },
       "CharacterController": {
         "description": "Fait de l’objet celui qu’on dirige : il marche, il saute, il monte les marches.",
         "title": "Personnage"
@@ -9,13 +17,33 @@
         "description": "Donne à l’objet un volume que les autres ne peuvent pas traverser.",
         "title": "Volume"
       },
+      "Follow": {
+        "description": "Fait suivre une autre entité, en s’arrêtant à la distance demandée — un compagnon, une caméra d’épaule, un ennemi.",
+        "title": "Poursuite"
+      },
       "Health": {
         "description": "Des points de vie, qui descendent quand l’entité est touchée et la font mourir à zéro.",
         "title": "Santé"
       },
+      "LookAt": {
+        "description": "Oriente l’entité vers une autre, tout de suite ou à vitesse de rotation limitée — une tourelle, un panneau, une tête.",
+        "title": "Regard"
+      },
       "Movement": {
         "description": "Fait aller et venir l’entité toute seule, le long d’un axe — une plate-forme, un ascenseur, un piège.",
         "title": "Mouvement"
+      },
+      "Orbit": {
+        "description": "Fait tourner l’entité autour d’une autre, ou autour de l’origine — une lune, un satellite, une caméra qui tourne.",
+        "title": "Orbite"
+      },
+      "Path": {
+        "description": "Fait suivre à l’entité une suite de points, à vitesse constante — un chariot, une caméra de travelling, une plate-forme sur rail.",
+        "title": "Rail"
+      },
+      "Patrol": {
+        "description": "Fait aller l’entité d’un point nommé au suivant, avec un temps d’attente à chaque étape — une sentinelle, un ascenseur.",
+        "title": "Patrouille"
       },
       "RigidBody": {
         "description": "Confie l’objet à la simulation : il tombe, il glisse, il se fait pousser.",
@@ -25,32 +53,209 @@
         "title": "Script",
         "description": "Confie l’objet à du code : ce que l’auteur a écrit s’exécute à chaque pas."
       },
+      "Player": {
+        "title": "Joueur",
+        "description": "Désigne celui qu’on joue. Un seul par scène : ce qui pend sous lui est son corps et son œil, et c’est lui que la caméra suit."
+      },
+      "Spin": {
+        "description": "Fait tourner l’entité sur un axe, sans fin — une pièce à ramasser, une hélice, un mécanisme.",
+        "title": "Rotation continue"
+      },
+      "SpringArm": {
+        "title": "Perche",
+        "description": "Accroche une caméra derrière un élément, à distance réglable : elle se rapproche quand un mur s’interpose et suit avec du retard plutôt qu’en collant."
+      },
       "Trigger": {
         "description": "Ne bloque rien et prévient quand quelque chose entre dans son volume ou en sort.",
         "title": "Détecteur"
+      },
+      "Vehicle": {
+        "title": "Véhicule",
+        "description": "Pose l’objet sur des roues suspendues, motrices et directrices : il roule, il freine, il braque. Les roues sont ses objets enfants, nommées ici."
       }
     },
     "fields": {
+      "acceleration": "Montée en vitesse",
+      "agility": "Maniabilité",
+      "airControl": "Contrôle en l’air",
       "axis": "Axe",
+      "body": "Corps suivi",
+      "bodyTurnSpeed": "Rotation du corps (0 : aucune)",
+      "camera": "Caméra",
+      "collision": "Éviter les murs",
+      "collisionInLag": "Entrée en collision",
+      "collisionOutLag": "Sortie de collision",
+      "coyoteTime": "Tolérance de saut",
       "current": "Actuelle",
+      "deceleration": "Décélération",
       "distance": "Distance",
+      "drag": "Traînée",
+      "drive": "Transmission",
       "fidelity": "Précision",
       "friction": "Frottement",
+      "from": "Fichier d’origine",
+      "graph": "Graphe d’animation",
       "gravityScale": "Pesanteur",
       "height": "Hauteur",
+      "hysteresis": "Hystérésis",
+      "jumpBuffer": "Saut anticipé",
       "jumpSpeed": "Saut",
       "kind": "Simulation",
+      "length": "Longueur",
       "lockRotation": "Bloquer la rotation",
+      "lookAt": "Cadrage",
       "mass": "Masse",
       "max": "Maximum",
+      "maxSteerAngle": "Braquage maximal",
+      "maxThrust": "Poussée maximale",
+      "maxTorque": "Couple moteur",
       "mode": "Parcours",
+      "moveSpeed": "Vitesse de marche (0 : celle de la scène)",
+      "orientation": "Orientation",
+      "orientToTangent": "Suivre la tangente",
+      "pitchMax": "Inclinaison maximale",
+      "pitchMin": "Inclinaison minimale",
+      "positionLag": "Retard de position",
+      "possesses": "Élément possédé",
+      "probeRadius": "Rayon de sonde",
       "radius": "Rayon",
       "restitution": "Rebond",
+      "rotationLag": "Retard de rotation",
+      "runSpeed": "Vitesse de course (0 : pas de course)",
+      "safetyMargin": "Marge de sécurité",
       "script": "Fichier",
+      "shoulder": "Décalage latéral",
       "slopeLimit": "Pente",
       "snapDistance": "Accroche",
       "speed": "Vitesse",
-      "stepHeight": "Marche"
+      "stallAngle": "Angle de décrochage",
+      "stepHeight": "Marche",
+      "stopDistance": "Distance d’arrêt",
+      "subject": "Élément suivi",
+      "suspensionLength": "Débattement",
+      "target": "Cible",
+      "turnSpeed": "Vitesse de rotation",
+      "waitSeconds": "Attente",
+      "waypoints": "Points",
+      "wheelRadius": "Rayon des roues",
+      "wheels": "Roues",
+      "wheelWidth": "Largeur des roues",
+      "wingArea": "Surface alaire"
+    },
+    "export": {
+      "title": "Optimiser le jeu",
+      "action": "Exporter",
+      "safeTitle": "Optimisations runtime SAFE",
+      "safeRuntime": "Optimiser la représentation runtime",
+      "instancing": "Instancier les objets répétés",
+      "batching": "Regrouper les géométries statiques compatibles",
+      "deduplication": "Dédupliquer les ressources",
+      "geometryBuffers": "Optimiser les buffers géométriques",
+      "losslessCompression": "Compresser sans perte visuelle",
+      "removeUnused": "Supprimer les ressources inutilisées",
+      "currentSceneMeasured": "Mesuré · scène actuelle",
+      "projectEstimated": "Estimé · jeu complet · {{count, number}} scènes",
+      "currentSceneLossyEstimate": "Scène actuelle avec pertes · {{triangles}} triangles · {{geometry}} de géométrie · {{images}} d’images",
+      "triangleResult": "Triangles affichés {{before}} → {{after}}",
+      "geometryResult": "Géométrie {{before}} → {{after}}",
+      "imageResult": "Images {{before}} → {{after}}",
+      "visualTitle": "Avancé · changements visuels",
+      "generateLods": "Générer les niveaux de distance",
+      "geometryLabel": "Simplification géométrique",
+      "compressionLabel": "Compression des images",
+      "reductionLabel": "Résolution des images",
+      "quality": {
+        "off": "Désactivée",
+        "conservative": "Prudente",
+        "balanced": "Équilibrée",
+        "aggressive": "Agressive"
+      },
+      "reduction": {
+        "off": "Originale",
+        "half": "Moitié",
+        "quarter": "Quart"
+      },
+      "visualChangesNone": "Changements visuels : AUCUN",
+      "visualChangesPossible": "Changements visuels : POSSIBLES",
+      "failed": "Le jeu n’a pas pu être exporté."
+    },
+    "inputMap": {
+      "actionId": "Action",
+      "actionKind": "Valeur",
+      "addAction": "Ajouter une action",
+      "addBinding": "Ajouter une liaison",
+      "binding": "Liaison {{device}}",
+      "applyPresetHint": "Remplace cette carte par le point de départ choisi",
+      "axis": "Axe",
+      "context": "Contexte",
+      "create": "Nouvelle carte de contrôles",
+      "createHint": "Crée une carte de contrôles depuis un point de départ standard",
+      "defaultActive": "Actif au démarrage",
+      "deadZone": "Zone morte",
+      "deviceLabel": "Périphérique",
+      "duplicateId": "Plusieurs cartes de contrôles utilisent l’identifiant « {{id}} ». Donnez un identifiant unique à chaque contexte.",
+      "device": {
+        "gamepad": "Manette",
+        "keyboard": "Clavier",
+        "mouse": "Souris"
+      },
+      "id": "Identifiant",
+      "invalid": "Le JSON ne décrit pas une carte de contrôles valide.",
+      "invert": "Inverser",
+      "jsonLabel": "JSON de la carte",
+      "kind": {
+        "axis1": "Un axe",
+        "axis2": "Deux axes",
+        "button": "Bouton"
+      },
+      "loadFailed": "Cette carte de contrôles n’a pas pu être lue.",
+      "loading": "Chargement de la carte de contrôles…",
+      "mode": {
+        "expert": "Expert",
+        "json": "JSON",
+        "simple": "Simple"
+      },
+      "modeHint": "Change la façon de modifier la même carte de contrôles",
+      "preset": {
+        "character": "Personnage",
+        "flight": "Vol",
+        "menu": "Menu",
+        "studio": "Studio",
+        "vehicle": "Véhicule"
+      },
+      "presets": "Points de départ",
+      "priority": "Priorité",
+      "removeAction": "Supprimer l’action",
+      "removeBinding": "Supprimer la liaison",
+      "save": "Enregistrer",
+      "scale": "Échelle",
+      "unnamedAction": "Action sans nom",
+      "capture": "Appuyez",
+      "capturing": "Appuyez…",
+      "captureHint": "Lie cette commande à la prochaine touche ou au prochain contrôle poussé. Échap annule.",
+      "help": {
+        "id": "Le nom du contexte, celui qu’un script pousse et que le repli intégré complète. Il vient du nom du fichier ; deux fichiers portant le même identifiant ne feraient qu’un seul contexte.",
+        "priority": "Qui gagne quand deux contextes actifs déclarent la même action. Le plus GRAND nombre écrit en dernier et l’emporte. Les contextes intégrés personnage, véhicule et vol sont à 0, 10 et 10.",
+        "defaultActive": "Si cette carte est en service dès le début de la partie. Sinon, c’est à un script de la pousser — un contexte de menu s’ouvre et se referme ainsi.",
+        "actionId": "Le nom que lit un script et que lisent les contrôleurs intégrés : `move`, `jump`, `steer`. C’est ce nom qui compte, jamais la touche.",
+        "actionKind": "Ce que l’action rend : un bouton rend oui ou non, un axe rend un nombre entre −1 et 1, deux axes rendent un couple — ce qu’un stick dit.",
+        "device": "D’où vient la commande. Une même action peut en cumuler plusieurs : c’est ainsi qu’un jeu répond au clavier ET à la manette sans le savoir.",
+        "axis": "Sur laquelle des deux moitiés cette touche pousse. Une action à deux axes se compose de quatre touches, deux par axe.",
+        "scale": "De combien cette liaison pousse, et dans quel sens. −1 pour la moitié qui va vers la gauche ou vers l’arrière, 1 pour l’autre.",
+        "deadZone": "En dessous de cette valeur, le stick est considéré au repos. Un stick usé dérive : sans zone morte, le personnage marche tout seul.",
+        "invert": "Retourne le sens de ce contrôle. Ce que certains pilotes attendent du tangage, et personne du reste."
+      }
+    },
+    "controlsMenu": {
+      "add": "Ajouter une liaison",
+      "capture": "Appuyez sur une touche ou un bouton de manette",
+      "change": "Modifier",
+      "close": "Fermer",
+      "gamepad": "Manette",
+      "keyboard": "Clavier",
+      "mouse": "Souris",
+      "reset": "Tout réinitialiser",
+      "title": "Contrôles"
     },
     "play": {
       "faults_many": "{{count, number}} erreurs",
@@ -78,18 +283,25 @@
       "emptyHint": "Un composant dit ce que l’objet FAIT, quand son type dit ce qu’il dessine."
     },
     "values": {
+      "all": "Intégrale",
       "auto": "Automatique",
       "box": "Cube",
       "convexes": "Convexes",
       "dynamic": "Dynamique",
       "fixed": "Fixe",
+      "front": "Traction",
       "hull": "Enveloppe",
       "kinematic": "Pilotée",
       "loop": "En boucle",
       "once": "Une fois",
       "pingPong": "Aller-retour",
+      "pivot": "L’épaule",
+      "pointer": "Le regard",
+      "rear": "Propulsion",
+      "subject": "L’élément suivi",
       "trimesh": "Triangles",
       "unknown": "Valeur inconnue",
+      "unnamedNode": "Aucun",
       "x": "X",
       "y": "Y",
       "z": "Z"
@@ -97,6 +309,8 @@
     "window": {
       "debug": "Débogage",
       "debugHint": "Ce que la partie dit d’elle-même : objets, images par seconde, pas, fautes",
+      "framePerformance": "CPU {{cpu}} ms · rendu {{render}} ms",
+      "renderPerformance": "{{calls, number}} appels de dessin · {{triangles, number}} triangles",
       "noFaults": "Aucune faute",
       "title": "Partie",
       "waiting": "En attente du studio…"

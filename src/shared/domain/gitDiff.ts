@@ -62,20 +62,32 @@ export function parseUnifiedDiff(output: string): GitDiff {
     // out rather than shown: it would read as a removal that nobody made.
     if (line.startsWith('\\')) continue
 
-    if (line.startsWith('+')) {
-      hunk.lines.push({ side: 'added', text: line.slice(1), before: null, after })
-      after += 1
-    } else if (line.startsWith('-')) {
-      hunk.lines.push({ side: 'removed', text: line.slice(1), before, after: null })
-      before += 1
-    } else if (line.startsWith(' ')) {
-      hunk.lines.push({ side: 'context', text: line.slice(1), before, after })
-      before += 1
-      after += 1
-    }
+    const parsed = diffLine(line, before, after)
+    if (!parsed) continue
+    hunk.lines.push(parsed.line)
+    before += parsed.before
+    after += parsed.after
   }
 
   return hunks.length === 0 ? { kind: 'empty' } : { kind: 'text', hunks }
+}
+
+function diffLine(
+  value: string,
+  before: number,
+  after: number,
+): { line: GitDiffLine; before: number; after: number } | null {
+  const text = value.slice(1)
+  if (value.startsWith('+')) {
+    return { line: { side: 'added', text, before: null, after }, before: 0, after: 1 }
+  }
+  if (value.startsWith('-')) {
+    return { line: { side: 'removed', text, before, after: null }, before: 1, after: 0 }
+  }
+  if (value.startsWith(' ')) {
+    return { line: { side: 'context', text, before, after }, before: 1, after: 1 }
+  }
+  return null
 }
 
 /**

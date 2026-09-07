@@ -1,22 +1,27 @@
 import { useEffect } from 'react'
-import type { MenuAbility, MenuCheck } from '@shared/domain/command'
+import { scopeOfWorkspace, type MenuAbility, type MenuCheck } from '@shared/domain/command'
 import { revealTool } from '@/helpers/revealPanel'
 import { availableToolIds } from '@/helpers/toolRegistry'
 import { getBridge } from '@/services/bridge'
 import { routeCommand } from '@/services/commandRouter'
 import { addNodeTo } from '@/hooks/useAddNode'
+import { createDocumentOfKind } from '@/features/shell/newDocument'
+import { openRecent } from '@/features/shell/openRecent'
 import { canMaskFromSelection, canMergeDown } from '@/engines/canvas/canvasState'
 import { canvasOf, useCanvases } from '@/stores/canvases'
 import { selectionOf, useCanvasViews } from '@/stores/canvasViews'
-import { activeIdOfKind, useDocuments } from '@/stores/documents'
-import { displayOfPane, MAIN_SCENE_PANE, sceneViewOf, useSceneViews } from '@/stores/sceneViews'
-import { sceneEngineOf } from '@/stores/sceneEngines'
+import { activeIdOfKind, activeSceneOrWorkshopId, useDocuments } from '@/stores/documents'
+import { closableTabId } from '@/features/shell/components/dockviewApi'
+import { displayOfPane } from '@/stores/sceneViewChrome'
+import { MAIN_SCENE_PANE, sceneViewOf, useSceneViews } from '@/stores/sceneViews'
 import { sceneOf, useScenes } from '@/stores/scenes'
 import { useGit } from '@/stores/git'
 import { toolSurface, useLayouts } from '@/stores/layouts'
 import { useModels } from '@/stores/models'
 import { useProject } from '@/stores/project'
 import { useSettings } from '@/stores/settings'
+import { takeExternalFiles } from '@/services/externalFiles'
+import { connectMeshConversion } from '@/services/meshConversion'
 
 type SceneMenuState = { checked: MenuCheck[]; abilities: MenuAbility[] }
 
@@ -29,7 +34,8 @@ type SceneMenuState = { checked: MenuCheck[]; abilities: MenuAbility[] }
  * one, and a menu has a single row to say it with — the bar has the same limit, see `SceneDocument`.
  */
 function sceneMenuState(): SceneMenuState {
-  const documentId = activeIdOfKind(useDocuments.getState(), 'scene')
+  // The model tab's workshop too: its View rows tick off the same view store.
+  const documentId = activeSceneOrWorkshopId(useDocuments.getState())
   if (!documentId) return { checked: [], abilities: [] }
 
   const view = sceneViewOf(useSceneViews.getState(), documentId)
@@ -110,18 +116,27 @@ function publishMenuContext(): void {
   const tools = availableToolIds(surface)
   const scene = sceneMenuState()
   const canvas = canvasAbilities()
-  const abilities = [...scene.abilities, ...canvas]
-
   const front = useDocuments.getState()
-  const kind = (front.activeId ? front.documents[front.activeId] : undefined)?.kind ?? null
+  // Both refused in silence over a screen with no document — `routeCommand` answers `noSurface`
+  // and nothing on the menu said so, which is what an enabled row promises it will not do.
+  const saving: MenuAbility[] = front.activeId ? ['document.save', 'document.saveAs'] : []
+  // The router's own answer, said on the row before it is pressed rather than worked out again.
+  const closing: MenuAbility[] = closableTabId() ? ['document.close'] : []
+  const abilities = [...saving, ...closing, ...scene.abilities, ...canvas]
+  // The scope and not the kind, since the menu asks whose history ⌘Z pops: the 3D space opens
+  // both scenes and interfaces, and the two do not answer the same.
+  const scope = scopeOfWorkspace(
+    surface,
+    (front.activeId ? front.documents[front.activeId] : undefined)?.kind,
+  )
 
-  const signature = JSON.stringify([surface, tools, scene.checked, abilities, kind])
+  const signature = JSON.stringify([surface, tools, scene.checked, abilities, scope])
   if (signature === published) return
   published = signature
   publishedScene = sceneSignature(scene)
   publishedCanvas = canvas.join('|')
 
-  void getBridge()?.window.setWorkspace(surface, tools, scene.checked, abilities, kind)
+  void getBridge()?.window.setWorkspace(surface, tools, scene.checked, abilities, scope)
 }
 
 /** The listener of the two image stores — a layer drag writes one on every pointer move. */
@@ -157,6 +172,22 @@ function publishIfGitChanged(): void {
   publishMenuContext()
 }
 
+function subscribeMenuPublishers(): Array<() => void> {
+  const stops = [useLayouts, useSettings, useDocuments, useProject].map(store =>
+    store.subscribe(publishMenuContext),
+  )
+  stops.push(
+    useModels.subscribe((state, previous) => {
+      if (state.selected !== previous.selected) publishMenuContext()
+    }),
+  )
+  for (const store of [useSceneViews, useScenes]) stops.push(store.subscribe(publishIfSceneChanged))
+  for (const store of [useCanvases, useCanvasViews])
+    stops.push(store.subscribe(publishIfCanvasChanged))
+  stops.push(useGit.subscribe(publishIfGitChanged))
+  return stops
+}
+
 /**
  * Wires the native menu to the shell. Without this listener, "View ▸ Tool windows" would emit
  * into the void and the menu entries would silently do nothing.
@@ -183,28 +214,7 @@ export function useNativeMenu(): void {
     // which scene is in front decides what the ticks read.
     // `useProject` is among them because the home offers the Explorer only while a project is
     // open: without it the row would stay in the menu until something else happened to publish.
-    const stopPublishing = [useLayouts, useSettings, useDocuments, useProject].map(store =>
-      store.subscribe(publishMenuContext),
-    )
-    // Search keystrokes used to rebuild the native menu: only the chosen model moves a row.
-    stopPublishing.push(
-      useModels.subscribe((state, previous) => {
-        if (state.selected === previous.selected) return
-        publishMenuContext()
-      }),
-    )
-    // The two written far too often are subscribed apart, through the guard that prices a tick
-    // and an ability before a context. `useScenes` is one of them because what is PICKED in a
-    // scene decides whether the menu offers to export a selection.
-    for (const store of [useSceneViews, useScenes])
-      stopPublishing.push(store.subscribe(publishIfSceneChanged))
-    // The image stores belong to that second family too: a layer drag writes `useCanvases` on
-    // every pointer move, and what the two Image rows need from it changes far more rarely.
-    for (const store of [useCanvases, useCanvasViews])
-      stopPublishing.push(store.subscribe(publishIfCanvasChanged))
-    // `useGit` belongs to that second family rather than the first: the history is offered only
-    // over a folder under version control, but `busy` flips on every command and moves no row.
-    stopPublishing.push(useGit.subscribe(publishIfGitChanged))
+    const stopPublishing = subscribeMenuPublishers()
 
     // Through `revealTool`, which resolves the zone: a tool sits in different ones depending on
     // the workspace, and the menu is built once for the whole app.
@@ -213,31 +223,38 @@ export function useNativeMenu(): void {
     // The verdict is dropped on purpose: a menu row that reaches nothing is a row already greyed
     // out, and there is nobody to answer. An MCP client is the caller that needs it.
     const stopCommand = bridge.menu.onCommand(command => void routeCommand(command))
+    // One row of File ▸ New. The same door the plus button opens, with the kind already named:
+    // the name and the folder are still asked, so a template is still offered where there is one.
+    const stopDocumentNew = bridge.menu.onDocumentNew(({ kind }) => void createDocumentOfKind(kind))
+
+    const stopOpenRecent = bridge.menu.onOpenRecent(request => void openRecent(request))
+    const stopExternalFiles = bridge.externalFiles?.onOpen(() => void takeExternalFiles())
+    if (bridge.externalFiles) void takeExternalFiles()
+    // Every 3D file that lands — generated, adopted, asked for over the MCP — becomes a `.glb`.
+    const stopMeshConversion = connectMeshConversion()
+
     // The same path the toolbar and the panels take: two ways of adding a node would drift.
     const stopSceneAdd = bridge.menu.onSceneAdd(({ kind }) => {
       // Of the right kind: the menu is app-wide, and a node written under an image document
-      // would give it a scene and a history it has no editor for.
+      // would give it a scene and a history it has no editor for. A model tab's workshop takes
+      // no node either — nothing saves one yet.
       const documentId = activeIdOfKind(useDocuments.getState(), 'scene')
       if (documentId) addNodeTo(documentId, kind)
     })
 
-    // The camera is the engine's, not the store's: a side to look from is a move, not a state
-    // — see `PaneView`. The main pane alone, as the bar's own flyout does.
-    const stopSceneView = bridge.menu.onSceneView(({ direction }) => {
-      const documentId = activeIdOfKind(useDocuments.getState(), 'scene')
-      if (documentId) sceneEngineOf(documentId)?.viewFrom(direction)
-    })
-
     const stopSceneDisplay = bridge.menu.onSceneDisplay(({ mode }) => {
-      const documentId = activeIdOfKind(useDocuments.getState(), 'scene')
+      const documentId = activeSceneOrWorkshopId(useDocuments.getState())
       if (documentId) useSceneViews.getState().setDisplay(documentId, MAIN_SCENE_PANE, mode)
     })
 
     return () => {
       stopTool()
       stopCommand()
+      stopDocumentNew()
+      stopOpenRecent()
+      stopExternalFiles?.()
+      stopMeshConversion()
       stopSceneAdd()
-      stopSceneView()
       stopSceneDisplay()
       for (const stop of stopPublishing) stop()
     }

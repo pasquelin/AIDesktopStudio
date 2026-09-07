@@ -5,6 +5,7 @@ import {
   type Asset,
   type AssetType,
 } from '@shared/domain/asset'
+import { isPlayerModulePath } from '@shared/domain/playerModuleFile'
 import { workspaceOfType } from '@shared/domain/assetKind'
 import type { DocumentDescriptor, DocumentKind } from '@shared/domain/document'
 import type { WorkspaceId } from '@shared/domain/workspace'
@@ -13,6 +14,8 @@ import { restoreDocument } from '@/features/shell/documentIo'
 import { loadTake } from '@/features/audio/components/TakeEditor/loadTake'
 import { becomeAsset, placeAsset } from '@/features/image/placeAsset'
 import { placeMaterialChannel } from '@/features/material/components/placeChannel'
+import { importableAssetTypeOf } from '@shared/domain/importFormat'
+import { sourceNatureOf } from '@shared/domain/fileRole'
 import { documentOfKind, useDocuments } from '@/stores/documents'
 import { addAnimationTo, addModelTo } from '@/stores/scenes'
 import { addAssetToSequence, sequenceTakes } from '@/stores/sequences'
@@ -219,7 +222,7 @@ export const ASSET_INTENTS: readonly AssetIntent[] = [
       const { reportAssetDrift } = await import('@/features/image/assetFidelity')
       await reportAssetDrift(documentId, asset.id, asset.name)
     },
-    ...inDocument('image', placeAsset, isLocalPicture, becomeAsset),
+    ...inDocument('image', placeAsset, isPaintablePicture, becomeAsset),
   },
   {
     id: 'video.clip',
@@ -243,9 +246,34 @@ export const ASSET_INTENTS: readonly AssetIntent[] = [
   },
 ]
 
+/**
+ * Whether a file is a player MODULE rather than a mesh — the one thing that tells the two
+ * double-clicks apart, since both are glTF and both live on the mesh shelf.
+ */
+export function opensAsPlayerModule(asset: Asset): boolean {
+  return (
+    asset.type === 'mesh' &&
+    asset.location === 'local' &&
+    isPlayerModulePath(asset.path ?? asset.name)
+  )
+}
+
 /** Every destination that would take this kind, whether or not its space is open right now. */
 export function intentsFor(type: AssetType): readonly AssetIntent[] {
   return ASSET_INTENTS.filter(intent => intent.accepts.includes(type))
+}
+
+/**
+ * The importable meshes ARE the models the studio edits; a `.gltf` is not among them, it is a
+ * document. Read off the PATH — a catalogued row is named without its extension — and never for a
+ * row the cloud holds, which has no file for the tab to read.
+ */
+export function opensAsCharacter(asset: Asset): boolean {
+  return (
+    asset.type === 'mesh' &&
+    asset.location === 'local' &&
+    importableAssetTypeOf(asset.path ?? asset.name) === 'mesh'
+  )
 }
 
 /**
@@ -282,7 +310,14 @@ export function editorIntent(asset: Asset): AssetIntent | null {
  * all. `null` for a picture not on disk — `assetUrl` answers 404 for a cloud row.
  */
 export function pixelEditorIntent(asset: Asset): AssetIntent | null {
-  return isLocalPicture(asset) ? IMAGE_INTENT : null
+  return isPaintablePicture(asset) ? IMAGE_INTENT : null
+}
+
+/** A picture the image editor can actually decode — not an OpenEXR heightmap. */
+function isPaintablePicture(asset: Asset): boolean {
+  if (!isLocalPicture(asset)) return false
+  const nature = sourceNatureOf(asset.path ?? asset.name)
+  return nature.domain === 'other' ? true : nature.openable
 }
 
 const IMAGE_INTENT = ASSET_INTENTS.find(intent => intent.workspace === 'image') ?? null

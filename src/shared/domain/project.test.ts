@@ -9,9 +9,13 @@ import {
   projectsByCreation,
   movedRecentProject,
   projectName,
+  RECENT_DOCUMENTS_MAX,
   RECENT_PROJECTS_MAX,
+  withoutProjectDocuments,
+  withRecentDocument,
   withRecentProject,
   type Project,
+  type RecentDocument,
   type RecentProject,
 } from './project'
 
@@ -348,5 +352,78 @@ describe('projectPathFor', () => {
   // The first project of a machine: no folder is known, so nothing can be composed.
   it('answers nothing where no folder is known', () => {
     expect(projectPathFor('test3', undefined)).toBeUndefined()
+  })
+})
+
+describe('the shelf of recent documents', () => {
+  const entry = (project: string, path: string, openedAt: string): RecentDocument => ({
+    project,
+    path,
+    kind: 'scene',
+    openedAt,
+  })
+
+  const shelf = (recent: readonly RecentDocument[]): string[] =>
+    recent.map(one => `${one.project}:${one.path}`)
+
+  /** Most recently opened first, and that IS the order it is drawn in — unlike the projects. */
+  it('puts the one just opened at the top', () => {
+    const recent = withRecentDocument(
+      [entry('/a', 'Scenes/One.gltf', '2026-09-01T10:00:00.000Z')],
+      entry('/a', 'Scenes/Two.gltf', '2026-09-02T10:00:00.000Z'),
+    )
+
+    expect(shelf(recent)).toEqual(['/a:Scenes/Two.gltf', '/a:Scenes/One.gltf'])
+  })
+
+  it('lists a document opened again once, at the top', () => {
+    const recent = withRecentDocument(
+      [
+        entry('/a', 'Scenes/One.gltf', '2026-09-01T10:00:00.000Z'),
+        entry('/a', 'Scenes/Two.gltf', '2026-09-01T11:00:00.000Z'),
+      ],
+      entry('/a', 'Scenes/One.gltf', '2026-09-02T10:00:00.000Z'),
+    )
+
+    expect(shelf(recent)).toEqual(['/a:Scenes/One.gltf', '/a:Scenes/Two.gltf'])
+  })
+
+  /** The same path in two projects is two documents — one identity would take the other's row. */
+  it("tells one project's document from another's of the same path", () => {
+    const recent = withRecentDocument(
+      [entry('/a', 'Scenes/One.gltf', '2026-09-01T10:00:00.000Z')],
+      entry('/b', 'Scenes/One.gltf', '2026-09-02T10:00:00.000Z'),
+    )
+
+    expect(shelf(recent)).toEqual(['/b:Scenes/One.gltf', '/a:Scenes/One.gltf'])
+  })
+
+  it('keeps no more than the bound, dropping the oldest', () => {
+    let recent: RecentDocument[] = []
+    for (let n = 0; n < RECENT_DOCUMENTS_MAX + 3; n += 1) {
+      recent = withRecentDocument(
+        recent,
+        entry('/a', `Scenes/${n}.gltf`, '2026-09-01T10:00:00.000Z'),
+      )
+    }
+
+    expect(recent).toHaveLength(RECENT_DOCUMENTS_MAX)
+    expect(shelf(recent).at(-1)).toBe('/a:Scenes/3.gltf')
+  })
+
+  /**
+   * Forgetting or binning a project takes its documents with it: each row would otherwise reopen
+   * the project that was just dropped, which is the one thing dropping it has to stop.
+   */
+  it('drops everything a project held when the project goes', () => {
+    const recent = withoutProjectDocuments(
+      [
+        entry('/a', 'Scenes/One.gltf', '2026-09-01T10:00:00.000Z'),
+        entry('/b', 'Scenes/Two.gltf', '2026-09-01T11:00:00.000Z'),
+      ],
+      '/a',
+    )
+
+    expect(shelf(recent)).toEqual(['/b:Scenes/Two.gltf'])
   })
 })

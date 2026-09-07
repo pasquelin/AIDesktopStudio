@@ -8,8 +8,9 @@ import { useCanvases } from '@/stores/canvases'
 import { useLayouts } from '@/stores/layouts'
 import { useModels } from '@/stores/models'
 import { chooseModels } from '@/stores/models-fixtures'
-import { arrangedFor } from '@/stores/tool-fixtures'
-import { arrangementOf, useTools } from '@/stores/tools'
+import { chassisFor } from '@/stores/panels-fixtures'
+import { shownIn } from '@pasquelin/panels'
+import { panelsStore } from '@/stores/panels'
 import { prepareEdit } from './aiActions'
 
 const INPAINT = aiRoleId('image', 'inpaint')
@@ -39,7 +40,7 @@ const bridge = {
 beforeEach(() => {
   uploaded = []
   installCanvas(DOCUMENT)
-  useTools.setState({ arrangements: arrangedFor('image', { open: {} }), focusedZone: null })
+  chassisFor('image')
   useLayouts.setState({ activeWorkspace: 'image', home: false })
   // The employment a retouch reaches for since ADR-23, not the family's first one: the same
   // weights serve both, and a person may well have picked differently for each.
@@ -144,7 +145,7 @@ describe('preparing an edit', () => {
     await expect(prepareEdit(DOCUMENT, 'regenerate', host, bridge)).resolves.toBe(false)
 
     expect(uploaded).toEqual([])
-    expect(arrangementOf(useTools.getState(), 'image').open.left?.primary).toBe('generator')
+    expect(shownIn(panelsStore.getState(), 'left').primary).toBe('generator')
   })
 
   /**
@@ -175,6 +176,6 @@ describe('preparing an edit', () => {
   it('brings the form forward rather than submitting it', async () => {
     await prepareEdit(DOCUMENT, 'regenerate', host, bridge)
 
-    expect(useTools.getState().focusedZone).toBe('left')
+    expect(panelsStore.getState().focusedZone).toBe('left')
   })
 })

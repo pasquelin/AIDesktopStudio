@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import type { NamedDocumentPlace, NewDocumentAsk } from '@shared/domain/newDocument'
+import type { NewDocumentAnswer, NewDocumentAsk } from '@shared/domain/newDocument'
 import { CHANNELS } from '@shared/ipc'
 
 const handlers = vi.hoisted(
@@ -66,22 +66,28 @@ function fakeWindow(): FakeWindow {
 
 const ASK: NewDocumentAsk = {
   kind: 'scene',
-  folder: 'documents',
-  suggested: 'Scène 1',
+  surface: '3d',
+  picked: 'documents',
   projectName: 'One',
+  recentProjects: [],
   open: [],
+}
+
+const MADE: NewDocumentAnswer = {
+  answer: 'made',
+  place: { kind: 'scene', title: 'Niveau', folder: 'documents' },
 }
 
 let studio = fakeEmitter()
 
-const ask = (): Promise<NamedDocumentPlace | null> =>
+const ask = (): Promise<NewDocumentAnswer | null> =>
   handlers.get(CHANNELS.newDocumentAsk)?.(
     { sender: studio },
     ASK as never,
-  ) as Promise<NamedDocumentPlace | null>
+  ) as Promise<NewDocumentAnswer | null>
 
-const answer = (place: NamedDocumentPlace | null): Promise<unknown> | undefined =>
-  handlers.get(CHANNELS.newDocumentAnswer)?.(null, place as never)
+const answer = (given: NewDocumentAnswer | null): Promise<unknown> | undefined =>
+  handlers.get(CHANNELS.newDocumentAnswer)?.(null, given as never)
 
 const request = (): Promise<unknown> | undefined =>
   handlers.get(CHANNELS.newDocumentRequest)?.(null)
@@ -106,9 +112,9 @@ describe('registerNewDocumentWindow', () => {
 
   it('answers the studio what the window answers, and takes it down', async () => {
     const asked = ask()
-    void answer({ title: 'Niveau', folder: 'documents' })
+    void answer(MADE)
 
-    await expect(asked).resolves.toEqual({ title: 'Niveau', folder: 'documents' })
+    await expect(asked).resolves.toEqual(MADE)
     expect(opened.window?.destroyed).toBe(1)
   })
 
@@ -165,7 +171,7 @@ describe('registerNewDocumentWindow', () => {
     const second = ask()
     await expect(request()).resolves.toEqual(ASK)
 
-    void answer({ title: 'Niveau', folder: 'documents' })
-    await expect(second).resolves.toEqual({ title: 'Niveau', folder: 'documents' })
+    void answer(MADE)
+    await expect(second).resolves.toEqual(MADE)
   })
 })

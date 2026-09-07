@@ -1,7 +1,7 @@
 import { mdiPlus } from '@mdi/js'
 import { useTranslation } from 'react-i18next'
 import { resetTo } from '@/helpers/resetTo'
-import { DEFAULT_PATH, type PathDescriptor } from '@shared/domain/scene'
+import { bezierPathOf, DEFAULT_PATH, type PathDescriptor } from '@shared/domain/scene'
 import { PropertyRow } from '@/components/PropertyRow'
 import { PropertySection } from '@/components/PropertySection'
 import { SliderField } from '@/components/SliderField'
@@ -29,19 +29,35 @@ export function PathSection({ path, onChange, gesture }: PathSectionProps) {
 
   return (
     <PropertySection title={t('inspector.rail')} scId="rail">
-      <SliderField
-        label={t('inspector.fields.tension')}
-        scId="rail.tension"
-        value={path.tension}
-        min={0}
-        max={MAX_TENSION}
-        step={0.05}
-        onChange={tension => onChange({ ...path, tension })}
-        onReset={resetTo(path.tension, DEFAULT_PATH.tension, tension =>
-          onChange({ ...path, tension }),
-        )}
-        {...gesture}
+      {/* Two shapes, two controls: a smooth rail bends by ONE number, a Bézier one by the pair of
+          tangents every anchor carries — and those are dragged in the viewport, never typed. */}
+      <ToggleField
+        label={t('inspector.fields.handles')}
+        scId="rail.handles"
+        value={path.kind === 'bezier'}
+        onChange={handles =>
+          onChange(
+            handles
+              ? bezierPathOf(path.points, path.closed)
+              : { ...DEFAULT_PATH, points: path.points, closed: path.closed },
+          )
+        }
       />
+      {path.kind === 'catmullrom' && (
+        <SliderField
+          label={t('inspector.fields.tension')}
+          scId="rail.tension"
+          value={path.tension}
+          min={0}
+          max={MAX_TENSION}
+          step={0.05}
+          onChange={tension => onChange({ ...path, tension })}
+          onReset={resetTo(path.tension, DEFAULT_PATH.tension, tension =>
+            onChange({ ...path, tension }),
+          )}
+          {...gesture}
+        />
+      )}
       <ToggleField
         label={t('inspector.fields.closed')}
         scId="rail.closed"

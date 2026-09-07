@@ -36,7 +36,9 @@ import {
   type Light,
 } from 'three'
 import type { ViewHelper } from 'three/addons/helpers/ViewHelper.js'
+import { ribbonGeometry } from './ribbonGeometry'
 import type { GeometryDescriptor, LightKind, PathDescriptor } from '@shared/domain/scene'
+import { handleAt, type Vector3 as PlainVector3 } from '@shared/domain/scene'
 import { pathPoints } from './cameraPath'
 import { MARKER_NAME, solid } from './markerPaint'
 import { screenScale } from '../viewport/screenScale'
@@ -77,6 +79,24 @@ export function geometryFor(descriptor: GeometryDescriptor): BufferGeometry {
         descriptor.height,
         descriptor.segments,
       )
+    case 'plane':
+      return new PlaneGeometry(descriptor.width, descriptor.height)
+    case 'ribbon':
+      return ribbonGeometry(descriptor)
+    case 'ring':
+      return new RingGeometry(descriptor.innerRadius, descriptor.outerRadius, descriptor.segments)
+    default:
+      return curvedGeometryFor(descriptor)
+  }
+}
+
+function curvedGeometryFor(
+  descriptor: Exclude<
+    GeometryDescriptor,
+    { kind: 'box' | 'capsule' | 'circle' | 'cylinder' | 'plane' | 'ribbon' | 'ring' }
+  >,
+): BufferGeometry {
+  switch (descriptor.kind) {
     case 'dodecahedron':
       return new DodecahedronGeometry(descriptor.radius)
     case 'icosahedron':
@@ -85,10 +105,19 @@ export function geometryFor(descriptor: GeometryDescriptor): BufferGeometry {
       return new LatheGeometry(undefined, descriptor.segments)
     case 'octahedron':
       return new OctahedronGeometry(descriptor.radius)
-    case 'plane':
-      return new PlaneGeometry(descriptor.width, descriptor.height)
-    case 'ring':
-      return new RingGeometry(descriptor.innerRadius, descriptor.outerRadius, descriptor.segments)
+    default:
+      return sweptGeometryFor(descriptor)
+  }
+}
+
+function sweptGeometryFor(
+  descriptor: Exclude<
+    GeometryDescriptor,
+    | { kind: 'box' | 'capsule' | 'circle' | 'cylinder' | 'plane' | 'ribbon' | 'ring' }
+    | { kind: 'dodecahedron' | 'icosahedron' | 'lathe' | 'octahedron' }
+  >,
+): BufferGeometry {
+  switch (descriptor.kind) {
     case 'sphere':
       return new SphereGeometry(
         descriptor.radius,
@@ -159,6 +188,9 @@ export function helperFor(light: Light): LightHelper | null {
 /** Metres. A camera about the size of a hand, so it neither hides the set nor disappears in it. */
 const CAMERA_BODY = { width: 0.24, height: 0.2, depth: 0.36 }
 
+/** How far the lens hood reaches ahead of a camera's own point — where its shot leaves from. */
+export const CAMERA_LENS_REACH = CAMERA_BODY.depth / 2 + 0.16 + 0.025
+
 /**
  * A film camera: a body, a lens down its line of sight, and a magazine on top. It faces −Z, which
  * is where a `PerspectiveCamera` looks, so the lens says which way the shot goes.
@@ -194,6 +226,9 @@ export function cameraBody(fill: string, edge: string): Object3D {
 /** How big a control point is built, in scene units. What it ends up drawn at is `KNOB_SHARE`. */
 export const PATH_KNOB_RADIUS = 0.14
 
+/** Past every surface, which all draw at zero — a handle one cannot see is no handle. */
+const HANDLE_ORDER = 10
+
 /**
  * How much of the visible height a knob covers, whatever the distance: a hundred-and-twenty-eighth
  * of it, so about 14 px across on a viewport 900 px tall — the size a control point is drawn at in
@@ -228,26 +263,131 @@ export function knobIndexOf(name: string): number | null {
 }
 
 /**
+ * The two tangents of an anchor, and the bar that ties each to it. Named apart from a knob: a
+ * pick has to say WHICH of the three it caught, the gizmo writing a different field for each.
+ */
+export const HANDLE_PREFIX = { in: 'path-in-', out: 'path-out-' }
+export const HANDLE_BAR_PREFIX = 'path-bar-'
+
+export type HandlePart = 'in' | 'out'
+
+/** Whether an object is one of a rail's own helpers rather than something the document owns. */
+export function isRailAid(name: string): boolean {
+  return name.startsWith(RAIL_AID_PREFIX)
+}
+
+/** What every helper of a rail is named after — the line, the knobs, the tangents and their bars. */
+export const RAIL_AID_PREFIX = 'path-'
+
+export function handleName(part: HandlePart, index: number): string {
+  return `${HANDLE_PREFIX[part]}${index}`
+}
+
+/** Which tangent an object stands for, or `null` for one that is neither. */
+export function handlePartOf(name: string): { part: HandlePart; index: number } | null {
+  for (const part of ['in', 'out'] satisfies HandlePart[]) {
+    const prefix = HANDLE_PREFIX[part]
+    if (!name.startsWith(prefix)) continue
+    const index = Number(name.slice(prefix.length))
+    if (Number.isInteger(index) && index >= 0) return { part, index }
+  }
+  return null
+}
+
+/**
  * A rail: the sampled curve, and one knob per control point.
  *
  * Knobs are meshes rather than a `Points` cloud because the gizmo attaches to an `Object3D` —
  * a point of a cloud is an index in a buffer, and nothing a transform control can hold.
  */
 export function buildPath(descriptor: PathDescriptor, colour: string): Object3D {
-  const object = new Object3D()
+  return dressWithRail(new Object3D(), descriptor, { knob: colour }, false)
+}
 
-  const line = new Line(new BufferGeometry(), new LineBasicMaterial({ color: colour }))
+/**
+ * What a rail's three kinds of handle are painted in. `handle` and `start` fall back on the
+ * anchors' own colour, so a caller with nothing to say about them says nothing.
+ */
+export type RailColours = { knob: string; handle?: string; start?: string }
+
+/**
+ * 🛑 `through` for a band and never for a rail: a rail hangs in the air, but a band's run lies
+ * INSIDE the surface it shapes, so its line and its knobs sit behind what they pilot.
+ */
+export function dressWithRail(
+  object: Object3D,
+  descriptor: PathDescriptor,
+  colours: RailColours,
+  through: boolean,
+): Object3D {
+  const colour = colours.knob
+  const handleColour = colours.handle ?? colour
+  const line = new Line(
+    new BufferGeometry(),
+    new LineBasicMaterial({ color: colour, depthTest: !through }),
+  )
+  if (through) line.renderOrder = HANDLE_ORDER
   line.name = PATH_CURVE_NAME
   line.geometry.setFromPoints(pathPoints(descriptor))
   object.add(line)
 
   for (const [index, point] of descriptor.points.entries()) {
-    const knob = pathKnob(index, colour)
+    // 🛑 The FIRST anchor apart: a run of identical dots says nothing about which end it starts
+    // from, and a band swept along it has a direction one has to be able to read.
+    const knob = pathKnob(index, (index === 0 ? colours.start : undefined) ?? colour, through)
     knob.position.set(point.x, point.y, point.z)
     object.add(knob)
+
+    // Hidden until its anchor is the one being worked on — see `showPathHandles`. Built either
+    // way, so activating a point costs no rebuild and no frame.
+    for (const part of ['in', 'out'] satisfies HandlePart[]) {
+      const handle = pathKnob(index, handleColour, through)
+      handle.name = handleName(part, index)
+      handle.visible = false
+      object.add(handle)
+
+      const bar = new Line(
+        new BufferGeometry(),
+        new LineBasicMaterial({ color: handleColour, depthTest: !through }),
+      )
+      bar.name = barName(part, index)
+      bar.visible = false
+      if (through) bar.renderOrder = HANDLE_ORDER
+      object.add(bar)
+    }
+
+    placeHandles(object, descriptor, index, point)
   }
 
   return object
+}
+
+export function barName(part: HandlePart, index: number): string {
+  return `${HANDLE_BAR_PREFIX}${part}-${index}`
+}
+
+/**
+ * 🛑 Called from the BUILD as well as from the sync: left to the sync alone, every tangent sat at
+ * the rail's origin until something else changed the shape — a dot in the middle of a field.
+ */
+export function placeHandles(
+  object: Object3D,
+  descriptor: PathDescriptor,
+  index: number,
+  point: PlainVector3,
+): void {
+  const pair = handleAt(descriptor, index)
+
+  for (const part of ['in', 'out'] satisfies HandlePart[]) {
+    const reach = pair[part]
+    const at = new Vector3(point.x + reach.x, point.y + reach.y, point.z + reach.z)
+
+    object.getObjectByName(handleName(part, index))?.position.copy(at)
+    const bar = object.getObjectByName(barName(part, index))
+    if (bar instanceof Line) {
+      bar.geometry.setFromPoints([new Vector3(point.x, point.y, point.z), at])
+    }
+  }
 }
 
 /**
@@ -260,11 +400,12 @@ export function buildPath(descriptor: PathDescriptor, colour: string): Object3D 
  * The matrix is recomposed by hand because three had already composed it for this draw: a scale
  * written and left there is a scale that shows up one frame late, and reads as a lag.
  */
-export function pathKnob(index: number, colour: string): Mesh {
+export function pathKnob(index: number, colour: string, through = false): Mesh {
   const knob = new Mesh(
     new SphereGeometry(PATH_KNOB_RADIUS, 8, 6),
-    new MeshBasicMaterial({ color: colour }),
+    new MeshBasicMaterial({ color: colour, depthTest: !through }),
   )
+  if (through) knob.renderOrder = HANDLE_ORDER
   knob.name = knobName(index)
   knob.onBeforeRender = (_renderer, _scene, camera) => sizeKnobFor(knob, camera)
   knob.onAfterRender = () => restoreKnob(knob)

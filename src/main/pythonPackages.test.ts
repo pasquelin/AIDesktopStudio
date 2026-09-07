@@ -55,7 +55,7 @@ describe('what the Python side distributes', () => {
     const locked = new Set(lockedPackages())
 
     expect(UNREAD_PENDING_COLLECTION.filter(name => !locked.has(name))).toEqual([])
-    expect(UNREAD_PENDING_COLLECTION).toHaveLength(47)
+    expect(UNREAD_PENDING_COLLECTION).toHaveLength(81)
   })
 
   it('states a licence for each package whose metadata was read', () => {

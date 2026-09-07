@@ -108,7 +108,7 @@ async function loadSources(load: TextureSource, urls: readonly string[]): Promis
   const loaded: Source[] = []
   // The settled result itself, not its reason: it is what tells "nothing failed" apart from
   // "something failed with an undefined reason", and it is a type the platform already has.
-  let failure: PromiseRejectedResult | undefined
+  let failure: PromiseRejectedResult | undefined = undefined
   for (const result of settled) {
     if (result.status === 'fulfilled') loaded.push(result.value)
     else failure ??= result
@@ -201,6 +201,17 @@ async function withRenderer<T>(
     // `dispose` frees three's own objects; the context itself only goes with this.
     renderer.forceContextLoss()
   }
+}
+
+/** Draw the pass and encode the frame — the two ports that return a PNG both did this. */
+export async function pngDrawn({
+  renderer,
+  pipeline,
+  material,
+  size,
+}: OffscreenFrame): Promise<PictureSize & { png: Uint8Array }> {
+  pipeline.renderToScreen(material)
+  return { ...size, png: await encodePng(renderer.domElement) }
 }
 
 /** The browser's own encoder — the one place where a per-pixel loop is not ours to write. */

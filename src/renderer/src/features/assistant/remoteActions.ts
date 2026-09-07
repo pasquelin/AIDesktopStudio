@@ -2,6 +2,8 @@ import { assistantAction } from '@shared/domain/assistant'
 import type { ActionOutcome } from '@shared/domain/assistant'
 import { getBridge } from '@/services/bridge'
 import { splitConsent } from './wireConsent'
+import { sceneEngineOf } from '@/stores/sceneEngines'
+import { canvasHost } from '@/features/image/canvasHosts'
 
 /**
  * Actions asked for from OUTSIDE this window — today, by an MCP client.
@@ -17,9 +19,32 @@ export function connectRemoteActions(): () => void {
   const bridge = getBridge()
   if (!bridge) return () => {}
 
-  return bridge.assistant.onAction(({ callId, call }) => {
+  const stopActions = bridge.assistant.onAction(({ callId, call }) => {
     void answer(callId, call.action, call.input)
   })
+  const stopVisual = bridge.assistant.onVisualCapture(({ callId, documentId }) => {
+    void answerVisual(callId, documentId)
+  })
+  return () => {
+    stopActions()
+    stopVisual()
+  }
+}
+
+async function answerVisual(callId: string, documentId: string): Promise<void> {
+  const png = await captureVisual(documentId)
+  await getBridge()?.assistant.visualCaptureResult({ callId, png })
+}
+
+async function captureVisual(documentId: string): Promise<Uint8Array | null> {
+  try {
+    const scene = sceneEngineOf(documentId)
+    return scene
+      ? await scene.captureStill('view')
+      : ((await canvasHost(documentId)?.flatten()) ?? null)
+  } catch {
+    return null
+  }
 }
 
 async function answer(

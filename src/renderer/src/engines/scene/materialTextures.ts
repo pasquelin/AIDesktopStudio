@@ -1,5 +1,5 @@
 import { SRGBColorSpace, type Mesh, type MeshStandardMaterial, type SpriteMaterial } from 'three'
-import type { MaterialDescriptor, SpriteDescriptor } from '@shared/domain/scene'
+import type { MaterialDescriptor, SpriteDescriptor, TextureSlot } from '@shared/domain/scene'
 import { createSlotBindings, createTextureBinding } from './textureBinding'
 import type { TextureCache } from './textureCache'
 import { giveSecondUvSet } from './threeSync'
@@ -15,7 +15,7 @@ export function createMaterialTextures(
   cache: TextureCache,
   mesh: Mesh,
   material: MeshStandardMaterial,
-  onChange: () => void,
+  onChange: (slot: TextureSlot) => void,
 ): MaterialTextures {
   const slots = createSlotBindings(cache, 'flipY', (slot, texture) => {
     if (material[slot] === texture) return
@@ -26,7 +26,7 @@ export function createMaterialTextures(
     material[slot] = texture
     // A slot that goes from empty to filled changes the shader program itself.
     material.needsUpdate = true
-    onChange()
+    onChange(slot)
   })
 
   return {

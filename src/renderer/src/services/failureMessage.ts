@@ -17,6 +17,8 @@ const MESSAGE_KEY: Record<JobFailure, string> = {
   rejected: 'errors.rejected',
   storage: 'errors.storage',
   'incomplete-model': 'errors.incompleteModel',
+  'engine-missing': 'errors.engineMissing',
+  'engine-failed': 'errors.engineFailed',
   unexpected: 'errors.unexpected',
 }
 

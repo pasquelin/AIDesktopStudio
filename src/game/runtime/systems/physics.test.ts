@@ -5,8 +5,10 @@ import { newComponent } from '@shared/domain/componentRegistry'
 import { DEFAULT_PLAY } from '@shared/domain/scene'
 import type { Component } from '@shared/domain/component'
 import type { GameEvent, GameEventName } from '@shared/domain/gameEvent'
+import { createIntents } from '../intents'
 import { notedPhysics, type NotedPhysics } from '../../physics/physics-fixtures'
 import { createCharacters } from '../characters'
+import { createPossessions } from '../possessions'
 import type { ColliderShape } from '../../physics/shape'
 import { restingTransform } from '../entity'
 import { testPorts, testWorld } from '../world-fixtures'
@@ -23,10 +25,12 @@ function bench(over: Partial<WorldOptions> = {}): Bench {
   const physics = notedPhysics()
   const seen: GameEvent[] = []
 
-  const characters = createCharacters()
+  // One `possessions` for both: `characters` reads it, and `settle` reads the same answer.
+  const possessions = createPossessions()
+  const characters = createCharacters(possessions, entity => entity.transform, createIntents())
   const world = testWorld({
     ports: testPorts({ physics }),
-    systems: [createPhysicsSystem({ shapeOf: () => CUBE, characters })],
+    systems: [createPhysicsSystem({ shapeOf: () => CUBE, characters, possessions })],
     ...over,
   })
 
@@ -128,7 +132,7 @@ describe('what falls, what blocks and what walks', () => {
     const shape = physics.added[0]?.shape
 
     expect(shape?.kind).toBe('capsule')
-    // The straight part only, as Rapier counts it: 1,8 tall less a cap at each end.
+    // The straight part only, as a capsule is counted: 1,8 tall less a cap at each end.
     expect(shape?.kind === 'capsule' ? shape.halfHeight : 0).toBeCloseTo(0.6, 6)
     expect(shape?.kind === 'capsule' ? shape.radius : 0).toBeCloseTo(0.3, 6)
   })
@@ -167,7 +171,7 @@ describe('what falls, what blocks and what walks', () => {
   })
 
   /**
-   * Rapier sends no parting event for a body it REMOVES, so a pair left behind would sit in the
+   * No engine sends a parting event for a body it REMOVES, so a pair left behind would sit in the
    * set for the life of the session — and the door it opened would never close.
    */
   it('forgets a trigger pair with the entity that was standing in it', () => {
@@ -231,7 +235,11 @@ describe('what falls, what blocks and what walks', () => {
    */
   it('asks for a shape once, not once a frame', () => {
     const physics = notedPhysics()
-    const characters = createCharacters()
+    const characters = createCharacters(
+      createPossessions(),
+      entity => entity.transform,
+      createIntents(),
+    )
     let asked = 0
     const world = testWorld({
       ports: testPorts({ physics }),
@@ -242,6 +250,7 @@ describe('what falls, what blocks and what walks', () => {
             return null
           },
           characters,
+          possessions: createPossessions(),
         }),
       ],
     })

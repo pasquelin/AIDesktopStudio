@@ -13,6 +13,7 @@ import {
   type LightDescriptor,
   type MaterialDescriptor,
   type ModelRef,
+  type OptimizationSettings,
   type PathDescriptor,
   type SpriteDescriptor,
   type TextDescriptor,
@@ -24,6 +25,14 @@ import type { CsgGraph } from '@shared/domain/csg'
 import { EMPTY_TIMELINE, type AnimationTimeline } from '@shared/domain/animation'
 import { DEFAULT_FONT } from '@shared/domain/font'
 import { cachedOn } from '../core/cachedOn'
+
+export type { OptimizationSettings } from '@shared/domain/scene'
+
+export type BakedInstance = {
+  sourceId: string
+  name: string
+  transform: Transform
+}
 
 export type SceneNodeBase = {
   id: string
@@ -45,6 +54,20 @@ export type SceneNodeBase = {
    * rendering — the behaviour lives in a system, never in the component.
    */
   components?: readonly Component[]
+  /**
+   * The attachment point of the PARENT this node hangs on — a sword in a hand, a hat on a head.
+   *
+   * It REFINES `parentId` and never replaces it: the parent is still the character, and this
+   * says which of its sockets to follow. A node whose parent carries no such socket hangs from
+   * the character itself, which is where it stood before the socket was named.
+   */
+  attach?: { socket: string }
+  /**
+   * How a person answered « how should this be drawn » — read by the grouping, which keeps its own
+   * representation as a disposable cache. `instances` is NOT that cache: it is written and read
+   * back verbatim, so once baked it IS the document.
+   */
+  optimization?: OptimizationSettings
 }
 
 export type SceneNode = SceneNodeBase &
@@ -53,6 +76,7 @@ export type SceneNode = SceneNodeBase &
         type: 'mesh'
         geometry: GeometryDescriptor
         material: MaterialDescriptor
+        instances?: readonly BakedInstance[]
         /**
          * Marked as a TOOL for the next boolean — Roblox's Negate, and the only explicit way to
          * say which way a cut runs. Absent on every node ever written so far, and absent means
@@ -198,6 +222,11 @@ export function shadowDefaults(node: ShadowSubject): {
   // Everything else defaults to what it is capable of: a mesh both throws and catches, a sprite
   // does neither, and nothing has to say so twice.
   return { castShadow: canCastShadow(node), receiveShadow: canReceiveShadow(node) }
+}
+
+/** A light catches nothing: the flag exists on every node, but only two kinds answer to it. */
+export function receivesShadow(node: SceneNode): boolean {
+  return canReceiveShadow(node) && node.receiveShadow
 }
 
 /**
@@ -397,8 +426,6 @@ export function canReparent(
 export function subtreesOf(nodes: readonly SceneNode[], ids: readonly string[]): SceneNode[] {
   const wanted = new Set(ids)
   const byParent = new Map<string | null, SceneNode[]>()
-  // Only the roots, never the whole scene by id: a second index of 40 000 entries doubled the
-  // cost of every fold, which asks for two shapes.
   const roots = new Map<string, SceneNode>()
   for (const node of nodes) {
     if (wanted.has(node.id)) roots.set(node.id, node)
@@ -406,7 +433,6 @@ export function subtreesOf(nodes: readonly SceneNode[], ids: readonly string[]):
     if (siblings) siblings.push(node)
     else byParent.set(node.parentId, [node])
   }
-
   const found: SceneNode[] = []
   const seen = new Set<string>()
   for (const id of ids) {
@@ -415,9 +441,6 @@ export function subtreesOf(nodes: readonly SceneNode[], ids: readonly string[]):
     seen.add(id)
     found.push(root)
   }
-
-  // Indexed rather than iterated: the loop appends as it walks, which is the descent itself. The
-  // `seen` set is also what ends it on a parent cycle, where the singular used to spin for ever.
   for (let at = 0; at < found.length; at += 1) {
     const node = found[at]
     if (!node) continue
@@ -457,4 +480,10 @@ export function cameraIds(nodes: readonly SceneNode[]): ReadonlySet<string> {
  */
 export function firstCameraId(nodes: readonly SceneNode[]): string | null {
   return cameraIds(nodes).values().next().value ?? null
+}
+
+/** The nodes of a set whose parent is not in it — what a gesture over a subtree acts on once. */
+export function rootsOf(nodes: readonly SceneNode[]): SceneNode[] {
+  const ids = new Set(nodes.map(node => node.id))
+  return nodes.filter(node => node.parentId === null || !ids.has(node.parentId))
 }

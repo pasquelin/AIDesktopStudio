@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import type { AssistantCall } from '@shared/domain/assistant'
+import type { ActionOutcome, AssistantCall } from '@shared/domain/assistant'
 import type { AssistantActionRequest } from '@shared/ipc'
 import { createRemoteActions } from './asking'
 
@@ -23,6 +23,21 @@ function windowThatAnswers() {
 }
 
 describe('asking the window in front to act', () => {
+  it('serves bounded action discovery in the main process', async () => {
+    const findActions = vi.fn(async (): Promise<ActionOutcome> => ({
+      ok: true,
+      data: [{ name: 'git.checkout' }],
+    }))
+    const send = vi.fn(() => true)
+    const actions = createRemoteActions({ send, findActions })
+
+    await expect(
+      actions.run({ action: 'actions.find', input: { query: 'switch branch' } }),
+    ).resolves.toEqual({ ok: true, data: [{ name: 'git.checkout' }] })
+    expect(findActions).toHaveBeenCalledWith('switch branch')
+    expect(send).not.toHaveBeenCalled()
+  })
+
   it('answers what the window made of it', async () => {
     const { actions } = windowThatAnswers()
     const running = actions.run(call)

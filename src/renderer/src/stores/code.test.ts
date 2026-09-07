@@ -7,7 +7,13 @@ const WALK = 'script:Scripts/Walk.ts'
 
 describe('the scripts an editor holds', () => {
   beforeEach(() => {
-    useCode.setState({ files: {}, problems: [], revision: 0 })
+    useCode.setState({
+      files: {},
+      problems: [],
+      revision: 0,
+      resourceRevisions: {},
+      resourceIncarnations: {},
+    })
     useDocuments.setState({ documents: {}, activeId: null })
   })
 
@@ -104,6 +110,20 @@ describe('the scripts an editor holds', () => {
     // A read off disk is the other half: that one must reach the editor.
     useCode.getState().installed('script:A.ts', 'three')
     expect(useCode.getState().revision).toBeGreaterThan(installed)
+  })
+
+  it('tracks source edits per script without changing the editor synchronization revision', () => {
+    useCode.getState().installed('script:A.ts', 'one')
+    useCode.getState().installed('script:B.ts', 'two')
+    const editorRevision = useCode.getState().revision
+    const beforeA = useCode.getState().resourceRevisions['script:A.ts'] ?? 0
+    const beforeB = useCode.getState().resourceRevisions['script:B.ts'] ?? 0
+
+    useCode.getState().edited('script:A.ts', 'changed')
+
+    expect(useCode.getState().revision).toBe(editorRevision)
+    expect(useCode.getState().resourceRevisions['script:A.ts']).toBe(beforeA + 1)
+    expect(useCode.getState().resourceRevisions['script:B.ts']).toBe(beforeB)
   })
 
   /** 🛑 A script born in a tab has no file for the walk to find, and a Play re-reads them all. */

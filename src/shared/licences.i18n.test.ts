@@ -11,7 +11,7 @@ import licences from './licences.json'
  * into it by the script lands on screen having passed no bundle at all — which is how
  * "shipped with the application" and "— version 1.52.3, unmodified" were read by French users.
  *
- * `text` is exempt: a licence is reproduced word for word, in the language its authors wrote it.
+ * `text` and `attribution` preserve the publisher’s mandatory wording verbatim.
  */
 const PROSE = /\p{Letter}{2,}\s+\p{Letter}{2,}/u
 

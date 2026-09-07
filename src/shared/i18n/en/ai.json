@@ -2,7 +2,8 @@
   "aiRoles": {
     "assistant": "Assistant",
     "dictation": "Dictation",
-    "embedding": "Memory (vectors)"
+    "embedding": "Memory (vectors)",
+    "smart-selection": "Smart Select"
   },
   "aiClouds": {
     "scenario": "Scenario",
@@ -180,6 +181,8 @@
     "load": "Load",
     "loadBeyondMachine": "Could not load: {{needed}} asked for, {{available}} available.",
     "loadFailed": "The load stopped. Try again, or reinstall the model.",
+    "loadEngineMissing": "The local AI engine is not installed on this machine.",
+    "loadEngineFailed": "The local AI engine did not start. Check the activity journal, then try again.",
     "loadHint": "Holds the weights in memory so answers come back at once",
     "loadIncomplete": "The model files are missing or unreadable. Reinstall it, then try again.",
     "loadNetwork": "The load was interrupted. Check the network and try again.",
@@ -192,6 +195,8 @@
     "none": "None",
     "noneHint": "No AI for this job.",
     "notInstalledYet": "Install it before it can serve this operation.",
+    "autoRigSimple": "Simple Auto Rig",
+    "autoRigSimpleHint": "Integrated, fast and available offline without a download.",
     "ollamaHelpDown": "Ollama is not open. The studio opens it on its own.",
     "ollamaHelpEmpty": "Ollama has no model yet.",
     "ollamaHelpFailed": "The install did not work. Nothing was deleted. You can try again.",
@@ -229,6 +234,21 @@
     "verdict": "{{word}} — {{detail}}",
     "cloudModel": "Model",
     "cloudModelHelp": "The exact model name at that service. Left empty, the studio uses the one it offers.",
-    "studioModelHelp": "The same choice as in the assistant’s own window. The four differ by price."
+    "studioModelHelp": "The same choice as in the assistant’s own window. The four differ by price.",
+    "motionSetup": "The motion model and its text encoder install together. The download is optional and animation retargeting remains available without it. Check the publisher page for access requirements; complete terms are available in Help → Licences.",
+    "motionFolder": "Local motion model",
+    "addMotionFolder": "Add a motion folder",
+    "motionFolderHelp": "Select a complete folder obtained from the publishers, including motion weights, the text encoder and its adapters. Files stay in their current location.",
+    "motionTerms": "Confirm that you hold the required rights and access for these files and accept their publishers’ licences. Complete terms are available in Help → Licences.",
+    "motionAccept": "Accept and add",
+    "motionFolderUnreadable": "This folder is missing required files, or their integrity could not be verified.",
+    "readEngine": "Check engine",
+    "readEngineHint": "Checks the libraries required for this generation",
+    "cancelVerification": "Stops verification of the supplied files",
+    "verifyingModel": "Verifying model files…"
+  },
+  "aiCloudGroups": {
+    "generation": "Generation",
+    "assistant": "Assistant and code"
   }
 }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { commandIn, scopeOfWorkspace } from '@shared/domain/command'
+import { commandIn, scopeOfWorkspace, type CommandScope } from '@shared/domain/command'
 import { workspaceForKind, type DocumentKind } from '@shared/domain/document'
 import { WRITTEN_SOURCES } from '@/components/testHarness'
 
@@ -33,6 +33,16 @@ const HISTORY_STORES: Readonly<Record<string, DocumentKind>> = {
  */
 const FACTORY_ITSELF = 'documentStore'
 
+/**
+ * The stores whose subject is a FILE rather than a document — they serve no workspace, so the
+ * rule below cannot read their scope off a kind. Named with the scope they answer under, and
+ * held to the same bargain: a pair of commands, or ⌘Z fills a stack nothing can pop.
+ */
+const HISTORY_WITHOUT_A_DOCUMENT: Readonly<Record<string, CommandScope>> = {
+  // The skeleton window edits a `.glb` of the project, and the studio has no document for one.
+  'character.ts': 'character',
+}
+
 const storesWithHistory = (): string[] =>
   WRITTEN_SOURCES.filter(
     ([path, source]) =>
@@ -44,7 +54,9 @@ const storesWithHistory = (): string[] =>
 describe('every store that records a history', () => {
   /** A store added without an entry below leaves this file describing a tree it no longer reads. */
   it('is named in the table this file checks', () => {
-    expect(storesWithHistory().sort()).toEqual(Object.keys(HISTORY_STORES).sort())
+    expect(storesWithHistory().sort()).toEqual(
+      [...Object.keys(HISTORY_STORES), ...Object.keys(HISTORY_WITHOUT_A_DOCUMENT)].sort(),
+    )
   })
 
   /**
@@ -59,6 +71,15 @@ describe('every store that records a history', () => {
       const scope = scopeOfWorkspace(workspaceForKind(kind), kind)
       return !scope || !commandIn(scope, 'undo') || !commandIn(scope, 'redo')
     })
+
+    expect(unreachable.map(([store]) => store)).toEqual([])
+  })
+
+  /** The same bargain for the ones that serve no document: a scope, and both of its commands. */
+  it('reaches undo and redo for a history whose subject is a file', () => {
+    const unreachable = Object.entries(HISTORY_WITHOUT_A_DOCUMENT).filter(
+      ([, scope]) => !commandIn(scope, 'undo') || !commandIn(scope, 'redo'),
+    )
 
     expect(unreachable.map(([store]) => store)).toEqual([])
   })

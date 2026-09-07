@@ -4,7 +4,8 @@ import { join } from 'node:path'
 import { app } from 'electron'
 import { registerAssetHandlers } from '@main/assets/handlers'
 import { registerBundledTextureHandlers } from '@main/assets/bundledTextures'
-import { bundledTextures, resourcesRoot } from '@main/resources'
+import { registerBundledCharacterHandlers } from '@main/assets/bundledCharacters'
+import { bundledCharacters, bundledTextures, resourcesRoot } from '@main/resources'
 import { registerDiagnosticsHandlers } from '@main/diagnostics/handlers'
 import { createInstalledFonts } from '@main/fonts/disk'
 import { registerAnimationHandlers } from '@main/animations'
@@ -15,6 +16,8 @@ import { readFavoriteThumbnail } from '@main/favorites/thumbnail'
 import { registerAssistantHandlers } from '@main/assistant/handlers'
 import { registerMemoryHandlers } from '@main/memory/handlers'
 import { registerAiHandlers } from '@main/ai/handlers'
+import { registerAutoRigHandlers } from '@main/ai/autoRigHandlers'
+import { registerSmartSelectionHandlers } from '@main/ai/smartSelectionHandlers'
 import { registerDictationHandlers } from '@main/dictation/handlers'
 import { registerMediaHandlers } from '@main/media/handlers'
 import { registerMenuHandlers } from '@main/menu'
@@ -22,6 +25,8 @@ import { createCredentialVault } from '@main/git/credentials'
 import { registerGitHandlers } from '@main/git/handlers'
 import { createElectronAdapter } from '@main/settings/adapter'
 import { registerProjectHandlers } from '@main/project/handlers'
+import { registerAnimationGraphHandlers } from '@main/project/animationGraphHandlers'
+import { registerInputMapHandlers } from '@main/project/inputMapHandlers'
 import { registerProviderHandlers } from '@main/provider/handlers'
 import { TRANSLATIONS } from '@shared/i18n'
 import { CURRENT } from '@main/logFile'
@@ -34,6 +39,8 @@ import { registerSceneHandlers } from '@main/scene/export'
 import { registerPostPresetHandlers } from '@main/scene/postPreset'
 import { registerExportHandlers } from '@main/export/folder'
 import { registerGameExportHandler } from '@main/export/game'
+import { bundledAnimationFile } from '@main/animations'
+import { bundledAnimations } from '@main/resources'
 import { registerMontageHandlers } from '@main/export/montage'
 import { createRunningTasks, registerTaskCancelHandler } from '@main/task/runningTasks'
 import { registerMontageImportHandlers } from '@main/import/montageImport'
@@ -43,30 +50,32 @@ import { registerUpdateHandlers } from '@main/update/handlers'
 import { registerFileInfoWindow } from '@main/window/fileInfo'
 import { registerHelpWindows } from '@main/window/help'
 import { registerGameWindow } from '@main/window/gameWindow'
+import { registerPlayerModuleWindow } from '@main/window/playerModuleWindow'
 import { registerMirrorWindow } from '@main/window/mirror'
 import { registerNewDocumentWindow } from '@main/window/newDocument'
+import { registerExternalFileHandlers } from '@main/externalFiles'
+import { registerMissionHandlers } from '@main/mission/handlers'
 import { markSettingsPending, openSettingsWindow } from '@main/window/windows'
 import type { Services } from '@main/services'
 
-/** Single place where the IPC surface is wired. Registered once, before any window loads. */
-export function registerIpc(services: Services): void {
+function registerWindowIpc(): void {
+  registerExternalFileHandlers()
   registerWindowControls()
   registerMirrorWindow()
   registerGameWindow()
+  registerPlayerModuleWindow()
   registerHelpWindows()
   registerFileInfoWindow()
   registerNewDocumentWindow()
   registerContextMenu()
   registerMenuHandlers()
-  registerDiagnosticsHandlers(() => services.journal)
-  // Wired here rather than held by `Services`: opening a window is not a service, and this is
-  // where the two sides of the boundary are already being joined.
+}
+
+function registerSettingsIpc(services: Services): void {
   registerSettingsHandlers({
     ...services,
     openSettings: openSettingsWindow,
     setPending: markSettingsPending,
-    // The setting says what was WANTED; this says what is listening. Both sides of the answer
-    // come from `mcpStateOf`, so the pull and the push cannot disagree.
     mcpState: () => mcpStateOf(services.mcp.endpoint()),
     runAction: runSettingAction({
       settings: services.settings,
@@ -85,17 +94,15 @@ export function registerIpc(services: Services): void {
       },
     }),
   })
-  registerProviderHandlers(services)
+}
+
+function registerProjectIpc(services: Services): void {
   registerProjectHandlers({ ...services, record: entry => services.journal.record(entry) })
-  registerBundledTextureHandlers({
-    catalog: () => services.project.catalog(),
-    assets: services.assets,
-    newAssetId: services.newAssetId,
-    folder: () => bundledTextures(resourcesRoot()),
-    projectPath: () => services.project.path(),
-    roles: () => services.project.roles(),
-    exists: services.exists,
-  })
+  registerInputMapHandlers(services.inputMaps)
+  registerAnimationGraphHandlers(services.animationGraphs)
+}
+
+function registerGitIpc(services: Services): void {
   const git = registerGitHandlers({
     // The same file and the same keychain the API key already uses. A second store would be a
     // second place a secret can be left behind on a machine somebody stops trusting.
@@ -109,15 +116,79 @@ export function registerIpc(services: Services): void {
       return userName && userEmail ? { name: userName, email: userEmail } : undefined
     },
   })
-
-  /**
-   * A changed binary has to reach the service, which holds both the detection and the port bound
-   * to it. Without this the preference could be edited and nothing would read it until the next
-   * launch — the service would go on saying git is missing on a machine that has just been told
-   * where it is.
-   */
   services.settings.subscribe(() => git.forget())
+}
+
+function registerCreativeIpc(
+  services: Services,
+  running: ReturnType<typeof createRunningTasks>,
+): void {
+  registerMissionHandlers(services.missions, services.missionRuntime, services.studioEvents)
+  registerStyleHandlers(services.styles)
+  registerMediaHandlers({ ...services, running })
+  registerAssistantHandlers({
+    brain: services.assistant,
+    settleAction: services.remoteActions.settle,
+    settleVisualCapture: services.visualCapture.settle,
+    running,
+    journal: () => services.journal,
+    transcribe: services.transcribe,
+    said: services.said,
+  })
+  registerMemoryHandlers({ host: services.memory, vectors: services.memoryVectors })
+  registerAiHandlers({ manager: services.ai, addOwnModel: services.addOwnAiModel, running })
+  registerAutoRigHandlers(services.autoRig, running)
+  registerSmartSelectionHandlers(services.smartSelection, running)
+  registerDictationHandlers({
+    session: services.dictation,
+    openPrivacySettings: services.openMicrophoneSettings,
+  })
+  registerDialogHandlers(services)
+  registerSceneHandlers(services)
+  registerPostPresetHandlers(services)
+  registerExportHandlers(services)
+  registerGameExportHandler({
+    ...services,
+    // The same folder the asset scheme serves `animation://` from — see `serviceAssistant`.
+    bundledAnimation: name => bundledAnimationFile(bundledAnimations(resourcesRoot()), name),
+  })
+  registerMontageHandlers({ ...services, running })
+  registerMontageImportHandlers({ ...services, running })
+  registerTaskCancelHandler(running)
+  registerRenderHandlers({
+    ...services,
+    newId: () => `render_${randomUUID()}`,
+    encode: services.encodeVideo,
+  })
+}
+
+/** Single place where the IPC surface is wired. Registered once, before any window loads. */
+export function registerIpc(services: Services): void {
+  registerWindowIpc()
+  registerDiagnosticsHandlers(() => services.journal)
+  registerSettingsIpc(services)
+  registerProviderHandlers(services)
+  registerProjectIpc(services)
+  registerBundledTextureHandlers({
+    catalog: () => services.project.catalog(),
+    assets: services.assets,
+    newAssetId: services.newAssetId,
+    folder: () => bundledTextures(resourcesRoot()),
+    projectPath: () => services.project.path(),
+    roles: () => services.project.roles(),
+    exists: services.exists,
+  })
+  registerBundledCharacterHandlers({
+    catalog: () => services.project.catalog(),
+    assets: services.assets,
+    newAssetId: services.newAssetId,
+    folder: () => bundledCharacters(resourcesRoot()),
+    projectPath: () => services.project.path(),
+    exists: services.exists,
+  })
+  registerGitIpc(services)
   registerAssetHandlers({
+    projectPath: () => services.project.path(),
     catalog: () => services.project.catalog(),
     remote: services.remote,
     cloud: services.cloud,
@@ -138,36 +209,7 @@ export function registerIpc(services: Services): void {
   // One table for every long task of this process: the caller names it, this side runs it under
   // that name, and the stop reaches it by the same name. Built here so no handler owns the door.
   const running = createRunningTasks()
-  registerStyleHandlers(services.styles)
-  registerMediaHandlers(services)
-  registerAssistantHandlers({
-    brain: services.assistant,
-    settleAction: services.remoteActions.settle,
-    running,
-    journal: () => services.journal,
-    transcribe: services.transcribe,
-    said: services.said,
-  })
-  registerMemoryHandlers({ host: services.memory, vectors: services.memoryVectors })
-  registerAiHandlers({ manager: services.ai, addOwnModel: services.addOwnAiModel })
-  registerDictationHandlers({
-    session: services.dictation,
-    openPrivacySettings: services.openMicrophoneSettings,
-  })
-  registerDialogHandlers(services)
-  registerSceneHandlers(services)
-  registerPostPresetHandlers(services)
-  registerExportHandlers(services)
-  registerGameExportHandler(services)
-  registerMontageHandlers({ ...services, running })
-  // The same table both ways: an unpack is as long as a pack, and the stop button is one button.
-  registerMontageImportHandlers({ ...services, running })
-  registerTaskCancelHandler(running)
-  registerRenderHandlers({
-    ...services,
-    newId: () => `render_${randomUUID()}`,
-    encode: services.encodeVideo,
-  })
+  registerCreativeIpc(services, running)
   registerNewsHandlers(services.news)
   registerUpdateHandlers(services)
   // Built here rather than held by `Services`: the index reads nothing until a picker asks, so

@@ -146,6 +146,26 @@ export function createTripoRunner(deps: TripoRunnerDeps): TripoJobRunner {
   const uploaded = async (value: string): Promise<string> =>
     isAbsolute(value) ? await sendUp(value) : value
 
+  // 🛑 The FIELD says what is a file: a prompt beginning with `/` must never reach `readFile`.
+  // Repeated fields upload a list of the same kind; one value is a list of one, never an empty list.
+  async function assignField(
+    sent: Record<string, unknown>,
+    field: TripoEntry['fields'][number],
+    value: unknown,
+  ): Promise<void> {
+    if (!FILE_KINDS.includes(field.kind)) {
+      sent[field.key] = value
+      return
+    }
+    if (field.repeated) {
+      const held = (Array.isArray(value) ? value : [value]).filter(one => typeof one === 'string')
+      if (held.length > 0)
+        sent[field.key] = wrapped(field.key, await Promise.all(held.map(uploaded)))
+      return
+    }
+    sent[field.key] = typeof value === 'string' ? wrapped(field.key, await uploaded(value)) : value
+  }
+
   /**
    * The body their endpoint takes: the form's own keys, which ARE the API's, plus the model the
    * entry names. An empty value is left out rather than sent — their defaults are documented,
@@ -161,29 +181,8 @@ export function createTripoRunner(deps: TripoRunnerDeps): TripoJobRunner {
       const value = body[field.key]
       if (value === undefined || value === null || value === '') continue
 
-      // 🛑 The FIELD says what is a file, never the shape of the value: read off the string, a
-      // prompt opening on a slash — « /robot on a plinth » — was handed to `readFile` and failed
-      // the job on an ENOENT nobody could read. A file arrives as a PATH because `services.ts`
-      // routes a Tripo body through the LOCAL resolver.
-      if (!FILE_KINDS.includes(field.kind)) {
-        sent[field.key] = value
-        continue
-      }
-
-      // A cardinality, never a second rule about files: a repeated field is a LIST of the same
-      // kind, and each of them goes up the one way above allows.
-      if (field.repeated) {
-        // A lone value is a list of ONE, never nothing: a control that has not caught up with a
-        // repeated field would otherwise send `[]`, which their refusal counts as no file at all.
-        const held = (Array.isArray(value) ? value : [value]).filter(one => typeof one === 'string')
-        if (held.length === 0) continue
-
-        sent[field.key] = wrapped(field.key, await Promise.all(held.map(uploaded)))
-        continue
-      }
-
-      sent[field.key] =
-        typeof value === 'string' ? wrapped(field.key, await uploaded(value)) : value
+      // The field, never the value's shape, decides whether a string is a file path.
+      await assignField(sent, field, value)
     }
 
     return sent

@@ -29,12 +29,15 @@ const FRAMES_A_WINDOW = /<WindowShell[\s>]/
 const FAMILIES: readonly string[] = [
   './features/document/',
   './features/manual/',
+  './features/player/',
+  './features/retarget/components/',
   './features/settings/',
   // Two files rather than a folder: the journal and the licences are one window each, and they
   // sit among the shell's own components, which are the docks this rule is measured against.
   './features/shell/components/JournalWindow.tsx',
   './features/shell/components/LicencesWindow.tsx',
   './features/usage/',
+  './features/welcome/',
 ]
 
 /**
@@ -42,9 +45,10 @@ const FAMILIES: readonly string[] = [
  * equivalent. It carries captions, rows and actions — no field role, no suffix, no gauge at all.
  */
 const ALLOWED: readonly string[] = [
-  './features/document/components/NewDocument/NewDocumentWindow.tsx',
+  './features/document/components/NewDocument/NewDocumentForm.tsx',
   './features/document/components/NewDocument/NewDocumentTemplateTile.tsx',
   './features/settings/components/Ai/AiCandidateRow.tsx',
+  './features/welcome/components/WelcomeModelRow.tsx',
 ]
 
 describe('a window that is not a dock', () => {

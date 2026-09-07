@@ -52,12 +52,39 @@ const choiceField = (key: string, options: readonly string[]): ActionField => ({
   options,
 })
 
+/** A name, a list of names, or a list of points — what no number and no closed list can say. */
+const textField = (key: string, picks?: ActionField['picks']): ActionField => ({
+  key,
+  kind: 'text',
+  labelKey: `game.fields.${key}`,
+  required: true,
+  ...(picks === undefined ? {} : { picks }),
+})
+
 const flagField = (key: string): ActionField => ({
   key,
   kind: 'boolean',
   labelKey: `game.fields.${key}`,
   required: true,
 })
+
+/**
+ * Who is PLAYED. What the player IS — a body, an eye — is the STRUCTURE hanging under the node
+ * and never a value here; the two fields say only where it came from and what it currently rides.
+ */
+const PLAYER: ComponentDescriptor = {
+  type: 'Player',
+  titleKey: 'game.components.Player.title',
+  descriptionKey: 'game.components.Player.description',
+  category: 'gameplay',
+  // `from` is the module FILE these nodes were read out of, kept so the studio can offer to read
+  // them again. Empty for a module built in the scene and never filed.
+  //
+  // 🛑 `possesses` is what the player currently RIDES — a car, a lift, anything the scene holds.
+  // Empty means it holds its own body, which is the ordinary case. See `possession.ts`.
+  fields: [textField('from'), textField('possesses')],
+  defaults: { from: '', possesses: '' },
+}
 
 const HEALTH: ComponentDescriptor = {
   type: 'Health',
@@ -81,6 +108,146 @@ const MOVEMENT: ComponentDescriptor = {
     choiceField('mode', ['once', 'loop', 'pingPong']),
   ],
   defaults: { axis: 'y', speed: 1, distance: 2, mode: 'pingPong' },
+}
+
+/**
+ * The six that travel without the physics. They write TRANSFORMS, which is why they run before
+ * `physics` and why `writeConflicts` cannot see them meeting — its table names components.
+ *
+ * `target` and `waypoints` hold ENTITY names rather than positions, so an author moves the mark
+ * and the follower follows. `Path` is the exception: its waypoints are points, because a rail is
+ * a shape rather than a set of objects.
+ */
+const PATH: ComponentDescriptor = {
+  type: 'Path',
+  titleKey: 'game.components.Path.title',
+  descriptionKey: 'game.components.Path.description',
+  category: 'gameplay',
+  fields: [
+    textField('waypoints'),
+    numberField('speed', 0),
+    choiceField('mode', ['once', 'loop', 'pingPong']),
+    flagField('orientToTangent'),
+  ],
+  defaults: { waypoints: '', speed: 2, mode: 'loop', orientToTangent: false },
+}
+
+const FOLLOW: ComponentDescriptor = {
+  type: 'Follow',
+  titleKey: 'game.components.Follow.title',
+  descriptionKey: 'game.components.Follow.description',
+  category: 'gameplay',
+  fields: [
+    textField('target'),
+    numberField('speed', 0),
+    numberField('stopDistance', 0),
+    numberField('acceleration', 0),
+  ],
+  defaults: { target: '', speed: 3, stopDistance: 1.5, acceleration: 8 },
+}
+
+const ORBIT: ComponentDescriptor = {
+  type: 'Orbit',
+  titleKey: 'game.components.Orbit.title',
+  descriptionKey: 'game.components.Orbit.description',
+  category: 'gameplay',
+  // An empty `target` is the world's origin, which is what an author means by « turn about there ».
+  // A negative speed turns the other way, and a negative height hangs the orbit below its mark.
+  fields: [
+    textField('target'),
+    numberField('radius', 0),
+    numberField('speed', -720, 720),
+    numberField('height', -100, 100),
+  ],
+  defaults: { target: '', radius: 5, speed: 45, height: 0 },
+}
+
+const LOOK_AT: ComponentDescriptor = {
+  type: 'LookAt',
+  titleKey: 'game.components.LookAt.title',
+  descriptionKey: 'game.components.LookAt.description',
+  category: 'gameplay',
+  // A turn speed of zero is INSTANT, which is what a camera mount or a signpost wants.
+  fields: [textField('target'), numberField('turnSpeed', 0)],
+  defaults: { target: '', turnSpeed: 0 },
+}
+
+const PATROL: ComponentDescriptor = {
+  type: 'Patrol',
+  titleKey: 'game.components.Patrol.title',
+  descriptionKey: 'game.components.Patrol.description',
+  category: 'gameplay',
+  fields: [
+    textField('waypoints'),
+    numberField('speed', 0),
+    numberField('waitSeconds', 0),
+    choiceField('mode', ['once', 'loop', 'pingPong']),
+  ],
+  defaults: { waypoints: '', speed: 2, waitSeconds: 1, mode: 'pingPong' },
+}
+
+const SPIN: ComponentDescriptor = {
+  type: 'Spin',
+  titleKey: 'game.components.Spin.title',
+  descriptionKey: 'game.components.Spin.description',
+  category: 'gameplay',
+  // Degrees a second, and a negative one turns the other way.
+  fields: [choiceField('axis', ['x', 'y', 'z']), numberField('speed', -720, 720)],
+  defaults: { axis: 'y', speed: 90 },
+}
+
+/**
+ * A camera on an arm, the way Unreal hangs one: `camera` behind `subject`, pulled in by a wall.
+ * 🛑 `orientation` is the whole of what a rig FEELS like — `pointer` aims where the player looks
+ * (Unreal's `bUsePawnControlRotation`), `subject` where the thing is pointed, `fixed` at its node.
+ */
+const SPRING_ARM: ComponentDescriptor = {
+  type: 'SpringArm',
+  titleKey: 'game.components.SpringArm.title',
+  descriptionKey: 'game.components.SpringArm.description',
+  category: 'gameplay',
+  fields: [
+    textField('subject', 'node'),
+    textField('camera', 'node'),
+    choiceField('orientation', ['pointer', 'subject', 'fixed']),
+    numberField('length', 0, 50),
+    numberField('height', -10, 10),
+    numberField('shoulder', -5, 5),
+    flagField('collision'),
+    numberField('probeRadius', 0, 2),
+    numberField('safetyMargin', 0, 1),
+    numberField('hysteresis', 0, 1),
+    numberField('positionLag', 0, 2),
+    numberField('rotationLag', 0, 2),
+    numberField('collisionInLag', 0, 2),
+    numberField('collisionOutLag', 0, 2),
+    numberField('pitchMin', -89, 89),
+    numberField('pitchMax', -89, 89),
+    choiceField('lookAt', ['pivot', 'subject']),
+  ],
+  // Seconds, the four lags, and zero is what an author writes for a camera welded to its subject.
+  // 🛑 Coming in is FASTER than going out, never instant: a snap read as a cut. What keeps the
+  // shot off the subject is `probeRadius` plus `safetyMargin` — measured 1,25 m against a 0,90 m
+  // pillar — and never a floor on the length, which would seat the camera INSIDE what it met.
+  defaults: {
+    subject: '',
+    camera: '',
+    orientation: 'pointer',
+    length: 4,
+    height: 1.6,
+    shoulder: 0,
+    collision: true,
+    probeRadius: 0.2,
+    safetyMargin: 0.1,
+    hysteresis: 0.1,
+    positionLag: 0.08,
+    rotationLag: 0.05,
+    collisionInLag: 0.04,
+    collisionOutLag: 0.25,
+    pitchMin: -60,
+    pitchMax: 60,
+    lookAt: 'pivot',
+  },
 }
 
 const COLLIDER: ComponentDescriptor = {
@@ -134,12 +301,25 @@ const CHARACTER_CONTROLLER: ComponentDescriptor = {
   titleKey: 'game.components.CharacterController.title',
   descriptionKey: 'game.components.CharacterController.description',
   category: 'physics',
-  // The pace, the pull and the eye height are NOT here: they are the scene's, in `world.play`,
-  // so that a template meaning « first person, feet on the ground » says it once for the set.
+  // The pull and the eye height stay the scene's, in `world.play`. The PACE falls back instead, so
+  // that two characters in one scene can walk at two paces:
+  // 🛑 `moveSpeed` at zero is « the scene's » and `runSpeed` at zero is « no running » — never
+  // « standing still ». Both labels say so, because `main/mcp/tools.ts` publishes the label as the
+  // schema's description and a model reading `minimum: 0` would otherwise write it to freeze a walker.
+  // 🛑 `acceleration` and `deceleration` start at 0,1 and NOT at zero, which `Follow` already spends
+  // on « never moves »: one key cannot mean « instant » here and « frozen » there.
   fields: [
     numberField('height', 0.2, 10),
     numberField('radius', 0.05, 5),
+    numberField('moveSpeed', 0, 50),
+    numberField('runSpeed', 0, 50),
+    numberField('acceleration', 0.1, 200),
+    numberField('deceleration', 0.1, 200),
+    numberField('bodyTurnSpeed', 0, 1440),
     numberField('jumpSpeed', 0, 50),
+    numberField('airControl', 0, 1),
+    numberField('coyoteTime', 0, 1),
+    numberField('jumpBuffer', 0, 1),
     numberField('stepHeight', 0, 2),
     numberField('slopeLimit', 0, 89),
     numberField('snapDistance', 0, 2),
@@ -147,11 +327,72 @@ const CHARACTER_CONTROLLER: ComponentDescriptor = {
   defaults: {
     height: 1.8,
     radius: 0.3,
-    jumpSpeed: 5,
+    moveSpeed: 0,
+    runSpeed: 0,
+    acceleration: 40,
+    deceleration: 60,
+    bodyTurnSpeed: 0,
+    jumpSpeed: 2.8,
+    airControl: 0.35,
+    coyoteTime: 0.12,
+    jumpBuffer: 0.12,
     stepHeight: 0.5,
     slopeLimit: 45,
     snapDistance: 0.5,
   },
+  events: ['Collided'],
+}
+
+/**
+ * What rolls: a body the engine hangs on suspended, driven, steered wheels. `wheels` names the
+ * child nodes that DRAW them, in the body's own frame — their local place is where each wheel is
+ * hung, so an author moves a wheel mesh and the axle follows. The ones ahead of the centre steer.
+ */
+const VEHICLE: ComponentDescriptor = {
+  type: 'Vehicle',
+  titleKey: 'game.components.Vehicle.title',
+  descriptionKey: 'game.components.Vehicle.description',
+  category: 'physics',
+  fields: [
+    textField('wheels'),
+    numberField('wheelRadius', 0.05, 2),
+    numberField('wheelWidth', 0.05, 1),
+    numberField('suspensionLength', 0.05, 2),
+    numberField('maxSteerAngle', 0, 60),
+    numberField('maxTorque', 0, 20_000),
+    choiceField('drive', ['all', 'front', 'rear']),
+  ],
+  defaults: {
+    wheels: '',
+    wheelRadius: 0.35,
+    wheelWidth: 0.25,
+    suspensionLength: 0.4,
+    maxSteerAngle: 30,
+    maxTorque: 500,
+    drive: 'all',
+  },
+  requires: ['RigidBody'],
+  events: ['Collided'],
+}
+
+/**
+ * What flies: lift, drag and thrust computed on the body's own motion each step, and control
+ * surfaces that only bite with air over them — a plane standing still answers no stick.
+ */
+const AIRCRAFT: ComponentDescriptor = {
+  type: 'Aircraft',
+  titleKey: 'game.components.Aircraft.title',
+  descriptionKey: 'game.components.Aircraft.description',
+  category: 'physics',
+  fields: [
+    numberField('maxThrust', 0, 200_000),
+    numberField('wingArea', 0.1, 500),
+    numberField('stallAngle', 1, 45),
+    numberField('agility', 0, 10),
+    numberField('drag', 0, 1),
+  ],
+  defaults: { maxThrust: 12_000, wingArea: 16, stallAngle: 15, agility: 1, drag: 0.04 },
+  requires: ['RigidBody'],
   events: ['Collided'],
 }
 
@@ -163,8 +404,20 @@ const SCRIPT: ComponentDescriptor = {
   // 🛑 ONE declared field. What a script exposes differs per script, so those rows are read off
   // the file's own `props` and written beside this one — see `scriptProps`. Absent by default:
   // a component nobody has set carries nothing, and `settingsOf` answers the author's own words.
-  fields: [{ key: 'script', kind: 'text', labelKey: 'game.fields.script', required: true }],
+  fields: [textField('script', 'script')],
   defaults: { script: '' },
+}
+
+/** `body` names the node carrying the `CharacterController` this reads; empty is this one. */
+const ANIMATOR: ComponentDescriptor = {
+  type: 'Animator',
+  titleKey: 'game.components.Animator.title',
+  descriptionKey: 'game.components.Animator.description',
+  category: 'gameplay',
+  // 🛑 `graph` is TYPED and not picked: a `picks` kind comes with a label of its own.
+  fields: [textField('graph'), textField('body', 'node')],
+  defaults: { graph: '', body: '' },
+  events: ['AnimationFinished', 'AnimationEvent'],
 }
 
 /**
@@ -173,13 +426,24 @@ const SCRIPT: ComponentDescriptor = {
  * union that no surface can offer.
  */
 export const COMPONENTS: Record<ComponentType, ComponentDescriptor> = {
+  Player: PLAYER,
   Health: HEALTH,
   Movement: MOVEMENT,
+  Path: PATH,
+  Follow: FOLLOW,
+  Orbit: ORBIT,
+  LookAt: LOOK_AT,
+  Patrol: PATROL,
+  Spin: SPIN,
+  SpringArm: SPRING_ARM,
   Collider: COLLIDER,
   RigidBody: RIGID_BODY,
   Trigger: TRIGGER,
   CharacterController: CHARACTER_CONTROLLER,
+  Vehicle: VEHICLE,
+  Aircraft: AIRCRAFT,
   Script: SCRIPT,
+  Animator: ANIMATOR,
 }
 
 export const COMPONENT_TYPES: readonly ComponentType[] =

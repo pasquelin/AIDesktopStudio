@@ -1,7 +1,11 @@
 import { net, protocol } from 'electron'
-import { isAbsolute, resolve, sep } from 'node:path'
+import { realpath } from 'node:fs/promises'
+import { basename, dirname, isAbsolute, resolve, sep } from 'node:path'
+import { pathIsInside } from '@main/export/pathIsInside'
 import { pathToFileURL } from 'node:url'
 import { ASSET_SCHEME, hostedParts, type Asset } from '@shared/domain/asset'
+import { stemOf } from '@shared/domain/fileName'
+import { SOURCES_FOLDER } from '@shared/domain/meshImport'
 import { log } from '@main/log'
 import { webCodecsReads } from '@main/media/service'
 
@@ -19,6 +23,30 @@ export function assetFilePath(projectPath: string, relativePath: string): string
   const file = resolve(root, relativePath)
 
   return file.startsWith(root + sep) ? file : null
+}
+
+/** A dependency of one imported 3D asset, canonicalised inside that asset's `.sources`. */
+export async function conversionNeighbourPath(
+  projectPath: string,
+  asset: Asset,
+  neighbour: string,
+): Promise<string | null> {
+  if (!asset.path || !assetFilePath(projectPath, asset.path) || isAbsolute(neighbour)) return null
+  if (basename(dirname(asset.path)) !== stemOf(basename(asset.path))) return null
+  const parts = neighbour.split('/')
+  if (parts.length === 0 || parts.some(part => part === '' || part === '.' || part === '..')) {
+    return null
+  }
+
+  try {
+    const projectRoot = await realpath(resolve(projectPath))
+    const sourceRoot = await realpath(resolve(projectPath, dirname(asset.path), SOURCES_FOLDER))
+    if (!pathIsInside(projectRoot, sourceRoot)) return null
+    const file = await realpath(resolve(sourceRoot, ...parts))
+    return pathIsInside(sourceRoot, file) ? file : null
+  } catch {
+    return null
+  }
 }
 
 /**
@@ -70,7 +98,7 @@ function linkedFileOf(asset: Asset): string | null {
 }
 
 /**
- * Declares the scheme before the app is ready. Required for `img-src ia-studio:` to be honoured
+ * Declares the scheme before the app is ready. Required for `img-src ai-desktop-studio:` to be honoured
  * and for the renderer to fetch over it at all; Electron ignores the call afterwards.
  */
 export function registerAssetScheme(): void {
@@ -138,7 +166,7 @@ export async function servedPath(url: string, resolvers: AssetResolvers): Promis
   if (!parsed) return null
 
   // `hasOwn`, not a plain lookup: every key of `Object.prototype` would otherwise be a live host,
-  // and `ia-studio://toString/x` would reach `net.fetch` with a path nobody registered.
+  // and `ai-desktop-studio://toString/x` would reach `net.fetch` with a path nobody registered.
   if (!Object.hasOwn(resolvers, parsed.host)) return null
 
   const resolveHost = resolvers[parsed.host]

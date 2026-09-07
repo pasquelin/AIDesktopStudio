@@ -176,3 +176,17 @@ it('says on the row what stands between a model and a generation', async () => {
 
   expect(screen.getByRole('menuitem', { name: /Sana 600M/ })).toHaveTextContent('Non installé')
 })
+
+/**
+ * A promotion is a word on a row and nothing else: the picker shows every model it is handed,
+ * in the order it is handed them. What is promoted is the HOST's business — see `GeneratorModel`.
+ */
+it('carries the host’s word onto a row without hiding any other', async () => {
+  open({ promotedOf: candidate => (candidate.id === 'flux' ? 'pixel art' : undefined) })
+
+  await userEvent.click(screen.getByRole('button', { name: /SSD-1B/ }))
+
+  expect(screen.getAllByRole('menuitem')).toHaveLength(MODELS.length)
+  expect(screen.getByRole('menuitem', { name: /Flux/ })).toHaveTextContent('pixel art')
+  expect(screen.getByRole('menuitem', { name: /Sana 600M/ })).not.toHaveTextContent('pixel art')
+})

@@ -1,10 +1,14 @@
 import { writeQueue } from '@main/persistence'
 import { createProcessClient, type ProcessPort } from '@main/processClient'
+import { orElse } from '@shared/promises'
 import type { EmbedAsk, EmbedRequest, EmbedResponse } from './embedProtocol'
 
 export type EmbedPort = ProcessPort<EmbedRequest, EmbedResponse> & { kill: () => void }
 
 export const EMBEDDER_GONE = 'the embedding process is gone'
+export const CLOSE_GRACE_MS = 15_000
+// The quit does not wait 15 s on a wedged worker: the OS reclaims what a kill leaves behind.
+export const QUIT_CLOSE_GRACE_MS = 2_000
 
 export type EmbedClient = {
   /** Loads the weights and answers how many dimensions they produce. Rejects where it cannot. */
@@ -18,7 +22,8 @@ export type EmbedClient = {
   embed: (texts: readonly string[], signal?: AbortSignal) => Promise<readonly Float32Array[]>
   /** One question. The other prefix, and the only difference — see `EmbedLoad`. */
   embedQuery: (text: string) => Promise<Float32Array>
-  close: () => void
+  /** Disposes the worker's weights, then kills it — after `graceMs` if it never answers. */
+  close: (graceMs?: number) => Promise<void>
 }
 
 export function createEmbedClient(port: EmbedPort): EmbedClient {
@@ -67,9 +72,20 @@ export function createEmbedClient(port: EmbedPort): EmbedClient {
       return vector ?? new Float32Array()
     },
 
-    // Killing it is what rejects the callers: the exit reaches `onFailure`, which is the one
-    // path that empties the pending runs — see `processClient`.
-    close: () => port.kill(),
+    close: async (graceMs = CLOSE_GRACE_MS) => {
+      let timer: ReturnType<typeof setTimeout> | undefined
+      const elapsed = new Promise<void>(resolve => {
+        timer = setTimeout(resolve, graceMs)
+        timer.unref?.()
+      })
+      try {
+        // A dead process has nothing left to dispose; the kill below still settles its callers.
+        await orElse(Promise.race([ask({ op: 'close' }), elapsed]), undefined)
+      } finally {
+        clearTimeout(timer)
+        port.kill()
+      }
+    },
   }
 }
 

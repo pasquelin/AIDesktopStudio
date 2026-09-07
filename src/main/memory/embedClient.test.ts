@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { createEmbedClient, EMBEDDER_GONE, type EmbedPort } from './embedClient'
+import { CLOSE_GRACE_MS, createEmbedClient, EMBEDDER_GONE, type EmbedPort } from './embedClient'
 import type { EmbedRequest, EmbedResponse } from './embedProtocol'
 
 /** The process, replaced by a list of what was asked and a hand on when each answer comes back. */
@@ -149,16 +149,58 @@ describe('when the process is gone', () => {
     await expect(client.embed(['two'])).rejects.toThrow(EMBEDDER_GONE)
   })
 
-  /** Killing it is what rejects the callers: the exit is the one path that empties the runs. */
-  it('kills the process, and every later call says the embedder is gone', async () => {
+  it('disposes the model before killing the process', async () => {
     const fake = fakePort()
     const client = createEmbedClient(fake.port)
 
-    client.close()
+    const closing = client.close()
+    await fake.posted(1)
+    expect(fake.asked[0]).toMatchObject({ op: 'close' })
+    expect(fake.killed()).toBe(0)
+
+    fake.answer({ id: 1, ok: true, value: undefined })
+    await closing
     fake.die(new Error(EMBEDDER_GONE))
 
     expect(fake.killed()).toBe(1)
     await expect(client.embed(['one'])).rejects.toThrow(EMBEDDER_GONE)
+  })
+
+  it('kills the process when graceful disposal fails', async () => {
+    const fake = fakePort()
+    const client = createEmbedClient(fake.port)
+
+    const closing = client.close()
+    await fake.posted(1)
+    fake.answer({ id: 1, ok: false, error: 'dispose failed' })
+
+    await expect(closing).resolves.toBeUndefined()
+    expect(fake.killed()).toBe(1)
+  })
+
+  // The default grace, and the shorter one the quit asks for — a wedged worker is not worth
+  // keeping the window on screen 15 s.
+  it.each([
+    ['its default grace', undefined, CLOSE_GRACE_MS],
+    ['the shorter grace it was given', 2_000, 2_000],
+  ])('kills the process after %s when disposal never answers', async (_, given, graceMs) => {
+    vi.useFakeTimers()
+    try {
+      const fake = fakePort()
+      const client = createEmbedClient(fake.port)
+
+      const closing = client.close(given)
+      await vi.advanceTimersByTimeAsync(0)
+      expect(fake.asked[0]).toMatchObject({ op: 'close' })
+
+      await vi.advanceTimersByTimeAsync(graceMs - 1)
+      expect(fake.killed()).toBe(0)
+      await vi.advanceTimersByTimeAsync(1)
+      expect(fake.killed()).toBe(1)
+      await closing
+    } finally {
+      vi.useRealTimers()
+    }
   })
 
   /** A batch given up on is dropped at the worker, so what it half-computed is cleaned up there. */

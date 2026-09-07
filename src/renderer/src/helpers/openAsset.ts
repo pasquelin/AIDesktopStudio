@@ -3,8 +3,44 @@ import { openDocument } from '@/features/shell/components/dockviewApi'
 import { reportFailure } from '@/services/diagnostics'
 import { assetsById, useAssets } from '@/stores/assets'
 import { documentById, documentForAsset, useDocuments } from '@/stores/documents'
+import { openCharacter } from '@/character/openCharacter'
+import { getBridge } from '@/services/bridge'
 import { useProject } from '@/stores/project'
-import { editorIntent, pixelEditorIntent, type AssetIntent } from './assetIntents'
+import {
+  editorIntent,
+  opensAsCharacter,
+  opensAsPlayerModule,
+  pixelEditorIntent,
+  type AssetIntent,
+} from './assetIntents'
+
+async function openSpecialAsset(asset: Asset, into?: AssetIntent): Promise<boolean | null> {
+  if (into) return null
+  if (opensAsPlayerModule(asset)) {
+    await getBridge()?.playerModuleWindow.open(asset.id)
+    return true
+  }
+  return opensAsCharacter(asset) ? openCharacter(asset.id) : null
+}
+
+function refusalFor(asset: Asset, intent: AssetIntent | null): string | null {
+  if (!intent?.takes(asset)) return 'no destination'
+  if (asset.location !== 'local') return 'not on disk'
+  if (!useProject.getState().project) return 'no project'
+  return null
+}
+
+async function createAssetDocument(asset: Asset, intent: AssetIntent): Promise<boolean> {
+  const created = await useDocuments
+    .getState()
+    .create(intent.workspace, { title: asset.name, sourceAssetId: asset.id })
+  if (!created) {
+    reportFailure('assets.open', asset.name, new Error('no document'))
+    return false
+  }
+  await (intent.become ?? intent.into)(created.id, asset)
+  return true
+}
 
 /**
  * What opening an asset does — double-click or Enter: a tab of its own, in the space that edits
@@ -26,6 +62,12 @@ import { editorIntent, pixelEditorIntent, type AssetIntent } from './assetIntent
  * but `openProjectFile` reports the gesture back to a caller that has to say what happened.
  */
 export async function openAsset(asset: Asset, into?: AssetIntent): Promise<boolean> {
+  // Both are opened on the FILE and never as one node of a scene — the module in a window of its
+  // own, the character on a tab. Only where nobody named a destination: « Send to », the viewport
+  // drop and `node.addModel` all pass an intent, and each still puts a model in a scene.
+  const special = await openSpecialAsset(asset, into)
+  if (special !== null) return special
+
   const intent = into ?? editorIntent(asset)
   const already = documentForAsset(useDocuments.getState(), asset.id, intent?.kind)
   // Back to its own tab rather than a second one onto the same asset: two tabs of one document
@@ -41,42 +83,12 @@ export async function openAsset(asset: Asset, into?: AssetIntent): Promise<boole
     return true
   }
 
-  // `takes` before anything is made: an editor that would refuse the asset must say so rather
-  // than leave an empty tab standing where a refusal belonged.
-  if (!intent?.takes(asset)) {
-    reportFailure('assets.open', asset.name, new Error('no destination'))
+  const refusal = refusalFor(asset, intent)
+  if (refusal || !intent) {
+    reportFailure('assets.open', asset.name, new Error(refusal ?? 'no destination'))
     return false
   }
-
-  // Every editor loads its subject from the file behind it — `assetUrl` resolves an id against
-  // the catalogue, and one the cloud still holds answers 404. `takes` cannot see this for the
-  // kinds whose destination has no picture guard, so the gesture asks it once, for all of them.
-  if (asset.location !== 'local') {
-    reportFailure('assets.open', asset.name, new Error('not on disk'))
-    return false
-  }
-
-  // A document is a file in a project folder, so without one there is nowhere to write it —
-  // `create` alone would post a descriptor for a tab that can never be saved.
-  if (!useProject.getState().project) {
-    reportFailure('assets.open', asset.name, new Error('no project'))
-    return false
-  }
-
-  const created = await useDocuments
-    .getState()
-    .create(intent.workspace, { title: asset.name, sourceAssetId: asset.id })
-
-  if (!created) {
-    reportFailure('assets.open', asset.name, new Error('no document'))
-    return false
-  }
-
-  // `become` where the destination offers one — the document IS the asset, rather than a blank
-  // one the asset was dropped on. It is what leaves the tab unmodified on open, and what makes
-  // ⌘S able to write a faithful flatten back.
-  await (intent.become ?? intent.into)(created.id, asset)
-  return true
+  return createAssetDocument(asset, intent)
 }
 
 /**

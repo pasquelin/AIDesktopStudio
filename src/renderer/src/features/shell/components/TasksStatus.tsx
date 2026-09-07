@@ -35,7 +35,9 @@ export function TasksStatus() {
           {rows.map(row => (
             <ProgressRow
               key={row.id}
-              label={row.label}
+              label={
+                row.phase ? t(`tasks.phases.${row.phase}`, { defaultValue: row.label }) : row.label
+              }
               ratio={row.ratio}
               status={formatPercent(row.ratio, i18n.language)}
               cancel={{

@@ -1,6 +1,7 @@
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { CommandId } from '@shared/domain/command'
+import { runGuiDocumentCommand } from './guiDocumentCommands'
 import { UI_RESOLUTIONS, isUiResolutionId, uiResolutionOf } from '@shared/domain/uiResolution'
 import { Toolbar } from '@/components/Toolbar/Toolbar'
 import { useDocumentTitle } from '@/hooks/useDocumentTitle'
@@ -56,11 +57,7 @@ export function GuiDocument({ documentId }: { documentId: string }) {
   useRestoredDocument(documentId)
 
   const onCommand = useCallback(
-    (command: CommandId) => {
-      const store = useGuis.getState()
-      if (command === 'gui.undo') return store.undo(documentId)
-      if (command === 'gui.redo') return store.redo(documentId)
-    },
+    (command: CommandId): boolean => runGuiDocumentCommand(documentId, command),
     [documentId],
   )
 

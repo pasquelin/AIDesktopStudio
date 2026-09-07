@@ -8,7 +8,9 @@ import {
   aiEditCommand,
   aiEditOf,
   IMAGE_TOOLS,
+  TOOL_COMMANDS,
   canvasToolFor,
+  cursorFor,
   toolById,
 } from './imageTools'
 
@@ -28,6 +30,27 @@ const armableRows = (): { id: string; tool: CanvasTool | null; reachable: boolea
   ])
 
 describe('image tools', () => {
+  it('keeps every selection gesture in the one selection menu', () => {
+    expect(toolById('region')?.modes?.map(mode => mode.id)).toEqual([
+      'rectangle',
+      'ellipse',
+      'lasso',
+      'smart',
+    ])
+    expect(toolById('smartSelect')).toBeNull()
+  })
+
+  it('arms one intelligent selection gesture from the selection menu', () => {
+    expect(canvasToolFor('region', 'smart')).toBe('smartSelect')
+    expect(
+      TOOL_COMMANDS.filter(entry => entry.tool === 'region' && entry.mode === 'smart'),
+    ).toEqual([{ command: 'canvas.toolSmartSelect', tool: 'region', mode: 'smart' }])
+  })
+
+  it('uses a visible selection cursor for the intelligent gesture', () => {
+    expect(cursorFor('region', 'smart')).toContain('data:image/svg+xml')
+  })
+
   it('names every tool through i18n rather than a literal', () => {
     for (const tool of IMAGE_TOOLS) expect(tool.labelKey).toMatch(/^imageTools\./)
   })

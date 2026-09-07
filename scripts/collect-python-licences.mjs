@@ -6,7 +6,7 @@
  * `dist-info/METADATA` of a materialised environment, so this reads one and writes down what it
  * found; the result is committed, and `collect-licences.mjs` reads the file rather than the disk.
  *
- * Committed rather than read at collect time for one reason: materialising the diffusion
+ * Committed rather than read at collect time for one reason: materialising the generation
  * environment costs 682 Mo, and neither the gate nor a clone should have to pay it to produce a
  * notice.
  *
@@ -14,9 +14,11 @@
  *     node scripts/collect-python-licences.mjs --python <path>    # reads an existing one
  */
 import { execFileSync } from 'node:child_process'
-import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { embeddedProfiles } from './prepare-engine-runtime.mjs'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 const ENGINE = join(ROOT, 'engine')
@@ -80,7 +82,7 @@ function readEnvironment(sitePackages) {
 
     const text = readFileSync(metadata, 'utf8')
     const name = /^Name:\s*(.+)$/m.exec(text)?.[1]?.trim()
-    if (!name) continue
+    if (!name || name === 'ai-desktop-studio-engine') continue
 
     // Normalised the way the lock spells it: PyPI allows `_` and `.` where the lock writes `-`.
     found[name.toLowerCase().replace(/[._]+/g, '-')] = {
@@ -101,24 +103,44 @@ function sitePackagesOf(python) {
 
 function materialise() {
   const venv = join(ENGINE, '.licences-venv')
-  console.log('Materialising the diffusion environment — 682 Mo, once.')
+  const work = mkdtempSync(join(tmpdir(), 'ai-desktop-studio-licences-'))
+  const requirements = join(work, 'requirements.txt')
+  console.log('Materialising the embedded local AI runtime profiles.')
   execFileSync('uv', ['venv', '--python', '3.12', venv], { stdio: 'inherit' })
-  execFileSync(
-    'uv',
-    [
-      'pip',
-      'install',
-      '--python',
-      join(venv, 'bin', 'python'),
-      '--project',
-      ENGINE,
-      '--extra',
-      'diffusion',
-    ],
-    { stdio: 'inherit', cwd: ROOT },
-  )
-
-  return join(venv, 'bin', 'python')
+  try {
+    execFileSync(
+      'uv',
+      [
+        'export',
+        '--project',
+        ENGINE,
+        '--locked',
+        '--quiet',
+        '--no-dev',
+        ...embeddedProfiles().flatMap(profile => ['--extra', profile]),
+        '--no-emit-project',
+        '--output-file',
+        requirements,
+      ],
+      { stdio: 'inherit', cwd: ROOT },
+    )
+    execFileSync(
+      'uv',
+      [
+        'pip',
+        'install',
+        '--python',
+        join(venv, 'bin', 'python'),
+        '--exact',
+        '--requirement',
+        requirements,
+      ],
+      { stdio: 'inherit', cwd: ROOT },
+    )
+    return join(venv, 'bin', 'python')
+  } finally {
+    rmSync(work, { recursive: true, force: true })
+  }
 }
 
 const at = process.argv.indexOf('--python')

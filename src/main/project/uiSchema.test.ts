@@ -30,7 +30,7 @@ describe('the published interface schema', () => {
    * that opens perfectly well.
    */
   it.each(UI_TEMPLATE_IDS)('accepts the document a new %s interface opens on', id => {
-    expect(uiDocumentSchema.safeParse(uiFromTemplate(id, newId)).success).toBe(true)
+    expect(uiDocumentSchema.safeParse(uiFromTemplate(id, newId, 'Controls')).success).toBe(true)
   })
 
   /**
@@ -39,7 +39,7 @@ describe('the published interface schema', () => {
    * one element of every type is what says so.
    */
   it.each(UI_ELEMENT_TYPES)('accepts an element of every type the format holds: %s', type => {
-    const whole = uiFromTemplate('empty', newId)
+    const whole = uiFromTemplate('empty', newId, 'Controls')
     const root = { ...whole.root, children: [newUiElement(type, newId)] }
 
     expect(uiDocumentSchema.safeParse({ ...whole, root }).success).toBe(true)
@@ -49,7 +49,7 @@ describe('the published interface schema', () => {
   it('accepts the file the studio writes, envelope and all', () => {
     const file = {
       studio: { documentId: 'doc-1', documentKind: 'gui' },
-      ...uiPayload(uiFromTemplate('hud', newId)),
+      ...uiPayload(uiFromTemplate('hud', newId, 'Controls')),
     }
 
     expect(file.$schema).toBe(UI_SCHEMA_URL)
@@ -57,7 +57,7 @@ describe('the published interface schema', () => {
   })
 
   it('turns away a document that is not one', () => {
-    const whole = uiFromTemplate('hud', newId)
+    const whole = uiFromTemplate('hud', newId, 'Controls')
 
     expect(uiDocumentSchema.safeParse({ ...whole, root: { type: 'panel' } }).success).toBe(false)
     // Bounded high: a file written by a later build is refused rather than read as this one.

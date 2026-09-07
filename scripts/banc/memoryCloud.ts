@@ -134,6 +134,8 @@ export function createMemoryCloud(folder: MemoryFolder, catalog: MemoryCatalog):
         items: MODELS.filter(
           one =>
             (query.family === undefined || one.family === query.family) &&
+            (query.capabilities === undefined ||
+              query.capabilities.every(capability => one.capabilities.includes(capability))) &&
             (!query.search || one.name.toLowerCase().includes(query.search.toLowerCase())),
         ).map(({ fields: _fields, ...summary }) => summary),
         cursor: null,

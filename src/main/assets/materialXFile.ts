@@ -129,9 +129,6 @@ export function writeMaterialX(document: MtlxDocument, envelope = ''): string {
       : []),
   ].join(' ')
 
-  // No graph at all when nothing is textured, rather than an empty one: a material of uniform
-  // values is the shape a new document has, and an empty `<nodegraph>` is noise every other
-  // reader has to step over. Seen in a file the app wrote, not deduced.
   const lines = [
     '<?xml version="1.0"?>',
     `<materialx ${attributes}>`,
@@ -243,17 +240,7 @@ function nodesIn(xml: string): Map<string, Node> {
     if (tag === 'input' || tag === 'output') {
       const holder = open[open.length - 1]
       if (!holder) continue
-      const name = attribute(rest, 'name')
-      const nodename = attribute(rest, 'nodename')
-      if (nodename) holder.from.set(name, nodename)
-      const output = attribute(rest, 'output')
-      if (output) holder.connections.set(name, { graph: attribute(rest, 'nodegraph'), output })
-      const value = attribute(rest, 'value')
-      if (value) holder.values.set(name, unescapeXml(value))
-      const declared = attribute(rest, 'type')
-      if (declared) holder.types.set(name, declared)
-      const colorspace = attribute(rest, 'colorspace')
-      if (colorspace) holder.colorspaces.set(name, unescapeXml(colorspace))
+      recordPort(holder, rest)
       continue
     }
 
@@ -264,6 +251,20 @@ function nodesIn(xml: string): Map<string, Node> {
   }
 
   return nodes
+}
+
+function recordPort(holder: Node, attributes: string): void {
+  const name = attribute(attributes, 'name')
+  const nodename = attribute(attributes, 'nodename')
+  if (nodename) holder.from.set(name, nodename)
+  const output = attribute(attributes, 'output')
+  if (output) holder.connections.set(name, { graph: attribute(attributes, 'nodegraph'), output })
+  const value = attribute(attributes, 'value')
+  if (value) holder.values.set(name, unescapeXml(value))
+  const declared = attribute(attributes, 'type')
+  if (declared) holder.types.set(name, declared)
+  const colorspace = attribute(attributes, 'colorspace')
+  if (colorspace) holder.colorspaces.set(name, unescapeXml(colorspace))
 }
 
 const numbersIn = (text: string): number[] =>
@@ -298,42 +299,63 @@ function imageBehind(
     if (!node) return null
 
     if (node.kind === 'tiledimage' || node.kind === 'image') {
-      const file = node.values.get('file')
-      if (!file) return null
-      const colorspace = node.colorspaces.get('file')
-      return {
-        input,
-        type: node.type || 'color3',
-        // `fileprefix` is prepended to every `filename` value in its scope — § File Prefixes.
-        // Ignored, the path names nothing and the catalogue resolves no picture at all.
-        file: `${prefix}${file}`,
-        ...(colorspace ? { colorspace } : {}),
-        tiling: pairIn(node.values.get('uvtiling') ?? '', [1, 1]),
-        offset: pairIn(node.values.get('uvoffset') ?? '', [0, 0]),
-        ...(wrap ? { wrap } : {}),
-        ...(multiply ? { multiply } : {}),
-      }
+      return imageFromNode(node, input, prefix, wrap, multiply)
     }
 
-    if (node.kind === 'normalmap') {
-      wrap = { node: 'normalmap', scale: Number(node.values.get('scale') ?? 1) || 1 }
-      at = node.from.get('in')
-      continue
-    }
-
-    if (node.kind === 'multiply') {
-      const [r, g, b] = numbersIn(node.values.get('in2') ?? '')
-      if (r !== undefined && g !== undefined && b !== undefined) multiply = [r, g, b]
-      at = node.from.get('in1')
-      continue
-    }
-
-    // Any other node is one this studio does not write; the chain is followed through its first
-    // connection rather than abandoned, so a file that wraps an image once more still reads.
-    at = node.from.values().next().value
+    const step = imageStep(node, wrap, multiply)
+    at = step.at
+    wrap = step.wrap
+    multiply = step.multiply
   }
 
   return null
+}
+
+function imageStep(
+  node: Node,
+  wrap: MtlxWrap | undefined,
+  multiply: readonly [number, number, number] | undefined,
+): {
+  at: string | undefined
+  wrap: MtlxWrap | undefined
+  multiply: readonly [number, number, number] | undefined
+} {
+  if (node.kind === 'normalmap') {
+    return {
+      at: node.from.get('in'),
+      wrap: { node: 'normalmap', scale: Number(node.values.get('scale') ?? 1) || 1 },
+      multiply,
+    }
+  }
+  if (node.kind !== 'multiply') return { at: node.from.values().next().value, wrap, multiply }
+  const [r, g, b] = numbersIn(node.values.get('in2') ?? '')
+  return {
+    at: node.from.get('in1'),
+    wrap,
+    multiply: r !== undefined && g !== undefined && b !== undefined ? [r, g, b] : multiply,
+  }
+}
+
+function imageFromNode(
+  node: Node,
+  input: string,
+  prefix: string,
+  wrap: MtlxWrap | undefined,
+  multiply: readonly [number, number, number] | undefined,
+): MtlxImage | null {
+  const file = node.values.get('file')
+  if (!file) return null
+  const colorspace = node.colorspaces.get('file')
+  return {
+    input,
+    type: node.type || 'color3',
+    file: `${prefix}${file}`,
+    ...(colorspace ? { colorspace } : {}),
+    tiling: pairIn(node.values.get('uvtiling') ?? '', [1, 1]),
+    offset: pairIn(node.values.get('uvoffset') ?? '', [0, 0]),
+    ...(wrap ? { wrap } : {}),
+    ...(multiply ? { multiply } : {}),
+  }
 }
 
 /**
@@ -373,38 +395,10 @@ export function readMaterialX(xml: string): MtlxDocument {
   const surfaceName = material?.from.get('surfaceshader')
   const surface = surfaceName ? nodes.get(surfaceName) : undefined
 
-  for (const [input, value] of surface?.values ?? []) {
-    // The DECLARED type, never one re-derived from how many numbers the value holds: `normal`
-    // and `tangent` are `vector3` and would come back `color3`, and `thin_walled="true"` holds
-    // no number at all and would be dropped entirely.
-    const declared = surface?.types.get(input) ?? ''
-    const numbers = numbersIn(value)
-    const spelt = numbers.length === 0 ? value : numbers.length === 1 ? numbers[0] : numbers
-    if (spelt === undefined) continue
-    values.push({
-      input,
-      type: declared || (numbers.length === 1 ? 'float' : 'color3'),
-      value: spelt,
-    })
-  }
-
-  for (const [input, output] of surface?.connections ?? []) {
-    const target = outputTarget(nodes, output)
-    const image = target ? imageBehind(nodes, target, input, prefix) : null
-    if (image) images.push(image)
-  }
-
-  const displaceName = material?.from.get(MTLX_DISPLACEMENT)
-  const displace = displaceName ? nodes.get(displaceName) : undefined
-  const heightOutput = displace?.connections.get('displacement')
-  const heightTarget = heightOutput ? outputTarget(nodes, heightOutput) : undefined
-  const height = heightTarget ? imageBehind(nodes, heightTarget, MTLX_DISPLACEMENT, prefix) : null
-  if (height) {
-    images.push({
-      ...height,
-      wrap: { node: 'displacement', scale: Number(displace?.values.get('scale') ?? 1) || 1 },
-    })
-  }
+  readSurfaceValues(surface, values)
+  readSurfaceImages(nodes, surface, prefix, images)
+  const height = displacementImage(nodes, material, prefix)
+  if (height) images.push(height)
 
   const state = root?.[1] ? unescapeXml(attribute(root[1], MTLX_STUDIO_ATTR)) : ''
   const studio: unknown = state ? JSON.parse(state) : null
@@ -416,6 +410,59 @@ export function readMaterialX(xml: string): MtlxDocument {
     ...(isRecord(studio) ? { studio } : {}),
     ...(extra.length > 0 ? { extra } : {}),
   }
+}
+
+function readSurfaceValues(surface: Node | undefined, values: MtlxValue[]): void {
+  for (const [input, value] of surface?.values ?? []) {
+    // The DECLARED type, never one re-derived from how many numbers the value holds: `normal`
+    // and `tangent` are `vector3` and would come back `color3`, and `thin_walled="true"` holds
+    // no number at all and would be dropped entirely.
+    const read = valueFromSurface(surface, input, value)
+    if (read) values.push(read)
+  }
+}
+
+function readSurfaceImages(
+  nodes: Map<string, Node>,
+  surface: Node | undefined,
+  prefix: string,
+  images: MtlxImage[],
+): void {
+  for (const [input, output] of surface?.connections ?? []) {
+    const target = outputTarget(nodes, output)
+    const image = target ? imageBehind(nodes, target, input, prefix) : null
+    if (image) images.push(image)
+  }
+}
+
+function displacementImage(
+  nodes: Map<string, Node>,
+  material: Node | undefined,
+  prefix: string,
+): MtlxImage | null {
+  const displaceName = material?.from.get(MTLX_DISPLACEMENT)
+  const displace = displaceName ? nodes.get(displaceName) : undefined
+  const heightOutput = displace?.connections.get('displacement')
+  const heightTarget = heightOutput ? outputTarget(nodes, heightOutput) : undefined
+  const height = heightTarget ? imageBehind(nodes, heightTarget, MTLX_DISPLACEMENT, prefix) : null
+  return height
+    ? {
+        ...height,
+        wrap: { node: 'displacement', scale: Number(displace?.values.get('scale') ?? 1) || 1 },
+      }
+    : null
+}
+
+function valueFromSurface(
+  surface: Node | undefined,
+  input: string,
+  value: string,
+): MtlxValue | null {
+  const declared = surface?.types.get(input) ?? ''
+  const numbers = numbersIn(value)
+  const spelt = numbers.length === 0 ? value : numbers.length === 1 ? numbers[0] : numbers
+  if (spelt === undefined) return null
+  return { input, type: declared || (numbers.length === 1 ? 'float' : 'color3'), value: spelt }
 }
 
 /**

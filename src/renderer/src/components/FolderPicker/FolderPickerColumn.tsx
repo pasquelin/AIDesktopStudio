@@ -2,7 +2,9 @@ import { mdiChevronRight, mdiFolderOutline } from '@mdi/js'
 import { useEffect, useRef, type KeyboardEvent } from 'react'
 import { COLUMN_ARROWS } from '@/hooks/useColumnKeys'
 import type { FolderColumn } from '@/hooks/useFolderColumns'
+import { useRoleOfFolder } from '@/hooks/useRoleOfFolder'
 import { cn } from '@/helpers/cn'
+import { roleIcon, roleInk } from '@/helpers/workspaces'
 import { Row } from '../Row'
 import { rowSkin } from '../styles'
 import { UiIcon } from '../UiIcon'
@@ -39,6 +41,9 @@ export function FolderPickerColumn({
   label,
 }: FolderPickerColumnProps) {
   const caret = useRef<HTMLDivElement>(null)
+  // A folder that SERVES a section wears that section's glyph and hue, the way the explorer's tree
+  // draws the very same folders: one colour code in the project, not one per surface.
+  const roleOf = useRoleOfFolder()
 
   // Only where the keyboard put it: taking the focus on every render would pull the caret out of
   // the name field above on the first listing to come back.
@@ -77,36 +82,43 @@ export function FolderPickerColumn({
       // column of folder names is read by scanning rather than line by line.
       className="flex w-(--sc-folder-column) shrink-0 flex-col gap-0.5 overflow-y-auto p-1"
     >
-      {column.entries.map(entry => (
-        <div
-          key={entry.path}
-          ref={entry.path === focused ? caret : undefined}
-          role="option"
-          aria-selected={entry.path === chosen}
-          // Both, and on the same element: `aria-selected` is what a reader hears, `data-selected`
-          // is what lifts the row's own words out of `muted` on the picked fill.
-          data-selected={entry.path === chosen ? '' : undefined}
-          // A roving stop: one per column, so Tab steps from column to column rather than
-          // through every folder a project holds.
-          tabIndex={
-            entry.path === chosen || (chosen === undefined && entry === column.entries[0]) ? 0 : -1
-          }
-          onClick={() => onPick(entry.path)}
-          onKeyDown={onKeyDown(entry.path)}
-          // The gauge, and it has to be HERE: `Row` draws itself at `h-full`, so a parent with no
-          // height of its own leaves every line as tall as its text — `Tree` gives its rows one
-          // through the virtualizer, and a list that does not is the one that reads cramped.
-          className={cn(rowSkin(entry.path === chosen), 'h-(--sc-control) cursor-pointer')}
-        >
-          <Row
-            icon={mdiFolderOutline}
-            title={entry.name}
-            // What says a folder opens a column of its own — the Finder draws the same one. The
-            // quiet ink rather than an opacity: it is a glyph that informs, held to 3:1 (1.4.11).
-            actions={<UiIcon path={mdiChevronRight} size={12} className="text-muted" />}
-          />
-        </div>
-      ))}
+      {column.entries.map(entry => {
+        const role = roleOf(entry.path)
+
+        return (
+          <div
+            key={entry.path}
+            ref={entry.path === focused ? caret : undefined}
+            role="option"
+            aria-selected={entry.path === chosen}
+            // Both, and on the same element: `aria-selected` is what a reader hears, `data-selected`
+            // is what lifts the row's own words out of `muted` on the picked fill.
+            data-selected={entry.path === chosen ? '' : undefined}
+            // A roving stop: one per column, so Tab steps from column to column rather than
+            // through every folder a project holds.
+            tabIndex={
+              entry.path === chosen || (chosen === undefined && entry === column.entries[0])
+                ? 0
+                : -1
+            }
+            onClick={() => onPick(entry.path)}
+            onKeyDown={onKeyDown(entry.path)}
+            // The gauge, and it has to be HERE: `Row` draws itself at `h-full`, so a parent with no
+            // height of its own leaves every line as tall as its text — `Tree` gives its rows one
+            // through the virtualizer, and a list that does not is the one that reads cramped.
+            className={cn(rowSkin(entry.path === chosen), 'h-(--sc-control) cursor-pointer')}
+          >
+            <Row
+              icon={role ? roleIcon(role) : mdiFolderOutline}
+              iconInk={role ? roleInk(role) : undefined}
+              title={entry.name}
+              // What says a folder opens a column of its own — the Finder draws the same one. The
+              // quiet ink rather than an opacity: it is a glyph that informs, held to 3:1 (1.4.11).
+              actions={<UiIcon path={mdiChevronRight} size={12} className="text-muted" />}
+            />
+          </div>
+        )
+      })}
     </div>
   )
 }

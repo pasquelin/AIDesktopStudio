@@ -1,4 +1,5 @@
-import { bench, describe } from 'vitest'
+import { bench } from '@shared/vitestBench'
+import { describe } from 'vitest'
 import type { Command } from '../core/history'
 import { moveNodes, setShadowOn } from './commands'
 import { meshNodes, spriteNodeFixture } from './scene-fixtures'

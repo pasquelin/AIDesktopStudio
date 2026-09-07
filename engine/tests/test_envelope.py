@@ -2,8 +2,8 @@ import json
 
 import pytest
 
-from ia_studio_engine import PROTOCOL_VERSION
-from ia_studio_engine.protocol.envelope import (
+from aidesktopstudio_engine import PROTOCOL_VERSION
+from aidesktopstudio_engine.protocol.envelope import (
     EnvelopeError,
     decode_request,
     encode_error,

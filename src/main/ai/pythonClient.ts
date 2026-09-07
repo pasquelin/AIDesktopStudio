@@ -20,6 +20,7 @@ import {
   type EngineHello,
   type EngineJobOp,
   type EngineRequest,
+  type EngineRequirementsProfile,
   type EngineSettledJob,
 } from './pythonProtocol'
 
@@ -43,7 +44,7 @@ const GONE = 'the local AI engine is gone'
 /** What a caller wants to know while a job runs, and what stops it. */
 type EngineJobWatch = {
   /** From 0 to 1, pushed between two steps by the door itself. */
-  readonly onStep?: (ratio: number) => void
+  readonly onStep?: (ratio: number, phase?: string) => void
   readonly signal?: AbortSignal
 }
 
@@ -65,7 +66,7 @@ export type PythonClient = {
    * What the door's environment is missing, if anything. Answered by the core, so it wakes no
    * door and imports no tensor library — a door started to be told it holds nothing is 682 MB.
    */
-  requirements: () => Promise<EngineRequirements>
+  requirements: (profile?: EngineRequirementsProfile) => Promise<EngineRequirements>
   /**
    * Opens a JOB on a door and waits for the event that settles it — reading gigabytes and running
    * an inference are the two things `REQUEST_TIMEOUT_MS` must never bound.
@@ -134,40 +135,37 @@ export function createPythonClient(port: PythonPort, listeners: PythonListeners)
     {
       resolve: (job: EngineSettledJob) => void
       reject: (error: Error) => void
-      onStep?: (ratio: number) => void
+      onStep?: (ratio: number, phase?: string) => void
     }
   >()
   let nextJob = 1
 
-  port.onMessage(frame => {
-    if (!('evt' in frame)) return
-
-    if (isJobProgress(frame)) {
-      jobs.get(frame.job)?.onStep?.(frame.ratio)
-      return
-    }
-
+  function settleJob(frame: EngineFrame): boolean {
     if (isSettledJob(frame)) {
       const waiting = jobs.get(frame.job)
       jobs.delete(frame.job)
-      if (!waiting) return
+      if (!waiting) return true
 
       if (frame.evt === 'job.completed') waiting.resolve(frame)
       else
         waiting.reject(
           new Error(`${frame.code ?? 'failed'}: ${frame.message ?? 'the door refused'}`),
         )
+      return true
+    }
+    return false
+  }
+
+  function receive(frame: EngineFrame): void {
+    if (!('evt' in frame)) return
+    if (isJobProgress(frame)) {
+      jobs.get(frame.job)?.onStep?.(frame.ratio, frame.phase)
       return
     }
-
-    // A door announcing itself. Nothing reads it: admission is answered by the core
-    // (`memory.ledger`), and a device by the frame of the generation that used it. Dropped by NAME
-    // — the fall-through below reads any other event as a `runtime.error` and logs its `message`.
-    if (isWorkerHello(frame)) return
+    if (settleJob(frame) || isWorkerHello(frame)) return
 
     if (!isHello(frame)) {
-      // `runtime.error`: the engine could not read a frame, and there is no run to answer under.
-      log.warn('engine', frame.message)
+      log.warn('engine', frame.message ?? 'engine runtime error')
       return
     }
 
@@ -186,7 +184,9 @@ export function createPythonClient(port: PythonPort, listeners: PythonListeners)
     const waiting = settleReady
     settleReady = null
     waiting?.resolve(frame)
-  })
+  }
+
+  port.onMessage(receive)
 
   port.onFailure(error => {
     // Every job in flight belongs to the process that just died, and nothing will ever settle it.
@@ -220,12 +220,12 @@ export function createPythonClient(port: PythonPort, listeners: PythonListeners)
       return readHardware(answer)
     },
 
-    requirements: async () => {
+    requirements: async (profile = 'diffusion') => {
       if (closed) throw new Error(GONE)
 
       return readRequirements(
         await beforeDeadline(
-          client.send(id => engineRequest(id, 'engine.requirements')),
+          client.send(id => engineRequest(id, 'engine.requirements', { profile })),
           'engine.requirements',
         ),
       )

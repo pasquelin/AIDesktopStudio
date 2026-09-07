@@ -45,7 +45,9 @@ export function delegated(
     // A token still passes it, one call at a time and never standing — that is the whole point.
     case 'studio':
       return false
+    // A zero budget delegates nothing, a run priced at nothing included: a model of this machine
+    // is priced at 0 since 2026-09-06, and `0 <= 0` would have waved it through unasked.
     case 'credits':
-      return estimate !== null && spent + estimate <= mcp.delegateBudget
+      return estimate !== null && mcp.delegateBudget > 0 && spent + estimate <= mcp.delegateBudget
   }
 }

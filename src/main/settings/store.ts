@@ -18,58 +18,32 @@ import {
   type AccountBook,
   type Credentials,
 } from './accounts'
+import { grandfatherOnboarding } from '@shared/domain/welcome'
 import { parseStoredAccounts, parseStoredCredentials, salvagePartialSettings } from './validation'
-
-/**
- * What the store needs in order to persist. Injected so tests need neither Electron nor a
- * disk: `safeStorage` does not exist outside a packaged application.
- */
 export type PersistenceAdapter = {
   read: <T>(key: string) => T | undefined
   write: (key: string, value: unknown) => void
   remove: (key: string) => void
   encrypt: (plain: string) => string
   decrypt: (encrypted: string) => string
-  /** Where it writes, for the settings screen's "reveal the file" button. */
   path: () => string
 }
-
-/**
- * What a change to the account list did. `credentialsChanged` is derived from the book, not
- * claimed by the caller: adding a second account or removing an idle one leaves the active key
- * exactly where it was, and treating those as a switch would throw away every cache for nothing.
- */
 export type AccountChange = {
   accounts: AccountSummary[]
   credentialsChanged: boolean
 }
-
-/** An account as the main process may use it to call the API on that account's behalf. */
 export type KeyedAccount = {
   id: string
   name: string
   credentials: Credentials
-  /** Which cloud the key opens. Absent means Scenario, exactly as the stored account leaves it. */
   providerId?: CloudProviderId
 }
-
 export type SettingsStore = {
   read: () => Settings
   write: (partial: PartialSettings) => Settings
-  /**
-   * Back to a fresh install. Not `write(DEFAULT_SETTINGS)`: a write MERGES, and the settings
-   * with no default — an accent, an ffmpeg path, a projects folder — have nothing in the
-   * defaults to overwrite them, so they would survive the reset that promised to remove them.
-   */
   reset: () => Settings
-  /** Every held account, without its credentials — this is what may cross to a window. */
   accounts: () => AccountSummary[]
-  /**
-   * The same accounts, credentials included. Main process only: nothing here may cross to a
-   * window. Exists so usage can be read for every stored key at once, not just the active one.
-   */
   keyedAccounts: () => KeyedAccount[]
-  /** All four throw an `AccountError`: a refused name, an unknown id, or a locked keychain. */
   addAccount: (
     name: string,
     credentials: Credentials,
@@ -79,64 +53,29 @@ export type SettingsStore = {
   removeAccount: (id: string) => AccountChange
   activateAccount: (id: string) => AccountChange
   hasCredentials: () => boolean
-  /**
-   * Carries a lone stored pair over into a book, once, at startup. Erases nothing it has not
-   * read: a locked keychain leaves everything exactly where it is.
-   */
   settleAccounts: () => void
-  /** Main process only. Never expose over IPC — see spec § 4, invariant 1. */
   readCredentials: () => Credentials | null
-  /** Main process only. The active key of one cloud, or none. */
   readCredentialsFor: (provider: CloudProviderId) => Credentials | null
-  /**
-   * The credentials behind an `accountFingerprint`, or `null` if that key is no longer held.
-   * Main process only. What lets a job outliving a session be polled on the account that paid
-   * for it — by the key rather than by the book entry, which a remove-and-re-add renews.
-   */
   credentialsOf: (fingerprint: string) => Credentials | null
-  /**
-   * Follows every change from here on. Returns the way to stop.
-   *
-   * Beside `onChange`, which is the ONE listener wired at construction and cannot be a second:
-   * the store is built before the services are, so anything built later — the MCP control is the
-   * first — had no way in but a module-level global. This is that way in.
-   */
   subscribe: (listener: (settings: Settings) => void) => () => void
-  /** Where the settings are written. */
   path: () => string
 }
-
 const SETTINGS_KEY = 'settings'
 const CREDENTIALS_KEY = 'credentials'
 const ACCOUNTS_KEY = 'accounts'
-
-/**
- * The id a migrated lone pair lands under. Fixed rather than generated: the migration is read
- * before it is ever written, and a fresh id per read would hand every caller a different
- * account for the same key.
- */
 const MIGRATED_ACCOUNT_ID = 'account_migrated'
-
-/**
- * Whether the calls now go out under a different key. Read off the credentials rather than off
- * the active id, because the two stopped being the same question: the development account keeps
- * one id while the file behind it may hold another key, and a cache kept across that change
- * would serve one project's contents under another's name.
- */
 function movedKey(before: AccountBook, after: AccountBook): boolean {
   const from = activeCredentials(before)
   const to = activeCredentials(after)
   return from?.key !== to?.key || from?.secret !== to?.secret
 }
-
-/** One write folded onto what stands, branch by branch. Exported for the bench's settings port,
- * which must merge exactly as this does. */
 export function mergedSettings(base: Settings, partial: PartialSettings): Settings {
   return {
     general: { ...base.general, ...partial.general },
     ai: { ...base.ai, ...partial.ai },
     home: { ...base.home, ...partial.home },
     workspaces: { ...base.workspaces, ...partial.workspaces },
+    input: { ...base.input, ...partial.input },
     appearance: { ...base.appearance, ...partial.appearance },
     generation: { ...base.generation, ...partial.generation },
     storage: { ...base.storage, ...partial.storage },
@@ -147,23 +86,15 @@ export function mergedSettings(base: Settings, partial: PartialSettings): Settin
     advanced: { ...base.advanced, ...partial.advanced },
     assistant: { ...base.assistant, ...partial.assistant },
     mcp: { ...base.mcp, ...partial.mcp },
+    onboarding: { ...base.onboarding, ...partial.onboarding },
     dictation: { ...base.dictation, ...partial.dictation },
   }
 }
-
-/**
- * Every write goes through here, wherever it came from — the settings window, or the main
- * process recording the project it just opened — so notifying from the store rather than from
- * the IPC handler is what makes "one window changed a setting" reach all of them.
- */
 export type SettingsStoreOptions = {
   onChange?: (settings: Settings) => void
-  /** What an unwritten profile starts from, and what `reset` goes back to. */
   defaults?: Settings
-  /** Injected so a test can name the accounts it creates. */
   newAccountId?: () => string
 }
-
 export function createSettingsStore(
   adapter: PersistenceAdapter,
   {
@@ -172,37 +103,27 @@ export function createSettingsStore(
     newAccountId = () => `account_${randomUUID()}`,
   }: SettingsStoreOptions = {},
 ): SettingsStore {
-  /**
-   * 🛑 Held between writes, and the config file is no longer re-read for each ask: one edited by
-   * hand while the studio runs is seen at the next write, not at the next read. The price of a
-   * read was a zod pass over the whole file plus a rebuild of all fifteen sections, on a call the
-   * main process makes from many hot paths — `services.ts` alone asks eighteen times.
-   */
   let cached: Settings | null = null
-
-  /**
-   * Frozen because it is now SHARED: every caller between two writes holds the same object, so
-   * one of them writing into a section would change what the others read — and the file behind
-   * it would still say the old thing. A write goes through `write`, which rebuilds it.
-   */
   const frozen = (settings: Settings): Settings => {
     for (const section of Object.values(settings)) Object.freeze(section)
     return Object.freeze(settings)
   }
-
   const read = (): Settings => {
-    cached ??= frozen(mergedSettings(defaults, salvagePartialSettings(adapter.read(SETTINGS_KEY))))
+    if (cached) return cached
+    const salvaged = salvagePartialSettings(adapter.read(SETTINGS_KEY))
+    let settings = frozen(mergedSettings(defaults, salvaged))
+    const stamp = grandfatherOnboarding(salvaged, new Date().toISOString())
+    if (stamp) {
+      settings = frozen(mergedSettings(settings, { onboarding: stamp }))
+      adapter.write(SETTINGS_KEY, settings)
+    }
+    cached = settings
     return cached
   }
-
-  /** What was just written is re-read rather than assumed: the schema may narrow what it stores. */
   const forgetSettings = (): void => {
     cached = null
   }
-
   const readRaw = (key: string): string | null => adapter.read<string>(key) ?? null
-
-  /** The plain text behind a stored blob, or null when the keychain would not hand it back. */
   const decrypted = (raw: string): string | null => {
     try {
       return adapter.decrypt(raw)
@@ -210,39 +131,34 @@ export function createSettingsStore(
       return null
     }
   }
-
   const decrypt = <T>(raw: string, parse: (plain: string) => T | null): T | null => {
     const plain = decrypted(raw)
     if (plain === null) return null
     try {
       return parse(plain)
     } catch {
-      // Truncated JSON, or a shape from another version.
       return null
     }
   }
-
-  /**
-   * Three states, not two, and the difference decides whether writing is allowed.
-   *
-   * `locked` — the keychain refused. The keys are still in there; the next launch will very
-   * likely read them, so nothing may be written over them and nothing may be erased.
-   * `corrupt` — decrypted fine, holds no book. The content is unrecoverable whatever we do, so
-   * writing over it is the only way out; refusing would wedge account management for good.
-   */
   type StoredBook =
-    | { held: 'none' }
-    | { held: 'locked' }
-    | { held: 'corrupt' }
-    | { held: 'book'; book: AccountBook }
-
+    | {
+        held: 'none'
+      }
+    | {
+        held: 'locked'
+      }
+    | {
+        held: 'corrupt'
+      }
+    | {
+        held: 'book'
+        book: AccountBook
+      }
   const storedBook = (): StoredBook => {
     const raw = readRaw(ACCOUNTS_KEY)
     if (!raw) return { held: 'none' }
-
     const plain = decrypted(raw)
     if (plain === null) return { held: 'locked' }
-
     try {
       const book = parseStoredAccounts(plain)
       return book ? { held: 'book', book } : { held: 'corrupt' }
@@ -250,62 +166,33 @@ export function createSettingsStore(
       return { held: 'corrupt' }
     }
   }
-
-  /**
-   * Reads without side effects. A book that cannot be read reads as empty so the screens ask
-   * for a key rather than claim to be set up — never as a reason to erase it.
-   *
-   * With no book at all, a lone pair from a single-credential install stands in for one, so
-   * an upgrade keeps working before `settleAccounts` has had a chance to carry it over.
-   */
   const persistedBook = (): AccountBook => {
     const stored = storedBook()
     if (stored.held === 'book') return stored.book
     if (stored.held !== 'none') return EMPTY_BOOK
-
     const lone = readRaw(CREDENTIALS_KEY)
     const credentials = lone && decrypt(lone, parseStoredCredentials)
     return credentials ? bookFromCredentials(credentials, MIGRATED_ACCOUNT_ID) : EMPTY_BOOK
   }
-
-  /** The keychain's accounts, repaired. Takes a held book so a caller need not read it twice. */
   const readBook = (persisted = persistedBook()): AccountBook => settleBook(persisted)
-
   const writeBook = (book: AccountBook): void => {
     adapter.write(ACCOUNTS_KEY, adapter.encrypt(JSON.stringify(book)))
   }
-
-  /** Runs one change and reports whether it moved the active key — never guessed by a caller. */
   const apply = (change: (book: AccountBook) => AccountBook): AccountChange => {
     const stored = storedBook()
-
-    /*
-     * A write replaces the blob whole. Adding an account on top of keys we cannot see would
-     * leave a book of one where the user had several — and the screen invites exactly that,
-     * since an unreadable book reads as "no account yet". Only a locked keychain earns the
-     * refusal: its keys are intact and the next launch reads them fine. Corrupt content has
-     * nothing left to protect, and refusing there would lock the user out permanently.
-     */
     if (stored.held === 'locked') throw new AccountError('store-unreadable')
-
     const before = readBook(stored.held === 'book' ? stored.book : undefined)
     const after = change(before)
     writeBook(after)
-
     return { accounts: summariesOf(after), credentialsChanged: movedKey(before, after) }
   }
-
   const listeners = new Set<(settings: Settings) => void>()
-
-  /** The one wired at construction, then whoever subscribed later. */
   const announce = (settings: Settings): void => {
     onChange?.(settings)
     for (const listener of listeners) listener(settings)
   }
-
   return {
     read,
-
     write: partial => {
       const merged = mergedSettings(read(), partial)
       adapter.write(SETTINGS_KEY, merged)
@@ -313,21 +200,17 @@ export function createSettingsStore(
       announce(merged)
       return merged
     },
-
     reset: () => {
       adapter.write(SETTINGS_KEY, defaults)
       forgetSettings()
       announce(defaults)
       return defaults
     },
-
     subscribe: listener => {
       listeners.add(listener)
       return () => listeners.delete(listener)
     },
-
     accounts: () => summariesOf(readBook()),
-
     keyedAccounts: () =>
       readBook().accounts.map(account => ({
         id: account.id,
@@ -335,7 +218,6 @@ export function createSettingsStore(
         credentials: account.credentials,
         ...(account.providerId ? { providerId: account.providerId } : {}),
       })),
-
     addAccount: (name, credentials, providerId) =>
       apply(book =>
         addAccount(book, {
@@ -345,52 +227,30 @@ export function createSettingsStore(
           ...(providerId && providerId !== SCENARIO_CLOUD ? { providerId } : {}),
         }),
       ),
-
     renameAccount: (id, name) => apply(book => renameAccount(book, id, name)),
-
     removeAccount: id => apply(book => removeAccount(book, id)),
-
     activateAccount: id => apply(book => activateAccount(book, id)),
-
     hasCredentials: () => activeCredentials(readBook()) !== null,
-
     settleAccounts: () => {
       const stored = storedBook()
-
-      // Nothing is touched. This runs before the first window, where a keychain can be locked
-      // or unavailable for the launch: erasing the book would cost every key the user holds,
-      // and erasing the pair beside it would cost the one copy that migration may still need.
       if (stored.held === 'locked') return
-
       const lone = readRaw(CREDENTIALS_KEY)
-      // Read before erasing, always. A pair that will not decrypt today is still the only copy
-      // of that key, and the launch that reads it may be the next one.
       const credentials = lone && decrypt(lone, parseStoredCredentials)
-
       if (stored.held === 'book') {
-        // The book supersedes it, and left behind it would outlive "remove every account".
         if (credentials) adapter.remove(CREDENTIALS_KEY)
         return
       }
-
       if (!credentials) return
-
       try {
         writeBook(bookFromCredentials(credentials, MIGRATED_ACCOUNT_ID))
         adapter.remove(CREDENTIALS_KEY)
       } catch {
-        // No keychain on this machine, so nothing can be encrypted. The pair stays where it
-        // is and `readBook` keeps standing in for it — failing the launch over a migration
-        // that can wait would be worse.
+        return
       }
     },
-
     readCredentials: () => activeCredentials(readBook()),
-
     readCredentialsFor: provider => credentialsFor(readBook(), provider),
-
     credentialsOf: fingerprint => credentialsByFingerprint(readBook(), fingerprint),
-
     path: adapter.path,
   }
 }

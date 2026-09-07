@@ -1,7 +1,7 @@
 [project]
-name = "ia-studio-engine"
+name = "ai-desktop-studio-engine"
 dynamic = ["version"]
-description = "The local AI engine of IA Studio: a supervised Python process that measures and executes."
+description = "The local AI engine of AI Desktop Studio: a supervised Python process that measures and executes."
 requires-python = ">=3.12"
 dependencies = []
 
@@ -11,6 +11,30 @@ dependencies = []
 # which is why the core stays at the 10 ms of a bare interpreter. Workers pay it, once, and stay
 # alive. The `llm`, `diffusion`, `audio` and `3d` groups land with the worker that needs them.
 core = []
+selection = [
+  "onnxruntime>=1.23",
+  "numpy>=1.26",
+  "pillow>=10.0",
+]
+motion = [
+  "pydantic>=2",
+  "torch>=2.6",
+  "numpy>=1.26",
+  "scipy>=1.10",
+  "transformers==5.15.1",
+  "peft>=0.18",
+  "safetensors>=0.4",
+  "einops>=0.7",
+  "omegaconf>=2.3",
+  "tqdm>=4.0",
+]
+# The production Auto Rig door. It intentionally excludes the diffusion, training, demo and
+# Blender stacks: MIA inference imports only these three distributions directly.
+autorig = [
+  "torch==2.14.0",
+  "numpy>=1.26",
+  "einops>=0.7",
+]
 # The door that holds tensors. NEVER installed by `pnpm engine:check`: the gate would then
 # download 682 Mo to be green, and the tests of `engine/tests` are written to need none of it.
 diffusion = [
@@ -31,13 +55,17 @@ diffusion = [
   # An undeclared import is one a dependency is free to drop from under us.
   "numpy>=1.26",
   "pillow>=10.0",
+  # Other 3D plugins run on this same door. These pure-Python wheels need no compiler on first use
+  # on CPU or Apple Silicon; MIA itself uses the smaller embedded `autorig` profile above.
+  "einops>=0.7",
+  "timm>=1.0",
 ]
 # TripoSR / TRELLIS / TripoSG / InstantMesh / LGM / CraftsMan3D / MMAudio. NEVER installed by
 # `pnpm engine:check`.
 plugin = [
   # Everything the diffusers door needs, at the SAME bounds — and what `_require(…, "plugin")`
   # promises: the adapters import diffusers, transformers and numpy right after the probe.
-  "ia-studio-engine[diffusion]",
+  "ai-desktop-studio-engine[diffusion]",
   "einops>=0.7",
   # `_load_lgm` reads its unet and its splatter through `safetensors.torch.load_file`; the
   # diffusers door only ever asks diffusers for `use_safetensors`.
@@ -62,6 +90,9 @@ plugin = [
   "typeguard>=4.0",
 ]
 
+[tool.ai-desktop-studio]
+embedded-profiles = ["autorig", "selection"]
+
 [dependency-groups]
 # numpy and Pillow, and nothing heavier: `skybox_fill` is pure array work, and leaving it
 # untested was the one algorithmic file of this engine with no guard. Together they are ~37 MB installed —
@@ -74,10 +105,10 @@ build-backend = "hatchling.build"
 
 # One truth for the version: `__init__.py` holds it, the manifest reads it.
 [tool.hatch.version]
-path = "src/ia_studio_engine/__init__.py"
+path = "src/aidesktopstudio_engine/__init__.py"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/ia_studio_engine"]
+packages = ["src/aidesktopstudio_engine"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

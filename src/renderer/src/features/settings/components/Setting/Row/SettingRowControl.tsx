@@ -11,11 +11,13 @@ import { cn } from '@/helpers/cn'
 import { formatDecimal } from '@/helpers/format'
 import { Slider } from '@/components/Slider'
 import { WINDOW_CAPTION } from '@/components/windowStyles'
-import { SETTING_SELECT } from '../../settingStyles'
 import type { Labelled } from './controls'
 import { SettingRowColorControl } from './SettingRowColorControl'
 import { SettingRowPathControl } from './SettingRowPathControl'
 import { SettingRowTextControl } from './SettingRowTextControl'
+import { WindowInput } from '@/components/WindowInput'
+import { WindowSelect } from '@/components/WindowSelect'
+import { WindowToggle } from '@/components/WindowToggle'
 
 /**
  * What a numeric field may hand over. An emptied field is mid-edit, and a value zod would
@@ -59,12 +61,12 @@ export function SettingRowControl({
   switch (descriptor.kind) {
     case 'choice':
       return (
-        <select
+        <WindowSelect
           id={id}
           data-sc={fieldHandle(scId)}
           aria-describedby={describedBy}
-          className={SETTING_SELECT}
-          value={String(value ?? '')}
+          className="w-full max-w-xs"
+          value={String(definedValue(value))}
           // Handed back as the option declared it, not as the string the DOM carries: a
           // numeric choice would otherwise be stored as `'3'` and refused by zod.
           onChange={event =>
@@ -79,21 +81,21 @@ export function SettingRowControl({
               {optionLabel(option, t)}
             </option>
           ))}
-        </select>
+        </WindowSelect>
       )
 
     case 'number':
       return (
-        <input
+        <WindowInput
           id={id}
           data-sc={fieldHandle(scId)}
           aria-describedby={describedBy}
-          className="input input-sm w-24"
+          className="w-24"
           type="number"
           min={descriptor.min}
           max={descriptor.max}
           step={descriptor.step}
-          value={typeof value === 'number' ? value : ''}
+          value={numberValue(value, '')}
           onChange={event => {
             const next = event.target.valueAsNumber
             if (writableNumber(descriptor, next)) onChange(next)
@@ -112,27 +114,23 @@ export function SettingRowControl({
             min={descriptor.min}
             max={descriptor.max}
             step={descriptor.step}
-            value={typeof value === 'number' ? value : 0}
+            value={numberValue(value, 0)}
             onChange={next => {
               if (writableNumber(descriptor, next)) onChange(next)
             }}
           />
           <span className={cn(WINDOW_CAPTION, 'w-10 text-right tabular-nums')}>
-            {typeof value === 'number'
-              ? formatDecimal(value, i18n.language, { digits: decimals, least: decimals })
-              : ''}
+            {displayNumber(value, i18n.language, decimals)}
           </span>
         </div>
       )
 
     case 'boolean':
       return (
-        <input
+        <WindowToggle
           id={id}
           data-sc={fieldHandle(scId)}
           aria-describedby={describedBy}
-          className="toggle toggle-sm"
-          type="checkbox"
           checked={value === true}
           onChange={event => onChange(event.target.checked)}
         />
@@ -173,4 +171,25 @@ export function SettingRowControl({
         />
       )
   }
+}
+
+function definedValue(value: SettingValue | undefined): SettingValue | '' {
+  return value ?? ''
+}
+
+function numberValue<T extends number | ''>(
+  value: SettingValue | undefined,
+  fallback: T,
+): number | T {
+  return typeof value === 'number' ? value : fallback
+}
+
+function displayNumber(
+  value: SettingValue | undefined,
+  language: string,
+  decimals: number,
+): string {
+  return typeof value === 'number'
+    ? formatDecimal(value, language, { digits: decimals, least: decimals })
+    : ''
 }

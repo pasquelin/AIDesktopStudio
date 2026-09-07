@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { arrangedFor } from '@/stores/tool-fixtures'
-import { arrangementOf, useTools } from '@/stores/tools'
+import { shownIn } from '@pasquelin/panels'
+import { panelsStore } from '@/stores/panels'
+import { chassisFor } from '@/stores/panels-fixtures'
 import { useLayouts } from '@/stores/layouts'
 import { useModels } from '@/stores/models'
 import { installFakeBridge } from '@/services/fakeBridge'
@@ -11,9 +12,9 @@ let opened: string[] = []
 beforeEach(() => {
   opened = []
   installFakeBridge({ settings: { open: section => (opened.push(section), Promise.resolve()) } })
-  useTools.setState({ arrangements: arrangedFor('image', { open: {} }), focusedZone: null })
   useLayouts.setState({ activeWorkspace: 'image', home: false })
   useModels.setState({ collections: {}, selected: {} })
+  chassisFor('image')
 })
 
 /**
@@ -24,7 +25,7 @@ describe('offering a model of one family', () => {
   it('opens the generation panel, whose picker lists exactly that family', () => {
     offerModelsOfFamily('image')
 
-    expect(arrangementOf(useTools.getState(), 'image').open.left?.primary).toBe('generator')
+    expect(shownIn(panelsStore.getState(), 'left').primary).toBe('generator')
   })
 
   /**
@@ -35,7 +36,8 @@ describe('offering a model of one family', () => {
     offerModelsOfFamily('upscale')
 
     expect(opened).toEqual(['ai.upscale'])
-    expect(arrangementOf(useTools.getState(), 'image').open.left?.primary).toBeUndefined()
+    // Untouched: the half is still the one the studio opened, with no panel named in it.
+    expect(panelsStore.getState().views.workspaces?.left?.primary).toBeNull()
   })
 
   /** The home browses no catalogue at all, so it lands in the preferences like any other miss. */

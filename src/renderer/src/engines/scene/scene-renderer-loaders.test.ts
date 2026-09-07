@@ -108,6 +108,23 @@ describe('SceneRenderer and a tree that will not build', () => {
   })
 
   // A model nobody can click without costing a frame says so once, or it says nothing at all.
+  // The cache fails by key, which is a versioned url: the journal must still name the asset.
+  it('names the asset, never its url, when a model cannot be read', async () => {
+    const renderer = new SceneRenderer({
+      onSelect: vi.fn(),
+      onTransform: vi.fn(),
+      loadModel: () => Promise.reject(new Error('unreadable')),
+      assetVersion: () => 'v1',
+    })
+
+    renderer.apply({ ...EMPTY_SCENE, nodes: [modelNodeFixture('a', 'asset-1')], selectedIds: [] })
+
+    await vi.waitFor(() =>
+      expect(reported).toHaveBeenCalledWith('scene.model', 'asset-1', expect.anything()),
+    )
+    renderer.dispose()
+  })
+
   it('writes the failure to the journal under its own scope', async () => {
     const bvh: BvhBuilder = {
       accelerate: () => Promise.reject(new Error('out of memory')),

@@ -5,12 +5,27 @@ import { LEAST_GUARDS, MOST_SLACK, readsTheTree, wideGuardsUnder } from './wideG
 const ROOT = join(import.meta.dirname, '..', '..')
 const GUARDED = wideGuardsUnder(join(ROOT, 'src')).map(path => path.replace(`${ROOT}/`, ''))
 
+/** A borrower's own path, which is what lets the sweep behind an import be followed and read. */
+const from = (path: string): string => join(ROOT, path)
+
 describe('finding the tests no import graph reaches', () => {
   it('sees a glob standing for files it does not name, and leaves a single-file one alone', () => {
     expect(readsTheTree("const all = import.meta.glob('./**/*.tsx', { query: '?raw' })")).toBe(true)
-    expect(
-      readsTheTree("const one = import.meta.glob('./PropertyRow.tsx', { query: '?raw' })"),
-    ).toBe(false)
+    expect(readsTheTree("const one = import.meta.glob('./PropertyRow.tsx')")).toBe(false)
+  })
+
+  /**
+   * A single-file glob is NOT reached by the import graph once it asks for `?raw`, and this case
+   * says so where the one above used to claim the opposite: Vite gives the raw text another module
+   * id, so `related` follows nothing. `rootErrors.test.tsx` reads `main.tsx` exactly that way, and
+   * nothing imports `main.tsx` at all — it has a top-level await and mounts.
+   */
+  it('sees a file inlined at build time, however narrowly it was asked for', () => {
+    expect(readsTheTree("import sheet from './index-foundation.css?raw'")).toBe(true)
+    expect(readsTheTree("const one = import.meta.glob('./main.tsx', { query: '?raw' })")).toBe(true)
+    expect(readsTheTree("await import('./timeline?raw')")).toBe(true)
+    // Prose about `?raw` is not a read. The quotes are what tell them apart.
+    expect(readsTheTree('// inlined through ?raw by the harness')).toBe(false)
   })
 
   /**
@@ -24,7 +39,7 @@ describe('finding the tests no import graph reaches', () => {
   })
 
   it('holds the one the narrow reading missed', () => {
-    expect(GUARDED).toContain('src/renderer/src/components/styles.test.ts')
+    expect(GUARDED).toContain('src/renderer/src/components/stylesRows.test.ts')
   })
 
   /**
@@ -58,7 +73,6 @@ describe('finding the tests no import graph reaches', () => {
   it('sees a walk of the disk and a read of what is data rather than a module', () => {
     expect(readsTheTree("readdirSync(join(ROOT, 'src'))")).toBe(true)
     expect(readsTheTree("readFileSync('vitest.config.ts', 'utf8')")).toBe(true)
-    expect(readsTheTree("import sheet from './index.css?raw'")).toBe(true)
   })
 
   /**
@@ -70,7 +84,9 @@ describe('finding the tests no import graph reaches', () => {
     expect(readsTheTree("execFileSync(\n  'git',\n  ['grep', '-In', NEEDLE],\n)")).toBe(true)
     expect(readsTheTree("execFileSync('node', ['scripts/check.mjs'])")).toBe(false)
   })
+})
 
+describe('wide guard coverage', () => {
   it('leaves an ordinary suite alone, which is what keeps the selection worth making', () => {
     expect(readsTheTree("import { Tree } from './Tree'\nrender(<Tree />)")).toBe(false)
   })
@@ -81,13 +97,44 @@ describe('finding the tests no import graph reaches', () => {
    * that way while the count still read 36 and looked healthy.
    */
   it('sees the suite that borrows the shared sweep rather than writing one', () => {
-    expect(readsTheTree("import { sourceFiles } from './sourceFiles'")).toBe(true)
-    expect(readsTheTree("import { PROJECT_TREES } from '@main/sourceFiles'")).toBe(true)
+    const main = from('src/main/probe.test.ts')
+
+    expect(readsTheTree("import { sourceFiles } from './sourceFiles'", main)).toBe(true)
+    expect(readsTheTree("import { PROJECT_TREES } from '@main/sourceFiles'", main)).toBe(true)
     // A guard one folder down, which the first version of the rule would have dropped.
-    expect(readsTheTree("import { sourceFiles } from '../sourceFiles'")).toBe(true)
-    expect(readsTheTree("import { sourceFiles } from '../../sourceFiles'")).toBe(true)
+    const deeper = from('src/main/window/probe.test.ts')
+    expect(readsTheTree("import { sourceFiles } from '../sourceFiles'", deeper)).toBe(true)
     expect(GUARDED).toContain('src/main/no-bare-locale-compare.test.ts')
     expect(GUARDED).toContain('src/main/no-hardcoded-text.test.ts')
+  })
+
+  /**
+   * The borrowed module is RESOLVED and read, never matched on its name — which is the whole point:
+   * a name list is what let `index.css` become three files under other names in silence. A module
+   * that reads nothing leaves its importer alone, or the net would hold the entire suite.
+   */
+  it('follows the import to the module, and only when that module is a sweep', () => {
+    const main = from('src/main/probe.test.ts')
+
+    expect(readsTheTree("import { clamp } from '@shared/numeric'", main)).toBe(false)
+    expect(readsTheTree("import { thing } from './nothing-of-this-repository'", main)).toBe(false)
+    expect(readsTheTree("import { render } from '@testing-library/react'", main)).toBe(false)
+  })
+
+  /**
+   * The four the split dropped, and the reason this case names them rather than counting: the lot
+   * that lost them ADDED five elsewhere, so the count went up while the tightest colour guard of
+   * the repository left the short loop. Membership is what a count cannot say.
+   */
+  it('holds the design guards that read a stylesheet through a shared module', () => {
+    expect(GUARDED).toEqual(
+      expect.arrayContaining([
+        'src/renderer/src/components/tokensContrast.test.ts',
+        'src/renderer/src/components/tokensHue.test.ts',
+        'src/renderer/splash.test.ts',
+        'src/renderer/src/features/scene/components/Camera/CameraPreview.test.tsx',
+      ]),
+    )
   })
 
   /**
@@ -97,9 +144,16 @@ describe('finding the tests no import graph reaches', () => {
    * out — two of them with no other way in, and the floor far too high to notice.
    */
   it('sees the three ways the renderer sweep is borrowed', () => {
-    expect(readsTheTree("import { WRITTEN_SOURCES } from './testHarness'")).toBe(true)
-    expect(readsTheTree("import { WRITTEN_SOURCES } from '../components/testHarness'")).toBe(true)
-    expect(readsTheTree("import { SUITE_SOURCES } from '@/components/testHarness'")).toBe(true)
+    const beside = from('src/renderer/src/components/probe.test.ts')
+    const elsewhere = from('src/renderer/src/stores/probe.test.ts')
+
+    expect(readsTheTree("import { WRITTEN_SOURCES } from './testHarness'", beside)).toBe(true)
+    expect(
+      readsTheTree("import { WRITTEN_SOURCES } from '../components/testHarness'", elsewhere),
+    ).toBe(true)
+    expect(readsTheTree("import { SUITE_SOURCES } from '@/components/testHarness'", beside)).toBe(
+      true,
+    )
     expect(GUARDED).toContain('src/renderer/src/components/spacing.test.ts')
     expect(GUARDED).toContain('src/renderer/src/stores/job-fixtures.test.ts')
   })

@@ -9,6 +9,7 @@ import { useDocuments } from './documents'
 import { job as jobOf } from './job-fixtures'
 import { claimImageOnSubmit, connectImageGeneration } from './imageGeneration'
 import { useJobs } from './jobs'
+import { groupLayer, pixelLayer } from '@/engines/canvas/canvasState'
 
 const opened: Asset[] = []
 vi.mock('@/helpers/openAsset', () => ({
@@ -124,6 +125,24 @@ describe('landing a generation in the canvas that asked for it', () => {
     await finish('succeeded')
 
     expect(stack('doc-1').activeLayerId).toBe(stack('doc-1').layers.at(-1)?.id)
+  })
+
+  it('places a layer-targeted result directly above that layer in its group', async () => {
+    useCanvases.getState().replace('doc-1', {
+      ...stack('doc-1'),
+      layers: [groupLayer('group', 'Group', [pixelLayer('car', 'Car')])],
+      activeLayerId: 'car',
+    })
+    catalogueHolds([picture('asset-1')])
+    claimImageOnSubmit(undefined, null, 'car')(job())
+
+    await finish('succeeded')
+
+    const group = stack('doc-1').layers[0]
+    expect(group?.kind === 'group' ? group.children.map(layer => layer.name) : []).toEqual([
+      'Car',
+      'asset-1',
+    ])
   })
 
   it('ignores what the same job produced that is not a picture', async () => {

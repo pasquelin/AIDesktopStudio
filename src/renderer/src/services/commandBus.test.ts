@@ -32,6 +32,21 @@ describe('the command bus', () => {
     expect(heard).not.toHaveBeenCalled()
   })
 
+  /** What a surface CREATED outranks a bare « acted », and `false` from another does not hide it. */
+  it('carries back what a surface says it made', () => {
+    const stops = [
+      subscribeToCommands(() => false),
+      subscribeToCommands(command =>
+        command === 'scene.duplicate' ? { nodeIds: ['copy-1'] } : true,
+      ),
+      subscribeToCommands(() => true),
+    ]
+
+    expect(publishCommand('scene.duplicate')).toEqual({ nodeIds: ['copy-1'] })
+    expect(publishCommand('scene.undo')).toBe(true)
+    for (const stop of stops) stop()
+  })
+
   /**
    * A document unmounts on the command it is handed — closing its tab is a command like any
    * other. Iterating the live set would then skip the listener that follows it.

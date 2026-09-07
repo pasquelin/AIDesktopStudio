@@ -2,25 +2,34 @@
 
 import type { ScenePlay } from '@shared/domain/scene'
 import type { Vector3 } from '@shared/domain/transform'
+import { clamp } from '../numeric'
+import { copyAxes } from './entity'
+import { axesOfEuler, type Axes } from '../physics/quaternion'
 import type { CameraView } from '../ports/renderPort'
 
 /** Where the head is pointed, in radians. Yaw turns, pitch tips. */
 export type Look = { yaw: number; pitch: number }
 
-/** How far behind the shoulder the camera hangs, and how high a plan view stands and stands off. */
-const OVER_SHOULDER = 5
+/**
+ * How far behind the shoulder the camera hangs, and how high a plan view stands and stands off.
+ * A SHOULDER: what is driven asks for its own stand-off, a nine-metre plane being inside this one.
+ */
+export const OVER_SHOULDER = 5
 const OVERHEAD_HEIGHT = 12
 const OVERHEAD_BACK = 4
 
 /**
- * Where the scene is watched from, given how it says it is WALKED. `feet` is the contact with the
- * floor, never the centre: a document writes `eyeHeight` as metres above the ground.
+ * Where the scene is watched from. `feet` is the contact with the floor, never the centre.
  *
- * 🛑 Nothing for `orbit`, and nothing for a mode this does not know — a fifth `PlayCamera` leaves
- * the camera alone rather than silently behaving like a third-person one. The view is REWRITTEN
- * in place, like a port's arrays: read it within the frame, never keep it.
+ * 🛑 Nothing for `orbit` nor for a mode this does not know — a fifth `PlayCamera` leaves the
+ * camera alone rather than silently behaving like a third-person one. The view is reused.
  */
-export function playView(play: ScenePlay, feet: Vector3, look: Look): CameraView | null {
+export function playView(
+  play: ScenePlay,
+  feet: Vector3,
+  look: Look,
+  back = OVER_SHOULDER,
+): CameraView | null {
   if (play.camera === 'orbit') return null
 
   VIEW.target.x = feet.x
@@ -34,29 +43,68 @@ export function playView(play: ScenePlay, feet: Vector3, look: Look): CameraView
     return VIEW
   }
 
-  const flat = Math.cos(look.pitch)
-  const aheadX = -Math.sin(look.yaw) * flat
-  const aheadY = Math.sin(look.pitch)
-  const aheadZ = -Math.cos(look.yaw) * flat
+  aheadOf(look, AHEAD)
 
   if (play.camera === 'firstPerson') {
-    VIEW.position.x = VIEW.target.x
-    VIEW.position.y = VIEW.target.y
-    VIEW.position.z = VIEW.target.z
-    VIEW.target.x += aheadX
-    VIEW.target.y += aheadY
-    VIEW.target.z += aheadZ
+    copyAxes(VIEW.position, VIEW.target)
+    VIEW.target.x += AHEAD.x
+    VIEW.target.y += AHEAD.y
+    VIEW.target.z += AHEAD.z
     return VIEW
   }
 
   if (play.camera === 'thirdPerson') {
-    VIEW.position.x = VIEW.target.x - aheadX * OVER_SHOULDER
-    VIEW.position.y = VIEW.target.y - aheadY * OVER_SHOULDER
-    VIEW.position.z = VIEW.target.z - aheadZ * OVER_SHOULDER
+    VIEW.position.x = VIEW.target.x - AHEAD.x * back
+    VIEW.position.y = VIEW.target.y - AHEAD.y * back
+    VIEW.position.z = VIEW.target.z - AHEAD.z * back
     return VIEW
   }
 
   return null
 }
 
+/** The way a look POINTS, as a unit vector. Written in place, and read once a frame per shot. */
+export function aheadOf(look: Look, into: Vector3): Vector3 {
+  const flat = Math.cos(look.pitch)
+  into.x = -Math.sin(look.yaw) * flat
+  into.y = Math.sin(look.pitch)
+  into.z = -Math.cos(look.yaw) * flat
+  return into
+}
+
+/**
+ * The shot a camera NODE makes: it stands where it stands and looks where it is turned. What a
+ * spring arm composes, rather than a stand-off from a pair of feet.
+ *
+ * 🛑 An orbited set is left alone here too — the one mode where the game does not drive the view.
+ */
+export function armView(
+  play: ScenePlay,
+  at: Vector3,
+  rotation: Vector3,
+  axes: Axes,
+  fieldOfView: number,
+): CameraView | null {
+  if (play.camera === 'orbit') return null
+
+  const { forward } = axesOfEuler(rotation, axes)
+  ARM_VIEW.fieldOfView = fieldOfView
+  copyAxes(ARM_VIEW.position, at)
+  ARM_VIEW.target.x = at.x + forward.x
+  ARM_VIEW.target.y = at.y + forward.y
+  ARM_VIEW.target.z = at.z + forward.z
+  return ARM_VIEW
+}
+
+/** Where a rotation POINTS, as the yaw and pitch a shot is built from. */
+export function lookOf(rotation: Vector3, axes: Axes, into: Look): Look {
+  const { forward } = axesOfEuler(rotation, axes)
+  into.yaw = Math.atan2(-forward.x, -forward.z)
+  into.pitch = Math.asin(clamp(forward.y, -1, 1))
+  return into
+}
+
 const VIEW: CameraView = { position: { x: 0, y: 0, z: 0 }, target: { x: 0, y: 0, z: 0 } }
+/** Its own, with a lens: a shot from a pair of feet never carries one. */
+const ARM_VIEW: CameraView = { position: { x: 0, y: 0, z: 0 }, target: { x: 0, y: 0, z: 0 } }
+const AHEAD: Vector3 = { x: 0, y: 0, z: 0 }

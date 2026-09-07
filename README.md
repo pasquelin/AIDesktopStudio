@@ -1,6 +1,6 @@
 <div align="center">
 
-# IA Studio
+# AI Desktop Studio
 
 **A desktop creation studio for generative models.**
 Generate and edit images, videos, 3D models, audio, textures and skyboxes — in one place, on your machine.
@@ -14,12 +14,12 @@ Generate and edit images, videos, 3D models, audio, textures and skyboxes — in
 [![Tests](https://img.shields.io/badge/tests-9000%2B%20passing-2b2d30?logo=vitest&logoColor=6da95f)](#quality-bar)
 [![License](https://img.shields.io/badge/license-PolyForm%20Noncommercial-2b2d30)](#license)
 
-**[→ Presentation site](https://pasquelin.github.io/IAStudio/)**
+**[→ Presentation site](https://www.aidesktopstudio.com/)**
 
 </div>
 
 <div align="center">
-  <img src="site/assets/images/studio-3d.png" alt="IA Studio in the Modelling workspace: the model catalogue and the project explorer on the left, a generated car standing in the scene viewport in the centre, the scene outliner and the inspector on the right, and across the bottom the timeline with one row per light and object" width="900">
+  <img src="site/assets/images/studio-3d.png" alt="AI Desktop Studio in the Modelling workspace: the model catalogue and the project explorer on the left, a generated car standing in the scene viewport in the centre, the scene outliner and the inspector on the right, and across the bottom the timeline with one row per light and object" width="900">
 </div>
 
 ---
@@ -60,7 +60,7 @@ to come.
 
 ## Getting started
 
-**Requirements** — Node **24** (the version in `.nvmrc`, which is also what CI runs), [pnpm](https://pnpm.io), macOS / Windows / Linux, and a
+**Requirements** — Node **24** (the version in `.nvmrc`, which is also what CI runs), [pnpm 12.3.4 installed with its standalone installer](https://pnpm.io/installation) (Corepack does not yet run pnpm 12), macOS / Windows / Linux, and a
 API key and secret from your generation provider.
 
 ```bash
@@ -84,6 +84,7 @@ Full walkthrough: [user guide](docs/en/user-guide.md) · every setting explained
 |---|---|
 | `pnpm start` | electron-vite in watch mode, hot reload on main, preload and renderer |
 | `pnpm start:debug` | same, with the remote debugging port on 9222 — what drives the app from outside |
+| `pnpm world:validate` | with `pnpm start:debug` already running, compares real WebGL frames and runtime observations for benchmark scenes S1–S5; this is separate from `pnpm validate` |
 | `pnpm build` | typecheck, then build the three targets |
 | `pnpm dist` | build, then package and sign with electron-builder |
 | `pnpm typecheck` | `tsc --noEmit` across the three targets |
@@ -93,6 +94,8 @@ Full walkthrough: [user guide](docs/en/user-guide.md) · every setting explained
 | `pnpm validate` | the gate: every check a commit must pass, chained. `package.json` names its links, and the CI job runs this very command rather than a copy of it |
 | `pnpm unused:main` | knip — exports, files and dependencies nothing reaches. **`src/main` only**: the same unreachable export is reported there and ignored under `renderer` and `shared`, and no configuration found so far widens it |
 | `pnpm duplication` | jscpd — blocks written twice, from sixty tokens up, over the whole of `src` |
+| `pnpm dry` | dry-ts — same-shape functions, names forgotten, tests excluded |
+| `pnpm duplication:report` | classified jscpd + dry-ts report (production vs tests, same-name first) |
 | `pnpm rebuild:native` | electron-rebuild — required after touching better-sqlite3 |
 
 ---
@@ -105,7 +108,7 @@ src/
 │   ├── provider/    API client, model registry, job manager, credentials
 │   ├── project/     project folders, manifest, SQLite catalogue
 │   ├── settings/    encrypted store and its handlers
-│   ├── assets/      asset ingestion and the ia-studio:// protocol
+│   ├── assets/      asset ingestion and the ai-desktop-studio:// protocol
 │   ├── media/       ffmpeg-backed media work
 │   ├── menu/        native menu, built from the shared registries
 │   └── window/      window lifecycle, navigation lockdown
@@ -135,6 +138,14 @@ A selection, not an inventory — enough to find your way, and no more.
 enforces — `package.json` is where they are listed, so that no second list can drift from it —
 and the suite it runs is **north of 9,000 tests** (9,315 across 686 files on 2026-08-17). Unit
 tests are colocated with the code they cover and written in the same movement, never after.
+
+`pnpm sizes:check` enforces strict physical-line limits on every tracked maintained source,
+including tests: files `< 500`, classes `< 300`, ordinary functions `< 50`, React components
+`< 250`, and hooks named `use…` `< 150`. A function with cyclomatic complexity 10 or more is
+instead limited to `< 30` lines. Complexity starts at 1 and adds a path for each conditional,
+loop, catch, non-empty switch/match arm, and short-circuit boolean operator. Nested functions are
+measured separately. Vendored code, copied three.js decoders, and generated outputs are excluded.
+The same guard runs in both `pnpm check` and `pnpm validate`; there is no debt baseline.
 
 Every change also goes through a reuse-and-simplification pass and an automated review before
 it is called done.

@@ -1,5 +1,5 @@
-import { AnimationClip, Bone, Object3D, VectorKeyframeTrack } from 'three'
-import { describe, expect, it } from 'vitest'
+import { AnimationClip, AnimationMixer, Bone, Object3D, VectorKeyframeTrack } from 'three'
+import { describe, expect, it, vi } from 'vitest'
 import {
   assetClip,
   bundledClip,
@@ -14,7 +14,6 @@ import { bundledAnimationUrl } from '@shared/domain/animationLibrary'
 import { animationTrack, timelineWith } from './animation-fixtures'
 import { SceneAnimations, clipNamesOf, foreignClipsOf } from './animation'
 
-/** A cube travelling `to` units along X over one second, which is enough to read a mixer by. */
 function walkClip(name = 'walk', to = 1): AnimationClip {
   const track = new VectorKeyframeTrack('cube.position', [0, 1], [0, 0, 0, to, 0, 0])
   return new AnimationClip(name, 1, [track])
@@ -28,7 +27,6 @@ function scene(): Object3D {
   return root
 }
 
-/** `name` picks which clip of the file the block plays, since that now lives inside its source. */
 const ref = ({
   name = 'walk',
   id = 'block-1',
@@ -48,7 +46,6 @@ describe('the clips a model brought', () => {
   })
 })
 
-/** A skeleton the roles can be read on: hips, one leg, and one arm up the spine. */
 function limbRig(): Object3D {
   const root = new Object3D()
   const hips = new Bone()
@@ -67,7 +64,6 @@ function limbRig(): Object3D {
   return root
 }
 
-/** One clip driving BOTH limbs the same distance, so what a mask keeps out is what stays still. */
 const limbClip = (name: string, to: number): AnimationClip =>
   new AnimationClip(name, 1, [
     new VectorKeyframeTrack('LeftUpperLeg.position', [0, 1], [0, 0, 0, to, 0, 0]),
@@ -80,7 +76,6 @@ const limbOf = (root: Object3D, name: string): Object3D => {
   return bone
 }
 
-/** These blocks in one lane, which is the shape a node's track has when nothing is stacked. */
 const applyTo = (animations: SceneAnimations, clips: readonly ClipRef[]): void =>
   animations.apply('node-1', [clipLane('main', clips)])
 
@@ -98,14 +93,22 @@ describe('SceneAnimations', () => {
     return cube
   }
 
-  // A bare rigged character brings no clip of its own, and is exactly what an animation shipped
-  // with the app gets dropped onto: registered anyway, or there is nothing to hand it to.
   it('registers a model bringing no clip, with nothing to play until one is filed', () => {
     const animations = new SceneAnimations()
     animations.add('node-1', scene(), [])
 
     expect(animations.has('node-1')).toBe(true)
     expect(animations.clipsOf('node-1')).toEqual([])
+  })
+
+  it('does not evaluate a mixer that has no block to place', () => {
+    const { animations } = withWalk()
+    const update = vi.spyOn(AnimationMixer.prototype, 'update')
+
+    animations.seek(0.5 * SECOND)
+
+    expect(update).not.toHaveBeenCalled()
+    update.mockRestore()
   })
 
   it('plays a clip filed after the file landed, at the width that clip really runs', () => {
@@ -121,8 +124,6 @@ describe('SceneAnimations', () => {
     expect(cubeOf(root).position.x).toBeCloseTo(0.5)
   })
 
-  // The two are told apart by their KIND and not by their name: an animation shipped as `walk`
-  // and a clip the model's own file spells `walk` are two different things.
   it('keeps a shipped animation apart from a clip of the file bearing the same name', () => {
     const animations = new SceneAnimations()
     const root = scene()
@@ -181,8 +182,6 @@ describe('SceneAnimations', () => {
     animations.seek(0.5 * SECOND)
     applyTo(animations, [])
 
-    // Without an action driving them, three restores the values the file was loaded with — and
-    // it has to reach the objects on the spot, since nothing will advance afterwards.
     expect(cubeOf(root).position.x).toBe(0)
   })
 
@@ -200,8 +199,6 @@ describe('SceneAnimations', () => {
     expect(cubeOf(root).position.x).toBeCloseTo(1, 5)
   })
 
-  // Watching one animation is a look at a block, not a move of the scene's clock: the head is
-  // left exactly where it stands, and the model follows a clock of its own.
   it('poses a model from its own clock, leaving the head where it was', () => {
     const { animations, root } = withWalk()
     applyTo(animations, [ref()])
@@ -311,8 +308,6 @@ describe('several blocks on one model', () => {
     ])
     animations.seek(1.5 * SECOND)
 
-    // Halfway through complementary fades the weights are a half each, so the pose is the
-    // average of the two — which is what stops a jump between neighbouring blocks.
     expect(cube.position.x).toBeCloseTo((walkAlone + runAlone) / 2, 5)
   })
 
@@ -449,8 +444,6 @@ describe('two blocks stacked on a body', () => {
     expect(limbOf(root, 'LeftUpperLeg').position.x).toBe(0)
   })
 
-  // THE point of the whole thing: « walking AND raising the arms ». Layered whole-body, the two
-  // gave their mean and neither was itself.
   it('gives each half its own block whole, where a mean is all two whole bodies can give', () => {
     const { animations, root } = withLimbs()
 

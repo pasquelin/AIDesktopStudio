@@ -1,11 +1,19 @@
 import type { RecentProject } from '@shared/domain/project'
 import type { WorkspaceId } from '@shared/domain/workspace'
+import { workshopIdOf } from '@shared/domain/character'
+import { workshopScene } from '@/character/characterStage'
+import { drawing } from '@/game/game-fixtures'
+import { registerSceneEngine } from '@/stores/sceneEngines'
+import { rigFit } from '@/engines/scene/rigFit'
+import { seedCharacter, useCharacters } from '@/stores/character'
 import { useJobs } from '@/stores/jobs'
 import { useSettings } from '@/stores/settings'
 import { useTasks } from '@/stores/tasks'
 import { canvasOf, useCanvases } from '@/stores/canvases'
 import { useModelFiles } from '@/stores/modelFiles'
 import { sceneOf, useScenes } from '@/stores/scenes'
+import { useDocuments } from '@/stores/documents'
+import { useSceneViews } from '@/stores/sceneViews'
 import { sequenceOf, useSequences } from '@/stores/sequences'
 import { SECOND } from './oracle'
 import type { Studio } from './studio'
@@ -64,6 +72,14 @@ export const blockScene = sceneWith({ kind: 'box', name: 'Bloc' })
 /** A scene holding the cube every section from 6 onwards talks about. */
 export const cubeScene = sceneWith(CUBE)
 
+/** The cube scene with three.js settings written over it — what a scenario lowers before asking. */
+export const cubeSceneWith =
+  (three: Record<string, unknown>) =>
+  async (studio: Studio): Promise<void> => {
+    await cubeScene(studio)
+    await studio.run('settings.write', { settings: { three } })
+  }
+
 export const withSphere = sceneWith(CUBE, { kind: 'sphere', name: 'Sphere Droite' })
 
 /** A wall with a cube standing inside it — what a window is cut out of. */
@@ -87,6 +103,41 @@ export const modelScene = async (studio: Studio): Promise<void> => {
     name: 'Knight',
   })
   measured(studio, named(studio, 'Knight'))
+  // 🛑 The skeleton window, opened on the same file: `rig.*` acts on a CHARACTER now, and with
+  // none open the whole of section 50 would be scored on a refusal. Its workshop scene is
+  // measured too — a fit proportions itself off a height, and reads it from that scene alone.
+  const character = assetOf(studio, 'knight in plate armour, character.glb')
+  seedCharacter(character, null, {})
+  const documentId = workshopIdOf(character)
+  const bounds = { min: { x: -0.3, y: 0, z: -0.2 }, max: { x: 0.3, y: 1.8, z: 0.2 } }
+  useScenes.getState().ensure(documentId, () => workshopScene(character))
+  const nodeId = sceneOf(useScenes.getState(), documentId).nodes[0]?.id ?? ''
+  registerSceneEngine(
+    documentId,
+    drawing({
+      meshSample: () => ({ bounds, points: new Float32Array() }),
+      autoRigTargets: () => [{ mesh: 0, primitive: 0, vertexCount: 1 }],
+      simpleAutoRig: () =>
+        Promise.resolve({
+          rig: rigFit(bounds),
+          bindings: [
+            {
+              mesh: 0,
+              primitive: 0,
+              skinIndex: new Uint16Array([0, 0, 0, 0]),
+              skinWeight: new Float32Array([1, 0, 0, 0]),
+            },
+          ],
+          metadata: {
+            backendId: 'simple',
+            sourceInfluences: 4,
+            outputInfluences: 4,
+            fingers: false,
+          },
+        }),
+    }),
+  )
+  measured(studio, nodeId, documentId)
 }
 
 /**
@@ -100,24 +151,26 @@ export const modelSceneWithMaterial = async (studio: Studio): Promise<void> => {
 
 /** The bones the model in front carries, for a decor that has to name the one it just added. */
 export const bonesOf = (studio: Studio): readonly string[] => {
-  const node = sceneOf(useScenes.getState(), frontId(studio)).nodes.find(
-    one => one.type === 'model',
-  )
-  return node?.type === 'model' ? (node.model.rig?.bones.map(one => one.name) ?? []) : []
+  void studio
+  const open = Object.values(useCharacters.getState().states).find(one => one.assetId !== '')
+  return open?.rig?.bones.map(one => one.name) ?? []
 }
 
 /**
  * 🛑 What the ENGINE measures of a model, which a headless run has none of: without it `rig.fit`
  * refuses `notFound` and the whole of section 50 is scored on a model nobody could have rigged.
  */
-const measured = (studio: Studio, nodeId: string): void => {
-  useModelFiles.getState().reportRig(frontId(studio), nodeId, {
+const measured = (studio: Studio, nodeId: string, documentId = frontId(studio)): void => {
+  useModelFiles.getState().reportRig(documentId, nodeId, {
     status: 'staticMesh',
     bones: [],
     boneNames: [],
     boneCount: 0,
     // A character of about 1.8 m, standing — `rigFitFaultOf` refuses anything flat or lying.
     bounds: { min: { x: -0.3, y: 0, z: -0.2 }, max: { x: 0.3, y: 1.8, z: 0.2 } },
+    // No vertex to read, so the fit keeps the joints its proportions placed — which is exactly
+    // what a run with no viewport can be scored on.
+    points: new Float32Array(),
   })
 }
 
@@ -193,6 +246,18 @@ export const twoSounds = async (studio: Studio): Promise<void> => {
 export const boatImage = async (studio: Studio): Promise<void> => {
   await studio.run('file.open', { path: 'Images/fais moi un bateau.png' })
   await studio.run('layer.rename', { layerId: layerAt(studio, 0), name: 'Bateau' })
+}
+
+/** That picture on a 32 × 32 grid, which is what section 68 draws on. */
+export const pixelArtBoat = async (studio: Studio): Promise<void> => {
+  await boatImage(studio)
+  await studio.run('canvas.setPixelArt', { enabled: true, columns: 32, rows: 32, cell: 1 })
+}
+
+/** A red cell already laid, so an erasure has something to take away. */
+export const paintedDot = async (studio: Studio): Promise<void> => {
+  await pixelArtBoat(studio)
+  await studio.run('canvas.drawPixels', { shape: 'points', cells: ['3,4'], color: '#ff0000' })
 }
 
 /** That picture with a second layer over it, which five scenarios of section 19 act on. */
@@ -293,4 +358,23 @@ export const playedScene = async (studio: Studio): Promise<void> => {
   await cubeScene(studio)
   await studio.run('play.start', {})
   await studio.playing()
+}
+
+/**
+ * The knight opened on its own model tab, in front: what section 71 asks of the VIEW of a model.
+ * Through the studio's own `create`, as `openCharacter` does — the decor imitates nothing.
+ */
+export const characterTab = async (studio: Studio): Promise<void> => {
+  await modelScene(studio)
+  const assetId = assetOf(studio, 'knight in plate armour, character.glb')
+  const created = await useDocuments.getState().create('3d', {
+    title: 'Knight',
+    sourceAssetId: assetId,
+    kind: 'character',
+    path: 'Modelling/Models/knight in plate armour, character.glb',
+  })
+  if (!created) throw new Error('the studio refused to open the model tab')
+  useDocuments.getState().activate(created.id)
+  // Armed as the real tab arms it at mount: a request to HIDE the bones has to find them shown.
+  useSceneViews.getState().setSkeletons(workshopIdOf(assetId), true)
 }

@@ -4,6 +4,7 @@ import type { SelectionMode } from '@/helpers/selection'
 import { setUiSelection } from '@/engines/gui/guiCommands'
 import { createDocumentStore } from './documentStore'
 import { EMPTY_GUI, type GuiState } from '@/engines/gui/guiState'
+import i18next from 'i18next'
 
 const store = createDocumentStore<GuiState>(EMPTY_GUI)
 
@@ -33,7 +34,7 @@ export function selectInGui(
   const current = guiOf(state, documentId)
   const next = setUiSelection(current, ids, mode)
 
-  if (next.selectedIds !== current.selectedIds) state.replace(documentId, next)
+  if (next.selectedIds !== current.selectedIds) state.replaceView(documentId, next)
 }
 
 /**
@@ -43,7 +44,8 @@ export function selectInGui(
  * is exactly what stops `restoreDocument` from putting the studio default in its place.
  */
 export function seedGuiTemplate(documentId: string, template: UiTemplateId): void {
-  store.use
-    .getState()
-    .ensure(documentId, () => ({ document: uiFromTemplate(template, newId), selectedIds: [] }))
+  store.use.getState().ensure(documentId, () => ({
+    document: uiFromTemplate(template, newId, i18next.t('game.controlsMenu.title')),
+    selectedIds: [],
+  }))
 }

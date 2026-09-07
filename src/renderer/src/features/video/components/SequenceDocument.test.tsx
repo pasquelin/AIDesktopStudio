@@ -65,17 +65,15 @@ const seekMontage = (playhead: number): void => {
   act(() => store.replace('doc-1', { ...sequenceStore.stateOf(store, 'doc-1'), playhead }))
 }
 
-describe('SequenceDocument', () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
-    built.length = 0
-    usePlayback.setState({ running: {}, heads: {} })
-    useDocuments.setState({ activeId: 'doc-1' })
-    // Almost everything below is about the PAIR, which a tab now opens with one half of: the
-    // decor asks for the source monitor, and the one suite about the default closes it again.
-    useMonitorPair.setState({ clipShown: { 'doc-1': true } })
-  })
+beforeEach(() => {
+  vi.clearAllMocks()
+  built.length = 0
+  usePlayback.setState({ running: {}, heads: {} })
+  useDocuments.setState({ activeId: 'doc-1' })
+  useMonitorPair.setState({ clipShown: { 'doc-1': true } })
+})
 
+describe('SequenceDocument monitors', () => {
   /**
    * What a montage tab is FOR is the edit: the source monitor is the half one opens to look at
    * one clip, and it used to take half the width whether or not a clip was being looked at.
@@ -214,7 +212,9 @@ describe('SequenceDocument', () => {
 
     expect(sourceTrack()?.clips[0]?.id).toBe('clip-2')
   })
+})
 
+describe('SequenceDocument playback heads', () => {
   /**
    * What makes the source monitor a way to SEE the clip you picked: a track above may cover it
    * in the programme, and its own picture is the only place left to watch it.
@@ -324,7 +324,9 @@ describe('SequenceDocument', () => {
     seekMontage(9_000_000)
     expect(sourcePlayhead()).toBe(1_000_000 - 1_000_000 / 25)
   })
+})
 
+describe('SequenceDocument transport focus', () => {
   /**
    * Two pictures playing at once is two audible streams and two hardware decoders fighting over
    * the GPU. The token already revokes whoever held it; this is the half that stops the key

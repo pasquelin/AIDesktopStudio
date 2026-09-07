@@ -5,10 +5,10 @@
  * Every piece is written by its EDGES, never its centre — see `slab`: two parts that meet then
  * share the very same constant, which is what stops a stair ending half a step short.
  */
-import type { CheckerTextureId } from '@shared/domain/checkerTexture'
-import type { MaterialDescriptor } from '@shared/domain/scene'
-import { defaultMeshMaterial } from './checkerTextures'
+import type { Component } from '@shared/domain/component'
+import type { MaterialDescriptor, Vector3 } from '@shared/domain/scene'
 import { newComponent } from '@shared/domain/componentRegistry'
+import { climbSurface, groundSurface, markSurface, obstacleSurface, surface } from './levelParts'
 import { groupNode, meshNode, transformAt } from './nodeFactory'
 import { IDENTITY_TRANSFORM, type SceneNode } from './sceneState'
 
@@ -66,21 +66,6 @@ function slab(
     },
   )
 }
-
-/**
- * What a part is made of, by its ROLE — a set of one grey is a set nobody reads at a glance.
- *
- * A fresh descriptor per call, never one shared: two nodes holding the same object would be
- * edited together by accident.
- */
-function surface(color: string, texture?: CheckerTextureId): MaterialDescriptor {
-  return { ...defaultMeshMaterial(texture), color }
-}
-
-/** The density is left at the studio default of one everywhere: what changes is WHICH grid. */
-const groundSurface = (): MaterialDescriptor => surface('#9aa4b0')
-const climbSurface = (): MaterialDescriptor => surface('#d08c3a', 'checkerLarge')
-const obstacleSurface = (): MaterialDescriptor => surface('#4e5661', 'gridSmall')
 
 /** Metres from the centre of the set, on each horizontal axis. */
 type Extent = { x: number; z: number }
@@ -162,7 +147,7 @@ function floorSlabs(parentId: string): SceneNode[] {
     slab(
       { x0: -1.5, x1: 1.5, y0: 0, y1: 0.05, z0: START_Z - 1.5, z1: START_Z + 1.5 },
       'Start',
-      surface('#3d7ab8', 'checkerSmall'),
+      markSurface(),
       parentId,
     ),
   ]
@@ -183,9 +168,16 @@ function walls(parentId: string): SceneNode[] {
   )
 }
 
-const STEP_RISE = 0.5
-const STEP_RUN = 0.8
-const STEP_COUNT = 5
+/**
+ * 🛑 The rise is DERIVED from the drop and the count, never written by hand — and that is what was
+ * wrong with it. At five steps it came to 0,50 m, which is exactly the `stepHeight` a
+ * `CharacterController` ships with, and exactly its `snapDistance`: the controller's own skin and a float
+ * put the obstacle on either side of the limit from one step to the next, so a walker climbed one,
+ * caught on the next, and was snapped back down onto the one before. Eight steps leave the margin.
+ */
+const STEP_COUNT = 8
+const STEP_RISE = -COURT_FLOOR / STEP_COUNT
+const STEP_RUN = 0.6
 
 /**
  * The stair out of the court, its TOP step against the court's edge where the floor it leads to
@@ -278,15 +270,21 @@ function walkway(parentId: string): SceneNode[] {
   ]
 }
 
-/** Three blocks at rising heights, the gaps between them widening: the question a jump answers. */
+/**
+ * Three blocks at rising heights, the gaps between them widening: the question a jump answers.
+ *
+ * 🛑 Cut to what a HUMAN clears, and measured against the port: a jump of 2,8 m/s reaches 0,40 m
+ * and stays up 0,57 s, so it lands a block at 0,90 m and carries 2,3 m. The old course — 0,6 to
+ * 1,8 m across gaps up to 3,4 — was drawn for the 5 m/s jump, which reached 1,27 m.
+ */
 function jumps(parentId: string): SceneNode[] {
   const blocks: SceneNode[] = []
   let x = 3
 
-  for (const [index, gap] of [1.5, 2.4, 3.4].entries()) {
+  for (const [index, gap] of [1, 1.5, 2].entries()) {
     blocks.push(
       slab(
-        { x0: x, x1: x + 2, y0: 0, y1: 0.6 + index * 0.6, z0: -14, z1: -12 },
+        { x0: x, x1: x + 2, y0: 0, y1: 0.6 + index * 0.15, z0: -14, z1: -12 },
         `Jump Block ${index + 1}`,
         climbSurface(),
         parentId,
@@ -332,15 +330,17 @@ function obstacles(parentId: string): SceneNode[] {
  * now (`game/hierarchy.ts`), so a set can be both readable and something one bumps into. It was
  * the other way round for one lot — the floor at the root, the rest walked through.
  */
-export function playgroundNodes(): SceneNode[] {
+export function playgroundNodes(played = 'Character'): SceneNode[] {
   const ground = groupNode(IDENTITY_TRANSFORM, 'Ground')
   const enclosure = groupNode(IDENTITY_TRANSFORM, 'Enclosure')
   const course = groupNode(IDENTITY_TRANSFORM, 'Course')
+  const machinery = groupNode(IDENTITY_TRANSFORM, 'Machines')
 
   return [
     ground,
     enclosure,
     course,
+    machinery,
     ...[
       ...floorSlabs(ground.id),
       ...courtWalls(ground.id),
@@ -351,8 +351,134 @@ export function playgroundNodes(): SceneNode[] {
       ...jumps(course.id),
       ...obstacles(course.id),
     ].map(solid),
+    // 🛑 Outside the `map`, which REPLACES a node's components: a machine dressed by `solid`
+    // would lose the very component that moves it.
+    ...machines(machinery.id, played),
   ]
 }
 
 /** A part the physics feels — the shape it draws, read as the volume it stops you at. */
 const solid = (node: SceneNode): SceneNode => ({ ...node, components: [newComponent('Collider')] })
+
+/**
+ * A part the game DRIVES: felt like a solid, and travelled by whatever component is handed in.
+ *
+ * 🛑 `kinematic`, and that is what makes it carry: a dynamic body would fall, and a fixed one
+ * would not hear the transform the travelling system writes.
+ */
+const driven = (node: SceneNode, ...travelling: readonly Component[]): SceneNode => ({
+  ...node,
+  components: [
+    newComponent('Collider'),
+    { ...newComponent('RigidBody'), kind: 'kinematic' },
+    ...travelling,
+  ],
+})
+
+/** A named place, and nothing else — what `Patrol` walks between. */
+const post = (name: string, at: Vector3, parentId: string): SceneNode => ({
+  ...groupNode(transformAt(at), name),
+  parentId,
+})
+
+/**
+ * The moving parts of the set.
+ *
+ * 🛑 Every one of them is built from a travelling COMPONENT and nothing else. A lift written by
+ * hand here would be the same behaviour a second time, and the vehicle and aircraft templates
+ * would each write a third — which is exactly how a set of components stops being used at all.
+ *
+ * 🛑 `played` is who the beacon and the drone watch, and it is a PARAMETER because the set is
+ * driven as well as walked: a `Character` written here left both of them turning at a name the
+ * car template does not carry — silently, the systems answering nothing for a name nobody wears.
+ */
+function machines(parentId: string, played: string): SceneNode[] {
+  const bar = meshNode(
+    { kind: 'box', width: 5, height: 0.4, depth: 0.4 },
+    { transform: transformAt({ x: 0, y: 0.6, z: 6 }), material: climbSurface(), parentId },
+  )
+
+  return [
+    travellingMachine(parentId, 'Lift', 2, 2, `-4 ${COURT_FLOOR + 0.15} 2, -4 0.15 2`, 1.5),
+    travellingMachine(
+      parentId,
+      'Ferry',
+      -2,
+      2.5,
+      `-4 ${COURT_FLOOR + 0.15} -2, 4 ${COURT_FLOOR + 0.15} -2`,
+      2,
+    ),
+    driven({ ...bar, name: 'Turnstile' }, { ...newComponent('Spin'), axis: 'y', speed: 40 }),
+    post('Post West', { x: -16, y: TERRACE_HEIGHT + 0.3, z: -12 }, parentId),
+    post('Post East', { x: -10, y: TERRACE_HEIGHT + 0.3, z: -12 }, parentId),
+    sentry(parentId),
+    // Two components on one node, and they do not fight: `Orbit` writes the place, `LookAt` the
+    // turn. The beacon circles the turnstile and keeps facing whoever is walking.
+    beacon(parentId, played),
+    drone(parentId, played),
+  ]
+}
+
+function travellingMachine(
+  parentId: string,
+  name: string,
+  z: number,
+  width: number,
+  waypoints: string,
+  speed: number,
+): SceneNode {
+  const node = meshNode(
+    { kind: 'box', width, height: 0.3, depth: 2 },
+    {
+      transform: transformAt({ x: -4, y: COURT_FLOOR + 0.15, z }),
+      material: climbSurface(),
+      parentId,
+      name,
+    },
+  )
+  return driven(node, { ...newComponent('Path'), waypoints, speed, mode: 'pingPong' })
+}
+
+function sentry(parentId: string): SceneNode {
+  const node = meshNode(
+    { kind: 'box', width: 0.6, height: 0.6, depth: 0.6 },
+    {
+      transform: transformAt({ x: -16, y: TERRACE_HEIGHT + 0.3, z: -12 }),
+      parentId,
+      name: 'Sentry',
+    },
+  )
+  return driven(node, {
+    ...newComponent('Patrol'),
+    waypoints: 'Post West, Post East',
+    speed: 1.5,
+    waitSeconds: 1,
+    mode: 'pingPong',
+  })
+}
+
+function beacon(parentId: string, played: string): SceneNode {
+  return {
+    ...meshNode(
+      { kind: 'sphere', radius: 0.3, widthSegments: 16, heightSegments: 12 },
+      { transform: transformAt({ x: 3, y: 1.8, z: 6 }), parentId, name: 'Beacon' },
+    ),
+    components: [
+      { ...newComponent('Orbit'), target: 'Turnstile', radius: 3, speed: 60, height: 1.2 },
+      { ...newComponent('LookAt'), target: played, turnSpeed: 180 },
+    ],
+  }
+}
+
+function drone(parentId: string, played: string): SceneNode {
+  return {
+    ...meshNode(
+      { kind: 'sphere', radius: 0.35, widthSegments: 16, heightSegments: 12 },
+      { transform: transformAt({ x: 3.5, y: 3, z: 13 }), parentId, name: 'Drone' },
+    ),
+    components: [
+      { ...newComponent('Follow'), target: played, speed: 2.5, stopDistance: 3, acceleration: 4 },
+      { ...newComponent('LookAt'), target: played, turnSpeed: 120 },
+    ],
+  }
+}

@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { cloneElement, isValidElement, type ReactElement, type ReactNode } from 'react'
 import { cn } from '@/helpers/cn'
 import { FIELD_NAME } from './styles'
 
@@ -46,6 +46,16 @@ export function FormField({
   className,
   children,
 }: FormFieldProps) {
+  // Legacy callers put the control in `children`; keep that shape while new/compound fields use
+  // the explicit slot and reserve `children` for help or validation feedback.
+  const candidate = control ?? children
+  const laidOut =
+    required && isValidElement(candidate)
+      ? cloneElement(candidate as ReactElement<{ 'aria-required'?: boolean }>, {
+          'aria-required': true,
+        })
+      : candidate
+  const feedback = control === undefined ? undefined : children
   const name = (
     <>
       {label}
@@ -63,18 +73,18 @@ export function FormField({
 
   return (
     <div className={cn('flex flex-col gap-1.5 text-xs', className)}>
-      {beside && control !== undefined ? (
+      {beside && laidOut !== undefined ? (
         <div className="flex items-center gap-2">
-          {control}
+          {laidOut}
           {named}
         </div>
       ) : (
         <>
           {named}
-          {control}
+          {laidOut}
         </>
       )}
-      {children}
+      {feedback}
     </div>
   )
 }

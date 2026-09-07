@@ -2,8 +2,23 @@ import type { TaskWatch } from '@shared/domain/taskProgress'
 import type { FolderExportRequest, SkyboxExportCommand } from '@shared/ipc'
 import { loadTexture } from '@/engines/scene/textureCache'
 import { assetVersionOf } from '@/stores/assets'
-import { documentExportName, useDocuments } from '@/stores/documents'
+import { useDocuments } from '@/stores/documents'
+import { documentExportName } from '@/stores/documentExportName'
 import { skyboxOf, useSkyboxes } from '@/stores/skyboxes'
+import type { SkyboxExportPort } from '@/engines/skybox/exportPort'
+import { lendable } from '@/helpers/lendable'
+
+/** The GPU pass, which a headless run has not got — lent for the length of a run, like the picture measurer. */
+const port = lendable<SkyboxExportPort | null>(null)
+
+export const lendSkyboxExportPort = port.lend
+
+async function skyboxExportPort(): Promise<SkyboxExportPort> {
+  const lent = port.current()
+  if (lent) return lent
+  const { createSkyboxExportPort } = await import('@/engines/skybox/exportPort')
+  return createSkyboxExportPort({ loadTexture, assetVersion: assetVersionOf })
+}
 
 /**
  * A sky, rendered to its six faces — the half of an export that has nothing to do with where it
@@ -28,8 +43,8 @@ export async function skyboxExportFiles(
 
   const target = command.kind === 'faces' ? 'sky.faces' : command.target
 
-  const { createSkyboxExportPort } = await import('@/engines/skybox/exportPort')
-  const files = await createSkyboxExportPort({ loadTexture, assetVersion: assetVersionOf })(
+  const render = await skyboxExportPort()
+  const files = await render(
     { assetId: sky.source.assetId, adjustments: sky.adjustments, name, command },
     watch,
   )

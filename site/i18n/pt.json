@@ -8,9 +8,9 @@
     "ogLocale": "pt_BR"
   },
   "head": {
-    "title": "IA Studio — seis ateliês de geração, uma só janela",
+    "title": "AI Desktop Studio — seis ateliês de geração, uma só janela",
     "description": "Aplicação de desktop multimodal: imagem, vídeo, 3D, áudio, texturas e skyboxes numa interface de painéis acopláveis. Ditado offline e pilotagem por servidor MCP.",
-    "ogTitle": "IA Studio — seis ateliês de geração, uma só janela",
+    "ogTitle": "AI Desktop Studio — seis ateliês de geração, uma só janela",
     "ogDescription": "Seis ateliês de geração numa só janela. Electron, React 19, TypeScript. macOS, Windows, Linux."
   },
   "nav": {
@@ -291,7 +291,7 @@
   "docs": {
     "eyebrow": "Documentação &amp; demonstração",
     "title": "Tudo está escrito ao lado do código.",
-    "videoLabel": "Demonstração do IA Studio: percurso pelos seis ateliês, de uma geração 3D até à montagem.",
+    "videoLabel": "Demonstração do AI Desktop Studio: percurso pelos seis ateliês, de uma geração 3D até à montagem.",
     "links": {
       "0": {
         "text": "O manual, vinte capítulos — também legíveis na aplicação",
@@ -318,7 +318,8 @@
         "label": "Licença"
       }
     },
-    "manualFile": "user-guide.md"
+    "manualFile": "user-guide.md",
+    "mcpChapterFile": "manual/20-driving-from-outside.md"
   },
   "download": {
     "eyebrow": "Instalação",
@@ -351,11 +352,11 @@
         "state": "Versão a caminho"
       }
     },
-    "note": "O instalador rege-se pelas <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">condições de utilização</a>; o código-fonte, pela licença <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial&nbsp;1.0.0</a>. A aplicação não dá acesso a nenhum serviço de geração: usa a chave de API que você fornece, sob a sua conta e a suas expensas."
+    "note": "O instalador rege-se pelas <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">condições de utilização</a>; o código-fonte, pela licença <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial&nbsp;1.0.0</a>. A aplicação não dá acesso a nenhum serviço de geração: usa a chave de API que você fornece, sob a sua conta e a suas expensas."
   },
   "foot": {
     "groups": {
-      "0": "IA Studio",
+      "0": "AI Desktop Studio",
       "1": "Ateliês",
       "2": "Recursos",
       "3": "Contacto"
@@ -365,7 +366,7 @@
       "0": "Descarregamento",
       "1": "Licença"
     },
-    "legal": "Código-fonte sob licença <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial 1.0.0</a> · aplicação distribuída sob as suas <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">condições de utilização</a> · componentes de terceiros listados nos <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/THIRD-PARTY-NOTICES.md\" target=\"_blank\" rel=\"noopener\">avisos</a>. © 2026 Alban Pasquelin.",
+    "legal": "Código-fonte sob licença <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial 1.0.0</a> · aplicação distribuída sob as suas <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">condições de utilização</a> · componentes de terceiros listados nos <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/THIRD-PARTY-NOTICES.md\" target=\"_blank\" rel=\"noopener\">avisos</a>. © 2026 Alban Pasquelin.",
     "docsLink": "Documentação",
     "changelog": "Alterações",
     "docsFr": "Docs 🇫🇷",

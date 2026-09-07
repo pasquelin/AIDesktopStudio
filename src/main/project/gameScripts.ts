@@ -4,6 +4,7 @@ import { SCRIPT_EXTENSION, type GameScriptFile } from '@shared/domain/game'
 import { extensionOf } from '@shared/domain/fileName'
 import { isPrivatePath, type FolderEntry } from '@shared/domain/folder'
 import { byCodeUnit } from '@shared/text'
+import { pathIsInside } from '@main/export/pathIsInside'
 import { isMissing, writeAtomic, writeQueue } from '@main/persistence'
 import { orElse } from '@shared/promises'
 
@@ -88,8 +89,7 @@ async function insideProject(base: string, path: string): Promise<string | null>
     const resolved = await orElse(realpath(target), target)
     const within = relative(base, resolved)
 
-    // Empty is the root itself; a leading `..` or an absolute answer is a path that left.
-    if (within.length === 0 || within.startsWith('..') || isAbsolute(within)) return null
+    if (!pathIsInside(base, resolved)) return null
     return isPrivatePath(within.split(sep).join('/')) ? null : target
   } catch {
     return null

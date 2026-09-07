@@ -39,7 +39,7 @@ function reframe(documentId: string, change: (viewport: Viewport) => Viewport): 
  * Around the middle of what can actually be seen — a key press has no pointer to zoom towards,
  * and the middle of the host is not the middle of the view when the rulers take a bite out of it.
  */
-function step(documentId: string, pick: (scale: number) => number): void {
+function step(documentId: string, pick: (scale: number, integral: boolean) => number): void {
   const measured = panel(documentId)
   if (!measured) return
 
@@ -47,7 +47,10 @@ function step(documentId: string, pick: (scale: number) => number): void {
     x: (measured.inset + measured.host.width) / 2,
     y: (measured.inset + measured.host.height) / 2,
   }
-  reframe(documentId, viewport => zoomCanvasAt(viewport, pick(viewport.scale), anchor))
+  const cell = canvasOf(useCanvases.getState(), documentId).pixelCell
+  reframe(documentId, viewport =>
+    zoomCanvasAt(viewport, pick(viewport.scale, cell !== null), anchor),
+  )
 }
 
 export function zoomIn(documentId: string): void {
@@ -59,7 +62,7 @@ export function zoomOut(documentId: string): void {
 }
 
 export function zoomToFit(documentId: string): void {
-  frame(documentId, (document, { host, inset }) => fitTo(document, host, inset))
+  frame(documentId, (document, { host, inset }, integral) => fitTo(document, host, inset, integral))
 }
 
 /** One document pixel per screen pixel, centred — what ⌘1 means in every editor. */
@@ -70,13 +73,15 @@ export function zoomToActual(documentId: string): void {
 /** Both framings read the same two sizes; only the scale they settle on differs. */
 function frame(
   documentId: string,
-  place: (document: Size, panel: { host: Size; inset: number }) => Viewport,
+  place: (document: Size, panel: { host: Size; inset: number }, integral: boolean) => Viewport,
 ): void {
   const measured = panel(documentId)
   if (!measured) return
 
   const canvas = canvasOf(useCanvases.getState(), documentId)
-  reframe(documentId, () => place({ width: canvas.width, height: canvas.height }, measured))
+  reframe(documentId, () =>
+    place({ width: canvas.width, height: canvas.height }, measured, canvas.pixelCell !== null),
+  )
 }
 
 export function toggleView(documentId: string, key: ViewToggle): void {

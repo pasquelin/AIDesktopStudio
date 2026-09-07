@@ -196,27 +196,45 @@ describe('engineDoorOf', () => {
 })
 
 describe('the doors the engine opens', () => {
-  /**
-   * 🛑 Two tables, one on each side of the frontier: this file pairs a MODALITY with a door, and
-   * `engine/src/ia_studio_engine/protocol/doors.py` pairs a DOOR with the modality it serves. A
-   * name that drifts on one side is refused at generation time, hours after the edit, as
-   * `no such door` — nothing else here would see it.
-   */
-  it('names the same door as the engine, for every modality that writes a file', () => {
-    const doorsPy = readFileSync(
-      join(ROOT, 'engine/src/ia_studio_engine/protocol/doors.py'),
-      'utf8',
-    )
-    const declared = Object.fromEntries(
-      [...doorsPy.matchAll(/^ {4}"(engine\/[a-z0-9]+)": "([a-z]+)",$/gm)].map(
-        ([, door, modality]) => [modality, door],
-      ),
-    )
-    const ours = Object.fromEntries(
-      LOCAL_MODALITIES.filter(producesFile).map(modality => [modality, engineDoorOf(modality)]),
+  const doorsPy = (): string =>
+    readFileSync(join(ROOT, 'engine/src/aidesktopstudio_engine/protocol/doors.py'), 'utf8')
+
+  /** Door to modality, as the engine spells the pair — only the modalities this side knows. */
+  const declaredDoors = (): Record<string, string> =>
+    Object.fromEntries(
+      [...doorsPy().matchAll(/^ {4}"(engine\/[a-z0-9]+)": "([a-z]+)",$/gm)]
+        .map(([, door, modality]) => [door, modality])
+        .filter(([, modality]) => LOCAL_MODALITIES.some(local => local === modality)),
     )
 
-    expect(ours).toEqual(declared)
+  /**
+   * 🛑 Two tables, one on each side of the frontier: this file pairs a MODALITY with a door, and
+   * `engine/src/aidesktopstudio_engine/protocol/doors.py` pairs a DOOR with the modality it serves. A
+   * name that drifts on one side is refused at generation time, hours after the edit, as
+   * `no such door` — nothing else here would see it.
+   *
+   * No longer a bijection, and the case below says why: `motion` rides the door the engine serves
+   * for meshes. So what is asserted is the property that still holds — every door we name is a
+   * door the engine opens, and every door it serves a modality by is the door we name for it.
+   */
+  it('names only doors the engine opens, and the one it names for each modality it serves', () => {
+    const declared = declaredDoors()
+    const producing = LOCAL_MODALITIES.filter(producesFile)
+
+    expect(producing.map(engineDoorOf).filter(door => !(door in declared))).toEqual([])
+    for (const [door, modality] of Object.entries(declared))
+      expect([modality, engineDoorOf(modality)]).toEqual([modality, door])
+  })
+
+  /**
+   * 🛑 The one modality with no door of its own: a motion is dispatched by MODEL ID inside the 3d
+   * worker (`plugin_adapter.PLUGINS`), so it shares the mesh door. Pinned from both sides — a
+   * `engine/motion` added to the engine without this table, or the reverse, reddens here rather
+   * than at generation time.
+   */
+  it('rides the 3d door for a motion, the engine opening none of its own', () => {
+    expect(engineDoorOf('motion')).toBe(engineDoorOf('mesh'))
+    expect(doorsPy()).not.toContain('engine/motion')
   })
 })
 
@@ -228,12 +246,12 @@ describe('the families the engine opens itself', () => {
    * day the engine is extracted — taking with it what says a CUDA family must not load on Metal.
    */
   const table = readFileSync(
-    join(ROOT, 'engine/src/ia_studio_engine/adapters/plugin_adapter.py'),
+    join(ROOT, 'engine/src/aidesktopstudio_engine/adapters/plugin_adapter.py'),
     'utf8',
   )
   const body = table.split('PLUGINS: dict[str, Plugin] = {')[1]?.split('\n}')[0] ?? ''
   const declared = body.split(/\n(?= {4}")/).flatMap(entry => {
-    const id = /^ {4}"([a-z0-9-]+)":/.exec(entry)?.[1]
+    const id = /^ {4}"([a-z0-9.-]+)":/.exec(entry)?.[1]
     return id ? [{ id, needsCuda: entry.includes('needs_cuda=True') }] : []
   })
 

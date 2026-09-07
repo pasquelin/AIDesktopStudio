@@ -5,6 +5,19 @@ import { CHANNELS } from '@shared/ipc'
 import { setWindowLanguage } from './language'
 import { registerContextMenu, registerFieldMenu } from './contextMenu'
 
+function emptyNativeImage() {
+  return {
+    representations: [] as unknown[],
+    template: false,
+    addRepresentation(representation: unknown) {
+      this.representations.push(representation)
+    },
+    setTemplateImage(value: boolean) {
+      this.template = value
+    },
+  }
+}
+
 /**
  * Electron in a bottle for this file alone, rather than the shared `ipc/testHarness`: what is
  * doubled here — a web contents that reports a right-click, a menu that pops up — is of no use to
@@ -41,18 +54,7 @@ const electron = vi.hoisted(() => {
         void handlers.set(channel, handler),
     },
     BrowserWindow: { fromWebContents: (contents: unknown) => (contents ? owner : null) },
-    nativeImage: {
-      createEmpty: () => ({
-        representations: [] as unknown[],
-        template: false,
-        addRepresentation(representation: unknown) {
-          this.representations.push(representation)
-        },
-        setTemplateImage(value: boolean) {
-          this.template = value
-        },
-      }),
-    },
+    nativeImage: { createEmpty: emptyNativeImage },
     Menu: {
       buildFromTemplate: (items: MenuItemConstructorOptions[]) => ({
         popup: (options: { window: unknown; callback?: () => void }) =>
@@ -174,7 +176,9 @@ describe('the menu a right-click raises', () => {
 
     expect(electron.popped).toEqual([])
   })
+})
 
+describe('context menu editing actions', () => {
   it('disables what the caret cannot do', () => {
     const field = openWindow()
 
@@ -194,6 +198,9 @@ describe('the menu a right-click raises', () => {
 
   // Chromium answers with no suggestion at all for a word it cannot guess at, and this row is
   // then the only thing the menu has to say about it.
+})
+
+describe('context menu spelling actions', () => {
   it('learns a word Chromium had no suggestion for', () => {
     const field = openWindow()
 
@@ -249,19 +256,19 @@ function raise(items: unknown) {
   }
 }
 
-describe('the menu a window raises over its own surfaces', () => {
-  const rows = [
-    {
-      id: 'reveal',
-      label: 'Afficher dans le dossier',
-      icon: PIXEL,
-      tooltip: 'Ouvre le gestionnaire de fichiers sur le fichier sélectionné',
-    },
-    { id: 'rename', label: 'Renommer', enabled: false },
-  ]
+const windowRows = [
+  {
+    id: 'reveal',
+    label: 'Afficher dans le dossier',
+    icon: PIXEL,
+    tooltip: 'Ouvre le gestionnaire de fichiers sur le fichier sélectionné',
+  },
+  { id: 'rename', label: 'Renommer', enabled: false },
+]
 
+describe('the menu a window raises over its own surfaces', () => {
   it('answers the row that was chosen, though the menu closed before sending it', async () => {
-    const menu = raise(rows)
+    const menu = raise(windowRows)
 
     menu.choose('Afficher dans le dossier')
 
@@ -269,7 +276,7 @@ describe('the menu a window raises over its own surfaces', () => {
   })
 
   it('answers that nothing was chosen when the menu is dismissed', async () => {
-    const menu = raise(rows)
+    const menu = raise(windowRows)
 
     menu.dismiss()
 
@@ -277,7 +284,7 @@ describe('the menu a window raises over its own surfaces', () => {
   })
 
   it('greys the row the window declared unavailable', () => {
-    expect(raise(rows).rows.map(row => row.enabled)).toEqual([true, false])
+    expect(raise(windowRows).rows.map(row => row.enabled)).toEqual([true, false])
   })
 
   /**
@@ -286,7 +293,7 @@ describe('the menu a window raises over its own surfaces', () => {
    * the one platform that shows it — the others drop `toolTip` without a word.
    */
   it('carries what each row does, for the platform that can show it', () => {
-    expect(raise(rows).rows[0]?.toolTip).toBe(
+    expect(raise(windowRows).rows[0]?.toolTip).toBe(
       'Ouvre le gestionnaire de fichiers sur le fichier sélectionné',
     )
   })
@@ -296,14 +303,16 @@ describe('the menu a window raises over its own surfaces', () => {
    * `addRepresentation` is used over `createFromDataURL`.
    */
   it('files the glyph at the density the window drew it for', () => {
-    const icon = raise(rows).rows[0]?.icon
+    const icon = raise(windowRows).rows[0]?.icon
 
     expect(icon).toMatchObject({
       template: true,
       representations: [{ scaleFactor: 2, dataURL: PIXEL }],
     })
   })
+})
 
+describe('validating a window menu', () => {
   // The one channel where a window composes something handed straight to the platform, and
   // `addRepresentation` takes any URL string it is given — `file:` included.
   it('refuses a picture the window did not draw', () => {
@@ -332,7 +341,7 @@ describe('the menu a window raises over its own surfaces', () => {
 
   // A rule is a row with nothing to choose, and twelve gestures in one menu need the groups.
   it('draws a separator as a rule rather than as a row', () => {
-    const drawn = raise([{ id: '0', label: '', separator: true }, ...rows]).rows
+    const drawn = raise([{ id: '0', label: '', separator: true }, ...windowRows]).rows
 
     expect(drawn[0]).toEqual({ type: 'separator' })
   })

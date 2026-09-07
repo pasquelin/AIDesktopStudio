@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { SPLASH_BACKGROUND_COLOR } from '@shared/constants'
 import icon from '../../build/icon.svg?raw'
-import stylesheet from './src/index.css?raw'
+import { stylesheet } from './src/indexCss-fixtures'
 import splash from './splash.html?raw'
 
 /**

@@ -1,4 +1,5 @@
-import { bench, describe } from 'vitest'
+import { bench } from '@shared/vitestBench'
+import { describe } from 'vitest'
 import type { Command, History } from '@/engines/core/history'
 import { createDocumentStore } from './documentStore'
 
@@ -30,6 +31,8 @@ const state = {
   states: { 'doc-1': { value: 0 } },
   histories: { 'doc-1': history },
   saved: { 'doc-1': history.past.at(-1) ?? null },
+  revisions: { 'doc-1': 1 },
+  incarnations: { 'doc-1': 'bench' },
 }
 
 describe('reading the modified marker', () => {

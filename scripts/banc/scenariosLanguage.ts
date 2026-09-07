@@ -392,4 +392,19 @@ export const LANGUAGE_SCENARIOS: readonly Scenario[] = [
     setup: modelScene,
     passed: askedRatherThanActed,
   },
+  /**
+   * 🛑 The FIRST scenario of the bench where the person says no, and the reason `answers` exists:
+   * `runConfirmedAction` answered `granted: true` to all 285 actions, so `refused('declined')`
+   * was reachable by nothing. What is scored is the studio, not the model — it is right to call.
+   */
+  {
+    name: '30.4 leaves the file alone when the person says no',
+    said: ['Mets le fichier Images/fais moi un bateau.png à la corbeille.'],
+    answers: 'no',
+    // Both halves: the studio was ASKED and it refused, and the file is still on the disk. The
+    // second alone is true of a decor nobody touched.
+    passed: run =>
+      read.declined(run, 'files.trash') &&
+      read.files(run).includes('Images/fais moi un bateau.png'),
+  },
 ]

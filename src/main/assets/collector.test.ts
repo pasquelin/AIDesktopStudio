@@ -38,9 +38,9 @@ function backendSpy(): { backend: LocalBackend; imported: ImportRequest[] } {
   return { backend, imported }
 }
 
-describe('asset collector', () => {
-  const remote = (kind: string): RemoteAsset => ({ url: `https://cdn.example/x.${kind}`, kind })
+const remote = (kind: string): RemoteAsset => ({ url: `https://cdn.example/x.${kind}`, kind })
 
+describe('asset collector basics', () => {
   it('names a single output after the job', async () => {
     const { backend, imported } = backendSpy()
     let sequence = 0
@@ -175,7 +175,9 @@ describe('asset collector', () => {
     await collect(JOB, ['remote_1'], null)
     expect(imported[0]?.thumbnailUrl).toBeUndefined()
   })
+})
 
+describe('asset collector channels', () => {
   // One converter job answers with several pictures. Filed as plain images, the material
   // would be lost: the channel a picture carries is what makes it part of one.
   it('files a PBR channel as the picture it is, its channel remembered', async () => {
@@ -301,7 +303,9 @@ describe('asset collector', () => {
     expect(retrieve).not.toHaveBeenCalled()
     expect(imported).toEqual([])
   })
+})
 
+describe('asset collector recovery', () => {
   /**
    * Skipping the download on the strength of a row alone put a dead id among the job's outputs,
    * and nothing ever came back for the bytes. The bytes come back INTO the row that was already

@@ -19,14 +19,31 @@ export function environmentFromInput(
   const kind = oneOf(input, 'kind', ENVIRONMENT_KINDS)
   const assetId = textOf(input, 'assetId')
   const title = textOf(input, 'sky')
-  // A surface is lit by ONE prefiltered map, so naming both is a request with two answers.
+  const invalid = invalidEnvironment(kind, assetId, title)
+  if (invalid) return invalid
+
+  const documentId =
+    title === null ? null : documentNamedOfKind(useDocuments.getState(), 'skybox', title)
+  if (title !== null && documentId === null)
+    return refused(
+      'notFound',
+      `no sky document titled "${title}" in this project — documents.list answers what there is, with its title and its kind`,
+    )
+
+  const environment: EnvironmentRef | null = environmentOf(kind, assetId, documentId)
+  return assetId === null ? write(environment) : withAsset(assetId, () => write(environment))
+}
+
+function invalidEnvironment(
+  kind: EnvironmentRef['kind'] | null,
+  assetId: string | null,
+  title: string | null,
+): ActionOutcome | null {
   if (assetId !== null && title !== null)
     return refused(
       'badInput',
       'a surface is lit by ONE source: name "assetId" for a picture of the library, or "sky" for the title of a sky document — never both',
     )
-  // The panel answers a kind by taking the first of the project, which from outside would be a
-  // reference nobody picked. `studio` beside either is the opposite of both readings of it.
   if (kind === 'skybox' && assetId === null)
     return refused(
       'badInput',
@@ -43,25 +60,18 @@ export function environmentFromInput(
       'kind "studio" puts every named source out, so it travels alone — drop "assetId" and "sky"',
     )
 
-  // The sky DOCUMENT must EXIST, or the surface follows a reference nothing can resolve.
-  const documentId =
-    title === null ? null : documentNamedOfKind(useDocuments.getState(), 'skybox', title)
-  if (title !== null && documentId === null)
-    return refused(
-      'notFound',
-      `no sky document titled "${title}" in this project — documents.list answers what there is, with its title and its kind`,
-    )
-
-  // A source named outright is a source chosen, so `kind` is what a client says only to put one out.
-  const environment: EnvironmentRef | null =
-    documentId !== null
-      ? { kind: 'sky', documentId }
-      : assetId !== null
-        ? { kind: 'skybox', assetId }
-        : kind === 'studio'
-          ? STUDIO_ENVIRONMENT
-          : null
-
-  // The picture must EXIST too, for the reason the document above does.
-  return assetId === null ? write(environment) : withAsset(assetId, () => write(environment))
+  return null
 }
+
+const environmentOf = (
+  kind: EnvironmentRef['kind'] | null,
+  assetId: string | null,
+  documentId: string | null,
+): EnvironmentRef | null =>
+  documentId !== null
+    ? { kind: 'sky', documentId }
+    : assetId !== null
+      ? { kind: 'skybox', assetId }
+      : kind === 'studio'
+        ? STUDIO_ENVIRONMENT
+        : null

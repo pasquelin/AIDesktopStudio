@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { NOT_PLAYING, type RuntimeReport } from '@shared/domain/gameRuntime'
 import { orElse } from '@shared/promises'
 import type { ScriptModule } from '@game/ports/scriptPort'
+import type { InputMap } from '@shared/domain/inputMap'
 import {
   createScriptCompiler,
   type ScriptCompiler,
@@ -12,11 +13,20 @@ import { gameMessageOf, openGameChannel, type GameCommand } from '@/game/gameCha
 import type { SceneLookup } from '@/game/playSession'
 import { getBridge } from '@/services/bridge'
 import type { SceneState } from '@/engines/scene/sceneState'
+import { runtimeWorldPatch, runtimeWorldPatchIsEmpty } from '@/engines/scene/runtimeWorldCompiler'
 import { codeFilesOf, useCode } from './code'
 import { documentById, sceneDocumentNamed, useDocuments } from './documents'
 import { sceneEngineOf } from './sceneEngines'
 import { loadSceneSource, montageSceneOf } from './sceneSources'
 import { sceneOf, useScenes } from './scenes'
+import {
+  inputMapIdConflict,
+  projectInputMaps,
+  withoutDuplicateInputMapIds,
+} from '@/engines/code/projectInputMaps'
+import { projectAnimationGraphs } from '@/engines/code/projectAnimationGraphs'
+import type { AnimationGraphModule } from '@shared/domain/animationGraph'
+import i18next from 'i18next'
 
 /** How long a command may wait on the game window. A `step` runs up to 120 fixed steps there. */
 const COMMAND_MS = 2_000
@@ -60,6 +70,8 @@ type PublishedGame = {
   documentId: string
   modules: readonly ScriptModule[]
   troubles: readonly ScriptTrouble[]
+  inputMaps: readonly InputMap[]
+  animationGraphs: readonly AnimationGraphModule[]
 }
 
 export const usePlay = create<PlayStoreState>()(() => ({
@@ -132,7 +144,13 @@ async function begin(documentId: string): Promise<void> {
   // a file is a fade that stalls on black, and the timeline names them in advance.
   for (const scene of scenesAhead(sceneOf(useScenes.getState(), documentId))) sceneNamed(scene)
 
-  published = { documentId, modules: compiled.modules, troubles: compiled.troubles }
+  published = {
+    documentId,
+    modules: compiled.modules,
+    troubles: compiled.troubles,
+    inputMaps: compiled.inputMaps,
+    animationGraphs: compiled.animationGraphs,
+  }
   publishGame()
   watchTheScene(documentId)
 
@@ -155,18 +173,21 @@ function publishGame(): void {
     scene: sceneOf(useScenes.getState(), published.documentId),
     modules: published.modules,
     troubles: published.troubles,
+    inputMaps: published.inputMaps,
+    animationGraphs: published.animationGraphs,
   })
 }
 
 /** Every edit under a running game: `createStudioRender` reads the edit state on every frame. */
 function watchTheScene(documentId: string): void {
   stopWatchingScene?.()
-  let shown: SceneState | null = null
+  let shown: SceneState = sceneOf(useScenes.getState(), documentId)
   stopWatchingScene = useScenes.subscribe(state => {
     const scene = sceneOf(state, documentId)
     if (scene === shown) return
+    const patch = runtimeWorldPatch(shown, scene)
     shown = scene
-    wire().postMessage({ kind: 'edit', documentId, scene })
+    if (!runtimeWorldPatchIsEmpty(patch)) wire().postMessage({ kind: 'edit', documentId, patch })
   })
 }
 
@@ -249,9 +270,19 @@ const NOT_ANSWERED: CommandAnswer = { ok: false, ran: 0 }
  */
 let compiler: ScriptCompiler | null = null
 
-type CompiledScripts = { modules: readonly ScriptModule[]; troubles: readonly ScriptTrouble[] }
+type CompiledScripts = {
+  modules: readonly ScriptModule[]
+  troubles: readonly ScriptTrouble[]
+  inputMaps: readonly InputMap[]
+  animationGraphs: readonly AnimationGraphModule[]
+}
 
-const NO_SCRIPTS: CompiledScripts = { modules: [], troubles: [] }
+const NO_SCRIPTS: CompiledScripts = {
+  modules: [],
+  troubles: [],
+  inputMaps: [],
+  animationGraphs: [],
+}
 
 /**
  * Whether that text would compile, said the way a fault is — or nothing when it would.
@@ -262,7 +293,10 @@ const NO_SCRIPTS: CompiledScripts = { modules: [], troubles: [] }
  */
 export async function scriptTrouble(script: string, source: string): Promise<ScriptTrouble | null> {
   compiler ??= createScriptCompiler()
-  return (await compiler.compile([{ script, source }])).troubles[0] ?? null
+  // The same maps a Play is handed, duplicates dropped — or the squiggle in the editor answers
+  // for a set of contexts the game will never see.
+  const maps = withoutDuplicateInputMapIds(await projectInputMaps())
+  return (await compiler.compile([{ script, source }], maps)).troubles[0] ?? null
 }
 
 /**
@@ -273,12 +307,42 @@ export async function compiledScripts(): Promise<CompiledScripts> {
   // 🛑 Through the EDITOR's own reading, never a second walk of the disk: what a Play compiles
   // has to be what the screen shows, or an author watches the script from before their last
   // keystroke run — without a word.
-  await useCode.getState().reload()
+  const [, allMaps, animationGraphs] = await Promise.all([
+    useCode.getState().reload(),
+    projectInputMaps(),
+    projectAnimationGraphs(),
+  ])
+  const conflict = inputMapIdConflict(allMaps)
+  // 🛑 SAID, never fatal: a duplicate id used to drop every script of the project, so a fifty-file
+  // game lost all fifty for one map in double. `line: 0` because the offender is a `.input.json`
+  // and `openScriptAt` opens scripts alone — an addressable fault that opens nothing is worse.
+  const troubles: readonly ScriptTrouble[] = conflict
+    ? [
+        {
+          script: conflict.path,
+          message: i18next.t('game.inputMap.duplicateId', { id: conflict.map.id }),
+          line: 0,
+        },
+      ]
+    : []
+  const inputMaps = withoutDuplicateInputMapIds(allMaps)
   const files = codeFilesOf(useCode.getState())
-  if (files.length === 0) return NO_SCRIPTS
+  const runtimeMaps = inputMaps.map(input => input.map)
+  if (files.length === 0)
+    return { ...NO_SCRIPTS, troubles, inputMaps: runtimeMaps, animationGraphs }
 
   compiler ??= createScriptCompiler()
-  return await compiler.compile(files.map(file => ({ script: file.script, source: file.source })))
+  const compiled = await compiler.compile(
+    files.map(file => ({ script: file.script, source: file.source })),
+    inputMaps,
+  )
+  // The conflict FIRST: it is the cause, and what compiled after it is the consequence.
+  return {
+    ...compiled,
+    troubles: [...troubles, ...compiled.troubles],
+    inputMaps: runtimeMaps,
+    animationGraphs,
+  }
 }
 
 /** What a document's game says about itself, or the still report — never `undefined` on screen. */
@@ -308,4 +372,11 @@ function sceneNamed(scene: string): SceneLookup {
 function scenesAhead(state: SceneState): readonly string[] {
   const named = (state.animation.transitions ?? []).flatMap(one => one.scene ?? [])
   return [...new Set(named)]
+}
+
+export function startOrResumePlay(documentId: string): void {
+  const store = usePlay.getState()
+  const report = playReportOf(store, documentId)
+  if (report.state === 'paused') void store.resume(documentId)
+  else if (report.state === 'edit') store.start(documentId)
 }

@@ -1,15 +1,4 @@
-/**
- * Collects the licence of everything the studio redistributes into `src/shared/licences.json`,
- * which the Help ▸ Licences window reads, and into `THIRD-PARTY-NOTICES.md` for readers of the
- * repository and the release page.
- *
- * What is shipped is `SHIPPED`, and why it is a list rather than a query is written there.
- * `licence.test.ts` fails if a runtime dependency is added without landing in it, and
- * `main/licences.test.ts` fails if one of its names is no longer declared in the manifest.
- *
- * The texts themselves are read from `node_modules`, never copied by hand — a version bump
- * brings its own wording.
- */
+/** Builds the offline notices from shipped manifests and canonical publisher texts. */
 import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -22,11 +11,15 @@ import { VAD as STT_VAD } from './fetch-stt.mjs'
 import { isCopyleft, NO_VERSION } from '../src/shared/domain/licence.ts'
 import { SHIPPED } from '../src/main/shippedPackages.ts'
 import { BUILD_ONLY_PYTHON, ENGINE_PACKAGE, INTERPRETER } from '../src/main/pythonPackages.ts'
+import { kimodoLicences } from './kimodo-licences.mjs'
+import { MODEL_NOTES } from './licence-model-notes.mjs'
+import { makeItAnimatableLicence } from './make-it-animatable-licence.mjs'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 
 /** Written by `collect-python-licences.mjs` from a materialised environment, and committed. */
 const PYTHON_LICENCES = join(ROOT, 'engine', 'licences.json')
+const EMBEDDED_RUNTIME = join(ROOT, 'engine', 'embedded-runtime.json')
 const OUTPUT = join(ROOT, 'src', 'shared', 'licences.json')
 const NOTICES = join(ROOT, 'THIRD-PARTY-NOTICES.md')
 
@@ -105,13 +98,13 @@ function ffmpegLicence() {
     version: [...new Set(Object.values(FFMPEG_TARGETS).map(target => target.version))].join(' / '),
     spdx: [...licences].join(' / '),
     text: [
-      'FFmpeg is a separate program, spawned by IA Studio. It is not linked into it.',
+      'FFmpeg is a separate program, spawned by AI Desktop Studio. It is not linked into it.',
       '',
       'The build differs per platform, and so do its terms:',
       ...terms,
       '',
       'Both families oblige us to offer FFmpeg’s corresponding sources, below. They are',
-      'attached to every release of IA Studio alongside the installers, and each binary',
+      'attached to every release of AI Desktop Studio alongside the installers, and each binary',
       'prints the configuration it was built with under `ffmpeg -buildconf`.',
     ].join('\n'),
     // One line per distinct archive: the targets do not all sit on the same version, nor on the
@@ -172,123 +165,6 @@ const LISTED_NOT_FETCHED = [
 ].join('\n')
 
 /**
- * What is true of ONE model and of no other: who holds the copyright, and what its own components
- * were read to be. Keyed by manifest id, so a model with nothing particular to say needs no line.
- */
-const MODEL_NOTES = {
-  'sana-600m-1024': [
-    'Copyright NVIDIA Corporation and the Sana authors.',
-    '',
-    'THE DOWNLOAD CARRIES MORE THAN ONE LICENCE, measured on 2026-08-22. Its text encoder is a',
-    'Gemma 2 model: text_encoder/config.json names google/gemma-2-2b-it, and the 5.2 GB it',
-    'weighs are governed by the Gemma Terms of Use rather than by Apache-2.0.',
-    'Full terms: https://ai.google.dev/gemma/terms',
-  ],
-  'sana-1600m-1024': ['Copyright NVIDIA Corporation and the Sana authors.'],
-  'sana15-1-6b': ['Copyright NVIDIA Corporation and the Sana authors.'],
-  'ssd-1b': [
-    'Copyright Segmind.',
-    '',
-    'Its components, read on 2026-08-22: two CLIP text encoders and a VAE, none of whose',
-    'configuration names an upstream repository. SSD-1B is published by Segmind as a distillation',
-    'of Stable Diffusion XL 1.0, whose own weights are released under CreativeML Open RAIL++-M.',
-  ],
-  'qwen-image': ['Copyright Alibaba Group and the Qwen authors.'],
-  'qwen-image-edit': ['Copyright Alibaba Group and the Qwen authors.'],
-  'cogvideox-2b': ['Copyright the CogVideoX authors, Zhipu AI.'],
-  'wan21-t2v-1-3b': [
-    'Copyright Alibaba Group and the Wan authors.',
-    '',
-    'Its UMT5 text encoder is 22.7 GB of the 28.9 this weighs — read on 2026-08-22.',
-  ],
-  'wan22-ti2v-5b': ['Copyright Alibaba Group and the Wan authors.'],
-  'wan21-i2v-14b-480p': ['Copyright Alibaba Group and the Wan authors.'],
-  'mochi-1-preview': ['Copyright Genmo.'],
-  'acestep-v15-xl-base': ['Copyright the ACE-Step authors.'],
-  'acestep-v15-xl-turbo': ['Copyright the ACE-Step authors.'],
-  'acestep-v15-xl-sft': ['Copyright the ACE-Step authors.'],
-  'shap-e': [
-    'Copyright OpenAI. Its text encoder is a CLIP model — text_encoder/config.json names',
-    'openai/clip-vit-large-patch14, whose repository card states no licence of its own.',
-    '',
-    'This download carries `.bin` tensors, which the studio otherwise refuses: Shap-E publishes',
-    'its renderer in that form alone. What still guards it: torch has refused to unpickle by',
-    'default since 2.6, and every file above is pinned to a digest.',
-  ],
-  instantmesh: [
-    'Copyright Tencent ARC Lab and the InstantMesh authors.',
-    '',
-    'THE DOWNLOAD CARRIES MORE THAN ONE ORIGIN, read on 2026-08-23. Apache-2.0 covers the two',
-    'TencentARC files — the reconstruction checkpoint and the white-background unet. The other',
-    'seventeen are sudo-ai/zero123plus-v1.2, whose repository card states no licence of its own.',
-    '',
-    'The unet lands under `unet/`, where the six-view pipeline reads it: the studio fetches the',
-    'base unet of zero123plus not at all, rather than 3.4 GB it would overwrite on load.',
-  ],
-  lgm: [
-    'Copyright the LGM authors, and Ashawkey for the published weights.',
-    '',
-    'THE DOWNLOAD CARRIES MORE THAN ONE ORIGIN, read on 2026-08-23. MIT covers the splatter',
-    'checkpoint alone; the four-view stage is ashawkey/imagedream-ipmv-diffusers, published under',
-    'OpenRAIL, and it is fourteen of the fifteen files above.',
-    '',
-    'What LGM writes is a 3D Gaussian cloud, not a mesh: the step that turns one into the other',
-    'is a rasterizer whose licence forbids commercial use, and it is not fetched or shipped.',
-  ],
-  panfusion: [
-    'The files fetched are Stable Diffusion 1.5 (CreativeML Open RAIL-M). PanFusion publishes a',
-    'Lightning checkpoint this studio cannot open. Generation uses MultiDiffusion circular padding.',
-  ],
-  mvdiffusion: [
-    'The files fetched are Stable Diffusion 1.5 (CreativeML Open RAIL-M). MVDiffusion publishes a',
-    'Dropbox Lightning checkpoint this studio cannot open. Generation uses MultiDiffusion.',
-  ],
-  diffusion360: [
-    'Copyright the Diffusion360 authors. The files fetched are the published sd-base pipeline',
-    '(Apache-2.0). They include `.bin` tensors, the same reservation as Shap-E: torch has refused',
-    'to unpickle by default since 2.6, and every file above is pinned to a digest.',
-  ],
-  unipano: [
-    'The files fetched are Stable Diffusion 1.5 (CreativeML Open RAIL-M). UniPano publishes no',
-    'weights. Generation uses MultiDiffusion circular padding.',
-  ],
-  'controlnet-canny-sdxl': [
-    'Copyright the xinsir authors. A control network run BESIDE a base model, never alone.',
-  ],
-  'ip-adapter-sdxl': [
-    'Copyright Tencent AI Lab. Adapter weights grafted onto a base model, never alone.',
-    '',
-    'Only the SDXL set is fetched: the repository ships four adapters and two image encoders,',
-    'for two model families.',
-  ],
-  'mmaudio-small-44k': ['Copyright the MMAudio authors.'],
-  'mmaudio-medium-44k': ['Copyright the MMAudio authors.'],
-  'mmaudio-large-44k': ['Copyright the MMAudio authors.'],
-  'trellis2-4b': ['Copyright Microsoft.'],
-  triposr: ['Copyright Stability AI and Tripo AI.'],
-  'shap-e-img2img': [
-    'Copyright OpenAI. Same renderer, and the same `.bin` reservation as Shap-E above.',
-  ],
-  craftsman3d: [
-    'Copyright the CraftsMan3D authors.',
-    '',
-    'THE TERMS ARE THOSE OF THE BRANCH THE WEIGHTS BELONG TO, read on 2026-08-23. `main` says MIT',
-    'and does not open these weights at all — it registers neither `pixart-diffusion-system` nor',
-    '`cond-embedder`, the two names their config.yaml asks for. The branch that does, CraftsMan-v1.5,',
-    'states the Stable Diffusion 1.5 terms: CreativeML Open RAIL-M. Neither branch carries a',
-    'LICENSE file; both state their terms in the README alone.',
-    '',
-    'What the studio ships is the inference code, which that licence calls Complementary Material',
-    'and grants outright — its use-based restrictions bind the weights, which the person fetches',
-    'from the publisher under the licence they accept there.',
-    '',
-    'Two configs travel with it: openai/clip-vit-large-patch14, whose card states no licence, and',
-    'facebook/dinov2-base (Apache-2.0). Their tensors are never fetched — the checkpoint holds them.',
-  ],
-  triposg: ['Copyright VAST AI Research and Tripo.'],
-}
-
-/**
  * One notice per catalogue entry, read off the manifests rather than retyped beside them.
  *
  * The dictation model is NOT here — it lives in `dictation.ts` and keeps its own block above.
@@ -296,12 +172,17 @@ const MODEL_NOTES = {
 function catalogueLicences() {
   const path = join(ROOT, 'src', 'shared', 'domain', 'localModels.json')
   const catalogue = JSON.parse(readFileSync(path, 'utf8'))
-
   return Object.values(catalogue)
     .flat()
-    .filter(model => model.loader === 'diffusers' || model.loader === 'plugin')
+    .filter(
+      model =>
+        model.loader === 'diffusers' ||
+        model.loader === 'plugin' ||
+        model.loader === 'onnx-runtime',
+    )
     .map(model => ({
       name: model.name,
+      ...(model.files[0]?.revision ? { version: model.files[0].revision } : {}),
       spdx: model.licence,
       text: [
         model.files.length === 0
@@ -364,11 +245,14 @@ function modelLicences() {
       ].join('\n'),
       sources: 'https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3',
     },
-    ...qwenLicences(),
-    embeddingGemmaLicence(),
-    ...pythonLicences(),
-    ...catalogueLicences(),
+    makeItAnimatableLicence,
+    ...kimodoLicences,
+    ...extraModelLicences(),
   ]
+}
+
+function extraModelLicences() {
+  return [...qwenLicences(), embeddingGemmaLicence(), ...pythonLicences(), ...catalogueLicences()]
 }
 
 /**
@@ -383,6 +267,17 @@ const UNSTATED_LICENCE = 'unstated'
 
 function pythonLicences() {
   const read = existsSync(PYTHON_LICENCES) ? JSON.parse(readFileSync(PYTHON_LICENCES, 'utf8')) : {}
+  const runtime = JSON.parse(readFileSync(EMBEDDED_RUNTIME, 'utf8'))
+  const runtimeByName = new Map(
+    runtime.distributions.map(distribution => [
+      distribution.name.replaceAll('_', '-'),
+      distribution,
+    ]),
+  )
+  const packageNames = new Set([
+    ...Object.keys(read),
+    ...runtime.distributions.map(distribution => distribution.name),
+  ])
 
   const interpreter = {
     name: INTERPRETER.name,
@@ -397,23 +292,32 @@ function pythonLicences() {
     sources: INTERPRETER.source,
   }
 
-  const packages = Object.entries(read)
-    .filter(([name]) => !BUILD_ONLY_PYTHON.includes(name) && name !== ENGINE_PACKAGE)
-    .map(([name, entry]) => ({
-      name,
-      version: entry.version ?? NO_VERSION,
-      // NOT `NO_VERSION`, which reads "shipped with the application" — a sentence about a
-      // version, printed in the licence column of a package whose metadata states none.
-      spdx: entry.spdx ?? UNSTATED_LICENCE,
-      text: [
-        'Part of the environment a local generation runs in. It is NOT shipped with the',
-        'application: it is fetched on first use, and removed with the engine.',
-        '',
-        `Licensed under ${entry.spdx ?? 'a licence its metadata does not state'}.`,
-        ...(entry.home ? [`Source: ${entry.home}`] : []),
-      ].join('\n'),
-      ...(entry.home ? { sources: entry.home } : {}),
-    }))
+  const packages = [...packageNames]
+    .filter(name => !BUILD_ONLY_PYTHON.includes(name) && name !== ENGINE_PACKAGE)
+    .sort((left, right) => left.localeCompare(right))
+    .map(name => {
+      const entry = read[name] ?? {}
+      const runtimeDistribution = runtimeByName.get(name.replaceAll('_', '-'))
+      const shipped = runtimeDistribution !== undefined
+      const spdx = runtimeDistribution?.licence ?? entry.spdx ?? UNSTATED_LICENCE
+
+      return {
+        name,
+        version: runtimeDistribution?.version ?? entry.version ?? NO_VERSION,
+        // NOT `NO_VERSION`, which reads "shipped with the application" — a sentence about a
+        // version, printed in the licence column of a package whose metadata states none.
+        spdx,
+        text: [
+          shipped
+            ? 'Part of the embedded local AI runtime. It IS shipped with the application.'
+            : 'Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.',
+          '',
+          `Licensed under ${spdx}.`,
+          ...(entry.home ? [`Source: ${entry.home}`] : []),
+        ].join('\n'),
+        ...(entry.home ? { sources: entry.home } : {}),
+      }
+    })
 
   return [interpreter, ...packages]
 }
@@ -516,6 +420,7 @@ function renderNotices(entries) {
         : []),
       '',
       '```',
+      ...(entry.attribution ? [entry.attribution, ''] : []),
       entry.text,
       '```',
     ].join('\n'),
@@ -524,12 +429,12 @@ function renderNotices(entries) {
   return [
     '# Third-party notices',
     '',
-    'IA Studio ships the software listed below, each under its own licence. This file is',
+    'AI Desktop Studio ships the software listed below, each under its own licence. This file is',
     'generated by `pnpm licences:collect` — edit the script, never the file.',
     '',
     // One entry, not a pre-broken pair: split across two, the product's name sat astride the join
     // and no rename could reach it. The line break belongs to the rendering, not to the source.
-    "The terms below govern these components. They are not affected by the licence of IA Studio itself (LICENSE) nor by the application's terms of use (EULA.md).",
+    "The terms below govern these components. They are not affected by the licence of AI Desktop Studio itself (LICENSE) nor by the application's terms of use (EULA.md).",
     '',
     '| Component | Version | Licence |',
     '| --- | --- | --- |',
@@ -586,5 +491,8 @@ refuse(
 writeFileSync(OUTPUT, `${JSON.stringify(licences, null, 2)}\n`)
 console.log(`${licences.length} licences → src/shared/licences.json`)
 
-writeFileSync(NOTICES, renderNotices(licences))
+const notices = renderNotices(licences)
+  .replace(/\r\n?/g, '\n')
+  .replace(/[ \t]+$/gm, '')
+writeFileSync(NOTICES, notices)
 console.log(`${licences.length} licences → THIRD-PARTY-NOTICES.md`)

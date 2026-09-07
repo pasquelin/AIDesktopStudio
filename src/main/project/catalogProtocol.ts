@@ -1,6 +1,7 @@
 import type { ActivityDraft, ActivityEntry, ActivityQuery } from '@shared/domain/activity'
 import type { Asset, AssetCounts, AssetQuery } from '@shared/domain/asset'
 import type { RescanReport } from './catalogRescan'
+import type { AnimationPosterWrite } from './catalogTypes'
 
 /**
  * What the main process and the catalogue worker say to each other.
@@ -11,6 +12,7 @@ import type { RescanReport } from './catalogRescan'
  */
 
 export type CatalogRequest =
+  | ({ id: number; op: 'setAnimationPoster' } & AnimationPosterWrite)
   | { id: number; op: 'add'; asset: Asset }
   | { id: number; op: 'find'; assetId: string }
   | { id: number; op: 'findByHash'; hash: string }
@@ -20,11 +22,13 @@ export type CatalogRequest =
   | { id: number; op: 'remove'; assetId: string }
   | { id: number; op: 'repath'; from: string; to: string }
   | { id: number; op: 'forgetUnder'; path: string }
+  | { id: number; op: 'assetsUnder'; folders: readonly string[] }
   | { id: number; op: 'appendActivity'; entries: readonly ActivityDraft[] }
   | { id: number; op: 'readActivity'; query: ActivityQuery }
 
 /** What each operation answers, so the client can type its promise without a cast. */
 export type CatalogResults = {
+  setAnimationPoster: boolean
   add: Asset
   find: Asset | null
   findByHash: Asset | null
@@ -34,6 +38,7 @@ export type CatalogResults = {
   remove: void
   repath: void
   forgetUnder: number
+  assetsUnder: Asset[]
   appendActivity: ActivityEntry[]
   readActivity: ActivityEntry[]
 }

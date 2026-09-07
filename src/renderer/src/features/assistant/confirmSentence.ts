@@ -20,6 +20,7 @@ export function confirmSentence(
 ): string {
   if (commitment !== 'credits') return translate(confirmKey(commitment))
   if (typeof estimate !== 'number') return translate('assistant.confirm.unknownCost')
+  if (estimate === 0) return translate('assistant.confirm.noCost')
 
   return translate(confirmKey(commitment), {
     cost: translate('generation.estimatedCost', { units: formatUnits(estimate, language) }),

@@ -1,8 +1,9 @@
 import type { CaptureQuality } from '@shared/domain/sceneCapture'
-import { bytesToBase64 } from '@/helpers/base64'
+import { bytesToBase64 } from '@shared/base64'
 import { getBridge } from '@/services/bridge'
 import { reportFailure } from '@/services/diagnostics'
-import { documentExportName, useDocuments } from '@/stores/documents'
+import { useDocuments } from '@/stores/documents'
+import { documentExportName } from '@/stores/documentExportName'
 import { sceneEngineOf } from '@/stores/sceneEngines'
 
 /**

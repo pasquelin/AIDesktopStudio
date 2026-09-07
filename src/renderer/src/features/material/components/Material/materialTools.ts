@@ -134,6 +134,14 @@ const tilingModes = (): readonly ToolMode[] =>
  * the shape in use is legible without opening anything. Nothing here is a `CommandId`.
  */
 export function materialTools({ preview, inspected, filled }: MaterialToolsInput): ToolbarItem[] {
+  return [...materialDisplayTools(preview, inspected, filled), ...materialActionTools(preview)]
+}
+
+function materialDisplayTools(
+  preview: MaterialToolsInput['preview'],
+  inspected: MaterialToolsInput['inspected'],
+  filled: MaterialToolsInput['filled'],
+): ToolbarItem[] {
   return [
     {
       id: 'shape',
@@ -161,6 +169,11 @@ export function materialTools({ preview, inspected, filled }: MaterialToolsInput
       modes: tilingModes(),
       activeMode: String(preview.tilingPreview),
     },
+  ]
+}
+
+function materialActionTools(preview: MaterialToolsInput['preview']): ToolbarItem[] {
+  return [
     {
       id: 'seam',
       labelKey: 'material.showSeam',

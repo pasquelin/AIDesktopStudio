@@ -32,7 +32,7 @@ export function ProgramTransport({ documentId }: ProgramTransportProps) {
         if (!sequenceStore.hasState(store, documentId)) return
         // Handed back, not published: the montage below carries the zero this writes.
         usePlayback.getState().clearHead(documentId)
-        store.replace(documentId, { ...sequenceOf(store, documentId), playhead: 0 })
+        store.replaceView(documentId, { ...sequenceOf(store, documentId), playhead: 0 })
       }}
     />
   )

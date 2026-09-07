@@ -85,7 +85,8 @@ export const ASSET_HANDLERS: ActionHandlers = {
   'assets.captionImages': input =>
     withBridge(bridge => bridge.assets.describe(textsOf(input, 'assetIds'))),
 
-  'assets.absent': input => withBridge(bridge => bridge.assets.absent(textsOf(input, 'assetIds'))),
+  'assets.listMissing': input =>
+    withBridge(bridge => bridge.assets.absent(textsOf(input, 'assetIds'))),
 
   'asset.extractTextures': input =>
     withBridge(bridge => bridge.assets.extractTextures(textOf(input, 'assetId') ?? '')),
@@ -97,7 +98,7 @@ export const ASSET_HANDLERS: ActionHandlers = {
     return outcome.ok && outcome.data === false
       ? refused(
           'notFound',
-          `asset "${textOf(input, 'assetId') ?? ''}" has no file on this machine to show — assets.search answers what the library holds, and assets.absent says which have no file yet`,
+          `asset "${textOf(input, 'assetId') ?? ''}" has no file on this machine to show — assets.search answers what the library holds, and assets.listMissingProjectAssets says which have no file yet`,
         )
       : outcome
   },

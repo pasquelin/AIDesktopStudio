@@ -5,7 +5,7 @@ import type { AssistantThought } from '@shared/domain/assistant'
 import type { AssistantBrain, NotReady, TurnWatch } from './brainPort'
 import { SCENARIO_CLOUD } from '@shared/domain/aiCloud'
 import { answeredTurn, notesFor, turnsWith, TurnStopped, type BrainAttempt } from './brainTurn'
-import { briefingFor, instructionFor, type Briefing } from './instruction'
+import { briefingFor, instructionFor, PREAMBLE_COST, type Briefing } from './instruction'
 import { INSTRUCTION_FALLBACK, type ProviderLimits } from './providerLimits'
 
 /**
@@ -36,10 +36,11 @@ export const UTTERANCE_ROOM = 1_500
  * longer a budget: the catalogue is 4 225 characters of names, and the briefing grows only by the
  * manuals a chain opens. Held to 8 500, three of them fitted and the rest were cut in silence.
  */
-const briefingRoom = (bounds: ProviderLimits): number => bounds.instructionMax - UTTERANCE_ROOM
+const briefingRoom = (bounds: ProviderLimits): number =>
+  bounds.instructionMax - UTTERANCE_ROOM - PREAMBLE_COST
 
 /** The same against the fallback, for a door that has not read its schema yet. */
-export const BRIEFING_ROOM = INSTRUCTION_FALLBACK - UTTERANCE_ROOM
+export const BRIEFING_ROOM = INSTRUCTION_FALLBACK - UTTERANCE_ROOM - PREAMBLE_COST
 
 export type BrainDeps = {
   /**
@@ -150,6 +151,12 @@ export function createProviderBrain({
   }
 
   return {
+    capabilities: async () => ({
+      streaming: false,
+      structuredJson: true,
+      multimodalImages: false,
+      maxOutputTokens: 1,
+    }),
     // In CHARACTERS, because that is the unit the model's own `instruction` field is bounded in.
     window: async () => {
       const bounds = await limits()
@@ -169,6 +176,7 @@ export function createProviderBrain({
         (shown, complaint) => ask(request, chosen, bounds, shown, watch, complaint),
         undefined,
         notesFor(SCENARIO_CLOUD, chosen, watch),
+        watch.discover,
       )
     },
   }

@@ -38,18 +38,16 @@ Rappel du modèle de branches ([ADR-15](adr/ADR-15-modele-de-branches.md)) : **`
    donc l’auto-update répond 404 **sans que rien ne s’affiche**
    ([ADR-05](adr/ADR-05-canal-de-distribution.md)).
 
-3. **Basculer GitHub Pages sur le workflow.**
+3. **Vérifier que les quatre secrets de déploiement existent.**
 
    ```bash
-   gh api -X PUT repos/:owner/:repo/pages -f build_type=workflow
-   gh api repos/:owner/:repo/pages --jq .build_type        # attendu : workflow
+   gh secret list --json name --jq '.[].name' | grep '^DEPLOY_'   # attendu : les quatre
    ```
 
-   Un dépôt configuré depuis l’interface arrive en `build_type: legacy`, où Pages sert la branche
-   choisie **directement** et ignore `pages.yml` : `actions/deploy-pages` échoue, le site reste
-   sur ce que `main` porte, et `assets/release.json` n’est jamais écrit — donc aucune carte de
-   téléchargement ne se remplit. Le symptôme est un 404 sur la page d’accueil, sans le moindre
-   run en échec.
+   Le site ne passe plus par GitHub Pages depuis le 2026-09-07 : `pages.yml` pousse le rendu par
+   `rsync` sur le serveur qui sert `www.aidesktopstudio.com`, et c'est la seule adresse. Sans ces
+   secrets le job échoue à la première clé, après avoir bâti — le tag existe alors, la draft
+   aussi, et le site annonce encore la version d'avant.
 
 4. **Vérifier le pipeline à blanc**, avant tout tag :
 
@@ -151,11 +149,11 @@ la recevoir.
 
    | Fichier | Plateforme |
    |---|---|
-   | `ia-studio-0.2.0-darwin-arm64.dmg` / `.zip` | macOS Apple Silicon |
-   | `ia-studio-0.2.0-darwin-x64.dmg` / `.zip` | macOS Intel |
-   | `ia-studio-0.2.0-win32-x64.exe` | Windows |
-   | `ia-studio-0.2.0-linux-x86_64.AppImage` | Linux |
-   | `ia-studio-0.2.0-linux-amd64.deb` | Debian, Ubuntu |
+   | `ai-desktop-studio-0.2.0-darwin-arm64.dmg` / `.zip` | macOS Apple Silicon |
+   | `ai-desktop-studio-0.2.0-darwin-x64.dmg` / `.zip` | macOS Intel |
+   | `ai-desktop-studio-0.2.0-win32-x64.exe` | Windows |
+   | `ai-desktop-studio-0.2.0-linux-x86_64.AppImage` | Linux |
+   | `ai-desktop-studio-0.2.0-linux-amd64.deb` | Debian, Ubuntu |
    | `latest.yml`, `latest-mac.yml`, `latest-linux.yml` | manifestes d’auto-update |
 
    > **Ces noms sont relevés sur un vrai run, pas déduits** — dry run du 15 août 2026. Deux pièges,

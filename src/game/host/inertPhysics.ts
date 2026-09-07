@@ -20,6 +20,11 @@ export function createInertPhysics(): PhysicsPort {
       for (const one of wanted) moved.push({ body: one.body, moved: one.wanted, grounded: true })
       return moved
     },
+    drive: () => {},
+    push: () => {},
+    motion: () => [],
+    // Nothing to be stopped by, so no probe ever is.
+    cast: () => null,
     step: () => {},
     poses: () => [],
     contacts: () => [],

@@ -17,9 +17,17 @@ import { newUiDocument, newUiElement } from './uiDocument'
  * Shared rather than kept in the window, because two sides answer with one: the naming window
  * picks an id, and the assistant will name one on a `ui.create` without a window anywhere.
  */
-export type UiTemplateId = 'empty' | 'hud' | 'mainMenu' | 'pause'
+export type UiTemplateId =
+  'empty' | 'hud' | 'mainMenu' | 'pause' | 'mainMenuControls' | 'pauseControls'
 
-export const UI_TEMPLATE_IDS: readonly UiTemplateId[] = ['empty', 'hud', 'mainMenu', 'pause']
+export const UI_TEMPLATE_IDS: readonly UiTemplateId[] = [
+  'empty',
+  'hud',
+  'mainMenu',
+  'pause',
+  'mainMenuControls',
+  'pauseControls',
+]
 
 /**
  * What a new interface takes when nobody picks. `empty` and not the HUD: an interface is one of
@@ -33,19 +41,28 @@ export function isUiTemplateId(value: unknown): value is UiTemplateId {
 }
 
 /** A `Record`, so a fifth template does not compile until it has said what it lays down. */
-const BUILDERS: Record<UiTemplateId, (newId: () => string) => readonly UiElement[]> = {
+const BUILDERS: Record<
+  UiTemplateId,
+  (newId: () => string, controls: string) => readonly UiElement[]
+> = {
   empty: () => [],
   hud: hudElements,
   mainMenu: menuElements,
   pause: pauseElements,
+  mainMenuControls: menuControlsElements,
+  pauseControls: pauseControlsElements,
 }
 
 /** Through `newUiDocument` and `newUiElement`: what an element IS is described once, by the
  * reader a file goes through. A second table here would gain a field on read and lose it here. */
-export function uiFromTemplate(id: UiTemplateId, newId: () => string): UiDocument {
+export function uiFromTemplate(
+  id: UiTemplateId,
+  newId: () => string,
+  controls: string,
+): UiDocument {
   const document = newUiDocument(newId)
 
-  return { ...document, root: { ...document.root, children: BUILDERS[id](newId) } }
+  return { ...document, root: { ...document.root, children: BUILDERS[id](newId, controls) } }
 }
 
 const named = <T extends UiElement['type']>(type: T, newId: () => string, name: string) => ({
@@ -83,6 +100,17 @@ function menuElements(newId: () => string): readonly UiElement[] {
   return [centredStack(newId, 'Menu', [title(newId, 'Game'), ...buttons(newId, ['Play', 'Quit'])])]
 }
 
+function menuControlsElements(newId: () => string, controls: string): readonly UiElement[] {
+  return [
+    centredStack(newId, 'Menu', [
+      title(newId, 'Game'),
+      button(newId, 'Play', 'play'),
+      button(newId, controls, 'controls'),
+      button(newId, 'Quit', 'quit'),
+    ]),
+  ]
+}
+
 /**
  * A veil over whatever is behind it, and the choices on top. The veil is a `panel` stretched
  * across the screen rather than a property of the interface: what a pause LOOKS like is the
@@ -90,15 +118,29 @@ function menuElements(newId: () => string): readonly UiElement[] {
  */
 function pauseElements(newId: () => string): readonly UiElement[] {
   return [
-    {
-      ...named('panel', newId, 'Veil'),
-      place: SCREEN_PLACEMENT,
-      style: { ...DEFAULT_STYLE, background: { kind: 'color', color: '#000000' }, opacity: 0.6 },
-      children: [],
-    },
+    veil(newId),
     centredStack(newId, 'Pause', [title(newId, 'Paused'), ...buttons(newId, ['Resume', 'Quit'])]),
   ]
 }
+
+function pauseControlsElements(newId: () => string, controls: string): readonly UiElement[] {
+  return [
+    veil(newId),
+    centredStack(newId, 'Pause', [
+      title(newId, 'Paused'),
+      button(newId, 'Resume', 'resume'),
+      button(newId, controls, 'controls'),
+      button(newId, 'Quit', 'quit'),
+    ]),
+  ]
+}
+
+const veil = (newId: () => string): UiElement => ({
+  ...named('panel', newId, 'Veil'),
+  place: SCREEN_PLACEMENT,
+  style: { ...DEFAULT_STYLE, background: { kind: 'color', color: '#000000' }, opacity: 0.6 },
+  children: [],
+})
 
 function centredStack(
   newId: () => string,
@@ -120,15 +162,17 @@ const title = (newId: () => string, value: string): UiElement => ({
 
 /** The `action` is what a script answers in `onUiAction`, so a template names one per button. */
 const buttons = (newId: () => string, labels: readonly string[]): readonly UiElement[] =>
-  labels.map(label => ({
-    ...named('button', newId, label),
-    interaction: { ...DEFAULT_INTERACTION, action: label.toLowerCase(), cursor: 'pointer' },
-    style: {
-      ...DEFAULT_STYLE,
-      background: { kind: 'color', color: '#2a2a2a' },
-      border: { width: 1, color: '#4a4a4a', radius: 4 },
-      padding: { top: 12, right: 32, bottom: 12, left: 32 },
-    },
-    text: { ...DEFAULT_TEXT, value: label, size: 24, align: 'center' },
-    children: [],
-  }))
+  labels.map(label => button(newId, label, label.toLowerCase()))
+
+const button = (newId: () => string, label: string, action: string): UiElement => ({
+  ...named('button', newId, label),
+  interaction: { ...DEFAULT_INTERACTION, action, cursor: 'pointer' },
+  style: {
+    ...DEFAULT_STYLE,
+    background: { kind: 'color', color: '#2a2a2a' },
+    border: { width: 1, color: '#4a4a4a', radius: 4 },
+    padding: { top: 12, right: 32, bottom: 12, left: 32 },
+  },
+  text: { ...DEFAULT_TEXT, value: label, size: 24, align: 'center' },
+  children: [],
+})

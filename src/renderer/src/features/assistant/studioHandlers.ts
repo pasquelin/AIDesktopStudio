@@ -1,19 +1,32 @@
-import { englishText } from '@shared/i18n'
-import { refused, type ActionField } from '@shared/domain/assistant'
+import { englishText, textAt, TRANSLATIONS } from '@shared/i18n'
+import {
+  refused,
+  type ActionField,
+  type ActionName,
+  type ActionOutcome,
+} from '@shared/domain/assistant'
 import { COMPONENTS, COMPONENT_TYPES, descriptorOf } from '@shared/domain/componentRegistry'
 import { isComponentType } from '@shared/domain/componentRegistry'
+import { resolveNamedReference } from '@shared/domain/namedReference'
 import { refFromString } from '@shared/domain/ref'
 import STUDIO_TYPES from '@game/api/studio.d.ts?raw'
-import { mounted, NO_SCENE } from './sceneHandlers'
+import { WORKSPACE_IDS } from '@shared/domain/workspace'
+import { usToSeconds } from '@shared/domain/time'
+import type { AnimationTrack } from '@shared/domain/animation'
+import { mounted } from './sceneHandlers'
+import { studioSnapshot } from './stateHandlers'
 import type { ActionHandlers } from './actionHandler'
 import { textOf } from './actionInputs'
 import { nodeAimed } from './nodeAimed'
+import type { SceneNode, SceneState } from '@/engines/scene/sceneState'
 
 /** The handlers of `STUDIO_ACTIONS`, which says why there are three of them. */
 export const STUDIO_HANDLERS: ActionHandlers = {
   'studio.describe': input => {
     const open = mounted()
-    if (!open) return refused('wrongSurface', NO_SCENE)
+    // The studio itself when no scene is in front — refused as « no surface » at start-up, a
+    // client asking what it was talking to learnt nothing (Codex by MCP, 2026-09-06).
+    if (!open) return describedStudio()
 
     const named = textOf(input, 'ref') ?? ''
     const scene = open.state
@@ -34,35 +47,15 @@ export const STUDIO_HANDLERS: ActionHandlers = {
     if (ref?.kind === 'entity' && ref.document !== open.documentId) {
       return refused('notFound', `"${named}" belongs to another document`)
     }
+    const track = scene.animation.tracks.find(one => one.id === named)
+    if (track) return { ok: true, data: describedTrack(track) }
     const node = nodeAimed(scene, ref?.kind === 'entity' ? ref.id : named)
-    if (!node) return refused('notFound', `no node "${named}" in the scene in front, by id or name`)
-
-    return {
-      ok: true,
-      data: {
-        id: node.id,
-        name: node.name,
-        type: node.type,
-        transform: node.transform,
-        components: (node.components ?? []).map(component => ({
-          type: component.type,
-          properties: component,
-          // The descriptor, so a model knows what it may WRITE without a second call.
-          fields: isComponentType(component.type)
-            ? descriptorOf(component.type).fields.map(describeField)
-            : [],
-        })),
-        relations: {
-          parent: node.parentId ?? null,
-          children: scene.nodes.filter(one => one.parentId === node.id).map(one => one.id),
-        },
-        available: {
-          components: COMPONENT_TYPES.filter(
-            type => !(node.components ?? []).some(one => one.type === type),
-          ),
-        },
-      },
-    }
+    if (!node)
+      return refused(
+        'notFound',
+        `no node "${named}" in the scene in front, by id or name — a node id, a node name or a channel id (track_…) is what this takes`,
+      )
+    return { ok: true, data: describedNode(node, scene) }
   },
 
   'studio.docs': input => {
@@ -70,26 +63,70 @@ export const STUDIO_HANDLERS: ActionHandlers = {
     if (topic.length === 0) {
       return { ok: true, data: { topics: [...COMPONENT_TYPES, 'script'] } }
     }
-    // 🛑 The SAME text the editor types against, sliced — never a second telling of it, which is
-    // the one that would drift from what the compiler enforces.
-    if (topic === 'script') return { ok: true, data: { topic, docs: STUDIO_TYPES } }
-
-    if (!isComponentType(topic)) {
+    const resolved = resolveNamedReference(
+      topic,
+      [...COMPONENT_TYPES, 'script'],
+      candidate => candidate,
+      candidate =>
+        isComponentType(candidate)
+          ? [
+              textAt(TRANSLATIONS.en, COMPONENTS[candidate].titleKey),
+              textAt(TRANSLATIONS.fr, COMPONENTS[candidate].titleKey),
+            ]
+          : [],
+    )
+    if (resolved.kind === 'ambiguous') {
+      return refused(
+        'badInput',
+        `topic "${topic}" is ambiguous — use one of: ${resolved.values.join(', ')}`,
+      )
+    }
+    if (resolved.kind === 'missing') {
       return refused('notFound', `no topic "${topic}" — ask with no topic for the list`)
     }
+    // The editor's API declaration is served verbatim, never retold in a second contract.
+    if (resolved.value === 'script')
+      return { ok: true, data: { topic: resolved.value, docs: STUDIO_TYPES } }
+    if (!isComponentType(resolved.value))
+      return refused('notFound', `no topic "${topic}" — ask with no topic for the list`)
     // 🛑 Resolved, never the KEYS: an action whose trade is to document serves sentences, and
     // `mcpTools` already puts every description through `englishText` for the same reason.
-    const held = COMPONENTS[topic]
+    const held = COMPONENTS[resolved.value]
     return {
       ok: true,
       data: {
-        topic,
+        topic: resolved.value,
         title: englishText(held.titleKey),
         description: englishText(held.descriptionKey),
         fields: held.fields.map(describeField),
       },
     }
   },
+}
+
+function describedNode(node: SceneNode, scene: SceneState): Record<string, unknown> {
+  return {
+    id: node.id,
+    name: node.name,
+    type: node.type,
+    transform: node.transform,
+    components: (node.components ?? []).map(component => ({
+      type: component.type,
+      properties: component,
+      fields: isComponentType(component.type)
+        ? descriptorOf(component.type).fields.map(describeField)
+        : [],
+    })),
+    relations: {
+      parent: node.parentId ?? null,
+      children: scene.nodes.filter(one => one.parentId === node.id).map(one => one.id),
+    },
+    available: {
+      components: COMPONENT_TYPES.filter(
+        type => !(node.components ?? []).some(one => one.type === type),
+      ),
+    },
+  }
 }
 
 /** One field as a model reads it: the label resolved, and the bounds it must respect. */
@@ -102,3 +139,29 @@ const describeField = (field: ActionField): Record<string, unknown> => ({
   ...(field.min === undefined ? {} : { min: field.min }),
   ...(field.max === undefined ? {} : { max: field.max }),
 })
+
+function describedStudio(): ActionOutcome {
+  return { ok: true, data: { ...studioSnapshot(), workspaces: WORKSPACE_IDS } }
+}
+
+/** A channel and what takes it: keys are read here, and written by the key actions below. */
+function describedTrack(track: AnimationTrack) {
+  return {
+    channel: {
+      id: track.id,
+      name: track.name,
+      target: track.target,
+      muted: track.muted,
+      solo: track.solo,
+      locked: track.locked,
+      keys: track.keys.map(key => ({ timeSeconds: usToSeconds(key.time), value: key.value })),
+    },
+    accepts: [
+      'key.writeKeysOnOpenChannels',
+      'key.move',
+      'track.rename',
+      'track.remove',
+      'track.setMuteSoloLockHeight',
+    ] satisfies readonly ActionName[],
+  }
+}

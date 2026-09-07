@@ -7,6 +7,7 @@ import { fileInfoRoute } from '@shared/domain/fileInfo'
 import { LICENCES_ROUTE } from '@shared/domain/licence'
 import { MANUAL_ROUTE } from '@shared/domain/manual'
 import { GAME_WINDOW_ROUTE } from '@shared/domain/gameWindow'
+import { playerModuleRoute } from '@shared/domain/playerModuleWindow'
 import { MIRROR_ROUTE } from '@shared/domain/mirror'
 import { NEW_DOCUMENT_ROUTE } from '@shared/domain/newDocument'
 import { settingsRoute, type SettingsSectionId } from '@shared/domain/settings'
@@ -18,6 +19,7 @@ import { isDevelopment } from '@main/environment'
 import { trackWindowState } from './controls'
 import { windowLanguage } from './language'
 import { revealWindow } from './reveal'
+import { loadWindow } from './loadWindow'
 
 /**
  * The floor below which the layout stops being usable: the two rails take 96 px, the side
@@ -48,50 +50,53 @@ export const WEB_PREFERENCES: WebPreferences = {
  */
 const WINDOW_ICON = process.platform === 'darwin' ? undefined : APP_ICON_PATH
 
-/**
- * Where the renderer lives, in one place. Dev serves it, a packaged build reads it from disk,
- * and both assume `out/renderer/` sits beside `out/main/` — an assumption worth stating once.
- */
-export function load(window: BrowserWindow, options: { entry?: string; hash?: string } = {}): void {
-  const { entry = 'index.html', hash } = options
-  const devUrl = process.env['ELECTRON_RENDERER_URL']
+export const load = loadWindow
 
-  if (isDevelopment && devUrl) {
-    const base = entry === 'index.html' ? devUrl : `${devUrl}/${entry}`
-    void window.loadURL(hash ? `${base}#${hash}` : base)
-    return
-  }
+/** What separates one window of a family from the next. Everything else about them is identical. */
+type WindowSize = { width: number; height: number; minWidth: number; minHeight: number }
 
-  const file = join(import.meta.dirname, '../renderer', entry)
-  void window.loadFile(file, hash ? { hash } : {})
+/** The tail every factory here shares: follow the window, then show it once it has a first frame. */
+function shown(window: BrowserWindow): BrowserWindow {
+  trackWindowState(window)
+  window.once('ready-to-show', () => window.show())
+  return window
 }
 
-/** What separates one auxiliary window from the next. Everything else about them is identical. */
-type AuxiliarySize = { width: number; height: number; minWidth: number; minHeight: number }
+/**
+ * Where macOS floats the three buttons, for every window of the studio that hides its bar.
+ *
+ * ONE offset, because `WindowTitleBar` stands exactly as tall as the studio's own `TitleBar`:
+ * two windows side by side put their lights on one line, which two offsets could not do. Both
+ * bars are `--sc-title-bar` tall — 2 × `y` plus the lights' 12px diameter, so a title is centred
+ * on them; `theme.test.ts` holds the two numbers together.
+ */
+const TRAFFIC_LIGHTS = { x: 16, y: 14 }
+type WindowOptions = NonNullable<ConstructorParameters<typeof BrowserWindow>[0]>
 
 /**
  * The shape shared by every window that is not a document: a size typed here rather than taken
  * from the screen, and no full screen — macOS would give it a space of its own, hiding the studio
  * behind it.
  *
- * Written once because it was written three times: settings, licences and usage differed only by
- * their four numbers, and a floor added to one of them silently left the other two behind.
+ * Written once because it was written three times, and it now dresses the skeleton window too: a
+ * floor added to one of them silently left the others behind.
  */
-function auxiliaryWindow(size: AuxiliarySize): BrowserWindow {
-  const window = new BrowserWindow({
-    ...size,
-    show: false,
-    backgroundColor: chromeColor(),
-    titleBarStyle: 'hiddenInset',
-    trafficLightPosition: { x: 12, y: 12 },
-    fullscreenable: false,
-    icon: WINDOW_ICON,
-    webPreferences: WEB_PREFERENCES,
-  })
-
-  trackWindowState(window)
-  window.once('ready-to-show', () => window.show())
-  return window
+function auxiliaryWindow(size: WindowSize, title?: string): BrowserWindow {
+  return shown(
+    new BrowserWindow({
+      ...size,
+      show: false,
+      backgroundColor: chromeColor(),
+      titleBarStyle: 'hiddenInset',
+      // The studio's own offset, not one per family: `WindowTitleBar` stands as tall as `TitleBar`,
+      // so two windows side by side put their lights on one line.
+      trafficLightPosition: TRAFFIC_LIGHTS,
+      fullscreenable: false,
+      title,
+      icon: WINDOW_ICON,
+      webPreferences: WEB_PREFERENCES,
+    }),
+  )
 }
 
 /**
@@ -104,14 +109,14 @@ const auxiliaryWindows = new Map<string, BrowserWindow>()
  * Reveals the window a route already has, or builds it. Settings does not come through here: it
  * carries a section to announce and a close it may refuse, neither of which the other two have.
  */
-function openAuxiliaryWindow(hash: string, size: AuxiliarySize): BrowserWindow {
+export function openAuxiliaryWindow(hash: string, size: WindowSize, title?: string): BrowserWindow {
   const held = auxiliaryWindows.get(hash)
   if (held && !held.isDestroyed()) {
     revealWindow(held)
     return held
   }
 
-  const window = auxiliaryWindow(size)
+  const window = auxiliaryWindow(size, title)
   // Identity-checked, as `createMainWindow` is: an older window closing must not clear a slot a
   // newer one now holds.
   window.on('closed', () => {
@@ -153,7 +158,7 @@ export function createMainWindow(options: { deferShow?: boolean } = {}): Browser
     show: false,
     backgroundColor: chromeColor(),
     titleBarStyle: 'hiddenInset',
-    trafficLightPosition: { x: 16, y: 14 },
+    trafficLightPosition: TRAFFIC_LIGHTS,
     icon: WINDOW_ICON,
     webPreferences: WEB_PREFERENCES,
   })
@@ -359,10 +364,32 @@ export function openFileInfoWindow(path: string): BrowserWindow {
 export function openNewDocumentWindow(): BrowserWindow {
   return openAuxiliaryWindow(NEW_DOCUMENT_ROUTE, {
     width: 860,
-    height: 640,
+    height: 680,
     minWidth: 720,
     minHeight: 520,
   })
+}
+
+/**
+ * The shape the two windows that show a PICTURE share: full screen allowed, no title bar inset,
+ * and the monitor's own black behind the image so that nothing beside it tints the judgement.
+ */
+function monitorWindow(
+  size: WindowSize,
+  title: string,
+  over: Partial<WindowOptions> = {},
+): BrowserWindow {
+  return shown(
+    new BrowserWindow({
+      ...size,
+      show: false,
+      backgroundColor: MIRROR_BACKGROUND,
+      title,
+      icon: WINDOW_ICON,
+      webPreferences: WEB_PREFERENCES,
+      ...over,
+    }),
+  )
 }
 
 /** The one video return, held apart from the auxiliary ones — see `openMirrorWindow`. */
@@ -386,20 +413,11 @@ export function openMirrorWindow(): BrowserWindow {
     return mirrorWindow
   }
 
-  const window = new BrowserWindow({
-    width: 960,
-    height: 560,
-    minWidth: 320,
-    minHeight: 200,
-    show: false,
-    backgroundColor: MIRROR_BACKGROUND,
-    title: TRANSLATIONS[windowLanguage()].mirror.title,
-    icon: WINDOW_ICON,
-    webPreferences: WEB_PREFERENCES,
-  })
+  const window = monitorWindow(
+    { width: 960, height: 560, minWidth: 320, minHeight: 200 },
+    TRANSLATIONS[windowLanguage()].mirror.title,
+  )
 
-  trackWindowState(window)
-  window.once('ready-to-show', () => window.show())
   window.on('closed', () => {
     if (mirrorWindow === window) mirrorWindow = null
   })
@@ -423,20 +441,14 @@ export function openGameWindow(): BrowserWindow {
     return gameWindow
   }
 
-  const window = new BrowserWindow({
-    width: 1280,
-    height: 720,
-    minWidth: 480,
-    minHeight: 320,
-    show: false,
-    backgroundColor: MIRROR_BACKGROUND,
-    title: TRANSLATIONS[windowLanguage()].game.window.title,
-    icon: WINDOW_ICON,
-    webPreferences: WEB_PREFERENCES,
-  })
+  const window = monitorWindow(
+    { width: 1280, height: 720, minWidth: 480, minHeight: 320 },
+    TRANSLATIONS[windowLanguage()].game.window.title,
+    // 🛑 NO title bar, where the studio only insets its own: a strip of chrome over a game is a
+    // strip of somebody else's window. The lights stay — nothing else closes it with a mouse.
+    { titleBarStyle: 'hidden', trafficLightPosition: TRAFFIC_LIGHTS },
+  )
 
-  trackWindowState(window)
-  window.once('ready-to-show', () => window.show())
   window.on('closed', () => {
     // Identity-checked, as every other slot here is: an older window closing must not clear one
     // a newer game now holds, nor tell the studio that the game it just started is over.
@@ -447,6 +459,37 @@ export function openGameWindow(): BrowserWindow {
 
   load(window, { hash: GAME_WINDOW_ROUTE })
   gameWindow = window
+  return window
+}
+
+/** The one module window — one module at a time, as `openPlayerModuleWindow` explains. */
+let playerModuleWindow: BrowserWindow | null = null
+
+/**
+ * ONE window, turned towards whichever module is opened. It reloads rather than messaging the
+ * fragment across, so a window the system restores finds its subject in its own URL.
+ */
+export function openPlayerModuleWindow(assetId: string): BrowserWindow {
+  const hash = playerModuleRoute(assetId)
+  if (playerModuleWindow && !playerModuleWindow.isDestroyed()) {
+    revealWindow(playerModuleWindow)
+    load(playerModuleWindow, { hash })
+    return playerModuleWindow
+  }
+
+  // Framed like the studio and unlike the mirror or the game: this is a place one EDITS, and a
+  // native bar over the studio's own chrome read as another application's window.
+  const window = auxiliaryWindow(
+    { width: 1180, height: 720, minWidth: 720, minHeight: 480 },
+    TRANSLATIONS[windowLanguage()].playerWindow.title,
+  )
+
+  window.on('closed', () => {
+    if (playerModuleWindow === window) playerModuleWindow = null
+  })
+
+  load(window, { hash })
+  playerModuleWindow = window
   return window
 }
 

@@ -20,7 +20,7 @@ names the object involved and says what failed.
 | "Could not import “…”", "“…” is unreadable" | Import |
 | "Could not send “…”", "The tags of “…” did not reach the library", "The generation API refused a request", "The file could not be shown" | Library |
 | "Saving the document failed", "A layer could not be loaded", "Exporting the scene failed" | Document |
-| "This folder is not an IA Studio project", "The project could not be created in this folder", "The system could not open this file" | Project |
+| "This folder is not an AI Desktop Studio project", "The project could not be created in this folder", "The system could not open this file" | Project |
 | "Part of the interface could not be drawn", "A workspace’s stored layout could not be read" | Interface |
 
 Filter by **level** — information, warning, failure — or by **topic**: each is a menu whose
@@ -44,7 +44,7 @@ telling you what they are missing in order to fill up.
 
 | What you read | What it means |
 |---|---|
-| "No project open" | you need to create or open a project (`⌘N` / `⌘O`) |
+| "No project open" | you need to create or open a project (`⌘N` then one click, or `⌘O`) |
 | "No document open. Generate or open an asset to get started." | the centre of the window is waiting for a first tab |
 | "No asset yet. Generate something to get started." | the project's folder is still empty |
 | "No generation running." | nothing is generating right now — the generations list is empty |

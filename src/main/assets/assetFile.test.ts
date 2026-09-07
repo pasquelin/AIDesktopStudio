@@ -3,7 +3,13 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import type { Asset } from '@shared/domain/asset'
-import { DUPLICATE_NAME, freeAssetPath, moveAssetFile, moveAssetFileToFree } from './assetFile'
+import {
+  ASSET_DUPLICATE_NAME,
+  freeAnimationPath,
+  freeAssetPath,
+  moveAssetFile,
+  moveAssetFileToFree,
+} from './assetFile'
 
 let root = ''
 
@@ -104,7 +110,7 @@ describe('moving an asset file to its new name', () => {
 
     await expect(
       moveAssetFile(root, asset({ path: 'assets/img/asset_1.png' }), 'Ruelle'),
-    ).rejects.toThrow(DUPLICATE_NAME)
+    ).rejects.toThrow(ASSET_DUPLICATE_NAME)
 
     expect((await readdir(join(root, 'assets/img'))).sort()).toEqual(['Ruelle.png', 'asset_1.png'])
   })
@@ -197,5 +203,85 @@ describe('moving a file to a name the studio wrote itself', () => {
   it('leaves an asset with no file of ours alone', async () => {
     const linked = asset({ sourcePath: '/Users/x/rush.mov' })
     expect(await moveAssetFileToFree(root, linked, 'une ruelle')).toBe(undefined)
+  })
+})
+
+/**
+ * An animation is the one kind that lands in a FOLDER of its own. The folder carries the name —
+ * a rig calls its only clip `NlaTrack` or nothing at all — and the still then has somewhere to
+ * live beside it, which is how `resources/animations/` has been laid out since it shipped.
+ */
+describe('where an imported animation lands', () => {
+  const motion = (path: string): Asset => asset({ type: 'animation', name: 'Jump', path })
+
+  it('gives the clip a folder of the asset’s name, and the clip no name at all', async () => {
+    expect(await freeAnimationPath(root, 'assets/img', 'Jump', '.glb')).toBe(
+      'assets/img/Jump/animation.glb',
+    )
+    expect(await readdir(join(root, 'assets/img'))).toEqual(['Jump'])
+  })
+
+  it('suffixes the FOLDER when one of that name is taken, never the clip', async () => {
+    await freeAnimationPath(root, 'assets/img', 'Jump', '.glb')
+
+    expect(await freeAnimationPath(root, 'assets/img', 'Jump', '.glb')).toBe(
+      'assets/img/Jump 2/animation.glb',
+    )
+  })
+
+  // The extension travels: `ANIMATION_EXTENSIONS` takes `.fbx` too, and which file is inside a
+  // folder is read rather than spelled.
+  it('keeps the extension it was handed', async () => {
+    expect(await freeAnimationPath(root, 'assets/img', 'Walk', '.fbx')).toBe(
+      'assets/img/Walk/animation.fbx',
+    )
+  })
+
+  it('renames the folder rather than the clip, and carries the still along', async () => {
+    const path = await freeAnimationPath(root, 'assets/img', 'Jump', '.glb')
+    await put(path)
+    await put('assets/img/Jump/thumb.png')
+    await mkdir(join(root, 'assets/img/Jump/.sources'))
+    await put('assets/img/Jump/.sources/Jump.fbx')
+
+    expect(await moveAssetFile(root, motion(path), 'Saut')).toBe('assets/img/Saut/animation.glb')
+    expect((await readdir(join(root, 'assets/img/Saut'))).sort()).toEqual([
+      '.sources',
+      'animation.glb',
+      'thumb.png',
+    ])
+    expect(await readdir(join(root, 'assets/img/Saut/.sources'))).toEqual(['Jump.fbx'])
+  })
+
+  it('refuses a rename onto a folder another animation holds', async () => {
+    const path = await freeAnimationPath(root, 'assets/img', 'Jump', '.glb')
+    await put(path)
+    await freeAnimationPath(root, 'assets/img', 'Walk', '.glb')
+
+    await expect(moveAssetFile(root, motion(path), 'Walk')).rejects.toThrow(ASSET_DUPLICATE_NAME)
+  })
+
+  /**
+   * 🛑 The angle this is measured for rather than deduced: a clip a user dropped in by hand and
+   * called `animation.glb` reads exactly like one the studio laid out. Its parent is the
+   * animations folder itself, and carrying THAT along would rename every other clip's home.
+   */
+  it('leaves a folder alone when anything else lives in it', async () => {
+    await put('assets/img/animation.glb')
+    await put('assets/img/Ruelle.png')
+
+    expect(await moveAssetFile(root, motion('assets/img/animation.glb'), 'Saut')).toBe(
+      'assets/img/Saut.glb',
+    )
+    expect(await readdir(join(root, 'assets/img'))).toContain('Ruelle.png')
+  })
+
+  // An animation imported BEFORE the studio wrote folders sits flat, and its name is its file's.
+  it('renames a flat animation the way every other kind is renamed', async () => {
+    await put('assets/img/Jump.glb')
+
+    expect(await moveAssetFile(root, motion('assets/img/Jump.glb'), 'Saut')).toBe(
+      'assets/img/Saut.glb',
+    )
   })
 })

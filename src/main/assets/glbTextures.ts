@@ -1,13 +1,9 @@
 import { isRecord } from '@shared/guards'
+import { glbChunksOf, glbFrom, glbJson } from '@shared/domain/glbContainer'
 import { textureSlotsOf } from '@shared/domain/gltf'
+import type { ModelTextureUse } from '@shared/domain/asset'
 import type { PbrChannel } from '@shared/domain/material'
-
-/** `glTF` in ASCII, little-endian — the four bytes every `.glb` opens with. */
-const GLB_MAGIC = 0x46546c67
-const JSON_CHUNK = 0x4e4f534a
-const BIN_CHUNK = 0x004e4942
-const HEADER_BYTES = 12
-const CHUNK_HEADER_BYTES = 8
+import { compactBufferViews } from './glbBufferCompaction'
 
 /**
  * How a glTF texture slot maps onto the studio's own channels.
@@ -28,6 +24,119 @@ const CHANNEL_OF_SLOT: Record<string, PbrChannel> = {
   emissiveTexture: 'emissive',
 }
 
+type ExtractedMaterialSettings = ModelTextureUse['settings']
+
+function textureUse(
+  material: unknown,
+  materialIndex: number,
+  slot: string,
+  texture: unknown,
+  samplers: unknown[],
+): ModelTextureUse {
+  const held = isRecord(material) ? material : {}
+  const info = textureInfoOf(held, slot)
+  return {
+    materialIndex,
+    materialName: typeof held.name === 'string' ? held.name : `Material ${materialIndex + 1}`,
+    slot,
+    ...(CHANNEL_OF_SLOT[slot] ? { channel: CHANNEL_OF_SLOT[slot] } : {}),
+    sampling: samplingOf(info, texture, samplers),
+    settings: materialSettingsOf(held, info),
+  }
+}
+
+function samplingOf(
+  textureInfo: Record<string, unknown>,
+  texture: unknown,
+  samplers: unknown[],
+): ModelTextureUse['sampling'] {
+  const heldTexture = isRecord(texture) ? texture : {}
+  const samplerIndex = Number.isInteger(heldTexture.sampler) ? Number(heldTexture.sampler) : -1
+  const sampler = isRecord(samplers[samplerIndex]) ? samplers[samplerIndex] : {}
+  const extension = isRecord(textureInfo.extensions)
+    ? textureInfo.extensions.KHR_texture_transform
+    : undefined
+  const transform = isRecord(extension) ? extension : {}
+  return {
+    channel: Number.isInteger(transform.texCoord)
+      ? Number(transform.texCoord)
+      : Number.isInteger(textureInfo.texCoord)
+        ? Number(textureInfo.texCoord)
+        : 0,
+    wrapS: numberOr(sampler.wrapS, 10497),
+    wrapT: numberOr(sampler.wrapT, 10497),
+    minFilter: numberOr(sampler.minFilter, 9987),
+    magFilter: numberOr(sampler.magFilter, 9729),
+  }
+}
+
+function materialSettingsOf(
+  material: Record<string, unknown>,
+  textureInfo: Record<string, unknown>,
+): ExtractedMaterialSettings {
+  const pbr = isRecord(material.pbrMetallicRoughness) ? material.pbrMetallicRoughness : {}
+  const normal = isRecord(material.normalTexture) ? material.normalTexture : {}
+  const occlusion = isRecord(material.occlusionTexture) ? material.occlusionTexture : {}
+  const emissiveStrength = isRecord(material.extensions)
+    ? material.extensions.KHR_materials_emissive_strength
+    : undefined
+  const transform = isRecord(textureInfo.extensions)
+    ? textureInfo.extensions.KHR_texture_transform
+    : undefined
+  const textureTransform = isRecord(transform) ? transform : {}
+  return {
+    color: linearColor(pbr.baseColorFactor, '#ffffff'),
+    roughness: unitNumber(pbr.roughnessFactor, 1),
+    metalness: unitNumber(pbr.metallicFactor, 1),
+    normalScale: numberOr(normal.scale, 1),
+    aoIntensity: unitNumber(occlusion.strength, 1),
+    emissive: linearColor(material.emissiveFactor, '#000000'),
+    emissiveIntensity: isRecord(emissiveStrength)
+      ? numberOr(emissiveStrength.emissiveStrength, 1)
+      : 1,
+    tiling: vector2(textureTransform.scale, 1),
+    offset: vector2(textureTransform.offset, 0),
+    rotation: numberOr(textureTransform.rotation, 0),
+  }
+}
+
+function textureInfoOf(value: unknown, slot: string): Record<string, unknown> {
+  if (!isRecord(value)) return {}
+  for (const [key, child] of Object.entries(value)) {
+    if (key === slot && isRecord(child)) return child
+    const nested = textureInfoOf(child, slot)
+    if (Object.keys(nested).length > 0) return nested
+  }
+  return {}
+}
+
+function vector2(value: unknown, fallback: number): { x: number; y: number } {
+  return {
+    x: Array.isArray(value) ? numberOr(value[0], fallback) : fallback,
+    y: Array.isArray(value) ? numberOr(value[1], fallback) : fallback,
+  }
+}
+
+function unitNumber(value: unknown, fallback: number): number {
+  return Math.min(1, Math.max(0, numberOr(value, fallback)))
+}
+
+function numberOr(value: unknown, fallback: number): number {
+  return typeof value === 'number' && Number.isFinite(value) ? value : fallback
+}
+
+function linearColor(value: unknown, fallback: string): string {
+  if (!Array.isArray(value) || value.length < 3) return fallback
+  const bytes = value
+    .slice(0, 3)
+    .map(channel => Math.round(255 * linearToSrgb(unitNumber(channel, 0))))
+  return `#${bytes.map(byte => byte.toString(16).padStart(2, '0')).join('')}`
+}
+
+function linearToSrgb(value: number): number {
+  return value <= 0.0031308 ? value * 12.92 : 1.055 * value ** (1 / 2.4) - 0.055
+}
+
 export type EmbeddedTexture = {
   /** The picture exactly as the file holds it — never re-encoded, so nothing is lost. */
   bytes: Uint8Array
@@ -37,6 +146,49 @@ export type EmbeddedTexture = {
   channel?: PbrChannel
   /** The glTF slot it was found in — `baseColorTexture`. Names the asset the studio creates. */
   slot: string
+  uses: readonly ModelTextureUse[]
+}
+
+function usesByImage(
+  materials: unknown[],
+  textures: unknown[],
+  samplers: unknown[],
+): Map<number, ModelTextureUse[]> {
+  const uses = new Map<number, ModelTextureUse[]>()
+  materials.forEach((material, materialIndex) => {
+    for (const found of textureSlotsOf(material)) {
+      const source = sourceOf(textures[found.index])
+      if (source === undefined) continue
+      const use = textureUse(material, materialIndex, found.slot, textures[found.index], samplers)
+      const worn = uses.get(source)
+      if (worn) worn.push(use)
+      else uses.set(source, [use])
+    }
+  })
+  return uses
+}
+
+function texturesFrom(
+  uses: ReadonlyMap<number, ModelTextureUse[]>,
+  images: unknown[],
+  bufferViews: unknown[],
+  bin: Uint8Array,
+): EmbeddedTexture[] {
+  const found: EmbeddedTexture[] = []
+  for (const [source, image] of images.entries()) {
+    const picture = pictureOf(image, bufferViews, bin)
+    if (!picture) continue
+    const worn = uses.get(source) ?? []
+    const slots = worn.map(use => use.slot)
+    const channel = channelWornBy(slots)
+    found.push({
+      ...picture,
+      slot: slots[0] ?? `image${source + 1}`,
+      uses: worn,
+      ...(channel ? { channel } : {}),
+    })
+  }
+  return found
 }
 
 /**
@@ -50,41 +202,164 @@ export type EmbeddedTexture = {
  * and a model whose bytes are not a `.glb` is a normal thing to click on.
  */
 export function embeddedTextures(file: Uint8Array): EmbeddedTexture[] {
-  const chunks = chunksOf(file)
+  const chunks = glbChunksOf(file)
   if (!chunks) return []
 
-  const gltf: unknown = parseJson(chunks.json)
+  const gltf: unknown = glbJson(chunks.json)
   if (!isRecord(gltf)) return []
 
   const images = Array.isArray(gltf.images) ? gltf.images : []
   const textures = Array.isArray(gltf.textures) ? gltf.textures : []
   const bufferViews = Array.isArray(gltf.bufferViews) ? gltf.bufferViews : []
-  const materials = Array.isArray(gltf.materials) ? gltf.materials : []
+  // Roles come from material slots; unused images have no role to extract.
+  const uses = usesByImage(
+    Array.isArray(gltf.materials) ? gltf.materials : [],
+    textures,
+    Array.isArray(gltf.samplers) ? gltf.samplers : [],
+  )
+  return texturesFrom(uses, images, bufferViews, chunks.bin)
+}
 
-  // Walked from the MATERIALS rather than over `images`: a picture's role is the slot that uses
-  // it, and a file may declare images no material ever wears. Every slot wearing one picture is
-  // collected before any of them decides what it IS — see `channelWornBy`.
-  const slotsPerImage = new Map<number, string[]>()
-  for (const material of materials) {
-    for (const { slot, index } of textureSlotsOf(material)) {
-      const source = sourceOf(textures[index])
-      if (source === undefined) continue
+/** Removes every material image and its now-unreferenced binary views from a binary glTF. */
+export function withoutEmbeddedTextures(file: Uint8Array): Uint8Array {
+  const chunks = glbChunksOf(file)
+  if (!chunks) return file
+  const parsed = glbJson(chunks.json)
+  if (!isRecord(parsed)) return file
+  const imageViews = removeExtractedTextureReferences(parsed, chunks.bin)
+  if (!imageViews) return file
+  const referenced = bufferViewReferences(parsed)
+  const removable = new Set([...imageViews].filter(index => !referenced.has(index)))
+  const compacted = compactBufferViews(parsed, chunks.bin, removable)
+  return glbFrom({
+    ...chunks,
+    json: new TextEncoder().encode(JSON.stringify(parsed)),
+    bin: compacted,
+  })
+}
 
-      const worn = slotsPerImage.get(source)
-      if (worn) worn.push(slot)
-      else slotsPerImage.set(source, [slot])
+function removeExtractedTextureReferences(
+  parsed: Record<string, unknown>,
+  binary: Uint8Array,
+): Set<number> | null {
+  const images = Array.isArray(parsed.images) ? parsed.images : []
+  const textures = Array.isArray(parsed.textures) ? parsed.textures : []
+  const materials = Array.isArray(parsed.materials) ? parsed.materials : []
+  const removedImages = new Set(
+    images.flatMap((image, index) =>
+      pictureOf(image, bufferViewsOf(parsed), binary) ? [index] : [],
+    ),
+  )
+  if (removedImages.size === 0) return null
+  const imageViews = new Set(
+    [...removedImages].flatMap(index => {
+      const image = images[index]
+      return isRecord(image) && typeof image.bufferView === 'number' ? [image.bufferView] : []
+    }),
+  )
+  const imageRemap = retainedIndexes(images, removedImages)
+  const removedTextures = new Set<number>()
+  const keptTextures = textures.filter((texture, index) => {
+    const source = sourceOf(texture)
+    if (source === undefined || !removedImages.has(source)) {
+      remapTextureSource(texture, imageRemap)
+      return true
     }
+    removedTextures.add(index)
+    return false
+  })
+  const textureRemap = retainedIndexes(textures, removedTextures)
+
+  const keptImages = images.filter((_, index) => !removedImages.has(index))
+  parsed.images = keptImages
+  parsed.textures = keptTextures
+  if (keptImages.length === 0) delete parsed.images
+  if (keptTextures.length === 0) {
+    delete parsed.textures
+    delete parsed.samplers
   }
+  for (const material of materials) rewriteTextureSlots(material, textureRemap)
+  removeImageBasedLighting(parsed)
+  return imageViews
+}
 
-  const found: EmbeddedTexture[] = []
-  for (const [source, slots] of slotsPerImage) {
-    const picture = pictureOf(images[source], bufferViews, chunks.bin)
-    if (!picture) continue
-
-    const channel = channelWornBy(slots)
-    found.push({ ...picture, slot: slots[0] ?? '', ...(channel ? { channel } : {}) })
+function removeImageBasedLighting(parsed: Record<string, unknown>): void {
+  if (isRecord(parsed.extensions)) {
+    delete parsed.extensions.EXT_lights_image_based
+    if (Object.keys(parsed.extensions).length === 0) delete parsed.extensions
   }
+  const scenes = Array.isArray(parsed.scenes) ? parsed.scenes : []
+  for (const scene of scenes) {
+    if (!isRecord(scene) || !isRecord(scene.extensions)) continue
+    delete scene.extensions.EXT_lights_image_based
+    if (Object.keys(scene.extensions).length === 0) delete scene.extensions
+  }
+  for (const key of ['extensionsUsed', 'extensionsRequired']) {
+    if (!Array.isArray(parsed[key])) continue
+    const kept = parsed[key].filter(name => name !== 'EXT_lights_image_based')
+    if (kept.length > 0) parsed[key] = kept
+    else delete parsed[key]
+  }
+}
 
+function bufferViewsOf(gltf: Record<string, unknown>): unknown[] {
+  return Array.isArray(gltf.bufferViews) ? gltf.bufferViews : []
+}
+
+function retainedIndexes(
+  values: readonly unknown[],
+  removed: ReadonlySet<number>,
+): Map<number, number> {
+  const remap = new Map<number, number>()
+  let next = 0
+  values.forEach((_, index) => {
+    if (!removed.has(index)) remap.set(index, next++)
+  })
+  return remap
+}
+
+function remapTextureSource(texture: unknown, remap: ReadonlyMap<number, number>): void {
+  if (!isRecord(texture)) return
+  if (typeof texture.source === 'number') {
+    const next = remap.get(texture.source)
+    if (next !== undefined) texture.source = next
+  }
+  if (!isRecord(texture.extensions)) return
+  for (const extension of Object.values(texture.extensions)) {
+    if (!isRecord(extension) || typeof extension.source !== 'number') continue
+    const next = remap.get(extension.source)
+    if (next !== undefined) extension.source = next
+  }
+}
+
+function rewriteTextureSlots(value: unknown, remap: ReadonlyMap<number, number>): void {
+  if (Array.isArray(value)) {
+    for (const child of value) rewriteTextureSlots(child, remap)
+    return
+  }
+  if (!isRecord(value)) return
+
+  for (const [key, child] of Object.entries(value)) {
+    if (key === 'extras') continue
+    if (key.endsWith('Texture') && isRecord(child) && typeof child.index === 'number') {
+      const index = remap.get(child.index)
+      if (index === undefined) delete value[key]
+      else child.index = index
+    } else rewriteTextureSlots(child, remap)
+  }
+}
+
+function bufferViewReferences(value: unknown, found = new Set<number>()): Set<number> {
+  if (Array.isArray(value)) {
+    for (const child of value) bufferViewReferences(child, found)
+    return found
+  }
+  if (!isRecord(value)) return found
+
+  for (const [key, child] of Object.entries(value)) {
+    if (key === 'bufferView' && typeof child === 'number') found.add(child)
+    else bufferViewReferences(child, found)
+  }
   return found
 }
 
@@ -101,43 +376,6 @@ function channelWornBy(slots: readonly string[]): PbrChannel | undefined {
   const only = [...claimed]
 
   return claimed.size === 1 ? only[0] : undefined
-}
-
-/** The two chunks a `.glb` is made of, or null when the bytes are not one. */
-function chunksOf(file: Uint8Array): { json: Uint8Array; bin: Uint8Array } | null {
-  if (file.byteLength < HEADER_BYTES) return null
-
-  const view = new DataView(file.buffer, file.byteOffset, file.byteLength)
-  if (view.getUint32(0, true) !== GLB_MAGIC) return null
-
-  let json: Uint8Array | null = null
-  let bin: Uint8Array | null = null
-
-  let offset = HEADER_BYTES
-  while (offset + CHUNK_HEADER_BYTES <= file.byteLength) {
-    const length = view.getUint32(offset, true)
-    const kind = view.getUint32(offset + 4, true)
-    const start = offset + CHUNK_HEADER_BYTES
-    // A length that overruns the file is a truncated download, not a chunk: stop rather than
-    // hand a reader a window onto bytes that are not there.
-    if (start + length > file.byteLength) break
-
-    const body = file.subarray(start, start + length)
-    if (kind === JSON_CHUNK) json ??= body
-    if (kind === BIN_CHUNK) bin ??= body
-
-    offset = start + length
-  }
-
-  return json ? { json, bin: bin ?? new Uint8Array() } : null
-}
-
-function parseJson(bytes: Uint8Array): unknown {
-  try {
-    return JSON.parse(new TextDecoder().decode(bytes))
-  } catch {
-    return null
-  }
 }
 
 /**
@@ -176,17 +414,7 @@ function pictureOf(
   if (!isRecord(image)) return null
 
   const declared = image.mimeType
-
-  if (typeof image.uri === 'string') {
-    const bytes = dataUriBytes(image.uri)
-    if (!bytes) return null
-
-    // The URI's own type first: `mimeType` is optional for a `uri` image precisely because the
-    // URI carries it, and defaulting to PNG there wrote JPEG bytes into a file named `.png` —
-    // served as a PNG afterwards, by a name the bytes do not answer to.
-    const carried = /^data:([^;,]+)/.exec(image.uri)?.[1]
-    return { bytes, mimeType: typeof declared === 'string' ? declared : (carried ?? 'image/png') }
-  }
+  if (typeof image.uri === 'string') return dataPicture(image.uri, declared)
 
   const mimeType = typeof declared === 'string' ? declared : 'image/png'
   if (typeof image.bufferView !== 'number') return null
@@ -199,6 +427,17 @@ function pictureOf(
   if (length <= 0 || offset + length > bin.byteLength) return null
 
   return { bytes: bin.subarray(offset, offset + length), mimeType }
+}
+
+function dataPicture(
+  uri: string,
+  declared: unknown,
+): { bytes: Uint8Array; mimeType: string } | null {
+  const bytes = dataUriBytes(uri)
+  if (!bytes) return null
+  // Prefer the URI type because glTF permits `mimeType` to be absent for data URIs.
+  const carried = /^data:([^;,]+)/.exec(uri)?.[1]
+  return { bytes, mimeType: typeof declared === 'string' ? declared : (carried ?? 'image/png') }
 }
 
 function dataUriBytes(uri: string): Uint8Array | null {

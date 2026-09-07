@@ -14,8 +14,14 @@ import {
   mdiSoccer,
   mdiSphere,
   mdiSquareOutline,
+  mdiVectorPolyline,
 } from '@mdi/js'
-import { MESH_ENTRIES, type GeometryDescriptor, type MeshKind } from '@shared/domain/scene'
+import {
+  bezierPathOf,
+  MESH_ENTRIES,
+  type GeometryDescriptor,
+  type MeshKind,
+} from '@shared/domain/scene'
 
 export type MeshPrimitive = {
   kind: MeshKind
@@ -118,6 +124,24 @@ const MESH_BUILDERS: MeshBuilders = {
       radialSegments: 8,
       p: 2,
       q: 3,
+    }),
+  },
+  ribbon: {
+    icon: mdiVectorPolyline,
+    // Born on a rail of its own, so its points are dragged with the very handles a rail has.
+    create: () => ({
+      kind: 'ribbon',
+      path: bezierPathOf(
+        [
+          { x: 0, y: 0, z: 2 },
+          { x: 2, y: 0, z: 0 },
+          { x: 0, y: 0, z: -2 },
+        ],
+        false,
+      ),
+      width: 1,
+      height: 0.2,
+      segments: 32,
     }),
   },
   tube: {

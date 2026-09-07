@@ -98,7 +98,7 @@ type AssistantMemoryState = {
   stopIndex: () => Promise<void>
 }
 
-export const useAssistantMemory = create<AssistantMemoryState>()((set, get) => ({
+const assistantMemoryState: AssistantMemoryState = {
   memories: [],
   asked: false,
   scope: 'project',
@@ -111,16 +111,24 @@ export const useAssistantMemory = create<AssistantMemoryState>()((set, get) => (
     // 🛑 Subscribing costs nothing; reloading opens a thread and a database, and the settings
     // window connects this from its root — hence only once the panel has ASKED.
     const stopChanges = bridge.memory.onChanged(scope => {
-      if (bursting || scope !== get().scope || !get().loaded) return
-      void get().reload()
+      if (
+        bursting ||
+        scope !== useAssistantMemory.getState().scope ||
+        !useAssistantMemory.getState().loaded
+      )
+        return
+      void useAssistantMemory.getState().reload()
     })
     const stopSteps = bridge.memory.onIndexed(progress => {
-      if (progress.scope !== get().scope) return
+      if (progress.scope !== useAssistantMemory.getState().scope) return
 
       // Cleared at the end rather than left showing « 40 / 40 »: a bar that never goes away is
       // a bar that stops meaning « something is happening ».
       const done = progress.done >= progress.total
-      set({ indexing: done ? null : progress, pending: progress.total - progress.done })
+      useAssistantMemory.setState({
+        indexing: done ? null : progress,
+        pending: progress.total - progress.done,
+      })
     })
     return () => {
       stopChanges()
@@ -131,21 +139,24 @@ export const useAssistantMemory = create<AssistantMemoryState>()((set, get) => (
   look: async (scope, query) => {
     // The bar belongs to the scope that was showing: a run under way in the other one is not
     // this panel's business, and `onIndexed` filters on the scope anyway.
-    const moved = scope !== get().scope
-    set({ scope, query, ...(moved ? { indexing: null } : {}) })
-    await get().reload()
+    const moved = scope !== useAssistantMemory.getState().scope
+    useAssistantMemory.setState({ scope, query, ...(moved ? { indexing: null } : {}) })
+    await useAssistantMemory.getState().reload()
     // Here and not in `reload`: what is left to embed belongs to the SCOPE, so it is read when
     // the scope changes and when the panel first asks — never on a filter the count ignores.
-    if (moved || !get().asked) {
-      set({ asked: true, pending: await orElse(memoryBridge()?.pending(scope), 0) })
+    if (moved || !useAssistantMemory.getState().asked) {
+      useAssistantMemory.setState({
+        asked: true,
+        pending: await orElse(memoryBridge()?.pending(scope), 0),
+      })
     }
   },
 
   reload: async () => {
-    const { scope, query } = get()
+    const { scope, query } = useAssistantMemory.getState()
     // Cleared first: a scope just changed leaves the OTHER scope's rows on screen, and `loaded`
     // saying true about them is a panel claiming they are the answer.
-    set({ loaded: false })
+    useAssistantMemory.setState({ loaded: false })
 
     // 🛑 The listing alone: `pending` is a `LEFT JOIN` over EVERY memory of the scope and ignores
     // the query, so counting it here made each keystroke pay a scan. Read when the scope moves.
@@ -154,35 +165,44 @@ export const useAssistantMemory = create<AssistantMemoryState>()((set, get) => (
     // 🛑 Dropped when the question moved on: two reads in flight — a scope switch, or a write
     // announced mid-switch — can settle out of order, and the slower one would paint the other
     // scope's rows and call them loaded.
-    if (get().scope !== scope || get().query !== query) return
+    if (
+      useAssistantMemory.getState().scope !== scope ||
+      useAssistantMemory.getState().query !== query
+    )
+      return
 
-    set({ memories, loaded: true })
+    useAssistantMemory.setState({ memories, loaded: true })
   },
 
   // No optimistic write, unlike the context panel: the id and the date come from the main
   // process, so there is nothing truthful to draw before the answer arrives.
-  remember: async draft => await orElse(memoryBridge()?.remember(get().scope, draft), null),
+  remember: async draft =>
+    await orElse(memoryBridge()?.remember(useAssistantMemory.getState().scope, draft), null),
 
   /**
    * Reloaded here rather than left to the change event: the panel is what shows the row, and a
    * pinned memory still offering « Pin » is the whole gesture failing in front of the person.
    */
   amend: async (id, patch) => {
-    const amended = await amendedIn(get().scope, id, patch)
-    if (amended) await get().reload()
+    const amended = await amendedIn(useAssistantMemory.getState().scope, id, patch)
+    if (amended) await useAssistantMemory.getState().reload()
     return amended
   },
 
   forget: async id => {
-    const forgotten = await orElse(memoryBridge()?.forget(get().scope, id), false)
-    if (forgotten) await get().reload()
+    const forgotten = await orElse(
+      memoryBridge()?.forget(useAssistantMemory.getState().scope, id),
+      false,
+    )
+    if (forgotten) await useAssistantMemory.getState().reload()
     return forgotten
   },
 
-  rebuild: async () => await orElse(memoryBridge()?.rebuild(get().scope), 0),
+  rebuild: async () =>
+    await orElse(memoryBridge()?.rebuild(useAssistantMemory.getState().scope), 0),
 
   reset: async () => {
-    await orElse(memoryBridge()?.reset(get().scope), undefined)
+    await orElse(memoryBridge()?.reset(useAssistantMemory.getState().scope), undefined)
   },
 
   /** One reload at the end and not one per memory — see `amendedAll`. */
@@ -190,25 +210,28 @@ export const useAssistantMemory = create<AssistantMemoryState>()((set, get) => (
     // Linked BEFORE it is archived, so what was tidied away still says what it stood beside.
     // `linkTo` and not `links`: the union is computed in the store, over what stands there.
     const merged = await amendedAll(
-      get().scope,
-      duplicatesIn(get().memories).flatMap(([keeper, ...rest]) =>
+      useAssistantMemory.getState().scope,
+      duplicatesIn(useAssistantMemory.getState().memories).flatMap(([keeper, ...rest]) =>
         keeper
           ? rest.map((one): MemoryAmendment => [one.id, { state: 'archived', linkTo: [keeper.id] }])
           : [],
       ),
     )
 
-    await get().reload()
+    await useAssistantMemory.getState().reload()
     return merged
   },
 
   archiveStale: async now => {
     const archived = await amendedAll(
-      get().scope,
-      staleIn(get().memories, now).map((one): MemoryAmendment => [one.id, { state: 'archived' }]),
+      useAssistantMemory.getState().scope,
+      staleIn(useAssistantMemory.getState().memories, now).map((one): MemoryAmendment => [
+        one.id,
+        { state: 'archived' },
+      ]),
     )
 
-    await get().reload()
+    await useAssistantMemory.getState().reload()
     return archived
   },
 
@@ -237,17 +260,20 @@ export const useAssistantMemory = create<AssistantMemoryState>()((set, get) => (
     return written !== null
   },
 
-  compact: async () => await orElse(memoryBridge()?.compact(get().scope), 0),
+  compact: async () =>
+    await orElse(memoryBridge()?.compact(useAssistantMemory.getState().scope), 0),
 
   index: async () => {
-    await orElse(memoryBridge()?.index(get().scope), undefined)
+    await orElse(memoryBridge()?.index(useAssistantMemory.getState().scope), undefined)
   },
 
   stopIndex: async () => {
-    await orElse(memoryBridge()?.stopIndex(get().scope), undefined)
+    await orElse(memoryBridge()?.stopIndex(useAssistantMemory.getState().scope), undefined)
     // 🛑 Cleared HERE: an aborted run leaves `sweep`'s loop without a last `onProgress`, so no
     // event ever says it ended — and the panel offered Stop for the rest of the session, with
     // Embed unreachable behind it.
-    set({ indexing: null })
+    useAssistantMemory.setState({ indexing: null })
   },
-}))
+}
+
+export const useAssistantMemory = create<AssistantMemoryState>()(() => assistantMemoryState)

@@ -97,4 +97,26 @@ describe('keyboard and pointer read off the page', () => {
 
     expect(input.state().held).toEqual([])
   })
+
+  it('reads standard gamepad axes and analog buttons with the keyboard state', () => {
+    input = createDomInput(target, () => [
+      {
+        id: 'DualSense',
+        index: 0,
+        mapping: 'standard',
+        axes: [0, -1],
+        buttons: [0, 0.8],
+      },
+    ])
+
+    expect(input.state().gamepads).toEqual([
+      {
+        id: 'DualSense',
+        index: 0,
+        mapping: 'standard',
+        axes: [0, -1],
+        buttons: [0, 0.8],
+      },
+    ])
+  })
 })

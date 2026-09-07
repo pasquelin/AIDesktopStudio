@@ -10,6 +10,8 @@ import { PBR_CHANNELS, slotForChannel, type MaterialSettings } from '@shared/dom
 import { cachedOn } from '@/engines/core/cachedOn'
 import type { ChannelSet, MaterialState } from '@/engines/material/materialState'
 import { loadMaterialSource, wornMaterialOf } from '@/stores/materialSources'
+import { assetsById, rememberAssets, useAssets } from '@/stores/assets'
+import { getBridge } from '@/services/bridge'
 
 /**
  * What a model's dress is worth to ONE of its material slots — the port every scene takes.
@@ -18,6 +20,7 @@ import { loadMaterialSource, wornMaterialOf } from '@/stores/materialSources'
  * The cavity, the two ranges and the green flip are dropped — a scene draws no such shader.
  */
 export function wornModelDress(dress: ModelDressRef, slot: number): ModelDress | null {
+  if (dress.kind === 'plain') return PLAIN_DRESS
   if (dress.kind === 'image') return coveredBy(dress.assetId)
 
   const materialId = dress.documentIds[slot]
@@ -30,6 +33,21 @@ export function wornModelDress(dress: ModelDressRef, slot: number): ModelDress |
   return null
 }
 
+export function extractedModelDress(assetId: string): ModelDressRef | undefined {
+  const documentIds = assetsById(useAssets.getState()).get(assetId)?.modelMaterialIds
+  return documentIds ? { kind: 'materials', documentIds } : undefined
+}
+
+export async function prepareExtractedModelDress(assetId: string): Promise<void> {
+  if (assetsById(useAssets.getState()).has(assetId)) return
+  const bridge = getBridge()
+  if (!bridge) return
+  const assets = await bridge.assets.search({ ids: [assetId], limit: 1 })
+  rememberAssets(assets)
+}
+
+const PLAIN_DRESS: ModelDress = Object.freeze({ textures: {}, fileTextures: false })
+
 /** Asked once per SLOT of every model wearing it, on every refresh — held against its state. */
 const dresses = new WeakMap<MaterialState, ModelDress>()
 
@@ -39,13 +57,13 @@ const dresses = new WeakMap<MaterialState, ModelDress>()
  */
 const covers = new Map<string, ModelDress>()
 
-function coveredBy(assetId: string): ModelDress | null {
-  if (!isWorn(assetId)) return null
+function coveredBy(assetId: string): ModelDress {
+  if (!isWorn(assetId)) return PLAIN_DRESS
 
   const held = covers.get(assetId)
   if (held) return held
 
-  const made: ModelDress = { textures: { map: { assetId } } }
+  const made: ModelDress = { textures: { map: { assetId } }, fileTextures: false }
   covers.set(assetId, made)
   return made
 }
@@ -63,7 +81,13 @@ function slotsOf(channels: ChannelSet): Partial<Record<TextureSlot, TextureRef>>
   for (const channel of PBR_CHANNELS) {
     const slot = slotForChannel(channel)
     const held = channels[channel]
-    if (slot && held) slots[slot] = { assetId: held.assetId }
+    if (slot && held) {
+      slots[slot] = {
+        assetId: held.assetId,
+        ...(held.transform ? { transform: held.transform } : {}),
+        ...(held.sampling ? { sampling: held.sampling } : {}),
+      }
+    }
   }
 
   return slots

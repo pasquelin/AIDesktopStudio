@@ -2,12 +2,12 @@ import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { SettingPath } from '@shared/domain/settingsPath'
 import { WINDOW_HELP } from '@/components/windowStyles'
-import { cn } from '@/helpers/cn'
 import { useDictation } from '@/stores/dictation'
 import { useSettings } from '@/stores/settings'
 import { useSettingsDraft, useSettingValue } from '@/stores/settingsDraft'
 import { SettingLine } from './Setting/SettingLine'
-import { SETTING_COLUMN, SETTING_SELECT } from './settingStyles'
+import { SETTING_COLUMN } from './settingStyles'
+import { WindowSelect } from '@/components/WindowSelect'
 import { SettingRestoreButton } from './Setting/SettingRestoreButton'
 
 /** No descriptor names it — its options are whatever is plugged in — but the path is a leaf. */
@@ -63,12 +63,12 @@ export function DictationSettings() {
           ) : undefined
         }
       >
-        <select
+        <WindowSelect
           id={FIELD_ID}
           data-sc="field:dictation.device"
           // Wider than the shared cap: the registry rows it was drawn for hold short words, and a
           // device reads « MacBook Pro Microphone (Built-in) ».
-          className={cn(SETTING_SELECT, 'max-w-md')}
+          className="w-full max-w-md"
           value={current}
           onChange={event => stage(DEVICE, event.target.value || undefined)}
         >
@@ -80,7 +80,7 @@ export function DictationSettings() {
               {device.label || device.id}
             </option>
           ))}
-        </select>
+        </WindowSelect>
 
         <SettingRestoreButton
           restorable={current !== ''}

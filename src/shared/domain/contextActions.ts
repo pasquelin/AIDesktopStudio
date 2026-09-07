@@ -70,6 +70,10 @@ export const CONTEXT_ACTIONS: readonly AssistantAction[] = [
     commitment: 'files',
     repeatable: true,
     reach: 'mcp',
+    capabilities: {
+      targets: ['projectContext'],
+      documentAffinity: 'transversal',
+    },
     fields: [
       {
         key: 'cardId',

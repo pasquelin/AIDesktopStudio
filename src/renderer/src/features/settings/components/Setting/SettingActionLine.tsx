@@ -1,13 +1,9 @@
 import { HINT_LEFT } from '@/helpers/tooltip'
-import {
-  WINDOW_ACTION,
-  WINDOW_ACTION_DANGER,
-  WINDOW_ACTION_QUIET,
-  WINDOW_HELP,
-} from '@/components/windowStyles'
+import { WINDOW_HELP } from '@/components/windowStyles'
 import { SettingLine } from './SettingLine'
+import { WindowButton, type WindowButtonVariant } from '@/components/WindowButton'
 
-/** What paints the button, where nothing is being confirmed — see `WINDOW_ACTION_QUIET`. */
+/** What paints the button, where nothing is being confirmed. */
 export type SettingActionTone = 'action' | 'quiet'
 
 export type SettingActionLineProps = {
@@ -42,16 +38,14 @@ export function SettingActionLine({
   tone = 'action',
   onRun,
 }: SettingActionLineProps) {
+  const variant: WindowButtonVariant = confirm ? 'danger' : tone === 'quiet' ? 'quiet' : 'primary'
   return (
     <SettingLine title={title} help={<p className={WINDOW_HELP}>{help}</p>}>
-      <button
-        type="button"
+      <WindowButton
         // The help under the pointer too: a narrow window pushes the sentence beside the row out
         // of sight well before it takes the button with it.
         {...HINT_LEFT(help)}
-        className={
-          confirm ? WINDOW_ACTION_DANGER : tone === 'quiet' ? WINDOW_ACTION_QUIET : WINDOW_ACTION
-        }
+        variant={variant}
         disabled={disabled}
         // Asked for once, plainly: what these erase no Cancel button covers.
         onClick={() => {
@@ -59,7 +53,7 @@ export function SettingActionLine({
         }}
       >
         {button}
-      </button>
+      </WindowButton>
     </SettingLine>
   )
 }

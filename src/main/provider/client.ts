@@ -164,14 +164,20 @@ function reducing(note: (error: unknown) => void) {
  * lines, and the rule that matters here is the one it would take one forgetful copy to break.
  */
 export function reducedBy(scope: string) {
-  return reducing(error => {
-    // Logged where the credentials already live: reduced to a code, neither the renderer nor
-    // anyone reading a bug report could say which call the API refused.
-    log.error(scope, describeFailure(error))
-    // Every API failure the studio reduces passes here — which is why the journal is fed from
-    // this one place rather than from each handler that happens to remember.
-    sink?.(scope, persistableFailure(error))
-  })
+  return reducing(error => noteFailure(scope, error))
+}
+
+// What every reduced failure leaves behind — log line and journal entry — for a caller that
+// answers a page instead of throwing, and would otherwise leave nothing at all.
+export function noteFailure(scope: string, error: unknown): void {
+  // No credentials is a state, not a refused call: there was never a request to describe.
+  if (error instanceof NotAuthenticatedError) return
+  // Logged where the credentials already live: reduced to a code, neither the renderer nor
+  // anyone reading a bug report could say which call the API refused.
+  log.error(scope, describeFailure(error))
+  // Every API failure the studio reduces passes here — which is why the journal is fed from
+  // this one place rather than from each handler that happens to remember.
+  sink?.(scope, persistableFailure(error))
 }
 
 /**

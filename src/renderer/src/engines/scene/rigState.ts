@@ -8,7 +8,7 @@
  * Pure, like `bonePicking.ts`: three runs under jsdom without a GPU, and every question here is
  * about the shape of a tree.
  */
-import { Box3, Matrix4, Mesh, Vector3, type AnimationClip, type Object3D } from 'three'
+import { Box3, Matrix4, Mesh, Vector3, type AnimationClip, type Bone, type Object3D } from 'three'
 import type { HumanoidRole } from '@shared/domain/humanoid'
 import { boneRolesOf } from './boneRoles'
 import type { Bounds } from './rigFit'
@@ -65,10 +65,25 @@ export type RigState = {
    * inspector reads as `noGeometry` — nulling that one too would drop the message in silence.
    */
   bounds: Bounds | null
+  /**
+   * The mesh's own vertices, subsampled, in the space the bones are hung in — what pulls a fitted
+   * joint inside the body rather than onto the envelope. `null` beside a `null` box, and empty
+   * for a mesh holding no vertex at all.
+   */
+  points: Float32Array | null
 }
 
+/**
+ * How many vertices a fit is handed at most.
+ *
+ * Every one of them is walked once per joint, and a character can carry a million: at fifty-two
+ * joints that is a walk nobody would wait for. A regular stride keeps the SHAPE — which is all a
+ * cross-section needs — where taking the first N would hand it one limb and nothing else.
+ */
+const FIT_SAMPLE = 30_000
+
 /** three marks its bones with a flag; `instanceof` would miss one from another three instance. */
-export function isBoneObject(object: Object3D): boolean {
+export function isBoneObject(object: Object3D): object is Bone {
   return Reflect.get(object, 'isBone') === true
 }
 
@@ -116,13 +131,15 @@ function walkBones(root: Object3D): { bones: SkeletonBone[]; boneCount: number }
 export function rigStateOf(root: Object3D, clips: readonly AnimationClip[] = []): RigState {
   const { bones, boneCount } = walkBones(root)
   const status = statusOf(root, bones, boneCount, clips.length > 0)
+  const measured = status === 'staticMesh' ? measuredMeshOf(root) : null
 
   return {
     status,
     bones,
     boneNames: bones.map(bone => bone.name),
     boneCount,
-    bounds: status === 'staticMesh' ? boundsOf(root) : null,
+    bounds: measured?.bounds ?? null,
+    points: measured?.points ?? null,
   }
 }
 
@@ -134,15 +151,21 @@ export function rigStateOf(root: Object3D, clips: readonly AnimationClip[] = [])
  * skeleton wherever the model happens to stand in the scene, and scale it by whatever scale the
  * node wears.
  *
- * A bare mesh alone, and that is not an optimisation: `setFromObject` walks a `SkinnedMesh`
- * through its bones, and one whose geometry carries no skin attributes throws inside three.
+ * Public because a hand is fitted long after the mesh stopped being bare, and needs the same
+ * points on a model that carries bones.
  */
-function boundsOf(root: Object3D): Bounds {
+export function measuredMeshOf(root: Object3D): { bounds: Bounds; points: Float32Array } {
   const box = new Box3()
   const point = new Vector3()
+  const kept: number[] = []
 
   root.updateWorldMatrix(false, true)
   const intoRoot = new Matrix4().copy(root.matrixWorld).invert()
+
+  // One pass, both answers: the walk over every vertex is the expensive part, and doing it twice
+  // to measure and then to sample would double the wait on a million-vertex character.
+  let seen = 0
+  const stride = Math.max(1, Math.ceil(vertexCountOf(root) / FIT_SAMPLE))
 
   root.traverse(object => {
     if (!(object instanceof Mesh)) return
@@ -151,12 +174,26 @@ function boundsOf(root: Object3D): Bounds {
     const toRoot = new Matrix4().multiplyMatrices(intoRoot, object.matrixWorld)
     for (let vertex = 0; vertex < position.count; vertex += 1) {
       box.expandByPoint(point.fromBufferAttribute(position, vertex).applyMatrix4(toRoot))
+      if (seen % stride === 0) kept.push(point.x, point.y, point.z)
+      seen += 1
     }
   })
 
   // `Box3` starts inverted, so a mesh with no vertex would place bones at the ends of the world.
   // Zeroes rather than `null`: that box is the route to `noGeometry`, the note the user reads.
-  return box.isEmpty() ? EMPTY_BOUNDS : { min: { ...box.min }, max: { ...box.max } }
+  return {
+    bounds: box.isEmpty() ? EMPTY_BOUNDS : { min: { ...box.min }, max: { ...box.max } },
+    points: new Float32Array(kept),
+  }
+}
+
+/** How many vertices the model holds, for the stride the sample walks with. */
+function vertexCountOf(root: Object3D): number {
+  let total = 0
+  root.traverse(object => {
+    if (object instanceof Mesh) total += object.geometry.getAttribute('position').count
+  })
+  return total
 }
 
 const EMPTY_BOUNDS: Bounds = { min: { x: 0, y: 0, z: 0 }, max: { x: 0, y: 0, z: 0 } }

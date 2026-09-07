@@ -8,6 +8,7 @@ import {
 } from '@shared/domain/assistant'
 import { isRecord } from '@shared/guards'
 import { stableKey } from '@shared/hash'
+import { byCodeUnit } from '@shared/text'
 import { englishText } from '@shared/i18n'
 
 /**
@@ -191,7 +192,21 @@ export type AssistantTurn = {
    * finished, and a person told nothing would take a half-done job for a finished one.
    */
   ending?: 'halted' | 'stopped'
+  /**
+   * The opening answer neither called nor asked, and was sent back once — see `chainOn`. Read
+   * by the next round as the reason it is being asked again.
+   */
+  nudged?: boolean
 }
+
+/**
+ * 🛑 What a sent-back opening answer is told. A first answer with no call and no question was,
+ * measured 2026-09-02, mostly a recital of the state block: « il y a déjà une lumière
+ * directionnelle », three runs out of three, `scene.state` never called.
+ */
+export const NUDGE =
+  'You neither called nor asked: what the studio holds is READ, never recalled. Call the read ' +
+  'that answers, or "ask". If there is truly nothing to call, answer again.'
 
 /**
  * The conversation as the model reads it: one block per turn, oldest first.
@@ -256,34 +271,13 @@ function blockOf(turn: AssistantTurn): string {
   const lines = [`The person said: ${turn.said}`]
   if (turn.answered !== '') lines.push(`You answered: ${turn.answered}`)
 
-  for (const step of turn.steps) {
-    if (step.refusal !== null) {
-      // 🛑 The refusal's own sentence and nothing more. A repair named here would name an
-      // ACTION, and this history reaches every door — including the ones shown fourteen actions,
-      // where `parseReply` refuses a whole reply for naming a fifteenth. `WIDE_RULES` is where
-      // advice that names an action belongs, because only there is it filtered by door.
-      // The detail names a FIELD, never an action, so it stays inside the rule above: a caller
-      // told only "bad input" sends the same call again, which is what this exists to stop.
-      const why = englishText(refusalKey(step.refusal))
-      lines.push(
-        `You tried ${step.action}, refused: ${why}${step.detail === undefined ? '' : ` — ${step.detail}`}`,
-      )
-      continue
-    }
-
-    // The answer, not just the fact: without it a model that has just searched cannot open what
-    // it found, and asks for the same search again. Written inline rather than bound to a name —
-    // `no-hardcoded-text.test.ts` reads a named sentence as one bound for a screen.
-    lines.push(
-      step.data === undefined
-        ? `You ran ${step.action}.`
-        : `You ran ${step.action}. It answered: ${resultLine(step.data)}`,
-    )
-  }
+  for (const step of turn.steps) lines.push(stepLine(step))
 
   // 🛑 ONE line for the pair: `blockWithin` keeps a contiguous TAIL, so split in two a long
   // question was cut while its answer stayed, and the round read an answer to nothing.
   for (const asked of turn.asks) lines.push(`You asked: ${asked.question} — ${cameBack(asked)}`)
+
+  if (turn.nudged) lines.push(NUDGE)
 
   // Said rather than left out: a turn that shows as nothing at all would have the model repeat
   // the sentence it already failed on, instead of trying it another way.
@@ -294,15 +288,38 @@ function blockOf(turn: AssistantTurn): string {
   return lines.join('\n')
 }
 
+function stepLine(step: AssistantTurn['steps'][number]): string {
+  if (step.refusal !== null) {
+    const why = englishText(refusalKey(step.refusal))
+    return `You tried ${step.action}, refused: ${why}${step.detail === undefined ? '' : ` — ${step.detail}`}`
+  }
+
+  return step.data === undefined
+    ? `You ran ${step.action}.`
+    : `You ran ${step.action}. It answered: ${resultLine(step.data)}`
+}
+
 /**
  * 🛑 What a relative call is keyed by, so the same one cannot be applied twice in one turn.
  *
  * An absolute call repeated writes the same value; a RELATIVE one adds again. Measured on the
  * bench pass of 2026-08-26: « 20 degrés de plus » was sent twice and turned the cube by 40.
+ *
+ * 🛑 The NUMBERS are left out of the key, and that is the whole of it: a model that second-guesses
+ * its own arithmetic sends the same change again under another figure, and the two land one on
+ * top of the other. Measured 2026-09-02 — « 50 cm à droite » went out as `positionX: 0.5` then as
+ * `positionX: 2.5`, leaving the sphere three metres out, and « 20 degrés de plus » was sent twice
+ * as 0.3490658503988659 then 0.34906585, which the whole-input key read as two different calls.
  */
 export function repeatKeyOf(action: ActionName, input: Record<string, unknown>): string | null {
-  return input.relative === true ? `${action} ${JSON.stringify(input)}` : null
+  if (input.relative !== true) return null
+
+  const named = Object.fromEntries(Object.entries(input).filter(([, one]) => !isNumber(one)))
+  const moved = Object.keys(input).filter(one => isNumber(input[one]))
+  return `${action} ${stableKey(named)} ${[...moved].sort(byCodeUnit).join(',')}`
 }
+
+const isNumber = (value: unknown): boolean => typeof value === 'number'
 
 /**
  * Whether this TURN already ran that very relative call, and got it done.

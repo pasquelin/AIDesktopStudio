@@ -9,22 +9,11 @@
  * No three.js here on purpose: this is reached from the door that creates a document, which the
  * rail and the home page both press, and neither may pull a renderer in to open a tab.
  */
+import { EMPTY_TIMELINE, sheetFromAnimated, type AnimationTimeline } from '@shared/domain/animation'
+import { newComponent, withComponentField } from '@shared/domain/componentRegistry'
 import {
-  EMPTY_TIMELINE,
-  SCENE_SUBJECT_ID,
-  sheetFromAnimated,
-  type AnimationTimeline,
-  type AnimationTrack,
-} from '@shared/domain/animation'
-import { newComponent } from '@shared/domain/componentRegistry'
-import {
-  postEffect,
-  readParams,
-  type PostEffect,
-  type PostEffectId,
-} from '@shared/domain/postProcessing'
-import { SECOND, type Us } from '@shared/domain/time'
-import {
+  DEFAULT_CAMERA,
+  DEFAULT_GROUND,
   DEFAULT_WORLD,
   type MaterialDescriptor,
   type ScenePlay,
@@ -37,15 +26,65 @@ import {
   type SceneTemplateId,
 } from '@shared/domain/sceneTemplate'
 import { createDefaultScene } from './defaultScene'
+import { airfieldNodes } from './airfieldLevel'
+import { carNodes } from './carNodes'
+import { CIRCUIT_START, CIRCUIT_START_YAW, circuitNodes } from './circuitLevel'
+import { LYING_FLAT } from './levelParts'
+import { MOUNTAIN_WORLD, mountainNodes } from './mountainLevel'
 import { presetPatch } from './environmentPresets'
-import { cameraNode, lightNode, meshNode, pathNode, transformAt } from './nodeFactory'
+import { planeNodes } from './planeNodes'
+import {
+  aimedFrom,
+  armRest,
+  cameraNode,
+  groupNode,
+  lightNode,
+  meshNode,
+  pathNode,
+  playerModuleNodes,
+  transformAt,
+} from './nodeFactory'
 import { playgroundNodes } from './playgroundLevel'
+import { postProcessingTemplate } from './postProcessingTemplate'
+import { DEFAULT_ROLE_PATHS } from '@shared/domain/folderRole'
+import { documentPathFor } from '@shared/domain/documentName'
+import { refToString } from '@shared/domain/ref'
+import type { TemplateScriptId } from '@shared/domain/templateScript'
 import type { SceneNode, SceneState } from './sceneState'
 
 const ORIGIN: Vector3 = { x: 0, y: 0, z: 0 }
 
-/** A `plane` stands upright, and a floor is the one thing that must not. */
-const LYING_FLAT: Vector3 = { x: -Math.PI / 2, y: 0, z: 0 }
+/**
+ * The same node, carrying the script that will drive it.
+ *
+ * 🛑 A template SHOWS: a player who walks off the built-in contexts alone leaves nothing in the
+ * project to read, and nothing to change. `seedSceneScripts` writes the file this names.
+ */
+function scripted(node: SceneNode, script: TemplateScriptId, folder: string): SceneNode {
+  return {
+    ...node,
+    components: [
+      ...(node.components ?? []),
+      // 🛑 A `script:<path>` REFERENCE, never the bare id: the kernel keys its modules by that
+      // string, and anything else answers « script never loaded » without opening in the inspector.
+      withComponentField(
+        newComponent('Script'),
+        'script',
+        refToString({ kind: 'script', path: documentPathFor(script, 'script', folder) }),
+      ),
+    ],
+  }
+}
+
+/** Its FIRST node carries it — a machine's own body, a module's root. */
+function scriptedFirst(
+  nodes: readonly SceneNode[],
+  script: TemplateScriptId,
+  folder: string,
+): readonly SceneNode[] {
+  const [first, ...rest] = nodes
+  return first ? [scripted(first, script, folder), ...rest] : nodes
+}
 
 /**
  * The pitch that aims a camera standing at `height`, `distance` away on the +Z axis, at a point
@@ -68,6 +107,35 @@ function aimedCamera(height: number, distance: number, targetHeight = 0, targetZ
   const rotation = { x: pitchTowards(height, distance, targetHeight), y: 0, z: 0 }
   return cameraNode(transformAt({ x: 0, y: height, z: targetZ + distance }, rotation))
 }
+
+/**
+ * A camera on an arm, wired to what it films, and SEATED where the arm will put it — see
+ * `armRest`. Named parts, so an author can read the pair in the outliner and retune it.
+ */
+function cameraRig(
+  machine: readonly [SceneNode, ...SceneNode[]],
+  over: Record<string, string | number> = {},
+): readonly SceneNode[] {
+  const subject = machine[0]
+  let arm = newComponent('SpringArm')
+  for (const [key, value] of Object.entries({
+    subject: subject.name,
+    camera: CAMERA_NAME,
+    ...over,
+  })) {
+    arm = withComponentField(arm, key, value)
+  }
+  // 🛑 The NODE's own pose, never the numbers it was built from: `carNodes` turns its body by
+  // `heading + π` and lifts it by the ride height.
+  const { pivot, seat } = armRest(subject.transform.position, subject.transform.rotation.y, arm)
+  return [
+    ...machine,
+    { ...groupNode(transformAt(ORIGIN), 'Camera Rig'), components: [arm] },
+    cameraNode(transformAt(seat, aimedFrom(seat, pivot))),
+  ]
+}
+
+const CAMERA_NAME = 'Camera'
 
 /**
  * The working floor: wearing the checker, catching shadows, throwing none. Its tiling is the
@@ -93,8 +161,20 @@ function standIn(): SceneNode {
       { kind: 'capsule', radius: 0.3, height: 1.2, capSegments: 8, radialSegments: 16 },
       { transform: transformAt({ x: 0, y: 0.9, z: STAND_IN_Z }), name: 'Character' },
     ),
-    components: [newComponent('CharacterController'), newComponent('Health')],
+    components: [newComponent('CharacterController')],
   }
+}
+
+/**
+ * The player module, put down where the stand-in stands. It brings its own body, its own arm and
+ * the eye it films through — nothing here names a camera, which is the whole of what it replaces.
+ */
+function playerModuleAt(
+  z: number,
+  view: 'firstPerson' | 'thirdPerson' = 'thirdPerson',
+): readonly SceneNode[] {
+  const [root, ...rest] = playerModuleNodes(view)
+  return root ? [{ ...root, transform: transformAt({ x: 0, y: 0, z }) }, ...rest] : []
 }
 
 /** Clear of the pit, on the floor band the two framed views open on. */
@@ -146,18 +226,6 @@ const BACKDROP: MaterialDescriptor = {
   emissiveMap: null,
   displacementMap: null,
 }
-
-/**
- * A mirror-bright surface: what an occlusion pass and a reflection are read on, and what the
- * demonstration puts at the centre of its frame. Metal because a rough dielectric hides both.
- */
-const METAL: MaterialDescriptor = {
-  ...BACKDROP,
-  color: '#dfe3ea',
-  roughness: 0.14,
-  metalness: 1,
-}
-
 /**
  * Feet on the ground, walking speed, eyes at 1,70 m — what the character templates share, and
  * the values the player will read the day it exists.
@@ -170,9 +238,13 @@ const WALKING: Partial<ScenePlay> = { eyeHeight: EYE_HEIGHT, moveSpeed: 4, gravi
  * The level, its light, and what the view adds on top — the three character templates differ by
  * that last part alone, which is the whole claim they make.
  */
-function characterView(view: readonly SceneNode[], play: Partial<ScenePlay>): Template {
+function characterView(
+  view: readonly SceneNode[],
+  play: Partial<ScenePlay>,
+  played?: string,
+): Template {
   return {
-    nodes: [...playgroundNodes(), sun(2.2, { x: 22, y: 26, z: 16 }), skyLight(1.3), ...view],
+    nodes: [...playgroundNodes(played), sun(2.2, { x: 22, y: 26, z: 16 }), skyLight(1.3), ...view],
     // The outdoor preset for its haze and its grading, but a PLAIN SKY behind rather than the
     // procedural studio: that one is nearly black, and a wall turned away from the sun landed on
     // the same value as the background — which reads as a wall that vanishes when one turns.
@@ -195,39 +267,7 @@ type Template = {
   animation?: Partial<AnimationTimeline>
 }
 
-/** The three instance ids a channel of the demonstration aims at. The others are named once. */
-const DEMO = { defocus: 'demo-dof', bloom: 'demo-bloom', grade: 'demo-grade' }
-
-/** A parameter of the demonstration stack, set apart from what a fresh effect opens on. */
-const tuned = (
-  id: string,
-  effect: PostEffectId,
-  params: Record<string, number | string | boolean>,
-): PostEffect => {
-  // `readParams` rather than a spread: it fills in from the catalogue AND bounds what is given,
-  // so a value that drifted out of its own slider is caught rather than written.
-  return { ...postEffect(id, effect), params: readParams(effect, params) }
-}
-
-/** One composition channel of the demonstration, on the SCENE's own stack. */
-const demoTrack = (
-  id: string,
-  effectId: string,
-  param: string,
-  keys: readonly { time: Us; value: number }[],
-): AnimationTrack => ({
-  id,
-  name: id,
-  index: 0,
-  muted: false,
-  solo: false,
-  locked: false,
-  target: { nodeId: SCENE_SUBJECT_ID, property: 'post', post: { effectId, param } },
-  // Deltas over what the stack stores, like every other channel — see `postAt`.
-  keys: keys.map(one => ({ time: one.time, value: { x: one.value, y: 0, z: 0 } })),
-})
-
-const BUILDERS: Record<SceneTemplateId, () => Template> = {
+const BUILDERS: Record<SceneTemplateId, (scriptFolder: string) => Template> = {
   // The studio's own default, unchanged: three lights and nothing else. Lit rather than truly
   // bare — an unlit scene reads as a broken viewport, not as a document waiting to be filled.
   empty: () => ({ nodes: createDefaultScene().nodes }),
@@ -300,153 +340,134 @@ const BUILDERS: Record<SceneTemplateId, () => Template> = {
     play: { ...WALKING, camera: 'firstPerson' },
   }),
 
-  /**
-   * The scene the composition is JUDGED on, and everything in it is there for that.
-   *
-   * A metal sphere for the occlusion and the reflections, a lamp close enough to blow a highlight
-   * past white for the bloom, a near post and a far wall for the defocus to have something to
-   * choose between, and a camera already on a rail. Its own Default Post Processing is set, and
-   * its band already holds § 14 and § 15: a travelling, a rack focus from 15 m to 2 m, a bloom
-   * that flashes and an exposure that closes.
-   */
-  postProcessing: () => {
-    const rail = pathNode()
-    const camera = aimedCamera(1.5, 9, 1)
-
-    return {
-      nodes: [
-        floor(40),
-        meshNode(
-          { kind: 'sphere', radius: 1, widthSegments: 48, heightSegments: 32 },
-          {
-            transform: transformAt({ x: 0, y: 1, z: 0 }),
-            material: METAL,
-            name: 'Metal Sphere',
-          },
-        ),
-        // In FRONT of the sphere and off to one side: a rack focus needs something the near end
-        // of its travel can be sharp on, and the sphere is where the far end lands.
-        meshNode(
-          { kind: 'cylinder', radiusTop: 0.12, radiusBottom: 0.12, height: 2.4, segments: 24 },
-          { transform: transformAt({ x: -1.6, y: 1.2, z: 5 }), name: 'Foreground Post' },
-        ),
-        /*
-         * Behind everything, which is what gives the haze and the occlusion a far end to read.
-         *
-         * Wide enough to FILL the frame, and a mid grey rather than the white cyclorama the photo
-         * set wears: measured at the head, 50.7 % of the top-right third was clipped past 250
-         * while the floor clipped none — the eye read a blown wall and a black void beside it,
-         * and a composition judged against a clipped wall is judged against nothing.
-         */
-        meshNode(
-          { kind: 'plane', width: 60, height: 16 },
-          {
-            transform: transformAt({ x: 0, y: 7, z: -9 }),
-            material: { ...BACKDROP, color: '#8c8c92' },
-            castShadow: false,
-            name: 'Backdrop',
-          },
-        ),
-        sun(1.6, { x: -6, y: 7, z: 5 }),
-        ambient(0.2),
-        // Twelve, not the sixty a spot four metres away carries: a point light falls off as the
-        // square of a distance, and under two metres that is some eighteen times the same lamp.
-        // It still blows the specular past white, which is what a bloom needs to find.
-        pointLight(12, { x: 1.8, y: 2.2, z: 1.6 }),
-        camera,
-        rail,
-      ],
-      world: {
-        ...presetPatch('studio'),
-        post: {
-          enabled: true,
-          effects: [
-            tuned('demo-gtao', 'gtao', { radius: 0.3, blend: 0.85 }),
-            // A small aperture on purpose: the shot OPENS at fifteen metres — § 14 — so the
-            // subject starts out of focus, and a wide one would open the template on a smear.
-            tuned(DEMO.defocus, 'dof', { focusDistance: 15, aperture: 0.004, maxBlur: 0.012 }),
-            tuned(DEMO.bloom, 'bloom', { strength: 0.35, radius: 0.5, threshold: 0.9 }),
-            tuned(DEMO.grade, 'colorGrading', { contrast: 1.15, saturation: 0.98 }),
-            tuned('demo-vignette', 'vignette', { offset: 0.9, darkness: 1.1 }),
-            postEffect('demo-smaa', 'smaa'),
-          ],
-        },
-      },
-      animation: {
-        duration: 5 * SECOND,
-        shots: [
-          {
-            id: 'demo-shot',
-            cameraId: camera.id,
-            start: 0,
-            duration: 5 * SECOND,
-            motion: { pathId: rail.id, easing: 'easeInOut', from: 0, to: 1 },
-            target: { kind: 'point', at: { x: 0, y: 1, z: 0 } },
-          },
-        ],
-        tracks: [
-          // § 14, to the metre: sharp at fifteen at the top of the shot, sharp at two by three
-          // seconds — the rack focus a travelling is judged by.
-          demoTrack('demo-focus', DEMO.defocus, 'focusDistance', [
-            { time: 0, value: 0 },
-            { time: 3 * SECOND, value: -13 },
-          ]),
-          /*
-           * § 15: a flash that opens and closes rather than a level that rises and stays.
-           *
-           * Peaking at 1.5 rather than at 3: looked at, a peak of three drowned the sphere in its
-           * own halo — the subject the rack focus had just brought into view disappeared behind
-           * the effect meant to celebrate it. A flash one cannot see THROUGH is not a flash.
-           */
-          demoTrack('demo-flash', DEMO.bloom, 'strength', [
-            { time: 0, value: 0 },
-            { time: 1.5 * SECOND, value: 1.15 },
-            { time: 3 * SECOND, value: 0 },
-          ]),
-          // The dark passage, in STOPS: one to four tenths of the light is about a stop and a
-          // third, which is what `colorGrading` counts in.
-          demoTrack('demo-exposure', DEMO.grade, 'exposure', [
-            { time: 0, value: 0 },
-            { time: 5 * SECOND, value: -1.32 },
-          ]),
-        ],
-      },
-    }
-  },
+  postProcessing: () =>
+    postProcessingTemplate({ floor, sun, ambient, pointLight, aimedCamera, backdrop: BACKDROP }),
 
   // The three below open on the SAME level and differ by where the camera stands — which is what
   // these three views are. A cadrage over an empty floor proved nothing: what makes them worth
   // picking is a set one can climb, fall off and bump into.
   // On the start pad, at eye height and facing down the set — where the walk begins the day a
   // controller reads `play`, rather than somewhere on the floor with the court behind it.
-  firstPerson: () =>
-    characterView([standIn(), cameraNode(transformAt({ x: 0, y: EYE_HEIGHT, z: STAND_IN_Z }))], {
-      camera: 'firstPerson',
-    }),
+  firstPerson: folder =>
+    characterView(
+      [...scriptedFirst(playerModuleAt(STAND_IN_Z, 'firstPerson'), 'player', folder)],
+      { camera: 'firstPerson' },
+      'Capsule',
+    ),
 
   // The camera stands back BEHIND the stand-in, which stands at z = 10 — over the shoulder means
   // both on the same axis, and the aim is at chest height.
-  thirdPerson: () =>
-    characterView([standIn(), aimedCamera(2.4, 5, 1, STAND_IN_Z)], { camera: 'thirdPerson' }),
+  // 🛑 The module and nothing else: it carries the body, the arm and the camera, bound by the
+  // TREE. The trio it replaces bound them by name, and a second `Camera` captured the arm.
+  thirdPerson: folder =>
+    characterView(
+      [...scriptedFirst(playerModuleAt(STAND_IN_Z), 'player', folder)],
+      { camera: 'thirdPerson' },
+      'Capsule',
+    ),
 
-  topDown: () =>
-    characterView([standIn(), aimedCamera(16, 11, 0.9, STAND_IN_Z)], {
+  topDown: folder =>
+    characterView([scripted(standIn(), 'player', folder), aimedCamera(16, 11, 0.9, STAND_IN_Z)], {
       camera: 'topDown',
       moveSpeed: 6,
     }),
+
+  // 🛑 No stand-in, and that is not an omission: a walker wins the camera seat over a machine,
+  // so a silhouette left on the pad would frame the car from a pair of feet.
+  // 🛑 The arm aims down the CAR's own nose, not where the pointer looks: a car turning under a
+  // camera the mouse alone aims reads as a car sliding sideways.
+  car: folder => ({
+    nodes: [
+      ...circuitNodes(),
+      sun(2.4, { x: 60, y: 70, z: 40 }),
+      skyLight(1.3),
+      ...cameraRig(scriptedCar(folder), {
+        orientation: 'subject',
+        length: 8,
+        height: 2.4,
+      }),
+    ],
+    world: {
+      ...presetPatch('outdoor'),
+      background: { kind: 'color', color: '#b6c6d8' },
+      // 🛑 The preset's own haze closes at 140 m and the circuit is 250 m across: the far side of
+      // the loop was solid grey, which is why its shape could not be read at a glance.
+      fog: { kind: 'linear', color: '#b6c6d8', near: 60, far: 420 },
+      ground: { ...DEFAULT_GROUND, visible: true, size: 400, color: '#5c6b4f' },
+    },
+    play: { ...WALKING, camera: 'thirdPerson', played: CAR_NAME },
+  }),
+
+  plane: folder => ({
+    nodes: [
+      ...airfieldNodes(),
+      ...mountainNodes(),
+      sun(2.6, { x: 40, y: 50, z: 20 }),
+      skyLight(1.4),
+      ...scriptedFirst(planeNodes({ x: 0, y: CRUISE_ALTITUDE, z: 60 }), 'plane', folder),
+      aimedCamera(CRUISE_ALTITUDE + 6, 30, CRUISE_ALTITUDE, 60),
+    ],
+    world: {
+      ...presetPatch('outdoor'),
+      background: { kind: 'color', color: '#9fc0e0' },
+      // 🛑 The preset closes its haze at 140 m and this map is flown at 120: everything but the
+      // wingtips was inside the fog. It now closes just short of the camera's own far plane, so
+      // the horizon fades instead of being cut off.
+      fog: { kind: 'linear', color: '#9fc0e0', near: 250, far: DEFAULT_CAMERA.far - 100 },
+      // 🛑 Catches NO shadow: the map is kilometres across, so one shadow texel covers metres —
+      // on a flat ground that reads as a grey moiré staircase, which made the editor unusable.
+      ground: {
+        ...DEFAULT_GROUND,
+        visible: true,
+        size: MOUNTAIN_WORLD,
+        color: '#6f7f63',
+        receiveShadow: false,
+      },
+    },
+    play: { ...WALKING, camera: 'thirdPerson' },
+  }),
 }
+
+/** Who the set's beacon and drone watch here, the stand-in being nowhere on this template. */
+const CAR_NAME = 'Car'
+
+/** The seeded file, named on every Animator the template laid down — empty stays the shipped preset. */
+function withAnimatorGraph(nodes: readonly SceneNode[], graph: string): SceneNode[] {
+  return nodes.map(node => {
+    if (!node.components?.some(one => one.type === 'Animator')) return node
+    return {
+      ...node,
+      components: node.components.map(one =>
+        one.type === 'Animator' ? withComponentField(one, 'graph', graph) : one,
+      ),
+    }
+  })
+}
+
+/** `cameraRig` needs the pair typed as a non-empty tuple, which `scriptedFirst` cannot promise. */
+function scriptedCar(folder: string): [SceneNode, ...SceneNode[]] {
+  const [body, ...rest] = carNodes(CIRCUIT_START, CAR_NAME, CIRCUIT_START_YAW)
+  return [scripted(body, 'car', folder), ...rest]
+}
+
+/** Metres. High enough that a plane finding its speed has room to dip while it does. */
+const CRUISE_ALTITUDE = 120
 
 /**
  * The scene a template opens on. A fresh state on every call, ids included — two documents made
  * from one template share nothing.
  */
-export function sceneFromTemplate(id: SceneTemplateId = DEFAULT_SCENE_TEMPLATE): SceneState {
+export function sceneFromTemplate(
+  id: SceneTemplateId = DEFAULT_SCENE_TEMPLATE,
+  scriptFolder: string = DEFAULT_ROLE_PATHS.code,
+  graph?: string,
+): SceneState {
   // Checked although the type says it cannot be wrong: the id crosses the boundary from the
   // naming window, and one this build has never heard of would throw on `BUILDERS[id]()`.
-  const template = BUILDERS[isSceneTemplateId(id) ? id : DEFAULT_SCENE_TEMPLATE]()
+  const template = BUILDERS[isSceneTemplateId(id) ? id : DEFAULT_SCENE_TEMPLATE](scriptFolder)
 
   return {
-    nodes: [...template.nodes],
+    nodes: graph ? withAnimatorGraph(template.nodes, graph) : [...template.nodes],
     selectedIds: [],
     world: {
       ...DEFAULT_WORLD,

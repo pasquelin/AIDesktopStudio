@@ -172,6 +172,12 @@ export function assetsById(state: Pick<AssetsState, 'items'>): ReadonlyMap<strin
   return indexed.byId
 }
 
+export function rememberAssets(assets: readonly Asset[]): void {
+  const byId = new Map(indexed?.byId)
+  for (const asset of assets) byId.set(asset.id, asset)
+  indexed = { items: useAssets.getState().items, byId }
+}
+
 /**
  * Drops what the index remembers — every asset of the project being left.
  *
@@ -217,231 +223,225 @@ function readView(persisted: unknown): CollectionState['view'] | null {
  * Only the display is persisted. The catalogue belongs to the project, and a list restored
  * from the last session would show what a different project contained.
  */
-export const useAssets = create<AssetsState>()(
-  persist(
-    (set, get) => {
-      let pending: ReturnType<typeof setTimeout> | null = null
-      let reading: Promise<void> | null = null
-      // Which scope the read in flight is answering for.
-      let readingScope: readonly AssetType[] | null = null
-      // The page in flight, so a scroll that fires twice asks once.
-      let growing: Promise<void> | null = null
-      /**
-       * How many pages the shelf has been shown, so a refresh hands back as much as it took away:
-       * a generation finishing while the reader sits at row 800 would otherwise cut the list to
-       * 200 under them. Not derived from `items.length`, which still holds the scope being left.
-       */
-      let pagesRead = 1
+let pending: ReturnType<typeof setTimeout> | null = null
+let reading: Promise<void> | null = null
+// Which scope the read in flight is answering for.
+let readingScope: readonly AssetType[] | null = null
+// The page in flight, so a scroll that fires twice asks once.
+let growing: Promise<void> | null = null
+/**
+ * How many pages the shelf has been shown, so a refresh hands back as much as it took away:
+ * a generation finishing while the reader sits at row 800 would otherwise cut the list to
+ * 200 under them. Not derived from `items.length`, which still holds the scope being left.
+ */
+let pagesRead = 1
 
-      return {
-        collection: DEFAULT_COLLECTION_STATE,
-        setCollection: collection => set({ collection }),
+const assetsState: AssetsState = {
+  collection: DEFAULT_COLLECTION_STATE,
+  setCollection: collection => useAssets.setState({ collection }),
 
-        items: [],
-        scope: null,
+  items: [],
+  scope: null,
 
-        shownCount: null,
-        setShownCount: shownCount => {
-          if (get().shownCount !== shownCount) set({ shownCount })
-        },
+  shownCount: null,
+  setShownCount: shownCount => {
+    if (useAssets.getState().shownCount !== shownCount) useAssets.setState({ shownCount })
+  },
 
-        hasMore: false,
+  hasMore: false,
 
-        // A change of space changes what the catalogue is asked for, so the rows follow at once
-        // rather than on the next invalidation — and back to one page with it, the pages read
-        // belonging to the list being left. The rows stay until the new ones arrive: the panel
-        // sets its scope as it mounts, so emptying here blanks the shelf on every open.
-        setScope: scope => {
-          if (sameScope(get().scope, scope)) return
+  // A change of space changes what the catalogue is asked for, so the rows follow at once
+  // rather than on the next invalidation — and back to one page with it, the pages read
+  // belonging to the list being left. The rows stay until the new ones arrive: the panel
+  // sets its scope as it mounts, so emptying here blanks the shelf on every open.
+  setScope: scope => {
+    if (sameScope(useAssets.getState().scope, scope)) return
 
-          pagesRead = 1
-          set({ scope })
-          void get().refresh()
-        },
+    pagesRead = 1
+    useAssets.setState({ scope })
+    void useAssets.getState().refresh()
+  },
 
-        loadMore: async () => {
-          if (growing) return growing
-          // A refresh in flight is already reading every page this shelf has been shown.
-          if (reading || !get().hasMore) return
+  loadMore: async () => {
+    if (growing) return growing
+    // A refresh in flight is already reading every page this shelf has been shown.
+    if (reading || !useAssets.getState().hasMore) return
 
-          const scope = get().scope
-          const offset = get().items.length
+    const scope = useAssets.getState().scope
+    const offset = useAssets.getState().items.length
 
-          growing = (async () => {
-            const bridge = getBridge()
-            if (!bridge) return
+    growing = (async () => {
+      const bridge = getBridge()
+      if (!bridge) return
 
-            try {
-              const page = await bridge.assets.search(pageOf(scope, offset, LOCAL_PAGE))
-              // The space may have changed while this was in flight, and its rows are another
-              // list's: appended they would be two scopes shown as one.
-              if (!sameScope(get().scope, scope)) return
+      try {
+        const page = await bridge.assets.search(pageOf(scope, offset, LOCAL_PAGE))
+        // The space may have changed while this was in flight, and its rows are another
+        // list's: appended they would be two scopes shown as one.
+        if (!sameScope(useAssets.getState().scope, scope)) return
 
-              pagesRead += 1
-              // Against what is held, because the offset is `items.length` and a row can leave
-              // the list between two pages — `retype` drops one the scope no longer takes, and
-              // the page then starts one row short of where it was meant to.
-              set(state => ({
-                items: [...state.items, ...withoutHeld(state.items, page)],
-                hasMore: page.length === LOCAL_PAGE,
-              }))
-            } catch {
-              // The catalogue failed — see `refresh` below, which answers the same way.
-              set({ hasMore: false })
-            }
-          })().finally(() => {
-            growing = null
-          })
-
-          return growing
-        },
-
-        // Callers that need the rows NOW share the read already in flight rather than opening a
-        // second one: `assets.searchProjectCatalogue` is a synchronous SQLite query in the main process, and
-        // three generations finishing together asked for the same answer three times over.
-        refresh: async () => {
-          // Shared only when it answers the same question. A read in flight for the previous
-          // space would otherwise be handed back for the new one, leaving the shelf showing
-          // what the space one had just left uses.
-          if (reading && sameScope(readingScope, get().scope)) return reading
-
-          const scope = get().scope
-          readingScope = scope
-
-          reading = (async () => {
-            const bridge = getBridge()
-            if (!bridge) return
-
-            try {
-              const found: Asset[] = []
-              let more = false
-
-              // As wide as the query is allowed to be, not one call per page shown: each is a
-              // synchronous SQLite query on the process every window shares. The bound is re-read
-              // each turn, so a `loadMore` landing mid-refresh is not handed back a shorter list.
-              while (found.length < pagesRead * LOCAL_PAGE) {
-                const limit = Math.min(
-                  ASSET_SEARCH_LIMIT_MAX,
-                  pagesRead * LOCAL_PAGE - found.length,
-                )
-                const rows = await bridge.assets.search(pageOf(scope, found.length, limit))
-                found.push(...rows)
-                // Against what was ASKED for, not `LOCAL_PAGE`: a refresh reads wider than a page.
-                more = rows.length === limit
-                if (!more) break
-              }
-
-              // Rounded up so a part-filled page is asked for whole next time, and never zero:
-              // an empty catalogue must still leave a page to read.
-              pagesRead = Math.max(1, Math.ceil(found.length / LOCAL_PAGE))
-              set({ items: found, hasMore: more })
-            } catch {
-              // The catalogue failed. No project open answers an empty page instead, so what
-              // lands here is a database that stopped reading.
-              pagesRead = 1
-              set({ items: [], hasMore: false })
-            }
-          })().finally(() => {
-            reading = null
-          })
-
-          return reading
-        },
-
-        // Through `invalidate` like every other site that says the catalogue moved, so the
-        // coalescing holds: an extraction writing six pictures is one read, not six.
-        connect: connectThroughBridge(async bridge =>
-          bridge.assets.onChanged(changed => {
-            // Before the invalidation: the shelf reads a page in a third of a second, and a
-            // texture slot may ask for its version on the very next frame.
-            rememberAssetRevisions(changed)
-            get().invalidate()
-          }),
-        ),
-
-        invalidate: () => {
-          if (pending) clearTimeout(pending)
-          pending = setTimeout(() => {
-            pending = null
-            void get().refresh()
-          }, COALESCE_MS)
-        },
-
-        rename: async (assetId, name) => {
-          const refused = checkAssetName(name)
-          if (refused) return refused
-
-          const bridge = getBridge()
-          if (!bridge) return 'invalid'
-
-          let written
-          try {
-            written = await bridge.assets.update(assetId, { name: name.trim() })
-          } catch (error) {
-            // Read off the message, as a document's refusal is: the name reached the file, so
-            // the folder can now refuse what no field could see — a name it already holds.
-            // Journalled by the CALLER, on the code this hands back (`helpers/rename.ts`).
-            return nameFailureOf(error, ASSET_NAME_FAILURES, 'invalid')
-          }
-
-          if (!written) return 'invalid'
-
-          // Written into the shelf rather than waited for: `assets:update` broadcasts nothing —
-          // it is answered where it was ordered, which is the doctrine every other write follows.
-          // Straight into `items` and not through `invalidate`, so the tile shows the new name on
-          // the next paint instead of a third of a second later.
-          set(state => ({
-            items: state.items.map(item => (item.id === assetId ? written : item)),
-          }))
-          return null
-        },
-
-        retype: async (assetId, type) => {
-          const bridge = getBridge()
-          if (!bridge) return
-
-          let written
-          try {
-            written = await bridge.assets.update(assetId, { type })
-          } catch (error) {
-            reportFailure('assets.retype', assetId, error)
-            return
-          }
-
-          if (!written) return
-
-          // Into the shelf on the spot, as a rename is — `assets:update` broadcasts nothing, so
-          // nothing else would tell it. Told apart from a rename by what a TYPE decides: the
-          // shelf reads a scope, and a picture that has just become a texture is no longer a row
-          // this one asked for. Written in place it stayed on screen, under its old shelf, with
-          // its new name for what it is — until something unrelated happened to re-read.
-          set(state => ({
-            items: state.items.flatMap(item => {
-              if (item.id !== assetId) return [item]
-              return state.scope && !state.scope.includes(written.type) ? [] : [written]
-            }),
-          }))
-        },
-
-        cancelInvalidate: () => {
-          if (pending) clearTimeout(pending)
-          pending = null
-        },
+        pagesRead += 1
+        // Against what is held, because the offset is `items.length` and a row can leave
+        // the list between two pages — `retype` drops one the scope no longer takes, and
+        // the page then starts one row short of where it was meant to.
+        useAssets.setState(state => ({
+          items: [...state.items, ...withoutHeld(state.items, page)],
+          hasMore: page.length === LOCAL_PAGE,
+        }))
+      } catch {
+        // The catalogue failed — see `refresh` below, which answers the same way.
+        useAssets.setState({ hasMore: false })
       }
-    },
-    {
-      name: 'ia-studio:assets',
-      version: COLLECTION_PERSIST_VERSION,
-      /**
-       * The store used to persist a bare `view`, before the state became a whole
-       * `CollectionState`. Carried over rather than dropped: zustand would otherwise discard
-       * the entry entirely, and with it the grid-or-list the user had chosen.
-       */
-      migrate: persisted => {
-        const view = readView(persisted)
-        return view ? { collection: { ...DEFAULT_COLLECTION_STATE, view } } : undefined
-      },
-      partialize: state => ({ collection: withoutSearch(state.collection) }),
-    },
+    })().finally(() => {
+      growing = null
+    })
+
+    return growing
+  },
+
+  // Callers that need the rows NOW share the read already in flight rather than opening a
+  // second one: `assets.searchProjectCatalogue` is a synchronous SQLite query in the main process, and
+  // three generations finishing together asked for the same answer three times over.
+  refresh: async () => {
+    // Shared only when it answers the same question. A read in flight for the previous
+    // space would otherwise be handed back for the new one, leaving the shelf showing
+    // what the space one had just left uses.
+    if (reading && sameScope(readingScope, useAssets.getState().scope)) return reading
+
+    const scope = useAssets.getState().scope
+    readingScope = scope
+
+    reading = (async () => {
+      const bridge = getBridge()
+      if (!bridge) return
+
+      try {
+        const found: Asset[] = []
+        let more = false
+
+        // As wide as the query is allowed to be, not one call per page shown: each is a
+        // synchronous SQLite query on the process every window shares. The bound is re-read
+        // each turn, so a `loadMore` landing mid-refresh is not handed back a shorter list.
+        while (found.length < pagesRead * LOCAL_PAGE) {
+          const limit = Math.min(ASSET_SEARCH_LIMIT_MAX, pagesRead * LOCAL_PAGE - found.length)
+          const rows = await bridge.assets.search(pageOf(scope, found.length, limit))
+          found.push(...rows)
+          // Against what was ASKED for, not `LOCAL_PAGE`: a refresh reads wider than a page.
+          more = rows.length === limit
+          if (!more) break
+        }
+
+        // Rounded up so a part-filled page is asked for whole next time, and never zero:
+        // an empty catalogue must still leave a page to read.
+        pagesRead = Math.max(1, Math.ceil(found.length / LOCAL_PAGE))
+        useAssets.setState({ items: found, hasMore: more })
+      } catch {
+        // The catalogue failed. No project open answers an empty page instead, so what
+        // lands here is a database that stopped reading.
+        pagesRead = 1
+        useAssets.setState({ items: [], hasMore: false })
+      }
+    })().finally(() => {
+      reading = null
+    })
+
+    return reading
+  },
+
+  // Through `invalidate` like every other site that says the catalogue moved, so the
+  // coalescing holds: an extraction writing six pictures is one read, not six.
+  connect: connectThroughBridge(async bridge =>
+    bridge.assets.onChanged(changed => {
+      // Before the invalidation: the shelf reads a page in a third of a second, and a
+      // texture slot may ask for its version on the very next frame.
+      rememberAssetRevisions(changed)
+      useAssets.getState().invalidate()
+    }),
   ),
+
+  invalidate: () => {
+    if (pending) clearTimeout(pending)
+    pending = setTimeout(() => {
+      pending = null
+      void useAssets.getState().refresh()
+    }, COALESCE_MS)
+  },
+
+  rename: async (assetId, name) => {
+    const refused = checkAssetName(name)
+    if (refused) return refused
+
+    const bridge = getBridge()
+    if (!bridge) return 'invalid'
+
+    let written
+    try {
+      written = await bridge.assets.update(assetId, { name: name.trim() })
+    } catch (error) {
+      // Read off the message, as a document's refusal is: the name reached the file, so
+      // the folder can now refuse what no field could see — a name it already holds.
+      // Journalled by the CALLER, on the code this hands back (`helpers/rename.ts`).
+      return nameFailureOf(error, ASSET_NAME_FAILURES, 'invalid')
+    }
+
+    if (!written) return 'invalid'
+
+    // Written into the shelf rather than waited for: `assets:update` broadcasts nothing —
+    // it is answered where it was ordered, which is the doctrine every other write follows.
+    // Straight into `items` and not through `invalidate`, so the tile shows the new name on
+    // the next paint instead of a third of a second later.
+    useAssets.setState(state => ({
+      items: state.items.map(item => (item.id === assetId ? written : item)),
+    }))
+    return null
+  },
+
+  retype: async (assetId, type) => {
+    const bridge = getBridge()
+    if (!bridge) return
+
+    let written
+    try {
+      written = await bridge.assets.update(assetId, { type })
+    } catch (error) {
+      reportFailure('assets.retype', assetId, error)
+      return
+    }
+
+    if (!written) return
+
+    // Into the shelf on the spot, as a rename is — `assets:update` broadcasts nothing, so
+    // nothing else would tell it. Told apart from a rename by what a TYPE decides: the
+    // shelf reads a scope, and a picture that has just become a texture is no longer a row
+    // this one asked for. Written in place it stayed on screen, under its old shelf, with
+    // its new name for what it is — until something unrelated happened to re-read.
+    useAssets.setState(state => ({
+      items: state.items.flatMap(item => {
+        if (item.id !== assetId) return [item]
+        return state.scope && !state.scope.includes(written.type) ? [] : [written]
+      }),
+    }))
+  },
+
+  cancelInvalidate: () => {
+    if (pending) clearTimeout(pending)
+    pending = null
+  },
+}
+
+export const useAssets = create<AssetsState>()(
+  persist(() => assetsState, {
+    name: 'ai-desktop-studio:assets',
+    version: COLLECTION_PERSIST_VERSION,
+    /**
+     * The store used to persist a bare `view`, before the state became a whole
+     * `CollectionState`. Carried over rather than dropped: zustand would otherwise discard
+     * the entry entirely, and with it the grid-or-list the user had chosen.
+     */
+    migrate: persisted => {
+      const view = readView(persisted)
+      return view ? { collection: { ...DEFAULT_COLLECTION_STATE, view } } : undefined
+    },
+    partialize: state => ({ collection: withoutSearch(state.collection) }),
+  }),
 )

@@ -57,6 +57,14 @@ export function bundledTextures(root: string): string {
   return join(root, 'textures')
 }
 
+/**
+ * The character the app ships with, one GLB per density. Common to every project, read-only,
+ * updated by updating the app — as the animations beside them are.
+ */
+export function bundledCharacters(root: string): string {
+  return join(root, 'characters')
+}
+
 /** The picture of each local model — one PNG named after the model it stands for. */
 export function bundledModels(root: string): string {
   return join(root, 'models')

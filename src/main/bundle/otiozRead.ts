@@ -44,6 +44,14 @@ class ImportCancelledError extends Error {}
 
 type Collected = { chunks: Uint8Array[]; bytes: number }
 
+const readState = () => ({
+  version: { chunks: [], bytes: 0 } as Collected,
+  content: { chunks: [], bytes: 0 } as Collected,
+  media: [] as { entry: string; file: string }[],
+  sinks: [] as WriteStream[],
+  taken: new Set<string>(),
+})
+
 const collect = (into: Collected, chunk: Uint8Array): void => {
   into.bytes += chunk.length
   if (into.bytes > MAX_CONTENT_BYTES) throw new NotABundleError('this cut is too large to be one')
@@ -51,6 +59,29 @@ const collect = (into: Collected, chunk: Uint8Array): void => {
 }
 
 const joined = ({ chunks, bytes }: Collected): Uint8Array => Buffer.concat(chunks, bytes)
+
+async function feedArchive(
+  archive: string,
+  total: number,
+  unzip: Unzip,
+  room: () => Promise<void>,
+  onStep?: TaskWatch['onStep'],
+): Promise<void> {
+  const read = steppedProgress(total, onStep)
+  for await (const chunk of createReadStream(archive, { highWaterMark: 1 << 20 })) {
+    unzip.push(chunk, false)
+    read(chunk.length)
+    await room()
+  }
+  unzip.push(new Uint8Array(0), true)
+}
+
+async function finishSinks(sinks: readonly WriteStream[]): Promise<void> {
+  for (const sink of sinks) {
+    sink.end()
+    await finished(sink)
+  }
+}
 
 /**
  * Unpacks the bundle into `into`, which the caller made and owns — including taking it away when
@@ -66,11 +97,16 @@ export async function readOtiozFile(
   const total = (await stat(archive)).size
   if (signal?.aborted) return null
 
-  const version: Collected = { chunks: [], bytes: 0 }
-  const content: Collected = { chunks: [], bytes: 0 }
-  const media: { entry: string; file: string }[] = []
-  const sinks: WriteStream[] = []
-  const taken = new Set<string>()
+  return unpackOtiozFile(archive, into, total, { onStep, signal })
+}
+
+async function unpackOtiozFile(
+  archive: string,
+  into: string,
+  total: number,
+  { onStep, signal }: TaskWatch,
+): Promise<OtiozRead | null> {
+  const { version, content, media, sinks, taken } = readState()
 
   let failure: Error | null = null
   let blocked: Promise<void> | null = null
@@ -196,20 +232,8 @@ export async function readOtiozFile(
   }
 
   try {
-    // Per step rather than per chunk, the rule the writer and the model download already carry: a
-    // gigabyte read a mebibyte at a time is a thousand reports to move a bar of a hundred states.
-    const read = steppedProgress(total, onStep)
-    for await (const chunk of createReadStream(archive, { highWaterMark: 1 << 20 })) {
-      unzip.push(chunk, false)
-      read(chunk.length)
-      await room()
-    }
-    unzip.push(new Uint8Array(0), true)
-
-    for (const sink of sinks) {
-      sink.end()
-      await finished(sink)
-    }
+    await feedArchive(archive, total, unzip, room, onStep)
+    await finishSinks(sinks)
     if (failure) throw failure
 
     if (version.bytes === 0 || content.bytes === 0) {

@@ -9,21 +9,21 @@ from pathlib import Path
 
 import pytest
 
-from ia_studio_engine.adapters.diffusers_adapter import (
+from aidesktopstudio_engine.adapters.diffusers_adapter import (
     DiffusersAdapter,
     accepted_kwargs,
     pretrained_file_kwargs,
     pretrained_optional_overrides,
     tune_pipeline,
 )
-from ia_studio_engine.adapters.loading import (
+from aidesktopstudio_engine.adapters.loading import (
     LoadedModel,
     LoadRefusedError,
     generation_refusal,
     quietened,
     refuse_reason,
 )
-from ia_studio_engine.adapters.modalities import MODALITIES
+from aidesktopstudio_engine.adapters.modalities import MODALITIES
 
 
 def held(*, model_id: str = "sana", pipeline: object | None = None) -> LoadedModel:

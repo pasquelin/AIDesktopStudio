@@ -2,14 +2,13 @@ import { useTranslation } from 'react-i18next'
 import { WindowFailure } from '@/components/WindowFailure'
 import { WindowNote } from '@/components/WindowNote'
 import type { UsagePeriod } from '@shared/domain/usage'
-import { WINDOW_ACTION_SECONDARY } from '@/components/windowStyles'
-import { cn } from '@/helpers/cn'
 import { HINT_RIGHT } from '@/helpers/tooltip'
 import { UsageTable } from './Table/UsageTable'
 import { UsageTableHeadCell } from './Table/UsageTableHeadCell'
 import { UsageTableRow } from './Table/UsageTableRow'
 import { formatMoment, formatUnits } from '@/helpers/format'
 import { useUsageEvents } from '@/hooks/useUsageEvents'
+import { WindowButton } from '@/components/WindowButton'
 
 /**
  * The raw billable log, event by event.
@@ -69,15 +68,15 @@ export function UsageJournal({ period }: { period: UsagePeriod }) {
       </UsageTable>
 
       {page.more && (
-        <button
-          type="button"
-          className={cn(WINDOW_ACTION_SECONDARY, 'self-start')}
+        <WindowButton
+          variant="secondary"
+          className="self-start"
           {...HINT_RIGHT(t('usage.loadMoreHint'))}
           onClick={more}
           disabled={loading}
         >
           {t('usage.loadMore')}
-        </button>
+        </WindowButton>
       )}
     </div>
   )

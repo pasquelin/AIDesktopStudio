@@ -20,25 +20,25 @@ const THIRD = hung('sky-3')
 /** The procedural studio: a scene naming no sky, and one whose sky has not landed yet. */
 const STUDIO = null
 
-describe('createSkyBinding', () => {
-  let source: ReturnType<typeof fakeTextureSource>
-  let paint: Mock<() => void>
+let source: ReturnType<typeof fakeTextureSource>
+let paint: Mock<() => void>
 
-  beforeEach(() => {
-    source = fakeTextureSource()
-    paint = vi.fn()
-  })
+beforeEach(() => {
+  source = fakeTextureSource()
+  paint = vi.fn()
+})
 
-  /** The failure port: what a cache tells its engine is that engine's business, not this one's. */
-  const silent = () => {}
+/** The failure port: what a cache tells its engine is that engine's business, not this one's. */
+const silent = () => {}
 
-  const binding = () => createSkyBinding(createTextureCache(source.load, silent), paint)
+const binding = () => createSkyBinding(createTextureCache(source.load, silent), paint)
 
+describe('createSkyBinding loading', () => {
   it('asks for the sky by asset id, and prefilters it once it has decoded', async () => {
     const environment = fakeEnvironment()
     await binding().apply(environment, SKY)
 
-    expect(source.load).toHaveBeenCalledWith('ia-studio://asset/sky-1', 'flipY')
+    expect(source.load).toHaveBeenCalledWith('ai-desktop-studio://asset/sky-1', 'flipY')
     expect(environment.setTexture).toHaveBeenCalled()
     expect(environment.refresh).toHaveBeenCalled()
   })
@@ -98,7 +98,7 @@ describe('createSkyBinding', () => {
     await sky.refresh()
 
     expect(source.load).toHaveBeenCalledTimes(2)
-    expect(source.load).toHaveBeenLastCalledWith('ia-studio://asset/sky-1?v=after', 'flipY')
+    expect(source.load).toHaveBeenLastCalledWith('ai-desktop-studio://asset/sky-1?v=after', 'flipY')
   })
 
   it('refreshes nothing before a sky has been asked for', async () => {
@@ -127,8 +127,8 @@ describe('createSkyBinding', () => {
     const second = sky.apply(environment, SKY)
 
     const newer = new Texture()
-    settle.get('ia-studio://asset/sky-1?v=v2')?.(newer)
-    settle.get('ia-studio://asset/sky-1?v=v1')?.(new Texture())
+    settle.get('ai-desktop-studio://asset/sky-1?v=v2')?.(newer)
+    settle.get('ai-desktop-studio://asset/sky-1?v=v1')?.(new Texture())
     await Promise.all([first, second])
 
     expect(environment.setTexture).toHaveBeenLastCalledWith(newer)
@@ -217,7 +217,9 @@ describe('createSkyBinding', () => {
     expect(source.freed[2]).not.toHaveBeenCalled()
     expect(sky.showsSky()).toBe(true)
   })
+})
 
+describe('createSkyBinding ownership', () => {
   /**
    * The ordering rule this module exists for, in the case a losing call can break it: sky-1 is on
    * the background while 2 and 3 decode, and 2 resolves first. Whatever 2 gives back, it must not

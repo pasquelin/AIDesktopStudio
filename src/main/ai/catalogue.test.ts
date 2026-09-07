@@ -132,12 +132,17 @@ describe('the shipped catalogue', () => {
   it('opens every generating model rather than leaving it plugin-required', () => {
     const closed = shippedModels()
       .filter(model => model.modality && model.modality !== 'text')
-      .filter(model => model.runtimeStatus === 'plugin-required')
+      .filter(
+        model =>
+          model.runtimeStatus === 'plugin-required' && model.distributionStatus !== 'blocked',
+      )
       .map(model => model.id)
 
     expect(closed).toEqual([])
   })
+})
 
+describe('the shipped generation catalogue', () => {
   it('lists the five panorama models under the skybox employments', () => {
     expect(shippedModelsFor(aiRoleId('skybox', 'txt2skybox')).map(model => model.id)).toEqual([
       'panfusion',
@@ -188,6 +193,24 @@ describe('the shipped catalogue', () => {
     expect(model?.needsCuda).toBe(true)
     expect(model?.files.length).toBeGreaterThan(0)
     expect(model?.runtimeStatus).not.toBe('unsupported')
+  })
+
+  it('offers the advanced Auto Rig with its five pinned checkpoints', () => {
+    const model = shippedModel('make-it-animatable')
+
+    expect(shippedModelsFor(aiRoleId('3d', 'rig'))).toEqual([model])
+    expect(model?.files.map(file => file.name)).toEqual([
+      'bw.pth',
+      'bw_normal.pth',
+      'joints.pth',
+      'joints_coarse.pth',
+      'pose.pth',
+    ])
+    expect(
+      model?.files.every(file => file.revision === 'eb12b71253361fd1a7216625a95144af3c58263e'),
+    ).toBe(true)
+    expect(model?.diskBytes).toBe(2_330_090_627)
+    expect(model?.needsCuda).not.toBe(true)
   })
 
   it('opens InstantMesh as a CUDA plugin, its unet standing in for zero123plus own', () => {
@@ -254,7 +277,9 @@ describe('the shipped catalogue', () => {
 
     expect(bare).toEqual([])
   })
+})
 
+describe('models discovered at runtime', () => {
   it('offers a discovered chat model to the assistant and not to drawing', () => {
     const qwen = ollamaModel({ name: 'qwen3:8b', size: 5_000_000_000 })
     expect(qwen).not.toBeNull()

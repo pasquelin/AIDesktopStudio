@@ -15,9 +15,11 @@ export function memoryCatalog(file = ':memory:', disk: RescanDisk | null = null)
   return {
     add: async asset => catalog.add(asset),
     find: async assetId => catalog.find(assetId),
+    setAnimationPoster: async write => catalog.setAnimationPoster(write),
     findByHash: async hash => catalog.findByHash(hash),
     findByRemoteId: async remoteAssetId => catalog.findByRemoteId(remoteAssetId),
     search: async query => catalog.search(query),
+    assetsUnder: async folders => catalog.assetsUnder(folders),
     countByType: async () => catalog.countByType(),
     remove: async assetId => catalog.remove(assetId),
     repath: async (from, to) => catalog.repath(from, to),

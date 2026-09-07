@@ -46,17 +46,20 @@ export async function unpackMaterialChannels(
   for (const channel of wanted) {
     try {
       const picture = await unpack({ channel, sourceUrl: assetUrl(asset.id) })
-      landed.push(
-        await bridge.assets.saveTexture({
-          name: i18next.t('material.derivedName', {
-            name: asset.name,
-            channel: i18next.t(`material.channel.${channel}`),
-          }),
-          map: channel,
-          derivedFrom: asset.id,
-          png: picture.png,
+      const saved = await bridge.assets.saveTexture({
+        name: i18next.t('material.derivedName', {
+          name: asset.name,
+          channel: i18next.t(`material.channel.${channel}`),
         }),
-      )
+        map: channel,
+        derivedFrom: asset.id,
+        png: picture.png,
+      })
+      landed.push({
+        ...saved,
+        ...(asset.textureTransform ? { textureTransform: asset.textureTransform } : {}),
+        ...(asset.textureSampling ? { textureSampling: asset.textureSampling } : {}),
+      })
     } catch (error) {
       reportFailure('material.channel', channel, error)
     }

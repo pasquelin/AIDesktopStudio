@@ -22,36 +22,38 @@ const withoutProse = (source: string): string =>
  * Where each `refused(` of a module sits, and whether anything follows the refusal name. Read by
  * matching parentheses: a call wrapped by Prettier spans five lines, and a grep per line sees half.
  */
+function refusalHasDetail(source: string, start: number): boolean {
+  let at = start
+  let depth = 1
+  let hasDetail = false
+  while (at < source.length && depth > 0) {
+    const char = source[at]
+    if (char === '(' || char === '[' || char === '{') depth += 1
+    else if (char === ')' || char === ']' || char === '}') depth -= 1
+    else if (char === ',' && depth === 1) hasDetail = true
+    else if (char === "'" || char === '"' || char === '`') {
+      at += 1
+      while (at < source.length && source[at] !== char) {
+        if (source[at] === '\\') at += 1
+        at += 1
+      }
+    }
+    at += 1
+  }
+  return hasDetail
+}
+
 function refusalsIn(source: string): { line: number; hasDetail: boolean }[] {
   const found: { line: number; hasDetail: boolean }[] = []
   const calls = /\brefused\(/g
   let match = calls.exec(source)
-
   while (match !== null) {
-    let at = match.index + match[0].length
-    let depth = 1
-    let hasDetail = false
-
-    while (at < source.length && depth > 0) {
-      const char = source[at]
-      if (char === '(' || char === '[' || char === '{') depth += 1
-      else if (char === ')' || char === ']' || char === '}') depth -= 1
-      else if (char === ',' && depth === 1) hasDetail = true
-      else if (char === "'" || char === '"' || char === '`') {
-        const quote = char
-        at += 1
-        while (at < source.length && source[at] !== quote) {
-          if (source[at] === '\\') at += 1
-          at += 1
-        }
-      }
-      at += 1
-    }
-
-    found.push({ line: source.slice(0, match.index).split('\n').length, hasDetail })
+    found.push({
+      line: source.slice(0, match.index).split('\n').length,
+      hasDetail: refusalHasDetail(source, match.index + match[0].length),
+    })
     match = calls.exec(source)
   }
-
   return found
 }
 

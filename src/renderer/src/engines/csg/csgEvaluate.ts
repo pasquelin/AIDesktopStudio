@@ -9,6 +9,7 @@ import {
 } from 'three-bvh-csg'
 import { isCsgGraph, type CsgGraph, type CsgOperation, type CsgPart } from '@shared/domain/csg'
 import { geometryFor } from '../scene/threeFactory'
+import { tileUvs } from '../scene/uvTiling'
 import { bakedGeometry } from './bakedGeometry'
 import { csgKeyOf } from './csgKey'
 import type { CsgMesh } from './csgMessage'
@@ -86,10 +87,14 @@ export function geometryOfGraph(graph: CsgGraph): BufferGeometry {
  * the other half of the same lesson, and `bakedGeometry` carries it.
  */
 function brushOf(part: CsgPart): Brush {
+  const shape = part.geometry
   const geometry = bakedGeometry(
-    isCsgGraph(part.geometry) ? geometryOfGraph(part.geometry) : geometryFor(part.geometry),
+    isCsgGraph(shape) ? geometryOfGraph(shape) : geometryFor(shape),
     part.transform,
   )
+  // Tiled AFTER the placement, so a flat face is projected in the SOLID's frame rather than the
+  // brush's: one grid then runs across a whole union instead of restarting at every joint.
+  if (!isCsgGraph(shape)) tileUvs(geometry, shape, part.material.tilesPerMetre)
 
   const brush = new Brush(geometry)
   brush.updateMatrixWorld(true)

@@ -43,6 +43,42 @@ export function createTimelineSystem(options: TimelineSystemOptions): System {
   // mutes that row for good, where the storm would have retried.
   const voiceless = new Set<string>()
 
+  const fireEvents = (world: World, now: number): void => {
+    for (const event of events) {
+      if (!Number.isFinite(event.at) || event.at > now || fired.has(event.id)) continue
+      fired.add(event.id)
+      sayCustom(world, event.name, event.entity, event.payload)
+    }
+  }
+
+  const playAudio = (world: World, now: number): void => {
+    for (const sound of audio) {
+      const on = within(sound, now)
+      if (on && !playing.has(sound.id) && !voiceless.has(sound.id)) {
+        const opening = levelOf(sound, now)
+        const voice = world.ports.audio.play(options.assetRef(sound.assetId), {
+          volume: opening,
+          loop: sound.loop === true,
+        })
+        if (voice) {
+          playing.set(sound.id, voice)
+          level.set(sound.id, opening)
+        } else voiceless.add(sound.id)
+      } else if (on) updateLevel(sound, now, playing, level)
+      else stopSound(sound.id, playing, level)
+    }
+  }
+
+  const changeScene = (world: World, now: number): void => {
+    for (const transition of changes) {
+      if (swapped.has(transition.id)) continue
+      const half = halfOf(transition)
+      if (now < transition.at + half) continue
+      swapped.add(transition.id)
+      world.ports.scenes.load(transition.scene, half / MICROSECONDS_A_SECOND)
+    }
+  }
+
   return {
     name: 'timeline',
     reads: [],
@@ -53,53 +89,10 @@ export function createTimelineSystem(options: TimelineSystemOptions): System {
       // drift from the physics at the first late frame. It also never goes backwards — a STOP
       // builds a new world and a new system — so nothing here has to be undone.
       const now = world.time.elapsed * MICROSECONDS_A_SECOND
-
-      for (const event of events) {
-        // 🛑 `at > now` is FALSE for a `NaN`, so the row would fire on the first step. What is
-        // not a finite instant is not an instant, and it never comes due.
-        if (!Number.isFinite(event.at) || event.at > now || fired.has(event.id)) continue
-        fired.add(event.id)
-        sayCustom(world, event.name, event.entity, event.payload)
-      }
-
-      for (const sound of audio) {
-        const on = within(sound, now)
-        if (on && !playing.has(sound.id) && !voiceless.has(sound.id)) {
-          const opening = levelOf(sound, now)
-          const voice = world.ports.audio.play(options.assetRef(sound.assetId), {
-            volume: opening,
-            loop: sound.loop === true,
-          })
-          if (voice) {
-            playing.set(sound.id, voice)
-            level.set(sound.id, opening)
-          } else voiceless.add(sound.id)
-        } else if (on) {
-          const wanted = levelOf(sound, now)
-          if (level.get(sound.id) !== wanted) {
-            playing.get(sound.id)?.gain(wanted)
-            level.set(sound.id, wanted)
-          }
-        } else if (playing.has(sound.id)) {
-          playing.get(sound.id)?.stop()
-          playing.delete(sound.id)
-          level.delete(sound.id)
-        }
-      }
-
+      fireEvents(world, now)
+      playAudio(world, now)
       world.ports.render.veil(veilAt(transitions, now))
-
-      // 🛑 At its HALFWAY mark, where the veil is full: a scene swapped at the top of a fade is
-      // a cut with a fade painted after it.
-      for (const transition of changes) {
-        if (swapped.has(transition.id)) continue
-
-        const half = halfOf(transition)
-        if (now < transition.at + half) continue
-        swapped.add(transition.id)
-        // What is LEFT of the fade: the veil is already full, and the new scene lifts it.
-        world.ports.scenes.load(transition.scene, half / MICROSECONDS_A_SECOND)
-      }
+      changeScene(world, now)
     },
 
     // 🛑 The voices this row started: the mixer outlives a scene swap, and a loop left playing
@@ -111,6 +104,25 @@ export function createTimelineSystem(options: TimelineSystemOptions): System {
       voiceless.clear()
     },
   }
+}
+
+function updateLevel(
+  sound: TimelineMedia,
+  now: number,
+  playing: Map<string, AudioVoice>,
+  level: Map<string, number>,
+): void {
+  const wanted = levelOf(sound, now)
+  if (level.get(sound.id) === wanted) return
+  playing.get(sound.id)?.gain(wanted)
+  level.set(sound.id, wanted)
+}
+
+function stopSound(id: string, playing: Map<string, AudioVoice>, level: Map<string, number>): void {
+  if (!playing.has(id)) return
+  playing.get(id)?.stop()
+  playing.delete(id)
+  level.delete(id)
 }
 
 /** A timeline counts in microseconds; the world counts seconds. */

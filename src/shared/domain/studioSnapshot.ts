@@ -3,6 +3,7 @@ import type { PlayState } from './gameRuntime'
 import type { Project } from './project'
 import type { TargetKind } from './target'
 import type { WorkspaceId } from './workspace'
+import type { DocumentRevisionSnapshot, DocumentStateSnapshot } from './documentState'
 
 /**
  * What `studio.state` answers: the studio as one reading, for whoever asked.
@@ -62,6 +63,8 @@ export type StudioSnapshot = {
   /** `null` for a surface no command scope covers — the home, for one. */
   commandScope: string | null
   documents: SnapshotDocument[]
+  activeDocumentState?: DocumentStateSnapshot
+  documentRevisions?: DocumentRevisionSnapshot[]
   selection: SnapshotSelection | null
   /** Which model is armed per role, keyed by `AiRoleId`. Absent where nothing is armed. */
   armedModels: Partial<Record<string, string>>

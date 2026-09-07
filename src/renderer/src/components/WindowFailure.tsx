@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import { cn } from '@/helpers/cn'
 import { HINT_RIGHT } from '@/helpers/tooltip'
-import { WINDOW_ACTION_SECONDARY } from './windowStyles'
+import { WindowButton } from './WindowButton'
 
 /** The way out of a failure: what it offers, what the label leaves unsaid, and what it does. */
 export type WindowFailureAction = {
@@ -37,14 +37,9 @@ export function WindowFailure({ children, action, className }: WindowFailureProp
   return (
     <div className={cn('flex flex-col items-start gap-2', className)}>
       {sentence}
-      <button
-        type="button"
-        className={WINDOW_ACTION_SECONDARY}
-        {...HINT_RIGHT(action.hint)}
-        onClick={action.onClick}
-      >
+      <WindowButton variant="secondary" {...HINT_RIGHT(action.hint)} onClick={action.onClick}>
         {action.label}
-      </button>
+      </WindowButton>
     </div>
   )
 }

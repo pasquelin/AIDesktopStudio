@@ -42,7 +42,7 @@ key marked `Z`, wherever that is on your keyboard: middle-left on AZERTY, bottom
 You press what you read.
 
 That is the rule every other application follows, and it holds for what the system keeps to
-itself too: `⌘Q` quits the studio, `⌘W` closes the window, `⌘M` minimises it. No command here can
+itself too: `⌘Q` quits the studio, `⌘M` minimises the window. No command here can
 take those keys.
 
 > **A key printing nothing the studio can read keeps its position.** That is the case for the
@@ -99,7 +99,8 @@ is also what lets it write into a text field, see below.
 
 | Action | Key | What it does |
 |---|---|---|
-| **New project** | `⌘N` | creates an empty project and opens it |
+| **New…** | `⌘N` | opens the window that makes a project or a document, from any screen |
+| **New project** | `⌥⌘N` | creates an empty project and opens it, without going through the window |
 | **Open project** | `⌘O` | opens an existing project in place of the current one |
 | **Save document** | `⌘S` | writes the document in front into the project — **and rewrites the asset it came from**, in the Image workspace |
 | **Save as** | `⇧⌘S` | writes a copy of the asset beside the original and carries on with it, asking for no name |
@@ -637,7 +638,8 @@ that is not a workspace — it is open in all of them at once — and one more c
 
 | Key | Anywhere | Bar | 3D view | Edit | Image | Sky | Audio | Material |
 |---|---|---|---|---|---|---|---|---|
-| `⌘N` | New project |  |  |  |  |  |  |  |
+| `⌘N` | New… |  |  |  |  |  |  |  |
+| `⌥⌘N` | New project |  |  |  |  |  |  |  |
 | `⌘O` | Open project |  |  |  |  |  |  |  |
 | `⌘S` | Save |  |  |  |  |  |  |  |
 | `⇧⌘S` | Save as |  |  |  |  |  |  |  |

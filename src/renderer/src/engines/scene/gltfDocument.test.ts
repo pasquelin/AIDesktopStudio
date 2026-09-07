@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { reliefLayer } from '@shared/domain/scene'
 import { DOCUMENT_ID_KEY, DOCUMENT_KIND_KEY, STUDIO_METADATA_KEY } from '@shared/domain/document'
 import { GLTF_SCENE_STATE, gltfStudioMetadata, isGltfDocument } from '@shared/domain/gltf'
 import { isRecord } from '@shared/guards'
@@ -8,7 +9,9 @@ import {
   sceneHoldsMore,
   type GltfDocumentOptions,
 } from './gltfDocument'
-import { cameraNodeFixture, lightNodeFixture, meshNode } from './scene-fixtures'
+import { loadHeightmap } from './heightmap'
+import { openExrFloatY } from './openExr-fixtures'
+import { cameraNodeFixture, lightNodeFixture, meshNode, modelNodeFixture } from './scene-fixtures'
 import { EMPTY_SCENE, type SceneState } from './sceneState'
 
 const WRITTEN: GltfDocumentOptions = { documentId: 'doc-1', documentKind: 'scene' }
@@ -25,12 +28,59 @@ function nodesOf(document: Record<string, unknown>): Record<string, unknown>[] {
   return Array.isArray(nodes) ? nodes.filter(isRecord) : []
 }
 
+/** `EXRLoader` writes scanline 0 at the bottom. Domain samples follow that orientation. */
+function flippedExr(values: Float32Array, width: number, height: number): Float32Array {
+  const out = new Float32Array(values.length)
+  for (let y = 0; y < height; y++) {
+    out.set(values.subarray(y * width, (y + 1) * width), (height - 1 - y) * width)
+  }
+  return out
+}
+
 describe('gltfDocumentOf', () => {
   it('writes a file another application reads as glTF', () => {
     const document = write(EMPTY_SCENE)
 
     expect(isGltfDocument(document)).toBe(true)
     expect(document.scene).toBe(0)
+  })
+
+  it('names the model another application follows, by uri', () => {
+    const uri = '.resources/Modelling/Models/HeroMedium.glb'
+    const document = gltfDocumentOf(
+      { ...EMPTY_SCENE, nodes: [modelNodeFixture('Character', 'asset-hero')] },
+      { ...WRITTEN, uriOf: id => (id === 'asset-hero' ? uri : null) },
+    )
+    if (!isRecord(document)) throw new Error('not a document')
+
+    expect(nodesOf(document)[0]?.extras).toEqual({ uri })
+  })
+
+  it('points at the pictures a mesh wears', () => {
+    const floor = meshNode('floor')
+    floor.material = { ...floor.material, map: { assetId: 'tex-1' } }
+    const document = gltfDocumentOf(
+      { ...EMPTY_SCENE, nodes: [floor] },
+      { ...WRITTEN, uriOf: id => (id === 'tex-1' ? '.resources/Materials/GridLarge.png' : null) },
+    )
+    if (!isRecord(document)) throw new Error('not a document')
+
+    expect(document.images).toEqual([{ uri: '.resources/Materials/GridLarge.png' }])
+  })
+
+  it('keeps pictures it composed, and names extras a save would drop', () => {
+    const floor = meshNode('floor')
+    floor.material = { ...floor.material, map: { assetId: 'tex-1' } }
+    const composed = gltfDocumentOf(
+      { ...EMPTY_SCENE, nodes: [floor] },
+      { ...WRITTEN, uriOf: () => 'grid.png' },
+    )
+    if (!isRecord(composed)) throw new Error('not a document')
+
+    expect(sceneHoldsMore(composed)).not.toContain('images')
+    expect(sceneHoldsMore({ ...write(EMPTY_SCENE), images: [{ uri: 'foreign.png' }] })).toContain(
+      'images',
+    )
   })
 
   it('says which document it is, and which kind, where the file name cannot', () => {
@@ -121,6 +171,41 @@ describe('gltfDocumentOf', () => {
 })
 
 describe('sceneFromGltf', () => {
+  it('round-trips a relief, and the samples that asset holds', async () => {
+    const layer = reliefLayer(
+      { assetId: 'asset_height' },
+      {
+        id: 'terrain',
+        origin: { x: -16, z: 4 },
+        size: { x: 256, z: 128 },
+        elevation: { min: -8, max: 32 },
+      },
+    )
+    const state: SceneState = {
+      ...EMPTY_SCENE,
+      world: {
+        ...EMPTY_SCENE.world,
+        layers: [layer],
+      },
+    }
+    const document = JSON.parse(JSON.stringify(write(state)))
+
+    expect(sceneHoldsMore(document)).toEqual([])
+    const back = sceneFromGltf(document)
+    expect(back.world.layers).toEqual([layer])
+
+    const values = Float32Array.from({ length: 16 }, (_, at) => at + 0.25)
+    const bytes = openExrFloatY(4, 4, values)
+    const body = new ArrayBuffer(bytes.byteLength)
+    new Uint8Array(body).set(bytes)
+    const first = back.world.layers[0]
+    const assetId = first?.kind === 'relief' ? first.heightmap.assetId : ''
+    const samples = await loadHeightmap(assetId, async () => body)
+    expect(samples.width).toBe(4)
+    expect(samples.height).toBe(4)
+    expect(samples.values).toEqual(flippedExr(values, 4, 4))
+  })
+
   it('gives back the scene that was written, node for node', () => {
     const state: SceneState = {
       ...EMPTY_SCENE,

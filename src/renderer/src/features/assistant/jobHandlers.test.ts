@@ -21,11 +21,11 @@ describe('reading a generation', () => {
    * progress — which made a client able to start a generation and unable to learn what it
    * produced, which is the one thing it was generating for.
    */
-  it('answers with what a job produced, cost and failed on', () => {
+  it('answers with what a job produced, cost and failed on', async () => {
     const done = jobOf({ id: 'job-1', status: 'succeeded', progress: 1 })
     useJobs.setState({ jobs: [{ ...done, assetIds: ['asset-9'], cost: 4 }] })
 
-    expect(runAction('job.readCloudGeneration', { jobId: 'job-1' })).resolves.toMatchObject({
+    await expect(runAction('job.readCloudGeneration', { jobId: 'job-1' })).resolves.toMatchObject({
       ok: true,
       data: { assetIds: ['asset-9'], cost: 4, status: 'succeeded' },
     })
@@ -170,7 +170,7 @@ describe('cancelling and counting', () => {
     const usageReport = vi.fn(async () => report())
     installFakeBridge({ provider: { usageReport } })
 
-    await runAction('usage.report', { days: '7' })
+    await runAction('usage.report', { days: 7 })
     expect(usageReport).toHaveBeenCalledWith(7)
 
     await runAction('usage.report', {})

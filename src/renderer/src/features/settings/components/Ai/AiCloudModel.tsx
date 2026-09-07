@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next'
+import { WindowInput } from '@/components/WindowInput'
 import { defaultChatModel } from '@shared/domain/aiCloud'
 import { fieldHandle } from '@/components/scHandle'
 import { WINDOW_CAPTION, WINDOW_HELP, WINDOW_ROW } from '@/components/windowStyles'
@@ -29,10 +30,10 @@ export function AiCloudModel({ providerId }: AiCloudModelProps) {
     <li className={cn(WINDOW_ROW, 'flex-col items-start pl-6')}>
       <label className="flex w-full items-center gap-2">
         <span className={WINDOW_CAPTION}>{t('aiModels.cloudModel')}</span>
-        <input
+        <WindowInput
           type="text"
           data-sc={fieldHandle(`ai.cloud.${providerId}.model`)}
-          className="input input-sm w-full max-w-xs"
+          className="w-full max-w-xs"
           placeholder={defaultChatModel(providerId) ?? undefined}
           {...field}
         />

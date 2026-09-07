@@ -6,6 +6,9 @@
     "generate": "Generate",
     "close": "Close",
     "removeTool": "Remove tool",
+    "resizeZone": "Resize panel area",
+    "resizeSplit": "Resize the two panels",
+    "resizeBand": "Resize the bottom panels",
     "retry": "Try again",
     "retryHint": "Renders this area again, without restarting the studio",
     "generateHint": "Starts the generation with the settings above; it is followed in the generations bar",
@@ -37,7 +40,16 @@
     "running_other": "{{count, number}} tasks",
     "open": "Show tasks",
     "openHint": "Opens the list of tasks in progress",
-    "cancel": "Stop this task"
+    "cancel": "Stop this task",
+    "phases": {
+      "prepare": "Preparing model",
+      "load": "Loading engine",
+      "analyse": "Analysing character",
+      "skeleton": "Generating skeleton",
+      "pose": "Computing rest pose",
+      "skinning": "Computing skinning",
+      "apply": "Applying skeleton"
+    }
   },
   "dialog": {
     "allMedia": "All media",
@@ -45,6 +57,7 @@
     "audio": "Audio",
     "image": "Image",
     "mesh": "3D model",
+    "animation": "Animation",
     "bundle": "Edit with its media",
     "weights": "Model weights"
   },
@@ -74,13 +87,15 @@
     "invalidValue": "Invalid value.",
     "rejected": "The generation failed.",
     "incompleteModel": "The model files are incomplete. Reinstall the model, then run it again.",
+    "engineMissing": "The local AI engine is not installed on this machine, so nothing here can run the model.",
+    "engineFailed": "The local AI engine did not start. Check the activity journal, then try again.",
     "storage": "Could not save the result to disk.",
     "panelCrashed": "This panel ran into an error.",
     "windowCrashed": "The application ran into an error."
   },
   "licences": {
     "title": "Licences",
-    "intro": "IA Studio ships with the software below. Each keeps its own licence, reproduced here in full.",
+    "intro": "AI Desktop Studio ships with the software below. Each keeps its own licence, reproduced here in full.",
     "sources": "Corresponding sources:",
     "sourcesUnmodified": "Corresponding sources, unmodified:",
     "bundled": "shipped with the application",

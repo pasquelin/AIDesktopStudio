@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
-import { WINDOW_ACTION, WINDOW_ACTION_SECONDARY } from '@/components/windowStyles'
 import { HINT_TOP } from '@/helpers/tooltip'
 import { isSettingsDraftDirty, useSettingsDraft } from '@/stores/settingsDraft'
+import { WindowButton } from '@/components/WindowButton'
 
 /**
  * Apply, Cancel, OK — and nothing at all while nothing is waiting, so the window is not a form
@@ -21,30 +21,18 @@ export function SettingsWindowDraftBar() {
 
   return (
     <footer className="border-base-300 flex shrink-0 items-center justify-end gap-2 border-t px-4 py-2">
-      <button
-        type="button"
-        className={WINDOW_ACTION_SECONDARY}
-        {...HINT_TOP(t('settings.cancelHint'))}
-        onClick={cancel}
-      >
+      <WindowButton variant="secondary" {...HINT_TOP(t('settings.cancelHint'))} onClick={cancel}>
         {t('settings.cancel')}
-      </button>
-      <button
-        type="button"
-        className={WINDOW_ACTION}
-        {...HINT_TOP(t('settings.applyHint'))}
-        onClick={() => void apply()}
-      >
+      </WindowButton>
+      <WindowButton {...HINT_TOP(t('settings.applyHint'))} onClick={() => void apply()}>
         {t('settings.apply')}
-      </button>
-      <button
-        type="button"
-        className={WINDOW_ACTION}
+      </WindowButton>
+      <WindowButton
         {...HINT_TOP(t('settings.confirmHint'))}
         onClick={() => void apply().then(() => window.close())}
       >
         {t('settings.confirm')}
-      </button>
+      </WindowButton>
     </footer>
   )
 }

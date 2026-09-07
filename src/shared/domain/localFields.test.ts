@@ -104,8 +104,12 @@ describe('the modalities that write a file', () => {
     for (const absent of ['width', 'height', 'negativePrompt']) expect(keys).not.toContain(absent)
   })
 
-  it('files each of them on the shelf it is named after', () => {
-    for (const modality of producing) expect(assetTypeOfModality(modality)).toBe(modality)
+  // A motion is the one that is not named after its shelf: it is filed as an animation, which is
+  // what the studio calls a clip. Every other modality still answers itself.
+  it('files each of them on the shelf its name says, a motion apart', () => {
+    for (const modality of producing.filter(one => one !== 'motion'))
+      expect(assetTypeOfModality(modality)).toBe(modality)
+    expect(assetTypeOfModality('motion')).toBe('animation')
   })
 
   // The collector files by modality. A skybox is a panorama PNG — the same suffix as an image,
@@ -116,6 +120,7 @@ describe('the modalities that write a file', () => {
     expect(outputExtensionOf('video')).toBe('mp4')
     expect(outputExtensionOf('audio')).toBe('wav')
     expect(outputExtensionOf('mesh')).toBe('ply')
+    expect(outputExtensionOf('motion')).toBe('glb')
   })
 
   it('opens a skybox on a 2:1 frame, which a still does not', () => {
@@ -153,5 +158,24 @@ describe('a default that cannot be typed back in', () => {
     )
 
     expect(offGrid).toEqual([])
+  })
+
+  // 🛑 `localFields.secondsHelp` speaks of a SOUND, and a motion is a length on a skeleton. Held
+  // in the shared `seconds` helper, it explained the audio field under the motion one.
+  it('explains a duration only where the sentence is about that duration', () => {
+    const durationOf = (modality: 'audio' | 'motion') =>
+      localFieldsOf(modality, {}, key => key).find(field => field.key === 'seconds')
+
+    expect(durationOf('audio')?.help).toBe('localFields.secondsHelp')
+    expect(durationOf('motion')?.help).toBeUndefined()
+  })
+
+  // 🛑 A seed is 32 bits unsigned: the local motion engine raises on anything wider, and nothing
+  // on the `generate` path was catching it — the job simply failed.
+  it('bounds every seed field to what a seed IS, rather than leaving it open', () => {
+    const seeds = localFieldsOf('motion', {}, key => key).filter(field => field.kind === 'seed')
+
+    expect(seeds).not.toHaveLength(0)
+    for (const field of seeds) expect(field).toMatchObject({ min: 0, max: 2 ** 32 - 1 })
   })
 })

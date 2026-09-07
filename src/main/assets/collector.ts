@@ -7,11 +7,6 @@ import { channelFromProviderType } from '@shared/domain/material'
 import type { WorkspaceId } from '@shared/domain/workspace'
 import type { AssetCollector } from '@main/provider/jobManager'
 import type { LocalBackend } from './localBackend'
-
-/**
- * `metadataType` is `metadata.type` on the API side — where a PBR channel announces itself —
- * and `parentId` the API asset this one was made from.
- */
 export type RemoteAsset = {
   url: string
   kind: string
@@ -21,42 +16,49 @@ export type RemoteAsset = {
   ownerId?: string
   updatedAt?: string
   outputIndex?: number
-  /** The still the API renders for what cannot be shown directly — a mesh, a video, a sound. */
   thumbnailUrl?: string
-  /** Read off the API asset: the job carries neither the model nor the prompt at its top level. */
   generation?: AssetGeneration
 }
-
-/**
- * A local row an API asset became, as the collector needs to see it.
- *
- * `jobId` is what put it there, and the collector reads it: a row alone does not say whose
- * output it is. `type` too, so a second pass over outputs already collected still names their
- * shelves. `onDisk` because a row is not a file — see the two readings below.
- */
-type HeldAsset = Pick<Asset, 'id' | 'jobId' | 'type'> & { onDisk: boolean }
-
+type HeldAsset = Pick<Asset, 'id' | 'jobId' | 'type'> & {
+  onDisk: boolean
+}
 export type CollectorDeps = {
   retrieve: (remoteAssetId: string) => Promise<RemoteAsset>
   backend: LocalBackend
   newId: () => string
-  /** The local asset an API one became, or `null` when it never entered the project. */
   heldFor: (remoteAssetId: string) => Promise<HeldAsset | null>
 }
+type Collected = { id: string; workspace: WorkspaceId }
+type ImportRequest = Parameters<LocalBackend['importFromUrl']>[0]
 
+function remoteDetails(
+  remote: RemoteAsset,
+  authored: Parameters<AssetCollector>[2],
+  parent: HeldAsset | null,
+): Partial<ImportRequest> {
+  const source = channelFromProviderType(remote.metadataType)
+  return {
+    ...(remote.thumbnailUrl ? { thumbnailUrl: remote.thumbnailUrl } : {}),
+    ...(remote.ownerId ? { remoteOwnerId: remote.ownerId } : {}),
+    ...(remote.updatedAt ? { remoteUpdatedAt: remote.updatedAt } : {}),
+    ...(remote.generation
+      ? {
+          generation: authored
+            ? withAuthoredPrompt(remote.generation, authored)
+            : remote.generation,
+        }
+      : {}),
+    ...(parent ? { derivedFrom: parent.id } : {}),
+    ...(source ? { map: source.channel } : {}),
+    ...(source?.inverted ? { mapInverted: true } : {}),
+  }
+}
 export function createAssetCollector({
   retrieve,
   backend,
   newId,
   heldFor,
 }: CollectorDeps): AssetCollector {
-  /**
-   * What the API says about an output, or `null` when it will not say.
-   *
-   * Only forgiving for an output this job already holds: everywhere else a retrieve that fails is
-   * a collection that failed, and swallowing it would report a job as succeeded with a shelf
-   * missing.
-   */
   const fetchRemote = async (
     remoteAssetId: string,
     mine: HeldAsset | null,
@@ -64,107 +66,62 @@ export function createAssetCollector({
     if (!mine) return await retrieve(remoteAssetId)
     return await orElse(retrieve(remoteAssetId), null)
   }
-
+  const importRemote = async (
+    job: Parameters<AssetCollector>[0],
+    remoteAssetIds: readonly string[],
+    index: number,
+    remoteAssetId: string,
+    remote: RemoteAsset,
+    mine: HeldAsset | null,
+    authored: Parameters<AssetCollector>[2],
+  ): Promise<Collected | null> => {
+    const type = assetTypeOfRemote(remote)
+    if (!type) return null
+    const parent = remote.parentId ? await heldFor(remote.parentId) : null
+    const written = authored?.written ?? remote.generation?.prompt
+    const asset = await backend.importFromUrl({
+      id: mine?.id ?? newId(),
+      url: remote.url,
+      name: generatedAssetName({
+        ...(written ? { prompt: written } : {}),
+        label: job.label,
+        index,
+        total: remoteAssetIds.length,
+      }),
+      type,
+      jobId: job.id,
+      remoteAssetId,
+      sync: false,
+      ...(remoteAssetIds.length > 1 ? { groupId: job.id, outputIndex: index } : {}),
+      ...remoteDetails(remote, authored, parent),
+    })
+    return { id: asset.id, workspace: workspaceOfType(type) }
+  }
+  const collectOne = async (
+    job: Parameters<AssetCollector>[0],
+    remoteAssetIds: readonly string[],
+    index: number,
+    authored: Parameters<AssetCollector>[2],
+  ): Promise<Collected | null> => {
+    const remoteAssetId = remoteAssetIds[index]
+    if (!remoteAssetId) return null
+    const held = await heldFor(remoteAssetId)
+    const mine = held?.jobId === job.id ? held : null
+    if (mine?.onDisk) return { id: mine.id, workspace: workspaceOfType(mine.type) }
+    const remote = await fetchRemote(remoteAssetId, mine)
+    if (!remote) return mine ? { id: mine.id, workspace: workspaceOfType(mine.type) } : null
+    return importRemote(job, remoteAssetIds, index, remoteAssetId, remote, mine, authored)
+  }
   return async (job, remoteAssetIds, authored) => {
     const collected: string[] = []
-    // A set, and read back as one: the seven channels of a PBR pack are one shelf, not seven.
     const shelves = new Set<WorkspaceId>()
-
-    // Sequential on purpose: a single generation can return a dozen outputs, and downloading
-    // them all at once would fight the very concurrency the JobManager bounds.
-    for (const [index, remoteAssetId] of remoteAssetIds.entries()) {
-      // This job's own output, already here: a second pass over a note that outlived a crash, or
-      // a resumed job the studio had in fact collected. Downloading it again would duplicate
-      // every output and pay for the transfer twice. Scoped to the job rather than to the remote
-      // id alone, or a copy the user had pulled from the account library would be adopted as the
-      // output — and it carries neither the prompt behind it, nor its group, nor its label.
-      // `onDisk`, because what this branch decides is NOT to download: a row whose file the user
-      // has since thrown away would otherwise put a dead id among the outputs of the job, and
-      // nothing would ever come back for the bytes. The row is not the file.
-      const held = await heldFor(remoteAssetId)
-      const mine = held?.jobId === job.id ? held : null
-
-      if (mine?.onDisk) {
-        collected.push(mine.id)
-        shelves.add(workspaceOfType(mine.type))
-        continue
+    for (const [index] of remoteAssetIds.entries()) {
+      const result = await collectOne(job, remoteAssetIds, index, authored)
+      if (result) {
+        collected.push(result.id)
+        shelves.add(result.workspace)
       }
-
-      const remote = await fetchRemote(remoteAssetId, mine)
-
-      // The API no longer answers for an output this job did collect: the row is all that is left
-      // of it, and failing the whole job over one output — the other three having just been paid
-      // for again — is worse than handing back a row whose file the user removed.
-      if (!remote) {
-        if (!mine) continue
-        collected.push(mine.id)
-        shelves.add(workspaceOfType(mine.type))
-        continue
-      }
-
-      const source = channelFromProviderType(remote.metadataType)
-      const type = assetTypeOfRemote(remote)
-      if (!type) continue
-
-      // What the channels of one texture hang from. Absent when the parent never entered the
-      // project — an image uploaded straight to the API, or converted before it was imported.
-      // `onDisk` is not read here: a lineage points at an id, and a row keeps its own whatever
-      // became of its file.
-      const parent = remote.parentId ? await heldFor(remote.parentId) : null
-
-      // What the PERSON wrote, and only then what the API echoed: the echo carries whatever the
-      // project's context added, and every row of a shelf would read the same.
-      const written = authored?.written ?? remote.generation?.prompt
-
-      const asset = await backend.importFromUrl({
-        // The row this job already made for this output, when there is one: `write` finds it,
-        // rewrites it in place and — `INSERT OR REPLACE` naming no `missing_at` — undates it. A
-        // fresh id would leave the old row beside the new one, both claiming one remote asset and
-        // one path, and `findByRemoteId` answers OLDEST first: every later pass would hand back
-        // the dead one, and the browser would show the output twice.
-        id: mine?.id ?? newId(),
-        url: remote.url,
-        // What was ASKED for, not which model answered: a shelf named after models is a shelf
-        // where everything of one model reads the same. The label is the fallback, and an
-        // honest one — an upscale takes a picture and no words.
-        name: generatedAssetName({
-          ...(written ? { prompt: written } : {}),
-          label: job.label,
-          index,
-          total: remoteAssetIds.length,
-        }),
-        type,
-        jobId: job.id,
-        remoteAssetId,
-        // Provenance, not a twin: pushing is a later, explicit gesture.
-        sync: false,
-        // One job, one group. The API has no notion of a set, but the seven channels of a PBR
-        // pack are exactly the outputs of one conversion — and a lone output is not a group.
-        ...(remoteAssetIds.length > 1 ? { groupId: job.id, outputIndex: index } : {}),
-        // The same still the library shows, kept for what cannot stand in for itself — a mesh
-        // generated here is a tile in the browser a second later, and its own file is not a picture.
-        ...(remote.thumbnailUrl ? { thumbnailUrl: remote.thumbnailUrl } : {}),
-        ...(remote.ownerId ? { remoteOwnerId: remote.ownerId } : {}),
-        ...(remote.updatedAt ? { remoteUpdatedAt: remote.updatedAt } : {}),
-        // The WRITTEN prompt, never the one the context lengthened: it names the file, it is
-        // what full-text search matches, and it is what a « regenerate » must reopen on.
-        ...(remote.generation
-          ? {
-              generation: authored
-                ? withAuthoredPrompt(remote.generation, authored)
-                : remote.generation,
-            }
-          : {}),
-        ...(parent ? { derivedFrom: parent.id } : {}),
-        // Absent rather than false: an ordinary map is not "a map that is not inverted".
-        ...(source ? { map: source.channel } : {}),
-        ...(source?.inverted ? { mapInverted: true } : {}),
-      })
-
-      collected.push(asset.id)
-      shelves.add(workspaceOfType(type))
     }
-
     return { ids: collected, workspaces: [...shelves] }
   }
 }

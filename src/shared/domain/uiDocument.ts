@@ -153,8 +153,14 @@ export function newUiElement<T extends UiElementType>(
  */
 function element(value: unknown, newId: () => string): UiElement | null {
   if (!isRecord(value) || !isUiElementType(value.type)) return null
+  const type = value.type
+  const base = elementBase(value, newId)
+  const kids = holdsChildren(type) ? children(value.children, newId) : []
+  return elementVariant(value, type, base, kids)
+}
 
-  const base = {
+function elementBase(value: Record<string, unknown>, newId: () => string) {
+  return {
     // An id the file lost is minted rather than costing the element: what an id keys — a
     // binding, a keyframe, a script's `get` — is broken either way, and a visible element is
     // something to repair where a dropped one is something to notice.
@@ -169,35 +175,49 @@ function element(value: unknown, newId: () => string): UiElement | null {
     style: style(value.style),
     interaction: interaction(value.interaction),
   }
+}
 
-  const kids = holdsChildren(value.type) ? children(value.children, newId) : []
-
-  if (value.type === 'screen') return { ...base, type: 'screen', children: kids }
-  if (value.type === 'stack') {
+function elementVariant(
+  value: Record<string, unknown>,
+  type: UiElement['type'],
+  base: ReturnType<typeof elementBase>,
+  kids: readonly UiElement[],
+): UiElement {
+  if (type === 'screen') return { ...base, type: 'screen', children: kids }
+  if (type === 'stack') {
     return { ...base, type: 'stack', stack: stack(value.stack), children: kids }
   }
-  if (value.type === 'grid') {
+  if (type === 'grid') {
     return { ...base, type: 'grid', grid: grid(value.grid), children: kids }
   }
-  if (value.type === 'scroll') {
+  if (type === 'scroll') {
     return { ...base, type: 'scroll', scroll: scroll(value.scroll), children: kids }
   }
-  if (value.type === 'button') {
+  if (type === 'button') {
     return { ...base, type: 'button', text: text(value.text), children: kids }
   }
-  if (value.type === 'text') return { ...base, type: 'text', text: text(value.text) }
-  if (value.type === 'image') return { ...base, type: 'image', image: image(value.image) }
-  if (value.type === 'progress') {
+  if (type === 'panel') return { ...base, type: 'panel', children: kids }
+  return leafElement(value, type, base)
+}
+
+function leafElement(
+  value: Record<string, unknown>,
+  type: UiElement['type'],
+  base: ReturnType<typeof elementBase>,
+): UiElement {
+  if (type === 'text') return { ...base, type: 'text', text: text(value.text) }
+  if (type === 'image') return { ...base, type: 'image', image: image(value.image) }
+  if (type === 'progress') {
     return { ...base, type: 'progress', progress: progress(value.progress) }
   }
-  if (value.type === 'slider') return { ...base, type: 'slider', slider: slider(value.slider) }
-  if (value.type === 'input') return { ...base, type: 'input', input: input(value.input) }
-  if (value.type === 'checkbox') {
+  if (type === 'slider') return { ...base, type: 'slider', slider: slider(value.slider) }
+  if (type === 'input') return { ...base, type: 'input', input: input(value.input) }
+  if (type === 'checkbox') {
     return { ...base, type: 'checkbox', checkbox: checkbox(value.checkbox) }
   }
-  if (value.type === 'spacer') return { ...base, type: 'spacer' }
+  if (type === 'spacer') return { ...base, type: 'spacer' }
 
-  return { ...base, type: 'panel', children: kids }
+  return { ...base, type: 'spacer' }
 }
 
 /** What a reader made of a list, dropping what it could not read. Anything but a list is none. */

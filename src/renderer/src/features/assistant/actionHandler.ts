@@ -18,6 +18,7 @@ export type ActionHandler = (
    * calls of its own, and they engage on the terms of the door the LOT came through.
    */
   wire?: WireCall,
+  signal?: AbortSignal,
 ) => ActionOutcome | Promise<ActionOutcome>
 
 /**
@@ -62,4 +63,12 @@ export async function withAsset(
         'notFound',
         `no asset "${assetId}" in this library — assets.searchProjectCatalogue answers what it holds, each with its id`,
       )
+}
+
+/** `ok`, with what the call answers read AFTER the command — a bare `ok` when it answers nothing. */
+export function answered<S>(
+  answer: ((state: S) => unknown) | undefined,
+  read: () => S,
+): ActionOutcome {
+  return answer ? { ok: true, data: answer(read()) } : { ok: true }
 }

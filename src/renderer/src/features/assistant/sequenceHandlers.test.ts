@@ -210,11 +210,26 @@ describe('editing a clip', () => {
     expect(sequence().tracks[0]?.clips[0]?.start).toBe(0)
   })
 
-  it('trims to the media behind the clip, and no further', async () => {
-    await runAction('clip.trim', { clipId: 'clip-a', edge: 'out', at: 9 * SECOND })
-
+  it('trims to the media behind the clip, and no further, and answers where it now stands', async () => {
     // Four seconds of source is all there is to show, whatever the edge was pulled to.
+    expect(await runAction('clip.trim', { clipId: 'clip-a', edge: 'out', at: 9 * SECOND })).toEqual(
+      { ok: true, data: { start: 0, end: 4 * SECOND } },
+    )
     expect(sequence().tracks[0]?.clips[0]?.duration).toBe(4 * SECOND)
+  })
+
+  /** What a write ANSWERS: where the clip now sits, or the one dial it turned — never the clip. */
+  it('answers a move by the span, a fade by its ramp and a gain by its level', async () => {
+    expect(
+      await runAction('clip.move', { clipId: 'clip-a', trackId: 'track-video', start: 2 * SECOND }),
+    ).toEqual({ ok: true, data: { start: 2 * SECOND, end: 6 * SECOND } })
+    expect(await runAction('clip.fade', { clipId: 'clip-a', edge: 'out', length: SECOND })).toEqual(
+      { ok: true, data: { fadeOut: SECOND } },
+    )
+    expect(await runAction('clip.gain', { clipId: 'clip-a', gain: -60 })).toEqual({
+      ok: true,
+      data: { gain: MIN_GAIN_DB },
+    })
   })
 })
 

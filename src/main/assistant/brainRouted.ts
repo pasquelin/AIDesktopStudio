@@ -67,6 +67,12 @@ function brainFor(
  */
 export function createRoutedBrain(deps: RoutedBrainDeps): AssistantBrain {
   return {
+    capabilities: async () => {
+      const [brain] = brainFor(deps, await deps.providerOf())
+      return brain
+        ? await brain.capabilities()
+        : { streaming: false, structuredJson: true, multimodalImages: false }
+    },
     /**
      * Asked of whichever door serves TODAY, and answered `null` where none does — the composer
      * shows the bound of the door in front, and nothing serving is not a window of zero.
@@ -88,8 +94,19 @@ export function createRoutedBrain(deps: RoutedBrainDeps): AssistantBrain {
       const [brain, why] = brainFor(deps, provider)
       if (brain === null) throw new Error(`nothing serves the assistant: ${why}`)
 
+      const capabilities = await brain.capabilities()
+      const accepted = capabilities.multimodalImages ? request : { ...request, images: undefined }
+
       return await brain.think(
-        { ...request, context, state, memories, folders: deps.foldersOf() },
+        {
+          ...accepted,
+          // A mission already packed this in the main process; overwriting it drops scores, jobs
+          // and previous results. The window cannot forge one: `parseThought` strips the field.
+          context: accepted.context ?? context,
+          state,
+          memories,
+          folders: deps.foldersOf(),
+        },
         watch,
       )
     },

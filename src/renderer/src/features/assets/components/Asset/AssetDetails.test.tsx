@@ -12,8 +12,9 @@ import { useJobs } from '@/stores/jobs'
 import { useModels } from '@/stores/models'
 import { useLayouts } from '@/stores/layouts'
 import { useSelection } from '@/stores/selection'
-import { arrangedFor } from '@/stores/tool-fixtures'
-import { arrangementOf, useTools } from '@/stores/tools'
+import { chassisFor } from '@/stores/panels-fixtures'
+import { shownIn } from '@pasquelin/panels'
+import { panelsStore } from '@/stores/panels'
 import type { AssetRowModel } from './rows'
 import { AssetDetails } from './AssetDetails'
 
@@ -127,7 +128,7 @@ describe('what a row of the remote browser opens onto', () => {
 
   it('arms the generator with the parameters behind the asset, and brings it up', async () => {
     useJobs.setState({ jobs: [job], bodies: { 'job-1': { prompt: 'x', guidance: 7 } } })
-    useTools.setState({ arrangements: arrangedFor('image', { open: {} }) })
+    chassisFor('image')
     render(<AssetDetails row={line()} twin={asset({ jobId: 'job-1' })} />)
 
     await userEvent.click(screen.getByRole('button', { name: /Régénérer/ }))
@@ -135,6 +136,6 @@ describe('what a row of the remote browser opens onto', () => {
     const models = useModels.getState()
     expect(models.selected[aiRoleId('image', 'txt2img')]).toBe('eleven-music-v2')
     expect(models.preset[aiRoleId('image', 'txt2img')]).toEqual({ prompt: 'x', guidance: 7 })
-    expect(arrangementOf(useTools.getState(), 'image').open.left?.primary).toBe('generator')
+    expect(shownIn(panelsStore.getState(), 'left').primary).toBe('generator')
   })
 })

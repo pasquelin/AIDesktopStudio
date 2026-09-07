@@ -122,7 +122,9 @@ describe('the local brain', () => {
     expect(said.length).toBeLessThan(10_000)
     expect(briefingOf(asked)).toContain('Catalogue:')
   })
+})
 
+describe('the local brain conversation', () => {
   it('asks the model for one JSON object, in the window its manifest declares', async () => {
     const { brain, asked } = brainAnswering([REPLY])
 
@@ -218,6 +220,7 @@ describe('the local brain', () => {
     await expect(brain.think({ utterance: 'hello', history: [] })).resolves.toEqual({
       say: '',
       calls: [],
+      unreadable: true,
       cost: 0,
     })
   })

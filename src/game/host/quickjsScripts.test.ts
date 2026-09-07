@@ -26,6 +26,8 @@ const frameOf = (entities: readonly ScriptEntity[], input = IDLE): ScriptFrame =
   tick: 1,
   dt: 1 / 60,
   input,
+  actions: {},
+  bindings: {},
   entities,
   kept: {},
 })
@@ -80,6 +82,36 @@ describe('the sandbox a game runs its own code in', () => {
 
     expect(still.intents).toEqual([])
     expect(held.intents).toEqual([{ act: 'move', entity: 'e1', by: { x: 0, y: 0, z: -1 } }])
+  })
+
+  it('reads named actions and requests input context changes', () => {
+    port.load([
+      {
+        script: 'script:Walk.ts',
+        code: compiled(
+          'onUpdate(self, ctx) { if (ctx.input.button("jump")) self.moveBy(0, 1, 0); game.input.pushContext("vehicle"); game.input.rebind("character", "jump", 0, { device: "keyboard", code: "Enter" }); game.input.reset("character", "jump") }',
+        ),
+      },
+    ])
+    port.attach([{ entity: 'e1', script: 'script:Walk.ts', props: {} }])
+
+    const outcome = port.run('onUpdate', {
+      ...frameOf([walker()]),
+      actions: { jump: true, throttle: 0.5, move: { x: 1, y: -1 } },
+    })
+
+    expect(outcome.intents).toEqual([
+      { act: 'move', entity: 'e1', by: { x: 0, y: 1, z: 0 } },
+      { act: 'inputContext', action: 'push', id: 'vehicle' },
+      {
+        act: 'inputRebind',
+        context: 'character',
+        action: 'jump',
+        index: 0,
+        binding: { device: 'keyboard', code: 'Enter' },
+      },
+      { act: 'inputReset', context: 'character', action: 'jump' },
+    ])
   })
 
   it('reads the components its entity carries', () => {

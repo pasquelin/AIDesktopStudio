@@ -30,6 +30,31 @@ function kept(paths: readonly (string | undefined)[]): string[] {
   return paths.filter((path): path is string => path !== undefined && path !== '')
 }
 
+function windowsPaths(env: NodeJS.ProcessEnv, exe: string, join: typeof posix.join): string[] {
+  return kept([
+    env.LOCALAPPDATA ? join(env.LOCALAPPDATA, 'Programs', 'Ollama', exe) : undefined,
+    env.ProgramFiles ? join(env.ProgramFiles, 'Ollama', exe) : undefined,
+    env['ProgramFiles(x86)'] ? join(env['ProgramFiles(x86)'], 'Ollama', exe) : undefined,
+  ])
+}
+
+function unixPaths(platform: NodeJS.Platform, env: NodeJS.ProcessEnv, exe: string): string[] {
+  if (platform === 'darwin') {
+    return [
+      '/opt/homebrew/bin/ollama',
+      '/usr/local/bin/ollama',
+      '/Applications/Ollama.app/Contents/Resources/ollama',
+    ]
+  }
+  const home = env.HOME ?? env.USERPROFILE ?? ''
+  return kept([
+    '/usr/local/bin/ollama',
+    '/usr/bin/ollama',
+    '/snap/bin/ollama',
+    home ? posix.join(home, '.local', 'bin', exe) : undefined,
+  ])
+}
+
 /**
  * Usual install locations, then an optional studio copy, then PATH. Joins follow the handed-in
  * platform, not this process's — a Windows path asserted on a Mac would otherwise go through posix.
@@ -41,29 +66,7 @@ export function ollamaBinary(
 ): string[] {
   const { join } = pathOf(platform)
   const exe = platform === 'win32' ? 'ollama.exe' : 'ollama'
-
-  let known: string[]
-  if (platform === 'win32') {
-    known = kept([
-      env.LOCALAPPDATA ? join(env.LOCALAPPDATA, 'Programs', 'Ollama', exe) : undefined,
-      env.ProgramFiles ? join(env.ProgramFiles, 'Ollama', exe) : undefined,
-      env['ProgramFiles(x86)'] ? join(env['ProgramFiles(x86)'], 'Ollama', exe) : undefined,
-    ])
-  } else if (platform === 'darwin') {
-    known = [
-      '/opt/homebrew/bin/ollama',
-      '/usr/local/bin/ollama',
-      '/Applications/Ollama.app/Contents/Resources/ollama',
-    ]
-  } else {
-    const home = env.HOME ?? env.USERPROFILE ?? ''
-    known = kept([
-      '/usr/local/bin/ollama',
-      '/usr/bin/ollama',
-      '/snap/bin/ollama',
-      home ? join(home, '.local', 'bin', exe) : undefined,
-    ])
-  }
+  const known = platform === 'win32' ? windowsPaths(env, exe, join) : unixPaths(platform, env, exe)
 
   return [
     ...known,

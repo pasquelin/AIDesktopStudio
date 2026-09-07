@@ -18,12 +18,35 @@ const frenchText = (key: string): string => {
 }
 
 describe('the registry, published as tools', () => {
+  it('publishes input maps, animation graphs and retarget measurements', () => {
+    expect(mcpTools().map(tool => tool.name)).toEqual(
+      expect.arrayContaining([
+        'inputMaps_list',
+        'inputMap_read',
+        'inputMap_write',
+        'animationGraphs_list',
+        'animationGraph_read',
+        'animationGraph_write',
+        'animation_retargetStatus',
+      ]),
+    )
+  })
+
   it('offers every action of the wire, and nothing else', () => {
     expect(
       mcpTools()
         .map(tool => tool.name)
         .sort(),
     ).toEqual(ACTION_REGISTRY.map(action => toolName(action.name)).sort())
+  })
+
+  it('publishes numeric choices with their actual JSON type', () => {
+    const usage = mcpTools().find(tool => tool.name === 'usage_report')
+
+    expect(usage?.inputSchema.properties['days']).toMatchObject({
+      type: 'number',
+      enum: [7, 31, 120],
+    })
   })
 
   /**
@@ -64,13 +87,14 @@ describe('the registry, published as tools', () => {
     // Named rather than counted: a `filter` that empties leaves the loop below green while every
     // tool it guarded goes back to announcing an immediate run.
     expect(marked.map(action => action.name).sort()).toEqual([
+      'ai.manageLocalRuntime',
       'assets.removeFromLibrary',
       'command.runStudioCommand',
       'context.writeProjectCard',
       // Named a folder, it writes without a picker to ask first — see `gameActions`.
       'game.export',
       'git.commit',
-      'settings.pressButton',
+      'settings.triggerAction',
     ])
     for (const action of marked) {
       const tool = mcpTools().find(one => one.name === toolName(action.name))
@@ -87,6 +111,9 @@ describe('the registry, published as tools', () => {
    * The commitment is checked too: the note REPLACES the one `commitment` would have written, so
    * `asksItself` on anything above the floor would drop the word that a confirmation is coming.
    */
+})
+
+describe('tool execution metadata', () => {
   it('says so when the handler raises the studio’s own question', () => {
     const marked = ACTION_REGISTRY.filter(entry => entry.asksItself)
 
@@ -196,6 +223,9 @@ describe('an action’s inputs, as JSON Schema', () => {
    * nothing else, so a client could neither build the call nor probe for it under
    * `additionalProperties: false`. Its options name the KEYS, hence `propertyNames`.
    */
+})
+
+describe('structured action inputs', () => {
   it('announces a record as an object, and names the keys it takes', () => {
     const schema = schemaOfFields([
       {

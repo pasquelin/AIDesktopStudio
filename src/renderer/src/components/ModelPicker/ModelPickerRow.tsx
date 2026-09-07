@@ -11,6 +11,8 @@ export type ModelPickerRowProps = {
   selected: boolean
   /** Where it runs, resolved by the picker: translating per row runs i18next per frame. */
   where: string
+  /** A word the host puts after `where` — what makes this model worth looking at first. */
+  promoted?: string
   /** Its picture, resolved by the host. Absent draws the empty plate every other row wears. */
   picture?: string
   /** Why it cannot be picked right now, with the sentence that explains the word. */
@@ -24,6 +26,7 @@ export const ModelPickerRow = memo(function ModelPickerRow({
   model,
   selected,
   where,
+  promoted,
   picture,
   refusal,
   onPick,
@@ -40,7 +43,7 @@ export const ModelPickerRow = memo(function ModelPickerRow({
       <Row
         media={<Thumbnail url={picture} />}
         title={model.name}
-        subtitle={refusal ? `${where} · ${refusal.word}` : where}
+        subtitle={[where, promoted, refusal?.word].filter(Boolean).join(' · ')}
         hint={refusal?.hint}
       />
     </button>

@@ -5,10 +5,14 @@ import type { SettingsSectionId } from '@shared/domain/settings'
 import { QuietNote } from '@/components/QuietNote'
 import { Separator } from '@/components/Separator'
 import { aiSectionOf } from '@/helpers/aiSectionLazy'
-import { roleLabel } from '@/helpers/roleLabel'
 import { ModelInventoryRow } from './ModelInventoryRow'
 import { HOME_BLOCK, HOME_BLOCK_HEADING } from '@/components/styles'
-import { employmentGroupsOf, type EmploymentGroup, type Translate } from './inventory'
+import {
+  employmentGroupsOf,
+  employmentLabelOf,
+  type EmploymentGroup,
+  type Translate,
+} from './inventory'
 
 /**
  * One line per family, and one per role no family holds — what serves each, or how many of the
@@ -35,7 +39,7 @@ export function ModelInventoryEmployments({
         <QuietNote>{t('home.models.nothing')}</QuietNote>
       ) : (
         groups.map((group, rank) => {
-          const label = labelOf(group, t)
+          const label = employmentLabelOf(group, t)
 
           return (
             // The roles no family holds close the list, and a rule says so: read straight on,
@@ -60,10 +64,6 @@ export function ModelInventoryEmployments({
       )}
     </div>
   )
-}
-
-function labelOf(group: EmploymentGroup, t: Translate): string {
-  return group.family === null ? roleLabel(group.role, t) : t(`families.${group.family}`)
 }
 
 /**

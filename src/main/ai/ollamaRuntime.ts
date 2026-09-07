@@ -74,6 +74,36 @@ function chatProgressIn(frame: unknown): AssistantProgress | null {
   )
 }
 
+function chatBody(request: ChatRequest): string {
+  return JSON.stringify({
+    model: request.model,
+    messages: request.messages,
+    stream: request.onProgress !== undefined,
+    keep_alive: '5m',
+    options: {
+      num_ctx: request.contextTokens,
+      ...(request.temperature === undefined ? {} : { temperature: request.temperature }),
+      ...(request.topP === undefined ? {} : { top_p: request.topP }),
+      ...(request.maxTokens === undefined ? {} : { num_predict: request.maxTokens }),
+    },
+    ...(request.json ? { format: 'json' } : {}),
+  })
+}
+
+async function chatText(response: Response, request: ChatRequest): Promise<string> {
+  const watching = request.onProgress
+  if (!watching) return chatProgressIn(await response.json())?.delta ?? ''
+
+  let written = ''
+  for await (const frame of eventsOf(response.body)) {
+    const progress = chatProgressIn(frame)
+    if (progress === null) continue
+    written += progress.delta
+    watching(progress)
+  }
+  return written
+}
+
 export function ollamaHttpPort(origin = ORIGIN, send: typeof fetch = fetch): OllamaPort {
   const url = (path: string) => `${origin}${path}`
 
@@ -136,38 +166,14 @@ export function ollamaHttpPort(origin = ORIGIN, send: typeof fetch = fetch): Oll
       const response = await send(url('/api/chat'), {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({
-          model: request.model,
-          messages: request.messages,
-          stream: request.onProgress !== undefined,
-          keep_alive: '5m',
-          options: {
-            num_ctx: request.contextTokens,
-            ...(request.temperature === undefined ? {} : { temperature: request.temperature }),
-            ...(request.topP === undefined ? {} : { top_p: request.topP }),
-            ...(request.maxTokens === undefined ? {} : { num_predict: request.maxTokens }),
-          },
-          ...(request.json ? { format: 'json' } : {}),
-        }),
+        body: chatBody(request),
         signal: request.signal,
       })
       if (!response.ok) throw new Error(`ollama /api/chat ${response.status}`)
 
       // 🛑 Not the streamed reader on a whole body: this door answers ONE object, and nothing
       // promises it on one line — every line failing to parse would answer the empty string.
-      const watching = request.onProgress
-      if (!watching) return chatProgressIn(await response.json())?.delta ?? ''
-
-      let written = ''
-      for await (const frame of eventsOf(response.body)) {
-        const progress = chatProgressIn(frame)
-        if (progress === null) continue
-
-        written += progress.delta
-        watching(progress)
-      }
-
-      return written
+      return chatText(response, request)
     },
 
     generateImage: async request => {

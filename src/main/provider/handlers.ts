@@ -92,21 +92,10 @@ export function registerProviderHandlers({
     reduced(() => prompts.describeStyle(parseReferenceImages(images))),
   )
 
-  /**
-   * Queues the job under the name of the model it runs.
-   *
-   * `describe` rather than `list`: the panel just used it to render the form, so it is warm,
-   * whereas a cold listing paginates a whole catalogue before the job is even queued. A missing
-   * name is a cosmetic problem; refusing to run over one is not.
-   */
-  // Reduced like its neighbours: a throw from `parseGenerationBody` crossed the IPC raw, missing
-  // the journal `recordFailuresTo` keeps — and the Generate button, which has no catch of its
-  // own, then did nothing and said nothing.
+  // `describe` is warm after rendering the form; a missing cosmetic label must not refuse a job.
   handle(CHANNELS.providerGenerate, (_event, modelId, body, use) =>
     reduced(async () => {
       const id = parseModelId(modelId)
-      // The id stands in for a name the catalogue could not give: a job listed under its id
-      // reads worse than one listed under a name, and neither is a reason to refuse to generate.
       let label = id
       try {
         label = (await models.describe(id)).name
@@ -120,10 +109,7 @@ export function registerProviderHandlers({
     }),
   )
 
-  // What is priced is a target, exactly as what is submitted is. Where the figure sits in the
-  // answer is `cost.ts`'s business, not this one's.
-  // The SAME body the generation would send, context included: a dry run validates what it is
-  // given, so a price quoted on a shorter prompt is a price for a call nobody is going to make.
+  // Price the same context-enriched body that generation would submit.
   handle(CHANNELS.providerEstimateCost, (_event, target, body, use) =>
     reduced(async () => {
       const asked = parseJobTarget(target)

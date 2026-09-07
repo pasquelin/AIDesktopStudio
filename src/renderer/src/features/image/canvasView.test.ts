@@ -52,6 +52,18 @@ describe('zooming', () => {
     expect(viewport().scale).toBe(1)
   })
 
+  // On a grid, ⌘+ walks whole stops: 1.5 would put one document pixel on a pixel and a half.
+  it('walks whole stops once the document is on a pixel grid', () => {
+    useCanvases.setState({
+      states: { [DOCUMENT]: { ...DEFAULT_CANVAS, width: 400, height: 200, pixelCell: 1 } },
+      histories: {},
+    })
+    zoomToActual(DOCUMENT)
+    zoomIn(DOCUMENT)
+
+    expect(viewport().scale).toBe(2)
+  })
+
   it('fits the document with room to breathe, beside the rulers', () => {
     zoomToFit(DOCUMENT)
 

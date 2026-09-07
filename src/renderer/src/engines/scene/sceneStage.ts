@@ -3,7 +3,11 @@ import type { Us } from '@shared/domain/time'
 import { offScreenHost } from '@/engines/core/offScreenHost'
 import { reportFailure } from '@/services/diagnostics'
 import { environmentDressOf } from '@/features/skybox/components/environmentDress'
-import { wornModelDress } from '@/features/material/modelDress'
+import {
+  extractedModelDress,
+  prepareExtractedModelDress,
+  wornModelDress,
+} from '@/features/material/modelDress'
 import { assetVersionOf } from '@/stores/assets'
 import { onMaterialChange } from '@/stores/materialSources'
 import { onSkyChange } from '@/stores/skyboxSources'
@@ -91,6 +95,8 @@ export function createSceneStage({
           // with what was framed, from the first frame.
           assetVersion: assetVersionOf,
           wornDress: wornModelDress,
+          defaultModelDress: extractedModelDress,
+          prepareModelDress: prepareExtractedModelDress,
           environmentDress: environmentDressOf,
         })
 

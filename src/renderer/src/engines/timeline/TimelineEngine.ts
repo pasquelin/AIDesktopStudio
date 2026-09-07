@@ -1,5 +1,5 @@
 import { Container, Graphics, Sprite, Texture, type Application, type TextureSource } from 'pixi.js'
-import { bytesFromBase64 } from '@/helpers/base64'
+import { bytesFromBase64 } from '@shared/base64'
 import { createClock, type Clock } from './clock'
 import { createDecoderPool, type DecoderPool, type SinkLike } from './decoderPool'
 import { playbackToken } from './playback'
@@ -10,94 +10,43 @@ import {
   type SoundScheduler,
 } from './soundSchedule'
 import {
-  clipEnd,
   clipSource,
   EMPTY_SEQUENCE,
   playsThrough,
   sequenceDuration,
   sourceTimeAt,
-  type Clip,
   type SequenceState,
-  type Track,
   type Us,
 } from './timelineState'
 import { followHostSize, mountApplication } from '../core/mount'
 import { tokenAsHex } from '../core/palette'
 import type { Size } from '../core/geometry'
+import {
+  clipAt,
+  fitInside,
+  reusePaintedSource,
+  spritesOffFrame,
+  swapTexture,
+  videoTracksByDepth,
+  type Placement,
+} from './timelinePresentation'
+export {
+  clipAt,
+  fitInside,
+  reusePaintedSource,
+  spritesOffFrame,
+  swapTexture,
+  videoTracksByDepth,
+} from './timelinePresentation'
+export type { Placement } from './timelinePresentation'
 
-/** The clip a track is playing at that instant, or nothing — a gap is a legitimate answer. */
-export function clipAt(track: Track, time: Us): Clip | null {
-  return track.clips.find(clip => time >= clip.start && time < clipEnd(clip)) ?? null
-}
-
-/** A still already on this sprite: skip the decode and the GPU upload. */
-export function reusePaintedSource(
-  source: string | null,
-  trackId: string,
-  stable: (assetId: string) => boolean,
-  painted: ReadonlyMap<string, string>,
-): boolean {
-  return source !== null && stable(source) && painted.get(trackId) === source
-}
-
-/**
- * The sprites whose track LEFT the frame, and which nothing else would ever take down.
- *
- * The paint loop reaches only the tracks still in the list, so a track deleted — or turned into a
- * sound track by a change of selection — would keep the image it last painted on screen while
- * something else plays.
- */
-export function spritesOffFrame<T>(
-  sprites: ReadonlyMap<string, T>,
-  painting: readonly Track[],
-): T[] {
-  const inFrame = new Set(painting.map(track => track.id))
-  return [...sprites].filter(([trackId]) => !inFrame.has(trackId)).map(([, sprite]) => sprite)
-}
-
-/** Under every track: the depths handed to the sprites start at zero — see `seek`. */
+/* Under every track: the depths handed to the sprites start at zero — see `seek`. */
 const BACKDROP_DEPTH = -1
 
 /**
  * Lowest index first, which is the order the sprites are given their depths in: the LAST of this
  * list is the row highest in the column, and the one the eye sees on top.
  */
-export function videoTracksByDepth(state: SequenceState): Track[] {
-  return state.tracks
-    .filter(track => track.kind === 'video')
-    .sort((left, right) => left.index - right.index)
-}
-
-/**
- * Swaps a decoded frame in and disposes of the texture it replaces — never `Texture.EMPTY`,
- * which every sprite starts on and the whole application shares. Pixi 8 happens to no-op its
- * `destroy`, but destroying what one did not create is not something to lean on a library for.
- */
-export function swapTexture(target: { texture: Texture }, next: Texture): void {
-  const previous = target.texture
-  target.texture = next
-  if (previous !== Texture.EMPTY) previous.destroy(true)
-}
-
-/** Where something sized lands once fitted: its top-left corner, and the factor to draw it by. */
-export type Placement = { x: number; y: number; scale: number }
-
-/**
- * Letterboxes `source` inside `frame`, centred, aspect ratio kept. A scale rather than a width
- * and a height: stretching a 4:3 rush to fill a 16:9 sequence is the one thing a monitor judging
- * a picture must never do. Anything unmeasured yields a zero scale — never a NaN on the stage.
- */
-export function fitInside(source: Size, frame: Size): Placement {
-  const usable = source.width > 0 && source.height > 0 && frame.width > 0 && frame.height > 0
-  if (!usable) return { x: 0, y: 0, scale: 0 }
-
-  const scale = Math.min(frame.width / source.width, frame.height / source.height)
-  return {
-    x: (frame.width - source.width * scale) / 2,
-    y: (frame.height - source.height * scale) / 2,
-    scale,
-  }
-}
 
 /** Applies a placement to anything Pixi positions and scales. */
 function place(target: Container, placement: Placement): void {
@@ -370,7 +319,7 @@ export class TimelineEngine {
       // Asked here rather than by filtering the list: a track dropped from it would keep the
       // sprite it last painted on screen, which is the opposite of muting it.
       const clip = playsThrough(this.state, track) ? clipAt(track, time) : null
-      const sprite = this.spriteFor(track.id)
+      const sprite = spriteFor(track.id, this.sprites, this.frame)
       // Restated on EVERY seek, and that is the whole point: a sprite joins the frame the first
       // time its track is painted, so the order the children were added in is the order the
       // tracks first appeared — never the order of the column. V2, opened after V1 already had
@@ -417,7 +366,7 @@ export class TimelineEngine {
         upload: uploaded =>
           swapTexture(sprite, uploadNow(Texture.from(uploaded), application.renderer.texture)),
       }).push(frame)
-      this.fit(sprite)
+      fitSprite(sprite, this.canvas())
     })
 
     // Only when the monitor is showing nothing at all: the message covers the whole picture, and
@@ -446,21 +395,9 @@ export class TimelineEngine {
     this.application?.render()
   }
 
-  /**
-   * The composited frame as it stands, as PNG bytes — one call per frame of an export.
-   *
-   * Extracted from the frame container rather than read off the canvas: a WebGL drawing buffer
-   * is only guaranteed to hold its pixels until the task ends, and an export awaits between
-   * every frame. Pixi renders the container into a texture of its own, which has no such rule.
-   *
-   * `null` before the application exists, which is the only thing that can go wrong here.
-   */
+  /** The composited frame as PNG bytes, or null before the application exists. */
   async snapshot(): Promise<Uint8Array | null> {
-    const application = this.application
-    if (!application) return null
-
-    const url = await application.renderer.extract.base64({ target: this.frame, format: 'png' })
-    return bytesFromBase64(url)
+    return snapshotOf(this.application, this.frame)
   }
 
   /** The sequence canvas, in its own pixels — what every layer is composited against. */
@@ -468,41 +405,57 @@ export class TimelineEngine {
     return { width: this.state.settings.width, height: this.state.settings.height }
   }
 
-  /**
-   * Bound rather than a method: the renderer holds it as a listener across the engine's life.
-   *
-   * Guarded because `apply` runs it, and `apply` runs on every pointer move of a trim — where
-   * re-tessellating the backdrop for a rectangle nobody resized is pure waste.
-   */
+  /** Stable listener retained by Pixi across the engine's lifetime. */
   private readonly layout = (): void => {
     const application = this.application
     if (!application) return
-
-    const canvas = this.canvas()
-    const screen = application.screen
-    const shape = `${canvas.width}x${canvas.height}@${screen.width}x${screen.height}`
-    if (shape === this.laidOut) return
-    this.laidOut = shape
-
-    const colour = tokenAsHex(application.canvas, CANVAS_TOKEN, CANVAS_FALLBACK)
-    this.backdrop.clear().rect(0, 0, canvas.width, canvas.height).fill(colour)
-    place(this.frame, fitInside(canvas, application.screen))
-
-    for (const sprite of this.sprites.values()) this.fit(sprite)
+    this.laidOut = layoutFrame(
+      application,
+      this.frame,
+      this.backdrop,
+      this.sprites.values(),
+      this.canvas(),
+      this.laidOut,
+    )
   }
+}
 
-  /** Letterboxes one layer in the sequence canvas. Only its texture's size can change this. */
-  private fit(sprite: Sprite): void {
-    place(sprite, fitInside(sprite.texture, this.canvas()))
-  }
+async function snapshotOf(
+  application: Application | null,
+  frame: Container,
+): Promise<Uint8Array | null> {
+  if (!application) return null
+  const url = await application.renderer.extract.base64({ target: frame, format: 'png' })
+  return bytesFromBase64(url)
+}
 
-  private spriteFor(trackId: string): Sprite {
-    const existing = this.sprites.get(trackId)
-    if (existing) return existing
+function layoutFrame(
+  application: Application,
+  frame: Container,
+  backdrop: Graphics,
+  sprites: Iterable<Sprite>,
+  canvas: Size,
+  previous: string,
+): string {
+  const screen = application.screen
+  const shape = `${canvas.width}x${canvas.height}@${screen.width}x${screen.height}`
+  if (shape === previous) return previous
+  const colour = tokenAsHex(application.canvas, CANVAS_TOKEN, CANVAS_FALLBACK)
+  backdrop.clear().rect(0, 0, canvas.width, canvas.height).fill(colour)
+  place(frame, fitInside(canvas, screen))
+  for (const sprite of sprites) fitSprite(sprite, canvas)
+  return shape
+}
 
-    const sprite = new Sprite()
-    this.sprites.set(trackId, sprite)
-    this.frame.addChild(sprite)
-    return sprite
-  }
+function fitSprite(sprite: Sprite, canvas: Size): void {
+  place(sprite, fitInside(sprite.texture, canvas))
+}
+
+function spriteFor(trackId: string, sprites: Map<string, Sprite>, frame: Container): Sprite {
+  const existing = sprites.get(trackId)
+  if (existing) return existing
+  const sprite = new Sprite()
+  sprites.set(trackId, sprite)
+  frame.addChild(sprite)
+  return sprite
 }

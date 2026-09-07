@@ -1,7 +1,10 @@
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, screen } from 'electron'
 import { splashColor } from './theme'
 import { createSplashController, type Splash } from './splash'
+import { centredIn } from './placement'
 import { WEB_PREFERENCES, load } from './windows'
+
+const SPLASH_SIZE = { width: 420, height: 260 }
 
 /**
  * Frameless with native rounded corners rather than `transparent: true`: CLAUDE.md forbids
@@ -12,8 +15,9 @@ import { WEB_PREFERENCES, load } from './windows'
  */
 export function openSplashWindow(): Splash {
   let window: BrowserWindow | null = new BrowserWindow({
-    width: 420,
-    height: 260,
+    // Read the same way as the welcome it hands over to: on the BOUNDS, the two jumped by half a
+    // menu bar between them.
+    ...centredIn(screen.getPrimaryDisplay().workArea, SPLASH_SIZE),
     frame: false,
     roundedCorners: true,
     resizable: false,
@@ -25,7 +29,6 @@ export function openSplashWindow(): Splash {
     // Never takes focus: ⌘N while it is up would otherwise reach a window with no bridge and
     // vanish — the silent drop `sendToFocused` exists to prevent.
     focusable: false,
-    center: true,
     skipTaskbar: true,
     backgroundColor: splashColor(),
     // Spread rather than retyped: `WEB_PREFERENCES` carries the guarantee that no window

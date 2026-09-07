@@ -58,6 +58,7 @@ export function SceneNavigationHint({ speed }: SceneNavigationHintProps) {
 
   return (
     <div
+      aria-hidden="true"
       className={cn(VIEWPORT_READOUT, 'bottom-2 left-1/2 flex -translate-x-1/2 items-center gap-3')}
     >
       {shown && (

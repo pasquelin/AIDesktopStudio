@@ -109,6 +109,83 @@ function abortIfCancelled(signal: AbortSignal | undefined): void {
   if (signal?.aborted) throw new DownloadCancelled('the model download was cancelled')
 }
 
+async function responseFor(
+  host: DownloadHost,
+  file: ModelFile,
+  asked: number,
+  signal: AbortSignal | undefined,
+): Promise<DownloadResponse> {
+  try {
+    const response = await host.fetch(file.url, asked, signal)
+    if (!response.ok) throw new Error(`${file.name} answered ${response.status}`)
+    return response
+  } catch (error) {
+    abortIfCancelled(signal)
+    rethrowNetwork(error, file.name)
+  }
+}
+
+async function seedDigest(
+  host: Pick<DownloadHost, 'readBack'>,
+  part: string,
+  resuming: boolean,
+  signal: AbortSignal | undefined,
+  onBytes?: (bytes: number) => void,
+): Promise<{ digest: ReturnType<typeof createHash>; received: number }> {
+  const digest = createHash('sha256')
+  let received = 0
+  if (resuming)
+    for await (const chunk of host.readBack(part)) {
+      abortIfCancelled(signal)
+      digest.update(chunk)
+      received += chunk.byteLength
+      onBytes?.(chunk.byteLength)
+    }
+  return { digest, received }
+}
+
+export async function fingerprintModelFile(
+  readBack: DownloadHost['readBack'],
+  path: string,
+  signal?: AbortSignal,
+  onBytes?: (bytes: number) => void,
+): Promise<{ bytes: number; sha256: string }> {
+  const { digest, received } = await seedDigest({ readBack }, path, true, signal, onBytes)
+  return { bytes: received, sha256: digest.digest('hex') }
+}
+
+async function writeResponse(
+  host: DownloadHost,
+  file: ModelFile,
+  response: DownloadResponse,
+  part: string,
+  resuming: boolean,
+  options: DownloadOptions & { alreadyDone: number; total: number },
+  seeded: Awaited<ReturnType<typeof seedDigest>>,
+): Promise<{ received: number; reported: number }> {
+  let { received } = seeded
+  let reported = received
+  const sink = await host.open(part, resuming)
+  try {
+    for await (const chunk of response.body) {
+      abortIfCancelled(options.signal)
+      await sink.write(chunk)
+      seeded.digest.update(chunk)
+      received += chunk.byteLength
+      if (received - reported >= PROGRESS_STEP) {
+        reported = received
+        options.onProgress({ received: options.alreadyDone + received, total: options.total })
+      }
+    }
+  } catch (error) {
+    abortIfCancelled(options.signal)
+    rethrowNetwork(error, file.name)
+  } finally {
+    await sink.close()
+  }
+  return { received, reported }
+}
+
 /**
  * Fetches one file, resuming a `.part` when there is one.
  *
@@ -126,7 +203,6 @@ export async function fetchModelFile(
 
   abortIfCancelled(options.signal)
 
-  // Before the `.part` is opened, and cheap on a folder that is already there.
   await host.ensureFolder(pathParentOf(target))
 
   const onDisk = await host.sizeOf(part)
@@ -135,56 +211,24 @@ export async function fetchModelFile(
   // a model that loads and recognises nothing.
   const asked = onDisk > 0 && onDisk < file.bytes ? onDisk : 0
 
-  let response: DownloadResponse
-  try {
-    response = await host.fetch(file.url, asked, options.signal)
-  } catch (error) {
-    abortIfCancelled(options.signal)
-    rethrowNetwork(error, file.name)
-  }
-  if (!response.ok) throw new Error(`${file.name} answered ${response.status}`)
+  const response = await responseFor(host, file, asked, options.signal)
 
   // Resumed only if the server actually honoured the range. Asked to resume and served the
   // whole file, what is on disk is not a prefix of what is arriving — so it is dropped rather
   // than appended to, which would build a wrong file that only says so at the digest.
   const resuming = asked > 0 && response.partial
-  const digest = createHash('sha256')
-  let received = 0
+  const seeded = await seedDigest(host, part, resuming, options.signal)
+  const { digest } = seeded
+  const { received, reported } = await writeResponse(
+    host,
+    file,
+    response,
+    part,
+    resuming,
+    options,
+    seeded,
+  )
 
-  if (resuming) {
-    for await (const chunk of host.readBack(part)) {
-      abortIfCancelled(options.signal)
-      digest.update(chunk)
-      received += chunk.byteLength
-    }
-  }
-
-  let reported = received
-  const sink = await host.open(part, resuming)
-
-  try {
-    for await (const chunk of response.body) {
-      abortIfCancelled(options.signal)
-      await sink.write(chunk)
-      digest.update(chunk)
-      received += chunk.byteLength
-
-      if (received - reported >= PROGRESS_STEP) {
-        reported = received
-        options.onProgress({ received: options.alreadyDone + received, total: options.total })
-      }
-    }
-  } catch (error) {
-    abortIfCancelled(options.signal)
-    rethrowNetwork(error, file.name)
-  } finally {
-    // Closed on the way out whatever happened: a cancelled download leaves a `.part` the next
-    // attempt resumes from, and an open handle would keep it locked on Windows.
-    await sink.close()
-  }
-
-  // The last step is almost never a whole one, and a bar that stops at 97% reads as a download
-  // that stalled.
   if (received > reported) {
     options.onProgress({ received: options.alreadyDone + received, total: options.total })
   }
@@ -247,7 +291,8 @@ export async function modelIsComplete(
 ): Promise<boolean> {
   // A model the person supplied is installed exactly while THEIR file is there: nothing was
   // fetched into the model folder, and looking for it in there would read as never installed.
-  if (isSuppliedModel(model)) return await host.exists(model.weightsPath)
+  if (isSuppliedModel(model) && !needsOwnFolder(model.loader))
+    return await host.exists(model.weightsPath)
 
   // `every` of nothing is true. Right for Ollama, which lists what it holds; a lie for a card
   // listed before its engine exists.

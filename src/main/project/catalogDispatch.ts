@@ -19,6 +19,8 @@ export function dispatchCatalogRequest(catalog: Catalog, request: CatalogRequest
 
 function valueOf(catalog: Catalog, request: CatalogRequest): CatalogResults[CatalogOp] {
   switch (request.op) {
+    case 'setAnimationPoster':
+      return catalog.setAnimationPoster(request)
     case 'add':
       return catalog.add(request.asset)
     case 'find':
@@ -37,9 +39,19 @@ function valueOf(catalog: Catalog, request: CatalogRequest): CatalogResults[Cata
       return catalog.repath(request.from, request.to)
     case 'forgetUnder':
       return catalog.forgetUnder(request.path)
-    case 'appendActivity':
-      return catalog.appendActivity(request.entries)
-    case 'readActivity':
-      return catalog.readActivity(request.query)
+    case 'assetsUnder':
+      return catalog.assetsUnder(request.folders)
+    default:
+      return journalValueOf(catalog, request)
   }
+}
+
+/** The journal's own two, apart because they are the JOURNAL's — the rest of this reads assets. */
+function journalValueOf(
+  catalog: Catalog,
+  request: Extract<CatalogRequest, { op: 'appendActivity' | 'readActivity' }>,
+): CatalogResults['appendActivity' | 'readActivity'] {
+  return request.op === 'appendActivity'
+    ? catalog.appendActivity(request.entries)
+    : catalog.readActivity(request.query)
 }

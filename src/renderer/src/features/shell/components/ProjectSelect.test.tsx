@@ -44,12 +44,12 @@ const openMenu = async (name: string): Promise<void> => {
   await userEvent.click(buttonFor(name))
 }
 
-describe('ProjectSelect', () => {
-  beforeEach(() => {
-    installFakeBridge()
-    given(null)
-  })
+beforeEach(() => {
+  installFakeBridge()
+  given(null)
+})
 
+describe('ProjectSelect current project', () => {
   it('shows the name of the project that is open', () => {
     given(summer)
     render(<ProjectSelect />)
@@ -90,7 +90,9 @@ describe('ProjectSelect', () => {
 
     expect(open).toHaveBeenCalledWith('/projects/Winter')
   })
+})
 
+describe('ProjectSelect menu actions', () => {
   // Reopening the open one drops every panel's state and reloads the catalogue to land on the
   // folder already in front.
   it('does not reopen the project already in front', async () => {

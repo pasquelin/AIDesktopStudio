@@ -61,6 +61,22 @@ describe('unpacking a packed picture', () => {
     expect(saveTexture).toHaveBeenCalledTimes(2)
   })
 
+  it('keeps the packed picture UV transform on every unpacked channel', async () => {
+    const transform = {
+      tiling: { x: 2, y: 3 },
+      offset: { x: 0.25, y: 0.5 },
+      rotation: 0.4,
+    }
+    installFakeBridge({
+      assets: { saveTexture: request => Promise.resolve(packed({ map: request.map })) },
+    })
+
+    const result = await unpackMaterialChannels(packed({ textureTransform: transform }), unpacked)
+
+    expect(result).toHaveLength(2)
+    expect(result.every(asset => asset.textureTransform === transform)).toBe(true)
+  })
+
   it('does nothing at all for a picture nothing says packs channels', async () => {
     const saveTexture = vi.fn(() => Promise.resolve(packed()))
     installFakeBridge({ assets: { saveTexture } })

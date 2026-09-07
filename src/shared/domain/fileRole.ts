@@ -1,6 +1,7 @@
 import { ASSET_TYPES, type AssetType } from './asset'
 import { typeOfWorkspace } from './assetKind'
 import { documentExtensionOf, kindForExtension, workspaceForKind } from './document'
+import { importableAssetTypeOf } from './importFormat'
 
 /**
  * Which domain a file belongs to, plus the answer for one that belongs to none.
@@ -19,6 +20,14 @@ export type FileDomain = AssetType | 'material' | 'other'
 export type FileRole = 'source' | 'edit'
 
 export type FileNature = { domain: FileDomain; role: FileRole }
+
+/** A source file's domain, and whether the studio can show or hold it. */
+export type SourceNature = {
+  domain: AssetType | 'other'
+  openable: boolean
+  /** Held as an asset even when a double-click is not ours — a heightmap `.exr`. */
+  catalogable: boolean
+}
 
 /**
  * What a file IS, by its name alone.
@@ -77,6 +86,7 @@ const DOMAIN_BY_EXTENSION: Record<string, AssetType> = {
   '.usda': 'mesh',
   '.usdc': 'mesh',
   '.dae': 'mesh',
+  '.bvh': 'animation',
 }
 
 /**
@@ -109,38 +119,6 @@ export function natureOf(fileName: string): FileNature {
 }
 
 /**
- * Which of those the studio can actually SHOW, rather than merely name.
- *
- * Narrower than the domains above on purpose: `.heic`, `.tif`, `.exr` and `.hdr` are pictures
- * nothing here decodes, and `.glb` is the only mesh a loader here reads. Opening one of the
- * others would post an empty tab where handing it to the system still shows the file.
- */
-const OPENABLE_EXTENSIONS: readonly string[] = [
-  '.png',
-  '.ora',
-  '.jpg',
-  '.jpeg',
-  '.webp',
-  '.avif',
-  '.gif',
-  '.svg',
-  '.mp4',
-  '.webm',
-  '.mov',
-  '.mkv',
-  '.avi',
-  '.m4v',
-  '.wav',
-  '.mp3',
-  '.flac',
-  '.ogg',
-  '.m4a',
-  '.aac',
-  '.aiff',
-  '.glb',
-]
-
-/**
  * Whether a double-click on this file belongs in the studio or with the system.
  *
  * A document always does — it is the studio's own. A source does when something here can draw
@@ -157,25 +135,29 @@ export function opensInStudio(fileName: string): boolean {
   return sourceNatureOf(fileName).openable
 }
 
+/** Chromium decodes no MXF: opened as a tab, a rush shows a blank player instead of the system's. */
+const UNDRAWABLE_EXTENSIONS = ['.tif', '.tiff', '.exr', '.hdr', '.mxf']
+
 /**
  * What a file could be as BYTES to look at, whatever a document of that name would be. The two
  * questions came apart the day a document took the extension of an open format: an `.ora` from
  * another application is a picture to adopt, and `natureOf` calls it an edit.
  *
- * `openable` is narrower than a domain on purpose: `.heic` and `.gltf` carry one and nothing here
- * draws them, so adopting one would post a tab over a file the studio cannot show.
+ * `catalogable` follows the import registry. `openable` is narrower: TIFF and high-dynamic-range
+ * pictures enter the catalogue for materials and skies, but the image canvas cannot draw them.
  *
  * Narrower than `FileDomain` in its return, and the compiler is what holds it: bytes adopted into
  * the catalogue take an asset TYPE, and `material` is a document rather than one.
  */
-export function sourceNatureOf(fileName: string): {
-  domain: AssetType | 'other'
-  openable: boolean
-} {
+export function sourceNatureOf(fileName: string): SourceNature {
   const extension = documentExtensionOf(fileName).toLowerCase()
+  const importable = importableAssetTypeOf(fileName)
+  const domain = importable ?? DOMAIN_BY_EXTENSION[extension] ?? 'other'
+  const openable = importable !== null && !UNDRAWABLE_EXTENSIONS.includes(extension)
   return {
-    domain: DOMAIN_BY_EXTENSION[extension] ?? 'other',
-    openable: OPENABLE_EXTENSIONS.includes(extension),
+    domain,
+    openable,
+    catalogable: importable !== null,
   }
 }
 

@@ -52,6 +52,22 @@ describe('a texture written as MaterialX', () => {
     expect(written.studio).toMatchObject({ channels: { ao: { assetId: 'a' } } })
   })
 
+  it('round-trips a channel-specific UV rotation through studio metadata', () => {
+    const baseColor = map('a')
+    baseColor.transform = {
+      tiling: { x: 2, y: 3 },
+      offset: { x: 0.25, y: 0.5 },
+      rotation: 0.4,
+    }
+    const written = mtlxMaterialOf(texture({ channels: { baseColor } }), {
+      files: { baseColor: 'Images/base.png' },
+    })
+
+    expect(materialFromMtlx(written, () => 'relinked').channels.baseColor?.transform).toEqual(
+      baseColor.transform,
+    )
+  })
+
   /**
    * What this function does with a path it was not given — NOT a statement that the path may be
    * lost. Finding one is `filesFor`'s job, and `textureDocument.test.ts` is what holds it: the

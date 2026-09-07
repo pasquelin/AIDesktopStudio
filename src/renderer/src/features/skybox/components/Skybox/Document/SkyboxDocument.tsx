@@ -19,6 +19,7 @@ import { useSkyboxViews, skyboxViewOf } from '@/stores/skyboxViews'
 import { useRestoredDocument } from '@/hooks/useRestoredDocument'
 import { useShelfRefresh } from '@/hooks/useShelfRefresh'
 import { useShortcuts } from '@/hooks/useShortcuts'
+import { runSkyboxCommand } from './skyboxCommands'
 import { assetVersionOf } from '@/stores/assets'
 import { livePreviewOf } from '@/stores/livePreviews'
 import { bindingOf, type CommandId } from '@shared/domain/command'
@@ -127,22 +128,7 @@ export function SkyboxDocument({ documentId }: { documentId: string }) {
    * command — but nothing listened, so ⌘Z fell through to the platform and undid nothing at all.
    */
   const run = useCallback(
-    (command: CommandId): void => {
-      switch (command) {
-        case 'skybox.view':
-          // Cycles rather than one key per view: four modes, and a key each would spend four
-          // letters on a space that has two other things to offer.
-          return useSkyboxViews.getState().cycleView(documentId)
-        case 'skybox.probes': {
-          const views = useSkyboxViews.getState()
-          return views.set(documentId, { probes: !skyboxViewOf(views, documentId).probes })
-        }
-        case 'skybox.undo':
-          return useSkyboxes.getState().undo(documentId)
-        case 'skybox.redo':
-          return useSkyboxes.getState().redo(documentId)
-      }
-    },
+    (command: CommandId): boolean => runSkyboxCommand(documentId, command),
     [documentId],
   )
 

@@ -40,6 +40,7 @@ export const ASSET_ACTIONS: readonly AssistantAction[] = [
     commitment: 'none',
     repeatable: true,
     reach: 'mcp',
+    returns: ['projectAssetCandidates'],
     fields: [
       { key: 'text', kind: 'text', labelKey: 'assistant.fields.query', required: false },
       KIND,
@@ -96,8 +97,15 @@ export const ASSET_ACTIONS: readonly AssistantAction[] = [
     commitment: 'none',
     repeatable: true,
     reach: 'mcp',
+    uses: ['projectAssetCandidates'],
     fields: [
-      { key: 'assetId', kind: 'text', labelKey: 'assistant.fields.assetId', required: true },
+      {
+        key: 'assetId',
+        kind: 'text',
+        labelKey: 'assistant.fields.assetId',
+        required: true,
+        reference: 'asset',
+      },
       { key: 'name', kind: 'text', labelKey: 'assistant.fields.name', required: false },
       TAGS,
       KIND,
@@ -131,6 +139,7 @@ export const ASSET_ACTIONS: readonly AssistantAction[] = [
     commitment: 'none',
     repeatable: true,
     reach: 'mcp',
+    uses: ['projectAssetCandidates'],
     fields: [ASSET_IDS],
   }),
   action({
@@ -140,8 +149,15 @@ export const ASSET_ACTIONS: readonly AssistantAction[] = [
     commitment: 'none',
     repeatable: true,
     reach: 'mcp',
+    uses: ['projectAssetCandidates'],
     fields: [
-      { key: 'assetId', kind: 'text', labelKey: 'assistant.fields.assetId', required: true },
+      {
+        key: 'assetId',
+        kind: 'text',
+        labelKey: 'assistant.fields.assetId',
+        required: true,
+        reference: 'asset',
+      },
     ],
   }),
   action({
@@ -156,9 +172,9 @@ export const ASSET_ACTIONS: readonly AssistantAction[] = [
     ],
   }),
   action({
-    name: 'assets.absent',
-    titleKey: 'assistant.actions.assetsAbsent.title',
-    descriptionKey: 'assistant.actions.assetsAbsent.description',
+    name: 'assets.listMissing',
+    titleKey: 'assistant.actions.assetsListMissing.title',
+    descriptionKey: 'assistant.actions.assetsListMissing.description',
     commitment: 'none',
     repeatable: true,
     reach: 'mcp',

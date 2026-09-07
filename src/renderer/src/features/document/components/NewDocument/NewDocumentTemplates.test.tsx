@@ -1,17 +1,14 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
-import {
-  SCENE_TEMPLATE_GROUPS,
-  SCENE_TEMPLATE_IDS,
-  TEMPLATES_BY_GROUP,
-} from '@shared/domain/sceneTemplate'
+import { SCENE_TEMPLATE_IDS } from '@shared/domain/sceneTemplate'
 import { NewDocumentTemplates } from './NewDocumentTemplates'
 
 describe('NewDocumentTemplates', () => {
-  it('offers every template the studio knows, on one row per group', () => {
+  it('offers every template the studio knows, on one line', () => {
     render(<NewDocumentTemplates value="basic" onChange={() => {}} />)
 
+    expect(screen.getAllByRole('list')).toHaveLength(1)
     expect(screen.getAllByRole('button')).toHaveLength(SCENE_TEMPLATE_IDS.length)
   })
 
@@ -34,15 +31,32 @@ describe('NewDocumentTemplates', () => {
     expect(screen.getByRole('button', { name: 'Vide' })).toHaveAttribute('aria-pressed', 'false')
   })
 
-  // Tailwind reads its classes off the source, so the grid cannot be composed from the count —
-  // and a ninth template added to a group would silently wrap onto a second row instead.
-  it('gives each group as many columns as it holds templates', () => {
+  // The line is the whole of what this lot bought: eleven squares over two rows cost the form the
+  // height its folder picker needed, and a twelfth template now costs none.
+  it('scrolls the line rather than wrapping it', () => {
     render(<NewDocumentTemplates value="basic" onChange={() => {}} />)
-    const lists = screen.getAllByRole('list')
 
-    expect(lists).toHaveLength(SCENE_TEMPLATE_GROUPS.length)
-    SCENE_TEMPLATE_GROUPS.forEach((group, at) => {
-      expect(lists[at]?.className).toContain(`grid-cols-${TEMPLATES_BY_GROUP[group].length}`)
-    })
+    expect(screen.getByRole('list')).toHaveClass('flex', 'overflow-x-auto')
+  })
+
+  it('keeps the shelves in order, general first and machine last', () => {
+    render(<NewDocumentTemplates value="basic" onChange={() => {}} />)
+
+    const drawn = screen.getAllByRole('button').map(tile => tile.getAttribute('data-sc'))
+
+    expect(drawn).toEqual(SCENE_TEMPLATE_IDS.map(id => `field:document.template.${id}`))
+  })
+
+  /**
+   * The section's own hue and no other: one colour code in this window, the very one the column
+   * beside it gives `Scène`. A hue of its own here would say a template belongs somewhere else.
+   */
+  it('inks every glyph in the hue the section already wears', () => {
+    const { container } = render(<NewDocumentTemplates value="basic" onChange={() => {}} />)
+
+    const inks = [...container.querySelectorAll('svg')].map(glyph => glyph.getAttribute('class'))
+
+    expect(inks).toHaveLength(SCENE_TEMPLATE_IDS.length)
+    inks.forEach(ink => expect(ink).toContain('text-domain-3d'))
   })
 })

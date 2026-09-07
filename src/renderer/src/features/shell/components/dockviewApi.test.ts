@@ -1,16 +1,24 @@
 import type { DockviewApi } from 'dockview-react'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { DocumentDescriptor } from '@shared/domain/document'
+import type { FileView } from '@shared/domain/fileView'
 import { useDocuments } from '@/stores/documents'
 import { useLayouts } from '@/stores/layouts'
 import {
   closePanel,
+  closeFileView,
+  openFileView,
   openDocument,
   openPanelIds,
   setDockviewApi,
   setDocumentTitle,
   showWorkspace,
+  documentIsMarkedModified,
+  fileViewsHoldEdits,
+  registerFileViewSave,
+  settleFileViews,
 } from './dockviewApi'
+import { bridgeWatchingLogs, installFakeBridge } from '@/services/fakeBridge'
 
 const scene: DocumentDescriptor = {
   id: 'doc-1',
@@ -25,6 +33,11 @@ const sequence: DocumentDescriptor = {
   title: 'Bande annonce',
   workspace: 'video',
   path: 'documents/Bande annonce.otio',
+}
+const controls: FileView = {
+  id: 'inputMap',
+  path: 'Controls/character.input.json',
+  title: 'character',
 }
 
 type Panel = {
@@ -77,6 +90,8 @@ beforeEach(() => {
   useDocuments.setState({ documents: {}, stored: [], activeId: null, recent: {} })
   useLayouts.setState({ activeWorkspace: '3d', home: false, layout: null })
 })
+
+afterEach(() => void closeFileView('file:Controls/character.input.json'))
 
 describe('opening a document', () => {
   it('adds a panel for it', () => {
@@ -134,6 +149,24 @@ describe('opening a document', () => {
     openDocument(sequence)
 
     expect(useLayouts.getState().activeWorkspace).toBe('video')
+  })
+})
+
+describe('opening a registered file view', () => {
+  it('adds its editor and brings an existing tab forward', () => {
+    const { addPanel, panels } = mount()
+
+    openFileView(controls)
+    openFileView(controls)
+
+    expect(addPanel).toHaveBeenCalledTimes(1)
+    expect(addPanel).toHaveBeenCalledWith({
+      id: 'file:Controls/character.input.json',
+      component: 'inputMap',
+      title: 'character',
+      params: { path: 'Controls/character.input.json' },
+    })
+    expect(panels[0]?.api.setActive).toHaveBeenCalled()
   })
 })
 
@@ -263,16 +296,84 @@ describe('the panels of the centre', () => {
   })
 })
 
+describe('a file view tab', () => {
+  it('saves modified work before closing when the native question asks it to', async () => {
+    const save = vi.fn(() => Promise.resolve(true))
+    installFakeBridge({ documents: { confirmClose: () => Promise.resolve('save') } })
+    const { panels } = mount()
+    openFileView(controls)
+    const release = registerFileViewSave('file:Controls/character.input.json', save)
+    setDocumentTitle('file:Controls/character.input.json', 'character', true)
+
+    void closeFileView('file:Controls/character.input.json')
+
+    await vi.waitFor(() => expect(save).toHaveBeenCalled())
+    expect(panels[0]?.api.close).toHaveBeenCalled()
+    release()
+  })
+
+  // The layout restores a `file:` panel at launch and nothing registers it: only the orphan sweep
+  // used to take it away. Kept on screen, it has to be askable and closable like one opened here.
+  it('asks about and closes a modified file view the layout restored', async () => {
+    installFakeBridge({ documents: { confirmClose: () => Promise.resolve('discard') } })
+    const { panels } = mount('file:Controls/character.input.json')
+    setDocumentTitle('file:Controls/character.input.json', 'character', true)
+
+    expect(fileViewsHoldEdits()).toBe(true)
+    await expect(closeFileView('file:Controls/character.input.json')).resolves.toBe(true)
+
+    expect(panels[0]?.api.close).toHaveBeenCalled()
+    expect(fileViewsHoldEdits()).toBe(false)
+  })
+
+  it('keeps a modified file view when a project change is cancelled', async () => {
+    installFakeBridge({ documents: { confirmClose: () => Promise.resolve('cancel') } })
+    const { panels } = mount()
+    openFileView(controls)
+    setDocumentTitle('file:Controls/character.input.json', 'character', true)
+
+    await expect(settleFileViews()).resolves.toBe(false)
+
+    expect(panels[0]?.api.close).not.toHaveBeenCalled()
+    setDocumentTitle('file:Controls/character.input.json', 'character', false)
+  })
+
+  it('says so when the answer is to save and the view has no way to', async () => {
+    const { entries } = bridgeWatchingLogs({
+      documents: { confirmClose: () => Promise.resolve('save') },
+    })
+    mount()
+    openFileView(controls)
+    setDocumentTitle('file:Controls/character.input.json', 'character', true)
+
+    await expect(settleFileViews()).resolves.toBe(false)
+
+    expect(entries().map(entry => entry.scope)).toContain('document.save')
+    setDocumentTitle('file:Controls/character.input.json', 'character', false)
+  })
+
+  it('drops unmodified file views before another project opens', async () => {
+    const { panels } = mount()
+    openFileView(controls)
+
+    await expect(settleFileViews()).resolves.toBe(true)
+
+    expect(panels[0]?.api.close).toHaveBeenCalled()
+  })
+})
+
 describe('the tab of a document', () => {
-  it('carries a bullet while the work is not on disk', () => {
+  it('names the document, and says separately whether the work is not on disk', () => {
     const { panels } = mount()
     openDocument(scene)
 
     setDocumentTitle('doc-1', 'Niveau', true)
-    expect(panels[0]?.setTitle).toHaveBeenCalledWith('Niveau •')
+    expect(panels[0]?.setTitle).toHaveBeenCalledWith('Niveau')
+    expect(documentIsMarkedModified('doc-1')).toBe(true)
 
     setDocumentTitle('doc-1', 'Niveau', false)
-    expect(panels[0]?.setTitle).toHaveBeenCalledWith('Niveau')
+    expect(panels[0]?.setTitle).toHaveBeenLastCalledWith('Niveau')
+    expect(documentIsMarkedModified('doc-1')).toBe(false)
   })
 
   it('says nothing about a document no panel holds', () => {
@@ -287,5 +388,15 @@ describe('the tab of a document', () => {
 
     closePanel('doc-1')
     expect(panels[0]?.api.close).toHaveBeenCalled()
+  })
+
+  it('forgets that a closed panel was marked modified', () => {
+    mount()
+    openDocument(scene)
+    setDocumentTitle('doc-1', 'Niveau', true)
+
+    closePanel('doc-1')
+
+    expect(documentIsMarkedModified('doc-1')).toBe(false)
   })
 })

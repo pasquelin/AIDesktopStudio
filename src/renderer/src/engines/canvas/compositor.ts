@@ -42,19 +42,12 @@ export function isMaskKey(key: string): boolean {
 
 /** Bottom first, like the stack itself: the last node is the one the eye sees on top. */
 export function composite(layers: readonly Layer[]): CompositeNode[] {
-  // The base a clipped layer is cut out of: the last unclipped one below it, carried forward as
-  // the level is walked. A run of clipped layers shares one base, as it does in Photoshop.
   let base: string | null = null
   const nodes: CompositeNode[] = []
-
   for (const layer of layers) {
     if (layer.kind === 'adjustment') {
-      // Everything below it in this level, or the one node below when it is clipped. Wrapped
-      // rather than listed: the grading is a pass over what it covers, not a layer beside it.
       const covered = layer.clipped ? nodes.splice(-1) : nodes.splice(0)
       if (covered.length > 0) nodes.push({ kind: 'adjust', id: layer.id, children: covered })
-      // A clipped adjustment does not become the base of the run above it; an unclipped one has
-      // nothing left under it to be one for.
       continue
     }
 
@@ -64,8 +57,6 @@ export function composite(layers: readonly Layer[]): CompositeNode[] {
       continue
     }
 
-    // `null` when nothing lies under it: a clipped layer with no base is not clipped at all, and
-    // hiding it would lose its pixels for a reason nobody could see.
     const clippedBy = layer.clipped ? base : null
     if (!layer.clipped) base = layer.id
 
@@ -77,7 +68,6 @@ export function composite(layers: readonly Layer[]): CompositeNode[] {
       maskEnabled: layer.mask?.enabled === true,
     })
   }
-
   return nodes
 }
 

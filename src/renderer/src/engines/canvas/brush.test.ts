@@ -3,6 +3,7 @@ import {
   blurRadius,
   BRUSH_SETTINGS_BY_TOOL,
   BRUSH_SIZE,
+  brushSettingsOf,
   DEFAULT_BRUSH,
   readsBrushSetting,
   resizedBrush,
@@ -45,6 +46,12 @@ describe('which settings a tool reads', () => {
       .map(([tool]) => tool)
 
     expect(feathering).toEqual(['brush'])
+  })
+
+  // What the bar hides and the engine stops reading, from the same call.
+  it('takes the hardness away on a pixel grid, and nothing else', () => {
+    expect(brushSettingsOf('brush', 16)).toEqual(['size', 'opacity'])
+    expect(brushSettingsOf('brush', null)).toEqual(['size', 'hardness', 'opacity'])
   })
 
   it('gives the eraser its size, which is the one thing a stamp of white still needs', () => {

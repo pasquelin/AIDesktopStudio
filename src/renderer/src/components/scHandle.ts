@@ -5,4 +5,8 @@
  */
 export const fieldHandle = (id: string): string => `field:${id}`
 
+/** Accepts both legacy full handles and the unprefixed ids preferred by reusable controls. */
+export const windowFieldHandle = (id?: string): string | undefined =>
+  id === undefined || id.startsWith('field:') ? id : fieldHandle(id)
+
 export const sectionHandle = (id: string): string => `section:${id}`

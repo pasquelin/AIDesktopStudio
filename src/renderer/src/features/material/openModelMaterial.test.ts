@@ -112,6 +112,38 @@ describe('opening the material of a model', () => {
     expect(await openModelMaterial(MODEL, [texture()])).toBe(first)
   })
 
+  it('finishes an existing document after its first assembly was interrupted', async () => {
+    const packed = texture({
+      id: 'asset-packed',
+      map: undefined,
+      packedSlot: 'metallicRoughnessTexture',
+    })
+    const interrupted = async (): Promise<never> => {
+      throw new Error('disk full')
+    }
+
+    await expect(openModelMaterial(MODEL, [packed], interrupted)).resolves.toBeNull()
+    expect(openedCount()).toBe(0)
+    installFakeBridge({
+      assets: {
+        saveTexture: request =>
+          Promise.resolve(texture({ id: `asset-${request.map}`, map: request.map })),
+      },
+    })
+    await openModelMaterial(MODEL, [packed], async request => ({
+      channel: request.channel,
+      png: new Uint8Array([1]),
+      width: 1,
+      height: 1,
+    }))
+
+    expect(openedCount()).toBe(1)
+    expect(materialOf(useMaterials.getState(), opened().id).channels).toMatchObject({
+      roughness: { assetId: 'asset-roughness' },
+      metalness: { assetId: 'asset-metalness' },
+    })
+  })
+
   it('answers nothing when there was nothing to assemble', async () => {
     expect(await openModelMaterial(MODEL, [texture({ location: 'cloud' })])).toBeNull()
   })
@@ -145,6 +177,33 @@ describe('opening the material of a model', () => {
     const channels = materialOf(useMaterials.getState(), opened().id).channels
     expect(channels.roughness).toBeDefined()
     expect(channels.metalness).toBeDefined()
+  })
+
+  it('keeps the material factors extracted from glTF', async () => {
+    const settings = {
+      color: '#808080',
+      roughness: 0.25,
+      metalness: 0.75,
+      normalScale: 0.5,
+      aoIntensity: 0.6,
+      emissive: '#201000',
+      emissiveIntensity: 2,
+      tiling: { x: 2, y: 3 },
+      offset: { x: 0.25, y: 0.5 },
+      rotation: 0.4,
+    }
+
+    await openModelMaterial({ ...MODEL, settings }, [texture()])
+
+    expect(materialOf(useMaterials.getState(), opened().id).material).toMatchObject({
+      color: settings.color,
+      roughness: settings.roughness,
+      metalness: settings.metalness,
+      normalScale: settings.normalScale,
+      aoIntensity: settings.aoIntensity,
+      emissive: settings.emissive,
+      emissiveIntensity: settings.emissiveIntensity,
+    })
   })
 
   /**

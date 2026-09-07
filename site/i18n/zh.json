@@ -8,9 +8,9 @@
     "ogLocale": "zh_CN"
   },
   "head": {
-    "title": "IA Studio — 六个生成工作室，一个窗口",
+    "title": "AI Desktop Studio — 六个生成工作室，一个窗口",
     "description": "多模态桌面应用：图像、视频、3D、音频、纹理与天空盒，集于一个可停靠面板界面。离线听写，并可通过 MCP 服务器驱动。",
-    "ogTitle": "IA Studio — 六个生成工作室，一个窗口",
+    "ogTitle": "AI Desktop Studio — 六个生成工作室，一个窗口",
     "ogDescription": "六个生成工作室，集于一个窗口。Electron、React 19、TypeScript。macOS、Windows、Linux。"
   },
   "nav": {
@@ -291,7 +291,7 @@
   "docs": {
     "eyebrow": "文档 &amp; 演示",
     "title": "一切都写在代码旁边。",
-    "videoLabel": "IA Studio 演示：走过六个工作室，从一次 3D 生成直到成片剪辑。",
+    "videoLabel": "AI Desktop Studio 演示：走过六个工作室，从一次 3D 生成直到成片剪辑。",
     "links": {
       "0": {
         "text": "手册，二十章 —— 在应用内同样可读",
@@ -318,7 +318,8 @@
         "label": "许可"
       }
     },
-    "manualFile": "user-guide.md"
+    "manualFile": "user-guide.md",
+    "mcpChapterFile": "manual/20-driving-from-outside.md"
   },
   "download": {
     "eyebrow": "安装",
@@ -351,11 +352,11 @@
         "state": "版本待发布"
       }
     },
-    "note": "安装包受<a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">使用条款</a>约束；源代码则依 <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial&nbsp;1.0.0</a> 许可。本应用不提供任何生成服务的访问权限：它使用你自己提供的 API 密钥，记在你的账户下，费用由你承担。"
+    "note": "安装包受<a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">使用条款</a>约束；源代码则依 <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial&nbsp;1.0.0</a> 许可。本应用不提供任何生成服务的访问权限：它使用你自己提供的 API 密钥，记在你的账户下，费用由你承担。"
   },
   "foot": {
     "groups": {
-      "0": "IA Studio",
+      "0": "AI Desktop Studio",
       "1": "工作室",
       "2": "资源",
       "3": "联系"
@@ -365,7 +366,7 @@
       "0": "下载",
       "1": "许可"
     },
-    "legal": "源代码依 <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial 1.0.0</a> 许可 · 应用依其<a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">使用条款</a>分发 · 第三方组件列于<a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/THIRD-PARTY-NOTICES.md\" target=\"_blank\" rel=\"noopener\">声明</a>。© 2026 Alban Pasquelin。",
+    "legal": "源代码依 <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial 1.0.0</a> 许可 · 应用依其<a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">使用条款</a>分发 · 第三方组件列于<a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/THIRD-PARTY-NOTICES.md\" target=\"_blank\" rel=\"noopener\">声明</a>。© 2026 Alban Pasquelin。",
     "docsLink": "文档",
     "changelog": "更新日志",
     "docsFr": "文档 🇫🇷",

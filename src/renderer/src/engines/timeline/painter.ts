@@ -344,8 +344,6 @@ function paintClip(
   const boxTop = top + CLIP_INSET
   const boxHeight = height - CLIP_INSET * 2 - 1
 
-  // Selection wins over the kind: a picked clip has to read as picked, and two greens would say
-  // less than one blue does.
   context.fillStyle = selected ? palette.selected : palette[CLIP_FILLS[kind]]
   context.fillRect(left, boxTop, right - left, boxHeight)
 
@@ -354,50 +352,67 @@ function paintClip(
   context.rect(left, boxTop, right - left, boxHeight)
   context.clip()
 
-  // What a track SHOWS follows what it plays: pictures on a picture track, the waveform on a
-  // sound track. Both on both drew a waveform over the stills of every rush — and the sound
-  // half of a take, which points at the same file, wore that rush's frames under its own
-  // waveform. Asking for neither is also what keeps a video clip from fetching peaks nobody
-  // draws, and a sound clip from decoding a still.
+  paintClipMedia(context, clip, viewport, left, right, boxTop, boxHeight, selected, kind, {
+    palette,
+    options,
+    linkable,
+  })
+
+  context.fillStyle = palette.text
+  context.fillText(label, left + 6, boxTop + 4)
+  paintLinkBadge(context, clip, left, right, top, selected, linkable, palette)
+  context.restore()
+
+  context.fillStyle = palette.border
+  context.fillRect(left, boxTop, 1, boxHeight)
+  context.fillRect(right - 1, boxTop, 1, boxHeight)
+  paintEdgeBars(context, left, right, boxTop, boxHeight, selected, palette)
+}
+
+function paintClipMedia(
+  context: CanvasRenderingContext2D,
+  clip: Clip,
+  viewport: Viewport,
+  left: number,
+  right: number,
+  top: number,
+  height: number,
+  selected: boolean,
+  kind: TrackKind,
+  { palette, options }: ClipPaint,
+): void {
   const poster = kind === 'video' ? (options.posterOf?.(clip) ?? null) : null
-  if (poster) paintPoster(context, poster, left, right, boxTop, boxHeight)
+  if (poster) paintPoster(context, poster, left, right, top, height)
 
   const peaks = kind === 'audio' ? (options.peaksOf?.(clip) ?? null) : null
   if (peaks) {
     paintWaveform(
       context,
       waveformColumns(clip, peaks, viewport, left, right),
-      boxTop,
-      boxHeight,
+      top,
+      height,
       selected ? palette.text : palette.muted,
     )
   }
 
-  paintFades(context, clip, viewport, left, right, boxTop, boxHeight, palette)
+  paintFades(context, clip, viewport, left, right, top, height, palette)
+}
 
-  context.fillStyle = palette.text
-  context.fillText(label, left + 6, boxTop + 4)
-
-  // From the row's top, not the box's: the placement is measured against the bands `hitTest`
-  // reads, and those are the row's.
+function paintLinkBadge(
+  context: CanvasRenderingContext2D,
+  clip: Clip,
+  left: number,
+  right: number,
+  top: number,
+  selected: boolean,
+  linkable: boolean,
+  palette: Palette,
+): void {
   const badge = linkable ? badgeAt(left, right, top) : null
   if (badge) {
-    // Full ink for a pair that holds, the quiet one for a clip standing alone: the state is read
-    // from the glyph, and the ink only says which of the two is the ordinary case. A picked clip
-    // lifts to the label's ink as the waveform and the grips do — `muted` on `accent-soft` is
-    // the one pairing this palette does not carry.
     context.fillStyle = selected || clip.linkId ? palette.text : palette.muted
     paintGlyph(context, LINK_GLYPHS[clip.linkId ? 'tied' : 'alone'], badge)
   }
-  context.restore()
-
-  context.fillStyle = palette.border
-  context.fillRect(left, boxTop, 1, boxHeight)
-  context.fillRect(right - 1, boxTop, 1, boxHeight)
-
-  // After the border and outside the clipping path: a grip drawn under the poster is a grip
-  // nobody sees, and the border alone reads as a seam between two clips rather than an end.
-  paintEdgeBars(context, left, right, boxTop, boxHeight, selected, palette)
 }
 
 export function paintTimeline(
@@ -424,6 +439,34 @@ export function paintTimeline(
   // asking it five hundred times a frame would walk the tracks five hundred times.
   const shared: ClipPaint = { palette, options, linkable: pairsPossible(state) }
 
+  paintTracks(context, state, viewport, size, from, to, labelOf, shared)
+
+  paintRuler(context, state, viewport, size)
+
+  paintBandEnd(context, {
+    end: sequenceDuration(state),
+    viewport,
+    width: size.width,
+    height: size.height,
+    colour: palette.muted,
+  })
+
+  context.fillStyle = palette.playhead
+  context.fillRect(Math.round(timeToX(state.playhead, viewport)), 0, 1, size.height)
+}
+
+function paintTracks(
+  context: CanvasRenderingContext2D,
+  state: SequenceState,
+  viewport: Viewport,
+  size: Size,
+  from: Us,
+  to: Us,
+  labelOf: (clip: Clip) => string,
+  shared: ClipPaint,
+): void {
+  const { palette } = shared
+
   for (const { track, offset } of trackRows(state)) {
     const top = RULER_HEIGHT + offset - viewport.scrollTop
     if (top > size.height || top + track.height < RULER_HEIGHT) continue
@@ -449,19 +492,4 @@ export function paintTimeline(
       )
     }
   }
-
-  paintRuler(context, state, viewport, size)
-
-  // Where the montage stops, marked exactly as a scene's duration is: the two bands had said the
-  // same thing in two different languages — a wash of scrim there, nothing at all here.
-  paintBandEnd(context, {
-    end: sequenceDuration(state),
-    viewport,
-    width: size.width,
-    height: size.height,
-    colour: palette.muted,
-  })
-
-  context.fillStyle = palette.playhead
-  context.fillRect(Math.round(timeToX(state.playhead, viewport)), 0, 1, size.height)
 }

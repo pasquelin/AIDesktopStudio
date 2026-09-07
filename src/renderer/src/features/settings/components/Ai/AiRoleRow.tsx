@@ -1,26 +1,12 @@
-import { mdiInformationOutline } from '@mdi/js'
-import { Fragment, memo } from 'react'
+import { memo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { defaultChatModel } from '@shared/domain/aiCloud'
-import { ASSISTANT_ROLE } from '@shared/domain/aiRole'
+import { aiRoleId, AUTO_RIG_ROLE } from '@shared/domain/aiRole'
 import type { AiOverview, ChoiceScope, ModelCandidate, RoleRow } from '@shared/domain/aiOverview'
-import { MODEL_SOURCES, sourceOf, type ModelSource } from '@shared/domain/localModel'
-import { UiIcon } from '@/components/UiIcon'
-import { WINDOW_CAPTION, WINDOW_GROUP_LABEL } from '@/components/windowStyles'
+import { WindowTag } from '@/components/WindowTag'
+import { WINDOW_CAPTION } from '@/components/windowStyles'
 import type { ModelFitSentence } from '@/hooks/useModelFit'
-import { useAiModels } from '@/stores/aiModels'
-import { useModels } from '@/stores/models'
-import { AiCandidateRow } from './AiCandidateRow'
-import { AiCloudModel } from './AiCloudModel'
-import { AiStudioModel } from './AiStudioModel'
-import { AiChoiceRow } from './AiChoiceRow'
 import { roleLabel } from '@/helpers/roleLabel'
-
-const SOURCE_COPY: Record<ModelSource, { title: string; help?: string }> = {
-  studio: { title: 'aiModels.sourceStudio', help: 'aiModels.sourceStudioHelp' },
-  ollama: { title: 'aiModels.sourceOllama', help: 'aiModels.sourceOllamaHelp' },
-  custom: { title: 'aiModels.sourceCustom' },
-}
+import { AiRoleOptions } from './AiRoleOptions'
 
 export type AiRoleRowProps = {
   row: RoleRow
@@ -48,9 +34,6 @@ export const AiRoleRow = memo(function AiRoleRow({
   fitOf,
 }: AiRoleRowProps) {
   const { t } = useTranslation()
-  const chooseAiProvider = useAiModels(state => state.chooseAiProvider)
-  const selectRoleModel = useModels(state => state.select)
-
   const label = roleLabel(row.role, t)
   // Captured so the narrowing survives into the callback below, which a property access does not.
   const provider = row.provider
@@ -62,122 +45,27 @@ export const AiRoleRow = memo(function AiRoleRow({
       : undefined
   // The controls, unlike the summary, show the scope BEING EDITED: a radio reading the effect
   // would leave a click writing a scope that already agreed, doing nothing and saying nothing.
-  const editing = row.chosen[scope]
+  const usesIntegratedRig = row.role === AUTO_RIG_ROLE
 
   return (
     <details className="border-base-300 border-b last:border-b-0">
       <summary className="flex cursor-pointer items-center gap-2 py-3">
         <span className="flex-1">{label}</span>
-        {row.chosen.project !== null && (
-          <span className="badge badge-sm">{t('aiModels.chosenAtProject')}</span>
-        )}
+        {row.chosen.project !== null && <WindowTag>{t('aiModels.chosenAtProject')}</WindowTag>}
         <span className={WINDOW_CAPTION}>
           {served && served.model.name}
           {provider?.kind === 'cloud' && t(`aiClouds.${provider.providerId}`)}
-          {provider === null && t('aiModels.providerNone')}
+          {provider === null &&
+            t(usesIntegratedRig ? 'aiModels.autoRigSimple' : 'aiModels.providerNone')}
         </span>
       </summary>
 
       <fieldset className="pt-3 pb-4">
         <legend className="sr-only">{t('aiModels.candidates', { role: label })}</legend>
-        <ul>
-          <AiChoiceRow
-            role={row.role}
-            choice="none"
-            label={t('aiModels.none')}
-            hint={t('aiModels.noneHint')}
-            checked={editing === null}
-            onChoose={() => void chooseAiProvider(row.role, null, scope)}
-          />
-
-          {/* 🛑 Silence here reads as a broken list: what is missing is an engine, not a manifest.
-              No role="alert" — a live region would announce a standing state on every render. */}
-          {provider === null && (
-            <li className="py-2">
-              <span className="alert alert-warning alert-soft">
-                <UiIcon path={mdiInformationOutline} />
-                {t('aiModels.chooseProvider')}
-              </span>
-            </li>
-          )}
-          {row.candidates.length === 0 && (
-            <li className="py-2">
-              <span className="alert alert-info alert-soft">
-                <UiIcon path={mdiInformationOutline} />
-                {t('aiModels.noLocalEngine')}
-              </span>
-            </li>
-          )}
-
-          {MODEL_SOURCES.map(source => {
-            const candidates = row.candidates.filter(one => sourceOf(one.model) === source)
-            if (candidates.length === 0) return null
-            const copy = SOURCE_COPY[source]
-
-            return (
-              <li key={source} className="pt-6">
-                <h4 className={WINDOW_GROUP_LABEL}>{t(copy.title)}</h4>
-                {copy.help !== undefined && <p className={WINDOW_CAPTION}>{t(copy.help)}</p>}
-                <ul>
-                  {candidates.map(candidate => (
-                    <AiCandidateRow
-                      key={candidate.model.id}
-                      role={row.role}
-                      candidate={candidate}
-                      chosen={editing?.kind === 'local' && editing.modelId === candidate.model.id}
-                      fit={fitOf(candidate)}
-                      progress={
-                        installing?.modelId === candidate.model.id ? installing.progress : null
-                      }
-                      loading={loading?.modelId === candidate.model.id ? loading.ratio : null}
-                      busy={busy}
-                      onChoose={() => {
-                        void chooseAiProvider(
-                          row.role,
-                          { kind: 'local', modelId: candidate.model.id },
-                          scope,
-                        )
-                        selectRoleModel(row.role, candidate.model.id)
-                      }}
-                    />
-                  ))}
-                </ul>
-              </li>
-            )
-          })}
-
-          {row.clouds.length > 0 && (
-            <li className="pt-6">
-              <h4 className={WINDOW_GROUP_LABEL}>{t('aiModels.sourceCloud')}</h4>
-              <p className={WINDOW_CAPTION}>{t('aiModels.sourceCloudHelp')}</p>
-              <ul>
-                {row.clouds.map(providerId => (
-                  <Fragment key={providerId}>
-                    <AiChoiceRow
-                      role={row.role}
-                      choice={providerId}
-                      label={t(`aiClouds.${providerId}`)}
-                      hint={t(`aiClouds.${providerId}Hint`)}
-                      checked={editing?.kind === 'cloud' && editing.providerId === providerId}
-                      onChoose={() =>
-                        void chooseAiProvider(row.role, { kind: 'cloud', providerId }, scope)
-                      }
-                    />
-                    {/* Under every cloud rather than under the chosen one alone: the model is not
-                        scoped, and a field appearing with the radio would hide it. Which control
-                        it takes is read off the registry — a declared model, or a priced four. */}
-                    {row.role === ASSISTANT_ROLE &&
-                      (defaultChatModel(providerId) === null ? (
-                        <AiStudioModel />
-                      ) : (
-                        <AiCloudModel providerId={providerId} />
-                      ))}
-                  </Fragment>
-                ))}
-              </ul>
-            </li>
-          )}
-        </ul>
+        {row.role === aiRoleId('3d', 'motion') && (
+          <p className={WINDOW_CAPTION}>{t('aiModels.motionSetup')}</p>
+        )}
+        <AiRoleOptions {...{ row, installing, loading, busy, scope, fitOf }} />
       </fieldset>
     </details>
   )

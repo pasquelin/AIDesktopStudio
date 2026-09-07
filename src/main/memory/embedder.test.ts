@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import type { EmbedClient } from './embedClient'
 import { createEmbedder, type Embedder } from './embedder'
 import type { EmbedWeights } from './embedChoice'
@@ -11,26 +11,31 @@ type Opened = {
 
 function stand(
   modelId: string | null,
-  { dims = 768, failing = false, slow = false } = {},
+  { dims = 768, failing = false, slow = false, slowClose = false } = {},
 ): {
   embedder: Embedder
   opened: Opened[]
   closed: () => number
+  /** The grace each close was given, in order — `undefined` where the client's default stands. */
+  closedWith: () => (number | undefined)[]
   troubles: string[]
   die: () => void
   idle: () => void
   chose: (next: string | null) => void
   /** Lets a load that was held open settle — what makes a race testable. */
   settle: () => void
+  /** Lets a graceful close finish before another process is opened. */
+  settleClose: () => void
 } {
   const opened: Opened[] = []
   const troubles: string[] = []
-  let closes = 0
+  const closedWith: (number | undefined)[] = []
   let current = modelId
   let fire: () => void = () => {}
 
   let killProcess: () => void = () => {}
   const parked: (() => void)[] = []
+  const parkedCloses: (() => void)[] = []
   const open = (onGone: () => void): EmbedClient => {
     killProcess = onGone
     const client: EmbedClient = {
@@ -42,8 +47,9 @@ function stand(
       },
       embed: async texts => texts.map(() => new Float32Array([1])),
       embedQuery: async () => new Float32Array([1]),
-      close: () => {
-        closes++
+      close: async graceMs => {
+        closedWith.push(graceMs)
+        if (slowClose) await new Promise<void>(resolve => parkedCloses.push(resolve))
       },
     }
     return client
@@ -56,7 +62,11 @@ function stand(
     settle: () => {
       for (const let_go of parked.splice(0)) let_go()
     },
-    closed: () => closes,
+    settleClose: () => {
+      for (const letGo of parkedCloses.splice(0)) letGo()
+    },
+    closed: () => closedWith.length,
+    closedWith: () => closedWith,
     idle: () => fire(),
     chose: next => {
       current = next
@@ -178,6 +188,20 @@ describe('idleness', () => {
 
     expect(stood.opened).toHaveLength(2)
   })
+
+  it('waits for graceful disposal before opening the next process', async () => {
+    const stood = stand(GEMMA, { slowClose: true })
+    await stood.embedder.embed(['one'])
+    stood.idle()
+
+    const next = stood.embedder.embed(['two'])
+    await Promise.resolve()
+    expect(stood.opened).toHaveLength(1)
+
+    stood.settleClose()
+    await next
+    expect(stood.opened).toHaveLength(2)
+  })
 })
 
 describe('when the process dies on its own', () => {
@@ -211,6 +235,15 @@ describe('closing', () => {
 
     expect(stood.closed()).toBe(0)
   })
+
+  // The quit hands a short grace down; an idle release hands none and the client's default stands.
+  it('passes the grace it was given on to the process', async () => {
+    const stood = stand(GEMMA)
+    await stood.embedder.embed(['one'])
+    await stood.embedder.close(2_000)
+
+    expect(stood.closedWith()).toEqual([2_000])
+  })
 })
 
 describe('a choice that moves while the weights are loading', () => {
@@ -227,9 +260,9 @@ describe('a choice that moves while the weights are loading', () => {
     stood.chose('another-model')
     const second = stood.embedder.embed(['the palette'])
     stood.settle()
-    await Promise.all([first, second])
+    await vi.waitFor(() => expect(stood.opened).toHaveLength(2))
     stood.settle()
-    await second
+    await Promise.all([first, second])
 
     // Both weights were loaded, and the SECOND caller waited for its own rather than taking the
     // first one's: the last load is the one that was chosen.
@@ -237,5 +270,7 @@ describe('a choice that moves while the weights are loading', () => {
       `/models/${GEMMA}.gguf`,
       '/models/another-model.gguf',
     ])
+    // The first process finished loading a model nobody holds any more: closed, not leaked.
+    expect(stood.closed()).toBe(1)
   })
 })

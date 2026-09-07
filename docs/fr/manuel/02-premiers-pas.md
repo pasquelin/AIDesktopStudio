@@ -69,7 +69,7 @@ passe, réservés aux programmes.
 ## Étape 3 — Brancher votre compte
 
 1. Ouvrez les réglages : `⌘,` sur macOS, `Ctrl+,` sur Windows et Linux. Ou par le menu —
-   **IA Studio ▸ Réglages…** sur macOS, **Fichier ▸ Réglages…** ailleurs, car il n’y a
+   **AI Desktop Studio ▸ Réglages…** sur macOS, **Fichier ▸ Réglages…** ailleurs, car il n’y a
    de menu d’application que sur macOS.
 2. Dans la liste de gauche, cliquez sur **Compte**.
 3. Donnez-lui un **nom** — ce que vous voulez : « Studio », « Perso », votre prénom.
@@ -121,7 +121,8 @@ cela ne touche ni vos projets ni ce que vous écrivez dedans.
 
 ## Étape 5 — Créer votre premier projet
 
-`⌘N` / `Ctrl+N`, ou menu **Fichier ▸ Nouveau projet…**
+`⌥⌘N` / `Alt+Ctrl+N`, ou menu **Fichier ▸ Nouveau projet…** — ou `⌘N`, qui ouvre la fenêtre
+proposant un projet comme un document
 
 Le studio vous demande **un dossier**, et ce dossier *devient* le projet — il ne fabrique rien
 au-dessus ni en dessous. Créez-le au besoin depuis le sélecteur (bouton **Nouveau dossier**) et

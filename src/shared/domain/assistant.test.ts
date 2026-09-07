@@ -73,7 +73,7 @@ describe('the action registry', () => {
     const offered = assistantAction('command.runStudioCommand')?.fields[0]?.options ?? []
 
     expect(offered).toHaveLength(ids.length)
-    for (const id of offered) expect(ids, id).toContain(id)
+    for (const id of offered) expect(ids).toContain(id)
   })
 })
 
@@ -121,6 +121,12 @@ describe('what an action engages', () => {
 
   it('finds nothing on an empty query rather than everything', () => {
     expect(findActions('   ')).toEqual([])
+  })
+
+  it('finds the action whose field ACCEPTS the word, so a studio command is reachable by name', () => {
+    expect(findActions('duplicate scene').map(action => action.name)).toContain(
+      'command.runStudioCommand',
+    )
   })
 
   /**
@@ -179,6 +185,9 @@ describe('what a second identical call can bring', () => {
       'channel.setMuteSoloLock',
       'chat.close',
       'clip.select',
+      // 🛑 A command answers `ok` and nothing of what it did: « duplique-le » ran
+      // `scene.duplicate` three times and left four cubes where two were asked for.
+      'command.runStudioCommand',
       'dictation.start',
       'dictation.stop',
       'document.activate',
@@ -208,10 +217,10 @@ describe('what a second identical call can bring', () => {
       'project.rename',
       'project.trash',
       'settings.open',
-      'skybox.setViewOptions',
+      'skybox.setViewportOptions',
       'target.select',
       'view.direction',
-      'view.display',
+      'view.setDisplayMode',
     ])
   })
 

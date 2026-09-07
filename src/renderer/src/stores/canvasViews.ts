@@ -8,8 +8,8 @@ import {
 } from '@/engines/canvas/viewport'
 import type { Size } from '@/engines/core/geometry'
 
-/** The toggles a menu item flips. Spelled as a union so a typo cannot invent a fourth one. */
-export type ViewToggle = 'rulers' | 'guides' | 'snap'
+/** The toggles a menu row or an inspector row flips. A union, so a typo invents no fifth one. */
+export type ViewToggle = 'rulers' | 'guides' | 'snap' | 'grid'
 
 const NO_HOST: Size = { width: 0, height: 0 }
 

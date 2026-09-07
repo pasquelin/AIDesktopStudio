@@ -8,6 +8,3 @@
  * their line ends where the lines above it do once the window is widened past the cap.
  */
 export const SETTING_COLUMN = 'flex max-w-2xl flex-col'
-
-/** The one `<select>` of these windows. Capped narrower than its row: a list of short words. */
-export const SETTING_SELECT = 'select select-sm w-full max-w-xs'

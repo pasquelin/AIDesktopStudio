@@ -1,11 +1,11 @@
 Licence non arrêtée.
 
-Ce sous-projet — le Local AI Engine d'IA Studio — n'a pas encore de licence. La décision est
+Ce sous-projet — le Local AI Engine d'AI Desktop Studio — n'a pas encore de licence. La décision est
 différée, volontairement : `engine/` est écrit pour pouvoir recevoir la sienne, ou sortir dans un
 dépôt à part, sans refonte. Ce fichier existe dès le premier commit pour que ce jour-là soit
 mécanique plutôt qu'archéologique.
 
 Tant qu'aucune licence n'est arrêtée, tous droits réservés — Alban Pasquelin.
 
-Le reste du dépôt IA Studio est sous PolyForm Noncommercial 1.0.0 ; voir le fichier LICENSE de la
+Le reste du dépôt AI Desktop Studio est sous PolyForm Noncommercial 1.0.0 ; voir le fichier LICENSE de la
 racine. Cette mention ne dit rien de la licence future d'`engine/`.

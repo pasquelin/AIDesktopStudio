@@ -9,9 +9,9 @@ import {
   EMPTY_SEQUENCE,
   EMPTY_SOUND_SEQUENCE,
   makeClip,
-  parseSequence,
   sceneIdOfSource,
 } from './timelineState'
+import { parseSequence } from './timelineParsing'
 
 const SETTINGS = DEFAULT_SETTINGS
 

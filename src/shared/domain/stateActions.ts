@@ -47,6 +47,7 @@ export const STATE_ACTIONS: readonly AssistantAction[] = [
     commitment: 'none',
     repeatable: false,
     reach: 'mcp',
+    capabilities: { targets: ['document'] },
     fields: [
       { key: 'documentId', kind: 'text', labelKey: 'assistant.fields.documentId', required: true },
     ],

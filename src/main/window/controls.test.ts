@@ -1,7 +1,7 @@
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { CHANNELS, EVENTS } from '@shared/ipc'
-import { invoke, openWindow } from '@main/ipc/testHarness'
-import { registerWindowControls } from './controls'
+import { invoke, invokeFrom, openWindow, quitApp } from '@main/ipc/testHarness'
+import { armQuit, registerWindowControls } from './controls'
 import { setWindowLanguage } from './language'
 
 vi.mock('electron', async () => (await import('@main/ipc/testHarness')).mockElectron())
@@ -15,6 +15,8 @@ beforeAll(() => {
 
 beforeEach(() => {
   setWindowLanguage('fr')
+  quitApp.mockClear()
+  invoke(CHANNELS.windowResumeLeave, false)
 })
 
 describe('the language a window draws in', () => {
@@ -41,5 +43,36 @@ describe('the language a window draws in', () => {
       expect(window.sent.filter(entry => entry.channel === EVENTS.windowLanguage)).toEqual([
         { channel: EVENTS.windowLanguage, payload: 'en' },
       ])
+  })
+})
+
+describe('resuming a leave held for unsaved work', () => {
+  it('closes the window when the gesture was not a quit', () => {
+    const window = openWindow()
+
+    invokeFrom(window, CHANNELS.windowResumeLeave, true)
+
+    expect(window.close).toHaveBeenCalled()
+    expect(quitApp).not.toHaveBeenCalled()
+  })
+
+  it('quits when the gesture was ⌘Q', () => {
+    const window = openWindow()
+    armQuit()
+
+    invokeFrom(window, CHANNELS.windowResumeLeave, true)
+
+    expect(quitApp).toHaveBeenCalled()
+    expect(window.close).not.toHaveBeenCalled()
+  })
+
+  it('drops a cancelled leave without closing or quitting', () => {
+    const window = openWindow()
+    armQuit()
+
+    invokeFrom(window, CHANNELS.windowResumeLeave, false)
+
+    expect(quitApp).not.toHaveBeenCalled()
+    expect(window.close).not.toHaveBeenCalled()
   })
 })

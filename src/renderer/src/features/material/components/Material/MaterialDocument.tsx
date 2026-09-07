@@ -1,8 +1,9 @@
 import { mdiTextureBox } from '@mdi/js'
-import { useCallback } from 'react'
+import { useCallback, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { assetUrl, PICTURES, posterUrl, type Asset } from '@shared/domain/asset'
 import type { CommandId } from '@shared/domain/command'
+import { runMaterialCommand } from './materialCommands'
 import { type MaterialExportTarget } from '@shared/domain/materialExport'
 import { activation } from '@/helpers/activation'
 import { cn } from '@/helpers/cn'
@@ -22,6 +23,8 @@ import { placeMaterialChannel } from '../placeChannel'
 import { materialExportFiles } from '../../materialExportFiles'
 import { MaterialToolbar } from './MaterialToolbar'
 import { useRestoredDocument } from '@/hooks/useRestoredDocument'
+import { useSettings } from '@/stores/settings'
+import { customFrom, schemeFor } from '@shared/domain/navigationPreset'
 import { useShelfRefresh } from '@/hooks/useShelfRefresh'
 import { useSkyRefresh } from '@/hooks/useSkyRefresh'
 import { useMountedEngine } from '@/hooks/useMountedEngine'
@@ -71,11 +74,7 @@ export function MaterialDocument({ documentId }: { documentId: string }) {
   // Channels and styles both push onto `useMaterials`, and until now nothing could pop it: no
   // scope, no key, no menu row — while the manual already promised ⌘Z on an applied style.
   const onCommand = useCallback(
-    (command: CommandId) => {
-      const store = useMaterials.getState()
-      if (command === 'material.undo') return store.undo(documentId)
-      if (command === 'material.redo') return store.redo(documentId)
-    },
+    (command: CommandId): boolean => runMaterialCommand(documentId, command),
     [documentId],
   )
 
@@ -98,6 +97,15 @@ export function MaterialDocument({ documentId }: { documentId: string }) {
       }),
     texture,
   )
+
+  // The preview turns like the scene does: two rules in one window is what the setting's help
+  // promises it is not — see `MaterialRenderer.setNavigationScheme`.
+  const three = useSettings(state => state.settings.three)
+  useEffect(() => {
+    engine.current?.setNavigationScheme(schemeFor(three.navigationPreset, customFrom(three)))
+    // `documentId` too: the engine is rebuilt when it changes, and the new one would open on
+    // the studio's gestures while the scene turns by the chosen scheme.
+  }, [documentId, engine, three])
 
   useShelfRefresh(() => engine.current?.refreshMaps())
   // The sky the preview NAMES moved: no asset id changed, so the shelf says nothing.

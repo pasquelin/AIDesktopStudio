@@ -1,9 +1,28 @@
-import { BrowserWindow } from 'electron'
+import { app, BrowserWindow } from 'electron'
 import { INITIAL_WINDOW_STATE, type WindowState } from '@shared/domain/window'
 import { CHANNELS, EVENTS } from '@shared/ipc'
 import { handle } from '@main/ipc/handle'
 import { broadcast } from '@main/ipc/broadcast'
 import { followWindowLanguage, windowLanguage } from './language'
+
+/** Set by `before-quit`; a window close that is not a quit leaves this false. */
+let quitArmed = false
+
+export function armQuit(): void {
+  quitArmed = true
+}
+
+function resumeLeave(sender: Electron.WebContents, proceed: boolean): void {
+  const shouldQuit = quitArmed
+  quitArmed = false
+  if (!proceed) return
+  if (shouldQuit) {
+    app.quit()
+    return
+  }
+  const window = BrowserWindow.fromWebContents(sender)
+  if (window && !window.isDestroyed()) window.close()
+}
 
 function stateOf(target: BrowserWindow): WindowState {
   return {
@@ -55,5 +74,9 @@ export function registerWindowControls(): void {
   handle(CHANNELS.windowState, event => {
     const window = BrowserWindow.fromWebContents(event.sender)
     return window ? stateOf(window) : INITIAL_WINDOW_STATE
+  })
+
+  handle(CHANNELS.windowResumeLeave, (event, proceed) => {
+    resumeLeave(event.sender, proceed)
   })
 }

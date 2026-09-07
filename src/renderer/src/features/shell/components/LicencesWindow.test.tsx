@@ -15,6 +15,15 @@ describe('LicencesWindow', () => {
     installFakeBridge()
   })
 
+  it('keeps required attribution visible while licence texts are folded', () => {
+    render(<LicencesWindow />)
+    expect(screen.getByText('Built with Meta Llama 3')).toBeVisible()
+    expect(screen.getByRole('button', { name: /^Meta Llama 3/ })).toHaveAttribute(
+      'aria-expanded',
+      'false',
+    )
+  })
+
   it('names every component the studio ships', () => {
     render(<LicencesWindow />)
 

@@ -49,7 +49,7 @@ export const useExplorerView = create<ExplorerViewState>()(
       setExplorerMode: mode => set({ mode }),
     }),
     {
-      name: 'ia-studio:explorer-view',
+      name: 'ai-desktop-studio:explorer-view',
       // `search` is dropped by the policy every collection follows: a studio reopening on a tree
       // narrowed by a word nobody typed reads as a project gone missing.
       partialize: ({ collection, hidden, mode }) => ({

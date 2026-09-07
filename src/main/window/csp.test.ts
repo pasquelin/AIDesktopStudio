@@ -61,6 +61,9 @@ describe('the window policy', () => {
    * A `data:` URL carries its own payload and reaches no host, so this widens what the renderer
    * can READ from itself and not what it can talk to.
    */
+})
+
+describe('renderer window policy', () => {
   it('lets Pixi ask whether it may decode off the UI thread', () => {
     expect(directive('connect-src')).toContain('data:')
   })

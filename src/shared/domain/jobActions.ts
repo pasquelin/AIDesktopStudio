@@ -23,8 +23,16 @@ export const JOB_ACTIONS: readonly AssistantAction[] = [
     commitment: 'none',
     repeatable: true,
     reach: 'mcp',
+    inputs: ['generationModelCandidates'],
+    returns: ['generationModelCandidates'],
     fields: [
-      { key: 'modelId', kind: 'text', labelKey: 'assistant.fields.modelId', required: true },
+      {
+        key: 'modelId',
+        kind: 'text',
+        labelKey: 'assistant.fields.modelId',
+        required: true,
+        reference: 'model',
+      },
     ],
   }),
   action({
@@ -101,14 +109,12 @@ export const JOB_ACTIONS: readonly AssistantAction[] = [
     repeatable: true,
     reach: 'mcp',
     fields: [
-      // A closed set rather than a bounded number: the API takes three windows and nothing
-      // between them, and `validatesInput` only holds a closed set on a field that is text.
       {
         key: 'days',
         kind: 'choice',
         labelKey: 'assistant.fields.days',
         required: false,
-        options: USAGE_PERIODS.map(String),
+        options: USAGE_PERIODS,
       },
     ],
   }),

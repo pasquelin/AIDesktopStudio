@@ -13,11 +13,13 @@ import { fieldHandle } from '@/components/scHandle'
 import { cn } from '@/helpers/cn'
 import { useAssistantMemory } from '@/stores/assistantMemory'
 import { useProject } from '@/stores/project'
-import { SETTING_COLUMN, SETTING_SELECT } from '../settingStyles'
+import { SETTING_COLUMN } from '../settingStyles'
 import { MemoryRelations } from './Relations/MemoryRelations'
 import { MemoryRowActions } from './Row/MemoryRowActions'
 import { MemoryRowDetail } from './Row/MemoryRowDetail'
 import { MemoryUpkeep } from './MemoryUpkeep'
+import { WindowInput } from '@/components/WindowInput'
+import { WindowSelect } from '@/components/WindowSelect'
 
 /**
  * What the assistant has learned, and the only screen that can correct it.
@@ -96,25 +98,25 @@ export function MemorySettings() {
         {/* 🛑 `input-sm` and not `WindowSearch`, which is the NAV field of a window: it is
             `input-xs w-full shrink-0`, so it stood eight pixels shorter than the select beside it
             and took the whole row without yielding. Every other settings form is `…-sm`. */}
-        <input
+        <WindowInput
           data-sc={fieldHandle('memory.search')}
           type="search"
-          className="input input-sm min-w-0 grow"
+          className="min-w-0 grow"
           aria-label={t('settings.memorySearch')}
           placeholder={t('settings.memorySearch')}
           value={text}
           onChange={event => setText(event.target.value)}
         />
-        <select
+        <WindowSelect
           data-sc="field:memory.type"
           aria-label={t('settings.memoryFilterAll')}
           /**
-           * 🛑 A FLOOR, never a cap: `SETTING_SELECT` is `max-w-xs` for a row where the select
-           * stands alone, and here it took twice the field beside it. Bare `w-auto` is worse —
+           * 🛑 A FLOOR, never a cap: the select must not take twice the field beside it. Bare
+           * `w-auto` is worse —
            * `[M]` a native select sizes on the option SHOWN, so it jumped between 67 and 122 px
            * as the filter moved. The floor holds it still; it grows rather than truncate.
            */
-          className={cn(SETTING_SELECT, 'w-auto min-w-40 shrink-0')}
+          className="w-auto min-w-40 shrink-0"
           value={type}
           onChange={event => setType(event.target.value as MemoryType | '')}
         >
@@ -124,7 +126,7 @@ export function MemorySettings() {
               {t(`memoryTypes.${one}`)}
             </option>
           ))}
-        </select>
+        </WindowSelect>
       </div>
 
       <p className={WINDOW_CAPTION}>{t('settings.memoryCount', { count: memories.length })}</p>

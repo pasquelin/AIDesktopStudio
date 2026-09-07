@@ -10,6 +10,7 @@ import { createAdjustPass } from '../gpu/passes/adjust'
 import { encodePng, runOffscreenPass, type PictureSize } from '../material/derive/offscreen'
 import type { TextureSource } from '../scene/textureCache'
 import { createProjectionPass } from './projectionShader'
+import type { GpuPipeline } from '../gpu/gpuPipeline'
 
 /**
  * A sky on its way to six files somebody will hand to an engine.
@@ -85,6 +86,38 @@ export type SkyboxExportPortOptions = {
   encodeRadiance?: RgbeEncoder
 }
 
+async function exportFaces(
+  pipeline: GpuPipeline,
+  renderer: WebGLRenderer,
+  graded: WebGLRenderTarget,
+  faceSide: number,
+  name: string,
+  watch?: TaskWatch,
+): Promise<ExportedFile[]> {
+  const projection = createProjectionPass()
+  try {
+    projection.setSource(graded.texture)
+    projection.setFrame(faceSide, faceSide)
+    const faces = faceFileNames(name)
+    const files: ExportedFile[] = []
+    for (const face of faces) {
+      watch?.signal?.throwIfAborted()
+      projection.setLayout('single', face.face)
+      pipeline.renderToScreen(projection.material)
+      const bytes = await encodePng(renderer.domElement)
+      files.push({
+        name: face.name,
+        extension: exportTargetOf('sky.faces').extension,
+        bytes,
+      })
+      watch?.onStep?.(files.length, faces.length)
+    }
+    return files
+  } finally {
+    projection.dispose()
+  }
+}
+
 export function createSkyboxExportPort({
   loadTexture,
   assetVersion,
@@ -151,34 +184,7 @@ export function createSkyboxExportPort({
             return [{ name, extension: exportTargetOf(command.target).extension, bytes }]
           }
 
-          const projection = createProjectionPass()
-          try {
-            projection.setSource(graded.texture)
-            // A square frame for a square face, so `single` letterboxes nothing.
-            projection.setFrame(faceSide, faceSide)
-
-            const faces = faceFileNames(name)
-            const files: ExportedFile[] = []
-            for (const face of faces) {
-              // Between faces, which is where a stop can be honoured: one face is a single
-              // draw and a read, and interrupting inside it would leave the canvas half read.
-              watch?.signal?.throwIfAborted()
-              projection.setLayout('single', face.face)
-              pipeline.renderToScreen(projection.material)
-              // Awaited before the next face is drawn: they share one canvas, and a read left
-              // running would encode whichever face happened to be on it.
-              const bytes = await encodePng(renderer.domElement)
-              files.push({
-                name: face.name,
-                extension: exportTargetOf('sky.faces').extension,
-                bytes,
-              })
-              watch?.onStep?.(files.length, faces.length)
-            }
-            return files
-          } finally {
-            projection.dispose()
-          }
+          return exportFaces(pipeline, renderer, graded, faceSide, name, watch)
         } finally {
           // Its own `finally`, inside the pass's: the target is 64 MB at 4K, and a throw while
           // the six faces are drawn would otherwise leave it held for the life of the window.

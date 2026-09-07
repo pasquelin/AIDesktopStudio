@@ -22,78 +22,73 @@ import { DictationStatusListening } from './DictationStatusListening'
  */
 export function DictationStatus() {
   const { t } = useTranslation()
-  const dictation = useDictationView()
-  const bytes = useBytes()
+  return dictationContent(useDictationView(), useBytes(), t)
+}
 
+type DictationView = ReturnType<typeof useDictationView>
+type Bytes = ReturnType<typeof useBytes>
+type Translate = ReturnType<typeof useTranslation>['t']
+
+function dictationContent(dictation: DictationView, bytes: Bytes, t: Translate) {
   if (!dictation.enabled) return null
-
   if (dictation.isListening) return <DictationStatusListening />
-
-  if (dictation.state === 'modelMissing') {
-    const size = bytes(STT_MODEL_BYTES)
-    return (
-      <button
-        type="button"
-        {...HINT_TOP(t('dictation.downloadHint'))}
-        onClick={() => void dictation.downloadModel()}
-        className={STATUS_BUTTON}
-      >
-        <UiIcon path={mdiMicrophone} size={12} />
-        <span>{t('dictation.download', { size })}</span>
-      </button>
-    )
-  }
-
-  if (dictation.state === 'downloadingModel' && dictation.download) {
-    const label = t('dictation.downloading', {
-      done: bytes(dictation.download.received),
-      total: bytes(dictation.download.total),
-    })
-
-    return (
-      <span className="flex items-center gap-1.5">
-        <span>{label}</span>
-        <ProgressBar
-          ratio={
-            dictation.download.total > 0
-              ? dictation.download.received / dictation.download.total
-              : 0
-          }
-          label={label}
-          className="w-12"
-        />
-        <button
-          type="button"
-          {...HINT_TOP(t('dictation.cancelDownloadHint'))}
-          onClick={() => void dictation.cancelDownload()}
-          className="hover:text-text"
-        >
-          {t('dictation.cancelDownload')}
-        </button>
-      </span>
-    )
-  }
-
-  if (dictation.state === 'permissionRequired') {
-    return (
-      // No `role="status"`: it would replace the implicit `button` role, and this is the only
-      // way out of a refused microphone — a screen reader has to find it among the buttons.
-      <button
-        type="button"
-        {...HINT_TOP(t('dictation.openPrivacySettingsHint'))}
-        onClick={() => void dictation.openPrivacySettings()}
-        className={STATUS_BUTTON}
-      >
-        <UiIcon path={mdiMicrophone} size={12} />
-        <span>{t('dictation.openPrivacySettings')}</span>
-      </button>
-    )
-  }
-
-  // The detail is never shown: it names a file path or an ONNX symbol, and it is in the journal.
-  if (dictation.state === 'error' && dictation.failure) {
+  if (dictation.state === 'modelMissing') return missingModel(dictation, bytes, t)
+  if (dictation.state === 'downloadingModel' && dictation.download)
+    return modelDownload(dictation, bytes, t)
+  if (dictation.state === 'permissionRequired') return permissionRequired(dictation, t)
+  if (dictation.state === 'error' && dictation.failure)
     return <span role="status">{t(`dictation.errors.${dictation.failure.code}`)}</span>
-  }
-
   return null
+}
+
+function missingModel(dictation: DictationView, bytes: Bytes, t: Translate) {
+  return (
+    <button
+      type="button"
+      {...HINT_TOP(t('dictation.downloadHint'))}
+      onClick={() => void dictation.downloadModel()}
+      className={STATUS_BUTTON}
+    >
+      <UiIcon path={mdiMicrophone} size={12} />
+      <span>{t('dictation.download', { size: bytes(STT_MODEL_BYTES) })}</span>
+    </button>
+  )
+}
+
+function modelDownload(dictation: DictationView, bytes: Bytes, t: Translate) {
+  if (!dictation.download) return null
+  const label = t('dictation.downloading', {
+    done: bytes(dictation.download.received),
+    total: bytes(dictation.download.total),
+  })
+  const ratio =
+    dictation.download.total > 0 ? dictation.download.received / dictation.download.total : 0
+  return (
+    <span className="flex items-center gap-1.5">
+      <span>{label}</span>
+      <ProgressBar ratio={ratio} label={label} className="w-12" />
+      <button
+        type="button"
+        {...HINT_TOP(t('dictation.cancelDownloadHint'))}
+        onClick={() => void dictation.cancelDownload()}
+        className="hover:text-text"
+      >
+        {t('dictation.cancelDownload')}
+      </button>
+    </span>
+  )
+}
+
+function permissionRequired(dictation: DictationView, t: Translate) {
+  return (
+    <button
+      type="button"
+      {...HINT_TOP(t('dictation.openPrivacySettingsHint'))}
+      onClick={() => void dictation.openPrivacySettings()}
+      className={STATUS_BUTTON}
+    >
+      <UiIcon path={mdiMicrophone} size={12} />
+      <span>{t('dictation.openPrivacySettings')}</span>
+    </button>
+  )
 }

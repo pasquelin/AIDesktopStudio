@@ -4,18 +4,20 @@ import {
   mdiEyeOffOutline,
   mdiEyeOutline,
   mdiFolderPlusOutline,
+  mdiContentSaveMoveOutline,
   mdiPlaylistPlus,
   mdiPlaylistRemove,
   mdiRenameOutline,
   mdiSelectionEllipseRemove,
   mdiSwapHorizontal,
+  mdiSpeedometer,
   mdiTrashCanOutline,
 } from '@mdi/js'
 import type { TFunction } from 'i18next'
-import { commandDescriptor, type CommandId } from '@shared/domain/command'
+import type { CommandId } from '@shared/domain/command'
 import { canInvertCarve, canNegate } from '@/engines/csg/carve'
 import type { SceneNode } from '@/engines/scene/sceneState'
-import { showContextMenu, type ContextMenuRow } from '@/helpers/contextMenu'
+import { commandRow, showContextMenu, type ContextMenuRow } from '@/helpers/contextMenu'
 
 export type SceneNodeMenuProps = {
   /** The node the pointer is over. Already selected by the caller — see below. */
@@ -33,6 +35,8 @@ export type SceneNodeMenuProps = {
    * never the length of the menu — the same shape the eye row takes, and the rule above.
    */
   onSheet: boolean
+  /** Files a player module. Absent on every other node, like the two carve rows above. */
+  onFileAsModule?: () => void
   /**
    * Opens the name for typing. Absent in the viewport, which draws no name to type over: there
    * the node is renamed from the outliner or from the inspector's own field. The one row that
@@ -58,29 +62,21 @@ export type SceneNodeMenuProps = {
  * Copy, cut and paste are deliberately absent — the four keys every editor shares already sit in
  * the native Édition menu, where a hand that lost them looks.
  */
-export function openSceneNodeMenu({
-  node,
-  canFrame,
-  t,
-  run,
-  onToggleVisible,
-  onSheet,
-  onRename,
-}: SceneNodeMenuProps): void {
-  // Named by the registry rather than by keys written again here: the row then says exactly what
-  // the toolbar's tooltip and the native menu's entry say, and a renamed command cannot leave one
-  // of the three behind.
-  const command = (id: CommandId, icon: string): ContextMenuRow => {
-    const descriptor = commandDescriptor(id)
-    return {
-      label: descriptor ? t(descriptor.titleKey) : id,
-      icon,
-      tooltip: descriptor ? t(descriptor.helpKey) : id,
-      onSelect: () => run(id),
-    }
-  }
+export function openSceneNodeMenu(props: SceneNodeMenuProps): void {
+  const { node, canFrame, t, run, onToggleVisible, onSheet, onRename, onFileAsModule } = props
+  const command = (id: CommandId, icon: string): ContextMenuRow => commandRow(id, icon, t, run)
 
   void showContextMenu([
+    ...(onFileAsModule
+      ? [
+          {
+            label: t('playerWindow.file'),
+            icon: mdiContentSaveMoveOutline,
+            tooltip: t('playerWindow.fileHint'),
+            onSelect: onFileAsModule,
+          },
+        ]
+      : []),
     ...(onRename
       ? [
           {
@@ -93,13 +89,12 @@ export function openSceneNodeMenu({
       : []),
     command('scene.duplicate', mdiContentCopy),
     command('scene.group', mdiFolderPlusOutline),
+    command('scene.optimizeSelection', mdiSpeedometer),
     // The two of the boolean family a hand reaches for from HERE: marking a tool, and repairing a
     // fold that ran backwards. Greyed rather than hidden, like framing below — the menu keeps its
     // length whatever is under the pointer.
     { ...command('scene.negate', mdiSelectionEllipseRemove), disabled: !canNegate([node]) },
     { ...command('scene.invertCarve', mdiSwapHorizontal), disabled: !canInvertCarve([node]) },
-    // On or off the band, by the same shape the eye row takes: one row whose label flips, so the
-    // menu keeps its length. Both sides act on the selection, like every other row here.
     command(
       onSheet ? 'scene.removeFromSheet' : 'scene.addToSheet',
       onSheet ? mdiPlaylistRemove : mdiPlaylistPlus,
@@ -109,8 +104,6 @@ export function openSceneNodeMenu({
       label: node.visible ? t('scene.hide') : t('scene.show'),
       icon: node.visible ? mdiEyeOffOutline : mdiEyeOutline,
       tooltip: node.visible ? t('scene.hideHint') : t('scene.showHint'),
-      // The one row that stays on the node under the pointer: the eye of a row does the same, and
-      // a selection of six half hidden has no single state to flip.
       onSelect: onToggleVisible,
     },
     command('scene.delete', mdiTrashCanOutline),

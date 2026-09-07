@@ -154,7 +154,7 @@ describe('correcting what the library holds', () => {
     const absent = vi.fn(async () => ['asset-2'])
     installFakeBridge({ assets: { absent } })
 
-    expect(await runAction('assets.absent', { assetIds: ['asset-1', 'asset-2'] })).toEqual({
+    expect(await runAction('assets.listMissing', { assetIds: ['asset-1', 'asset-2'] })).toEqual({
       ok: true,
       data: ['asset-2'],
     })

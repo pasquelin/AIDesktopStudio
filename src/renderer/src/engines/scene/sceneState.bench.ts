@@ -1,4 +1,5 @@
-import { bench, describe } from 'vitest'
+import { bench } from '@shared/vitestBench'
+import { describe } from 'vitest'
 import { meshNodes } from './scene-fixtures'
 import { selectedNodes } from './sceneState'
 

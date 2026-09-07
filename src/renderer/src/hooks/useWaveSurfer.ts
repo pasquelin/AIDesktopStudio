@@ -1,18 +1,19 @@
-import { useEffect, useRef, useState } from 'react'
-import WaveSurfer from 'wavesurfer.js'
-import RegionsPlugin from 'wavesurfer.js/dist/plugins/regions.js'
-import TimelinePlugin, { type TimelinePluginOptions } from 'wavesurfer.js/dist/plugins/timeline.js'
-import { clamp } from '@shared/numeric'
+import { useRef, useState } from 'react'
+import type WaveSurfer from 'wavesurfer.js'
+import type RegionsPlugin from 'wavesurfer.js/dist/plugins/regions.js'
+import type { TimelinePluginOptions } from 'wavesurfer.js/dist/plugins/timeline.js'
 import { playbackToken } from '@/engines/timeline/playback'
-import { MAX_SCALE, ZOOM_STEP } from '@/engines/timeline/viewport'
 import { useLatest } from './useLatest'
 import { useToken } from './useToken'
-import { durationOf } from '@/engines/audio/audioData'
 import type { RenderedAudio } from '@/engines/audio/audioRender'
 import type { Region } from '@/engines/audio/edits'
 import { formatDuration } from '@/engines/timeline/timecode'
 import { RULER_HEIGHT } from '@/engines/timeline/timelineGeometry'
 import { SECOND, type Us } from '@/engines/timeline/timelineState'
+import { useWaveSurferAudio } from './useWaveSurferAudio'
+import { useWaveSurferInstance } from './useWaveSurferInstance'
+import { useWaveSurferPalette } from './useWaveSurferPalette'
+import { useWaveSurferWheel } from './useWaveSurferWheel'
 
 export type WaveSurferHandle = {
   playing: boolean
@@ -34,20 +35,7 @@ export type UseWaveSurferOptions = {
   onRegionChange: (region: Region | null) => void
 }
 
-/** Bars rather than a continuous line: fewer paths per redraw, and easier to read at a glance. */
-const BAR_WIDTH = 2
-const BAR_GAP = 1
-const BAR_RADIUS = 2
-
-/** Wide enough to read as a line against the veil the selection is tinted with, and no wider. */
-const CURSOR_WIDTH = 2
-
-/**
- * How far in a take can be read, in pixels a second. The strip's own ceiling — `MAX_SCALE` is
- * that many pixels per microsecond — so the two surfaces of an Audio tab stop zooming together.
- */
-const MAX_PX_PER_SECOND = MAX_SCALE * SECOND
-
+/* Bars rather than a continuous line: fewer paths per redraw, and easier to read at a glance. */
 /**
  * The graduations above the wave — where the strip and the programme monitor both wear
  * `paintRuler`, this one is wavesurfer's own plugin, the take being drawn by wavesurfer.
@@ -110,161 +98,19 @@ export function useWaveSurfer({
   // Kept in a ref so the listeners below never have to be re-subscribed when the callback
   // identity changes — a re-subscription mid-drag drops the region being drawn.
   const notify = useLatest(onRegionChange)
-
-  // Created once per container. Kept out of the data effect below on purpose: rebuilding the
-  // instance on every edit would destroy the very region the pointer is dragging.
-  useEffect(() => {
-    if (!container) return
-
-    const plugin = RegionsPlugin.create()
-    const instance = WaveSurfer.create({
-      container,
-      barWidth: BAR_WIDTH,
-      barGap: BAR_GAP,
-      barRadius: BAR_RADIUS,
-      height: 'auto',
-      plugins: [plugin, TimelinePlugin.create(TIMELINE)],
-    })
-
-    surfer.current = instance
-    regions.current = plugin
-
-    instance.on('play', () => setPlaying(true))
-    instance.on('pause', () => setPlaying(false))
-    instance.on('timeupdate', seconds => setCurrentTime(Math.round(seconds * SECOND)))
-
-    // One region at a time: the toolbar acts on "the selection", and two of them would leave
-    // it ambiguous which.
-    const only = (region: { start: number; end: number; remove: () => void }): void => {
-      for (const other of plugin.getRegions()) if (other !== region) other.remove()
-      notify.current({
-        from: Math.round(region.start * SECOND),
-        to: Math.round(region.end * SECOND),
-      })
-    }
-    plugin.on('region-created', only)
-    plugin.on('region-updated', only)
-
-    return () => {
-      playbackToken.release(owner)
-      instance.destroy()
-      surfer.current = null
-      regions.current = null
-      setPlaying(false)
-    }
-  }, [container, owner, notify])
-
-  /**
-   * The palette, laid on the instance rather than handed to its constructor — which is what lets
-   * a theme switched with the editor open reach a wave already drawn.
-   *
-   * The veil is given to the DRAG and not to the region once it lands: what is being traced is
-   * drawn as the pointer moves, and a region left to its own default traces it in wavesurfer's
-   * black. `enableDragSelection` hands back its own unsubscribe, so re-arming it with the new
-   * colour is the effect's cleanup and nothing has to be counted.
-   *
-   * `container` sits in the deps for the reason the take below carries: it stands for the
-   * INSTANCE, and a surface replaced is a fresh one holding none of this.
-   */
-  useEffect(() => {
-    const instance = surfer.current
-    const plugin = regions.current
-    if (!instance || !plugin) return
-    // A token that answers nothing is a stylesheet not parsed yet, and an empty string is not the
-    // library's `??` default: it would paint the wave and the selection in nothing at all.
-    if (!wave || !head || !veil) return
-
-    // The played part is NOT tinted: a third fill sliding under the veil is what made the
-    // selection and the head unreadable against one another in the first place.
-    instance.setOptions({
-      waveColor: wave,
-      progressColor: wave,
-      cursorColor: head,
-      cursorWidth: CURSOR_WIDTH,
-    })
-    for (const region of plugin.getRegions()) region.setOptions({ color: veil })
-
-    return plugin.enableDragSelection({ color: veil })
-  }, [container, wave, head, veil])
-
-  /**
-   * The take itself, pushed in as a blob AND as peaks.
-   *
-   * The blob is what makes it audible: handed peaks and a duration alone, wavesurfer renders
-   * the waveform and plays nothing at all — there is no media behind it. The peaks ride along
-   * so the drawing still costs no second decode.
-   *
-   * It has to be a blob rather than the asset's own URL, because what is heard is the edit
-   * chain and not the file on disk. The WAV arrives already encoded, from the worker that
-   * replayed the chain: encoding it here would put 206 ms back on the window's thread.
-   */
-  // `container` is in the deps though nothing here reads it, and it is load-bearing: it is what
-  // stands for the INSTANCE, which a ref cannot announce. A surface replaced — a panel
-  // reattached — builds a new instance holding nothing, and the take has to go back into it.
-  // The effect above runs first, being declared first, so the ref is already the fresh one.
-  useEffect(() => {
-    const instance = surfer.current
-    if (!instance || !rendered) return
-
-    // A take arriving is drawn fitted to the panel, so the zoom goes back to meaning that.
-    // Kept, it would have been the PREVIOUS take's pixels-per-second, and the first notch of the
-    // wheel would have jumped from the fit straight to a scale nothing here was ever drawn at.
-    zoomed.current = 0
-
-    const blob = new Blob([rendered.wav], { type: 'audio/wav' })
-    instance
-      .loadBlob(blob, rendered.data.channels, durationOf(rendered.data) / SECOND)
-      .catch(() => {
-        // Rejects when the take is swapped mid-load, which is not a failure worth reporting.
-      })
-  }, [container, rendered])
-
-  /**
-   * The wheel over the take: zoom with a modifier, scroll otherwise — the vocabulary the strip,
-   * the dope sheet and the programme monitor all answer, so one gesture reads the same over every
-   * surface that lays time out sideways.
-   *
-   * Not `useTimelineWheel`: that one drives a `Viewport`, and what a take is drawn at is a
-   * pixels-per-second wavesurfer owns. The gesture is the same, the state behind it is not — and
-   * it is not the same to the pixel: `zoomAt` keeps the instant under the cursor where it was,
-   * which `zoom()` cannot be asked to do. Zooming a take walks toward its middle. Living with
-   * that is the price of not reaching into wavesurfer's scroll on every notch.
-   *
-   * Native and NON-PASSIVE for the reason written there too — React delivers `wheel` passively,
-   * where `preventDefault` does nothing and the panel behind scrolls instead.
-   */
-  useEffect(() => {
-    if (!container) return
-
-    const onWheel = (event: WheelEvent): void => {
-      const instance = surfer.current
-      if (!instance) return
-      event.preventDefault()
-
-      if (!event.ctrlKey && !event.metaKey) {
-        // Shift turns a vertical wheel horizontal, as every editor does for a single-axis mouse.
-        const along = event.shiftKey ? event.deltaY : event.deltaX || event.deltaY
-        instance.setScroll(instance.getScroll() + along)
-        return
-      }
-
-      const duration = instance.getDuration()
-      if (duration <= 0) return
-
-      // The floor is the take laid across the panel: there is nothing to see further out, and
-      // dezooming past it would leave the wave stranded in a corner of its own surface. Held
-      // under the ceiling because a very short take — a two-tenths bang on a wide panel — fits at
-      // a scale past it, and `clamp` answers its HIGH bound when the two cross: the first zoom in
-      // would have zoomed out, below the fit it started at.
-      const fitted = Math.min(instance.getWidth() / duration, MAX_PX_PER_SECOND)
-      const factor = event.deltaY < 0 ? ZOOM_STEP : 1 / ZOOM_STEP
-      zoomed.current = clamp((zoomed.current || fitted) * factor, fitted, MAX_PX_PER_SECOND)
-      instance.zoom(zoomed.current)
-    }
-
-    container.addEventListener('wheel', onWheel, { passive: false })
-    return () => container.removeEventListener('wheel', onWheel)
-  }, [container])
+  const refs = { surferRef: surfer, zoomedRef: zoomed, regionsRef: regions }
+  useWaveSurferInstance({
+    ...refs,
+    container,
+    owner,
+    timeline: TIMELINE,
+    notify,
+    setPlaying,
+    setCurrentTime,
+  })
+  useWaveSurferPalette({ ...refs, container, wave, head, veil })
+  useWaveSurferAudio(container, rendered, refs)
+  useWaveSurferWheel(container, refs)
 
   return {
     playing,

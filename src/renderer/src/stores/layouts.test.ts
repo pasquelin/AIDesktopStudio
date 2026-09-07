@@ -86,7 +86,7 @@ describe('layouts store', () => {
   describe('persisted format', () => {
     it('drops what an older build stored instead of handing it to Dockview', async () => {
       localStorage.setItem(
-        'ia-studio:layouts',
+        'ai-desktop-studio:layouts',
         JSON.stringify({
           state: { activeWorkspace: 'image', layouts: { image: layout('generator') } },
           version: 0,
@@ -105,7 +105,7 @@ describe('layouts store', () => {
      */
     it('drops the per-section layouts a build before the unified centre stored', async () => {
       localStorage.setItem(
-        'ia-studio:layouts',
+        'ai-desktop-studio:layouts',
         JSON.stringify({
           state: { activeWorkspace: 'image', layouts: { image: layout('generator') } },
           version: 2,
@@ -125,7 +125,7 @@ describe('layouts store', () => {
      */
     it('drops a workspace this build no longer declares, rather than restoring it', async () => {
       localStorage.setItem(
-        'ia-studio:layouts',
+        'ai-desktop-studio:layouts',
         JSON.stringify({ state: { activeWorkspace: 'graph', layout: null }, version: 1 }),
       )
 

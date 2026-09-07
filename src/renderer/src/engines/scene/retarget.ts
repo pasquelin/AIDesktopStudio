@@ -6,48 +6,68 @@
  * identical skeletons need no worker at all, and asking for one would replace an exact clip with
  * a resampled approximation of itself.
  */
-import {
-  AnimationClip,
-  Bone,
-  NumberKeyframeTrack,
-  QuaternionKeyframeTrack,
-  Skeleton,
-  SkinnedMesh,
-  Vector3,
-  VectorKeyframeTrack,
-  type KeyframeTrack,
-  type Object3D,
-} from 'three'
+import { type AnimationClip, Euler, Matrix4, Quaternion, Vector3, type Object3D } from 'three'
 import { isFingerRole, type HumanoidRole } from '@shared/domain/humanoid'
 import {
+  isSkeletonProfile,
   profileWithRole,
-  skeletonSignatureOf,
   type SkeletonProfile,
 } from '@shared/domain/skeletonProfile'
-import { boneRolesOf, type NamedBone } from './boneRoles'
-import { isBoneObject } from './rigState'
+import { boneRolesOf } from './boneRoles'
 import {
   clipBuffers,
+  type RetargetOptions,
   type RetargetRequest,
   type RetargetResponse,
   type WireBone,
   type WireClip,
-  type WireTrack,
-  type WireTrackKind,
 } from './retargetMessage'
+import { clipFromWire, wireBonesOf, wireClipOf } from './retargetWire'
+export {
+  clipFromWire,
+  wireBonesOf,
+  wireClipOf,
+  skinnedFromWire,
+  nodeTrackNameOf,
+} from './retargetWire'
+import { namedBonesOf, profileOfBones } from './retargetSignatures'
+export { namedBonesOf, profileOfBones } from './retargetSignatures'
 import { createWorkerPort } from '../core/workerPort'
+import { serial } from '../core/serialPort'
 
 export type Retarget = {
   /**
    * The clips as the target skeleton would play them. `null` means the request was taken back, or
    * the port let go while it was out — an awaited promise nobody answers never ends.
+   *
+   * 🛑 A target ALREADY WIRED is taken as it is: a caller replaying eight files on one body wired
+   * it eight times, and `wireBonesOf` walks the tree and copies every transform. Its signature is
+   * memoised per array, so handing the same one back is what makes that memo bite.
+   *
+   * 🛑 And it MAY HAND BACK the very clips it was given — two skeletons that already agree need
+   * no worker at all. A caller that writes into one clones it first, or it renames the file's own
+   * clip: `SceneRendererModels.adopt` is where that was paid for.
    */
   adapt: (
-    target: Object3D,
+    target: Object3D | readonly WireBone[],
     source: Object3D,
     clips: readonly AnimationClip[],
-    watch?: { onProgress?: (progress: number) => void; signal?: AbortSignal },
+    watch?: {
+      onProgress?: (progress: number) => void
+      signal?: AbortSignal
+      profiles?: readonly SkeletonProfile[]
+      sourceProfile?: SkeletonProfile
+      targetProfile?: SkeletonProfile
+      options?: RetargetOptions
+    },
   ) => Promise<AnimationClip[] | null>
+  /**
+   * How well a motion fits this character, read through the very corrections a transfer uses.
+   *
+   * On the port and not called free-standing: the recorded roles live here, and a verdict read
+   * without them announced a joint « staying at rest » that the transfer went on to drive.
+   */
+  fitOf: (target: Object3D, source: Object3D) => RetargetFit
   /**
    * What a skeleton of that signature means, from now on and for every model carrying it.
    *
@@ -56,77 +76,74 @@ export type Retarget = {
    * thing this closes. Profiles a project remembered are handed back the same way.
    */
   remember: (profile: SkeletonProfile) => void
+  /** The profile a signature is remembered under, if any. */
+  profileOf: (signature: string) => SkeletonProfile | undefined
   dispose: () => void
 }
 
+/**
+ * A skeleton as the worker reads one, wired from the tree unless it already was.
+ *
+ * 🛑 Handed back AS IT IS, never copied: the signature memo has the array's identity for key, and
+ * a copy would pay the very digests passing a wired skeleton exists to save.
+ */
+const bonesOf = (target: Object3D | readonly WireBone[]): readonly WireBone[] =>
+  Array.isArray(target) ? (target as readonly WireBone[]) : wireBonesOf(target as Object3D)
+
 export function createRetarget(spawn: () => Worker): Retarget {
-  const port = createWorkerPort<readonly WireClip[], RetargetResponse>(
-    spawn,
-    'retargeting',
-    answer => answer.clips,
+  // 🛑 One transfer at a time, and the worker KILLED to take one back: a retarget is a single
+  // call that never reads its mailbox again, so a posted `cancel` would be read after the answer.
+  const port = serial(
+    createWorkerPort<readonly WireClip[], RetargetResponse>(
+      spawn,
+      'retargeting',
+      answer => answer.clips,
+      'terminate',
+    ),
+    { what: 'retargeting', depth: 32 },
   )
   const profiles = new Map<string, SkeletonProfile>()
 
-  const send = (request: RetargetRequest, watch: Watch): Promise<readonly WireClip[] | null> =>
-    new Promise((resolve, reject) => {
-      const running = port.running()
-
-      // Posted before it is recorded, so a payload the structured clone cannot carry throws with
-      // no slot left behind — `bvhInflight` says why this order is safe.
-      running.postMessage(request, clipBuffers(request.clips))
-
-      // Dropped whichever way the request ends, a worker dying included.
-      const stop = new AbortController()
-      const give = (clips: readonly WireClip[] | null): void => {
-        stop.abort()
-        resolve(clips)
-      }
-      const fail = (error: Error): void => {
-        stop.abort()
-        reject(error)
-      }
-      port.record(request.id, { resolve: give, reject: fail, onProgress: watch?.onProgress })
-
-      // `{ signal }` rather than a bare listener: a caller keeping ONE controller for its whole
-      // life would otherwise leave one listener per request behind it, each holding a `resolve`.
-      watch?.signal?.addEventListener(
-        'abort',
-        () => {
-          if (!port.forget(request.id)) return
-          running.postMessage({ id: request.id, cancel: true })
-          give(null)
-        },
-        { signal: stop.signal },
-      )
-
-      // An `abort` already fired has already been delivered, so the listener above would never
-      // run: without this the worker does the whole job and answers clips for a dead caller.
-      if (watch?.signal?.aborted) {
-        port.forget(request.id)
-        running.postMessage({ id: request.id, cancel: true })
-        give(null)
-      }
-    })
-
   return {
     adapt: async (target, source, clips, watch) => {
-      if (port.isGone()) return null
+      if (port.isGone() || watch?.signal?.aborted) return null
 
-      const targetBones = wireBonesOf(target)
-      const sourceBones = wireBonesOf(source)
-      // Nothing to replay: the clips already speak this skeleton's language, exactly.
-      if (sameSkeleton(targetBones, sourceBones)) return [...clips]
+      const targetKnown = profilesFor(profiles, watch?.profiles, watch?.targetProfile)
+      const sourceKnown = profilesFor(profiles, watch?.profiles, watch?.sourceProfile)
+      validateOptions(watch?.options)
+      const targetBones = alignedBonesOf(bonesOf(target), targetKnown)
+      const sourceBones = alignedBonesOf(wireBonesOf(source), sourceKnown)
+      if (exactReplay(targetBones, sourceBones, targetKnown, sourceKnown, watch?.options))
+        return [...clips]
 
-      const request: RetargetRequest = {
-        id: port.claim(),
-        ...retargetPlanOf(targetBones, sourceBones, clips.map(wireClipOf), undefined, profiles),
-      }
-      const adapted = await send(request, watch)
+      const originalTargetProfile = profileOfBones(targetBones, profiles)
+      const originalSourceProfile = profileOfBones(sourceBones, profiles)
+      const plan = retargetPlanOf(
+        targetBones,
+        sourceBones,
+        clips.map(wireClipOf),
+        undefined,
+        targetKnown,
+        sourceKnown,
+      )
+      const adapted = await port.send(id => {
+        const request: RetargetRequest = { id, ...plan, options: watch?.options }
+        return { message: request, transfer: clipBuffers(request.clips) }
+      }, watch)
 
+      if (
+        originalTargetProfile !== profileOfBones(targetBones, profiles) ||
+        originalSourceProfile !== profileOfBones(sourceBones, profiles)
+      )
+        return null
       return adapted && adapted.map(clipFromWire)
     },
 
-    remember: profile => void profiles.set(profile.signature, profile),
+    fitOf: (target, source) => retargetFitOf(target, source, profiles),
+
+    remember: profile => rememberProfile(profiles, profile),
+
+    profileOf: signature => profiles.get(signature),
 
     dispose: () => {
       profiles.clear()
@@ -135,7 +152,65 @@ export function createRetarget(spawn: () => Worker): Retarget {
   }
 }
 
-type Watch = { onProgress?: (progress: number) => void; signal?: AbortSignal } | undefined
+function validateOptions(options?: RetargetOptions): void {
+  if (options?.scale !== undefined && (!Number.isFinite(options.scale) || options.scale <= 0))
+    throw new Error('retarget scale must be finite and positive')
+}
+
+function profilesFor(
+  known: ReadonlyMap<string, SkeletonProfile>,
+  common: readonly SkeletonProfile[] = [],
+  override?: SkeletonProfile,
+): Map<string, SkeletonProfile> {
+  const profiles = new Map(known)
+  for (const profile of common) rememberProfile(profiles, profile)
+  if (override) rememberProfile(profiles, override)
+  return profiles
+}
+
+function exactReplay(
+  target: readonly WireBone[],
+  source: readonly WireBone[],
+  targetKnown: ReadonlyMap<string, SkeletonProfile>,
+  sourceKnown: ReadonlyMap<string, SkeletonProfile>,
+  options?: RetargetOptions,
+): boolean {
+  const to = profileOfBones(target, targetKnown)
+  const from = profileOfBones(source, sourceKnown)
+  return (
+    sameSkeleton(target, source) &&
+    options?.scale === undefined &&
+    options?.rootMotion !== 'inPlace' &&
+    !to?.ignored?.length &&
+    !from?.ignored?.length &&
+    JSON.stringify(to?.roles) === JSON.stringify(from?.roles)
+  )
+}
+
+/**
+ * A file's own roles laid over what the project already corrected for that rig: the exclusions
+ * and the aligned rest pose only a window can set survive, minus any bone the file now names.
+ */
+export function rigProfileOf(
+  signature: string,
+  roles: Readonly<Record<string, HumanoidRole>>,
+  held?: SkeletonProfile,
+): SkeletonProfile {
+  const ignored = held?.ignored?.filter(name => !(name in roles))
+  return {
+    signature,
+    roles: { ...roles },
+    ...(held?.provider && { provider: held.provider }),
+    ...(held?.restPose && { restPose: held.restPose }),
+    ...(ignored?.length && { ignored }),
+  }
+}
+
+function rememberProfile(profiles: Map<string, SkeletonProfile>, profile: SkeletonProfile): void {
+  if (!isSkeletonProfile(profile)) throw new Error('invalid skeleton profile')
+  if (JSON.stringify(profiles.get(profile.signature)) === JSON.stringify(profile)) return
+  profiles.set(profile.signature, profile)
+}
 
 /**
  * What to ask the worker for: which target bone reads which source bone, and where the hips are.
@@ -149,20 +224,48 @@ export function retargetPlanOf(
   clips: readonly WireClip[],
   fps?: number,
   known?: ReadonlyMap<string, SkeletonProfile>,
+  sourceKnown = known,
 ): Omit<RetargetRequest, 'id'> {
-  const sourceRoles = rolesOf(source, known)
+  const sourceRoles = rolesOf(source, sourceKnown)
   const sourceByRole = new Map(Object.entries(sourceRoles).map(([name, role]) => [role, name]))
   const sourceNames = new Set(source.map(bone => bone.name))
 
   const names: Record<string, string> = {}
-  for (const bone of target) if (sourceNames.has(bone.name)) names[bone.name] = bone.name
+  const excluded = new Set([
+    ...(profileOfBones(target, known)?.ignored ?? []),
+    ...(profileOfBones(source, sourceKnown)?.ignored ?? []),
+  ])
+  for (const bone of target)
+    if (sourceNames.has(bone.name) && !excluded.has(bone.name)) names[bone.name] = bone.name
 
-  for (const [name, role] of Object.entries(rolesOf(target, known))) {
+  const targetRoles = rolesOf(target, known)
+  for (const [name, role] of Object.entries(targetRoles)) {
     const from = sourceByRole.get(role)
     if (from) names[name] = from
   }
 
-  return { target, source, clips, names, hip: sourceByRole.get('Hips'), fps }
+  const targetByRole = new Map(Object.entries(targetRoles).map(([name, role]) => [role, name]))
+  const torso = torsoOf(targetByRole, sourceByRole)
+  return {
+    target,
+    source,
+    clips,
+    names,
+    hip: sourceByRole.get('Hips'),
+    fps,
+    ...(torso && { torso }),
+  }
+}
+
+function torsoOf(
+  target: ReadonlyMap<HumanoidRole, string>,
+  source: ReadonlyMap<HumanoidRole, string>,
+): RetargetRequest['torso'] | undefined {
+  const named = [target, source].map(side => [side.get('Hips'), side.get('Head')])
+  const [to, from] = named
+  return to?.[0] && to[1] && from?.[0] && from[1]
+    ? { target: [to[0], to[1]], source: [from[0], from[1]] }
+    : undefined
 }
 
 /**
@@ -194,20 +297,19 @@ export function bodyFitOf(fit: RetargetFit): Omit<RetargetFit, 'matched'> {
   }
 }
 
-export function retargetFitOf(target: Object3D, source: Object3D): RetargetFit {
-  const targetRoles = new Set(Object.values(boneRolesOf(namedBonesOf(wireBonesOf(target)))))
-  const sourceRoles = new Set(Object.values(boneRolesOf(namedBonesOf(wireBonesOf(source)))))
+export function retargetFitOf(
+  target: Object3D,
+  source: Object3D,
+  known?: ReadonlyMap<string, SkeletonProfile>,
+): RetargetFit {
+  const targetRoles = new Set(Object.values(rolesOf(wireBonesOf(target), known)))
+  const sourceRoles = new Set(Object.values(rolesOf(wireBonesOf(source), known)))
 
   return {
     matched: [...targetRoles].filter(role => sourceRoles.has(role)),
     missingInSource: [...targetRoles].filter(role => !sourceRoles.has(role)),
     missingInTarget: [...sourceRoles].filter(role => !targetRoles.has(role)),
   }
-}
-
-/** The wire spells a parent as an index; reading roles wants it as a name. */
-function namedBonesOf(bones: readonly WireBone[]): NamedBone[] {
-  return bones.map(bone => ({ name: bone.name, parent: bones[bone.parent]?.name ?? null }))
 }
 
 /**
@@ -221,16 +323,37 @@ function rolesOf(
   bones: readonly WireBone[],
   known?: ReadonlyMap<string, SkeletonProfile>,
 ): Record<string, HumanoidRole> {
-  const signature = skeletonSignatureOf(bones.map(bone => bone.name))
   const found = boneRolesOf(namedBonesOf(bones))
-  const corrections = known?.get(signature)?.roles
-  if (!corrections) return found
+  const stored = profileOfBones(bones, known)
+  for (const name of stored?.ignored ?? []) delete found[name]
+  if (!stored) return found
 
-  let profile: SkeletonProfile = { signature, roles: found }
-  for (const [name, role] of Object.entries(corrections)) {
+  let profile: SkeletonProfile = { signature: stored.signature, roles: found }
+  const names = new Set(bones.map(bone => bone.name))
+  for (const [name, role] of Object.entries(stored.roles)) {
+    if (!names.has(name)) continue
     profile = profileWithRole(profile, name, role)
   }
   return { ...profile.roles }
+}
+
+function alignedBonesOf(
+  bones: readonly WireBone[],
+  known: ReadonlyMap<string, SkeletonProfile>,
+): readonly WireBone[] {
+  const restPose = profileOfBones(bones, known)?.restPose
+  if (!restPose) return bones
+  return bones.map(bone => {
+    const rest = restPose[bone.name]
+    if (!rest) return bone
+    // Rotation only: a signature names a rig, and the proportions belong to each file of it.
+    return {
+      ...bone,
+      quaternion: new Quaternion()
+        .setFromEuler(new Euler(rest.rotation.x, rest.rotation.y, rest.rotation.z))
+        .toArray(),
+    }
+  })
 }
 
 /**
@@ -243,18 +366,22 @@ function rolesOf(
  * the ORIGIN, measured on the real file on 2026-08-18 — hips to head is intrinsic to a rig and
  * survives that, as it survives the rest rotations 46 of its 52 bones carry.
  */
-export function skeletonScaleOf(target: Object3D, source: Object3D): number {
-  const to = torsoLengthOf(target)
-  const from = torsoLengthOf(source)
+export function skeletonScaleOf(
+  target: Object3D,
+  source: Object3D,
+  torso?: RetargetRequest['torso'],
+): number {
+  const to = torsoLengthOf(target, torso?.target)
+  const from = torsoLengthOf(source, torso?.source)
 
   // A rig with no head, or two bones in one place: reading it as a size would be worse than not.
   return to > 0 && from > 0 ? to / from : 1
 }
 
-function torsoLengthOf(root: Object3D): number {
-  const roles = boneRolesOf(namedBonesOf(wireBonesOf(root)))
-  const hips = boneFilling(root, roles, 'Hips')
-  const head = boneFilling(root, roles, 'Head')
+function torsoLengthOf(root: Object3D, named?: readonly [string, string]): number {
+  const roles = named ? undefined : boneRolesOf(namedBonesOf(wireBonesOf(root)))
+  const hips = named ? root.getObjectByName(named[0]) : roles && boneFilling(root, roles, 'Hips')
+  const head = named ? root.getObjectByName(named[1]) : roles && boneFilling(root, roles, 'Head')
   if (!hips || !head) return 0
 
   root.updateWorldMatrix(false, true)
@@ -268,6 +395,53 @@ function boneFilling(
 ): Object3D | undefined {
   const name = Object.keys(roles).find(bone => roles[bone] === role)
   return name === undefined ? undefined : root.getObjectByName(name)
+}
+
+/**
+ * 🛑 three copies the source bone's WORLD orientation onto the target one and stops there, so two
+ * skeletons whose rests differ fold in two — measured 2026-09-01 on a fitted rig whose 22 rests
+ * are all the identity, playing a Mixamo motion. `restSource⁻¹ · restTarget` makes it a delta.
+ *
+ * Both skeletons are read AT REST, so they are the worker's own — never a placed scene node,
+ * whose holder would fold its own rotation into every offset.
+ */
+export function restOffsetsOf(
+  target: Object3D,
+  source: Object3D,
+  names: Readonly<Record<string, string>>,
+): Record<string, Matrix4> {
+  const turns = worldTurnsOf(target)
+  const from = worldTurnsOf(source)
+
+  const offsets: Record<string, Matrix4> = {}
+  for (const [bone, other] of Object.entries(names)) {
+    const turn = turns.get(bone)
+    const rest = from.get(other)
+    if (!turn || !rest) continue
+
+    // Cloned: `invert` and `multiply` write in place, and two target bones may name one source
+    // bone — the second would then read a rest the first had destroyed.
+    offsets[bone] = new Matrix4().makeRotationFromQuaternion(rest.clone().invert().multiply(turn))
+  }
+
+  return offsets
+}
+
+/**
+ * Every named object's world ROTATION, in one walk — `getObjectByName` walks the whole tree per
+ * call, and this is asked once per bone of a 52-bone rig. The scale is dropped on purpose: a rig
+ * scaled by its holder would otherwise fold that scale into the delta.
+ */
+function worldTurnsOf(root: Object3D): Map<string, Quaternion> {
+  root.updateWorldMatrix(false, true)
+
+  const turns = new Map<string, Quaternion>()
+  root.traverse(object => {
+    if (object.name && !turns.has(object.name))
+      turns.set(object.name, object.getWorldQuaternion(new Quaternion()))
+  })
+
+  return turns
 }
 
 /**
@@ -285,9 +459,11 @@ export function sameSkeleton(target: readonly WireBone[], source: readonly WireB
     if (!other || bone.name !== other.name || bone.parent !== other.parent) return false
 
     return (
+      near(bone.frame ?? IDENTITY_ARRAY, other.frame ?? IDENTITY_ARRAY) &&
       near(bone.position, other.position) &&
       near(bone.quaternion, other.quaternion) &&
-      near(bone.scale, other.scale)
+      near(bone.scale, other.scale) &&
+      sameFrames(bone.parentFrames ?? [], other.parentFrames ?? [])
     )
   })
 }
@@ -298,108 +474,26 @@ export function sameSkeleton(target: readonly WireBone[], source: readonly WireB
  * retargeted instead, which is the safe way round to be wrong.
  */
 const REST_TOLERANCE = 1e-6
+const IDENTITY_ARRAY: readonly number[] = /* @__PURE__ */ new Matrix4().toArray()
 
 function near(a: readonly number[], b: readonly number[]): boolean {
   return a.every((value, index) => Math.abs(value - (b[index] ?? 0)) <= REST_TOLERANCE)
 }
 
-/**
- * Every named bone of a model, parents before children.
- *
- * Deduplicated by name, like `rigState`: a track and a bone map both address a bone by name, and
- * a second bone of the same name is one nothing can reach.
- */
-export function wireBonesOf(root: Object3D): WireBone[] {
-  const bones: WireBone[] = []
-  const indexOf = new Map<string, number>()
-
-  root.traverse(object => {
-    if (!isBoneObject(object) || !object.name || indexOf.has(object.name)) return
-
-    indexOf.set(object.name, bones.length)
-    bones.push({
-      name: object.name,
-      parent: parentIndexOf(object, indexOf),
-      position: object.position.toArray(),
-      quaternion: object.quaternion.toArray(),
-      scale: object.scale.toArray(),
+function sameFrames(
+  a: readonly Pick<WireBone, 'position' | 'quaternion' | 'scale'>[],
+  b: readonly Pick<WireBone, 'position' | 'quaternion' | 'scale'>[],
+): boolean {
+  return (
+    a.length === b.length &&
+    a.every((frame, index) => {
+      const other = b[index]
+      return (
+        other !== undefined &&
+        near(frame.position, other.position) &&
+        near(frame.quaternion, other.quaternion) &&
+        near(frame.scale, other.scale)
+      )
     })
-  })
-
-  return bones
-}
-
-function parentIndexOf(bone: Object3D, indexOf: ReadonlyMap<string, number>): number {
-  let above = bone.parent
-  while (above) {
-    const known = above.name === '' ? undefined : indexOf.get(above.name)
-    if (known !== undefined) return known
-    above = above.parent
-  }
-  return -1
-}
-
-/** The skeleton three needs to sample a clip: a mesh, because `retargetClip` reads `.skeleton`. */
-export function skinnedFromWire(bones: readonly WireBone[]): SkinnedMesh {
-  const built = bones.map(wire => {
-    const bone = new Bone()
-    bone.name = wire.name
-    bone.position.fromArray([...wire.position])
-    bone.quaternion.fromArray([...wire.quaternion])
-    bone.scale.fromArray([...wire.scale])
-    return bone
-  })
-
-  const mesh = new SkinnedMesh()
-  built.forEach((bone, index) => {
-    const above = bones[index]?.parent ?? -1
-    ;(above < 0 ? mesh : (built[above] ?? mesh)).add(bone)
-  })
-
-  mesh.updateMatrixWorld(true)
-  mesh.bind(new Skeleton(built))
-  return mesh
-}
-
-export function wireClipOf(clip: AnimationClip): WireClip {
-  return {
-    name: clip.name,
-    duration: clip.duration,
-    tracks: clip.tracks.map(track => ({
-      name: track.name,
-      kind: trackKindOf(track),
-      times: new Float32Array(track.times),
-      values: new Float32Array(track.values),
-    })),
-  }
-}
-
-export function clipFromWire(wire: WireClip): AnimationClip {
-  return new AnimationClip(wire.name, wire.duration, wire.tracks.map(trackFromWire))
-}
-
-function trackFromWire(track: WireTrack): KeyframeTrack {
-  if (track.kind === 'quaternion')
-    return new QuaternionKeyframeTrack(track.name, track.times, track.values)
-  if (track.kind === 'vector') return new VectorKeyframeTrack(track.name, track.times, track.values)
-
-  return new NumberKeyframeTrack(track.name, track.times, track.values)
-}
-
-function trackKindOf(track: KeyframeTrack): WireTrackKind {
-  if (track.ValueTypeName === 'quaternion') return 'quaternion'
-  return track.ValueTypeName === 'vector' ? 'vector' : 'number'
-}
-
-/**
- * `.bones[Hips].quaternion` read as `Hips.quaternion`.
- *
- * `retargetClip` writes the SKELETON spelling, which only binds against an object carrying a
- * `.skeleton`. Every clip this studio plays comes off `GLTFLoader` in the NODE spelling and is
- * bound against the model holder — so a retargeted clip left as three spells it would resolve to
- * nothing, silently, and the character would simply stand still.
- */
-export function nodeTrackNameOf(name: string): string {
-  const match = /^\.bones\[(.+)\]\.(.+)$/.exec(name)
-  return match ? `${match[1]}.${match[2]}` : name
+  )
 }

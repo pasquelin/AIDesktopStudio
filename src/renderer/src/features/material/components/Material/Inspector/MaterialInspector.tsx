@@ -26,6 +26,7 @@ import { useDocumentEdit } from '@/hooks/useDocumentEdit'
 import { ChannelsSection } from '../../ChannelsSection/ChannelsSection'
 import { StylesSection } from '../../StylesSection/StylesSection'
 import { MaterialInspectorSeamReading } from './MaterialInspectorSeamReading'
+import { MaterialInspectorReliefSection } from './MaterialInspectorReliefSection'
 
 export type TextureInspectorProps = { documentId: string }
 
@@ -50,18 +51,12 @@ export function MaterialInspector({ documentId }: TextureInspectorProps) {
   const onPreview = <K extends keyof typeof preview>(key: K, value: (typeof preview)[K]): void =>
     edit.run(setPreview(key, value))
 
-  // Through the same setter, so ⌘Z takes a reset back the way it takes a drag back.
   const resetMaterial = <K extends keyof typeof material>(key: K): (() => void) | undefined =>
     resetTo(material[key], DEFAULT_TEXTURE_MATERIAL[key], value => onMaterial(key, value))
 
   const resetPreview = <K extends keyof typeof preview>(key: K): (() => void) | undefined =>
     resetTo(preview[key], DEFAULT_PREVIEW[key], value => onPreview(key, value))
 
-  /**
-   * Stable, so the memo on `EnvironmentSection` can actually skip: a fresh arrow at the call site
-   * made it re-render on every value a slider drag emits, in the one panel that drags the most.
-   * It captures `edit` alone, itself memoised on the document.
-   */
   const changeEnvironment = useCallback(
     (next: EnvironmentRef) => edit.run(setPreview('environment', next)),
     [edit],
@@ -69,13 +64,8 @@ export function MaterialInspector({ documentId }: TextureInspectorProps) {
 
   return (
     <>
-      {/* Keyed: the derivation in flight is that section's own state, and one instance shared
-          across documents left every derivable row of the texture in front dead for a job running
-          in another tab. */}
       <ChannelsSection key={documentId} documentId={documentId} />
 
-      {/* Beside the channels they read, and before the values they write: a style is picked, then
-          tuned by the sections underneath. */}
       <StylesSection documentId={documentId} />
 
       <PropertySection title={t('inspector.material')} scId="material.material">
@@ -98,8 +88,6 @@ export function MaterialInspector({ documentId }: TextureInspectorProps) {
           onReset={resetMaterial('roughness')}
           {...edit.gesture}
         />
-        {/* The remap reads the map, so it is offered next to the scalar that multiplies it: a
-            generated channel is usually flat, and this is what gives it a range to live in. */}
         <RangeField
           label={t('material.roughnessRange')}
           value={material.roughnessRange}
@@ -161,37 +149,12 @@ export function MaterialInspector({ documentId }: TextureInspectorProps) {
         />
       </PropertySection>
 
-      <PropertySection title={t('material.relief')} scId="material.relief">
-        {/* Signed on purpose: a negative scale flips the relief, which is the answer to a normal
-            map baked the other way round. */}
-        {/* The bounds come from the state, which clamps a hand-edited file to the same ones. */}
-        <SliderField
-          label={t('material.normalScale')}
-          scId="material.normalScale"
-          value={material.normalScale}
-          {...MATERIAL_BOUNDS.normalScale}
-          onChange={value => onMaterial('normalScale', value)}
-          onReset={resetMaterial('normalScale')}
-          {...edit.gesture}
-        />
-        <ToggleField
-          label={t('material.invertNormalGreen')}
-          scId="material.invertNormalGreen"
-          value={material.invertNormalGreen}
-          onChange={value => onMaterial('invertNormalGreen', value)}
-        />
-        {/* Off by default, and it says why in the state: a subdivided sphere costs more than the
-            scene it previews, so displacement is something asked for rather than assumed. */}
-        <SliderField
-          label={t('material.heightScale')}
-          scId="material.heightScale"
-          value={material.heightScale}
-          {...MATERIAL_BOUNDS.heightScale}
-          onChange={value => onMaterial('heightScale', value)}
-          onReset={resetMaterial('heightScale')}
-          {...edit.gesture}
-        />
-      </PropertySection>
+      <MaterialInspectorReliefSection
+        material={material}
+        onChange={onMaterial}
+        onReset={resetMaterial}
+        {...edit.gesture}
+      />
 
       <PropertySection title={t('material.emission')} scId="material.emission">
         <ColorField
@@ -212,8 +175,6 @@ export function MaterialInspector({ documentId }: TextureInspectorProps) {
         />
       </PropertySection>
 
-      {/* One set of values for all eight channels: applied to one alone, the maps drift apart and
-          the relief stops matching the picture it lifts. */}
       <PropertySection title={t('material.tiling')} defaultOpen={false} scId="material.tiling">
         <VectorField
           label={t('material.repeat')}
@@ -231,7 +192,6 @@ export function MaterialInspector({ documentId }: TextureInspectorProps) {
           onChange={value => onMaterial('offset', value)}
           {...edit.gesture}
         />
-        {/* Degrees on screen, radians in the file — the same trade the sky inspector makes. */}
         <SliderField
           label={t('material.rotation')}
           scId="material.rotation"
@@ -244,8 +204,6 @@ export function MaterialInspector({ documentId }: TextureInspectorProps) {
           {...edit.gesture}
         />
 
-        {/* Below the values it multiplies, and visibly apart from them: these two are how the
-            repeat is LOOKED at, and neither ever reaches a scene. */}
         <SelectField
           label={t('material.tilingPreview')}
           scId="material.tilingPreview"
@@ -254,7 +212,6 @@ export function MaterialInspector({ documentId }: TextureInspectorProps) {
             value: String(times),
             label: t('material.tilingPreviewTimes', { count: times }),
           }))}
-          // Back to the numeric union — the field speaks strings.
           onChange={value => {
             const times = TILING_PREVIEWS.find(candidate => String(candidate) === value)
             if (times) onPreview('tilingPreview', times)
@@ -317,8 +274,6 @@ export function MaterialInspector({ documentId }: TextureInspectorProps) {
         />
       </PropertySection>
 
-      {/* The very section the 3D space shows, because it is the same question: a texture judged
-          under a flat lamp is not judged, and the skies on offer are the project's own. */}
       <EnvironmentSection environment={preview.environment} onChange={changeEnvironment} />
     </>
   )

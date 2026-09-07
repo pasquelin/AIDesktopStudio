@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import source from './SceneRenderer.ts?raw'
+import { sceneRendererSource as source } from './sceneRendererSource.testHelper'
 
 /**
  * Who gives a shape back to the cache that lent it.
@@ -10,12 +10,15 @@ import source from './SceneRenderer.ts?raw'
  */
 describe('SceneRenderer and the shapes it borrows', () => {
   const body = (name: string): string =>
-    new RegExp(`private ${name}\\([^)]*\\): void \\{[\\s\\S]*?\\n {2}\\}`).exec(source)?.[0] ?? ''
+    new RegExp(`protected ${name}\\([^)]*\\): void \\{[\\s\\S]*?\\n {2}\\}`).exec(source)?.[0] ?? ''
+  const privateBody = (name: string): string =>
+    new RegExp(`private ${name}\\([\\s\\S]*?\\): void \\{[\\s\\S]*?\\n {2}\\}`).exec(source)?.[0] ??
+    ''
 
   it('gives back the reference it took when the mesh already wore that shape', () => {
     // The comparison that leads here is by REFERENCE, so a descriptor minted again with the same
     // content lands in this branch and `acquire` answers the very shape the mesh is wearing.
-    expect(body('syncDescriptors')).toContain('else this.shapes.release(object.geometry)')
+    expect(privateBody('syncMesh')).toContain('else this.shapes.release(object.geometry)')
   })
 
   it('frees a borrowed shape through the caches, never straight to `dispose`', () => {

@@ -1,7 +1,7 @@
 /**
  * Fetches what the studio ships beside itself, right before electron-builder packs a target:
- * the ffmpeg of that target, the voice detector dictation listens through, and the interpreter
- * the local AI engine runs on.
+ * the ffmpeg of that target, the voice detector dictation listens through, and the complete
+ * local AI engine runtime, including Auto Rig dependencies.
  *
  * A single `pnpm dist` builds several targets — macOS ships arm64 and x64 from one run — while
  * `resources/ffmpeg/` holds one platform's binaries at a time. Left to a manual
@@ -18,6 +18,7 @@ import { Arch } from 'electron-builder'
 import { fetchEngine } from './fetch-engine.mjs'
 import { fetchFfmpeg } from './fetch-ffmpeg.mjs'
 import { fetchStt } from './fetch-stt.mjs'
+import { prepareEngineRuntime } from './prepare-engine-runtime.mjs'
 
 export default async function beforePack(context) {
   const platform = context.electronPlatformName
@@ -41,4 +42,7 @@ export default async function beforePack(context) {
   // bundle of a two-arch run would otherwise carry the first one's.
   console.log(`Fetching the AI engine interpreter for ${platform}-${arch}`)
   await fetchEngine(platform, arch)
+
+  console.log(`Preparing the Auto Rig runtime for ${platform}-${arch}`)
+  prepareEngineRuntime(platform, arch)
 }

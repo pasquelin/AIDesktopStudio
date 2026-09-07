@@ -10,17 +10,34 @@ const ACCOUNTS: AccountSummary[] = [
   { id: 'acc-2', name: 'Perso', active: false },
 ]
 
+const ENABLED_MCP_SETTINGS = {
+  ...DEFAULT_SETTINGS,
+  mcp: { ...DEFAULT_SETTINGS.mcp, enabled: true },
+}
+
 beforeEach(() => {
   installFakeBridge()
 })
 
 describe('the settings', () => {
-  it('answers them whole', async () => {
-    expect(await runAction('settings.read', {})).toEqual({ ok: true, data: DEFAULT_SETTINGS })
+  it('answers them whole, with what each choice setting accepts', async () => {
+    expect(await runAction('settings.read', {})).toEqual({
+      ok: true,
+      data: {
+        settings: DEFAULT_SETTINGS,
+        choices: expect.objectContaining({
+          'three.shadowQuality': {
+            title: 'Shadow softness',
+            help: expect.any(String),
+            values: ['hard', 'soft'],
+          },
+        }),
+      },
+    })
   })
 
   it('writes one section without restating the others', async () => {
-    const write = vi.fn(async () => DEFAULT_SETTINGS)
+    const write = vi.fn(async () => ENABLED_MCP_SETTINGS)
     installFakeBridge({ settings: { write } })
 
     await runAction('settings.write', { settings: { mcp: { enabled: true } } })
@@ -43,6 +60,17 @@ describe('the settings', () => {
       await runAction('settings.write', { settings: { colours: { accent: 'red' } } }),
     ).toMatchObject({ ok: false, refusal: 'badInput' })
     expect(write).not.toHaveBeenCalled()
+  })
+
+  it('refuses a nested setting field the studio did not apply', async () => {
+    const write = vi.fn(async () => DEFAULT_SETTINGS)
+    installFakeBridge({ settings: { write } })
+
+    expect(
+      await runAction('settings.write', {
+        settings: { workspaces: { scene: { grid: { visible: true } } } },
+      }),
+    ).toMatchObject({ ok: false, refusal: 'badInput' })
   })
 
   /**
@@ -89,7 +117,7 @@ describe('the settings', () => {
 
   // Its neighbour in the same section is ordinary, which is what makes the refusal above narrow.
   it('still lets the entry point itself be switched', async () => {
-    const write = vi.fn(async () => DEFAULT_SETTINGS)
+    const write = vi.fn(async () => ENABLED_MCP_SETTINGS)
     installFakeBridge({ settings: { write } })
 
     expect(
@@ -149,14 +177,14 @@ describe('the buttons of the settings window', () => {
     installFakeBridge({ settings: { runAction: runSettingAction } })
 
     expect(
-      await runAction('settings.pressButton', { action: 'advanced.openLogFolder' }),
+      await runAction('settings.triggerAction', { action: 'advanced.openLogFolder' }),
     ).toMatchObject({
       ok: true,
     })
     expect(runSettingAction).toHaveBeenCalledWith('advanced.openLogFolder')
 
     expect(
-      await runAction('settings.pressButton', { action: 'advanced.selfDestruct' }),
+      await runAction('settings.triggerAction', { action: 'advanced.selfDestruct' }),
     ).toMatchObject({
       ok: false,
       refusal: 'badInput',
@@ -168,11 +196,13 @@ describe('the buttons of the settings window', () => {
    * setting back to its default — are asked about, and the four others are not.
    */
   it('asks first for the two nothing takes back', () => {
-    expect(commitmentOfCall('settings.pressButton', { action: 'advanced.reset' })).toBe('files')
+    expect(commitmentOfCall('settings.triggerAction', { action: 'advanced.reset' })).toBe('files')
     expect(
-      commitmentOfCall('settings.pressButton', { action: 'advanced.installResolveBridge' }),
+      commitmentOfCall('settings.triggerAction', {
+        action: 'advanced.installResolveBridge',
+      }),
     ).toBe('files')
-    expect(commitmentOfCall('settings.pressButton', { action: 'advanced.openDevtools' })).toBe(
+    expect(commitmentOfCall('settings.triggerAction', { action: 'advanced.openDevtools' })).toBe(
       'none',
     )
   })

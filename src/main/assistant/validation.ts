@@ -157,6 +157,25 @@ const SNAPSHOT = z.object({
       modified: z.boolean(),
     }),
   ),
+  activeDocumentState: z
+    .object({
+      documentId: z.string(),
+      kind: z.enum(DOCUMENT_KINDS),
+      incarnation: z.string(),
+      revision: z.number().int().nonnegative(),
+      state: z.unknown(),
+    })
+    .optional(),
+  documentRevisions: z
+    .array(
+      z.object({
+        documentId: z.string(),
+        kind: z.enum(DOCUMENT_KINDS),
+        incarnation: z.string(),
+        revision: z.number().int().nonnegative(),
+      }),
+    )
+    .optional(),
   selection: z
     .object({
       kind: z.enum(TARGET_KINDS),

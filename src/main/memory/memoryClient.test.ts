@@ -53,11 +53,11 @@ let memory: AsyncMemory
 let fail: (error: Error) => void
 
 beforeEach(async () => {
-  root = await mkdtemp(join(tmpdir(), 'ia-studio-memory-client-'))
+  root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-memory-client-'))
   let minted = 0
   database = openMemoryDatabase()
   store = createMemoryStore({
-    file: join(root, '.ia-studio', 'memory.ndjson'),
+    file: join(root, '.ai-desktop-studio', 'memory.ndjson'),
     index: createMemoryIndex(database),
     now: () => '2026-08-28T10:00:00.000Z',
     newId: () => `m_${++minted}`,

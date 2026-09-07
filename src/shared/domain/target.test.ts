@@ -69,11 +69,20 @@ describe('aimedAt', () => {
   /** What a spoken request has: the briefing shows both, and a model sends the name. */
   it('answers the one target carrying that name', () => {
     expect(aimedAt(all, byId, 'Ciel')?.id).toBe('l-1')
+    expect(aimedAt(all, byId, 'ciel')?.id).toBe('l-1')
   })
 
   /** 🛑 A guess between two of one name would edit the wrong object in silence. */
   it('answers nothing when two targets share the name', () => {
     expect(aimedAt(all, byId, 'Sol')).toBeUndefined()
+  })
+
+  it('keeps folded names ambiguous', () => {
+    const accented = [layer('l-1', 'Été'), layer('l-2', 'Ete')]
+
+    expect(
+      aimedAt(accented, given => accented.find(one => one.id === given), 'ete'),
+    ).toBeUndefined()
   })
 
   it('answers nothing for a name nobody carries, or for no name at all', () => {

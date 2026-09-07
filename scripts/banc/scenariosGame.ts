@@ -32,7 +32,7 @@ export const GAME_SCENARIOS: readonly Scenario[] = [
     said: ['Fais aller Cube Test de gauche à droite.'],
     setup: cubeScene,
     // 🛑 Never on a default: `y` and `pingPong` are what `component.attach` alone already writes,
-    // so an oracle reading either would pass without `component.set` being called at all.
+    // so an oracle reading either would pass without `component.setProperties` being called at all.
     passed: run => componentOf(run, 'Cube Test', 'Movement')?.axis === 'x',
   },
   {

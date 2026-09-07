@@ -20,6 +20,7 @@ import {
   mdiFormatColorFill,
   mdiFormatText,
   mdiHandBackRight,
+  mdiHandPointingUp,
   mdiImagePlusOutline,
   mdiImageRemoveOutline,
   mdiImageSizeSelectLarge,
@@ -58,6 +59,7 @@ export const TOOL_COMMANDS: readonly ToolCommand[] = [
   { command: 'canvas.toolSelectRectangle', tool: 'region', mode: 'rectangle' },
   { command: 'canvas.toolSelectEllipse', tool: 'region', mode: 'ellipse' },
   { command: 'canvas.toolSelectLasso', tool: 'region', mode: 'lasso' },
+  { command: 'canvas.toolSmartSelect', tool: 'region', mode: 'smart' },
   { command: 'canvas.toolShapeRectangle', tool: 'shape', mode: 'rectangle' },
   { command: 'canvas.toolShapeLine', tool: 'shape', mode: 'line' },
   { command: 'canvas.toolShapeArrow', tool: 'shape', mode: 'arrow' },
@@ -168,6 +170,12 @@ export const IMAGE_TOOLS: readonly ImageTool[] = [
         descriptionKey: 'imageTools.selectLassoHint',
         icon: mdiLasso,
       },
+      {
+        id: 'smart',
+        labelKey: 'imageTools.smartSelect',
+        descriptionKey: 'imageTools.smartSelectHint',
+        icon: mdiAutoFix,
+      },
     ],
   },
   {
@@ -276,10 +284,6 @@ export const IMAGE_TOOLS: readonly ImageTool[] = [
   },
   {
     id: 'comment',
-    // Greyed on the group, not only on its rows: `Toolbar` does not inherit a mode's `disabled`,
-    // so the button armed a tool the engine drops every pointer event of — a live-looking button
-    // that changed the cursor and did nothing.
-    disabled: true,
     tool: 'comment',
     labelKey: 'imageTools.comment',
     descriptionKey: 'imageTools.commentHint',
@@ -425,6 +429,9 @@ export function toolById(id: string): ImageTool | null {
  */
 export function canvasToolFor(toolId: string, modeId?: string): CanvasTool | null {
   if (toolId === 'pointer') return modeId === 'hand' ? 'hand' : 'move'
+  if (toolId === 'region') {
+    if (modeId === 'smart') return 'smartSelect'
+  }
   // The pencil is not a mode of the brush for the engine: the two lay the same disc down and
   // differ on the edge, which is the whole of what the bundle promises about them.
   if (toolId === 'paint') return modeId === 'pencil' ? 'pencil' : 'brush'
@@ -437,6 +444,7 @@ export function canvasToolFor(toolId: string, modeId?: string): CanvasTool | nul
  */
 export function selectionShapeFor(toolId: string, modeId?: string): SelectionShape | null {
   if (toolId !== 'region') return null
+  if (modeId === 'smart') return null
   if (modeId === 'ellipse') return 'ellipse'
   if (modeId === 'lasso') return 'lasso'
   return 'rect'
@@ -461,15 +469,13 @@ export const DEFAULT_MODES: Readonly<Record<string, string>> = Object.fromEntrie
 export function cursorFor(toolId: string, modeId?: string): string {
   if (toolId === 'pointer') return modeId === 'hand' ? 'grab' : 'move'
   if (toolId === 'text') return 'text'
+  if (toolId === 'region' && modeId === 'smart') return smartSelectionCursor()
   return DRAWN_CURSORS[toolId] ?? 'crosshair'
 }
-
-/** Built once: the string is ~450 characters, and `cursorFor` runs on every render. */
 const DRAWN_CURSORS: Record<string, string> = {
   fill: iconCursor('fill', 4, 20),
   picker: iconCursor('picker', 3, 21),
 }
-
 function iconCursor(toolId: string, hotspotX: number, hotspotY: number): string {
   const path = toolById(toolId)?.icon ?? ''
   // White fill on a dark outline, so the cursor stays visible on either. `crosshair` is the
@@ -478,4 +484,8 @@ function iconCursor(toolId: string, hotspotX: number, hotspotY: number): string 
     `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24">` +
     `<path d="${path}" fill="#fff" stroke="#000" stroke-width="1"/></svg>`
   return `url("data:image/svg+xml;utf8,${encodeURIComponent(svg)}") ${hotspotX} ${hotspotY}, crosshair`
+}
+function smartSelectionCursor(): string {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="${mdiHandPointingUp}" fill="#fff" stroke="#000" stroke-width="1"/><path d="M18 2v4M16 4h4" stroke="#000" stroke-width="2"/><path d="M18 2v4M16 4h4" stroke="#fff" stroke-width="1"/></svg>`
+  return `url("data:image/svg+xml;utf8,${encodeURIComponent(svg)}") 13 4, crosshair`
 }

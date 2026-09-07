@@ -140,25 +140,34 @@ export function deadManualLinks(chapters: readonly ManualChapter[], language: La
     return null
   }
 
-  for (const chapter of chapters) {
-    for (const [, href = ''] of chapter.markdown.matchAll(LINK)) {
-      const target = manualTargetOf(href)
-      const say = (what: string) => dead.push(`${language}/${chapter.slug}: "${href}" ${what}`)
+  for (const chapter of chapters) dead.push(...deadLinksIn(chapter, language, slugs, missing))
 
-      if (!target) say('is none of the three shapes a manual link takes')
-      else if (target.kind === 'anchor') {
-        const fault = missing(chapter.slug, target.anchor)
-        if (fault) say(fault)
-      } else if (target.kind === 'chapter') {
-        if (!slugs.has(target.slug)) say('is not a shipped chapter')
-        else if (target.anchor) {
-          const fault = missing(target.slug, target.anchor)
-          if (fault) say(fault)
-        }
+  return dead
+}
+
+function deadLinksIn(
+  chapter: ManualChapter,
+  language: Language,
+  slugs: ReadonlySet<string>,
+  missing: (slug: string, anchor: string) => string | null,
+): string[] {
+  const dead: string[] = []
+  const say = (href: string, what: string) =>
+    dead.push(`${language}/${chapter.slug}: "${href}" ${what}`)
+  for (const [, href = ''] of chapter.markdown.matchAll(LINK)) {
+    const target = manualTargetOf(href)
+    if (!target) say(href, 'is none of the three shapes a manual link takes')
+    else if (target.kind === 'anchor') {
+      const fault = missing(chapter.slug, target.anchor)
+      if (fault) say(href, fault)
+    } else if (target.kind === 'chapter') {
+      if (!slugs.has(target.slug)) say(href, 'is not a shipped chapter')
+      else if (target.anchor) {
+        const fault = missing(target.slug, target.anchor)
+        if (fault) say(href, fault)
       }
     }
   }
-
   return dead
 }
 

@@ -42,7 +42,7 @@ touche marquée `Z`, où qu’elle soit sur votre clavier : au milieu à gauche 
 gauche sur un QWERTY. Vous appuyez sur ce que vous lisez.
 
 C’est la règle de toutes les autres applications, et elle vaut aussi pour ce que le système
-garde pour lui : `⌘Q` quitte le studio, `⌘W` ferme la fenêtre, `⌘M` la réduit. Aucune commande
+garde pour lui : `⌘Q` quitte le studio, `⌘M` réduit la fenêtre. Aucune commande
 d’ici ne peut prendre ces touches-là.
 
 > **Une touche qui n’écrit rien que le studio sache lire garde sa place.** C’est le cas des
@@ -101,7 +101,8 @@ voir plus bas.
 
 | Action | Touche | Ce qu’elle fait |
 |---|---|---|
-| **Nouveau projet** | `⌘N` | crée un projet vide et l’ouvre |
+| **Nouveau…** | `⌘N` | ouvre la fenêtre qui crée un projet ou un document, depuis n’importe quel écran |
+| **Nouveau projet** | `⌥⌘N` | crée un projet vide et l’ouvre, sans passer par la fenêtre |
 | **Ouvrir un projet** | `⌘O` | ouvre un projet existant à la place de celui en cours |
 | **Enregistrer le document** | `⌘S` | écrit le document en avant dans le projet — **et réécrit l’asset dont il vient**, dans l’espace Image |
 | **Enregistrer sous** | `⇧⌘S` | écrit une copie de l’asset à côté de l’original et continue sur elle, sans demander de nom |
@@ -654,7 +655,8 @@ laisserait croire que `⌘D` ou `⌘Z` y font ce qu’ils font dans l’espace d
 
 | Touche | Partout | Barre | Vue 3D | Montage | Image | Ciel | Audio | Matière |
 |---|---|---|---|---|---|---|---|---|
-| `⌘N` | Nouveau projet |  |  |  |  |  |  |  |
+| `⌘N` | Nouveau… |  |  |  |  |  |  |  |
+| `⌥⌘N` | Nouveau projet |  |  |  |  |  |  |  |
 | `⌘O` | Ouvrir un projet |  |  |  |  |  |  |  |
 | `⌘S` | Enregistrer |  |  |  |  |  |  |  |
 | `⇧⌘S` | Enregistrer sous |  |  |  |  |  |  |  |

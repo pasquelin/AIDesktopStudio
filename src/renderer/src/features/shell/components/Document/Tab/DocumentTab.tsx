@@ -1,14 +1,17 @@
 import { mdiClose } from '@mdi/js'
-import { DockviewDefaultTab, type IDockviewPanelHeaderProps } from 'dockview-react'
+import type { IDockviewPanelHeaderProps } from 'dockview-react'
 import { useState, type MouseEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ToolButton } from '@/components/ToolButton'
 import { UiIcon } from '@/components/UiIcon'
 import { InlineRename } from '@/components/InlineRename'
+import { cn } from '@/helpers/cn'
 import { renameDocument } from '@/helpers/rename'
 import { workspaceById, workspaceLabelKey } from '@/helpers/workspaces'
+import { useDocumentModified } from '@/hooks/useDocumentModified'
 import { useDocuments } from '@/stores/documents'
 import { closeTab } from './closeTab'
+import { panelIsFileView } from '../../dockviewApi'
 import { openDocumentTabMenu } from './documentTabMenu'
 import { HINT_BOTTOM, TIP_BOTTOM } from '@/helpers/tooltip'
 
@@ -16,9 +19,8 @@ import { HINT_BOTTOM, TIP_BOTTOM } from '@/helpers/tooltip'
  * A document's tab.
  *
  * Dockview's own close button removes the panel and nothing else — it cannot ask about unsaved
- * work, and it left the document's state, its history and its descriptor behind. So the default
- * tab is kept for its title, its drag behaviour and its look, its cross is hidden, and the one
- * drawn here goes through `closeTab` instead.
+ * work, and it left the document's state, its history and its descriptor behind. The cross
+ * drawn here goes through `closeTab` instead. Drag lives on `.dv-tab`, which Dockview owns.
  *
  * The glyph in front is the document's SECTION, and it is what makes one tab strip readable for
  * six of them: a scene, an image and a texture now sit side by side, where the title alone says
@@ -28,8 +30,10 @@ import { HINT_BOTTOM, TIP_BOTTOM } from '@/helpers/tooltip'
 export function DocumentTab(props: IDockviewPanelHeaderProps) {
   const { t } = useTranslation()
   const workspace = useDocuments(state => state.documents[props.api.id]?.workspace)
-  const title = useDocuments(state => state.documents[props.api.id]?.title)
+  const title = useDocuments(state => state.documents[props.api.id]?.title) ?? props.api.title
+  const modified = useDocumentModified(props.api.id)
   const [renaming, setRenaming] = useState(false)
+  const isFileView = panelIsFileView(props.api.id)
 
   const close = (event: MouseEvent): void => {
     // Dockview reads a click on the tab as "activate me"; this one is not that.
@@ -38,6 +42,7 @@ export function DocumentTab(props: IDockviewPanelHeaderProps) {
   }
 
   const openMenu = (event: MouseEvent): void => {
+    if (isFileView) return
     event.preventDefault()
     openDocumentTabMenu({ documentId: props.api.id, t, onRename: () => setRenaming(true) })
   }
@@ -49,8 +54,8 @@ export function DocumentTab(props: IDockviewPanelHeaderProps) {
 
   /**
    * The field takes the whole tab while it is open — the drag, the close button and the space
-   * glyph all step aside. Dockview's own tab is what carries the drag, and leaving it mounted
-   * under a field would have a rename begin a drag on the first pointer move.
+   * glyph all step aside. Leaving a title mounted under a field would have a rename begin a
+   * drag on the first pointer move.
    */
   if (renaming && title)
     return (
@@ -65,12 +70,10 @@ export function DocumentTab(props: IDockviewPanelHeaderProps) {
     )
 
   return (
-    <>
+    <span className="flex min-w-0 flex-1 items-center" onContextMenu={openMenu}>
       {workspace && (
         // A hint and no `aria-label`: the tab's own title is its accessible name, and one set
         // here would replace it (WCAG 2.5.3). The sentence is what the glyph cannot spell.
-        // No padding of its own: `.dv-tab` opens the row and the default tab's own padding
-        // separates the glyph from the title.
         <span
           className="flex shrink-0 items-center"
           {...HINT_BOTTOM(t(workspaceLabelKey(workspace)))}
@@ -80,12 +83,15 @@ export function DocumentTab(props: IDockviewPanelHeaderProps) {
       )}
       {/* Double-click renames, as it does in the layer stack, the outliner and the track
           headers — the gesture a title one can edit is expected to answer. */}
-      <DockviewDefaultTab
-        {...props}
-        hideClose
-        onContextMenu={openMenu}
-        onDoubleClick={() => setRenaming(true)}
-      />
+      <span
+        className="flex min-w-0 flex-1 items-center gap-0.5 px-1"
+        onDoubleClick={() => {
+          if (!isFileView) setRenaming(true)
+        }}
+      >
+        <span className={cn('min-w-0 truncate', modified && 'font-semibold')}>{title}</span>
+        {modified ? <span className="text-accent-ink shrink-0">*</span> : null}
+      </span>
       {/* Same footprint as the cross it replaces, so a tab does not change width for having
           its own close button. */}
       <ToolButton
@@ -97,6 +103,6 @@ export function DocumentTab(props: IDockviewPanelHeaderProps) {
         className="mr-1 size-4 shrink-0 self-center"
         onClick={close}
       />
-    </>
+    </span>
   )
 }

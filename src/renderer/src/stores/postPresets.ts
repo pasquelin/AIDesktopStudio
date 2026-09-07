@@ -56,7 +56,7 @@ export const usePostPresets = create<PostPresetsState>()(
         set(state => ({ saved: state.saved.filter(preset => preset.id !== id) })),
     }),
     {
-      name: 'ia-studio:post-presets',
+      name: 'ai-desktop-studio:post-presets',
       // Read back through the reader rather than trusted: this is a file on disk, and a stack
       // whose effects are not effects would be handed straight to the composer.
       merge: (persisted, current) => ({ ...current, saved: readPresets(persisted) }),

@@ -55,42 +55,40 @@ const grab = (name: string, y: number): void => {
   })
 }
 
+beforeEach(() => {
+  frames.clear()
+  queued = 0
+  clock = 0
+  vi.stubGlobal('requestAnimationFrame', (frame: FrameRequestCallback) => {
+    frames.set(++queued, frame)
+    return queued
+  })
+  vi.stubGlobal('cancelAnimationFrame', (id: number) => frames.delete(id))
+
+  useTimelineView.setState({ viewports: {} })
+  useSequences.setState({
+    states: {
+      'doc-1': sequenceWith(
+        [...Array(ROWS).keys()].map(row => trackFixture(`A${row + 1}`, 'audio')),
+      ),
+    },
+    histories: {},
+  })
+})
+
+afterEach(() => {
+  vi.unstubAllGlobals()
+})
+
+const held = (content = CONTENT): void => {
+  const view = render(<TrackHeaders documentId="doc-1" />, { wrapper: StrictMode })
+  layout(view, content)
+  grab('A1', TOP + 10)
+  fireEvent.pointerMove(window, { clientY: BOTTOM - 4, buttons: 1 })
+  advance(0)
+}
+
 describe('a band that comes to the pointer', () => {
-  beforeEach(() => {
-    frames.clear()
-    queued = 0
-    clock = 0
-    vi.stubGlobal('requestAnimationFrame', (frame: FrameRequestCallback) => {
-      frames.set(++queued, frame)
-      return queued
-    })
-    vi.stubGlobal('cancelAnimationFrame', (id: number) => frames.delete(id))
-
-    useTimelineView.setState({ viewports: {} })
-    useSequences.setState({
-      states: {
-        'doc-1': sequenceWith(
-          [...Array(ROWS).keys()].map(row => trackFixture(`A${row + 1}`, 'audio')),
-        ),
-      },
-      histories: {},
-    })
-  })
-
-  afterEach(() => {
-    vi.unstubAllGlobals()
-  })
-
-  /** A row taken by its grip and brought against the bottom edge, one frame in — see `advance`. */
-  const held = (content = CONTENT): void => {
-    const view = render(<TrackHeaders documentId="doc-1" />, { wrapper: StrictMode })
-    layout(view, content)
-    grab('A1', TOP + 10)
-    fireEvent.pointerMove(window, { clientY: BOTTOM - 4, buttons: 1 })
-    // The first frame of a gesture only sets the clock: nothing has passed yet, so nothing moves.
-    advance(0)
-  }
-
   /**
    * The whole reason this exists, measured on 15 August 2026: a panel docked at the foot of the
    * screen puts the fourth and fifth tracks of a montage past the bottom of the WINDOW. No
@@ -133,7 +131,9 @@ describe('a band that comes to the pointer', () => {
 
     expect(scrollTop()).toBe(reached)
   })
+})
 
+describe('a timeline band at its boundaries', () => {
   /**
    * A release out THERE never reaches this window: no capture means no `pointerup`, and the
    * window keeps its focus so no `blur` either. Travelling on the last position seen would run

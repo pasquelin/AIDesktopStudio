@@ -8,7 +8,7 @@ import {
 import { copiesText, type MotionId, signatureOf } from '@shared/domain/shortcut'
 import { IS_MAC } from '@/helpers/platform'
 import { isTyping } from '@/helpers/typing'
-import { armCommandScope, subscribeToCommands } from '@/services/commandBus'
+import { armCommandScope, subscribeToCommands, type CommandAnswer } from '@/services/commandBus'
 import { currentOverrides, motionFor } from '@/stores/bindings'
 import { useLatest } from './useLatest'
 
@@ -30,7 +30,7 @@ export type ShortcutsOptions = {
    */
   documentId?: string
   /** `false` says the surface had nothing to do with it — an undo on an empty stack. */
-  onCommand: (command: CommandId) => boolean | void
+  onCommand: (command: CommandId) => CommandAnswer | void
   /** Fires when the held set actually changes — never on a frame tick. */
   onMotionChange?: (held: Set<MotionId>) => void
   /**
@@ -39,6 +39,8 @@ export type ShortcutsOptions = {
    * twice per gesture would drop whatever was held across it.
    */
   isFlying?: () => boolean
+  /** Whether the ARROWS fly too — see `SceneRenderer.flightOwnsArrows`. */
+  flightOwnsArrows?: () => boolean
 }
 
 function holdsText(): boolean {
@@ -64,11 +66,12 @@ export function useShortcuts({
   onCommand,
   onMotionChange,
   isFlying,
+  flightOwnsArrows,
 }: ShortcutsOptions): {
   heldMotion: RefObject<Set<MotionId>>
 } {
   const heldMotion = useRef<Set<MotionId>>(new Set())
-  const handlers = useLatest({ onCommand, onMotionChange, isFlying })
+  const handlers = useLatest({ onCommand, onMotionChange, isFlying, flightOwnsArrows })
 
   /**
    * The same surface, reached the other way: the native menu fires a command outright rather
@@ -86,7 +89,7 @@ export function useShortcuts({
 
         // `void` from a surface means it acted: only one that says `false` outright is reported
         // as having done nothing.
-        return handlers.current.onCommand(command) !== false
+        return handlers.current.onCommand(command) ?? true
       }),
     [scope, listens, documentId, handlers],
   )
@@ -117,8 +120,11 @@ export function useShortcuts({
       if (!handlers.current.isFlying?.() || isTyping(event.target)) return
       // On the CODE, never the signature: holding Shift to boost would sign every direction as
       // `Shift+…`, and the table would match none of them.
-      const motion = motionFor(event.code)
+      const motion = motionFor(event.code, event)
       if (!motion) return
+      // An arrow belongs to the interface unless a GESTURE holds the flight: claimed under a
+      // permanent one, every arrow of the window died for the session — see `flightOwnsArrows`.
+      if (event.code.startsWith('Arrow') && handlers.current.flightOwnsArrows?.() === false) return
 
       // Holding a key repeats keydown; only a set that actually changed is worth reporting.
       if (!held.has(motion)) {

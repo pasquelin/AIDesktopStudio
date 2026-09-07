@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { EMPTY_RUNTIME_PERFORMANCE } from '@shared/domain/gameRuntime'
 import { drawing } from '@/game/game-fixtures'
 import { installScene } from '@/stores/scene-fixtures'
 import { forgetSceneEngine, registerSceneEngine } from '@/stores/sceneEngines'
@@ -13,7 +14,14 @@ describe('a game driven from outside the window', () => {
     installScene(DOCUMENT)
     registerSceneEngine(DOCUMENT, drawing())
     usePlay.setState({ reports: {} })
-    return () => forgetSceneEngine(DOCUMENT)
+    return () => {
+      // 🛑 Which document is playing lives in the MODULE, and no case put it back: a case that
+      // started one leaves `start` a NO-OP for the next, which then speaks to the session the
+      // first opened rather than to its own decor. Every case here reads a game it believes it
+      // set up.
+      usePlay.getState().stop(DOCUMENT)
+      forgetSceneEngine(DOCUMENT)
+    }
   })
 
   /** 🛑 At once: a start that waited for the WebAssembly would hold an MCP client for a second. */
@@ -73,6 +81,7 @@ describe('a game driven from outside the window', () => {
           errors: [
             { script: 'script:Walk.ts', entity: null, message: 'no', line: 7, column: 3, at: 1 },
           ],
+          performance: EMPTY_RUNTIME_PERFORMANCE,
         },
       },
     })

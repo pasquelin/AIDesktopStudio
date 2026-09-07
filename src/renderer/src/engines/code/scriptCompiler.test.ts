@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import type { CodeRequest, CodeResponse } from './codeMessage'
 import { createScriptCompiler } from './scriptCompiler'
+import type { InputMapModule } from '@shared/domain/inputMap'
 
 /** A worker that answers by hand, so what this measures is the CACHE and not the compiler. */
 function counting(
@@ -48,6 +49,34 @@ describe('an author’s scripts, compiled once', () => {
     ])
 
     expect(asked).toEqual(['same', 'other'])
+  })
+
+  it('recompiles when an imported input map changes', async () => {
+    const { asked, compiler } = counting(source => ({ code: source }))
+    const first: InputMapModule = {
+      path: 'Scripts/character.input.json',
+      map: { version: 1, id: 'character', priority: 0, defaultActive: true, actions: [] },
+    }
+
+    await compiler.compile([{ script: 'script:Scripts/player.ts', source: 'same' }], [first])
+    await compiler.compile(
+      [{ script: 'script:Scripts/player.ts', source: 'same' }],
+      [{ ...first, map: { ...first.map, priority: 10 } }],
+    )
+
+    expect(asked).toEqual(['same', 'same'])
+  })
+
+  it('compiles identical relative imports once per script folder', async () => {
+    const { asked, compiler } = counting(source => ({ code: source }))
+    const source = "import controls from './controls.input.json'\nexport default controls"
+
+    await compiler.compile([
+      { script: 'script:Character/player.ts', source },
+      { script: 'script:Vehicle/player.ts', source },
+    ])
+
+    expect(asked).toEqual([source, source])
   })
 
   /** Twice in ONE batch, where the cache has nothing to say yet — the batch answers for itself. */

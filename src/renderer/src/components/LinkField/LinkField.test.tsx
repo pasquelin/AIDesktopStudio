@@ -5,11 +5,12 @@ import { PICTURES, type Asset, type AssetType } from '@shared/domain/asset'
 import { startAssetDrag } from '@/helpers/assetDrag'
 import { dragTransfer } from '@/helpers/drag-fixtures'
 import { useAssets } from '@/stores/assets'
-import { LinkField, type LinkFieldProps, type LinkOption } from './LinkField'
+import { LinkField, type LinkFieldProps } from './LinkField'
+import type { LinkOption } from './linkOption'
 
 const OPTIONS: LinkOption[] = [
-  { id: 'tex-1', name: 'Brick', url: 'ia-studio://asset/tex-1' },
-  { id: 'tex-2', name: 'Rust', url: 'ia-studio://asset/tex-2' },
+  { id: 'tex-1', name: 'Brick', url: 'ai-desktop-studio://asset/tex-1' },
+  { id: 'tex-2', name: 'Rust', url: 'ai-desktop-studio://asset/tex-2' },
 ]
 
 /** What the drag carries — resolved against the catalogue by the drop, never sent with it. */
@@ -188,11 +189,47 @@ describe('LinkField', () => {
       expect(run).toHaveBeenCalled()
     })
 
+    it('opens what it holds on a double-click of its selected value', async () => {
+      const run = vi.fn()
+      render(<Slot value="tex-1" onChange={vi.fn()} open={{ ...OPEN, run }} />)
+
+      await userEvent.dblClick(screen.getByRole('combobox'))
+
+      expect(run).toHaveBeenCalledOnce()
+    })
+
     // A focus stop that leads nowhere is one more Tab to cross for nothing.
     it('offers nothing to open while the slot is empty', () => {
       render(<Slot value={null} onChange={vi.fn()} open={OPEN} />)
 
       expect(screen.queryByRole('button', { name: 'Ouvrir' })).not.toBeInTheDocument()
+    })
+
+    it('lets an empty slot choose its first picture from its thumbnail', async () => {
+      const pick = vi.fn()
+      render(<Slot value={null} onChange={vi.fn()} press={{ ...PRESS, run: pick }} open={OPEN} />)
+
+      await userEvent.click(screen.getByRole('button', { name: 'Choisir' }))
+
+      expect(pick).toHaveBeenCalledOnce()
+    })
+
+    it('does not try to open a missing picture on a double-click', async () => {
+      const pick = vi.fn()
+      const open = vi.fn()
+      render(
+        <Slot
+          value="tex-gone"
+          onChange={vi.fn()}
+          press={{ ...PRESS, run: pick }}
+          open={{ ...OPEN, run: open }}
+        />,
+      )
+
+      await userEvent.dblClick(screen.getByRole('button', { name: 'Choisir' }))
+
+      expect(pick).toHaveBeenCalledOnce()
+      expect(open).not.toHaveBeenCalled()
     })
 
     /** A document outlives the picture it points at: nothing rewrites a material on deletion. */
@@ -211,7 +248,7 @@ describe('LinkField', () => {
       await waitFor(() =>
         expect(screen.getByRole('img', { name: 'Brick' })).toHaveAttribute(
           'src',
-          'ia-studio://asset/tex-1',
+          'ai-desktop-studio://asset/tex-1',
         ),
       )
     })

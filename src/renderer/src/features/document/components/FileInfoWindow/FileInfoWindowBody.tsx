@@ -29,67 +29,71 @@ export type FileInfoWindowBodyProps = {
  */
 export function FileInfoWindowBody({ id, path, facts, asset, status }: FileInfoWindowBodyProps) {
   const { t, i18n } = useTranslation()
+  if (id === 'git' && status) return gitSection(path, status, t)
+  if (id === 'media' && asset) return mediaSection(asset, t)
+  if (id === 'catalogue' && asset) return catalogueSection(asset, i18n.language, t)
+  return generalSection(path, facts, asset, i18n.language, t)
+}
 
-  if (id === 'git' && status) {
-    // No entry means git has nothing pending for this path — which is what the sentence says,
-    // and all it says: a file git ignores has no entry either, and claiming it is recorded
-    // would be a deduction dressed as a reading.
-    const change = status.files.find(file => file.path === path)?.change
+type Translate = ReturnType<typeof useTranslation>['t']
 
-    return (
-      <PropertySection title={t('fileInfo.sections.git')} scId="fileInfo.git">
-        <PropertyRow label={t('git.ref.branch')}>{status.branch ?? t('git.detached')}</PropertyRow>
-        <PropertyRow label={t('inspector.state')}>
-          {change ? t(`git.change.${change}`) : t('fileInfo.gitUnchanged')}
+function gitSection(path: string, status: GitStatus, t: Translate) {
+  const change = status.files.find(file => file.path === path)?.change
+  return (
+    <PropertySection title={t('fileInfo.sections.git')} scId="fileInfo.git">
+      <PropertyRow label={t('git.ref.branch')}>{status.branch ?? t('git.detached')}</PropertyRow>
+      <PropertyRow label={t('inspector.state')}>
+        {change ? t(`git.change.${change}`) : t('fileInfo.gitUnchanged')}
+      </PropertyRow>
+    </PropertySection>
+  )
+}
+
+function mediaSection(asset: Asset, t: Translate) {
+  const width = asset.probe?.width ?? asset.width
+  const height = asset.probe?.height ?? asset.height
+  return (
+    <PropertySection title={t('fileInfo.sections.media')} scId="fileInfo.media">
+      {width !== undefined && height !== undefined && (
+        <PropertyRow label={t('inspector.dimensions')}>
+          {width} × {height}
         </PropertyRow>
-      </PropertySection>
-    )
-  }
-
-  if (id === 'media' && asset) {
-    const probe = asset.probe
-    const width = probe?.width ?? asset.width
-    const height = probe?.height ?? asset.height
-
-    return (
-      <PropertySection title={t('fileInfo.sections.media')} scId="fileInfo.media">
-        {width !== undefined && height !== undefined && (
-          <PropertyRow label={t('inspector.dimensions')}>
-            {width} × {height}
-          </PropertyRow>
-        )}
-        {probe?.duration !== undefined && (
-          <PropertyRow label={t('inspector.duration')}>
-            {formatDuration(probe.duration)}
-          </PropertyRow>
-        )}
-        {probe?.codec !== undefined && (
-          <PropertyRow label={t('fileInfo.codec')}>{probe.codec}</PropertyRow>
-        )}
-      </PropertySection>
-    )
-  }
-
-  if (id === 'catalogue' && asset) {
-    return (
-      <PropertySection title={t('fileInfo.sections.catalogue')} scId="fileInfo.catalogue">
-        <PropertyRow label={t('fileInfo.identifier')}>{asset.id}</PropertyRow>
-        {asset.hash !== undefined && (
-          // Stacked: a content hash is sixty-four characters, and a column truncates it to
-          // something two different files would read the same.
-          <PropertyRow label={t('fileInfo.fingerprint')} shape="wrap">
-            {asset.hash}
-          </PropertyRow>
-        )}
-        {/* Local, like every other stamp the studio shows: this says when a person put the file
-            here, not what an account was billed. */}
-        <PropertyRow label={t('fileInfo.added')}>
-          {formatMoment(asset.createdAt, i18n.language, 'local')}
+      )}
+      {asset.probe?.duration !== undefined && (
+        <PropertyRow label={t('inspector.duration')}>
+          {formatDuration(asset.probe.duration)}
         </PropertyRow>
-      </PropertySection>
-    )
-  }
+      )}
+      {asset.probe?.codec !== undefined && (
+        <PropertyRow label={t('fileInfo.codec')}>{asset.probe.codec}</PropertyRow>
+      )}
+    </PropertySection>
+  )
+}
 
+function catalogueSection(asset: Asset, language: string, t: Translate) {
+  return (
+    <PropertySection title={t('fileInfo.sections.catalogue')} scId="fileInfo.catalogue">
+      <PropertyRow label={t('fileInfo.identifier')}>{asset.id}</PropertyRow>
+      {asset.hash !== undefined && (
+        <PropertyRow label={t('fileInfo.fingerprint')} shape="wrap">
+          {asset.hash}
+        </PropertyRow>
+      )}
+      <PropertyRow label={t('fileInfo.added')}>
+        {formatMoment(asset.createdAt, language, 'local')}
+      </PropertyRow>
+    </PropertySection>
+  )
+}
+
+function generalSection(
+  path: string,
+  facts: FileFacts,
+  asset: Asset | null,
+  language: string,
+  t: Translate,
+) {
   return (
     <PropertySection title={t('fileInfo.sections.general')} scId="fileInfo.general">
       <PropertyRow label={t('inspector.name')}>{nameOf(path)}</PropertyRow>
@@ -109,16 +113,16 @@ export function FileInfoWindowBody({ id, path, facts, asset, status }: FileInfoW
           totalling a tree is a walk this window does not take. */}
       {facts.kind === 'file' && (
         <PropertyRow label={t('inspector.size')}>
-          {formatBytes(facts.bytes, unit => t(`units.${unit}`), i18n.language)}
+          {formatBytes(facts.bytes, unit => t(`units.${unit}`), language)}
         </PropertyRow>
       )}
       {facts.createdAt !== null && (
         <PropertyRow label={t('inspector.created')}>
-          {formatMoment(facts.createdAt, i18n.language, 'local')}
+          {formatMoment(facts.createdAt, language, 'local')}
         </PropertyRow>
       )}
       <PropertyRow label={t('fileInfo.modified')}>
-        {formatMoment(facts.modifiedAt, i18n.language, 'local')}
+        {formatMoment(facts.modifiedAt, language, 'local')}
       </PropertyRow>
     </PropertySection>
   )

@@ -2,15 +2,8 @@ import { describe, expect, it } from 'vitest'
 import { SCENE_SUBJECT_ID, type CameraShot } from '@shared/domain/animation'
 import { SECOND } from '@shared/domain/time'
 import { animationTrack, cameraShot, timelineWith } from './animation-fixtures'
-import {
-  CHANNEL_HEIGHT,
-  SUBJECT_HEIGHT,
-  animationRows,
-  mergedKeys,
-  subjectKey,
-  trackIdsOf,
-  type SheetLane,
-} from './animationRows'
+import { animationRows, trackIdsOf, type SheetLane } from './animationRows'
+import { CHANNEL_HEIGHT, SUBJECT_HEIGHT, mergedKeys, subjectKey } from '../timeline/bandRows'
 
 const CUBE = [{ id: 'cube', name: 'Circle' }]
 

@@ -1,5 +1,6 @@
+import { isRetargetRoute } from '@shared/domain/retargetWindow'
 import { orElse } from '@shared/promises'
-import { lazy, StrictMode, Suspense } from 'react'
+import { lazy, StrictMode, Suspense, type ReactNode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { isJournalRoute } from '@shared/domain/activity'
 import { isFileInfoRoute } from '@shared/domain/fileInfo'
@@ -8,8 +9,10 @@ import { isLicencesRoute } from '@shared/domain/licence'
 import { isManualRoute } from '@shared/domain/manual'
 import { isMirrorRoute } from '@shared/domain/mirror'
 import { isNewDocumentRoute } from '@shared/domain/newDocument'
+import { isPlayerModuleRoute } from '@shared/domain/playerModuleWindow'
 import { isSettingsRoute } from '@shared/domain/settings'
 import { isUsageRoute } from '@shared/domain/usage'
+import { isWelcomeRoute } from '@shared/domain/welcome'
 import { UNKNOWN_SYSTEM_LANGUAGE } from '@shared/i18n'
 import { Application } from '@/features/shell/components/Application'
 import { getBridge } from '@/services/bridge'
@@ -34,6 +37,10 @@ const language = await orElse(getBridge()?.window.language(), UNKNOWN_SYSTEM_LAN
 await initI18n(language)
 
 /** Same reason as the licences below, for another window's folder: registry, sections, draft. */
+const RetargetWindow = lazy(async () => ({
+  default: (await import('@/features/retarget/components/Retarget/RetargetWindow')).RetargetWindow,
+}))
+
 const SettingsWindow = lazy(async () => ({
   default: (await import('@/features/settings/components/SettingsWindow/SettingsWindow'))
     .SettingsWindow,
@@ -62,6 +69,12 @@ const GameWindow = lazy(async () => ({
   default: (await import('@/features/game/components/GameWindow/GameWindow')).GameWindow,
 }))
 
+/** Lazy for the same reason as the game window: it drags a `SceneRenderer`, and three.js with it. */
+const PlayerModuleWindow = lazy(async () => ({
+  default: (await import('@/features/player/components/PlayerModuleWindow/PlayerModuleWindow'))
+    .PlayerModuleWindow,
+}))
+
 /** Lazy for a harder reason than size: the charting library must stay out of the first frame. */
 const UsageWindow = lazy(async () => ({
   default: (await import('@/features/usage/components/Usage/Window/UsageWindow')).UsageWindow,
@@ -87,6 +100,10 @@ const NewDocumentWindow = lazy(async () => ({
     .NewDocumentWindow,
 }))
 
+const WelcomeWindow = lazy(async () => ({
+  default: (await import('@/features/welcome/components/WelcomeWindow')).WelcomeWindow,
+}))
+
 /**
  * Every application window loads the same bundle and reads the route from the fragment: the
  * i18n bootstrap, the tokens and the bridge are shared, and navigation is locked, so the
@@ -94,70 +111,24 @@ const NewDocumentWindow = lazy(async () => ({
  * has its own entry precisely so it never pulls this bundle in.
  */
 function Route({ hash }: { hash: string }) {
-  if (isSettingsRoute(hash)) {
-    return (
-      <Suspense fallback={null}>
-        <SettingsWindow />
-      </Suspense>
-    )
-  }
-  if (isJournalRoute(hash)) {
-    return (
-      <Suspense fallback={null}>
-        <JournalWindow />
-      </Suspense>
-    )
-  }
-  if (isLicencesRoute(hash)) {
-    return (
-      <Suspense fallback={null}>
-        <LicencesWindow />
-      </Suspense>
-    )
-  }
-  if (isUsageRoute(hash)) {
-    return (
-      <Suspense fallback={null}>
-        <UsageWindow />
-      </Suspense>
-    )
-  }
-  if (isGameWindowRoute(hash)) {
-    return (
-      <Suspense fallback={null}>
-        <GameWindow />
-      </Suspense>
-    )
-  }
-  if (isMirrorRoute(hash)) {
-    return (
-      <Suspense fallback={null}>
-        <MirrorWindow />
-      </Suspense>
-    )
-  }
-  if (isManualRoute(hash)) {
-    return (
-      <Suspense fallback={null}>
-        <ManualWindow />
-      </Suspense>
-    )
-  }
-  if (isFileInfoRoute(hash)) {
-    return (
-      <Suspense fallback={null}>
-        <FileInfoWindow />
-      </Suspense>
-    )
-  }
-  if (isNewDocumentRoute(hash)) {
-    return (
-      <Suspense fallback={null}>
-        <NewDocumentWindow />
-      </Suspense>
-    )
-  }
-  return <Application />
+  const window = windowFor(hash)
+  return window ? <Suspense fallback={null}>{window}</Suspense> : <Application />
+}
+
+function windowFor(hash: string): ReactNode {
+  if (isRetargetRoute(hash)) return <RetargetWindow />
+  if (isSettingsRoute(hash)) return <SettingsWindow />
+  if (isJournalRoute(hash)) return <JournalWindow />
+  if (isLicencesRoute(hash)) return <LicencesWindow />
+  if (isUsageRoute(hash)) return <UsageWindow />
+  if (isGameWindowRoute(hash)) return <GameWindow />
+  if (isPlayerModuleRoute(hash)) return <PlayerModuleWindow />
+  if (isMirrorRoute(hash)) return <MirrorWindow />
+  if (isManualRoute(hash)) return <ManualWindow />
+  if (isFileInfoRoute(hash)) return <FileInfoWindow />
+  if (isNewDocumentRoute(hash)) return <NewDocumentWindow />
+  if (isWelcomeRoute(hash)) return <WelcomeWindow />
+  return null
 }
 
 createRoot(root, ROOT_ERROR_REPORTING).render(

@@ -2,6 +2,7 @@ import {
   mdiCloudUploadOutline,
   mdiFileDocumentOutline,
   mdiImageMultipleOutline,
+  mdiImageRefreshOutline,
   mdiSendOutline,
   mdiShapeOutline,
   mdiTextBoxOutline,
@@ -122,17 +123,7 @@ function catalogueGroup(
     },
   ]
 
-  // Only for a mesh, because only a mesh keeps its pictures inside itself. Greyed when the file
-  // is not here — a row that appears and disappears with the selection is one nobody can learn.
-  if (asset?.type === 'mesh') {
-    rows.push({
-      label: t('assets.extractTextures'),
-      icon: mdiImageMultipleOutline,
-      tooltip: t('assets.extractTexturesHint'),
-      disabled: asset.location !== 'local',
-      onSelect: () => extractTextures(asset),
-    })
-  }
+  rows.push(...rowsForKind(asset, t))
 
   return {
     label: t('assets.catalogueGroup'),
@@ -155,4 +146,48 @@ function extractTextures(asset: Asset): void {
     // time, so a failure on the fourth leaves three in the catalogue — invisible until some
     // unrelated refresh, if only the happy path re-read the shelf.
     .finally(() => useAssets.getState().invalidate())
+}
+
+/**
+ * What only ONE kind of asset can be asked. Greyed rather than left out when the file is not
+ * here: a row that appears and disappears with the selection is one nobody can learn.
+ */
+function rowsForKind(asset: Asset | null, t: TFunction): ContextMenuAction[] {
+  // Only a mesh keeps its pictures inside itself.
+  if (asset?.type === 'mesh')
+    return [
+      {
+        label: t('assets.extractTextures'),
+        icon: mdiImageMultipleOutline,
+        tooltip: t('assets.extractTexturesHint'),
+        disabled: asset.location !== 'local',
+        onSelect: () => extractTextures(asset),
+      },
+    ]
+
+  // An animation's still is DRAWN rather than taken from the file, and the automatic pass skips
+  // a clip that already has one — without this a poor frame would be the one forever.
+  if (asset?.type === 'animation')
+    return [
+      {
+        label: t('assets.redrawPoster'),
+        icon: mdiImageRefreshOutline,
+        tooltip: t('assets.redrawPosterHint'),
+        disabled: asset.location !== 'local' || !asset.path,
+        onSelect: () => void redrawPoster(asset),
+      },
+    ]
+
+  return []
+}
+
+/**
+ * The still of one animation, drawn again over the one it has.
+ *
+ * The pass refreshes the shelf itself and reports its own failures, so there is nothing to catch
+ * here — but it is awaited inside a named function rather than left as a bare promise.
+ */
+async function redrawPoster(asset: Asset): Promise<void> {
+  const { generateAnimationThumbnails } = await import('@/services/animationThumbnails')
+  await generateAnimationThumbnails([asset], true)
 }

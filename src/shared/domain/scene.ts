@@ -1,437 +1,29 @@
-/**
- * What a scene is made of, shared by both processes. Like `domain/tool.ts`, it sits here
- * because the native menu needs the list and `shared/` cannot import from the renderer.
- *
- * The descriptors live here too, and not in `engines/`: they are the serialized form of a
- * document, which is what `shared/domain` is for — and it is what lets `MeshKind` be *derived*
- * from them instead of restated, so a geometry added without a menu entry fails to compile.
- */
 import type { FontRef } from './font'
-import type { BodyPart } from './humanoid'
-import type { Rig } from './rig'
-import type { Us } from './time'
-import type { GeometryDescriptor } from './geometry'
-import { EMPTY_STACK, type CameraPost, type PostStack } from './postProcessing'
+import { EMPTY_STACK, type PostStack } from './postProcessing'
+import { RELIEF_CHUNK_TEXELS } from './relief'
 import type { Vector3 } from './transform'
+import type { GeometryDescriptor } from './geometry'
+import {
+  UNLOCKED_TERRAIN,
+  GROUND_MATERIAL_CHANNELS,
+  type ReliefLayer,
+  type ScatterLayer,
+  type TerrainEditLayer,
+  type TextureRef,
+  type WorldLayer,
+} from './sceneModel'
+import type { TextureSlot } from './sceneTexture'
 
-/** Re-exported so the fifty-odd files that read a pose from here keep reading it from here. */
-export { isTransform, isVector3, type Transform, type Vector3 } from './transform'
+export * from './sceneModel'
+export * from './sceneTexture'
+export * from './scatter'
+export type { ReliefMask } from './relief'
 
-/** Re-exported for the same reason as the transform above: this is where a scene is read from. */
-export type { GeometryDescriptor } from './geometry'
-
-/**
- * A texture is a reference to an asset of the project, never an image and never a three.js
- * object: an engine is rebuilt from its serialized state, so what a document stores has to be
- * something a reload can resolve again. The engine loads it, caches it and frees it.
- */
-export type TextureRef = { assetId: string }
-
-/**
- * A camera the scene holds, as opposed to the one the viewport looks through. It is a node like
- * any other — pickable, movable, animatable by a track — and glTF carries one, so it survives an
- * export where a viewport setting never could.
- */
-export type CameraDescriptor = {
-  /** Vertical field of view, in degrees, as every other angle a person types. */
-  fov: number
-  near: number
-  far: number
-  /**
-   * What this camera does with the scene's composition. Absent on every camera ever written,
-   * and absent means `inherit` — see `postOf`, the one place that says so.
-   */
-  post?: CameraPost
-}
-
-export const DEFAULT_CAMERA: CameraDescriptor = Object.freeze({ fov: 50, near: 0.1, far: 1000 })
-
-/**
- * A rail: the line a camera runs along during a shot.
- *
- * A node of the scene like any other, so it inherits the outliner row, the selection, the gizmo,
- * the rename, the visibility, undo, copy and paste — everything `SceneNode` already gives.
- *
- * `kind` is an open union: a Bézier one would be another value here, and no document written
- * before it would have to be migrated.
- */
-export type PathDescriptor = {
-  kind: 'catmullrom'
-  /** In the node's OWN frame, so moving the rail moves the trajectory. Two at the very least. */
-  points: readonly Vector3[]
-  closed: boolean
-  /** Catmull-Rom tension: 0 is angular, 0.5 is three.js's own default. */
-  tension: number
-}
-
-export const DEFAULT_PATH: PathDescriptor = Object.freeze({
-  kind: 'catmullrom',
-  // Five units apart along Z, which is the axis a camera born from the Add menu looks down.
-  points: Object.freeze([
-    Object.freeze({ x: 0, y: 0, z: 0 }),
-    Object.freeze({ x: 0, y: 0, z: -5 }),
-  ]),
-  closed: false,
-  tension: 0.5,
-})
-
-/**
- * An imported model, for the same reason and in the same shape as a texture: what a document
- * stores is what a reload can resolve again.
- *
- * One node holding a reference, never a subtree of nodes. A single GLB brings meshes by the
- * thousand, and a save was measured freezing every window past ~5500 nodes — the document grows
- * by one row here whatever the file weighs. The cost is that the inside of a model cannot be edited;
- * that is the right trade for a generation studio, and an explicit "explode" command is what
- * would lift it the day it matters.
- */
-export type ModelRef = {
-  assetId: string
-  /** The skeleton the studio put on this model. The one exception to the rule above — see `rig.ts`. */
-  rig?: Rig
-  /** What plays on this model: one lane per layer, and the blocks inside each. */
-  lanes?: readonly ClipLane[]
-  /**
-   * @deprecated Read when a document written before lanes existed is opened, and folded into a
-   * single lane. Never written again.
-   */
-  clips?: readonly ClipRef[]
-  /**
-   * @deprecated Read when a document written before clips were plural is opened, and converted
-   * into a single `ClipRef`. Never written again.
-   */
-  animation?: AnimationRef
-  /** What covers this model. Absent leaves it wearing what its own file carries. */
-  dress?: ModelDressRef
-  /**
-   * @deprecated Read when a document written before `dress` existed is opened, and folded into a
-   * one-entry `materials`. Never written again.
-   */
-  materialDocumentId?: string
-}
-
-/**
- * What covers a model: ONE picture, or the material documents it wears — never both.
- *
- * A union rather than two fields, so a model dressed BOTH ways cannot be written at all: the two
- * modes contradict each other, and holding them apart by convention is how they would drift.
- *
- * `image` is the simple mode — one picture as the base colour of the whole model, which is what
- * Roblox's `TextureID` is. Nothing is derived from it: a normal computed from the luminance of a
- * photograph turns painted shadow into relief, and that guess belongs to the other mode, where
- * the user asks for it channel by channel and sees the result.
- *
- * `materials` is the advanced mode — Blender's material slots and Unreal's material elements. One
- * document id per slot, in the order the file's own materials come, and a REFERENCE rather than a
- * copy: what a material holds is resolved when the scene is READ, so editing it reaches every
- * model wearing it. An empty entry leaves that slot wearing the file's own material.
- *
- * Both ride in `extras[studio]` verbatim, so no glTF reader sees them and no format head changes.
- */
-export type ModelDressRef =
-  { kind: 'image'; assetId: string } | { kind: 'materials'; documentIds: readonly string[] }
-
-/**
- * The empty slot of either mode: a picture not chosen yet, a slot keeping the file's own material.
- *
- * Stored rather than folded back to no dress at all, and that is what makes the mode STICK: a
- * panel switched to one mode and not filled in must stay in it, or the choice undoes itself
- * under the hand that made it.
- *
- * Read through `isWorn` and never compared to directly: every reader tested falsiness instead, so
- * the constant could not have changed value without breaking them all in silence.
- */
-export const NOTHING_WORN = ''
-
-/**
- * How many material slots a model may be given. The list GROWS to reach the slot named, so an
- * outside caller asking for a millionth one would allocate a million empty rows.
- */
-export const MATERIAL_SLOTS = 64
-
-/** Whether a slot of either mode names something. The one reading of `NOTHING_WORN`. */
-export function isWorn(id: string | undefined): id is string {
-  return id !== undefined && id !== NOTHING_WORN
-}
-
-/**
- * The material documents a model wears, slot by slot — empty for one dressed any other way.
- *
- * The empty answer is SHARED: a fresh array is a new snapshot on every call, which is a render
- * loop the day this is read inside a zustand selector.
- */
-export function wornMaterials(dress: ModelDressRef | undefined): readonly string[] {
-  return dress?.kind === 'materials' ? dress.documentIds : NO_MATERIALS
-}
-
-const NO_MATERIALS: readonly string[] = Object.freeze([])
-
-/**
- * One slot of a material list, the rest carried over — and the list GROWN to reach it when the
- * slot sits past its end, since a model's slots come from its file and the list may not have
- * caught up. The gap fills with empty slots rather than shifting what is already worn.
- */
-export function withMaterialAt(
-  worn: readonly string[],
-  slot: number,
-  documentId: string,
-): readonly string[] {
-  if (slot < 0 || slot >= MATERIAL_SLOTS || !Number.isInteger(slot)) return worn
-
-  const next = [...worn]
-  while (next.length <= slot) next.push(NOTHING_WORN)
-  next[slot] = documentId
-  return next
-}
-
-/**
- * What a MATERIAL is worth to a model — its maps by slot, and the dials a plain standard material
- * reads. Resolved from the document the node names, never stored on the node.
- */
-export type ModelDress = {
-  textures: Partial<Record<TextureSlot, TextureRef>>
-  /** Absent where nothing is set — an empty finish still costs a `needsUpdate` per material. */
-  material?: ModelMaterial
-}
-
-/** What a model wears over its file. Every field optional: absent leaves what the glTF said. */
-export type ModelMaterial = {
-  color?: string
-  roughness?: number
-  metalness?: number
-  normalScale?: number
-  aoIntensity?: number
-  emissive?: string
-  emissiveIntensity?: number
-  /** Repeat and shift of every map at once — applied to the textures, not to the material. */
-  tiling?: { x: number; y: number }
-  offset?: { x: number; y: number }
-  /** Radians. */
-  rotation?: number
-}
-
-/**
- * Which clip of a model plays, and how. Absent on a model carrying none, and on every document
- * written before animation existed — the reader fills it in rather than refusing the node.
- *
- * The head position is part of it on purpose: an engine is rebuilt from its state, and a scene
- * reopened on frame one would lose the pose its author saved it on.
- */
-export type AnimationRef = {
-  /** The clip's name as the file spells it. A name the file no longer holds simply plays nothing. */
-  clip: string
-  playing: boolean
-  /**
-   * Where the head stands inside the clip, in SECONDS — three's mixer counts in them and this
-   * rides straight into it. The scene's own timeline counts in microseconds (`Keyframe.time`):
-   * the two meet only through `secondsToUs`, never by being handed to one another.
-   */
-  time: number
-  /** A multiplier, never a frame rate: the clip carries its own timing. */
-  speed: number
-  loop: boolean
-  /**
-   * Where the block sits on the scene's band, in MICROSECONDS — the unit that band counts in,
-   * unlike `time` just above, which is three's own clock inside the clip.
-   *
-   * It is what makes a clip a block one can move rather than something that simply runs: before
-   * the head reaches it the model stands at its rest pose, and the render walks it frame by
-   * frame instead of leaving it wherever real time happened to leave it.
-   */
-  start: Us
-}
-
-/**
- * Where a clip's frames come from.
- *
- * `embedded` is the file the model itself is: the name is the one the GLB spells. `bundled` is a
- * folder shipped beside the app, named by that FOLDER — never by what its clip spells, which is
- * `NlaTrack` on a Tripo rig and nothing at all on Uthana's. `asset` is a clip of the project's
- * own library, reusable by any character.
- */
-export type ClipSource =
-  | { kind: 'embedded'; name: string }
-  | { kind: 'bundled'; name: string }
-  | { kind: 'asset'; assetId: string; name: string }
-
-export const CLIP_SOURCES: readonly ClipSource['kind'][] = ['embedded', 'bundled', 'asset']
-
-/**
- * What a block may be sped up or slowed to. Zero would make it infinitely long, and past four
- * times a motion reads as a glitch rather than as a faster move.
- *
- * Here rather than in the engine that reads it, for the reason `TILES_PER_METRE` is: it bounds
- * what a DOCUMENT may hold, so the registry on this side of the boundary can state it too.
- */
-export const CLIP_SPEED = Object.freeze({ min: 0.1, max: 4 })
-
-/** Seconds. Past a second a transition stops reading as one move joining another. */
-export const MAX_CLIP_FADE = 1
-
-/**
- * What a block's clip is filed under, wherever a player or a length is kept by name.
- *
- * The kind is part of it, and that is the whole point: an animation shipped as `walk` and a clip
- * the model's own file spells `walk` are two different things, and a bare name would play one
- * for the other.
- */
-export function clipKeyOf(source: ClipSource): string {
-  if (source.kind === 'embedded') return source.name
-  // The id and not the name: two library clips may well be called the same thing.
-  return source.kind === 'asset' ? `asset:${source.assetId}` : `bundled:${source.name}`
-}
-
-/**
- * One block of animation on a model's band.
- *
- * MIND THE UNITS, and they are not the same in both halves of this type: `start`, `duration`,
- * `fadeIn` and `fadeOut` are MICROSECONDS, the unit the band counts in; `offset` is SECONDS,
- * three's own clock inside the clip. The two meet only through `secondsToUs` / `usToSeconds`,
- * never by being handed to one another.
- */
-export type ClipRef = {
-  /** Minted by the studio, so two blocks of the same clip are still two blocks. */
-  id: string
-  source: ClipSource
-  /**
-   * The words shown for this block. The studio OWNS them and never takes them from the file:
-   * a Tripo rig spells its only clip `NlaTrack`, and Uthana's carries no name at all.
-   */
-  label: string
-  /** Where the block sits on the band. */
-  start: Us
-  /** How much band it takes. `0` means "not measured yet" — the length lives in the file. */
-  duration: Us
-  /** Where playback starts INSIDE the clip, in three's seconds. */
-  offset: number
-  /** A multiplier, never a frame rate: the clip carries its own timing. */
-  speed: number
-  loop: boolean
-  fadeIn: Us
-  fadeOut: Us
-  /** `auto` lets the studio decide from what the clip actually holds. */
-  rootMotion: RootMotion
-  /**
-   * Which bones this block drives. Absent is the whole body — what every document written before
-   * this field says, and what a lone block wants anyway.
-   *
-   * It is what makes « walking AND raising the arms » something other than the average of the
-   * two: blocks driving different halves stop sharing the pose out between them.
-   */
-  part?: BodyPart
-}
-
-/**
- * One layer of blocks on a model's track, and several of them stack.
- *
- * A lane is what makes two moves play AT ONCE — a walk under a wave — where blocks laid in one
- * lane simply take turns. It exists even while empty: an object has its lane before it has
- * anything to put in it.
- */
-export type ClipLane = {
-  id: string
-  clips: readonly ClipRef[]
-}
-
-/**
- * The lane a document written before lanes existed describes, and the one a model is given when
- * it first needs somewhere to drop a block. Fixed rather than minted, so reopening a file twice
- * gives the same document.
- */
-export const MAIN_LANE_ID = 'main'
-
-export function clipLane(id: string, clips: readonly ClipRef[] = []): ClipLane {
-  return { id, clips }
-}
-
-export type RootMotion = 'inPlace' | 'travel' | 'auto'
-
-export const ROOT_MOTIONS: readonly RootMotion[] = ['inPlace', 'travel', 'auto']
-
-/** What a block is worth before anything is chosen for it. */
-export const DEFAULT_CLIP: Omit<ClipRef, 'id' | 'source' | 'label'> = Object.freeze({
-  start: 0,
-  duration: 0,
-  offset: 0,
-  speed: 1,
-  loop: true,
-  fadeIn: 0,
-  fadeOut: 0,
-  rootMotion: 'auto',
-})
-
-/**
- * A block on one of the clips a model's own file brought.
- *
- * `extra` goes UNDER the identity, so carrying a previous block over cannot smuggle in the clip
- * it used to play.
- */
-export function embeddedClip(id: string, name: string, extra: Partial<ClipRef> = {}): ClipRef {
-  return { ...DEFAULT_CLIP, ...extra, id, source: { kind: 'embedded', name }, label: name }
-}
-
-/** A block on an animation shipped with the app, named — and labelled — by its folder. */
-export function bundledClip(id: string, name: string, extra: Partial<ClipRef> = {}): ClipRef {
-  return { ...DEFAULT_CLIP, ...extra, id, source: { kind: 'bundled', name }, label: name }
-}
-
-/**
- * A block on an animation the PROJECT holds: a file of its own, played on another character.
- *
- * The name is the asset's, which is a file's stem rather than anything the clip inside spells —
- * `NlaTrack` and `animation_0` are what those spell, and neither may reach the screen.
- */
-export function assetClip(
-  id: string,
-  assetId: string,
-  name: string,
-  extra: Partial<ClipRef> = {},
-): ClipRef {
-  return { ...DEFAULT_CLIP, ...extra, id, source: { kind: 'asset', assetId, name }, label: name }
-}
-
-/**
- * The block a document written before clips were plural describes.
- *
- * The id is fixed rather than minted so that reopening a file twice gives the same document; that
- * form holds one clip per model, so a constant is unique where it has to be.
- */
-export function clipFromAnimation(animation: AnimationRef): ClipRef {
-  return embeddedClip('legacy', animation.clip, {
-    // Checked rather than read: `start` came late, and a document older than it holds none —
-    // the reader that lets such a node through does not require it either.
-    start: Number.isFinite(animation.start) ? animation.start : 0,
-    offset: animation.time,
-    // `playing` is deliberately dropped: whether a block runs on real time is session state now
-    // (see `SelfPlay`), and a document reopening mid-walk would put an undo entry behind a play
-    // button.
-    speed: animation.speed,
-    loop: animation.loop,
-  })
-}
-
-/**
- * What lights a viewport, and the same three-way choice a model's dress is: nothing of the
- * project, one PICTURE, or a DOCUMENT the scene follows.
- *
- * `studio` is procedural — three builds a small lit room and prefilters it — so a brand new
- * document is already lit without the studio shipping an HDRI.
- *
- * `skybox` is one picture, hung as it is. `sky` names a sky DOCUMENT and takes everything it
- * says: the graded picture, its sun, its environment intensity. A reference and not a copy, so
- * turning the sun in that document turns the shadows of every scene naming it.
- */
 export type EnvironmentRef =
   { kind: 'studio' } | { kind: 'skybox'; assetId: string } | { kind: 'sky'; documentId: string }
 
 export const STUDIO_ENVIRONMENT: EnvironmentRef = Object.freeze({ kind: 'studio' })
 
-/**
- * Derived, never restated — the same rule `BACKGROUND_KINDS` follows.
- *
- * The two are EXCLUSIVE, and that is the whole reason a panel names them: a scene is lit by one
- * prefiltered map, so choosing a sky is what puts the procedural studio out.
- */
 export const ENVIRONMENT_KINDS: readonly EnvironmentRef['kind'][] = ['studio', 'skybox', 'sky']
 
 /**
@@ -563,6 +155,64 @@ export const DEFAULT_GROUND: GroundDescriptor = Object.freeze({
   receiveShadow: true,
 })
 
+/** A file that omits the placement: min corner at the world origin, side of the default ground. */
+export const DEFAULT_RELIEF_ORIGIN: ReliefLayer['origin'] = Object.freeze({ x: 0, z: 0 })
+export const DEFAULT_RELIEF_SIZE: ReliefLayer['size'] = Object.freeze({
+  x: DEFAULT_GROUND.size,
+  z: DEFAULT_GROUND.size,
+})
+export const DEFAULT_RELIEF_ELEVATION: ReliefLayer['elevation'] = Object.freeze({
+  min: 0,
+  max: 1,
+})
+export const DEFAULT_RELIEF_NAME = 'Terrain'
+export const DEFAULT_EDIT_NAME = 'Sculpt'
+/** Measured at 12/16 fragment samplers with IBL and one shadow on Apple M2 Max, 2026-09-04. */
+export const MAX_GROUND_MATERIALS = GROUND_MATERIAL_CHANNELS.length
+
+export function terrainEditLayer(
+  patch: Partial<TerrainEditLayer> & { id: string },
+): TerrainEditLayer {
+  return {
+    id: patch.id,
+    name: patch.name ?? DEFAULT_EDIT_NAME,
+    enabled: patch.enabled ?? true,
+    locked: patch.locked ?? false,
+    alpha: patch.alpha ?? 1,
+    ...(patch.sculpt && patch.sculpt.chunks.length > 0 ? { sculpt: patch.sculpt } : {}),
+    ...(patch.mask ? { mask: patch.mask } : {}),
+  }
+}
+
+export function enabledTerrains(layers: readonly WorldLayer[]): readonly ReliefLayer[] {
+  return layers.filter((layer): layer is ReliefLayer => layer.kind === 'relief' && layer.enabled)
+}
+
+export function enabledScatters(layers: readonly WorldLayer[]): readonly ScatterLayer[] {
+  return layers.filter((layer): layer is ScatterLayer => layer.kind === 'scatter' && layer.enabled)
+}
+
+export function reliefLayer(
+  heightmap: TextureRef,
+  patch: Partial<Omit<ReliefLayer, 'kind' | 'heightmap'>> & { id: string },
+): ReliefLayer {
+  return {
+    kind: 'relief',
+    id: patch.id,
+    name: patch.name ?? DEFAULT_RELIEF_NAME,
+    enabled: patch.enabled ?? true,
+    locked: patch.locked ?? UNLOCKED_TERRAIN,
+    heightmap,
+    origin: patch.origin ?? DEFAULT_RELIEF_ORIGIN,
+    size: patch.size ?? DEFAULT_RELIEF_SIZE,
+    elevation: patch.elevation ?? DEFAULT_RELIEF_ELEVATION,
+    grain: patch.grain ?? RELIEF_CHUNK_TEXELS,
+    edits: patch.edits ?? [],
+    groundMaterials: (patch.groundMaterials ?? []).slice(0, MAX_GROUND_MATERIALS),
+    groundWeights: patch.groundWeights ?? null,
+  }
+}
+
 /**
  * How a scene is WALKED rather than watched — what the window that plays a set will fly, and
  * what a template settles for it.
@@ -627,6 +277,8 @@ export type SceneWorld = {
    * through unless it says otherwise. Part of the document like the fog, and belonging to no node.
    */
   post: PostStack
+  /** Surface patches. World opens with the scene; a file that omits them reads as none. */
+  layers: readonly WorldLayer[]
 }
 
 export const DEFAULT_WORLD: SceneWorld = Object.freeze({
@@ -644,6 +296,7 @@ export const DEFAULT_WORLD: SceneWorld = Object.freeze({
   // Empty and ON: a scene opens composing nothing, and the switch is already where a first
   // effect will be compared from.
   post: EMPTY_STACK,
+  layers: Object.freeze([]),
 })
 
 /** Bounds a slider and a stored value are both held to. */
@@ -668,31 +321,6 @@ export const SHADOW_QUALITIES: readonly ShadowQuality[] = ['hard', 'soft']
 
 /** The sides a shadow map may take. A list, so a slider cannot suggest the values in between. */
 export const SHADOW_MAP_SIZES: readonly number[] = [512, 1024, 2048, 4096]
-
-/** The maps a `MeshStandardMaterial` reads, in the order the inspector lists them. */
-export type TextureSlot =
-  | 'map'
-  | 'normalMap'
-  | 'roughnessMap'
-  | 'metalnessMap'
-  | 'aoMap'
-  | 'emissiveMap'
-  /**
-   * Displaces VERTICES, so it shows nothing on a shape with no vertices to move — a plane of two
-   * triangles stays flat however strong the map. The material's own preview tessellates; a scene
-   * draws what its geometry has.
-   */
-  | 'displacementMap'
-
-export const TEXTURE_SLOTS: readonly TextureSlot[] = [
-  'map',
-  'normalMap',
-  'roughnessMap',
-  'metalnessMap',
-  'aoMap',
-  'emissiveMap',
-  'displacementMap',
-]
 
 export type MaterialDescriptor = {
   kind: 'standard'
@@ -808,6 +436,7 @@ export const MESH_ENTRIES: readonly SceneEntry<MeshKind>[] = [
   { kind: 'lathe' },
   { kind: 'octahedron' },
   { kind: 'plane' },
+  { kind: 'ribbon' },
   { kind: 'ring' },
   { kind: 'sphere' },
   { kind: 'tetrahedron' },
@@ -825,14 +454,24 @@ export type ExportFormat = 'glb' | 'gltf' | 'usdz' | 'obj' | 'ply' | 'stl'
 export const EXPORT_FORMATS: readonly ExportFormat[] = ['glb', 'gltf', 'usdz', 'obj', 'ply', 'stl']
 
 /** What is picked from the Add menu without being a mesh or a light. */
-export type ObjectKind = 'sprite' | 'text' | 'camera' | 'path'
+export type ObjectKind = 'sprite' | 'text' | 'camera' | 'path' | 'player'
 
 export const OBJECT_ENTRIES: readonly SceneEntry<ObjectKind>[] = [
   { kind: 'sprite' },
   { kind: 'text' },
   { kind: 'camera' },
   { kind: 'path' },
+  { kind: 'player' },
 ]
+
+/**
+ * A figure is a SET of meshes, never one shape: a silhouette wearing clothes needs a colour per
+ * part, and a node carries a single material. What the studio lays down is real mesh nodes an
+ * author can then edit one by one — see `figures.ts`.
+ */
+export type FigureKind = 'humanoid'
+
+export const FIGURE_ENTRIES: readonly SceneEntry<FigureKind>[] = [{ kind: 'humanoid' }]
 
 export const LIGHT_ENTRIES: readonly SceneEntry<LightKind>[] = [
   { kind: 'ambient' },
@@ -842,110 +481,4 @@ export const LIGHT_ENTRIES: readonly SceneEntry<LightKind>[] = [
   { kind: 'spot' },
 ]
 
-// How a scene is being looked at, and drawn, starts here. Session state, like an image document's
-// zoom: never saved with the document, and ⌘Z never touches it — the scene did not change, the
-// view did. Declared here rather than beside the renderer that applies them, and for the same
-// reason `MESH_ENTRIES` is: the native menu offers a row per value and is built in the main
-// process, which cannot import a renderer module.
-
-/** The six sides of the box a set is judged from. */
-export type ViewDirection = 'top' | 'bottom' | 'front' | 'back' | 'left' | 'right'
-
-export const VIEW_DIRECTIONS: readonly ViewDirection[] = [
-  'front',
-  'back',
-  'left',
-  'right',
-  'top',
-  'bottom',
-]
-
-/** A toolbar row and a menu row both carry a plain string: this turns one back into a direction. */
-export function isViewDirection(value: string): value is ViewDirection {
-  return VIEW_DIRECTIONS.some(direction => direction === value)
-}
-
-/**
- * What the viewport draws. The order is the order the key cycles through: the three the studio
- * opened with first, then the ones a model is judged by.
- *
- * `solid`, `matcap` and `density` paint every surface with one stand-in material, so what shows
- * is the SHAPE — a matcap reads curvature the way a clay render does, and density says which
- * object of a set carries the triangles. `material` keeps the real materials but drops the
- * scene's own lights, which is how a texture is judged without a light flattering it.
- *
- * `studio` goes one step further and drops the document's ENVIRONMENT too, lighting the subject
- * from three's own prefiltered room: it is the mode that still shows a mesh when the scene it
- * lives in is a night sky with no lamp in it.
- */
-export type DisplayMode =
-  | 'shaded'
-  | 'wireframe'
-  | 'both'
-  | 'solid'
-  | 'material'
-  | 'studio'
-  | 'matcap'
-  | 'density'
-  /** Surfaces barely there, so the skeleton inside is what reads. */
-  | 'ghost'
-  /** No surface at all. What is left is the skeleton, which is drawn outside the scene graph. */
-  | 'skeleton'
-
-export const DISPLAY_MODES: readonly DisplayMode[] = [
-  'shaded',
-  'wireframe',
-  'both',
-  'solid',
-  'material',
-  'studio',
-  'matcap',
-  'density',
-  'ghost',
-  'skeleton',
-]
-
-export function isDisplayMode(value: string): value is DisplayMode {
-  return DISPLAY_MODES.some(mode => mode === value)
-}
-
-/**
- * How much of a family of aids is drawn. `selected` is what the studio has always done for lights
- * and camera frustums, and stays the default: a directional light draws a line clear across the
- * scene, so three lamps shown at once is a viewport nobody can read.
- */
-export type HelperVisibility = 'off' | 'selected' | 'all'
-
-export const HELPER_VISIBILITIES: readonly HelperVisibility[] = ['off', 'selected', 'all']
-
-/**
- * Whether an aid is drawn for this node. Here rather than beside either of its callers: the
- * viewport draws light helpers and camera frustums, `viewportAids` draws boxes and origins, and
- * the two had the same expression written out twice.
- */
-export function showsAid(
-  visibility: HelperVisibility,
-  selected: ReadonlySet<string>,
-  id: string,
-): boolean {
-  return visibility === 'all' || (visibility === 'selected' && selected.has(id))
-}
-
-/**
- * How the viewport spends its pixels. It moves `pixelRatio` and nothing about the assets: a
- * texture is never resized, a geometry never simplified.
- */
-export type ViewportQuality = 'performance' | 'balanced' | 'high'
-
-export const VIEWPORT_QUALITIES: readonly ViewportQuality[] = ['performance', 'balanced', 'high']
-
-/**
- * The unit lengths are WRITTEN in. One scene unit is one metre and stays one metre — this changes
- * what a field shows and what it reads back, never what the scene holds.
- */
-export type DisplayUnit = 'mm' | 'cm' | 'm'
-
-export const DISPLAY_UNITS: readonly DisplayUnit[] = ['mm', 'cm', 'm']
-
-/** How much of a normal is drawn, relative to the object it stands on. */
-export const NORMAL_LENGTH = Object.freeze({ min: 0.01, max: 2, step: 0.01 })
+export * from './sceneViewport'

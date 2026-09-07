@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 
-import { bench, describe } from 'vitest'
+import { bench } from '@shared/vitestBench'
+
+import { describe } from 'vitest'
 import { STEP_SECONDS } from './gameLoop'
 import type { System, World } from './world'
 import { testWorld } from './world-fixtures'

@@ -1,6 +1,7 @@
 import type { CloudProviderId, HttpChat } from '@shared/domain/aiCloud'
 import type { AssistantThought } from '@shared/domain/assistant'
-import { askCloudChat, type CloudPoster } from '@main/ai/cloudChat'
+import { askCloudChat, takesTools, type CloudPoster } from '@main/ai/cloudChat'
+import { chatToolsFor, foldedReply } from './chatTools'
 import type { ChatTurn } from '@main/ai/localRuntimes'
 import { log } from '@main/log'
 import type { Credentials } from '@main/settings/accounts'
@@ -22,9 +23,9 @@ const ASK_TOKENS = 4096
  * the 437 scenarios of `pnpm banc` against deepseek-chat: 55% → 61% passed, 2 069 → 1 548 rounds,
  * 496 → 269 refusals.
  *
- * 🛑 That catalogue is GONE — the briefing now carries names and the manuals a chain opens, and
- * the widest one reachable runs 23 607 characters. Nothing is cut above 8 192 tokens, so this
- * number no longer constrains anything: it is what the door ASKS for, not what it needs.
+ * `[M]` A context-free turn still carried 108 426 characters on 2026-09-05: this room keeps every
+ * manual that fits, not only those a chain opened. This number therefore constrains the
+ * briefing, but it is still not the model's known window.
  *
  * 🛑 It budgets the BRIEFING and nothing else: `messagesFor` sends the history unbounded, where
  * `brainLocal` trims it through `promptWindow`. Ten blocks and a paste can add 110 020 characters
@@ -94,6 +95,7 @@ export function createHttpChatBrain({
     request: AssistantThought,
     briefing: Briefing,
     watch: TurnWatch,
+    native: boolean,
     complaint?: string,
   ) => {
     const held = credentials()
@@ -111,19 +113,22 @@ export function createHttpChatBrain({
       // The model is settled HERE and nowhere deeper: what a cloud is talked to with is a
       // setting, and the three request shapes below only ever read the one they were handed.
       const asked = { ...chat, model: model() }
+      // The tools follow the briefing SHOWN, expansions included: what has fields is callable.
+      const tools = native ? chatToolsFor(briefing.loaded) : undefined
       const answer = await askCloudChat(
         {
           chat: asked,
           key: held.key,
           messages,
+          images: request.images,
           json: true,
           maxTokens: ASK_TOKENS,
-          ...defined({ signal: watch.signal, onProgress: watch.onProgress }),
+          ...defined({ signal: watch.signal, onProgress: watch.onProgress, tools }),
         },
         send,
       )
       if (briefing.narrow === null) narrowed = true
-      return { answer, cost: 0 }
+      return { answer: foldedReply(answer), cost: 0 }
     } catch (error) {
       log.warn('assistant', `${chat.kind} thinking failed: ${String(error)}`)
       throw error
@@ -131,16 +136,25 @@ export function createHttpChatBrain({
   }
 
   return {
+    capabilities: async () => ({
+      streaming: true,
+      structuredJson: true,
+      multimodalImages: chat.multimodalImages === true && model() === chat.model,
+      maxOutputTokens: ASK_TOKENS,
+    }),
     // 🛑 None, and INVENTING one is the defect this says no to: neither figure below is a window,
     // both are briefing budgets, and one worn as a window is the `2 067 / 4 096` shown for
     // DeepSeek. No chat cloud here publishes its window over the API, so there is nothing to read.
     window: () => Promise.resolve(null),
     think: async (request, watch = {}) => {
+      // A mission alone has candidates to hand over as tools; the door says whether it takes them.
+      const native = request.candidates !== undefined && takesTools({ chat, ...watch })
       const composed = await briefingFor(
         request,
         roomFor(CLOUD_CONTEXT_TOKENS),
         notReady,
         roomFor(CLOUD_FALLBACK_TOKENS),
+        native,
       )
       // 🛑 Narrowed by the DOOR, not by the room: the names fit everywhere, so a door that has
       // already refused once would be composed the wide rules again and refuse them again — one
@@ -152,9 +166,10 @@ export function createHttpChatBrain({
       // whose window is far larger, off a number that only ever budgeted the briefing.
       return await answeredTurn(
         briefing,
-        (shown, complaint) => round(request, shown, watch, complaint),
+        (shown, complaint) => round(request, shown, watch, native, complaint),
         watch.onProgress,
         notesFor(cloud, model(), watch),
+        watch.discover,
       )
     },
   }

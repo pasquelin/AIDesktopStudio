@@ -1,4 +1,4 @@
 /* What macOS shows in its own permission dialog, above the Allow and Don't Allow buttons.
    Kept identical to `mac.extendInfo` in electron-builder.yml: that value is the fallback for
    any language with no .lproj of its own, and two wordings for one sentence would drift. */
-"NSMicrophoneUsageDescription" = "IA Studio uses the microphone to turn what you say into text, on this computer. Nothing you say is sent anywhere.";
+"NSMicrophoneUsageDescription" = "AI Desktop Studio uses the microphone to turn what you say into text, on this computer. Nothing you say is sent anywhere.";

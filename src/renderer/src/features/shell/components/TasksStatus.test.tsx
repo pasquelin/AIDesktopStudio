@@ -65,4 +65,12 @@ describe('the tasks indicator', () => {
     await userEvent.click(screen.getByRole('button'))
     expect(screen.getByText('Coucher')).toBeInTheDocument()
   })
+
+  it('shows a measured processing phase when the worker reports one', async () => {
+    showing({ id: 'a', label: 'Squelettage avancé', ratio: 0.4, phase: 'skinning' })
+    render(<TasksStatus />)
+
+    await userEvent.click(screen.getByRole('button'))
+    expect(screen.getByText('Calcul du skinning')).toBeInTheDocument()
+  })
 })

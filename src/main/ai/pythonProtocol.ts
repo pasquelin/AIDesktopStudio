@@ -16,13 +16,28 @@ export const PROTOCOL_VERSION = 2
 
 /** What the core answers itself, in the same turn — neither wakes a door. */
 export type EngineOp = 'hardware.info' | 'memory.ledger' | 'engine.requirements'
+export type EngineRequirementsProfile = 'diffusion' | 'autorig' | 'motion' | 'selection'
+/** Read back by `pythonProtocol.test.ts` against what the engine's supervisor accepts. */
+export const PROFILES: readonly EngineRequirementsProfile[] = [
+  'diffusion',
+  'autorig',
+  'motion',
+  'selection',
+]
 
 /**
  * What the core hands to a DOOR instead of answering. Each reads gigabytes or runs for seconds, so
  * each answers with the job it opened and pushes its result as an event.
  */
 export type EngineJobOp =
-  'models.load' | 'models.unload' | 'generate' | 'worker.status' | 'memory.info'
+  | 'models.load'
+  | 'models.unload'
+  | 'generate'
+  | 'auto-rig'
+  | 'selection.encode'
+  | 'selection.decode'
+  | 'worker.status'
+  | 'memory.info'
 
 /** Drops a request the engine still holds. Posted by `processClient` when a caller aborts. */
 export const CANCEL_OP = 'engine.cancel'
@@ -71,6 +86,7 @@ const jobProgress = z.object({
   evt: z.literal('job.progress'),
   job: z.string(),
   ratio: z.number(),
+  phase: z.string().optional(),
 })
 
 /**
@@ -97,6 +113,10 @@ const settledJob = z.object({
   tensorBytes: z.number().nullable().optional(),
   heldBytes: z.number().nullable().optional(),
   machine: z.unknown().optional(),
+  peakRssBytes: z.number().optional(),
+  width: z.number().optional(),
+  height: z.number().optional(),
+  alpha: z.string().optional(),
 })
 
 /** What the engine says about a frame it could not read: there is no run id to answer under. */

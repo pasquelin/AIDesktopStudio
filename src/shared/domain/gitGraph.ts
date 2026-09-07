@@ -57,35 +57,7 @@ export function laneLayout(commits: readonly GitCommit[]): GitGraph {
   let width = 0
 
   for (const commit of commits) {
-    const claimed = waiting.flatMap((hash, lane) => (hash === commit.hash ? [lane] : []))
-    const lane = claimed[0] ?? free(waiting)
-    const links: GitLink[] = []
-
-    // Branches that come back together. The dot is drawn once, in the first lane that was
-    // waiting; the others end here, and their columns are given back.
-    for (const merged of claimed.slice(1)) {
-      links.push({ from: merged, to: lane })
-      waiting[merged] = null
-    }
-
-    // Every other lane simply carries on down the row, and has to be drawn doing so — a line
-    // that stopped being emitted for one row would break in the middle of the graph.
-    for (const [index, hash] of waiting.entries()) {
-      if (hash !== null && index !== lane && !claimed.includes(index)) {
-        links.push({ from: index, to: index })
-      }
-    }
-
-    const [first, ...rest] = commit.parents
-    waiting[lane] = first ?? null
-    if (first !== undefined) links.push({ from: lane, to: lane })
-
-    for (const parent of rest) {
-      const already = waiting.indexOf(parent)
-      const target = already === -1 ? free(waiting) : already
-      waiting[target] = parent
-      links.push({ from: lane, to: target })
-    }
+    const { lane, links } = layoutRow(commit, waiting)
 
     width = Math.max(width, waiting.length, lane + 1)
     rows.push({ commit, lane, links })
@@ -94,6 +66,38 @@ export function laneLayout(commits: readonly GitCommit[]): GitGraph {
   // Beside the rows rather than on each of them: it is one number for the whole log, and a row
   // cannot say it anyway while there are commits below it that have not been placed.
   return { width, rows }
+}
+
+function layoutRow(
+  commit: GitCommit,
+  waiting: (string | null)[],
+): Pick<GitLaneRow, 'lane' | 'links'> {
+  const claimed = waiting.flatMap((hash, lane) => (hash === commit.hash ? [lane] : []))
+  const lane = claimed[0] ?? free(waiting)
+  const links = continuedLinks(waiting, claimed, lane)
+  const [first, ...rest] = commit.parents
+  waiting[lane] = first ?? null
+  if (first !== undefined) links.push({ from: lane, to: lane })
+  for (const parent of rest) {
+    const already = waiting.indexOf(parent)
+    const target = already === -1 ? free(waiting) : already
+    waiting[target] = parent
+    links.push({ from: lane, to: target })
+  }
+  return { lane, links }
+}
+
+function continuedLinks(waiting: (string | null)[], claimed: number[], lane: number): GitLink[] {
+  const links: GitLink[] = []
+  for (const merged of claimed.slice(1)) {
+    links.push({ from: merged, to: lane })
+    waiting[merged] = null
+  }
+  for (const [index, hash] of waiting.entries()) {
+    if (hash !== null && index !== lane && !claimed.includes(index))
+      links.push({ from: index, to: index })
+  }
+  return links
 }
 
 /** The leftmost lane nothing is waiting in, extending the row when they are all taken. */

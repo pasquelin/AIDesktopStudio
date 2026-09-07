@@ -117,8 +117,7 @@ export function createThumbnailCache(deps: ThumbnailCacheDeps): ThumbnailCache {
         return cached
       }
 
-      // A file nothing can draw is asked for again at every scroll, and answering costs a
-      // QuickLook attempt each time. Remembered by KEY, so the answer expires with the file.
+      // Remember failures by content key so scrolling does not retry an unchanged file.
       if (undrawable.has(key)) return null
 
       const rendered = await pool.run(() => deps.render(absolute, relative))
@@ -127,17 +126,12 @@ export function createThumbnailCache(deps: ThumbnailCacheDeps): ThumbnailCache {
         return null
       }
 
-      // Kept, never thrown: a project on a read-only share or a full disk would otherwise reject
-      // once per tile, and `useLoadable` remembers a failed URL as broken for the life of the
-      // window — four hundred glyphs where four hundred previews belong, until it reloads.
+      // A read-only or full volume costs this preview, not the whole listing.
       try {
         await mkdir(folder, { recursive: true })
-        // A staging name per CALL, never per process: every window is served by this one process,
-        // so a pid would be the same string for all of them — two of them would write into the
-        // file the other is having renamed, and publish a preview of nothing.
+        // A staging name per call prevents concurrent windows from sharing a temporary file.
         writes += 1
         await writeAtomic(cached, rendered, { staging: `${cached}.${writes}.tmp` })
-        // Stamped like a read, so freshness is one notion: written IS read, for what was asked.
         await touch(cached)
       } catch {
         return null

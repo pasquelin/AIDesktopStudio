@@ -170,10 +170,6 @@ const blur: EffectFactory = () => {
       writeVector(across.uniforms, 'texel', step.x, step.y)
       writeVector(down.uniforms, 'texel', step.x, step.y)
     },
-    setSize: (width, height) => {
-      across.setSize(width, height)
-      down.setSize(width, height)
-    },
     dispose: () => {
       across.dispose()
       down.dispose()

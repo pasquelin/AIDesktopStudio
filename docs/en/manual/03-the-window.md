@@ -279,6 +279,21 @@ have closed everything, every panel stays one click away.
 A click on an icon **opens** the panel; a second one **closes** it. A **separator** marks a
 zone's cut: the icons above it open in the first half, those below in the second.
 
+### Moving a panel
+
+**Drag its icon along the rail** and drop it where you want it: in the other half of the same
+column, in the other column, in the bottom band. A dashed frame shows where the panel will land,
+and an empty half opens during the gesture to offer itself.
+
+A panel **that was on screen** still is where it lands; a closed one moves without opening — the
+gesture does not force a column on you that you never asked for.
+
+> **Each workspace keeps its own arrangement.** Moving the Layers in the Image workspace moves
+> nothing in Video, nor on the home. What the six workspaces still share is what is **open** — a
+> library opened in Image is still open in Video.
+
+**View ▸ Reset layout** brings every panel back to its original place, everywhere.
+
 ### The left rail
 
 | Element | What it does |
@@ -560,7 +575,7 @@ simply not there.
 
 | Menu | What is in it |
 |---|---|
-| **IA Studio** | *macOS only*: About, **Settings…**, and the system's commands |
+| **AI Desktop Studio** | *macOS only*: About, **Settings…**, and the system's commands |
 | **File** | New project…, Open project…, Save, Save as…, Import ▸, Export ▸. **Off macOS, Settings… is here** |
 | **Edit** | Undo, Redo, and the system's text commands |
 | **Tools** | *Image workspace*: the eighteen tools of the bar, plus **Smaller** and **Larger brush** |
@@ -614,7 +629,7 @@ so and points to the settings.
 
 ### The licences window
 
-**Help ▸ Licences** lists the software IA Studio ships with: name, version, and the short
+**Help ▸ Licences** lists the software AI Desktop Studio ships with: name, version, and the short
 licence name (`MIT`, `Apache-2.0`…). Click a row: the **full text** unfolds, and the link to its
 sources appears when the licence requires it.
 

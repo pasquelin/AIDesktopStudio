@@ -2,6 +2,7 @@ import activity from './activity.json'
 import ai from './ai.json'
 import assets from './assets.json'
 import assistant from './assistant.json'
+import character from './character.json'
 import code from './code.json'
 import commands from './commands.json'
 import common from './common.json'
@@ -21,6 +22,7 @@ import settings from './settings.json'
 import shell from './shell.json'
 import ui from './ui.json'
 import usage from './usage.json'
+import welcome from './welcome.json'
 
 /**
  * The source bundle, split by functional surface. One flat file was the most contested path of
@@ -36,6 +38,7 @@ export const fr = {
   ...ai,
   ...assets,
   ...assistant,
+  ...character,
   ...code,
   ...commands,
   ...common,
@@ -55,6 +58,7 @@ export const fr = {
   ...material,
   ...ui,
   ...usage,
+  ...welcome,
 }
 
 /** The shape every other locale must have, in full. Named here because `fr` defines it. */

@@ -1,4 +1,5 @@
 import type { FieldDescriptor, FieldKind } from '@shared/domain/model'
+import { isGenerationCanvasSource } from '@shared/domain/generationComment'
 
 export type FormValues = Record<string, unknown>
 
@@ -148,7 +149,9 @@ export function referencePictures(
     // A repeated field holds several of them, and prompt assistance saw none of a multiview.
     const value = values[field.key]
     for (const one of Array.isArray(value) ? value : [value]) {
-      if (typeof one === 'string' && one.trim() !== '') pictures.push(one)
+      if (typeof one === 'string' && one.trim() !== '' && !isGenerationCanvasSource(one)) {
+        pictures.push(one)
+      }
     }
   }
 

@@ -195,9 +195,10 @@ describe('the keys the registry binds', () => {
   })
 
   /**
-   * ⌘Q, ⌘W, ⌘M: the desktop answers these before any window does, on all three systems. A
+   * ⌘Q, ⌘M: the desktop answers these before any window does, on all three systems. A
    * command holding one is unreachable AND takes a gesture nothing else can make — which is
    * exactly what ⌘Q did on a French keyboard, where the window read it as the canvas's ⌘A.
+   * ⌘W is the tab, so it is not on that list.
    */
   it('leaves the chords the desktop answers to the desktop', () => {
     for (const isMac of [true, false]) {
@@ -261,21 +262,28 @@ describe('the scope a document edits through', () => {
   })
 })
 
-describe('the commands that raise a system dialogue', () => {
+describe('the commands that raise a dialogue only a person can fill', () => {
   /**
-   * 🛑 A LIST, and it is an opt-in flag on 131 entries: written out so a sixth dialogue shows up
-   * here as a name rather than as a count nobody can act on. **Blind spot**: nothing detects a
-   * command that starts raising one later — this list is held by reading, not by the machine.
+   * 🛑 A LIST, and it is an opt-in flag on 132 entries: written out so a seventh shows up here as
+   * a name rather than as a count nobody can act on. **Blind spot**: nothing detects a command
+   * that starts raising one later — this list is held by reading, not by the machine.
+   *
+   * `app.new` is the one that is NOT a native picker: it opens a window of the studio's own that
+   * asks what to make. Same refusal, same reason — nothing here can fill it or read it back.
    */
-  it('names the five, so a sixth is a change somebody has to make on purpose', () => {
+  it('names every dialog command, so another is a deliberate change', () => {
     const raising = COMMAND_REGISTRY.filter(one => one.raisesDialog).map(one => one.id)
 
     expect([...raising].sort()).toEqual([
+      'app.new',
       'canvas.export',
       'canvas.exportLayered',
       'montage.import',
       'project.new',
       'project.open',
+      'scene.exportGame',
+      'scene.optimizeSelection',
+      'scene.worldPerformance',
     ])
   })
 })

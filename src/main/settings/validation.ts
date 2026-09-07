@@ -1,13 +1,15 @@
+import {
+  CUSTOM_DOLLIES,
+  CUSTOM_ORBITS,
+  CUSTOM_PANS,
+  FLY_MODES,
+  NAVIGATION_PRESETS,
+} from '@shared/domain/navigationPreset'
 import { currentModelFamily } from '@shared/domain/model'
 import { LANDING_CHOICES } from '@shared/domain/settings'
 import { isRecord, mapKeys } from '@shared/guards'
 import { z } from 'zod'
-import {
-  isCloudProviderId,
-  SCENARIO_CLOUD,
-  type CloudAuth,
-  type CloudProviderId,
-} from '@shared/domain/aiCloud'
+import { isCloudProviderId } from '@shared/domain/aiCloud'
 import { currentAiRoleKey, type RoleProvider } from '@shared/domain/aiRole'
 import { ASSISTANT_MODELS } from '@shared/domain/assistant'
 import { ASSISTANT_STEPS_DEFAULT, assistantStepsWithin } from '@shared/domain/assistantSteps'
@@ -22,11 +24,11 @@ import {
   type SettingsSectionId,
 } from '@shared/domain/settings'
 import { boundsOf, SETTING_ACTION_IDS, type SettingActionId } from '@shared/domain/settingsRegistry'
-import { ACCOUNT_NAME_MAX_LENGTH } from '@shared/domain/account'
 import { DICTATION_MODES } from '@shared/domain/dictation'
 import { isSignature } from '@shared/domain/shortcut'
 import { HOME_SECTION_IDS } from '@shared/domain/home'
-import { RECENT_PROJECTS_MAX } from '@shared/domain/project'
+import { RECENT_DOCUMENTS_MAX, RECENT_PROJECTS_MAX } from '@shared/domain/project'
+import { isDocumentKind, type DocumentKind } from '@shared/domain/document'
 import { WORKSPACE_IDS } from '@shared/domain/workspace'
 import {
   DISPLAY_UNITS,
@@ -39,7 +41,14 @@ import {
 import { HEX_COLOR } from '@shared/domain/color'
 import { localModelSchema } from '@main/ai/localModelSchema'
 import { migratedRoleChoices } from './migratedRoleChoices'
-import type { AccountBook, Credentials } from './accounts'
+export {
+  parseAccountId,
+  parseAccountName,
+  parseCloudProviderId,
+  parseCredentials,
+  parseStoredAccounts,
+  parseStoredCredentials,
+} from './credentialsValidation'
 
 // Built from the shared unions, never retyped — the same reason `provider/validation.ts` gives:
 // a hand-copied list silently stops accepting what the panel offers.
@@ -89,6 +98,14 @@ const recentProject = z.object({
   createdAt: z.string().min(1).optional(),
 })
 
+const recentDocument = z.object({
+  project: z.string().min(1),
+  path: z.string().min(1),
+  // Through the domain's own guard rather than a re-listed enum: one list of the kinds.
+  kind: z.custom<DocumentKind>(isDocumentKind),
+  openedAt: z.string().min(1),
+})
+
 const storage = z.object({
   backend: z.enum(['local', 'cloud']).optional(),
   projectsFolder: z.string().min(1).optional(),
@@ -96,6 +113,9 @@ const storage = z.object({
   // Bounded here as well as where it is written: the list is session state a hand-edited file
   // could grow without limit, and the home draws every entry it is given.
   recentProjects: z.array(recentProject).max(RECENT_PROJECTS_MAX).optional(),
+  // Same bound and same reason as above. A kind this build has never heard of drops the ENTRY
+  // rather than the branch: an unknown glyph is worse than a row that is not offered.
+  recentDocuments: z.array(recentDocument).max(RECENT_DOCUMENTS_MAX).optional(),
   // Declared here or dropped in silence: a zod object STRIPS what it does not name, and this
   // branch is reparsed on every settings write — which the project store does on every document
   // saved. The links would survive exactly until the next one.
@@ -117,6 +137,8 @@ const general = z.object({
   startup: z.enum(STARTUP_BEHAVIOURS).optional(),
   autosave: z.boolean().optional(),
 })
+
+const input = z.object({ gamepadNavigation: z.boolean().optional() })
 
 const homeSection = z.object({
   id: z.enum(HOME_SECTION_IDS),
@@ -173,6 +195,13 @@ const handles = boundsOf('three.gizmoSize')
 const three = z.object({
   showGrid: z.boolean().optional(),
   gridSize: z.number().int().min(grid.min).max(grid.max).optional(),
+  navigationPreset: z.enum(NAVIGATION_PRESETS).optional(),
+  navigationCustomOrbit: z.enum(CUSTOM_ORBITS).optional(),
+  navigationCustomPan: z.enum(CUSTOM_PANS).optional(),
+  navigationCustomDolly: z.enum(CUSTOM_DOLLIES).optional(),
+  navigationCustomFly: z.enum(FLY_MODES).optional(),
+  orbitAroundSelection: z.boolean().optional(),
+  orbitUnderCursor: z.boolean().optional(),
   flySpeed: z.number().min(fly.min).max(fly.max).optional(),
   boostFactor: z.number().min(boost.min).max(boost.max).optional(),
   fieldOfView: z.number().min(lens.min).max(lens.max).optional(),
@@ -244,6 +273,11 @@ const assistant = z.object({
   // a hand-edited thousand is a bill. `boundsOf` reads the registry, so the field and the file
   // cannot disagree.
   steps: z.number().int().catch(ASSISTANT_STEPS_DEFAULT).transform(assistantStepsWithin).optional(),
+})
+
+const onboarding = z.object({
+  version: z.number().int().min(0).optional(),
+  completedAt: z.string().min(1).optional(),
 })
 
 const mcp = z.object({
@@ -324,6 +358,7 @@ const partialSettingsShape = z.object({
   workspaces: workspaces.optional(),
   appearance: appearance.optional(),
   generation: generation.optional(),
+  input: input.optional(),
   storage: storage.optional(),
   three: three.optional(),
   shortcuts: shortcuts.optional(),
@@ -332,6 +367,7 @@ const partialSettingsShape = z.object({
   advanced: advanced.optional(),
   assistant: assistant.optional(),
   mcp: mcp.optional(),
+  onboarding: onboarding.optional(),
   dictation: dictation.optional(),
 })
 
@@ -378,6 +414,10 @@ function currentOwnModel(model: unknown): unknown {
   if (!isRecord(model)) return model
 
   const brought: Record<string, unknown> = { ...model }
+  // 🛑 A motion used to be a `mesh` that a `fieldProfile` took back, and the schema no longer
+  // names either field — so a model imported before the change came back off the disk as a plain
+  // mesh: gated on the 682 MB diffusion group, written `.ply`, filed as a mesh, with no word.
+  if (model.fieldProfile === 'motion') brought.modality = 'motion'
   if (typeof model.family === 'string') brought.family = currentModelFamily(model.family)
   if (Array.isArray(model.serves)) {
     brought.serves = model.serves.map(role =>
@@ -435,99 +475,4 @@ const settingAction = z.enum(SETTING_ACTION_IDS)
 
 export function parseSettingAction(value: unknown): SettingActionId {
   return settingAction.parse(value)
-}
-
-// Trimmed before the length check: a key pasted from a web page carries a trailing newline,
-// and the API answers 401 to a credential that only differs by whitespace.
-const credential = z.string().trim().min(1)
-
-export function parseCredentials(
-  key: unknown,
-  secret: unknown,
-  auth: CloudAuth = 'key-secret',
-): Credentials {
-  if (auth === 'key') return { key: credential.parse(key), secret: '' }
-
-  return { key: credential.parse(key), secret: credential.parse(secret) }
-}
-
-/** Absent or Scenario: every caller written before clouds were a list. */
-export function parseCloudProviderId(value: unknown): CloudProviderId {
-  if (value === undefined || value === null || value === '') return SCENARIO_CLOUD
-  if (!isCloudProviderId(value)) throw new Error(`unknown cloud: ${String(value)}`)
-  return value
-}
-
-const storedCredentials = z.object({ key: credential, secret: z.string().trim() })
-
-/**
- * Reads back what this process wrote, on the same `credential` schema as the input path. A
- * hand-rolled guard accepting `{key:'',secret:''}` once made `hasCredentials()` answer true on
- * a blank pair: the account screen claimed to be configured while every call answered 401.
- */
-export function parseStoredCredentials(plain: string): Credentials | null {
-  const parsed = storedCredentials.safeParse(JSON.parse(plain))
-  return parsed.success ? parsed.data : null
-}
-
-const accountName = z.string().trim().min(1).max(ACCOUNT_NAME_MAX_LENGTH)
-const accountId = z.string().trim().min(1)
-
-/**
- * A type guard, not the rule. `checkAccountName` owns what makes a name acceptable, and it
- * answers a code the screen can translate — refusing here instead would surface a name that is
- * merely too long as an unexplained rejected call.
- */
-export function parseAccountName(value: unknown): string {
-  return z.string().parse(value)
-}
-
-/** Throws: the id names what gets written, and a renderer sends it. */
-export function parseAccountId(value: unknown): string {
-  return accountId.parse(value)
-}
-
-const storedAccount = z.object({
-  id: accountId,
-  name: accountName,
-  credentials: storedCredentials,
-  // Absent on every key written before clouds became a list, and `providerOf` reads that absence
-  // as Scenario — which is why no stored file has to be rewritten.
-  providerId: z.string().min(1).optional(),
-})
-
-const storedBook = z.object({
-  // `catch` per entry rather than on the array: one unreadable account costs its own row, not
-  // every key the user holds.
-  accounts: z.array(storedAccount.nullable().catch(null)),
-  // The shape written since clouds became a list. Caught like an entry: a corrupt pointer costs
-  // the pointer, not the whole book.
-  activeByProvider: z.record(z.string().min(1), z.string().min(1)).catch({}).optional(),
-  // What the same file held before. Read only to be MIGRATED below — never written again.
-  activeId: z.string().min(1).nullable().catch(null).optional(),
-})
-
-/**
- * Reads a book back from disk, keeping whatever still parses — and repairing nothing.
- *
- * The repair is `settleBook`, and it runs one step later. A pointer that names nothing is
- * repointed there, not here: this function only parses.
- *
- * A book written before clouds became a list carries `activeId` and no `providerId` anywhere: its
- * pointer is read as Scenario's, which is what it always was. Nothing is rewritten until the next
- * write, and `settleBook` repairs whatever the migration could not name.
- *
- * Null means the blob is not a book at all, which is what tells the caller to look for a lone
- * pair to migrate instead.
- */
-export function parseStoredAccounts(plain: string): AccountBook | null {
-  const parsed = storedBook.safeParse(JSON.parse(plain))
-  if (!parsed.success) return null
-
-  const migrated = parsed.data.activeId ? { [SCENARIO_CLOUD]: parsed.data.activeId } : {}
-
-  return {
-    accounts: parsed.data.accounts.filter(entry => entry !== null),
-    activeByProvider: parsed.data.activeByProvider ?? migrated,
-  }
 }

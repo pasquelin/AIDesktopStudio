@@ -3,6 +3,7 @@ import type { PythonClient, PythonListeners } from './pythonClient'
 import {
   BACKOFF_BASE_MS,
   createPythonSupervisor,
+  EngineMissingError,
   FAILURE_WINDOW_MS,
   MAX_FAILURES,
   type PythonSupervisorHost,
@@ -102,6 +103,27 @@ describe('holding one engine', () => {
 
     expect(await starting).toBeNull()
     expect(held.opened[0]?.close).toHaveBeenCalled()
+  })
+})
+
+describe('an engine that is not on this disk', () => {
+  // A worktree without `pnpm engine:fetch` — measured 2026-09-06: three spawns, three ENOENT,
+  // a backoff between each, and a job that ended on the word `rejected`.
+  it('gives up at once and says the engine is not installed', async () => {
+    let opens = 0
+    const supervisor = createPythonSupervisor({
+      open: () => {
+        opens += 1
+        throw new EngineMissingError('/nowhere/python3')
+      },
+      now: () => 0,
+      delay: () => Promise.resolve(),
+    })
+
+    expect(await supervisor.engine()).toBeNull()
+    expect(await supervisor.engine()).toBeNull()
+    expect(opens).toBe(1)
+    expect(supervisor.whyNot()).toBe('engine-missing')
   })
 })
 

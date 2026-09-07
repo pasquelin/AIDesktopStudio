@@ -97,6 +97,10 @@ async function forget(): Promise<void> {
 
 async function answer(request: EmbedJob, signal: AbortSignal): Promise<unknown> {
   if (request.op === 'load') return await load(request)
+  if (request.op === 'close') {
+    await forget()
+    return
+  }
 
   const current = engine
   // Raised rather than answered empty: an empty batch reads as a model that found nothing to say.

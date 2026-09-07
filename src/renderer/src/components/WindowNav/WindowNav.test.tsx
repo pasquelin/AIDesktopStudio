@@ -56,13 +56,20 @@ describe('WindowNavItem', () => {
   })
 
   /**
-   * The windows speak DaisyUI's tokens and the docks speak the studio's. An entry reaching for a
-   * dock's skin would look like a panel control inside an ordinary window.
+   * 🛑 An entry of this column is CHOSEN, not actioned, and the studio tells the two apart by one
+   * token — `accent-soft`, the accent thinned. A full blue here reads as a control, and sat beside
+   * the folder browser of the new-document window, which paints a picked row soft, it said the
+   * two selections were different things.
+   *
+   * Not a breach of the boundary the file above draws: that one is about the class STRINGS of
+   * `components/styles.ts`, which speak names DaisyUI never heard of. `accent-soft` is declared in
+   * the `@theme` block and belongs to neither vocabulary.
    */
-  it('wears the window vocabulary, not the docks', () => {
+  it('paints a chosen entry with the accent thinned, never a full blue', () => {
     render(entry({ active: true }))
 
-    expect(screen.getByRole('button')).toHaveClass('bg-primary')
+    expect(screen.getByRole('button')).toHaveClass('bg-accent-soft')
+    expect(screen.getByRole('button')).not.toHaveClass('bg-primary')
   })
 })
 

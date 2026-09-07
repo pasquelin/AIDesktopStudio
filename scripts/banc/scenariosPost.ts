@@ -162,7 +162,7 @@ export const POST_SCENARIOS: readonly Scenario[] = [
     said: ['Retire la clé posée sur la force du halo lumineux.'],
     setup: async studio => {
       await composing(studio)
-      await studio.run('post.key', {
+      await studio.run('post.addKeyframe', {
         effectId: effectAt(studio, 0),
         param: 'strength',
         value: 2,

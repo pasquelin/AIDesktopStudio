@@ -1,4 +1,5 @@
-import { bench, describe } from 'vitest'
+import { bench } from '@shared/vitestBench'
+import { describe } from 'vitest'
 import { meshNode } from './scene-fixtures'
 import { sceneFromPayload } from './sceneDocument'
 import { DEFAULT_MATERIAL, type SceneNode } from './sceneState'

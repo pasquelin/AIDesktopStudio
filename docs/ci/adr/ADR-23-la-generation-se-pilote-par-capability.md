@@ -80,7 +80,7 @@ peut servir localement mérite d'être dit :
   `VAST-AI/UniRig`, aucun `.py` dans le dépôt de poids, format `.ckpt` avec une conversion
   communautaire en safetensors (`apozz/UniRig-safetensors`, MIT). Il franchit `ADMITTED_LICENCES`,
   `admitsLoad` et `weightsCarryCode`, et le vendoring de son code emprunterait le mécanisme que
-  `engine/src/ia_studio_engine/vendor/` sert déjà à cinq arbres. Candidat, pas une décision : il
+  `engine/src/aidesktopstudio_engine/vendor/` sert déjà à cinq arbres. Candidat, pas une décision : il
   manquerait une porte `engine/rig`, `core/router.py` n'en déclarant que cinq.
 - `[D]` **MDM** — code MIT, mais les poids sont sur Google Drive, ce que `ModelFile` ne peut ni
   épingler ni vérifier, et le pipeline dépend de SMPL, sous licence de recherche non commerciale.

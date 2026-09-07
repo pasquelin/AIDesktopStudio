@@ -27,15 +27,22 @@ const PROJECT = '/projects/One'
 let catalog: AsyncCatalog
 let written: Asset[]
 
-/** Writes where the real one writes — the path is what the idempotence is read from. */
+/**
+ * Writes where the real one writes — the path is what the idempotence is read from, and honouring
+ * `resource` is what makes this double able to see the folder at all.
+ */
 function backend(): LocalBackend {
-  const importFromBytes = async (request: { id: string; name: string }): Promise<Asset> => {
+  const importFromBytes = async (request: {
+    id: string
+    name: string
+    resource?: true
+  }): Promise<Asset> => {
     const asset: Asset = {
       id: request.id,
       name: request.name,
       type: 'image',
       location: 'local',
-      path: `Images/${request.name}.png`,
+      path: `${request.resource ? '.resources/Materials' : 'Images'}/${request.name}.png`,
       tags: [],
       createdAt: '2026-08-20T10:00:00.000Z',
     }
@@ -97,10 +104,10 @@ describe('the working textures shipped with the app', () => {
       'checkerSmall',
     ])
     expect(written.map(asset => asset.path)).toEqual([
-      'Images/GridLarge.png',
-      'Images/GridSmall.png',
-      'Images/CheckerLarge.png',
-      'Images/CheckerSmall.png',
+      '.resources/Materials/GridLarge.png',
+      '.resources/Materials/GridSmall.png',
+      '.resources/Materials/CheckerLarge.png',
+      '.resources/Materials/CheckerSmall.png',
     ])
   })
 
@@ -122,7 +129,7 @@ describe('the working textures shipped with the app', () => {
   it('writes again the one whose file has gone, keeping the id its scenes point at', async () => {
     const folder = shippedFolder()
     const first = await install(folder)
-    onDisk.delete(`${PROJECT}/Images/CheckerLarge.png`)
+    onDisk.delete(`${PROJECT}/.resources/Materials/CheckerLarge.png`)
     written = []
 
     const second = await install(folder, 100)
@@ -136,8 +143,8 @@ describe('the working textures shipped with the app', () => {
    * its four under `Textures/` would otherwise take four more under `Images/`, and its meshes
    * would go on wearing the first four.
    */
-  it.each(['Textures', 'Materials'])(
-    'keeps the four a project filed under %s, before the folder settled',
+  it.each(['Textures', 'Images', 'Materials'])(
+    'keeps the four a project filed under %s, before `.resources/` existed',
     async folder => {
       const former: Asset = {
         id: 'asset_filed_before',
@@ -153,11 +160,15 @@ describe('the working textures shipped with the app', () => {
 
       const installed = await install(shippedFolder())
 
-      expect(installed[0]).toEqual({ id: 'gridLarge', assetId: former.id })
+      expect(installed[0]).toEqual({
+        id: 'gridLarge',
+        assetId: former.id,
+        path: former.path,
+      })
       expect(written.map(asset => asset.path)).toEqual([
-        'Images/GridSmall.png',
-        'Images/CheckerLarge.png',
-        'Images/CheckerSmall.png',
+        '.resources/Materials/GridSmall.png',
+        '.resources/Materials/CheckerLarge.png',
+        '.resources/Materials/CheckerSmall.png',
       ])
     },
   )

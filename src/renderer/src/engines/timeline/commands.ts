@@ -11,13 +11,9 @@ import {
   editableTrack,
   insertClip,
   linkedClipIds,
-  makeTrack,
   newClipId,
-  nextTrackId,
-  reindexTracks,
   selectClip,
   snapToFrame,
-  trackById,
   trackOfClip,
   updateClip,
   updateTrack,
@@ -25,84 +21,17 @@ import {
   type ClipEdge,
   type SequenceSelection,
   type SequenceState,
-  type Track,
-  type TrackKind,
   type Us,
 } from './timelineState'
+import { addTrack } from './trackCommands'
+import { acrossLink, selectionOf, withoutClip } from './linkedCommand'
+export { addTrack, moveTrack, removeTrack, renameTrack } from './trackCommands'
 
 /**
  * Sequence edits, on the pattern of `engines/scene/commands.ts`: a command captures what it
  * needs to revert **as it is applied**, not as it is built — what a track looked like before is
  * only known once the edit runs. Redo re-applies and re-captures.
  */
-
-const withoutClip = (track: Track, clipId: string): Track => ({
-  ...track,
-  clips: track.clips.filter(clip => clip.id !== clipId),
-})
-
-// Both halves together: a command that put one back and not the other would leave the inspector
-// on a row while the strip highlighted a clip.
-const selectionOf = ({ selectedId, selectedTrackId }: SequenceState): SequenceSelection => ({
-  selectedId,
-  selectedTrackId,
-})
-
-/**
- * The same edit, on a clip and on whatever a link ties to it — a take's picture and its sound.
- *
- * The twins are only known once there is a state to read, so the whole is composed on the first
- * apply and KEPT: a redo must replay the very same commands, each holding the id it minted for
- * a tail it cut loose, and rebuilding them would rename what undo had put back.
- */
-function acrossLink(
-  id: string,
-  clipId: string,
-  make: (state: SequenceState, linkedId: string) => Command<SequenceState> | null,
-): Command<SequenceState> {
-  let parts: Command<SequenceState>[] | null = null
-  /** Whether the last apply went through. A refused edit has nothing to put back. */
-  let held = false
-  /** The ids this edit spans, kept for the selection — see the end of `apply`. */
-  let linked: string[] = []
-
-  return {
-    id,
-    apply: state => {
-      linked = linkedClipIds(state, clipId)
-      parts ??= linked.flatMap(linkedId => make(state, linkedId) ?? [])
-
-      // All halves or none. Every command refuses by handing its state back untouched — a
-      // locked track, a cut falling outside the clip — and letting the others through anyway
-      // moved a picture whose sound stayed put: the one failure a link exists to prevent.
-      // Lock A1, drag the take on V1, and the pair was desynced for good.
-      let current = state
-      for (const part of parts) {
-        const next = part.apply(current)
-        if (next === current) {
-          held = false
-          return state
-        }
-        current = next
-      }
-
-      held = true
-
-      // The half the user touched keeps the selection, whatever order the parts ran in. Each of
-      // these commands selects what IT edited, and the twin is applied last: clicking a picture
-      // put the inspector on its sound, and clicking a sound on its picture — a montage that
-      // selected the wrong half of everything.
-      //
-      // Only when a part actually moved the selection onto a twin: a command that leaves it
-      // alone must leave it alone here too, or an edit that changed nothing would still write a
-      // state that differs — and undo would have nothing to put back for it.
-      const moved = current.selectedId
-      const ontoTwin = moved !== null && moved !== clipId && linked.includes(moved)
-      return ontoTwin ? selectClip(current, clipId) : current
-    },
-    revert: state => (held && parts ? composed(id, parts).revert(state) : state),
-  }
-}
 
 /**
  * What is known of the media behind a clip, which is not the same question as how long it runs.
@@ -512,135 +441,6 @@ export function unlinkClip(clipId: string): Command<SequenceState> {
       return relink(state, untied.ids)
     },
     revert: state => (untied ? relink(state, untied.ids, untied.linkId) : state),
-  }
-}
-
-/**
- * Adds a track at the bottom of the column. What it is called is decided as the command is
- * applied, not as it is built: two adds queued before either runs would otherwise pick the same
- * free name, and the second would land on a track that already exists.
- */
-export function addTrack(kind: TrackKind): Command<SequenceState> {
-  let added: string | null = null
-
-  return {
-    id: `track:add:${kind}`,
-    apply: state => {
-      const id = nextTrackId(state.tracks, kind)
-      added = id
-      return {
-        ...state,
-        tracks: reindexTracks([...state.tracks, makeTrack({ id, kind, index: 0 })]),
-      }
-    },
-    revert: state =>
-      added === null
-        ? state
-        : { ...state, tracks: reindexTracks(state.tracks.filter(track => track.id !== added)) },
-  }
-}
-
-/**
- * Removes a track, clips and all. The whole track is captured rather than its id: undo has to
- * put back what it carried, and at the row it was on — a track restored at the bottom would
- * silently change what covers what.
- */
-export function removeTrack(trackId: string): Command<SequenceState> {
-  let before: { position: number; track: Track; selection: SequenceSelection } | null = null
-
-  return {
-    id: `track:remove:${trackId}`,
-    apply: state => {
-      const position = state.tracks.findIndex(track => track.id === trackId)
-      const track = state.tracks[position]
-      if (!track || track.locked) return state
-
-      before = { position, track, selection: selectionOf(state) }
-      return {
-        ...state,
-        tracks: reindexTracks(state.tracks.filter(current => current.id !== trackId)),
-        // The row itself as much as what sat on it, and undo puts both back.
-        selectedId: track.clips.some(clip => clip.id === state.selectedId)
-          ? null
-          : state.selectedId,
-        selectedTrackId: state.selectedTrackId === trackId ? null : state.selectedTrackId,
-      }
-    },
-    revert: state => {
-      const origin = before
-      if (!origin) return state
-
-      const tracks = [...state.tracks]
-      tracks.splice(origin.position, 0, origin.track)
-      return { ...state, tracks: reindexTracks(tracks), ...origin.selection }
-    },
-  }
-}
-
-/**
- * Moves a track one row up or down. `by` is a step rather than a target row so the two callers
- * that exist — the two menu entries — cannot disagree on what the rows are numbered from.
- */
-export function moveTrack(trackId: string, by: number): Command<SequenceState> {
-  let from: number | null = null
-  let target: number | null = null
-
-  const reorder = (tracks: readonly Track[], position: number, to: number): Track[] => {
-    const track = tracks[position]
-    if (!track) return [...tracks]
-
-    const moved = tracks.filter((_, at) => at !== position)
-    moved.splice(to, 0, track)
-    return reindexTracks(moved)
-  }
-
-  return {
-    id: `track:move:${trackId}`,
-    apply: state => {
-      const position = state.tracks.findIndex(track => track.id === trackId)
-      // The destination is remembered on the way out and replayed on the way back in: after a
-      // coalesced drag this apply is the LAST step's, and recomputing `position + by` on redo put
-      // the track one row down instead of the three it had been dragged.
-      const to = target ?? position + by
-      if (position < 0 || to < 0 || to >= state.tracks.length) return state
-
-      from ??= position
-      target = to
-      return { ...state, tracks: reorder(state.tracks, position, to) }
-    },
-    /**
-     * The track is found again rather than computed from `from + by`, and that is what makes a
-     * DRAG undoable in one press: successive steps of one gesture coalesce into a single entry
-     * keeping the FIRST revert (`coalesce`), by which time the track stands three places away
-     * from where that arithmetic expects it — and ⌘Z put it back in the wrong row.
-     */
-    revert: state => {
-      if (from === null) return state
-      const position = state.tracks.findIndex(track => track.id === trackId)
-      return position < 0 ? state : { ...state, tracks: reorder(state.tracks, position, from) }
-    },
-  }
-}
-
-export function renameTrack(trackId: string, name: string): Command<SequenceState> {
-  let before: string | null = null
-
-  return {
-    id: `rename:${trackId}`,
-    apply: state => {
-      const track = trackById(state, trackId)
-      const trimmed = name.trim()
-      // An empty name would leave the header blank with nothing to click back into.
-      if (!track || !trimmed) return state
-
-      before = track.name
-      return updateTrack(state, trackId, current => ({ ...current, name: trimmed }))
-    },
-    revert: state => {
-      const origin = before
-      if (origin === null) return state
-      return updateTrack(state, trackId, current => ({ ...current, name: origin }))
-    },
   }
 }
 

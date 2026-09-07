@@ -15,6 +15,7 @@ import {
   type AssistantAnswer,
 } from '@shared/domain/assistant'
 import { isRecord, readText } from '@shared/guards'
+import { closingBrace } from '@shared/text'
 
 /** What `parseReply` answers: the reply without the cost, which only the caller knows. */
 export type Reply = Omit<AssistantAnswer, 'cost'>
@@ -33,10 +34,11 @@ export function jsonIn(text: string): unknown {
   try {
     return JSON.parse(trimmed)
   } catch {
-    // The outermost braces, so a fence, a preamble or a trailing word all fall away together.
+    // From the first brace to the one that CLOSES it, so a fence, a preamble and a trailing
+    // `]}` all fall away — the last brace of the text was inside that tail (58.9, 2026-09-06).
     const start = trimmed.indexOf('{')
-    const end = trimmed.lastIndexOf('}')
-    if (start === -1 || end <= start) return null
+    const end = closingBrace(trimmed, start)
+    if (start === -1 || end === -1) return null
 
     try {
       return JSON.parse(trimmed.slice(start, end + 1))
@@ -106,22 +108,44 @@ function questionIn(value: unknown): AskedQuestion | null {
   return { question, choices, ...(held.note === true ? { note: true } : {}) }
 }
 
-function callIn(value: unknown, shown: ReadonlySet<ActionName>): AssistantCall | null {
-  if (!isRecord(value)) return null
+/**
+ * Why a reply was refused — what the retry is told. `unknownAction` carries the name: told only
+ * « not JSON », the model invented a second name (31.1, 30.3, 32.1, 33.1 — 2026-09-06).
+ */
+export type ReplyFault =
+  { kind: 'json' } | { kind: 'shape' } | { kind: 'unknownAction'; name: string } | { kind: 'empty' }
+
+const SHAPE: ReplyFault = { kind: 'shape' }
+
+function callIn(value: unknown, shown: ReadonlySet<ActionName>): AssistantCall | ReplyFault {
+  if (!isRecord(value)) return SHAPE
 
   /**
    * 🛑 Held to what the briefing NAMED, which is the whole registry now that the catalogue is
    * names alone — a hallucinated action is still refused. Whether the model had that action's
    * FIELDS is a different question, and one `answeredTurn` answers by opening them.
    */
-  const action = assistantAction(typeof value.action === 'string' ? value.action : '')
-  if (!action || !shown.has(action.name)) return null
+  if (typeof value.action !== 'string') return SHAPE
+  const action = assistantAction(value.action)
+  if (!action || !shown.has(action.name)) return { kind: 'unknownAction', name: value.action }
 
   // An action with no fields may legitimately arrive without an input at all.
   const input = value.input
-  if (input !== undefined && !isRecord(input)) return null
+  if (input !== undefined && !isRecord(input)) return SHAPE
 
   return { action: action.name satisfies ActionName, input: isRecord(input) ? input : {} }
+}
+
+function callsIn(value: unknown, shown: ReadonlySet<ActionName>): AssistantCall[] | ReplyFault {
+  if (value !== undefined && !Array.isArray(value)) return SHAPE
+
+  const calls: AssistantCall[] = []
+  for (const raw of Array.isArray(value) ? value : []) {
+    const call = callIn(raw, shown)
+    if ('kind' in call) return call
+    calls.push(call)
+  }
+  return calls
 }
 
 /**
@@ -135,14 +159,21 @@ function callIn(value: unknown, shown: ReadonlySet<ActionName>): AssistantCall |
  * whose author meant it to run entire — the studio would do half of something nobody asked for.
  */
 export function parseReply(text: string, shown: ReadonlySet<ActionName>): Reply | null {
+  const read = readReply(text, shown)
+  return 'reply' in read ? read.reply : null
+}
+
+/** The reply, or the fault the retry is told about. */
+export function readReply(
+  text: string,
+  shown: ReadonlySet<ActionName>,
+): { reply: Reply } | { fault: ReplyFault } {
   const parsed = jsonIn(text)
-  if (!isRecord(parsed)) return null
+  if (!isRecord(parsed)) return { fault: { kind: 'json' } }
 
   const say = typeof parsed.say === 'string' ? parsed.say : ''
-  const rawCalls = parsed.calls
-
-  // Absent is allowed and means none; present and not a list is a shape nobody meant.
-  if (rawCalls !== undefined && !Array.isArray(rawCalls)) return null
+  const calls = callsIn(parsed.calls, shown)
+  if ('kind' in calls) return { fault: calls }
 
   /**
    * 🛑 Asking WINS, before the calls are even read: told to ask, a model asks and acts in the same
@@ -150,20 +181,15 @@ export function parseReply(text: string, shown: ReadonlySet<ActionName>): Reply 
    * `command.runStudioCommand` beside it. A plan written before the answer was known is written against a guess.
    */
   const ask = askIn(parsed.ask)
-  if (ask) return { say, ask, calls: [] }
+  if (ask) return { reply: { say, ask, calls: [] } }
 
   // 🛑 Content that cannot be read REFUSES the whole reply rather than running what stood beside
   // it: a model that meant to stop and ask had its question dropped and its plan carried out.
-  if (!asksNothing(parsed.ask)) return null
-
-  const calls: AssistantCall[] = []
-  for (const raw of Array.isArray(rawCalls) ? rawCalls : []) {
-    const call = callIn(raw, shown)
-    if (!call) return null
-    calls.push(call)
-  }
+  if (!asksNothing(parsed.ask)) return { fault: SHAPE }
 
   // Neither a word nor a deed, which is not an answer a person can be shown — and the check has
   // to sit at the end of EVERY path: an early return let `[1,2,3]` and `{}` through as empty.
-  return say.trim() === '' && calls.length === 0 ? null : { say, calls }
+  return say.trim() === '' && calls.length === 0
+    ? { fault: { kind: 'empty' } }
+    : { reply: { say, calls } }
 }

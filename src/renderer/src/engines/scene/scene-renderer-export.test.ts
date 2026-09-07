@@ -65,4 +65,22 @@ describe('SceneRenderer export', () => {
 
     expect(await namesIn(renderer, 'selection')).toEqual([])
   })
+
+  /**
+   * 🛑 Measured on the file the real exporter writes, never deduced: what a motion carries of this
+   * studio rides on the SCENE — `GLTFLoader` hands `scenes[i].extras` back as `scene.userData`, and
+   * reads nothing of the root's — and three writes it only through the scene's own `userData`.
+   */
+  it('writes what the studio asked to carry into the extras of the scene', async () => {
+    const renderer = rendererOf({ nodes: [meshNode('box-1')] })
+
+    const bytes = await renderer.exportTo('gltf', 'scene', {
+      aidesktopstudio: { animation: { fps: 25 } },
+    })
+    const file = JSON.parse(new TextDecoder().decode(bytes)) as {
+      scenes?: { extras?: Record<string, unknown> }[]
+    }
+
+    expect(file.scenes?.[0]?.extras).toEqual({ aidesktopstudio: { animation: { fps: 25 } } })
+  })
 })

@@ -1,12 +1,16 @@
+import type { PickedPathPoint } from '@/engines/scene/SceneRenderer'
+import type { SculptTool } from '@/engines/scene/reliefStroke'
+export type { SculptTool }
 import { create } from 'zustand'
 import { snapToFrame, type Us } from '@shared/domain/time'
+import { sameCameraView } from '@shared/domain/transform'
 import {
   DEFAULT_PANE_VIEWS,
   type CameraPlacement,
   type PaneView,
   type PreviewWatch,
 } from '@/engines/scene/sceneView'
-import { type ClipRef, type DisplayMode } from '@shared/domain/scene'
+import { type ClipRef, type DisplayMode, type GroundMaterialChannel } from '@shared/domain/scene'
 import { NOTHING_ISOLATED, type Isolation } from '@/engines/scene/isolation'
 import { NOTHING_SNAPPED, snappingToggled, type SnapKind, type Snapping } from '@shared/domain/snap'
 import type { ProjectionKind } from '@/engines/viewport/ViewportEngine'
@@ -22,8 +26,15 @@ import type { ProjectionKind } from '@/engines/viewport/ViewportEngine'
  */
 export type WatchedPreview = PreviewWatch & { laid?: ClipRef }
 
+export type ArmedWorld =
+  | { kind: 'relief'; id: string; editId: string | null; materialChannel?: GroundMaterialChannel }
+  | { kind: 'scatter'; id: string; materialChannel?: GroundMaterialChannel }
+  | null
+
 export type SceneView = {
   projection: ProjectionKind
+  /** Whether transform handles use the selected object's axes rather than the world's. */
+  localFrame: boolean
   /**
    * One mode per view, main one first. A list rather than a single value: in a quad layout each
    * view answers for itself — wireframe on top while the flown one stays shaded is the whole
@@ -34,10 +45,20 @@ export type SceneView = {
   skeletons: boolean
   /** Whether a click picks a bone rather than a mesh. Exclusive on purpose — see the renderer. */
   poseMode: boolean
+  /** Whether a drag sculpts the armed relief. Exclusive of `poseMode`. Not a `TransformMode`. */
+  sculptMode: boolean
+  sculptTool: SculptTool
+  sculptRadius: number
+  sculptFalloff: number
+  sculptAmount: number
   /** The bone the pose mode picked, which the gizmo holds. Never a node — see `TrackTarget`. */
   pickedBone: { nodeId: string; bone: string } | null
-  /** The control point of a rail the gizmo holds. Never a node either — see `PathDescriptor`. */
-  pickedPathPoint: { nodeId: string; index: number } | null
+  /** The World panel's armed layer. Session, like `pickedBone`: not the document, not undone. */
+  armedWorld: ArmedWorld
+  /** Relief half of `armedWorld`, which the sculpt engine still reads by terrainId. */
+  armedRelief: { terrainId: string; editId: string | null } | null
+  /** The control point or tangent of a rail the gizmo holds. Never a node — see `PathDescriptor`. */
+  pickedPathPoint: PickedPathPoint | null
   /** Four views instead of one — top, front, left, and the one being flown. */
   quad: boolean
   /** Whether the wireframe drops its triangulation diagonals. Never real quads — see the engine. */
@@ -109,10 +130,18 @@ export type SceneView = {
 
 const DEFAULT_SCENE_VIEW: SceneView = {
   projection: 'perspective',
+  localFrame: false,
   displays: ['shaded'],
   skeletons: false,
   poseMode: false,
+  sculptMode: false,
+  sculptTool: 'raise',
+  sculptRadius: 2,
+  sculptFalloff: 0,
+  sculptAmount: 0.1,
   pickedBone: null,
+  armedWorld: null,
+  armedRelief: null,
   pickedPathPoint: null,
   quad: false,
   quadEdges: false,
@@ -140,10 +169,18 @@ const DEFAULT_SCENE_VIEW: SceneView = {
 export type SceneViewsState = {
   views: Record<string, SceneView>
   setProjection: (documentId: string, projection: ProjectionKind) => void
+  setLocalFrame: (documentId: string, localFrame: boolean) => void
   setDisplay: (documentId: string, pane: number, display: DisplayMode) => void
   setSkeletons: (documentId: string, skeletons: boolean) => void
   setPoseMode: (documentId: string, poseMode: boolean) => void
+  setSculptMode: (documentId: string, sculptMode: boolean) => void
+  setSculptTool: (documentId: string, sculptTool: SculptTool) => void
+  setSculptRadius: (documentId: string, sculptRadius: number) => void
+  setSculptFalloff: (documentId: string, sculptFalloff: number) => void
+  setSculptAmount: (documentId: string, sculptAmount: number) => void
   setPickedBone: (documentId: string, pickedBone: SceneView['pickedBone']) => void
+  setArmedWorld: (documentId: string, armedWorld: ArmedWorld) => void
+  setArmedRelief: (documentId: string, armedRelief: SceneView['armedRelief']) => void
   setPickedPathPoint: (documentId: string, pickedPathPoint: SceneView['pickedPathPoint']) => void
   setQuad: (documentId: string, quad: boolean) => void
   setQuadEdges: (documentId: string, quadEdges: boolean) => void
@@ -161,19 +198,20 @@ export type SceneViewsState = {
   setCamera: (documentId: string, camera: CameraPlacement) => void
 }
 
-/**
- * The pane a surface with one row to say it in speaks for — the native menu, the bar's flyout,
- * and an action. A quad layout gives each of its four views a way of being drawn, and none of
- * those three has four ways of asking.
- */
+/** The pane addressed by surfaces that expose only one display-mode row. */
 export const MAIN_SCENE_PANE = 0
 
-export const useSceneViews = create<SceneViewsState>()(set => ({
+const sceneViewsStore = create<SceneViewsState>()(set => ({
   views: {},
 
   setProjection: (documentId, projection) =>
     set(state => ({
       views: { ...state.views, [documentId]: { ...sceneViewOf(state, documentId), projection } },
+    })),
+
+  setLocalFrame: (documentId, localFrame) =>
+    set(state => ({
+      views: { ...state.views, [documentId]: { ...sceneViewOf(state, documentId), localFrame } },
     })),
 
   setDisplay: (documentId, pane, display) =>
@@ -194,13 +232,88 @@ export const useSceneViews = create<SceneViewsState>()(set => ({
     })),
 
   setPoseMode: (documentId, poseMode) =>
+    set(state => {
+      const view = sceneViewOf(state, documentId)
+      return {
+        views: {
+          ...state.views,
+          [documentId]: {
+            ...view,
+            poseMode,
+            sculptMode: poseMode ? false : view.sculptMode,
+          },
+        },
+      }
+    }),
+
+  setSculptMode: (documentId, sculptMode) =>
+    set(state => {
+      const view = sceneViewOf(state, documentId)
+      return {
+        views: {
+          ...state.views,
+          [documentId]: {
+            ...view,
+            sculptMode,
+            poseMode: sculptMode ? false : view.poseMode,
+            pickedBone: sculptMode ? null : view.pickedBone,
+          },
+        },
+      }
+    }),
+
+  setSculptTool: (documentId, sculptTool) =>
     set(state => ({
-      views: { ...state.views, [documentId]: { ...sceneViewOf(state, documentId), poseMode } },
+      views: { ...state.views, [documentId]: { ...sceneViewOf(state, documentId), sculptTool } },
+    })),
+
+  setSculptRadius: (documentId, sculptRadius) =>
+    set(state => ({
+      views: { ...state.views, [documentId]: { ...sceneViewOf(state, documentId), sculptRadius } },
+    })),
+
+  setSculptFalloff: (documentId, sculptFalloff) =>
+    set(state => ({
+      views: { ...state.views, [documentId]: { ...sceneViewOf(state, documentId), sculptFalloff } },
+    })),
+
+  setSculptAmount: (documentId, sculptAmount) =>
+    set(state => ({
+      views: { ...state.views, [documentId]: { ...sceneViewOf(state, documentId), sculptAmount } },
     })),
 
   setPickedBone: (documentId, pickedBone) =>
     set(state => ({
       views: { ...state.views, [documentId]: { ...sceneViewOf(state, documentId), pickedBone } },
+    })),
+
+  setArmedWorld: (documentId, armedWorld) =>
+    set(state => ({
+      views: {
+        ...state.views,
+        [documentId]: {
+          ...sceneViewOf(state, documentId),
+          armedWorld,
+          armedRelief:
+            armedWorld?.kind === 'relief'
+              ? { terrainId: armedWorld.id, editId: armedWorld.editId }
+              : null,
+        },
+      },
+    })),
+
+  setArmedRelief: (documentId, armedRelief) =>
+    set(state => ({
+      views: {
+        ...state.views,
+        [documentId]: {
+          ...sceneViewOf(state, documentId),
+          armedRelief,
+          armedWorld: armedRelief
+            ? { kind: 'relief', id: armedRelief.terrainId, editId: armedRelief.editId }
+            : null,
+        },
+      },
     })),
 
   setPickedPathPoint: (documentId, pickedPathPoint) =>
@@ -311,48 +424,15 @@ export const useSceneViews = create<SceneViewsState>()(set => ({
     }),
 }))
 
-function samePlacement(left: CameraPlacement | null, right: CameraPlacement): boolean {
-  if (!left) return false
-  return (
-    left.position.x === right.position.x &&
-    left.position.y === right.position.y &&
-    left.position.z === right.position.z &&
-    left.target.x === right.target.x &&
-    left.target.y === right.target.y &&
-    left.target.z === right.target.z
-  )
-}
+export const useSceneViews = sceneViewsStore
 
-/** How a given view draws. A pane nobody has set draws the way the studio opens: shaded. */
-export function displayOfPane(displays: readonly DisplayMode[], pane: number): DisplayMode {
-  return displays[pane] ?? 'shaded'
+function samePlacement(left: CameraPlacement | null, right: CameraPlacement): boolean {
+  return left !== null && sameCameraView(left, right)
 }
 
 /** A document nobody has looked at yet is looked at the default way. */
 export function sceneViewOf(state: SceneViewsState, documentId: string): SceneView {
   return state.views[documentId] ?? DEFAULT_SCENE_VIEW
-}
-
-/**
- * Everything a viewport document paints, minus the clock. Used with `useShallow` so a playhead
- * write does not rebuild the toolbar host.
- */
-export function sceneViewChromeOf(state: SceneViewsState, documentId: string) {
-  const view = sceneViewOf(state, documentId)
-  return {
-    snapping: view.snapping,
-    isolation: view.isolation,
-    poseMode: view.poseMode,
-    pickedBone: view.pickedBone,
-    pickedPathPoint: view.pickedPathPoint,
-    projection: view.projection,
-    displays: view.displays,
-    quadEdges: view.quadEdges,
-    skeletons: view.skeletons,
-    quad: view.quad,
-    panes: view.panes,
-    activePane: view.activePane,
-  }
 }
 
 /**
@@ -374,35 +454,4 @@ export function useSceneFrameHead(documentId: string, fps: number): Us {
 
 export function useScenePreview(documentId: string): WatchedPreview | null {
   return useSceneViews(state => sceneViewOf(state, documentId).preview)
-}
-
-/**
- * Whether a view write should refresh a montage looking through that scene.
- *
- * Playhead, playing and preview are the scene's OWN clock: a live clip on a sequence seeks at
- * the sequence's head, and redrawing it sixty times a second for a clock it does not show is
- * two extra 3D frames per tick.
- */
-export function sceneViewAffectsMontage(previous: SceneView, next: SceneView): boolean {
-  return (
-    previous.panes !== next.panes ||
-    previous.camera !== next.camera ||
-    previous.projection !== next.projection ||
-    previous.displays !== next.displays ||
-    previous.quad !== next.quad ||
-    previous.quadEdges !== next.quadEdges ||
-    previous.skeletons !== next.skeletons ||
-    previous.isolation !== next.isolation
-  )
-}
-
-/** Walks every open view: a sequence may composite several scenes. */
-export function sceneViewsAffectMontage(previous: SceneViewsState, next: SceneViewsState): boolean {
-  if (previous.views === next.views) return false
-
-  const ids = new Set([...Object.keys(previous.views), ...Object.keys(next.views)])
-  for (const id of ids) {
-    if (sceneViewAffectsMontage(sceneViewOf(previous, id), sceneViewOf(next, id))) return true
-  }
-  return false
 }

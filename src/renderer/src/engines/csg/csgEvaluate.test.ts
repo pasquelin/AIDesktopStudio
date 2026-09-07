@@ -42,7 +42,42 @@ function volumeOf(mesh: CsgMesh): number {
 const trianglesOf = (mesh: CsgMesh): number =>
   mesh.index ? mesh.index.length / 3 : mesh.position.length / 9
 
+/** How far the u coordinate travels over the whole solid — one metre per tile, at density one. */
+function uSpanOf(mesh: CsgMesh): number {
+  let least = Infinity
+  let most = -Infinity
+  for (let at = 0; at < mesh.uv.length; at += 2) {
+    least = Math.min(least, mesh.uv[at]!)
+    most = Math.max(most, mesh.uv[at]!)
+  }
+  return most - least
+}
+
+const tiled = (part: CsgPart, tilesPerMetre: number): CsgPart => ({
+  ...part,
+  material: { ...DEFAULT_MATERIAL, tilesPerMetre },
+})
+
 describe('evaluateGraph', () => {
+  // 🛑 A box is born with UVs of 0..1 per face, whatever its size: a welded kerb wore ONE square
+  // stretched over thirty metres, and read as no grid at all.
+  it('lays one grid across a whole union rather than one per brush', () => {
+    const left = tiled(cube('Left'), 1)
+    const right = tiled(placed(cube('Right'), { position: { x: 0.6, y: 0, z: 0 } }), 1)
+    const welded = evaluateGraph(graph(left, [{ operation: 'unite', part: right }]))
+
+    // The solid is 1,6 m across, so its grid travels 1,6 tiles — never the 1,0 of a bare box.
+    expect(uSpanOf(welded)).toBeCloseTo(1.6, 2)
+  })
+
+  it('reads the density each brush was painted with', () => {
+    const left = tiled(cube('Left'), 0.5)
+    const right = tiled(placed(cube('Right'), { position: { x: 0.6, y: 0, z: 0 } }), 0.5)
+    const welded = evaluateGraph(graph(left, [{ operation: 'unite', part: right }]))
+
+    expect(uSpanOf(welded)).toBeCloseTo(0.8, 2)
+  })
+
   it('keeps the size a scaled brush was given', () => {
     const pillar = placed(cube('Pillar'), { scale: { x: 1, y: 6, z: 1 } })
     const beside = placed(cube('Beside'), { position: { x: 0.6, y: 0, z: 0 } })

@@ -71,6 +71,34 @@ export function createSkyBinding(cache: TextureCache, paintBackground: () => voi
     wanted = null
   }
 
+  const showStudio = (environment: ViewportEnvironment): void => {
+    release()
+    environment.setTexture(null)
+    environment.setStudio()
+    paintBackground()
+  }
+
+  const loadSky = async (environment: ViewportEnvironment, held: Held): Promise<void> => {
+    const token = Symbol(held.assetId)
+    inFlight.set(token, held)
+    const loaded = await cache.acquire(held.assetId, SRGBColorSpace, held.version)
+    if (!inFlight.delete(token)) return
+    if (!loaded) {
+      if (wanted === held) wanted = null
+      return
+    }
+    if (wanted !== held) {
+      give(held)
+      return
+    }
+    environment.setTexture(loaded)
+    environment.refresh()
+    paintBackground()
+    const previous = shown
+    shown = held
+    if (previous) give(previous)
+  }
+
   const apply = async (
     environment: ViewportEnvironment,
     asked: EnvironmentDress | null,
@@ -78,59 +106,17 @@ export function createSkyBinding(cache: TextureCache, paintBackground: () => voi
     last = { environment, asked }
     const assetId = asked?.assetId ?? null
     const version = assetId === null ? undefined : cache.versionOf(assetId)
-    // Before the shortcut below and before the load: the grading of a sky moves while its picture
-    // does not, and the first frame of a sky already graded must not show it raw.
     environment.setAdjustments(asked?.adjustments ?? NEUTRAL_ADJUSTMENTS)
-    // The version too, or a sky whose file was rewritten under the same id would be recognised
-    // as « already shown » and the edit would never reach the backdrop.
     if (assetId === (wanted?.assetId ?? null) && version === wanted?.version) return
 
     if (!assetId) {
-      release()
-      environment.setTexture(null)
-      environment.setStudio()
-      paintBackground()
+      showStudio(environment)
       return
     }
 
     const held: Held = { assetId, version }
     wanted = held
-    const token = Symbol(assetId)
-    inFlight.set(token, held)
-    const loaded = await cache.acquire(held.assetId, SRGBColorSpace, held.version)
-
-    // Drained by `release` while this decoded: the reference is already back, and giving it
-    // twice would take the count to zero under whoever else holds the same sky.
-    if (!inFlight.delete(token)) return
-
-    // Failure first, because it holds nothing to give back — `ref-cache` drops the entry. Asked
-    // after the overtaken case, a sky that both failed and lost would hand back a reference it
-    // never took. `wanted` stops claiming it so `release` does not either, and so the same sky
-    // can be asked for again; only if it is still the one wanted, or a loser would clear the
-    // winner's claim.
-    if (!loaded) {
-      if (wanted === held) wanted = null
-      return
-    }
-
-    // Overtaken while decoding: gives back what it acquired, which it never put on screen. By
-    // identity, so a second load of the same sky under a newer version overtakes the first.
-    if (wanted !== held) {
-      give(held)
-      return
-    }
-
-    environment.setTexture(loaded)
-    environment.refresh()
-    // `setTexture` paints the backdrop from the sky it was just handed, which is only right when
-    // the sky IS the backdrop: a viewport showing a colour instead had it wiped to nothing the
-    // moment a sky landed. Asking again is what settles it, and it is the caller who knows.
-    paintBackground()
-
-    // After the swap, never before: the old texture is bound to the background until then.
-    const previous = shown
-    shown = held
-    if (previous) give(previous)
+    await loadSky(environment, held)
   }
 
   return {

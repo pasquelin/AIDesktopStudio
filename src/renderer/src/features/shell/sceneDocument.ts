@@ -1,7 +1,11 @@
 import i18next from 'i18next'
 import { gltfDocumentOf, sceneFromGltf, sceneHoldsMore } from '@/engines/scene/gltfDocument'
+import { installedPathOf } from '@/engines/scene/projectInstalls'
 import type { SceneState } from '@/engines/scene/sceneState'
+import { mediaLinkOf } from '@/engines/timeline/mediaLink'
+import { documentFolder } from './documentFolder'
 import { reportNotice } from '@/services/diagnostics'
+import { assetsById, useAssets } from '@/stores/assets'
 
 /**
  * A scene on its way to and from its file, which is a glTF one and nothing else.
@@ -23,7 +27,15 @@ export const sceneRefusesToSave = (documentId: string): string | null =>
   incomplete.has(documentId) ? i18next.t('documents.saveRefusedSceneHoldsMore') : null
 
 export function scenePayloadOf(state: SceneState, documentId: string): unknown {
-  return gltfDocumentOf(state, { documentId, documentKind: 'scene' })
+  const folder = documentFolder(documentId)
+  return gltfDocumentOf(state, {
+    documentId,
+    documentKind: 'scene',
+    uriOf: assetId => {
+      const path = assetsById(useAssets.getState()).get(assetId)?.path ?? installedPathOf(assetId)
+      return path ? mediaLinkOf(path, folder) : null
+    },
+  })
 }
 
 export function sceneFromPayloadFile(payload: unknown, documentId: string): SceneState {

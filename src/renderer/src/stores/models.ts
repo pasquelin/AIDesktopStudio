@@ -142,7 +142,7 @@ export const useModels = create<ModelsState>()(
         set(state => ({ collections: { ...state.collections, [family]: collection } })),
     }),
     {
-      name: 'ia-studio:models',
+      name: 'ai-desktop-studio:models',
       // Bumped with the shape of `CollectionState`: an entry missing `thumbnailSize` lays the
       // grid out in zero-wide columns, which reads as a panel that lost its content.
       //
@@ -170,7 +170,7 @@ export const useModels = create<ModelsState>()(
 
 /**
  * The state of one family's browser, defaulted here rather than at each reader — the shape
- * `canvasViewOf` and `arrangementOf` settled on. The shared constant is never rebuilt: a
+ * `canvasViewOf` settled on. The shared constant is never rebuilt: a
  * selector returning a fresh object hands React a new snapshot on every render.
  */
 export function modelCollectionOf(

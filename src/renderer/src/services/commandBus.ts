@@ -1,7 +1,12 @@
 import type { CommandId, CommandScope } from '@shared/domain/command'
 
-// `false` says the surface took the command and had NOTHING to do — see `publishCommand`.
-type Listener = (command: CommandId, to: string | null) => boolean
+/**
+ * What a surface answers: `false` when it took the command and had NOTHING to do, `true` when
+ * it acted, and what it CREATED when the command made something — see `publishCommand`.
+ */
+export type CommandAnswer = boolean | Record<string, unknown>
+
+type Listener = (command: CommandId, to: string | null) => CommandAnswer
 
 const listeners = new Set<Listener>()
 
@@ -27,13 +32,19 @@ const armed = new Map<CommandScope, number>()
  *
  * 🛑 Answers whether anything ACTED, which is not whether anything listened: an undo on an empty
  * stack is a surface that took the command and did nothing. Told `ok` regardless, a client sends
- * it again — nine times over, measured on the bench pass of 2026-08-26.
+ * it again — nine times over, measured on the bench pass of 2026-08-26. And what a surface
+ * CREATED outranks a bare « acted »: a copy nothing names is a command a client runs again to
+ * get an id that never comes — ten refusals in one bench pass (2026-09-02).
  */
-export function publishCommand(command: CommandId, to: string | null = null): boolean {
-  let acted = false
-  for (const listener of [...listeners]) acted = listener(command, to) || acted
+export function publishCommand(command: CommandId, to: string | null = null): CommandAnswer {
+  let answer: CommandAnswer = false
+  for (const listener of [...listeners]) {
+    const one = listener(command, to)
+    if (typeof one === 'object') answer = one
+    else if (one && answer === false) answer = true
+  }
 
-  return acted
+  return answer
 }
 
 /** Listens until the returned function is called. */

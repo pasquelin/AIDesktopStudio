@@ -18,7 +18,7 @@ import type { PictureMeasure } from './pictureSize'
  * The layer is named after the asset: a stack of "Layer 4, Layer 5, Layer 6" says nothing about
  * what is in it. `addLayer` arms it, so the brush lands on what was just dropped.
  */
-export function placeAsset(documentId: string, asset: Asset): void {
+export function placeAsset(documentId: string, asset: Asset, targetLayerId?: string): void {
   if (!isLocalPicture(asset)) {
     // Said rather than swallowed, exactly as `placeMaterialChannel` says it: `AssetDropTarget`
     // cannot refuse this one while it flies — a drag announces its TYPE and not where its file
@@ -27,7 +27,8 @@ export function placeAsset(documentId: string, asset: Asset): void {
     return
   }
 
-  useCanvases.getState().runCommand(documentId, addLayer(sourceLayer(asset)))
+  const layer = sourceLayer(asset)
+  useCanvases.getState().runCommand(documentId, addLayer(layer, targetLayerId))
 }
 
 /** A layer that names the asset it draws, so the engine fetches the pixels rather than holding them. */

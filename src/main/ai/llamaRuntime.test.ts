@@ -28,6 +28,7 @@ const runtime = (over: { files?: LocalRuntime; port?: LlamaPort } = {}): LocalRu
     port: over.port ?? port(),
     weightsOf: model => `/models/${model.files[0]?.name ?? model.id}`,
     modelOf: id => (id === 'qwen' ? MODEL : null),
+    ensureLoaded: async () => {},
   })
 
 const request = { model: 'qwen', contextTokens: 4096, messages: [], json: false }

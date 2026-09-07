@@ -19,7 +19,7 @@
     "textPath": "Text on path",
     "textPathHint": "Set text along a path — not available yet",
     "comment": "Comment",
-    "commentHint": "Leave a note on the image — not available yet",
+    "commentHint": "Leave a note linked to an area of the image",
     "region": "Selection",
     "regionHint": "Mark out an area the tools will be confined to",
     "selectRectangle": "Rectangular selection",
@@ -28,6 +28,8 @@
     "selectEllipseHint": "Drag an elliptical selection — Shift for a circle",
     "selectLasso": "Lasso",
     "selectLassoHint": "Draw a freehand selection",
+    "smartSelect": "Smart Select",
+    "smartSelectHint": "Select an object with the local selection model",
     "shape": "Shapes",
     "shapeHint": "Draw a shape on the active layer",
     "shapeRectangle": "Rectangle",
@@ -69,6 +71,14 @@
     "opacity": "Opacity",
     "textName": "Text",
     "textEditing": "Text entry"
+  },
+  "imageComments": {
+    "edit": "Generation instruction",
+    "placeholder": "Change to make…",
+    "remove": "Remove comment",
+    "removeHint": "Removes this note from the generation context",
+    "generate": "Generate from this comment",
+    "generateHint": "Starts a generation with this note only"
   },
   "imageView": {
     "zoom": "{{value}} — actual size",

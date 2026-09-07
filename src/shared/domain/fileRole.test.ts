@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { EXTENSIONS_BY_KIND } from './document'
-import { FILE_DOMAINS, natureOf, opensInStudio } from './fileRole'
+import { FILE_DOMAINS, natureOf, opensInStudio, sourceNatureOf } from './fileRole'
 
 describe('natureOf', () => {
   /**
@@ -75,15 +75,29 @@ describe('opensInStudio', () => {
     expect(opensInStudio('storyboard.pdf')).toBe(false)
   })
 
-  /**
-   * The one case the two tables disagree on, and the reason this function exists beside
-   * `natureOf`: these carry a domain, and nothing in this repository draws them.
-   */
-  it('leaves a picture nothing here decodes to the system, domain or not', () => {
-    for (const name of ['photo.heic', 'scan.tif', 'plate.exr', 'dome.hdr']) {
-      expect(natureOf(name).domain).toBe('image')
+  it('catalogues pictures that the canvas cannot decode without opening an empty editor', () => {
+    for (const name of ['scan.tif', 'plate.exr', 'dome.hdr']) {
       expect(opensInStudio(name)).toBe(false)
     }
+    expect(opensInStudio('photo.heic')).toBe(false)
+  })
+
+  it('catalogues an OpenEXR as an image without promising to display it', () => {
+    expect(sourceNatureOf('height.exr')).toEqual({
+      domain: 'image',
+      openable: false,
+      catalogable: true,
+    })
+  })
+
+  it('catalogues a broadcast rush without opening a player that cannot decode it', () => {
+    // Chromium decodes no MXF: opened as a tab it shows a blank player, where handing the file
+    // to the system opened the one that reads it.
+    expect(sourceNatureOf('rush.mxf')).toEqual({
+      domain: 'video',
+      openable: false,
+      catalogable: true,
+    })
   })
 
   // A montage IS a document now, whichever application wrote it — the studio reads the standard
@@ -93,9 +107,18 @@ describe('opensInStudio', () => {
     expect(opensInStudio('Bande.otio')).toBe(true)
   })
 
-  it('takes the one mesh a loader here reads, and no other', () => {
-    expect(opensInStudio('chair.obj')).toBe(false)
-    expect(natureOf('chair.obj').domain).toBe('mesh')
+  it('opens every self-contained mesh the import dialog advertises', () => {
+    for (const name of [
+      'chair.glb',
+      'chair.obj',
+      'chair.fbx',
+      'chair.stl',
+      'chair.ply',
+      'chair.usdz',
+    ]) {
+      expect(opensInStudio(name)).toBe(true)
+      expect(natureOf(name).domain).toBe('mesh')
+    }
   })
 
   // The blind spot `opensInStudio` writes down, held here so it fails the day it changes.

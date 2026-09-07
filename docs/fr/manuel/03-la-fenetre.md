@@ -286,6 +286,22 @@ Un clic sur une icône **ouvre** le panneau ; un second le **referme**. Un **tra
 indique la coupure d’une zone : les icônes au-dessus ouvrent dans la première moitié, celles en
 dessous dans la seconde.
 
+### Déplacer un panneau
+
+**Tirez son icône dans le rail** et lâchez-la où vous voulez la voir : dans l’autre moitié de la
+même colonne, dans l’autre colonne, dans la bande du bas. Un cadre en pointillés montre l’endroit
+où le panneau va tomber, et une moitié vide s’ouvre pendant le geste pour vous l’offrir.
+
+Un panneau **qui était à l’écran** l’est encore là où il tombe ; un panneau fermé se déplace sans
+s’ouvrir — le geste ne vous impose pas une colonne que vous n’avez pas demandée.
+
+> **Chaque espace garde sa propre disposition.** Déplacer les Calques dans l’espace Image ne
+> déplace rien en Vidéo, ni à l’accueil. Ce qui reste commun aux six espaces, c’est ce qui est
+> **ouvert** — une étagère ouverte en Image est encore ouverte en Vidéo.
+
+**Affichage ▸ Réinitialiser la disposition** ramène tous les panneaux à leur place d’origine,
+partout.
+
 ### Le rail de gauche
 
 | Élément | Ce qu’il fait |
@@ -574,7 +590,7 @@ vous éditez une image, Ajouter quand vous éditez une scène. Un menu absent n�
 
 | Menu | Ce qu’on y trouve |
 |---|---|
-| **IA Studio** | *macOS seulement* : À propos, **Réglages…**, et les commandes du système |
+| **AI Desktop Studio** | *macOS seulement* : À propos, **Réglages…**, et les commandes du système |
 | **Fichier** | Nouveau projet…, Ouvrir un projet…, Enregistrer, Enregistrer sous…, Importer ▸, Exporter ▸. **Hors macOS, Réglages… est ici** |
 | **Édition** | Annuler, Rétablir, et les commandes de texte du système |
 | **Outils** | *espace Image* : les dix-huit outils de la barre, plus **Réduire** et **Agrandir le pinceau** |
@@ -631,7 +647,7 @@ le dit et renvoie aux réglages.
 
 ### La fenêtre des licences
 
-**Aide ▸ Licences** liste les logiciels qu’IA Studio embarque : nom, version, et nom court
+**Aide ▸ Licences** liste les logiciels qu’AI Desktop Studio embarque : nom, version, et nom court
 de la licence (`MIT`, `Apache-2.0`…). Cliquez une ligne : le **texte entier** se déplie, et le
 lien vers les sources s’affiche quand la licence l’exige.
 

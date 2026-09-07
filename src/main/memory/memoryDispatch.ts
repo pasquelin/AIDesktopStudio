@@ -28,6 +28,32 @@ export async function dispatchMemoryRequest(
       return await store.rebuild()
     case 'refresh':
       return await store.refresh()
+    default:
+      return dispatchMemoryMaintenance(store, request)
+  }
+}
+
+type MaintenanceRequest = Exclude<
+  MemoryRequest,
+  {
+    op:
+      | 'remember'
+      | 'amend'
+      | 'forget'
+      | 'read'
+      | 'list'
+      | 'count'
+      | 'markUsed'
+      | 'rebuild'
+      | 'refresh'
+  }
+>
+
+async function dispatchMemoryMaintenance(
+  store: MemoryStore,
+  request: MaintenanceRequest,
+): Promise<unknown> {
+  switch (request.op) {
     case 'compact':
       return await store.compact()
     case 'reset':

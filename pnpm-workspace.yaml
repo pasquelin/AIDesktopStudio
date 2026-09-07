@@ -1,3 +1,6 @@
+packages:
+  - .
+
 allowBuilds:
   better-sqlite3: true
   electron: true
@@ -15,8 +18,9 @@ minimumReleaseAgeExclude:
   - jscpd-linux-x64-musl@5.0.15
   - jscpd-windows-x64-msvc@5.0.15
   - jscpd@5.0.15
-  - mediabunny@1.53.1
+  - mediabunny@1.53.1 || 1.55.7
   - zustand@5.0.15
   - dockview-core@8.1.0
   - dockview-react@8.1.0
   - dockview@8.1.0
+  - '@pasquelin/panels@0.4.1'

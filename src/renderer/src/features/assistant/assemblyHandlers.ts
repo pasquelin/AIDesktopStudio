@@ -1,4 +1,4 @@
-import { refused } from '@shared/domain/assistant'
+import { refused, type ActionOutcome } from '@shared/domain/assistant'
 import { prefabDocumentOf, prefabIdFor, withPrefab } from '@shared/domain/game'
 import { refFromString, refToString } from '@shared/domain/ref'
 import { isSceneTemplateId } from '@shared/domain/sceneTemplate'
@@ -13,13 +13,14 @@ import { sceneOf, sceneStore, useScenes } from '@/stores/scenes'
 import type { ActionHandlers } from './actionHandler'
 import { numberOf, textOf } from './actionInputs'
 import { mounted, NO_SCENE } from './sceneHandlers'
+import { mountedScene } from './sceneHandlerCore'
 import { messageOf } from '@shared/guards'
 
 /** What puts a whole game together in one gesture — a template, or a prefab of the project. */
 export const ASSEMBLY_HANDLERS: ActionHandlers = {
-  'game.applyTemplate': input => {
-    const open = mounted()
-    if (!open) return refused('wrongSurface', NO_SCENE)
+  'game.applyTemplate': async input => {
+    const open = mountedScene()
+    if ('ok' in open) return open
 
     // The choice field has already refused anything else, and names the three in doing so; this
     // is the narrowing TypeScript asks for, not a second gate.
@@ -30,8 +31,17 @@ export const ASSEMBLY_HANDLERS: ActionHandlers = {
         `no scene template "${wanted}" — the "template" field of this action lists the ones it takes`,
       )
 
-    const before = open.state.nodes.length
-    useScenes.getState().runCommand(open.documentId, layOutTemplate(wanted))
+    const { seedTemplateFiles } = await import('@/features/game/seedTemplateFiles')
+    const seeded = await seedTemplateFiles(wanted)
+    // Read AGAIN after the await, as `prefab.instantiate` does: an MCP call is not user-driven,
+    // and a tab switched while the disk was seeded would lay the nodes in the document that WAS
+    // in front — and count them against a snapshot of it.
+    const landing = mountedScene()
+    if ('ok' in landing) return landing
+    const before = landing.state.nodes.length
+    useScenes
+      .getState()
+      .runCommand(landing.documentId, layOutTemplate(wanted, seeded.scripts, seeded.graph))
     // What was ADDED, as `prefab.instantiate` answers too: a scene's own total would have a
     // client reading « 52 objects » where 38 were laid down.
     return {
@@ -40,40 +50,7 @@ export const ASSEMBLY_HANDLERS: ActionHandlers = {
     }
   },
 
-  'prefab.define': async input => {
-    const named = textOf(input, 'name') ?? ''
-    if (named.length === 0) return refused('badInput', 'a prefab needs a name')
-
-    // The scene in FRONT when none is named: « fais un prefab de ça » is what a person says.
-    const wanted = textOf(input, 'document') ?? ''
-    const documentId = wanted.length === 0 ? mounted()?.documentId : sceneDocumentNamed(wanted)
-    if (!documentId) return refused('wrongSurface', 'no scene to name as a prefab')
-    // 🛑 That the project HOLDS it: `sceneDocumentNamed` falls back on the word itself, so any
-    // string named a prefab — and every instantiation of it answered `notFound` for ever after.
-    if (documentById(useDocuments.getState(), documentId)?.kind !== 'scene') {
-      return refused('notFound', `no scene named "${wanted}"`)
-    }
-
-    const bridge = getBridge()
-    if (!bridge) return refused('noBridge', 'this window is not connected to the studio process')
-
-    // 🛑 Read, changed and written whole, and nothing serialises it: two calls in flight, or a
-    // script renamed at the same moment (`main/project/scriptPaths.ts` writes the same file),
-    // and the last one wins. The same loss `main/project/game.ts` already declares.
-    try {
-      const held = await bridge.game.read()
-      if (held.trouble !== null) return refused('failed', `game.json is ${held.trouble}`)
-
-      // 🛑 The id it already had: a reference written into a component or a script must survive
-      // its piece being renamed or rebound, which a fresh id every time made impossible.
-      const id = prefabIdFor(held.game, named, documentId) ?? newId()
-      const prefab = { id, name: named, document: documentId }
-      await bridge.game.write(withPrefab(held.game, prefab))
-      return { ok: true, data: { ...prefab, ref: refToString({ kind: 'prefab', id: prefab.id }) } }
-    } catch (error) {
-      return refused('failed', messageOf(error))
-    }
-  },
+  'prefab.define': definePrefab,
 
   'prefab.instantiate': async input => {
     if (!mounted()) return refused('wrongSurface', NO_SCENE)
@@ -86,8 +63,8 @@ export const ASSEMBLY_HANDLERS: ActionHandlers = {
 
     // Read AGAIN after the await: an MCP call is not user-driven, and a tab switched while the
     // disk answered would have the nodes land in the document that WAS in front.
-    const open = mounted()
-    if (!open) return refused('wrongSurface', NO_SCENE)
+    const open = mountedScene()
+    if ('ok' in open) return open
     if (open.documentId === documentId) {
       return refused('badInput', `"${named}" is the scene in front: it cannot instance itself`)
     }
@@ -102,6 +79,33 @@ export const ASSEMBLY_HANDLERS: ActionHandlers = {
     useScenes.getState().runCommand(open.documentId, addNodes(nodes))
     return { ok: true, data: { nodes: nodes.length } }
   },
+}
+
+async function definePrefab(input: Record<string, unknown>): Promise<ActionOutcome> {
+  const named = textOf(input, 'name') ?? ''
+  if (named.length === 0) return refused('badInput', 'a prefab needs a name')
+
+  const wanted = textOf(input, 'document') ?? ''
+  const documentId = wanted.length === 0 ? mounted()?.documentId : sceneDocumentNamed(wanted)
+  if (!documentId) return refused('wrongSurface', 'no scene to name as a prefab')
+  if (documentById(useDocuments.getState(), documentId)?.kind !== 'scene') {
+    return refused('notFound', `no scene named "${wanted}"`)
+  }
+
+  const bridge = getBridge()
+  if (!bridge) return refused('noBridge', 'this window is not connected to the studio process')
+
+  try {
+    const held = await bridge.game.read()
+    if (held.trouble !== null) return refused('failed', `game.json is ${held.trouble}`)
+
+    const id = prefabIdFor(held.game, named, documentId) ?? newId()
+    const prefab = { id, name: named, document: documentId }
+    await bridge.game.write(withPrefab(held.game, prefab))
+    return { ok: true, data: { ...prefab, ref: refToString({ kind: 'prefab', id: prefab.id }) } }
+  } catch (error) {
+    return refused('failed', messageOf(error))
+  }
 }
 
 /**

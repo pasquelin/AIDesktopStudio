@@ -14,6 +14,7 @@ import {
   rootSections,
   sectionEntry,
   sectionOfFamily,
+  settingChoices,
   SETTING_REGISTRY,
   SETTING_SECTIONS,
   UNLISTED_PATHS,
@@ -253,5 +254,19 @@ describe('settings registry', () => {
 
   it('leaves bounds open for a setting that declares none', () => {
     expect(boundsOf('media.ffmpegPath').max).toBe(Number.POSITIVE_INFINITY)
+  })
+})
+
+describe('settingChoices', () => {
+  it('describes every choice setting by its English title, help and values', () => {
+    const choices = settingChoices()
+    const listed = SETTING_REGISTRY.filter(descriptor => descriptor.kind === 'choice')
+
+    expect(Object.keys(choices).sort()).toEqual(listed.map(one => one.path).sort())
+    for (const one of listed) {
+      expect(choices[one.path]?.values).toEqual(optionsOf(one).map(option => option.value))
+      expect(choices[one.path]?.title).not.toMatch(/^settings\./)
+      expect(choices[one.path]?.help).not.toMatch(/^settings\./)
+    }
   })
 })

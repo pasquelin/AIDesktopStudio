@@ -25,6 +25,31 @@ export type SequenceExportOptions = TaskWatch & {
   title: string
 }
 
+async function renderFrames(
+  engine: TimelineEngine,
+  bridge: NonNullable<ReturnType<typeof getBridge>>,
+  id: string,
+  duration: number,
+  fps: number,
+  watch: TaskWatch,
+): Promise<string | null> {
+  const times = frameTimes(duration, fps)
+  let index = 0
+  for (const time of times) {
+    if (watch.signal?.aborted) {
+      await bridge.render.cancel(id)
+      return null
+    }
+    await engine.seek(time)
+    const png = await engine.snapshot()
+    if (!png) continue
+    index += 1
+    await bridge.render.frame({ id, index, png })
+    watch.onStep?.(index, times.length)
+  }
+  return bridge.render.finish(id)
+}
+
 /**
  * Writes the montage out as a video file, frame by frame.
  *
@@ -70,26 +95,7 @@ export async function exportSequence({
     await engine.mount(host)
     engine.apply(sequence)
 
-    const times = frameTimes(duration, fps)
-    let index = 0
-    for (const time of times) {
-      if (signal?.aborted) {
-        await bridge.render.cancel(id)
-        return null
-      }
-
-      // Awaited one at a time: `seek` opens whatever decoder that instant needs, and running
-      // ahead of it would hold the whole film in memory for no gain.
-      await engine.seek(time)
-      const png = await engine.snapshot()
-      if (!png) continue
-
-      index += 1
-      await bridge.render.frame({ id, index, png })
-      onStep?.(index, times.length)
-    }
-
-    return await bridge.render.finish(id)
+    return await renderFrames(engine, bridge, id, duration, fps, { onStep, signal })
   } catch (error) {
     await bridge.render.cancel(id)
     reportFailure('sequence.export', title, error)

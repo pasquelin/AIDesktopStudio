@@ -4,7 +4,7 @@ import { clamp } from '@shared/numeric'
 /**
  * `OrbitControls` multiplies its radius per notch: it closes on the target asymptotically and
  * never crosses it, so the step shrinks until motion dies out on the spot. Here the step keeps a
- * floor in metres, and the pivot is put back ahead once the camera has passed what it aimed at.
+ * floor in metres, and the pivot lands ON what the pointer met rather than on the line of sight.
  */
 
 /** Fraction of the distance to what is aimed at, spent per notch. */
@@ -14,26 +14,39 @@ export const DOLLY_RATE = 0.12
 export const DOLLY_FLOOR = 0.05
 
 /**
- * Metres. Where the pivot rests once the camera has crossed what it aimed at — and where a
- * finished flight rests it too, `ViewportEngine` lending a borrowed camera its pivot at the same.
- */
-export const PIVOT_AHEAD = 5
-
-/**
  * Notches from a wheel event's `deltaY`. A mouse detent reports about 100 pixels, a trackpad
  * reports many small deltas — dividing by 100 serves both, and the cap keeps one violent flick
  * from throwing the camera across the scene.
  */
-export function notchesOf(deltaY: number): number {
-  return clamp(-deltaY / 100, -MAX_NOTCHES, MAX_NOTCHES)
+export function notchesOf(deltaY: number, deltaMode = 0): number {
+  return clamp(-wheelPixels(deltaY, deltaMode) / 100, -MAX_NOTCHES, MAX_NOTCHES)
+}
+
+/** DOM wheel units normalised to the pixels Chromium reports for ordinary wheels and trackpads. */
+function wheelPixels(delta: number, mode: number): number {
+  if (mode === 1) return delta * 16
+  if (mode === 2) return delta * 800
+  return delta
 }
 
 const MAX_NOTCHES = 5
 
+/**
+ * Pixels of drag that spend one notch. A hand travels further than a detent for the same amount,
+ * which is what keeps a chord dolly from crossing the scene in a flick.
+ */
+const DRAG_PIXELS = 60
+
+/**
+ * Notches a DRAG spends. Right and up close in, as they do in the two applications that dolly
+ * this way; a diagonal spends both, so the gesture has no dead axis.
+ */
+export function dragNotchesOf(deltaX: number, deltaY: number): number {
+  return clamp((deltaX - deltaY) / DRAG_PIXELS, -MAX_NOTCHES, MAX_NOTCHES)
+}
+
 export type DollyRequest = {
   position: Vector3
-  /** Where the camera looks, normalized. What the pivot is put back along after a crossing. */
-  forward: Vector3
   /** Where the pointer points, normalized. What the camera actually travels along. */
   aim: Vector3
   /** What the pointer's ray met, or a point stood in for it when it met nothing. */
@@ -44,25 +57,19 @@ export type DollyRequest = {
 
 export type DollyMove = {
   position: Vector3
-  pivot: Vector3
+  /**
+   * Where the view turns next — the world point the pointer met, wherever it sits on screen.
+   * `null` once the camera has crossed it: it is behind now, and the caller keeps what it had.
+   */
+  pivot: Vector3 | null
   /** The aimed point is behind the camera now. Whoever aimed has to aim again — see `DOLLY_RATE`. */
   crossed: boolean
 }
 
-export function dollyTo({ position, forward, aim, aimed, notches }: DollyRequest): DollyMove {
+export function dollyTo({ position, aim, aimed, notches }: DollyRequest): DollyMove {
   const step = Math.max(position.distanceTo(aimed) * DOLLY_RATE, DOLLY_FLOOR) * notches
   const moved = position.clone().addScaledVector(aim, step)
+  const crossed = aimed.clone().sub(moved).dot(aim) <= DOLLY_FLOOR
 
-  // ON the line of sight, always: `OrbitControls` ends its frame on `lookAt(target)`, so a pivot
-  // set off-axis would swing the view round to centre whatever the pointer was over. Its DEPTH is
-  // the aimed point's own, measured from where the camera LANDS — a floor applied to a surface
-  // merely NEARER than `PIVOT_AHEAD` would bury the pivot behind it.
-  const depth = aimed.clone().sub(moved).dot(forward)
-  const crossed = depth <= DOLLY_FLOOR
-
-  return {
-    position: moved,
-    pivot: moved.clone().addScaledVector(forward, crossed ? PIVOT_AHEAD : depth),
-    crossed,
-  }
+  return { position: moved, pivot: crossed ? null : aimed.clone(), crossed }
 }

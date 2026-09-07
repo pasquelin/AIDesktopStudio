@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createSkyboxContent } from '@shared/domain/skybox'
 import { useDocuments } from '@/stores/documents'
 import { useSkyboxes } from '@/stores/skyboxes'
-import { skyboxExportFiles } from './skyboxExportFiles'
+import { lendSkyboxExportPort, skyboxExportFiles } from './skyboxExportFiles'
 
 const port = vi.fn(() => Promise.resolve([{ name: 'Ciel', extension: '.hdr', bytes: BYTES }]))
 const BYTES = new Uint8Array([1, 2, 3])
@@ -30,6 +30,19 @@ beforeEach(() => {
 })
 
 describe('what the sky hands the writer', () => {
+  it('renders through a lent port, and never asks the GPU chunk for one', async () => {
+    const lent = vi.fn(() => Promise.resolve([{ name: 'Ciel', extension: '.png', bytes: BYTES }]))
+    const giveBack = lendSkyboxExportPort(lent)
+    try {
+      const request = await skyboxExportFiles('doc-1', { kind: 'faces', size: 1024 })
+
+      expect(request.files).toEqual([{ name: 'Ciel', extension: '.png', bytes: BYTES }])
+      expect(port).not.toHaveBeenCalled()
+    } finally {
+      giveBack()
+    }
+  })
+
   it('hands the port the command it was given, whole', async () => {
     await skyboxExportFiles('doc-1', { kind: 'panorama', target: 'sky.exr' })
 

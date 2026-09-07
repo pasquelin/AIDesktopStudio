@@ -1,7 +1,8 @@
 import { TIMELINE_TEMPLATES } from './animation'
 import { TEMPLATES_BY_GROUP } from './sceneTemplate'
-import { action, type ActionField, type AssistantAction } from './assistantAction'
+import { action, NODE_ID, type ActionField, type AssistantAction } from './assistantAction'
 import { COMPONENT_TYPES } from './componentRegistry'
+import { GEOMETRY_SIMPLIFICATIONS, TEXTURE_COMPRESSIONS, TEXTURE_REDUCTIONS } from './gameExport'
 
 /**
  * What an object DOES while the game runs, driven from outside the window.
@@ -9,13 +10,6 @@ import { COMPONENT_TYPES } from './componentRegistry'
  * `reach: 'mcp'` for all three: the briefing the window's own assistant reads is already at its
  * width, and three more entries push it past. The inspector is how the window does this.
  */
-const nodeIdField: ActionField = {
-  key: 'nodeId',
-  kind: 'text',
-  labelKey: 'assistant.fields.nodeId',
-  required: true,
-}
-
 const componentTypeField: ActionField = {
   key: 'type',
   kind: 'choice',
@@ -32,7 +26,7 @@ export const GAME_ACTIONS: readonly AssistantAction[] = [
     commitment: 'none',
     repeatable: true,
     reach: 'mcp',
-    fields: [nodeIdField, componentTypeField],
+    fields: [NODE_ID, componentTypeField],
   }),
   action({
     name: 'component.detach',
@@ -41,7 +35,7 @@ export const GAME_ACTIONS: readonly AssistantAction[] = [
     commitment: 'none',
     repeatable: true,
     reach: 'mcp',
-    fields: [nodeIdField, componentTypeField],
+    fields: [NODE_ID, componentTypeField],
   }),
   action({
     /**
@@ -49,14 +43,14 @@ export const GAME_ACTIONS: readonly AssistantAction[] = [
      * a schema naming them all would describe none of them — and a `raw` parameter is one no
      * client can build from. The handler converts it by the kind the DESCRIPTOR declares.
      */
-    name: 'component.set',
-    titleKey: 'assistant.actions.componentSet.title',
-    descriptionKey: 'assistant.actions.componentSet.description',
+    name: 'component.setProperties',
+    titleKey: 'assistant.actions.componentSetProperties.title',
+    descriptionKey: 'assistant.actions.componentSetProperties.description',
     commitment: 'none',
     repeatable: true,
     reach: 'mcp',
     fields: [
-      nodeIdField,
+      NODE_ID,
       componentTypeField,
       { key: 'field', kind: 'text', labelKey: 'assistant.fields.componentField', required: true },
       { key: 'value', kind: 'text', labelKey: 'assistant.fields.componentValue', required: true },
@@ -226,6 +220,7 @@ export const STUDIO_ACTIONS: readonly AssistantAction[] = [
     commitment: 'none',
     repeatable: true,
     reach: 'mcp',
+    capabilities: { targets: ['component'] },
     fields: [
       { key: 'topic', kind: 'text', labelKey: 'assistant.fields.docsTopic', required: false },
     ],
@@ -270,7 +265,7 @@ const timelineListField: ActionField = {
  * What a timeline CUES, put there from outside the window.
  *
  * 🛑 ONE action for the four lists rather than four: what changes between them is the shape of
- * the row, and `component.set` already settled that question here — the value travels as TEXT
+ * the row, and `component.setProperties` already settled that question here — the value travels as TEXT
  * and the handler reads it by what the list declares. Four narrow actions would be four schemas
  * a model has to tell apart before it can ask for anything.
  */
@@ -419,6 +414,33 @@ export const EXPORT_ACTIONS: readonly AssistantAction[] = [
       { key: 'entryScene', kind: 'text', labelKey: 'assistant.fields.entryScene', required: false },
       { key: 'title', kind: 'text', labelKey: 'assistant.fields.gameTitle', required: false },
       { key: 'folder', kind: 'text', labelKey: 'assistant.fields.exportFolder', required: false },
+      {
+        key: 'generateLods',
+        kind: 'boolean',
+        labelKey: 'assistant.fields.generateLods',
+        required: false,
+      },
+      {
+        key: 'geometrySimplification',
+        kind: 'choice',
+        labelKey: 'assistant.fields.geometrySimplification',
+        required: false,
+        options: GEOMETRY_SIMPLIFICATIONS,
+      },
+      {
+        key: 'textureCompression',
+        kind: 'choice',
+        labelKey: 'assistant.fields.textureCompression',
+        required: false,
+        options: TEXTURE_COMPRESSIONS,
+      },
+      {
+        key: 'textureReduction',
+        kind: 'choice',
+        labelKey: 'assistant.fields.textureReduction',
+        required: false,
+        options: TEXTURE_REDUCTIONS,
+      },
     ],
   }),
 ]

@@ -5,7 +5,13 @@ import { fakeMenu } from '@/helpers/menu-fixtures'
 import { installFakeBridge } from '@/services/fakeBridge'
 import { installScene } from '@/stores/scene-fixtures'
 import { sceneOf, useScenes } from '@/stores/scenes'
+import { EMPTY_SCENE } from '@/engines/scene/sceneState'
+import { groupNodeFixture, meshNode } from '@/engines/scene/scene-fixtures'
 import { SceneTree } from './SceneTree'
+import { SceneActions } from './SceneActions'
+import { modelNodeFixture } from '@/engines/scene/scene-fixtures'
+import { useModelFiles } from '@/stores/modelFiles'
+import { workshopIdOf } from '@shared/domain/character'
 
 /** jsdom implements no `DataTransfer`; the tree reads exactly these three members of one. */
 function dragData() {
@@ -31,6 +37,32 @@ beforeEach(() => {
 })
 
 describe('SceneTree', () => {
+  it('shows and selects multiple meshes below one model root without making them scene nodes', async () => {
+    const model = modelNodeFixture('character')
+    useScenes.getState().replace('doc-1', { ...EMPTY_SCENE, nodes: [model] })
+    useModelFiles.getState().reportMaterials(
+      'doc-1',
+      model.id,
+      2,
+      ['Hair', 'Skin'],
+      [
+        { id: 'mesh-0', name: 'Hair', materialSlots: [0] },
+        { id: 'mesh-1', name: 'Head', materialSlots: [1] },
+      ],
+    )
+
+    render(<SceneTree documentId="doc-1" modelContents />)
+
+    expect(screen.getByText('Hair')).toBeInTheDocument()
+    expect(screen.getByText('Head')).toBeInTheDocument()
+    expect(scene().nodes).toEqual([model])
+
+    await userEvent.click(screen.getByText('Hair'))
+
+    expect(scene().selectedIds).toEqual([model.id])
+    expect(useModelFiles.getState().selectedParts['doc-1']).toBe(`${model.id}:mesh-0`)
+  })
+
   it('shows the scene root and its three default lights', () => {
     render(<SceneTree documentId="doc-1" />)
 
@@ -261,6 +293,14 @@ describe('SceneTree', () => {
     fireEvent.drop(rows[1]!, { dataTransfer: data, clientY: 3 })
 
     expect(order().slice(0, 3)).toEqual([second, third, first])
+    // 🛑 And the SCREEN follows: sorted by name whatever the scene held, the drag wrote a command
+    // and an undo entry for a row that never moved.
+    expect(
+      screen
+        .getAllByRole('treeitem')
+        .slice(1, 4)
+        .map(row => row.textContent),
+    ).toEqual([second, third, first])
   })
 
   it('folds the root away, which is session state and not an edit', async () => {
@@ -271,6 +311,52 @@ describe('SceneTree', () => {
     )
 
     expect(screen.queryByText('AmbientLight')).not.toBeInTheDocument()
+  })
+
+  it('forgets the open descendants when their parent is folded', async () => {
+    installScene('doc-1', {
+      ...EMPTY_SCENE,
+      nodes: [
+        groupNodeFixture('parent'),
+        groupNodeFixture('child', 'parent'),
+        meshNode('leaf', 'child'),
+      ],
+    })
+    render(<SceneTree documentId="doc-1" />)
+
+    expect(screen.getByText('leaf')).toBeInTheDocument()
+    await userEvent.click(
+      screen
+        .getByText('parent')
+        .closest('[role="treeitem"]')
+        ?.querySelector('[data-chevron]') as HTMLElement,
+    )
+    await userEvent.click(
+      screen
+        .getByText('parent')
+        .closest('[role="treeitem"]')
+        ?.querySelector('[data-chevron]') as HTMLElement,
+    )
+
+    expect(screen.getByText('child')).toBeInTheDocument()
+    expect(screen.queryByText('leaf')).not.toBeInTheDocument()
+  })
+
+  it('searches the scene tree and offers the inverse global fold action', async () => {
+    render(
+      <>
+        <SceneActions />
+        <SceneTree documentId="doc-1" />
+      </>,
+    )
+
+    await userEvent.type(screen.getByRole('searchbox'), 'Ambient')
+    expect(screen.getByText('AmbientLight')).toBeInTheDocument()
+    expect(screen.queryByText('DirectionalLight')).not.toBeInTheDocument()
+
+    await userEvent.click(screen.getByRole('button', { name: 'Tout replier' }))
+    expect(screen.queryByText('AmbientLight')).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Tout déplier' })).toBeInTheDocument()
   })
 
   it('raises the node menu on a right-click, and nothing on the root', () => {
@@ -284,6 +370,21 @@ describe('SceneTree', () => {
     // The root is a row but not a node: it stands for the scene, which has no name and no delete.
     fireEvent.contextMenu(screen.getByText('Scène'))
     expect(menu.raised).toHaveLength(1)
+  })
+
+  // The workshop of a model tab lists that one model: a scene menu there offered to delete it.
+  it('raises the workshop menu, not the scene one, on the model of a character tab', () => {
+    const workshop = workshopIdOf('asset-hero')
+    const model = modelNodeFixture('character')
+    useScenes.getState().replace(workshop, { ...EMPTY_SCENE, nodes: [model] })
+    const menu = fakeMenu()
+    installFakeBridge({ menu: menu.bridge })
+    render(<SceneTree documentId={workshop} modelContents />)
+
+    fireEvent.contextMenu(screen.getByText(model.name))
+
+    expect(menu.labels()).toContain('Afficher les os')
+    expect(menu.labels()).not.toContain('Supprimer')
   })
 
   /**

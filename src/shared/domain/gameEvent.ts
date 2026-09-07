@@ -30,6 +30,7 @@ export type GameEventName =
   | 'ItemPicked'
   | 'ItemUsed'
   | 'AnimationFinished'
+  | 'AnimationEvent'
   | 'TimelineFinished'
   | 'VideoFinished'
   | 'SoundFinished'

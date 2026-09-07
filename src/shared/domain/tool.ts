@@ -4,6 +4,7 @@
  * enriches it with icons and components. Duplicating it in the main process would degrade
  * `ToolId` to `string` and force a cast back on the other side.
  */
+import type { Slot, Zone } from '@pasquelin/panels'
 import {
   GENERATIVE_WORKSPACE_IDS,
   LIBRARY_WORKSPACE_IDS,
@@ -34,21 +35,20 @@ export const HOME_SURFACE = 'home'
  */
 export type SurfaceFamily = 'workspaces' | 'home'
 
-export const SURFACE_FAMILIES: readonly SurfaceFamily[] = ['workspaces', 'home']
-
 export function familyOf(surface: ToolSurface): SurfaceFamily {
   return surface === HOME_SURFACE ? 'home' : 'workspaces'
 }
 
 /**
- * Where a tool hangs. The bottom band is TWO zones sharing one height: whichever of them is alone
- * runs under the opposite column, and together they split the width between them.
+ * Where a tool hangs — the chassis' own zone, under the studio's name. Types only: `shared/`
+ * holds no runtime dependency, and a type import is erased.
  */
-export type ToolZone = 'left' | 'right' | 'top' | 'bottomLeft' | 'bottomRight'
+export type ToolZone = Zone
 
 export type ToolId =
   | 'assistant'
   | 'layers'
+  | 'world'
   | 'meshes'
   | 'lights'
   | 'timeline'
@@ -61,7 +61,6 @@ export type ToolId =
   | 'inspector'
   | 'assets'
   | 'projects'
-  | 'animations'
   | 'text'
   | 'context'
   | 'problems'
@@ -81,14 +80,8 @@ export type ToolId =
  */
 export const SCENARIO_TOOLS: readonly ToolId[] = ['generator', 'assets']
 
-/**
- * A zone is cut in two, and each half shows one tool at a time. The rail draws the same cut as
- * a separator: icons above it open in the first half, icons below in the second.
- *
- * `primary` is the half nearest the window edge the zone hangs from — the top of a side column,
- * the left of the bottom strip.
- */
-export type ToolSlot = 'primary' | 'secondary'
+/** A zone is cut in two, and each half shows one tool at a time — the chassis' own slot. */
+export type ToolSlot = Slot
 
 /**
  * Where a tool sits. A tool may declare **more than one**, for disjoint sets of surfaces: the
@@ -117,7 +110,8 @@ export type ToolPlacement = {
    * The state itself is not answered here — `shared/` holds no runtime dependency — but which
    * question to ask is a property of the panel, and it belongs beside the panel.
    */
-  requires?: 'project' | 'git' | 'cloud' | 'centreTaken'
+  requires?:
+    'project' | 'git' | 'cloud' | 'centreTaken' | 'sceneContents' | 'sceneDocument' | 'guiDocument'
   /**
    * Whether the panel takes its zone WHOLE: shown, the other half draws nothing. Only a
    * `primary` may ask for it — `tool.test.ts` holds that, the resolver silencing the second half
@@ -133,18 +127,6 @@ export type ToolPlacement = {
    */
   opens?: number
 }
-
-export const TOOL_SLOTS: readonly ToolSlot[] = ['primary', 'secondary']
-
-/**
- * One tool per half, so an icon click swaps rather than stacks. Key absent, the half is closed;
- * `null`, it is open on no panel in particular; an id, on the panel the user chose.
- *
- * That third state earns its keep: what is open is stored once for all the sections, while the
- * panel that comes first in a half differs in each — the layers in Image, the shelf in Video,
- * the sky in Skyboxes. An id there would impose one section's answer on the other five.
- */
-export type ZoneSlots = Partial<Record<ToolSlot, ToolId | null>>
 
 /**
  * Tools sharing a zone AND a slot take turns; tools in different slots of the same zone show
@@ -211,15 +193,45 @@ export const TOOL_PLACEMENTS: readonly ToolPlacement[] = [
   { id: 'text', zone: 'right', slot: 'primary', surfaces: ['image'] },
   // The outliner of the scene, which the Explorer used to hold in this one workspace — it now
   // lists the documents of the project in every space, which is a different question.
-  { id: 'scene', zone: 'right', slot: 'primary', surfaces: ['3d'] },
+  {
+    id: 'scene',
+    zone: 'right',
+    slot: 'primary',
+    surfaces: ['3d'],
+    requires: 'sceneContents',
+  },
   // The outliner of an interface, beside the scene's rather than folded into it: the 3D
   // space opens two kinds now, and one panel answering for both would answer for neither.
-  { id: 'guiTree', zone: 'right', slot: 'primary', surfaces: ['3d'] },
-  { id: 'lights', zone: 'right', slot: 'primary', surfaces: ['3d'] },
-  { id: 'meshes', zone: 'right', slot: 'primary', surfaces: ['3d'] },
+  {
+    id: 'guiTree',
+    zone: 'right',
+    slot: 'primary',
+    surfaces: ['3d'],
+    requires: 'guiDocument',
+  },
+  {
+    id: 'lights',
+    zone: 'right',
+    slot: 'primary',
+    surfaces: ['3d'],
+    requires: 'sceneDocument',
+  },
+  {
+    id: 'meshes',
+    zone: 'right',
+    slot: 'primary',
+    surfaces: ['3d'],
+    requires: 'sceneDocument',
+  },
+  {
+    id: 'world',
+    zone: 'right',
+    slot: 'primary',
+    surfaces: ['3d'],
+    requires: 'sceneDocument',
+  },
   // What a character can be made to play, on the right where the panels that steer a document
   // already are. Its rows are dragged onto the band below, which is why the two face each other.
-  { id: 'animations', zone: 'right', slot: 'primary', surfaces: ['3d'] },
 
   // The other half of the right column, and always up: what is selected is read WHILE a
   // model is chosen and a prompt written, and in an editor the inspector is never the panel
@@ -388,32 +400,9 @@ export function workspacePlacementsOf(id: unknown): ToolPlacement[] {
  * offered on the home, where there may not be one.
  */
 export function placementIn(id: unknown, surface: ToolSurface): ToolPlacement | null {
-  return placementsOf(id).find(placement => serves(placement, surface)) ?? null
+  return TOOL_PLACEMENTS.find(one => one.id === id && serves(one, surface)) ?? null
 }
 
 export function serves(placement: ToolPlacement, surface: ToolSurface): boolean {
   return placement.surfaces.includes(surface)
-}
-
-export const TOOL_ZONES: readonly ToolZone[] = ['left', 'right', 'top', 'bottomLeft', 'bottomRight']
-
-/** The band's two halves, in the order they are drawn. */
-export const BOTTOM_ZONES: readonly ToolZone[] = ['bottomLeft', 'bottomRight']
-
-/** Whether the zone is one of the band's halves, which share a height and a resize handle. */
-export function isBottom(zone: ToolZone): boolean {
-  return zone === 'bottomLeft' || zone === 'bottomRight'
-}
-
-/** Horizontal zones: their size is set as a height, not a width. */
-export function isHorizontal(zone: ToolZone): boolean {
-  return zone === 'top' || isBottom(zone)
-}
-
-/**
- * Zones whose panel sits before its resize handle. The opposite zones grow backwards, which
- * is also why their drag direction is inverted.
- */
-export function isLeading(zone: ToolZone): boolean {
-  return zone === 'left' || zone === 'top'
 }

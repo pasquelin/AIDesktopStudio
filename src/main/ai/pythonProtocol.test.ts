@@ -3,6 +3,7 @@ import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import {
   doorMemory,
+  PROFILES,
   PROTOCOL_VERSION,
   readFrame,
   readHardware,
@@ -18,10 +19,26 @@ const ROOT = join(import.meta.dirname, '..', '..', '..')
  */
 describe('the version both sides agree on', () => {
   it('is the same number in the engine as in the studio', () => {
-    const source = readFileSync(join(ROOT, 'engine/src/ia_studio_engine/__init__.py'), 'utf8')
+    const source = readFileSync(join(ROOT, 'engine/src/aidesktopstudio_engine/__init__.py'), 'utf8')
     const declared = /^PROTOCOL_VERSION = (\d+)$/m.exec(source)
 
     expect(Number(declared?.[1])).toBe(PROTOCOL_VERSION)
+  })
+
+  it('names the same requirement profiles as the engine accepts', () => {
+    const requirements = readFileSync(
+      join(ROOT, 'engine/src/aidesktopstudio_engine/core/requirements.py'),
+      'utf8',
+    )
+    const supervisor = readFileSync(
+      join(ROOT, 'engine/src/aidesktopstudio_engine/core/supervisor.py'),
+      'utf8',
+    )
+    const fallback = /^DOOR_EXTRA = "([a-z]+)"$/m.exec(requirements)?.[1]
+    const others = /profile not in \{DOOR_EXTRA, ([^}]*)\}/.exec(supervisor)?.[1] ?? ''
+
+    const accepted = [fallback, ...others.split(',').map(one => one.trim().replace(/"/g, ''))]
+    expect(accepted.filter(Boolean).sort()).toEqual([...PROFILES].sort())
   })
 })
 
@@ -95,7 +112,10 @@ describe('what a door reports about its memory', () => {
   }
 
   /** `MemoryLedger` has an `as_frame` of its own, and it composes `doors` rather than a door. */
-  const source = readFileSync(join(ROOT, 'engine/src/ia_studio_engine/core/memory.py'), 'utf8')
+  const source = readFileSync(
+    join(ROOT, 'engine/src/aidesktopstudio_engine/core/memory.py'),
+    'utf8',
+  )
   const own = source.slice(source.indexOf('class DoorMemory'), source.indexOf('class MemoryLedger'))
   const emitted = [...own.matchAll(/^\s+"(\w+)":/gm)].map(found => found[1] ?? '')
 

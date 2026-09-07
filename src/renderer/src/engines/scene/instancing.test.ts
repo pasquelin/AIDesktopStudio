@@ -5,16 +5,14 @@ import {
   Mesh,
   MeshStandardMaterial,
   Object3D,
+  Raycaster,
+  Vector3,
 } from 'three'
 import { describe, expect, it } from 'vitest'
 import { EDGE_LAYER } from './sceneView'
-import { meshNode } from './scene-fixtures'
-import {
-  DRAWN_BY_INSTANCE,
-  WORTH_INSTANCING,
-  createInstancedGroups,
-  keepsItsGroup,
-} from './instancing'
+import { meshNode, modelNodeFixture } from './scene-fixtures'
+import { DRAWN_BY_INSTANCE, WORTH_INSTANCING } from './grouping'
+import { createInstancedGroups, keepsItsGroup } from './instancing'
 import type { SceneNode } from './sceneState'
 
 /** One shape, N nodes of it — a decor someone copied and pasted, which is the case that costs. */
@@ -97,7 +95,8 @@ describe('createInstancedGroups', () => {
     const { nodes, objects } = alike(WORTH_INSTANCING)
     createInstancedGroups(scene).rebuild(nodes, id => objects.get(id))
 
-    // What keeps picking alive: they are still in the scene, matrices and all — just not drawn.
+    // What keeps picking alive: they are still in `objects`, matrices and all — just neither
+    // drawn nor walked, which is a layer and a place in the tree, not the same thing.
     for (const mesh of objects.values()) {
       expect(mesh.layers.isEnabled(DRAWN_BY_INSTANCE)).toBe(true)
       expect(mesh.layers.isEnabled(0)).toBe(false)
@@ -237,6 +236,41 @@ describe('createInstancedGroups', () => {
   })
 })
 
+describe('picking a body through the instance that draws it', () => {
+  it('maps the raycast instance slot back to the source node', () => {
+    const scene = host()
+    const groups = createInstancedGroups(scene)
+    const { nodes, objects } = alike(WORTH_INSTANCING)
+    groups.rebuild(nodes, id => objects.get(id))
+    scene.updateMatrixWorld(true)
+    const raycaster = new Raycaster(new Vector3(5, 10, 0), new Vector3(0, -1, 0))
+
+    const instance = groups.pickable()[0]
+    if (!instance) throw new Error('nothing was instanced')
+    const hit = raycaster.intersectObject(instance, false)[0]
+
+    expect(hit?.instanceId).toBe(5)
+    expect(hit ? groups.nodeIdOf(hit) : null).toBe('n5')
+  })
+
+  it('answers nothing for an object or slot no instance owns', () => {
+    const scene = host()
+    const groups = createInstancedGroups(scene)
+    const { nodes, objects } = alike(WORTH_INSTANCING)
+    groups.rebuild(nodes, id => objects.get(id))
+    const instance = groups.pickable()[0]
+    if (!instance) throw new Error('nothing was instanced')
+
+    expect(
+      groups.nodeIdOf({ object: new Mesh(), distance: 1, point: new Vector3(), instanceId: 0 }),
+    ).toBeNull()
+    expect(
+      groups.nodeIdOf({ object: instance, distance: 1, point: new Vector3(), instanceId: 999 }),
+    ).toBeNull()
+    expect(groups.nodeIdOf({ object: instance, distance: 1, point: new Vector3() })).toBeNull()
+  })
+})
+
 describe('splitting a group across the level it covers', () => {
   it('draws a spread-out shape through one instance per region', () => {
     const scene = host()
@@ -351,7 +385,7 @@ describe('keepsItsGroup', () => {
     expect(keepsItsGroup(node, { ...node, transform: moved })).toBe(true)
   })
 
-  it('lets go of a node whose shape, paint, visibility, parent, shadow or mark changed', () => {
+  it('lets go of a node whose grouping inputs or optimization intent changed', () => {
     const node = meshNode('n0')
     const elsewhere: Partial<typeof node>[] = [
       { geometry: { kind: 'sphere', radius: 1, widthSegments: 8, heightSegments: 8 } },
@@ -363,6 +397,7 @@ describe('keepsItsGroup', () => {
       // An instance draws the FIRST member's own material, so a brick marked as a tool inside a
       // wall of sixty-four would either stay grey or turn the whole wall red.
       { negative: true },
+      { optimization: { mode: 'exclude' } },
     ]
 
     // Each of the seven is read by the grouping: kept, the node would go on being drawn by an
@@ -371,5 +406,24 @@ describe('keepsItsGroup', () => {
     for (const moved of elsewhere) {
       expect(keepsItsGroup(node, { ...node, ...moved })).toBe(false)
     }
+  })
+
+  it('keeps a model whose placement is all that moved', () => {
+    const node = modelNodeFixture('tree')
+    const moved = { ...node.transform, position: { x: 4, y: 0, z: 0 } }
+    expect(keepsItsGroup(node, { ...node, transform: moved })).toBe(true)
+  })
+
+  it('lets go of a model whose asset, dress, shadow or optimization intent changed', () => {
+    const node = modelNodeFixture('tree')
+    expect(keepsItsGroup(node, { ...node, model: { assetId: 'other' } })).toBe(false)
+    expect(
+      keepsItsGroup(node, {
+        ...node,
+        model: { ...node.model, dress: { kind: 'image', assetId: 'pic-1' } },
+      }),
+    ).toBe(false)
+    expect(keepsItsGroup(node, { ...node, castShadow: !node.castShadow })).toBe(false)
+    expect(keepsItsGroup(node, { ...node, optimization: { mode: 'exclude' } })).toBe(false)
   })
 })

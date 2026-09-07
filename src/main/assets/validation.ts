@@ -49,6 +49,7 @@ const assetChanges = z.object({
   // One of the six the studio knows, and nothing else: `other` is what a file with no row is,
   // never what a row says of itself.
   type: z.enum(ASSET_TYPES).optional(),
+  modelMaterialIds: z.array(z.string().min(1)).max(64).optional(),
 })
 
 export function parseAssetChanges(value: unknown): AssetChanges {

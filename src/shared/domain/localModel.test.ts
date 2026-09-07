@@ -53,6 +53,12 @@ describe('modelRefusalOf', () => {
     expect(modelRefusalOf(localModel())).toBeNull()
   })
 
+  it('refuses a distribution-blocked model independently of files on disk', () => {
+    expect(modelRefusalOf(localModel({ distributionStatus: 'blocked' }))).toBe(
+      'distribution-blocked',
+    )
+  })
+
   it('refuses a pair the whitelist does not admit', () => {
     expect(modelRefusalOf(localModel({ format: 'pickle' }))).toBe('format-not-admitted')
     expect(modelRefusalOf(localModel({ format: 'onnx', loader: 'ollama' }))).toBe(

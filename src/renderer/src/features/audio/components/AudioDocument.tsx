@@ -1,14 +1,14 @@
 import { useCallback } from 'react'
 import type { CommandId } from '@shared/domain/command'
+import { runAudioCommand } from './audioCommands'
 import { ResizeHandle } from '@/components/ResizeHandle'
-import { canRedo, canUndo } from '@/engines/core/history'
 import type { Us } from '@/engines/timeline/timelineState'
 import { useRestoredDocument } from '@/hooks/useRestoredDocument'
 import { useShortcuts } from '@/hooks/useShortcuts'
 import { useDocumentTitle } from '@/hooks/useDocumentTitle'
 import { useSoundTransport } from '@/hooks/useSoundTransport'
 import { useSplitPair } from '@/hooks/useSplitPair'
-import { audioHistoryOf, isAudioEditDirty, useAudioEdits } from '@/stores/audioEdits'
+import { isAudioEditDirty, useAudioEdits } from '@/stores/audioEdits'
 import { useDocumentIsInFront } from '@/stores/documents'
 import { isClipMonitorShown, useMonitorPair } from '@/stores/monitorPair'
 import { playbackHeadOf, usePlayback } from '@/stores/playback'
@@ -69,7 +69,7 @@ export function AudioDocument({ documentId }: AudioDocumentProps) {
       if (!sequenceStore.hasState(store, documentId)) return
 
       // Scrubbing is not an edit: the head goes through `replace`, which skips the history.
-      store.replace(documentId, { ...sequenceOf(store, documentId), playhead })
+      store.replaceView(documentId, { ...sequenceOf(store, documentId), playhead })
     },
     [documentId],
   )
@@ -84,21 +84,7 @@ export function AudioDocument({ documentId }: AudioDocumentProps) {
    * which is why `SoundPanel` mounts the strip with its shortcuts off.
    */
   const onCommand = useCallback(
-    (command: CommandId) => {
-      const takes = useAudioEdits.getState()
-      const montage = useSequences.getState()
-
-      if (command === 'audio.undo') {
-        return canUndo(audioHistoryOf(takes, documentId))
-          ? takes.undo(documentId)
-          : montage.undo(documentId)
-      }
-      if (command === 'audio.redo') {
-        return canRedo(audioHistoryOf(takes, documentId))
-          ? takes.redo(documentId)
-          : montage.redo(documentId)
-      }
-    },
+    (command: CommandId): boolean => runAudioCommand(documentId, command),
     [documentId],
   )
 

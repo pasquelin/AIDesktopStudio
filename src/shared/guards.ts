@@ -123,6 +123,10 @@ export function readBoolean(
  * The list rather than the key, unlike the readers above: a union is read off a payload, off an
  * argument and off a menu row, and only the first of those has a record to name a key in.
  */
-export function oneOf<T extends string>(options: readonly T[], value: unknown, fallback: T): T {
+export function oneOf<T extends string | number>(
+  options: readonly T[],
+  value: unknown,
+  fallback: T,
+): T {
   return options.find(candidate => candidate === value) ?? fallback
 }

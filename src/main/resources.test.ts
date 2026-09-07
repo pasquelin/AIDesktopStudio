@@ -31,9 +31,9 @@ describe('the local AI engine', () => {
   })
 
   it('names the Windows interpreter the way that platform runs it', () => {
-    expect(bundledEngine('C:\\Program Files\\IA Studio\\resources', 'win32').python).toContain(
-      'python.exe',
-    )
+    expect(
+      bundledEngine('C:\\Program Files\\AI Desktop Studio\\resources', 'win32').python,
+    ).toContain('python.exe')
   })
 
   it('is recopied onto that sibling before a dev run starts', () => {

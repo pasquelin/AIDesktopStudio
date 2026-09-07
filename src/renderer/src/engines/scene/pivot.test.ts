@@ -1,6 +1,14 @@
 import { Object3D, Vector3 } from 'three'
 import { describe, expect, it } from 'vitest'
-import { applyTransform, carry, centreOf, placePivot, release, transformOf } from './pivot'
+import {
+  applyTransform,
+  carry,
+  centreOf,
+  placePivot,
+  release,
+  standsAt,
+  transformOf,
+} from './pivot'
 
 function node(id: string, x: number, y = 0, z = 0): Object3D {
   const object = new Object3D()
@@ -154,6 +162,16 @@ describe('transformOf', () => {
  * is that a transform read out and written back is the same transform, which is exactly what
  * the renderer does with a bone's rest pose.
  */
+describe('standsAt', () => {
+  it('answers true only when the object already holds that pose', () => {
+    const object = node('crate', 1, 2, 3)
+    const held = transformOf(object)
+
+    expect(standsAt(object, held)).toBe(true)
+    expect(standsAt(object, { ...held, position: { ...held.position, x: 9 } })).toBe(false)
+  })
+})
+
 describe('applyTransform', () => {
   it('writes back what transformOf read, part for part', () => {
     const source = node('a', 1, 2, 3)

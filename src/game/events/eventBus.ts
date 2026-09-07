@@ -39,6 +39,21 @@ export function createEventBus(report: EventTrouble): EventBus {
   const walking: ((event: GameEvent) => void)[] = []
   let stopped = false
 
+  const deliver = (event: GameEvent): void => {
+    const listed = handlers.get(event.name)
+    if (!listed?.length && anyone.length === 0) return
+    walking.length = 0
+    if (listed) for (const handler of listed) walking.push(handler)
+    for (const handler of anyone) walking.push(handler)
+    for (let at = 0; at < walking.length && !stopped; at++) {
+      try {
+        walking[at]?.(event)
+      } catch (error) {
+        report(error, event)
+      }
+    }
+  }
+
   return {
     on: (name, handler) => {
       const listed = handlers.get(name) ?? []
@@ -73,25 +88,7 @@ export function createEventBus(report: EventTrouble): EventBus {
         for (let index = 0; index < delivering.length && !stopped; index++) {
           const event = delivering[index]
           if (!event) continue
-
-          const listed = handlers.get(event.name)
-          if (!listed?.length && anyone.length === 0) continue
-
-          // 🛑 Walked over a COPY. A handler that drops its own subscription — the one-shot, the
-          // obvious way to write `on('Died', …)` — splices the live array, and the walk would then
-          // step over whichever handler moved into its place.
-          walking.length = 0
-          if (listed) for (const handler of listed) walking.push(handler)
-          for (const handler of anyone) walking.push(handler)
-
-          for (let at = 0; at < walking.length && !stopped; at++) {
-            try {
-              walking[at]?.(event)
-            } catch (error) {
-              // Reported and the rest still delivered: one broken handler must not cost the tick.
-              report(error, event)
-            }
-          }
+          deliver(event)
         }
       } finally {
         // In a `finally`, or a throw leaves the tick's events in the buffer that becomes the next

@@ -8,11 +8,11 @@ import inspect
 
 import pytest
 
-from ia_studio_engine.adapters.diffusers_adapter import DiffusersAdapter
-from ia_studio_engine.adapters.modalities import MODALITIES
-from ia_studio_engine.adapters.model_adapter import ModelAdapter
-from ia_studio_engine.adapters.plugin_adapter import PluginAdapter
-from ia_studio_engine.adapters.routing_adapter import RoutingAdapter
+from aidesktopstudio_engine.adapters.diffusers_adapter import DiffusersAdapter
+from aidesktopstudio_engine.adapters.modalities import MODALITIES
+from aidesktopstudio_engine.adapters.model_adapter import ModelAdapter
+from aidesktopstudio_engine.adapters.plugin_adapter import PluginAdapter
+from aidesktopstudio_engine.adapters.routing_adapter import RoutingAdapter
 
 ADAPTERS = (DiffusersAdapter, PluginAdapter, RoutingAdapter)
 
@@ -42,7 +42,7 @@ def test_an_adapter_publishes_the_five_calls_a_door_makes_and_nothing_else(adapt
         if not name.startswith("_") and callable(getattr(adapter, name))
     )
 
-    assert published == ["backend", "device", "generate", "load", "unload"]
+    assert published == ["auto_rig", "backend", "device", "generate", "load", "unload"]
 
 
 @pytest.mark.parametrize("adapter", ADAPTERS, ids=lambda one: one.__name__)

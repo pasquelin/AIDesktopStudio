@@ -12,6 +12,8 @@ import { animationViewOf, useAnimationViews } from '@/stores/animationView'
 import { useAssets } from '@/stores/assets'
 import { useModelFiles } from '@/stores/modelFiles'
 import { sceneOf, useScenes } from '@/stores/scenes'
+import { characterOf, seedCharacter, useCharacters } from '@/stores/character'
+import { clearCharacters } from '@/stores/character-fixtures'
 import { runAction } from './executor'
 
 const DOCUMENT = 'doc-scene'
@@ -41,52 +43,58 @@ function scene(): SceneState {
 const character = (): ModelNode | undefined =>
   scene().nodes.find((node): node is ModelNode => node.type === 'model')
 
-function installCharacter(rig: Rig | undefined = RIG): string {
-  const node = modelNode('asset-hero', 'Héros')
-  const rigged = rig ? { ...node, model: { assetId: 'asset-hero', rig } } : node
-  installScene(DOCUMENT, { ...createDefaultScene(), nodes: [rigged], selectedIds: [] })
+/** What the skeleton window holds — a FILE, which is where a rig lives now. */
+const held = () => characterOf(useCharacters.getState(), ASSET)
+
+/** The scene still holds the model: the band and the blocks are the scene's half. */
+function installCharacter(rig: Rig | null = RIG): string {
+  const node = modelNode(ASSET, 'Héros')
+  installScene(DOCUMENT, { ...createDefaultScene(), nodes: [node], selectedIds: [] })
+  seedCharacter(ASSET, rig, {})
   return node.id
 }
+
+const ASSET = 'asset-hero'
 
 beforeEach(() => {
   useAssets.setState({ items: [ANIMATION] })
   useModelFiles.setState({ rigs: {} })
+  clearCharacters()
 })
 
 describe('reading a character', () => {
-  it('answers its bones, its handles and what the engine measured', async () => {
-    const nodeId = installCharacter()
+  it('answers its bones, its handles and what it knows how to play', async () => {
+    installCharacter()
 
-    const outcome = await runAction('rig.state', { nodeId })
+    const outcome = await runAction('rig.state', {})
 
-    expect(outcome).toMatchObject({ ok: true, data: { rigged: true, status: null } })
+    expect(outcome).toMatchObject({ ok: true, data: { rigged: true, motions: [], sockets: [] } })
     expect((outcome as { data: { bones: unknown[] } }).data.bones).toHaveLength(2)
   })
 
-  // `notFound` and not `wrongSurface`: the scene IS in front. The measure is on `noModel`.
-  it('refuses a node the scene does not hold as missing, not as the wrong surface', async () => {
-    installCharacter()
-
-    expect(await runAction('rig.state', { nodeId: 'node-z' })).toMatchObject({
+  // 🛑 `wrongSurface` and not `notFound`: a skeleton is edited in a window of its own, and with
+  // none open there is no character to name — a different thing from naming one wrongly.
+  it('refuses when no character is open, and says where one is opened', async () => {
+    expect(await runAction('rig.state', {})).toMatchObject({
       ok: false,
-      refusal: 'notFound',
+      refusal: 'wrongSurface',
     })
   })
 })
 
 describe('the skeleton', () => {
   it('takes a bone out, its children hung where it hung', async () => {
-    const nodeId = installCharacter()
+    installCharacter()
 
-    expect(await runAction('bone.remove', { nodeId, bone: 'Root' })).toEqual({ ok: true })
-    expect(character()?.model.rig?.bones.map(bone => bone.name)).toEqual(['Spine'])
+    expect(await runAction('bone.remove', { bone: 'Root' })).toEqual({ ok: true })
+    expect(held().rig?.bones.map(bone => bone.name)).toEqual(['Spine'])
   })
 
   it('adds one under the bone named, called after it', async () => {
-    const nodeId = installCharacter()
+    installCharacter()
 
-    expect(await runAction('bone.add', { nodeId, parent: 'Spine' })).toEqual({ ok: true })
-    expect(character()?.model.rig?.bones.map(bone => bone.name)).toContain('Spine.1')
+    expect(await runAction('bone.add', { parent: 'Spine' })).toEqual({ ok: true })
+    expect(held().rig?.bones.map(bone => bone.name)).toContain('Spine.1')
   })
 
   /**
@@ -94,66 +102,66 @@ describe('the skeleton', () => {
    * took when the skeleton never moved.
    */
   it('refuses a rename onto a name already taken rather than answering ok', async () => {
-    const nodeId = installCharacter()
+    installCharacter()
 
-    expect(await runAction('bone.rename', { nodeId, bone: 'Spine', name: 'Root' })).toMatchObject({
+    expect(await runAction('bone.rename', { bone: 'Spine', name: 'Root' })).toMatchObject({
       ok: false,
       refusal: 'notFound',
     })
-    expect(character()?.model.rig?.bones.map(bone => bone.name)).toEqual(['Root', 'Spine'])
+    expect(held().rig?.bones.map(bone => bone.name)).toEqual(['Root', 'Spine'])
   })
 
   it('ties a bone to a joint of the standard, and to none when no role is given', async () => {
-    const nodeId = installCharacter()
+    installCharacter()
 
-    await runAction('bone.role', { nodeId, bone: 'Spine', role: 'Hips' })
-    expect(character()?.model.rig?.bones.find(bone => bone.name === 'Spine')?.role).toBe('Hips')
+    await runAction('bone.setRole', { bone: 'Spine', role: 'Hips' })
+    expect(held().rig?.bones.find(bone => bone.name === 'Spine')?.role).toBe('Hips')
 
-    await runAction('bone.role', { nodeId, bone: 'Spine' })
-    expect(character()?.model.rig?.bones.find(bone => bone.name === 'Spine')?.role).toBeUndefined()
+    await runAction('bone.setRole', { bone: 'Spine' })
+    expect(held().rig?.bones.find(bone => bone.name === 'Spine')?.role).toBeUndefined()
   })
 
   it('refuses a bone the skeleton does not hold', async () => {
-    const nodeId = installCharacter()
+    installCharacter()
 
-    expect(await runAction('bone.remove', { nodeId, bone: 'Tail' })).toMatchObject({
+    expect(await runAction('bone.remove', { bone: 'Tail' })).toMatchObject({
       ok: false,
       refusal: 'notFound',
     })
   })
 
   it('takes the whole skeleton off', async () => {
-    const nodeId = installCharacter()
+    installCharacter()
 
-    expect(await runAction('rig.clear', { nodeId })).toEqual({ ok: true })
-    expect(character()?.model.rig).toBeUndefined()
+    expect(await runAction('rig.clear', {})).toEqual({ ok: true })
+    expect(held().rig).toBeNull()
   })
 
   // The engine has not read the model, so there is nothing measured to fit a skeleton to.
   it('refuses to fit one while nothing has been measured', async () => {
-    const nodeId = installCharacter(undefined)
+    installCharacter(null)
 
-    expect(await runAction('rig.fit', { nodeId })).toMatchObject({ ok: false, refusal: 'notFound' })
+    expect(await runAction('rig.fit', {})).toMatchObject({ ok: false, refusal: 'notFound' })
   })
 })
 
 describe('the handles a joint reaches for', () => {
   it('adds a chain and the handle it reaches for, then takes both back', async () => {
-    const nodeId = installCharacter()
+    installCharacter()
 
-    expect(await runAction('ik.add', { nodeId, bone: 'Spine' })).toEqual({ ok: true })
-    const chain = character()?.model.rig?.ik?.[0]
+    expect(await runAction('ik.add', { bone: 'Spine' })).toEqual({ ok: true })
+    const chain = held().rig?.ik?.[0]
     expect(chain?.effector).toBe('Spine')
 
-    expect(await runAction('ik.remove', { nodeId, chainId: chain?.id ?? '' })).toEqual({ ok: true })
-    expect(character()?.model.rig?.ik).toEqual([])
-    expect(character()?.model.rig?.bones.map(bone => bone.name)).toEqual(['Root', 'Spine'])
+    expect(await runAction('ik.remove', { chainId: chain?.id ?? '' })).toEqual({ ok: true })
+    expect(held().rig?.ik).toEqual([])
+    expect(held().rig?.bones.map(bone => bone.name)).toEqual(['Root', 'Spine'])
   })
 
   it('refuses a chain the rig does not hold', async () => {
-    const nodeId = installCharacter()
+    installCharacter()
 
-    expect(await runAction('ik.remove', { nodeId, chainId: 'chain-z' })).toMatchObject({
+    expect(await runAction('ik.remove', { chainId: 'chain-z' })).toMatchObject({
       ok: false,
       refusal: 'notFound',
     })

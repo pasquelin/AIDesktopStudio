@@ -126,4 +126,28 @@ describe('what the main process reports', () => {
     expect(useTasks.getState().running).toEqual({})
     stop()
   })
+
+  it('writes nothing for a step that moves neither the ratio nor the phase', () => {
+    let push = (_progress: TaskProgress): void => {}
+    installFakeBridge({
+      tasks: {
+        onProgress: callback => {
+          push = callback
+          return () => {}
+        },
+      },
+    })
+    const stop = useTasks.getState().connect()
+    useTasks.getState().begin({ id: 'reading', label: 'Bande', ratio: 0 })
+
+    push({ id: 'reading', ratio: 0.25 })
+    const moved = useTasks.getState().running
+    push({ id: 'reading', ratio: 0.25 })
+
+    // The same object, not an equal one: a bundle steps thousands of times per visible percent,
+    // and every fresh state here re-renders every subscriber of this store.
+    expect(useTasks.getState().running).toBe(moved)
+    useTasks.getState().end('reading')
+    stop()
+  })
 })

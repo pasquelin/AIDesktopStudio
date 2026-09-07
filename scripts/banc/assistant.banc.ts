@@ -52,10 +52,18 @@ const NOTHING: Tokens = { sent: 0, back: 0, cached: 0 }
 
 const NO_BODY: readonly number[] = [204, 205, 304]
 
+/** The statuses that refuse the KEY rather than the request — and with it the whole run. */
+const DOOR_SHUT: readonly number[] = [401, 403]
+
+// 🛑 The first refusal fails every scenario after it: a dead key played 439 scenarios to 0 %
+// with `auth` written nowhere, `0 sent` its only trace — measured 2026-09-01.
+let shut: string | null = null
+
 /** Counts what crossed, and hands the response on untouched. */
 function counting(into: Tokens): (input: string, init?: RequestInit) => Promise<Response> {
   return async (input, init) => {
     const answer = await fetch(input, init)
+    if (DOOR_SHUT.includes(answer.status)) shut = `the door refused the key: HTTP ${answer.status}`
     // Read ONCE and handed on as text: `clone().json()` buffers the whole body a second time,
     // and the brain parses it again straight after — on every round of every scenario.
     const written = await answer.text()
@@ -132,6 +140,7 @@ describe.skipIf(KEY === '' || chat === null)(`what ${PROVIDER} does with a real 
       ...NOTHING,
     }
     const missed: string[] = []
+    if (shut !== null) throw new Error(shut)
 
     const brain = createHttpChatBrain({
       cloud: PROVIDER,
@@ -147,6 +156,7 @@ describe.skipIf(KEY === '' || chat === null)(`what ${PROVIDER} does with a real 
       // piles up rather than being replaced — a run that throws would leave every later scenario
       // paying it, once per streamed token.
       try {
+        if (shut !== null) throw new Error(shut)
         tally.rounds += played.rounds
         tally.refused += played.refused
 

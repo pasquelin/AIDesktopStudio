@@ -6,4 +6,4 @@ import { dragChannel } from '@/helpers/drag'
  * Here rather than in `TitleBar.tsx` because the bar starts and reads the drag while each pill
  * asks whether it carries one, and importing it back from the bar would close an import cycle.
  */
-export const SPACES = dragChannel('application/x-ia-studio-workspace')
+export const SPACES = dragChannel('application/x-ai-desktop-studio-workspace')

@@ -1,3 +1,4 @@
+import type { EngineFailure } from './failure'
 import type { AiRoleId, RoleProvider } from './aiRole'
 import type { Compatibility } from './aiMemory'
 import type { DownloadProgress, LocalModel } from './localModel'
@@ -13,6 +14,8 @@ import { fitAllowsUse, type FitObstacle } from './modelFit'
 
 /** Where a choice came from, which is what tells "inherited" from "set here". */
 export type ChoiceScope = 'app' | 'project'
+
+export type OwnModelProfile = 'motion'
 
 /** The values beside the type: the scope selector composes a key per member, and a guard reads it. */
 export const CHOICE_SCOPES: readonly ChoiceScope[] = ['app', 'project']
@@ -63,6 +66,14 @@ export type RoleRow = {
    * Empty is an ordinary answer: dictation is served on this machine or not at all.
    */
   readonly clouds: readonly string[]
+}
+
+/**
+ * Whether an install already holds the disk. One at a time, wherever it was begun — three screens
+ * derived it side by side, and the day a fourth source of downloads lands they would disagree.
+ */
+export function aiDiskBusy(overview: Pick<AiOverview, 'installing' | 'ollama'> | null): boolean {
+  return overview !== null && (overview.installing !== null || overview.ollama.progress !== null)
 }
 
 /**
@@ -127,6 +138,7 @@ export type LoadRefusal =
     }
   | { readonly reason: 'incomplete'; readonly modelId: string }
   | { readonly reason: 'network'; readonly modelId: string }
+  | { readonly reason: EngineFailure; readonly modelId: string }
   | { readonly reason: 'failed'; readonly modelId: string }
 
 /** Why an install did not land, kept until the next try so the screen can say it. */
@@ -164,6 +176,7 @@ export type AiOverview = {
  * answered yet knows nothing, and a nothing must never be shown as a clean bill of health.
  */
 export type EngineOffer = {
+  readonly profile?: OwnModelProfile
   readonly known: boolean
   /** Absent or older than declared, by name. What the button installs, and what it says. */
   readonly missing: readonly string[]

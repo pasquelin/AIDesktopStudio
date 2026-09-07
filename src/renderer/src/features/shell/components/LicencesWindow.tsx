@@ -26,6 +26,14 @@ export function LicencesWindow() {
     <WindowShell title={t('licences.title')}>
       <p className={cn(WINDOW_CAPTION, 'pb-3')}>{t('licences.intro')}</p>
 
+      {entries
+        .filter(entry => entry.attribution)
+        .map(entry => (
+          <p key={entry.name} className="text-body pb-3">
+            {entry.attribution}
+          </p>
+        ))}
+
       <ul>
         {entries.map(entry => (
           <li key={entry.name} className="border-base-300 border-b last:border-b-0">
@@ -34,7 +42,7 @@ export function LicencesWindow() {
               aria-expanded={openName === entry.name}
               {...HINT_BOTTOM(openName === entry.name ? t('licences.fold') : t('licences.unfold'))}
               onClick={() => setOpenName(current => (current === entry.name ? null : entry.name))}
-              className="hover:bg-base-300 flex w-full cursor-pointer items-baseline gap-2 py-2 text-left"
+              className="hover:bg-base-200 flex w-full cursor-pointer items-baseline gap-2 py-2 text-left"
             >
               <span className="text-body">{entry.name}</span>
               <span className={WINDOW_CAPTION}>{entry.version ?? t('licences.bundled')}</span>

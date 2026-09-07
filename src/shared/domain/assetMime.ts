@@ -47,6 +47,8 @@ const MIME_BY_EXTENSION: Record<string, string> = {
   '.fbx': 'application/vnd.autodesk.fbx',
   '.stl': 'model/stl',
   '.ply': 'model/ply',
+  '.dae': 'model/vnd.collada+xml',
+  '.usdz': 'model/vnd.usdz+zip',
 }
 
 /**

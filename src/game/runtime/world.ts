@@ -7,14 +7,20 @@ import type { Transform } from '@shared/domain/transform'
 import type { GameApi } from '../api/gameApi'
 import { createEventBus, type EventBus } from '../events/eventBus'
 import type { InputState } from '../ports/inputPort'
-import { restingTransform, type Entity } from './entity'
+import type { InputMap } from './inputMap'
+import type { InputActions } from './inputActions'
+import { createWorldInput } from './worldInput'
+import { createInputContexts, type InputContexts } from './inputContexts'
+import { createInputControls, type InputControls } from './inputControls'
+import { clonedTransform, copyTransformInto, restingTransform, type Entity } from './entity'
 import { createEntityStore, type EntityStore } from './entityStore'
 import { createRandom, type Random } from './random'
 import { orderedByDeclaration, writeConflicts, type SystemShape } from './systemOrder'
 
 export type System = SystemShape & {
   fixedUpdate?: (world: World, dt: number) => void
-  lateUpdate?: (world: World, alpha: number) => void
+  /** `dt` is the FRAME's seconds, not the step's: what smoothing must be written against. */
+  lateUpdate?: (world: World, alpha: number, dt: number) => void
   /** Gives back what the system took from a PORT it does not own — bodies, voices, handles. */
   dispose?: (world: World) => void
 }
@@ -41,6 +47,13 @@ export type World = {
   /** The input as of the step being run — DATA of the tick, never a live read. */
   input: InputState
   /**
+   * The same input read as NAMED actions of the active contexts, sampled once a step. What the
+   * built-in controllers answer, so a stick and a key reach them by one path.
+   */
+  readonly actions: InputActions
+  readonly inputContexts: InputContexts
+  readonly inputControls: InputControls
+  /**
    * The four gestures a SYSTEM uses, all of them landing at the END of the step.
    *
    * 🛑 A `Set` visits what is added to it while it is being walked, so a system spawning — or
@@ -55,9 +68,12 @@ export type World = {
   destroy: (id: string) => void
   attach: (entity: Entity, component: Component) => void
   detach: (entity: Entity, type: ComponentType) => void
-  /** One fixed step: input snapshot, systems in order, births and deaths, then the events. */
+  /**
+   * One fixed step: the pose to interpolate FROM, the input snapshot, the systems in order, then
+   * the births, the deaths and the events.
+   */
   step: (dt: number) => void
-  lateUpdate: (alpha: number) => void
+  lateUpdate: (alpha: number, dt: number) => void
   /** Drops every subscription and gives every system's port holdings back. Idempotent. */
   dispose: () => void
 }
@@ -70,6 +86,8 @@ export type WorldOptions = {
   seed: number
   step: number
   play: ScenePlay
+  inputMaps?: readonly InputMap[]
+  inputControls?: InputControls
 }
 
 export function createWorld(options: WorldOptions): World {
@@ -81,10 +99,38 @@ export function createWorld(options: WorldOptions): World {
   const attaching: { entity: Entity; component: Component }[] = []
   const detaching: { entity: Entity; type: ComponentType }[] = []
   let minted = 0
+  const inputControls = options.inputControls ?? createInputControls(options.inputMaps ?? [])
+  const saidOfInput = (message: string): void => options.ports.log.write('warn', message)
+  const contexts = createInputContexts(inputControls.maps(), saidOfInput)
+  const input = createWorldInput(inputControls, contexts, options.ports.input.state(), saidOfInput)
 
   // Not `messageOf` of `@shared/guards`: this tree is MIT and ships without the rest, so a VALUE
   // taken from `@shared/` would carry PolyForm code into an exported game.
   const said = (error: unknown): string => (error instanceof Error ? error.message : String(error))
+
+  const runFixed = (world: World, dt: number): void => {
+    for (const system of systems) {
+      if (!system.fixedUpdate) continue
+      try {
+        system.fixedUpdate(world, dt)
+      } catch (error) {
+        world.ports.log.write('error', `system ${system.name} threw: ${said(error)}`)
+      }
+    }
+  }
+
+  const applyPending = (world: World): void => {
+    for (const entity of born) world.entities.add(entity)
+    born.length = 0
+    bornIds.clear()
+    for (const wanted of attaching) world.entities.attach(wanted.entity, wanted.component)
+    attaching.length = 0
+    for (const wanted of detaching) world.entities.detach(wanted.entity, wanted.type)
+    detaching.length = 0
+    for (const id of doomed) world.entities.remove(id)
+    doomed.length = 0
+    doomedIds.clear()
+  }
 
   const world: World = {
     scene: options.scene,
@@ -97,7 +143,17 @@ export function createWorld(options: WorldOptions): World {
     ports: options.ports,
     play: options.play,
     time: { tick: 0, elapsed: 0, step: options.step },
-    input: options.ports.input.state(),
+    get input() {
+      return input.state()
+    },
+    set input(state: InputState) {
+      input.take(state)
+    },
+    get actions() {
+      return input.actions
+    },
+    inputContexts: contexts,
+    inputControls,
 
     spawn: request => {
       // Counted rather than drawn from `crypto.randomUUID`: two runs of one seed must mint the
@@ -138,46 +194,13 @@ export function createWorld(options: WorldOptions): World {
     },
 
     step: dt => {
+      // 🛑 Here and not in `createGameLoop`: `world.step` is what DEFINES a step, and a second
+      // caller — a hand-driven step, a replay — would otherwise draw with no pose to come from.
+      for (const entity of world.entities.all()) keepPose(entity)
       world.input = world.ports.input.state()
 
-      for (let index = 0; index < systems.length; index++) {
-        const system = systems[index]
-        if (!system?.fixedUpdate) continue
-        try {
-          system.fixedUpdate(world, dt)
-        } catch (error) {
-          // Reported rather than thrown on: a throw here would skip `endStep` and the tick, so
-          // the same frame would be retried and would throw again, for ever.
-          world.ports.log.write('error', `system ${system.name} threw: ${said(error)}`)
-        }
-      }
-
-      for (let index = 0; index < born.length; index++) {
-        const entity = born[index]
-        if (entity) world.entities.add(entity)
-      }
-      born.length = 0
-      bornIds.clear()
-
-      for (let index = 0; index < attaching.length; index++) {
-        const wanted = attaching[index]
-        if (wanted) world.entities.attach(wanted.entity, wanted.component)
-      }
-      attaching.length = 0
-
-      for (let index = 0; index < detaching.length; index++) {
-        const wanted = detaching[index]
-        if (wanted) world.entities.detach(wanted.entity, wanted.type)
-      }
-      detaching.length = 0
-
-      for (let index = 0; index < doomed.length; index++) {
-        const id = doomed[index]
-        if (id !== undefined) world.entities.remove(id)
-      }
-      doomed.length = 0
-      doomedIds.clear()
-
+      runFixed(world, dt)
+      applyPending(world)
       world.events.drain()
       world.ports.input.endStep()
 
@@ -185,12 +208,12 @@ export function createWorld(options: WorldOptions): World {
       world.time.elapsed += dt
     },
 
-    lateUpdate: alpha => {
+    lateUpdate: (alpha, dt) => {
       for (let index = 0; index < systems.length; index++) {
         const system = systems[index]
         if (!system?.lateUpdate) continue
         try {
-          system.lateUpdate(world, alpha)
+          system.lateUpdate(world, alpha, dt)
         } catch (error) {
           world.ports.log.write('error', `system ${system.name} threw: ${said(error)}`)
         }
@@ -217,4 +240,10 @@ export function createWorld(options: WorldOptions): World {
   }
 
   return world
+}
+
+function keepPose(entity: Entity): void {
+  const held = entity.previous
+  if (held) copyTransformInto(held, entity.transform)
+  else entity.previous = clonedTransform(entity.transform)
 }

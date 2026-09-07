@@ -1,4 +1,4 @@
-import { contextBridge, ipcRenderer, type IpcRendererEvent } from 'electron'
+import { contextBridge, ipcRenderer, webUtils, type IpcRendererEvent } from 'electron'
 import type { AccountSummary } from '@shared/domain/account'
 import type { ActivityEntry } from '@shared/domain/activity'
 import type { MemoryIndexing, MemoryScope } from '@shared/domain/assistantMemory'
@@ -18,6 +18,9 @@ import type { Language } from '@shared/i18n/languages'
 import type { UpdateState } from '@shared/domain/update'
 import type { WindowState } from '@shared/domain/window'
 import type { AssistantProgress } from '@shared/domain/assistant'
+import type { Mission } from '@shared/domain/mission'
+import type { StudioEvent } from '@shared/domain/studioEvent'
+import type { AssistantVisualCaptureRequest, AssistantVisualCaptureResult } from '@shared/ipcEvents'
 import type { SettingsSectionId } from '@shared/domain/settings'
 import {
   CHANNELS,
@@ -25,9 +28,10 @@ import {
   type AssistantActionRequest,
   type LogEntry,
   type McpState,
+  type NewDocumentRequest,
+  type RecentOpenRequest,
   type SceneAddRequest,
   type SceneDisplayRequest,
-  type SceneViewRequest,
   type SceneCaptureCommand,
   type SceneExportCommand,
   type SkyboxExportCommand,
@@ -147,6 +151,17 @@ const bridge: StudioBridge = {
     fileHistory: () => ipcRenderer.invoke(CHANNELS.projectFileHistory),
     onFilesChanged: callback => subscribe<FileOutcome>(EVENTS.filesChanged, callback),
   },
+  inputMaps: {
+    list: () => ipcRenderer.invoke(CHANNELS.inputMapList),
+    read: path => ipcRenderer.invoke(CHANNELS.inputMapRead, path),
+    write: (path, map) => ipcRenderer.invoke(CHANNELS.inputMapWrite, path, map),
+    onWritten: callback => subscribe<string>(EVENTS.projectJsonWritten, callback),
+  },
+  animationGraphs: {
+    list: () => ipcRenderer.invoke(CHANNELS.animationGraphList),
+    read: path => ipcRenderer.invoke(CHANNELS.animationGraphRead, path),
+    write: (path, graph) => ipcRenderer.invoke(CHANNELS.animationGraphWrite, path, graph),
+  },
   git: {
     read: () => ipcRenderer.invoke(CHANNELS.gitRead),
     init: () => ipcRenderer.invoke(CHANNELS.gitInit),
@@ -191,6 +206,7 @@ const bridge: StudioBridge = {
   },
   documents: {
     list: () => ipcRenderer.invoke(CHANNELS.documentList),
+    opened: (path, kind) => ipcRenderer.invoke(CHANNELS.documentOpened, path, kind),
     read: (id, kind) => ipcRenderer.invoke(CHANNELS.documentRead, id, kind),
     write: (id, kind, file, force, folder) =>
       ipcRenderer.invoke(CHANNELS.documentWrite, id, kind, file, force, folder),
@@ -211,15 +227,25 @@ const bridge: StudioBridge = {
     absent: assetIds => ipcRenderer.invoke(CHANNELS.assetsAbsent, assetIds),
     saveAudio: request => ipcRenderer.invoke(CHANNELS.assetsSaveAudio, request),
     savePicture: request => ipcRenderer.invoke(CHANNELS.assetsSavePicture, request),
+    savePlayerModule: request => ipcRenderer.invoke(CHANNELS.assetsSavePlayerModule, request),
     saveLayered: request => ipcRenderer.invoke(CHANNELS.assetsSaveLayered, request),
+    saveMesh: request => ipcRenderer.invoke(CHANNELS.assetsSaveMesh, request),
+    saveAnimation: request => ipcRenderer.invoke(CHANNELS.assetsSaveAnimation, request),
+    saveConverted: request => ipcRenderer.invoke(CHANNELS.assetsSaveConverted, request),
+    animationThumbnailModel: () => ipcRenderer.invoke(CHANNELS.animationThumbnailModel),
+    saveAnimationThumbnail: request => ipcRenderer.invoke(CHANNELS.animationThumbnailSave, request),
     readLayered: assetId => ipcRenderer.invoke(CHANNELS.assetsReadLayered, assetId),
     saveTexture: request => ipcRenderer.invoke(CHANNELS.assetsSaveTexture, request),
     installBundledTextures: () => ipcRenderer.invoke(CHANNELS.texturesInstallBundled),
+    installBundledCharacter: level => ipcRenderer.invoke(CHANNELS.charactersInstallBundled, level),
     extractTextures: assetId => ipcRenderer.invoke(CHANNELS.assetsExtractTextures, assetId),
     update: (assetId, changes) => ipcRenderer.invoke(CHANNELS.assetsUpdate, assetId, changes),
-    remove: (assetIds, alsoRemote) =>
-      ipcRenderer.invoke(CHANNELS.assetsRemove, assetIds, alsoRemote),
+    remove: (assetIds, alsoRemote, expectedProjectPath) =>
+      ipcRenderer.invoke(CHANNELS.assetsRemove, assetIds, alsoRemote, expectedProjectPath),
     describe: assetIds => ipcRenderer.invoke(CHANNELS.assetsDescribe, assetIds),
+  },
+  smartSelection: {
+    run: request => ipcRenderer.invoke(CHANNELS.smartSelectionRun, request),
   },
   cloud: {
     browse: query => ipcRenderer.invoke(CHANNELS.cloudBrowse, query),
@@ -282,6 +308,9 @@ const bridge: StudioBridge = {
   media: {
     adopt: relative => ipcRenderer.invoke(CHANNELS.mediaAdopt, relative),
     ingest: () => ipcRenderer.invoke(CHANNELS.mediaIngest),
+    ingestPaths: (requestId, folder, taskId) =>
+      ipcRenderer.invoke(CHANNELS.mediaIngestPaths, requestId, folder, taskId),
+    importPicked: (role, taskId) => ipcRenderer.invoke(CHANNELS.mediaImportPicked, role, taskId),
     cancel: assetId => ipcRenderer.invoke(CHANNELS.mediaCancel, assetId),
     capabilities: () => ipcRenderer.invoke(CHANNELS.mediaAvailable),
     onProgress: callback => subscribe<IngestProgress>(EVENTS.mediaProgress, callback),
@@ -290,11 +319,22 @@ const bridge: StudioBridge = {
     think: request => ipcRenderer.invoke(CHANNELS.assistantThink, request),
     stop: () => ipcRenderer.invoke(CHANNELS.assistantStop),
     onAction: callback => subscribe<AssistantActionRequest>(EVENTS.assistantAction, callback),
+    onVisualCapture: callback =>
+      subscribe<AssistantVisualCaptureRequest>(EVENTS.assistantVisualCapture, callback),
     onStream: callback => subscribe<AssistantProgress>(EVENTS.assistantStream, callback),
     actionResult: result => ipcRenderer.invoke(CHANNELS.assistantActionResult, result),
+    visualCaptureResult: (result: AssistantVisualCaptureResult) =>
+      ipcRenderer.invoke(CHANNELS.assistantVisualCaptureResult, result),
     note: note => ipcRenderer.invoke(CHANNELS.assistantNote, note),
     said: key => ipcRenderer.invoke(CHANNELS.assistantSaid, key),
     window: () => ipcRenderer.invoke(CHANNELS.assistantWindow),
+  },
+  missions: {
+    watch: scope => ipcRenderer.invoke(CHANNELS.missionsWatch, scope),
+    create: goal => ipcRenderer.invoke(CHANNELS.missionsCreate, goal),
+    resume: (stepId, answer) => ipcRenderer.invoke(CHANNELS.missionsResume, stepId, answer),
+    onChanged: callback => subscribe<Mission>(EVENTS.missionChanged, callback),
+    onEvent: callback => subscribe<StudioEvent>(EVENTS.missionEvent, callback),
   },
   ai: {
     overview: () => ipcRenderer.invoke(CHANNELS.aiOverview),
@@ -304,15 +344,18 @@ const bridge: StudioBridge = {
     cancelInstall: () => ipcRenderer.invoke(CHANNELS.aiCancelInstall),
     installOllama: () => ipcRenderer.invoke(CHANNELS.aiInstallOllama),
     cancelInstallOllama: () => ipcRenderer.invoke(CHANNELS.aiCancelInstallOllama),
-    readEngine: () => ipcRenderer.invoke(CHANNELS.aiReadEngine),
-    installEngine: () => ipcRenderer.invoke(CHANNELS.aiInstallEngine),
+    readEngine: profile => ipcRenderer.invoke(CHANNELS.aiReadEngine, profile),
+    installEngine: profile => ipcRenderer.invoke(CHANNELS.aiInstallEngine, profile),
     cancelInstallEngine: () => ipcRenderer.invoke(CHANNELS.aiCancelInstallEngine),
     remove: modelId => ipcRenderer.invoke(CHANNELS.aiRemove, modelId),
     load: modelId => ipcRenderer.invoke(CHANNELS.aiLoad, modelId),
     cancelLoad: () => ipcRenderer.invoke(CHANNELS.aiCancelLoad),
     unload: modelId => ipcRenderer.invoke(CHANNELS.aiUnload, modelId),
-    addOwnModel: () => ipcRenderer.invoke(CHANNELS.aiAddOwnModel),
+    addOwnModel: (profile, taskId) => ipcRenderer.invoke(CHANNELS.aiAddOwnModel, profile, taskId),
     onChanged: callback => subscribe<AiOverview>(EVENTS.ai, callback),
+  },
+  autoRig: {
+    run: request => ipcRenderer.invoke(CHANNELS.autoRigRun, request),
   },
   dictation: {
     state: () => ipcRenderer.invoke(CHANNELS.dictationState),
@@ -327,6 +370,13 @@ const bridge: StudioBridge = {
   },
   mirror: {
     open: () => ipcRenderer.invoke(CHANNELS.mirrorOpen),
+  },
+  retargetWindow: {
+    focusOrigin: () => ipcRenderer.invoke(CHANNELS.retargetWindowFocusOrigin),
+    open: sessionId => ipcRenderer.invoke(CHANNELS.retargetWindowOpen, sessionId),
+  },
+  playerModuleWindow: {
+    open: assetId => ipcRenderer.invoke(CHANNELS.playerModuleWindowOpen, assetId),
   },
   gameWindow: {
     open: () => ipcRenderer.invoke(CHANNELS.gameWindowOpen),
@@ -350,6 +400,7 @@ const bridge: StudioBridge = {
     onState: callback => subscribe<WindowState>(EVENTS.windowState, callback),
     language: () => ipcRenderer.invoke(CHANNELS.windowLanguage),
     onLanguage: callback => subscribe<Language>(EVENTS.windowLanguage, callback),
+    resumeLeave: proceed => ipcRenderer.invoke(CHANNELS.windowResumeLeave, proceed),
     setWorkspace: (workspace, tools, checked, abilities, kind) =>
       ipcRenderer.invoke(CHANNELS.windowWorkspace, workspace, tools, checked, abilities, kind),
   },
@@ -357,13 +408,24 @@ const bridge: StudioBridge = {
     popup: items => ipcRenderer.invoke(CHANNELS.menuPopup, items),
     onOpenTool: callback => subscribe<ToolRequest>(EVENTS.openTool, callback),
     onCommand: callback => subscribe<CommandId>(EVENTS.menuCommand, callback),
+    onDocumentNew: callback => subscribe<NewDocumentRequest>(EVENTS.documentNew, callback),
+    onOpenRecent: callback => subscribe<RecentOpenRequest>(EVENTS.openRecent, callback),
     onSceneAdd: callback => subscribe<SceneAddRequest>(EVENTS.sceneAdd, callback),
-    onSceneView: callback => subscribe<SceneViewRequest>(EVENTS.sceneView, callback),
     onSceneDisplay: callback => subscribe<SceneDisplayRequest>(EVENTS.sceneDisplay, callback),
     onSceneExport: callback => subscribe<SceneExportCommand>(EVENTS.sceneExport, callback),
     onSceneCapture: callback => subscribe<SceneCaptureCommand>(EVENTS.sceneCapture, callback),
     onMaterialExport: callback => subscribe<MaterialExportCommand>(EVENTS.materialExport, callback),
     onSkyboxExport: callback => subscribe<SkyboxExportCommand>(EVENTS.skyboxExport, callback),
+  },
+  externalFiles: {
+    take: () => ipcRenderer.invoke(CHANNELS.externalFilesTake),
+    offer: files =>
+      ipcRenderer.invoke(
+        CHANNELS.externalFilesOffer,
+        files.map(file => webUtils.getPathForFile(file)).filter(Boolean),
+      ),
+    discard: requestId => ipcRenderer.invoke(CHANNELS.externalFilesDiscard, requestId),
+    onOpen: callback => subscribe<void>(EVENTS.externalFiles, callback),
   },
   diagnostics: {
     onLog: callback => subscribe<LogEntry>(EVENTS.log, callback),

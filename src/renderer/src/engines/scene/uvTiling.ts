@@ -15,6 +15,15 @@ import { DEFAULT_TUBE_CURVE } from './threeFactory'
 
 /** Metres across, then metres down, that the native UVs of a surface of revolution cover. */
 type UvSpan = { u: number; v: number }
+type FlatKind =
+  | 'box'
+  | 'plane'
+  | 'circle'
+  | 'ring'
+  | 'dodecahedron'
+  | 'icosahedron'
+  | 'octahedron'
+  | 'tetrahedron'
 
 export function tileUvs(
   geometry: BufferGeometry,
@@ -36,6 +45,13 @@ type UvAttribute = BufferAttribute | InterleavedBufferAttribute
  * defaulting: a kind added to the union has to say which way it takes, and the compiler asks.
  */
 function spanOf(descriptor: GeometryDescriptor, geometry: BufferGeometry): UvSpan | null {
+  if (isFlat(descriptor)) return null
+  return curvedSpanOf(descriptor, geometry)
+}
+
+function isFlat(
+  descriptor: GeometryDescriptor,
+): descriptor is Extract<GeometryDescriptor, { kind: FlatKind }> {
   switch (descriptor.kind) {
     case 'box':
     case 'plane':
@@ -45,45 +61,47 @@ function spanOf(descriptor: GeometryDescriptor, geometry: BufferGeometry): UvSpa
     case 'icosahedron':
     case 'octahedron':
     case 'tetrahedron':
-      return null
+      return true
+    default:
+      return false
+  }
+}
 
-    // Round the side, then down it. The wider end when the two differ: a cone's squares narrow
-    // towards its point whatever is done here, and the wide end is the one a person reads.
+function curvedSpanOf(
+  descriptor: Exclude<GeometryDescriptor, { kind: FlatKind }>,
+  geometry: BufferGeometry,
+): UvSpan {
+  switch (descriptor.kind) {
+    case 'ribbon':
+      return { u: 1, v: 1 }
+
     case 'cylinder':
       return {
         u: circumference(Math.max(descriptor.radiusTop, descriptor.radiusBottom)),
         v: descriptor.height,
       }
 
-    // Down the sphere is half a turn, not a whole one.
     case 'sphere':
       return { u: circumference(descriptor.radius), v: Math.PI * descriptor.radius }
 
-    // The side plus the two caps, which is the distance a finger travels from pole to pole.
     case 'capsule':
       return {
         u: circumference(descriptor.radius),
         v: descriptor.height + Math.PI * descriptor.radius,
       }
 
-    // `u` runs round the ring, `v` round the tube — the order three.js builds them in.
     case 'torus':
       return { u: circumference(descriptor.radius), v: circumference(descriptor.tube) }
 
-    // The knot winds `p` times round the ring, so its length is that much more than the circle.
     case 'torusKnot':
       return {
         u: circumference(descriptor.radius) * descriptor.p,
         v: circumference(descriptor.tube),
       }
 
-    // `u` runs ALONG the path and `v` round the tube — the order three.js builds them in. The
-    // path is fixed until a curve editor exists, so its length is read rather than guessed at.
     case 'tube':
       return { u: DEFAULT_TUBE_CURVE.getLength(), v: circumference(descriptor.radius) }
 
-    // Round the axis, then up the profile — and the profile lives in the factory, so the height
-    // is measured off the built shape.
     case 'lathe':
       return spanFromBounds(geometry)
   }

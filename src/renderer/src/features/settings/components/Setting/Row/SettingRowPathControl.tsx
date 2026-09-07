@@ -1,10 +1,9 @@
 import { useTranslation } from 'react-i18next'
-import { cn } from '@/helpers/cn'
-import { WINDOW_ACTION } from '@/components/windowStyles'
 import { HINT_LEFT } from '@/helpers/tooltip'
 import { getBridge } from '@/services/bridge'
 import type { CommittedProps } from './controls'
 import { SettingRowTextControl } from './SettingRowTextControl'
+import { WindowButton } from '@/components/WindowButton'
 
 /**
  * A path, with the native picker beside it. The field stays writable: a path can be pasted, and
@@ -36,14 +35,13 @@ export function SettingRowPathControl({
         stored={stored}
         onCommit={onCommit}
       />
-      <button
-        type="button"
-        className={cn(WINDOW_ACTION, 'shrink-0')}
+      <WindowButton
+        className="shrink-0"
         {...HINT_LEFT(t('settings.browseHint'))}
         onClick={() => void browse()}
       >
         {t('settings.browse')}
-      </button>
+      </WindowButton>
     </div>
   )
 }

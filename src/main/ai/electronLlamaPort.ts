@@ -1,4 +1,11 @@
-import type { ChatHistoryItem, Llama, LlamaGrammar, LlamaModel } from 'node-llama-cpp'
+import type {
+  ChatHistoryItem,
+  Llama,
+  LlamaChatSession,
+  LlamaContext,
+  LlamaGrammar,
+  LlamaModel,
+} from 'node-llama-cpp'
 import type { ChatRequest, ChatTurn, LoadOptions } from './localRuntimes'
 import type { LlamaPort } from './llamaRuntime'
 
@@ -86,6 +93,50 @@ export function electronLlamaPort(): LlamaPort {
     }
   }
 
+  // Everything but the last turn, briefing restored at the head: `setChatHistory` replaces what
+  // the constructor seeded, while leaving the last user turn in makes `prompt` merge it twice.
+  // Temperature stays zero by default because the assistant's structured answers are parsed.
+  async function promptSession(session: LlamaChatSession, request: ChatRequest): Promise<string> {
+    const briefing = request.messages.find(turn => turn.role === 'system')?.content
+    const spoken = request.messages.filter(isSpoken)
+    const earlier = spoken.slice(0, -1).map(historyItemOf)
+    if (earlier.length > 0) {
+      const head: ChatHistoryItem[] = briefing ? [{ type: 'system', text: briefing }] : []
+      session.setChatHistory([...head, ...earlier])
+    }
+    return await session.prompt(spoken.at(-1)?.content ?? '', {
+      temperature: request.temperature ?? 0,
+      ...(request.topP === undefined ? {} : { topP: request.topP }),
+      ...(request.maxTokens === undefined ? {} : { maxTokens: request.maxTokens }),
+      ...(request.signal ? { signal: request.signal } : {}),
+      ...(request.onProgress
+        ? { onTextChunk: (delta: string) => request.onProgress?.({ delta }) }
+        : {}),
+      ...(request.json ? { grammar: await jsonGrammar() } : {}),
+    })
+  }
+
+  // `contextTokens` is a ceiling: allocating the full 131,072-token training window would reserve
+  // an attention cache of many gigabytes. The context owns that cache and must die after the turn;
+  // the model stays loaded because reloading its weights per sentence defeats `keep_alive`.
+  async function chat(request: ChatRequest, weights: string): Promise<string> {
+    const { LlamaChatSession } = await import('node-llama-cpp')
+    const model = await hold(weights, { onProgress: () => {} })
+    const context: LlamaContext = await model.createContext({
+      contextSize: { max: request.contextTokens },
+    })
+    try {
+      const briefing = request.messages.find(turn => turn.role === 'system')?.content
+      const session = new LlamaChatSession({
+        contextSequence: context.getSequence(),
+        systemPrompt: briefing,
+      })
+      return await promptSession(session, request)
+    } finally {
+      await context.dispose()
+    }
+  }
+
   return {
     ready: () => !refused,
 
@@ -116,55 +167,6 @@ export function electronLlamaPort(): LlamaPort {
       }
     },
 
-    chat: async (request: ChatRequest, weights: string): Promise<string> => {
-      const { LlamaChatSession } = await import('node-llama-cpp')
-
-      const model = await hold(weights, { onProgress: () => {} })
-
-      // A CEILING, not a demand: a manifest may declare the window the weights were trained for —
-      // 131 072 tokens on a recent Llama — and asking for it outright allocates an attention cache
-      // of many gigabytes, which fails on every turn. `max` lets the runtime take what it can.
-      const context = await model.createContext({ contextSize: { max: request.contextTokens } })
-      try {
-        const briefing = request.messages.find(turn => turn.role === 'system')?.content
-        const session = new LlamaChatSession({
-          contextSequence: context.getSequence(),
-          // The briefing is a turn of its own on this door, exactly as it is on Ollama's.
-          systemPrompt: briefing,
-        })
-
-        // 🛑 Everything BUT the last turn, briefing put back at the head: `setChatHistory`
-        // REPLACES what the constructor seeded, and leaving the last user turn in made `prompt`
-        // merge it with itself.
-        const spoken = request.messages.filter(isSpoken)
-        const earlier = spoken.slice(0, -1).map(historyItemOf)
-        if (earlier.length > 0) {
-          const head: ChatHistoryItem[] =
-            briefing === undefined ? [] : [{ type: 'system', text: briefing }]
-          session.setChatHistory([...head, ...earlier])
-        }
-
-        return await session.prompt(spoken.at(-1)?.content ?? '', {
-          // Zero where nothing asks otherwise: the assistant's answers are parsed, and a door
-          // that wandered would fail that parse rather than read as creative.
-          temperature: request.temperature ?? 0,
-          ...(request.topP === undefined ? {} : { topP: request.topP }),
-          ...(request.maxTokens === undefined ? {} : { maxTokens: request.maxTokens }),
-          ...(request.signal ? { signal: request.signal } : {}),
-          // Text and not tokens: `onToken` hands back ids this port would have to detokenise,
-          // and what a window shows is words. No count — this door publishes none.
-          ...(request.onProgress
-            ? { onTextChunk: (delta: string) => request.onProgress?.({ delta }) }
-            : {}),
-          // A grammar for JSON at large, never the assistant's own shape: a port that knew what
-          // `say` and `calls` are would be a port that only one caller could use.
-          ...(request.json ? { grammar: await jsonGrammar() } : {}),
-        })
-      } finally {
-        // The context holds the KV cache, which is the bulk of what a turn takes. The MODEL stays:
-        // reloading gigabytes of weights per sentence is what `keep_alive` existed to avoid.
-        await context.dispose()
-      }
-    },
+    chat,
   }
 }

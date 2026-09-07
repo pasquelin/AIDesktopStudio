@@ -10,6 +10,7 @@ import {
 } from '@shared/domain/command'
 import type { Signature } from '@shared/domain/shortcut'
 import { useOverrides } from '@/hooks/useOverrides'
+import { useStagedNavigation } from '@/hooks/useStagedNavigation'
 import { resolveBindings } from '@/stores/bindings'
 import { WINDOW_CAPTION } from '@/components/windowStyles'
 import { ShortcutsSettingsScope } from './ShortcutsSettingsScope'
@@ -28,7 +29,13 @@ export function ShortcutsSettings() {
   // What the screen SHOWS is resolved against the system; what `bind` writes is not — see
   // `resolveBindings`. Read raw, this screen offered ⌃⌘F for a full screen that answers F11.
   // Resolved once and handed down: a merge per row is 171 of them on every keystroke.
-  const resolved = useMemo(() => resolveBindings(overrides), [overrides])
+  // The scheme too: it is the middle layer, so a row shows the key the CHOSEN application gives
+  // a command, and calls it remapped only where the person themselves moved it.
+  const [preset, custom] = useStagedNavigation()
+  const resolved = useMemo(
+    () => resolveBindings(overrides, preset, custom),
+    [overrides, preset, custom],
+  )
   /**
    * What is listening, if anything. ONE state rather than one per listener: a row and the
    * search box each holding their own meant a keypress could be recorded as a binding and used

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { FLY_SPEEDS } from '@shared/domain/snap'
-import stylesheet from '@/index.css?raw'
+import { stylesheet } from '@/indexCss-fixtures'
 import { SNAP_STEP_CONTROLS } from './sceneSnapControls'
 
 /**

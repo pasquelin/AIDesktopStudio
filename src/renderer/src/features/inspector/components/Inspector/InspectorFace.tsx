@@ -1,7 +1,8 @@
 import { designatedIn } from '@/engines/timeline/timelineState'
 import { layerById } from '@/engines/canvas/canvasState'
-import { canvasOf, useCanvases } from '@/stores/canvases'
+import { canvasOf, canvasStore, useCanvases } from '@/stores/canvases'
 import {
+  activeCharacterAssetId,
   activeImageId,
   activeSceneId,
   activeMontageId,
@@ -11,8 +12,10 @@ import {
 } from '@/stores/documents'
 import { sequenceOf, useSequences } from '@/stores/sequences'
 import { ClipInspector } from '../../../timeline/components/ClipInspector'
+import { CanvasInspector } from '../../../image/components/Canvas/CanvasInspector'
 import { LayerInspector } from '../../../image/components/Layer/LayerInspector'
 import { SceneInspector } from '../../../scene/components/Scene/SceneInspector'
+import { CharacterInspector } from '../../../character/components/Character/Inspector/CharacterInspector'
 import { SkyboxInspector } from '../../../skybox/components/Skybox/Inspector/SkyboxInspector'
 import { MaterialInspector } from '../../../material/components/Material/Inspector/MaterialInspector'
 import { TrackInspector } from '../../../timeline/components/Track/TrackInspector'
@@ -34,36 +37,56 @@ export function InspectorFace() {
   const sequence = useSequences(state => (sequenceId ? sequenceOf(state, sequenceId) : null))
   const textureId = useDocuments(activeMaterialId)
   const skyboxId = useDocuments(activeSkyboxId)
+  // The ASSET and not the document: a character tab edits a model of the library, and everything
+  // this face reads — the skeleton, its motions — is filed under it.
+  const characterAssetId = useDocuments(activeCharacterAssetId)
   const imageId = useDocuments(activeImageId)
-  const canvas = useCanvases(state => (imageId ? canvasOf(state, imageId) : null))
+  // `hasState` first: `canvasOf` falls back to the default canvas, and a document still being
+  // read would offer its fields to edit — an entry ⌘Z would then swap the loaded file for.
+  const canvas = useCanvases(state =>
+    imageId && canvasStore.hasState(state, imageId) ? canvasOf(state, imageId) : null,
+  )
 
-  // `activeLayerId`, which is where a layer's own document holds it: one born on the canvas arms
-  // it without any pointer being involved.
-  if (imageId) {
-    const layer = canvas ? layerById(canvas, canvas.activeLayerId) : null
-    return layer ? <LayerInspector documentId={imageId} layer={layer} /> : <InspectorEmpty />
-  }
+  const documentInspector =
+    canvasInspector(imageId, canvas) ?? sequenceInspector(sequenceId, sequence)
+  if (documentInspector) return documentInspector
+  return otherInspector(sceneId, characterAssetId, skyboxId, textureId)
+}
 
-  // Read off the montage, so no owner has to be compared: a clip designated in one tab cannot
-  // speak for another.
-  if (sequenceId && sequence) {
-    const designated = designatedIn(sequence)
-    if (designated?.kind === 'track') {
-      return <TrackInspector documentId={sequenceId} track={designated.track} />
-    }
+function canvasInspector(imageId: string | null, canvas: ReturnType<typeof canvasOf> | null) {
+  if (!imageId || !canvas) return null
+  const layer = layerById(canvas, canvas.activeLayerId)
+  return (
+    <>
+      <CanvasInspector key={imageId} documentId={imageId} canvas={canvas} />
+      {layer && <LayerInspector documentId={imageId} layer={layer} />}
+    </>
+  )
+}
 
-    return designated ? (
-      <ClipInspector documentId={sequenceId} sequence={sequence} clip={designated.clip} />
-    ) : (
-      <InspectorEmpty />
-    )
-  }
+function sequenceInspector(
+  sequenceId: string | null,
+  sequence: ReturnType<typeof sequenceOf> | null,
+) {
+  if (!sequenceId || !sequence) return null
+  const designated = designatedIn(sequence)
+  if (designated?.kind === 'track')
+    return <TrackInspector documentId={sequenceId} track={designated.track} />
+  return designated ? (
+    <ClipInspector documentId={sequenceId} sequence={sequence} clip={designated.clip} />
+  ) : (
+    <InspectorEmpty />
+  )
+}
 
-  // Which node is the scene's own state, read by `SceneInspector` there.
+function otherInspector(
+  sceneId: string | null,
+  characterId: string | null,
+  skyboxId: string | null,
+  textureId: string | null,
+) {
   if (sceneId) return <SceneInspector documentId={sceneId} />
-
-  // A sky has no node to pick: everything on it belongs to the document.
+  if (characterId) return <CharacterInspector assetId={characterId} />
   if (skyboxId) return <SkyboxInspector documentId={skyboxId} />
-
   return textureId ? <MaterialInspector documentId={textureId} /> : <InspectorEmpty />
 }

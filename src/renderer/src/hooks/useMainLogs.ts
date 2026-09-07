@@ -22,7 +22,7 @@ function print(level: LogLevel, scope: string, message: string): void {
   // must not resolve style over the whole shell once each.
   const badge = `color:${cachedToken('--color-accent')};font-weight:600`
 
-  /* eslint-disable no-console -- mirroring the main process's console is the whole point */
+  /* oxlint-disable no-console -- mirroring the main process's console is the whole point */
   if (level === 'error') console.error(line, badge, '')
   else if (level === 'warn') console.warn(line, badge, '')
   else console.log(line, badge, '')

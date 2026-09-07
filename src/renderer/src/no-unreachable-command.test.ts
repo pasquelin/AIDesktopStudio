@@ -13,8 +13,21 @@ import { WINDOW_SOURCES } from './windowSources'
 /** The modules whose exports ARE the edits of a document — one per workspace that keeps one. */
 const COMMAND_MODULES = [
   'engines/canvas/commands.ts',
-  'engines/scene/commands.ts',
+  'engines/canvas/commandsStructure.ts',
   'engines/scene/animationCommands.ts',
+  'engines/scene/animationRecordingCommands.ts',
+  'engines/scene/animationTrackCommands.ts',
+  'engines/scene/cameraAnimationCommands.ts',
+  'engines/scene/nodeBatchCommands.ts',
+  'engines/scene/nodeBulkCommands.ts',
+  'engines/scene/nodeDescriptorCommands.ts',
+  'engines/scene/nodeEditCommands.ts',
+  'engines/scene/nodeTreeCommands.ts',
+  'engines/scene/postCommands.ts',
+  'engines/scene/reliefCommands.ts',
+  'engines/scene/scatterCommands.ts',
+  'engines/scene/templateCommands.ts',
+  'engines/scene/timelineCommands.ts',
   'engines/timeline/commands.ts',
 ]
 
@@ -84,6 +97,7 @@ const COMMANDS: readonly (readonly [string, readonly string[]])[] = SOURCES.map(
  */
 const COMBINATORS: readonly string[] = [
   'multi',
+  'restructure',
   'editClip',
   'railOnNewShot',
   // The single-node writer its spreading twin builds from. `setMaterialOn` is what decides
@@ -93,6 +107,9 @@ const COMBINATORS: readonly string[] = [
   'setMeshMaterial',
   'setNodeMaterial',
   'setTextMaterial',
+  // The single-node writer `addNodes` builds from, and what every command composing an add uses.
+  // The published gesture is the plural one: an Add puts down a whole module, never one node.
+  'addNode',
   'setSprite',
   'setText',
   'setTransform',
@@ -118,6 +135,21 @@ const COMBINATORS: readonly string[] = [
 const SPREAD_OVER_A_SELECTION: readonly string[] = ['setGeometryOn', 'setLightOn', 'setCameraOn']
 
 /**
+ * Reached through a GESTURE of the store, which does the edit and one thing more that a panel and
+ * an action must not diverge on. Named one by one: reading the store whole would let every command
+ * it mentions read as published.
+ */
+const THROUGH_A_GESTURE: Readonly<Record<string, string>> = {
+  // Laying a block also CHOOSES it — `stores/scenes.ts`, and `animation.addBlock` performs it.
+  addModelClip: 'laySceneClip',
+  // Reopening a motion also selects its workbench — `characterMotion.ts`, and
+  // `animation.reopenMotion` performs it through that one path.
+  loadAnimation: 'reopenCharacterMotion',
+  // Saving a ground stroke creates its picture asset before the document can point at it.
+  setTerrainGroundWeights: 'saveGroundPaint',
+}
+
+/**
  * Reached through `command.runStudioCommand` rather than by an action of its own — the OTHER door, which this
  * rule cannot see: a client fires the registry command beside each one and the surface in front
  * builds the edit. Listed so they do not read as gestures nothing can reach.
@@ -137,6 +169,7 @@ const THROUGH_A_COMMAND: Readonly<Record<string, string>> = {
   // The toggle half of the tool mark: `node.markAsCuttingTool` publishes `setNodesNegative`, which SAYS
   // which of the two it means, where a button has to read what is already marked.
   negateNodes: 'scene.negate',
+  setNodesOptimization: 'scene.optimizeSelection',
 }
 
 /**
@@ -149,9 +182,43 @@ const THROUGH_A_COMMAND: Readonly<Record<string, string>> = {
  * driving the 3D space runs into first.
  */
 const NOT_PUBLISHED: readonly string[] = [
-  // A stroke goes through the engine's GPU surface and its patch history: this takes a live PORT,
-  // not a path, and publishing it needs an engine API that does not exist — see `canvasActions.ts`.
-  'paintPixels',
+  'sweep',
+  'removePostEffect',
+  'reorderPostEffects',
+  'sculptRelief',
+  'addTerrain',
+  'addTerrainEdit',
+  'removeTerrain',
+  'removeTerrainEdit',
+  'renameTerrain',
+  'renameTerrainEdit',
+  'reorderTerrainEdits',
+  'reorderTerrains',
+  'setTerrainEditAlpha',
+  'setTerrainEditMask',
+  'paintTerrainEditMask',
+  'addScatter',
+  'removeScatter',
+  'renameScatter',
+  'reorderScatters',
+  'setScatterEnabled',
+  'setScatterLocked',
+  'setScatterMask',
+  'paintScatterMask',
+  'setScatterRules',
+  'setScatterSeed',
+  'setScatterAssets',
+  'setScatterCategory',
+  'setScatterCollision',
+  'setScatterFollowRelief',
+  'setTerrainEditEnabled',
+  'setTerrainEditLocked',
+  'setTerrainEnabled',
+  'setTerrainLocked',
+  'setTerrainGroundMaterials',
+  // The ENGINE reaches it, never a handler: `endPixels` calls `onPixels`, which the window has
+  // wired to this command since the brush existed. An action that paints goes through the port's
+  // `paintCells`, which knows nothing of it — a second door is the same entry pushed twice.
   // The drag's own half of `layer.transform`: an absolute x and y, so a gesture coalesced into
   // one entry keeps the last apply. An action names the transform whole and goes through
   // `setLayerTransform` — a second door onto the same edit is an edit published twice.
@@ -162,10 +229,48 @@ const NOT_PUBLISHED: readonly string[] = [
   'resizeCaption',
 ]
 
+/**
+ * A module that declares no command because it re-exports other modules' ones — legal, and the one
+ * shape that may answer nothing. Told by its TEXT rather than by a list: a barrel named here would
+ * go stale the day the next one is written.
+ */
+const reExportsOnly = (source: string): boolean =>
+  !/export function \w+\(/.test(source) && /export \{[\s\S]*?\} from '/.test(source)
+
 describe('what edits a document, and what an outside client may ask for', () => {
-  /** A regex that reads nothing prints the same green as one that works. */
-  it('finds the commands at all', () => {
-    for (const [module, names] of COMMANDS) expect(names.length, module).toBeGreaterThan(10)
+  /**
+   * A regex that reads nothing prints the same green as one that works — so the floor is PER
+   * MODULE. Over the total it is not a floor at all: measured 2026-09-04, `animationCommands.ts`
+   * answered ZERO after becoming a re-export barrel while the sum of sixteen modules read ~149
+   * against a floor of 40. A module rewritten to `export const name = (…): Command =>` would leave
+   * the reachability audit the same silent way.
+   *
+   * A barrel is allowed its zero, and pays for it: what stands BEHIND it must itself be audited,
+   * or it hides a module this suite never reads.
+   */
+  it('finds the commands of every module, and not merely of their total', () => {
+    const sourceOf = new Map(SOURCES)
+
+    for (const [module, names] of COMMANDS) {
+      const source = sourceOf.get(module) ?? ''
+      if (!reExportsOnly(source)) {
+        // Not a higher floor: the size split left modules of THREE commands —
+        // `animationRecordingCommands.ts`, measured 2026-09-04. Zero is what a regex reading
+        // nothing answers, and zero is what a module declaring anything at all may never say.
+        expect(names.length, module).toBeGreaterThan(0)
+        continue
+      }
+
+      const folder = module.slice(0, module.lastIndexOf('/') + 1)
+      const behind = [...source.matchAll(/\} from '\.\/(\w+)'/g)].map(
+        match => `${folder}${match[1]}.ts`,
+      )
+      expect(behind.length, module).toBeGreaterThan(0)
+      expect(
+        behind.filter(path => !COMMAND_MODULES.includes(path)),
+        module,
+      ).toEqual([])
+    }
 
     expect(HANDLERS.length).toBeGreaterThan(10_000)
   })
@@ -176,6 +281,7 @@ describe('what edits a document, and what an outside client may ask for', () => 
       ...SPREAD_OVER_A_SELECTION,
       ...NOT_PUBLISHED,
       ...Object.keys(THROUGH_A_COMMAND),
+      ...Object.keys(THROUGH_A_GESTURE),
     ])
     const orphans = COMMANDS.flatMap(([module, names]) =>
       names
@@ -198,6 +304,7 @@ describe('what edits a document, and what an outside client may ask for', () => 
       ...SPREAD_OVER_A_SELECTION,
       ...NOT_PUBLISHED,
       ...Object.keys(THROUGH_A_COMMAND),
+      ...Object.keys(THROUGH_A_GESTURE),
     ]
 
     expect(listed.filter(name => !declared.has(name)).sort()).toEqual([])

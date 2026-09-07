@@ -80,4 +80,10 @@ describe('CollectionBar', () => {
     expect(screen.getByLabelText('period')).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: /filtres/ })).not.toBeInTheDocument()
   })
+
+  it('can give the spare width of an inline bar to search', () => {
+    renderBar([], { layout: 'inline', growSearch: true })
+
+    expect(screen.getByRole('searchbox').closest('label')).toHaveClass('flex-1')
+  })
 })

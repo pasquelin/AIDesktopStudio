@@ -61,26 +61,7 @@ export function facetsFor(
   t: Translate,
   clouds: readonly string[],
 ): FacetDescriptor[] {
-  const facets: FacetDescriptor[] = []
-
-  facets.push({
-    key: RUNTIME_FACET,
-    label: t('models.runtime'),
-    options: [
-      { value: LOCAL_RUNTIME, label: t('models.runsLocally') },
-      ...clouds.map(value => ({ value, label: t(`aiClouds.${value}`) })),
-    ],
-  })
-
-  facets.push({
-    key: ORIGIN_FACET,
-    label: t('models.origin'),
-    options: [
-      { value: 'official', label: t('models.official') },
-      { value: 'community', label: t('models.community') },
-    ],
-  })
-
+  const facets = baseFacets(t, clouds)
   const capabilities = filterCapabilitiesOf(family)
   if (capabilities.length) {
     facets.push({
@@ -99,7 +80,6 @@ export function facetsFor(
     })
   }
 
-  // The publisher is a tag like any other, so both facets narrow through the same parameter.
   const publishers = PUBLISHERS_BY_FAMILY[family]
   if (publishers.length) {
     facets.push({
@@ -116,6 +96,27 @@ export function facetsFor(
   })
 
   return facets
+}
+
+function baseFacets(t: Translate, clouds: readonly string[]): FacetDescriptor[] {
+  return [
+    {
+      key: RUNTIME_FACET,
+      label: t('models.runtime'),
+      options: [
+        { value: LOCAL_RUNTIME, label: t('models.runsLocally') },
+        ...clouds.map(value => ({ value, label: t(`aiClouds.${value}`) })),
+      ],
+    },
+    {
+      key: ORIGIN_FACET,
+      label: t('models.origin'),
+      options: [
+        { value: 'official', label: t('models.official') },
+        { value: 'community', label: t('models.community') },
+      ],
+    },
+  ]
 }
 
 /**

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import source from './SceneRenderer.ts?raw'
+import { sceneRendererSource as source } from './sceneRendererSource.testHelper'
 
 /**
  * What the surface snap aims at, read as text.
@@ -10,7 +10,8 @@ import source from './SceneRenderer.ts?raw'
  * object it reads.
  */
 describe('SceneRenderer and what a surface snap lays down', () => {
-  const layOnSurface = source.match(/private layOnSurface\(\): void \{[\s\S]*?\n {2}\}/)?.[0] ?? ''
+  const layOnSurface =
+    source.match(/protected layOnSurface\(\): void \{[\s\S]*?\n {2}\}/)?.[0] ?? ''
 
   it('has a method to read at all, so the rules below cannot pass on an empty string', () => {
     expect(layOnSurface).toContain('snapSurfaceOffset')

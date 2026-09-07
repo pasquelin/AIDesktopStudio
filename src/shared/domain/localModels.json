@@ -1,4 +1,39 @@
 {
+  "smart-selection": [
+    {
+      "id": "efficient-sam-ti",
+      "name": "EfficientSAM-Ti",
+      "summary": "Promptable image selection, Tiny ViT ONNX encoder and decoder",
+      "format": "onnx",
+      "loader": "onnx-runtime",
+      "rank": 1,
+      "licence": "Apache-2.0",
+      "licenceUrl": "https://www.apache.org/licenses/LICENSE-2.0",
+      "source": "https://github.com/yformer/EfficientSAM",
+      "files": [
+        {
+          "role": "encoder",
+          "name": "efficientsam_ti_encoder.onnx",
+          "url": "https://huggingface.co/yunyangx/EfficientSAM/resolve/d53228e3f6dee607309453f54a22c40c2a10204c/efficientsam_ti_encoder.onnx",
+          "bytes": 24799761,
+          "sha256": "84ed466ffcc5c1f8d08409bc34a23bb364ab2c15e402cb12d4335a42be0e0951",
+          "revision": "d53228e3f6dee607309453f54a22c40c2a10204c",
+          "upstream": "https://github.com/yformer/EfficientSAM"
+        },
+        {
+          "role": "decoder",
+          "name": "efficientsam_ti_decoder.onnx",
+          "url": "https://huggingface.co/yunyangx/EfficientSAM/resolve/d53228e3f6dee607309453f54a22c40c2a10204c/efficientsam_ti_decoder.onnx",
+          "bytes": 16565728,
+          "sha256": "a62f8fa5ea080447c0689418d69e58f1e83e0b7adf9c142e2bd9bcc8045c0b11",
+          "revision": "d53228e3f6dee607309453f54a22c40c2a10204c",
+          "upstream": "https://github.com/yformer/EfficientSAM"
+        }
+      ],
+      "diskBytes": 41365489,
+      "reservationBytes": 200000000
+    }
+  ],
   "assistant": [
     {
       "id": "qwen2.5-0.5b-instruct-q4",
@@ -291,16 +326,8 @@
       "reservationBytes": 4496703488,
       "thumbnail": "ssd-1b.png",
       "family": "image",
-      "capabilities": [
-        "txt2img",
-        "img2img",
-        "inpaint",
-        "outpaint"
-      ],
-      "serves": [
-        "material/txt2img_texture",
-        "material/img2img_texture"
-      ]
+      "capabilities": ["txt2img", "img2img", "inpaint", "outpaint"],
+      "serves": ["material/txt2img_texture", "material/img2img_texture"]
     },
     {
       "id": "sana-600m-1024",
@@ -431,12 +458,8 @@
       "reservationBytes": 7766163456,
       "thumbnail": "sana-600m-1024.png",
       "family": "image",
-      "capabilities": [
-        "txt2img"
-      ],
-      "serves": [
-        "material/txt2img_texture"
-      ]
+      "capabilities": ["txt2img"],
+      "serves": ["material/txt2img_texture"]
     },
     {
       "id": "sana-1600m-1024",
@@ -583,12 +606,8 @@
       "reservationBytes": 4862736884,
       "thumbnail": "sana-1600m-1024.png",
       "family": "image",
-      "capabilities": [
-        "txt2img"
-      ],
-      "serves": [
-        "material/txt2img_texture"
-      ]
+      "capabilities": ["txt2img"],
+      "serves": ["material/txt2img_texture"]
     },
     {
       "id": "sana15-1-6b",
@@ -719,12 +738,8 @@
       "reservationBytes": 4862888829,
       "thumbnail": "sana15-1-6b.png",
       "family": "image",
-      "capabilities": [
-        "txt2img"
-      ],
-      "serves": [
-        "material/txt2img_texture"
-      ]
+      "capabilities": ["txt2img"],
+      "serves": ["material/txt2img_texture"]
     },
     {
       "id": "qwen-image",
@@ -967,12 +982,8 @@
       "reservationBytes": 28852287506,
       "thumbnail": "qwen-image.png",
       "family": "image",
-      "capabilities": [
-        "txt2img"
-      ],
-      "serves": [
-        "material/txt2img_texture"
-      ]
+      "capabilities": ["txt2img"],
+      "serves": ["material/txt2img_texture"]
     }
   ],
   "video/txt2video": [
@@ -1105,10 +1116,7 @@
       "reservationBytes": 6887763909,
       "thumbnail": "cogvideox-2b.png",
       "family": "video",
-      "capabilities": [
-        "txt2video",
-        "video2video"
-      ]
+      "capabilities": ["txt2video", "video2video"]
     },
     {
       "id": "wan21-t2v-1-3b",
@@ -1279,10 +1287,7 @@
       "reservationBytes": 14464443929,
       "thumbnail": "wan21-t2v-1-3b.png",
       "family": "video",
-      "capabilities": [
-        "txt2video",
-        "video2video"
-      ]
+      "capabilities": ["txt2video", "video2video"]
     },
     {
       "id": "wan22-ti2v-5b",
@@ -1461,11 +1466,7 @@
       "reservationBytes": 17100709200,
       "thumbnail": "wan22-ti2v-5b.png",
       "family": "video",
-      "capabilities": [
-        "img2video",
-        "txt2video",
-        "video2video"
-      ]
+      "capabilities": ["img2video", "txt2video", "video2video"]
     },
     {
       "id": "mochi-1-preview",
@@ -1740,9 +1741,7 @@
       "reservationBytes": 66754740322,
       "thumbnail": "mochi-1-preview.png",
       "family": "video",
-      "capabilities": [
-        "txt2video"
-      ]
+      "capabilities": ["txt2video"]
     }
   ],
   "image/img2img": [
@@ -2059,9 +2058,7 @@
       "reservationBytes": 28860227143,
       "thumbnail": "qwen-image-edit.png",
       "family": "image",
-      "capabilities": [
-        "img2img"
-      ]
+      "capabilities": ["img2img"]
     }
   ],
   "video/img2video": [
@@ -2354,9 +2351,7 @@
       "reservationBytes": 45048778190,
       "thumbnail": "wan21-i2v-14b-480p.png",
       "family": "video",
-      "capabilities": [
-        "img2video"
-      ]
+      "capabilities": ["img2video"]
     }
   ],
   "audio/txt2audio": [
@@ -2529,10 +2524,7 @@
       "reservationBytes": 5550750945,
       "thumbnail": "acestep-v15-xl-turbo.png",
       "family": "audio",
-      "capabilities": [
-        "txt2audio",
-        "audio2audio"
-      ]
+      "capabilities": ["txt2audio", "audio2audio"]
     },
     {
       "id": "acestep-v15-xl-base",
@@ -2735,10 +2727,7 @@
       "reservationBytes": 5760798878,
       "thumbnail": "acestep-v15-xl-base.png",
       "family": "audio",
-      "capabilities": [
-        "txt2audio",
-        "audio2audio"
-      ]
+      "capabilities": ["txt2audio", "audio2audio"]
     },
     {
       "id": "acestep-v15-xl-sft",
@@ -2941,10 +2930,7 @@
       "reservationBytes": 5760798878,
       "thumbnail": "acestep-v15-xl-sft.png",
       "family": "audio",
-      "capabilities": [
-        "txt2audio",
-        "audio2audio"
-      ]
+      "capabilities": ["txt2audio", "audio2audio"]
     }
   ],
   "3d/txt23d": [
@@ -3102,9 +3088,7 @@
       "reservationBytes": 2450491475,
       "thumbnail": "shap-e.png",
       "family": "3d",
-      "capabilities": [
-        "txt23d"
-      ],
+      "capabilities": ["txt23d"],
       "readsTorchWeights": true
     }
   ],
@@ -3144,9 +3128,7 @@
       "reservationBytes": 838623864,
       "thumbnail": "triposr.png",
       "family": "3d",
-      "capabilities": [
-        "img23d"
-      ],
+      "capabilities": ["img23d"],
       "distribution": "direct-download",
       "licenceStatus": "commercial"
     },
@@ -3280,9 +3262,7 @@
       "reservationBytes": 2989127072,
       "thumbnail": "shap-e-img2img.png",
       "family": "3d",
-      "capabilities": [
-        "img23d"
-      ],
+      "capabilities": ["img23d"],
       "readsTorchWeights": true
     },
     {
@@ -3464,9 +3444,7 @@
       "reservationBytes": 8118738554,
       "thumbnail": "trellis2-4b.png",
       "family": "3d",
-      "capabilities": [
-        "img23d"
-      ],
+      "capabilities": ["img23d"],
       "distribution": "direct-download",
       "licenceStatus": "commercial",
       "needsCuda": true
@@ -3528,9 +3506,7 @@
       "diskBytes": 4987516130,
       "reservationBytes": 8000000000,
       "family": "3d",
-      "capabilities": [
-        "img23d"
-      ],
+      "capabilities": ["img23d"],
       "needsCuda": true,
       "distribution": "direct-download",
       "licenceStatus": "restricted"
@@ -3705,9 +3681,7 @@
       "diskBytes": 5360112404,
       "reservationBytes": 10000000000,
       "family": "3d",
-      "capabilities": [
-        "img23d"
-      ],
+      "capabilities": ["img23d"],
       "needsCuda": true,
       "distribution": "direct-download",
       "licenceStatus": "restricted"
@@ -3850,9 +3824,7 @@
       "diskBytes": 4824902623,
       "reservationBytes": 12000000000,
       "family": "3d",
-      "capabilities": [
-        "img23d"
-      ],
+      "capabilities": ["img23d"],
       "needsCuda": true,
       "distribution": "direct-download",
       "licenceStatus": "restricted"
@@ -3946,9 +3918,7 @@
       "diskBytes": 7946491209,
       "reservationBytes": 3973245604,
       "family": "3d",
-      "capabilities": [
-        "img23d"
-      ],
+      "capabilities": ["img23d"],
       "needsCuda": true,
       "thumbnail": "triposg.png"
     }
@@ -4091,16 +4061,12 @@
       "reservationBytes": 2507643548,
       "thumbnail": "controlnet-canny-sdxl.png",
       "family": "image",
-      "capabilities": [
-        "controlnet"
-      ],
+      "capabilities": ["controlnet"],
       "attaches": {
         "model": "ssd-1b",
         "as": "controlnet"
       },
-      "serves": [
-        "material/controlnet_texture"
-      ]
+      "serves": ["material/controlnet_texture"]
     }
   ],
   "image/reference": [
@@ -4145,18 +4111,14 @@
       "reservationBytes": 2196250026,
       "thumbnail": "ip-adapter-sdxl.png",
       "family": "image",
-      "capabilities": [
-        "reference"
-      ],
+      "capabilities": ["reference"],
       "attaches": {
         "model": "ssd-1b",
         "as": "ip-adapter",
         "subfolder": "sdxl_models",
         "weightName": "ip-adapter_sdxl.safetensors"
       },
-      "serves": [
-        "material/reference_texture"
-      ]
+      "serves": ["material/reference_texture"]
     }
   ],
   "audio/video2audio": [
@@ -4209,9 +4171,7 @@
       "reservationBytes": 1625582553,
       "thumbnail": "mmaudio-small-44k.png",
       "family": "audio",
-      "capabilities": [
-        "video2audio"
-      ],
+      "capabilities": ["video2audio"],
       "distribution": "direct-download",
       "licenceStatus": "non-commercial"
     },
@@ -4264,9 +4224,7 @@
       "reservationBytes": 2554376795,
       "thumbnail": "mmaudio-medium-44k.png",
       "family": "audio",
-      "capabilities": [
-        "video2audio"
-      ],
+      "capabilities": ["video2audio"],
       "distribution": "direct-download",
       "licenceStatus": "non-commercial"
     },
@@ -4319,9 +4277,7 @@
       "reservationBytes": 3370803661,
       "thumbnail": "mmaudio-large-44k.png",
       "family": "audio",
-      "capabilities": [
-        "video2audio"
-      ],
+      "capabilities": ["video2audio"],
       "distribution": "direct-download",
       "licenceStatus": "non-commercial"
     }
@@ -4385,14 +4341,10 @@
       "reservationBytes": 1142098602,
       "thumbnail": "trellis-text-large.png",
       "family": "3d",
-      "capabilities": [
-        "3d23d"
-      ],
+      "capabilities": ["3d23d"],
       "distribution": "direct-download",
       "licenceStatus": "commercial",
-      "serves": [
-        "3d/txt23d"
-      ],
+      "serves": ["3d/txt23d"],
       "needsCuda": true
     },
     {
@@ -4549,14 +4501,10 @@
       "reservationBytes": 1649619433,
       "thumbnail": "trellis-image-large.png",
       "family": "3d",
-      "capabilities": [
-        "3d23d"
-      ],
+      "capabilities": ["3d23d"],
       "distribution": "direct-download",
       "licenceStatus": "commercial",
-      "serves": [
-        "3d/img23d"
-      ],
+      "serves": ["3d/img23d"],
       "needsCuda": true
     }
   ],
@@ -4691,9 +4639,7 @@
           "default": 1024
         }
       },
-      "capabilities": [
-        "txt2skybox"
-      ]
+      "capabilities": ["txt2skybox"]
     },
     {
       "id": "mvdiffusion",
@@ -4825,9 +4771,7 @@
           "default": 1024
         }
       },
-      "capabilities": [
-        "txt2skybox"
-      ]
+      "capabilities": ["txt2skybox"]
     },
     {
       "id": "diffusion360",
@@ -4950,9 +4894,7 @@
       "diskBytes": 5161903727,
       "reservationBytes": 2580951863,
       "family": "skybox",
-      "capabilities": [
-        "txt2skybox"
-      ],
+      "capabilities": ["txt2skybox"],
       "fieldOverrides": {
         "width": {
           "default": 2048
@@ -5093,9 +5035,7 @@
           "default": 1024
         }
       },
-      "capabilities": [
-        "txt2skybox"
-      ]
+      "capabilities": ["txt2skybox"]
     }
   ],
   "skybox/img2skybox": [
@@ -5301,11 +5241,75 @@
       "reservationBytes": 16874174930,
       "thumbnail": "genex-world-initializer.png",
       "family": "skybox",
-      "capabilities": [
-        "img2skybox"
-      ],
+      "capabilities": ["img2skybox"],
       "distribution": "direct-download",
       "licenceStatus": "commercial"
+    }
+  ],
+  "3d/rig": [
+    {
+      "id": "make-it-animatable",
+      "backendId": "make-it-animatable",
+      "name": "Make-It-Animatable",
+      "summary": "Advanced local humanoid Auto Rig with skeleton and skin weights",
+      "releasedAt": "2024-12-06",
+      "format": "pickle",
+      "loader": "plugin",
+      "modality": "mesh",
+      "family": "3d",
+      "capabilities": ["rig"],
+      "rank": 1,
+      "licence": "Apache-2.0",
+      "licenceUrl": "https://huggingface.co/jasongzy/Make-It-Animatable/blob/eb12b71253361fd1a7216625a95144af3c58263e/README.md",
+      "licenceStatus": "restricted",
+      "source": "https://huggingface.co/jasongzy/Make-It-Animatable",
+      "files": [
+        {
+          "role": "skinning",
+          "name": "bw.pth",
+          "url": "https://huggingface.co/jasongzy/Make-It-Animatable/resolve/eb12b71253361fd1a7216625a95144af3c58263e/output/best/new/bw.pth",
+          "bytes": 424693698,
+          "sha256": "8ff6abc9ed78665513d2dcd7b2d7e8430f6c86335389120281be3bd999d27830",
+          "revision": "eb12b71253361fd1a7216625a95144af3c58263e"
+        },
+        {
+          "role": "skinning-normals",
+          "name": "bw_normal.pth",
+          "url": "https://huggingface.co/jasongzy/Make-It-Animatable/resolve/eb12b71253361fd1a7216625a95144af3c58263e/output/best/new/bw_normal.pth",
+          "bytes": 429008352,
+          "sha256": "d69d259863af77a06b6c4ee3d1fc2cb8566194fc8fc08cecbcb065bf9fa94818",
+          "revision": "eb12b71253361fd1a7216625a95144af3c58263e"
+        },
+        {
+          "role": "joints",
+          "name": "joints.pth",
+          "url": "https://huggingface.co/jasongzy/Make-It-Animatable/resolve/eb12b71253361fd1a7216625a95144af3c58263e/output/best/new/joints.pth",
+          "bytes": 525833771,
+          "sha256": "595587abb2ef9977bc9e49f8221c326da473de8ff1cd8785eb55ac63acde2b8e",
+          "revision": "eb12b71253361fd1a7216625a95144af3c58263e"
+        },
+        {
+          "role": "joints-coarse",
+          "name": "joints_coarse.pth",
+          "url": "https://huggingface.co/jasongzy/Make-It-Animatable/resolve/eb12b71253361fd1a7216625a95144af3c58263e/output/best/new/joints_coarse.pth",
+          "bytes": 424706373,
+          "sha256": "389e18f92a65e7925c1a940dfff22cc85e9ac4ead17ab4a65fd4ef5d6088b96b",
+          "revision": "eb12b71253361fd1a7216625a95144af3c58263e"
+        },
+        {
+          "role": "pose",
+          "name": "pose.pth",
+          "url": "https://huggingface.co/jasongzy/Make-It-Animatable/resolve/eb12b71253361fd1a7216625a95144af3c58263e/output/best/new/pose.pth",
+          "bytes": 525848433,
+          "sha256": "4996440d7d90064516e134e748abacd3b96e17856a7d8a4a245bbeb205402b7e",
+          "revision": "eb12b71253361fd1a7216625a95144af3c58263e"
+        }
+      ],
+      "diskBytes": 2330090627,
+      "reservationBytes": 4300000000,
+      "distribution": "direct-download",
+      "runtimeStatus": "supported",
+      "readsTorchWeights": true
     }
   ],
   "code/txt2code": [
@@ -5317,10 +5321,7 @@
       "loader": "llamacpp",
       "modality": "text",
       "family": "code",
-      "capabilities": [
-        "txt2code",
-        "code2code"
-      ],
+      "capabilities": ["txt2code", "code2code"],
       "rank": 1,
       "licence": "Apache-2.0",
       "licenceUrl": "https://www.apache.org/licenses/LICENSE-2.0",
@@ -5348,10 +5349,7 @@
       "loader": "llamacpp",
       "modality": "text",
       "family": "code",
-      "capabilities": [
-        "txt2code",
-        "code2code"
-      ],
+      "capabilities": ["txt2code", "code2code"],
       "rank": 1,
       "licence": "Apache-2.0",
       "licenceUrl": "https://www.apache.org/licenses/LICENSE-2.0",
@@ -5376,7 +5374,7 @@
     {
       "id": "embeddinggemma-300m-q8",
       "name": "EmbeddingGemma 300M",
-      "summary": "EmbeddingGemma 300M, Q8_0 — 768 dimensions, multilingual",
+      "summary": "EmbeddingGemma 300M, Q8_0 \u2014 768 dimensions, multilingual",
       "releasedAt": "2025-09-04",
       "format": "gguf",
       "loader": "llamacpp",
@@ -5404,6 +5402,135 @@
         "document": "title: none | text: ",
         "query": "task: search result | query: "
       }
+    }
+  ],
+  "3d/motion": [
+    {
+      "id": "kimodo-soma-rp-v1.1",
+      "name": "Kimodo SOMA RP v1.1",
+      "format": "safetensors",
+      "loader": "plugin",
+      "modality": "motion",
+      "family": "3d",
+      "capabilities": ["motion"],
+      "rank": 1,
+      "licence": "other",
+      "licenceUrl": "https://www.nvidia.com/en-us/agreements/enterprise-software/nvidia-open-model-license/",
+      "licenceStatus": "restricted",
+      "source": "https://huggingface.co/nvidia/Kimodo-SOMA-RP-v1.1",
+      "files": [
+        {
+          "role": "config",
+          "name": "LICENSE",
+          "url": "https://huggingface.co/nvidia/Kimodo-SOMA-RP-v1.1/resolve/6c9233af1180b8151e3c4703477104af5dce9dd5/LICENSE",
+          "bytes": 10229,
+          "sha256": "f0572a530e92550e620650907f3e656f6fedc2eac73eef78c5c8d29cdefa0a71",
+          "revision": "6c9233af1180b8151e3c4703477104af5dce9dd5"
+        },
+        {
+          "role": "config",
+          "name": "config.yaml",
+          "url": "https://huggingface.co/nvidia/Kimodo-SOMA-RP-v1.1/resolve/6c9233af1180b8151e3c4703477104af5dce9dd5/config.yaml",
+          "bytes": 675,
+          "sha256": "ac464fe608c95dff5efeddc7c76a0acc0eaa883e1a5eea759fab666ab893470b",
+          "revision": "6c9233af1180b8151e3c4703477104af5dce9dd5"
+        },
+        {
+          "role": "weights",
+          "name": "model.safetensors",
+          "url": "https://huggingface.co/nvidia/Kimodo-SOMA-RP-v1.1/resolve/6c9233af1180b8151e3c4703477104af5dce9dd5/model.safetensors",
+          "bytes": 1133185036,
+          "sha256": "ef0a0ca45a6089ab4532dde609785771ae3f38755b4ae6cf314b0213e07cd4a3",
+          "revision": "6c9233af1180b8151e3c4703477104af5dce9dd5"
+        },
+        {
+          "role": "config",
+          "name": "stats/motion/body/mean.npy",
+          "url": "https://huggingface.co/nvidia/Kimodo-SOMA-RP-v1.1/resolve/6c9233af1180b8151e3c4703477104af5dce9dd5/stats/motion/body/mean.npy",
+          "bytes": 3040,
+          "sha256": "d42f35f8bb7ef52fdec66ae29c5cf590bd038f4f1aabd2d560d1d0f78663ed6f",
+          "revision": "6c9233af1180b8151e3c4703477104af5dce9dd5"
+        },
+        {
+          "role": "config",
+          "name": "stats/motion/body/std.npy",
+          "url": "https://huggingface.co/nvidia/Kimodo-SOMA-RP-v1.1/resolve/6c9233af1180b8151e3c4703477104af5dce9dd5/stats/motion/body/std.npy",
+          "bytes": 3040,
+          "sha256": "965bbad497726ef4e6c46b519827e2cbcb29f974214b25718d20a725b82279ed",
+          "revision": "6c9233af1180b8151e3c4703477104af5dce9dd5"
+        },
+        {
+          "role": "config",
+          "name": "stats/motion/global_root/mean.npy",
+          "url": "https://huggingface.co/nvidia/Kimodo-SOMA-RP-v1.1/resolve/6c9233af1180b8151e3c4703477104af5dce9dd5/stats/motion/global_root/mean.npy",
+          "bytes": 168,
+          "sha256": "6c110980f9a0386e57a8c186f8eac7f55dc05bade92f44c4b391450ada598da1",
+          "revision": "6c9233af1180b8151e3c4703477104af5dce9dd5"
+        },
+        {
+          "role": "config",
+          "name": "stats/motion/global_root/std.npy",
+          "url": "https://huggingface.co/nvidia/Kimodo-SOMA-RP-v1.1/resolve/6c9233af1180b8151e3c4703477104af5dce9dd5/stats/motion/global_root/std.npy",
+          "bytes": 168,
+          "sha256": "fb15aeed7143f5f0754611f0acf5fa5f55d1f6492a49c23e490fc62f7bf11fb0",
+          "revision": "6c9233af1180b8151e3c4703477104af5dce9dd5"
+        },
+        {
+          "role": "config",
+          "name": "stats/motion/local_root/mean.npy",
+          "url": "https://huggingface.co/nvidia/Kimodo-SOMA-RP-v1.1/resolve/6c9233af1180b8151e3c4703477104af5dce9dd5/stats/motion/local_root/mean.npy",
+          "bytes": 160,
+          "sha256": "4c36e8e33d6d51e6c8206ac796a52b7b3a4da7f0dc49ebdbb4f130178e3e9d31",
+          "revision": "6c9233af1180b8151e3c4703477104af5dce9dd5"
+        },
+        {
+          "role": "config",
+          "name": "stats/motion/local_root/std.npy",
+          "url": "https://huggingface.co/nvidia/Kimodo-SOMA-RP-v1.1/resolve/6c9233af1180b8151e3c4703477104af5dce9dd5/stats/motion/local_root/std.npy",
+          "bytes": 160,
+          "sha256": "5f57b41f51ced7832cffa81702f6e04d8694e16475c184baec6c8be0e98c8dba",
+          "revision": "6c9233af1180b8151e3c4703477104af5dce9dd5"
+        },
+        {
+          "role": "config",
+          "name": "mntp/adapter_config.json",
+          "url": "https://huggingface.co/McGill-NLP/LLM2Vec-Meta-Llama-3-8B-Instruct-mntp/resolve/31474e395ada192e8ed1586db6be79fb3b70c9c0/adapter_config.json",
+          "bytes": 794,
+          "sha256": "90c7a52902503751dd7930ce54a65af591f8399730756192945eba8ed7293f65",
+          "revision": "31474e395ada192e8ed1586db6be79fb3b70c9c0"
+        },
+        {
+          "role": "weights",
+          "name": "mntp/adapter_model.safetensors",
+          "url": "https://huggingface.co/McGill-NLP/LLM2Vec-Meta-Llama-3-8B-Instruct-mntp/resolve/31474e395ada192e8ed1586db6be79fb3b70c9c0/adapter_model.safetensors",
+          "bytes": 167829552,
+          "sha256": "de9c8736618a13173c6a1623cdef1b75e86c69317f1073ae82cd516ac36a632d",
+          "revision": "31474e395ada192e8ed1586db6be79fb3b70c9c0"
+        },
+        {
+          "role": "config",
+          "name": "adapter/adapter_config.json",
+          "url": "https://huggingface.co/McGill-NLP/LLM2Vec-Meta-Llama-3-8B-Instruct-mntp-supervised/resolve/baa8ebf04a1c2500e61288e7dad65e8ae42601a7/adapter_config.json",
+          "bytes": 794,
+          "sha256": "88d07fe789dadeb68d544b984099194ae589bde229e8e99a2ae1b9993ae350ee",
+          "revision": "baa8ebf04a1c2500e61288e7dad65e8ae42601a7"
+        },
+        {
+          "role": "weights",
+          "name": "adapter/adapter_model.safetensors",
+          "url": "https://huggingface.co/McGill-NLP/LLM2Vec-Meta-Llama-3-8B-Instruct-mntp-supervised/resolve/baa8ebf04a1c2500e61288e7dad65e8ae42601a7/adapter_model.safetensors",
+          "bytes": 167829552,
+          "sha256": "53f8f94ebdf396667ba99dd96e78203edae27bbcdbd1cf5f12b611e1d916b225",
+          "revision": "baa8ebf04a1c2500e61288e7dad65e8ae42601a7"
+        }
+      ],
+      "diskBytes": 1468863368,
+      "reservationBytes": 19000000000,
+      "runtimeStatus": "supported",
+      "distribution": "user-import",
+      "distributionStatus": "blocked",
+      "summary": "Text-to-motion generation on a humanoid skeleton, with local Meta Llama 3 8B weights and the optional motion engine package",
+      "releasedAt": "2026-04-10"
     }
   ]
 }

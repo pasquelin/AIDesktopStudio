@@ -5,18 +5,21 @@ import { createInertScripts } from '@game/host/inertScripts'
 import { createDefaultScene } from '@/engines/scene/defaultScene'
 import { drawing } from '@/game/game-fixtures'
 import { createGameStage, type GameStage } from '@/game/gameStage'
+import { clearGameOptimizationCache } from '@/game/gameChannel'
 import { meshNode } from '@/engines/scene/scene-fixtures'
+import type { SceneState } from '@/engines/scene/sceneState'
 import { installFakeBridge } from '@/services/fakeBridge'
 import { installScene } from './scene-fixtures'
-import { playReportOf, usePlay } from './play'
+import { compiledScripts, playReportOf, usePlay } from './play'
+import { sceneOf, useScenes } from './scenes'
 import { forgetSceneEngine, registerSceneEngine } from './sceneEngines'
 
 /**
  * The engine is 2,7 Mo of WebAssembly and this suite measures the STUDIO half — which game the
  * window was told to play, what comes back, and when it is forgotten.
  */
-vi.mock('@game/host/rapierPhysics', () => ({
-  loadRapierPhysics: () => Promise.resolve(createInertPhysics()),
+vi.mock('@game/host/joltPhysics', () => ({
+  loadJoltPhysics: () => Promise.resolve(createInertPhysics()),
 }))
 
 /** And the sandbox with it: a suite that measures a transport must not wait on a JIT. */
@@ -24,7 +27,7 @@ vi.mock('@game/host/quickjsScripts', () => ({
   loadQuickjsScripts: () => Promise.resolve(createInertScripts()),
 }))
 
-const DOCUMENT = 'doc-scene'
+const DOCUMENT = 'doc-play-scene'
 const OTHER = 'doc-other-scene'
 
 const opened = (): void => {
@@ -104,6 +107,65 @@ describe('a game played in a window of its own', () => {
     expect(report()).toBe(first)
   })
 
+  it('hands unchanged runtime nodes back to the renderer by identity after a local edit', async () => {
+    const applied: SceneState[] = []
+    stage?.close()
+    stage = createGameStage({
+      renderer: drawing({ apply: state => applied.push(state) }),
+      input: new EventTarget(),
+    })
+    const a = meshNode('a')
+    const b = meshNode('b')
+    installScene(DOCUMENT, { ...createDefaultScene(), nodes: [a, b], selectedIds: [] })
+    registerSceneEngine(DOCUMENT, drawing())
+
+    usePlay.getState().start(DOCUMENT)
+    await vi.waitFor(() => expect(report().state).toBe('playing'))
+    const first = applied.at(-1)
+    if (!first) throw new Error('runtime scene was not applied')
+    const beforeEdit = applied.length
+
+    const current = sceneOf(useScenes.getState(), DOCUMENT)
+    useScenes.getState().replace(DOCUMENT, {
+      ...current,
+      nodes: [current.nodes[0] ?? a, { ...(current.nodes[1] ?? b), visible: false }],
+    })
+    await vi.waitFor(() => expect(applied.length).toBeGreaterThan(beforeEdit))
+    const edited = applied.at(-1)
+    if (!edited) throw new Error('edited runtime scene was not applied')
+
+    expect(edited.nodes[0]).toBe(first.nodes[0])
+    expect(edited.nodes[1]).not.toBe(first.nodes[1])
+  })
+
+  it('rebuilds the runtime world after its optimization cache is cleared', async () => {
+    const applied: SceneState[] = []
+    stage?.close()
+    stage = createGameStage({
+      renderer: drawing({ apply: state => applied.push(state) }),
+      input: new EventTarget(),
+    })
+    opened()
+    registerSceneEngine(DOCUMENT, drawing())
+
+    usePlay.getState().start(DOCUMENT)
+    await vi.waitFor(() => expect(report().state).toBe('playing'))
+    const edited = sceneOf(useScenes.getState(), DOCUMENT)
+    useScenes.getState().replace(DOCUMENT, {
+      ...edited,
+      nodes: edited.nodes.map(node => ({ ...node, visible: false })),
+    })
+    await vi.waitFor(() => expect(applied.at(-1)?.nodes[0]?.visible).toBe(false))
+    const before = applied.length
+    const compiled = applied.at(-1)?.nodes[0]
+
+    clearGameOptimizationCache(DOCUMENT)
+
+    await vi.waitFor(() => expect(applied.length).toBeGreaterThan(before))
+    expect(applied.at(-1)?.nodes[0]).not.toBe(compiled)
+    expect(applied.at(-1)?.nodes[0]?.visible).toBe(false)
+  })
+
   /**
    * 🛑 The whole reason `pause` crossed a window and came back: a caller told « paused » that was
    * not is one that steps a world still running under it.
@@ -176,5 +238,48 @@ describe('a game played in a window of its own', () => {
 
   it('says nothing, and throws nothing, when a document nobody played is stopped', () => {
     expect(() => usePlay.getState().stop('never-played')).not.toThrow()
+  })
+})
+
+describe('a project where two files carry one context', () => {
+  const named = (id: string) => ({
+    version: 1,
+    id,
+    priority: 0,
+    defaultActive: true,
+    actions: [],
+  })
+
+  it('still hands the game a map, and names the file that was dropped', async () => {
+    installFakeBridge({
+      game: { scripts: () => Promise.resolve([]) },
+      inputMaps: {
+        list: () =>
+          Promise.resolve(['Controls/character.input.json', 'Controls/studio.input.json']),
+        read: () => Promise.resolve(named('character')),
+      },
+    })
+
+    const compiled = await compiledScripts()
+
+    // 🛑 ONE map rather than none: a duplicate id used to return `NO_SCRIPTS`, so a game lost its
+    // controls AND every script of the project for one file in double.
+    expect(compiled.inputMaps).toEqual([named('character')])
+    expect(compiled.troubles).toHaveLength(1)
+    expect(compiled.troubles[0]?.message).toContain('character')
+    // `line: 0` — the offender is a control map, and only a script can be opened at a line.
+    expect(compiled.troubles[0]?.line).toBe(0)
+  })
+
+  it('says nothing when each context is carried by one file', async () => {
+    installFakeBridge({
+      game: { scripts: () => Promise.resolve([]) },
+      inputMaps: {
+        list: () => Promise.resolve(['Controls/character.input.json']),
+        read: () => Promise.resolve(named('character')),
+      },
+    })
+
+    expect((await compiledScripts()).troubles).toEqual([])
   })
 })

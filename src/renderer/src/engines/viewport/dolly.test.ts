@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest'
 import { Vector3 } from 'three'
-import { DOLLY_FLOOR, DOLLY_RATE, PIVOT_AHEAD, dollyTo, notchesOf } from './dolly'
+import { DOLLY_FLOOR, DOLLY_RATE, dollyTo, dragNotchesOf, notchesOf } from './dolly'
 
 const FORWARD = new Vector3(0, 0, -1)
 
 /** Straight ahead: the aim and the gaze agree, which is the wheel over the middle of the view. */
 function ahead(from: Vector3, aimed: Vector3, notches: number) {
-  return dollyTo({ position: from, forward: FORWARD, aim: FORWARD, aimed, notches })
+  return dollyTo({ position: from, aim: FORWARD, aimed, notches })
 }
 
 describe('dollying towards what the pointer aims at', () => {
@@ -37,13 +37,12 @@ describe('dollying towards what the pointer aims at', () => {
    */
   it('keeps the pivot ON a surface that is nearer than the resting distance', () => {
     const moved = ahead(new Vector3(), new Vector3(0, 0, -2), 1)
-    expect(moved.pivot.z).toBeCloseTo(-2, 6)
+    expect(moved.pivot?.z).toBeCloseTo(-2, 6)
     expect(moved.crossed).toBe(false)
   })
 
-  it('rests the pivot ahead of the camera once it has crossed', () => {
-    const moved = ahead(new Vector3(), new Vector3(0, 0, -0.02), 1)
-    expect(moved.pivot.z).toBeCloseTo(moved.position.z - PIVOT_AHEAD, 6)
+  it('leaves the pivot to the caller once it has crossed, rather than resting it anywhere', () => {
+    expect(ahead(new Vector3(), new Vector3(0, 0, -0.02), 1).pivot).toBeNull()
   })
 
   /**
@@ -57,31 +56,30 @@ describe('dollying towards what the pointer aims at', () => {
 
   it('puts the pivot at the depth of what was aimed at while that is still ahead', () => {
     const moved = ahead(new Vector3(), new Vector3(0, 0, -100), 1)
-    expect(moved.pivot.z).toBeCloseTo(-100, 6)
+    expect(moved.pivot?.z).toBeCloseTo(-100, 6)
   })
 
   /**
-   * `OrbitControls` ends its frame on `lookAt(target)`. A pivot placed on an off-axis point would
-   * therefore swing the whole view round to centre it — travelling, not turning, is the promise.
+   * The reason `PIVOT_AHEAD` is gone, and the reason `update()` no longer runs on a perspective
+   * pane: the pivot is the world point the pointer MET, off centre and all, so the next orbit
+   * turns around what was zoomed onto rather than around its depth brought back to the middle.
    */
-  it('keeps the pivot on the line of sight, so travelling never turns the view', () => {
+  it('puts the pivot on what the pointer met, off the line of sight and all', () => {
     const moved = dollyTo({
       position: new Vector3(),
-      forward: FORWARD,
       aim: new Vector3(1, 0, -1).normalize(),
       aimed: new Vector3(30, 0, -30),
       notches: 1,
     })
 
-    expect(moved.pivot.x).toBeCloseTo(moved.position.x, 6)
-    expect(moved.pivot.y).toBeCloseTo(moved.position.y, 6)
+    expect(moved.pivot?.x).toBeCloseTo(30, 6)
+    expect(moved.pivot?.z).toBeCloseTo(-30, 6)
   })
 
   it('travels towards the pointer rather than towards the middle of the view', () => {
     const aim = new Vector3(1, 0, -1).normalize()
     const moved = dollyTo({
       position: new Vector3(),
-      forward: FORWARD,
       aim,
       aimed: new Vector3(0, 0, -10),
       notches: 1,
@@ -125,7 +123,35 @@ describe('reading the wheel', () => {
     expect(notchesOf(-8)).toBeCloseTo(0.08, 6)
   })
 
+  it('normalises line and page wheel events before measuring their travel', () => {
+    expect(notchesOf(-1, 1)).toBeCloseTo(0.16, 6)
+    expect(notchesOf(-1, 2)).toBe(5)
+  })
+
   it('caps one violent flick, which would otherwise cross the whole scene at once', () => {
     expect(notchesOf(-100000)).toBe(notchesOf(-1000))
+  })
+})
+
+describe('the notches a chord drag spends', () => {
+  it('closes in when the hand goes right, as Unity does', () => {
+    expect(dragNotchesOf(60, 0)).toBeGreaterThan(0)
+  })
+
+  it('closes in when the hand goes up, as Blender does', () => {
+    expect(dragNotchesOf(0, -60)).toBeGreaterThan(0)
+  })
+
+  it('pulls away the other way', () => {
+    expect(dragNotchesOf(-60, 0)).toBeLessThan(0)
+  })
+
+  /** A diagonal spends both, so neither axis of the gesture is dead. */
+  it('adds the two axes rather than picking one', () => {
+    expect(dragNotchesOf(30, -30)).toBeCloseTo(dragNotchesOf(60, 0), 6)
+  })
+
+  it('caps a flick, exactly as the wheel does', () => {
+    expect(dragNotchesOf(100000, 0)).toBe(dragNotchesOf(1000, 0))
   })
 })

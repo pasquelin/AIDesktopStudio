@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 
-import { bench, describe } from 'vitest'
+import { bench } from '@shared/vitestBench'
+
+import { describe } from 'vitest'
 import type { InputState } from '../ports/inputPort'
 import type { ScriptEntity, ScriptFrame } from '../script/frame'
 import type { ScriptPort } from '../ports/scriptPort'
@@ -68,7 +70,7 @@ async function scripted(
     })),
   )
   const entities = Array.from({ length: count }, (_, index) => entity(index, carrying))
-  return [port, { tick: 1, dt: 1 / 60, input: IDLE, entities, kept: {} }]
+  return [port, { tick: 1, dt: 1 / 60, input: IDLE, actions: {}, bindings: {}, entities, kept: {} }]
 }
 
 /** One rendered frame's worth, as the SYSTEM drives it: the mask first, then the hook. */

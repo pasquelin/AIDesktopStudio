@@ -34,11 +34,19 @@ export function createTextureBinding(
     if (given) cache.release(given.assetId, colorSpace, given.version, orientation)
   }
 
+  const load = async (
+    wanted: Wanted,
+    previous: Wanted | null,
+    swapping: boolean,
+  ): Promise<void> => {
+    const texture = await cache.acquire(wanted.assetId, colorSpace, wanted.version, orientation)
+    if (swapping) release(previous)
+    if (held !== wanted || !texture) return
+    install(texture)
+  }
+
   return assetId => {
     const wanted = assetId === null ? null : { assetId, version: cache.versionOf(assetId) }
-    // Compared through the optional chain so an empty slot asked to stay empty also stops here:
-    // falling through would write `null` into the material on every apply, and recompile its
-    // shader for it.
     if (held?.assetId === wanted?.assetId && held?.version === wanted?.version) return
 
     /**
@@ -52,12 +60,6 @@ export function createTextureBinding(
 
     const previous = held
     held = wanted
-    /**
-     * The same picture in a newer version: what is on screen stays until the replacement has
-     * decoded, and only then is the old reference given back — emptied first, a ⌘S over a texture
-     * would flash the model bare, and freeing it first would leave the frames in between drawing
-     * a texture the cache has already disposed. Same order, same reason as `sky-binding`.
-     */
     const swapping = previous !== null && wanted !== null && previous.assetId === wanted.assetId
     if (!swapping) {
       release(previous)
@@ -65,12 +67,7 @@ export function createTextureBinding(
     }
     if (!wanted) return
 
-    void cache.acquire(wanted.assetId, colorSpace, wanted.version, orientation).then(texture => {
-      if (swapping) release(previous)
-      // Stale: the slot has moved on, and the reference it took went back with the move.
-      if (held !== wanted || !texture) return
-      install(texture)
-    })
+    void load(wanted, previous, swapping)
   }
 }
 

@@ -65,6 +65,17 @@ describe('the sky', () => {
     expect(sky().environment).toEqual({ intensity: 0.5, showBackground: false })
   })
 
+  it('answers the dials it turned, and only those', async () => {
+    expect(await runAction('skybox.adjustImage', { exposure: 1.5 })).toEqual({
+      ok: true,
+      data: { exposure: 1.5 },
+    })
+    expect(await runAction('skybox.setSun', { elevation: 0.4, color: '#ffddaa' })).toEqual({
+      ok: true,
+      data: { elevation: 0.4, color: '#ffddaa' },
+    })
+  })
+
   it('hangs a picture of the library in the sky', async () => {
     expect(await runAction('skybox.setSourceImage', { assetId: PICTURE.id })).toEqual({ ok: true })
     expect(sky().source).toEqual({ assetId: PICTURE.id })
@@ -152,6 +163,13 @@ describe('the material', () => {
     })
   })
 
+  it('answers the settings it wrote, a vector under the stem its axes carry', async () => {
+    expect(await runAction('material.setSurfaceSettings', { roughness: 0.2, tilingX: 4 })).toEqual({
+      ok: true,
+      data: { roughness: 0.2, tiling: { x: 4, y: 1 } },
+    })
+  })
+
   it('changes only the settings it was given', async () => {
     await runAction('material.setSurfaceSettings', { roughness: 0.2, color: '#334455' })
 
@@ -234,7 +252,9 @@ describe('how a sky is looked at', () => {
   it('writes the projection, the lens and the probes, and reads them back', async () => {
     withSky()
 
-    expect(await runAction('skybox.setViewOptions', { view: 'equirect', probes: false })).toEqual({
+    expect(
+      await runAction('skybox.setViewportOptions', { view: 'equirect', probes: false }),
+    ).toEqual({
       ok: true,
     })
 
@@ -248,7 +268,7 @@ describe('how a sky is looked at', () => {
   it('refuses a call that names nothing at all', async () => {
     withSky()
 
-    expect(await runAction('skybox.setViewOptions', {})).toMatchObject({
+    expect(await runAction('skybox.setViewportOptions', {})).toMatchObject({
       ok: false,
       refusal: 'badInput',
     })
@@ -261,6 +281,7 @@ describe('the two halves of a material nothing could write', () => {
 
     expect(await runAction('material.setSurfaceSettings', { roughnessMin: 0.2 })).toEqual({
       ok: true,
+      data: { roughnessRange: { min: 0.2, max: 1 } },
     })
     expect(material().material.roughnessRange).toEqual({ min: 0.2, max: 1 })
 

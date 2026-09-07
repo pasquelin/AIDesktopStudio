@@ -1,6 +1,11 @@
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
-import { defineConfig } from 'electron-vite'
+import {
+  defineConfig,
+  type MainViteConfig,
+  type PreloadViteConfig,
+  type RendererViteConfig,
+} from 'electron-vite'
 import type { Plugin } from 'vite'
 import { execSync } from 'node:child_process'
 import { basename, resolve } from 'node:path'
@@ -8,6 +13,7 @@ import { DECODER_MODULES, withoutDecoderUrls } from './src/main/decoderUrls'
 
 const partage = resolve('src/shared')
 const principal = resolve('src/main')
+const jeu = resolve('src/game')
 
 /**
  * Strips three.js's decoder URLs so the bundler stops emitting files nothing fetches. The why,
@@ -58,9 +64,11 @@ function commitHash(): string {
  *
  * `serve` is the `dev` command; `build` and `preview` run as `build`.
  */
-export default defineConfig(({ command }) => ({
-  main: {
-    resolve: { alias: { '@shared': partage, '@main': principal } },
+function main(command: string): MainViteConfig {
+  return {
+    // `@game` for the main process too: `@shared/domain/inputMap` re-exports the control-map
+    // domain from the MIT runtime, which is where it is written.
+    resolve: { alias: { '@shared': partage, '@main': principal, '@game': jeu } },
     define: {
       __COMMIT_HASH__: JSON.stringify(commitHash()),
       __DEV__: JSON.stringify(command === 'serve'),
@@ -72,8 +80,10 @@ export default defineConfig(({ command }) => ({
         // resolved beside the bundled main, so each has to land there as a file of its own.
         input: {
           index: resolve('src/main/index.ts'),
+          pickingValidation: resolve('src/main/pickingValidation.ts'),
           catalogWorker: resolve('src/main/project/catalogWorker.ts'),
           memoryWorker: resolve('src/main/memory/memoryWorker.ts'),
+          actionIndexWorker: resolve('src/main/actionIndex/actionIndexWorker.ts'),
           peaksWorker: resolve('src/main/media/peaksWorker.ts'),
           bundleWorker: resolve('src/main/bundle/bundleWorker.ts'),
           sttWorker: resolve('src/main/dictation/sttWorker.ts'),
@@ -85,34 +95,40 @@ export default defineConfig(({ command }) => ({
         output: { entryFileNames: '[name].js', chunkFileNames: '[name]-[hash].js' },
       },
     },
+  }
+}
+
+const preload: PreloadViteConfig = {
+  resolve: { alias: { '@shared': partage, '@game': jeu } },
+  build: {
+    externalizeDeps: true,
+    rollupOptions: {
+      input: resolve('src/preload/index.ts'),
+      // A sandboxed preload MUST be CommonJS: Electron refuses to load an ESM module, and
+      // the `window.studio` bridge is then never installed — silently.
+      output: { format: 'cjs', entryFileNames: 'index.cjs' },
+    },
   },
-  preload: {
-    resolve: { alias: { '@shared': partage } },
-    build: {
-      externalizeDeps: true,
-      rollupOptions: {
-        input: resolve('src/preload/index.ts'),
-        // A sandboxed preload MUST be CommonJS: Electron refuses to load an ESM module, and
-        // the `window.studio` bridge is then never installed — silently.
-        output: { format: 'cjs', entryFileNames: 'index.cjs' },
+}
+
+const renderer: RendererViteConfig = {
+  root: resolve('src/renderer'),
+  plugins: [react(), tailwindcss(), strippedDecoderUrls()],
+  worker: { plugins: () => [strippedDecoderUrls()] },
+  // `@game` here as well as in `tsconfig.web.json`: a path the compiler resolves and the
+  // bundler does not fails at RUNTIME with a green typecheck.
+  resolve: {
+    alias: { '@': resolve('src/renderer/src'), '@game': jeu, '@shared': partage },
+  },
+  build: {
+    rollupOptions: {
+      input: {
+        index: resolve('src/renderer/index.html'),
+        pickingValidation: resolve('src/renderer/pickingValidation.html'),
+        splash: resolve('src/renderer/splash.html'),
       },
     },
   },
-  renderer: {
-    root: resolve('src/renderer'),
-    plugins: [react(), tailwindcss(), strippedDecoderUrls()],
-    // `@game` here as well as in `tsconfig.web.json`: a path the compiler resolves and the
-    // bundler does not fails at RUNTIME with a green typecheck.
-    resolve: {
-      alias: { '@': resolve('src/renderer/src'), '@game': resolve('src/game'), '@shared': partage },
-    },
-    build: {
-      rollupOptions: {
-        input: {
-          index: resolve('src/renderer/index.html'),
-          splash: resolve('src/renderer/splash.html'),
-        },
-      },
-    },
-  },
-}))
+}
+
+export default defineConfig(({ command }) => ({ main: main(command), preload, renderer }))

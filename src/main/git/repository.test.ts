@@ -8,15 +8,6 @@ import { exists } from '@main/persistence'
 import { detectGit, gitVersionProbe } from './binary'
 import { GITIGNORE_FILE, openRepository, type Repository } from './repository'
 
-/**
- * The one suite here that runs the real binary, and it is where that is worth paying for: what
- * `git init` leaves on disk is the whole of what this module decides, and no fake can say whether
- * git agreed. Everything ABOVE the port — which codes mean what, which failure gets which
- * sentence, which screen each state stands up — is checked without a repository, in `parse.test.ts`
- * and `service.test.ts`.
- *
- * Skipped rather than failed where git is absent, which is a machine the studio itself supports.
- */
 let hasGit = false
 
 beforeAll(async () => {

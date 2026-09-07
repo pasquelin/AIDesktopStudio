@@ -7,20 +7,15 @@
  * touches one of the three. The level is READ BACK from them instead, and reads `null` — shown as
  * « custom » — for a combination no level names.
  */
-import type { ShadowQuality, ViewportQuality } from '@shared/domain/scene'
+import type { RenderPolicy } from '@shared/domain/renderPolicy'
 import { shadowMapSizeFor } from './viewportQuality'
 
 export type ShadowLevel = 'off' | 'fast' | 'standard' | 'high'
 
 export const SHADOW_LEVELS: readonly ShadowLevel[] = ['off', 'fast', 'standard', 'high']
 
-export type ShadowPreference = {
-  shadows: boolean
-  shadowQuality: ShadowQuality
-  shadowMapSize: number
-  /** The quality level caps the map, so what is READ has to know about it — see `shadowLevelOf`. */
-  quality: ViewportQuality
-}
+/** The four an export carries too — the lens apart, this IS a render policy. */
+export type ShadowPreference = Omit<RenderPolicy, 'fieldOfView' | 'gridSize'>
 
 /** What a level writes. The quality is the person's own and is deliberately left where it is. */
 type LevelPatch = Omit<ShadowPreference, 'quality'>

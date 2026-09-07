@@ -1,0 +1,72 @@
+{
+  "source": "tripo-character.glb (corpus local non distribué)",
+  "bones": 52,
+  "meshes": 1,
+  "vertices": 716371,
+  "weights": {
+    "rawSumMin": 0.9999996553786499,
+    "rawSumMax": 1.0000003490920335,
+    "reducedSumMin": 0.9999998807907104,
+    "reducedSumMax": 1.0000001192092896,
+    "negative": 0,
+    "nonFinite": 0
+  },
+  "fingers": {
+    "bones": 30,
+    "verticesDominated": 27591,
+    "movingVertices": 160551,
+    "dominatedMotionMean": 0.015438712400311912
+  },
+  "comparison52To4": {
+    "rest": {
+      "rmsModelUnits": 2.3566764855799556e-08,
+      "maxModelUnits": 1.7027565603223607e-07,
+      "rmsBoundingDiagonalRatio": 1.6709084795851323e-08,
+      "maxBoundingDiagonalRatio": 1.2072723569487653e-07
+    },
+    "arms-raised": {
+      "rmsModelUnits": 0.0001973859444909524,
+      "maxModelUnits": 0.0016484717310008366,
+      "rmsBoundingDiagonalRatio": 0.00013994871609188588,
+      "maxBoundingDiagonalRatio": 0.0011687838405226997
+    },
+    "elbows-bent": {
+      "rmsModelUnits": 0.0002618211348225,
+      "maxModelUnits": 0.0021051284672295597,
+      "rmsBoundingDiagonalRatio": 0.00018563394551028415,
+      "maxBoundingDiagonalRatio": 0.0014925582819842608
+    },
+    "knee-bent": {
+      "rmsModelUnits": 6.73938914572869e-05,
+      "maxModelUnits": 0.0017959418483378536,
+      "rmsBoundingDiagonalRatio": 4.7782979716245906e-05,
+      "maxBoundingDiagonalRatio": 0.0012733417087967566
+    },
+    "head-turned": {
+      "rmsModelUnits": 4.566335634010849e-05,
+      "maxModelUnits": 0.0019526617847724847,
+      "rmsBoundingDiagonalRatio": 3.237580116824065e-05,
+      "maxBoundingDiagonalRatio": 0.001384457796350974
+    },
+    "hips-turned": {
+      "rmsModelUnits": 2.3568255764369544e-08,
+      "maxModelUnits": 1.7075281496656037e-07,
+      "rmsBoundingDiagonalRatio": 1.6710141865749177e-08,
+      "maxBoundingDiagonalRatio": 1.2106554641098486e-07
+    },
+    "fingers-flexed": {
+      "rmsModelUnits": 6.435831269469193e-05,
+      "maxModelUnits": 0.0006469978793559362,
+      "rmsBoundingDiagonalRatio": 4.563072236318784e-05,
+      "maxBoundingDiagonalRatio": 0.0004587283190986608
+    }
+  },
+  "timingsSeconds": {
+    "glbPreprocessing": 0.5595953750016633,
+    "predictionRead": 0.8287185830122326,
+    "fourWeightReduction": 0.7584465839900076,
+    "posesAndCaptures": 21.67241133400239,
+    "adapterTotal": 24.70069220798905
+  },
+  "peakRssBytes": 1914863616
+}

@@ -1,8 +1,7 @@
 import { realpath } from 'node:fs/promises'
-import { isAbsolute, relative, sep } from 'node:path'
+import { relative } from 'node:path'
 import { fileURLToPath } from 'node:url'
-
-const RESERVED: readonly string[] = ['.git', '.index']
+import { isProjectReserved, pathIsInside } from '@main/export/pathIsInside'
 
 /**
  * Which file a montage is allowed to have READ, decided by what the disk resolves to.
@@ -21,10 +20,8 @@ export async function fileInsideProject(root: string, url: string): Promise<stri
     const base = await realpath(root)
     // A `file://` URL, which is how the timeline names its media; anything else is not a path.
     const resolved = await realpath(url.startsWith('file:') ? fileURLToPath(url) : url)
-    const within = relative(base, resolved)
-
-    if (within === '' || within.startsWith('..') || isAbsolute(within)) return null
-    return RESERVED.includes(within.split(sep)[0] ?? '') ? null : resolved
+    if (!pathIsInside(base, resolved) || isProjectReserved(relative(base, resolved))) return null
+    return resolved
   } catch {
     return null
   }

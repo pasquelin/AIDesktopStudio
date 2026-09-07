@@ -52,6 +52,13 @@ describe('what makes a rig holdable', () => {
   it('lets two bones share no role at all', () => {
     expect(rigFaultOf([bone('Hips', null), bone('Spine', 'Hips')])).toBeNull()
   })
+
+  it('refuses a non-finite rest transform before it reaches Three.js', () => {
+    const invalid = bone('Hips', null)
+    invalid.rest = { ...REST, position: { ...REST.position, x: Number.NaN } }
+
+    expect(rigFaultOf([invalid])).toBe('invalid-transform')
+  })
 })
 
 describe('reading a rig off a document', () => {

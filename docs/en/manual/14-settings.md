@@ -661,9 +661,9 @@ Opens your file manager where your settings are saved, in a file called `setting
 
 | System  | Where                                                   |
 | ------- | ------------------------------------------------------- |
-| macOS   | `~/Library/Application Support/IA Studio/settings.json` |
-| Windows | `%APPDATA%\IA Studio\settings.json`                     |
-| Linux   | `~/.config/IA Studio/settings.json`                     |
+| macOS   | `~/Library/Application Support/AI Desktop Studio/settings.json` |
+| Windows | `%APPDATA%\AI Desktop Studio\settings.json`                     |
+| Linux   | `~/.config/AI Desktop Studio/settings.json`                     |
 
 Useful to copy them before moving to another machine, or to send to someone helping you understand
 a problem.
@@ -695,7 +695,7 @@ had asked for it yourself in the assistant. A program outside cannot give it on 
 Copies the line to paste in a terminal to connect a client:
 
 ```
-claude mcp add <name> -- "/Applications/IA Studio.app/Contents/MacOS/IA Studio" --mcp-stdio=…
+claude mcp add <name> -- "/Applications/AI Desktop Studio.app/Contents/MacOS/AI Desktop Studio" --mcp-stdio=…
 ```
 
 **It holds no port and no token**: it names the studio as a program to start, not an address to

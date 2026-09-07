@@ -1,3 +1,5 @@
+import type { TFunction } from 'i18next'
+import { commandDescriptor, type CommandId } from '@shared/domain/command'
 import type { ContextMenuItem } from '@shared/domain/contextMenu'
 import { getBridge } from '@/services/bridge'
 import { reportFailure } from '@/services/diagnostics'
@@ -40,6 +42,22 @@ export type ContextMenuGroup = {
 }
 
 export type ContextMenuRow = ContextMenuAction | ContextMenuRule | ContextMenuGroup
+
+/** A row that fires a studio command: its title and help are the command's own, translated. */
+export function commandRow(
+  id: CommandId,
+  icon: string,
+  t: TFunction,
+  run: (command: CommandId) => void,
+): ContextMenuAction {
+  const descriptor = commandDescriptor(id)
+  return {
+    label: descriptor ? t(descriptor.titleKey) : id,
+    icon,
+    tooltip: descriptor ? t(descriptor.helpKey) : id,
+    onSelect: () => run(id),
+  }
+}
 
 const isRule = (row: ContextMenuRow): row is ContextMenuRule => 'separator' in row
 const isGroup = (row: ContextMenuRow): row is ContextMenuGroup => 'rows' in row

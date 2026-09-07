@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { MAX_SCALE as TIMELINE_MAX_SCALE } from '@/engines/timeline/viewport'
 import {
+  onDevicePixels,
   centerOn,
   clampCanvasScale,
   containIn,
@@ -9,6 +10,7 @@ import {
   CANVAS_MIN_SCALE,
   nextZoom,
   previousZoom,
+  wheelStep,
   toDocument,
   toScreen,
   visibleRect,
@@ -24,6 +26,12 @@ describe('viewport', () => {
 
     expect(screen).toEqual({ x: 60, y: 30 })
     expect(toDocument(VIEWPORT, screen)).toEqual({ x: 10, y: 5 })
+  })
+
+  // A CSS pixel is not the unit that matters: at a ratio of 2, half a CSS pixel is whole.
+  it('snaps the origin to whole device pixels and leaves the zoom alone', () => {
+    expect(onDevicePixels({ x: 10.4, y: 3.5, scale: 8 }, 1)).toEqual({ x: 10, y: 4, scale: 8 })
+    expect(onDevicePixels({ x: 10.4, y: 3.5, scale: 8 }, 2)).toEqual({ x: 10.5, y: 3.5, scale: 8 })
   })
 
   it('clamps a scale to what the renderer can show', () => {
@@ -147,6 +155,50 @@ describe("the canvas scale bounds, which are not the timeline's", () => {
   it('walks a ladder that ends exactly on its own bounds', () => {
     expect(previousZoom(0.03)).toBe(CANVAS_MIN_SCALE)
     expect(nextZoom(48)).toBe(CANVAS_MAX_SCALE)
+  })
+
+  /**
+   * The pixel ladder has ends of its own, and they have to be reachable: one below the canvas
+   * floor would be clamped to a scale that is not on the ladder, and the step back would jump.
+   */
+  it('holds the pixel ladder inside the same bounds', () => {
+    expect(previousZoom(0.03125, true)).toBe(0.03125)
+    expect(previousZoom(0.03125, true)).toBeGreaterThanOrEqual(CANVAS_MIN_SCALE)
+    expect(nextZoom(48, true)).toBe(CANVAS_MAX_SCALE)
+  })
+})
+
+describe('fitting a document', () => {
+  const HOST = { width: 800, height: 800 }
+
+  // ⌘0 on a 64² sprite gave a postage stamp: fitting refuses to magnify, which is right for a
+  // photograph and makes the native pixel-art mode unusable.
+  it('magnifies a sprite to a whole stop when asked, and never otherwise', () => {
+    expect(fitTo({ width: 64, height: 64 }, HOST).scale).toBe(1)
+    expect(fitTo({ width: 64, height: 64 }, HOST, 0, true).scale).toBe(8)
+    // A large document worked in blocks lands under 1 either way: the lifted ceiling is
+    // inoffensive there, which is what lets one rule serve both ways of working.
+    expect(fitTo({ width: 1024, height: 1024 }, HOST, 0, true).scale).toBe(0.5)
+  })
+})
+
+describe('the wheel on a pixel grid', () => {
+  /**
+   * Quantising the exponential result gives a dead wheel, so travel accumulates — and the
+   * remainder is carried, or the rate follows how the browser chunked the gesture.
+   */
+  it('holds its stop until a notch of travel is worth one, and keeps what is left', () => {
+    expect(wheelStep(8, 0, -20)).toEqual({ scale: 8, debt: -20 })
+    expect(wheelStep(8, -20, -40)).toEqual({ scale: 12, debt: -10 })
+  })
+
+  it('spends every stop a coalesced burst paid for', () => {
+    expect(wheelStep(1, 0, -150).scale).toBe(4)
+  })
+
+  it('drops travel that turned back, and ignores a sideways drift', () => {
+    expect(wheelStep(8, -40, 20)).toEqual({ scale: 8, debt: 20 })
+    expect(wheelStep(8, -40, 0)).toEqual({ scale: 8, debt: -40 })
   })
 
   /*

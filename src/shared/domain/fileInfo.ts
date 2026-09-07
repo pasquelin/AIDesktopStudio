@@ -1,4 +1,5 @@
 import type { FileKind } from './folder'
+import { hashPayload, hashRoute } from './hashPayload'
 
 /**
  * What the DISK says about one entry of the project folder — and nothing the catalogue knows.
@@ -27,26 +28,14 @@ export const FILE_INFO_ROUTE = 'file-info'
  * structure by whoever parses the fragment back.
  */
 export function fileInfoRoute(path: string): string {
-  return `${FILE_INFO_ROUTE}/${encodeURIComponent(path)}`
+  return hashRoute(FILE_INFO_ROUTE, path)
 }
 
 export function isFileInfoRoute(hash: string): boolean {
   return hash.replace(/^#/, '').startsWith(`${FILE_INFO_ROUTE}/`)
 }
 
-/**
- * The path the fragment names, `null` for a fragment naming none.
- *
- * `decodeURIComponent` throws on a malformed escape, and the fragment is the one input this side
- * does not build itself — a window restored with a hand-edited URL must open empty, not white.
- */
+/** The path the fragment names, `null` for a fragment naming none. */
 export function fileInfoPathOf(hash: string): string | null {
-  const encoded = hash.replace(/^#/, '').slice(`${FILE_INFO_ROUTE}/`.length)
-  if (!isFileInfoRoute(hash) || encoded === '') return null
-
-  try {
-    return decodeURIComponent(encoded)
-  } catch {
-    return null
-  }
+  return hashPayload(hash, FILE_INFO_ROUTE)
 }

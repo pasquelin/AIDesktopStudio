@@ -53,6 +53,15 @@ const wrote = (body: string): string =>
 const HELD = projectTypes({ components: ['Health', 'Movement'] })
 
 describe('what a script is refused before it ever runs', () => {
+  it('types a standard input map import without inventing a project declaration', () => {
+    const said = complaints(
+      "import character from './character.input.json'\nexport default character.actions[0]?.id",
+      HELD,
+    )
+
+    expect(said).toEqual([])
+  })
+
   /** 🛑 The sentence the whole lot exists for. */
   it('refuses a component name the project does not hold', () => {
     const said = complaints(wrote("onUpdate(self) { self.get('Helth') }"), HELD)

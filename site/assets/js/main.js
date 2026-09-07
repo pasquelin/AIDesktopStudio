@@ -20,7 +20,6 @@
      data-stage              scène épinglée qui s'ouvre au scroll
    ========================================================================= */
 
-(function () {
   var root = document.documentElement;
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   root.classList.add('js');
@@ -168,10 +167,121 @@
     items.forEach(function (it) { it.el.style.opacity = '1'; it.el.style.transform = 'none'; });
     var maxR = document.documentElement.scrollHeight - window.innerHeight;
     if (elTime) elTime.textContent = timecode(maxR > 0 ? clamp(window.scrollY / maxR, 0, 1) : 0);
-    return;
+  } else {
+  var reads = [];
+
+  function readFrame(vh) {
+    reads.length = 0;
+    for (var i = 0; i < items.length; i++) {
+      var item = items[i];
+      reads.push(item.done && !item.speed ? null : item.el.getBoundingClientRect());
+    }
+    var dRects = [];
+    for (var j = 0; j < depths.length; j++) dRects.push(depths[j].box.getBoundingClientRect());
+    var scrollY = window.scrollY;
+    var maxScroll = document.documentElement.scrollHeight - vh;
+    return {
+      dRects: dRects,
+      scrollY: scrollY,
+      page: maxScroll > 0 ? clamp(scrollY / maxScroll, 0, 1) : 0,
+      stageRect: stage ? stage.getBoundingClientRect() : null,
+      pinH: stagePin ? stagePin.offsetHeight : 0,
+      stageH: stage ? stage.offsetHeight : 0
+    };
   }
 
-  var reads = [];
+  function transformItem(item, e, parx, par, now) {
+    if (item.line && e > 0.05) item.el.classList.add('is-in');
+    if (item.words) {
+      for (var w = 0; w < item.words.length; w++) {
+        var ew = item.t0 ? out(clamp((now - item.t0 - w * 42) / DUR, 0, 1)) : 0;
+        item.words[w].style.transform = 'translate3d(0,' + ((1 - ew) * 105).toFixed(2) + '%,0)';
+      }
+      if (item.speed || item.speedx) {
+        item.el.style.transform = 'translate3d(' + parx.toFixed(2) + 'px,' + par.toFixed(2) + 'px,0)';
+      }
+      return;
+    }
+    var y = par + (1 - e) * item.rise;
+    var x = parx + (1 - e) * item.shift;
+    var sc = item.zoom ? (1 - item.zoom * (1 - e)) : 1;
+    item.el.style.transform = 'translate3d(' + x.toFixed(2) + 'px,' + y.toFixed(2) + 'px,0)' +
+      (item.zoom ? ' scale(' + sc.toFixed(4) + ')' : '');
+    if (!item.still) item.el.style.opacity = e.toFixed(3);
+  }
+
+  function animateItem(item, rect, now, vh) {
+    if (!rect) return;
+    if (rect.bottom < -260 || rect.top > vh + 260) {
+      if (rect.bottom < 0 && !item.t0) item.t0 = now - 4000;
+      return;
+    }
+    if (!item.t0 && rect.top < vh * 0.9 && rect.bottom > vh * 0.02) item.t0 = now + item.delay;
+    var e = item.t0 ? out(clamp((now - item.t0) / DUR, 0, 1)) : 0;
+    if (e === 1 && (!item.words || now - item.t0 > DUR + item.words.length * 42)) item.done = true;
+    var off = (rect.top + rect.height / 2 - vh / 2) / (vh + rect.height);
+    var par = -off * item.speed * vh * 1.6;
+    var parx = -off * item.speedx * vh * 1.6;
+    if (item.px === undefined) { item.px = parx; item.py = par; }
+    item.px += (parx - item.px) * 0.11;
+    item.py += (par - item.py) * 0.11;
+    transformItem(item, e, item.px, item.py, now);
+  }
+
+  function animateItems(now, vh) {
+    for (var i = 0; i < items.length; i++) animateItem(items[i], reads[i], now, vh);
+  }
+
+  function animateDepths(dRects, vh) {
+    for (var d = 0; d < depths.length; d++) {
+      var rect = dRects[d];
+      if (rect.bottom < -200 || rect.top > vh + 200) continue;
+      var off = (rect.top + rect.height / 2 - vh / 2) / (vh + rect.height);
+      var amp = depths[d].img.offsetHeight * 0.052;
+      depths[d].img.style.transform =
+        'translate3d(0,' + (off * amp * 2).toFixed(2) + 'px,0) scale(1.115)';
+    }
+  }
+
+  function animateHero(scrollY, vh) {
+    if (!heroWrap) return;
+    var hp = clamp(scrollY / vh, 0, 1);
+    heroWrap.style.transform = 'translate3d(0,' + (hp * 90).toFixed(1) + 'px,0)';
+    heroWrap.style.opacity = clamp(1 - hp * 1.35, 0, 1).toFixed(3);
+    if (veil) veil.style.opacity = smooth(hp).toFixed(3);
+  }
+
+  function frameHole(dRects, vh) {
+    var hole = 0;
+    for (var i = 0; i < dRects.length; i++) {
+      var rect = dRects[i];
+      if (rect.bottom < 0 || rect.top > vh) continue;
+      var centred = 1 - Math.min(1, Math.abs(rect.top + rect.height / 2 - vh / 2) / (vh * 0.75));
+      if (centred > hole) hole = centred;
+    }
+    return hole;
+  }
+
+  function animateStage(frame, vh) {
+    if (stage && stageFrame && wide.matches && frame.stageH > frame.pinH) {
+      var q = clamp(-frame.stageRect.top / (frame.stageH - frame.pinH), 0, 1);
+      var opened = cube(clamp(q / 0.78, 0, 1));
+      var scale = 0.60 + 0.40 * opened;
+      stageFrame.style.transform = 'scale(' + scale.toFixed(4) + ')';
+      stageFrame.style.borderRadius = (30 - 17 * opened).toFixed(1) + 'px';
+      if (stageImg) stageImg.style.transform = 'scale(' + (1.10 - 0.10 * opened).toFixed(4) + ')';
+      return opened * Math.min(
+        clamp((vh - frame.stageRect.top) / (vh * 0.5), 0, 1),
+        clamp(frame.stageRect.bottom / (vh * 0.8), 0, 1)
+      );
+    }
+    if (stageFrame && !wide.matches) {
+      stageFrame.style.transform = '';
+      stageFrame.style.borderRadius = '';
+      if (stageImg) stageImg.style.transform = '';
+    }
+    return 0;
+  }
 
   function loop(now) {
     requestAnimationFrame(loop);
@@ -179,138 +289,25 @@
 
     var vh = window.innerHeight;
 
-    /* ---- phase de lecture : uniquement des mesures, aucune écriture ---- */
-    reads.length = 0;
-    for (var i = 0; i < items.length; i++) {
-      var it = items[i];
-      if (it.done && !it.speed) { reads.push(null); continue; }
-      reads.push(it.el.getBoundingClientRect());
-    }
+    var frame = readFrame(vh);
 
-    var dRects = [];
-    for (var j = 0; j < depths.length; j++) dRects.push(depths[j].box.getBoundingClientRect());
+    animateItems(now, vh);
 
-    var scrollY = window.scrollY;
-    var maxScroll = document.documentElement.scrollHeight - vh;
-    var page = maxScroll > 0 ? clamp(scrollY / maxScroll, 0, 1) : 0;
+    animateDepths(frame.dRects, vh);
 
-    var stageRect = stage ? stage.getBoundingClientRect() : null;
-    var pinH = stagePin ? stagePin.offsetHeight : 0;
-    var stageH = stage ? stage.offsetHeight : 0;
+    animateHero(frame.scrollY, vh);
 
-    /* ---- phase d'écriture ---- */
-
-    for (var k = 0; k < items.length; k++) {
-      var item = items[k];
-      var r = reads[k];
-      if (!r) continue;
-
-      if (r.bottom < -260 || r.top > vh + 260) {
-        if (r.bottom < 0 && !item.t0) { item.t0 = now - 4000; }
-        continue;
-      }
-
-      if (!item.t0 && r.top < vh * 0.9 && r.bottom > vh * 0.02) item.t0 = now + item.delay;
-
-      var e = item.t0 ? out(clamp((now - item.t0) / DUR, 0, 1)) : 0;
-      /* un titre n'est fini que quand son dernier mot est arrivé */
-      if (e === 1 && (!item.words || now - item.t0 > DUR + item.words.length * 42)) item.done = true;
-
-      /* parallaxe : -0,5 en haut d'écran, +0,5 en bas.
-         La même mesure pilote les deux axes : le déplacement horizontal
-         suit donc le défilement vertical, ce qui donne une dérive oblique. */
-      var off = (r.top + r.height / 2 - vh / 2) / (vh + r.height);
-      var par = -off * item.speed * vh * 1.6;
-      var parx = -off * item.speedx * vh * 1.6;
-
-      /* la parallaxe ne suit pas le scroll au pixel près : elle le rattrape.
-         C'est ce qui empêche la page de sursauter quand on défile vite. */
-      if (item.px === undefined) { item.px = parx; item.py = par; }
-      item.px += (parx - item.px) * 0.11;
-      item.py += (par - item.py) * 0.11;
-      par = item.py; parx = item.px;
-
-      if (item.line && e > 0.05) item.el.classList.add('is-in');
-
-      if (item.words) {
-        for (var w = 0; w < item.words.length; w++) {
-          var ew = item.t0 ? out(clamp((now - item.t0 - w * 42) / DUR, 0, 1)) : 0;
-          item.words[w].style.transform = 'translate3d(0,' + ((1 - ew) * 105).toFixed(2) + '%,0)';
-        }
-        if (item.speed || item.speedx) {
-          item.el.style.transform = 'translate3d(' + parx.toFixed(2) + 'px,' + par.toFixed(2) + 'px,0)';
-        }
-      } else {
-        var y = par + (1 - e) * item.rise;
-        var x = parx + (1 - e) * item.shift;
-        var sc = item.zoom ? (1 - item.zoom * (1 - e)) : 1;
-        item.el.style.transform = 'translate3d(' + x.toFixed(2) + 'px,' + y.toFixed(2) + 'px,0)' +
-          (item.zoom ? ' scale(' + sc.toFixed(4) + ')' : '');
-        if (!item.still) item.el.style.opacity = e.toFixed(3);
-      }
-    }
-
-    /* ---- profondeur dans les cadres ---- */
-    for (var d = 0; d < depths.length; d++) {
-      var dr = dRects[d];
-      if (dr.bottom < -200 || dr.top > vh + 200) continue;
-      var doff = (dr.top + dr.height / 2 - vh / 2) / (vh + dr.height);
-      var amp = depths[d].img.offsetHeight * 0.052;
-      depths[d].img.style.transform =
-        'translate3d(0,' + (doff * amp * 2).toFixed(2) + 'px,0) scale(1.115)';
-    }
-
-    /* ---- héros ---- */
-    if (heroWrap) {
-      var hp = clamp(scrollY / vh, 0, 1);
-      heroWrap.style.transform = 'translate3d(0,' + (hp * 90).toFixed(1) + 'px,0)';
-      heroWrap.style.opacity = clamp(1 - hp * 1.35, 0, 1).toFixed(3);
-      /* le voile se referme derrière le héros : les particules passent
-         de premier plan à texture de fond, sans gêner la lecture */
-      if (veil) veil.style.opacity = smooth(hp).toFixed(3);
-    }
-
-    /* ---- ouverture du champ autour du contenu ----
-       Deux sources : la capture épinglée qui s'agrandit, et, partout
-       ailleurs, la capture la plus proche du centre de l'écran. */
-    var holeFrames = 0;
-    for (var hf = 0; hf < dRects.length; hf++) {
-      var hr = dRects[hf];
-      if (hr.bottom < 0 || hr.top > vh) continue;
-      var centred = 1 - Math.min(1, Math.abs(hr.top + hr.height / 2 - vh / 2) / (vh * 0.75));
-      if (centred > holeFrames) holeFrames = centred;
-    }
-    var holeStage = 0;
-
-    /* ---- scène épinglée ---- */
-    if (stage && stageFrame && wide.matches && stageH > pinH) {
-      var q = clamp(-stageRect.top / (stageH - pinH), 0, 1);
-      var eq = cube(clamp(q / 0.78, 0, 1));
-      var scale = 0.60 + 0.40 * eq;
-      stageFrame.style.transform = 'scale(' + scale.toFixed(4) + ')';
-      stageFrame.style.borderRadius = (30 - 17 * eq).toFixed(1) + 'px';
-      if (stageImg) stageImg.style.transform = 'scale(' + (1.10 - 0.10 * eq).toFixed(4) + ')';
-      holeStage = eq * Math.min(
-        clamp((vh - stageRect.top) / (vh * 0.5), 0, 1),
-        clamp(stageRect.bottom / (vh * 0.8), 0, 1)
-      );
-    } else if (stageFrame && !wide.matches) {
-      stageFrame.style.transform = '';
-      stageFrame.style.borderRadius = '';
-      if (stageImg) stageImg.style.transform = '';
-    }
-
-    window.__fxHole = Math.max(holeStage, holeFrames * 0.42);
+    window.__fxHole = Math.max(animateStage(frame, vh), frameHole(frame.dRects, vh) * 0.42);
 
     /* ---- bandeau horizontal : dérive lente + poussée du scroll ---- */
     if (tickerRow) {
-      var tx = (now * 0.0015 + scrollY * 0.018) % 50;
+      var tx = (now * 0.0015 + frame.scrollY * 0.018) % 50;
       tickerRow.style.transform = 'translate3d(' + (-tx).toFixed(3) + '%,0,0)';
     }
 
     /* ---- barre de statut ---- */
-    if (elTime) elTime.textContent = timecode(page);
-    if (elProgress) elProgress.style.transform = 'scaleX(' + page + ')';
+    if (elTime) elTime.textContent = timecode(frame.page);
+    if (elProgress) elProgress.style.transform = 'scaleX(' + frame.page + ')';
   }
 
   requestAnimationFrame(loop);
@@ -321,8 +318,8 @@
      à rééditer à la main. Le fichier ABSENT est le cas normal tant qu'aucune version
      n'est sortie — les cartes gardent alors ce que le HTML porte. */
 
-  /* Relatif à la RACINE du site, pas à la page : `/IAStudio/fr/` aurait demandé
-     `/IAStudio/fr/assets/release.json`, qui n'existe pas. Le gabarit pose la racine
+  /* Relatif à la RACINE du site, pas à la page : `/AIDesktopStudio/fr/` aurait demandé
+     `/AIDesktopStudio/fr/assets/release.json`, qui n'existe pas. Le gabarit pose la racine
      sur <html>, parce que lui seul sait à quelle profondeur la page est rendue. */
   var root = document.documentElement.dataset.root || '';
 
@@ -351,4 +348,4 @@
       });
     })
     .catch(function () { /* pas de version publiée, ou hors ligne : le HTML fait foi */ });
-})();
+}

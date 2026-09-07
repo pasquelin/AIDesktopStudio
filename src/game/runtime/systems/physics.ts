@@ -4,11 +4,19 @@ import type { ComponentType } from '@shared/domain/component'
 import type { Transform, Vector3 } from '@shared/domain/transform'
 import { eulerFromQuaternion, quaternionFromEuler } from '../../physics/quaternion'
 import type { ColliderShape } from '../../physics/shape'
-import type { BodyDescriptor, BodyKind, BodyPose } from '../../ports/physicsPort'
+import type {
+  BodyDescriptor,
+  BodyKind,
+  BodyPose,
+  VehicleSettings,
+  VehicleWheel,
+} from '../../ports/physicsPort'
 import type { Characters } from '../characters'
+import type { Possessions } from '../possessions'
 import { COMPONENT_DEFAULTS } from '../componentDefaults'
 import { flagOf, numberOf, textOf } from '../componentFields'
 import { componentOf, type Entity } from '../entity'
+import { entityNamed } from '../steering'
 import type { System, World } from '../world'
 
 /**
@@ -20,12 +28,15 @@ export const PHYSICAL: readonly ComponentType[] = [
   'RigidBody',
   'Trigger',
   'CharacterController',
+  'Vehicle',
+  'Aircraft',
 ]
 
 const BODY_KINDS: readonly BodyKind[] = ['fixed', 'dynamic', 'kinematic']
 
 const COLLIDER = COMPONENT_DEFAULTS.Collider
 const BODY = COMPONENT_DEFAULTS.RigidBody
+const VEHICLE = COMPONENT_DEFAULTS.Vehicle
 
 export type PhysicsSystemOptions = {
   /**
@@ -35,6 +46,11 @@ export type PhysicsSystemOptions = {
   shapeOf: (entity: Entity) => ColliderShape | null
   /** Shared with the camera system, which watches whoever this one walks. */
   characters: Characters
+  /**
+   * The bodies a player is riding something else with. 🛑 The port goes on REPORTING a walker it
+   * was asked to move by nothing, and writing that pose back undid the carry on every step.
+   */
+  possessions: Possessions
   /** Bodies belonging to no entity: the scene's own floor, which is not a node. */
   statics?: readonly BodyDescriptor[]
   /**
@@ -78,6 +94,30 @@ export function createPhysicsSystem(options: PhysicsSystemOptions): System {
     }
   }
 
+  const discover = (world: World): void => {
+    for (const type of PHYSICAL) {
+      for (const entity of world.entities.withComponent(type)) {
+        if (seen.has(entity.id)) continue
+        seen.add(entity.id)
+        if (kinematic(entity)) driven.push(entity)
+        if (known.has(entity.id)) continue
+        known.add(entity.id)
+        const descriptor = bodyOf(entity, options, characters, world)
+        if (descriptor) fresh.push(descriptor)
+      }
+    }
+  }
+
+  const forgetGone = (): void => {
+    for (const name of known) if (!seen.has(name)) gone.push(name)
+    for (const name of gone) known.delete(name)
+    for (const name of gone) {
+      for (const pair of triggered) {
+        if (pair.startsWith(`${name}|`) || pair.endsWith(`|${name}`)) triggered.delete(pair)
+      }
+    }
+  }
+
   /** Bodies for the entities that gained one, names for those that went away. */
   const sync = (world: World): void => {
     seen.clear()
@@ -85,33 +125,8 @@ export function createPhysicsSystem(options: PhysicsSystemOptions): System {
     gone.length = 0
     driven.length = 0
 
-    for (const type of PHYSICAL) {
-      for (const entity of world.entities.withComponent(type)) {
-        if (seen.has(entity.id)) continue
-        seen.add(entity.id)
-        if (kinematic(entity)) driven.push(entity)
-        if (known.has(entity.id)) continue
-
-        // Known either way: a shape that could not be derived cannot be derived next frame
-        // either, and retrying would rebuild a geometry sixty times a second. Why it could not is
-        // the STUDIO's to say — `shapeOf` is the only thing here that ever answers nothing.
-        known.add(entity.id)
-        const descriptor = bodyOf(entity, options, characters)
-        if (descriptor) fresh.push(descriptor)
-      }
-    }
-
-    for (const name of known) if (!seen.has(name)) gone.push(name)
-    for (const name of gone) known.delete(name)
-
-    // Rapier sends no parting event for a body it REMOVES, so a pair left in `triggered` would
-    // stay there for the life of the session — and a door would never close behind a corpse.
-    for (const name of gone) {
-      for (const pair of triggered) {
-        if (pair.startsWith(`${name}|`) || pair.endsWith(`|${name}`)) triggered.delete(pair)
-      }
-    }
-
+    discover(world)
+    forgetGone()
     if (gone.length > 0) world.ports.physics.remove(gone)
     if (fresh.length > 0) refuse(world, world.ports.physics.add(fresh))
   }
@@ -150,7 +165,7 @@ export function createPhysicsSystem(options: PhysicsSystemOptions): System {
       const port = world.ports.physics
       if (!started) {
         started = true
-        // A document writes the pull DOWNWARD as a positive number; Rapier reads an acceleration.
+        // A document writes the pull DOWNWARD as a positive number; an engine reads an acceleration.
         port.setGravity(-world.play.gravity)
         refuse(world, port.add(options.statics ?? []))
       }
@@ -159,7 +174,7 @@ export function createPhysicsSystem(options: PhysicsSystemOptions): System {
       drive(world)
       characters.settle(port.moveCharacters(characters.intents(world, dt)))
       port.step(dt)
-      settle(world, options.localOf)
+      settle(world, options.localOf, options.possessions)
       announce(world, triggered)
     },
 
@@ -184,6 +199,7 @@ function bodyOf(
   entity: Entity,
   options: PhysicsSystemOptions,
   characters: Characters,
+  world: World,
 ): BodyDescriptor | null {
   const walker = componentOf(entity, 'CharacterController')
   const collider = componentOf(entity, 'Collider')
@@ -208,14 +224,60 @@ function bodyOf(
     lockRotation: walker !== null || flagOf(rigid, 'lockRotation', BODY.lockRotation),
     sensor: componentOf(entity, 'Trigger') !== null,
     character: walker ? characters.settingsOf(entity) : null,
+    vehicle: vehicleOf(entity, world),
+  }
+}
+
+/**
+ * The wheels a `Vehicle` hangs, read off the child nodes it NAMES. Their own transforms are where
+ * they hang, so an author moves a wheel mesh and the axle follows it.
+ *
+ * 🛑 Nothing for a vehicle whose wheels name nobody: a car built with no wheels would be a crate
+ * that answers the pedals, which is worse than one the port refuses by name.
+ */
+function vehicleOf(entity: Entity, world: World): VehicleSettings | null {
+  const settings = componentOf(entity, 'Vehicle')
+  if (!settings) return null
+
+  const drive = textOf(settings, 'drive', VEHICLE.drive)
+  const wheels: VehicleWheel[] = []
+  for (const said of textOf(settings, 'wheels', VEHICLE.wheels).split(',')) {
+    const name = said.trim()
+    const wheel = name === '' ? null : entityNamed(world, name)
+    if (!wheel) continue
+
+    // Ahead is −Z, which is where a node's own forward points: the front axle is what steers.
+    const ahead = wheel.transform.position.z < 0
+    wheels.push({
+      body: wheel.id,
+      at: { ...wheel.transform.position },
+      steers: ahead,
+      driven: drive === 'all' || (drive === 'front') === ahead,
+      handBraked: !ahead,
+    })
+  }
+  if (wheels.length === 0) return null
+
+  return {
+    wheelRadius: numberOf(settings, 'wheelRadius', VEHICLE.wheelRadius),
+    wheelWidth: numberOf(settings, 'wheelWidth', VEHICLE.wheelWidth),
+    suspensionLength: numberOf(settings, 'suspensionLength', VEHICLE.suspensionLength),
+    maxSteerAngle: numberOf(settings, 'maxSteerAngle', VEHICLE.maxSteerAngle),
+    maxTorque: numberOf(settings, 'maxTorque', VEHICLE.maxTorque),
+    wheels,
   }
 }
 
 /** What the step moved, written back into the entity it belongs to — in ITS own frame. */
-function settle(world: World, localOf: PhysicsSystemOptions['localOf']): void {
+function settle(
+  world: World,
+  localOf: PhysicsSystemOptions['localOf'],
+  possessions: Possessions,
+): void {
   for (const pose of world.ports.physics.poses()) {
     const entity = world.entities.get(pose.body)
-    if (!entity) continue
+    // A carried body is placed by `possession`, not by the engine that still holds its capsule.
+    if (!entity || possessions.holds(pose.body)) continue
 
     const turned = eulerFromQuaternion(pose.rotation, TURNED)
     const local = localOf ? localOf(entity, pose.position, turned) : null

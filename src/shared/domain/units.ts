@@ -5,7 +5,7 @@
  * project opened under another unit holds exactly the same numbers. What changes is the figure a
  * field shows and the figure it reads back — the whole of what `three.units` is.
  */
-import type { DisplayUnit } from './scene'
+import type { DisplayUnit, Vector3 } from './scene'
 
 /** How many of a unit make one scene unit. */
 const PER_METRE: Record<DisplayUnit, number> = { mm: 1000, cm: 100, m: 1 }
@@ -18,6 +18,15 @@ export function toDisplayLength(metres: number, unit: DisplayUnit): number {
 /** The other way: what somebody typed, back into what the document holds. */
 export function fromDisplayLength(shown: number, unit: DisplayUnit): number {
   return shown / PER_METRE[unit]
+}
+
+/** The three axes at once, which is how an inspector shows a position or a scale. */
+export function shownLength(vector: Vector3, unit: DisplayUnit): Vector3 {
+  return {
+    x: toDisplayLength(vector.x, unit),
+    y: toDisplayLength(vector.y, unit),
+    z: toDisplayLength(vector.z, unit),
+  }
 }
 
 /**

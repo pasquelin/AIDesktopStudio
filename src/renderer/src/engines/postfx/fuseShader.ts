@@ -62,7 +62,6 @@ function typeOf(uniform: IUniform): string {
   }
   if (isVectorLike(value, 'z')) return 'vec3'
   if (isVectorLike(value, 'y')) return 'vec2'
-  // A colour carries r/g/b and rides as a vec3; anything else has no business being fused.
   if (isRecord(value) && 'r' in value) return 'vec3'
   return 'float'
 }
@@ -83,24 +82,20 @@ export function fuseShader(chunks: readonly FusableChunk[]): FusedShader {
   const beforeFetch: string[] = []
   const afterFetch: string[] = []
   const naming: Record<string, string>[] = []
-
   for (const [index, chunk] of chunks.entries()) {
     const prefix = `fx${index}_`
     const names = [...Object.keys(chunk.uniforms), ...(chunk.helpers ?? []).flatMap(helperNamesIn)]
     const map: Record<string, string> = {}
-
     for (const [name, uniform] of Object.entries(chunk.uniforms)) {
       map[name] = `${prefix}${name}`
       uniforms[map[name]] = uniform
       declarations.push(`uniform ${typeOf(uniform)} ${map[name]};`)
     }
     naming.push(map)
-
     for (const helper of chunk.helpers ?? []) helpers.push(renamed(helper, names, prefix))
     const body = renamed(chunk.body, names, prefix)
     ;(chunk.kind === 'uv' ? beforeFetch : afterFetch).push(`  {\n${body}\n  }`)
   }
-
   return {
     uniforms,
     naming,

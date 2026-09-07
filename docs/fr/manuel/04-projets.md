@@ -23,12 +23,24 @@ logiciel qui l’a créé est un projet qu’on perd le jour où le logiciel ne 
 
 | Action | Raccourci | Menu |
 |---|---|---|
-| **Nouveau projet** | `⌘N` / `Ctrl+N` | **Fichier ▸ Nouveau projet…** |
+| **Nouveau…** | `⌘N` / `Ctrl+N` | **Fichier ▸ Nouveau…** |
+| **Nouveau projet** | `⌥⌘N` / `Alt+Ctrl+N` | **Fichier ▸ Nouveau projet…** |
 | **Ouvrir un projet** | `⌘O` / `Ctrl+O` | **Fichier ▸ Ouvrir un projet…** |
+| **Ouvrir un projet récent** | — | **Fichier ▸ Ouvrir récent** |
+
+**`⌘N` ouvre une fenêtre**, la même depuis n’importe quel écran : elle propose de créer un projet
+et, en dessous, chaque type de document — image, vidéo, scène, interface, script, audio, matière,
+ciel. Les types de l’espace où vous êtes sont en tête de liste ; tous les autres restent
+accessibles. **Le bouton vert `+`**, en haut de la colonne d’icônes, ouvre exactement la même
+fenêtre.
+
+**Aucun projet ouvert ?** La fenêtre le dit et offre la sortie sur place : vos projets récents,
+d’un clic, ou les deux boutons pour en créer ou en ouvrir un. Le projet s’ouvre et vous
+continuez — sans repasser par l’accueil.
 
 **Les deux gestes sont aussi dans le panneau Explorateur**, quand aucun projet n’est ouvert : il
 affiche alors **Ouvrir un projet** et **Créer un projet**, à sa place habituelle dans la colonne
-de gauche. C’est là pour ne pas avoir à repasser par l’accueil depuis un espace de travail.
+de gauche.
 
 **Un seul projet est ouvert à la fois.** Ouvrir le second ferme le premier — sans rien perdre :
 tout ce qui était enregistré l’est resté.
@@ -99,14 +111,14 @@ Mon projet/
 │   └── Animations/         vos mouvements
 │                           …et tout ce que vous créez à côté
 │
-│   Chacun porte un .ia-studio-role — CACHÉ — qui dit à quelle section il sert
+│   Chacun porte un .ai-desktop-studio-role — CACHÉ — qui dit à quelle section il sert
 │
 ├── .project.json         la carte d'identité — CACHÉ
 │
 ├── .project-context.json  CE QUE LE PROJET RACONTE — CACHÉ
 │                        l'univers, le style, les interdits — voir plus bas
 │
-├── .ia-studio/            UNE SAUVEGARDE DU CATALOGUE — CACHÉ
+├── .ai-desktop-studio/            UNE SAUVEGARDE DU CATALOGUE — CACHÉ
 │   └── items.json          ce qu'un fichier ne peut pas dire de lui-même
 │
 └── .index/               LE CATALOGUE ET SES CACHES — À GARDER, CACHÉ
@@ -127,7 +139,7 @@ les outils du studio, pas votre travail.
 > endroit où atterrir, et le studio le recrée plutôt que de refuser de travailler.
 
 > **Renommez-les, déplacez-les : ils continuent de servir leur section.** Ce qui lie un dossier à
-> une section n’est pas son nom mais un petit fichier caché qu’il porte, `.ia-studio-role`. Il
+> une section n’est pas son nom mais un petit fichier caché qu’il porte, `.ai-desktop-studio-role`. Il
 > voyage avec le dossier — un renommage dans le Finder ou l’Explorateur de Windows, un
 > déplacement, une copie, un zip. Renommez `Modelling/` en « Mes modèles » et le prochain maillage
 > y atterrit quand même.
@@ -157,7 +169,7 @@ les outils du studio, pas votre travail.
 > ranger à la main, à votre rythme, ou ne rien ranger du tout.
 
 > **Sur Windows, un point ne cache rien** — l’Explorateur lit un attribut de fichier, pas le nom.
-> Le studio le pose lui-même sur `.project.json` et sur `.index/`. **`.ia-studio/` ne le reçoit
+> Le studio le pose lui-même sur `.project.json` et sur `.index/`. **`.ai-desktop-studio/` ne le reçoit
 > pas** : le jour où il apparaît — il n’est écrit qu’après une passe qui a trouvé quelque chose —
 > vous le verrez dans l’Explorateur de Windows, à côté de vos dossiers. Il n’y a rien à en faire :
 > c’est la sauvegarde décrite plus bas. Si la pose échoue, **le projet s’ouvre quand
@@ -203,7 +215,7 @@ générations et des imports ; la passe qui relit le dossier à l’ouverture RE
 ont bougé, elle ne redevine pas ce qu’ils sont. Supprimer `.index/` rend donc un projet dont les
 fichiers sont tous là et dont plus rien ne dit ce qu’ils sont.
 
-> **C’est à cela que sert `.ia-studio/items.json`.** Le studio y recopie, après chaque passe qui a
+> **C’est à cela que sert `.ai-desktop-studio/items.json`.** Le studio y recopie, après chaque passe qui a
 > changé quelque chose, ce qu’un fichier ne peut pas dire de lui-même : son nom, ses tags, le
 > modèle et le prompt qui l’ont produit — rangés par empreinte du contenu, de sorte qu’un fichier
 > retrouvé se reconnaisse. Ce n’est pas une source : le studio ne la lit jamais de lui-même. C’est
@@ -232,7 +244,7 @@ que vous désignez et cherche ce fichier dedans.
 - **`updatedAt` bouge à chaque document enregistré.** C’est la dernière fois que ce projet a
   travaillé, pas la dernière fois qu’il a été ouvert.
 - **Désigner un dossier qui n’en contient pas** vous vaut « Ce dossier n’est pas un projet
-  IA Studio », dans le journal et dans une bulle en bas à droite — pas un message système.
+  AI Desktop Studio », dans le journal et dans une bulle en bas à droite — pas un message système.
 - **Un fichier tronqué ou modifié à la main** est signalé comme illisible, et le studio ne l’ouvre
   pas plutôt que d’en deviner le contenu.
 - **Un projet créé par une version PLUS RÉCENTE du studio est refusé.** Il n’est pas ouvert « du
@@ -530,7 +542,7 @@ document ouvert : annuler dans le canevas ne doit pas atteindre votre disque.
 > « Cette action est irréversible », et c’est exact.
 
 **Un refus, et il est grisé plutôt que caché.** Ce que le studio garde pour lui — tout ce qui
-commence par un point : `.index/`, `.ia-studio/`, `.project.json` — ne se renomme ni ne se jette, et
+commence par un point : `.index/`, `.ai-desktop-studio/`, `.project.json` — ne se renomme ni ne se jette, et
 ne reçoit rien non plus. Ce sont ses outils ; renommer l’un d’eux casserait le projet pour un nom
 que personne ne lit. **Le même refus vaut des deux côtés du glisser** : vous voyez avant de lâcher.
 

@@ -8,6 +8,8 @@ export type LinkFieldSlotProps = {
   onDrop: (asset: Asset) => void
   /** The row is what a right-click lands on, droppable or not — absent where it holds nothing. */
   onContextMenu?: (event: MouseEvent) => void
+  /** Opens the linked asset from the row while leaving its thumbnail's own gesture alone. */
+  onDoubleClick?: (event: MouseEvent) => void
   children: ReactNode
 }
 
@@ -22,13 +24,19 @@ export type LinkFieldSlotProps = {
  * NOT `AssetDropField`, whose name is one letter away: that one is a form control — it registers
  * with react-hook-form, draws an input, and holds the chosen id itself. This holds nothing.
  */
-export function LinkFieldSlot({ accepts, onDrop, onContextMenu, children }: LinkFieldSlotProps) {
+export function LinkFieldSlot({
+  accepts,
+  onDrop,
+  onContextMenu,
+  onDoubleClick,
+  children,
+}: LinkFieldSlotProps) {
   // `min-w-0` alone: the row inside is a `FIELD_ROW` and carries its own height, its own inset
   // and its own gutter, exactly like every other property line — which is the point of the row
   // having gone back to the shared two-column shape.
   if (!accepts) {
     return (
-      <div className="min-w-0" onContextMenu={onContextMenu}>
+      <div className="min-w-0" onContextMenu={onContextMenu} onDoubleClick={onDoubleClick}>
         {children}
       </div>
     )
@@ -40,6 +48,7 @@ export function LinkFieldSlot({ accepts, onDrop, onContextMenu, children }: Link
       exclusive
       onDrop={onDrop}
       onContextMenu={onContextMenu}
+      onDoubleClick={onDoubleClick}
       className="min-w-0 rounded-(--radius-sc-sm)"
     >
       {children}

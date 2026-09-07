@@ -39,6 +39,19 @@ beforeAll(() => {
   folder = mkdtempSync(join(tmpdir(), 'ias-engine-test-'))
   writeFileSync(scriptAt('standIn.js'), STAND_IN)
   writeFileSync(scriptAt('leaves.js'), 'process.exit(0)')
+  // A frame far larger than one packet, written in pieces: a selection mask crosses at one byte
+  // a pixel, and the socket delivers it as hundreds of chunks.
+  writeFileSync(
+    scriptAt('writesLong.js'),
+    `const net = require('node:net')
+     const socket = net.connect(process.argv[process.argv.indexOf('--socket') + 1], () => {
+       const frame = JSON.stringify({
+         v: ${PROTOCOL_VERSION}, evt: 'engine.hello', engine: '0.0.0',
+         protocol: ${PROTOCOL_VERSION}, python: '', platform: 'x'.repeat(300000),
+       }) + '\\n'
+       for (let at = 0; at < frame.length; at += 8192) socket.write(frame.slice(at, at + 8192))
+     })`,
+  )
   // Says where its package was put, through the socket — which is the channel that exists.
   writeFileSync(
     scriptAt('saysSources.js'),
@@ -109,6 +122,16 @@ describe('the socket the engine answers on', () => {
     port.kill()
   })
 
+  /** A mask crosses at one byte a pixel, so a frame is not always smaller than a packet. */
+  it('delivers a frame that arrived in many packets, whole', async () => {
+    const port = open('writesLong.js')
+    const seen = watch(port)
+
+    await vi.waitFor(() => expect(seen.frames).toHaveLength(1), 5_000)
+    expect(seen.frames[0]).toMatchObject({ evt: 'engine.hello', platform: 'x'.repeat(300_000) })
+    port.kill()
+  })
+
   /** A Python library writing to the socket is not a reason to take the engine down. */
   it('drops a line it cannot read rather than the connection', async () => {
     vi.stubEnv('NOISE', 'FutureWarning: torch is deprecated')
@@ -126,7 +149,7 @@ describe('the death of the engine', () => {
   it('reports a process that could never be started, and says it is gone', async () => {
     let left = false
     const port = openPythonProcess({
-      command: 'ia-studio-no-such-interpreter',
+      command: 'ai-desktop-studio-no-such-interpreter',
       args: [],
       sources: folder,
       processName: 'the stand-in engine',

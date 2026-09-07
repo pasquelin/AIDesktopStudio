@@ -36,7 +36,7 @@ const RERUN_EVERYTHING = [
   'tsconfig.json',
   'tsconfig.node.json',
   'tsconfig.web.json',
-  'eslint.config.mjs',
+  'oxlint.json',
   '.prettierrc',
 ]
 
@@ -119,35 +119,44 @@ function report(results) {
   return failed.length === 0 ? 0 : 1
 }
 
-async function main(since) {
-  let touched
-  try {
-    touched = touchedFiles(since)
-  } catch (failure) {
-    // Git's own words, not a guess: this catches a missing binary and a corrupt index too, and
-    // naming the revision for those sends the reader hunting a typo they never made.
-    const complaint = String(failure.stderr ?? failure.message).trim()
-    process.stderr.write(`\nERROR: git failed while reading what changed since '${since}'.\n`)
-    process.stderr.write(`${complaint}\n\n`)
-    return 1
-  }
-
-  // `.html` belongs here: `index.html` carries the Content-Security-Policy, and leaving it out
-  // made a weakened CSP report "nothing to check" and exit green — found in review on
-  // 2026-08-13. Nothing imports it, so `csp.test.ts` catches it as a wide guard rather than
-  // through `related`.
+function selectedFiles(touched) {
   const sources = touched.filter(path => /^src\/.*\.(ts|tsx|css|json|html)$/.test(path))
-  const wholeSuite = touched.some(path => RERUN_EVERYTHING.includes(path))
-  // A wide guard may READ outside `src/`: `localRuntimes.test.ts` holds the door table of
-  // `engine/**/doors.py` in step with the studio's. Detection lives under `src/`, so a lot that
-  // touches the engine alone selected nothing and exited green on the very drift it guards.
-  const guarded = touched.some(path => /^engine\/.*\.py$/.test(path))
+  return {
+    sources,
+    wholeSuite: touched.some(path => RERUN_EVERYTHING.includes(path)),
+    guarded: touched.some(path => /^engine\/.*\.py$/.test(path)),
+  }
+}
 
+function testSuites(sources, wholeSuite) {
+  if (wholeSuite) return [run('tests (whole suite)', 'npx', ['vitest', 'run'])]
+  const related =
+    sources.length > 0
+      ? [run('tests (related)', 'npx', ['vitest', 'related', '--run', ...sources])]
+      : []
+  return [...related, run('tests (wide guards)', 'npx', ['vitest', 'run', ...wideGuards()])]
+}
+
+function sourceGates(sources) {
+  const present = sources.filter(path => existsSync(join(ROOT, path)))
+  const formattable = present.filter(path => /\.(tsx?|css)$/.test(path))
+  const lintable = formattable.filter(path => !path.endsWith('.css'))
+  const lint =
+    lintable.length > 0
+      ? [run('lint', 'npx', ['oxlint', '-c', 'oxlint.json', '--deny-warnings', ...lintable])]
+      : []
+  const format =
+    formattable.length > 0
+      ? [run('format', 'npx', ['prettier', '--check', '--cache', ...formattable])]
+      : []
+  return [...lint, ...format]
+}
+
+async function runTouched(touched, since) {
+  const { sources, wholeSuite, guarded } = selectedFiles(touched)
   if (sources.length === 0 && !wholeSuite && !guarded) {
-    process.stdout.write(
-      `\nNothing under src/ or engine/ has changed against ${since}. There is nothing to check.\n\n`,
-    )
-    return 0
+    process.stdout.write(`\nNothing under src/ or engine/ has changed against ${since}.\n`)
+    return report([await run('size guard', 'node', ['scripts/check-sizes.mjs'])])
   }
 
   process.stdout.write(
@@ -158,53 +167,31 @@ async function main(since) {
     process.stdout.write('A config file moved, so the whole suite runs rather than a selection.\n')
   }
 
-  // `wideGuards()` inside the branch that uses it: on the whole-suite path it would walk every
-  // test file under `src/` to build a list nothing then reads.
-  const suites = wholeSuite
-    ? [run('tests (whole suite)', 'npx', ['vitest', 'run'])]
-    : [
-        ...(sources.length > 0
-          ? [run('tests (related)', 'npx', ['vitest', 'related', '--run', ...sources])]
-          : []),
-        run('tests (wide guards)', 'npx', ['vitest', 'run', ...wideGuards()]),
-      ]
-
-  // The cached gates alongside the suites: they read a cache under `node_modules/.cache/` and cost
-  // a second each warm, so nothing is gained by holding them back. The cache locations are the
-  // ones `package.json` writes, never a second set: a run under a different location leaves the
-  // gate's own cache cold, which is the ten seconds it exists to save.
-  //
-  // Only what is still on disk — git reports a deleted path like any other, and both tools exit 2
-  // on a file that is gone, failing the loop for the very change that most needs a clean answer.
-  //
-  // Two lists rather than one, because the two gates cover different files: `pnpm lint` reads
-  // `src` alone, while `format:check` takes `.css` as well — and `index.css` is where every token
-  // and every text step lives. Neither reads `.html`.
-  const present = sources.filter(path => existsSync(join(ROOT, path)))
-  const formattable = present.filter(path => /\.(tsx?|css)$/.test(path))
-  const lintable = formattable.filter(path => !path.endsWith('.css'))
   const results = await Promise.all([
-    ...suites,
+    run('size guard', 'node', ['scripts/check-sizes.mjs']),
+    ...testSuites(sources, wholeSuite),
     run('typecheck', 'pnpm', ['typecheck']),
-    ...(lintable.length > 0
-      ? [
-          run('lint', 'npx', [
-            'eslint',
-            '--max-warnings',
-            '0',
-            '--cache',
-            '--cache-location',
-            'node_modules/.cache/eslint/',
-            ...lintable,
-          ]),
-        ]
-      : []),
-    ...(formattable.length > 0
-      ? [run('format', 'npx', ['prettier', '--check', '--cache', ...formattable])]
-      : []),
+    ...sourceGates(sources),
   ])
-
   return report(results)
+}
+
+async function main(since) {
+  let touched
+  try {
+    touched = touchedFiles(since)
+  } catch (failure) {
+    // Git's own words, not a guess: this catches a missing binary and a corrupt index too, and
+    // naming the revision for those sends the reader hunting a typo they never made. NARROW on
+    // purpose — wrapped around the whole run, a failed wide-guard walk or a broken gate reported
+    // itself as « git failed », with the real stack cut down to `failure.message`.
+    const complaint = String(failure.stderr ?? failure.message).trim()
+    process.stderr.write(`\nERROR: git failed while reading what changed since '${since}'.\n`)
+    process.stderr.write(`${complaint}\n\n`)
+    return 1
+  }
+
+  return runTouched(touched, since)
 }
 
 // `exitCode` rather than `process.exit`: the failing gate's whole output has just been written,

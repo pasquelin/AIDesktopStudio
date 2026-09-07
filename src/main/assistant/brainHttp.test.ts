@@ -419,3 +419,65 @@ describe('createHttpChatBrain', () => {
     expect(post).toHaveBeenCalledWith(expect.stringContaining('key=gem-key'), expect.anything())
   })
 })
+
+/**
+ * A mission on the OpenAI wire is handed its manuals as native tools, and what the cloud CALLS
+ * comes back as calls of the catalogue — the name written by hand was the name invented.
+ */
+describe('a mission on a door that speaks tools', () => {
+  const deepseek = () =>
+    createHttpChatBrain({
+      cloud: 'deepseek',
+      chat: { kind: 'openai', baseUrl: 'https://api.deepseek.com', model: 'deepseek-chat' },
+      model: () => 'deepseek-chat',
+      credentials: () => ({ key: 'sk-test', secret: '' }),
+      fetch: post,
+    })
+  let sent: Record<string, unknown> = {}
+  const post = vi.fn(async (_url: string, init?: RequestInit) => {
+    sent = JSON.parse(String(init?.body)) as Record<string, unknown>
+    return jsonResponse({
+      choices: [
+        {
+          message: {
+            content: '{"say":"Adding a cube.","ask":null}',
+            tool_calls: [{ function: { name: 'node_add', arguments: '{"kind":"cube"}' } }],
+          },
+        },
+      ],
+    })
+  })
+
+  it('folds what the cloud called into calls of the catalogue, without a consent field', async () => {
+    const answer = await deepseek().think({
+      utterance: 'add a cube',
+      history: [],
+      mission: true,
+      candidates: ['node.add', 'generator.submit'],
+    })
+
+    expect(answer.say).toBe('Adding a cube.')
+    expect(answer.calls).toEqual([{ action: 'node.add', input: { kind: 'cube' } }])
+    const tools = sent['tools'] as {
+      function: { name: string; parameters: { properties: object } }
+    }[]
+    expect(tools.map(tool => tool.function.name)).toEqual(['node_add', 'generator_submit'])
+    expect(tools[1]?.function.parameters.properties).not.toHaveProperty('consent')
+    expect(JSON.stringify(sent['messages'])).not.toContain('a list of actions to run')
+  })
+
+  it('sends no tools to a watched turn, whose stream reads text frames alone', async () => {
+    post.mockImplementationOnce(async (_url: string, init?: RequestInit) => {
+      sent = JSON.parse(String(init?.body)) as Record<string, unknown>
+      return jsonResponse({ choices: [{ message: { content: '{"say":"hi","calls":[]}' } }] })
+    })
+
+    await deepseek().think(
+      { utterance: 'add a cube', history: [], mission: true, candidates: ['node.add'] },
+      { onProgress: () => undefined },
+    )
+
+    expect(sent).not.toHaveProperty('tools')
+    expect(JSON.stringify(sent['messages'])).toContain('a list of actions to run')
+  })
+})

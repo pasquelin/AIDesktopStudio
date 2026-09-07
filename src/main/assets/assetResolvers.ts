@@ -1,12 +1,20 @@
 import type { Asset } from '@shared/domain/asset'
 import { ASSET_HOST, MASTER_HOST, POSTER_HOST, THUMB_HOST } from '@shared/domain/asset'
+import { FILE_HOST } from '@shared/domain/assetAccess'
 import { ANIMATION_HOST } from '@shared/domain/animationLibrary'
+import { CHARACTER_HOST } from '@shared/domain/bundledCharacter'
 import { TEMPLATE_HOST } from '@shared/domain/sceneTemplate'
 import { FAVORITE_HOST } from '@shared/domain/favorite'
 import { MODEL_HOST } from '@shared/domain/localModel'
 import { TEXTURE_HOST } from '@shared/domain/checkerTexture'
 import { orWhenGone } from '@main/project/store'
-import { exportFileOf, posterFileOf, servedFileOf, type AssetResolvers } from './protocol'
+import {
+  conversionNeighbourPath,
+  exportFileOf,
+  posterFileOf,
+  servedFileOf,
+  type AssetResolvers,
+} from './protocol'
 
 /** What the hosts read, each behind the narrowest port that answers for it. */
 export type AssetResolverDeps = {
@@ -24,6 +32,8 @@ export type AssetResolverDeps = {
   bundledModel: (file: string) => Promise<string | null>
   /** And for a working texture, which a probe wears without any project having a row for it. */
   bundledTexture: (file: string) => Promise<string | null>
+  /** And for the shipped character, which the welcome window wears before a project exists. */
+  bundledCharacter: (file: string) => Promise<string | null>
 }
 
 /**
@@ -53,6 +63,15 @@ export function createAssetResolvers(deps: AssetResolverDeps): AssetResolvers {
     // most of what it draws the catalogue has never heard of. `assetFilePath` refuses whatever
     // walks out of the project, exactly as it does for a row.
     [THUMB_HOST]: relative => deps.thumbnailOf(relative),
+    // The asset id is the capability: only its own canonical `.sources` tree can be read.
+    [FILE_HOST]: async requested => {
+      const root = deps.projectPath()
+      if (!root) return null
+      const [assetId, ...parts] = requested.split('/')
+      if (!assetId || parts.length === 0) return null
+      const asset = await orWhenGone(() => deps.findAsset(assetId), null)
+      return asset ? await conversionNeighbourPath(root, asset, parts.join('/')) : null
+    },
     // A folder's name alone means its clip, a name going deeper means that very file: the
     // document holds the animation's NAME, and nothing in it says which file is inside.
     [ANIMATION_HOST]: id => deps.bundledAnimation(id),
@@ -61,5 +80,6 @@ export function createAssetResolvers(deps: AssetResolverDeps): AssetResolvers {
     [TEMPLATE_HOST]: file => deps.bundledTemplate(file),
     [MODEL_HOST]: file => deps.bundledModel(file),
     [TEXTURE_HOST]: file => deps.bundledTexture(file),
+    [CHARACTER_HOST]: file => deps.bundledCharacter(file),
   }
 }

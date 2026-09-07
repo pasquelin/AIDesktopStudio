@@ -1,7 +1,8 @@
 import json
 
-from ia_studio_engine import PROTOCOL_VERSION
-from ia_studio_engine.core.supervisor import serve
+from aidesktopstudio_engine import PROTOCOL_VERSION
+from aidesktopstudio_engine.core import supervisor
+from aidesktopstudio_engine.core.supervisor import serve
 
 
 def run(*lines: str) -> list[dict]:
@@ -10,8 +11,11 @@ def run(*lines: str) -> list[dict]:
     return [json.loads(frame) for frame in written]
 
 
-def ask(op: str, request_id: int = 1) -> str:
-    return json.dumps({"v": PROTOCOL_VERSION, "id": request_id, "op": op}) + "\n"
+def ask(op: str, request_id: int = 1, params: dict | None = None) -> str:
+    return (
+        json.dumps({"v": PROTOCOL_VERSION, "id": request_id, "op": op, "params": params or {}})
+        + "\n"
+    )
 
 
 def test_greets_before_anything_is_asked() -> None:
@@ -27,6 +31,20 @@ def test_answers_the_machine_it_runs_on() -> None:
 
     assert answer["id"] == 1
     assert answer["ok"]["cpuCount"] >= 1
+
+
+def test_requirements_forwards_the_requested_runtime_profile(monkeypatch) -> None:
+    surveyed: list[str] = []
+
+    def survey(profile: str = "diffusion") -> dict:
+        surveyed.append(profile)
+        return {"extra": profile, "declaration": [], "absent": [], "stale": [], "complete": True}
+
+    monkeypatch.setattr(supervisor, "survey", survey)
+    _greeting, answer = run(ask("engine.requirements", params={"profile": "autorig"}))
+
+    assert answer["ok"]["extra"] == "autorig"
+    assert surveyed == ["autorig"]
 
 
 def test_refuses_an_op_it_does_not_know_under_the_run_that_asked() -> None:

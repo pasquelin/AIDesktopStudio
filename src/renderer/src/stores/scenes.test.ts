@@ -6,8 +6,11 @@ import { meshNode, modelNodeFixture } from '@/engines/scene/scene-fixtures'
 import { EMPTY_SCENE, IDENTITY_TRANSFORM } from '@/engines/scene/sceneState'
 import type { Asset, AssetType } from '@shared/domain/asset'
 import { clearScenes } from './scene-fixtures'
+import { assetClip } from '@shared/domain/scene'
+import { animationViewOf, useAnimationViews } from './animationView'
 import {
   addAnimationTo,
+  laySceneClip,
   sceneHistoryOf,
   isSceneDirty,
   sceneOf,
@@ -294,6 +297,27 @@ describe('laying a motion on a character', () => {
       assetId: 'asset-9',
       name: 'jig',
     })
+  })
+
+  // Every panel describes the block the band shows as chosen, so a block laid and left unpicked
+  // leaves them all empty while the motion plays in the viewport.
+  it('chooses the block it lays, so the panels describe it', () => {
+    installed(['m'])
+    addAnimationTo('doc-1', asset('animation'))
+
+    const node = sceneOf(useScenes.getState(), 'doc-1').nodes[0]
+    const laid = node?.type === 'model' ? node.model.lanes?.[0]?.clips[0]?.id : null
+    expect(animationViewOf(useAnimationViews.getState(), 'doc-1').pickedBlock).toBe(laid)
+  })
+
+  // A block nothing carries would clear the keys one had selected, for an edit that never was.
+  it('chooses nothing when there was no model to lay it on', () => {
+    installed(['m'])
+    useAnimationViews.getState().setPickedBlock('doc-1', 'kept')
+
+    laySceneClip('doc-1', 'no-such-node', assetClip('c9', 'asset-9', 'jig'))
+
+    expect(animationViewOf(useAnimationViews.getState(), 'doc-1').pickedBlock).toBe('kept')
   })
 
   // With nobody selected there is nobody to make it move, and landing a node of its own would

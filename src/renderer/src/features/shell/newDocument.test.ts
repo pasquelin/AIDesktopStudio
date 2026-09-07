@@ -1,15 +1,20 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { documentFolderOf, type DocumentDescriptor } from '@shared/domain/document'
 import type { FileFacts } from '@shared/domain/fileInfo'
-import type { NamedDocumentPlace, NewDocumentAsk } from '@shared/domain/newDocument'
+import type { DocumentKind } from '@shared/domain/document'
+import type {
+  NamedDocumentPlace,
+  NewDocumentAnswer,
+  NewDocumentAsk,
+} from '@shared/domain/newDocument'
 import { CHECKER_TEXTURE_IDS } from '@shared/domain/checkerTexture'
-import { forgetCheckerTextures } from '@/engines/scene/checkerTextures'
+import { forgetProjectInstalls } from '@/engines/scene/projectInstalls'
 import { installFakeBridge, type BridgeOverrides } from '@/services/fakeBridge'
 import { useDocuments } from '@/stores/documents'
 import { useProject } from '@/stores/project'
 import { useSelection } from '@/stores/selection'
 import { sceneOf, useScenes } from '@/stores/scenes'
-import { createDocumentIn } from './newDocument'
+import { createDocumentIn, openNewDocument } from './newDocument'
 
 const openDocument = vi.fn()
 vi.mock('./components/dockviewApi', () => ({
@@ -36,14 +41,34 @@ const FOLDER_FACTS: FileFacts = { ...FILE_FACTS, kind: 'folder' }
 /** What the window was asked, which is the whole of what this side hands over. */
 const asks: NewDocumentAsk[] = []
 
-/** Installs the bridge with the window's answer already decided. */
-const answering = (place: NamedDocumentPlace | null, overrides: BridgeOverrides = {}): void => {
+/** What a window that names a document answers with. The kind travels back with the name. */
+const madeAs = (
+  title: string,
+  folder: string,
+  kind: DocumentKind = 'scene',
+  template?: NamedDocumentPlace['template'],
+): NewDocumentAnswer => ({
+  answer: 'made',
+  place: { kind, title, folder, ...(template ? { template } : {}) },
+})
+
+/**
+ * Installs the bridge with the window's answers already decided, in order — the last one repeats,
+ * since a question put again after a project was opened has to be answered too.
+ */
+const answering = (
+  givens: readonly (NewDocumentAnswer | null)[],
+  overrides: BridgeOverrides = {},
+): void => {
+  let turn = 0
   installFakeBridge({
     ...overrides,
     newDocument: {
       ask: ask => {
         asks.push(ask)
-        return Promise.resolve(place)
+        const given = givens[Math.min(turn, givens.length - 1)] ?? null
+        turn += 1
+        return Promise.resolve(given)
       },
     },
   })
@@ -51,28 +76,31 @@ const answering = (place: NamedDocumentPlace | null, overrides: BridgeOverrides 
 
 const created = (): DocumentDescriptor[] => Object.values(useDocuments.getState().documents)
 
-describe('createDocumentIn', () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
-    asks.length = 0
-    installFakeBridge()
-    useDocuments.setState({ documents: {}, stored: [] })
-    useSelection.getState().selectFiles([])
-    const stamp = '2026-08-16T10:00:00.000Z'
-    useProject.setState({
-      project: {
-        path: '/projects/One',
-        manifest: { version: 1, createdAt: stamp, updatedAt: stamp },
-      },
-    })
+beforeEach(() => {
+  vi.clearAllMocks()
+  asks.length = 0
+  installFakeBridge()
+  useDocuments.setState({ documents: {}, stored: [] })
+  useSelection.getState().selectFiles([])
+  const stamp = '2026-08-16T10:00:00.000Z'
+  useProject.setState({
+    project: {
+      path: '/projects/One',
+      manifest: { version: 1, createdAt: stamp, updatedAt: stamp },
+    },
   })
+})
 
+describe('createDocumentIn', () => {
   it('calls the document what the window answers, and opens it', async () => {
-    answering({ title: 'Niveau', folder: 'Modelling/Scenes' })
+    answering([madeAs('Niveau', 'Modelling/Scenes')])
 
-    createDocumentIn('3d')
+    // 🛑 AWAITED, where the cases below need not be: the opening happens AFTER the seeding, and
+    // the seeding awaits what the app ships. Waiting on the document alone read before the
+    // opening and went red under a loaded suite — green alone, the worst way to be wrong.
+    await createDocumentIn('3d')
 
-    await vi.waitFor(() => expect(created()).toHaveLength(1))
+    expect(created()).toHaveLength(1)
     expect(created()[0]?.title).toBe('Niveau')
     // The name is the file name: there is only ever one name to change afterwards.
     expect(created()[0]?.path).toBe('Modelling/Scenes/Niveau.gltf')
@@ -80,23 +108,32 @@ describe('createDocumentIn', () => {
   })
 
   /**
-   * The proposal is read off the folder as much as off the open tabs — a document saved and then
-   * closed still holds its name, and counting only what is open would propose it twice.
+   * What the window is told about the studio it was summoned from. The suggested name is NOT
+   * here any more: the window is where a kind is picked, so the name that steps over the folder
+   * can only be composed once that kind is known — see `NewDocumentForm`.
    */
-  it('proposes the first free number, reading the folder afresh', async () => {
-    answering(null, {
-      documents: { list: () => Promise.resolve([stored('Scène 1', 'Scène 1.gltf')]) },
-    })
+  it('tells the window what is being made, and out of which project', async () => {
+    answering([null])
 
     createDocumentIn('3d')
 
     await vi.waitFor(() => expect(asks).toHaveLength(1))
-    expect(asks[0]).toMatchObject({ kind: 'scene', suggested: 'Scène 2', projectName: 'One' })
+    expect(asks[0]).toMatchObject({ kind: 'scene', surface: '3d', projectName: 'One' })
+  })
+
+  /** With no kind named, the window asks that first — and the surface is what orders the list. */
+  it('names no kind when the gesture did not', async () => {
+    answering([null])
+
+    void openNewDocument('materials')
+
+    await vi.waitFor(() => expect(asks).toHaveLength(1))
+    expect(asks[0]).toMatchObject({ kind: null, surface: 'materials' })
   })
 
   // What the window cannot read for itself: a document a tab holds and no folder does yet.
   it('hands the window the documents no file holds', async () => {
-    answering(null)
+    answering([null])
     useDocuments.setState({ documents: { open: stored('Brouillon', 'Brouillon.gltf') } })
 
     createDocumentIn('3d')
@@ -109,47 +146,40 @@ describe('createDocumentIn', () => {
 
   // Where the Explorer is pointing, which is where a user looking at a folder means to create.
   it('opens the window on the folder holding the picked row', async () => {
-    answering(null, { project: { fileFacts: () => Promise.resolve(FILE_FACTS) } })
+    answering([null], { project: { fileFacts: () => Promise.resolve(FILE_FACTS) } })
     useSelection.getState().selectFiles(['Images/Croquis/etude.jpg'])
 
     createDocumentIn('3d')
 
     await vi.waitFor(() => expect(asks).toHaveLength(1))
-    expect(asks[0]?.folder).toBe('Images/Croquis')
+    expect(asks[0]?.picked).toBe('Images/Croquis')
   })
 
   it('opens the window on a picked folder itself', async () => {
-    answering(null, { project: { fileFacts: () => Promise.resolve(FOLDER_FACTS) } })
+    answering([null], { project: { fileFacts: () => Promise.resolve(FOLDER_FACTS) } })
     useSelection.getState().selectFiles(['Images/Croquis'])
 
     createDocumentIn('3d')
 
     await vi.waitFor(() => expect(asks).toHaveLength(1))
-    expect(asks[0]?.folder).toBe('Images/Croquis')
+    expect(asks[0]?.picked).toBe('Images/Croquis')
   })
 
-  it("falls back to the kind's own folder when nothing is picked", async () => {
-    answering(null)
+  /**
+   * Nothing rather than this kind's own folder: which folder a kind belongs to depends on the
+   * kind, and the kind is picked in the window. The fallback lives there — see `NewDocumentForm`.
+   */
+  it('points at nothing when the Explorer points at nothing', async () => {
+    answering([null])
 
     createDocumentIn('3d')
 
     await vi.waitFor(() => expect(asks).toHaveLength(1))
-    expect(asks[0]?.folder).toBe('Modelling/Scenes')
+    expect(asks[0]?.picked).toBeNull()
   })
+})
 
-  /**
-   * A material is a DOCUMENT, and the pictures that serve one land beside it — the one shelf the
-   * two vocabularies share.
-   */
-  it('falls back to the materials folder for a material', async () => {
-    answering(null)
-
-    createDocumentIn('materials')
-
-    await vi.waitFor(() => expect(asks).toHaveLength(1))
-    expect(asks[0]?.folder).toBe('Materials')
-  })
-
+describe('createDocumentIn results', () => {
   /**
    * The window is not the only door: a caller that supplies a title opens none — the assistant
    * and the MCP wire both do — and the fallback has to be the same one on both.
@@ -162,7 +192,7 @@ describe('createDocumentIn', () => {
   })
 
   it('files the document in the folder the window answers', async () => {
-    answering({ title: 'Niveau', folder: 'Images/Croquis' })
+    answering([madeAs('Niveau', 'Images/Croquis')])
 
     createDocumentIn('3d')
 
@@ -173,7 +203,7 @@ describe('createDocumentIn', () => {
   // Cancelled, or the window closed — the main process answers `null` for both, and nothing may
   // be made either way.
   it('makes nothing when the creation is called off', async () => {
-    answering(null)
+    answering([null])
 
     createDocumentIn('3d')
 
@@ -182,15 +212,17 @@ describe('createDocumentIn', () => {
     expect(openDocument).not.toHaveBeenCalled()
   })
 
-  it('makes nothing with no project open', async () => {
-    answering({ title: 'Niveau', folder: '' })
+  /**
+   * It used to answer nothing before opening anything, which is what made a project a thing one
+   * had to go and open somewhere else first. The window opens now, and offers the way in.
+   */
+  it('still opens the window with no project, and makes nothing without one', async () => {
+    answering([madeAs('Niveau', '')])
     useProject.setState({ project: null })
 
-    createDocumentIn('3d')
-    // Long enough for the listing and the question that would have followed it.
-    await new Promise(settled => setTimeout(settled, 0))
-
-    expect(asks).toHaveLength(0)
+    expect(await createDocumentIn('3d')).toBeNull()
+    expect(asks).toHaveLength(1)
+    expect(asks[0]?.projectName).toBeNull()
     expect(created()).toHaveLength(0)
   })
 
@@ -198,22 +230,65 @@ describe('createDocumentIn', () => {
   // person closed is the one answer it must never give.
   describe('what it answers', () => {
     it('the document, once the window is filled', async () => {
-      answering({ title: 'Niveau', folder: 'Modelling/Scenes' })
+      answering([madeAs('Niveau', 'Modelling/Scenes')])
 
       expect(await createDocumentIn('3d')).toMatchObject({ title: 'Niveau', kind: 'scene' })
     })
 
     it('nothing when the window is called off', async () => {
-      answering(null)
+      answering([null])
 
       expect(await createDocumentIn('3d')).toBeNull()
       expect(created()).toHaveLength(0)
     })
 
     it('nothing with no project open', async () => {
+      answering([null])
       useProject.setState({ project: null })
 
       expect(await createDocumentIn('3d')).toBeNull()
+    })
+  })
+
+  /**
+   * The window offers the ways into a project and takes none of them: leaving one tears down
+   * panels, settles unsaved work and reloads a catalogue. The studio does it and asks again, so
+   * opening a project does not cost the gesture that was being made.
+   */
+  describe('the ways into a project the window sends back', () => {
+    it('opens the one it names, then puts the question again', async () => {
+      const opened: string[] = []
+      answering([{ answer: 'recentProject', path: '/projects/Two' }, null])
+      useProject.setState({
+        open: path => {
+          opened.push(path)
+          return Promise.resolve(true)
+        },
+      })
+
+      expect(await createDocumentIn('3d')).toBeNull()
+      expect(opened).toEqual(['/projects/Two'])
+      expect(asks).toHaveLength(2)
+    })
+
+    it('raises the picker the window asks for', async () => {
+      const raised: string[] = []
+      answering([{ answer: 'newProject' }, { answer: 'openProject' }, null])
+      useProject.setState({
+        createPicked: () => {
+          raised.push('create')
+          return Promise.resolve()
+        },
+        openPicked: () => {
+          raised.push('open')
+          return Promise.resolve()
+        },
+      })
+
+      await createDocumentIn('3d')
+
+      expect(raised).toEqual(['create', 'open'])
+      expect(asks).toHaveLength(3)
     })
   })
 
@@ -221,7 +296,7 @@ describe('createDocumentIn', () => {
   // never opens, so nothing is left waiting on a screen nobody is looking at.
   describe('named by its caller', () => {
     it('makes it without opening the window', async () => {
-      answering(null)
+      answering([null])
 
       const made = await createDocumentIn('3d', { title: 'Niveau', folder: 'Repérages' })
 
@@ -274,7 +349,7 @@ describe('createDocumentIn', () => {
   // `restoreDocument`, and the template would be lost between the window and the viewport.
   describe('what a new scene opens on', () => {
     it('holds the template the window answered with', async () => {
-      answering({ title: 'Plateau', folder: 'Modelling/Scenes', template: 'topDown' })
+      answering([madeAs('Plateau', 'Modelling/Scenes', 'scene', 'topDown')])
 
       const made = await createDocumentIn('3d')
 
@@ -304,7 +379,7 @@ describe('createDocumentIn', () => {
      * the door has to do, not hoping it already happened.
      */
     it('dresses the shapes a template lays down, however late the textures land', async () => {
-      forgetCheckerTextures()
+      forgetProjectInstalls()
       installFakeBridge({
         assets: {
           installBundledTextures: () =>

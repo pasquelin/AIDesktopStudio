@@ -16,10 +16,9 @@ const SRC = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 /**
  * The import cycles this repository still carries, each written as its two files sorted.
  *
- * **Empty, and that is the point of keeping it.** A ratchet, not a target: the list is meant to
- * shrink and never to grow. Nothing else in `pnpm validate` sees a cycle — not the compiler, not
- * eslint, not the tests — so a cycle removed today can come back tomorrow with every gate green,
- * which is what happened to the fifth one. An empty list makes the next one fail on sight.
+ * A ratchet, not a target: the list is meant to shrink and never to grow. Nothing else in
+ * `pnpm validate` sees a cycle — not the compiler, not eslint, not the tests — so a cycle removed
+ * today can come back tomorrow with every gate green, which is what happened to the fifth one.
  *
  * **Nothing here enforces the direction.** A line can be added as easily as removed, and no test
  * can tell a surrender from a fix. Review is what holds it, and that is worth knowing rather than
@@ -140,6 +139,9 @@ describe('the import graph', () => {
     const files = sources(SRC)
     const graph = new Map<string, string[]>(
       files.map(file => {
+        // `import type` counts as an edge, and that is the whole point: the trap of a size split is
+        // a type the extracted half re-imports from its parent. A walker that skipped type-only
+        // imports answered 0 here on a tree carrying 7 — measured 2026-09-04.
         const imports = ts.preProcessFile(readFileSync(file, 'utf8'), true, true).importedFiles
         const edges = imports
           .map(({ fileName }) => resolveSpecifier(fileName, file))
@@ -162,10 +164,9 @@ describe('the import graph', () => {
   })
 
   /**
-   * And it can fail. While `KNOWN` held entries, the second assertion above was the liveness
-   * probe: a detector gone blind answered nothing and the missing lines reddened. Emptying the
-   * list retired that probe — `[].filter(…)` is empty however broken the walk is — so the proof
-   * that this file can still SEE a cycle has to be made on a graph of its own.
+   * And it can fail. `KNOWN` holding entries makes the second assertion above a liveness probe of
+   * its own — a detector gone blind answers nothing and the missing lines redden — but that probe
+   * dies the day the list empties again, so the proof is also made here, on a graph of its own.
    */
   it('would see a cycle if the tree had one', () => {
     const [a, b] = [join(SRC, 'a.ts'), join(SRC, 'b.ts')]

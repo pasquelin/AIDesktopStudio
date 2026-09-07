@@ -13,6 +13,62 @@ import { materialOf, useMaterials } from '@/stores/materials'
 /** The GPU port, built once. It holds nothing: a context is made and released per derivation. */
 const gpuDerive = createDerivePort({ loadTexture })
 
+type DerivationSnapshot = { source: string; target: string | undefined }
+
+function movedChannel(
+  documentId: string,
+  from: PbrChannel,
+  channel: PbrChannel,
+  before: DerivationSnapshot,
+): PbrChannel | null {
+  const now = channels(documentId)
+  if (now[from]?.assetId !== before.source) return from
+  return now[channel]?.assetId !== before.target ? channel : null
+}
+
+function reportStale(channel: PbrChannel, which: PbrChannel): false {
+  reportFailure('material.channel', channel, new Error(`${which} changed while deriving`))
+  return false
+}
+
+async function saveDerivedChannel(
+  documentId: string,
+  channel: PbrChannel,
+  from: PbrChannel,
+  sourceAssetId: string,
+  bridge: NonNullable<ReturnType<typeof getBridge>>,
+  derive: DerivePort,
+): Promise<boolean> {
+  const before = { source: sourceAssetId, target: channels(documentId)[channel]?.assetId }
+  try {
+    const picture = await derive({ channel, sourceUrl: assetUrl(sourceAssetId) })
+    const stale = movedChannel(documentId, from, channel, before)
+    if (stale) return reportStale(channel, stale)
+    const asset = await bridge.assets.saveTexture({
+      name: derivedName(from, channel, sourceAssetId),
+      map: channel,
+      derivedFrom: sourceAssetId,
+      png: picture.png,
+    })
+    await useAssets.getState().refresh()
+    const late = movedChannel(documentId, from, channel, before)
+    if (late) return reportStale(channel, late)
+    useMaterials.getState().runCommand(
+      documentId,
+      setChannel(channel, {
+        assetId: asset.id,
+        origin: 'derived',
+        width: picture.width,
+        height: picture.height,
+      }),
+    )
+    return true
+  } catch (error) {
+    reportFailure('material.channel', channel, error)
+    return false
+  }
+}
+
 /**
  * Computes one channel of a material from another, and puts the result in the project.
  *
@@ -38,68 +94,7 @@ export async function deriveMaterialChannel(
     return false
   }
 
-  /**
-   * What must not have moved while this ran, checked after EVERY await rather than once.
-   *
-   * Both ends matter, and each was a way of losing work. The **source**: pixels computed from a
-   * height map that has since been replaced describe nothing that is still open. The
-   * **destination**: only the menu row goes dead during a derivation — the tile still takes a
-   * drop, and a picture the user put there by hand would be silently overwritten by a result
-   * badged `derived`. The most recent gesture is the one that has to survive.
-   *
-   * And the two longest waits come AFTER the first check: writing the file, then relisting the
-   * catalogue. A check that closed before them would leave exactly the state it exists to stop.
-   */
-  const before = { source: source.assetId, target: channels(documentId)[channel]?.assetId }
-
-  /** Which end moved, so the journal names it rather than saying something changed. */
-  const moved = (): PbrChannel | null => {
-    const now = channels(documentId)
-    if (now[from]?.assetId !== before.source) return from
-    return now[channel]?.assetId !== before.target ? channel : null
-  }
-
-  const abandon = (which: PbrChannel): false => {
-    reportFailure('material.channel', channel, new Error(`${which} changed while deriving`))
-    return false
-  }
-
-  try {
-    const picture = await derive({ channel, sourceUrl: assetUrl(source.assetId) })
-
-    // Said rather than swallowed — the menu row would otherwise look inert. Checked here so a
-    // file is not written for a result already known to be stale.
-    const stale = moved()
-    if (stale) return abandon(stale)
-
-    const asset = await bridge.assets.saveTexture({
-      name: derivedName(from, channel, source.assetId),
-      map: channel,
-      derivedFrom: source.assetId,
-      png: picture.png,
-    })
-
-    // Before the channel points at it: the tile reads the shelf for the picture it shows, and a
-    // channel filled with an id the store has never heard of shows an empty frame.
-    await useAssets.getState().refresh()
-
-    const late = moved()
-    if (late) return abandon(late)
-
-    useMaterials.getState().runCommand(
-      documentId,
-      setChannel(channel, {
-        assetId: asset.id,
-        origin: 'derived',
-        width: picture.width,
-        height: picture.height,
-      }),
-    )
-    return true
-  } catch (error) {
-    reportFailure('material.channel', channel, error)
-    return false
-  }
+  return saveDerivedChannel(documentId, channel, from, source.assetId, bridge, derive)
 }
 
 /** Read at call time, never captured: every check has to see the store as it is right now. */

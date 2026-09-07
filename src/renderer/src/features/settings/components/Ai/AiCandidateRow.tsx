@@ -1,7 +1,7 @@
 import { memo } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { ModelCandidate } from '@shared/domain/aiOverview'
-import type { AiRoleId } from '@shared/domain/aiRole'
+import { aiRoleId, type AiRoleId } from '@shared/domain/aiRole'
 import {
   catalogueLineOf,
   modelThumbnailUrl,
@@ -58,6 +58,7 @@ export const AiCandidateRow = memo(function AiCandidateRow({
       caption={[
         candidate.model.diskBytes > 0 ? bytes(candidate.model.diskBytes) : undefined,
         catalogueLineOf(candidate.model),
+        candidate.model.licence,
         candidate.serves > 1 ? t('aiModels.servesRoles', { count: candidate.serves }) : undefined,
         fit.verdict,
       ]
@@ -77,7 +78,9 @@ export const AiCandidateRow = memo(function AiCandidateRow({
       // the line and refuses to shrink, which drew a 256px picture over the name beside it.
       picture={<Thumbnail url={modelThumbnailUrl(candidate.model)} className={FIELD_THUMBNAIL} />}
     >
-      {chosen && <AiPublisherLink url={candidate.model.source} />}
+      {(chosen || role === aiRoleId('3d', 'motion')) && (
+        <AiPublisherLink url={candidate.model.source} />
+      )}
       <AiModelActions candidate={candidate} progress={progress} loading={loading} busy={busy} />
     </AiChoiceRow>
   )

@@ -1,7 +1,8 @@
 import { exportTargetOf, SCENE_TARGET_OF_FORMAT } from '@shared/domain/exportRegistry'
 import type { ExportFormat } from '@shared/domain/scene'
 import type { FolderExportRequest } from '@shared/ipc'
-import { documentExportName, useDocuments } from '@/stores/documents'
+import { useDocuments } from '@/stores/documents'
+import { documentExportName } from '@/stores/documentExportName'
 import { sceneEngineOf } from '@/stores/sceneEngines'
 import { sceneOf, useScenes } from '@/stores/scenes'
 

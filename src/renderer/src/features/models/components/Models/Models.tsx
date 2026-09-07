@@ -128,91 +128,102 @@ export function Models({ family }: ModelsProps) {
     return <EmptyState icon={mdiCubeScan} message={t(failureKeyOf(catalogue.refusal))} />
   }
 
-  return (
-    <div className="flex h-full flex-col">
-      <ModelsSelected model={selected} picture={selected ? pictureOf(selected) : undefined} />
+  function View() {
+    return (
+      <div className="flex h-full flex-col">
+        <ModelsSelected model={selected} picture={selected ? pictureOf(selected) : undefined} />
 
-      <CollectionBar
-        scId="models"
-        state={collection}
-        onChange={next => setCollection(family, next)}
-        facets={facets}
-        sorts={sorts}
-      />
-
-      {offered && <ModelDownloadDialog model={offered} onClose={() => setOffered(null)} />}
-
-      <div className="min-h-0 flex-1">
-        <Collection
-          label={t('panels.models')}
-          items={items}
+        <CollectionBar
+          scId="models"
           state={collection}
-          selectedIds={selectedId ? [selectedId] : []}
-          // A tile whose weights are absent OFFERS the download rather than doing nothing: it is
-          // the one refusal the studio can lift itself, and a dimmed tile with no way forward is
-          // what sent people looking through the settings for a button.
-          onSelect={model => {
-            if (reachOf(model).fetchable) {
-              setOffered(model)
-              return
-            }
-            // ADR-23 § C: the employment the pick was made FOR, and no other. This panel knows
-            // a family, so it arms that family's first one — where `familyChoiceWrites` armed
-            // every employment the model could serve, silently taking over five more.
-            const role = primaryRoleOf(model.family)
-            if (!role) return
-
-            select(role, model.id)
-            void chooseAiProvider(
-              role,
-              providerOfModel(model),
-              projectPath === null ? 'app' : 'project',
-            )
-          }}
-          onReachEnd={catalogue.more}
-          onVisible={resolveFor}
-          // The same answer greys the cell and explains it, so a row cannot end up dimmed with
-          // nothing to say why.
-          // Greyed, but still reachable when the studio can fetch it — see `onSelect`.
-          isDisabled={model => {
-            const reach = reachOf(model)
-            return reach.refusal !== undefined && !reach.fetchable
-          }}
-          rowHeight="media"
-          renderCard={model => (
-            <ModelsCard model={model} picture={pictureOf(model)} refusal={reachOf(model).refusal} />
-          )}
-          renderRow={model => (
-            <ModelsRow model={model} picture={pictureOf(model)} refusal={reachOf(model).refusal} />
-          )}
-          empty={
-            <EmptyState
-              icon={mdiCubeScan}
-              message={
-                catalogue.fetching
-                  ? t('collection.loading')
-                  : // The debounced search, not the typed one: for the 250 ms in between, the
-                    // filter blamed for the empty panel has not been applied yet.
-                    isFiltered(
-                        { ...collection, search },
-                        facets.map(facet => facet.key),
-                      )
-                    ? t('collection.noMatch')
-                    : t('models.none')
-              }
-            />
-          }
-          footer={
-            catalogue.fetchingMore ? (
-              // Not `standalone`: its `py-6` is the room an empty list gives a sentence, and this
-              // one sits under a full grid that is still paging.
-              <div className="py-2 text-center">
-                <QuietNote>{t('collection.loading')}</QuietNote>
-              </div>
-            ) : null
-          }
+          onChange={next => setCollection(family, next)}
+          facets={facets}
+          sorts={sorts}
         />
+
+        {offered && <ModelDownloadDialog model={offered} onClose={() => setOffered(null)} />}
+
+        <div className="min-h-0 flex-1">
+          <Collection
+            label={t('panels.models')}
+            items={items}
+            state={collection}
+            selectedIds={selectedId ? [selectedId] : []}
+            // A tile whose weights are absent OFFERS the download rather than doing nothing: it is
+            // the one refusal the studio can lift itself, and a dimmed tile with no way forward is
+            // what sent people looking through the settings for a button.
+            onSelect={model => {
+              if (reachOf(model).fetchable) {
+                setOffered(model)
+                return
+              }
+              // ADR-23 § C: the employment the pick was made FOR, and no other. This panel knows
+              // a family, so it arms that family's first one — where `familyChoiceWrites` armed
+              // every employment the model could serve, silently taking over five more.
+              const role = primaryRoleOf(model.family)
+              if (!role) return
+
+              select(role, model.id)
+              void chooseAiProvider(
+                role,
+                providerOfModel(model),
+                projectPath === null ? 'app' : 'project',
+              )
+            }}
+            onReachEnd={catalogue.more}
+            onVisible={resolveFor}
+            // The same answer greys the cell and explains it, so a row cannot end up dimmed with
+            // nothing to say why.
+            // Greyed, but still reachable when the studio can fetch it — see `onSelect`.
+            isDisabled={model => {
+              const reach = reachOf(model)
+              return reach.refusal !== undefined && !reach.fetchable
+            }}
+            rowHeight="media"
+            renderCard={model => (
+              <ModelsCard
+                model={model}
+                picture={pictureOf(model)}
+                refusal={reachOf(model).refusal}
+              />
+            )}
+            renderRow={model => (
+              <ModelsRow
+                model={model}
+                picture={pictureOf(model)}
+                refusal={reachOf(model).refusal}
+              />
+            )}
+            empty={
+              <EmptyState
+                icon={mdiCubeScan}
+                message={
+                  catalogue.fetching
+                    ? t('collection.loading')
+                    : // The debounced search, not the typed one: for the 250 ms in between, the
+                      // filter blamed for the empty panel has not been applied yet.
+                      isFiltered(
+                          { ...collection, search },
+                          facets.map(facet => facet.key),
+                        )
+                      ? t('collection.noMatch')
+                      : t('models.none')
+                }
+              />
+            }
+            footer={
+              catalogue.fetchingMore ? (
+                // Not `standalone`: its `py-6` is the room an empty list gives a sentence, and this
+                // one sits under a full grid that is still paging.
+                <div className="py-2 text-center">
+                  <QuietNote>{t('collection.loading')}</QuietNote>
+                </div>
+              ) : null
+            }
+          />
+        </div>
       </div>
-    </div>
-  )
+    )
+  }
+  return View()
 }

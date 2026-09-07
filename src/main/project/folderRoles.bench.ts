@@ -1,9 +1,10 @@
+import { bench } from '@shared/vitestBench'
 import { execFile } from 'node:child_process'
 import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { promisify } from 'node:util'
-import { afterAll, bench, describe } from 'vitest'
+import { afterAll, describe } from 'vitest'
 import { DEFAULT_ROLE_PATHS, FOLDER_ROLES, ROLE_MARKER } from '@shared/domain/folderRole'
 import {
   CATALOG_FILE,
@@ -141,7 +142,7 @@ let laid: Promise<Shapes> | null = null
 let base: string | null = null
 
 async function layAll(): Promise<Shapes> {
-  const under = (base = await mkdtemp(join(tmpdir(), 'ia-studio-roles-bench-')))
+  const under = (base = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-roles-bench-')))
 
   const media = async (name: string, count: number): Promise<string> => {
     const root = join(under, name)
@@ -231,7 +232,7 @@ describe('resolving the folder roles from the cache', () => {
 })
 
 /** The walk itself, without the marker reads around it — where the time in the group above goes. */
-describe('the walk under the resolution: every entry named .ia-studio-role', () => {
+describe('the walk under the resolution: every entry named .ai-desktop-studio-role', () => {
   for (const name of SHAPE_NAMES) {
     bench(
       name,

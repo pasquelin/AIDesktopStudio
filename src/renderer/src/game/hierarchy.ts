@@ -24,7 +24,16 @@ export type Hierarchy = {
   localOf: (nodeId: string, position: Vector3, rotation: Vector3) => Transform | null
 }
 
-export function createHierarchy(byId: ReadonlyMap<string, SceneNode>): Hierarchy {
+/**
+ * 🛑 `liveOf` is REQUIRED, and it is the whole of what makes a moving parent carry: `byId` holds
+ * the DOCUMENT's nodes and an entity holds a copy, so composing from the node alone framed every
+ * child at the place its parent stood when Play began. Measured — a rider on a lift stayed at 1
+ * while the lift reached 6. A caller with nothing live to offer answers `null`.
+ */
+export function createHierarchy(
+  byId: ReadonlyMap<string, SceneNode>,
+  liveOf: (nodeId: string) => Transform | null,
+): Hierarchy {
   /** The chain above a node, composed. Identity for one that hangs from nothing the scene holds. */
   const above = (parentId: string | null): Matrix4 => {
     const world = new Matrix4()
@@ -32,7 +41,7 @@ export function createHierarchy(byId: ReadonlyMap<string, SceneNode>): Hierarchy
     // circular parent, and a cycle would be a document no gesture of the studio can write.
     let walker = parentId === null ? undefined : byId.get(parentId)
     while (walker) {
-      world.premultiply(matrixOfTransform(walker.transform))
+      world.premultiply(matrixOfTransform(liveOf(walker.id) ?? walker.transform))
       walker = walker.parentId === null ? undefined : byId.get(walker.parentId)
     }
     return world

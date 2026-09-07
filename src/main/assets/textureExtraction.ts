@@ -3,7 +3,7 @@ import type { Asset, AssetQuery } from '@shared/domain/asset'
 import type { ActivityReport } from '@main/project/activityLog'
 import { fillHoles, TRANSLATIONS } from '@shared/i18n'
 import { windowLanguage } from '@main/window/language'
-import { embeddedTextures, type EmbeddedTexture } from './glbTextures'
+import { embeddedTextures, withoutEmbeddedTextures, type EmbeddedTexture } from './glbTextures'
 import { isPngBytes, probePng } from '@main/media/png'
 import type { WriteRequest } from './localBackend'
 
@@ -41,6 +41,8 @@ export type TextureExtractionDeps = {
   /** What is already derived from an asset — this is what makes a second run cost nothing. */
   search: (query: AssetQuery) => Promise<readonly Asset[]>
   write: (request: WriteRequest, bytes: Uint8Array) => Promise<Asset>
+  /** Replaces the model bytes after every extracted picture has landed safely. */
+  replaceModel: (source: Asset, bytes: Uint8Array) => Promise<void>
   newAssetId: () => string
   /** The project journal. A model that carries no picture is a normal answer, said out loud. */
   record: (entry: ActivityReport) => void
@@ -55,20 +57,10 @@ export type TextureExtraction = (source: Asset) => Promise<Asset[]>
  * PNG, so this is a file read and a copy — decoding them in the renderer to hand them back would
  * cost a re-encode that softens exactly what the model was painted with (invariant 6).
  *
- * **Idempotent**, and that is what lets it run on its own at import AND from the menu row that
- * catches up the models a project already held: a mesh that already has pictures derived from it
- * is left alone, and answers with them. Without that, the two paths would double every texture of
- * every model imported since.
- *
- * Twice over, because the catalogue can only answer for what is COMMITTED: a run in flight is
- * shared rather than started again. A real model takes seconds to read and write, and the menu
- * row clicked during the automatic run saw a mesh with no derived picture — which it was, for a
- * few seconds more.
+ * **Idempotent**: a retry resumes missing pictures, then removes the model's embedded copies only
+ * after every picture has landed. Concurrent clicks share the same run.
  */
 export function createTextureExtraction(deps: TextureExtractionDeps): TextureExtraction {
-  // What is being extracted right now, per mesh. The catalogue can only answer for what is
-  // COMMITTED, and a real model takes seconds to read and write: the import path and the menu row
-  // both saw zero derived rows and both extracted, leaving every picture twice.
   const running = new Map<string, Promise<Asset[]>>()
 
   return source => {
@@ -84,22 +76,29 @@ export function createTextureExtraction(deps: TextureExtractionDeps): TextureExt
 async function extract(deps: TextureExtractionDeps, source: Asset): Promise<Asset[]> {
   if (source.type !== 'mesh') throw new Error(`asset ${source.id} is not a mesh`)
 
-  const already = await deps.search({ derivedFrom: source.id, type: 'image' })
-  if (already.length > 0) return [...already]
-
+  const derived = await deps.search({ derivedFrom: source.id, type: 'image' })
+  const already = derived.filter(asset => asset.map !== undefined || asset.packedSlot !== undefined)
   const file = deps.fileOf(source)
   if (!file) throw new Error(`asset ${source.id} has no file to read`)
+  const bytes = await readModel(deps, source, file)
+  const found = embeddedTextures(bytes)
+  if (found.length === 0 && already.length > 0) return [...already]
+  const extracted = await writeMissing(deps, source, found, already)
+  if (found.length > 0 && source.modelMaterialIds && source.modelMaterialIds.length > 0) {
+    await deps.replaceModel(source, withoutEmbeddedTextures(bytes))
+  }
+  recordResult(deps, source, extracted.length)
+  return extracted
+}
 
-  // `Buffer` IS a `Uint8Array`, and the reader takes it as one: wrapping it would copy the
-  // whole model — several hundred megabytes for a scan, on the process every window waits on.
-  // 🛑 The `try` holds the READ alone: the original handler was `readFile`'s second argument, so
-  // a reader that throws on a corrupt model is not this journal line, and never was.
-  let bytes
+async function readModel(
+  deps: TextureExtractionDeps,
+  source: Asset,
+  file: string,
+): Promise<Uint8Array> {
   try {
-    bytes = await readFile(file)
+    return await readFile(file)
   } catch (error) {
-    // Recorded and rethrown: the window says it too, but a project reopened tomorrow keeps
-    // the line — and a file the disk refuses is exactly what one goes back to the journal for.
     deps.record({
       level: 'error',
       topic: 'import',
@@ -108,46 +107,72 @@ async function extract(deps: TextureExtractionDeps, source: Asset): Promise<Asse
     })
     throw error
   }
-
-  const found = embeddedTextures(bytes)
-
-  const created: Asset[] = []
-  for (const texture of found) {
-    // Sequential on purpose: a model can carry half a dozen 2048² pictures, and writing them
-    // all at once is a burst of tens of megabytes at whatever the disk will take.
-    created.push(await deps.write(requestFor(source, texture, deps.newAssetId()), texture.bytes))
-  }
-
-  // Said either way. A model with no picture inside it is a normal answer, and one the shelf
-  // cannot show on its own: nothing appears, and a gesture that changes nothing without a word
-  // reads as a broken menu row.
-  deps.record({
-    level: 'info',
-    // `import`, like every other line about bytes landing in the project.
-    topic: 'import',
-    ...(created.length > 0
-      ? {
-          messageKey: 'activity.extractedTextures',
-          params: { count: created.length, name: source.name },
-        }
-      : { messageKey: 'activity.extractedNothing', params: { name: source.name } }),
-  })
-
-  return created
 }
 
-function requestFor(source: Asset, texture: EmbeddedTexture, id: string): WriteRequest {
+async function writeMissing(
+  deps: TextureExtractionDeps,
+  source: Asset,
+  found: readonly EmbeddedTexture[],
+  already: readonly Asset[],
+): Promise<Asset[]> {
+  const extracted: Asset[] = []
+  for (const [index, texture] of found.entries()) {
+    const existing = matchingAsset(already, texture, index, found.length)
+    extracted.push(
+      existing ??
+        (await deps.write(requestFor(source, texture, deps.newAssetId(), index), texture.bytes)),
+    )
+  }
+  return extracted
+}
+
+function recordResult(deps: TextureExtractionDeps, source: Asset, count: number): void {
+  deps.record({
+    level: 'info',
+    topic: 'import',
+    ...(count > 0
+      ? { messageKey: 'activity.extractedTextures', params: { count, name: source.name } }
+      : { messageKey: 'activity.extractedNothing', params: { name: source.name } }),
+  })
+}
+
+function matchingAsset(
+  assets: readonly Asset[],
+  texture: EmbeddedTexture,
+  index: number,
+  textureCount: number,
+): Asset | undefined {
+  const indexed = assets.find(asset => asset.outputIndex === index && serves(asset, texture))
+  if (indexed) return indexed
+  return textureCount === 1
+    ? assets.find(asset => asset.outputIndex === undefined && serves(asset, texture))
+    : undefined
+}
+
+function serves(asset: Asset, texture: EmbeddedTexture): boolean {
+  return texture.channel ? asset.map === texture.channel : asset.packedSlot === texture.slot
+}
+
+function requestFor(
+  source: Asset,
+  texture: EmbeddedTexture,
+  id: string,
+  outputIndex: number,
+): WriteRequest {
   return {
     id,
     name: extractedTextureName(source.name, texture),
     type: 'image',
     extension: extensionOfMime(texture.mimeType),
+    folderRole: 'image',
     // Traceable both ways: the inspector shows a model's own pictures beside it by asking the
     // catalogue what was derived from it.
     derivedFrom: source.id,
+    outputIndex,
     // One or the other, never both: a slot naming exactly one channel says so through `map`, and
     // the rest carry the slot they came out of so something can later tell an ORM from a coat.
     ...(texture.channel ? { map: texture.channel } : { packedSlot: texture.slot }),
+    modelTextureUses: texture.uses,
     // A PNG carries its size in its header, which `probePng` reads. A JPEG's is not read at all —
     // nothing probes an extracted picture afterwards, so its row shows none.
     ...(isPngBytes(texture.bytes) ? { probe: probePng(texture.bytes) ?? undefined } : {}),

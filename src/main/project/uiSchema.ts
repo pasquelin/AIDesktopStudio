@@ -273,7 +273,7 @@ export const UI_SCHEMA_FILE = `docs/schema/ui-${UI_VERSION}.schema.json`
 export function uiJsonSchema(): Record<string, unknown> {
   return {
     $id: UI_SCHEMA_URL,
-    title: 'IA Studio interface',
+    title: 'AI Desktop Studio interface',
     ...z.toJSONSchema(uiDocumentSchema, { io: 'input' }),
   }
 }

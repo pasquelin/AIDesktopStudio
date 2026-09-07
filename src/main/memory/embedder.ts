@@ -18,8 +18,8 @@ export type Embedder = {
   embed: (texts: readonly string[], signal?: AbortSignal) => Promise<readonly Float32Array[]>
   /** One question. An empty vector where no model can answer — see `similarity`. */
   embedQuery: (text: string) => Promise<Float32Array>
-  /** Lets go of the process. The next call opens another one. */
-  close: () => Promise<void>
+  /** Lets go of the process, killing it after `graceMs` if it will not dispose. */
+  close: (graceMs?: number) => Promise<void>
 }
 
 export type EmbedderDeps = {
@@ -61,29 +61,33 @@ export function createEmbedder({
   // it computed was written under `model = 'B'`, where `dropOtherVectors('B')` never reaches it.
   let loading: string | null = null
   let cancelIdle: (() => void) | null = null
+  // The last process let go, still disposing its weights: the next one is not opened over it.
+  let releasing: Promise<void> = Promise.resolve()
 
-  const letGo = (): void => {
+  const letGo = (graceMs?: number): Promise<void> => {
     const going = held
     held = null
     opening = null
     cancelIdle?.()
     cancelIdle = null
-    going?.client.close()
+    if (going) releasing = going.client.close(graceMs)
+    return releasing
   }
 
   const restIdle = (): void => {
     cancelIdle?.()
-    cancelIdle = idleMs > 0 ? schedule(letGo, idleMs) : null
+    cancelIdle = idleMs > 0 ? schedule(() => void letGo(), idleMs) : null
   }
 
   const start = async (modelId: string): Promise<Held | null> => {
     const wanted = weightsFor(modelId)
     if (wanted === null) return null
+    await releasing
 
     // The client is compared on the way out, not captured: a process that died AFTER another
     // was opened must not take the live one with it.
     const client = open(() => {
-      if (held?.client === client) letGo()
+      if (held?.client === client) void letGo()
     })
 
     try {
@@ -94,12 +98,18 @@ export function createEmbedder({
         wanted.queryPrefix,
         wanted.contextTokens,
       )
+      // Loaded for a choice that moved meanwhile: nobody will hold it, so it goes here, once.
+      if (loading !== modelId) {
+        releasing = client.close()
+        return null
+      }
       return { modelId, client }
     } catch (error) {
       // A model that will not load costs the vectors, never the studio: the retrieval falls back
       // on exact search rather than pretending to have searched.
       onTrouble(messageOf(error))
-      client.close()
+      releasing = client.close()
+      await releasing
       return null
     }
   }
@@ -107,16 +117,10 @@ export function createEmbedder({
   const ready = async (): Promise<Held | null> => {
     const modelId = chosenId()
     if (modelId === null) {
-      // Chosen away, or uninstalled, while a process was up: it holds weights nothing will ask
-      // for again.
-      if (held) letGo()
+      if (held) void letGo()
       return null
     }
-
-    // Another model is another SPACE entirely, so the old weights must go: the vectors already
-    // stored are invalidated by their `model` column, not converted.
-    if (held && held.modelId !== modelId) letGo()
-    // The same, for a load still in flight — which `held` cannot say anything about yet.
+    if (held && held.modelId !== modelId) void letGo()
     if (opening !== null && loading !== modelId) {
       opening = null
       loading = null
@@ -128,8 +132,6 @@ export function createEmbedder({
     }
 
     const answered = await opening
-    // Read back rather than assigned blind: a load that started for another model settled while
-    // this one waited, and its client is not the one this caller asked for.
     if (loading !== modelId) return await ready()
 
     held = answered
@@ -168,7 +170,7 @@ export function createEmbedder({
       }
     },
 
-    close: async () => {
+    close: async graceMs => {
       // Awaited first: letting go mid-load leaves a process holding weights nothing will kill,
       // and quitting is exactly when that happens.
       try {
@@ -176,7 +178,7 @@ export function createEmbedder({
       } catch {
         // A load that failed was already reported by `start`, and has nothing left to close.
       }
-      letGo()
+      await letGo(graceMs)
     },
   }
 }

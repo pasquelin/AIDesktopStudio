@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import source from './SceneRenderer.ts?raw'
+import { sceneRendererSource as source } from './sceneRendererSource.testHelper'
 import { DEFAULT_SETTINGS } from '@shared/domain/settings'
 import { boundsOf } from '@shared/domain/settingsRegistry'
 

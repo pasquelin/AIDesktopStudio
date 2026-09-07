@@ -32,8 +32,8 @@
     "details": "Détail de la ligne",
     "editPixels": "Modifier l’image",
     "editPixelsHint": "Ouvre cette image dans l’espace Image, où ⌘S la réécrit sur place",
-    "extractTextures": "Extraire ses images",
-    "extractTexturesHint": "Sort les images contenues dans ce modèle vers le projet, où elles peuvent être ouvertes et peintes",
+    "extractTextures": "Extraire les textures du modèle",
+    "extractTexturesHint": "Extrait les textures intégrées du modèle vers Matières, où elles peuvent être ouvertes et modifiées",
     "fetchActionHint": "Télécharge les assets choisis de la bibliothèque distante dans le projet ouvert",
     "fetchAction_many": "Télécharger {{count, number}} assets",
     "fetchAction_one": "Télécharger {{count, number}} asset",
@@ -55,6 +55,8 @@
     "push_many": "Envoyer {{count, number}} assets",
     "push_one": "Envoyer {{count, number}} asset",
     "push_other": "Envoyer {{count, number}} assets",
+    "redrawPoster": "Redessiner la vignette",
+    "redrawPosterHint": "Dessine une nouvelle vignette pour cette animation, à la place de celle qu’elle porte",
     "renameHint": "Change le nom dans ce projet ; celui du compte distant ne bouge pas",
     "renameLabel": "Nom de l’asset",
     "search": "Rechercher…",
@@ -120,9 +122,16 @@
       "skybox": "Ciel",
       "material": "Matière",
       "script": "Script",
-      "gui": "Interface"
+      "gui": "Interface",
+      "character": "Personnage"
     },
     "new": "Nouveau document",
+    "newKinds": "Types de documents",
+    "noProjectBody": "Un document est un fichier dans un projet. Ouvrez-en un, ou créez-en un, pour commencer.",
+    "recentProjects": "Projets récents",
+    "importFiles": "Importer des fichiers",
+    "importProjectTitle": "Choisissez un projet de destination",
+    "importProjectBody": "Les fichiers seront copiés dans le projet sélectionné, puis ouverts dans le studio.",
     "newByKind": {
       "image": "Nouvelle image",
       "scene": "Nouvelle scène",
@@ -186,7 +195,9 @@
     "templateField": "Modèle de départ",
     "templateGroups": {
       "general": "Général",
-      "character": "Personnage"
+      "character": "Personnage",
+      "machine": "Machine",
+      "staging": "Mise en scène"
     },
     "templates": {
       "empty": "Vide",
@@ -197,7 +208,9 @@
       "firstPerson": "1re personne",
       "thirdPerson": "3e personne",
       "topDown": "Vue de dessus",
-      "postProcessing": "Post-traitement"
+      "postProcessing": "Post-traitement",
+      "car": "Voiture",
+      "plane": "Avion"
     },
     "templateHints": {
       "empty": "Trois lumières, et rien d’autre à retirer",
@@ -208,19 +221,25 @@
       "firstPerson": "La caméra à hauteur d’œil, prête à marcher",
       "thirdPerson": "La caméra derrière l’épaule d’une silhouette",
       "topDown": "La caméra en plongée, au-dessus de la scène",
-      "postProcessing": "Un mouvement de caméra, une bascule de point et un halo animé — de quoi juger toute la chaîne"
+      "postProcessing": "Un mouvement de caméra, une bascule de point et un halo animé — de quoi juger toute la chaîne",
+      "car": "Une voiture sur ses quatre roues, à conduire sur le parcours",
+      "plane": "Un avion déjà en vol, à piloter au manche et aux gaz"
     },
     "uiTemplates": {
       "empty": "Vide",
       "hud": "HUD",
       "mainMenu": "Menu principal",
-      "pause": "Menu de pause"
+      "pause": "Menu de pause",
+      "mainMenuControls": "Menu + contrôles",
+      "pauseControls": "Pause + contrôles"
     },
     "uiTemplateHints": {
       "empty": "Un écran nu, à remplir",
       "hud": "Un score en haut, une jauge de vie en bas",
       "mainMenu": "Un titre et des boutons, au centre",
-      "pause": "Un voile sur la partie, et de quoi reprendre"
+      "pause": "Un voile sur la partie, et de quoi reprendre",
+      "mainMenuControls": "Un menu principal qui ouvre aussi la configuration des contrôles",
+      "pauseControls": "Un menu de pause qui ouvre aussi la configuration des contrôles"
     },
     "folderField": "Emplacement",
     "folderHint": "Choisit le dossier du projet où le document sera enregistré",

@@ -1,0 +1,268 @@
+/*
+ * The panel chassis reads its own gauges and colours from these, so `@pasquelin/panels` is
+ * dressed by the studio's tokens rather than by the neutral palette it ships — the same rule
+ * React Flow follows below, and the one no component escapes.
+ *
+ * Every value is a REFERENCE, never a copy: the density switch rewrites the `--sc-*` half under
+ * `[data-density='compact']`, and a copied number would stop following it. The chassis has no
+ * second declaration as a result.
+ *
+ * `--pnl-surface` has no counterpart here and takes the panel's own colour: it exists for a tab
+ * strip, which the studio draws with Dockview rather than with the chassis.
+ *
+ * 🛑 BOTH selectors. `:root` is what a `Surface` mounted outside `<Panels>` needs — the skeleton
+ * window mounts two, and they fell to no background at all. `.pnl-root` is what the docks still
+ * need: the library declares its own palette ON that element, and a declaration there beats an
+ * inherited one whatever the specificity says.
+ */
+:root,
+.pnl-root {
+  --pnl-rail: var(--sc-rail);
+  --pnl-rail-button: var(--sc-rail-button);
+  --pnl-gutter: var(--sc-gutter);
+  --pnl-header: var(--sc-header);
+  --pnl-tab: var(--sc-tab);
+  --pnl-radius: var(--radius-sc-lg);
+  --pnl-radius-sm: var(--radius-sc-md);
+  --pnl-font-size: var(--text-body);
+
+  --pnl-chassis: var(--color-chassis);
+  --pnl-panel: var(--color-panel);
+  --pnl-surface: var(--color-panel);
+  --pnl-elevated: var(--color-elevated);
+  --pnl-border: var(--color-border);
+  --pnl-text: var(--color-text);
+  --pnl-muted: var(--color-muted);
+  --pnl-accent: var(--color-accent);
+  --pnl-accent-text: var(--color-accent-content);
+}
+
+.pnl-root .pnl-rail-drag__placeholder,
+.pnl-root .pnl-rail-drag__empty,
+.pnl-root .pnl-rail-drag__ghost {
+  border-radius: var(--radius-sc-md);
+}
+
+/*
+ * React Flow reads its own colours from these, so the canvas is dressed by the studio's tokens
+ * rather than by a stylesheet holding hex values of its own — the one rule no component escapes.
+ *
+ * The dashed, thick edge is the webapp's: `stroke-width: 3; stroke-dasharray: 8`, read off
+ * `app.scenario.com`. Keeping it means a graph looks the same in both editors, which is the
+ * point of adopting their format in the first place.
+ */
+.react-flow {
+  --xy-background-color: var(--color-panel);
+  --xy-background-pattern-color: var(--color-border);
+  --xy-node-color: var(--color-text);
+  --xy-edge-stroke: var(--color-border);
+  --xy-edge-stroke-selected: var(--color-accent);
+  --xy-edge-stroke-width: 3;
+  --xy-connectionline-stroke: var(--color-accent);
+  --xy-connectionline-stroke-width: 3;
+  --xy-handle-background-color: var(--color-surface);
+  --xy-selection-background-color: var(--color-accent-soft);
+  --xy-selection-border: 1px dotted var(--color-accent);
+  --xy-resize-background-color: var(--color-accent);
+}
+
+.react-flow__edge-path,
+.react-flow__connection-path {
+  stroke-dasharray: 8;
+}
+
+/*
+ * react-tooltip pads a wrapper INSIDE the bubble — `8px 16px`, on a node `TooltipHost` never
+ * names — and the classes it puts on the bubble itself cannot reach it. Left alone, the padding
+ * that host declares is added to this one rather than being it, and the bubble reads as a plaque:
+ * measured at 130×39 for one 11-pixel line. The bubble keeps its own padding; this one goes.
+ *
+ * Two class names deep because the library's own rule is one, and its stylesheet is injected
+ * after this file: at equal specificity the later rule wins, and a single class here was
+ * measured doing nothing at all.
+ */
+.react-tooltip .react-tooltip-content-wrapper {
+  padding: 0;
+}
+
+/*
+ * The bubble LEAVES at once (library default `0.15s`); the wait belongs on the way in, and the
+ * opening fade stays so a bubble does not snap in after its second of wait. 🛑 `clickable` keeps
+ * its own 100 ms — `delayHide || 100`, a zero is falsy — which is what lets the pointer cross the
+ * 8 px `offset` to sweep the bubble (WCAG SC 1.4.13).
+ */
+.react-tooltip {
+  --rt-transition-closing-delay: 0s;
+}
+
+/*
+ * The two edges of a selection in the take editor, which the regions plugin writes inline as
+ * `rgba(0, 0, 0, 0.5)` — a black that reads 1.15:1 on the dark chassis, so the marks that
+ * actually bound the selection are the ones nobody can see.
+ *
+ * They are what CARRIES the state, and the veil inside them is emphasis on top: the accent at
+ * full clears the 3:1 WCAG 1.4.11 asks of a control, where the veil composed on the chassis
+ * reads 1.44 and could not reach that bar at any alpha still letting the wave through. Both
+ * ratios are measured in `design/tokens.test.ts`, which also holds this rule to its class.
+ *
+ * `::part` because wavesurfer builds its own shadow host inside our surface — hence the
+ * descendant step, the host being its div and not ours — and `!important` because the plugin
+ * writes the border inline, where no author rule reaches it.
+ */
+.sc-wave div::part(region-handle-left),
+.sc-wave div::part(region-handle-right) {
+  border-color: var(--color-accent) !important;
+}
+
+/*
+ * The graduations above the take, drawn by wavesurfer's timeline plugin — dressed here rather
+ * than through the plugin's own `style` option so that a theme switched with the editor open
+ * reaches them: the instance is built once per surface and never rebuilt on a palette change,
+ * precisely so a drag in progress survives.
+ *
+ * The ink and the type are the strip's, which `readRulerStyle` gives the two canvas rulers of the
+ * same tab: one grid to read, in three places. Monospace for the reason a timecode always is —
+ * proportional digits shuffle the label sideways as the numbers change.
+ */
+.sc-wave div::part(timeline-wrapper) {
+  color: var(--color-muted);
+  font-family: ui-monospace, monospace;
+}
+
+/*
+ * The size is set on the INNER part, and only there: the plugin writes `font-size` inline on it,
+ * computed as half the height it was given, so the same rule on the wrapper above is inherited
+ * into nothing. `!important` for that inline style, as the region handles two rules up.
+ */
+.sc-wave div::part(timeline) {
+  font-size: var(--text-mini) !important;
+}
+
+:focus,
+/*
+ * `:focus-within` is the half the first selector never covered, and daisyUI writes its field ring
+ * on exactly that — so the account form of the welcome drew an outline the studio had decided
+ * against, in the one window built on daisyUI's own components. Its cost is the one
+ * `no-focus-ring.test.ts` states, unchanged: this widens the owner's rule, it does not soften it.
+ */
+:focus-within {
+  outline: none !important;
+}
+
+/*
+ * The THIRD selector, and the one that survived the two above: `.select:focus, .select:focus-within,
+ * .select:open` is daisyUI's rule, and a select whose menu is DEPLOYED matches only the last of
+ * them — the ring came back for exactly as long as the list was down. Its own rule rather than a
+ * fourth name on the list above: `:open` shipped in Chromium 133, and a selector an older parser
+ * rejects takes the whole list with it.
+ */
+:open {
+  outline: none !important;
+}
+
+/*
+ * What a picture sits on once it fills the screen — the video return put on a second display and
+ * filled from the window menu, and anything else a viewer takes full screen later.
+ *
+ * The monitor keeps `chassis` inside the studio, where the panel around it is what says "this is
+ * a surface". Full screen there is no panel, and a dark grey field around a film is the one thing
+ * a room notices. Chromium paints the layer behind it too, hence the backdrop: without it the
+ * page shows through at the edges.
+ */
+:fullscreen,
+:fullscreen::backdrop {
+  background: var(--color-monitor);
+}
+
+/*
+ * `truncate`, cutting at the START. What it is for is a PATH: `Images/Croquis/etude.jpg` clipped
+ * the ordinary way leaves `Images/Croqui…`, which is the half nobody reads — the file's own name
+ * is at the far end, and it is what the row is about.
+ *
+ * `direction: rtl` is the whole trick: the browser only ever puts its ellipsis at the end of the
+ * writing direction, so the text is laid out right to left and the clip lands on the left. What
+ * it costs is that a path ENDING in punctuation would draw that punctuation on the wrong side,
+ * which `unicode-bidi: plaintext` settles by reading each run in its own direction.
+ *
+ * A utility rather than three declarations in a component: they are one rule, and one of the
+ * three alone is a name that reads backwards.
+ */
+@utility truncate-start {
+  overflow: hidden;
+  direction: rtl;
+  unicode-bidi: plaintext;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/*
+ * A picture cut to the DOCUMENT silhouette — `mdiFile` MINUS its fold, written here because CSS
+ * cannot read `@mdi/js`. A mask SUBTRACTS a second subpath instead of drawing it, and the fold
+ * came out as a black triangle of panel through the corner of every thumbnail.
+ */
+@utility document-cutout {
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6,2C4.89,2 4,2.89 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2H6Z'/%3E%3C/svg%3E");
+  mask-size: contain;
+  mask-position: center;
+  mask-repeat: no-repeat;
+}
+
+/*
+ * The handle of a slider, and nothing else — the rail is `SliderRail`, drawn behind it. A utility
+ * rather than classes in a component: a pseudo-element is out of reach of one, and the two rules
+ * are a single control. WebKit alone, this window being Chromium.
+ */
+@utility slider-handle {
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+
+  &::-webkit-slider-thumb {
+    appearance: none;
+    width: var(--sc-slider-thumb);
+    height: var(--sc-slider-thumb);
+    border: none;
+    border-radius: calc(infinity* 1px);
+    background: var(--color-accent);
+  }
+}
+
+/*
+ * Where a section's glyph sits inside the folder silhouette of a grid tile. A utility rather than
+ * classes on the element: these are the coordinates of the `mdiFolder` path, whose body spans
+ * 6 to 20 of a 24 viewBox — so the middle of the folder is BELOW the middle of its box.
+ */
+@utility folder-emblem {
+  position: absolute;
+  inset: 38.2% 34% 29.8%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-chassis);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  /* What text without a size class falls to; the ladder above says why it is not `rem`. The
+     gauges stay in pixels, because a control has to keep hitting the same target size whatever
+     the text does. */
+  font-size: var(--text-body);
+  /* A studio never scrolls as a whole: every panel handles its own overflow. */
+  overflow: hidden;
+  user-select: none;
+}
+
+/*
+ * Not `prefers-reduced-motion`: that one is the system's answer, and this is the setting. The
+ * studio is where someone may want the interface still while the OS animates everywhere else.
+ *
+ * `1ms` rather than `0`: a zero-length transition never fires `transitionend`, and a component
+ * waiting on it to unmount would stay on screen for good.
+ */
+:root[data-reduce-motion='true'] *,
+:root[data-reduce-motion='true'] *::before,
+:root[data-reduce-motion='true'] *::after {
+  animation-duration: 1ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 1ms !important;
+  scroll-behavior: auto !important;
+}

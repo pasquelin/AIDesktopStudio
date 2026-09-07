@@ -14,6 +14,8 @@ export type GpuStats = {
   /** Alive in the context now, not per frame: what a missing `dispose` makes climb. */
   geometries: number
   textures: number
+  renderMs: number
+  gpuFrameMs: number | null
 }
 
 /** Only the counters that are read. A real `WebGLRenderer.info` satisfies this by shape. */
@@ -23,7 +25,17 @@ export type FrameCounters = {
 }
 
 export function emptyGpuStats(): GpuStats {
-  return { calls: 0, triangles: 0, points: 0, lines: 0, frames: 0, geometries: 0, textures: 0 }
+  return {
+    calls: 0,
+    triangles: 0,
+    points: 0,
+    lines: 0,
+    frames: 0,
+    geometries: 0,
+    textures: 0,
+    renderMs: 0,
+    gpuFrameMs: null,
+  }
 }
 
 /**
@@ -33,12 +45,17 @@ export function emptyGpuStats(): GpuStats {
  * `frames` is counted here rather than read off `info.render.frame`, which counts calls to
  * `render`: a viewport that draws an overlay makes two of those per frame.
  */
-export function recordFrame({ render, memory }: FrameCounters, into: GpuStats): void {
+export function recordFrame(
+  { render, memory }: FrameCounters,
+  into: GpuStats,
+  renderMs: number = into.renderMs,
+): void {
   into.calls = render.calls
   into.triangles = render.triangles
   into.points = render.points
   into.lines = render.lines
   into.geometries = memory.geometries
   into.textures = memory.textures
+  into.renderMs = renderMs
   into.frames += 1
 }

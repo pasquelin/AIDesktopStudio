@@ -1,7 +1,7 @@
-# IA Studio — architecture
+# AI Desktop Studio — architecture
 
 Comment le studio est bâti, et pourquoi il l’est ainsi. Écrit pour qui reprend le code. Vous
-cherchez plutôt comment *s’en servir* ? Voir [guide-utilisateur.md](guide-utilisateur.md).
+cherchez plutôt comment _s’en servir_ ? Voir [guide-utilisateur.md](guide-utilisateur.md).
 
 > 🇬🇧 This document is also available [in English](../en/architecture.md).
 
@@ -163,32 +163,17 @@ getBridge()          →  window.studio         →  ipcMain.handle(CHANNELS.x)
   .searchModels(q)          contextBridge           renvoie des données typées
 ```
 
-**83 canaux dans `CHANNELS`, plus 18 événements dans `EVENTS`** — relevé le 9 août 2026 au soir, et
-le chiffre bouge à chaque chantier : **il a bougé deux fois dans la journée où cette phrase a été
-écrite**. Le compter (`CHANNELS`, deux espaces d’indentation) coûte moins que de le croire.
-Vingt et un préfixes, dont les plus chargés :
+Les registres `CHANNELS` et `EVENTS` font foi ; aucun compte recopié dans la documentation n’est
+stable. `missions:watch` et `missions:create` montent vers le main. `evt:mission-changed` redescend
+uniquement vers la fenêtre abonnée, avec une projection filtrée sur son projet.
 
-| Famille | Nb | Ce qu’elle porte |
-|---|---|---|
-| `provider:*` | 13 | recherche de modèles, description, génération, contrôle des jobs |
-| `assets:*` / `cloud:*` | 9 + 6 | catalogue du projet, ingestion, et la bibliothèque du compte |
-| `dictation:*` | 8 | permissions du micro, modèle, session de reconnaissance |
-| `settings:*` / `accounts:*` | 6 + 5 | lecture, écriture, identifiants, état d’authentification |
-| `document:*` | 6 | ouvrir, écrire, lister les documents du projet |
-| `styles:*` | 4 | les réglages de matière, enregistrés et rejoués |
-| `favorites:*`, `project:*`, `media:*`, `window:*` | 3 chacun | — |
-| `dialog:*`, `fonts:*`, `update:*` | 2 chacun | — |
-| `activity:*`, `diagnostics:*`, `scene:*`, `material:*`, `skybox:*` | 1 chacun | — |
-
-**`EVENTS` est l’autre sens** — le main poussant vers le renderer, dix-huit entrées : progression
-des jobs et des imports, lignes de journal, changements de projet et de réglages, état de fenêtre,
-aperçus de dictée, et le menu natif qui demande à l’UI d’ouvrir un outil ou une section de réglages,
-d’exécuter une commande, ou de déposer un nœud dans la scène.
+**`EVENTS` est l’autre sens** — le main pousse notamment la progression, les changements de projet
+et de réglages, les missions, l’état des fenêtres, la dictée et les commandes du menu natif.
 
 La séparation n’est pas cosmétique : **chaque `on…` du pont s’abonne à exactement une entrée de
 `EVENTS`**, et chaque méthode d’appel à exactement une de `CHANNELS`.
 
-Les fichiers locaux sont servis au renderer par un protocole `ia-studio://`. L’URL est dérivée de
+Les fichiers locaux sont servis au renderer par un protocole `ai-desktop-studio://`. L’URL est dérivée de
 l’identifiant de l’asset : une grille de vignettes ne coûte donc aucun IPC — et le renderer ne
 manipule toujours aucun chemin de fichier.
 
@@ -233,15 +218,16 @@ src/main/
 │   ├── syncPlan.ts          ce que deux côtés devraient faire l'un de l'autre
 │   ├── collector.ts         ce qu'une génération dépose dans le projet
 │   ├── autoCaption.ts       nommer une image d'après ce que l’API y voit
-│   └── protocol.ts          le protocole ia-studio://
+│   └── protocol.ts          le protocole ai-desktop-studio://
 ├── dictation/               la reconnaissance vocale : permissions, modèle, découpage, handlers
 ├── assistant/               la pensée de l'assistant, derrière un port, et ce qu'on en relit
+├── mission/                 autorité, store, journal versionné, événements et handlers des missions
 ├── mcp/                     le même catalogue d'actions, offert à un client extérieur
 ├── settings/                le store chiffré, son adaptateur, ses handlers
 ├── favorites/               les recettes épinglées, gardées hors des projets
 ├── styles/                  les réglages de matière qu'on rejoue d'une matière à l'autre
 ├── scene/                   l'export d'une scène, et sa validation
-├── export/                  écrire plusieurs fichiers dans un dossier : une matière, six faces de ciel
+├── export/                  paquets déterministes de matière, ciel et jeu compilé
 ├── diagnostics/             le canal par lequel le renderer signale un échec
 ├── media/                   importer un fichier : sonde, hachage, proxy, forme d'onde
 ├── fonts/                   les polices embarquées et celles du système
@@ -259,6 +245,30 @@ src/main/
 > dossier de l'utilisateur, ce qui n'appartient qu'à lui. **Le nom du fichier de transit est un
 > paramètre et non une constante** : les trois stores sérialisent leurs écritures, mais plusieurs
 > fenêtres écrivent dans le même dossier de projet.
+
+### Les missions survivent au processus
+
+Le main est l’unique autorité des missions. Le Store sérialise leurs révisions et les projette aux
+fenêtres ; le Manager publie les événements métier. Le journal append-only version 1 vit dans
+`<userData>/missions.ndjson` et restaure la dernière révision valide de chaque identifiant. Une
+ligne invalide est ignorée, une version future est refusée. Une action retrouvée `running` est mise
+en pause avec `action_outcome_unknown` et n’est jamais rejouée automatiquement. L’arrêt attend le
+flush du Store, puis celui du journal.
+
+Avant qu’une étape réfléchisse, `AssistantContextBuilder` reconstruit un objet typé depuis la
+mission et l’état courant : snapshot validé de la fenêtre, projet, document, sélection, résultats,
+jobs, contexte projet, souvenirs rappelés et actions recherchées. Chaque source est limitée avant
+l’assemblage et publie son propre rapport de budget. Un snapshot appartenant à un autre projet est
+écarté en bloc, afin que deux missions ou deux fenêtres ne partagent jamais un état volatil.
+
+Le renderer publie aussi l’état structurel du document actif depuis un registre exhaustif de
+providers par type. Les stores de document portent une révision logique distincte du marqueur
+`dirty` ; sélection, playhead et autres états de vue empruntent un chemin qui ne la modifie pas.
+Chaque incarnation de fenêtre possède une identité propre, afin qu’une mission restaurée ne puisse
+pas confondre un compteur neuf avec son ancienne précondition. Le Scheduler compare ces lectures
+avant chaque exécution, persiste les nouvelles préconditions et remet les changements au runner :
+celui-ci peut relire le contexte et conserver le plan ou demander sa révision, sans transformer une
+modification humaine en échec.
 
 ### Le JobManager est le seul à poller
 
@@ -354,7 +364,7 @@ sont figées, et chacune répond à un défaut précis :
 ### L’import de médias
 
 Importer un fichier est un pipeline à étapes nommées — `probe`, `hash`, `proxy`, `peaks` —
-chacune rapportant un ratio sur l’import *entier*, pas sur elle-même : une barre de progression
+chacune rapportant un ratio sur l’import _entier_, pas sur elle-même : une barre de progression
 veut donc dire la même chose à toutes les étapes. Il est annulable à tout moment : le proxy d’un
 rush de vingt minutes doit pouvoir s’arrêter sur demande.
 
@@ -387,6 +397,13 @@ deux lecteurs, et **aucun des deux ne décide** :
 - **l’assistant**, dans la fenêtre, à qui le briefing donne **tous les NOMS** et rien d’autre ;
 - **`main/mcp/tools.ts`**, qui republie **tout**, champs compris, en outils MCP pour un client
   extérieur.
+
+Le main dérive aussi de ce registre un `ActionIndex` reconstructible dans `<userData>/actions.db`.
+Les actions, leurs champs, le FTS5 et les vecteurs y sont séparés ; une empreinte du corpus évite
+les reconstructions inutiles. Toute lecture SQLite s’exécute dans `actionIndexWorker`. Le service
+réutilise l’unique modèle d’embedding déjà partagé avec la mémoire et retombe sur FTS5 lorsqu’il
+n’y en a pas. Cet index prépare le runtime de missions ; le briefing historique conserve encore
+ses noms jusqu’au raccord complet du nouveau chemin.
 
 **Le briefing porte les noms, jamais les modes d’emploi.** Les 283 actions groupées par famille
 coûtent 4 225 caractères, là où leurs descriptions et leurs champs en coûtent 90 994 — que seule la
@@ -532,15 +549,15 @@ vide. Le splash lui-même a son entrée à part, précisément pour ne jamais ti
 
 Sept choses en sont tenues dehors, chacune parce qu’une session ordinaire ne les ouvre pas toutes :
 
-| Ce qui est chargé à la demande | Pourquoi |
-|---|---|
-| Les **six éditeurs** | une session en ouvre un ou deux ; les six pèsent plusieurs mégaoctets |
-| Les **quinze panneaux** | un espace en montre trois ou quatre, jamais les quinze |
-| Le **formulaire de génération**, et zod, `react-hook-form`, `@hookform/resolvers` avec lui | on ouvre un générateur, on n’arrive pas dessus |
-| La fenêtre des **Réglages** — son registre, ses sections, son brouillon | une cinquantaine de kilooctets d’une autre fenêtre |
-| La fenêtre des **Licences** | le texte intégral de chaque licence embarquée, que personne ne lit dans une session ordinaire |
-| La fenêtre de **Consommation** | pour une raison plus dure que sa taille : la bibliothèque de graphiques |
-| Le **parseur de polices** (`opentype.js`) | seul le texte en volume et les légendes en ont besoin |
+| Ce qui est chargé à la demande                                                             | Pourquoi                                                                                      |
+| ------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------- |
+| Les **six éditeurs**                                                                       | une session en ouvre un ou deux ; les six pèsent plusieurs mégaoctets                         |
+| Les **quinze panneaux**                                                                    | un espace en montre trois ou quatre, jamais les quinze                                        |
+| Le **formulaire de génération**, et zod, `react-hook-form`, `@hookform/resolvers` avec lui | on ouvre un générateur, on n’arrive pas dessus                                                |
+| La fenêtre des **Réglages** — son registre, ses sections, son brouillon                    | une cinquantaine de kilooctets d’une autre fenêtre                                            |
+| La fenêtre des **Licences**                                                                | le texte intégral de chaque licence embarquée, que personne ne lit dans une session ordinaire |
+| La fenêtre de **Consommation**                                                             | pour une raison plus dure que sa taille : la bibliothèque de graphiques                       |
+| Le **parseur de polices** (`opentype.js`)                                                  | seul le texte en volume et les légendes en ont besoin                                         |
 
 **Un `lazy()` qui échoue ne se rattrape pas par un réessai** : React met le rejet en cache, si
 bien que le bouton « Réessayer » de la frontière d’erreur ne peut pas gagner sur ces routes. La
@@ -666,14 +683,14 @@ l’espace, quand `shared/` n’a aucune dépendance runtime. D’où une couche
 
 Six, aucun React à l’intérieur d’aucun.
 
-| Moteur | Adossé à | Détient |
-|---|---|---|
-| `CanvasEngine` | PixiJS 8.19 | le document image : calques, formes, tracés |
-| `SceneRenderer` | three.js 0.185 | la scène 3D : maillages, lumières, gizmos, caméra |
-| `TimelineEngine` | mediabunny + Canvas + Web Audio | la séquence : clips, lecture image ET son, formes d’onde, vignettes |
-| `engines/audio` | tableaux d’échantillons | l’édition sonore : rogner, fondus, gain, normaliser, silences |
-| `SkyboxRenderer` | `ViewportEngine` | le ciel vu de l’intérieur : soleil, étalonnage, sondes |
-| `MaterialRenderer` | `ViewportEngine` | la matière posée sur une forme : canaux PBR, environnement, tiling |
+| Moteur             | Adossé à                        | Détient                                                             |
+| ------------------ | ------------------------------- | ------------------------------------------------------------------- |
+| `CanvasEngine`     | PixiJS 8.19                     | le document image : calques, formes, tracés                         |
+| `SceneRenderer`    | three.js 0.185                  | la scène 3D : maillages, lumières, gizmos, caméra                   |
+| `TimelineEngine`   | mediabunny + Canvas + Web Audio | la séquence : clips, lecture image ET son, formes d’onde, vignettes |
+| `engines/audio`    | tableaux d’échantillons         | l’édition sonore : rogner, fondus, gain, normaliser, silences       |
+| `SkyboxRenderer`   | `ViewportEngine`                | le ciel vu de l’intérieur : soleil, étalonnage, sondes              |
+| `MaterialRenderer` | `ViewportEngine`                | la matière posée sur une forme : canaux PBR, environnement, tiling  |
 
 Les trois qui montrent de la 3D partagent `engines/viewport/` — canevas, caméra, orbite,
 redimensionnement, boucle à la demande, éclairage par image. Chacun écrivant le sien, c’était
@@ -721,7 +738,7 @@ aucune commande. Un seul appelant est concerné aujourd’hui, `setSkyboxSource`
 chemins d’entrée d’une image dans un ciel.
 
 `nodeFactory.ts`, `meshPrimitives.ts`, `lightTypes.ts` et `threeFactory.ts` gardent la
-*description* d’un nœud séparée de son instanciation three.js — une scène se sérialise donc sans
+_description_ d’un nœud séparée de son instanciation three.js — une scène se sérialise donc sans
 traîner le moteur de rendu avec elle, et se reconstruit depuis cette seule sérialisation.
 
 Et une fois l’objet three instancié, **on le mute, on ne le remplace pas** : `.set` plutôt qu’un
@@ -812,7 +829,7 @@ un formulaire de génération qui perd un champ en silence est pire qu’un form
 un job attend des minutes avant de partir, et un contexte modifié entre-temps serait ajouté à un
 corps que quelqu’un a déjà lu à l’écran. C’est aussi le seul point que le devis et la génération
 partagent : ce qui est chiffré est ce qui est envoyé. La clé du champ de prompt se trouve par
-`promptSpark`, jamais par son nom — un contexte tombé dans un *negative prompt* demanderait
+`promptSpark`, jamais par son nom — un contexte tombé dans un _negative prompt_ demanderait
 l’inverse de lui-même. Un modèle qui n’en déclare aucun n’est pas touché, en silence.
 
 **Le prompt ÉCRIT voyage à côté** (`AuthoredPrompt`), du handler jusqu’au collecteur : l’API renvoie
@@ -827,7 +844,7 @@ ne gagne aucun champ : `withAuthoredPrompt` remet l’écrit dans `params`, ce q
 qu’obtiennent une ou deux générations, pas une cadence fixe. À cadence fixe, quatre générations
 simultanées demandent 120 requêtes par minute contre les cent que l’API accorde — le limiteur
 retient alors chaque poll, le SDK réessaie, et **une génération qui tourne et qui est facturée est
-rapportée comme un échec de débit au bout de quinze secondes**. Le budget lui-même est *dérivé*
+rapportée comme un échec de débit au bout de quinze secondes**. Le budget lui-même est _dérivé_
 des constantes de `rateLimiter.ts` et non écrit en clair, précisément pour qu’il ne devienne pas
 faux en silence le jour où l’une d’elles bouge.
 
@@ -874,7 +891,7 @@ l’assistant. Il vit dans le DOSSIER et non dans les réglages, contrairement �
 Il refuse d’être écrasé quand il est illisible ou d’une version plus récente, l’inverse de
 `jobStore.ts` : ce qu’il porte est le texte de quelqu’un.
 
-Le **rôle d’un dossier** est dit par un marqueur qu’il porte, `.ia-studio-role`, et non par son
+Le **rôle d’un dossier** est dit par un marqueur qu’il porte, `.ai-desktop-studio-role`, et non par son
 nom : dix rôles (`shared/domain/folderRole.ts`), un par endroit où le studio dépose quelque chose.
 `DEFAULT_ROLE_PATHS` dit où chacun COMMENCE — `Images/`, `Modelling/Scenes/`, `Scripts/`… — et rien
 de plus : le dossier est ordinaire dès la première seconde, et un renommage fait dans le Finder ne
@@ -903,7 +920,7 @@ pour qu’un projet reste transportable.
 **Il ne se reconstruit pas.** Rien ne redevine ce qu’un fichier EST : le catalogue se remplit au
 fil des générations et des imports. Le supprimer perd les noms, les étiquettes, les dimensions, la
 recette de génération, `derivedFrom`, le `sourcePath` des médias liés et le journal d’activité —
-les fichiers restent, plus rien ne dit ce qu’ils sont. `.ia-studio/items.json` est ce qui reste à
+les fichiers restent, plus rien ne dit ce qu’ils sont. `.ai-desktop-studio/items.json` est ce qui reste à
 lire ce jour-là : une sauvegarde indexée par empreinte de contenu, écrite après chaque passe de
 réconciliation qui a changé quelque chose, que le studio ne relit jamais de lui-même.
 
@@ -918,7 +935,7 @@ daté, si bien que la corbeille — qui date au lieu d’effacer — rend une li
 en ressort.
 
 Un asset est soit `local` (un fichier du projet), soit `cloud` (encore uniquement chez le fournisseur).
-Une image locale est servie au renderer sous la forme `ia-studio://<id>`.
+Une image locale est servie au renderer sous la forme `ai-desktop-studio://<id>`.
 
 Les **documents** sont des fichiers rangés où l’utilisateur veut — le dossier de leur section
 n’est que là où atterrit une première sauvegarde, et `documents.list()` parcourt le projet entier
@@ -1054,18 +1071,18 @@ dialogues, gestion des clés API, onboarding.
 
 Les primitives, toutes dans `components/` :
 
-| | |
-|---|---|
-| `Panel`, `PanelHeader` | la surface sombre arrondie et sa ligne de titre |
-| `Row` | **la** ligne, partout — vignette ou icône, titre, sous-titre, actions, infobulle sur un nom tronqué |
-| `Collection`, `CollectionBar` | la liste virtualisée à deux vues, et sa barre de recherche/facettes/tri |
-| `MediaTile`, `Thumbnail` | la tuile carrée légendée, et la même image à taille fixe |
-| `Toolbar`, `ToolButton`, `Button`, `UiIcon` | la barre partagée, ses boutons d’icône, ses boutons libellés, l’unique porte des icônes |
-| `ProgressRow`, `ProgressBar` | « quelque chose se passe, voilà où ça en est » — partagés par le résumé des générations, sa liste dépliée et l’import de médias |
-| `PropertySection` et les champs | `TextField`, `NumberField`, `SliderField`, `RangeField`, `ColorField`, `VectorField`, `ToggleField`, `PictureField`, `AssetDropField`, `PropertyRow` — ce dont l’inspecteur est fait |
-| `DynamicForm` | le seul formulaire de génération qui existe |
-| `Tree`, `Flyout`, `MenuButton`, `MenuRow`, `EmptyState`, `Timecode`, `Separator`, `TooltipHost` | |
-| `styles.ts` | les chaînes de classes partagées par plus d’un composant : `FOCUS_RING`, `CONTROL`, `MEDIA_FRAME` |
+|                                                                                                 |                                                                                                                                                                                      |
+| ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `Panel`, `PanelHeader`                                                                          | la surface sombre arrondie et sa ligne de titre                                                                                                                                      |
+| `Row`                                                                                           | **la** ligne, partout — vignette ou icône, titre, sous-titre, actions, infobulle sur un nom tronqué                                                                                  |
+| `Collection`, `CollectionBar`                                                                   | la liste virtualisée à deux vues, et sa barre de recherche/facettes/tri                                                                                                              |
+| `MediaTile`, `Thumbnail`                                                                        | la tuile carrée légendée, et la même image à taille fixe                                                                                                                             |
+| `Toolbar`, `ToolButton`, `Button`, `UiIcon`                                                     | la barre partagée, ses boutons d’icône, ses boutons libellés, l’unique porte des icônes                                                                                              |
+| `ProgressRow`, `ProgressBar`                                                                    | « quelque chose se passe, voilà où ça en est » — partagés par le résumé des générations, sa liste dépliée et l’import de médias                                                      |
+| `PropertySection` et les champs                                                                 | `TextField`, `NumberField`, `SliderField`, `RangeField`, `ColorField`, `VectorField`, `ToggleField`, `PictureField`, `AssetDropField`, `PropertyRow` — ce dont l’inspecteur est fait |
+| `DynamicForm`                                                                                   | le seul formulaire de génération qui existe                                                                                                                                          |
+| `Tree`, `Flyout`, `MenuButton`, `MenuRow`, `EmptyState`, `Timecode`, `Separator`, `TooltipHost` |                                                                                                                                                                                      |
+| `styles.ts`                                                                                     | les chaînes de classes partagées par plus d’un composant : `FOCUS_RING`, `CONTROL`, `MEDIA_FRAME`                                                                                    |
 
 Écrire à la main une ligne, une surface de panneau ou un cadre d’image est un bug de style, pas
 un raccourci.
@@ -1115,9 +1132,9 @@ donc une bulle et un menu ont le même aspect parce qu’ils partagent la même 
 Deux bibliothèques ont fait le chemin inverse et sont entrées, chacune pour une chose qu’on
 n’écrit pas soi-même :
 
-| | |
-|---|---|
-| `recharts` | les courbes de la fenêtre de consommation — dépense par jour, par compte |
+|               |                                                                                       |
+| ------------- | ------------------------------------------------------------------------------------- |
+| `recharts`    | les courbes de la fenêtre de consommation — dépense par jour, par compte              |
 | `opentype.js` | la lecture des tables d’une police, pour le texte en volume et la légende d’une image |
 
 `opentype.js` est **chargé à la demande** : il ne pèse pas sur le premier écran, qui n’a aucune
@@ -1296,7 +1313,7 @@ Trois conséquences, dont une à accepter :
 d’usage affichait « images-generation » et « video » dans une fenêtre française : même symptôme,
 autre outil. Ces valeurs-là sont **trois unions fermées et documentées**, listées par `usages.list`
 et recopiées dans `shared/domain/usage.ts` : **21 actions dépensières**, **8 genres d’assets**, et
-**100 actions du journal brut** — ces dernières sont une union *différente* des premières, et le
+**100 actions du journal brut** — ces dernières sont une union _différente_ des premières, et le
 mot qui les rapproche est un piège. `USAGE_ACTIONS` est ce qui est **facturé** ; `USAGE_EVENT_ACTIONS`
 est ce qui **s’est passé**, y compris ce que rien ne facture (`subscription`, `asset-privacy`,
 `assistant-message`). Les deux listes se recouvrent aux trois quarts, d’où **une seule table de
@@ -1306,10 +1323,10 @@ les portées du journal. Une action ajoutée par le fournisseur sans sa ligne fa
 
 La règle qui départage les deux :
 
-| Le texte distant… | L’outil |
-|---|---|
-| appartient à une **liste fermée** que l’API documente | une clé de bundle par valeur, plus une garde exhaustive |
-| est **écrit librement** et change avec chaque modèle publié | le dictionnaire indexé sur le texte source |
+| Le texte distant…                                           | L’outil                                                 |
+| ----------------------------------------------------------- | ------------------------------------------------------- |
+| appartient à une **liste fermée** que l’API documente       | une clé de bundle par valeur, plus une garde exhaustive |
+| est **écrit librement** et change avec chaque modèle publié | le dictionnaire indexé sur le texte source              |
 
 Dans les deux cas le repli est **le texte brut de l’API, jamais une clé** : un écran en anglais
 reste lisible, un écran qui affiche `usage.action.images-generation` ne l’est pas.
@@ -1326,14 +1343,14 @@ est aussi une donnée n’est pas un libellé**, et la traduire la casse comme d
 Ce ne sont pas les mêmes tests, et les confondre laisse croire qu’une seule chose est surveillée.
 Ils se partagent l’arbre sans se recouvrir, et tournent tous dans `pnpm validate`.
 
-| Garde | Ce qu’il refuse |
-|---|---|
-| `shared/i18n/bundles.test.ts` | une clé présente d’un côté et pas de l’autre, un ordre qui diverge, une valeur vide, une apostrophe ASCII en français, **une espace sécable devant `; : ! ?` ou dans les guillemets français**, un trou d’interpolation perdu — **et une phrase anglaise recopiée dans le bundle français** |
-| `renderer/src/no-hardcoded-text.test.ts` | dans un `.tsx` : du texte entre balises, un littéral entre accolades, derrière un ternaire ou un `&&`, et tout attribut qu’un humain lit |
-| `main/no-hardcoded-text.test.ts`, § *the main process* | un mot écrit dans un dialogue natif ou dans un `label` de menu |
-| `main/no-hardcoded-text.test.ts`, § *the registries* | dans `renderer`, `shared` ou `preload` : un libellé écrit là où une clé est attendue |
-| `main/no-hardcoded-text.test.ts`, § *the words nobody puts in a tag* | dans les **quatre** arbres — `main` compris : une phrase liée à un nom, `const message = 'This project could not be opened'`, que ni les balises ni les champs de registre ne montrent |
-| `shared/licences.i18n.test.ts` | de la prose dans un champ **affiché** de `src/shared/licences.json`, que `pnpm licences:collect` génère et que la fenêtre Licences rend tel quel. Le champ `text` est exempté : une licence se reproduit dans la langue de ses auteurs |
+| Garde                                                                | Ce qu’il refuse                                                                                                                                                                                                                                                                             |
+| -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `shared/i18n/bundles.test.ts`                                        | une clé présente d’un côté et pas de l’autre, un ordre qui diverge, une valeur vide, une apostrophe ASCII en français, **une espace sécable devant `; : ! ?` ou dans les guillemets français**, un trou d’interpolation perdu — **et une phrase anglaise recopiée dans le bundle français** |
+| `renderer/src/no-hardcoded-text.test.ts`                             | dans un `.tsx` : du texte entre balises, un littéral entre accolades, derrière un ternaire ou un `&&`, et tout attribut qu’un humain lit                                                                                                                                                    |
+| `main/no-hardcoded-text.test.ts`, § _the main process_               | un mot écrit dans un dialogue natif ou dans un `label` de menu                                                                                                                                                                                                                              |
+| `main/no-hardcoded-text.test.ts`, § _the registries_                 | dans `renderer`, `shared` ou `preload` : un libellé écrit là où une clé est attendue                                                                                                                                                                                                        |
+| `main/no-hardcoded-text.test.ts`, § _the words nobody puts in a tag_ | dans les **quatre** arbres — `main` compris : une phrase liée à un nom, `const message = 'This project could not be opened'`, que ni les balises ni les champs de registre ne montrent                                                                                                      |
+| `shared/licences.i18n.test.ts`                                       | de la prose dans un champ **affiché** de `src/shared/licences.json`, que `pnpm licences:collect` génère et que la fenêtre Licences rend tel quel. Le champ `text` est exempté : une licence se reproduit dans la langue de ses auteurs                                                      |
 
 **Le dernier est arrivé le 11 août, et il ferme une voie qu'aucun des quatre autres ne pouvait
 voir** : ils lisent tous l'arbre TypeScript, et ce texte-là n'est écrit dans aucun `.ts` — c'est
@@ -1352,13 +1369,13 @@ vrai et se lit plus mal.
 **Ce que l'exclusion coûterait si elle dérivait, et le garde qui l'en empêche** : un fichier
 nommé `*-fixtures.ts` qu'un panneau importerait serait invisible aux deux gardes — deux angles
 morts sur un même fichier, dont aucun ne dirait un mot.
-`main/import-cycles.test.ts`, § *what a shipped file may reach*, refuse cet import. Il juge sur le
+`main/import-cycles.test.ts`, § _what a shipped file may reach_, refuse cet import. Il juge sur le
 chemin RÉSOLU, si bien qu'un alias, un `.js` écrit pour un `.ts` et le suffixe `?worker` de Vite
 atterrissent tous au même endroit. **Ce qu'il ne voit pas**, et il le dit : un worker nommé par
 `new URL(…, import.meta.url)` est une URL, pas un import.
 
-**Une garde qui lit des données peut devenir aveugle sans rougir**, et c’est la raison du § *what
-the guards would catch* de `bundles.test.ts`. Ses huit vérifications passent par quatre helpers
+**Une garde qui lit des données peut devenir aveugle sans rougir**, et c’est la raison du § _what
+the guards would catch_ de `bundles.test.ts`. Ses huit vérifications passent par quatre helpers
 locaux : un helper qui rendrait un tableau vide les ferait **toutes passer au vert en ne vérifiant
 plus rien**. Cinq sondes tiennent maintenant ce que les gardes doivent voir — un trou
 d’interpolation renommé d’une langue à l’autre, un formateur de nombre tombé d’un seul côté, deux
@@ -1378,7 +1395,7 @@ sur trois clés d’un lot fusionné en parallèle : le motif étant invisible d
 ne l’aurait vu à la relecture.
 
 **Le premier voit ce qu’aucun des trois autres ne peut voir.** Une phrase anglaise collée dans
-une section de `fr/` passe *par* le bundle : elle est irréprochable pour les gardes qui traquent le texte en
+une section de `fr/` passe _par_ le bundle : elle est irréprochable pour les gardes qui traquent le texte en
 dur, et elle s’affiche pourtant en anglais devant un utilisateur français. Le test la reconnaît à
 ceci qu’elle est **identique dans les deux fichiers**. Il ne compare que les phrases, jamais les
 mots seuls : `Position`, `Rotation`, `Saturation` s’écrivent pareil dans les deux langues —
@@ -1421,7 +1438,7 @@ l’utilisateur ; les identifiants sont chiffrés d’abord, puis rangés en bas
 rend des octets, et un fichier JSON tient des chaînes.
 
 Si `safeStorage.isEncryptionAvailable()` est faux, l’enregistrement des identifiants **lève**
-plutôt que de retomber sur du texte clair. Ce refus *est* la fonctionnalité.
+plutôt que de retomber sur du texte clair. Ce refus _est_ la fonctionnalité.
 
 Tout ce qui est relu est validé (`settings/validation.ts`) : un fichier de configuration est
 non typé par nature, et une valeur éditée à la main ou héritée d’une version antérieure doit
@@ -1441,11 +1458,11 @@ Trois variables ne se renseignent nulle part : elles viennent du système, de la
 de tests. Chacune a un **repli qui marche** — aucune n’est requise, et c’est la raison de les
 lire plutôt que de les exiger.
 
-| Variable | Posée par | Ce qu’elle change | Si elle manque |
-|---|---|---|---|
-| `LOCALAPPDATA` | Windows | ajoute les polices installées pour l’utilisateur seul aux dossiers balayés | seules les polices de la machine sont vues |
-| `NODE_ENV` | le lanceur de tests, à `test` | fait taire le journal du processus principal | le journal écrit, et une suite bavarde noie sa propre sortie |
-| `GITHUB_SHA` | GitHub Actions | grave l’empreinte du commit dans le build, sans appeler git | l’empreinte est demandée à git ; hors dépôt, elle vaut `dev` |
+| Variable       | Posée par                     | Ce qu’elle change                                                          | Si elle manque                                               |
+| -------------- | ----------------------------- | -------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| `LOCALAPPDATA` | Windows                       | ajoute les polices installées pour l’utilisateur seul aux dossiers balayés | seules les polices de la machine sont vues                   |
+| `NODE_ENV`     | le lanceur de tests, à `test` | fait taire le journal du processus principal                               | le journal écrit, et une suite bavarde noie sa propre sortie |
+| `GITHUB_SHA`   | GitHub Actions                | grave l’empreinte du commit dans le build, sans appeler git                | l’empreinte est demandée à git ; hors dépôt, elle vaut `dev` |
 
 ### Ce dont le build a besoin
 
@@ -1482,14 +1499,14 @@ IPC, et les panneaux via Testing Library.
 
 ## Ajouter quelque chose
 
-| Ce que vous ajoutez | Par où commencer |
-|---|---|
-| Un panneau | une entrée dans `TOOL_PLACEMENTS`, puis `panels/<nom>/` avec un `index.ts` exportant `definition: { Content, Actions }` |
-| Un espace de travail | `WORKSPACE_IDS`, puis son icône et sa famille dans `helpers/workspaces.ts` — le compilateur réclame les deux |
-| Un canal IPC | `shared/ipc.ts` d’abord, le handler ensuite ; la signature en est dérivée, donc partez du contrat |
-| Un type de maillage ou de lumière | `meshPrimitives.ts` / `lightTypes.ts` — la barre d’outils, les panneaux et le menu natif lisent ces tables |
-| Un outil image | `features/image/components/imageTools.ts`, dans le bon groupe |
-| Une forme visuelle partagée | `components/`, un composant par fichier, avec son test — et son nom porte le préfixe de ses dossiers |
+| Ce que vous ajoutez               | Par où commencer                                                                                                        |
+| --------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Un panneau                        | une entrée dans `TOOL_PLACEMENTS`, puis `panels/<nom>/` avec un `index.ts` exportant `definition: { Content, Actions }` |
+| Un espace de travail              | `WORKSPACE_IDS`, puis son icône et sa famille dans `helpers/workspaces.ts` — le compilateur réclame les deux            |
+| Un canal IPC                      | `shared/ipc.ts` d’abord, le handler ensuite ; la signature en est dérivée, donc partez du contrat                       |
+| Un type de maillage ou de lumière | `meshPrimitives.ts` / `lightTypes.ts` — la barre d’outils, les panneaux et le menu natif lisent ces tables              |
+| Un outil image                    | `features/image/components/imageTools.ts`, dans le bon groupe                                                           |
+| Une forme visuelle partagée       | `components/`, un composant par fichier, avec son test — et son nom porte le préfixe de ses dossiers                    |
 
 Deux règles qui font gagner le plus de temps : vérifier qu’un helper n’existe pas déjà avant d’en
 écrire un, et lire le voisinage avant d’y toucher. Les registres font que la plupart des ajouts
@@ -1513,14 +1530,14 @@ feat/<nom> ──▶ develop ──▶ main ──tag v*──▶ build 3 OS ─
 
 ### Ce que le pipeline produit
 
-| Fichier | Pour |
-|---|---|
-| `.dmg` arm64 et x64 | macOS Apple Silicon et Intel |
-| `.zip` arm64 et x64 | ce que consomme `electron-updater` — pas distribué |
-| `.exe` (NSIS) | Windows x64 |
-| `.AppImage` et `.deb` | Linux x64 |
-| `latest.yml`, `latest-mac.yml`, `latest-linux.yml` | les manifestes d’auto-update |
-| `*.blockmap` | le téléchargement différentiel |
+| Fichier                                            | Pour                                               |
+| -------------------------------------------------- | -------------------------------------------------- |
+| `.dmg` arm64 et x64                                | macOS Apple Silicon et Intel                       |
+| `.zip` arm64 et x64                                | ce que consomme `electron-updater` — pas distribué |
+| `.exe` (NSIS)                                      | Windows x64                                        |
+| `.AppImage` et `.deb`                              | Linux x64                                          |
+| `latest.yml`, `latest-mac.yml`, `latest-linux.yml` | les manifestes d’auto-update                       |
+| `*.blockmap`                                       | le téléchargement différentiel                     |
 
 Les trois plateformes sont packagées en parallèle mais **ne publient rien** : un job final agrège
 les artefacts, **vérifie qu’aucun manifeste ni blockmap ne manque**, et crée la release en
@@ -1548,9 +1565,9 @@ désalignement produit des manifestes qui annoncent une version inexistante.
 
 ### Où lire la suite
 
-| | |
-|---|---|
-| [`docs/ci/RELEASE.md`](../ci/RELEASE.md) | la check-list de publication et le rollback |
-| [`docs/ci/SECRETS.md`](../ci/SECRETS.md) | les secrets de signature, leur obtention, leur rotation |
-| [`docs/ci/TROUBLESHOOTING.md`](../ci/TROUBLESHOOTING.md) | symptôme → cause → correction |
-| [`docs/ci/adr/`](../ci/adr/) | les décisions du pipeline, avec ce qui a été écarté et pourquoi |
+|                                                          |                                                                 |
+| -------------------------------------------------------- | --------------------------------------------------------------- |
+| [`docs/ci/RELEASE.md`](../ci/RELEASE.md)                 | la check-list de publication et le rollback                     |
+| [`docs/ci/SECRETS.md`](../ci/SECRETS.md)                 | les secrets de signature, leur obtention, leur rotation         |
+| [`docs/ci/TROUBLESHOOTING.md`](../ci/TROUBLESHOOTING.md) | symptôme → cause → correction                                   |
+| [`docs/ci/adr/`](../ci/adr/)                             | les décisions du pipeline, avec ce qui a été écarté et pourquoi |

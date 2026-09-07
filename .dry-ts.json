@@ -1,0 +1,4 @@
+{
+  "excludeTests": true,
+  "exclude": ["**/fixtures/**", "**/*-fixtures.ts", "**/*-fixtures.tsx", "**/public/**"]
+}

@@ -75,6 +75,12 @@ export function rootColour(name: string): string {
   return cachedToken(name) || '#000'
 }
 
+/** A root gauge that is a bare number, or `fallback` when no DOM has parsed the theme yet. */
+export function rootRatio(name: string, fallback: number): number {
+  const parsed = Number.parseFloat(cachedToken(name))
+  return Number.isFinite(parsed) ? parsed : fallback
+}
+
 /**
  * `tokenAsFont` for a painter that has no element of its own — the shorthand is composed off the
  * root, and the size comes from the cache rather than a style resolution per paint.

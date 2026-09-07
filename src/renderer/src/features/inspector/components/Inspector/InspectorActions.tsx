@@ -1,6 +1,7 @@
-import { mdiPaletteSwatchOutline, mdiUnfoldLessHorizontal, mdiUnfoldMoreHorizontal } from '@mdi/js'
+import { mdiPaletteSwatchOutline } from '@mdi/js'
 import { useTranslation } from 'react-i18next'
 import { ToolButton } from '@/components/ToolButton'
+import { TreeFoldButton } from '@/components/TreeFoldButton'
 import { TIP_BOTTOM } from '@/helpers/tooltip'
 import { activeMaterialId, useDocuments } from '@/stores/documents'
 import { anySectionOpen, useSectionFolds } from '@/stores/sectionFolds'
@@ -26,14 +27,7 @@ export function InspectorActions() {
 
   return (
     <>
-      <ToolButton
-        icon={foldable ? mdiUnfoldLessHorizontal : mdiUnfoldMoreHorizontal}
-        label={t(foldable ? 'inspector.foldAll' : 'inspector.unfoldAll')}
-        description={t(foldable ? 'inspector.foldAllHint' : 'inspector.unfoldAllHint')}
-        tooltip={TIP_BOTTOM}
-        variant="header"
-        onClick={askAllSections}
-      />
+      <TreeFoldButton expanded={foldable} onFold={askAllSections} onUnfold={askAllSections} />
 
       {documentId && (
         <ToolButton

@@ -6,7 +6,7 @@ import { CONTROL } from '@/components/styles'
 import { TIP_RIGHT } from '@/helpers/tooltip'
 import type { CanvasTool } from '@/engines/canvas/canvasTool'
 import {
-  BRUSH_SETTINGS_BY_TOOL,
+  brushSettingsOf,
   BRUSH_SIZE,
   type BrushSetting,
   type BrushSettings,
@@ -37,25 +37,28 @@ const BRUSH_FIELDS: readonly {
 ]
 
 /**
- * The colour, always, and the settings the armed tool reads — `BRUSH_SETTINGS_BY_TOOL`, which
+ * The colour, always, and the settings the armed tool reads — `brushSettingsOf`, which
  * the engine reads too. A setting the tool ignores is not greyed, it is gone; the colour is not
  * one of them, it belongs to the document.
  */
 export function ImageDocumentBrush({
   armed,
+  cell,
   brush,
   onBrush,
   shortcuts,
 }: {
   /** What the engine is doing, not which button is lit: six groups map onto fewer tools. */
   armed: CanvasTool | null
+  /** The document's pixel grid, which takes the hardness away — see `brushSettingsOf`. */
+  cell: number | null
   brush: BrushSettings
   onBrush: (next: BrushSettings) => void
   /** Read off the registry by the caller, so a remapped bracket key moves on the tooltip too. */
   shortcuts: { smaller: string; larger: string }
 }) {
   const { t } = useTranslation()
-  const reads = armed ? BRUSH_SETTINGS_BY_TOOL[armed] : []
+  const reads = armed ? brushSettingsOf(armed, cell) : []
   const fields = BRUSH_FIELDS.filter(field => reads.includes(field.of))
 
   return (

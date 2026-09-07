@@ -14,7 +14,7 @@ import {
   type McpLaunch,
 } from './endpoint'
 
-const PACKAGED = '/Applications/IA Studio.app/Contents/MacOS/IA Studio'
+const PACKAGED = '/Applications/AI Desktop Studio.app/Contents/MacOS/AI Desktop Studio'
 const ADDRESS = '/profile/mcp.json'
 const WAY_IN = `${STDIO_FLAG}=${ADDRESS}`
 
@@ -22,13 +22,15 @@ const packaged = (): McpLaunch => mcpLaunch(PACKAGED, null, ADDRESS)
 
 describe('pointing a client here', () => {
   /**
-   * 🛑 Against `APP_NAME` itself rather than a fixture: it is "IA Studio", and the space in it
-   * made `claude mcp add … ia studio http://…` read the name as `ia` and the url as `studio`.
+   * 🛑 Against `APP_NAME` itself rather than a fixture: the spaces in it made
+   * `claude mcp add … ai desktop studio http://…` read the name as `ai` and the url as `desktop`.
    * A test naming its own client cannot see that.
    */
   it('registers the studio under a name with no space in it', () => {
-    expect(clientName(APP_NAME)).toBe('ia-studio')
-    expect(mcpAddCommand(packaged(), clientName(APP_NAME)).split(' ')).toContain('ia-studio')
+    expect(clientName(APP_NAME)).toBe('ai-desktop-studio')
+    expect(mcpAddCommand(packaged(), clientName(APP_NAME)).split(' ')).toContain(
+      'ai-desktop-studio',
+    )
   })
 
   /**
@@ -47,8 +49,8 @@ describe('pointing a client here', () => {
    * `--` before the command: without it the CLI reads `--mcp-stdio` as one of its own options.
    */
   it('spells a command a terminal can take, with the space in the path quoted', () => {
-    expect(mcpAddCommand(packaged(), 'ia-studio')).toBe(
-      `claude mcp add ia-studio -- "${PACKAGED}" ${WAY_IN}`,
+    expect(mcpAddCommand(packaged(), 'ai-desktop-studio')).toBe(
+      `claude mcp add ai-desktop-studio -- "${PACKAGED}" ${WAY_IN}`,
     )
   })
 
@@ -58,10 +60,10 @@ describe('pointing a client here', () => {
    * JSON, and a trailing comma would pass a substring check and fail every client on the machine.
    */
   it('hands a file-driven client the same command, as JSON it can parse', () => {
-    const parsed: unknown = JSON.parse(mcpConfigJson(packaged(), 'ia-studio'))
+    const parsed: unknown = JSON.parse(mcpConfigJson(packaged(), 'ai-desktop-studio'))
 
     expect(parsed).toEqual({
-      mcpServers: { 'ia-studio': { command: PACKAGED, args: [WAY_IN] } },
+      mcpServers: { 'ai-desktop-studio': { command: PACKAGED, args: [WAY_IN] } },
     })
   })
 
@@ -82,6 +84,9 @@ describe('pointing a client here', () => {
    * second to start took the first's file over — its clients drove the wrong studio, and its quit
    * removed the file from under a studio still listening.
    */
+})
+
+describe('persisting a client endpoint', () => {
   it('gives each checkout its own address file, and a packaged run the plain one', () => {
     expect(mcpEndpointPath('/profile', null)).toBe(ADDRESS)
     expect(mcpEndpointPath('/profile', '/one')).not.toBe(mcpEndpointPath('/profile', '/another'))
@@ -95,17 +100,17 @@ describe('pointing a client here', () => {
   it('adds itself to what a checkout already declares, and rewrites nothing else', () => {
     const existing = `{"mcpServers":{"other":{"command":"x"}},"somethingElse":1}`
 
-    const written = mcpConfigWith(existing, packaged(), 'ia-studio')
+    const written = mcpConfigWith(existing, packaged(), 'ai-desktop-studio')
 
     expect(JSON.parse(written ?? '')).toEqual({
       mcpServers: {
         other: { command: 'x' },
-        'ia-studio': { command: PACKAGED, args: [WAY_IN] },
+        'ai-desktop-studio': { command: PACKAGED, args: [WAY_IN] },
       },
       somethingElse: 1,
     })
     // Nothing to change, so nothing is written: a launch does not touch a file it agrees with.
-    expect(mcpConfigWith(written ?? '', packaged(), 'ia-studio')).toBeNull()
+    expect(mcpConfigWith(written ?? '', packaged(), 'ai-desktop-studio')).toBeNull()
   })
 
   /**
@@ -113,9 +118,11 @@ describe('pointing a client here', () => {
    * made the Windows path name a file that does not exist.
    */
   it('quotes a path holding a space without escaping its separators', () => {
-    const windows = 'C:\\Program Files\\IA Studio\\IA Studio.exe'
+    const windows = 'C:\\Program Files\\AI Desktop Studio\\AI Desktop Studio.exe'
 
-    expect(mcpAddCommand(mcpLaunch(windows, null, ADDRESS), 'ia-studio')).toContain(`"${windows}"`)
+    expect(mcpAddCommand(mcpLaunch(windows, null, ADDRESS), 'ai-desktop-studio')).toContain(
+      `"${windows}"`,
+    )
   })
 
   /**

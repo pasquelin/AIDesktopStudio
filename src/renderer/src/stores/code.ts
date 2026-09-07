@@ -24,6 +24,8 @@ export type CodeStoreState = {
    * selection and moves the caret.
    */
   revision: number
+  resourceRevisions: Record<string, number>
+  resourceIncarnations: Record<string, string>
   problems: readonly CodeProblem[]
   /**
    * Where the cursor is wanted next, put there by whoever names a place — a problems row, or a
@@ -58,6 +60,8 @@ export type CodeStoreState = {
 export const useCode = create<CodeStoreState>()((set, get) => ({
   files: {},
   revision: 0,
+  resourceRevisions: {},
+  resourceIncarnations: {},
   problems: [],
   goto: null,
 
@@ -85,6 +89,12 @@ export const useCode = create<CodeStoreState>()((set, get) => ({
       return {
         files,
         revision: state.revision + 1,
+        resourceIncarnations: Object.fromEntries(
+          Object.keys(files).map(script => [
+            script,
+            state.resourceIncarnations[script] ?? crypto.randomUUID(),
+          ]),
+        ),
         // Dropped with the walk: a problem of the project before this one names a script that is
         // no longer there, and clicking it would open a tab on a file nothing holds.
         problems: state.problems.filter(problem => problem.script in files),
@@ -99,7 +109,17 @@ export const useCode = create<CodeStoreState>()((set, get) => ({
       // read off this map, and `restoreDocument` re-reads it after its await — an entry made
       // here would make it skip the install and lose what the file held.
       if (!held || held.source === source) return state
-      return { files: { ...state.files, [script]: { ...held, source } } }
+      return {
+        files: { ...state.files, [script]: { ...held, source } },
+        resourceRevisions: {
+          ...state.resourceRevisions,
+          [script]: (state.resourceRevisions[script] ?? 0) + 1,
+        },
+        resourceIncarnations: {
+          ...state.resourceIncarnations,
+          [script]: state.resourceIncarnations[script] ?? crypto.randomUUID(),
+        },
+      }
     })
   },
 
@@ -112,6 +132,14 @@ export const useCode = create<CodeStoreState>()((set, get) => ({
     set(state => ({
       files: { ...state.files, [script]: { script, saved: held?.saved ?? '', source } },
       revision: state.revision + 1,
+      resourceRevisions: {
+        ...state.resourceRevisions,
+        [script]: (state.resourceRevisions[script] ?? 0) + 1,
+      },
+      resourceIncarnations: {
+        ...state.resourceIncarnations,
+        [script]: state.resourceIncarnations[script] ?? crypto.randomUUID(),
+      },
     }))
     return true
   },
@@ -124,6 +152,14 @@ export const useCode = create<CodeStoreState>()((set, get) => ({
     set(state => ({
       files: { ...state.files, [script]: { script, saved: source, source } },
       revision: state.revision + 1,
+      resourceRevisions: {
+        ...state.resourceRevisions,
+        [script]: (state.resourceRevisions[script] ?? 0) + 1,
+      },
+      resourceIncarnations: {
+        ...state.resourceIncarnations,
+        [script]: state.resourceIncarnations[script] ?? crypto.randomUUID(),
+      },
     }))
   },
 
@@ -134,7 +170,12 @@ export const useCode = create<CodeStoreState>()((set, get) => ({
     })
   },
 
-  forget: script => set(state => ({ files: withoutKey(state.files, script) })),
+  forget: script =>
+    set(state => ({
+      files: withoutKey(state.files, script),
+      resourceRevisions: withoutKey(state.resourceRevisions, script),
+      resourceIncarnations: withoutKey(state.resourceIncarnations, script),
+    })),
 
   save: async script => {
     const held = get().files[script]
@@ -149,6 +190,15 @@ export const useCode = create<CodeStoreState>()((set, get) => ({
 
 /** The `script:` reference a path spells, for a caller holding the descriptor rather than an id. */
 export const scriptRefAt = (path: string): string => refToString({ kind: 'script', path })
+
+/**
+ * The path back out of a `script:` reference — the value itself when it is not one, so a
+ * component written before references existed still names a file rather than nothing.
+ */
+export function scriptPathOf(script: string): string {
+  const ref = refFromString(script)
+  return ref?.kind === 'script' ? ref.path : script
+}
 
 /** The `script:` reference of an OPEN document — `null` once the descriptor has left the store.
  * The centre keys tabs by document id where everything else names a script by PATH. */
@@ -165,7 +215,13 @@ export function scriptRefOf(documentId: string): string | null {
  * of the project being left would stay in the store, and a ⌘Q would write them into the new one.
  */
 export async function readProjectScripts(): Promise<void> {
-  useCode.setState({ files: {}, problems: [], goto: null })
+  useCode.setState({
+    files: {},
+    resourceRevisions: {},
+    resourceIncarnations: {},
+    problems: [],
+    goto: null,
+  })
   await useCode.getState().reload()
 }
 
@@ -175,8 +231,11 @@ export function codeFileOf(documentId: string): CodeFile | undefined {
   return script === null ? undefined : useCode.getState().files[script]
 }
 
-/** The scripts of the project, in one order — what a Play compiles and what `script.list` says. */
-export function codeFilesOf(state: CodeStoreState): readonly CodeFile[] {
+/**
+ * The scripts of the project, in one order — what a Play compiles and what `script.list` says.
+ * Takes the FILES, so a memo can hold it: it builds an array, and a selector that does loops.
+ */
+export function codeFilesOf(state: Pick<CodeStoreState, 'files'>): readonly CodeFile[] {
   return Object.values(state.files).sort((one, other) => byCodeUnit(one.script, other.script))
 }
 

@@ -3,7 +3,10 @@ import type { HttpChat } from '@shared/domain/aiCloud'
 import { assistantProgress, type AssistantProgress } from '@shared/domain/assistant'
 import { linesOf } from '@main/netStream'
 import { isRecord } from '@shared/guards'
+import { bytesToBase64 } from '@shared/base64'
+import type { AssistantImage } from '@shared/domain/assistant'
 import type { ChatTurn } from './localRuntimes'
+import type { JsonSchema } from '@main/mcp/tools'
 
 /**
  * One round trip against a chat cloud — the door the assistant thinks through and the one a
@@ -23,10 +26,30 @@ export class CloudRefused extends Error {
 /** A door that refused the request for its SIZE — for a chat cloud, a 400, 413 or 422. */
 export class OversizedRequest extends CloudRefused {}
 
+/** One function the cloud may call, in the shape OpenAI's wire takes it. */
+export type ChatTool = {
+  readonly name: string
+  readonly description: string
+  readonly parameters: JsonSchema
+}
+
+/** One call the cloud made. `arguments` stays the JSON text it sent: reading it is the caller's. */
+type ToolCall = { readonly name: string; readonly arguments: string }
+
+/** What a cloud answered: its text, and the tools it called — none on a door that takes none. */
+export type CloudAnswer = { readonly text: string; readonly calls: readonly ToolCall[] }
+
+// The OpenAI wire alone speaks tools, and never on a stream: `readStream` takes text frames alone.
+export const takesTools = (ask: Pick<CloudChatAsk, 'chat' | 'onProgress'>): boolean =>
+  ask.chat.kind === 'openai' && ask.onProgress === undefined
+
 export type CloudChatAsk = {
   readonly chat: HttpChat
   readonly key: string
   readonly messages: readonly ChatTurn[]
+  readonly images?: readonly AssistantImage[]
+  /** Native tools. The OpenAI door alone takes them, and never on a stream — see `brainHttp`. */
+  readonly tools?: readonly ChatTool[]
   /** Whether the answer must be one JSON object. Stated by the caller: nothing here guesses. */
   readonly json: boolean
   readonly maxTokens: number
@@ -60,9 +83,26 @@ const numberAt = (value: unknown, path: readonly string[]): number | undefined =
   return typeof leaf === 'number' ? leaf : undefined
 }
 
-function openaiText(body: unknown): string | null {
+const textOnly = (text: string | null): CloudAnswer | null =>
+  text === null ? null : { text, calls: [] }
+
+function toolCallsOf(message: unknown): ToolCall[] {
+  const listed = at(message, ['tool_calls'])
+  if (!Array.isArray(listed)) return []
+  return listed.flatMap(one => {
+    const name = textOf(one, ['function', 'name'])
+    const args = at(one, ['function', 'arguments'])
+    return name === null ? [] : [{ name, arguments: typeof args === 'string' ? args : '{}' }]
+  })
+}
+
+/** Beside its calls the content is often EMPTY — measured on deepseek-chat with 285 tools. */
+function openaiAnswer(body: unknown): CloudAnswer | null {
   if (!isRecord(body) || !Array.isArray(body['choices'])) return null
-  return textOf(body['choices'][0], ['message', 'content'])
+  const message = at(body['choices'][0], ['message'])
+  const text = textOf(message, ['content']) ?? ''
+  const calls = toolCallsOf(message)
+  return text === '' && calls.length === 0 ? null : { text, calls }
 }
 
 function anthropicText(body: unknown): string | null {
@@ -101,15 +141,15 @@ function refusalOf(body: unknown, status: number, label: string): CloudRefused {
 
 async function readBody(
   response: Response,
-  pick: (body: unknown) => string | null,
+  pick: (body: unknown) => CloudAnswer | null,
   label: string,
-): Promise<string> {
+): Promise<CloudAnswer> {
   const body: unknown = await orElse(response.json(), null)
   if (!response.ok) throw refusalOf(body, response.status, label)
 
-  const text = pick(body)
-  if (text === null) throw new Error(`${label} answered nothing`)
-  return text
+  const answer = pick(body)
+  if (answer === null) throw new Error(`${label} answered nothing`)
+  return answer
 }
 
 function systemOf(messages: readonly ChatTurn[]): string {
@@ -126,6 +166,56 @@ function geminiContents(messages: readonly ChatTurn[]): unknown[] {
     role: turn.role === 'assistant' ? 'model' : 'user',
     parts: [{ text: turn.content }],
   }))
+}
+
+const encodedImages = (images: readonly AssistantImage[] | undefined) =>
+  (images ?? []).map(image => ({ ...image, data: bytesToBase64(image.bytes) }))
+
+function openAiMessages(ask: CloudChatAsk): unknown[] {
+  const images = encodedImages(ask.images)
+  return ask.messages.map((turn, index) =>
+    turn.role === 'user' && index === ask.messages.length - 1 && images.length > 0
+      ? {
+          ...turn,
+          content: [
+            { type: 'text', text: turn.content },
+            ...images.map(image => ({
+              type: 'image_url',
+              image_url: { url: `data:${image.mimeType};base64,${image.data}` },
+            })),
+          ],
+        }
+      : turn,
+  )
+}
+
+function anthropicMessages(ask: CloudChatAsk): unknown[] {
+  const images = encodedImages(ask.images)
+  const messages = withoutSystem(ask.messages)
+  return messages.map((turn, index) => ({
+    role: turn.role === 'assistant' ? 'assistant' : 'user',
+    content:
+      turn.role === 'user' && index === messages.length - 1 && images.length > 0
+        ? [
+            { type: 'text', text: turn.content },
+            ...images.map(image => ({
+              type: 'image',
+              source: { type: 'base64', media_type: image.mimeType, data: image.data },
+            })),
+          ]
+        : turn.content,
+  }))
+}
+
+function geminiContentsWithImages(ask: CloudChatAsk): unknown[] {
+  const images = encodedImages(ask.images)
+  const contents = geminiContents(ask.messages)
+  const last = contents[contents.length - 1]
+  if (images.length === 0 || !isRecord(last) || !Array.isArray(last['parts'])) return contents
+  last['parts'].push(
+    ...images.map(image => ({ inlineData: { mimeType: image.mimeType, data: image.data } })),
+  )
+  return contents
 }
 
 /** The frames of a `text/event-stream`. Only `data:` lines carry anything the doors below read. */
@@ -147,20 +237,20 @@ type FrameReader = (frame: unknown) => AssistantProgress | null
 
 /** One wire format, whole: how it is asked for, how a frame reads, how a WHOLE body reads. */
 type Door = {
-  text: (body: unknown) => string | null
+  answer: (body: unknown) => CloudAnswer | null
   /** 🛑 Anthropic puts the two counts in two DIFFERENT frames, so both paths are read on each. */
   frame: FrameReader
   label: (chat: HttpChat) => string
 }
 
 const doorOf = (
-  text: (body: unknown) => string | null,
+  answer: (body: unknown) => CloudAnswer | null,
   textIn: readonly string[],
   promptIn: readonly string[],
   replyIn: readonly string[],
   label: (chat: HttpChat) => string,
 ): Door => ({
-  text,
+  answer,
   frame: frame =>
     isRecord(frame)
       ? assistantProgress(
@@ -174,21 +264,21 @@ const doorOf = (
 
 const DOORS: Record<HttpChat['kind'], Door> = {
   openai: doorOf(
-    openaiText,
+    openaiAnswer,
     ['choices', '0', 'delta', 'content'],
     ['usage', 'prompt_tokens'],
     ['usage', 'completion_tokens'],
     chat => (chat.kind === 'openai' ? chat.baseUrl : chat.kind),
   ),
   anthropic: doorOf(
-    anthropicText,
+    body => textOnly(anthropicText(body)),
     ['delta', 'text'],
     ['message', 'usage', 'input_tokens'],
     ['usage', 'output_tokens'],
     () => 'anthropic',
   ),
   gemini: doorOf(
-    geminiText,
+    body => textOnly(geminiText(body)),
     ['candidates', '0', 'content', 'parts', '0', 'text'],
     ['usageMetadata', 'promptTokenCount'],
     ['usageMetadata', 'candidatesTokenCount'],
@@ -202,7 +292,7 @@ async function readStream(
   door: Door,
   label: string,
   onProgress: (progress: AssistantProgress) => void,
-): Promise<string> {
+): Promise<CloudAnswer> {
   if (!response.ok) throw refusalOf(await orElse(response.json(), null), response.status, label)
 
   let written = ''
@@ -215,7 +305,7 @@ async function readStream(
   }
 
   if (written === '') throw new Error(`${label} answered nothing`)
-  return written
+  return { text: written, calls: [] }
 }
 
 /**
@@ -225,14 +315,14 @@ async function readStream(
  * one whole body, which holds no `data:` line — read as a stream it yields nothing, and the turn
  * failed with "answered nothing" on a reply that parses fine.
  */
-async function answerFrom(response: Response, ask: CloudChatAsk): Promise<string> {
+async function answerFrom(response: Response, ask: CloudChatAsk): Promise<CloudAnswer> {
   const door = DOORS[ask.chat.kind]
   const label = door.label(ask.chat)
   const streaming = response.headers.get('content-type')?.includes('event-stream') === true
 
   return ask.onProgress && streaming
     ? await readStream(response, door, label, ask.onProgress)
-    : await readBody(response, door.text, label)
+    : await readBody(response, door.answer, label)
 }
 
 async function postJson(
@@ -262,22 +352,28 @@ async function askOpenAi(
   chat: Extract<HttpChat, { kind: 'openai' }>,
   ask: CloudChatAsk,
   post: CloudPoster,
-): Promise<string> {
+): Promise<CloudAnswer> {
+  const tools = ask.tools ?? []
   const response = await postJson(
     post,
     `${chat.baseUrl.replace(/\/$/, '')}/chat/completions`,
     { authorization: `Bearer ${ask.key}` },
     {
       model: chat.model,
-      messages: ask.messages,
+      messages: openAiMessages(ask),
       max_tokens: ask.maxTokens,
       ...sampling(ask, 'top_p'),
+      // Kept beside the tools: the content is then `{say, ask}` or empty, never a preamble —
+      // accepted by deepseek-chat because the briefing says « JSON » (measured 2026-09-06).
       ...(ask.json ? { response_format: { type: 'json_object' } } : {}),
+      ...(tools.length > 0
+        ? { tools: tools.map(tool => ({ type: 'function', function: tool })) }
+        : {}),
       /**
        * 🛑 `include_usage` or a streamed answer reports NO counts at all — this door puts them in
        * a final frame sent only when asked for. **Blind spot**: `baseUrl` is typed by hand, and a
-       * gateway that refuses unknown body fields answers 400, which `TOO_MUCH` reads as a size
-       * refusal — so such a door narrows its briefing and pays a second call before failing.
+       * gateway that refuses unknown body fields — this one, or `tools` — answers 400, which
+       * `TOO_MUCH` reads as a size refusal: such a door narrows and pays a second call first.
        */
       ...(ask.onProgress ? { stream: true, stream_options: { include_usage: true } } : {}),
     },
@@ -291,7 +387,7 @@ async function askAnthropic(
   chat: Extract<HttpChat, { kind: 'anthropic' }>,
   ask: CloudChatAsk,
   post: CloudPoster,
-): Promise<string> {
+): Promise<CloudAnswer> {
   const response = await postJson(
     post,
     'https://api.anthropic.com/v1/messages',
@@ -301,10 +397,7 @@ async function askAnthropic(
       max_tokens: ask.maxTokens,
       ...sampling(ask, 'top_p'),
       system: systemOf(ask.messages),
-      messages: withoutSystem(ask.messages).map(turn => ({
-        role: turn.role === 'assistant' ? 'assistant' : 'user',
-        content: turn.content,
-      })),
+      messages: anthropicMessages(ask),
       ...(ask.onProgress ? { stream: true } : {}),
     },
     ask.signal,
@@ -317,7 +410,7 @@ async function askGemini(
   chat: Extract<HttpChat, { kind: 'gemini' }>,
   ask: CloudChatAsk,
   post: CloudPoster,
-): Promise<string> {
+): Promise<CloudAnswer> {
   const system = systemOf(ask.messages)
   const url =
     // Encoded like the key beside it: the model is typed by hand now, and a `#` in it truncated
@@ -334,7 +427,7 @@ async function askGemini(
     {},
     {
       ...(system ? { systemInstruction: { parts: [{ text: system }] } } : {}),
-      contents: geminiContents(ask.messages),
+      contents: geminiContentsWithImages(ask),
       generationConfig: {
         maxOutputTokens: ask.maxTokens,
         ...sampling(ask, 'topP'),
@@ -347,8 +440,8 @@ async function askGemini(
   return await answerFrom(response, ask)
 }
 
-/** Asks the cloud its own way, and answers the text it sent back. */
-export async function askCloudChat(ask: CloudChatAsk, post: CloudPoster): Promise<string> {
+/** Asks the cloud its own way, and answers what it sent back. */
+export async function askCloudChat(ask: CloudChatAsk, post: CloudPoster): Promise<CloudAnswer> {
   switch (ask.chat.kind) {
     case 'openai':
       return await askOpenAi(ask.chat, ask, post)

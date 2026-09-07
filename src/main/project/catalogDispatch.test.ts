@@ -174,8 +174,10 @@ describe('dispatchCatalogRequest', () => {
         throw new Error('disk is full')
       },
       find: () => null,
+      setAnimationPoster: () => false,
       findByHash: () => null,
       findByRemoteId: () => null,
+      assetsUnder: () => [],
       search: () => [],
       countByType: () => NO_ASSETS,
       remove: () => {},
@@ -198,8 +200,10 @@ describe('dispatchCatalogRequest', () => {
     const failing: Catalog = {
       add: () => asset,
       find: () => null,
+      setAnimationPoster: () => false,
       findByHash: () => null,
       findByRemoteId: () => null,
+      assetsUnder: () => [],
       search: () => {
         throw new Error('malformed query')
       },

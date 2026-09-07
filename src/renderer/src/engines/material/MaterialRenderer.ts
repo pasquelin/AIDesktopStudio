@@ -14,6 +14,7 @@ import { createTextureBinding, type TextureBinding } from '../scene/textureBindi
 import { createTextureCache, type TextureCache, type TextureSource } from '../scene/textureCache'
 import { createSkyBinding, type SkyBinding } from '../viewport/skyBinding'
 import { createEnvironment, type ViewportEnvironment } from '../viewport/environment'
+import { SCHEME_OF, type NavigationScheme } from '@shared/domain/navigationPreset'
 import { ViewportEngine } from '../viewport/ViewportEngine'
 import {
   bindUniforms,
@@ -70,7 +71,19 @@ export class MaterialRenderer {
   private readonly viewport = new ViewportEngine({
     toneMapping: true,
     onFrame: delta => this.spin(delta),
+    scheme: () => this.scheme,
   })
+
+  /**
+   * Which application the preview is turned like. It shows ONE object centred, so it never wants
+   * a pivot of its own — but a person who orbits the scene on the middle button expects the same
+   * here, and two rules in one window is what the setting's help promises it is not.
+   */
+  private scheme: NavigationScheme = SCHEME_OF.studio
+
+  setNavigationScheme(scheme: NavigationScheme): void {
+    this.scheme = scheme
+  }
 
   private readonly material = new MeshStandardMaterial()
   private readonly mesh = new Mesh(previewGeometry('sphere', false), this.material)
@@ -161,7 +174,7 @@ export class MaterialRenderer {
   /** The engine holds no truth: everything it shows comes back through here. */
   apply(texture: MaterialState): void {
     this.applyGeometry(texture)
-    this.applyMaterial(texture)
+    this.transform = applyMaterial(texture, this.material, this.uniforms, this.transform)
     this.applyChannels(texture)
     void this.applyEnvironment(texture)
     this.viewport.requestRender()
@@ -199,68 +212,6 @@ export class MaterialRenderer {
     // buffers on the GPU until the context goes.
     this.mesh.geometry.dispose()
     this.mesh.geometry = geometry
-  }
-
-  private applyMaterial(texture: MaterialState): void {
-    const { material } = texture
-    this.material.color.set(material.color)
-    this.material.roughness = material.roughness
-    this.material.metalness = material.metalness
-
-    const frame = materialFrameOf(texture)
-    this.uniforms.roughnessRemap.value.set(frame.roughnessRemap.x, frame.roughnessRemap.y)
-    this.uniforms.metalnessRemap.value.set(frame.metalnessRemap.x, frame.metalnessRemap.y)
-    this.uniforms.edgeIntensity.value = frame.edgeIntensity
-    this.material.normalScale.set(
-      material.normalScale,
-      // OpenGL and DirectX disagree on which way the green channel points, and a normal map
-      // baked for the other one lights from the wrong side until this is flipped.
-      material.invertNormalGreen ? -material.normalScale : material.normalScale,
-    )
-    this.material.displacementScale = material.heightScale
-    this.material.aoMapIntensity = material.aoIntensity
-    // `.set`, not a new Color: this runs on every frame of every drag, and three owns the instance.
-    this.material.emissive.set(material.emissive)
-    this.material.emissiveIntensity = material.emissiveIntensity
-
-    // No `needsUpdate` here: nothing above affects the PROGRAM. A slot going empty→filled does,
-    // and `install`, `release` and `setEdgeMap` are the three that say so.
-    this.applyTransform(texture)
-  }
-
-  /**
-   * Repeat, offset and rotation are applied to **every** map, not just the base colour: applied
-   * to one alone, the maps drift apart and the relief stops matching the picture it lifts.
-   *
-   * Guarded on the values having moved, as `applyGeometry` is: `apply` runs on every frame of
-   * every drag, and twelve of the fifteen settings have nothing to do with tiling.
-   *
-   * And no `needsUpdate` on a map, ever. It bumps `source.needsUpdate` too, which re-uploads the
-   * pixels AND rebuilds the mip chain — eight 2K channels is 128 MB of upload per frame. Nothing
-   * here needs it: `matrixAutoUpdate` is on, so three refreshes the uv matrix itself every frame,
-   * and `wrapS`/`wrapT`, which really are upload-time state, are set once in `install`.
-   */
-  private applyTransform({ material, preview }: MaterialState): void {
-    const seamShift = seamShiftOf(preview)
-    // Compared before anything is built, not after: this used to allocate two objects to answer
-    // a question that is nearly always no — twelve of the fifteen settings above have nothing to
-    // do with tiling, and each of them arrives on every frame of its own drag.
-    if (samePlacement(this.transform, material, preview.tilingPreview, seamShift)) return
-
-    const { tiling, offset, rotation } = material
-    this.transform = { tiling, offset, rotation, tilingPreview: preview.tilingPreview, seamShift }
-
-    for (const map of this.maps()) this.placeMap(map)
-    syncEdgeTransform(this.uniforms)
-  }
-
-  /** Every texture this material shows, the cavity mask included — it is not in a slot. */
-  private *maps(): Generator<Texture> {
-    for (const channel of PBR_CHANNELS) {
-      const slot = slotFor(channel)
-      const map = slot ? this.material[slot] : this.uniforms.edgeMap.value
-      if (map) yield map
-    }
   }
 
   private applyChannels(texture: MaterialState): void {
@@ -310,7 +261,7 @@ export class MaterialRenderer {
     map.wrapS = RepeatWrapping
     map.wrapT = RepeatWrapping
     map.center.set(0.5, 0.5)
-    this.placeMap(map)
+    placeMap(map, this.transform)
 
     const slot = slotFor(channel)
     if (slot) this.material[slot] = map
@@ -320,16 +271,6 @@ export class MaterialRenderer {
     this.material.needsUpdate = true
     syncEdgeTransform(this.uniforms)
     this.viewport.requestRender()
-  }
-
-  /** The transform this material is on, onto one map — the new one, or all of them. */
-  private placeMap(map: Texture): void {
-    const { tiling, offset, rotation, tilingPreview, seamShift } = this.transform
-    // Multiplied, not replaced: the preview asks "how does this look repeated", and the answer
-    // has to be the material's own repeat seen more times, not somebody else's repeat.
-    map.repeat.set(tiling.x * tilingPreview, tiling.y * tilingPreview)
-    map.offset.set(offset.x + seamShift, offset.y + seamShift)
-    map.rotation = rotation
   }
 
   /** A channel emptied: its slot cleared, or the cavity mask unbound where it has no slot. */
@@ -410,6 +351,65 @@ export class MaterialRenderer {
     if (this.sky.showsSky()) return
     this.viewport.setBackgroundColor(this.viewport.paletteToken('--color-viewport'))
   }
+}
+
+type MaterialUniforms = ReturnType<typeof createUniforms>
+
+function applyMaterial(
+  state: MaterialState,
+  rendered: MeshStandardMaterial,
+  uniforms: MaterialUniforms,
+  transform: MapTransform,
+): MapTransform {
+  const { material } = state
+  rendered.color.set(material.color)
+  rendered.roughness = material.roughness
+  rendered.metalness = material.metalness
+  const frame = materialFrameOf(state)
+  uniforms.roughnessRemap.value.set(frame.roughnessRemap.x, frame.roughnessRemap.y)
+  uniforms.metalnessRemap.value.set(frame.metalnessRemap.x, frame.metalnessRemap.y)
+  uniforms.edgeIntensity.value = frame.edgeIntensity
+  rendered.normalScale.set(
+    material.normalScale,
+    material.invertNormalGreen ? -material.normalScale : material.normalScale,
+  )
+  rendered.displacementScale = material.heightScale
+  rendered.aoMapIntensity = material.aoIntensity
+  rendered.emissive.set(material.emissive)
+  rendered.emissiveIntensity = material.emissiveIntensity
+  return applyTransform(transform, state, rendered, uniforms)
+}
+
+function applyTransform(
+  current: MapTransform,
+  { material, preview }: MaterialState,
+  rendered: MeshStandardMaterial,
+  uniforms: MaterialUniforms,
+): MapTransform {
+  const seamShift = seamShiftOf(preview)
+  if (samePlacement(current, material, preview.tilingPreview, seamShift)) return current
+  const { tiling, offset, rotation } = material
+  const next = { tiling, offset, rotation, tilingPreview: preview.tilingPreview, seamShift }
+  for (const map of mapsOf(rendered, uniforms)) placeMap(map, next)
+  syncEdgeTransform(uniforms)
+  return next
+}
+
+/** Every texture this material shows, the cavity mask included — it is not in a slot. */
+function* mapsOf(material: MeshStandardMaterial, uniforms: MaterialUniforms): Generator<Texture> {
+  for (const channel of PBR_CHANNELS) {
+    const slot = slotFor(channel)
+    const map = slot ? material[slot] : uniforms.edgeMap.value
+    if (map) yield map
+  }
+}
+
+/** Places the material transform and preview frame onto one texture. */
+function placeMap(map: Texture, transform: MapTransform): void {
+  const { tiling, offset, rotation, tilingPreview, seamShift } = transform
+  map.repeat.set(tiling.x * tilingPreview, tiling.y * tilingPreview)
+  map.offset.set(offset.x + seamShift, offset.y + seamShift)
+  map.rotation = rotation
 }
 
 /**

@@ -16,7 +16,7 @@ git et doit le rester : une clé commitée survit dans l'historique au commit qu
 
 ## Où en est le banc
 
-La liste ci-dessous compte **439 demandes, et le banc en joue 439** (compté le 2026-08-31) — une par case, dans cet ordre.
+La liste ci-dessous compte **472 demandes, et le banc en joue 472** (compté le 2026-09-07) — une par case, dans cet ordre.
 `batterie.test.ts` tient les deux listes à la même longueur et dans le même ordre : une demande
 ajoutée ici sans scénario fait rougir la porte, et un scénario écrit pour rien aussi. C'est ce qui
 rend « on en est où ? » répondable.
@@ -34,7 +34,7 @@ répond pas, fût-ce par une liste vide. `coverage.test.ts` tient le reste — u
 nomme aucun scénario, et le rôle de ce qui reste sans mesure, **écrit en toutes lettres plutôt que
 compté** : un compte reste vert le jour où un trou se comble pendant qu'un autre se creuse.
 
-**Déclaré n'est pas mesuré**, et le rapport du banc écrit les deux : `MCP reached: N/230` compte ce
+**Déclaré n'est pas mesuré**, et le rapport du banc écrit les deux : `MCP reached: N/310` compte ce
 qu'une passe a vraiment appelé, et la ligne `declared covered, never reached` nomme les actions que
 `coverage.ts` promettait et qu'aucun run n'a touchées.
 
@@ -92,7 +92,7 @@ passe en ne faisant rien » :
 - **Ouvrir une image crée DÉJÀ son calque.** Le décor en ajoutait un second, et tous les comptes
   de calques étaient décalés de un.
 - **Un rail naît avec deux points**, donc « ajoute un point » se lit à trois.
-- **Un squelette posé nomme déjà `LeftHand` et `RightHand`** : ce que `rig.hands` ajoute, ce sont
+- **Un squelette posé nomme déjà `LeftHand` et `RightHand`** : ce que `rig.configureHands` ajoute, ce sont
   les doigts.
 - **Une copie s'appelle « … 2 »**, jamais « copie de … » : c'est `planFiles` qui la nomme.
 - **`path.addPoint` prend les trois axes ou aucun** — en nommer un seul est un `badInput`.
@@ -132,11 +132,11 @@ qu'un scénario tiendra demain.
 
 **`MCP reached: 200/230`.** Les trente actions que `coverage.ts` déclarait couvertes et qu'aucun
 run n'a touchées — chacune est un outil publié sur le fil MCP que personne n'a vu marcher :
-`prompt.describeStyle`, `actions.find`, `files.undoFileOperation`, `files.redoFileOperation`, `files.readUndoStack`,
+`prompt.describeStyle`, `actions.find`, `files.undoFileOperation`, `files.redoFileOperation`, `files.canUndoRedo`,
 `cost.estimate`, `job.cancelCloudGeneration`, `asset.reveal`, `layer.editShapeLayer`, `guide.remove`, `clip.speed`,
 `track.add`, `skybox.setSourceImage`, `cloud.explorePublicFeed`, `cloud.pull`, `node.setPrimitiveParameters`, `model.textures`,
 `bone.remove`, `animation.removeBlock`, `animation.setBlockSettings`, `key.writeKeysOnOpenChannels`, `git.diff`, `git.stage`,
-`git.unstage`, `git.restore`, `git.stashPop`, `git.stashDrop`, `context.deleteProjectCard`, `settings.pressButton`,
+`git.unstage`, `git.restore`, `git.stashPop`, `git.stashDrop`, `context.deleteProjectCard`, `settings.triggerAction`,
 `accounts.activate`.
 
 ### Ce que les chaînes disent, par volume
@@ -390,6 +390,8 @@ L'assistant doit lire les valeurs **actuelles** avant d'appliquer une transforma
 - [ ] « Mets la qualité des ombres au niveau le plus élevé disponible. »
 - [ ] « Change l'arrière-plan sans changer l'éclairage de la scène. »
 - [ ] « Éclaire ma scène avec mon ciel Ciel Test. »
+- [ ] « Passe la navigation 3D en schéma Blender. »
+- [ ] « Cadre le cube et garde-le dans la vue même s'il bouge. »
 
 ## 11. Import d'assets dans une scène
 
@@ -586,6 +588,7 @@ Lecture → calcul → écriture → relecture.
 - [ ] « Supprime le bateau. » — asset, calque, instance, document ou fichier : il doit distinguer.
 - [ ] « Supprime tout. » — une destruction globale de portée ambiguë ne s'exécute pas à l'aveugle.
 - [ ] « Remplace toutes mes textures. » — il doit savoir par quoi avant de toucher à quoi que ce soit.
+- [ ] « Mets le fichier Images/fais moi un bateau.png à la corbeille. » — la personne répond NON à la carte : le fichier reste.
 
 ## 31. Planification complexe
 
@@ -665,6 +668,7 @@ Sur l'image du bateau ouverte :
 - [x] « Duplique le calque Bateau. »
 - [x] « Verrouille le calque Bateau pour ne plus y toucher. »
 - [x] « Ajoute un calque de texte qui dit Bonjour. »
+- [x] « Prépare ce document pour une impression en niveaux de gris à 300 ppp et 16 bits. »
 
 ## 40. Les pistes et la tête de lecture
 
@@ -715,6 +719,8 @@ Sur un montage vidéo portant deux plans et un fond sonore :
 - [x] « Quels comptes ai-je enregistrés ? »
 - [ ] « Bascule sur mon deuxième compte. »
 - [ ] « Renomme ce compte Studio Perso. »
+- [x] « Quels modèles IA locaux sont installés et lequel peut servir l’assistant ? »
+- [x] « Vérifie si le moteur local de mouvement est prêt et ce qui lui manque. »
 
 ## 44. Générations en cours
 
@@ -769,6 +775,7 @@ Dans la scène Test MCP, avec Camera Test :
 - [x] « Ajoute un brouillard léger. »
 - [ ] « Ajoute un sol sous mes objets. »
 - [ ] « Passe le rendu en qualité maximale. »
+- [ ] « Ajoute une couche de semis d’arbres à cette scène. »
 
 ## 49. Animation — le reste
 
@@ -796,6 +803,9 @@ Sur mon personnage principal, dans la scène Test MCP :
 - [ ] « Ajoute une contrainte IK sur sa jambe gauche. »
 - [ ] « Retire cette contrainte IK. »
 - [x] « Enlève complètement le squelette de ce personnage. »
+- [ ] « Pose un point d'attache sur sa main droite, appelé Main Droite. »
+- [ ] « Accroche le cube à Main Droite. »
+- [ ] « Retire le point d'attache Main Droite. »
 
 ## 51. Calques avancés et repères
 
@@ -982,7 +992,7 @@ fait écrire par un **modèle** — un cloud de discussion ou un modèle de code
 
 ## 67. Retenir ce qu'on lui apprend d'un projet
 
-Ce que l'assistant a appris vit dans `<projet>/.ia-studio/memory.ndjson` et voyage avec le
+Ce que l'assistant a appris vit dans `<projet>/.ai-desktop-studio/memory.ndjson` et voyage avec le
 dossier. 🛑 **Rien n'est injecté dans le briefing** : il ne porte qu'un signal d'une ligne, et
 seulement si la mémoire n'est pas vide — c'est le modèle qui va la chercher. Les cinq actions
 sont en `reach: 'mcp'` : elles ne sont pas dans la part courte, donc une porte étroite les atteint
@@ -995,3 +1005,67 @@ Ce que la section mesure au-delà de son décor : que le modèle DEMANDE ce qu'i
 - [ ] « Donne-moi le détail de ce que tu sais sur les caméras. »
 - [ ] « Oublie ce que tu as retenu sur les caméras. »
 - [ ] « Relie ce que tu sais des caméras à ce que tu sais du script. »
+
+## 68. Le pixel art
+
+Une grille se règle en CELLULES — « une grille de 32 sur 32 » — et le studio en déduit la taille
+du document. Les coordonnées d'un dessin sont en cellules, jamais en pixels du document : c'est
+la seule chose qu'un modèle ne peut pas déduire, et `canvas.state` la lui rend.
+
+🛑 **Ce que la section ne mesure pas** : ce qu'un modèle d'image REND. Ajouter « pixel art » au
+prompt obtient un 1024 « façon pixel art », pas un vrai 32 × 32. 68.8 mesure les mots envoyés,
+rien d'autre.
+
+- [ ] « Passe ce document en pixel art, avec une grille de 32 sur 32. »
+- [ ] « Le mode pixel art est-il actif, et quelle est la taille de la grille ? »
+- [ ] « Pose un pixel rouge en 3, 4. »
+- [ ] « Trace une ligne noire du coin haut gauche au coin bas droit. »
+- [ ] « Dessine un carré bleu plein de 8 sur 8 au centre de la grille. »
+- [ ] « Remplis tout le calque en blanc. »
+- [ ] « Efface le pixel en 3, 4. »
+- [ ] « Génère un sprite de personnage. »
+- [ ] « Enlève la grille de pixel art de ce document. »
+
+## 69. Optimiser une scène 3D
+
+- [ ] « Analyse les possibilités d’optimisation de cette scène sans la modifier. »
+- [ ] « Optimise les objets sélectionnés sans aucune perte visuelle. »
+- [ ] « Prépare toute cette scène pour le jeu avec les optimisations sûres. »
+- [ ] « Trouve ce qui provoque le plus de draw calls et donne-moi le rapport. »
+- [ ] « Vide le cache d’optimisation de cette scène. »
+- [ ] « Optimise tout sauf Cube Test. »
+- [ ] « Force les deux sphères à utiliser des instances. »
+
+## 70. Annoter une image pour la prochaine génération
+
+Ces notes sont un brouillon de session : elles apparaissent sur l’image et dans le générateur,
+visent l’image entière ou un calque, puis disparaissent après l’envoi.
+
+- [ ] « Ajoute une note pour la prochaine génération : rends l'arrière-plan nocturne. »
+- [ ] « Sur le calque Bateau, note pour la génération : garde exactement cette coque. »
+- [ ] « Remplace la note de génération par : éclaire seulement l'arrière-plan. »
+- [ ] « Retire la note de génération en attente. »
+
+## 71. L'onglet modèle
+
+Le chevalier ouvert dans son onglet Modèle, en avant :
+
+- [ ] « Que contient l'onglet modèle ? »
+- [ ] « Passe le modèle en filaire. »
+- [ ] « Masque le squelette du modèle. »
+- [ ] « Capture la vue du modèle. »
+- [ ] « Ajoute un cube à côté du modèle. »
+
+🛑 **La dernière demande est REFUSÉE, et c'est ce que le scénario mesure** : l'atelier d'un modèle
+est dessiné, jamais enregistré — un cube posé là serait perdu en silence. Le studio répond
+`wrongSurface` et dit où un nœud peut aller. Ce n'est pas un décor qui se pose avec un refus :
+le décor est le chevalier ouvert, la demande est ce qui est refusé.
+## 72. Contrôler les entrées, graphes et retargeting d’animation
+
+- [ ] « Liste les cartes de contrôles du projet, avec les commandes clavier et manette. »
+- [ ] « Lis la carte de contrôles Controls/character.input.json. »
+- [ ] « Écris cette carte de contrôles dans Controls/character.input.json. »
+- [ ] « Liste les graphes d’animation du projet. »
+- [ ] « Lis le graphe d’animation Animation/character.anim.json. »
+- [ ] « Écris ce graphe d’animation dans Animation/character.anim.json. »
+- [ ] « Vérifie comment le mouvement bundled idle s’adapte au personnage sélectionné. »

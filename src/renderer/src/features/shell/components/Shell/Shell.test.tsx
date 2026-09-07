@@ -1,53 +1,43 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
+import { shownIn } from '@pasquelin/panels'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { mountedConfirmer } from '@/features/assistant/confirm'
 import { installFakeBridge } from '@/services/fakeBridge'
 import { installDocument } from '@/stores/document-fixtures'
+import { installCharacterDocument } from '@/stores/character-fixtures'
+import { trackByGit } from '@/stores/git-fixtures'
+import { useProject } from '@/stores/project'
 import { homeIsVisible, useLayouts } from '@/stores/layouts'
+import { panelsStore } from '@/stores/panels'
+import { chassisFor, resetChassis } from '@/stores/panels-fixtures'
 import { useSettings } from '@/stores/settings'
-import { arrangedFor } from '@/stores/tool-fixtures'
-import {
-  DEFAULT_ARRANGEMENTS,
-  DEFAULT_LENGTHS,
-  DEFAULT_OPEN,
-  useTools,
-  type OpenByZone,
-} from '@/stores/tools'
 import { withQueries } from '../query-fixtures'
 import { Shell } from './Shell'
 
 vi.mock('../Document/DocumentArea', () => ({ DocumentArea: () => null }))
 
-// The rail carries one button per panel, labelled with the same title as the panel itself. It
-// has its own test; here it would only make every query ambiguous.
-vi.mock('../Rail/Rail', () => ({ Rail: () => null }))
+/**
+ * What the frame DRAWS, by the panels on screen.
+ *
+ * `region` and not the label: the rail carries a button of the same name for every panel it
+ * offers, open or not, so a query by label alone can no longer tell a panel from its icon.
+ */
+function drawn(): string[] {
+  return screen.queryAllByRole('region').map(node => node.getAttribute('aria-label') ?? '')
+}
 
 function renderShell() {
   return render(withQueries(<Shell />))
 }
 
-/** Resize handles: a zone's own, plus the divider a zone cut in two puts inside itself. */
-function handles(): HTMLElement[] {
-  return screen.queryAllByRole('separator')
-}
-
-/** The smallest box holding both — what says which of them the frame groups together. */
-function boxOf(one: HTMLElement, other: HTMLElement): HTMLElement | null {
-  for (let node = one.parentElement; node; node = node.parentElement) {
-    if (node.contains(other)) return node
-  }
-  return null
-}
-
 beforeEach(() => {
   installFakeBridge()
-  // Every test below is about the docks, which the home covers entirely — see the last block,
-  // which is the one that exercises it.
+  // Every test below is about the docks, which the home covers entirely — see its own block.
   useLayouts.setState({ activeWorkspace: 'image', layout: null, home: false })
-  useTools.setState({
-    arrangements: arrangedFor('image', { open: {} }),
-    lengths: DEFAULT_LENGTHS,
-  })
+  // Shared with every other file: a case that opens one leaves the studio holding it, and the
+  // panels asking for a project are then offered where the case beside it says they are not.
+  useProject.setState({ project: null })
+  resetChassis()
   // The store is shared across files: one test turns the home off, and every later one would
   // inherit a studio whose entry point does not exist.
   useSettings.setState(state => ({
@@ -55,345 +45,162 @@ beforeEach(() => {
   }))
 })
 
-describe('a horizontal band', () => {
-  /**
-   * The band is the RIGHT half's alone today, and a strip running the whole width under both
-   * columns is what it replaces: the left column now reaches the foot of the frame, and the
-   * band starts where it ends.
-   *
-   * Read in Video since 17 August: the band held the shelf in Image until then, and what is left
-   * there is the history, which asks for a project these tests do not open.
-   */
-  it('runs the left column past the band, and the right one down to it', () => {
-    useLayouts.setState({ activeWorkspace: 'video' })
-    useTools.setState({ arrangements: DEFAULT_ARRANGEMENTS })
-    renderShell()
-
-    const band = screen.getByLabelText('Timeline')
-    // Video reads its models on the left, and the inspector is what its right column holds.
-    const left = screen.getByLabelText('Génération')
-    const right = screen.getByLabelText('Inspecteur')
-
-    // The right column shares the box the band hangs under; the left one is outside it.
-    expect(boxOf(band, right)?.contains(left)).toBe(false)
-  })
-
-  // The montage, where this read the shelf until 17 August — the shelf answers from the left
-  // column now. Video rather than Image, and it is not a detail: the only tool left in Image's
-  // band is the history, and that one asks for a project these tests do not open.
-  it('is one surface: the panel and the zone handle, nothing else', () => {
-    useLayouts.setState({ activeWorkspace: 'video' })
-    useTools.setState({
-      arrangements: arrangedFor('image', { open: { bottomRight: { primary: 'timeline' } } }),
-    })
-    renderShell()
-
-    expect(screen.getByLabelText('Timeline')).toBeInTheDocument()
-    expect(handles()).toHaveLength(1)
-  })
-
-  // No placement declares a second half in a band, but a layout written by an older version
-  // can still hold one. It must not draw a panel there.
-  it('shows nothing in a second half a stored layout still asks for', () => {
-    useLayouts.setState({ activeWorkspace: 'video' })
-    useTools.setState({
-      arrangements: arrangedFor('image', { open: { bottomRight: { secondary: 'timeline' } } }),
-    })
-    renderShell()
-
-    expect(screen.queryByLabelText('Timeline')).not.toBeInTheDocument()
-  })
-
-  // The divider is what would leave two panels too narrow to be either — and drawn from a
-  // state nothing writes any more, nothing puts it back.
-  it('draws no divider inside itself, whatever the stored layout holds', () => {
-    useLayouts.setState({ activeWorkspace: 'video' })
-    useTools.setState({
-      arrangements: arrangedFor('image', {
-        open: { bottomRight: { primary: 'timeline', secondary: 'timeline' } },
-      }),
-    })
-    renderShell()
-
-    expect(screen.getAllByLabelText('Timeline')).toHaveLength(1)
-    expect(handles()).toHaveLength(1)
-  })
-})
-
-// What a fresh install shows, and what "Reset layout" restores. The stored layout is the same in
-// all six sections; each reads its own first panel into every half.
+/**
+ * 🛑 What the STUDIO decides, and nothing the chassis already owns.
+ *
+ * The geometry — a column running past the band, a divider drawn only between two open halves,
+ * a zone taking no room while empty — moved into `@pasquelin/panels` with its own suite. Kept
+ * here it would have described the same behaviour twice, and the copy would have been the one
+ * to rot.
+ *
+ * What is left is what the registry says: which panel each space puts where, and which panels a
+ * surface offers at all.
+ */
 describe('the default layout', () => {
   it('opens Image on the layers, the inspector, the generator and the Explorer', () => {
-    useTools.setState({ arrangements: DEFAULT_ARRANGEMENTS })
     renderShell()
 
-    expect(screen.getByLabelText('Calques')).toBeInTheDocument()
-    expect(screen.getByLabelText('Inspecteur')).toBeInTheDocument()
-    // The upper left, on the first panel it declares. The shelf shares that half and is NOT what
-    // a default layout opens on: one asks for it, and choosing a model comes first.
-    expect(screen.getByLabelText('Génération')).toBeInTheDocument()
-    expect(screen.queryByLabelText('Bibliothèque')).not.toBeInTheDocument()
-    // The lower half of the left column, open like every other half a surface has: two halves
-    // exist so the shelf stays visible WHILE the Explorer is read.
-    expect(screen.getByLabelText('Explorateur')).toBeInTheDocument()
+    expect(drawn()).toEqual(
+      expect.arrayContaining(['Calques', 'Inspecteur', 'Génération', 'Explorateur']),
+    )
   })
 
   it('opens Video on the montage, with the same left column as Image', () => {
     useLayouts.setState({ activeWorkspace: 'video' })
-    useTools.setState({ arrangements: DEFAULT_ARRANGEMENTS })
     renderShell()
 
-    expect(screen.getByLabelText('Timeline')).toBeInTheDocument()
-    expect(screen.getByLabelText('Génération')).toBeInTheDocument()
+    expect(drawn()).toEqual(expect.arrayContaining(['Timeline', 'Génération', 'Explorateur']))
+    // The layer stack means nothing here, and no placement gives it this space.
+    expect(drawn()).not.toContain('Calques')
   })
 
-  // What a sky IS and how it is LOOKED at both went back to the inspector on 2026-08-19, one
-  // after the other — so that half of the rail declares nothing, and the inspector answers alone.
-  it('opens Skyboxes on the inspector alone, its own half being empty', () => {
+  it('opens Skyboxes on the inspector alone, its own upper right being empty', () => {
     useLayouts.setState({ activeWorkspace: 'skyboxes' })
-    useTools.setState({ arrangements: DEFAULT_ARRANGEMENTS })
     renderShell()
 
-    expect(screen.getByLabelText('Inspecteur')).toBeInTheDocument()
-    expect(screen.queryByLabelText('Vue')).not.toBeInTheDocument()
+    expect(drawn()).toContain('Inspecteur')
+    expect(drawn()).not.toContain('Calques')
+    expect(drawn()).not.toContain('Timeline')
   })
 })
 
-// The band belongs to the montage in Video. The shelf stood in the right column there until
-// 17 August, so a take could be dragged onto a track; it holds the upper left in every space
-// now, and the gesture is unchanged — a column and a band are on screen together either way.
-describe('the Video layout', () => {
-  // One stored layout, read by two sections: the halves keep their place, their contents follow.
-  const SHELF_IN_COLUMN: OpenByZone = {
-    ...DEFAULT_OPEN.workspaces,
-    left: { primary: 'assets', secondary: 'explorer' },
-  }
+/**
+ * 🛑 Which halves a surface STARTS with is the studio's decision, and it is made once per view.
+ * Read off "whatever happens to be declared the second the chassis settles", a half whose panels
+ * all wait on something — a project being read, git answering — stays shut for good.
+ */
+describe('the halves a surface starts with', () => {
+  it('opens the band in Video, on a studio entered through Image', () => {
+    const { rerender } = renderShell()
 
-  it('puts the montage in the band and the shelf in the left column', () => {
     useLayouts.setState({ activeWorkspace: 'video' })
-    useTools.setState({ arrangements: arrangedFor('image', { open: SHELF_IN_COLUMN }) })
-    renderShell()
+    rerender(withQueries(<Shell />))
 
-    expect(screen.getByLabelText('Timeline')).toBeInTheDocument()
-    expect(screen.getByLabelText('Bibliothèque')).toBeInTheDocument()
+    expect(drawn()).toContain('Timeline')
   })
 
-  it('gives the same halves the panels Image puts there', () => {
-    useLayouts.setState({ activeWorkspace: 'image' })
-    useTools.setState({ arrangements: arrangedFor('image', { open: SHELF_IN_COLUMN }) })
-    renderShell()
+  it('gives the home’s lower left to the Explorer when the project it waited for opens', () => {
+    useLayouts.setState({ home: true })
+    const { rerender } = renderShell()
 
-    expect(screen.getByLabelText('Bibliothèque')).toBeInTheDocument()
-    expect(screen.getByLabelText('Calques')).toBeInTheDocument()
-    expect(screen.queryByLabelText('Timeline')).not.toBeInTheDocument()
+    useProject.setState({
+      project: { path: '/projects/one', manifest: { version: 1, createdAt: '', updatedAt: '' } },
+    })
+    rerender(withQueries(<Shell />))
+
+    expect(drawn()).toContain('Explorateur')
   })
 })
 
-/** Both halves of one column open — the only shape in which a half can be told from its neighbour. */
-const COLUMN_OF_TWO = { right: { primary: 'layers', secondary: 'inspector' } } satisfies OpenByZone
-
-describe('a side column', () => {
-  // The cut a band refuses is exactly what a column is for: two panels stacked, and a divider
-  // to share the height between them.
-  it('keeps both halves and the divider between them', () => {
-    useTools.setState({ arrangements: arrangedFor('image', { open: COLUMN_OF_TWO }) })
+// A panel a surface cannot offer is a panel NOT DECLARED. The half it would have taken falls
+// back to what this surface does declare — and gives it back the day the panel returns.
+describe('a panel the surface cannot offer', () => {
+  it('is absent from the frame and from the rail, with no project open', () => {
     renderShell()
 
-    expect(screen.getByLabelText('Calques')).toBeInTheDocument()
-    expect(screen.getByLabelText('Inspecteur')).toBeInTheDocument()
-    expect(handles()).toHaveLength(2)
+    expect(drawn()).not.toContain('Git')
+    expect(screen.queryByRole('button', { name: 'Git' })).not.toBeInTheDocument()
   })
 
-  /**
-   * The close button of a docked panel, which is the only way out of a half that the rail cannot
-   * offer — and it has to shut the half it belongs to rather than the one above it. Both halves
-   * are asserted from one arrangement: `Edge` builds a closing handler per half, and a single
-   * one of them proves nothing about the other.
-   */
-  it('closes the half whose button was pressed, and leaves the other standing', () => {
-    useTools.setState({ arrangements: arrangedFor('image', { open: COLUMN_OF_TWO }) })
+  it('leaves the half to the Explorer rather than closing it', () => {
     renderShell()
 
-    const [upper, lower] = screen.getAllByRole('button', { name: 'Retirer le module' })
-    if (!upper || !lower) throw new Error('both halves must draw a close button')
-
-    fireEvent.click(lower)
-
-    expect(screen.getByLabelText('Calques')).toBeInTheDocument()
-    expect(screen.queryByLabelText('Inspecteur')).not.toBeInTheDocument()
-
-    fireEvent.click(upper)
-
-    expect(screen.queryByLabelText('Calques')).not.toBeInTheDocument()
-  })
-
-  /**
-   * Half each until somebody says otherwise, and it is CSS that divides them. Read off the LOWER
-   * half, the only one a length was ever written to — the upper one has taken what is left since
-   * before this rule, so asserting on it would pass whatever happens here.
-   */
-  it('divides a column evenly until a divider has been dragged', () => {
-    useTools.setState({ arrangements: arrangedFor('image', { open: COLUMN_OF_TWO }) })
-    renderShell()
-
-    expect(screen.getByLabelText('Inspecteur').style.flexBasis).toBe('')
-  })
-
-  it('gives the lower half the length a drag wrote for it', () => {
-    useTools.setState({
-      arrangements: arrangedFor('image', { open: COLUMN_OF_TWO }),
-      lengths: { ...DEFAULT_LENGTHS, splits: { right: 200 } },
-    })
-    renderShell()
-
-    expect(screen.getByLabelText('Inspecteur').style.flexBasis).toBe('200px')
-  })
-
-  // A lone half fills its zone: the divider belongs to the cut, and there is none to make here.
-  it('draws no divider where only one half of a column is open', () => {
-    useTools.setState({
-      arrangements: arrangedFor('image', { open: { left: { primary: 'assets' } } }),
-    })
-    renderShell()
-
-    expect(screen.getByLabelText('Bibliothèque')).toBeInTheDocument()
-    expect(handles()).toHaveLength(1)
-  })
-
-  /**
-   * The same, from the other half — reached by closing the upper one, which leaves the lower
-   * alone in the column. It then takes the whole zone rather than the length the divider gave
-   * it, and there is no divider left to read that length from. The home was the surface that
-   * exercised this by default until its left column was cut in two.
-   */
-  it('gives the whole column to a lower half left on its own', () => {
-    useTools.setState({
-      arrangements: arrangedFor('image', { open: { right: { secondary: 'inspector' } } }),
-    })
-    renderShell()
-
-    expect(screen.getByLabelText('Inspecteur')).toBeInTheDocument()
-    expect(handles()).toHaveLength(1)
+    // The lower left is the Explorer's, the Git panel's and the context's; two of the three ask
+    // for a project, so the half draws the one that does not.
+    expect(drawn()).toContain('Explorateur')
   })
 })
 
 describe('the home', () => {
-  /**
-   * Two columns and no band: the montage and the asset strip act on an open document, and the
-   * home has none. Those zones are not drawn, so neither are their rails.
-   */
-  it('draws its two columns and neither band', () => {
+  beforeEach(() => {
     useLayouts.setState({ home: true })
-    useTools.setState({ arrangements: DEFAULT_ARRANGEMENTS })
-    renderShell()
-
-    expect(screen.queryByLabelText('Calques')).not.toBeInTheDocument()
-    expect(screen.queryByLabelText('Bibliothèque')).not.toBeInTheDocument()
-    // TWO dividers — where a workspace has four: one per column, and no split inside either. A
-    // column split needs both halves populated, and each of these holds one panel.
-    expect(handles()).toHaveLength(2)
   })
 
   /**
-   * Its panels open where panels open — under a rail icon, in a tool window that closes and
-   * reopens like the others. What an unchosen half draws is the first panel the registry puts
-   * there, which is why no arrangement here names one.
+   * Two columns and no band: the montage and the asset shelf act on an open document, and the
+   * home has none. Those zones are not declared here, so nothing draws them.
    */
-  it('opens on the projects', () => {
-    useLayouts.setState({ home: true })
-    useTools.setState({ arrangements: DEFAULT_ARRANGEMENTS })
+  it('draws its own panels and neither band', () => {
+    renderShell()
+
+    expect(drawn()).toContain('Vos projets')
+    expect(drawn()).not.toContain('Timeline')
+    expect(drawn()).not.toContain('Bibliothèque')
+  })
+
+  it('opens on the projects, and on none of what the spaces put there', () => {
     renderShell()
 
     // The upper left, which the home alone gives to something other than generation.
-    expect(screen.getByLabelText('Vos projets')).toBeInTheDocument()
-    // The account's remote library stood in the right column until this lot, and it was the last
-    // panel there: what it said now lives in the models band of the page itself.
-    expect(screen.queryByLabelText('Votre bibliothèque')).not.toBeInTheDocument()
+    expect(drawn()).toContain('Vos projets')
+    expect(drawn()).not.toContain('Génération')
     // Gone with the eight readings of the studio that came down on 13 August.
-    expect(screen.queryByLabelText('Ce que vous avez produit')).not.toBeInTheDocument()
-    expect(screen.queryByLabelText('Activité récente')).not.toBeInTheDocument()
-    // The spaces' own two, which no placement gives this surface.
-    expect(screen.queryByLabelText('Génération')).not.toBeInTheDocument()
-    expect(screen.queryByLabelText('Explorateur')).not.toBeInTheDocument()
-  })
-
-  /**
-   * A half shows ONE panel at a time, whatever else the registry declares beside it. The rail is
-   * how one swaps them, and it has its own suite — this file mocks it away so that a title
-   * queried here can only be a panel.
-   */
-  it('shows one panel per half, never the whole right column at once', () => {
-    useLayouts.setState({ home: true })
-    useTools.setState({ arrangements: DEFAULT_ARRANGEMENTS })
-    renderShell()
-
-    expect(screen.queryByLabelText('Vos documents')).not.toBeInTheDocument()
-  })
-
-  // The status line is the studio's global view — jobs, activity, updates — and the home is
-  // where a global view is most wanted, not least.
-  /**
-   * The two cuts a surface with two columns has: the one between a column and the centre, and
-   * the one between a column's two halves. Both write to the arrangement of the surface being
-   * looked at — the home writes the home's, never the workspaces'.
-   *
-   * jsdom implements neither pointer capture nor layout, so the capture is stubbed and the
-   * measured container reads zero: what is under test is which store each handle writes to, not
-   * the arithmetic, which `fitZoneSize` and `fitSplit` own and are tested on directly.
-   */
-  it('resizes its own zones, and the width it writes belongs to the studio', () => {
-    useLayouts.setState({ home: true })
-    useTools.setState({ arrangements: DEFAULT_ARRANGEMENTS, lengths: DEFAULT_LENGTHS })
-    Element.prototype.setPointerCapture = vi.fn()
-    renderShell()
-
-    for (const handle of handles()) {
-      fireEvent.pointerDown(handle, { pointerId: 1, clientX: 400, clientY: 300 })
-      fireEvent.pointerMove(handle, { pointerId: 1, clientX: 340, clientY: 260 })
-    }
-
-    const { sizes, splits } = useTools.getState().lengths
-    expect(sizes.left).toBeDefined()
-    // The right column came back on 28 August, with the assistant as its only panel.
-    expect(sizes.right).toBeDefined()
-    // No split to drag any more, and that is the assertion rather than an omission: the home has
-    // one half per column since 13 August, so nothing here writes `splits`.
-    expect(splits).toEqual({})
+    expect(drawn()).not.toContain('Votre bibliothèque')
+    expect(drawn()).not.toContain('Activité récente')
   })
 
   it('keeps the status line under it', () => {
-    useLayouts.setState({ home: true })
     renderShell()
 
     expect(screen.getByRole('contentinfo')).toBeInTheDocument()
   })
 
+  /**
+   * The home and the spaces are two VIEWS of one chassis: each keeps the panels it had open,
+   * and neither can close the other's. One shared arrangement made a click on the Explorer a
+   * click on the generation panel.
+   */
   it('gives back the workspace and its panels when it is left', () => {
-    useLayouts.setState({ home: true })
-    useTools.setState({
-      arrangements: arrangedFor('image', { open: { right: { primary: 'layers' } } }),
-    })
     const { rerender } = renderShell()
+    expect(drawn()).toContain('Vos projets')
 
     useLayouts.setState({ home: false })
     rerender(withQueries(<Shell />))
 
-    expect(screen.getByLabelText('Calques')).toBeInTheDocument()
+    expect(drawn()).toContain('Calques')
+    expect(drawn()).not.toContain('Vos projets')
+  })
+
+  it('shares the column widths with the spaces, which are the studio’s', () => {
+    const { rerender } = renderShell()
+    panelsStore.getState().resize('left', 420, 1600)
+
+    useLayouts.setState({ home: false })
+    rerender(withQueries(<Shell />))
+
+    // A column that changed width on the way out of the home would read as another window.
+    expect(panelsStore.getState().lengths.sizes.left).toBe(420)
   })
 
   it('takes the home button out of the bar when the setting turns it off', () => {
     useSettings.setState(state => ({
       settings: { ...state.settings, home: { ...state.settings.home, enabled: false } },
     }))
-    useLayouts.setState({ home: true })
-    useTools.setState({
-      arrangements: arrangedFor('image', { open: { right: { primary: 'layers' } } }),
-    })
     renderShell()
 
     expect(screen.queryByRole('button', { name: 'Accueil' })).not.toBeInTheDocument()
     // And the studio is on its workspace rather than on a home nothing can reach.
-    expect(screen.getByLabelText('Calques')).toBeInTheDocument()
+    expect(drawn()).toContain('Calques')
   })
 })
 
@@ -449,21 +256,112 @@ describe('the right column with a document in front', () => {
   })
 
   it('is the assistant alone, on an untouched layout', () => {
-    useTools.setState({ arrangements: DEFAULT_ARRANGEMENTS })
     renderShell()
 
-    expect(screen.getByLabelText('Assistant')).toBeInTheDocument()
-    expect(screen.queryByLabelText('Inspecteur')).not.toBeInTheDocument()
-    expect(screen.queryByLabelText('Calques')).not.toBeInTheDocument()
+    expect(drawn()).toContain('Assistant')
+    expect(drawn()).not.toContain('Inspecteur')
+    expect(drawn()).not.toContain('Calques')
   })
 
   it('gives the column back to the panel asked for, and keeps the inspector beside it', () => {
-    useTools.setState({ arrangements: DEFAULT_ARRANGEMENTS })
-    useTools.getState().show('image', 'right', 'inspector')
+    chassisFor('image', { right: { primary: 'layers', secondary: null } })
     renderShell()
 
-    expect(screen.queryByLabelText('Assistant')).not.toBeInTheDocument()
-    expect(screen.getByLabelText('Inspecteur')).toBeInTheDocument()
-    expect(screen.getByLabelText('Calques')).toBeInTheDocument()
+    expect(drawn()).not.toContain('Assistant')
+    expect(drawn()).toContain('Inspecteur')
+    expect(drawn()).toContain('Calques')
+  })
+})
+
+describe('the tools beside a standalone model', () => {
+  it('offers its mesh hierarchy without offering scene-only editors', () => {
+    useLayouts.setState({ activeWorkspace: '3d' })
+    installCharacterDocument('character-1', 'asset-hero')
+    renderShell()
+
+    expect(screen.getByRole('button', { name: 'Scène' })).toBeInTheDocument()
+    for (const name of ['Interface', 'Lumières', 'Mailles']) {
+      expect(drawn()).not.toContain(name)
+      expect(screen.queryByRole('button', { name })).not.toBeInTheDocument()
+    }
+    expect(screen.getByRole('button', { name: 'Inspecteur' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Timeline' })).toBeInTheDocument()
+  })
+})
+
+/**
+ * The montage carries a whole bar on its title row and wants the width; every other band panel
+ * wants its buttons at the end. The chassis guesses from "publishes actions in a horizontal
+ * zone", which is why the registry has to say.
+ */
+describe('a panel of the band', () => {
+  it('gives the row’s free width to the montage, and to it alone', () => {
+    useLayouts.setState({ activeWorkspace: 'video' })
+    renderShell()
+
+    expect(screen.getByText('Timeline')).toHaveClass('pnl-header__title--fixed')
+  })
+
+  it('leaves the history’s actions at the end of its row', () => {
+    trackByGit()
+    useProject.setState({
+      project: {
+        path: '/projects/one',
+        manifest: { version: 1, createdAt: '', updatedAt: '' },
+      },
+    })
+    renderShell()
+    panelsStore.getState().show('history')
+
+    expect(screen.getByText('Historique')).not.toHaveClass('pnl-header__title--fixed')
+  })
+})
+
+/**
+ * 🛑 The arrangement is kept per SECTION, `view` naming only the family: left to follow `view`,
+ * one panel dragged in Image reordered the rail of all six spaces.
+ */
+describe('moving a panel', () => {
+  it('hands the rail buttons to a drag', () => {
+    renderShell()
+
+    expect(document.body.querySelectorAll('[data-pnl-panel]').length).toBeGreaterThan(0)
+  })
+
+  it('keeps one section’s arrangement out of the others', () => {
+    const { rerender } = renderShell()
+    const showing = (zone: 'left' | 'right') => shownIn(panelsStore.getState(), zone)
+
+    // The Explorer, from the lower left of Image to the lower right — a half every space
+    // declares, so the two sections can disagree about it at all.
+    panelsStore.getState().movePanel('explorer', { zone: 'right', slot: 'secondary' }, 0)
+    expect(showing('right').secondary).toBe('explorer')
+
+    useLayouts.setState({ activeWorkspace: 'video' })
+    rerender(withQueries(<Shell />))
+
+    // Nobody dragged anything in Video: it holds what the registry declares.
+    expect(showing('right').secondary).toBe('inspector')
+    expect(showing('left').secondary).toBe('explorer')
+
+    useLayouts.setState({ activeWorkspace: 'image' })
+    rerender(withQueries(<Shell />))
+
+    expect(showing('right').secondary).toBe('explorer')
+  })
+})
+
+/**
+ * 🛑 The listener sits on `window`, above the whole tree. Cancelling every drop took the native
+ * insertion away from any editable field a selection was dragged into.
+ */
+describe('a drop that carries no file', () => {
+  it('is left to whatever is under it', () => {
+    renderShell()
+    const drop = new Event('drop', { bubbles: true, cancelable: true })
+
+    window.dispatchEvent(drop)
+
+    expect(drop.defaultPrevented).toBe(false)
   })
 })

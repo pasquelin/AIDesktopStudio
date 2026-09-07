@@ -34,8 +34,18 @@ const TEARDOWNS = ['onTestFinished', 'afterEach']
  * The test at the bottom asks whether an entry is still NEEDED, never whether its prose is true.
  */
 const OWNED_ELSEWHERE: Record<string, string> = {
-  'main/project/store.test.ts':
-    'three catalogues handed to `openCatalog`, given back by `store.ts` when the store closes',
+  'main/project/store01Part01.test.ts':
+    'catalogues handed to `openCatalog`, given back by `store.ts` when the store closes',
+  'main/project/store01Part02.test.ts':
+    'catalogues handed to `openCatalog`, given back by `store.ts` when the store closes',
+  'main/project/store01Part03.test.ts':
+    'catalogues handed to `openCatalog`, given back by `store.ts` when the store closes',
+  'main/project/store02.test.ts':
+    'catalogues handed to `openCatalog`, given back by `store.ts` when the store closes',
+  'main/project/store03.test.ts':
+    'catalogues handed to `openCatalog`, given back by `store.ts` when the store closes',
+  'main/project/store04.test.ts':
+    'catalogues handed to `openCatalog`, given back by `store.ts` when the store closes',
   'main/memory/memoryClient.test.ts':
     'the database goes to the index, then to the store, and comes back through `memory.close()` — which is what the suite is there to exercise',
 }
@@ -181,16 +191,16 @@ export function unclosedIn(path: string, source: string): string[] {
  *   `const { close } = openMemoryDatabase()`, a handle renamed before its teardown, and a handle
  *   handed to a helper that closes it. Each reads as a leak.
  */
+const sweep = (): { path: string; findings: string[] }[] =>
+  testFilesUnder(SOURCE_ROOT).map(path => {
+    const named = relative(SOURCE_ROOT, path)
+    return { path: named, findings: unclosedIn(named, readFileSync(path, 'utf8')) }
+  })
+
+const findingsOf = (): string[] =>
+  sweep().flatMap(({ path, findings }) => (path in OWNED_ELSEWHERE ? [] : findings))
+
 describe('every database a suite opens by name is given back', () => {
-  const sweep = (): { path: string; findings: string[] }[] =>
-    testFilesUnder(SOURCE_ROOT).map(path => {
-      const named = relative(SOURCE_ROOT, path)
-      return { path: named, findings: unclosedIn(named, readFileSync(path, 'utf8')) }
-    })
-
-  const findingsOf = (): string[] =>
-    sweep().flatMap(({ path, findings }) => (path in OWNED_ELSEWHERE ? [] : findings))
-
   it(
     'gives back every database it opened, in every suite of the project',
     () => {
@@ -250,6 +260,9 @@ describe('every database a suite opens by name is given back', () => {
    * the block that leaks is named. The tally is per `describe`, so the sound half answers for
    * itself and for nothing else.
    */
+})
+
+describe('database teardown scope', () => {
   it('refuses the block that keeps its handle, and names only that one', () => {
     expect(
       unclosedIn(
@@ -312,7 +325,9 @@ describe('every database a suite opens by name is given back', () => {
   it('sees the opening the catalogue suites had left without a teardown', () => {
     expect(unclosedIn('probe.ts', 'const driver = openMemoryDatabase()')).toEqual(['probe.ts:1'])
   })
+})
 
+describe('database teardown forms', () => {
   it('takes the teardown passed by reference and the one wrapped in an arrow', () => {
     expect(
       unclosedIn('probe.ts', 'const d = openMemoryDatabase()\nonTestFinished(d.close)'),
@@ -350,7 +365,9 @@ describe('every database a suite opens by name is given back', () => {
       ),
     ).toEqual(['probe.ts:1'])
   })
+})
 
+describe('database opening counts', () => {
   it('takes the handle reassigned before each test, once per opening', () => {
     expect(
       unclosedIn(

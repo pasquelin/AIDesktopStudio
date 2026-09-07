@@ -1,6 +1,6 @@
 import { join, resolve, sep } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { pathIsInside } from './pathIsInside'
+import { isProjectReserved, pathIsInside } from './pathIsInside'
 
 const ROOT = resolve(sep, 'games', 'Demo')
 
@@ -26,5 +26,13 @@ describe('whether a file lands inside the folder a game was written to', () => {
 
   it('refuses a path of its own elsewhere on the disk', () => {
     expect(pathIsInside(ROOT, resolve(sep, 'etc', 'passwd'))).toBe(false)
+  })
+})
+
+describe('the project’s own bookkeeping', () => {
+  it('refuses .git and .index at the first segment, not a file named like them deeper', () => {
+    expect(isProjectReserved('.git')).toBe(true)
+    expect(isProjectReserved(join('.index', 'catalog.db'))).toBe(true)
+    expect(isProjectReserved(join('assets', '.git'))).toBe(false)
   })
 })

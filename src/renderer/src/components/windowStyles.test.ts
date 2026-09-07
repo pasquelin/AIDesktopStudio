@@ -13,7 +13,7 @@ const GUARDED = './windowStyles.ts'
 const spellsOutRow = spellsOut(WINDOW_ROW.split(' ').filter(one => !one.startsWith('last:')))
 
 /** The way the two search results were made clickable before they had a constant. */
-const redressesRow = rewrites('WINDOW_ROW', ['hover:bg-base-300', 'w-full', 'text-left'])
+const redressesRow = rewrites('WINDOW_ROW', ['hover:bg-base-200', 'w-full', 'text-left'])
 
 describe('the line of a list in an app window', () => {
   it('finds the sources at all, so the rules below cannot pass on an empty list', () => {
@@ -24,7 +24,7 @@ describe('the line of a list in an app window', () => {
   it('is the line, plus what makes the whole of it a button and nothing more', () => {
     expect(WINDOW_ROW_BUTTON.split(' ')).toEqual([
       ...WINDOW_ROW.split(' '),
-      'hover:bg-base-300',
+      'hover:bg-base-200',
       'w-full',
       'text-left',
     ])
@@ -64,10 +64,12 @@ describe('the line of a list in an app window', () => {
     ).map(([path]) => path)
 
     expect(wearing.sort()).toEqual([
+      '../features/document/components/NewDocument/NewDocumentNoProject.tsx',
       '../features/manual/components/ManualWindow/ManualWindowResults.tsx',
       '../features/settings/components/Ai/AiChoiceRow.tsx',
       '../features/settings/components/Ai/AiCloudModel.tsx',
       '../features/settings/components/Ai/AiStudioModel.tsx',
+      '../features/settings/components/InputSettings.tsx',
       '../features/settings/components/Setting/SettingLine.tsx',
       '../features/settings/components/SettingsWindow/SettingsWindowResultRow.tsx',
     ])

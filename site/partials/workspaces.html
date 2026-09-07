@@ -1,0 +1,240 @@
+  <!-- ================================================================
+       ATELIER — 3D
+       AXE : horizontal. Un seul axe par section — ne pas cumuler data-speed
+       et data-speedx ici, c'est l'alternance entre sections qui donne
+       le rythme.
+       ================================================================ -->
+  <section class="panel" id="trois-d">
+    <div class="wrap mode mode--flip">
+      <div class="mode__text" data-fx data-still data-speedx="0.026">
+        <p class="eyebrow" data-fx data-rise="0" data-shift="-20">{{threeD.eyebrow}}</p>
+        <h2 class="mode__title" data-fx data-split data-delay="60">{{nav.threeD}}</h2>
+        <p class="lede" data-fx data-rise="0" data-shift="-24" data-delay="220">{{threeD.lede}}</p>
+        <ul class="mode__list" data-stagger="60" data-stagger-rise="0" data-stagger-shift="-26">
+          <li><b>{{threeD.list.0.term}}</b>{{threeD.list.0.text}}</li>
+          <li><b>{{threeD.list.1.term}}</b>{{threeD.list.1.text}}</li>
+          <li><b>{{threeD.list.2.term}}</b>{{threeD.list.2.text}}</li>
+        </ul>
+      </div>
+      <figure class="mode__shot" data-fx data-still data-speedx="-0.036">
+        <div class="frame" data-fx data-rise="0" data-zoom="0.05">
+          <img src="{{root}}assets/images/3d.webp" width="1800" height="1129" data-depth
+               alt="{{threeD.alt}}" loading="lazy">
+        </div>
+        <figcaption class="chipset" data-stagger="50" data-stagger-rise="0" data-stagger-shift="-18">
+          <span>{{threeD.chips.0}}</span><span>{{threeD.chips.1}}</span><span>{{threeD.chips.2}}</span><span>{{threeD.chips.3}}</span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ================================================================
+       ATELIER — IMAGE
+       AXE : diagonal. Un seul axe par section — ne pas cumuler data-speed
+       et data-speedx ici, c'est l'alternance entre sections qui donne
+       le rythme.
+       ================================================================ -->
+  <section class="panel" id="image">
+    <div class="wrap mode">
+      <div class="mode__text" data-fx data-still data-speed="-0.024" data-speedx="-0.016">
+        <p class="eyebrow" data-fx data-rise="12" data-shift="-12">{{image.eyebrow}}</p>
+        <h2 class="mode__title" data-fx data-split data-delay="60">{{nav.image}}</h2>
+        <p class="lede" data-fx data-rise="14" data-shift="-14" data-delay="220">{{image.lede}}</p>
+        <ul class="mode__list" data-stagger="60" data-stagger-rise="14" data-stagger-shift="-14">
+          <li><b>{{image.list.0.term}}</b>{{image.list.0.text}}</li>
+          <li><b>{{image.list.1.term}}</b>{{image.list.1.text}}</li>
+          <li><b>{{image.list.2.term}}</b>{{image.list.2.text}}</li>
+        </ul>
+      </div>
+      <figure class="mode__shot" data-fx data-still data-speed="0.05" data-speedx="0.024">
+        <div class="frame" data-fx data-rise="0" data-zoom="0.05">
+          <img src="{{root}}assets/images/image.webp" width="1800" height="1129" data-depth
+               alt="{{image.alt}}" loading="lazy">
+        </div>
+        <figcaption class="chipset" data-stagger="50" data-stagger-rise="10" data-stagger-shift="-10">
+          <span>{{image.chips.0}}</span><span>{{image.chips.1}}</span><span>{{image.chips.2}}</span><span>{{image.chips.3}}</span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ================================================================
+       ATELIER — AUDIO
+       AXE : vertical. Un seul axe par section — ne pas cumuler data-speed
+       et data-speedx ici, c'est l'alternance entre sections qui donne
+       le rythme.
+       ================================================================ -->
+  <section class="panel" id="audio">
+    <div class="wrap mode mode--flip">
+      <div class="mode__text" data-fx data-still data-speed="-0.035">
+        <p class="eyebrow" data-fx data-rise="16">{{audio.eyebrow}}</p>
+        <h2 class="mode__title" data-fx data-split data-delay="60">{{nav.audio}}</h2>
+        <p class="lede" data-fx data-rise="20" data-delay="220">{{audio.lede}}</p>
+        <ul class="mode__list" data-stagger="60" data-stagger-rise="20">
+          <li><b>{{audio.list.0.term}}</b>{{audio.list.0.text}}</li>
+          <li><b>{{audio.list.1.term}}</b>{{audio.list.1.text}}</li>
+          <li><b>{{audio.list.2.term}}</b>{{audio.list.2.text}}</li>
+        </ul>
+      </div>
+      <figure class="mode__shot" data-fx data-still data-speed="0.07">
+        <div class="frame" data-fx data-rise="0" data-zoom="0.05">
+          <img src="{{root}}assets/images/audio.webp" width="1800" height="1129" data-depth
+               alt="{{audio.alt}}" loading="lazy">
+        </div>
+        <figcaption class="chipset" data-stagger="50" data-stagger-rise="14">
+          <span>{{audio.chips.0}}</span><span>{{audio.chips.1}}</span><span>{{audio.chips.2}}</span><span>{{audio.chips.3}}</span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ================================================================
+       ATELIER — TEXTURES
+       AXE : horizontal. Un seul axe par section — ne pas cumuler data-speed
+       et data-speedx ici, c'est l'alternance entre sections qui donne
+       le rythme.
+       ================================================================ -->
+  <section class="panel" id="textures">
+    <div class="wrap mode">
+      <div class="mode__text" data-fx data-still data-speedx="-0.026">
+        <p class="eyebrow" data-fx data-rise="0" data-shift="-20">{{textures.eyebrow}}</p>
+        <h2 class="mode__title" data-fx data-split data-delay="60">{{nav.textures}}</h2>
+        <p class="lede" data-fx data-rise="0" data-shift="-24" data-delay="220">{{textures.lede}}</p>
+        <ul class="mode__list" data-stagger="60" data-stagger-rise="0" data-stagger-shift="-26">
+          <li><b>{{textures.list.0.term}}</b>{{textures.list.0.text}}</li>
+          <li><b>{{textures.list.1.term}}</b>{{textures.list.1.text}}</li>
+          <li><b>{{textures.list.2.term}}</b>{{textures.list.2.text}}</li>
+        </ul>
+      </div>
+      <figure class="mode__shot" data-fx data-still data-speedx="0.036">
+        <div class="frame" data-fx data-rise="0" data-zoom="0.05">
+          <img src="{{root}}assets/images/textures.webp" width="1800" height="1129" data-depth
+               alt="{{textures.alt}}" loading="lazy">
+        </div>
+        <figcaption class="chipset" data-stagger="50" data-stagger-rise="0" data-stagger-shift="-18">
+          <span>{{textures.chips.0}}</span><span>{{textures.chips.1}}</span><span>{{textures.chips.2}}</span><span>{{textures.chips.3}}</span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ================================================================
+       ATELIER — SKYBOXES
+       AXE : diagonal. Un seul axe par section — ne pas cumuler data-speed
+       et data-speedx ici, c'est l'alternance entre sections qui donne
+       le rythme.
+       ================================================================ -->
+  <section class="panel" id="skyboxes">
+    <div class="wrap mode mode--flip">
+      <div class="mode__text" data-fx data-still data-speed="-0.024" data-speedx="0.016">
+        <p class="eyebrow" data-fx data-rise="12" data-shift="-12">{{skyboxes.eyebrow}}</p>
+        <h2 class="mode__title" data-fx data-split data-delay="60">{{nav.skyboxes}}</h2>
+        <p class="lede" data-fx data-rise="14" data-shift="-14" data-delay="220">{{skyboxes.lede}}</p>
+        <ul class="mode__list" data-stagger="60" data-stagger-rise="14" data-stagger-shift="-14">
+          <li><b>{{skyboxes.list.0.term}}</b>{{skyboxes.list.0.text}}</li>
+          <li><b>{{skyboxes.list.1.term}}</b>{{skyboxes.list.1.text}}</li>
+          <li><b>{{skyboxes.list.2.term}}</b>{{skyboxes.list.2.text}}</li>
+        </ul>
+      </div>
+      <figure class="mode__shot" data-fx data-still data-speed="0.05" data-speedx="-0.024">
+        <div class="frame" data-fx data-rise="0" data-zoom="0.05">
+          <img src="{{root}}assets/images/skyboxes.webp" width="1800" height="1129" data-depth
+               alt="{{skyboxes.alt}}" loading="lazy">
+        </div>
+        <figcaption class="chipset" data-stagger="50" data-stagger-rise="10" data-stagger-shift="-10">
+          <span>{{skyboxes.chips.0}}</span><span>{{skyboxes.chips.1}}</span><span>{{skyboxes.chips.2}}</span><span>{{skyboxes.chips.3}}</span><span>{{skyboxes.chips.4}}</span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ================================================================
+       BANDEAU — ce que les ateliers savent produire. Le contenu est
+       dupliqué à l'identique : c'est ce qui rend la boucle invisible.
+       Pour modifier la liste, éditer les DEUX blocs .ticker__set.
+       ================================================================ -->
+  <div class="ticker" aria-hidden="true" data-ticker>
+    <div class="ticker__row">
+      <div class="ticker__set"><span>{{ticker.0}}</span><span>{{ticker.1}}</span><span>{{ticker.2}}</span><span>{{ticker.3}}</span><span>{{ticker.4}}</span><span>{{ticker.5}}</span><span>{{ticker.6}}</span><span>{{ticker.7}}</span><span>{{ticker.8}}</span><span>{{ticker.9}}</span><span>{{ticker.10}}</span><span>{{ticker.11}}</span><span>{{ticker.12}}</span><span>{{ticker.13}}</span><span>{{ticker.14}}</span><span>{{ticker.15}}</span></div>
+      <div class="ticker__set"><span>{{ticker.0}}</span><span>{{ticker.1}}</span><span>{{ticker.2}}</span><span>{{ticker.3}}</span><span>{{ticker.4}}</span><span>{{ticker.5}}</span><span>{{ticker.6}}</span><span>{{ticker.7}}</span><span>{{ticker.8}}</span><span>{{ticker.9}}</span><span>{{ticker.10}}</span><span>{{ticker.11}}</span><span>{{ticker.12}}</span><span>{{ticker.13}}</span><span>{{ticker.14}}</span><span>{{ticker.15}}</span></div>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       ARCHITECTURE
+       ================================================================ -->
+  <section class="panel" id="architecture">
+    <div class="wrap">
+      <div class="panel__head">
+        <p class="eyebrow" data-fx data-rise="16">{{architecture.eyebrow}}</p>
+        <h2 data-fx data-split data-delay="80">{{architecture.title}}</h2>
+        <p class="lede" data-fx data-rise="22" data-delay="360">{{architecture.lede}}</p>
+      </div>
+
+      <!-- AXE : horizontal -->
+      <div class="rack" data-fx data-rise="0" data-shift="-28" data-speedx="0.018">
+        <div class="rack__row">
+          <div class="rack__label">{{architecture.racks.0}}</div>
+          <div class="rack__cells">
+            <div class="cell">
+              <span class="tag">{{architecture.cells.0.tag}}</span>
+              <h3>{{architecture.cells.0.title}}</h3>
+              <p>{{architecture.cells.0.text}}</p>
+            </div>
+            <div class="cell">
+              <span class="tag">{{architecture.cells.1.tag}}</span>
+              <h3>{{architecture.cells.1.title}}</h3>
+              <p>{{architecture.cells.1.text}}</p>
+            </div>
+            <div class="cell">
+              <span class="tag">{{architecture.cells.2.tag}}</span>
+              <h3>{{architecture.cells.2.title}}</h3>
+              <p>{{architecture.cells.2.text}}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="rack__row">
+          <div class="rack__label">{{architecture.racks.1}}</div>
+          <div class="rack__cells">
+            <div class="cell">
+              <span class="tag">{{architecture.cells.3.tag}}</span>
+              <h3>{{architecture.cells.3.title}}</h3>
+              <p>{{architecture.cells.3.text}}</p>
+            </div>
+            <div class="cell">
+              <span class="tag">{{architecture.cells.4.tag}}</span>
+              <h3>{{architecture.cells.4.title}}</h3>
+              <p>{{architecture.cells.4.text}}</p>
+            </div>
+            <div class="cell">
+              <span class="tag">{{architecture.cells.5.tag}}</span>
+              <h3>{{architecture.cells.5.title}}</h3>
+              <p>{{architecture.cells.5.text}}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="rack__row">
+          <div class="rack__label">{{architecture.racks.2}}</div>
+          <div class="rack__cells">
+            <div class="cell">
+              <span class="tag">{{architecture.cells.6.tag}}</span>
+              <h3>{{architecture.cells.6.title}}</h3>
+              <p>{{architecture.cells.6.text}}</p>
+            </div>
+            <div class="cell">
+              <span class="tag">{{architecture.cells.7.tag}}</span>
+              <h3>{{architecture.cells.7.title}}</h3>
+              <p>{{architecture.cells.7.text}}</p>
+            </div>
+            <div class="cell">
+              <span class="tag">{{architecture.cells.8.tag}}</span>
+              <h3>{{architecture.cells.8.title}}</h3>
+              <p>{{architecture.cells.8.text}}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>

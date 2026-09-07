@@ -183,7 +183,7 @@ const flipped = (plane: Plane): Plane => new Plane(plane.normal.clone().negate()
 
 /**
  * Whether a piece holds matter. Measured on the corners' BOX, which lets a thin diagonal sliver
- * through — a piece Rapier then refuses or builds as a collider too small to feel. The reverse
+ * through — a piece the physics then refuses or builds as a collider too small to feel. The reverse
  * mistake, dropping a real piece, would open a hole in a wall.
  */
 function encloses(planes: Polytope): boolean {

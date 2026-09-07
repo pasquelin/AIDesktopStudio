@@ -2,6 +2,7 @@ import { CHANNELS } from '@shared/ipc'
 import type { WindowPage } from '@shared/domain/window'
 import { handle } from '@main/ipc/handle'
 import { openJournalWindow, openLicencesWindow, openManualWindow, openUsageWindow } from './windows'
+import { openWelcomeWindow } from './welcomeWindow'
 
 /**
  * The windows a renderer may raise, opened from anywhere rather than from a menu alone.
@@ -14,6 +15,7 @@ const OPENERS: Record<WindowPage, () => void> = {
   licences: () => void openLicencesWindow(),
   usage: () => void openUsageWindow(),
   journal: () => void openJournalWindow(),
+  welcome: () => void openWelcomeWindow(),
 }
 
 export function registerHelpWindows(): void {

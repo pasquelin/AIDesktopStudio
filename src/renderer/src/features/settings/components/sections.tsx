@@ -13,6 +13,7 @@ import { McpSettings } from './McpSettings'
 import { MemoryGraph } from './Memory/Graph/MemoryGraph'
 import { MemorySettings } from './Memory/MemorySettings'
 import { MediaSettings } from './MediaSettings'
+import { InputSettings } from './InputSettings'
 import { ShortcutsSettings } from './ShortcutsSettings/ShortcutsSettings'
 
 export type SettingsSection = SettingSectionEntry & {
@@ -34,6 +35,7 @@ const CONTENT: Partial<Record<SettingsSectionId, FC>> = {
   ai: AiSettings,
   shortcuts: ShortcutsSettings,
   media: MediaSettings,
+  input: InputSettings,
   mcp: McpSettings,
   memory: MemorySettings,
   'memory.graph': MemoryGraph,

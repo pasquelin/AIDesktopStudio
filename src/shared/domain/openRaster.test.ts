@@ -35,7 +35,7 @@ describe('isOraSurfacePath', () => {
     // The studio's own entries are not surfaces, and one standing in for a layer would be
     // overwritten by the pixels of that layer.
     expect(isOraSurfacePath('stack.xml')).toBe(false)
-    expect(isOraSurfacePath('iastudio/document.json')).toBe(false)
+    expect(isOraSurfacePath('aidesktopstudio/document.json')).toBe(false)
     expect(isOraSurfacePath('scenario/envelope.json')).toBe(false)
     expect(isOraSurfacePath('mimetype')).toBe(false)
   })

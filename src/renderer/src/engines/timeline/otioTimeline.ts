@@ -2,7 +2,7 @@
  * A montage, translated to OpenTimelineIO and back.
  *
  * The standard part is the truth: another application edits the cut, not our metadata. The
- * `iastudio` domain only RESTORES what the standard rounded away — an exact microsecond, a fade,
+ * `aidesktopstudio` domain only RESTORES what the standard rounded away — an exact microsecond, a fade,
  * a gain — and it is ignored the moment it disagrees with the frame the standard holds. Trusting
  * it blindly would silently undo a trim made in Resolve.
  */
@@ -36,7 +36,6 @@ import {
   newClipId,
   nextTrackId,
   playsThrough,
-  readSelection,
   reindexTracks,
   type Clip,
   type SequenceState,
@@ -44,6 +43,8 @@ import {
   type TrackKind,
   type Us,
 } from './timelineState'
+import { readSelection } from './timelineParsing'
+export { montageHoldsMore, montageRebuildsExtended } from './otioInspection'
 
 /** What a clip draws, as another application needs it named: a label, and a file or nothing. */
 export type OtioSource = { name: string; url: string | null }
@@ -405,117 +406,6 @@ function fpsFrom(timeline: Record<string, unknown>, stack: Record<string, unknow
   const duration = isRecord(range) ? range.duration : null
   const rate = isRecord(duration) ? readNumber(duration, 'rate', 0) : 0
   return rate > 0 ? rate : DEFAULT_SETTINGS.fps
-}
-
-/** The root members `otioTimelineOf` composes. Anything else came from another application. */
-const COMPOSED_ROOT = new Set(['OTIO_SCHEMA', 'name', 'metadata', 'global_start_time', 'tracks'])
-
-/** What a track may hold: this editor writes clips and the gaps between them, and nothing else. */
-const COMPOSED_ITEMS = new Set(['Clip.1', 'Gap.1'])
-
-/** The one effect a clip carries out of the studio — a speed change, written as a time warp. */
-const COMPOSED_EFFECT = 'LinearTimeWarp.1'
-
-/**
- * How many distinct names the walk collects before it stops.
- *
- * The names come from the FILE — a foreign metadata domain, an unknown schema — so a montage of
- * 5 000 clips each carrying its own could otherwise build a set of 5 000 and push the join of it
- * into a sentence. Enough of them to name what is there; the refusal does not change past that.
- */
-const HELD_LIMIT = 8
-
-/**
- * What an OTIO file holds beyond what a save would write back.
- *
- * `otioTimelineOf` recomposes the whole timeline, so a montage the studio wrote and another
- * application enriched came back without its markers, its effects or its transitions on the first
- * ⌘S — measured at the screen 18/08, with nothing said. The refusal that already existed covers
- * clips whose media the project has lost, which is a different failure.
- *
- * **The blind spot, in clear**: a TAKE keeps only its audio tracks (`soundMontageOf`), so a `.otio`
- * of a take that somehow holds a picture track loses it, and nothing here can see that — this
- * function reads the file, never which workspace opened it.
- */
-export function montageHoldsMore(payload: unknown): string[] {
-  if (!isOtioTimeline(payload)) return []
-  const held = new Set(Object.keys(payload).filter(key => !COMPOSED_ROOT.has(key)))
-
-  for (const key of foreignMetadata(payload)) held.add(`metadata.${key}`)
-
-  const stack = isRecord(payload.tracks) ? payload.tracks : {}
-  for (const name of composedOver(stack)) held.add(name)
-
-  for (const track of childrenOf(stack)) {
-    // `enabled` is the RESULT of the mute and the solo, written from the state on every save.
-    for (const name of composedOver(track, 'enabled')) held.add(name)
-
-    for (const item of childrenOf(track)) {
-      // Stopping HERE rather than after the loop: the walk is the cost, on a file already parsed
-      // whole, and a montage past the limit has said everything the sentence can hold.
-      if (held.size >= HELD_LIMIT) return [...held]
-
-      const schema = readString(item, 'OTIO_SCHEMA', '')
-      if (!COMPOSED_ITEMS.has(schema)) held.add(schema || 'children')
-      else for (const name of composedOver(item, 'range')) held.add(name)
-    }
-  }
-
-  return [...held]
-}
-
-const childrenOf = (value: Record<string, unknown>): Record<string, unknown>[] =>
-  Array.isArray(value.children) ? value.children.filter(isRecord) : []
-
-const foreignMetadata = (value: Record<string, unknown>): string[] =>
-  isRecord(value.metadata)
-    ? Object.keys(value.metadata).filter(key => key !== STUDIO_METADATA_KEY)
-    : []
-
-/**
- * The members an item is rewritten with whatever it held — every one of them a place another
- * application puts work. A `LinearTimeWarp` is the studio's own speed change and stays silent.
- *
- * `composes` names the ONE member this level writes back from its own state, and must therefore
- * not report: a track's `enabled` is its mute and its solo, a clip's and a gap's `source_range` is
- * its trim. Without it the guard refused every montage holding a hole between two clips.
- */
-function composedOver(item: Record<string, unknown>, composes?: 'range' | 'enabled'): string[] {
-  const held = foreignMetadata(item).map(key => `metadata.${key}`)
-
-  if (Array.isArray(item.markers) && item.markers.length > 0) held.push('markers')
-  if (composes !== 'enabled' && !readBoolean(item, 'enabled', true)) held.push('enabled')
-  if (composes !== 'range' && isRecord(item.source_range)) held.push('source_range')
-
-  const effects = Array.isArray(item.effects) ? item.effects : []
-  if (effects.some(one => !isRecord(one) || one.OTIO_SCHEMA !== COMPOSED_EFFECT)) {
-    held.push('effects')
-  }
-
-  return held
-}
-
-/**
- * Whether the file itself carries what the standard rounds away — the fades, the gains, the links
- * and the exact times. Asked of a CLIP: the root metadata says which document it was, the clips
- * are where the extended traits ride, and a file may keep one without the other.
- *
- * Its blind spot is written rather than hidden: one clip answering for all of them. A file half
- * written here would be called whole, which is the harmless way round — the alternative is
- * telling somebody their fades are gone while the montage plays them.
- */
-export function montageRebuildsExtended(payload: unknown): boolean {
-  if (!isOtioTimeline(payload)) return false
-  const stack = isRecord(payload.tracks) ? payload.tracks : {}
-
-  return childrenOf(stack).some(track =>
-    childrenOf(track).some(
-      item =>
-        isRecord(item) &&
-        item.OTIO_SCHEMA === 'Clip.1' &&
-        Object.keys(otioStudioMetadata(item)).length > 0,
-    ),
-  )
 }
 
 /** A montage read back, with the clips the read let go of — see `readSequenceFromOtio`. */

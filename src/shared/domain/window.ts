@@ -16,10 +16,16 @@ export const INITIAL_WINDOW_STATE: WindowState = {
  * The windows a renderer — or the assistant — may raise. Each is a window of its own rather than
  * a panel; `openManualWindow` and its neighbours say why.
  *
- * 🛑 Named for the WINDOW and no longer for the menu: three of these four are the Help menu's,
- * and the journal is not. The channel and the action stay `help.openStudioWindow` — an action published on
+ * 🛑 Named for the WINDOW and no longer for the menu: most of these belong to Help, and the
+ * journal is not. The channel and the action stay `help.openStudioWindow` — an action published on
  * the MCP wire is a name clients hold us to.
  */
-export type WindowPage = 'manual' | 'licences' | 'usage' | 'journal'
+export type WindowPage = 'manual' | 'licences' | 'usage' | 'journal' | 'welcome'
 
-export const WINDOW_PAGES: readonly WindowPage[] = ['manual', 'licences', 'usage', 'journal']
+export const WINDOW_PAGES: readonly WindowPage[] = [
+  'manual',
+  'licences',
+  'usage',
+  'journal',
+  'welcome',
+]

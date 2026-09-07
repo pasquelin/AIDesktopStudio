@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { ActionName, ActionOutcome } from '@shared/domain/assistant'
 import type { AssistantActionRequest, AssistantActionResult } from '@shared/ipc'
+import type { AssistantVisualCaptureRequest, AssistantVisualCaptureResult } from '@shared/ipcEvents'
 import { installFakeBridge } from '@/services/fakeBridge'
 import { connectRemoteActions } from './remoteActions'
 
@@ -13,11 +14,21 @@ const runConfirmedAction = vi.hoisted(() =>
   vi.fn<(name: ActionName, input: Record<string, unknown>) => Promise<ActionOutcome>>(),
 )
 vi.mock('./executor', () => ({ runConfirmedAction }))
+const captureStill = vi.hoisted(() => vi.fn<() => Promise<Uint8Array>>())
+const flatten = vi.hoisted(() => vi.fn<() => Promise<Uint8Array | null>>())
+const sceneEngineOf = vi.hoisted(() =>
+  vi.fn<() => { captureStill: typeof captureStill } | null>(() => null),
+)
+const canvasHost = vi.hoisted(() => vi.fn(() => ({ flatten })))
+vi.mock('@/stores/sceneEngines', () => ({ sceneEngineOf }))
+vi.mock('@/features/image/canvasHosts', () => ({ canvasHost }))
 
 /** A bridge that hands back the way to push an action, and what the window answered. */
 function connected() {
   let push: ((request: AssistantActionRequest) => void) | null = null
+  let pushVisual: ((request: AssistantVisualCaptureRequest) => void) | null = null
   const answers: AssistantActionResult[] = []
+  const visuals: AssistantVisualCaptureResult[] = []
 
   installFakeBridge({
     assistant: {
@@ -29,16 +40,61 @@ function connected() {
         answers.push(result)
         return Promise.resolve()
       },
+      onVisualCapture: callback => {
+        pushVisual = callback
+        return () => {}
+      },
+      visualCaptureResult: result => {
+        visuals.push(result)
+        return Promise.resolve()
+      },
     },
   })
 
   const stop = connectRemoteActions()
-  return { push: (request: AssistantActionRequest) => push?.(request), answers, stop }
+  return {
+    push: (request: AssistantActionRequest) => push?.(request),
+    pushVisual: (request: AssistantVisualCaptureRequest) => pushVisual?.(request),
+    answers,
+    visuals,
+    stop,
+  }
 }
 
 beforeEach(() => {
   runConfirmedAction.mockReset()
   runConfirmedAction.mockResolvedValue({ ok: true })
+  captureStill.mockReset()
+  flatten.mockReset()
+  sceneEngineOf.mockReset()
+  sceneEngineOf.mockReturnValue(null)
+  canvasHost.mockClear()
+})
+
+describe('an ephemeral visual requested from outside the window', () => {
+  it('captures a scene without creating an asset', async () => {
+    const png = new Uint8Array([1, 2, 3])
+    captureStill.mockResolvedValue(png)
+    sceneEngineOf.mockReturnValue({ captureStill })
+    const { pushVisual, visuals } = connected()
+
+    pushVisual({ callId: 'capture_1', documentId: 'scene_1' })
+    await vi.waitFor(() => expect(visuals).toHaveLength(1))
+
+    expect(captureStill).toHaveBeenCalledWith('view')
+    expect(canvasHost).not.toHaveBeenCalled()
+    expect(visuals[0]).toEqual({ callId: 'capture_1', png })
+  })
+
+  it('answers with no image when a canvas capture fails', async () => {
+    flatten.mockRejectedValue(new Error('canvas unavailable'))
+    const { pushVisual, visuals } = connected()
+
+    pushVisual({ callId: 'capture_2', documentId: 'image_1' })
+    await vi.waitFor(() => expect(visuals).toHaveLength(1))
+
+    expect(visuals[0]).toEqual({ callId: 'capture_2', png: null })
+  })
 })
 
 describe('an action asked for from outside the window', () => {

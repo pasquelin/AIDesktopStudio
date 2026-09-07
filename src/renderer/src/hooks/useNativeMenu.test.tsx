@@ -2,12 +2,9 @@ import { aiRoleId } from '@shared/domain/aiRole'
 import { renderHook } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { MenuAbility, MenuCheck } from '@shared/domain/command'
-import type {
-  SceneAddRequest,
-  SceneDisplayRequest,
-  SceneViewRequest,
-  Unsubscribe,
-} from '@shared/ipc'
+import type { SceneAddRequest, SceneDisplayRequest, Unsubscribe } from '@shared/ipc'
+import { workshopIdOf } from '@shared/domain/character'
+import { installCharacterDocument } from '@/stores/character-fixtures'
 import { installScene } from '@/stores/scene-fixtures'
 import type { CommandId } from '@shared/domain/command'
 import type { ToolId, ToolSurface } from '@shared/domain/tool'
@@ -19,9 +16,8 @@ import { useDocuments } from '@/stores/documents'
 import { useLayouts } from '@/stores/layouts'
 import { useModels } from '@/stores/models'
 import { sceneOf, useScenes } from '@/stores/scenes'
-import { displayOfPane, sceneViewOf, useSceneViews } from '@/stores/sceneViews'
-import { forgetSceneEngine, registerSceneEngine } from '@/stores/sceneEngines'
-import type { SceneRenderer } from '@/engines/scene/SceneRenderer'
+import { displayOfPane } from '@/stores/sceneViewChrome'
+import { sceneViewOf, useSceneViews } from '@/stores/sceneViews'
 
 const saveDocument = vi.fn((_documentId: string) => Promise.resolve())
 const saveDocumentAs = vi.fn((_documentId: string) => Promise.resolve(true))
@@ -52,7 +48,7 @@ vi.mock('@/helpers/toolRegistry', async importOriginal => {
 const { useNativeMenu } = await import('./useNativeMenu')
 
 /** Holds the listener the hook registers on a menu channel, so the test can play the menu. */
-function captureMenu<T>(channel: 'onSceneAdd' | 'onCommand' | 'onSceneView' | 'onSceneDisplay') {
+function captureMenu<T>(channel: 'onSceneAdd' | 'onCommand' | 'onSceneDisplay') {
   let listener: ((payload: T) => void) | null = null
   const watched = bridgeWatchingLogs({
     menu: {
@@ -69,7 +65,6 @@ function captureMenu<T>(channel: 'onSceneAdd' | 'onCommand' | 'onSceneView' | 'o
 
 const captureSceneAdd = () => captureMenu<SceneAddRequest>('onSceneAdd')
 const captureCommand = () => captureMenu<CommandId>('onCommand')
-const captureSceneView = () => captureMenu<SceneViewRequest>('onSceneView')
 const captureSceneDisplay = () => captureMenu<SceneDisplayRequest>('onSceneDisplay')
 
 function meshes() {
@@ -221,15 +216,18 @@ describe('what the native menu is told', () => {
     tools: readonly ToolId[]
     checked: readonly MenuCheck[]
     abilities: readonly MenuAbility[]
+    scope: string | null
   } {
     // Typed by the stub rather than by the bridge; the call is what the hook actually sent.
-    const [surface, tools, checked, abilities] = (setWorkspace.mock.lastCall ?? []) as unknown as [
+    const [surface, tools, checked, abilities, scope] = (setWorkspace.mock.lastCall ??
+      []) as unknown as [
       string,
       readonly ToolId[],
       readonly MenuCheck[],
       readonly MenuAbility[],
+      string | null,
     ]
-    return { surface, tools, checked, abilities }
+    return { surface, tools, checked, abilities, scope }
   }
 
   beforeEach(() => {
@@ -263,6 +261,18 @@ describe('what the native menu is told', () => {
     renderHook(() => useNativeMenu())
     useLayouts.getState().setHome(false)
     expect(lastPublished().surface).toBe('image')
+  })
+
+  /** Whose history ⌘Z pops is announced as a scope: the menu never sees a document kind. */
+  it('announces the history the space in front edits through', () => {
+    renderHook(() => useNativeMenu())
+    expect(lastPublished().scope).toBe('canvas')
+  })
+
+  it('announces no history over the home, which edits nothing', () => {
+    useLayouts.setState({ home: true })
+    renderHook(() => useNativeMenu())
+    expect(lastPublished().scope).toBeNull()
   })
 
   it('follows a change of section', () => {
@@ -333,6 +343,16 @@ describe('what the native menu is told', () => {
       expect(lastPublished().checked).toContain('scene.display:matcap')
     })
 
+    // A model tab has no scene id, so its View rows read the view of its workshop.
+    it('reads the workshop of the model tab in front', () => {
+      installCharacterDocument('doc-hero', 'asset-hero')
+      renderHook(() => useNativeMenu())
+      useSceneViews.getState().setSkeletons(workshopIdOf('asset-hero'), true)
+      useSceneViews.getState().setDisplay(workshopIdOf('asset-hero'), 0, 'wireframe')
+
+      expect(lastPublished().checked).toEqual(['scene.display:wireframe', 'scene.skeletons'])
+    })
+
     /**
      * `useSceneViews` carries the animation playhead, written on every frame of a running
      * animation. Published without a comparison, a played scene would send sixty messages a
@@ -382,23 +402,32 @@ describe('what the native menu is told', () => {
       useScenes.getState().replace('doc-1', { ...scene, selectedIds: ids })
     }
 
+    /** The three document rows travel with any tab in front, this decor holding one. */
+    const IN_FRONT: MenuAbility[] = ['document.save', 'document.saveAs', 'document.close']
+
     it('offers nothing to export where nothing is picked', () => {
       renderHook(() => useNativeMenu())
-      expect(lastPublished().abilities).toEqual([])
+      expect(lastPublished().abilities).toEqual(IN_FRONT)
     })
 
     /** The scene is the source, so a pick nothing pointed the studio at counts all the same. */
     it('offers the selection export on a pick the studio was never pointed at', () => {
       renderHook(() => useNativeMenu())
       pick(['node-1'])
-      expect(lastPublished().abilities).toEqual(['scene.exportSelection'])
+      expect(lastPublished().abilities).toEqual([...IN_FRONT, 'scene.exportSelection'])
     })
 
     it('takes it back when the selection empties', () => {
       renderHook(() => useNativeMenu())
       pick(['node-1'])
       pick([])
-      expect(lastPublished().abilities).toEqual([])
+      expect(lastPublished().abilities).toEqual(IN_FRONT)
+    })
+
+    it('withholds closing the tab while the home covers it', () => {
+      useLayouts.setState({ home: true })
+      renderHook(() => useNativeMenu())
+      expect(lastPublished().abilities).toEqual(['document.save', 'document.saveAs'])
     })
 
     /** A timeline drag writes the scene on every pointer move, and moves nothing that is picked. */
@@ -436,28 +465,14 @@ describe('what the native View menu asks of the scene', () => {
     expect(displayOfPane(sceneViewOf(useSceneViews.getState(), 'doc-1').displays, 0)).toBe('shaded')
   })
 
-  /**
-   * A side to look from is the camera's, and the camera belongs to the engine rather than to a
-   * store: an axis view is where one stands, not a state the document carries — see `PaneView`.
-   */
-  it('stands the camera at the side the row names', () => {
-    const viewFrom = vi.fn()
-    // Only the one method the row reaches for: the rest of `SceneRenderer` is another suite's.
-    registerSceneEngine('doc-1', { viewFrom } as unknown as SceneRenderer)
-    const menu = captureSceneView()
+  it('draws the workshop of the model tab in front', () => {
+    installCharacterDocument('doc-hero', 'asset-hero')
+    const menu = captureSceneDisplay()
     renderHook(() => useNativeMenu())
 
-    menu.emit({ direction: 'top' })
+    menu.emit({ mode: 'matcap' })
 
-    expect(viewFrom).toHaveBeenCalledWith('top')
-    forgetSceneEngine('doc-1')
-  })
-
-  /** A tab whose viewport is not mounted has no engine, and the row must not throw on it. */
-  it('says nothing to a scene whose viewport is not mounted', () => {
-    const menu = captureSceneView()
-    renderHook(() => useNativeMenu())
-
-    expect(() => menu.emit({ direction: 'top' })).not.toThrow()
+    const workshop = sceneViewOf(useSceneViews.getState(), workshopIdOf('asset-hero'))
+    expect(displayOfPane(workshop.displays, 0)).toBe('matcap')
   })
 })

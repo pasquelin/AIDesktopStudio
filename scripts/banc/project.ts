@@ -44,5 +44,8 @@ export const PROJECT: readonly Seeded[] = [
  * refusal if the file carried nothing: a scene with no nodes instances no nodes.
  */
 export const DOCUMENT_SOURCES: readonly { path: string; source: string }[] = [
-  { path: 'documents/Scène 1.gltf', source: barrelDocument().content },
+  // 🛑 The path the document LIVES at, which `documents.read` looks the content up by: written
+  // under `documents/` it was nowhere the reader goes, so instancing it refused `notFound` twelve
+  // times over — 63.4 and 63.5 could not be won by any model, measured 2026-09-01.
+  { path: 'Modelling/Scenes/Scène 1.gltf', source: barrelDocument().content },
 ]

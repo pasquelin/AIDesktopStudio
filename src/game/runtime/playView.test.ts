@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MIT
 
 import { describe, expect, it } from 'vitest'
-import { DEFAULT_PLAY, type PlayCamera } from '@shared/domain/scene'
-import { playView } from './playView'
+import { DEFAULT_PLAY, type PlayCamera, type ScenePlay } from '@shared/domain/scene'
+import { restingAxes } from '../physics/quaternion'
+import { armView, playView } from './playView'
 
 const FEET = { x: 0, y: 0, z: 0 }
 const AHEAD = { yaw: 0, pitch: 0 }
@@ -57,5 +58,15 @@ describe('where a scene is watched from while it is played', () => {
     )
 
     expect(view?.position).toEqual({ x: 2, y: 6, z: -3 })
+  })
+})
+
+describe('the shot a camera node makes', () => {
+  /** A shot from a pair of feet never carries a lens — not even the one an arm just used. */
+  it('leaves no lens on the shot a pair of feet makes after it', () => {
+    const play: ScenePlay = { ...DEFAULT_PLAY, camera: 'thirdPerson' }
+    armView(play, { x: 2, y: 3, z: 4 }, { x: 0, y: 0, z: 0 }, restingAxes(), 35)
+
+    expect(playView(play, FEET, AHEAD)?.fieldOfView).toBeUndefined()
   })
 })

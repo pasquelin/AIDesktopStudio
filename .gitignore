@@ -1,7 +1,9 @@
 node_modules/
+.pnpm-store/
 dist/
 out/
 release/
+release-*/
 .DS_Store
 *.log
 .playwright-mcp/
@@ -52,3 +54,9 @@ resources/gameRuntime/
 
 # Vitrine bâtie (site/build.mjs) — jamais versionnée, rebâtie à chaque publication.
 _site/
+
+# The Jolt engine the studio compiles for itself is a shipped artefact, not a build output.
+!vendor/jolt-physics/dist/
+
+# vitest json reporter output
+.vitest/

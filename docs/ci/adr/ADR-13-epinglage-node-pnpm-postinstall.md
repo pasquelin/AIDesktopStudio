@@ -16,9 +16,9 @@ Deux constats de l’audit touchent au démarrage de tout job CI :
    et le menu pendant `pnpm start`. En CI, il ne sert à rien — le bundle packagé est produit par
    `electron-builder` à partir d’une copie neuve — et il s’exécute sur le runner macOS.
 
-> Le nom cité ci-dessus est celui du contexte de la décision. Le studio s’appelle **IA Studio**
-> depuis le 21/08 ([ADR-16](ADR-16-licence-du-projet.md)), et le script ne l’écrit plus : il lit
-> `productName` dans `package.json`.
+> Le nom cité ci-dessus est celui du contexte de la décision. Le studio s’appelle
+> **AI Desktop Studio** depuis le 07/09, et le script ne l’écrit plus : il lit `productName` dans
+> `package.json`.
 
 ## Décision
 

@@ -26,6 +26,14 @@ export type AnimationView = {
   pickedBlock: string | null
   /** Whether moving an object writes a key rather than its rest pose. */
   autoKey: boolean
+  /** Whether the head starts over at the end rather than stopping there. */
+  looping: boolean
+  /**
+   * The motion FILE this band is editing, or `null` for one nothing has filed yet. Here rather
+   * than in the document for `autoKey`'s reason, and keyed the same way: two workbenches open at
+   * once edit two motions.
+   */
+  openMotion: string | null
   /**
    * How the lines have been arranged, by `subjectKey`. Empty leaves the scene's own order.
    *
@@ -41,6 +49,8 @@ const DEFAULT_ANIMATION_VIEW: AnimationView = {
   selected: [],
   pickedBlock: null,
   autoKey: false,
+  looping: false,
+  openMotion: null,
   order: [],
 }
 
@@ -51,6 +61,8 @@ export type AnimationViewState = {
   setSelected: (documentId: string, selected: readonly string[]) => void
   setPickedBlock: (documentId: string, pickedBlock: string | null) => void
   setAutoKey: (documentId: string, autoKey: boolean) => void
+  setLooping: (documentId: string, looping: boolean) => void
+  openMotion: (documentId: string, openMotion: string | null) => void
   /**
    * Moves one line in the sheet's own arrangement, and answers how many places it ACTUALLY
    * travelled — nothing at the ends of the stack, which is what `RowReorder.move` owes its caller.
@@ -87,10 +99,24 @@ export const useAnimationViews = create<AnimationViewState>()(set => ({
     set(state => write(state, documentId, view => ({ ...view, selected, pickedBlock: null }))),
 
   setPickedBlock: (documentId, pickedBlock) =>
-    set(state => write(state, documentId, view => ({ ...view, pickedBlock, selected: [] }))),
+    set(state =>
+      write(state, documentId, view =>
+        // Identity is the answer to "the same block, again", for `moveRow`'s reason: a control
+        // that rewrites its block on every tick of a slider repaints the whole band with it.
+        view.pickedBlock === pickedBlock && view.selected.length === 0
+          ? view
+          : { ...view, pickedBlock, selected: [] },
+      ),
+    ),
 
   setAutoKey: (documentId, autoKey) =>
     set(state => write(state, documentId, view => ({ ...view, autoKey }))),
+
+  setLooping: (documentId, looping) =>
+    set(state => write(state, documentId, view => ({ ...view, looping }))),
+
+  openMotion: (documentId, openMotion) =>
+    set(state => write(state, documentId, view => ({ ...view, openMotion }))),
 
   moveRow: (documentId, shown, rowId, by) => {
     let travelled = 0

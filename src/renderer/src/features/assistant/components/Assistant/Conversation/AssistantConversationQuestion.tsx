@@ -75,7 +75,7 @@ export function AssistantConversationQuestion({ request }: { request: ConfirmReq
 
       {/* 🛑 What it was called WITH — the half that was missing. See `ConfirmRequest.input`. */}
       {(action?.fields ?? []).map(field =>
-        input[field.key] === undefined && !field.picks ? null : (
+        input[field.key] === undefined && field.picks !== 'folder' ? null : (
           <div key={field.key} className="flex flex-wrap items-center gap-2">
             <p className="text-text text-mini m-0">
               {t('assistant.confirm.value', {
@@ -86,7 +86,7 @@ export function AssistantConversationQuestion({ request }: { request: ConfirmReq
                     : valueShown(input[field.key]),
               })}
             </p>
-            {field.picks && (
+            {field.picks === 'folder' && (
               <Button
                 onClick={() => void pick(field)}
                 {...HINT_TOP(t('assistant.confirm.pickFolderHint'))}

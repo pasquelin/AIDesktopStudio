@@ -1,5 +1,5 @@
+import { boundsOf } from './objectBounds'
 import {
-  Box3,
   EdgesGeometry,
   LineSegments,
   Mesh,
@@ -18,6 +18,7 @@ import {
   type Vector3 as PlainVector3,
   type ViewDirection,
 } from '@shared/domain/scene'
+import type { CameraView as Shot } from '@shared/domain/transform'
 import { centreOf, transformOf } from './pivot'
 
 /**
@@ -296,7 +297,7 @@ export type Framing = { target: Vector3; position: Vector3 }
  * The same pair as plain numbers, for whoever has to store or hand it across — a store holds no
  * three.js object, and a placement read back into a fresh engine must survive the trip.
  */
-export type CameraPlacement = { position: PlainVector3; target: PlainVector3 }
+export type CameraPlacement = Shot
 
 /**
  * One block watched on a clock of its own — which block, from where, and whether it runs.
@@ -342,8 +343,7 @@ export function framingPlacement(
   fieldOfView: number,
   from: Vector3 = FRAME_FROM,
 ): Framing {
-  const bounds = new Box3()
-  for (const object of objects) bounds.expandByObject(object)
+  const bounds = boundsOf(objects)
 
   // A selection of lights and empty groups encloses no box at all, and their placements still
   // average to somewhere worth looking at.

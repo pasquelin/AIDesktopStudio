@@ -246,6 +246,18 @@ describe('parseAssetQuery', () => {
   it('asks for everything when asked for nothing', () => {
     expect(parseAssetQuery({})).toEqual({})
   })
+
+  /**
+   * 🛑 The whole of what keeps the studio's own rows out of a window: `hidden` reaches
+   * `.resources/` past `NOT_PRIVATE`, and it is the ABSENCE of a line above that refuses it here.
+   * A field added to the schema by reflex would hand the explorer everything the studio owns,
+   * with the typecheck, the lint and every other case of this file still green.
+   */
+  it('drops the reach into what the studio owns, which only the main process may ask for', () => {
+    expect(parseAssetQuery({ path: '.resources/Materials/GridLarge.png', hidden: true })).toEqual({
+      path: '.resources/Materials/GridLarge.png',
+    })
+  })
 })
 
 /**

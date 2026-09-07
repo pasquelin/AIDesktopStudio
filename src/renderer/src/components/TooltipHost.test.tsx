@@ -2,6 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it } from 'vitest'
 import { TIP_BOTTOM } from '@/helpers/tooltip'
+import { stylesheet } from '../indexCss-fixtures'
 import { TooltipHost } from './TooltipHost'
 
 function Anchored() {
@@ -53,6 +54,13 @@ describe('TooltipHost', () => {
     await userEvent.unhover(bubble)
 
     await waitFor(() => expect(anchor).not.toHaveAttribute('aria-describedby'))
+  })
+
+  // jsdom computes no transition, so the sheet is what says it. The CLOSING delay alone: the
+  // opening fade is what keeps a bubble from snapping in after its second of wait.
+  it('fades in and leaves at once', () => {
+    expect(stylesheet).toContain('--rt-transition-closing-delay: 0s')
+    expect(stylesheet).not.toContain('--rt-transition-show-delay: 0s')
   })
 
   // Where a tooltip is the only thing that shows a sentence, it is content rather than

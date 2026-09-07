@@ -57,6 +57,29 @@ describe('csgKeyOf', () => {
     expect(csgKeyOf(welded)).not.toBe(csgKeyOf(pierced()))
   })
 
+  // 🛑 Part of the GEOMETRY, `brushOf` writing it into the UVs: shared, the second solid would be
+  // handed the first one's grid, with every gate green.
+  it('separates two solids that differ by how dense their grid is', () => {
+    const dense: CsgGraph = {
+      ...pierced(),
+      base: { ...wall(), material: { ...DEFAULT_MATERIAL, tilesPerMetre: 4 } },
+    }
+    expect(csgKeyOf(dense)).not.toBe(csgKeyOf(pierced()))
+  })
+
+  // Keyed on the wrapper's density, two identical solids would each pay a full evaluation for a
+  // number nothing reads.
+  it('ignores the density of a brush that carries a recipe', () => {
+    const nested = (tilesPerMetre: number): CsgGraph =>
+      csgGraphOf({
+        ...wall(),
+        geometry: pierced(),
+        material: { ...DEFAULT_MATERIAL, tilesPerMetre },
+      })
+
+    expect(csgKeyOf(nested(4))).toBe(csgKeyOf(nested(1)))
+  })
+
   it('separates two shapes whose numbers read alike', () => {
     const box = csgGraphOf(
       csgPartOf('a', { kind: 'box', width: 1, height: 1, depth: 1 }, DEFAULT_MATERIAL),

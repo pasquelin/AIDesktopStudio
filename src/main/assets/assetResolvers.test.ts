@@ -1,3 +1,6 @@
+import { mkdir, mkdtemp, realpath, symlink, writeFile } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 import { describe, expect, it, vi } from 'vitest'
 import type { Asset } from '@shared/domain/asset'
 
@@ -7,11 +10,13 @@ vi.mock('electron', () => ({ net: {}, protocol: {} }))
 
 const { createAssetResolvers } = await import('./assetResolvers')
 const { ASSET_HOST, POSTER_HOST, THUMB_HOST } = await import('@shared/domain/asset')
+const { FILE_HOST } = await import('@shared/domain/assetAccess')
 const { FAVORITE_HOST } = await import('@shared/domain/favorite')
 const { TEMPLATE_HOST } = await import('@shared/domain/sceneTemplate')
 const { ANIMATION_HOST } = await import('@shared/domain/animationLibrary')
 const { MODEL_HOST } = await import('@shared/domain/localModel')
 const { TEXTURE_HOST } = await import('@shared/domain/checkerTexture')
+const { CHARACTER_HOST } = await import('@shared/domain/bundledCharacter')
 const { CATALOGUE_CLOSED } = await import('@main/project/catalogClient')
 const { NoProjectError } = await import('@main/project/store')
 
@@ -39,12 +44,67 @@ const hostsWith = (overrides: Partial<Deps> = {}) =>
     bundledTemplate: file => Promise.resolve(`/resources/templates/${file}`),
     bundledModel: file => Promise.resolve(`/resources/models/${file}`),
     bundledTexture: file => Promise.resolve(`/resources/textures/${file}`),
+    bundledCharacter: file => Promise.resolve(`/resources/characters/${file}`),
     ...overrides,
   })
 
 const resolversReading = (findAsset: () => Promise<Asset | null>) => hostsWith({ findAsset })
 
 describe('what the asset scheme resolves', () => {
+  it('serves only the neighbours of the asset named by the file capability', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-file-host-'))
+    const outside = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-file-outside-'))
+    await mkdir(join(root, 'Models/Robot/.sources'), { recursive: true })
+    await writeFile(join(root, 'Models/Robot/.sources/robot.mtl'), 'material')
+    await writeFile(join(outside, 'secret.txt'), 'secret')
+    await symlink(outside, join(root, 'Models/Robot/.sources/escape'))
+    const hosts = hostsWith({
+      projectPath: () => root,
+      findAsset: id =>
+        Promise.resolve(
+          id === 'asset-1' ? asset({ type: 'mesh', path: 'Models/Robot/Robot.obj' }) : null,
+        ),
+    })
+
+    expect(await hosts[FILE_HOST]?.('asset-1/robot.mtl')).toBe(
+      await realpath(join(root, 'Models/Robot/.sources/robot.mtl')),
+    )
+    expect(await hosts[FILE_HOST]?.('asset-1/../secret.txt')).toBeNull()
+    expect(await hosts[FILE_HOST]?.('asset-1/escape/secret.txt')).toBeNull()
+    expect(await hosts[FILE_HOST]?.('another-asset/robot.mtl')).toBeNull()
+    expect(
+      await hostsWith({ projectPath: () => null })[FILE_HOST]?.('asset-1/robot.mtl'),
+    ).toBeNull()
+  })
+
+  it('does not turn a shared role .sources folder into a file capability', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-file-host-'))
+    await mkdir(join(root, 'Models/.sources'), { recursive: true })
+    await writeFile(join(root, 'Models/.sources/Other.fbx'), 'other source')
+    const hosts = hostsWith({
+      projectPath: () => root,
+      findAsset: () => Promise.resolve(asset({ type: 'mesh', path: 'Models/Robot.obj' })),
+    })
+
+    await expect(hosts[FILE_HOST]?.('asset-1/Other.fbx')).resolves.toBeNull()
+  })
+
+  it('refuses a source package whose parent symlink leaves the project', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-file-host-'))
+    const outside = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-file-outside-'))
+    await mkdir(join(root, 'Models'), { recursive: true })
+    await mkdir(join(outside, '.sources'), { recursive: true })
+    await writeFile(join(outside, 'Robot.obj'), 'mesh')
+    await writeFile(join(outside, '.sources/secret.txt'), 'secret')
+    await symlink(outside, join(root, 'Models/Robot'))
+    const hosts = hostsWith({
+      projectPath: () => root,
+      findAsset: () => Promise.resolve(asset({ type: 'mesh', path: 'Models/Robot/Robot.obj' })),
+    })
+
+    await expect(hosts[FILE_HOST]?.('asset-1/secret.txt')).resolves.toBeNull()
+  })
+
   it('serves the file a row names, and the still beside it, off the same identifier', async () => {
     const resolvers = resolversReading(() =>
       Promise.resolve(asset({ path: 'assets/rush.mp4', posterPath: '.index/posters/a.jpg' })),
@@ -111,6 +171,7 @@ describe('what the asset scheme resolves', () => {
     [MODEL_HOST, 'text.png', '/resources/models/text.png'],
     [ANIMATION_HOST, 'walk', '/resources/animations/walk'],
     [TEXTURE_HOST, 'GridLarge.png', '/resources/textures/GridLarge.png'],
+    [CHARACTER_HOST, 'HeroMedium.glb', '/resources/characters/HeroMedium.glb'],
   ])('serves %s with no project open', async (host, key, file) => {
     const hosts = hostsWith({ projectPath: () => null })
 

@@ -67,6 +67,81 @@ describe('the duplication detector still looking at the tree', () => {
 })
 
 /**
+ * dry-ts sees Type-2/3 clones that jscpd cannot — same shape, names forgotten. It reports, it
+ * does not gate: a fail-on-any-cluster would go red on ipc ↔ main ↔ renderer, which is written
+ * twice on purpose. **What it does not see:** two components of the same role with different JSX.
+ */
+const dryTs = (): Record<string, unknown> => {
+  const config = readJson('.dry-ts.json')
+  if (typeof config !== 'object' || config === null)
+    throw new Error('.dry-ts.json is not an object')
+  return { ...config }
+}
+
+/**
+ * What knip is told to overlook, and why each line is there.
+ *
+ * These are not a widening of the reach — the probe below shows nothing widens it. Each names a
+ * file reached by something other than an import:
+ *
+ * `uv` is the engine's own toolchain, and it is NOT installed by `pnpm install`: `engine-check.mjs`
+ * shells out to it and names it when it is missing. The two macOS ones belong to
+ * `dev-app-identity.mjs`.
+ *
+ * `before-pack.mjs` and `after-pack.mjs` are called by `electron-builder.yml` through configuration.
+ * Deleting the first would stop ffmpeg being fetched; deleting the second would let an unusable
+ * embedded AI runtime ship.
+ *
+ * `site/assets/js/*.js` and the stylesheet beside them are loaded by `site/template.html` — the
+ * public site, which knip does not parse. The scripts are entry points because they hold code; the
+ * CSS is ignored outright, having no graph to enter.
+ *
+ * `vendor/**` is the physics engine we compile ourselves: a package the manifest depends on by
+ * `file:`, so what reaches it goes through `node_modules` and knip reads its files as orphans.
+ *
+ * `.agents/**` is in `.git/info/exclude`, copied into every worktree so the contract travels with
+ * the branch. Knip does not honour that exclude: 28 unused-file hits, every one a tool no import
+ * reaches, measured 2026-09-03 on a worktree that had only copied `.agents`.
+ *
+ * `scripts/*.d.mts`: knip reads a declaration file as unimported, never as the types OF the
+ * sibling it declares. Measured on `check-sizes.d.mts` — deleting it fails the typecheck with
+ * TS7016 on `check-sizes.test.ts`, which imports the `.mjs`.
+ *
+ * They are here because a detector that always reports the same false positives is a detector
+ * whose red gets read as normal. The three entry points for `src/main`, `src/preload` and the
+ * renderer are NOT here: knip finds them itself and reports each as redundant, which is what
+ * separates a genuine blind spot from a second description of the build drifting from the first.
+ */
+const KNIP_CONFIG = {
+  $schema: 'https://unpkg.com/knip@6/schema.json',
+  ignoreBinaries: ['sips', 'iconutil', 'uv'],
+  entry: ['scripts/before-pack.mjs', 'scripts/after-pack.mjs', 'site/assets/js/*.js'],
+  ignore: ['site/assets/css/**', 'vendor/**', '.agents/**', 'scripts/*.d.mts'],
+}
+
+describe('the structural duplicate detector still looking at the tree', () => {
+  it('drops tests and fixtures, not the sources', () => {
+    expect(dryTs()['excludeTests']).toBe(true)
+    expect(dryTs()['exclude']).toEqual([
+      '**/fixtures/**',
+      '**/*-fixtures.ts',
+      '**/*-fixtures.tsx',
+      '**/public/**',
+    ])
+  })
+
+  it('is reachable by a name, not only by remembering the binary', () => {
+    expect(manifest.scripts.dry).toContain('dry-ts')
+    expect(manifest.scripts['duplication:report']).toContain('scripts/duplication-report.mjs')
+  })
+
+  it('is a report, not a link of the gate', () => {
+    expect(manifest.scripts.validate).not.toContain('pnpm dry')
+    expect(manifest.scripts.validate).not.toContain('duplication:report')
+  })
+})
+
+/**
  * **knip reaches `src/main` and nothing else here, and no configuration found so far changes
  * that.** Measured, not assumed: the same unreachable export appended to `src/main/log.ts`, to
  * `src/renderer/src/helpers/cn.ts` and to `src/shared/hash.ts` is reported for the first alone.
@@ -80,37 +155,9 @@ describe('the duplication detector still looking at the tree', () => {
  * none, because a clean run then reads as a clean repository.
  */
 describe('the dead-code detector still looking at the tree', () => {
-  /**
-   * Three binaries a script shells out to, and what knip cannot see is used.
-   *
-   * These are not a widening of the reach — the probe above shows nothing widens it. Each names
-   * a file reached by something other than an import:
-   *
-   * `uv` is the engine's own toolchain, and it is NOT installed by `pnpm install`: `engine-check.mjs`
-   * shells out to it and names it when it is missing. The two macOS ones belong to
-   * `dev-app-identity.mjs`.
-   *
-   * `before-pack.mjs` is called by `electron-builder.yml` through its `beforePack` hook, which is
-   * configuration. Deleting it on knip's word would stop ffmpeg being fetched at packaging time,
-   * and the build would ship without an encoder rather than fail.
-   *
-   * `site/assets/js/*.js` and the stylesheet beside them are loaded by `site/template.html` — the
-   * public site, which knip does not parse. The scripts are entry points because they hold code;
-   * the CSS is ignored outright, having no graph to enter.
-   *
-   * They are here because a detector that always reports the same false positives is a detector
-   * whose red gets read as normal. The three entry points for `src/main`, `src/preload` and the
-   * renderer are NOT here: knip finds them itself and reports each as redundant, which is what
-   * separates a genuine blind spot from a second description of the build drifting from the first.
-   */
   it('exempts the shelled-out binaries and what knip cannot see is used', () => {
     const config = readJson('knip.json')
-    expect(config).toEqual({
-      $schema: 'https://unpkg.com/knip@6/schema.json',
-      ignoreBinaries: ['sips', 'iconutil', 'uv'],
-      entry: ['scripts/before-pack.mjs', 'site/assets/js/*.js'],
-      ignore: ['site/assets/css/**'],
-    })
+    expect(config).toEqual(KNIP_CONFIG)
   })
 
   /**
@@ -118,8 +165,9 @@ describe('the dead-code detector still looking at the tree', () => {
    * the hook would leave the two pointing at different files, and the packaging failure would
    * surface as a build shipping without an encoder.
    */
-  it('names the script electron-builder actually calls before packing', () => {
+  it('names both scripts electron-builder calls around packaging', () => {
     expect(read('electron-builder.yml')).toContain('beforePack: scripts/before-pack.mjs')
+    expect(read('electron-builder.yml')).toContain('afterPack: scripts/after-pack.mjs')
   })
 
   /**

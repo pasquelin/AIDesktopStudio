@@ -9,7 +9,6 @@ import {
   boundParam,
   type CameraPost,
   type CameraPostMode,
-  type PostEffect,
   type PostEffectId,
   type PostParamValue,
   type PostStack,
@@ -21,7 +20,7 @@ import {
   stackFromPreset,
   type UserPostPreset,
 } from '@shared/domain/postPresets'
-import { movedWithin } from '@shared/domain/order'
+import { inOrder, movedWithin } from '@shared/domain/order'
 import type { CameraDescriptor } from '@shared/domain/scene'
 import type { Us } from '@shared/domain/time'
 import {
@@ -155,18 +154,6 @@ export function reorderPostEffects(
     ...stack,
     effects: inOrder(stack.effects, order),
   }))
-}
-
-function inOrder(effects: readonly PostEffect[], order: readonly string[]): PostEffect[] {
-  const byId = new Map(effects.map(one => [one.id, one]))
-  const moved = order.flatMap(id => {
-    const found = byId.get(id)
-    if (found) byId.delete(id)
-    return found ? [found] : []
-  })
-  // Anything the order forgot keeps its place at the end rather than vanishing: an order is a
-  // gesture, and a gesture computed against a stale list must not delete an effect.
-  return [...moved, ...byId.values()]
 }
 
 export function setPostEffectEnabled(

@@ -110,7 +110,7 @@ describe('how much of the catalogue the model is shown', () => {
     // treize actions sont citées — la garde ne pouvait plus rougir pour aucune d'elles.
     const at = briefing.text.indexOf('[core]')
     const names = briefing.text.slice(at, briefing.text.indexOf('\n\n', at))
-    const unwritten = [...briefing.allowed].filter(name => !names.includes(name))
+    const unwritten = ACTION_REGISTRY.map(one => one.name).filter(name => !names.includes(name))
     expect(unwritten).toEqual([])
     expect(briefing.text).toContain('The Image space is in front')
     expect(briefing.text).toContain('a project about sailing boats')
@@ -168,11 +168,12 @@ describe('how much of the catalogue the model is shown', () => {
 
       for (const action of ACTION_REGISTRY) {
         expect(briefing.text.includes(action.name), action.name).toBe(true)
-        expect(briefing.allowed.has(action.name), action.name).toBe(true)
       }
     },
   )
+})
 
+describe('how the catalogue is presented to the model', () => {
   /** And the names ALONE: a manual nobody asked for is what put 90 994 characters on every turn. */
   it('describes no action until one is opened', () => {
     const bare = studioBriefing({ room: WIDE })
@@ -227,7 +228,7 @@ describe('how much of the catalogue the model is shown', () => {
     expect(wide.text).toContain('has HAPPENED')
     expect(wide.text).toContain('the WHOLE path inside the project')
     expect(wide.text).toContain('Never write <something> where an id goes')
-    expect(wide.text).toContain('what a generation made is in the')
+    expect(wide.text).toContain('what a generation MADE is in the project catalogue')
     expect(wide.text).toContain('read models.readGenerationModelFields first')
   })
 
@@ -277,9 +278,9 @@ describe('how much of the catalogue the model is shown', () => {
   })
 })
 
-describe('asking for the rest of the catalogue', () => {
-  const expanded = (query: string) => studioBriefing({ room: NARROW }).expand?.(query)
+const expanded = (query: string) => studioBriefing({ room: NARROW }).expand?.(query)
 
+describe('asking for the rest of the catalogue', () => {
   /** A word rather than a name: what `actions.find` is still for once every name is shown. */
   it('opens the manual of what a query found', () => {
     const briefing = expanded('git branch')
@@ -320,7 +321,9 @@ describe('asking for the rest of the catalogue', () => {
       if (shown) expect(briefing?.text).toContain(`  ${action.name} —`)
     }
   })
+})
 
+describe('expanded catalogue results', () => {
   /**
    * 🛑 A wide door prints every manual from the start, so nothing is ever left to open and the
    * unprinted count is ALWAYS zero. Read as "nothing matched", it made the model tell the person
@@ -397,6 +400,19 @@ describe('asking for the rest of the catalogue', () => {
   })
 })
 
+describe('what the briefing says about naming an action', () => {
+  /**
+   * 🛑 The half-sentence is the whole rule: without it a model asked to name an action the
+   * briefing had not spelt answered « je ne peux pas » rather than call it — 20 of the 121
+   * failures of the 2026-09-01 pass.
+   */
+  it('tells the model to call an unopened action rather than refuse', () => {
+    expect(studioBriefing({ room: WIDE }).text).toContain(
+      'Never invent a name, never say you cannot.',
+    )
+  })
+})
+
 describe('a door that refused the briefing it was given', () => {
   /**
    * The room a chat cloud holds is an assumption — its model is typed by hand — so the wide
@@ -439,7 +455,9 @@ describe('what a briefing says about the memory', () => {
     expect(studioBriefing({ memories: 0, room: WIDE }).text).not.toContain('has a memory')
     expect(studioBriefing({ room: WIDE }).text).not.toContain('has a memory')
   })
+})
 
+describe('memory briefing budgets', () => {
   /**
    * 🛑 Overrunning is the ONE thing it yields to — a runtime truncates from the HEAD, where the
    * preamble sits (ADR-18).

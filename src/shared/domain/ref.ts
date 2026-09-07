@@ -62,25 +62,27 @@ export function refFromString(text: string): Ref | null {
   if (kind === 'script') return rest.length > 0 ? { kind, path: rest } : null
 
   const parts = rest.split('/')
-  if (kind === 'component') {
-    const [document, entity, type] = parts
-    if (parts.length !== 3 || !document || !entity || !type) return null
-    return { kind, document, entity, type }
-  }
-
-  if (isPartKind(kind)) {
-    const [document, id] = parts
-    if (parts.length !== 2 || !document || !id) return null
-    return { kind, document, id }
-  }
-
-  if (isNamedKind(kind)) {
-    const [id] = parts
-    if (parts.length !== 1 || !id) return null
-    return { kind, id }
-  }
-
+  if (kind === 'component') return componentRef(parts)
+  if (isPartKind(kind)) return partRef(kind, parts)
+  if (isNamedKind(kind)) return namedRef(kind, parts)
   return null
+}
+
+function componentRef(parts: string[]): Ref | null {
+  const [document, entity, type] = parts
+  return parts.length === 3 && document && entity && type
+    ? { kind: 'component', document, entity, type }
+    : null
+}
+
+function partRef(kind: PartKind, parts: string[]): Ref | null {
+  const [document, id] = parts
+  return parts.length === 2 && document && id ? { kind, document, id } : null
+}
+
+function namedRef(kind: NamedKind, parts: string[]): Ref | null {
+  const [id] = parts
+  return parts.length === 1 && id ? { kind, id } : null
 }
 
 const isNamedKind = (value: string): value is NamedKind => NAMED_KINDS.some(kind => kind === value)

@@ -111,7 +111,9 @@ export const PROJECT_SCENARIOS: readonly Scenario[] = [
   asking(
     '2.5 opens the texture the first model uses',
     'Ouvre la texture utilisée par mon premier modèle 3D.',
-    run => read.openedFile(run, 'planks, seamless.png') || read.askedBack(run),
+    // Without the extension: a texture EXTRACTED from the model is filed under its stem alone,
+    // and opening that copy is as much an answer as opening the material picture itself.
+    run => read.openedFile(run, 'planks, seamless') || read.askedBack(run),
   ),
   asking('2.6 opens the first skybox', 'Ouvre ma première skybox.', run =>
     read.documents(run).some(one => (one.path ?? '').startsWith('Skyboxes/')),

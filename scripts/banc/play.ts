@@ -1,5 +1,4 @@
 import type { ActionName } from '@shared/domain/assistant'
-import { MEMORY_ANSWERING_STATES } from '@shared/domain/assistantMemory'
 import { composedContext } from '@shared/domain/projectContext'
 import { resultLine } from '@/features/assistant/components/Assistant/Conversation/conversation'
 import { useAssistant } from '@/stores/assistant'
@@ -17,26 +16,40 @@ export async function play(scenario: Scenario, ask: Think): Promise<Run & { roun
   const asked: { action: ActionName; input: Record<string, unknown> }[] = []
   let rounds = 0
 
-  const studio = await createStudio(PROJECT, async request => {
-    rounds += 1
-    const answer = await ask({
-      ...request,
-      state: await studio.state(),
-      context: composedContext(studio.shell.context().cards),
-      /**
-       * 🛑 The COUNT, which is the whole of what a briefing says about the memory — and the bench
-       * never sent it, so `MEMORY_CALL` was printed on no run at all. Told nothing, the model
-       * searched the FILES for what it had learned: « qu'est-ce que tu sais des caméras ? »
-       * answered `files.search query=camera → found 0`, measured 2026-09-01.
-       */
-      memories: studio.memories().filter(one => MEMORY_ANSWERING_STATES.includes(one.state)).length,
-    })
+  const studio = await createStudio(
+    PROJECT,
+    async request => {
+      rounds += 1
+      const answer = await ask({
+        ...request,
+        state: await studio.state(),
+        context: composedContext(studio.shell.context().cards),
+        /**
+         * 🛑 The COUNT, which is the whole of what a briefing says about the memory — and the bench
+         * never sent it, so `MEMORY_CALL` was printed on no run at all. Told nothing, the model
+         * searched the FILES for what it had learned: « qu'est-ce que tu sais des caméras ? »
+         * answered `files.search query=camera → found 0`, measured 2026-09-01.
+         */
+        memories: studio.answeringMemories(),
+      })
 
-    asked.push(...answer.calls.map(one => ({ action: one.action as ActionName, input: one.input })))
-    return answer
-  })
+      asked.push(
+        ...answer.calls.map(one => ({ action: one.action as ActionName, input: one.input })),
+      )
+      return answer
+    },
+    scenario.answers,
+  )
 
-  await scenario.setup?.(studio)
+  try {
+    await scenario.setup?.(studio)
+  } catch (error) {
+    // The caller closes by the handle this throw takes away, and the ports would stay lent to a
+    // run that is over — the next case then fails for the wrong reason.
+    studio.close()
+    throw error
+  }
+
   // What the decor changed is not what the model changed — see `settle`.
   studio.settle()
   useAssistant.setState({ turns: [], spent: 0 })

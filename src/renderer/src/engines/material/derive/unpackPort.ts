@@ -1,6 +1,6 @@
 import type { PbrChannel } from '@shared/domain/material'
 import type { TextureSource } from '../../scene/textureCache'
-import { encodePng, runOffscreenPass, type PictureSize } from './offscreen'
+import { pngDrawn, runOffscreenPass, type PictureSize } from './offscreen'
 import { createUnpackPass } from './unpackShaders'
 
 export type UnpackRequest = {
@@ -23,9 +23,6 @@ export function createUnpackPort({ loadTexture }: { loadTexture: TextureSource }
       load: loadTexture,
       urls: [sourceUrl],
       pass: ([source]) => ({ material: createUnpackPass(channel, source.texture) }),
-      draw: async ({ renderer, pipeline, material, size }) => {
-        pipeline.renderToScreen(material)
-        return { ...size, png: await encodePng(renderer.domElement) }
-      },
+      draw: pngDrawn,
     })
 }

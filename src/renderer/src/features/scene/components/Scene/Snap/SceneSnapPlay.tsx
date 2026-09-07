@@ -1,9 +1,13 @@
 import { mdiAlertCircleOutline, mdiPlay, mdiStop } from '@mdi/js'
 import { useTranslation } from 'react-i18next'
+import { faultsOf } from '@shared/domain/gameRuntime'
 import { ToolButton } from '@/components/ToolButton'
 import { tipFor } from '@/helpers/tooltip'
 import { openScriptAt } from '@/helpers/openScript'
-import { playReportOf, usePlay } from '@/stores/play'
+import { playReportOf, startOrResumePlay, usePlay } from '@/stores/play'
+
+/** Enough to read the cause and what it caused; the button's label carries the true count. */
+const FAULTS_SHOWN = 6
 
 export type SceneSnapPlayProps = { documentId: string }
 
@@ -14,21 +18,9 @@ export type SceneSnapPlayProps = { documentId: string }
 export function SceneSnapPlay({ documentId }: SceneSnapPlayProps) {
   const { t } = useTranslation()
   const report = usePlay(state => playReportOf(state, documentId))
-  // Both, never one OR the other: a game that has a script fault and an engine error has two
-  // things wrong with it, and showing the first count hid the second.
-  const faults = [
-    ...report.errors.map(one => `${one.script}:${one.line} — ${one.message}`),
-    ...report.logs.filter(entry => entry.level === 'error').map(entry => entry.message),
-  ]
+  const faults = faultsOf(report)
   // The last one an editor can OPEN. A log line names no line, so it opens nothing.
   const addressable = report.errors.findLast(one => one.line > 0) ?? null
-
-  const play = (): void => {
-    // The game runs in a window of its own, which reads its own keyboard: nothing of this
-    // viewport is handed over, and a resumed game is not a started one.
-    if (report.state === 'paused') void usePlay.getState().resume(documentId)
-    else usePlay.getState().start(documentId)
-  }
 
   return (
     <>
@@ -39,7 +31,7 @@ export function SceneSnapPlay({ documentId }: SceneSnapPlayProps) {
         description={t('game.play.startHint')}
         tooltip={tipFor('horizontal')}
         disabled={report.state === 'playing'}
-        onClick={play}
+        onClick={() => startOrResumePlay(documentId)}
       />
 
       <ToolButton
@@ -60,13 +52,16 @@ export function SceneSnapPlay({ documentId }: SceneSnapPlayProps) {
           icon={mdiAlertCircleOutline}
           tone="warning"
           label={t('game.play.faults', { count: faults.length })}
-          description={faults.at(-1)}
+          // 🛑 The FIRST ones, in order: showing only the last read out `script never loaded`
+          // while the duplicate map id that CAUSED it, reported first, was never on screen — and
+          // the log ring keeps two hundred, which a system throwing every step fills.
+          description={faults.slice(0, FAULTS_SHOWN).join('\n')}
           tooltip={tipFor('horizontal')}
           disabled={!addressable}
           onClick={() => {
             if (!addressable) return
             // Paused first: a game still running scrolls its own errors past the reader.
-            usePlay.getState().pause(documentId)
+            void usePlay.getState().pause(documentId)
             // Opens the script's own tab, which is what brings the Code space up with it: the
             // section follows the document in front — see `DocumentArea.followFront`.
             openScriptAt(addressable.script, addressable.line, addressable.column || 1)

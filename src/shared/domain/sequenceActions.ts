@@ -1,4 +1,4 @@
-import { action, type ActionField, type AssistantAction } from './assistantAction'
+import { action, MUTE_SOLO_LOCK, type ActionField, type AssistantAction } from './assistantAction'
 
 /**
  * The montage, driven by value rather than by gesture.
@@ -82,8 +82,15 @@ export const SEQUENCE_ACTIONS: readonly AssistantAction[] = [
     commitment: 'none',
     repeatable: true,
     reach: 'mcp',
+    uses: ['projectAssetCandidates'],
     fields: [
-      { key: 'assetId', kind: 'text', labelKey: 'assistant.fields.assetId', required: true },
+      {
+        key: 'assetId',
+        kind: 'text',
+        labelKey: 'assistant.fields.assetId',
+        required: true,
+        reference: 'asset',
+      },
       { ...TRACK, required: false },
       {
         key: 'start',
@@ -279,9 +286,7 @@ export const SEQUENCE_ACTIONS: readonly AssistantAction[] = [
     reach: 'mcp',
     fields: [
       TRACK,
-      { key: 'muted', kind: 'boolean', labelKey: 'assistant.fields.muted', required: false },
-      { key: 'solo', kind: 'boolean', labelKey: 'assistant.fields.solo', required: false },
-      { key: 'locked', kind: 'boolean', labelKey: 'assistant.fields.locked', required: false },
+      ...MUTE_SOLO_LOCK,
       { key: 'height', kind: 'integer', labelKey: 'assistant.fields.height', required: false },
     ],
   }),

@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { expect, it } from 'vitest'
 import { LANGUAGES, type Language } from './i18n/languages'
 import { deadManualLinks, type ManualChapter } from './domain/manual'
 import { americanVerbs, americanWords, frenchWords, proseOf } from './i18n/spelling-fixtures'
@@ -83,190 +83,188 @@ const buttonQuotesOf = (language: Language): { slug: string; label: string }[] =
     return label ? [{ slug, label }] : []
   })
 
-describe('the manual the application carries', () => {
-  // A hole here is a language that opens on nothing, and only for the readers who chose it.
-  it('carries the same chapters in every language', () => {
-    const reference = chaptersOf('fr').map(chapter => chapter.number)
+// A hole here is a language that opens on nothing, and only for the readers who chose it.
+it('carries the same chapters in every language', () => {
+  const reference = chaptersOf('fr').map(chapter => chapter.number)
 
-    expect(reference.length).toBeGreaterThan(0)
-    for (const language of languages) {
-      expect(chaptersOf(language).map(chapter => chapter.number)).toEqual(reference)
-    }
-  })
+  expect(reference.length).toBeGreaterThan(0)
+  for (const language of languages) {
+    expect(chaptersOf(language).map(chapter => chapter.number)).toEqual(reference)
+  }
+})
 
-  /**
-   * What is written for someone browsing the repository must not reach a reader: the
-   * `[← …] · [Contents] · [Next →]` rows are a GitHub necessity the window replaces, and
-   * `<!-- CAPTURE … -->` is a note to whoever will take the screenshot one day.
-   */
-  it('leaves the scaffolding of the repository behind', () => {
-    const leaked = languages.flatMap(language =>
-      chaptersOf(language)
-        .filter(chapter => /CAPTURE|guide-utilisateur|user-guide/.test(chapter.markdown))
-        .map(chapter => `${language}/${chapter.slug}`),
+/**
+ * What is written for someone browsing the repository must not reach a reader: the
+ * `[← …] · [Contents] · [Next →]` rows are a GitHub necessity the window replaces, and
+ * `<!-- CAPTURE … -->` is a note to whoever will take the screenshot one day.
+ */
+it('leaves the scaffolding of the repository behind', () => {
+  const leaked = languages.flatMap(language =>
+    chaptersOf(language)
+      .filter(chapter => /CAPTURE|guide-utilisateur|user-guide/.test(chapter.markdown))
+      .map(chapter => `${language}/${chapter.slug}`),
+  )
+
+  expect(leaked).toEqual([])
+})
+
+/**
+ * Asked of the SHIPPED data, with the same predicate the collector asks of what it is about to
+ * write: the collector proves what it wrote at the moment it wrote it, and this file is what
+ * the window actually opens.
+ */
+it('has no link that goes nowhere', () => {
+  const dead = languages.flatMap(language => deadManualLinks(chaptersOf(language), language))
+
+  expect(dead).toEqual([])
+})
+
+/**
+ * The English bundle is British throughout, and `bundles.test.ts` holds it there. The manual
+ * quotes those same labels and explains them in prose, so a chapter written American reads as a
+ * second spelling of the product — which is what the bundle's own `Vectorization` was, sitting
+ * beside the `vectorisation` these chapters already spelled.
+ *
+ * Prose only, and `proseOf` says what that costs: the `Authorization` header of two chapters
+ * would fail this guard on its first run.
+ *
+ * What it does not read: the French chapters, which have no British side to keep, and the two
+ * pairs `AMERICAN_FORMS` leaves out, where British English spells both words.
+ */
+it('spells its English prose the British way', () => {
+  const american = chaptersOf('en').flatMap(chapter => {
+    const prose = `${chapter.title}\n${proseOf(chapter.markdown)}`
+
+    return [...americanVerbs(prose), ...americanWords(prose)].map(
+      word => `${chapter.slug} — ${word}`,
     )
-
-    expect(leaked).toEqual([])
   })
 
-  /**
-   * Asked of the SHIPPED data, with the same predicate the collector asks of what it is about to
-   * write: the collector proves what it wrote at the moment it wrote it, and this file is what
-   * the window actually opens.
-   */
-  it('has no link that goes nowhere', () => {
-    const dead = languages.flatMap(language => deadManualLinks(chaptersOf(language), language))
+  expect(american).toEqual([])
+})
 
-    expect(dead).toEqual([])
-  })
+/**
+ * Chapter 09 wrote `a travelling starts and stops dead` where English says the camera does —
+ * the borrowing the bundle carried in the label that row explains. Prose only, for the reason
+ * above, and no exemption exists on this side: the manual has no keys to name one by.
+ */
+it('writes its own English words rather than French ones', () => {
+  const borrowed = chaptersOf('en').flatMap(chapter =>
+    frenchWords(`${chapter.title}\n${proseOf(chapter.markdown)}`).map(
+      word => `${chapter.slug} — ${word}`,
+    ),
+  )
 
-  /**
-   * The English bundle is British throughout, and `bundles.test.ts` holds it there. The manual
-   * quotes those same labels and explains them in prose, so a chapter written American reads as a
-   * second spelling of the product — which is what the bundle's own `Vectorization` was, sitting
-   * beside the `vectorisation` these chapters already spelled.
-   *
-   * Prose only, and `proseOf` says what that costs: the `Authorization` header of two chapters
-   * would fail this guard on its first run.
-   *
-   * What it does not read: the French chapters, which have no British side to keep, and the two
-   * pairs `AMERICAN_FORMS` leaves out, where British English spells both words.
-   */
-  it('spells its English prose the British way', () => {
-    const american = chaptersOf('en').flatMap(chapter => {
-      const prose = `${chapter.title}\n${proseOf(chapter.markdown)}`
+  expect(borrowed).toEqual([])
+})
 
-      return [...americanVerbs(prose), ...americanWords(prose)].map(
-        word => `${chapter.slug} — ${word}`,
-      )
-    })
+/**
+ * Every assertion below is a list expected EMPTY, so a reading that recognises nothing keeps
+ * them all green. These samples are what `menuPathsOf` is worth: the middle one is the table
+ * row that a first, edge-free crossing returned as a menu path.
+ */
+it('reads a path across one line break of the page, and no further', () => {
+  expect(menuPathsOf('**Fichier ▸ Exporter la\nsélection** écrit tout')).toEqual([
+    'Fichier ▸ Exporter la sélection',
+  ])
+  expect(
+    menuPathsOf('| la pastille est **verte** en haut |\n| [Premiers pas ▸ étape 3] |'),
+  ).toEqual([])
+  expect(menuPathsOf('**Aide ▸\n\nJournal**')).toEqual([])
+})
 
-    expect(american).toEqual([])
-  })
+/**
+ * A chapter sending its reader to **Help ▸ Journal** was sending them to a menu entry no
+ * language carries, and the manual being read INSIDE the window, a wrong path reads as the
+ * software being broken. The French chapters were right to the last of their 66 paths; the
+ * English ones held ten wrong citations — `Export the scene` for `Export scene`, `Enlarge` for
+ * `Upscale` — the shape of a manual translated from the French without re-reading the English
+ * screen.
+ *
+ * What it does NOT read, and it is most of the quoting: a label written on its own, outside a
+ * path. `**Enlarge**` alone sat in three more chapters and no reading here would have found it.
+ */
+it.each(languages)('quotes no menu path the screen does not carry, in %s', language => {
+  const labels = screenLabels(TRANSLATIONS[language])
+  // The segment after « Réglages » names one of its SECTIONS, not any label on screen:
+  // « Réglages ▸ Compte » stayed green in six chapters because `usage.account` carries the word.
+  // What follows a section is a SETTING, read against the whole bundle as before.
+  const root = asRead(TRANSLATIONS[language].settings.title)
+  const tree = settingsTree(TRANSLATIONS[language])
+  const invented = chaptersOf(language).flatMap(chapter =>
+    menuPathsOf(chapter.markdown).flatMap(path => {
+      const segments = path.split(/[▸›]/).map(asRead)
+      const held = tree.get(segments[1] ?? '')
+      const carried = (segment: string, index: number): boolean => {
+        if (segments[0] !== root) return labels.has(segment)
+        if (index === 1) return tree.has(segment)
 
-  /**
-   * Chapter 09 wrote `a travelling starts and stops dead` where English says the camera does —
-   * the borrowing the bundle carried in the label that row explains. Prose only, for the reason
-   * above, and no exemption exists on this side: the manual has no keys to name one by.
-   */
-  it('writes its own English words rather than French ones', () => {
-    const borrowed = chaptersOf('en').flatMap(chapter =>
-      frenchWords(`${chapter.title}\n${proseOf(chapter.markdown)}`).map(
-        word => `${chapter.slug} — ${word}`,
-      ),
-    )
+        return index === 2 && held !== undefined && held.size > 0
+          ? held.has(segment)
+          : labels.has(segment)
+      }
 
-    expect(borrowed).toEqual([])
-  })
+      return segments
+        .filter(
+          (segment, index) =>
+            segment && !carried(segment, index) && !NOT_A_MENU_ENTRY[language].has(segment),
+        )
+        .map(segment => `${chapter.slug} — "${segment}" in ${path.trim()}`)
+    }),
+  )
 
-  /**
-   * Every assertion below is a list expected EMPTY, so a reading that recognises nothing keeps
-   * them all green. These samples are what `menuPathsOf` is worth: the middle one is the table
-   * row that a first, edge-free crossing returned as a menu path.
-   */
-  it('reads a path across one line break of the page, and no further', () => {
-    expect(menuPathsOf('**Fichier ▸ Exporter la\nsélection** écrit tout')).toEqual([
-      'Fichier ▸ Exporter la sélection',
-    ])
-    expect(
-      menuPathsOf('| la pastille est **verte** en haut |\n| [Premiers pas ▸ étape 3] |'),
-    ).toEqual([])
-    expect(menuPathsOf('**Aide ▸\n\nJournal**')).toEqual([])
-  })
+  expect(invented).toEqual([])
+})
 
-  /**
-   * A chapter sending its reader to **Help ▸ Journal** was sending them to a menu entry no
-   * language carries, and the manual being read INSIDE the window, a wrong path reads as the
-   * software being broken. The French chapters were right to the last of their 66 paths; the
-   * English ones held ten wrong citations — `Export the scene` for `Export scene`, `Enlarge` for
-   * `Upscale` — the shape of a manual translated from the French without re-reading the English
-   * screen.
-   *
-   * What it does NOT read, and it is most of the quoting: a label written on its own, outside a
-   * path. `**Enlarge**` alone sat in three more chapters and no reading here would have found it.
-   */
-  it.each(languages)('quotes no menu path the screen does not carry, in %s', language => {
-    const labels = screenLabels(TRANSLATIONS[language])
-    // The segment after « Réglages » names one of its SECTIONS, not any label on screen:
-    // « Réglages ▸ Compte » stayed green in six chapters because `usage.account` carries the word.
-    // What follows a section is a SETTING, read against the whole bundle as before.
-    const root = asRead(TRANSLATIONS[language].settings.title)
-    const tree = settingsTree(TRANSLATIONS[language])
-    const invented = chaptersOf(language).flatMap(chapter =>
-      menuPathsOf(chapter.markdown).flatMap(path => {
-        const segments = path.split(/[▸›]/).map(asRead)
-        const held = tree.get(segments[1] ?? '')
-        const carried = (segment: string, index: number): boolean => {
-          if (segments[0] !== root) return labels.has(segment)
-          if (index === 1) return tree.has(segment)
+it.each(languages)('quotes no button the screen does not carry, in %s', language => {
+  const labels = screenLabels(TRANSLATIONS[language])
+  const quotes = buttonQuotesOf(language)
 
-          return index === 2 && held !== undefined && held.size > 0
-            ? held.has(segment)
-            : labels.has(segment)
-        }
+  // A reading that recognised nothing would keep the assertion below green for good.
+  expect(quotes.length).toBeGreaterThan(0)
+  expect(
+    quotes
+      .filter(({ label }) => !labels.has(asRead(label)))
+      .map(({ slug, label }) => `${slug} — "${label}"`),
+  ).toEqual([])
+})
 
-        return segments
-          .filter(
-            (segment, index) =>
-              segment && !carried(segment, index) && !NOT_A_MENU_ENTRY[language].has(segment),
-          )
-          .map(segment => `${chapter.slug} — "${segment}" in ${path.trim()}`)
-      }),
-    )
+/**
+ * The same reasoning `bundles.test.ts` applies to its own exemptions: one whose segment stopped
+ * being written is one nobody would think to delete, and the next reader takes it for a rule.
+ */
+it.each(languages)('drops a gesture exemption once no path writes it, in %s', language => {
+  const written = new Set(
+    chaptersOf(language).flatMap(chapter =>
+      menuPathsOf(chapter.markdown).flatMap(path => path.split(/[▸›]/).map(asRead)),
+    ),
+  )
 
-    expect(invented).toEqual([])
-  })
+  expect([...NOT_A_MENU_ENTRY[language]].filter(segment => !written.has(segment))).toEqual([])
+})
 
-  it.each(languages)('quotes no button the screen does not carry, in %s', language => {
-    const labels = screenLabels(TRANSLATIONS[language])
-    const quotes = buttonQuotesOf(language)
+it.each(languages)('writes every menu path with a separator it reads, in %s', language => {
+  const unread = arrowsOf(language)
+    .filter(({ bold }) => !A_DIRECTION_NOT_A_PATH[language].has(bold))
+    .map(({ slug, bold }) => `${slug} — ${bold}`)
 
-    // A reading that recognised nothing would keep the assertion below green for good.
-    expect(quotes.length).toBeGreaterThan(0)
-    expect(
-      quotes
-        .filter(({ label }) => !labels.has(asRead(label)))
-        .map(({ slug, label }) => `${slug} — "${label}"`),
-    ).toEqual([])
-  })
+  expect(unread).toEqual([])
+})
 
-  /**
-   * The same reasoning `bundles.test.ts` applies to its own exemptions: one whose segment stopped
-   * being written is one nobody would think to delete, and the next reader takes it for a rule.
-   */
-  it.each(languages)('drops a gesture exemption once no path writes it, in %s', language => {
-    const written = new Set(
-      chaptersOf(language).flatMap(chapter =>
-        menuPathsOf(chapter.markdown).flatMap(path => path.split(/[▸›]/).map(asRead)),
-      ),
-    )
+// The same reasoning as the gesture exemptions above: one nobody writes reads as a rule.
+it.each(languages)('drops a direction exemption once no chapter writes it, in %s', language => {
+  const written = new Set(arrowsOf(language).map(({ bold }) => bold))
 
-    expect([...NOT_A_MENU_ENTRY[language]].filter(segment => !written.has(segment))).toEqual([])
-  })
+  expect([...A_DIRECTION_NOT_A_PATH[language]].filter(bold => !written.has(bold))).toEqual([])
+})
 
-  it.each(languages)('writes every menu path with a separator it reads, in %s', language => {
-    const unread = arrowsOf(language)
-      .filter(({ bold }) => !A_DIRECTION_NOT_A_PATH[language].has(bold))
-      .map(({ slug, bold }) => `${slug} — ${bold}`)
+// The range a literal union would have held, had a JSON import been able to keep one.
+it('numbers every heading between one and four', () => {
+  const outside = languages.flatMap(language =>
+    chaptersOf(language)
+      .flatMap(chapter => chapter.headings)
+      .filter(entry => !Number.isInteger(entry.depth) || entry.depth < 1 || entry.depth > 4),
+  )
 
-    expect(unread).toEqual([])
-  })
-
-  // The same reasoning as the gesture exemptions above: one nobody writes reads as a rule.
-  it.each(languages)('drops a direction exemption once no chapter writes it, in %s', language => {
-    const written = new Set(arrowsOf(language).map(({ bold }) => bold))
-
-    expect([...A_DIRECTION_NOT_A_PATH[language]].filter(bold => !written.has(bold))).toEqual([])
-  })
-
-  // The range a literal union would have held, had a JSON import been able to keep one.
-  it('numbers every heading between one and four', () => {
-    const outside = languages.flatMap(language =>
-      chaptersOf(language)
-        .flatMap(chapter => chapter.headings)
-        .filter(entry => !Number.isInteger(entry.depth) || entry.depth < 1 || entry.depth > 4),
-    )
-
-    expect(outside).toEqual([])
-  })
+  expect(outside).toEqual([])
 })

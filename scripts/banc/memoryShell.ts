@@ -38,6 +38,26 @@ export type MemoryShell = {
   helpAt: () => string | null
 }
 
+const projectAt = (path: string): Project => ({
+  path,
+  manifest: { version: MANIFEST_VERSION, createdAt: WHEN, updatedAt: WHEN },
+})
+
+const defaultAccounts = (): AccountSummary[] => [
+  { id: 'account-1', name: 'Studio', providerId: 'scenario', active: true },
+  { id: 'account-2', name: 'Perso', providerId: 'scenario', active: false },
+]
+
+const emptyShellStatus = () => ({
+  context: noContext(),
+  minted: 0,
+  settingsOpen: false,
+  fullScreen: false,
+  mirrored: false,
+  updateInstalled: false,
+  helpAt: null as string | null,
+})
+
 export function createMemoryShell(assetOf: (assetId: string) => Asset | null): MemoryShell {
   const revealed: string[] = []
   const trashedProjects: string[] = []
@@ -47,23 +67,9 @@ export function createMemoryShell(assetOf: (assetId: string) => Asset | null): M
   const adopted: string[] = []
   let styles: MaterialStyle[] = []
   let favorites: FavoriteRecipe[] = []
-  let context: ContextState = noContext()
-  let minted = 0
-  let settingsOpen = false
-  let fullScreen = false
-  let mirrored = false
-  let updateInstalled = false
-  let helpAt: string | null = null
+  const status = emptyShellStatus()
 
-  const projectAt = (path: string): Project => ({
-    path,
-    manifest: { version: MANIFEST_VERSION, createdAt: WHEN, updatedAt: WHEN },
-  })
-
-  const accounts: AccountSummary[] = [
-    { id: 'account-1', name: 'Studio', providerId: 'scenario', active: true },
-    { id: 'account-2', name: 'Perso', providerId: 'scenario', active: false },
-  ]
+  const accounts = defaultAccounts()
 
   const channels: BridgeOverrides = {
     project: {
@@ -82,10 +88,10 @@ export function createMemoryShell(assetOf: (assetId: string) => Asset | null): M
         revealed.push(relative)
         return Promise.resolve()
       },
-      readContext: () => Promise.resolve(context),
+      readContext: () => Promise.resolve(status.context),
       writeContext: cards => {
-        context = { ...context, cards }
-        return Promise.resolve(context)
+        status.context = { ...status.context, cards }
+        return Promise.resolve(status.context)
       },
     },
     fileInfo: {
@@ -97,8 +103,8 @@ export function createMemoryShell(assetOf: (assetId: string) => Asset | null): M
     styles: {
       list: () => Promise.resolve(styles),
       save: style => {
-        minted += 1
-        styles = [...styles, { ...style, id: style.id || `style-${minted}` }]
+        status.minted += 1
+        styles = [...styles, { ...style, id: style.id || `style-${status.minted}` }]
         return Promise.resolve(styles)
       },
       rename: (id, name) => {
@@ -118,11 +124,11 @@ export function createMemoryShell(assetOf: (assetId: string) => Asset | null): M
         const asset = assetOf(assetId)
         if (!asset) return Promise.resolve(favorites)
 
-        minted += 1
+        status.minted += 1
         favorites = [
           ...favorites,
           {
-            id: `favorite-${minted}`,
+            id: `favorite-${status.minted}`,
             label: asset.name,
             type: asset.type,
             generation: {
@@ -156,31 +162,31 @@ export function createMemoryShell(assetOf: (assetId: string) => Asset | null): M
     },
     settings: {
       open: () => {
-        settingsOpen = true
+        status.settingsOpen = true
         return Promise.resolve()
       },
     },
     window: {
       toggleFullScreen: () => {
-        fullScreen = !fullScreen
+        status.fullScreen = !status.fullScreen
         return Promise.resolve()
       },
     },
     mirror: {
       open: () => {
-        mirrored = true
+        status.mirrored = true
         return Promise.resolve()
       },
     },
     help: {
       open: page => {
-        helpAt = page
+        status.helpAt = page
         return Promise.resolve()
       },
     },
     updates: {
       install: () => {
-        updateInstalled = true
+        status.updateInstalled = true
         return Promise.resolve()
       },
     },
@@ -203,7 +209,7 @@ export function createMemoryShell(assetOf: (assetId: string) => Asset | null): M
     styles: () => styles,
     favorites: () => favorites,
     accounts: () => accounts,
-    context: () => context,
+    context: () => status.context,
     pulled: () => pulled,
     pushed: () => pushed,
     projectAt,
@@ -212,10 +218,10 @@ export function createMemoryShell(assetOf: (assetId: string) => Asset | null): M
     adopt: relative => {
       adopted.push(relative)
     },
-    settingsOpen: () => settingsOpen,
-    fullScreen: () => fullScreen,
-    mirrored: () => mirrored,
-    updateInstalled: () => updateInstalled,
-    helpAt: () => helpAt,
+    settingsOpen: () => status.settingsOpen,
+    fullScreen: () => status.fullScreen,
+    mirrored: () => status.mirrored,
+    updateInstalled: () => status.updateInstalled,
+    helpAt: () => status.helpAt,
   }
 }

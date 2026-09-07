@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 
 import type { AiPort } from '../ports/aiPort'
+import type { AnimationPort } from '../ports/animationPort'
 import type { AssetPort } from '../ports/assetPort'
 import type { AudioPort } from '../ports/audioPort'
 import type { InputPort } from '../ports/inputPort'
@@ -19,6 +20,7 @@ export type GameApi = {
   assets: AssetPort
   input: InputPort
   render: RenderPort
+  animation: AnimationPort
   physics: PhysicsPort
   script: ScriptPort
   scenes: ScenePort

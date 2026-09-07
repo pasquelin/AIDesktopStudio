@@ -21,6 +21,7 @@ const deps = (overrides: Partial<AdoptFileDeps> = {}): AdoptFileDeps => ({
   now: () => '2026-08-17T10:00:00.000Z',
   hash: async () => 'fingerprint',
   probeFile: async () => ({ duration: 4_000_000, codec: 'h264' }),
+  roles: () => ({}),
   onAdopted: asset => landed.push(asset),
   record: report => lines.push(report.messageKey),
   ...overrides,
@@ -71,6 +72,14 @@ describe('adoptFile', () => {
     expect(landed).toEqual([asset])
   })
 
+  it('files a picture under the skyboxes folder as a skybox', async () => {
+    await put('Skyboxes/a clear blue sky at noon.png')
+
+    const asset = await adoptFile('Skyboxes/a clear blue sky at noon.png', deps())
+
+    expect(asset).toMatchObject({ type: 'skybox', path: 'Skyboxes/a clear blue sky at noon.png' })
+  })
+
   it('hands back the row it already has rather than doubling it', async () => {
     await put('Images/facade.jpg')
     const first = await adoptFile('Images/facade.jpg', deps())
@@ -81,6 +90,43 @@ describe('adoptFile', () => {
     expect(await catalog.search({ path: 'Images/facade.jpg' })).toHaveLength(1)
   })
 
+  it('adopts an FBX in the animations folder as a motion', async () => {
+    await put('Modelling/Animations/Walking.fbx', new Uint8Array([0x46, 0x42, 0x58]))
+
+    expect(await adoptFile('Modelling/Animations/Walking.fbx', deps())).toMatchObject({
+      name: 'Walking',
+      type: 'animation',
+      path: 'Modelling/Animations/Walking.fbx',
+    })
+  })
+
+  it('adopts an FBX in the models folder as a mesh', async () => {
+    await put('Modelling/Models/prop.fbx', new Uint8Array([0x46, 0x42, 0x58]))
+
+    expect(await adoptFile('Modelling/Models/prop.fbx', deps())).toMatchObject({
+      type: 'mesh',
+      path: 'Modelling/Models/prop.fbx',
+    })
+  })
+
+  it('retargets a row whose folder now says it is a motion', async () => {
+    await put('Modelling/Animations/Walking.fbx', new Uint8Array([0x46, 0x42, 0x58]))
+    await catalog.add({
+      id: 'asset-1',
+      name: 'Walking',
+      type: 'mesh',
+      location: 'local',
+      path: 'Modelling/Animations/Walking.fbx',
+      tags: [],
+      createdAt: '2026-09-06T00:00:00.000Z',
+    })
+
+    expect(await adoptFile('Modelling/Animations/Walking.fbx', deps())).toMatchObject({
+      id: 'asset-1',
+      type: 'animation',
+    })
+  })
+
   it('leaves a file the studio cannot show alone, writing nothing', async () => {
     await put('Notes/brief.txt', new Uint8Array([0x68, 0x69]))
     await put('Images/photo.heic')
@@ -89,6 +135,16 @@ describe('adoptFile', () => {
     expect(await adoptFile('Images/photo.heic', deps())).toBeNull()
     expect(await catalog.search({})).toHaveLength(0)
     expect(lines).toEqual([])
+  })
+
+  it('adopts an OpenEXR as an image, which is how a heightmap enters the catalogue', async () => {
+    await put('World/height.exr')
+
+    expect(await adoptFile('World/height.exr', deps())).toMatchObject({
+      name: 'height',
+      type: 'image',
+      path: 'World/height.exr',
+    })
   })
 
   /**

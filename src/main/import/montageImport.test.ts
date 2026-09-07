@@ -53,7 +53,7 @@ describe('reading a montage bundle into the project', () => {
 
   beforeEach(async () => {
     adopted = []
-    project = await realpath(await mkdtemp(join(tmpdir(), 'ia-studio-project-')))
+    project = await realpath(await mkdtemp(join(tmpdir(), 'ai-desktop-studio-project-')))
     const rushes = await mkdtemp(join(tmpdir(), 'scenario-rushes-'))
     const rush = join(rushes, 'plan.mp4')
     await writeFile(rush, RUSH)

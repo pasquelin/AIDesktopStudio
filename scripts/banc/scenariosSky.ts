@@ -59,7 +59,7 @@ export const SKY_SCENARIOS: readonly Scenario[] = [
     // Put out first: a sky opens with its probes ON, so « affiche-les » asks for nothing.
     setup: async studio => {
       await sky()(studio)
-      await studio.run('skybox.setViewOptions', { probes: false })
+      await studio.run('skybox.setViewportOptions', { probes: false })
     },
     passed: run => read.skyView(run)?.probes === true,
   },

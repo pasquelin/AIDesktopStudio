@@ -680,9 +680,9 @@ nommé `settings.json`.
 
 | Système | Où                                                      |
 | ------- | ------------------------------------------------------- |
-| macOS   | `~/Library/Application Support/IA Studio/settings.json` |
-| Windows | `%APPDATA%\IA Studio\settings.json`                     |
-| Linux   | `~/.config/IA Studio/settings.json`                     |
+| macOS   | `~/Library/Application Support/AI Desktop Studio/settings.json` |
+| Windows | `%APPDATA%\AI Desktop Studio\settings.json`                     |
+| Linux   | `~/.config/AI Desktop Studio/settings.json`                     |
 
 Utile pour en faire une copie avant de changer de machine, ou pour l’envoyer à quelqu’un qui vous
 aide à comprendre un problème.
@@ -717,7 +717,7 @@ donner à votre place.
 Copie la ligne à coller dans un terminal pour brancher un client :
 
 ```
-claude mcp add <nom> -- "/Applications/IA Studio.app/Contents/MacOS/IA Studio" --mcp-stdio=…
+claude mcp add <nom> -- "/Applications/AI Desktop Studio.app/Contents/MacOS/AI Desktop Studio" --mcp-stdio=…
 ```
 
 **Elle ne porte ni port ni jeton** : elle désigne le studio comme un programme à démarrer, pas une

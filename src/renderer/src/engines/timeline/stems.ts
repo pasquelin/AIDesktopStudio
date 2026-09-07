@@ -115,7 +115,6 @@ export async function stemsOf(
   const frames = framesFor(sequenceDuration(state), sampleRate)
   const chunks = audioChunksIn(state, 0, sequenceDuration(state))
 
-  // Decoded once per ASSET, never once per clip: the same jingle laid thirty times is one file.
   const sources = new Map<string, AudioData | null>()
   const stems: Stem[] = []
   let done = 0
@@ -131,8 +130,7 @@ export async function stemsOf(
       if (!sources.has(chunk.assetId)) sources.set(chunk.assetId, await decode(chunk.assetId))
     }
 
-    // Stereo as soon as one rush of the track is: a mono stem out of a stereo take would fold a
-    // width somebody placed, and there is nowhere in a `.wav` to say it was folded.
+    // Preserve stereo as soon as one clip has two channels.
     const widest = mine.reduce(
       (most, chunk) => Math.max(most, sources.get(chunk.assetId)?.channels.length ?? 0),
       1,
@@ -140,9 +138,7 @@ export async function stemsOf(
 
     const channels = Array.from({ length: widest }, () => new Float32Array(frames))
     for (const chunk of mine) {
-      // BETWEEN clips, and it is not decoration: one clip is millions of samples of straight-line
-      // arithmetic, and without giving the loop back the stop button does nothing and the bar this
-      // very call feeds never repaints. Invariant 6, on the one export here measured in minutes.
+      // Yield between clips so cancellation and progress remain responsive.
       await yieldToWindow()
       signal?.throwIfAborted()
 

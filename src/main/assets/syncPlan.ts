@@ -31,6 +31,24 @@ export type SyncSide = {
   localChangedAt?: string
 }
 
+function pushAction(side: SyncSide): SyncAction {
+  if (!side.hasLocalFile) return { kind: 'skip', assetId: side.assetId, reason: 'no-local-file' }
+  if (side.remoteAssetId === undefined || movedSince(side.localChangedAt, side.remoteSyncedAt)) {
+    return { kind: 'push', assetId: side.assetId }
+  }
+  return { kind: 'skip', assetId: side.assetId, reason: 'nothing-to-do' }
+}
+
+function pullAction(side: SyncSide): SyncAction {
+  if (side.remoteAssetId === undefined) {
+    return { kind: 'skip', assetId: side.assetId, reason: 'no-twin' }
+  }
+  if (!side.hasLocalFile || movedSince(side.remoteUpdatedAt, side.remoteSyncedAt)) {
+    return { kind: 'pull', assetId: side.assetId, remoteAssetId: side.remoteAssetId }
+  }
+  return { kind: 'skip', assetId: side.assetId, reason: 'nothing-to-do' }
+}
+
 function actionFor(side: SyncSide, policy: SyncPolicy, activeOwnerId: string | null): SyncAction {
   const { assetId, remoteAssetId } = side
 
@@ -41,20 +59,8 @@ function actionFor(side: SyncSide, policy: SyncPolicy, activeOwnerId: string | n
     return { kind: 'skip', assetId, reason: 'other-account' }
   }
 
-  const localMoved = movedSince(side.localChangedAt, side.remoteSyncedAt)
-  const remoteMoved = movedSince(side.remoteUpdatedAt, side.remoteSyncedAt)
-
-  if (policy === 'push') {
-    if (!side.hasLocalFile) return { kind: 'skip', assetId, reason: 'no-local-file' }
-    if (remoteAssetId === undefined || localMoved) return { kind: 'push', assetId }
-    return { kind: 'skip', assetId, reason: 'nothing-to-do' }
-  }
-
-  if (policy === 'pull') {
-    if (remoteAssetId === undefined) return { kind: 'skip', assetId, reason: 'no-twin' }
-    if (!side.hasLocalFile || remoteMoved) return { kind: 'pull', assetId, remoteAssetId }
-    return { kind: 'skip', assetId, reason: 'nothing-to-do' }
-  }
+  if (policy === 'push') return pushAction(side)
+  if (policy === 'pull') return pullAction(side)
 
   if (remoteAssetId === undefined) {
     return side.hasLocalFile
@@ -63,6 +69,8 @@ function actionFor(side: SyncSide, policy: SyncPolicy, activeOwnerId: string | n
   }
 
   if (!side.hasLocalFile) return { kind: 'pull', assetId, remoteAssetId }
+  const localMoved = movedSince(side.localChangedAt, side.remoteSyncedAt)
+  const remoteMoved = movedSince(side.remoteUpdatedAt, side.remoteSyncedAt)
   if (localMoved && remoteMoved) return { kind: 'conflict', assetId, remoteAssetId }
   if (localMoved) return { kind: 'push', assetId }
   if (remoteMoved) return { kind: 'pull', assetId, remoteAssetId }

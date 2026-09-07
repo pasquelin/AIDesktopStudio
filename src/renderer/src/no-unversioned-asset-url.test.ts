@@ -13,6 +13,12 @@ const BUILDERS = new Set(['assetUrl', 'assetMasterUrl'])
 const VERSIONED = 'versionedUrl'
 
 /**
+ * The model cache's key builder versions inside itself, so a call handing it ONE argument is a
+ * bare URL wearing another name — read here as one, or the scatter's three sites vanish from view.
+ */
+const MODEL_KEY = 'modelKeyOf'
+
+/**
  * Where a bare asset URL is what happens today, one SITE each — the file and the line's own text,
  * not the file alone: exempting a whole module hides the next bare URL somebody adds to it.
  *
@@ -21,23 +27,31 @@ const VERSIONED = 'versionedUrl'
  */
 const ALLOWED = new Map<string, string>([
   [
-    'engines/scene/modelCache.ts | return createRefCache({ load: assetId => load(assetUrl(assetId)), free: disposeTree, onFailure })',
-    'hole: a rewritten .glb never reloads — no refreshModels, no version in the key',
+    'engines/scene/scatterSurface.ts | const acquired = models.acquire(modelKeyOf(assetId))',
+    'hole: a scattered model never reloads — the scatter keys its share on the bare url',
   ],
   [
-    "engines/scene/animation.ts | return source.kind === 'asset' ? assetUrl(source.assetId) : null",
+    'engines/scene/scatterSurface.ts | for (const assetId of state.assets.held) models.release(modelKeyOf(assetId))',
+    'the UNLOAD path of that hole: it frees exactly the key `sourceOf` took',
+  ],
+  [
+    'engines/scene/scatterSurface.ts | models.release(modelKeyOf(assetId))',
+    'the same unload, when a layer lets one asset go',
+  ],
+  [
+    "engines/scene/clipSources.ts | return source.kind === 'asset' ? assetUrl(source.assetId) : null",
     'hole: a rewritten animation never reloads — clipSources keys on the bare URL',
   ],
   [
-    'engines/canvas/CanvasEngine.ts | const url = assetUrl(assetId)',
+    'engines/canvas/CanvasViewport.ts | const url = assetUrl(assetId)',
     'the UNLOAD path: it frees exactly the key `loadInto` wrote, so it must not be versioned',
   ],
   [
-    'engines/canvas/CanvasEngine.ts | void this.loadInto(key, assetUrl(layer.source)).catch(error =>',
+    'engines/canvas/CanvasEditing.ts | void this.loadInto(key, assetUrl(layer.source)).catch(error =>',
     'hole: a layer reads its source once, at birth — and ⌘S writes the stale pixels back',
   ],
   [
-    'engines/canvas/CanvasEngine.ts | void this.loadInto(layer.id, assetUrl(layer.source)).catch(error =>',
+    'engines/canvas/CanvasLayerDrawing.ts | await this.loadInto(layerId, assetUrl(source))',
     'hole: same, when the layer is born',
   ],
   [
@@ -45,7 +59,7 @@ const ALLOWED = new Map<string, string>([
     'hole: video, audio and peaks all read through here, unversioned',
   ],
   [
-    'helpers/assetFetch.ts | return fetchOver(assetMasterUrl(assetId), assetId)',
+    'helpers/assetFetch.ts | return fetchOver(assetMasterUrl(assetId), assetId, signal)',
     'hole: the export path reads the original the same way',
   ],
   [
@@ -53,7 +67,7 @@ const ALLOWED = new Map<string, string>([
     'hole: measures the picture the browser cached, not the file — so the drift notice can lie',
   ],
   [
-    'features/material/deriveChannel.ts | const picture = await derive({ channel, sourceUrl: assetUrl(source.assetId) })',
+    'features/material/deriveChannel.ts | const picture = await derive({ channel, sourceUrl: assetUrl(sourceAssetId) })',
     'hole: derives a channel from whatever the browser already holds',
   ],
   [
@@ -118,13 +132,10 @@ function sitesIn(relative: string, code: string): string[] {
   const found: string[] = []
 
   const walk = (node: ts.Node): void => {
-    if (
-      ts.isCallExpression(node) &&
-      ts.isIdentifier(node.expression) &&
-      BUILDERS.has(node.expression.text) &&
-      !insideVersioned(node)
-    ) {
-      found.push(siteOf(relative, source, node))
+    if (ts.isCallExpression(node) && ts.isIdentifier(node.expression)) {
+      const bareBuilder = BUILDERS.has(node.expression.text) && !insideVersioned(node)
+      const bareKey = node.expression.text === MODEL_KEY && node.arguments.length === 1
+      if (bareBuilder || bareKey) found.push(siteOf(relative, source, node))
     }
     ts.forEachChild(node, walk)
   }

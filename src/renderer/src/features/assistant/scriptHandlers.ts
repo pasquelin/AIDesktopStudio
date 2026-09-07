@@ -1,7 +1,6 @@
 import { refused, type ActionOutcome } from '@shared/domain/assistant'
 import { SCRIPT_EXTENSION } from '@shared/domain/game'
-import { refFromString } from '@shared/domain/ref'
-import { codeFilesOf, scriptRefAt, useCode } from '@/stores/code'
+import { codeFilesOf, scriptPathOf, scriptRefAt, useCode } from '@/stores/code'
 import { scriptTrouble } from '@/stores/play'
 import { useProject } from '@/stores/project'
 import type { ActionHandlers } from './actionHandler'
@@ -34,7 +33,7 @@ export const SCRIPT_HANDLERS: ActionHandlers = {
       data: {
         scripts: codeFilesOf(useCode.getState()).map(file => ({
           ref: file.script,
-          path: pathOfScript(file.script),
+          path: scriptPathOf(file.script),
           lines: file.source.split('\n').length,
         })),
       },
@@ -87,7 +86,3 @@ export const SCRIPT_HANDLERS: ActionHandlers = {
 }
 
 /** The file a script reference names — the one reading of it, for whoever answers a path. */
-function pathOfScript(script: string): string {
-  const ref = refFromString(script)
-  return ref?.kind === 'script' ? ref.path : script
-}

@@ -31,6 +31,7 @@ import {
   type Clip,
   type SequenceState,
 } from '@/engines/timeline/timelineState'
+import { seekTo } from '@/features/video/components/TimelineCanvas/sequenceCommands'
 import { activeMontageId, useDocuments } from '@/stores/documents'
 import {
   selectClipIn,
@@ -39,8 +40,8 @@ import {
   useSequences,
   writeTrack,
 } from '@/stores/sequences'
-import { withAsset, withBridge, type ActionHandlers } from './actionHandler'
-import { boolOf, numberOf, oneOf, textOf } from './actionInputs'
+import { answered, withAsset, withBridge, type ActionHandlers } from './actionHandler'
+import { flagNamed, numberOf, oneOf, textOf } from './actionInputs'
 
 /**
  * Clips and tracks, driven by value.
@@ -73,10 +74,29 @@ function stateOf(documentId: string): SequenceState {
   return sequenceOf(useSequences.getState(), documentId)
 }
 
-function run(documentId: string, command: Command<SequenceState>): ActionOutcome {
+function run(
+  documentId: string,
+  command: Command<SequenceState>,
+  /** What the call answers, read off the montage AFTER the command — see `clipAfter`. */
+  answer?: (state: SequenceState) => unknown,
+): ActionOutcome {
   useSequences.getState().runCommand(documentId, command)
-  return { ok: true }
+  return answered(answer, () => sequenceOf(useSequences.getState(), documentId))
 }
+
+/** One clip as it now stands, for what a write answers — nothing when the command removed it. */
+const clipAfter =
+  (clipId: string, read: (clip: Clip) => unknown) =>
+  (state: SequenceState): unknown => {
+    const clip = clipById(state, clipId)
+    return clip ? read(clip) : undefined
+  }
+
+/** Where a clip now sits — what a move and a trim answer, since both are clamped on the way. */
+const spanOf = (clip: Clip): { start: number; end: number } => ({
+  start: clip.start,
+  end: clipEnd(clip),
+})
 
 /**
  * The same, for one named clip, found before anything runs.
@@ -89,6 +109,7 @@ function editClipOf(
   build: (clip: Clip, state: SequenceState) => Command<SequenceState> | null,
   /** What a caller does when the clip IS there and the build still declines. */
   nothing: string,
+  answer?: (clip: Clip) => unknown,
 ): ActionOutcome {
   const open = mounted()
   if (!open) return refused('wrongSurface', NO_MONTAGE)
@@ -98,7 +119,9 @@ function editClipOf(
   if (!clip) return refused('notFound', noClip(named))
 
   const command = build(clip, open.state)
-  return command ? run(open.documentId, command) : refused('badInput', nothing)
+  if (!command) return refused('badInput', nothing)
+
+  return run(open.documentId, command, answer && clipAfter(clip.id, answer))
 }
 
 /** The same for a track, and only one an edit may reach: a locked row refuses in silence. */
@@ -245,7 +268,11 @@ async function trim(input: Record<string, unknown>): Promise<ActionOutcome> {
   if (!found.ok) return found
 
   const asset = Array.isArray(found.data) ? (found.data[0] ?? null) : null
-  return run(open.documentId, trimClip(clip.id, edge, at, mediaExtentOf(asset)))
+  return run(
+    open.documentId,
+    trimClip(clip.id, edge, at, mediaExtentOf(asset)),
+    clipAfter(clip.id, spanOf),
+  )
 }
 
 function seek(input: Record<string, unknown>): ActionOutcome {
@@ -260,11 +287,8 @@ function seek(input: Record<string, unknown>): ActionOutcome {
     )
 
   // Not a command: where the head sits is how one looks at a montage, not an edit of it — the
-  // strip writes it through `replace` for the same reason.
-  useSequences.getState().replace(open.documentId, {
-    ...open.state,
-    playhead: Math.min(time, sequenceDuration(open.state)),
-  })
+  // strip writes it the same way.
+  seekTo(open.documentId, time)
   return { ok: true }
 }
 
@@ -298,9 +322,9 @@ function adjustTrack(input: Record<string, unknown>): ActionOutcome {
   const height = numberOf(input, 'height')
   writeTrack(open.documentId, track.id, current => ({
     ...current,
-    ...(input.muted === undefined ? {} : { muted: boolOf(input, 'muted') }),
-    ...(input.solo === undefined ? {} : { solo: boolOf(input, 'solo') }),
-    ...(input.locked === undefined ? {} : { locked: boolOf(input, 'locked') }),
+    ...flagNamed(input, 'muted'),
+    ...flagNamed(input, 'solo'),
+    ...flagNamed(input, 'locked'),
     ...(height === null ? {} : { height: clampTrackHeight(height) }),
   }))
   return { ok: true }
@@ -330,6 +354,7 @@ export const SEQUENCE_HANDLERS: ActionHandlers = {
           ? null
           : moveClip(clip.id, trackId, start),
       '"start" and "trackId" are both wanted, and "trackId" must name a row of this montage that is not locked — sequence.state answers "tracks" with their ids and their "locked"',
+      spanOf,
     )
   },
 
@@ -351,6 +376,7 @@ export const SEQUENCE_HANDLERS: ActionHandlers = {
       input,
       clip => (edge && length !== null ? setClipFade(clip.id, edge, length) : null),
       `"edge" and "length" are both wanted, and "edge" is one of: ${CLIP_EDGES.join(', ')}`,
+      clip => (edge === 'in' ? { fadeIn: clip.fadeIn } : { fadeOut: clip.fadeOut }),
     )
   },
 
@@ -360,6 +386,7 @@ export const SEQUENCE_HANDLERS: ActionHandlers = {
       input,
       clip => (gain === null ? null : setClipGain(clip.id, gain)),
       '"gain" is wanted, as a number',
+      clip => ({ gain: clip.gain }),
     )
   },
 

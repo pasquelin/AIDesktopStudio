@@ -46,7 +46,6 @@ describe('translateSchema', () => {
   })
 
   describe('the field prompt assistance rewrites', () => {
-    // Measured on `model_google-gemini-3-1-flash`: the API marks it itself.
     it('takes the API at its word when it marks one', () => {
       const [field] = translateSchema([
         { name: 'prompt', type: 'string', prompt: true, promptSpark: true },
@@ -54,7 +53,6 @@ describe('translateSchema', () => {
       expect(field?.promptSpark).toBe(true)
     })
 
-    // A model sparing with metadata must not lose the feature altogether.
     it('falls back to the prompt field on a model that marks only that', () => {
       const [field] = translateSchema([{ name: 'prompt', type: 'string', prompt: true }])
       expect(field?.promptSpark).toBe(true)
@@ -82,9 +80,9 @@ describe('translateSchema', () => {
     ])
     expect(fields.map(field => field.kind)).toEqual(['image', 'mesh', 'raw'])
   })
+})
 
-  // What lets a mesh be refused before minutes of upload rather than after them. Uthana's
-  // character rigger is the measured case: `characterFile`, 30 MB.
+describe('translateSchema metadata', () => {
   it('carries the size limit a file input names', () => {
     const fields = translateSchema([
       { name: 'characterFile', type: 'file', kind: '3d', maxSize: 30000000 },
@@ -111,36 +109,40 @@ describe('translateSchema', () => {
     expect(field?.label).toBe('Num inference steps')
   })
 
-  it('prefers the label provided by the model', () => {
-    const [field] = translateSchema([{ name: 'numInferenceSteps', type: 'number', label: 'Steps' }])
-    expect(field?.label).toBe('Steps')
-  })
+  describe('field metadata', () => {
+    it('prefers the label provided by the model', () => {
+      const [field] = translateSchema([
+        { name: 'numInferenceSteps', type: 'number', label: 'Steps' },
+      ])
+      expect(field?.label).toBe('Steps')
+    })
 
-  it('marks a field required only when the rule is "always"', () => {
-    const fields = translateSchema([
-      { name: 'a', type: 'string', required: { always: true } },
-      { name: 'b', type: 'string', required: {} },
-      { name: 'c', type: 'string' },
-    ])
-    expect(fields.map(field => field.required)).toEqual([true, false, false])
-  })
+    it('marks a field required only when the rule is "always"', () => {
+      const fields = translateSchema([
+        { name: 'a', type: 'string', required: { always: true } },
+        { name: 'b', type: 'string', required: {} },
+        { name: 'c', type: 'string' },
+      ])
+      expect(fields.map(field => field.required)).toEqual([true, false, false])
+    })
 
-  it('accepts a complete absence of inputs', () => {
-    expect(translateSchema(undefined)).toEqual([])
-  })
+    it('accepts a complete absence of inputs', () => {
+      expect(translateSchema(undefined)).toEqual([])
+    })
 
-  it('does not invent a missing default value', () => {
-    const [field] = translateSchema([{ name: 'a', type: 'string' }])
-    expect(field).not.toHaveProperty('default')
-  })
+    it('does not invent a missing default value', () => {
+      const [field] = translateSchema([{ name: 'a', type: 'string' }])
+      expect(field).not.toHaveProperty('default')
+    })
 
-  it('keeps every input, unknown ones included', () => {
-    const inputs: ProviderInput[] = [
-      { name: 'a', type: 'string' },
-      { name: 'b', type: 'inputs_array' },
-      { name: 'c', type: 'model' },
-    ]
-    expect(translateSchema(inputs)).toHaveLength(3)
+    it('keeps every input, unknown ones included', () => {
+      const inputs: ProviderInput[] = [
+        { name: 'a', type: 'string' },
+        { name: 'b', type: 'inputs_array' },
+        { name: 'c', type: 'model' },
+      ]
+      expect(translateSchema(inputs)).toHaveLength(3)
+    })
   })
 })
 
@@ -202,7 +204,9 @@ describe('familyOf', () => {
     expect(familyOf(['img2img'], ['sc:scenario', 'skybox-upscale'])).toBe('skybox')
     expect(familyOf(['img2img'], ['image-upscale'])).toBe('upscale')
   })
+})
 
+describe('familyOf image edits', () => {
   // The capability enum holds no upscale, no cutout and no vectorize value — measured against
   // `models.list`'s own — and all 26 of these models answer `img2img`. The tag is the only
   // signal, exactly as for skyboxes.

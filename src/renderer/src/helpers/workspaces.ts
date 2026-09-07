@@ -2,6 +2,7 @@ import {
   mdiCodeBraces,
   mdiCubeScan,
   mdiCubeOutline,
+  mdiGamepadVariantOutline,
   mdiImageOutline,
   mdiPanoramaVariantOutline,
   mdiRun,
@@ -98,6 +99,7 @@ const OWN_ROLE_ICON: Record<FolderRole, string | null> = {
   // A glyph of its own though it serves 3D: an interface sits at the TOP of the project, and
   // wearing the section's cube would file it under what is modelled.
   gui: mdiViewDashboardOutline,
+  input: mdiGamepadVariantOutline,
 }
 
 /**
@@ -144,7 +146,10 @@ export function roleIcon(role: FolderRole): string {
  * section's label. Total rather than a test on the id: a role with no answer would compose a key
  * nothing translates, and a raw key on screen is this repository's costliest defect.
  */
-const ROLE_LABEL: Record<FolderRole, 'section' | 'scenes' | 'models' | 'animations' | 'gui'> = {
+const ROLE_LABEL: Record<
+  FolderRole,
+  'section' | 'scenes' | 'models' | 'animations' | 'gui' | 'input'
+> = {
   image: 'section',
   video: 'section',
   audio: 'section',
@@ -158,6 +163,7 @@ const ROLE_LABEL: Record<FolderRole, 'section' | 'scenes' | 'models' | 'animatio
   // Its own line rather than the section's: this folder is not under Modelling, so « folder of
   // the 3D section » would send whoever reads it looking in the wrong place.
   gui: 'gui',
+  input: 'input',
 }
 
 export function roleLabelKey(role: FolderRole): string {

@@ -99,6 +99,31 @@ export function composed<S>(id: string, parts: readonly Command<S>[]): Command<S
 }
 
 /**
+ * One field of the state replaced, and that field alone given back: what sits beside it in the
+ * state — an armed layer, a folded group — is written outside the history and must not come back
+ * with ⌘Z. Captured as it is applied, so the command survives being redone.
+ */
+export function replaceField<S, K extends keyof S>(
+  id: string,
+  key: K,
+  next: (previous: S[K]) => S[K],
+): Command<S> {
+  // A flag rather than a sentinel: `null` and `undefined` are both values a field may hold.
+  let captured = false
+  let before: S[K] | undefined
+
+  return {
+    id,
+    apply: state => {
+      before = state[key]
+      captured = true
+      return { ...state, [key]: next(state[key]) }
+    },
+    revert: state => (captured ? { ...state, [key]: before } : state),
+  }
+}
+
+/**
  * Runs a command as the continuation of the one before it, when both are the same edit of the
  * same node — which is what `id` says. Dragging a field emits dozens of values a second, and a
  * stack where ⌘Z gives back one pixel of a drag is a stack nobody can use.

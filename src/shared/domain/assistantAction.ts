@@ -1,15 +1,7 @@
 import { HEX_COLOR } from './color'
 import type { FieldKind } from './model'
 import { ENVIRONMENT_KINDS } from './scene'
-
-/**
- * What an action IS, apart from which actions there are.
- *
- * Split from `assistant.ts` so a family of actions can be declared in its own module without
- * importing the registry that collects them — the cycle `import-cycles.test.ts` holds at zero.
- * The registry, and everything that reads one particular action, stays there.
- */
-
+import type { ActionReferenceKind, ActionResource } from './actionResource'
 /**
  * Every action the studio publishes, in one list.
  *
@@ -18,293 +10,10 @@ import { ENVIRONMENT_KINDS } from './scene'
  * `exhaustive.test.ts` holds union → families, and it has to — a name declared here and never
  * built leaves the registry and the handler table in perfect agreement about nothing.
  */
-export type ActionName =
-  | 'command.runStudioCommand'
-  | 'workspace.open'
-  | 'models.search'
-  | 'models.select'
-  | 'generator.prepare'
-  | 'generator.readArmedGeneration'
-  | 'generator.submit'
-  | 'jobs.list'
-  | 'prompt.suggest'
-  | 'prompt.translate'
-  | 'prompt.describeStyle'
-  | 'chat.close'
-  | 'actions.find'
-  | 'target.select'
-  | 'studio.state'
-  | 'documents.list'
-  | 'document.open'
-  | 'document.activate'
-  | 'document.close'
-  | 'document.rename'
-  | 'document.save'
-  | 'document.deleteFromDisk'
-  | 'document.export'
-  | 'activity.recent'
-  | 'projects.list'
-  | 'project.open'
-  | 'project.close'
-  | 'project.create'
-  | 'project.forget'
-  | 'project.trash'
-  | 'file.open'
-  | 'files.list'
-  | 'files.search'
-  | 'files.move'
-  | 'files.copy'
-  | 'files.duplicate'
-  | 'files.trash'
-  | 'files.undoFileOperation'
-  | 'files.redoFileOperation'
-  | 'files.readUndoStack'
-  | 'file.rename'
-  | 'file.facts'
-  | 'file.reveal'
-  | 'folder.new'
-  | 'project.rename'
-  | 'models.readGenerationModelFields'
-  | 'cost.estimate'
-  | 'job.readCloudGeneration'
-  | 'job.waitForCloudGeneration'
-  | 'job.cancelCloudGeneration'
-  | 'task.cancelLocalTask'
-  | 'usage.report'
-  | 'assets.searchProjectCatalogue'
-  | 'assets.counts'
-  | 'assets.absent'
-  | 'assets.captionImages'
-  | 'asset.get'
-  | 'asset.update'
-  | 'asset.reveal'
-  | 'asset.extractTextures'
-  | 'assets.removeFromLibrary'
-  | 'canvas.state'
-  | 'canvas.resize'
-  | 'canvas.crop'
-  | 'canvas.flipOrRotate'
-  | 'layer.add'
-  | 'layer.remove'
-  | 'layer.select'
-  | 'layer.rename'
-  | 'layer.setOpacityBlendAndVisibility'
-  | 'layer.transform'
-  | 'layer.editTextLayer'
-  | 'layer.reorderInStack'
-  | 'layer.duplicate'
-  | 'layer.group'
-  | 'layer.ungroup'
-  | 'layer.mergeDown'
-  | 'layer.lock'
-  | 'layer.editShapeLayer'
-  | 'layer.setAdjustmentAmount'
-  | 'layer.setMaskOptions'
-  | 'guide.add'
-  | 'guide.move'
-  | 'guide.remove'
-  | 'sequence.state'
-  | 'sequence.seek'
-  | 'clip.add'
-  | 'clip.remove'
-  | 'clip.move'
-  | 'clip.trim'
-  | 'clip.split'
-  | 'clip.fade'
-  | 'clip.gain'
-  | 'clip.speed'
-  | 'clip.unlink'
-  | 'clip.select'
-  | 'track.add'
-  | 'track.remove'
-  | 'track.reorderTracks'
-  | 'track.rename'
-  | 'track.setMuteSoloLockHeight'
-  | 'skybox.state'
-  | 'skybox.setViewOptions'
-  | 'skybox.adjustImage'
-  | 'skybox.resetAdjustments'
-  | 'skybox.setSun'
-  | 'skybox.setPreviewLighting'
-  | 'skybox.setSourceImage'
-  | 'material.state'
-  | 'material.setSurfaceSettings'
-  | 'material.setPreviewEnvironment'
-  | 'material.setPreviewDisplay'
-  | 'material.setChannelImage'
-  | 'styles.list'
-  | 'style.save'
-  | 'style.rename'
-  | 'style.remove'
-  | 'cloud.browseAccountLibrary'
-  | 'cloud.explorePublicFeed'
-  | 'cloud.findSimilarPublished'
-  | 'cloud.previewSync'
-  | 'cloud.pull'
-  | 'cloud.push'
-  | 'auth.state'
-  | 'window.state'
-  | 'window.fullScreen'
-  | 'settings.open'
-  | 'updates.state'
-  | 'updates.install'
-  | 'dictation.state'
-  | 'dictation.start'
-  | 'dictation.stop'
-  | 'panels.list'
-  | 'panel.open'
-  | 'panel.close'
-  | 'media.capabilities'
-  | 'media.indexFileInPlace'
-  | 'fonts.list'
-  | 'favorites.listPinnedRecipes'
-  | 'favorite.pinAssetRecipe'
-  | 'favorite.unpinAssetRecipe'
-  | 'fileInfo.openWindow'
-  | 'mirror.openVideoReturnWindow'
-  | 'help.openStudioWindow'
-  | 'scene.state'
-  | 'node.add'
-  | 'node.addModel'
-  | 'node.markAsCuttingTool'
-  | 'node.combineIntoSolid'
-  | 'node.swapSolidMatterAndTool'
-  | 'node.separate'
-  | 'node.remove'
-  | 'node.rename'
-  | 'node.transform'
-  | 'node.setVisible'
-  | 'node.setMeshMaterial'
-  | 'node.setPrimitiveParameters'
-  | 'node.setShadowCastAndReceive'
-  | 'node.setSpriteSettings'
-  | 'node.setTextSettings'
-  | 'node.setPathShape'
-  | 'path.addPoint'
-  | 'path.movePoint'
-  | 'path.removePoint'
-  | 'node.setLightSettings'
-  | 'node.setCameraLens'
-  | 'model.wearMaterial'
-  | 'model.wearImage'
-  | 'camera.addShot'
-  | 'camera.bindPathToShot'
-  | 'camera.createAndBindPath'
-  | 'camera.aimShotAt'
-  | 'camera.reorder'
-  | 'node.reparent'
-  | 'node.select'
-  | 'view.direction'
-  | 'view.display'
-  | 'scene.capture'
-  | 'world.applyPreset'
-  | 'world.setSceneLighting'
-  | 'world.setBackground'
-  | 'world.setFog'
-  | 'world.setGroundPlane'
-  | 'world.setToneMapping'
-  | 'post.state'
-  | 'post.add'
-  | 'post.remove'
-  | 'post.move'
-  | 'post.set'
-  | 'post.setEffectEnabled'
-  | 'post.setWholeStackEnabled'
-  | 'post.applyPreset'
-  | 'post.listPresets'
-  | 'post.duplicate'
-  | 'post.reset'
-  | 'post.key'
-  | 'post.unkey'
-  | 'post.savePreset'
-  | 'post.renamePreset'
-  | 'post.deleteSavedPreset'
-  | 'post.setCameraStackMode'
-  | 'rig.state'
-  | 'rig.fit'
-  | 'rig.clear'
-  | 'rig.hands'
-  | 'bone.add'
-  | 'bone.remove'
-  | 'bone.rename'
-  | 'bone.role'
-  | 'ik.add'
-  | 'ik.remove'
-  | 'animations.list'
-  | 'animation.addBlock'
-  | 'animation.removeBlock'
-  | 'animation.setBlockSettings'
-  | 'animation.setBandLengthAndRate'
-  | 'animation.autoKey'
-  | 'key.writePoseKeys'
-  | 'key.removeSubjectKeys'
-  | 'key.writeKeysOnOpenChannels'
-  | 'key.move'
-  | 'channel.remove'
-  | 'channel.setMuteSoloLock'
-  | 'git.status'
-  | 'git.log'
-  | 'git.listCommitFiles'
-  | 'git.diff'
-  | 'git.branches'
-  | 'git.stashes'
-  | 'git.init'
-  | 'git.stage'
-  | 'git.unstage'
-  | 'git.restore'
-  | 'git.commit'
-  | 'git.createBranch'
-  | 'git.checkout'
-  | 'git.stash'
-  | 'git.stashPop'
-  | 'git.tag'
-  | 'git.stashDrop'
-  | 'git.resolve'
-  | 'git.abortMerge'
-  | 'git.remotes'
-  | 'git.addRemote'
-  | 'git.fetch'
-  | 'git.pull'
-  | 'git.push'
-  | 'component.attach'
-  | 'component.detach'
-  | 'component.set'
-  | 'play.start'
-  | 'play.stop'
-  | 'play.pause'
-  | 'play.resume'
-  | 'play.step'
-  | 'play.loadScene'
-  | 'runtime.report'
-  | 'runtime.errors'
-  | 'script.list'
-  | 'script.read'
-  | 'script.write'
-  | 'studio.describe'
-  | 'studio.docs'
-  | 'studio.batch'
-  | 'timeline.addSceneCue'
-  | 'timeline.removeSceneCue'
-  | 'timeline.setPanelRows'
-  | 'game.applyTemplate'
-  | 'prefab.define'
-  | 'prefab.instantiate'
-  | 'game.export'
-  | 'memory.recall'
-  | 'memory.read'
-  | 'memory.write'
-  | 'memory.forget'
-  | 'memory.link'
-  | 'context.readProjectCards'
-  | 'context.writeProjectCard'
-  | 'context.deleteProjectCard'
-  | 'settings.read'
-  | 'settings.write'
-  | 'settings.pressButton'
-  | 'accounts.list'
-  | 'accounts.activate'
-  | 'accounts.rename'
-
+import type { ActionName } from './assistantActionNames'
+import type { ActionCapabilities } from './actionCapabilities'
+import type { ActionReach } from './actionReach'
+export type { ActionName } from './assistantActionNames'
 /**
  * What running an action leaves behind, and therefore whether it may run without being asked.
  *
@@ -330,7 +39,6 @@ export type ActionName =
  * about those would teach its user to click Allow without reading.
  */
 export type ActionCommitment = 'none' | 'files' | 'asset' | 'remote' | 'studio' | 'credits'
-
 export const ACTION_COMMITMENTS: readonly ActionCommitment[] = [
   'none',
   'files',
@@ -339,19 +47,6 @@ export const ACTION_COMMITMENTS: readonly ActionCommitment[] = [
   'studio',
   'credits',
 ]
-
-/**
- * 🛑 VESTIGIAL, and said so rather than left to be discovered: the briefing shows every NAME on
- * every door since `studioBriefing` stopped composing manuals it was not asked for, so nothing
- * reads this but `actionsReaching('mcp')` — which both values answer. The wire carries all of it.
- *
- * `both` still reads as "the vocabulary of a spoken request" and `mcp` as "what a program drives",
- * but neither decides anything today. A new action may be marked either way without a consequence.
- */
-export type ActionReach = 'both' | 'mcp'
-
-export const ACTION_REACHES: readonly ActionReach[] = ['both', 'mcp']
-
 /**
  * One input of an action.
  *
@@ -359,24 +54,26 @@ export const ACTION_REACHES: readonly ActionReach[] = ['both', 'mcp']
  * writes and the form shows as-is. A static registry cannot hold a sentence — every word bound
  * for the screen lives in a bundle — so this carries `labelKey` instead.
  */
+export type ActionChoice = string | number | boolean
+
 export type ActionField = {
   key: string
   kind: FieldKind
   labelKey: string
   required: boolean
+  /** Closed wire values, never translated labels. */
+  options?: readonly ActionChoice[]
   /**
-   * The values this field accepts, when it accepts a closed set. Raw identifiers rather than
-   * translated labels: these are read by a model and by an MCP client, never shown as-is.
-   */
-  options?: readonly string[]
-  /**
-   * This value names a FOLDER of the machine, so the question can offer to point at one — the
-   * model guesses a name where only the person knows where their work lives.
+   * What this value NAMES, so a surface can offer to point at one instead of asking for the word.
+   * `folder` is a folder of the machine — the model guesses a name where only the person knows
+   * where their work lives; `node` is a node of the scene and `script` a file of the project,
+   * both of which the inspector offers as a list rather than as a name to type.
    *
    * 🛑 Not `PathKind`: the button's label says « dossier », and nothing would rougir on a field
    * that asked for a FILE under it. A second kind comes with a second label.
    */
-  picks?: 'folder'
+  picks?: 'folder' | 'node' | 'script'
+  reference?: ActionReferenceKind
   min?: number
   max?: number
   /** A list of `kind` rather than one of it. `raw` stays a single value — it is already open. */
@@ -422,12 +119,34 @@ export type AssistantAction = {
   runsOthers?: true
   reach: ActionReach
   fields: readonly ActionField[]
+  requires?: readonly ActionResource[]
+  produces?: readonly ActionResource[]
+  inputs?: readonly ActionResource[]
+  /** A resource that improves this action but whose absence does not prevent a direct call. */
+  uses?: readonly ActionResource[]
+  returns?: readonly ActionResource[]
+  capabilities?: ActionCapabilities
 }
 
-/** Identity, for the type annotation it forces on every entry of a family table. */
 export function action(descriptor: AssistantAction): AssistantAction {
   return descriptor
 }
+/** The node in front, named the same way in every family that points at one. */
+export const NODE_ID: ActionField = {
+  key: 'nodeId',
+  kind: 'text',
+  labelKey: 'assistant.fields.nodeId',
+  required: true,
+  picks: 'node',
+  reference: 'node',
+}
+
+/** How one works on a channel or a row — the same three flags, two families. */
+export const MUTE_SOLO_LOCK: readonly ActionField[] = [
+  { key: 'muted', kind: 'boolean', labelKey: 'assistant.fields.muted', required: false },
+  { key: 'solo', kind: 'boolean', labelKey: 'assistant.fields.solo', required: false },
+  { key: 'locked', kind: 'boolean', labelKey: 'assistant.fields.locked', required: false },
+]
 
 /**
  * What lights a surface, as the two registries that ask it both name it: a PICTURE by asset id,
@@ -576,12 +295,10 @@ export function confirmKey(commitment: ActionCommitment): string {
   return `assistant.confirm.${commitment}`
 }
 
-/** Whether running this needs a yes first. Only `credits` quotes a figure. */
 export function needsConfirmation(commitment: ActionCommitment): boolean {
   return commitment !== 'none'
 }
 
-/** A refusal, spelled once for the ten modules that hand one back. */
 export const refused = (refusal: ActionRefusal, detail?: string): ActionOutcome => ({
   ok: false,
   refusal,
@@ -605,52 +322,59 @@ const withinLength = (field: ActionField, value: string): boolean =>
 
 function fits(field: ActionField, value: unknown): boolean {
   switch (field.kind) {
-    // `task` is here for the compiler's sake: its options are composed by the window from what
-    // has run, so no action declares one.
     case 'text':
     case 'longText':
-    case 'choice':
     case 'image':
     case 'mesh':
     case 'task':
+      return fitsText(field, value)
+    case 'choice':
       return (
-        typeof value === 'string' &&
-        (!field.required || value.trim() !== '') &&
-        !PLACEHOLDER.test(value) &&
-        (!field.options || field.options.includes(value)) &&
-        // 🛑 A LENGTH on a text field, and it was applied by nobody: an over-long summary reached
-        // the main process, zod threw there, and the client got a refusal naming no field to
-        // repair — so it retried the same call. `tools.ts` publishes it as `maxLength`.
-        withinLength(field, value)
+        (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') &&
+        (field.options?.some(option => option === value) ?? true)
       )
-    // Apart from the strings, because every reader of a colour falls back SILENTLY on a value it
-    // cannot parse — the paint never took, and the caller was told it did.
     case 'color':
       return typeof value === 'string' && HEX_COLOR.test(value)
     case 'number':
     case 'integer':
     case 'seed':
-      return (
-        typeof value === 'number' &&
-        Number.isFinite(value) &&
-        (field.kind === 'number' || Number.isInteger(value)) &&
-        (field.min === undefined || value >= field.min) &&
-        (field.max === undefined || value <= field.max)
-      )
+      return fitsNumber(field, value)
     case 'boolean':
       return typeof value === 'boolean'
     case 'raw':
       return value !== undefined
-    // `Object.keys` rather than `in`, which answers true for `__proto__`, `toString` and
-    // `constructor` — names that reached a merge, vanished in it, and were answered `ok`.
     case 'record':
-      return (
-        typeof value === 'object' &&
-        value !== null &&
-        !Array.isArray(value) &&
-        Object.keys(value).every(key => field.options?.includes(key) ?? true)
-      )
+      return fitsRecord(field, value)
   }
+}
+
+function fitsText(field: ActionField, value: unknown): boolean {
+  return (
+    typeof value === 'string' &&
+    (!field.required || value.trim() !== '') &&
+    !PLACEHOLDER.test(value) &&
+    (!field.options || field.options.includes(value)) &&
+    withinLength(field, value)
+  )
+}
+
+function fitsNumber(field: ActionField, value: unknown): boolean {
+  return (
+    typeof value === 'number' &&
+    Number.isFinite(value) &&
+    (field.kind === 'number' || Number.isInteger(value)) &&
+    (field.min === undefined || value >= field.min) &&
+    (field.max === undefined || value <= field.max)
+  )
+}
+
+function fitsRecord(field: ActionField, value: unknown): boolean {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    !Array.isArray(value) &&
+    Object.keys(value).every(key => field.options?.some(option => option === key) ?? true)
+  )
 }
 
 /**

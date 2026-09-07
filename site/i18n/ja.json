@@ -8,9 +8,9 @@
     "ogLocale": "ja_JP"
   },
   "head": {
-    "title": "IA Studio — 六つの生成ワークショップを、ひとつのウィンドウに",
+    "title": "AI Desktop Studio — 六つの生成ワークショップを、ひとつのウィンドウに",
     "description": "マルチモーダルなデスクトップアプリ。画像、動画、3D、オーディオ、テクスチャ、スカイボックスをドッキング可能なパネル UI にまとめました。オフラインの音声入力と MCP サーバー経由の操作に対応。",
-    "ogTitle": "IA Studio — 六つの生成ワークショップを、ひとつのウィンドウに",
+    "ogTitle": "AI Desktop Studio — 六つの生成ワークショップを、ひとつのウィンドウに",
     "ogDescription": "六つの生成ワークショップを、ひとつのウィンドウに。Electron、React 19、TypeScript。macOS、Windows、Linux。"
   },
   "nav": {
@@ -291,7 +291,7 @@
   "docs": {
     "eyebrow": "ドキュメント &amp; デモ",
     "title": "すべてはコードの隣に書いてあります。",
-    "videoLabel": "IA Studio のデモ。六つのワークショップを巡り、3D の生成から編集まで。",
+    "videoLabel": "AI Desktop Studio のデモ。六つのワークショップを巡り、3D の生成から編集まで。",
     "links": {
       "0": {
         "text": "マニュアル全二十章 — アプリの中でも読めます",
@@ -318,7 +318,8 @@
         "label": "ライセンス"
       }
     },
-    "manualFile": "user-guide.md"
+    "manualFile": "user-guide.md",
+    "mcpChapterFile": "manual/20-driving-from-outside.md"
   },
   "download": {
     "eyebrow": "インストール",
@@ -351,11 +352,11 @@
         "state": "リリース準備中"
       }
     },
-    "note": "インストーラーは<a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">利用規約</a>に従い、ソースコードは <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial&nbsp;1.0.0</a> ライセンスに従います。本アプリはいかなる生成サービスへのアクセスも提供しません。あなたが用意した API キーを、あなたのアカウントで、あなたの負担のもとに使います。"
+    "note": "インストーラーは<a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">利用規約</a>に従い、ソースコードは <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial&nbsp;1.0.0</a> ライセンスに従います。本アプリはいかなる生成サービスへのアクセスも提供しません。あなたが用意した API キーを、あなたのアカウントで、あなたの負担のもとに使います。"
   },
   "foot": {
     "groups": {
-      "0": "IA Studio",
+      "0": "AI Desktop Studio",
       "1": "ワークショップ",
       "2": "リソース",
       "3": "連絡先"
@@ -365,7 +366,7 @@
       "0": "ダウンロード",
       "1": "ライセンス"
     },
-    "legal": "ソースコードは <a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial 1.0.0</a> ライセンス · アプリは<a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">利用規約</a>のもとで配布 · サードパーティ製コンポーネントは<a href=\"https://github.com/pasquelin/IAStudio/blob/HEAD/THIRD-PARTY-NOTICES.md\" target=\"_blank\" rel=\"noopener\">表示</a>に記載。© 2026 Alban Pasquelin。",
+    "legal": "ソースコードは <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial 1.0.0</a> ライセンス · アプリは<a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">利用規約</a>のもとで配布 · サードパーティ製コンポーネントは<a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/THIRD-PARTY-NOTICES.md\" target=\"_blank\" rel=\"noopener\">表示</a>に記載。© 2026 Alban Pasquelin。",
     "docsLink": "ドキュメント",
     "changelog": "変更履歴",
     "docsFr": "ドキュメント 🇫🇷",

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { parentOf } from '@shared/domain/folder'
 import { DEFAULT_ROLE_PATHS } from '@shared/domain/folderRole'
-import { PROJECT } from './project'
+import { DOCUMENT_SOURCES, PROJECT } from './project'
 
 /**
  * 🛑 The tree the bench lays down drifted from the one `create` lays down, twice — `Videos` and
@@ -22,4 +22,15 @@ describe('the project the bench lays down', () => {
 
     expect(stray).toEqual([])
   })
+})
+
+/**
+ * 🛑 The path a document LIVES at: written elsewhere, `documents.read` looks its content up and
+ * finds none. `documents/Scène 1.gltf` survived twelve failed runs with a green suite, and
+ * instancing that scene as a prefab refused `notFound` every time.
+ */
+it('writes every document source onto a file the project seeds', () => {
+  const seeded = PROJECT.filter(one => one.kind === 'file').map(one => one.path)
+
+  expect(DOCUMENT_SOURCES.map(one => one.path).filter(path => !seeded.includes(path))).toEqual([])
 })

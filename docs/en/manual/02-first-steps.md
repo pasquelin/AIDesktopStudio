@@ -67,7 +67,7 @@ programs.
 ## Step 3 — Connect your account
 
 1. Open settings: `⌘,` on macOS, `Ctrl+,` on Windows and Linux. Or through the menu —
-   **IA Studio ▸ Settings…** on macOS, **File ▸ Settings…** elsewhere, since only macOS
+   **AI Desktop Studio ▸ Settings…** on macOS, **File ▸ Settings…** elsewhere, since only macOS
    has an application menu.
 2. In the list on the left, click **Account**.
 3. Give it a **name** — whatever you like: "Studio", "Personal", your first name.
@@ -118,7 +118,8 @@ neither your projects nor what you write in them.
 
 ## Step 5 — Create your first project
 
-`⌘N` / `Ctrl+N`, or menu **File ▸ New project…**
+`⌥⌘N` / `Alt+Ctrl+N`, or menu **File ▸ New project…** — or `⌘N`, which opens the window
+offering a project as well as a document
 
 The studio asks for **a folder**, and that folder *becomes* the project — nothing is built above
 or below it. Make one from the picker if you need to (**New Folder**) and give it the name you

@@ -17,6 +17,8 @@ describe('what may run without the question on screen', () => {
     expect(delegated(unarmed, 'asset', null, 0)).toBe(false)
     expect(delegated(unarmed, 'remote', null, 0)).toBe(false)
     expect(delegated(unarmed, 'credits', 1, 0)).toBe(false)
+    // A model of this machine is priced at nothing, and nothing armed still means asked about.
+    expect(delegated(unarmed, 'credits', 0, 0)).toBe(false)
   })
 
   it('lets through the levels that were armed, and only those', () => {

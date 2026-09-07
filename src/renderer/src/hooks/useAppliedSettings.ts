@@ -1,5 +1,6 @@
 import { useAppearance } from './useAppearance'
 import { useLanguage } from './useLanguage'
+import { useGamepadNavigation } from './useGamepadNavigation'
 
 /**
  * Everything a window has to apply to itself from the settings. One entry point rather than a
@@ -9,4 +10,5 @@ import { useLanguage } from './useLanguage'
 export function useAppliedSettings(): void {
   useAppearance()
   useLanguage()
+  useGamepadNavigation()
 }

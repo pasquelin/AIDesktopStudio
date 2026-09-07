@@ -42,8 +42,6 @@ function spyContext() {
   const lines: Point[] = []
   const images: Rect[] = []
 
-  // The glyphs drawn from an `@mdi/js` path, with where and in what ink. `Path2D` is a holder
-  // under jsdom (`testSetup`), so what comes back is the `d` string the painter chose.
   const glyphs: { d: string; x: number; y: number; ink: string }[] = []
   let origin: Point = { x: 0, y: 0 }
 
@@ -59,7 +57,6 @@ function spyContext() {
     translate: vi.fn((x: number, y: number) => void (origin = { x, y })),
     scale: vi.fn(),
     fill: vi.fn((path?: { d?: string }) => {
-      // Called bare for the waveform and the fades, with a path only for a glyph.
       if (path?.d) glyphs.push({ d: path.d, ...origin, ink })
     }),
     moveTo: vi.fn((x: number, y: number) => lines.push({ x, y })),

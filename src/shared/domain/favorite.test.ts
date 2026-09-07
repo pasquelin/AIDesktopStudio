@@ -18,7 +18,7 @@ describe('where a pinned still is served from', () => {
   it('names a host of its own, and reads its id back', () => {
     const url = favoriteThumbnailUrl('favorite_1')
 
-    expect(url).toBe('ia-studio://favorite/favorite_1')
+    expect(url).toBe('ai-desktop-studio://favorite/favorite_1')
     expect(favoriteIdFromUrl(url)).toBe('favorite_1')
   })
 
@@ -34,7 +34,7 @@ describe('where a pinned still is served from', () => {
   it('answers null for anything that is not one of ours', () => {
     expect(favoriteIdFromUrl('https://example.com/favorite_1')).toBeNull()
     expect(favoriteIdFromUrl('not a url at all')).toBeNull()
-    expect(favoriteIdFromUrl('ia-studio://favorite/')).toBeNull()
+    expect(favoriteIdFromUrl('ai-desktop-studio://favorite/')).toBeNull()
   })
 })
 

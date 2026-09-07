@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { TooltipHost } from './TooltipHost'
-import { DRAGGABLE } from '@/helpers/appRegion'
+import { WindowTitleBar } from './WindowTitleBar'
 
 export type WindowShellProps = {
   /** Already translated, as every design component takes its words. */
@@ -10,6 +10,7 @@ export type WindowShellProps = {
   /** Under everything, across the full width: the settings draft bar and nothing else so far. */
   footer?: ReactNode
   children: ReactNode
+  content?: 'document' | 'panels'
 } & WindowColumn
 
 /**
@@ -49,6 +50,10 @@ type WindowColumn =
  *
  * `TooltipHost` is mounted here rather than by each window. It is per-window and easy to forget:
  * without it, tooltip attributes write a sentence nobody ever sees.
+ *
+ * 🛑 The ground is `bg-chassis`: the main process paints the window with that very value before the
+ * first frame — `WINDOW_CHROME_COLOR` restates `--color-chassis` — so a DaisyUI ground opened on
+ * one colour and settled on another. `window-ground.test.ts` holds the two together.
  */
 export function WindowShell({
   title,
@@ -57,18 +62,11 @@ export function WindowShell({
   nav,
   footer,
   children,
+  content = 'document',
 }: WindowShellProps) {
   return (
-    <div className="bg-base-200 text-base-content flex h-full flex-col">
-      <header
-        style={DRAGGABLE}
-        className="text-body flex shrink-0 items-center pt-2 pr-4 pb-2 pl-24 font-medium"
-      >
-        {/* A heading rather than bare words: it is the only thing naming the window to a reader,
-            and Tailwind's preflight leaves an `h1` at the size its container gives it. */}
-        <h1>{title}</h1>
-        {headerActions}
-      </header>
+    <div className="bg-chassis text-base-content flex h-full flex-col">
+      <WindowTitleBar title={title} actions={headerActions} />
 
       <div className="flex min-h-0 flex-1">
         {nav && (
@@ -80,7 +78,15 @@ export function WindowShell({
           </nav>
         )}
 
-        <main className="min-w-0 flex-1 overflow-auto px-6 py-4">{children}</main>
+        <main
+          className={
+            content === 'panels'
+              ? 'min-h-0 min-w-0 flex-1 overflow-hidden'
+              : 'min-w-0 flex-1 overflow-auto px-6 py-4'
+          }
+        >
+          {children}
+        </main>
       </div>
 
       {footer}

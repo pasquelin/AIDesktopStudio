@@ -51,7 +51,6 @@ function harness(overrides: Partial<SessionHost> = {}) {
     opened,
     timers,
     states: () => events.filter(event => event.type === 'state').map(event => event.state),
-    /** Lets the startup probe finish: it crosses `modelIsReady` and a `catch` before it publishes. */
     settled: async () => {
       await Promise.resolve()
       await Promise.resolve()
@@ -84,14 +83,9 @@ describe('starting a session', () => {
     await session.start()
 
     expect(opened).toHaveBeenCalledTimes(1)
-    // The window depends on this: a resident engine announces nothing between `ready` and
-    // `listening`, so a second `loadingEngine` here would reach a renderer that reads it as a
-    // state crossed while no start is in flight.
     expect(states()).toEqual(['loadingEngine', 'listening', 'ready', 'listening'])
   })
 
-  // Asked first, so the interface can tell "you said no" from "there is no microphone" — which
-  // `getUserMedia` alone reports identically.
   it('stops at the permission, and says which refusal it was', async () => {
     const { session, states, events, opened } = harness({
       requestMicrophone: () => Promise.resolve('denied'),
@@ -107,8 +101,6 @@ describe('starting a session', () => {
     })
   })
 
-  // Before any press: a window cannot tell a missing model from a microphone that answers
-  // nothing, so the button it would draw does nothing when pressed.
   it('says the model is missing without waiting to be started', async () => {
     const { states, settled } = harness({ modelIsReady: () => Promise.resolve(false) })
 
@@ -117,11 +109,6 @@ describe('starting a session', () => {
     expect(states()).toEqual(['modelMissing'])
   })
 
-  /**
-   * 🛑 The catalogue screen writes the very files this session needs and never tells it. Without
-   * a way back, a model fetched there left the microphone hidden and the status line offering to
-   * download 640 MB already on the disk — until the studio was restarted.
-   */
   it('takes back the missing model once something else has installed it', async () => {
     let onDisk = false
     const { session, states, settled } = harness({ modelIsReady: () => Promise.resolve(onDisk) })
@@ -142,11 +129,6 @@ describe('starting a session', () => {
     expect(states()).toEqual(['loadingEngine', 'listening'])
   })
 
-  /**
-   * 🛑 The model goes missing AFTER the startup probe answered, or this proves nothing: the probe
-   * would have published `modelMissing` already and `publish` deduplicates, so the case would go
-   * green on the state it was handed rather than on the one the press produced.
-   */
   it('asks for the model rather than failing when it is not there', async () => {
     let onDisk = true
     const { session, states, opened, settled } = harness({
@@ -191,8 +173,6 @@ describe('a session that goes wrong', () => {
     expect(harnessed.session.snapshot().failure?.code).toBe('engineCrashed')
   })
 
-  // A process that dies on the first chunk would otherwise be forked again by the next one, for
-  // as long as someone keeps speaking.
   it('gives up after three failed loads in a row', async () => {
     const harnessed = harness()
     harnessed.failLoad('the addon will not load')
@@ -238,8 +218,6 @@ describe('a session that goes wrong', () => {
     expect(session.snapshot().state).toBe('listening')
   })
 
-  // A worker that answers `{failed}` on a segment is still running. Letting go of the reference
-  // without killing it leaves 700 MB resident, and the next press forks a second one.
   it('closes the engine it is giving up on', async () => {
     const { session, engine, crash } = harness()
 
@@ -338,11 +316,6 @@ describe('ending a session', () => {
     expect(events).toContainEqual({ type: 'final', text: 'Un phare rouge.', latencyMs: 300 })
   })
 
-  /**
-   * The worker takes `{cancel}` in turn, behind the audio it has already accepted, and a decode
-   * under way answers when it resolves. Without this, a sentence the user explicitly threw away
-   * was written into the field a moment later.
-   */
   it('drops a sentence that settles after it was cancelled', async () => {
     const { session, events, speak } = harness()
 
@@ -380,8 +353,6 @@ describe('letting the model go', () => {
     expect(session.snapshot().state).toBe('idle')
   })
 
-  // The engine holds audio that has not been transcribed yet: letting it go mid-sentence would
-  // lose the words between the last silence and now.
   it('never drops it while someone is speaking', async () => {
     const { session, engine, timers } = harness()
 
@@ -471,8 +442,6 @@ describe('fetching the model', () => {
           signal.addEventListener('abort', () => reject(new DownloadCancelled('cancelled')))
         }),
     })
-    // The startup probe first, and a disk that agrees with the case: a session downloading a
-    // model the harness calls present is a decor that contradicts itself.
     await settled()
 
     const running = session.downloadModel()
@@ -482,8 +451,6 @@ describe('fetching the model', () => {
     expect(states()).toEqual(['modelMissing', 'downloadingModel', 'modelMissing'])
   })
 
-  // Told apart because they lead somewhere different: a network that failed is worth retrying,
-  // a file that failed its digest was deleted and has to say so.
   it('names a corrupted model differently from a failed network', async () => {
     const corrupted = harness({
       download: () => Promise.reject(new ChecksumMismatch('encoder.int8.onnx is damaged')),

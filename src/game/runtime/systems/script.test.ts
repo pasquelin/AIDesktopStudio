@@ -1,18 +1,26 @@
 // SPDX-License-Identifier: MIT
 
+import { INPUT_MAP_VERSION } from '../inputMap'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import type { Component, JsonValue } from '@shared/domain/component'
 import { newComponent, withComponentField } from '@shared/domain/componentRegistry'
+import { createAnimators } from '../animators'
+import { createIntents } from '../intents'
 import { loadQuickjsScripts } from '../../host/quickjsScripts'
 import type { ScriptFault } from '../../script/frame'
 import type { ScriptPort } from '../../ports/scriptPort'
 import { restingTransform } from '../entity'
+import { STEP_SECONDS } from '../gameLoop'
 import { testPorts, testWorld } from '../world-fixtures'
 import type { World } from '../world'
+import type { InputMap } from '../inputMap'
 import { createScriptSystem } from './script'
 
 const STEP = 1 / 60
 const WALK = 'script:Walk.ts'
+
+/** Fresh per case: a store shared between them would carry one test's ask into the next. */
+let intents = createIntents()
 
 const scripted = (body: string): string => `exports.default = defineScript({ ${body} })`
 
@@ -25,7 +33,7 @@ const scripted = (body: string): string => `exports.default = defineScript({ ${b
  */
 const frame = (world: World): void => {
   world.step(STEP)
-  world.lateUpdate(0)
+  world.lateUpdate(0, STEP_SECONDS)
 }
 
 /** A real sandbox: what this measures is the SYSTEM, and a fake one would prove nothing of it. */
@@ -36,19 +44,31 @@ describe('what a game does with its own code', () => {
   beforeEach(async () => {
     port = await loadQuickjsScripts()
     faults = []
+    intents = createIntents()
   })
 
   afterEach(() => {
     port.dispose()
   })
 
-  function running(body: string, components: Component[] = []): World {
+  function running(
+    body: string,
+    components: Component[] = [],
+    inputMaps: readonly InputMap[] = [],
+    bodyIdOf: (moduleId: string) => string | null = () => null,
+    animatorIdOf: (moduleId: string) => string | null = () => null,
+  ): World {
     const world = testWorld({
       ports: testPorts({ script: port }),
+      inputMaps,
       systems: [
         createScriptSystem({
+          animators: createAnimators(),
+          animatorIdOf,
           modules: [{ script: WALK, code: scripted(body) }],
           onFault: fault => faults.push(fault),
+          intents,
+          bodyIdOf,
         }),
       ],
     })
@@ -61,6 +81,27 @@ describe('what a game does with its own code', () => {
     return world
   }
 
+  /**
+   * 🛑 A module's script sits on the module and its animator on the mesh, so an event named for
+   * its own entity reached nobody — the hook was unreachable from the very script a template
+   * lays down.
+   */
+  it("hands an animation event of its module's animated part to the script", () => {
+    const world = running(
+      'onAnimationEvent(self, ctx, event) { game.log.info(event.payload.state) }',
+      [],
+      [],
+      () => null,
+      moduleId => (moduleId === 'e1' ? 'mesh' : null),
+    )
+    world.events.emit({ name: 'AnimationFinished', entity: 'mesh', payload: { state: 'jump' } })
+
+    frame(world)
+    frame(world)
+
+    expect(world.ports.log.recent().map(entry => entry.message)).toContain('jump')
+  })
+
   /** 🛑 The measure the lot is for: twenty lines of an author's code move something. */
   it('moves what a script tells it to move', () => {
     const world = running('onUpdate(self, ctx, dt) { self.moveBy(0, 0, -4 * dt) }')
@@ -69,6 +110,44 @@ describe('what a game does with its own code', () => {
     frame(world)
 
     expect(world.entities.get('e1')?.transform.position.z).toBeCloseTo(-8 / 60, 6)
+  })
+
+  it('lands a walk in the intents rather than on the transform, so physics still rules', () => {
+    const world = running('onStart(self) { self.walk(1, -2) }')
+
+    frame(world)
+
+    expect(intents.walkOf('e1')).toEqual({ x: 1, y: -2 })
+    // 🛑 The node has NOT moved: a walk placed here would go through whatever wall is in the way.
+    expect(world.entities.get('e1')?.transform.position).toEqual({ x: 0, y: 0, z: 0 })
+  })
+
+  /** The script sits on the MODULE in one template and on the capsule itself in two others. */
+  it('reaches the module BODY when the script sits on the module', () => {
+    const world = running('onStart(self) { self.jump() }', [], [], id =>
+      id === 'e1' ? 'body' : null,
+    )
+
+    frame(world)
+
+    expect(intents.jumped('body')).toBe(true)
+    expect(intents.jumped('e1')).toBe(false)
+  })
+
+  it('applies context changes requested by a script', () => {
+    const vehicle: InputMap = {
+      version: INPUT_MAP_VERSION,
+      id: 'vehicle',
+      priority: 10,
+      defaultActive: false,
+      actions: [],
+    }
+    const world = running('onStart() { game.input.pushContext("vehicle") }', [], [vehicle])
+    expect(world.inputContexts.active()).not.toContain('vehicle')
+
+    frame(world)
+
+    expect(world.inputContexts.active()).toContain('vehicle')
   })
 
   it('writes a field of a component the entity already carries', () => {
@@ -199,6 +278,8 @@ describe('what a game does with its own code', () => {
       ports: testPorts({ script: port }),
       systems: [
         createScriptSystem({
+          animators: createAnimators(),
+          animatorIdOf: () => null,
           modules: [
             {
               script: WALK,
@@ -208,6 +289,8 @@ describe('what a game does with its own code', () => {
             },
           ],
           onFault: fault => faults.push(fault),
+          intents,
+          bodyIdOf: () => null,
         }),
       ],
     })
@@ -277,8 +360,12 @@ describe('what a script asks about its scenes', () => {
       }),
       systems: [
         createScriptSystem({
+          animators: createAnimators(),
+          animatorIdOf: () => null,
           modules: [{ script: WALK, code: scripted(body) }],
           onFault: () => {},
+          intents,
+          bodyIdOf: () => null,
         }),
       ],
     })

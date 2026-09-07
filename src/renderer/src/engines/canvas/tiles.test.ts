@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { brushRect, tileBytes, tileKey, tilesCovering, TILE_SIZE } from './tiles'
+import { brushRect, tileBytes, tileKey, tilesCovering, TILE_SIZE, unionOf } from './tiles'
 
 const DOCUMENT = { width: 1024, height: 1024 }
 
@@ -51,6 +51,17 @@ describe('tilesCovering', () => {
     expect(tileBytes({ column: 0, row: 0, x: 0, y: 0, width: 512, height: 512 })).toBe(
       512 * 512 * 4,
     )
+  })
+})
+
+describe('unionOf', () => {
+  it('gives the one box every rectangle falls in, whatever their order', () => {
+    expect(
+      unionOf([
+        { x: 40, y: 8, width: 8, height: 8 },
+        { x: 0, y: 24, width: 8, height: 8 },
+      ]),
+    ).toEqual({ x: 0, y: 8, width: 48, height: 24 })
   })
 })
 

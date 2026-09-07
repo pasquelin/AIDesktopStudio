@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { GIT_FAILURE_KEYS, remoteHost } from '@shared/domain/git'
+import { GIT_FAILURE_KEYS, remoteHost, type GitRepository } from '@shared/domain/git'
 import { EmptyState } from '@/components/EmptyState'
 import { toolIcon } from '@/helpers/toolRegistry'
 import { useGitStatus } from '@/hooks/useGitStatus'
@@ -26,6 +26,25 @@ export function Git() {
   const remote = useGit(state => state.remote)
   const host = remote ? remoteHost(remote.url) : null
 
+  return gitContent(repository, {
+    busy,
+    host,
+    initRepository,
+    refresh,
+    t,
+  })
+}
+
+type GitContentContext = {
+  busy: boolean
+  host: string | null
+  initRepository: () => Promise<void>
+  refresh: () => Promise<void>
+  t: ReturnType<typeof useTranslation>['t']
+}
+
+function gitContent(repository: GitRepository, context: GitContentContext) {
+  const { busy, host, initRepository, refresh, t } = context
   switch (repository.kind) {
     case 'no-project':
       return <NoProject icon={toolIcon('git')} message={t('git.noProject')} />
@@ -53,9 +72,6 @@ export function Git() {
       )
 
     case 'failed':
-      // The one refusal with a way out of its own: the server said no, and what it wants is a
-      // token. Only for a server that HAS a host — an SSH remote is answered by the machine's own
-      // key and agent, which no field here could stand in for.
       if (repository.reason === 'authentication' && host !== null) {
         return <CredentialField host={host} />
       }

@@ -1,0 +1,10 @@
+{
+  "adapterMilliseconds": 15.111707999999908,
+  "applyRigMilliseconds": 1.1786670000000186,
+  "exportMilliseconds": 13.532000000000039,
+  "importMilliseconds": 6.936041999999929,
+  "bones": 52,
+  "skinnedMeshes": 1,
+  "vertexMotion": 0.44323730173862796,
+  "outputBytes": 14345980
+}

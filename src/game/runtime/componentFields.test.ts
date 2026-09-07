@@ -2,7 +2,7 @@
 
 import { describe, expect, it } from 'vitest'
 import type { Component } from '@shared/domain/component'
-import { flagOf, numberOf, textOf } from './componentFields'
+import { choiceOf, flagOf, numberOf, textOf } from './componentFields'
 
 const held: Component = {
   type: 'Movement',
@@ -36,5 +36,20 @@ describe('what a system reads off a component', () => {
     expect(textOf(held, 'speed', 'once')).toBe('once')
     expect(flagOf(held, 'on', false)).toBe(true)
     expect(flagOf(held, 'said', false)).toBe(false)
+  })
+
+  /** What a `choiceField` is FOR: a system switches on the three it knows and no fourth. */
+  it('holds a choice to its own choices, a hand-edited fourth included', () => {
+    const modes: readonly ['once', 'loop', 'pingPong'] = ['once', 'loop', 'pingPong']
+
+    expect(choiceOf(held, 'said', modes, 'once')).toBe('loop')
+    expect(choiceOf({ ...held, said: 'sideways' }, 'said', modes, 'pingPong')).toBe('pingPong')
+    expect(choiceOf(held, 'absent', modes, 'once')).toBe('once')
+    expect(choiceOf(null, 'said', modes, 'pingPong')).toBe('pingPong')
+  })
+
+  /** A default that is not a choice cannot escape the union either — the first one answers. */
+  it('answers the first choice for a default that is not one', () => {
+    expect(choiceOf(held, 'absent', ['once', 'loop'], 'sideways')).toBe('once')
   })
 })

@@ -66,7 +66,7 @@ function designate(
     return sequence
   }
 
-  current.replace(documentId, next)
+  current.replaceView(documentId, next)
   return next
 }
 
@@ -298,5 +298,5 @@ export function writeTrack(
   change: (track: Track) => Track,
 ): void {
   const current = store.use.getState()
-  current.replace(documentId, updateTrack(store.stateOf(current, documentId), trackId, change))
+  current.replaceView(documentId, updateTrack(store.stateOf(current, documentId), trackId, change))
 }

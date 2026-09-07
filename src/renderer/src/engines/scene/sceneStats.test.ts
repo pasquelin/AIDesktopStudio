@@ -1,6 +1,10 @@
 import {
+  BatchedMesh,
+  BufferGeometry,
   BoxGeometry,
   InstancedMesh,
+  InterleavedBuffer,
+  InterleavedBufferAttribute,
   Matrix4,
   Mesh,
   MeshStandardMaterial,
@@ -10,7 +14,7 @@ import {
 } from 'three'
 import { describe, expect, it } from 'vitest'
 import { MARKER_NAME } from './markerPaint'
-import { densityOf, EMPTY_STATS, statsOf, totalStats } from './sceneStats'
+import { densityOf, EMPTY_STATS, geometryBytesOf, statsOf, totalStats } from './sceneStats'
 
 function texturedMaterial(width: number, height: number): MeshStandardMaterial {
   const material = new MeshStandardMaterial()
@@ -22,6 +26,18 @@ function texturedMaterial(width: number, height: number): MeshStandardMaterial {
 }
 
 describe('statsOf', () => {
+  it('counts shared interleaved storage once and includes morph buffers', () => {
+    const geometry = new BufferGeometry()
+    const interleaved = new InterleavedBuffer(new Float32Array(12), 6)
+    geometry.setAttribute('position', new InterleavedBufferAttribute(interleaved, 3, 0))
+    geometry.setAttribute('normal', new InterleavedBufferAttribute(interleaved, 3, 3))
+    geometry.morphAttributes.position = [
+      new InterleavedBufferAttribute(new InterleavedBuffer(new Float32Array(6), 3), 3, 0),
+    ]
+
+    expect(geometryBytesOf([new Mesh(geometry, new MeshStandardMaterial())])).toBe(18 * 4)
+  })
+
   it('counts a cube through its index rather than its positions', () => {
     const cube = new Mesh(new BoxGeometry(), new MeshStandardMaterial())
 
@@ -162,5 +178,19 @@ describe('totalStats', () => {
     // thing on screen came out at the coolest step of the density ramp.
     expect(densityOf(many)).toBeGreaterThan(0)
     expect(densityOf(many)).toBeLessThan(lone)
+  })
+
+  it('counts every copy a lot draws, for the same reason', () => {
+    const geometry = new BoxGeometry(1, 1, 1)
+    const lone = densityOf(new Mesh(geometry, new MeshStandardMaterial()))
+
+    const lot = new BatchedMesh(8, 8 * 24, 8 * 36, new MeshStandardMaterial())
+    const shape = lot.addGeometry(geometry)
+    for (let at = 0; at < 8; at += 1) {
+      lot.setMatrixAt(lot.addInstance(shape), new Matrix4().makeTranslation(at * 2, 0, 0))
+    }
+
+    expect(densityOf(lot)).toBeGreaterThan(0)
+    expect(densityOf(lot)).toBeLessThan(lone)
   })
 })

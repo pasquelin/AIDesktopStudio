@@ -1,5 +1,5 @@
-import { Raycaster, SRGBColorSpace, Vector2, type Texture } from 'three'
-import { anglesFromDirection, type SphericalAngles } from '@shared/domain/angles'
+import { SRGBColorSpace, type Texture } from 'three'
+import type { SphericalAngles } from '@shared/domain/angles'
 import { DEFAULT_FIELD_OF_VIEW, type SkyboxContent, type SkyboxView } from '@shared/domain/skybox'
 import { bundledTextureUrl, type CheckerTextureId } from '@shared/domain/checkerTexture'
 import { createRefCache, type RefCache } from '../core/refCache'
@@ -9,11 +9,11 @@ import { createTextureBinding, type TextureBinding } from '../scene/textureBindi
 import { createTextureCache, type TextureCache, type TextureSource } from '../scene/textureCache'
 import { createEnvironment, type ViewportEnvironment } from '../viewport/environment'
 import { createTestObjects, type TestObjects } from '../viewport/testObjects'
-import { aimAlong, turnBy } from '../viewport/lookAround'
+import { aimAlong } from '../viewport/lookAround'
 import { ViewportEngine } from '../viewport/ViewportEngine'
 import { createSkySun, type SkySun } from '../scene/skySun'
 import { createProjectionPass, type ProjectionPass } from './projectionShader'
-import { gestureFor, type SkyboxGesture } from './sunDrag'
+import { createSkyboxPointer } from './skyboxPointer'
 
 export type SkyboxRendererOptions = {
   /** A sun dragged in the viewport. The document holds the angles; this only reports them. */
@@ -77,8 +77,6 @@ export class SkyboxRenderer {
   /** The same light a SCENE hangs for the sky it names — one description of a sun, not two. */
   private readonly sunLight: SkySun = createSkySun(this.viewport.scene)
   private readonly cache: TextureCache
-  private readonly raycaster = new Raycaster()
-  private readonly pointer = new Vector2()
 
   /** For the FLAT views alone: they draw a quad to the screen, which grades nothing. */
   private pipeline: GpuPipeline | null = null
@@ -86,8 +84,16 @@ export class SkyboxRenderer {
 
   private look: SphericalAngles = { elevation: 0, azimuth: 0 }
   private sun: SphericalAngles = { elevation: Math.PI / 6, azimuth: 0 }
-  private gesture: SkyboxGesture | null = null
-  private lastPointer: { x: number; y: number } | null = null
+  private readonly pointer = createSkyboxPointer({
+    viewport: this.viewport,
+    sun: () => this.sun,
+    look: () => this.look,
+    onSunChange: sun => this.options.onSunChange(sun),
+    onLookChange: look => {
+      this.look = look
+      this.aimCamera()
+    },
+  })
 
   /** What the setting asks for; what is shown is this AND a sky to judge — see `syncProbes`. */
   private probesWanted = true
@@ -156,9 +162,7 @@ export class SkyboxRenderer {
     this.pipeline = createGpuPipeline(renderer)
     this.environment = createEnvironment(renderer, this.viewport.scene, this.viewport.requestRender)
 
-    canvas.addEventListener('pointerdown', this.onPointerDown)
-    window.addEventListener('pointermove', this.onPointerMove)
-    window.addEventListener('pointerup', this.onPointerUp)
+    this.pointer.mount()
 
     this.aimCamera()
 
@@ -270,10 +274,7 @@ export class SkyboxRenderer {
   }
 
   dispose(): void {
-    const canvas = this.viewport.canvas
-    canvas?.removeEventListener('pointerdown', this.onPointerDown)
-    window.removeEventListener('pointermove', this.onPointerMove)
-    window.removeEventListener('pointerup', this.onPointerUp)
+    this.pointer.dispose()
 
     this.releaseSource()
     this.cache.dispose()
@@ -322,50 +323,5 @@ export class SkyboxRenderer {
   private aimCamera(): void {
     aimAlong(this.viewport.camera, this.look)
     this.viewport.requestRender()
-  }
-
-  /** The direction the pointer is looking at. At the centre, that is the ray itself. */
-  private rayDirection(event: PointerEvent): { x: number; y: number; z: number } | null {
-    const ndc = this.viewport.pointerNdcOf(event)
-    if (!ndc) return null
-
-    this.pointer.set(ndc.x, ndc.y)
-    this.raycaster.setFromCamera(this.pointer, this.viewport.camera)
-    const { x, y, z } = this.raycaster.ray.direction
-    return { x, y, z }
-  }
-
-  private readonly onPointerDown = (event: PointerEvent): void => {
-    if (event.button !== 0) return
-
-    const direction = this.rayDirection(event)
-    if (!direction) return
-
-    this.gesture = gestureFor(direction, this.sun)
-    this.lastPointer = { x: event.clientX, y: event.clientY }
-  }
-
-  private readonly onPointerMove = (event: PointerEvent): void => {
-    if (!this.gesture || !this.lastPointer) return
-
-    if (this.gesture === 'sun') {
-      const direction = this.rayDirection(event)
-      if (!direction) return
-      // The angles are the truth and the light follows them, never the other way round: a
-      // position held as truth makes the panel and the viewport disagree across the zenith.
-      this.options.onSunChange(anglesFromDirection(direction, this.sun))
-      return
-    }
-
-    const deltaX = event.clientX - this.lastPointer.x
-    const deltaY = event.clientY - this.lastPointer.y
-    this.lastPointer = { x: event.clientX, y: event.clientY }
-    this.look = turnBy(this.look, deltaX, deltaY)
-    this.aimCamera()
-  }
-
-  private readonly onPointerUp = (): void => {
-    this.gesture = null
-    this.lastPointer = null
   }
 }

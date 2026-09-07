@@ -174,6 +174,7 @@ export const FILE_ACTIONS: readonly AssistantAction[] = [
     commitment: 'none',
     repeatable: false,
     reach: 'both',
+    uses: ['projectFilePaths'],
     fields: [{ key: 'path', kind: 'text', labelKey: 'assistant.fields.filePath', required: true }],
   }),
   action({
@@ -183,6 +184,7 @@ export const FILE_ACTIONS: readonly AssistantAction[] = [
     commitment: 'none',
     repeatable: true,
     reach: 'mcp',
+    returns: ['projectFilePaths'],
     fields: [
       { key: 'folder', kind: 'text', labelKey: 'assistant.fields.folderPath', required: false },
       { key: 'hidden', kind: 'boolean', labelKey: 'assistant.fields.hidden', required: false },
@@ -195,6 +197,7 @@ export const FILE_ACTIONS: readonly AssistantAction[] = [
     commitment: 'none',
     repeatable: true,
     reach: 'mcp',
+    returns: ['projectFilePaths'],
     fields: [
       { key: 'query', kind: 'text', labelKey: 'assistant.fields.query', required: true },
       { key: 'hidden', kind: 'boolean', labelKey: 'assistant.fields.hidden', required: false },
@@ -293,9 +296,9 @@ export const FILE_ACTIONS: readonly AssistantAction[] = [
     fields: [],
   }),
   action({
-    name: 'files.readUndoStack',
-    titleKey: 'assistant.actions.filesReadUndoStack.title',
-    descriptionKey: 'assistant.actions.filesReadUndoStack.description',
+    name: 'files.canUndoRedo',
+    titleKey: 'assistant.actions.filesCanUndoRedo.title',
+    descriptionKey: 'assistant.actions.filesCanUndoRedo.description',
     commitment: 'none',
     repeatable: true,
     reach: 'mcp',

@@ -1,10 +1,46 @@
 import { describe, expect, it } from 'vitest'
-import { inputProblem, readInput, validatesInput, type ActionField } from './assistantAction'
+import {
+  inputProblem,
+  MUTE_SOLO_LOCK,
+  NODE_ID,
+  readInput,
+  validatesInput,
+  type ActionField,
+} from './assistantAction'
+import { RIG_ACTIONS } from './rigActions'
+import { SEQUENCE_ACTIONS } from './sequenceActions'
 
 const field = (partial: Partial<ActionField> & Pick<ActionField, 'key' | 'kind'>): ActionField => ({
   labelKey: 'assistant.fields.query',
   required: false,
   ...partial,
+})
+
+describe('the node every family that points at one names', () => {
+  it('is the required nodeId field', () => {
+    expect(NODE_ID).toEqual({
+      key: 'nodeId',
+      kind: 'text',
+      labelKey: 'assistant.fields.nodeId',
+      required: true,
+      picks: 'node',
+      reference: 'node',
+    })
+  })
+})
+
+describe('the flags a channel and a montage row share', () => {
+  it('names muted, solo and locked, in that order', () => {
+    expect(MUTE_SOLO_LOCK.map(field => field.key)).toEqual(['muted', 'solo', 'locked'])
+  })
+
+  it('is the list both families write, not a copy of it', () => {
+    const channel = RIG_ACTIONS.find(one => one.name === 'channel.setMuteSoloLock')
+    const track = SEQUENCE_ACTIONS.find(one => one.name === 'track.setMuteSoloLockHeight')
+
+    expect(channel?.fields.slice(1)).toEqual(MUTE_SOLO_LOCK)
+    expect(track?.fields.slice(1, 4)).toEqual(MUTE_SOLO_LOCK)
+  })
 })
 
 describe('an input, checked against the fields that declare it', () => {
@@ -51,10 +87,16 @@ describe('an input, checked against the fields that declare it', () => {
   })
 
   it('holds a closed field to the values it closes over', () => {
-    const fields = [field({ key: 'axis', kind: 'choice', options: ['x', 'y'] })]
+    const text = [field({ key: 'axis', kind: 'choice', options: ['x', 'y'] })]
+    const number = [field({ key: 'days', kind: 'choice', options: [7, 31, 120] })]
+    const boolean = [field({ key: 'enabled', kind: 'choice', options: [true] })]
 
-    expect(validatesInput(fields, { axis: 'x' })).toBe(true)
-    expect(validatesInput(fields, { axis: 'z' })).toBe(false)
+    expect(validatesInput(text, { axis: 'x' })).toBe(true)
+    expect(validatesInput(text, { axis: 'z' })).toBe(false)
+    expect(validatesInput(number, { days: 31 })).toBe(true)
+    expect(validatesInput(number, { days: '31' })).toBe(false)
+    expect(validatesInput(boolean, { enabled: true })).toBe(true)
+    expect(validatesInput(boolean, { enabled: false })).toBe(false)
   })
 
   it('holds a bounded number to its bounds', () => {

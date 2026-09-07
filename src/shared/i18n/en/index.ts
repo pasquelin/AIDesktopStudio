@@ -3,6 +3,7 @@ import type * as frActivity from '../fr/activity.json'
 import type * as frAi from '../fr/ai.json'
 import type * as frAssets from '../fr/assets.json'
 import type * as frAssistant from '../fr/assistant.json'
+import type * as frCharacter from '../fr/character.json'
 import type * as frCommands from '../fr/commands.json'
 import type * as frCommon from '../fr/common.json'
 import type * as frContext from '../fr/context.json'
@@ -22,10 +23,12 @@ import type * as frCode from '../fr/code.json'
 import type * as frShell from '../fr/shell.json'
 import type * as frUi from '../fr/ui.json'
 import type * as frUsage from '../fr/usage.json'
+import type * as frWelcome from '../fr/welcome.json'
 import activity from './activity.json'
 import ai from './ai.json'
 import assets from './assets.json'
 import assistant from './assistant.json'
+import character from './character.json'
 import code from './code.json'
 import commands from './commands.json'
 import common from './common.json'
@@ -45,6 +48,7 @@ import settings from './settings.json'
 import shell from './shell.json'
 import ui from './ui.json'
 import usage from './usage.json'
+import welcome from './welcome.json'
 
 /** The roots a section is responsible for, read off its French twin rather than listed here. */
 type Section<Roots extends keyof Translations> = Pick<Translations, Roots>
@@ -64,6 +68,7 @@ export const en = {
   ...(ai satisfies Section<keyof typeof frAi>),
   ...(assets satisfies Section<keyof typeof frAssets>),
   ...(assistant satisfies Section<keyof typeof frAssistant>),
+  ...(character satisfies Section<keyof typeof frCharacter>),
   ...(code satisfies Section<keyof typeof frCode>),
   ...(commands satisfies Section<keyof typeof frCommands>),
   ...(common satisfies Section<keyof typeof frCommon>),
@@ -83,4 +88,5 @@ export const en = {
   ...(material satisfies Section<keyof typeof frMaterial>),
   ...(ui satisfies Section<keyof typeof frUi>),
   ...(usage satisfies Section<keyof typeof frUsage>),
+  ...(welcome satisfies Section<keyof typeof frWelcome>),
 }

@@ -5,6 +5,9 @@ import { createBoneJoints } from './boneJoints'
 /** What the studio draws at runtime; a runner has no 2D context, so the mark is handed in here. */
 const disc = () => new Texture()
 
+/** A runner resolves no custom property, so both tokens come back the same: they are handed in. */
+const colours = () => ({ rest: '#808080', picked: '#346ef2' })
+
 /** Two bones, one under the other, so a world position is not the local one. */
 function chain(): Bone[] {
   const hips = new Bone()
@@ -88,6 +91,33 @@ describe('marking where two bones meet', () => {
       alphaMap: null,
       alphaTest: 0,
     })
+    joints.dispose()
+  })
+
+  // The accent says what is CHOSEN. Painted all one colour, a skeleton gave no sign at all of
+  // which bone the panel beside it was editing — measured on screen, on a fitted character.
+  it('paints the chosen joint apart from the rest, and only that one', () => {
+    const joints = createBoneJoints(chain(), disc, colours)
+    const colour = joints.points.geometry.getAttribute('color')
+
+    const atRest = pointsOf(colour)
+    joints.pick('Spine')
+    const picked = pointsOf(colour)
+
+    expect(picked.slice(0, 3)).toEqual(atRest.slice(0, 3))
+    expect(picked.slice(3)).not.toEqual(atRest.slice(3))
+    joints.dispose()
+  })
+
+  it('takes the mark back off when nothing is chosen', () => {
+    const joints = createBoneJoints(chain(), disc, colours)
+    const colour = joints.points.geometry.getAttribute('color')
+
+    const atRest = pointsOf(colour)
+    joints.pick('Spine')
+    joints.pick(null)
+
+    expect(pointsOf(colour)).toEqual(atRest)
     joints.dispose()
   })
 

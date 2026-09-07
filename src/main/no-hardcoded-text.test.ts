@@ -7,7 +7,6 @@ import { PROJECT_TREES, SOURCE_ROOT, sourceFiles, WHOLE_PROJECT } from './source
 
 const MAIN = dirname(fileURLToPath(import.meta.url))
 
-/** The calls that put words on screen without a window: OS dialogs and notifications. */
 const SHOWS_TEXT = new Set([
   'showMessageBox',
   'showMessageBoxSync',
@@ -19,7 +18,6 @@ const SHOWS_TEXT = new Set([
   'Notification',
 ])
 
-/** The fields of those calls a user reads. `defaultPath` is a path, `filters[].extensions` a list. */
 const READ_FIELDS = new Set([
   'body',
   'buttonLabel',
@@ -87,7 +85,6 @@ function isKey(text: string): boolean {
   return /^[a-z][A-Za-z0-9]*(\.[A-Za-z0-9_]+)+$/.test(text)
 }
 
-/** A word, rather than a symbol or a number that reads the same in any language. */
 function isWords(text: string): boolean {
   return /\p{Letter}{2}/u.test(text)
 }
@@ -119,7 +116,6 @@ function registryFindingsFrom(source: ts.SourceFile): string[] {
   return findings
 }
 
-/** What a call is named, whether it is `dialog.showMessageBox(…)` or `new Notification(…)`. */
 function calledName(node: ts.CallExpression | ts.NewExpression, source: ts.SourceFile): string {
   const target = node.expression
   if (ts.isPropertyAccessExpression(target)) return target.name.getText(source)
@@ -130,7 +126,6 @@ function findingsIn(path: string, code: string): string[] {
   const source = ts.createSourceFile(path, code, ts.ScriptTarget.Latest, true)
   const findings: string[] = []
 
-  /** Literals right inside the options object — the shape someone writes when in a hurry. */
   const inspect = (node: ts.Node, call: string): void => {
     if (ts.isPropertyAssignment(node) && READ_FIELDS.has(node.name.getText(source))) {
       const written = [
@@ -364,13 +359,9 @@ const LOGICAL_OPERATORS = new Set([
   ts.SyntaxKind.QuestionQuestionToken,
 ])
 
-/** Both sides of a ternary and of a guard: parking a second wording beside the first is the move. */
 function literalsIn(expression: ts.Expression): string[] {
   if (ts.isStringLiteral(expression) || ts.isNoSubstitutionTemplateLiteral(expression))
     return [expression.text]
-  // `Deleted ${n} assets` is the commonest shape of a sentence bound to a name, and the copy
-  // that started this guard had dropped this branch: the interpolation is what someone reaches
-  // for the moment the wording carries a number.
   if (ts.isTemplateExpression(expression))
     return [
       expression.head.text + expression.templateSpans.map(span => span.literal.text).join(' '),
@@ -464,15 +455,10 @@ describe('the words nobody puts in a tag', () => {
     WHOLE_PROJECT,
   )
 
-  // That the four trees were actually opened is held by `sourceFiles.test.ts`, on the walk both
-  // guards borrow — an empty result here proves nothing unless the files were read.
-
   it('would see a sentence parked in a constant', () => {
     expect(boundSentencesIn('probe.tsx', "const label = 'Delete this project'")).toHaveLength(1)
   })
 
-  // The branch this guard lost on its way here, and the shape a wording takes the moment it
-  // carries a number. The JSX check asserts the same thing on its own side.
   it('reads a sentence that interpolates', () => {
     const code = 'const label = `Deleted ${count} of your assets`'
 

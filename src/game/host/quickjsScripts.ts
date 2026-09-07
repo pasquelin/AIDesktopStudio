@@ -2,6 +2,7 @@
 
 import type * as QuickJS from 'quickjs-emscripten-core'
 import type { GameEvent } from '@shared/domain/gameEvent'
+import { isRecord } from '../guards'
 import { KERNEL } from '../script/kernel'
 import {
   NO_OUTCOME,
@@ -25,7 +26,7 @@ type Engine = QuickJS.QuickJSWASMModule
 const engine = loadOnce(startEngine)
 
 /**
- * The sandbox, loaded on FIRST PLAY. Imported dynamically for the reason Rapier is: the machine
+ * The sandbox, loaded on FIRST PLAY. Imported dynamically for the reason the physics is: the machine
  * carries its WebAssembly inlined and weighs some 3 Mo, which no window that only draws needs.
  */
 export async function loadQuickjsScripts(): Promise<ScriptPort> {
@@ -66,8 +67,11 @@ function createQuickjsScripts(machine: Engine): ScriptPort {
     return null
   }
 
-  const fault = evaluate(KERNEL, 'kernel.js')
-  if (fault) throw new Error(`the sandbox kernel did not load: ${fault.message}`)
+  const loadKernel = (): void => {
+    const fault = evaluate(KERNEL, 'kernel.js')
+    if (fault) throw new Error(`the sandbox kernel did not load: ${fault.message}`)
+  }
+  loadKernel()
 
   /**
    * 🛑 Resolved ONCE. A handle costs a crossing to fetch and another to release, and these seven
@@ -241,9 +245,8 @@ const wrapped = (one: ScriptModule): string =>
 const fileOf = (script: string): string => script.replace(/^script:/, '')
 
 function faultOf(said: unknown, file: string): ScriptFault {
-  const message =
-    isRecordLike(said) && typeof said.message === 'string' ? said.message : String(said)
-  const stack = isRecordLike(said) && typeof said.stack === 'string' ? said.stack : ''
+  const message = isRecord(said) && typeof said.message === 'string' ? said.message : String(said)
+  const stack = isRecord(said) && typeof said.stack === 'string' ? said.stack : ''
   const at = /\(([^()]*):(\d+):(\d+)\)/.exec(stack)
 
   return {
@@ -256,14 +259,11 @@ function faultOf(said: unknown, file: string): ScriptFault {
   }
 }
 
-const isRecordLike = (value: unknown): value is Record<string, unknown> =>
-  typeof value === 'object' && value !== null
-
 const isCulprit = (value: unknown): value is { script: string; entity: string } =>
-  isRecordLike(value) && typeof value.script === 'string' && typeof value.entity === 'string'
+  isRecord(value) && typeof value.script === 'string' && typeof value.entity === 'string'
 
 /** Not re-read intent by intent: `apply` reaches the world through gestures that refuse. */
 const isOutcome = (
   value: unknown,
 ): value is { intents: ScriptIntent[]; faults: ScriptFault[]; hooks?: unknown } =>
-  isRecordLike(value) && Array.isArray(value.intents) && Array.isArray(value.faults)
+  isRecord(value) && Array.isArray(value.intents) && Array.isArray(value.faults)

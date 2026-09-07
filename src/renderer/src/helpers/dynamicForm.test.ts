@@ -167,6 +167,14 @@ describe('grouping', () => {
 })
 
 describe('referencePictures', () => {
+  it('does not expose the open-canvas placeholder as an uploaded reference', () => {
+    expect(
+      referencePictures([{ key: 'image', kind: 'image', label: 'Image', required: true }], {
+        image: 'canvas:doc-1',
+      }),
+    ).toEqual([])
+  })
+
   const picture = (key: string): FieldDescriptor => ({
     key,
     kind: 'image',

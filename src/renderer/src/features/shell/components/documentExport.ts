@@ -2,7 +2,8 @@ import type { LogScope, StudioBridge } from '@shared/ipc'
 import type { TaskWatch } from '@shared/domain/taskProgress'
 import { getBridge } from '@/services/bridge'
 import { reportFailure } from '@/services/diagnostics'
-import { documentExportName, useDocuments } from '@/stores/documents'
+import { useDocuments } from '@/stores/documents'
+import { documentExportName } from '@/stores/documentExportName'
 import { runTask } from '@/stores/tasks'
 
 export type DocumentExport = {

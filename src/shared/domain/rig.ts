@@ -1,6 +1,6 @@
 import { isRecord } from '../guards'
 import { isHumanoidRole, type HumanoidRole } from './humanoid'
-import { IDENTITY_TRANSFORM, isTransform, type Transform } from './transform'
+import { IDENTITY_TRANSFORM, isTransform, finiteTransform, type Transform } from './transform'
 
 /**
  * A skeleton the studio owns, as the document holds it.
@@ -60,7 +60,8 @@ export type RigBone = {
  * A string rather than a boolean because every caller has something to do with it: the document
  * reader drops the model, and a command refuses the edit and says which rule it broke.
  */
-export type RigFault = 'empty' | 'duplicate-bone' | 'unknown-parent' | 'cycle' | 'duplicate-role'
+export type RigFault =
+  'empty' | 'duplicate-bone' | 'unknown-parent' | 'cycle' | 'duplicate-role' | 'invalid-transform'
 
 export function rigFaultOf(bones: readonly RigBone[]): RigFault | null {
   if (bones.length === 0) return 'empty'
@@ -73,6 +74,7 @@ export function rigFaultOf(bones: readonly RigBone[]): RigFault | null {
 
   const roles = new Set<HumanoidRole>()
   for (const bone of bones) {
+    if (!finiteTransform(bone.rest)) return 'invalid-transform'
     if (bone.parent !== null && !byName.has(bone.parent)) return 'unknown-parent'
     if (!bone.role) continue
     if (roles.has(bone.role)) return 'duplicate-role'
@@ -153,6 +155,32 @@ export function rigWithRole(
 
     return bone.name === name && role !== null ? { ...rest, role } : rest
   })
+}
+
+/**
+ * One bone put back where it rests, in its parent's space.
+ *
+ * The whole of what makes an approximate fit usable: proportions read off a bounding box land a
+ * joint near where it belongs, and the hand that corrects it writes here. A name the rig has not
+ * got changes nothing rather than adding a bone — the gizmo can outlive a rename.
+ */
+export function rigWithRest(
+  bones: readonly RigBone[],
+  name: string,
+  rest: Transform,
+): readonly RigBone[] {
+  return bones.map(bone => (bone.name === name ? { ...bone, rest } : bone))
+}
+
+/**
+ * The suffix a handle's name carries. A chain reaches for a BONE — three's solver knows nothing
+ * else — so the one thing that tells a handle from a joint is how it is called.
+ */
+export const IK_HANDLE = '.handle'
+
+/** 🛑 A handle is not part of the body: nothing of the mesh may ever be weighed against one. */
+export function isIkHandle(name: string): boolean {
+  return name.endsWith(IK_HANDLE)
 }
 
 export function isRig(value: unknown): value is Rig {

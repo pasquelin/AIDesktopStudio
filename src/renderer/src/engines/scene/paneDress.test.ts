@@ -17,17 +17,17 @@ function eye(): PaneEye & { layers: Layers } {
   return { layers: new Layers() }
 }
 
+let materials: PaneMaterials
+let memory: ReturnType<typeof createPaneMemory>
+
+beforeEach(() => {
+  materials = createPaneMaterials()
+  memory = createPaneMemory()
+})
+
+const cube = (): Mesh => new Mesh(new BoxGeometry(), new MeshStandardMaterial())
+
 describe('dressing a view before it is drawn', () => {
-  let materials: PaneMaterials
-  let memory: ReturnType<typeof createPaneMemory>
-
-  beforeEach(() => {
-    materials = createPaneMaterials()
-    memory = createPaneMemory()
-  })
-
-  const cube = (): Mesh => new Mesh(new BoxGeometry(), new MeshStandardMaterial())
-
   it('leaves the real materials alone in a shaded view', () => {
     const mesh = cube()
     const own = mesh.material
@@ -206,7 +206,9 @@ describe('dressing a view before it is drawn', () => {
 
     expect(inside.material).not.toBe(own)
   })
+})
 
+describe('dressing a pane environment', () => {
   /**
    * Per PANE and not per document. `scene.environment` is one reference, but it is read at draw
    * time — which is what lets a studio view and a rendered view stand side by side in a quad

@@ -7,8 +7,9 @@ import {
   type AssetQuery,
   type AssetType,
 } from '@shared/domain/asset'
+import { filingTypeOf } from '@shared/domain/filingType'
 import { natureOf } from '@shared/domain/fileRole'
-import { isUnder, nameOf, type FileKind } from '@shared/domain/folder'
+import { isUnder, nameOf, parentOf, type FileKind } from '@shared/domain/folder'
 import { matchesWords, searchWords } from '@shared/text'
 import { WHEN } from './project'
 
@@ -26,10 +27,14 @@ function rowFor(path: string, at: number): Asset | null {
   const domain = natureOf(path).domain
   if (!ASSET_TYPES.some(one => one === domain)) return null
 
+  // The bench's project keeps the default folders, so the role map is empty here.
+  const type = filingTypeOf(nameOf(path), parentOf(path) ?? '', {}, domain as AssetType)
+  if (!type) return null
+
   return {
     id: `asset-${at + 1}`,
     name: nameOf(path),
-    type: domain as AssetType,
+    type,
     location: 'local',
     path,
     tags: [],
@@ -69,10 +74,27 @@ export function createMemoryCatalog(
       rows = [...rows.filter(one => one.id !== asset.id), asset]
       return Promise.resolve(asset)
     },
+    setAnimationPoster: async ({ assetId, sourcePath, posterPath, replace }) => {
+      const asset = rows.find(one => one.id === assetId)
+      if (asset?.type !== 'animation' || asset.path !== sourcePath) return false
+      if (asset.posterPath && !replace) return false
+      rows = rows.map(one =>
+        one.id === assetId ? { ...one, posterPath, localChangedAt: new Date().toISOString() } : one,
+      )
+      return true
+    },
     find: assetId => Promise.resolve(rows.find(one => one.id === assetId) ?? null),
     findByHash: () => Promise.resolve(null),
     findByRemoteId: remoteAssetId =>
       Promise.resolve(rows.find(one => one.remoteAssetId === remoteAssetId) ?? null),
+
+    assetsUnder: folders =>
+      Promise.resolve(
+        rows.filter(one => {
+          const path = one.path
+          return Boolean(path) && folders.some(to => path === to || path?.startsWith(`${to}/`))
+        }),
+      ),
 
     search: query => {
       const words = searchWords(query.text ?? '')

@@ -53,15 +53,7 @@ import { SETTINGS_HANDLERS } from './settingsHandlers'
 import { SHELL_HANDLERS } from './shellHandlers'
 import { STATE_HANDLERS } from './stateHandlers'
 import { TARGET_HANDLERS } from './targetHandlers'
-
-/**
- * One action in, one outcome out — for both doors.
- *
- * The table is assembled here and nowhere else, one entry per name the registry publishes.
- * `executor.test.ts` holds the two lists to each other in both directions: an action published
- * with nothing behind it would answer `badInput` to every client that read `tools/list` and
- * believed it, and a handler nothing publishes is code no caller can reach.
- */
+import { PROJECT_HANDLERS } from './projectHandlers'
 const HANDLERS: ActionHandlers = {
   ...CORE_HANDLERS,
   ...GAME_HANDLERS,
@@ -72,6 +64,7 @@ const HANDLERS: ActionHandlers = {
   ...ASSEMBLY_HANDLERS,
   ...EXPORT_HANDLERS,
   ...TARGET_HANDLERS,
+  ...PROJECT_HANDLERS,
   ...STATE_HANDLERS,
   ...FILE_HANDLERS,
   ...JOB_HANDLERS,
@@ -88,31 +81,14 @@ const HANDLERS: ActionHandlers = {
   ...MEMORY_HANDLERS,
   ...SETTINGS_HANDLERS,
   ...SHELL_HANDLERS,
-  // Last, and in the table like every other: a family declaring this name would otherwise
-  // overwrite it in silence, and `executor.test.ts` holds the table to the registry.
   'studio.batch': runBatch,
 }
-
-/** Every name the table answers, so a test can compare it with the registry. */
 export function handledActions(): readonly string[] {
   return Object.keys(HANDLERS)
 }
 
-/**
- * What this window has already spent WITHOUT asking, against the delegated budget.
- *
- * Both doors feed it: the delegation checkbox, and a consent token — nobody at the screen was
- * asked in either case, and a ledger that only saw one of them would bound neither.
- *
- * Its blind spot, written rather than hidden: the ledger is per WINDOW and per launch. Two windows
- * open at once each carry the whole budget, so an armed studio with two windows may spend twice
- * what was armed. It is here rather than in the main process because the figure it counts — the
- * estimate — is read off the form only a window can see, and moving the count without moving the
- * quote would put the two out of step.
- */
 let spentUnasked = 0
 
-/** For the suite, which must not have one case's spending decide the next one's. */
 export function resetDelegatedSpendForTests(): void {
   spentUnasked = 0
 }
@@ -137,20 +113,11 @@ function readOrRefusal(
     : { refusal: refused('badInput', inputProblem(action.fields, input) ?? undefined) }
 }
 
-/**
- * Runs one action, having checked its input against the fields that declare it.
- *
- * The check lives HERE rather than one level up, and that is what lets every handler read its
- * input plainly: `runAction` is exported, so a gate on the confirmed path alone would be a gate
- * with a way around it. Nothing else does the work either — the IPC boundary checks the
- * envelope, the reply parser checks the NAME, and the MCP server passes `params.arguments`
- * through untouched, its `additionalProperties: false` being a promise to the client rather than
- * an enforcement.
- */
 export async function runAction(
   name: ActionName,
   input: Record<string, unknown>,
   wire?: WireCall,
+  signal?: AbortSignal,
 ): Promise<ActionOutcome> {
   const handler = HANDLERS[name]
   if (!handler)
@@ -162,7 +129,7 @@ export async function runAction(
   const read = readOrRefusal(name, input)
   if ('refusal' in read) return read.refusal
 
-  const outcome = await ranSafely(handler, read.listed, wire)
+  const outcome = await ranSafely(handler, read.listed, wire, signal)
   // Not awaited, and the input READ rather than the one sent: what a memory anchors on must be
   // what the action actually acted on. A memory that will not persist must not turn a call that
   // changed the studio into a refusal.
@@ -170,19 +137,14 @@ export async function runAction(
   return outcome
 }
 
-/**
- * 🛑 What a handler THROWS is a refusal like any other. Left to climb, it reached the bare catch
- * of `ranAll`, which marked the whole turn LOST: the person read "the assistant could not answer
- * that one" over a studio that had just written why in its journal, and the model — which repairs
- * from refusals — was handed nothing at all.
- */
 async function ranSafely(
   handler: ActionHandler,
   listed: Record<string, unknown>,
   wire: WireCall | undefined,
+  signal: AbortSignal | undefined,
 ): Promise<ActionOutcome> {
   try {
-    return await handler(listed, wire)
+    return await handler(listed, wire, signal)
   } catch (error) {
     // `failed` and not `badInput`: the input was checked at the door, so what threw is the studio
     // — a client told its input was wrong would retry a call that was never the problem.
@@ -190,24 +152,6 @@ async function ranSafely(
   }
 }
 
-/**
- * A lot of primitives run as ONE call — the plan's § 16.3 c.
- *
- * Here rather than beside the other handlers: what it runs is `runAction`, and this is that
- * module. `import-cycles.test.ts` holds a ratchet at zero.
- *
- * 🛑 **Each call is confirmed on its OWN terms**, and that is a correction of what this lot first
- * wrote. Weighing the lot at the worst of what it holds, then asking once, collapsed the five
- * delegation switches into one: a batch mixing a generation with a `files.trash` weighed
- * `credits`, and a person who had delegated a credits BUDGET — and nothing else — had the
- * deletion carried out without being asked. Twenty generations were quoted as one, too.
- *
- * The price is a question per engaging call rather than one for the lot; what is kept is one MCP
- * round trip, the order, and the stop at the first refusal. A single question for a whole lot
- * needs the question itself to LIST what it holds, which `ConfirmRequest` does not carry.
- *
- * From the wire, every call is cleared before any of them runs — see `lotCleared`.
- */
 async function runBatch(input: Record<string, unknown>, wire?: WireCall): Promise<ActionOutcome> {
   const read = readBatch(input)
   if ('refusal' in read) return read.refusal
@@ -227,10 +171,6 @@ async function runBatch(input: Record<string, unknown>, wire?: WireCall): Promis
   return { ok: true, data: { ran: done.length, results: done } }
 }
 
-/**
- * 🛑 A token is spent as its own call goes, never when the lot cleared: a lot stopping at call
- * three left the tokens of the seven it never ran burnt, and the retry had to ask for all of them.
- */
 async function runPlanned(planned: Planned, wire: WireCall | undefined): Promise<ActionOutcome> {
   if (planned.token) takeConsent(planned.token, planned.name, planned.listed)
 
@@ -272,33 +212,13 @@ async function lotCleared(
   const price = pricedOnce()
 
   for (const [at, call] of calls.entries()) {
-    const { given, wire } = splitConsent(call.input)
-    const read = readOrRefusal(call.action, given)
-    if ('refusal' in read) return { refusal: ranked(at, read.refusal) }
-
-    const engaged = await engagementOf(call.action, read.listed, spent, price)
-    const step = { name: call.action, listed: read.listed }
-    const token =
-      wire.consent !== undefined && !claimed.has(wire.consent) ? wire.consent : undefined
-
-    if (!engaged || engaged.armed) {
-      if (engaged && token !== undefined) takeConsent(token, call.action, read.listed)
-      const cleared = clearedWithoutAsking(engaged)
-      spent += cleared.debit
-      plan.push({ ...step, cleared })
-      continue
+    const result = await planCall(call, at, spent, claimed, price)
+    if ('refusal' in result) return { refusal: result.refusal }
+    if ('asked' in result) asked.push(result.asked)
+    else {
+      plan.push(result.planned)
+      spent += result.planned.cleared.debit
     }
-
-    const held = token === undefined ? null : holdsConsent(token, call.action, read.listed)
-    // Nothing pushed, and the plan stops counting: `asked` is not empty, so the lot is refused.
-    if (token === undefined || !held) {
-      asked.push(`call ${at + 1}: ${consentAsked(call.action, read.listed, engaged, ASK_IN_LOT)}`)
-      continue
-    }
-
-    claimed.add(token)
-    spent += engaged.estimate ?? 0
-    plan.push({ ...step, cleared: { quoted: held.quoted, debit: engaged.estimate ?? 0 }, token })
   }
 
   if (asked.length > 0) return { refusal: refused('needsConsent', asked.join('\n')) }
@@ -306,15 +226,48 @@ async function lotCleared(
   return { plan }
 }
 
-/**
- * Runs an action, checking its input and asking first when it engages anything.
- *
- * Both gates sit here rather than in the main process, and that is deliberate: the figure quoted
- * comes from the form the window is showing, which the main process cannot see, and the question
- * is asked on a screen only the window has. It also means there is one gate rather than two —
- * whether the call came from the conversation or from an MCP client on the other side of the
- * machine, it arrives at this function and is treated the same way.
- */
+type PlanCallResult = { planned: Planned } | { asked: string } | { refusal: ActionOutcome }
+
+async function planCall(
+  call: BatchedCall,
+  at: number,
+  spent: number,
+  claimed: Set<string>,
+  price: () => Promise<number | null>,
+): Promise<PlanCallResult> {
+  const { given, wire } = splitConsent(call.input)
+  const read = readOrRefusal(call.action, given)
+  if ('refusal' in read) return { refusal: ranked(at, read.refusal) }
+
+  const engaged = await engagementOf(call.action, read.listed, spent, price)
+  const token = wire.consent !== undefined && !claimed.has(wire.consent) ? wire.consent : undefined
+  if (!engaged || engaged.armed) {
+    if (engaged && token !== undefined) takeConsent(token, call.action, read.listed)
+    const cleared = clearedWithoutAsking(engaged)
+    return { planned: { name: call.action, listed: read.listed, cleared } }
+  }
+
+  const held = token === undefined ? null : holdsConsent(token, call.action, read.listed)
+  if (token === undefined || !held)
+    return {
+      asked: `call ${at + 1}: ${consentAsked(call.action, read.listed, engaged, ASK_IN_LOT)}`,
+    }
+  return plannedWithConsent(call.action, read.listed, engaged, held.quoted, token, claimed)
+}
+
+function plannedWithConsent(
+  name: ActionName,
+  listed: Record<string, unknown>,
+  engaged: Engagement,
+  quoted: QuotedBody | null,
+  token: string,
+  claimed: Set<string>,
+): PlanCallResult {
+  claimed.add(token)
+  const cleared = { quoted, debit: engaged.estimate ?? 0 }
+  return { planned: { name, listed, cleared, token } }
+}
+
 export async function runConfirmedAction(
   name: ActionName,
   input: Record<string, unknown>,
@@ -516,7 +469,6 @@ function pricedOnce(): () => Promise<number | null> {
   return () => (asked ??= estimateOfSubmission())
 }
 
-/** Whether the form still holds exactly what was priced. */
 function unchangedSince(quoted: { modelId: string; values: Record<string, unknown> }): boolean {
   const now = mountedGenerator()?.body()
   return (

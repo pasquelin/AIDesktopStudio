@@ -41,6 +41,46 @@ describe('a game running inside the studio', () => {
     expect(reports.at(-1)).toMatchObject({ state: 'playing', tick: 0, entities: 2 })
   })
 
+  it('publishes measured renderer counters and the latest compilation cost', () => {
+    const frames = handDriven()
+    const reports: RuntimeReport[] = []
+    startPlay({
+      documentId: 'doc-1',
+      renderer: drawnBy({
+        runtimePerformance: () => ({
+          renderMs: 1.25,
+          gpuFrameMs: 0.75,
+          drawCalls: 7,
+          triangles: 420,
+          vertices: 240,
+          visibleObjects: 6,
+          culledObjects: 4,
+          instanceCount: 100,
+          batchCount: 2,
+          geometryBufferBytes: 1_024,
+          estimatedTextureBytes: 2_048,
+        }),
+      }),
+      editState: () => scene(),
+      input: new EventTarget(),
+      frames: frames.driver,
+      compilationMs: () => 3.5,
+      onReport: report => reports.push(report),
+    })
+
+    frames.advance(0.2)
+
+    expect(reports.at(-1)?.performance).toMatchObject({
+      drawCalls: 7,
+      triangles: 420,
+      instanceCount: 100,
+      batchCount: 2,
+      compilationMs: 3.5,
+      gpuFrameMs: 0.75,
+      renderMs: 1.25,
+    })
+  })
+
   it('moves an object its component says moves, and leaves the others alone', () => {
     const { frames, apply, state } = playing()
 
@@ -50,6 +90,43 @@ describe('a game running inside the studio', () => {
     const drawn = lastDrawn(apply)
     expect(drawn?.nodes[0]?.transform.position.y).toBeGreaterThan(0)
     expect(drawn?.nodes[1]).toBe(state.nodes[1])
+  })
+
+  /** 🛑 The judder at 120 Hz against a 60 Hz step — see `placementsOf`. */
+  it('draws a moving object further on every frame, steps run or not', () => {
+    const { frames, apply } = playing()
+    // Past the warm-up, which forgets its clock once — see `warmed`.
+    frames.advance(0)
+    frames.advance(1 / 60)
+    frames.advance(2 / 60)
+
+    const drawn: number[] = []
+    for (let frame = 6; frame <= 12; frame += 1) {
+      frames.advance(frame / 120)
+      drawn.push(lastDrawn(apply)?.nodes[0]?.transform.position.y ?? 0)
+    }
+
+    // Strictly rising, frame by frame: a flat pair is a frame that drew the step it was between.
+    expect(drawn.every((at, index) => index === 0 || at > (drawn[index - 1] ?? 0))).toBe(true)
+  })
+
+  /**
+   * 🛑 A paused game keeps drawing, but the accumulator stops — so `alpha` stays wherever the
+   * pause caught it. Redrawing there walks a hand-stepped world BACK to a fraction of the step
+   * before, on every frame, for as long as the pause lasts.
+   */
+  it('holds a hand-stepped world where the step left it, frame after frame', () => {
+    const { session, frames, apply } = playing()
+    frames.advance(0)
+    // A frame that leaves the accumulator part-way between two steps, which is what freezes.
+    frames.advance(3.5 / 60)
+    session.pause()
+    session.step(1)
+    const stepped = lastDrawn(apply)?.nodes[0]?.transform.position.y ?? 0
+
+    frames.advance(4 / 60)
+
+    expect(lastDrawn(apply)?.nodes[0]?.transform.position.y ?? 0).toBeCloseTo(stepped, 6)
   })
 
   /**
@@ -67,6 +144,24 @@ describe('a game running inside the studio', () => {
     expect(JSON.stringify(state)).toBe(before)
     expect(lastDrawn(apply)).toBe(state)
     expect(session.state()).toBe('edit')
+  })
+
+  /** Frozen while the game writes the camera, or a damped orbit eases it back — see `placeView`. */
+  it('gives the camera back to the hand when it stops', () => {
+    const releaseView = vi.fn()
+    const frames = handDriven()
+    const session = startPlay({
+      documentId: 'doc-1',
+      renderer: drawnBy({ releaseView }),
+      editState: () => scene(),
+      input: new EventTarget(),
+      frames: frames.driver,
+      onReport: () => {},
+    })
+
+    session.stop()
+
+    expect(releaseView).toHaveBeenCalled()
   })
 
   it('lets go of the frames when it stops', () => {
@@ -115,6 +210,63 @@ describe('a game running inside the studio', () => {
     frames.advance(60.2)
 
     expect(reports.at(-1)?.tick).toBe(played + 12)
+  })
+
+  it('seeks the band on the game clock, so a clip without an Animator still plays', () => {
+    const seekClips = vi.fn()
+    const frames = handDriven()
+    startPlay({
+      documentId: 'doc-1',
+      renderer: drawnBy({}),
+      animate: {
+        poseNode: vi.fn(),
+        releaseNode: vi.fn(),
+        clipLengthsOf: () => ({}),
+        useGraphClips: vi.fn(),
+        seekClips,
+      },
+      editState: () => scene(),
+      input: new EventTarget(),
+      frames: frames.driver,
+      onReport: () => {},
+    })
+
+    frames.advance(0)
+    frames.advance(1 / 60)
+    frames.advance(1)
+    const last = seekClips.mock.calls.at(-1)?.[0] ?? 0
+
+    expect(seekClips.mock.calls.length).toBeGreaterThan(1)
+    expect(last).toBeGreaterThan(0)
+  })
+
+  it('leaves the band where it is while the game is paused', () => {
+    const seekClips = vi.fn()
+    const frames = handDriven()
+    const session = startPlay({
+      documentId: 'doc-1',
+      renderer: drawnBy({}),
+      animate: {
+        poseNode: vi.fn(),
+        releaseNode: vi.fn(),
+        clipLengthsOf: () => ({}),
+        useGraphClips: vi.fn(),
+        seekClips,
+      },
+      editState: () => scene(),
+      input: new EventTarget(),
+      frames: frames.driver,
+      onReport: () => {},
+    })
+    frames.advance(0)
+    frames.advance(1)
+    session.pause()
+    const sought = seekClips.mock.calls.length
+
+    frames.advance(1)
+    frames.advance(1)
+
+    expect(seekClips.mock.calls.length).toBe(sought)
   })
 })
 

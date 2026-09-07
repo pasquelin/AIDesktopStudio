@@ -6,6 +6,7 @@ import {
   emptyHistory,
   HISTORY_LIMIT,
   redo,
+  replaceField,
   run,
   discardLast,
   forget,
@@ -118,6 +119,16 @@ describe('composed', () => {
 })
 
 /** What says whether a document is on disk — see `dropped` in `history.ts` for the trap. */
+describe('replaceField', () => {
+  it('gives back the field alone, and leaves what was written beside it', () => {
+    const command = replaceField<{ a: number; b: number }, 'a'>('a', 'a', previous => previous + 1)
+
+    const applied = command.apply({ a: 1, b: 1 })
+    expect(applied).toEqual({ a: 2, b: 1 })
+    expect(command.revert({ ...applied, b: 2 })).toEqual({ a: 1, b: 2 })
+  })
+})
+
 describe('markOf', () => {
   const many = (count: number): History<number> => {
     let value = 0

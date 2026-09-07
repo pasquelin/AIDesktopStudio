@@ -1,5 +1,13 @@
 {
   "commands": {
+    "scenePlay": {
+      "title": "Lancer le jeu",
+      "help": "Lance ou reprend la scène dans la fenêtre de jeu."
+    },
+    "appNew": {
+      "title": "Nouveau…",
+      "help": "Ouvre la fenêtre qui crée un projet ou un document, quel que soit l’écran"
+    },
     "projectNew": {
       "title": "Nouveau projet",
       "help": "Crée un projet vide et l’ouvre. Un projet est le dossier qui contient tout ce que vous fabriquez : les images, les vidéos, les sons et la façon dont ils sont rangés."
@@ -14,7 +22,11 @@
     },
     "documentSave": {
       "title": "Enregistrer le document",
-      "help": "Écrit le document en avant dans le projet. Une scène 3D vit dans la fenêtre tant qu’elle n’est pas enregistrée : l’onglet porte un point tant que ce qui est à l’écran n’est pas ce qui est sur le disque."
+      "help": "Écrit le document en avant dans le projet. Tant qu’il n’est pas enregistré, il vit dans la fenêtre : l’onglet porte un astérisque tant que ce qui est à l’écran n’est pas ce qui est sur le disque."
+    },
+    "documentClose": {
+      "title": "Fermer l’onglet",
+      "help": "Ferme le document en avant. S’il reste des modifications non enregistrées, le studio demande quoi en faire. S’il n’y a plus d’onglet, la fenêtre se ferme."
     },
     "layoutReset": {
       "title": "Réinitialiser la disposition",
@@ -96,6 +108,10 @@
       "title": "Cadrer la sélection",
       "help": "Rapproche la caméra de l’objet choisi pour qu’il remplisse la vue. Pratique quand on s’est perdu ou qu’un objet est minuscule."
     },
+    "sceneFrameFollow": {
+      "title": "Suivre la sélection",
+      "help": "Cadre la sélection et la garde dans la vue : ce qui bouge emmène la caméra avec lui, sans changer l’angle ni la distance. Rappelé, il lâche prise."
+    },
     "sceneIsolate": {
       "title": "Isoler la sélection",
       "help": "Ne laisse à l’écran que les objets choisis, le temps de travailler dessus. Rien n’est modifié : appuyer une seconde fois rend la scène telle qu’elle était, y compris les objets que vous aviez masqués vous-même."
@@ -119,6 +135,34 @@
     "sceneProjection": {
       "title": "Projection",
       "help": "Bascule entre la perspective, où les fuyantes convergent, et la projection orthographique, où les parallèles restent parallèles. C’est ce qui permet de juger un alignement à l’œil."
+    },
+    "sceneViewFront": {
+      "title": "Regarder de face",
+      "help": "Place la caméra devant la scène, alignée sur l’axe. La vue de référence pour juger d’une silhouette."
+    },
+    "sceneViewBack": {
+      "title": "Regarder de derrière",
+      "help": "Place la caméra derrière la scène, sur le même axe : ce que la face cache."
+    },
+    "sceneViewRight": {
+      "title": "Regarder de droite",
+      "help": "Place la caméra sur le côté droit, alignée sur l’axe. Ce qui sert à juger une profondeur."
+    },
+    "sceneViewLeft": {
+      "title": "Regarder de gauche",
+      "help": "Place la caméra sur le côté gauche, sur le même axe que la vue de droite."
+    },
+    "sceneViewTop": {
+      "title": "Regarder de dessus",
+      "help": "Place la caméra au-dessus de la scène, à la verticale. Ce qui sert à disposer les objets au sol."
+    },
+    "sceneViewBottom": {
+      "title": "Regarder de dessous",
+      "help": "Place la caméra sous la scène, à la verticale, dans l’autre sens que la vue de dessus."
+    },
+    "sceneViewCamera": {
+      "title": "Regarder par la caméra",
+      "help": "Fait passer la vue par la caméra choisie, et l’en ressort au second appel. Sans caméra choisie, prend la première de la scène."
     },
     "sceneQuad": {
       "title": "Quatre vues",
@@ -156,6 +200,18 @@
       "title": "Dupliquer",
       "help": "Pose une copie de ce qui est sélectionné, sous le même parent et exactement au même endroit, puis la sélectionne. Un groupe se duplique entier, avec tout ce qui pend dessous."
     },
+    "sceneOptimizeSelection": {
+      "title": "Optimiser la sélection…",
+      "help": "Mesure la sélection et présente une représentation runtime SAFE avant de modifier ses réglages d’optimisation."
+    },
+    "sceneWorldPerformance": {
+      "title": "Performances du monde…",
+      "help": "Mesure toute la scène et présente les possibilités d’optimisation SAFE sans modifier le monde auteur."
+    },
+    "sceneExportGame": {
+      "title": "Exporter le jeu…",
+      "help": "Construit un jeu autonome depuis une copie runtime optimisée sans modifier les scènes d’édition."
+    },
     "sceneCopy": {
       "title": "Copier",
       "help": "Retient ce qui est sélectionné pour le coller ensuite, ici ou dans une autre scène. Ce presse-papiers est celui du studio : il ne touche pas à celui du système."
@@ -190,7 +246,7 @@
     },
     "sequenceExportCut": {
       "title": "Exporter le montage (OTIO)…",
-      "help": "Écrit le montage lui-même dans un fichier OpenTimelineIO, que d’autres logiciels de montage ouvrent — pistes, clips, points d’entrée, vitesses et liens vers les médias. Les fondus, les gains et les liens image/son y voyagent aussi, mais seul IA Studio les relit."
+      "help": "Écrit le montage lui-même dans un fichier OpenTimelineIO, que d’autres logiciels de montage ouvrent — pistes, clips, points d’entrée, vitesses et liens vers les médias. Les fondus, les gains et les liens image/son y voyagent aussi, mais seul AI Desktop Studio les relit."
     },
     "sequenceExportEdl": {
       "title": "Exporter la liste de montage (EDL)…",
@@ -271,6 +327,10 @@
     "canvasGuides": {
       "title": "Repères",
       "help": "Affiche ou masque les repères posés sur l’image. Les masquer ne les efface pas."
+    },
+    "canvasGrid": {
+      "title": "Grille de pixels",
+      "help": "Affiche ou masque la grille des pixels de l’œuvre. Uniquement sur un document en mode pixel art."
     },
     "canvasClearGuides": {
       "title": "Effacer les repères",
@@ -384,6 +444,14 @@
     "canvasToolSelectLasso": {
       "title": "Lasso",
       "help": "Arme le lasso : la sélection suit la main, à main levée."
+    },
+    "canvasToolSmartSelect": {
+      "title": "Clic — Sélection intelligente",
+      "help": "Arme la sélection d’objet au clic avec le modèle local."
+    },
+    "canvasToolSmartSelectBox": {
+      "title": "Rectangle — Sélection intelligente",
+      "help": "Arme la sélection d’objet dans un rectangle approximatif avec le modèle local."
     },
     "canvasToolShapeRectangle": {
       "title": "Forme Rectangle",

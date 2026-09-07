@@ -10,26 +10,22 @@
  *     node scripts/fetch-engine.mjs --sources-only           # recopy engine/src, skip the interpreter
  *     node scripts/fetch-engine.mjs --digests                # after rotating a build
  *
- * 🛑 **The interpreter alone, and no tensor library.** Measured 2026-08-22: the core answers in
- * 33 ms because it imports none, where a diffusion environment is 682 Mo on macOS, 693 on
- * Windows and **4,7 Go on Linux** — the last one being why an environment is fetched on first use
- * rather than shipped.
+ * This function fetches the interpreter alone. The packaging hook then adds the small, pinned
+ * Auto Rig profile to that interpreter; the much larger diffusion profiles remain downloaded on
+ * demand. Keeping the two steps separate leaves development startup on the bare core runtime.
  *
- * 🛑 And what is fetched on first use must be an archive THIS BUILD SIGNED. Measured the same
- * day: an environment resolved on the person's machine will not load under the hardened runtime,
- * because every Mach-O has to carry our signature or `dlopen` refuses it — "different Team IDs".
+ * 🛑 Why diffusion is still NOT shipped. Measured 2026-08-22: the core answers in 33 ms because it
+ * imports no tensor library, where a diffusion environment is 682 Mo on macOS, 693 on Windows and
+ * 4,7 Go on Linux.
+ *
+ * 🛑 And what is fetched on first use must be an archive THIS BUILD SIGNED. Measured the same day:
+ * an environment resolved on the person's machine will not load under the hardened runtime,
+ * because every Mach-O has to carry our signature or `dlopen` refuses it - "different Team IDs".
+ * That is why a shipped profile is materialized before signing rather than after installation.
  */
 import { execFileSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
-import {
-  cpSync,
-  existsSync,
-  mkdirSync,
-  mkdtempSync,
-  readFileSync,
-  rmSync,
-  writeFileSync,
-} from 'node:fs'
+import { cpSync, existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { basename, dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -116,11 +112,6 @@ export async function fetchEngine(platform = process.platform, arch = process.ar
   const stamp = join(DESTINATION, '.fetched')
   const wanted = `${triple}@${RELEASE}`
 
-  if (existsSync(stamp) && readFileSync(stamp, 'utf8').trim() === wanted) {
-    syncEngineSources()
-    return
-  }
-
   const expected = DIGESTS[triple]
   if (!expected) {
     throw new Error(
@@ -129,7 +120,7 @@ export async function fetchEngine(platform = process.platform, arch = process.ar
     )
   }
 
-  const work = mkdtempSync(join(tmpdir(), 'ia-studio-engine-'))
+  const work = mkdtempSync(join(tmpdir(), 'ai-desktop-studio-engine-'))
   try {
     const archive = join(work, 'python.tar.gz')
     const digest = await download(urlOf(triple), archive)
@@ -154,7 +145,7 @@ export async function fetchEngine(platform = process.platform, arch = process.ar
 
 async function printDigests() {
   for (const triple of Object.values(TARGETS)) {
-    const work = mkdtempSync(join(tmpdir(), 'ia-studio-engine-'))
+    const work = mkdtempSync(join(tmpdir(), 'ai-desktop-studio-engine-'))
     try {
       const digest = await download(urlOf(triple), join(work, 'python.tar.gz'))
       process.stdout.write(`  '${triple}': '${digest}',\n`)

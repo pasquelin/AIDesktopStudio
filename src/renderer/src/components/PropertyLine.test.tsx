@@ -41,6 +41,21 @@ describe('the shell every property line shares', () => {
     expect(container.querySelector('[aria-hidden="true"]')).not.toBeNull()
   })
 
+  it('uses one control width when a row has only one action', () => {
+    const { container } = render(
+      <PropertyLine
+        label="Texture"
+        root="div"
+        actions={<button type="button">Extract</button>}
+        compactActions
+      >
+        <select aria-label="Texture" />
+      </PropertyLine>,
+    )
+
+    expect(container.firstElementChild?.lastElementChild).toHaveClass('w-(--sc-control)')
+  })
+
   /** A line that ends no property line — a vector's axis — asks for none rather than an empty one. */
   it('ends where it is told to end none', () => {
     const { container } = render(

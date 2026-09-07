@@ -45,6 +45,7 @@ describe('what the 3D space offers to do with a node', () => {
       'Renommer l’objet',
       'Dupliquer',
       'Grouper',
+      'Optimiser la sélection…',
       'Négatif',
       'Inverser le pli',
       'Ajouter à la bande d’animation',
@@ -64,7 +65,7 @@ describe('what the 3D space offers to do with a node', () => {
 
     expect(menu.labels()).toContain('Retirer de la bande d’animation')
     expect(menu.labels()).not.toContain('Ajouter à la bande d’animation')
-    expect(menu.labels()).toHaveLength(9)
+    expect(menu.labels()).toHaveLength(10)
   })
 
   // A viewport draws no name to type over, so the row that would open one has nowhere to land.
@@ -114,5 +115,12 @@ describe('what the 3D space offers to do with a node', () => {
 
     await vi.waitFor(() => expect(onRename).toHaveBeenCalled())
     expect(run).not.toHaveBeenCalled()
+  })
+
+  it('opens the optimization report through the scene command', async () => {
+    menu.picks('Optimiser la sélection…')
+    raise()
+
+    await vi.waitFor(() => expect(run).toHaveBeenCalledWith('scene.optimizeSelection'))
   })
 })

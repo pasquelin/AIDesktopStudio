@@ -1,8 +1,8 @@
 import { useTranslation } from 'react-i18next'
+import { HOME_SURFACE } from '@shared/domain/tool'
+import { openNewDocument } from '@/features/shell/newDocument'
 import { Button } from '@/components/Button'
 import { QuietNote } from '@/components/QuietNote'
-import { DEFAULT_WORKSPACE } from '@shared/domain/workspace'
-import { enterWorkspace } from '../open'
 import { HINT_TOP } from '@/helpers/tooltip'
 import { HomeViewHidden } from './HomeViewHidden'
 
@@ -15,7 +15,7 @@ export function HomeViewClosing() {
       <QuietNote standalone>{t('home.closing.title')}</QuietNote>
       <Button
         {...HINT_TOP(t('home.closingActionHint'))}
-        onClick={() => enterWorkspace(DEFAULT_WORKSPACE)}
+        onClick={() => void openNewDocument(HOME_SURFACE)}
       >
         {t('home.closing.action')}
       </Button>

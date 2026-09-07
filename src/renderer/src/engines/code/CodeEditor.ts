@@ -1,6 +1,6 @@
 import type * as Monaco from 'monaco-editor'
-import EditorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
-import TsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker'
+import EditorWorker from 'monaco-editor/editor/editor.worker?worker'
+import TsWorker from 'monaco-editor/language/typescript/ts.worker?worker'
 import STUDIO_TYPES from '@game/api/studio.d.ts?raw'
 import { loadOnce } from '@game/host/loadOnce'
 import { cachedToken, onPaletteChange } from '@/engines/core/palette'
@@ -151,10 +151,7 @@ export class CodeEditor {
     if (types === declaredProject) return
 
     projectLib?.dispose()
-    projectLib = this.monaco.languages.typescript.typescriptDefaults.addExtraLib(
-      types,
-      PROJECT_TYPES,
-    )
+    projectLib = this.monaco.typescript.typescriptDefaults.addExtraLib(types, PROJECT_TYPES)
     declaredProject = types
   }
 
@@ -183,7 +180,7 @@ export class CodeEditor {
 const STUDIO_TYPES_PATH = 'file:///node_modules/@studio/index.d.ts'
 const PROJECT_TYPES = 'file:///node_modules/@studio/project.d.ts'
 
-const STUDIO_THEME = 'ia-studio'
+const STUDIO_THEME = 'ai-desktop-studio'
 
 /** 🛑 The caret line is a FILL whose BORDER takes the same colour: Monaco's dark theme draws that
  * one as a rule above and below, which reads as a rectangle around the line. `chassis` and not
@@ -249,13 +246,13 @@ async function start(): Promise<typeof Monaco> {
 
   // The ESM entry by its PATH: the package publishes no main a bundler or a test runner
   // resolves, and `editor.main` is the one that brings the TypeScript contribution with it.
-  const monaco = await import('monaco-editor/esm/vs/editor/editor.main')
-  const typescript = monaco.languages.typescript.typescriptDefaults
+  const monaco = await import('monaco-editor/editor/editor.main')
+  const typescript = monaco.typescript.typescriptDefaults
 
   typescript.setCompilerOptions({
-    target: monaco.languages.typescript.ScriptTarget.ES2020,
-    module: monaco.languages.typescript.ModuleKind.ESNext,
-    moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
+    target: monaco.typescript.ScriptTarget.ES2020,
+    module: monaco.typescript.ModuleKind.ESNext,
+    moduleResolution: monaco.typescript.ModuleResolutionKind.NodeJs,
     strict: true,
     noEmit: true,
     allowNonTsExtensions: true,

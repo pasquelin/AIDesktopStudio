@@ -27,8 +27,11 @@ export type EmbedTexts = {
   asQuery: boolean
 }
 
+/** Disposes the context, weights and addon before the parent terminates the empty process. */
+type EmbedClose = { op: 'close' }
+
 /** Split from `EmbedRequest`: `Omit` over a union keeps only the keys every member shares. */
-export type EmbedAsk = EmbedLoad | EmbedTexts
+export type EmbedAsk = EmbedLoad | EmbedTexts | EmbedClose
 
 /** Drops a run already given. The worker answers it like any other end — see `processClient`. */
 export type EmbedCancel = { id: number; cancel: true }

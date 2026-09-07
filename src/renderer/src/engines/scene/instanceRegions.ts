@@ -39,6 +39,19 @@ const CELLS_PER_AXIS = 1024
  * frame at rest and 9.1 ms on a wide view, against 0.6 ms here.
  */
 export function regionsByGrid({ at, count }: Centres, cells: number): SpatialRegions {
+  const [low, high] = boundsOf(at, count)
+  const held = slotsByCell(at, count, low, high, divisionsFor(low, high, cells))
+  const order = new Uint32Array(count)
+  const starts: number[] = [0]
+  let written = 0
+  for (const slots of held.values()) {
+    for (const slot of slots) order[written++] = slot
+    starts.push(written)
+  }
+  return { order, starts: Uint32Array.from(starts) }
+}
+
+function boundsOf(at: Float64Array, count: number): [number[], number[]] {
   const low = [Infinity, Infinity, Infinity]
   const high = [-Infinity, -Infinity, -Infinity]
   for (let slot = 0; slot < count; slot += 1) {
@@ -48,8 +61,16 @@ export function regionsByGrid({ at, count }: Centres, cells: number): SpatialReg
       if (value > (high[axis] ?? 0)) high[axis] = value
     }
   }
+  return [low, high]
+}
 
-  const divisions = divisionsFor(low, high, cells)
+function slotsByCell(
+  at: Float64Array,
+  count: number,
+  low: number[],
+  high: number[],
+  divisions: number[],
+): Map<number, number[]> {
   const held = new Map<number, number[]>()
   for (let slot = 0; slot < count; slot += 1) {
     let key = 0
@@ -63,18 +84,7 @@ export function regionsByGrid({ at, count }: Centres, cells: number): SpatialReg
     if (cell) cell.push(slot)
     else held.set(key, [slot])
   }
-
-  const order = new Uint32Array(count)
-  const starts: number[] = [0]
-  let written = 0
-  for (const slots of held.values()) {
-    for (const slot of slots) {
-      order[written] = slot
-      written += 1
-    }
-    starts.push(written)
-  }
-  return { order, starts: Uint32Array.from(starts) }
+  return held
 }
 
 /**

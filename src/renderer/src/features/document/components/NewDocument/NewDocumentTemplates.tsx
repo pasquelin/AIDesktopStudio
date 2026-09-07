@@ -1,5 +1,7 @@
 import {
+  mdiAirplane,
   mdiAutoFix,
+  mdiCarHatchback,
   mdiCubeOutline,
   mdiEyeOutline,
   mdiGrid,
@@ -10,15 +12,10 @@ import {
   mdiVideoOutline,
 } from '@mdi/js'
 import { useTranslation } from 'react-i18next'
-import {
-  SCENE_TEMPLATE_GROUPS,
-  TEMPLATES_BY_GROUP,
-  templateThumbnailUrl,
-  type SceneTemplateGroup,
-  type SceneTemplateId,
-} from '@shared/domain/sceneTemplate'
-import { cn } from '@/helpers/cn'
-import { NewDocumentTemplateTile } from './NewDocumentTemplateTile'
+import { roleForKind } from '@shared/domain/document'
+import { SCENE_TEMPLATE_IDS, type SceneTemplateId } from '@shared/domain/sceneTemplate'
+import { roleInk } from '@/helpers/workspaces'
+import { NewDocumentTemplateTile, TEMPLATE_STRIP } from './NewDocumentTemplateTile'
 
 /** The glyph a template falls back on until its still has been drawn. */
 const ICONS: Record<SceneTemplateId, string> = {
@@ -31,22 +28,16 @@ const ICONS: Record<SceneTemplateId, string> = {
   firstPerson: mdiEyeOutline,
   thirdPerson: mdiVideoOutline,
   topDown: mdiGrid,
+  car: mdiCarHatchback,
+  plane: mdiAirplane,
 }
 
 /**
- * How each group is laid out: how many of the section's NINE columns it takes, and how many tiles
- * it fits across — always as many as the group holds, so every group is one row, and the two
- * spans add up to the section's own width so every tile is one column wide whichever group it is
- * in. A group gaining a template moves both numbers, here and on the row below.
- *
- * Written rather than composed from that count, because Tailwind generates its classes by
- * reading the source: `grid-cols-${templates.length}` produces a class that does not exist.
- * `NewDocumentTemplates.test.tsx` holds the two halves together.
+ * The hue the SECTION already gives a scene — the very one the column beside these tiles draws
+ * `Scène` in. Read off the role rather than written: one colour code in the window, not two, and a
+ * hue of its own here would be a belonging nobody claimed.
  */
-const LAYOUT: Record<SceneTemplateGroup, { span: string; columns: string }> = {
-  general: { span: 'col-span-6', columns: 'grid-cols-6' },
-  character: { span: 'col-span-3', columns: 'grid-cols-3' },
-}
+const INK = roleInk(roleForKind('scene'))
 
 export type NewDocumentTemplatesProps = {
   value: SceneTemplateId
@@ -60,32 +51,29 @@ export type NewDocumentTemplatesProps = {
  * Only the scene kind draws this: the other five have one thing to be. Its state is
  * `aria-pressed`, like every other exclusive row of this studio (see `Chip`), and each tile
  * carries a `data-sc` so a script can pick one without reading a translated word.
+ *
+ * ONE line that scrolls, where three shelves once spread over two: the height they took is the
+ * height the folder picker under them was missing, and a twelfth template now costs none. The
+ * shelves survive as the ORDER of the row — general, then character, then machine.
  */
 export function NewDocumentTemplates({ value, onChange }: NewDocumentTemplatesProps) {
   const { t } = useTranslation()
 
   return (
-    <div className="grid grid-cols-9 gap-3">
-      {SCENE_TEMPLATE_GROUPS.map(group => (
-        <section key={group} className={cn('flex min-w-0 flex-col gap-1.5', LAYOUT[group].span)}>
-          <span className="text-muted text-xs">{t(`documents.templateGroups.${group}`)}</span>
-          <ul className={cn('grid gap-2', LAYOUT[group].columns)}>
-            {TEMPLATES_BY_GROUP[group].map(id => (
-              <li key={id}>
-                <NewDocumentTemplateTile
-                  id={id}
-                  caption={t(`documents.templates.${id}`)}
-                  hint={t(`documents.templateHints.${id}`)}
-                  icon={ICONS[id]}
-                  url={templateThumbnailUrl(id)}
-                  selected={value === id}
-                  onPick={() => onChange(id)}
-                />
-              </li>
-            ))}
-          </ul>
-        </section>
+    <ul className={TEMPLATE_STRIP}>
+      {SCENE_TEMPLATE_IDS.map(id => (
+        <li key={id}>
+          <NewDocumentTemplateTile
+            id={id}
+            caption={t(`documents.templates.${id}`)}
+            hint={t(`documents.templateHints.${id}`)}
+            icon={ICONS[id]}
+            ink={INK}
+            selected={value === id}
+            onPick={() => onChange(id)}
+          />
+        </li>
       ))}
-    </div>
+    </ul>
   )
 }

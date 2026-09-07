@@ -7,15 +7,19 @@
  * lien. Chacun était évident une fois montré, et invisible tant qu'aucune machine ne le
  * cherchait.
  *
- * Il lit le GABARIT et les dictionnaires, pas le site bâti : rien à compiler, donc il peut
- * entrer dans `pnpm validate` sans rien coûter.
+ * Il BÂTIT le site dans un dossier temporaire et lit CE QUE LE BUILD PRODUIT, jamais une
+ * reconstruction qui lui ressemble : la précédente inlinait le partiel elle-même, validait donc
+ * des clés que le build ne remplissait pas, et restait verte pendant que les 15 pages publiaient
+ * 141 marqueurs en clair chacune, 121 distincts (mesuré le 04/09). Le build est du Node pur — 0,10 s.
  *
- * CE FICHIER EST PARTAGÉ À L'IDENTIQUE par map3D, panels et IA Studio. Les règles valent
+ * CE FICHIER EST PARTAGÉ À L'IDENTIQUE par map3D, panels et AI Desktop Studio. Les règles valent
  * pour les trois ; ce qui est propre à un dépôt vient de `repo.config.json`.
  *
  *   node scripts/check-site.mjs
  */
-import { readFile, readdir } from 'node:fs/promises'
+import { execFileSync } from 'node:child_process'
+import { mkdtemp, readFile, readdir, rm } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -24,32 +28,42 @@ const ROOT = resolve(HERE, '..')
 const SITE = join(ROOT, 'site')
 
 const repo = JSON.parse(await readFile(join(ROOT, 'repo.config.json'), 'utf8'))
-const gabarit = await readFile(join(SITE, 'template.html'), 'utf8')
+const DEFAUT = repo.site.defaultLang ?? 'en'
 
 const langues = []
 for (const f of (await readdir(join(SITE, 'i18n'))).filter((n) => n.endsWith('.json')).sort()) {
   langues.push(JSON.parse(await readFile(join(SITE, 'i18n', f), 'utf8')))
 }
-const defaut = langues.find((l) => l.meta.lang === (repo.site.defaultLang ?? 'en'))
 
-const lookup = (dict, chemin) => chemin.split('.').reduce((n, k) => (n == null ? undefined : n[k]), dict)
+/* Un build qui refuse de rendre est déjà le verdict : il nomme la clé absente, ce qu'aucune
+   relecture du gabarit ne saurait faire aussi précisément. */
+const sortie = await mkdtemp(join(tmpdir(), 'vitrine-'))
+try {
+  execFileSync(process.execPath, [join(SITE, 'build.mjs'), sortie], { stdio: 'pipe' })
+} catch (erreur) {
+  console.error('Contrôle de la vitrine en échec — le build ne rend pas :\n')
+  console.error(String(erreur.stderr || erreur.message).trim())
+  await rm(sortie, { recursive: true, force: true })
+  process.exit(1)
+}
 
-/** Rend les `{{clés}}` d'un fragment avec le dictionnaire par défaut, pour lire le texte réel. */
-const rendu = (texte) =>
-  texte.replace(/\{\{([\w.]+)\}\}/g, (_, cle) => {
-    const valeur = lookup(defaut, cle)
-    return typeof valeur === 'string' ? valeur : ''
-  })
+const cheminDe = (lang) => (lang === DEFAUT ? '' : `${lang}/`)
+const pages = []
+for (const l of langues) {
+  const chemin = join(sortie, cheminDe(l.meta.lang), 'index.html')
+  pages.push({ lang: l.meta.lang, html: await readFile(chemin, 'utf8') })
+}
+await rm(sortie, { recursive: true, force: true })
 
 const nu = (html) => html.replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim()
 
 const griefs = []
 
 /* ------------------------------------------------------------------ les liens */
-/* Le gabarit est rendu EN ENTIER avant d'être lu : un lien peut vivre dans un
+/* La page LUE est celle que le build a rendue, en entier : un lien peut vivre dans un
    dictionnaire — les mentions légales en portent plusieurs — et ne jamais apparaître
    dans le gabarit. Ne lire que celui-ci laisserait ces liens hors du contrôle. */
-const page = rendu(gabarit)
+const page = pages.find((p) => p.lang === DEFAUT).html
 const liens = [...page.matchAll(/<a[^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a\s*>/g)].map((m) => ({
   href: m[1],
   texte: nu(m[2]),
@@ -153,18 +167,47 @@ if (contactTrouve.join('|') !== contactAttendu.join('|')) {
 const ids = new Set([...page.matchAll(/\bid="([^"]+)"/g)].map((m) => m[1]))
 for (const { href } of liens) {
   if (!href.startsWith('#') || href === '#') continue
-  if (!ids.has(href.slice(1))) griefs.push(`l'ancre ${href} ne vise aucune section du gabarit.`)
+  if (!ids.has(href.slice(1))) griefs.push(`l'ancre ${href} ne vise aucune section de la page.`)
 }
 
-/* --------------------------------------------------------- les clés du gabarit */
-/* Le moteur les vérifie au rendu ; ici on le sait avant d'avoir bâti, et sans les
-   variables que le moteur fabrique lui-même. */
-const FOURNIES = new Set([
-  'lang', 'dir', 'docs', 'root', 'version', 'alternates', 'langSwitch', 'jsonld', 'ogLocale', 'localeAlternates',
-])
-for (const [, cle] of gabarit.matchAll(/\{\{([\w.]+)\}\}/g)) {
-  if (FOURNIES.has(cle)) continue
-  if (lookup(defaut, cle) === undefined) griefs.push(`le gabarit demande « ${cle} », absent du dictionnaire de référence.`)
+/* ------------------------------------------------ les marqueurs non remplis */
+/* Un `{{marqueur}}` resté dans une page PUBLIÉE, c'est le gabarit qui s'affiche au visiteur. Cette
+   règle ne double pas la vérification de clés du moteur : elle attrape ce qu'aucune clé absente ne
+   signale — un fragment injecté trop tard pour être balayé, ce qui est arrivé au partiel. */
+const sansCommentaires = (html) => html.replace(/<!--[\s\S]*?-->/g, '')
+for (const { lang, html } of pages) {
+  const restants = [...new Set(sansCommentaires(html).match(/\{\{[^{}]*\}\}/g) ?? [])]
+  if (restants.length > 0) {
+    const extrait = restants.slice(0, 4).join(', ') + (restants.length > 4 ? ', …' : '')
+    griefs.push(`« ${lang} » publie ${restants.length} marqueurs de gabarit en clair : ${extrait}`)
+  }
+}
+
+/* ------------------------------------------------- les cibles dans le dépôt */
+/* Un `blob/HEAD/<chemin>` n'était vérifié par personne : la destination existe, ou rend
+   un 404 que seul un lecteur découvre. Trois précautions, chacune pour une panne réelle.
+   On lit TOUTES les pages : un chemin juste dans une langue peut être mort dans les
+   quatorze autres, ce qui est arrivé (07/09) — `manuel/20-piloter-de-l-exterieur.md`
+   était codé en dur alors que l'anglais range le même texte sous
+   `manual/20-driving-from-outside.md`. On interroge `HEAD` et non le disque : ce que
+   GitHub sert est le COMMIT, donc un fichier créé et jamais indexé laisserait la porte
+   verte et le site en 404 — et `git` distingue la casse là où APFS la replie. Et l'URL
+   est ancrée sur le dépôt de CE projet : un lien vers un fichier tiers n'a pas à résoudre
+   ici, cette vitrine partageant son contrôle avec deux autres. */
+const echappe = (t) => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+const DANS_LE_DEPOT = new RegExp(`href="${echappe(DEPOT)}/(?:blob|tree)/HEAD/([^"#?]+)"`, 'g')
+const cibles = new Map()
+for (const p of pages) {
+  for (const m of sansCommentaires(p.html).matchAll(DANS_LE_DEPOT)) {
+    if (!cibles.has(m[1])) cibles.set(m[1], p.lang)
+  }
+}
+for (const [chemin, lang] of [...cibles].sort()) {
+  try {
+    execFileSync('git', ['cat-file', '-e', `HEAD:${chemin}`], { cwd: ROOT, stdio: 'ignore' })
+  } catch {
+    griefs.push(`« ${chemin} » n'est pas dans HEAD, lié par la vitrine « ${lang} ».`)
+  }
 }
 
 /* --------------------------------------------------------------- les langues */
@@ -181,6 +224,6 @@ if (griefs.length > 0) {
 }
 
 console.log(
-  `Vitrine contrôlée — ${liens.length} liens, ${parLibelle.size} libellés distincts, ` +
-    `${ids.size} ancres, ${langues.length} langues.`,
+  `Vitrine contrôlée sur sa sortie bâtie — ${pages.length} pages, ${liens.length} liens, ` +
+    `${parLibelle.size} libellés distincts, ${ids.size} ancres, ${cibles.size} cibles dans le dépôt.`,
 )

@@ -1,4 +1,4 @@
-import type { CsgGraph, CsgPart } from '@shared/domain/csg'
+import { isCsgGraph, type CsgGraph, type CsgPart } from '@shared/domain/csg'
 import { stableKey } from '@shared/hash'
 
 /**
@@ -22,9 +22,10 @@ export function csgKeyOf(graph: CsgGraph): string {
 }
 
 /**
- * Neither the name nor the collision fidelity is read, and that is the point: renaming a brush or
- * changing how the physics feels it leaves the mesh identical, so both must go on sharing one.
+ * Neither the name nor the collision fidelity is read. 🛑 The density IS, alone of the material —
+ * `brushOf` writes it into the UVs of a PRIMITIVE brush, never into one carrying a recipe.
  */
 function shapeOf(part: CsgPart): readonly unknown[] {
-  return [part.geometry, part.transform]
+  const density = isCsgGraph(part.geometry) ? [] : [part.material.tilesPerMetre]
+  return [part.geometry, part.transform, ...density]
 }

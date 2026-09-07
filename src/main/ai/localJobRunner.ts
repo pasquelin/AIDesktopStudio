@@ -1,4 +1,5 @@
-import type { JobFailure } from '@shared/domain/failure'
+import { ENGINE_FAILURES, type JobFailure } from '@shared/domain/failure'
+import { codeIn, messageOf } from '@shared/guards'
 import type { AssetType } from '@shared/domain/asset'
 import {
   assetTypeOfModality,
@@ -12,7 +13,7 @@ import {
   codeChatPrompt,
   unfencedCode,
 } from '@shared/domain/codeGeneration'
-import { capabilitiesIn, type LocalModel } from '@shared/domain/localModel'
+import { capabilitiesIn, distributionStatusOf, type LocalModel } from '@shared/domain/localModel'
 import { CODE_FAMILY } from '@shared/domain/model'
 import type { JobRunner, RemoteJob } from '@main/provider/jobManager'
 import type { ChatRequest, ChatTurn, GenerateResult } from './localRuntimes'
@@ -112,11 +113,14 @@ export function textIn(body: Record<string, unknown>, key: string): string | nul
   return typeof held === 'string' && held.length > 0 ? held : null
 }
 
+/** The codes a load or a runtime throws by name, read whole or after the `: ` a wrapper adds. */
+const CODED_FAILURES: readonly JobFailure[] = ['incomplete-model', 'network', ...ENGINE_FAILURES]
+
 function jobFailureOf(error: unknown): JobFailure {
   if (error instanceof NetworkInterrupted || isNetworkError(error)) return 'network'
-  const text = error instanceof Error ? error.message : String(error)
-  if (text === 'incomplete-model' || text.endsWith(': incomplete-model')) return 'incomplete-model'
-  if (text === 'network' || text.endsWith(': network')) return 'network'
+  const text = messageOf(error)
+  const coded = codeIn(text, CODED_FAILURES)
+  if (coded) return coded
   if (text.includes('no file named')) return 'incomplete-model'
   return 'rejected'
 }
@@ -206,7 +210,11 @@ export function createLocalJobRunner(deps: LocalJobDeps): LocalJobRunner {
       signal: job.abort.signal,
     })
 
-    job.produced = { ...written, type: assetTypeOfModality(modality), prompt: promptOf(body) }
+    job.produced = {
+      ...written,
+      type: assetTypeOfModality(modality),
+      prompt: promptOf(body),
+    }
   }
 
   const run = async (
@@ -216,6 +224,7 @@ export function createLocalJobRunner(deps: LocalJobDeps): LocalJobRunner {
     body: Record<string, unknown>,
   ): Promise<void> => {
     try {
+      if (distributionStatusOf(model) === 'blocked') throw new Error('distribution-blocked')
       // The manifest says which, and a modality it does not carry is a conversation — the only
       // thing this ran before there was anything else to run.
       if (model.modality && producesFile(model.modality)) {

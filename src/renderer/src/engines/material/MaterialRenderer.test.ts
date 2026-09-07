@@ -55,39 +55,38 @@ const hung = (named: EnvironmentRef): EnvironmentDress | null =>
     ? { assetId: named.assetId, adjustments: NEUTRAL_ADJUSTMENTS, sun: null, intensity: 0.5 }
     : null
 
+let source: ReturnType<typeof fakeTextureSource>
+let host: HTMLElement
+
+beforeEach(() => {
+  source = fakeTextureSource()
+  vi.spyOn(ViewportEngine.prototype, 'mount').mockImplementation(() => {})
+  // The mocked environment never reads the renderer fields.
+  vi.spyOn(ViewportEngine.prototype, 'gl', 'get').mockReturnValue({} as never)
+  host = document.createElement('div')
+})
+
+const mounted = (): MaterialRenderer => {
+  const renderer = new MaterialRenderer({ loadTexture: source.load, environmentDress: hung })
+  renderer.mount(host)
+  return renderer
+}
+
+const applied = async (renderer: MaterialRenderer, state: MaterialState): Promise<void> => {
+  const calls = source.load.mock.calls.length
+  renderer.apply(state)
+  await vi.waitFor(() => expect(source.load).toHaveBeenCalledTimes(calls + 1))
+}
+
 describe('the texture preview', () => {
-  let source: ReturnType<typeof fakeTextureSource>
-  let host: HTMLElement
-
-  beforeEach(() => {
-    source = fakeTextureSource()
-    vi.spyOn(ViewportEngine.prototype, 'mount').mockImplementation(() => {})
-    // `as`: `mount` only checks that a renderer exists before handing it to `createEnvironment`,
-    // which is mocked above — so nothing ever reads a field of it.
-    vi.spyOn(ViewportEngine.prototype, 'gl', 'get').mockReturnValue({} as never)
-    host = document.createElement('div')
-  })
-
-  const mounted = (): MaterialRenderer => {
-    const renderer = new MaterialRenderer({ loadTexture: source.load, environmentDress: hung })
-    renderer.mount(host)
-    return renderer
-  }
-
-  const applied = async (renderer: MaterialRenderer, state: MaterialState): Promise<void> => {
-    const calls = source.load.mock.calls.length
-    renderer.apply(state)
-    await vi.waitFor(() => expect(source.load).toHaveBeenCalledTimes(calls + 1))
-  }
-
   /**
    * The cache takes an asset id and builds the URL itself. Handing it one already built made it
-   * encode the whole `ia-studio://` URL as an id, and the sky could never load.
+   * encode the whole `ai-desktop-studio://` URL as an id, and the sky could never load.
    */
   it('asks for the sky by asset id, not by a URL it built itself', async () => {
     await applied(mounted(), skyOf('sky-1'))
 
-    expect(source.load).toHaveBeenCalledWith('ia-studio://asset/sky-1', 'flipY')
+    expect(source.load).toHaveBeenCalledWith('ai-desktop-studio://asset/sky-1', 'flipY')
   })
 
   /** Both halves: an orbit panned with the middle button aims elsewhere, and putting only the
@@ -236,7 +235,7 @@ describe('the texture preview', () => {
 
       await vi.waitFor(() => expect(source.load).toHaveBeenCalledTimes(PBR_CHANNELS.length))
       for (const channel of PBR_CHANNELS) {
-        expect(source.load).toHaveBeenCalledWith(`ia-studio://asset/${channel}-1`, 'flipY')
+        expect(source.load).toHaveBeenCalledWith(`ai-desktop-studio://asset/${channel}-1`, 'flipY')
       }
     })
 
@@ -319,7 +318,9 @@ describe('the texture preview', () => {
       // And the document keeps what its author chose.
       expect(state.material.tiling).toEqual({ x: 3, y: 5 })
     })
+  })
 
+  describe('the placement and lifetime of texture channels', () => {
     /**
      * Half a width and half a height is exactly what brings a wrap edge to the middle of the
      * frame. On every map at once, or the relief stops matching the picture it lifts.
@@ -438,7 +439,10 @@ describe('the texture preview', () => {
       renderer.refreshMaps()
 
       await vi.waitFor(() => expect(source.load).toHaveBeenCalledTimes(2))
-      expect(source.load).toHaveBeenLastCalledWith('ia-studio://asset/base-1?v=after', 'flipY')
+      expect(source.load).toHaveBeenLastCalledWith(
+        'ai-desktop-studio://asset/base-1?v=after',
+        'flipY',
+      )
     })
   })
 })

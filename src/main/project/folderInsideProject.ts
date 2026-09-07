@@ -1,6 +1,7 @@
 import { orElse } from '@shared/promises'
 import { realpath } from 'node:fs/promises'
-import { isAbsolute, join, relative, sep } from 'node:path'
+import { join, relative } from 'node:path'
+import { isProjectReserved, pathIsInside, PROJECT_RESERVED } from '@main/export/pathIsInside'
 
 /**
  * Where a write is allowed to land inside the open project, decided by what the disk RESOLVES TO
@@ -18,10 +19,8 @@ import { isAbsolute, join, relative, sep } from 'node:path'
  * `.git` and `.index` are refused on top: the first holds the token a remote was cloned with, the
  * second is the catalogue database, and an export folder is neither.
  */
-const RESERVED: readonly string[] = ['.git', '.index']
-
 export async function folderInsideProject(root: string, folder: string): Promise<string | null> {
-  if (RESERVED.includes(folder)) return null
+  if (PROJECT_RESERVED.includes(folder)) return null
 
   try {
     const base = await realpath(root)
@@ -32,8 +31,8 @@ export async function folderInsideProject(root: string, folder: string): Promise
     const resolved = await orElse(realpath(target), target)
     const within = relative(base, resolved)
 
-    if (within === '' || within.startsWith('..') || isAbsolute(within)) return null
-    return RESERVED.includes(within.split(sep)[0] ?? '') ? null : target
+    if (!pathIsInside(base, resolved) || isProjectReserved(within)) return null
+    return target
   } catch {
     return null
   }

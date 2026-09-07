@@ -21,7 +21,7 @@ export type FavoritesStore = {
   /** Answers the whole list, as the account channels do: one write, one truth back. */
   pin: (draft: FavoriteDraft) => Promise<FavoriteRecipe[]>
   unpin: (id: string) => Promise<FavoriteRecipe[]>
-  /** The file behind `ia-studio://favorite/<id>`, or null for an id that is not one of ours. */
+  /** The file behind `ai-desktop-studio://favorite/<id>`, or null for an id that is not one of ours. */
   thumbnailPath: (id: string) => string | null
 }
 
@@ -160,7 +160,7 @@ export function createFavorites(folder: string): FavoritesStore {
      * `hasThumbnail` it already holds, and a file that is not there is a 404 either way.
      *
      * Contained all the same, exactly as `assetFilePath` contains a catalogue path. The id here
-     * comes off a URL and `new URL` does not decode `%2F`, so `ia-studio://favorite/..%2F..%2Fx`
+     * comes off a URL and `new URL` does not decode `%2F`, so `ai-desktop-studio://favorite/..%2F..%2Fx`
      * reaches this as a real `../../x` — and the scheme is one the CSP lets the window fetch.
      */
     thumbnailPath: id => {

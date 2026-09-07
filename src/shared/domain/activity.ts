@@ -78,6 +78,8 @@ export type ActivityMessage =
   | 'jobCancelled'
   | 'jobFailed'
   | 'jobWaitsForProject'
+  | 'meshConverted'
+  | 'missionStateChanged'
   | 'projectAccountMissing'
   | 'projectAccountRestored'
   | 'projectAccountSwitched'
@@ -126,6 +128,8 @@ export const ACTIVITY_MESSAGES: readonly ActivityMessage[] = [
   'jobCancelled',
   'jobFailed',
   'jobWaitsForProject',
+  'meshConverted',
+  'missionStateChanged',
   'projectAccountMissing',
   'projectAccountRestored',
   'projectAccountSwitched',

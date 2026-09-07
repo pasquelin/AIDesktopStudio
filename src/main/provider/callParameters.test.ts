@@ -10,6 +10,32 @@ function field(
   return { key, kind, label: key, required: false, ...extra }
 }
 
+const PROMPT_SPARK_FIELDS = [
+  field('prompt', 'longText'),
+  field('videoFps', 'number', { min: 0.1, max: 24 }),
+  field('aspectRatio', 'choice', {
+    options: [
+      { value: '3:2', label: '3:2' },
+      { value: '21:9', label: '21:9' },
+    ],
+  }),
+  field('resolution', 'choice', {
+    options: [
+      { value: '1K', label: '1K' },
+      { value: '4K', label: '4K' },
+    ],
+  }),
+  field('useGoogleSearch', 'boolean'),
+  field('thinkingLevel', 'choice', {
+    options: [
+      { value: 'LOW', label: 'LOW' },
+      { value: 'HIGH', label: 'HIGH' },
+    ],
+  }),
+  field('numOutputs', 'integer', { min: 1, max: 4 }),
+  field('seed', 'seed', { min: 0, max: 2147483647 }),
+]
+
 describe('adoptableParameters', () => {
   it('keeps only the keys the model declares', () => {
     const fields = [field('prompt', 'longText'), field('resolution', 'choice')]
@@ -90,8 +116,6 @@ describe('adoptableParameters', () => {
       expect(adoptableParameters({ resolution: 4 }, fields)).toEqual({})
     })
 
-    // A model may publish an enum without listing its values; a string is then all there is
-    // to check against.
     it('takes any string for a choice with no published option', () => {
       const fields = [field('style', 'choice')]
 
@@ -145,32 +169,6 @@ describe('adoptableParameters', () => {
   // Measured on `model_google-gemini-3-1-flash`: the proposal carries every setting the model
   // declares, including one that only applies to another input it also accepts.
   it('takes a real Prompt Spark proposal whole', () => {
-    const fields = [
-      field('prompt', 'longText'),
-      field('videoFps', 'number', { min: 0.1, max: 24 }),
-      field('aspectRatio', 'choice', {
-        options: [
-          { value: '3:2', label: '3:2' },
-          { value: '21:9', label: '21:9' },
-        ],
-      }),
-      field('resolution', 'choice', {
-        options: [
-          { value: '1K', label: '1K' },
-          { value: '4K', label: '4K' },
-        ],
-      }),
-      field('useGoogleSearch', 'boolean'),
-      field('thinkingLevel', 'choice', {
-        options: [
-          { value: 'LOW', label: 'LOW' },
-          { value: 'HIGH', label: 'HIGH' },
-        ],
-      }),
-      field('numOutputs', 'integer', { min: 1, max: 4 }),
-      field('seed', 'seed', { min: 0, max: 2147483647 }),
-    ]
-
     const adopted = adoptableParameters(
       {
         prompt: 'Photorealistic close-up of a large, weathered mossy boulder',
@@ -182,7 +180,7 @@ describe('adoptableParameters', () => {
         numOutputs: 1,
         seed: 869979916,
       },
-      fields,
+      PROMPT_SPARK_FIELDS,
     )
 
     expect(adopted).toEqual({

@@ -1,9 +1,10 @@
-import { refused, type ActionOutcome } from '@shared/domain/assistant'
+import { refused, type ActionField, type ActionOutcome } from '@shared/domain/assistant'
 import type { ComponentType } from '@shared/domain/component'
 import { componentValueOf, descriptorOf, isComponentType } from '@shared/domain/componentRegistry'
 import { attachComponent, detachComponent, setComponentField } from '@/engines/scene/commands'
 import type { SceneNode } from '@/engines/scene/sceneState'
 import { activeSceneId, useDocuments } from '@/stores/documents'
+import { noSuchNode } from './sceneHandlers'
 import { sceneOf, useScenes } from '@/stores/scenes'
 import type { ActionHandlers } from './actionHandler'
 import { textOf } from './actionInputs'
@@ -16,7 +17,7 @@ import { nodeAimed } from './nodeAimed'
  * families would double it, and nobody opens a file that size to add a component.
  *
  * 🛑 Every way of missing is told apart — the surface, the object, the type, the field, the
- * value. One refusal for all of them sent a model repairing what was not broken: a `component.set`
+ * value. One refusal for all of them sent a model repairing what was not broken: a `component.setProperties`
  * on an object with no such component answered « already as asked », and attaching it was the one
  * thing that would have helped.
  */
@@ -32,8 +33,9 @@ function aim(input: Record<string, unknown>): Aimed | ActionOutcome {
     )
 
   const named = textOf(input, 'nodeId') ?? ''
-  const node = nodeAimed(sceneOf(useScenes.getState(), documentId), named)
-  if (!node) return refused('notFound', `no node "${named}" in the scene in front, by id or name`)
+  const scene = sceneOf(useScenes.getState(), documentId)
+  const node = nodeAimed(scene, named)
+  if (!node) return refused('notFound', noSuchNode(named, scene.nodes))
 
   const type = textOf(input, 'type') ?? ''
   if (!isComponentType(type)) return refused('badInput', `no component type "${type}"`)
@@ -58,6 +60,25 @@ function runOn(
   return { ok: true }
 }
 
+/** What a field takes, in the words a refusal needs: `mode (one of once, loop, pingPong)`. */
+function describeComponentField(field: ActionField): string {
+  const takes =
+    field.kind === 'choice'
+      ? `one of ${(field.options ?? []).join(', ')}`
+      : field.kind === 'boolean'
+        ? 'true or false'
+        : field.kind === 'number' || field.kind === 'integer'
+          ? [
+              field.kind,
+              field.min !== undefined ? `≥ ${field.min}` : '',
+              field.max !== undefined ? `≤ ${field.max}` : '',
+            ]
+              .filter(Boolean)
+              .join(' ')
+          : 'text'
+  return `${field.key} (${takes})`
+}
+
 export const GAME_HANDLERS: ActionHandlers = {
   'component.attach': input => {
     const aimed = aim(input)
@@ -77,7 +98,7 @@ export const GAME_HANDLERS: ActionHandlers = {
     return runOn(aimed, detachComponent(aimed.node.id, aimed.type), `carries no ${aimed.type}`)
   },
 
-  'component.set': input => {
+  'component.setProperties': input => {
     const aimed = aim(input)
     if (missed(aimed)) return aimed
 
@@ -87,13 +108,25 @@ export const GAME_HANDLERS: ActionHandlers = {
       return refused('notFound', `"${aimed.node.name}" carries no ${aimed.type}`)
     }
 
+    // The fields ride with the refusal: told only « no field », a model guessed fifteen names
+    // for a Movement — direction, velocity, start — and never the four it has (60.3, 2026-09-06).
     const named = textOf(input, 'field') ?? ''
-    const field = descriptorOf(aimed.type).fields.find(one => one.key === named)
-    if (!field) return refused('badInput', `${aimed.type} has no field "${named}"`)
+    const fields = descriptorOf(aimed.type).fields
+    const field = fields.find(one => one.key === named)
+    if (!field) {
+      const takes = fields.map(describeComponentField).join(', ')
+      return refused('badInput', `${aimed.type} has no field "${named}" — it has: ${takes}`)
+    }
 
     const said = textOf(input, 'value') ?? ''
     const value = componentValueOf(field, said)
-    if (value === null) return refused('badInput', `"${said}" does not fit ${aimed.type}.${named}`)
+    if (value === null) {
+      const takes = describeComponentField(field)
+      return refused(
+        'badInput',
+        `"${said}" does not fit ${aimed.type}.${named}, which takes ${takes}`,
+      )
+    }
 
     return runOn(aimed, setComponentField(aimed.node.id, aimed.type, named, value))
   },

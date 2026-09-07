@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { forgetCheckerTextures, rememberCheckerTextures } from './checkerTextures'
+import { COMPONENTS } from '@shared/domain/componentRegistry'
 import { playgroundNodes } from './playgroundLevel'
 import type { SceneNode } from './sceneState'
 
@@ -102,7 +103,9 @@ describe('the playground level', () => {
     expect(overTheCourt).toHaveLength(1)
     expect(named(playgroundNodes(), 'Plank')).toBeDefined()
   })
+})
 
+describe('the playground level traversal', () => {
   it('sinks the court below the floor it is cut into', () => {
     const nodes = playgroundNodes()
     const court = boxOf(named(nodes, 'Court Floor') as SceneNode)
@@ -115,18 +118,24 @@ describe('the playground level', () => {
    * The stair is what makes the court a place one comes BACK from. Built the other way round it
    * climbed towards mid-court and ended at floor level over the drop, which no rule here saw.
    */
-  it('climbs out of the court, top step against the edge it leads onto', () => {
+  it('climbs out of the court, by steps the character that ships with it can take', () => {
     const steps = meshes(playgroundNodes())
       .filter(node => node.name.startsWith('Court Step '))
       .map(boxOf)
       .filter(box => box !== null)
       .sort((a, b) => a.y1 - b.y1)
+    // 🛑 Read off the controller rather than written here: the rise was once hand-set to 0,50,
+    // which is EXACTLY this number and exactly its `snapDistance`. The controller's skin and a float
+    // then put a step on either side of the limit — the walker climbed one, caught on the next
+    // and was snapped back onto the one before. Seen on screen; no test of this file saw it.
+    const climbed = Number(COMPONENTS.CharacterController.defaults.stepHeight)
 
-    expect(steps).toHaveLength(5)
+    expect(steps.length).toBeGreaterThan(4)
     expect(steps.at(-1)?.y1).toBeCloseTo(0)
-    // Each nose stands one rise above the last, and each tread starts where the last one ended.
     for (const [index, step] of steps.slice(1).entries()) {
-      expect(step.y1 - (steps[index]?.y1 ?? 0)).toBeCloseTo(0.5)
+      const rise = step.y1 - (steps[index]?.y1 ?? 0)
+      // A margin, not a bound: at the limit itself it is a coin toss from one step to the next.
+      expect(rise).toBeLessThan(climbed * 0.8)
       expect(step.x0).toBeCloseTo(steps[index]?.x1 ?? 0)
     }
   })
@@ -163,7 +172,9 @@ describe('the playground level', () => {
     const gaps = blocks.slice(1).map((block, index) => block.x0 - (blocks[index]?.x1 ?? 0))
     expect(gaps).toEqual([...gaps].sort((a, b) => a - b))
   })
+})
 
+describe('the playground level structure', () => {
   it('names every part, so the outliner is not a column of « Box »', () => {
     const names = playgroundNodes().map(node => node.name)
 
@@ -175,16 +186,66 @@ describe('the playground level', () => {
     const nodes = playgroundNodes()
     const groups = nodes.filter(node => node.type === 'group')
 
-    expect(groups.map(group => group.name)).toEqual(['Ground', 'Enclosure', 'Course'])
-    expect(nodes.filter(node => node.parentId === null)).toEqual(groups)
+    const roots = nodes.filter(node => node.parentId === null)
+
+    expect(roots.map(root => root.name)).toEqual(['Ground', 'Enclosure', 'Course', 'Machines'])
+    // The posts a patrol walks between are groups too, and they hang under `Machines` like the
+    // rest — so « every group is a root » is no longer the shape of the claim.
+    expect(roots.every(root => root.type === 'group')).toBe(true)
+    expect(groups.length).toBeGreaterThan(roots.length)
   })
 
-  /** 🛑 A set one can climb, fall off and bump into — which is the whole claim it makes. */
-  it('makes every part of it solid', () => {
+  /**
+   * 🛑 A set one can climb, fall off and bump into — which is the whole claim it makes. The two
+   * markers are NAMED rather than counted: a third part left hollow would otherwise slip through.
+   */
+  it('makes every part of it solid, but for the markers that must stop nobody', () => {
     const parts = playgroundNodes().filter(node => node.type !== 'group')
+    const hollow = parts.filter(node => !node.components?.some(one => one.type === 'Collider'))
 
     expect(parts.length).toBeGreaterThan(20)
-    expect(parts.every(node => node.components?.some(one => one.type === 'Collider'))).toBe(true)
+    expect(hollow.map(node => node.name).sort()).toEqual(['Beacon', 'Drone'])
+  })
+
+  /**
+   * 🛑 The guard that stops a vehicle template from writing a lift of its own. Every moving part
+   * is moved by a COMPONENT, and this says which — a machine driven by hand here would be the
+   * same behaviour written twice, and the next template would write it a third time.
+   */
+  it('moves every machine by a component rather than by hand', () => {
+    const byName = new Map(playgroundNodes().map(node => [node.name, node]))
+    const travels = (name: string): string[] =>
+      (byName.get(name)?.components ?? [])
+        .map(one => one.type)
+        .filter(type => type !== 'Collider' && type !== 'RigidBody')
+
+    expect(travels('Lift')).toEqual(['Path'])
+    expect(travels('Ferry')).toEqual(['Path'])
+    expect(travels('Turnstile')).toEqual(['Spin'])
+    expect(travels('Sentry')).toEqual(['Patrol'])
+    expect(travels('Beacon')).toEqual(['Orbit', 'LookAt'])
+    expect(travels('Drone')).toEqual(['Follow', 'LookAt'])
+  })
+
+  /**
+   * 🛑 A name nobody wears is a machine that never moves, in silence: `Patrol` and the rest answer
+   * nothing for it and simply skip the entity. Renaming a post is what this catches.
+   */
+  it('points every machine at a name the set carries', () => {
+    const nodes = playgroundNodes()
+    const names = new Set(nodes.map(node => node.name))
+    const wanted = nodes.flatMap(node =>
+      (node.components ?? []).flatMap(component =>
+        component.type === 'Patrol'
+          ? String(component.waypoints ?? '')
+              .split(',')
+              .map(said => said.trim())
+          : [],
+      ),
+    )
+
+    expect(wanted.length).toBeGreaterThan(0)
+    expect(wanted.filter(name => !names.has(name))).toEqual([])
   })
 
   /** No shape is born bare — see `checkerTextures`. A grey set says nothing about its own scale. */

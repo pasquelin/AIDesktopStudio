@@ -3,8 +3,8 @@ import { useTranslation } from 'react-i18next'
 import { workspaceLabelKey } from '@/helpers/workspaces'
 import { useWorkspaces } from '@/hooks/useWorkspaces'
 import { getBridge } from '@/services/bridge'
+import { openNewDocument } from '@/features/shell/newDocument'
 import { useProject } from '@/stores/project'
-import { enterWorkspace } from '../open'
 import { Section } from '../Section'
 import { ToolsGroup, type Entry } from './ToolsGroup'
 
@@ -25,7 +25,7 @@ export function Tools() {
     icon: workspace.icon,
     label: t(workspaceLabelKey(workspace.id)),
     help: t(`home.tools.${workspace.id}`),
-    onClick: () => enterWorkspace(workspace.id),
+    onClick: () => void openNewDocument(workspace.id),
   }))
 
   const manage: Entry[] = [

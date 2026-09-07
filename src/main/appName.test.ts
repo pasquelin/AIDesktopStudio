@@ -23,6 +23,23 @@ const SPELT_BY_HAND = [
 const fileAt = (path: string): string =>
   readFileSync(new URL(`../../${path}`, import.meta.url), 'utf8')
 
+/**
+ * 🛑 The site's heading, which spells the name and cannot import it either — but across two
+ * elements, so it holds no spelling as a substring and belongs to the reading case alone.
+ */
+const SPLIT_ACROSS_MARKUP = [...SPELT_BY_HAND, 'site/template.html']
+
+/**
+ * 🛑 What a READER sees, tags dropped and whitespace collapsed. A name split across markup holds
+ * neither spelling as a substring: the splash shipped `<b>IA</b> Studio` and the site's heading
+ * `IA` above `Studio`, and every case above passed on both.
+ */
+const readingOf = (source: string): string =>
+  source
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+
 describe('the product name', () => {
   for (const path of SPELT_BY_HAND) {
     it(`is what ${path} carries`, () => {
@@ -36,6 +53,14 @@ describe('the product name', () => {
    */
   it('is the only product name those surfaces carry', () => {
     expect(SPELT_BY_HAND.filter(path => fileAt(path).includes('Scenario Studio'))).toEqual([])
+    expect(SPELT_BY_HAND.filter(path => fileAt(path).includes('IA Studio'))).toEqual([])
+  })
+
+  it('is what those surfaces READ as, markup included', () => {
+    const reading = (path: string): string => readingOf(fileAt(path))
+
+    expect(SPLIT_ACROSS_MARKUP.filter(path => !reading(path).includes(APP_NAME))).toEqual([])
+    expect(SPLIT_ACROSS_MARKUP.filter(path => reading(path).includes('IA Studio'))).toEqual([])
   })
 
   // `dev-app-identity.mjs` used to hold a sixth copy. It reads `package.json` now, so the case
@@ -45,5 +70,19 @@ describe('the product name', () => {
 
     expect(script).toContain('productName: PRODUCT_NAME')
     expect(script).not.toContain(`'${APP_NAME}'`)
+  })
+
+  /**
+   * 🛑 The bundle it renames wears the PREVIOUS product's name, not Electron's — this script gave
+   * it that name the first time it ran. Looking for `Electron.app` finds neither it nor the new
+   * name, and the script exits without a word: every `pnpm start` then shows the name the studio
+   * used to have, beside an « About » item carrying the new one. What it costs to find out is a
+   * screenshot from someone who noticed.
+   */
+  it('renames whatever bundle is there, never one it expects by name', () => {
+    const script = fileAt('scripts/dev-app-identity.mjs')
+
+    expect(script).not.toContain("'Electron.app'")
+    expect(script).toContain("one.endsWith('.app')")
   })
 })

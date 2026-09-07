@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import stylesheet from '../index.css?raw'
+import { stylesheet } from '../indexCss-fixtures'
 import { WRITTEN_SOURCES } from './testHarness'
 
 /**
@@ -14,25 +14,34 @@ import { WRITTEN_SOURCES } from './testHarness'
  * A FILL is not a ring: `MenuRow` lights the focused row of a menu, which is how a keyboard walks
  * one at all, and this rule has nothing to say about it.
  */
-const RING = /\b(?:focus|focus-visible|focus-within)[^\s'"`]*:(?:ring|outline)-(?!none)/
-
-describe('no focus ring', () => {
-  it('is stated once, in the stylesheet, where it also reaches daisyUI and Chromium', () => {
-    expect(stylesheet).toMatch(/:focus-visible[^{]*\{\s*outline: none !important/)
+describe('keyboard focus', () => {
+  it('draws no browser outline on focused elements', () => {
+    expect(stylesheet).toMatch(/:focus,[\s\S]*?:focus-within\s*\{\s*outline: none !important;/)
   })
 
-  it('is not written back one component at a time', () => {
-    const offenders = WRITTEN_SOURCES.filter(([, source]) => RING.test(source)).map(
+  /**
+   * `:focus-within` is not a second spelling: daisyUI writes its field ring on that selector alone,
+   * so the rule read as held while the welcome's account form drew the outline anyway.
+   */
+  it('covers the selector a component library reaches for, not only the bare one', () => {
+    expect(stylesheet).toContain(':focus-within {')
+  })
+
+  /**
+   * daisyUI rings a field on `:focus`, `:focus-within` AND `:open` — a select with its menu down
+   * matches the last alone, so the ring came back for as long as the list was open.
+   */
+  it('covers a control whose menu is deployed, which neither focus selector matches', () => {
+    expect(stylesheet).toMatch(/:open\s*\{\s*outline: none !important;/)
+  })
+
+  it('is not overridden one component at a time', () => {
+    const overrides = /\b(?:focus|focus-visible|focus-within)[^\s'"`]*:outline-none/
+    const offenders = WRITTEN_SOURCES.filter(([, source]) => overrides.test(source)).map(
       ([path]) => path,
     )
 
     expect(offenders).toEqual([])
-    // The rule refuses something, which a sweep that only ever returns nothing cannot show.
-    expect(RING.test("'focus-visible:ring-accent'")).toBe(true)
-    expect(RING.test("'focus:outline-2'")).toBe(true)
-    expect(RING.test("'group-data-selected/row:focus-visible:ring-accent-content'")).toBe(true)
-    // The drop target of the title bar draws a ring that no focus brings up.
-    expect(RING.test("'ring-accent ring-2'")).toBe(false)
-    expect(RING.test("'focus-visible:bg-accent'")).toBe(false)
+    expect(overrides.test("'focus-visible:outline-none'")).toBe(true)
   })
 })

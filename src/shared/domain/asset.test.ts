@@ -7,6 +7,7 @@ import {
   hostedParts,
   hostedUrl,
   isAssetType,
+  isLocalPicture,
   isSyncStatus,
   isTimeless,
   mediaDuration,
@@ -14,6 +15,7 @@ import {
   roleForAsset,
   withoutSourcePath,
   MASTER_HOST,
+  PICTURES,
   POSTER_HOST,
   type Asset,
 } from './asset'
@@ -43,8 +45,8 @@ describe('asset URLs', () => {
 
   it('refuses a URL that is not ours to serve', () => {
     expect(assetIdFromUrl('https://cdn.cloud.scenario.com/asset_1')).toBeNull()
-    expect(assetIdFromUrl('ia-studio://other/asset_1')).toBeNull()
-    expect(assetIdFromUrl('ia-studio://asset/')).toBeNull()
+    expect(assetIdFromUrl('ai-desktop-studio://other/asset_1')).toBeNull()
+    expect(assetIdFromUrl('ai-desktop-studio://asset/')).toBeNull()
     expect(assetIdFromUrl('not a url')).toBeNull()
   })
 })
@@ -54,6 +56,15 @@ describe('which assets have a picture to show', () => {
   // would never come — the whole asset browser would fall back to its icons.
   it('offers a poster for a linked still, whose path the window never sees', () => {
     expect(posterUrl(asset({ type: 'image' }))).toBe(assetUrl('asset-1'))
+  })
+
+  // One answer, read from `PICTURES` on both sides: a kind added there and not to the poster
+  // would draw a « local » thumbnail in the browser while the still slot answered nothing.
+  it('serves every kind the browser calls a picture', () => {
+    for (const type of PICTURES) {
+      expect(isLocalPicture(asset({ type }))).toBe(true)
+      expect(posterUrl(asset({ type }))).toBe(assetUrl('asset-1'))
+    }
   })
 
   it('offers one for a still copied into the project too', () => {

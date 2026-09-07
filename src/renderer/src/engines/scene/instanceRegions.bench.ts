@@ -1,5 +1,6 @@
+import { bench } from '@shared/vitestBench'
 import { MathUtils } from 'three'
-import { bench, describe } from 'vitest'
+import { describe } from 'vitest'
 import { regionsByGrid, type Centres } from './instanceRegions'
 
 /**

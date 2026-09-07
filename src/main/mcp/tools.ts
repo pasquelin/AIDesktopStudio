@@ -29,7 +29,7 @@ export type JsonSchema = {
 type ScalarSchema = {
   type?: 'string' | 'number' | 'integer' | 'boolean' | 'object'
   description: string
-  enum?: string[]
+  enum?: Array<string | number | boolean>
   /** The keys a `record` accepts. `enum` would close the VALUE, which is not what is known. */
   propertyNames?: { enum: string[] }
   minimum?: number
@@ -49,7 +49,7 @@ type FieldSchema = ScalarSchema | { type: 'array'; description: string; items: S
 const JSON_TYPE: Record<FieldKind, ScalarSchema['type']> = {
   text: 'string',
   longText: 'string',
-  choice: 'string',
+  choice: undefined,
   color: 'string',
   image: 'string',
   mesh: 'string',
@@ -63,13 +63,17 @@ const JSON_TYPE: Record<FieldKind, ScalarSchema['type']> = {
 }
 
 function scalarSchema(field: ActionField): ScalarSchema {
-  const type = JSON_TYPE[field.kind]
+  const type = field.kind === 'choice' ? choiceType(field) : JSON_TYPE[field.kind]
 
   // A `record`'s options name its KEYS, not the values it may hold — the same list, read on the
   // other side of the colon.
   const closed = field.options
     ? field.kind === 'record'
-      ? { propertyNames: { enum: [...field.options] } }
+      ? {
+          propertyNames: {
+            enum: field.options.filter((option): option is string => typeof option === 'string'),
+          },
+        }
       : { enum: [...field.options] }
     : {}
 
@@ -79,6 +83,15 @@ function scalarSchema(field: ActionField): ScalarSchema {
     ...closed,
     ...boundsOf(field, type),
   }
+}
+
+function choiceType(field: ActionField): ScalarSchema['type'] {
+  const types = new Set(field.options?.map(option => typeof option) ?? [])
+  if (types.size !== 1) return undefined
+  const type = [...types][0]
+  if (type === 'number') return 'number'
+  if (type === 'boolean') return 'boolean'
+  return type === 'string' ? 'string' : undefined
 }
 
 /**

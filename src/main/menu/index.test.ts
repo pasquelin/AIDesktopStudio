@@ -1,4 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { scopeOfWorkspace } from '@shared/domain/command'
+import { isWorkspaceId } from '@shared/domain/workspace'
 import { TRANSLATIONS } from '@shared/i18n'
 import { CHANNELS, EVENTS } from '@shared/ipc'
 import {
@@ -13,7 +15,7 @@ import {
   type FakeWindow,
 } from '@main/ipc/testHarness'
 import { setWindowLanguage } from '@main/window/language'
-import { buildMenu, registerMenuHandlers } from './index'
+import { buildMenu, noteProjectOpen, noteRecent, registerMenuHandlers } from './index'
 
 vi.mock('electron', async () => (await import('@main/ipc/testHarness')).mockElectron())
 // The three neighbours the menu calls into. Real, they pull the whole window layer in — and
@@ -28,12 +30,13 @@ vi.mock('@main/window/controls', () => ({ toggleFullScreen: vi.fn() }))
 /** What a window announces on startup and on every click of the space rail. */
 function announce(
   window: FakeWindow,
-  workspace: string,
+  workspace: string | null,
   tools: string[] = [],
   checked: string[] = [],
   abilities: string[] = [],
+  scope: string | null = workspace && isWorkspaceId(workspace) ? scopeOfWorkspace(workspace) : null,
 ): void {
-  invokeFrom(window, CHANNELS.windowWorkspace, workspace, tools, checked, abilities)
+  invokeFrom(window, CHANNELS.windowWorkspace, workspace, tools, checked, abilities, scope)
 }
 
 /**
@@ -44,6 +47,7 @@ function announce(
 type MenuRow = {
   label?: string
   accelerator?: string
+  enabled?: boolean
   submenu?: readonly MenuRow[]
   click?: () => void
 }
@@ -56,6 +60,29 @@ function items(): MenuRow[] {
   const built = lastMenu()
   if (!isMenuRows(built)) throw new Error('no menu has been built')
   return built
+}
+
+/**
+ * The same search, held to one branch of the tree.
+ *
+ * Needed since File ▸ New file arrived: a kind of document and what the studio exports are the
+ * same words — « Scène », « Matière », « Ciel » — so a sweep of the whole menu answers `not null`
+ * for an export row that is no longer there. Every case about a row a SPACE decides reads through
+ * here; the plain sweep stays for the labels that are unique.
+ */
+function findUnder(parent: string, label: string): MenuRow | null {
+  const branch = findByLabel(parent)?.submenu
+  if (!branch) return null
+
+  const walk = (level: readonly MenuRow[]): MenuRow | null => {
+    for (const item of level) {
+      if (item.label === label) return item
+      const deeper = item.submenu ? walk(item.submenu) : null
+      if (deeper) return deeper
+    }
+    return null
+  }
+  return walk(branch)
 }
 
 /** Walks the whole tree: what a case names is a leaf, and its depth is not the point. */
@@ -83,6 +110,10 @@ function findByLabel(label: string): MenuRow | null {
 beforeEach(() => {
   resetHandlers()
   setWindowLanguage('fr')
+  // Normalised like the language and the overrides above, and for the same reason: this module
+  // stays loaded between cases, so a project left open by one would decide the next.
+  noteProjectOpen(null)
+  noteRecent([], [])
   registerMenuHandlers()
   buildMenu({})
 })
@@ -95,7 +126,7 @@ describe('the window the menu belongs to', () => {
 
     buildMenu()
 
-    expect(findByLabel(TRANSLATIONS.fr.menu.exportScene)).not.toBeNull()
+    expect(findUnder(TRANSLATIONS.fr.menu.export, TRANSLATIONS.fr.menu.exportScene)).not.toBeNull()
   })
 
   /**
@@ -129,6 +160,17 @@ describe('the window the menu belongs to', () => {
 
     expect(picture.sent).toEqual([{ channel: EVENTS.menuCommand, payload: 'canvas.undo' }])
     expect(scene.sent).toEqual([{ channel: EVENTS.menuCommand, payload: 'scene.undo' }])
+  })
+
+  // The skeleton window: no space announced, a history all the same.
+  it('fires the undo of a window that shows no space but reports a history', () => {
+    const skeleton = openWindow()
+    announce(skeleton, null, [], [], [], 'character')
+    focusWindow(skeleton)
+
+    runUndo()
+
+    expect(skeleton.sent).toEqual([{ channel: EVENTS.menuCommand, payload: 'character.undo' }])
   })
 
   // The splash has no bridge: a command sent there is lost, and the fallback must step over it.
@@ -181,6 +223,18 @@ describe('what makes the menu rebuild', () => {
     const before = menuBuilds()
 
     announce(window, '3d')
+
+    expect(menuBuilds()).toBe(before + 1)
+  })
+
+  // The 3D space keeps its panels across a scene and an interface; only the history changes.
+  it('rebuilds when the same workspace reports another history', () => {
+    const window = openWindow()
+    focusWindow(window)
+    announce(window, '3d', [], [], [], 'scene')
+    const before = menuBuilds()
+
+    announce(window, '3d', [], [], [], 'gui')
 
     expect(menuBuilds()).toBe(before + 1)
   })
@@ -293,7 +347,7 @@ describe('what a window is allowed to announce', () => {
     announce(window, 'holodeck')
 
     expect(menuBuilds()).toBe(before)
-    expect(findByLabel(TRANSLATIONS.fr.menu.exportScene)).not.toBeNull()
+    expect(findUnder(TRANSLATIONS.fr.menu.export, TRANSLATIONS.fr.menu.exportScene)).not.toBeNull()
   })
 
   /**
@@ -319,7 +373,45 @@ describe('what a window is allowed to announce', () => {
     focusWindow(window)
     announce(window, '3d', ['scene', 'not-a-panel'])
 
-    expect(findByLabel(TRANSLATIONS.fr.panels.scene)).not.toBeNull()
+    expect(findUnder(TRANSLATIONS.fr.menu.tools, TRANSLATIONS.fr.panels.scene)).not.toBeNull()
+  })
+})
+
+/**
+ * The one fact the menu does NOT take from the focused window: the main process owns the open
+ * project, and a fact routed through a renderer is a fact free to arrive late — File ▸ New file
+ * would stay greyed over a project already open.
+ */
+describe('the project the main process holds', () => {
+  const newFileRow = (kind: string) =>
+    findUnder(TRANSLATIONS.fr.menu.newFile, TRANSLATIONS.fr.documents.kinds[kind as 'image'])
+
+  it('arms the kinds of File ▸ New file when one opens, and disarms them when it goes', () => {
+    noteProjectOpen('/projects/One')
+    expect(newFileRow('image')?.enabled).toBe(true)
+
+    noteProjectOpen(null)
+    expect(newFileRow('image')?.enabled).toBe(false)
+  })
+
+  it('rebuilds when a shelf moves, and not when a settings write left it alone', () => {
+    const shelf = [{ path: '/projects/One', openedAt: '2026-09-01T10:00:00.000Z' }]
+    noteRecent(shelf, [])
+    expect(findUnder(TRANSLATIONS.fr.menu.openRecent, 'One')).not.toBeNull()
+
+    const before = menuBuilds()
+    noteRecent([...shelf], [])
+
+    expect(menuBuilds()).toBe(before)
+  })
+
+  it('rebuilds nothing when told what it already knows', () => {
+    noteProjectOpen('/projects/One')
+    const before = menuBuilds()
+
+    noteProjectOpen('/projects/One')
+
+    expect(menuBuilds()).toBe(before)
   })
 })
 
@@ -334,7 +426,7 @@ describe('a window that goes away', () => {
     announce(picture, 'image')
     focusWindow(picture)
 
-    expect(findByLabel(TRANSLATIONS.fr.menu.exportScene)).toBeNull()
+    expect(findUnder(TRANSLATIONS.fr.menu.export, TRANSLATIONS.fr.menu.exportScene)).toBeNull()
   })
 
   it('takes the menu back to no workspace at all when it was the last one', () => {
@@ -346,7 +438,7 @@ describe('a window that goes away', () => {
     closeWindow(window)
 
     expect(menuBuilds()).toBe(before + 1)
-    expect(findByLabel(TRANSLATIONS.fr.menu.exportScene)).toBeNull()
+    expect(findUnder(TRANSLATIONS.fr.menu.export, TRANSLATIONS.fr.menu.exportScene)).toBeNull()
   })
 })
 

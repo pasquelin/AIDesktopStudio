@@ -8,7 +8,7 @@ import { dragChannel, type DragLike } from './drag'
  * type is also what lets the strip say, during the drag, that it takes the drop — `getData`
  * answers nothing until the drop itself.
  */
-export const SCENE_DRAG_TYPE = 'application/x-ia-studio-scene'
+export const SCENE_DRAG_TYPE = 'application/x-ai-desktop-studio-scene'
 
 const SCENES = dragChannel(SCENE_DRAG_TYPE)
 

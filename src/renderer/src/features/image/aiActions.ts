@@ -41,6 +41,46 @@ export const AI_EDITS: Readonly<Record<AiEdit, { role: AiRoleId; masked: boolean
   extend: { role: aiRoleId('image', 'outpaint'), masked: true },
 }
 
+async function editableModel(
+  role: AiRoleId,
+  bridge: EditBridge,
+): Promise<{ modelId: string; fields: readonly FieldDescriptor[] } | null> {
+  const modelId = modelForCapability(role)
+  if (!modelId) {
+    const parts = partsOfRole(role)
+    if (parts) offerModelsOfFamily(parts.family)
+    return null
+  }
+  const descriptor = await bridge.describeModel(modelId)
+  if (!descriptor.fields.some(field => field.kind === 'image')) {
+    revealTool('generator')
+    return null
+  }
+  return { modelId, fields: descriptor.fields }
+}
+
+async function editValues(
+  documentId: string,
+  masked: boolean,
+  fields: readonly FieldDescriptor[],
+  host: EditHost,
+  bridge: EditBridge,
+) {
+  const image = await host.snapshot()
+  if (!image) throw new Error('this image has no picture to send yet')
+
+  const canvas = canvasOf(useCanvases.getState(), documentId)
+  const layer = layerById(canvas, canvas.activeLayerId)
+  const wantsMask = fields.some(field => field.maskFrom !== undefined)
+  const mask =
+    masked && wantsMask && layer?.mask?.enabled === true ? await host.maskSnapshot(layer.id) : null
+  if (masked && !wantsMask) reportNotice('canvas.edit', i18next.t('imageEdit.maskIgnored'))
+
+  const imageId = await bridge.uploadAsset(`${documentId}.png`, image)
+  const maskId = mask ? await bridge.uploadAsset(`${documentId}-mask.png`, mask) : null
+  return fillEditFields(fields, { image: imageId, ...(maskId ? { mask: maskId } : {}) })
+}
+
 /**
  * Prepares an edit and stops there. The form is never short-circuited: the action flattens the
  * document, sends it, finds the family's default model and opens its form on the right fields —
@@ -57,54 +97,11 @@ export async function prepareEdit(
   bridge: EditBridge,
 ): Promise<boolean> {
   const { role, masked } = AI_EDITS[edit]
-  const modelId = modelForCapability(role)
-  if (!modelId) {
-    // The family, because that is what a picker browses: an employment has no catalogue of its
-    // own, and `partsOfRole` never answers nothing for a role composed from constants.
-    const parts = partsOfRole(role)
-    if (parts) offerModelsOfFamily(parts.family)
-    return false
-  }
+  const editable = await editableModel(role, bridge)
+  if (!editable) return false
+  const { modelId, fields } = editable
 
-  // Described before anything is sent: an upload is a permanent asset in the user's library, and
-  // a model with nowhere to put a picture must not cost one.
-  const descriptor = await bridge.describeModel(modelId)
-  if (!descriptor.fields.some(field => field.kind === 'image')) {
-    revealTool('generator')
-    return false
-  }
-
-  // THROWS rather than answering `false`: the other two refusals above each show something — the
-  // model picker, the generator — and this one had nothing to show and said nothing either.
-  const image = await host.snapshot()
-  if (!image) throw new Error('this image has no picture to send yet')
-
-  const canvas = canvasOf(useCanvases.getState(), documentId)
-  const layer = layerById(canvas, canvas.activeLayerId)
-  // Asked of the model FIRST, for the reason the image field is asked above: an upload is a
-  // permanent asset in the user's library, and a model with nowhere to put a mask must not cost
-  // one. Sent to such a model the mask was uploaded, then quietly dropped by `fillEditFields`,
-  // and the whole picture was regenerated while the user believed a region had been protected.
-  const wantsMask = descriptor.fields.some(field => field.maskFrom !== undefined)
-  // `enabled`, not merely present: the canvas does not honour a mask whose box is unticked, and
-  // sending it would ask the model to repaint a region nothing on screen shows.
-  const mask =
-    masked && wantsMask && layer?.mask?.enabled === true ? await host.maskSnapshot(layer.id) : null
-
-  // A NOTICE, not a failure: the edit goes through, with less than it was asked for. Reported as
-  // one it carried the scope's own line — "the image could not be sent to the model" — while the
-  // send was succeeding.
-  if (masked && !wantsMask) reportNotice('canvas.edit', i18next.t('imageEdit.maskIgnored'))
-
-  // Sequenced rather than raced: when the second upload fails, the first has already created a
-  // permanent asset in the account, and `Promise.all` left it there unnamed and untraceable.
-  const imageId = await bridge.uploadAsset(`${documentId}.png`, image)
-  const maskId = mask ? await bridge.uploadAsset(`${documentId}-mask.png`, mask) : null
-
-  const values = fillEditFields(descriptor.fields, {
-    image: imageId,
-    ...(maskId ? { mask: maskId } : {}),
-  })
+  const values = await editValues(documentId, masked, fields, host, bridge)
 
   useModels.getState().prepare(role, modelId, values)
   useGeneration.getState().forceCapability(role)

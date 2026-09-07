@@ -1,4 +1,3 @@
-import { DIRECT_PROPERTIES, type AnimationTrack } from '@shared/domain/animation'
 import { refused, type ActionOutcome } from '@shared/domain/assistant'
 import {
   BODY_PARTS,
@@ -6,8 +5,6 @@ import {
   type BodyPart,
   type HumanoidRole,
 } from '@shared/domain/humanoid'
-import { speaksBundle } from '@/helpers/speaksBundle'
-import { childBone } from '@shared/domain/rig'
 import {
   assetClip,
   bundledClip,
@@ -16,48 +13,46 @@ import {
   ROOT_MOTIONS,
   type ClipRef,
 } from '@shared/domain/scene'
-import { secondsToUs, snapToFrame, type Us } from '@shared/domain/time'
-import {
-  keyNode,
-  keySubject,
-  moveAnimationKey,
-  recordingTracksFor,
-  removeAnimationTrack,
-  setTimelineSettings,
-  unkeySubject,
-  unkeySubjectWholly,
-} from '@/engines/scene/animationCommands'
+import { secondsToUs, snapToFrame } from '@shared/domain/time'
 import { clampPlayhead } from '@/engines/scene/animationEval'
 import { clipsEdited, clipsMoved, laneHolding, lanesWith } from '@/engines/scene/clipBlend'
-import { channelNames } from '@/helpers/channelNames'
-import { sceneKeyingAt } from '@/helpers/sceneKeyingAt'
-import {
-  addIkChain,
-  addModelClip,
-  addRigBone,
-  addRigHands,
-  removeIkChain,
-  removeModelClip,
-  removeRigBone,
-  renameRigBone,
-  setModelLanes,
-  setModelRig,
-  setRigBoneRole,
-} from '@/engines/scene/commands'
+import { removeModelClip, setModelLanes } from '@/engines/scene/commands'
 import type { Command } from '@/engines/core/history'
-import { rigFit, rigFitFaultOf } from '@/engines/scene/rigFit'
-import { nodeById, type ModelNode, type SceneState } from '@/engines/scene/sceneState'
+import type { CharacterState } from '@/engines/character/characterState'
+import {
+  addCharacterBone,
+  addCharacterHands,
+  addCharacterIkChain,
+  addCharacterSocket,
+  removeCharacterBone,
+  removeCharacterIkChain,
+  removeCharacterSocket,
+  renameCharacterBone,
+  setCharacterBoneRole,
+  setCharacterAutoRig,
+  setCharacterRig,
+} from '@/engines/character/characterCommands'
+import { autoRigServiceFor } from '@/engines/character/autoRigBackends'
+import { DEFAULT_AUTO_RIG_OPTIONS } from '@shared/domain/autoRigInference'
+import { workshopIdOf } from '@shared/domain/character'
+import { useCharacters } from '@/stores/character'
+import { type ModelNode, type SceneState } from '@/engines/scene/sceneState'
+import { IDENTITY_TRANSFORM } from '@shared/domain/transform'
 import { newId } from '@/helpers/ids'
 import { assetsById, useAssets } from '@/stores/assets'
-import { useAnimationViews } from '@/stores/animationView'
 import { getBridge } from '@/services/bridge'
 import { activeSceneId, useDocuments } from '@/stores/documents'
-import { clipsOfNode, rigOfNode, useModelFiles } from '@/stores/modelFiles'
-import { sceneOf, useScenes, writeAnimationTrack } from '@/stores/scenes'
+import { clipsOfNode, useModelFiles } from '@/stores/modelFiles'
+import { laySceneClip, sceneOf, useScenes } from '@/stores/scenes'
+import { sceneEngineOf } from '@/stores/sceneEngines'
+import type { SceneRenderer } from '@/engines/scene/SceneRenderer'
+import type { MeshSample } from '@/engines/scene/rigSnap'
 import { type ActionHandlers } from './actionHandler'
 import { NO_SCENE } from './sceneHandlers'
-import { boolOf, maybeBoolOf, numberOf, oneOf, textOf } from './actionInputs'
+import { maybeBoolOf, numberOf, oneOf, textOf } from './actionInputs'
 import { nodeAimed } from './nodeAimed'
+import { RIG_KEY_HANDLERS } from './rigKeyHandlers'
+import { reopenCharacterMotion } from '@/character/characterMotion'
 
 /**
  * The skeleton of a character, the handles its joints reach for, and the blocks laid on its band.
@@ -89,6 +84,24 @@ function noModel(input: Record<string, unknown>): ActionOutcome {
       )
 }
 
+async function reopenMotion(input: Record<string, unknown>): Promise<ActionOutcome> {
+  const open = model(input)
+  if (!open) return noModel(input)
+
+  const assetId = textOf(input, 'assetId')
+  if (!assetId) return refused('badInput', '"assetId" is required to reopen a motion')
+
+  try {
+    await reopenCharacterMotion(open.documentId, open.node.id, assetId)
+    return { ok: true }
+  } catch {
+    return refused(
+      'badInput',
+      'this animation cannot reopen the motion workbench for that model — use animations.list to choose a compatible motion',
+    )
+  }
+}
+
 /** Runs one command on the model named, refusing before it rather than writing nothing. */
 function editModelOf(
   input: Record<string, unknown>,
@@ -106,54 +119,123 @@ function editModelOf(
   return { ok: true }
 }
 
-/** The bone named on that model, so a name nobody answers to is a refusal rather than a no-op. */
-function boneOf(node: ModelNode, name: string | null): string | null {
-  return name !== null && node.model.rig?.bones.some(bone => bone.name === name) ? name : null
+/**
+ * The character the skeleton window is editing, or nothing.
+ *
+ * 🛑 A skeleton lives in a FILE now, not on a node: an action that named a node would be naming
+ * the one place the studio no longer keeps one.
+ */
+function character(): CharacterState | null {
+  const open = Object.values(useCharacters.getState().states).find(one => one.assetId !== '')
+  return open ?? null
+}
+
+function noCharacter(): ActionOutcome {
+  return refused(
+    'wrongSurface',
+    'no character is open — a skeleton is edited in its own window, which file.open puts a `.glb` in',
+  )
+}
+
+/** The bone named on that character, so a name nobody answers to is a refusal rather than a no-op. */
+function boneOf(state: CharacterState, name: string | null): string | null {
+  return name !== null && state.rig?.bones.some(bone => bone.name === name) ? name : null
+}
+
+/** One edit of the open character, refused when the build declines. */
+function editCharacter(
+  build: (state: CharacterState) => Command<CharacterState> | null,
+  nothing: string,
+): ActionOutcome {
+  const open = character()
+  if (!open) return noCharacter()
+
+  const command = build(open)
+  if (!command) return refused('notFound', nothing)
+
+  useCharacters.getState().runCommand(open.assetId, command)
+  return { ok: true }
 }
 
 /**
  * The skeleton the studio fits to the mesh it has measured. `null` bounds mean the engine has not
  * read the model yet, which is a wait rather than a fault.
  */
-function fitRig(input: Record<string, unknown>): ActionOutcome {
-  const open = model(input)
-  if (!open) return noModel(input)
+async function fitRig(
+  _input: Record<string, unknown>,
+  _wire?: unknown,
+  signal = new AbortController().signal,
+): Promise<ActionOutcome> {
+  const open = character()
+  if (!open) return noCharacter()
 
-  const bounds = rigOfNode(useModelFiles.getState(), open.documentId, open.node.id)?.bounds
-  if (!bounds)
+  const documentId = workshopIdOf(open.assetId)
+  const node = sceneOf(useScenes.getState(), documentId).nodes.find(
+    candidate => candidate.type === 'model',
+  )
+  const engine = sceneEngineOf(documentId)
+  const sample = node ? engine?.meshSample(node.id) : null
+  if (!node || !engine || !sample)
     return refused(
       'notFound',
-      'the studio has not measured this model yet — rig.state answers "status"; wait for it to read the file, then send this again',
+      'the studio has not measured this character yet — rig.state answers "status"; wait for it to read the file, then send this again',
     )
 
-  const fault = rigFitFaultOf(bounds)
-  if (fault)
+  try {
+    return await fitMeasuredRig(open, documentId, node.id, engine, sample, signal)
+  } catch (error) {
     return refused(
       'failed',
-      fault === 'noGeometry'
-        ? 'this model measures too small to lay bones in — it carries no geometry the studio can fit a rig to'
-        : 'this model lies down, and a rig is proportioned off the height — stand it up with node.transform, then send this again',
+      String(error).includes('CANCELLED')
+        ? 'Auto Rig was cancelled before it changed the character'
+        : 'Auto Rig could not produce a valid skeleton and skin for this character',
     )
+  }
+}
 
-  useScenes.getState().runCommand(open.documentId, setModelRig(open.node.id, rigFit(bounds)))
+async function fitMeasuredRig(
+  open: CharacterState,
+  documentId: string,
+  nodeId: string,
+  engine: SceneRenderer,
+  sample: MeshSample,
+  signal: AbortSignal,
+): Promise<ActionOutcome> {
+  const targets = engine.autoRigTargets(nodeId)
+  const service = autoRigServiceFor(
+    async (_backendInput, context) => {
+      const result = await engine.simpleAutoRig(nodeId, sample, context.signal, context.onProgress)
+      if (!result) throw new Error('INVALID_MESH')
+      return result
+    },
+    async () => {
+      throw new Error('ENGINE_UNAVAILABLE')
+    },
+  )
+  const result = await service.run('simple', DEFAULT_AUTO_RIG_OPTIONS, {
+    signal,
+    onProgress: () => {},
+    targets,
+  })
+  if (sceneEngineOf(documentId) !== engine || engine.autoRigTargets(nodeId).length === 0)
+    return refused('notFound', 'the character changed before Auto Rig completed')
+  useCharacters.getState().runCommand(open.assetId, setCharacterAutoRig(result))
   return { ok: true }
 }
 
-/** What the panels read off a character: its bones, their roles, its handles and its blocks. */
-function rigState(input: Record<string, unknown>): ActionOutcome {
-  const open = model(input)
-  if (!open) return noModel(input)
+/** What the panels read off a character: its bones, their roles, its handles, what it can play. */
+function rigState(): ActionOutcome {
+  const open = character()
+  if (!open) return noCharacter()
 
-  const rig = open.node.model.rig
   return {
     ok: true,
     data: {
-      rigged: rig !== undefined,
-      bones: rig?.bones ?? [],
-      ik: rig?.ik ?? [],
-      lanes: open.node.model.lanes ?? [],
-      // What the engine measured, which is what decides whether a bare mesh can be rigged at all.
-      status: rigOfNode(useModelFiles.getState(), open.documentId, open.node.id)?.status ?? null,
+      rigged: open.rig !== null,
+      bones: open.rig?.bones ?? [],
+      ik: open.rig?.ik ?? [],
+      sockets: open.sockets,
+      motions: open.motions,
     },
   }
 }
@@ -165,28 +247,7 @@ async function addAnimation(input: Record<string, unknown>): Promise<ActionOutco
   const assetId = textOf(input, 'assetId')
   const clipName = textOf(input, 'clipName')
 
-  if (source === 'asset') {
-    if (clipName !== null || assetId === null)
-      return refused('badInput', 'source "asset" wants "assetId" and no "clipName"')
-
-    const asset = assetsById(useAssets.getState()).get(assetId)
-    if (!asset)
-      return refused(
-        'notFound',
-        `no asset "${assetId}" in this library — assets.searchProjectCatalogue answers what is in it`,
-      )
-    if (asset.type !== 'animation')
-      return refused(
-        'badInput',
-        `asset "${assetId}" is of type "${asset.type}", and a block wants one of type "animation" — assets.searchProjectCatalogue with type "animation" answers which are`,
-      )
-
-    return editModelOf(
-      input,
-      node => addModelClip(node.id, assetClip(newId(), asset.id, asset.name)),
-      'that asset built no block on this model',
-    )
-  }
+  if (source === 'asset') return addAssetAnimation(input, assetId, clipName)
 
   if (assetId !== null || clipName === null)
     return refused('badInput', `source "${source}" wants "clipName" and no "assetId"`)
@@ -206,15 +267,42 @@ async function addAnimation(input: Record<string, unknown>): Promise<ActionOutco
       `"${clipName}" is not among the "${source}" clips this model can play — animations.list answers "embedded" and "bundled" by name`,
     )
 
-  return editModelOf(
+  return layBlockOf(
     input,
-    node =>
-      addModelClip(
-        node.id,
-        source === 'embedded' ? embeddedClip(newId(), clipName) : bundledClip(newId(), clipName),
-      ),
-    'that clip built no block on this model',
+    source === 'embedded' ? embeddedClip(newId(), clipName) : bundledClip(newId(), clipName),
   )
+}
+
+function addAssetAnimation(
+  input: Record<string, unknown>,
+  assetId: string | null,
+  clipName: string | null,
+): ActionOutcome {
+  if (clipName !== null || assetId === null)
+    return refused('badInput', 'source "asset" wants "assetId" and no "clipName"')
+
+  const asset = assetsById(useAssets.getState()).get(assetId)
+  if (!asset)
+    return refused(
+      'notFound',
+      `no asset "${assetId}" in this library — assets.searchProjectCatalogue answers what is in it`,
+    )
+  if (asset.type !== 'animation')
+    return refused(
+      'badInput',
+      `asset "${assetId}" is of type "${asset.type}", and a block wants one of type "animation" — assets.searchProjectCatalogue with type "animation" answers which are`,
+    )
+
+  return layBlockOf(input, assetClip(newId(), asset.id, asset.name))
+}
+
+/** Laid through the very gesture the panels use, so a block an assistant lays lands CHOSEN too. */
+function layBlockOf(input: Record<string, unknown>, clip: ClipRef): ActionOutcome {
+  const open = model(input)
+  if (!open) return noModel(input)
+
+  laySceneClip(open.documentId, open.node.id, clip)
+  return { ok: true }
 }
 
 /** The animations shipped with the app, by folder — the picker's own second list. */
@@ -297,203 +385,83 @@ function editBlock(input: Record<string, unknown>): ActionOutcome {
   )
 }
 
-function timelineSettings(input: Record<string, unknown>): ActionOutcome {
-  const documentId = activeSceneId(useDocuments.getState())
-  if (documentId === null) return refused('wrongSurface', NO_SCENE)
-
-  const seconds = numberOf(input, 'durationSeconds')
-  const fps = numberOf(input, 'fps')
-  if (seconds === null && fps === null)
-    return refused(
-      'badInput',
-      'this call named neither "durationSeconds" nor "fps", and one of the two is what it writes',
-    )
-
-  useScenes.getState().runCommand(
-    documentId,
-    setTimelineSettings({
-      ...(seconds === null ? {} : { duration: secondsToUs(seconds) }),
-      ...(fps === null ? {} : { fps }),
-    }),
-  )
-  return { ok: true }
-}
-
-/** A key lands on a frame or on nothing: one laid between two is one nothing reads back. */
-function frameAt(state: SceneState, seconds: number): Us {
-  return snapToFrame(secondsToUs(seconds), state.animation.fps)
-}
-
-/** Runs a command built from the instant a key lands on, the head where none was named. */
-function editKeys(
-  input: Record<string, unknown>,
-  build: (open: { state: SceneState; at: Us }) => Command<SceneState> | null,
-  /** What a caller does when the scene IS in front and the build still declines. */
-  nothing: string,
-): ActionOutcome {
-  const documentId = activeSceneId(useDocuments.getState())
-  if (documentId === null) return refused('wrongSurface', NO_SCENE)
-
-  const keying = sceneKeyingAt(documentId)
-  const seconds = numberOf(input, 'timeSeconds')
-  const command = build({
-    state: keying.state,
-    at: seconds === null ? keying.at : frameAt(keying.state, seconds),
-  })
-  if (!command) return refused('badInput', nothing)
-
-  useScenes.getState().runCommand(documentId, command)
-  return { ok: true }
-}
-
-/** The channel a call names, on the scene in front — an id nobody answers to is a refusal. */
-function editTrack(
-  input: Record<string, unknown>,
-  build: (track: AnimationTrack, documentId: string) => ActionOutcome,
-): ActionOutcome {
-  const documentId = activeSceneId(useDocuments.getState())
-  if (documentId === null) return refused('wrongSurface', NO_SCENE)
-
-  const trackId = textOf(input, 'trackId') ?? ''
-  const track = sceneOf(useScenes.getState(), documentId).animation.tracks.find(
-    held => held.id === trackId,
-  )
-
-  return track
-    ? build(track, documentId)
-    : refused(
-        'notFound',
-        `no channel "${trackId}" on the scene in front — scene.state answers "tracks" with their ids`,
-      )
-}
-
-/** The subject a call names: a node of the scene, or one bone of the model it holds. */
-function subjectOf(input: Record<string, unknown>): { nodeId: string; bone?: string } {
-  const bone = textOf(input, 'bone')
-  const nodeId = textOf(input, 'nodeId') ?? ''
-  return bone === null ? { nodeId } : { nodeId, bone }
-}
-
-/** Its channels, by id — locked ones left out, as every gesture of the band leaves them out. */
-function tracksOfSubject(state: SceneState, subject: { nodeId: string; bone?: string }): string[] {
-  return recordingTracksFor(state.animation, subject.nodeId, subject.bone).map(track => track.id)
-}
-
-/**
- * A channel name is screen text, and one opened from outside must read like one opened by the
- * diamond. `i18next` answers nothing before a window has initialised it — a test — so the English
- * line stands in, never `undefined` written into a document.
- */
-function keyPose(input: Record<string, unknown>): ActionOutcome {
-  const only = oneOf(input, 'property', DIRECT_PROPERTIES) ?? undefined
-
-  return editKeys(
-    input,
-    ({ state, at }) => {
-      const subject = subjectOf(input)
-      const node = nodeById(state, subject.nodeId)
-      if (!node) return null
-
-      return keyNode(
-        state,
-        subject,
-        at,
-        channelNames(speaksBundle(), subject.bone ?? node.name),
-        () => `track_${newId()}`,
-        only,
-      )
-    },
-    '"nodeId" must name a node of the scene in front, and "bone" one of its rig — scene.state answers "nodes", rig.state answers "bones"',
-  )
-}
-
 export const RIG_HANDLERS: ActionHandlers = {
+  ...RIG_KEY_HANDLERS,
   'rig.state': rigState,
   'rig.fit': fitRig,
-  'rig.clear': input =>
-    editModelOf(
-      input,
-      node => setModelRig(node.id, null),
-      'this model carries no rig to clear — rig.state answers "rigged", and rig.fit builds one',
+  'rig.clear': () =>
+    editCharacter(
+      state => (state.rig ? setCharacterRig(null) : null),
+      'this character carries no rig to clear — rig.state answers "rigged", and rig.fit builds one',
     ),
-  'rig.hands': input =>
-    editModelOf(
-      input,
-      node => addRigHands(node.id),
-      'this model carries no rig to add hands to — rig.fit builds one first, and rig.state answers "rigged"',
+  'rig.configureHands': () =>
+    editCharacter(
+      state => (state.rig ? addCharacterHands() : null),
+      'this character carries no rig to add hands to — rig.fit builds one first',
     ),
+
+  'socket.add': input =>
+    editCharacter(state => {
+      const bone = boneOf(state, textOf(input, 'bone'))
+      const name = textOf(input, 'name') ?? ''
+      return bone === null || name === ''
+        ? null
+        : addCharacterSocket({ id: newId(), name, bone, rest: IDENTITY_TRANSFORM })
+    }, '"bone" must name a bone of this character and "name" the point — rig.state answers "bones"'),
+
+  'socket.remove': input =>
+    editCharacter(state => {
+      const named = textOf(input, 'name')
+      const socket = state.sockets.find(one => one.name === named || one.id === named)
+      return socket ? removeCharacterSocket(socket.id) : null
+    }, '"name" must name an attachment point this character carries — rig.state answers "sockets"'),
 
   'bone.add': input =>
-    editModelOf(
-      input,
-      node => {
-        const parent = boneOf(node, textOf(input, 'parent'))
-        return parent === null
-          ? null
-          : addRigBone(node.id, childBone(node.model.rig?.bones ?? [], parent))
-      },
-      '"parent" must name a bone of this model\'s rig — rig.state answers "bones" with their names',
-    ),
+    editCharacter(state => {
+      const parent = boneOf(state, textOf(input, 'parent'))
+      return parent === null ? null : addCharacterBone(parent)
+    }, '"parent" must name a bone of this character — rig.state answers "bones" with their names'),
 
   'bone.remove': input =>
-    editModelOf(
-      input,
-      node => {
-        const bone = boneOf(node, textOf(input, 'bone'))
-        return bone === null ? null : removeRigBone(node.id, bone)
-      },
-      '"bone" must name a bone of this model\'s rig — rig.state answers "bones" with their names',
-    ),
+    editCharacter(state => {
+      const bone = boneOf(state, textOf(input, 'bone'))
+      return bone === null ? null : removeCharacterBone(bone)
+    }, '"bone" must name a bone of this character — rig.state answers "bones" with their names'),
 
   'bone.rename': input =>
-    editModelOf(
-      input,
-      node => {
-        const bone = boneOf(node, textOf(input, 'bone'))
-        const name = textOf(input, 'name') ?? ''
-        // A name already taken is refused here rather than by the command, which writes nothing for
-        // a duplicate — and a client told `ok` would believe the rename took.
-        return bone === null || node.model.rig?.bones.some(one => one.name === name)
-          ? null
-          : renameRigBone(node.id, bone, name)
-      },
-      '"bone" must name a bone of this model\'s rig and "name" must be free of the others — rig.state answers "bones"',
-    ),
+    editCharacter(state => {
+      const bone = boneOf(state, textOf(input, 'bone'))
+      const name = textOf(input, 'name') ?? ''
+      // A name already taken is refused here rather than by the command, which writes nothing
+      // for a duplicate — and a client told `ok` would believe the rename took.
+      return bone === null || state.rig?.bones.some(one => one.name === name)
+        ? null
+        : renameCharacterBone(bone, name)
+    }, '"bone" must name a bone of this character and "name" must be free of the others'),
 
-  'bone.role': input =>
-    editModelOf(
-      input,
-      node => {
-        const bone = boneOf(node, textOf(input, 'bone'))
-        const role: HumanoidRole | null = oneOf(input, 'role', HUMANOID_ROLES)
-        return bone === null ? null : setRigBoneRole(node.id, bone, role)
-      },
-      '"bone" must name a bone of this model\'s rig — rig.state answers "bones" with their names',
-    ),
+  'bone.setRole': input =>
+    editCharacter(state => {
+      const bone = boneOf(state, textOf(input, 'bone'))
+      const role: HumanoidRole | null = oneOf(input, 'role', HUMANOID_ROLES)
+      return bone === null ? null : setCharacterBoneRole(bone, role)
+    }, '"bone" must name a bone of this character — rig.state answers "bones" with their names'),
 
   'ik.add': input =>
-    editModelOf(
-      input,
-      node => {
-        const bone = boneOf(node, textOf(input, 'bone'))
-        return bone === null ? null : addIkChain(node.id, bone)
-      },
-      '"bone" must name a bone of this model\'s rig — rig.state answers "bones" with their names',
-    ),
+    editCharacter(state => {
+      const bone = boneOf(state, textOf(input, 'bone'))
+      return bone === null ? null : addCharacterIkChain(bone)
+    }, '"bone" must name a bone of this character — rig.state answers "bones" with their names'),
 
   'ik.remove': input =>
-    editModelOf(
-      input,
-      node => {
-        const chainId = textOf(input, 'chainId') ?? ''
-        return node.model.rig?.ik?.some(chain => chain.id === chainId)
-          ? removeIkChain(node.id, chainId)
-          : null
-      },
-      '"chainId" must name a handle of this model — rig.state answers "ik" with their ids',
-    ),
+    editCharacter(state => {
+      const chainId = textOf(input, 'chainId') ?? ''
+      return state.rig?.ik?.some(chain => chain.id === chainId)
+        ? removeCharacterIkChain(chainId)
+        : null
+    }, '"chainId" must name a handle of this character — rig.state answers "ik" with their ids'),
 
   'animations.list': listAnimations,
+  'animation.reopenMotion': reopenMotion,
   'animation.addBlock': addAnimation,
   'animation.setBlockSettings': editBlock,
 
@@ -508,95 +476,4 @@ export const RIG_HANDLERS: ActionHandlers = {
       },
       '"clipId" names no block laid on this model — animations.list answers "lanes" with the clips on them',
     ),
-
-  'animation.setBandLengthAndRate': timelineSettings,
-
-  'animation.autoKey': input => {
-    const documentId = activeSceneId(useDocuments.getState())
-    if (documentId === null) return refused('wrongSurface', NO_SCENE)
-
-    useAnimationViews.getState().setAutoKey(documentId, boolOf(input, 'on'))
-    return { ok: true }
-  },
-
-  'key.writePoseKeys': keyPose,
-
-  /**
-   * 🛑 No instant named clears them ALL, and that is the difference from the window's own diamond:
-   * a client cannot see the playhead, so « efface toutes les clés » had no call to make.
-   */
-  'key.removeSubjectKeys': input =>
-    editKeys(
-      input,
-      ({ state, at }) => {
-        const tracks = tracksOfSubject(state, subjectOf(input))
-        return numberOf(input, 'timeSeconds') === null
-          ? unkeySubjectWholly(state, tracks)
-          : unkeySubject(state, tracks, at)
-      },
-      'nothing is keyed for that subject, or nothing at that instant — scene.state answers "tracks" with the instants each channel holds',
-    ),
-
-  'key.writeKeysOnOpenChannels': input =>
-    editKeys(
-      input,
-      ({ state, at }) =>
-        keySubject(
-          state,
-          state.animation.tracks.map(track => track.id),
-          at,
-        ),
-      'the scene in front holds no channel to key — key.writePoseKeys opens one on a node first',
-    ),
-
-  'key.move': input =>
-    editTrack(input, (track, documentId) => {
-      const state = sceneOf(useScenes.getState(), documentId)
-      const from = frameAt(state, numberOf(input, 'fromSeconds') ?? 0)
-
-      // Nothing standing where the drag began: the command hands the state back untouched, which
-      // without this reads as a key moved.
-      if (!track.keys.some(key => key.time === from))
-        return refused(
-          'badInput',
-          'that channel holds no key at "fromSeconds" — scene.state answers "tracks" with the instants each one holds, in microseconds',
-        )
-
-      const to = frameAt(state, numberOf(input, 'toSeconds') ?? 0)
-      useScenes.getState().runCommand(documentId, moveAnimationKey(track.id, from, to))
-      return { ok: true }
-    }),
-
-  'channel.remove': input =>
-    editTrack(input, (track, documentId) => {
-      // A locked channel is skipped by the command, which reads as removed.
-      if (track.locked)
-        return refused(
-          'badInput',
-          'that channel is locked — channel.setMuteSoloLock with locked false unlocks it, then send this again',
-        )
-
-      useScenes.getState().runCommand(documentId, removeAnimationTrack(track.id))
-      return { ok: true }
-    }),
-
-  'channel.setMuteSoloLock': input =>
-    editTrack(input, (track, documentId) => {
-      const flags = {
-        ...flagNamed(input, 'muted'),
-        ...flagNamed(input, 'solo'),
-        ...flagNamed(input, 'locked'),
-      }
-      if (Object.keys(flags).length === 0)
-        return refused('badInput', 'this call named none of muted, solo, locked')
-
-      writeAnimationTrack(documentId, track.id, held => ({ ...held, ...flags }))
-      return { ok: true }
-    }),
-}
-
-/** One flag of a channel, or nothing at all — the difference `boolOf` alone cannot carry. */
-function flagNamed(input: Record<string, unknown>, key: string): Record<string, boolean> {
-  const value = maybeBoolOf(input, key)
-  return value === null ? {} : { [key]: value }
 }

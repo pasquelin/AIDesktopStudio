@@ -2,7 +2,7 @@ import { APIError } from '@scenario-labs/sdk'
 import type { CostEstimate, JobTarget } from '@shared/domain/job'
 import { isRecord } from '@shared/guards'
 
-/** What a run would cost, without running it. `null` where the API declines to price it. */
+/** What a run would cost, unrun: `null` where the API declines to price it, 0 for this machine. */
 export type CostEstimator = (
   target: JobTarget,
   body: Record<string, unknown>,
@@ -43,7 +43,7 @@ export function costEstimatorOf(
     // is free: measured on screen, an estimate for `ssd-1b` reached `runModel` and came back
     // `404 Model ssd-1b not found`, journalled beside the generation's own failure — two error
     // lines for one gesture, and a request spent asking a service about something it never had.
-    if (runsHere(target.id)) return null
+    if (runsHere(target.id)) return { creativeUnits: 0 }
 
     try {
       return priceIn(await run(target, body))

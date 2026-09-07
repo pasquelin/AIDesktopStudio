@@ -8,7 +8,7 @@ import { createHierarchy } from './hierarchy'
 const BOX: GeometryDescriptor = { kind: 'box', width: 1, height: 1, depth: 1 }
 
 const held = (nodes: readonly SceneNode[]) =>
-  createHierarchy(new Map(nodes.map(one => [one.id, one])))
+  createHierarchy(new Map(nodes.map(one => [one.id, one])), () => null)
 
 const at = (x: number, y: number, z: number): Transform => ({
   ...IDENTITY_TRANSFORM,

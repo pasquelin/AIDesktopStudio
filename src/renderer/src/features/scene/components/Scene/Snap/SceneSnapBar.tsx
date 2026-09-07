@@ -1,24 +1,19 @@
-import { mdiFormatVerticalAlignBottom, mdiRun } from '@mdi/js'
+import { mdiFormatVerticalAlignBottom } from '@mdi/js'
 import { Fragment, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { PANE_TOOLBAR_ASIDE } from '@/components/styles'
 import { Toolbar } from '@/components/Toolbar/Toolbar'
-import { boundsOf } from '@shared/domain/settingsRegistry'
 import { tipFor } from '@/helpers/tooltip'
 import { Separator } from '@/components/Separator'
 import { ToggleMenu } from '@/components/ToggleMenu/ToggleMenu'
 import { useSnapReading } from '@/hooks/useSnapReading'
-import { useSpeedReading } from '@/hooks/useSpeedReading'
 import { useViewportSetting } from '@/hooks/useViewportSetting'
 import { useSceneViews, sceneViewOf } from '@/stores/sceneViews'
 import { SNAP_STEP_CONTROLS } from '../../sceneSnapControls'
 import { SceneSnapPlay } from './SceneSnapPlay'
 import { SceneSnapStepMenu } from './SceneSnapStepMenu'
 import { SceneSnapSurfaceMenu } from './SceneSnapSurfaceMenu'
-import { SceneSpeedMenu } from '../SceneSpeedMenu'
-
-// Read once: the registry answers by walking every descriptor, and this sits on a render path.
-const FLY_SPEED = boundsOf('three.flySpeed')
+import { SceneSpeedControl } from '../SceneSpeedControl'
 
 // The longest reading a control can show, so its box stops resizing under a dragged slider.
 // By characters, which is exact here: every figure is drawn `tabular-nums`.
@@ -44,9 +39,7 @@ export function SceneSnapBar({ documentId, speed, onSpeed }: SceneSnapBarProps) 
   const { view, set } = useViewportSetting()
   const snapping = useSceneViews(state => sceneViewOf(state, documentId).snapping)
 
-  const flying = speed ?? view.flySpeed
   const reading = useSnapReading(view.units)
-  const speedReading = useSpeedReading()
   // 🛑 Held across renders: the step widths format every step of every kind — some thirty
   // readings — and a wheel notch or a dragged speed slider re-renders this bar at pointer rate.
   const stepped = useMemo(
@@ -76,18 +69,7 @@ export function SceneSnapBar({ documentId, speed, onSpeed }: SceneSnapBarProps) 
       className={PANE_TOOLBAR_ASIDE}
       extras={
         <>
-          <ToggleMenu
-            icon={mdiRun}
-            scId="snapBar.speed"
-            label={t('snapBar.speed')}
-            description={t('snapBar.speedHint')}
-            tooltip={tipFor('horizontal')}
-            value={speedReading(flying)}
-            widest={speedReading(FLY_SPEED.max)}
-            valueName={t('snapBar.speed')}
-            rowCount={2}
-            rows={close => <SceneSpeedMenu speed={flying} onChoose={onSpeed} onClose={close} />}
-          />
+          <SceneSpeedControl speed={speed} onSpeed={onSpeed} />
 
           <Separator />
 

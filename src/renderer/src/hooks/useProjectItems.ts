@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { Asset } from '@shared/domain/asset'
-import type { DocumentDescriptor } from '@shared/domain/document'
+import { documentsByPath } from '@shared/domain/document'
 import type { FolderEntry } from '@shared/domain/folder'
 import { assetsAt } from '@/helpers/assetAt'
 import { itemOfPath, type ProjectItem } from '@/helpers/projectItem'
@@ -69,11 +69,7 @@ export function useProjectItems(hidden: boolean, active: boolean): ProjectItems 
     }
   }, [projectPath, hidden, active, again])
 
-  const documentsByFile = useMemo(() => {
-    const found = new Map<string, DocumentDescriptor>()
-    for (const document of stored) found.set(document.path, document)
-    return found
-  }, [stored])
+  const documentsByFile = useMemo(() => documentsByPath(stored), [stored])
 
   const items = useMemo(
     () =>

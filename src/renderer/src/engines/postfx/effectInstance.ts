@@ -25,7 +25,6 @@ export type EffectInstance = {
   passes: readonly Pass[]
   /** Moves the parameters into the uniforms. It must NEVER rebuild — see `stackShapeKey`. */
   apply: (effect: PostEffect, view: ViewInfo) => void
-  setSize: (width: number, height: number) => void
   dispose: () => void
 }
 
@@ -34,7 +33,6 @@ export function onePass(pass: Pass, apply: EffectInstance['apply']): EffectInsta
   return {
     passes: [pass],
     apply,
-    setSize: (width, height) => pass.setSize(width, height),
     dispose: () => pass.dispose(),
   }
 }

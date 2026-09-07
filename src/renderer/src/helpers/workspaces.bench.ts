@@ -1,4 +1,5 @@
-import { bench, describe } from 'vitest'
+import { bench } from '@shared/vitestBench'
+import { describe } from 'vitest'
 import { natureOf } from '@shared/domain/fileRole'
 import { FOLDER_ROLES } from '@shared/domain/folderRole'
 import { domainInk, roleInk } from './workspaces'

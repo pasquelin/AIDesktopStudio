@@ -50,10 +50,10 @@ export type KeyChord = {
  * go on answering the old key. Here the second spelling never exists.
  *
  * `NumpadEnter` is a distinct position, and reading it as `Enter` is what makes the keypad's
- * return key answer the two commands bound to that name. The keypad's DIGITS need no entry: with
- * the lock on they print their digit and `codeOf` names them by it, and with the lock off they
- * print `End` or `PageUp`, which no character names — so they stay on their own position, and a
- * keypress meant to move the caret fires nothing.
+ * return key answer the two commands bound to that name. It is the ONLY key of the pad that
+ * folds: the rest keep their own position, `codeOf` refusing to name them by what they print —
+ * Blender's numbered views live there, and a Mac has no lock to take them off the main row's
+ * digits with.
  */
 const CODE_ALIASES: Record<string, string> = {
   NumpadEnter: 'Enter',
@@ -116,7 +116,12 @@ function chordOf(event: KeyChord, isMac: boolean, code: string): Signature {
 
 /** The code a keypress is named by: the character it prints, or the position where none is. */
 function codeOf(event: KeyChord): string {
-  const printed = event.key.length === 1 ? US_CODE_BY_CHARACTER[event.key.toLowerCase()] : undefined
+  // The keypad is a PLACE, never a character: with the lock on it prints the digit of the main
+  // row, and a view bound to `Numpad1` fired `Digit1` — which is to say, on a Mac, never.
+  const printed =
+    event.key.length === 1 && !event.code.startsWith('Numpad')
+      ? US_CODE_BY_CHARACTER[event.key.toLowerCase()]
+      : undefined
   return printed ?? CODE_ALIASES[event.code] ?? event.code
 }
 
@@ -126,16 +131,15 @@ export function signatureOf(event: KeyChord, isMac: boolean): Signature {
 }
 
 /**
- * Chords the desktop answers before any window does: quitting, closing, hiding, minimising, the
+ * Chords the desktop answers before any window does: quitting, hiding, minimising, the
  * screenshot keys. A command bound to one is unreachable AND takes a gesture the user has no
  * other way to make — `Meta` reads as ⌘ on macOS and Ctrl elsewhere, which is where these sit
  * on all three systems.
  *
- * ⌘, is absent on purpose: the platform reserves it FOR the settings, which is what it opens.
+ * ⌘, is left out so Settings can bind it; ⌘W is left out so `document.close` can.
  */
 const PLATFORM_CHORDS: ReadonlySet<Signature> = new Set([
   'Meta+KeyQ',
-  'Meta+KeyW',
   'Meta+KeyM',
   'Meta+KeyH',
   'Meta+Space',
@@ -281,6 +285,7 @@ const KEY_GLYPHS: Record<string, string> = {
   Equal: '=',
   Minus: '−',
   Semicolon: ';',
+  Quote: "'",
   Comma: ',',
   Period: '.',
   Slash: '/',
@@ -369,10 +374,23 @@ const ACCELERATOR_MODIFIERS: Record<string, string> = {
   Meta: 'CmdOrCtrl',
 }
 
-/** Keys Electron names differently from `event.code`. Anything else passes through. */
+/**
+ * Keys Electron names differently from `event.code`. Anything else passes through — which is why
+ * `acceleratorsAreRegistrable` sweeps the whole registry: seven bindings passed through as codes
+ * Electron cannot register, ⌘0 and ⌘1 among them, and only the menu was mute about it.
+ */
 const ACCELERATOR_KEYS: Record<string, string> = {
   Comma: ',',
   Period: '.',
+  Semicolon: ';',
+  Quote: "'",
+  Backquote: '`',
+  BracketLeft: '[',
+  BracketRight: ']',
+  ArrowUp: 'Up',
+  ArrowDown: 'Down',
+  ArrowLeft: 'Left',
+  ArrowRight: 'Right',
   Equal: '=',
   Minus: '-',
   Slash: '/',
@@ -384,6 +402,23 @@ const ACCELERATOR_KEYS: Record<string, string> = {
   Enter: 'Return',
   Home: 'Home',
   End: 'End',
+  // The keypad, which Electron spells its own way: `Numpad1` is not a key it knows, and a row
+  // built with one logs « Invalid accelerator » and shows no shortcut at all.
+  Numpad0: 'num0',
+  Numpad1: 'num1',
+  Numpad2: 'num2',
+  Numpad3: 'num3',
+  Numpad4: 'num4',
+  Numpad5: 'num5',
+  Numpad6: 'num6',
+  Numpad7: 'num7',
+  Numpad8: 'num8',
+  Numpad9: 'num9',
+  NumpadDecimal: 'numdec',
+  NumpadAdd: 'numadd',
+  NumpadSubtract: 'numsub',
+  NumpadMultiply: 'nummult',
+  NumpadDivide: 'numdiv',
 }
 
 export function acceleratorOf(signature: Signature | null): string | undefined {
@@ -393,6 +428,8 @@ export function acceleratorOf(signature: Signature | null): string | undefined {
   const code = parts.at(-1) ?? ''
   const modifiers = parts.slice(0, -1).map(part => ACCELERATOR_MODIFIERS[part] ?? part)
 
-  const key = ACCELERATOR_KEYS[code] ?? (code.startsWith('Key') ? code.slice(3) : code)
+  const key =
+    ACCELERATOR_KEYS[code] ??
+    (code.startsWith('Key') || code.startsWith('Digit') ? code.replace(/^Key|^Digit/, '') : code)
   return [...modifiers, key].join('+')
 }

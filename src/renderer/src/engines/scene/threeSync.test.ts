@@ -1,33 +1,24 @@
 import {
   AmbientLight,
   type BufferGeometry,
-  CameraHelper,
   DirectionalLight,
   HemisphereLight,
   Mesh,
   MeshStandardMaterial,
-  type Object3D,
-  PerspectiveCamera,
   PointLight,
   SpotLight,
   SpriteMaterial,
 } from 'three'
 import { describe, expect, it, vi } from 'vitest'
-import { DEFAULT_PATH, type PathDescriptor } from '@shared/domain/scene'
-import { LIGHT_TYPES } from './lightTypes'
-import { buildPath, geometryFor, PATH_CURVE_NAME, sizeKnobFor } from './threeFactory'
+import { geometryFor } from './threeFactory'
 import { DEFAULT_MATERIAL } from './sceneState'
 import {
-  applyCamera,
   wearGeometry,
   applyLight,
   applyMaterial,
   applyNegative,
   unmarkTools,
-  applyPath,
   applySprite,
-  giveSecondUvSet,
-  showPathKnobs,
   standardMaterialOf,
   tiledGeometry,
 } from './threeSync'
@@ -342,6 +333,24 @@ describe('applyLight', () => {
 
     expect(light.distance).toBe(12)
     expect(light.decay).toBe(1.5)
+    expect(light.shadow.camera.far).toBe(12)
+  })
+
+  it('restores the unbounded point light shadow range', () => {
+    const light = new PointLight()
+    applyLight(light, { kind: 'point', color: '#ffffff', intensity: 1, distance: 12, decay: 2 })
+
+    applyLight(light, { kind: 'point', color: '#ffffff', intensity: 1, distance: 0, decay: 2 })
+
+    expect(light.shadow.camera.far).toBe(500)
+  })
+
+  it('keeps a valid shadow range below the point light near plane', () => {
+    const light = new PointLight()
+
+    applyLight(light, { kind: 'point', color: '#ffffff', intensity: 1, distance: 0.1, decay: 2 })
+
+    expect(light.shadow.camera.far).toBe(500)
   })
 
   it('writes the cone of a spot light', () => {
@@ -404,231 +413,5 @@ describe('standardMaterialOf', () => {
     const mesh = new Mesh(undefined, [new MeshStandardMaterial()])
 
     expect(standardMaterialOf(mesh)).toBeNull()
-  })
-})
-
-/**
- * Each branch checks the class it writes to rather than casting. A descriptor that does not
- * match the light it is handed leaves it alone: three.js throws on a field its class has no
- * room for, and a mismatched pair is reachable while a kind is being swapped.
- */
-describe('a light descriptor handed to a light of another class', () => {
-  // Read off the registry rather than typed out: a sixth kind of light is then covered the day
-  // it lands, instead of quietly not being.
-  const positioned = LIGHT_TYPES.filter(type => type.kind !== 'ambient')
-
-  for (const type of positioned) {
-    it(`leaves an ambient light alone when given a ${type.kind} descriptor`, () => {
-      const light = new AmbientLight()
-      const descriptor = type.create()
-
-      expect(() => applyLight(light, descriptor)).not.toThrow()
-      expect(light.intensity).toBe(descriptor.intensity)
-    })
-  }
-})
-
-describe('applyCamera', () => {
-  const cameraWithHelper = (): PerspectiveCamera => {
-    const camera = new PerspectiveCamera(50, 1, 0.1, 1000)
-    camera.add(new CameraHelper(camera))
-    return camera
-  }
-
-  it('writes the lens and rebuilds the projection', () => {
-    const camera = cameraWithHelper()
-
-    applyCamera(camera, { fov: 90, near: 1, far: 10 })
-
-    expect([camera.fov, camera.near, camera.far]).toEqual([90, 1, 10])
-  })
-
-  // The helper reads the projection matrix once: left alone it keeps outlining the old frustum.
-  it('updates the frustum drawn from it', () => {
-    const camera = cameraWithHelper()
-    const helper = camera.children[0]
-    if (!(helper instanceof CameraHelper)) throw new Error('the camera wears its helper')
-    const update = vi.spyOn(helper, 'update')
-
-    applyCamera(camera, { fov: 90, near: 1, far: 10 })
-
-    expect(update).toHaveBeenCalled()
-  })
-
-  /**
-   * The outline is what makes a viewport with five cameras unreadable, and the camera it is
-   * drawn from is the very one a preview and a film render through — so a shortened reach must
-   * not survive the call.
-   */
-  it('draws a shortened outline without leaving the camera short', () => {
-    const camera = cameraWithHelper()
-    const helper = camera.children[0]
-    if (!(helper instanceof CameraHelper)) throw new Error('the camera wears its helper')
-    const seen: number[] = []
-    vi.spyOn(helper, 'update').mockImplementation(() => void seen.push(camera.far))
-
-    applyCamera(camera, { fov: 50, near: 0.1, far: 1000 }, 2)
-
-    expect(seen).toEqual([2])
-    expect(camera.far).toBe(1000)
-  })
-
-  it('never lengthens a frustum past the lens it belongs to', () => {
-    const camera = cameraWithHelper()
-    const helper = camera.children[0]
-    if (!(helper instanceof CameraHelper)) throw new Error('the camera wears its helper')
-    const seen: number[] = []
-    vi.spyOn(helper, 'update').mockImplementation(() => void seen.push(camera.far))
-
-    applyCamera(camera, { fov: 50, near: 0.1, far: 5 }, 40)
-
-    expect(seen).toEqual([5])
-  })
-})
-
-describe('showPathKnobs', () => {
-  /**
-   * Only a selected rail hands its points to the gizmo, and a knob per point on every rail is
-   * what buries a sequence. The line stays, so an unselected rail can still be clicked.
-   */
-  it('hides the knobs and leaves the line', () => {
-    const points = [
-      { x: 0, y: 0, z: 0 },
-      { x: 10, y: 0, z: 0 },
-    ]
-    const object = buildPath({ ...DEFAULT_PATH, points }, '#ffffff')
-
-    showPathKnobs(object, false)
-    expect(
-      object.children.filter(child => child instanceof Mesh).map(knob => knob.visible),
-    ).toEqual([false, false])
-    expect(object.getObjectByName(PATH_CURVE_NAME)?.visible).toBe(true)
-
-    showPathKnobs(object, true)
-    expect(
-      object.children.filter(child => child instanceof Mesh).map(knob => knob.visible),
-    ).toEqual([true, true])
-  })
-})
-
-describe('a knob about to be drawn', () => {
-  const pathOf = (points: PathDescriptor['points']): PathDescriptor => ({
-    ...DEFAULT_PATH,
-    points,
-  })
-
-  /** What the knob's own `onBeforeRender` calls, with the camera about to draw it. */
-  const draw = (knob: Object3D, camera: PerspectiveCamera): void => {
-    knob.parent?.updateMatrixWorld(true)
-    sizeKnobFor(knob, camera)
-  }
-
-  const cameraAt = (z: number): PerspectiveCamera => {
-    const camera = new PerspectiveCamera(60, 1, 0.1, 100)
-    camera.position.set(0, 0, z)
-    return camera
-  }
-
-  /**
-   * A knob of a fixed size in the SCENE covers five pixels once the view steps back, and a
-   * target of five pixels is one nobody hits.
-   */
-  it('grows with the distance of the camera drawing it, keeping its size on screen', () => {
-    const object = buildPath(
-      pathOf([
-        { x: 0, y: 0, z: 0 },
-        { x: 10, y: 0, z: 0 },
-      ]),
-      '#ffffff',
-    )
-    const knob = object.children[1]
-    if (!knob) throw new Error('the rail was built without a knob')
-
-    draw(knob, cameraAt(5))
-    const near = knob.scale.x
-
-    draw(knob, cameraAt(10))
-
-    expect(knob.scale.x).toBeCloseTo(near * 2, 3)
-  })
-
-  // Written into the matrix on the spot: a scale three has already composed for this draw shows
-  // up one frame late, which reads as a lag.
-  it('carries the size it just took into the matrix it is drawn with', () => {
-    const object = buildPath(
-      pathOf([
-        { x: 0, y: 0, z: 0 },
-        { x: 10, y: 0, z: 0 },
-      ]),
-      '#ffffff',
-    )
-    const knob = object.children[1]
-    if (!knob) throw new Error('the rail was built without a knob')
-
-    draw(knob, cameraAt(20))
-
-    expect(knob.matrixWorld.elements[0]).toBeCloseTo(knob.scale.x, 5)
-  })
-})
-
-describe('applyPath', () => {
-  const pathOf = (points: PathDescriptor['points']): PathDescriptor => ({
-    ...DEFAULT_PATH,
-    points,
-  })
-  const at = (x: number) => ({ x, y: 0, z: 0 })
-
-  it('draws the line and one knob per control point', () => {
-    const object = buildPath(pathOf([at(0), at(10)]), '#ffffff')
-
-    expect(object.children.filter(child => child instanceof Mesh)).toHaveLength(2)
-    expect(object.getObjectByName(PATH_CURVE_NAME)).toBeDefined()
-  })
-
-  it('follows a point that moved without building a knob for it', () => {
-    const object = buildPath(pathOf([at(0), at(10)]), '#ffffff')
-    // Child 0 is the line, so the knob of the point that moves is the second one after it.
-    const knob = object.children[2]
-
-    applyPath(object, pathOf([at(0), at(4)]), '#ffffff')
-
-    expect(object.children[2]).toBe(knob)
-    expect(knob?.position.x).toBe(4)
-  })
-
-  it('grows a knob for a point added, and drops the one a point taken away had', () => {
-    const object = buildPath(pathOf([at(0), at(10)]), '#ffffff')
-
-    applyPath(object, pathOf([at(0), at(5), at(10)]), '#ffffff')
-    expect(object.children.filter(child => child instanceof Mesh)).toHaveLength(3)
-
-    applyPath(object, pathOf([at(0), at(10)]), '#ffffff')
-    expect(object.children.filter(child => child instanceof Mesh)).toHaveLength(2)
-  })
-})
-
-// An occlusion map reads the second UV set; without this, nudging a radius would stop it dead.
-describe('wearGeometry and the second UV set', () => {
-  it('carries it over to the shape that replaces the one that had it', () => {
-    const mesh = new Mesh(geometryFor({ kind: 'box', width: 1, height: 1, depth: 1 }))
-    giveSecondUvSet(mesh.geometry)
-
-    wearGeometry(
-      mesh,
-      geometryFor({ kind: 'sphere', radius: 2, widthSegments: 8, heightSegments: 6 }),
-    )
-
-    expect(mesh.geometry.attributes.uv1).toBeDefined()
-  })
-
-  it('does not invent one for a shape that never had it', () => {
-    const mesh = new Mesh(geometryFor({ kind: 'box', width: 1, height: 1, depth: 1 }))
-
-    wearGeometry(
-      mesh,
-      geometryFor({ kind: 'sphere', radius: 2, widthSegments: 8, heightSegments: 6 }),
-    )
-
-    expect(mesh.geometry.attributes.uv1).toBeUndefined()
   })
 })

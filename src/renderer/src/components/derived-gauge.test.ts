@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import stylesheet from '../index.css?raw'
+import { stylesheet } from '../indexCss-fixtures'
 import { WRITTEN_SOURCES } from './testHarness'
 
 /**

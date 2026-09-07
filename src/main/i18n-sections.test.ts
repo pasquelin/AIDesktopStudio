@@ -20,6 +20,16 @@ function rootsOf(language: Language, file: string): readonly string[] {
   return Object.keys(parsed)
 }
 
+function quotedKey(
+  source: string,
+  start: number,
+  line: number,
+): { key: string; line: number; end: number } {
+  let end = start + 1
+  while (end < source.length && source[end] !== '"') end += source[end] === '\\' ? 2 : 1
+  return { key: source.slice(start + 1, end), line, end }
+}
+
 /**
  * The keys a file declares twice inside ONE object, with the line of the loser.
  *
@@ -29,7 +39,6 @@ function rootsOf(language: Language, file: string): readonly string[] {
  */
 function duplicateKeysOf(source: string): string[] {
   const duplicates: string[] = []
-  // One frame per open container. `null` is an array, which declares no key at all.
   const containers: (Set<string> | null)[] = []
   let last: { key: string; line: number } | null = null
   let line = 1
@@ -39,16 +48,13 @@ function duplicateKeysOf(source: string): string[] {
 
     if (char === '\n') line += 1
     else if (char === '"') {
-      let end = at + 1
-      while (end < source.length && source[end] !== '"') end += source[end] === '\\' ? 2 : 1
-      last = { key: source.slice(at + 1, end), line }
-      at = end
+      const quoted = quotedKey(source, at, line)
+      last = quoted
+      at = quoted.end
     } else if (char === '{') containers.push(new Set())
     else if (char === '[') containers.push(null)
     else if (char === '}' || char === ']') containers.pop()
     else if (char === ':') {
-      // The colon is what tells a key from a value, and only the string right before it can be
-      // one: a value is followed by a comma or a brace.
       const held = containers.at(-1)
       if (held && last) {
         if (held.has(last.key)) duplicates.push(`${last.key} (line ${last.line})`)

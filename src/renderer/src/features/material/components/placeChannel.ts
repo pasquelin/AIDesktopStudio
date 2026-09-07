@@ -35,6 +35,8 @@ export function placeMaterialChannel(
       origin: 'imported',
       width: asset.width ?? 0,
       height: asset.height ?? 0,
+      ...(asset.textureTransform ? { transform: asset.textureTransform } : {}),
+      ...(asset.textureSampling ? { sampling: asset.textureSampling } : {}),
     }),
   )
   return true

@@ -1,3 +1,4 @@
+import { MESH_IMPORT_LOSSES } from '@shared/domain/meshImport'
 import { describe, expect, it } from 'vitest'
 import { isRecord } from '@shared/guards'
 import { LANGUAGES, TRANSLATIONS, type Language } from '@shared/i18n'
@@ -6,15 +7,18 @@ import { PICTURE_TRAITS } from '@shared/domain/formatCapability'
 import { FOLDER_ROLES } from '@shared/domain/folderRole'
 import { roleLabelKey } from '@/helpers/workspaces'
 import { WORKSPACE_IDS } from '@shared/domain/workspace'
-import { BODY_PARTS } from '@shared/domain/humanoid'
-import { ROOT_MOTIONS } from '@shared/domain/scene'
+import { BODY_PARTS, HUMANOID_ROLES } from '@shared/domain/humanoid'
+import { GROUND_MATERIAL_CHANNELS, ROOT_MOTIONS, SCATTER_CATEGORIES } from '@shared/domain/scene'
 import { EASINGS } from '@shared/domain/animation'
+import { OPTIMIZATION_MODES } from '@shared/domain/scene'
+import { OPTIMIZATION_WARNING_REASONS } from '@/engines/scene/worldAnalyzer'
 import { UI_ELEMENT_TYPES } from '@shared/domain/ui'
 import { UI_RESOLUTION_IDS } from '@shared/domain/uiResolution'
 import { UI_TEMPLATE_IDS } from '@shared/domain/uiTemplates'
 import { BLEND_MODES } from '@shared/domain/canvasBlend'
 import {
   ADJUSTMENT_KINDS,
+  COLOR_MODES,
   LAYER_KINDS,
   SHAPE_KINDS,
   type LayerKind,
@@ -31,13 +35,19 @@ import { SHADOW_LEVELS } from '@/engines/scene/shadowLevels'
 import { INPUT_ORIGINS, type InputOrigin } from '@/generation/generationInputs'
 import { RIG_STATUSES, type RigStatus } from '@/engines/scene/rigState'
 import { RIG_FIT_FAULTS, type RigFitFault } from '@/engines/scene/rigFit'
+import {
+  AUTO_RIG_PRODUCT_ERRORS,
+  AUTO_RIG_PROGRESS_PHASES,
+  type AutoRigProductError,
+  type AutoRigProgressPhase,
+} from '@shared/domain/autoRigInference'
 import { NAVIGATION_HINT_GROUPS } from '@/features/scene/components/Scene/SceneNavigationHint'
-import { CHARACTER_KINDS } from '@/features/scene/components/RigSection'
+import { CHARACTER_KINDS } from '@shared/domain/character'
 import { ASSET_INTENTS } from '@/helpers/assetIntents'
 import { FOLDER_SORTS } from '@/helpers/folderSort'
 import { TRACK_FLAGS } from '@/features/timeline/components/trackFlags'
 import { DOCUMENT_NAME_REFUSALS } from '@/features/document/documentName'
-import { DOCUMENT_KINDS } from '@shared/domain/document'
+import { DOCUMENT_KINDS, isMadeFromNothing } from '@shared/domain/document'
 import { SCENE_TEMPLATE_GROUPS, SCENE_TEMPLATE_IDS } from '@shared/domain/sceneTemplate'
 import { FILE_KINDS } from '@shared/domain/folder'
 import { FILE_INFO_SECTIONS } from '@/features/document/components/FileInfoWindow/sections'
@@ -71,6 +81,15 @@ function explained(prefix: string, values: readonly string[]): string[] {
  * `inspector.layerKind_text` where a word belongs.
  */
 const COMPOSED_KEYS: readonly string[] = [
+  // What a model's conversion to glb could not carry — one sentence per loss, composed from the
+  // row's own list.
+  ...MESH_IMPORT_LOSSES.map(loss => `activity.importLoss.${loss}`),
+  ...SCATTER_CATEGORIES.map(category => `world.scatterCategory_${category}`),
+  ...GROUND_MATERIAL_CHANNELS.map(channel => `world.groundChannel_${channel}`),
+  // Every optimization mode a person can choose, and every reason a node is left out of one.
+  // Both are template literals, which `known-keys.i18n.test.ts` writes off as a blind spot.
+  ...OPTIMIZATION_MODES.map(mode => `optimization.modes.${mode}`),
+  ...OPTIMIZATION_WARNING_REASONS.map(reason => `optimization.warningReasons.${reason}`),
   // How a chain ended when it did not end by itself — composed from the turn's own field. Lost
   // from a bundle, the raw key lands where the one sentence saying a job was cut short belongs.
   'assistant.ending.halted',
@@ -87,6 +106,12 @@ const COMPOSED_KEYS: readonly string[] = [
   ...CLOUD_IDS.map(doorLabelKey),
   doorLabelKey('local'),
   ...ADJUSTMENT_KINDS.map(kind => `adjustment.${kind}`),
+  // Every humanoid role, group and side the transfer window names from a template literal: a
+  // role lost from a bundle would put its raw key on every row of the bone mapping.
+  ...HUMANOID_ROLES.map(role => `character.retarget.roles.${role}`),
+  ...['torso', 'arms', 'legs', 'fingers'].map(group => `character.retarget.groups.${group}`),
+  ...['source', 'target'].map(side => `character.retarget.${side}`),
+  ...['source', 'target'].map(side => `character.retarget.${side}Alignment`),
   // What a format could not carry, named in the flatten dialogue. The PICTURE traits alone: the
   // image is the one kind with a `traitsOf`, so no other family can reach that sentence — the day
   // a second kind gains one, its traits belong here too.
@@ -104,6 +129,8 @@ const COMPOSED_KEYS: readonly string[] = [
   // no sentence would put a raw key over the viewport at the very moment the mode opens.
   ...NAVIGATION_HINT_GROUPS.map(group => `sceneNavigation.${group.key}`),
   ...LAYER_KINDS.map(kind => `inspector.layerKind_${kind}`),
+  // Composed by the inspector's document face from the canvas's closed list.
+  ...COLOR_MODES.map(mode => `inspector.colorMode_${mode}`),
   // One row per element type in the bar's flyout, and the same word again as the outliner's
   // fallback title for an element its author has not named — the commonest state of a new one.
   ...UI_ELEMENT_TYPES.map(type => `guiTools.types.${type}`),
@@ -127,6 +154,11 @@ const COMPOSED_KEYS: readonly string[] = [
   // Why a mesh cannot take a skeleton. Composed the same way, and it stands in for the button
   // itself: a fault with no sentence would leave the user a raw key where the offer used to be.
   ...RIG_FIT_FAULTS.map(fault => `inspector.rigFault_${fault}`),
+  // Why an automatic rig gave up, composed from the code the engine answers. The inspector paints
+  // it with NO fallback, so a key missing from a bundle shows the code itself to the person.
+  ...AUTO_RIG_PRODUCT_ERRORS.map(code => `inspector.autoRigErrors.${code}`),
+  // What that rig is busy with, on the status line's row.
+  ...AUTO_RIG_PROGRESS_PHASES.map(phase => `tasks.phases.${phase}`),
   // The four answers to « what is this », in the dialogue that lays a skeleton.
   ...CHARACTER_KINDS.map(kind => `inspector.characterKinds.${kind}`),
   // Which half of a body a block drives. A part with no sentence would read as a raw key inside
@@ -173,8 +205,9 @@ const COMPOSED_KEYS: readonly string[] = [
   // What a document of this kind is CALLED — the word a blank one is named after, « Scène 1 ».
   // A kind with no word would name every new document of that space `documents.kinds.x 1`.
   ...DOCUMENT_KINDS.map(kind => `documents.kinds.${kind}`),
-  // The heading of the field that names it, one per kind for the article French puts in front.
-  ...DOCUMENT_KINDS.map(kind => `documents.newByKind.${kind}`),
+  // The heading of the field that names it, one per kind for the article French puts in front —
+  // and only for a kind one can MAKE: a character is opened on a model, never named into being.
+  ...DOCUMENT_KINDS.filter(isMadeFromNothing).map(kind => `documents.newByKind.${kind}`),
   // What a new scene may open on: the tile's name, and the sentence that says what it holds. A
   // template with neither would read as its own id inside the window that offers it.
   ...SCENE_TEMPLATE_IDS.flatMap(id => [
@@ -240,6 +273,36 @@ describe('the lists behind those keys', () => {
     const all: Record<RigFitFault, true> = { noGeometry: true, lyingDown: true }
 
     expect([...RIG_FIT_FAULTS].sort()).toEqual(Object.keys(all).sort())
+  })
+
+  it('holds every reason an automatic rig gives up', () => {
+    const all: Record<AutoRigProductError, true> = {
+      MODEL_NOT_INSTALLED: true,
+      MODEL_INVALID: true,
+      ENGINE_UNAVAILABLE: true,
+      UNSUPPORTED_PLATFORM: true,
+      INVALID_MESH: true,
+      NOT_HUMANOID: true,
+      INFERENCE_FAILED: true,
+      OUT_OF_MEMORY: true,
+      CANCELLED: true,
+    }
+
+    expect([...AUTO_RIG_PRODUCT_ERRORS].sort()).toEqual(Object.keys(all).sort())
+  })
+
+  it('holds every phase an automatic rig passes through', () => {
+    const all: Record<AutoRigProgressPhase, true> = {
+      prepare: true,
+      load: true,
+      analyse: true,
+      skeleton: true,
+      pose: true,
+      skinning: true,
+      apply: true,
+    }
+
+    expect([...AUTO_RIG_PROGRESS_PHASES].sort()).toEqual(Object.keys(all).sort())
   })
 
   it('holds every state an imported model can be in', () => {

@@ -4,6 +4,7 @@ import {
   HemisphereLight,
   Line,
   Mesh,
+  MeshBasicMaterial,
   MeshStandardMaterial,
   PointLight,
   SpotLight,
@@ -23,8 +24,22 @@ import type {
   Vector3,
 } from '@shared/domain/scene'
 import { pathPoints } from './cameraPath'
-import { bareLight, geometryFor, pathKnob, PATH_CURVE_NAME, PATH_KNOB_PREFIX } from './threeFactory'
+import {
+  bareLight,
+  dressWithRail,
+  geometryFor,
+  HANDLE_BAR_PREFIX,
+  handlePartOf,
+  isRailAid,
+  knobIndexOf,
+  knobName,
+  placeHandles,
+  PATH_CURVE_NAME,
+  PATH_KNOB_PREFIX,
+} from './threeFactory'
 import { tileUvs } from './uvTiling'
+
+const UNBOUNDED_POINT_SHADOW_FAR = 500
 
 /*
  * Bringing an existing three.js object in line with an edited descriptor — the other half of
@@ -151,6 +166,14 @@ export function lightFor(descriptor: LightDescriptor): Light {
 }
 
 /**
+ * 🛑 three.js follows a light target's world matrix only once the target stands in the scene:
+ * without this a directional shadow is thrown at the world origin, and nothing says so.
+ */
+export function standTarget(light: Object3D, scene: Object3D): void {
+  if (light instanceof DirectionalLight || light instanceof SpotLight) scene.add(light.target)
+}
+
+/**
  * The light's own parameters. Each branch checks the class it writes to rather than casting: a
  * mismatch leaves the light alone instead of throwing at the user.
  */
@@ -162,19 +185,17 @@ export function applyLight(light: Light, descriptor: LightDescriptor): void {
     case 'directional':
       if (light instanceof DirectionalLight) applyTarget(light, descriptor.target)
       return
-
     case 'hemisphere':
       if (!(light instanceof HemisphereLight)) return
       light.color.set(descriptor.skyColor)
       light.groundColor.set(descriptor.groundColor)
       return
-
     case 'point':
       if (!(light instanceof PointLight)) return
       light.distance = descriptor.distance
       light.decay = descriptor.decay
+      fitPointShadowRange(light)
       return
-
     case 'spot':
       if (!(light instanceof SpotLight)) return
       light.distance = descriptor.distance
@@ -183,6 +204,14 @@ export function applyLight(light: Light, descriptor: LightDescriptor): void {
       light.decay = descriptor.decay
       applyTarget(light, descriptor.target)
   }
+}
+
+function fitPointShadowRange(light: PointLight): void {
+  const far =
+    light.distance > light.shadow.camera.near ? light.distance : UNBOUNDED_POINT_SHADOW_FAR
+  if (light.shadow.camera.far === far) return
+  light.shadow.camera.far = far
+  light.shadow.camera.updateProjectionMatrix()
 }
 
 function applyTarget(light: DirectionalLight | SpotLight, target: Vector3): void {
@@ -233,6 +262,17 @@ export function showPathKnobs(object: Object3D, shown: boolean): void {
 }
 
 /**
+ * 🛑 The line of a BAND, shown only while it is worked on. A rail node keeps its own either way —
+ * it is nothing but that line, and hiding it would leave nothing to click. A band is a surface
+ * one clicks directly, so its line drew a permanent stripe down the middle, seen THROUGH the very
+ * cars it was under.
+ */
+export function showRailLine(object: Object3D, shown: boolean): void {
+  const line = object.getObjectByName(PATH_CURVE_NAME)
+  if (line) line.visible = shown
+}
+
+/**
  * A rail brought in line with its descriptor: the sampled line, and one knob per control point.
  *
  * Knobs are added and removed rather than rebuilt whole: a drag of one point emits a descriptor
@@ -244,18 +284,58 @@ export function applyPath(object: Object3D, descriptor: PathDescriptor, colour: 
   if (line instanceof Line) line.geometry.setFromPoints(pathPoints(descriptor))
 
   const knobs = object.children.filter(
-    (child): child is Mesh => child.name.startsWith(PATH_KNOB_PREFIX) && child instanceof Mesh,
+    (child): child is Mesh => knobIndexOf(child.name) !== null && child instanceof Mesh,
   )
 
-  for (const extra of knobs.slice(descriptor.points.length)) {
-    object.remove(extra)
-    extra.geometry.dispose()
+  // A run that gained or lost an anchor is dressed again whole: every anchor carries three more
+  // objects now, and threading an insertion through four parallel lists is where a leak lives.
+  if (knobs.length !== descriptor.points.length) {
+    const worn = knobs[0]?.material
+    const through = worn instanceof MeshBasicMaterial && !worn.depthTest
+    const colourNamed = (name: string | null): string | undefined => {
+      const child = name
+        ? object.getObjectByName(name)
+        : object.children.find(one => handlePartOf(one.name))
+      return child instanceof Mesh && child.material instanceof MeshBasicMaterial
+        ? `#${child.material.color.getHexString()}`
+        : undefined
+    }
+    // Read off what is already hung rather than passed in: the three colours are three tokens,
+    // and dressing again in the anchors' would repaint the pair and the first point grey.
+    // Read off what is already hung rather than passed in: the three are three tokens, and
+    // dressing again in the anchors' would repaint the pair and the first point grey.
+    const colours = { knob: colour, handle: colourNamed(null), start: colourNamed(knobName(0)) }
+    // 🛑 The AIDS alone, by name: a band hangs them off its own mesh, and any node of the document
+    // may be reparented under that mesh from the outliner. Swept whole, this took the reparented
+    // node out of the scene and disposed a geometry the shared cache still counted as alive.
+    for (const child of [...object.children].filter(one => isRailAid(one.name))) {
+      object.remove(child)
+      if (child instanceof Mesh || child instanceof Line) child.geometry.dispose()
+    }
+    dressWithRail(object, descriptor, colours, through)
+    return
   }
 
   for (const [index, point] of descriptor.points.entries()) {
-    const knob = knobs[index] ?? pathKnob(index, colour)
-    if (!knobs[index]) object.add(knob)
-    knob.position.set(point.x, point.y, point.z)
+    knobs[index]?.position.set(point.x, point.y, point.z)
+    placeHandles(object, descriptor, index, point)
+  }
+}
+
+/**
+ * The tangents shown on ONE anchor — the one being worked on — and on no other.
+ *
+ * 🛑 Every anchor at once is what makes a run of twenty-four unreadable: Photoshop shows the pair
+ * of the point one clicked, and that is the gesture this follows.
+ */
+export function showPathHandles(object: Object3D, index: number | null): void {
+  for (const child of object.children) {
+    const part = handlePartOf(child.name)
+    const bar = child.name.startsWith(HANDLE_BAR_PREFIX)
+      ? Number(child.name.split('-').at(-1))
+      : null
+    if (part) child.visible = part.index === index
+    else if (bar !== null) child.visible = bar === index
   }
 }
 

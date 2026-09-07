@@ -166,7 +166,12 @@ describe('SCENE_TOOLS', () => {
  */
 describe('ADD_TOOLS', () => {
   it('offers one button per family a scene grows by', () => {
-    expect(ADD_TOOLS.map(tool => tool.id)).toEqual(['add:meshes', 'add:lights', 'add:objects'])
+    expect(ADD_TOOLS.map(tool => tool.id)).toEqual([
+      'add:meshes',
+      'add:lights',
+      'add:figures',
+      'add:objects',
+    ])
   })
 
   /** Three flat lists rather than one of twenty-four: a flyout has no submenu to fold them into. */
@@ -174,11 +179,17 @@ describe('ADD_TOOLS', () => {
     expect(ADD_TOOLS.flatMap(tool => tool.modes ?? [])).toHaveLength(ADD_ENTRIES.length)
   })
 
-  /** The four objects are the reason this exists: none of them has a panel to be added from. */
+  /** The objects are the reason this exists: none of them has a panel to be added from. */
   it('is the only place an object can be added from', () => {
     const objects = ADD_TOOLS.find(tool => tool.id === 'add:objects')
 
-    expect(objects?.modes?.map(mode => mode.id)).toEqual(['sprite', 'text', 'camera', 'path'])
+    expect(objects?.modes?.map(mode => mode.id)).toEqual([
+      'sprite',
+      'text',
+      'camera',
+      'path',
+      'player',
+    ])
   })
 
   /** Arms nothing, so it must carry no armed mode — that is what opens the menu on a click. */

@@ -1,7 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Asset } from '@shared/domain/asset'
+import type { ExternalFileImport } from '@shared/domain/externalFile'
 import { CHANNELS } from '@shared/ipc'
 import { invoke, resetHandlers } from '@main/ipc/testHarness'
+import { createRunningTasks } from '@main/task/runningTasks'
 import { registerMediaHandlers, type MediaHandlerDeps } from './handlers'
 import { linkedAsset } from './link'
 
@@ -24,7 +26,12 @@ function deps(overrides: Partial<MediaHandlerDeps> = {}): MediaHandlerDeps {
     ),
     adopt: vi.fn(async () => null),
     pickMedia: vi.fn(async () => ['/Volumes/Rushes/A001.mov']),
+    pickAnimation: vi.fn(async () => ['/motions/Walking.fbx']),
+    folderFor: vi.fn(async () => 'Modelling/Animations'),
     capabilities: async () => ({ ffmpeg: true }),
+    importPaths: async () => ({ assets: [], documents: [], montages: [], refused: [], failed: [] }),
+    claimExternalFiles: () => [],
+    running: createRunningTasks(),
     ...overrides,
   }
 }
@@ -39,12 +46,14 @@ describe('media handlers', () => {
     const injected = deps({ pickMedia: async () => ['/rushes/a.mov', '/takes/b.wav'] })
     registerMediaHandlers(injected)
 
-    const assets = await invoke(CHANNELS.mediaIngest)
+    const imported = await invoke(CHANNELS.mediaIngest)
 
-    expect(assets).toMatchObject([
-      { name: 'a', type: 'video' },
-      { name: 'b', type: 'audio' },
-    ])
+    expect(imported).toMatchObject({
+      assets: [
+        { name: 'a', type: 'video' },
+        { name: 'b', type: 'audio' },
+      ],
+    })
     expect(injected.link).toHaveBeenCalledTimes(2)
   })
 
@@ -53,9 +62,11 @@ describe('media handlers', () => {
   it('tells the window everything about a linked file except where it is', async () => {
     registerMediaHandlers(deps({ pickMedia: async () => ['/Volumes/Rushes/a.mov'] }))
 
-    const assets = await invoke(CHANNELS.mediaIngest)
+    const imported = await invoke(CHANNELS.mediaIngest)
 
-    expect(assets).toEqual([expect.not.objectContaining({ sourcePath: expect.anything() })])
+    expect(imported).toMatchObject({
+      assets: [expect.not.objectContaining({ sourcePath: expect.anything() })],
+    })
   })
 
   it('starts an ingest per linked file, without waiting for it to finish', async () => {
@@ -77,18 +88,153 @@ describe('media handlers', () => {
     const injected = deps({ pickMedia: async () => ['/notes.txt', '/rushes/a.mov'] })
     registerMediaHandlers(injected)
 
-    const assets = await invoke(CHANNELS.mediaIngest)
+    const imported = await invoke(CHANNELS.mediaIngest)
 
-    expect(assets).toHaveLength(1)
+    expect(imported).toMatchObject({ assets: [expect.anything()] })
     expect(injected.link).toHaveBeenCalledOnce()
+  })
+
+  it('copies a picked 3D file into the project rather than linking it where it lies', async () => {
+    const imported = linkedAsset('/outside/Robot.fbx', {
+      id: 'asset-mesh',
+      type: 'mesh',
+      now: '2026-09-06T10:00:00.000Z',
+    })
+    const importPaths = vi.fn(async () => ({
+      assets: [imported],
+      documents: [],
+      montages: [],
+      refused: [{ name: 'Broken.fbx', extension: 'fbx' }],
+      failed: ['skin.png'],
+    }))
+    const injected = deps({
+      pickMedia: async () => ['/outside/Robot.fbx', '/rushes/a.mov'],
+      importPaths,
+    })
+    registerMediaHandlers(injected)
+
+    const result = await invoke(CHANNELS.mediaIngest)
+
+    expect(importPaths).toHaveBeenCalledWith(['/outside/Robot.fbx'], '', {})
+    expect(injected.link).toHaveBeenCalledOnce()
+    expect(result).toMatchObject({
+      assets: [{ type: 'video' }, { type: 'mesh' }],
+      refused: [{ name: 'Broken.fbx', extension: 'fbx' }],
+      failed: ['skin.png'],
+    })
   })
 
   it('answers an empty list when the dialog was dismissed', async () => {
     const injected = deps({ pickMedia: async () => [] })
     registerMediaHandlers(injected)
 
-    await expect(invoke(CHANNELS.mediaIngest)).resolves.toEqual([])
+    await expect(invoke(CHANNELS.mediaIngest)).resolves.toEqual({
+      assets: [],
+      documents: [],
+      montages: [],
+      refused: [],
+      failed: [],
+    })
     expect(injected.media.ingest).not.toHaveBeenCalled()
+  })
+
+  it('imports paths supplied by the desktop into the requested project folder', async () => {
+    const imported = linkedAsset('/outside/model.glb', {
+      id: 'asset-1',
+      type: 'mesh',
+      now: '2026-09-03T10:00:00.000Z',
+    })
+    const importPaths = vi.fn(async () => ({
+      assets: [imported],
+      documents: [],
+      montages: [],
+      refused: [],
+      failed: [],
+    }))
+    registerMediaHandlers(deps({ importPaths, claimExternalFiles: () => ['/outside/model.glb'] }))
+
+    const result = await invoke(CHANNELS.mediaIngestPaths, 'request-1', 'Models', 'task-1')
+
+    expect(importPaths).toHaveBeenCalledWith(
+      ['/outside/model.glb'],
+      'Models',
+      expect.objectContaining({ signal: expect.any(AbortSignal) }),
+    )
+    expect(result).toEqual({
+      assets: [expect.not.objectContaining({ sourcePath: expect.anything() })],
+      documents: [],
+      montages: [],
+      refused: [],
+      failed: [],
+    })
+  })
+
+  it('imports picked motions into the animations folder', async () => {
+    const imported = linkedAsset('/motions/Walking.fbx', {
+      id: 'asset-walk',
+      type: 'animation',
+      now: '2026-09-06T10:00:00.000Z',
+    })
+    const importPaths = vi.fn(async () => ({
+      assets: [imported],
+      documents: [],
+      montages: [],
+      refused: [],
+      failed: [],
+    }))
+    const folderFor = vi.fn(async () => 'Modelling/Animations')
+    registerMediaHandlers(deps({ importPaths, folderFor }))
+
+    const result = await invoke(CHANNELS.mediaImportPicked, 'animations', 'task-anim')
+
+    expect(folderFor).toHaveBeenCalledWith('animations')
+    expect(importPaths).toHaveBeenCalledWith(
+      ['/motions/Walking.fbx'],
+      'Modelling/Animations',
+      expect.objectContaining({ signal: expect.any(AbortSignal) }),
+    )
+    expect(result).toEqual({
+      assets: [expect.not.objectContaining({ sourcePath: expect.anything() })],
+      documents: [],
+      montages: [],
+      refused: [],
+      failed: [],
+    })
+  })
+
+  it('imports nothing when the motion picker is dismissed', async () => {
+    const importPaths = vi.fn()
+    registerMediaHandlers(deps({ pickAnimation: async () => [], importPaths }))
+
+    await expect(invoke(CHANNELS.mediaImportPicked, 'animations', 'task-none')).resolves.toEqual({
+      assets: [],
+      documents: [],
+      montages: [],
+      refused: [],
+      failed: [],
+    })
+    expect(importPaths).not.toHaveBeenCalled()
+  })
+
+  it('stops an external import through the shared task table', async () => {
+    const running = createRunningTasks()
+    const importPaths = vi.fn(
+      async (_paths: readonly string[], _folder: string, watch: { signal?: AbortSignal }) =>
+        await new Promise<ExternalFileImport>(resolve => {
+          watch.signal?.addEventListener(
+            'abort',
+            () => resolve({ assets: [], documents: [], montages: [], refused: [], failed: [] }),
+            { once: true },
+          )
+        }),
+    )
+    registerMediaHandlers(deps({ importPaths, running }))
+
+    const importing = invoke(CHANNELS.mediaIngestPaths, 'request-2', '', 'task-2')
+    await vi.waitFor(() => expect(importPaths).toHaveBeenCalledOnce())
+
+    expect(running.cancel('task-2')).toBe(true)
+    await expect(importing).resolves.toMatchObject({ failed: [] })
   })
 
   it('adopts a file of the project, and answers the row without its whereabouts', async () => {

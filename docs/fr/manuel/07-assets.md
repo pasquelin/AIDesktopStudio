@@ -446,21 +446,41 @@ PROJET et non une ligne, ce qui est pourquoi il vit sous le blanc, à côté de 
 | Type | Extensions acceptées |
 |---|---|
 | **Vidéo** | `mp4` `mov` `mkv` `webm` `avi` `mxf` `m4v` |
-| **Audio** | `wav` `mp3` `aac` `flac` `m4a` `ogg` |
-| **Image** | `png` `jpg` `jpeg` `webp` `tif` `tiff` `exr` |
-| **3D** | `glb` |
+| **Audio** | `wav` `mp3` `aac` `flac` `m4a` `ogg` `aiff` |
+| **Image** | `png` `ora` `jpg` `jpeg` `webp` `avif` `gif` `svg` `tif` `tiff` `exr` `hdr` |
+| **3D** | `glb` `obj` `fbx` `stl` `ply` `dae` `usdz` — et `bvh` pour une capture de mouvement |
+| **Documents** | `ora` `gltf` `otio` `mtlx` |
+| **Montage avec médias** | `otioz` |
 
-> **Les modèles 3D s’importent au format `.glb`.** Le `.gltf` séparé (avec ses fichiers `.bin`
-> et ses textures à côté) ne s’importe pas : le studio sert chaque asset seul, sans son
-> voisinage, et les fichiers liés resteraient introuvables. `.obj`, `.fbx` et les HDRI (`.hdr`)
-> ne s’importent pas encore.
-> Un `.exr` importé est catalogué comme une image, pas comme un ciel. Voir
-> [Ce qui n’existe pas encore](18-limites.md).
+La liste des assets vaut aussi pour le sélecteur. Le dépôt depuis le bureau, l’icône de
+l’application et **Ouvrir avec** acceptent également les documents standard et les montages
+groupés du tableau. Un document est copié dans le projet puis ouvert ; un `.otioz` est dépaqueté
+avec ses médias comme par **Fichier › Importer**. Une cible compatible se dessine en bleu ; un
+format refusé se dessine en rouge et le journal nomme les fichiers qui ne sont pas entrés. Dans un
+lot mélangé, les fichiers acceptés entrent et les autres sont signalés ensemble.
 
-### Le fichier n’est pas copié — à l’import
+**Un fichier 3D devient un `.glb` en entrant.** Le studio ne travaille qu’avec un seul conteneur
+3D, le glTF binaire : un `.obj`, un `.fbx`, un `.dae`, un `.usdz`, un `.stl`, un `.ply` ou un
+`.bvh` est converti une fois, à l’import, et c’est ce `.glb` que le catalogue, la scène, l’éditeur
+de personnage et l’export de jeu lisent ensuite. L’original n’est pas jeté : il est rangé dans un
+dossier `.sources` à côté du fichier converti, avec ce qu’il référençait — le `.mtl` et les
+textures d’un `.obj`, les images d’un `.dae` — hors du catalogue. Ce que la conversion n’a pas pu
+garder est dit dans le journal au moment où le fichier entre : des matières absentes pour un
+`.stl`, des textures introuvables, un ombrage qui n’était pas physique et a été approché.
 
-**Important.** À l’import, le studio ne copie pas votre fichier dans le projet : il crée un
-**lien** vers l’endroit où il se trouve.
+**Modèle ou animation ?** Le dossier où le fichier est déposé décide d’abord — Modèles ou
+Animations — puis le contenu corrige ce qui est impossible : un fichier sans aucun clip n’est pas
+une animation, un fichier sans aucun maillage n’est pas un modèle. Un `.fbx` Mixamo, qui porte un
+personnage et sa marche, reste l’animation qu’il a été rangé comme. Un `.bvh` est toujours une
+animation. Les fichiers déjà présents dans un projet avant cette règle ne sont pas touchés.
+
+> Un `.gltf` séparé qui n’est pas un document AI Desktop Studio ne s’importe pas encore comme modèle.
+
+### Les médias audio, vidéo et image ne sont pas copiés — à l’import
+
+**Important.** Pour l’audio, la vidéo et les images, le sélecteur **Importer un média** ne copie pas
+votre fichier dans le projet : il crée un **lien** vers l’endroit où il se trouve. Les fichiers 3D
+font exception : ils sont copiés puis convertis comme décrit ci-dessus.
 
 Deux conséquences :
 

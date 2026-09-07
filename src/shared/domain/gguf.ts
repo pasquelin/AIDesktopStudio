@@ -127,6 +127,23 @@ function numberValue(cursor: Cursor, type: number): number | null {
   return null
 }
 
+function metadataOf(cursor: Cursor, count: number) {
+  let architecture: string | null = null
+  let name: string | null = null
+  const lengths = new Map<string, number>()
+  for (let index = 0; index < count; index += 1) {
+    const key = cursor.string()
+    const type = cursor.uint32()
+    if (type === STRING_TYPE && key === 'general.architecture') architecture = cursor.string()
+    else if (type === STRING_TYPE && key === 'general.name') name = cursor.string()
+    else if (key.endsWith('.context_length')) {
+      const length = numberValue(cursor, type)
+      if (length !== null) lengths.set(key, length)
+    } else cursor.skip(type)
+  }
+  return { architecture, name, lengths }
+}
+
 export function ggufHeaderOf(bytes: Uint8Array): GgufReading {
   const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength)
   if (bytes.byteLength < 8 || view.getUint32(0, true) !== GGUF_MAGIC) return { kind: 'not-gguf' }
@@ -141,23 +158,7 @@ export function ggufHeaderOf(bytes: Uint8Array): GgufReading {
     cursor.uint64()
     const count = cursor.uint64()
 
-    let architecture: string | null = null
-    let name: string | null = null
-    const lengths = new Map<string, number>()
-
-    for (let index = 0; index < count; index += 1) {
-      const key = cursor.string()
-      const type = cursor.uint32()
-
-      // The TYPE decides how the value is walked, never the key: a file naming `general.name` an
-      // array would otherwise be read as a string and every byte after it as noise.
-      if (type === STRING_TYPE && key === 'general.architecture') architecture = cursor.string()
-      else if (type === STRING_TYPE && key === 'general.name') name = cursor.string()
-      else if (key.endsWith('.context_length')) {
-        const length = numberValue(cursor, type)
-        if (length !== null) lengths.set(key, length)
-      } else cursor.skip(type)
-    }
+    const { architecture, name, lengths } = metadataOf(cursor, count)
 
     return {
       kind: 'header',

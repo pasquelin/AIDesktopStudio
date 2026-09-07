@@ -73,6 +73,78 @@ function storedEntry(zip: Zip, name: string, bytes: Uint8Array): void {
   entry.push(bytes, true)
 }
 
+async function bundleSize(
+  contentBytes: number,
+  media: OtiozContents['media'],
+  signal?: AbortSignal,
+): Promise<number | null> {
+  let total = contentBytes
+  for (const medium of media) {
+    const found = await orElse(stat(medium.path), null)
+    if (!found?.isFile()) throw new MissingMediumError(medium.entry)
+    if (signal?.aborted) return null
+    total += found.size
+  }
+  return total
+}
+
+async function removePartial(
+  path: string,
+  out: ReturnType<typeof createWriteStream>,
+): Promise<void> {
+  try {
+    await finished(out)
+  } catch {
+    // The original stream failure is the useful error.
+  }
+  try {
+    await rm(path, { force: true })
+  } catch {
+    // Cancellation must still be reported as cancellation when cleanup fails.
+  }
+}
+
+type BundleOutput = {
+  path: string
+  out: ReturnType<typeof createWriteStream>
+  chunks: Readable
+  zip: Zip
+  encodedContent: Uint8Array
+  media: OtiozContents['media']
+  room: () => Promise<void>
+  wrote: (bytes: number) => void
+  drained: Promise<void>
+  signal?: AbortSignal
+  abandon: () => void
+}
+
+async function finishBundle(output: BundleOutput): Promise<boolean> {
+  const { path, out, chunks, zip, encodedContent, media, room, wrote, drained, signal, abandon } =
+    output
+  try {
+    storedEntry(zip, OTIOZ_VERSION_PATH, strToU8(OTIOZ_VERSION))
+    storedEntry(zip, OTIOZ_CONTENT_PATH, encodedContent)
+    wrote(encodedContent.length)
+    for (const medium of media) {
+      await room()
+      const entry = new ZipPassThrough(medium.entry)
+      zip.add(entry)
+      await pushFile(entry, medium.path, room, wrote)
+    }
+    zip.end()
+    await drained
+    return true
+  } catch (error) {
+    chunks.destroy()
+    out.destroy()
+    await removePartial(path, out)
+    if (error instanceof ExportCancelledError) return false
+    throw error
+  } finally {
+    signal?.removeEventListener('abort', abandon)
+  }
+}
+
 /**
  * The bundle, written where it was asked for. Answers whether it was — `false` when it was
  * stopped, which is a decision rather than a failure and leaves nothing on disk.
@@ -95,19 +167,27 @@ export async function writeOtiozFile(
   // Nothing is opened before every medium is there: half a bundle looks exactly like a whole one.
   // The sizes come free with the check, and they are what makes the progress a real fraction
   // rather than a count of files — one rush of thirty gigabytes among six small ones.
-  let total = encodedContent.length
-  for (const medium of media) {
-    const found = await orElse(stat(medium.path), null)
-    if (!found?.isFile()) throw new MissingMediumError(medium.entry)
-    // READ rather than listened for, and the only stop this walk has: the listener that carries
-    // every other one is attached below, and one added to an already-raised signal never fires.
-    // Nothing after this awaits before it is attached, so no moment is left uncovered.
-    if (signal?.aborted) return false
-    total += found.size
-  }
+  const total = await bundleSize(encodedContent.length, media, signal)
+  if (total === null) return false
 
+  return streamBundle(path, { content, media }, { onStep, signal }, encodedContent, total)
+}
+
+async function streamBundle(
+  path: string,
+  { media }: OtiozContents,
+  { onStep, signal }: TaskWatch,
+  encodedContent: Uint8Array,
+  total: number,
+): Promise<boolean> {
   const wrote = steppedProgress(total, onStep)
+  return finishBundle({ ...openBundleOutput(path, signal), encodedContent, media, wrote })
+}
 
+function openBundleOutput(
+  path: string,
+  signal?: AbortSignal,
+): Omit<BundleOutput, 'encodedContent' | 'media' | 'wrote'> {
   const out = createWriteStream(path)
   let wanted = false
   let wake: (() => void) | null = null
@@ -134,7 +214,6 @@ export async function writeOtiozFile(
       chunks.destroy(error)
       return
     }
-    // False means the buffer is full; the reader asks for more by calling `read` above.
     wanted = chunks.push(data)
     if (final) chunks.push(null)
   })
@@ -165,50 +244,5 @@ export async function writeOtiozFile(
     if (failure) throw failure
   }
 
-  try {
-    storedEntry(zip, OTIOZ_VERSION_PATH, strToU8(OTIOZ_VERSION))
-    storedEntry(zip, OTIOZ_CONTENT_PATH, encodedContent)
-    wrote(encodedContent.length)
-
-    for (const medium of media) {
-      // Between files as well as between chunks: a bundle of a thousand tiny stills would
-      // otherwise only notice the stop at the end of one it has already finished.
-      await room()
-      const entry = new ZipPassThrough(medium.entry)
-      zip.add(entry)
-      await pushFile(entry, medium.path, room, wrote)
-    }
-
-    zip.end()
-    await drained
-    return true
-  } catch (error) {
-    chunks.destroy()
-    out.destroy()
-    // A half-written bundle looks exactly like a finished one, and it is the file somebody hands
-    // to somebody else. It goes rather than staying to be found later.
-    //
-    // Awaited on the stream FIRST: `destroy` closes the descriptor on a later tick, and Windows
-    // refuses to unlink a file that still has an open handle — `force` only swallows `ENOENT`.
-    // And a removal that fails anyway must not turn a stop into a reported failure.
-    // 🛑 Two blocks and not one: a destroyed stream is exactly what makes `finished` reject,
-    // and the removal below has to run anyway — that is the whole reason it waits for it.
-    try {
-      await finished(out)
-    } catch {
-      // The stop, or the failure being rethrown below, is what the caller hears.
-    }
-
-    try {
-      await rm(path, { force: true })
-    } catch {
-      // A half-written bundle that will not go must not turn a stop into a reported failure.
-    }
-    if (error instanceof ExportCancelledError) return false
-    throw error
-  } finally {
-    // A signal outlives the export it was handed to — the window keeps one per row and drops
-    // them all at once, so a listener left behind holds this closure for the session.
-    signal?.removeEventListener('abort', abandon)
-  }
+  return { path, out, chunks, zip, room, drained, signal, abandon }
 }

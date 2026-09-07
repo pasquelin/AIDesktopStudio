@@ -46,7 +46,7 @@ export function favoriteThumbnailUrl(id: string): string {
   return hostedUrl(FAVORITE_HOST, id)
 }
 
-/** `ia-studio://favorite/<id>` → `<id>`. */
+/** `ai-desktop-studio://favorite/<id>` → `<id>`. */
 export function favoriteIdFromUrl(url: string): string | null {
   return hostedIdFromUrl(url, FAVORITE_HOST)
 }

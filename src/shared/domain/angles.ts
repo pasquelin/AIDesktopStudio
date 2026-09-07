@@ -25,6 +25,11 @@ export function toDegrees(radians: number): number {
   return radians * PER_RADIAN
 }
 
+/** The three axes at once, which is how an inspector shows a rotation. */
+export function degreesOf(vector: Vector3): Vector3 {
+  return { x: toDegrees(vector.x), y: toDegrees(vector.y), z: toDegrees(vector.z) }
+}
+
 /**
  * Just short of the pole. Exactly at it the direction is vertical and the azimuth stops
  * meaning anything, so a camera clamped to the pole loses which way it was facing.

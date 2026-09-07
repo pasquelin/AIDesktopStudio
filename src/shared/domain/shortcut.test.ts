@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { bindingOf, commandFor, COMMAND_REGISTRY } from './command'
+import { NAVIGATION_PRESETS, SCHEME_OF, type DeclaredPreset } from './navigationPreset'
 import {
   acceleratorOf,
   DEFAULT_MOTION,
@@ -94,8 +95,13 @@ describe('signatureOf', () => {
     expect(sign(event('Numpad1', { key: 'End' }))).toBe('Numpad1')
   })
 
-  it('reads a keypad digit as the digit it prints once the lock is on', () => {
-    expect(sign(event('Numpad1', { key: '1', metaKey: true }))).toBe('Meta+Digit1')
+  /**
+   * And leaves it alone with the lock ON too, where it prints the digit of the main row: Blender
+   * puts its numbered views on the pad, and a Mac has no lock to tell the two apart with.
+   */
+  it('keeps a keypad digit on its own position even once the lock is on', () => {
+    expect(sign(event('Numpad1', { key: '1', metaKey: true }))).toBe('Meta+Numpad1')
+    expect(sign(event('NumpadDecimal', { key: '.' }))).toBe('NumpadDecimal')
   })
 })
 
@@ -148,12 +154,13 @@ describe('away from macOS', () => {
 describe('reservedByPlatform', () => {
   it('names the chords the desktop answers before any window does', () => {
     expect(reservedByPlatform('Meta+KeyQ')).toBe(true)
-    expect(reservedByPlatform('Meta+KeyW')).toBe(true)
+    expect(reservedByPlatform('Meta+KeyM')).toBe(true)
   })
 
   /** The platform reserves ⌘, FOR the settings, which is the very thing it opens here. */
-  it('leaves ⌘, alone, and says nothing about a chord nobody claims', () => {
+  it('leaves ⌘, and ⌘W alone, and says nothing about a chord nobody claims', () => {
     expect(reservedByPlatform('Meta+Comma')).toBe(false)
+    expect(reservedByPlatform('Meta+KeyW')).toBe(false)
     expect(reservedByPlatform(shipped('canvas.undo'))).toBe(false)
     expect(reservedByPlatform(null)).toBe(false)
   })
@@ -228,6 +235,14 @@ describe('shortcutLabel', () => {
   })
 })
 
+/**
+ * What Electron takes as the KEY half of an accelerator: a character, a named key, or a function
+ * key. A `KeyboardEvent.code` like `Digit0` or `BracketLeft` is none of the three, and Electron
+ * refuses the whole binding rather than the key.
+ */
+const ELECTRON_KEY =
+  /^(.|F\d{1,2}|num\d|numdec|numadd|numsub|nummult|numdiv|Space|Tab|Backspace|Delete|Insert|Return|Enter|Up|Down|Left|Right|Home|End|PageUp|PageDown|Escape|Esc|Plus|Capslock|Numlock|PrintScreen)$/
+
 describe('acceleratorOf', () => {
   // The one place a signature and an Electron accelerator meet. The menu wrote these by hand,
   // which is how it kept advertising a key a remapped command no longer answered to.
@@ -238,6 +253,41 @@ describe('acceleratorOf', () => {
   it('names the punctuation keys Electron will not take as codes', () => {
     expect(acceleratorOf('Meta+Comma')).toBe('CmdOrCtrl+,')
     expect(acceleratorOf('Meta+Equal')).toBe('CmdOrCtrl+=')
+    expect(acceleratorOf('Meta+Semicolon')).toBe('CmdOrCtrl+;')
+    expect(acceleratorOf('Meta+Digit0')).toBe('CmdOrCtrl+0')
+    expect(acceleratorOf('Alt+Meta+ArrowLeft')).toBe('Alt+CmdOrCtrl+Left')
+  })
+
+  /**
+   * 🛑 The table was extended one key at a time, and each time the NEXT one waited for somebody to
+   * notice: seven bindings spelled a `KeyboardEvent.code` Electron cannot register — ⌘0 and ⌘1 for
+   * the zoom among them. The menu drew the key correctly and registered nothing.
+   */
+  it('spells every binding of the registry in words Electron takes', () => {
+    const unspeakable = COMMAND_REGISTRY.flatMap(command => {
+      const accelerator = acceleratorOf(command.defaultBinding ?? null)
+      const key = accelerator?.split('+').at(-1) ?? ''
+      return accelerator && !ELECTRON_KEY.test(key) ? [`${command.id} — ${accelerator}`] : []
+    })
+
+    expect(unspeakable).toEqual([])
+  })
+
+  /**
+   * 🛑 The guard above reads the registry's OWN keys and nothing else, and a preset layer is the
+   * other half: Blender's numbered views are the first bindings to live only there, and every one
+   * of them spelled a `KeyboardEvent.code` — `Numpad1` — that Electron refuses to register.
+   */
+  it('spells every key a preset moves, which the registry never carries', () => {
+    const unspeakable = NAVIGATION_PRESETS.filter(preset => preset !== 'custom').flatMap(preset =>
+      Object.values(SCHEME_OF[preset as DeclaredPreset].bindings).flatMap(binding => {
+        const accelerator = acceleratorOf(binding ?? null)
+        const key = accelerator?.split('+').at(-1) ?? ''
+        return accelerator && !ELECTRON_KEY.test(key) ? [`${preset} — ${accelerator}`] : []
+      }),
+    )
+
+    expect(unspeakable).toEqual([])
   })
 
   it('keeps modifier order and passes named keys through', () => {

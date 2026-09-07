@@ -13,7 +13,7 @@
  *
  *   node site/build.mjs <dossier-de-sortie> [--site=https://hôte/chemin/]
  *
- * CE FICHIER EST PARTAGÉ À L'IDENTIQUE par map3D, panels et IA Studio. Ce qui change
+ * CE FICHIER EST PARTAGÉ À L'IDENTIQUE par map3D, panels et AI Desktop Studio. Ce qui change
  * d'un dépôt à l'autre vit dans `repo.config.json`, jamais ici : une correction faite
  * dans un dépôt doit pouvoir être recopiée telle quelle dans les deux autres.
  *
@@ -80,7 +80,16 @@ for (const locale of locales) {
   }
 }
 
-const template = await readFile(join(HERE, 'template.html'), 'utf8')
+/* Les partiels sont inlinés AVANT la passe de valeurs : `String.replace` ne re-balaie jamais son
+   remplacement, donc un partiel passé comme VALEUR publiait ses marqueurs en clair — 141 par page,
+   121 distincts, dans les 15 langues (04/09). La forme fonction neutralise les `$&` du HTML injecté. */
+const PARTIALS = join(HERE, 'partials')
+let template = await readFile(join(HERE, 'template.html'), 'utf8')
+for (const file of existsSync(PARTIALS) ? await readdir(PARTIALS) : []) {
+  if (!file.endsWith('.html')) continue
+  const partial = await readFile(join(PARTIALS, file), 'utf8')
+  template = template.replaceAll(`{{${file.slice(0, -'.html'.length)}}}`, () => partial)
+}
 const { version } = JSON.parse(await readFile(join(ROOT, 'package.json'), 'utf8'))
 
 /** Chemin public d'une langue, relatif à la racine du site. */

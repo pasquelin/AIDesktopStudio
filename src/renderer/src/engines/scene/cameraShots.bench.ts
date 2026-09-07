@@ -1,4 +1,5 @@
-import { bench, describe } from 'vitest'
+import { bench } from '@shared/vitestBench'
+import { describe } from 'vitest'
 import { EMPTY_TIMELINE, type AnimationTimeline } from '@shared/domain/animation'
 import { SECOND } from '@shared/domain/time'
 import { cameraShot } from './animation-fixtures'

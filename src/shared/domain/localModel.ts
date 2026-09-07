@@ -19,11 +19,13 @@ export type ModelFormat = 'safetensors' | 'gguf' | 'onnx' | 'pickle'
 export const MODEL_FORMATS: readonly ModelFormat[] = ['safetensors', 'gguf', 'onnx', 'pickle']
 
 /** What opens the weights. The pair, not the format, is what the whitelist is written on. */
-export type ModelLoader = 'sherpa-onnx' | 'ollama' | 'llamacpp' | 'diffusers' | 'plugin'
+export type ModelLoader =
+  'sherpa-onnx' | 'onnx-runtime' | 'ollama' | 'llamacpp' | 'diffusers' | 'plugin'
 
 /** The values beside the type, so a table keyed by loader can be walked without a cast. */
 export const MODEL_LOADERS: readonly ModelLoader[] = [
   'sherpa-onnx',
+  'onnx-runtime',
   'ollama',
   'llamacpp',
   'diffusers',
@@ -77,6 +79,8 @@ export type ModelAttachment = {
 
 export type LocalModel = {
   readonly id: string
+  /** Generic engine id for a model-backed Auto Rig entry. */
+  readonly backendId?: string
   /**
    * `name` rather than `title`, and the guard's own reason applies: this is DOCUMENT DATA, not a
    * word of the interface. A model is called what its publisher calls it, in every language.
@@ -153,6 +157,8 @@ export type LocalModel = {
   readonly licenceStatus?: LicenceStatus
   /** Whether anything here can run it today. `supported` by default. */
   readonly runtimeStatus?: RuntimeStatus
+  /** Whether this release may expose the model, independently of its technical state. */
+  readonly distributionStatus?: DistributionStatus
   /**
    * The official pipelines for these weights are CUDA kernels (spconv, nvdiffrast). MPS and CPU
    * cannot open them; the verdict says so rather than offering a Generate that dies at import.
@@ -250,6 +256,7 @@ export const PART_SUFFIX = '.part'
  */
 const ADMITTED: Record<ModelLoader, readonly ModelFormat[]> = {
   'sherpa-onnx': ['onnx'],
+  'onnx-runtime': ['onnx'],
   ollama: ['gguf', 'safetensors'],
   llamacpp: ['gguf', 'safetensors'],
   /**
@@ -302,6 +309,7 @@ export type LicenceStatus = 'commercial' | 'non-commercial' | 'restricted' | 'un
 
 /** Whether anything here can actually RUN it today. Orthogonal to the licence, and to the disk. */
 export type RuntimeStatus = 'supported' | 'plugin-required' | 'unsupported'
+export type DistributionStatus = 'public' | 'blocked'
 
 /** Where a local model comes from, as the manager groups it — derived, never stored on the choice. */
 export type ModelSource = 'studio' | 'ollama' | 'custom'
@@ -316,7 +324,15 @@ export function sourceOf(model: LocalModel): ModelSource {
 
 /** Why a model cannot be offered at all, whatever the machine could hold. */
 export type ModelRefusal =
-  'format-not-admitted' | 'weights-carry-code' | 'licence-not-admitted' | 'licence-excludes-region'
+  | 'format-not-admitted'
+  | 'weights-carry-code'
+  | 'licence-not-admitted'
+  | 'licence-excludes-region'
+  | 'distribution-blocked'
+
+export function distributionStatusOf(model: LocalModel): DistributionStatus {
+  return model.distributionStatus ?? 'public'
+}
 
 /**
  * The licences the studio may offer a download of — SPDX identifiers, and the list IS the policy.
@@ -395,6 +411,7 @@ export function weightsCarryCode(model: LocalModel): boolean {
  * they already hold. What rank 3 earns is a mark, never a lock.
  */
 export function modelRefusalOf(model: LocalModel): ModelRefusal | null {
+  if (distributionStatusOf(model) === 'blocked') return 'distribution-blocked'
   // Before everything else, and it is not a reservation: a licence that excludes the territory
   // the studio is used from grants no permission at all, whoever does the downloading.
   if (licenceStatusOf(model) === 'unsupported-region') return 'licence-excludes-region'

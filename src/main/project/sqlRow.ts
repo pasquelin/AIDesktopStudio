@@ -34,5 +34,7 @@ export function number(row: SqlRow, column: string): number {
  */
 export function bytes(row: SqlRow, column: string): Uint8Array {
   const value = row[column]
-  return value instanceof Uint8Array ? value : new Uint8Array()
+  return ArrayBuffer.isView(value)
+    ? new Uint8Array(value.buffer, value.byteOffset, value.byteLength)
+    : new Uint8Array()
 }

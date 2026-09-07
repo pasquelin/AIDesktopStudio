@@ -110,12 +110,14 @@ describe('a model of this machine', () => {
    * `404 Model ssd-1b not found`, journalled beside the generation's own failure — two error
    * lines for one gesture, and a request spent asking a service about something it never had.
    */
-  it('is never priced by the API, and nothing is asked', async () => {
+  it('is priced at nothing without the API being asked', async () => {
     const run = vi.fn(() => Promise.reject(new Error('the API must not be reached')))
 
     const estimate = await costEstimatorOf(run, () => true)({ id: 'ssd-1b' }, { prompt: 'a cat' })
 
-    expect(estimate).toBeNull()
+    // Nothing rather than `null`: `null` reads as « could not estimate », and a consent asked for
+    // a local model then promised a spend it could not size — Codex by MCP, 2026-09-06.
+    expect(estimate).toEqual({ creativeUnits: 0 })
     expect(run).not.toHaveBeenCalled()
   })
 })

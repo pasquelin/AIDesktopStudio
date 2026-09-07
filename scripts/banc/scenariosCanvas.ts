@@ -52,6 +52,15 @@ export const CANVAS_SCENARIOS: readonly Scenario[] = [
     setup: boatImage,
     passed: run => read.layers(run).some(one => read.captionOf(one) === 'Bonjour'),
   },
+  {
+    name: '39.7 sets the image document for grayscale print',
+    said: ['Prépare ce document pour une impression en niveaux de gris à 300 ppp et 16 bits.'],
+    setup: boatImage,
+    passed: run => {
+      const image = read.canvas(run)
+      return image?.dpi === 300 && image.colorMode === 'grayscale' && image.bitDepth === 16
+    },
+  },
 
   {
     name: '40.1 puts the playhead at 3 seconds',
@@ -98,6 +107,13 @@ export const CANVAS_SCENARIOS: readonly Scenario[] = [
       await soundBed(studio)
       await laid(studio, trackAt(studio, 1), 'waves on a wooden hull.wav', 6 * read.SECOND)
     },
-    passed: run => read.audioRow(run) === undefined && read.clips(run).length === 2,
+    /**
+     * 🛑 THE row that carried the sounds, not every audio row: the decor lays A1 with two sounds
+     * and leaves A2 empty, so « plus aucune piste audio » asked for the empty one to go as well —
+     * which the sentence never says. One audio row left, and the two video clips alone.
+     */
+    passed: run =>
+      read.tracks(run).filter(one => one.kind === 'audio').length === 1 &&
+      read.clips(run).length === 2,
   },
 ]

@@ -14,11 +14,13 @@ import { usePickedRows } from './usePickedRows'
 import { deselect } from '@/helpers/selection'
 import { workspaceById } from '@/helpers/workspaces'
 import { useAssets, assetsById } from '@/stores/assets'
-import { activeSceneId, activeScriptId, useDocuments } from '@/stores/documents'
+import { activeImageId, activeSceneId, activeScriptId, useDocuments } from '@/stores/documents'
 import { useLayouts } from '@/stores/layouts'
 import { sceneOf, selectIn, useScenes } from '@/stores/scenes'
 import { latestGenerationIds, useJobs } from '@/stores/jobs'
 import { selectedFilePaths, useSelection } from '@/stores/selection'
+import { generationCommentsOf, useGenerationComments } from '@/stores/generationComments'
+import { writtenGenerationComments } from '@/features/image/generationComments'
 
 /**
  * What the AI side knows of the workspace right now — the § 9 of the brief.
@@ -113,10 +115,18 @@ export function useGenerationContext(forced: AiRoleId | null): GenerationContext
   // Offered to the resolver and to nothing else: there is no catalogue row to attach and no
   // thumbnail to draw. Its TEXT travels in the body — see `bodyExtras`.
   const scriptId = useDocuments(activeScriptId)
+  const imageId = useDocuments(activeImageId)
+  const annotatedImage = useGenerationComments(
+    state => writtenGenerationComments(generationCommentsOf(state, imageId)).length > 0,
+  )
 
   const available = useMemo<readonly AvailableInput[]>(
-    () => (scriptId === null ? inputs : [...inputs, SCRIPT_AT_HAND]),
-    [inputs, scriptId],
+    () => [
+      ...inputs,
+      ...(scriptId === null ? [] : [SCRIPT_AT_HAND]),
+      ...(annotatedImage ? [IMAGE_AT_HAND] : []),
+    ],
+    [inputs, scriptId, annotatedImage],
   )
 
   // Memoised with the inputs it reads: the resolution allocates a contract per required input,
@@ -134,6 +144,7 @@ const NO_KEYS: readonly string[] = []
 
 /** The open script, as the resolver sees it. Frozen once: it carries no id and never varies. */
 const SCRIPT_AT_HAND: AvailableInput = { role: 'source', kind: 'code' }
+const IMAGE_AT_HAND: AvailableInput = { role: 'source', kind: 'image' }
 
 /** A separator no node name can hold, so the three parts travel as one comparable string. */
 const KEY_PART = '\u0000'

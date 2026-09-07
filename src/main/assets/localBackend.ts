@@ -9,20 +9,12 @@ import {
   type MediaProbe,
 } from '@shared/domain/asset'
 import type { FolderRole } from '@shared/domain/folderRole'
-import { POSTERS_FOLDER } from '@shared/domain/project'
+import { POSTERS_FOLDER, resourceFolderOf } from '@shared/domain/project'
 import type { PbrChannel } from '@shared/domain/material'
+import type { ModelTextureUse } from '@shared/domain/modelTextureUse'
 import type { AsyncCatalog } from '@main/project/catalogClient'
 import { log } from '@main/log'
-import { freeAssetPath } from './assetFile'
-
-const FALLBACK_EXTENSION: Record<AssetType, string> = {
-  image: '.png',
-  video: '.mp4',
-  audio: '.mp3',
-  mesh: '.glb',
-  skybox: '.png',
-  animation: '.glb',
-}
+import { freeAnimationPath, freeAssetPath, safeExtension, withExtension } from './assetFile'
 
 export type Download = (url: string) => Promise<Uint8Array>
 
@@ -90,6 +82,9 @@ export type ImportRequest = {
   generation?: AssetGeneration
   map?: PbrChannel
   mapInverted?: boolean
+  /** The glTF slot of an extracted packed or extension map no PBR channel names exactly. */
+  packedSlot?: string
+  modelTextureUses?: readonly ModelTextureUse[]
   /**
    * The library's own still for this asset. Brought down for the kinds no browser can decode —
    * a mesh — so a tile that was a picture in the library stays one once the file is here.
@@ -100,6 +95,14 @@ export type ImportRequest = {
 /** An import whose bytes the caller already holds — an edited take, rather than a download. */
 export type WriteRequest = Omit<ImportRequest, 'url'> & {
   extension: string
+  /** Overrides filing without changing what kind of asset the catalogue records. */
+  folderRole?: FolderRole
+  /**
+   * Files this under `.resources/` — what the APP ships, which no surface that browses assets
+   * lists. 🛑 A FLAG, never a path: a folder reaching this from a request would write outside the
+   * project on its first `../`.
+   */
+  resource?: true
   /** What the bytes say about themselves, when the caller could read it. */
   probe?: MediaProbe
 }
@@ -128,30 +131,6 @@ export type LocalBackend = {
 }
 
 /**
- * Anything that is not a plain extension is refused, and the kind's own is used instead.
- *
- * The refusal is the point, and it lives here rather than at each caller: the string comes
- * from an API response or from the renderer, and `../../.ssh/id_rsa` appended to an asset id
- * would write outside the project entirely.
- */
-function safeExtension(extension: string, type: AssetType): string {
-  return /^\.[a-z0-9]{1,8}$/i.test(extension) ? extension.toLowerCase() : FALLBACK_EXTENSION[type]
-}
-
-/**
- * The same file, re-suffixed — a take re-encoded on the way out keeps the name it is known by.
- *
- * Which is also what makes it the only path an asset's own file ever needs: it cannot collide,
- * being the file that is already there. `freeAssetPath` is for a file that does not exist yet.
- */
-function withExtension(relativePath: string, extension: string): string {
-  // `extname` and not `stemOf`, which is for a NAME: this takes a path, and only `node:path`
-  // knows that the last dot of `assets/v1.2/take` belongs to a folder rather than to the file.
-  const suffix = extname(relativePath)
-  return `${suffix ? relativePath.slice(0, -suffix.length) : relativePath}${extension}`
-}
-
-/**
  * A URL carries a name, and a name carries whatever the API put in it. Only the extension is
  * kept, and only if it looks like one — the file name itself comes from the asset's own name.
  */
@@ -159,7 +138,7 @@ export function extensionFromUrl(url: string, type: AssetType): string {
   try {
     return safeExtension(extname(new URL(url).pathname), type)
   } catch {
-    return FALLBACK_EXTENSION[type]
+    return safeExtension('', type)
   }
 }
 
@@ -177,6 +156,79 @@ export function twinOf(
     ...(request.remoteUpdatedAt ? { remoteUpdatedAt: request.remoteUpdatedAt } : {}),
     ...(request.sync === false ? {} : { syncStatus: 'synced' }),
   }
+}
+
+type WrittenAsset = {
+  request: WriteRequest
+  existing: Asset | null
+  name: string
+  relativePath: string
+  byteLength: number
+  at: string
+  fingerprint?: string | null
+  probe?: MediaProbe
+  posterPath?: string
+}
+
+type WriteSource = { bytes: Uint8Array } | { from: string }
+
+const sourceLength = async (source: WriteSource, absolute: string): Promise<number> =>
+  'bytes' in source ? source.bytes.byteLength : (await stat(absolute)).size
+
+function writtenAssetOf(input: WrittenAsset): Asset {
+  const { request, existing, name, relativePath, byteLength, at, fingerprint, probe, posterPath } =
+    input
+  return {
+    ...existing,
+    id: request.id,
+    name,
+    type: request.type,
+    location: 'local',
+    path: relativePath,
+    bytes: byteLength,
+    tags: existing?.tags ?? [],
+    createdAt: existing?.createdAt ?? at,
+    localChangedAt: at,
+    ...(fingerprint ? { hash: fingerprint } : {}),
+    ...(probe ? { probe } : {}),
+    ...(posterPath ? { posterPath } : {}),
+    ...(request.jobId ? { jobId: request.jobId } : {}),
+    ...requestMetadata(request),
+    ...twinOf(request, at),
+  }
+}
+
+function requestMetadata(request: Omit<ImportRequest, 'url'>): Partial<Asset> {
+  return {
+    ...(request.derivedFrom ? { derivedFrom: request.derivedFrom } : {}),
+    ...(request.groupId ? { groupId: request.groupId } : {}),
+    ...(request.outputIndex !== undefined ? { outputIndex: request.outputIndex } : {}),
+    ...(request.generation ? { generation: request.generation } : {}),
+    ...(request.map
+      ? { map: request.map, ...(request.mapInverted ? { mapInverted: true } : {}) }
+      : {}),
+    ...(request.packedSlot ? { packedSlot: request.packedSlot } : {}),
+    ...(request.modelTextureUses ? { modelTextureUses: request.modelTextureUses } : {}),
+  }
+}
+
+function replacementAsset(
+  existing: Asset,
+  relativePath: string,
+  bytes: Uint8Array,
+  at: string,
+  probe?: MediaProbe,
+): Asset {
+  const rewritten: Asset = {
+    ...existing,
+    path: relativePath,
+    bytes: bytes.byteLength,
+    localChangedAt: at,
+    ...(existing.remoteAssetId ? { syncStatus: 'local-ahead' } : {}),
+    ...(probe ? { probe } : {}),
+  }
+  delete rewritten.peaksPath
+  return rewritten
 }
 
 /**
@@ -237,9 +289,6 @@ export function createLocalBackend({
     }
   }
 
-  /** Bytes in hand, or a file already on this machine. */
-  type WriteSource = { bytes: Uint8Array } | { from: string }
-
   /** `rename` first: a copy of a panorama is megabytes of I/O the same volume never needs. */
   const place = async (source: WriteSource, absolute: string): Promise<void> => {
     if ('bytes' in source) return await writeFile(absolute, source.bytes)
@@ -253,8 +302,31 @@ export function createLocalBackend({
     }
   }
 
-  const lengthOf = async (source: WriteSource, absolute: string): Promise<number> =>
-    'bytes' in source ? source.bytes.byteLength : (await stat(absolute)).size
+  const writePath = async (
+    request: WriteRequest,
+    existing: Asset | null,
+    name: string,
+  ): Promise<string> => {
+    const extension = safeExtension(request.extension, request.type)
+    if (existing?.path) return withExtension(existing.path, extension)
+
+    const role = request.folderRole ?? roleForAsset(request)
+    const folder = request.resource ? resourceFolderOf(role) : await folderFor(role)
+    if (request.type === 'animation')
+      return freeAnimationPath(projectPath(), folder, name, extension)
+    return freeAssetPath(projectPath(), folder, name, extension)
+  }
+
+  const removeReplacedPoster = async (
+    existing: Asset | null,
+    posterPath?: string,
+  ): Promise<void> => {
+    if (posterPath && existing?.posterPath && existing.posterPath !== posterPath)
+      await rm(join(projectPath(), existing.posterPath), { force: true })
+  }
+
+  const addWritten = async (input: WrittenAsset): Promise<Asset> =>
+    announce(await catalog().add(writtenAssetOf(input)))
 
   const write = async (request: WriteRequest, source: WriteSource): Promise<Asset> => {
     // Read BEFORE the write, where it used to run beside it: the file is named after the row
@@ -272,17 +344,13 @@ export function createLocalBackend({
     const poster = savePoster(request)
 
     const existing = await catalog().find(request.id)
-    const extension = safeExtension(request.extension, request.type)
-
     // The name the ROW carries wins over the request's: a second pull of an asset the user has
     // since renamed must not put the API's wording back — neither on their disk NOR in their
     // catalogue, and writing `request.name` here while the file took the other one is the two
     // names apart again, in the opposite direction.
     const name = existing?.name ?? request.name
 
-    const relativePath = existing?.path
-      ? withExtension(existing.path, extension)
-      : await freeAssetPath(projectPath(), await folderFor(roleForAsset(request)), name, extension)
+    const relativePath = await writePath(request, existing, name)
 
     // The probe spawns ffprobe, so it runs beside the still rather than after it.
     const absolute = join(projectPath(), relativePath)
@@ -292,49 +360,25 @@ export function createLocalBackend({
       // After the write, and only after it: these three read the file that was just laid down.
       written.then(() => probeWritten(request, relativePath)),
       written.then(() => hash(absolute)),
-      written.then(() => lengthOf(source, absolute)),
+      written.then(() => sourceLength(source, absolute)),
     ])
-
-    const at = now()
 
     // The still's name follows the extension the CDN's URL carried, and a second pull of the
     // same twin can carry another one. The file the row stops pointing at is ours and nothing
     // would ever come back for it — the same reason `replaceBytes` drops the file it replaces.
-    if (posterPath && existing?.posterPath && existing.posterPath !== posterPath) {
-      await rm(join(projectPath(), existing.posterPath), { force: true })
-    }
+    await removeReplacedPoster(existing, posterPath)
 
-    const asset: Asset = {
-      ...existing,
-      id: request.id,
+    return addWritten({
+      request,
+      existing,
       name,
-      type: request.type,
-      location: 'local',
-      path: relativePath,
-      bytes: byteLength,
-      tags: existing?.tags ?? [],
-      createdAt: existing?.createdAt ?? at,
-      localChangedAt: at,
-      // Absent rather than cleared, like the poster below: a read that failed this time leaves
-      // the fingerprint an earlier write recorded, which still describes the same bytes.
-      ...(fingerprint ? { hash: fingerprint } : {}),
-      ...(probe ? { probe } : {}),
-      // Absent rather than cleared, for the reason the fingerprint above carries.
-      ...(posterPath ? { posterPath } : {}),
-      ...(request.jobId ? { jobId: request.jobId } : {}),
-      ...(request.derivedFrom ? { derivedFrom: request.derivedFrom } : {}),
-      ...(request.groupId ? { groupId: request.groupId } : {}),
-      ...(request.outputIndex !== undefined ? { outputIndex: request.outputIndex } : {}),
-      ...(request.generation ? { generation: request.generation } : {}),
-      // Nested: the flag says how to read a channel, so it means nothing without one — and the
-      // catalogue only reads it back inside a valid channel anyway.
-      ...(request.map
-        ? { map: request.map, ...(request.mapInverted ? { mapInverted: true } : {}) }
-        : {}),
-      ...twinOf(request, at),
-    }
-
-    return announce(await catalog().add(asset))
+      relativePath,
+      byteLength,
+      at: now(),
+      fingerprint,
+      probe,
+      posterPath,
+    })
   }
 
   /**
@@ -353,6 +397,13 @@ export function createLocalBackend({
       // exists for reports its own failures to the journal.
     }
     return asset
+  }
+
+  const replacementPath = async (existing: Asset, extension: string): Promise<string> => {
+    const safe = safeExtension(extension, existing.type)
+    return existing.path
+      ? withExtension(existing.path, safe)
+      : freeAssetPath(projectPath(), await folderFor(roleForAsset(existing)), existing.name, safe)
   }
 
   return {
@@ -384,14 +435,7 @@ export function createLocalBackend({
       // The stem the file already has, so that applying an edit is not also a rename: a take
       // imported before names reached the disk keeps its id there until somebody renames it,
       // which is the one gesture that moves a file.
-      const relativePath = existing.path
-        ? withExtension(existing.path, safeExtension(extension, existing.type))
-        : await freeAssetPath(
-            projectPath(),
-            await folderFor(roleForAsset(existing)),
-            existing.name,
-            safeExtension(extension, existing.type),
-          )
+      const relativePath = await replacementPath(existing, extension)
 
       const absolute = join(projectPath(), relativePath)
       await writeFile(absolute, bytes)
@@ -412,17 +456,7 @@ export function createLocalBackend({
       // A fresh one is derived from the new bytes below, on the same path every other write
       // takes. Nothing used to do that, and applying an edit left every clip of the take
       // waveform-less for good.
-      const rewritten: Asset = {
-        ...existing,
-        path: relativePath,
-        bytes: bytes.byteLength,
-        localChangedAt: now(),
-        // The file just changed under a twin that has not: saying so is what later lets a push
-        // be offered, and what stops an edited take from passing for identical to the library.
-        ...(existing.remoteAssetId ? { syncStatus: 'local-ahead' } : {}),
-        ...(probe ? { probe } : {}),
-      }
-      delete rewritten.peaksPath
+      const rewritten = replacementAsset(existing, relativePath, bytes, now(), probe)
 
       // The fingerprint follows the bytes for the same reason the waveform does: the one the row
       // carried describes a take that no longer exists, so a rescan would hunt for a file nobody

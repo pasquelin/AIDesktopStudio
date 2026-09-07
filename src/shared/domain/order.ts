@@ -56,3 +56,21 @@ export function movedWithin(ids: readonly string[], id: string, by: number): rea
   moved.splice(to, 0, id)
   return moved
 }
+
+/**
+ * The same items, in the order the ids name. Anything the order forgot keeps its place at the
+ * end rather than vanishing: an order is a gesture, and a gesture computed against a stale list
+ * must not delete an entry.
+ */
+export function inOrder<T extends { id: string }>(
+  items: readonly T[],
+  order: readonly string[],
+): T[] {
+  const byId = new Map(items.map(one => [one.id, one]))
+  const moved = order.flatMap(id => {
+    const found = byId.get(id)
+    if (found) byId.delete(id)
+    return found ? [found] : []
+  })
+  return [...moved, ...byId.values()]
+}

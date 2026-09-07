@@ -136,7 +136,7 @@ export function createCodeJobRunner(deps: CodeJobDeps): CodeJobRunner {
           deps.post,
         ),
       )
-      job.answer = unfencedCode(answer)
+      job.answer = unfencedCode(answer.text)
       job.status = 'success'
     } catch (error) {
       deps.log('warn', `writing a script failed: ${String(error)}`)

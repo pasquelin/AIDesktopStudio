@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { movedWithin, reconcileOrder } from './order'
+import { inOrder, movedWithin, reconcileOrder } from './order'
 
 const REGISTRY = ['a', 'b', 'c', 'd']
 const identity = (id: string): string => id
@@ -61,5 +61,11 @@ describe('movedWithin', () => {
 
     expect(movedWithin(ids, 'a', -1)).toBe(ids)
     expect(movedWithin(ids, 'gone', 1)).toBe(ids)
+  })
+})
+
+describe('inOrder', () => {
+  it('keeps an entry the order forgot rather than dropping it', () => {
+    expect(inOrder([{ id: 'a' }, { id: 'b' }], ['b']).map(one => one.id)).toEqual(['b', 'a'])
   })
 })

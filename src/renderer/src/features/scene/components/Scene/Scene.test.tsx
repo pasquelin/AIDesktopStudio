@@ -7,6 +7,9 @@ import { useDocuments } from '@/stores/documents'
 import { clearScenes } from '@/stores/scene-fixtures'
 import { useScenes } from '@/stores/scenes'
 import { Scene } from './Scene'
+import { installCharacterDocument } from '@/stores/character-fixtures'
+import { workshopIdOf } from '@shared/domain/character'
+import { workshopScene } from '@/character/characterStage'
 
 const scene: DocumentDescriptor = {
   id: 'doc-1',
@@ -40,6 +43,17 @@ describe('the scene panel', () => {
 
     render(<Scene />)
     expect(screen.getByRole('tree')).toBeInTheDocument()
+  })
+
+  it('draws the model workshop as a scene while a character is in front', () => {
+    installCharacterDocument('character-1', 'asset-hero')
+    const workshopId = workshopIdOf('asset-hero')
+    useScenes.getState().replace(workshopId, workshopScene('asset-hero'))
+
+    render(<Scene />)
+
+    expect(screen.getByRole('tree')).toBeInTheDocument()
+    expect(screen.getByText('asset-hero')).toBeInTheDocument()
   })
 
   // A tree panel handed an image document would ask `useScenes` for a scene that does not exist.

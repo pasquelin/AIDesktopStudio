@@ -185,7 +185,7 @@ export function modelsForWith(
 ): readonly LocalModel[] {
   const shipped = shippedModelsFor(role)
   const extra = [
-    ...(role === OWN_MODEL_ROLE ? own : []),
+    ...own.filter(model => discoveredServes(model, role)),
     ...discovered.filter(model => discoveredServes(model, role)),
   ]
   return extra.length === 0 ? shipped : [...shipped, ...extra]
@@ -214,6 +214,8 @@ export function modelWith(
 export function catalogueRefusals(): readonly { model: string; refusal: string }[] {
   return SHIPPED.flatMap(entry => {
     const refusal = modelRefusalOf(entry.model)
-    return refusal === null ? [] : [{ model: entry.model.id, refusal }]
+    return refusal === null || refusal === 'distribution-blocked'
+      ? []
+      : [{ model: entry.model.id, refusal }]
   })
 }

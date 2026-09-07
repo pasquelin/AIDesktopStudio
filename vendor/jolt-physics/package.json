@@ -1,0 +1,26 @@
+{
+  "name": "jolt-physics",
+  "version": "1.1.0-simd.3e3b5ff",
+  "description": "JoltPhysics.js at 3e3b5ff (three commits past 1.1.0) recompiled with -DENABLE_SIMD=ON and -DALLOW_MEMORY_GROWTH=ON — see ../../scripts/build-jolt.mjs and artefact.json",
+  "license": "MIT",
+  "author": "jrouwe",
+  "homepage": "https://github.com/jrouwe/JoltPhysics.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jrouwe/JoltPhysics.js.git"
+  },
+  "type": "module",
+  "main": "dist/jolt-physics.wasm-compat.js",
+  "types": "dist/types.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/types.d.ts",
+      "default": "./dist/jolt-physics.wasm-compat.js"
+    },
+    "./wasm-compat": {
+      "types": "./dist/types.d.ts",
+      "default": "./dist/jolt-physics.wasm-compat.js"
+    },
+    "./package.json": "./package.json"
+  }
+}

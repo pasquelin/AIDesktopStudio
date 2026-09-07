@@ -30,7 +30,7 @@ export function colliderFromNode(node: SceneNode): NodeCollider | null {
   const scale = node.transform.scale
 
   if (node.type === 'carved') return carvedCollider(node.carved, scale, said)
-  if (node.type === 'mesh') return meshCollider(node.geometry, scale, said)
+  if (node.type === 'mesh' && !node.instances) return meshCollider(node.geometry, scale, said)
   return null
 }
 
@@ -77,22 +77,8 @@ function carvedCollider(graph: CsgGraph, scale: PlainVector3, said: string): Nod
 function primitiveOf(shape: GeometryDescriptor, scale: PlainVector3): ColliderShape | null {
   const round = Math.abs(scale.x - scale.z) < 1e-6
 
-  if (shape.kind === 'box') {
-    return {
-      kind: 'cuboid',
-      hx: Math.abs(shape.width * scale.x) / 2,
-      hy: Math.abs(shape.height * scale.y) / 2,
-      hz: Math.abs(shape.depth * scale.z) / 2,
-    }
-  }
-  if (shape.kind === 'plane') {
-    return {
-      kind: 'cuboid',
-      hx: Math.abs(shape.width * scale.x) / 2,
-      hy: Math.abs(shape.height * scale.y) / 2,
-      hz: PLANE_THICKNESS,
-    }
-  }
+  if (shape.kind === 'box') return boxPrimitive(shape, scale)
+  if (shape.kind === 'plane') return planePrimitive(shape, scale)
   if (shape.kind === 'sphere' && round && Math.abs(scale.x - scale.y) < 1e-6) {
     return { kind: 'ball', radius: Math.abs(shape.radius * scale.x) }
   }
@@ -108,13 +94,37 @@ function primitiveOf(shape: GeometryDescriptor, scale: PlainVector3): ColliderSh
     if (shape.radiusTop === shape.radiusBottom) {
       return { kind: 'cylinder', halfHeight, radius: Math.abs(shape.radiusTop * scale.x) }
     }
-    // Rapier's cone stands on its base, like three's cylinder with nothing on top.
+    // A cone stands on its base, like three's cylinder with nothing on top.
     if (shape.radiusTop === 0) {
       return { kind: 'cone', halfHeight, radius: Math.abs(shape.radiusBottom * scale.x) }
     }
   }
 
   return null
+}
+
+function boxPrimitive(
+  shape: Extract<GeometryDescriptor, { kind: 'box' }>,
+  scale: PlainVector3,
+): ColliderShape {
+  return {
+    kind: 'cuboid',
+    hx: Math.abs(shape.width * scale.x) / 2,
+    hy: Math.abs(shape.height * scale.y) / 2,
+    hz: Math.abs(shape.depth * scale.z) / 2,
+  }
+}
+
+function planePrimitive(
+  shape: Extract<GeometryDescriptor, { kind: 'plane' }>,
+  scale: PlainVector3,
+): ColliderShape {
+  return {
+    kind: 'cuboid',
+    hx: Math.abs(shape.width * scale.x) / 2,
+    hy: Math.abs(shape.height * scale.y) / 2,
+    hz: PLANE_THICKNESS,
+  }
 }
 
 const boxed = (points: Float32Array): NodeCollider | null => {

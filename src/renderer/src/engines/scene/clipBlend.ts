@@ -49,7 +49,6 @@ export function clipBlendAt(
   playhead: Us,
 ): ClipWeight[] {
   const sounding = new Map<Block, number>()
-
   for (const lane of lanes) {
     const blocks = placed(lane.clips, lengths)
     if (blocks.length === 0) continue
@@ -60,8 +59,6 @@ export function clipBlendAt(
     }
 
     const within = [...heard.values()].reduce((sum, weight) => sum + weight, 0)
-    // Whatever the fades leave goes to the block that HOLDS here, never to the rest pose: a
-    // character melting towards its bind pose is the one thing a fade must never look like.
     if (within < 1) {
       const holder = holdingAt(blocks, playhead)
       heard.set(holder, (heard.get(holder) ?? 0) + 1 - within)
@@ -70,9 +67,6 @@ export function clipBlendAt(
     for (const [block, weight] of heard) sounding.set(block, weight)
   }
 
-  // Shared out WITHIN a body part and not across all of them: two blocks driving different
-  // halves are not competing for the same bones, and halving both is what made « walk AND wave »
-  // come out as neither.
   const totals = new Map<BodyPart, number>()
   for (const [block, weight] of sounding) {
     totals.set(partOf(block), (totals.get(partOf(block)) ?? 0) + weight)

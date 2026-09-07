@@ -1,4 +1,5 @@
 import { assetUrl } from '@shared/domain/asset'
+import { lendable } from '@/helpers/lendable'
 import type { Size } from '@/engines/core/geometry'
 
 /** How a picture's own dimensions are read. Injected, because jsdom decodes nothing. */
@@ -33,21 +34,15 @@ export function naturalSize(url: string): Promise<Size> {
  * decodes nothing, so an `Image` there never fires `load` and every measurement would hang.
  * Lent for the length of a case, like the sqlite driver and the seam measurer already are.
  */
-let measurePicture: PictureMeasure = naturalSize
+const measurer = lendable<PictureMeasure>(naturalSize)
 
 /** Swaps the measurer, and hands back the undo. */
-export function lendPictureMeasure(measure: PictureMeasure): () => void {
-  const previous = measurePicture
-  measurePicture = measure
-  return () => {
-    measurePicture = previous
-  }
-}
+export const lendPictureMeasure = measurer.lend
 
 /** What an asset measures, or `null` when its file will not decode. */
 export async function measureAsset(
   assetId: string,
-  measure: PictureMeasure = measurePicture,
+  measure: PictureMeasure = measurer.current(),
 ): Promise<Size | null> {
   try {
     const size = await measure(assetUrl(assetId))

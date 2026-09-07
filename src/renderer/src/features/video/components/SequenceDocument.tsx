@@ -36,7 +36,7 @@ export function SequenceDocument({ documentId }: SequenceDocumentProps) {
   const { t } = useTranslation()
   const sequence = useSequences(state => sequenceOf(state, documentId))
   const clockHead = usePlayback(state => playbackHeadOf(state, documentId))
-  const program = clockHead === undefined ? sequence : { ...sequence, playhead: clockHead }
+  const program = sequenceAt(sequence, clockHead)
   const active = useDocumentIsInFront(documentId)
 
   useDocumentTitle(
@@ -88,11 +88,7 @@ export function SequenceDocument({ documentId }: SequenceDocumentProps) {
     posted.current = sequence
     // Identity, not equality: the store replaces the objects it changes, so three references
     // answer "is this the same edit with the playhead somewhere else" without walking a clip.
-    const sameEdit =
-      last !== null &&
-      last.tracks === sequence.tracks &&
-      last.settings === sequence.settings &&
-      last.selectedId === sequence.selectedId
+    const sameEdit = sameSequenceEdit(last, sequence)
 
     if (sameEdit) opened.postMessage({ kind: 'time', playhead: sequence.playhead })
     else opened.postMessage({ kind: 'edit', sequence })
@@ -190,7 +186,7 @@ export function SequenceDocument({ documentId }: SequenceDocumentProps) {
    */
   const clipId = selected?.id ?? null
   const playing = sourcePlaying || running
-  if (!playing && (followed.head !== sequence.playhead || followed.clipId !== clipId)) {
+  if (shouldFollow(playing, followed, sequence.playhead, clipId)) {
     setFollowed({ head: sequence.playhead, clipId })
     setSourceTime(followedTime)
   }
@@ -224,48 +220,77 @@ export function SequenceDocument({ documentId }: SequenceDocumentProps) {
     [documentId],
   )
 
-  return (
-    // The inset belongs to the ROW, not to each monitor: carried by both, it doubled around the
-    // handle and the pair read as two panes pushed apart rather than as two panels side by side.
-    <div ref={pairRef} className="flex h-full min-h-0 p-(--sc-gutter)">
-      {sourceShown && (
-        <>
-          {/* Fixed width once it has been dragged, an equal share until then: a document opens on
+  function Monitors() {
+    return (
+      // The inset belongs to the ROW, not to each monitor: carried by both, it doubled around the
+      // handle and the pair read as two panes pushed apart rather than as two panels side by side.
+      <div ref={pairRef} className="flex h-full min-h-0 p-(--sc-gutter)">
+        {sourceShown && (
+          <>
+            {/* Fixed width once it has been dragged, an equal share until then: a document opens on
               two monitors of the same size, and only a gesture makes one of them the wide one. */}
-          <div className="flex min-w-0" style={leadStyle} onPointerDown={() => setFocus('source')}>
-            <Monitor
-              owner={owner}
-              title={t('transport.source')}
-              role={t('transport.sourceRole')}
-              sequence={source}
-              onTime={setSourceTime}
-              keyboard={active && armed === 'source'}
-              placeholder={
-                selected ? null : (
-                  <EmptyState icon={mdiVideoOutline} message={t('transport.noClip')} />
-                )
-              }
-            />
-          </div>
+            <div
+              className="flex min-w-0"
+              style={leadStyle}
+              onPointerDown={() => setFocus('source')}
+            >
+              <Monitor
+                owner={owner}
+                title={t('transport.source')}
+                role={t('transport.sourceRole')}
+                sequence={source}
+                onTime={setSourceTime}
+                keyboard={active && armed === 'source'}
+                placeholder={
+                  selected ? null : (
+                    <EmptyState icon={mdiVideoOutline} message={t('transport.noClip')} />
+                  )
+                }
+              />
+            </div>
 
-          {/* The same handle the shell splits its zones with, so the gesture is the one gesture.
+            {/* The same handle the shell splits its zones with, so the gesture is the one gesture.
               It replaces a `Separator`, which drew the line and refused to be moved. */}
-          <ResizeHandle axis="horizontal" size={leadSize} onSize={onLeadSize} />
-        </>
-      )}
+            <ResizeHandle axis="horizontal" size={leadSize} onSize={onLeadSize} />
+          </>
+        )}
 
-      <div className="flex min-w-0 flex-1" onPointerDown={() => setFocus('program')}>
-        <Monitor
-          owner={programOwner(documentId)}
-          title={t('transport.program')}
-          role={t('transport.programRole')}
-          sequence={program}
-          onTime={setProgramTime}
-          keyboard={active && armed === 'program'}
-          program
-          clipHalf={{ shown: sourceShown, onToggle: toggleSource }}
-        />
+        <div className="flex min-w-0 flex-1" onPointerDown={() => setFocus('program')}>
+          <Monitor
+            owner={programOwner(documentId)}
+            title={t('transport.program')}
+            role={t('transport.programRole')}
+            sequence={program}
+            onTime={setProgramTime}
+            keyboard={active && armed === 'program'}
+            program
+            clipHalf={{ shown: sourceShown, onToggle: toggleSource }}
+          />
+        </div>
       </div>
-    </div>
+    )
+  }
+  return <>{Monitors()}</>
+}
+
+function sequenceAt(sequence: SequenceState, head: Us | undefined): SequenceState {
+  return head === undefined ? sequence : { ...sequence, playhead: head }
+}
+
+function sameSequenceEdit(last: SequenceState | null, sequence: SequenceState): boolean {
+  return (
+    last !== null &&
+    last.tracks === sequence.tracks &&
+    last.settings === sequence.settings &&
+    last.selectedId === sequence.selectedId
   )
+}
+
+function shouldFollow(
+  playing: boolean,
+  followed: { head: Us; clipId: string | null },
+  head: Us,
+  clipId: string | null,
+): boolean {
+  return !playing && (followed.head !== head || followed.clipId !== clipId)
 }

@@ -1,3 +1,5 @@
+import { vi } from 'vitest'
+
 /**
  * Electron in a bottle, for main-process tests — four of them had grown their own copy of
  * `ipcMain`, so any change to `handle()` meant four edits.
@@ -22,10 +24,12 @@ export type FakeWindow = {
     id: number
     send: (channel: string, payload: unknown) => void
     isDestroyed: () => boolean
+    once: (event: string, listener: () => void) => void
   }
   isFocusable: () => boolean
   isDestroyed: () => boolean
   on: (event: string, listener: () => void) => void
+  close: () => void
   /** What the window was sent, in order — what an assertion on `send` reads. */
   sent: { channel: string; payload: unknown }[]
 }
@@ -34,6 +38,7 @@ const windows: FakeWindow[] = []
 let focused: FakeWindow | null = null
 const appListeners = new Map<string, Listener[]>()
 const closedListeners = new Map<FakeWindow, (() => void)[]>()
+const contentsDestroyedListeners = new Map<FakeWindow, (() => void)[]>()
 /** Still listed by `getAllWindows`, but gone — what an `isDestroyed` guard is written for. */
 const destroyed = new Set<FakeWindow>()
 /** Off the list, and its web contents with it: reading their id throws, as it does for real. */
@@ -41,10 +46,16 @@ const closed = new Set<FakeWindow>()
 /** Every application menu set, newest last. A rebuild that changes nothing still counts. */
 const menus: unknown[] = []
 
+export const quitApp = vi.fn()
+
 export function mockElectron(): {
   ipcMain: { handle: (channel: string, handler: Invoke) => void }
-  app: { on: (event: string, listener: Listener) => void }
-  BrowserWindow: { getAllWindows: () => FakeWindow[]; getFocusedWindow: () => FakeWindow | null }
+  app: { on: (event: string, listener: Listener) => void; quit: () => void }
+  BrowserWindow: {
+    getAllWindows: () => FakeWindow[]
+    getFocusedWindow: () => FakeWindow | null
+    fromWebContents: (contents: unknown) => FakeWindow | null
+  }
   Menu: {
     buildFromTemplate: (template: unknown) => unknown
     setApplicationMenu: (menu: unknown) => void
@@ -60,8 +71,13 @@ export function mockElectron(): {
     app: {
       on: (event, listener) =>
         void appListeners.set(event, [...(appListeners.get(event) ?? []), listener]),
+      quit: () => quitApp(),
     },
-    BrowserWindow: { getAllWindows: () => [...windows], getFocusedWindow: () => focused },
+    BrowserWindow: {
+      getAllWindows: () => [...windows],
+      getFocusedWindow: () => focused,
+      fromWebContents: contents => windows.find(one => one.webContents === contents) ?? null,
+    },
     Menu: {
       // The template travels through untouched, so a test reads what was built rather than an
       // opaque `Menu` the double would have had to invent.
@@ -109,6 +125,13 @@ export function openWindow({ focusable = true } = {}): FakeWindow {
       },
       send: (channel, payload) => void sent.push({ channel, payload }),
       isDestroyed: () => destroyed.has(window) || closed.has(window),
+      once: (event, listener) => {
+        if (event !== 'destroyed') return
+        contentsDestroyedListeners.set(window, [
+          ...(contentsDestroyedListeners.get(window) ?? []),
+          listener,
+        ])
+      },
     },
     isFocusable: () => focusable,
     isDestroyed: () => destroyed.has(window),
@@ -116,6 +139,7 @@ export function openWindow({ focusable = true } = {}): FakeWindow {
       if (event !== 'closed') return
       closedListeners.set(window, [...(closedListeners.get(window) ?? []), listener])
     },
+    close: vi.fn(),
     sent,
   }
 
@@ -134,6 +158,8 @@ export function closeWindow(window: FakeWindow): void {
   const at = windows.indexOf(window)
   if (at !== -1) windows.splice(at, 1)
   if (focused === window) focused = null
+  for (const listener of contentsDestroyedListeners.get(window) ?? []) listener()
+  contentsDestroyedListeners.delete(window)
   closed.add(window)
   for (const listener of closedListeners.get(window) ?? []) listener()
   closedListeners.delete(window)
@@ -142,6 +168,8 @@ export function closeWindow(window: FakeWindow): void {
 /** Gone but still listed — the state a `isDestroyed` guard exists for. */
 export function destroyWindow(window: FakeWindow): void {
   destroyed.add(window)
+  for (const listener of contentsDestroyedListeners.get(window) ?? []) listener()
+  contentsDestroyedListeners.delete(window)
 }
 
 /** Private: a case drives the app through `openWindow`, `focusWindow` and `closeWindow`. */
@@ -162,6 +190,7 @@ export function resetHandlers(): void {
   registered.clear()
   windows.length = 0
   closedListeners.clear()
+  contentsDestroyedListeners.clear()
   appListeners.clear()
   destroyed.clear()
   closed.clear()

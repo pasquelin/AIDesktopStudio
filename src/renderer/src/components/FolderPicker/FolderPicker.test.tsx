@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { FolderEntry } from '@shared/domain/folder'
 import { installFakeBridge } from '@/services/fakeBridge'
+import { useFolderRoles } from '@/stores/folderRoles'
 import { FolderPicker } from './FolderPicker'
 
 const LABELS = {
@@ -51,6 +52,24 @@ const columns = (): string[][] =>
 describe('FolderPicker', () => {
   beforeEach(() => {
     installFakeBridge({ project: { listFolder } })
+    useFolderRoles.setState({ roles: {} })
+  })
+
+  /**
+   * The same glyph and the same hue the explorer's tree gives that very folder: a project has ONE
+   * colour code, and a browser drawing eight identical grey folders said the section a document
+   * lands in is not worth knowing here.
+   */
+  it('draws a folder that serves a section in the glyph and hue of that section', async () => {
+    useFolderRoles.setState({ roles: { image: 'Images' } })
+    show()
+
+    const row = await screen.findByRole('option', { name: 'Images' })
+    expect(row.querySelector('svg')?.getAttribute('class')).toContain('text-domain-image')
+
+    // And a folder that serves none keeps the plain one — the rule has to refuse something.
+    const plain = screen.getByRole('option', { name: '3D' })
+    expect(plain.querySelector('svg')?.getAttribute('class')).not.toContain('text-domain')
   })
 
   it('opens on the project folder, in one column', async () => {

@@ -89,16 +89,12 @@ export function createSession(host: SessionHost): DictationSession {
   let state: SttState = 'idle'
   let download: DownloadProgress | null = null
   let failure: SttFailure | null = null
-
-  let engine: SttClient | null = null
-  let restarts = 0
+  let engine: SttClient | null = null,
+    restarts = 0
   let downloading: AbortController | null = null
   let cancelIdle: (() => void) | null = null
-  /** Shared by every caller that arrives while one start is still running — see `start`. */
-  let starting: Promise<void> | null = null
-  /** Set by `cancel`, cleared by the next start: what was dropped must not arrive late. */
-  let discarding = false
-
+  let starting: Promise<void> | null = null,
+    discarding = false
   const publish = (next: SttState): void => {
     if (state === next) return
     state = next
@@ -120,8 +116,6 @@ export function createSession(host: SessionHost): DictationSession {
     else if (ready === true && state === 'modelMissing') publish('idle')
   }
 
-  // Swallowed: an unreadable folder is what a press will report, and a rejection in a factory
-  // reaches no caller.
   void probeModel().catch(() => {})
 
   const refuse = (code: SttErrorCode, error: unknown): void => {
@@ -212,8 +206,6 @@ export function createSession(host: SessionHost): DictationSession {
 
   const begin = async (): Promise<void> => {
     if (state === 'listening') return
-    // A download in flight owns the state: starting would answer `modelMissing` over its
-    // progress bar, and the button that answer offers does nothing while it runs.
     if (state === 'downloadingModel') return
 
     const access = await host.requestMicrophone()

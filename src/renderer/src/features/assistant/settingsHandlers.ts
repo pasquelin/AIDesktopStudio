@@ -1,47 +1,48 @@
 import { refused, type ActionOutcome } from '@shared/domain/assistant'
 import type { PartialSettings } from '@shared/domain/settings'
 import { SETTING_ACTION_IDS } from '@shared/domain/settingAction'
+import { settingChoices } from '@shared/domain/settingsRegistry'
+import { isRecord } from '@shared/guards'
 import { getBridge } from '@/services/bridge'
 import { withBridge, type ActionHandlers } from './actionHandler'
 import { oneOf, recordOf, textOf } from './actionInputs'
 
-/** The settings and the account, read and set from outside the window. */
-
 const NO_BRIDGE = 'this window is not connected to the studio process'
+function includesWrittenValues(held: unknown, asked: unknown): boolean {
+  if (Array.isArray(asked))
+    return Array.isArray(held) && JSON.stringify(held) === JSON.stringify(asked)
+  if (!isRecord(asked)) return held === asked
+  if (!isRecord(held)) return false
+  return Object.entries(asked).every(([key, value]) => includesWrittenValues(held[key], value))
+}
 
-/**
- * The section names are checked by `validatesInput`, from the `record` field's own key list —
- * `write` takes a `PartialSettings` the main process merges branch by branch, and a branch it
- * does not know travels through unread, so a misspelt section would be answered `ok`.
- *
- * The blind spot, written rather than hidden: only section NAMES are checked. A misspelt field
- * inside a known section is stripped by the schema in the main process and still answered `ok`.
- * Checking fields against `DEFAULT_SETTINGS` cannot close it — `media` and `git` default to `{}`
- * while carrying optional fields, so every legitimate write to those two would be refused.
- */
-function write(input: Record<string, unknown>): Promise<ActionOutcome> {
+async function write(input: Record<string, unknown>): Promise<ActionOutcome> {
   const asked: PartialSettings | null = recordOf(input, 'settings')
   if (!asked)
-    return Promise.resolve(
-      refused(
-        'badInput',
-        '"settings" is wanted, as a record of settings sections — settings.read answers the shape it takes',
-      ),
+    return refused(
+      'badInput',
+      '"settings" is wanted, as a record of settings sections — settings.read answers the shape it takes',
     )
 
   // The one branch this action may not touch, and the reason the delegation is worth anything: a
   // client that could raise its own budget or tick its own boxes would be asking itself. Only the
   // settings window arms it — `settings.open` is published, and that is the whole of the way in.
   if (Object.keys(asked.mcp ?? {}).some(key => key.startsWith('delegate'))) {
-    return Promise.resolve(
-      refused(
-        'notAllowed',
-        'the "delegate" switches of the mcp section are not writable from here — only the settings window arms them, and settings.open raises it',
-      ),
+    return refused(
+      'notAllowed',
+      'the "delegate" switches of the mcp section are not writable from here — only the settings window arms them, and settings.open raises it',
     )
   }
 
-  return withBridge(bridge => bridge.settings.write(asked))
+  const bridge = getBridge()
+  if (!bridge) return refused('noBridge', NO_BRIDGE)
+  const written = await bridge.settings.write(asked)
+  return includesWrittenValues(written, asked)
+    ? { ok: true, data: written }
+    : refused(
+        'badInput',
+        'one or more setting fields are unknown or were not applied — settings.read answers the accepted shape',
+      )
 }
 
 async function activate(input: Record<string, unknown>): Promise<ActionOutcome> {
@@ -60,7 +61,11 @@ async function activate(input: Record<string, unknown>): Promise<ActionOutcome> 
 }
 
 export const SETTINGS_HANDLERS: ActionHandlers = {
-  'settings.read': () => withBridge(bridge => bridge.settings.read()),
+  'settings.read': () =>
+    withBridge(async bridge => ({
+      settings: await bridge.settings.read(),
+      choices: settingChoices(),
+    })),
   'settings.write': write,
   'accounts.list': () => withBridge(bridge => bridge.accounts.list()),
   'accounts.activate': activate,
@@ -85,7 +90,7 @@ export const SETTINGS_HANDLERS: ActionHandlers = {
       : { ok: true, data: result.accounts }
   },
 
-  'settings.pressButton': input => {
+  'settings.triggerAction': input => {
     const id = oneOf(input, 'action', SETTING_ACTION_IDS)
     return id
       ? withBridge(bridge => bridge.settings.runAction(id))

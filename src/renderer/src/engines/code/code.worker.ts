@@ -7,10 +7,10 @@ declare const self: DedicatedWorkerGlobalScope
 
 /** TypeScript to JavaScript, off the UI thread — CLAUDE.md invariant 6. */
 self.addEventListener('message', (event: MessageEvent<CodeRequest>) => {
-  const { id, source } = event.data
+  const { id, script, source, inputMaps } = event.data
 
   try {
-    const held = transpile(source)
+    const held = transpile(source, { script, inputMaps })
     self.postMessage({ id, ...held } satisfies CodeResponse)
   } catch (error) {
     self.postMessage({ id, trouble: messageOf(error), line: 0 } satisfies CodeResponse)

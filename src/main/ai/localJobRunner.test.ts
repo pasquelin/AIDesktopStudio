@@ -229,6 +229,17 @@ describe('a model that produces something other than a sentence', () => {
     expect(runner.producedBy(jobId)).toBeNull()
   })
 
+  it('names a missing engine so the jobs row can say to install it', async () => {
+    const runner = imageRunner({
+      generate: () => Promise.reject(new Error('loading local_image failed: engine-missing')),
+    })
+
+    const { jobId } = await runner.submit({ id: IMAGE_MODEL.id }, { prompt: 'x' })
+    await settled()
+
+    expect((await runner.poll(jobId, TARGET)).error).toBe('engine-missing')
+  })
+
   it('names an incomplete model so the jobs row can say to reinstall', async () => {
     const runner = imageRunner({
       generate: () => Promise.reject(new Error('incomplete-model')),
@@ -277,5 +288,41 @@ describe('what a modality decides', () => {
     await settled()
 
     expect(runner.producedBy(submitted.jobId)?.type).toBe('mesh')
+  })
+})
+
+describe('unavailable local model', () => {
+  it('refuses a blocked distribution before invoking any runtime', async () => {
+    const generate = vi.fn()
+    const runner = runnerWith({
+      modelOf: () => localModel({ modality: 'mesh', distributionStatus: 'blocked' }),
+      generate,
+    })
+    const job = await runner.submit(TARGET, { prompt: 'walk' })
+    await settled()
+    expect((await runner.poll(job.jobId, TARGET)).status).toBe('failure')
+    expect(generate).not.toHaveBeenCalled()
+  })
+})
+
+describe('generated motion collection', () => {
+  it('files a motion model output as animation in the existing collector contract', async () => {
+    const model = localModel({
+      id: 'motion',
+      loader: 'plugin',
+      modality: 'motion',
+      family: '3d',
+      capabilities: ['motion'],
+    })
+    const runner = runnerWith({
+      modelOf: () => model,
+      generate: async () => ({ path: '/tmp/motion.glb', device: 'cpu', backend: 'pytorch' }),
+    })
+    const job = await runner.submit({ id: model.id }, { prompt: 'walk' })
+    await settled()
+    expect(runner.producedBy(job.jobId)).toMatchObject({
+      type: 'animation',
+      path: '/tmp/motion.glb',
+    })
   })
 })

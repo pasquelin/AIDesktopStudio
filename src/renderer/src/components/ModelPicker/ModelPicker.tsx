@@ -23,6 +23,11 @@ export type ModelPickerProps = {
   /** Names the control, so a `<label>` above it may bind: a `<button>` is labelable. */
   id?: string
   models: readonly ModelSummary[]
+  /**
+   * A word for the models worth looking at first, and the ORDER is the host's — this list is
+   * shown as it arrives. Nothing is ever hidden by it.
+   */
+  promotedOf?: (model: ModelSummary) => string | undefined
   /** The model in use, or `null` when the employment is served by nothing yet. */
   value: string | null
   onChange: (modelId: string) => void
@@ -65,6 +70,7 @@ export function ModelPicker({
   value,
   onChange,
   refusalOf,
+  promotedOf,
   pictureOf,
   onVisible,
   caption,
@@ -185,6 +191,7 @@ export function ModelPicker({
                     model={model}
                     selected={model.id === value}
                     where={runtimeLabels.get(model.runsOn) ?? model.runsOn}
+                    promoted={promotedOf?.(model)}
                     picture={pictureOf?.(model)}
                     refusal={refusalOf?.(model)}
                     onPick={pick}

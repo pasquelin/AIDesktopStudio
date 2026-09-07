@@ -94,6 +94,7 @@ async function facts(input: Record<string, unknown>): Promise<ActionOutcome> {
  */
 const REFUSAL_OF_OPENING: Record<FileOpening, ActionOutcome | null> = {
   document: null,
+  editor: null,
   asset: null,
   system: null,
   folder: refused(
@@ -192,16 +193,9 @@ async function createProject(input: Record<string, unknown>): Promise<ActionOutc
       '"name" is wanted — what to call the new project. "folder" says where to put it, and the studio uses where this person keeps projects when it is left out',
     )
 
-  /**
-   * 🛑 A NAME is enough, and that is the whole point: asked for an absolute path, the model asked
-   * the person for one — which is a line nobody wants to type. Where this machine keeps projects
-   * is the studio's to know, never the model's.
-   */
   const { projectsFolder, recentProjects } = useSettings.getState().settings.storage
   const within = textOf(input, 'folder') ?? projectPickerFolder(projectsFolder, recentProjects)
   const path = projectPathFor(asked, within ?? undefined)
-  // The first project of a machine: nothing has been created yet, so there is no folder to put a
-  // name under. Answered rather than guessed — `~/Documents` is a place nobody asked for.
   if (path === undefined) {
     return refused(
       'badInput',
@@ -210,24 +204,17 @@ async function createProject(input: Record<string, unknown>): Promise<ActionOutc
     )
   }
 
-  // Through the store, which is what makes this the FOURTH way out of a project rather than the
-  // one that slipped past its questions: it left the open project without asking about the
-  // generations running in it, nor about any document holding unsaved work.
+  return createProjectAt(path)
+}
+
+async function createProjectAt(path: string): Promise<ActionOutcome> {
   let created: Project | null
   try {
     created = await useProject.getState().createAt(path)
   } catch (error) {
-    /**
-     * 🛑 The folder's own refusal, said in a sentence the model can repair from. Left to throw it
-     * reached the turn as "the assistant could not answer that one", over a studio that had
-     * written the reason in its journal — and « crée un projet jeu1 » ended there.
-     */
     const why = projectFailureIn(messageOf(error))
     return refused('failed', why === null ? messageOf(error) : CREATE_REFUSALS[why])
   }
-  // `declined` rather than `badInput`, and it covers both nos: the question on the way out, and
-  // the main process asking about a folder that already holds files. A client told its input was
-  // wrong would retry a path that was never the problem.
   if (!created)
     return refused(
       'declined',
@@ -384,7 +371,7 @@ export const FILE_HANDLERS: ActionHandlers = {
 
   'files.redoFileOperation': () => changing(bridge => bridge.project.redoFile()),
 
-  'files.readUndoStack': () => inProject(bridge => bridge.project.fileHistory()),
+  'files.canUndoRedo': () => inProject(bridge => bridge.project.fileHistory()),
 
   'file.reveal': input =>
     inProject(bridge => bridge.project.revealFile(textOf(input, 'path') ?? '')),

@@ -13,6 +13,7 @@
     "media": "Médias",
     "git": "Versions",
     "dictation": "Dictée",
+    "input": "Périphériques",
     "ai": "Modèles d’IA",
     "accountDescription": "Une clé par service, chiffrée par le trousseau.",
     "appearanceDescription": "Thème et densité des contrôles.",
@@ -20,7 +21,20 @@
     "gitDescription": "Suivi des versions du dossier de projet, par git. Ne concerne que vos fichiers.",
     "mediaDescription": "Préparation des fichiers importés : proxies et waveforms.",
     "dictationDescription": "Dicter un texte au lieu de le taper. Tout se passe sur cet ordinateur : rien de ce que vous dites n’est envoyé nulle part.",
+    "inputDescription": "Façon de parcourir le studio à la manette, et périphériques connectés à cet ordinateur.",
     "aiDescription": "Quelle IA sert chaque opération. Le studio ici, Ollama ici, ou un service en ligne dont vous avez la clé.",
+    "gamepadNavigation": {
+      "title": "Parcourir le studio à la manette",
+      "help": "Permet à une manette connectée de parcourir l’interface du studio, valider et revenir. Ce choix reste désactivé tant que vous ne l’allumez pas, afin qu’une partie ne déplace pas l’éditeur derrière elle."
+    },
+    "inputDevices": {
+      "title": "Contrôles détectés",
+      "keyboard": "Clavier",
+      "mouse": "Souris",
+      "gamepadUnsupported": "Cette manette n’utilise pas la disposition standard : le studio ne peut pas lire ses boutons.",
+      "noGamepad": "Aucune manette connectée.",
+      "gamepadSleeps": "Une manette n’apparaît qu’après un premier appui sur l’un de ses boutons : le navigateur ne la montre pas avant. Branchée mais muette, elle ne se distingue pas d’une manette absente."
+    },
     "theme": {
       "title": "Thème",
       "help": "Choisit les couleurs de toute l’application. Le thème sombre repose les yeux quand on travaille longtemps dans une pièce peu éclairée ; le thème clair se lit mieux en plein jour. « Système » suit le réglage de votre ordinateur et bascule tout seul, par exemple le soir venu.",
@@ -159,6 +173,7 @@
       "spaces": "Dans la barre des espaces",
       "explorer": "Dans l’explorateur",
       "scene": "Dans la vue 3D",
+      "character": "Dans le squelette",
       "sequence": "Dans le montage",
       "canvas": "Dans l’image",
       "skybox": "Dans le ciel",
@@ -176,6 +191,52 @@
     "gridSize": {
       "title": "Taille de la grille",
       "help": "Jusqu’où le quadrillage s’étend, en mètres, et donc combien de carreaux il compte — un carreau vaut toujours un mètre. Agrandissez-le pour une scène vaste, réduisez-le pour un petit objet posé près de la caméra."
+    },
+    "navigationPreset": {
+      "title": "Schéma de navigation",
+      "help": "Quelle application 3D ce viewport imite : ses gestes de souris et ses raccourcis. Un schéma ne déplace que ce que son application fait autrement — tout le reste garde les touches d’AI Desktop Studio, y compris ce que les autres n’ont pas. Vos propres remappages passent toujours devant.",
+      "studio": "AI Desktop Studio",
+      "unreal": "Unreal Engine",
+      "unity": "Unity",
+      "blender": "Blender",
+      "roblox": "Roblox Studio",
+      "custom": "Personnalisé"
+    },
+    "navigationCustomOrbit": {
+      "title": "Tourner avec",
+      "help": "Le geste qui fait pivoter la vue dans votre schéma personnel.",
+      "leftAlt": "Alt + clic gauche",
+      "left": "Clic gauche, avec ou sans Alt",
+      "middle": "Bouton du milieu"
+    },
+    "navigationCustomPan": {
+      "title": "Déplacer latéralement avec",
+      "help": "Le geste qui fait glisser la vue sans la faire tourner.",
+      "middle": "Bouton du milieu",
+      "middleShift": "Maj + bouton du milieu",
+      "leftAltShift": "Maj + Alt + clic gauche"
+    },
+    "navigationCustomDolly": {
+      "title": "Avancer et reculer avec",
+      "help": "Le geste qui rapproche la vue de ce qu’elle vise, en plus de la molette.",
+      "altRight": "Alt + clic droit",
+      "ctrlMiddle": "Ctrl + bouton du milieu",
+      "rightOntoLeft": "Clic droit, gauche déjà tenu"
+    },
+    "navigationCustomFly": {
+      "title": "Touches de déplacement",
+      "help": "Quand ZQSD appartiennent à la caméra. En permanence, les lettres cessent d’être disponibles pour les commandes de la scène — c’est pourquoi Unity et Unreal exigent un bouton.",
+      "anyButton": "Tant qu’un bouton est tenu",
+      "rightButton": "Tant que le bouton droit est tenu",
+      "always": "En permanence"
+    },
+    "orbitAroundSelection": {
+      "title": "Tourner autour de la sélection",
+      "help": "Quand vous faites pivoter la vue 3D, elle tourne autour de ce qui est sélectionné plutôt qu’autour d’un point flottant devant vous. C’est ce qui évite de perdre son objet dès qu’on s’en approche. Sans rien de sélectionné, ou si la sélection est hors de l’écran, la vue tourne autour du dernier point regardé."
+    },
+    "orbitUnderCursor": {
+      "title": "Tourner sous le curseur",
+      "help": "La vue tourne autour de ce que le pointeur survole au moment où vous commencez à pivoter, plutôt qu’autour d’un point fixé plus tôt. Très pratique pour travailler de près sans jamais recadrer ; déroutant si vous venez d’Unity ou d’Unreal, qui n’ont pas cette option."
     },
     "flySpeed": {
       "title": "Vitesse de déplacement",
@@ -429,6 +490,10 @@
     "memoryCompactHelp": "Réécrit le fichier avec une ligne par mémoire debout. C’est là que ce qui a été oublié quitte le disque pour de bon.",
     "memoryRelations": "Ce que cette mémoire touche",
     "memoryPromote": "Retenir partout",
-    "memoryPromoteHint": "Recopie cette mémoire dans celle de la machine, pour qu’elle serve dans tous vos projets. Ce que le projet a appris y reste."
+    "memoryPromoteHint": "Recopie cette mémoire dans celle de la machine, pour qu’elle serve dans tous vos projets. Ce que le projet a appris y reste.",
+    "gameControls": {
+      "title": "Les commandes du jeu",
+      "help": "Elles ne se règlent pas ici. Une partie lit une carte de contrôles du projet, rangée sous « Contrôles du jeu » dans l’Explorateur, et le bouton « Nouvelle carte de contrôles » en crée une. Cette page ne concerne que l’interface du studio et ce qui est branché sur cet ordinateur."
+    }
   }
 }

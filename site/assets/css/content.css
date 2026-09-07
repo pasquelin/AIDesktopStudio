@@ -1,0 +1,237 @@
+/* ------------------------------------------------------------ docs/démo */
+
+.split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 380px);
+  gap: clamp(32px, 4vw, 60px);
+  align-items: start;
+  margin-top: clamp(40px, 5vw, 64px);
+}
+@media (max-width: 940px) { .split { grid-template-columns: 1fr; } }
+
+.player {
+  aspect-ratio: 16 / 9;
+  border-radius: 14px; overflow: hidden;
+  border: 1px solid var(--edge); background: #000;
+}
+.player video { display: block; width: 100%; height: 100%; }
+
+.doclist { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--edge); }
+.doclist a {
+  display: flex; align-items: baseline; gap: 14px;
+  padding: 17px 4px; border-bottom: 1px solid var(--edge);
+  transition: padding-left .25s var(--ease), color .25s var(--ease);
+  color: var(--mist);
+}
+.doclist a:hover { padding-left: 12px; color: var(--bone); }
+.doclist span { font-size: .95rem; }
+.doclist em {
+  margin-left: auto; font-style: normal;
+  font-family: var(--mono); font-size: 11px; color: var(--dim);
+}
+
+/* ------------------------------------------------------------ download */
+
+/* Cinq cartes, et cinq ne se divise pas : un `auto-fit` en posait quatre puis une seule, dont
+   les quatre places vides laissaient voir le fond du conteneur. Les paliers sont explicites
+   pour que chaque ligne soit toujours pleine — cinq de front, puis trois et deux. */
+.dl {
+  display: grid; grid-template-columns: repeat(5, 1fr);
+  gap: 1px; background: var(--edge);
+  border: 1px solid var(--edge); border-radius: 12px; overflow: hidden;
+  margin-top: clamp(40px, 5vw, 64px);
+}
+/* Six colonnes servent de dénominateur commun : trois cartes larges de deux, puis deux de trois. */
+@media (max-width: 1180px) {
+  .dl { grid-template-columns: repeat(6, 1fr); }
+  .dl__item { grid-column: span 2; }
+  .dl__item:nth-child(4) { grid-column: 1 / 4; }
+  .dl__item:nth-child(5) { grid-column: 4 / -1; }
+}
+@media (max-width: 760px) {
+  .dl { grid-template-columns: 1fr; }
+  .dl__item, .dl__item:nth-child(4), .dl__item:nth-child(5) { grid-column: auto; }
+}
+.dl__item {
+  background: var(--panel); padding: 28px 26px 30px;
+  display: flex; flex-direction: column; gap: 8px;
+  transition: background .22s var(--ease);
+}
+.dl__item:hover { background: var(--raise); }
+.dl__item h3 { font-size: 1.1rem; font-family: var(--body); font-weight: 500; letter-spacing: 0; }
+.dl__item p { margin: 0; font-size: .85rem; color: var(--mist); }
+/* L'état d'un téléchargement n'est pas une alerte : il se lit en texte secondaire,
+   et passe à l'accent quand une version est réellement disponible. */
+.dl__item .state {
+  margin-top: 14px; font-family: var(--mono); font-size: 11px;
+  letter-spacing: .06em; color: var(--mist);
+}
+.dl__item[href*="/releases/download/"] .state { color: var(--lift); }
+
+/* Même largeur que les cartes au-dessus : cette note les commente, elle ne s'arrête pas avant. */
+.dl-note {
+  margin: 26px 0 0;
+  font-size: .82rem; line-height: 1.7; color: var(--mist);
+}
+.dl-note a { color: var(--lift); text-decoration: underline; text-underline-offset: 2px; }
+.dl-note a:hover { color: var(--bone); }
+
+.term {
+  margin: 28px 0 0; padding: 24px 26px;
+  border: 1px solid var(--edge); border-radius: 12px;
+  background: rgba(0, 0, 0, .35);
+  font-family: var(--mono); font-size: 13px; line-height: 2;
+  color: var(--mist); overflow-x: auto;
+}
+.term b { color: var(--accent); font-weight: 500; }
+.term code { font: inherit; }
+
+/* ---------------------------------------------------------------- footer */
+
+.footer {
+  border-top: 1px solid var(--edge);
+  padding-block: 64px calc(var(--status-h) + 56px);
+  color: var(--mist); font-size: .86rem;
+}
+.footer__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) repeat(auto-fit, minmax(150px, 1fr));
+  gap: 40px;
+}
+.footer h4 {
+  font-family: var(--mono); font-size: 10.5px; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--dim); margin: 0 0 16px; font-weight: 400;
+}
+.footer ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 9px; }
+.footer a:hover { color: var(--bone); }
+/* Même largeur que la grille du pied de page, sans borne : les mentions et leurs filets vont
+   d'un bord à l'autre du `.wrap`, comme tout ce qui les entoure. Pas de `columns` non plus — sur
+   un paragraphe de trois lignes la coupure tombe en plein milieu d'une phrase. */
+.legal {
+  margin-top: 52px; padding-top: 26px; border-top: 1px solid var(--edge);
+  font-size: .8rem; color: var(--dim);
+}
+.legal strong { color: var(--mist); font-weight: 500; }
+
+/* =========================================================================
+   Sélecteur de langue
+
+   Rendu par `site/build.mjs`, comme dans map3D et panels : un `<details>` natif,
+   qui se ferme sur Échap et sur un clic à côté sans une ligne de JavaScript. Le
+   BOUTON porte le code à deux lettres — seul format qui tienne dans la barre —,
+   et le menu qui s'ouvre porte les noms natifs, que le lecteur cherche des yeux.
+
+   Tout est en propriétés logiques : en arabe la page entière se retourne, et le
+   menu doit s'ouvrir du bon côté sans une règle de plus.
+   ========================================================================= */
+
+.langs {
+  position: relative;
+}
+
+.langs__current {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  height: 28px;
+  padding: 0 10px;
+  border: 1px solid var(--edge);
+  border-radius: 6px;
+  background: var(--raise);
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--mist);
+  cursor: pointer;
+  list-style: none;
+  transition: border-color .18s var(--ease), color .18s var(--ease);
+}
+
+.langs__current::-webkit-details-marker {
+  display: none;
+}
+
+.langs__current::after {
+  content: '▾';
+  font-size: 10px;
+  color: var(--dim);
+}
+
+.langs__current:hover,
+details[open] > .langs__current {
+  border-color: var(--line);
+  color: var(--bone);
+}
+
+.langs__menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  inset-inline-end: 0;
+  z-index: 60;
+  min-width: 210px;
+  max-height: min(62vh, 440px);
+  overflow-y: auto;
+  margin: 0;
+  padding: 6px;
+  border: 1px solid var(--edge);
+  border-radius: 10px;
+  background: var(--panel);
+  list-style: none;
+  box-shadow: 0 18px 40px rgb(0 0 0 / 55%);
+}
+
+.langs__item {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 7px 10px;
+  border-radius: 6px;
+  font-size: 14px;
+  color: var(--mist);
+  text-decoration: none;
+}
+
+.langs__item i {
+  font-style: normal;
+}
+
+.langs__item b {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--dim);
+}
+
+a.langs__item:hover {
+  background: var(--raise);
+  color: var(--bone);
+}
+
+.langs__item[aria-current='true'] {
+  color: var(--lift);
+}
+
+/* Sous la largeur où la barre d'onglets se resserre, le sélecteur garde sa place :
+   c'est le seul moyen de changer de langue, et le faire disparaître enfermerait le
+   lecteur dans celle qu'on a devinée pour lui. */
+@media (max-width: 720px) {
+  .langs__menu {
+    min-width: 180px;
+  }
+}
+
+/* Le pavillon du sélecteur de langue. Taille fixée en `em` pour qu'il suive le texte, et
+   `line-height: 1` parce que les emoji drapeaux ont une hauteur de ligne propre qui
+   décalait la ligne de base des noms à côté d'eux. */
+.langs__flag {
+  flex: none;
+  font-size: 1.05em;
+  line-height: 1;
+}
+
+/* Avec le pavillon la ligne porte trois éléments, et `space-between` les aurait écartés
+   un à un — drapeau à gauche, nom au milieu, code à droite. Le nom prend l'espace qui
+   reste : le drapeau lui reste collé, le code à deux lettres tient la droite. */
+.langs__item i {
+  flex: 1;
+}

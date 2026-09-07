@@ -64,7 +64,7 @@ export type CodeAsk = {
  * the string — `pnpm build` then dies on an unterminated literal, and `pnpm validate` is green.
  */
 const RULES: readonly string[] = [
-  'You write TypeScript for the IA Studio script runtime.',
+  'You write TypeScript for the AI Desktop Studio script runtime.',
   'Answer with the SCRIPT ALONE: no prose, no explanation, no Markdown fence.',
   'A script may reach "@studio" and nothing else: no filesystem, no network, no DOM.',
   'The declaration below is the whole of what a script can reach.',

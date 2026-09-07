@@ -12,6 +12,9 @@
  */
 import { readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
+// With the extension, because `scripts/check.mjs` imports this module from bare Node, which
+// resolves no extension of its own.
+import { resolveSpecifier } from './sourceFiles.ts'
 
 /**
  * The floor `scripts/check.mjs` refuses to run below. A detector that recognises nothing prints
@@ -22,12 +25,19 @@ import { join } from 'node:path'
  * thirty-eight guards would have passed. Never RAISE it to the count; `MOST_SLACK` below is what
  * now says when it has drifted too far, so this no longer rests on anyone remembering.
  *
- * Raised to 84 on 2026-08-31, against 94 read: `component-prefixes.test.ts` then
- * `mock-paths.test.ts` each took the gap past ten, which is the suite asking for this line rather
- * than anyone remembering to write it. Raised again to 85 the same day, against 95, when
- * `no-bare-checkbox.test.ts` took it past ten once more.
+ * Raised whenever `MOST_SLACK` says the gap has grown, never on a whim: 87 against 97 read on
+ * 2026-09-03, when `window-ground.test.ts` took it past ten; 92 against 106 on 2026-09-04, when
+ * `indexCss-fixtures` and `sceneRendererSource.testHelper` gave back the fourteen design guards
+ * the `index.css` split had dropped and the eleven of `SceneRenderer` that had never been in the
+ * net; 112 against 126 the same day, when the name list became a resolved hop into the module;
+ * 122 against 132 on 2026-09-06, when `manualInputActions.test.ts` read the manual chapters; 123
+ * against 133 the same day, the animation graph having brought its own beside them; 124 against
+ * 134 the same day, the welcome reading its shipped clip folders off the disk; 125 against 135 on
+ * 2026-09-07, when `no-unpainted-framing` swept the renderer for framings that draw nothing; 126
+ * against 136 the same day, `site-leaves-pages` reading the workflow beside the one that already
+ * did.
  */
-export const LEAST_GUARDS = 85
+export const LEAST_GUARDS = 126
 
 /**
  * How far the floor may sit below the real count before it stops meaning anything.
@@ -66,24 +76,56 @@ function readsAnchoredFile(code: string): boolean {
 }
 
 /**
- * A suite that borrows a sweep instead of writing one — `sourceFiles.ts` for the main process,
- * `renderer/src/windowSources.ts` for the window, a collector under `scripts/` for either.
- * Extracting shared reading MUST come with a line here, or the borrower leaves the short loop in
- * silence. A count that rises says a rule caught something, never that it caught everything: the
- * qualified spelling alone once missed the five consumers sitting beside the module.
+ * A file whose TEXT is inlined at build time — `?raw`, at an import or as a glob's query.
+ *
+ * Vite gives a `?raw` import ANOTHER module id than the file it reads, so nothing in the graph
+ * relates the two: measured on 2026-09-04, `vitest related --run index-foundation.css` selects
+ * ZERO suites while fourteen read that file. Quoted rather than anywhere in the text, so prose
+ * about `?raw` does not count.
  */
-function borrowsTheSweep(code: string): boolean {
-  // Any depth of `../`, not just the sibling: a guard one folder down imports `'../sourceFiles'`
-  // and would have dropped out of the net exactly like the one this function was added for. The
-  // review caught the two literal spellings before anyone wrote that guard.
-  //
-  // `(components/)?` is the third spelling, and it cost a day: the five guards that SIT BESIDE
-  // `testHarness.ts` write `'./testHarness'`, which the folder-qualified form does not match.
-  // The line added for it on 2026-08-16 caught its five distant consumers and none of its
-  // neighbours — a fix measured by a count that went up, which is exactly how a half-fix looks.
-  return /from '\.[./]*\/(sourceFiles|windowSources|(components\/)?testHarness)'|from '@main\/sourceFiles'|from '@\/(windowSources|components\/testHarness)'|from '\.[./]*\/scripts\/[\w-]+\.ts'/.test(
-    code,
+const inlinesAFileAtBuildTime = (code: string): boolean => /'[^']*\?raw'/.test(code)
+
+/** A module that reads the repository, whatever way it does it — what a suite borrows. */
+function isASweep(code: string): boolean {
+  return (
+    inlinesAFileAtBuildTime(code) ||
+    walksTheTree(code) ||
+    readsAnchoredFile(code) ||
+    asksGitForTheTree(code)
   )
+}
+
+/** Read once per module: a sweep is borrowed by dozens of suites, and the disk is not free. */
+const sweeps = new Map<string, boolean>()
+
+function isASweepModule(path: string): boolean {
+  const known = sweeps.get(path)
+  if (known !== undefined) return known
+
+  const answer = isASweep(readFileSync(path, 'utf8'))
+  sweeps.set(path, answer)
+  return answer
+}
+
+/**
+ * A suite that borrows a sweep instead of writing one, followed to the MODULE rather than matched
+ * on its NAME.
+ *
+ * The name list this replaces had to be kept in step with the tree by hand, and it was not: cutting
+ * `index.css` in three moved fourteen design guards — `tokensContrast`, the tightest of the
+ * repository, among them — onto a module the list did not know. **The count went UP by five in the
+ * same lot**, so the loss showed nowhere, which is the shape of every half-fix this file records.
+ *
+ * ONE hop, and only into a module that is itself a sweep. Deeper, or into anything that merely
+ * touches `fs`, would drag most of the suite into the short loop for a `readdirSync` over a
+ * temporary folder. **Blind**: a sweep borrowed through a third module, and one reached by
+ * `new URL(…, import.meta.url)` rather than by an import — the hole `resolveSpecifier` writes.
+ */
+function borrowsTheSweep(code: string, from: string): boolean {
+  return [...code.matchAll(/from '([^']+)'/g)].some(match => {
+    const target = resolveSpecifier(match[1] ?? '', from)
+    return target !== null && isASweepModule(target)
+  })
 }
 
 /**
@@ -96,25 +138,30 @@ function borrowsTheSweep(code: string): boolean {
 const asksGitForTheTree = (code: string): boolean => /execFileSync\(\s*'git'/.test(code)
 
 /**
- * Whether a test reads sources it never imports.
+ * Whether a test reads sources it never imports. `from` is the suite's own path, without which the
+ * borrowed sweep cannot be followed — a caller that has only the text gets the five other ways.
  *
  * Six ways. The fourth was missing until a review found it on 2026-08-13: a wide
  * `import.meta.glob`, a walk of the disk, a read of a file that is data rather than a module
- * (`vitest.config.ts` for the test projects, `index.css` for the design tokens), and a read
- * anchored on the suite's own location. That last one covers `csp.test.ts`, `licences.test.ts`,
- * `permission-strings.test.ts` and `gate-caches.test.ts` — four guards that sat outside the net
- * while the floor read 32 and looked healthy. The fifth arrived with `sourceFiles.ts`, for the
- * suites that no longer read anything themselves; the sixth with the first guard to ask git. A
- * count above `LEAST_GUARDS` proves nothing about what the detector cannot see, which is why the
- * ways are enumerated here rather than counted.
+ * (`vitest.config.ts` for the test projects), and a read anchored on the suite's own location.
+ * That last one covers `csp.test.ts`, `licences.test.ts`, `permission-strings.test.ts` and
+ * `gate-caches.test.ts` — four guards that sat outside the net while the floor read 32 and looked
+ * healthy. The fifth arrived with `sourceFiles.ts`, for the suites that no longer read anything
+ * themselves; the sixth with the first guard to ask git. A count above `LEAST_GUARDS` proves
+ * nothing about what the detector cannot see, which is why the ways are enumerated here rather
+ * than counted.
+ *
+ * **No file is recognised by its NAME any more.** `index.css` was, and the day it became three
+ * files under other names the fourteen guards reading it left the net in silence.
  */
-export function readsTheTree(code: string): boolean {
+export function readsTheTree(code: string, from?: string): boolean {
   return (
     walksTheTree(code) ||
     readsAnchoredFile(code) ||
-    borrowsTheSweep(code) ||
     asksGitForTheTree(code) ||
-    /readdirSync|vitest\.config\.ts|index\.css/.test(code)
+    inlinesAFileAtBuildTime(code) ||
+    /readdirSync|vitest\.config\.ts/.test(code) ||
+    (from !== undefined && borrowsTheSweep(code, from))
   )
 }
 
@@ -145,5 +192,5 @@ export function testFilesUnder(folder: string, matching = /\.test\.tsx?$/): stri
  * two walks would drift, and the drift would show as a floor that passes while the loop skips.
  */
 export function wideGuardsUnder(folder: string): string[] {
-  return testFilesUnder(folder).filter(path => readsTheTree(readFileSync(path, 'utf8')))
+  return testFilesUnder(folder).filter(path => readsTheTree(readFileSync(path, 'utf8'), path))
 }

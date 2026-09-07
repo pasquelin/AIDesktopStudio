@@ -22,7 +22,7 @@ const bodyOf = (kind: DocumentKind): string =>
           name: kind,
           // What `otioBody` stamps on every save, so what is written here comes back byte for
           // byte: the id, and which of the two kinds `.otio` names this file is.
-          metadata: { iastudio: { documentId: `doc-${kind}`, documentKind: kind } },
+          metadata: { aidesktopstudio: { documentId: `doc-${kind}`, documentKind: kind } },
           tracks: { OTIO_SCHEMA: 'Stack.1', children: [] },
         },
         null,
@@ -37,7 +37,7 @@ const bodyOf = (kind: DocumentKind): string =>
           // stamp is written here too, so what comes back equals what went in.
           JSON.stringify(
             {
-              iastudio: { documentId: `doc-${kind}`, documentKind: kind },
+              aidesktopstudio: { documentId: `doc-${kind}`, documentKind: kind },
               version: 1,
               mode: 'screen',
               design: { width: 1920, height: 1080 },
@@ -56,6 +56,53 @@ const PIXELS = Uint8Array.from(
     'base64',
   ),
 )
+
+const imageSnapshot = async () => {
+  const { root, documents } = await withTempProject()
+  await documents.write('doc-1', 'image', {
+    title: 'Cover',
+    content: JSON.stringify({
+      width: 64,
+      height: 32,
+      nodes: [
+        {
+          kind: 'layer',
+          name: 'Ink',
+          src: 'data/p_a.png',
+          x: 0,
+          y: 0,
+          opacity: 1,
+          visible: true,
+          composite: 'svg:src-over',
+        },
+      ],
+      studio: '{"layers":[]}',
+    }),
+    parts: [
+      { path: ORA_MERGED_PATH, png: PIXELS },
+      { path: 'data/p_a.png', png: PIXELS },
+    ],
+  })
+  return { root, whole: await snapshotDocuments(documents) }
+}
+
+const stripImageSurfaces = async (root: string) => {
+  await writeFile(
+    join(root, documentFolderOf('image'), 'Cover.ora'),
+    zipSync({
+      mimetype: [strToU8(ORA_MIMETYPE), { level: 0 }],
+      'stack.xml': strToU8(
+        `<?xml version='1.0' encoding='UTF-8'?>\n` +
+          `<image version="0.0.3" w="64" h="32"><stack>` +
+          `<layer name="Ink" x="0" y="0" opacity="1" visibility="visible" ` +
+          `composite-op="svg:src-over" src="data/p_a.png"/>` +
+          `</stack></image>\n`,
+      ),
+      'aidesktopstudio/document.json': strToU8('{"layers":[]}'),
+    }),
+  )
+  return snapshotDocuments(documentFilesAt(root, NOW))
+}
 
 /**
  * The measuring tool has to be measured too: a snapshot that missed a document, or that differed
@@ -88,56 +135,8 @@ describe('the project fixture', () => {
   // The loss this tool exists to catch, and the one a file count cannot see: the stack is intact
   // and every surface beside it is gone.
   it('sees the surfaces of an image document, not just its stack', async () => {
-    const { root, documents } = await withTempProject()
-    const content = JSON.stringify({
-      width: 64,
-      height: 32,
-      nodes: [
-        {
-          kind: 'layer',
-          name: 'Ink',
-          src: 'data/p_a.png',
-          x: 0,
-          y: 0,
-          opacity: 1,
-          visible: true,
-          composite: 'svg:src-over',
-        },
-      ],
-      studio: '{"layers":[]}',
-    })
-    await documents.write('doc-1', 'image', {
-      title: 'Cover',
-      content,
-      parts: [
-        { path: ORA_MERGED_PATH, png: PIXELS },
-        { path: 'data/p_a.png', png: PIXELS },
-      ],
-    })
-
-    const whole = await snapshotDocuments(documents)
-
-    /**
-     * Written by hand rather than by `packOpenRaster`, which refuses this shape now: the tree may
-     * only name entries the container holds. It is still what a truncated copy, a failed sync or
-     * another tool leaves on disk, and it is exactly the loss a file count cannot see.
-     */
-    await writeFile(
-      join(root, documentFolderOf('image'), 'Cover.ora'),
-      zipSync({
-        mimetype: [strToU8(ORA_MIMETYPE), { level: 0 }],
-        'stack.xml': strToU8(
-          `<?xml version='1.0' encoding='UTF-8'?>\n` +
-            `<image version="0.0.3" w="64" h="32"><stack>` +
-            `<layer name="Ink" x="0" y="0" opacity="1" visibility="visible" ` +
-            `composite-op="svg:src-over" src="data/p_a.png"/>` +
-            `</stack></image>\n`,
-        ),
-        'iastudio/document.json': strToU8('{"layers":[]}'),
-      }),
-    )
-
-    const stripped = await snapshotDocuments(documentFilesAt(root, NOW))
+    const { root, whole } = await imageSnapshot()
+    const stripped = await stripImageSurfaces(root)
 
     expect(whole[0]?.parts).toEqual([
       { path: 'data/p_a.png', bytes: PIXELS.byteLength },

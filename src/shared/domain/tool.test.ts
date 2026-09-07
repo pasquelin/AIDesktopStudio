@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
+import { isHorizontal } from '@pasquelin/panels'
 import {
   SCENARIO_TOOLS,
-  isHorizontal,
   placementIn,
   placementOf,
   placementsOf,
@@ -310,7 +310,7 @@ describe('the rail order of the upper right', () => {
       'guiTree',
       'lights',
       'meshes',
-      'animations',
+      'world',
     ])
   })
 

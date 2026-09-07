@@ -32,6 +32,7 @@ export const GIT_ACTIONS: readonly AssistantAction[] = [
     commitment: 'none',
     repeatable: true,
     reach: 'mcp',
+    capabilities: { targets: ['project'] },
     fields: [],
   }),
   action({

@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { Viewport } from '@/engines/timeline/timelineGeometry'
-import type { AnimationRow } from '@/engines/scene/animationRows'
+import type { AnimationRow } from '@/engines/timeline/bandRows'
 import { animationViewOf, useAnimationViews } from '@/stores/animationView'
 import { TimelineHeaderColumn } from '../../../../timeline/components/Timeline/TimelineHeaderColumn'
 import { AnimationHeadersRow } from './AnimationHeadersRow'

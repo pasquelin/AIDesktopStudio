@@ -48,6 +48,7 @@ export type MemoryVectorsDeps = {
   embedder: Embedder
   onProgress: (scope: MemoryScope, progress: EmbedProgress) => void
   onTrouble: (message: string) => void
+  closeEmbedder?: boolean
 }
 
 /** How many a recall answers when the caller names no limit of its own. */
@@ -58,6 +59,7 @@ export function createMemoryVectors({
   embedder,
   onProgress,
   onTrouble,
+  closeEmbedder = true,
 }: MemoryVectorsDeps): MemoryVectors {
   const queues = new Map<MemoryScope, EmbedQueue>()
   // One per scope, replaced at each run: an abort raised on the last run must not stop the next
@@ -125,7 +127,7 @@ export function createMemoryVectors({
 
     close: async () => {
       for (const one of stops.values()) one.abort()
-      await embedder.close()
+      if (closeEmbedder) await embedder.close()
     },
   }
 

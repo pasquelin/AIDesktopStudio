@@ -2,13 +2,14 @@ import type { AnimationTrack } from '@shared/domain/animation'
 import type { Asset } from '@shared/domain/asset'
 import { updateAnimationTrack } from '@/engines/scene/animationCommands'
 import { addModelClip, addNode, setSelection } from '@/engines/scene/commands'
-import { assetClip } from '@shared/domain/scene'
+import { assetClip, type ClipRef } from '@shared/domain/scene'
 import { newId } from '@/helpers/ids'
 import { modelNode } from '@/engines/scene/nodeFactory'
 import { EMPTY_SCENE, type SceneState } from '@/engines/scene/sceneState'
 import { sceneFromTemplate } from '@/engines/scene/sceneTemplates'
 import type { SceneTemplateId } from '@shared/domain/sceneTemplate'
 import type { SelectionMode } from '@/helpers/selection'
+import { useAnimationViews } from './animationView'
 import { createDocumentStore } from './documentStore'
 
 /** One scene per document, in memory like the documents themselves. */
@@ -26,8 +27,13 @@ export const isSceneDirty = store.isDirty
  * `ensure`, so this never writes over a scene already there — and the state being present is
  * exactly what stops `restoreDocument` from putting the studio default in its place.
  */
-export function seedSceneTemplate(documentId: string, template: SceneTemplateId): void {
-  store.use.getState().ensure(documentId, () => sceneFromTemplate(template))
+export function seedSceneTemplate(
+  documentId: string,
+  template: SceneTemplateId,
+  scriptFolder?: string,
+  graph?: string,
+): void {
+  store.use.getState().ensure(documentId, () => sceneFromTemplate(template, scriptFolder, graph))
 }
 
 /**
@@ -40,7 +46,7 @@ export function writeAnimationTrack(
   change: (track: AnimationTrack) => AnimationTrack,
 ): void {
   const current = store.use.getState()
-  current.replace(
+  current.replaceView(
     documentId,
     updateAnimationTrack(store.stateOf(current, documentId), trackId, change),
   )
@@ -63,7 +69,7 @@ export function selectIn(
   // Guarded on the ids rather than on the state, which `setSelection` copies either way: clicking
   // a row that is already selected — the gesture that OPENS a drag — otherwise wrote the document
   // back, and the viewport rebuilt its whole scene graph on the strength of it.
-  if (next.selectedIds !== current.selectedIds) state.replace(documentId, next)
+  if (next.selectedIds !== current.selectedIds) state.replaceView(documentId, next)
 }
 
 /**
@@ -94,8 +100,24 @@ export function addAnimationTo(documentId: string, asset: Asset): boolean {
   )
   if (!model) return false
 
-  useScenes
-    .getState()
-    .runCommand(documentId, addModelClip(model.id, assetClip(newId(), asset.id, asset.name)))
+  laySceneClip(documentId, model.id, assetClip(newId(), asset.id, asset.name))
   return true
+}
+
+/**
+ * A block laid on a model, and CHOSEN in the same gesture.
+ *
+ * 🛑 The two are one: every panel describes the block the band shows as chosen, so one laid and
+ * left unpicked leaves the inspector empty while the motion plays in the viewport.
+ */
+export function laySceneClip(documentId: string, nodeId: string, clip: ClipRef): void {
+  useScenes.getState().runCommand(documentId, addModelClip(nodeId, clip))
+
+  // Only what actually landed: naming a block no lane carries would clear the keys one had
+  // selected for an edit that never happened.
+  const node = sceneOf(useScenes.getState(), documentId).nodes.find(one => one.id === nodeId)
+  const laid =
+    node?.type === 'model' &&
+    node.model.lanes?.some(lane => lane.clips.some(one => one.id === clip.id))
+  if (laid) useAnimationViews.getState().setPickedBlock(documentId, clip.id)
 }

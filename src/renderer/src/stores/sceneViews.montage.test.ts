@@ -1,10 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import {
-  sceneViewAffectsMontage,
-  sceneViewOf,
-  useSceneViews,
-  sceneViewsAffectMontage,
-} from './sceneViews'
+import { sceneViewAffectsMontage, sceneViewsAffectMontage } from './sceneViewChrome'
+import { sceneViewOf, useSceneViews } from './sceneViews'
 
 describe('what a montage redraws for', () => {
   it('ignores a playhead that moved and nothing else', () => {

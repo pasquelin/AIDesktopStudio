@@ -66,3 +66,78 @@ export function nearestProjected<T extends Projected>(
 
   return best
 }
+
+/** A bone as the screen sees it: from its own joint to its child's, which is what one clicks. */
+export type ProjectedSegment = {
+  nodeId: string
+  bone: string
+  head: Projected
+  tail: Projected
+}
+
+/**
+ * The bone under the pointer, or nothing — measured to the whole SEGMENT rather than to its head.
+ *
+ * A skeleton is clicked on its bones, not on the points where two of them meet: asking for the
+ * nearest joint left the middle of every bone dead, and a long one — a thigh, a forearm — could
+ * only be taken by aiming at one of its ends.
+ *
+ * Depth breaks a tie exactly as it does for a point: two bones crossing on screen are one in
+ * front of the other, and the front one is the one being looked at.
+ */
+export function nearestSegment(
+  segments: readonly ProjectedSegment[],
+  pointer: Pointer,
+  reach = BONE_REACH,
+): ProjectedSegment | null {
+  let best: ProjectedSegment | null = null
+  let bestDistance = Infinity
+  let bestAlong = Infinity
+  let bestDepth = Infinity
+
+  for (const segment of segments) {
+    if (offScreen(segment.head) && offScreen(segment.tail)) continue
+    const near = nearestOn(segment, pointer)
+    if (near.distance > reach) continue
+
+    if (
+      near.distance < bestDistance ||
+      (near.distance === bestDistance &&
+        (near.along < bestAlong || (near.along === bestAlong && near.depth < bestDepth)))
+    ) {
+      best = segment
+      bestDistance = near.distance
+      bestAlong = near.along
+      bestDepth = near.depth
+    }
+  }
+
+  return best
+}
+
+/** Behind the camera or past its far plane — the window `project` maps everything else into. */
+export function offScreen(point: Projected): boolean {
+  return point.z < -1 || point.z > 1
+}
+
+/** How far the pointer falls from a segment, where along it (0 head, 1 tail) and how deep there. */
+function nearestOn(
+  segment: ProjectedSegment,
+  pointer: Pointer,
+): { distance: number; along: number; depth: number } {
+  const span = { x: segment.tail.x - segment.head.x, y: segment.tail.y - segment.head.y }
+  const length = span.x * span.x + span.y * span.y
+  const reach = { x: pointer.x - segment.head.x, y: pointer.y - segment.head.y }
+
+  // A bone with no child projects to a point, and so does one seen end on: both fall back to the
+  // head, which is exactly what the joint-only pick used to answer.
+  const along =
+    length <= 0 ? 0 : Math.min(1, Math.max(0, (reach.x * span.x + reach.y * span.y) / length))
+  const at = { x: segment.head.x + span.x * along, y: segment.head.y + span.y * along }
+
+  return {
+    distance: Math.hypot(at.x - pointer.x, at.y - pointer.y),
+    along,
+    depth: segment.head.z + (segment.tail.z - segment.head.z) * along,
+  }
+}

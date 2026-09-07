@@ -25,6 +25,7 @@ vi.mock('@/engines/material/MaterialRenderer', () => ({
     apply = vi.fn()
     dispose = vi.fn()
     refreshMaps = vi.fn()
+    setNavigationScheme = vi.fn()
     resetView = resetViewSpy
   },
 }))
@@ -108,7 +109,10 @@ describe('MaterialDocument', () => {
       useMaterialViews.getState().inspect(DOCUMENT, 'normal')
       render(<MaterialDocument documentId={DOCUMENT} />)
 
-      expect(screen.getByRole('presentation')).toHaveAttribute('src', 'ia-studio://asset/normal-1')
+      expect(screen.getByRole('presentation')).toHaveAttribute(
+        'src',
+        'ai-desktop-studio://asset/normal-1',
+      )
     })
 
     it('draws nothing flat while the material is what is shown', () => {

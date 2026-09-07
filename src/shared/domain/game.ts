@@ -40,10 +40,14 @@ export const SCRIPT_EXTENSION = '.ts'
 export const SCRIPT_STARTER = `import { defineScript } from '@studio'
 
 export default defineScript({
-  props: { speed: 4 },
-
   onUpdate(self, ctx, dt) {
-    if (ctx.input.down('KeyW')) self.moveBy(0, 0, -self.props.speed * dt)
+    // A named ACTION, never a key code: the same line answers a keyboard and a gamepad, and
+    // rebinding it is a line of a control map rather than of this file.
+    const wanted = ctx.input.axis2('move')
+    // walk() asks the character controller, so gravity and walls still apply. moveBy() would
+    // place the node instead — through the wall. It takes a DIRECTION: the pace is the
+    // CharacterController's, so this walks whatever the scene says a walk is.
+    self.walk(wanted.x, wanted.y)
   },
 })
 `

@@ -1,4 +1,6 @@
 import {
+  type BufferGeometry,
+  BatchedMesh,
   Box3,
   InstancedMesh,
   Mesh,
@@ -7,6 +9,7 @@ import {
   type Object3D,
   type Texture,
 } from 'three'
+import { DRAWN_TRIANGLES } from './grouping'
 import { MARKER_NAME } from './markerPaint'
 
 /**
@@ -72,7 +75,7 @@ export function statsOf(
         for (const texture of texturesOf(material)) {
           if (textures.has(texture)) continue
           textures.add(texture)
-          stats.textureBytes += textureBytes(texture)
+          stats.textureBytes += textureBytesOf(texture)
         }
       }
     }
@@ -118,7 +121,7 @@ function isTexture(value: unknown): value is Texture {
   return typeof value === 'object' && value !== null && Reflect.get(value, 'isTexture') === true
 }
 
-function textureBytes(texture: Texture): number {
+export function textureBytesOf(texture: Texture): number {
   const image: unknown = texture.image
   if (typeof image !== 'object' || image === null) return 0
 
@@ -130,6 +133,38 @@ function textureBytes(texture: Texture): number {
 }
 
 /**
+ * Every buffer a geometry holds, each once. 🛑 The ONE place that answers it: the optimization
+ * report used to keep its own version without `morphAttributes`, so a morphed mesh weighed less
+ * there than in the runtime profile — two figures for one geometry, shown to the same person.
+ */
+export function geometryArraysOf(geometry: BufferGeometry): ArrayBufferView[] {
+  const arrays = new Set<ArrayBufferView>()
+  if (geometry.index) arrays.add(geometry.index.array)
+  for (const name of Object.keys(geometry.attributes)) arrays.add(geometry.getAttribute(name).array)
+  for (const morphed of Object.values(geometry.morphAttributes))
+    for (const attribute of morphed ?? []) arrays.add(attribute.array)
+  return [...arrays]
+}
+
+export function geometryBytesOf(objects: Iterable<Object3D>): number {
+  const geometries = new Set<unknown>()
+  const arrays = new Set<unknown>()
+  let bytes = 0
+  for (const object of objects) {
+    object.traverse(child => {
+      if (!(child instanceof Mesh) || geometries.has(child.geometry)) return
+      geometries.add(child.geometry)
+      for (const array of geometryArraysOf(child.geometry)) {
+        if (arrays.has(array)) continue
+        arrays.add(array)
+        bytes += array.byteLength
+      }
+    })
+  }
+  return bytes
+}
+
+/**
  * How tightly a mesh packs its triangles: triangles per unit of surface of the box around it.
  *
  * A box rather than the real surface — a real area means walking every triangle, which is the
@@ -137,13 +172,15 @@ function textureBytes(texture: Texture): number {
  * an absolute: what it answers is "which of these is the heavy one".
  */
 export function densityOf(object: Object3D): number {
-  const stats = statsOf([object])
   // An instance holds ONE geometry and draws it `count` times, while its box spans every copy:
   // counted once against that box, a thousand cubes read as empty space and the density view
   // painted the most crowded thing on screen at the coolest step of its ramp.
-  const triangles =
-    object instanceof InstancedMesh ? stats.triangles * object.count : stats.triangles
+  const triangles = drawnTrianglesOf(object)
   if (triangles === 0) return 0
+
+  // A lot places its copies by matrix, so the box below reads one shape unless the lot has
+  // measured itself. Measured once, then held.
+  if (object instanceof BatchedMesh && !object.boundingBox) object.computeBoundingBox()
 
   const size = new Box3().setFromObject(object).getSize(new Vector3())
   const area = 2 * (size.x * size.y + size.y * size.z + size.z * size.x)
@@ -175,4 +212,17 @@ export function sameStats(one: SceneStats, other: SceneStats): boolean {
     one.draws === other.draws &&
     one.textureBytes === other.textureBytes
   )
+}
+
+/**
+ * The triangles an object actually DRAWS. An instance draws its one shape `count` times; a lot
+ * says what it draws, its buffer holding one copy of each shape and reserved room besides.
+ */
+function drawnTrianglesOf(object: Object3D): number {
+  if (object instanceof BatchedMesh) {
+    const written = object.userData[DRAWN_TRIANGLES]
+    return typeof written === 'number' ? written : statsOf([object]).triangles
+  }
+  const stats = statsOf([object])
+  return object instanceof InstancedMesh ? stats.triangles * object.count : stats.triangles
 }

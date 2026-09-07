@@ -47,7 +47,7 @@ describe('the skybox export port', () => {
 
     await expect(port(request)).rejects.toThrow()
 
-    expect(loadTexture.mock.calls[0]?.[0]).toBe('ia-studio://asset/a-sky?v=after')
+    expect(loadTexture.mock.calls[0]?.[0]).toBe('ai-desktop-studio://asset/a-sky?v=after')
   })
 
   it('decodes the sky as a colour, which is what the shared loader does not do', async () => {

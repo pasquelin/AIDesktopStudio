@@ -1,8 +1,26 @@
+import { SCENE_TEMPLATE_IDS } from './sceneTemplate'
 import { action, type ActionCommitment, type AssistantAction } from './assistantAction'
 import { COMMAND_REGISTRY, type CommandId } from './command'
 import { LANDING_TARGETS } from './landingTarget'
 import { MODEL_FAMILIES } from './model'
+import { allRoles } from './aiRole'
+import { CHOICE_SCOPES } from './aiOverview'
 import { WORKSPACE_IDS } from './workspace'
+
+const AI_MANAGEMENT_OPERATIONS = [
+  'choose',
+  'install',
+  'cancelInstall',
+  'remove',
+  'load',
+  'cancelLoad',
+  'unload',
+  'readEngine',
+  'installEngine',
+  'cancelEngineInstall',
+  'installRuntime',
+  'cancelRuntimeInstall',
+]
 
 /**
  * The commands that upload a picture before they prepare anything.
@@ -39,11 +57,71 @@ export function commitmentOfCommand(id: string): ActionCommitment {
  */
 export const CORE_ACTIONS: readonly AssistantAction[] = [
   action({
+    name: 'ai.localState',
+    titleKey: 'assistant.actions.aiLocalState.title',
+    descriptionKey: 'assistant.actions.aiLocalState.description',
+    commitment: 'none',
+    repeatable: true,
+    reach: 'mcp',
+    fields: [],
+  }),
+  action({
+    name: 'ai.manageLocalRuntime',
+    titleKey: 'assistant.actions.aiManageLocalRuntime.title',
+    descriptionKey: 'assistant.actions.aiManageLocalRuntime.description',
+    commitment: 'none',
+    raises: input => (input.operation === 'readEngine' ? 'none' : 'studio'),
+    repeatable: true,
+    reach: 'mcp',
+    fields: [
+      {
+        key: 'operation',
+        kind: 'choice',
+        labelKey: 'assistant.fields.aiOperation',
+        required: true,
+        options: AI_MANAGEMENT_OPERATIONS,
+      },
+      {
+        key: 'localId',
+        kind: 'text',
+        labelKey: 'assistant.fields.localId',
+        required: false,
+      },
+      {
+        key: 'role',
+        kind: 'choice',
+        labelKey: 'assistant.fields.aiRole',
+        required: false,
+        options: allRoles(),
+      },
+      {
+        key: 'scope',
+        kind: 'choice',
+        labelKey: 'assistant.fields.aiScope',
+        required: false,
+        options: CHOICE_SCOPES,
+      },
+      {
+        key: 'profile',
+        kind: 'choice',
+        labelKey: 'assistant.fields.aiProfile',
+        required: false,
+        options: ['motion'],
+      },
+    ],
+  }),
+  action({
     name: 'command.runStudioCommand',
     titleKey: 'assistant.actions.commandRunStudioCommand.title',
     descriptionKey: 'assistant.actions.commandRunStudioCommand.description',
     commitment: 'none',
-    repeatable: true,
+    /**
+     * 🛑 A command answers `ok` and NOTHING of what it did, so a model with no way to confirm sends
+     * it again: « duplique-le » ran `scene.duplicate` three times and left four cubes where two
+     * were asked for. `alreadySettled` refuses the second identical one of a turn, and says the
+     * first has already happened — a command meant twice is two turns, or two different ids.
+     */
+    repeatable: false,
     raises: input =>
       typeof input.command === 'string' ? commitmentOfCommand(input.command) : 'none',
     reach: 'both',
@@ -54,10 +132,11 @@ export const CORE_ACTIONS: readonly AssistantAction[] = [
         labelKey: 'assistant.fields.command',
         required: true,
         /**
-         * 🛑 The WHOLE registry, the five that raise a native picker included — leaving them out
-         * was tried and is worse: `options` is what the validator holds an input to, so
-         * `command.runStudioCommand project.new` came back `badInput` quoting the 126 remaining names, where
-         * the handler answers `nativeDialog` and says to use the action taking a path.
+         * 🛑 The WHOLE registry, the six that raise a dialogue only a person can fill included —
+         * five native pickers and `app.new`, which opens a window of the studio's own. Leaving
+         * them out was tried and is worse: `options` is what the validator holds an input to, so
+         * `command.runStudioCommand project.new` came back `badInput` quoting the 126 remaining
+         * names, where the handler answers `nativeDialog` and says what to use instead.
          */
         options: COMMAND_REGISTRY.map(descriptor => descriptor.id),
       },
@@ -90,12 +169,15 @@ export const CORE_ACTIONS: readonly AssistantAction[] = [
       { key: 'title', kind: 'text', labelKey: 'assistant.fields.title', required: false },
       { key: 'folder', kind: 'text', labelKey: 'assistant.fields.folderPath', required: false },
       // What a scene opens on. Read only when a title was given: with none the window opens, and
-      // the person in front of it picks the template themselves.
-      //
-      // Its eight values are deliberately NOT enumerated here: measured, they cost 83 characters
-      // of the preamble, which took the room left for the person's own sentence under the 4 000
-      // `brain.test.ts` holds. An unknown value opens the default rather than failing.
-      { key: 'template', kind: 'text', labelKey: 'assistant.fields.template', required: false },
+      // the person in front of it picks the template themselves. Enumerated since 2026-09-06: a
+      // client that was not told `empty` existed emptied a new scene by hand, five objects.
+      {
+        key: 'template',
+        kind: 'choice',
+        labelKey: 'assistant.fields.template',
+        required: false,
+        options: SCENE_TEMPLATE_IDS,
+      },
     ],
   }),
   action({
@@ -105,8 +187,9 @@ export const CORE_ACTIONS: readonly AssistantAction[] = [
     commitment: 'none',
     repeatable: true,
     reach: 'both',
+    returns: ['generationModelCandidates'],
     fields: [
-      { key: 'query', kind: 'text', labelKey: 'assistant.fields.query', required: true },
+      { key: 'query', kind: 'text', labelKey: 'assistant.fields.query', required: false },
       {
         key: 'family',
         kind: 'choice',
@@ -114,6 +197,7 @@ export const CORE_ACTIONS: readonly AssistantAction[] = [
         required: false,
         options: MODEL_FAMILIES,
       },
+      { key: 'operation', kind: 'text', labelKey: 'assistant.fields.operation', required: false },
     ],
   }),
   action({
@@ -123,6 +207,7 @@ export const CORE_ACTIONS: readonly AssistantAction[] = [
     commitment: 'none',
     repeatable: false,
     reach: 'both',
+    inputs: ['generationModelCandidates'],
     fields: [
       {
         key: 'family',
@@ -131,7 +216,13 @@ export const CORE_ACTIONS: readonly AssistantAction[] = [
         required: true,
         options: MODEL_FAMILIES,
       },
-      { key: 'modelId', kind: 'text', labelKey: 'assistant.fields.modelId', required: true },
+      {
+        key: 'modelId',
+        kind: 'text',
+        labelKey: 'assistant.fields.modelId',
+        required: true,
+        reference: 'model',
+      },
     ],
   }),
   action({
@@ -141,6 +232,8 @@ export const CORE_ACTIONS: readonly AssistantAction[] = [
     commitment: 'none',
     repeatable: true,
     reach: 'both',
+    inputs: ['generationModelCandidates'],
+    produces: ['preparedGeneration'],
     fields: [
       {
         key: 'family',
@@ -149,7 +242,13 @@ export const CORE_ACTIONS: readonly AssistantAction[] = [
         required: true,
         options: MODEL_FAMILIES,
       },
-      { key: 'modelId', kind: 'text', labelKey: 'assistant.fields.modelId', required: true },
+      {
+        key: 'modelId',
+        kind: 'text',
+        labelKey: 'assistant.fields.modelId',
+        required: true,
+        reference: 'model',
+      },
       /**
        * 🛑 The employment, since a family alone names its FIRST — so `code` armed `txt2code` and
        * a call could never reach `code2code`, which is what « rewrite this script » is.
@@ -185,6 +284,7 @@ export const CORE_ACTIONS: readonly AssistantAction[] = [
     commitment: 'credits',
     repeatable: true,
     reach: 'both',
+    requires: ['preparedGeneration'],
     fields: [
       {
         key: 'landing',

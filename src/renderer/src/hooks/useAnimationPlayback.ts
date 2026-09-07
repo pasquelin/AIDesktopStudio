@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import type { Us } from '@shared/domain/time'
 import { clampPlayhead } from '@/engines/scene/animationEval'
+import { animationViewOf, useAnimationViews } from '@/stores/animationView'
 import { sceneViewOf, useSceneViews } from '@/stores/sceneViews'
 
 /**
@@ -26,12 +27,23 @@ export function useAnimationPlayback(documentId: string, playing: boolean, durat
       const next = sceneViewOf(views, documentId).playhead + (now - last) * 1000
       last = now
 
-      if (next >= duration) {
+      if (next < duration) {
+        views.setPlayhead(documentId, clampPlayhead(next, duration))
+        frame = requestAnimationFrame(step)
+        return
+      }
+
+      // Read at the end rather than watched: a loop turned on mid-play must not tear the frame
+      // loop down and hang it again on the very frame it is about to wrap.
+      if (!animationViewOf(useAnimationViews.getState(), documentId).looping) {
         views.setPlayhead(documentId, duration)
         views.setPlaying(documentId, false)
         return
       }
-      views.setPlayhead(documentId, clampPlayhead(next, duration))
+
+      // Wrapped, never set back to zero: what the last frame overshot is time the next pass owes,
+      // and dropping it makes a loop run slower than the band says it does.
+      views.setPlayhead(documentId, clampPlayhead(next - duration, duration))
       frame = requestAnimationFrame(step)
     }
 

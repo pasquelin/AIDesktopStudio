@@ -35,6 +35,9 @@ const TARGETS_BY_KIND: Record<DocumentKind, DocumentTargets | null> = {
   script: null,
   // Nothing aimable YET: elements become targets with the editor, in the lot that draws them.
   gui: null,
+  // A bone carries no id — it is addressed by NAME, and the `rig.*` actions take one. A target
+  // list would be a second way of naming the same joints, free to disagree with them.
+  character: null,
 }
 
 /**

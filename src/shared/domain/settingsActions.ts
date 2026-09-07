@@ -1,6 +1,7 @@
 import { action, type AssistantAction } from './assistantAction'
 import { DEFAULT_SETTINGS } from './settings'
 import { SETTING_ACTION_IDS, type SettingActionId } from './settingAction'
+import { DOCUMENT_KINDS } from './document'
 
 /** The two buttons nothing takes back: one writes outside the studio, the other empties it. */
 const IRREVERSIBLE: readonly SettingActionId[] = ['advanced.installResolveBridge', 'advanced.reset']
@@ -21,7 +22,9 @@ export const SETTINGS_ACTIONS: readonly AssistantAction[] = [
     commitment: 'none',
     repeatable: true,
     reach: 'mcp',
+    capabilities: { documentKinds: DOCUMENT_KINDS, documentAffinity: 'relevant' },
     fields: [],
+    returns: ['settingsState'],
   }),
   action({
     /**
@@ -36,6 +39,8 @@ export const SETTINGS_ACTIONS: readonly AssistantAction[] = [
     commitment: 'studio',
     repeatable: true,
     reach: 'mcp',
+    capabilities: { documentKinds: DOCUMENT_KINDS, documentAffinity: 'relevant' },
+    inputs: ['settingsState'],
     fields: [
       {
         key: 'settings',
@@ -85,9 +90,9 @@ export const SETTINGS_ACTIONS: readonly AssistantAction[] = [
      * The buttons of the settings window, which are not settings: they have no path and no value.
      * Two of them leave something behind, and `raises` is what asks about those two.
      */
-    name: 'settings.pressButton',
-    titleKey: 'assistant.actions.settingsPressButton.title',
-    descriptionKey: 'assistant.actions.settingsPressButton.description',
+    name: 'settings.triggerAction',
+    titleKey: 'assistant.actions.settingsTriggerAction.title',
+    descriptionKey: 'assistant.actions.settingsTriggerAction.description',
     commitment: 'none',
     repeatable: true,
     raises: input => (IRREVERSIBLE.some(id => id === input.action) ? 'files' : 'none'),

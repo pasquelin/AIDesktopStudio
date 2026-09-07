@@ -104,6 +104,28 @@ describe('the wire, spoken by a real client', () => {
   })
 
   /**
+   * 🛑 No `tools/call` of this repo had ever carried an ARRAY: the two that existed passed
+   * `{workspace:'3d'}` and `{}`. A `repeated` field emits `{type:'array', items:{type:'string'}}`,
+   * a serialisation path the SDK's `Client` had never validated here.
+   */
+  it('carries a repeated field across as the list the window reads', async () => {
+    const run = vi.fn<(call: AssistantCall) => Promise<ActionOutcome>>(() =>
+      Promise.resolve({ ok: true }),
+    )
+    const client = await clientTalkingTo(run)
+
+    await client.callTool({
+      name: 'canvas_drawPixels',
+      arguments: { shape: 'points', cells: ['3,4', '3,5'], color: '#ff0000' },
+    })
+
+    expect(run).toHaveBeenCalledWith({
+      action: 'canvas.drawPixels',
+      input: { shape: 'points', cells: ['3,4', '3,5'], color: '#ff0000' },
+    })
+  })
+
+  /**
    * A refusal reaches the client AS an error. Answered `ok` with a sentence in it, a client reads
    * "it ran" and moves on to the next step of a plan that has already gone wrong.
    */

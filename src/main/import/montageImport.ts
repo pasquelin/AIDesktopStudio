@@ -5,12 +5,13 @@ import type { Asset } from '@shared/domain/asset'
 import { taskRatio } from '@shared/domain/taskProgress'
 import { safeFileName, stemOf } from '@shared/domain/fileName'
 import { importSourceOf } from '@shared/domain/importRegistry'
-import { CHANNELS, EVENTS } from '@shared/ipc'
+import { CHANNELS, EVENTS, type MontageImportResult } from '@shared/ipc'
 import type { BundleClient } from '@main/bundle/bundleClient'
 import { sendToSender } from '@main/ipc/broadcast'
 import { handle } from '@main/ipc/handle'
 import type { RunningTasks } from '@main/task/runningTasks'
 import { folderInsideProject } from '@main/project/folderInsideProject'
+import { pathIn } from '@shared/domain/folder'
 
 export type MontageImportDeps = {
   /** Injected, like every dialog: `dialog` needs a live app, which no test has. */
@@ -52,6 +53,48 @@ async function madeFolder(root: string, wanted: string): Promise<string | null> 
   return null
 }
 
+type MontageArchiveDeps = Pick<MontageImportDeps, 'bundles' | 'adopt'> & {
+  onProgress?: (done: number, total: number) => void
+}
+
+export async function importMontageArchive(
+  archive: string,
+  root: string,
+  parent: string,
+  signal: AbortSignal,
+  { bundles, adopt, onProgress }: MontageArchiveDeps,
+): Promise<MontageImportResult | null> {
+  if (signal.aborted) return null
+  const parentAbsolute = join(root, parent)
+  const name = await madeFolder(parentAbsolute, safeFileName(stemOf(basename(archive)), 'montage'))
+  if (!name) return null
+  const folder = pathIn(parent, name)
+
+  const into = join(root, folder)
+  try {
+    const contents = await bundles().read({
+      path: archive,
+      into,
+      onStep: (done, total) => onProgress?.(done, total),
+      signal,
+    })
+    if (!contents) {
+      await rm(into, { recursive: true, force: true })
+      return null
+    }
+
+    const media: { entry: string; assetId: string }[] = []
+    for (const one of contents.media) {
+      const asset = await adopt(`${folder}/${one.file}`)
+      if (asset) media.push({ entry: one.entry, assetId: asset.id })
+    }
+    return { content: contents.content, media, folder }
+  } catch (error) {
+    await rm(into, { recursive: true, force: true })
+    throw error
+  }
+}
+
 /**
  * Reading a montage bundle back into the project. What it reads WINS: the cut comes from the
  * file, and the media are copied in and catalogued rather than pointed at where they lie.
@@ -76,47 +119,15 @@ export function registerMontageImportHandlers({
     return running.run(id, async signal => {
       const archive = await pickImportPath(importSourceOf('montage.otioz').extension)
       if (!archive) return null
-      // Asked again here: the folder below is made on disk, and a stop already given must not put
-      // one in somebody's project for the moment it takes the reader to answer nothing.
-      if (signal.aborted) return null
-
-      const folder = await madeFolder(root, safeFileName(stemOf(basename(archive)), 'montage'))
-      if (!folder) return null
-
-      const into = join(root, folder)
-
-      try {
-        const contents = await bundles().read({
-          path: archive,
-          into,
-          onStep: (done, total) =>
-            sendToSender(event.sender, EVENTS.taskProgress, {
-              id,
-              ratio: taskRatio(done, total),
-            }),
-          signal,
-        })
-
-        // Stopped: the folder is this side's own, made a moment ago, so taking it away undoes the
-        // whole import rather than leaving half a montage's rushes in somebody's project.
-        if (!contents) {
-          await rm(into, { recursive: true, force: true })
-          return null
-        }
-
-        const media: { entry: string; assetId: string }[] = []
-        for (const one of contents.media) {
-          const asset = await adopt(`${folder}/${one.file}`)
-          // A medium the studio has no editor for lands on disk and gets no row: the clip that
-          // named it is dropped by `sequenceFromOtio`, which answers nothing for an unknown url.
-          if (asset) media.push({ entry: one.entry, assetId: asset.id })
-        }
-
-        return { content: contents.content, media, folder }
-      } catch (error) {
-        await rm(into, { recursive: true, force: true })
-        throw error
-      }
+      return await importMontageArchive(archive, root, '', signal, {
+        bundles,
+        adopt,
+        onProgress: (done, total) =>
+          sendToSender(event.sender, EVENTS.taskProgress, {
+            id,
+            ratio: taskRatio(done, total),
+          }),
+      })
     })
   })
 }

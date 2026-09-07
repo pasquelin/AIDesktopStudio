@@ -14,11 +14,12 @@
  */
 export const SHIPPED: string[] = [
   // Runtime dependencies, loaded from `node_modules` rather than bundled.
-  '@dimforge/rapier3d-compat',
   '@jitl/quickjs-singlefile-browser-release-sync',
+  'jolt-physics',
   '@mdi/js',
   '@mdi/react',
   '@modelcontextprotocol/sdk',
+  '@pasquelin/panels',
   '@scenario-labs/sdk',
   'ag-psd',
   'better-sqlite3',
@@ -94,6 +95,7 @@ export const BUILD_ONLY: string[] = [
   '@types/react-is',
   '@types/three',
   '@vitejs/plugin-react',
+  'dry-ts',
   'electron-builder',
   'electron-vite',
   'eslint',
@@ -101,9 +103,12 @@ export const BUILD_ONLY: string[] = [
   'jscpd',
   'jsdom',
   'knip',
+  'oxlint',
+  'oxlint-tsgolint',
   'prettier',
   'prettier-plugin-tailwindcss',
   'typescript-eslint',
+  'typescript-7',
   'vite',
   'vitest',
 ]

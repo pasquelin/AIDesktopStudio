@@ -92,6 +92,10 @@ export function needsProxy(probe: MediaProbe): boolean {
   return !webCodecsReads(probe.codec) || probe.height > 1080
 }
 
+const isTimed = (kind: AssetType): boolean => ['video', 'audio'].includes(kind)
+
+const hasWaveform = (probe: MediaProbe): boolean => Boolean(probe.sampleRate) && probe.duration > 0
+
 /** How far along the whole ingest each stage is — announced when the stage starts. */
 const STAGE_RATIO: Record<IngestStage, number> = {
   queued: 0,
@@ -182,6 +186,68 @@ export function createMediaService(deps: MediaServiceDeps): MediaService {
     }
   }
 
+  const derivePoster = async (
+    assetId: string,
+    source: string,
+    kind: AssetType,
+    probe: MediaProbe,
+    fields: Partial<Asset>,
+    binary: string,
+    project: string,
+    signal: AbortSignal,
+  ): Promise<void> => {
+    if (!wantsPoster(kind)) return
+    const relative = `${POSTERS_FOLDER}/${assetId}.jpg`
+    try {
+      await deps.run(
+        binary,
+        posterArgs(source, `${project}/${relative}`, posterOffset(probe.duration)),
+        signal,
+      )
+      fields.posterPath = relative
+    } catch {
+      // A grid falls back to the kind's own glyph, which is what it showed before.
+    }
+  }
+
+  const deriveProxy = async (
+    source: string,
+    probe: MediaProbe,
+    key: string,
+    fields: Partial<Asset>,
+    binary: string,
+    project: string,
+    signal: AbortSignal,
+  ): Promise<void> => {
+    if (!needsProxy(probe)) return
+    const relative = `${PROXIES_FOLDER}/${key}.mp4`
+    await deps.run(binary, proxyArgs(source, `${project}/${relative}`), signal)
+    fields.proxyPath = relative
+  }
+
+  const derivePeaks = async (
+    source: string,
+    probe: MediaProbe,
+    key: string,
+    fields: Partial<Asset>,
+    binary: string,
+    project: string,
+    signal: AbortSignal,
+  ): Promise<void> => {
+    if (!probe.sampleRate || probe.duration <= 0) return
+    const peaks = await deps.computePeaks({
+      binary,
+      args: peaksArgs(source),
+      buckets: Math.max(1, Math.round((probe.duration / 1_000_000) * PEAKS_PER_SECOND)),
+      samplesPerBucket: PEAKS_SAMPLE_RATE / PEAKS_PER_SECOND,
+      signal,
+    })
+    if (signal.aborted) return
+    const relative = `${PEAKS_FOLDER}/${key}.bin`
+    await deps.writeFile(`${project}/${relative}`, new Uint8Array(peaks.buffer))
+    fields.peaksPath = relative
+  }
+
   /**
    * What a timed media gets beside it once its length is known: a still, a proxy when nothing
    * can decode it as it is, and a waveform. Shared by both ways in — a file picked off a disk
@@ -206,55 +272,20 @@ export function createMediaService(deps: MediaServiceDeps): MediaService {
     const { assetId, source, kind, probe, key, poster } = request
     const binary = deps.ffmpeg()
     const project = deps.projectPath()
-    const timed = kind === 'video' || kind === 'audio'
-    if (!timed || !binary || !project) return
+    if (!isTimed(kind) || !binary || !project) return
 
-    // Under the proxy's own stage rather than one of its own: a keyframe grab is a tenth of a
-    // second, and a stage of its own would cost an ingest state, its label in two bundles and
-    // the guards that hold them, for a bar nobody would see move.
-    //
-    // Swallowed on failure, like the still a download brings beside a mesh: a rush whose first
-    // keyframe ffmpeg refuses is still a perfectly good import.
-    if (poster && wantsPoster(kind)) {
-      const relative = `${POSTERS_FOLDER}/${assetId}.jpg`
-      const args = posterArgs(source, `${project}/${relative}`, posterOffset(probe.duration))
-      try {
-        await deps.run(binary, args, signal)
-        fields.posterPath = relative
-      } catch {
-        // A grid falls back to the kind's own glyph, which is what it showed before.
-      }
+    if (poster) {
+      await derivePoster(assetId, source, kind, probe, fields, binary, project, signal)
       if (signal.aborted) return
     }
-
     if (needsProxy(probe)) {
       advance('proxy')
-      const relative = `${PROXIES_FOLDER}/${key}.mp4`
-      await deps.run(binary, proxyArgs(source, `${project}/${relative}`), signal)
+      await deriveProxy(source, probe, key, fields, binary, project, signal)
       if (signal.aborted) return
-      fields.proxyPath = relative
     }
-
-    // Without a duration there is no bucket count worth computing, and a waveform reduced to
-    // one pair is a flat line that looks exactly like silence.
-    if (probe.sampleRate && probe.duration > 0) {
+    if (hasWaveform(probe)) {
       advance('peaks')
-
-      const seconds = probe.duration / 1_000_000
-      // ffmpeg and the reduction both run off this process: an hour of audio is 57 MB of PCM,
-      // and folding it here froze every window for the length of the fold.
-      const peaks = await deps.computePeaks({
-        binary,
-        args: peaksArgs(source),
-        buckets: Math.max(1, Math.round(seconds * PEAKS_PER_SECOND)),
-        samplesPerBucket: PEAKS_SAMPLE_RATE / PEAKS_PER_SECOND,
-        signal,
-      })
-      if (signal.aborted) return
-
-      const relative = `${PEAKS_FOLDER}/${key}.bin`
-      await deps.writeFile(`${project}/${relative}`, new Uint8Array(peaks.buffer))
-      fields.peaksPath = relative
+      await derivePeaks(source, probe, key, fields, binary, project, signal)
     }
   }
 
@@ -274,94 +305,79 @@ export function createMediaService(deps: MediaServiceDeps): MediaService {
         deps.onProgress({ assetId, stage, ratio: STAGE_RATIO[stage] })
       }
 
+      const probeSource = async (): Promise<boolean> => {
+        if (kind === 'mesh') return true
+        advance('probe')
+        const outcome = await deps.probe(sourcePath, controller.signal)
+        if (cancelled()) return false
+        if (outcome.kind === 'unreadable') {
+          stage = 'unreadable'
+          return false
+        }
+        if (outcome.kind === 'probed') fields.probe = outcome.probe
+        return true
+      }
+
+      const hashSource = async (): Promise<string | null> => {
+        advance('hash')
+        const hash = await deps.hash(sourcePath)
+        fields.hash = hash
+        if (cancelled()) return null
+        if (!occupyHash(hash)) {
+          stage = 'duplicate'
+          return null
+        }
+        mine = hash
+        if (await deps.duplicateExists(assetId, hash)) {
+          stage = 'duplicate'
+          return null
+        }
+        return cancelled() ? null : hash
+      }
+
+      const deriveSource = async (hash: string): Promise<void> => {
+        if (!fields.probe) return
+        await deriveFiles(
+          { assetId, source: sourcePath, kind, probe: fields.probe, key: hash, poster: true },
+          fields,
+          controller.signal,
+          advance,
+        )
+      }
+
+      const finishIngest = async (): Promise<void> => {
+        release()
+        running.delete(assetId)
+        if (mine) freeHash(mine)
+        if (stage === 'duplicate' || stage === 'unreadable') {
+          try {
+            await deps.discard(assetId)
+          } catch {
+            // The project may have closed while the file was read.
+          }
+        } else if (stage !== 'queued') {
+          deps.save(assetId, fields)
+        }
+        const outcome = cancelled() ? 'cancelled' : stage
+        advance(outcome)
+        journal(sourcePath, outcome)
+      }
+
       advance('queued')
       await acquire()
 
       try {
         if (cancelled()) return
-
-        // ffprobe reads media, and a model is not media: asked about a `.glb` it answers
-        // "unreadable", which discards the row that was just minted — a valid file vanishing
-        // from the browser a second after it appeared. The hash below still runs: it is what
-        // catches a duplicate and what a relink is found by, and it reads any bytes at all.
-        const probed = kind !== 'mesh'
-
-        if (probed) {
-          advance('probe')
-          const outcome = await deps.probe(sourcePath, controller.signal)
-          if (cancelled()) return
-
-          // Refused by the tool that can read every format the picker offers: the file is not
-          // media, and a row saying otherwise is worse than no row at all.
-          if (outcome.kind === 'unreadable') {
-            stage = 'unreadable'
-            return
-          }
-
-          if (outcome.kind === 'probed') fields.probe = outcome.probe
-        }
-
-        const probe = fields.probe ?? null
-
-        advance('hash')
-        const hash = await deps.hash(sourcePath)
-        fields.hash = hash
+        if (!(await probeSource())) return
+        const hash = await hashSource()
+        if (!hash) return
+        await deriveSource(hash)
         if (cancelled()) return
-
-        // Claimed before the catalogue is asked, and without an await in between: the question
-        // and the answer must not be separated, or two picks of the same bytes both hear "no".
-        if (!occupyHash(hash)) {
-          stage = 'duplicate'
-          return
-        }
-        mine = hash
-
-        // The row already in the catalogue keeps its tags, its proxy and its waveform, and this
-        // second pick reuses it rather than doubling it.
-        if (await deps.duplicateExists(assetId, hash)) {
-          stage = 'duplicate'
-          return
-        }
-        if (cancelled()) return
-
-        if (probe) {
-          // A picked file has no still waiting for it anywhere: whatever ffmpeg grabs is the
-          // only picture there will ever be of it.
-          const work = { assetId, source: sourcePath, kind, probe, key: hash, poster: true }
-          await deriveFiles(work, fields, controller.signal, advance)
-          if (cancelled()) return
-        }
-
         stage = 'done'
       } catch {
-        // An unreadable file is a normal outcome of letting users pick any file.
         stage = 'failed'
       } finally {
-        release()
-        running.delete(assetId)
-        if (mine) freeHash(mine)
-
-        // Two outcomes leave nothing worth keeping: a file that is not media, and bytes the
-        // catalogue already holds. Both drop the row this pick minted rather than write to it.
-        // `failed` is not one of them — a proxy that broke after a good probe keeps its row.
-        if (stage === 'duplicate' || stage === 'unreadable') {
-          // Swallowed: this runs in a `finally`, and the project may have been closed while the
-          // file was being read — a throw here would escape the ingest nobody is awaiting.
-          try {
-            await deps.discard(assetId)
-          } catch {
-            // Runs in a `finally` on a project that may be closed, as the note above says.
-          }
-        } else if (stage !== 'queued') {
-          // Saved whatever else happened: a proxy that failed after the probe and the hash
-          // succeeded must not throw them away — there is no retry, and re-picking makes a
-          // new row.
-          deps.save(assetId, fields)
-        }
-
-        const outcome = cancelled() ? 'cancelled' : stage
-        advance(outcome)
-        journal(sourcePath, outcome)
+        await finishIngest()
       }
     },
 
@@ -388,23 +404,13 @@ export function createMediaService(deps: MediaServiceDeps): MediaService {
         if (announce) deps.onProgress({ assetId, stage, ratio: STAGE_RATIO[stage] })
       }
 
-      advance('queued')
-      // The same bounded pool as a picked file, per CLAUDE.md § 6: four videos generated at once
-      // are four ffmpeg processes otherwise, on top of whatever is being imported beside them.
-      await acquire()
-
-      try {
+      const runDerive = async (): Promise<void> => {
         if (cancelled()) return
-
-        // Hashed like a picked file, and for the same two reasons: it names the derived files —
-        // so the same bytes pulled twice write one proxy — and it is what a relink searches on.
         advance('hash')
         fields.hash = await deps.hash(path)
         if (cancelled()) return
-
         while (!occupyHash(fields.hash)) await waitForHash(fields.hash)
         mine = fields.hash
-
         await deriveFiles(
           { assetId, source: path, kind, probe, key: fields.hash, poster },
           fields,
@@ -412,24 +418,27 @@ export function createMediaService(deps: MediaServiceDeps): MediaService {
           advance,
         )
         stage = 'done'
+      }
+
+      const finishDerive = async (): Promise<void> => {
+        release()
+        if (running.get(assetId) === controller) running.delete(assetId)
+        if (mine) freeHash(mine)
+        if (stage !== 'queued') await deps.save(assetId, fields)
+        advance(cancelled() ? 'cancelled' : stage)
+      }
+
+      advance('queued')
+      // The same bounded pool as a picked file, per CLAUDE.md § 6: four videos generated at once
+      // are four ffmpeg processes otherwise, on top of whatever is being imported beside them.
+      await acquire()
+
+      try {
+        await runDerive()
       } catch {
         stage = 'failed'
       } finally {
-        release()
-        // Only if the entry is still MINE: the run this one replaced ends after it, and a blind
-        // delete would take the live controller out — leaving "cancel" with nothing to abort.
-        if (running.get(assetId) === controller) running.delete(assetId)
-        if (mine) freeHash(mine)
-
-        // Never discarded, whatever happened: the row stands for an asset the account holds,
-        // and a proxy that failed is a take that plays without one — not a take that is gone.
-        //
-        // Awaited, unlike the same call in `ingest`: whoever asked for this reads the row back
-        // to announce it, and a broadcast that outran the write repainted the shelf with what
-        // was there before.
-        if (stage !== 'queued') await deps.save(assetId, fields)
-
-        advance(cancelled() ? 'cancelled' : stage)
+        await finishDerive()
       }
     },
 

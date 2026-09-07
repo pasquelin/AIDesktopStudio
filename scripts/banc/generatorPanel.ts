@@ -39,10 +39,15 @@ export function installGeneratorPanel(
       models.selected[role],
       useAiModels.getState().overview,
     )
+    if (!modelId) return null
+
     // 🛑 Through `withBodyExtras`, as the real panel does: what the WORKSPACE adds is not in the
-    // preset, and a stand-in that skipped it would score a generation the studio never sends.
-    const values = withBodyExtras(role, models.preset[role] ?? {})
-    return modelId ? { modelId, values } : null
+    // preset, and a stand-in that skipped it would score a generation the studio never sends —
+    // with the model's own fields, since which one holds the prompt is its schema to say.
+    return {
+      modelId,
+      values: withBodyExtras(role, models.preset[role] ?? {}, { fields: schemaOf(modelId) }),
+    }
   }
 
   const references = (): string[] => {

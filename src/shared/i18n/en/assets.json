@@ -32,8 +32,8 @@
     "details": "Row detail",
     "editPixels": "Edit the image",
     "editPixelsHint": "Opens this image in the Image space, where ⌘S writes it back over itself",
-    "extractTextures": "Extract its images",
-    "extractTexturesHint": "Takes the images inside this model out into the project, where they can be opened and painted on",
+    "extractTextures": "Extract the model maps",
+    "extractTexturesHint": "Extracts the model’s embedded maps into Materials, where they can be opened and edited",
     "fetchActionHint": "Downloads the chosen assets from the remote library into the open project",
     "fetchAction_many": "Download {{count, number}} assets",
     "fetchAction_one": "Download {{count, number}} asset",
@@ -55,6 +55,8 @@
     "push_many": "Send {{count, number}} assets",
     "push_one": "Send {{count, number}} asset",
     "push_other": "Send {{count, number}} assets",
+    "redrawPoster": "Redraw thumbnail",
+    "redrawPosterHint": "Draws this animation a new thumbnail, in place of the one it wears",
     "renameHint": "Changes the name in this project; the one on the remote account stays as it is",
     "renameLabel": "Asset name",
     "search": "Search…",
@@ -120,9 +122,16 @@
       "skybox": "Sky",
       "material": "Material",
       "script": "Script",
-      "gui": "Interface"
+      "gui": "Interface",
+      "character": "Character"
     },
     "new": "New document",
+    "newKinds": "Document kinds",
+    "noProjectBody": "A document is a file inside a project. Open one, or make one, to begin.",
+    "recentProjects": "Recent projects",
+    "importFiles": "Import files",
+    "importProjectTitle": "Choose a destination project",
+    "importProjectBody": "The files will be copied into the selected project, then opened in the studio.",
     "newByKind": {
       "image": "New image",
       "scene": "New scene",
@@ -186,7 +195,9 @@
     "templateField": "Starting template",
     "templateGroups": {
       "general": "General",
-      "character": "Character"
+      "character": "Character",
+      "machine": "Machine",
+      "staging": "Staging"
     },
     "templates": {
       "empty": "Empty",
@@ -197,7 +208,9 @@
       "firstPerson": "First person",
       "thirdPerson": "Third person",
       "topDown": "Top down",
-      "postProcessing": "Post-processing"
+      "postProcessing": "Post-processing",
+      "car": "Car",
+      "plane": "Aircraft"
     },
     "templateHints": {
       "empty": "Three lights, and nothing else to take away",
@@ -208,19 +221,25 @@
       "firstPerson": "The camera at eye height, ready to walk",
       "thirdPerson": "The camera behind a stand-in’s shoulder",
       "topDown": "The camera looking down on the scene",
-      "postProcessing": "A camera move, a rack focus and an animated bloom — the whole chain, judged at once"
+      "postProcessing": "A camera move, a rack focus and an animated bloom — the whole chain, judged at once",
+      "car": "A car on four wheels, to drive around the course",
+      "plane": "A plane already flying, on the stick and the throttle"
     },
     "uiTemplates": {
       "empty": "Empty",
       "hud": "HUD",
       "mainMenu": "Main menu",
-      "pause": "Pause menu"
+      "pause": "Pause menu",
+      "mainMenuControls": "Menu + controls",
+      "pauseControls": "Pause + controls"
     },
     "uiTemplateHints": {
       "empty": "A bare screen, to be filled",
       "hud": "A score up top, a health bar below",
       "mainMenu": "A title and buttons, in the middle",
-      "pause": "A veil over the game, and a way back in"
+      "pause": "A veil over the game, and a way back in",
+      "mainMenuControls": "A main menu that also opens control configuration",
+      "pauseControls": "A pause menu that also opens control configuration"
     },
     "folderField": "Location",
     "folderHint": "Chooses the project folder the document will be saved in",

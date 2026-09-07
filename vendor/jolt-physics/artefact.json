@@ -1,0 +1,15 @@
+{
+  "source": "https://github.com/jrouwe/JoltPhysics.js.git",
+  "version": "1.1.0",
+  "commit": "3e3b5ff0bae3db323395d72fe1ae1ca693dedc17",
+  "compiler": "emscripten/emsdk@sha256:f174124ff798a3ead1abef247d9a849c270b642d552fea500a42565ff210f765",
+  "flags": [
+    "-DCMAKE_BUILD_TYPE=Distribution",
+    "-DBUILD_WASM_COMPAT_ONLY=ON",
+    "-DENABLE_SIMD=ON",
+    "-DALLOW_MEMORY_GROWTH=ON"
+  ],
+  "sha256": "11558683f9810acd9e671a4ffc8c29309e0f082a4e04816cc0651cd33d8ceae3",
+  "bytes": 3778874,
+  "controlSha256": "71fcba929035f6778c5c4e941ab77fb86f3da6dbb9ca7b5b21524b2debd607c3"
+}

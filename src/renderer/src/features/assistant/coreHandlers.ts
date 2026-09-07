@@ -1,11 +1,14 @@
 import { findActions, refused, type ActionOutcome } from '@shared/domain/assistant'
+import type { ApiFailure } from '@shared/domain/failure'
 import { commandDescriptor } from '@shared/domain/command'
-import { primaryRoleOf } from '@shared/domain/aiRole'
+import { allRoles, primaryRoleOf } from '@shared/domain/aiRole'
+import { CHOICE_SCOPES } from '@shared/domain/aiOverview'
 import { LANDING_TARGETS } from '@shared/domain/landingTarget'
-import { MODEL_FAMILIES } from '@shared/domain/model'
+import { CAPABILITIES_BY_FAMILY, MODEL_FAMILIES } from '@shared/domain/model'
 import { SCENE_TEMPLATE_IDS } from '@shared/domain/sceneTemplate'
 import { WORKSPACE_IDS } from '@shared/domain/workspace'
 import { englishText } from '@shared/i18n'
+import { failureMessageKey } from '@/services/failureMessage'
 import { showWorkspace } from '@/features/shell/components/dockviewApi'
 import { createDocumentIn } from '@/features/shell/newDocument'
 import { openGeneratorOn } from '@/helpers/openGenerator'
@@ -14,6 +17,7 @@ import { routeCommand, type CommandRouting } from '@/services/commandRouter'
 import { useJobs } from '@/stores/jobs'
 import { useModels } from '@/stores/models'
 import { useProject } from '@/stores/project'
+import { getBridge } from '@/services/bridge'
 import { withBridge, type ActionHandlers } from './actionHandler'
 import { boolOf, oneOf, recordOf, textOf } from './actionInputs'
 import { mountedGenerator } from './generatorBridge'
@@ -63,7 +67,8 @@ function runCommand(input: Record<string, unknown>): ActionOutcome {
       `"${descriptor.id}" raises a dialog of the operating system, which nothing here can fill or read back — use the action that takes a path instead: file.open, project.open, document.open or document.export, depending on what was meant`,
     )
 
-  return ROUTED[routeCommand(descriptor.id)]
+  const routed = routeCommand(descriptor.id)
+  return typeof routed === 'string' ? ROUTED[routed] : { ok: true, data: routed }
 }
 
 async function submitPrepared(input: Record<string, unknown>): Promise<ActionOutcome> {
@@ -90,7 +95,10 @@ async function submitPrepared(input: Record<string, unknown>): Promise<ActionOut
   // reads: a refusal naming nothing was sent again word for word 384 times on 2026-08-25.
   const into = oneOf(input, 'landing', LANDING_TARGETS) ?? armed.landing.target
   if (into === null) {
-    return refused('ambiguousLanding', `name landing: one of ${LANDING_TARGETS.join(', ')}`)
+    return refused(
+      'ambiguousLanding',
+      `by MCP nobody is at the screen to be asked — name landing: one of ${LANDING_TARGETS.join(', ')}`,
+    )
   }
 
   const job = await generator.submit(into)
@@ -245,7 +253,55 @@ function findInCatalogue(input: Record<string, unknown>): ActionOutcome {
   }
 }
 
+// A cloud catalogue that answered nothing, said as what to do next — `missing` is the one code a
+// client can repair, and it met a bare `failed: missing` (2026-09-06).
+function catalogueRefusal(code: ApiFailure): ActionOutcome {
+  return refused(
+    'notFound',
+    code === 'missing'
+      ? 'the cloud catalogue needs a Scenario account and none is active — accounts.list says which accounts exist, and Settings ▸ Accounts adds one; models that need no account are listed when there are any'
+      : `the cloud catalogue refused the search: ${englishText(failureMessageKey(code))} — what needs no account is listed when there is any`,
+  )
+}
+
+function localModelManagement(
+  input: Record<string, unknown>,
+): Promise<ActionOutcome> | ActionOutcome {
+  const operation = textOf(input, 'operation')
+  const localId = textOf(input, 'localId')
+  const profile = oneOf(input, 'profile', ['motion'])
+  const needsModel = ['choose', 'install', 'remove', 'load', 'unload'].includes(operation ?? '')
+  if (needsModel && !localId) return refused('badInput', '"localId" is required for this operation')
+
+  if (operation === 'choose') {
+    const role = allRoles().find(candidate => candidate === textOf(input, 'role'))
+    const scope = oneOf(input, 'scope', CHOICE_SCOPES)
+    return role && scope && localId
+      ? withBridge(bridge => bridge.ai.choose(role, { kind: 'local', modelId: localId }, scope))
+      : refused('badInput', '"role", "localId" and "scope" are required to choose a local model')
+  }
+
+  if (operation === 'install' && localId) return withBridge(bridge => bridge.ai.install(localId))
+  if (operation === 'cancelInstall') return withBridge(bridge => bridge.ai.cancelInstall())
+  if (operation === 'remove' && localId) return withBridge(bridge => bridge.ai.remove(localId))
+  if (operation === 'load' && localId) return withBridge(bridge => bridge.ai.load(localId))
+  if (operation === 'cancelLoad') return withBridge(bridge => bridge.ai.cancelLoad())
+  if (operation === 'unload' && localId) return withBridge(bridge => bridge.ai.unload(localId))
+  if (operation === 'readEngine')
+    return withBridge(bridge => bridge.ai.readEngine(profile ?? undefined))
+  if (operation === 'installEngine')
+    return withBridge(bridge => bridge.ai.installEngine(profile ?? undefined))
+  if (operation === 'cancelEngineInstall')
+    return withBridge(bridge => bridge.ai.cancelInstallEngine())
+  if (operation === 'installRuntime') return withBridge(bridge => bridge.ai.installOllama())
+  if (operation === 'cancelRuntimeInstall')
+    return withBridge(bridge => bridge.ai.cancelInstallOllama())
+  return refused('badInput', '"operation" is not a local model lifecycle operation')
+}
+
 export const CORE_HANDLERS: ActionHandlers = {
+  'ai.localState': () => withBridge(bridge => bridge.ai.overview()),
+  'ai.manageLocalRuntime': localModelManagement,
   'command.runStudioCommand': runCommand,
   'actions.find': findInCatalogue,
   'workspace.open': openWorkspace,
@@ -255,15 +311,32 @@ export const CORE_HANDLERS: ActionHandlers = {
   'prompt.suggest': suggestPrompts,
   'prompt.describeStyle': describeStyle,
 
-  'models.search': input => {
+  'models.search': async input => {
+    const bridge = getBridge()
+    if (!bridge) return ROUTED.noBridge
     const family = oneOf(input, 'family', MODEL_FAMILIES)
-    return withBridge(async bridge => {
-      const page = await bridge.provider.searchModels({
-        search: textOf(input, 'query') ?? '',
-        ...(family ? { family } : {}),
-      })
-      return page.items.map(model => ({ id: model.id, name: model.name, family: model.family }))
-    })
+    const operation = textOf(input, 'operation')
+    const query = {
+      ...(family ? { family } : {}),
+      ...(operation && family && CAPABILITIES_BY_FAMILY[family].includes(operation)
+        ? { capabilities: [operation] }
+        : {}),
+    }
+    const search = textOf(input, 'query')
+    let page = await bridge.provider.searchModels({ ...query, ...(search ? { search } : {}) })
+    if (page.items.length === 0 && search && family) {
+      page = await bridge.provider.searchModels(query)
+    }
+    if (page.items.length === 0 && page.refused) return catalogueRefusal(page.refused)
+    return {
+      ok: true,
+      data: page.items.map(model => ({
+        id: model.id,
+        name: model.name,
+        family: model.family,
+        ...(model.unavailable ? { unavailable: model.unavailable } : {}),
+      })),
+    }
   },
 
   'models.select': input => {

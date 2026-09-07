@@ -36,6 +36,16 @@ const TURNED: Transform = { ...IDENTITY, rotation: Math.PI / 2 }
 const ASKEW: Transform = { ...IDENTITY, rotation: Math.PI / 6 }
 const PINNED: Transform = { ...IDENTITY, rotation: Math.PI / 6, originX: 0, originY: 0, scaleX: 2 }
 
+const DIRECTIONS: readonly [HandleId, number, number][] = [
+  ['nw', -1, -1],
+  ['n', 0, -1],
+  ['e', 1, 0],
+  ['se', 1, 1],
+]
+
+const pulled = (transform: Transform, handle: 'e' | 'se' | 'w' | 'n', to: Point, uniform = false) =>
+  layerBoxOf(resizeBy(transform, handle, DOC, to, uniform), DOC)
+
 describe('where the grips sit', () => {
   it('puts four on the corners and four on the middle of each edge', () => {
     const points = handlePoints(cornersOfRect(BOX))
@@ -142,14 +152,6 @@ describe('taking hold of the chrome', () => {
 })
 
 describe('which way a grip pulls', () => {
-  /** Typed here rather than inferred: `it.each` would widen the ids to plain strings. */
-  const DIRECTIONS: readonly [HandleId, number, number][] = [
-    ['nw', -1, -1],
-    ['n', 0, -1],
-    ['e', 1, 0],
-    ['se', 1, 1],
-  ]
-
   // Read off `ANCHOR`, so the two can never disagree about which corner is opposite which.
   it.each(DIRECTIONS)('sends %s away from the corner it anchors against', (handle, x, y) => {
     expect(handleDirection(handle)).toEqual({ x, y })
@@ -236,14 +238,6 @@ describe('where a layer stands, ignoring its rotation', () => {
 })
 
 describe('pulling a grip', () => {
-  /** Where the layer stands after a grip has been dragged to `to`. */
-  const pulled = (
-    transform: Transform,
-    handle: 'e' | 'se' | 'w' | 'n',
-    to: Point,
-    uniform = false,
-  ) => layerBoxOf(resizeBy(transform, handle, DOC, to, uniform), DOC)
-
   it('doubles the width when the east grip is pulled twice as far', () => {
     expect(pulled(IDENTITY, 'e', { x: 2000, y: 500 })).toMatchObject({ width: 2000 })
   })
@@ -310,7 +304,9 @@ describe('pulling a grip', () => {
 
     expect(Math.abs(transform.scaleX)).toBeGreaterThanOrEqual(0.01)
   })
+})
 
+describe('pulling a transformed grip', () => {
   /**
    * On a turned layer the east grip is on screen where the eye sees the east edge — below the
    * middle, after a quarter turn. Dragging it away from the box has to widen the layer along its

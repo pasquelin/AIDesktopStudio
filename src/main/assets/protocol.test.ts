@@ -152,7 +152,7 @@ describe('routing a URL of the scheme', () => {
 
   // One id, two files: the model and the picture of it. Only the host tells them apart.
   it('sends the same identifier to a different file on the poster host', async () => {
-    await expect(servedPath('ia-studio://poster/asset_1', resolvers)).resolves.toBe(
+    await expect(servedPath('ai-desktop-studio://poster/asset_1', resolvers)).resolves.toBe(
       '/projects/a/.index/posters/asset_1.jpg',
     )
     expect(resolvePoster).toHaveBeenCalledWith('asset_1')
@@ -160,12 +160,12 @@ describe('routing a URL of the scheme', () => {
   })
 
   it('sends an asset to the catalogue and a favourite to the folder beside the settings', async () => {
-    await expect(servedPath('ia-studio://asset/asset_1', resolvers)).resolves.toBe(
+    await expect(servedPath('ai-desktop-studio://asset/asset_1', resolvers)).resolves.toBe(
       '/projects/a/assets/img/asset_1.png',
     )
     expect(resolveAsset).toHaveBeenCalledWith('asset_1')
 
-    await expect(servedPath('ia-studio://favorite/favorite_1', resolvers)).resolves.toBe(
+    await expect(servedPath('ai-desktop-studio://favorite/favorite_1', resolvers)).resolves.toBe(
       '/userData/favorites/favorite_1.png',
     )
     expect(resolveFavorite).toHaveBeenCalledWith('favorite_1')
@@ -173,12 +173,12 @@ describe('routing a URL of the scheme', () => {
 
   /**
    * A plain object carries `Object.prototype`, so every one of its keys would be a live host —
-   * `ia-studio://toString/x` reached `net.fetch` with a path nobody registered.
+   * `ai-desktop-studio://toString/x` reached `net.fetch` with a path nobody registered.
    */
   it('serves nothing for a host that is only inherited', async () => {
-    await expect(servedPath('ia-studio://toString/x', resolvers)).resolves.toBeNull()
-    await expect(servedPath('ia-studio://constructor/x', resolvers)).resolves.toBeNull()
-    await expect(servedPath('ia-studio://__proto__/x', resolvers)).resolves.toBeNull()
+    await expect(servedPath('ai-desktop-studio://toString/x', resolvers)).resolves.toBeNull()
+    await expect(servedPath('ai-desktop-studio://constructor/x', resolvers)).resolves.toBeNull()
+    await expect(servedPath('ai-desktop-studio://__proto__/x', resolvers)).resolves.toBeNull()
   })
 
   /**
@@ -194,8 +194,8 @@ describe('routing a URL of the scheme', () => {
       },
     }
 
-    await expect(servedPath('ia-studio://asset/asset_1', rejecting)).resolves.toBeNull()
-    await expect(servedPath('ia-studio://asset/asset_1', throwing)).resolves.toBeNull()
+    await expect(servedPath('ai-desktop-studio://asset/asset_1', rejecting)).resolves.toBeNull()
+    await expect(servedPath('ai-desktop-studio://asset/asset_1', throwing)).resolves.toBeNull()
   })
 
   /**
@@ -204,7 +204,7 @@ describe('routing a URL of the scheme', () => {
    * a resolver that broke, and a 404 is the only trace it will ever leave outside the journal.
    */
   it('journals a resolver that refuses as a defect, not as a missing file', async () => {
-    await servedPath('ia-studio://asset/asset_1', {
+    await servedPath('ai-desktop-studio://asset/asset_1', {
       [ASSET_HOST]: () => Promise.reject(new TypeError('find is not a function')),
     })
 
@@ -213,7 +213,7 @@ describe('routing a URL of the scheme', () => {
   })
 
   it('serves nothing for a host neither resolver knows', async () => {
-    await expect(servedPath('ia-studio://something-else/1', resolvers)).resolves.toBeNull()
+    await expect(servedPath('ai-desktop-studio://something-else/1', resolvers)).resolves.toBeNull()
     await expect(servedPath('https://example.com/1', resolvers)).resolves.toBeNull()
   })
 })

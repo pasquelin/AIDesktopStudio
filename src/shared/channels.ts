@@ -1,0 +1,290 @@
+/**
+ * Channel names, declared with literal types. The annotation is verbose on purpose: the
+ * project forbids `as const`, and without literal types `CHANNELS.settingsRead` widens to
+ * `string`, which collapses every channel-keyed table in the main process into one index
+ * signature — and the boundary stops being typed.
+ */
+export type Channels = {
+  settingsRead: 'settings:read'
+  settingsWrite: 'settings:write'
+  settingsAuthState: 'settings:auth-state'
+  settingsOpen: 'settings:open'
+  mcpState: 'mcp:state'
+  settingsRunAction: 'settings:run-action'
+  settingsPending: 'settings:pending'
+
+  accountsList: 'accounts:list'
+  accountsAdd: 'accounts:add'
+  accountsRename: 'accounts:rename'
+  accountsRemove: 'accounts:remove'
+  accountsActivate: 'accounts:activate'
+  accountsCredits: 'accounts:credits'
+
+  providerSearchModels: 'provider:search-models'
+  providerModelPreviews: 'provider:model-previews'
+  providerDescribeModel: 'provider:describe-model'
+  providerPlan: 'provider:plan'
+  providerSuggestPrompts: 'provider:suggest-prompts'
+  providerTranslatePrompt: 'provider:translate-prompt'
+  providerDescribeStyle: 'provider:describe-style'
+  providerGenerate: 'provider:generate'
+  providerEstimateCost: 'provider:estimate-cost'
+  providerUploadAsset: 'provider:upload-asset'
+  providerCancelJob: 'provider:cancel-job'
+  providerListJobs: 'provider:list-jobs'
+  providerUsageReport: 'provider:usage-report'
+  providerUsageEvents: 'provider:usage-events'
+
+  projectCreate: 'project:create'
+  projectOpen: 'project:open'
+  projectCurrent: 'project:current'
+  projectClose: 'project:close'
+  projectAskLeave: 'project:ask-leave'
+  projectListFolder: 'project:list-folder'
+  projectSearchFolder: 'project:search-folder'
+  projectWalkFolder: 'project:walk-folder'
+  projectOpenFile: 'project:open-file'
+  projectRevealFile: 'project:reveal-file'
+  projectRevealFolder: 'project:reveal-folder'
+  projectRename: 'project:rename'
+  projectTrash: 'project:trash'
+  projectRenameFile: 'project:rename-file'
+  projectMoveFiles: 'project:move-files'
+  projectTrashFiles: 'project:trash-files'
+  projectNewFolder: 'project:new-folder'
+  projectDuplicateFiles: 'project:duplicate-files'
+  projectPasteFiles: 'project:paste-files'
+  projectUndoFile: 'project:undo-file'
+  projectRedoFile: 'project:redo-file'
+  projectFileHistory: 'project:file-history'
+  projectStopRescan: 'project:stop-rescan'
+  projectRescanState: 'project:rescan-state'
+  projectFolderRoles: 'project:folder-roles'
+  projectFolderFor: 'project:folder-for'
+  projectFileFacts: 'project:file-facts'
+  projectReadContext: 'project:read-context'
+  projectWriteContext: 'project:write-context'
+  memoryList: 'memory:list'
+  memoryRecall: 'memory:recall'
+  memoryRead: 'memory:read'
+  memoryRemember: 'memory:remember'
+  memoryAmend: 'memory:amend'
+  memoryForget: 'memory:forget'
+  memoryRebuild: 'memory:rebuild'
+  memoryReset: 'memory:reset'
+  memoryPending: 'memory:pending'
+  memoryIndex: 'memory:index'
+  memoryStopIndex: 'memory:stop-index'
+  memoryCompact: 'memory:compact'
+
+  /**
+   * Opens one file's information window, or reveals the one that path already has.
+   *
+   * Under `window:` because opening one is the whole of it — and because a channel's domain is
+   * held to a single lowercase word (`ipc.test.ts`), which `file-info:` is not.
+   */
+  fileInfoOpen: 'window:file-info'
+
+  /** Under `window:` for the reason `fileInfoOpen` is: opening one is the whole of it. */
+  newDocumentAsk: 'window:new-document'
+  newDocumentRequest: 'window:new-document-request'
+  newDocumentAnswer: 'window:new-document-answer'
+
+  gitRead: 'git:read'
+  gitInit: 'git:init'
+  gitStage: 'git:stage'
+  gitUnstage: 'git:unstage'
+  gitRestore: 'git:restore'
+  gitCommit: 'git:commit'
+  gitBranches: 'git:branches'
+  gitCreateBranch: 'git:create-branch'
+  gitCheckout: 'git:checkout'
+  gitLog: 'git:log'
+  gitCommitFiles: 'git:commit-files'
+  gitDiff: 'git:diff'
+  gitBytes: 'git:bytes'
+  gitRemotes: 'git:remotes'
+  gitAddRemote: 'git:add-remote'
+  gitFetch: 'git:fetch'
+  gitPull: 'git:pull'
+  gitPush: 'git:push'
+  gitResolve: 'git:resolve'
+  gitAbortMerge: 'git:abort-merge'
+  gitStash: 'git:stash'
+  gitStashes: 'git:stashes'
+  gitStashPop: 'git:stash-pop'
+  gitStashDrop: 'git:stash-drop'
+  gitTag: 'git:tag'
+  gitHasCredentials: 'git:has-credentials'
+  gitSetCredentials: 'git:set-credentials'
+  gitClearCredentials: 'git:clear-credentials'
+
+  dialogPickPath: 'dialog:pick-path'
+  dialogExportPicture: 'dialog:export-picture'
+
+  gameRead: 'game:read'
+  gameWrite: 'game:write'
+  gameScripts: 'game:scripts'
+  gameWriteScript: 'game:write-script'
+
+  inputMapList: 'input:list'
+  inputMapRead: 'input:read'
+  inputMapWrite: 'input:write'
+
+  animationGraphList: 'anim:list'
+  animationGraphRead: 'anim:read'
+  animationGraphWrite: 'anim:write'
+
+  documentList: 'document:list'
+  documentRead: 'document:read'
+  documentWrite: 'document:write'
+  documentRename: 'document:rename'
+  documentRemove: 'document:remove'
+  documentOpened: 'document:opened'
+  documentConfirmClose: 'document:confirm-close'
+  documentConfirmDelete: 'document:confirm-delete'
+  documentConfirmOverwrite: 'document:confirm-overwrite'
+  documentConfirmFlatten: 'document:confirm-flatten'
+
+  assetsSearch: 'assets:search'
+  assetsCounts: 'assets:counts'
+  assetsPeaks: 'assets:peaks'
+  assetsReveal: 'assets:reveal'
+  assetsAbsent: 'assets:absent'
+  assetsSaveAudio: 'assets:save-audio'
+  assetsSavePicture: 'assets:save-picture'
+  assetsSavePlayerModule: 'assets:save-player-module'
+  assetsSaveLayered: 'assets:save-layered'
+  /** Writes a character's own `.glb` back, its skeleton in it. See `SaveMeshRequest`. */
+  assetsSaveMesh: 'assets:save-mesh'
+  /** Files a motion in the project's `animations` folder, as a file of its own. */
+  assetsSaveAnimation: 'assets:save-animation'
+  /** Lands the `.glb` a 3D file was converted into, keeping the original. See `ConvertMeshRequest`. */
+  assetsSaveConverted: 'assets:save-converted'
+  assetsReadLayered: 'assets:read-layered'
+  assetsSaveTexture: 'assets:save-texture'
+  texturesInstallBundled: 'textures:install-bundled'
+  charactersInstallBundled: 'characters:install-bundled'
+  assetsExtractTextures: 'assets:extract-textures'
+  assetsUpdate: 'assets:update'
+  assetsRemove: 'assets:remove'
+  assetsDescribe: 'assets:describe'
+
+  smartSelectionRun: 'selection:run'
+
+  cloudBrowse: 'cloud:browse'
+  cloudExplore: 'cloud:explore'
+  cloudSimilar: 'cloud:similar'
+  cloudPull: 'cloud:pull'
+  cloudPush: 'cloud:push'
+  cloudPlan: 'cloud:plan'
+
+  favoritesList: 'favorites:list'
+  favoritesPin: 'favorites:pin'
+  favoritesUnpin: 'favorites:unpin'
+
+  stylesList: 'styles:list'
+  stylesSave: 'styles:save'
+  stylesRename: 'styles:rename'
+  stylesRemove: 'styles:remove'
+
+  activityRead: 'activity:read'
+
+  mediaAdopt: 'media:adopt'
+  mediaIngest: 'media:ingest'
+  mediaCancel: 'media:cancel'
+  mediaAvailable: 'media:available'
+
+  assistantThink: 'assistant:think'
+  assistantStop: 'assistant:stop'
+  assistantActionResult: 'assistant:action-result'
+  assistantVisualCaptureResult: 'assistant:visual-capture-result'
+  assistantNote: 'assistant:note'
+  assistantSaid: 'assistant:said'
+  assistantWindow: 'assistant:window'
+  missionsWatch: 'missions:watch'
+  missionsCreate: 'missions:create'
+  missionsResume: 'missions:resume'
+
+  dictationState: 'dictation:state'
+  dictationStart: 'dictation:start'
+  dictationStop: 'dictation:stop'
+  dictationCancel: 'dictation:cancel'
+  dictationPush: 'dictation:push'
+  dictationDownloadModel: 'dictation:download-model'
+  dictationCancelDownload: 'dictation:cancel-download'
+  dictationOpenPrivacy: 'dictation:open-privacy'
+
+  aiOverview: 'ai:overview'
+  aiChoose: 'ai:choose'
+  aiChooseMany: 'ai:choose-many'
+  aiInstall: 'ai:install'
+  aiCancelInstall: 'ai:cancel-install'
+  aiInstallOllama: 'ai:install-ollama'
+  aiCancelInstallOllama: 'ai:cancel-install-ollama'
+  aiReadEngine: 'ai:read-engine'
+  aiInstallEngine: 'ai:install-engine'
+  aiCancelInstallEngine: 'ai:cancel-install-engine'
+  aiRemove: 'ai:remove'
+  aiLoad: 'ai:load'
+  aiCancelLoad: 'ai:cancel-load'
+  aiUnload: 'ai:unload'
+  aiAddOwnModel: 'ai:add-own-model'
+
+  autoRigRun: 'autorig:run'
+
+  sceneExport: 'scene:export'
+  postExport: 'post:export'
+  postImport: 'post:import'
+  montageExport: 'montage:export'
+  montageImport: 'montage:import'
+  renderStart: 'render:start'
+  renderFrame: 'render:frame'
+  renderFinish: 'render:finish'
+  renderCancel: 'render:cancel'
+
+  materialExport: 'material:export'
+  skyboxExport: 'skybox:export'
+  montageStems: 'montage:stems'
+  projectExport: 'project:export'
+  gameExport: 'game:export'
+  taskCancel: 'task:cancel'
+
+  fontsList: 'fonts:list'
+  fontsRead: 'fonts:read'
+
+  animationsList: 'animations:list'
+
+  diagnosticsReport: 'diagnostics:report'
+  diagnosticsTrace: 'diagnostics:trace'
+
+  windowToggleFullScreen: 'window:toggle-full-screen'
+  windowState: 'window:state'
+  windowLanguage: 'window:language'
+  windowWorkspace: 'window:workspace'
+  /**
+   * Resumes a leave the renderer held for unsaved work. `true` continues the original
+   * gesture — quit or close; `false` drops it.
+   */
+  windowResumeLeave: 'window:resume-leave'
+  /** Opens the video return, or reveals the one already open. See `MIRROR_ROUTE`. */
+  mirrorOpen: 'mirror:open'
+
+  /** Opens the game window, or reveals the one already open. See `GAME_ROUTE`. */
+  gameWindowOpen: 'game:open-window'
+  retargetWindowFocusOrigin: 'character:focus-retarget-origin'
+  retargetWindowOpen: 'character:open-retarget-window'
+  playerModuleWindowOpen: 'player:open-module-window'
+  /** Closes it. What a Stop pressed in the studio does — the window is the main process's. */
+  gameWindowClose: 'game:close-window'
+
+  /** Opens one of the three windows the Help menu offers, or reveals the one already open. */
+  helpOpen: 'help:open'
+
+  menuPopup: 'menu:popup'
+
+  newsRead: 'news:read'
+
+  updateState: 'update:state'
+  updateInstall: 'update:install'
+}

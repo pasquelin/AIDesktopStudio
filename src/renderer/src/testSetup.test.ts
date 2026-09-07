@@ -42,7 +42,7 @@ describe('the renderer test setup', () => {
   /**
    * The relation, not the number: an expiry has to be reported as an expiry. A wait outliving
    * its case turns "this query never resolved" into a case killed at the runner's ceiling, which
-   * names nothing. `ToolWindow.test.tsx` is the case that must state its own budget for exactly
+   * names nothing. `LicencesWindow.test.tsx` is a case that states its own budget for exactly
    * this reason — it waits ten seconds, so it raises its ceiling to twenty.
    */
   it('expires before the runner gives up on the case', () => {

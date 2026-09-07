@@ -51,7 +51,7 @@ const sky = (over: Partial<SkyboxContent> = {}): SkyboxContent => ({
 const uriOf = (payload: unknown): string => {
   const nodes = isRecord(payload) && Array.isArray(payload.nodes) ? payload.nodes : []
   const horizon = nodes.filter(isRecord).find(node => node.name === 'Horizon')
-  const extras = isRecord(horizon?.extras) ? horizon.extras.iastudio : null
+  const extras = isRecord(horizon?.extras) ? horizon.extras.aidesktopstudio : null
   return isRecord(extras) && typeof extras.source === 'string' ? extras.source : ''
 }
 

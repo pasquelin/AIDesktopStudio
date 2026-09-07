@@ -29,8 +29,8 @@ export type GenerationInput = {
   kind: AssetType
   /**
    * 🛑 The catalogue row it names, and never optional: an input the panel cannot ATTACH is one it
-   * would draw and never send. A canvas has no asset until it flattens, and flattening is
-   * `prepareEdit`'s gesture — this panel has no upload of its own.
+   * would draw and never send. A canvas annotation is offered to capability resolution without
+   * becoming one of these rows, then flattened only when the generation is submitted.
    */
   assetId: string
   /** What the panel draws beside the thumbnail. Document data, never a word of the interface. */

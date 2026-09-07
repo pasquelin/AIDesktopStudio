@@ -1,5 +1,5 @@
 import { mdiImagePlusOutline } from '@mdi/js'
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import type { UseFormRegisterReturn } from 'react-hook-form'
 import { ASSET_TYPES, assetUrl, posterUrl, type Asset } from '@shared/domain/asset'
 import { cn } from '@/helpers/cn'
@@ -15,6 +15,8 @@ export type AssetDropFieldProps = {
   registration: UseFormRegisterReturn
   /** What the form starts with, so a preset filled by an edit action shows its picture. */
   initial?: string
+  /** A workspace-owned value shown by name while its hidden token satisfies the model contract. */
+  implicitLabel?: string
   placeholder: string
   /** The handle the MCP steers this field by. Never a translated word. */
   scId?: string
@@ -32,6 +34,7 @@ export function AssetDropField({
   id,
   registration,
   initial,
+  implicitLabel,
   placeholder,
   scId,
 }: AssetDropFieldProps) {
@@ -44,6 +47,7 @@ export function AssetDropField({
    * to open that door for a preset's thumbnail.
    */
   const [poster, setPoster] = useState<string | null>(null)
+  const implicit = implicitLabel && assetId === initial ? implicitLabel : null
 
   // A model switch resets the form; without this the old thumbnail outlives the value it stood
   // for. Keyed on what the form was reset to, so typing in between is not undone.
@@ -69,7 +73,7 @@ export function AssetDropField({
       exclusive
       className="flex min-w-0 items-center gap-2 rounded"
     >
-      {assetId ? (
+      {assetId && !implicit ? (
         <Thumbnail url={poster ?? assetUrl(assetId)} className={FIELD_THUMBNAIL} />
       ) : (
         <span className={cn(FIELD_THUMBNAIL, 'text-muted grid shrink-0 place-items-center')}>
@@ -79,19 +83,51 @@ export function AssetDropField({
 
       {/* Controlled, so a drop shows in the field as well as in the thumbnail — and so the
           reset a model switch performs empties both together. */}
-      <input
-        id={id}
-        type="text"
-        data-sc={scId && fieldHandle(scId)}
-        placeholder={placeholder}
-        className={FIELD_FILL}
-        {...registration}
-        value={assetId}
-        onChange={event => {
-          setAssetId(event.target.value)
-          void registration.onChange(event)
-        }}
-      />
+      {assetInput({ id, registration, assetId, implicit, placeholder, scId, setAssetId })}
     </AssetDropTarget>
+  )
+}
+
+type AssetInput = Pick<AssetDropFieldProps, 'id' | 'registration' | 'placeholder' | 'scId'> & {
+  assetId: string
+  implicit: string | null
+  setAssetId: (assetId: string) => void
+}
+
+function assetInput(input: AssetInput): ReactNode {
+  if (input.implicit) {
+    return (
+      <>
+        <input
+          type="hidden"
+          data-sc="field:generation.canvasSource"
+          {...input.registration}
+          value={input.assetId}
+        />
+        <input
+          id={input.id}
+          type="text"
+          data-sc={input.scId && fieldHandle(input.scId)}
+          className={FIELD_FILL}
+          value={input.implicit}
+          readOnly
+        />
+      </>
+    )
+  }
+  return (
+    <input
+      id={input.id}
+      type="text"
+      data-sc={input.scId && fieldHandle(input.scId)}
+      placeholder={input.placeholder}
+      className={FIELD_FILL}
+      {...input.registration}
+      value={input.assetId}
+      onChange={event => {
+        input.setAssetId(event.target.value)
+        void input.registration.onChange(event)
+      }}
+    />
   )
 }

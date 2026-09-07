@@ -1,5 +1,6 @@
-import { action, RELATIVE_FIELD, type ActionField, type AssistantAction } from './assistantAction'
+import { action, RELATIVE_FIELD, type AssistantAction } from './assistantAction'
 import { BLEND_MODES } from './canvasBlend'
+import { GENERATION_COMMENT_TEXT_MAX } from './generationComment'
 
 /**
  * The image workspace, driven by value rather than by gesture.
@@ -13,35 +14,15 @@ import { BLEND_MODES } from './canvasBlend'
  * `document.activate` rather than by naming it here — one way of saying "the document I mean",
  * not two.
  *
- * What is NOT here, said plainly: painting. A stroke goes through the engine's GPU surface and
- * its patch history, which no command in `engines/canvas/commands.ts` exposes — `paintPixels`
- * takes a live port, not a path. Publishing it needs an engine API that does not exist yet.
+ * What is NOT here yet, said plainly: painting. `engines/canvas/commands.ts` has no path onto a
+ * GPU surface, so an action that paints goes through `CanvasHost.paintCells` — published, and
+ * with no caller until one is written.
  */
 
-const LAYER: ActionField = {
-  key: 'layerId',
-  kind: 'text',
-  labelKey: 'assistant.fields.layerId',
-  required: true,
-}
+import { CANVAS_ACTIONS_MORE } from './canvasActionsMore'
+import { LAYER, SIDES } from './canvasActionFields'
 
-/**
- * How many sides a ring may take. Written out because `shapeGeometry.ts` cannot be imported from
- * here; `canvasHandlers.test.ts` holds this copy to `MIN_SIDES`/`MAX_SIDES`, and the dials too.
- */
-const SIDES = { min: 3, max: 12 }
-
-/** The two a guide may run along, held to `Guide['axis']` by `canvasHandlers.test.ts`. */
-const GUIDE_AXES: readonly string[] = ['x', 'y']
-
-const GUIDE: ActionField = {
-  key: 'guideId',
-  kind: 'text',
-  labelKey: 'assistant.fields.guideId',
-  required: true,
-}
-
-export const CANVAS_ACTIONS: readonly AssistantAction[] = [
+const CANVAS_ACTIONS_FIRST: readonly AssistantAction[] = [
   action({
     name: 'canvas.state',
     titleKey: 'assistant.actions.canvasState.title',
@@ -50,6 +31,31 @@ export const CANVAS_ACTIONS: readonly AssistantAction[] = [
     repeatable: true,
     reach: 'mcp',
     fields: [],
+  }),
+  action({
+    name: 'canvas.setDocumentProperties',
+    titleKey: 'assistant.actions.canvasSetDocumentProperties.title',
+    descriptionKey: 'assistant.actions.canvasSetDocumentProperties.description',
+    commitment: 'none',
+    repeatable: true,
+    reach: 'mcp',
+    fields: [
+      { key: 'dpi', kind: 'number', labelKey: 'assistant.fields.dpi', required: false, min: 1 },
+      {
+        key: 'colorMode',
+        kind: 'choice',
+        labelKey: 'assistant.fields.colorMode',
+        required: false,
+        options: ['rgb', 'grayscale'],
+      },
+      {
+        key: 'bitDepth',
+        kind: 'choice',
+        labelKey: 'assistant.fields.bitDepth',
+        required: false,
+        options: [8, 16, 32],
+      },
+    ],
   }),
   action({
     name: 'layer.add',
@@ -175,6 +181,11 @@ export const CANVAS_ACTIONS: readonly AssistantAction[] = [
     commitment: 'none',
     repeatable: true,
     reach: 'mcp',
+    capabilities: {
+      targets: ['layer'],
+      documentKinds: ['image'],
+      documentAffinity: 'required',
+    },
     fields: [
       LAYER,
       { key: 'x', kind: 'number', labelKey: 'assistant.fields.x', required: false },
@@ -335,225 +346,52 @@ export const CANVAS_ACTIONS: readonly AssistantAction[] = [
       },
     ],
   }),
+]
+
+const CANVAS_COMMENT_ACTIONS: readonly AssistantAction[] = [
   action({
-    name: 'canvas.crop',
-    titleKey: 'assistant.actions.canvasCrop.title',
-    descriptionKey: 'assistant.actions.canvasCrop.description',
-    commitment: 'none',
-    repeatable: true,
-    reach: 'mcp',
-    fields: [
-      { key: 'x', kind: 'number', labelKey: 'assistant.fields.x', required: true },
-      { key: 'y', kind: 'number', labelKey: 'assistant.fields.y', required: true },
-      { key: 'width', kind: 'number', labelKey: 'assistant.fields.width', required: true, min: 1 },
-      {
-        key: 'height',
-        kind: 'number',
-        labelKey: 'assistant.fields.height',
-        required: true,
-        min: 1,
-      },
-    ],
-  }),
-  action({
-    /**
-     * The three padlocks of a layer, which every other action of this family is held by: a locked
-     * layer refuses the very edits published beside this one, and nothing else could unlock it.
-     */
-    name: 'layer.lock',
-    titleKey: 'assistant.actions.layerLock.title',
-    descriptionKey: 'assistant.actions.layerLock.description',
-    commitment: 'none',
-    repeatable: true,
-    reach: 'mcp',
-    fields: [
-      LAYER,
-      { key: 'pixels', kind: 'boolean', labelKey: 'assistant.fields.lockPixels', required: false },
-      {
-        key: 'position',
-        kind: 'boolean',
-        labelKey: 'assistant.fields.lockPosition',
-        required: false,
-      },
-      { key: 'alpha', kind: 'boolean', labelKey: 'assistant.fields.lockAlpha', required: false },
-    ],
-  }),
-  action({
-    /**
-     * A shape stays a shape after it is drawn, which is the whole point of keeping its two points
-     * rather than its pixels — and until now only the drawing could say what it was painted with.
-     */
-    name: 'layer.editShapeLayer',
-    titleKey: 'assistant.actions.layerEditShapeLayer.title',
-    descriptionKey: 'assistant.actions.layerEditShapeLayer.description',
-    commitment: 'none',
-    repeatable: true,
-    reach: 'mcp',
-    fields: [
-      LAYER,
-      { key: 'filled', kind: 'boolean', labelKey: 'assistant.fields.shapeFilled', required: false },
-      { key: 'fill', kind: 'color', labelKey: 'assistant.fields.shapeFill', required: false },
-      {
-        key: 'stroked',
-        kind: 'boolean',
-        labelKey: 'assistant.fields.shapeStroked',
-        required: false,
-      },
-      { key: 'stroke', kind: 'color', labelKey: 'assistant.fields.shapeStroke', required: false },
-      {
-        key: 'strokeWidth',
-        kind: 'number',
-        labelKey: 'assistant.fields.strokeWidth',
-        required: false,
-        min: 1,
-      },
-      {
-        key: 'sides',
-        kind: 'integer',
-        labelKey: 'assistant.fields.sides',
-        required: false,
-        ...SIDES,
-      },
-    ],
-  }),
-  action({
-    /**
-     * One dial per layer, and the layer says which — `canvas.state` carries it. Four fields rather
-     * than a bare number because each dial swings its own range, and a schema is where a client
-     * should read that rather than by being refused.
-     */
-    name: 'layer.setAdjustmentAmount',
-    titleKey: 'assistant.actions.layerSetAdjustmentAmount.title',
-    descriptionKey: 'assistant.actions.layerSetAdjustmentAmount.description',
-    commitment: 'none',
-    repeatable: true,
-    reach: 'mcp',
-    fields: [
-      LAYER,
-      {
-        key: 'exposure',
-        kind: 'number',
-        labelKey: 'assistant.fields.exposure',
-        required: false,
-        min: -3,
-        max: 3,
-      },
-      {
-        key: 'contrast',
-        kind: 'number',
-        labelKey: 'assistant.fields.contrast',
-        required: false,
-        min: 0,
-        max: 2,
-      },
-      {
-        key: 'saturation',
-        kind: 'number',
-        labelKey: 'assistant.fields.saturation',
-        required: false,
-        min: 0,
-        max: 2,
-      },
-      {
-        key: 'temperature',
-        kind: 'number',
-        labelKey: 'assistant.fields.temperature',
-        required: false,
-        min: -1,
-        max: 1,
-      },
-    ],
-  }),
-  action({
-    name: 'canvas.flipOrRotate',
-    titleKey: 'assistant.actions.canvasFlipOrRotate.title',
-    descriptionKey: 'assistant.actions.canvasFlipOrRotate.description',
+    name: 'img.pin',
+    titleKey: 'assistant.actions.canvasGenerationComment.title',
+    descriptionKey: 'assistant.actions.canvasGenerationComment.description',
     commitment: 'none',
     repeatable: true,
     reach: 'mcp',
     fields: [
       {
-        key: 'turn',
+        key: 'action',
         kind: 'choice',
-        labelKey: 'assistant.fields.turn',
+        labelKey: 'assistant.fields.commentAction',
         required: true,
-        options: ['flipHorizontal', 'flipVertical', 'rotateClockwise', 'rotateAnticlockwise'],
+        options: ['add', 'update', 'remove'],
       },
-    ],
-  }),
-  action({
-    /**
-     * What an existing mask DOES: whether it hides anything, and whether it travels with the layer.
-     * Carving one is `canvas.maskFromSelection`, a command, because the pixels are the engine's —
-     * so a layer wearing none is refused rather than given an empty one that hides everything.
-     */
-    name: 'layer.setMaskOptions',
-    titleKey: 'assistant.actions.layerSetMaskOptions.title',
-    descriptionKey: 'assistant.actions.layerSetMaskOptions.description',
-    commitment: 'none',
-    repeatable: true,
-    reach: 'mcp',
-    fields: [
-      LAYER,
+      { key: 'x', kind: 'number', labelKey: 'assistant.fields.x', required: false },
+      { key: 'y', kind: 'number', labelKey: 'assistant.fields.y', required: false },
       {
-        key: 'enabled',
-        kind: 'boolean',
-        labelKey: 'assistant.fields.maskEnabled',
+        key: 'text',
+        kind: 'longText',
+        labelKey: 'assistant.fields.generationInstruction',
+        required: false,
+        max: GENERATION_COMMENT_TEXT_MAX,
+      },
+      { ...LAYER, required: false },
+      {
+        key: 'outline',
+        kind: 'raw',
+        labelKey: 'assistant.fields.commentOutline',
         required: false,
       },
-      { key: 'linked', kind: 'boolean', labelKey: 'assistant.fields.maskLinked', required: false },
-      { key: 'remove', kind: 'boolean', labelKey: 'assistant.fields.maskRemove', required: false },
-    ],
-  }),
-  action({
-    // Pulled off a ruler on screen, and named by value here. It answers the id it was born with,
-    // which is what the two beside it take.
-    name: 'guide.add',
-    titleKey: 'assistant.actions.guideAdd.title',
-    descriptionKey: 'assistant.actions.guideAdd.description',
-    commitment: 'none',
-    repeatable: true,
-    reach: 'mcp',
-    fields: [
       {
-        key: 'axis',
-        kind: 'choice',
-        labelKey: 'assistant.fields.guideAxis',
-        required: true,
-        options: GUIDE_AXES,
-      },
-      {
-        key: 'position',
-        kind: 'number',
-        labelKey: 'assistant.fields.guidePosition',
-        required: true,
+        key: 'commentId',
+        kind: 'text',
+        labelKey: 'assistant.fields.commentId',
+        required: false,
       },
     ],
   }),
-  action({
-    name: 'guide.move',
-    titleKey: 'assistant.actions.guideMove.title',
-    descriptionKey: 'assistant.actions.guideMove.description',
-    commitment: 'none',
-    repeatable: true,
-    reach: 'mcp',
-    fields: [
-      GUIDE,
-      {
-        key: 'position',
-        kind: 'number',
-        labelKey: 'assistant.fields.guidePosition',
-        required: true,
-      },
-    ],
-  }),
-  action({
-    name: 'guide.remove',
-    titleKey: 'assistant.actions.guideRemove.title',
-    descriptionKey: 'assistant.actions.guideRemove.description',
-    commitment: 'none',
-    repeatable: true,
-    reach: 'mcp',
-    fields: [GUIDE],
-  }),
+]
+
+export const CANVAS_ACTIONS: readonly AssistantAction[] = [
+  ...CANVAS_ACTIONS_FIRST,
+  ...CANVAS_ACTIONS_MORE,
+  ...CANVAS_COMMENT_ACTIONS,
 ]

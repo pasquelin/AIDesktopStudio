@@ -23,9 +23,8 @@
 
 import * as THREE from 'three';
 
-(function () {
-  var canvas = document.getElementById('scene');
-  if (!canvas) return;
+var canvas = document.getElementById('scene');
+if (canvas) {
 
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var small = window.innerWidth < 760;
@@ -279,12 +278,11 @@ import * as THREE from 'three';
     build(0);
     renderer.render(scene, camera);
     window.addEventListener('resize', function () { resize(); renderer.render(scene, camera); }, { passive: true });
-    return;
+  } else {
+    (function loop(now) {
+      requestAnimationFrame(loop);
+      if (document.hidden) return;
+      render(now || performance.now());
+    })();
   }
-
-  (function loop(now) {
-    requestAnimationFrame(loop);
-    if (document.hidden) return;
-    render(now || performance.now());
-  })();
-})();
+}

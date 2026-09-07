@@ -1,5 +1,8 @@
 import type { Asset } from '@shared/domain/asset'
-import { openDocument } from '@/features/shell/components/dockviewApi'
+import { opensInStudio } from '@shared/domain/fileRole'
+import { nameOf } from '@shared/domain/folder'
+import { fileViewOf } from '@shared/domain/fileView'
+import { openDocument, openFileView } from '@/features/shell/components/dockviewApi'
 import { getBridge } from '@/services/bridge'
 import { reportFailure } from '@/services/diagnostics'
 import { documentAtPath, useDocuments } from '@/stores/documents'
@@ -11,7 +14,34 @@ import { documentAtPath, useDocuments } from '@/stores/documents'
  * the journal. `file.open` does, because a model told only "done" tells the person the same.
  */
 export type FileOpening =
-  'document' | 'asset' | 'system' | 'folder' | 'missing' | 'unreachable' | 'failed'
+  'document' | 'editor' | 'asset' | 'system' | 'folder' | 'missing' | 'unreachable' | 'failed'
+
+type Bridge = NonNullable<ReturnType<typeof getBridge>>
+
+async function openAdopted(path: string, asset: Asset, bridge: Bridge): Promise<FileOpening> {
+  if (!opensInStudio(nameOf(path))) {
+    return (await bridge.project.openFile(path)) ? 'system' : 'failed'
+  }
+  const { openAsset } = await import('./openAsset')
+  return (await openAsset(asset)) ? 'asset' : 'failed'
+}
+
+async function openOutsideStudio(path: string, bridge: Bridge): Promise<FileOpening> {
+  const facts = await bridge.project.fileFacts(path)
+  if (!facts) return 'missing'
+  if (facts.kind === 'folder') return 'folder'
+  return (await bridge.project.openFile(path)) ? 'system' : 'failed'
+}
+
+async function reportAdoptionFailure(
+  path: string,
+  bridge: Bridge,
+  error: unknown,
+): Promise<FileOpening> {
+  if ((await bridge.project.fileFacts(path)) === null) return 'missing'
+  reportFailure('explorer.open', path, error)
+  return 'failed'
+}
 
 /**
  * Opening a file of the project folder, whatever it is — the Explorer's double-click, and the
@@ -28,6 +58,12 @@ export async function openProjectFile(path: string): Promise<FileOpening> {
     return 'document'
   }
 
+  const fileView = fileViewOf(path)
+  if (fileView) {
+    openFileView(fileView)
+    return 'editor'
+  }
+
   const bridge = getBridge()
   if (!bridge) return 'unreachable'
 
@@ -40,27 +76,17 @@ export async function openProjectFile(path: string): Promise<FileOpening> {
     // A path that is not there answers `null` below, never a throw — so what reaches here is a
     // catalogue or a volume that failed, and the disk is asked only to tell the two apart.
     // `explorer.open` names the gesture, not its caller.
-    if ((await bridge.project.fileFacts(path)) === null) return 'missing'
-
-    reportFailure('explorer.open', path, error)
-    return 'failed'
+    return await reportAdoptionFailure(path, bridge, error)
   }
 
   // Loaded on the call, as it was from the Explorer: `openAsset` reaches `ASSET_INTENTS`, which
   // names every editor's destination, and `eager-graph.test.ts` holds the first screen to less.
   if (adopted) {
-    const { openAsset } = await import('./openAsset')
-    return (await openAsset(adopted)) ? 'asset' : 'failed'
+    return await openAdopted(path, adopted, bridge)
   }
 
   // Asked only HERE, on the one path that is about to leave the studio: a `stat` on every
   // double-click would pay for what the answer above already settled. It is what tells an entry
   // that is not there from one no editor of ours takes.
-  const facts = await bridge.project.fileFacts(path)
-  if (!facts) return 'missing'
-  if (facts.kind === 'folder') return 'folder'
-
-  // Awaited, unlike the Explorer's fire-and-forget: `shell.openPath` refusing is the difference
-  // between a file the person can now see and one nothing happened to.
-  return (await bridge.project.openFile(path)) ? 'system' : 'failed'
+  return await openOutsideStudio(path, bridge)
 }

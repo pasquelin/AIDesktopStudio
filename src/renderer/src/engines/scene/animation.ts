@@ -1,14 +1,14 @@
 import { AnimationMixer, LoopOnce, LoopRepeat, type AnimationClip, type Object3D } from 'three'
 import { EMPTY_TIMELINE, type AnimationTimeline } from '@shared/domain/animation'
-import { clipKeyOf, type ClipLane, type ClipRef, type ClipSource } from '@shared/domain/scene'
-import { assetUrl } from '@shared/domain/asset'
-import { bundledAnimationUrl } from '@shared/domain/animationLibrary'
-import { WHOLE_BODY, type BodyPart } from '@shared/domain/humanoid'
-import { bonesDrivenBy } from './boneRoles'
+import { clipKeyOf, type ClipLane, type ClipRef } from '@shared/domain/scene'
+import { WHOLE_BODY } from '@shared/domain/humanoid'
 import type { Us } from '@shared/domain/time'
 import { clipBlendAt, type ClipWeight } from './clipBlend'
-import { skeletonBonesOf, type SkeletonBone } from './rigState'
+import { skeletonBonesOf } from './rigState'
 import { blockClip, nodeTravelsOnBand, rootTrackOf, travelsWith } from './rootMotion'
+import { drivenIn, posePlayer, releasePlayer, type Player } from './animationPlayer'
+export { foreignClipsOf, type ForeignClip } from './clipSources'
+import type { PosedClip } from '@game/ports/animationPort'
 
 /** The clips a loaded file brought, in the order it spells them. */
 export function clipsOf(source: Object3D): AnimationClip[] {
@@ -24,82 +24,11 @@ export function clipLengthsOf(source: Object3D): Record<string, number> {
   return lengthsOf(clipsOf(source))
 }
 
-/** A clip a model's blocks name that its own file did not bring: where to read it, what to call it. */
-export type ForeignClip = { key: string; url: string; label: string }
-
-/** Where a clip that did not come with the model is read from — `null` for the model's own. */
-export function clipSourceUrl(source: ClipSource): string | null {
-  if (source.kind === 'bundled') return bundledAnimationUrl(source.name)
-  return source.kind === 'asset' ? assetUrl(source.assetId) : null
-}
-
-/**
- * Every clip a document asks a model to play that the model's own file did not bring, once each.
- *
- * Once per KEY and not per block: a walk laid down four times is one file to read, and the key
- * carries the kind, so a shipped `walk` and a project asset called `walk` stay two things.
- */
-export function foreignClipsOf(lanes: readonly ClipLane[]): ForeignClip[] {
-  const found = new Map<string, ForeignClip>()
-
-  for (const clip of lanes.flatMap(lane => lane.clips)) {
-    const url = clipSourceUrl(clip.source)
-    const key = clipKeyOf(clip.source)
-    if (url && !found.has(key)) found.set(key, { key, url, label: clip.label })
-  }
-  return [...found.values()]
-}
-
-/** The bones a half of this body covers, read once per half — the roles walk every bone. */
-function drivenIn(player: Player, part: BodyPart): ReadonlySet<string> | null {
-  if (!player.driven.has(part)) player.driven.set(part, bonesDrivenBy(player.bones, part))
-  return player.driven.get(part) ?? null
-}
-
 /** One place decides the shape of this record: the band and the mixer must read the same one. */
 function lengthsOf(clips: readonly AnimationClip[]): Record<string, number> {
   const lengths: Record<string, number> = {}
   for (const clip of clips) lengths[clip.name] = clip.duration
   return lengths
-}
-
-/** One block of the document, and the clip object it plays. */
-type Bound = {
-  ref: ClipRef
-  /** Whether that object kept the travel, so a decision that flips rebuilds it. */
-  travel: boolean
-  /** Which entry of `clips` it was built from, so a block pointed elsewhere is rebuilt. */
-  key: string
-  /** Which bones that object was cut down to, so a block given another half is rebuilt too. */
-  part: BodyPart
-  clip: AnimationClip
-}
-
-type Player = {
-  mixer: AnimationMixer
-  /**
-   * Every clip this model can play, by `clipKeyOf` — its file's own, and whatever was retargeted
-   * onto it since. FIRST WINS on a key held twice, and so does `lengths`: a Mixamo export calls
-   * every clip `mixamo.com`, and two answers here would play one clip at another's width.
-   */
-  clips: Map<string, AnimationClip>
-  /** The names the model's OWN file spells, which is what a panel offers a choice from. */
-  fileNames: readonly string[]
-  /** The bones the clips play on, kept so a clip arriving later can be read against them. */
-  bones: readonly SkeletonBone[]
-  /**
-   * Which bones each half of this body covers, worked out at most once per half: reading the
-   * roles walks all fifty-two, and it depends on the skeleton alone.
-   */
-  driven: Map<BodyPart, ReadonlySet<string> | null>
-  /** How long each clip runs, which is what a block's width is derived from. */
-  lengths: Record<string, number>
-  /** The travel channel of each clip, worked out once — it depends on the file and the rig alone. */
-  rootTracks: Map<string, string | null>
-  /** The lanes as the document holds them. `bound` alone would lose which lane a block lies in. */
-  lanes: readonly ClipLane[]
-  /** One entry per block the document holds, keyed by block id. */
-  bound: Map<string, Bound>
 }
 
 /**
@@ -141,12 +70,15 @@ export class SceneAnimations {
       mixer: new AnimationMixer(root),
       clips: byName,
       fileNames: [...byName.keys()],
+      fileClips: [...clips],
       bones,
       driven: new Map(),
       lengths: lengthsOf([...byName.values()]),
       rootTracks,
       lanes: [],
       bound: new Map(),
+      posed: new Map(),
+      graphDriven: false,
     })
   }
 
@@ -164,9 +96,33 @@ export class SceneAnimations {
     this.apply(nodeId, player.lanes)
   }
 
+  /** Releases a transient clip and its actions from this model's single mixer. */
+  removeClip(nodeId: string, key: string): void {
+    const player = this.players.get(nodeId)
+    if (!player || player.fileNames.includes(key)) return
+    if (player.graphDriven) {
+      // Leave the posed action: uncacheing it restores the bind pose for a frame.
+      player.clips.delete(key)
+      delete player.lengths[key]
+      player.rootTracks.delete(key)
+      return
+    }
+    const clip = player.clips.get(key)
+    if (clip) player.mixer.uncacheClip(clip)
+    player.clips.delete(key)
+    delete player.lengths[key]
+    player.rootTracks.delete(key)
+    this.apply(nodeId, player.lanes)
+  }
+
   /** How long each clip a node can play runs, by key — what the band draws its blocks from. */
   lengthsOf(nodeId: string): Readonly<Record<string, number>> {
     return this.players.get(nodeId)?.lengths ?? {}
+  }
+
+  /** The lanes this model was last applied, for whoever has to ask for its clips again. */
+  lanesOf(nodeId: string): readonly ClipLane[] {
+    return this.players.get(nodeId)?.lanes ?? []
   }
 
   /** What the model's own file spells, which is the list a panel offers a choice from. */
@@ -200,7 +156,7 @@ export class SceneAnimations {
 
     // Its OWN, never what was retargeted onto it: a rig describes the file, and an animation
     // dropped on a character says nothing about the character.
-    return player.fileNames.flatMap(name => player.clips.get(name) ?? [])
+    return [...player.fileClips]
   }
 
   /**
@@ -225,35 +181,14 @@ export class SceneAnimations {
     if (!player) return
 
     player.lanes = lanes
+    // 🛑 Remembered while a machine drives it: the lanes are what `release` gives the body back to,
+    // and a document edited mid-game must not repose a model the game is playing.
+    if (player.graphDriven) return
     const onBand = nodeTravelsOnBand(this.timeline, nodeId)
     const kept = new Set<string>()
 
     for (const ref of lanes.flatMap(lane => lane.clips)) {
-      const key = clipKeyOf(ref.source)
-      const source = player.clips.get(key)
-      // A block naming a clip nothing has filed plays nothing, rather than costing the whole
-      // model its animation — which is also the state a shipped animation is in while it loads.
-      if (!source) continue
-
-      kept.add(ref.id)
-      const travel = travelsWith(ref.rootMotion, onBand)
-      const part = ref.part ?? WHOLE_BODY
-      const held = player.bound.get(ref.id)
-      // Rebuilt only when what the clip HOLDS changes — the travel, the bones it drives, the clip
-      // itself. A speed, a fade or a move is written onto the action further down instead.
-      if (held && held.travel === travel && held.key === key && held.part === part) {
-        held.ref = ref
-        continue
-      }
-
-      if (held) player.mixer.uncacheClip(held.clip)
-      const clip = blockClip(
-        source,
-        player.rootTracks.get(key) ?? null,
-        travel,
-        drivenIn(player, part),
-      )
-      player.bound.set(ref.id, { ref, travel, key, part, clip })
+      if (this.bindClip(player, ref, onBand)) kept.add(ref.id)
     }
 
     for (const [id, held] of player.bound) {
@@ -270,10 +205,13 @@ export class SceneAnimations {
    * Puts every block where the scene's HEAD says, rather than where real time left it. A render
    * never advances real time at all: without this it writes the same pose a thousand times, and
    * a film of a walking character came out frozen for exactly that reason.
+   *
+   * Answers whether any model was actually POSED: a head that drives nothing moves nothing, and
+   * an exported frame reads that to decide whether it owes a shadow pass.
    */
-  seek(playhead: Us): void {
+  seek(playhead: Us): boolean {
     this.playhead = playhead
-    this.placeAll()
+    return this.placeAll()
   }
 
   /**
@@ -310,11 +248,34 @@ export class SceneAnimations {
     return length
   }
 
-  private placeAll(): void {
-    for (const player of this.players.values()) this.place(player)
+  /** What a state machine plays on this model, in place of its band — see `posePlayer`. */
+  pose(nodeId: string, clips: readonly PosedClip[]): void {
+    const player = this.players.get(nodeId)
+    if (player) posePlayer(player, clips)
+  }
+
+  /** Gives a model back to its band. Idempotent, and what `world.dispose` owes every body. */
+  release(nodeId: string): void {
+    const player = this.players.get(nodeId)
+    if (!player || !player.graphDriven) return
+
+    releasePlayer(player)
+    this.apply(nodeId, player.lanes)
+  }
+
+  private placeAll(): boolean {
+    let posed = false
+    for (const player of this.players.values()) {
+      if (player.bound.size === 0 || player.graphDriven) continue
+      this.place(player)
+      posed = true
+    }
+    return posed
   }
 
   private place(player: Player): void {
+    if (player.graphDriven) return
+
     const sounding = new Map<string, ClipWeight>()
     for (const heard of clipBlendAt(player.lanes, player.lengths, this.playhead)) {
       sounding.set(heard.clipId, heard)
@@ -335,5 +296,27 @@ export class SceneAnimations {
 
     // A pose has to show without waiting for a frame, and nothing here ever gets one.
     player.mixer.update(0)
+  }
+
+  private bindClip(player: Player, ref: ClipRef, onBand: boolean): boolean {
+    const key = clipKeyOf(ref.source)
+    const source = player.clips.get(key)
+    if (!source) return false
+    const travel = travelsWith(ref.rootMotion, onBand)
+    const part = ref.part ?? WHOLE_BODY
+    const held = player.bound.get(ref.id)
+    if (held && held.travel === travel && held.key === key && held.part === part) {
+      held.ref = ref
+      return true
+    }
+    if (held) player.mixer.uncacheClip(held.clip)
+    const clip = blockClip(
+      source,
+      player.rootTracks.get(key) ?? null,
+      travel,
+      drivenIn(player, part),
+    )
+    player.bound.set(ref.id, { ref, travel, key, part, clip })
+    return true
   }
 }

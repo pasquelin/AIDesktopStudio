@@ -6,7 +6,10 @@ import { useLayouts } from '@/stores/layouts'
 import { closeOrphanTabs } from './orphanTabs'
 
 const closePanel = vi.hoisted(() => vi.fn())
-vi.mock('./components/dockviewApi', () => ({ closePanel }))
+vi.mock('./components/dockviewApi', async importActual => ({
+  ...(await importActual<Record<string, unknown>>()),
+  closePanel,
+}))
 
 const SAVED: DocumentDescriptor = {
   id: 'saved',
@@ -47,6 +50,16 @@ describe('closeOrphanTabs', () => {
 
     expect(closePanel).toHaveBeenCalledWith('ghost')
     expect(useLayouts.getState().layout).toBeNull()
+  })
+
+  // A file view is in no folder listing to be missing from, so every sweep read it as a ghost —
+  // and `closePanel` takes a tab without the question `closeFileView` asks about its edits.
+  it('leaves a file view alone, which no listing was ever going to hold', () => {
+    showPanels('file:Entrées/Clavier.input.json')
+
+    closeOrphanTabs()
+
+    expect(closePanel).not.toHaveBeenCalled()
   })
 
   it('leaves the tab of a document the folder holds', () => {

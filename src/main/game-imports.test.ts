@@ -154,7 +154,7 @@ describe('what the game runtime may reach', () => {
 
     expect(reachesOutOf(from, "import type { Ref } from '@shared/domain/ref'")).toEqual([])
     expect(reachesOutOf(from, "import { createRingLog } from './ringLog'")).toEqual([])
-    expect(reachesOutOf(from, "import RAPIER from '@dimforge/rapier3d-compat'")).toEqual([])
+    expect(reachesOutOf(from, "import Jolt from 'jolt-physics/wasm-compat'")).toEqual([])
   })
 
   /** And so can the other half: three spellings that carry code, and two that carry nothing. */

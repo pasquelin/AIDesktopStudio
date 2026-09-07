@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs'
+import { readdirSync, readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import { WINDOW_CHROME_COLOR } from '@shared/constants'
 import { THEME_ATTRIBUTE } from '@shared/domain/settings'
@@ -13,7 +13,28 @@ import { THEME_ATTRIBUTE } from '@shared/domain/settings'
  * jsdom, where `import.meta.url` is an http URL and no file can be read — and this IS a main
  * process contract, since the window chrome is painted from values it cannot read off the CSS.
  */
-const stylesheet = readFileSync(new URL('../../renderer/src/index.css', import.meta.url), 'utf8')
+const SHEETS = new URL('../../renderer/src/', import.meta.url)
+
+/** Every piece of the token layer, from the folder rather than from a list that would go stale. */
+const pieces = readdirSync(SHEETS)
+  .filter(name => /^index-.*\.css$/.test(name))
+  .sort()
+
+const stylesheet = pieces.map(name => readFileSync(new URL(name, SHEETS), 'utf8')).join('\n')
+
+/**
+ * The window loads `index.css`, which is nothing but `@import` lines since the split. A piece on
+ * disk that it does not import is dead to the application while every guard here still reads it —
+ * and a piece it imports that is gone breaks the window with the whole suite green.
+ */
+describe('the pieces of the stylesheet', () => {
+  it('is exactly what index.css imports', () => {
+    const index = readFileSync(new URL('index.css', SHEETS), 'utf8')
+    const imported = [...index.matchAll(/@import '\.\/([^']+)'/g)].map(match => match[1]).sort()
+
+    expect(imported).toEqual(pieces)
+  })
+})
 
 /** The declarations of one block, from its opening line to the brace in the first column. */
 function blockFrom(opening: string): string {
@@ -27,6 +48,30 @@ function colorsIn(block: string): Map<string, string> {
     [...block.matchAll(/(--color-[a-z0-9-]+):\s*([^;]+);/g)].map(match => [match[1]!, match[2]!]),
   )
 }
+
+/** macOS draws each light 12px across; the bar centres its text on that circle. */
+const LIGHT_DIAMETER = 12
+
+/**
+ * The bar over a window is a CSS gauge and the lights are placed by this process: two numbers in
+ * two trees that nothing else relates. Off by one padding, every title sat above the lights.
+ */
+describe('the title bar and the traffic lights', () => {
+  const lights = /TRAFFIC_LIGHTS = \{ x: \d+, y: (\d+) \}/.exec(
+    readFileSync(new URL('./windows.ts', import.meta.url), 'utf8'),
+  )
+  const bar = /--sc-title-bar: (\d+)px;/.exec(blockFrom(':root {'))
+
+  it('centres a title on the lights: the bar is twice their offset plus their diameter', () => {
+    expect(lights?.[1]).toBeDefined()
+    expect(Number(bar?.[1])).toBe(2 * Number(lights?.[1]) + LIGHT_DIAMETER)
+  })
+
+  // The lights are placed once, whatever the density: a bar that shrank with it would leave them.
+  it('does not let the compact density move the bar', () => {
+    expect(blockFrom(":root[data-density='compact'] {")).not.toContain('--sc-title-bar')
+  })
+})
 
 const reference = colorsIn(blockFrom('@theme {'))
 const dark = colorsIn(blockFrom(`name: '${THEME_ATTRIBUTE.dark}'`))
@@ -81,6 +126,9 @@ describe('the light theme', () => {
       '--color-monitor',
       '--color-marquee-light',
       '--color-marquee-dark',
+      // And the pixel grid, ruled over the same document for the same reason.
+      '--color-grid-cell',
+      '--color-grid-pixel',
       // The three axis stripes, and their reason is arithmetic rather than editorial: a stripe
       // has to clear 3:1 against `surface` on BOTH themes, which pinches its luminance between
       // 0.146 and 0.273 — a window narrow enough that one value serves the two. Measured in

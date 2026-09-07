@@ -5,6 +5,12 @@ import {
   type CommandId,
 } from '@shared/domain/command'
 import { DEFAULT_MOTION, type MotionId, type Signature } from '@shared/domain/shortcut'
+import {
+  customFrom,
+  schemeFor,
+  type CustomNavigation,
+  type NavigationPreset,
+} from '@shared/domain/navigationPreset'
 import { IS_MAC } from '@/helpers/platform'
 import { useSettings } from './settings'
 
@@ -19,13 +25,24 @@ const PLATFORM_DEFAULTS = platformDefaults(IS_MAC)
  * written table, the platform's own keys would be saved as though the user had remapped them —
  * which is also why a row asks the stored table whether it is remapped.
  */
-let mergedFrom: BindingOverrides | null = null
+let mergedFrom: { overrides: BindingOverrides; scheme: string } | null = null
 let merged: BindingOverrides = PLATFORM_DEFAULTS
 
-function withPlatformDefaults(overrides: BindingOverrides): BindingOverrides {
-  if (overrides !== mergedFrom) {
-    mergedFrom = overrides
-    merged = { ...PLATFORM_DEFAULTS, ...overrides }
+/**
+ * Three layers, and the person's own is the last: what this system ships, then what the chosen
+ * application binds differently, then every remap that was actually made — see `navigationPreset`.
+ */
+function withPlatformDefaults(
+  overrides: BindingOverrides,
+  preset: NavigationPreset,
+  custom: CustomNavigation,
+): BindingOverrides {
+  // Keyed on the scheme's own signature, never on the preset alone: a custom flight turned
+  // permanent moves two keys without the preset's name changing at all.
+  const scheme = `${preset}:${custom.fly}`
+  if (mergedFrom?.overrides !== overrides || mergedFrom.scheme !== scheme) {
+    mergedFrom = { overrides, scheme }
+    merged = { ...PLATFORM_DEFAULTS, ...schemeFor(preset, custom).bindings, ...overrides }
   }
   return merged
 }
@@ -36,8 +53,12 @@ function withPlatformDefaults(overrides: BindingOverrides): BindingOverrides {
  * through it would make `useBindingOverrides` answer a fresh object every other read, which is
  * exactly what `useSyncExternalStore` refuses. The caller memoises.
  */
-export function resolveBindings(overrides: BindingOverrides): BindingOverrides {
-  return { ...PLATFORM_DEFAULTS, ...overrides }
+export function resolveBindings(
+  overrides: BindingOverrides,
+  preset: NavigationPreset,
+  custom: CustomNavigation,
+): BindingOverrides {
+  return { ...PLATFORM_DEFAULTS, ...schemeFor(preset, custom).bindings, ...overrides }
 }
 
 /**
@@ -48,19 +69,33 @@ export function resolveBindings(overrides: BindingOverrides): BindingOverrides {
  * windows nor the native menu — and where no screen could edit them at all.
  */
 export function useBindingOverrides(): BindingOverrides {
-  return useSettings(state => withPlatformDefaults(state.settings.shortcuts.overrides))
+  return useSettings(state =>
+    withPlatformDefaults(
+      state.settings.shortcuts.overrides,
+      state.settings.three.navigationPreset,
+      customFrom(state.settings.three),
+    ),
+  )
 }
 
 /** The key one command answers to, for a tooltip or a toolbar. */
 export function useBinding(id: CommandId): Signature | null {
   return useSettings(state =>
-    bindingOf(id, withPlatformDefaults(state.settings.shortcuts.overrides)),
+    bindingOf(
+      id,
+      withPlatformDefaults(
+        state.settings.shortcuts.overrides,
+        state.settings.three.navigationPreset,
+        customFrom(state.settings.three),
+      ),
+    ),
   )
 }
 
 /** Read outside React, on a keydown: subscribing per event would be a subscription per frame. */
 export function currentOverrides(): BindingOverrides {
-  return withPlatformDefaults(useSettings.getState().settings.shortcuts.overrides)
+  const { shortcuts, three } = useSettings.getState().settings
+  return withPlatformDefaults(shortcuts.overrides, three.navigationPreset, customFrom(three))
 }
 
 /**
@@ -79,6 +114,18 @@ const MOTION_BY_CODE: ReadonlyMap<Signature, MotionId> = new Map(
  * signature: boost IS Shift, so a signature would spell it `Shift+ShiftLeft` and spell every
  * direction pressed under it `Shift+…` — a table of bare codes matches none of those.
  */
-export function motionFor(code: string): MotionId | null {
+export function motionFor(code: string, chord: HeldModifiers = {}): MotionId | null {
+  // ⌘ and Ctrl never fly — without this, ⌘Z under a permanent flight is eaten as `forward` on
+  // AZERTY, where the key printing `z` sits at `KeyW`. Alt is NOT one of them: the studio orbits
+  // under it and arms the flight on that same press, so refusing it stopped the camera mid-drag.
+  if (chord.ctrlKey === true || chord.metaKey === true) return null
   return MOTION_BY_CODE.get(code) ?? null
+}
+
+/** What a keypress holds. `shiftKey` and `altKey` are named and IGNORED: both fly. */
+export type HeldModifiers = {
+  ctrlKey?: boolean
+  metaKey?: boolean
+  altKey?: boolean
+  shiftKey?: boolean
 }

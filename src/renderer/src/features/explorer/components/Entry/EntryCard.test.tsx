@@ -34,7 +34,7 @@ describe('EntryCard', () => {
    * itself. What the studio keeps for itself was draggable by its preview.
    */
   it('refuses a drag started on the picture of a card that may not be picked up', () => {
-    const { tile, onPickUp } = card({ pickable: false, preview: 'ia-studio://thumb/x' })
+    const { tile, onPickUp } = card({ pickable: false, preview: 'ai-desktop-studio://thumb/x' })
     const picture = tile.querySelector('img')
 
     fireEvent.dragStart(picture!, { dataTransfer: dragTransfer() })
@@ -43,7 +43,7 @@ describe('EntryCard', () => {
   })
 
   it('carries a drag started on the picture of a card that may', () => {
-    const { tile, onPickUp } = card({ preview: 'ia-studio://thumb/x' })
+    const { tile, onPickUp } = card({ preview: 'ai-desktop-studio://thumb/x' })
 
     fireEvent.dragStart(tile.querySelector('img')!, { dataTransfer: dragTransfer() })
 
@@ -55,7 +55,7 @@ describe('EntryCard', () => {
    * grid drew before, nor a silhouette that hides the picture.
    */
   it('cuts the thumbnail of a file to the document silhouette', () => {
-    const { tile } = card({ preview: 'ia-studio://thumb/x' })
+    const { tile } = card({ preview: 'ai-desktop-studio://thumb/x' })
 
     expect(tile.querySelector('img')?.className).toContain('document-cutout')
   })

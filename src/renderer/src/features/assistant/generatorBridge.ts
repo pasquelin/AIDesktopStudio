@@ -40,6 +40,8 @@ export type GeneratorBridge = {
   armed: () => ArmedGeneration | null
   /** `into` overrides the destination the panel shows; absent takes it. */
   submit: (into?: LandingTarget) => Promise<Job | null>
+  /** Submits one canvas note without consuming the other drafts. */
+  submitComment?: (documentId: string, commentId: string) => Promise<Job | null>
   /**
    * The reference pictures sitting on the form, as asset ids.
    *
@@ -51,9 +53,22 @@ export type GeneratorBridge = {
 }
 
 const host = createMountedHost<GeneratorBridge>()
+const listeners = new Set<() => void>()
 
 /** Declares the generator while it is on screen. Returns the way to take it back down. */
-export const registerGenerator = host.hold
+export function registerGenerator(generator: GeneratorBridge): () => void {
+  const release = host.hold(generator)
+  listeners.forEach(listener => listener())
+  return () => {
+    release()
+    listeners.forEach(listener => listener())
+  }
+}
 
 /** The generator, if one is mounted. `null` is an answer, not a failure: the panel may be closed. */
 export const mountedGenerator = host.get
+
+export function subscribeGenerator(listener: () => void): () => void {
+  listeners.add(listener)
+  return () => listeners.delete(listener)
+}

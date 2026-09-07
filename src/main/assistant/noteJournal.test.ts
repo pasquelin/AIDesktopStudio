@@ -7,7 +7,7 @@ import { lineOfNote, reportOfNote } from './noteJournal'
 
 /** Every note the union can carry, so the guard below reads them all rather than a sample. */
 const EVERY_NOTE: readonly AssistantNote[] = [
-  { kind: 'sent', door: 'deepseek', model: 'deepseek-chat', text: 'You drive IA Studio' },
+  { kind: 'sent', door: 'deepseek', model: 'deepseek-chat', text: 'You drive AI Desktop Studio' },
   { kind: 'answered', text: '{"say":"","calls":[]}' },
   { kind: 'ran', action: 'jobs.list', input: '{}', answer: 'ok', refused: false },
   { kind: 'ran', action: 'project.create', input: '{}', answer: 'badInput', refused: true },
@@ -51,15 +51,13 @@ describe('what a note becomes in the journal', () => {
    * SIZE is kept; the text is in the transcript, which stays in the log folder.
    */
   it('keeps a prompt out of a file that travels with the project', () => {
-    const report = reportOfNote({
-      kind: 'sent',
-      door: 'deepseek',
-      model: 'deepseek-chat',
-      text: `You drive IA Studio\n\nFolders on this machine:\nhome: /Users/someone\n`,
-    })
+    // Against the prompt's own length rather than a literal: a literal is a count to re-measure
+    // by hand every time a word of the fixture moves, and a rename left it eight short.
+    const text = `You drive AI Desktop Studio\n\nFolders on this machine:\nhome: /Users/someone\n`
+    const report = reportOfNote({ kind: 'sent', door: 'deepseek', model: 'deepseek-chat', text })
 
     expect(report.detail).toBeUndefined()
-    expect(report.params?.['chars']).toBe(67)
+    expect(report.params?.['chars']).toBe(text.length)
   })
 
   /** Every arm, not one: a single unbounded detail is a database row nothing holds back. */

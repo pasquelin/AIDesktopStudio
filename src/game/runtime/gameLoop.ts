@@ -49,7 +49,8 @@ export function createGameLoop(world: World): GameLoop {
       // Clamped at BOTH ends. A clock that goes backwards — an NTP correction, a replay fed out
       // of order — would otherwise drive the accumulator negative: the world stops stepping until
       // the deficit is repaid, and `alpha` answers behind the last step instead of between two.
-      accumulator += clamp(nowSeconds - last, 0, MAX_FRAME_SECONDS)
+      const frame = clamp(nowSeconds - last, 0, MAX_FRAME_SECONDS)
+      accumulator += frame
       last = nowSeconds
 
       let ran = 0
@@ -59,7 +60,7 @@ export function createGameLoop(world: World): GameLoop {
         ran += 1
       }
 
-      world.lateUpdate(alpha())
+      world.lateUpdate(alpha(), frame)
       return ran
     },
 

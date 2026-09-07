@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
+import { glbChunksOf, glbFrom, glbJson } from '@shared/domain/glbContainer'
 import { glbFile as glb, glbWearing as fileWith } from './glb-fixtures'
-import { embeddedTextures } from './glbTextures'
+import { embeddedTextures, withoutEmbeddedTextures } from './glbTextures'
 
 const JPEG = new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 1, 2, 3, 4])
 const PNG = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 9, 9])
@@ -123,7 +124,6 @@ describe('the pictures a glb carries', () => {
     expect(found[0]?.channel).toBeUndefined()
   })
 
-  // Two slots that mean the SAME channel still agree, and the picture keeps it.
   it('keeps the channel when every slot wearing it says the same thing', () => {
     const file = glb(
       {
@@ -140,7 +140,9 @@ describe('the pictures a glb carries', () => {
 
     expect(embeddedTextures(file)).toMatchObject([{ channel: 'baseColor' }])
   })
+})
 
+describe('embedded glb pictures', () => {
   /**
    * `mimeType` is optional for a `uri` image because the URI carries it. Defaulting to PNG there
    * wrote JPEG bytes into a file named `.png`, served afterwards as a PNG by a name the bytes do
@@ -193,89 +195,91 @@ describe('the pictures a glb carries', () => {
 
     expect(embeddedTextures(whole.subarray(0, whole.byteLength - 6))).toEqual([])
   })
+})
 
-  /**
-   * Every one of these is a real shape a file off the network can have, and each has its own
-   * way of being wrong. What they share is the answer: nothing extracted, nothing thrown — the
-   * gesture is a menu row, and a model the studio cannot read must not take the window with it.
-   */
-  describe('a file that is not what it claims', () => {
-    const wrongMagic = new Uint8Array(20)
+/**
+ * Every one of these is a real shape a file off the network can have, and each has its own
+ * way of being wrong. What they share is the answer: nothing extracted, nothing thrown — the
+ * gesture is a menu row, and a model the studio cannot read must not take the window with it.
+ */
+const wrongMagic = new Uint8Array(20)
 
-    const cases: [string, Uint8Array][] = [
-      ['four bytes that are not glTF', wrongMagic],
-      ['a document that is not an object', glb('just a string')],
-      ['a document with no material at all', glb({ textures: [{ source: 0 }] })],
-      [
-        'a texture pointing at no source',
-        glb({ materials: [{ normalTexture: { index: 0 } }], textures: [{}] }),
-      ],
-      [
-        'a texture that is not an object',
-        glb({ materials: [{ normalTexture: { index: 0 } }], textures: ['nope'] }),
-      ],
-      [
-        'a source no image answers for',
-        glb({ materials: [{ normalTexture: { index: 0 } }], textures: [{ source: 9 }] }),
-      ],
-      [
-        'an image that names neither a view nor a URI',
-        glb({
-          materials: [{ normalTexture: { index: 0 } }],
-          textures: [{ source: 0 }],
-          images: [{ mimeType: 'image/png' }],
-        }),
-      ],
-      [
-        'a view the document does not hold',
-        glb({
-          materials: [{ normalTexture: { index: 0 } }],
-          textures: [{ source: 0 }],
-          images: [{ bufferView: 4 }],
-          bufferViews: [],
-        }),
-      ],
-      [
-        'a view claiming more bytes than the chunk carries',
-        glb(
-          {
-            materials: [{ normalTexture: { index: 0 } }],
-            textures: [{ source: 0 }],
-            images: [{ bufferView: 0 }],
-            bufferViews: [{ buffer: 0, byteLength: 9_000 }],
-          },
-          PNG,
-        ),
-      ],
-      [
-        'a view that claims no length at all',
-        glb(
-          {
-            materials: [{ normalTexture: { index: 0 } }],
-            textures: [{ source: 0 }],
-            images: [{ bufferView: 0 }],
-            bufferViews: [{ buffer: 0, byteOffset: 0 }],
-          },
-          PNG,
-        ),
-      ],
-      [
-        'a data URI carrying nothing readable',
-        glb({
-          materials: [{ normalTexture: { index: 0 } }],
-          textures: [{ source: 0 }],
-          images: [{ uri: 'data:image/png,not-base64-at-all' }],
-        }),
-      ],
-    ]
+const invalidFiles: [string, Uint8Array][] = [
+  ['four bytes that are not glTF', wrongMagic],
+  ['a document that is not an object', glb('just a string')],
+  ['a document with no material at all', glb({ textures: [{ source: 0 }] })],
+  [
+    'a texture pointing at no source',
+    glb({ materials: [{ normalTexture: { index: 0 } }], textures: [{}] }),
+  ],
+  [
+    'a texture that is not an object',
+    glb({ materials: [{ normalTexture: { index: 0 } }], textures: ['nope'] }),
+  ],
+  [
+    'a source no image answers for',
+    glb({ materials: [{ normalTexture: { index: 0 } }], textures: [{ source: 9 }] }),
+  ],
+  [
+    'an image that names neither a view nor a URI',
+    glb({
+      materials: [{ normalTexture: { index: 0 } }],
+      textures: [{ source: 0 }],
+      images: [{ mimeType: 'image/png' }],
+    }),
+  ],
+  [
+    'a view the document does not hold',
+    glb({
+      materials: [{ normalTexture: { index: 0 } }],
+      textures: [{ source: 0 }],
+      images: [{ bufferView: 4 }],
+      bufferViews: [],
+    }),
+  ],
+  [
+    'a view claiming more bytes than the chunk carries',
+    glb(
+      {
+        materials: [{ normalTexture: { index: 0 } }],
+        textures: [{ source: 0 }],
+        images: [{ bufferView: 0 }],
+        bufferViews: [{ buffer: 0, byteLength: 9_000 }],
+      },
+      PNG,
+    ),
+  ],
+  [
+    'a view that claims no length at all',
+    glb(
+      {
+        materials: [{ normalTexture: { index: 0 } }],
+        textures: [{ source: 0 }],
+        images: [{ bufferView: 0 }],
+        bufferViews: [{ buffer: 0, byteOffset: 0 }],
+      },
+      PNG,
+    ),
+  ],
+  [
+    'a data URI carrying nothing readable',
+    glb({
+      materials: [{ normalTexture: { index: 0 } }],
+      textures: [{ source: 0 }],
+      images: [{ uri: 'data:image/png,not-base64-at-all' }],
+    }),
+  ],
+]
 
-    for (const [what, file] of cases) {
-      it(`yields nothing for ${what}`, () => {
-        expect(embeddedTextures(file)).toEqual([])
-      })
-    }
-  })
+describe('a file that is not what it claims', () => {
+  for (const [what, file] of invalidFiles) {
+    it(`yields nothing for ${what}`, () => {
+      expect(embeddedTextures(file)).toEqual([])
+    })
+  }
+})
 
+describe('glb texture defaults', () => {
   // A file whose JSON chunk is missing entirely — there is nothing to read the pictures FROM.
   it('yields nothing when the document itself is absent', () => {
     const binaryOnly = new Uint8Array(20)
@@ -304,7 +308,7 @@ describe('the pictures a glb carries', () => {
     expect(embeddedTextures(file)).toMatchObject([{ mimeType: 'image/png', bytes: PNG }])
   })
 
-  it('ignores a picture no material wears', () => {
+  it('extracts a picture even when no material wears it', () => {
     const file = glb(
       {
         materials: [{ name: 'bare' }],
@@ -315,6 +319,181 @@ describe('the pictures a glb carries', () => {
       PNG,
     )
 
-    expect(embeddedTextures(file)).toEqual([])
+    expect(embeddedTextures(file)).toMatchObject([{ slot: 'image1', bytes: PNG }])
+  })
+})
+
+describe('a glb after extraction', () => {
+  it('keeps geometry while removing material slots and image bytes', () => {
+    const geometry = new Uint8Array([1, 2, 3, 4])
+    const source = glb(
+      {
+        buffers: [{ byteLength: JPEG.byteLength + geometry.byteLength }],
+        bufferViews: [
+          { buffer: 0, byteOffset: 0, byteLength: JPEG.byteLength },
+          { buffer: 0, byteOffset: JPEG.byteLength, byteLength: geometry.byteLength },
+        ],
+        accessors: [{ bufferView: 1, componentType: 5121, count: 4, type: 'SCALAR' }],
+        materials: [
+          {
+            pbrMetallicRoughness: { baseColorTexture: { index: 0 } },
+            extras: { preferredTexture: 'linen' },
+          },
+        ],
+        textures: [{ source: 0 }],
+        images: [{ bufferView: 0, mimeType: 'image/jpeg' }],
+      },
+      new Uint8Array([...JPEG, ...geometry]),
+    )
+
+    const result = withoutEmbeddedTextures(source)
+    const chunks = glbChunksOf(result)
+    const json = chunks ? glbJson(chunks.json) : null
+
+    expect(embeddedTextures(result)).toEqual([])
+    expect(chunks?.bin).toEqual(geometry)
+    expect(json).toMatchObject({
+      buffers: [{ byteLength: geometry.byteLength }],
+      bufferViews: [{ buffer: 0, byteOffset: 0, byteLength: geometry.byteLength }],
+      accessors: [{ bufferView: 0 }],
+      materials: [{ pbrMetallicRoughness: {}, extras: { preferredTexture: 'linen' } }],
+    })
+    expect(json).not.toHaveProperty('images')
+    expect(json).not.toHaveProperty('textures')
+  })
+
+  it('keeps external images and remaps the material slot that uses them', () => {
+    const source = glb(
+      {
+        materials: [
+          {
+            pbrMetallicRoughness: { baseColorTexture: { index: 0 } },
+            normalTexture: { index: 1 },
+          },
+        ],
+        textures: [{ source: 0 }, { source: 1 }],
+        images: [
+          { bufferView: 0, mimeType: 'image/jpeg' },
+          { uri: 'normal.png', mimeType: 'image/png' },
+        ],
+        bufferViews: [{ buffer: 0, byteOffset: 0, byteLength: JPEG.byteLength }],
+      },
+      JPEG,
+    )
+
+    const chunks = glbChunksOf(withoutEmbeddedTextures(source))
+    const json = chunks ? glbJson(chunks.json) : null
+
+    expect(json).toMatchObject({
+      images: [{ uri: 'normal.png' }],
+      textures: [{ source: 0 }],
+      materials: [{ pbrMetallicRoughness: {}, normalTexture: { index: 0 } }],
+    })
+  })
+
+  it('preserves unknown container chunks byte-for-byte', () => {
+    const chunks = glbChunksOf(fileWith('baseColorTexture', JPEG))
+    if (!chunks) throw new Error('fixture is not a glb')
+    const extra = { kind: 0x12345678, bytes: new Uint8Array([9, 8, 7, 0]) }
+
+    const result = glbChunksOf(withoutEmbeddedTextures(glbFrom({ ...chunks, extra: [extra] })))
+
+    expect(result?.extra).toEqual([extra])
+  })
+
+  it('removes image-based lighting references when another external image remains', () => {
+    const source = glb(
+      {
+        materials: [
+          { pbrMetallicRoughness: { baseColorTexture: { index: 0 } }, normalTexture: { index: 1 } },
+        ],
+        textures: [{ source: 0 }, { source: 1 }],
+        images: [
+          { bufferView: 0, mimeType: 'image/jpeg' },
+          { uri: 'normal.png', mimeType: 'image/png' },
+        ],
+        bufferViews: [{ buffer: 0, byteOffset: 0, byteLength: JPEG.byteLength }],
+        extensions: { EXT_lights_image_based: { lights: [{ specularImages: [[0]] }] } },
+        scenes: [{ extensions: { EXT_lights_image_based: { light: 0 } } }],
+        extensionsUsed: ['EXT_lights_image_based'],
+      },
+      JPEG,
+    )
+
+    const chunks = glbChunksOf(withoutEmbeddedTextures(source))
+    const json = chunks ? glbJson(chunks.json) : null
+
+    expect(embeddedTextures(withoutEmbeddedTextures(source))).toEqual([])
+    expect(json).toMatchObject({ images: [{ uri: 'normal.png' }] })
+    expect(json).not.toHaveProperty('extensions.EXT_lights_image_based')
+    expect(json).not.toHaveProperty('scenes.0.extensions.EXT_lights_image_based')
+    expect(json).not.toHaveProperty('extensionsUsed')
+  })
+
+  it('does not mistake punctual light numbers for image indexes', () => {
+    const source = glb(
+      {
+        materials: [{ pbrMetallicRoughness: { baseColorTexture: { index: 0 } } }],
+        textures: [{ source: 0 }],
+        images: [{ bufferView: 0, mimeType: 'image/jpeg' }],
+        bufferViews: [{ buffer: 0, byteOffset: 0, byteLength: JPEG.byteLength }],
+        extensions: {
+          KHR_lights_punctual: { lights: [{ type: 'point', intensity: 1, color: [1, 1, 1] }] },
+        },
+      },
+      JPEG,
+    )
+
+    expect(embeddedTextures(withoutEmbeddedTextures(source))).toEqual([])
+  })
+
+  it('compacts compressed buffers while removing material images', () => {
+    const binary = new Uint8Array([...JPEG, 1, 2, 3, 4])
+    const source = glb(
+      {
+        buffers: [{ byteLength: binary.byteLength }],
+        bufferViews: [
+          { buffer: 0, byteOffset: 0, byteLength: JPEG.byteLength },
+          {
+            buffer: 0,
+            byteOffset: JPEG.byteLength,
+            byteLength: 4,
+            extensions: {
+              EXT_meshopt_compression: {
+                buffer: 0,
+                byteOffset: JPEG.byteLength,
+                byteLength: 4,
+                byteStride: 1,
+                count: 4,
+                mode: 'ATTRIBUTES',
+                filter: 'NONE',
+              },
+            },
+          },
+        ],
+        accessors: [{ bufferView: 1, componentType: 5121, count: 4, type: 'SCALAR' }],
+        materials: [{ pbrMetallicRoughness: { baseColorTexture: { index: 0 } } }],
+        textures: [{ source: 0 }],
+        images: [{ bufferView: 0, mimeType: 'image/jpeg' }],
+      },
+      binary,
+    )
+
+    const chunks = glbChunksOf(withoutEmbeddedTextures(source))
+    const json = chunks ? glbJson(chunks.json) : null
+
+    expect(chunks?.bin).toEqual(new Uint8Array([1, 2, 3, 4]))
+    expect(json).toMatchObject({
+      bufferViews: [
+        {
+          byteOffset: 0,
+          extensions: { EXT_meshopt_compression: { byteOffset: 0 } },
+        },
+      ],
+      accessors: [{ bufferView: 0 }],
+      buffers: [{ byteLength: 4 }],
+    })
+    expect(json).not.toHaveProperty('images')
+    expect(json).not.toHaveProperty('textures')
   })
 })

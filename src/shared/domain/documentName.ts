@@ -1,4 +1,4 @@
-import { documentFolderOf, EXTENSIONS_BY_KIND, type DocumentKind } from './document'
+import { documentFolderOf, extensionOfKind, type DocumentKind } from './document'
 import { pathIn } from './folder'
 import {
   foldForFileName,
@@ -43,9 +43,14 @@ export type NamedDocument = {
   fileName: string
 }
 
-/** The file a document of this name and kind lands on. */
+/**
+ * The file a document of this name and kind lands on.
+ *
+ * A kind with no file of its own composes a bare name — it never reaches the disk this way: its
+ * tab carries the path of the model it edits, and its ⌘S patches that container.
+ */
 export function documentFileName(name: string, kind: DocumentKind): string {
-  return `${safeFileName(name, 'document')}${EXTENSIONS_BY_KIND[kind]}`
+  return `${safeFileName(name, 'document')}${extensionOfKind(kind) ?? ''}`
 }
 
 /**

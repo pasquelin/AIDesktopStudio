@@ -8,6 +8,7 @@ import { CLOUD_IDS, type CloudProviderId } from '@shared/domain/aiCloud'
 import { partsOfRole, type AiRoleId } from '@shared/domain/aiRole'
 import { fitAllowsUse } from '@shared/domain/modelFit'
 import { MODEL_FAMILIES, type ModelFamily } from '@shared/domain/model'
+import { roleLabel } from '@/helpers/roleLabel'
 
 /** What the band's blocks all need, and none owns. */
 export type Translate = (key: string, values?: Record<string, string | number>) => string
@@ -79,6 +80,11 @@ export function cloudIdsOf(overview: AiOverview): readonly CloudProviderId[] {
   const held = new Set(overview.roles.flatMap(row => row.clouds))
 
   return CLOUD_IDS.filter(id => held.has(id))
+}
+
+/** What a group is called on screen. Read by the home band and by the welcome, one reading. */
+export function employmentLabelOf(group: EmploymentGroup, t: Translate): string {
+  return group.family === null ? roleLabel(group.role, t) : t(`families.${group.family}`)
 }
 
 /** One line of the employment list: a whole family, or one of the roles no family holds. */

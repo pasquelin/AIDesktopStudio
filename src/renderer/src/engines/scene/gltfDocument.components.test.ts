@@ -9,6 +9,8 @@ import {
   sceneHoldsMore,
   type GltfDocumentOptions,
 } from './gltfDocument'
+import { playerModuleNodes } from './nodeFactory'
+import { playerPartsOf } from './playerModule'
 import { meshNode } from './scene-fixtures'
 import { EMPTY_SCENE, type SceneState } from './sceneState'
 
@@ -30,7 +32,7 @@ const payloadNodes = (document: Record<string, unknown>): Record<string, unknown
   const scenes = document.scenes
   const first = Array.isArray(scenes) ? scenes[0] : null
   const extras = isRecord(first) ? first.extras : null
-  const studio = isRecord(extras) ? extras.iastudio : null
+  const studio = isRecord(extras) ? extras.aidesktopstudio : null
   const state = isRecord(studio) ? studio[GLTF_SCENE_STATE] : null
   const nodes = isRecord(state) ? state.nodes : null
   return Array.isArray(nodes) ? nodes.filter(isRecord) : []
@@ -62,6 +64,16 @@ describe('a scene document carrying components', () => {
     expect(sceneFromGltf(document).nodes[0]?.components).toEqual([])
   })
 
+  // 🛑 A rig belongs to the model's own file now, and this reader drops the one a node holds.
+  // Written back in silence, a ⌘S on an old scene would take every skeleton it carried with it.
+  it('refuses to save over a scene still carrying a skeleton on one of its nodes', () => {
+    const document = written(sceneWith())
+    const node = payloadNodes(document)[0]
+    if (node) node.model = { assetId: 'x', rig: { origin: 'local', bones: [] } }
+
+    expect(sceneHoldsMore(document)).toEqual(['nodes.model.rig'])
+  })
+
   it('refuses to save over a file holding a component it cannot act on', () => {
     const document = written(sceneWith([newComponent('Health')]))
     const node = payloadNodes(document)[0]
@@ -87,5 +99,36 @@ describe('a components member that is not a list at all', () => {
 
     expect(sceneFromGltf(document).nodes[0]?.components).toEqual([])
     expect(sceneHoldsMore(document)).toEqual(['components'])
+  })
+})
+
+/**
+ * The module is the one node whose MEANING is its shape: a marker on a group, a body under it, a
+ * camera under an arm. A save that keeps the components and loses the parenting keeps nothing.
+ */
+describe('a player module written to a file and read back', () => {
+  const saved = (): SceneState =>
+    sceneFromGltf(written({ ...EMPTY_SCENE, nodes: [...playerModuleNodes()] }))
+
+  it('comes back with its body under it and its camera under its arm', () => {
+    const back = saved()
+    const at = (name: string) => back.nodes.find(node => node.name === name)
+
+    // The figure's own parts ride along; what a module MEANS is these five and how they hang.
+    expect(back.nodes.map(node => node.name)).toEqual(
+      expect.arrayContaining(['Player_Module', 'Capsule', 'Figure', 'SpringArm', 'Camera']),
+    )
+    expect(at('Capsule')?.parentId).toBe(at('Player_Module')?.id)
+    expect(at('Figure')?.parentId).toBe(at('Capsule')?.id)
+    expect(at('SpringArm')?.parentId).toBe(at('Player_Module')?.id)
+    expect(at('Camera')?.parentId).toBe(at('SpringArm')?.id)
+  })
+
+  it('is still the node the studio reads as the player', () => {
+    const back = saved()
+
+    expect(playerPartsOf(back.nodes)?.body?.id).toBe(
+      back.nodes.find(node => node.name === 'Capsule')?.id,
+    )
   })
 })

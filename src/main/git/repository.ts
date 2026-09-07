@@ -102,8 +102,8 @@ function configuresGit(name: string): boolean {
   return name.startsWith('GIT_') || UNPREFIXED_GIT_SETTINGS.includes(name)
 }
 
-export function openRepository(root: string, binary?: string, deps?: RepositoryDeps): Repository {
-  const git = simpleGit({
+function createGitClient(root: string, binary?: string): SimpleGit {
+  return simpleGit({
     baseDir: root,
     /**
      * One git at a time, per project. Git takes `.git/index.lock` for the duration of any command
@@ -126,16 +126,10 @@ export function openRepository(root: string, binary?: string, deps?: RepositoryD
     },
     ...(binary === undefined ? {} : { binary }),
   })
+}
 
-  /**
-   * What every command runs in, built ONCE, and a token is laid OVER it rather than into it.
-   * Everything that CONFIGURES git is dropped — an inherited `GIT_DIR` or `GIT_EDITOR` is refused
-   * outright by simple-git, so the command fails before it spawns — while `HTTPS_PROXY` and
-   * `SSH_AUTH_SOCK` are kept. No prompt is ever answerable from a studio window, hence
-   * `GIT_TERMINAL_PROMPT=0`, an empty `GIT_ASKPASS`, and ssh in `BatchMode`: the stated cost is
-   * that a passphrase-protected key with no agent loaded fails instead of hanging for ever.
-   */
-  const baseEnv: Record<string, string> = {
+function gitEnvironment(): Record<string, string> {
+  return {
     ...Object.fromEntries(
       Object.entries(process.env).filter(
         (entry): entry is [string, string] => entry[1] !== undefined && !configuresGit(entry[0]),
@@ -145,31 +139,101 @@ export function openRepository(root: string, binary?: string, deps?: RepositoryD
     GIT_ASKPASS: '',
     GIT_SSH_COMMAND: 'ssh -o BatchMode=yes',
   }
+}
+
+function remoteRunner(
+  git: SimpleGit,
+  baseEnv: Record<string, string>,
+  deps?: RepositoryDeps,
+): (args: readonly string[]) => Promise<void> {
+  const queue = writeQueue()
+  return async args => {
+    await queue.next(async () => {
+      const credential = deps?.credentials((await firstRemoteUrl(git)) ?? '') ?? null
+      if (credential) {
+        git.env({
+          ...baseEnv,
+          GIT_STUDIO_USER: credential.user,
+          GIT_STUDIO_TOKEN: credential.token,
+        })
+      }
+      try {
+        await git.raw([...(credential ? CREDENTIAL_ARGS : []), ...args])
+      } finally {
+        if (credential) git.env(baseEnv)
+      }
+    })
+  }
+}
+
+async function stageFiles(git: SimpleGit, paths: readonly string[]): Promise<void> {
+  await git.raw(['add', '--', ...paths])
+}
+
+async function restoreFiles(git: SimpleGit, paths: readonly string[]): Promise<void> {
+  await git.raw(['restore', '--source=HEAD', '--staged', '--worktree', '--', ...paths])
+}
+
+async function localBranches(git: SimpleGit): Promise<GitBranch[]> {
+  const summary = await git.branchLocal()
+  return summary.all.map(name => ({ name, current: name === summary.current }))
+}
+
+function historyReads(
+  git: SimpleGit,
+  root: string,
+  binary?: string,
+): Pick<Repository, 'log' | 'commitFiles' | 'diff' | 'bytes' | 'remotes'> {
+  return {
+    log: async (limit, skip) =>
+      parseLog(
+        await git.raw([
+          'log',
+          '--all',
+          '--topo-order',
+          `--max-count=${limit}`,
+          `--skip=${skip}`,
+          `--format=${LOG_FORMAT}`,
+        ]),
+      ),
+    commitFiles: async hash =>
+      parseNameStatus(
+        await git.raw(['show', '--name-status', '--format=', '-m', '--first-parent', hash]),
+      ),
+    diff: async (path, commit) =>
+      parseUnifiedDiff(
+        commit === null
+          ? await git.raw(['diff', 'HEAD', '--', path])
+          : await git.raw(['show', '--format=', '-m', '--first-parent', commit, '--', path]),
+      ),
+    bytes: (path, ref) =>
+      ref === null ? workingBlob(root, path) : blobAt(root, ref, path, binary ?? 'git'),
+    remotes: async () =>
+      (await git.getRemotes(true)).map(remote => ({
+        name: remote.name,
+        url: remote.refs.fetch || remote.refs.push,
+      })),
+  }
+}
+
+export function openRepository(root: string, binary?: string, deps?: RepositoryDeps): Repository {
+  const git = createGitClient(root, binary)
+  const baseEnv = gitEnvironment()
 
   git.env(baseEnv)
 
-  /** One command that talks to a server at a time — see `reachOut` for why that is its own. */
-  const remoteQueue = writeQueue()
+  const reachOut = remoteRunner(git, baseEnv, deps)
 
   return {
     root,
     isRepository: () => isRepositoryRoot(git),
     init: () => initialise(git, root),
     status: () => statusOf(git),
-    stage: async paths => {
-      await git.raw(['add', '--', ...paths])
-    },
+    stage: paths => stageFiles(git, paths),
     unstage: paths => unstage(git, paths),
-    restore: async paths => {
-      // `--source=HEAD` on both sides, so one gesture puts a file back whichever half it was
-      // changed in — a file staged AND edited again would otherwise need the button twice.
-      await git.raw(['restore', '--source=HEAD', '--staged', '--worktree', '--', ...paths])
-    },
+    restore: paths => restoreFiles(git, paths),
     commit: (message, amend, identity) => commit(git, message, amend, identity),
-    branches: async () => {
-      const summary = await git.branchLocal()
-      return summary.all.map(name => ({ name, current: name === summary.current }))
-    },
+    branches: () => localBranches(git),
     createBranch: async name => {
       await git.checkoutLocalBranch(name)
     },
@@ -185,48 +249,7 @@ export function openRepository(root: string, binary?: string, deps?: RepositoryD
      * `--topo-order` rather than by date, and the layout below depends on it: a child must be
      * reached before its parents, and clocks on two machines do not guarantee that.
      */
-    log: async (limit, skip) =>
-      parseLog(
-        await git.raw([
-          'log',
-          '--all',
-          '--topo-order',
-          `--max-count=${limit}`,
-          `--skip=${skip}`,
-          `--format=${LOG_FORMAT}`,
-        ]),
-      ),
-
-    // `--format=` empties the header, leaving only the file list. `-m --first-parent` makes a
-    // merge show what it actually brought in rather than nothing at all, which is what a plain
-    // `show` writes for one.
-    commitFiles: async hash =>
-      parseNameStatus(
-        await git.raw(['show', '--name-status', '--format=', '-m', '--first-parent', hash]),
-      ),
-
-    /**
-     * `HEAD` rather than nothing for a working file, so ONE view answers "what have I changed
-     * since the last version" whether the change has been ticked or not. A bare `git diff` shows
-     * only the unticked half, which reads as the change disappearing the moment it is ticked.
-     */
-    diff: async (path, commit) =>
-      parseUnifiedDiff(
-        commit === null
-          ? await git.raw(['diff', 'HEAD', '--', path])
-          : await git.raw(['show', '--format=', '-m', '--first-parent', commit, '--', path]),
-      ),
-
-    bytes: (path, ref) =>
-      ref === null ? workingBlob(root, path) : blobAt(root, ref, path, binary ?? 'git'),
-
-    remotes: async () =>
-      (await git.getRemotes(true)).map(remote => ({
-        name: remote.name,
-        // `fetch` and `push` can differ; the one shown is the one taken FROM, which is the one a
-        // token is asked for and the one every ordinary project has set to the same string.
-        url: remote.refs.fetch || remote.refs.push,
-      })),
+    ...historyReads(git, root, binary),
 
     addRemote: async (name, url) => {
       await git.addRemote(name, url)
@@ -277,43 +300,6 @@ export function openRepository(root: string, binary?: string, deps?: RepositoryD
     tag: async (name, commit) => {
       await git.raw(['tag', '--', name, commit])
     },
-  }
-
-  /**
-   * Runs one command that talks to a server, with whatever credentials that server has.
-   *
-   * Serialised on its own, above simple-git's queue, and the reason is the environment: it is set
-   * on the INSTANCE, so two remote commands scheduled together could have the second's token in
-   * place when the first spawns. One at a time keeps set, spawn and reset in one piece.
-   *
-   * The token is the ONLY thing laid over `baseEnv`, which every other command already runs in.
-   */
-  async function reachOut(args: readonly string[]): Promise<void> {
-    await remoteQueue.next(async () => {
-      const credential = deps?.credentials((await firstRemoteUrl(git)) ?? '') ?? null
-
-      if (credential) {
-        git.env({
-          ...baseEnv,
-          GIT_STUDIO_USER: credential.user,
-          GIT_STUDIO_TOKEN: credential.token,
-        })
-      }
-
-      try {
-        await git.raw([...(credential ? CREDENTIAL_ARGS : []), ...args])
-      } finally {
-        // The token leaves the instance the moment the command is done, so nothing that runs
-        // AFTERWARDS — a status, a log — carries it.
-        //
-        // What this does not close, said plainly: the environment belongs to the instance, and a
-        // local command already queued behind this one spawns with the token in its environment.
-        // It is a git the studio started, on this machine, and it talks to no server; closing it
-        // would take a second instance, which would cost the single queue that keeps two
-        // commands from meeting over `.git/index.lock`.
-        if (credential) git.env(baseEnv)
-      }
-    })
   }
 }
 

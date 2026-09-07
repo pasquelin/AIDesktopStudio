@@ -1,12 +1,11 @@
 // SPDX-License-Identifier: MIT
 
-import type { Transform, Vector3 } from '@shared/domain/transform'
+import type { CameraView, Transform } from '@shared/domain/transform'
+
+export type { CameraView }
 
 /** Where one entity of a document stands, once a step has moved it. */
 export type EntityPlacement = { entity: string; transform: Transform }
-
-/** Where the eye stands and what it looks at, in the scene's own frame. */
-export type CameraView = { position: Vector3; target: Vector3 }
 
 /**
  * What a step hands to whatever draws: one call for every entity that moved, for the reason

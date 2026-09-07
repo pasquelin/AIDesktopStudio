@@ -21,8 +21,8 @@ import { SceneSnapPlay } from './SceneSnapPlay'
 const WALK = `script:${documentFolderOf('script')}/Walk.ts`
 
 /** 2,7 Mo of WebAssembly for a bar that draws two buttons — see `play.test.ts`. */
-vi.mock('@game/host/rapierPhysics', () => ({
-  loadRapierPhysics: () => Promise.resolve(createInertPhysics()),
+vi.mock('@game/host/joltPhysics', () => ({
+  loadJoltPhysics: () => Promise.resolve(createInertPhysics()),
 }))
 
 /** And the sandbox with it: a suite that measures a transport must not wait on a JIT. */
@@ -124,11 +124,26 @@ describe('a game whose systems are failing', () => {
           veil: 0,
           errors,
           logs,
+          performance: {
+            cpuFrameMs: 0,
+            renderMs: 0,
+            gpuFrameMs: null,
+            drawCalls: 0,
+            triangles: 0,
+            vertices: 0,
+            visibleObjects: 0,
+            culledObjects: 0,
+            instanceCount: 0,
+            batchCount: 0,
+            geometryBufferBytes: 0,
+            estimatedTextureBytes: 0,
+            compilationMs: 0,
+          },
         },
       },
     })
 
-  it('says how many faults there are, and names the last', () => {
+  it('says how many faults there are, and names the one there is', () => {
     playing(
       [],
       [
@@ -142,6 +157,23 @@ describe('a game whose systems are failing', () => {
     expect(screen.getByRole('button', { name: '1 erreur' })).toHaveAttribute(
       'data-tooltip-content',
       'system script threw: broken',
+    )
+  })
+
+  /**
+   * 🛑 ALL of them: naming the last alone read out `script never loaded` while the duplicate map
+   * id that CAUSED it, reported first, never reached the screen.
+   */
+  it('names every fault, first one first', () => {
+    playing(
+      [{ script: WALK, entity: null, message: 'cause', line: 0, column: 0, at: 1 }],
+      [{ level: 'error', message: 'consequence', at: 2 }],
+    )
+    render(<SceneSnapPlay documentId={DOCUMENT} />)
+
+    expect(screen.getByRole('button', { name: '2 erreurs' })).toHaveAttribute(
+      'data-tooltip-content',
+      `${WALK}:0 — cause\nconsequence`,
     )
   })
 

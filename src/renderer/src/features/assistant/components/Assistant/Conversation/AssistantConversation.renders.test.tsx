@@ -3,6 +3,8 @@ import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { installFakeBridge } from '@/services/fakeBridge'
 import { useAssistant } from '@/stores/assistant'
+import { useMissions } from '@/stores/missions'
+import type { StudioEvent } from '@shared/domain/studioEvent'
 import type { AssistantTurn } from './conversation'
 import type * as ConversationStyles from './conversationStyles'
 import { AssistantConversation } from './AssistantConversation'
@@ -61,9 +63,29 @@ beforeEach(() => {
     asked: null,
     choosing: null,
   })
+  useMissions.setState({ missions: [], events: [] })
 })
 
 describe('what a long conversation costs while the model writes', () => {
+  it('shows mission work before any conversation turn exists', () => {
+    const event: StudioEvent = {
+      id: 'mission_live',
+      at: '2026-09-04T10:00:00.000Z',
+      state: 'waiting',
+      category: 'mission',
+      type: 'mission.waiting_job',
+      priority: 'normal',
+      missionId: 'mission_1',
+      messageKey: 'activity.missionStateChanged',
+      params: { label: 'Build a boat' },
+    }
+    useAssistant.setState({ turns: [] })
+    useMissions.setState({ events: [event] })
+
+    render(<AssistantConversation />)
+
+    expect(screen.getByText(/Mission en attente|Mission waiting/)).toBeInTheDocument()
+  })
   /** Without this the counts below would pass on a mock whose path no longer resolves. */
   it('paints one bubble per turn on the first render', () => {
     render(<AssistantConversation />)

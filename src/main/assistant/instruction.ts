@@ -1,255 +1,38 @@
 import {
-  ACTION_FAMILIES,
   ACTION_REGISTRY,
-  assistantAction,
-  DISCOVERY_ACTION,
   findActions,
   MOST_LOADED,
   type AssistantThought,
-  type ActionField,
   type ActionName,
-  type AssistantAction,
-  HISTORY_MAX,
-  MOST_QUESTIONS,
 } from '@shared/domain/assistant'
-import { MEMORY_RECALL_ACTION } from '@shared/domain/memoryActions'
 import { CONTEXT_COMPOSED_MAX } from '@shared/domain/projectContext'
 import type { Target } from '@shared/domain/target'
-import { englishText } from '@shared/i18n'
 import { linesWithin, STATE_MAX } from './studioState'
+import {
+  actionBlock,
+  CONTINUING,
+  FORMAT,
+  manualPrinted,
+  manualText,
+  MEMORY_CALL,
+  MISSION_RULES,
+  namesPrinted,
+  roleWith,
+  RULES,
+  targetLine,
+  TOOL_FORMAT,
+  type Manual,
+  WIDE_RULES,
+} from './instructionCatalogue'
 
-/**
- * What the model is told before it answers.
- *
- * Two kinds of sentence live here, and the difference is worth stating because they sit five
- * lines apart. The CATALOGUE — what each action is and what its fields mean — comes from the
- * English bundle, because those same sentences are shown on screen and one source is the only
- * way they stay one thing. `ROLE` and `FORMAT` are written here as literals, because they are
- * shown to nobody: they are a prompt, which is code, and putting a prompt in a translation
- * bundle would invite someone to translate the one thing that must not move.
- *
- * English throughout either way — see `englishText`, which the window uses for the other half of
- * the same conversation.
- */
-
-/**
- * One target, as a line the model can read. The id first because it is what `target.select` takes
- * back — a model that read the name first tends to answer with the name.
- */
-function targetLine(target: Target): string {
-  const selected = target.selected ? ' (selected)' : ''
-  return `  ${target.id} — ${target.kind} "${target.name}"${selected}`
-}
-
-/** One field, as a line the model can read: name, type, whether it must be there, what it takes. */
-function fieldLine(field: ActionField): string {
-  const parts = [`${field.key} (${field.kind}${field.required ? ', required' : ''})`]
-  if (field.options) parts.push(`one of: ${field.options.join(', ')}`)
-  parts.push(englishText(field.labelKey))
-  return `    - ${parts.join(' — ')}`
-}
-
-/** One action's MANUAL: what it is for, and every field it takes. */
-function actionBlock(action: AssistantAction): string {
-  const lines = [`  ${action.name} — ${englishText(action.descriptionKey)}`]
-  for (const field of action.fields) lines.push(fieldLine(field))
-  return lines.join('\n')
-}
-
-/**
- * 🛑 One manual and WHOSE it is, carried together rather than re-derived: a scan of the composed
- * text for `\n  <name> — ` also matches a project context that happens to be shaped that way, and
- * a block split by position breaks the day a translated label carries a newline.
- */
-type Manual = { readonly name: ActionName; readonly text: string }
-
-/** The manuals a briefing carries, in the order the chain opened them. */
-const manualPrinted = (loaded: readonly ActionName[]): readonly Manual[] =>
-  loaded
-    .flatMap(name => assistantAction(name) ?? [])
-    .map(action => ({ name: action.name, text: actionBlock(action) }))
-
-const manualText = (manuals: readonly Manual[]): string => manuals.map(one => one.text).join('\n')
-
-/**
- * 🛑 The whole registry as NAMES, headed by the family that publishes it — 4 225 characters where
- * the manuals of the same 283 actions run to 90 994, which no door but the widest could hold.
- */
-let namesHeld: string | null = null
-
-const namesPrinted = (): string =>
-  (namesHeld ??= ACTION_FAMILIES.map(
-    family => `  [${family.name}] ${family.actions.map(one => one.name).join(', ')}`,
-  ).join('\n'))
-
-/**
- * 🛑 Every name of the registry, and that is the point of showing names: a model may call anything
- * it can read. `parseReply` still refuses what the registry does not declare.
- */
-let allowedHeld: ReadonlySet<ActionName> | null = null
-
-const allNames = (): ReadonlySet<ActionName> =>
-  (allowedHeld ??= new Set(ACTION_REGISTRY.map(action => action.name)))
-
-/**
- * The shape the answer has to take.
- *
- * Stated twice — as a sentence and as an example — because the one thing this whole file exists
- * to obtain is a parseable object, and the cheapest model on the list is the one most likely to
- * wrap it in prose if only told once.
- */
-const FORMAT = [
-  'Answer with one JSON object and nothing else. No prose around it, no code fence.',
-  'The object has exactly three keys:',
-  '  "say": a short sentence for the person, in their language. May be empty.',
-  // 🛑 Two lines of the FORMAT and never a rule of the catalogue: named by a rule, this was
-  // described to every model and called by none — the question went in "say" and the calls went
-  // out beside it. What gives ground when the room runs out is never this block.
-  '  "ask": {"question":"…","choices":[…]} to ask the person, or null. It RUNS NOTHING:',
-  '    the calls wait, their answer comes back next round. Ask rather than act halfway.',
-  `    Several: {"questions":[{"question":"…","choices":[…],"note":true},…]}, ${MOST_QUESTIONS} max ("note" = a free line).`,
-  '  "calls": a list of actions to run, in order. May be empty.',
-  'Each call is {"action": "<name from the catalogue>", "input": {<the fields above>}}.',
-  // 🛑 A LITERAL id: the example spelled `"<the armed model>"` and the model copied the shape —
-  // twenty-three calls over five passes carried `<shotId>` or `<path found>` where a value goes.
-  'Example: {"say":"Making an image.","ask":null,"calls":[{"action":"generator.prepare",',
-  '"input":{"family":"image","modelId":"flux.1-dev","parameters":{"prompt":"a bicycle"}}},',
-  '{"action":"generator.submit","input":{"landing":"document"}}]}',
-].join('\n')
-
-/**
- * 🛑 What replaced the eleven-action catalogue, and the whole reason the names fit: an action the
- * briefing did not spell used to cost the entire answer, so a model was told to ask before acting
- * — and, measured, answered « je ne peux pas » instead.
- */
-const NAMES_RULE = [
-  '  - The catalogue is EVERY action there is, names alone. "Manual" below holds the fields of',
-  '    the ones already opened. Name an action that is not there and its fields come back to you',
-  '    in the same turn — so call what you mean. Never invent a name, never say you cannot.',
-]
-
-const RULES = [
-  '  - Only use actions from the catalogue below. Never invent one.',
-  '  - One request often needs several calls, in order. Carry it to its end.',
-  '  - generator.prepare fills the form and stops. generator.submit sends it and spends credits.',
-  // The state below is what the person is looking at. Written as a rule rather than left to be
-  // inferred: a model handed a space and a document still opened a second one for the subject of
-  // the sentence, which is where "make me a bicycle" became a document named Bicycle.
-  '  - Act on what is in front of the person. Only make a document when asked for a new one.',
-  // 🛑 A RULE and not two catalogue blocks: printed they cost 158 characters, and a block is the
-  // first thing dropped when the room runs out — leaving `project.open` allowed and unspelt.
-  '  - Opening a project: projects.list gives their paths, then project.open with {"path":"…"}.',
-  ...NAMES_RULE,
-  `  - A word rather than a name: ${DISCOVERY_ACTION} with {"query":"…"} answers with what matches.`,
-]
-
-/**
- * 🛑 The rules a door has to have ROOM for, and nothing more: naming an action is safe everywhere
- * now that every name is shown, so what sets them apart is the 2 320 characters they cost.
- *
- * Scenario's door leaves 8 500 for the whole briefing and the names alone take 4 225, so it is
- * shown `RULES` and these are what it does without — see `studioBriefing`, which decides on room.
- */
-const WIDE_RULES = [
-  '  - If nothing in the catalogue fits, return no calls and say so in "say".',
-  /**
-   * The three that place a NAMED file, and they are one story: a model shown two hundred actions
-   * reached for documents.list, which holds documents alone, then said it had found a picture.
-   */
-  '  - A file the person names is in the project: find it by name there, then file.open it.',
-  /**
-   * What unblocks a studio spoken to in one language and filled in another: a picture is named
-   * after the PROMPT that made it, so "le voilier vert" is on disk as "a beautiful sailing ship,
-   * sailboat, on the open sea, green". No wording of a search reaches that — and the model asked
-   * three times over to be ALLOWED to list a folder of nine it could simply have read.
-   */
-  '  - Nothing found by name? List the folders YOURSELF and read the names in them, in this same',
-  '    answer. Never ask to be allowed: a name follows the prompt that made it, not what is spoken.',
-  '  - Several files match? Choose none: "ask" which, with their names as the choices.',
-  // Four requests of the batterie died on a bare name — `files.move ["bateau-test.png"]` for a
-  // file sitting in `Images/` — each answered `refused: missing`.
-  '  - A path is the WHOLE path inside the project, folders and all: "Images/x.png", never',
-  '    "x.png". A name you were TOLD is not a path — find the file, then use the path it answered.',
-  // Six runs, none able to answer: asked to rename « la copie », it searched for the NEW name.
-  '  - Renaming: the new name is not on disk yet. Find the file by what it is called NOW.',
-  '  - Every value is literal. Never write <something> where an id goes: if you do not have it,',
-  '    call for it and use what came back on the next round.',
-  '  - The remote library is not this project. Look there only when asked to.',
-  // Five requests died on it: the decor had just generated a picture, and the model answered
-  // « je ne vois aucune image générée » — nothing in the studio block says one was made.
-  '  - "that picture", "the result", "the generated model": what a generation made is in the',
-  '    project catalogue. assets.searchProjectCatalogue with generated finds it; nothing else announces it.',
-  // Twice over, a reference travelled as a PATH under a key nobody reads. The field belongs to
-  // the model's own schema, and the value is an asset id.
-  '  - To work FROM a picture, read models.readGenerationModelFields first and fill the field it names with an ASSET',
-  '    ID — never a path, and never a key you chose yourself.',
-  // A plan that reads well and cannot run: opening the picture is what put the Image space in
-  // front, and every scene call after it was refused.
-  '  - Scene, image and montage actions work on the document IN FRONT, and opening a file changes',
-  '    which one that is. Open what you will act on LAST, or bring it back with document.activate,',
-  '    which takes its id, its path, or the title the studio shows in quotes.',
-  // Narrowed to the repair alone: rule 3 above is what makes a model ask, and it must keep doing
-  // so for what the person alone knows.
-  '  - Never ask to be allowed to repair your OWN order: do it, and say what you did.',
-  // Twelve requests died on a question the studio answers — « sur quel clip ? » to a montage
-  // holding one, « quel modèle 3D ? » to a project holding two.
-  '  - Rule 3 is for what the person ALONE knows. ONE thing of that kind in front of you is the',
-  '    one meant, and a question about what a read would have told you is a turn spent for nothing.',
-  '  - "one metre more", "half", "25% more" are RELATIVE. Read the value that stands, do the',
-  '    arithmetic, write the result: every field is an absolute value, never a difference.',
-  '  - Never say a thing is done unless a call in this conversation did it.',
-  '  - Reading is not doing: the request is done once the change it asked for has been WRITTEN.',
-  // The same call sent four times after it answered ok, one refusal collected eight times on
-  // arguments that never changed.
-  '  - A call that answered ok has HAPPENED — sending it again does it twice. A refused call is',
-  '    refused again on the same arguments: change them, or do something else.',
-]
-
-/**
- * 🛑 The whole of what a briefing says about the memory, and it says it only when there is
- * something to find — a project that has learned nothing pays not one character.
- *
- * A SIGNAL rather than the memories themselves: pushing summaries cost an embedding and a scan of
- * every vector on every turn, for a block the room threw away whole on four doors of five.
- */
-const MEMORY_CALL = `  - This project has a memory: ${MEMORY_RECALL_ACTION} answers it. Ask before guessing.`
-
-/**
- * 🛑 What a round after the first is told, and every line of it earns its place.
- *
- * Without the first, a model handed its own history repeats the search it has just run. Without
- * the last, it never stops: answering with no calls is the ONLY way it says a request is done,
- * and nothing else in the briefing asks it to.
- */
-const CONTINUING = [
-  'You are still working on the same request. What you have already done is in the history',
-  'above, with what each action answered — build on it, and never redo a call that has answered.',
-  'Answer with NO calls when the request is done. When you need something only the person can',
-  'tell you, that is what "ask" is for.',
-].join('\n')
-
-const roleWith = (rules: readonly string[]): string =>
-  [
-    'You drive IA Studio, a desktop application for generating images, video, 3D models,',
-    'audio, materials and skyboxes. The person talks to you and you act on their behalf.',
-    '',
-    'Rules:',
-    ...rules,
-  ].join('\n')
-
-/**
- * Trims the history to what the model will actually be given.
- *
- * The oldest turns go first: a conversation is understood from its end, and the sentence just
- * spoken matters more than the one before the one before it.
- */
-export function recentHistory(history: readonly string[], limit = HISTORY_MAX): string[] {
-  return [...history].slice(-limit)
-}
-
+export { recentHistory } from './instructionCatalogue'
 export type BriefingParts = {
+  /** A mission round: `context` is the mission JSON, and `MISSION_RULES` says how to read it. */
+  mission?: boolean
   /** A round after the first on one sentence — see `CONTINUING`, which is what it adds. */
   continuing?: boolean
+  /** The manuals travel as native tools too, so the FORMAT says to call them — `TOOL_FORMAT`. */
+  tools?: boolean
   /** The spaces nothing can generate in, so the model says so before promising a picture. */
   notReady?: readonly string[]
   /** What the open project is about, already composed — see `composedContext`. */
@@ -295,13 +78,12 @@ export type BriefingParts = {
 /**
  * What the model is shown, and what an answer is then held to.
  *
- * 🛑 `allowed` is the whole registry now that the catalogue names it whole, and `loaded` is the
- * narrower thing: what the model has the FIELDS of. A call naming an action outside `loaded` is
- * not refused — `answeredTurn` opens its manual and asks again.
+ * Every name the registry declares is printed on every door — 4 225 characters — and `parseReply`
+ * refuses the rest. `loaded` is narrower: what the model has the FIELDS of. `answeredTurn` never
+ * executes an action outside it; it opens its manual and asks for the plan again first.
  */
 export type Briefing = {
   readonly text: string
-  readonly allowed: ReadonlySet<ActionName>
   /** The manuals this briefing CARRIES, oldest first — what has fields, for `unloadedIn`. */
   readonly loaded: readonly ActionName[]
   /** Of those, the ones the CHAIN asked for: what travels back, never the default load. */
@@ -317,8 +99,29 @@ export type Briefing = {
   readonly narrow: (() => Briefing) | null
 }
 
-/** A composed briefing and the manuals it KEPT — what the cut decided, not a scan of its text. */
 type Written = { readonly text: string; readonly held: readonly ActionName[] }
+
+function manualsWithin(manuals: readonly Manual[], over: number): readonly Manual[] {
+  const held = [...manuals]
+  let remaining = over
+  while (remaining > 0 && held.length > 0) remaining -= (held.shift()?.text.length ?? 0) + 1
+  return held
+}
+
+function finalBriefing(
+  one: Composition,
+  manuals: string,
+  found: string,
+  state: string,
+  targets: readonly Target[],
+  previous: string,
+): string {
+  const room = Math.max(0, (one.parts.context ?? '').length - (previous.length - one.parts.room))
+  const trimmed = withParts(one, { context: linesWithin(one.parts.context ?? '', room) })
+  const withContext = composed(trimmed, manuals, found, state, targets)
+  if (withContext.length <= one.parts.room) return withContext
+  return composed(withParts(trimmed, { folders: '' }), manuals, found, state, targets)
+}
 
 /**
  * 🛑 What GIVES GROUND when the room runs out, in order: the manuals, the state, the targets, the
@@ -341,9 +144,7 @@ function briefingText(one: Composition, manual: readonly Manual[], found: string
    * By whole actions and from the FRONT: what a chain opened last is what it is about to call,
    * and half a field line is an action the model cannot see is truncated.
    */
-  const blocks = [...manual]
-  let over = full.length - parts.room
-  while (over > 0 && blocks.length > 0) over -= (blocks.shift()?.text.length ?? 0) + 1
+  const blocks = manualsWithin(manual, full.length - parts.room)
   const held = blocks.map(one => one.name)
   const manuals = manualText(blocks)
   const thinner = composed(one, manuals, found, state, targets)
@@ -368,16 +169,7 @@ function briefingText(one: Composition, manual: readonly Manual[], found: string
    * is cut by whole lines and the targets by whole entries, so a saturated briefing settles a
    * couple of dozen characters over the room with nothing left to give.
    */
-  const room = Math.max(0, (parts.context ?? '').length - (cut.length - parts.room))
-  const trimmedContext = withParts(one, { context: linesWithin(parts.context ?? '', room) })
-  const last = composed(trimmedContext, manuals, found, short, aimed)
-  if (last.length <= parts.room) return { text: last, held }
-
-  // 🛑 `[M]` The folders go WHOLE or not at all: the briefing runs thousands of characters, so the
-  // 137-character block overruns any door leaving it less than that.
-  const bare = withParts(trimmedContext, { folders: '' })
-
-  return { text: composed(bare, manuals, found, short, aimed), held }
+  return { text: finalBriefing(one, manuals, found, short, aimed, cut), held }
 }
 
 function targetsWithin(targets: readonly Target[], over: number): readonly Target[] {
@@ -391,7 +183,6 @@ function targetsWithin(targets: readonly Target[], over: number): readonly Targe
   return targets.slice(0, targets.length - dropped)
 }
 
-/** The heading the manuals sit under — named, so a model does not read them as the catalogue. */
 const MANUAL_HEAD = 'Manual — the fields of the actions opened so far:'
 
 function composed(
@@ -402,42 +193,31 @@ function composed(
   targets: readonly Target[],
 ): string {
   const parts = one.parts
-  // Silent when everything is served: a line saying nothing is worth no characters.
-  const idle =
-    parts.notReady && parts.notReady.length > 0
-      ? [`No model ready for: ${parts.notReady.join(', ')}.`, '']
-      : []
-  // Before the catalogue rather than after it: what the project IS frames every action the model
-  // might pick, where a note under the list reads as a footnote to the last one.
-  const about = parts.context ? ['Project context:', parts.context, ''] : []
-  // Before the catalogue, with the rest of what is TRUE of this machine: read after the actions
-  // it serves, an absolute path reads as an example rather than as this person's own folder.
-  const where = parts.folders ? ['Folders on this machine:', parts.folders, ''] : []
-  const now = state ? [state, ''] : []
-  // After the catalogue rather than before it: `target.select` is what these ids are for, and a
-  // list read before the action that consumes them reads as facts about nothing.
-  const aim =
-    targets.length > 0
-      ? ['Targets in the open document:', targets.map(targetLine).join('\n'), '']
-      : []
-
   return [
     roleWith(one.rules),
     '',
-    ...about,
-    ...where,
-    ...now,
-    ...idle,
+    ...labelled(parts.mission ? 'Mission:' : 'Project context:', parts.context),
+    ...labelled('Folders on this machine:', parts.folders),
+    ...plain(state),
+    ...notReadyLines(parts.notReady),
     'Catalogue:',
     namesPrinted(),
     '',
-    ...(manual === '' ? [] : [MANUAL_HEAD, manual, '']),
-    ...aim,
-    ...(found ? [found, ''] : []),
-    ...(parts.continuing ? [CONTINUING, ''] : []),
-    FORMAT,
+    ...labelled(MANUAL_HEAD, manual),
+    ...labelled('Targets in the open document:', targets.map(targetLine).join('\n')),
+    ...plain(found),
+    ...plain(parts.continuing ? CONTINUING : ''),
+    parts.tools ? TOOL_FORMAT : FORMAT,
   ].join('\n')
 }
+
+const plain = (value: string): readonly string[] => (value === '' ? [] : [value, ''])
+
+const labelled = (label: string, value: string | undefined): readonly string[] =>
+  value ? [label, value, ''] : []
+
+const notReadyLines = (workspaces: readonly string[] | undefined): readonly string[] =>
+  workspaces && workspaces.length > 0 ? [`No model ready for: ${workspaces.join(', ')}.`, ''] : []
 
 /** What the memory costs a briefing, and only where there is something to find. */
 const memorySignal = (parts: BriefingParts): readonly string[] =>
@@ -511,10 +291,8 @@ function briefingOf(one: Composition): Briefing {
    * cross it every turn. Without `opened`, the caller IS the chain.
    */
   const opened = (one.parts.opened ?? asked).filter(name => held.has(name))
-
   return {
     text: written.text,
-    allowed: allNames(),
     loaded: written.held,
     opened,
     withLoaded: names => briefingOf(askedFor(one, names)),
@@ -533,12 +311,16 @@ export function studioBriefing(parts: BriefingParts): Briefing {
   // its state and its context instead, which are what the wide set would take.
   if (parts.room < wideFloor()) return narrow()
 
-  const wide = briefingOf({ parts, rules: WIDE_ALL, narrow })
+  const wide = briefingOf({ parts, rules: rulesFor(WIDE_ALL, parts), narrow })
 
   return wide.text.length > parts.room ? narrow() : wide
 }
 
 const WIDE_ALL: readonly string[] = [...RULES, ...WIDE_RULES]
+
+/** The mission rules ride with BOTH sets: a door too tight for the wide ones still reads a JSON. */
+const rulesFor = (rules: readonly string[], parts: BriefingParts): readonly string[] =>
+  parts.mission ? [...rules, ...MISSION_RULES] : rules
 
 /**
  * The room the wide rules ASK FOR: their own bare briefing, plus what has to fit beside it — the
@@ -567,25 +349,22 @@ const meanManual = (): number =>
 function narrowBriefing(declared: BriefingParts): Briefing {
   return briefingOf({
     parts: { ...declared, room: declared.fallbackRoom ?? declared.room },
-    rules: RULES,
+    rules: rulesFor(RULES, declared),
     narrow: null,
   })
 }
 
-/**
- * The briefing one turn is answered against, composed ONCE and outside any retry: a complaint
- * quotes an answer, and a second reading would ship a briefing the complaint was not about.
- *
- * The three brains differ here in one number — their room — and in nothing else.
- */
+/** Built once outside retries, so a complaint quotes the briefing it actually answers. */
 export async function briefingFor(
   request: AssistantThought,
   room: number,
   notReady?: () => Promise<readonly string[]>,
   fallbackRoom = room,
+  tools = false,
 ): Promise<Briefing> {
   return studioBriefing({
     continuing: request.continuing === true,
+    tools,
     notReady: await notReady?.(),
     context: request.context,
     folders: request.folders,
@@ -597,9 +376,16 @@ export async function briefingFor(
      * and `loaded` reports what it printed, so a narrow door asks the rest back. Measured
      * 2026-08-31 over the 437 scenarios of `pnpm banc`: opened on demand instead, the same
      * scenarios passed 56% against 65%, and reached 214 actions against 243.
+     *
+     * 🛑 A mission opens the CANDIDATES' manuals alone, and never narrows the names: shown 12
+     * names of 283, the model could not ask for what it did not know existed — 55 of 440
+     * scenarios never had the expected action among the candidates (measured 2026-09-05).
      */
-    loaded: withChainLast(request.loaded ?? []),
+    loaded: request.candidates
+      ? [...new Set([...request.candidates, ...(request.loaded ?? [])])]
+      : withChainLast(request.loaded ?? []),
     opened: request.loaded ?? [],
+    mission: request.mission === true,
     room,
     fallbackRoom,
   })
@@ -679,9 +465,10 @@ function expandedWith(one: Composition, query: string): Briefing {
    * Worst to best, because the cut keeps the TAIL: the other way round, what room was left
    * described the poorest answers.
    */
-  const asked = askedFor(one, [...matched].reverse())
+  const opened = [...matched].reverse()
+  const expanded = askedFor(one, opened)
   const widest = widestFound(query, matched)
-  const probe = briefingOf({ ...asked, found: widest })
+  const probe = briefingOf({ ...expanded, found: widest })
   const kept = matched.filter(name => probe.loaded.includes(name)).length
   const found = foundBlock(query, matched, kept)
   if (found === widest) return probe
@@ -691,7 +478,7 @@ function expandedWith(one: Composition, query: string): Briefing {
   // printed above it — eight rooms measured 2026-08-31.
   const spare = widest.length - found.length
 
-  return briefingOf({ ...withParts(asked, { room: asked.parts.room - spare }), found })
+  return briefingOf({ ...withParts(expanded, { room: expanded.parts.room - spare }), found })
 }
 
 /**
@@ -704,6 +491,7 @@ export function instructionFor(briefing: string, utterance: string, ceiling: num
   return preamble + utterance.slice(0, Math.max(0, ceiling - preamble.length))
 }
 
-// 🛑 A function and not a `const`, however single its use: `no-hardcoded-text.test.ts` reads a
-// sentence BOUND to a name as a line bound for a screen, and this one is bound for a model.
+// A function keeps model text outside the screen-text guard's name binding.
 const preambleOf = (briefing: string): string => `${briefing}\n\nThe person says:\n\n`
+
+export const PREAMBLE_COST = preambleOf('').length

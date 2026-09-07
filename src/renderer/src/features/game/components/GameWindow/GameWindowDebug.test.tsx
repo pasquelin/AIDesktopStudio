@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it } from 'vitest'
 import type { RuntimeReport } from '@shared/domain/gameRuntime'
+import { EMPTY_RUNTIME_PERFORMANCE } from '@shared/domain/gameRuntime'
 import { GameWindowDebug } from './GameWindowDebug'
 
 const RUNNING: RuntimeReport = {
@@ -13,6 +14,13 @@ const RUNNING: RuntimeReport = {
   logs: [],
   errors: [],
   veil: 0,
+  performance: {
+    ...EMPTY_RUNTIME_PERFORMANCE,
+    cpuFrameMs: 2.5,
+    renderMs: 1.25,
+    drawCalls: 4,
+    triangles: 120,
+  },
 }
 
 describe('what a running game says about itself', () => {
@@ -26,6 +34,8 @@ describe('what a running game says about itself', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Débogage' }))
 
     expect(screen.getByText(/3 objets · 60 i\/s · pas 12/)).toBeInTheDocument()
+    expect(screen.getByText('CPU 2,5 ms · rendu 1,25 ms')).toBeInTheDocument()
+    expect(screen.getByText('4 appels de dessin · 120 triangles')).toBeInTheDocument()
   })
 
   it('names the last fault in full, and says so on the button', async () => {

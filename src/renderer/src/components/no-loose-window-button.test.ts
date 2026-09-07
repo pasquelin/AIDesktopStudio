@@ -26,7 +26,7 @@ import { WINDOW_SOURCES } from '../windowSources'
  * UNEXPORTED so that no caller can wear the glyph without the tooltip the component makes
  * compulsory — publishing it from `windowStyles.ts` would reopen exactly that door.
  */
-const HOMES: readonly string[] = ['windowStyles.ts', 'WindowIconButton.tsx']
+const HOMES: readonly string[] = ['WindowButton.tsx', 'WindowIconButton.tsx']
 
 /** Comments talk ABOUT the classes — this guard's own prose would fail it otherwise. */
 function withoutComments(code: string): string {

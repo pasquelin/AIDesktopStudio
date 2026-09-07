@@ -17,35 +17,27 @@ const GRIP = /Move the row/
  */
 const strictly = { wrapper: StrictMode }
 
+const rowWith = (reorder: Partial<RowReorder> & Pick<RowReorder, 'move'>) => (
+  <TimelineRow height={ROW_HEIGHT} reorder={{ label: 'Move the row', ...reorder }}>
+    <span>A1</span>
+  </TimelineRow>
+)
+
+const grab = (): HTMLElement => {
+  const grip = screen.getByRole('button', { name: GRIP })
+  fireEvent.pointerDown(grip, { clientY: 0, pointerId: 1 })
+  return grip
+}
+
+const dragTo = (clientY: number): void => {
+  fireEvent.pointerMove(window, { clientY, pointerId: 1, buttons: 1 })
+}
+
+const drop = (): void => {
+  fireEvent.pointerUp(window, { pointerId: 1 })
+}
+
 describe('TimelineRow', () => {
-  /** A stack that always takes the move, unless the test hands one that does not. */
-  const rowWith = (reorder: Partial<RowReorder> & Pick<RowReorder, 'move'>) => (
-    <TimelineRow height={ROW_HEIGHT} reorder={{ label: 'Move the row', ...reorder }}>
-      <span>A1</span>
-    </TimelineRow>
-  )
-
-  const grab = (): HTMLElement => {
-    const grip = screen.getByRole('button', { name: GRIP })
-    fireEvent.pointerDown(grip, { clientY: 0, pointerId: 1 })
-    return grip
-  }
-
-  /**
-   * Fired on the WINDOW, never on the grip — which is where the gesture listens, and that is the
-   * whole point: a row travels through the DOM as the stack reorders under it, and a node that is
-   * re-inserted drops the pointer capture it held. Bound to the element, the drag died on the
-   * first rank it crossed.
-   */
-  const dragTo = (clientY: number): void => {
-    // `buttons: 1` — a move with none held is what says the release happened out of sight.
-    fireEvent.pointerMove(window, { clientY, pointerId: 1, buttons: 1 })
-  }
-
-  const drop = (): void => {
-    fireEvent.pointerUp(window, { pointerId: 1 })
-  }
-
   it('moves the row by what the drag has travelled, and only by the difference', () => {
     const move = vi.fn((by: number) => by)
     render(rowWith({ move }), strictly)

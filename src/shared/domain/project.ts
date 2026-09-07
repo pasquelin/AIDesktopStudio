@@ -3,6 +3,7 @@ import { pathBaseNameOf } from './fileName'
 import { byCodeUnit } from '../text'
 import type { AccountSummary } from './account'
 import { parentOf } from './folder'
+import { DEFAULT_ROLE_PATHS, type FolderRole } from './folderRole'
 
 export const MANIFEST_VERSION = 1
 
@@ -35,7 +36,31 @@ export const CATALOG_FILE = `${INDEX_FOLDER}/catalog.db`
  * NOT `.index/`, and the difference is the whole reason both exist: `.index/` is a cache the
  * studio's `.gitignore` excludes, this travels with the project and is meant to be committed.
  */
-export const STUDIO_FOLDER = '.ia-studio'
+export const STUDIO_FOLDER = '.ai-desktop-studio'
+
+/**
+ * Where what the APP ships lands inside a project — the working textures, the character, the
+ * clips. Copied there rather than served from beside the app because a `.gltf` has to point at a
+ * picture another application can open, and a texture living only inside the studio would leave
+ * every exported scene bare.
+ *
+ * Under a dot for the same reason `.index/` is: it is not the user's to arrange. No surface that
+ * BROWSES assets lists it — see `isStudioPrivate` and `NOT_PRIVATE` — and no gesture may move or
+ * throw away what it holds. It travels with the project like `.ai-desktop-studio/`, being what the
+ * project's own scenes point at.
+ */
+export const RESOURCES_FOLDER = '.resources'
+
+/**
+ * Where a resource of this role lands inside `.resources/` — the ONE spelling of that path.
+ *
+ * Default role names rather than resolved ones: the studio owns this folder, so no marker travels
+ * into it and no rename moves what it holds. Written and looked up through here, never composed
+ * twice — a divergence makes the lookup miss and installs a second copy at every open.
+ */
+export function resourceFolderOf(role: FolderRole): string {
+  return `${RESOURCES_FOLDER}/${DEFAULT_ROLE_PATHS[role]}`
+}
 
 /** What the assistant has learned about this project. One JSON object per line, appended. */
 export const MEMORY_FILE = `${STUDIO_FOLDER}/memory.ndjson`
@@ -464,3 +489,11 @@ export type RescanState = {
 }
 
 export const IDLE_RESCAN: RescanState = { running: false, done: 0, total: 0 }
+
+export {
+  RECENT_DOCUMENTS_MAX,
+  withRecentDocument,
+  withoutProjectDocuments,
+  withoutRecentDocument,
+  type RecentDocument,
+} from './projectRecent'

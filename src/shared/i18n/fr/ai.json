@@ -2,7 +2,8 @@
   "aiRoles": {
     "assistant": "Assistant",
     "dictation": "Dictée",
-    "embedding": "Mémoire (vecteurs)"
+    "embedding": "Mémoire (vecteurs)",
+    "smart-selection": "Sélection intelligente"
   },
   "aiClouds": {
     "scenario": "Scenario",
@@ -180,6 +181,8 @@
     "load": "Charger",
     "loadBeyondMachine": "Chargement impossible : {{needed}} demandés, {{available}} disponibles.",
     "loadFailed": "Le chargement s’est arrêté. Réessayez, ou réinstallez le modèle.",
+    "loadEngineMissing": "Le moteur d’IA local n’est pas installé sur cette machine.",
+    "loadEngineFailed": "Le moteur d’IA local n’a pas démarré. Consultez le journal d’activité, puis réessayez.",
     "loadHint": "Met les poids en mémoire pour que les réponses soient immédiates",
     "loadIncomplete": "Les fichiers du modèle manquent ou sont illisibles. Réinstallez-le, puis réessayez.",
     "loadNetwork": "Le chargement s’est interrompu. Vérifiez le réseau et réessayez.",
@@ -192,6 +195,8 @@
     "none": "Aucun",
     "noneHint": "Pas d’IA pour ce travail.",
     "notInstalledYet": "À installer avant de pouvoir servir cette opération.",
+    "autoRigSimple": "Squelettage simple",
+    "autoRigSimpleHint": "Intégré, rapide et disponible hors ligne sans téléchargement.",
     "ollamaHelpDown": "Ollama n’est pas ouvert. Le studio l’ouvre tout seul.",
     "ollamaHelpEmpty": "Ollama n’a encore aucun modèle.",
     "ollamaHelpFailed": "L’installation n’a pas marché. Rien n’a été effacé. Vous pouvez réessayer.",
@@ -229,6 +234,21 @@
     "verdict": "{{word}} — {{detail}}",
     "cloudModel": "Modèle",
     "cloudModelHelp": "Le nom exact du modèle chez ce service. Laissé vide, le studio prend celui qu’il propose.",
-    "studioModelHelp": "Le même choix que dans la fenêtre de l’assistant. Les quatre diffèrent par le prix."
+    "studioModelHelp": "Le même choix que dans la fenêtre de l’assistant. Les quatre diffèrent par le prix.",
+    "motionSetup": "Le modèle de mouvement et son encodeur de texte s’installent ensemble. Leur téléchargement est optionnel et ne conditionne pas le transfert d’animation. Consultez la fiche éditeur pour les conditions d’accès ; les textes complets se trouvent dans Aide → Licences.",
+    "motionFolder": "Modèle de mouvement local",
+    "addMotionFolder": "Ajouter un dossier de mouvement",
+    "motionFolderHelp": "Sélectionnez un dossier complet obtenu auprès des éditeurs, avec les poids du mouvement, de l’encodeur et de ses adaptateurs. Les fichiers restent à leur emplacement.",
+    "motionTerms": "Confirmez que vous disposez des droits et accès requis pour ces fichiers et que vous acceptez les licences de leurs éditeurs. Les textes complets sont disponibles dans Aide → Licences.",
+    "motionAccept": "Accepter et ajouter",
+    "motionFolderUnreadable": "Ce dossier ne contient pas tous les fichiers attendus, ou leur intégrité n’a pas pu être vérifiée.",
+    "readEngine": "Vérifier le moteur",
+    "readEngineHint": "Vérifie les bibliothèques nécessaires à cette génération",
+    "cancelVerification": "Arrête la vérification des fichiers fournis",
+    "verifyingModel": "Vérification des fichiers du modèle…"
+  },
+  "aiCloudGroups": {
+    "generation": "Génération",
+    "assistant": "Assistant et code"
   }
 }

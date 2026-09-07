@@ -12,6 +12,9 @@ import { useAssets } from '@/stores/assets'
 import { selectedFilePaths, useSelection } from '@/stores/selection'
 import type { GenerationInput } from '@/generation/generationInputs'
 import { useGenerationContext } from './useGenerationContext'
+import { installCanvas } from '@/stores/canvas-fixtures'
+import { useGenerationComments } from '@/stores/generationComments'
+import { aiRoleId } from '@shared/domain/aiRole'
 
 const DOCUMENT = 'doc-3d'
 
@@ -59,6 +62,24 @@ beforeEach(() => {
   useSelection.getState().selectFiles([])
   useAssets.setState({ items: [PICTURE] })
   catalogueHolding([PICTURE])
+  useGenerationComments.setState({ comments: {} })
+})
+
+describe('an annotated image document', () => {
+  it('selects image-to-image without manufacturing an asset row', () => {
+    installCanvas('image-1')
+    useLayouts.setState({ activeWorkspace: 'image' })
+    useGenerationComments.getState().add('image-1', {
+      id: 'note-1',
+      at: { x: 10, y: 20 },
+      text: 'Keep the subject',
+    })
+
+    const { result } = renderHook(() => useGenerationContext(null))
+
+    expect(result.current.capability.chosen).toBe(aiRoleId('image', 'img2img'))
+    expect(result.current.inputs).toEqual([])
+  })
 })
 
 describe('taking a source back off', () => {

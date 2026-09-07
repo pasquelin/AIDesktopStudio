@@ -19,7 +19,7 @@
     "textPath": "Texte sur chemin",
     "textPathHint": "Poser du texte le long d’un chemin — pas encore disponible",
     "comment": "Commentaire",
-    "commentHint": "Poser une note sur l’image — pas encore disponible",
+    "commentHint": "Poser une note liée à une zone de l’image",
     "region": "Sélection",
     "regionHint": "Délimiter une zone à laquelle les outils se limiteront",
     "selectRectangle": "Sélection rectangulaire",
@@ -28,6 +28,8 @@
     "selectEllipseHint": "Tracer une sélection elliptique — Maj pour un cercle",
     "selectLasso": "Lasso",
     "selectLassoHint": "Tracer une sélection à main levée",
+    "smartSelect": "Sélection intelligente",
+    "smartSelectHint": "Sélectionner un objet avec le modèle local",
     "shape": "Formes",
     "shapeHint": "Tracer une forme sur le calque actif",
     "shapeRectangle": "Rectangle",
@@ -69,6 +71,14 @@
     "opacity": "Opacité",
     "textName": "Texte",
     "textEditing": "Saisie du texte"
+  },
+  "imageComments": {
+    "edit": "Instruction de génération",
+    "placeholder": "Modification à apporter…",
+    "remove": "Retirer le commentaire",
+    "removeHint": "Retire cette note du contexte de génération",
+    "generate": "Générer à partir de ce commentaire",
+    "generateHint": "Lance une génération avec cette note uniquement"
   },
   "imageView": {
     "zoom": "{{value}} — taille réelle",

@@ -1,10 +1,10 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
-import { DEFAULT_PATH, type PathDescriptor } from '@shared/domain/scene'
+import { DEFAULT_PATH, type SmoothPath } from '@shared/domain/scene'
 import { PathSection } from './PathSection'
 
-function show(overrides: Partial<PathDescriptor> = {}) {
+function show(overrides: Partial<SmoothPath> = {}) {
   const onChange = vi.fn()
   render(<PathSection path={{ ...DEFAULT_PATH, ...overrides }} onChange={onChange} gesture={{}} />)
 

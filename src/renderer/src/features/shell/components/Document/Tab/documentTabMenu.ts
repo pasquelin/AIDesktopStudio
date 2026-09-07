@@ -1,9 +1,12 @@
+import { hasRetargetHost, openRetargetForAsset } from '@/character/retargetHosts'
 import { mdiClose, mdiCloseBoxMultipleOutline, mdiRenameOutline, mdiTrashCanOutline } from '@mdi/js'
 import type { TFunction } from 'i18next'
+import { isFiledKind } from '@shared/domain/document'
 import { showContextMenu } from '@/helpers/contextMenu'
+import { characterAssetOf, useDocuments } from '@/stores/documents'
 import { reportFailure } from '@/services/diagnostics'
-import { closeTab } from './closeTab'
-import { closeDocument, deleteDocument } from '../../../documentIo'
+import { closeTab, closeTabAsking } from './closeTab'
+import { deleteDocument } from '../../../documentIo'
 import { openPanelIds } from '../../dockviewApi'
 
 export type DocumentTabMenuProps = {
@@ -24,11 +27,28 @@ export type DocumentTabMenuProps = {
  * The menu is gone by the time any of these fails, so the journal is where a failure lands.
  */
 export function openDocumentTabMenu({ documentId, t, onRename }: DocumentTabMenuProps): void {
+  // 🛑 A tab with no file in the project is named and removed in the LIBRARY: a character rigs a
+  // model that lives there, so both gestures belong to the shelf and neither would land here.
+  const kind = useDocuments.getState().documents[documentId]?.kind
+  const character = characterAssetOf(useDocuments.getState(), documentId)
+  const filed = kind !== undefined && isFiledKind(kind)
+
   void showContextMenu([
+    ...(character
+      ? [
+          {
+            label: t('character.retarget.title'),
+            tooltip: t('character.retarget.title'),
+            disabled: !hasRetargetHost(character),
+            onSelect: () => void openRetargetForAsset(character),
+          },
+        ]
+      : []),
     {
       label: t('documents.rename'),
       icon: mdiRenameOutline,
       tooltip: t('documents.renameHint'),
+      disabled: !filed,
       onSelect: onRename,
     },
     {
@@ -51,6 +71,7 @@ export function openDocumentTabMenu({ documentId, t, onRename }: DocumentTabMenu
       label: t('documents.delete'),
       icon: mdiTrashCanOutline,
       tooltip: t('documents.deleteHint'),
+      disabled: !filed,
       onSelect: () =>
         void deleteDocument(documentId).catch(error =>
           reportFailure('document.delete', documentId, error),
@@ -67,6 +88,6 @@ export function openDocumentTabMenu({ documentId, t, onRename }: DocumentTabMenu
 async function closeOthers(keptId: string): Promise<void> {
   for (const id of openPanelIds()) {
     if (id === keptId) continue
-    if (!(await closeDocument(id))) return
+    if (!(await closeTabAsking(id))) return
   }
 }

@@ -45,7 +45,7 @@ function componentsIn(code: string): Set<string> {
   const declared = [
     ...code.matchAll(/(?:^|\n)(?:export )?(?:default )?function ([A-Z][a-z]\w*)/g),
     ...code.matchAll(/(?:^|\n)(?:export )?const ([A-Z][a-z]\w*) = (?:\(|memo|forwardRef)/g),
-    ...code.matchAll(/(?:^|\n)(?:export )?class ([A-Z][a-z]\w*)/g),
+    ...code.matchAll(/(?:^|\n)(?:export )?(?:abstract )?class ([A-Z][a-z]\w*)/g),
     ...code.matchAll(/= memo\(function ([A-Z][a-z]\w*)/g),
   ]
 
@@ -60,7 +60,7 @@ function componentsIn(code: string): Set<string> {
  */
 function handsOut(code: string, name: string): boolean {
   return new RegExp(
-    `(?:^|\\n)export (?:default )?(?:function|class|const) ${name}\\b|` +
+    `(?:^|\\n)export (?:default )?(?:function|(?:abstract )?class|const) ${name}\\b|` +
       `(?:^|\\n)export (?:default )?const ${name} = memo\\(`,
   ).test(code)
 }
@@ -175,7 +175,9 @@ describe(`file names — ${RULE}`, () => {
     },
     WHOLE_PROJECT,
   )
+})
 
+describe('hook names', () => {
   /**
    * One `use…` name, one declaration — stores INCLUDED, and that is what the guard above cannot
    * say: it exempts `stores/` before it compares, so a store and a hook both answered to

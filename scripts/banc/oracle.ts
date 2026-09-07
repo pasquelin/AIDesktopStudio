@@ -1,5 +1,5 @@
 import type { CameraShot, Keyframe, TrackProperty } from '@shared/domain/animation'
-import { commitmentOfCall, type ActionName } from '@shared/domain/assistant'
+import { commitmentOfCall } from '@shared/domain/assistant'
 import type { Asset } from '@shared/domain/asset'
 import type { DocumentDescriptor } from '@shared/domain/document'
 import type { ModelFamily } from '@shared/domain/model'
@@ -14,7 +14,7 @@ import type { CsgOperation } from '@shared/domain/csg'
 import { wornMaterials } from '@shared/domain/scene'
 import { toRadians } from '@shared/domain/angles'
 import { SECOND } from '@shared/domain/time'
-import { matchesWords, searchWords } from '@shared/text'
+import { foldForSearch, matchesWords, searchWords } from '@shared/text'
 import type { SkyboxContent } from '@shared/domain/skybox'
 import {
   EMPTY_STACK,
@@ -27,6 +27,7 @@ import { toDb } from '@/engines/audio/audioData'
 import { canvasOf, useCanvases } from '@/stores/canvases'
 import { usePostPresets } from '@/stores/postPresets'
 import { useSettings } from '@/stores/settings'
+import { useCharacters } from '@/stores/character'
 import { sceneOf, useScenes } from '@/stores/scenes'
 import { sceneViewOf, useSceneViews } from '@/stores/sceneViews'
 import { sequenceOf, useSequences } from '@/stores/sequences'
@@ -36,8 +37,10 @@ import { skyboxOf, useSkyboxes } from '@/stores/skyboxes'
 import { materialOf, useMaterials } from '@/stores/materials'
 import type { AnimationTimeline } from '@shared/domain/animation'
 import type { Run } from './run'
+import { generationCommentsOf, useGenerationComments } from '@/stores/generationComments'
 
 export { SECOND }
+export { answerOf, declined, ranStudioCommand, searched, tried } from './oracleActions'
 
 /**
  * 🛑 An oracle reads the STATE, never the words the model wrote: every failure this bench exists
@@ -73,11 +76,24 @@ export const openedFile = (run: Run, ending: string): boolean =>
 
 export const front = (run: Run): DocumentDescriptor | null => run.studio.front()
 
+export const generationComments = (run: Run) =>
+  generationCommentsOf(useGenerationComments.getState(), front(run)?.id ?? null)
+
 export const nodes = (run: Run): readonly SceneNode[] =>
   inSpace(run, '3d').flatMap(one => sceneOf(useScenes.getState(), one.id).nodes)
 
-export const nodeNamed = (run: Run, name: string): SceneNode | undefined =>
-  nodes(run).find(one => answersTo(one.name, name))
+/**
+ * The node called exactly that, before one whose name merely CONTAINS it: « Sphere » answered
+ * `HemisphereLight` first, and 6.7 could not pass whatever the model did (2026-09-06).
+ */
+export function nodeNamed(run: Run, name: string): SceneNode | undefined {
+  const wanted = foldForSearch(name)
+  const all = nodes(run)
+  return (
+    all.find(one => foldForSearch(one.name) === wanted) ??
+    all.find(one => answersTo(one.name, name))
+  )
+}
 
 /**
  * What a node was ADDED as — the word `node.add` takes, which the state spells across two
@@ -171,10 +187,21 @@ export const montage = (run: Run) => {
 export const animationView = (run: Run) =>
   firstOf(run, '3d', id => animationViewOf(useAnimationViews.getState(), id))
 
-/** The skeleton of the model in the open scene — a rig lives on its node's `model`, nowhere else. */
-export const rig = (run: Run) => {
-  const model = nodes(run).find(one => one.type === 'model')
-  return model?.type === 'model' ? (model.model.rig ?? null) : null
+/**
+ * The skeleton of the character the window holds.
+ *
+ * 🛑 Not a node's: a rig belongs to a FILE now, and the studio keeps no document for one — the
+ * skeleton window is where it is read and edited.
+ */
+export const rig = (_run: Run) => {
+  const open = Object.values(useCharacters.getState().states).find(one => one.assetId !== '')
+  return open?.rig ?? null
+}
+
+/** The attachment points that character carries — they live in its file, never in the scene. */
+export const sockets = (_run: Run) => {
+  const open = Object.values(useCharacters.getState().states).find(one => one.assetId !== '')
+  return open?.sockets ?? []
 }
 
 /**
@@ -199,6 +226,23 @@ export const modelCoveredBy = (run: Run, name: string): string | null => {
 /** The open picture itself — its size and its guides, which no layer carries. */
 export const canvas = (run: Run) =>
   firstOf(run, 'image', id => canvasOf(useCanvases.getState(), id))
+
+/** How many cells a call laid down — see `canvasSurface`, which records them as the port does. */
+export const paintedCells = (run: Run): number => run.studio.painted().size
+
+/** What a cell holds: a packed colour, `null` where it was erased, `undefined` if untouched. */
+export const painted = (run: Run, x: number, y: number): number | null | undefined =>
+  run.studio.painted().get(`${x},${y}`)
+
+/** Whether a generation of that family was sent a prompt CARRYING a word. */
+export const promptSent = (run: Run, family: ModelFamily, word: string): boolean =>
+  jobs(run).some(
+    one =>
+      run.studio.familyOf(one.targetId) === family &&
+      Object.values(run.studio.sentBodies()[one.id] ?? {}).some(
+        value => typeof value === 'string' && value.includes(word),
+      ),
+  )
 
 /**
  * What the document in front DESIGNATES, and of what kind — « sélectionne le calque » is not
@@ -442,34 +486,11 @@ export const wrote = (run: Run, section: string, key: string): boolean =>
 
     const asked = one.input['settings']
     const written = isRecord(asked) ? asked[section] : undefined
-    return isRecord(written) && Object.keys(written).some(name => name.toLowerCase().includes(key))
+    // BOTH sides lowered: folded on the written name alone, a key in camelCase could never
+    // match, and the scenario failed whatever the model did.
+    const wanted = key.toLowerCase()
+    return isRecord(written) && Object.keys(written).some(n => n.toLowerCase().includes(wanted))
   })
-
-/** Whether a search was actually run, and on a word the sentence carries. */
-export const searched = (run: Run, word: string): boolean =>
-  run.called.some(
-    one =>
-      (one.action === 'files.search' || one.action === 'assets.searchProjectCatalogue') &&
-      Object.values(one.input).some(
-        value => typeof value === 'string' && value.toLowerCase().includes(word),
-      ),
-  )
-
-/** Whether an action ran at all, refused or not — what an undo scenario has to see happen. */
-export const tried = (run: Run, name: ActionName): boolean =>
-  run.called.some(one => one.action === name)
-
-/**
- * What one action answered, for the readings whose whole EFFECT is their answer.
- *
- * 🛑 A refusal answers too — `answerShown` writes « refused wrongSurface » — so this rends only
- * what came back from a call that WORKED. Written the other way round first, and twelve of the
- * thirteen § 61 scenarios then passed on a studio that had refused every one of them.
- */
-export const answerOf = (run: Run, name: ActionName): string | null => {
-  const held = run.called.find(one => one.action === name)?.answer
-  return held === undefined || held.startsWith('refused') ? null : held
-}
 
 /** The timeline of the scene in front — what a game CUES, as the document holds it. */
 export const animation = (run: Run): AnimationTimeline | null => openScene(run)?.animation ?? null

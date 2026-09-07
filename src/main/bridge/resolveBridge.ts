@@ -63,8 +63,7 @@ export const resolveScriptPath = (home: string, platform: NodeJS.Platform): stri
  * Lua rather than Python: Resolve ships its own Lua and needs nothing installed, where the Python
  * door wants an interpreter of a version the user has to match.
  */
-export function resolveScriptText(): string {
-  return `-- ${APP_NAME} bridge. Written by the application; edit at your own risk.
+const SCRIPT_TEXT = `-- ${APP_NAME} bridge. Written by the application; edit at your own risk.
 -- Workspace > Scripts > ${APP_NAME}
 
 -- The GLOBAL, before anything calls it: \`Resolve()\` outside Resolve is a call on nil, which
@@ -135,6 +134,9 @@ window:Show()
 dispatcher:RunLoop()
 window:Hide()
 `
+
+export function resolveScriptText(): string {
+  return SCRIPT_TEXT
 }
 
 /**

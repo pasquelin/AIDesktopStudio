@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest'
 import { transpile } from './transpile'
+import type { InputMapModule } from '@shared/domain/inputMap'
+
+const CHARACTER: InputMapModule = {
+  path: 'Scripts/character.input.json',
+  map: { version: 1, id: 'character', priority: 0, defaultActive: true, actions: [] },
+}
 
 describe('an author’s TypeScript, turned into what the sandbox runs', () => {
   it('strips the types and leaves what a machine can run', () => {
@@ -30,6 +36,25 @@ describe('an author’s TypeScript, turned into what the sandbox runs', () => {
 
     expect('code' in held).toBe(true)
     expect('code' in held && held.code).not.toContain('@studio')
+  })
+
+  it('inlines a validated input map imported beside the script', () => {
+    const held = transpile(
+      "import character from './character.input.json'\nexport default { character }",
+      { script: 'script:Scripts/player.ts', inputMaps: [CHARACTER] },
+    )
+
+    expect('code' in held && held.code).toContain('"id": "character"')
+    expect('code' in held && held.code).not.toContain('require(')
+  })
+
+  it('refuses an input map the project does not hold and keeps its source line', () => {
+    const held = transpile(
+      "import { defineScript } from '@studio'\nimport vehicle from './vehicle.input.json'",
+      { script: 'script:Scripts/player.ts', inputMaps: [CHARACTER] },
+    )
+
+    expect(held).toEqual({ trouble: './vehicle.input.json', line: 2 })
   })
 
   /** 🛑 Ordinary TypeScript, and what a line scanner reads as three lines of nothing. */

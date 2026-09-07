@@ -23,19 +23,30 @@ export function readBatch(input: Record<string, unknown>): BatchRead {
   const said = input.calls
   if (typeof said !== 'string') return { refusal: refused('badInput', 'calls must be JSON text') }
 
-  let parsed: unknown
-  try {
-    parsed = JSON.parse(said)
-  } catch {
-    return { refusal: refused('badInput', 'calls is not JSON') }
-  }
-  if (!Array.isArray(parsed) || parsed.length === 0) {
+  const parsed = parsedCalls(said)
+  if ('refusal' in parsed) return parsed
+  if (parsed.calls.length === 0) {
     return { refusal: refused('badInput', 'calls must be a non-empty array of {action,input}') }
   }
-  if (parsed.length > MOST_CALLS) {
+  if (parsed.calls.length > MOST_CALLS) {
     return { refusal: refused('badInput', `a lot holds at most ${MOST_CALLS} calls`) }
   }
 
+  return checkedCalls(parsed.calls)
+}
+
+function parsedCalls(said: string): { calls: unknown[] } | { refusal: ActionOutcome } {
+  try {
+    const parsed: unknown = JSON.parse(said)
+    return Array.isArray(parsed)
+      ? { calls: parsed }
+      : { refusal: refused('badInput', 'calls must be a non-empty array of {action,input}') }
+  } catch {
+    return { refusal: refused('badInput', 'calls is not JSON') }
+  }
+}
+
+function checkedCalls(parsed: unknown[]): BatchRead {
   const calls: BatchedCall[] = []
   for (const [at, one] of parsed.entries()) {
     if (!isBatchCall(one)) {

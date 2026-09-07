@@ -1,3 +1,5 @@
+import { resolveNamedReference } from './namedReference'
+
 /**
  * What the assistant may aim at inside the open document.
  *
@@ -38,14 +40,13 @@ export function aimedAt<T extends { name: string }>(
 
   const found = byId(given)
   if (found) return found
-
-  let only: T | undefined
-  for (const one of all) {
-    if (one.name !== given) continue
-    if (only) return undefined
-    only = one
-  }
-  return only
+  const resolution = resolveNamedReference(
+    given,
+    all,
+    one => one.name,
+    () => [],
+  )
+  return resolution.kind === 'resolved' ? resolution.value : undefined
 }
 
 /**

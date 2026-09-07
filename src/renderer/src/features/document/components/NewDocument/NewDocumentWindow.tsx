@@ -1,59 +1,33 @@
-import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { EXTENSIONS_BY_KIND, type DocumentKind } from '@shared/domain/document'
-import { checkDocumentName } from '@shared/domain/documentName'
-import { FOLDER_ROOT } from '@shared/domain/folder'
-import type {
-  DocumentTemplateId,
-  NamedDocumentPlace,
-  NewDocumentAsk,
-} from '@shared/domain/newDocument'
-import { DEFAULT_SCENE_TEMPLATE, type SceneTemplateId } from '@shared/domain/sceneTemplate'
-import { DEFAULT_UI_TEMPLATE, type UiTemplateId } from '@shared/domain/uiTemplates'
-import { Button } from '@/components/Button'
-import { FolderPicker } from '@/components/FolderPicker/FolderPicker'
+import { creatablesFor } from '@shared/domain/creatable'
+import type { DocumentKind } from '@shared/domain/document'
+import type { NewDocumentAnswer, NewDocumentAsk } from '@shared/domain/newDocument'
 import { WindowShell } from '@/components/WindowShell'
-import { FIELD_FILL, FILE_EXTENSION } from '@/components/styles'
-import { cn } from '@/helpers/cn'
-import { isComposing } from '@/helpers/composition'
 import { getBridge } from '@/services/bridge'
 import { useAppliedSettings } from '@/hooks/useAppliedSettings'
-import { takenDocumentNames, useDocuments } from '@/stores/documents'
-import { DOCUMENT_NAME_REFUSALS } from '../../documentName'
-import { NewDocumentTemplates } from './NewDocumentTemplates'
-import { NewDocumentUiTemplates } from './NewDocumentUiTemplates'
+import { useConnections } from '@/hooks/useConnections'
+import { useDocuments } from '@/stores/documents'
+import { useFolderRoles } from '@/stores/folderRoles'
+import { NewDocumentForm } from './NewDocumentForm'
+import { NewDocumentKinds } from './NewDocumentKinds'
+import { NewDocumentNoProject } from './NewDocumentNoProject'
 
 /**
- * What a document is called and where it goes, asked in a WINDOW before it is made.
+ * What to make, what to call it and where it goes. A window rather than a modal: the studio is
+ * held on the other end until this answers, and a window that goes away answers `null`.
  *
- * A window rather than a modal over the studio: it is moved, resized and put beside what one is
- * looking at, and closing it means the document was not made — the studio is held on the other
- * end until this answers, and the main process answers `null` for a window that went away.
- *
- * The field opens on the name the studio would have given, selected: Enter takes it as it
- * stands, typing replaces it, so naming costs nothing to whoever does not care to.
- *
- * Refused where it is TYPED rather than at the disk, and the refusal follows the folder: a name
- * taken in one is free in the next. What each folder holds is read here — `stored` is the whole
- * project folder — plus the documents a tab holds and no file does yet, which travel in the ask.
+ * None of the ways into a project acts here — the studio owns leaving one. See `NewDocumentAnswer`.
  */
 export function NewDocumentWindow() {
   const { t } = useTranslation()
   useAppliedSettings()
+  // For DRAWING alone: the folder picker inks a folder that serves a section the way the explorer
+  // does, and this window is its own renderer — the studio's subscription does not reach it.
+  useConnections([useFolderRoles(state => state.connect)])
 
   const [ask, setAsk] = useState<NewDocumentAsk | null>(null)
-  const [draft, setDraft] = useState('')
-  const [folder, setFolder] = useState(FOLDER_ROOT)
-  const [template, setTemplate] = useState<SceneTemplateId>(DEFAULT_SCENE_TEMPLATE)
-  // Two states rather than one of the union: each section keeps what was picked in it,
-  // and a window reopened on the other kind would otherwise answer with an id it refuses.
-  const [uiTemplate, setUiTemplate] = useState<UiTemplateId>(DEFAULT_UI_TEMPLATE)
-  const stored = useDocuments(state => state.stored)
-  const field = useRef<HTMLInputElement>(null)
-  const nameId = useId()
-  const extensionId = useId()
-  const folderId = useId()
-  const refusalId = useId()
+  const [kind, setKind] = useState<DocumentKind | null>(null)
 
   useEffect(() => {
     void (async () => {
@@ -62,152 +36,98 @@ export function NewDocumentWindow() {
 
       // The listing FIRST, and the form only then: what the folders hold is what a typed name is
       // refused against, and a field open over an empty listing accepts a name the disk already
-      // holds — which the first save would silently suffix, the one outcome this window exists
-      // to prevent. Read here rather than handed over: the picker walks the whole project.
+      // holds — which the first save would silently suffix, the one outcome this window exists to
+      // prevent. Read here rather than handed over: the picker walks the whole project.
       await useDocuments.getState().relist()
 
       setAsk(asked)
-      setDraft(asked.suggested)
-      setFolder(asked.folder)
+      // Landing on the likeliest row rather than on a prompt: the caller either named a kind, or
+      // the surface it came from puts one first. An empty pane would be a click for everybody.
+      setKind(asked.kind ?? creatablesFor(asked.surface)[0]?.kind ?? null)
     })()
   }, [])
-
-  useEffect(() => {
-    if (!ask) return
-
-    field.current?.focus()
-    // And the whole name with it: the field opens on a name that is there to be replaced.
-    field.current?.select()
-  }, [ask])
 
   /**
    * The main process is what closes this window, so a refused answer leaves it standing — and
    * standing is the right fallback: closing it by hand says exactly what Cancel says.
    */
-  const settle = (place: NamedDocumentPlace | null): void => {
+  const settle = (given: NewDocumentAnswer | null): void => {
     void getBridge()
-      ?.newDocument.answer(place)
+      ?.newDocument.answer(given)
       .catch(() => {})
   }
+
+  useEffect(() => {
+    /** Escape closes the window the way its close button does: nothing is made. */
+    const onKeyDown = (event: KeyboardEvent): void => {
+      // On the window rather than on the form: the column takes focus too, and Escape pressed
+      // there used to reach nothing at all. `isComposing` is an input method's own candidate.
+      if (event.key === 'Escape' && !event.isComposing) settle(null)
+    }
+
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [])
 
   // Nothing was asked — a window restored by the system, or one whose question has been settled.
   if (!ask) return <WindowShell title={t('documents.new')}>{null}</WindowShell>
 
-  const refusal = checkDocumentName(
-    draft,
-    ask.kind,
-    takenDocumentNames({ documents: {}, stored: [...stored, ...ask.open] }, folder),
-  )
+  const project = ask.projectName
 
-  /** Escape closes the window the way its close button does: nothing is made. */
-  const onKeyDown = (event: KeyboardEvent<HTMLElement>): void => {
-    // Escape cancels the candidate an input method is composing — see `isComposing`.
-    if (event.key === 'Escape' && !isComposing(event)) settle(null)
-  }
-
-  /** What this kind answers with, or nothing at all — never the other kind's id. */
-  const templateOf = (kind: DocumentKind): { template?: DocumentTemplateId } => {
-    if (kind === 'scene') return { template }
-    if (kind === 'gui') return { template: uiTemplate }
-    return {}
+  if (ask.purpose === 'externalFiles') {
+    return (
+      <WindowShell title={t('documents.importFiles')}>
+        <NewDocumentNoProject
+          recent={ask.recentProjects}
+          title={t('documents.importProjectTitle')}
+          body={t('documents.importProjectBody')}
+          onNewProject={() => settle({ answer: 'newProject' })}
+          onOpenProject={() => settle({ answer: 'openProject' })}
+          onOpenRecent={path => settle({ answer: 'recentProject', path })}
+        />
+      </WindowShell>
+    )
   }
 
   return (
-    <WindowShell title={t(`documents.newByKind.${ask.kind}`)}>
-      <form
-        // The whole window: the name at the top, the browser taking the slack, the buttons at
-        // the bottom edge wherever that edge is.
-        className="flex h-full flex-col gap-3"
-        onKeyDown={onKeyDown}
-        onSubmit={event => {
-          event.preventDefault()
-          // The template travels for the kind that DREW a section and for no other: one that
-          // showed none would be answering with a choice nobody was offered.
-          if (!refusal) settle({ title: draft.trim(), folder, ...templateOf(ask.kind) })
-        }}
-      >
-        {/* Labelled where it shows, not by an `aria-label`: two bare fields under one heading
-              leave nothing to tell them apart, for a reader of either kind. */}
-        <div className="flex flex-col gap-1.5">
-          <label htmlFor={nameId} className="text-muted text-xs">
-            {t('documents.nameField')}
-          </label>
-          <div className="flex items-center gap-2">
-            <input
-              ref={field}
-              data-sc="field:newDocument.name"
-              id={nameId}
-              aria-describedby={refusal ? `${extensionId} ${refusalId}` : extensionId}
-              value={draft}
-              className={cn(FIELD_FILL, 'text-xs')}
-              onChange={event => setDraft(event.target.value)}
+    <WindowShell
+      title={t('documents.new')}
+      navLabel={t('documents.newKinds')}
+      nav={
+        <NewDocumentKinds
+          creatables={creatablesFor(ask.surface)}
+          selected={kind}
+          hasProject={project !== null}
+          onSelect={setKind}
+          onNewProject={() => settle({ answer: 'newProject' })}
+        />
+      }
+    >
+      {project === null ? (
+        <NewDocumentNoProject
+          recent={ask.recentProjects}
+          onNewProject={() => settle({ answer: 'newProject' })}
+          onOpenProject={() => settle({ answer: 'openProject' })}
+          onOpenRecent={path => settle({ answer: 'recentProject', path })}
+        />
+      ) : (
+        kind && (
+          <div className="flex h-full flex-col">
+            <h2 className="mb-4 text-base font-semibold">{t(`documents.newByKind.${kind}`)}</h2>
+            {/* Remounted per kind: the suggested name and the starting folder are read once, and
+                reconciling them would leave a name typed for another kind in the field. */}
+            <NewDocumentForm
+              key={kind}
+              kind={kind}
+              picked={ask.picked}
+              projectName={project}
+              open={ask.open}
+              onCancel={() => settle(null)}
+              onSubmit={place => settle({ answer: 'made', place })}
             />
-            {/* Read off the kind, and shown rather than offered: one format per kind is the
-                  whole of the open-format decision, so there is nothing here to pick between. */}
-            <span id={extensionId} className={cn(FILE_EXTENSION, 'shrink-0 text-xs')}>
-              {EXTENSIONS_BY_KIND[ask.kind]}
-            </span>
           </div>
-        </div>
-
-        {refusal && (
-          <p id={refusalId} role="alert" className="text-warning m-0 text-xs">
-            {t(DOCUMENT_NAME_REFUSALS[refusal])}
-          </p>
-        )}
-
-        {/* Under the name and above the folder, which is the order the questions come in: what it
-            is called, what it holds, where it goes. */}
-        {(ask.kind === 'scene' || ask.kind === 'gui') && (
-          <div className="flex flex-col gap-1.5">
-            <span className="text-muted text-xs">{t('documents.templateField')}</span>
-            {ask.kind === 'scene' ? (
-              <NewDocumentTemplates value={template} onChange={setTemplate} />
-            ) : (
-              <NewDocumentUiTemplates value={uiTemplate} onChange={setUiTemplate} />
-            )}
-          </div>
-        )}
-
-        <div className="flex min-h-0 flex-1 flex-col gap-1.5">
-          <span id={folderId} className="text-muted text-xs">
-            {t('documents.folderField')}
-          </span>
-          <FolderPicker
-            value={folder}
-            onChange={setFolder}
-            rootName={ask.projectName}
-            labels={{
-              columns: t('documents.folderField'),
-              empty: t('documents.folderEmpty'),
-              newFolder: t('documents.newFolder'),
-              newFolderName: t('documents.newFolderName'),
-              newFolderLabel: t('documents.newFolderLabel'),
-              create: t('documents.create'),
-              cancel: t('documents.cancel'),
-              folderTaken: t('documents.folderTaken'),
-              folderFailed: t('documents.folderFailed'),
-            }}
-            // Handed to the picker rather than drawn under it: the three buttons belong on one
-            // line, and only the picker knows when its own field has taken that line over.
-            actions={
-              <>
-                <Button className="shrink-0" onClick={() => settle(null)}>
-                  {t('documents.cancel')}
-                </Button>
-                <Button
-                  type="submit"
-                  variant="primary"
-                  className="shrink-0"
-                  disabled={refusal !== null}
-                >
-                  {t('documents.create')}
-                </Button>
-              </>
-            }
-          />
-        </div>
-      </form>
+        )
+      )}
     </WindowShell>
   )
 }

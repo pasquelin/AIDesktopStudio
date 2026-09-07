@@ -1,6 +1,6 @@
+import { bench } from '@shared/vitestBench'
 import {
   BoxGeometry,
-  BufferGeometry,
   Mesh,
   MeshStandardMaterial,
   Object3D,
@@ -9,12 +9,11 @@ import {
   SphereGeometry,
   Vector2,
 } from 'three'
-import { acceleratedRaycast, computeBoundsTree, disposeBoundsTree, MeshBVH } from 'three-mesh-bvh'
-import { bench, describe } from 'vitest'
-
-BufferGeometry.prototype.computeBoundsTree = computeBoundsTree
-BufferGeometry.prototype.disposeBoundsTree = disposeBoundsTree
-Mesh.prototype.raycast = acceleratedRaycast
+import { MeshBVH } from 'three-mesh-bvh'
+import { describe } from 'vitest'
+// The studio's own patches, never a copy: this bench listed three of the four, so it timed the
+// slow path for a skinned mesh while the app took the fast one.
+import './bvhPatches'
 
 /**
  * What one click costs. The picker walks every object of the scene on every click — never per

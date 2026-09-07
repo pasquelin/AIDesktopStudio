@@ -1,5 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { newComponent } from '@shared/domain/componentRegistry'
+import { SECOND } from '@shared/domain/time'
+import { animationTrack } from '@/engines/scene/animation-fixtures'
 import { meshNode } from '@/engines/scene/scene-fixtures'
 import { EMPTY_SCENE } from '@/engines/scene/sceneState'
 import { installScene } from '@/stores/scene-fixtures'
@@ -12,6 +14,30 @@ describe('what keeps a model from guessing', () => {
     installScene(DOCUMENT, {
       ...EMPTY_SCENE,
       nodes: [{ ...meshNode('n1'), name: 'Hero', components: [newComponent('Health')] }],
+    })
+  })
+
+  // Asked about a channel id, the answer was « no node » — a client that had just opened the
+  // channel could not read it back (Codex by MCP, 2026-09-06).
+  it('describes a channel by its id, with its keys and what takes it', async () => {
+    installScene(DOCUMENT, {
+      ...EMPTY_SCENE,
+      nodes: [{ ...meshNode('n1'), name: 'Hero' }],
+      animation: {
+        ...EMPTY_SCENE.animation,
+        tracks: [
+          animationTrack('track_1', 'position', [{ time: SECOND, value: { x: 0, y: 2, z: 0 } }], {
+            target: { nodeId: 'n1', property: 'position' },
+          }),
+        ],
+      },
+    })
+
+    const outcome = await runAction('studio.describe', { ref: 'track_1' })
+
+    expect(outcome.ok && outcome.data).toMatchObject({
+      channel: { id: 'track_1', keys: [{ timeSeconds: 1, value: { x: 0, y: 2, z: 0 } }] },
+      accepts: expect.arrayContaining(['key.writeKeysOnOpenChannels']),
     })
   })
 
@@ -51,12 +77,14 @@ describe('what keeps a model from guessing', () => {
     expect(outcome.ok && outcome.data).toMatchObject({ scene: DOCUMENT })
   })
 
-  it('names the topics it can document, then documents one', async () => {
+  it('names its topics and resolves their canonical and displayed names', async () => {
     const listed = await runAction('studio.docs', {})
-    const held = await runAction('studio.docs', { topic: 'Health' })
 
     expect(listed.ok && (listed.data as { topics: string[] }).topics).toContain('Health')
-    expect(held.ok && held.data).toMatchObject({ topic: 'Health' })
+    for (const topic of ['Health', 'health', 'Santé', 'sante', 'composant Santé']) {
+      const held = await runAction('studio.docs', { topic })
+      expect(held.ok && held.data).toMatchObject({ topic: 'Health' })
+    }
   })
 
   /** The SAME text the editor types against — a second telling is the one that would drift. */
@@ -64,6 +92,13 @@ describe('what keeps a model from guessing', () => {
     const outcome = await runAction('studio.docs', { topic: 'script' })
 
     expect(outcome.ok && String((outcome.data as { docs: string }).docs)).toContain('defineScript')
+  })
+
+  it('refuses a folded topic shared by a component and the script surface', async () => {
+    expect(await runAction('studio.docs', { topic: 'SCRIPT' })).toMatchObject({
+      ok: false,
+      refusal: 'badInput',
+    })
   })
 
   it('refuses a topic nothing documents, and says how to find the list', async () => {
@@ -78,7 +113,7 @@ describe('what keeps a model from guessing', () => {
         calls: JSON.stringify([
           { action: 'component.attach', input: { nodeId: 'Hero', type: 'Movement' } },
           {
-            action: 'component.set',
+            action: 'component.setProperties',
             input: { nodeId: 'Hero', type: 'Movement', field: 'speed', value: '9' },
           },
         ]),

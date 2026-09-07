@@ -100,47 +100,44 @@ function keysIn(
     keys.push({ key: literal.text, line: lineOf(literal) })
   }
 
-  const visit = (node: ts.Node): void => {
-    // `t(…)` or `i18next.t(…)`, and nothing else that happens to end in a `t` — `import(…)`
-    // does, and it took a dynamic import of `opentype.js` to notice.
-    const callee = ts.isCallExpression(node) ? node.expression.getText(source) : ''
-
-    // Only the first argument: the second is a fallback, not another key.
-    if (ts.isCallExpression(node) && (callee === 't' || callee.endsWith('.t'))) {
-      const [first, second] = node.arguments
-      // One options object exists at runtime whichever branch is taken, so every key it can
-      // reach is checked against that same object.
-      const given =
-        second !== undefined && ts.isObjectLiteralExpression(second)
-          ? namesOf(second, source)
-          : undefined
-      for (const literal of literalsOf(first).filter(one => one.text.includes('.'))) {
-        take(literal)
-        if (given !== undefined) filled.push({ key: literal.text, given, line: lineOf(node) })
-      }
+  const takeCallKeys = (node: ts.Node): void => {
+    if (!ts.isCallExpression(node)) return
+    const callee = node.expression.getText(source)
+    if (callee !== 't' && !callee.endsWith('.t')) return
+    const [first, second] = node.arguments
+    const given =
+      second !== undefined && ts.isObjectLiteralExpression(second)
+        ? namesOf(second, source)
+        : undefined
+    for (const literal of literalsOf(first).filter(one => one.text.includes('.'))) {
+      take(literal)
+      if (given !== undefined) filled.push({ key: literal.text, given, line: lineOf(node) })
     }
+  }
 
-    // Through `literalsOf` as well: a toolbar row that toggles names its two keys in a ternary,
-    // and four registries write `labelKey` that way.
-    if (ts.isPropertyAssignment(node) && node.name.getText(source).endsWith('Key')) {
-      for (const literal of literalsOf(node.initializer).filter(one => one.text.includes('.'))) {
-        take(literal)
-      }
+  const takePropertyKeys = (node: ts.Node): void => {
+    if (!ts.isPropertyAssignment(node) || !node.name.getText(source).endsWith('Key')) return
+    for (const literal of literalsOf(node.initializer).filter(one => one.text.includes('.'))) {
+      take(literal)
     }
+  }
 
-    // A `Record<Union, string>` indexed by a union value: `{ missing: 'errors.missing' }`. The
-    // property is named for the CASE, never for what it holds, so no suffix can find it — which
-    // is how eight tables grew keys that nothing checked.
+  const takeRecordKeys = (node: ts.Node): void => {
     if (
-      ts.isVariableDeclaration(node) &&
-      node.type !== undefined &&
-      ts.isTypeReferenceNode(node.type) &&
-      node.type.typeName.getText(source) === 'Record' &&
-      node.initializer !== undefined
-    ) {
-      keysUnder(node.initializer)
-    }
+      !ts.isVariableDeclaration(node) ||
+      node.type === undefined ||
+      node.initializer === undefined
+    )
+      return
+    if (!ts.isTypeReferenceNode(node.type) || node.type.typeName.getText(source) !== 'Record')
+      return
+    keysUnder(node.initializer)
+  }
 
+  const visit = (node: ts.Node): void => {
+    takeCallKeys(node)
+    takePropertyKeys(node)
+    takeRecordKeys(node)
     ts.forEachChild(node, visit)
   }
 

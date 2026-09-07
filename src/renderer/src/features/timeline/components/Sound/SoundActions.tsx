@@ -28,7 +28,7 @@ export function SoundActions({ documentId }: SoundActionsProps) {
     // The same guard the monitor writes its head behind: a document dropped while this row is
     // still mounted would be rebuilt out of the store's default, a picture track and all.
     if (sequenceStore.hasState(store, documentId)) {
-      store.replace(documentId, { ...sequenceOf(store, documentId), playhead: 0 })
+      store.replaceView(documentId, { ...sequenceOf(store, documentId), playhead: 0 })
     }
   }
 

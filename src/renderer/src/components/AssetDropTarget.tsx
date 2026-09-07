@@ -1,7 +1,13 @@
 import { useState, type MouseEvent, type ReactNode } from 'react'
 import type { Asset, AssetType } from '@shared/domain/asset'
 import { carriesAsset, draggedAssetType, droppedAsset } from '@/helpers/assetDrag'
+import {
+  carriesExternalFiles,
+  externalFileTargetTone,
+  importExternalFilesInto,
+} from '@/services/externalFiles'
 import { cn } from '@/helpers/cn'
+import { copiesDropTone, warnsDropTone } from '@/helpers/drag'
 
 export type AssetDropTargetProps = {
   /** The kinds this target takes. A drag announcing none is taken anyway — see below. */
@@ -25,29 +31,27 @@ export type AssetDropTargetProps = {
   outlined?: boolean
   /** The surface is what a right-click lands on, where the caller holds a menu for it. */
   onContextMenu?: (event: MouseEvent) => void
+  onDoubleClick?: (event: MouseEvent) => void
   className?: string
   children: ReactNode
 }
 
-/**
- * A surface an asset can be dropped onto, with the two halves every one of them got wrong.
- *
- * First: `preventDefault` on `dragover` is what makes a drop possible at all, and calling it
- * unconditionally means the surface swallows files dragged in from the desktop. It is called
- * only for drags that carry one of ours, and only for a kind this target would take.
- *
- * Second: the target says whether it would accept WHILE the asset is still flying. That needs
- * the kind, which is why the drag announces it in its MIME type — `getData` answers nothing
- * before the drop, so a target reading the asset would be painting after the fact. A drag that
- * announces no kind is accepted rather than refused: a drop that silently does nothing is worse
- * than one that lands somewhere sensible.
- */
+async function handDroppedAsset(
+  pending: Promise<Asset | null>,
+  onDrop: (asset: Asset) => void,
+): Promise<void> {
+  const asset = await pending
+  if (asset) onDrop(asset)
+}
+
+/** A target for catalogue assets and desktop files, imported before its callback receives them. */
 export function AssetDropTarget({
   accepts,
   onDrop,
   exclusive,
   outlined = true,
   onContextMenu,
+  onDoubleClick,
   className,
   children,
 }: AssetDropTargetProps) {
@@ -56,6 +60,7 @@ export function AssetDropTarget({
   return (
     <div
       onContextMenu={onContextMenu}
+      onDoubleClick={onDoubleClick}
       className={cn(
         className,
         outlined && state !== 'idle' && 'outline-2 -outline-offset-2',
@@ -65,6 +70,14 @@ export function AssetDropTarget({
         outlined && state === 'refused' && 'outline-danger',
       )}
       onDragOver={event => {
+        if (carriesExternalFiles(event)) {
+          const tone = externalFileTargetTone(event, accepts)
+          if (exclusive && tone !== 'refused') event.stopPropagation()
+          event.preventDefault()
+          event.dataTransfer.dropEffect = copiesDropTone(tone) ? 'copy' : 'none'
+          setState(tone === 'accepted' ? 'over' : warnsDropTone(tone) ? 'refused' : 'idle')
+          return
+        }
         if (!carriesAsset(event)) return
         if (exclusive) event.stopPropagation()
 
@@ -86,8 +99,17 @@ export function AssetDropTarget({
         if (to instanceof Node && event.currentTarget.contains(to)) return
         setState('idle')
       }}
-      onDrop={event => {
+      onDrop={async event => {
         setState('idle')
+
+        if (carriesExternalFiles(event)) {
+          if (event.dataTransfer.files.length === 0) return
+          if (externalFileTargetTone(event, accepts) === 'refused') return
+          event.preventDefault()
+          event.stopPropagation()
+          void importExternalFilesInto(event.dataTransfer.files, accepts, onDrop)
+          return
+        }
 
         /**
          * Asked AGAIN here, and that is the whole point: `dragover` decides the outline, this
@@ -106,9 +128,7 @@ export function AssetDropTarget({
 
         // Read synchronously, awaited after: a library asset is fetched first, and the event
         // is recycled the moment this handler returns.
-        void droppedAsset(event).then(asset => {
-          if (asset) onDrop(asset)
-        })
+        void handDroppedAsset(droppedAsset(event), onDrop)
       }}
     >
       {children}

@@ -48,6 +48,47 @@ export type RuntimeReport = {
    * instant, and one written into the scene would put an undo entry per frame of a fade.
    */
   veil: number
+  performance: RuntimePerformance
+}
+
+export type RuntimePerformance = {
+  cpuFrameMs: number
+  renderMs: number
+  gpuFrameMs: number | null
+  drawCalls: number
+  triangles: number
+  vertices: number
+  visibleObjects: number
+  culledObjects: number
+  instanceCount: number
+  batchCount: number
+  geometryBufferBytes: number
+  estimatedTextureBytes: number
+  compilationMs: number
+}
+
+export const EMPTY_RUNTIME_PERFORMANCE: RuntimePerformance = {
+  cpuFrameMs: 0,
+  renderMs: 0,
+  gpuFrameMs: null,
+  drawCalls: 0,
+  triangles: 0,
+  vertices: 0,
+  visibleObjects: 0,
+  culledObjects: 0,
+  instanceCount: 0,
+  batchCount: 0,
+  geometryBufferBytes: 0,
+  estimatedTextureBytes: 0,
+  compilationMs: 0,
+}
+
+/** Script faults first, then log lines at error — both, never one or the other. */
+export function faultsOf(report: RuntimeReport): readonly string[] {
+  return [
+    ...report.errors.map(one => `${one.script}:${one.line} — ${one.message}`),
+    ...report.logs.filter(entry => entry.level === 'error').map(entry => entry.message),
+  ]
 }
 
 export const NOT_PLAYING: RuntimeReport = {
@@ -59,4 +100,5 @@ export const NOT_PLAYING: RuntimeReport = {
   logs: [],
   errors: [],
   veil: 0,
+  performance: EMPTY_RUNTIME_PERFORMANCE,
 }

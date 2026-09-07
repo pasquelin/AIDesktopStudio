@@ -1,7 +1,7 @@
 import { orElse } from '@shared/promises'
 import { isLocalPicture, type Asset } from '@shared/domain/asset'
 import { contactSheetPdf, type SheetPicture } from '@shared/domain/contactSheet'
-import { bytesToBase64 } from '@/helpers/base64'
+import { bytesToBase64 } from '@shared/base64'
 import { fetchAsset } from '@/helpers/assetFetch'
 import { getBridge } from '@/services/bridge'
 import { reportFailure } from '@/services/diagnostics'

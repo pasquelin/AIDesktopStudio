@@ -1,5 +1,11 @@
 import type { WebContents } from 'electron'
-import { CHANNELS, EVENTS, MAX_LOG_MESSAGE, type AssistantActionResult } from '@shared/ipc'
+import {
+  CHANNELS,
+  EVENTS,
+  MAX_LOG_MESSAGE,
+  type AssistantActionResult,
+  type AssistantVisualCaptureResult,
+} from '@shared/ipc'
 import type { AssistantNote } from '@shared/domain/assistantNote'
 import { clipped } from '@shared/text'
 import { handle } from '@main/ipc/handle'
@@ -17,6 +23,7 @@ export type AssistantHandlerDeps = {
   brain: AssistantBrain
   /** Where a window's answer to an action asked for from outside goes — see `createRemoteActions`. */
   settleAction: (result: AssistantActionResult) => void
+  settleVisualCapture: (result: AssistantVisualCaptureResult) => void
   /** The studio's one table of long tasks — the same the montage stop button reaches through. */
   running: RunningTasks
   /** Where a turn is written down. Read per call: a project can be closed mid-conversation. */
@@ -51,6 +58,7 @@ function whileAlive(sender: WebContents): AbortSignal {
 export function registerAssistantHandlers({
   brain,
   settleAction,
+  settleVisualCapture,
   running,
   journal,
   transcribe,
@@ -101,6 +109,10 @@ export function registerAssistantHandlers({
 
   handle(CHANNELS.assistantActionResult, (_event, result) => {
     settleAction(parseActionResult(result))
+  })
+
+  handle(CHANNELS.assistantVisualCaptureResult, (_event, result) => {
+    settleVisualCapture(result)
   })
 
   handle(CHANNELS.assistantNote, (_event, one) => {

@@ -58,34 +58,28 @@ export async function importOtioz(): Promise<string | null> {
   const bridge = getBridge()
   if (!bridge) return null
 
-  const workspace = workspaceForKind(importSourceOf('montage.otioz').kind)
-  if (!workspace) return null
-
   try {
     const read = await runTask(i18next.t('documents.importing'), id => bridge.montage.import(id))
     if (!read) return null
 
-    // The rows were minted by the main process while it unpacked; nothing in the window has seen
-    // them yet, and the montage is about to name every one of them.
-    await useAssets.getState().refresh()
-
-    // The tab FIRST: the bookkeeping a montage carries — the metadata to hand back, the refusal
-    // to overwrite — is kept by document id, and there is none before this.
-    const created = await useDocuments
-      .getState()
-      .create(workspace, { title: stemOf(read.folder), folder: read.folder })
-    if (!created) return null
-
-    sequenceStore.use.getState().replace(created.id, sequenceOfBundle(read, created.id))
-    openDocument(created)
-    // Written at once rather than left dirty, unless the read let something go or the file holds
-    // more than this editor composes: `saveDocument` refuses those, and a first ⌘S that quietly
-    // dropped what another application put there is the contre-exemple this chantier is about.
-    await saveDocument(created.id, false)
-
-    return created.id
+    return await openImportedOtioz(read)
   } catch (error) {
     reportFailure('sequence.import', 'montage.otioz', error)
     return null
   }
+}
+
+export async function openImportedOtioz(read: MontageImportResult): Promise<string | null> {
+  const workspace = workspaceForKind(importSourceOf('montage.otioz').kind)
+  if (!workspace) return null
+  await useAssets.getState().refresh()
+  const created = await useDocuments
+    .getState()
+    .create(workspace, { title: stemOf(read.folder), folder: read.folder })
+  if (!created) return null
+
+  sequenceStore.use.getState().replace(created.id, sequenceOfBundle(read, created.id))
+  openDocument(created)
+  await saveDocument(created.id, false)
+  return created.id
 }

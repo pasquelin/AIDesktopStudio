@@ -1,10 +1,9 @@
 import { useTranslation } from 'react-i18next'
-import { WINDOW_ACTION_QUIET, WINDOW_ACTION_SECONDARY } from '@/components/windowStyles'
 import type { Signature } from '@shared/domain/shortcut'
 import { useShortcutLabel } from '@/hooks/useShortcutLabel'
 import { useChordCapture } from '@/hooks/useChordCapture'
-import { cn } from '@/helpers/cn'
 import { HINT_BOTTOM } from '@/helpers/tooltip'
+import { WindowButton } from '@/components/WindowButton'
 
 /** Searches by pressing the combination rather than by naming it. */
 export function ShortcutsSettingsSearchByChord({
@@ -25,24 +24,23 @@ export function ShortcutsSettingsSearchByChord({
 
   return (
     <div className="flex items-center gap-2">
-      <button
-        type="button"
-        className={cn(WINDOW_ACTION_QUIET, 'font-mono', listening && 'btn-primary')}
+      <WindowButton
+        variant={listening ? 'primary' : 'quiet'}
+        className="font-mono"
         {...HINT_BOTTOM(t('settings.findByChordHint'))}
         onClick={onListen}
       >
         {listening ? t('settings.pressAKey') : label(query) || t('settings.findByChord')}
-      </button>
+      </WindowButton>
 
       {query !== null && (
-        <button
-          type="button"
-          className={WINDOW_ACTION_SECONDARY}
+        <WindowButton
+          variant="secondary"
           {...HINT_BOTTOM(t('settings.showAllHint'))}
           onClick={() => onQuery(null)}
         >
           {t('settings.showAll')}
-        </button>
+        </WindowButton>
       )}
     </div>
   )

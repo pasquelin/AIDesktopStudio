@@ -19,23 +19,17 @@ import {
 } from '@shared/domain/document'
 import { isPrivatePath } from '@shared/domain/folder'
 import { isFolderRole, type FolderRole } from '@shared/domain/folderRole'
-import { GAME_VERSION, type GameManifest } from '@shared/domain/game'
 import { isOraSurfacePath, type OraStack } from '@shared/domain/openRaster'
-import { MANIFEST_VERSION, type Manifest } from '@shared/domain/project'
-import {
-  CONTEXT_BODY_MAX,
-  CONTEXT_CARDS_MAX,
-  CONTEXT_PICTURES_MAX,
-  CONTEXT_TITLE_MAX,
-  CONTEXT_VERSION,
-  type ContextCard,
-  type ProjectContext,
-} from '@shared/domain/projectContext'
 import { isPbrChannel, type PbrChannel } from '@shared/domain/material'
+import { MESH_IMPORT_LOSSES } from '@shared/domain/meshImport'
 import type {
   SaveAudioRequest,
+  SaveAnimationRequest,
   SaveLayeredRequest,
+  SaveMeshRequest,
+  ConvertMeshRequest,
   SavePictureRequest,
+  SavePlayerModuleRequest,
   SaveTextureRequest,
 } from '@shared/ipc'
 import { assetId } from '@main/assets/validation'
@@ -43,71 +37,12 @@ import { isPngBytes } from '@main/media/png'
 import { pathSegment, withinCodePoints } from '@main/validation'
 import { base64Payload } from '@main/provider/validation'
 
-const manifest = z.object({
-  // Capped, not merely floored, exactly as `documentEnvelope` below — and for a heavier reason.
-  // A document flattened by a later save is one file; a project is the whole folder.
-  version: z.number().int().min(1).max(MANIFEST_VERSION),
-  createdAt: z.string().min(1),
-  updatedAt: z.string().min(1),
-})
-
-/** A project folder is user territory: its manifest can be edited, truncated or replaced. */
-export function parseManifest(value: unknown): Manifest {
-  return manifest.parse(value)
-}
-
-// Bounds in CODE POINTS, never in UTF-16 units: a card written in emoji or in Japanese is as long
-// as it looks, which is the lesson `checkAssetName` already carries.
-const contextCard = z.object({
-  id: z.string().trim().min(1).refine(withinCodePoints(80)),
-  // May be empty: a card with no title travels as its body alone.
-  title: z.string().trim().refine(withinCodePoints(CONTEXT_TITLE_MAX)),
-  body: z.string().refine(withinCodePoints(CONTEXT_BODY_MAX)),
-  active: z.boolean(),
-  pictures: z.array(assetId).max(CONTEXT_PICTURES_MAX),
-})
-
-const projectContext = z.object({
-  version: z.number().int().min(1).max(CONTEXT_VERSION),
-  cards: z.array(contextCard).max(CONTEXT_CARDS_MAX),
-})
-
-/** The file, which like the manifest is user territory — hand-edited, truncated, or older. */
-export function parseProjectContext(value: unknown): ProjectContext {
-  return projectContext.parse(value)
-}
-
-/** What a window, or a program driving the studio, asks to store. */
-export function parseContextCards(value: unknown): ContextCard[] {
-  return z.array(contextCard).max(CONTEXT_CARDS_MAX).parse(value)
-}
-
-const gameScript = z.object({ id: z.string().min(1), path: z.string().min(1) })
-
-const gamePrefab = z.object({
-  id: z.string().min(1),
-  name: z.string(),
-  document: z.string().min(1),
-})
-
-/**
- * Every member but the version has a default, and that is a decision: `game.json` is written by
- * hand and merged by git, so a manifest naming only its scenes must open rather than read as
- * broken. The version alone is required — it is what tells a file from a later build apart.
- */
-const game = z.object({
-  version: z.number().int().min(1).max(GAME_VERSION),
-  scenes: z.array(z.string().min(1)).default([]),
-  entryScene: z.string().min(1).nullable().default(null),
-  scripts: z.array(gameScript).default([]),
-  prefabs: z.array(gamePrefab).default([]),
-  settings: z.object({ title: z.string().default('') }).default({ title: '' }),
-})
-
-/** The author's file: hand-edited, versioned by git, and merged by a tool that knows no schema. */
-export function parseGame(value: unknown): GameManifest {
-  return game.parse(value)
-}
+export {
+  parseContextCards,
+  parseGame,
+  parseManifest,
+  parseProjectContext,
+} from './manifestValidation'
 
 // Absolute paths only, and enforced rather than merely intended: a relative one would resolve
 // against the main process's working directory, which is wherever Electron happened to be
@@ -294,6 +229,17 @@ export function parseSavePicture(value: unknown): SavePictureRequest {
  */
 const MAX_STUDIO_STATE = 64 * 1024 * 1024
 
+/** The studio state's ceiling rather than a picture's: a mesh swapped in for the stand-in grows one. */
+const savePlayerModule = z.object({
+  name: z.string().trim().min(1).max(200),
+  derivedFrom: assetId.optional(),
+  gltf: z.string().min(1).max(MAX_STUDIO_STATE),
+})
+
+export function parseSavePlayerModule(value: unknown): SavePlayerModuleRequest {
+  return savePlayerModule.parse(value)
+}
+
 const oraBase = {
   name: z.string().max(200),
   x: z.number(),
@@ -359,6 +305,46 @@ const oraSurface = z.object({
   path: oraPath,
   png: z.instanceof(Uint8Array).refine(bytes => bytes.byteLength <= MAX_PICTURE_BYTES),
 })
+
+/**
+ * A character's own container. Bounded like a take is, and for the same reason: the renderer is
+ * the sandboxed side, and a model of a million triangles with its maps inside runs to hundreds
+ * of megabytes.
+ */
+export const MAX_MESH_BYTES = 1024 * 1024 * 1024
+
+const saveMesh = z.object({
+  // Required, unlike every neighbour: ⌘S rewrites the file the window opened, in place.
+  replaces: assetId,
+  glb: z.instanceof(Uint8Array).refine(bytes => bytes.byteLength <= MAX_MESH_BYTES),
+})
+
+export function parseSaveMesh(value: unknown): SaveMeshRequest {
+  return saveMesh.parse(value)
+}
+
+const saveConverted = z.object({
+  replaces: assetId,
+  projectPath,
+  glb: z.instanceof(Uint8Array).refine(bytes => bytes.byteLength <= MAX_MESH_BYTES),
+  type: z.enum(['mesh', 'animation']),
+  losses: z.array(z.enum(MESH_IMPORT_LOSSES)).max(MESH_IMPORT_LOSSES.length),
+})
+
+export function parseSaveConverted(value: unknown): ConvertMeshRequest {
+  return saveConverted.parse(value)
+}
+
+const saveAnimation = z.object({
+  name: z.string().trim().min(1).max(200),
+  derivedFrom: assetId.optional(),
+  replaces: assetId.optional(),
+  glb: z.instanceof(Uint8Array).refine(bytes => bytes.byteLength <= MAX_MESH_BYTES),
+})
+
+export function parseSaveAnimation(value: unknown): SaveAnimationRequest {
+  return saveAnimation.parse(value)
+}
 
 const saveLayered = z.object({
   replaces: assetId.optional(),

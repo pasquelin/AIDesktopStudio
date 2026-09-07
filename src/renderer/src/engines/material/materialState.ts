@@ -18,6 +18,7 @@ import {
   type PreviewShape,
 } from '@shared/domain/material'
 import { clamp } from '@shared/numeric'
+import type { TextureSampling } from '@shared/domain/textureSampling'
 
 /**
  * The `MeshStandardMaterial` property a channel feeds. Named here rather than borrowed from the
@@ -100,6 +101,8 @@ export type ChannelMap = {
   height: number
   /** Set when the pixels read the other way round — a smoothness map stored as roughness. */
   inverted?: true
+  transform?: Pick<MaterialSettings, 'tiling' | 'offset' | 'rotation'>
+  sampling?: TextureSampling
 }
 
 export type ChannelSet = { [C in PbrChannel]?: ChannelMap }
@@ -223,36 +226,50 @@ export function missingChannels(texture: MaterialState): PbrChannel[] {
 function readChannels(value: unknown): ChannelSet {
   const channels: ChannelSet = {}
   if (!isRecord(value)) return channels
-
-  // Walked over the declared channels rather than over the file: a channel a hand edit invented
-  // disappears with no case of its own, and the work is bounded by the domain either way.
   for (const channel of PBR_CHANNELS) {
     const entry = value[channel]
-    // A channel with no asset behind it has no pixels: kept, it would show a tile claiming to
-    // hold a map.
     if (!isRecord(entry) || typeof entry.assetId !== 'string' || entry.assetId.length === 0) {
       continue
     }
 
     const stored = isChannelOrigin(entry.origin) ? entry.origin : 'imported'
-    // A channel nothing derives cannot hold derived pixels: badged that way it would promise a
-    // recompute that no source can ever trigger.
     const derivable = sourceFor(channel) !== null
-
     const map: ChannelMap = {
       assetId: entry.assetId,
       origin: stored === 'derived' && !derivable ? 'imported' : stored,
       width: readPositive(entry, 'width', 0),
       height: readPositive(entry, 'height', 0),
     }
-
     if (typeof entry.modelId === 'string') map.modelId = entry.modelId
     if (entry.inverted === true) map.inverted = true
-
+    const transform = readTransform(entry.transform)
+    if (transform) map.transform = transform
+    const sampling = readSampling(entry.sampling)
+    if (sampling) map.sampling = sampling
     channels[channel] = map
   }
-
   return channels
+}
+
+function readSampling(value: unknown): ChannelMap['sampling'] {
+  if (!isRecord(value)) return undefined
+  const values = ['channel', 'wrapS', 'wrapT', 'minFilter', 'magFilter']
+  if (!values.every(key => typeof value[key] === 'number' && Number.isFinite(value[key]))) {
+    return undefined
+  }
+  return {
+    channel: Number(value.channel),
+    wrapS: Number(value.wrapS),
+    wrapT: Number(value.wrapT),
+    minFilter: Number(value.minFilter),
+    magFilter: Number(value.magFilter),
+  }
+}
+
+function readTransform(value: unknown): ChannelMap['transform'] {
+  if (!isRecord(value)) return undefined
+  const material = readMaterial(value)
+  return { tiling: material.tiling, offset: material.offset, rotation: material.rotation }
 }
 
 function readPreview(value: unknown): PreviewSettings {

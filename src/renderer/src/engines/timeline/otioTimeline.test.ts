@@ -229,35 +229,82 @@ describe('sequenceFromOtio', () => {
   })
 
   /**
-   * What ANOTHER application sees: the same file with the `iastudio` domain of its metadata gone.
+   * What ANOTHER application sees: the same file with the `aidesktopstudio` domain of its metadata gone.
    * The one measurement behind `capabilityOf('otio')` — and the reason « no loss » is never said
    * without saying to whom.
    *
    * Clip ids are blanked on both sides: identity rides in the metadata this drops, and a fresh
    * one is minted for a clip read without it.
    */
+})
+
+function richSequence(): SequenceState {
+  return {
+    settings: { width: 1280, height: 720, fps: 25, sampleRate: 44_100 },
+    tracks: reindexTracks([
+      trackFixture(
+        'V1',
+        'video',
+        [
+          // One microsecond off the frame grid, which is what makes `exactTime` visible.
+          clipFixture('a', 0, 2 * SECOND, { inPoint: SECOND + 1, fadeIn: 200_000, linkId: 'x' }),
+          clipFixture('b', 3 * SECOND, SECOND, { speed: 0.5 }),
+        ],
+        { name: 'Plans', height: 90, locked: true, solo: true },
+      ),
+      trackFixture('A1', 'audio', [clipFixture('c', 0, 2 * SECOND, { gain: -6, linkId: 'x' })], {
+        muted: true,
+      }),
+    ]),
+    selectedId: 'b',
+    selectedTrackId: null,
+    playhead: 1_500_000,
+  }
+}
+
+function plainSequence(): SequenceState {
+  return {
+    settings: DEFAULT_SETTINGS,
+    tracks: reindexTracks([
+      makeTrack({
+        id: 'V1',
+        kind: 'video',
+        index: 0,
+        name: 'Plans',
+        clips: [
+          makeClip({
+            id: 'a',
+            assetId: 'asset-a',
+            start: 0,
+            duration: 2 * SECOND,
+            inPoint: SECOND,
+          }),
+          makeClip({
+            id: 'b',
+            assetId: 'asset-b',
+            start: 3 * SECOND,
+            duration: SECOND,
+            speed: 0.5,
+          }),
+        ],
+      }),
+      makeTrack({
+        id: 'A1',
+        kind: 'audio',
+        index: 0,
+        muted: true,
+        clips: [makeClip({ id: 'c', assetId: 'asset-c', start: 0, duration: 2 * SECOND })],
+      }),
+    ]),
+    selectedId: null,
+    selectedTrackId: null,
+    playhead: 0,
+  }
+}
+
+describe('sequenceFromOtio without studio metadata', () => {
   it('shows the cut and nothing else once the studio metadata is gone', () => {
-    const rich: SequenceState = {
-      settings: { width: 1280, height: 720, fps: 25, sampleRate: 44_100 },
-      tracks: reindexTracks([
-        trackFixture(
-          'V1',
-          'video',
-          [
-            // One microsecond off the frame grid, which is what makes `exactTime` visible.
-            clipFixture('a', 0, 2 * SECOND, { inPoint: SECOND + 1, fadeIn: 200_000, linkId: 'x' }),
-            clipFixture('b', 3 * SECOND, SECOND, { speed: 0.5 }),
-          ],
-          { name: 'Plans', height: 90, locked: true, solo: true },
-        ),
-        trackFixture('A1', 'audio', [clipFixture('c', 0, 2 * SECOND, { gain: -6, linkId: 'x' })], {
-          muted: true,
-        }),
-      ]),
-      selectedId: 'b',
-      selectedTrackId: null,
-      playhead: 1_500_000,
-    }
+    const rich = richSequence()
 
     const stripped = JSON.parse(
       JSON.stringify(write(rich)).replaceAll(`"${STUDIO_METADATA_KEY}"`, '"someone_else"'),
@@ -270,53 +317,13 @@ describe('sequenceFromOtio', () => {
           sceneId: '',
         })),
       ),
-    ).toEqual(
-      anonymous({
-        // Frame size, sample rate, playhead and selection are gone: OTIO has no field for any
-        // of them, so the read falls back on the defaults.
-        settings: DEFAULT_SETTINGS,
-        tracks: reindexTracks([
-          makeTrack({
-            id: 'V1',
-            kind: 'video',
-            index: 0,
-            name: 'Plans',
-            clips: [
-              // Fade, link and the exact microsecond are gone; the cut is not.
-              makeClip({
-                id: 'a',
-                assetId: 'asset-a',
-                start: 0,
-                duration: 2 * SECOND,
-                inPoint: SECOND,
-              }),
-              makeClip({
-                id: 'b',
-                assetId: 'asset-b',
-                start: 3 * SECOND,
-                duration: SECOND,
-                speed: 0.5,
-              }),
-            ],
-          }),
-          // Silenced by the solo above rather than muted, and the file cannot tell those apart:
-          // what it carries is the RESULT, and this track reads back as a muted one.
-          makeTrack({
-            id: 'A1',
-            kind: 'audio',
-            index: 0,
-            muted: true,
-            clips: [makeClip({ id: 'c', assetId: 'asset-c', start: 0, duration: 2 * SECOND })],
-          }),
-        ]),
-        selectedId: null,
-        selectedTrackId: null,
-        playhead: 0,
-      }),
-    )
+    ).toEqual(anonymous(plainSequence()))
   })
 
   // The standard part is what another application edits; the metadata only remembers.
+})
+
+describe('sequenceFromOtio interoperability', () => {
   it('takes a mute made elsewhere over the switches the metadata still remembers', () => {
     const heard = sequenceWith(
       reindexTracks([trackFixture('A1', 'audio', [clipFixture('a', 0, SECOND)])]),
@@ -340,25 +347,24 @@ describe('sequenceFromOtio', () => {
   })
 })
 
+const written = (): Record<string, unknown> =>
+  JSON.parse(JSON.stringify(write(montage))) as Record<string, unknown>
+
+const stackWith = (over: Record<string, unknown>): Record<string, unknown> => ({
+  ...written(),
+  tracks: { ...(written().tracks as Record<string, unknown>), ...over },
+})
+
+function trackWith(over: Record<string, unknown>): Record<string, unknown> {
+  const stack = written().tracks as Record<string, unknown>
+  const tracks = stack.children as Record<string, unknown>[]
+  return stackWith({ children: [{ ...tracks[0], ...over }, ...tracks.slice(1)] })
+}
+
+const marker = { OTIO_SCHEMA: 'Marker.2', name: 'Repère', color: 'RED' }
+
 /** Each case asserts WHICH member was found — `gltfDocument.test.ts` says what that costs. */
 describe('montageHoldsMore', () => {
-  const written = (): Record<string, unknown> =>
-    JSON.parse(JSON.stringify(write(montage))) as Record<string, unknown>
-
-  const stackWith = (over: Record<string, unknown>): Record<string, unknown> => ({
-    ...written(),
-    tracks: { ...(written().tracks as Record<string, unknown>), ...over },
-  })
-
-  /** The first track of the file, replaced by one holding whatever the case is about. */
-  function trackWith(over: Record<string, unknown>): Record<string, unknown> {
-    const stack = written().tracks as Record<string, unknown>
-    const tracks = stack.children as Record<string, unknown>[]
-    return stackWith({ children: [{ ...tracks[0], ...over }, ...tracks.slice(1)] })
-  }
-
-  const marker = { OTIO_SCHEMA: 'Marker.2', name: 'Repère', color: 'RED' }
-
   it('finds nothing in a montage the studio wrote itself', () => {
     expect(montageHoldsMore(written())).toEqual([])
   })
@@ -404,7 +410,9 @@ describe('montageHoldsMore', () => {
 
     expect(montageHoldsMore(off)).toEqual(['enabled'])
   })
+})
 
+describe('montageHoldsMore ranges and foreign items', () => {
   it('names the range a track holds, which a save writes null', () => {
     const trimmed = trackWith({
       source_range: { OTIO_SCHEMA: 'TimeRange.1', start_time: null, duration: null },

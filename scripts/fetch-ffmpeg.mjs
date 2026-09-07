@@ -44,13 +44,19 @@ import {
 } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
+import { performance } from 'node:perf_hooks'
+import { replaceDirectory } from '../src/main/artefact.ts'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 const DESTINATION = join(ROOT, 'resources', 'ffmpeg')
 
 // A dated autobuild, not the rolling `latest` tag: `latest` moves under a pinned URL.
-const BTBN = 'https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2026-08-07-13-13'
+// 🛑 Un autobuild MENSUEL, jamais un quotidien. BtbN élague les quotidiens au bout d'un mois :
+// `autobuild-2026-08-07-13-13` a répondu 404 sur les trois plateformes le 2026-09-07, bloquant
+// toute publication. Les mensuels — le 31 de chaque mois — sont conservés, et celui-ci porte le
+// MÊME build que l'épingle d'avant, donc les mêmes binaires et les mêmes empreintes.
+const BTBN = 'https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2026-07-31-14-10'
 const BTBN_VERSION = '7.1.5'
 const BTBN_BUILD = 'ffmpeg-n7.1.5-12-g1fdbca85aa'
 
@@ -142,8 +148,8 @@ export const TARGETS = {
       },
     ],
     digests: {
-      'ffmpeg.exe': '7f1699cebe0cf8ce516ca07e344aec1daeb6ee327406210bfeba93d73d79f881',
-      'ffprobe.exe': '4ef8134fd69e58f47760f7096abcd2400907cb273fa661ed48804599787aa20f',
+      'ffmpeg.exe': '3e79ae0855dce679f3911069df641e9da7dc82aec76807205607338218cd956f',
+      'ffprobe.exe': 'ee8e8a69735563cce488d35f719d0b6e41f22ea8f8fd01271583ea5afe154f58',
     },
   },
   'linux-x64': {
@@ -161,8 +167,8 @@ export const TARGETS = {
       },
     ],
     digests: {
-      ffmpeg: '2906d9c9562208328105521968b98688112c3e9c31b65b5f29bfda0593b3de4a',
-      ffprobe: '84412194eb4b87ca0dfe763843a2bb45b51e06042e7128b741c1b6c5a89d04f3',
+      ffmpeg: '1ecd53c642a959896b5b557b76731f6d4c9b62034fbac7c6cbecf3ee695f29a9',
+      ffprobe: '13045903b5c87826890ff4c2ccdf8c84cdbb3c16fe38100dd09cc436b0f05c05',
     },
   },
   'linux-arm64': {
@@ -180,8 +186,8 @@ export const TARGETS = {
       },
     ],
     digests: {
-      ffmpeg: '250065a03c052955963e3ff6724262e5fbffdc0d0325b08f62e2d04571ee4d1a',
-      ffprobe: 'b11d18c6d1a56a66ca75b1b14a3f831b70d6a4c3d1f7d95a9b7c3358e84343c0',
+      ffmpeg: 'f2f19b5788ca1c5eb8ad4db6eda03ade6f59162397eb9e1ce44ddc0dadcca2a7',
+      ffprobe: '4e2e0af085bc0752d0291a8e54e3975af2a41e4d08583481cbf0d9038c8aceea',
     },
   },
 }
@@ -205,11 +211,24 @@ function flag(name, fallback) {
 }
 
 async function download(url, into) {
-  const response = await fetch(url, { redirect: 'follow' }).catch(cause => {
-    throw new Error(`Could not reach ${url}: ${cause.message}`)
-  })
+  const started = performance.now()
+  let response
+  try {
+    response = await fetch(url, { redirect: 'follow' })
+  } catch (cause) {
+    throw new Error(`Could not reach ${url}: ${cause.message}`, { cause })
+  }
   if (!response.ok) throw new Error(`${url} answered ${response.status}`)
-  writeFileSync(into, new Uint8Array(await response.arrayBuffer()))
+  const length = response.headers.get('content-length')
+  const bytes = new Uint8Array(await response.arrayBuffer())
+  console.log(
+    `  ${response.url} ${response.status} ${response.headers.get('content-type') ?? 'unknown'} ` +
+      `${bytes.byteLength} bytes in ${Math.round(performance.now() - started)} ms`,
+  )
+  if (length !== null && bytes.byteLength !== Number(length)) {
+    throw new Error(`${response.url} closed at ${bytes.byteLength} bytes, expected ${length}`)
+  }
+  writeFileSync(into, bytes)
 }
 
 /** Pulls one member out of the archive into `work`, and answers where it landed. */
@@ -239,6 +258,59 @@ function digestOf(file) {
   return createHash('sha256').update(readFileSync(file)).digest('hex')
 }
 
+function verifyDigest(key, name, seen, target) {
+  const expected = target.digests[name]
+  if (!expected) throw new Error(`No digest recorded for ${key}/${name}`)
+  if (expected === seen) return
+  throw new Error(
+    `${key}/${name} does not match its recorded digest.\n` +
+      `  expected ${expected}\n  got      ${seen}\n` +
+      'Rotate deliberately: update the URL and rerun with --digests.',
+  )
+}
+
+async function installArchives(target, key, work, destination, verify, downloadArchive = download) {
+  const seen = {}
+  for (const archive of target.archives) {
+    const file = join(work, 'archive')
+    console.log(`Fetching ${archive.url}`)
+    await downloadArchive(archive.url, file)
+    for (const [name, member] of Object.entries(archive.members)) {
+      const extracted = extract(file, member, work)
+      seen[name] = digestOf(extracted)
+      if (verify) verifyDigest(key, name, seen[name], target)
+      copyFileSync(extracted, join(destination, name))
+      rmSync(extracted)
+      chmodSync(join(destination, name), 0o755)
+      console.log(`  \u2192 ${name} ${seen[name].slice(0, 12)}`)
+    }
+    rmSync(file)
+  }
+  return seen
+}
+
+function writeNotice(destination, target, key, platform) {
+  const sources = target.sources
+  writeFileSync(
+    join(destination, 'NOTICE.txt'),
+    [
+      `FFmpeg ${target.version} for ${key}`,
+      `Licence: ${target.licence}`,
+      `Build: ${target.source}`,
+      '',
+      'FFmpeg is a separate program, spawned by AI Desktop Studio. It is not linked into it.',
+      '',
+      'Corresponding sources, as the licence requires:',
+      `  ${sources.url}`,
+      `  also attached to every release of AI Desktop Studio as ${sources.file}`,
+      '',
+      'The build configuration of this very binary is printed by:',
+      `  ${platform === 'win32' ? 'ffmpeg.exe' : './ffmpeg'} -buildconf`,
+      '',
+    ].join('\n'),
+  )
+}
+
 /**
  * Puts the binaries for one target in `resources/ffmpeg/`, replacing whatever was there.
  *
@@ -248,7 +320,7 @@ function digestOf(file) {
  */
 export async function fetchFfmpeg(platform, arch, options = {}) {
   const key = `${platform}-${arch}`
-  const target = TARGETS[key]
+  const target = options.target ?? TARGETS[key]
   if (!target) {
     throw new Error(
       `No ffmpeg build declared for ${key}. Known: ${Object.keys(TARGETS).join(', ')}`,
@@ -257,72 +329,22 @@ export async function fetchFfmpeg(platform, arch, options = {}) {
 
   const destination = options.destination ?? DESTINATION
   const verify = options.verify ?? true
-  const seen = {}
-
-  rmSync(destination, { recursive: true, force: true })
-  mkdirSync(destination, { recursive: true })
-  const work = mkdtempSync(join(tmpdir(), 'ia-studio-ffmpeg-'))
+  const work = mkdtempSync(join(tmpdir(), 'ai-desktop-studio-ffmpeg-'))
 
   try {
-    for (const archive of target.archives) {
-      const file = join(work, 'archive')
-      console.log(`Fetching ${archive.url}`)
-      await download(archive.url, file)
-
-      for (const [name, member] of Object.entries(archive.members)) {
-        const extracted = extract(file, member, work)
-        seen[name] = digestOf(extracted)
-
-        if (verify) {
-          const expected = target.digests[name]
-          if (!expected) throw new Error(`No digest recorded for ${key}/${name}`)
-          if (expected !== seen[name]) {
-            throw new Error(
-              `${key}/${name} does not match its recorded digest.\n` +
-                `  expected ${expected}\n  got      ${seen[name]}\n` +
-                `Rotate deliberately: update the URL and rerun with --digests.`,
-            )
-          }
-        }
-
-        // Copied, not renamed: the scratch dir is under the OS temp root, which on a Windows
-        // runner is a different volume from the checkout — `rename` answers EXDEV across those.
-        copyFileSync(extracted, join(destination, name))
-        rmSync(extracted)
-        chmodSync(join(destination, name), 0o755)
-        console.log(`  \u2192 ${name} ${seen[name].slice(0, 12)}`)
-      }
-      rmSync(file)
-    }
-
-    const sources = target.sources
-    writeFileSync(
-      join(destination, 'NOTICE.txt'),
-      [
-        `FFmpeg ${target.version} for ${key}`,
-        `Licence: ${target.licence}`,
-        `Build: ${target.source}`,
-        '',
-        'FFmpeg is a separate program, spawned by IA Studio. It is not linked into it.',
-        '',
-        'Corresponding sources, as the licence requires:',
-        `  ${sources.url}`,
-        `  also attached to every release of IA Studio as ${sources.file}`,
-        '',
-        'The build configuration of this very binary is printed by:',
-        `  ${platform === 'win32' ? 'ffmpeg.exe' : './ffmpeg'} -buildconf`,
-        '',
-      ].join('\n'),
-    )
-  } catch (failure) {
-    // Half a fetch looks like a whole one: an `ffmpeg` without its `ffprobe` resolves fine and
-    // then fails per file. Leave nothing rather than something that reads as complete.
-    rmSync(destination, { recursive: true, force: true })
-    throw failure
+    let seen = {}
+    await replaceDirectory(destination, async staging => {
+      seen = await installArchives(target, key, work, staging, verify, options.download)
+      writeNotice(staging, target, key, platform)
+      finishFetch(seen, staging, platform, arch)
+    })
+    return seen
   } finally {
     rmSync(work, { recursive: true, force: true })
   }
+}
 
+function finishFetch(seen, destination, platform, arch) {
   const binary = join(destination, platform === 'win32' ? 'ffmpeg.exe' : 'ffmpeg')
   if (!existsSync(binary)) throw new Error(`Nothing landed at ${binary}`)
 
@@ -335,7 +357,7 @@ export async function fetchFfmpeg(platform, arch, options = {}) {
 
 /** Fetches every target into a scratch folder and prints what to paste back into `TARGETS`. */
 async function printDigests() {
-  const scratch = mkdtempSync(join(tmpdir(), 'ia-studio-ffmpeg-digests-'))
+  const scratch = mkdtempSync(join(tmpdir(), 'ai-desktop-studio-ffmpeg-digests-'))
   try {
     for (const key of Object.keys(TARGETS)) {
       const [platform, arch] = key.split('-')

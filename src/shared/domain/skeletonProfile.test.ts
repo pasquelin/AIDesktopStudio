@@ -4,6 +4,7 @@ import {
   isSkeletonProfile,
   profileWithRole,
   skeletonSignatureOf,
+  skeletonTopologySignatureOf,
   type SkeletonProfile,
 } from './skeletonProfile'
 
@@ -75,4 +76,34 @@ describe('reading a profile back', () => {
   it('refuses one with no signature to recognise it by', () => {
     expect(isSkeletonProfile({ signature: '', roles: {} })).toBe(false)
   })
+})
+
+it('distinguishes topology while remaining independent of bone order', () => {
+  const bones = [
+    { name: 'Hips', parent: null },
+    { name: 'Head', parent: 'Hips' },
+  ]
+  expect(skeletonTopologySignatureOf(bones)).toBe(skeletonTopologySignatureOf([...bones].reverse()))
+  expect(skeletonTopologySignatureOf(bones)).not.toBe(
+    skeletonTopologySignatureOf(bones.map(bone => ({ ...bone, parent: null }))),
+  )
+})
+it('rejects a persisted role assigned to two bones', () => {
+  expect(isSkeletonProfile(profileOf({ Hip: 'Hips', Pelvis: 'Hips' }))).toBe(false)
+})
+
+it('rejects a non-finite rest pose before it reaches the sampler', () => {
+  expect(
+    isSkeletonProfile({
+      signature: 'x',
+      roles: {},
+      restPose: {
+        Hips: {
+          position: { x: NaN, y: 0, z: 0 },
+          rotation: { x: 0, y: 0, z: 0 },
+          scale: { x: 1, y: 1, z: 1 },
+        },
+      },
+    }),
+  ).toBe(false)
 })

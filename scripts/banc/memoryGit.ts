@@ -37,21 +37,23 @@ type Repo = {
 
 const staged = (repo: Repo): GitFile[] => repo.files.filter(one => one.stage === 'staged')
 
+const emptyRepo = (): Repo => ({
+  tracked: false,
+  branch: 'main',
+  branches: ['main'],
+  files: [],
+  commits: [],
+  stashes: [],
+  remotes: [],
+  tags: [],
+  merging: false,
+  fetched: false,
+  pulled: false,
+  pushed: false,
+})
+
 export function createMemoryGit(): MemoryGit {
-  const repo: Repo = {
-    tracked: false,
-    branch: 'main',
-    branches: ['main'],
-    files: [],
-    commits: [],
-    stashes: [],
-    remotes: [],
-    tags: [],
-    merging: false,
-    fetched: false,
-    pulled: false,
-    pushed: false,
-  }
+  const repo = emptyRepo()
 
   const state = (): GitRepository =>
     repo.tracked

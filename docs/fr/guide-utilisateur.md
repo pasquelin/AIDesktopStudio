@@ -1,6 +1,6 @@
-# IA Studio — le manuel
+# AI Desktop Studio — le manuel
 
-Bienvenue. Ce manuel explique **tout** ce que fait IA Studio, du premier lancement au
+Bienvenue. Ce manuel explique **tout** ce que fait AI Desktop Studio, du premier lancement au
 travail de tous les jours.
 
 Il est écrit pour être lu par quelqu’un qui n’a jamais ouvert de logiciel de création, sans
@@ -15,7 +15,7 @@ nécessaire, il est expliqué à l’endroit où il apparaît, puis rappelé dan
 
 ## En trois phrases
 
-IA Studio est un logiciel qui s’installe sur votre ordinateur. Il sait **fabriquer** des
+AI Desktop Studio est un logiciel qui s’installe sur votre ordinateur. Il sait **fabriquer** des
 images, des vidéos, des sons, des objets en 3D, des matières et des ciels — en demandant à des
 modèles d’intelligence artificielle, en ligne, chez un fournisseur de génération. Et il
 sait ensuite **les assembler, les régler et les ranger**, chez vous, sans les renvoyer nulle
@@ -79,7 +79,7 @@ chez votre fournisseur. Cliquez **Ajouter un compte** : le studio vérifie
 tout de suite et pose une pastille verte **Utilisé** sur la ligne.
 
 **2. Créez un projet.**
-`⌘N` / `Ctrl+N`. Choisissez un dossier et un nom. Un projet est un **dossier sur votre disque** :
+`⌥⌘N` / `Alt+Ctrl+N` — ou `⌘N`, puis **Créer un projet**. Choisissez un dossier et un nom. Un projet est un **dossier sur votre disque** :
 tout ce que vous fabriquerez atterrira dedans.
 
 **3. Choisissez un espace.**

@@ -54,6 +54,15 @@ const pierced = (collision: CsgGraph['collision']): SceneNode => ({
 })
 
 describe('what a node is felt as', () => {
+  it('leaves a baked render container unfelt so its restored source bodies own collision', () => {
+    const node = shaped(
+      { kind: 'box', width: 1, height: 1, depth: 1 },
+      { instances: [{ sourceId: 'source', name: 'Source', transform: IDENTITY_TRANSFORM }] },
+    )
+
+    expect(colliderFromNode(node)).toBeNull()
+  })
+
   it('takes a box exactly, scale and all', () => {
     const node = shaped(
       { kind: 'box', width: 2, height: 4, depth: 6 },

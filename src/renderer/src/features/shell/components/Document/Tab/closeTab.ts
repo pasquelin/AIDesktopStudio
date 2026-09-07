@@ -1,14 +1,17 @@
 import { closeDocument } from '../../../documentIo'
+import { closeFileView, panelIsFileView } from '../../dockviewApi'
 import { reportFailure } from '@/services/diagnostics'
 
+// A file view is not a document: `closeDocument` finds no io for it, so it asks nothing, drops
+// the edits, and answers `true`. The four closing gestures come here so none can forget it.
+export function closeTabAsking(tabId: string): Promise<boolean> {
+  return panelIsFileView(tabId) ? closeFileView(tabId) : closeDocument(tabId)
+}
+
 /**
- * Closes a document from a gesture that has no surface of its own to fail on — the tab's cross,
- * a row of its menu. Both offer the same thing under the same label, so both fail the same way:
- * into the journal, which is where a ⌘S that will not write already reports.
- *
- * Nothing is awaited. The dialog is the answer the user gets; a caller waiting on the promise
- * would only be waiting to do nothing with it.
+ * For a gesture with no surface of its own to fail on — the tab's cross, a row of its menu.
+ * Both fail the same way: into the journal, where a ⌘S that will not write already reports.
  */
-export function closeTab(documentId: string): void {
-  void closeDocument(documentId).catch(error => reportFailure('document.close', documentId, error))
+export function closeTab(tabId: string): void {
+  void closeTabAsking(tabId).catch(error => reportFailure('document.close', tabId, error))
 }

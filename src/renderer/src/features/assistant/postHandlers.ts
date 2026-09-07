@@ -38,6 +38,7 @@ import type { ActionHandlers } from './actionHandler'
 import { maybeBoolOf, numberOf, oneOf, textOf } from './actionInputs'
 import { nodeAimed } from './nodeAimed'
 import { mounted, NO_SCENE } from './sceneHandlers'
+import { mountedScene } from './sceneHandlerCore'
 
 /**
  * The composition, driven by value. Nothing here knows what a bloom is: both the effect and the
@@ -94,8 +95,8 @@ function withStack(
     documentId: string
   }) => ActionOutcome,
 ): ActionOutcome {
-  const open = mounted()
-  if (!open) return refused('wrongSurface', NO_SCENE)
+  const open = mountedScene()
+  if ('ok' in open) return open
 
   const target = targetOf(input, open.state)
   if (typeof target === 'string') return lookupRefusal(target)
@@ -308,7 +309,7 @@ export const POST_HANDLERS: ActionHandlers = {
    * stack, which is arithmetic no client should have to do. A parameter the catalogue does not
    * call animatable is refused rather than written where nothing reads.
    */
-  'post.key': input =>
+  'post.addKeyframe': input =>
     editPost(
       input,
       (target, stack, state) => {
@@ -333,7 +334,7 @@ export const POST_HANDLERS: ActionHandlers = {
       '"effectId" must name an instance of this composition and "value" is wanted, with "param" one of that effect\'s animatable parameters — post.state answers "effects" with their ids and their "params"',
     ),
 
-  'post.unkey': input =>
+  'post.removeKeyframe': input =>
     editPost(
       input,
       (target, stack, state) => {
@@ -380,8 +381,8 @@ export const POST_HANDLERS: ActionHandlers = {
   },
 
   'post.setCameraStackMode': input => {
-    const open = mounted()
-    if (!open) return refused('wrongSurface', NO_SCENE)
+    const open = mountedScene()
+    if ('ok' in open) return open
 
     const named = textOf(input, 'nodeId') ?? ''
     const node = nodeAimed(open.state, named)

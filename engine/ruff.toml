@@ -1,6 +1,6 @@
 line-length = 100
 target-version = "py312"
-extend-exclude = ["src/ia_studio_engine/vendor"]
+extend-exclude = ["src/aidesktopstudio_engine/vendor"]
 
 [lint]
 select = ["E", "F", "I", "N", "UP", "B", "SIM", "RUF"]

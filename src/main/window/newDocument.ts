@@ -1,5 +1,5 @@
 import type { BrowserWindow } from 'electron'
-import type { NamedDocumentPlace, NewDocumentAsk } from '@shared/domain/newDocument'
+import type { NewDocumentAnswer, NewDocumentAsk } from '@shared/domain/newDocument'
 import { CHANNELS } from '@shared/ipc'
 import { handle } from '@main/ipc/handle'
 import { openNewDocumentWindow } from './windows'
@@ -7,7 +7,7 @@ import { openNewDocumentWindow } from './windows'
 type Pending = {
   ask: NewDocumentAsk
   window: BrowserWindow
-  answer: (place: NamedDocumentPlace | null) => void
+  answer: (given: NewDocumentAnswer | null) => void
 }
 
 let pending: Pending | null = null
@@ -19,12 +19,12 @@ let pending: Pending | null = null
  * would be handed the window still showing the previous one. Nothing listens for this window's
  * `close`, so there is nothing to lose by skipping it.
  */
-function settle(place: NamedDocumentPlace | null): void {
+function settle(given: NewDocumentAnswer | null): void {
   const question = pending
   pending = null
   if (!question) return
 
-  question.answer(place)
+  question.answer(given)
   if (!question.window.isDestroyed()) question.window.destroy()
 }
 
@@ -45,7 +45,7 @@ export function registerNewDocumentWindow(): void {
 
     const window = openNewDocumentWindow()
 
-    return new Promise<NamedDocumentPlace | null>(answer => {
+    return new Promise<NewDocumentAnswer | null>(answer => {
       const question: Pending = { ask, window, answer }
       pending = question
 
@@ -64,8 +64,8 @@ export function registerNewDocumentWindow(): void {
 
   handle(CHANNELS.newDocumentRequest, () => Promise.resolve(pending?.ask ?? null))
 
-  handle(CHANNELS.newDocumentAnswer, (_event, place) => {
-    settle(place)
+  handle(CHANNELS.newDocumentAnswer, (_event, given) => {
+    settle(given)
     return Promise.resolve()
   })
 }

@@ -2,12 +2,30 @@
  * Which shape format a file is, from its BYTES.
  *
  * Read from the bytes and never from the name, for the reason `loadAnimation` already carries: a
- * model reaches the engine as `ia-studio://asset/<id>`, which spells no extension, and the engine
+ * model reaches the engine as `ai-desktop-studio://asset/<id>`, which spells no extension, and the engine
  * holds no catalogue to ask. A name that IS there still wins where one exists — see `fileRole`.
  */
 
-/** The formats three can parse. `usd` covers the whole family, `.usdz` being the zipped one. */
-export type MeshFormat = 'gltf' | 'fbx' | 'obj' | 'stl' | 'ply' | 'collada' | 'usd'
+/**
+ * The formats three can parse. `usd` covers the whole family, `.usdz` being the zipped one; `bvh`
+ * is the one that never holds a mesh — a skeleton and its motion, and nothing else.
+ */
+export type MeshFormat = 'gltf' | 'fbx' | 'obj' | 'stl' | 'ply' | 'collada' | 'usd' | 'bvh'
+
+const FORMAT_BY_EXTENSION: Readonly<Record<string, MeshFormat>> = {
+  gltf: 'gltf',
+  fbx: 'fbx',
+  obj: 'obj',
+  stl: 'stl',
+  ply: 'ply',
+  dae: 'collada',
+  usdz: 'usd',
+  bvh: 'bvh',
+}
+
+export function meshFormatForExtension(extension: string): MeshFormat | null {
+  return FORMAT_BY_EXTENSION[extension.toLowerCase()] ?? null
+}
 
 /** How many leading bytes `meshFormatOf` looks at as text. An OBJ may open on a long comment. */
 const TEXT_BYTES = 1024
@@ -44,6 +62,7 @@ export function meshFormatOf(bytes: Uint8Array): MeshFormat | null {
 
   if (opening.startsWith('{')) return 'gltf'
   if (opening.startsWith('#usda')) return 'usd'
+  if (opening.startsWith('HIERARCHY')) return 'bvh'
   if (opening.startsWith('solid')) return 'stl'
   // The ASCII spelling of FBX opens on a comment block, and names itself a few lines down.
   if (head.includes('FBXHeaderExtension')) return 'fbx'

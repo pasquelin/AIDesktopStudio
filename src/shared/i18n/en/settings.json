@@ -13,6 +13,7 @@
     "media": "Media",
     "git": "Versions",
     "dictation": "Dictation",
+    "input": "Devices",
     "ai": "AI models",
     "accountDescription": "One key per service, encrypted by the keychain.",
     "appearanceDescription": "Theme and control density.",
@@ -20,7 +21,20 @@
     "gitDescription": "Version tracking of the project folder, by git. Your files only.",
     "mediaDescription": "Preparation of imported files: proxies and waveforms.",
     "dictationDescription": "Speaking a text instead of typing it. Everything happens on this computer: nothing you say is sent anywhere.",
+    "inputDescription": "How the studio is navigated with a gamepad, and the devices connected to this computer.",
     "aiDescription": "Which AI serves each operation. The studio here, Ollama here, or an online service you have a key for.",
+    "gamepadNavigation": {
+      "title": "Navigate the studio with a gamepad",
+      "help": "Lets a connected gamepad move through the studio interface and confirm or dismiss controls. It stays off until you enable it, so playing a game cannot move the editor behind it."
+    },
+    "inputDevices": {
+      "title": "Detected controls",
+      "keyboard": "Keyboard",
+      "mouse": "Mouse",
+      "gamepadUnsupported": "This controller does not use the standard layout: the studio cannot read its buttons.",
+      "noGamepad": "No gamepad is connected.",
+      "gamepadSleeps": "A gamepad only appears once one of its buttons has been pressed: the browser does not show it before that. Plugged in but silent, it looks exactly like no gamepad at all."
+    },
     "theme": {
       "title": "Theme",
       "help": "Picks the colours of the whole application. The dark theme rests the eyes over a long session in a dimly lit room; the light one reads better in broad daylight. “System” follows your computer’s own setting and switches on its own, for instance when evening comes.",
@@ -159,6 +173,7 @@
       "spaces": "In the bar of spaces",
       "explorer": "In the explorer",
       "scene": "In the 3D view",
+      "character": "In the skeleton",
       "sequence": "In the edit",
       "canvas": "In the image",
       "skybox": "In the sky",
@@ -176,6 +191,52 @@
     "gridSize": {
       "title": "Grid size",
       "help": "How far the grid reaches, in metres, and therefore how many squares it has — a square is always one metre. Make it bigger for a wide scene, smaller for a little object sitting near the camera."
+    },
+    "navigationPreset": {
+      "title": "Navigation scheme",
+      "help": "Which 3D application this viewport drives like: its mouse gestures and its shortcuts. A scheme only moves what its own application does differently — everything else keeps AI Desktop Studio’s keys, including what the others have no equivalent for. Your own remaps always win.",
+      "studio": "AI Desktop Studio",
+      "unreal": "Unreal Engine",
+      "unity": "Unity",
+      "blender": "Blender",
+      "roblox": "Roblox Studio",
+      "custom": "Custom"
+    },
+    "navigationCustomOrbit": {
+      "title": "Turn with",
+      "help": "The gesture that rotates the view in your own scheme.",
+      "leftAlt": "Alt + left click",
+      "left": "Left click, with or without Alt",
+      "middle": "Middle button"
+    },
+    "navigationCustomPan": {
+      "title": "Slide sideways with",
+      "help": "The gesture that slides the view without turning it.",
+      "middle": "Middle button",
+      "middleShift": "Shift + middle button",
+      "leftAltShift": "Shift + Alt + left click"
+    },
+    "navigationCustomDolly": {
+      "title": "Move in and out with",
+      "help": "The gesture that closes the view in on what it aims at, beside the wheel.",
+      "altRight": "Alt + right click",
+      "ctrlMiddle": "Ctrl + middle button",
+      "rightOntoLeft": "Right click, left already held"
+    },
+    "navigationCustomFly": {
+      "title": "Movement keys",
+      "help": "When WASD belong to the camera. Held always, the letters stop being available to the scene’s commands — which is why Unity and Unreal ask for a button.",
+      "anyButton": "While a button is held",
+      "rightButton": "While the right button is held",
+      "always": "Always"
+    },
+    "orbitAroundSelection": {
+      "title": "Orbit around selection",
+      "help": "When you rotate the 3D view, it turns around whatever is selected rather than around a floating point ahead of you. That is what stops you losing your object as you close in on it. With nothing selected, or with the selection off screen, the view turns around the last point you looked at."
+    },
+    "orbitUnderCursor": {
+      "title": "Orbit under the cursor",
+      "help": "The view turns around whatever the pointer is over when you start rotating, rather than around a point set earlier. Handy for close work with no reframing; surprising if you come from Unity or Unreal, which offer no such option."
     },
     "flySpeed": {
       "title": "Fly speed",
@@ -429,6 +490,10 @@
     "memoryCompactHelp": "Rewrites the file with one line per standing memory. This is where what was forgotten finally leaves the disk.",
     "memoryRelations": "What this memory touches",
     "memoryPromote": "Keep everywhere",
-    "memoryPromoteHint": "Copies this memory into the machine’s own, so it serves in every project of yours. What the project learned stays there too."
+    "memoryPromoteHint": "Copies this memory into the machine’s own, so it serves in every project of yours. What the project learned stays there too.",
+    "gameControls": {
+      "title": "The game’s controls",
+      "help": "They are not set here. A game reads a control map of the project, filed under “Game controls” in the Explorer, and the “New control map” button creates one. This page covers the studio interface alone, and what is plugged into this computer."
+    }
   }
 }

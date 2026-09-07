@@ -5,7 +5,7 @@
  * regarde sans rien installer. Et c'est le même serveur pour les trois dépôts, donc
  * ce qu'on voit en local ne dépend pas de l'outil qui l'a servi.
  *
- * CE FICHIER EST PARTAGÉ À L'IDENTIQUE par map3D, panels et IA Studio.
+ * CE FICHIER EST PARTAGÉ À L'IDENTIQUE par map3D, panels et AI Desktop Studio.
  *
  *   node scripts/serve.mjs [dossier] [--port=8080] [--base=/nom-du-depot/]
  *

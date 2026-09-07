@@ -17,6 +17,8 @@ describe('how a scene band is being looked at', () => {
       selected: [],
       pickedBlock: null,
       autoKey: false,
+      looping: false,
+      openMotion: null,
       order: [],
     })
   })

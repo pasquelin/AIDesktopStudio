@@ -46,7 +46,7 @@ describe('a game put together in one gesture', () => {
     const outcome = await runAction('game.applyTemplate', { template: 'thirdPerson' })
 
     expect(outcome).toMatchObject({ ok: true, data: { template: 'thirdPerson' } })
-    expect(scene().nodes.map(node => node.name)).toContain('Character')
+    expect(scene().nodes.map(node => node.name)).toContain('Player_Module')
     expect(scene().world.play.camera).toBe('thirdPerson')
   })
 

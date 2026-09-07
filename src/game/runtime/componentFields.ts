@@ -22,6 +22,23 @@ export function flagOf(component: Component | null, key: string, fallback: boole
 }
 
 /**
+ * A `choiceField` read back as one of its OWN choices, so a caller can switch on it exhaustively
+ * and a hand-edited `.gltf` cannot smuggle a fourth mode past the three a system knows.
+ *
+ * The fallback is the descriptor's default, passed as the plain string it is typed as; a default
+ * that is not itself a choice answers the first one rather than escaping the union.
+ */
+export function choiceOf<T extends string>(
+  component: Component | null,
+  key: string,
+  choices: readonly [T, ...T[]],
+  fallback: string,
+): T {
+  const value = component?.[key]
+  return choices.find(one => one === value) ?? choices.find(one => one === fallback) ?? choices[0]
+}
+
+/**
  * A bag of plain settings, which is what a `Script` carries beside the file it names.
  *
  * Filtered rather than trusted: a `.gltf` can come from elsewhere, and what the sandbox is handed

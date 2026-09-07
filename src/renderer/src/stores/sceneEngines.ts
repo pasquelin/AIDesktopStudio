@@ -23,3 +23,8 @@ export function forgetSceneEngine(documentId: string): void {
 export function sceneEngineOf(documentId: string): SceneRenderer | undefined {
   return engines.get(documentId)
 }
+
+/** Tells every mounted scene that a shared model asset lost its embedded textures. */
+export function detachModelFileTexturesInScenes(assetId: string): void {
+  for (const engine of engines.values()) engine.detachModelFileTextures(assetId)
+}

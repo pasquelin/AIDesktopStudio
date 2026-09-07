@@ -30,6 +30,28 @@ describe('the loop that catches a frame up', () => {
     expect(loop.advance(30)).toBe(Math.floor(MAX_FRAME_SECONDS / STEP_SECONDS))
   })
 
+  /**
+   * What smoothing reads. Taken from the FRAME and not from the step: a lag written against the
+   * step runs twice as fast on a screen drawing twice as often.
+   */
+  it('hands a late pass the seconds of the frame, clamped as the catch-up is', () => {
+    const frames: number[] = []
+    const world = testWorld({
+      systems: [
+        { name: 'camera', reads: [], writes: [], lateUpdate: (_, __, dt) => frames.push(dt) },
+      ],
+    })
+    const loop = createGameLoop(world)
+    loop.advance(0)
+    loop.advance(0.02)
+    loop.advance(0.05)
+    loop.advance(30)
+
+    expect(frames[0]).toBeCloseTo(0.02, 6)
+    expect(frames[1]).toBeCloseTo(0.03, 6)
+    expect(frames[2]).toBe(MAX_FRAME_SECONDS)
+  })
+
   it('draws between two steps rather than only on one', () => {
     const drawn: number[] = []
     const world = testWorld({

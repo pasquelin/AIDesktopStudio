@@ -21,7 +21,6 @@ import {
   unpackOpenRaster,
 } from './openRasterFile'
 
-/** One transparent pixel, which is all any of this needs to be real PNG bytes. */
 const PNG = Uint8Array.from(
   Buffer.from(
     'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
@@ -68,11 +67,6 @@ const entriesOf = (bytes: Uint8Array): Record<string, string> =>
   )
 
 describe('writing an OpenRaster container', () => {
-  /**
-   * The one structural rule of the format: `mimetype` comes first and uncompressed, so a reader
-   * can identify the file from its first bytes without inflating anything. A container that gets
-   * this wrong opens nowhere, and nothing else in it would say why.
-   */
   it('puts the mimetype first, stored rather than deflated', () => {
     const bytes = packOpenRaster(document())
 
@@ -155,20 +149,21 @@ describe('writing an OpenRaster container', () => {
     expect(written).toContain('R&amp;D &lt;draft&gt;')
     expect(written).not.toContain('<draft>')
   })
+})
 
+describe('writing OpenRaster metadata', () => {
   it('carries the studio state no standard field could hold', () => {
     const entries = entriesOf(
       packOpenRaster(document({ stack: stack({ studio: '{"guides":[1]}' }) })),
     )
 
-    expect(entries['iastudio/document.json']).toBe('{"guides":[1]}')
+    expect(entries['aidesktopstudio/document.json']).toBe('{"guides":[1]}')
   })
 
-  /** A file written elsewhere has nothing of ours in it, and must still be a valid container. */
   it('writes no studio entry when there is no studio state', () => {
     expect(
       entriesOf(packOpenRaster(document({ stack: stack({ studio: '' }) }))),
-    ).not.toHaveProperty('iastudio/document.json')
+    ).not.toHaveProperty('aidesktopstudio/document.json')
   })
 
   /**
@@ -325,24 +320,17 @@ describe('reading an OpenRaster container back', () => {
       png: PNG,
     })
   })
+})
 
-  /** A container another application wrote, assembled by hand: `packOpenRaster` is not on trial. */
-  const foreign = (stack: string): Uint8Array =>
-    zipSync({
-      mimetype: [strToU8(ORA_MIMETYPE), { level: 0 }],
-      'stack.xml': strToU8(stack),
-      'mergedimage.png': strToU8('x'),
-      'data/ink.png': strToU8('x'),
-    })
+const foreign = (stack: string): Uint8Array =>
+  zipSync({
+    mimetype: [strToU8(ORA_MIMETYPE), { level: 0 }],
+    'stack.xml': strToU8(stack),
+    'mergedimage.png': strToU8('x'),
+    'data/ink.png': strToU8('x'),
+  })
 
-  /**
-   * An unanchored search for `y="…"` finds the tail of `opacity="…"`, and every layer lands at
-   * the wrong height — invisible to a round trip through this studio, which emits `y` first.
-   *
-   * The order is not fixed by the spec and is not worth guessing at: this case was written
-   * against « GIMP writes them alphabetically », which MEASURING GIMP 3.2.4 disproved — it emits
-   * `src name x y opacity visibility composite-op`. The defence is right, the reason was not.
-   */
+describe('reading foreign OpenRaster containers', () => {
   it('reads an attribute whose name ends another one, whatever the order', () => {
     const read = unpackOpenRaster(
       foreign(
@@ -466,8 +454,6 @@ describe('reading an OpenRaster container back', () => {
 })
 
 describe('containerPictureOf', () => {
-  // Told apart by their BYTES: what is under test is which entry each reader picks, and neither
-  // decodes what it hands back.
   const FLATTEN = strToU8('the whole picture')
   const THUMB = strToU8('the small one')
 
@@ -488,7 +474,7 @@ describe('containerPictureOf', () => {
   }
 
   /**
-   * The asset scheme routes every `ia-studio://asset/…` through this, so a layer sourced from a
+   * The asset scheme routes every `ai-desktop-studio://asset/…` through this, so a layer sourced from a
    * container reads it too: answered the thumbnail, a 4K picture arrived 256 px wide and was
    * stretched over the whole document.
    */
@@ -504,7 +490,6 @@ describe('containerPictureOf', () => {
     await expect(containerTileOf(file)).resolves.toEqual(THUMB)
   })
 
-  // Every container the studio writes as a DOCUMENT carries none — see `documentBody`.
   it('falls back to the flatten when the container carries no thumbnail', async () => {
     const file = await written({ [ORA_MERGED_PATH]: FLATTEN })
 

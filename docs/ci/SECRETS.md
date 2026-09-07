@@ -1,8 +1,11 @@
-# Les secrets de la signature
+# Les secrets du dépôt
 
-**Aucun secret n’est configuré à ce jour.** Le pipeline produit des builds non signés et le
-signale dans le résumé de chaque run — c’est délibéré, voir
+**Aucun secret de SIGNATURE n’est configuré à ce jour.** Le pipeline produit des builds non
+signés et le signale dans le résumé de chaque run — c’est délibéré, voir
 [ADR-04](adr/ADR-04-strategie-de-signature.md). Ce document est la procédure d’activation.
+
+**Les quatre secrets du DÉPLOIEMENT de la vitrine, eux, existent** — ils sont en bas de page. Ne
+pas lire la phrase ci-dessus comme « le dépôt n’a aucun secret » : `gh secret list` fait foi.
 
 > **Toutes les valeurs d’exemple de ce document sont FICTIVES.** `2X4B9Q7ZKD`, `a1b2c3d4-…`,
 > `MIIKm…` : rien de tout cela n’est réel, ni ne doit être copié tel quel.
@@ -164,9 +167,41 @@ Dans le résumé du run, l’avertissement **« UNSIGNED build »** doit avoir d
 plateforme concernée. Puis, sur le `.dmg` téléchargé :
 
 ```bash
-codesign --verify --deep --strict --verbose=2 /Applications/IA\ Studio.app
-spctl --assess --type execute --verbose /Applications/IA\ Studio.app
+codesign --verify --deep --strict --verbose=2 /Applications/AI\ Desktop\ Studio.app
+spctl --assess --type execute --verbose /Applications/AI\ Desktop\ Studio.app
 # attendu : "accepted", "source=Notarized Developer ID"
 ```
 
 En cas d’échec, voir [TROUBLESHOOTING.md](TROUBLESHOOTING.md).
+
+---
+
+## La vitrine — quatre secrets, et ils sont posés
+
+`pages.yml` ne passe plus par GitHub Pages : il pousse le rendu par `rsync` sur le serveur qui
+sert `www.aidesktopstudio.com`.
+
+**Sur leur nommage, une dette est ouverte plutôt que cachée.** La règle en tête de page dit qu’un
+nom hors de la liste d’[ADR-07](adr/ADR-07-nommage-des-secrets.md) demande un amendement ; ces
+quatre-là sont arrivés sans. La lecture retenue est qu’ADR-07 ne statue que sur la SIGNATURE — son
+contexte, sa table et ses alternatives ne parlent que d’elle — et que le déploiement n’entre donc
+pas dans son périmètre. C’est à confirmer par un amendement ou par un ADR à lui.
+
+| Secret               | Ce que c’est                                                                                                                                                                                                         |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `DEPLOY_SSH_KEY`     | La clé privée du dépôt de la vitrine, écrite dans `~/.ssh/deploy`. Côté serveur, `authorized_keys` l’enferme par `command="rrsync -wo <dossier>"` : elle n’ouvre **aucun shell** et n’atteint aucun autre répertoire |
+| `DEPLOY_KNOWN_HOSTS` | L’empreinte du serveur. `ssh` tourne en `StrictHostKeyChecking=yes` : sans elle la connexion est refusée, plutôt qu’acceptée à l’aveugle                                                                             |
+| `DEPLOY_TARGET`      | `utilisateur@hôte` de destination. Le `/` qui suit dans la commande `rsync` est relatif au dossier où la clé est enfermée, pas la racine du serveur                                                                  |
+| `DEPLOY_SSH_PORT`    | Le port SSH, le serveur n’écoutant pas sur 22                                                                                                                                                                        |
+
+**Un secret manquant fait échouer le job à la première clé, APRÈS le build** : le tag existe
+alors, la draft aussi, et le site annonce encore la version d’avant. Le contrôle est dans
+[RELEASE.md](RELEASE.md) :
+
+```bash
+gh secret list --json name --jq '.[].name' | grep '^DEPLOY_'   # attendu : les quatre
+```
+
+**Rotation** : régénérer la paire, poser la publique dans `authorized_keys` du serveur **avec sa
+contrainte `command=`**, puis remplacer `DEPLOY_SSH_KEY`. L’ordre compte — remplacer le secret
+d’abord coupe le déploiement jusqu’à ce que le serveur suive.

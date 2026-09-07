@@ -8,6 +8,11 @@ import type { CHANNELS, StudioBridge } from '@shared/ipc'
  * window state — failing only at runtime, inside a component.
  */
 type ChannelMethod = {
+  [CHANNELS.animationThumbnailModel]: StudioBridge['assets']['animationThumbnailModel']
+  [CHANNELS.animationThumbnailSave]: StudioBridge['assets']['saveAnimationThumbnail']
+  [CHANNELS.missionsWatch]: StudioBridge['missions']['watch']
+  [CHANNELS.missionsCreate]: StudioBridge['missions']['create']
+  [CHANNELS.missionsResume]: StudioBridge['missions']['resume']
   [CHANNELS.settingsRead]: StudioBridge['settings']['read']
   [CHANNELS.settingsWrite]: StudioBridge['settings']['write']
   [CHANNELS.settingsAuthState]: StudioBridge['settings']['authState']
@@ -119,11 +124,19 @@ type ChannelMethod = {
   [CHANNELS.gameScripts]: StudioBridge['game']['scripts']
   [CHANNELS.gameWriteScript]: StudioBridge['game']['writeScript']
 
+  [CHANNELS.inputMapList]: StudioBridge['inputMaps']['list']
+  [CHANNELS.inputMapRead]: StudioBridge['inputMaps']['read']
+  [CHANNELS.inputMapWrite]: StudioBridge['inputMaps']['write']
+  [CHANNELS.animationGraphList]: StudioBridge['animationGraphs']['list']
+  [CHANNELS.animationGraphRead]: StudioBridge['animationGraphs']['read']
+  [CHANNELS.animationGraphWrite]: StudioBridge['animationGraphs']['write']
+
   [CHANNELS.documentList]: StudioBridge['documents']['list']
   [CHANNELS.documentRead]: StudioBridge['documents']['read']
   [CHANNELS.documentWrite]: StudioBridge['documents']['write']
   [CHANNELS.documentRename]: StudioBridge['documents']['rename']
   [CHANNELS.documentRemove]: StudioBridge['documents']['remove']
+  [CHANNELS.documentOpened]: StudioBridge['documents']['opened']
   [CHANNELS.documentConfirmClose]: StudioBridge['documents']['confirmClose']
   [CHANNELS.documentConfirmDelete]: StudioBridge['documents']['confirmDelete']
   [CHANNELS.documentConfirmOverwrite]: StudioBridge['documents']['confirmOverwrite']
@@ -136,14 +149,20 @@ type ChannelMethod = {
   [CHANNELS.assetsAbsent]: StudioBridge['assets']['absent']
   [CHANNELS.assetsSaveAudio]: StudioBridge['assets']['saveAudio']
   [CHANNELS.assetsSavePicture]: StudioBridge['assets']['savePicture']
+  [CHANNELS.assetsSavePlayerModule]: StudioBridge['assets']['savePlayerModule']
   [CHANNELS.assetsSaveLayered]: StudioBridge['assets']['saveLayered']
+  [CHANNELS.assetsSaveMesh]: StudioBridge['assets']['saveMesh']
+  [CHANNELS.assetsSaveConverted]: StudioBridge['assets']['saveConverted']
+  [CHANNELS.assetsSaveAnimation]: StudioBridge['assets']['saveAnimation']
   [CHANNELS.assetsReadLayered]: StudioBridge['assets']['readLayered']
   [CHANNELS.assetsSaveTexture]: StudioBridge['assets']['saveTexture']
   [CHANNELS.texturesInstallBundled]: StudioBridge['assets']['installBundledTextures']
+  [CHANNELS.charactersInstallBundled]: StudioBridge['assets']['installBundledCharacter']
   [CHANNELS.assetsExtractTextures]: StudioBridge['assets']['extractTextures']
   [CHANNELS.assetsUpdate]: StudioBridge['assets']['update']
   [CHANNELS.assetsRemove]: StudioBridge['assets']['remove']
   [CHANNELS.assetsDescribe]: StudioBridge['assets']['describe']
+  [CHANNELS.smartSelectionRun]: StudioBridge['smartSelection']['run']
   [CHANNELS.cloudBrowse]: StudioBridge['cloud']['browse']
   [CHANNELS.cloudExplore]: StudioBridge['cloud']['explore']
   [CHANNELS.cloudSimilar]: StudioBridge['cloud']['similar']
@@ -188,12 +207,15 @@ type ChannelMethod = {
 
   [CHANNELS.mediaAdopt]: StudioBridge['media']['adopt']
   [CHANNELS.mediaIngest]: StudioBridge['media']['ingest']
+  [CHANNELS.mediaIngestPaths]: StudioBridge['media']['ingestPaths']
+  [CHANNELS.mediaImportPicked]: StudioBridge['media']['importPicked']
   [CHANNELS.mediaCancel]: StudioBridge['media']['cancel']
   [CHANNELS.mediaAvailable]: StudioBridge['media']['capabilities']
 
   [CHANNELS.assistantThink]: StudioBridge['assistant']['think']
   [CHANNELS.assistantStop]: StudioBridge['assistant']['stop']
   [CHANNELS.assistantActionResult]: StudioBridge['assistant']['actionResult']
+  [CHANNELS.assistantVisualCaptureResult]: StudioBridge['assistant']['visualCaptureResult']
   [CHANNELS.assistantNote]: StudioBridge['assistant']['note']
   [CHANNELS.assistantSaid]: StudioBridge['assistant']['said']
   [CHANNELS.assistantWindow]: StudioBridge['assistant']['window']
@@ -213,6 +235,7 @@ type ChannelMethod = {
   [CHANNELS.aiCancelLoad]: StudioBridge['ai']['cancelLoad']
   [CHANNELS.aiUnload]: StudioBridge['ai']['unload']
   [CHANNELS.aiAddOwnModel]: StudioBridge['ai']['addOwnModel']
+  [CHANNELS.autoRigRun]: StudioBridge['autoRig']['run']
 
   [CHANNELS.dictationState]: StudioBridge['dictation']['state']
   [CHANNELS.dictationStart]: StudioBridge['dictation']['start']
@@ -227,9 +250,13 @@ type ChannelMethod = {
   [CHANNELS.windowState]: StudioBridge['window']['state']
   [CHANNELS.windowLanguage]: StudioBridge['window']['language']
   [CHANNELS.windowWorkspace]: StudioBridge['window']['setWorkspace']
+  [CHANNELS.windowResumeLeave]: StudioBridge['window']['resumeLeave']
 
   [CHANNELS.mirrorOpen]: StudioBridge['mirror']['open']
   [CHANNELS.gameWindowOpen]: StudioBridge['gameWindow']['open']
+  [CHANNELS.retargetWindowFocusOrigin]: StudioBridge['retargetWindow']['focusOrigin']
+  [CHANNELS.retargetWindowOpen]: StudioBridge['retargetWindow']['open']
+  [CHANNELS.playerModuleWindowOpen]: StudioBridge['playerModuleWindow']['open']
   [CHANNELS.gameWindowClose]: StudioBridge['gameWindow']['close']
 
   [CHANNELS.helpOpen]: StudioBridge['help']['open']
@@ -239,6 +266,12 @@ type ChannelMethod = {
   [CHANNELS.newDocumentAsk]: StudioBridge['newDocument']['ask']
   [CHANNELS.newDocumentRequest]: StudioBridge['newDocument']['request']
   [CHANNELS.newDocumentAnswer]: StudioBridge['newDocument']['answer']
+
+  [CHANNELS.externalFilesTake]: StudioBridge['externalFiles']['take']
+  [CHANNELS.externalFilesOffer]: (
+    paths: readonly string[],
+  ) => ReturnType<StudioBridge['externalFiles']['offer']>
+  [CHANNELS.externalFilesDiscard]: StudioBridge['externalFiles']['discard']
 
   [CHANNELS.menuPopup]: StudioBridge['menu']['popup']
 

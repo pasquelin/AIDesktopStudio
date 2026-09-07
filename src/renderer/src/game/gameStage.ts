@@ -1,3 +1,5 @@
+import type { SceneAnimate } from './studioAnimation'
+import type { AnimationGraphModule } from '@shared/domain/animationGraph'
 import type { DomInputTarget } from '@game/host/domInput'
 import type { ScriptModule } from '@game/ports/scriptPort'
 import type { ScriptTrouble } from '@/engines/code/scriptCompiler'
@@ -7,10 +9,20 @@ import { gameMessageOf, openGameChannel, type GameCommand } from './gameChannel'
 import { startGame } from './gameHost'
 import type { PlaySession, SceneLookup } from './playSession'
 import type { SceneDraw } from './studioRender'
+import {
+  createRuntimeWorldCompiler,
+  worldWithRuntimePatch,
+} from '@/engines/scene/runtimeWorldCompiler'
+import type { InputMap } from '@shared/domain/inputMap'
 
 export type GameStageDeps = {
   /** What draws. The game window's own engine — a WebGL context never crosses a window. */
   renderer: SceneDraw
+  /**
+   * The mixers a state machine writes through. Absent, every body stands in its rest pose and the
+   * game plays on — a host with no viewport of its own has none.
+   */
+  animate?: SceneAnimate
   /** What the keyboard and the pointer are read off. The window itself, where there is one. */
   input: DomInputTarget
   /** Told what is playing, so a window can title itself and draw its own debug drawer. */
@@ -26,12 +38,17 @@ export type GameStage = { close: () => void }
  */
 export function createGameStage(deps: GameStageDeps): GameStage {
   const channel = openGameChannel()
+  const compiler = createRuntimeWorldCompiler()
 
   let session: PlaySession | null = null
   let documentId: string | null = null
   let scene: SceneState | null = null
+  let authoring: SceneState | null = null
   let modules: readonly ScriptModule[] = []
   let troubles: readonly ScriptTrouble[] = []
+  let inputMaps: readonly InputMap[] = []
+  let animationGraphs: readonly AnimationGraphModule[] = []
+  let compilationMs = 0
   /** Scenes the studio has answered for, by the name the game asked with. */
   const known = new Map<string, SceneLookup>()
   /** Guards a start against the `play` that overtook it while the engines were landing. */
@@ -57,7 +74,9 @@ export function createGameStage(deps: GameStageDeps): GameStage {
     session = null
     documentId = null
     scene = null
+    authoring = null
     known.clear()
+    compiler.clearOptimizationCache()
     deps.onReport?.(null)
   }
 
@@ -69,6 +88,7 @@ export function createGameStage(deps: GameStageDeps): GameStage {
     const started = await startGame({
       documentId: id,
       renderer: deps.renderer,
+      animate: deps.animate,
       // The LATEST published state, never the one captured here: the studio keeps editing.
       editState: () => scene ?? held,
       input: deps.input,
@@ -76,6 +96,9 @@ export function createGameStage(deps: GameStageDeps): GameStage {
       troubles,
       sceneNamed,
       onReport: report,
+      compilationMs: () => compilationMs,
+      inputMaps,
+      animationGraphs,
     })
 
     // Overtaken by a later Play, or stopped while the engines were landing.
@@ -98,35 +121,23 @@ export function createGameStage(deps: GameStageDeps): GameStage {
     return { ok: true, ran: 0 }
   }
 
-  channel.onmessage = event => {
+  function handleMessage(event: MessageEvent<unknown>): void {
     const message = gameMessageOf(event.data)
     if (!message) return
-
     if (message.kind === 'play') {
-      // `drop` bumps the generation, which is the token this start is guarded by: a second Play
-      // arriving while the engines land drops this one on the floor rather than installing it.
-      drop()
-      documentId = message.documentId
-      scene = message.scene
-      modules = message.modules
-      troubles = message.troubles
-      // 🛑 Applied whole, and it is what the studio's own viewport does on every edit: the render
-      // port only ever moves the nodes a step MOVED, so without this the window holds an engine
-      // that was never given the scene — measured, and it drew an empty grey window.
-      deps.renderer.apply(message.scene)
-      void begin(generation)
+      handlePlay(message)
       return
     }
-
+    if (message.kind === 'clearOptimization') {
+      handleClearOptimization(message.documentId)
+      return
+    }
     if (message.kind === 'edit') {
-      if (message.documentId !== documentId) return
-      scene = message.scene
-      deps.renderer.apply(message.scene)
+      handleEdit(message.documentId, message.patch)
       return
     }
-
     if (message.kind === 'scene') {
-      known.set(message.scene, message.found)
+      known.set(message.scene, compiledLookup(message.found))
       return
     }
 
@@ -136,9 +147,48 @@ export function createGameStage(deps: GameStageDeps): GameStage {
       return
     }
 
-    // The studio went away: there is nothing left to play for, and nobody to report to.
     if (message.kind === 'gone') drop()
   }
+
+  function handlePlay(
+    message: Extract<NonNullable<ReturnType<typeof gameMessageOf>>, { kind: 'play' }>,
+  ): void {
+    drop()
+    documentId = message.documentId
+    authoring = message.scene
+    scene = compiler.compileRuntimeWorld(authoring)
+    compilationMs = compiler.getOptimizationReport().compilationMs
+    modules = message.modules
+    troubles = message.troubles
+    inputMaps = message.inputMaps
+    animationGraphs = message.animationGraphs
+    deps.renderer.apply(scene)
+    void begin(generation)
+  }
+
+  function handleClearOptimization(id: string): void {
+    if (id !== documentId || !authoring) return
+    compiler.clearOptimizationCache()
+    // A fresh REFERENCE is all this needs — `SceneRenderer` skips what compares equal by identity.
+    // A deep clone copied the whole scene state, instance transforms included.
+    scene = compiler.compileRuntimeWorld({
+      ...authoring,
+      nodes: authoring.nodes.map(node => ({ ...node })),
+    })
+    compilationMs = compiler.getOptimizationReport().compilationMs
+    deps.renderer.apply(scene)
+  }
+
+  function handleEdit(id: string, patch: Parameters<typeof worldWithRuntimePatch>[1]): void {
+    if (id !== documentId) return
+    if (authoring) authoring = worldWithRuntimePatch(authoring, patch)
+    const compiled = compiler.compileRuntimeRegion(patch)
+    if (!compiled) return
+    scene = compiled
+    compilationMs = compiler.getOptimizationReport().compilationMs
+    deps.renderer.apply(scene)
+  }
+  channel.onmessage = handleMessage
 
   // The window opens long after the studio pressed Play, and a channel replays nothing.
   channel.postMessage({ kind: 'ask' })
@@ -149,4 +199,14 @@ export function createGameStage(deps: GameStageDeps): GameStage {
       channel.close()
     },
   }
+}
+
+/**
+ * A scene looked up for a REFERENCE, never the one being played. Its own compilation time is not
+ * reported: `compilationMs` names what the player is standing in, and writing another scene's
+ * figure there made the panel read a number from somewhere nobody was.
+ */
+function compiledLookup(found: SceneLookup): SceneLookup {
+  if (found === 'reading' || found === 'unknown') return found
+  return { ...found, state: createRuntimeWorldCompiler().compileRuntimeWorld(found.state) }
 }

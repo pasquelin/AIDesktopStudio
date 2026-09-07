@@ -1,5 +1,4 @@
 import { mdiAlertCircleOutline } from '@mdi/js'
-import { WINDOW_ACTION_QUIET } from '@/components/windowStyles'
 import { useTranslation } from 'react-i18next'
 import { bindingOf, type BindingOverrides, type CommandDescriptor } from '@shared/domain/command'
 import type { Signature } from '@shared/domain/shortcut'
@@ -7,6 +6,7 @@ import { useShortcutLabel } from '@/hooks/useShortcutLabel'
 import { useChordCapture } from '@/hooks/useChordCapture'
 import { UiIcon } from '@/components/UiIcon'
 import { cn } from '@/helpers/cn'
+import { WindowButton } from '@/components/WindowButton'
 import { HINT_LEFT } from '@/helpers/tooltip'
 import { SettingLine } from '../Setting/SettingLine'
 import { SettingRestoreButton } from '../Setting/SettingRestoreButton'
@@ -59,24 +59,19 @@ export function ShortcutsSettingsCommandRow({
           </span>
         )}
 
-        <button
+        <WindowButton
           id={id}
-          type="button"
           aria-describedby={describedBy}
           aria-label={t(descriptor.titleKey)}
           {...HINT_LEFT(t('settings.captureHint'))}
           onClick={onCapture}
           // The base is the role; the two words after it are STATE, which no role names — see the
           // blind spot `no-loose-window-button.test.ts` writes out.
-          className={cn(
-            WINDOW_ACTION_QUIET,
-            'w-40 font-mono',
-            capturing && 'btn-primary',
-            clashing && !capturing && 'btn-error btn-outline',
-          )}
+          className={cn('w-40 font-mono')}
+          variant={capturing ? 'primary' : clashing ? 'danger' : 'quiet'}
         >
           {capturing ? t('settings.pressAKey') : label(binding) || t('settings.unbound')}
-        </button>
+        </WindowButton>
 
         <SettingRestoreButton
           restorable={remapped}

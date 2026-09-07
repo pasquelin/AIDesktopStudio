@@ -12,11 +12,11 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import { BoxGeometry, Mesh, MeshStandardMaterial, Object3D } from 'three'
 import { describe, expect, it } from 'vitest'
 import { HUMANOID_BODY_ROLES } from '@shared/domain/humanoid'
-import { applyRig, positionsIn, skinnableMeshesOf } from './rigBuild'
+import { applyRig, positionsIn, skinnableMeshesOf } from '../character/rigBuild'
 import { rigFit, rigFitFaultOf, type Bounds } from './rigFit'
 import { rigStateOf, type RigState } from './rigState'
-import { skinVertices } from './skinVertices'
-import { wireOf } from './skinWeights'
+import { skinVertices } from '../character/skinVertices'
+import { wireOf } from '../character/skinWeights'
 
 /** A body-sized box: the fit reads a bounding box and nothing else, and this one stands upright. */
 const BOUNDS: Bounds = { min: { x: -0.3, y: 0, z: -0.2 }, max: { x: 0.3, y: 1.8, z: 0.2 } }

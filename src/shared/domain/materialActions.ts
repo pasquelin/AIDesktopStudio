@@ -41,12 +41,12 @@ export const MATERIAL_ACTIONS: readonly AssistantAction[] = [
   action({
     /**
      * How a sky is being LOOKED AT — the projection, the lens, and whether the test objects stand
-     * in it. Session state, exactly as `view.display` is in the 3D space: none of it is saved with
+     * in it. Session state, exactly as `view.setDisplayMode` is in the 3D space: none of it is saved with
      * the document and ⌘Z never touches it.
      */
-    name: 'skybox.setViewOptions',
-    titleKey: 'assistant.actions.skyboxSetViewOptions.title',
-    descriptionKey: 'assistant.actions.skyboxSetViewOptions.description',
+    name: 'skybox.setViewportOptions',
+    titleKey: 'assistant.actions.skyboxSetViewportOptions.title',
+    descriptionKey: 'assistant.actions.skyboxSetViewportOptions.description',
     commitment: 'none',
     repeatable: false,
     reach: 'mcp',
@@ -130,8 +130,15 @@ export const MATERIAL_ACTIONS: readonly AssistantAction[] = [
     commitment: 'none',
     repeatable: true,
     reach: 'mcp',
+    uses: ['projectAssetCandidates'],
     fields: [
-      { key: 'assetId', kind: 'text', labelKey: 'assistant.fields.assetId', required: true },
+      {
+        key: 'assetId',
+        kind: 'text',
+        labelKey: 'assistant.fields.assetId',
+        required: true,
+        reference: 'asset',
+      },
     ],
   }),
   action({

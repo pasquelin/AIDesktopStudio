@@ -30,14 +30,46 @@ export type WorkerPort<T> = {
   record: (id: number, slot: PortSlot<T>) => void
   /** `false` when the request was already answered for — what tells a late abort from a live one. */
   forget: (id: number) => boolean
+  /**
+   * One request, out and back: claimed, posted, recorded, and taken back on an abort.
+   *
+   * 🛑 The order is the contract, not a style — posting BEFORE recording is what leaves no slot
+   * behind when the structured clone refuses a payload. Written out three times before this, in
+   * three engines, each with the same six comments.
+   */
+  send: (
+    request: (id: number) => { message: unknown; transfer?: Transferable[] },
+    watch?: PortWatch,
+  ) => Promise<T | null>
   dispose: () => void
 }
 
-/** @param what names the worker in the two failures no `try` inside it can catch. */
+/** What a caller may follow a request with: how far it has got, and a way to take it back. */
+export type PortWatch = {
+  onProgress?: (progress: number) => void
+  signal?: AbortSignal
+}
+
+/**
+ * How a request in flight is taken back.
+ *
+ * 🛑 It belongs to the WORKER, not to the caller: a worker that reads its mailbox between steps
+ * answers `{ cancel: true }`, and one whose work is a single call that never yields can only be
+ * killed. Written as a flag on `send`, five ports out of six walked an automaton for the sixth.
+ */
+export type CancelPolicy = 'message' | 'terminate'
+
+/**
+ * @param spawn builds the worker on first use and after a recoverable restart.
+ * @param what names the worker in the two failures no `try` inside it can catch.
+ * @param valueOf extracts the value carried by a completed worker answer.
+ * @param cancel how a request out on it is taken back — see `CancelPolicy`.
+ */
 export function createWorkerPort<T, R extends PortResponse>(
   spawn: () => Worker,
   what: string,
   valueOf: (answer: Answered<R>) => T,
+  cancel: CancelPolicy = 'message',
 ): WorkerPort<T> {
   const waiting = new Map<number, PortSlot<T>>()
   let worker: Worker | null = null
@@ -65,18 +97,39 @@ export function createWorkerPort<T, R extends PortResponse>(
 
     worker.terminate()
     worker = null
-    for (const slot of waiting.values()) slot.reject(new Error(reason))
+    const abandoned = [...waiting.values()]
     waiting.clear()
+    for (const slot of abandoned) slot.reject(new Error(reason))
   }
 
-  return {
+  /**
+   * 🛑 Killing it ABANDONS what was still out on it: a terminated worker answers nothing more,
+   * ever, and a slot left in `waiting` is a promise nobody will ever honour. Held safe until now
+   * only because the one port that terminates is wrapped by `serial` — an invariant living a
+   * file away from the code that needed it.
+   */
+  const takeBack = (running: Worker, id: number): void => {
+    if (cancel === 'message') {
+      running.postMessage({ id, cancel: true })
+      return
+    }
+    // 🛑 Killed whatever the port holds NOW: `abandon` leaves alone a worker it no longer owns —
+    // one replaced since the post, by an error that respawned it — and that worker would run its
+    // request to the end for nobody. Terminated once either way, which its suite counts.
+    if (worker === running) abandon(running, `${what} request taken back`)
+    else running.terminate()
+  }
+
+  const port: WorkerPort<T> = {
     claim: () => (nextId += 1),
 
     running: () => {
       if (worker) return worker
 
       const started = spawn()
-      started.addEventListener('message', (event: MessageEvent<R>) => settle(event.data))
+      started.addEventListener('message', (event: MessageEvent<R>) => {
+        if (worker === started) settle(event.data)
+      })
       started.addEventListener('error', event =>
         abandon(started, `${what} worker failed: ${event.message}`),
       )
@@ -93,13 +146,61 @@ export function createWorkerPort<T, R extends PortResponse>(
 
     forget: id => waiting.delete(id),
 
+    send: (request, watch) =>
+      new Promise((resolve, reject) => {
+        if (gone) {
+          resolve(null)
+          return
+        }
+
+        let finished = false
+        let id = 0
+        let running: Worker | null = null
+        const finish = (): void => {
+          finished = true
+          watch?.signal?.removeEventListener('abort', give)
+        }
+        const give = (): void => {
+          if (finished || !waiting.delete(id)) return
+          if (running) takeBack(running, id)
+          finish()
+          resolve(null)
+        }
+
+        if (!watch?.signal?.aborted) watch?.signal?.addEventListener('abort', give)
+        id = port.claim()
+        try {
+          running = port.running()
+          const { message, transfer } = request(id)
+          running.postMessage(message, transfer ?? [])
+          waiting.set(id, {
+            resolve: value => {
+              finish()
+              resolve(value)
+            },
+            reject: error => {
+              finish()
+              reject(error)
+            },
+            onProgress: watch?.onProgress,
+          })
+        } catch (error) {
+          finish()
+          reject(error)
+        }
+        if (watch?.signal?.aborted) give()
+      }),
+
     dispose: () => {
       gone = true
       worker?.terminate()
       worker = null
       // Resolved, not rejected: a window closing is nobody's failure.
-      for (const slot of waiting.values()) slot.resolve(null)
+      const abandoned = [...waiting.values()]
       waiting.clear()
+      for (const slot of abandoned) slot.resolve(null)
     },
   }
+
+  return port
 }

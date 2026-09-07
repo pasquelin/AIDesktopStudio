@@ -99,7 +99,9 @@ describe('what the studio is, said to the model', () => {
     expect(said).not.toContain('No project is open')
     expect(said).toContain('Space: image.')
   })
+})
 
+describe('what the studio selection says to the model', () => {
   it('names what is selected, so a request about "it" lands on the right thing', () => {
     const said = describeStudio(
       studio({ selection: { kind: 'node', items: [{ id: 'n1', name: 'Caisse' }] } }),

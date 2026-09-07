@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import source from './SceneRenderer.ts?raw'
+import { sceneRendererSource as source } from './sceneRendererSource.testHelper'
 
 /**
  * Which buttons arm the flight, and what arming it must not cost them.
@@ -9,25 +9,27 @@ import source from './SceneRenderer.ts?raw'
  * the left button KEEPS what it already did — orbiting through `OrbitControls`, picking on
  * release, driving the gizmos — and only gains the keys the right one already answered.
  */
+const handler = (name: string, args: string): string =>
+  source.match(new RegExp(`${name} = \\(${args}\\): void => \\{[\\s\\S]*?\\n {2}\\}`))?.[0] ?? ''
+
+const pointerDown = handler('onPointerDown', 'event: PointerEvent')
+const pointerUp = handler('onPointerUp', 'event: PointerEvent')
+const privateMethod = (signature: string): string =>
+  source.match(new RegExp(`private ${signature} \\{[\\s\\S]*?\\n {2}\\}`))?.[0] ?? ''
+const leftUp = privateMethod('endLeftButton\\(event: PointerEvent\\): void')
+const rightUp = privateMethod('endRightButton\\(event: PointerEvent\\): void')
+const endFlight =
+  source.match(
+    /protected endFlight\(button: number, event: Pick<PointerEvent, 'buttons'>\): void \{[\s\S]*?\n {2}\}/,
+  )?.[0] ?? ''
+const draggingChanged = handler('onDraggingChanged', '')
+
 describe('SceneRenderer and the buttons that fly', () => {
-  const handler = (name: string, args: string): string =>
-    source.match(new RegExp(`${name} = \\(${args}\\): void => \\{[\\s\\S]*?\\n {2}\\}`))?.[0] ?? ''
-
-  const pointerDown = handler('onPointerDown', 'event: PointerEvent')
-  const pointerUp = handler('onPointerUp', 'event: PointerEvent')
-  const endFlight =
-    source.match(
-      /private endFlight\(button: number, event: PointerEvent\): void \{[\s\S]*?\n {2}\}/,
-    )?.[0] ?? ''
-  const draggingChanged = handler('onDraggingChanged', '')
-
   // A regex that matched nothing would make every assertion below vacuously true.
-  it('finds the three handlers the rest of this file reads', () => {
-    expect([pointerDown, pointerUp, draggingChanged].map(found => found.length > 0)).toEqual([
-      true,
-      true,
-      true,
-    ])
+  it('finds the handlers and both button paths the rest of this file reads', () => {
+    expect(
+      [pointerDown, pointerUp, leftUp, rightUp, draggingChanged].map(found => found.length > 0),
+    ).toEqual([true, true, true, true, true])
   })
 
   it('arms the flight from either button', () => {
@@ -35,7 +37,7 @@ describe('SceneRenderer and the buttons that fly', () => {
   })
 
   it('ends it on either release', () => {
-    expect(pointerUp.match(/this\.endFlight\(/g)).toHaveLength(2)
+    expect(`${leftUp}${rightUp}`.match(/this\.endFlight\(/g)).toHaveLength(2)
   })
 
   /**
@@ -53,7 +55,7 @@ describe('SceneRenderer and the buttons that fly', () => {
   // Letting go of `W` before the button leaves a release that never moved a pixel, which is what
   // a click looks like — the right button already reads `flew` before raising its menu.
   it('picks nothing on a release that flew', () => {
-    expect(pointerUp).toMatch(/if \(flew \|\| !wasClick\(/)
+    expect(leftUp).toMatch(/if \(flew \|\| !wasClick\(/)
   })
 
   it('drops the flight the left button armed once a gizmo takes the handle', () => {
@@ -72,18 +74,25 @@ describe('SceneRenderer and the buttons that fly', () => {
    */
   it('takes the orbit out of the loop while the mode is armed', () => {
     const syncPaneFreeze =
-      source.match(/private syncPaneFreeze\(\): void \{[\s\S]*?\n {2}\}/)?.[0] ?? ''
+      source.match(/protected syncPaneFreeze\(\): void \{[\s\S]*?\n {2}\}/)?.[0] ?? ''
 
     expect(syncPaneFreeze).toContain('this.navigating')
   })
+})
 
+describe('SceneRenderer flight ownership', () => {
   /**
    * A click during an armed flight ends the BUTTON's flight, and used to take the keys with it:
    * the camera stopped with `W` still physically down, and nothing pushes the set again until the
-   * next key transition.
+   * next key transition. A PERMANENT flight is the same reading: the release of a click that
+   * armed nothing must not stop a camera whose key is still down.
    */
-  it('leaves the held keys alone when a button ends but the mode is still armed', () => {
-    expect(endFlight).toContain('if (!this.navigating) this.held.clear()')
+  it('leaves the held keys alone when a button ends but the camera still owns them', () => {
+    expect(endFlight).toContain(
+      "if (!this.navigating && this.scheme.fly !== 'always') this.held.clear()",
+    )
+    // A handle GRABBED is the exception, and it holds for every scheme: one gesture must not
+    // move the object and the point of view at once, permanent flight included.
     expect(draggingChanged).toContain('if (!this.navigating) this.held.clear()')
   })
 
@@ -98,18 +107,18 @@ describe('SceneRenderer and the buttons that fly', () => {
    * The wheel means speed in the MODE alone. Gated on `flying` it would change meaning under a
    * held button, where the manual promises a dolly and no hint is on screen to say otherwise.
    */
-  it('spends the wheel on speed for the mode, never under a held button', () => {
+  it('spends the wheel on speed in pointer-lock mode and under the right flight button', () => {
     const spend =
       source.match(
-        /private spendWheelOnSpeed\(event: WheelEvent\): boolean \{[\s\S]*?\n {2}\}/,
+        /protected spendWheelOnSpeed\(event: WheelEvent\): boolean \{[\s\S]*?\n {2}\}/,
       )?.[0] ?? ''
 
-    expect(spend).toContain('if (!this.navigating) return false')
+    expect(spend).toContain('if (!this.navigating && this.flownWith !== 2) return false')
   })
 
   // The same trap `turnToViewHelper` guards the trihedron against.
   it('rests the pivot ahead of the camera rather than where the flight left it', () => {
-    const restPivot = source.match(/private restPivot\(\): void \{[\s\S]*?\n {2}\}/)?.[0] ?? ''
+    const restPivot = source.match(/protected restPivot\(\): void \{[\s\S]*?\n {2}\}/)?.[0] ?? ''
 
     // Whitespace collapsed: Prettier wraps this very call, and a literal would break on a
     // reformat that changed nothing.
@@ -127,9 +136,10 @@ describe('SceneRenderer and the buttons that fly', () => {
    */
   it('never freezes the panes under the left button, which would cost it its rotation', () => {
     const startFlight =
-      source.match(/private startFlight\(event: PointerEvent\): void \{[\s\S]*?\n {2}\}/)?.[0] ?? ''
+      source.match(/protected startFlight\(event: PointerEvent\): void \{[\s\S]*?\n {2}\}/)?.[0] ??
+      ''
     const syncPaneFreeze =
-      source.match(/private syncPaneFreeze\(\): void \{[\s\S]*?\n {2}\}/)?.[0] ?? ''
+      source.match(/protected syncPaneFreeze\(\): void \{[\s\S]*?\n {2}\}/)?.[0] ?? ''
 
     expect(startFlight).toMatch(/if \(event\.button === 2\) this\.viewport\.freezePanes\(true\)/)
     expect(syncPaneFreeze).toContain('this.flownWith === 2')

@@ -23,7 +23,7 @@ export type TaskWatch = {
  * What the main process pushes back while it works. Only the needle: the window minted the row
  * and already holds its name, and echoing it would let the two disagree.
  */
-export type TaskProgress = { id: string; ratio: number }
+export type TaskProgress = { id: string; ratio: number; phase?: string }
 
 /**
  * A share of the work, with nothing to divide by answered as nothing done — a bundle whose media

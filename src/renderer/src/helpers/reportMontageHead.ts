@@ -20,5 +20,5 @@ export function reportMontageHead(documentId: string, owner: string, playhead: U
 
   playback.clearHead(documentId)
   // Playback is not an edit: the playhead goes through `replace`, which skips the history.
-  store.replace(documentId, { ...sequenceOf(store, documentId), playhead })
+  store.replaceView(documentId, { ...sequenceOf(store, documentId), playhead })
 }

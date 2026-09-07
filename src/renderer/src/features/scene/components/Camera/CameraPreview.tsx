@@ -118,14 +118,18 @@ export function CameraPreview({ documentId }: { documentId: string }) {
   }, [rect, full, onAir])
 
   useEffect(() => {
-    const engine = sceneEngineOf(documentId)
-    engine?.setCameraPreview(
+    sceneEngineOf(documentId)?.setCameraPreview(
       cameraId && picture ? { cameraNodeId: cameraId, rect: picture, full } : null,
     )
-
-    // The engine outlives this component: left open, it would draw over a document nobody sees.
-    return () => engine?.setCameraPreview(null)
   }, [documentId, cameraId, picture, full])
+
+  // The engine outlives this component: left open, it would draw over a document nobody sees.
+  // Its OWN effect, on the document alone: closing the preview frees its chain and the programs
+  // compiled for it, and a rectangle that follows the pointer changes on every move.
+  useEffect(() => {
+    const engine = sceneEngineOf(documentId)
+    return () => engine?.setCameraPreview(null)
+  }, [documentId])
 
   const onGrab = (event: ReactPointerEvent<HTMLDivElement>): void => {
     // Not from the button in the corner: its press bubbles up here, and a preview that jumps
@@ -149,75 +153,78 @@ export function CameraPreview({ documentId }: { documentId: string }) {
     })
   }
 
-  return (
-    <div ref={host} className="pointer-events-none absolute inset-0">
-      {camera && rect && (
-        <div
-          /**
-           * The border, the radius and the floating shadow the studio gives everything it floats
-           * — `Toolbar` and `TooltipHost` are the two that settled that.
-           *
-           * NO background, and it is not an oversight: the picture is drawn by the ENGINE, on a
-           * canvas that sits UNDER the DOM, so a surface here covers it — the preview went black
-           * the moment one was put on. Nothing over the picture may be opaque.
-           *
-           * The radius is the SMALL one for the same reason: the picture is a hard rectangle the
-           * DOM cannot clip, so it overruns a rounded corner by the sagitta — 1,6 px at 4, 12 px
-           * at the large radius, which reads as a broken frame.
-           */
-          className={cn(
+  function Preview() {
+    return (
+      <div ref={host} className="pointer-events-none absolute inset-0">
+        {camera && rect && (
+          <div
             /**
-             * TWO strokes, and the reason is arithmetic. This frame is read against the VIEWPORT,
-             * which `index.css` sets LIGHTER than every surface of the studio — so no dark grey
-             * can carry it: measured 18/08 against #33363b, `border` is 1,00:1, `panel` 1,44 and
-             * pure black 1,73, under the 3:1 WCAG 1.4.11 asks of a glyph that informs. A light
-             * grey reaches it and belongs to nothing else here.
+             * The border, the radius and the floating shadow the studio gives everything it floats
+             * — `Toolbar` and `TooltipHost` are the two that settled that.
              *
-             * So the outer two pixels are `panel`, which is what the eye reads as a frame of this
-             * app, and a one-pixel `muted` ring inside carries the contrast. `furniture` and not
-             * `floating`: a preview is set down in the view, it does not hover over it.
+             * NO background, and it is not an oversight: the picture is drawn by the ENGINE, on a
+             * canvas that sits UNDER the DOM, so a surface here covers it — the preview went black
+             * the moment one was put on. Nothing over the picture may be opaque.
              *
-             * The same at every moment, on air included: what says a camera is live is the badge
-             * that says so in words, and a second signal in colour says it twice.
+             * The radius is the SMALL one for the same reason: the picture is a hard rectangle the
+             * DOM cannot clip, so it overruns a rounded corner by the sagitta — 1,6 px at 4, 12 px
+             * at the large radius, which reads as a broken frame.
              */
-            'border-panel ring-muted pointer-events-auto absolute border-2 ring-1 ring-inset',
-            full ? '' : 'rounded-(--radius-sc-sm) shadow-(--sc-shadow-furniture)',
-            full ? '' : 'cursor-grab active:cursor-grabbing',
-          )}
-          style={{ left: rect.x, top: rect.y, width: rect.width, height: rect.height }}
-          // The WHOLE preview is the handle — a title bar would be the one place a hand does not
-          // aim for. It also takes the pointer whole: without that the press fell through to the
-          // viewport, which read it as an orbit and turned the scene instead of moving this.
-          onPointerDown={full ? undefined : onGrab}
-          onPointerMove={onDragMove}
-          onPointerUp={drag.cancel}
-          onPointerCancel={drag.cancel}
-          onLostPointerCapture={drag.cancel}
-        >
-          {/* What the engine paints into: the frame WHOLE, so the picture is the preview and not
-              a letterbox between two bars. Everything else floats over it. */}
-          <div ref={body} className="absolute inset-0" />
-          <div className="absolute inset-x-0 top-0 flex items-center justify-between gap-2 px-2 py-1">
-            <span className="text-text text-tiny min-w-0 truncate">{camera.name}</span>
-            {onAir && (
-              <span className="bg-elevated text-text text-tiny shrink-0 rounded-(--radius-sc-sm) px-1">
-                {t('scene.onAir')}
-              </span>
+            className={cn(
+              /**
+               * TWO strokes, and the reason is arithmetic. This frame is read against the VIEWPORT,
+               * which `index.css` sets LIGHTER than every surface of the studio — so no dark grey
+               * can carry it: measured 18/08 against #33363b, `border` is 1,00:1, `panel` 1,44 and
+               * pure black 1,73, under the 3:1 WCAG 1.4.11 asks of a glyph that informs. A light
+               * grey reaches it and belongs to nothing else here.
+               *
+               * So the outer two pixels are `panel`, which is what the eye reads as a frame of this
+               * app, and a one-pixel `muted` ring inside carries the contrast. `furniture` and not
+               * `floating`: a preview is set down in the view, it does not hover over it.
+               *
+               * The same at every moment, on air included: what says a camera is live is the badge
+               * that says so in words, and a second signal in colour says it twice.
+               */
+              'border-panel ring-muted pointer-events-auto absolute border-2 ring-1 ring-inset',
+              full ? '' : 'rounded-(--radius-sc-sm) shadow-(--sc-shadow-furniture)',
+              full ? '' : 'cursor-grab active:cursor-grabbing',
             )}
+            style={{ left: rect.x, top: rect.y, width: rect.width, height: rect.height }}
+            // The WHOLE preview is the handle — a title bar would be the one place a hand does not
+            // aim for. It also takes the pointer whole: without that the press fell through to the
+            // viewport, which read it as an orbit and turned the scene instead of moving this.
+            onPointerDown={full ? undefined : onGrab}
+            onPointerMove={onDragMove}
+            onPointerUp={drag.cancel}
+            onPointerCancel={drag.cancel}
+            onLostPointerCapture={drag.cancel}
+          >
+            {/* What the engine paints into: the frame WHOLE, so the picture is the preview and not
+              a letterbox between two bars. Everything else floats over it. */}
+            <div ref={body} className="absolute inset-0" />
+            <div className="absolute inset-x-0 top-0 flex items-center justify-between gap-2 px-2 py-1">
+              <span className="text-text text-tiny min-w-0 truncate">{camera.name}</span>
+              {onAir && (
+                <span className="bg-elevated text-text text-tiny shrink-0 rounded-(--radius-sc-sm) px-1">
+                  {t('scene.onAir')}
+                </span>
+              )}
+            </div>
+            <div className="absolute right-0 bottom-0 p-1">
+              <ToolButton
+                icon={full ? mdiArrowCollapse : mdiArrowExpand}
+                label={full ? t('scene.previewInset') : t('scene.previewFull')}
+                tooltip={TIP_LEFT}
+                variant="header"
+                onClick={() =>
+                  useSceneViews.getState().setPreviewSize(documentId, full ? 'inset' : 'full')
+                }
+              />
+            </div>
           </div>
-          <div className="absolute right-0 bottom-0 p-1">
-            <ToolButton
-              icon={full ? mdiArrowCollapse : mdiArrowExpand}
-              label={full ? t('scene.previewInset') : t('scene.previewFull')}
-              tooltip={TIP_LEFT}
-              variant="header"
-              onClick={() =>
-                useSceneViews.getState().setPreviewSize(documentId, full ? 'inset' : 'full')
-              }
-            />
-          </div>
-        </div>
-      )}
-    </div>
-  )
+        )}
+      </div>
+    )
+  }
+  return Preview()
 }

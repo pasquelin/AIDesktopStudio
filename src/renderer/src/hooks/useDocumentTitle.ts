@@ -11,7 +11,7 @@ import { setDocumentTitle } from '@/features/shell/components/dockviewApi'
  * dirty in exactly one of the six stores, and only the one holding it can say so as it changes.
  *
  * Every space calls this. Written as one hook because five of them did not call anything at
- * all: `setDocumentTitle` had a single caller, so a scene showed its bullet and said its new
+ * all: `setDocumentTitle` had a single caller, so a scene showed its mark and said its new
  * name, while an image, a take, a montage, a texture and a sky kept the title they were opened
  * with and never once said they were unsaved.
  */

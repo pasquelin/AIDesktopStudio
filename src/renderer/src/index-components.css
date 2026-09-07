@@ -1,0 +1,371 @@
+/*
+ * The light theme — the MIRROR of the dark one, not its inversion.
+ *
+ * The rule that gives the interface its IDE reading is "surfaces stand apart from the chassis".
+ * In the dark theme they do it by being darker; here they do it by being LIGHTER, with the
+ * chassis as a grey gutter around white panels. Inverting the dark values numerically would
+ * have produced a muddy grey on grey, which is the usual way a light theme is got wrong.
+ *
+ * Both the studio tokens and daisyUI's are restated here: a theme that only overrode half of
+ * them would leave the panels white and the viewport dark.
+ */
+@plugin 'daisyui/theme' {
+  name: 'aidesktopstudio-light';
+  color-scheme: light;
+
+  --color-base-100: #f5f6f8;
+  --color-base-200: #ffffff;
+  /* The divider, off the chassis for the reason the dark theme gives — but DARKER here, where
+     the dark theme goes lighter: on a light chassis every lighter step reads under 1.1. */
+  --color-base-300: #c9cbd1;
+  --color-base-content: #1f2124;
+  --color-primary: #346ef2;
+  --color-primary-content: #ffffff;
+  --color-secondary: #e4e6ea;
+  --color-secondary-content: #1f2124;
+  /* One variable for daisyUI and the studio alike — see the dark theme above. */
+  --color-accent: #346ef2;
+  --color-accent-content: #ffffff;
+  --color-neutral: #c9cbd1;
+  --color-neutral-content: #1f2124;
+  --color-info: #346ef2;
+  --color-info-content: #ffffff;
+  /*
+   * The status hues, DARKENED once more — the previous green cleared 4.5:1 on a panel and on a
+   * surface and failed it on the chassis, which is where a status word most often sits. Each is
+   * its own hue moved toward black by `inkFor`, the same ramp the accent a user picks takes.
+   */
+  --color-success: #296e46;
+  --color-success-content: #ffffff;
+  /* Darkened from the dark theme's amber: #e0a350 on white carries no text and reads as beige. */
+  --color-warning: #885606;
+  --color-warning-content: #ffffff;
+  --color-comment-note: #fff0a6;
+  --color-comment-note-border: #c5a548;
+  --color-comment-note-content: #2f2915;
+  --color-comment-note-fold: #dcc15c;
+  --color-comment-mark: #5978e8;
+  /* Same reason: the dark theme's coral is a highlight on black and a pastel on white. */
+  --color-error: #b72e27;
+  --color-error-content: #ffffff;
+
+  --radius-selector: 4px;
+  --radius-field: 4px;
+  --radius-box: 6px;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+
+  /* The same seven hues, darkened. Tightest is a chosen row at 3.08, against 3.95 bare. */
+  --color-domain-image: #c42381;
+  --color-domain-video: #c83124;
+  --color-domain-3d: #896419;
+  --color-domain-code: #557414;
+  --color-domain-audio: #167b16;
+  --color-domain-skyboxes: #157860;
+  --color-domain-materials: #a925d5;
+
+  --color-chassis: #dcdde1;
+  --color-panel: #ffffff;
+  --color-surface: #f5f6f8;
+  --color-elevated: #e4e6ea;
+  --color-border: #c9cbd1;
+  /* Darker than the dark theme's, not lighter: the ink has to leave the background it sits on. */
+  --color-accent-ink: #2a5dc0;
+  /* Restated rather than inherited: this theme reads its own block, and the accent could part. */
+  --color-accent-hover: #2a58c2;
+  /* Thinned from the accent here too, and lighter: this theme reads its own block. */
+  --color-accent-soft: color-mix(in srgb, var(--color-accent) 22%, transparent);
+  /* The studio's own name for daisyUI's `error`, and the same value: two reds would be one too many. */
+  --color-danger: #b72e27;
+  /*
+   * The one token this theme darkens away from its dark twin rather than alongside it —
+   * `main/window/theme.test.ts` carries why. The green is drawn IN and drawn ON: `text-create`
+   * names a leading slide, `bg-create` fills the rail's create button under a white icon, and at
+   * #12b600 that icon carried 2.72:1, under even the 3:1 WCAG 1.4.11 asks of a glyph.
+   * The hover keeps its LUMINANCE ratio to the resting fill, so pointing still darkens the button.
+   */
+  --color-create: #0b7100;
+  --color-create-hover: #095a00;
+  /* White here, where the dark theme goes near-black: this green is dark enough to carry it, 6.22:1. */
+  --color-create-content: #ffffff;
+  --color-text: #1f2124;
+  /* Lowered from #6b7078, which read 3.67:1 on this theme's chassis. Same reason as the dark. */
+  --color-muted: #5d6168;
+
+  /*
+   * The viewport stays a working space rather than becoming part of the page: here that means
+   * DARKER than the surfaces around it, where the dark theme made it lighter. A scene floating
+   * in white reads washed out, and the grid standing on it disappears.
+   */
+  --color-viewport: #babdc4;
+  --color-viewport-line: #9aa0a8;
+  --color-mesh: #6b7078;
+  /* Deepened as every pigment is here: the dark theme's mint washes out on a pale ground. */
+  --color-foliage: #3f8a71;
+  /*
+   * Black in both themes, on purpose. A picture is judged against the black it will be shown
+   * on, whatever the studio's own chrome is doing — the same trade the opaque window makes.
+   */
+  --color-monitor: #000000;
+  /* The same trade as the dark theme's green: `elevated`'s luminance here, so the label and the
+     waveform read on it exactly as they do on a picture clip. */
+  --color-clip-audio: #d5ecdb;
+  /* Darkened rather than lightened, as every ink is here: the meters keep the same chassis under
+     them, and a mid green that carried 5:1 on the dark one carries 1.6 on this. */
+  --color-level-safe: #2f7d4f;
+  /*
+   * Restated identically, and the only inks in this block that are: a stripe has to clear 3:1
+   * against `surface` on BOTH themes, which pinches its luminance into a window narrow enough
+   * that one value serves the two. Stated here all the same, rather than left to inheritance —
+   * `design/tokens.test.ts` reads each theme's block on its own, and so does anyone reading this
+   * file to find out what the light theme paints.
+   */
+  --color-axis-x: #e03131;
+  --color-axis-y: #2b8a3e;
+  --color-axis-z: #1971c2;
+  /*
+   * Restated identically, and for the same reason as the monitor: the marching ants are drawn
+   * over the document, not over the studio's chrome, and the document does not change with the
+   * theme. Swapping them would make the outline vanish over a light picture.
+   */
+  --color-marquee-light: #ffffff;
+  --color-marquee-dark: #000000;
+
+  /* Restated identically, for the marching ants' reason: ruled over the same document. */
+  --color-grid-cell: #8080808c;
+  --color-grid-pixel: #80808047;
+  /*
+   * Lighter than its dark counterpart: on a light document the same black would read as a hole
+   * rather than as a dimmed part of the picture.
+   */
+  --color-scrim: #0000004d;
+  /*
+   * The light theme's own panel, as the dark one takes the dark panel: this veil sinks the studio
+   * into the ground of whichever theme is on, rather than darkening it. It has to — the
+   * conversation over it is painted in `text`, which is DARK here, and a black veil would leave
+   * it unreadable.
+   */
+  --color-scrim-deep: #ffffffcc;
+}
+
+:root {
+  /* Overwritten inline by `useAppearance`; the value here is what an unstyled root falls to. */
+  --sc-font-scale: 1;
+  --sc-control: 28px;
+  /* The bar over every window, centring its text on the native traffic lights. Not redeclared
+     under compact: the lights do not move with it. `main/window/theme.test.ts` holds both numbers. */
+  --sc-title-bar: 40px;
+  /* A control that sits INSIDE a list row rather than on a bar: the visibility eye, a layer's
+     padlock. `--sc-control` is the gauge of a BAR, and two of them at the end of a 28px line took
+     68px of it — more than a fifth of a side panel, on the very rows whose name is what one reads.
+
+     Deliberately under the 24px WCAG 2.2 SC 2.5.8 asks for, under the criterion's spacing
+     exception: these are the only targets on their line, and the row itself answers everywhere
+     they do not. Chosen on 2026-08-14, not derived. */
+  --sc-control-inline: 20px;
+  --sc-comment-outline: 3px;
+  --sc-comment-note-width: calc(220px * var(--sc-font-scale));
+  --sc-comment-note-text: calc(44px * var(--sc-font-scale));
+  --sc-comment-note-fold: 10px;
+  /* The rail a slider runs on, and the handle that runs along it. Gauges rather than classes
+     because the browser's own slider honours neither: its track is white on one field and blue
+     on the next, at a thickness nothing here chose. `slider-handle` drops it and the rail is
+     drawn behind as a div, so a single pair of values answers every slider of the studio. */
+  /* How far a painted relief mask carries the accent over the terrain. A gauge because it IS the
+     `accent-soft` ratio, and a vertex colour cannot read that token: three renders `color-mix()`
+     as WHITE, so reading `--color-accent-soft` would erase the stencil rather than soften it.
+     Measured 2026-09-05 with `new Color()`. */
+  --sc-relief-mask-tint: 0.22;
+  --sc-slider-rail: 4px;
+  --sc-slider-thumb: 14px;
+  /* Every menu of figures the studio offers — snap steps, turn divisions, fly speeds. The COUNT
+     lives here beside the track because both are what make four menus read as one family: a width
+     alone still let a short list lay itself out three across.
+     In `ch` and not pixels, for the reason `--sc-tooltip` gives below: the cells wear
+     `--text-tiny`, which follows `appearance.fontScale` up to 1.4, and a fixed track would wrap
+     `10000 mm` onto a second line inside a box whose height cannot grow. Out of the density block
+     with it — what sets this width is the text, and density does not move the text.
+     Eleven, measured 2026-08-25: the two longest readings any menu prints, `×0,015625` and
+     `10000 mm`, both draw 56px against the 68px a cell leaves inside its padding. */
+  --sc-value-grid: repeat(4, 11ch);
+  /* How wide the home's column is allowed to grow. Not a density gauge — it does not change with
+     one — but a gauge all the same, so no component writes the number. On a 2 000px display an
+     unbounded column put a row's label at one edge and its value at the other; the rails narrow
+     the centre for a workspace, and the home has none of them open on most of its width. */
+  --sc-home-width: 1100px;
+  /* How wide the conversation is allowed to grow where its host is a whole window — the empty
+     centre. Derived, like the card above: the thread is prose under `--text-*`, so a fixed cap
+     would widen the measure in characters at every step of the scale. 520px at scale 1 is about
+     86 characters of `--text-xs`, measured against 760px giving 126 of it. The right column caps
+     itself by being a column, so nothing reads this there. */
+  --sc-chat-width: calc(520px * var(--sc-font-scale));
+  /* How tall a card of the home's top band stands. A gauge because the rail is handed a NUMBER,
+     and derived because the card is prose under `--text-*`: at scale 1.4 its four clamped lines
+     no longer fit a 168px box, and `overflow` cuts the fourth through the middle — for exactly
+     the readers who enlarged the text. Registered above, or `useGauge` reads the calc as text. */
+  --sc-spotlight-card: calc(168px * var(--sc-font-scale));
+  /* The same band LAID DOWN — one card taking the width. Its stand-in reserved 76px flat, right
+     at scale 1 and short by a third at 1.4: the jump the stand-in exists to prevent. */
+  --sc-spotlight-banner: calc(76px * var(--sc-font-scale));
+  /* The coverage bar of the home's models band. Bounded, and short on purpose: a bar running the
+     width of the page reads as a download in progress rather than as a proportion. */
+  --sc-verdict-bar: 320px;
+  /* The glyph a `ToolButton` draws on a header. RECOPIED from `HOSTS.header.glyph`, which takes a
+     number and not a gauge — `design/styles.test.ts` holds the two together, since moving one
+     alone would shift the lean below by half its change and nothing would say so. */
+  --sc-icon-header: 14px;
+  /* How far a property line's END button leans into the panel's own padding: its box ends on the
+     column every field ends on, but its glyph sits centred in a wider square, so what the eye
+     reads stopped short. Derived, so a density that moves the control moves the lean with it. */
+  --sc-row-action-bleed: calc((var(--sc-control) - var(--sc-icon-header)) / 2);
+  /* The room every property line keeps at its end, drawn into or not — two controls, the most any
+     line asks for: padlock and reset on Scale, browse and clear on a link. */
+  --sc-row-actions: calc(var(--sc-control) * 2);
+  /* Ten property rows and their nine standard gaps before a long interactive group scrolls. */
+  --sc-field-list: calc(var(--sc-control) * 10 + 72px);
+  /* Where a surface laid BESIDE the pane's tool column starts. Derived, so a density that moves
+     the control moves it too: `left-2` under the column (8px), its border and `p-1` on both
+     sides (10px), and 8px of air between the two. */
+  --sc-pane-aside: calc(var(--sc-control) + 26px);
+  /* A list row that stacks a name over a subtitle. `--sc-control` cannot hold it: two steps of
+     `leading-tight` text are 27.5px, which fills a 28px row edge to edge and overflows a compact
+     one. Its own gauge rather than a padding on the row, because the virtualizer is given a
+     NUMBER and a padding would not reach it.
+
+     Flat, where `--sc-indent` next door is derived, and the difference is NOT an oversight:
+     nothing reads `--sc-indent` from JavaScript, whereas `useGauge` reads this one and tests
+     `endsWith('px')`. An unregistered property computes to its value with variables substituted
+     and nothing evaluated, so `calc(var(--sc-control) + 8px)` reads back as that very string,
+     fails the test, and falls to the shipped number at every density — silently. Deriving it
+     means registering it with `@property` first, and that has to be measured in Electron: jsdom
+     evaluates no calc, so no suite here would see the difference. */
+  --sc-row-stacked: 36px;
+  /* The same two steps of text under a fill that STANDS THERE — the open project on the home,
+     which `selectionTone: 'strong'` paints for as long as the project is open. At 36 that fill
+     leaves ~4px above and below the text, which reads as words pressed against their own
+     highlight rather than as a line standing in it; 44 leaves ~8.
+
+     Not "the rows that have a fill", which would be every picked row: `rowSkin` paints a selection
+     edge to edge in every list. What is answered here is a fill nobody has to select to see, and
+     only the home has one.
+
+     Its own gauge and not a taller `--sc-row-stacked`: raising the shared one for the home's sake
+     also loosened the documents panel, which stacks the same two steps. Flat, for the reason
+     above. */
+  --sc-row-filled: 44px;
+  /* A list row whose PICTURE is what one reads — the asset shelf. Two steps of text fit in 36;
+     a thumbnail one can recognise does not, and 28px of picture showed a colour, not a subject. */
+  --sc-row-media: 48px;
+  /* The room a row keeps around the picture it carries — ONE number, so every thumbnail of the
+     studio is inset the same however tall its line is. Same at both densities: the padding is
+     what stays constant, the picture is what shrinks. What a picture then measures is derived
+     from it in `ROW_MEDIA_*`, which is where the three shapes are written. */
+  --sc-row-pad: 4px;
+  /* Rail width: the button (36) plus the margin keeping it off the window edge. */
+  --sc-rail: 48px;
+  --sc-rail-button: 36px;
+  /* What aligns on the rail's edge — today the footer. A chosen width, deliberately NOT the
+     rail's own `(rail - button) / 2`, which is 6px: the inset was widened on purpose. It does
+     not follow density either, so there is no second declaration below. */
+  --sc-rail-inset: 14px;
+  --sc-gutter: 6px;
+  /* One step of indentation, wherever a tree draws depth — the layer stack included, which a
+     comment here claimed walked a narrower step of its own until 2026-08-14. It never did: it
+     goes through `Tree`, which knows one indent. Believing otherwise is what let a batch close
+     the fold column on leaves without noticing that the column and this step are the SAME 12px,
+     so a layer inside a group landed at its parent's x, and 4px to its left in compact.
+
+     Derived, so it follows density without a second declaration below — and named, because `Tree`
+     and the settings column had started to spell the same two gutters out on their own. */
+  --sc-indent: calc(var(--sc-gutter) * 2);
+  --sc-header: 40px;
+  /* The strip, not the tab: the tab sits inside it with 6px of air above and below, so this
+     value is the pill's height plus that margin. */
+  --sc-tab: 40px;
+  /* Track header column: wide enough for a name plus mute, solo and lock on one line. */
+  --sc-track-header: 140px;
+  /* The label column of a property line, whichever family draws it: `PropertyRow` for a value to
+     read, the fields for a control to change it. A SHARE of the row rather than a width, since a
+     fixed 80px truncated « Point d'entrée » in an inspector 1300px across with that width sitting
+     empty beside its value. No floor: one cannot shrink, and a side zone dragged to its 140px
+     minimum then overflowed. The ceiling keeps a detached panel from spending 300px on one word. */
+  --sc-label-share: 30%;
+  --sc-label-max: 200px;
+  /* One column of the folder browser, which shows folder names and nothing else. Wide enough for
+     the names a project actually carries — `Textures`, `Repérages` — and narrow enough that three
+     columns fit the dialog without it becoming a window. Truncation is the fallback, as
+     everywhere a name is drawn. */
+  --sc-folder-column: 160px;
+  /* How wide a tooltip may grow before it wraps. Unbounded, it took the width of its longest
+     line — a layer named with a whole sentence drew a band across the canvas beside its panel,
+     which is the surface the studio exists to let one judge.
+     In `ch` and not pixels, the one measure in this block that has to be: the bubble wears
+     `--text-tiny`, which follows `appearance.fontScale` from 0.85 to 1.4, and a fixed width
+     would turn two lines into four for exactly the readers who enlarged the text. `Spotlight`
+     measures its prose the same way. Held out of the density block on purpose: a tooltip is
+     read, not operated. */
+  --sc-tooltip: 42ch;
+  /* The output meter standing beside the programme monitor, and the spectrum band under it. Both
+     are canvases sized in CSS and measured back by `paintOn`, so neither needs `useGauge` — but
+     both need to follow density, which a constant in a component could not. Narrow on purpose:
+     they are read at a glance, and every pixel they take is one the montage loses. */
+  --sc-meter: 14px;
+  --sc-spectrum: 72px;
+  --sc-shadow-furniture: 0 1px 2px rgb(0 0 0 / 0.25);
+  --sc-shadow-floating: 0 8px 24px rgb(0 0 0 / 0.55);
+}
+
+.generation-comment-note {
+  width: var(--sc-comment-note-width);
+  min-height: var(--sc-comment-note-text);
+  gap: calc(var(--sc-control-inline) / 4);
+  padding: calc(var(--sc-control-inline) / 2);
+  border-radius: var(--radius-sc-sm);
+  box-shadow: var(--sc-shadow-floating);
+}
+
+.generation-comment-note::after {
+  position: absolute;
+  right: -1px;
+  bottom: -1px;
+  width: 0;
+  height: 0;
+  border-width: var(--sc-comment-note-fold) var(--sc-comment-note-fold) 0 0;
+  border-style: solid;
+  border-color: var(--color-comment-note-fold) transparent transparent transparent;
+  content: '';
+}
+
+:root[data-density='compact'] {
+  --sc-control: 24px;
+  --sc-control-inline: 18px;
+  --sc-slider-rail: 3px;
+  --sc-slider-thumb: 12px;
+  --sc-row-stacked: 32px;
+  --sc-row-filled: 38px;
+  --sc-row-media: 42px;
+  --sc-rail: 42px;
+  --sc-rail-button: 32px;
+  --sc-gutter: 4px;
+  --sc-header: 28px;
+  --sc-tab: 32px;
+  --sc-track-header: 120px;
+  /* The share holds at both densities; only what it may never exceed comes down. */
+  --sc-label-max: 180px;
+  --sc-meter: 12px;
+  --sc-spectrum: 56px;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+.virtual-field-list {
+  height: var(--sc-field-list);
+  overflow-y: auto;
+}

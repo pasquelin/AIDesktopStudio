@@ -176,6 +176,24 @@ function tasksIn(data: unknown): readonly TripoTask[] | null {
   )
 }
 
+async function answerOf(response: Response, path: string): Promise<unknown> {
+  let body: unknown = null
+  try {
+    body = await response.json()
+  } catch {
+    // A gateway answering HTML is the ordinary shape of an outage: the status below says it.
+  }
+  const code = isRecord(body) ? readOptionalNumber(body, 'code') : undefined
+  if (response.ok && code === 0) return isRecord(body) ? body['data'] : null
+
+  throw new TripoError(
+    code ?? 0,
+    response.status,
+    (isRecord(body) ? textOf(body, 'message') : undefined) ?? `${path} answered ${response.status}`,
+    retryAfterMsOf(response.headers.get('retry-after'), Date.now()),
+  )
+}
+
 export function createTripoApi({
   key,
   fetch: get = fetch,
@@ -198,23 +216,7 @@ export function createTripoApi({
       headers: { authorization: `Bearer ${held}`, ...headers },
     })
 
-    let body: unknown = null
-    try {
-      body = await response.json()
-    } catch {
-      // A gateway answering HTML is the ordinary shape of an outage: the status below says it.
-    }
-
-    const code = isRecord(body) ? readOptionalNumber(body, 'code') : undefined
-    if (response.ok && code === 0) return isRecord(body) ? body['data'] : null
-
-    throw new TripoError(
-      code ?? 0,
-      response.status,
-      (isRecord(body) ? textOf(body, 'message') : undefined) ??
-        `${path} answered ${response.status}`,
-      retryAfterMsOf(response.headers.get('retry-after'), Date.now()),
-    )
+    return answerOf(response, path)
   }
 
   const postJson = (path: string, body: Record<string, unknown>): Promise<unknown> =>
@@ -260,7 +262,7 @@ export function createTripoApi({
 
     upload: async (fileName, bytes, mimeType) => {
       const form = new FormData()
-      form.append('file', new Blob([bytes], { type: mimeType }), fileName)
+      form.append('file', new Blob([new Uint8Array(bytes)], { type: mimeType }), fileName)
       const data = await call('files', { method: 'POST', body: form })
       const token = isRecord(data) ? textOf(data, 'file_token') : undefined
       if (!token) throw new TripoError(0, 200, 'a file was accepted without a token')

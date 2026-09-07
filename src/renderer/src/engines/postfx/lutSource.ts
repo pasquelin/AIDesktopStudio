@@ -14,6 +14,14 @@ export async function loadLutTexture(
   assetId: string,
   version?: string,
 ): Promise<Data3DTexture | null> {
-  const read = await loader.loadAsync(versionedUrl(assetUrl(assetId), version))
+  return await loadLutFrom(versionedUrl(assetUrl(assetId), version))
+}
+
+/**
+ * The same picture read from wherever it is served. An exported game has no `asset://` — its
+ * files sit beside the page, and its port is what turns an id into a URL.
+ */
+export async function loadLutFrom(url: string): Promise<Data3DTexture | null> {
+  const read = await loader.loadAsync(url)
   return read.texture3D
 }

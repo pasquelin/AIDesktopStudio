@@ -1,4 +1,11 @@
-import { activeAudioId, activeSceneId, activeSequenceId, useDocuments } from '@/stores/documents'
+import { workshopIdOf } from '@shared/domain/character'
+import {
+  activeAudioId,
+  activeCharacterAssetId,
+  activeSceneId,
+  activeSequenceId,
+  useDocuments,
+} from '@/stores/documents'
 import { AnimationActions } from '../../../animation/components/Animation/Actions/AnimationActions'
 import { ProgramTransport } from '../ProgramTransport'
 import { SequenceActions } from '../SequenceActions'
@@ -12,10 +19,14 @@ import { SoundActions } from '../Sound/SoundActions'
  */
 export function TimelineActions() {
   const sceneId = useDocuments(activeSceneId)
+  const characterAssetId = useDocuments(activeCharacterAssetId)
   const audioId = useDocuments(activeAudioId)
   const documentId = useDocuments(activeSequenceId)
 
   if (sceneId) return <AnimationActions documentId={sceneId} />
+  // The model tab's band is its workshop's; no camera can stand in it, so nothing films it.
+  if (characterAssetId)
+    return <AnimationActions documentId={workshopIdOf(characterAssetId)} filmable={false} />
   // The sound montage carries its own transport: the Audio workspace has no monitor to hold one.
   if (audioId) return <SoundActions documentId={audioId} />
   if (!documentId) return null

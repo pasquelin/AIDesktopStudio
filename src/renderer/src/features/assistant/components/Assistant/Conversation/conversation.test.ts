@@ -216,6 +216,28 @@ describe('a relative call sent twice in one turn', () => {
     expect(repeatKeyOf('node.transform', { nodeId: 'n-1', rotationY: 0.35 })).toBeNull()
   })
 
+  /**
+   * 🛑 The FIGURE is not part of the key: a second relative change to the same field lands on top
+   * of the first whatever it carries, and a model correcting its own arithmetic sends another.
+   */
+  it('keys the same field of the same thing alike, whatever figure it carries', () => {
+    expect(repeatKeyOf('node.transform', { ...call, rotationY: 2 })).toBe(
+      repeatKeyOf('node.transform', call),
+    )
+  })
+
+  it('keys another field, another thing and another action apart', () => {
+    const key = repeatKeyOf('node.transform', call)
+
+    expect(
+      repeatKeyOf('node.transform', { nodeId: 'n-1', positionX: 0.35, relative: true }),
+    ).not.toBe(key)
+    expect(
+      repeatKeyOf('node.transform', { nodeId: 'n-2', rotationY: 0.35, relative: true }),
+    ).not.toBe(key)
+    expect(repeatKeyOf('node.setLightSettings', call)).not.toBe(key)
+  })
+
   it('is seen as already run, and only once it has actually run', () => {
     const key = repeatKeyOf('node.transform', call)
     const step = (refusal: AssistantStep['refusal']): AssistantStep => ({

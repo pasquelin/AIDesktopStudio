@@ -1,7 +1,7 @@
 import type { PbrChannel } from '@shared/domain/material'
 import type { TextureSource } from '../../scene/textureCache'
 import { createDerivePass } from './deriveShaders'
-import { encodePng, runOffscreenPass, type PictureSize } from './offscreen'
+import { pngDrawn, runOffscreenPass, type PictureSize } from './offscreen'
 
 export type DeriveRequest = {
   /** The channel to compute. Its source channel is what `sourceUrl` points at. */
@@ -35,9 +35,6 @@ export function createDerivePort({ loadTexture }: DerivePortOptions): DerivePort
       load: loadTexture,
       urls: [sourceUrl],
       pass: ([source]) => createDerivePass(channel, source.texture, source.size),
-      draw: async ({ renderer, pipeline, material, size }) => {
-        pipeline.renderToScreen(material)
-        return { ...size, png: await encodePng(renderer.domElement) }
-      },
+      draw: pngDrawn,
     })
 }

@@ -27,11 +27,17 @@ export type EntityStore = {
   attach: (entity: Entity, component: Component) => void
   detach: (entity: Entity, type: ComponentType) => boolean
   count: () => number
+  /**
+   * Bumped whenever the POPULATION changes, never for a component. What a cache of names reads to
+   * know its answer may have gone stale — a miss above all, which nothing else could invalidate.
+   */
+  born: () => number
 }
 
 export function createEntityStore(): EntityStore {
   const byId = new Map<string, Entity>()
   const byComponent = new Map<ComponentType, Set<Entity>>()
+  let born = 0
 
   const indexed = (type: ComponentType): Set<Entity> => {
     const held = byComponent.get(type)
@@ -42,6 +48,7 @@ export function createEntityStore(): EntityStore {
   }
 
   const add = (entity: Entity): void => {
+    born += 1
     byId.set(entity.id, entity)
     for (let index = 0; index < entity.components.length; index++) {
       const component = entity.components[index]
@@ -56,6 +63,7 @@ export function createEntityStore(): EntityStore {
       const entity = byId.get(id)
       if (!entity) return false
 
+      born += 1
       byId.delete(id)
       for (let index = 0; index < entity.components.length; index++) {
         const component = entity.components[index]
@@ -65,6 +73,7 @@ export function createEntityStore(): EntityStore {
     },
 
     get: id => byId.get(id) ?? null,
+    born: () => born,
     all: () => byId.values(),
     // The real set, made on first ask: a sweep held by a system before anything carried the type
     // would otherwise be a frozen empty one, for the life of the world.

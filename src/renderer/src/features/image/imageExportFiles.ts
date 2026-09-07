@@ -1,6 +1,7 @@
 import { exportTargetOf } from '@shared/domain/exportRegistry'
 import type { FolderExportRequest } from '@shared/ipc'
-import { documentExportName, useDocuments } from '@/stores/documents'
+import { useDocuments } from '@/stores/documents'
+import { documentExportName } from '@/stores/documentExportName'
 import { canvasHost } from './canvasHosts'
 
 /**

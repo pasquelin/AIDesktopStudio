@@ -350,31 +350,21 @@ export function resizeBy(
   const straight = unrotated(transform, document, to)
   const anchor = ANCHOR[handle]
   const fixed = { x: box.x + box.width * anchor.x, y: box.y + box.height * anchor.y }
-
-  // A grip on an edge moves one axis only: the other keeps the scale it had.
   const pullsX = anchor.x !== 0.5
   const pullsY = anchor.y !== 0.5
-
   let scaleX = pullsX ? ratio(straight.x - fixed.x, box.width * (anchor.x === 1 ? -1 : 1)) : 1
   let scaleY = pullsY ? ratio(straight.y - fixed.y, box.height * (anchor.y === 1 ? -1 : 1)) : 1
-
   if (uniform && pullsX && pullsY) {
     const side = Math.max(Math.abs(scaleX), Math.abs(scaleY))
     scaleX = side * Math.sign(scaleX || 1)
     scaleY = side * Math.sign(scaleY || 1)
   }
-
   const scaled = {
     ...transform,
     scaleX: floored(transform.scaleX * scaleX),
     scaleY: floored(transform.scaleY * scaleY),
   }
-
-  // The corner the hand is pulling AGAINST, in the frame it is gripping — the picture's when the
-  // layer holds one. Solved against the document instead, the anchored edge of a photo that does
-  // not fill its surface would drift by the margin `containIn` left around it.
   const held = { x: frame.x + anchor.x * frame.width, y: frame.y + anchor.y * frame.height }
-
   return anchoredAt(scaled, document, held, applyTo(layerMatrix(transform, document), held))
 }
 
