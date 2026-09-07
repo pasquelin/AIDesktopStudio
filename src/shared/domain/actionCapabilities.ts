@@ -149,6 +149,10 @@ export function intentOfWords(
       vocabulary[intent].some(prefix => token.startsWith(prefix)),
     )
     if (position >= 0 && (found === null || position < found.position)) found = { intent, position }
+    // Nothing later can beat position 0, and ties already go to the earlier intent: the scan of
+    // the remaining intents and their prefixes only confirms it. Measured on ten names, identical
+    // results: 469 `startsWith` fall to 309, and the run from 556 ms to 364 over 2 M calls.
+    if (found?.position === 0) return found.intent
   }
   return found?.intent ?? null
 }

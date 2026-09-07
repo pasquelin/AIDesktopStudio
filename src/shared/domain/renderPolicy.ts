@@ -1,4 +1,4 @@
-import { isRecord } from '../guards'
+import { isRecord, oneOf, readBoolean, readNumber } from '../guards'
 import { SHADOW_QUALITIES, type ShadowQuality } from './scene'
 import { VIEWPORT_QUALITIES, type ViewportQuality } from './sceneViewport'
 
@@ -73,12 +73,6 @@ export function renderPolicyOf(view: RenderPolicy): RenderPolicy {
   }
 }
 
-const finite = (value: unknown, fallback: number): number =>
-  typeof value === 'number' && Number.isFinite(value) ? value : fallback
-
-const oneOf = <T extends string>(value: unknown, held: readonly T[], fallback: T): T =>
-  held.includes(value as T) ? (value as T) : fallback
-
 /**
  * A policy read off a manifest, member by member.
  *
@@ -89,19 +83,15 @@ const oneOf = <T extends string>(value: unknown, held: readonly T[], fallback: T
 export function readRenderPolicy(value: unknown): RenderPolicy {
   if (!isRecord(value)) return { ...DEFAULT_RENDER_POLICY }
   return {
-    shadows: typeof value.shadows === 'boolean' ? value.shadows : DEFAULT_RENDER_POLICY.shadows,
-    shadowQuality: oneOf<ShadowQuality>(
-      value.shadowQuality,
+    shadows: readBoolean(value, 'shadows', DEFAULT_RENDER_POLICY.shadows),
+    shadowQuality: oneOf(
       SHADOW_QUALITIES,
+      value.shadowQuality,
       DEFAULT_RENDER_POLICY.shadowQuality,
     ),
-    shadowMapSize: finite(value.shadowMapSize, DEFAULT_RENDER_POLICY.shadowMapSize),
-    quality: oneOf<ViewportQuality>(
-      value.quality,
-      VIEWPORT_QUALITIES,
-      DEFAULT_RENDER_POLICY.quality,
-    ),
-    fieldOfView: finite(value.fieldOfView, DEFAULT_RENDER_POLICY.fieldOfView),
-    gridSize: finite(value.gridSize, DEFAULT_RENDER_POLICY.gridSize),
+    shadowMapSize: readNumber(value, 'shadowMapSize', DEFAULT_RENDER_POLICY.shadowMapSize),
+    quality: oneOf(VIEWPORT_QUALITIES, value.quality, DEFAULT_RENDER_POLICY.quality),
+    fieldOfView: readNumber(value, 'fieldOfView', DEFAULT_RENDER_POLICY.fieldOfView),
+    gridSize: readNumber(value, 'gridSize', DEFAULT_RENDER_POLICY.gridSize),
   }
 }

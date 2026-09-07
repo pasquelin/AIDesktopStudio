@@ -74,6 +74,15 @@ function objReferences(text: string): unknown[] {
 }
 
 /**
+ * The keywords of an `.mtl` line that names a picture.
+ *
+ * 🛑 Composed into both regexes rather than written in each: adding one to the FINDER alone copies
+ * a texture that the REWRITER then leaves pointing at the old folder, and the OBJ loses the
+ * picture it was just handed — without a word.
+ */
+const MTL_MAPS = 'map_\\w+|bump|disp|decal|refl|norm'
+
+/**
  * The pictures a material library names — `map_Kd`, `bump`, `disp`, `refl`, `norm`…: the file
  * is the LAST word of the line, everything between the keyword and it being options (`-bm 1`).
  */
@@ -85,7 +94,7 @@ function mtlReferences(text: string): unknown[] {
     ['-s', 3],
     ['-o', 3],
   ]
-  for (const line of text.match(/^\s*(map_\w+|bump|disp|decal|refl|norm)\s+.+$/gm) ?? []) {
+  for (const line of text.match(new RegExp(`^\\s*(?:${MTL_MAPS})\\s+.+$`, 'gm')) ?? []) {
     const words = line.trim().split(/\s+/)
     words.shift()
     for (const [option, parameters] of options) {
@@ -149,7 +158,7 @@ export function mtlPathsBeside(material: string, library: string): string {
   const folder = library.slice(0, library.lastIndexOf('/') + 1)
   if (folder === '') return material
   return material.replace(
-    /^(\s*(?:map_\w+|bump|disp|decal|refl|norm)\s+.*?)(\S+)(\s*)$/gm,
+    new RegExp(`^(\\s*(?:${MTL_MAPS})\\s+.*?)(\\S+)(\\s*)$`, 'gm'),
     (whole, head: string, file: string, tail: string) =>
       SCHEME.test(file) || file.startsWith('/') ? whole : `${head}${folder}${file}${tail}`,
   )

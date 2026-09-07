@@ -54,8 +54,8 @@ export function repeatsLastRound(
   if (!last || !before) return false
   const keys = answer.calls.map(callKey)
   const repeats = (round: readonly MissionStep[]): boolean => {
-    const idle = idleKeys(round)
-    return idle.size > 0 && keys.every(key => idle.has(key))
+    const idleCalls = idleKeys(round)
+    return idleCalls.size > 0 && keys.every(key => idleCalls.has(key))
   }
   return repeats(last) && repeats(before)
 }

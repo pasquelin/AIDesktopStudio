@@ -15,6 +15,7 @@ import {
   type AssistantAnswer,
 } from '@shared/domain/assistant'
 import { isRecord, readText } from '@shared/guards'
+import { closingBrace } from '@shared/text'
 
 /** What `parseReply` answers: the reply without the cost, which only the caller knows. */
 export type Reply = Omit<AssistantAnswer, 'cost'>
@@ -36,7 +37,7 @@ export function jsonIn(text: string): unknown {
     // From the first brace to the one that CLOSES it, so a fence, a preamble and a trailing
     // `]}` all fall away — the last brace of the text was inside that tail (58.9, 2026-09-06).
     const start = trimmed.indexOf('{')
-    const end = closingBraceFrom(trimmed, start)
+    const end = closingBrace(trimmed, start)
     if (start === -1 || end === -1) return null
 
     try {
@@ -45,25 +46,6 @@ export function jsonIn(text: string): unknown {
       return null
     }
   }
-}
-
-/** Where the object opened at `start` closes, strings and escapes skipped; -1 when it never does. */
-function closingBraceFrom(text: string, start: number): number {
-  let depth = 0
-  let quoted = false
-  for (let at = start; at >= 0 && at < text.length; at += 1) {
-    const char = text[at]
-    if (quoted) {
-      if (char === '\\') at += 1
-      else if (char === '"') quoted = false
-    } else if (char === '"') quoted = true
-    else if (char === '{') depth += 1
-    else if (char === '}') {
-      depth -= 1
-      if (depth === 0) return at
-    }
-  }
-  return -1
 }
 
 /**

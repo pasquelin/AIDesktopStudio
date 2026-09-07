@@ -188,6 +188,20 @@ const NEGATIVE_PROMPT: LocalFieldTemplate = {
   group: ADVANCED_GROUP,
 }
 
+/** Written once and shared: two modalities ask for a duration, with bounds of their own. */
+function seconds(base: { default: number; max: number }): LocalFieldTemplate {
+  return {
+    key: 'seconds',
+    kind: 'number',
+    labelKey: 'localFields.seconds',
+    helpKey: 'localFields.secondsHelp',
+    required: false,
+    min: 1,
+    step: 0.5,
+    ...base,
+  }
+}
+
 /** Written once and shared: three modalities count denoise steps, with bounds of their own. */
 function steps(base: { default: number; max: number }): LocalFieldTemplate {
   return {
@@ -327,17 +341,7 @@ const TEMPLATES: Record<LocalModality, readonly LocalFieldTemplate[]> = {
     SOURCE_AUDIO,
     SOURCE_VIDEO,
     LYRICS,
-    {
-      key: 'seconds',
-      kind: 'number',
-      labelKey: 'localFields.seconds',
-      helpKey: 'localFields.secondsHelp',
-      required: false,
-      default: 10,
-      min: 1,
-      max: 600,
-      step: 0.5,
-    },
+    seconds({ default: 10, max: 600 }),
     steps({ default: 8, max: 200 }),
     cfgScale({ default: 3.5, max: 20 }),
     SEED,
@@ -385,16 +389,7 @@ export type LocalFieldOverrides = Readonly<
  */
 const MOTION_FIELDS: readonly LocalFieldTemplate[] = [
   PROMPT,
-  {
-    key: 'seconds',
-    kind: 'number',
-    labelKey: 'localFields.seconds',
-    required: false,
-    default: 5,
-    min: 1,
-    max: 30,
-    step: 0.5,
-  },
+  seconds({ default: 5, max: 30 }),
   steps({ default: 50, max: 100 }),
   SEED,
 ]
