@@ -33,9 +33,11 @@ import { resolveSpecifier } from './sourceFiles.ts'
  * 122 against 132 on 2026-09-06, when `manualInputActions.test.ts` read the manual chapters; 123
  * against 133 the same day, the animation graph having brought its own beside them; 124 against
  * 134 the same day, the welcome reading its shipped clip folders off the disk; 125 against 135 on
- * 2026-09-07, when `no-unpainted-framing` swept the renderer for framings that draw nothing.
+ * 2026-09-07, when `no-unpainted-framing` swept the renderer for framings that draw nothing; 127
+ * against 137 the same day, `site-leaves-pages` reading the workflow beside the two that already
+ * did.
  */
-export const LEAST_GUARDS = 125
+export const LEAST_GUARDS = 127
 
 /**
  * How far the floor may sit below the real count before it stops meaning anything.

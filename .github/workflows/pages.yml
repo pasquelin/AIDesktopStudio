@@ -1,6 +1,12 @@
-# Vitrine GitHub Pages. Squelette commun aux trois dépôts (map3D, panels, AI Desktop Studio) :
-# mêmes déclencheurs, mêmes versions d'actions, même artefact `_site`. Ce qui diffère ici
-# tient à la seule particularité réelle de ce dépôt — le manifeste de version.
+# Vitrine. Squelette commun aux trois dépôts (map3D, panels, AI Desktop Studio) : mêmes
+# déclencheurs, mêmes versions d'actions, même artefact `_site`. Deux choses diffèrent ici —
+# le manifeste de version, et la destination.
+#
+# 🛑 CE DÉPÔT NE PUBLIE PLUS SUR GITHUB PAGES. `www.aidesktopstudio.com` est servi par le
+# serveur du bas, et Pages servait le même rendu sous `pasquelin.github.io/AIDesktopStudio/`,
+# sans qu'aucune des deux adresses renvoie à l'autre. Décision d'Alban du 2026-09-07 : une
+# seule adresse, l'ancienne répondant 404 plutôt que de rediriger. Le nom du fichier reste
+# `pages.yml`, cité par `docs/ci/RELEASE.md` et trois gardes de `src/main/`.
 #
 # Ce que ce workflow ajoute et que la page ne peut pas savoir toute seule : quelle version
 # est sortie, et où vivent ses cinq installeurs. Il écrit `site/assets/release.json`, que
@@ -39,13 +45,12 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 # Un seul déploiement à la fois, sans annuler celui en cours : une publication à moitié
-# écrite est pire qu'une publication en retard.
+# écrite est pire qu'une publication en retard. `rsync --delete` en particulier ne supporte
+# pas deux passes concurrentes sur le même dossier.
 concurrency:
-  group: pages
+  group: vitrine
   cancel-in-progress: false
 
 jobs:
@@ -137,54 +142,30 @@ jobs:
       # qui compte ici, et il est dans le moteur, pas dans ce fichier.
       - run: pnpm build:site
 
+      # Le rendu passe au job suivant en artefact plutôt que d'être rebâti là-bas :
+      # un second build ne recevrait pas la charge utile de l'événement, donc
+      # rendrait un site SANS `assets/release.json` — pastille de version et
+      # cartes de téléchargement vides.
+      #
       # Sur `release: published`, GITHUB_REF vaut refs/tags/<tag> et jamais
       # refs/heads/main : tester la seule branche sautait tout le déploiement à
       # la publication — le déclencheur pour lequel le manifeste est écrit.
-      - uses: actions/configure-pages@v6
-        if: github.event_name == 'release' || github.ref == 'refs/heads/main'
-
-      - uses: actions/upload-pages-artifact@v5
-        if: github.event_name == 'release' || github.ref == 'refs/heads/main'
-        with:
-          path: _site
-
-      # Le même rendu, en artefact ordinaire, pour le serveur. Deux artefacts
-      # plutôt qu'un : `upload-pages-artifact` produit un tar au format propre à
-      # Pages, que `download-artifact` ne sait pas rouvrir. Et surtout, rebâtir
-      # dans l'autre job donnerait un site SANS `assets/release.json` — il est
-      # écrit ici, à partir de la charge utile de l'événement, qu'un second job
-      # ne reçoit pas.
       - uses: actions/upload-artifact@v5
-        if: github.event_name == 'release' || github.ref == 'refs/heads/main'
+        if: >-
+          github.event_name == 'release' || github.event_name == 'workflow_dispatch' ||
+          github.ref == 'refs/heads/main'
         with:
           name: site
           path: _site
           retention-days: 1
 
-  deploy:
-    needs: build
-    if: github.event_name == 'release' || github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v5
-
   # Le serveur qui sert www.aidesktopstudio.com — l'URL canonique depuis la
-  # refonte. Pages reste déployé en miroir : les deux rendus sont identiques et
-  # portent la même balise canonique, donc rien n'est dupliqué aux yeux d'un
-  # moteur.
-  #
-  # Ce job ne dépend PAS de `deploy` : une panne de Pages ne doit pas priver le
-  # domaine de sa mise à jour, et réciproquement.
+  # refonte, et désormais la seule adresse du site.
   deploy-server:
     needs: build
-    if: github.event_name == 'release' || github.ref == 'refs/heads/main'
+    if: >-
+      github.event_name == 'release' || github.event_name == 'workflow_dispatch' ||
+      github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
