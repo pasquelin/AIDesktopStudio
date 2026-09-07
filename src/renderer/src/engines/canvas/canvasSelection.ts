@@ -48,17 +48,17 @@ export function extendLasso(selection: CanvasSelection, point: Point): CanvasSel
   return { kind: 'lasso', points: [...selection.points, point] }
 }
 
+/** Kept per SELECTION: an edit replaces the object, which is what makes the identity the key. */
+const outlines = new WeakMap<object, Point[]>()
+
 /**
  * The outline to stroke, in document coordinates and closed — one shape for the three, so the
  * overlay strokes a polyline and needs to know nothing about ellipses or lassos.
+ *
+ * 🛑 Held: a raster selection is walked pixel by pixel, and the overlay asks TWICE a frame — for
+ * whether the ants march, then to draw them — so a 4096² document scanned 33 M pixels sixty times
+ * a second for an outline that had not moved.
  */
-/**
- * 🛑 Kept per SELECTION, because a raster one is walked pixel by pixel: the overlay asks twice a
- * frame — `marching()` and `drawSelection` — so a 4096² document scanned 33 M pixels sixty times
- * a second for an outline that had not moved. An edit replaces the object, which is the key.
- */
-const outlines = new WeakMap<object, Point[]>()
-
 export function selectionOutline(selection: CanvasSelection): Point[] {
   if (!selection) return []
   return cachedOn(outlines, selection, () => outlineOf(selection))

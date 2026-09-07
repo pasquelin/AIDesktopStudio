@@ -81,6 +81,24 @@ describe('landConvertedMesh', () => {
     expect(await exists(join(root, 'Models/Robot.fbx'))).toBe(false)
   })
 
+  // 🛑 The import deduplicates on the WHOLE file name, so a `Robot.fbx` lands beside an existing
+  // `Robot.glb`; taking the name with another extension made the conversion refuse itself with
+  // « already exists », and the `.fbx` stayed unconverted for ever.
+  it('takes a free name when a glb of that name is already there', async () => {
+    const { root, deps } = await studio([
+      row({ path: 'Models/Robot.fbx' }),
+      row({ id: 'asset-2', name: 'Robot', path: 'Models/Robot.glb' }),
+    ])
+
+    const landed = await landConvertedMesh(
+      { replaces: 'asset-1', glb: GLB, type: 'mesh', losses: [] },
+      deps,
+    )
+
+    expect(landed?.path).toBe('Models/Robot 2.glb')
+    expect(await readFile(join(root, 'Models/Robot.glb'), 'utf8')).toBe('bytes of Robot')
+  })
+
   it('refiles a motion that turned out to be a model, the original following it', async () => {
     const { root, catalog, deps } = await studio([
       row({
