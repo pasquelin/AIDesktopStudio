@@ -79,11 +79,40 @@ export type InputMap = {
   actions: readonly InputAction[]
 }
 
-const SUPPORTED_GAMEPAD =
-  /^(?:leftStick|rightStick)(?:X|Y|Button)?$|^(?:south|east|west|north|leftShoulder|rightShoulder|leftTrigger|rightTrigger|select|start|dpadUp|dpadDown|dpadLeft|dpadRight|home)$/
+/**
+ * 🛑 The union spelled once more, and by the COMPILER: a control missing here does not build.
+ * The regex this replaces re-spelled all twenty-three by hand, so a twenty-fourth added to the
+ * union compiled everywhere and was refused in silence — the studio writing it into a
+ * `.input.json`, the game reading `null`, dropping the binding and playing on.
+ */
+const GAMEPAD_CONTROLS: Readonly<Record<GamepadControl, true>> = {
+  leftStick: true,
+  rightStick: true,
+  leftStickX: true,
+  leftStickY: true,
+  rightStickX: true,
+  rightStickY: true,
+  south: true,
+  east: true,
+  west: true,
+  north: true,
+  leftShoulder: true,
+  rightShoulder: true,
+  leftTrigger: true,
+  rightTrigger: true,
+  select: true,
+  start: true,
+  leftStickButton: true,
+  rightStickButton: true,
+  dpadUp: true,
+  dpadDown: true,
+  dpadLeft: true,
+  dpadRight: true,
+  home: true,
+}
 
 const isGamepadControl = (value: unknown): value is GamepadControl =>
-  typeof value === 'string' && SUPPORTED_GAMEPAD.test(value)
+  typeof value === 'string' && Object.hasOwn(GAMEPAD_CONTROLS, value)
 
 export const isInputActionKind = (value: unknown): value is InputActionKind =>
   value === 'button' || value === 'axis1' || value === 'axis2'
