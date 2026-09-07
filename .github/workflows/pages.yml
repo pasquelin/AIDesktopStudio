@@ -137,17 +137,33 @@ jobs:
       # qui compte ici, et il est dans le moteur, pas dans ce fichier.
       - run: pnpm build:site
 
+      # Sur `release: published`, GITHUB_REF vaut refs/tags/<tag> et jamais
+      # refs/heads/main : tester la seule branche sautait tout le déploiement à
+      # la publication — le déclencheur pour lequel le manifeste est écrit.
       - uses: actions/configure-pages@v6
-        if: github.ref == 'refs/heads/main'
+        if: github.event_name == 'release' || github.ref == 'refs/heads/main'
 
       - uses: actions/upload-pages-artifact@v5
-        if: github.ref == 'refs/heads/main'
+        if: github.event_name == 'release' || github.ref == 'refs/heads/main'
         with:
           path: _site
 
+      # Le même rendu, en artefact ordinaire, pour le serveur. Deux artefacts
+      # plutôt qu'un : `upload-pages-artifact` produit un tar au format propre à
+      # Pages, que `download-artifact` ne sait pas rouvrir. Et surtout, rebâtir
+      # dans l'autre job donnerait un site SANS `assets/release.json` — il est
+      # écrit ici, à partir de la charge utile de l'événement, qu'un second job
+      # ne reçoit pas.
+      - uses: actions/upload-artifact@v5
+        if: github.event_name == 'release' || github.ref == 'refs/heads/main'
+        with:
+          name: site
+          path: _site
+          retention-days: 1
+
   deploy:
     needs: build
-    if: github.ref == 'refs/heads/main'
+    if: github.event_name == 'release' || github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
@@ -158,3 +174,87 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v5
+
+  # Le serveur qui sert www.aidesktopstudio.com — l'URL canonique depuis la
+  # refonte. Pages reste déployé en miroir : les deux rendus sont identiques et
+  # portent la même balise canonique, donc rien n'est dupliqué aux yeux d'un
+  # moteur.
+  #
+  # Ce job ne dépend PAS de `deploy` : une panne de Pages ne doit pas priver le
+  # domaine de sa mise à jour, et réciproquement.
+  deploy-server:
+    needs: build
+    if: github.event_name == 'release' || github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/download-artifact@v5
+        with:
+          name: site
+          path: _site
+
+      # `--delete` en fin de course efface du serveur ce que l'artefact ne
+      # contient pas : un artefact vide ou tronqué effacerait donc le site en
+      # ligne, sans qu'aucune étape ne rougisse. On refuse d'aller plus loin.
+      - name: Refuser un rendu vide
+        run: |
+          test -s _site/index.html || { echo "Artefact sans index.html — arrêt avant rsync." >&2; exit 1; }
+          # Le rendu compte 33 fichiers au 2026-09-07 : une page par langue, les
+          # assets, le sitemap et robots.txt. Le plancher est bas exprès — il
+          # attrape l'artefact vide ou à moitié téléchargé, pas une page en moins.
+          n=$(find _site -type f | wc -l)
+          echo "$n fichiers à déployer"
+          [ "$n" -ge 20 ] || { echo "Seulement $n fichiers, le rendu en produit une trentaine." >&2; exit 1; }
+
+      # nginx sert `page.html.gz` à la place de `page.html` quand il le trouve
+      # (`gzip_static on`), sans rien recompresser à chaque requête. Fait ici en
+      # -9, ce que la compression à la volée ne se permet jamais.
+      # Images et vidéos sont déjà compressées : les gziper les alourdirait.
+      - name: Précompresser
+        run: |
+          find _site -type f \
+            \( -name '*.html' -o -name '*.css' -o -name '*.js' \
+               -o -name '*.svg' -o -name '*.json' -o -name '*.xml' -o -name '*.txt' \) \
+            -exec gzip -9 -k -f {} +
+
+      - name: Clé de déploiement
+        env:
+          KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          KNOWN: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          printf '%s\n' "$KEY"   > ~/.ssh/deploy && chmod 600 ~/.ssh/deploy
+          printf '%s\n' "$KNOWN" > ~/.ssh/known_hosts && chmod 600 ~/.ssh/known_hosts
+
+      # Le `/` distant n'est pas la racine du serveur : la clé est enfermée par
+      # `command="rrsync -wo <dossier>"` dans authorized_keys, et tout chemin est
+      # relatif à ce dossier. Cette clé ne peut donc rien faire d'autre
+      # qu'écrire le site — pas de shell, pas d'autre répertoire.
+      #
+      # `--delete` retire du serveur ce que le rendu ne produit plus ; sans lui
+      # une page supprimée resterait en ligne indéfiniment.
+      - name: Déployer
+        env:
+          TARGET: ${{ secrets.DEPLOY_TARGET }}
+          PORT: ${{ secrets.DEPLOY_SSH_PORT }}
+        run: |
+          # Sans --delete-delay les suppressions s'entrelacent aux transferts, et
+          # un visiteur lit une page dont le CSS n'est pas encore arrivé.
+          # L'exclusion protège le challenge ACME le jour où le vhost le servirait
+          # depuis ici plutôt que depuis /var/www/html.
+          rsync -rltz --delete-delay --delay-updates --stats \
+            --exclude '.well-known/' \
+            -e "ssh -p $PORT -i ~/.ssh/deploy -o StrictHostKeyChecking=yes" \
+            _site/ "$TARGET:/"
+
+      - name: Vérifier
+        run: |
+          # rsync a déjà réussi à ce stade : un échec ici doit venir du site, pas
+          # d'un aléa réseau. D'où le délai borné et les deux reprises. -L parce
+          # qu'une redirection ajoutée à la racine reste une réponse saine.
+          code=$(curl -sL -o /dev/null -w '%{http_code}' \
+            --max-time 15 --retry 2 --retry-delay 3 \
+            https://www.aidesktopstudio.com/)
+          echo "https://www.aidesktopstudio.com/ → $code" >> "$GITHUB_STEP_SUMMARY"
+          [ "$code" = "200" ] || { echo "Le site répond $code au lieu de 200." >&2; exit 1; }
