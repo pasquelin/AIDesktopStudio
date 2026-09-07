@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-import type { InputMap, KeyboardBinding } from '@shared/domain/inputMap'
+import { INPUT_MAP_VERSION, type InputMap, type KeyboardBinding } from '@shared/domain/inputMap'
 
 /** The four keys and the four arrows a walker and a machine both answer, as one half-axis each. */
 function keyAxis(negative: readonly string[], positive: readonly string[]): KeyboardBinding[] {
@@ -30,7 +30,7 @@ const BACK = ['KeyS', 'ArrowDown']
  */
 const DEFAULTS: readonly InputMap[] = [
   {
-    version: 1,
+    version: INPUT_MAP_VERSION,
     id: 'character',
     priority: 0,
     defaultActive: true,
@@ -75,7 +75,7 @@ const DEFAULTS: readonly InputMap[] = [
     ],
   },
   {
-    version: 1,
+    version: INPUT_MAP_VERSION,
     id: 'vehicle',
     priority: 10,
     // Active with `character`: no action name is shared, and a driver's body walks nowhere while
@@ -122,7 +122,7 @@ const DEFAULTS: readonly InputMap[] = [
     ],
   },
   {
-    version: 1,
+    version: INPUT_MAP_VERSION,
     id: 'flight',
     priority: 10,
     defaultActive: true,
@@ -183,7 +183,26 @@ export function withDefaultInputMaps(maps: readonly InputMap[]): readonly InputM
 function completed(map: InputMap): InputMap {
   const built = DEFAULTS.find(one => one.id === map.id)
   if (!built) return map
+  const kinds = new Map(built.actions.map(action => [action.id, action]))
+  // 🛑 The KIND is the built-in's, whatever the file says: values are keyed by id alone, so a
+  // `move` written as `axis1` made `axis2('move')` answer zero and the character stopped walking,
+  // with nothing said. A binding of the wrong shape reads as rest; the controller stays alive.
+  const kept = map.actions.map(action => {
+    const one = kinds.get(action.id)
+    return one && one.kind !== action.kind ? one : action
+  })
   const declared = new Set(map.actions.map(action => action.id))
   const missing = built.actions.filter(action => !declared.has(action.id))
-  return missing.length === 0 ? map : { ...map, actions: [...map.actions, ...missing] }
+  return { ...map, ...upgraded(map, built), actions: [...kept, ...missing] }
+}
+
+/**
+ * 🛑 What a map written before version 2 does not answer: those files predate the day driving and
+ * flying became active by default, so a project that had made its own carried `false` and its
+ * plane responded to NOTHING, with no word. A map of the current version is left as it is.
+ */
+function upgraded(map: InputMap, built: InputMap): Partial<InputMap> {
+  return map.version === INPUT_MAP_VERSION
+    ? {}
+    : { version: INPUT_MAP_VERSION, defaultActive: built.defaultActive }
 }

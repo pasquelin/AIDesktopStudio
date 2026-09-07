@@ -1,3 +1,4 @@
+import { INPUT_MAP_VERSION } from '@shared/domain/inputMap'
 import { describe, expect, it } from 'vitest'
 import { newComponent, withComponentField } from '@shared/domain/componentRegistry'
 import { DEFAULT_PLAY, reliefLayer } from '@shared/domain/scene'
@@ -37,13 +38,19 @@ describe('the edit state, translated into something that runs', () => {
   it('starts the runtime with the default input contexts from the project', () => {
     const inputMaps: readonly InputMap[] = [
       {
-        version: 1,
+        version: INPUT_MAP_VERSION,
         id: 'character',
         priority: 0,
         defaultActive: true,
         actions: [],
       },
-      { version: 1, id: 'vehicle', priority: 10, defaultActive: false, actions: [] },
+      {
+        version: INPUT_MAP_VERSION,
+        id: 'vehicle',
+        priority: 10,
+        defaultActive: false,
+        actions: [],
+      },
     ]
 
     const world = worldFromScene('doc-1', scene(), ports(), {}, 1, undefined, inputMaps)
