@@ -4,6 +4,7 @@ import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { createInputMaps } from './inputMaps'
 import type { FolderEntry } from '@shared/domain/folder'
+import { INPUT_MAP_VERSION } from '@shared/domain/inputMap'
 
 const entry = (path: string): FolderEntry => ({ path, name: path, kind: 'file' })
 
@@ -94,5 +95,26 @@ describe('project input maps', () => {
     ).resolves.toBe(false)
     await expect(readFile(join(outside, 'New/character.input.json'), 'utf8')).rejects.toThrow()
     await rm(outside, { recursive: true, force: true })
+  })
+
+  // 🛑 Every window, not the one that wrote: a control map is resolved once and held, so a rebind
+  // saved anywhere left the others reading the version from before it.
+  it('tells what a write landed on, so a held map elsewhere knows it is behind', async () => {
+    const said: string[] = []
+    const store = createInputMaps({
+      rootOf: () => root,
+      walk: async () => [],
+      announce: path => said.push(path),
+    })
+
+    await store.write('Controls/character.input.json', {
+      version: INPUT_MAP_VERSION,
+      id: 'character',
+      priority: 0,
+      defaultActive: true,
+      actions: [],
+    })
+
+    expect(said).toEqual(['Controls/character.input.json'])
   })
 })

@@ -21,6 +21,8 @@ export type ProjectJsonStoreDeps<T> = {
   parse: (value: unknown) => T
   rootOf: () => string | null
   walk: () => Promise<FolderEntry[]>
+  /** Told what a write landed on. A PORT, so this module owes Electron nothing. */
+  announce?: (path: string) => void
 }
 
 /**
@@ -66,6 +68,10 @@ export function createProjectJsonStore<T>(deps: ProjectJsonStoreDeps<T>): Projec
       await writes.next(() =>
         writeAtomic(resolve(folder, basename(file)), `${JSON.stringify(value, null, 2)}\n`),
       )
+      // 🛑 Every window, not the one that wrote: a control map is resolved once and held, so a
+      // rebind saved in one window left the studio's own navigation reading the version from
+      // before it — until the project was closed and opened again.
+      deps.announce?.(path)
       return true
     },
   }

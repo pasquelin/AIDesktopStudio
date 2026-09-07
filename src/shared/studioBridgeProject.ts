@@ -14,6 +14,8 @@ export type StudioBridgeProject = {
     list: () => Promise<string[]>
     read: (path: string) => Promise<InputMap | null>
     write: (path: string, map: InputMap) => Promise<boolean>
+    /** Told when ANY window wrote one, with its path: a held map is stale from that moment. */
+    onWritten: (callback: (path: string) => void) => Unsubscribe
   }
   /** The state machines a body is animated by. The same three gestures, on `.anim.json` files. */
   animationGraphs: {

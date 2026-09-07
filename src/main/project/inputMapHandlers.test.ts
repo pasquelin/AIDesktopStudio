@@ -39,9 +39,11 @@ describe('project input map handlers', () => {
       invoke(CHANNELS.inputMapWrite, 'Controls/character.input.json', character),
     ).resolves.toBe(true)
     expect(() =>
+      // A version this build has never written: 1 and 2 are both READ, one being a file from
+      // before driving and flying were active by default.
       invoke(CHANNELS.inputMapWrite, 'Controls/broken.input.json', {
         ...character,
-        version: 2,
+        version: 99,
       }),
     ).toThrow('unsupported input map version')
 

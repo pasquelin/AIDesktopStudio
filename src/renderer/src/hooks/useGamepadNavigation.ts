@@ -8,6 +8,7 @@ import { createInputActions, type InputActions } from '@game/runtime/inputAction
 import {
   onInputMapsChanged,
   projectInputMaps,
+  watchWrittenInputMaps,
   withoutDuplicateInputMapIds,
 } from '@/engines/code/projectInputMaps'
 import { useProject } from '@/stores/project'
@@ -112,6 +113,7 @@ export function useGamepadNavigation(): void {
   const [written, again] = useReloadKey()
 
   useEffect(() => onInputMapsChanged(again), [again])
+  useEffect(() => watchWrittenInputMaps(), [])
 
   useEffect(() => {
     if (!enabled || typeof navigator.getGamepads !== 'function') return

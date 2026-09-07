@@ -11,6 +11,7 @@ export type AnimationGraphStore = ProjectJsonStore<AnimationGraph>
 export function createAnimationGraphs(deps: {
   rootOf: () => string | null
   walk: () => Promise<FolderEntry[]>
+  announce?: (path: string) => void
 }): AnimationGraphStore {
   return createProjectJsonStore({
     ...deps,
