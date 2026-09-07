@@ -102,14 +102,18 @@ export function createWorkerPort<T, R extends PortResponse>(
     for (const slot of abandoned) slot.reject(new Error(reason))
   }
 
-  /** 🛑 The worker is DROPPED with it: a terminated one answers nothing more, ever. */
+  /**
+   * 🛑 Killing it ABANDONS what was still out on it: a terminated worker answers nothing more,
+   * ever, and a slot left in `waiting` is a promise nobody will ever honour. Held safe until now
+   * only because the one port that terminates is wrapped by `serial` — an invariant living a
+   * file away from the code that needed it.
+   */
   const takeBack = (running: Worker, id: number): void => {
     if (cancel === 'message') {
       running.postMessage({ id, cancel: true })
       return
     }
-    running.terminate()
-    if (worker === running) worker = null
+    abandon(running, `${what} request taken back`)
   }
 
   const port: WorkerPort<T> = {

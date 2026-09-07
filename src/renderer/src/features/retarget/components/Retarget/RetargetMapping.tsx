@@ -2,7 +2,7 @@ import { mdiFilterVariant } from '@mdi/js'
 import { ToolButton } from '@/components/ToolButton'
 import { QuietNote } from '@/components/QuietNote'
 import { HINT_LEFT } from '@/helpers/tooltip'
-import { RetargetMappingRow, type BoneChoice } from './RetargetMappingRow'
+import { RetargetMappingRow } from './RetargetMappingRow'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
@@ -13,6 +13,7 @@ import {
 import { profileWithRole } from '@shared/domain/skeletonProfile'
 import { PropertySection } from '@/components/PropertySection'
 import { SearchField } from '@/components/SearchField'
+import type { SelectOption } from '@/components/SelectField'
 import { Button } from '@/components/Button'
 import { motionProfile } from '../../retargetDraft'
 import { boneFor, type RetargetMappingSide } from '../../retargetMappingSide'
@@ -31,7 +32,7 @@ const GROUPS = [
 
 type Props = { source: RetargetMappingSide; target: RetargetMappingSide; resetKey?: string }
 
-const choicesOf = (side: RetargetMappingSide, unmapped: string): BoneChoice[] => [
+const choicesOf = (side: RetargetMappingSide, unmapped: string): SelectOption<string>[] => [
   { value: '', label: unmapped },
   ...side.view.bones.map(bone => ({ value: bone.name, label: bone.name })),
 ]
@@ -57,8 +58,8 @@ export function RetargetMapping({ source, target, resetKey }: Props) {
   // 🛑 One list per SIDE, not one per row: the same seventy bones were spelled into `<option>`
   // objects fifty-two times over, for each of the two sides — see `RetargetMappingRow`.
   const unmapped = t('character.retarget.unmapped')
-  const sourceBones = useMemo(() => choicesOf(source, unmapped), [source, unmapped])
-  const targetBones = useMemo(() => choicesOf(target, unmapped), [target, unmapped])
+  const sourceBones = useMemo(() => choicesOf(source, unmapped), [source.view.bones, unmapped])
+  const targetBones = useMemo(() => choicesOf(target, unmapped), [target.view.bones, unmapped])
   const lock = useCallback((role: HumanoidRole) => {
     setLocked(current => {
       const next = new Set(current)
@@ -67,12 +68,17 @@ export function RetargetMapping({ source, target, resetKey }: Props) {
       return next
     })
   }, [])
+  // 🛑 The roles already taken are COUNTED here, not asked of `next`: that profile is replaced at
+  // every turn, and `boneFor` inverts a whole one per question — around a hundred inversions for
+  // a click, where the linear walk it replaced stopped at its first match.
   const auto = () => {
     for (const side of [source, target]) {
       let next = side.profile
+      const taken = new Set(Object.values(side.profile.roles))
       for (const [bone, role] of Object.entries(motionProfile(side.view.bones).roles)) {
-        if (locked.has(role) || boneFor(next, role) || next.roles[bone]) continue
+        if (locked.has(role) || taken.has(role) || next.roles[bone]) continue
         next = profileWithRole(next, bone, role)
+        taken.add(role)
       }
       side.onChange(next)
     }

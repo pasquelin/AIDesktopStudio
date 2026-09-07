@@ -132,6 +132,7 @@ export function actionIntents(action: IntentBearer): readonly ActionIntent[] {
  * else. Not `commitment: 'none'`, which `node.remove` declares too.
  */
 export function actionReads(action: IntentBearer): boolean {
-  const intents = actionIntents(action)
-  return intents.length > 0 && intents.every(intent => intent === 'read' || intent === 'search')
+  // No empty list to guard against any more: `ACTION_INTENTS` is a `Record<ActionName, …>` and
+  // its suite refuses an entry that names none.
+  return actionIntents(action).every(intent => intent === 'read' || intent === 'search')
 }

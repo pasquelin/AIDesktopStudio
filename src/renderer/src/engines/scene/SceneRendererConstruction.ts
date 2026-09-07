@@ -53,14 +53,15 @@ export class SceneRendererConstruction extends SceneRendererFrame {
       options.assetVersion,
       options.livePreview,
     )
-    this.buildModelSources(options)
-    this.buildShapeWorkers(options)
-    this.buildRigWorkers(options)
-    this.buildStage(options)
+    this.buildModelSources()
+    this.buildShapeWorkers()
+    this.buildRigWorkers()
+    this.buildStage()
   }
 
   /** Where a `.glb` comes from, and the two caches that keep one file read once. */
-  private buildModelSources(options: SceneRendererOptions): void {
+  private buildModelSources(): void {
+    const options = this.options
     this.gltf = options.loadModel
       ? {
           load: options.loadModel,
@@ -100,7 +101,8 @@ export class SceneRendererConstruction extends SceneRendererFrame {
   }
 
   /** What cuts and groups geometry — all three behind a worker, none of it on the interface thread. */
-  private buildShapeWorkers(options: SceneRendererOptions): void {
+  private buildShapeWorkers(): void {
+    const options = this.options
     this.bvh = options.bvh ?? createBvhBuilder(() => new BvhWorker())
     this.instances = groupsFor(options)(
       this.viewport.scene,
@@ -118,7 +120,8 @@ export class SceneRendererConstruction extends SceneRendererFrame {
   }
 
   /** What binds and replays a skeleton, and the corrections this project already made. */
-  private buildRigWorkers(options: SceneRendererOptions): void {
+  private buildRigWorkers(): void {
+    const options = this.options
     this.skin = options.skin ?? createSkinWeights(() => new SkinWorker())
     this.retarget = options.retarget ?? createRetarget(() => new RetargetWorker())
     // Before any file lands: a skeleton this project has already been taught is recognised on
@@ -127,7 +130,8 @@ export class SceneRendererConstruction extends SceneRendererFrame {
   }
 
   /** The sky, the glyphs and where the eye starts — what a scene shows before it holds anything. */
-  private buildStage(options: SceneRendererOptions): void {
+  private buildStage(): void {
+    const options = this.options
     this.sky = createSkyBinding(this.textureCache, () => this.paintBackground())
     // The studio's own by default: a face parsed for a caption in the image workspace is the
     // same object a text node extrudes, and half a megabyte of glyph tables is worth sharing.

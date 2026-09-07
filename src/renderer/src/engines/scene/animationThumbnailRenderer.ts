@@ -20,7 +20,7 @@ import type { Object3D } from 'three'
 import { createGltfSource } from './gltfSource'
 import { disposeTree } from './modelCache'
 import { retargetPlanOf, wireBonesOf, skeletonScaleOf } from './retarget'
-import { poseFractionOf, turnScoreOf, wrappedAngle, yawOf } from './animationPose'
+import { poseFractionOf, yawOf } from './animationPose'
 import type { AnimationThumbnailRequest } from './animationThumbnailMessage'
 
 /** What a clip nobody has described is scored on: a step is read in the legs. */
@@ -125,7 +125,6 @@ export async function createAnimationThumbnailRenderer(model: ArrayBuffer, decod
       if (!sourceHip) throw new Error(`Hips missing in ${name}`)
       // Aliased, as `hip` is above: the narrowing is what the nested pose helpers read.
       const sh = sourceHip
-      const square = shown.square === true
 
       const scale = skeletonScaleOf(character, source)
       mixer = new AnimationMixer(source)
@@ -145,13 +144,12 @@ export async function createAnimationThumbnailRenderer(model: ArrayBuffer, decod
       const start = new Map(
         [...refs].map(([n, r]) => [n, r.o.getWorldQuaternion(new Quaternion())]),
       )
-      const relativeYaw = () => wrappedAngle(yaw() - initialYaw)
+      // 🛑 Reached only by a clip NOBODY has described: a shipped one settles where to stop, and
+      // is never sampled. A step is read in the legs — scoring a walk on its head would pick the
+      // frame where it looks around rather than the one where it strides.
       function poseScore(): number {
-        if (shown.score === 'hipHeight') return sh.o.getWorldPosition(new Vector3()).y
-        if (shown.score === 'turn') return turnScoreOf(relativeYaw(), shown.turn ?? Math.PI / 4)
-
         let score = 0
-        for (const joint of shown.joints ?? STEP_JOINTS) {
+        for (const joint of STEP_JOINTS) {
           // `refs` and `start` are keyed by SOURCE names, a poster's joints by the character's:
           // read one of them untranslated and a Mixamo clip scores against its bind pose.
           const from = names[joint] ?? joint
@@ -169,7 +167,7 @@ export async function createAnimationThumbnailRenderer(model: ArrayBuffer, decod
       function applyPose(): void {
         const correction = new Quaternion().setFromAxisAngle(
           new Vector3(0, 1, 0),
-          square ? -initialYaw : 0,
+          shown.square ? -initialYaw : 0,
         )
         const desired = new Map<string, Quaternion>()
         for (const b of bones) {
@@ -197,7 +195,7 @@ export async function createAnimationThumbnailRenderer(model: ArrayBuffer, decod
       function framePose(): void {
         const box = bounds(),
           center = box.getCenter(new Vector3())
-        direction.fromArray([...(shown.camera ?? preset.camera)]).normalize()
+        direction.fromArray(shown.camera ?? preset.camera).normalize()
         camera.position.copy(center).addScaledVector(direction, restHeight * 5)
         camera.lookAt(center)
         camera.updateMatrixWorld(true)

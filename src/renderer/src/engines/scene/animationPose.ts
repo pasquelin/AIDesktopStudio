@@ -17,21 +17,6 @@ export function yawOf(current: Quaternion, rest: Quaternion): number {
 }
 
 /**
- * The same angle brought back inside a half turn.
- *
- * Without it a character that turned a hair past π reads as having turned almost a full circle
- * the other way, and the frame chosen for a `TurnAround` is the one where it faces the camera.
- */
-export function wrappedAngle(radians: number): number {
-  return Math.atan2(Math.sin(radians), Math.cos(radians))
-}
-
-/** How near a turn is to the one it should be showing. NEARER IS HIGHER, like every score here. */
-export function turnScoreOf(yaw: number, wanted: number): number {
-  return -Math.abs(Math.abs(yaw) - wanted)
-}
-
-/**
  * Where in the clip to stop, as a fraction of it — the settled one when a clip is known, else
  * the best-scoring sample.
  *

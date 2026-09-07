@@ -189,8 +189,6 @@ export function runSceneCommand(documentId: string, command: CommandId): Command
         return null
     }
   }
-  let answer: CommandAnswer | null = framingAndViews()
-  if (answer !== null) return answer
   const cameraSheetAndPanels = () => {
     switch (command) {
       case 'scene.viewCamera':
@@ -218,8 +216,6 @@ export function runSceneCommand(documentId: string, command: CommandId): Command
         return null
     }
   }
-  answer = cameraSheetAndPanels()
-  if (answer !== null) return answer
   const removingAndCopying = () => {
     switch (command) {
       case 'scene.delete':
@@ -244,8 +240,6 @@ export function runSceneCommand(documentId: string, command: CommandId): Command
         return null
     }
   }
-  answer = removingAndCopying()
-  if (answer !== null) return answer
   const pastingAndGrouping = () => {
     switch (command) {
       case 'scene.cut':
@@ -273,8 +267,6 @@ export function runSceneCommand(documentId: string, command: CommandId): Command
         return null
     }
   }
-  answer = pastingAndGrouping()
-  if (answer !== null) return answer
   const solidOperations = () => {
     switch (command) {
       case 'scene.negate':
@@ -299,8 +291,6 @@ export function runSceneCommand(documentId: string, command: CommandId): Command
         return null
     }
   }
-  answer = solidOperations()
-  if (answer !== null) return answer
   const separatingAndHistory = () => {
     switch (command) {
       case 'scene.separate': {
@@ -321,7 +311,19 @@ export function runSceneCommand(documentId: string, command: CommandId): Command
         return null
     }
   }
-  answer = separatingAndHistory()
-  if (answer !== null) return answer
+  // 🛑 The ORDER is the whole of what this list carries: a command a half does not know answers
+  // `null`, and the next one is asked — so moving one between halves is free, and only a case two
+  // of them share depends on where it sits.
+  for (const half of [
+    framingAndViews,
+    cameraSheetAndPanels,
+    removingAndCopying,
+    pastingAndGrouping,
+    solidOperations,
+    separatingAndHistory,
+  ]) {
+    const answer = half()
+    if (answer !== null) return answer
+  }
   return false
 }

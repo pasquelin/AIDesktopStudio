@@ -1,5 +1,6 @@
 import type { HumanoidRole } from '@shared/domain/humanoid'
 import type { SkeletonProfile } from '@shared/domain/skeletonProfile'
+import { cachedOn } from '@/engines/core/cachedOn'
 import type { MotionView } from './components/Retarget/RetargetViewport'
 
 export type RetargetMappingSide = {
@@ -16,16 +17,13 @@ export type RetargetMappingSide = {
  */
 const inverted = new WeakMap<SkeletonProfile, ReadonlyMap<HumanoidRole, string>>()
 
-function bonesByRole(profile: SkeletonProfile): ReadonlyMap<HumanoidRole, string> {
-  const held = inverted.get(profile)
-  if (held) return held
-
-  const made = new Map<HumanoidRole, string>()
-  for (const [name, role] of Object.entries(profile.roles))
-    if (!made.has(role)) made.set(role, name)
-  inverted.set(profile, made)
-  return made
-}
+const bonesByRole = (profile: SkeletonProfile): ReadonlyMap<HumanoidRole, string> =>
+  cachedOn(inverted, profile, () => {
+    const made = new Map<HumanoidRole, string>()
+    for (const [name, role] of Object.entries(profile.roles))
+      if (!made.has(role)) made.set(role, name)
+    return made
+  })
 
 /** The bone a profile gives a role, or nothing when the role is unmapped. */
 export const boneFor = (profile: SkeletonProfile, role: HumanoidRole): string =>

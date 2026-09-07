@@ -28,7 +28,10 @@ export async function installShippedCharacter(isCurrent: () => boolean): Promise
       assetId = installed?.assetId ?? null
       assetPath = installed?.path ?? null
     }
-    return true
+    // 🛑 What LANDED, never « did not throw »: a main process answering `null` — no bridge, no
+    // level shipped — leaves the project bodiless, and saying `true` would memoise that for the
+    // whole session.
+    return installed !== null && installed !== undefined
   } catch {
     if (isCurrent()) forgetShippedCharacter()
     return false

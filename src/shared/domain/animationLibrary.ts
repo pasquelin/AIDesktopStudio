@@ -10,10 +10,6 @@ import { stemOf } from './fileName'
  * from the folder rather than from inside the clip: a Tripo rig calls its only clip `NlaTrack`
  * and Uthana's carries no name at all, so what the file spells must never reach the screen.
  */
-/** A mood is read in the upper body, a step in the legs — see `AnimationPoster.joints`. */
-const MOOD_JOINTS: readonly string[] = ['Head', 'Chest', 'LeftUpperArm', 'RightUpperArm']
-const IDLE_JOINTS: readonly string[] = ['Head', 'Chest', 'Hips', 'LeftUpperLeg', 'RightUpperLeg']
-
 export type BundledAnimation = {
   /** The folder's name, which is what the studio shows and what a block is labelled with. */
   name: string
@@ -34,14 +30,14 @@ export type BundledAnimation = {
  * clip is described by nobody, and guessing from its name is what this exists to stop.
  */
 export type AnimationPoster = {
-  /** Where in the clip to stop, as a fraction of it. Nothing means the best-scoring sample. */
+  /**
+   * Where in the clip to stop, as a fraction of it.
+   *
+   * 🛑 Every shipped clip settles it, and that is what makes the scoring below UNREACHABLE for
+   * them: a described clip is never sampled. What the sampling is for is a clip nobody has
+   * described, and it is scored on the legs — see `STEP_JOINTS`, in the renderer.
+   */
   at?: number
-  /** How high the hips travel, for a clip whose whole point is leaving the ground. */
-  score?: 'hipHeight' | 'turn'
-  /** For `turn`: how far the body must have turned by, in radians. */
-  turn?: number
-  /** The joints whose travel from the first frame is added up, by humanoid role. */
-  joints?: readonly string[]
   /** Where the eye stands, when the ordinary three-quarter view says nothing about this clip. */
   camera?: readonly [number, number, number]
   /** Whether the body is turned back square to the camera — what a side turn is drawn as. */
@@ -55,19 +51,19 @@ export type AnimationPoster = {
  * dropped in wears whatever name its author gave it, and answers here by accident or not at all.
  */
 export const BUNDLED_ANIMATION_POSTERS: Readonly<Record<string, AnimationPoster>> = {
-  Idle: { at: 0.5, joints: IDLE_JOINTS },
-  IdleBreathing: { at: 0.85, joints: IDLE_JOINTS },
-  IdleBriefcase: { at: 0.25, joints: IDLE_JOINTS },
-  IdleHappy: { at: 0.3, joints: MOOD_JOINTS },
-  IdleSad: { at: 0.45, joints: MOOD_JOINTS },
-  IdleShift: { at: 0.3, joints: IDLE_JOINTS },
-  Jump: { at: 0.39, score: 'hipHeight' },
-  RunningJump: { at: 0.39, score: 'hipHeight' },
+  Idle: { at: 0.5 },
+  IdleBreathing: { at: 0.85 },
+  IdleBriefcase: { at: 0.25 },
+  IdleHappy: { at: 0.3 },
+  IdleSad: { at: 0.45 },
+  IdleShift: { at: 0.3 },
+  Jump: { at: 0.39 },
+  RunningJump: { at: 0.39 },
   StrafeLeft: { at: 0.25 },
   StrafeRight: { at: 0.65 },
-  TurnAround: { at: 0.55, score: 'turn', turn: Math.PI * 0.8 },
-  TurnLeft: { at: 0.29, score: 'turn', turn: Math.PI / 4, square: true, camera: [0, 7, 24] },
-  TurnRight: { at: 0.5, score: 'turn', turn: Math.PI / 4, square: true, camera: [0, 7, 24] },
+  TurnAround: { at: 0.55 },
+  TurnLeft: { at: 0.29, square: true, camera: [0, 7, 24] },
+  TurnRight: { at: 0.5, square: true, camera: [0, 7, 24] },
   Walk: { at: 0.75 },
   WalkStart: { at: 0.45 },
   WalkStop: { at: 0.45 },

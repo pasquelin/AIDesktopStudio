@@ -35,7 +35,9 @@ export async function installCheckerTextures(isCurrent: () => boolean): Promise<
   try {
     const textures = (await getBridge()?.assets.installBundledTextures()) ?? []
     if (isCurrent()) rememberCheckerTextures(textures)
-    return true
+    // 🛑 What LANDED, never « did not throw »: an empty answer leaves every new shape plain, and
+    // saying `true` would memoise that for the whole session — see `projectInstalls`.
+    return textures.length > 0
   } catch {
     if (isCurrent()) forgetCheckerTextures()
     return false

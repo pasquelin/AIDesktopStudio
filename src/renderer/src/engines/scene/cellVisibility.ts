@@ -15,6 +15,14 @@ import type { CellKey, WorldPartition } from './worldPartition'
  * 🛑 What the last follow was answered for. A camera that has not moved, a cast unchanged and a
  * revision unchanged mean the answer would be the same one — measured at 9,43 ms a frame on 512
  * cells of 8 192 bodies, all in view, which is the whole of what a still frame was paying twice.
+ *
+ * 🛑 ONE slot, and it must stay one: this is not a cache but « what the cells reflect right now »,
+ * `synchronizeStandingCells` having MUTATED their visibility. A slot per camera would answer early
+ * for a camera whose cells another has since replaced, and draw a pane from another one's view.
+ *
+ * The price, in clear: a frame drawing several panes, or a camera preview beside a pane, asks with
+ * a different camera each time and touches nothing. The saving is a window showing ONE view —
+ * which is the ordinary one, and the only one where the same question was asked twice.
  */
 export type FollowMemory = {
   /**

@@ -227,7 +227,6 @@ function systemsFor(parts: SystemParts): readonly System[] {
   const pilots = createPilots()
   const player = playerPartsOf(state.nodes)
   const rigs = createRigs(player?.eye?.id ?? null)
-  const shapeOf = (entity: Entity): ColliderShape | null => shapeFor(byId, ports, entity)
   return [
     createScriptSystem(scripts),
     createTimelineSystem({
@@ -250,7 +249,7 @@ function systemsFor(parts: SystemParts): readonly System[] {
       localOf: (entity, position, rotation) => hierarchy.localOf(entity.id, position, rotation),
     }),
     createPhysicsSystem({
-      shapeOf,
+      shapeOf: (entity: Entity) => shapeFor(byId, ports, entity),
       characters,
       possessions,
       statics: staticsOf(state, heightmaps, message => ports.log.write('warn', message)),

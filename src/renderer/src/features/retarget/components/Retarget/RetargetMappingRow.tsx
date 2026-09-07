@@ -2,13 +2,11 @@ import { mdiLock, mdiLockOpenVariant } from '@mdi/js'
 import { memo } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { HumanoidRole } from '@shared/domain/humanoid'
-import { SelectField } from '@/components/SelectField'
+import { SelectField, type SelectOption } from '@/components/SelectField'
 import { PropertyRow } from '@/components/PropertyRow'
 import { ToolButton } from '@/components/ToolButton'
 import { HINT_LEFT } from '@/helpers/tooltip'
 import { boneFor, type RetargetMappingSide } from '../../retargetMappingSide'
-
-export type BoneChoice = { value: string; label: string }
 
 /**
  * 🛑 Memoised, and its options RECEIVED: a humanoid has fifty-two roles and a rig some seventy
@@ -28,8 +26,8 @@ export const RetargetMappingRow = memo(function RetargetMappingRow({
   role: HumanoidRole
   source: RetargetMappingSide
   target: RetargetMappingSide
-  sourceBones: readonly BoneChoice[]
-  targetBones: readonly BoneChoice[]
+  sourceBones: readonly SelectOption<string>[]
+  targetBones: readonly SelectOption<string>[]
   locked: boolean
   onLock: (role: HumanoidRole) => void
   onChoose: (side: RetargetMappingSide, role: HumanoidRole, name: string) => void
@@ -42,7 +40,7 @@ export const RetargetMappingRow = memo(function RetargetMappingRow({
           [
             ['source', source, sourceBones],
             ['target', target, targetBones],
-          ] satisfies [string, RetargetMappingSide, readonly BoneChoice[]][]
+          ] satisfies [string, RetargetMappingSide, readonly SelectOption<string>[]][]
         ).map(([id, side, bones]) => (
           <SelectField
             key={id}

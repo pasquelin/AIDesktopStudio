@@ -1,7 +1,7 @@
 import type { Asset, AssetQuery } from '@shared/domain/asset'
 import { matchExpression } from './ftsMatch'
 import { escapeLike, holes, NOT_PRIVATE } from './sqlText'
-import type { SqliteDriver, SqlValue } from './sqlite'
+import type { SqliteDriver, SqlRow, SqlValue } from './sqlite'
 import { text } from './sqlRow'
 import { assetOf } from './catalogRows'
 import { CATALOG_DEFAULT_LIMIT } from './catalogSchema'
@@ -22,6 +22,11 @@ export function searchAssets(
   const rows = driver
     .prepare(`SELECT * FROM assets ${where} ORDER BY ${order} LIMIT ? OFFSET ?`)
     .all(...params)
+  return assetsOf(rows, tagsByAsset)
+}
+
+/** The rows dressed with their tags — the one shape a query answers in, whatever asked for it. */
+function assetsOf(rows: readonly SqlRow[], tagsByAsset: TagsByAsset): Asset[] {
   const tags = tagsByAsset(rows.map(row => text(row, 'id')))
   return rows.map(row => assetOf(row, tags.get(text(row, 'id')) ?? []))
 }

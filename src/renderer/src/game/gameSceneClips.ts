@@ -1,6 +1,7 @@
 import type { Object3D } from 'three'
 import type { ModelRef } from '@shared/domain/sceneModel'
 import { clipKeyOf, type ClipSource } from '@shared/domain/scene'
+import { orElse } from '@shared/promises'
 import type { AssetPort } from '@game/ports/assetPort'
 import type { ModelSource } from '@/engines/scene/modelCache'
 import type { SceneResources } from './gameSceneResources'
@@ -24,7 +25,10 @@ export async function loadModelAnimations(
   // 🛑 Awaited TOGETHER and filed in ORDER: the files are independent round trips, and reading
   // them one after another is what made a scene of ten characters wait for eighty. What a node
   // can play is a record, so resolution order would otherwise decide what a band lists first.
-  const loaded = await Promise.all(asked.map(one => settledOrNull(one.held)))
+  //
+  // Per file, and silent on purpose: one clip whose model fails to load must not take the clips
+  // beside it down, and `createModelOf` already reports what a model failing to load costs.
+  const loaded = await Promise.all(asked.map(one => orElse<Object3D | null>(one.held, null)))
 
   for (const [index, one] of asked.entries()) {
     const selected = loaded[index]?.animations[one.at]
@@ -60,15 +64,4 @@ function askedClipsOf(
   }
 
   return asked
-}
-
-/** 🛑 Per file: one clip whose model fails to load must not take the clips beside it down. */
-async function settledOrNull(held: Promise<Object3D>): Promise<Object3D | null> {
-  try {
-    return await held
-  } catch {
-    // Said nowhere on purpose: `createModelOf` already reports what a model failing to load costs,
-    // and a clip that never lands leaves its block silent rather than the scene broken.
-    return null
-  }
 }

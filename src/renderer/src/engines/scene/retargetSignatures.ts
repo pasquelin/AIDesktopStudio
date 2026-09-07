@@ -10,6 +10,7 @@ import { skeletonSignatureOf, skeletonTopologySignatureOf } from '@shared/domain
 import type { SkeletonProfile } from '@shared/domain/skeletonProfile'
 import type { NamedBone } from './boneRoles'
 import type { WireBone } from './retargetMessage'
+import { cachedOn } from '../core/cachedOn'
 
 /** The wire spells a parent as an index; reading roles wants it as a name. */
 export function namedBonesOf(bones: readonly WireBone[]): NamedBone[] {
@@ -25,15 +26,12 @@ export function namedBonesOf(bones: readonly WireBone[]): NamedBone[] {
  * Each is filled SEPARATELY, and that is the point: `profileOfBones` only reaches for the second
  * when the first misses, and computing both eagerly would pay a digest the common case skips.
  */
-const signatures = new WeakMap<readonly WireBone[], { topology?: string; names?: string }>()
+type Signatures = { topology?: string; names?: string }
 
-function signaturesOf(bones: readonly WireBone[]): { topology?: string; names?: string } {
-  const held = signatures.get(bones)
-  if (held) return held
-  const made = {}
-  signatures.set(bones, made)
-  return made
-}
+const signatures = new WeakMap<readonly WireBone[], Signatures>()
+
+const signaturesOf = (bones: readonly WireBone[]): Signatures =>
+  cachedOn(signatures, bones, () => ({}))
 
 function topologySignature(bones: readonly WireBone[]): string {
   const held = signaturesOf(bones)

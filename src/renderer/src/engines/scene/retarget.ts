@@ -43,6 +43,10 @@ export type Retarget = {
    * 🛑 A target ALREADY WIRED is taken as it is: a caller replaying eight files on one body wired
    * it eight times, and `wireBonesOf` walks the tree and copies every transform. Its signature is
    * memoised per array, so handing the same one back is what makes that memo bite.
+   *
+   * 🛑 And it MAY HAND BACK the very clips it was given — two skeletons that already agree need
+   * no worker at all. A caller that writes into one clones it first, or it renames the file's own
+   * clip: `SceneRendererModels.adopt` is where that was paid for.
    */
   adapt: (
     target: Object3D | readonly WireBone[],
