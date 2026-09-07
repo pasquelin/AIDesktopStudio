@@ -73,10 +73,6 @@ function picturesOf(manager: LoadingManager): { wait: (timeoutMs: number) => Pro
           clearTimeout(late)
           done()
         }
-        if (finished) {
-          clearTimeout(late)
-          done()
-        }
       }),
   }
 }

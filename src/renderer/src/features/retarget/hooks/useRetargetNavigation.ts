@@ -12,7 +12,7 @@ type Side = 'source' | 'target'
 export function useRetargetNavigation(source: Navigation | null, target: Navigation | null) {
   const [active, activate] = useState<Side>('target')
   const [navigating, setNavigating] = useState(false)
-  const engine = active === 'source' ? source : active === 'target' ? target : null
+  const engine = active === 'source' ? source : target
   const { heldMotion } = useShortcuts({
     scope: 'scene',
     enabled: engine !== null,

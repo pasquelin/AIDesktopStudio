@@ -1,4 +1,5 @@
 import { profileOfBones } from '@/engines/scene/retarget'
+import { sameValues } from '@/helpers/objects'
 import { motionProfile } from './retargetDraft'
 import type { MotionView } from './components/Retarget/RetargetViewport'
 import { profileWithRole, type SkeletonProfile } from '@shared/domain/skeletonProfile'
@@ -18,11 +19,11 @@ export function profilesConflict(
   source: SkeletonProfile | null,
   target: SkeletonProfile | null,
 ): boolean {
+  // 🛑 By value, never by `JSON.stringify`: `profileWithRole` DELETES the rebound key and pushes
+  // it back at the end, so two identical profiles read as a conflict after one `choose()` and
+  // `confirmedProfiles` then saved none of them.
   return Boolean(
-    source &&
-    target &&
-    source.signature === target.signature &&
-    JSON.stringify(source) !== JSON.stringify(target),
+    source && target && source.signature === target.signature && !sameValues(source, target),
   )
 }
 

@@ -215,14 +215,13 @@ export function retargetPlanOf(
   for (const bone of target)
     if (sourceNames.has(bone.name) && !excluded.has(bone.name)) names[bone.name] = bone.name
 
-  for (const [name, role] of Object.entries(rolesOf(target, known))) {
+  const targetRoles = rolesOf(target, known)
+  for (const [name, role] of Object.entries(targetRoles)) {
     const from = sourceByRole.get(role)
     if (from) names[name] = from
   }
 
-  const targetByRole = new Map(
-    Object.entries(rolesOf(target, known)).map(([name, role]) => [role, name]),
-  )
+  const targetByRole = new Map(Object.entries(targetRoles).map(([name, role]) => [role, name]))
   const torso = torsoOf(targetByRole, sourceByRole)
   return {
     target,
@@ -308,8 +307,9 @@ function rolesOf(
 ): Record<string, HumanoidRole> {
   const signature = skeletonSignatureOf(bones.map(bone => bone.name))
   const found = boneRolesOf(namedBonesOf(bones))
-  for (const name of profileOfBones(bones, known)?.ignored ?? []) delete found[name]
-  const corrections = profileOfBones(bones, known)?.roles
+  const stored = profileOfBones(bones, known)
+  for (const name of stored?.ignored ?? []) delete found[name]
+  const corrections = stored?.roles
   if (!corrections) return found
 
   let profile: SkeletonProfile = { signature, roles: found }

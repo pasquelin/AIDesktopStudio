@@ -14,7 +14,7 @@ vi.mock('pixi.js', () => ({
   },
 }))
 
-import { rasterSelectionStencil, selectionStencil } from './selectionStencil'
+import { selectionStencil } from './selectionStencil'
 
 describe('raster selection stencil', () => {
   beforeEach(() => {
@@ -22,12 +22,13 @@ describe('raster selection stencil', () => {
   })
 
   it('draws only opaque raster runs in document coordinates', () => {
-    rasterSelectionStencil(
-      { x: 10, y: 20, width: 4, height: 2 },
-      2,
-      2,
-      new Uint8Array([255, 0, 0, 255]),
-    )
+    selectionStencil({
+      kind: 'raster',
+      bounds: { x: 10, y: 20, width: 4, height: 2 },
+      width: 2,
+      height: 2,
+      alpha: new Uint8Array([255, 0, 0, 255]),
+    })
 
     expect(rect).toHaveBeenCalledTimes(2)
     expect(rect).toHaveBeenNthCalledWith(1, 10, 20, 2, 1)

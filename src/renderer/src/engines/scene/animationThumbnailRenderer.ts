@@ -110,7 +110,8 @@ export async function createAnimationThumbnailRenderer(model: ArrayBuffer, decod
   const restBounds = bounds(),
     restHeight = restBounds.max.y - restBounds.min.y
   const camera = new OrthographicCamera(-1, 1, 1, -1, 0.001, restHeight * 100)
-  const direction = new Vector3().fromArray(preset.camera).normalize()
+  // Held rather than allocated per pose: `framePose` fills it before every read.
+  const direction = new Vector3()
   const restore = () => {
     for (const b of bones) {
       const saved = rest.get(b.name)
@@ -136,7 +137,9 @@ export async function createAnimationThumbnailRenderer(model: ArrayBuffer, decod
       if (!clip) throw new Error(`No clip in ${name}`)
       const sourceHip = refs.get(names.Hips ?? 'Hips')
       if (!sourceHip) throw new Error(`Hips missing in ${name}`)
+      // Aliased, as `hip` is above: the narrowing is what the nested pose helpers read.
       const sh = sourceHip
+      const sideTurn = /^Turn(Left|Right)$/.test(name)
 
       const scale = skeletonScaleOf(character, source)
       mixer = new AnimationMixer(source)
@@ -159,7 +162,7 @@ export async function createAnimationThumbnailRenderer(model: ArrayBuffer, decod
       const relativeYaw = () => wrappedAngle(yaw() - initialYaw)
       function poseScore(): number {
         if (/jump/i.test(name)) return sh.o.getWorldPosition(new Vector3()).y
-        if (/^Turn(Left|Right)$/.test(name)) return turnScoreOf(relativeYaw(), Math.PI / 4)
+        if (sideTurn) return turnScoreOf(relativeYaw(), Math.PI / 4)
         if (name === 'TurnAround') return turnScoreOf(relativeYaw(), Math.PI * 0.8)
 
         let score = 0
@@ -181,7 +184,7 @@ export async function createAnimationThumbnailRenderer(model: ArrayBuffer, decod
       function applyPose(): void {
         const correction = new Quaternion().setFromAxisAngle(
           new Vector3(0, 1, 0),
-          /^Turn(Left|Right)$/.test(name) ? -initialYaw : 0,
+          sideTurn ? -initialYaw : 0,
         )
         const desired = new Map<string, Quaternion>()
         for (const b of bones) {
@@ -209,9 +212,7 @@ export async function createAnimationThumbnailRenderer(model: ArrayBuffer, decod
       function framePose(): void {
         const box = bounds(),
           center = box.getCenter(new Vector3())
-        direction
-          .fromArray(/^Turn(Left|Right)$/.test(name) ? [0, 7, 24] : preset.camera)
-          .normalize()
+        direction.fromArray(sideTurn ? [0, 7, 24] : preset.camera).normalize()
         camera.position.copy(center).addScaledVector(direction, restHeight * 5)
         camera.lookAt(center)
         camera.updateMatrixWorld(true)

@@ -17,6 +17,18 @@ import { Button } from '@/components/Button'
 import { motionProfile } from '../../retargetDraft'
 import { boneFor, type RetargetMappingSide } from '../../retargetMappingSide'
 
+const GROUPS = [
+  {
+    id: 'torso',
+    roles: HUMANOID_BODY_ROLES.filter(
+      role => !role.startsWith('Left') && !role.startsWith('Right'),
+    ),
+  },
+  { id: 'arms', roles: HUMANOID_BODY_ROLES.filter(role => /Shoulder|Arm|Hand/.test(role)) },
+  { id: 'legs', roles: HUMANOID_BODY_ROLES.filter(role => /Leg|Foot|Toes/.test(role)) },
+  { id: 'fingers', roles: HUMANOID_FINGER_ROLES },
+]
+
 type Props = { source: RetargetMappingSide; target: RetargetMappingSide; resetKey?: string }
 
 export function RetargetMapping({ source, target, resetKey }: Props) {
@@ -59,17 +71,6 @@ export function RetargetMapping({ source, target, resetKey }: Props) {
       one.view.engine.setPickedBone(bone ? { nodeId: one.view.nodeId, bone } : null)
     }
   }
-  const groups = [
-    {
-      id: 'torso',
-      roles: HUMANOID_BODY_ROLES.filter(
-        role => !role.startsWith('Left') && !role.startsWith('Right'),
-      ),
-    },
-    { id: 'arms', roles: HUMANOID_BODY_ROLES.filter(role => /Shoulder|Arm|Hand/.test(role)) },
-    { id: 'legs', roles: HUMANOID_BODY_ROLES.filter(role => /Leg|Foot|Toes/.test(role)) },
-    { id: 'fingers', roles: HUMANOID_FINGER_ROLES },
-  ]
   return (
     <PropertySection title={t('character.retarget.mapping')} scId="retarget.mapping">
       <SearchField
@@ -88,7 +89,7 @@ export function RetargetMapping({ source, target, resetKey }: Props) {
           onClick={() => setMissing(value => !value)}
         />
       </div>
-      {groups.map(group => {
+      {GROUPS.map(group => {
         const roles = group.roles.filter(visible)
         if (roles.length === 0) return null
         return (

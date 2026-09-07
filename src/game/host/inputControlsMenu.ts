@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 
-import type { InputActionKind, InputBinding, GamepadControl } from '@shared/domain/inputMap'
+import type { InputActionKind, InputBinding } from '@shared/domain/inputMap'
 import type { InputControls } from '../runtime/inputControls'
+import { GAMEPAD_AXES, GAMEPAD_BUTTONS } from '../runtime/inputMaps'
 
 type InputControlsMenuLabels = {
   title: string
@@ -305,26 +306,6 @@ function gamepadSignals(navigator: Navigator | undefined): string[] {
   return signals
 }
 
-const BUTTON_CONTROLS: readonly GamepadControl[] = [
-  'south',
-  'east',
-  'west',
-  'north',
-  'leftShoulder',
-  'rightShoulder',
-  'leftTrigger',
-  'rightTrigger',
-  'select',
-  'start',
-  'leftStickButton',
-  'rightStickButton',
-  'dpadUp',
-  'dpadDown',
-  'dpadLeft',
-  'dpadRight',
-  'home',
-]
-
 /**
  * 🛑 The WAY a half-axis pushes, carried over from what it replaces: `throttle` and `yaw` are two
  * buttons scaled apart, and a capture that dropped the scale made the pair add up instead of
@@ -345,7 +326,7 @@ function gamepadBinding(signal: string, capture: Capture): InputBinding | null {
   // A BUTTON serves a half-axis too: a trigger drives `accelerate` and a shoulder `yaw` in the
   // shipped contexts, and refusing one left those four slots stuck on « capturing… » for ever.
   if (source === 'button' && (capture.kind === 'button' || capture.kind === 'axis1')) {
-    const control = BUTTON_CONTROLS[index]
+    const control = GAMEPAD_BUTTONS[index]
     if (!control) return null
     return capture.kind === 'button'
       ? { device: 'gamepad', control }
@@ -355,12 +336,6 @@ function gamepadBinding(signal: string, capture: Capture): InputBinding | null {
   if (capture.kind === 'axis2')
     return { device: 'gamepad', control: index < 2 ? 'leftStick' : 'rightStick' }
   if (capture.kind !== 'axis1') return null
-  const controls: readonly GamepadControl[] = [
-    'leftStickX',
-    'leftStickY',
-    'rightStickX',
-    'rightStickY',
-  ]
-  const control = controls[index]
+  const control = GAMEPAD_AXES[index]
   return control ? { device: 'gamepad', control, ...shape } : null
 }
