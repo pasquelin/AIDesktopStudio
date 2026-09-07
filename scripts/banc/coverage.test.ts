@@ -13,7 +13,11 @@ import { SCENARIOS } from './scenarios'
  * Actions no request exercises — empty, and to stay empty. 🛑 A list and not a count, so an
  * action added with `[]` turns the gate red by NAME rather than by a number nobody can act on.
  */
-const AWAITING: readonly ActionName[] = []
+/**
+ * 🛑 Measured by nothing, and said so rather than borrowed from a neighbouring rank: reopening a
+ * motion wants an asset this studio wrote a band into, which no decor lays.
+ */
+const AWAITING: readonly ActionName[] = ['animation.reopenMotion']
 
 describe('the MCP surface and the batterie', () => {
   /**

@@ -323,7 +323,8 @@ export const COVERAGE: Record<ActionName, readonly string[]> = {
   'ik.remove': ['50.9'],
 
   'animations.list': ['49.1'],
-  'animation.reopenMotion': ['49.1'],
+  // No rank reaches it: it wants a motion this studio wrote a band into, which no decor lays.
+  'animation.reopenMotion': [],
   'animation.addBlock': ['13.5'],
   'animation.removeBlock': ['13.6'],
   'animation.setBlockSettings': ['49.2'],

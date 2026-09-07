@@ -84,7 +84,11 @@ export function useRetargetHost(assetId: string): () => Promise<void> {
     }
     channel.onmessage = async event => {
       const message = retargetMessageOf(event.data)
-      if (message?.kind === 'ask') publish()
+      if (message?.kind === 'ask') {
+        // A window that just opened heard none of what was published: it gets the whole snapshot.
+        published = null
+        publish()
+      }
       if (message?.kind === 'editRig')
         await editRetargetRig(
           assetId,

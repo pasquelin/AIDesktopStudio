@@ -1,3 +1,4 @@
+import { ANIMATION_GRAPH_EXTENSION, animationGraphOf } from '@shared/domain/animationGraph'
 import type { Asset } from '@shared/domain/asset'
 import { DOCUMENT_VERSION, type DocumentDescriptor } from '@shared/domain/document'
 import { documentFileName } from '@shared/domain/documentName'
@@ -5,6 +6,7 @@ import { stemOf } from '@shared/domain/fileName'
 import { DEFAULT_ROLE_PATHS } from '@shared/domain/folderRole'
 import { nameOf, parentOf, pathIn } from '@shared/domain/folder'
 import { SCRIPT_EXTENSION, type GameManifest } from '@shared/domain/game'
+import { INPUT_MAP_EXTENSION, inputMapOf } from '@shared/domain/inputMap'
 import type { StudioBridge } from '@shared/ipc'
 import { mergedSettings } from '@main/settings/store'
 import { installFakeBridge, type BridgeOverrides } from '@/services/fakeBridge'
@@ -52,6 +54,36 @@ const texturesOfTheProject = (catalog: MemoryCatalog): readonly Asset[] =>
         one.type === 'image' && (one.path ?? '').startsWith(`${DEFAULT_ROLE_PATHS.materials}/`),
     )
 
+/** Reads and writes the project's `.input.json` / `.anim.json` files on the bench's own disk. */
+function projectJsonPort<T>(
+  disk: MemoryFolder,
+  extension: string,
+  parse: (value: unknown) => T,
+): {
+  list: () => Promise<string[]>
+  read: (path: string) => Promise<T | null>
+  write: (path: string, value: T) => Promise<boolean>
+} {
+  const readable = (path: string): boolean => path.endsWith(extension) && !path.startsWith('/')
+  return {
+    list: () => Promise.resolve(disk.paths().filter(one => one.endsWith(extension))),
+    read: async path => {
+      const text = readable(path) ? disk.textOf(path) : null
+      if (text === null) return null
+      try {
+        return parse(JSON.parse(text))
+      } catch {
+        return null
+      }
+    },
+    write: async (path, value) => {
+      if (!readable(path)) return false
+      await disk.write(path, JSON.stringify(value, null, 2))
+      return true
+    },
+  }
+}
+
 export function installStudioBridge(context: StudioBridgeContext, think?: Think): void {
   const { folder, catalog, ops, cloud, documentsOnDisk, git, shell, game, memory } = context
   installFakeBridge({
@@ -63,6 +95,13 @@ export function installStudioBridge(context: StudioBridgeContext, think?: Think)
      * the window has to turn up in `studio.files()`, or no oracle can read it back. What a write
      * MEANS — the refusal of a path that leaves the project — stays in the main process.
      */
+    /**
+     * 🛑 A PORT: the same disk as everything else, so a map written from outside the window turns
+     * up in `studio.files()` and an oracle reads back what a write landed. What a write MEANS —
+     * the refusal of a path that leaves the project — stays in the main process.
+     */
+    inputMaps: projectJsonPort(folder, INPUT_MAP_EXTENSION, inputMapOf),
+    animationGraphs: projectJsonPort(folder, ANIMATION_GRAPH_EXTENSION, animationGraphOf),
     game: ((): NonNullable<BridgeOverrides['game']> => ({
       /**
        * 🛑 A PORT: the disk an export writes onto. Every file lands in the memory folder under

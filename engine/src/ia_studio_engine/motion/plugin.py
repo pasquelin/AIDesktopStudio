@@ -156,7 +156,7 @@ def run_motion(model, params, destination, on, on_step, stopping):
         for index, value in enumerate(indices):
             check()
             if on_step:
-                on_step(index, len(indices))
+                on_step(index + 1, len(indices))
             yield value
         check()
 

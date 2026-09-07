@@ -1,4 +1,5 @@
-import type { HumanoidRole, SkeletonProfile } from '@shared/domain/skeletonProfile'
+import type { HumanoidRole } from '@shared/domain/humanoid'
+import type { SkeletonProfile } from '@shared/domain/skeletonProfile'
 import type { MotionView } from './components/Retarget/RetargetViewport'
 
 export type RetargetMappingSide = {
