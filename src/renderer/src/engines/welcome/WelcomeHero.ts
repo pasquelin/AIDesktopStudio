@@ -19,6 +19,7 @@ import { WELCOME_CLIP_NAMES, type WelcomeClipName } from '@shared/domain/welcome
 import { clamp } from '@shared/numeric'
 import { clipsOf } from '../scene/animation'
 import { disposeTree } from '../scene/modelCache'
+import { wireBonesOf } from '../scene/retarget'
 import { skeletonBonesOf, type SkeletonBone } from '../scene/rigState'
 import { rootTrackOf } from '../scene/rootMotion'
 import type { GltfSource } from '../scene/gltfSource'
@@ -173,8 +174,12 @@ export class WelcomeHero {
       Promise.all(loading),
     ])
     const mixer = new AnimationMixer(body)
+    // 🛑 The body wired ONCE for the eight files: `adapt` wired it again per call, walking the
+    // tree and copying every transform, and its signature was digested afresh each time — eight
+    // preludes on the interface thread at the moment the welcome screen opens.
+    const wired = wireBonesOf(body)
     const adapted = await Promise.all(
-      files.map(async file => (await this.deps.retarget.adapt(body, file, clipsOf(file)))?.[0]),
+      files.map(async file => (await this.deps.retarget.adapt(wired, file, clipsOf(file)))?.[0]),
     )
     return { body, files, mixer, adapted }
   }

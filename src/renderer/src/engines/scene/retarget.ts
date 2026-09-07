@@ -38,9 +38,13 @@ export type Retarget = {
   /**
    * The clips as the target skeleton would play them. `null` means the request was taken back, or
    * the port let go while it was out — an awaited promise nobody answers never ends.
+   *
+   * 🛑 A target ALREADY WIRED is taken as it is: a caller replaying eight files on one body wired
+   * it eight times, and `wireBonesOf` walks the tree and copies every transform. Its signature is
+   * memoised per array, so handing the same one back is what makes that memo bite.
    */
   adapt: (
-    target: Object3D,
+    target: Object3D | readonly WireBone[],
     source: Object3D,
     clips: readonly AnimationClip[],
     watch?: {
@@ -72,6 +76,15 @@ export type Retarget = {
   dispose: () => void
 }
 
+/**
+ * A skeleton as the worker reads one, wired from the tree unless it already was.
+ *
+ * 🛑 Handed back AS IT IS, never copied: the signature memo has the array's identity for key, and
+ * a copy would pay the very digests passing a wired skeleton exists to save.
+ */
+const bonesOf = (target: Object3D | readonly WireBone[]): readonly WireBone[] =>
+  Array.isArray(target) ? (target as readonly WireBone[]) : wireBonesOf(target as Object3D)
+
 export function createRetarget(spawn: () => Worker): Retarget {
   const port = createWorkerPort<readonly WireClip[], RetargetResponse>(
     spawn,
@@ -88,7 +101,7 @@ export function createRetarget(spawn: () => Worker): Retarget {
       const targetKnown = profilesFor(profiles, watch?.profiles, watch?.targetProfile)
       const sourceKnown = profilesFor(profiles, watch?.profiles, watch?.sourceProfile)
       validateOptions(watch?.options)
-      const targetBones = alignedBonesOf(wireBonesOf(target), targetKnown)
+      const targetBones = alignedBonesOf(bonesOf(target), targetKnown)
       const sourceBones = alignedBonesOf(wireBonesOf(source), sourceKnown)
       if (exactReplay(targetBones, sourceBones, targetKnown, sourceKnown, watch?.options))
         return [...clips]
@@ -315,9 +328,9 @@ function rolesOf(
 }
 
 function alignedBonesOf(
-  bones: WireBone[],
+  bones: readonly WireBone[],
   known: ReadonlyMap<string, SkeletonProfile>,
-): WireBone[] {
+): readonly WireBone[] {
   const restPose = profileOfBones(bones, known)?.restPose
   if (!restPose) return bones
   return bones.map(bone => {

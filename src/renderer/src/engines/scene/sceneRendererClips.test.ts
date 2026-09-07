@@ -10,6 +10,7 @@ import { skeletonTopologySignatureOf, type SkeletonProfile } from '@shared/domai
 import { SceneRenderer } from './SceneRenderer'
 import type { BvhBuilder } from './bvhBuilder'
 import type { Retarget } from './retarget'
+import type { WireBone } from './retargetMessage'
 import type * as ModelCache from './modelCache'
 import { modelNodeFixture } from './scene-fixtures'
 import { EMPTY_SCENE } from './sceneState'
@@ -69,10 +70,10 @@ const modelNode = (clip: ClipRef | null) => ({
 describe('SceneRenderer and the animations the app ships with', () => {
   /** What the retargeting port is asked, and what it hands back — here, the clips unchanged. */
   const straightThrough = (): Retarget & {
-    asked: { target: Object3D; clips: string[] }[]
+    asked: { target: Object3D | readonly WireBone[]; clips: string[] }[]
     learnt: SkeletonProfile[]
   } => {
-    const asked: { target: Object3D; clips: string[] }[] = []
+    const asked: { target: Object3D | readonly WireBone[]; clips: string[] }[] = []
     const learnt: SkeletonProfile[] = []
     return {
       asked,
