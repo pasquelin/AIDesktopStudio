@@ -11,11 +11,9 @@ import { isFingerRole, type HumanoidRole } from '@shared/domain/humanoid'
 import {
   isSkeletonProfile,
   profileWithRole,
-  skeletonTopologySignatureOf,
-  skeletonSignatureOf,
   type SkeletonProfile,
 } from '@shared/domain/skeletonProfile'
-import { boneRolesOf, type NamedBone } from './boneRoles'
+import { boneRolesOf } from './boneRoles'
 import {
   clipBuffers,
   type RetargetOptions,
@@ -32,6 +30,8 @@ export {
   skinnedFromWire,
   nodeTrackNameOf,
 } from './retargetWire'
+import { namedBonesOf, profileOfBones } from './retargetSignatures'
+export { namedBonesOf, profileOfBones } from './retargetSignatures'
 import { createWorkerPort } from '../core/workerPort'
 
 export type Retarget = {
@@ -289,11 +289,6 @@ export function retargetFitOf(
   }
 }
 
-/** The wire spells a parent as an index; reading roles wants it as a name. */
-export function namedBonesOf(bones: readonly WireBone[]): NamedBone[] {
-  return bones.map(bone => ({ name: bone.name, parent: bones[bone.parent]?.name ?? null }))
-}
-
 /**
  * What each bone MEANS: what its name spells, corrected by whatever was recorded for a skeleton
  * of exactly these bones.
@@ -317,23 +312,6 @@ function rolesOf(
     profile = profileWithRole(profile, name, role)
   }
   return { ...profile.roles }
-}
-
-/**
- * What was recorded for a skeleton of exactly these bones, under either identity it may wear.
- *
- * 🛑 The second `get` is a MIGRATION DOOR, not a fallback that never closes: v1.0.0 filed
- * corrections under a name-only key, and a stored profile carries no parents, so it can only be
- * re-keyed when a skeleton is READ. `profileForView` is where that happens.
- */
-export function profileOfBones(
-  bones: readonly WireBone[],
-  known?: ReadonlyMap<string, SkeletonProfile>,
-): SkeletonProfile | undefined {
-  return (
-    known?.get(skeletonTopologySignatureOf(namedBonesOf(bones))) ??
-    known?.get(skeletonSignatureOf(bones.map(bone => bone.name)))
-  )
 }
 
 function alignedBonesOf(
