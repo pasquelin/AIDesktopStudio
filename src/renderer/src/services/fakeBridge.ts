@@ -135,6 +135,7 @@ const fakeInputMaps = (overrides: BridgeOverrides): StudioBridge['inputMaps'] =>
   list: () => Promise.resolve([]),
   read: () => Promise.resolve(null),
   write: () => Promise.resolve(false),
+  onWritten: noSubscription,
   ...overrides.inputMaps,
 })
 

@@ -41,6 +41,16 @@ export function inputMapsChanged(): void {
   for (const listener of listeners) listener()
 }
 
+/**
+ * 🛑 The main says it, so EVERY window hears: the bell above is a module of one renderer, and a
+ * map written from the assistant, from « new control map », or from another window left the
+ * others reading the version from before it. Rung for `.anim.json` too, which costs a reread
+ * nobody notices and keeps this to one subscription.
+ */
+export function watchWrittenInputMaps(): () => void {
+  return getBridge()?.inputMaps.onWritten(() => inputMapsChanged()) ?? (() => {})
+}
+
 /** Whether `id` is carried by more than one file — asked of ONE id, where the next finds any. */
 export function isDuplicateInputMapId(maps: readonly InputMapModule[], id: string): boolean {
   return maps.filter(one => one.map.id === id).length > 1

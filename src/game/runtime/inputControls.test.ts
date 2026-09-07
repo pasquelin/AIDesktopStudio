@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from 'vitest'
 import {
   inputBindingFits,
   inputBindingOf,
+  INPUT_MAP_VERSION,
   type GamepadControl,
   type InputActionKind,
   type InputBinding,
@@ -14,7 +15,7 @@ import { resolveInputMaps, type RawInput } from './inputMaps'
 
 const defaults: readonly InputMap[] = [
   {
-    version: 1,
+    version: INPUT_MAP_VERSION,
     id: 'character',
     priority: 0,
     defaultActive: true,
@@ -51,13 +52,15 @@ describe('runtime input controls', () => {
     const write = vi.fn()
     const controls = createInputControls(defaults, { read: () => null, write })
 
+    const before = createInputControls(defaults).maps()
     controls.rebind('character', 'jump', 0, { device: 'keyboard', code: 'Enter' })
+    controls.rebind('vehicle', 'handBrake', 0, { device: 'keyboard', code: 'KeyB' })
     controls.reset()
 
-    expect(controls.maps().find(map => map.id === 'character')?.actions[0]).toEqual(
-      defaults[0]?.actions[0],
-    )
-    expect(write).toHaveBeenCalledTimes(2)
+    // 🛑 Every map, not the one that was looked at: a reset leaving `vehicle` and `flight`
+    // rebound was green while this compared a single action of a single context.
+    expect(controls.maps()).toEqual(before)
+    expect(write).toHaveBeenCalledTimes(3)
   })
 
   it('refuses an unknown action and a malformed binding', () => {

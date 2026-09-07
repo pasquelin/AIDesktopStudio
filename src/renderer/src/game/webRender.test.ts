@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { PCFShadowMap } from 'three'
 import type { Object3D, Scene } from 'three'
 import type * as ThreeModule from 'three'
+import type { PostEffect } from '@shared/domain/postProcessing'
 import { DEFAULT_RENDER_POLICY, type RenderPolicy } from '@shared/domain/renderPolicy'
 import { lightNode, meshNode } from '@/engines/scene/nodeFactory'
 import { at, BOX, NOTHING, sceneOf, SUN } from './game-fixtures'
@@ -93,6 +94,16 @@ const sunOf = (scene: unknown): { shadow: { camera: { right: number; far: number
   return found
 }
 
+/** The chunk a page failed to fetch: what `composerHold` has to SAY rather than swallow. */
+vi.mock('@/engines/postfx/PostComposer', () => ({
+  get PostComposer(): never {
+    throw new Error('chunk missing')
+  },
+}))
+
+/** One effect in the stack, so the drawer builds a composer at all. */
+const GRADE: PostEffect = { id: 'one', effect: 'bloom', enabled: true, params: {} }
+
 describe('what an exported game pays for an image', () => {
   it('tells the renderer the policy — on or off, the filter, and never three.js own redraw', async () => {
     const { renderer } = await stagedGame({ ...DEFAULT_RENDER_POLICY, shadowQuality: 'soft' })
@@ -100,6 +111,38 @@ describe('what an exported game pays for an image', () => {
     expect(renderer.shadowMap.enabled).toBe(true)
     expect(renderer.shadowMap.type).toBe(PCFShadowMap)
     expect(renderer.shadowMap.autoUpdate).toBe(false)
+  })
+
+  // 🛑 A manifest is a JSON file on disk: a size somebody typed as a word gave `NaN` for the
+  // shadow maps and the pixel ratio, which draws nothing and says nothing.
+  it('reads a policy member by member, keeping the default for what does not read', async () => {
+    Object.defineProperty(globalThis, 'devicePixelRatio', { value: 2, configurable: true })
+    const { render, renderer } = await stagedGame({
+      shadowMapSize: 'big',
+      quality: 'cinematic',
+    } as unknown as Partial<RenderPolicy>)
+    render.draw()
+
+    // The balanced default, not the word: `pixelRatioFor('cinematic')` would have been undefined.
+    expect(renderer.ratio).toBe(1.5)
+    expect(Reflect.get(sunOf(renderer.frames[0]).shadow, 'mapSize')).toMatchObject({
+      width: DEFAULT_RENDER_POLICY.shadowMapSize,
+    })
+  })
+
+  it('says the effect chain did not build, rather than playing on without it', async () => {
+    const said: string[] = []
+    const render = createWebRender(CANVAS, NOTHING, DEFAULT_RENDER_POLICY, (level, message) =>
+      said.push(`${level}: ${message}`),
+    )
+
+    const graded = sceneOf([meshNode(BOX, { name: 'Crate', transform: at(1, 0.5, 1) })])
+    await render.show({
+      ...graded,
+      world: { ...graded.world, post: { enabled: true, effects: [GRADE] } },
+    })
+
+    expect(said.some(line => line.startsWith('error:'))).toBe(true)
   })
 
   it('fills what an older export left out of its policy, rather than framing on undefined', async () => {

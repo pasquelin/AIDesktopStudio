@@ -33,10 +33,15 @@ export const ASSEMBLY_HANDLERS: ActionHandlers = {
 
     const { seedTemplateFiles } = await import('@/features/game/seedTemplateFiles')
     const seeded = await seedTemplateFiles(wanted)
-    const before = open.state.nodes.length
+    // Read AGAIN after the await, as `prefab.instantiate` does: an MCP call is not user-driven,
+    // and a tab switched while the disk was seeded would lay the nodes in the document that WAS
+    // in front — and count them against a snapshot of it.
+    const landing = mountedScene()
+    if ('ok' in landing) return landing
+    const before = landing.state.nodes.length
     useScenes
       .getState()
-      .runCommand(open.documentId, layOutTemplate(wanted, seeded.scripts, seeded.graph))
+      .runCommand(landing.documentId, layOutTemplate(wanted, seeded.scripts, seeded.graph))
     // What was ADDED, as `prefab.instantiate` answers too: a scene's own total would have a
     // client reading « 52 objects » where 38 were laid down.
     return {

@@ -1,4 +1,4 @@
-import type { InputMap, KeyboardBinding } from './inputMap'
+import { INPUT_MAP_VERSION, type InputMap, type KeyboardBinding } from './inputMap'
 
 export type InputPresetId = 'studio' | 'character' | 'vehicle' | 'flight' | 'menu'
 
@@ -36,7 +36,7 @@ const PRESETS: Record<InputPresetId, InputMap> = {
   // two-way stick is the only thing an `axis2` takes, so the d-pad could not live on `navigate`
   // — and it is what a person navigating a panel reaches for first.
   studio: {
-    version: 1,
+    version: INPUT_MAP_VERSION,
     id: 'studio',
     priority: 100,
     defaultActive: true,
@@ -63,7 +63,7 @@ const PRESETS: Record<InputPresetId, InputMap> = {
     ],
   },
   character: {
-    version: 1,
+    version: INPUT_MAP_VERSION,
     id: 'character',
     priority: 0,
     defaultActive: true,
@@ -108,7 +108,7 @@ const PRESETS: Record<InputPresetId, InputMap> = {
     ],
   },
   vehicle: {
-    version: 1,
+    version: INPUT_MAP_VERSION,
     id: 'vehicle',
     priority: 10,
     // Active with `character`: no action name is shared, and a driver's body walks nowhere while
@@ -155,7 +155,7 @@ const PRESETS: Record<InputPresetId, InputMap> = {
     ],
   },
   flight: {
-    version: 1,
+    version: INPUT_MAP_VERSION,
     id: 'flight',
     priority: 10,
     defaultActive: true,
@@ -195,7 +195,7 @@ const PRESETS: Record<InputPresetId, InputMap> = {
     ],
   },
   menu: {
-    version: 1,
+    version: INPUT_MAP_VERSION,
     id: 'menu',
     priority: 100,
     defaultActive: false,
@@ -222,4 +222,31 @@ const PRESETS: Record<InputPresetId, InputMap> = {
 
 export function inputMapPreset(id: InputPresetId): InputMap {
   return PRESETS[id]
+}
+
+/**
+ * A written map, completed action by ACTION from the preset it names.
+ *
+ * 🛑 A map a project wrote before an action existed — or one rebinding a single action — would
+ * otherwise REPLACE the preset: `axis2`/`button` answer zero for an action nobody declared, and
+ * the studio's own navigation lost confirm and back with no word. Mirrors `withDefaultInputMaps`
+ * of the game runtime, which cannot be imported here — that tree ships MIT and this one does not.
+ */
+export function completedInputMap(map: InputMap): InputMap {
+  if (!INPUT_PRESET_IDS.includes(map.id as InputPresetId)) return map
+  const preset = PRESETS[map.id as InputPresetId]
+  const kinds = new Map(preset.actions.map(action => [action.id, action]))
+  // 🛑 The KIND is the preset's, whatever the file says: values are keyed by id alone, so an
+  // action written under another kind answers zero to whoever reads it, and says nothing.
+  const kept = map.actions.map(action => {
+    const one = kinds.get(action.id)
+    return one && one.kind !== action.kind ? one : action
+  })
+  const declared = new Set(map.actions.map(action => action.id))
+  const missing = preset.actions.filter(action => !declared.has(action.id))
+  const upgraded =
+    map.version === INPUT_MAP_VERSION
+      ? {}
+      : { version: INPUT_MAP_VERSION, defaultActive: preset.defaultActive }
+  return { ...map, ...upgraded, actions: [...kept, ...missing] }
 }

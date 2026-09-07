@@ -155,6 +155,7 @@ const bridge: StudioBridge = {
     list: () => ipcRenderer.invoke(CHANNELS.inputMapList),
     read: path => ipcRenderer.invoke(CHANNELS.inputMapRead, path),
     write: (path, map) => ipcRenderer.invoke(CHANNELS.inputMapWrite, path, map),
+    onWritten: callback => subscribe<string>(EVENTS.projectJsonWritten, callback),
   },
   animationGraphs: {
     list: () => ipcRenderer.invoke(CHANNELS.animationGraphList),

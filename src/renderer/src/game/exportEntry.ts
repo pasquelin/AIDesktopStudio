@@ -5,6 +5,8 @@ import {
 } from '@shared/domain/gameExport'
 import { createBundledAssets } from '@game/host/bundledAssets'
 import { createExportHost } from '@game/host/exportHost'
+import { createRingLog } from '@game/host/ringLog'
+import type { LogPort } from '@game/ports/logPort'
 import { loadQuickjsScripts } from '@game/host/quickjsScripts'
 import { loadJoltPhysics } from '@game/host/joltPhysics'
 import type { AssetPort } from '@game/ports/assetPort'
@@ -45,18 +47,18 @@ import fr from '@shared/i18n/fr/game.json'
 export async function startExportedGame(canvas: HTMLCanvasElement): Promise<() => void> {
   const game = await exportedJson<ExportedGame>(EXPORTED_GAME_FILE)
   const inputControls = createInputControls(game.inputMaps ?? [], browserInputStorage())
-  const expandedAssets = await expandCompressedAssets(game.assets, game.compressedAssets ?? [])
+  const expanded = await expandCompressedAssets(game.assets, game.compressedAssets ?? [])
   const rollback = createStartupRollback()
-  rollback.add(expandedAssets.dispose)
+  rollback.add(expanded.dispose)
   installControlsMenu(canvas, inputControls, rollback)
   try {
-    const { assets, render, drawn, swap, entry } = openStage(canvas, game, expandedAssets, rollback)
+    const { assets, render, drawn, swap, entry, log } = openStage(canvas, game, expanded, rollback)
 
     // 🛑 Together: awaited in turn, the page paid the SUM of two WebAssembly runtimes and two
     // fetches before its first frame. A sibling of a load that rejects goes undisposed — that
     // startup has already failed, and the page shows nothing.
     const [{ ports, modules }, openingSource] = await Promise.all([
-      createPorts(canvas, game, assets, drawn.port, render.animation, swap.port, rollback),
+      createPorts(canvas, game, assets, drawn.port, render.animation, swap.port, rollback, log),
       exportedJson<unknown>(entry.file, entry.compression),
     ])
     const runtime = runtimeOf(game, modules, inputControls)
@@ -197,11 +199,14 @@ function openStage(
   rollback: ReturnType<typeof createStartupRollback>,
 ) {
   const assets = createBundledAssets(expanded.files)
-  const render = createWebRender(canvas, assets, game.render)
+  // 🛑 The journal is opened HERE, before the ports: what the drawer has to say — a chain of
+  // effects that will not build — happens on this side of the line, and one game keeps one.
+  const log = createRingLog(printedForExport)
+  const render = createWebRender(canvas, assets, game.render, log.write)
   rollback.add(render.dispose)
   const entry = exportedSceneNamed(game, game.entryScene)
   if (!entry) throw new Error(`no scene "${game.entryScene}" in this game`)
-  return { assets, render, drawn: createDrawnPort(render), swap: createSceneSwap(), entry }
+  return { assets, render, log, drawn: createDrawnPort(render), swap: createSceneSwap(), entry }
 }
 
 function createDrawnPort(render: ReturnType<typeof createWebRender>): {
@@ -230,6 +235,7 @@ async function createPorts(
   animation: AnimationPort,
   scenes: ReturnType<typeof createSceneSwap>['port'],
   rollback: ReturnType<typeof createStartupRollback>,
+  log: LogPort,
 ) {
   const [physics, script, modules] = await Promise.all([
     loadJoltPhysics(),
@@ -248,6 +254,7 @@ async function createPorts(
     render,
     animation,
     scenes,
+    log,
   })
   rollback.add(() => {
     ports.input.detach()
@@ -361,4 +368,10 @@ function clipsIn(
   )
 
   return nodeId => sources.get(nodeId) ?? []
+}
+
+/** An exported game has no journal to send a line to: what a browser shows is all there is. */
+function printedForExport(entry: { level: string; message: string }): void {
+  if (entry.level === 'warn') console.warn(entry.message)
+  if (entry.level === 'error') console.error(entry.message)
 }

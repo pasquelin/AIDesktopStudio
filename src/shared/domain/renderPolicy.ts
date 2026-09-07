@@ -1,4 +1,6 @@
-import type { ShadowQuality, ViewportQuality } from './scene'
+import { isRecord } from '../guards'
+import { SHADOW_QUALITIES, type ShadowQuality } from './scene'
+import { VIEWPORT_QUALITIES, type ViewportQuality } from './sceneViewport'
 
 /**
  * What one image COSTS, read by BOTH engines that draw the same scene — the editor's viewport and
@@ -68,5 +70,38 @@ export function renderPolicyOf(view: RenderPolicy): RenderPolicy {
     quality: view.quality,
     fieldOfView: view.fieldOfView,
     gridSize: view.gridSize,
+  }
+}
+
+const finite = (value: unknown, fallback: number): number =>
+  typeof value === 'number' && Number.isFinite(value) ? value : fallback
+
+const oneOf = <T extends string>(value: unknown, held: readonly T[], fallback: T): T =>
+  held.includes(value as T) ? (value as T) : fallback
+
+/**
+ * A policy read off a manifest, member by member.
+ *
+ * 🛑 Not a cast: a game's manifest is a JSON file on disk, and one carrying `render: {}` — or a
+ * size somebody typed as a word — gave `NaN` for the shadow maps and the pixel ratio, which draws
+ * nothing and says nothing. What does not read keeps the default the export was written under.
+ */
+export function readRenderPolicy(value: unknown): RenderPolicy {
+  if (!isRecord(value)) return { ...DEFAULT_RENDER_POLICY }
+  return {
+    shadows: typeof value.shadows === 'boolean' ? value.shadows : DEFAULT_RENDER_POLICY.shadows,
+    shadowQuality: oneOf<ShadowQuality>(
+      value.shadowQuality,
+      SHADOW_QUALITIES,
+      DEFAULT_RENDER_POLICY.shadowQuality,
+    ),
+    shadowMapSize: finite(value.shadowMapSize, DEFAULT_RENDER_POLICY.shadowMapSize),
+    quality: oneOf<ViewportQuality>(
+      value.quality,
+      VIEWPORT_QUALITIES,
+      DEFAULT_RENDER_POLICY.quality,
+    ),
+    fieldOfView: finite(value.fieldOfView, DEFAULT_RENDER_POLICY.fieldOfView),
+    gridSize: finite(value.gridSize, DEFAULT_RENDER_POLICY.gridSize),
   }
 }

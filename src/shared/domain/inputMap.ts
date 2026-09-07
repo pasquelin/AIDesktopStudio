@@ -1,4 +1,12 @@
-export const INPUT_MAP_VERSION = 1
+export const INPUT_MAP_VERSION = 2
+
+/**
+ * 🛑 A map written under version 1 is READ, never refused: those files predate the day the
+ * built-in contexts became active by default, so their `defaultActive` says nothing about what
+ * their author wanted. `completedInputMap` — and `withDefaultInputMaps` on the game side — take
+ * the built-in's answer for a built-in context, and leave a context of the project's own alone.
+ */
+const INPUT_MAP_VERSIONS: readonly number[] = [1, INPUT_MAP_VERSION]
 export const INPUT_MAP_EXTENSION = '.input.json'
 
 export type InputActionKind = 'button' | 'axis1' | 'axis2'
@@ -66,7 +74,8 @@ export type InputMapModule = { path: string; map: InputMap }
 export function inputMapOf(value: unknown): InputMap {
   if (!isRecord(value)) throw new Error('input map must be an object')
   const { version, id, priority, defaultActive, actions } = value
-  if (version !== INPUT_MAP_VERSION) throw new Error('unsupported input map version')
+  if (typeof version !== 'number' || !INPUT_MAP_VERSIONS.includes(version))
+    throw new Error('unsupported input map version')
   if (typeof id !== 'string' || id.length === 0) throw new Error('input map id is required')
   if (typeof priority !== 'number' || !Number.isFinite(priority))
     throw new Error('invalid input priority')

@@ -7,6 +7,11 @@ export type InputMapStore = ProjectJsonStore<InputMap>
 export function createInputMaps(deps: {
   rootOf: () => string | null
   walk: () => Promise<FolderEntry[]>
+  announce?: (path: string) => void
 }): InputMapStore {
-  return createProjectJsonStore({ ...deps, extension: INPUT_MAP_EXTENSION, parse: inputMapOf })
+  return createProjectJsonStore({
+    ...deps,
+    extension: INPUT_MAP_EXTENSION,
+    parse: inputMapOf,
+  })
 }

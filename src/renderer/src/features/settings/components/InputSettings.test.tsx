@@ -55,4 +55,17 @@ describe('input devices in settings', () => {
 
     expect(screen.getByText('Arcade Stick')).toBeInTheDocument()
   })
+
+  // 🛑 Listed and inert otherwise: every reader answers zero for a mapping it cannot name, so a
+  // controller shown here did nothing and said nothing.
+  it('says a controller it cannot read is one it cannot read', () => {
+    Object.defineProperty(window.navigator, 'getGamepads', {
+      value: () => [{ index: 0, id: 'Odd Pad', connected: true, mapping: '' }],
+      configurable: true,
+    })
+
+    render(<InputSettings />)
+
+    expect(screen.getByText(/disposition standard/)).toBeVisible()
+  })
 })

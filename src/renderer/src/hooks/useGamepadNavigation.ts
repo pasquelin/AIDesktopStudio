@@ -2,12 +2,13 @@
 import { useEffect } from 'react'
 import { focusableWithin } from '@/helpers/focusableWithin'
 import type { InputMap } from '@shared/domain/inputMap'
-import { inputMapPreset } from '@shared/domain/inputPresets'
+import { completedInputMap, inputMapPreset } from '@shared/domain/inputPresets'
 import { readGamepads } from '@game/host/domInput'
 import { createInputActions, type InputActions } from '@game/runtime/inputActions'
 import {
   onInputMapsChanged,
   projectInputMaps,
+  watchWrittenInputMaps,
   withoutDuplicateInputMapIds,
 } from '@/engines/code/projectInputMaps'
 import { useProject } from '@/stores/project'
@@ -99,10 +100,11 @@ export function navigationState(actions: InputActions): GamepadNavigationState {
   }
 }
 
-/** The project's own `studio` context if it wrote one, the preset otherwise. */
+/** The project's own `studio` context if it wrote one, completed by the preset — or the preset. */
 export async function studioInputMaps(): Promise<readonly InputMap[]> {
   const written = withoutDuplicateInputMapIds(await projectInputMaps())
-  return [written.find(one => one.map.id === STUDIO)?.map ?? inputMapPreset(STUDIO)]
+  const own = written.find(one => one.map.id === STUDIO)?.map
+  return [own ? completedInputMap(own) : inputMapPreset(STUDIO)]
 }
 
 export function useGamepadNavigation(): void {
@@ -111,6 +113,7 @@ export function useGamepadNavigation(): void {
   const [written, again] = useReloadKey()
 
   useEffect(() => onInputMapsChanged(again), [again])
+  useEffect(() => watchWrittenInputMaps(), [])
 
   useEffect(() => {
     if (!enabled || typeof navigator.getGamepads !== 'function') return

@@ -154,4 +154,15 @@ describe('a default that cannot be typed back in', () => {
 
     expect(offGrid).toEqual([])
   })
+
+  // 🛑 A seed is 32 bits unsigned: the local motion engine raises on anything wider, and nothing
+  // on the `generate` path was catching it — the job simply failed.
+  it('bounds every seed field to what a seed IS, rather than leaving it open', () => {
+    const seeds = localFieldsOf('mesh', {}, key => key, 'motion').filter(
+      field => field.kind === 'seed',
+    )
+
+    expect(seeds).not.toHaveLength(0)
+    for (const field of seeds) expect(field).toMatchObject({ min: 0, max: 2 ** 32 - 1 })
+  })
 })

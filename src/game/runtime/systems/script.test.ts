@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 
+import { INPUT_MAP_VERSION } from '@shared/domain/inputMap'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import type { Component, JsonValue } from '@shared/domain/component'
 import { newComponent, withComponentField } from '@shared/domain/componentRegistry'
@@ -135,7 +136,7 @@ describe('what a game does with its own code', () => {
 
   it('applies context changes requested by a script', () => {
     const vehicle: InputMap = {
-      version: 1,
+      version: INPUT_MAP_VERSION,
       id: 'vehicle',
       priority: 10,
       defaultActive: false,

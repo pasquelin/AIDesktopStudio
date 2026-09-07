@@ -31,6 +31,7 @@
       "title": "Contrôles détectés",
       "keyboard": "Clavier",
       "mouse": "Souris",
+      "gamepadUnsupported": "Cette manette n’utilise pas la disposition standard : le studio ne peut pas lire ses boutons.",
       "noGamepad": "Aucune manette connectée.",
       "gamepadSleeps": "Une manette n’apparaît qu’après un premier appui sur l’un de ses boutons : le navigateur ne la montre pas avant. Branchée mais muette, elle ne se distingue pas d’une manette absente."
     },

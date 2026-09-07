@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 
+import { INPUT_MAP_VERSION } from '@shared/domain/inputMap'
 import { describe, expect, it } from 'vitest'
 import type { InputMap } from '@shared/domain/inputMap'
 import { inputMapPreset, type InputPresetId } from '@shared/domain/inputPresets'
@@ -18,7 +19,7 @@ describe('the input contexts a scene falls back on', () => {
 
   it('completes a declared context ACTION by action, never wholesale', () => {
     const own = {
-      version: 1,
+      version: INPUT_MAP_VERSION,
       id: 'character',
       priority: 0,
       defaultActive: true,
@@ -33,12 +34,56 @@ describe('the input contexts a scene falls back on', () => {
   })
 
   it('keeps the project map in place and adds only the contexts it left out', () => {
-    const own = { version: 1, id: 'character', priority: 7, defaultActive: false, actions: [] }
+    const own = {
+      version: INPUT_MAP_VERSION,
+      id: 'character',
+      priority: 7,
+      defaultActive: false,
+      actions: [],
+    }
 
     const completed = withDefaultInputMaps([own])
 
     // Its own priority and its own switch, untouched — only the actions behind them are filled.
     expect(completed[0]).toMatchObject({ id: 'character', priority: 7, defaultActive: false })
     expect(completed.map(map => map.id)).toEqual(['character', 'vehicle', 'flight'])
+  })
+
+  // 🛑 Values are keyed by ID alone: a `move` written as `axis1` made `axis2('move')` answer zero
+  // and the character stopped walking, with nothing said.
+  it('keeps the built-in KIND when a written map declares another for the same action', () => {
+    const written: InputMap = {
+      version: INPUT_MAP_VERSION,
+      id: 'character',
+      priority: 0,
+      defaultActive: true,
+      actions: [{ id: 'move', kind: 'axis1', bindings: [] }],
+    }
+
+    const [completed] = withDefaultInputMaps([written])
+
+    expect(completed?.actions.find(one => one.id === 'move')?.kind).toBe('axis2')
+  })
+
+  // 🛑 A file written before version 2 predates the day driving and flying became active by
+  // default: a project that had made its own carried `false`, and its plane answered NOTHING.
+  // 🛑 The two trees hold the same number apart, this one being MIT: a drift would make an
+  // exported game write maps the studio refuses, or the other way round.
+  it('holds the same map version as the studio, which it may not import a value from', () => {
+    expect(withDefaultInputMaps([])[0]?.version).toBe(INPUT_MAP_VERSION)
+  })
+
+  it('gives a map written before version 2 the built-in answer on being active', () => {
+    const old: InputMap = {
+      version: 1,
+      id: 'flight',
+      priority: 0,
+      defaultActive: false,
+      actions: [],
+    }
+
+    const [upgraded] = withDefaultInputMaps([old])
+
+    expect(upgraded).toMatchObject({ version: INPUT_MAP_VERSION, defaultActive: true })
   })
 })

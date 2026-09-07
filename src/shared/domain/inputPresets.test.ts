@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { inputMapOf } from './inputMap'
-import { inputMapPreset, INPUT_PRESET_IDS } from './inputPresets'
+import { completedInputMap, inputMapPreset, INPUT_PRESET_IDS } from './inputPresets'
 
 describe('input presets', () => {
   it('offers a ready-to-play context for every simple workflow', () => {
@@ -42,5 +42,17 @@ describe('input presets', () => {
     expect(inputMapPreset('flight').defaultActive).toBe(true)
     // A menu PRIMES over the rest, so only a script knows when to push it.
     expect(inputMapPreset('menu').defaultActive).toBe(false)
+  })
+
+  it('completes a written map from its preset, and leaves a map of its own alone', () => {
+    const preset = inputMapPreset('character')
+    const partial = { ...preset, actions: preset.actions.slice(0, 1) }
+
+    expect(completedInputMap(partial).actions.map(one => one.id)).toEqual(
+      preset.actions.map(one => one.id),
+    )
+
+    const own = { ...preset, id: 'crane', actions: preset.actions.slice(0, 1) }
+    expect(completedInputMap(own)).toBe(own)
   })
 })

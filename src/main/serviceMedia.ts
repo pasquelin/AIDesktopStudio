@@ -129,8 +129,15 @@ export function createMediaServices(deps: MediaDeps) {
   const projectRoot = (): string | null => deps.project.current()?.path ?? null
   const game = createProjectGame({ rootOf: projectRoot })
   const scripts = createGameScripts({ rootOf: projectRoot, walk: () => folder.walk() })
-  const inputMaps = createInputMaps({ rootOf: projectRoot, walk: () => folder.walk() })
-  const animationGraphs = createAnimationGraphs({ rootOf: projectRoot, walk: () => folder.walk() })
+  // 🛑 Every window, not the one that wrote: a control map is resolved once and held, so a rebind
+  // saved anywhere left the others reading the version from before it, until the project reopened.
+  const announce = (path: string): void => broadcast(EVENTS.projectJsonWritten, path)
+  const inputMaps = createInputMaps({ rootOf: projectRoot, walk: () => folder.walk(), announce })
+  const animationGraphs = createAnimationGraphs({
+    rootOf: projectRoot,
+    walk: () => folder.walk(),
+    announce,
+  })
   const files = createFileOps({
     rootOf: projectRoot,
     folder,

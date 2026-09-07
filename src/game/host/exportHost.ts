@@ -4,6 +4,7 @@ import type { GameApi } from '../api/gameApi'
 import type { AnimationPort } from '../ports/animationPort'
 import type { AssetPort } from '../ports/assetPort'
 import type { LogEntry } from '@shared/domain/gameRuntime'
+import type { LogPort } from '../ports/logPort'
 import type { Player } from '../ports/netPort'
 import type { PhysicsPort } from '../ports/physicsPort'
 import type { RenderPort } from '../ports/renderPort'
@@ -38,11 +39,13 @@ export type ExportHostDeps = {
   assets?: AssetPort
   /** Where the game's other scenes come from. Absent holds it to the one it opened on. */
   scenes?: ScenePort
+  /** The journal the page already writes into: one game, one journal, whoever built it first. */
+  log?: LogPort
 }
 
 /** Every port with no studio, no protocol and no account. Two of them differ from the studio's. */
 export function createExportHost(deps: ExportHostDeps): GameApi {
-  const log = createRingLog(printed)
+  const log = deps.log ?? createRingLog(printed)
 
   return {
     assets: deps.assets ?? createBundledAssets(deps.files),

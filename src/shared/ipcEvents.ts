@@ -29,6 +29,7 @@ export const EVENTS = {
   projectChanged: 'evt:project-changed',
   projectFolderChanged: 'evt:project-folder-changed',
   filesChanged: 'evt:files-changed',
+  projectJsonWritten: 'evt:project-json-written',
   projectRescan: 'evt:project-rescan',
   projectFolderRoles: 'evt:project-folder-roles',
   projectContext: 'evt:project-context',
