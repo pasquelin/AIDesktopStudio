@@ -13,6 +13,140 @@ Conséquence sur l'écriture : **dans une section de version, les liens sont abs
 release ne résout pas les chemins relatifs du dépôt, et ces liens-là sont les premiers qu'un
 lecteur ouvre. Le préambule que voici n'est jamais publié et s'autorise donc le relatif.
 
+## [2.0.0] — 2026-09-07
+
+**Le studio s'appelle AI Desktop Studio, et il fabrique des mondes.** Un terrain se sculpte au
+pinceau, se peint en quatre matières et se sème de végétation ; un personnage rigué joue un graphe
+d'états ; une scène se joue à la manette et s'exporte en jeu autonome. Le tout sous un nom neuf, un
+site neuf, et un moteur d'IA qui tourne sur la machine.
+
+> **⚠️ Le renommage est un cutover : rien ne migre.** `IA Studio` devient `AI Desktop Studio`
+> jusque dans ses identifiants techniques — `appId`, dossier des réglages, protocole
+> `ai-desktop-studio://`. Quatre conséquences, toutes assumées :
+>
+> - **La 1.0.0 installée ne se met pas à jour toute seule.** L'`appId` a changé : la 2.0.0
+>   s'installe **à côté** d'elle. Désinstaller l'ancienne à la main.
+> - **Les réglages et les clés API ne suivent pas.** Ils vivaient sous `IA Studio`, et l'entrée de
+>   trousseau « IA Studio Safe Storage » devient orpheline. Ressaisir ses identifiants API une
+>   fois, dans Réglages.
+> - **Un projet de la 1.0.0 s'ouvre toujours** — ses documents n'ont pas changé de format. Seul son
+>   dossier `.ia-studio/` n'est plus lu : le renommer en `.ai-desktop-studio/` rend la mémoire de
+>   l'assistant et la sauvegarde des métadonnées d'items.
+> - **Les dossiers d'un projet d'avant perdent leur rôle.** Ce qui fait qu'un dossier EST celui
+>   des images ou des scripts est un fichier caché qu'il porte, et il a changé de nom :
+>   `.ia-studio-role` devient `.ai-desktop-studio-role`. Sans lui, le dossier perd sa couleur, son
+>   emblème, son infobulle et le rôle qui y range un import — le studio le remarque de nouveau dès
+>   qu'il écrit dedans, ce qui rend les rôles un par un. Pour les rendre d'un coup :
+>
+>   ```bash
+>   find <vos projets> -name .ia-studio-role -exec sh -c \
+>     'mv "$1" "$(dirname "$1")/.ai-desktop-studio-role"' _ {} \;
+>   ```
+> - **Les adresses internes `ia-studio://` ne répondent plus.** Le studio sert ses assets sous
+>   `ai-desktop-studio://`.
+
+> **Les installeurs ne sont toujours pas signés.** Ni certificat Apple, ni certificat Windows n'est
+> provisionné à ce jour
+> ([ADR-04](https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/docs/ci/adr/ADR-04-strategie-de-signature.md)) :
+> macOS opposera Gatekeeper, Windows affichera SmartScreen. L'auto-update vérifie le condensat du
+> manifeste — il garantit qu'un téléchargement n'a pas été corrompu, pas qu'il vient de nous.
+
+### Ajouté
+
+**Un panneau Monde, et le terrain se sculpte.** Le relief se travaille au pinceau dans le viewport
+— élever, creuser, lisser, aplanir — avec son intensité, son adoucissement de bord, des masques
+peints texel par texel et des masques de hauteur et de pente. Il se découpe en chunks de 64 texels
+calculés dans un worker, s'annule chunk par chunk, et porte une pile de calques de retouche qui
+gardent chaque passe séparée. Une heightmap EXR peut lui servir de base. La physique suit : sous
+les pieds, un relief devient un heightfield Jolt plutôt qu'un cube.
+
+**Le sol se peint, la végétation pousse.** Quatre matières se mélangent au pinceau, canal par
+canal, et la peinture persiste en PNG. Le Scatter sème de vrais modèles cellule par cellule en
+maillages instanciés, avec paliers de densité selon la distance, capsules de collision, et un
+masque dérivé du sol peint.
+
+**Une scène s'exporte en jeu autonome.** Un compilateur compile le monde par delta, déduplique son
+contenu, regroupe et fusionne ce qui est statique, partitionne l'espace et ne dessine que ce
+qu'une caméra atteint. Le jeu exporté paie ce que l'éditeur paie — mêmes ombres, même culling —
+et une recette WebGL le vérifie de bout en bout. L'optimisation au bake s'interrompt.
+
+**Le jeu se joue à la manette.** Des cartes de contrôle éditables (`.input.json`), leurs
+préférences, leur zone morte, et des scripts qui pilotent un corps au lieu de le téléporter.
+
+**Le personnage a son onglet et son graphe d'animation.** L'onglet Modèle ouvre les six formats de
+maillage et donne le squelette, les points d'attache, le poids des formes, les textures extraites
+et redevenues éditables, la capture et l'export — sans jamais toucher à une scène. Un graphe
+d'états (`.anim.json`) fait jouer au personnage ce qu'il est en train de faire. Les animations se
+rangent par dossier, portent leur vignette, et se transfèrent d'un personnage à l'autre par un
+atelier qui préserve la hauteur et les repères d'armature.
+
+**Un moteur d'IA tourne sur la machine.** Un interpréteur Python embarqué, un écran de bienvenue
+qui télécharge les modèles, l'auto-rig Make-It-Animatable et sa qualité réglable, et une recherche
+d'action sémantique locale.
+
+**Le viewport se conduit comme les logiciels d'à côté** : schémas de navigation Unity, Unreal,
+Blender, Maya et Roblox, rectangle de sélection, accords de dolly, pavé numérique et gestes
+tactiles.
+
+**Un mode pixel art** dans l'espace Image : une cellule, une grille, et des pixels qui sortent
+nets.
+
+**Le studio se pilote de l'extérieur par 310 actions** — 222 à la 1.0.0 — l'animation, les cartes
+de contrôle, l'optimisation du monde et les vues de fichier ayant rejoint le catalogue.
+
+### Modifié
+
+**Le studio s'appelle AI Desktop Studio** — voir l'encadré en tête de section.
+
+**Tout import 3D devient un `.glb`.** Six formats entrent, dont le Collada et le BVH, et repartent
+en glTF binaire ; l'original est gardé sous `.sources`. Le `.gltf` reste seul à ouvrir une scène.
+
+**Le châssis à docks est devenu une bibliothèque**, le studio ne gardant que ses moitiés d'usine.
+
+**⌘W ferme une vue de fichier** sans jeter ses modifications, et le dernier onglet ne ferme plus
+la fenêtre.
+
+**Un projet ou un fichier se crée depuis n'importe où**, les arbres replient leurs descendants, la
+scène gagne ses filtres, et toutes les fenêtres se tiennent sur le même gris.
+
+**Le rail de la 3D ne montre que ce qui est actionnable.** Un outil que rien ne peut recevoir y
+disparaît au lieu d'être grisé — ils étaient une vingtaine à attendre une sélection. Le menu natif
+les nomme tous à tout moment, et le clic droit offre ceux que la situation permet. Les barres qui
+RÉPONDENT à un état, elles, gardent leur grisage : Appliquer et Annuler un recadrage ne sont dans
+aucun menu.
+
+**Le site quitte GitHub Pages pour une seule adresse** :
+[www.aidesktopstudio.com](https://www.aidesktopstudio.com/).
+
+### Corrigé
+
+- Le picking d'une grande scène coûtait à chaque clic ce qu'il coûte sur toute la scène, et perdait
+  la sélection sur les corps groupés.
+- Une annulation emportait la sculpture encore en vol ; un glisser de pinceau annulait ses propres
+  disques au lieu de les enfiler.
+- Le regard partagé d'un personnage suivait la caméra de celui qui le conduisait.
+- Les touches de vol redressaient la caméra toutes seules.
+- Le miroir et la course de la peinture de sol ne tombaient pas où le pinceau était.
+- Une scène rechargée oubliait son heightmap, et un `.exr` du catalogue ouvrait un onglet Image.
+- Le regroupement statique se reconstruisait à chaque frame : 78 % de moins.
+- Le thread UI payait la boucle du disque pendant une sculpture.
+- « Nouveau projet » pouvait ne rien faire, sans un mot : le dossier choisi, le sélecteur refermé,
+  et le studio immobile. Deux portes de sortie refusaient sans avoir posé de question — une vue de
+  fichier disparue, un enregistrement qui se dérobe — et le disent désormais.
+- Le studio ouvre les fichiers que le système lui envoie.
+
+### Limites connues
+
+- **Le manuel ne décrit pas encore le panneau Monde**, la sculpture du relief, le Scatter ni le
+  mode pixel art. Ses vingt chapitres couvrent le reste, dont l'onglet Modèle, les animations et
+  l'export d'un jeu.
+- **Les projets et les réglages de la 1.0.0** — voir l'encadré en tête de section.
+- Les installeurs ne sont pas signés.
+- Sur Linux, un document dont le nom porte un accent écrit sous forme décomposée — ce que produit
+  une archive faite sur macOS — s'affiche dans l'Explorateur sans pouvoir s'ouvrir.
+- La liste complète et par espace :
+  [chapitre 18](https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/docs/fr/manuel/18-limites.md).
+
 ## [1.0.0] — 2026-08-20
 
 **Les six documents du studio s'écrivent désormais dans des formats que d'autres logiciels lisent
