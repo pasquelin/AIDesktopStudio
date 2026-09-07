@@ -1,13 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-import type { InputMap, KeyboardBinding } from '@shared/domain/inputMap'
-
-/**
- * 🛑 COPIED, like the maps below: this tree is MIT and ships without the rest, so a VALUE taken
- * from `@shared/` would carry PolyForm code into an exported game. `inputDefaults.test.ts` ships
- * nowhere, reads both, and refuses a drift.
- */
-const MAP_VERSION = 2
+import { INPUT_MAP_VERSION, type InputMap, type KeyboardBinding } from './inputMap'
 
 /** The four keys and the four arrows a walker and a machine both answer, as one half-axis each. */
 function keyAxis(negative: readonly string[], positive: readonly string[]): KeyboardBinding[] {
@@ -30,14 +23,19 @@ const RIGHT = ['KeyD', 'ArrowRight']
 const AHEAD = ['KeyW', 'ArrowUp']
 const BACK = ['KeyS', 'ArrowDown']
 
+/** The three contexts a game plays with no file and no script — the studio reads these too. */
+export type PlayedPreset = 'character' | 'vehicle' | 'flight'
+
 /**
- * 🛑 COPIED from `@shared/domain/inputPresets`: this tree is MIT and ships without the rest, so a
- * VALUE taken from `@shared/` would carry PolyForm code into an exported game. `inputDefaults.
- * test.ts` ships nowhere, reads both, and refuses a drift.
+ * The three contexts a game plays with no file and no script.
+ *
+ * The SOURCE, read by the studio's own presets — `@shared/domain/inputPresets` spreads these and
+ * adds the two only it plays. They were copied there, character for character, until MIT became
+ * the source of this domain.
  */
-const DEFAULTS: readonly InputMap[] = [
-  {
-    version: MAP_VERSION,
+export const PLAYED_INPUT_PRESETS: Record<PlayedPreset, InputMap> = {
+  character: {
+    version: INPUT_MAP_VERSION,
     id: 'character',
     priority: 0,
     defaultActive: true,
@@ -81,8 +79,8 @@ const DEFAULTS: readonly InputMap[] = [
       },
     ],
   },
-  {
-    version: MAP_VERSION,
+  vehicle: {
+    version: INPUT_MAP_VERSION,
     id: 'vehicle',
     priority: 10,
     // Active with `character`: no action name is shared, and a driver's body walks nowhere while
@@ -128,8 +126,8 @@ const DEFAULTS: readonly InputMap[] = [
       },
     ],
   },
-  {
-    version: MAP_VERSION,
+  flight: {
+    version: INPUT_MAP_VERSION,
     id: 'flight',
     priority: 10,
     defaultActive: true,
@@ -168,7 +166,7 @@ const DEFAULTS: readonly InputMap[] = [
       },
     ],
   },
-]
+}
 
 /**
  * The maps given, completed by the contexts they leave undefined — a gamepad and a keyboard reach
@@ -179,17 +177,21 @@ const DEFAULTS: readonly InputMap[] = [
  */
 export function withDefaultInputMaps(maps: readonly InputMap[]): readonly InputMap[] {
   const declared = new Set(maps.map(map => map.id))
-  return [...maps.map(completed), ...DEFAULTS.filter(map => !declared.has(map.id))]
+  const built = Object.values(PLAYED_INPUT_PRESETS)
+  return [...maps.map(completed), ...built.filter(map => !declared.has(map.id))]
+}
+
+function completed(map: InputMap): InputMap {
+  const built = PLAYED_INPUT_PRESETS[map.id as PlayedPreset]
+  return built ? completedAgainst(map, built) : map
 }
 
 /**
  * 🛑 Completed action by ACTION: a map written before an action existed — `run`, `handBrake`,
  * `yaw` — would otherwise leave the built-in controller reading nothing, and a car that drove
- * yesterday would be dead with no word.
+ * yesterday would be dead with no word. The studio reads this for its own two presets as well.
  */
-function completed(map: InputMap): InputMap {
-  const built = DEFAULTS.find(one => one.id === map.id)
-  if (!built) return map
+export function completedAgainst(map: InputMap, built: InputMap): InputMap {
   const kinds = new Map(built.actions.map(action => [action.id, action]))
   // 🛑 The KIND is the built-in's, whatever the file says: values are keyed by id alone, so a
   // `move` written as `axis1` made `axis2('move')` answer zero and the character stopped walking,
@@ -209,7 +211,7 @@ function completed(map: InputMap): InputMap {
  * plane responded to NOTHING, with no word. A map of the current version is left as it is.
  */
 function upgraded(map: InputMap, built: InputMap): Partial<InputMap> {
-  return map.version === MAP_VERSION
+  return map.version === INPUT_MAP_VERSION
     ? {}
-    : { version: MAP_VERSION, defaultActive: built.defaultActive }
+    : { version: INPUT_MAP_VERSION, defaultActive: built.defaultActive }
 }

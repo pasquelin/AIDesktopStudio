@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 
 import { createInputControls } from '../runtime/inputControls'
-import { INPUT_MAP_VERSION, type InputMap } from '@shared/domain/inputMap'
+import { INPUT_MAP_VERSION, type InputMap } from '../runtime/inputMap'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createInputControlsMenu } from './inputControlsMenu'
 

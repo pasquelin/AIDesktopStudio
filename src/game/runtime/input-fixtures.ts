@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-import type { GamepadControl } from '@shared/domain/inputMap'
+import type { GamepadControl } from './inputMap'
 import type { GamepadState, InputState } from '../ports/inputPort'
 import { GAMEPAD_BUTTONS } from './inputMaps'
 

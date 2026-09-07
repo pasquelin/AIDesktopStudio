@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 
 import { describe, expect, it } from 'vitest'
-import type { InputMap } from '@shared/domain/inputMap'
+import type { InputMap } from './inputMap'
 import { createInputActions } from './inputActions'
 
 const MAPS: readonly InputMap[] = [

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-import type { InputActionKind, InputBinding } from '@shared/domain/inputMap'
+import type { InputActionKind, InputBinding } from '../runtime/inputMap'
 import type { InputControls } from '../runtime/inputControls'
 import { GAMEPAD_AXES, GAMEPAD_BUTTONS } from '../runtime/inputMaps'
 

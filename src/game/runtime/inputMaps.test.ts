@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 
 import { describe, expect, it } from 'vitest'
-import type { InputMap } from '@shared/domain/inputMap'
+import type { InputMap } from './inputMap'
 import { resolveInputMaps } from './inputMaps'
 import { standardGamepad } from './input-fixtures'
 

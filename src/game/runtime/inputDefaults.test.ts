@@ -1,20 +1,19 @@
 // SPDX-License-Identifier: MIT
 
-import { INPUT_MAP_VERSION } from '@shared/domain/inputMap'
 import { describe, expect, it } from 'vitest'
-import type { InputMap } from '@shared/domain/inputMap'
-import { inputMapPreset, type InputPresetId } from '@shared/domain/inputPresets'
-import { withDefaultInputMaps } from './inputDefaults'
+import { INPUT_MAP_VERSION, type InputMap } from './inputMap'
+import { PLAYED_INPUT_PRESETS, withDefaultInputMaps } from './inputDefaults'
 
-/**
- * The half of the carve-out a suite can hold: the runtime ships without `@shared/`, so it copies
- * these maps — and a test ships nowhere, so it may read both and refuse a drift.
- */
 describe('the input contexts a scene falls back on', () => {
-  const PLAYED: readonly InputPresetId[] = ['character', 'vehicle', 'flight']
-
-  it('says exactly what the preset says, for the three a game plays with', () => {
-    expect(withDefaultInputMaps([])).toEqual(PLAYED.map(inputMapPreset))
+  // 🛑 Handed out as they ARE, not copied: `createInputControls` clones what it keeps, and cloning
+  // twice hid which of the two owned the copy.
+  it('hands out the three a game plays with, untouched, when it is given nothing', () => {
+    expect(withDefaultInputMaps([])).toEqual([
+      PLAYED_INPUT_PRESETS.character,
+      PLAYED_INPUT_PRESETS.vehicle,
+      PLAYED_INPUT_PRESETS.flight,
+    ])
+    expect(withDefaultInputMaps([])[0]).toBe(PLAYED_INPUT_PRESETS.character)
   })
 
   it('completes a declared context ACTION by action, never wholesale', () => {
@@ -67,12 +66,6 @@ describe('the input contexts a scene falls back on', () => {
 
   // 🛑 A file written before version 2 predates the day driving and flying became active by
   // default: a project that had made its own carried `false`, and its plane answered NOTHING.
-  // 🛑 The two trees hold the same number apart, this one being MIT: a drift would make an
-  // exported game write maps the studio refuses, or the other way round.
-  it('holds the same map version as the studio, which it may not import a value from', () => {
-    expect(withDefaultInputMaps([])[0]?.version).toBe(INPUT_MAP_VERSION)
-  })
-
   it('gives a map written before version 2 the built-in answer on being active', () => {
     const old: InputMap = {
       version: 1,

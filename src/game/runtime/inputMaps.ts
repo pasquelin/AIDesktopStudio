@@ -6,7 +6,7 @@ import type {
   InputAction,
   InputBinding,
   InputMap,
-} from '@shared/domain/inputMap'
+} from './inputMap'
 import type { GamepadState, InputState } from '../ports/inputPort'
 import { clamp } from '../numeric'
 
