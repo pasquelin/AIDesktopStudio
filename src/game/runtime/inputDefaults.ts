@@ -1,6 +1,13 @@
 // SPDX-License-Identifier: MIT
 
-import { INPUT_MAP_VERSION, type InputMap, type KeyboardBinding } from '@shared/domain/inputMap'
+import type { InputMap, KeyboardBinding } from '@shared/domain/inputMap'
+
+/**
+ * 🛑 COPIED, like the maps below: this tree is MIT and ships without the rest, so a VALUE taken
+ * from `@shared/` would carry PolyForm code into an exported game. `inputDefaults.test.ts` ships
+ * nowhere, reads both, and refuses a drift.
+ */
+const MAP_VERSION = 2
 
 /** The four keys and the four arrows a walker and a machine both answer, as one half-axis each. */
 function keyAxis(negative: readonly string[], positive: readonly string[]): KeyboardBinding[] {
@@ -30,7 +37,7 @@ const BACK = ['KeyS', 'ArrowDown']
  */
 const DEFAULTS: readonly InputMap[] = [
   {
-    version: INPUT_MAP_VERSION,
+    version: MAP_VERSION,
     id: 'character',
     priority: 0,
     defaultActive: true,
@@ -75,7 +82,7 @@ const DEFAULTS: readonly InputMap[] = [
     ],
   },
   {
-    version: INPUT_MAP_VERSION,
+    version: MAP_VERSION,
     id: 'vehicle',
     priority: 10,
     // Active with `character`: no action name is shared, and a driver's body walks nowhere while
@@ -122,7 +129,7 @@ const DEFAULTS: readonly InputMap[] = [
     ],
   },
   {
-    version: INPUT_MAP_VERSION,
+    version: MAP_VERSION,
     id: 'flight',
     priority: 10,
     defaultActive: true,
@@ -202,7 +209,7 @@ function completed(map: InputMap): InputMap {
  * plane responded to NOTHING, with no word. A map of the current version is left as it is.
  */
 function upgraded(map: InputMap, built: InputMap): Partial<InputMap> {
-  return map.version === INPUT_MAP_VERSION
+  return map.version === MAP_VERSION
     ? {}
-    : { version: INPUT_MAP_VERSION, defaultActive: built.defaultActive }
+    : { version: MAP_VERSION, defaultActive: built.defaultActive }
 }

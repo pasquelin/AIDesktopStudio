@@ -67,6 +67,12 @@ describe('the input contexts a scene falls back on', () => {
 
   // 🛑 A file written before version 2 predates the day driving and flying became active by
   // default: a project that had made its own carried `false`, and its plane answered NOTHING.
+  // 🛑 The two trees hold the same number apart, this one being MIT: a drift would make an
+  // exported game write maps the studio refuses, or the other way round.
+  it('holds the same map version as the studio, which it may not import a value from', () => {
+    expect(withDefaultInputMaps([])[0]?.version).toBe(INPUT_MAP_VERSION)
+  })
+
   it('gives a map written before version 2 the built-in answer on being active', () => {
     const old: InputMap = {
       version: 1,

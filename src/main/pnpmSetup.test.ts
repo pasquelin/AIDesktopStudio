@@ -43,9 +43,10 @@ describe('the pnpm 12 toolchain', () => {
     const lockfile = readFileSync(join(ROOT, 'pnpm-lock.yaml'), 'utf8')
 
     expect(lockfile).toMatch(/^---\nlockfileVersion: '9.0'/)
-    expect(lockfile).toMatch(
-      /packageManagerDependencies:\n {6}pnpm:\n {8}specifier: 12\.3\.4\n {8}version: 12\.3\.4/,
-    )
+    // 🛑 Its own entry, whoever else sits in that block: pnpm 12 locks `@pnpm/exe` beside `pnpm`,
+    // and reading the two as one line made this refuse the very lockfile it is meant to describe.
+    const managers = lockfile.split('packageManagerDependencies:\n')[1]?.split('\npackages:')[0]
+    expect(managers).toMatch(/^ {6}pnpm:\n {8}specifier: 12\.3\.4\n {8}version: 12\.3\.4$/m)
     expect(lockfile).toContain("\n---\nlockfileVersion: '9.0'")
   })
 })
