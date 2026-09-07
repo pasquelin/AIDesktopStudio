@@ -11,7 +11,7 @@ import { load, studioWindow, WEB_PREFERENCES } from './windows'
  * A splash-shaped window: no chrome, native rounded corners, the mark's tile colour underneath.
  * NOTHING scrolls here (Alban) — a slide that does not fit is a slide to shorten.
  */
-const WELCOME_SIZE = { width: 960, height: 760 }
+const WELCOME_SIZE = { width: 960, height: 840 }
 
 const WINDOW_ICON = process.platform === 'darwin' ? undefined : APP_ICON_PATH
 
