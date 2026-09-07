@@ -183,6 +183,33 @@ for (const { lang, html } of pages) {
   }
 }
 
+/* ------------------------------------------------- les cibles dans le dépôt */
+/* Un `blob/HEAD/<chemin>` n'était vérifié par personne : la destination existe, ou rend
+   un 404 que seul un lecteur découvre. Trois précautions, chacune pour une panne réelle.
+   On lit TOUTES les pages : un chemin juste dans une langue peut être mort dans les
+   quatorze autres, ce qui est arrivé (07/09) — `manuel/20-piloter-de-l-exterieur.md`
+   était codé en dur alors que l'anglais range le même texte sous
+   `manual/20-driving-from-outside.md`. On interroge `HEAD` et non le disque : ce que
+   GitHub sert est le COMMIT, donc un fichier créé et jamais indexé laisserait la porte
+   verte et le site en 404 — et `git` distingue la casse là où APFS la replie. Et l'URL
+   est ancrée sur le dépôt de CE projet : un lien vers un fichier tiers n'a pas à résoudre
+   ici, cette vitrine partageant son contrôle avec deux autres. */
+const echappe = (t) => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+const DANS_LE_DEPOT = new RegExp(`href="${echappe(DEPOT)}/(?:blob|tree)/HEAD/([^"#?]+)"`, 'g')
+const cibles = new Map()
+for (const p of pages) {
+  for (const m of sansCommentaires(p.html).matchAll(DANS_LE_DEPOT)) {
+    if (!cibles.has(m[1])) cibles.set(m[1], p.lang)
+  }
+}
+for (const [chemin, lang] of [...cibles].sort()) {
+  try {
+    execFileSync('git', ['cat-file', '-e', `HEAD:${chemin}`], { cwd: ROOT, stdio: 'ignore' })
+  } catch {
+    griefs.push(`« ${chemin} » n'est pas dans HEAD, lié par la vitrine « ${lang} ».`)
+  }
+}
+
 /* --------------------------------------------------------------- les langues */
 if (langues.length < 2) griefs.push(`une seule langue : la vitrine n'est pas traduite.`)
 for (const l of langues) {
@@ -198,5 +225,5 @@ if (griefs.length > 0) {
 
 console.log(
   `Vitrine contrôlée sur sa sortie bâtie — ${pages.length} pages, ${liens.length} liens, ` +
-    `${parLibelle.size} libellés distincts, ${ids.size} ancres.`,
+    `${parLibelle.size} libellés distincts, ${ids.size} ancres, ${cibles.size} cibles dans le dépôt.`,
 )

@@ -318,7 +318,8 @@
         "label": "Licence"
       }
     },
-    "manualFile": "guide-utilisateur.md"
+    "manualFile": "guide-utilisateur.md",
+    "mcpChapterFile": "manuel/20-piloter-de-l-exterieur.md"
   },
   "download": {
     "eyebrow": "Installation",
