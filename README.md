@@ -14,7 +14,7 @@ Generate and edit images, videos, 3D models, audio, textures and skyboxes — in
 [![Tests](https://img.shields.io/badge/tests-9000%2B%20passing-2b2d30?logo=vitest&logoColor=6da95f)](#quality-bar)
 [![License](https://img.shields.io/badge/license-PolyForm%20Noncommercial-2b2d30)](#license)
 
-**[→ Presentation site](https://aidesktopstudio.com/)**
+**[→ Presentation site](https://www.aidesktopstudio.com/)**
 
 </div>
 
