@@ -439,7 +439,10 @@ describe('the texture preview', () => {
       renderer.refreshMaps()
 
       await vi.waitFor(() => expect(source.load).toHaveBeenCalledTimes(2))
-      expect(source.load).toHaveBeenLastCalledWith('ai-desktop-studio://asset/base-1?v=after', 'flipY')
+      expect(source.load).toHaveBeenLastCalledWith(
+        'ai-desktop-studio://asset/base-1?v=after',
+        'flipY',
+      )
     })
   })
 })

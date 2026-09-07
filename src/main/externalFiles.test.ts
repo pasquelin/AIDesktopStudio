@@ -38,9 +38,9 @@ describe('externalPathsFromArguments', () => {
 
 describe('launchedPaths', () => {
   it('cuts the binary whatever path invoked it, so no launch announces a refused executable', () => {
-    expect(launchedPaths(['/usr/local/bin/ai-desktop-studio', '/work/model.obj'], '/repo/app')).toEqual([
-      '/work/model.obj',
-    ])
+    expect(
+      launchedPaths(['/usr/local/bin/ai-desktop-studio', '/work/model.obj'], '/repo/app'),
+    ).toEqual(['/work/model.obj'])
   })
 
   it('drops the application folder a development launch passes after the binary', () => {

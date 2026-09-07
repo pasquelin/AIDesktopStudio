@@ -125,4 +125,4 @@ consommateur résidant dans l'Union européenne, les règles de compétence prot
 
 ## 14. Contact
 
-Alban Pasquelin — https://github.com/pasquelin/IAStudio
+Alban Pasquelin — https://github.com/pasquelin/AIDesktopStudio

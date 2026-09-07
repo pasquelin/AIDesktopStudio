@@ -374,7 +374,9 @@ function otioOf(count: number): string {
   return JSON.stringify({
     OTIO_SCHEMA: 'Timeline.1',
     name: 'Bench',
-    metadata: { aidesktopstudio: { documentId: 'a3f1', width: 1920, height: 1080, sampleRate: 48_000 } },
+    metadata: {
+      aidesktopstudio: { documentId: 'a3f1', width: 1920, height: 1080, sampleRate: 48_000 },
+    },
     global_start_time: time(0),
     tracks: {
       OTIO_SCHEMA: 'Stack.1',

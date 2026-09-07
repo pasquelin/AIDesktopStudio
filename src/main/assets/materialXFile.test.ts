@@ -76,7 +76,9 @@ describe('a material written as MaterialX', () => {
   it('writes the envelope before the state, where a head read reaches it', () => {
     const written = writeMaterialX(document({ studio: { channels: {} } }), '{"documentId":"m1"}')
 
-    expect(written.indexOf('aidesktopstudiodocument=')).toBeLessThan(written.indexOf('aidesktopstudiostate='))
+    expect(written.indexOf('aidesktopstudiodocument=')).toBeLessThan(
+      written.indexOf('aidesktopstudiostate='),
+    )
     expect(mtlxHeadIn(written)).toEqual({ version: '1.39', envelope: '{"documentId":"m1"}' })
   })
 

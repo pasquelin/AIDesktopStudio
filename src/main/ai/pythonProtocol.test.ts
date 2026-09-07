@@ -112,7 +112,10 @@ describe('what a door reports about its memory', () => {
   }
 
   /** `MemoryLedger` has an `as_frame` of its own, and it composes `doors` rather than a door. */
-  const source = readFileSync(join(ROOT, 'engine/src/aidesktopstudio_engine/core/memory.py'), 'utf8')
+  const source = readFileSync(
+    join(ROOT, 'engine/src/aidesktopstudio_engine/core/memory.py'),
+    'utf8',
+  )
   const own = source.slice(source.indexOf('class DoorMemory'), source.indexOf('class MemoryLedger'))
   const emitted = [...own.matchAll(/^\s+"(\w+)":/gm)].map(found => found[1] ?? '')
 

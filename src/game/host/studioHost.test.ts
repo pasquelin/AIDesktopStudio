@@ -17,7 +17,9 @@ describe('the game as the studio fills it', () => {
       journal: entry => journal.push(entry),
     })
 
-    expect(game.assets.urlOf({ kind: 'asset', id: 'asset_1' })).toBe('ai-desktop-studio://asset/asset_1')
+    expect(game.assets.urlOf({ kind: 'asset', id: 'asset_1' })).toBe(
+      'ai-desktop-studio://asset/asset_1',
+    )
 
     game.log.write('info', 'started')
     expect(journal.map(entry => entry.message)).toEqual(['started'])

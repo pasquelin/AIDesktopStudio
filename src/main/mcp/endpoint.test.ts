@@ -28,7 +28,9 @@ describe('pointing a client here', () => {
    */
   it('registers the studio under a name with no space in it', () => {
     expect(clientName(APP_NAME)).toBe('ai-desktop-studio')
-    expect(mcpAddCommand(packaged(), clientName(APP_NAME)).split(' ')).toContain('ai-desktop-studio')
+    expect(mcpAddCommand(packaged(), clientName(APP_NAME)).split(' ')).toContain(
+      'ai-desktop-studio',
+    )
   })
 
   /**
@@ -118,7 +120,9 @@ describe('persisting a client endpoint', () => {
   it('quotes a path holding a space without escaping its separators', () => {
     const windows = 'C:\\Program Files\\AI Desktop Studio\\AI Desktop Studio.exe'
 
-    expect(mcpAddCommand(mcpLaunch(windows, null, ADDRESS), 'ai-desktop-studio')).toContain(`"${windows}"`)
+    expect(mcpAddCommand(mcpLaunch(windows, null, ADDRESS), 'ai-desktop-studio')).toContain(
+      `"${windows}"`,
+    )
   })
 
   /**
