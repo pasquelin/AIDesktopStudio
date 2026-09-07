@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { DEFAULT_SETTINGS, type Settings } from '@shared/domain/settings'
+import { DEFAULT_SETTINGS, WITHOUT_EDITOR_AIDS, type Settings } from '@shared/domain/settings'
 import type { SceneRenderer } from '@/engines/scene/SceneRenderer'
 import { characterOf, useCharacters } from '@/stores/character'
 import type { characterViewOf } from '@/stores/characterView'
@@ -13,10 +13,8 @@ function characterViewport(three: Settings['three']): Settings['three'] {
     ...DEFAULT_SETTINGS.three,
     orbitAroundSelection: three.orbitAroundSelection,
     orbitUnderCursor: three.orbitUnderCursor,
+    ...WITHOUT_EDITOR_AIDS,
     showGrid: true,
-    lightHelpers: 'off',
-    cameraHelpers: 'off',
-    boundingBoxes: 'off',
   }
 }
 

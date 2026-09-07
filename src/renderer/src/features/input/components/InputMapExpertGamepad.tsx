@@ -2,14 +2,14 @@
 import { useTranslation } from 'react-i18next'
 import { inputBindingFits } from '@shared/domain/inputMap'
 import type { GamepadBinding, GamepadControl, InputActionKind } from '@shared/domain/inputMap'
-import { Button } from '@/components/Button'
 import { NumberField } from '@/components/NumberField'
 import { SelectField } from '@/components/SelectField'
 import { ToggleField } from '@/components/ToggleField'
 import { useInputCapture } from '@/hooks/useInputCapture'
-import { HINT_LEFT, TIP_LEFT } from '@/helpers/tooltip'
+import { TIP_LEFT } from '@/helpers/tooltip'
 import { useLatest } from '@/hooks/useLatest'
-import { DEFAULT_GAMEPAD_DEAD_ZONE } from '@game/runtime/inputMaps'
+import { DEFAULT_GAMEPAD_DEAD_ZONE, GAMEPAD_AXES, GAMEPAD_BUTTONS } from '@game/runtime/inputMaps'
+import { InputMapCaptureButton } from './InputMapCaptureButton'
 
 type InputMapExpertGamepadProps = {
   kind: InputActionKind
@@ -18,30 +18,13 @@ type InputMapExpertGamepadProps = {
   onChange: (binding: GamepadBinding) => void
 }
 
+// The two sticks whole, then the runtime's own orders: spelt out here it was a fifth copy of the
+// list, and a control added to the union compiled everywhere without ever reaching this picker.
 const CONTROLS: readonly GamepadControl[] = [
   'leftStick',
   'rightStick',
-  'leftStickX',
-  'leftStickY',
-  'rightStickX',
-  'rightStickY',
-  'south',
-  'east',
-  'west',
-  'north',
-  'leftShoulder',
-  'rightShoulder',
-  'leftTrigger',
-  'rightTrigger',
-  'select',
-  'start',
-  'leftStickButton',
-  'rightStickButton',
-  'dpadUp',
-  'dpadDown',
-  'dpadLeft',
-  'dpadRight',
-  'home',
+  ...GAMEPAD_AXES,
+  ...GAMEPAD_BUTTONS,
 ]
 
 export function InputMapExpertGamepad({
@@ -69,19 +52,15 @@ export function InputMapExpertGamepad({
         options={CONTROLS.filter(fits).map(control => ({ value: control, label: control }))}
         onChange={control => onChange({ ...binding, control })}
         actions={
-          <Button
-            onClick={() =>
-              capture.capturing
-                ? capture.cancel()
-                : capture.captureGamepadControl(
-                    control => onChange({ ...latest.current, control }),
-                    fits,
-                  )
+          <InputMapCaptureButton
+            capture={capture}
+            onArm={() =>
+              capture.captureGamepadControl(
+                control => onChange({ ...latest.current, control }),
+                fits,
+              )
             }
-            {...HINT_LEFT(t('game.inputMap.captureHint'))}
-          >
-            {capture.capturing ? t('game.inputMap.capturing') : t('game.inputMap.capture')}
-          </Button>
+          />
         }
       />
       <NumberField

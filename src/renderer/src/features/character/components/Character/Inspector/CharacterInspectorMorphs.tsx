@@ -27,25 +27,28 @@ export function CharacterInspectorMorphs({
 
   return (
     <PropertySection title={t('character.morphs')} scId="character.morphs">
-      {names.length === 0 && <QuietNote>{t('character.morphsEmpty')}</QuietNote>}
-      {names.length > 0 && <QuietNote>{t('character.morphsHint')}</QuietNote>}
-      {names.length > 0 && (
-        <VirtualFieldList
-          key={`${documentId}:${nodeId}`}
-          items={names}
-          keyOf={name => name}
-          label={t('character.morphs')}
-          renderItem={name => (
-            <SliderField
-              label={name}
-              value={weights[name] ?? 0}
-              {...WEIGHT}
-              onChange={value => weigh(assetId, name, value)}
-              onReset={() => weigh(assetId, name, 0)}
-              scId="character.morph"
-            />
-          )}
-        />
+      {names.length === 0 ? (
+        <QuietNote>{t('character.morphsEmpty')}</QuietNote>
+      ) : (
+        <>
+          <QuietNote>{t('character.morphsHint')}</QuietNote>
+          <VirtualFieldList
+            key={`${documentId}:${nodeId}`}
+            items={names}
+            keyOf={name => name}
+            label={t('character.morphs')}
+            renderItem={name => (
+              <SliderField
+                label={name}
+                value={weights[name] ?? 0}
+                {...WEIGHT}
+                onChange={value => weigh(assetId, name, value)}
+                onReset={() => weigh(assetId, name, 0)}
+                scId="character.morph"
+              />
+            )}
+          />
+        </>
       )}
     </PropertySection>
   )

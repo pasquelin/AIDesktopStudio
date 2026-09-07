@@ -360,6 +360,18 @@ export type Settings = {
 }
 
 /**
+ * The editor aids a surface that is NOT the editor turns off — the subset `renderPolicyOf` has no
+ * name for, written once so a fourth aid is not three lists to remember.
+ *
+ * `showGrid` is deliberately out: the workshop draws one and a game draws none, so each surface
+ * still says which it is.
+ */
+export const WITHOUT_EDITOR_AIDS: Pick<
+  Settings['three'],
+  'lightHelpers' | 'cameraHelpers' | 'boundingBoxes'
+> = { lightHelpers: 'off', cameraHelpers: 'off', boundingBoxes: 'off' }
+
+/**
  * The defaults, and the only place they are written: `defaultAt` reads them through a path, so
  * the registry describes settings without restating what they start at. A fresh install is
  * exactly this.
