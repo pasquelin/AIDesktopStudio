@@ -53,7 +53,7 @@ function sceneTools(
       ...tool,
       shortcut: facts.label(bindingOf(tool.command, facts.bindings)),
       activeMode: tool.id === 'display' ? displayOfPane(facts.view.displays, 0) : undefined,
-      disabled: unavailable[tool.command],
+      unavailable: unavailable[tool.command],
       pressed: pressed[tool.command],
       ...(tool.command === 'scene.carve' && facts.matterName
         ? {

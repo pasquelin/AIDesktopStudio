@@ -289,8 +289,6 @@ const LOG_SCOPE_SET: Record<LogScope, true> = {
   'project.forget': true,
   'project.close': true,
   'project.rename': true,
-  'project.open': true,
-  'project.create': true,
   'font.face': true,
   'shell.render': true,
   'shell.layout': true,

@@ -154,8 +154,6 @@
       "project.forget": "Le projet n’a pas pu être retiré de la liste",
       "project.close": "Le projet a bien été fermé, mais le studio n’a pas pu retenir de ne pas le rouvrir au prochain lancement",
       "project.rename": "Le projet n’a pas pu être renommé",
-      "project.open": "Le projet n’a pas pu être ouvert",
-      "project.create": "Le projet n’a pas pu être créé",
       "font.face": "Une police n’a pas pu être chargée",
       "document.close": "La fermeture du document a échoué",
       "document.delete": "La suppression du document a échoué",

@@ -154,8 +154,6 @@
       "project.forget": "The project could not be removed from the list",
       "project.close": "The project was closed, but the studio could not record that the next launch should not reopen it",
       "project.rename": "The project could not be renamed",
-      "project.open": "The project could not be opened",
-      "project.create": "The project could not be created",
       "font.face": "A font could not be loaded",
       "document.close": "Closing the document failed",
       "document.delete": "Deleting the document failed",

@@ -56,7 +56,7 @@ export type AsyncCatalog = {
    * Answers how many rows went, so a caller knows whether anything is worth telling a window.
    */
   forgetUnder: (path: string) => Promise<number>
-  /** Every filed row under any of these folders, with no bound — see `assetsUnder`. */
+  /** Every filed row AT one of these paths or under it — prefixes, see `assetsUnder`. */
   assetsUnder: (folders: readonly string[]) => Promise<Asset[]>
   /**
    * Reconciles the catalogue with the project folder, in the thread that holds it.

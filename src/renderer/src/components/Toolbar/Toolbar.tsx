@@ -1,4 +1,4 @@
-import { Fragment, type CSSProperties, type ReactNode } from 'react'
+import { Fragment, useMemo, type CSSProperties, type ReactNode } from 'react'
 import { cn } from '@/helpers/cn'
 import { tipFor } from '@/helpers/tooltip'
 import { Separator } from '../Separator'
@@ -24,15 +24,6 @@ export type ToolbarProps = {
   orientation?: 'vertical' | 'horizontal'
   /** Workspace tools, rendered after the built-in ones and in the same visual language. */
   extras?: ReactNode
-  /**
-   * Drops a disabled tool instead of greying it — for a RAIL, whose tools the native menu names
-   * at all times and whose context menu offers the ones a situation affords. See `shownTools`.
-   *
-   * 🛑 Off by default, and that is not timidity: a bar that ANSWERS a state — the crop frame's
-   * Apply and Cancel — is not in any menu, and hiding those leaves nothing on screen to say what
-   * the studio is waiting for.
-   */
-  hideDisabled?: boolean
   className?: string
   /** What no class can express — an offset read off a runtime measure, such as the rulers'. */
   style?: CSSProperties
@@ -52,7 +43,6 @@ export function Toolbar({
   onMode,
   orientation = 'vertical',
   extras,
-  hideDisabled = false,
   className,
   style,
 }: ToolbarProps) {
@@ -61,7 +51,7 @@ export function Toolbar({
   // over the button above and cover the tool the eye is comparing against.
   const tip = tipFor(orientation)
   const divider = <Separator orientation={vertical ? 'horizontal' : 'vertical'} />
-  const shown = hideDisabled ? shownTools(tools) : tools
+  const shown = useMemo(() => shownTools(tools), [tools])
 
   return (
     <div

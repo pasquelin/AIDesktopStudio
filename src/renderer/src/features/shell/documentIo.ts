@@ -370,19 +370,7 @@ async function whileSettling<T>(body: () => Promise<T>): Promise<T> {
 }
 async function askAboutUnsavedWork(documentId: string): Promise<CloseChoice> {
   const title = useDocuments.getState().documents[documentId]?.title ?? ''
-  const choice = await getBridge()?.documents.confirmClose(title)
-  // 🛑 Nobody answered — no bridge, or a dialog that gave nothing back. Read as `cancel` because
-  // that is the only safe reading of an unanswered question about unsaved work, but SAID: the
-  // caller that stops on it announces nothing of its own, and the gesture dies where it stood.
-  if (choice === undefined) {
-    reportFailure(
-      'document.close',
-      title,
-      new Error('the question about unsaved work went unanswered'),
-    )
-    return 'cancel'
-  }
-  return choice
+  return (await getBridge()?.documents.confirmClose(title)) ?? 'cancel'
 }
 export async function closeDocument(documentId: string): Promise<boolean> {
   return await whileSettling(async () => {
@@ -429,7 +417,12 @@ async function settleUnsaved(andForget: boolean): Promise<boolean> {
       answers.push({ documentId, choice })
     }
     for (const { documentId, choice } of answers) {
-      if (choice === 'save' && !(await saveDocument(documentId))) return false
+      // 🛑 Answered "save" and the save refused — `savableDocument` turns several ways down in
+      // silence. The callers read this `false` as "the person said no" and stop everything.
+      if (choice === 'save' && !(await saveDocument(documentId))) {
+        reportFailure('document.save', documentId, new Error('this document refused to save'))
+        return false
+      }
       if (andForget) forgetDocument(documentId)
     }
     return true

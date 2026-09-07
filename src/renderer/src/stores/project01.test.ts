@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, onTestFinished, vi } from 'vitest'
 import { type Project } from '@shared/domain/project'
 import type * as DocumentIo from '@/features/shell/documentIo'
-import { bridgeWatchingLogs, installFakeBridge } from '@/services/fakeBridge'
+import { installFakeBridge } from '@/services/fakeBridge'
 import type { ActivityEntry } from '@shared/domain/activity'
 import { useActivity } from './activity'
 import { assetsById, useAssets } from './assets'
@@ -292,10 +292,8 @@ describe('making a project at a path', () => {
 
 /**
  * Every caller does `void openPicked()` — the home's tools, the rail, the native menu and now
- * the explorer's empty state. A refusal left to throw was therefore an unhandled rejection.
- *
- * 🛑 Swallowed is not the same as silent, and it used to be: the main's own line goes into the
- * journal of the OPEN project, so a studio holding none wrote nothing anywhere.
+ * the explorer's empty state. A refusal left to throw was therefore an unhandled rejection,
+ * and the main process has already written the reason in the journal on its way past.
  */
 describe('picking a folder in the dialog', () => {
   const picking = (folder: string | null) => ({
@@ -378,17 +376,6 @@ describe('picking a folder in the dialog', () => {
     await useProject.getState().createPicked()
 
     expect(useProject.getState().project?.path).toBe('/open')
-  })
-
-  // 🛑 The journal the main writes lives in the open project's catalogue: creating the FIRST
-  // project of a session is exactly when there is none, and the gesture died without a word.
-  it('says so when the folder cannot be made into a project', async () => {
-    const create = vi.fn(() => Promise.reject(new Error('read-only')))
-    const { entries } = bridgeWatchingLogs({ ...picking('/read-only'), project: { create } })
-
-    await useProject.getState().createPicked()
-
-    expect(entries().map(entry => entry.scope)).toContain('project.create')
   })
 
   it('survives a folder that cannot be written', async () => {

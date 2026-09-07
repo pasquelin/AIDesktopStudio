@@ -18,8 +18,6 @@ const SMOKE = [
   'hello.index(b"worker.hello")',
 ].join('; ')
 
-const SMOKE_TIMEOUT = 180_000
-
 function pythonOf(runtime, platform) {
   return join(resolve(runtime), 'python', platform === 'win32' ? 'python.exe' : 'bin/python3')
 }
@@ -62,10 +60,9 @@ export function checkEngineRuntime(runtime, platform = process.platform, arch = 
   execFileSync(command, [...args, '-c', SMOKE], {
     cwd: runtime,
     encoding: 'utf8',
-    // `serve_selection` builds its model BEFORE wrapping the socket the caller detached: a throw
-    // there leaves nothing to close, `recv` never sees EOF, and the pack hook this runs from would
-    // hold the release build until its job timed out, without a line saying why.
-    timeout: SMOKE_TIMEOUT,
+    // What `settimeout` above cannot bound: a hang at import or in the model's constructor. The
+    // pack hook this runs from would otherwise hold the build until the job timed out.
+    timeout: 180_000,
     env: {
       ...process.env,
       PYTHONDONTWRITEBYTECODE: '1',

@@ -338,11 +338,6 @@ describe('a file view tab', () => {
     setDocumentTitle('file:Controls/character.input.json', 'character', false)
   })
 
-  /**
-   * 🛑 A `false` nobody was asked for. The caller — leaving a project, quitting — reads it as
-   * "the person said no", so the whole gesture stopped with the dialog already dismissed and
-   * nothing on screen to explain it.
-   */
   it('says so when the answer is to save and the view has no way to', async () => {
     const { entries } = bridgeWatchingLogs({
       documents: { confirmClose: () => Promise.resolve('save') },

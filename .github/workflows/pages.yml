@@ -175,14 +175,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
-    # Un seul déploiement à la fois, sans annuler celui en cours : une publication à moitié
-    # écrite est pire qu'une publication en retard, et `rsync --delete` ne supporte pas deux
-    # passes concurrentes sur le même dossier.
+    # Un seul déploiement à la fois, sans annuler celui en cours : `rsync --delete` ne supporte
+    # pas deux passes concurrentes sur le même dossier.
     #
-    # 🛑 Sur le JOB, pas sur le workflow. GitHub ne garde qu'un run EN ATTENTE par groupe : au
-    # niveau workflow, les builds de pull request partageaient la file des déploiements, et une
-    # release publiée derrière un build en cours se faisait évincer par le build suivant — la
-    # vitrine n'annonçait jamais la version, pour seule trace un run « cancelled ».
+    # 🛑 Sur le JOB, pas sur le workflow : GitHub ne garde qu'un run EN ATTENTE par groupe, et
+    # les builds de pull request partageaient alors la file des déploiements.
     concurrency:
       group: vitrine
       cancel-in-progress: false

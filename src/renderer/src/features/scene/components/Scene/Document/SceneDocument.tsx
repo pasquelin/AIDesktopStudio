@@ -299,7 +299,6 @@ export function SceneDocument({ documentId }: { documentId: string }) {
       <Toolbar
         className={PANE_TOOLBAR}
         tools={tools}
-        hideDisabled
         activeTool={armed ? NAVIGATE_TOOL : mode}
         onTool={id => {
           const command = SCENE_TOOLS.find(candidate => candidate.id === id)?.command

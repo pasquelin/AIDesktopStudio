@@ -95,18 +95,17 @@ function modifiedFileViewIds(): string[] {
 async function settleFileView(id: string): Promise<boolean> {
   const view = fileViews.get(id)
   const bridge = getBridge()
-  // 🛑 A `false` nobody was ASKED for. It stops the whole gesture that called this — leaving a
-  // project, quitting — and every one of those callers reads it as "the person said no", so
-  // without a word here the studio simply does nothing and never says why.
-  if (!view || !bridge) {
+  // 🛑 A `false` nobody was ASKED for: the callers — leaving a project, quitting — all read it as
+  // "the person said no", so a silent one stops the whole gesture with nothing on screen.
+  if (!view) {
     reportFailure('document.close', id, new Error('the view holding these edits is gone'))
     return false
   }
+  if (!bridge) return false
   const choice = await bridge.documents.confirmClose(view.title)
   if (choice === 'cancel') return false
   if (choice === 'save') {
     const save = fileViewSaves.get(id)
-    // Answered "save" and there is nothing to save WITH: the same silent stop, one step later.
     if (!save) {
       reportFailure('document.save', view.title, new Error('this view has no way to save'))
       return false
