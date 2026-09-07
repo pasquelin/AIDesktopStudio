@@ -18,22 +18,22 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
-from ia_studio_engine.adapters.device import (
+from aidesktopstudio_engine.adapters.device import (
     device,
     held_bytes,
     release_cache,
     result_frame,
     tensor_bytes,
 )
-from ia_studio_engine.adapters.loading import (
+from aidesktopstudio_engine.adapters.loading import (
     LoadedModel,
     LoadRefusedError,
     generation_refusal,
     quietened,
     refuse_reason,
 )
-from ia_studio_engine.adapters.modalities import MODALITIES, Modality
-from ia_studio_engine.core.jobqueue import CancelledError
+from aidesktopstudio_engine.adapters.modalities import MODALITIES, Modality
+from aidesktopstudio_engine.core.jobqueue import CancelledError
 
 
 def call_parameters(pipeline: Any) -> Any:

@@ -10,15 +10,15 @@ import threading
 from collections.abc import Callable
 from typing import Any
 
-from ia_studio_engine import PROTOCOL_VERSION
-from ia_studio_engine.core.memory import DoorMemory, MemoryLedger
-from ia_studio_engine.core.workers import WorkerProcess
-from ia_studio_engine.protocol.doors import DOORS
-from ia_studio_engine.protocol.envelope import CANCEL_OP, encode_event
+from aidesktopstudio_engine import PROTOCOL_VERSION
+from aidesktopstudio_engine.core.memory import DoorMemory, MemoryLedger
+from aidesktopstudio_engine.core.workers import WorkerProcess
+from aidesktopstudio_engine.protocol.doors import DOORS
+from aidesktopstudio_engine.protocol.envelope import CANCEL_OP, encode_event
 
 #: The single module every door runs; which door it is travels as its first argument. Named here
 #: because the core is the only side that builds an argv.
-DOOR_MODULE = "ia_studio_engine.workers.door"
+DOOR_MODULE = "aidesktopstudio_engine.workers.door"
 
 Send = Callable[[str], None]
 Spawn = Callable[[str, Callable[[dict], None], Callable[[], None]], WorkerProcess]

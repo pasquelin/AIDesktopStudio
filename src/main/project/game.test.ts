@@ -18,7 +18,7 @@ describe('the game a project declares', () => {
   let game: ProjectGameStore
 
   beforeEach(async () => {
-    root = await mkdtemp(join(tmpdir(), 'ia-studio-game-'))
+    root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-game-'))
     game = createProjectGame({ rootOf: () => root })
   })
 

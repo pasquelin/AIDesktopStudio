@@ -23,7 +23,7 @@ const deps = (
 
 describe('importFiles routing', () => {
   it('routes a mixed drop to the folder each kind is filed under', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'ia-studio-import-'))
+    const root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-import-'))
     const picture = `${root}-facade.png`
     const motion = `${root}-Walking.fbx`
     const mesh = `${root}-character.glb`
@@ -61,8 +61,8 @@ describe('importFiles routing', () => {
   })
 
   it('walks a dropped folder and imports every file it can read', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'ia-studio-import-'))
-    const outside = await mkdtemp(join(tmpdir(), 'ia-studio-motions-'))
+    const root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-import-'))
+    const outside = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-motions-'))
     await writeFile(join(outside, 'Walking.fbx'), 'walk')
     await writeFile(join(outside, 'Start Walking.fbx'), 'start')
     await writeFile(join(outside, 'notes.txt'), 'ignore')
@@ -92,7 +92,7 @@ describe('importFiles routing', () => {
   })
 
   it('files a glTF dropped on Animations as a motion, not a scene document', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'ia-studio-import-'))
+    const root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-import-'))
     const source = `${root}.gltf`
     await writeFile(source, '{"asset":{"version":"2.0"}}')
     const adopt = vi.fn(async (path: string): Promise<Asset> => ({
@@ -114,7 +114,7 @@ describe('importFiles routing', () => {
   })
 
   it('writes a window drop through folderFor, not a mkdir of the drawing path', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'ia-studio-import-'))
+    const root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-import-'))
     const motion = `${root}-Walking.fbx`
     await writeFile(motion, 'fbx')
     const folderFor = vi.fn(async () => 'Motions')

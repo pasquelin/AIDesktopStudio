@@ -5,11 +5,11 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any
 
-from ia_studio_engine.adapters.diffusers_adapter import DiffusersAdapter
-from ia_studio_engine.adapters.loading import LoadedModel
-from ia_studio_engine.adapters.modalities import Modality
-from ia_studio_engine.adapters.model_adapter import ModelAdapter
-from ia_studio_engine.adapters.plugin_adapter import PluginAdapter, is_plugin_model
+from aidesktopstudio_engine.adapters.diffusers_adapter import DiffusersAdapter
+from aidesktopstudio_engine.adapters.loading import LoadedModel
+from aidesktopstudio_engine.adapters.modalities import Modality
+from aidesktopstudio_engine.adapters.model_adapter import ModelAdapter
+from aidesktopstudio_engine.adapters.plugin_adapter import PluginAdapter, is_plugin_model
 
 
 class RoutingAdapter:

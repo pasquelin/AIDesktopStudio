@@ -1,5 +1,5 @@
 [project]
-name = "ia-studio-engine"
+name = "ai-desktop-studio-engine"
 dynamic = ["version"]
 description = "The local AI engine of AI Desktop Studio: a supervised Python process that measures and executes."
 requires-python = ">=3.12"
@@ -65,7 +65,7 @@ diffusion = [
 plugin = [
   # Everything the diffusers door needs, at the SAME bounds — and what `_require(…, "plugin")`
   # promises: the adapters import diffusers, transformers and numpy right after the probe.
-  "ia-studio-engine[diffusion]",
+  "ai-desktop-studio-engine[diffusion]",
   "einops>=0.7",
   # `_load_lgm` reads its unet and its splatter through `safetensors.torch.load_file`; the
   # diffusers door only ever asks diffusers for `use_safetensors`.
@@ -105,10 +105,10 @@ build-backend = "hatchling.build"
 
 # One truth for the version: `__init__.py` holds it, the manifest reads it.
 [tool.hatch.version]
-path = "src/ia_studio_engine/__init__.py"
+path = "src/aidesktopstudio_engine/__init__.py"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/ia_studio_engine"]
+packages = ["src/aidesktopstudio_engine"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

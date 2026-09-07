@@ -32,7 +32,7 @@ const payloadNodes = (document: Record<string, unknown>): Record<string, unknown
   const scenes = document.scenes
   const first = Array.isArray(scenes) ? scenes[0] : null
   const extras = isRecord(first) ? first.extras : null
-  const studio = isRecord(extras) ? extras.iastudio : null
+  const studio = isRecord(extras) ? extras.aidesktopstudio : null
   const state = isRecord(studio) ? studio[GLTF_SCENE_STATE] : null
   const nodes = isRecord(state) ? state.nodes : null
   return Array.isArray(nodes) ? nodes.filter(isRecord) : []

@@ -16,9 +16,9 @@ import threading
 from collections.abc import Callable, Mapping
 from typing import Any
 
-from ia_studio_engine import PROTOCOL_VERSION, __version__
-from ia_studio_engine.core.jobqueue import Job, JobQueue
-from ia_studio_engine.protocol.envelope import (
+from aidesktopstudio_engine import PROTOCOL_VERSION, __version__
+from aidesktopstudio_engine.core.jobqueue import Job, JobQueue
+from aidesktopstudio_engine.protocol.envelope import (
     CANCEL_OP,
     EnvelopeError,
     decode_request,

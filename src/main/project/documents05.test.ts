@@ -68,7 +68,7 @@ describe('createDocumentFiles', () => {
     (await readdir(join(root, folder))).filter(name => !isHiddenEntry(name))
 
   beforeEach(async () => {
-    root = await mkdtemp(join(tmpdir(), 'ia-studio-documents-'))
+    root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-documents-'))
     documents = documentFilesAt(root, NOW)
   })
 
@@ -247,7 +247,7 @@ describe('createDocumentFiles', () => {
       JSON.stringify({
         OTIO_SCHEMA: 'Timeline.1',
         name: 'Bande',
-        metadata: { iastudio: studio },
+        metadata: { aidesktopstudio: studio },
         global_start_time: null,
         tracks: { OTIO_SCHEMA: 'Stack.1', children: [] },
       })
@@ -330,7 +330,7 @@ describe('createDocumentFiles', () => {
       JSON.stringify({
         asset: { version: '2.0' },
         scene: 0,
-        scenes: [{ nodes: [], extras: { iastudio: studio } }],
+        scenes: [{ nodes: [], extras: { aidesktopstudio: studio } }],
         nodes: [],
       })
 

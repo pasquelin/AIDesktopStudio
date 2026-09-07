@@ -29,7 +29,7 @@ describe('a scatter whose model was rewritten', () => {
     await surface.sync({ ...DEFAULT_WORLD, layers: [{ ...layer, name: 'Forest' }] })
 
     expect(load).toHaveBeenCalledTimes(1)
-    expect(load).toHaveBeenCalledWith('ia-studio://asset/pine')
+    expect(load).toHaveBeenCalledWith('ai-desktop-studio://asset/pine')
     surface.dispose()
   })
 })

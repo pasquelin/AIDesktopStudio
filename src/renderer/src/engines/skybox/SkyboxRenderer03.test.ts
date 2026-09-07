@@ -76,10 +76,10 @@ vi.mock('../gpu/passes/adjust', async importOriginal => {
 const host = document.createElement('div')
 
 /** Where a picture of the open project is read from — the floor's grid answers on another host. */
-const ASSET_URL = 'ia-studio://asset/'
+const ASSET_URL = 'ai-desktop-studio://asset/'
 
 /** The floor's grid, shipped beside the app: no project takes part in answering for it. */
-const GRID_URL = 'ia-studio://texture/GridLarge.png'
+const GRID_URL = 'ai-desktop-studio://texture/GridLarge.png'
 
 /** Azimuth `0` aims at `+Z`, which is where a ray through the centre of the frame goes. */
 const SUN_AHEAD = 0

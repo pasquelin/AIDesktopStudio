@@ -17,7 +17,7 @@ import traceback
 from collections.abc import Callable
 from typing import Any
 
-from ia_studio_engine.protocol.envelope import frames
+from aidesktopstudio_engine.protocol.envelope import frames
 
 Listener = Callable[[dict[str, Any]], None]
 

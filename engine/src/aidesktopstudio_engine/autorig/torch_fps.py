@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from ia_studio_engine.autorig.fps import farthest_point_indices
+from aidesktopstudio_engine.autorig.fps import farthest_point_indices
 
 
 def farthest_point_sample(points, batch, ratio: float):

@@ -148,7 +148,7 @@ describe('Tree', () => {
     )
 
     const elsewhere = dragTransfer()
-    elsewhere.setData('application/x-ia-studio-tree-row', 'from-another-tree')
+    elsewhere.setData('application/x-ai-desktop-studio-tree-row', 'from-another-tree')
     fireEvent.drop(screen.getAllByRole('treeitem')[2]!, { dataTransfer: elsewhere })
 
     expect(onDrop).not.toHaveBeenCalled()
@@ -179,7 +179,7 @@ describe('Tree', () => {
     fireEvent.dragStart(rows[1]!, { dataTransfer: dragTransfer() })
 
     const elsewhere = dragTransfer()
-    elsewhere.setData('application/x-ia-studio-tree-row', 'from-another-tree')
+    elsewhere.setData('application/x-ai-desktop-studio-tree-row', 'from-another-tree')
     fireEvent.drop(rows[2]!, { dataTransfer: elsewhere })
 
     expect(onDrop).not.toHaveBeenCalled()

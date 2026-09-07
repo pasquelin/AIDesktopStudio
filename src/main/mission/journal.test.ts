@@ -19,7 +19,7 @@ function clock(): MissionClock {
 
 describe('mission journal', () => {
   it('restores the latest version of every mission across a restart', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'ia-studio-missions-'))
+    const root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-missions-'))
     const time = clock()
     const journal = createMissionJournal(() => root, time.now)
     const first = createMission('First', time)
@@ -36,7 +36,7 @@ describe('mission journal', () => {
   })
 
   it('migrates an unversioned line and ignores a corrupt line', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'ia-studio-missions-'))
+    const root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-missions-'))
     const time = clock()
     const mission = createMission('Legacy', time)
     const legacy = { ...mission, revision: undefined }
@@ -49,7 +49,7 @@ describe('mission journal', () => {
   })
 
   it('separates the first append from a truncated crash tail', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'ia-studio-missions-'))
+    const root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-missions-'))
     const time = clock()
     await appendFile(join(root, 'missions.ndjson'), '{"v":1,"mission":')
     const journal = createMissionJournal(() => root, time.now)
@@ -61,7 +61,7 @@ describe('mission journal', () => {
   })
 
   it('refuses a future journal rather than fork its chronology', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'ia-studio-missions-'))
+    const root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-missions-'))
     const time = clock()
     await appendFile(
       join(root, 'missions.ndjson'),
@@ -74,7 +74,7 @@ describe('mission journal', () => {
   })
 
   it('pauses an action whose result was not journalled before shutdown', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'ia-studio-missions-'))
+    const root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-missions-'))
     const time = clock()
     let mission = createMission('Act', time)
     const step = createMissionStep(
@@ -101,7 +101,7 @@ describe('mission journal', () => {
   })
 
   it('flushes every queued append before shutdown', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'ia-studio-missions-'))
+    const root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-missions-'))
     const time = clock()
     const journal = createMissionJournal(() => root, time.now)
     void journal.append(createMission('Queued', time))

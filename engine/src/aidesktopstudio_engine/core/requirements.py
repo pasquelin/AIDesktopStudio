@@ -64,7 +64,8 @@ def declared(extra: str = DOOR_EXTRA) -> list[str]:
         return []
     project = tomllib.loads(PROJECT.read_text(encoding="utf-8"))
     optional = project.get("project", {}).get("optional-dependencies", {})
-    return [line for line in optional.get(extra, []) if not line.startswith("ia-studio-engine")]
+    package = "ai-desktop-studio-engine"
+    return [line for line in optional.get(extra, []) if not line.startswith(package)]
 
 
 def survey(extra: str = DOOR_EXTRA) -> dict[str, Any]:

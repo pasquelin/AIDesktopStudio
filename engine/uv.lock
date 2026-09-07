@@ -664,7 +664,7 @@ wheels = [
 ]
 
 [[package]]
-name = "ia-studio-engine"
+name = "ai-desktop-studio-engine"
 source = { editable = "." }
 
 [package.optional-dependencies]

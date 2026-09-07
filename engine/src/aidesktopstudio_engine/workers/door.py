@@ -2,7 +2,8 @@
 One process, one adapter, one modality, one model. It never replans — it does not free another
 door, does not substitute a model. A refusal travels back, and the main process makes the plan.
 
-Started by the core as `python -m ia_studio_engine.workers.door <door> <fd>`, never on its own.
+Started by the core as `python -m aidesktopstudio_engine.workers.door <door> <fd>`,
+never on its own.
 """
 
 from __future__ import annotations
@@ -11,14 +12,14 @@ import socket
 import sys
 from typing import Any
 
-from ia_studio_engine.adapters.device import memory_frame
-from ia_studio_engine.adapters.modalities import MODALITIES
-from ia_studio_engine.adapters.params import filled
-from ia_studio_engine.adapters.routing_adapter import RoutingAdapter
-from ia_studio_engine.adapters.selection import EfficientSam
-from ia_studio_engine.protocol.doors import DOORS, SPECIAL_DOORS
-from ia_studio_engine.protocol.envelope import encode_event
-from ia_studio_engine.workers.base import WorkerLoop, worker_hello
+from aidesktopstudio_engine.adapters.device import memory_frame
+from aidesktopstudio_engine.adapters.modalities import MODALITIES
+from aidesktopstudio_engine.adapters.params import filled
+from aidesktopstudio_engine.adapters.routing_adapter import RoutingAdapter
+from aidesktopstudio_engine.adapters.selection import EfficientSam
+from aidesktopstudio_engine.protocol.doors import DOORS, SPECIAL_DOORS
+from aidesktopstudio_engine.protocol.envelope import encode_event
+from aidesktopstudio_engine.workers.base import WorkerLoop, worker_hello
 
 #: `[?]` Not measured. The queue serialises, so one job at a time. § L.8 would replace these values.
 OCCUPANCY = {"process": "exclusive-process", "device": "exclusive", "maxConcurrent": 1}

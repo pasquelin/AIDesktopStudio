@@ -46,7 +46,7 @@ const timeline = (studio: Record<string, unknown> = {}): string =>
   JSON.stringify({
     OTIO_SCHEMA: 'Timeline.1',
     name: 'Bande',
-    metadata: { iastudio: studio },
+    metadata: { aidesktopstudio: studio },
     global_start_time: null,
     tracks: { OTIO_SCHEMA: 'Stack.1', children: [] },
   })
@@ -55,7 +55,7 @@ describe('what a listing pays per document', () => {
   let root = ''
 
   beforeEach(async () => {
-    root = await mkdtemp(join(tmpdir(), 'ia-studio-heads-'))
+    root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-heads-'))
   })
 
   const laid = async (name: string, body: string): Promise<string> => {

@@ -2,7 +2,7 @@
  * Which shape format a file is, from its BYTES.
  *
  * Read from the bytes and never from the name, for the reason `loadAnimation` already carries: a
- * model reaches the engine as `ia-studio://asset/<id>`, which spells no extension, and the engine
+ * model reaches the engine as `ai-desktop-studio://asset/<id>`, which spells no extension, and the engine
  * holds no catalogue to ask. A name that IS there still wins where one exists — see `fileRole`.
  */
 

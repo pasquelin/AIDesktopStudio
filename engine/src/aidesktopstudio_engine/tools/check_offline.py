@@ -18,7 +18,7 @@ socket without going through Python. A container or a firewall would close that 
 works the same on the three operating systems — which is why this file says what it covers rather
 than claiming to cover everything.
 
-    python -m ia_studio_engine.tools.check_offline <model-folder> [--steps 4]
+    python -m aidesktopstudio_engine.tools.check_offline <model-folder> [--steps 4]
 """
 
 from __future__ import annotations
@@ -77,8 +77,8 @@ def main(argv: list[str] | None = None) -> int:
 
     # Imported AFTER the cut: an import that reaches the network is exactly one of the eight
     # families, and importing first would let it through unseen.
-    from ia_studio_engine.adapters.diffusers_adapter import DiffusersAdapter
-    from ia_studio_engine.adapters.modalities import MODALITIES
+    from aidesktopstudio_engine.adapters.diffusers_adapter import DiffusersAdapter
+    from aidesktopstudio_engine.adapters.modalities import MODALITIES
 
     adapter = DiffusersAdapter(MODALITIES["image"])
     # A real file and not `/dev/null`: the writer picks its encoder off the extension, and a

@@ -34,7 +34,7 @@ export function createSmartSelectionHost(deps: {
       // The picture only touches the disk for an encoding the engine does not hold yet.
       const epoch = deps.epoch()
       const encode = async (): Promise<void> => {
-        folder ??= await mkdtemp(join(tmpdir(), 'ia-studio-selection-'))
+        folder ??= await mkdtemp(join(tmpdir(), 'ai-desktop-studio-selection-'))
         const image = join(folder, 'composite.png')
         await writeFile(image, request.png)
         await engine.job('selection.encode', { door: 'engine/selection', image }, { signal })

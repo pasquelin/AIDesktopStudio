@@ -5,9 +5,9 @@ from __future__ import annotations
 import math
 from pathlib import Path
 
-from ia_studio_engine.adapters.loading import LoadRefusedError
-from ia_studio_engine.core.jobqueue import CancelledError
-from ia_studio_engine.motion.gltf import motion_glb
+from aidesktopstudio_engine.adapters.loading import LoadRefusedError
+from aidesktopstudio_engine.core.jobqueue import CancelledError
+from aidesktopstudio_engine.motion.gltf import motion_glb
 
 MODEL_ID = "kimodo-soma-rp-v1.1"
 

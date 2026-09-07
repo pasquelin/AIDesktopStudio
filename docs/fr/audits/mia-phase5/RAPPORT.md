@@ -274,8 +274,8 @@ THIRD-PARTY-NOTICES.md
 electron-builder.yml
 engine/autorig-runtime.json
 engine/pyproject.toml
-engine/src/ia_studio_engine/autorig/drop_path.py
-engine/src/ia_studio_engine/vendor/make_it_animatable/models_ae.py
+engine/src/aidesktopstudio_engine/autorig/drop_path.py
+engine/src/aidesktopstudio_engine/vendor/make_it_animatable/models_ae.py
 engine/tests/test_drop_path.py
 engine/uv.lock
 package.json

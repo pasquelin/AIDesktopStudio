@@ -125,7 +125,7 @@ describe('the project explorer, as a grid', () => {
 
     expect((await tileFor('facade.jpg')).querySelector('img')).toHaveAttribute(
       'src',
-      'ia-studio://thumb/facade.jpg',
+      'ai-desktop-studio://thumb/facade.jpg',
     )
   })
 

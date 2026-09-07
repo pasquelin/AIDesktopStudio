@@ -16,7 +16,7 @@ afterEach(async () => {
 
 describe('resuming model texture extraction', () => {
   it('retains every material use after the model has already lost its embedded images', async () => {
-    const folder = await mkdtemp(join(tmpdir(), 'ia-studio-extraction-'))
+    const folder = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-extraction-'))
     folders.push(folder)
     const path = join(folder, 'model.glb')
     await writeFile(path, modelFile())

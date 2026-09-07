@@ -76,7 +76,7 @@ vi.mock('../gpu/passes/adjust', async importOriginal => {
 const host = document.createElement('div')
 
 /** The floor's grid, shipped beside the app: no project takes part in answering for it. */
-const GRID_URL = 'ia-studio://texture/GridLarge.png'
+const GRID_URL = 'ai-desktop-studio://texture/GridLarge.png'
 
 const skyOf = (assetId: string): SkyboxContent => {
   const content = createSkyboxContent()

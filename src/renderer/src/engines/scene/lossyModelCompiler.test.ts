@@ -24,7 +24,7 @@ describe('LOSSY imported models compiled for an export', () => {
     const dispose = vi.fn()
 
     const compiled = await compileLossyModels(
-      [{ id: 'tree', url: 'ia-studio://master/tree?v=1' }],
+      [{ id: 'tree', url: 'ai-desktop-studio://master/tree?v=1' }],
       NO_LOSSY_OPTIMIZATION,
       undefined,
       { load, simplify: vi.fn(), dispose },
@@ -40,13 +40,13 @@ describe('LOSSY imported models compiled for an export', () => {
     const load = vi.fn(async () => null)
 
     await compileLossyModels(
-      [{ id: 'tree', url: 'ia-studio://master/tree?v=1' }],
+      [{ id: 'tree', url: 'ai-desktop-studio://master/tree?v=1' }],
       { ...NO_LOSSY_OPTIMIZATION, generateLods: true },
       { signal: controller.signal },
       { load, simplify: vi.fn(), dispose: vi.fn() },
     )
 
-    expect(load).toHaveBeenCalledWith('ia-studio://master/tree?v=1', controller.signal)
+    expect(load).toHaveBeenCalledWith('ai-desktop-studio://master/tree?v=1', controller.signal)
   })
 
   it('keeps exact LOD0 outside the plan and compiles only distant levels', async () => {
@@ -55,7 +55,7 @@ describe('LOSSY imported models compiled for an export', () => {
     const simplify = vi.fn(reducedLevels)
 
     const compiled = await compileLossyModels(
-      [{ id: 'tree', url: 'ia-studio://master/tree?v=1' }],
+      [{ id: 'tree', url: 'ai-desktop-studio://master/tree?v=1' }],
       { ...NO_LOSSY_OPTIMIZATION, generateLods: true },
       undefined,
       { load: async () => root, simplify, dispose: vi.fn() },
@@ -76,8 +76,8 @@ describe('LOSSY imported models compiled for an export', () => {
 
     await compileLossyModels(
       [
-        { id: 'tree', url: 'ia-studio://master/tree?v=1' },
-        { id: 'tree', url: 'ia-studio://master/tree?v=1' },
+        { id: 'tree', url: 'ai-desktop-studio://master/tree?v=1' },
+        { id: 'tree', url: 'ai-desktop-studio://master/tree?v=1' },
       ],
       { ...NO_LOSSY_OPTIMIZATION, generateLods: true, geometrySimplification: 'aggressive' },
       { onProgress },
@@ -95,7 +95,7 @@ describe('LOSSY imported models compiled for an export', () => {
     const simplify = vi.fn()
 
     const compiled = await compileLossyModels(
-      [{ id: 'character', url: 'ia-studio://master/character?v=1' }],
+      [{ id: 'character', url: 'ai-desktop-studio://master/character?v=1' }],
       { ...NO_LOSSY_OPTIMIZATION, geometrySimplification: 'aggressive' },
       undefined,
       { load: async () => root, simplify, dispose: vi.fn() },
@@ -112,7 +112,7 @@ describe('LOSSY imported models compiled for an export', () => {
     const simplify = vi.fn()
 
     const compiled = await compileLossyModels(
-      [{ id: 'tree', url: 'ia-studio://master/tree?v=1' }],
+      [{ id: 'tree', url: 'ai-desktop-studio://master/tree?v=1' }],
       { ...NO_LOSSY_OPTIMIZATION, generateLods: true },
       undefined,
       { load: async () => root, simplify, dispose: vi.fn() },

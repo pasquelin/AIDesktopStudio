@@ -41,8 +41,8 @@ describe('a material held as MaterialX', () => {
     const written = asText(material.write(materialDocument()))
 
     expect(written.startsWith('<?xml version="1.0"?>\n<materialx version="1.39"')).toBe(true)
-    expect(written).toContain('<standard_surface name="SR_iastudio" type="surfaceshader">')
-    expect(written).toContain('<surfacematerial name="iastudio_material" type="material">')
+    expect(written).toContain('<standard_surface name="SR_aidesktopstudio" type="surfaceshader">')
+    expect(written).toContain('<surfacematerial name="aidesktopstudio_material" type="material">')
   })
 
   /**

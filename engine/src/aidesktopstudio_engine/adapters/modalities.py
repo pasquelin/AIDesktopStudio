@@ -12,7 +12,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
 
-from ia_studio_engine.adapters.params import filled, knob, text
+from aidesktopstudio_engine.adapters.params import filled, knob, text
 
 #: What a diffusers pipeline is asked, whatever the modality. The studio's own names on the left.
 COMMON_KEYS = {
@@ -219,7 +219,7 @@ def _skybox_kwargs(params: dict[str, Any]) -> dict[str, Any]:
     if source is None:
         return {**_sized_kwargs(params), "circular_padding": True}
 
-    from ia_studio_engine.adapters.skybox_fill import view_to_panorama
+    from aidesktopstudio_engine.adapters.skybox_fill import view_to_panorama
 
     kwargs = _shared_kwargs(params)
     wrapped, mask = view_to_panorama(_open_image(source))

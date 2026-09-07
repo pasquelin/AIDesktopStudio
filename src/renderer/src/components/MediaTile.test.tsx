@@ -28,12 +28,12 @@ describe('MediaTile', () => {
   })
 
   /**
-   * A still is served over `ia-studio://`, whose resolver reads a catalogue that refuses while a
+   * A still is served over `ai-desktop-studio://`, whose resolver reads a catalogue that refuses while a
    * project closes. The tile asks once more — and asking means a NEW element: re-rendering the
    * same `src` fetches nothing at all, which is what the `key` is for.
    */
   it('asks a second time for a still, with a fresh element', () => {
-    render(<MediaTile url="ia-studio://poster/asset_1" caption="Model" />)
+    render(<MediaTile url="ai-desktop-studio://poster/asset_1" caption="Model" />)
     const first = picture()
 
     fireEvent.error(first as HTMLImageElement)

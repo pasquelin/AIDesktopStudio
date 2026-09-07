@@ -9,14 +9,14 @@ from pathlib import Path
 
 import pytest
 
-from ia_studio_engine.core import requirements
+from aidesktopstudio_engine.core import requirements
 
 DECLARATION = """
 [project]
 name = "probe"
 [project.optional-dependencies]
 diffusion = [
-  "ia-studio-engine",
+  "ai-desktop-studio-engine",
   "pytest>=1.0",
   "not-a-package-anyone-installed>=3.0",
 ]
@@ -32,7 +32,7 @@ def declared(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
 
 
 def test_the_engine_itself_is_not_something_to_install(declared: Path) -> None:
-    """`plugin` opens by naming `ia-studio-engine[diffusion]`, which no `pip` can be handed."""
+    """`plugin` names an engine extra that must never be handed to `pip`."""
     assert requirements.declared() == ["pytest>=1.0", "not-a-package-anyone-installed>=3.0"]
 
 

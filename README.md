@@ -108,7 +108,7 @@ src/
 │   ├── provider/    API client, model registry, job manager, credentials
 │   ├── project/     project folders, manifest, SQLite catalogue
 │   ├── settings/    encrypted store and its handlers
-│   ├── assets/      asset ingestion and the ia-studio:// protocol
+│   ├── assets/      asset ingestion and the ai-desktop-studio:// protocol
 │   ├── media/       ffmpeg-backed media work
 │   ├── menu/        native menu, built from the shared registries
 │   └── window/      window lifecycle, navigation lockdown

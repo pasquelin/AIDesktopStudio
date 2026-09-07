@@ -69,7 +69,7 @@ describe('the kinds a string holds', () => {
     await saveDocument(documentId)
 
     const asWritten: Record<string, unknown> = JSON.parse(written.get(documentId) ?? '{}')
-    const foreign = { ...asWritten, metadata: { iastudio: { audioEdits: { 'clip-a': [] } } } }
+    const foreign = { ...asWritten, metadata: { aidesktopstudio: { audioEdits: { 'clip-a': [] } } } }
     written.set(documentId, JSON.stringify(foreign))
     useSequences.getState().drop(documentId)
     await restoreDocument(documentId)

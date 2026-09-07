@@ -121,7 +121,7 @@ export function folderTrail(folder: string): readonly string[] {
  * of what a project folder is not the user's to arrange.
  *
  * A leading dot on ANY segment, rather than a list of the folders the studio writes: `.index/`
- * and its four caches, `.project.json`, `.ia-studio/`. A list is what gets a sixth entry added
+ * and its four caches, `.project.json`, `.ai-desktop-studio/`. A list is what gets a sixth entry added
  * without this predicate hearing about it, and the failure that follows is a user renaming the
  * file that says the folder is a project at all. The dot is a rule the writer cannot forget,
  * because it is the same rule that hides the file.

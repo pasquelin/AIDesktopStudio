@@ -12,25 +12,25 @@ from functools import partial
 from pathlib import Path
 from typing import Any
 
-from ia_studio_engine.adapters.device import (
+from aidesktopstudio_engine.adapters.device import (
     device,
     held_bytes,
     release_cache,
     result_frame,
     tensor_bytes,
 )
-from ia_studio_engine.adapters.loading import (
+from aidesktopstudio_engine.adapters.loading import (
     NEEDS_PICTURE,
     NEEDS_PROMPT,
     LoadRefusedError,
     quietened,
     refuse_reason,
 )
-from ia_studio_engine.adapters.params import filled, knob, text
-from ia_studio_engine.adapters.plugin_contract import Plugin
-from ia_studio_engine.adapters.plugin_runtime import PluginAdapter
-from ia_studio_engine.autorig import plugin as autorig_plugin
-from ia_studio_engine.motion import plugin as motion_plugin
+from aidesktopstudio_engine.adapters.params import filled, knob, text
+from aidesktopstudio_engine.adapters.plugin_contract import Plugin
+from aidesktopstudio_engine.adapters.plugin_runtime import PluginAdapter
+from aidesktopstudio_engine.autorig import plugin as autorig_plugin
+from aidesktopstudio_engine.motion import plugin as motion_plugin
 
 __all__ = [
     "PLUGINS",

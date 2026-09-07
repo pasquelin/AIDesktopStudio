@@ -10,22 +10,22 @@ describe('useLoadable', () => {
   })
 
   /**
-   * A still is served over `ia-studio://`, whose resolver reads a catalogue that refuses while a
+   * A still is served over `ai-desktop-studio://`, whose resolver reads a catalogue that refuses while a
    * project closes — under a scroll, that is a whole grid at once. One such refusal used to cost
    * every tile it hit its picture for as long as it stayed mounted.
    */
   it('asks again once before giving up', () => {
-    const { result } = renderHook(() => useLoadable('ia-studio://poster/asset_1'))
+    const { result } = renderHook(() => useLoadable('ai-desktop-studio://poster/asset_1'))
 
     act(() => result.current.onError())
 
-    expect(result.current.src).toBe('ia-studio://poster/asset_1')
+    expect(result.current.src).toBe('ai-desktop-studio://poster/asset_1')
     // What makes the browser ask at all: the same `src` re-rendered fetches nothing.
     expect(result.current.attempt).toBe(1)
   })
 
   it('gives up on a still that failed twice', () => {
-    const { result } = renderHook(() => useLoadable('ia-studio://poster/asset_1'))
+    const { result } = renderHook(() => useLoadable('ai-desktop-studio://poster/asset_1'))
 
     act(() => result.current.onError())
     act(() => result.current.onError())

@@ -186,7 +186,7 @@ configuration attend :
 ```json
 {
   "mcpServers": {
-    "ia-studio": {
+    "ai-desktop-studio": {
       "command": "/Applications/AI Desktop Studio.app/Contents/MacOS/AI Desktop Studio",
       "args": ["--mcp-stdio=…"]
     }

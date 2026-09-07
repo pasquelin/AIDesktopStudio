@@ -38,7 +38,7 @@ describe('externalPathsFromArguments', () => {
 
 describe('launchedPaths', () => {
   it('cuts the binary whatever path invoked it, so no launch announces a refused executable', () => {
-    expect(launchedPaths(['/usr/local/bin/ia-studio', '/work/model.obj'], '/repo/app')).toEqual([
+    expect(launchedPaths(['/usr/local/bin/ai-desktop-studio', '/work/model.obj'], '/repo/app')).toEqual([
       '/work/model.obj',
     ])
   })

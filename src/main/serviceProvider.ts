@@ -47,7 +47,7 @@ export class ProviderServices {
   }
   readonly holdsTripo = (): boolean => this.settings.readCredentialsFor(TRIPO_CLOUD) !== null
   readonly generationFolder = async (): Promise<string> => {
-    const folder = join(app.getPath('temp'), 'ia-studio-generations')
+    const folder = join(app.getPath('temp'), 'ai-desktop-studio-generations')
     this.generationFolderMade ??= ensureFolder(folder).then(() => folder)
     return await this.generationFolderMade
   }

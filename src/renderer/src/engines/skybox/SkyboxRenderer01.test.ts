@@ -76,7 +76,7 @@ vi.mock('../gpu/passes/adjust', async importOriginal => {
 const host = document.createElement('div')
 
 /** Where a picture of the open project is read from — the floor's grid answers on another host. */
-const ASSET_URL = 'ia-studio://asset/'
+const ASSET_URL = 'ai-desktop-studio://asset/'
 
 const skyOf = (assetId: string): SkyboxContent => {
   const content = createSkyboxContent()
@@ -192,7 +192,7 @@ describe('the renderer of a skybox', () => {
   })
 
   describe('the source picture', () => {
-    // Handing the cache a URL it had built itself made it encode the whole `ia-studio://` address
+    // Handing the cache a URL it had built itself made it encode the whole `ai-desktop-studio://` address
     // as an asset id, and no sky could ever load.
     it('asks for the sky by asset id, not by a URL it built itself', async () => {
       await applied(mounted(), skyOf('sky-1'))

@@ -70,7 +70,7 @@ describe('createDocumentFiles', () => {
     (await readdir(join(root, folder))).filter(name => !isHiddenEntry(name))
 
   beforeEach(async () => {
-    root = await mkdtemp(join(tmpdir(), 'ia-studio-documents-'))
+    root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-documents-'))
     documents = documentFilesAt(root, NOW)
   })
 
@@ -107,7 +107,7 @@ describe('createDocumentFiles', () => {
       scene: 0,
       scenes: [{ name: 'Crépuscule', nodes: [0] }],
       nodes: [{ name: 'Sun', rotation: [0, 0, 0, 1] }],
-      extras: { iastudio: { sun: { intensity: 2 } } },
+      extras: { aidesktopstudio: { sun: { intensity: 2 } } },
     })
     await documents.write('doc-sky', 'skybox', { title: 'Crépuscule', content: sky })
 
@@ -119,7 +119,7 @@ describe('createDocumentFiles', () => {
     expect(onDisk).toMatchObject({ asset: { version: '2.0' }, scene: 0 })
 
     await documents.rename('doc-sky', 'skybox', 'Aube')
-    expect((await documents.read('doc-sky', 'skybox'))?.content).toContain('"iastudio"')
+    expect((await documents.read('doc-sky', 'skybox'))?.content).toContain('"aidesktopstudio"')
     expect(await held(SKIES)).toEqual(['Aube.gltf'])
   })
 
@@ -150,7 +150,7 @@ describe('createDocumentFiles', () => {
     // Real MaterialX, not a spelling of the studio's own wearing the extension.
     const onDisk = await readFile(join(root, MATERIALS, 'Laiton.mtlx'), 'utf8')
     expect(onDisk.startsWith('<?xml version="1.0"?>\n<materialx version="1.39"')).toBe(true)
-    expect(onDisk).toContain('<standard_surface name="SR_iastudio" type="surfaceshader">')
+    expect(onDisk).toContain('<standard_surface name="SR_aidesktopstudio" type="surfaceshader">')
 
     await documents.rename('doc-mat', 'material', 'Bronze')
     expect(await held(MATERIALS)).toEqual(['Bronze.mtlx'])

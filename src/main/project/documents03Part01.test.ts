@@ -20,7 +20,7 @@ describe('createDocumentFiles', () => {
   let documents: DocumentFiles
 
   beforeEach(async () => {
-    root = await mkdtemp(join(tmpdir(), 'ia-studio-documents-'))
+    root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-documents-'))
     documents = documentFilesAt(root, NOW)
   })
 

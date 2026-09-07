@@ -104,14 +104,14 @@ My project/
 │   └── Animations/         your motions
 │                           …and whatever you make beside them
 │
-│   Each carries a .ia-studio-role — HIDDEN — saying which section it serves
+│   Each carries a .ai-desktop-studio-role — HIDDEN — saying which section it serves
 │
 ├── .project.json         the identity card — HIDDEN
 │
 ├── .project-context.json  WHAT THE PROJECT IS ABOUT — HIDDEN
 │                        the world, the look, the forbidden — see below
 │
-├── .ia-studio/            A BACKUP OF THE CATALOGUE — HIDDEN
+├── .ai-desktop-studio/            A BACKUP OF THE CATALOGUE — HIDDEN
 │   └── items.json          what a file cannot say about itself
 │
 └── .index/               THE CATALOGUE AND ITS CACHES — KEEP THIS, HIDDEN
@@ -132,7 +132,7 @@ tools, not your work.
 > where the studio recreates it rather than refusing to work.
 
 > **Rename them, move them: they go on serving their section.** What binds a folder to a section
-> is not its name but a small hidden file it carries, `.ia-studio-role`. It travels with the
+> is not its name but a small hidden file it carries, `.ai-desktop-studio-role`. It travels with the
 > folder — a rename in the Finder or in Windows Explorer, a move, a copy, a zip. Rename
 > `Modelling/` to “My models” and the next mesh still lands there.
 >
@@ -161,7 +161,7 @@ tools, not your work.
 > beside the old one. You can rearrange everything by hand, at your own pace, or not at all.
 
 > **On Windows a dot hides nothing** — Explorer reads a file attribute, not the name. The studio
-> sets it on `.project.json` and on `.index/` itself. **`.ia-studio/` does not get it**: the day it
+> sets it on `.project.json` and on `.index/` itself. **`.ai-desktop-studio/` does not get it**: the day it
 > appears — it is only written after a pass that found something — you will see it in Windows
 > Explorer, beside your own folders. There is nothing to do about it: it is the backup described
 > below. If setting the attribute fails, **the project opens anyway**: a service
@@ -206,7 +206,7 @@ import; the pass that re-reads the folder when a project opens FINDS files that 
 does not guess again what they are. Deleting `.index/` therefore leaves a project whose files are
 all still there and about which nothing says what they are.
 
-> **That is what `.ia-studio/items.json` is for.** After every pass that changed something, the
+> **That is what `.ai-desktop-studio/items.json` is for.** After every pass that changed something, the
 > studio copies into it what a file cannot say about itself: its name, its tags, the model and the
 > prompt that produced it — keyed by the fingerprint of the contents, so that a file found again
 > can be recognised. It is not a source: the studio never reads it of its own accord. It is what is
@@ -523,7 +523,7 @@ document: undoing on the canvas must not reach your disk.
 > "This cannot be undone.", and it means it.
 
 **One refusal, greyed rather than hidden.** What the studio keeps for itself — everything starting
-with a dot: `.index/`, `.ia-studio/`, `.project.json` — cannot be renamed or trashed, and receives
+with a dot: `.index/`, `.ai-desktop-studio/`, `.project.json` — cannot be renamed or trashed, and receives
 nothing either. Those are its tools; renaming one would break the project for a name nobody reads.
 **The same refusal holds on both sides of a drag**: you see before you let go.
 

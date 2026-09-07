@@ -219,7 +219,7 @@ describe('painting into a mask', () => {
 })
 
 describe('loading a picture into a layer', () => {
-  const URL = 'ia-studio://asset/take-1'
+  const URL = 'ai-desktop-studio://asset/take-1'
 
   it('draws it into the texture of the layer it names', async () => {
     const { engine } = await mounted(stacked([pixelLayer('a', 'A'), pixelLayer('b', 'B')]))
@@ -263,7 +263,7 @@ describe('loading a picture into a layer', () => {
     engine.apply(stacked([pixelLayer('layer-1', 'Background'), laid]))
     await flushMicrotasks()
 
-    expect(canvasGpu().loaded).toEqual([{ src: 'ia-studio://asset/asset-7', parser: 'texture' }])
+    expect(canvasGpu().loaded).toEqual([{ src: 'ai-desktop-studio://asset/asset-7', parser: 'texture' }])
   })
 
   // Once, when it is born: redrawing on every state would repaint over what has been painted.
@@ -312,7 +312,7 @@ describe('loading a picture into a layer', () => {
     engine.apply(stacked([laid]))
     await flushMicrotasks()
 
-    expect(canvasGpu().loaded.map(asked => asked.src)).toContain('ia-studio://asset/asset-7')
+    expect(canvasGpu().loaded.map(asked => asked.src)).toContain('ai-desktop-studio://asset/asset-7')
   })
 
   // Same fallback on the other path: a surface that already exists takes its pixels directly,
@@ -332,7 +332,7 @@ describe('loading a picture into a layer', () => {
     ).rejects.toThrow()
     await flushMicrotasks()
 
-    expect(canvasGpu().loaded.map(asked => asked.src)).toContain('ia-studio://asset/asset-7')
+    expect(canvasGpu().loaded.map(asked => asked.src)).toContain('ai-desktop-studio://asset/asset-7')
   })
 
   /**

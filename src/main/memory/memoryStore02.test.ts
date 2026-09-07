@@ -34,8 +34,8 @@ const open = (): MemoryStore => {
 }
 
 beforeEach(async () => {
-  root = await mkdtemp(join(tmpdir(), 'ia-studio-memory-'))
-  file = join(root, '.ia-studio', 'memory.ndjson')
+  root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-memory-'))
+  file = join(root, '.ai-desktop-studio', 'memory.ndjson')
   store = open()
 })
 

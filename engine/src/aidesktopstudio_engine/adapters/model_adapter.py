@@ -9,7 +9,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any, Protocol
 
-from ia_studio_engine.adapters.loading import LoadedModel
+from aidesktopstudio_engine.adapters.loading import LoadedModel
 
 
 class ModelAdapter(Protocol):

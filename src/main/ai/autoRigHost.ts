@@ -68,7 +68,7 @@ async function runAutoRig(
   if (!model || modelRefusalOf(model) !== null) throw new AutoRigFailure('ENGINE_UNAVAILABLE')
   if (!deps.installedIds().has(model.id)) throw new AutoRigFailure('MODEL_NOT_INSTALLED')
   if (signal.aborted) throw new AutoRigFailure('CANCELLED')
-  const folder = await mkdtemp(join(tmpdir(), 'ia-studio-autorig-'))
+  const folder = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-autorig-'))
   const release = deps.hold(model.id)
   try {
     onProgress(0, 'prepare')

@@ -22,7 +22,7 @@ Le matériau de poitrine porte la marque AID lisible sur fond graphite. Les ress
 
 ### Compatibilité
 
-Le lot A ne change pas `ia-studio://`, `.ia-studio/`, `.ia-studio-role`, `iastudio` dans les exports, `com.pasquelin.iastudio`, le nom de package, les clés de stockage ni les URL GitHub. Les tests associés restent en place.
+Le lot A ne change pas `ai-desktop-studio://`, `.ai-desktop-studio/`, `.ai-desktop-studio-role`, `aidesktopstudio` dans les exports, `com.pasquelin.aidesktopstudio`, le nom de package, les clés de stockage ni les URL GitHub. Les tests associés restent en place.
 
 ### Validation
 

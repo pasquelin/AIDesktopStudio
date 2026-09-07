@@ -12,7 +12,7 @@ from collections.abc import Iterable, Iterator
 from dataclasses import dataclass
 from typing import Any
 
-from ia_studio_engine import PROTOCOL_VERSION
+from aidesktopstudio_engine import PROTOCOL_VERSION
 
 #: The op both loops answer without queueing it — a cancel that waited behind the job it stops
 #: stops nothing. Named here because it is protocol vocabulary, not a detail of either loop.

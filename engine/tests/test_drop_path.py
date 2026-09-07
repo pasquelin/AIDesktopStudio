@@ -1,7 +1,7 @@
 import pytest
 
 torch = pytest.importorskip("torch")
-DropPath = pytest.importorskip("ia_studio_engine.autorig.drop_path").DropPath
+DropPath = pytest.importorskip("aidesktopstudio_engine.autorig.drop_path").DropPath
 
 
 def test_drop_path_preserves_inference_values() -> None:

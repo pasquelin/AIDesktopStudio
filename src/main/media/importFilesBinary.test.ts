@@ -20,7 +20,7 @@ describe('importFiles binary meshes', () => {
   })
 
   it('copies a binary mesh without loading it as text to search for neighbours', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'ia-studio-import-binary-'))
+    const root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-import-binary-'))
     const source = `${root}.fbx`
     await writeFile(source, new Uint8Array([0, 255, 0, 254]))
     await mkdir(join(root, DEFAULT_ROLE_PATHS.models), { recursive: true })

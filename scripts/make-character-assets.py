@@ -360,7 +360,7 @@ def main():
         if wanted and name not in wanted:
             continue
         target = os.path.join(characters, f"{name}.glb")
-        before, after, measured, factor = build_hero(
+        before, after, measured, _factor = build_hero(
             os.path.join(source, folder, file), target, HERO_HEIGHT, texture
         )
         print(

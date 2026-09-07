@@ -172,4 +172,4 @@ export const UNREAD_PENDING_COLLECTION: readonly string[] = [
 ]
 
 /** The engine's own package. It is the studio's code, under the studio's licence. */
-export const ENGINE_PACKAGE = 'ia-studio-engine'
+export const ENGINE_PACKAGE = 'ai-desktop-studio-engine'

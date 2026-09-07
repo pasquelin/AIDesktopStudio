@@ -11,7 +11,7 @@ from pathlib import Path
 
 import pytest
 
-VENDOR = Path(__file__).resolve().parents[1] / "src/ia_studio_engine/vendor"
+VENDOR = Path(__file__).resolve().parents[1] / "src/aidesktopstudio_engine/vendor"
 
 # The folder a package sits in, and the licence file that travels with it — TripoSR is vendored
 # as `tsr`, the name its own imports use, so the pair cannot be derived from either half.
@@ -90,9 +90,10 @@ def test_no_vendored_tree_is_left_without_a_licence() -> None:
     assert trees == set(LICENCE_OF)
 
 
-ADAPTER = Path(__file__).resolve().parents[1] / "src/ia_studio_engine/adapters/plugin_adapter.py"
-MOTION = Path(__file__).resolve().parents[1] / "src/ia_studio_engine/motion/plugin.py"
-AUTORIG = Path(__file__).resolve().parents[1] / "src/ia_studio_engine/autorig/make_it_animatable.py"
+ENGINE_SOURCE = Path(__file__).resolve().parents[1] / "src/aidesktopstudio_engine"
+ADAPTER = ENGINE_SOURCE / "adapters/plugin_adapter.py"
+MOTION = ENGINE_SOURCE / "motion/plugin.py"
+AUTORIG = ENGINE_SOURCE / "autorig/make_it_animatable.py"
 
 #: Reached by a NAME read from a checkpoint's config rather than by an import, so no static reader
 #: will ever see these. `tsr/system.py` builds every part through `find_class`; TripoSG's scheduler
@@ -140,7 +141,7 @@ def _entry_points() -> set[str]:
                 and isinstance(node.args[0], ast.Constant)
             ):
                 named.add(str(node.args[0].value))
-    prefix = "ia_studio_engine.vendor."
+    prefix = "aidesktopstudio_engine.vendor."
     normalized = {name.removeprefix(prefix) for name in named}
     return {name for name in normalized if name.split(".")[0] in LICENCE_OF}
 

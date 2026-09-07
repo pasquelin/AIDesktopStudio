@@ -22,7 +22,7 @@ const bodyOf = (kind: DocumentKind): string =>
           name: kind,
           // What `otioBody` stamps on every save, so what is written here comes back byte for
           // byte: the id, and which of the two kinds `.otio` names this file is.
-          metadata: { iastudio: { documentId: `doc-${kind}`, documentKind: kind } },
+          metadata: { aidesktopstudio: { documentId: `doc-${kind}`, documentKind: kind } },
           tracks: { OTIO_SCHEMA: 'Stack.1', children: [] },
         },
         null,
@@ -37,7 +37,7 @@ const bodyOf = (kind: DocumentKind): string =>
           // stamp is written here too, so what comes back equals what went in.
           JSON.stringify(
             {
-              iastudio: { documentId: `doc-${kind}`, documentKind: kind },
+              aidesktopstudio: { documentId: `doc-${kind}`, documentKind: kind },
               version: 1,
               mode: 'screen',
               design: { width: 1920, height: 1080 },
@@ -98,7 +98,7 @@ const stripImageSurfaces = async (root: string) => {
           `composite-op="svg:src-over" src="data/p_a.png"/>` +
           `</stack></image>\n`,
       ),
-      'iastudio/document.json': strToU8('{"layers":[]}'),
+      'aidesktopstudio/document.json': strToU8('{"layers":[]}'),
     }),
   )
   return snapshotDocuments(documentFilesAt(root, NOW))

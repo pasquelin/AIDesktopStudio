@@ -327,7 +327,7 @@ export function pathsOf(files: readonly GitFile[]): string[] {
  * binary conflict. Nothing is lost, because the catalogue is rebuilt by the rescan from the files
  * themselves.
  *
- * `.ia-studio/items.json` is deliberately NOT here. It is JSON, it is small, and it holds the one
+ * `.ai-desktop-studio/items.json` is deliberately NOT here. It is JSON, it is small, and it holds the one
  * thing no rescan can recover: which prompt, model and seed produced each asset. A project cloned
  * back without it comes home with its pictures and none of their history.
  *
@@ -353,7 +353,7 @@ const GIT_HEAD = `${GIT_FOLDER}/HEAD`
  * writes half a dozen files under `.git/`, and announcing them makes the panel run git again.
  *
  * Exactly these two, and not "anything under a dot", which is the rule the explorer HIDES by:
- * `.ia-studio/items.json` sits under a dot and is deliberately versioned, so a folder watch that
+ * `.ai-desktop-studio/items.json` sits under a dot and is deliberately versioned, so a folder watch that
  * skipped it would leave the panel unaware of the one file no rescan can rebuild.
  *
  * `HEAD` is the exception, and it was measured: a commit made in a terminal moves no file the

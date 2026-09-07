@@ -10,7 +10,7 @@ import socket
 
 import pytest
 
-from ia_studio_engine.tools.check_offline import WentOutError, cut_the_network
+from aidesktopstudio_engine.tools.check_offline import WentOutError, cut_the_network
 
 
 @pytest.fixture(autouse=True)

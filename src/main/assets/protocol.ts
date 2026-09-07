@@ -98,7 +98,7 @@ function linkedFileOf(asset: Asset): string | null {
 }
 
 /**
- * Declares the scheme before the app is ready. Required for `img-src ia-studio:` to be honoured
+ * Declares the scheme before the app is ready. Required for `img-src ai-desktop-studio:` to be honoured
  * and for the renderer to fetch over it at all; Electron ignores the call afterwards.
  */
 export function registerAssetScheme(): void {
@@ -166,7 +166,7 @@ export async function servedPath(url: string, resolvers: AssetResolvers): Promis
   if (!parsed) return null
 
   // `hasOwn`, not a plain lookup: every key of `Object.prototype` would otherwise be a live host,
-  // and `ia-studio://toString/x` would reach `net.fetch` with a path nobody registered.
+  // and `ai-desktop-studio://toString/x` would reach `net.fetch` with a path nobody registered.
   if (!Object.hasOwn(resolvers, parsed.host)) return null
 
   const resolveHost = resolvers[parsed.host]

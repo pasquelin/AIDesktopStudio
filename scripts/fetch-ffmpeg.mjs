@@ -325,7 +325,7 @@ export async function fetchFfmpeg(platform, arch, options = {}) {
 
   const destination = options.destination ?? DESTINATION
   const verify = options.verify ?? true
-  const work = mkdtempSync(join(tmpdir(), 'ia-studio-ffmpeg-'))
+  const work = mkdtempSync(join(tmpdir(), 'ai-desktop-studio-ffmpeg-'))
 
   try {
     let seen = {}
@@ -353,7 +353,7 @@ function finishFetch(seen, destination, platform, arch) {
 
 /** Fetches every target into a scratch folder and prints what to paste back into `TARGETS`. */
 async function printDigests() {
-  const scratch = mkdtempSync(join(tmpdir(), 'ia-studio-ffmpeg-digests-'))
+  const scratch = mkdtempSync(join(tmpdir(), 'ai-desktop-studio-ffmpeg-digests-'))
   try {
     for (const key of Object.keys(TARGETS)) {
       const [platform, arch] = key.split('-')

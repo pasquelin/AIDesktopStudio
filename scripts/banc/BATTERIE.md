@@ -992,7 +992,7 @@ fait écrire par un **modèle** — un cloud de discussion ou un modèle de code
 
 ## 67. Retenir ce qu'on lui apprend d'un projet
 
-Ce que l'assistant a appris vit dans `<projet>/.ia-studio/memory.ndjson` et voyage avec le
+Ce que l'assistant a appris vit dans `<projet>/.ai-desktop-studio/memory.ndjson` et voyage avec le
 dossier. 🛑 **Rien n'est injecté dans le briefing** : il ne porte qu'un signal d'une ligne, et
 seulement si la mémoire n'est pas vide — c'est le modèle qui va la chercher. Les cinq actions
 sont en `reach: 'mcp'` : elles ne sont pas dans la part courte, donc une porte étroite les atteint

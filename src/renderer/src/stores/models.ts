@@ -142,7 +142,7 @@ export const useModels = create<ModelsState>()(
         set(state => ({ collections: { ...state.collections, [family]: collection } })),
     }),
     {
-      name: 'ia-studio:models',
+      name: 'ai-desktop-studio:models',
       // Bumped with the shape of `CollectionState`: an entry missing `thumbnailSize` lays the
       // grid out in zero-wide columns, which reads as a panel that lost its content.
       //

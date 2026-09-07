@@ -9,8 +9,8 @@ import { LinkField, type LinkFieldProps } from './LinkField'
 import type { LinkOption } from './linkOption'
 
 const OPTIONS: LinkOption[] = [
-  { id: 'tex-1', name: 'Brick', url: 'ia-studio://asset/tex-1' },
-  { id: 'tex-2', name: 'Rust', url: 'ia-studio://asset/tex-2' },
+  { id: 'tex-1', name: 'Brick', url: 'ai-desktop-studio://asset/tex-1' },
+  { id: 'tex-2', name: 'Rust', url: 'ai-desktop-studio://asset/tex-2' },
 ]
 
 /** What the drag carries — resolved against the catalogue by the drop, never sent with it. */
@@ -248,7 +248,7 @@ describe('LinkField', () => {
       await waitFor(() =>
         expect(screen.getByRole('img', { name: 'Brick' })).toHaveAttribute(
           'src',
-          'ia-studio://asset/tex-1',
+          'ai-desktop-studio://asset/tex-1',
         ),
       )
     })

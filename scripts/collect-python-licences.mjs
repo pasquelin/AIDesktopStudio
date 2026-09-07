@@ -82,7 +82,7 @@ function readEnvironment(sitePackages) {
 
     const text = readFileSync(metadata, 'utf8')
     const name = /^Name:\s*(.+)$/m.exec(text)?.[1]?.trim()
-    if (!name || name === 'ia-studio-engine') continue
+    if (!name || name === 'ai-desktop-studio-engine') continue
 
     // Normalised the way the lock spells it: PyPI allows `_` and `.` where the lock writes `-`.
     found[name.toLowerCase().replace(/[._]+/g, '-')] = {

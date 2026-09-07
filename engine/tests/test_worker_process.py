@@ -9,8 +9,8 @@ from pathlib import Path
 
 import pytest
 
-from ia_studio_engine import PROTOCOL_VERSION
-from ia_studio_engine.core.workers import WorkerProcess
+from aidesktopstudio_engine import PROTOCOL_VERSION
+from aidesktopstudio_engine.core.workers import WorkerProcess
 
 GREETS_THEN_ECHOES = """
 import json, socket, sys

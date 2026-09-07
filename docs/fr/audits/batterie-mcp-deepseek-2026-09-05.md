@@ -245,4 +245,4 @@ Le premier essai du test de fil MCP dans le sandbox a produit 5 échecs `listen 
 n'est pas compté comme une panne MCP.
 
 Le journal terminal brut de la passe a été conservé pendant l'analyse dans
-`/private/tmp/ia-studio-mcp-banc-2026-09-05.log`. Aucun secret n'est imprimé dans ce journal.
+`/private/tmp/ai-desktop-studio-mcp-banc-2026-09-05.log`. Aucun secret n'est imprimé dans ce journal.

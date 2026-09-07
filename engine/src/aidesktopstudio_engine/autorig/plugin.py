@@ -5,11 +5,11 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any
 
-from ia_studio_engine.adapters.loading import LoadRefusedError
+from aidesktopstudio_engine.adapters.loading import LoadRefusedError
 
 
 def load(folder: str, device: str) -> Any:
-    from ia_studio_engine.autorig.make_it_animatable import load as load_models
+    from aidesktopstudio_engine.autorig.make_it_animatable import load as load_models
 
     return load_models(folder, device)
 
@@ -25,6 +25,6 @@ def auto_rig(
     report: Callable[[int, int, str], None],
     stopping: Callable[[], bool],
 ) -> dict[str, Any]:
-    from ia_studio_engine.autorig.make_it_animatable import run
+    from aidesktopstudio_engine.autorig.make_it_animatable import run
 
     return run(handle, params, destination, report, stopping)

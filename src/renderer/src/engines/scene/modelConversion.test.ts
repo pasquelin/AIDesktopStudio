@@ -72,10 +72,10 @@ describe('convertModelToGlb', () => {
   it('folds an OBJ and the material library beside it into one binary glTF', async () => {
     const converted = await convertModelToGlb(
       bytesOf(CUBE_OBJ),
-      'ia-studio://file/models/robot/.sources/',
+      'ai-desktop-studio://file/models/robot/.sources/',
       'mesh',
       'obj',
-      ports({ 'ia-studio://file/models/robot/.sources/robot.mtl': SKIN_MTL }),
+      ports({ 'ai-desktop-studio://file/models/robot/.sources/robot.mtl': SKIN_MTL }),
     )
 
     const file = fileOf(converted.glb)
@@ -89,7 +89,7 @@ describe('convertModelToGlb', () => {
   it('says what an OBJ lost when its library is nowhere to be read', async () => {
     const converted = await convertModelToGlb(
       bytesOf(CUBE_OBJ),
-      'ia-studio://file/x/',
+      'ai-desktop-studio://file/x/',
       'mesh',
       'obj',
       ports(),
@@ -102,7 +102,7 @@ describe('convertModelToGlb', () => {
   it('parses an OBJ whose first directive follows a long comment header', async () => {
     const converted = await convertModelToGlb(
       bytesOf(`${'# licence\n'.repeat(200)}${CUBE_OBJ}`),
-      'ia-studio://file/x/',
+      'ai-desktop-studio://file/x/',
       'mesh',
       'obj',
       ports(),
@@ -114,7 +114,7 @@ describe('convertModelToGlb', () => {
   it('converts an OBJ made of lines even though it contains no triangle mesh', async () => {
     const converted = await convertModelToGlb(
       bytesOf('v 0 0 0\nv 1 0 0\nl 1 2'),
-      'ia-studio://file/x/',
+      'ai-desktop-studio://file/x/',
       'mesh',
       'obj',
       ports(),
@@ -136,12 +136,12 @@ describe('convertModelToGlb', () => {
           'f 1 2 3',
         ].join('\n'),
       ),
-      'ia-studio://file/x/',
+      'ai-desktop-studio://file/x/',
       'mesh',
       'obj',
       ports({
-        'ia-studio://file/x/body.mtl': 'newmtl body\nKd 1 0 0\n',
-        'ia-studio://file/x/clothes.mtl': 'newmtl clothes\nKd 0 1 0\n',
+        'ai-desktop-studio://file/x/body.mtl': 'newmtl body\nKd 1 0 0\n',
+        'ai-desktop-studio://file/x/clothes.mtl': 'newmtl clothes\nKd 0 1 0\n',
       }),
     )
 
@@ -157,7 +157,7 @@ describe('convertModelToGlb', () => {
   it('turns a BVH capture into a motion: bones and one clip, no mesh at all', async () => {
     const converted = await convertModelToGlb(
       bytesOf(WALK_BVH),
-      'ia-studio://file/x/',
+      'ai-desktop-studio://file/x/',
       'mesh',
       'bvh',
       ports(),
@@ -175,7 +175,7 @@ describe('convertModelToGlb', () => {
   it('makes a model of a file filed as a motion that holds no clip', async () => {
     const converted = await convertModelToGlb(
       bytesOf(CUBE_OBJ),
-      'ia-studio://file/x/',
+      'ai-desktop-studio://file/x/',
       'animation',
       'obj',
       ports(),
@@ -186,7 +186,7 @@ describe('convertModelToGlb', () => {
 
   it('refuses what is not a 3D file, rather than writing an empty glb', async () => {
     await expect(
-      convertModelToGlb(bytesOf('hello'), 'ia-studio://file/x/', 'mesh', 'obj', ports()),
+      convertModelToGlb(bytesOf('hello'), 'ai-desktop-studio://file/x/', 'mesh', 'obj', ports()),
     ).rejects.toThrow('not a 3D file')
   })
 
@@ -200,7 +200,7 @@ describe('convertModelToGlb', () => {
           nodes: [{ name: 'Empty' }],
         }),
       ),
-      'ia-studio://file/x/',
+      'ai-desktop-studio://file/x/',
       'mesh',
       'gltf',
       ports(),

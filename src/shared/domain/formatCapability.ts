@@ -310,7 +310,7 @@ const OPEN_RASTER: FormatCapability = carrying(
 /**
  * OpenTimelineIO holds the STRUCTURE of a cut, and it IS the montage document — there is no
  * spelling of the studio's own left beside it. Everything past that structure rides under the
- * `iastudio` domain of the metadata, which the core of OTIO carries and never reads.
+ * `aidesktopstudio` domain of the metadata, which the core of OTIO carries and never reads.
  *
  * `clipFade` is extended rather than standard, and it is the one interchange loss worth naming:
  * OTIO's `Transition` sits BETWEEN two items and consumes media from both, which a fade held by

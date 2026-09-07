@@ -129,7 +129,7 @@ describe('reading a skeleton off a model', () => {
   it('lets the file put a role right where the name spells another', () => {
     const holder = new Object3D()
     bone('Bone_003', holder, 1)
-    holder.userData = { iastudio: { roles: { Bone_003: 'Hips' } } }
+    holder.userData = { aidesktopstudio: { roles: { Bone_003: 'Hips' } } }
 
     expect(rigFromObject(holder)?.bones[0]?.role).toBe('Hips')
   })

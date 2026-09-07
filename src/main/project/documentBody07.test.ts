@@ -56,7 +56,7 @@ describe('a sky held as glTF', () => {
 
     expect(line.startsWith('{"asset":')).toBe(true)
     expect(JSON.parse(`${line.replace(/,$/, '')}}`)).toMatchObject({
-      asset: { extras: { iastudio: { documentKind: 'skybox' } } },
+      asset: { extras: { aidesktopstudio: { documentKind: 'skybox' } } },
     })
   })
 

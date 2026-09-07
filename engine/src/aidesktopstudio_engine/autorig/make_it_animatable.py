@@ -12,21 +12,21 @@ from typing import Any
 
 import numpy as np
 
-from ia_studio_engine.adapters.loading import LoadRefusedError
-from ia_studio_engine.autorig.quality import (
+from aidesktopstudio_engine.adapters.loading import LoadRefusedError
+from aidesktopstudio_engine.autorig.quality import (
     focus_surface_on_hands as _focus_surface_on_hands,
 )
-from ia_studio_engine.autorig.quality import (
+from aidesktopstudio_engine.autorig.quality import (
     focus_surface_on_hands_with_normals,
     sample_surface_points,
 )
-from ia_studio_engine.autorig.quality import (
+from aidesktopstudio_engine.autorig.quality import (
     post_process_weights as _post_process_weights,
 )
-from ia_studio_engine.autorig.quality import (
+from aidesktopstudio_engine.autorig.quality import (
     simplify_fingers as _simplify_fingers,
 )
-from ia_studio_engine.autorig.support import Joint
+from aidesktopstudio_engine.autorig.support import Joint
 
 JOINT_NAMES = (
     "Hips",
@@ -173,7 +173,7 @@ class Models:
 
 
 def load(folder: str, device: str) -> Models:
-    import ia_studio_engine.vendor.make_it_animatable.model as upstream_model
+    import aidesktopstudio_engine.vendor.make_it_animatable.model as upstream_model
 
     root = Path(folder)
     required = ("bw.pth", "bw_normal.pth", "joints.pth", "joints_coarse.pth", "pose.pth")

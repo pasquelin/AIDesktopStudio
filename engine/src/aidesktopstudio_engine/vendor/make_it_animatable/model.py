@@ -7,8 +7,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 from einops import repeat
 
-from ia_studio_engine.autorig.support import Joint, find_ckpt
-from ia_studio_engine.autorig.torch_fps import farthest_point_sample
+from aidesktopstudio_engine.autorig.support import Joint, find_ckpt
+from aidesktopstudio_engine.autorig.torch_fps import farthest_point_sample
 
 from .models_ae import Attention, DiagonalGaussianDistribution, create_autoencoder
 
@@ -885,7 +885,7 @@ class JointsAttentionCausal(nn.Module):
     def _forward(self, feat: torch.Tensor, out_gt: torch.Tensor = None):
         B, N, _ = feat.shape
         if self.out_type == "pose" and out_gt.shape[-1] == 6:
-            from ia_studio_engine.autorig.support import matrix_to_ortho6d, ortho6d_to_matrix
+            from aidesktopstudio_engine.autorig.support import matrix_to_ortho6d, ortho6d_to_matrix
 
             out_gt = matrix_to_ortho6d(ortho6d_to_matrix(out_gt))
         out_gt_feat: torch.Tensor = self.encoder(out_gt)  # B, N, D

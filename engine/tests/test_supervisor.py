@@ -1,8 +1,8 @@
 import json
 
-from ia_studio_engine import PROTOCOL_VERSION
-from ia_studio_engine.core import supervisor
-from ia_studio_engine.core.supervisor import serve
+from aidesktopstudio_engine import PROTOCOL_VERSION
+from aidesktopstudio_engine.core import supervisor
+from aidesktopstudio_engine.core.supervisor import serve
 
 
 def run(*lines: str) -> list[dict]:

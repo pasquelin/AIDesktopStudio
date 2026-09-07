@@ -74,11 +74,11 @@ describe('SceneRenderer export', () => {
   it('writes what the studio asked to carry into the extras of the scene', async () => {
     const renderer = rendererOf({ nodes: [meshNode('box-1')] })
 
-    const bytes = await renderer.exportTo('gltf', 'scene', { iastudio: { animation: { fps: 25 } } })
+    const bytes = await renderer.exportTo('gltf', 'scene', { aidesktopstudio: { animation: { fps: 25 } } })
     const file = JSON.parse(new TextDecoder().decode(bytes)) as {
       scenes?: { extras?: Record<string, unknown> }[]
     }
 
-    expect(file.scenes?.[0]?.extras).toEqual({ iastudio: { animation: { fps: 25 } } })
+    expect(file.scenes?.[0]?.extras).toEqual({ aidesktopstudio: { animation: { fps: 25 } } })
   })
 })

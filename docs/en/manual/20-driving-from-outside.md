@@ -182,7 +182,7 @@ puts the same connection on the clipboard, in the shape a configuration file exp
 ```json
 {
   "mcpServers": {
-    "ia-studio": {
+    "ai-desktop-studio": {
       "command": "/Applications/AI Desktop Studio.app/Contents/MacOS/AI Desktop Studio",
       "args": ["--mcp-stdio=…"]
     }

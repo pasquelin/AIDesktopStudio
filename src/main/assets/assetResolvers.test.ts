@@ -52,8 +52,8 @@ const resolversReading = (findAsset: () => Promise<Asset | null>) => hostsWith({
 
 describe('what the asset scheme resolves', () => {
   it('serves only the neighbours of the asset named by the file capability', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'ia-studio-file-host-'))
-    const outside = await mkdtemp(join(tmpdir(), 'ia-studio-file-outside-'))
+    const root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-file-host-'))
+    const outside = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-file-outside-'))
     await mkdir(join(root, 'Models/Robot/.sources'), { recursive: true })
     await writeFile(join(root, 'Models/Robot/.sources/robot.mtl'), 'material')
     await writeFile(join(outside, 'secret.txt'), 'secret')
@@ -78,7 +78,7 @@ describe('what the asset scheme resolves', () => {
   })
 
   it('does not turn a shared role .sources folder into a file capability', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'ia-studio-file-host-'))
+    const root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-file-host-'))
     await mkdir(join(root, 'Models/.sources'), { recursive: true })
     await writeFile(join(root, 'Models/.sources/Other.fbx'), 'other source')
     const hosts = hostsWith({
@@ -90,8 +90,8 @@ describe('what the asset scheme resolves', () => {
   })
 
   it('refuses a source package whose parent symlink leaves the project', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'ia-studio-file-host-'))
-    const outside = await mkdtemp(join(tmpdir(), 'ia-studio-file-outside-'))
+    const root = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-file-host-'))
+    const outside = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-file-outside-'))
     await mkdir(join(root, 'Models'), { recursive: true })
     await mkdir(join(outside, '.sources'), { recursive: true })
     await writeFile(join(outside, 'Robot.obj'), 'mesh')

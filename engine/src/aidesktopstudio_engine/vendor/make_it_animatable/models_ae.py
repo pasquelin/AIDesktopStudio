@@ -8,8 +8,8 @@ import torch.nn.functional as F
 
 from einops import rearrange, repeat
 
-from ia_studio_engine.autorig.torch_fps import farthest_point_sample
-from ia_studio_engine.autorig.drop_path import DropPath
+from aidesktopstudio_engine.autorig.torch_fps import farthest_point_sample
+from aidesktopstudio_engine.autorig.drop_path import DropPath
 
 def exists(val):
     return val is not None

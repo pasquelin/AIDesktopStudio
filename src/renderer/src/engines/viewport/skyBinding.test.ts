@@ -38,7 +38,7 @@ describe('createSkyBinding loading', () => {
     const environment = fakeEnvironment()
     await binding().apply(environment, SKY)
 
-    expect(source.load).toHaveBeenCalledWith('ia-studio://asset/sky-1', 'flipY')
+    expect(source.load).toHaveBeenCalledWith('ai-desktop-studio://asset/sky-1', 'flipY')
     expect(environment.setTexture).toHaveBeenCalled()
     expect(environment.refresh).toHaveBeenCalled()
   })
@@ -98,7 +98,7 @@ describe('createSkyBinding loading', () => {
     await sky.refresh()
 
     expect(source.load).toHaveBeenCalledTimes(2)
-    expect(source.load).toHaveBeenLastCalledWith('ia-studio://asset/sky-1?v=after', 'flipY')
+    expect(source.load).toHaveBeenLastCalledWith('ai-desktop-studio://asset/sky-1?v=after', 'flipY')
   })
 
   it('refreshes nothing before a sky has been asked for', async () => {
@@ -127,8 +127,8 @@ describe('createSkyBinding loading', () => {
     const second = sky.apply(environment, SKY)
 
     const newer = new Texture()
-    settle.get('ia-studio://asset/sky-1?v=v2')?.(newer)
-    settle.get('ia-studio://asset/sky-1?v=v1')?.(new Texture())
+    settle.get('ai-desktop-studio://asset/sky-1?v=v2')?.(newer)
+    settle.get('ai-desktop-studio://asset/sky-1?v=v1')?.(new Texture())
     await Promise.all([first, second])
 
     expect(environment.setTexture).toHaveBeenLastCalledWith(newer)

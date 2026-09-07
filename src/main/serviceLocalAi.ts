@@ -244,7 +244,7 @@ function createEngine(
       return createPythonClient(
         openPythonProcess({
           command: bundled.python,
-          args: ['-m', 'ia_studio_engine.core.supervisor'],
+          args: ['-m', 'aidesktopstudio_engine.core.supervisor'],
           sources: bundled.sources,
           processName: 'the local AI engine',
         }),

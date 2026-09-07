@@ -6,8 +6,8 @@ import time
 from collections.abc import Callable
 from typing import Any
 
-from ia_studio_engine.adapters.loading import LoadedModel, LoadRefusedError
-from ia_studio_engine.core.jobqueue import CancelledError
+from aidesktopstudio_engine.adapters.loading import LoadedModel, LoadRefusedError
+from aidesktopstudio_engine.core.jobqueue import CancelledError
 
 
 def _device_for(model_id, plugin, on):
@@ -30,12 +30,12 @@ class PluginAdapter:
         return "pytorch"
 
     def device(self) -> str:
-        from ia_studio_engine.adapters import plugin_adapter
+        from aidesktopstudio_engine.adapters import plugin_adapter
 
         return plugin_adapter.device()
 
     def unload(self) -> None:
-        from ia_studio_engine.adapters import plugin_adapter
+        from aidesktopstudio_engine.adapters import plugin_adapter
 
         self.loaded = None
         plugin_adapter._forget_local_repos()
@@ -48,7 +48,7 @@ class PluginAdapter:
         torch_weights: bool = False,
         attachment: dict[str, Any] | None = None,
     ) -> LoadedModel:
-        from ia_studio_engine.adapters import plugin_adapter
+        from aidesktopstudio_engine.adapters import plugin_adapter
 
         del torch_weights
         if attachment is not None:
@@ -83,7 +83,7 @@ class PluginAdapter:
         on_step: Callable[[int, int], None] | None = None,
         stopping: Callable[[], bool] | None = None,
     ) -> dict[str, Any]:
-        from ia_studio_engine.adapters import plugin_adapter
+        from aidesktopstudio_engine.adapters import plugin_adapter
 
         held = self.loaded
         if held is None:
@@ -113,7 +113,7 @@ class PluginAdapter:
         on_phase: Callable[[int, int, str], None],
         stopping: Callable[[], bool],
     ) -> dict[str, Any]:
-        from ia_studio_engine.adapters import plugin_adapter
+        from aidesktopstudio_engine.adapters import plugin_adapter
 
         held = self.loaded
         if held is None:

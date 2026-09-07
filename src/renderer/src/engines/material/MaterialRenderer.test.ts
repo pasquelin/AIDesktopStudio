@@ -81,12 +81,12 @@ const applied = async (renderer: MaterialRenderer, state: MaterialState): Promis
 describe('the texture preview', () => {
   /**
    * The cache takes an asset id and builds the URL itself. Handing it one already built made it
-   * encode the whole `ia-studio://` URL as an id, and the sky could never load.
+   * encode the whole `ai-desktop-studio://` URL as an id, and the sky could never load.
    */
   it('asks for the sky by asset id, not by a URL it built itself', async () => {
     await applied(mounted(), skyOf('sky-1'))
 
-    expect(source.load).toHaveBeenCalledWith('ia-studio://asset/sky-1', 'flipY')
+    expect(source.load).toHaveBeenCalledWith('ai-desktop-studio://asset/sky-1', 'flipY')
   })
 
   /** Both halves: an orbit panned with the middle button aims elsewhere, and putting only the
@@ -235,7 +235,7 @@ describe('the texture preview', () => {
 
       await vi.waitFor(() => expect(source.load).toHaveBeenCalledTimes(PBR_CHANNELS.length))
       for (const channel of PBR_CHANNELS) {
-        expect(source.load).toHaveBeenCalledWith(`ia-studio://asset/${channel}-1`, 'flipY')
+        expect(source.load).toHaveBeenCalledWith(`ai-desktop-studio://asset/${channel}-1`, 'flipY')
       }
     })
 
@@ -439,7 +439,7 @@ describe('the texture preview', () => {
       renderer.refreshMaps()
 
       await vi.waitFor(() => expect(source.load).toHaveBeenCalledTimes(2))
-      expect(source.load).toHaveBeenLastCalledWith('ia-studio://asset/base-1?v=after', 'flipY')
+      expect(source.load).toHaveBeenLastCalledWith('ai-desktop-studio://asset/base-1?v=after', 'flipY')
     })
   })
 })

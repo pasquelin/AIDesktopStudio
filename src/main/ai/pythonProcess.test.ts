@@ -126,7 +126,7 @@ describe('the death of the engine', () => {
   it('reports a process that could never be started, and says it is gone', async () => {
     let left = false
     const port = openPythonProcess({
-      command: 'ia-studio-no-such-interpreter',
+      command: 'ai-desktop-studio-no-such-interpreter',
       args: [],
       sources: folder,
       processName: 'the stand-in engine',

@@ -11,7 +11,7 @@ export type DraggedAnimation =
   { kind: 'embedded'; clip: string } | { kind: 'bundled'; name: string }
 
 /** The drag format. Namespaced so a file dropped from the desktop is never read as one of these. */
-export const ANIMATION_DRAG_TYPE = 'application/x-ia-studio-animation'
+export const ANIMATION_DRAG_TYPE = 'application/x-ai-desktop-studio-animation'
 
 /** What was dropped, or nothing: the payload crossed a `dataTransfer` as text and is not typed. */
 export function draggedAnimationOf(value: unknown): DraggedAnimation | null {

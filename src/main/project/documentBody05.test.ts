@@ -13,7 +13,7 @@ const timeline = (studio: Record<string, unknown> = {}): string =>
   JSON.stringify({
     OTIO_SCHEMA: 'Timeline.1',
     name: 'Bande',
-    metadata: { iastudio: studio },
+    metadata: { aidesktopstudio: studio },
     global_start_time: null,
     tracks: { OTIO_SCHEMA: 'Stack.1', children: [] },
   })

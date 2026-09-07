@@ -76,7 +76,7 @@ describe('a material written as MaterialX', () => {
   it('writes the envelope before the state, where a head read reaches it', () => {
     const written = writeMaterialX(document({ studio: { channels: {} } }), '{"documentId":"m1"}')
 
-    expect(written.indexOf('iastudiodocument=')).toBeLessThan(written.indexOf('iastudiostate='))
+    expect(written.indexOf('aidesktopstudiodocument=')).toBeLessThan(written.indexOf('aidesktopstudiostate='))
     expect(mtlxHeadIn(written)).toEqual({ version: '1.39', envelope: '{"documentId":"m1"}' })
   })
 
@@ -88,7 +88,7 @@ describe('a material written as MaterialX', () => {
     const written = writeMaterialX(document({ images: [] }))
 
     expect(written).not.toContain('<nodegraph')
-    expect(written).toContain('<standard_surface name="SR_iastudio" type="surfaceshader">')
+    expect(written).toContain('<standard_surface name="SR_aidesktopstudio" type="surfaceshader">')
     expect(readMaterialX(written).images).toEqual([])
   })
 
@@ -181,7 +181,7 @@ describe('a material written as MaterialX', () => {
     })
     const written = writeMaterialX(held)
 
-    expect(written).toContain('<displacement name="DS_iastudio" type="displacementshader">')
+    expect(written).toContain('<displacement name="DS_aidesktopstudio" type="displacementshader">')
     expect(written).toContain('<input name="displacementshader" type="displacementshader"')
     expect(readMaterialX(written).images[0]).toMatchObject({
       input: MTLX_DISPLACEMENT,

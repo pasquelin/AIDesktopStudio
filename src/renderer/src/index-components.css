@@ -10,7 +10,7 @@
  * them would leave the panels white and the viewport dark.
  */
 @plugin 'daisyui/theme' {
-  name: 'iastudio-light';
+  name: 'aidesktopstudio-light';
   color-scheme: light;
 
   --color-base-100: #f5f6f8;

@@ -10,29 +10,29 @@ const read = (name: string) => readFileSync(join(ROOT, name), 'utf8')
 // have described what I expected electron-builder to write — and what it writes is the point.
 const WINDOWS = `version: 0.1.0
 files:
-  - url: ia-studio-0.1.0-win32-x64.exe
+  - url: ai-desktop-studio-0.1.0-win32-x64.exe
     sha512: V305V2nh0hZ6noVoHy8Q==
     size: 200131728
-path: ia-studio-0.1.0-win32-x64.exe
+path: ai-desktop-studio-0.1.0-win32-x64.exe
 releaseDate: '2026-08-15T16:31:23.352Z'
 `
 
 const LINUX = `version: 0.1.0
 files:
-  - url: ia-studio-0.1.0-linux-x86_64.AppImage
+  - url: ai-desktop-studio-0.1.0-linux-x86_64.AppImage
     sha512: J80jADro4XRqeL7l==
     size: 270295604
     blockMapSize: 283208
-  - url: ia-studio-0.1.0-linux-amd64.deb
+  - url: ai-desktop-studio-0.1.0-linux-amd64.deb
     sha512: WExicXx6cFIGD5FY==
     size: 212821228
-path: ia-studio-0.1.0-linux-x86_64.AppImage
+path: ai-desktop-studio-0.1.0-linux-x86_64.AppImage
 releaseDate: '2026-08-15T16:30:26.583Z'
 `
 
 describe('the block maps a manifest requires beside it', () => {
   it('names one for an installer that declares no size of its own', () => {
-    expect(blockMapsExpected(WINDOWS)).toEqual(['ia-studio-0.1.0-win32-x64.exe.blockmap'])
+    expect(blockMapsExpected(WINDOWS)).toEqual(['ai-desktop-studio-0.1.0-win32-x64.exe.blockmap'])
   })
 
   it('names none for Linux, whose AppImage carries its own and whose deb never updates', () => {
@@ -42,8 +42,8 @@ describe('the block maps a manifest requires beside it', () => {
 
   it('reads every listed file, not only the updatable ones', () => {
     expect(manifestFiles(LINUX).map(file => file.url)).toEqual([
-      'ia-studio-0.1.0-linux-x86_64.AppImage',
-      'ia-studio-0.1.0-linux-amd64.deb',
+      'ai-desktop-studio-0.1.0-linux-x86_64.AppImage',
+      'ai-desktop-studio-0.1.0-linux-amd64.deb',
     ])
   })
 

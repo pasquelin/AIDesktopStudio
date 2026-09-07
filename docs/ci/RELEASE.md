@@ -151,11 +151,11 @@ la recevoir.
 
    | Fichier | Plateforme |
    |---|---|
-   | `ia-studio-0.2.0-darwin-arm64.dmg` / `.zip` | macOS Apple Silicon |
-   | `ia-studio-0.2.0-darwin-x64.dmg` / `.zip` | macOS Intel |
-   | `ia-studio-0.2.0-win32-x64.exe` | Windows |
-   | `ia-studio-0.2.0-linux-x86_64.AppImage` | Linux |
-   | `ia-studio-0.2.0-linux-amd64.deb` | Debian, Ubuntu |
+   | `ai-desktop-studio-0.2.0-darwin-arm64.dmg` / `.zip` | macOS Apple Silicon |
+   | `ai-desktop-studio-0.2.0-darwin-x64.dmg` / `.zip` | macOS Intel |
+   | `ai-desktop-studio-0.2.0-win32-x64.exe` | Windows |
+   | `ai-desktop-studio-0.2.0-linux-x86_64.AppImage` | Linux |
+   | `ai-desktop-studio-0.2.0-linux-amd64.deb` | Debian, Ubuntu |
    | `latest.yml`, `latest-mac.yml`, `latest-linux.yml` | manifestes d’auto-update |
 
    > **Ces noms sont relevés sur un vrai run, pas déduits** — dry run du 15 août 2026. Deux pièges,

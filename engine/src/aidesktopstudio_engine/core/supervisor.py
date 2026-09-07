@@ -16,11 +16,11 @@ import threading
 from collections.abc import Callable, Iterable, Mapping, Sequence
 from typing import Any
 
-from ia_studio_engine import PROTOCOL_VERSION, __version__
-from ia_studio_engine.core.requirements import DOOR_EXTRA, survey
-from ia_studio_engine.core.router import DoorRouter, spawn_door
-from ia_studio_engine.hardware.probe import hardware_info
-from ia_studio_engine.protocol.envelope import (
+from aidesktopstudio_engine import PROTOCOL_VERSION, __version__
+from aidesktopstudio_engine.core.requirements import DOOR_EXTRA, survey
+from aidesktopstudio_engine.core.router import DoorRouter, spawn_door
+from aidesktopstudio_engine.hardware.probe import hardware_info
+from aidesktopstudio_engine.protocol.envelope import (
     CANCEL_OP,
     EnvelopeError,
     Request,
@@ -164,7 +164,7 @@ def _open_stream(path: str) -> Stream:
 
 
 def main(argv: Sequence[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="ia-studio-engine")
+    parser = argparse.ArgumentParser(prog="ai-desktop-studio-engine")
     parser.add_argument("--socket", required=True, help="the socket or named pipe the main serves")
     options = parser.parse_args(argv)
 

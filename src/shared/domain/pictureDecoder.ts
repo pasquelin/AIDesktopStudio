@@ -2,7 +2,7 @@
  * Which decoder a picture needs, or nothing when the browser is one — read from its BYTES.
  *
  * From the bytes for the reason `meshFormatOf` is: a picture reaches the engines as
- * `ia-studio://asset/<id>`, which spells no extension. And it has to be asked at all because
+ * `ai-desktop-studio://asset/<id>`, which spells no extension. And it has to be asked at all because
  * handed to an `<img>`, every one of these lands as a picture of nothing — silently.
  */
 export type PictureDecoder = 'radiance' | 'openexr' | 'tiff' | 'openraster'

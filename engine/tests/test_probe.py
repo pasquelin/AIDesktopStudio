@@ -1,4 +1,4 @@
-from ia_studio_engine.hardware.probe import hardware_info
+from aidesktopstudio_engine.hardware.probe import hardware_info
 
 
 def test_answers_the_machine_without_a_tensor_library() -> None:

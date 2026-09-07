@@ -24,7 +24,7 @@ jamais tourné — et lui parle par un `socketpair` hérité, dans le même NDJS
 
 Ce qui diffère entre deux portes est une modalité et un nom, et **c'est une ligne de table** :
 `protocol/doors.py` apparie porte et modalité, `workers/door.py` est la boucle, et le noyau lance
-`python -m ia_studio_engine.workers.door <porte> <fd>`. Cinq modules répétaient ces quatre
+`python -m aidesktopstudio_engine.workers.door <porte> <fd>`. Cinq modules répétaient ces quatre
 lignes ; la table est lue par le noyau **et** par le studio, que `localRuntimes.test.ts` tient en
 phase.
 

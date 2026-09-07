@@ -9,11 +9,11 @@ import threading
 
 import pytest
 
-from ia_studio_engine.adapters.modalities import MODALITIES
-from ia_studio_engine.adapters.routing_adapter import RoutingAdapter
-from ia_studio_engine.protocol.doors import DOORS, SPECIAL_DOORS
-from ia_studio_engine.protocol.envelope import frames
-from ia_studio_engine.workers.door import main, serve
+from aidesktopstudio_engine.adapters.modalities import MODALITIES
+from aidesktopstudio_engine.adapters.routing_adapter import RoutingAdapter
+from aidesktopstudio_engine.protocol.doors import DOORS, SPECIAL_DOORS
+from aidesktopstudio_engine.protocol.envelope import frames
+from aidesktopstudio_engine.workers.door import main, serve
 
 
 def test_every_door_names_a_modality_that_exists() -> None:

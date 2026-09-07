@@ -10,8 +10,8 @@ import socket
 import threading
 from typing import Any
 
-from ia_studio_engine import PROTOCOL_VERSION
-from ia_studio_engine.workers.base import WorkerLoop
+from aidesktopstudio_engine import PROTOCOL_VERSION
+from aidesktopstudio_engine.workers.base import WorkerLoop
 
 
 def ask(op: str, request_id: int, **params: Any) -> bytes:

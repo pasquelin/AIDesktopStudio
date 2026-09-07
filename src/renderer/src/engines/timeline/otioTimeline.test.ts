@@ -229,7 +229,7 @@ describe('sequenceFromOtio', () => {
   })
 
   /**
-   * What ANOTHER application sees: the same file with the `iastudio` domain of its metadata gone.
+   * What ANOTHER application sees: the same file with the `aidesktopstudio` domain of its metadata gone.
    * The one measurement behind `capabilityOf('otio')` — and the reason « no loss » is never said
    * without saying to whom.
    *

@@ -33,7 +33,7 @@ export const useSkeletonProfiles = create<SkeletonProfilesState>()(
         })),
     }),
     {
-      name: 'ia-studio:skeleton-profiles',
+      name: 'ai-desktop-studio:skeleton-profiles',
       // Read back through the guard rather than trusted: this is a file on disk, and a profile
       // whose roles are not roles would be handed to the retargeting worker as a mapping.
       merge: (persisted, current) => ({ ...current, byProject: readProfiles(persisted) }),

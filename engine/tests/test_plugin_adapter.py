@@ -10,10 +10,15 @@ from pathlib import Path
 
 import pytest
 
-from ia_studio_engine.adapters.loading import LoadRefusedError
-from ia_studio_engine.adapters.modalities import MODALITIES
-from ia_studio_engine.adapters.plugin_adapter import PLUGINS, Plugin, PluginAdapter, is_plugin_model
-from ia_studio_engine.adapters.routing_adapter import RoutingAdapter
+from aidesktopstudio_engine.adapters.loading import LoadRefusedError
+from aidesktopstudio_engine.adapters.modalities import MODALITIES
+from aidesktopstudio_engine.adapters.plugin_adapter import (
+    PLUGINS,
+    Plugin,
+    PluginAdapter,
+    is_plugin_model,
+)
+from aidesktopstudio_engine.adapters.routing_adapter import RoutingAdapter
 
 CUDA_ONLY = sorted(name for name, plugin in PLUGINS.items() if plugin.needs_cuda)
 
@@ -22,7 +27,7 @@ def test_a_cuda_family_refuses_to_load_on_mps(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
     """`needs_cuda` is read off the same table `load` dispatches by, so one family carries it."""
-    import ia_studio_engine.adapters.plugin_adapter as plugin_adapter
+    import aidesktopstudio_engine.adapters.plugin_adapter as plugin_adapter
 
     monkeypatch.setattr(plugin_adapter, "device", lambda: "mps")
     with pytest.raises(LoadRefusedError, match="CUDA"):
@@ -37,7 +42,7 @@ def test_a_family_that_runs_anywhere_is_not_refused_for_the_device() -> None:
 def test_an_unknown_id_is_not_a_plugin_adapter(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
-    import ia_studio_engine.adapters.plugin_adapter as plugin_adapter
+    import aidesktopstudio_engine.adapters.plugin_adapter as plugin_adapter
 
     monkeypatch.setattr(plugin_adapter, "device", lambda: "cpu")
     with pytest.raises(LoadRefusedError, match="no plugin adapter"):
@@ -48,7 +53,7 @@ def test_attached_weights_are_refused_rather_than_dropped(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
     """A ControlNet asked of a plugin used to load as if nothing had been requested."""
-    import ia_studio_engine.adapters.plugin_adapter as plugin_adapter
+    import aidesktopstudio_engine.adapters.plugin_adapter as plugin_adapter
 
     monkeypatch.setattr(plugin_adapter, "device", lambda: "cpu")
     with pytest.raises(LoadRefusedError, match="no attached weights"):
@@ -72,7 +77,7 @@ def test_plugin_load_refuses_weights_that_carry_python(tmp_path: Path) -> None:
 def test_a_second_plugin_load_unloads_the_first(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
-    import ia_studio_engine.adapters.plugin_adapter as plugin_adapter
+    import aidesktopstudio_engine.adapters.plugin_adapter as plugin_adapter
 
     monkeypatch.setattr(plugin_adapter, "device", lambda: "cpu")
     monkeypatch.setattr(plugin_adapter, "held_bytes", lambda _device: 0)
@@ -96,7 +101,7 @@ def test_a_second_plugin_load_unloads_the_first(
 
 def test_a_family_that_reads_a_picture_says_so_rather_than_asking_for_a_prompt() -> None:
     """TripoSR takes no prompt, and the diffusers refusal named one — in the studio's journal."""
-    import ia_studio_engine.adapters.plugin_adapter as plugin_adapter
+    import aidesktopstudio_engine.adapters.plugin_adapter as plugin_adapter
 
     with pytest.raises(LoadRefusedError, match="needs a picture"):
         plugin_adapter._picture({"prompt": "a red cube"})
