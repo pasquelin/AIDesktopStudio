@@ -6,7 +6,7 @@
 # serveur du bas, et Pages servait le même rendu sous `pasquelin.github.io/AIDesktopStudio/`,
 # sans qu'aucune des deux adresses renvoie à l'autre. Décision d'Alban du 2026-09-07 : une
 # seule adresse, l'ancienne répondant 404 plutôt que de rediriger. Le nom du fichier reste
-# `pages.yml`, cité par `docs/ci/RELEASE.md` et trois gardes de `src/main/`.
+# `pages.yml`, cité par `docs/ci/RELEASE.md` et deux gardes de `src/main/`.
 #
 # Ce que ce workflow ajoute et que la page ne peut pas savoir toute seule : quelle version
 # est sortie, et où vivent ses cinq installeurs. Il écrit `site/assets/release.json`, que
@@ -41,7 +41,18 @@ on:
       - '.github/workflows/pages.yml'
   release:
     types: [published]
+  # 🛑 Un lancement à la main NE DÉPLOIE PAS, sauf à cocher cette case. Sans elle, un
+  # `gh workflow run pages.yml --ref <branche>` bâtissait la vitrine de cette branche et la
+  # poussait telle quelle sur le domaine — la ref n'étant contrainte nulle part, et rien ne
+  # repeignant la production avant le prochain push sur `main`, elle y restait. Le `push`
+  # est nommé dans les deux gardes pour la même raison : un dispatch depuis `main` passait
+  # par `github.ref` sans que personne l'ait demandé.
   workflow_dispatch:
+    inputs:
+      deploy:
+        description: Déployer sur le serveur, et pas seulement bâtir
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -152,8 +163,9 @@ jobs:
       # la publication — le déclencheur pour lequel le manifeste est écrit.
       - uses: actions/upload-artifact@v5
         if: >-
-          github.event_name == 'release' || github.event_name == 'workflow_dispatch' ||
-          github.ref == 'refs/heads/main'
+          github.event_name == 'release' ||
+          (github.event_name == 'workflow_dispatch' && inputs.deploy) ||
+          (github.event_name == 'push' && github.ref == 'refs/heads/main')
         with:
           name: site
           path: _site
@@ -164,8 +176,9 @@ jobs:
   deploy-server:
     needs: build
     if: >-
-      github.event_name == 'release' || github.event_name == 'workflow_dispatch' ||
-      github.ref == 'refs/heads/main'
+      github.event_name == 'release' ||
+      (github.event_name == 'workflow_dispatch' && inputs.deploy) ||
+      (github.event_name == 'push' && github.ref == 'refs/heads/main')
     runs-on: ubuntu-latest
     timeout-minutes: 10
 

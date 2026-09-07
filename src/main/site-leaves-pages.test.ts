@@ -12,7 +12,7 @@ const WORKFLOW = readFileSync(
  *
  * Pages published the same render as the domain, under `pasquelin.github.io/AIDesktopStudio/`,
  * with neither address pointing at the other. Alban's call on 2026-09-07: one address, the old
- * one answering 404. The file is still named `pages.yml` — three guards and `RELEASE.md` cite it
+ * one answering 404. The file is still named `pages.yml` — two guards and `RELEASE.md` cite it
  * by that name — so nothing but this case says the destination changed.
  */
 describe('the showcase', () => {
@@ -35,5 +35,21 @@ describe('the showcase', () => {
   it('asks for no write scope it no longer uses', () => {
     expect(WORKFLOW).not.toContain('pages: write')
     expect(WORKFLOW).not.toContain('id-token: write')
+  })
+
+  /**
+   * 🛑 `rsync --delete` puts whatever was built over the live site, and a manual run carries no
+   * ref constraint: gating on `workflow_dispatch` alone let any branch overwrite production, and
+   * nothing repaints it until the next qualifying push. Both gates name the input, and name
+   * `push` rather than reading `github.ref` — a dispatch from `main` satisfied that on its own.
+   */
+  it('deploys from a manual run only where the run asked for it', () => {
+    const gates = WORKFLOW.match(/github\.event_name == 'release'[^\n]*\n[^\n]*\n[^\n]*/g) ?? []
+
+    expect(gates.length).toBe(2)
+    for (const gate of gates) {
+      expect(gate).toContain("github.event_name == 'workflow_dispatch' && inputs.deploy")
+      expect(gate).toContain("github.event_name == 'push' && github.ref == 'refs/heads/main'")
+    }
   })
 })
