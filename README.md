@@ -60,7 +60,7 @@ to come.
 
 ## Getting started
 
-**Requirements** — Node **24** (the version in `.nvmrc`, which is also what CI runs), [pnpm](https://pnpm.io), macOS / Windows / Linux, and a
+**Requirements** — Node **24** (the version in `.nvmrc`, which is also what CI runs), [pnpm 12.3.4 installed with its standalone installer](https://pnpm.io/installation) (Corepack does not yet run pnpm 12), macOS / Windows / Linux, and a
 API key and secret from your generation provider.
 
 ```bash
