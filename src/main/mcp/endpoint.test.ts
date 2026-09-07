@@ -22,8 +22,8 @@ const packaged = (): McpLaunch => mcpLaunch(PACKAGED, null, ADDRESS)
 
 describe('pointing a client here', () => {
   /**
-   * 🛑 Against `APP_NAME` itself rather than a fixture: it is "AI Desktop Studio", and the space in it
-   * made `claude mcp add … ia studio http://…` read the name as `ia` and the url as `studio`.
+   * 🛑 Against `APP_NAME` itself rather than a fixture: the spaces in it made
+   * `claude mcp add … ai desktop studio http://…` read the name as `ai` and the url as `desktop`.
    * A test naming its own client cannot see that.
    */
   it('registers the studio under a name with no space in it', () => {

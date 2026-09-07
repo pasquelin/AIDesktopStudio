@@ -318,8 +318,8 @@
      à rééditer à la main. Le fichier ABSENT est le cas normal tant qu'aucune version
      n'est sortie — les cartes gardent alors ce que le HTML porte. */
 
-  /* Relatif à la RACINE du site, pas à la page : `/IAStudio/fr/` aurait demandé
-     `/IAStudio/fr/assets/release.json`, qui n'existe pas. Le gabarit pose la racine
+  /* Relatif à la RACINE du site, pas à la page : `/AIDesktopStudio/fr/` aurait demandé
+     `/AIDesktopStudio/fr/assets/release.json`, qui n'existe pas. Le gabarit pose la racine
      sur <html>, parce que lui seul sait à quelle profondeur la page est rendue. */
   var root = document.documentElement.dataset.root || '';
 

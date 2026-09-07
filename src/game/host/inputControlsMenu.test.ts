@@ -40,7 +40,7 @@ describe('exported controls menu', () => {
     const controls = createInputControls(MAPS)
     const menu = createInputControlsMenu({ owner: document, controls, labels: LABELS })
 
-    expect(Reflect.get(window, 'iaStudioControls')).toBe(menu)
+    expect(Reflect.get(window, 'aiDesktopStudioControls')).toBe(menu)
 
     menu.open()
     expect(document.querySelector('[data-input-controls-menu]')?.getAttribute('role')).toBe(
@@ -66,7 +66,7 @@ describe('exported controls menu', () => {
 
     menu.dispose()
     expect(document.activeElement).toBe(before)
-    expect(Reflect.has(window, 'iaStudioControls')).toBe(false)
+    expect(Reflect.has(window, 'aiDesktopStudioControls')).toBe(false)
     expect(document.querySelector('[data-input-controls-menu]')).toBeNull()
   })
 

@@ -39,7 +39,7 @@ départ : les ADR de `docs/ci/adr/` s’y réfèrent au lieu de le reparaphraser
 | Bundling | electron-vite 5. Main à **4 entrées** (`index`, `catalogWorker`, `peaksWorker`, `sttWorker`), preload forcé CJS, renderer à 2 HTML. Sortie `out/` | `electron.vite.config.ts` |
 | Build vs packaging | `pnpm build` = sources → `out/`. **`pnpm dist` packageait déjà** et produit un `.dmg` | `scripts/dist.sh` |
 | Packaging | `electron-builder 26.15.3`, configuration externalisée et complète | `electron-builder.yml` |
-| `appId` | `com.pasquelin.aidesktopstudio` — déjà arrêté | `electron-builder.yml:1` |
+| `appId` | `com.pasquelin.iastudio` — déjà arrêté | `electron-builder.yml:1` |
 | `productName` | `IA Studio`, dans `package.json` seulement, volontairement absent du YAML | `src/shared/constants.test.ts` |
 | Cibles déclarées | mac `dmg`+`zip` `[arm64, x64]`, win `nsis` `[x64]`, linux `AppImage`+`deb` | `electron-builder.yml` |
 | Icônes | `build/icon.svg` et `build/icon.png` 1024×1024. Pas de `.icns`/`.ico` — sans conséquence : electron-builder 26 rasterise le SVG à 1024 | `iconConverter.js:242` |

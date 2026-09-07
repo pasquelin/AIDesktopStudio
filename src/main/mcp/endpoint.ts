@@ -32,10 +32,9 @@ export const mcpStateOf = (endpoint: McpEndpoint | null): McpState => ({
 })
 
 /**
- * 🛑 What a client is registered UNDER, and it may not hold a space: `APP_NAME` is "AI Desktop Studio",
- * so `claude mcp add … ia studio http://…` had the CLI read the name as `ia`, the url as
- * `studio`, and the real url as a stray argument. The JSON block would have named a server
- * "ia studio", which is legal there and inconsistent with the command beside it.
+ * 🛑 What a client is registered UNDER, and it may not hold a space: `APP_NAME` carries two of
+ * them, and `claude mcp add … ai desktop studio http://…` had the CLI read the name as `ai`, the
+ * url as `desktop`, and the rest as stray arguments.
  */
 export const clientName = (appName: string): string => appName.toLowerCase().replace(/\s+/g, '-')
 

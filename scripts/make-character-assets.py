@@ -249,6 +249,14 @@ def merge_by_material():
     return len([obj for obj in bpy.data.objects if obj.type == "MESH"])
 
 
+# What the Desktop sources still spell, and what the shipped file must answer to. The sources are
+# not ours to rename, so the rebrand happens here, on the way out.
+BRAND_NAMES = {
+    "IA_Studio_Logo": "AI_Desktop_Studio_Logo",
+    "IA_Studio_Joints_Blue_55": "AI_Desktop_Studio_Joints_Blue_55",
+}
+
+
 def replace_brand_texture(texture):
     """Replaces the chest emblem before exporting every density of the shipped hero."""
     material = bpy.data.materials.get("IA_Studio_Logo")
@@ -260,9 +268,17 @@ def replace_brand_texture(texture):
     for node in material.node_tree.nodes:
         if node.type == "TEX_IMAGE":
             node.image = image
-            material.name = "AI_Desktop_Studio_Logo"
-            return
-    raise SystemExit("the hero chest-logo material has no image texture")
+            break
+    else:
+        raise SystemExit("the hero chest-logo material has no image texture")
+
+    # Objects and materials both, and by exact name: the exporter writes each one into the file,
+    # where a leftover spelling is the old brand shipped inside a delivered asset.
+    for holder in (bpy.data.objects, bpy.data.materials):
+        for old, renamed in BRAND_NAMES.items():
+            entry = holder.get(old)
+            if entry is not None:
+                entry.name = renamed
 
 
 def build_hero(source, target, height, texture):

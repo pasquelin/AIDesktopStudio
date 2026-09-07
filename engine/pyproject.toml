@@ -90,7 +90,7 @@ plugin = [
   "typeguard>=4.0",
 ]
 
-[tool.ia-studio]
+[tool.ai-desktop-studio]
 embedded-profiles = ["autorig", "selection"]
 
 [dependency-groups]

@@ -216,13 +216,13 @@ export function createInputControlsMenu(options: InputControlsMenuOptions): Inpu
       owner.removeEventListener('keydown', onKey)
       if (open) closeMenu()
       root.remove()
-      if (owner.defaultView && Reflect.get(owner.defaultView, 'iaStudioControls') === api) {
-        Reflect.deleteProperty(owner.defaultView, 'iaStudioControls')
+      if (owner.defaultView && Reflect.get(owner.defaultView, 'aiDesktopStudioControls') === api) {
+        Reflect.deleteProperty(owner.defaultView, 'aiDesktopStudioControls')
       }
     },
   }
   if (owner.defaultView) {
-    Object.defineProperty(owner.defaultView, 'iaStudioControls', {
+    Object.defineProperty(owner.defaultView, 'aiDesktopStudioControls', {
       configurable: true,
       value: api,
     })

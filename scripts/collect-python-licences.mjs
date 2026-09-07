@@ -103,7 +103,7 @@ function sitePackagesOf(python) {
 
 function materialise() {
   const venv = join(ENGINE, '.licences-venv')
-  const work = mkdtempSync(join(tmpdir(), 'ia-studio-licences-'))
+  const work = mkdtempSync(join(tmpdir(), 'ai-desktop-studio-licences-'))
   const requirements = join(work, 'requirements.txt')
   console.log('Materialising the embedded local AI runtime profiles.')
   execFileSync('uv', ['venv', '--python', '3.12', venv], { stdio: 'inherit' })

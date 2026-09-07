@@ -52,7 +52,7 @@ ou indices ; elle est annulable avant l’IPC et aucune tranche longue monolithi
 ## Runtime et packaging mesurés
 
 - CPython embarqué récupéré avec digest vérifié : 3.12.14 arm64, 68 Mo avec les sources moteur ;
-- wheel `aidesktopstudio_engine-0.1.0-py3-none-any.whl` construite et inspectée : backend, FPS NumPy,
+- wheel `ia_studio_engine-0.1.0-py3-none-any.whl` construite et inspectée : backend, FPS NumPy,
   modèles vendored et licence MIT présents ;
 - installation des dépendances dans ce CPython : uniquement des wheels natives/précompilées, sans
   compilation de `torch-cluster` ;
@@ -91,22 +91,22 @@ THIRD-PARTY-NOTICES.md
 docs/fr/audits/mia-phase4/RAPPORT.md
 engine/licences.json
 engine/pyproject.toml
-engine/src/aidesktopstudio_engine/adapters/diffusers_adapter.py
-engine/src/aidesktopstudio_engine/adapters/model_adapter.py
-engine/src/aidesktopstudio_engine/adapters/plugin_adapter.py
-engine/src/aidesktopstudio_engine/adapters/plugin_contract.py
-engine/src/aidesktopstudio_engine/adapters/plugin_runtime.py
-engine/src/aidesktopstudio_engine/adapters/routing_adapter.py
-engine/src/aidesktopstudio_engine/autorig/make_it_animatable.py
-engine/src/aidesktopstudio_engine/autorig/plugin.py
-engine/src/aidesktopstudio_engine/autorig/support.py
-engine/src/aidesktopstudio_engine/autorig/torch_fps.py
-engine/src/aidesktopstudio_engine/core/supervisor.py
-engine/src/aidesktopstudio_engine/vendor/MAKE-IT-ANIMATABLE-LICENSE
-engine/src/aidesktopstudio_engine/vendor/make_it_animatable/__init__.py
-engine/src/aidesktopstudio_engine/vendor/make_it_animatable/model.py
-engine/src/aidesktopstudio_engine/vendor/make_it_animatable/models_ae.py
-engine/src/aidesktopstudio_engine/workers/door.py
+engine/src/ia_studio_engine/adapters/diffusers_adapter.py
+engine/src/ia_studio_engine/adapters/model_adapter.py
+engine/src/ia_studio_engine/adapters/plugin_adapter.py
+engine/src/ia_studio_engine/adapters/plugin_contract.py
+engine/src/ia_studio_engine/adapters/plugin_runtime.py
+engine/src/ia_studio_engine/adapters/routing_adapter.py
+engine/src/ia_studio_engine/autorig/make_it_animatable.py
+engine/src/ia_studio_engine/autorig/plugin.py
+engine/src/ia_studio_engine/autorig/support.py
+engine/src/ia_studio_engine/autorig/torch_fps.py
+engine/src/ia_studio_engine/core/supervisor.py
+engine/src/ia_studio_engine/vendor/MAKE-IT-ANIMATABLE-LICENSE
+engine/src/ia_studio_engine/vendor/make_it_animatable/__init__.py
+engine/src/ia_studio_engine/vendor/make_it_animatable/model.py
+engine/src/ia_studio_engine/vendor/make_it_animatable/models_ae.py
+engine/src/ia_studio_engine/workers/door.py
 engine/tests/test_adapter_contract.py
 engine/tests/test_vendored_trees.py
 engine/uv.lock

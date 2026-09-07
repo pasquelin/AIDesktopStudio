@@ -95,7 +95,7 @@ Les tests confirment aussi qu'une ancienne préférence MIA retombe sur Simple, 
 checkpoints sont physiquement présents.
 
 Un smoke exécuté avec l'interpréteur et le `PYTHONPATH` du package importe réellement
-`aidesktopstudio_engine.workers.door`. Il a détecté puis permis de corriger une première exclusion trop
+`ia_studio_engine.workers.door`. Il a détecté puis permis de corriger une première exclusion trop
 large du dossier `autorig`, qui cassait le worker avant même son démarrage.
 
 Un package `develop` de 1 667 104 Kio a été produit avec un cache moteur historique contenant

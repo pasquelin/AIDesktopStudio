@@ -23,7 +23,7 @@ artifactName: ${name}-${version}-${platform}-${arch}.${ext}
 publish:
   provider: github
   owner: pasquelin
-  repo: IAStudio
+  repo: AIDesktopStudio
   releaseType: draft
 
 files:
