@@ -1,6 +1,7 @@
 import type { Rect } from './canvasState'
 import { box, ELLIPSE_SEGMENTS } from './shapeGeometry'
 import type { Point } from '../core/geometry'
+import { cachedOn } from '../core/cachedOn'
 
 /**
  * The region a gesture carved out, in document coordinates.
@@ -51,8 +52,19 @@ export function extendLasso(selection: CanvasSelection, point: Point): CanvasSel
  * The outline to stroke, in document coordinates and closed — one shape for the three, so the
  * overlay strokes a polyline and needs to know nothing about ellipses or lassos.
  */
+/**
+ * 🛑 Kept per SELECTION, because a raster one is walked pixel by pixel: the overlay asks twice a
+ * frame — `marching()` and `drawSelection` — so a 4096² document scanned 33 M pixels sixty times
+ * a second for an outline that had not moved. An edit replaces the object, which is the key.
+ */
+const outlines = new WeakMap<object, Point[]>()
+
 export function selectionOutline(selection: CanvasSelection): Point[] {
   if (!selection) return []
+  return cachedOn(outlines, selection, () => outlineOf(selection))
+}
+
+function outlineOf(selection: NonNullable<CanvasSelection>): Point[] {
   if (selection.kind === 'lasso') return [...selection.points]
   if (selection.kind === 'raster') return rasterOutline(selection)
 

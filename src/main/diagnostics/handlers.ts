@@ -53,6 +53,7 @@ const TOPIC_OF_SCOPE: Record<LogScope, ActivityTopic> = {
   // Same reading as its neighbour: the subject is the document that outgrew its source file,
   // and the tab is what the user has to act on.
   'canvas.edit': 'document',
+  'canvas.smartSelect': 'document',
   'image.export': 'document',
   'document.load': 'document',
   'document.save': 'document',
