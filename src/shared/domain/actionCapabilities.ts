@@ -1,8 +1,10 @@
+import { ACTION_INTENTS, type ActionIntent } from './actionIntents'
+import type { ActionName } from './assistantActionNames'
 import type { DocumentKind } from './document'
 import type { TargetKind } from './target'
 
-export type ActionIntent =
-  'read' | 'create' | 'mutate' | 'delete' | 'search' | 'execute' | 'remember'
+export type { ActionIntent } from './actionIntents'
+
 export type ActionDocumentAffinity = 'required' | 'relevant' | 'transversal'
 export type ActionTarget =
   | TargetKind
@@ -29,7 +31,6 @@ export type ActionTarget =
   | 'world'
 
 export type ActionCapabilities = {
-  intents?: readonly ActionIntent[]
   targets?: readonly ActionTarget[]
   documentKinds?: readonly DocumentKind[]
   documentAffinity?: ActionDocumentAffinity
@@ -100,44 +101,6 @@ export const ACTION_INTENT_ORDER: readonly ActionIntent[] = [
   'remember',
 ]
 
-/** The verbs an action name opens with, per intent — the index and the runtime read the same list. */
-export const ACTION_NAME_INTENTS: Readonly<Record<ActionIntent, readonly string[]>> = {
-  read: [
-    'state',
-    'list',
-    'get',
-    'read',
-    'report',
-    'describe',
-    'docs',
-    'facts',
-    'counts',
-    'status',
-    'log',
-  ],
-  create: ['create', 'add', 'prepare', 'duplicate', 'copy', 'group'],
-  mutate: [
-    'set',
-    'rename',
-    'move',
-    'transform',
-    'resize',
-    'update',
-    'adjust',
-    'apply',
-    'attach',
-    'bind',
-    'reorder',
-    'trim',
-    'split',
-    'write',
-  ],
-  delete: ['remove', 'delete', 'trash', 'forget', 'clear', 'detach', 'ungroup'],
-  search: ['search', 'find', 'browse', 'explore'],
-  execute: ['run', 'submit', 'open', 'close', 'play', 'step', 'cancel', 'wait'],
-  remember: ['remember', 'retain'],
-}
-
 /** The intent of the earliest token that opens with a known verb; ties go to the earlier intent. */
 export function intentOfWords(
   tokens: readonly string[],
@@ -157,16 +120,11 @@ export function intentOfWords(
   return found?.intent ?? null
 }
 
-type IntentBearer = { name: string; capabilities?: ActionCapabilities }
+type IntentBearer = { name: ActionName }
 
-/** Declared intents first; otherwise the one the verb of the name says, or none. */
+/** What the one table says this action does — see `actionIntents.ts` for why it is a table. */
 export function actionIntents(action: IntentBearer): readonly ActionIntent[] {
-  if (action.capabilities?.intents) return action.capabilities.intents
-  const intent = intentOfWords(
-    [(action.name.split('.')[1] ?? '').toLowerCase()],
-    ACTION_NAME_INTENTS,
-  )
-  return intent === null ? [] : [intent]
+  return ACTION_INTENTS[action.name]
 }
 
 /**

@@ -182,7 +182,6 @@ const CANVAS_ACTIONS_FIRST: readonly AssistantAction[] = [
     repeatable: true,
     reach: 'mcp',
     capabilities: {
-      intents: ['mutate'],
       targets: ['layer'],
       documentKinds: ['image'],
       documentAffinity: 'required',

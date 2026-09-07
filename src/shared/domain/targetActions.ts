@@ -18,7 +18,7 @@ export const TARGET_ACTIONS: readonly AssistantAction[] = [
     commitment: 'none',
     repeatable: false,
     reach: 'both',
-    capabilities: { intents: ['mutate'], targets: ['layer', 'node', 'clip', 'track'] },
+    capabilities: { targets: ['layer', 'node', 'clip', 'track'] },
     fields: [{ key: 'aimId', kind: 'text', labelKey: 'assistant.fields.aimId', required: true }],
   }),
 ]

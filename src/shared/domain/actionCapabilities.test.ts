@@ -1,36 +1,29 @@
 import { describe, expect, it } from 'vitest'
 import { actionIntents, actionReads } from './actionCapabilities'
+import { ACTION_INTENTS } from './actionIntents'
 
 describe('actionIntents', () => {
-  it('reads the intent on the verb of the name when nothing is declared', () => {
+  it('answers what the table says, whatever the verb of the name suggests', () => {
     expect(actionIntents({ name: 'scene.state' })).toEqual(['read'])
-    expect(actionIntents({ name: 'git.listCommitFiles' })).toEqual(['read'])
     expect(actionIntents({ name: 'node.remove' })).toEqual(['delete'])
+    // `diff` and `attach` open no verb the old guess knew; both were declared by hand.
+    expect(actionIntents({ name: 'git.diff' })).toEqual(['read'])
+    expect(actionIntents({ name: 'component.attach' })).toEqual(['create'])
   })
 
-  it('lets a declaration override a verb that says otherwise', () => {
-    expect(actionIntents({ name: 'git.diff', capabilities: { intents: ['read'] } })).toEqual([
-      'read',
-    ])
-    expect(
-      actionIntents({ name: 'component.attach', capabilities: { intents: ['create'] } }),
-    ).toEqual(['create'])
-  })
-
-  it('answers nothing for a verb it does not know', () => {
-    expect(actionIntents({ name: 'files.canUndoRedo' })).toEqual([])
+  // 🛑 The defect this table closes: 81 names said nothing to the verb guess, `actionIntents`
+  // answered `[]`, and the mission runtime verified after each one instead of planning.
+  it('leaves no action without an intent', () => {
+    expect(Object.entries(ACTION_INTENTS).filter(([, intents]) => intents.length === 0)).toEqual([])
   })
 })
 
 describe('actionReads', () => {
-  it('holds for reads and searches only, and never for a name that says nothing', () => {
+  it('holds for reads and searches only', () => {
     expect(actionReads({ name: 'files.search' })).toBe(true)
-    expect(
-      actionReads({ name: 'memory.recall', capabilities: { intents: ['search', 'read'] } }),
-    ).toBe(true)
-    expect(actionReads({ name: 'key.write', capabilities: { intents: ['create', 'read'] } })).toBe(
-      false,
-    )
-    expect(actionReads({ name: 'files.canUndoRedo' })).toBe(false)
+    expect(actionReads({ name: 'memory.recall' })).toBe(true)
+    expect(actionReads({ name: 'files.canUndoRedo' })).toBe(true)
+    expect(actionReads({ name: 'key.writePoseKeys' })).toBe(false)
+    expect(actionReads({ name: 'git.push' })).toBe(false)
   })
 })

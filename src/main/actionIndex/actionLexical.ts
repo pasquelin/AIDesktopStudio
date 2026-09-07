@@ -130,7 +130,9 @@ export function actionIntentScore(query: string, action: IndexedAction): number 
   const intents = actionIntents(action)
   if (intents.includes(queryIntent))
     return queryIntent === 'remember' ? SPECIFIC_INTENT_MATCH_SCORE : INTENT_MATCH_SCORE
-  return intents.length === 0 ? 0 : INTENT_MISMATCH_SCORE
+  // No neutral answer any more: the guess left 81 actions without an intent, and they escaped
+  // this penalty. `ACTION_INTENTS` gives every action one, so a mismatch is now always a mismatch.
+  return INTENT_MISMATCH_SCORE
 }
 
 export const actionQueryIntent = (query: string): ActionIntent | null =>

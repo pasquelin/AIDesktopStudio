@@ -26,7 +26,6 @@ export const GAME_ACTIONS: readonly AssistantAction[] = [
     commitment: 'none',
     repeatable: true,
     reach: 'mcp',
-    capabilities: { intents: ['create'] },
     fields: [NODE_ID, componentTypeField],
   }),
   action({
@@ -36,7 +35,6 @@ export const GAME_ACTIONS: readonly AssistantAction[] = [
     commitment: 'none',
     repeatable: true,
     reach: 'mcp',
-    capabilities: { intents: ['delete'] },
     fields: [NODE_ID, componentTypeField],
   }),
   action({
@@ -51,7 +49,6 @@ export const GAME_ACTIONS: readonly AssistantAction[] = [
     commitment: 'none',
     repeatable: true,
     reach: 'mcp',
-    capabilities: { intents: ['mutate'] },
     fields: [
       NODE_ID,
       componentTypeField,
@@ -144,7 +141,6 @@ export const PLAY_ACTIONS: readonly AssistantAction[] = [
   action({
     /** 🛑 ADDRESSABLE: the script's reference and the line, which is what a repair needs. */
     name: 'runtime.errors',
-    capabilities: { intents: ['read'] },
     titleKey: 'assistant.actions.runtimeErrors.title',
     descriptionKey: 'assistant.actions.runtimeErrors.description',
     commitment: 'none',
@@ -212,7 +208,6 @@ export const STUDIO_ACTIONS: readonly AssistantAction[] = [
     commitment: 'none',
     repeatable: true,
     reach: 'mcp',
-    capabilities: { intents: ['read'] },
     fields: [
       { key: 'ref', kind: 'text', labelKey: 'assistant.fields.describeRef', required: false },
     ],
@@ -225,7 +220,7 @@ export const STUDIO_ACTIONS: readonly AssistantAction[] = [
     commitment: 'none',
     repeatable: true,
     reach: 'mcp',
-    capabilities: { intents: ['read'], targets: ['component'] },
+    capabilities: { targets: ['component'] },
     fields: [
       { key: 'topic', kind: 'text', labelKey: 'assistant.fields.docsTopic', required: false },
     ],
@@ -246,7 +241,6 @@ export const STUDIO_ACTIONS: readonly AssistantAction[] = [
     repeatable: true,
     runsOthers: true,
     reach: 'mcp',
-    capabilities: { intents: ['execute'] },
     fields: [
       { key: 'calls', kind: 'longText', labelKey: 'assistant.fields.batchCalls', required: true },
     ],
@@ -283,7 +277,6 @@ export const TIMELINE_ACTIONS: readonly AssistantAction[] = [
     commitment: 'none',
     repeatable: true,
     reach: 'mcp',
-    capabilities: { intents: ['create', 'execute'] },
     fields: [
       timelineListField,
       { key: 'at', kind: 'number', labelKey: 'assistant.fields.timelineAt', required: true },
@@ -307,7 +300,6 @@ export const TIMELINE_ACTIONS: readonly AssistantAction[] = [
     commitment: 'none',
     repeatable: true,
     reach: 'mcp',
-    capabilities: { intents: ['delete'] },
     fields: [
       timelineListField,
       { key: 'id', kind: 'text', labelKey: 'assistant.fields.timelineRowId', required: true },
@@ -321,7 +313,6 @@ export const TIMELINE_ACTIONS: readonly AssistantAction[] = [
     commitment: 'none',
     repeatable: true,
     reach: 'mcp',
-    capabilities: { intents: ['mutate'] },
     fields: [
       {
         key: 'template',

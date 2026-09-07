@@ -47,7 +47,7 @@ export const STATE_ACTIONS: readonly AssistantAction[] = [
     commitment: 'none',
     repeatable: false,
     reach: 'mcp',
-    capabilities: { intents: ['execute'], targets: ['document'] },
+    capabilities: { targets: ['document'] },
     fields: [
       { key: 'documentId', kind: 'text', labelKey: 'assistant.fields.documentId', required: true },
     ],
@@ -172,7 +172,6 @@ export const STATE_ACTIONS: readonly AssistantAction[] = [
   }),
   action({
     name: 'activity.recent',
-    capabilities: { intents: ['read'] },
     titleKey: 'assistant.actions.activityRecent.title',
     descriptionKey: 'assistant.actions.activityRecent.description',
     commitment: 'none',
