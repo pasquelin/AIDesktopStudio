@@ -10,11 +10,67 @@ import { stemOf } from './fileName'
  * from the folder rather than from inside the clip: a Tripo rig calls its only clip `NlaTrack`
  * and Uthana's carries no name at all, so what the file spells must never reach the screen.
  */
+/** A mood is read in the upper body, a step in the legs — see `AnimationPoster.joints`. */
+const MOOD_JOINTS: readonly string[] = ['Head', 'Chest', 'LeftUpperArm', 'RightUpperArm']
+const IDLE_JOINTS: readonly string[] = ['Head', 'Chest', 'Hips', 'LeftUpperLeg', 'RightUpperLeg']
+
 export type BundledAnimation = {
   /** The folder's name, which is what the studio shows and what a block is labelled with. */
   name: string
   /** Whether the folder holds a `thumb.png`. No path: the window reads both over the scheme. */
   thumbnail: boolean
+}
+
+/**
+ * How a still is taken of a clip: where to stop inside it, what makes one frame worth showing
+ * over another, and where the eye stands.
+ *
+ * 🛑 DATA of the clip, and not a reading of its file name. The renderer decided all of this by
+ * matching the name it was handed — a sixteen-entry table, `/jump/i`, `/idle/i` — and the name it
+ * is handed for an imported clip is the stem of whatever file a person dropped: `Idle_Combat.fbx`
+ * was scored on its head and shoulders, `Walk_v2.fbx` on nothing in particular.
+ *
+ * Nothing here is the ordinary answer, and it means « take the best-scoring sample »: an imported
+ * clip is described by nobody, and guessing from its name is what this exists to stop.
+ */
+export type AnimationPoster = {
+  /** Where in the clip to stop, as a fraction of it. Nothing means the best-scoring sample. */
+  at?: number
+  /** How high the hips travel, for a clip whose whole point is leaving the ground. */
+  score?: 'hipHeight' | 'turn'
+  /** For `turn`: how far the body must have turned by, in radians. */
+  turn?: number
+  /** The joints whose travel from the first frame is added up, by humanoid role. */
+  joints?: readonly string[]
+  /** Where the eye stands, when the ordinary three-quarter view says nothing about this clip. */
+  camera?: readonly [number, number, number]
+  /** Whether the body is turned back square to the camera — what a side turn is drawn as. */
+  square?: boolean
+}
+
+/**
+ * What is known about the stills of the clips the app SHIPS with, by folder name.
+ *
+ * 🛑 Keyed by a folder the app owns, never by an imported file's stem: an animation someone
+ * dropped in wears whatever name its author gave it, and answers here by accident or not at all.
+ */
+export const BUNDLED_ANIMATION_POSTERS: Readonly<Record<string, AnimationPoster>> = {
+  Idle: { at: 0.5, joints: IDLE_JOINTS },
+  IdleBreathing: { at: 0.85, joints: IDLE_JOINTS },
+  IdleBriefcase: { at: 0.25, joints: IDLE_JOINTS },
+  IdleHappy: { at: 0.3, joints: MOOD_JOINTS },
+  IdleSad: { at: 0.45, joints: MOOD_JOINTS },
+  IdleShift: { at: 0.3, joints: IDLE_JOINTS },
+  Jump: { at: 0.39, score: 'hipHeight' },
+  RunningJump: { at: 0.39, score: 'hipHeight' },
+  StrafeLeft: { at: 0.25 },
+  StrafeRight: { at: 0.65 },
+  TurnAround: { at: 0.55, score: 'turn', turn: Math.PI * 0.8 },
+  TurnLeft: { at: 0.29, score: 'turn', turn: Math.PI / 4, square: true, camera: [0, 7, 24] },
+  TurnRight: { at: 0.5, score: 'turn', turn: Math.PI / 4, square: true, camera: [0, 7, 24] },
+  Walk: { at: 0.75 },
+  WalkStart: { at: 0.45 },
+  WalkStop: { at: 0.45 },
 }
 
 /** The clip files an animation folder may hold, lowercase and with their dot. */

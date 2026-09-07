@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { Euler, Quaternion } from 'three'
-import { poseFractionOf, scoredJointsOf, turnScoreOf, wrappedAngle, yawOf } from './animationPose'
+import { poseFractionOf, turnScoreOf, wrappedAngle, yawOf } from './animationPose'
 
 const turnedBy = (radians: number): Quaternion =>
   new Quaternion().setFromEuler(new Euler(0, radians, 0))
@@ -48,22 +48,6 @@ describe('how near a turn is to the one it should show', () => {
   // quarter are equally good pictures of a turn.
   it('judges the amount and not the direction', () => {
     expect(turnScoreOf(-Math.PI / 4, Math.PI / 4)).toBeCloseTo(0)
-  })
-})
-
-describe('the joints a frame is judged on', () => {
-  it('reads a mood in the upper body', () => {
-    expect(scoredJointsOf('IdleSad')).toContain('LeftUpperArm')
-    expect(scoredJointsOf('IdleHappy')).toContain('RightUpperArm')
-  })
-
-  it('reads a step in the legs, and nothing else', () => {
-    expect(scoredJointsOf('Walk')).toEqual(['LeftUpperLeg', 'RightUpperLeg'])
-  })
-
-  // A mood beats a stand: `IdleSad` holds both words, and it is the arms that say which it is.
-  it('lets the mood win over the stand when a name says both', () => {
-    expect(scoredJointsOf('IdleSad')).not.toEqual(scoredJointsOf('Idle'))
   })
 })
 

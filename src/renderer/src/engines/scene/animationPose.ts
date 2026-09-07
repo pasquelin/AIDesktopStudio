@@ -32,18 +32,6 @@ export function turnScoreOf(yaw: number, wanted: number): number {
 }
 
 /**
- * The joints that say how expressive a frame is, for a clip called this.
- *
- * A mood is read in the upper body and a step in the legs — scoring a walk on its head would
- * pick the frame where it looks around rather than the one where it strides.
- */
-export function scoredJointsOf(name: string): readonly string[] {
-  if (/sad|happy/i.test(name)) return ['Head', 'Chest', 'LeftUpperArm', 'RightUpperArm']
-  if (/idle/i.test(name)) return ['Head', 'Chest', 'Hips', 'LeftUpperLeg', 'RightUpperLeg']
-  return ['LeftUpperLeg', 'RightUpperLeg']
-}
-
-/**
  * Where in the clip to stop, as a fraction of it — the settled one when a clip is known, else
  * the best-scoring sample.
  *

@@ -20,7 +20,11 @@ import type { Object3D } from 'three'
 import { createGltfSource } from './gltfSource'
 import { disposeTree } from './modelCache'
 import { retargetPlanOf, wireBonesOf, skeletonScaleOf } from './retarget'
-import { poseFractionOf, scoredJointsOf, turnScoreOf, wrappedAngle, yawOf } from './animationPose'
+import { poseFractionOf, turnScoreOf, wrappedAngle, yawOf } from './animationPose'
+import type { AnimationThumbnailRequest } from './animationThumbnailMessage'
+
+/** What a clip nobody has described is scored on: a step is read in the legs. */
+const STEP_JOINTS: readonly string[] = ['LeftUpperLeg', 'RightUpperLeg']
 
 const preset = {
   size: 512,
@@ -30,25 +34,6 @@ const preset = {
   exposure: 1.05,
   samples: 17,
 }
-const poses: Record<string, number> = {
-  Idle: 0.5,
-  IdleBreathing: 0.85,
-  IdleBriefcase: 0.25,
-  IdleHappy: 0.3,
-  IdleSad: 0.45,
-  IdleShift: 0.3,
-  Jump: 0.39,
-  RunningJump: 0.39,
-  StrafeLeft: 0.25,
-  StrafeRight: 0.65,
-  TurnAround: 0.55,
-  TurnLeft: 0.29,
-  TurnRight: 0.5,
-  Walk: 0.75,
-  WalkStart: 0.45,
-  WalkStop: 0.45,
-}
-
 export async function createAnimationThumbnailRenderer(model: ArrayBuffer, decoderRoot?: string) {
   const canvas = new OffscreenCanvas(preset.size, preset.size)
   const renderer = new WebGLRenderer({
@@ -122,7 +107,8 @@ export async function createAnimationThumbnailRenderer(model: ArrayBuffer, decod
     scene.updateMatrixWorld(true)
   }
 
-  async function render({ animationUrl, name }: { animationUrl: string; name: string }) {
+  async function render({ animationUrl, name, poster }: AnimationThumbnailRequest) {
+    const shown = poster ?? {}
     restore()
     const source = await loader.loadAnimation(animationUrl)
     let mixer: AnimationMixer | undefined
@@ -139,7 +125,7 @@ export async function createAnimationThumbnailRenderer(model: ArrayBuffer, decod
       if (!sourceHip) throw new Error(`Hips missing in ${name}`)
       // Aliased, as `hip` is above: the narrowing is what the nested pose helpers read.
       const sh = sourceHip
-      const sideTurn = /^Turn(Left|Right)$/.test(name)
+      const square = shown.square === true
 
       const scale = skeletonScaleOf(character, source)
       mixer = new AnimationMixer(source)
@@ -161,13 +147,12 @@ export async function createAnimationThumbnailRenderer(model: ArrayBuffer, decod
       )
       const relativeYaw = () => wrappedAngle(yaw() - initialYaw)
       function poseScore(): number {
-        if (/jump/i.test(name)) return sh.o.getWorldPosition(new Vector3()).y
-        if (sideTurn) return turnScoreOf(relativeYaw(), Math.PI / 4)
-        if (name === 'TurnAround') return turnScoreOf(relativeYaw(), Math.PI * 0.8)
+        if (shown.score === 'hipHeight') return sh.o.getWorldPosition(new Vector3()).y
+        if (shown.score === 'turn') return turnScoreOf(relativeYaw(), shown.turn ?? Math.PI / 4)
 
         let score = 0
-        for (const joint of scoredJointsOf(name)) {
-          // `refs` and `start` are keyed by SOURCE names, `scoredJointsOf` by the character's:
+        for (const joint of shown.joints ?? STEP_JOINTS) {
+          // `refs` and `start` are keyed by SOURCE names, a poster's joints by the character's:
           // read one of them untranslated and a Mixamo clip scores against its bind pose.
           const from = names[joint] ?? joint
           const r = refs.get(from)
@@ -176,7 +161,7 @@ export async function createAnimationThumbnailRenderer(model: ArrayBuffer, decod
         }
         return score
       }
-      const chosen = poseFractionOf(poses[name], preset.samples, fraction => {
+      const chosen = poseFractionOf(shown.at, preset.samples, fraction => {
         sample(fraction)
         return poseScore()
       })
@@ -184,7 +169,7 @@ export async function createAnimationThumbnailRenderer(model: ArrayBuffer, decod
       function applyPose(): void {
         const correction = new Quaternion().setFromAxisAngle(
           new Vector3(0, 1, 0),
-          sideTurn ? -initialYaw : 0,
+          square ? -initialYaw : 0,
         )
         const desired = new Map<string, Quaternion>()
         for (const b of bones) {
@@ -212,7 +197,7 @@ export async function createAnimationThumbnailRenderer(model: ArrayBuffer, decod
       function framePose(): void {
         const box = bounds(),
           center = box.getCenter(new Vector3())
-        direction.fromArray(sideTurn ? [0, 7, 24] : preset.camera).normalize()
+        direction.fromArray([...(shown.camera ?? preset.camera)]).normalize()
         camera.position.copy(center).addScaledVector(direction, restHeight * 5)
         camera.lookAt(center)
         camera.updateMatrixWorld(true)
