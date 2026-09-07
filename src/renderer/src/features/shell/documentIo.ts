@@ -417,12 +417,10 @@ async function settleUnsaved(andForget: boolean): Promise<boolean> {
       answers.push({ documentId, choice })
     }
     for (const { documentId, choice } of answers) {
-      // 🛑 Answered "save" and the save refused — `savableDocument` turns several ways down in
-      // silence. The callers read this `false` as "the person said no" and stop everything.
-      if (choice === 'save' && !(await saveDocument(documentId))) {
-        reportFailure('document.save', documentId, new Error('this document refused to save'))
-        return false
-      }
+      // 🛑 This `false` says BOTH "it failed" and "the person answered no to the overwrite
+      // question", and nothing here tells them apart — so it stays silent rather than call a
+      // deliberate cancel an error. `closeDocument` has the same line, and the same hole.
+      if (choice === 'save' && !(await saveDocument(documentId))) return false
       if (andForget) forgetDocument(documentId)
     }
     return true

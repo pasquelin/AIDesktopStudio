@@ -104,8 +104,11 @@ function tagFilter(parts: SearchParts, tags: readonly string[]): void {
 const UNDER_BATCH = 200
 
 /**
- * Every filed row AT one of these paths or under it, with NO bound. Each is a prefix rather than
- * a folder: the caller passes one destination per moved FILE, which is why this batches at all.
+ * Every filed row AT one of these paths or under it, unpaged. Each is a prefix rather than a
+ * folder: the caller passes one destination per moved FILE, which is why this batches at all.
+ *
+ * 🛑 Unpaged is not unbounded: `tagsByAsset` names the rows in one `IN`, and this driver stops at
+ * 32 766 parameters. One prefix over a folder of more than ~32 700 filed assets still throws.
  *
  * 🛑 Apart from `searchAssets` precisely because it must not be paged: its caller refiles what a
  * move landed, and the search's 500-row cap left the rows past it carrying the type of the folder
