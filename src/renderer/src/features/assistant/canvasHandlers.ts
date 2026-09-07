@@ -6,6 +6,8 @@ import {
   allLayers,
   layerById,
   canMoveLayer,
+  BIT_DEPTHS,
+  COLOR_MODES,
   GUIDE_AXES,
   type CanvasState,
   type Guide,
@@ -139,8 +141,8 @@ function readState(): ActionOutcome {
 
 function setDocumentProperties(input: Record<string, unknown>): ActionOutcome {
   const dpi = numberOf(input, 'dpi')
-  const colorMode = oneOf(input, 'colorMode', ['rgb', 'grayscale'])
-  const bitDepth = oneOf(input, 'bitDepth', [8, 16, 32])
+  const colorMode = oneOf(input, 'colorMode', COLOR_MODES)
+  const bitDepth = oneOf(input, 'bitDepth', BIT_DEPTHS)
   const named = dpi !== null || colorMode !== null || bitDepth !== null
   if (!named || (dpi !== null && dpi < 1))
     return refused('badInput', 'name at least one valid document property')

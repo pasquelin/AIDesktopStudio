@@ -1,5 +1,6 @@
 import { link, mkdir, realpath, rename, rm, rmdir, writeFile } from 'node:fs/promises'
-import { basename, dirname, isAbsolute, join, posix, relative, sep } from 'node:path'
+import { basename, dirname, join, posix } from 'node:path'
+import { pathIsInside } from '@main/export/pathIsInside'
 import { roleForAsset, withoutSourcePath, type Asset } from '@shared/domain/asset'
 import { glbChunksOf } from '@shared/domain/glbContainer'
 import { extensionOf } from '@shared/domain/fileName'
@@ -101,10 +102,7 @@ async function targetPath(
 async function requireExistingInside(root: string, path: string): Promise<void> {
   if (!assetFilePath(root, path)) throw new Error('asset path leaves the project')
   const [projectRoot, directory] = await Promise.all([realpath(root), realpath(join(root, path))])
-  const within = relative(projectRoot, directory)
-  if (within === '' || isAbsolute(within) || within.startsWith(`..${sep}`)) {
-    throw new Error('asset path leaves the project')
-  }
+  if (!pathIsInside(projectRoot, directory)) throw new Error('asset path leaves the project')
 }
 
 async function moveSourcePackage(

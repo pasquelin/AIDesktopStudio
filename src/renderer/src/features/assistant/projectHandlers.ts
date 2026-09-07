@@ -3,15 +3,12 @@ import { clipKeyOf, CLIP_SOURCES } from '@shared/domain/scene'
 import { inputMapOf } from '@shared/domain/inputMap'
 import { animationGraphOf } from '@shared/domain/animationGraph'
 import type { StudioBridge } from '@shared/ipc'
-import { getBridge } from '@/services/bridge'
 import { activeSceneId, useDocuments } from '@/stores/documents'
 import { clipFitOfNode, useModelFiles } from '@/stores/modelFiles'
 import { sceneOf, useScenes } from '@/stores/scenes'
 import { nodeAimed } from './nodeAimed'
 import { oneOf, textOf } from './actionInputs'
 import { withBridge, type ActionHandlers } from './actionHandler'
-
-const NO_BRIDGE = 'this window is not connected to the studio process'
 
 async function readPath(
   read: (bridge: StudioBridge, path: string) => Promise<unknown>,
@@ -30,18 +27,18 @@ async function writePath<T>(
   key: string,
   parse: (value: unknown) => T,
 ): Promise<ActionOutcome> {
-  const bridge = getBridge()
-  if (!bridge) return refused('noBridge', NO_BRIDGE)
   let value: T
   try {
     value = parse(input[key])
   } catch (error) {
     return refused('badInput', error instanceof Error ? error.message : `invalid ${key}`)
   }
-  const written = await write(bridge, textOf(input, 'path') ?? '', value)
-  return written
+  const path = textOf(input, 'path') ?? ''
+  const outcome = await withBridge(bridge => write(bridge, path, value))
+  if (!outcome.ok) return outcome
+  return outcome.data
     ? { ok: true }
-    : refused('failed', `the project file "${textOf(input, 'path') ?? ''}" was not written`)
+    : refused('failed', `the project file "${path}" was not written`)
 }
 
 function retargetStatus(input: Record<string, unknown>): ActionOutcome {

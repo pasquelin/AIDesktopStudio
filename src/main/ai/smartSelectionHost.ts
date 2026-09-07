@@ -5,6 +5,7 @@ import type {
   SmartSelectionRequest,
   SmartSelectionResult,
 } from '@shared/domain/smartSelectionInference'
+import { writeQueue } from '@main/persistence'
 import type { PythonClient } from './pythonClient'
 
 export type SmartSelectionHost = {
@@ -17,21 +18,23 @@ export function createSmartSelectionHost(deps: {
   engine: () => Promise<PythonClient | null>
 }): SmartSelectionHost {
   let encodedRevision: string | null = null
-  let pending = Promise.resolve()
+  const queue = writeQueue()
   const run = async (
     request: SmartSelectionRequest,
     signal: AbortSignal,
   ): Promise<SmartSelectionResult> => {
     signal.throwIfAborted()
-    const folder = await mkdtemp(join(tmpdir(), 'ia-studio-selection-'))
+    let folder: string | null = null
     const release = deps.hold('efficient-sam-ti')
     try {
-      const image = join(folder, 'composite.png')
-      await writeFile(image, request.png)
       await deps.ensureLoaded('efficient-sam-ti')
       const engine = await deps.engine()
       if (!engine) throw new Error('the local AI engine is not answering')
+      // The picture only touches the disk for an encoding the engine does not hold yet.
       if (encodedRevision !== request.revision) {
+        folder = await mkdtemp(join(tmpdir(), 'ia-studio-selection-'))
+        const image = join(folder, 'composite.png')
+        await writeFile(image, request.png)
         await engine.job('selection.encode', { door: 'engine/selection', image }, { signal })
         signal.throwIfAborted()
         encodedRevision = request.revision
@@ -45,18 +48,11 @@ export function createSmartSelectionHost(deps: {
       return maskOf(decoded)
     } finally {
       release()
-      await rm(folder, { recursive: true, force: true })
+      if (folder) await rm(folder, { recursive: true, force: true })
     }
   }
   return {
-    run: (request, signal) => {
-      const next = pending.then(() => run(request, signal))
-      pending = next.then(
-        () => undefined,
-        () => undefined,
-      )
-      return next
-    },
+    run: (request, signal) => queue.next(() => run(request, signal)),
   }
 }
 

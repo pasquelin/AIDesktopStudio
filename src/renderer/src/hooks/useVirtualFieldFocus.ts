@@ -1,12 +1,6 @@
 import { useEffect, useRef, type KeyboardEvent, type RefObject } from 'react'
 import type { VirtualItem } from '@tanstack/react-virtual'
-
-const FOCUSABLE =
-  'button:not(:disabled),input:not(:disabled),select:not(:disabled),textarea:not(:disabled),[tabindex]:not([tabindex="-1"])'
-
-function focusableWithin(element: Element): HTMLElement[] {
-  return [...element.querySelectorAll<HTMLElement>(FOCUSABLE)]
-}
+import { focusableWithin } from '@/helpers/focusableWithin'
 
 export function useVirtualFieldFocus(
   count: number,

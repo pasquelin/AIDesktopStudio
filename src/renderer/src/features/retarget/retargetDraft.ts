@@ -5,11 +5,17 @@ import { skeletonTopologySignatureOf, type SkeletonProfile } from '@shared/domai
 import type { WireBone, WireClip } from '@/engines/scene/retargetMessage'
 import { disposeTree } from '@/engines/scene/modelCache'
 import type { SkinnedMesh } from 'three'
-import { clipFromWire, skinnedFromWire, wireClipOf, type Retarget } from '@/engines/scene/retarget'
+import {
+  clipFromWire,
+  namedBonesOf,
+  skinnedFromWire,
+  wireClipOf,
+  type Retarget,
+} from '@/engines/scene/retarget'
 import { exportObjects } from '@/engines/scene/sceneExport'
 
 export function motionProfile(bones: readonly WireBone[]): SkeletonProfile {
-  const named = bones.map(bone => ({ name: bone.name, parent: bones[bone.parent]?.name ?? null }))
+  const named = namedBonesOf(bones)
   return { signature: skeletonTopologySignatureOf(named), roles: boneRolesOf(named) }
 }
 

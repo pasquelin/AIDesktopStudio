@@ -105,7 +105,7 @@ export type ExportOptions = {
 }
 
 /** The clips the copied models brought with them, gathered wherever they hang in the subtree. */
-function clipsIn(roots: readonly Object3D[]): AnimationClip[] {
+export function clipsIn(roots: readonly Object3D[]): AnimationClip[] {
   const found: AnimationClip[] = []
   for (const root of roots) root.traverse(child => found.push(...child.animations))
 

@@ -1,6 +1,7 @@
 import { net, protocol } from 'electron'
 import { realpath } from 'node:fs/promises'
-import { basename, dirname, isAbsolute, relative, resolve, sep } from 'node:path'
+import { basename, dirname, isAbsolute, resolve, sep } from 'node:path'
+import { pathIsInside } from '@main/export/pathIsInside'
 import { pathToFileURL } from 'node:url'
 import { ASSET_SCHEME, hostedParts, type Asset } from '@shared/domain/asset'
 import { stemOf } from '@shared/domain/fileName'
@@ -40,17 +41,9 @@ export async function conversionNeighbourPath(
   try {
     const projectRoot = await realpath(resolve(projectPath))
     const sourceRoot = await realpath(resolve(projectPath, dirname(asset.path), SOURCES_FOLDER))
-    const sourceWithinProject = relative(projectRoot, sourceRoot)
-    if (
-      sourceWithinProject === '' ||
-      isAbsolute(sourceWithinProject) ||
-      sourceWithinProject.startsWith(`..${sep}`)
-    ) {
-      return null
-    }
+    if (!pathIsInside(projectRoot, sourceRoot)) return null
     const file = await realpath(resolve(sourceRoot, ...parts))
-    const within = relative(sourceRoot, file)
-    return within !== '' && !isAbsolute(within) && !within.startsWith(`..${sep}`) ? file : null
+    return pathIsInside(sourceRoot, file) ? file : null
   } catch {
     return null
   }

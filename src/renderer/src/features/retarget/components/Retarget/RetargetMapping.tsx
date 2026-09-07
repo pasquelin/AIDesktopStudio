@@ -10,16 +10,14 @@ import {
   HUMANOID_FINGER_ROLES,
   type HumanoidRole,
 } from '@shared/domain/humanoid'
-import { profileWithRole, type SkeletonProfile } from '@shared/domain/skeletonProfile'
+import { profileWithRole } from '@shared/domain/skeletonProfile'
 import { PropertySection } from '@/components/PropertySection'
 import { SearchField } from '@/components/SearchField'
 import { Button } from '@/components/Button'
 import { motionProfile } from '../../retargetDraft'
-import type { RetargetMappingSide } from '../../retargetMappingSide'
+import { boneFor, type RetargetMappingSide } from '../../retargetMappingSide'
 
 type Props = { source: RetargetMappingSide; target: RetargetMappingSide; resetKey?: string }
-const boneFor = (profile: SkeletonProfile, role: HumanoidRole) =>
-  Object.keys(profile.roles).find(name => profile.roles[name] === role) ?? ''
 
 export function RetargetMapping({ source, target, resetKey }: Props) {
   const { t } = useTranslation()

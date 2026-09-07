@@ -241,28 +241,21 @@ function extraPictures(document: Record<string, unknown>, held3d: unknown): stri
 }
 
 function textureAssetIdsOf(nodes: SceneState['nodes']): string[] {
-  const ids: string[] = []
-  const seen = new Set<string>()
-  for (const node of nodes) {
-    if (!carriesMaterial(node)) continue
-    for (const slot of TEXTURE_SLOTS) {
-      const assetId = node.material[slot]?.assetId
-      if (!assetId || seen.has(assetId)) continue
-      seen.add(assetId)
-      ids.push(assetId)
-    }
-  }
-  return ids
+  return textureAssetIdsFrom(nodes.filter(carriesMaterial).map(node => node.material))
 }
 
 function textureAssetIdsIn(held3d: unknown): string[] {
   if (!isRecord(held3d) || !Array.isArray(held3d.nodes)) return []
+  return textureAssetIdsFrom(held3d.nodes.map(node => (isRecord(node) ? node.material : null)))
+}
+
+function textureAssetIdsFrom(materials: readonly unknown[]): string[] {
   const ids: string[] = []
   const seen = new Set<string>()
-  for (const node of held3d.nodes) {
-    if (!isRecord(node) || !isRecord(node.material)) continue
+  for (const material of materials) {
+    if (!isRecord(material)) continue
     for (const slot of TEXTURE_SLOTS) {
-      const ref = node.material[slot]
+      const ref = material[slot]
       const assetId = isRecord(ref) && typeof ref.assetId === 'string' ? ref.assetId : ''
       if (!assetId || seen.has(assetId)) continue
       seen.add(assetId)
