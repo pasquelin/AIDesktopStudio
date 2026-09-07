@@ -74,7 +74,9 @@ describe('SceneRenderer export', () => {
   it('writes what the studio asked to carry into the extras of the scene', async () => {
     const renderer = rendererOf({ nodes: [meshNode('box-1')] })
 
-    const bytes = await renderer.exportTo('gltf', 'scene', { aidesktopstudio: { animation: { fps: 25 } } })
+    const bytes = await renderer.exportTo('gltf', 'scene', {
+      aidesktopstudio: { animation: { fps: 25 } },
+    })
     const file = JSON.parse(new TextDecoder().decode(bytes)) as {
       scenes?: { extras?: Record<string, unknown> }[]
     }

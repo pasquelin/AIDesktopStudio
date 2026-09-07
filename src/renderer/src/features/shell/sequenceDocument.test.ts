@@ -113,7 +113,9 @@ describe('what a save writes for a montage', () => {
   it('remembers which document the file is', () => {
     heldIn('Bande.otio')
 
-    expect(written(sequencePayload(ONE_CLIP, 'doc-1')).metadata.aidesktopstudio.documentId).toBe('doc-1')
+    expect(written(sequencePayload(ONE_CLIP, 'doc-1')).metadata.aidesktopstudio.documentId).toBe(
+      'doc-1',
+    )
   })
 
   it('indents, the file being one another application and a hand both read', () => {

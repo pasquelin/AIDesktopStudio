@@ -109,7 +109,10 @@ describe('MaterialDocument', () => {
       useMaterialViews.getState().inspect(DOCUMENT, 'normal')
       render(<MaterialDocument documentId={DOCUMENT} />)
 
-      expect(screen.getByRole('presentation')).toHaveAttribute('src', 'ai-desktop-studio://asset/normal-1')
+      expect(screen.getByRole('presentation')).toHaveAttribute(
+        'src',
+        'ai-desktop-studio://asset/normal-1',
+      )
     })
 
     it('draws nothing flat while the material is what is shown', () => {
