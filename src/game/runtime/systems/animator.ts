@@ -8,6 +8,7 @@ import {
   type AnimatorState,
   type ParameterReading,
 } from '../animationMachine'
+import type { PosedClip } from '../../ports/animationPort'
 import type { Animators } from '../animators'
 import type { Characters, WalkerReading } from '../characters'
 import { textOf } from '../componentFields'
@@ -40,6 +41,14 @@ type Held = {
   airborne: number
   grounded: boolean
   facing: number
+  /**
+   * 🛑 Written over every frame rather than allocated: this system was the only one of the loop
+   * not going through `pooled`, and a body posed at sixty frames threw away nine objects a frame.
+   * `AnimationPort.pose` spells out that what it hands over is borrowed for the call.
+   */
+  shown: AnimatorState
+  shownFrom: { state: string; time: number }
+  clips: PosedClip[]
 }
 
 /**
@@ -111,7 +120,7 @@ export function createAnimatorSystem(options: AnimatorSystemOptions): System {
         const lengths = world.ports.animation.lengths(entity.id)
         world.ports.animation.pose(
           entity.id,
-          posedClipsOf(current.layer, shownAt(current, alpha), lengths),
+          posedClipsOf(current.layer, shownAt(current, alpha), lengths, current.clips),
         )
       }
     },
@@ -130,17 +139,15 @@ function shownAt(current: Held, alpha: number): AnimatorState {
   // from, and mixing the two would draw a time inside neither clip.
   if (!before || before.state !== current.machine.state || alpha >= 1) return current.machine
 
-  const from =
-    current.machine.from && before.from && before.from.state === current.machine.from.state
-      ? { ...current.machine.from, time: mix(before.from.time, current.machine.from.time, alpha) }
-      : current.machine.from
-
-  return {
-    ...current.machine,
-    time: mix(before.time, current.machine.time, alpha),
-    faded: mix(before.faded, current.machine.faded, alpha),
-    from,
+  const shown = Object.assign(current.shown, current.machine)
+  shown.time = mix(before.time, current.machine.time, alpha)
+  shown.faded = mix(before.faded, current.machine.faded, alpha)
+  if (current.machine.from && before.from && before.from.state === current.machine.from.state) {
+    current.shownFrom.state = current.machine.from.state
+    current.shownFrom.time = mix(before.from.time, current.machine.from.time, alpha)
+    shown.from = current.shownFrom
   }
+  return shown
 }
 
 const mix = (from: number, to: number, alpha: number): number => from + (to - from) * alpha
@@ -171,6 +178,9 @@ function heldFor(
     airborne: 0,
     grounded: true,
     facing: 0,
+    shown: freshAnimator(layer),
+    shownFrom: { state: '', time: 0 },
+    clips: [],
   }
   kept.set(entity, made)
   return made

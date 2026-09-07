@@ -26,6 +26,10 @@ export type PosedClip = {
  * one mixer per model cannot let two clocks write the same bones. `world.dispose` gives every
  * port holding back, and this is one of them: without the release, stopping a game would leave
  * the character frozen in his last playing pose.
+ *
+ * 🛑 The clips are BORROWED for the length of the call: the animator hands out pooled objects it
+ * writes over on the next frame, so a host that keeps one reads a body's pose from two frames ago.
+ * What a host needs past the call it copies.
  */
 export type AnimationPort = {
   pose: (entity: string, clips: readonly PosedClip[]) => void
