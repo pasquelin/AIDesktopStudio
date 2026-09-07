@@ -31,6 +31,7 @@
       "title": "Detected controls",
       "keyboard": "Keyboard",
       "mouse": "Mouse",
+      "gamepadUnsupported": "This controller does not use the standard layout: the studio cannot read its buttons.",
       "noGamepad": "No gamepad is connected.",
       "gamepadSleeps": "A gamepad only appears once one of its buttons has been pressed: the browser does not show it before that. Plugged in but silent, it looks exactly like no gamepad at all."
     },

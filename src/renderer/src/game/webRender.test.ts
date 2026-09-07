@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { PCFShadowMap } from 'three'
 import type { Object3D, Scene } from 'three'
 import type * as ThreeModule from 'three'
+import type { PostEffect } from '@shared/domain/postProcessing'
 import { DEFAULT_RENDER_POLICY, type RenderPolicy } from '@shared/domain/renderPolicy'
 import { lightNode, meshNode } from '@/engines/scene/nodeFactory'
 import { at, BOX, NOTHING, sceneOf, SUN } from './game-fixtures'
@@ -101,7 +102,7 @@ vi.mock('@/engines/postfx/PostComposer', () => ({
 }))
 
 /** One effect in the stack, so the drawer builds a composer at all. */
-const GRADE = { id: 'one', effect: 'bloom' as const, enabled: true, params: {} }
+const GRADE: PostEffect = { id: 'one', effect: 'bloom', enabled: true, params: {} }
 
 describe('what an exported game pays for an image', () => {
   it('tells the renderer the policy — on or off, the filter, and never three.js own redraw', async () => {

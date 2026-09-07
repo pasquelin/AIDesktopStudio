@@ -1,4 +1,9 @@
-import { ADVANCED_GROUP, PROMPT_FIELD_KEY, type LocalFieldTemplate } from './localFields'
+import {
+  ADVANCED_GROUP,
+  SEED_BOUNDS,
+  PROMPT_FIELD_KEY,
+  type LocalFieldTemplate,
+} from './localFields'
 
 export const PROMPT: LocalFieldTemplate = {
   key: PROMPT_FIELD_KEY,
@@ -25,7 +30,7 @@ export function input(
 }
 
 export function seed(key: string, labelKey: string): LocalFieldTemplate {
-  return { key, kind: 'seed', labelKey, required: false, group: ADVANCED_GROUP }
+  return { key, kind: 'seed', labelKey, required: false, group: ADVANCED_GROUP, ...SEED_BOUNDS }
 }
 
 export const TEXTURE: LocalFieldTemplate = {

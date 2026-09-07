@@ -36,6 +36,13 @@ export function InputSettings() {
         {gamepads.map(gamepad => (
           <li key={gamepad.index} className={WINDOW_ROW}>
             {gamepad.id}
+            {/* 🛑 Listed and inert otherwise: every reader of a pad answers zero for a mapping it
+                cannot name, so a controller shown here did nothing and said nothing. */}
+            {gamepad.mapping !== 'standard' && (
+              <span className={cn(WINDOW_CAPTION, 'ml-2')}>
+                {t('settings.inputDevices.gamepadUnsupported')}
+              </span>
+            )}
           </li>
         ))}
       </ul>

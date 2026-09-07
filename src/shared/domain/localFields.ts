@@ -85,6 +85,13 @@ export const SEED_FIELD_KEY = 'seed'
  */
 export const ADVANCED_GROUP = 'advanced'
 
+/**
+ * 🛑 What a seed IS, everywhere: 32 bits unsigned. Written on the field so the form and
+ * `callParameters` refuse a wider one BEFORE the door does — the local motion engine raises on
+ * anything outside this, and nothing on the `generate` path was catching it.
+ */
+export const SEED_BOUNDS = { min: 0, max: 2 ** 32 - 1, step: 1 }
+
 const PROMPT: LocalFieldTemplate = {
   key: PROMPT_FIELD_KEY,
   kind: 'longText',
@@ -100,6 +107,7 @@ const SEED: LocalFieldTemplate = {
   helpKey: 'localFields.seedHelp',
   required: false,
   group: ADVANCED_GROUP,
+  ...SEED_BOUNDS,
 }
 
 /**
