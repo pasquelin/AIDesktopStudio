@@ -252,7 +252,7 @@ function createModelOf(
       )
       resources.animations.add(nodeId, optimized, source.animations)
       const wanted = clipsForNode?.(nodeId)
-      await loadModelAnimations(nodeId, model, assets, loadModel, resources.animations, wanted)
+      await loadModelAnimations(nodeId, model, assets, loadModel, resources, wanted)
       resources.animations.apply(nodeId, model.lanes ?? [])
       return optimized
     } catch {
