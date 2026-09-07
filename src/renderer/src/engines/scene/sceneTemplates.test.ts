@@ -74,7 +74,7 @@ describe('sceneFromTemplate', () => {
     }
 
     // The keys ARE the coverage: a template that stops being checked shows up as a missing one.
-    expect(seated).toEqual({ thirdPerson: true, car: true })
+    expect(seated).toEqual({ firstPerson: true, thirdPerson: true, car: true })
   })
 
   it('opens every template on a lit scene, so none of them looks like a broken viewport', () => {
@@ -348,9 +348,7 @@ describe('what a template lays down beside itself', () => {
 
     expect(module?.components?.some(one => one.type === 'Script')).toBe(true)
 
-    const walker = sceneFromTemplate('firstPerson').nodes.find(node =>
-      node.components?.some(one => one.type === 'CharacterController'),
-    )
+    const walker = sceneFromTemplate('firstPerson').nodes.find(isPlayerModule)
     expect(walker?.components?.some(one => one.type === 'Script')).toBe(true)
   })
 

@@ -176,3 +176,39 @@ const WALKER_AT_THE_FOOT: BodyDescriptor = {
   character: { stepHeight: 0.5, slopeLimit: 45, snapDistance: 0.5 },
   vehicle: null,
 }
+
+it('keeps the first-person view forward while the player walks sideways', async () => {
+  const physics = await loadJoltPhysics()
+  const host = createExportHost({
+    input: new EventTarget(),
+    player: { id: 'p1', name: 'Alba', local: true },
+    files: {},
+  })
+  const input = reading({ held: ['KeyD'] })
+  const views: CameraView[] = []
+  const world = worldFromScene('doc-1', sceneFromTemplate('firstPerson'), {
+    ...host,
+    physics,
+    input: { ...host.input, state: () => input },
+    render: {
+      ...host.render,
+      view: view => {
+        if (view) views.push(structuredClone(view))
+      },
+    },
+  })
+  try {
+    for (let step = 0; step < 30; step++) {
+      world.step(STEP)
+      world.lateUpdate(1, STEP)
+    }
+    const view = views.at(-1)
+    if (!view) throw new Error('Missing first-person view')
+    expect(view.position.x).toBeGreaterThan(0.1)
+    expect(view.target.x - view.position.x).toBeCloseTo(0)
+    expect(view.target.z - view.position.z).toBeCloseTo(-1)
+  } finally {
+    world.dispose()
+    physics.dispose()
+  }
+})

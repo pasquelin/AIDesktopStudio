@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it, onTestFinished, vi } from 'vitest'
 import { SECOND } from '@shared/domain/time'
 import {
   BoxGeometry,
@@ -17,6 +17,10 @@ import { IDENTITY_TRANSFORM } from '@shared/domain/transform'
 import { at, BOX, NOTHING, sceneOf, SUN } from './game-fixtures'
 import { buildGameScene, type GameScene } from './gameScene'
 import type { GameFlush } from './gameSceneFrame'
+
+import { sceneFromTemplate } from '@/engines/scene/sceneTemplates'
+import { playerPartsOf } from '@/engines/scene/playerModule'
+import { rememberShippedCharacter, forgetShippedCharacter } from '@/engines/scene/shippedCharacter'
 
 // A picture that lands as soon as it is asked for: what the loader does long after the build.
 vi.mock('@/engines/scene/textureCache', () => ({
@@ -345,4 +349,38 @@ describe('what a settled frame answers', () => {
     expect(built.flush(camera)).toEqual(STILL)
     built.dispose()
   })
+})
+
+it('keeps the first-person robot shadow without drawing its head over the camera', async () => {
+  rememberShippedCharacter('hero')
+  onTestFinished(forgetShippedCharacter)
+  const state = sceneFromTemplate('firstPerson')
+  const parts = playerPartsOf(state.nodes)
+  expect(parts?.body?.type).toBe('group')
+  expect(parts?.animated?.type).toBe('model')
+  const material = new MeshBasicMaterial()
+  const source = new Mesh(new BoxGeometry(), material)
+  const built = await buildGameScene(
+    state,
+    { ...NOTHING, urlOf: () => 'hero.glb' },
+    undefined,
+    undefined,
+    async () => source,
+  )
+  onTestFinished(() => built.dispose())
+  const meshes: Mesh[] = []
+  if (parts?.body)
+    built.byEntity.get(parts.body.id)?.traverse(one => {
+      if (one instanceof Mesh) meshes.push(one)
+    })
+  expect(meshes.length).toBeGreaterThan(0)
+  for (const mesh of meshes) {
+    expect(mesh.visible && mesh.castShadow).toBe(true)
+    for (const held of Array.isArray(mesh.material) ? mesh.material : [mesh.material]) {
+      expect(held.colorWrite).toBe(false)
+      expect(held.depthWrite).toBe(false)
+    }
+  }
+  expect(material.colorWrite).toBe(true)
+  expect(material.depthWrite).toBe(true)
 })

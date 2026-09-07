@@ -227,7 +227,7 @@ export function createCharacters(
         move.wanted.x = walker.paceX * dt
         move.wanted.y = walker.wantedY
         move.wanted.z = walker.paceZ * dt
-        move.facing = facedTowards(walker, settings, pace, steered, dt)
+        move.facing = facedTowards(walker, settings, pace, dt, look, world.play.camera)
         moves.push(move)
         byBody.set(entity.id, walker)
       }
@@ -383,21 +383,25 @@ function fallInto(
 }
 
 /**
- * The heading the body is sent to, or nothing when its author asked for no turn at all. Towards
- * where it is ASKED to walk: a body slowing to a stop would keep turning on a heading nobody holds.
+ * Turns toward the requested heading, unless the author disabled body rotation.
  */
 function facedTowards(
   walker: Walker,
   settings: Component,
   pace: { x: number; z: number },
-  steered: boolean,
   dt: number,
+  look: Look,
+  view: ScenePlay['camera'],
 ): number | null {
   const turn = numberOf(settings, 'bodyTurnSpeed', WALKER.bodyTurnSpeed)
   if (turn <= 0) return null
-  if (steered) {
-    const step = turn * DEGREES * dt
-    walker.facing += clamp(shortWay(walker.facing, Math.atan2(-pace.x, -pace.z)), -step, step)
-  }
+  const heading =
+    view === 'firstPerson'
+      ? look.yaw
+      : pace.x !== 0 || pace.z !== 0
+        ? Math.atan2(-pace.x, -pace.z)
+        : walker.facing
+  const step = turn * DEGREES * dt
+  walker.facing += clamp(shortWay(walker.facing, heading), -step, step)
   return walker.facing
 }

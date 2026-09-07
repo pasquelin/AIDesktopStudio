@@ -30,7 +30,13 @@ export type Scratch = {
 }
 
 /** `facing` is the last yaw actually sent across, so an unchanged heading costs no crossing. */
-export type Walker = { character: JoltCharacter; update: JoltUpdate; facing: number | null }
+export type Walker = {
+  character: JoltCharacter
+  update: JoltUpdate
+  facing: number | null
+  /** Support velocity retained in flight until the next landing. */
+  carried: { x: number; y: number; z: number }
+}
 
 /** What suspends and drives a `Vehicle`. Reference counted where Jolt counts, and torn down in order. */
 export type Ride = {
