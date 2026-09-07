@@ -8,9 +8,9 @@
     "ogLocale": "fr_FR"
   },
   "head": {
-    "title": "IA Studio — six ateliers de génération, une seule fenêtre",
+    "title": "AI Desktop Studio — six ateliers de génération, une seule fenêtre",
     "description": "Application de bureau multimodale : image, vidéo, 3D, audio, textures et skyboxes dans une interface à panneaux ancrables. Dictée hors ligne et pilotage par serveur MCP.",
-    "ogTitle": "IA Studio — six ateliers de génération, une seule fenêtre",
+    "ogTitle": "AI Desktop Studio — six ateliers de génération, une seule fenêtre",
     "ogDescription": "Six ateliers de génération dans une seule fenêtre. Electron, React 19, TypeScript. macOS, Windows, Linux."
   },
   "nav": {
@@ -291,7 +291,7 @@
   "docs": {
     "eyebrow": "Documentation &amp; démonstration",
     "title": "Tout est écrit à côté du code.",
-    "videoLabel": "Démonstration d’IA Studio : parcours des six ateliers, d'une génération 3D jusqu'au montage.",
+    "videoLabel": "Démonstration d’AI Desktop Studio : parcours des six ateliers, d'une génération 3D jusqu'au montage.",
     "links": {
       "0": {
         "text": "Le manuel, vingt chapitres — aussi lisibles dans l'application",
@@ -355,7 +355,7 @@
   },
   "foot": {
     "groups": {
-      "0": "IA Studio",
+      "0": "AI Desktop Studio",
       "1": "Ateliers",
       "2": "Ressources",
       "3": "Contact"

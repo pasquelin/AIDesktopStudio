@@ -36,6 +36,7 @@ describe('the product name', () => {
    */
   it('is the only product name those surfaces carry', () => {
     expect(SPELT_BY_HAND.filter(path => fileAt(path).includes('Scenario Studio'))).toEqual([])
+    expect(SPELT_BY_HAND.filter(path => fileAt(path).includes('IA Studio'))).toEqual([])
   })
 
   // `dev-app-identity.mjs` used to hold a sixth copy. It reads `package.json` now, so the case

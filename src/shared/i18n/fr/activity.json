@@ -93,7 +93,7 @@
     "projectNameTaken": "Un dossier porte déjà ce nom à côté — choisissez-en un autre",
     "projectNameUnsafe": "Ce nom ne peut pas être celui d’un dossier — retirez ce que le disque refuse",
     "projectNested": "Ce dossier est déjà à l’intérieur d’un projet : choisissez-en un en dehors",
-    "projectNotAProject": "Ce dossier n’est pas un projet IA Studio",
+    "projectNotAProject": "Ce dossier n’est pas un projet AI Desktop Studio",
     "projectNotCreated": "Le projet n’a pas pu être créé dans ce dossier",
     "projectNotRenamed": "Le projet n’a pas pu être renommé : son dossier est introuvable ou illisible",
     "projectNotRevealed": "Le dossier du projet est introuvable",

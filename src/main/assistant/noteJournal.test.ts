@@ -7,7 +7,7 @@ import { lineOfNote, reportOfNote } from './noteJournal'
 
 /** Every note the union can carry, so the guard below reads them all rather than a sample. */
 const EVERY_NOTE: readonly AssistantNote[] = [
-  { kind: 'sent', door: 'deepseek', model: 'deepseek-chat', text: 'You drive IA Studio' },
+  { kind: 'sent', door: 'deepseek', model: 'deepseek-chat', text: 'You drive AI Desktop Studio' },
   { kind: 'answered', text: '{"say":"","calls":[]}' },
   { kind: 'ran', action: 'jobs.list', input: '{}', answer: 'ok', refused: false },
   { kind: 'ran', action: 'project.create', input: '{}', answer: 'badInput', refused: true },
@@ -55,7 +55,7 @@ describe('what a note becomes in the journal', () => {
       kind: 'sent',
       door: 'deepseek',
       model: 'deepseek-chat',
-      text: `You drive IA Studio\n\nFolders on this machine:\nhome: /Users/someone\n`,
+      text: `You drive AI Desktop Studio\n\nFolders on this machine:\nhome: /Users/someone\n`,
     })
 
     expect(report.detail).toBeUndefined()

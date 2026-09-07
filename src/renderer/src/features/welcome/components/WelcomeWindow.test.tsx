@@ -26,7 +26,7 @@ describe('WelcomeWindow', () => {
    */
   it('carries the mark once, above the carousel rather than on each slide', () => {
     render(<WelcomeWindow />)
-    const mark = screen.getByRole('img', { name: 'IA Studio' })
+    const mark = screen.getByRole('img', { name: 'AI Desktop Studio' })
 
     expect(mark.closest('header')).not.toBeNull()
     // The slides are the sections of the rail, and the window's own root carries

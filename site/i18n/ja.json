@@ -8,9 +8,9 @@
     "ogLocale": "ja_JP"
   },
   "head": {
-    "title": "IA Studio — 六つの生成ワークショップを、ひとつのウィンドウに",
+    "title": "AI Desktop Studio — 六つの生成ワークショップを、ひとつのウィンドウに",
     "description": "マルチモーダルなデスクトップアプリ。画像、動画、3D、オーディオ、テクスチャ、スカイボックスをドッキング可能なパネル UI にまとめました。オフラインの音声入力と MCP サーバー経由の操作に対応。",
-    "ogTitle": "IA Studio — 六つの生成ワークショップを、ひとつのウィンドウに",
+    "ogTitle": "AI Desktop Studio — 六つの生成ワークショップを、ひとつのウィンドウに",
     "ogDescription": "六つの生成ワークショップを、ひとつのウィンドウに。Electron、React 19、TypeScript。macOS、Windows、Linux。"
   },
   "nav": {
@@ -291,7 +291,7 @@
   "docs": {
     "eyebrow": "ドキュメント &amp; デモ",
     "title": "すべてはコードの隣に書いてあります。",
-    "videoLabel": "IA Studio のデモ。六つのワークショップを巡り、3D の生成から編集まで。",
+    "videoLabel": "AI Desktop Studio のデモ。六つのワークショップを巡り、3D の生成から編集まで。",
     "links": {
       "0": {
         "text": "マニュアル全二十章 — アプリの中でも読めます",
@@ -355,7 +355,7 @@
   },
   "foot": {
     "groups": {
-      "0": "IA Studio",
+      "0": "AI Desktop Studio",
       "1": "ワークショップ",
       "2": "リソース",
       "3": "連絡先"

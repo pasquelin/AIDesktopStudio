@@ -8,9 +8,9 @@
     "ogLocale": "vi_VN"
   },
   "head": {
-    "title": "IA Studio — sáu xưởng tạo sinh, một cửa sổ duy nhất",
+    "title": "AI Desktop Studio — sáu xưởng tạo sinh, một cửa sổ duy nhất",
     "description": "Ứng dụng máy tính đa phương thức: hình ảnh, video, 3D, âm thanh, vân bề mặt và skybox trong một giao diện gồm các bảng có thể neo. Đọc chính tả ngoại tuyến và điều khiển qua máy chủ MCP.",
-    "ogTitle": "IA Studio — sáu xưởng tạo sinh, một cửa sổ duy nhất",
+    "ogTitle": "AI Desktop Studio — sáu xưởng tạo sinh, một cửa sổ duy nhất",
     "ogDescription": "Sáu xưởng tạo sinh trong một cửa sổ duy nhất. Electron, React 19, TypeScript. macOS, Windows, Linux."
   },
   "nav": {
@@ -291,7 +291,7 @@
   "docs": {
     "eyebrow": "Tài liệu &amp; trình diễn",
     "title": "Mọi thứ đều được viết ngay cạnh mã nguồn.",
-    "videoLabel": "Bản trình diễn IA Studio: đi qua sáu xưởng, từ một lần tạo sinh 3D cho tới khi dựng xong.",
+    "videoLabel": "Bản trình diễn AI Desktop Studio: đi qua sáu xưởng, từ một lần tạo sinh 3D cho tới khi dựng xong.",
     "links": {
       "0": {
         "text": "Cẩm nang hai mươi chương — đọc được ngay trong ứng dụng",
@@ -355,7 +355,7 @@
   },
   "foot": {
     "groups": {
-      "0": "IA Studio",
+      "0": "AI Desktop Studio",
       "1": "Xưởng",
       "2": "Tài nguyên",
       "3": "Liên hệ"

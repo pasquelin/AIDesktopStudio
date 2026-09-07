@@ -4,7 +4,7 @@ import type { BindingOverrides } from './command'
  * How each 3D application people already know drives its viewport, as data.
  *
  * A preset is a PARTIAL layer: it declares only what its application does differently, and
- * everything it says nothing about falls back to the studio's own. That is what lets IA Studio
+ * everything it says nothing about falls back to the studio's own. That is what lets AI Desktop Studio
  * keep the commands the others have no equivalent for, whichever preset is chosen.
  *
  * Resolution, in order: the studio's default, then the preset, then what the person remapped —

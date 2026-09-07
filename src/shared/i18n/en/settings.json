@@ -194,8 +194,8 @@
     },
     "navigationPreset": {
       "title": "Navigation scheme",
-      "help": "Which 3D application this viewport drives like: its mouse gestures and its shortcuts. A scheme only moves what its own application does differently — everything else keeps IA Studio’s keys, including what the others have no equivalent for. Your own remaps always win.",
-      "studio": "IA Studio",
+      "help": "Which 3D application this viewport drives like: its mouse gestures and its shortcuts. A scheme only moves what its own application does differently — everything else keeps AI Desktop Studio’s keys, including what the others have no equivalent for. Your own remaps always win.",
+      "studio": "AI Desktop Studio",
       "unreal": "Unreal Engine",
       "unity": "Unity",
       "blender": "Blender",

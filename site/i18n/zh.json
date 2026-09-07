@@ -8,9 +8,9 @@
     "ogLocale": "zh_CN"
   },
   "head": {
-    "title": "IA Studio — 六个生成工作室，一个窗口",
+    "title": "AI Desktop Studio — 六个生成工作室，一个窗口",
     "description": "多模态桌面应用：图像、视频、3D、音频、纹理与天空盒，集于一个可停靠面板界面。离线听写，并可通过 MCP 服务器驱动。",
-    "ogTitle": "IA Studio — 六个生成工作室，一个窗口",
+    "ogTitle": "AI Desktop Studio — 六个生成工作室，一个窗口",
     "ogDescription": "六个生成工作室，集于一个窗口。Electron、React 19、TypeScript。macOS、Windows、Linux。"
   },
   "nav": {
@@ -291,7 +291,7 @@
   "docs": {
     "eyebrow": "文档 &amp; 演示",
     "title": "一切都写在代码旁边。",
-    "videoLabel": "IA Studio 演示：走过六个工作室，从一次 3D 生成直到成片剪辑。",
+    "videoLabel": "AI Desktop Studio 演示：走过六个工作室，从一次 3D 生成直到成片剪辑。",
     "links": {
       "0": {
         "text": "手册，二十章 —— 在应用内同样可读",
@@ -355,7 +355,7 @@
   },
   "foot": {
     "groups": {
-      "0": "IA Studio",
+      "0": "AI Desktop Studio",
       "1": "工作室",
       "2": "资源",
       "3": "联系"

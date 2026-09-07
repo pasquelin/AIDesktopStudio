@@ -103,7 +103,7 @@ describe('the script itself', () => {
    * compiler would.
    */
   it('never spells the application name where Lua expects an identifier', () => {
-    // Beside a dot or run into a word, `IA Studio` becomes a name holding a space — which
+    // Beside a dot or run into a word, `AI Desktop Studio` becomes a name holding a space — which
     // Resolve reports against the WHOLE file, so the menu row does nothing at all. Inside a
     // string or a comment it is simply text, which is where every other use of it sits.
     expect(resolveScriptText()).not.toMatch(new RegExp(`[.\\w]${APP_NAME}|${APP_NAME}\\w`))

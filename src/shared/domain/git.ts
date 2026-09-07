@@ -334,7 +334,7 @@ export function pathsOf(files: readonly GitFile[]): string[] {
  * English, like the rest of a file collaborators read.
  */
 export function defaultIgnore(): string {
-  return `# Rebuilt by IA Studio from the project's own files — never versioned.\n${INDEX_FOLDER}/\n`
+  return `# Rebuilt by AI Desktop Studio from the project's own files — never versioned.\n${INDEX_FOLDER}/\n`
 }
 
 /** Git's own folder. Named because two sides ignore it, and neither should spell it itself. */

@@ -21,6 +21,7 @@ describe('the site icon', () => {
   // Two empty files are equal too: the case above passes on a pair of them.
   it('draws the mark rather than nothing', () => {
     expect(fileAt('build/icon.svg')).toContain('#346ef2')
+    expect(fileAt('build/icon.svg')).toContain('id="aid-mark"')
   })
 
   it('is what the page links to', () => {

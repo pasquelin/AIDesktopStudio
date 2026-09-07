@@ -14,7 +14,7 @@ import {
   type McpLaunch,
 } from './endpoint'
 
-const PACKAGED = '/Applications/IA Studio.app/Contents/MacOS/IA Studio'
+const PACKAGED = '/Applications/AI Desktop Studio.app/Contents/MacOS/AI Desktop Studio'
 const ADDRESS = '/profile/mcp.json'
 const WAY_IN = `${STDIO_FLAG}=${ADDRESS}`
 
@@ -22,7 +22,7 @@ const packaged = (): McpLaunch => mcpLaunch(PACKAGED, null, ADDRESS)
 
 describe('pointing a client here', () => {
   /**
-   * 🛑 Against `APP_NAME` itself rather than a fixture: it is "IA Studio", and the space in it
+   * 🛑 Against `APP_NAME` itself rather than a fixture: it is "AI Desktop Studio", and the space in it
    * made `claude mcp add … ia studio http://…` read the name as `ia` and the url as `studio`.
    * A test naming its own client cannot see that.
    */
@@ -116,7 +116,7 @@ describe('persisting a client endpoint', () => {
    * made the Windows path name a file that does not exist.
    */
   it('quotes a path holding a space without escaping its separators', () => {
-    const windows = 'C:\\Program Files\\IA Studio\\IA Studio.exe'
+    const windows = 'C:\\Program Files\\AI Desktop Studio\\AI Desktop Studio.exe'
 
     expect(mcpAddCommand(mcpLaunch(windows, null, ADDRESS), 'ia-studio')).toContain(`"${windows}"`)
   })

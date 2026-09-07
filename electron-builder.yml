@@ -35,7 +35,7 @@ files:
 
 # Une déclaration alimente les rôles macOS, le registre Windows et les types MIME Linux.
 fileAssociations:
-  - name: Médias IA Studio
+  - name: Médias AI Desktop Studio
     role: Editor
     ext:
       - glb
@@ -191,7 +191,7 @@ mac:
     # key is missing when the microphone is first touched. Not localised: an Info.plist string
     # needs an `InfoPlist.strings` per language, which electron-builder does not assemble.
     NSMicrophoneUsageDescription:
-      IA Studio uses the microphone to turn what you say into text, on this computer.
+      AI Desktop Studio uses the microphone to turn what you say into text, on this computer.
       Nothing you say is sent anywhere.
   # `notarize` is deliberately left at its default rather than pinned to false: electron-builder
   # only notarises what it managed to sign, so an unsigned build skips it on its own — and the
@@ -249,7 +249,7 @@ linux:
   # localises the only way it can — one key per locale, `Comment` being the C fallback.
   desktop:
     entry:
-      StartupWMClass: IA Studio
+      StartupWMClass: AI Desktop Studio
       Comment: Image, video, 3D, audio, texture and skybox creation studio
       Comment[fr]: Studio de création d’images, vidéos, modèles 3D, audio, textures et skyboxes
   target: [AppImage, deb]

@@ -17,7 +17,7 @@ describe('a sky held as glTF', () => {
     updatedAt: '2026-08-18T10:00:00.000Z',
     id: 'doc-sky',
     content: JSON.stringify({
-      asset: { version: '2.0', generator: 'IA Studio' },
+      asset: { version: '2.0', generator: 'AI Desktop Studio' },
       scene: 0,
       scenes: [{ name: 'Crépuscule', nodes: [0] }],
       nodes: [{ name: 'Sun' }],

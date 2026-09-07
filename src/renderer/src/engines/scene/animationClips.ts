@@ -15,7 +15,7 @@ import type { AnimationTimeline, AnimationTrack } from '@shared/domain/animation
  * What the scene's own animation is called inside an exported glTF — the name Blender and every
  * other reader shows in its action list. It is the studio's, so it carries the studio's name.
  */
-const STUDIO_CLIP_NAME = 'IA Studio'
+const STUDIO_CLIP_NAME = 'AI Desktop Studio'
 import { poseAt, tracksFor } from './animationEval'
 
 /** A node the file will hold, and the poses its tracks are measured against. */

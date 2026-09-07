@@ -8,9 +8,9 @@
     "ogLocale": "ko_KR"
   },
   "head": {
-    "title": "IA Studio — 여섯 개의 생성 작업실, 하나의 창",
+    "title": "AI Desktop Studio — 여섯 개의 생성 작업실, 하나의 창",
     "description": "멀티모달 데스크톱 애플리케이션. 이미지, 영상, 3D, 오디오, 텍스처, 스카이박스를 도킹 가능한 패널 인터페이스에 담았습니다. 오프라인 받아쓰기와 MCP 서버를 통한 제어를 지원합니다.",
-    "ogTitle": "IA Studio — 여섯 개의 생성 작업실, 하나의 창",
+    "ogTitle": "AI Desktop Studio — 여섯 개의 생성 작업실, 하나의 창",
     "ogDescription": "여섯 개의 생성 작업실을 하나의 창에. Electron, React 19, TypeScript. macOS, Windows, Linux."
   },
   "nav": {
@@ -291,7 +291,7 @@
   "docs": {
     "eyebrow": "문서 &amp; 시연",
     "title": "모든 것이 코드 옆에 적혀 있습니다.",
-    "videoLabel": "IA Studio 시연: 여섯 작업실을 거쳐, 3D 생성부터 편집까지.",
+    "videoLabel": "AI Desktop Studio 시연: 여섯 작업실을 거쳐, 3D 생성부터 편집까지.",
     "links": {
       "0": {
         "text": "스무 장짜리 설명서 — 애플리케이션 안에서도 읽힙니다",
@@ -355,7 +355,7 @@
   },
   "foot": {
     "groups": {
-      "0": "IA Studio",
+      "0": "AI Desktop Studio",
       "1": "작업실",
       "2": "자료",
       "3": "연락처"

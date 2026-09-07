@@ -103,7 +103,7 @@ describe('createDocumentFiles', () => {
    */
   it('writes a sky as glTF, and finds it again by its own head', async () => {
     const sky = JSON.stringify({
-      asset: { version: '2.0', generator: 'IA Studio' },
+      asset: { version: '2.0', generator: 'AI Desktop Studio' },
       scene: 0,
       scenes: [{ name: 'Crépuscule', nodes: [0] }],
       nodes: [{ name: 'Sun', rotation: [0, 0, 0, 1] }],

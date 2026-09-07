@@ -8,9 +8,9 @@
     "ogLocale": "tr_TR"
   },
   "head": {
-    "title": "IA Studio — altı üretim atölyesi, tek bir pencere",
+    "title": "AI Desktop Studio — altı üretim atölyesi, tek bir pencere",
     "description": "Çok kipli masaüstü uygulaması: görüntü, video, 3B, ses, dokular ve gökkutuları, yerleştirilebilir panellerden oluşan bir arayüzde. Çevrimdışı dikte ve MCP sunucusu üzerinden yönetim.",
-    "ogTitle": "IA Studio — altı üretim atölyesi, tek bir pencere",
+    "ogTitle": "AI Desktop Studio — altı üretim atölyesi, tek bir pencere",
     "ogDescription": "Altı üretim atölyesi tek bir pencerede. Electron, React 19, TypeScript. macOS, Windows, Linux."
   },
   "nav": {
@@ -291,7 +291,7 @@
   "docs": {
     "eyebrow": "Belgeler &amp; gösterim",
     "title": "Her şey kodun yanına yazılmıştır.",
-    "videoLabel": "IA Studio gösterimi: altı atölyenin gezisi, bir 3B üretiminden kurguya kadar.",
+    "videoLabel": "AI Desktop Studio gösterimi: altı atölyenin gezisi, bir 3B üretiminden kurguya kadar.",
     "links": {
       "0": {
         "text": "Yirmi bölümlük el kitabı — uygulamanın içinde de okunur",
@@ -355,7 +355,7 @@
   },
   "foot": {
     "groups": {
-      "0": "IA Studio",
+      "0": "AI Desktop Studio",
       "1": "Atölyeler",
       "2": "Kaynaklar",
       "3": "İletişim"

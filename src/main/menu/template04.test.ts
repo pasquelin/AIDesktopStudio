@@ -341,7 +341,7 @@ describe('the navigation schemes', () => {
     const shown = rows('blender')
 
     expect(shown.map(row => row.label)).toEqual([
-      'IA Studio',
+      'AI Desktop Studio',
       'Unreal Engine',
       'Unity',
       'Blender',

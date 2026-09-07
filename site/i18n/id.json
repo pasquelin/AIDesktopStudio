@@ -8,9 +8,9 @@
     "ogLocale": "id_ID"
   },
   "head": {
-    "title": "IA Studio — enam bengkel generasi, satu jendela",
+    "title": "AI Desktop Studio — enam bengkel generasi, satu jendela",
     "description": "Aplikasi desktop multimodal: gambar, video, 3D, audio, tekstur, dan skybox dalam antarmuka panel yang bisa ditambatkan. Dikte luring dan kendali lewat server MCP.",
-    "ogTitle": "IA Studio — enam bengkel generasi, satu jendela",
+    "ogTitle": "AI Desktop Studio — enam bengkel generasi, satu jendela",
     "ogDescription": "Enam bengkel generasi dalam satu jendela. Electron, React 19, TypeScript. macOS, Windows, Linux."
   },
   "nav": {
@@ -291,7 +291,7 @@
   "docs": {
     "eyebrow": "Dokumentasi &amp; demonstrasi",
     "title": "Semuanya ditulis di samping kodenya.",
-    "videoLabel": "Demonstrasi IA Studio: menyusuri enam bengkel, dari sebuah generasi 3D hingga ke penyuntingan.",
+    "videoLabel": "Demonstrasi AI Desktop Studio: menyusuri enam bengkel, dari sebuah generasi 3D hingga ke penyuntingan.",
     "links": {
       "0": {
         "text": "Buku panduan, dua puluh bab — terbaca juga di dalam aplikasi",
@@ -355,7 +355,7 @@
   },
   "foot": {
     "groups": {
-      "0": "IA Studio",
+      "0": "AI Desktop Studio",
       "1": "Bengkel",
       "2": "Sumber daya",
       "3": "Kontak"

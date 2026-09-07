@@ -93,7 +93,7 @@
     "projectNameTaken": "A folder beside it already has that name: pick another",
     "projectNameUnsafe": "That name cannot be a folder name: drop what the disk refuses",
     "projectNested": "This folder is already inside a project: pick one outside it",
-    "projectNotAProject": "This folder is not an IA Studio project",
+    "projectNotAProject": "This folder is not an AI Desktop Studio project",
     "projectNotCreated": "The project could not be created in this folder",
     "projectNotRenamed": "The project could not be renamed: its folder is missing or unreadable",
     "projectNotRevealed": "The project folder cannot be found",

@@ -8,9 +8,9 @@
     "ogLocale": "de_DE"
   },
   "head": {
-    "title": "IA Studio — sechs Generierungswerkstätten, ein einziges Fenster",
+    "title": "AI Desktop Studio — sechs Generierungswerkstätten, ein einziges Fenster",
     "description": "Multimodale Desktop-Anwendung: Bild, Video, 3D, Audio, Texturen und Skyboxen in einer Oberfläche mit andockbaren Panels. Diktat offline und Steuerung über einen MCP-Server.",
-    "ogTitle": "IA Studio — sechs Generierungswerkstätten, ein einziges Fenster",
+    "ogTitle": "AI Desktop Studio — sechs Generierungswerkstätten, ein einziges Fenster",
     "ogDescription": "Sechs Generierungswerkstätten in einem einzigen Fenster. Electron, React 19, TypeScript. macOS, Windows, Linux."
   },
   "nav": {
@@ -291,7 +291,7 @@
   "docs": {
     "eyebrow": "Dokumentation &amp; Vorführung",
     "title": "Alles steht neben dem Code geschrieben.",
-    "videoLabel": "Vorführung von IA Studio: ein Gang durch die sechs Werkstätten, von einer 3D-Generierung bis zum Schnitt.",
+    "videoLabel": "Vorführung von AI Desktop Studio: ein Gang durch die sechs Werkstätten, von einer 3D-Generierung bis zum Schnitt.",
     "links": {
       "0": {
         "text": "Das Handbuch, zwanzig Kapitel — auch in der Anwendung lesbar",
@@ -355,7 +355,7 @@
   },
   "foot": {
     "groups": {
-      "0": "IA Studio",
+      "0": "AI Desktop Studio",
       "1": "Werkstätten",
       "2": "Ressourcen",
       "3": "Kontakt"

@@ -242,7 +242,7 @@
     },
     "sequenceExportCut": {
       "title": "Export edit (OTIO)…",
-      "help": "Writes the edit itself out as an OpenTimelineIO file, which other editing applications open — tracks, clips, in points, speeds and links to the media. Fades, gains and image/sound links travel in it too, but only IA Studio reads them back."
+      "help": "Writes the edit itself out as an OpenTimelineIO file, which other editing applications open — tracks, clips, in points, speeds and links to the media. Fades, gains and image/sound links travel in it too, but only AI Desktop Studio reads them back."
     },
     "sequenceExportEdl": {
       "title": "Export edit list (EDL)…",

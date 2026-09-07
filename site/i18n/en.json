@@ -8,9 +8,9 @@
     "ogLocale": "en_US"
   },
   "head": {
-    "title": "IA Studio — six generation workshops, one window",
+    "title": "AI Desktop Studio — six generation workshops, one window",
     "description": "Multimodal desktop application: image, video, 3D, audio, textures and skyboxes in a dockable panel interface. Offline dictation and control through an MCP server.",
-    "ogTitle": "IA Studio — six generation workshops, one window",
+    "ogTitle": "AI Desktop Studio — six generation workshops, one window",
     "ogDescription": "Six generation workshops in a single window. Electron, React 19, TypeScript. macOS, Windows, Linux."
   },
   "nav": {
@@ -291,7 +291,7 @@
   "docs": {
     "eyebrow": "Documentation &amp; demonstration",
     "title": "Everything is written next to the code.",
-    "videoLabel": "IA Studio demonstration: a tour of the six workshops, from a 3D generation through to the edit.",
+    "videoLabel": "AI Desktop Studio demonstration: a tour of the six workshops, from a 3D generation through to the edit.",
     "links": {
       "0": {
         "text": "The manual, twenty chapters — also readable inside the application",
@@ -355,7 +355,7 @@
   },
   "foot": {
     "groups": {
-      "0": "IA Studio",
+      "0": "AI Desktop Studio",
       "1": "Workshops",
       "2": "Resources",
       "3": "Contact"
