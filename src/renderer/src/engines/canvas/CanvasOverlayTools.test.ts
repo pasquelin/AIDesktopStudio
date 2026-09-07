@@ -104,6 +104,7 @@ const COLORS = {
 const NO_TOOL: ToolChrome = {
   crop: null,
   textBox: null,
+  smartBox: null,
   overflowing: false,
   handles: null,
   lit: null,
@@ -285,7 +286,20 @@ describe('the tool chrome', () => {
       [27.5, 51.5],
     ])
   })
-
+  it('marches the ants round the intelligent selection box while it is being drawn', () => {
+    const { context, calls } = recorder()
+    drawOverlay(context, toolScene({ smartBox: RECT }))
+    expect(opsOf(calls, 'moveTo')).toEqual([
+      [27.5, 51.5],
+      [27.5, 51.5],
+    ])
+    expect(opsOf(calls, 'lineTo').slice(0, 4)).toEqual([
+      [87.5, 51.5],
+      [87.5, 131.5],
+      [27.5, 131.5],
+      [27.5, 51.5],
+    ])
+  })
   it('closes the marquee back onto its first corner, in screen coordinates', () => {
     const { context, calls } = recorder()
     drawOverlay(context, toolScene({ selection: { kind: 'rect', rect: RECT } }))
@@ -305,7 +319,6 @@ describe('the tool chrome', () => {
     // reads as a bug, and a single-colour marquee vanishes over a document of that colour.
     expect(opsOf(calls, 'strokeStyle')).toEqual([['#frame'], ['#light'], ['#dark']])
   })
-
   it('dashes the second pass only, and puts the dash back for whoever draws next', () => {
     const { context, calls } = recorder()
     drawOverlay(context, toolScene({ selection: { kind: 'rect', rect: RECT } }))

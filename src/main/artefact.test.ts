@@ -1,8 +1,15 @@
-import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
+import {
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  readdirSync,
+  writeFileSync,
+} from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { filesUnder, shippedTwice, wastedBytes } from './artefact'
+import { filesUnder, replaceDirectory, shippedTwice, wastedBytes } from './artefact'
 import manifest from '../../package.json'
 
 // Under `src/main` rather than `src/shared`: it judges what sits at the repository root, and
@@ -20,6 +27,22 @@ function folderHolding(files: Record<string, string>): string {
 }
 
 describe('what a build ships twice', () => {
+  it('keeps a complete runtime when staging reports a truncated download', async () => {
+    const root = mkdtempSync(join(tmpdir(), 'artefact-runtime-'))
+    const runtime = join(root, 'ffmpeg')
+    mkdirSync(runtime)
+    writeFileSync(join(runtime, 'ffmpeg'), 'verified')
+
+    await expect(
+      replaceDirectory(runtime, async () => {
+        throw new Error('closed at 3 bytes, expected 10')
+      }),
+    ).rejects.toThrow('closed at 3 bytes')
+
+    expect(readFileSync(join(runtime, 'ffmpeg'), 'utf8')).toBe('verified')
+    expect(existsSync(join(runtime, 'ffprobe'))).toBe(false)
+    expect(readdirSync(root).filter(entry => entry.startsWith('.ffmpeg-'))).toEqual([])
+  })
   it('names every path holding the same bytes, once', () => {
     const root = folderHolding({
       'renderer/assets/transcoder-a1b2.wasm': 'the same bytes',

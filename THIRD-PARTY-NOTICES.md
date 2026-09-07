@@ -16,24 +16,16 @@ The terms below govern these components. They are not affected by the licence of
 | @scenario-labs/sdk | 3.1.0 | MIT |
 | @tanstack/react-query | 5.102.8 | MIT |
 | @tanstack/react-virtual | 3.14.10 | MIT |
-| accelerate | 1.14.0 | Apache |
 | ACE-Step 1.5 XL | 8f40447d21ee59ad4dcee6c99ce248027410bfec | MIT |
 | ACE-Step 1.5 XL SFT | 4bf7b60a63b27144f539f980927eeb89f5f912b0 | MIT |
 | ACE-Step 1.5 XL Turbo | 200ba991ae448051e14b0183157e35c2d27c9fb0 | MIT |
 | ag-psd | 31.0.2 | MIT |
-| annotated-doc | 0.0.5 | MIT |
-| annotated-types | 0.8.0 | MIT |
-| anyio | 4.15.0 | MIT |
 | better-sqlite3 | 13.0.3 | MIT |
-| certifi | 2026.7.22 | MPL-2.0 |
-| charset-normalizer | 3.5.1 | MIT |
-| click | 8.5.0 | BSD-3-Clause |
 | CogVideoX 2B | 1137dacfc2c9c012bed6a0793f4ecf2ca8e7ba01 | Apache-2.0 |
 | ControlNet Canny SDXL | 1271357eda52d54b857c650cacb5b51144643ccb | Apache-2.0 |
 | CPython | 3.12.14 | PSF-2.0 |
 | CraftsMan3D | df4ddf7544cc2e75c5d24cb8605d8e91f0fa4abc | CreativeML Open RAIL-M |
 | daisyui | 5.7.28 | MIT |
-| diffusers | 0.40.0 | Apache 2.0 License |
 | Diffusion360 | d20770f5ec0000a2aaa579a1209d11dc92ddb08a | Apache-2.0 |
 | dockview-react | 8.2.0 | MIT |
 | EfficientSAM-Ti | d53228e3f6dee607309453f54a22c40c2a10204c | Apache-2.0 |
@@ -48,22 +40,13 @@ The terms below govern these components. They are not affected by the licence of
 | flatbuffers | 25.12.19 | Apache 2.0 |
 | fsspec | 2026.7.0 | BSD-3-Clause |
 | GenEx World Initializer | bdf9a02257c4c2728bcd90404d53687a9641e205 | CC-BY-4.0 |
-| h11 | 0.16.0 | MIT |
-| hf-xet | 1.6.0 | Apache-2.0 |
-| httpcore | 1.0.9 | BSD-3-Clause |
-| httpx | 0.28.1 | BSD-3-Clause |
-| huggingface-hub | 1.30.0 | Apache-2.0 |
 | i18next | 26.4.2 | MIT |
 | IBM Plex Mono | shipped with the application | OFL-1.1 |
 | IBM Plex Serif | shipped with the application | OFL-1.1 |
-| idna | 3.19 | BSD-3-Clause |
-| imageio | 2.37.4 | BSD-2-Clause |
-| imageio-ffmpeg | 0.6.0 | BSD-2-Clause |
 | immer | 11.1.18 | MIT |
-| importlib-metadata | 9.0.1 | Apache-2.0 |
 | InstantMesh | 2da07e89919e1a130c9b5add1584c70c7aa065fd | Apache-2.0 |
 | IP-Adapter SDXL | 018e402774aeeddd60609b4ecdb7e298259dc729 | Apache-2.0 |
-| jinja2 | 3.1.6 | BSD-3-Clause |
+| jinja2 | 3.1.6 | BSD License |
 | jolt-physics | 1.1.0-simd.3e3b5ff | MIT |
 | Kimodo code | 1aece8c124d73d255ceff5086d983b844c9f4e94 | Apache-2.0 |
 | Kimodo SOMA RP v1.1 | 6c9233af1180b8151e3c4703477104af5dce9dd5 | other |
@@ -73,9 +56,7 @@ The terms below govern these components. They are not affected by the licence of
 | LLM2Vec motion encoder adapters | 31474e395ada192e8ed1586db6be79fb3b70c9c0 / baa8ebf04a1c2500e61288e7dad65e8ae42601a7 | MIT / LicenseRef-Meta-Llama-3 |
 | Make-It-Animatable | eb12b71253361fd1a7216625a95144af3c58263e | Apache-2.0 |
 | Make-It-Animatable code | d60cc7e01ff8da46448e458dbf450e8967b34e77 | MIT |
-| markdown-it-py | 4.2.0 | MIT License |
 | markupsafe | 3.0.3 | BSD-3-Clause |
-| mdurl | 0.1.2 | MIT License |
 | mediabunny | 1.55.7 | MPL-2.0 |
 | Meta Llama 3 | 8afb486c1db24fe5011ec46dfbe5b5dccdb575c2 | LicenseRef-Meta-Llama-3 |
 | MMAudio Large | eb13a1a98fdbec91753775c57b074ccdfc60587c | CC-BY-NC-4.0 |
@@ -83,7 +64,7 @@ The terms below govern these components. They are not affected by the licence of
 | MMAudio Small | eb13a1a98fdbec91753775c57b074ccdfc60587c | CC-BY-NC-4.0 |
 | Mochi 1 | 14be5fcea23095ed330cb214647916a451e38b6e | Apache-2.0 |
 | monaco-editor | 0.56.0 | MIT |
-| mpmath | 1.3.0 | BSD-3-Clause |
+| mpmath | 1.3.0 | BSD |
 | MVDiffusion | 451f4fe16113bff5a5d2269ed5ad43b0592e9a14 | other |
 | networkx | 3.6.1 | BSD-3-Clause |
 | node-llama-cpp | 3.20.0 | MIT |
@@ -94,16 +75,10 @@ The terms below govern these components. They are not affected by the licence of
 | packaging | 26.3 | Apache-2.0 OR BSD-2-Clause |
 | PanFusion | 451f4fe16113bff5a5d2269ed5ad43b0592e9a14 | other |
 | Parakeet TDT 0.6b v3 | int8 | CC-BY-4.0 |
-| peft | 0.20.0 | Apache |
 | pillow | 12.3.0 | MIT-CMU |
 | pip | 26.2.1 | MIT |
 | pixi.js | 8.20.1 | MIT |
 | protobuf | 7.36.1 | 3-Clause BSD License |
-| psutil | 7.2.2 | BSD-3-Clause |
-| pydantic | 2.13.5 | MIT |
-| pydantic-core | 2.46.5 | MIT |
-| pygments | 2.21.0 | BSD-2-Clause |
-| pyyaml | 6.0.3 | MIT |
 | quickjs-emscripten-core | 0.32.0 | MIT |
 | Qwen-Image | 75e0b4be04f60ec59a75f475837eced720f823b6 | Apache-2.0 |
 | Qwen-Image-Edit | ac7f9318f633fc4b5778c59367c8128225f1e3de | Apache-2.0 |
@@ -121,51 +96,37 @@ The terms below govern these components. They are not affected by the licence of
 | react-markdown | 10.1.0 | MIT |
 | react-tooltip | 6.0.8 | MIT |
 | recharts | 3.10.1 | MIT |
-| regex | 2026.9.3 | Apache-2.0 AND CNRI-Python |
 | remark-gfm | 4.0.1 | MIT |
-| requests | 2.34.2 | Apache-2.0 |
-| rich | 15.0.0 | MIT |
-| safetensors | 0.8.0 | Apache Software License |
 | SANA 1.5 1.6B | b77948f2b4eed5c728e9b828ccff07f7427b43cc | Apache-2.0 |
 | Sana 1600M | ac0da2ff55fbe434795be0dce883042e4d49e2fc | Apache-2.0 |
 | Sana 600M | 28f3af7689de15f3883d5863059a2fca0aa9b829 | Apache-2.0 |
 | setuptools | 84.0.0 | MIT |
 | Shap-E | 7bd337afdea1c17842e1c3cc45c4e268356dba40 | MIT |
 | Shap-E Image | 0e0aba80f08d368aaf6af9cb93583707481cc29b | MIT |
-| shellingham | 1.5.4 | ISC License |
 | sherpa-onnx-node | 1.13.7 | Apache-2.0 |
 | Silero VAD | v5 | MIT |
 | simple-git | 3.36.0 | MIT |
 | SSD-1B | 60987f37e94cd59c36b1cba832b9f97b57395a10 | Apache-2.0 |
-| sympy | 1.14.0 | BSD-3-Clause |
+| sympy | 1.14.0 | BSD |
 | tailwind-merge | 3.6.0 | MIT |
 | tailwindcss | 4.3.3 | MIT |
 | three | 0.185.1 | MIT |
 | three-bvh-csg | 0.0.18 | MIT |
 | three-mesh-bvh | 0.9.14 | MIT |
-| timm | 1.0.29 | Apache-2.0 |
-| tokenizers | 0.23.2 | Apache Software License |
 | torch | 2.14.0 | Apache-2.0 AND Apache-2.0 WITH LLVM-exception AND BSD-2-Clause AND BSD-3-Clause AND BSL-1.0 AND MIT |
-| torchvision | 0.29.0 | BSD |
-| tqdm | 4.70.0 | MPL-2.0 AND MIT |
-| transformers | 5.16.1 | Apache 2.0 License |
 | TRELLIS Image | 25e0d31ffbebe4b5a97464dd851910efc3002d96 | MIT |
 | TRELLIS Text | 4aad9f4a110329a410974d7f41ce5333a9a1fc87 | MIT |
 | TRELLIS.2 4B | af44b45f2e35a493886929c6d786e563ec68364d | MIT |
 | TripoSG | 2c1c516d22d58db486a058d98d31bb6177344e06 | MIT |
 | TripoSR | 5b521936b01fbe1890f6f9baed0254ab6351c04a | MIT |
-| typer | 0.27.2 | MIT |
 | typescript | 6.0.2 | Apache-2.0 |
 | typing-extensions | 4.16.0 | PSF-2.0 |
-| typing-inspection | 0.4.4 | MIT |
 | UniPano | 451f4fe16113bff5a5d2269ed5ad43b0592e9a14 | other |
-| urllib3 | 2.7.0 | MIT |
 | utif | 3.1.0 | MIT |
 | Wan 2.1 I2V 14B | b184e23a8a16b20f108f727c902e769e873ffc73 | Apache-2.0 |
 | Wan 2.1 T2V 1.3B | 0fad780a534b6463e45facd96134c9f345acfa5b | Apache-2.0 |
 | Wan 2.2 TI2V 5B | b8fff7315c768468a5333511427288870b2e9635 | Apache-2.0 |
 | wavesurfer.js | 7.12.11 | BSD-3-Clause |
-| zipp | 4.1.0 | MIT |
 | zod | 4.5.4 | MIT |
 | zustand | 5.0.15 | MIT |
 
@@ -432,23 +393,6 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
-## accelerate
-
-Version: 1.14.0
-Licence: Apache
-
-Corresponding sources:
-
-```
-https://github.com/huggingface/accelerate
-```
-
-```
-Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.
-
-Licensed under Apache.
-Source: https://github.com/huggingface/accelerate
-```
 ## ACE-Step 1.5 XL
 
 Version: 8f40447d21ee59ad4dcee6c99ce248027410bfec
@@ -542,57 +486,6 @@ SOFTWARE.
 Any image or brush files included in this repository are not covered by this
 license and belong to their copyright holders.
 ```
-## annotated-doc
-
-Version: 0.0.5
-Licence: MIT
-
-Corresponding sources:
-
-```
-https://github.com/fastapi/annotated-doc
-```
-
-```
-Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.
-
-Licensed under MIT.
-Source: https://github.com/fastapi/annotated-doc
-```
-## annotated-types
-
-Version: 0.8.0
-Licence: MIT
-
-Corresponding sources:
-
-```
-https://github.com/annotated-types/annotated-types
-```
-
-```
-Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.
-
-Licensed under MIT.
-Source: https://github.com/annotated-types/annotated-types
-```
-## anyio
-
-Version: 4.15.0
-Licence: MIT
-
-Corresponding sources:
-
-```
-https://github.com/agronholm/anyio
-```
-
-```
-Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.
-
-Licensed under MIT.
-Source: https://github.com/agronholm/anyio
-```
 ## better-sqlite3
 
 Version: 13.0.3
@@ -620,57 +513,6 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-```
-## certifi
-
-Version: 2026.7.22
-Licence: MPL-2.0
-
-Corresponding sources:
-
-```
-https://github.com/certifi/python-certifi
-```
-
-```
-Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.
-
-Licensed under MPL-2.0.
-Source: https://github.com/certifi/python-certifi
-```
-## charset-normalizer
-
-Version: 3.5.1
-Licence: MIT
-
-Corresponding sources:
-
-```
-https://github.com/jawah/charset_normalizer
-```
-
-```
-Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.
-
-Licensed under MIT.
-Source: https://github.com/jawah/charset_normalizer
-```
-## click
-
-Version: 8.5.0
-Licence: BSD-3-Clause
-
-Corresponding sources:
-
-```
-https://github.com/pallets/click/
-```
-
-```
-Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.
-
-Licensed under BSD-3-Clause.
-Source: https://github.com/pallets/click/
 ```
 ## CogVideoX 2B
 
@@ -790,23 +632,6 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
-## diffusers
-
-Version: 0.40.0
-Licence: Apache 2.0 License
-
-Corresponding sources:
-
-```
-https://github.com/huggingface/diffusers
-```
-
-```
-Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.
-
-Licensed under Apache 2.0 License.
-Source: https://github.com/huggingface/diffusers
-```
 ## Diffusion360
 
 Version: d20770f5ec0000a2aaa579a1209d11dc92ddb08a
@@ -868,7 +693,7 @@ https://github.com/arogozhnikov/einops
 ```
 
 ```
-Part of the embedded Auto Rig runtime. It IS shipped with the macOS ARM64 application.
+Part of the embedded local AI runtime. It IS shipped with the application.
 
 Licensed under MIT.
 Source: https://github.com/arogozhnikov/einops
@@ -1033,7 +858,7 @@ https://github.com/tox-dev/py-filelock
 ```
 
 ```
-Part of the embedded Auto Rig runtime. It IS shipped with the macOS ARM64 application.
+Part of the embedded local AI runtime. It IS shipped with the application.
 
 Licensed under MIT.
 Source: https://github.com/tox-dev/py-filelock
@@ -1050,7 +875,7 @@ https://github.com/google/flatbuffers
 ```
 
 ```
-Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.
+Part of the embedded local AI runtime. It IS shipped with the application.
 
 Licensed under Apache 2.0.
 Source: https://github.com/google/flatbuffers
@@ -1067,7 +892,7 @@ https://github.com/fsspec/filesystem_spec
 ```
 
 ```
-Part of the embedded Auto Rig runtime. It IS shipped with the macOS ARM64 application.
+Part of the embedded local AI runtime. It IS shipped with the application.
 
 Licensed under BSD-3-Clause.
 Source: https://github.com/fsspec/filesystem_spec
@@ -1090,91 +915,6 @@ against a published digest, and removed from the model manager.
 
 
 Licensed under CC-BY-4.0. Full terms: https://creativecommons.org/licenses/by/4.0/
-```
-## h11
-
-Version: 0.16.0
-Licence: MIT
-
-Corresponding sources:
-
-```
-https://github.com/python-hyper/h11
-```
-
-```
-Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.
-
-Licensed under MIT.
-Source: https://github.com/python-hyper/h11
-```
-## hf-xet
-
-Version: 1.6.0
-Licence: Apache-2.0
-
-Corresponding sources:
-
-```
-https://github.com/huggingface/xet-core.git
-```
-
-```
-Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.
-
-Licensed under Apache-2.0.
-Source: https://github.com/huggingface/xet-core.git
-```
-## httpcore
-
-Version: 1.0.9
-Licence: BSD-3-Clause
-
-Corresponding sources:
-
-```
-https://github.com/encode/httpcore
-```
-
-```
-Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.
-
-Licensed under BSD-3-Clause.
-Source: https://github.com/encode/httpcore
-```
-## httpx
-
-Version: 0.28.1
-Licence: BSD-3-Clause
-
-Corresponding sources:
-
-```
-https://github.com/encode/httpx
-```
-
-```
-Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.
-
-Licensed under BSD-3-Clause.
-Source: https://github.com/encode/httpx
-```
-## huggingface-hub
-
-Version: 1.30.0
-Licence: Apache-2.0
-
-Corresponding sources:
-
-```
-https://github.com/huggingface/huggingface_hub
-```
-
-```
-Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.
-
-Licensed under Apache-2.0.
-Source: https://github.com/huggingface/huggingface_hub
 ```
 ## i18next
 
@@ -1416,57 +1156,6 @@ DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
 OTHER DEALINGS IN THE FONT SOFTWARE.
 ```
-## idna
-
-Version: 3.19
-Licence: BSD-3-Clause
-
-Corresponding sources:
-
-```
-https://github.com/kjd/idna
-```
-
-```
-Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.
-
-Licensed under BSD-3-Clause.
-Source: https://github.com/kjd/idna
-```
-## imageio
-
-Version: 2.37.4
-Licence: BSD-2-Clause
-
-Corresponding sources:
-
-```
-https://github.com/imageio/imageio
-```
-
-```
-Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.
-
-Licensed under BSD-2-Clause.
-Source: https://github.com/imageio/imageio
-```
-## imageio-ffmpeg
-
-Version: 0.6.0
-Licence: BSD-2-Clause
-
-Corresponding sources:
-
-```
-https://github.com/imageio/imageio-ffmpeg
-```
-
-```
-Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.
-
-Licensed under BSD-2-Clause.
-Source: https://github.com/imageio/imageio-ffmpeg
-```
 ## immer
 
 Version: 11.1.18
@@ -1494,23 +1183,6 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-```
-## importlib-metadata
-
-Version: 9.0.1
-Licence: Apache-2.0
-
-Corresponding sources:
-
-```
-https://github.com/python/importlib_metadata
-```
-
-```
-Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.
-
-Licensed under Apache-2.0.
-Source: https://github.com/python/importlib_metadata
 ```
 ## InstantMesh
 
@@ -1565,7 +1237,7 @@ Licensed under Apache-2.0. Full terms: https://www.apache.org/licenses/LICENSE-2
 ## jinja2
 
 Version: 3.1.6
-Licence: BSD-3-Clause
+Licence: BSD License
 
 Corresponding sources:
 
@@ -1574,9 +1246,9 @@ https://github.com/pallets/jinja/
 ```
 
 ```
-Part of the embedded Auto Rig runtime. It IS shipped with the macOS ARM64 application.
+Part of the embedded local AI runtime. It IS shipped with the application.
 
-Licensed under BSD-3-Clause.
+Licensed under BSD License.
 Source: https://github.com/pallets/jinja/
 ```
 ## jolt-physics
@@ -2397,23 +2069,6 @@ The inference implementation vendored by the Auto Rig backend.
 Copyright (c) 2025 Zhiyang Guo. Licensed under the MIT License.
 Full terms: https://github.com/jasongzy/Make-It-Animatable/blob/d60cc7e01ff8da46448e458dbf450e8967b34e77/LICENSE
 ```
-## markdown-it-py
-
-Version: 4.2.0
-Licence: MIT License
-
-Corresponding sources:
-
-```
-https://github.com/executablebooks/markdown-it-py
-```
-
-```
-Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.
-
-Licensed under MIT License.
-Source: https://github.com/executablebooks/markdown-it-py
-```
 ## markupsafe
 
 Version: 3.0.3
@@ -2426,27 +2081,10 @@ https://github.com/pallets/markupsafe/
 ```
 
 ```
-Part of the embedded Auto Rig runtime. It IS shipped with the macOS ARM64 application.
+Part of the embedded local AI runtime. It IS shipped with the application.
 
 Licensed under BSD-3-Clause.
 Source: https://github.com/pallets/markupsafe/
-```
-## mdurl
-
-Version: 0.1.2
-Licence: MIT License
-
-Corresponding sources:
-
-```
-https://github.com/executablebooks/mdurl
-```
-
-```
-Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.
-
-Licensed under MIT License.
-Source: https://github.com/executablebooks/mdurl
 ```
 ## mediabunny
 
@@ -3138,7 +2776,7 @@ SOFTWARE.
 ## mpmath
 
 Version: 1.3.0
-Licence: BSD-3-Clause
+Licence: BSD
 
 Corresponding sources:
 
@@ -3147,9 +2785,9 @@ https://github.com/fredrik-johansson/mpmath
 ```
 
 ```
-Part of the embedded Auto Rig runtime. It IS shipped with the macOS ARM64 application.
+Part of the embedded local AI runtime. It IS shipped with the application.
 
-Licensed under BSD-3-Clause.
+Licensed under BSD.
 Source: https://github.com/fredrik-johansson/mpmath
 ```
 ## MVDiffusion
@@ -3185,7 +2823,7 @@ https://github.com/networkx/networkx
 ```
 
 ```
-Part of the embedded Auto Rig runtime. It IS shipped with the macOS ARM64 application.
+Part of the embedded local AI runtime. It IS shipped with the application.
 
 Licensed under BSD-3-Clause.
 Source: https://github.com/networkx/networkx
@@ -3230,7 +2868,7 @@ https://github.com/numpy/numpy
 ```
 
 ```
-Part of the embedded Auto Rig runtime. It IS shipped with the macOS ARM64 application.
+Part of the embedded local AI runtime. It IS shipped with the application.
 
 Licensed under BSD-3-Clause AND 0BSD AND MIT AND Zlib AND CC0-1.0.
 Source: https://github.com/numpy/numpy
@@ -3265,7 +2903,7 @@ https://onnxruntime.ai
 ```
 
 ```
-Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.
+Part of the embedded local AI runtime. It IS shipped with the application.
 
 Licensed under MIT License.
 Source: https://onnxruntime.ai
@@ -3309,7 +2947,7 @@ https://github.com/pypa/packaging
 ```
 
 ```
-Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.
+Part of the embedded local AI runtime. It IS shipped with the application.
 
 Licensed under Apache-2.0 OR BSD-2-Clause.
 Source: https://github.com/pypa/packaging
@@ -3357,23 +2995,6 @@ sherpa-onnx project.
 
 Full terms: https://creativecommons.org/licenses/by/4.0/legalcode
 ```
-## peft
-
-Version: 0.20.0
-Licence: Apache
-
-Corresponding sources:
-
-```
-https://github.com/huggingface/peft
-```
-
-```
-Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.
-
-Licensed under Apache.
-Source: https://github.com/huggingface/peft
-```
 ## pillow
 
 Version: 12.3.0
@@ -3386,7 +3007,7 @@ https://github.com/python-pillow/Pillow
 ```
 
 ```
-Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.
+Part of the embedded local AI runtime. It IS shipped with the application.
 
 Licensed under MIT-CMU.
 Source: https://github.com/python-pillow/Pillow
@@ -3396,10 +3017,17 @@ Source: https://github.com/python-pillow/Pillow
 Version: 26.2.1
 Licence: MIT
 
+Corresponding sources:
+
 ```
-Part of the embedded Auto Rig runtime. It IS shipped with the macOS ARM64 application.
+https://github.com/pypa/pip
+```
+
+```
+Part of the embedded local AI runtime. It IS shipped with the application.
 
 Licensed under MIT.
+Source: https://github.com/pypa/pip
 ```
 ## pixi.js
 
@@ -3441,95 +3069,10 @@ https://developers.google.com/protocol-buffers/
 ```
 
 ```
-Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.
+Part of the embedded local AI runtime. It IS shipped with the application.
 
 Licensed under 3-Clause BSD License.
 Source: https://developers.google.com/protocol-buffers/
-```
-## psutil
-
-Version: 7.2.2
-Licence: BSD-3-Clause
-
-Corresponding sources:
-
-```
-https://github.com/giampaolo/psutil
-```
-
-```
-Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.
-
-Licensed under BSD-3-Clause.
-Source: https://github.com/giampaolo/psutil
-```
-## pydantic
-
-Version: 2.13.5
-Licence: MIT
-
-Corresponding sources:
-
-```
-https://github.com/pydantic/pydantic
-```
-
-```
-Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.
-
-Licensed under MIT.
-Source: https://github.com/pydantic/pydantic
-```
-## pydantic-core
-
-Version: 2.46.5
-Licence: MIT
-
-Corresponding sources:
-
-```
-https://github.com/pydantic/pydantic/tree/main/pydantic-core
-```
-
-```
-Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.
-
-Licensed under MIT.
-Source: https://github.com/pydantic/pydantic/tree/main/pydantic-core
-```
-## pygments
-
-Version: 2.21.0
-Licence: BSD-2-Clause
-
-Corresponding sources:
-
-```
-https://github.com/pygments/pygments
-```
-
-```
-Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.
-
-Licensed under BSD-2-Clause.
-Source: https://github.com/pygments/pygments
-```
-## pyyaml
-
-Version: 6.0.3
-Licence: MIT
-
-Corresponding sources:
-
-```
-https://github.com/yaml/pyyaml
-```
-
-```
-Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.
-
-Licensed under MIT.
-Source: https://github.com/yaml/pyyaml
 ```
 ## quickjs-emscripten-core
 
@@ -3937,23 +3480,6 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
-## regex
-
-Version: 2026.9.3
-Licence: Apache-2.0 AND CNRI-Python
-
-Corresponding sources:
-
-```
-https://github.com/mrabarnett/mrab-regex
-```
-
-```
-Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.
-
-Licensed under Apache-2.0 AND CNRI-Python.
-Source: https://github.com/mrabarnett/mrab-regex
-```
 ## remark-gfm
 
 Version: 4.0.1
@@ -3982,57 +3508,6 @@ IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
 CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-```
-## requests
-
-Version: 2.34.2
-Licence: Apache-2.0
-
-Corresponding sources:
-
-```
-https://github.com/psf/requests
-```
-
-```
-Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.
-
-Licensed under Apache-2.0.
-Source: https://github.com/psf/requests
-```
-## rich
-
-Version: 15.0.0
-Licence: MIT
-
-Corresponding sources:
-
-```
-https://github.com/Textualize/rich
-```
-
-```
-Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.
-
-Licensed under MIT.
-Source: https://github.com/Textualize/rich
-```
-## safetensors
-
-Version: 0.8.0
-Licence: Apache Software License
-
-Corresponding sources:
-
-```
-https://github.com/huggingface/safetensors
-```
-
-```
-Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.
-
-Licensed under Apache Software License.
-Source: https://github.com/huggingface/safetensors
 ```
 ## SANA 1.5 1.6B
 
@@ -4111,7 +3586,7 @@ https://github.com/pypa/setuptools
 ```
 
 ```
-Part of the embedded Auto Rig runtime. It IS shipped with the macOS ARM64 application.
+Part of the embedded local AI runtime. It IS shipped with the application.
 
 Licensed under MIT.
 Source: https://github.com/pypa/setuptools
@@ -4160,23 +3635,6 @@ against a published digest, and removed from the model manager.
 Copyright OpenAI. Same renderer, and the same `.bin` reservation as Shap-E above.
 
 Licensed under MIT. Full terms: https://opensource.org/licenses/MIT
-```
-## shellingham
-
-Version: 1.5.4
-Licence: ISC License
-
-Corresponding sources:
-
-```
-https://github.com/sarugaku/shellingham
-```
-
-```
-Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.
-
-Licensed under ISC License.
-Source: https://github.com/sarugaku/shellingham
 ```
 ## sherpa-onnx-node
 
@@ -4238,7 +3696,7 @@ Licensed under Apache-2.0. Full terms: https://www.apache.org/licenses/LICENSE-2
 ## sympy
 
 Version: 1.14.0
-Licence: BSD-3-Clause
+Licence: BSD
 
 Corresponding sources:
 
@@ -4247,9 +3705,9 @@ https://github.com/sympy/sympy
 ```
 
 ```
-Part of the embedded Auto Rig runtime. It IS shipped with the macOS ARM64 application.
+Part of the embedded local AI runtime. It IS shipped with the application.
 
-Licensed under BSD-3-Clause.
+Licensed under BSD.
 Source: https://github.com/sympy/sympy
 ```
 ## tailwind-merge
@@ -4392,40 +3850,6 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
-## timm
-
-Version: 1.0.29
-Licence: Apache-2.0
-
-Corresponding sources:
-
-```
-https://github.com/huggingface/pytorch-image-models
-```
-
-```
-Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.
-
-Licensed under Apache-2.0.
-Source: https://github.com/huggingface/pytorch-image-models
-```
-## tokenizers
-
-Version: 0.23.2
-Licence: Apache Software License
-
-Corresponding sources:
-
-```
-https://github.com/huggingface/tokenizers
-```
-
-```
-Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.
-
-Licensed under Apache Software License.
-Source: https://github.com/huggingface/tokenizers
-```
 ## torch
 
 Version: 2.14.0
@@ -4438,61 +3862,10 @@ https://github.com/pytorch/pytorch
 ```
 
 ```
-Part of the embedded Auto Rig runtime. It IS shipped with the macOS ARM64 application.
+Part of the embedded local AI runtime. It IS shipped with the application.
 
 Licensed under Apache-2.0 AND Apache-2.0 WITH LLVM-exception AND BSD-2-Clause AND BSD-3-Clause AND BSL-1.0 AND MIT.
 Source: https://github.com/pytorch/pytorch
-```
-## torchvision
-
-Version: 0.29.0
-Licence: BSD
-
-Corresponding sources:
-
-```
-https://github.com/pytorch/vision
-```
-
-```
-Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.
-
-Licensed under BSD.
-Source: https://github.com/pytorch/vision
-```
-## tqdm
-
-Version: 4.70.0
-Licence: MPL-2.0 AND MIT
-
-Corresponding sources:
-
-```
-https://github.com/tqdm/tqdm
-```
-
-```
-Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.
-
-Licensed under MPL-2.0 AND MIT.
-Source: https://github.com/tqdm/tqdm
-```
-## transformers
-
-Version: 5.16.1
-Licence: Apache 2.0 License
-
-Corresponding sources:
-
-```
-https://github.com/huggingface/transformers
-```
-
-```
-Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.
-
-Licensed under Apache 2.0 License.
-Source: https://github.com/huggingface/transformers
 ```
 ## TRELLIS Image
 
@@ -4592,23 +3965,6 @@ Copyright Stability AI and Tripo AI.
 
 Licensed under MIT. Full terms: https://opensource.org/licenses/MIT
 ```
-## typer
-
-Version: 0.27.2
-Licence: MIT
-
-Corresponding sources:
-
-```
-https://github.com/fastapi/typer
-```
-
-```
-Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.
-
-Licensed under MIT.
-Source: https://github.com/fastapi/typer
-```
 ## typescript
 
 Version: 6.0.2
@@ -4683,27 +4039,10 @@ https://github.com/python/typing_extensions
 ```
 
 ```
-Part of the embedded Auto Rig runtime. It IS shipped with the macOS ARM64 application.
+Part of the embedded local AI runtime. It IS shipped with the application.
 
 Licensed under PSF-2.0.
 Source: https://github.com/python/typing_extensions
-```
-## typing-inspection
-
-Version: 0.4.4
-Licence: MIT
-
-Corresponding sources:
-
-```
-https://github.com/pydantic/typing-inspection
-```
-
-```
-Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.
-
-Licensed under MIT.
-Source: https://github.com/pydantic/typing-inspection
 ```
 ## UniPano
 
@@ -4725,23 +4064,6 @@ The files fetched are Stable Diffusion 1.5 (CreativeML Open RAIL-M). UniPano pub
 weights. Generation uses MultiDiffusion circular padding.
 
 Licensed under other. Full terms: https://huggingface.co/spaces/CompVis/stable-diffusion-license
-```
-## urllib3
-
-Version: 2.7.0
-Licence: MIT
-
-Corresponding sources:
-
-```
-https://github.com/urllib3/urllib3
-```
-
-```
-Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.
-
-Licensed under MIT.
-Source: https://github.com/urllib3/urllib3
 ```
 ## utif
 
@@ -4868,23 +4190,6 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-```
-## zipp
-
-Version: 4.1.0
-Licence: MIT
-
-Corresponding sources:
-
-```
-https://github.com/jaraco/zipp
-```
-
-```
-Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.
-
-Licensed under MIT.
-Source: https://github.com/jaraco/zipp
 ```
 ## zod
 

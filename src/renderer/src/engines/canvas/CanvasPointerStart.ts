@@ -96,7 +96,6 @@ export abstract class CanvasPointerStart extends CanvasHitArea {
       return
     }
     if (this.tool === 'fill') return this.startFill()
-    if (this.tool === 'smartSelect') return this.options.onSmartSelect({ point })
     if (UNBUILT_TOOLS.has(this.tool)) return
     if (this.tool === 'move') return this.startMove(point)
     if (this.tool === 'text') return this.startText(event, point)
@@ -106,8 +105,8 @@ export abstract class CanvasPointerStart extends CanvasHitArea {
     else if (this.tool === 'select') {
       this.gesture = { kind: 'select', from: point }
       this.publishSelection(dragSelection(this.selectionShape, point, point, false))
-    } else if (this.tool === 'smartSelectBox') {
-      this.gesture = { kind: 'smartSelectBox', from: point, to: point }
+    } else if (this.tool === 'smartSelect') {
+      this.gesture = { kind: 'smartSelect', from: point, to: point }
     } else this.startPaint(point)
   }
 

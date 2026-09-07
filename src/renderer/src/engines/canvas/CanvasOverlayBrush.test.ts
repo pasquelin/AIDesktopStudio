@@ -101,6 +101,7 @@ const COLORS = {
 const NO_TOOL: ToolChrome = {
   crop: null,
   textBox: null,
+  smartBox: null,
   overflowing: false,
   handles: null,
   lit: null,

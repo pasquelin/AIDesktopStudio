@@ -19,7 +19,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 
 /** Written by `collect-python-licences.mjs` from a materialised environment, and committed. */
 const PYTHON_LICENCES = join(ROOT, 'engine', 'licences.json')
-const AUTORIG_RUNTIME = join(ROOT, 'engine', 'autorig-runtime.json')
+const EMBEDDED_RUNTIME = join(ROOT, 'engine', 'embedded-runtime.json')
 const OUTPUT = join(ROOT, 'src', 'shared', 'licences.json')
 const NOTICES = join(ROOT, 'THIRD-PARTY-NOTICES.md')
 
@@ -267,7 +267,7 @@ const UNSTATED_LICENCE = 'unstated'
 
 function pythonLicences() {
   const read = existsSync(PYTHON_LICENCES) ? JSON.parse(readFileSync(PYTHON_LICENCES, 'utf8')) : {}
-  const runtime = JSON.parse(readFileSync(AUTORIG_RUNTIME, 'utf8'))
+  const runtime = JSON.parse(readFileSync(EMBEDDED_RUNTIME, 'utf8'))
   const runtimeByName = new Map(
     runtime.distributions.map(distribution => [
       distribution.name.replaceAll('_', '-'),
@@ -309,7 +309,7 @@ function pythonLicences() {
         spdx,
         text: [
           shipped
-            ? 'Part of the embedded Auto Rig runtime. It IS shipped with the macOS ARM64 application.'
+            ? 'Part of the embedded local AI runtime. It IS shipped with the application.'
             : 'Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.',
           '',
           `Licensed under ${spdx}.`,

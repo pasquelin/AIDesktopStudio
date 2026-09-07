@@ -55,6 +55,7 @@ export type PendingShape = {
 export type ToolChrome = {
   crop: Rect | null
   textBox: Rect | null
+  smartBox: Rect | null
   overflowing: boolean
   handles: Corners | null
   lit: HandleId | null

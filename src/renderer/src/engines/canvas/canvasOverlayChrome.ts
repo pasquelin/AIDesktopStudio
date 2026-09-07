@@ -116,6 +116,12 @@ function drawTextBox(context: OverlayContext, scene: OverlayScene, phase: number
   drawOutline(context, scene, cornersOfRect(rect), phase)
 }
 
+function drawSmartBox(context: OverlayContext, scene: OverlayScene, phase: number): void {
+  const box = scene.tools.smartBox
+  if (!box) return
+  drawOutline(context, scene, cornersOfRect(box), phase)
+}
+
 function drawTextOverflow(context: OverlayContext, scene: OverlayScene): void {
   if (!scene.tools.handles || !scene.tools.overflowing) return
   const corner = toScreen(scene.viewport, scene.tools.handles.se)
@@ -154,6 +160,7 @@ export function drawTools(context: OverlayContext, scene: OverlayScene, phase: n
   drawCommentDraft(context, scene)
   drawPending(context, scene)
   drawTextBox(context, scene, phase)
+  drawSmartBox(context, scene, phase)
   drawCrop(context, scene, phase)
   if (scene.tools.handles) {
     drawOutline(context, scene, scene.tools.handles, phase)

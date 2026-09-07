@@ -26,8 +26,37 @@ function sitePackagesOf(python) {
   }).trim()
 }
 
+export function embeddedProfiles() {
+  const project = readFileSync(join(ENGINE, 'pyproject.toml'), 'utf8')
+  const declaration = /^embedded-profiles\s*=\s*(\[[^\n]+\])$/m.exec(project)?.[1]
+  if (!declaration) throw new Error('The engine declares no embedded runtime profiles')
+
+  const profiles = JSON.parse(declaration)
+  if (
+    !Array.isArray(profiles) ||
+    profiles.some(profile => typeof profile !== 'string' || !profile)
+  ) {
+    throw new Error('The embedded runtime profile declaration is invalid')
+  }
+
+  return profiles
+}
+
 function metadataValue(text, key) {
   return new RegExp(`^${key}:\\s*(.+)$`, 'm').exec(text)?.[1]?.trim() ?? null
+}
+
+function licenceOf(metadata) {
+  const expression = metadataValue(metadata, 'License-Expression')
+  if (expression) return expression
+
+  const declared = metadataValue(metadata, 'License')
+  if (declared) return declared
+
+  const classified = [...metadata.matchAll(/^Classifier: License :: (.+)$/gm)]
+    .map(match => match[1].split(' :: ').pop().trim())
+    .find(name => name !== 'OSI Approved')
+  return classified ?? null
 }
 
 function filesBelow(path, base = path) {
@@ -37,6 +66,24 @@ function filesBelow(path, base = path) {
       ? filesBelow(absolute, base)
       : [relative(base, absolute)]
   })
+}
+
+function bytesBelow(path) {
+  return readdirSync(path).reduce((total, entry) => {
+    const absolute = join(path, entry)
+    return (
+      total + (statSync(absolute).isDirectory() ? bytesBelow(absolute) : statSync(absolute).size)
+    )
+  }, 0)
+}
+
+function distributionBytes(sitePackages, record) {
+  return record.split('\n').reduce((total, line) => {
+    const relativePath = line.split(',')[0]
+    if (!relativePath) return total
+    const file = join(sitePackages, relativePath)
+    return total + (existsSync(file) ? statSync(file).size : 0)
+  }, 0)
 }
 
 function removeBytecode(path) {
@@ -65,13 +112,14 @@ function runtimeManifest(sitePackages, platform, arch) {
         .split('\n')
         .some(line => nativeSuffixes.some(suffix => line.split(',')[0].endsWith(suffix)))
       return {
-        name: metadataValue(metadata, 'Name'),
+        name: metadataValue(metadata, 'Name')?.toLowerCase().replace(/[._]+/g, '-'),
         version: metadataValue(metadata, 'Version'),
-        licence: metadataValue(metadata, 'License-Expression'),
+        licence: licenceOf(metadata),
         wheelFilename: `${entry.slice(0, -'.dist-info'.length)}-${
           /^Tag:\s*(.+)$/m.exec(wheel)?.[1] ?? 'unknown'
         }.whl`,
         native,
+        bytes: distributionBytes(sitePackages, record),
       }
     })
     .filter(distribution => distribution.name !== 'ia-studio-engine')
@@ -82,17 +130,29 @@ function runtimeManifest(sitePackages, platform, arch) {
     platform,
     arch,
     python: execFileSync(pythonOf(platform), ['--version'], { encoding: 'utf8' }).trim(),
-    profile: 'autorig',
+    profiles: embeddedProfiles(),
     files: filesBelow(sitePackages).length,
+    bytes: bytesBelow(sitePackages),
     distributions,
   }
+}
+
+function writeRuntimeManifest(manifest) {
+  const encoded = `${JSON.stringify(manifest, null, 2)}\n`
+  writeFileSync(join(RUNTIME, 'runtime-manifest.json'), encoded)
+  writeFileSync(join(ENGINE, 'embedded-runtime.json'), encoded)
+  console.log(
+    `Embedded runtime: ${manifest.bytes} bytes (${manifest.distributions
+      .map(distribution => `${distribution.name} ${distribution.bytes}`)
+      .join(', ')})`,
+  )
 }
 
 export function prepareEngineRuntime(platform = process.platform, arch = process.arch) {
   const python = pythonOf(platform)
   if (!existsSync(python)) throw new Error('Fetch the embedded Python runtime before preparing it')
 
-  const work = mkdtempSync(join(tmpdir(), 'ia-studio-autorig-'))
+  const work = mkdtempSync(join(tmpdir(), 'ia-studio-runtime-'))
   try {
     const requirements = join(work, 'requirements.txt')
     execFileSync(
@@ -104,8 +164,7 @@ export function prepareEngineRuntime(platform = process.platform, arch = process
         '--locked',
         '--quiet',
         '--no-dev',
-        '--extra',
-        'autorig',
+        ...embeddedProfiles().flatMap(profile => ['--extra', profile]),
         '--no-emit-project',
         '--output-file',
         requirements,
@@ -130,7 +189,7 @@ export function prepareEngineRuntime(platform = process.platform, arch = process
     const sitePackages = sitePackagesOf(python)
     removeBytecode(join(RUNTIME, 'python'))
     const manifest = runtimeManifest(sitePackages, platform, arch)
-    writeFileSync(join(RUNTIME, 'runtime-manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`)
+    writeRuntimeManifest(manifest)
     return manifest
   } finally {
     rmSync(work, { recursive: true, force: true })

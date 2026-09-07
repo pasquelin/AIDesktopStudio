@@ -24,7 +24,6 @@ function imageToolItems(context: MenuContext): MenuItemConstructorOptions[] {
     commandItem('canvas.toolSelectEllipse', t.commands.canvasToolSelectEllipse.title),
     commandItem('canvas.toolSelectLasso', t.commands.canvasToolSelectLasso.title),
     commandItem('canvas.toolSmartSelect', t.commands.canvasToolSmartSelect.title),
-    commandItem('canvas.toolSmartSelectBox', t.commands.canvasToolSmartSelectBox.title),
     { type: 'separator' },
     commandItem('canvas.toolShapeRectangle', t.commands.canvasToolShapeRectangle.title),
     commandItem('canvas.toolShapeLine', t.commands.canvasToolShapeLine.title),
