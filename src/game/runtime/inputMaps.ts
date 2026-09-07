@@ -6,7 +6,7 @@ import type {
   InputAction,
   InputBinding,
   InputMap,
-} from '@shared/domain/inputMap'
+} from './inputMap'
 import type { GamepadState, InputState } from '../ports/inputPort'
 import { clamp } from '../numeric'
 
@@ -135,8 +135,12 @@ function axisOf(binding: InputAction['bindings'][number], input: RawInput): numb
     (strongest, gamepad) => strongestAcross(strongest, rawGamepadAxis(gamepad, binding)),
     0,
   )
-  const deadZone = binding.deadZone ?? DEFAULT_GAMEPAD_DEAD_ZONE
-  if (Math.abs(raw) <= deadZone) return 0
+  return shaped(raw, binding)
+}
+
+/** Dead zone, then invert, then scale — the one order an axis and both halves of a stick share. */
+function shaped(raw: number, binding: GamepadBinding): number {
+  if (Math.abs(raw) <= (binding.deadZone ?? DEFAULT_GAMEPAD_DEAD_ZONE)) return 0
   return (binding.invert ? -raw : raw) * (binding.scale ?? 1)
 }
 
@@ -151,17 +155,7 @@ function vectorOf(binding: InputAction['bindings'][number], input: RawInput): In
     const raw = rawGamepadVector(gamepad, binding)
     return { x: strongestAcross(strongest.x, raw.x), y: strongestAcross(strongest.y, raw.y) }
   }, ZERO)
-  const deadZone = binding.deadZone ?? DEFAULT_GAMEPAD_DEAD_ZONE
-  return {
-    x:
-      Math.abs(vector.x) <= deadZone
-        ? 0
-        : (binding.invert ? -vector.x : vector.x) * (binding.scale ?? 1),
-    y:
-      Math.abs(vector.y) <= deadZone
-        ? 0
-        : (binding.invert ? -vector.y : vector.y) * (binding.scale ?? 1),
-  }
+  return { x: shaped(vector.x, binding), y: shaped(vector.y, binding) }
 }
 
 function rawGamepadAxis(gamepad: GamepadState, binding: GamepadBinding): number {

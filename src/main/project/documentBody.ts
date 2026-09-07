@@ -15,6 +15,7 @@ import { gltfStudioMetadata, isGltfDocument, GLTF_HEAD_LIMIT } from '@shared/dom
 import { isOtioTimeline, otioStudioMetadata } from '@shared/domain/otio'
 import { ORA_HEAD_LIMIT, ORA_MIMETYPE } from '@shared/domain/openRaster'
 import { isRecord, readString } from '@shared/guards'
+import { closingBrace } from '@shared/text'
 import { firstBytes } from '@main/persistence'
 import {
   oraHeadIn,
@@ -151,26 +152,6 @@ function studioMarkIn(head: string): Record<string, unknown> {
   }
 
   return merged
-}
-
-/** Where the object opening at `opens` closes, or `-1` when the head cut it short. */
-function closingBrace(head: string, opens: number): number {
-  let depth = 0
-  let quoted = false
-
-  for (let at = opens; at < head.length; at += 1) {
-    if (quoted) {
-      if (head[at] === '\\') at += 1
-      else if (head[at] === '"') quoted = false
-      continue
-    }
-
-    if (head[at] === '"') quoted = true
-    else if (head[at] === '{') depth += 1
-    else if (head[at] === '}' && (depth -= 1) === 0) return at
-  }
-
-  return -1
 }
 
 /**

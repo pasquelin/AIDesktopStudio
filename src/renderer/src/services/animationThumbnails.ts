@@ -2,6 +2,7 @@ import i18next from 'i18next'
 import { assetUrl, versionedUrl, type Asset } from '@shared/domain/asset'
 import type { SaveAnimationThumbnailRequest } from '@shared/ipcExports'
 import { stemOf } from '@shared/domain/fileName'
+import { BUNDLED_ANIMATION_POSTERS } from '@shared/domain/animationLibrary'
 import { getBridge } from './bridge'
 import { reportFailure, reportNotice } from './diagnostics'
 import { useAssets } from '@/stores/assets'
@@ -93,6 +94,16 @@ async function renderBatch(assets: readonly Asset[], redraw: boolean): Promise<v
   })
 }
 
+/**
+ * The still the app knows how to take of a clip it ships with, if this is one of them.
+ *
+ * 🛑 `Object.hasOwn`, never a bare index: the stem is whatever a person named their file, and
+ * `constructor.fbx` walked the prototype chain — a function spread into a `postMessage`, which
+ * throws `DataCloneError` and fails the thumbnail naming nothing.
+ */
+const posterFor = (stem: string) =>
+  Object.hasOwn(BUNDLED_ANIMATION_POSTERS, stem) ? { poster: BUNDLED_ANIMATION_POSTERS[stem] } : {}
+
 type Pass = { drawn: number; failed: number }
 
 type Drawing = {
@@ -151,6 +162,9 @@ async function drawOne(drawing: Drawing, asset: Asset, withModel: boolean): Prom
       decoderRoot: new URL('./decoders/', document.baseURI).href,
       animationUrl: versionedUrl(assetUrl(asset.id), asset.localChangedAt),
       name: stemOf(asset.name),
+      // 🛑 A shipped folder's name, and a stem answers it only when the two are the same word:
+      // what an imported clip is called is its author's business, and describes nothing.
+      ...posterFor(stemOf(asset.name)),
       ...(bytes ? { model: bytes } : {}),
     },
     bytes ? [bytes] : [],

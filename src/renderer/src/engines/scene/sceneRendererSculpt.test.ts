@@ -12,20 +12,23 @@ describe('SceneRenderer and sculpt mode', () => {
   const handler = (name: string, args: string): string =>
     source.match(new RegExp(`${name} = \\(${args}\\): void => \\{[\\s\\S]*?\\n {2}\\}`))?.[0] ?? ''
 
+  const privateMethod = (signature: string): string =>
+    source.match(new RegExp(`private ${signature} \\{[\\s\\S]*?\\n {2}\\}`))?.[0] ?? ''
   const attachGizmo = method('attachGizmo\\(\\): void')
   const armMarquee = method('armMarquee\\(event: PointerEvent\\): void')
   const pointerDown = handler('onPointerDown', 'event: PointerEvent')
   const pointerMove = handler('onPointerMove', 'event: PointerEvent')
   const pointerUp = handler('onPointerUp', 'event: PointerEvent')
+  const leftUp = privateMethod('endLeftButton\\(event: PointerEvent\\): void')
   const setSculptMode = method('setSculptMode\\(on: boolean\\): void')
   const moveSculptPointer = method('moveSculptPointer\\(event: PointerEvent\\): void')
 
   it('finds the paths sculpt exclusivity is written in', () => {
     expect(
-      [attachGizmo, armMarquee, pointerDown, pointerMove, pointerUp, setSculptMode].map(
+      [attachGizmo, armMarquee, pointerDown, pointerMove, pointerUp, leftUp, setSculptMode].map(
         found => found.length > 0,
       ),
-    ).toEqual([true, true, true, true, true, true])
+    ).toEqual([true, true, true, true, true, true, true])
   })
 
   it('detaches the gizmo while sculpt is on', () => {
@@ -42,7 +45,7 @@ describe('SceneRenderer and sculpt mode', () => {
   })
 
   it('does not pick a node on click while sculpt is on', () => {
-    expect(pointerUp).toContain('if (this.sculptMode) return')
+    expect(leftUp).toContain('if (this.sculptMode) return')
   })
 
   it('reattaches the gizmo once sculpt is off', () => {

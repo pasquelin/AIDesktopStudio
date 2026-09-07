@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-import type { InputMap } from '@shared/domain/inputMap'
+import type { InputMap } from './inputMap'
 
 export type InputContexts = {
   active: () => readonly string[]

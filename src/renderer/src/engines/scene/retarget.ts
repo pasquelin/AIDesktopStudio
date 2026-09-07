@@ -11,11 +11,9 @@ import { isFingerRole, type HumanoidRole } from '@shared/domain/humanoid'
 import {
   isSkeletonProfile,
   profileWithRole,
-  skeletonTopologySignatureOf,
-  skeletonSignatureOf,
   type SkeletonProfile,
 } from '@shared/domain/skeletonProfile'
-import { boneRolesOf, type NamedBone } from './boneRoles'
+import { boneRolesOf } from './boneRoles'
 import {
   clipBuffers,
   type RetargetOptions,
@@ -32,15 +30,26 @@ export {
   skinnedFromWire,
   nodeTrackNameOf,
 } from './retargetWire'
+import { namedBonesOf, profileOfBones } from './retargetSignatures'
+export { namedBonesOf, profileOfBones } from './retargetSignatures'
 import { createWorkerPort } from '../core/workerPort'
+import { serial } from '../core/serialPort'
 
 export type Retarget = {
   /**
    * The clips as the target skeleton would play them. `null` means the request was taken back, or
    * the port let go while it was out — an awaited promise nobody answers never ends.
+   *
+   * 🛑 A target ALREADY WIRED is taken as it is: a caller replaying eight files on one body wired
+   * it eight times, and `wireBonesOf` walks the tree and copies every transform. Its signature is
+   * memoised per array, so handing the same one back is what makes that memo bite.
+   *
+   * 🛑 And it MAY HAND BACK the very clips it was given — two skeletons that already agree need
+   * no worker at all. A caller that writes into one clones it first, or it renames the file's own
+   * clip: `SceneRendererModels.adopt` is where that was paid for.
    */
   adapt: (
-    target: Object3D,
+    target: Object3D | readonly WireBone[],
     source: Object3D,
     clips: readonly AnimationClip[],
     watch?: {
@@ -72,12 +81,26 @@ export type Retarget = {
   dispose: () => void
 }
 
+/**
+ * A skeleton as the worker reads one, wired from the tree unless it already was.
+ *
+ * 🛑 Handed back AS IT IS, never copied: the signature memo has the array's identity for key, and
+ * a copy would pay the very digests passing a wired skeleton exists to save.
+ */
+const bonesOf = (target: Object3D | readonly WireBone[]): readonly WireBone[] =>
+  Array.isArray(target) ? (target as readonly WireBone[]) : wireBonesOf(target as Object3D)
+
 export function createRetarget(spawn: () => Worker): Retarget {
-  const port = createWorkerPort<readonly WireClip[], RetargetResponse>(
-    spawn,
-    'retargeting',
-    answer => answer.clips,
-    true,
+  // 🛑 One transfer at a time, and the worker KILLED to take one back: a retarget is a single
+  // call that never reads its mailbox again, so a posted `cancel` would be read after the answer.
+  const port = serial(
+    createWorkerPort<readonly WireClip[], RetargetResponse>(
+      spawn,
+      'retargeting',
+      answer => answer.clips,
+      'terminate',
+    ),
+    { what: 'retargeting', depth: 32 },
   )
   const profiles = new Map<string, SkeletonProfile>()
 
@@ -88,7 +111,7 @@ export function createRetarget(spawn: () => Worker): Retarget {
       const targetKnown = profilesFor(profiles, watch?.profiles, watch?.targetProfile)
       const sourceKnown = profilesFor(profiles, watch?.profiles, watch?.sourceProfile)
       validateOptions(watch?.options)
-      const targetBones = alignedBonesOf(wireBonesOf(target), targetKnown)
+      const targetBones = alignedBonesOf(bonesOf(target), targetKnown)
       const sourceBones = alignedBonesOf(wireBonesOf(source), sourceKnown)
       if (exactReplay(targetBones, sourceBones, targetKnown, sourceKnown, watch?.options))
         return [...clips]
@@ -215,14 +238,13 @@ export function retargetPlanOf(
   for (const bone of target)
     if (sourceNames.has(bone.name) && !excluded.has(bone.name)) names[bone.name] = bone.name
 
-  for (const [name, role] of Object.entries(rolesOf(target, known))) {
+  const targetRoles = rolesOf(target, known)
+  for (const [name, role] of Object.entries(targetRoles)) {
     const from = sourceByRole.get(role)
     if (from) names[name] = from
   }
 
-  const targetByRole = new Map(
-    Object.entries(rolesOf(target, known)).map(([name, role]) => [role, name]),
-  )
+  const targetByRole = new Map(Object.entries(targetRoles).map(([name, role]) => [role, name]))
   const torso = torsoOf(targetByRole, sourceByRole)
   return {
     target,
@@ -290,11 +312,6 @@ export function retargetFitOf(
   }
 }
 
-/** The wire spells a parent as an index; reading roles wants it as a name. */
-export function namedBonesOf(bones: readonly WireBone[]): NamedBone[] {
-  return bones.map(bone => ({ name: bone.name, parent: bones[bone.parent]?.name ?? null }))
-}
-
 /**
  * What each bone MEANS: what its name spells, corrected by whatever was recorded for a skeleton
  * of exactly these bones.
@@ -306,35 +323,24 @@ function rolesOf(
   bones: readonly WireBone[],
   known?: ReadonlyMap<string, SkeletonProfile>,
 ): Record<string, HumanoidRole> {
-  const signature = skeletonSignatureOf(bones.map(bone => bone.name))
   const found = boneRolesOf(namedBonesOf(bones))
-  for (const name of profileOfBones(bones, known)?.ignored ?? []) delete found[name]
-  const corrections = profileOfBones(bones, known)?.roles
-  if (!corrections) return found
+  const stored = profileOfBones(bones, known)
+  for (const name of stored?.ignored ?? []) delete found[name]
+  if (!stored) return found
 
-  let profile: SkeletonProfile = { signature, roles: found }
+  let profile: SkeletonProfile = { signature: stored.signature, roles: found }
   const names = new Set(bones.map(bone => bone.name))
-  for (const [name, role] of Object.entries(corrections)) {
+  for (const [name, role] of Object.entries(stored.roles)) {
     if (!names.has(name)) continue
     profile = profileWithRole(profile, name, role)
   }
   return { ...profile.roles }
 }
 
-export function profileOfBones(
-  bones: readonly WireBone[],
-  known?: ReadonlyMap<string, SkeletonProfile>,
-): SkeletonProfile | undefined {
-  return (
-    known?.get(skeletonTopologySignatureOf(namedBonesOf(bones))) ??
-    known?.get(skeletonSignatureOf(bones.map(bone => bone.name)))
-  )
-}
-
 function alignedBonesOf(
-  bones: WireBone[],
+  bones: readonly WireBone[],
   known: ReadonlyMap<string, SkeletonProfile>,
-): WireBone[] {
+): readonly WireBone[] {
   const restPose = profileOfBones(bones, known)?.restPose
   if (!restPose) return bones
   return bones.map(bone => {

@@ -21,14 +21,19 @@ describe('SceneRenderer and the selection it follows', () => {
   const apply = method(
     'private applyState\\(state: SceneState, changed: readonly SceneNode\\[\\] \\| null\\): void',
   )
+  // The half of the pass that reads the document's selection — `applyState` calls it.
+  const select = method('private rehangAndSelect\\(state: SceneState\\): void')
 
   // A regex that matched nothing would make every assertion below vacuously true.
   it('finds the paths and both application entries the rest of this file reads', () => {
     expect(
-      [frameFollow, follow, apply, applyEntry, runtimeEntry].every(found => found.length > 0),
+      [frameFollow, follow, apply, select, applyEntry, runtimeEntry].every(
+        found => found.length > 0,
+      ),
     ).toBe(true)
     expect(applyEntry).toContain('this.applyState(state, null)')
     expect(runtimeEntry).toContain('this.applyState(delta.state, delta.changed)')
+    expect(apply).toContain('this.rehangAndSelect(state)')
   })
 
   /** The same press that took hold lets go, as `scene.isolate` already does. */
@@ -48,7 +53,7 @@ describe('SceneRenderer and the selection it follows', () => {
    * first move — the very thing it exists for. The DOCUMENT says when there is nothing left.
    */
   it('lets go on an emptied selection, and never on a frame that read nothing', () => {
-    expect(apply).toContain('if (state.selectedIds.length === 0) this.followed = null')
+    expect(select).toContain('if (state.selectedIds.length === 0) this.followed = null')
     expect(follow).toContain('if (!centre) return false')
     expect(follow).not.toContain('this.followed = null')
   })

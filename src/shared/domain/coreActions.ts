@@ -312,7 +312,6 @@ export const CORE_ACTIONS: readonly AssistantAction[] = [
    */
   action({
     name: 'prompt.suggest',
-    capabilities: { intents: ['read'] },
     titleKey: 'assistant.actions.promptSuggest.title',
     descriptionKey: 'assistant.actions.promptSuggest.description',
     commitment: 'none',
@@ -324,7 +323,6 @@ export const CORE_ACTIONS: readonly AssistantAction[] = [
   }),
   action({
     name: 'prompt.translate',
-    capabilities: { intents: ['read'] },
     titleKey: 'assistant.actions.promptTranslate.title',
     descriptionKey: 'assistant.actions.promptTranslate.description',
     commitment: 'none',

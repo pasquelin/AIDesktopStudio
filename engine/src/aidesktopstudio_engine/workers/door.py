@@ -167,6 +167,7 @@ def serve_selection(door: str, fd: int) -> int:
         return model.decode(
             point if isinstance(point, list) else None,
             box if isinstance(box, list) else None,
+            str(params["destination"]),
         )
 
     def unload(_params: dict[str, Any]) -> dict[str, Any]:

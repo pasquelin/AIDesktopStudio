@@ -229,7 +229,7 @@ export function createWebRender(
       // Which maps the pass draws was settled per light by `flush`; this is whether it runs.
       renderer.shadowMap.needsUpdate = frameOwesShadows(settled)
       pictureStale = false
-      paintHeld(renderer, held, camera, composer, policy, sized, played, veil)
+      paintHeld(renderer, held, camera, composed ? composer : null, policy, sized, played, veil)
     },
 
     dispose: () => {
@@ -302,7 +302,7 @@ function paintHeld(
   played: number,
   veil: ReturnType<typeof veilPass>,
 ): void {
-  if (composer && stackDraws(held.world.post)) {
+  if (composer) {
     composer.draw({
       surface: 'game',
       scene: held.scene,

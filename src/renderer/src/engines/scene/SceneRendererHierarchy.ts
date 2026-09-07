@@ -87,95 +87,79 @@ export abstract class SceneRendererHierarchy extends SceneRendererShadows {
     // Read before `applied` is emptied: the reference the cache holds is keyed by what the node
     // pointed at, and nothing else remembers it.
     const applied = this.applied.get(id)
-    const releaseStep1 = () => {
-      const releaseStep1 = () => {
-        const key = this.modelKeys.get(id)
-        if (applied?.type === 'model' && key !== undefined) this.modelCache.release(key)
-        this.modelKeys.delete(id)
-        // Given back once: `recut` may still be in flight, and `cutting` is what says which of the
-        // two owes the reference.
-        // `has`, never `delete`: consuming the token here left `recut` believing the reference had
-        // already been given back, and neither side ever returned it.
-        if (applied?.type === 'carved' && !this.cutting.has(id)) this.csg.release(applied.carved)
-        // Before the instance goes: a mixer holding actions keeps every bone of a released model
-        // alive with it.
-        this.animations.remove(id)
-        const releaseStep2 = () => {
-          // Its share of every animation file it played: the last node to let go frees the parse.
-          for (const url of this.bundled.get(id)?.values() ?? []) this.clipSources.release(url)
-          this.cancelRetargets(id)
-          this.bundled.delete(id)
-          this.graphClips.delete(id)
-          this.unbindSkeleton(id)
-          const releaseStep3 = () => {
-            this.iks.delete(id)
-            this.stopSkinning(id)
-            this.applied.delete(id)
-            const releaseStep4 = () => {
-              // Before the material goes: the slots have to give their references back, or the cache
-              // keeps a 4K map alive for a node that no longer exists.
-              for (const maps of [this.textures, this.spriteMaps, this.modelMaps]) {
-                maps.get(id)?.dispose()
-                maps.delete(id)
-              }
-              const object = this.objects.get(id)
-              if (object) {
-                // Its own buffer, and a child of the mesh rather than the mesh: nothing else frees it.
-                applyWireOverlay(object, false, this.wireMaterial)
-                // Not `scene.remove`: mid-drag the object hangs off the pivot, and the scene would not
-                // find it to remove. And `unhang` rather than `removeFromParent`: see there.
-                unhang(object)
-                if (object instanceof Mesh) {
-                  this.freeGeometry(object.geometry)
-                  disposeMaterial(object)
-                }
-                // A sprite is not a mesh, so the branch above never freed its material. Its geometry is
-                // left alone on purpose: three.js shares one quad between every sprite ever built.
-                if (object instanceof Sprite) object.material.dispose()
-                if (object instanceof DirectionalLight || object instanceof SpotLight)
-                  this.viewport.scene.remove(object.target)
-                this.objects.delete(id)
-                this.rigRests.delete(id)
-              }
-              const releaseStep5 = () => {
-                const helper = this.helpers.get(id)
-                if (helper) {
-                  this.viewport.scene.remove(helper)
-                  // A forgotten helper leaks a line geometry on every delete.
-                  helper.dispose()
-                  this.helpers.delete(id)
-                }
-                // The frustum stands in the SCENE, beside its camera rather than under it — see `buildCamera`
-                // — so removing the node leaves it drawn over nothing until it is taken out by hand.
-                const frustum = this.frustums.get(id)
-                const releaseStep6 = () => {
-                  if (frustum) {
-                    this.viewport.scene.remove(frustum)
-                    frustum.dispose()
-                    this.frustums.delete(id)
-                  }
-                  // The body hangs under the node, so it goes with it — but nothing above frees what it is made
-                  // of: an ambient lamp draws no helper, and its whole shape would leak on every delete.
-                  const marker = this.markers.get(id)
-                  if (marker) disposeTree(marker)
-                  const releaseStep7 = () => {
-                    this.markers.delete(id)
-                  }
-                  return releaseStep7()
-                }
-                return releaseStep6()
-              }
-              return releaseStep5()
-            }
-            return releaseStep4()
-          }
-          return releaseStep3()
-        }
-        return releaseStep2()
-      }
-      return releaseStep1()
+    const key = this.modelKeys.get(id)
+    if (applied?.type === 'model' && key !== undefined) this.modelCache.release(key)
+    this.modelKeys.delete(id)
+    // Given back once: `recut` may still be in flight, and `cutting` is what says which of the
+    // two owes the reference.
+    // `has`, never `delete`: consuming the token here left `recut` believing the reference had
+    // already been given back, and neither side ever returned it.
+    if (applied?.type === 'carved' && !this.cutting.has(id)) this.csg.release(applied.carved)
+    // Before the instance goes: a mixer holding actions keeps every bone of a released model
+    // alive with it.
+    this.animations.remove(id)
+    // Its share of every animation file it played: the last node to let go frees the parse.
+    for (const url of this.bundled.get(id)?.values() ?? []) this.clipSources.release(url)
+    this.cancelRetargets(id)
+    this.bundled.delete(id)
+    this.graphClips.delete(id)
+    this.unbindSkeleton(id)
+    this.iks.delete(id)
+    this.stopSkinning(id)
+    this.applied.delete(id)
+    // Before the material goes: the slots have to give their references back, or the cache
+    // keeps a 4K map alive for a node that no longer exists.
+    for (const maps of [this.textures, this.spriteMaps, this.modelMaps]) {
+      maps.get(id)?.dispose()
+      maps.delete(id)
     }
-    return releaseStep1()
+    this.releaseObject(id)
+    this.releaseAids(id)
+  }
+
+  /** The three.js object a node stood for, and everything only it holds. */
+  private releaseObject(id: string): void {
+    const object = this.objects.get(id)
+    if (!object) return
+    // Its own buffer, and a child of the mesh rather than the mesh: nothing else frees it.
+    applyWireOverlay(object, false, this.wireMaterial)
+    // Not `scene.remove`: mid-drag the object hangs off the pivot, and the scene would not
+    // find it to remove. And `unhang` rather than `removeFromParent`: see there.
+    unhang(object)
+    if (object instanceof Mesh) {
+      this.freeGeometry(object.geometry)
+      disposeMaterial(object)
+    }
+    // A sprite is not a mesh, so the branch above never freed its material. Its geometry is
+    // left alone on purpose: three.js shares one quad between every sprite ever built.
+    if (object instanceof Sprite) object.material.dispose()
+    if (object instanceof DirectionalLight || object instanceof SpotLight)
+      this.viewport.scene.remove(object.target)
+    this.objects.delete(id)
+    this.rigRests.delete(id)
+  }
+
+  /**
+   * The workshop furniture a node was drawn WITH, which hangs beside it rather than under it —
+   * see `buildCamera`. Left alone, a helper leaks a line geometry and a frustum stays drawn over
+   * nothing; a marker's whole shape leaks on an ambient lamp, which draws no helper at all.
+   */
+  private releaseAids(id: string): void {
+    const helper = this.helpers.get(id)
+    if (helper) {
+      this.viewport.scene.remove(helper)
+      helper.dispose()
+      this.helpers.delete(id)
+    }
+    const frustum = this.frustums.get(id)
+    if (frustum) {
+      this.viewport.scene.remove(frustum)
+      frustum.dispose()
+      this.frustums.delete(id)
+    }
+    const marker = this.markers.get(id)
+    if (marker) disposeTree(marker)
+    this.markers.delete(id)
   }
   protected selectedObjects(): Object3D[] {
     return this.selectedIds.flatMap(id => this.objects.get(id) ?? [])

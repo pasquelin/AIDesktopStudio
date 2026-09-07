@@ -4,7 +4,7 @@ import type { Component, ComponentType, JsonValue } from '@shared/domain/compone
 import type { Vector3 } from '@shared/domain/transform'
 import type { InputState } from '../ports/inputPort'
 import type { InputActionValue } from '../runtime/inputMaps'
-import type { InputBinding } from '@shared/domain/inputMap'
+import type { InputBinding } from '../runtime/inputMap'
 import type { InputBindings } from '../runtime/inputControls'
 
 /**

@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 import { useTranslation } from 'react-i18next'
 import type { InputActionKind, KeyboardBinding } from '@shared/domain/inputMap'
-import { Button } from '@/components/Button'
 import { NumberField } from '@/components/NumberField'
 import { SelectField } from '@/components/SelectField'
 import { TextField } from '@/components/TextField'
 import { useInputCapture } from '@/hooks/useInputCapture'
-import { HINT_LEFT, TIP_LEFT } from '@/helpers/tooltip'
+import { TIP_LEFT } from '@/helpers/tooltip'
 import { useLatest } from '@/hooks/useLatest'
+import { InputMapCaptureButton } from './InputMapCaptureButton'
 
 type InputMapExpertKeyboardProps = {
   kind: InputActionKind
@@ -38,16 +38,10 @@ export function InputMapExpertKeyboard({
         // 🛑 The field stays writable — a `KeyboardEvent.code` no keyboard here can produce is
         // still bindable — but nobody has to know the nomenclature by heart any more.
         actions={
-          <Button
-            onClick={() =>
-              capture.capturing
-                ? capture.cancel()
-                : capture.captureKey(code => onChange({ ...latest.current, code }))
-            }
-            {...HINT_LEFT(t('game.inputMap.captureHint'))}
-          >
-            {capture.capturing ? t('game.inputMap.capturing') : t('game.inputMap.capture')}
-          </Button>
+          <InputMapCaptureButton
+            capture={capture}
+            onArm={() => capture.captureKey(code => onChange({ ...latest.current, code }))}
+          />
         }
       />
       {kind === 'axis2' && (

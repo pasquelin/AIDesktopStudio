@@ -1,8 +1,7 @@
 import type { SceneRenderer } from '@/engines/scene/SceneRenderer'
-import { useCheckerTextures } from '@/hooks/useCheckerTextures'
 import { useMaterialRefresh } from '@/hooks/useMaterialRefresh'
 import { useShelfRefresh } from '@/hooks/useShelfRefresh'
-import { useShippedCharacter } from '@/hooks/useShippedCharacter'
+import { useProjectInstalls } from '@/hooks/useProjectInstalls'
 import { useSkyRefresh } from '@/hooks/useSkyRefresh'
 
 /**
@@ -20,6 +19,5 @@ export function useSceneRendererResources(
   })
   useMaterialRefresh(materialIds => engine.current?.dressModels(materialIds))
   useSkyRefresh(() => engine.current?.lightAgain())
-  useCheckerTextures()
-  useShippedCharacter()
+  useProjectInstalls()
 }

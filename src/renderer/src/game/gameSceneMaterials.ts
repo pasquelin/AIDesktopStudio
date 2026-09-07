@@ -40,7 +40,8 @@ async function wearTexture(
     material.needsUpdate = true
     resources.textureArrived = true
   } catch {
-    return
+    // Swallowed: the picture lands on no signal a step gives, so there is no caller to fail. The
+    // material keeps the colour it was dressed with — 🛑 nothing says WHICH url failed.
   }
 }
 

@@ -17,6 +17,8 @@ export function createSmartSelectionHost(deps: {
   hold: (modelId: string) => () => void
   engine: () => Promise<PythonClient | null>
   epoch: () => number | null
+  /** The mask back as BGRA. Injected: it needs a live app to reach `nativeImage`. */
+  readBitmap: (file: string) => Promise<Uint8Array | null>
 }): SmartSelectionHost {
   let encoded: { revision: string; epoch: number | null; engine: PythonClient } | null = null
   const queue = writeQueue()
@@ -25,16 +27,17 @@ export function createSmartSelectionHost(deps: {
     signal: AbortSignal,
   ): Promise<SmartSelectionResult> => {
     signal.throwIfAborted()
-    let folder: string | null = null
+    // Both the composite going in and the mask coming back travel as files, so the folder is
+    // wanted on every run — where only an encoding the engine did not hold used to need one.
+    const folder = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-selection-'))
+    const destination = join(folder, 'mask.png')
     const release = deps.hold('efficient-sam-ti')
     try {
       await deps.ensureLoaded('efficient-sam-ti')
       const engine = await deps.engine()
       if (!engine) throw new Error('the local AI engine is not answering')
-      // The picture only touches the disk for an encoding the engine does not hold yet.
       const epoch = deps.epoch()
       const encode = async (): Promise<void> => {
-        folder ??= await mkdtemp(join(tmpdir(), 'ai-desktop-studio-selection-'))
         const image = join(folder, 'composite.png')
         await writeFile(image, request.png)
         await engine.job('selection.encode', { door: 'engine/selection', image }, { signal })
@@ -44,7 +47,7 @@ export function createSmartSelectionHost(deps: {
       const decode = async (): Promise<unknown> => {
         const answer = await engine.job(
           'selection.decode',
-          { door: 'engine/selection', ...promptOf(request) },
+          { door: 'engine/selection', destination, ...promptOf(request) },
           { signal },
         )
         signal.throwIfAborted()
@@ -58,7 +61,7 @@ export function createSmartSelectionHost(deps: {
       )
         await encode()
       try {
-        return maskOf(await decode())
+        return await maskOf(await decode(), deps.readBitmap)
       } catch (error) {
         // 🛑 The engine let the model go between two clicks — an idle unload, or another model
         // taking the room — and its embedding went with it: only the studio still believed in
@@ -66,11 +69,11 @@ export function createSmartSelectionHost(deps: {
         if (!lostEmbedding(error)) throw error
         encoded = null
         await encode()
-        return maskOf(await decode())
+        return await maskOf(await decode(), deps.readBitmap)
       }
     } finally {
       release()
-      if (folder) await rm(folder, { recursive: true, force: true })
+      await rm(folder, { recursive: true, force: true })
     }
   }
 
@@ -85,24 +88,32 @@ function promptOf(request: SmartSelectionRequest): Record<string, number[]> {
   return { box: [x, y, x + width, y + height] }
 }
 
-function maskOf(result: unknown): SmartSelectionResult {
+const invalid = (): Error => new Error('the selection engine returned an invalid mask')
+
+async function maskOf(
+  result: unknown,
+  readBitmap: (file: string) => Promise<Uint8Array | null>,
+): Promise<SmartSelectionResult> {
   if (
     !result ||
     typeof result !== 'object' ||
-    !('alpha' in result) ||
+    !('mask' in result) ||
     !('width' in result) ||
     !('height' in result) ||
-    typeof result.alpha !== 'string' ||
+    typeof result.mask !== 'string' ||
     typeof result.width !== 'number' ||
     typeof result.height !== 'number'
   )
-    throw new Error('the selection engine returned an invalid mask')
-  const alpha = Uint8Array.from(
-    result.alpha.match(/.{2}/g)?.map(value => Number.parseInt(value, 16)) ?? [],
-  )
-  if (alpha.byteLength !== result.width * result.height)
-    throw new Error('the selection engine returned an invalid mask')
-  return { width: result.width, height: result.height, alpha }
+    throw invalid()
+
+  const { width, height } = result
+  const bitmap = await readBitmap(result.mask)
+  if (!bitmap || bitmap.byteLength !== width * height * 4) throw invalid()
+
+  // The mask is grey, so the four channels carry the same value and the first answers for all.
+  const alpha = new Uint8Array(width * height)
+  for (let at = 0; at < alpha.length; at += 1) alpha[at] = bitmap[at * 4] ?? 0
+  return { width, height, alpha }
 }
 
 /** What the door answers once its model has been unloaded — see `EfficientSam.decode`. */

@@ -39,7 +39,9 @@ class EfficientSam:
         self._embedding = self._encoder.run(None, {self._encoder.get_inputs()[0].name: tensor})[0]
         return {"width": source.width, "height": source.height}
 
-    def decode(self, point: list[float] | None, box: list[float] | None) -> dict[str, Any]:
+    def decode(
+        self, point: list[float] | None, box: list[float] | None, destination: str
+    ) -> dict[str, Any]:
         import numpy
         from PIL import Image
 
@@ -68,17 +70,23 @@ class EfficientSam:
         }
         mask = self._decoder.run(None, values)[0][0, 0, 0]
         bitmap = (mask > 0).astype(numpy.uint8) * 255
-        bitmap = numpy.asarray(
-            Image.fromarray(bitmap).resize((width, height), Image.Resampling.NEAREST)
+        return write_mask(
+            Image.fromarray(bitmap).resize((width, height), Image.Resampling.NEAREST), destination
         )
-        return {
-            "width": int(bitmap.shape[1]),
-            "height": int(bitmap.shape[0]),
-            "alpha": bitmap.tobytes().hex(),
-        }
 
     def unload(self) -> None:
         self._embedding = None
         self._size = None
         self._encoder = None
         self._decoder = None
+
+
+def write_mask(image: Any, destination: str) -> dict[str, Any]:
+    """
+    The frame NAMES the mask, it does not carry it — `envelope.py` opens on that rule.
+
+    Two bytes of JSON per pixel in hex: 4 147 200 for one click on a 1920x1080 composite, 16.6 MB
+    of text on a single line in 4K, where the PNG of the same mask is 5 450 bytes.
+    """
+    image.save(destination)
+    return {"width": image.width, "height": image.height, "mask": destination}

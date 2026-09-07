@@ -19,6 +19,7 @@ import { WELCOME_CLIP_NAMES, type WelcomeClipName } from '@shared/domain/welcome
 import { clamp } from '@shared/numeric'
 import { clipsOf } from '../scene/animation'
 import { disposeTree } from '../scene/modelCache'
+import { wireBonesOf } from '../scene/retarget'
 import { skeletonBonesOf, type SkeletonBone } from '../scene/rigState'
 import { rootTrackOf } from '../scene/rootMotion'
 import type { GltfSource } from '../scene/gltfSource'
@@ -146,23 +147,19 @@ export class WelcomeHero {
   }
 
   private async load(): Promise<void> {
-    let body: Object3D | undefined
-    let files: Object3D[] = []
-    let mixer: AnimationMixer | undefined
+    // Held until `mount` takes it: what is still here in the `finally` is what nobody owns.
+    let unowned: Brought | null = null
     try {
-      const brought = await this.bring()
-      body = brought.body
-      files = brought.files
-      mixer = brought.mixer
+      unowned = await this.bring()
       if (this.disposed) return
-      this.mount(brought)
-      body = undefined
-      mixer = undefined
-      files = []
+      this.mount(unowned)
+      unowned = null
     } catch (error) {
       if (!this.disposed) this.deps.onFailure(error)
     } finally {
-      if (this.disposed || !this.mixer) dropLoaded(body, files, mixer)
+      // The second half matters on a PARTIAL mount: what `mount` already took belongs to `this`.
+      if (unowned && (this.disposed || !this.mixer))
+        dropLoaded(unowned.body, unowned.files, unowned.mixer)
     }
   }
 
@@ -177,8 +174,12 @@ export class WelcomeHero {
       Promise.all(loading),
     ])
     const mixer = new AnimationMixer(body)
+    // 🛑 The body wired ONCE for the eight files: `adapt` wired it again per call, walking the
+    // tree and copying every transform, and its signature was digested afresh each time — eight
+    // preludes on the interface thread at the moment the welcome screen opens.
+    const wired = wireBonesOf(body)
     const adapted = await Promise.all(
-      files.map(async file => (await this.deps.retarget.adapt(body, file, clipsOf(file)))?.[0]),
+      files.map(async file => (await this.deps.retarget.adapt(wired, file, clipsOf(file)))?.[0]),
     )
     return { body, files, mixer, adapted }
   }

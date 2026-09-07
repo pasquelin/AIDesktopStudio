@@ -64,7 +64,6 @@ export function createProjectJsonStore<T>(deps: ProjectJsonStoreDeps<T>): Projec
       if (folder === null) return false
 
       deps.parse(value)
-      await mkdir(folder, { recursive: true })
       await writes.next(() =>
         writeAtomic(resolve(folder, basename(file)), `${JSON.stringify(value, null, 2)}\n`),
       )

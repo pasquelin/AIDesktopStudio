@@ -327,6 +327,26 @@ describe('retargeting a motion that changed folder', () => {
       type: 'animation',
     })
   })
+
+  it('files a picture dragged onto Skyboxes as a skybox, and back as a picture', async () => {
+    const { files, root, catalog } = harnessed
+    await mkdir(join(root, 'Images'), { recursive: true })
+    await mkdir(join(root, 'Skyboxes'), { recursive: true })
+    await writeFile(join(root, 'Images/noon.png'), 'sky')
+    await catalog.add(asset({ id: 'asset-noon', name: 'noon', path: 'Images/noon.png' }))
+
+    await files.move(['Images/noon.png'], 'Skyboxes')
+    expect(await catalog.find('asset-noon')).toMatchObject({
+      path: 'Skyboxes/noon.png',
+      type: 'skybox',
+    })
+
+    await files.move(['Skyboxes/noon.png'], 'Images')
+    expect(await catalog.find('asset-noon')).toMatchObject({
+      path: 'Images/noon.png',
+      type: 'image',
+    })
+  })
 })
 
 describe('with no project open', () => {

@@ -78,11 +78,12 @@ export function ScriptField({ label, value, onChange, scId }: ScriptFieldProps) 
  * `Scripts/player.ts` and `Enemies/player.ts` were two identical rows nobody could tell apart.
  */
 function named(scripts: readonly string[]): LinkOption[] {
+  const files = scripts.map(fileOf)
   const seen = new Map<string, number>()
-  for (const script of scripts) seen.set(fileOf(script), (seen.get(fileOf(script)) ?? 0) + 1)
-  return scripts.map(script => ({
+  for (const file of files) seen.set(file, (seen.get(file) ?? 0) + 1)
+  return scripts.map((script, index) => ({
     id: script,
-    name: (seen.get(fileOf(script)) ?? 0) > 1 ? scriptPathOf(script) : fileOf(script),
+    name: (seen.get(files[index] ?? '') ?? 0) > 1 ? scriptPathOf(script) : (files[index] ?? ''),
   }))
 }
 

@@ -29,7 +29,6 @@ function optimizationActions(): AssistantAction[] {
   return [
     {
       ...optimizationAction('optimization.analyze', 'optimizationAnalyze', [nodeIds]),
-      capabilities: { intents: ['read'] },
     },
     optimizationAction('optimization.report', 'optimizationReport', [nodeIds]),
     ...simple,

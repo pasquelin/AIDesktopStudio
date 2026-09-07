@@ -139,7 +139,6 @@ export function createModelRegistry(options: RegistryOptions): ModelRegistry {
         model.modality ?? 'text',
         model.fieldOverrides ?? {},
         options.translate,
-        model.fieldProfile,
       ),
     }
   }

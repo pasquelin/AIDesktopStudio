@@ -1,7 +1,6 @@
 import i18next from 'i18next'
-import { checkerTexturePath } from '@/engines/scene/checkerTextures'
 import { gltfDocumentOf, sceneFromGltf, sceneHoldsMore } from '@/engines/scene/gltfDocument'
-import { shippedCharacterPath } from '@/engines/scene/shippedCharacter'
+import { installedPathOf } from '@/engines/scene/projectInstalls'
 import type { SceneState } from '@/engines/scene/sceneState'
 import { mediaLinkOf } from '@/engines/timeline/mediaLink'
 import { documentFolder } from './documentFolder'
@@ -33,10 +32,7 @@ export function scenePayloadOf(state: SceneState, documentId: string): unknown {
     documentId,
     documentKind: 'scene',
     uriOf: assetId => {
-      const path =
-        assetsById(useAssets.getState()).get(assetId)?.path ??
-        shippedCharacterPath(assetId) ??
-        checkerTexturePath(assetId)
+      const path = assetsById(useAssets.getState()).get(assetId)?.path ?? installedPathOf(assetId)
       return path ? mediaLinkOf(path, folder) : null
     },
   })

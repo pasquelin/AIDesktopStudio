@@ -476,9 +476,9 @@ export type AssistantAnswer = {
   cost: number
 }
 
-export function assistantAction(name: string): AssistantAction | null {
-  return ACTION_REGISTRY.find(descriptor => descriptor.name === name) ?? null
-}
+/** Indexed, never scanned: 22 sites ask this, up to forty times per briefing. */
+const BY_NAME = new Map<string, AssistantAction>(ACTION_REGISTRY.map(one => [one.name, one]))
+export const assistantAction = (name: string): AssistantAction | null => BY_NAME.get(name) ?? null
 
 /**
  * What one particular call would engage, which for `command.runStudioCommand` is a fact of the command named

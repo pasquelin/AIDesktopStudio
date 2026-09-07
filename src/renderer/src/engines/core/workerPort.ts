@@ -51,22 +51,30 @@ export type PortWatch = {
 }
 
 /**
+ * How a request in flight is taken back.
+ *
+ * 🛑 It belongs to the WORKER, not to the caller: a worker that reads its mailbox between steps
+ * answers `{ cancel: true }`, and one whose work is a single call that never yields can only be
+ * killed. Written as a flag on `send`, five ports out of six walked an automaton for the sixth.
+ */
+export type CancelPolicy = 'message' | 'terminate'
+
+/**
  * @param spawn builds the worker on first use and after a recoverable restart.
  * @param what names the worker in the two failures no `try` inside it can catch.
  * @param valueOf extracts the value carried by a completed worker answer.
+ * @param cancel how a request out on it is taken back — see `CancelPolicy`.
  */
 export function createWorkerPort<T, R extends PortResponse>(
   spawn: () => Worker,
   what: string,
   valueOf: (answer: Answered<R>) => T,
-  interruptible = false,
+  cancel: CancelPolicy = 'message',
 ): WorkerPort<T> {
   const waiting = new Map<number, PortSlot<T>>()
   let worker: Worker | null = null
   let gone = false
   let nextId = 0
-  const queued: (() => void)[] = []
-  let active = false
 
   const settle = (response: R): void => {
     const slot = waiting.get(response.id)
@@ -92,6 +100,24 @@ export function createWorkerPort<T, R extends PortResponse>(
     const abandoned = [...waiting.values()]
     waiting.clear()
     for (const slot of abandoned) slot.reject(new Error(reason))
+  }
+
+  /**
+   * 🛑 Killing it ABANDONS what was still out on it: a terminated worker answers nothing more,
+   * ever, and a slot left in `waiting` is a promise nobody will ever honour. Held safe until now
+   * only because the one port that terminates is wrapped by `serial` — an invariant living a
+   * file away from the code that needed it.
+   */
+  const takeBack = (running: Worker, id: number): void => {
+    if (cancel === 'message') {
+      running.postMessage({ id, cancel: true })
+      return
+    }
+    // 🛑 Killed whatever the port holds NOW: `abandon` leaves alone a worker it no longer owns —
+    // one replaced since the post, by an error that respawned it — and that worker would run its
+    // request to the end for nobody. Terminated once either way, which its suite counts.
+    if (worker === running) abandon(running, `${what} request taken back`)
+    else running.terminate()
   }
 
   const port: WorkerPort<T> = {
@@ -122,74 +148,46 @@ export function createWorkerPort<T, R extends PortResponse>(
 
     send: (request, watch) =>
       new Promise((resolve, reject) => {
-        if (gone || (interruptible && watch?.signal?.aborted)) {
+        if (gone) {
           resolve(null)
           return
         }
 
-        let started = false
         let finished = false
         let id = 0
         let running: Worker | null = null
         const finish = (): void => {
           finished = true
           watch?.signal?.removeEventListener('abort', give)
-          if (interruptible && started) {
-            active = false
-            queued.shift()?.()
-          }
         }
         const give = (): void => {
-          if (finished) return
-          if (!started) {
-            const index = queued.indexOf(start)
-            if (index >= 0) queued.splice(index, 1)
-          } else if (!waiting.delete(id)) return
-          if (running) {
-            if (interruptible) {
-              running.terminate()
-              if (worker === running) worker = null
-            } else running.postMessage({ id, cancel: true })
-          }
+          if (finished || !waiting.delete(id)) return
+          if (running) takeBack(running, id)
           finish()
           resolve(null)
         }
-        const start = (): void => {
-          started = true
-          if (interruptible) active = true
-          if (gone) {
-            finish()
-            resolve(null)
-            return
-          }
-          id = port.claim()
-          try {
-            running = port.running()
-            const { message, transfer } = request(id)
-            running.postMessage(message, transfer ?? [])
-            waiting.set(id, {
-              resolve: value => {
-                finish()
-                resolve(value)
-              },
-              reject: error => {
-                finish()
-                reject(error)
-              },
-              onProgress: watch?.onProgress,
-            })
-          } catch (error) {
-            finish()
-            reject(error)
-          }
-        }
+
         if (!watch?.signal?.aborted) watch?.signal?.addEventListener('abort', give)
-        if (interruptible && active) {
-          if (queued.length >= 32) {
-            finish()
-            reject(new Error(`${what} queue is full`))
-          } else queued.push(start)
-        } else start()
+        id = port.claim()
+        try {
+          running = port.running()
+          const { message, transfer } = request(id)
+          running.postMessage(message, transfer ?? [])
+          waiting.set(id, {
+            resolve: value => {
+              finish()
+              resolve(value)
+            },
+            reject: error => {
+              finish()
+              reject(error)
+            },
+            onProgress: watch?.onProgress,
+          })
+        } catch (error) {
+          finish()
+          reject(error)
+        }
         if (watch?.signal?.aborted) give()
       }),
 

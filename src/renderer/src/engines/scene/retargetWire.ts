@@ -2,9 +2,11 @@ import {
   AnimationClip,
   Bone,
   NumberKeyframeTrack,
+  Quaternion,
   QuaternionKeyframeTrack,
   Skeleton,
   SkinnedMesh,
+  Vector3,
   VectorKeyframeTrack,
   type KeyframeTrack,
   type Object3D,
@@ -12,13 +14,12 @@ import {
 import { isBoneObject } from './rigState'
 import type { WireBone, WireClip, WireTrack, WireTrackKind, WireTransform } from './retargetMessage'
 
-/**
- * Every named bone of a model, parents before children.
- *
- * Duplicate names are refused: both animation tracks and mapping profiles bind bones by name.
- */
+const NO_TURN = new Quaternion()
+const NO_SCALE = new Vector3(1, 1, 1)
+
 const virtualFrames = new WeakSet<Object3D>()
 
+/** Every named bone of a model, parents before children. */
 export function wireBonesOf(root: Object3D): WireBone[] {
   const bones: WireBone[] = []
   const indexOf = new Map<Object3D, number>()
@@ -56,13 +57,8 @@ function parentFramesOf(
   while (above && above !== root && !known.has(above)) {
     if (
       above.position.lengthSq() !== 0 ||
-      above.quaternion.x !== 0 ||
-      above.quaternion.y !== 0 ||
-      above.quaternion.z !== 0 ||
-      above.quaternion.w !== 1 ||
-      above.scale.x !== 1 ||
-      above.scale.y !== 1 ||
-      above.scale.z !== 1
+      !above.quaternion.equals(NO_TURN) ||
+      !above.scale.equals(NO_SCALE)
     )
       frames.unshift(transformOf(above))
     above = above.parent

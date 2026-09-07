@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { ACTION_INTENTS } from './actionIntents'
 import {
   ACTION_COMMITMENTS,
   ACTION_REACHES,
@@ -406,9 +407,9 @@ const ALL_ACTIONS: Record<ActionName, true> = {
 }
 
 /**
- * A read is what the mission runtime plans after; anything else it verifies. Blind spot: a read
- * whose verb is outside `ACTION_NAME_INTENTS` and that declares no intent is verified as a
- * mutation — 82 names say nothing on their own (2026-09-06), and nothing here lists them.
+ * A read is what the mission runtime plans after; anything else it verifies. The blind spot this
+ * used to write is CLOSED: every action now declares its intent in `ACTION_INTENTS`, where the
+ * verb of the name was guessed at and 81 names said nothing to that guess.
  */
 describe('the assistant action registry', () => {
   it('never flags as a read an action that engages anything', () => {
@@ -417,6 +418,14 @@ describe('the assistant action registry', () => {
     )
 
     expect(engaging.map(one => one.name)).toEqual([])
+  })
+
+  // The compiler holds the other half: a `Record<ActionName, …>` cannot be short. This is what
+  // catches a key the union no longer declares — an action renamed, its old intent left behind.
+  it('names in its intent table exactly the actions it builds', () => {
+    expect(sorted(Object.keys(ACTION_INTENTS))).toEqual(
+      sorted(ACTION_REGISTRY.map(one => one.name)),
+    )
   })
 
   it('builds every action the union declares', () => {

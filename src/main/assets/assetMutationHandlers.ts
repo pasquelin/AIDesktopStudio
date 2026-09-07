@@ -97,10 +97,7 @@ async function removeAssets(
   alsoRemote: unknown,
   expectedProjectPath?: string,
 ): Promise<void> {
-  if (
-    expectedProjectPath !== undefined &&
-    (typeof expectedProjectPath !== 'string' || expectedProjectPath !== deps.projectPath?.())
-  )
+  if (expectedProjectPath !== undefined && expectedProjectPath !== deps.projectPath?.())
     throw new Error('asset rollback belongs to another project')
   const catalog = deps.catalog()
   const found = await findMany(() => catalog, parseAssetIds(assetIds))
@@ -109,8 +106,7 @@ async function removeAssets(
     if (twins.length > 0) await reduced(() => deps.remote().deleteMany(twins))
   }
   for (const asset of found) {
-    if (expectedProjectPath === undefined) await deps.removeFile(asset)
-    else await deps.removeFile(asset, expectedProjectPath)
+    await deps.removeFile(asset, expectedProjectPath)
     await catalog.remove(asset.id)
   }
 }

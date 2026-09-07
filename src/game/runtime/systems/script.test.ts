@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-import { INPUT_MAP_VERSION } from '@shared/domain/inputMap'
+import { INPUT_MAP_VERSION } from '../inputMap'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import type { Component, JsonValue } from '@shared/domain/component'
 import { newComponent, withComponentField } from '@shared/domain/componentRegistry'
@@ -13,7 +13,7 @@ import { restingTransform } from '../entity'
 import { STEP_SECONDS } from '../gameLoop'
 import { testPorts, testWorld } from '../world-fixtures'
 import type { World } from '../world'
-import type { InputMap } from '@shared/domain/inputMap'
+import type { InputMap } from '../inputMap'
 import { createScriptSystem } from './script'
 
 const STEP = 1 / 60

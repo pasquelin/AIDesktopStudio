@@ -444,9 +444,8 @@ describe('a supplied motion model', () => {
     const model = localModel({
       id: 'own-motion',
       backendId: 'kimodo-soma-rp-v1.1',
-      fieldProfile: 'motion',
       loader: 'plugin',
-      modality: 'mesh',
+      modality: 'motion',
       weightsPath: '/weights/motion',
     })
     await held.runtime.load?.(model, { onProgress: () => {} })

@@ -17,11 +17,47 @@ import {
   FACED,
 } from './sceneRendererSupport2'
 import { SceneRendererValidation } from './SceneRendererValidation'
+/** The cap moves the size a light is actually given, so a quality change resizes maps too. */
+function shadowChangeBetween(
+  held: ViewportOptions,
+  next: ViewportOptions,
+): { shadowsResized: boolean; shadowsMoved: boolean } {
+  const shadowsResized =
+    shadowMapSizeFor(next.quality, next.shadowMapSize) !==
+    shadowMapSizeFor(held.quality, held.shadowMapSize)
+  return {
+    shadowsResized,
+    shadowsMoved:
+      shadowsResized || next.shadowQuality !== held.shadowQuality || next.shadows !== held.shadows,
+  }
+}
+
 export abstract class SceneRendererAids extends SceneRendererValidation {
   protected abstract applySnap(): void
   protected abstract applyGizmoSize(): void
   protected abstract tuneShadows(): void
   protected abstract applyPalette(): void
+  /**
+   * A preference the user just edited wins over whatever the wheel left behind, and only then:
+   * dropped on every configure, an unrelated setting would reset a speed mid-flight.
+   */
+  private takeFlySpeed(held: ViewportOptions, next: ViewportOptions): void {
+    if (next.flySpeed === held.flySpeed) return
+    this.sessionFlySpeed = null
+    // Or the overlay goes on showing what the wheel last produced while the camera flies at the
+    // figure the person just typed.
+    this.options.onFlySpeedChange?.(next.flySpeed)
+  }
+
+  private driveRenderer(next: ViewportOptions): void {
+    const gl = this.viewport.gl
+    if (gl) {
+      applyShadowQuality(gl, next.shadowQuality)
+      applyShadows(gl, next.shadows, this.viewport.scene)
+    }
+    this.viewport.setPixelRatio(pixelRatioFor(next.quality))
+  }
+
   /**
    * The viewport settings changed. The grid is rebuilt rather than resized — `GridHelper` bakes
    * its geometry at construction — and the camera's projection matrix has to be recomputed by
@@ -31,66 +67,26 @@ export abstract class SceneRendererAids extends SceneRendererValidation {
     const held = this.view
     const gridMoved = next.showGrid !== held.showGrid || next.gridSize !== held.gridSize
     const lensMoved = next.fieldOfView !== held.fieldOfView
-    const configureStep1 = () => {
-      const configureStep1 = () => {
-        // The cap moves the size a light is actually given, so a quality change resizes maps too.
-        const shadowsResized =
-          shadowMapSizeFor(next.quality, next.shadowMapSize) !==
-          shadowMapSizeFor(held.quality, held.shadowMapSize)
-        const shadowsMoved =
-          shadowsResized ||
-          next.shadowQuality !== held.shadowQuality ||
-          next.shadows !== held.shadows
-        // A preference the user just edited wins over whatever the wheel left behind, and only then:
-        // dropped on every configure, an unrelated setting would reset a speed mid-flight.
-        if (next.flySpeed !== held.flySpeed) {
-          this.sessionFlySpeed = null
-          // Or the overlay goes on showing what the wheel last produced while the camera flies at
-          // the figure the person just typed.
-          this.options.onFlySpeedChange?.(next.flySpeed)
-        }
-        const configureStep2 = () => {
-          this.view = next
-          this.scheme = schemeFor(next.navigationPreset, customFrom(next))
-          // Through the viewport rather than onto the camera: the orthographic frustum is derived
-          // from this very field of view, and has to be resized with it.
-          if (lensMoved) this.driveLens()
-          const configureStep3 = () => {
-            // Unconditional, both of them: a step changed while snapping is off has to be waiting when
-            // it comes on, and the handles are rebuilt from `size` on the frame after it moves.
-            this.applySnap()
-            this.applyGizmoSize()
-            const gl = this.viewport.gl
-            const configureStep4 = () => {
-              if (gl) {
-                applyShadowQuality(gl, next.shadowQuality)
-                applyShadows(gl, next.shadows, this.viewport.scene)
-              }
-              this.viewport.setPixelRatio(pixelRatioFor(next.quality))
-              // Every light, not only the ones built after the change: a map is allocated per light, and
-              // the grid is the floor under the reach a directional one is given.
-              if (shadowsResized || gridMoved) this.tuneShadows()
-              const configureStep5 = () => {
-                if (gridMoved && this.viewport.canvas) this.applyPalette()
-                if (aidsMoved(held, next)) this.refreshAids()
-                if (helperVisibilityMoved(held, next)) this.showAidsForSelection()
-                const configureStep6 = () => {
-                  if (next.stats !== held.stats) this.reportStats()
-                  if (gridMoved || lensMoved || shadowsMoved) this.redraw()
-                }
-                return configureStep6()
-              }
-              return configureStep5()
-            }
-            return configureStep4()
-          }
-          return configureStep3()
-        }
-        return configureStep2()
-      }
-      return configureStep1()
-    }
-    return configureStep1()
+    const { shadowsResized, shadowsMoved } = shadowChangeBetween(held, next)
+    this.takeFlySpeed(held, next)
+    this.view = next
+    this.scheme = schemeFor(next.navigationPreset, customFrom(next))
+    // Through the viewport rather than onto the camera: the orthographic frustum is derived
+    // from this very field of view, and has to be resized with it.
+    if (lensMoved) this.driveLens()
+    // Unconditional, both of them: a step changed while snapping is off has to be waiting when
+    // it comes on, and the handles are rebuilt from `size` on the frame after it moves.
+    this.applySnap()
+    this.applyGizmoSize()
+    this.driveRenderer(next)
+    // Every light, not only the ones built after the change: a map is allocated per light, and
+    // the grid is the floor under the reach a directional one is given.
+    if (shadowsResized || gridMoved) this.tuneShadows()
+    if (gridMoved && this.viewport.canvas) this.applyPalette()
+    if (aidsMoved(held, next)) this.refreshAids()
+    if (helperVisibilityMoved(held, next)) this.showAidsForSelection()
+    if (next.stats !== held.stats) this.reportStats()
+    if (gridMoved || lensMoved || shadowsMoved) this.redraw()
   }
   /** How a node is turned, in world — what an arm reading a rotation hangs behind. */
   protected facingOf(id: string): TurnedVector | null {

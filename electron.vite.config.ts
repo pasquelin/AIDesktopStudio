@@ -13,6 +13,7 @@ import { DECODER_MODULES, withoutDecoderUrls } from './src/main/decoderUrls'
 
 const partage = resolve('src/shared')
 const principal = resolve('src/main')
+const jeu = resolve('src/game')
 
 /**
  * Strips three.js's decoder URLs so the bundler stops emitting files nothing fetches. The why,
@@ -65,7 +66,9 @@ function commitHash(): string {
  */
 function main(command: string): MainViteConfig {
   return {
-    resolve: { alias: { '@shared': partage, '@main': principal } },
+    // `@game` for the main process too: `@shared/domain/inputMap` re-exports the control-map
+    // domain from the MIT runtime, which is where it is written.
+    resolve: { alias: { '@shared': partage, '@main': principal, '@game': jeu } },
     define: {
       __COMMIT_HASH__: JSON.stringify(commitHash()),
       __DEV__: JSON.stringify(command === 'serve'),
@@ -96,7 +99,7 @@ function main(command: string): MainViteConfig {
 }
 
 const preload: PreloadViteConfig = {
-  resolve: { alias: { '@shared': partage } },
+  resolve: { alias: { '@shared': partage, '@game': jeu } },
   build: {
     externalizeDeps: true,
     rollupOptions: {
@@ -115,7 +118,7 @@ const renderer: RendererViteConfig = {
   // `@game` here as well as in `tsconfig.web.json`: a path the compiler resolves and the
   // bundler does not fails at RUNTIME with a green typecheck.
   resolve: {
-    alias: { '@': resolve('src/renderer/src'), '@game': resolve('src/game'), '@shared': partage },
+    alias: { '@': resolve('src/renderer/src'), '@game': jeu, '@shared': partage },
   },
   build: {
     rollupOptions: {

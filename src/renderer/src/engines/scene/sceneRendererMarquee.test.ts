@@ -5,8 +5,11 @@ const handler = (name: string, args: string): string =>
   source.match(new RegExp(`${name} = \\(${args}\\): void => \\{[\\s\\S]*?\\n {2}\\}`))?.[0] ?? ''
 const method = (signature: string): string =>
   source.match(new RegExp(`protected ${signature} \\{[\\s\\S]*?\\n {2}\\}`))?.[0] ?? ''
+const privateMethod = (signature: string): string =>
+  source.match(new RegExp(`private ${signature} \\{[\\s\\S]*?\\n {2}\\}`))?.[0] ?? ''
 const pointerDown = handler('onPointerDown', 'event: PointerEvent')
 const pointerUp = handler('onPointerUp', 'event: PointerEvent')
+const leftUp = privateMethod('endLeftButton\\(event: PointerEvent\\): void')
 const pointerMove = handler('onPointerMove', 'event: PointerEvent')
 const armMarquee = method('armMarquee\\(event: PointerEvent\\): void')
 const pickInMarquee = method('pickInMarquee\\(marquee: Marquee, event: PointerEvent\\): void')
@@ -22,12 +25,12 @@ const screenBodies = method('screenBodies\\(camera: Camera\\): ScreenBody\\[\\]'
  */
 describe('SceneRenderer and the rectangle', () => {
   // A regex that matched nothing would make every assertion below vacuously true.
-  it('finds the six paths the rest of this file reads', () => {
+  it('finds the seven paths the rest of this file reads', () => {
     expect(
-      [pointerDown, pointerUp, pointerMove, armMarquee, pickInMarquee, screenBodies].map(
+      [pointerDown, pointerUp, leftUp, pointerMove, armMarquee, pickInMarquee, screenBodies].map(
         found => found.length > 0,
       ),
-    ).toEqual([true, true, true, true, true, true])
+    ).toEqual([true, true, true, true, true, true, true])
   })
 
   /** Under `custom` the bare left button may still orbit, and under Blender the middle one does. */
@@ -63,8 +66,8 @@ describe('SceneRenderer and the rectangle', () => {
 
 describe('SceneRenderer rectangle selection', () => {
   it('picks what the rectangle crossed on release, and only once it travelled', () => {
-    expect(pointerUp).toContain('!wasClick(marquee.from, marquee.to)')
-    expect(pointerUp).toContain('this.pickInMarquee(marquee, event)')
+    expect(leftUp).toContain('!wasClick(marquee.from, marquee.to)')
+    expect(leftUp).toContain('this.pickInMarquee(marquee, event)')
   })
 
   /**
@@ -72,8 +75,8 @@ describe('SceneRenderer rectangle selection', () => {
    * where falling through to `wasClick` would have left it standing.
    */
   it('leaves the click path to a press that never travelled', () => {
-    expect(pointerUp.indexOf('this.pickInMarquee(')).toBeLessThan(
-      pointerUp.indexOf('if (flew || !wasClick('),
+    expect(leftUp.indexOf('this.pickInMarquee(')).toBeLessThan(
+      leftUp.indexOf('if (flew || !wasClick('),
     )
   })
 

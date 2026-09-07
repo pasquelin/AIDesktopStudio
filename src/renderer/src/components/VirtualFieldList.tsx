@@ -5,12 +5,11 @@ import { VirtualizedFieldList } from './VirtualizedFieldList'
 const VIRTUAL_FIELD_THRESHOLD = 100
 
 /** Keeps large groups of interactive property rows bounded without changing short forms. */
-export function VirtualFieldList<T>({ items, keyOf, label, renderItem }: VirtualFieldListProps<T>) {
-  if (items.length > VIRTUAL_FIELD_THRESHOLD)
-    return (
-      <VirtualizedFieldList items={items} keyOf={keyOf} label={label} renderItem={renderItem} />
-    )
+export function VirtualFieldList<T>(props: VirtualFieldListProps<T>) {
+  // Spread, never retyped one by one: a prop added to the type reached the virtualised half only.
+  if (props.items.length > VIRTUAL_FIELD_THRESHOLD) return <VirtualizedFieldList {...props} />
 
+  const { items, keyOf, label, renderItem } = props
   return (
     <div role="group" aria-label={label} className="flex flex-col gap-2">
       {items.map(item => (

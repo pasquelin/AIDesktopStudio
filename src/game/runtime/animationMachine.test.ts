@@ -7,6 +7,7 @@ import {
   type AnimationLayer,
 } from '@shared/domain/animationGraph'
 import { animationGraphPreset } from '@shared/domain/animationPresets'
+import type { PosedClip } from '../ports/animationPort'
 import {
   CLIP_SPEED,
   clipKeyOf as studioClipKeyOf,
@@ -103,6 +104,39 @@ describe('what a state machine plays', () => {
     const settled = ran(WALKING, opening, { speed: 2 }, 20).held
     expect(posedClipsOf(WALKING, settled, LENGTHS)).toHaveLength(1)
     expect(posedClipsOf(WALKING, settled, LENGTHS)[0]?.weight).toBe(1)
+  })
+
+  /**
+   * 🛑 The animator hands these very objects to `AnimationPort.pose`, which borrows them for the
+   * length of the call — this system was the only one of the loop still allocating on the frame,
+   * and a body posed at sixty threw away nine objects a frame.
+   */
+  it('writes into the buffer it is given, the same objects frame after frame', () => {
+    const opening = ran(WALKING, freshAnimator(WALKING), { speed: 2 }, 7).held
+    const buffer: PosedClip[] = []
+
+    const first = posedClipsOf(WALKING, opening, LENGTHS, buffer)
+    const held = [...first]
+    const again = posedClipsOf(WALKING, opening, LENGTHS, buffer)
+
+    expect(first).toBe(buffer)
+    expect(again).toBe(buffer)
+    expect(again[0]).toBe(held[0])
+    expect(again[1]).toBe(held[1])
+    expect(again.map(clip => clip.key)).toEqual(['bundled:Idle', 'bundled:Walk'])
+  })
+
+  // 🛑 Shortened, never left long: a fade that ended would otherwise go on posing the clip it
+  // left, at the weight it held on the last frame of the fade.
+  it('drops the slot of a clip that has stopped showing', () => {
+    const opening = ran(WALKING, freshAnimator(WALKING), { speed: 2 }, 7).held
+    const buffer: PosedClip[] = []
+    posedClipsOf(WALKING, opening, LENGTHS, buffer)
+
+    const settled = ran(WALKING, opening, { speed: 2 }, 20).held
+
+    expect(posedClipsOf(WALKING, settled, LENGTHS, buffer)).toHaveLength(1)
+    expect(buffer.map(clip => clip.key)).toEqual(['bundled:Walk'])
   })
 
   it('holds a clip that does not loop until it has played out', () => {

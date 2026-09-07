@@ -4,6 +4,7 @@ import { pathIsInside } from '@main/export/pathIsInside'
 import { roleForAsset, withoutSourcePath, type Asset } from '@shared/domain/asset'
 import { glbChunksOf } from '@shared/domain/glbContainer'
 import { extensionOf } from '@shared/domain/fileName'
+import { FOLDER_ROOT, parentOf } from '@shared/domain/folder'
 import type { FolderRole } from '@shared/domain/folderRole'
 import {
   GLB_EXTENSION,
@@ -93,7 +94,9 @@ async function targetPath(
   // file name, so a `Robot.fbx` lands happily beside an existing `Robot.glb` — and the conversion
   // then refused itself with « already exists », leaving the `.fbx` unconverted for ever.
   if (type === existing.type) {
-    const folder = existing.path.slice(0, existing.path.lastIndexOf('/'))
+    // `parentOf`, never `slice(0, lastIndexOf('/'))`: on an asset at the project root that reads
+    // -1, and `slice(0, -1)` handed `freeAssetPath` a folder short of its last character.
+    const folder = parentOf(existing.path) ?? FOLDER_ROOT
     const wanted = withExtension(existing.path, GLB_EXTENSION)
     if (!(await exists(join(root, wanted)))) return wanted
     return await freeAssetPath(root, folder, existing.name, GLB_EXTENSION)

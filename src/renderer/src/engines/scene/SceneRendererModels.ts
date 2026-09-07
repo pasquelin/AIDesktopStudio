@@ -98,114 +98,111 @@ export abstract class SceneRendererModels extends SceneRendererGeometry {
     // Here rather than in `syncNode`: what arrives lands after the sync that built the holder,
     // and the next one skips an unchanged node — the model would throw nothing until edited.
     const applied = this.applied.get(node.id) ?? node
-    const sceneTask1Step1 = () => {
-      const sceneTask1Step1 = () => {
-        // The instance, never the cached source: its materials are shared with every other node
-        // built from the same file, and `createModelTextures` is what clones them before writing.
-        const maps = createModelTextures(
-          this.textureCache,
-          holder,
-          () => this.redraw(),
-          () =>
-            reportFailure(
-              'scene.texture',
-              assetId,
-              new Error('this model carries no material a map can be written into'),
-            ),
-        )
-        this.modelMaps.set(node.id, maps)
-        this.options.onMaterials?.(
-          node.id,
-          maps.count(),
-          maps.names(),
-          maps.parts(),
-          maps.hasFileTextures(),
-          maps.sourceIndices(),
-        )
-        this.options.onMorphs?.(node.id, morphNamesOf(holder))
-        const sceneTask1Step2 = () => {
-          this.dressModel(node.id)
-          // The clips come from the cached SOURCE rather than the clone: `Object3D.copy` does not
-          // carry them, and a clip addresses its targets by name — so the source's drive any
-          // instance built from it.
-          this.animations.add(node.id, holder, clipsOf(source))
-          if (applied.type === 'model') {
-            this.animations.apply(node.id, applied.model.lanes ?? [])
-            this.ensureBundled(node.id, applied.model.lanes ?? [])
-          }
-          const sceneTask1Step3 = () => {
-            this.options.onClips?.(node.id, clipNamesOf(source), clipLengthsOf(source))
-            // The document's own rig, put back on. Its weights are NOT saved with it — they are derived
-            // from mesh and rig, like a BVH — so they are worked out again on every load. The skeleton
-            // is reported before that finishes: a rig that takes a minute to bind still has bones the
-            // inspector can name at once.
-            // Read once and used twice: whether this model has bones at all is the same question the
-            // helper asks, and answering it in two places is how the two came to disagree. The COUNT
-            // and not the named ones — an export that stripped joint names still has a rig to draw.
-            const clips = clipsOf(source)
-            const rig = rigStateOf(holder, clips)
-            const sceneTask1Step4 = () => {
-              if (applied.type === 'model')
-                markInstanceable(holder, instanceableOf(applied, rig, clips))
-              this.bindSkeleton(node.id, holder, rig.boneCount > 0)
-              this.options.onRig?.(node.id, rig)
-              const sceneTask1Step5 = () => {
-                // Read off the very object that just landed: the skeleton window edits the FILE, and
-                // decoding it a second time to read its bones would pay for a million triangles twice.
-                const { rig: carried, extras } = characterOf(holder)
-                this.options.onCharacter?.(node.id, carried, extras, meshSampleOf(rig))
-                // 🛑 Before anything is retargeted onto it: the FILE is where a bone's role was put right,
-                // and a motion laid on a skeleton nobody has read plays on the wrong joints.
-                if (carried) this.learnRig(carried, extras?.roles)
-                const sceneTask1Step6 = () => {
-                  // The bones arrive a tick after the sync that laid the timeline over the scene, so a track
-                  // on one of them would drive nothing at all until the next edit.
-                  this.applyPoses()
-                  applyShadowFlags(
-                    holder,
-                    applied.castShadow,
-                    receivesShadow(applied),
-                    this.belongsToAnotherNode,
-                  )
-                  // The count is a count of what is really there: a model's triangles arrive with its file,
-                  // which is a tick after the `apply` that asked for it. It is also what the scene now
-                  // OCCUPIES, so the lights are re-cut against a set that just grew by a whole model.
-                  this.markContentChanged()
-                  const sceneTask1Step7 = () => {
-                    this.placementChanged = true
-                    this.tuneShadowsIfMoved()
-                    this.regroupInstances()
-                    const sceneTask1Step8 = () => {
-                      this.reportStats()
-                      // Same reason, same place: what the file brought was not there when the mode was applied,
-                      // and a model landing into a wireframe scene would be the one thing still drawn shaded.
-                      if (this.needsEdges()) this.applyDisplay(holder)
-                      // A dense model is what makes a click cost a frame — measured in `scenePicking.bench.ts`.
-                      // Off the UI thread, and after the render: the viewport shows the file before the tree.
-                      this.redraw()
-                      const sceneTask1Step9 = () => {
-                        void this.accelerateOrReport(holder, assetId)
-                      }
-                      return sceneTask1Step9()
-                    }
-                    return sceneTask1Step8()
-                  }
-                  return sceneTask1Step7()
-                }
-                return sceneTask1Step6()
-              }
-              return sceneTask1Step5()
-            }
-            return sceneTask1Step4()
-          }
-          return sceneTask1Step3()
-        }
-        return sceneTask1Step2()
-      }
-      return sceneTask1Step1()
-    }
-    return sceneTask1Step1()
+
+    this.dressLandedModel(node.id, holder, assetId)
+    this.playLandedModel(node.id, holder, source, applied)
+    this.readLandedRig(node.id, holder, source, applied)
+    this.settleLandedModel(holder, applied)
+    // A dense model is what makes a click cost a frame — measured in `scenePicking.bench.ts`.
+    // Off the UI thread, and after the render: the viewport shows the file before the tree.
+    void this.accelerateOrReport(holder, assetId)
   }
+
+  /** What the file PAINTS with, off the instance and never off the shared source. */
+  private dressLandedModel(nodeId: string, holder: Object3D, assetId: string): void {
+    // The instance, never the cached source: its materials are shared with every other node
+    // built from the same file, and `createModelTextures` is what clones them before writing.
+    const maps = createModelTextures(
+      this.textureCache,
+      holder,
+      () => this.redraw(),
+      () =>
+        reportFailure(
+          'scene.texture',
+          assetId,
+          new Error('this model carries no material a map can be written into'),
+        ),
+    )
+    this.modelMaps.set(nodeId, maps)
+    this.options.onMaterials?.(
+      nodeId,
+      maps.count(),
+      maps.names(),
+      maps.parts(),
+      maps.hasFileTextures(),
+      maps.sourceIndices(),
+    )
+    this.options.onMorphs?.(nodeId, morphNamesOf(holder))
+    this.dressModel(nodeId)
+  }
+
+  /**
+   * 🛑 The clips come from the cached SOURCE rather than the clone: `Object3D.copy` does not carry
+   * them, and a clip addresses its targets by name — so the source's drive any instance built
+   * from it.
+   */
+  private playLandedModel(
+    nodeId: string,
+    holder: Object3D,
+    source: Object3D,
+    applied: SceneNode,
+  ): void {
+    this.animations.add(nodeId, holder, clipsOf(source))
+    if (applied.type === 'model') {
+      this.animations.apply(nodeId, applied.model.lanes ?? [])
+      this.ensureBundled(nodeId, applied.model.lanes ?? [])
+    }
+    this.options.onClips?.(nodeId, clipNamesOf(source), clipLengthsOf(source))
+  }
+
+  /**
+   * The document's own rig, put back on. Its weights are NOT saved with it — they are derived from
+   * mesh and rig, like a BVH — so they are worked out again on every load. The skeleton is
+   * reported before that finishes: a rig that takes a minute to bind still has bones to name.
+   */
+  private readLandedRig(
+    nodeId: string,
+    holder: Object3D,
+    source: Object3D,
+    applied: SceneNode,
+  ): void {
+    // Read once and used twice: whether this model has bones at all is the same question the
+    // helper asks, and answering it in two places is how the two came to disagree. The COUNT
+    // and not the named ones — an export that stripped joint names still has a rig to draw.
+    const clips = clipsOf(source)
+    const rig = rigStateOf(holder, clips)
+    if (applied.type === 'model') markInstanceable(holder, instanceableOf(applied, rig, clips))
+    this.bindSkeleton(nodeId, holder, rig.boneCount > 0)
+    this.options.onRig?.(nodeId, rig)
+    // Read off the very object that just landed: the skeleton window edits the FILE, and
+    // decoding it a second time to read its bones would pay for a million triangles twice.
+    const { rig: carried, extras } = characterOf(holder)
+    this.options.onCharacter?.(nodeId, carried, extras, meshSampleOf(rig))
+    // 🛑 Before anything is retargeted onto it: the FILE is where a bone's role was put right,
+    // and a motion laid on a skeleton nobody has read plays on the wrong joints.
+    if (carried) this.learnRig(carried, extras?.roles)
+  }
+
+  /** What the scene has to redo now that it holds a whole model more than it did. */
+  private settleLandedModel(holder: Object3D, applied: SceneNode): void {
+    // The bones arrive a tick after the sync that laid the timeline over the scene, so a track
+    // on one of them would drive nothing at all until the next edit.
+    this.applyPoses()
+    applyShadowFlags(holder, applied.castShadow, receivesShadow(applied), this.belongsToAnotherNode)
+    // The count is a count of what is really there: a model's triangles arrive with its file,
+    // which is a tick after the `apply` that asked for it. It is also what the scene now
+    // OCCUPIES, so the lights are re-cut against a set that just grew by a whole model.
+    this.markContentChanged()
+    this.placementChanged = true
+    this.tuneShadowsIfMoved()
+    this.regroupInstances()
+    this.reportStats()
+    // Same reason, same place: what the file brought was not there when the mode was applied,
+    // and a model landing into a wireframe scene would be the one thing still drawn shaded.
+    if (this.needsEdges()) this.applyDisplay(holder)
+    this.redraw()
+  }
+
   /** Loads again every model whose file moved since it was read — the door `useShelfRefresh` pushes. */
   refreshModels(): void {
     const stale = staleModelsOf(this.modelKeys, this.applied, this.options.assetVersion)
@@ -314,7 +311,7 @@ export abstract class SceneRendererModels extends SceneRendererGeometry {
       this.options.onClipFit?.(nodeId, clip.key, this.retarget.fitOf(holder, source))
       const adapted = await this.retarget.adapt(holder, source, [selected], { signal: stop.signal })
       if (!adapted?.[0] || stop.signal.aborted || this.objects.get(nodeId) !== holder) return
-      this.publishMotion(nodeId, clip, adapted[0])
+      this.publishMotion(nodeId, clip, adapted[0] === selected ? adapted[0].clone() : adapted[0])
     } catch (error) {
       // Under a scope of its own: a failing animation must not swallow what a failing model says.
       if (!stop.signal.aborted) reportFailure('scene.animation', clip.url, error)
@@ -323,10 +320,14 @@ export abstract class SceneRendererModels extends SceneRendererGeometry {
       if (requests?.get(clip.key) === stop) requests.delete(clip.key)
     }
   }
+  /**
+   * 🛑 The clip is RENAMED in place, so the caller clones only what it does not own: `adapt` hands
+   * the source back when the two skeletons already agree, and what comes off the worker is built
+   * by `clipFromWire`. Cloning either way recopied every buffer of it to write one string.
+   */
   private publishMotion(nodeId: string, clip: ForeignClip, adapted: AnimationClip): void {
-    const named = adapted.clone()
-    named.name = clip.label
-    this.animations.addClip(nodeId, clip.key, named)
+    adapted.name = clip.label
+    this.animations.addClip(nodeId, clip.key, adapted)
     this.options.onClips?.(
       nodeId,
       this.animations.fileNamesOf(nodeId),

@@ -14,6 +14,10 @@ const handler = (name: string, args: string): string =>
 
 const pointerDown = handler('onPointerDown', 'event: PointerEvent')
 const pointerUp = handler('onPointerUp', 'event: PointerEvent')
+const privateMethod = (signature: string): string =>
+  source.match(new RegExp(`private ${signature} \\{[\\s\\S]*?\\n {2}\\}`))?.[0] ?? ''
+const leftUp = privateMethod('endLeftButton\\(event: PointerEvent\\): void')
+const rightUp = privateMethod('endRightButton\\(event: PointerEvent\\): void')
 const endFlight =
   source.match(
     /protected endFlight\(button: number, event: Pick<PointerEvent, 'buttons'>\): void \{[\s\S]*?\n {2}\}/,
@@ -22,12 +26,10 @@ const draggingChanged = handler('onDraggingChanged', '')
 
 describe('SceneRenderer and the buttons that fly', () => {
   // A regex that matched nothing would make every assertion below vacuously true.
-  it('finds the three handlers the rest of this file reads', () => {
-    expect([pointerDown, pointerUp, draggingChanged].map(found => found.length > 0)).toEqual([
-      true,
-      true,
-      true,
-    ])
+  it('finds the handlers and both button paths the rest of this file reads', () => {
+    expect(
+      [pointerDown, pointerUp, leftUp, rightUp, draggingChanged].map(found => found.length > 0),
+    ).toEqual([true, true, true, true, true])
   })
 
   it('arms the flight from either button', () => {
@@ -35,7 +37,7 @@ describe('SceneRenderer and the buttons that fly', () => {
   })
 
   it('ends it on either release', () => {
-    expect(pointerUp.match(/this\.endFlight\(/g)).toHaveLength(2)
+    expect(`${leftUp}${rightUp}`.match(/this\.endFlight\(/g)).toHaveLength(2)
   })
 
   /**
@@ -53,7 +55,7 @@ describe('SceneRenderer and the buttons that fly', () => {
   // Letting go of `W` before the button leaves a release that never moved a pixel, which is what
   // a click looks like — the right button already reads `flew` before raising its menu.
   it('picks nothing on a release that flew', () => {
-    expect(pointerUp).toMatch(/if \(flew \|\| !wasClick\(/)
+    expect(leftUp).toMatch(/if \(flew \|\| !wasClick\(/)
   })
 
   it('drops the flight the left button armed once a gizmo takes the handle', () => {

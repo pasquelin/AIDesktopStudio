@@ -348,7 +348,7 @@ export const RIG_ACTIONS: readonly AssistantAction[] = [
     commitment: 'none',
     repeatable: true,
     reach: 'mcp',
-    capabilities: { intents: ['create', 'mutate'], targets: ['node'] },
+    capabilities: { targets: ['node'] },
     fields: [
       ...SUBJECT,
       {
@@ -412,7 +412,7 @@ export const RIG_ACTIONS: readonly AssistantAction[] = [
     commitment: 'none',
     repeatable: true,
     reach: 'mcp',
-    capabilities: { intents: ['mutate'], targets: ['node', 'track'] },
+    capabilities: { targets: ['node', 'track'] },
     fields: [
       TRACK,
       {

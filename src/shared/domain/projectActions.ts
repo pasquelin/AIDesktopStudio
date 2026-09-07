@@ -16,7 +16,7 @@ export const PROJECT_ACTIONS: readonly AssistantAction[] = [
     commitment: 'none',
     repeatable: true,
     reach: 'mcp',
-    capabilities: { intents: ['read'], targets: ['project'] },
+    capabilities: { targets: ['project'] },
     fields: [],
   }),
   action({
@@ -26,7 +26,7 @@ export const PROJECT_ACTIONS: readonly AssistantAction[] = [
     commitment: 'none',
     repeatable: true,
     reach: 'mcp',
-    capabilities: { intents: ['read'], targets: ['project'] },
+    capabilities: { targets: ['project'] },
     fields: [PATH],
   }),
   action({
@@ -36,7 +36,7 @@ export const PROJECT_ACTIONS: readonly AssistantAction[] = [
     commitment: 'files',
     repeatable: true,
     reach: 'mcp',
-    capabilities: { intents: ['mutate'], targets: ['project'] },
+    capabilities: { targets: ['project'] },
     fields: [
       PATH,
       { key: 'map', kind: 'record', labelKey: 'assistant.fields.inputMap', required: true },
@@ -49,7 +49,7 @@ export const PROJECT_ACTIONS: readonly AssistantAction[] = [
     commitment: 'none',
     repeatable: true,
     reach: 'mcp',
-    capabilities: { intents: ['read'], targets: ['project'] },
+    capabilities: { targets: ['project'] },
     fields: [],
   }),
   action({
@@ -59,7 +59,7 @@ export const PROJECT_ACTIONS: readonly AssistantAction[] = [
     commitment: 'none',
     repeatable: true,
     reach: 'mcp',
-    capabilities: { intents: ['read'], targets: ['project'] },
+    capabilities: { targets: ['project'] },
     fields: [PATH],
   }),
   action({
@@ -69,7 +69,7 @@ export const PROJECT_ACTIONS: readonly AssistantAction[] = [
     commitment: 'files',
     repeatable: true,
     reach: 'mcp',
-    capabilities: { intents: ['mutate'], targets: ['project'] },
+    capabilities: { targets: ['project'] },
     fields: [
       PATH,
       { key: 'graph', kind: 'record', labelKey: 'assistant.fields.animationGraph', required: true },
@@ -82,7 +82,7 @@ export const PROJECT_ACTIONS: readonly AssistantAction[] = [
     commitment: 'none',
     repeatable: true,
     reach: 'mcp',
-    capabilities: { intents: ['read'], targets: ['node'] },
+    capabilities: { targets: ['node'] },
     fields: [
       NODE_ID,
       {

@@ -1,4 +1,5 @@
 import { orElse } from '@shared/promises'
+import { pathIn } from '@shared/domain/folder'
 import { DEFAULT_ROLE_PATHS, type FolderRole } from '@shared/domain/folderRole'
 import { ANIMATION_GRAPH_EXTENSION } from '@shared/domain/animationGraph'
 import { animationGraphPreset, type AnimationPresetId } from '@shared/domain/animationPresets'
@@ -11,13 +12,22 @@ import { getBridge } from '@/services/bridge'
 import { scriptRefAt, useCode } from '@/stores/code'
 import { useDocuments } from '@/stores/documents'
 
-/** What each template plays with — the script its pilot carries, and the context that drives it. */
-const PLAYED: Partial<
-  Record<
-    SceneTemplateId,
-    { script: TemplateScriptId; map: InputPresetId; graph?: AnimationPresetId }
-  >
+/**
+ * What each template plays with — the script its pilot carries, and the context that drives it.
+ *
+ * `Record` rather than `Partial`, as `TEMPLATES_BY_GROUP` is: a template that plays nothing says
+ * so by `null`, so a new id is a compile error instead of a scene that silently seeds no files.
+ */
+const PLAYED: Record<
+  SceneTemplateId,
+  { script: TemplateScriptId; map: InputPresetId; graph?: AnimationPresetId } | null
 > = {
+  empty: null,
+  basic: null,
+  photoStudio: null,
+  cinematic: null,
+  archvis: null,
+  postProcessing: null,
   firstPerson: { script: 'player', map: 'character', graph: 'character' },
   thirdPerson: { script: 'player', map: 'character', graph: 'character' },
   topDown: { script: 'player', map: 'character', graph: 'character' },
@@ -79,7 +89,7 @@ async function seedPreset<T>(
   value: T,
 ): Promise<string | undefined> {
   const folder = await orElse(getBridge()?.project.folderFor(role), DEFAULT_ROLE_PATHS[role])
-  const path = `${folder}/${name}${extension}`
+  const path = pathIn(folder, `${name}${extension}`)
   const taken = await orElse(files.list(), [])
   if (taken.some(one => one.toLowerCase() === path.toLowerCase())) return path
 

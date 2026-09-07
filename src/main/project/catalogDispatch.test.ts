@@ -177,6 +177,7 @@ describe('dispatchCatalogRequest', () => {
       setAnimationPoster: () => false,
       findByHash: () => null,
       findByRemoteId: () => null,
+      assetsUnder: () => [],
       search: () => [],
       countByType: () => NO_ASSETS,
       remove: () => {},
@@ -202,6 +203,7 @@ describe('dispatchCatalogRequest', () => {
       setAnimationPoster: () => false,
       findByHash: () => null,
       findByRemoteId: () => null,
+      assetsUnder: () => [],
       search: () => {
         throw new Error('malformed query')
       },

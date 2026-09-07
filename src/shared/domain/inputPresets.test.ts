@@ -44,6 +44,14 @@ describe('input presets', () => {
     expect(inputMapPreset('menu').defaultActive).toBe(false)
   })
 
+  // 🛑 Same door as `completed` on the game side: an id read out of a file walks the prototype
+  // chain, and `'constructor'` is truthy.
+  it('leaves a map named after something on the prototype chain alone', () => {
+    const named = { ...inputMapPreset('character'), id: 'constructor', actions: [] }
+
+    expect(completedInputMap(named)).toBe(named)
+  })
+
   it('completes a written map from its preset, and leaves a map of its own alone', () => {
     const preset = inputMapPreset('character')
     const partial = { ...preset, actions: preset.actions.slice(0, 1) }

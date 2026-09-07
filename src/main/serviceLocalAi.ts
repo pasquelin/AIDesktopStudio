@@ -36,6 +36,7 @@ import { notAnswering, pythonRuntime } from './ai/pythonRuntime'
 import { createPythonSupervisor, EngineMissingError } from './ai/pythonSupervisor'
 import { createAutoRigHost } from './ai/autoRigHost'
 import { createSmartSelectionHost } from './ai/smartSelectionHost'
+import { readBitmap } from './media/readBitmap'
 import { fileRuntime, type LocalRuntimes } from './ai/localRuntimes'
 import { createOwnModelAdder } from './ai/ownModelAdder'
 import { fetchModel, modelIsComplete } from './ai/modelInstall'
@@ -193,6 +194,7 @@ function localHosts(
       hold,
       engine: () => engine.supervisor.engine(),
       epoch: () => ai.loadedEpoch?.('efficient-sam-ti') ?? null,
+      readBitmap,
     }),
   }
 }

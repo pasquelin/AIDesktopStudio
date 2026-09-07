@@ -42,17 +42,6 @@ export function drawSelectionStencil(
 }
 
 /** Compresses contiguous opaque pixels to one rectangle, rather than one Pixi path per pixel. */
-export function rasterSelectionStencil(
-  bounds: Rect,
-  width: number,
-  height: number,
-  alpha: Uint8Array,
-): Graphics {
-  const stencil = new Graphics()
-  drawRasterSelection(stencil, bounds, width, height, alpha, 0xffffff)
-  return stencil
-}
-
 function drawRasterSelection(
   stencil: Graphics,
   bounds: Rect,

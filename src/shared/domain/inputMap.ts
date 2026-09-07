@@ -1,4 +1,33 @@
-export const INPUT_MAP_VERSION = 2
+import { isRecord } from '../guards'
+import {
+  inputBindingFits,
+  inputBindingOrNull,
+  isInputActionKind,
+  INPUT_MAP_VERSION,
+  type InputAction,
+  type InputMap,
+} from '@game/runtime/inputMap'
+
+/**
+ * The studio's half of the control-map domain: what a document is called, and a reader that
+ * REFUSES rather than answering `null`.
+ *
+ * 🛑 The shape, the version, the parser and `inputBindingFits` are the game runtime's — that tree
+ * is MIT and this one is PolyForm, so MIT comes here and never the other way. Written the other
+ * way round, the runtime kept a copy of all of it and three guards watched for a drift.
+ */
+export {
+  INPUT_MAP_VERSION,
+  inputBindingFits,
+  type GamepadBinding,
+  type GamepadControl,
+  type InputAction,
+  type InputActionKind,
+  type InputBinding,
+  type InputMap,
+  type KeyboardBinding,
+  type MouseBinding,
+} from '@game/runtime/inputMap'
 
 /**
  * 🛑 A map written under version 1 is READ, never refused: those files predate the day the
@@ -8,66 +37,6 @@ export const INPUT_MAP_VERSION = 2
  */
 const INPUT_MAP_VERSIONS: readonly number[] = [1, INPUT_MAP_VERSION]
 export const INPUT_MAP_EXTENSION = '.input.json'
-
-export type InputActionKind = 'button' | 'axis1' | 'axis2'
-
-export type KeyboardBinding = {
-  device: 'keyboard'
-  code: string
-  axis?: 'x' | 'y'
-  scale?: number
-}
-export type MouseBinding = {
-  device: 'mouse'
-  control: 'primary'
-}
-export type GamepadControl =
-  | 'leftStick'
-  | 'rightStick'
-  | 'leftStickX'
-  | 'leftStickY'
-  | 'rightStickX'
-  | 'rightStickY'
-  | 'south'
-  | 'east'
-  | 'west'
-  | 'north'
-  | 'leftShoulder'
-  | 'rightShoulder'
-  | 'leftTrigger'
-  | 'rightTrigger'
-  | 'select'
-  | 'start'
-  | 'leftStickButton'
-  | 'rightStickButton'
-  | 'dpadUp'
-  | 'dpadDown'
-  | 'dpadLeft'
-  | 'dpadRight'
-  | 'home'
-export type GamepadBinding = {
-  device: 'gamepad'
-  control: GamepadControl
-  deadZone?: number
-  invert?: boolean
-  scale?: number
-}
-
-export type InputBinding = KeyboardBinding | MouseBinding | GamepadBinding
-
-export type InputAction = {
-  id: string
-  kind: InputActionKind
-  bindings: readonly InputBinding[]
-}
-
-export type InputMap = {
-  version: number
-  id: string
-  priority: number
-  defaultActive: boolean
-  actions: readonly InputAction[]
-}
 
 export type InputMapModule = { path: string; map: InputMap }
 
@@ -93,7 +62,7 @@ function inputActionOf(value: unknown): InputAction {
   if (!isRecord(value)) throw new Error('input action must be an object')
   const { id, kind, bindings } = value
   if (typeof id !== 'string' || id.length === 0) throw new Error('input action id is required')
-  if (!isActionKind(kind)) throw new Error('invalid input action kind')
+  if (!isInputActionKind(kind)) throw new Error('invalid input action kind')
   if (!Array.isArray(bindings)) throw new Error('input bindings must be an array')
 
   const parsed = bindings.map(inputBindingOf)
@@ -103,113 +72,14 @@ function inputActionOf(value: unknown): InputAction {
   return { id, kind, bindings: parsed }
 }
 
-export function inputBindingOf(value: unknown): InputBinding {
-  if (!isRecord(value) || typeof value.device !== 'string') throw new Error('invalid input binding')
-
-  if (value.device === 'keyboard') return keyboardBindingOf(value)
-
-  if (value.device === 'mouse' && isMouseControl(value.control))
-    return { device: 'mouse', control: value.control }
-
-  if (value.device === 'gamepad') return gamepadBindingOf(value)
-
-  throw new Error('invalid input binding')
-}
-
-function keyboardBindingOf(value: Record<string, unknown>): KeyboardBinding {
-  if (typeof value.code !== 'string' || value.code.length === 0)
-    throw new Error('invalid input binding')
-  if (value.axis !== undefined && value.axis !== 'x' && value.axis !== 'y')
-    throw new Error('invalid keyboard axis')
-  const scale = numericScale(value.scale)
-  return {
-    device: 'keyboard',
-    code: value.code,
-    ...(value.axis === undefined ? {} : { axis: value.axis }),
-    ...(scale === undefined ? {} : { scale }),
-  }
-}
-
-function gamepadBindingOf(value: Record<string, unknown>): GamepadBinding {
-  if (!isGamepadControl(value.control)) throw new Error('invalid input binding')
-  // Refused rather than dropped, like `deadZone` and `scale` beside it: the exported game holds
-  // its OWN copy of this reader and refuses it, so dropping here writes a file the game discards.
-  if (value.invert !== undefined && typeof value.invert !== 'boolean')
-    throw new Error('invalid gamepad invert')
-  const options = numericOptions(value)
-  return {
-    device: 'gamepad',
-    control: value.control,
-    ...(options.deadZone === undefined ? {} : { deadZone: options.deadZone }),
-    ...(value.invert === undefined ? {} : { invert: value.invert }),
-    ...(options.scale === undefined ? {} : { scale: options.scale }),
-  }
-}
-
-function numericOptions(value: Record<string, unknown>): { deadZone?: number; scale?: number } {
-  const deadZone = value.deadZone
-  const scale = value.scale
-  if (
-    deadZone !== undefined &&
-    (typeof deadZone !== 'number' || !Number.isFinite(deadZone) || deadZone < 0 || deadZone >= 1)
-  )
-    throw new Error('invalid gamepad dead zone')
-  if (scale !== undefined && (typeof scale !== 'number' || !Number.isFinite(scale)))
-    throw new Error('invalid gamepad scale')
-  return {
-    ...(typeof deadZone === 'number' ? { deadZone } : {}),
-    ...(typeof scale === 'number' ? { scale } : {}),
-  }
-}
-
-function numericScale(value: unknown): number | undefined {
-  if (value === undefined) return undefined
-  if (typeof value !== 'number' || !Number.isFinite(value))
-    throw new Error('invalid keyboard scale')
-  return value
-}
-
-function isActionKind(value: unknown): value is InputActionKind {
-  return value === 'button' || value === 'axis1' || value === 'axis2'
-}
-
-function isMouseControl(value: unknown): value is MouseBinding['control'] {
-  return value === 'primary'
-}
-
-function isGamepadControl(value: unknown): value is GamepadControl {
-  return (
-    typeof value === 'string' &&
-    /^(?:leftStick|rightStick)(?:X|Y|Button)?$|^(?:south|east|west|north|leftShoulder|rightShoulder|leftTrigger|rightTrigger|select|start|dpadUp|dpadDown|dpadLeft|dpadRight|home)$/.test(
-      value,
-    )
-  )
-}
-
-function isAxisBinding(binding: InputBinding): boolean {
-  return (
-    (binding.device === 'keyboard' &&
-      (binding.axis !== undefined || binding.scale !== undefined)) ||
-    (binding.device === 'gamepad' &&
-      (binding.control.endsWith('Stick') ||
-        binding.control.endsWith('StickX') ||
-        binding.control.endsWith('StickY')))
-  )
-}
-
-export function inputBindingFits(kind: InputActionKind, binding: InputBinding): boolean {
-  if (kind === 'button') return !isAxisBinding(binding)
-  if (binding.device === 'mouse') return false
-  if (kind === 'axis1') {
-    if (binding.device === 'keyboard') return binding.axis === undefined
-    // Anything but a TWO-WAY stick: a button pushes one way, which is what a half-axis is — and
-    // a rudder on the shoulders was refused by a rule that only knew the word « Trigger ».
-    return binding.control !== 'leftStick' && binding.control !== 'rightStick'
-  }
-  if (binding.device === 'keyboard') return binding.axis !== undefined
-  return binding.control === 'leftStick' || binding.control === 'rightStick'
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null
+/**
+ * The runtime's reader, turned into a refusal.
+ *
+ * A file the studio opens is one a person can be told about; the game reads the same bytes at
+ * launch and has nobody to tell, so it drops the binding and plays on. One rule, two answers.
+ */
+export function inputBindingOf(value: unknown) {
+  const binding = inputBindingOrNull(value)
+  if (!binding) throw new Error('invalid input binding')
+  return binding
 }

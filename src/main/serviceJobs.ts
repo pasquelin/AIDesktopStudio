@@ -307,9 +307,11 @@ async function removeConvertedSources(
   const packageParent = parentOf(sourceFolder)
   const ownsNested = ownsFolder && sourceFolder === `${assetFolder}/${SOURCES_FOLDER}`
   const ownsRefiled = nameOf(packageParent ?? '') === SOURCES_FOLDER
-  if (!ownsRefiled && !(ownsNested && nameOf(sourceFolder) === SOURCES_FOLDER)) {
-    return await orElse(rmdir(absolute), undefined)
-  }
+  // Said the right way round: this is the condition that decides a RECURSIVE delete. Anything the
+  // asset does not own is emptied at most, by an `rmdir` that fails on a folder holding anything.
+  const ownsPackage = ownsRefiled || (ownsNested && nameOf(sourceFolder) === SOURCES_FOLDER)
+  if (!ownsPackage) return await orElse(rmdir(absolute), undefined)
+
   await rm(absolute, { recursive: true })
   if (ownsRefiled && packageParent) {
     const parent = assetFilePath(root, packageParent)
@@ -355,7 +357,7 @@ function createLocalJobs(deps: JobDeps) {
           fields: request.fields,
           destination: join(
             await deps.generationFolder(),
-            `${request.jobId}.${model.outputExtension ?? outputExtensionOf(request.modality)}`,
+            `${request.jobId}.${outputExtensionOf(request.modality)}`,
           ),
           onProgress: request.onProgress,
           signal: request.signal,

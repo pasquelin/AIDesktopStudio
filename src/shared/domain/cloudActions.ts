@@ -113,7 +113,6 @@ export const CLOUD_ACTIONS: readonly AssistantAction[] = [
      * choose between pushing and pulling can ask what each would do before either costs a request.
      */
     name: 'cloud.previewSync',
-    capabilities: { intents: ['read'] },
     titleKey: 'assistant.actions.cloudPreviewSync.title',
     descriptionKey: 'assistant.actions.cloudPreviewSync.description',
     commitment: 'none',

@@ -3,7 +3,7 @@ import { ToolButton } from '@/components/ToolButton'
 import { QuietNote } from '@/components/QuietNote'
 import { HINT_LEFT } from '@/helpers/tooltip'
 import { RetargetMappingRow } from './RetargetMappingRow'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   HUMANOID_BODY_ROLES,
@@ -13,11 +13,29 @@ import {
 import { profileWithRole } from '@shared/domain/skeletonProfile'
 import { PropertySection } from '@/components/PropertySection'
 import { SearchField } from '@/components/SearchField'
+import type { SelectOption } from '@/components/SelectField'
 import { Button } from '@/components/Button'
 import { motionProfile } from '../../retargetDraft'
 import { boneFor, type RetargetMappingSide } from '../../retargetMappingSide'
 
+const GROUPS = [
+  {
+    id: 'torso',
+    roles: HUMANOID_BODY_ROLES.filter(
+      role => !role.startsWith('Left') && !role.startsWith('Right'),
+    ),
+  },
+  { id: 'arms', roles: HUMANOID_BODY_ROLES.filter(role => /Shoulder|Arm|Hand/.test(role)) },
+  { id: 'legs', roles: HUMANOID_BODY_ROLES.filter(role => /Leg|Foot|Toes/.test(role)) },
+  { id: 'fingers', roles: HUMANOID_FINGER_ROLES },
+]
+
 type Props = { source: RetargetMappingSide; target: RetargetMappingSide; resetKey?: string }
+
+const choicesOf = (side: RetargetMappingSide, unmapped: string): SelectOption<string>[] => [
+  { value: '', label: unmapped },
+  ...side.view.bones.map(bone => ({ value: bone.name, label: bone.name })),
+]
 
 export function RetargetMapping({ source, target, resetKey }: Props) {
   const { t } = useTranslation()
@@ -37,39 +55,50 @@ export function RetargetMapping({ source, target, resetKey }: Props) {
         .includes(query.toLowerCase())
     )
   }
+  // 🛑 One list per SIDE, not one per row: the same seventy bones were spelled into `<option>`
+  // objects fifty-two times over, for each of the two sides — see `RetargetMappingRow`.
+  const unmapped = t('character.retarget.unmapped')
+  const sourceBones = useMemo(() => choicesOf(source, unmapped), [source.view.bones, unmapped])
+  const targetBones = useMemo(() => choicesOf(target, unmapped), [target.view.bones, unmapped])
+  const lock = useCallback((role: HumanoidRole) => {
+    setLocked(current => {
+      const next = new Set(current)
+      if (next.has(role)) next.delete(role)
+      else next.add(role)
+      return next
+    })
+  }, [])
+  // 🛑 The roles already taken are COUNTED here, not asked of `next`: that profile is replaced at
+  // every turn, and `boneFor` inverts a whole one per question — around a hundred inversions for
+  // a click, where the linear walk it replaced stopped at its first match.
   const auto = () => {
     for (const side of [source, target]) {
       let next = side.profile
+      const taken = new Set(Object.values(side.profile.roles))
       for (const [bone, role] of Object.entries(motionProfile(side.view.bones).roles)) {
-        if (locked.has(role) || boneFor(next, role) || next.roles[bone]) continue
+        if (locked.has(role) || taken.has(role) || next.roles[bone]) continue
         next = profileWithRole(next, bone, role)
+        taken.add(role)
       }
       side.onChange(next)
     }
   }
-  const choose = (side: RetargetMappingSide, role: HumanoidRole, name: string) => {
-    let next = side.profile
-    const previous = boneFor(next, role)
-    if (previous) next = profileWithRole(next, previous, null)
-    if (name) next = profileWithRole(next, name, role)
-    side.onChange(next)
-    setLocked(current => new Set([...current, role]))
-    for (const one of [source, target]) {
-      const bone = one === side ? name : boneFor(one.profile, role)
-      one.view.engine.setPickedBone(bone ? { nodeId: one.view.nodeId, bone } : null)
-    }
-  }
-  const groups = [
-    {
-      id: 'torso',
-      roles: HUMANOID_BODY_ROLES.filter(
-        role => !role.startsWith('Left') && !role.startsWith('Right'),
-      ),
+  // Held across renders like `lock`, or the memo on every row misses whatever else is stable.
+  const choose = useCallback(
+    (side: RetargetMappingSide, role: HumanoidRole, name: string) => {
+      let next = side.profile
+      const previous = boneFor(next, role)
+      if (previous) next = profileWithRole(next, previous, null)
+      if (name) next = profileWithRole(next, name, role)
+      side.onChange(next)
+      setLocked(current => new Set([...current, role]))
+      for (const one of [source, target]) {
+        const bone = one === side ? name : boneFor(one.profile, role)
+        one.view.engine.setPickedBone(bone ? { nodeId: one.view.nodeId, bone } : null)
+      }
     },
-    { id: 'arms', roles: HUMANOID_BODY_ROLES.filter(role => /Shoulder|Arm|Hand/.test(role)) },
-    { id: 'legs', roles: HUMANOID_BODY_ROLES.filter(role => /Leg|Foot|Toes/.test(role)) },
-    { id: 'fingers', roles: HUMANOID_FINGER_ROLES },
-  ]
+    [source, target],
+  )
   return (
     <PropertySection title={t('character.retarget.mapping')} scId="retarget.mapping">
       <SearchField
@@ -88,7 +117,7 @@ export function RetargetMapping({ source, target, resetKey }: Props) {
           onClick={() => setMissing(value => !value)}
         />
       </div>
-      {groups.map(group => {
+      {GROUPS.map(group => {
         const roles = group.roles.filter(visible)
         if (roles.length === 0) return null
         return (
@@ -113,16 +142,11 @@ export function RetargetMapping({ source, target, resetKey }: Props) {
                 role={role}
                 source={source}
                 target={target}
+                sourceBones={sourceBones}
+                targetBones={targetBones}
                 locked={locked.has(role)}
                 onChoose={choose}
-                onLock={() =>
-                  setLocked(current => {
-                    const next = new Set(current)
-                    if (next.has(role)) next.delete(role)
-                    else next.add(role)
-                    return next
-                  })
-                }
+                onLock={lock}
               />
             ))}
           </PropertySection>

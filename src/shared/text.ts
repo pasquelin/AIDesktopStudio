@@ -89,3 +89,27 @@ export function byCodeUnit(one: string, other: string): number {
  */
 export const clipped = (text: string, max: number): string =>
   text.length <= max ? text : `${text.slice(0, max)}…`
+
+/**
+ * Where the object opening at `opens` closes, strings and escapes skipped; `-1` when it never does.
+ *
+ * Shared because both sides walk JSON they did not parse: the main process reads the head of a
+ * document, and the assistant reads a reply a model wrote around it. Written twice, an escaping
+ * fix landed in one of them only.
+ */
+export function closingBrace(text: string, opens: number): number {
+  let depth = 0
+  let quoted = false
+
+  for (let at = opens; at >= 0 && at < text.length; at += 1) {
+    const char = text[at]
+    if (quoted) {
+      if (char === '\\') at += 1
+      else if (char === '"') quoted = false
+    } else if (char === '"') quoted = true
+    else if (char === '{') depth += 1
+    else if (char === '}' && (depth -= 1) === 0) return at
+  }
+
+  return -1
+}

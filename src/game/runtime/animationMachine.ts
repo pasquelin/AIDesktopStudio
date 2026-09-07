@@ -9,6 +9,7 @@ import type {
 import type { ClipSource } from '@shared/domain/sceneModel'
 import type { PosedClip } from '../ports/animationPort'
 import { clamp } from '../numeric'
+import { pooled } from '../pooled'
 
 /** What a body is doing, as the conditions of a graph read it. */
 export type ParameterReading = Readonly<Record<string, number | boolean>>
@@ -112,28 +113,36 @@ export function advanceAnimator(
   }
 }
 
-/** Every clip showing right now, the state being entered over the one being left. */
+/**
+ * Every clip showing right now, the state being entered over the one being left.
+ *
+ * 🛑 Written INTO `clips` when one is given, which the animator reuses frame after frame — see
+ * `pooled`, and the borrowing `AnimationPort.pose` spells out. Two clips at most, so the buffer
+ * never grows past two.
+ */
 export function posedClipsOf(
   layer: AnimationLayer,
   held: AnimatorState,
   lengths: ClipLengths,
+  clips: PosedClip[] = [],
 ): readonly PosedClip[] {
   const into = weightOf(held)
-  const clips: PosedClip[] = []
+  let count = 0
 
   const leaving = held.from ? stateOf(layer, held.from.state) : null
-  if (leaving && held.from) {
-    const posed = posedOf(layer, leaving, held.from.time, 1 - into, lengths)
-    if (posed) clips.push(posed)
-  }
+  if (
+    leaving &&
+    held.from &&
+    posedInto(clips, count, layer, leaving, held.from.time, 1 - into, lengths)
+  )
+    count += 1
 
   const playing = stateOf(layer, held.state)
   // The whole weight when nothing is being left: a lone clip must never show at a fraction.
-  const posed = playing
-    ? posedOf(layer, playing, held.time, clips.length > 0 ? into : 1, lengths)
-    : null
-  if (posed) clips.push(posed)
+  if (playing && posedInto(clips, count, layer, playing, held.time, count > 0 ? into : 1, lengths))
+    count += 1
 
+  clips.length = count
   return clips
 }
 
@@ -142,26 +151,32 @@ function weightOf(held: AnimatorState): number {
   return held.from === null || held.fade <= 0 ? 1 : clamp(held.faded / held.fade, 0, 1)
 }
 
-function posedOf(
+/** Whether that state shows anything, having written it at `at` if it does. */
+function posedInto(
+  clips: PosedClip[],
+  at: number,
   layer: AnimationLayer,
   state: AnimationState,
   time: number,
   weight: number,
   lengths: ClipLengths,
-): PosedClip | null {
+): boolean {
   const key = clipKeyOf(state.source)
   const length = lengths[key]
   // Not landed yet: the state holds and shows nothing, which is the contract a block already has.
-  if (length === undefined || length <= 0) return null
+  if (length === undefined || length <= 0) return false
 
-  return {
-    key,
-    time: state.loop ? time % length : Math.min(time, length),
-    weight,
-    part: state.part ?? layer.part,
-    rootMotion: state.rootMotion,
-  }
+  const held = pooled(clips, at, () => ({ ...NO_CLIP }))
+  held.key = key
+  held.time = state.loop ? time % length : Math.min(time, length)
+  held.weight = weight
+  held.part = state.part ?? layer.part
+  held.rootMotion = state.rootMotion
+  return true
 }
+
+/** What a pooled slot is born as, before the state above writes every one of its fields. */
+const NO_CLIP: PosedClip = { key: '', time: 0, weight: 0, part: 'all', rootMotion: 'inPlace' }
 
 /** The clock of both halves moved on, and what that crossed put in `happened`. */
 function played(

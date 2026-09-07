@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, onTestFinished } from 'vitest'
 
-import type { Asset } from '@shared/domain/asset'
+import { ASSET_SEARCH_LIMIT_MAX, type Asset } from '@shared/domain/asset'
 
 import { createCatalog, migrate, type Catalog } from './catalog'
 
@@ -29,6 +29,33 @@ describe('catalog', () => {
     driver = openMemoryDatabase()
     catalog = createCatalog(driver)
     onTestFinished(driver.close)
+  })
+
+  /**
+   * 🛑 The refiling that follows a move read the catalogue through `search`, whose page stops at
+   * 500: past it, rows kept the type of the folder they came FROM, without a word.
+   */
+  it('answers for every row under a folder, past the page a search would stop at', () => {
+    for (let at = 0; at < 620; at += 1)
+      catalog.add(asset({ id: `asset_${at}`, path: `Rushes/shot_${at}.png` }))
+    catalog.add(asset({ id: 'asset_outside', path: 'Notes/brief.png' }))
+
+    expect(catalog.assetsUnder(['Rushes'])).toHaveLength(620)
+    expect(catalog.search({ limit: ASSET_SEARCH_LIMIT_MAX })).toHaveLength(500)
+  })
+
+  it('answers for a folder and everything below it, and for nothing beside it', () => {
+    catalog.add(asset({ id: 'asset_in', path: 'Rushes/a.png' }))
+    catalog.add(asset({ id: 'asset_deep', path: 'Rushes/day1/b.png' }))
+    catalog.add(asset({ id: 'asset_beside', path: 'RushesOld/c.png' }))
+
+    expect(
+      catalog
+        .assetsUnder(['Rushes'])
+        .map(one => one.id)
+        .sort(),
+    ).toEqual(['asset_deep', 'asset_in'])
+    expect(catalog.assetsUnder([])).toEqual([])
   })
 
   it('answers with the oldest row when the same bytes were let in twice', () => {

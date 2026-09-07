@@ -10,6 +10,7 @@ import { skeletonTopologySignatureOf, type SkeletonProfile } from '@shared/domai
 import { SceneRenderer } from './SceneRenderer'
 import type { BvhBuilder } from './bvhBuilder'
 import type { Retarget } from './retarget'
+import type { WireBone } from './retargetMessage'
 import type * as ModelCache from './modelCache'
 import { modelNodeFixture } from './scene-fixtures'
 import { EMPTY_SCENE } from './sceneState'
@@ -69,10 +70,10 @@ const modelNode = (clip: ClipRef | null) => ({
 describe('SceneRenderer and the animations the app ships with', () => {
   /** What the retargeting port is asked, and what it hands back — here, the clips unchanged. */
   const straightThrough = (): Retarget & {
-    asked: { target: Object3D; clips: string[] }[]
+    asked: { target: Object3D | readonly WireBone[]; clips: string[] }[]
     learnt: SkeletonProfile[]
   } => {
-    const asked: { target: Object3D; clips: string[] }[] = []
+    const asked: { target: Object3D | readonly WireBone[]; clips: string[] }[] = []
     const learnt: SkeletonProfile[] = []
     return {
       asked,
@@ -143,6 +144,23 @@ describe('SceneRenderer and the animations the app ships with', () => {
       { key: 'chosen', url: assetUrl('motion'), label: 'Chosen', clipIndex: 1 },
     ])
     await vi.waitFor(() => expect(retarget.asked[0]?.clips).toEqual(['second']))
+    engine.dispose()
+  })
+
+  /**
+   * 🛑 `adapt` hands the SOURCE clip back when the two skeletons already agree, and the label is
+   * written onto what it gave: renaming it in place would rename the file's own clip, and the
+   * panel that lists what the file carries would read the block's label instead.
+   */
+  it('leaves the source file its own clip name when nothing had to be retargeted', async () => {
+    // Named OTHERWISE than the block: the two spelled alike, an in-place rename is invisible.
+    const source = animatedModel([walk('Danse au sol')])
+    const { engine } = withShipped(animatedModel([]), source, straightThrough())
+    engine.apply({ ...EMPTY_SCENE, nodes: [modelNode(shippedBlock())] })
+
+    await vi.waitFor(() => expect(engine.clipLengthsOf('a')['bundled:Capoeira']).toBe(1))
+
+    expect(source.animations[0]?.name).toBe('Danse au sol')
     engine.dispose()
   })
 

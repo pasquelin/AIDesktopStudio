@@ -113,16 +113,16 @@ export function worldFromScene(
   const world = createWorld({
     scene: { kind: 'document', id: documentId },
     ports,
-    systems: systemsFor(
+    systems: systemsFor({
       state,
       ports,
-      told,
+      scripts: told,
       intents,
       animators,
-      graphNamed(animationGraphs),
-      id => living?.entities.get(id)?.transform ?? null,
+      graphOf: graphNamed(animationGraphs),
+      liveOf: id => living?.entities.get(id)?.transform ?? null,
       heightmaps,
-    ),
+    }),
     seed,
     step: STEP_SECONDS,
     play: state.world.play,
@@ -176,108 +176,102 @@ function scriptOptionsFor(
   }
 }
 
-/** Every system the studio runs today. A component gains its behaviour by joining this list. */
-function systemsFor(
-  state: SceneState,
+/**
+ * 🛑 A node hanging from another is FELT now, and that closed the hole this carried since the
+ * physics arrived: the body goes in at its composed place — see `hierarchy` — and what the step
+ * moves is written back into the frame the node hangs in.
+ *
+ * What stays true: the SHAPE is the node's own, so a scaled parent stretches the mesh and not
+ * the collider. Named here rather than discovered.
+ */
+function shapeFor(
+  byId: ReadonlyMap<string, SceneNode>,
   ports: GameApi,
-  scripts: ScriptSystemOptions,
-  intents: Intents,
-  animators: Animators,
-  graphOf: (ref: string) => AnimationGraph | null,
-  liveOf: (nodeId: string) => Transform | null,
-  heightmaps?: ReadonlyMap<string, HeightmapSamples>,
-): readonly System[] {
+  entity: Entity,
+): ColliderShape | null {
+  const node = byId.get(entity.id)
+  if (!node) return null
+  const collider = colliderFromNode(node)
+  if (!collider) {
+    ports.log.write('warn', `${node.name} has no shape the physics can feel`)
+    return null
+  }
+  if (!collider.exact) {
+    ports.log.write('warn', `${node.name} collides as a hull: its fidelity could not be met`)
+  }
+  return collider.shape
+}
+
+/** What the systems of one world are built from — named rather than eight positional arguments. */
+type SystemParts = {
+  state: SceneState
+  ports: GameApi
+  scripts: ScriptSystemOptions
+  intents: Intents
+  animators: Animators
+  graphOf: (ref: string) => AnimationGraph | null
+  liveOf: (nodeId: string) => Transform | null
+  heightmaps?: ReadonlyMap<string, HeightmapSamples>
+}
+
+/** Every system the studio runs today. A component gains its behaviour by joining this list. */
+function systemsFor(parts: SystemParts): readonly System[] {
+  const { state, ports, scripts, intents, animators, graphOf, liveOf, heightmaps } = parts
   const { bodyIdOf } = scripts
   const byId = new Map(state.nodes.map(node => [node.id, node]))
   const hierarchy = createHierarchy(byId, liveOf)
   const placedAt = (entity: Entity, own: Transform): Transform => hierarchy.worldOf(entity.id, own)
-  const systemsForStep1 = () => {
-    const placed = (entity: Entity): Transform => placedAt(entity, entity.transform)
-    const possessions = createPossessions()
-    const characters = createCharacters(possessions, placed, intents)
-    const systemsForStep2 = () => {
-      const pilots = createPilots()
-      const player = playerPartsOf(state.nodes)
-      const rigs = createRigs(player?.eye?.id ?? null)
-      const systemsForStep3 = () => {
-        /**
-         * 🛑 A node hanging from another is FELT now, and that closed the hole this carried since the
-         * physics arrived: the body goes in at its composed place — see `hierarchy` — and what the step
-         * moves is written back into the frame the node hangs in.
-         *
-         * What stays true: the SHAPE is the node's own, so a scaled parent stretches the mesh and not
-         * the collider. Named here rather than discovered.
-         */
-        const shapeOf = (entity: Entity): ColliderShape | null => {
-          const node = byId.get(entity.id)
-          if (!node) return null
-          const collider = colliderFromNode(node)
-          if (!collider) {
-            ports.log.write('warn', `${node.name} has no shape the physics can feel`)
-            return null
-          }
-          if (!collider.exact) {
-            ports.log.write(
-              'warn',
-              `${node.name} collides as a hull: its fidelity could not be met`,
-            )
-          }
-          return collider.shape
-        }
-        return [
-          createScriptSystem(scripts),
-          createTimelineSystem({
-            timeline: state.animation,
-            assetRef: id => ({ kind: 'asset', id }),
-          }),
-          createMovementSystem(),
-          createPathSystem(),
-          createPatrolSystem(),
-          createFollowSystem(),
-          createOrbitSystem(),
-          createSpinSystem(),
-          createLookAtSystem(),
-          createVehicleSystem(pilots, intents, placed),
-          createAircraftSystem(pilots, intents, placed),
-          createPossessionSystem({
-            possessions,
-            bodyIdOf,
-            worldOf: placedAt,
-            localOf: (entity, position, rotation) =>
-              hierarchy.localOf(entity.id, position, rotation),
-          }),
-          createPhysicsSystem({
-            shapeOf,
-            characters,
-            possessions,
-            statics: staticsOf(state, heightmaps, message => ports.log.write('warn', message)),
-            worldOf: placed,
-            localOf: (entity, position, rotation) =>
-              hierarchy.localOf(entity.id, position, rotation),
-          }),
-          createSpringArmSystem({
-            characters,
-            rigs,
-            worldOf: placedAt,
-            localOf: (entity, position, rotation) =>
-              hierarchy.localOf(entity.id, position, rotation),
-            lensOf: entity => cameraLensOf(byId.get(entity.id)),
-          }),
-          createAnimatorSystem({ graphOf, characters, animators }),
-          createPlayCameraSystem({
-            characters,
-            worldOf: placedAt,
-            pilots,
-            rigs,
-            playerBodyId: player?.body?.id ?? null,
-          }),
-        ]
-      }
-      return systemsForStep3()
-    }
-    return systemsForStep2()
-  }
-  return systemsForStep1()
+  const placed = (entity: Entity): Transform => placedAt(entity, entity.transform)
+  const possessions = createPossessions()
+  const characters = createCharacters(possessions, placed, intents)
+  const pilots = createPilots()
+  const player = playerPartsOf(state.nodes)
+  const rigs = createRigs(player?.eye?.id ?? null)
+  return [
+    createScriptSystem(scripts),
+    createTimelineSystem({
+      timeline: state.animation,
+      assetRef: id => ({ kind: 'asset', id }),
+    }),
+    createMovementSystem(),
+    createPathSystem(),
+    createPatrolSystem(),
+    createFollowSystem(),
+    createOrbitSystem(),
+    createSpinSystem(),
+    createLookAtSystem(),
+    createVehicleSystem(pilots, intents, placed),
+    createAircraftSystem(pilots, intents, placed),
+    createPossessionSystem({
+      possessions,
+      bodyIdOf,
+      worldOf: placedAt,
+      localOf: (entity, position, rotation) => hierarchy.localOf(entity.id, position, rotation),
+    }),
+    createPhysicsSystem({
+      shapeOf: (entity: Entity) => shapeFor(byId, ports, entity),
+      characters,
+      possessions,
+      statics: staticsOf(state, heightmaps, message => ports.log.write('warn', message)),
+      worldOf: placed,
+      localOf: (entity, position, rotation) => hierarchy.localOf(entity.id, position, rotation),
+    }),
+    createSpringArmSystem({
+      characters,
+      rigs,
+      worldOf: placedAt,
+      localOf: (entity, position, rotation) => hierarchy.localOf(entity.id, position, rotation),
+      lensOf: entity => cameraLensOf(byId.get(entity.id)),
+    }),
+    createAnimatorSystem({ graphOf, characters, animators }),
+    createPlayCameraSystem({
+      characters,
+      worldOf: placedAt,
+      pilots,
+      rigs,
+      playerBodyId: player?.body?.id ?? null,
+    }),
+  ]
 }
 
 /** The REST lens of a camera node — a game plays no timeline, so `lensAt` is never asked. */

@@ -80,7 +80,6 @@ export const SHELL_ACTIONS: readonly AssistantAction[] = [
   }),
   action({
     name: 'media.capabilities',
-    capabilities: { intents: ['read'] },
     titleKey: 'assistant.actions.mediaCapabilities.title',
     descriptionKey: 'assistant.actions.mediaCapabilities.description',
     commitment: 'none',

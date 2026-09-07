@@ -1,7 +1,7 @@
-import { ASSET_SEARCH_LIMIT_MAX, type Asset } from '@shared/domain/asset'
+import type { Asset } from '@shared/domain/asset'
 import type { FileOutcome, PathChange } from '@shared/domain/fileOp'
 import { filingTypeOf } from '@shared/domain/filingType'
-import { isUnder, nameOf, parentOf } from '@shared/domain/folder'
+import { nameOf, parentOf } from '@shared/domain/folder'
 import type { RoleFolders } from '@shared/domain/folderRole'
 import { moveAssetFile, moveAssetFileToFree } from '@main/assets/assetFile'
 import type { AsyncCatalog } from './catalogClient'
@@ -18,17 +18,28 @@ import {
 import { inverseBatch, steppedStacks, UNDO_DEPTH, type UndoStacks } from './fileStacks'
 import type { FolderReader, FolderWriter } from './folder'
 
+/**
+ * The rows a batch of moves refiled, once for the WHOLE batch.
+ *
+ * 🛑 Asked BY PREFIX and unbounded: it read the whole catalogue once per move — fifty files meant
+ * fifty round trips of five hundred rows — and, worse, the rows past that cap kept the type of the
+ * folder they came FROM, in silence, on exactly the projects large enough to have them. The
+ * repaths all land before this runs, so one read sees them all.
+ */
 async function retargetMoved(
   catalog: AsyncCatalog,
-  to: string,
+  destinations: readonly string[],
   roles: RoleFolders,
 ): Promise<number> {
-  const rows = await catalog.search({ limit: ASSET_SEARCH_LIMIT_MAX })
+  const rows = await catalog.assetsUnder(destinations)
   let changed = 0
   for (const row of rows) {
     const path = row.path
-    if (!path || (path !== to && !isUnder(path, to))) continue
-    const type = filingTypeOf(nameOf(path), parentOf(path) ?? '', roles)
+    if (!path) continue
+    // What the catalogue already holds over it, which is what `known` was written for: a file
+    // whose name says nothing — adopted by its first bytes — is otherwise skipped and keeps the
+    // type of the folder it came FROM.
+    const type = filingTypeOf(nameOf(path), parentOf(path) ?? '', roles, row.type)
     if (!type || type === row.type) continue
     await catalog.add({ ...row, type })
     changed += 1
@@ -103,13 +114,14 @@ export function createFileOps({
   }
   const follow = async (root: string, done: readonly PathChange[]): Promise<void> => {
     let forgotten = 0
-    let retargeted = 0
+    const moved: string[] = []
     for (const { from, to } of done) {
       if (from && to) {
         await catalog().repath(from, to)
-        retargeted += await retargetMoved(catalog(), to, roles())
+        moved.push(to)
       } else if (from) forgotten += await catalog().forgetUnder(from)
     }
+    const retargeted = await retargetMoved(catalog(), moved, roles())
     if (done.some(({ from, to }) => from && to)) await clearJournal(root)
     if (forgotten > 0 || retargeted > 0) assetsChanged()
     if (done.length > 0) pathsChanged(done)

@@ -45,7 +45,7 @@ export async function ownMotionModelFrom(
   watch?.signal?.throwIfAborted()
   if (!licencesAccepted) throw new Error('motion model licence acceptance is required')
   const template = shippedModelsFor(aiRoleId('3d', 'motion')).find(
-    model => model.fieldProfile === 'motion',
+    model => model.modality === 'motion',
   )
   if (!template) throw new Error('motion model manifest is unavailable')
   const folder = resolve(path)

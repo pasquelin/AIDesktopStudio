@@ -17,6 +17,58 @@ export type BundledAnimation = {
   thumbnail: boolean
 }
 
+/**
+ * How a still is taken of a clip: where to stop inside it, what makes one frame worth showing
+ * over another, and where the eye stands.
+ *
+ * 🛑 DATA of the clip, and not a reading of its file name. The renderer decided all of this by
+ * matching the name it was handed — a sixteen-entry table, `/jump/i`, `/idle/i` — and the name it
+ * is handed for an imported clip is the stem of whatever file a person dropped: `Idle_Combat.fbx`
+ * was scored on its head and shoulders, `Walk_v2.fbx` on nothing in particular.
+ *
+ * Nothing here is the ordinary answer, and it means « take the best-scoring sample »: an imported
+ * clip is described by nobody, and guessing from its name is what this exists to stop.
+ */
+export type AnimationPoster = {
+  /**
+   * Where in the clip to stop, as a fraction of it.
+   *
+   * 🛑 Every shipped clip settles it, and that is what makes the scoring below UNREACHABLE for
+   * them: a described clip is never sampled. What the sampling is for is a clip nobody has
+   * described, and it is scored on the legs — see `STEP_JOINTS`, in the renderer.
+   */
+  at?: number
+  /** Where the eye stands, when the ordinary three-quarter view says nothing about this clip. */
+  camera?: readonly [number, number, number]
+  /** Whether the body is turned back square to the camera — what a side turn is drawn as. */
+  square?: boolean
+}
+
+/**
+ * What is known about the stills of the clips the app SHIPS with, by folder name.
+ *
+ * 🛑 Keyed by a folder the app owns, never by an imported file's stem: an animation someone
+ * dropped in wears whatever name its author gave it, and answers here by accident or not at all.
+ */
+export const BUNDLED_ANIMATION_POSTERS: Readonly<Record<string, AnimationPoster>> = {
+  Idle: { at: 0.5 },
+  IdleBreathing: { at: 0.85 },
+  IdleBriefcase: { at: 0.25 },
+  IdleHappy: { at: 0.3 },
+  IdleSad: { at: 0.45 },
+  IdleShift: { at: 0.3 },
+  Jump: { at: 0.39 },
+  RunningJump: { at: 0.39 },
+  StrafeLeft: { at: 0.25 },
+  StrafeRight: { at: 0.65 },
+  TurnAround: { at: 0.55 },
+  TurnLeft: { at: 0.29, square: true, camera: [0, 7, 24] },
+  TurnRight: { at: 0.5, square: true, camera: [0, 7, 24] },
+  Walk: { at: 0.75 },
+  WalkStart: { at: 0.45 },
+  WalkStop: { at: 0.45 },
+}
+
 /** The clip files an animation folder may hold, lowercase and with their dot. */
 export const ANIMATION_EXTENSIONS: readonly string[] = ['.glb', '.gltf', '.fbx', '.bvh']
 

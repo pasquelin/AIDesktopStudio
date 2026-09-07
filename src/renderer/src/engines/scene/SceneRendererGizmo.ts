@@ -1,4 +1,5 @@
 import { Mesh, type Object3D } from 'three'
+import type { TransformControls } from 'three/addons/controls/TransformControls.js'
 import { type Transform } from '@shared/domain/scene'
 import { withMovedHandle, withMovedPoint } from './cameraPath'
 import { railOf } from './nodeRail'
@@ -22,6 +23,28 @@ export abstract class SceneRendererGizmo extends SceneRendererHierarchy {
   protected abstract pickedBoneObject(): Object3D | null
   protected abstract articulates(bone: Object3D): boolean
   protected abstract pickedKnob(): Object3D | null
+  /**
+   * A picked bone is what the gizmo holds while the pose mode is on, and it is attached directly:
+   * a bone is inside a model's instance, so the pivot has nothing to carry.
+   */
+  private attachToBone(gizmo: TransformControls, boneObject: Object3D): void {
+    this.boneHandle = this.articulates(boneObject)
+    if (this.mode === 'select') {
+      gizmo.detach()
+      return
+    }
+    if (!this.boneHandle) {
+      gizmo.attach(boneObject)
+      return
+    }
+    // 🛑 OUT of the chain: the gizmo attached to the joint itself has the bone it turns for a
+    // parent, so its own frame swung under the hand and the drag ran away.
+    boneObject.getWorldPosition(this.pivot.position)
+    this.pivot.quaternion.identity()
+    this.pivot.scale.set(1, 1, 1)
+    gizmo.attach(this.pivot)
+  }
+
   protected attachGizmo(): void {
     const gizmo = this.gizmo
     if (!gizmo) return
@@ -33,64 +56,34 @@ export abstract class SceneRendererGizmo extends SceneRendererHierarchy {
     // selection back to the scene, and re-centring the pivot while it carries that selection
     // would drag it to the origin — a mode key pressed during a drag must not move anything.
     if (gizmo.dragging) return
-    const attachGizmoStep1 = () => {
-      const attachGizmoStep1 = () => {
-        // A picked bone is what the gizmo holds while the pose mode is on, and it is attached
-        // directly: a bone is inside a model's instance, so the pivot has nothing to carry.
-        const boneObject = this.pickedBoneObject()
-        if (boneObject) {
-          this.boneHandle = this.articulates(boneObject)
-          if (this.mode === 'select') gizmo.detach()
-          else if (!this.boneHandle) gizmo.attach(boneObject)
-          else {
-            // 🛑 OUT of the chain: the gizmo attached to the joint itself has the bone it turns for
-            // a parent, so its own frame swung under the hand and the drag ran away.
-            boneObject.getWorldPosition(this.pivot.position)
-            this.pivot.quaternion.identity()
-            this.pivot.scale.set(1, 1, 1)
-            gizmo.attach(this.pivot)
-          }
-          return
-        }
-        this.boneHandle = false
-        const attachGizmoStep2 = () => {
-          const knob = this.pickedKnob()
-          if (knob) {
-            // 🛑 A point is a POSITION, so holding one IS a translation whatever tool is armed: rotating
-            // or scaling would ask the gizmo to write what the descriptor has no room for, and leaving
-            // it detached made a handle one takes and cannot move — which reads as a dead handle.
-            gizmo.setMode('translate')
-            gizmo.attach(knob)
-            return
-          }
-          // Back to the armed tool: holding a point forced translation, and a rotate left behind would
-          // outlive the point that asked for it.
-          if (this.mode !== 'select') gizmo.setMode(this.mode)
-          const attachGizmoStep3 = () => {
-            const target = gizmoTargetFor(this.mode, this.space, this.selectedObjects(), object =>
-              this.applied.get(object.name),
-            )
-            if (target.kind === 'none') {
-              gizmo.detach()
-              return
-            }
-            if (target.kind === 'object') {
-              gizmo.attach(target.object)
-              return
-            }
-            const attachGizmoStep4 = () => {
-              placePivot(this.pivot, target.objects, target.anchor)
-              gizmo.attach(this.pivot)
-            }
-            return attachGizmoStep4()
-          }
-          return attachGizmoStep3()
-        }
-        return attachGizmoStep2()
-      }
-      return attachGizmoStep1()
+    const boneObject = this.pickedBoneObject()
+    if (boneObject) return this.attachToBone(gizmo, boneObject)
+    this.boneHandle = false
+    const knob = this.pickedKnob()
+    if (knob) {
+      // 🛑 A point is a POSITION, so holding one IS a translation whatever tool is armed: rotating
+      // or scaling would ask the gizmo to write what the descriptor has no room for, and leaving
+      // it detached made a handle one takes and cannot move — which reads as a dead handle.
+      gizmo.setMode('translate')
+      gizmo.attach(knob)
+      return
     }
-    return attachGizmoStep1()
+    // Back to the armed tool: holding a point forced translation, and a rotate left behind would
+    // outlive the point that asked for it.
+    if (this.mode !== 'select') gizmo.setMode(this.mode)
+    const target = gizmoTargetFor(this.mode, this.space, this.selectedObjects(), object =>
+      this.applied.get(object.name),
+    )
+    if (target.kind === 'none') {
+      gizmo.detach()
+      return
+    }
+    if (target.kind === 'object') {
+      gizmo.attach(target.object)
+      return
+    }
+    placePivot(this.pivot, target.objects, target.anchor)
+    gizmo.attach(this.pivot)
   }
   protected onGizmoGrab = (): void => {
     this.dragged = false

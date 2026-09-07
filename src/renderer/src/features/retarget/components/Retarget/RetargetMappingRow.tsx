@@ -1,16 +1,24 @@
 import { mdiLock, mdiLockOpenVariant } from '@mdi/js'
+import { memo } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { HumanoidRole } from '@shared/domain/humanoid'
-import { SelectField } from '@/components/SelectField'
+import { SelectField, type SelectOption } from '@/components/SelectField'
 import { PropertyRow } from '@/components/PropertyRow'
 import { ToolButton } from '@/components/ToolButton'
 import { HINT_LEFT } from '@/helpers/tooltip'
 import { boneFor, type RetargetMappingSide } from '../../retargetMappingSide'
 
-export function RetargetMappingRow({
+/**
+ * 🛑 Memoised, and its options RECEIVED: a humanoid has fifty-two roles and a rig some seventy
+ * bones, so redrawing this section rebuilt around 7 400 `<option>` — on every letter typed into a
+ * field three components away, the workspace passing its props whole.
+ */
+export const RetargetMappingRow = memo(function RetargetMappingRow({
   role,
   source,
   target,
+  sourceBones,
+  targetBones,
   locked,
   onLock,
   onChoose,
@@ -18,8 +26,10 @@ export function RetargetMappingRow({
   role: HumanoidRole
   source: RetargetMappingSide
   target: RetargetMappingSide
+  sourceBones: readonly SelectOption<string>[]
+  targetBones: readonly SelectOption<string>[]
   locked: boolean
-  onLock: () => void
+  onLock: (role: HumanoidRole) => void
   onChoose: (side: RetargetMappingSide, role: HumanoidRole, name: string) => void
 }) {
   const { t } = useTranslation()
@@ -28,10 +38,10 @@ export function RetargetMappingRow({
       <div className="flex min-w-0 items-center gap-(--sc-gutter)">
         {(
           [
-            ['source', source],
-            ['target', target],
-          ] satisfies [string, RetargetMappingSide][]
-        ).map(([id, side]) => (
+            ['source', source, sourceBones],
+            ['target', target, targetBones],
+          ] satisfies [string, RetargetMappingSide, readonly SelectOption<string>[]][]
+        ).map(([id, side, bones]) => (
           <SelectField
             key={id}
             className="min-w-0 flex-1"
@@ -42,10 +52,7 @@ export function RetargetMappingRow({
             })}
             scId={`retarget.${id}.${role}`}
             value={boneFor(side.profile, role)}
-            options={[
-              { value: '', label: t('character.retarget.unmapped') },
-              ...side.view.bones.map(bone => ({ value: bone.name, label: bone.name })),
-            ]}
+            options={bones}
             onChange={name => onChoose(side, role, name)}
           />
         ))}
@@ -58,10 +65,10 @@ export function RetargetMappingRow({
             role: t(`character.retarget.roles.${role}`),
           })}
           tooltip={HINT_LEFT}
-          onClick={onLock}
+          onClick={() => onLock(role)}
           data-sc={`field:retarget.lock.${role}`}
         />
       </div>
     </PropertyRow>
   )
-}
+})

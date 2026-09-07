@@ -297,7 +297,6 @@ export const FILE_ACTIONS: readonly AssistantAction[] = [
   }),
   action({
     name: 'files.canUndoRedo',
-    capabilities: { intents: ['read'] },
     titleKey: 'assistant.actions.filesCanUndoRedo.title',
     descriptionKey: 'assistant.actions.filesCanUndoRedo.description',
     commitment: 'none',

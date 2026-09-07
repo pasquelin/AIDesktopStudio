@@ -1,15 +1,13 @@
 // SPDX-License-Identifier: MIT
 
-import type {
-  GamepadBinding,
-  InputAction,
-  InputActionKind,
-  InputBinding,
-  GamepadControl,
-  InputMap,
-  KeyboardBinding,
-  MouseBinding,
-} from '@shared/domain/inputMap'
+import { isRecord } from '../guards'
+import {
+  inputBindingFits,
+  inputBindingOrNull,
+  type InputAction,
+  type InputBinding,
+  type InputMap,
+} from './inputMap'
 import { withDefaultInputMaps } from './inputDefaults'
 
 export type InputBindings = Readonly<
@@ -96,8 +94,8 @@ function rebound(
   const action = map.actions[actionIndex]
   if (!action || index > action.bindings.length) return null
 
-  const parsed = bindingOf(binding)
-  if (!parsed || !accepts(action.kind, parsed)) return null
+  const parsed = inputBindingOrNull(binding)
+  if (!parsed || !inputBindingFits(action.kind, parsed)) return null
   const bindings = [...action.bindings]
   bindings[index] = parsed
   const changed: InputMap = {
@@ -164,9 +162,9 @@ function restoredMapOf(defaultMap: InputMap, value: unknown): InputMap {
 function restoredActionOf(action: InputAction, value: unknown): InputAction {
   if (!isRecord(value) || !Array.isArray(value.bindings)) return action
   const kept = value.bindings
-    .map(bindingOf)
+    .map(inputBindingOrNull)
     .filter(binding => binding !== null)
-    .filter(binding => accepts(action.kind, binding))
+    .filter(binding => inputBindingFits(action.kind, binding))
   // Everything stored was rubbish: the defaults, rather than an action nothing reaches any more.
   // An EMPTY stored list is a choice, though — someone unbound it on purpose.
   return value.bindings.length > 0 && kept.length === 0 ? action : { ...action, bindings: kept }
@@ -178,72 +176,3 @@ function byId(values: readonly unknown[]): Map<string, unknown> {
     if (isRecord(value) && typeof value.id === 'string') found.set(value.id, value)
   return found
 }
-
-function bindingOf(value: unknown): InputBinding | null {
-  if (!isRecord(value)) return null
-  if (value.device === 'keyboard') return keyboardOf(value)
-  if (value.device === 'mouse') return mouseOf(value.control)
-  if (value.device === 'gamepad') return gamepadOf(value)
-  return null
-}
-
-function keyboardOf(value: Record<string, unknown>): KeyboardBinding | null {
-  if (typeof value.code !== 'string' || value.code.length === 0) return null
-  if (value.axis !== undefined && value.axis !== 'x' && value.axis !== 'y') return null
-  if (!optionalNumber(value.scale)) return null
-  return {
-    device: 'keyboard',
-    code: value.code,
-    ...(value.axis === undefined ? {} : { axis: value.axis }),
-    ...(value.scale === undefined ? {} : { scale: value.scale }),
-  }
-}
-
-function mouseOf(control: unknown): MouseBinding | null {
-  return control === 'primary' ? { device: 'mouse', control } : null
-}
-
-function gamepadOf(value: Record<string, unknown>): GamepadBinding | null {
-  if (!isGamepadControl(value.control)) return null
-  if (value.deadZone !== undefined && !deadZone(value.deadZone)) return null
-  if (value.invert !== undefined && typeof value.invert !== 'boolean') return null
-  if (!optionalNumber(value.scale)) return null
-  return {
-    device: 'gamepad',
-    control: value.control,
-    ...(value.deadZone === undefined ? {} : { deadZone: value.deadZone }),
-    ...(value.invert === undefined ? {} : { invert: value.invert }),
-    ...(value.scale === undefined ? {} : { scale: value.scale }),
-  }
-}
-
-const SUPPORTED_GAMEPAD =
-  /^(?:leftStick|rightStick)(?:X|Y|Button)?$|^(?:south|east|west|north|leftShoulder|rightShoulder|leftTrigger|rightTrigger|select|start|dpadUp|dpadDown|dpadLeft|dpadRight|home)$/
-
-const isGamepadControl = (value: unknown): value is GamepadControl =>
-  typeof value === 'string' && SUPPORTED_GAMEPAD.test(value)
-
-function accepts(kind: InputActionKind, binding: InputBinding): boolean {
-  if (kind === 'button') {
-    if (binding.device === 'keyboard')
-      return binding.axis === undefined && binding.scale === undefined
-    return binding.device !== 'gamepad' || !/Stick(?:X|Y)?$/.test(binding.control)
-  }
-  if (binding.device === 'mouse') return false
-  if (kind === 'axis1') {
-    if (binding.device === 'keyboard') return binding.axis === undefined
-    // Anything but a two-way stick — see `inputBindingFits`, which this is held to.
-    return binding.control !== 'leftStick' && binding.control !== 'rightStick'
-  }
-  if (binding.device === 'keyboard') return binding.axis !== undefined
-  return binding.control === 'leftStick' || binding.control === 'rightStick'
-}
-
-const optionalNumber = (value: unknown): value is number | undefined =>
-  value === undefined || (typeof value === 'number' && Number.isFinite(value))
-
-const deadZone = (value: unknown): value is number =>
-  typeof value === 'number' && value >= 0 && value < 1
-
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === 'object' && value !== null

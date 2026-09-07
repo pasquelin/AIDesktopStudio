@@ -137,6 +137,25 @@ function tick(hero: WelcomeHero, seconds: number): void {
 }
 
 describe('WelcomeHero', () => {
+  /**
+   * 🛑 The eight files are replayed on ONE body, and `adapt` used to wire it again for each —
+   * walking the tree, copying every transform, and digesting the same signature eight times, on
+   * the interface thread at the moment the welcome screen opens.
+   */
+  it('wires the body once for the eight files it replays on it', async () => {
+    const targets: unknown[] = []
+    await readyHero(clipsOf(), {
+      adapt: async (target, _source, clips) => {
+        targets.push(target)
+        return clips[0] ? [clips[0]] : null
+      },
+    })
+
+    expect(targets.length).toBeGreaterThan(1)
+    expect(new Set(targets).size).toBe(1)
+    expect(Array.isArray(targets[0])).toBe(true)
+  })
+
   it('reacts to a slide selected while the character is loading', async () => {
     const hero = await new Promise<WelcomeHero>((resolve, reject) => {
       const pending = new WelcomeHero({

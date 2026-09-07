@@ -5,6 +5,7 @@ import type { Point } from '@/engines/core/geometry'
 import { registerFace } from '@/engines/canvas/canvasFonts'
 import type { BrushSettings } from '@/engines/canvas/brush'
 import { addLayer, cropToRect, resizeCaption } from '@/engines/canvas/commands'
+import type { CanvasSelection } from '@/engines/canvas/canvasSelection'
 import { shapeLayer, textLayer, type ShapeKind } from '@/engines/canvas/canvasState'
 import { holdCanvas } from '@/features/image/canvasHosts'
 import { guidePort } from '@/features/image/guidePort'
@@ -67,20 +68,22 @@ export function useImageDocumentEngine(
         prompt,
       })
       if (smartSelectionTask.current !== id) return
-      created.setSelection({
+      const raster: CanvasSelection = {
         kind: 'raster',
         bounds: { x: 0, y: 0, width: result.width, height: result.height },
         width: result.width,
         height: result.height,
         alpha: result.alpha,
-      })
-      views().setSelection(documentId, {
-        kind: 'raster',
-        bounds: { x: 0, y: 0, width: result.width, height: result.height },
-        width: result.width,
-        height: result.height,
-        alpha: result.alpha,
-      })
+      }
+      created.setSelection(raster)
+      views().setSelection(documentId, raster)
+    }
+    const reportedSmartSelect = async (prompt: SmartSelectionPrompt): Promise<void> => {
+      try {
+        await smartSelect(prompt)
+      } catch (error) {
+        if (!isAbortError(error)) reportFailure('canvas.smartSelect', documentId, error)
+      }
     }
     const created = new CanvasEngine({
       onPick: color => setBrush(current => ({ ...current, color })),
@@ -88,14 +91,10 @@ export function useImageDocumentEngine(
       onPixelsDropped: pixels.drop,
       onViewport: viewport => views().setViewport(documentId, viewport),
       onSelection: selection => views().setSelection(documentId, selection),
-      onSmartSelect: prompt => {
-        // 🛑 Said and not dropped: a model that is not installed, an engine that does not answer
-        // and a box too thin all rejected into `traceDroppedRejections`, so the click did nothing
-        // and nothing explained why. The cancel of the run before it is not a failure.
-        void smartSelect(prompt).catch(error => {
-          if (!isAbortError(error)) reportFailure('canvas.smartSelect', documentId, error)
-        })
-      },
+      // 🛑 Said and not dropped: a model that is not installed, an engine that does not answer
+      // and a box too thin all rejected into `traceDroppedRejections`, so the click did nothing
+      // and nothing explained why. The cancel of the run before it is not a failure.
+      onSmartSelect: prompt => void reportedSmartSelect(prompt),
       onComment,
       onHost: size => views().setHost(documentId, size),
       onText: asked => {

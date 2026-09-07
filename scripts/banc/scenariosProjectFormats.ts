@@ -1,4 +1,5 @@
-import { ANIMATION_GRAPH_EXTENSION, ANIMATION_GRAPH_VERSION } from '@shared/domain/animationGraph'
+import { ANIMATION_GRAPH_EXTENSION } from '@shared/domain/animationGraph'
+import { animationGraphPreset } from '@shared/domain/animationPresets'
 import { INPUT_MAP_EXTENSION } from '@shared/domain/inputMap'
 import { inputMapPreset } from '@shared/domain/inputPresets'
 import type { Scenario } from './run'
@@ -21,19 +22,7 @@ const laidInputMap = async (studio: Studio): Promise<void> => {
 const laidAnimationGraph = async (studio: Studio): Promise<void> => {
   await studio.run('animationGraph.write', {
     path: GRAPH_PATH,
-    graph: {
-      version: ANIMATION_GRAPH_VERSION,
-      id: 'character',
-      parameters: [],
-      layers: [
-        {
-          id: 'base',
-          initial: 'idle',
-          states: [{ id: 'idle', source: { kind: 'bundled', name: 'Idle' } }],
-          transitions: [],
-        },
-      ],
-    },
+    graph: animationGraphPreset('character'),
   })
 }
 

@@ -19,6 +19,7 @@ export function memoryCatalog(file = ':memory:', disk: RescanDisk | null = null)
     findByHash: async hash => catalog.findByHash(hash),
     findByRemoteId: async remoteAssetId => catalog.findByRemoteId(remoteAssetId),
     search: async query => catalog.search(query),
+    assetsUnder: async folders => catalog.assetsUnder(folders),
     countByType: async () => catalog.countByType(),
     remove: async assetId => catalog.remove(assetId),
     repath: async (from, to) => catalog.repath(from, to),

@@ -33,10 +33,7 @@ export function RetargetSource({
               scId="retarget.clip"
               label={t('character.retarget.clip')}
               value={String(clipIndex)}
-              options={source.clips.map((_, index) => ({
-                value: String(index),
-                label: clipOptionOf(source.clips, index, t),
-              }))}
+              options={clipOptionsOf(source.clips, t)}
               onChange={value => setClipIndex(Number(value))}
             />
           </div>
@@ -59,15 +56,19 @@ export function RetargetSource({
   )
 }
 
-function clipOptionOf(
+/** Counted once rather than per index: a Mixamo pack lands 300 clips in one file. */
+function clipOptionsOf(
   clips: readonly WireClip[],
-  index: number,
   label: (key: string, values: { name: string; n: number }) => string,
-): string {
-  const clip = clips[index]
-  if (!clip?.name) return String(index + 1)
-  const clashes = clips.filter(other => other.name === clip.name).length > 1
-  return clashes
-    ? label('character.retarget.clipHomonym', { name: clip.name, n: index + 1 })
-    : clip.name
+): { value: string; label: string }[] {
+  const seen = new Map<string, number>()
+  for (const clip of clips) if (clip.name) seen.set(clip.name, (seen.get(clip.name) ?? 0) + 1)
+  return clips.map((clip, index) => ({
+    value: String(index),
+    label: !clip.name
+      ? String(index + 1)
+      : (seen.get(clip.name) ?? 0) > 1
+        ? label('character.retarget.clipHomonym', { name: clip.name, n: index + 1 })
+        : clip.name,
+  }))
 }

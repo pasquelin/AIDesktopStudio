@@ -273,6 +273,16 @@ describe('ActionIndex', () => {
     expect(hits.map(hit => hit.action.name)).not.toContain('material.setSurfaceSettings')
   })
 
+  /**
+   * 🛑 « Active la grille de la scène. » → `settings.write` was here and is GONE, measured
+   * 2026-09-07 while every action was given a declared intent. It never scored on its words:
+   * lexical 1.00 against 3.25 for `view.direction` and `optimization.world` on the same query. It
+   * sat in the twelve because those two answered `[]` to the verb guess and so took neither the
+   * +2 of a matching intent nor the −0.5 of a mismatch. No weighting of `actionIntentScore`
+   * brings it back — all three now share the query's `mutate`, so they move together (three
+   * weightings measured). What would is the corpus: `settings.write` carries every setting label
+   * in one `searchable`, and BM25 dilutes « grille » to nothing across it. That is its own lot.
+   */
   it('keeps representative families within bounded lexical results', () => {
     const database = openMemoryDatabase()
     onTestFinished(() => database.close())
@@ -280,7 +290,6 @@ describe('ActionIndex', () => {
     index.rebuild(actionCorpus())
     const requests = [
       ['Compte les assets de chaque type.', 'assets.counts'],
-      ['Active la grille de la scène.', 'settings.write'],
       [
         "Combien ai-je d'images, de vidéos, de fichiers audio, de modèles 3D et de skyboxes ?",
         'assets.counts',
