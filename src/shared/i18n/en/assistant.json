@@ -1513,7 +1513,6 @@
       "tilesPerMetre": "Repeats of the maps per metre",
       "textures": "Maps by slot, an empty id taking off the one that was there",
       "map": "Image identifier, or nothing for none at all",
-      "path": "Project-relative file path",
       "inputMap": "Validated keyboard and gamepad input map",
       "animationGraph": "Validated animation graph",
       "value": "Words to set",

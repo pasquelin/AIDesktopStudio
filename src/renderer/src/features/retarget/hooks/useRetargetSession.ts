@@ -1,5 +1,6 @@
 import type { SkeletonProfile } from '@shared/domain/skeletonProfile'
 import { useEffect, useRef, useState } from 'react'
+import { useLatest } from '@/hooks/useLatest'
 import { retargetSessionOf } from '@shared/domain/retargetWindow'
 import { openRetargetChannel, retargetMessageOf, type RetargetSnapshot } from '../retargetChannel'
 
@@ -10,7 +11,7 @@ export function useRetargetSession() {
   const [status, setStatus] = useState<'idle' | 'saving' | 'saved' | 'failed'>('idle')
   const channel = useRef<BroadcastChannel | null>(null)
   const pending = useRef<string | null>(null)
-  const latestRef = useRef<RetargetSnapshot | null>(null)
+  const latestRef = useLatest(latest)
   const applied = useRef(false)
   useEffect(() => {
     const id = retargetSessionOf(window.location.hash)
@@ -24,7 +25,6 @@ export function useRetargetSession() {
       const message = retargetMessageOf(event.data)
       if (message?.kind === 'gone') {
         applied.current = false
-        latestRef.current = null
         setGone(true)
         setSnapshot(null)
         setLatest(null)
@@ -34,16 +34,11 @@ export function useRetargetSession() {
       if (message?.kind === 'changed') {
         const next = (current: RetargetSnapshot | null) =>
           current && { ...current, revision: message.revision, incarnation: message.incarnation }
-        setLatest(current => {
-          const value = next(current)
-          latestRef.current = value
-          return value
-        })
+        setLatest(next)
         if (applied.current) setSnapshot(current => next(current))
       }
       if (message?.kind === 'snapshot') {
         setGone(false)
-        latestRef.current = message.snapshot
         setLatest(message.snapshot)
         setSnapshot(current => current ?? message.snapshot)
       }

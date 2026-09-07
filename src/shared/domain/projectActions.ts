@@ -1,10 +1,10 @@
-import { action, type ActionField, type AssistantAction } from './assistantAction'
+import { action, NODE_ID, type ActionField, type AssistantAction } from './assistantAction'
 import { CLIP_SOURCES } from './scene'
 
 const PATH: ActionField = {
   key: 'path',
   kind: 'text',
-  labelKey: 'assistant.fields.path',
+  labelKey: 'assistant.fields.filePath',
   required: true,
 }
 
@@ -84,7 +84,7 @@ export const PROJECT_ACTIONS: readonly AssistantAction[] = [
     reach: 'mcp',
     capabilities: { intents: ['read'], targets: ['node'] },
     fields: [
-      { key: 'nodeId', kind: 'text', labelKey: 'assistant.fields.nodeId', required: true },
+      NODE_ID,
       {
         key: 'source',
         kind: 'choice',

@@ -111,6 +111,22 @@ describe('the retarget owner session', () => {
     expect(open.mock.calls[0]).toEqual(open.mock.calls[1])
   })
 
+  it('answers a window that opens later with the whole snapshot, never a delta', async () => {
+    renderHook(() => useRetargetHost(HERO))
+    await act(async () => {
+      await channel().receive({ kind: 'ask' })
+    })
+    channel().postMessage.mockClear()
+
+    await act(async () => {
+      await channel().receive({ kind: 'ask' })
+    })
+
+    expect(channel().postMessage).toHaveBeenLastCalledWith(
+      expect.objectContaining({ kind: 'snapshot' }),
+    )
+  })
+
   it('copies the rig across only when it changes, and only announces the rest', async () => {
     installFakeBridge({ assets: { saveAnimation: vi.fn(async () => SAVED) } })
     const { unmount } = renderHook(() => useRetargetHost(HERO))

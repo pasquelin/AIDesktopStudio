@@ -53,6 +53,9 @@ export const sameVector3 = (one: Vector3, other: Vector3): boolean =>
  */
 export type CameraView = { position: Vector3; target: Vector3; fieldOfView?: number }
 
+/** A view nothing has filmed yet: NaN never equals a real coordinate, so the first view always lands. */
+export const NOWHERE: Vector3 = { x: Number.NaN, y: Number.NaN, z: Number.NaN }
+
 /** Both engines drop a view that has not moved — `placeView` and `draw` each ask for a frame. */
 export function sameCameraView(one: CameraView, other: CameraView): boolean {
   return (

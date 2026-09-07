@@ -5,6 +5,7 @@ import { Toolbar } from '@/components/Toolbar/Toolbar'
 import { PANE_TOOLBAR } from '@/components/panelStyles'
 import { reportFailure } from '@/services/diagnostics'
 import { useLatest } from '@/hooks/useLatest'
+import { cn } from '@/helpers/cn'
 import { useEffect, useRef } from 'react'
 import { useSettings } from '@/stores/settings'
 import { SceneSpeedControl } from '@/features/scene/components/Scene/SceneSpeedControl'
@@ -139,7 +140,7 @@ export function RetargetViewport({
       <Toolbar
         orientation="horizontal"
         label={t('character.cameraSpeed')}
-        className={`${PANE_TOOLBAR} m-(--sc-gutter)`}
+        className={cn(PANE_TOOLBAR, 'm-(--sc-gutter)')}
         extras={
           <SceneSpeedControl speed={speed} onSpeed={value => engine.current?.setFlySpeed(value)} />
         }

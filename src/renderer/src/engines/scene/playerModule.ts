@@ -29,6 +29,8 @@ export type PlayerParts = {
 type FoundParts = PlayerParts & { inside: readonly SceneNode[] }
 
 const partsByNodes = new WeakMap<readonly SceneNode[], readonly FoundParts[]>()
+// A script asks per intent, per tick: the subtree walk is paid once per list and entity.
+const animatorTargetsByNodes = new WeakMap<readonly SceneNode[], Map<string, string | null>>()
 
 /**
  * Every module's parts, built ONCE per list — the same bargain as `byIdOf`, and for the same
@@ -59,7 +61,12 @@ export function partsOfModule(nodes: readonly SceneNode[], moduleId: string): Pl
  * or nothing — a script on a body with no machine must not invent a target.
  */
 export function animatorTargetOf(nodes: readonly SceneNode[], entityId: string): string | null {
-  return subtreesOf(nodes, [entityId]).find(node => carries(node, 'Animator'))?.id ?? null
+  const targets = cachedOn(animatorTargetsByNodes, nodes, () => new Map<string, string | null>())
+  const known = targets.get(entityId)
+  if (known !== undefined) return known
+  const found = subtreesOf(nodes, [entityId]).find(node => carries(node, 'Animator'))?.id ?? null
+  targets.set(entityId, found)
+  return found
 }
 
 /**

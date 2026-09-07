@@ -14,7 +14,7 @@ import {
 import { clamp } from '@shared/numeric'
 import type { AssetPort } from '@game/ports/assetPort'
 import type { CameraView, EntityPlacement, RenderPort } from '@game/ports/renderPort'
-import { copyCameraView, sameCameraView } from '@shared/domain/transform'
+import { copyCameraView, NOWHERE, sameCameraView } from '@shared/domain/transform'
 import { applyToneMapping } from '@/engines/scene/worldBinding'
 import { applyShadowPolicy, throwsOf, tuneShadowMaps } from '@/engines/scene/shadows'
 import type { ShadowThrow } from '@/engines/scene/grouping'
@@ -335,9 +335,6 @@ function setLens(camera: PerspectiveCamera, lens: number): boolean {
   camera.updateProjectionMatrix()
   return true
 }
-
-/** Off the scene, so the first view a game asks for is never mistaken for the one already held. */
-const NOWHERE = { x: Number.NaN, y: Number.NaN, z: Number.NaN }
 
 /** A black sheet across the frame, drawn over the scene at the veil's own opacity. */
 function veilPass() {

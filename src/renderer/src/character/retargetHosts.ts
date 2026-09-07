@@ -1,10 +1,9 @@
-const hosts = new Map<string, () => Promise<void>>()
+import { createHostRegistry } from '@/helpers/hostRegistry'
+
+const hosts = createHostRegistry<() => Promise<void>>()
 
 export function registerRetargetHost(assetId: string, open: () => Promise<void>): () => void {
-  hosts.set(assetId, open)
-  return () => {
-    if (hosts.get(assetId) === open) hosts.delete(assetId)
-  }
+  return hosts.hold(assetId, () => open)
 }
 
 export async function openRetargetForAsset(assetId: string): Promise<void> {
@@ -12,5 +11,5 @@ export async function openRetargetForAsset(assetId: string): Promise<void> {
 }
 
 export function hasRetargetHost(assetId: string): boolean {
-  return hosts.has(assetId)
+  return hosts.get(assetId) !== null
 }

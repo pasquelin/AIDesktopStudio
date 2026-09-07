@@ -1,8 +1,7 @@
 import { mdiFileTreeOutline } from '@mdi/js'
 import { useTranslation } from 'react-i18next'
 import { EmptyState } from '@/components/EmptyState'
-import { activeCharacterAssetId, activeSceneId, useDocuments } from '@/stores/documents'
-import { workshopIdOf } from '@shared/domain/character'
+import { activeCharacterAssetId, activeSceneOrWorkshopId, useDocuments } from '@/stores/documents'
 import { SceneTree } from './SceneTree'
 
 /**
@@ -12,9 +11,8 @@ import { SceneTree } from './SceneTree'
  */
 export function Scene() {
   const { t } = useTranslation()
-  const documentId = useDocuments(activeSceneId)
+  const shownId = useDocuments(activeSceneOrWorkshopId)
   const characterAssetId = useDocuments(activeCharacterAssetId)
-  const shownId = documentId ?? (characterAssetId ? workshopIdOf(characterAssetId) : null)
 
   if (!shownId) return <EmptyState icon={mdiFileTreeOutline} message={t('scene.noDocument')} />
   return <SceneTree documentId={shownId} modelContents={characterAssetId !== null} />

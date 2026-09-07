@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 import { useEffect } from 'react'
+import { focusableWithin } from '@/helpers/focusableWithin'
 import type { InputMap } from '@shared/domain/inputMap'
 import { inputMapPreset } from '@shared/domain/inputPresets'
 import { readGamepads } from '@game/host/domInput'
@@ -34,15 +35,6 @@ const STUDIO = 'studio'
 const ACTIVE: readonly string[] = [STUDIO]
 const NO_KEYS: readonly string[] = []
 
-const FOCUSABLE = [
-  'button:not(:disabled)',
-  'input:not(:disabled)',
-  'textarea:not(:disabled)',
-  'select:not(:disabled)',
-  'a[href]',
-  '[tabindex]:not([tabindex="-1"])',
-].join(',')
-
 function freshlyPressed(
   current: GamepadNavigationState,
   previous: GamepadNavigationState,
@@ -52,7 +44,7 @@ function freshlyPressed(
 }
 
 function focusBy(offset: number): void {
-  const controls = Array.from(document.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(isVisible)
+  const controls = focusableWithin(document).filter(isVisible)
   if (controls.length === 0) return
   const current = controls.indexOf(
     document.activeElement instanceof HTMLElement ? document.activeElement : document.body,

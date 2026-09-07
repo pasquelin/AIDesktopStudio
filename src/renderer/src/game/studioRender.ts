@@ -4,6 +4,7 @@ import {
   copyTransform,
   sameCameraView,
   sameTransform,
+  NOWHERE,
 } from '@shared/domain/transform'
 import type { CameraView, EntityPlacement, RenderPort } from '@game/ports/renderPort'
 import type { SceneRenderer } from '@/engines/scene/SceneRenderer'
@@ -163,6 +164,3 @@ export function createStudioRender(
     },
   }
 }
-
-/** Off the scene, so the first view a game asks for is never mistaken for the one already held. */
-const NOWHERE = { x: Number.NaN, y: Number.NaN, z: Number.NaN }

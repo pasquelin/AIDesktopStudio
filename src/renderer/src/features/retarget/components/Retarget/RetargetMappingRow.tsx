@@ -5,7 +5,7 @@ import { SelectField } from '@/components/SelectField'
 import { PropertyRow } from '@/components/PropertyRow'
 import { ToolButton } from '@/components/ToolButton'
 import { HINT_LEFT } from '@/helpers/tooltip'
-import type { RetargetMappingSide } from '../../retargetMappingSide'
+import { boneFor, type RetargetMappingSide } from '../../retargetMappingSide'
 
 export function RetargetMappingRow({
   role,
@@ -41,9 +41,7 @@ export function RetargetMappingRow({
               role: t(`character.retarget.roles.${role}`),
             })}
             scId={`retarget.${id}.${role}`}
-            value={
-              Object.keys(side.profile.roles).find(name => side.profile.roles[name] === role) ?? ''
-            }
+            value={boneFor(side.profile, role)}
             options={[
               { value: '', label: t('character.retarget.unmapped') },
               ...side.view.bones.map(bone => ({ value: bone.name, label: bone.name })),

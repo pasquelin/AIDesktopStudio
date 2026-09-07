@@ -57,3 +57,6 @@ _site/
 
 # The Jolt engine the studio compiles for itself is a shipped artefact, not a build output.
 !vendor/jolt-physics/dist/
+
+# vitest json reporter output
+.vitest/

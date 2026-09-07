@@ -291,7 +291,7 @@ export function retargetFitOf(
 }
 
 /** The wire spells a parent as an index; reading roles wants it as a name. */
-function namedBonesOf(bones: readonly WireBone[]): NamedBone[] {
+export function namedBonesOf(bones: readonly WireBone[]): NamedBone[] {
   return bones.map(bone => ({ name: bone.name, parent: bones[bone.parent]?.name ?? null }))
 }
 

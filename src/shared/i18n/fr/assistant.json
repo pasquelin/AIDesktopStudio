@@ -1513,7 +1513,6 @@
       "tilesPerMetre": "Répétitions des cartes par mètre",
       "textures": "Cartes par emplacement, un identifiant vide retirant celle qui y était",
       "map": "Identifiant de l’image, ou rien pour n’en mettre aucune",
-      "path": "Chemin du fichier relatif au projet",
       "inputMap": "Carte de contrôles clavier et manette validée",
       "animationGraph": "Graphe d’animation validé",
       "value": "Mots à écrire",

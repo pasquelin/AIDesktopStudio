@@ -6,11 +6,11 @@ import {
   MeshStandardMaterial,
   Points,
   Scene,
-  type AnimationClip,
   type Material,
   type Object3D,
 } from 'three'
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js'
+import { documentReferencesOf } from '@shared/domain/documentReferences'
 import type { MeshFormat } from '@shared/domain/meshFormat'
 import {
   convertedTypeOf,
@@ -18,6 +18,7 @@ import {
   type MeshImportLoss,
 } from '@shared/domain/meshImport'
 import { parseMeshBytes } from './gltfSource'
+import { clipsIn } from './sceneExport'
 
 /**
  * A 3D file that is not a `.glb`, turned into one — once, on arrival, on the UI thread.
@@ -89,12 +90,6 @@ function materialsOf(root: Object3D): Material[] {
   return found
 }
 
-function clipsOf(root: Object3D): AnimationClip[] {
-  const found: AnimationClip[] = []
-  root.traverse(object => found.push(...object.animations))
-  return found
-}
-
 function geometryCountOf(root: Object3D): number {
   let count = 0
   root.traverse(object => {
@@ -115,9 +110,7 @@ async function materialsFor(
   manager: LoadingManager,
   ports: ConversionPorts,
 ) {
-  const libraries = (text.match(/^\s*mtllib\s+.+$/gm) ?? []).flatMap(line =>
-    line.trim().slice('mtllib'.length).trim().split(/\s+/),
-  )
+  const libraries = documentReferencesOf('obj', text)
   const texts: string[] = []
   let missing = false
   for (const library of libraries) {
@@ -189,7 +182,7 @@ export async function convertModelToGlb(
   )
   if (approximated && !losses.includes('materials')) losses.push('shading')
 
-  const clips = clipsOf(root)
+  const clips = clipsIn([root])
   const geometryCount = geometryCountOf(root)
   if (format !== 'gltf' && geometryCount === 0 && clips.length === 0) {
     throw new Error('not a 3D file this build converts')
