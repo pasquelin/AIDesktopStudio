@@ -29,6 +29,10 @@ const DIFFUSERS_DOORS: Readonly<Record<ProducingModality, string>> = {
   audio: 'audio',
   mesh: '3d',
   skybox: 'skybox',
+  // The one exception, and it is deliberate: a motion is dispatched BY MODEL ID inside the 3d
+  // worker (`plugin_adapter.PLUGINS`), so the engine declares no door of its own for it. Giving
+  // it one is a runtime change — a process to spawn and to kill — not a table to edit here.
+  motion: '3d',
 }
 
 const DOORS_BY_LOADER: Readonly<Partial<Record<ModelLoader, Readonly<Record<string, string>>>>> = {

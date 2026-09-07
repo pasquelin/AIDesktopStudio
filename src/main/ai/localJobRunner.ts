@@ -212,9 +212,7 @@ export function createLocalJobRunner(deps: LocalJobDeps): LocalJobRunner {
 
     job.produced = {
       ...written,
-      type: capabilitiesIn(model, '3d')?.includes('motion')
-        ? 'animation'
-        : assetTypeOfModality(modality),
+      type: assetTypeOfModality(modality),
       prompt: promptOf(body),
     }
   }

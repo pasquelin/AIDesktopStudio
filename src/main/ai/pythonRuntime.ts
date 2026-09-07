@@ -63,7 +63,7 @@ function whatIsMissing(needs: EngineRequirements): string {
 
 function profileOf(model: LocalModel): 'selection' | 'motion' | 'autorig' | 'diffusion' {
   if (model.loader === 'onnx-runtime') return 'selection'
-  if (model.fieldProfile === 'motion') return 'motion'
+  if (model.modality === 'motion') return 'motion'
   return model.backendId === 'make-it-animatable' ? 'autorig' : 'diffusion'
 }
 

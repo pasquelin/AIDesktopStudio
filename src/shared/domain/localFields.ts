@@ -13,7 +13,7 @@ import type { AssetType } from './asset'
  */
 
 /** What a runtime takes, as far as a form is concerned. Never a model id, never a runtime name. */
-export type LocalModality = 'text' | 'image' | 'video' | 'audio' | 'mesh' | 'skybox'
+export type LocalModality = 'text' | 'image' | 'video' | 'audio' | 'mesh' | 'skybox' | 'motion'
 
 /** A modality that writes a FILE. Everything but `text`, which answers a sentence and files none. */
 export type ProducingModality = Exclude<LocalModality, 'text'>
@@ -29,11 +29,21 @@ export function producesFile(modality: LocalModality): modality is ProducingModa
 /**
  * The shelf a modality's output lands on.
  *
- * An identity, and it is the COMPILER that makes it worth writing: every producing modality is
- * named after its shelf, so one added without a shelf to land on fails to compile here.
+ * A table since `motion` joined: five modalities are named after their shelf and one is not — a
+ * motion is filed as an animation. The COMPILER is still what makes it worth writing, one line
+ * lower than before: a modality added without a shelf to land on fails to compile here.
  */
+const SHELVES: Record<ProducingModality, AssetType> = {
+  image: 'image',
+  video: 'video',
+  audio: 'audio',
+  mesh: 'mesh',
+  skybox: 'skybox',
+  motion: 'animation',
+}
+
 export function assetTypeOfModality(modality: ProducingModality): AssetType {
-  return modality
+  return SHELVES[modality]
 }
 
 const EXTENSIONS: Record<ProducingModality, string> = {
@@ -43,6 +53,8 @@ const EXTENSIONS: Record<ProducingModality, string> = {
   mesh: 'ply',
   // Same raster as an image: the collector files by modality, not by suffix.
   skybox: 'png',
+  // The motion plugin writes the clip on a humanoid skeleton, which is a glTF binary and no `.ply`.
+  motion: 'glb',
 }
 
 /**
@@ -254,6 +266,9 @@ function side(
 /**
  * What every local model of a modality offers. Bounds are the runtime's, not a model's: a model
  * that wants another default says so in its manifest rather than growing a template of its own.
+ *
+ * The same for every text model and the same for every diffusion model — and `motion`, which is
+ * neither, is a modality here for exactly that reason: its form is the runtime's, not its own.
  */
 const TEMPLATES: Record<LocalModality, readonly LocalFieldTemplate[]> = {
   text: [
@@ -363,6 +378,8 @@ const TEMPLATES: Record<LocalModality, readonly LocalFieldTemplate[]> = {
     cfgScale({ default: 7, max: 30 }),
     SEED,
   ],
+  // No negative prompt and no size: a motion is a length and a step count on a skeleton.
+  motion: [PROMPT, seconds({ default: 5, max: 30 }), steps({ default: 50, max: 100 }), SEED],
 }
 
 /**
@@ -387,24 +404,12 @@ export type LocalFieldOverrides = Readonly<
  * The form, in the reader's language. `translate` is handed in rather than imported: this runs in
  * the main process, where the language is a service and never a module-level read.
  */
-const MOTION_FIELDS: readonly LocalFieldTemplate[] = [
-  PROMPT,
-  seconds({ default: 5, max: 30 }),
-  steps({ default: 50, max: 100 }),
-  SEED,
-]
-
 export function localFieldsOf(
   modality: LocalModality,
   overrides: LocalFieldOverrides,
   translate: (key: string) => string,
-  profile?: 'motion',
 ): FieldDescriptor[] {
-  return fieldsFrom(
-    profile === 'motion' ? MOTION_FIELDS : TEMPLATES[modality],
-    translate,
-    overrides,
-  )
+  return fieldsFrom(TEMPLATES[modality], translate, overrides)
 }
 
 /**

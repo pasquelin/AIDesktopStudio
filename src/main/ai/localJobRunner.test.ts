@@ -310,7 +310,7 @@ describe('generated motion collection', () => {
     const model = localModel({
       id: 'motion',
       loader: 'plugin',
-      modality: 'mesh',
+      modality: 'motion',
       family: '3d',
       capabilities: ['motion'],
     })

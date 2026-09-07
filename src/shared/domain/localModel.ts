@@ -141,8 +141,6 @@ export type LocalModel = {
   readonly serves?: readonly string[]
   /** Which form it offers. A modality, never a model: see `localFields.ts`. */
   readonly modality?: LocalModality
-  readonly outputExtension?: 'glb'
-  readonly fieldProfile?: 'motion'
   /** What this entry disagrees with in its modality's form — bounds and defaults only. */
   readonly fieldOverrides?: LocalFieldOverrides
   /** Shipped beside the catalogue, so a card draws with no network and no dead link. */

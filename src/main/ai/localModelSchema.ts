@@ -37,8 +37,6 @@ export const localModelSchema: z.ZodType<LocalModel> = z.object({
   contextTokens: z.number().positive().optional(),
   reservationBytes: z.number().nonnegative(),
   modality: z.enum(LOCAL_MODALITIES).optional(),
-  outputExtension: z.literal('glb').optional(),
-  fieldProfile: z.literal('motion').optional(),
   // Declared, or STRIPPED: a zod object drops what it does not name, so a supplied model that
   // served a space would come back off the disk serving none — and vanish from every panel.
   family: z.enum(MODEL_FAMILIES).optional(),

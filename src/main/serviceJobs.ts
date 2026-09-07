@@ -357,7 +357,7 @@ function createLocalJobs(deps: JobDeps) {
           fields: request.fields,
           destination: join(
             await deps.generationFolder(),
-            `${request.jobId}.${model.outputExtension ?? outputExtensionOf(request.modality)}`,
+            `${request.jobId}.${outputExtensionOf(request.modality)}`,
           ),
           onProgress: request.onProgress,
           signal: request.signal,
