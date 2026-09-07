@@ -161,7 +161,7 @@ export function createServices(settings: SettingsStore): Services {
     })
   }
   // prettier-ignore
-  const { clouds, runtimes, ai, engine: localEngine, llama, modelOf, isLocalTarget, notReady, memoryVectors, embedder, addOwnAiModel, dictation, autoRig } = buildLocalAi()
+  const { clouds, runtimes, ai, engine: localEngine, llama, modelOf, isLocalTarget, notReady, memoryVectors, embedder, addOwnAiModel, dictation, autoRig, smartSelection } = buildLocalAi()
   const actionIndex = createActionSearchService({
     userData: app.getPath('userData'),
     embedder,
@@ -321,8 +321,6 @@ export function createServices(settings: SettingsStore): Services {
       assistantContext,
       missionRuntime,
       visualCapture,
-      // `current()` rather than `path()`, which throws: "no project open" is an ordinary answer
-      // here, and an export named against nothing is a refusal rather than a failure.
       projectPath: () => project.current()?.path ?? null,
       journal,
       transcribe,
@@ -342,6 +340,7 @@ export function createServices(settings: SettingsStore): Services {
       addOwnAiModel,
       dictation,
       autoRig,
+      smartSelection,
     }
   }
   function systemServices() {

@@ -48,6 +48,8 @@ export const BRUSH_SETTINGS_BY_TOOL: Readonly<Record<CanvasTool, readonly BrushS
   // A caption's colour and size live on the layer and are edited in the inspector.
   text: [],
   select: [],
+  smartSelect: [],
+  smartSelectBox: [],
   move: [],
   hand: [],
   crop: [],

@@ -15,7 +15,8 @@ from ia_studio_engine.adapters.device import memory_frame
 from ia_studio_engine.adapters.modalities import MODALITIES
 from ia_studio_engine.adapters.params import filled
 from ia_studio_engine.adapters.routing_adapter import RoutingAdapter
-from ia_studio_engine.protocol.doors import DOORS
+from ia_studio_engine.adapters.selection import EfficientSam
+from ia_studio_engine.protocol.doors import DOORS, SPECIAL_DOORS
 from ia_studio_engine.protocol.envelope import encode_event
 from ia_studio_engine.workers.base import WorkerLoop, worker_hello
 
@@ -129,6 +130,8 @@ def queued_handlers(door: str, adapter: RoutingAdapter, loop: WorkerLoop) -> dic
 
 
 def serve(door: str, fd: int) -> int:
+    if door in SPECIAL_DOORS:
+        return serve_selection(door, fd)
     adapter = RoutingAdapter(MODALITIES[DOORS[door]])
     connection = socket.socket(fileno=fd)
     WorkerLoop(
@@ -136,6 +139,55 @@ def serve(door: str, fd: int) -> int:
         worker_hello(door, adapter.backend(), OCCUPANCY),
         inline_handlers(door, adapter),
         lambda loop: queued_handlers(door, adapter, loop),
+    ).run()
+    return 0
+
+
+def serve_selection(door: str, fd: int) -> int:
+    model = EfficientSam()
+    connection = socket.socket(fileno=fd)
+
+    def load(params: dict[str, Any]) -> dict[str, Any]:
+        model.load(str(params["folder"]))
+        return {
+            "door": door,
+            "heldBytes": 1,
+            "tensorBytes": 0,
+            "device": "cpu",
+            "backend": "onnxruntime",
+        }
+
+    def encode(params: dict[str, Any]) -> dict[str, Any]:
+        return model.encode(str(params["image"]))
+
+    def decode(params: dict[str, Any]) -> dict[str, Any]:
+        point = params.get("point")
+        box = params.get("box")
+        return model.decode(
+            point if isinstance(point, list) else None,
+            box if isinstance(box, list) else None,
+        )
+
+    def unload(_params: dict[str, Any]) -> dict[str, Any]:
+        model.unload()
+        return {
+            "door": door,
+            "heldBytes": 0,
+            "tensorBytes": 0,
+            "device": "cpu",
+            "backend": "onnxruntime",
+        }
+
+    WorkerLoop(
+        connection,
+        worker_hello(door, "onnxruntime", OCCUPANCY),
+        {},
+        lambda _loop: {
+            "models.load": load,
+            "selection.encode": encode,
+            "selection.decode": decode,
+            "models.unload": unload,
+        },
     ).run()
     return 0
 

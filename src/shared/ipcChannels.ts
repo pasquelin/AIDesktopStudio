@@ -143,6 +143,7 @@ export const CHANNELS: Channels = {
   assetsUpdate: 'assets:update',
   assetsRemove: 'assets:remove',
   assetsDescribe: 'assets:describe',
+  smartSelectionRun: 'selection:run',
   cloudBrowse: 'cloud:browse',
   cloudExplore: 'cloud:explore',
   cloudSimilar: 'cloud:similar',

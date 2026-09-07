@@ -33,6 +33,7 @@ const DIFFUSERS_DOORS: Readonly<Record<ProducingModality, string>> = {
 
 const DOORS_BY_LOADER: Readonly<Partial<Record<ModelLoader, Readonly<Record<string, string>>>>> = {
   ollama: { image: 'api-generate', '*': 'api-chat' },
+  'onnx-runtime': { '*': 'selection' },
   // `*` is what an unnamed modality falls back on, never a door of its own.
   diffusers: { ...DIFFUSERS_DOORS, '*': 'diffusion' },
   plugin: { ...DIFFUSERS_DOORS, '*': 'diffusion' },

@@ -6,7 +6,7 @@
  * `dist-info/METADATA` of a materialised environment, so this reads one and writes down what it
  * found; the result is committed, and `collect-licences.mjs` reads the file rather than the disk.
  *
- * Committed rather than read at collect time for one reason: materialising the diffusion
+ * Committed rather than read at collect time for one reason: materialising the generation
  * environment costs 682 Mo, and neither the gate nor a clone should have to pay it to produce a
  * notice.
  *
@@ -101,11 +101,11 @@ function sitePackagesOf(python) {
 
 function materialise() {
   const venv = join(ENGINE, '.licences-venv')
-  console.log('Materialising the diffusion environment — 682 Mo, once.')
+  console.log('Materialising the generation and selection environment — 682 Mo, once.')
   execFileSync('uv', ['venv', '--python', '3.12', venv], { stdio: 'inherit' })
   execFileSync(
     'uv',
-    ['pip', 'install', '--python', join(venv, 'bin', 'python'), `${ENGINE}[diffusion]`],
+    ['pip', 'install', '--python', join(venv, 'bin', 'python'), `${ENGINE}[diffusion,selection]`],
     { stdio: 'inherit', cwd: ROOT },
   )
 

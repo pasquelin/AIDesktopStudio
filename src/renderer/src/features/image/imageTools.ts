@@ -58,6 +58,8 @@ export const TOOL_COMMANDS: readonly ToolCommand[] = [
   { command: 'canvas.toolSelectRectangle', tool: 'region', mode: 'rectangle' },
   { command: 'canvas.toolSelectEllipse', tool: 'region', mode: 'ellipse' },
   { command: 'canvas.toolSelectLasso', tool: 'region', mode: 'lasso' },
+  { command: 'canvas.toolSmartSelect', tool: 'smartSelect', mode: 'click' },
+  { command: 'canvas.toolSmartSelectBox', tool: 'smartSelect', mode: 'box' },
   { command: 'canvas.toolShapeRectangle', tool: 'shape', mode: 'rectangle' },
   { command: 'canvas.toolShapeLine', tool: 'shape', mode: 'line' },
   { command: 'canvas.toolShapeArrow', tool: 'shape', mode: 'arrow' },
@@ -167,6 +169,27 @@ export const IMAGE_TOOLS: readonly ImageTool[] = [
         labelKey: 'imageTools.selectLasso',
         descriptionKey: 'imageTools.selectLassoHint',
         icon: mdiLasso,
+      },
+    ],
+  },
+  {
+    id: 'smartSelect',
+    tool: 'smartSelect',
+    labelKey: 'imageTools.smartSelect',
+    descriptionKey: 'imageTools.smartSelectHint',
+    icon: mdiAutoFix,
+    modes: [
+      {
+        id: 'click',
+        labelKey: 'imageTools.smartSelectClick',
+        descriptionKey: 'imageTools.smartSelectClickHint',
+        icon: mdiAutoFix,
+      },
+      {
+        id: 'box',
+        labelKey: 'imageTools.smartSelectBox',
+        descriptionKey: 'imageTools.smartSelectBoxHint',
+        icon: mdiSelectionDrag,
       },
     ],
   },
@@ -421,6 +444,7 @@ export function toolById(id: string): ImageTool | null {
  */
 export function canvasToolFor(toolId: string, modeId?: string): CanvasTool | null {
   if (toolId === 'pointer') return modeId === 'hand' ? 'hand' : 'move'
+  if (toolId === 'smartSelect') return modeId === 'box' ? 'smartSelectBox' : 'smartSelect'
   // The pencil is not a mode of the brush for the engine: the two lay the same disc down and
   // differ on the edge, which is the whole of what the bundle promises about them.
   if (toolId === 'paint') return modeId === 'pencil' ? 'pencil' : 'brush'
@@ -459,8 +483,6 @@ export function cursorFor(toolId: string, modeId?: string): string {
   if (toolId === 'text') return 'text'
   return DRAWN_CURSORS[toolId] ?? 'crosshair'
 }
-
-/** Built once: the string is ~450 characters, and `cursorFor` runs on every render. */
 const DRAWN_CURSORS: Record<string, string> = {
   fill: iconCursor('fill', 4, 20),
   picker: iconCursor('picker', 3, 21),

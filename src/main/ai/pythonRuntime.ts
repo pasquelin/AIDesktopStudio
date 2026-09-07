@@ -61,6 +61,16 @@ function whatIsMissing(needs: EngineRequirements): string {
   return [...absent, ...stale].join(', ')
 }
 
+function profileOf(model: LocalModel): 'selection' | 'motion' | 'autorig' | 'diffusion' {
+  if (model.loader === 'onnx-runtime') return 'selection'
+  if (model.fieldProfile === 'motion') return 'motion'
+  return model.backendId === 'make-it-animatable' ? 'autorig' : 'diffusion'
+}
+
+function doorOf(model: LocalModel): string {
+  return model.loader === 'onnx-runtime' ? 'engine/selection' : engineDoorOf(model.modality)
+}
+
 /** The code when the supervisor knows why, so a failed job says "not installed", not "rejected". */
 export function notAnswering(whyNot: EngineFailure | null): Error {
   return new Error(whyNot ?? 'the local AI engine is not answering')
@@ -122,20 +132,14 @@ export function pythonRuntime(deps: PythonRuntimeDeps): LocalRuntime {
       // Asked BEFORE the door is woken: a library that is absent fails as an `ImportError` three
       // frames inside a worker, which reaches the person as a door that died. The core answers
       // this off `.dist-info` folders, so it imports nothing and starts no process.
-      const needs = await engine.requirements(
-        model.fieldProfile === 'motion'
-          ? 'motion'
-          : model.backendId === 'make-it-animatable'
-            ? 'autorig'
-            : 'diffusion',
-      )
+      const needs = await engine.requirements(profileOf(model))
       if (!needs.complete) {
         throw new Error(`the local AI engine is missing: ${whatIsMissing(needs)}`)
       }
 
       const done = deps.onUsed?.(model.id)
       try {
-        const door = engineDoorOf(model.modality)
+        const door = doorOf(model)
         const base = deps.baseOf(model)
         const settled = await engine.job(
           'models.load',

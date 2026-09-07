@@ -100,7 +100,7 @@ export abstract class CanvasStateBinding {
   protected readonly drawings = new Map<string, string>()
 
   /** Regions asked of masks that did not exist yet — see `fillMaskFromSelection`. */
-  protected readonly pendingMaskFills = new Map<string, readonly Point[]>()
+  protected readonly pendingMaskFills = new Map<string, Exclude<CanvasSelection, null>>()
 
   /** Pictures composed for layers that do not exist yet — see `flattenInto`. */
   protected readonly pendingPictures = new Map<string, RenderTexture>()

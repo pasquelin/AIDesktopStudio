@@ -162,6 +162,7 @@ type ChannelMethod = {
   [CHANNELS.assetsUpdate]: StudioBridge['assets']['update']
   [CHANNELS.assetsRemove]: StudioBridge['assets']['remove']
   [CHANNELS.assetsDescribe]: StudioBridge['assets']['describe']
+  [CHANNELS.smartSelectionRun]: StudioBridge['smartSelection']['run']
   [CHANNELS.cloudBrowse]: StudioBridge['cloud']['browse']
   [CHANNELS.cloudExplore]: StudioBridge['cloud']['explore']
   [CHANNELS.cloudSimilar]: StudioBridge['cloud']['similar']

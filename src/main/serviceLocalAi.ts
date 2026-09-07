@@ -35,6 +35,7 @@ import { openPythonProcess } from './ai/pythonProcess'
 import { notAnswering, pythonRuntime } from './ai/pythonRuntime'
 import { createPythonSupervisor, EngineMissingError } from './ai/pythonSupervisor'
 import { createAutoRigHost } from './ai/autoRigHost'
+import { createSmartSelectionHost } from './ai/smartSelectionHost'
 import { fileRuntime, type LocalRuntimes } from './ai/localRuntimes'
 import { createOwnModelAdder } from './ai/ownModelAdder'
 import { fetchModel, modelIsComplete } from './ai/modelInstall'
@@ -64,8 +65,6 @@ import { EVENTS } from '@shared/ipc'
 import { log } from './log'
 import type { Language } from '@shared/i18n'
 
-// Provisional ADR-19 policy. Three quarters keeps a measured 8 GB 7B model usable on 16 GB;
-// rendererReservedBytes was measured with a 3D scene open on 2026-08-21.
 const BUDGET = {
   appBudgetBytes: Math.round((totalmem() * 3) / 4),
   headroomBytes: 2_000_000_000,
@@ -146,18 +145,11 @@ export function createLocalAiServices(deps: LocalAiDeps) {
   Object.assign(deps.fromManager, {
     installedIds: () => ai.installedIds(),
     discovered: () => ai.discovered(),
-    // Read off the disk rather than off a start: a catalogue must never fork the interpreter.
     engineFailure: () =>
       existsSync(enginePython()) ? engine.supervisor.whyNot() : 'engine-missing',
   } satisfies FromManager)
   const { memoryVectors, embedder } = createVectors(deps, ai, modelOf, weightsOf)
-  const autoRig = createAutoRigHost({
-    models: () => catalogueWith(deps.settings.read().ai.ownModels, ai.discovered()),
-    installedIds: ai.installedIds,
-    ensureLoaded: ai.ensureLoaded,
-    hold: ai.hold,
-    engine: () => engine.supervisor.engine(),
-  })
+  const { autoRig, smartSelection } = localHosts(deps, ai, engine, ensureLoaded, hold)
   const addOwnAiModel = createOwnModelAdder(deps, ai)
   dictation = createDictation(deps, ai, modelFolder, downloads)
   return {
@@ -177,6 +169,30 @@ export function createLocalAiServices(deps: LocalAiDeps) {
     addOwnAiModel,
     dictation,
     autoRig,
+    smartSelection,
+  }
+}
+
+function localHosts(
+  deps: LocalAiDeps,
+  ai: AiManager,
+  engine: ReturnType<typeof createEngine>,
+  ensureLoaded: (modelId: string) => Promise<void>,
+  hold: (modelId: string) => () => void,
+) {
+  return {
+    autoRig: createAutoRigHost({
+      models: () => catalogueWith(deps.settings.read().ai.ownModels, ai.discovered()),
+      installedIds: ai.installedIds,
+      ensureLoaded: ai.ensureLoaded,
+      hold: ai.hold,
+      engine: () => engine.supervisor.engine(),
+    }),
+    smartSelection: createSmartSelectionHost({
+      ensureLoaded,
+      hold,
+      engine: () => engine.supervisor.engine(),
+    }),
   }
 }
 
@@ -331,6 +347,7 @@ function createRuntimes(input: {
 }): LocalRuntimes {
   return {
     'sherpa-onnx': input.fetchedFiles,
+    'onnx-runtime': input.engine.runtime,
     diffusers: input.engine.runtime,
     plugin: input.engine.runtime,
     llamacpp: llamaLocalRuntime({

@@ -190,6 +190,13 @@
     "text": "See README.md of the package."
   },
   {
+    "name": "EfficientSAM-Ti",
+    "version": "d53228e3f6dee607309453f54a22c40c2a10204c",
+    "spdx": "Apache-2.0",
+    "text": "Promptable image selection, Tiny ViT ONNX encoder and decoder, one of the models the studio generates with on this machine.\nIt is NOT shipped with the application: it is fetched on request into the user data folder,\nagainst a published digest, and removed from the model manager.\n\n\nLicensed under Apache-2.0. Full terms: https://www.apache.org/licenses/LICENSE-2.0",
+    "sources": "https://github.com/yformer/EfficientSAM"
+  },
+  {
     "name": "einops",
     "version": "0.8.2",
     "spdx": "MIT",
@@ -240,6 +247,13 @@
     "spdx": "MIT",
     "text": "Part of the embedded Auto Rig runtime. It IS shipped with the macOS ARM64 application.\n\nLicensed under MIT.\nSource: https://github.com/tox-dev/py-filelock",
     "sources": "https://github.com/tox-dev/py-filelock"
+  },
+  {
+    "name": "flatbuffers",
+    "version": "25.12.19",
+    "spdx": "Apache 2.0",
+    "text": "Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.\n\nLicensed under Apache 2.0.\nSource: https://github.com/google/flatbuffers",
+    "sources": "https://github.com/google/flatbuffers"
   },
   {
     "name": "fsspec",
@@ -537,6 +551,13 @@
     "sources": "https://github.com/microsoft/onnxruntime"
   },
   {
+    "name": "onnxruntime",
+    "version": "1.29.0",
+    "spdx": "MIT License",
+    "text": "Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.\n\nLicensed under MIT License.\nSource: https://onnxruntime.ai",
+    "sources": "https://onnxruntime.ai"
+  },
+  {
     "name": "opentype.js",
     "version": "2.0.0",
     "spdx": "MIT",
@@ -588,6 +609,13 @@
     "version": "8.20.1",
     "spdx": "MIT",
     "text": "The MIT License\n\nCopyright (c) 2013-2023 Mathew Groves, Chad Engler\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in\nall copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\nTHE SOFTWARE."
+  },
+  {
+    "name": "protobuf",
+    "version": "7.36.1",
+    "spdx": "3-Clause BSD License",
+    "text": "Part of the environment a local generation runs in. It is NOT shipped with the application: it is fetched on first use, and removed with the engine.\n\nLicensed under 3-Clause BSD License.\nSource: https://developers.google.com/protocol-buffers/",
+    "sources": "https://developers.google.com/protocol-buffers/"
   },
   {
     "name": "psutil",

@@ -1,4 +1,39 @@
 {
+  "smart-selection": [
+    {
+      "id": "efficient-sam-ti",
+      "name": "EfficientSAM-Ti",
+      "summary": "Promptable image selection, Tiny ViT ONNX encoder and decoder",
+      "format": "onnx",
+      "loader": "onnx-runtime",
+      "rank": 1,
+      "licence": "Apache-2.0",
+      "licenceUrl": "https://www.apache.org/licenses/LICENSE-2.0",
+      "source": "https://github.com/yformer/EfficientSAM",
+      "files": [
+        {
+          "role": "encoder",
+          "name": "efficientsam_ti_encoder.onnx",
+          "url": "https://huggingface.co/yunyangx/EfficientSAM/resolve/d53228e3f6dee607309453f54a22c40c2a10204c/efficientsam_ti_encoder.onnx",
+          "bytes": 24799761,
+          "sha256": "84ed466ffcc5c1f8d08409bc34a23bb364ab2c15e402cb12d4335a42be0e0951",
+          "revision": "d53228e3f6dee607309453f54a22c40c2a10204c",
+          "upstream": "https://github.com/yformer/EfficientSAM"
+        },
+        {
+          "role": "decoder",
+          "name": "efficientsam_ti_decoder.onnx",
+          "url": "https://huggingface.co/yunyangx/EfficientSAM/resolve/d53228e3f6dee607309453f54a22c40c2a10204c/efficientsam_ti_decoder.onnx",
+          "bytes": 16565728,
+          "sha256": "a62f8fa5ea080447c0689418d69e58f1e83e0b7adf9c142e2bd9bcc8045c0b11",
+          "revision": "d53228e3f6dee607309453f54a22c40c2a10204c",
+          "upstream": "https://github.com/yformer/EfficientSAM"
+        }
+      ],
+      "diskBytes": 41365489,
+      "reservationBytes": 200000000
+    }
+  ],
   "assistant": [
     {
       "id": "qwen2.5-0.5b-instruct-q4",
