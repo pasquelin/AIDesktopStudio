@@ -133,13 +133,14 @@ function worldGround(input: Record<string, unknown>): ActionOutcome {
 function worldLayers(input: Record<string, unknown>): ActionOutcome {
   const open = mountedScene()
   if ('ok' in open) return open
-  try {
-    const world = readWorld({ ...open.state.world, layers: input.layers }, undefined)
-    useScenes.getState().runCommand(open.documentId, setWorld({ layers: world.layers }))
-    return { ok: true }
-  } catch {
+  const wanted = input.layers
+  const world = readWorld({ ...open.state.world, layers: wanted }, undefined)
+  // The reader drops what it cannot read rather than throwing: a shorter list is a refusal here,
+  // or a typo in a kind would wipe every layer of the scene under an `ok`.
+  if (!Array.isArray(wanted) || world.layers.length !== wanted.length)
     return refused('badInput', '"layers" must be a complete valid terrain or scatter layer list')
-  }
+  useScenes.getState().runCommand(open.documentId, setWorld({ layers: world.layers }))
+  return { ok: true }
 }
 
 export const SCENE_WORLD_HANDLERS: ActionHandlers = {

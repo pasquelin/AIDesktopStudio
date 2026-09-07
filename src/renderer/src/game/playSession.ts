@@ -281,10 +281,16 @@ export function startPlay(deps: PlaySessionDeps): PlaySession {
                       publish()
                     }
                     /** Between the two steps the frame falls between, which is what stops a 60 Hz picture juddering. */
+                    let drawnUs = -1
                     const draw = (alpha: number): void => {
                       // 🛑 Before place: a still body makes `place` skip the apply, and a seek
                       // after a draw would pose bones the picture has already left behind.
-                      deps.animate?.seekClips(secondsToUs(world.time.elapsed))
+                      // Not on a clock that has not moved: a pause would repose every model a frame.
+                      const nowUs = secondsToUs(world.time.elapsed)
+                      if (nowUs !== drawnUs) {
+                        drawnUs = nowUs
+                        deps.animate?.seekClips(nowUs)
+                      }
                       world.ports.render.place(placementsOf(world, placements, alpha))
                     }
                     let liftVeil: () => void

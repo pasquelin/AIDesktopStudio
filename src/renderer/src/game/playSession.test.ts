@@ -239,6 +239,35 @@ describe('a game running inside the studio', () => {
     expect(seekClips.mock.calls.length).toBeGreaterThan(1)
     expect(last).toBeGreaterThan(0)
   })
+
+  it('leaves the band where it is while the game is paused', () => {
+    const seekClips = vi.fn()
+    const frames = handDriven()
+    const session = startPlay({
+      documentId: 'doc-1',
+      renderer: drawnBy({}),
+      animate: {
+        poseNode: vi.fn(),
+        releaseNode: vi.fn(),
+        clipLengthsOf: () => ({}),
+        useGraphClips: vi.fn(),
+        seekClips,
+      },
+      editState: () => scene(),
+      input: new EventTarget(),
+      frames: frames.driver,
+      onReport: () => {},
+    })
+    frames.advance(0)
+    frames.advance(1)
+    session.pause()
+    const sought = seekClips.mock.calls.length
+
+    frames.advance(1)
+    frames.advance(1)
+
+    expect(seekClips.mock.calls.length).toBe(sought)
+  })
 })
 
 describe('the camera a game borrows', () => {

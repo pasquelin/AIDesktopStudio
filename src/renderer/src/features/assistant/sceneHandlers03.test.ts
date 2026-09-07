@@ -66,6 +66,20 @@ describe('the world of the scene', () => {
     expect(scene().world.layers).toMatchObject([{ kind: 'scatter', id: 'trees', name: 'Trees' }])
   })
 
+  it('refuses a list it cannot read whole, rather than wiping the layers it holds', async () => {
+    await runAction('world.setLayers', { layers: [{ kind: 'scatter', id: 'trees' }] })
+
+    expect(await runAction('world.setLayers', { layers: 'all' })).toMatchObject({
+      ok: false,
+      refusal: 'badInput',
+    })
+    expect(await runAction('world.setLayers', { layers: [{ kind: 'relief' }] })).toMatchObject({
+      ok: false,
+      refusal: 'badInput',
+    })
+    expect(scene().world.layers).toMatchObject([{ kind: 'scatter', id: 'trees' }])
+  })
+
   it('uses the scene reader defaults for a sparse scatter entry', async () => {
     expect(await runAction('world.setLayers', { layers: [{ kind: 'scatter' }] })).toEqual({
       ok: true,
