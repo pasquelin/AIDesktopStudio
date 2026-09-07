@@ -11,6 +11,9 @@ import { useSceneClipboard } from '@/stores/sceneClipboard'
 import { sceneViewOf, useSceneViews } from '@/stores/sceneViews'
 import { forgetSceneEngine, registerSceneEngine } from '@/stores/sceneEngines'
 import type { SceneRenderer } from '@/engines/scene/SceneRenderer'
+import { commandFor, platformDefaults } from '@shared/domain/command'
+import { signatureOf } from '@shared/domain/shortcut'
+import { usePlay } from '@/stores/play'
 import { runSceneCommand } from './sceneCommands'
 import { useOptimizationDialog } from '@/hooks/useOptimizationDialog'
 import { useGameExportDialog } from '@/hooks/useGameExportDialog'
@@ -443,3 +446,30 @@ describe('the numbered views', () => {
     expect(sceneViewOf(useSceneViews.getState(), DOCUMENT).panes[0]).toBe('free')
   })
 })
+
+it.each([true, false])(
+  'starts the scene game with the platform Enter shortcut (mac: %s)',
+  isMac => {
+    const start = vi.spyOn(usePlay.getState(), 'start').mockImplementation(() => {})
+    try {
+      const signature = signatureOf(
+        {
+          code: 'Enter',
+          key: 'Enter',
+          metaKey: isMac,
+          ctrlKey: !isMac,
+          altKey: false,
+          shiftKey: false,
+        },
+        isMac,
+      )
+      const command = commandFor(signature, 'scene', platformDefaults(isMac))
+      expect(command).toBe('scene.play')
+      if (!command) throw new Error('Missing play command')
+      expect(runSceneCommand(DOCUMENT, command)).toBe(true)
+      expect(start).toHaveBeenCalledWith(DOCUMENT)
+    } finally {
+      start.mockRestore()
+    }
+  },
+)

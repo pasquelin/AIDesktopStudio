@@ -1,5 +1,9 @@
 {
   "commands": {
+    "scenePlay": {
+      "title": "Lancer le jeu",
+      "help": "Lance ou reprend la scène dans la fenêtre de jeu."
+    },
     "appNew": {
       "title": "Nouveau…",
       "help": "Ouvre la fenêtre qui crée un projet ou un document, quel que soit l’écran"

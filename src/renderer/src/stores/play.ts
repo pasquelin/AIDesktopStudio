@@ -373,3 +373,10 @@ function scenesAhead(state: SceneState): readonly string[] {
   const named = (state.animation.transitions ?? []).flatMap(one => one.scene ?? [])
   return [...new Set(named)]
 }
+
+export function startOrResumePlay(documentId: string): void {
+  const store = usePlay.getState()
+  const report = playReportOf(store, documentId)
+  if (report.state === 'paused') void store.resume(documentId)
+  else if (report.state === 'edit') store.start(documentId)
+}
