@@ -115,7 +115,9 @@ for (const { command, seconds } of report) {
   process.stdout.write(`  ✓ ${command.padEnd(34)} ${cost.padStart(8)}${drift}\n`)
 }
 
-if (MEASURING) {
+// Only a whole green run: a chain stopped on a red link measures a prefix, and writing it would
+// make the next baseline compare against a total that was never the gate.
+if (MEASURING && process.exitCode === undefined) {
   writeFileSync(
     RELEVE,
     `${JSON.stringify({ at: new Date().toISOString(), cores: availableParallelism(), links: report }, undefined, 2)}\n`,
