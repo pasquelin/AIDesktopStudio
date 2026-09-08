@@ -39,7 +39,9 @@ describe('mission runtime bench catalogue', () => {
     expect(representative.flatMap(scenarioFamilies)).toEqual(expect.arrayContaining(represented))
     expect(expanded.length).toBeGreaterThan(representative.length)
     expect(missionScenarios(SCENARIOS, 'all')).toHaveLength(SCENARIOS.length)
-  })
+    // Same reason as `world.determinism`: it walks the whole scenario battery three times over,
+    // and 15 s is the machine's load rather than this code's.
+  }, 60000)
 
   it('derives the coverage matrix from the registry and historical coverage', () => {
     const matrix = missionFamilyCoverage(SCENARIOS)

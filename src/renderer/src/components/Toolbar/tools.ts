@@ -1,4 +1,3 @@
-import type { AiRoleId } from '@shared/domain/aiRole'
 import type { ToolButtonProps } from '../ToolButton'
 import type { TooltipFactory } from '@/helpers/tooltip'
 
@@ -23,10 +22,12 @@ export type ToolMode = {
   /** Greyed rather than hidden — the bar never conceals what is coming, nor what is missing. */
   disabled?: boolean
   /**
-   * The employment it cannot run without. DECLARED here rather than branched on in the view: two
-   * modes ride the same model, and the one the view named was greyed while the other was not.
+   * The model of THIS machine it cannot run without. DECLARED here rather than branched on in the
+   * view: two modes ride the same model, and the one the view named was greyed while the other
+   * was not. A model id, never an employment — a mode runs what its host loads, and the employment
+   * a cloud may serve is the batch edit's business, not the gesture's.
    */
-  needsRole?: AiRoleId
+  needsModel?: string
 }
 
 export type ToolbarItem = {

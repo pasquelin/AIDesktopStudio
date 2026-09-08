@@ -56,7 +56,7 @@ describe('SmartSelectionHost', () => {
       ensureLoaded,
       hold: () => vi.fn(),
       engine: () => Promise.resolve(python),
-      epoch: () => 1,
+      loadedEpoch: () => 1,
       readBitmap,
     })
 
@@ -83,7 +83,7 @@ describe('SmartSelectionHost', () => {
       ensureLoaded: vi.fn(),
       hold: () => vi.fn(),
       engine: () => Promise.resolve(engine(job)),
-      epoch: () => epoch,
+      loadedEpoch: () => epoch,
       readBitmap,
     })
 
@@ -112,7 +112,7 @@ describe('SmartSelectionHost', () => {
       ensureLoaded: vi.fn(),
       hold: () => vi.fn(),
       engine: () => Promise.resolve(engine(job)),
-      epoch: () => epoch,
+      loadedEpoch: () => epoch,
       readBitmap,
     })
 
@@ -145,7 +145,7 @@ describe('SmartSelectionHost', () => {
       ensureLoaded: vi.fn(),
       hold: () => vi.fn(),
       engine: () => Promise.resolve(engine(job)),
-      epoch: () => 1,
+      loadedEpoch: () => 1,
       readBitmap,
     })
 
@@ -166,7 +166,7 @@ describe('SmartSelectionHost', () => {
       ensureLoaded: vi.fn(),
       hold: () => vi.fn(),
       engine: () => Promise.resolve(engine(job)),
-      epoch: () => 1,
+      loadedEpoch: () => 1,
       readBitmap,
     })
     const cancelled = new AbortController()
@@ -196,7 +196,7 @@ describe('SmartSelectionHost', () => {
       ensureLoaded: vi.fn(),
       hold: () => vi.fn(),
       engine: () => Promise.resolve(engine(job)),
-      epoch: () => 1,
+      loadedEpoch: () => 1,
       readBitmap: read,
     })
 
@@ -219,7 +219,7 @@ describe('SmartSelectionHost', () => {
       ensureLoaded: vi.fn(),
       hold: () => vi.fn(),
       engine: () => Promise.resolve(engine(job)),
-      epoch: () => 1,
+      loadedEpoch: () => 1,
       readBitmap: () => Promise.resolve(bgra([0, 255])),
     })
 

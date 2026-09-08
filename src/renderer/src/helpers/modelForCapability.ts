@@ -1,4 +1,4 @@
-import type { AiOverview } from '@shared/domain/aiOverview'
+import { canServe, type AiOverview } from '@shared/domain/aiOverview'
 import type { AiRoleId } from '@shared/domain/aiRole'
 import { ASSET_CLOUDS } from '@shared/domain/aiCloud'
 import { cloudModelId } from '@shared/domain/codeGeneration'
@@ -50,5 +50,16 @@ export function modelForCapability(role: AiRoleId): string | undefined {
     role,
     useModels.getState().selected[role],
     useAiModels.getState().overview,
+  )
+}
+
+/**
+ * Whether a model of THIS machine is on the disk and usable — what a tool that RUNS one needs to
+ * know, where `modelForCapability` answers which model an employment generates with. The two part
+ * company the moment a cloud serves that employment: the gesture still runs the local one.
+ */
+export function localModelReady(modelId: string, overview: AiOverview | null): boolean {
+  return (overview?.roles ?? []).some(row =>
+    row.candidates.some(one => one.model.id === modelId && canServe(one)),
   )
 }

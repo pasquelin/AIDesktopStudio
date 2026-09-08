@@ -1,9 +1,10 @@
 import { mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import type {
-  SmartSelectionRequest,
-  SmartSelectionResult,
+import {
+  SMART_SELECTION_MODEL,
+  type SmartSelectionRequest,
+  type SmartSelectionResult,
 } from '@shared/domain/smartSelectionInference'
 import { writeQueue } from '@main/persistence'
 import type { PythonClient } from './pythonClient'
@@ -16,7 +17,7 @@ export function createSmartSelectionHost(deps: {
   ensureLoaded: (modelId: string) => Promise<void>
   hold: (modelId: string) => () => void
   engine: () => Promise<PythonClient | null>
-  epoch: () => number | null
+  loadedEpoch: (modelId: string) => number | null
   /** The mask back as BGRA. Injected: it needs a live app to reach `nativeImage`. */
   readBitmap: (file: string) => Promise<Uint8Array | null>
 }): SmartSelectionHost {
@@ -31,12 +32,12 @@ export function createSmartSelectionHost(deps: {
     // wanted on every run — where only an encoding the engine did not hold used to need one.
     const folder = await mkdtemp(join(tmpdir(), 'ai-desktop-studio-selection-'))
     const destination = join(folder, 'mask.png')
-    const release = deps.hold('efficient-sam-ti')
+    const release = deps.hold(SMART_SELECTION_MODEL)
     try {
-      await deps.ensureLoaded('efficient-sam-ti')
+      await deps.ensureLoaded(SMART_SELECTION_MODEL)
       const engine = await deps.engine()
       if (!engine) throw new Error('the local AI engine is not answering')
-      const epoch = deps.epoch()
+      const epoch = deps.loadedEpoch(SMART_SELECTION_MODEL)
       const encode = async (): Promise<void> => {
         const image = join(folder, 'composite.png')
         await writeFile(image, request.png)
