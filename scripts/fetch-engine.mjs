@@ -53,6 +53,24 @@ const TARGETS = {
 }
 
 /**
+ * 🛑 Les cibles qui partent SANS moteur. `torch` n'a plus de roue macOS x86-64 depuis la 2.2.2 et
+ * `onnxruntime` depuis la 1.23.2 — relevé sur PyPI le 2026-09-07 — donc les deux profils
+ * embarqués, Auto Rig et Sélection intelligente, n'y ont aucun binaire installable. Décision
+ * d'Alban : livrer le studio entier sur Intel, sans son IA locale, plutôt que rien.
+ */
+export const ENGINELESS_TARGETS = new Set(['darwin-x64'])
+
+/**
+ * Ce qu'une cible sans moteur laisse à empaqueter : RIEN, et le dossier doit exister vide plutôt
+ * que d'être absent — `extraResources` le déclare, et une passe précédente du même run y a laissé
+ * l'interpréteur de l'AUTRE architecture.
+ */
+export function emptyEngine() {
+  rmSync(DESTINATION, { recursive: true, force: true })
+  mkdirSync(DESTINATION, { recursive: true })
+}
+
+/**
  * What each archive must hash to, read 2026-08-22. Two builds of one tag must ship the same
  * interpreter, so a rotated URL without a rotated digest fails here rather than shipping
  * something unread. A missing entry REFUSES rather than warns.
@@ -120,7 +138,10 @@ export async function fetchEngine(platform = process.platform, arch = process.ar
     )
   }
 
-  const work = mkdtempSync(join(tmpdir(), 'ai-desktop-studio-engine-'))
+  // 🛑 À CÔTÉ de la destination, pas dans le dossier temporaire du système. Sur un runner
+  // Windows, `TEMP` est sur C: et le workspace sur D:, et `tar` ne franchit pas les deux lettres
+  // de lecteur : « Error is not recoverable », mesuré le 2026-09-07.
+  const work = mkdtempSync(join(dirname(DESTINATION), 'ai-desktop-studio-engine-'))
   try {
     const archive = join(work, 'python.tar.gz')
     const digest = await download(urlOf(triple), archive)
