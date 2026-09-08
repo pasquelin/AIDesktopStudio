@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs'
-import { join, resolve } from 'node:path'
+import { dirname, join, resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import manifest from '../../package.json'
 import { pathIsInside } from './export/pathIsInside'
@@ -48,9 +48,9 @@ describe('the gate not rereading what it has already judged', () => {
       const stated = read(config).match(/"tsBuildInfoFile": "([^"]+)"/)?.[1]
 
       expect(stated).toBeDefined()
-      expect(pathIsInside(join(ROOT, 'node_modules'), resolve(ROOT, 'config', stated ?? ''))).toBe(
-        true,
-      )
+      expect(
+        pathIsInside(join(ROOT, 'node_modules'), resolve(ROOT, dirname(config), stated ?? '')),
+      ).toBe(true)
     }
   })
 
@@ -84,12 +84,13 @@ describe('the gate not rereading what it has already judged', () => {
    * Held as a rule rather than left to habit: a glob narrowed back to `src` costs nothing to
    * write, reddens nothing, and puts eleven files back in the dark.
    */
-  it('points both gates at the build scripts, not only at the sources', () => {
+  it('points both gates at the build scripts and the configs, not only at the sources', () => {
     expect(manifest.scripts.lint).toContain('scripts')
+    expect(manifest.scripts.lint).toContain('config')
     // The pair, named rather than looped over: indexing the manifest by a string would need a
     // cast, and the two gates are two, not a list.
     for (const glob of [manifest.scripts.format, manifest.scripts['format:check']]) {
-      expect(glob).toContain('{src,scripts}')
+      expect(glob).toContain('{src,scripts,config}')
       expect(glob).toContain('mjs')
     }
   })

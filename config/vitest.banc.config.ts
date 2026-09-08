@@ -2,7 +2,7 @@ import { loadEnv } from 'vite'
 import { defineConfig } from 'vitest/config'
 import { resolve } from 'node:path'
 
-/** `include` and `setupFiles` resolve against `root`, which defaults to the cwd, not this folder. */
+/** `include` and `setupFiles` resolve against `root`: the cwd by default, never this folder. */
 const ROOT = resolve(import.meta.dirname, '..')
 
 /**

@@ -34,9 +34,13 @@ function gameDecoders(): Plugin {
   return {
     name: 'game:decoders',
     closeBundle() {
-      cpSync(resolve(ROOT, 'src/renderer/public/decoders'), resolve(ROOT, 'resources/gameRuntime/decoders'), {
-        recursive: true,
-      })
+      cpSync(
+        resolve(ROOT, 'src/renderer/public/decoders'),
+        resolve(ROOT, 'resources/gameRuntime/decoders'),
+        {
+          recursive: true,
+        },
+      )
     },
   }
 }

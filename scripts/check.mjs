@@ -25,20 +25,9 @@ import { fileURLToPath } from 'node:url'
 // A `.ts` from a `.mjs`, as `check-artefact.mjs` does: Node 24 strips the types on the way in, so
 // the rule the tests check is the one that runs rather than a twin of it.
 import { LEAST_GUARDS, wideGuardsUnder } from '../src/main/wideGuards.ts'
+import { RERUN_EVERYTHING } from '../src/main/rerunEverything.ts'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
-
-/** A change here moves more than an import graph can follow, so nothing narrower than all of it. */
-const RERUN_EVERYTHING = [
-  'vitest.config.ts',
-  'package.json',
-  'pnpm-lock.yaml',
-  'tsconfig.json',
-  'config/tsconfig.node.json',
-  'config/tsconfig.web.json',
-  'oxlint.json',
-  '.prettierrc',
-]
 
 function git(...args) {
   return execFileSync('git', args, { cwd: ROOT, encoding: 'utf8' })
