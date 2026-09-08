@@ -42,6 +42,7 @@
     "motionSaveNew": "Yeni hareket olarak kaydet",
     "motionRemove": "Bu hareketi kaldır",
     "motionEmpty": "Bu karakter henüz hiçbir hareketi oynatamıyor.",
+    "motionNeedsSkeleton": "Bu modelin iskeletinin yok, bu nedenle hiçbir hareket oynatamazı. İskelet bölümünden bir tane verin.",
     "motionNew": "Yeni hareket",
     "saveFault_not-glb": "Bu dosya, stüdyonun geri yazabileceği bir model değil.",
     "saveFault_no-buffer": "Bu dosya deri giydirilecek hiçbir geometri taşımıyor.",
@@ -49,6 +50,7 @@
     "saveFault_compressed-primitive": "Bu dosyanın geometrisi sıkıştırılmış. Stüdyo içine bir iskelet yazamaz.",
     "retarget": {
       "title": "Animasyon aktar",
+      "needsSkeleton": "Bu modelin henüz iskeletinin yok, bu nedenle bir animasyonun aktarılacağı bir şey yok.",
       "source": "Kaynak",
       "sourceTitle": "Kaynak · {{name}}",
       "groupCount": "{{name}} ({{count, number}})",

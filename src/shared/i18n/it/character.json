@@ -42,6 +42,7 @@
     "motionSaveNew": "Salva come nuovo movimento",
     "motionRemove": "Rimuovi questo movimento",
     "motionEmpty": "Questo personaggio non sa ancora eseguire alcun movimento.",
+    "motionNeedsSkeleton": "Questo modello non ha uno scheletro, quindi non può riprodurre nessun movimento. Forniscine uno dalla sezione Scheletro.",
     "motionNew": "Nuovo movimento",
     "saveFault_not-glb": "Questo file non è un modello che lo studio sappia riscrivere.",
     "saveFault_no-buffer": "Questo file non porta alcuna geometria da rivestire.",
@@ -49,6 +50,7 @@
     "saveFault_compressed-primitive": "La geometria di questo file è compressa. Lo studio non sa scrivervi uno scheletro.",
     "retarget": {
       "title": "Trasferisci un’animazione",
+      "needsSkeleton": "Questo modello non ha ancora uno scheletro, quindi non c’è nulla su cui trasferire un’animazione.",
       "source": "Sorgente",
       "sourceTitle": "Sorgente · {{name}}",
       "groupCount": "{{name}} ({{count, number}})",

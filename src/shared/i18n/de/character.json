@@ -42,6 +42,7 @@
     "motionSaveNew": "Als neue Bewegung speichern",
     "motionRemove": "Diese Bewegung entfernen",
     "motionEmpty": "Dieser Charakter kann noch keine Bewegung abspielen.",
+    "motionNeedsSkeleton": "Dieses Modell hat kein Skelett, daher kann es keine Bewegung abspielen. Geben Sie ihm eines aus dem Abschnitt Skelett.",
     "motionNew": "Neue Bewegung",
     "saveFault_not-glb": "Diese Datei ist kein Modell, das das Studio zurückschreiben kann.",
     "saveFault_no-buffer": "Diese Datei trägt keine Geometrie, die sich mit einer Haut versehen ließe.",
@@ -49,6 +50,7 @@
     "saveFault_compressed-primitive": "Die Geometrie dieser Datei ist komprimiert. Das Studio kann kein Skelett hineinschreiben.",
     "retarget": {
       "title": "Animation übertragen",
+      "needsSkeleton": "Dieses Modell hat noch kein Skelett, daher gibt es nichts, auf das eine Animation übertragen werden kann.",
       "source": "Quelle",
       "sourceTitle": "Quelle · {{name}}",
       "groupCount": "{{name}} ({{count, number}})",

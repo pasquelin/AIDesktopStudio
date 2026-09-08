@@ -42,6 +42,7 @@
     "motionSaveNew": "Simpan sebagai gerak baru",
     "motionRemove": "Lepaskan gerak ini",
     "motionEmpty": "Karakter ini belum dapat memainkan gerak apa pun.",
+    "motionNeedsSkeleton": "Model ini tidak memiliki kerangka, jadi tidak dapat memutar gerak apa pun. Berikan satu dari bagian Kerangka.",
     "motionNew": "Gerak baru",
     "saveFault_not-glb": "File ini bukan model yang dapat ditulis ulang oleh studio.",
     "saveFault_no-buffer": "File ini tidak membawa geometri untuk dikerjakan.",
@@ -49,6 +50,7 @@
     "saveFault_compressed-primitive": "Geometri file ini dikompresi. Studio tidak dapat menulis kerangka ke dalamnya.",
     "retarget": {
       "title": "Pindahkan animasi",
+      "needsSkeleton": "Model ini belum memiliki kerangka, jadi tidak ada apa pun untuk mengirim animasi ke sana.",
       "source": "Sumber",
       "sourceTitle": "Sumber · {{name}}",
       "groupCount": "{{name}} ({{count, number}})",

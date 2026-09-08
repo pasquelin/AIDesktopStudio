@@ -42,6 +42,7 @@
     "motionSaveNew": "새 모션으로 저장",
     "motionRemove": "이 모션 제거",
     "motionEmpty": "이 캐릭터는 아직 어떤 모션도 재생할 수 없습니다.",
+    "motionNeedsSkeleton": "이 모델에는 스켈레톤이 없으므로 모션을 재생할 수 없습니다. 스켈레톤 섹션에서 하나를 제공하세요.",
     "motionNew": "새 모션",
     "saveFault_not-glb": "이 파일은 스튜디오가 다시 쓸 수 있는 모델이 아닙니다.",
     "saveFault_no-buffer": "이 파일에는 스키닝할 지오메트리가 없습니다.",
@@ -49,6 +50,7 @@
     "saveFault_compressed-primitive": "이 파일의 지오메트리는 압축되어 있습니다. 스튜디오는 여기에 스켈레톤을 기록할 수 없습니다.",
     "retarget": {
       "title": "애니메이션 전송",
+      "needsSkeleton": "이 모델에는 아직 스켈레톤이 없으므로 애니메이션을 전송할 대상이 없습니다.",
       "source": "소스",
       "sourceTitle": "소스 · {{name}}",
       "groupCount": "{{name}} ({{count, number}})",

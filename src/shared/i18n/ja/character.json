@@ -42,6 +42,7 @@
     "motionSaveNew": "新しいモーションとして保存",
     "motionRemove": "このモーションを削除",
     "motionEmpty": "このキャラクターはまだモーションを再生できません。",
+    "motionNeedsSkeleton": "このモデルにはスケルトンがないため、モーションを再生できません。スケルトンセクションから1つを提供してください。",
     "motionNew": "新しいモーション",
     "saveFault_not-glb": "このファイルは、スタジオが書き戻せるモデルではありません。",
     "saveFault_no-buffer": "このファイルには、スキニングするジオメトリがありません。",
@@ -49,6 +50,7 @@
     "saveFault_compressed-primitive": "このファイルのジオメトリは圧縮されています。スタジオはそこにスケルトンを書き込めません。",
     "retarget": {
       "title": "アニメーションを転送",
+      "needsSkeleton": "このモデルにはまだスケルトンがないため、アニメーションを転送する対象がありません。",
       "source": "ソース",
       "sourceTitle": "ソース · {{name}}",
       "groupCount": "{{name}}（{{count, number}}）",

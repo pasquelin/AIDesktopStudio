@@ -42,6 +42,7 @@
     "motionSaveNew": "Lưu thành một chuyển động mới",
     "motionRemove": "Xóa chuyển động này",
     "motionEmpty": "Nhân vật này chưa chạy được chuyển động nào.",
+    "motionNeedsSkeleton": "Mô hình này không có bộ xương, vì vậy nó không thể chơi bất kì chuyển động nào. Hãy cung cấp cho nó một cái từ phần Bộ xương.",
     "motionNew": "Chuyển động mới",
     "saveFault_not-glb": "Tệp này không phải là mô hình mà studio ghi lại được.",
     "saveFault_no-buffer": "Tệp này không có hình học nào để bọc da.",
@@ -49,6 +50,7 @@
     "saveFault_compressed-primitive": "Hình học của tệp này đã được nén. Studio không ghi được bộ xương vào đó.",
     "retarget": {
       "title": "Chuyển hoạt ảnh",
+      "needsSkeleton": "Mô hình này chưa có bộ xương, vì vậy không có gì để chuyển động hoạt hình vào.",
       "source": "Nguồn",
       "sourceTitle": "Nguồn · {{name}}",
       "groupCount": "{{name}} ({{count, number}})",

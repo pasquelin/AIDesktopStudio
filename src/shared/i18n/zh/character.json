@@ -42,6 +42,7 @@
     "motionSaveNew": "另存为新动作",
     "motionRemove": "移除该动作",
     "motionEmpty": "该角色还不会播放任何动作。",
+    "motionNeedsSkeleton": "该模型没有骨架，因此无法播放任何动作。从“骨架”部分为其提供一个。",
     "motionNew": "新动作",
     "saveFault_not-glb": "该文件不是工作室能够写回的模型。",
     "saveFault_no-buffer": "该文件没有可供蒙皮的几何体。",
@@ -49,6 +50,7 @@
     "saveFault_compressed-primitive": "该文件的几何体是压缩的。工作室无法把骨架写入其中。",
     "retarget": {
       "title": "重定向动画",
+      "needsSkeleton": "该模型还没有骨架，因此没有任何东西可以将动画转移到其上。",
       "source": "源",
       "sourceTitle": "源 · {{name}}",
       "groupCount": "{{name}}（{{count, number}}）",
