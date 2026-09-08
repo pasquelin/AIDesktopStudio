@@ -2,7 +2,7 @@ import { loadEnv } from 'vite'
 import { defineConfig } from 'vitest/config'
 import { resolve } from 'node:path'
 
-/** This config no longer sits at the root: every path below is anchored, never left to the cwd. */
+/** `include` and `setupFiles` resolve against `root`, which defaults to the cwd, not this folder. */
 const ROOT = resolve(import.meta.dirname, '..')
 
 /**

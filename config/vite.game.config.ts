@@ -6,7 +6,6 @@ import type { Plugin } from 'vite'
 import { DECODER_MODULES, withoutDecoderUrls } from '../src/main/decoderUrls'
 import { withoutNodeModuleImport } from '../src/main/export/withoutNodeModuleImport'
 
-/** This config no longer sits at the root: every path below is anchored, never left to the cwd. */
 const ROOT = resolve(import.meta.dirname, '..')
 
 /**
@@ -60,7 +59,6 @@ function stubNodeBuiltins(): Plugin {
 }
 
 export default defineConfig({
-  root: ROOT,
   publicDir: false,
   plugins: [stubNodeBuiltins(), strippedDecoderUrls(), gameDecoders()],
   resolve: {

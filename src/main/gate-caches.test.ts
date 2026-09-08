@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import manifest from '../../package.json'
+import { pathIsInside } from './export/pathIsInside'
 
 /**
  * What keeps the gate from redoing, on every call, work it has already done.
@@ -12,8 +13,8 @@ import manifest from '../../package.json'
  * None of this changes a verdict; it changes what gets recomputed. So nothing else in the suite
  * would go red the day a flag is dropped, which is why these cases exist.
  *
- * Under `src/main` rather than `src/shared`: these files sit at the repository root, and
- * `src/shared` compiles for the renderer.
+ * Under `src/main` rather than `src/shared`: these files are the repository's own
+ * configuration, and `src/shared` compiles for the renderer.
  */
 const ROOT = join(import.meta.dirname, '..', '..')
 const read = (name: string) => readFileSync(join(ROOT, name), 'utf8')
@@ -47,9 +48,7 @@ describe('the gate not rereading what it has already judged', () => {
       const stated = read(config).match(/"tsBuildInfoFile": "([^"]+)"/)?.[1]
 
       expect(stated).toBeDefined()
-      // Resolved rather than prefix-matched: from `config/` the path reads `../node_modules/`,
-      // which the literal check this replaced called a cache written beside the source.
-      expect(resolve(ROOT, 'config', stated ?? '').startsWith(join(ROOT, 'node_modules'))).toBe(
+      expect(pathIsInside(join(ROOT, 'node_modules'), resolve(ROOT, 'config', stated ?? ''))).toBe(
         true,
       )
     }
