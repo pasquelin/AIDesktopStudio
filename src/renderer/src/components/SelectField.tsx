@@ -115,6 +115,24 @@ type SelectLayoutProps = Pick<
   'label' | 'layout' | 'leading' | 'actions' | 'className'
 > & { id: string; children: ReactNode; compactActions?: boolean }
 
+/**
+ * The chevron the two `appearance-none` layouts owe their control: the browser draws none once
+ * the appearance is dropped, and the room `pe-6` reserves for it was standing empty. Pinned to
+ * the SELECT rather than to the row, so what stands beside it never lands under the glyph.
+ */
+function chevronedSelect(children: ReactNode) {
+  return (
+    <div className="relative flex min-w-0 flex-1 items-center">
+      {children}
+      <UiIcon
+        path={mdiChevronDown}
+        size={12}
+        className="text-muted pointer-events-none absolute end-2"
+      />
+    </div>
+  )
+}
+
 function stackedSelectLayout({
   label,
   className,
@@ -127,7 +145,7 @@ function stackedSelectLayout({
     <FormField label={label} htmlFor={id} className={className}>
       <div className="flex min-w-0 items-center gap-2">
         {leading}
-        {children}
+        {chevronedSelect(children)}
         {actions}
       </div>
     </FormField>
@@ -170,14 +188,9 @@ function selectLayout({
       </PropertyLine>
     )
   return (
-    <div className={cn('relative flex min-w-0 items-center', className)}>
+    <div className={cn('flex min-w-0 items-center', className)}>
       {leading}
-      {children}
-      <UiIcon
-        path={mdiChevronDown}
-        size={12}
-        className="text-muted pointer-events-none absolute end-2"
-      />
+      {chevronedSelect(children)}
       {actions}
     </div>
   )
