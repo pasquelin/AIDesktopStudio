@@ -50,6 +50,7 @@ type ImageDocumentViewProps = {
   comments: readonly GenerationComment[]
   commentSize: Size
   onCommentChange: (id: string, text: string) => void
+  onCommentRename: (id: string, title: string) => void
   onCommentRemove: (id: string) => void
   onCommentGenerate?: (id: string) => void
 }
@@ -70,6 +71,7 @@ export function ImageDocumentView(props: ImageDocumentViewProps) {
           view={view}
           size={props.commentSize}
           onChange={props.onCommentChange}
+          onRename={props.onCommentRename}
           onRemove={props.onCommentRemove}
           onGenerate={props.onCommentGenerate}
         />

@@ -103,6 +103,14 @@ function isDerived(value: string): boolean {
 describe('a token composed from the hue an element posts', () => {
   const onElement = colorsIn(blockFrom('.generation-comment {'))
 
+  /**
+   * 🛑 `colorsIn` reads `--color-*` only, so the pair the light theme DOES restate is invisible
+   * to every other rule here: deleted, each note would wear the dark ink on a white surface.
+   */
+  it('restates the ink the composed colour is built from, in the light theme', () => {
+    expect(blockFrom(`name: '${THEME_ATTRIBUTE.light}'`)).toContain('--sc-comment-ink:')
+  })
+
   it('says the same thing in `@theme` and on the element that posts an angle', () => {
     const composed = [...reference].filter(([name]) => name.startsWith('--color-comment-'))
 

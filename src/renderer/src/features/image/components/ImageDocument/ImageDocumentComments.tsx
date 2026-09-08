@@ -8,6 +8,7 @@ export type ImageDocumentCommentsProps = {
   view: CanvasView
   size: Size
   onChange: (id: string, text: string) => void
+  onRename: (id: string, title: string) => void
   onRemove: (id: string) => void
   onGenerate?: (id: string) => void
 }
@@ -21,6 +22,7 @@ export function ImageDocumentComments(props: ImageDocumentCommentsProps) {
       view={props.view}
       size={props.size}
       onChange={props.onChange}
+      onRename={props.onRename}
       onRemove={props.onRemove}
       onGenerate={props.onGenerate}
     />

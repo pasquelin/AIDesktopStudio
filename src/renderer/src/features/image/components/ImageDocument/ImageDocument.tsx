@@ -96,6 +96,7 @@ export function ImageDocument({ documentId }: ImageDocumentProps) {
   const [preparing, setPreparing] = useState(false)
   const comments = useGenerationComments(state => generationCommentsOf(state, documentId))
   const updateComment = useGenerationComments(state => state.update)
+  const renameComment = useGenerationComments(state => state.rename)
   const removeComment = useGenerationComments(state => state.remove)
   const addCanvasComment = useCanvasGenerationComments(documentId)
   const submitComment = useGeneratorCommentSubmission()
@@ -316,6 +317,7 @@ export function ImageDocument({ documentId }: ImageDocumentProps) {
       comments={comments}
       commentSize={canvas}
       onCommentChange={(id, text) => updateComment(documentId, id, text)}
+      onCommentRename={(id, title) => renameComment(documentId, id, title)}
       onCommentRemove={id => removeComment(documentId, id)}
       onCommentGenerate={
         submitComment ? id => void submitCanvasComment(submitComment, documentId, id) : undefined

@@ -1,7 +1,10 @@
 import type { CSSProperties } from 'react'
 import { mdiClose, mdiCreationOutline } from '@mdi/js'
 import { useTranslation } from 'react-i18next'
-import { GENERATION_COMMENT_TEXT_MAX } from '@shared/domain/generationComment'
+import {
+  GENERATION_COMMENT_TEXT_MAX,
+  GENERATION_COMMENT_TITLE_MAX,
+} from '@shared/domain/generationComment'
 import { MENU_RAISED } from '@/components/styles'
 import { ToolButton } from '@/components/ToolButton'
 import { cn } from '@/helpers/cn'
@@ -30,6 +33,7 @@ type ImageDocumentCommentProps = {
   view: CanvasView
   size: Size
   onChange: (id: string, text: string) => void
+  onRename: (id: string, title: string) => void
   onRemove: (id: string) => void
   onGenerate?: (id: string) => void
 }
@@ -73,10 +77,18 @@ export function ImageDocumentComment(props: ImageDocumentCommentProps) {
         onPointerDown={event => event.stopPropagation()}
       >
         <div className="flex w-full items-center gap-1.5">
-          <span className="border-comment-note-border text-comment-mark text-tiny flex size-(--sc-control-inline) shrink-0 items-center justify-center rounded-full border font-medium">
+          <span className="border-comment-note-border text-text text-tiny flex size-(--sc-control-inline) shrink-0 items-center justify-center rounded-full border font-medium">
             {props.number}
           </span>
-          <span className="flex-1" />
+          <input
+            className="text-text placeholder:text-muted min-w-0 flex-1 bg-transparent text-xs font-semibold outline-none"
+            data-sc="field:image.generationCommentTitle"
+            aria-label={t('imageComments.title')}
+            value={comment.title}
+            placeholder={t('imageComments.titlePlaceholder')}
+            maxLength={GENERATION_COMMENT_TITLE_MAX}
+            onChange={event => props.onRename(comment.id, event.target.value)}
+          />
           {props.onGenerate && (
             <ToolButton
               icon={mdiCreationOutline}

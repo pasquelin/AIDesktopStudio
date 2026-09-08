@@ -5,6 +5,7 @@ type GenerationCommentsState = {
   comments: Record<string, readonly GenerationComment[]>
   add: (documentId: string, comment: GenerationComment) => void
   update: (documentId: string, id: string, text: string) => void
+  rename: (documentId: string, id: string, title: string) => void
   remove: (documentId: string, id: string) => void
   removeSubmitted: (documentId: string, comments: readonly GenerationComment[]) => void
   clear: (documentId: string) => void
@@ -34,6 +35,15 @@ export const useGenerationComments = create<GenerationCommentsState>()(set => ({
         ...state.comments,
         [documentId]: (state.comments[documentId] ?? []).map(comment =>
           comment.id === id ? { ...comment, text } : comment,
+        ),
+      },
+    })),
+  rename: (documentId, id, title) =>
+    set(state => ({
+      comments: {
+        ...state.comments,
+        [documentId]: (state.comments[documentId] ?? []).map(comment =>
+          comment.id === id ? { ...comment, title } : comment,
         ),
       },
     })),

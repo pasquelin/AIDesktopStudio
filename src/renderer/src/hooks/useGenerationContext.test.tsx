@@ -72,6 +72,7 @@ describe('an annotated image document', () => {
     useGenerationComments.getState().add('image-1', {
       id: 'note-1',
       at: { x: 10, y: 20 },
+      title: '',
       text: 'Keep the subject',
     })
 

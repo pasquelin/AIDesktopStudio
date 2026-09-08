@@ -245,6 +245,20 @@ describe('the contrast of the inks', () => {
 
     expect(offenders).toEqual([])
   })
+
+  /**
+   * 🛑 A comment's hue is FREE — `commentHue` takes the angle off an id — so a word painted in it
+   * is a word whose contrast nobody chose: measured over the 360 angles, 3.38:1 at 190° on the
+   * light theme, where WCAG 1.4.3 asks 4.5. The hue may stroke and fill, never letter, and no
+   * ratio guard can see it: `tokensContrast` reads hexadecimals and skips a composed token.
+   */
+  it('letters nothing in the hue a comment picks for itself', () => {
+    const offenders = WRITTEN_SOURCES.filter(([, source]) =>
+      /\btext-comment-mark(?![\w-])/.test(source),
+    ).map(([path]) => path)
+
+    expect(offenders).toEqual([])
+  })
 })
 
 describe('the contrast of translucent inks', () => {

@@ -145,6 +145,7 @@ describe('a generation in flight', () => {
     useGenerationComments.getState().add(DOCUMENT, {
       id: 'note-1',
       at: { x: 10, y: 20 },
+      title: '',
       text: 'Keep the subject',
     })
     const snapshot = vi.fn(async () => 'COMMENTED-IMAGE')
@@ -174,11 +175,13 @@ describe('a generation in flight', () => {
     useGenerationComments.getState().add(DOCUMENT, {
       id: 'launched-note',
       at: { x: 10, y: 20 },
+      title: '',
       text: 'Remove the reflection',
     })
     useGenerationComments.getState().add(DOCUMENT, {
       id: 'later-note',
       at: { x: 30, y: 40 },
+      title: '',
       text: 'Keep this for later',
     })
     const release = holdCanvas(DOCUMENT, () =>
@@ -227,6 +230,7 @@ describe('a generation in flight', () => {
     useGenerationComments.getState().add(DOCUMENT, {
       id: 'note-1',
       at: { x: 10, y: 20 },
+      title: '',
       text: 'Remove the reflection',
     })
     installFakeBridge({
@@ -249,6 +253,7 @@ describe('a generation in flight', () => {
     useGenerationComments.getState().add(DOCUMENT, {
       id: 'submitted-note',
       at: { x: 10, y: 20 },
+      title: '',
       text: 'Keep the subject',
     })
     const release = holdCanvas(DOCUMENT, () =>
@@ -279,6 +284,7 @@ describe('a generation in flight', () => {
     useGenerationComments.getState().add(DOCUMENT, {
       id: 'later-note',
       at: { x: 30, y: 40 },
+      title: '',
       text: 'Make the sky brighter',
     })
     finishUpload('commented-source')
@@ -294,6 +300,7 @@ describe('a generation in flight', () => {
     useGenerationComments.getState().add(DOCUMENT, {
       id: 'note-1',
       at: { x: 10, y: 20 },
+      title: '',
       text: 'Keep the subject',
     })
     const release = holdCanvas(DOCUMENT, () =>

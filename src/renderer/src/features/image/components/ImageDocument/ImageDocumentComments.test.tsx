@@ -7,10 +7,11 @@ describe('image generation comment placement', () => {
   it('uses a concise prompt that remains readable inside the note', () => {
     render(
       <ImageDocumentComments
-        comments={[{ id: 'note', at: { x: 50, y: 50 }, text: '' }]}
+        comments={[{ id: 'note', at: { x: 50, y: 50 }, title: '', text: '' }]}
         view={DEFAULT_VIEW}
         size={{ width: 100, height: 100 }}
         onChange={() => {}}
+        onRename={() => {}}
         onRemove={() => {}}
       />,
     )
@@ -24,10 +25,11 @@ describe('image generation comment placement', () => {
     const onGenerate = vi.fn()
     render(
       <ImageDocumentComments
-        comments={[{ id: 'note', at: { x: 50, y: 50 }, text: 'Remove the reflection' }]}
+        comments={[{ id: 'note', at: { x: 50, y: 50 }, title: '', text: 'Remove the reflection' }]}
         view={DEFAULT_VIEW}
         size={{ width: 100, height: 100 }}
         onChange={() => {}}
+        onRename={() => {}}
         onRemove={() => {}}
         onGenerate={onGenerate}
       />,
@@ -41,10 +43,11 @@ describe('image generation comment placement', () => {
   it('shows no generation action without an active compatible generator', () => {
     render(
       <ImageDocumentComments
-        comments={[{ id: 'note', at: { x: 50, y: 50 }, text: 'Remove the reflection' }]}
+        comments={[{ id: 'note', at: { x: 50, y: 50 }, title: '', text: 'Remove the reflection' }]}
         view={DEFAULT_VIEW}
         size={{ width: 100, height: 100 }}
         onChange={() => {}}
+        onRename={() => {}}
         onRemove={() => {}}
       />,
     )
@@ -59,6 +62,7 @@ describe('image generation comment placement', () => {
           {
             id: 'note',
             at: { x: 50, y: 50 },
+            title: '',
             outline: [
               { x: 10, y: 10 },
               { x: 20, y: 20 },
@@ -69,6 +73,7 @@ describe('image generation comment placement', () => {
         view={DEFAULT_VIEW}
         size={{ width: 100, height: 100 }}
         onChange={() => {}}
+        onRename={() => {}}
         onRemove={() => {}}
       />,
     )
@@ -86,6 +91,7 @@ describe('image generation comment placement', () => {
           {
             id: 'note',
             at: { x: 50, y: 50 },
+            title: '',
             outline: [
               { x: 10, y: 10 },
               { x: 20, y: 10 },
@@ -97,6 +103,7 @@ describe('image generation comment placement', () => {
         view={DEFAULT_VIEW}
         size={{ width: 100, height: 100 }}
         onChange={() => {}}
+        onRename={() => {}}
         onRemove={() => {}}
       />,
     )
@@ -108,6 +115,7 @@ describe('image generation comment placement', () => {
     const comment = {
       id: 'note',
       at: { x: 10, y: 20 },
+      title: '',
       outline: [
         { x: 10, y: 20 },
         { x: 30, y: 40 },
@@ -120,6 +128,7 @@ describe('image generation comment placement', () => {
         view={DEFAULT_VIEW}
         size={{ width: 100, height: 100 }}
         onChange={() => {}}
+        onRename={() => {}}
         onRemove={() => {}}
       />,
     )
@@ -130,6 +139,7 @@ describe('image generation comment placement', () => {
         view={{ ...DEFAULT_VIEW, viewport: { x: 5, y: 7, scale: 2 } }}
         size={{ width: 100, height: 100 }}
         onChange={() => {}}
+        onRename={() => {}}
         onRemove={() => {}}
       />,
     )
@@ -149,14 +159,15 @@ describe('image generation comment placement', () => {
     render(
       <ImageDocumentComments
         comments={[
-          { id: 'top-left', at: { x: 10, y: 10 }, text: 'Top left' },
-          { id: 'top-right', at: { x: 90, y: 10 }, text: 'Top right' },
-          { id: 'bottom-left', at: { x: 10, y: 90 }, text: 'Bottom left' },
-          { id: 'bottom-right', at: { x: 90, y: 90 }, text: 'Bottom right' },
+          { id: 'top-left', at: { x: 10, y: 10 }, title: '', text: 'Top left' },
+          { id: 'top-right', at: { x: 90, y: 10 }, title: '', text: 'Top right' },
+          { id: 'bottom-left', at: { x: 10, y: 90 }, title: '', text: 'Bottom left' },
+          { id: 'bottom-right', at: { x: 90, y: 90 }, title: '', text: 'Bottom right' },
         ]}
         view={DEFAULT_VIEW}
         size={{ width: 100, height: 100 }}
         onChange={() => {}}
+        onRename={() => {}}
         onRemove={() => {}}
       />,
     )
@@ -175,14 +186,35 @@ describe('image generation comment placement', () => {
     })
   })
 
+  it('names an area from the canvas, and the name is what carries the emphasis', () => {
+    const onRename = vi.fn()
+    render(
+      <ImageDocumentComments
+        comments={[{ id: 'note', at: { x: 50, y: 50 }, title: '', text: '' }]}
+        view={DEFAULT_VIEW}
+        size={{ width: 100, height: 100 }}
+        onChange={() => {}}
+        onRename={onRename}
+        onRemove={() => {}}
+      />,
+    )
+
+    const field = screen.getByPlaceholderText('Nommer…')
+    fireEvent.change(field, { target: { value: 'Le ciel' } })
+
+    expect(onRename).toHaveBeenCalledWith('note', 'Le ciel')
+    expect(field).toHaveClass('font-semibold')
+  })
+
   it('edits a note from the canvas', () => {
     const onChange = vi.fn()
     render(
       <ImageDocumentComments
-        comments={[{ id: 'note', at: { x: 50, y: 50 }, text: 'Before' }]}
+        comments={[{ id: 'note', at: { x: 50, y: 50 }, title: '', text: 'Before' }]}
         view={DEFAULT_VIEW}
         size={{ width: 100, height: 100 }}
         onChange={onChange}
+        onRename={() => {}}
         onRemove={() => {}}
       />,
     )
@@ -196,10 +228,11 @@ describe('image generation comment placement', () => {
     const onRemove = vi.fn()
     render(
       <ImageDocumentComments
-        comments={[{ id: 'note', at: { x: 50, y: 50 }, text: 'Remove me' }]}
+        comments={[{ id: 'note', at: { x: 50, y: 50 }, title: '', text: 'Remove me' }]}
         view={DEFAULT_VIEW}
         size={{ width: 100, height: 100 }}
         onChange={() => {}}
+        onRename={() => {}}
         onRemove={onRemove}
       />,
     )
@@ -213,6 +246,7 @@ describe('image generation comment placement', () => {
     const comment = {
       id: 'note',
       at: { x: 50, y: 50 },
+      title: '',
       outline: [
         { x: 10, y: 10 },
         { x: 20, y: 10 },
@@ -226,6 +260,7 @@ describe('image generation comment placement', () => {
         view={DEFAULT_VIEW}
         size={{ width: 100, height: 100 }}
         onChange={() => {}}
+        onRename={() => {}}
         onRemove={() => {}}
       />,
     )
@@ -236,6 +271,7 @@ describe('image generation comment placement', () => {
         view={DEFAULT_VIEW}
         size={{ width: 100, height: 100 }}
         onChange={() => {}}
+        onRename={() => {}}
         onRemove={() => {}}
       />,
     )

@@ -35,7 +35,7 @@ export type SmartTool = Extract<CanvasTool, 'smartSelect' | 'smartComment'>
 // hand-written `===` per member stays green while a third tool falls through to the brush.
 const SMART_TOOLS: Record<SmartTool, true> = { smartSelect: true, smartComment: true }
 
-/** `in` takes any string, which is what lets a gesture kind ask without widening the signature. */
+/** `hasOwn` and not `in`: `in` walks the prototype, so `'toString'` would read as a tool. */
 export function isSmartTool(tool: CanvasTool | string): tool is SmartTool {
-  return tool in SMART_TOOLS
+  return Object.hasOwn(SMART_TOOLS, tool)
 }

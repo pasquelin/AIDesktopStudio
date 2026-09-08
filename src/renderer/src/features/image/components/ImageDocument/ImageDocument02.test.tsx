@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Asset } from '@shared/domain/asset'
 import { aiOverview, roleRow } from '@shared/domain/aiOverview-fixtures'
 import { SMART_SELECTION_ROLE } from '@shared/domain/aiRole'
@@ -212,6 +212,13 @@ describe('ImageDocument', () => {
           ],
         }),
       ],
+    })
+
+    // Neither store is reset by `testSetupStores`, so a case appended after these would run with
+    // a selection model installed without saying so — green for a reason it never asked for.
+    afterEach(() => {
+      useAiModels.setState({ overview: null })
+      chooseModels()
     })
 
     async function smartRowOf(tool: RegExp): Promise<HTMLElement> {

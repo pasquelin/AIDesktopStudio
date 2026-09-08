@@ -87,6 +87,7 @@ describe('what a family adds to a generation beyond the form', () => {
     useGenerationComments.getState().add('doc-image', {
       id: 'note-1',
       at: { x: 128, y: 256 },
+      title: '',
       text: 'Keep the car still',
     })
 
@@ -103,6 +104,7 @@ describe('what a family adds to a generation beyond the form', () => {
     useGenerationComments.getState().add('doc-image', {
       id: 'note-1',
       at: { x: 128, y: 256 },
+      title: '',
       text: 'Keep the car still',
     })
 

@@ -25,6 +25,7 @@ describe('generation image comments', () => {
     useGenerationComments.getState().add('image-1', {
       id: 'note-1',
       at: { x: 10, y: 20 },
+      title: '',
       text: 'Extract this car',
       layerId: 'car',
     })
@@ -39,6 +40,7 @@ describe('generation image comments', () => {
     useGenerationComments.getState().add('image-1', {
       id: 'note-1',
       at: { x: 10, y: 20 },
+      title: '',
       text: 'Extract this car',
     })
     render(<GeneratorComments fields={FIELDS} />)
