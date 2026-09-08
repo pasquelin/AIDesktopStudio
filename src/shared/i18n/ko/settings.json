@@ -1,499 +1,499 @@
 {
   "settings": {
-    "title": "Settings",
-    "sections": "Settings sections",
-    "search": "Search settings",
-    "results": "Results",
-    "noResult": "No setting matches this search.",
-    "restoreDefault": "Restore the default value",
-    "restoreDefaultHint": "Puts back the original value, the one from before any change",
-    "account": "API keys",
-    "appearance": "Appearance",
-    "generation": "Generation",
-    "media": "Media",
-    "git": "Versions",
-    "dictation": "Dictation",
-    "input": "Devices",
-    "ai": "AI models",
-    "accountDescription": "One key per service, encrypted by the keychain.",
-    "appearanceDescription": "Theme and control density.",
-    "generationDescription": "Generation queue and default models, per family.",
-    "gitDescription": "Version tracking of the project folder, by git. Your files only.",
-    "mediaDescription": "Preparation of imported files: proxies and waveforms.",
-    "dictationDescription": "Speaking a text instead of typing it. Everything happens on this computer: nothing you say is sent anywhere.",
-    "inputDescription": "How the studio is navigated with a gamepad, and the devices connected to this computer.",
-    "aiDescription": "Which AI serves each operation. The studio here, Ollama here, or an online service you have a key for.",
+    "title": "설정",
+    "sections": "설정 섹션",
+    "search": "설정 검색",
+    "results": "결과",
+    "noResult": "이 검색과 일치하는 설정이 없습니다.",
+    "restoreDefault": "기본값으로 되돌리기",
+    "restoreDefaultHint": "원래 값, 즉 무엇도 바꾸기 전의 값으로 되돌립니다",
+    "account": "API 키",
+    "appearance": "모양",
+    "generation": "생성",
+    "media": "미디어",
+    "git": "버전",
+    "dictation": "받아쓰기",
+    "input": "장치",
+    "ai": "AI 모델",
+    "accountDescription": "서비스마다 키 하나씩, 키체인으로 암호화됩니다.",
+    "appearanceDescription": "테마와 컨트롤 밀도.",
+    "generationDescription": "생성 대기열과 계열별 기본 모델.",
+    "gitDescription": "git으로 프로젝트 폴더의 버전을 추적합니다. 자신의 파일에만 해당합니다.",
+    "mediaDescription": "가져온 파일의 준비: 프록시와 파형.",
+    "dictationDescription": "텍스트를 입력하는 대신 말로 받아씁니다. 모든 처리는 이 컴퓨터에서 이루어집니다: 말한 내용은 어디로도 전송되지 않습니다.",
+    "inputDescription": "게임패드로 스튜디오를 이동하는 방식, 그리고 이 컴퓨터에 연결된 장치.",
+    "aiDescription": "각 작업을 어떤 AI가 담당할지 정합니다. 이 컴퓨터의 스튜디오, 이 컴퓨터의 Ollama, 또는 키를 가지고 있는 온라인 서비스.",
     "gamepadNavigation": {
-      "title": "Navigate the studio with a gamepad",
-      "help": "Lets a connected gamepad move through the studio interface and confirm or dismiss controls. It stays off until you enable it, so playing a game cannot move the editor behind it."
+      "title": "게임패드로 스튜디오 이동",
+      "help": "연결된 게임패드로 스튜디오 인터페이스를 이동하고 컨트롤을 확인하거나 닫을 수 있게 합니다. 직접 켜기 전까지는 꺼진 채로 있어, 게임을 하는 동안 뒤쪽 에디터가 움직이는 일이 없습니다."
     },
     "inputDevices": {
-      "title": "Detected controls",
-      "keyboard": "Keyboard",
-      "mouse": "Mouse",
-      "gamepadUnsupported": "This controller does not use the standard layout: the studio cannot read its buttons.",
-      "noGamepad": "No gamepad is connected.",
-      "gamepadSleeps": "A gamepad only appears once one of its buttons has been pressed: the browser does not show it before that. Plugged in but silent, it looks exactly like no gamepad at all."
+      "title": "감지된 컨트롤",
+      "keyboard": "키보드",
+      "mouse": "마우스",
+      "gamepadUnsupported": "이 컨트롤러는 표준 배치를 사용하지 않습니다: 스튜디오가 버튼을 읽을 수 없습니다.",
+      "noGamepad": "연결된 게임패드가 없습니다.",
+      "gamepadSleeps": "게임패드는 버튼을 한 번 누른 뒤에야 나타납니다: 그전에는 브라우저가 알려 주지 않습니다. 연결되어 있어도 아무 입력이 없으면 게임패드가 아예 없는 것과 똑같이 보입니다."
     },
     "theme": {
-      "title": "Theme",
-      "help": "Picks the colours of the whole application. The dark theme rests the eyes over a long session in a dimly lit room; the light one reads better in broad daylight. “System” follows your computer’s own setting and switches on its own, for instance when evening comes.",
-      "dark": "Dark",
-      "light": "Light",
-      "system": "System"
+      "title": "테마",
+      "help": "애플리케이션 전체의 색상을 고릅니다. 다크 테마는 어두운 방에서 오래 작업할 때 눈을 편하게 하고, 라이트 테마는 밝은 낮에 더 잘 읽힙니다. “시스템”은 컴퓨터 자체의 설정을 따라가며, 예를 들어 저녁이 되면 스스로 전환됩니다.",
+      "dark": "다크",
+      "light": "라이트",
+      "system": "시스템"
     },
     "density": {
-      "title": "Density",
-      "help": "Sets how big the buttons are and how tall the rows sit. “Compact” fits more on screen; “Comfortable” leaves more air between things, which makes them easier to aim at with a mouse.",
-      "comfortable": "Comfortable",
-      "compact": "Compact"
+      "title": "밀도",
+      "help": "버튼의 크기와 행의 높이를 정합니다. “좁게”는 화면에 더 많은 것을 담고, “넓게”는 사이에 여백을 더 두어 마우스로 겨냥하기 쉽게 합니다.",
+      "comfortable": "넓게",
+      "compact": "좁게"
     },
     "assistantSteps": {
-      "title": "Assistant chaining steps",
-      "help": "How many actions the assistant may chain for one request, when each depends on what the one before answered — find a file, open it, then place it in a scene. Every step is a billed round trip, so this number is the only thing keeping a misread request from running without end. Twelve covers most chains."
+      "title": "어시스턴트 연쇄 단계",
+      "help": "각 동작이 앞선 동작의 답에 의존할 때, 하나의 요청에 대해 어시스턴트가 이어서 실행할 수 있는 동작의 수입니다 — 파일을 찾고, 열고, 씬에 놓는 식입니다. 모든 단계는 요금이 부과되는 왕복이므로, 잘못 이해된 요청이 끝없이 도는 것을 막아 주는 것은 이 숫자뿐입니다. 열둘이면 대부분의 연쇄를 감당합니다."
     },
     "concurrentJobs": {
-      "title": "Concurrent generations",
-      "help": "How many creations work at the same time. The higher it is, the more you can start at once — but each may take longer to come back, and the service can turn away the ones beyond its limit. Three is a good balance."
+      "title": "동시 생성",
+      "help": "동시에 진행되는 창작의 수입니다. 이 값이 클수록 한 번에 더 많이 시작할 수 있지만 — 각각이 돌아오는 데 더 오래 걸릴 수 있고, 서비스가 한도를 넘는 것을 거부할 수 있습니다. 셋이 좋은 균형입니다."
     },
     "captionArrivals": {
-      "title": "Name fetched assets",
-      "help": "Automatically name an image that arrives without a useful name. Spends creative units."
+      "title": "받아 온 애셋 이름 짓기",
+      "help": "쓸 만한 이름 없이 도착한 이미지의 이름을 자동으로 짓습니다. 크리에이티브 유닛을 사용합니다."
     },
     "maxRetries": {
-      "title": "Max retries",
-      "help": "When a generation fails because the network dropped or a server was busy, the application tries again on its own. This number says how many times before giving up. At 0 it never tries twice. An invalid API key is never retried: trying again would not fix it."
+      "title": "최대 재시도 횟수",
+      "help": "네트워크가 끊기거나 서버가 바빠서 생성이 실패하면 애플리케이션이 스스로 다시 시도합니다. 이 숫자는 포기하기까지 몇 번 시도할지를 정합니다. 0이면 두 번 시도하지 않습니다. 잘못된 API 키는 절대 재시도하지 않습니다: 다시 시도해도 고쳐지지 않기 때문입니다."
     },
     "ffmpegPath": {
-      "title": "Path to ffmpeg",
-      "help": "Where to find an ffmpeg to use instead of the one shipped with the application. Leave empty unless you insist on your own.",
+      "title": "ffmpeg 경로",
+      "help": "애플리케이션에 함께 들어 있는 것 대신 사용할 ffmpeg의 위치입니다. 자신의 것을 꼭 쓰려는 경우가 아니면 비워 두세요.",
       "placeholder": "/opt/homebrew/bin/ffmpeg"
     },
     "gitBinary": {
-      "title": "Path to git",
-      "help": "Where to find a git to use instead of the system one. Leave empty in nearly every case. A path holding a space is refused, and the application then behaves as it does when git is missing altogether.",
+      "title": "git 경로",
+      "help": "시스템의 것 대신 사용할 git의 위치입니다. 거의 모든 경우 비워 두세요. 공백이 들어간 경로는 거부되며, 그때 애플리케이션은 git이 아예 없을 때와 똑같이 동작합니다.",
       "placeholder": "/usr/bin/git"
     },
     "gitUserName": {
-      "title": "Author name",
-      "help": "The name written into every recorded version. Leave empty to take the one git already knows on this computer.",
-      "placeholder": "Your name"
+      "title": "작성자 이름",
+      "help": "기록되는 모든 버전에 적히는 이름입니다. 이 컴퓨터에서 git이 이미 알고 있는 이름을 쓰려면 비워 두세요.",
+      "placeholder": "이름"
     },
     "gitUserEmail": {
-      "title": "Author address",
-      "help": "The address written beside the name in every recorded version. Leave empty to take the one git already knows.",
+      "title": "작성자 주소",
+      "help": "기록되는 모든 버전에서 이름 옆에 적히는 주소입니다. git이 이미 알고 있는 주소를 쓰려면 비워 두세요.",
       "placeholder": "you@example.com"
     },
     "dictationEnabled": {
-      "title": "Enable dictation",
-      "help": "Offers a microphone button beside text fields, and puts the listening shortcut into service. Switched off, dictation loads nothing and never asks for microphone access."
+      "title": "받아쓰기 사용",
+      "help": "텍스트 필드 옆에 마이크 버튼을 제공하고, 듣기 단축키를 사용할 수 있게 합니다. 꺼 두면 받아쓰기는 아무것도 로드하지 않고 마이크 접근을 요청하지도 않습니다."
     },
     "dictationMode": {
-      "title": "How it is triggered",
-      "help": "“Hold” listens for as long as you keep the shortcut pressed and stops the moment you let go: it is the safest, since the microphone is never left open by mistake. “Toggle” starts on the first press and stops on the next, which rests the hand over a long dictation.",
-      "pushToTalk": "Hold the key",
-      "continuous": "Toggle on and off"
+      "title": "실행 방식",
+      "help": "“누르고 있기”는 단축키를 누르고 있는 동안 듣고 손을 떼는 순간 멈춥니다: 마이크를 실수로 열어 둘 일이 없으므로 가장 안전합니다. “켜고 끄기”는 처음 누를 때 시작해 다음에 누를 때 멈추므로, 긴 받아쓰기에서 손이 편합니다.",
+      "pushToTalk": "키를 누르고 있기",
+      "continuous": "켜고 끄기"
     },
     "dictationSilence": {
-      "title": "Silence that ends a sentence",
-      "help": "How much quiet, in milliseconds, before what you have just said counts as finished and gets transcribed. Raise it if your sentences are cut in half because you pause to think."
+      "title": "문장을 끝내는 침묵",
+      "help": "방금 말한 내용이 끝난 것으로 간주되어 전사되기까지 필요한 침묵의 길이로, 밀리초 단위입니다. 생각하려고 잠시 멈춰서 문장이 둘로 잘린다면 값을 올리세요."
     },
     "dictationPreview": {
-      "title": "Preview while you speak",
-      "help": "How long, in milliseconds, between two previews of the text being spoken. The model does not write as the words come: every preview reads back everything said since the sentence began, and so costs computation. Set it to 0 to show only the settled text of each sentence."
+      "title": "말하는 동안 미리보기",
+      "help": "말하는 중인 텍스트의 미리보기 사이 간격으로, 밀리초 단위입니다. 모델은 말이 나오는 대로 받아쓰지 않습니다: 미리보기마다 문장이 시작된 이후의 내용을 전부 다시 읽으므로 연산이 듭니다. 각 문장의 확정된 텍스트만 표시하려면 0으로 설정하세요."
     },
     "dictationThreads": {
-      "title": "Compute threads",
-      "help": "How many cores recognition may occupy. Higher is faster up to a point, but every thread is a core taken away from the rest of the application."
+      "title": "연산 스레드",
+      "help": "인식이 차지할 수 있는 코어 수입니다. 어느 지점까지는 높을수록 빠르지만, 스레드 하나는 애플리케이션의 나머지에서 빼앗은 코어 하나입니다."
     },
     "dictationIdleUnload": {
-      "title": "Free the memory after",
-      "help": "Minutes without dictating before the model is unloaded, returning around 700 MB of memory. It loads itself again on the next dictation, which takes a few seconds. Set it to 0 to keep it resident."
+      "title": "메모리를 해제하기까지",
+      "help": "받아쓰기를 하지 않고 몇 분이 지나면 모델을 언로드해 약 700 MB의 메모리를 돌려줄지 정합니다. 다음 받아쓰기에서 스스로 다시 로드되며, 몇 초가 걸립니다. 계속 올려 두려면 0으로 설정하세요."
     },
     "dictationModelFolder": {
-      "title": "Model folder",
-      "help": "Where to find a recognition model already on this disk, to use instead of the one the application downloads. Leave empty in the normal case.",
+      "title": "모델 폴더",
+      "help": "애플리케이션이 내려받는 것 대신 사용할, 이 디스크에 이미 있는 인식 모델의 위치입니다. 보통은 비워 두세요.",
       "placeholder": "/Volumes/Models/parakeet-tdt-0.6b-v3-int8"
     },
-    "defaultModel": "Default model",
-    "noDefaultModel": "Ask every time",
-    "ffmpegFound": "ffmpeg is available: proxies and waveforms will be prepared.",
-    "ffmpegMissing": "ffmpeg is still not found. Importing works, without proxy or waveform.",
-    "browse": "Browse…",
+    "defaultModel": "기본 모델",
+    "noDefaultModel": "매번 물어보기",
+    "ffmpegFound": "ffmpeg를 사용할 수 있습니다: 프록시와 파형이 준비됩니다.",
+    "ffmpegMissing": "ffmpeg를 여전히 찾을 수 없습니다. 가져오기는 되지만 프록시도 파형도 없습니다.",
+    "browse": "찾아보기…",
     "accent": {
-      "title": "Accent colour",
-      "help": "The colour that marks what is selected or under way: the outline of the active panel, the timeline playhead, the frame around a selection. It changes nothing about what you make, only how the application shows you where you are. Leave it be to keep the theme’s own."
+      "title": "강조 색상",
+      "help": "선택된 것이나 진행 중인 것을 표시하는 색상입니다: 활성 패널의 윤곽선, 타임라인의 재생 헤드, 선택 영역을 두르는 테두리. 만드는 결과물은 전혀 바뀌지 않고, 애플리케이션이 현재 위치를 보여 주는 방식만 달라집니다. 테마의 색을 그대로 쓰려면 손대지 마세요."
     },
     "fontScale": {
-      "title": "Text size",
-      "help": "Makes every text in the application bigger or smaller at once. 1 is the size it was drawn at; above that words get larger and less fits on screen; below, the opposite. Buttons keep their size: density is what handles those."
+      "title": "텍스트 크기",
+      "help": "애플리케이션의 모든 텍스트를 한 번에 크게 또는 작게 만듭니다. 1이 원래 그려진 크기이고, 그보다 크면 글자가 커지고 화면에 들어가는 양이 줄어들며, 작으면 그 반대입니다. 버튼은 크기를 그대로 유지합니다: 그쪽은 밀도가 담당합니다."
     },
     "reduceMotion": {
-      "title": "Limit animations",
-      "help": "Turns off the small movements of the interface: panels appear at once instead of sliding in. Useful if animation tires you or makes you queasy, and on a slower machine where it stutters."
+      "title": "애니메이션 제한",
+      "help": "인터페이스의 작은 움직임을 끕니다: 패널이 미끄러져 들어오는 대신 한 번에 나타납니다. 애니메이션이 피곤하거나 어지럽게 느껴질 때, 그리고 움직임이 버벅이는 느린 컴퓨터에서 유용합니다."
     },
-    "general": "General",
-    "generalDescription": "The application’s language, and what it does when it opens.",
+    "general": "일반",
+    "generalDescription": "애플리케이션의 언어, 그리고 열릴 때 하는 일.",
     "language": {
-      "title": "Language",
-      "help": "The language of every text in the application: menus, buttons, messages. “System” follows your computer’s own language. The change takes effect as soon as you click Apply or OK, with nothing to relaunch. It leaves your projects, and anything you write in them, alone.",
-      "system": "System"
+      "title": "언어",
+      "help": "애플리케이션의 모든 텍스트의 언어입니다: 메뉴, 버튼, 메시지. “시스템”은 컴퓨터 자체의 언어를 따릅니다. 변경은 적용 또는 확인을 누르는 즉시 반영되며, 다시 시작할 것은 없습니다. 프로젝트와 그 안에 쓴 내용에는 손대지 않습니다.",
+      "system": "시스템"
     },
     "startup": {
-      "title": "On opening",
-      "help": "What the application does when you launch it. “Reopen the last project” puts you back where you left off. “Open nothing” starts on an empty window, which is quicker and calmer if you juggle a lot of projects.",
-      "lastProject": "Reopen the last project",
-      "nothing": "Open nothing"
+      "title": "열 때",
+      "help": "애플리케이션을 실행할 때 하는 일입니다. “마지막 프로젝트 다시 열기”는 하던 자리로 되돌려 놓습니다. “아무것도 열지 않기”는 빈 창으로 시작하며, 여러 프로젝트를 오갈 때 더 빠르고 차분합니다.",
+      "lastProject": "마지막 프로젝트 다시 열기",
+      "nothing": "아무것도 열지 않기"
     },
     "autosave": {
-      "title": "Save automatically",
-      "help": "Writes open documents every thirty seconds, without waiting for your ⌘S. Whatever you have done since the last save then survives a power cut or a crash. Image documents are left out of it whatever this says: their layers are read back off the graphics card, and writing every thirty seconds would make drawing stutter."
+      "title": "자동으로 저장",
+      "help": "⌘S를 기다리지 않고 열린 문서를 30초마다 기록합니다. 마지막 저장 이후에 한 작업은 정전이나 충돌에도 살아남습니다. 이 설정과 상관없이 이미지 문서는 제외됩니다: 레이어를 그래픽 카드에서 다시 읽어 와야 하므로, 30초마다 기록하면 그리기가 버벅이게 됩니다."
     },
     "home": {
-      "title": "Show the home screen",
-      "help": "The full-width screen the studio opens on: your projects, what you were working on, what is running, and what the models can do. Turn it off to go straight to the workspace you left. Which sections it shows, and in which order, is set on the home itself."
+      "title": "홈 화면 표시",
+      "help": "스튜디오가 열릴 때 나타나는 전체 너비 화면입니다: 프로젝트, 작업하던 것, 실행 중인 것, 그리고 모델이 할 수 있는 일. 끄면 마지막에 떠났던 작업 공간으로 곧장 갑니다. 어떤 섹션을 어떤 순서로 보여 줄지는 홈 화면에서 설정합니다."
     },
-    "modified": "Changed, not applied yet",
-    "apply": "Apply",
-    "cancel": "Cancel",
-    "confirm": "OK",
-    "discardTitle": "Some settings have not been applied",
-    "discardBody": "You changed settings without applying them. What would you like to do?",
-    "discard": "Don’t apply",
-    "shortcuts": "Shortcuts",
-    "shortcutsDescription": "The keys that trigger each action. Click a key to replace it.",
-    "pressAKey": "Press…",
-    "unbound": "None",
-    "shortcutConflict": "Two actions are fighting over this key: only one will answer.",
-    "findByChord": "Find by key",
-    "showAll": "Show all",
-    "chordFree": "No action uses this key: it is free.",
+    "modified": "변경됨, 아직 적용되지 않음",
+    "apply": "적용",
+    "cancel": "취소",
+    "confirm": "확인",
+    "discardTitle": "적용되지 않은 설정이 있습니다",
+    "discardBody": "설정을 바꾸고 적용하지 않았습니다. 어떻게 하시겠습니까?",
+    "discard": "적용하지 않음",
+    "shortcuts": "단축키",
+    "shortcutsDescription": "각 동작을 실행하는 키입니다. 키를 바꾸려면 클릭하세요.",
+    "pressAKey": "누르세요…",
+    "unbound": "없음",
+    "shortcutConflict": "두 동작이 이 키를 두고 다툽니다: 하나만 응답합니다.",
+    "findByChord": "키로 찾기",
+    "showAll": "모두 표시",
+    "chordFree": "이 키를 쓰는 동작이 없습니다: 비어 있습니다.",
     "scope": {
-      "global": "Anywhere in the application",
-      "spaces": "In the bar of spaces",
-      "explorer": "In the explorer",
-      "scene": "In the 3D view",
-      "character": "In the skeleton",
-      "sequence": "In the edit",
-      "canvas": "In the image",
-      "skybox": "In the sky",
-      "audio": "In the audio editor",
-      "material": "In the material",
-      "gui": "In an interface"
+      "global": "애플리케이션 어디에서나",
+      "spaces": "작업 공간 바에서",
+      "explorer": "탐색기에서",
+      "scene": "3D 뷰에서",
+      "character": "스켈레톤에서",
+      "sequence": "편집본에서",
+      "canvas": "이미지에서",
+      "skybox": "하늘에서",
+      "audio": "오디오 편집기에서",
+      "material": "머티리얼에서",
+      "gui": "인터페이스에서"
     },
-    "spaces": "Workspaces",
-    "spacesDescription": "What only makes sense inside one space: the 3D view, the edit, the image.",
-    "requires": "Has no effect while “{{setting}}” is off.",
+    "spaces": "작업 공간",
+    "spacesDescription": "특정 공간 안에서만 의미가 있는 것: 3D 뷰, 편집본, 이미지.",
+    "requires": "“{{setting}}” 설정이 꺼져 있는 동안에는 효과가 없습니다.",
     "showGrid": {
-      "title": "Show the grid",
-      "help": "The squared floor of the 3D view. It is not part of what you are making: it is a landmark for where things are and how high. Hide it to judge an image with nothing around it."
+      "title": "그리드 표시",
+      "help": "3D 뷰의 바닥에 깔린 격자입니다. 만드는 결과물의 일부가 아닙니다: 사물이 어디에 어느 높이로 있는지 알려 주는 기준입니다. 주위에 아무것도 없는 상태로 이미지를 판단하려면 숨기세요."
     },
     "gridSize": {
-      "title": "Grid size",
-      "help": "How far the grid reaches, in metres, and therefore how many squares it has — a square is always one metre. Make it bigger for a wide scene, smaller for a little object sitting near the camera."
+      "title": "그리드 크기",
+      "help": "그리드가 미터 단위로 얼마나 멀리까지 뻗는지, 따라서 칸이 몇 개인지 정합니다 — 한 칸은 언제나 1미터입니다. 넓은 씬에서는 크게, 카메라 가까이 놓인 작은 오브젝트에는 작게 하세요."
     },
     "navigationPreset": {
-      "title": "Navigation scheme",
-      "help": "Which 3D application this viewport drives like: its mouse gestures and its shortcuts. A scheme only moves what its own application does differently — everything else keeps AI Desktop Studio’s keys, including what the others have no equivalent for. Your own remaps always win.",
+      "title": "탐색 방식",
+      "help": "이 뷰포트가 어떤 3D 애플리케이션처럼 조작되는지 정합니다: 마우스 동작과 단축키가 그렇습니다. 방식은 해당 애플리케이션이 다르게 하는 것만 바꾸고 — 나머지는 모두 AI Desktop Studio의 키를 그대로 두며, 다른 애플리케이션에 대응하는 것이 없는 항목도 마찬가지입니다. 직접 다시 지정한 키가 언제나 우선합니다.",
       "studio": "AI Desktop Studio",
       "unreal": "Unreal Engine",
       "unity": "Unity",
       "blender": "Blender",
       "roblox": "Roblox Studio",
-      "custom": "Custom"
+      "custom": "사용자 지정"
     },
     "navigationCustomOrbit": {
-      "title": "Turn with",
-      "help": "The gesture that rotates the view in your own scheme.",
-      "leftAlt": "Alt + left click",
-      "left": "Left click, with or without Alt",
-      "middle": "Middle button"
+      "title": "회전 조작",
+      "help": "개인 방식에서 뷰를 회전시키는 동작입니다.",
+      "leftAlt": "Alt + 왼쪽 클릭",
+      "left": "왼쪽 클릭, Alt 유무 무관",
+      "middle": "가운데 버튼"
     },
     "navigationCustomPan": {
-      "title": "Slide sideways with",
-      "help": "The gesture that slides the view without turning it.",
-      "middle": "Middle button",
-      "middleShift": "Shift + middle button",
-      "leftAltShift": "Shift + Alt + left click"
+      "title": "좌우 이동 조작",
+      "help": "뷰를 회전시키지 않고 미끄러뜨리는 동작입니다.",
+      "middle": "가운데 버튼",
+      "middleShift": "Shift + 가운데 버튼",
+      "leftAltShift": "Shift + Alt + 왼쪽 클릭"
     },
     "navigationCustomDolly": {
-      "title": "Move in and out with",
-      "help": "The gesture that closes the view in on what it aims at, beside the wheel.",
-      "altRight": "Alt + right click",
-      "ctrlMiddle": "Ctrl + middle button",
-      "rightOntoLeft": "Right click, left already held"
+      "title": "전진과 후진 조작",
+      "help": "휠 외에, 뷰를 겨냥한 대상 쪽으로 다가가게 하는 동작입니다.",
+      "altRight": "Alt + 오른쪽 클릭",
+      "ctrlMiddle": "Ctrl + 가운데 버튼",
+      "rightOntoLeft": "왼쪽을 누른 채 오른쪽 클릭"
     },
     "navigationCustomFly": {
-      "title": "Movement keys",
-      "help": "When WASD belong to the camera. Held always, the letters stop being available to the scene’s commands — which is why Unity and Unreal ask for a button.",
-      "anyButton": "While a button is held",
-      "rightButton": "While the right button is held",
-      "always": "Always"
+      "title": "이동 키",
+      "help": "WASD가 카메라에 속하는 때입니다. 항상 카메라가 가지면 그 글자들을 씬의 명령에 쓸 수 없게 되는데 — 그래서 Unity와 Unreal은 버튼을 요구합니다.",
+      "anyButton": "버튼을 누르고 있는 동안",
+      "rightButton": "오른쪽 버튼을 누르고 있는 동안",
+      "always": "항상"
     },
     "orbitAroundSelection": {
-      "title": "Orbit around selection",
-      "help": "When you rotate the 3D view, it turns around whatever is selected rather than around a floating point ahead of you. That is what stops you losing your object as you close in on it. With nothing selected, or with the selection off screen, the view turns around the last point you looked at."
+      "title": "선택 항목 중심으로 회전",
+      "help": "3D 뷰를 회전시킬 때, 앞쪽의 떠 있는 점이 아니라 선택된 것을 중심으로 돕니다. 가까이 다가갈 때 오브젝트를 놓치지 않게 해 주는 것이 바로 이것입니다. 선택된 것이 없거나 선택이 화면 밖에 있으면, 마지막으로 바라본 지점을 중심으로 돕니다."
     },
     "orbitUnderCursor": {
-      "title": "Orbit under the cursor",
-      "help": "The view turns around whatever the pointer is over when you start rotating, rather than around a point set earlier. Handy for close work with no reframing; surprising if you come from Unity or Unreal, which offer no such option."
+      "title": "커서 아래를 중심으로 회전",
+      "help": "미리 정해 둔 점이 아니라, 회전을 시작하는 순간 포인터가 가리키고 있는 것을 중심으로 뷰가 돕니다. 화면을 다시 잡지 않고 가까이에서 작업할 때 편리하며, 이런 옵션이 없는 Unity나 Unreal에서 넘어왔다면 낯설게 느껴집니다."
     },
     "flySpeed": {
-      "title": "Fly speed",
-      "help": "How fast the camera moves when you fly through the 3D view, in metres per second. Too slow and crossing the scene takes ten seconds; too fast and you shoot past it without seeing it."
+      "title": "비행 속도",
+      "help": "3D 뷰에서 날아다닐 때 카메라가 움직이는 속도로, 초당 미터입니다. 너무 느리면 씬을 가로지르는 데 10초가 걸리고, 너무 빠르면 보지도 못한 채 지나칩니다."
     },
     "boostFactor": {
-      "title": "Boost",
-      "help": "What the speed is multiplied by while you hold the boost key. At 3 you go three times faster — enough to cross a large scene without changing the setting above."
+      "title": "가속",
+      "help": "가속 키를 누르고 있는 동안 속도에 곱해지는 값입니다. 3이면 세 배 빨라지며 — 위의 설정을 바꾸지 않고도 넓은 씬을 가로지를 만합니다."
     },
     "shadows": {
-      "title": "Cast shadows",
-      "help": "Works out the shadows the lights throw. Every light that casts one costs an extra render pass per frame: turning this off is the most direct way to lighten a heavy scene."
+      "title": "그림자 투사",
+      "help": "조명이 던지는 그림자를 계산합니다. 그림자를 드리우는 조명은 프레임마다 렌더 패스를 하나씩 더 쓰므로, 이 옵션을 끄는 것이 무거운 씬을 가볍게 하는 가장 직접적인 방법입니다."
     },
     "viewportQuality": {
-      "title": "Viewport quality",
-      "help": "How finely the same frame is drawn. Nothing about the models or the images changes — only the number of pixels worked out. Performance also caps how fine the shadows get.",
-      "performance": "Performance",
-      "balanced": "Balanced",
-      "high": "High"
+      "title": "뷰포트 품질",
+      "help": "같은 화면을 얼마나 곱게 그릴지 정합니다. 모델이나 이미지는 전혀 바뀌지 않고 — 계산되는 픽셀 수만 달라집니다. 성능 단계는 그림자가 얼마나 고와지는지도 함께 제한합니다.",
+      "performance": "성능",
+      "balanced": "균형",
+      "high": "높음"
     },
     "units": {
-      "title": "Display unit",
-      "help": "The unit lengths are written and read in. One scene unit stays one metre whatever this says: it changes what is shown, never what the document holds.",
-      "mm": "Millimetres",
-      "cm": "Centimetres",
-      "m": "Metres"
+      "title": "표시 단위",
+      "help": "길이를 쓰고 읽는 단위입니다. 이 설정과 상관없이 씬 단위 하나는 1미터로 남으며, 표시되는 것만 달라지고 문서가 담고 있는 값은 달라지지 않습니다.",
+      "mm": "밀리미터",
+      "cm": "센티미터",
+      "m": "미터"
     },
     "shadowQuality": {
-      "title": "Shadow softness",
-      "help": "The grain of a shadow’s edge. Hard cuts cleanly and costs the least; Soft smooths the edge. What throws a shadow, on the other hand, is decided object by object in the inspector.",
-      "hard": "Hard",
-      "soft": "Soft"
+      "title": "그림자 부드러움",
+      "help": "그림자 가장자리의 결입니다. 선명은 깔끔하게 잘리고 비용이 가장 적으며, 부드러움은 가장자리를 매끄럽게 만듭니다. 반면 무엇이 그림자를 드리울지는 인스펙터에서 오브젝트마다 정합니다.",
+      "hard": "선명",
+      "soft": "부드러움"
     },
     "shadowMapSize": {
-      "title": "Shadow detail",
-      "help": "The side, in pixels, of the shadow map each shadow-casting light computes. Doubling it costs four times the memory: 2048 is plenty for a scene of a few objects, 4096 earns its keep when one light covers a whole set."
+      "title": "그림자 정밀도",
+      "help": "그림자를 드리우는 조명마다 계산하는 그림자 맵의 한 변 길이로, 픽셀 단위입니다. 두 배로 하면 메모리는 네 배가 듭니다: 오브젝트가 몇 개뿐인 씬에는 2048로 충분하고, 조명 하나가 세트 전체를 덮을 때는 4096이 값을 합니다."
     },
     "snapTranslate": {
-      "title": "Move step",
-      "help": "How far an object travels in one step while snapping is on, in metres. Snapping itself is switched on from the scene toolbar; this only says how fine it is."
+      "title": "이동 간격",
+      "help": "스냅이 켜져 있을 때 오브젝트가 한 칸에 나아가는 거리로, 미터 단위입니다. 스냅 자체는 씬 도구 모음에서 켜며, 이 값은 그것이 얼마나 고운지만 정합니다."
     },
     "snapRotate": {
-      "title": "Rotate step",
-      "help": "The angle of one step of rotation while snapping is on, in degrees. Rotation steps on from wherever it started: 15° gives twenty-four steps per turn, 90° quarter turns."
+      "title": "회전 간격",
+      "help": "스냅이 켜져 있을 때 한 칸의 회전 각도로, 도 단위입니다. 회전은 시작한 자리에서부터 칸을 세므로, 15°면 한 바퀴에 스물네 칸, 90°면 4분의 1 바퀴가 됩니다."
     },
     "snapScale": {
-      "title": "Scale step",
-      "help": "How much the scale moves in one step while snapping is on. What is reachable is the multiples of the step: 0.1 lands exactly on tenths and halves, 0.25 on quarters."
+      "title": "스케일 간격",
+      "help": "스냅이 켜져 있을 때 스케일이 한 칸에 움직이는 양입니다. 도달할 수 있는 값은 간격의 배수입니다: 0.1은 10분의 1과 2분의 1에 정확히 떨어지고, 0.25는 4분의 1에 떨어집니다."
     },
     "gizmoSize": {
-      "title": "Handle size",
-      "help": "The MOST room the transform handles take on screen. They never grow past the object they hold: on a small part they follow its size, and beyond that they keep to this share of the view rather than growing without end."
+      "title": "핸들 크기",
+      "help": "트랜스폼 핸들이 화면에서 차지하는 최대 공간입니다. 핸들은 잡고 있는 오브젝트보다 결코 커지지 않습니다: 작은 부품에서는 그 크기를 따르고, 그 이상에서는 끝없이 커지는 대신 뷰의 이 비율을 지킵니다."
     },
     "snapSurfaceAlign": {
-      "title": "Align to surface",
-      "help": "While the surface snap is on, what you lay down lies along the slope it meets. Unchecked, it keeps its own orientation and only drops."
+      "title": "표면에 정렬",
+      "help": "표면 스냅이 켜져 있을 때, 내려놓는 것이 닿는 면의 경사를 따라 눕습니다. 체크를 해제하면 원래 방향을 유지한 채 내려가기만 합니다."
     },
     "snapSurfaceOffset": {
-      "title": "Surface offset",
-      "help": "How many metres what you lay down floats above the surface. Zero rests it on contact; a few centimetres keep two faces from fighting over the same plane on screen."
+      "title": "표면 오프셋",
+      "help": "배치한 것이 표면 위로 몇 미터 떠 있는지입니다. 0이면 맞닿은 채로 놓이고, 몇 센티미터를 두면 두 면이 화면에서 같은 평면을 두고 다투지 않습니다."
     },
     "fieldOfView": {
-      "title": "Field of view",
-      "help": "How much the camera takes in, in degrees. A narrow angle pulls close and flattens, like a telephoto lens; a wide one shows far more but bends the edges. 60 is close to what an eye sees."
+      "title": "시야각",
+      "help": "카메라가 담아내는 범위를 각도로 나타냅니다. 좁은 각도는 대상을 당겨 오고 원근을 평평하게 만들어 망원 렌즈처럼 보이며, 넓은 각도는 훨씬 많이 담지만 가장자리를 휘게 합니다. 60은 눈으로 보는 것에 가깝습니다."
     },
-    "advanced": "Advanced",
-    "advancedDescription": "What is only needed to understand a problem, or to start over.",
-    "reveal": "Show in folder",
-    "open": "Open",
+    "advanced": "고급",
+    "advancedDescription": "문제를 파악하거나 처음부터 다시 시작할 때만 필요한 것들입니다.",
+    "reveal": "폴더에 표시",
+    "open": "열기",
     "logLevel": {
-      "title": "Log detail",
-      "help": "How much the application says about what it is doing, in the console. “Nothing” says nothing at all; “Errors” reports only what failed; “Everything” narrates each step, which helps to understand a problem and is chatty the rest of the time.",
-      "silent": "Nothing",
-      "error": "Errors only",
-      "warn": "Errors and warnings",
-      "info": "Everything"
+      "title": "로그 상세도",
+      "help": "애플리케이션이 콘솔에서 자신이 하는 일을 얼마나 이야기할지입니다. “없음”은 아무것도 말하지 않고, “오류”는 실패한 것만 알리며, “전체”는 각 단계를 모두 이야기하므로 문제를 파악할 때 유용하고 그 밖의 때에는 수다스럽습니다.",
+      "silent": "없음",
+      "error": "오류만",
+      "warn": "오류와 경고",
+      "info": "전체"
     },
     "openLogFolder": {
-      "title": "Technical log",
-      "help": "Opens the file manager on the logs the studio writes on every launch: “main.log”, the one you will be asked for when something fails with nothing on screen, and “assistant.log”, which keeps in full what is sent to each model and what it answers.",
-      "button": "Show the technical log"
+      "title": "기술 로그",
+      "help": "스튜디오가 실행할 때마다 기록하는 로그가 있는 위치를 파일 관리자에서 엽니다. “main.log”는 화면에 아무것도 나타나지 않은 채 무언가 실패했을 때 요청받게 될 파일이고, “assistant.log”는 각 모델에 보낸 내용과 그 답변을 전부 보관합니다.",
+      "button": "기술 로그 표시"
     },
     "openSettingsFile": {
-      "title": "Settings file",
-      "help": "Opens the file manager where your settings are saved. Useful to copy them before moving to another machine, or to send them to someone helping you."
+      "title": "설정 파일",
+      "help": "설정이 저장된 위치를 파일 관리자에서 엽니다. 다른 컴퓨터로 옮기기 전에 복사해 두거나, 도와주는 사람에게 보낼 때 유용합니다."
     },
     "mcpEnabled": {
-      "title": "Drive the studio from outside",
-      "help": "Opens a way in on this machine alone, through which a client such as Claude Code can run the same actions the assistant runs. Anything that spends or uploads asks for a yes on screen, exactly as it does here. Switched off, nothing is listening."
+      "title": "외부에서 스튜디오 제어",
+      "help": "이 컴퓨터에만 진입점을 열어, Claude Code 같은 클라이언트가 어시스턴트와 같은 동작을 실행할 수 있게 합니다. 비용이 들거나 업로드하는 동작은 여기서와 똑같이 화면에서 동의를 구합니다. 꺼 두면 아무것도 수신 대기하지 않습니다."
     },
     "mcpDelegateFiles": {
-      "title": "Move and delete my files without asking me",
-      "help": "An outside client may move, rename or bin a file of your project, and put a git-tracked file back, without showing anything. The Explorer takes some of those back, never all. Unticked, every gesture is put in front of you first."
+      "title": "묻지 않고 내 파일 이동 및 삭제",
+      "help": "외부 클라이언트가 아무것도 표시하지 않은 채 프로젝트의 파일을 이동하거나 이름을 바꾸거나 휴지통으로 보낼 수 있고, git이 추적하는 파일을 되돌릴 수도 있습니다. 탐색기는 그중 일부만 되돌릴 수 있고 전부는 아닙니다. 선택을 해제하면 모든 동작이 먼저 화면에 표시됩니다."
     },
     "mcpDelegateAsset": {
-      "title": "Upload to my library without asking me",
-      "help": "An outside client may send an image to your library, where it stays. It costs no creative units. Unticked, every upload is put in front of you first."
+      "title": "묻지 않고 내 라이브러리에 업로드",
+      "help": "외부 클라이언트가 이미지를 라이브러리로 보낼 수 있고, 그 이미지는 그곳에 남습니다. 크리에이티브 유닛은 들지 않습니다. 선택을 해제하면 모든 업로드가 먼저 화면에 표시됩니다."
     },
     "mcpDelegateRemote": {
-      "title": "Publish to a remote server without asking me",
-      "help": "An outside client may send a branch to a remote git repository. It is the only gesture that leaves this machine, and nothing here takes it back. Arm it knowingly."
+      "title": "묻지 않고 원격 서버에 게시",
+      "help": "외부 클라이언트가 브랜치를 원격 git 저장소로 보낼 수 있습니다. 이 컴퓨터를 벗어나는 유일한 동작이며, 여기서는 되돌릴 수 없습니다. 충분히 알고 켜세요."
     },
     "mcpDelegateBudget": {
-      "title": "Spend creative units without asking me",
-      "help": "What an outside client may spend in this window before the studio starts asking again. At zero, every spend is put in front of you first. A generation the API declines to price is never started without you, whatever this holds."
+      "title": "묻지 않고 크리에이티브 유닛 사용",
+      "help": "스튜디오가 다시 묻기 시작하기 전까지 외부 클라이언트가 이 창에서 쓸 수 있는 금액입니다. 0이면 모든 지출이 먼저 화면에 표시됩니다. API가 가격을 매기지 못하는 생성은 이 값이 얼마든 확인 없이 시작되지 않습니다."
     },
     "copyMcpCommand": {
-      "title": "Connection command",
-      "help": "Copies the line to paste in a terminal to connect a client. It holds no port and no token, so it stays true for every launch to come.",
-      "button": "Copy"
+      "title": "연결 명령",
+      "help": "클라이언트를 연결하기 위해 터미널에 붙여 넣을 줄을 복사합니다. 포트도 토큰도 담고 있지 않아 앞으로의 모든 실행에서 그대로 유효합니다.",
+      "button": "복사"
     },
     "installResolveBridge": {
-      "title": "DaVinci Resolve bridge",
-      "help": "Drops a script into the folder Resolve reads, to import an edit written here from its own scripts menu. It appears without restarting Resolve. Removing it is done by hand, and Resolve only notices on its next start.",
-      "button": "Install",
-      "confirm": "A script will be written into DaVinci Resolve’s folder, on this machine. Nothing else is touched.",
-      "missing": "DaVinci Resolve was not found on this machine",
-      "missingDetail": "Its folder does not exist, so nothing was written. Install Resolve, run it once, then come back here.",
-      "missingOk": "Close"
+      "title": "DaVinci Resolve 브리지",
+      "help": "Resolve가 읽는 폴더에 스크립트를 넣어, 여기서 만든 편집본을 Resolve의 스크립트 메뉴에서 가져올 수 있게 합니다. Resolve를 다시 시작하지 않아도 나타납니다. 제거는 직접 해야 하며, Resolve는 다음 시작 때에만 이를 알아차립니다.",
+      "button": "설치",
+      "confirm": "이 컴퓨터의 DaVinci Resolve 폴더에 스크립트를 기록합니다. 그 밖에는 아무것도 건드리지 않습니다.",
+      "missing": "이 컴퓨터에서 DaVinci Resolve를 찾을 수 없습니다",
+      "missingDetail": "폴더가 없어 아무것도 기록하지 않았습니다. Resolve를 설치하고 한 번 실행한 다음 여기로 돌아오세요.",
+      "missingOk": "닫기"
     },
     "openDevtools": {
-      "title": "Developer tools",
-      "help": "Opens the technical console of the embedded browser. It shows the log messages and the errors. For troubleshooting only: nothing in there is needed to use the software."
+      "title": "개발자 도구",
+      "help": "내장 브라우저의 기술 콘솔을 엽니다. 로그 메시지와 오류를 보여 줍니다. 문제 해결 전용으로, 여기 있는 내용은 소프트웨어를 사용하는 데 필요하지 않습니다."
     },
     "resetAll": {
-      "title": "Reset everything",
-      "help": "Puts EVERY setting back to a fresh install: theme, language, shortcuts, all of it. Your projects, images and edits are untouched — only the settings are. There is no going back.",
-      "button": "Reset",
-      "confirm": "Reset every setting? Your projects are untouched, but this cannot be undone."
+      "title": "전체 초기화",
+      "help": "테마, 언어, 단축키를 비롯한 모든 설정을 새로 설치한 상태로 되돌립니다. 프로젝트와 이미지, 편집본은 건드리지 않습니다 — 되돌아가는 것은 설정뿐입니다. 되돌릴 수 없습니다.",
+      "button": "초기화",
+      "confirm": "모든 설정을 초기화하시겠습니까? 프로젝트는 그대로지만 이 작업은 되돌릴 수 없습니다."
     },
-    "storage": "Storage",
-    "storageDescription": "Where your projects are kept on disk.",
+    "storage": "저장소",
+    "storageDescription": "프로젝트가 디스크에 보관되는 위치입니다.",
     "projectsFolder": {
-      "title": "Projects folder",
-      "help": "The folder the application offers when you create or open a project. It moves nothing: projects already created stay where they are. Leave it empty to start from wherever you last were."
+      "title": "프로젝트 폴더",
+      "help": "프로젝트를 만들거나 열 때 애플리케이션이 제안하는 폴더입니다. 아무것도 옮기지 않으며, 이미 만든 프로젝트는 있던 자리에 그대로 있습니다. 비워 두면 마지막에 있던 위치에서 시작합니다."
     },
-    "cancelHint": "Drops the pending changes, without closing the window",
-    "applyHint": "Writes the changes now, and leaves the window open",
-    "confirmHint": "Writes the changes, then closes the window",
-    "browseHint": "Pick the folder in a system window",
-    "findByChordHint": "Click, then press a chord: the list keeps only what uses it",
-    "showAllHint": "Clears the filter and shows every shortcut again",
-    "captureHint": "Click, then press the chord to assign",
-    "sectionHint": "Shows the settings of this section",
-    "sectionStagedHint": "This section has changes that were not applied",
-    "searchSectionHint": "Opens the whole section, rather than the one result",
-    "searchResultHint": "Goes to the setting, in the section it belongs to",
+    "cancelHint": "창을 닫지 않고 대기 중인 변경 사항을 버립니다",
+    "applyHint": "변경 사항을 지금 기록하고 창은 열어 둡니다",
+    "confirmHint": "변경 사항을 기록한 다음 창을 닫습니다",
+    "browseHint": "시스템 창에서 폴더를 선택하세요",
+    "findByChordHint": "클릭한 다음 키 조합을 누르면 그 조합을 쓰는 항목만 목록에 남습니다",
+    "showAllHint": "필터를 지우고 모든 단축키를 다시 보여 줍니다",
+    "captureHint": "클릭한 다음 지정할 키 조합을 누르세요",
+    "sectionHint": "이 섹션의 설정을 보여 줍니다",
+    "sectionStagedHint": "이 섹션에 적용되지 않은 변경 사항이 있습니다",
+    "searchSectionHint": "결과 하나가 아니라 섹션 전체를 엽니다",
+    "searchResultHint": "해당 설정이 속한 섹션으로 이동합니다",
     "landing": {
-      "title": "Where a generation lands",
-      "help": "When a document of the same kind is already open. With nothing open, the result opens.",
-      "ask": "Ask every time",
-      "document": "Into the open document",
-      "newTab": "In a tab of its own"
+      "title": "생성 결과가 놓이는 곳",
+      "help": "같은 종류의 문서가 이미 열려 있을 때 적용됩니다. 열린 것이 없으면 결과가 열립니다.",
+      "ask": "매번 묻기",
+      "document": "열려 있는 문서에",
+      "newTab": "새 탭에"
     },
     "homeNews": {
-      "title": "Model news",
-      "help": "Reads the trending models and the articles published on Hugging Face, the host every weight of the catalogue already comes from. Unticked, the studio contacts nobody for this band."
+      "title": "모델 소식",
+      "help": "카탈로그의 모든 가중치가 이미 거쳐 오는 호스트인 Hugging Face에서 떠오르는 모델과 게시된 글을 읽어 옵니다. 선택을 해제하면 스튜디오는 이 밴드를 위해 아무 곳에도 접속하지 않습니다."
     },
-    "mcp": "Way in (MCP)",
-    "mcpDescription": "The studio’s second door: another program on this machine — Claude Code, Cursor, any client speaking the MCP protocol — runs the same actions the assistant runs, from its own project. Shut to start with.",
-    "mcpListening": "Open: the studio is listening on 127.0.0.1:{{port}}, on this machine alone.",
-    "mcpClosed": "Shut: nothing is listening. Tick the setting above to open the door.",
-    "mcpHowTo": "Connect a client",
-    "mcpStepOpen": "Tick “Drive the studio from outside”, whenever suits you. The way in starts at once, and a client already configured finds it.",
-    "mcpStepCopy": "Copy the connection command, for a client driven from a terminal — or the configuration block, for a client that reads a file. Neither holds a port or a token.",
-    "mcpStepPaste": "Paste it into a terminal open in your project, or the block into your client’s configuration file.",
-    "mcpNothingToRedo": "Only needs doing once. What you paste names the studio as a program to start, never an address to reach, so it keeps working across every launch — including the ones where the port and the token are new, which is all of them. A client already registered under the same name is replaced; there is nothing to remove first.",
-    "mcpExamples": "What a client can do",
-    "mcpExampleGenerate": "“Find a night skybox model, prepare the generation, but do not send it.”",
-    "mcpExampleTidy": "“Sort this week’s rushes into one folder per day.”",
-    "mcpExampleScene": "“Put a sphere two metres to the right of the cube and light it warm.”",
-    "mcpGuards": "What guards the door",
-    "mcpGuardLocal": "The way in listens on this machine only: nothing from the network reaches it.",
-    "mcpGuardToken": "A new token every launch; a request without it is refused.",
-    "mcpGuardOrigin": "A request from a web page open in your browser is refused on that ground alone.",
-    "mcpGuardConsent": "Anything that spends or uploads shows on screen and waits for your yes — except what you delegated above.",
+    "mcp": "진입점 (MCP)",
+    "mcpDescription": "스튜디오의 두 번째 문입니다. 이 컴퓨터의 다른 프로그램 — Claude Code, Cursor, MCP 프로토콜을 말하는 모든 클라이언트 — 이 자신의 프로젝트에서 어시스턴트와 같은 동작을 실행합니다. 처음에는 닫혀 있습니다.",
+    "mcpListening": "열림: 스튜디오가 이 컴퓨터에서만 127.0.0.1:{{port}}에서 수신 대기합니다.",
+    "mcpClosed": "닫힘: 아무것도 수신 대기하지 않습니다. 문을 열려면 위의 설정을 선택하세요.",
+    "mcpHowTo": "클라이언트 연결",
+    "mcpStepOpen": "원할 때 “외부에서 스튜디오 제어”를 선택하세요. 진입점이 즉시 시작되고, 이미 설정된 클라이언트가 이를 찾아냅니다.",
+    "mcpStepCopy": "터미널에서 구동하는 클라이언트라면 연결 명령을, 파일을 읽는 클라이언트라면 구성 블록을 복사하세요 — 어느 쪽도 포트나 토큰을 담지 않습니다.",
+    "mcpStepPaste": "프로젝트에서 열어 둔 터미널에 붙여 넣거나, 블록이라면 클라이언트의 구성 파일에 붙여 넣으세요.",
+    "mcpNothingToRedo": "한 번만 하면 됩니다. 붙여 넣는 내용은 스튜디오를 시작할 프로그램으로 지정할 뿐 접속할 주소를 가리키지 않으므로, 앞으로의 모든 실행에서 계속 유효합니다 — 포트와 토큰이 새로 만들어지는 실행, 즉 모든 실행에서도 마찬가지입니다. 같은 이름으로 이미 등록된 클라이언트는 교체되며, 먼저 지울 것은 없습니다.",
+    "mcpExamples": "클라이언트가 할 수 있는 일",
+    "mcpExampleGenerate": "“밤 스카이박스 모델을 찾아 생성을 준비하되, 보내지는 마세요.”",
+    "mcpExampleTidy": "“이번 주 러시를 하루에 한 폴더씩 정리하세요.”",
+    "mcpExampleScene": "“큐브 오른쪽 2 미터 지점에 구를 놓고 따뜻한 빛으로 비추세요.”",
+    "mcpGuards": "문을 지키는 것",
+    "mcpGuardLocal": "진입점은 이 컴퓨터에서만 수신 대기합니다. 네트워크에서 오는 것은 아무것도 닿지 않습니다.",
+    "mcpGuardToken": "실행할 때마다 새 토큰이 만들어지며, 토큰이 없는 요청은 거부됩니다.",
+    "mcpGuardOrigin": "브라우저에 열린 웹 페이지에서 온 요청은 그 이유만으로 거부됩니다.",
+    "mcpGuardConsent": "비용이 들거나 업로드하는 동작은 화면에 표시되어 동의를 기다립니다 — 위에서 위임한 것은 예외입니다.",
     "copyMcpConfig": {
-      "title": "Configuration block",
-      "help": "Copies the same connection as JSON, for a client configured by a file rather than by a command. Like the command, it stays true for every launch.",
-      "button": "Copy the JSON"
+      "title": "구성 블록",
+      "help": "명령이 아니라 파일로 설정하는 클라이언트를 위해 같은 연결을 JSON 형식으로 복사합니다. 명령과 마찬가지로 모든 실행에서 그대로 유효합니다.",
+      "button": "JSON 복사"
     },
-    "memory": "Assistant memory",
-    "memoryDescription": "What the assistant has learned about your projects. What it learned about a project lives in that project’s folder and travels with it; what it learned about how you work stays on this machine.",
-    "memoryProject": "This project",
-    "memoryGlobal": "This machine",
-    "memoryProjectHint": "What the assistant learned about the open project. That file travels with the folder.",
-    "memoryGlobalHint": "What the assistant learned about how you work. It never leaves this machine.",
-    "memoryGraph": "Graph",
-    "memoryGraphCount": "{{memories, number}} memories · {{links, number}} links",
-    "memoryGraphDescription": "What the assistant has learned, and what holds together. One dot per memory, a line between two that are about the same thing.",
-    "memoryGraphEmpty": "It takes at least two connected memories before a graph shows anything.",
-    "memorySearch": "Search the memory",
-    "memoryEmpty": "The assistant has learned nothing here yet.",
-    "memoryUnmatched": "No memory answers that search.",
-    "memoryNoProject": "Open a project to see what the assistant learned about it.",
-    "memoryUnreadable": "The memory file could not be read whole. What follows may be incomplete.",
-    "memoryTooNew": "This file was written by a newer build of the studio. Nothing has been changed.",
-    "memoryPin": "Pin",
-    "memoryPinHint": "A pinned memory is always given to the assistant, whatever the question.",
-    "memoryUnpin": "Unpin",
-    "memoryUnpinHint": "The assistant will only receive it when it answers the question asked.",
-    "memoryArchive": "Archive",
-    "memoryArchiveHint": "Sets it aside without erasing it: still readable, no longer given.",
-    "memoryRestore": "Put back to use",
-    "memoryRestoreHint": "The assistant may draw on it again.",
-    "memoryForget": "Forget",
-    "memoryForgetHint": "The forgetting is written into the file: nothing is erased, the trace remains.",
-    "memoryEdit": "Edit the summary",
-    "memorySource": "Written by",
-    "memorySourceAction": "an action ({{ref}})",
-    "memorySourcePerson": "you",
-    "memorySourceAssistant": "the assistant",
-    "memorySourceImport": "an import",
-    "memoryRefs": "It is about",
-    "memoryReplaces": "It replaces",
-    "memoryAlsoAbout": "is about it too",
-    "memoryLinks": "It points to",
-    "memorySupersedes": "Replaces {{id}}",
-    "memoryReindex": "Rebuild the index",
-    "memoryReindexHelp": "Reads the file back and rebuilds the search index. Nothing learned is lost.",
-    "memoryEmbed": "Compute the vectors",
-    "memoryEmbedHelp": "Lets the assistant find a memory without knowing its exact words. Needs an embedding model installed.",
-    "memoryEmbedPending_other": "{{count, number}} memories to compute",
-    "memoryEmbedNone": "Every memory has its vector.",
-    "memoryEmbedNoModel": "No embedding model is chosen. The search runs on words alone.",
-    "memoryStopEmbed": "Stop",
-    "memoryStopEmbedHelp": "What has already been computed is kept.",
-    "memoryPurge": "Forget everything",
-    "memoryPurgeHelp": "Erases this project’s memory file, and everything the assistant had learned from it.",
-    "memoryPurgeConfirm": "Erase everything the assistant learned about this project?",
-    "memoryFilterAll": "All",
-    "memoryCount_other": "{{count, number}} memories",
-    "memoryEmbedPending_one": "{{count, number}} memory to compute",
-    "memoryCount_one": "{{count, number}} memory",
-    "memoryEmbedPending_many": "{{count, number}} memories to compute",
-    "memoryCount_many": "{{count, number}} memories",
-    "memoryUpkeep": "Upkeep",
-    "memoryMerge": "Merge the duplicates",
-    "memoryMergeHelp": "Keeps the most important of each group saying the same thing, links the others to it and archives them. Nothing is erased.",
-    "memoryMergeNone": "Nothing says the same thing twice.",
-    "memoryMergeFound_one": "{{count, number}} duplicate",
-    "memoryMergeFound_many": "{{count, number}} duplicates",
-    "memoryMergeFound_other": "{{count, number}} duplicates",
-    "memoryStale": "Archive what sleeps",
-    "memoryStaleHelp": "Sets aside what nothing has drawn on for six months. Pinned memories are never touched.",
-    "memoryStaleNone": "Nothing has slept long enough.",
-    "memoryStaleFound_one": "{{count, number}} sleeping memory",
-    "memoryStaleFound_many": "{{count, number}} sleeping memories",
-    "memoryStaleFound_other": "{{count, number}} sleeping memories",
-    "memoryCompact": "Compact the file",
-    "memoryCompactHelp": "Rewrites the file with one line per standing memory. This is where what was forgotten finally leaves the disk.",
-    "memoryRelations": "What this memory touches",
-    "memoryPromote": "Keep everywhere",
-    "memoryPromoteHint": "Copies this memory into the machine’s own, so it serves in every project of yours. What the project learned stays there too.",
+    "memory": "어시스턴트 기억",
+    "memoryDescription": "어시스턴트가 프로젝트에 대해 배운 것입니다. 프로젝트에 대해 배운 내용은 그 프로젝트의 폴더에 남아 함께 이동하고, 작업 방식에 대해 배운 내용은 이 컴퓨터에 남습니다.",
+    "memoryProject": "이 프로젝트",
+    "memoryGlobal": "이 컴퓨터",
+    "memoryProjectHint": "어시스턴트가 열린 프로젝트에 대해 배운 내용입니다. 그 파일은 폴더와 함께 이동합니다.",
+    "memoryGlobalHint": "어시스턴트가 작업 방식에 대해 배운 내용입니다. 이 컴퓨터를 절대 벗어나지 않습니다.",
+    "memoryGraph": "그래프",
+    "memoryGraphCount": "기억 {{memories, number}}개 · 링크 {{links, number}}개",
+    "memoryGraphDescription": "어시스턴트가 배운 것과 서로 이어지는 것입니다. 기억 하나에 점 하나, 같은 것을 말하는 두 기억 사이에 선 하나입니다.",
+    "memoryGraphEmpty": "그래프에 무언가 나타나려면 서로 이어진 기억이 적어도 두 개는 있어야 합니다.",
+    "memorySearch": "기억 검색",
+    "memoryEmpty": "어시스턴트가 아직 여기서 배운 것이 없습니다.",
+    "memoryUnmatched": "그 검색에 해당하는 기억이 없습니다.",
+    "memoryNoProject": "어시스턴트가 무엇을 배웠는지 보려면 프로젝트를 여세요.",
+    "memoryUnreadable": "기억 파일을 전부 읽지 못했습니다. 아래 내용은 불완전할 수 있습니다.",
+    "memoryTooNew": "이 파일은 더 새로운 빌드의 스튜디오가 기록했습니다. 아무것도 변경하지 않았습니다.",
+    "memoryPin": "고정",
+    "memoryPinHint": "고정한 기억은 질문이 무엇이든 항상 어시스턴트에게 전달됩니다.",
+    "memoryUnpin": "고정 해제",
+    "memoryUnpinHint": "어시스턴트는 이 기억이 물어본 질문에 답이 될 때만 받게 됩니다.",
+    "memoryArchive": "보관",
+    "memoryArchiveHint": "지우지 않고 한쪽에 치워 둡니다. 계속 읽을 수 있지만 더는 전달되지 않습니다.",
+    "memoryRestore": "다시 사용",
+    "memoryRestoreHint": "어시스턴트가 다시 활용할 수 있습니다.",
+    "memoryForget": "잊기",
+    "memoryForgetHint": "잊었다는 사실이 파일에 기록됩니다. 아무것도 지워지지 않고 흔적이 남습니다.",
+    "memoryEdit": "요약 편집",
+    "memorySource": "기록한 주체",
+    "memorySourceAction": "동작 ({{ref}})",
+    "memorySourcePerson": "사용자",
+    "memorySourceAssistant": "어시스턴트",
+    "memorySourceImport": "가져오기",
+    "memoryRefs": "관련 대상",
+    "memoryReplaces": "대체하는 대상",
+    "memoryAlsoAbout": "이것을 함께 말하는 기억",
+    "memoryLinks": "가리키는 대상",
+    "memorySupersedes": "{{id}} 대체",
+    "memoryReindex": "색인 다시 만들기",
+    "memoryReindexHelp": "파일을 다시 읽어 검색 색인을 새로 만듭니다. 배운 것은 아무것도 사라지지 않습니다.",
+    "memoryEmbed": "벡터 계산",
+    "memoryEmbedHelp": "정확한 단어를 몰라도 어시스턴트가 기억을 찾아낼 수 있게 합니다. 설치된 임베딩 모델이 필요합니다.",
+    "memoryEmbedPending_other": "계산할 기억 {{count, number}}개",
+    "memoryEmbedNone": "모든 기억이 벡터를 가지고 있습니다.",
+    "memoryEmbedNoModel": "임베딩 모델이 선택되지 않았습니다. 검색은 단어만으로 이루어집니다.",
+    "memoryStopEmbed": "정지",
+    "memoryStopEmbedHelp": "이미 계산된 것은 그대로 보관됩니다.",
+    "memoryPurge": "전부 잊기",
+    "memoryPurgeHelp": "이 프로젝트의 기억 파일과, 어시스턴트가 거기서 배운 모든 것을 지웁니다.",
+    "memoryPurgeConfirm": "어시스턴트가 이 프로젝트에 대해 배운 것을 모두 지우시겠습니까?",
+    "memoryFilterAll": "전체",
+    "memoryCount_other": "기억 {{count, number}}개",
+    "memoryEmbedPending_one": "계산할 기억 {{count, number}}개",
+    "memoryCount_one": "기억 {{count, number}}개",
+    "memoryEmbedPending_many": "계산할 기억 {{count, number}}개",
+    "memoryCount_many": "기억 {{count, number}}개",
+    "memoryUpkeep": "관리",
+    "memoryMerge": "중복 병합",
+    "memoryMergeHelp": "같은 것을 말하는 무리마다 가장 중요한 기억을 남기고, 나머지는 그 기억에 연결한 뒤 보관합니다. 아무것도 지우지 않습니다.",
+    "memoryMergeNone": "같은 것을 두 번 말하는 기억은 없습니다.",
+    "memoryMergeFound_one": "중복 {{count, number}}개",
+    "memoryMergeFound_many": "중복 {{count, number}}개",
+    "memoryMergeFound_other": "중복 {{count, number}}개",
+    "memoryStale": "잠자는 기억 보관",
+    "memoryStaleHelp": "여섯 달 동안 아무것도 활용하지 않은 기억을 한쪽으로 치웁니다. 고정한 기억은 절대 건드리지 않습니다.",
+    "memoryStaleNone": "충분히 오래 잠든 기억이 없습니다.",
+    "memoryStaleFound_one": "잠자는 기억 {{count, number}}개",
+    "memoryStaleFound_many": "잠자는 기억 {{count, number}}개",
+    "memoryStaleFound_other": "잠자는 기억 {{count, number}}개",
+    "memoryCompact": "파일 압축 정리",
+    "memoryCompactHelp": "살아 있는 기억마다 한 줄씩으로 파일을 다시 씁니다. 잊은 내용이 디스크에서 완전히 사라지는 곳이 바로 여기입니다.",
+    "memoryRelations": "이 기억이 닿는 것",
+    "memoryPromote": "모든 곳에 보관",
+    "memoryPromoteHint": "이 기억을 컴퓨터의 기억으로 복사하여 모든 프로젝트에서 쓰이게 합니다. 프로젝트가 배운 내용도 그대로 남습니다.",
     "gameControls": {
-      "title": "The game’s controls",
-      "help": "They are not set here. A game reads a control map of the project, filed under “Game controls” in the Explorer, and the “New control map” button creates one. This page covers the studio interface alone, and what is plugged into this computer."
+      "title": "게임 조작",
+      "help": "여기서 설정하는 것이 아닙니다. 게임은 탐색기의 “게임 조작” 아래에 정리된 프로젝트의 입력 맵을 읽으며, “새 입력 맵” 버튼이 그것을 만듭니다. 이 페이지는 스튜디오 인터페이스와 이 컴퓨터에 연결된 장치만 다룹니다."
     }
   }
 }

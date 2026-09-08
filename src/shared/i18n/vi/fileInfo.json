@@ -1,24 +1,24 @@
 {
   "fileInfo": {
-    "title": "Information about {{name}}",
+    "title": "Thông tin về {{name}}",
     "sections": {
-      "general": "General",
-      "media": "Media",
-      "catalogue": "Catalogue",
+      "general": "Chung",
+      "media": "Phương tiện",
+      "catalogue": "Danh mục",
       "git": "Git"
     },
-    "gitUnchanged": "No pending changes",
+    "gitUnchanged": "Không có thay đổi nào chờ xử lý",
     "kind": {
-      "file": "File",
-      "folder": "Folder"
+      "file": "Tệp",
+      "folder": "Thư mục"
     },
-    "type": "Type",
-    "modified": "Modified",
+    "type": "Loại",
+    "modified": "Sửa đổi lần cuối",
     "codec": "Codec",
-    "identifier": "Identifier",
-    "fingerprint": "Content fingerprint",
-    "added": "Added",
-    "reading": "Reading the folder…",
-    "missing": "This entry is no longer in the project folder."
+    "identifier": "Định danh",
+    "fingerprint": "Dấu vân tay nội dung",
+    "added": "Thêm vào ngày",
+    "reading": "Đang đọc thư mục…",
+    "missing": "Mục này không còn nằm trong thư mục dự án."
   }
 }

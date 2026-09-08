@@ -1,8 +1,8 @@
 {
   "code": {
-    "unavailable": "The editor could not load.",
-    "noProblems": "No problems",
-    "openProblem": "Open at this line",
-    "at": "line {{line, number}}, column {{column, number}}"
+    "unavailable": "Không tải được trình soạn thảo.",
+    "noProblems": "Không có vấn đề",
+    "openProblem": "Mở tại dòng này",
+    "at": "dòng {{line, number}}, cột {{column, number}}"
   }
 }

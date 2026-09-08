@@ -1,24 +1,24 @@
 {
   "fileInfo": {
-    "title": "Information about {{name}}",
+    "title": "{{name}} 정보",
     "sections": {
-      "general": "General",
-      "media": "Media",
-      "catalogue": "Catalogue",
+      "general": "일반",
+      "media": "미디어",
+      "catalogue": "카탈로그",
       "git": "Git"
     },
-    "gitUnchanged": "No pending changes",
+    "gitUnchanged": "대기 중인 변경 사항 없음",
     "kind": {
-      "file": "File",
-      "folder": "Folder"
+      "file": "파일",
+      "folder": "폴더"
     },
-    "type": "Type",
-    "modified": "Modified",
-    "codec": "Codec",
-    "identifier": "Identifier",
-    "fingerprint": "Content fingerprint",
-    "added": "Added",
-    "reading": "Reading the folder…",
-    "missing": "This entry is no longer in the project folder."
+    "type": "유형",
+    "modified": "수정 날짜",
+    "codec": "코덱",
+    "identifier": "식별자",
+    "fingerprint": "콘텐츠 지문",
+    "added": "추가 날짜",
+    "reading": "폴더를 읽는 중…",
+    "missing": "이 항목은 더 이상 프로젝트 폴더에 없습니다."
   }
 }

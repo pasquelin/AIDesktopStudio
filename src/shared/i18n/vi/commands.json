@@ -1,549 +1,549 @@
 {
   "commands": {
     "scenePlay": {
-      "title": "Play scene",
-      "help": "Starts or resumes the scene in the game window."
+      "title": "Chạy cảnh",
+      "help": "Chạy hoặc tiếp tục cảnh trong cửa sổ game."
     },
     "appNew": {
-      "title": "New…",
-      "help": "Opens the window that makes a project or a document, from any screen"
+      "title": "Mới…",
+      "help": "Mở cửa sổ tạo một dự án hoặc một tài liệu, từ bất kỳ màn hình nào"
     },
     "projectNew": {
-      "title": "New project",
-      "help": "Creates an empty project and opens it. A project is the folder holding everything you make: the images, the videos, the sounds, and how they are arranged."
+      "title": "Dự án mới",
+      "help": "Tạo một dự án trống và mở nó. Dự án là thư mục chứa mọi thứ bạn làm ra: hình ảnh, video, âm thanh, và cách chúng được sắp xếp."
     },
     "projectOpen": {
-      "title": "Open project",
-      "help": "Picks a project already on your disk and opens it in place of the current one. The open project is saved as you go, so there is nothing to save first."
+      "title": "Mở dự án",
+      "help": "Chọn một dự án đã có trên đĩa và mở nó thay cho dự án hiện tại. Dự án đang mở được lưu liên tục, nên không có gì phải lưu trước."
     },
     "documentSaveAs": {
-      "title": "Save as",
-      "help": "Writes a copy of the asset beside the original and carries on with it. The asset that was open stays as it was at the last save."
+      "title": "Lưu thành",
+      "help": "Ghi một bản sao của tài nguyên bên cạnh bản gốc và làm việc tiếp trên bản sao. Tài nguyên đang mở giữ nguyên như ở lần lưu cuối."
     },
     "documentSave": {
-      "title": "Save document",
-      "help": "Writes the document in front into the project. Until it is saved, it lives in the window: the tab carries an asterisk for as long as what is on screen is not what is on disk."
+      "title": "Lưu tài liệu",
+      "help": "Ghi tài liệu ở phía trước vào dự án. Chừng nào chưa được lưu, nó chỉ sống trong cửa sổ: tab mang một dấu hoa thị chừng nào những gì trên màn hình chưa phải là những gì trên đĩa."
     },
     "documentClose": {
-      "title": "Close tab",
-      "help": "Closes the document in front. If it holds unsaved work, the studio asks what to do with it. With no tab left, the window closes."
+      "title": "Đóng tab",
+      "help": "Đóng tài liệu ở phía trước. Nếu nó còn phần chưa lưu, studio sẽ hỏi phải làm gì với phần đó. Khi không còn tab nào, cửa sổ sẽ đóng."
     },
     "layoutReset": {
-      "title": "Reset layout",
-      "help": "Puts the panels back where they started. Useful once the windows have been dragged all over and nothing is where you expect. Your work is untouched."
+      "title": "Đặt lại bố cục",
+      "help": "Đưa các bảng về đúng chỗ ban đầu. Hữu ích khi các cửa sổ đã bị kéo khắp nơi và không còn gì ở chỗ bạn tưởng. Công việc của bạn không bị đụng tới."
     },
     "appSettings": {
-      "title": "Settings",
-      "help": "Opens the settings window — this one: the language, the colours, the account, the shortcuts, and everything else that is adjustable."
+      "title": "Cài đặt",
+      "help": "Mở cửa sổ cài đặt — chính cửa sổ này: ngôn ngữ, màu sắc, tài khoản, phím tắt, và mọi thứ khác chỉnh được."
     },
     "appAssistant": {
-      "title": "Assistant",
-      "help": "Opens the window where you say what you want done, by voice or by keyboard. The assistant carries it out itself, and asks for a yes before anything that costs."
+      "title": "Trợ lý",
+      "help": "Mở cửa sổ nơi bạn nói ra điều mình muốn làm, bằng giọng nói hoặc bàn phím. Trợ lý tự thực hiện, và xin bạn đồng ý trước mọi thứ tốn phí."
     },
     "appDictate": {
-      "title": "Dictate",
-      "help": "Listens to the microphone and writes what you say at the caret, in the field you are in. Held down by default: speak, let go, the text appears."
+      "title": "Đọc chính tả",
+      "help": "Nghe micro và viết những gì bạn nói tại chỗ con trỏ, trong ô bạn đang ở. Mặc định là giữ phím: nói, thả ra, chữ hiện lên."
     },
     "windowFullScreen": {
-      "title": "Full screen",
-      "help": "Gives the window the whole screen, with no bar and no border, to work with nothing around it."
+      "title": "Toàn màn hình",
+      "help": "Cho cửa sổ chiếm trọn màn hình, không thanh và không viền, để làm việc mà không có gì xung quanh."
     },
     "spacesMoveLeft": {
-      "title": "Move the space left",
-      "help": "Shifts the focused space one place to the left in the top bar. The order you settle on is kept from one session to the next."
+      "title": "Chuyển không gian sang trái",
+      "help": "Dịch không gian đang có tiêu điểm sang trái một vị trí trong thanh trên cùng. Thứ tự bạn chọn được giữ từ phiên này sang phiên khác."
     },
     "spacesMoveRight": {
-      "title": "Move the space right",
-      "help": "Shifts the focused space one place to the right in the top bar. The order you settle on is kept from one session to the next."
+      "title": "Chuyển không gian sang phải",
+      "help": "Dịch không gian đang có tiêu điểm sang phải một vị trí trong thanh trên cùng. Thứ tự bạn chọn được giữ từ phiên này sang phiên khác."
     },
     "explorerNewFolder": {
-      "title": "New folder",
-      "help": "Creates an empty folder inside the one the explorer is showing, and opens its name for typing. The folder is yours, as is everything you put in it."
+      "title": "Thư mục mới",
+      "help": "Tạo một thư mục trống bên trong thư mục mà trình khám phá đang hiện, và mở tên của nó để gõ. Thư mục là của bạn, cũng như mọi thứ bạn cất vào đó."
     },
     "explorerDuplicate": {
-      "title": "Duplicate",
-      "help": "Lays a copy of each chosen item beside the original, under the first free name. A folder is copied with everything inside it."
+      "title": "Nhân bản",
+      "help": "Đặt một bản sao của từng mục đã chọn bên cạnh bản gốc, dưới cái tên còn trống đầu tiên. Một thư mục được sao chép cùng mọi thứ bên trong nó."
     },
     "explorerCut": {
-      "title": "Cut",
-      "help": "Holds the selection, to be moved on the next paste. Nothing moves until you paste, and the rows being held are drawn dimmed."
+      "title": "Cắt",
+      "help": "Giữ lại vùng chọn để di chuyển ở lần dán tới. Không gì dịch chuyển cho tới khi bạn dán, và những hàng đang được giữ hiện mờ đi."
     },
     "explorerCopy": {
-      "title": "Copy",
-      "help": "Holds the selection, to be copied on the next paste. The original stays where it is."
+      "title": "Sao chép",
+      "help": "Giữ lại vùng chọn để sao chép ở lần dán tới. Bản gốc vẫn ở nguyên chỗ của nó."
     },
     "explorerPaste": {
-      "title": "Paste",
-      "help": "Drops what the clipboard holds into the folder on screen. An item whose name is already taken is refused, and the rest go through."
+      "title": "Dán",
+      "help": "Thả những gì bảng nhớ tạm đang giữ vào thư mục trên màn hình. Mục nào mang cái tên đã bị chiếm thì bị từ chối, số còn lại đi qua."
     },
     "explorerTrash": {
-      "title": "Move to trash",
-      "help": "Sends the selection to the system trash, where you can get it back. It is the one explorer gesture the studio cannot undo."
+      "title": "Chuyển vào thùng rác",
+      "help": "Gửi vùng chọn vào thùng rác của hệ thống, nơi bạn có thể lấy lại. Đó là thao tác duy nhất của trình khám phá mà studio không hoàn tác được."
     },
     "explorerUndo": {
-      "title": "Undo the last file gesture",
-      "help": "Puts the last batch moved, renamed, duplicated or created back where it was. The stack belongs to the project rather than to a window, and the trash gesture never enters it."
+      "title": "Hoàn tác thao tác tệp cuối cùng",
+      "help": "Đưa lô tệp vừa được di chuyển, đổi tên, nhân bản hay tạo mới về lại chỗ cũ. Ngăn xếp thuộc về dự án chứ không thuộc về một cửa sổ, và thao tác chuyển vào thùng rác không bao giờ vào đó."
     },
     "explorerRedo": {
-      "title": "Redo the file gesture",
-      "help": "Redoes the batch of files that was just undone, exactly as it was."
+      "title": "Làm lại thao tác tệp",
+      "help": "Làm lại y nguyên lô tệp vừa được hoàn tác."
     },
     "sceneSelect": {
-      "title": "Select",
-      "help": "The plain tool: click an object in the scene to choose it, without doing anything to it. It is the one you come back to between manipulations."
+      "title": "Chọn",
+      "help": "Công cụ cơ bản: bấm vào một đối tượng trong cảnh để chọn nó, mà không làm gì với nó. Đây là công cụ bạn quay về giữa hai lần thao tác."
     },
     "sceneTranslate": {
-      "title": "Move",
-      "help": "Drags the chosen object from one place to another, by pulling the coloured arrows — one per direction."
+      "title": "Di chuyển",
+      "help": "Kéo đối tượng đã chọn từ chỗ này sang chỗ khác, bằng cách kéo các mũi tên màu — mỗi hướng một mũi tên."
     },
     "sceneRotate": {
-      "title": "Rotate",
-      "help": "Turns the chosen object on itself, by pulling the coloured rings — one per axis."
+      "title": "Xoay",
+      "help": "Xoay đối tượng đã chọn quanh chính nó, bằng cách kéo các vòng màu — mỗi trục một vòng."
     },
     "sceneScale": {
-      "title": "Scale",
-      "help": "Makes the chosen object bigger or smaller, by pulling its handles. Holding Shift keeps its proportions."
+      "title": "Đổi tỉ lệ",
+      "help": "Làm đối tượng đã chọn to lên hay nhỏ đi, bằng cách kéo các tay nắm của nó. Giữ phím Shift thì giữ nguyên tỉ lệ hình."
     },
     "sceneFrame": {
-      "title": "Frame selection",
-      "help": "Brings the camera close enough that the chosen object fills the view. Handy when you are lost, or when an object is tiny."
+      "title": "Đóng khung vùng chọn",
+      "help": "Đưa camera lại đủ gần để đối tượng đã chọn lấp đầy khung nhìn. Tiện khi bạn bị lạc, hoặc khi một đối tượng quá nhỏ."
     },
     "sceneFrameFollow": {
-      "title": "Follow the selection",
-      "help": "Frames the selection and keeps it in view: whatever moves takes the camera along, at the angle and distance already chosen. Called again, it lets go."
+      "title": "Theo dõi vùng chọn",
+      "help": "Đóng khung vùng chọn và giữ nó trong khung nhìn: thứ gì di chuyển sẽ kéo camera theo, ở đúng góc và khoảng cách đã chọn. Gọi lại lần nữa thì nó buông ra."
     },
     "sceneIsolate": {
-      "title": "Isolate selection",
-      "help": "Leaves only the chosen objects on screen while you work on them. Nothing is changed: pressing it again gives the scene back exactly as it was, including the objects you had hidden yourself."
+      "title": "Cô lập vùng chọn",
+      "help": "Chỉ để lại trên màn hình các đối tượng đã chọn trong lúc bạn làm việc với chúng. Không gì bị thay đổi: nhấn lần thứ hai trả lại cảnh đúng như cũ, kể cả những đối tượng chính bạn đã ẩn."
     },
     "sceneHide": {
-      "title": "Hide selection",
-      "help": "Takes the chosen objects out of the view without touching the document. Show all brings them back."
+      "title": "Ẩn vùng chọn",
+      "help": "Đưa các đối tượng đã chọn ra khỏi khung nhìn mà không đụng tới tài liệu. “Hiện tất cả” đưa chúng trở lại."
     },
     "sceneShowAll": {
-      "title": "Show all",
-      "help": "Undoes the hiding and isolating done from the viewport. Objects the document itself declares hidden stay hidden."
+      "title": "Hiện tất cả",
+      "help": "Hủy việc ẩn và cô lập đã làm từ khung nhìn. Những đối tượng mà chính tài liệu khai là ẩn thì vẫn ẩn."
     },
     "sceneSnap": {
-      "title": "All snaps",
-      "help": "Turns all four snaps on or off at once — surface, grid, angle, scale. A second press gives back exactly the ones that were on. The bar at the top of the viewport sets them one by one."
+      "title": "Tất cả bắt dính",
+      "help": "Bật hoặc tắt cùng lúc cả bốn kiểu bắt dính — bề mặt, lưới, góc, tỉ lệ. Nhấn lần thứ hai trả lại đúng những kiểu đang bật. Thanh trên đỉnh khung nhìn chỉnh từng kiểu một."
     },
     "sceneSpace": {
-      "title": "Local frame",
-      "help": "Lines the handles up with the object’s own orientation rather than the world’s. On a turned object, that is what lets you move it “towards its front” rather than north."
+      "title": "Hệ trục cục bộ",
+      "help": "Căn các tay nắm theo hướng của chính đối tượng thay vì theo hướng của thế giới. Trên một đối tượng đã xoay, đó là thứ cho phép di chuyển nó “về phía trước của nó” thay vì về hướng bắc."
     },
     "sceneProjection": {
-      "title": "Projection",
-      "help": "Switches between perspective, where receding lines converge, and orthographic projection, where parallels stay parallel. That is what lets an alignment be judged by eye."
+      "title": "Phép chiếu",
+      "help": "Chuyển giữa phối cảnh, nơi các đường lùi xa hội tụ, và phép chiếu trực giao, nơi các đường song song vẫn song song. Đó là thứ cho phép đánh giá một sự căn chỉnh bằng mắt."
     },
     "sceneViewFront": {
-      "title": "Look from the front",
-      "help": "Puts the camera in front of the scene, square to the axis. The reference view for judging a silhouette."
+      "title": "Nhìn từ phía trước",
+      "help": "Đặt camera trước cảnh, vuông góc với trục. Khung nhìn tham chiếu để đánh giá một dáng hình."
     },
     "sceneViewBack": {
-      "title": "Look from behind",
-      "help": "Puts the camera behind the scene, on the same axis: what the front hides."
+      "title": "Nhìn từ phía sau",
+      "help": "Đặt camera sau cảnh, trên cùng một trục: những gì mặt trước che khuất."
     },
     "sceneViewRight": {
-      "title": "Look from the right",
-      "help": "Puts the camera on the right-hand side, square to the axis. What a depth is judged from."
+      "title": "Nhìn từ bên phải",
+      "help": "Đặt camera ở phía bên phải, vuông góc với trục. Thứ dùng để đánh giá một chiều sâu."
     },
     "sceneViewLeft": {
-      "title": "Look from the left",
-      "help": "Puts the camera on the left-hand side, on the same axis as the right view."
+      "title": "Nhìn từ bên trái",
+      "help": "Đặt camera ở phía bên trái, trên cùng trục với khung nhìn bên phải."
     },
     "sceneViewTop": {
-      "title": "Look from above",
-      "help": "Puts the camera above the scene, looking straight down. What the objects are laid out on the ground from."
+      "title": "Nhìn từ trên xuống",
+      "help": "Đặt camera phía trên cảnh, nhìn thẳng xuống. Thứ dùng để bố trí các đối tượng trên mặt đất."
     },
     "sceneViewBottom": {
-      "title": "Look from below",
-      "help": "Puts the camera under the scene, looking straight up, the other way from the top view."
+      "title": "Nhìn từ dưới lên",
+      "help": "Đặt camera phía dưới cảnh, nhìn thẳng lên, ngược với khung nhìn từ trên xuống."
     },
     "sceneViewCamera": {
-      "title": "Look through the camera",
-      "help": "Draws the view through the chosen camera, and steps back out on a second call. With no camera chosen, it takes the first in the scene."
+      "title": "Nhìn qua camera",
+      "help": "Vẽ khung nhìn qua camera đã chọn, và thoát ra ở lần gọi thứ hai. Khi chưa chọn camera nào, nó lấy camera đầu tiên trong cảnh."
     },
     "sceneQuad": {
-      "title": "Four views",
-      "help": "Splits the viewport in four — top, front and side around the view being flown. Each quarter orbits under the pointer; the flown one keeps the gizmos."
+      "title": "Bốn khung nhìn",
+      "help": "Chia khung nhìn làm bốn — trên, trước và cạnh, quanh khung nhìn đang bay. Mỗi phần tư xoay quanh theo con trỏ; phần đang bay giữ các gizmo."
     },
     "sceneQuadEdges": {
-      "title": "Quad edges",
-      "help": "Redraws the wireframe without the diagonals triangulation added. A GLB never holds quads: this is a reconstruction by angle, faithful except on strongly curved surfaces."
+      "title": "Cạnh tứ giác",
+      "help": "Vẽ lại khung dây mà không có các đường chéo do phép tam giác hóa thêm vào. Một tệp GLB không bao giờ chứa tứ giác: đây là bản dựng lại theo góc, trung thực trừ trên các bề mặt cong mạnh."
     },
     "sceneDisplay": {
-      "title": "Display mode",
-      "help": "Cycles what the viewport draws: the surfaces, their edges alone, or both together. The button’s menu picks one directly."
+      "title": "Chế độ hiển thị",
+      "help": "Lần lượt đổi những gì khung nhìn vẽ: các bề mặt, riêng các cạnh của chúng, hay cả hai cùng lúc. Trình đơn của nút cho phép chọn thẳng một kiểu."
     },
     "sceneCapture": {
-      "title": "Capture the view",
-      "help": "Saves an image of the 3D view into the project’s images — without the grid, the handles or the rails. The menu offers resolutions larger than the panel’s own."
+      "title": "Chụp khung nhìn",
+      "help": "Lưu một hình ảnh của khung nhìn 3D vào phần hình ảnh của dự án — không có lưới, tay nắm hay đường đi. Trình đơn đưa ra những độ phân giải lớn hơn độ phân giải của chính bảng."
     },
     "sceneAdd": {
-      "title": "Add",
-      "help": "Opens the list of what a scene can take: meshes, lights and objects. A right-click on empty space opens the same list."
+      "title": "Thêm",
+      "help": "Mở danh sách những gì một cảnh có thể nhận: mesh, đèn và đối tượng. Bấm chuột phải vào chỗ trống mở đúng danh sách đó."
     },
     "sceneAddToSheet": {
-      "title": "Add to the animation band",
-      "help": "Puts the selected objects on the band, where keys are set. The band shows only what is put there, so a scene of thousands of objects stays readable."
+      "title": "Thêm vào dải hoạt ảnh",
+      "help": "Đặt các đối tượng đã chọn lên dải, nơi người ta đặt các key. Dải chỉ hiện những gì được đặt lên đó, nên một cảnh có hàng nghìn đối tượng vẫn đọc được."
     },
     "sceneRemoveFromSheet": {
-      "title": "Remove from the animation band",
-      "help": "Removes the line from the band. Keys already set stay, and an object keeps its line for as long as it holds one."
+      "title": "Gỡ khỏi dải hoạt ảnh",
+      "help": "Gỡ hàng khỏi dải. Các key đã đặt vẫn còn, và một đối tượng giữ hàng của nó chừng nào nó còn mang key."
     },
     "sceneGroup": {
-      "title": "Group",
-      "help": "Files the selected objects under one group. Moving the group moves them all, and ⌘Z takes the grouping back."
+      "title": "Nhóm",
+      "help": "Xếp các đối tượng đã chọn dưới cùng một nhóm. Di chuyển nhóm là di chuyển tất cả, và ⌘Z gỡ việc gộp nhóm."
     },
     "sceneDuplicate": {
-      "title": "Duplicate",
-      "help": "Puts a copy of the selection under the same parent and at the very same place, then selects it. A group duplicates whole, with everything hanging from it."
+      "title": "Nhân bản",
+      "help": "Đặt một bản sao của vùng chọn dưới cùng một cha và đúng ngay tại chỗ đó, rồi chọn nó. Một nhóm được nhân bản trọn vẹn, cùng mọi thứ treo dưới nó."
     },
     "sceneOptimizeSelection": {
-      "title": "Optimise selection…",
-      "help": "Measures the selection and previews a SAFE runtime representation before changing its optimisation settings."
+      "title": "Tối ưu vùng chọn…",
+      "help": "Đo vùng chọn và cho xem trước một biểu diễn runtime SAFE trước khi đổi các cài đặt tối ưu của nó."
     },
     "sceneWorldPerformance": {
-      "title": "World performance…",
-      "help": "Measures the whole scene and reports SAFE optimisation opportunities without changing the authoring world."
+      "title": "Hiệu năng thế giới…",
+      "help": "Đo toàn bộ cảnh và báo cáo những cơ hội tối ưu SAFE mà không thay đổi thế giới đang dựng."
     },
     "sceneExportGame": {
-      "title": "Export the game…",
-      "help": "Builds a standalone game from an optimised runtime copy while leaving the authoring scenes untouched."
+      "title": "Xuất game…",
+      "help": "Xây dựng một game độc lập từ bản sao runtime đã tối ưu hóa mà không sửa đổi các cảnh biên tập."
     },
     "sceneCopy": {
-      "title": "Copy",
-      "help": "Holds on to the selection so it can be pasted, here or in another scene. This is the studio’s own clipboard: it leaves the system one alone."
+      "title": "Sao chép",
+      "help": "Giữ lại những gì được chọn để có thể dán sau này, ở đây hoặc ở một cảnh khác. Đây là bảng tạm riêng của studio: nó không động đến bảng tạm hệ thống."
     },
     "sceneCut": {
-      "title": "Cut",
-      "help": "Holds on to the selection and takes it out of the scene. ⌘Z brings it back."
+      "title": "Cắt",
+      "help": "Giữ lại những gì được chọn rồi lấy nó ra khỏi cảnh. ⌘Z đưa nó trở lại."
     },
     "scenePaste": {
-      "title": "Paste",
-      "help": "Puts what was copied into the scene in front, and selects it. Pasting twice makes two separate copies."
+      "title": "Dán",
+      "help": "Đặt những gì đã sao chép vào cảnh hiện tại phía trước, và chọn nó. Dán hai lần tạo hai bản sao riêng biệt."
     },
     "sceneDelete": {
-      "title": "Delete",
-      "help": "Removes everything selected from the scene. Nothing is lost for good: ⌘Z brings it back."
+      "title": "Xóa",
+      "help": "Loại bỏ mọi thứ được chọn khỏi cảnh. Không có gì bị mất vĩnh viễn: ⌘Z đưa nó trở lại."
     },
     "undo": {
-      "title": "Undo",
-      "help": "Takes back the last thing you did in this document. Each document has its own stack: undo acts on the tab in front, not on the others."
+      "title": "Hoàn tác",
+      "help": "Hoàn tác hành động cuối cùng bạn thực hiện trong tài liệu này. Mỗi tài liệu có ngăn xếp riêng: hoàn tác tác động lên tab ở phía trước, không phải những tab khác."
     },
     "redo": {
-      "title": "Redo",
-      "help": "Does again what you have just undone. Handy after undoing once too often."
+      "title": "Làm lại",
+      "help": "Làm lại những gì bạn vừa hoàn tác. Hữu ích khi hoàn tác quá nhiều."
     },
     "sequencePlayPause": {
-      "title": "Play / Pause",
-      "help": "Starts playing the edit, or stops it where it is. Starting again picks up where you left off."
+      "title": "Chạy / Tạm dừng",
+      "help": "Bắt đầu phát montage, hoặc dừng nó ở chỗ hiện tại. Khởi động lại sẽ tiếp tục từ nơi bạn dừng lại."
     },
     "sequenceExport": {
-      "title": "Export video…",
-      "help": "Writes the edit out as a video file, frame by frame, 3D scenes included. The sound is not in it yet."
+      "title": "Xuất video…",
+      "help": "Ghi montage thành tệp video, khung hình từng khung, bao gồm cả cảnh 3D. Âm thanh chưa có."
     },
     "sequenceExportCut": {
-      "title": "Export edit (OTIO)…",
-      "help": "Writes the edit itself out as an OpenTimelineIO file, which other editing applications open — tracks, clips, in points, speeds and links to the media. Fades, gains and image/sound links travel in it too, but only AI Desktop Studio reads them back."
+      "title": "Xuất montage (OTIO)…",
+      "help": "Ghi montage thành tệp OpenTimelineIO, mà các ứng dụng biên tập khác mở — pistes, clips, điểm vào, tốc độ và liên kết đến phương tiện. Các chuyển dần, gain và liên kết hình ảnh/âm thanh cũng được đi kèm, nhưng chỉ AI Desktop Studio mới đọc lại chúng."
     },
     "sequenceExportEdl": {
-      "title": "Export edit list (EDL)…",
-      "help": "Writes the cuts and their timecodes as CMX3600, which every online room reads. The format holds one image track and two sound ones, and nothing of the fades, the gains or the speeds."
+      "title": "Xuất danh sách cắt (EDL)…",
+      "help": "Ghi các cắt và mã thời gian của chúng dưới dạng CMX3600, mà mọi phòng online đều đọc được. Định dạng chỉ chứa một pist hình ảnh và hai pist âm thanh, và không có gì về các chuyển dần, gain hoặc tốc độ."
     },
     "sequenceExportFcpxml": {
-      "title": "Export edit (FCPXML)…",
-      "help": "Writes the edit in the format Final Cut reads and Premiere and Resolve import. The tracks survive, a lane each, and so does the frame size; the fades, the gains and the speeds stay here."
+      "title": "Xuất montage (FCPXML)…",
+      "help": "Ghi montage theo định dạng mà Final Cut đọc và Premiere và Resolve nhập. Các pist tồn tại, một lane mỗi cái, và kích thước khung hình cũng vậy; các chuyển dần, gain và tốc độ ở đây."
     },
     "sequenceExportStems": {
-      "title": "Export sound per track (WAV)…",
-      "help": "Writes one WAV per audible track, mixed the way the edit plays it — the placements, the trims, the fades, the gains and the speeds are baked into the samples. A muted track is not written."
+      "title": "Xuất âm thanh theo pist (WAV)…",
+      "help": "Ghi một tệp WAV cho mỗi pist nghe được, hỗn hợp theo cách montage phát nó — vị trí, cắt gọn, chuyển dần, gain và tốc độ được nướng vào các mẫu. Một pist bị tắt tiếng sẽ không được ghi."
     },
     "sequenceExportBundle": {
-      "title": "Export edit with its media (OTIOZ)…",
-      "help": "Writes the same edit with the media it uses inside the file. This is the one to hand to somebody else, or to open in DaVinci Resolve, which then finds the rushes on its own instead of asking for them one by one."
+      "title": "Xuất montage và phương tiện của nó (OTIOZ)…",
+      "help": "Ghi cùng một montage với phương tiện nó sử dụng bên trong tệp. Đây là cái để gửi cho ai đó, hoặc để mở trong DaVinci Resolve, sau đó sẽ tìm thấy các cảnh quay riêng của nó thay vì hỏi từng cái một."
     },
     "montageImport": {
-      "title": "Import an edit with its media (OTIOZ)…",
-      "help": "Opens an edit written by another application, rushes and all. The media are copied into the project and enter the catalogue, then the edit opens linked to them. What the opened file does not bring is said as it opens, and starts from its default only there."
+      "title": "Nhập một montage và phương tiện của nó (OTIOZ)…",
+      "help": "Mở một montage được viết bởi một ứng dụng khác, cảnh quay và tất cả. Phương tiện được sao chép vào dự án và nhập danh mục, sau đó montage mở liên kết với chúng. Những gì tệp đã mở không mang theo được nói khi nó mở, và chỉ bắt đầu từ mặc định của nó ở đó."
     },
     "sequenceMirror": {
-      "title": "Return window",
-      "help": "Opens the edit in a window of its own, to put on a second screen. It follows the studio frame by frame, without the sound, and closes like any window."
+      "title": "Cửa sổ trả về",
+      "help": "Mở montage trong cửa sổ riêng của nó, để đặt trên màn hình thứ hai. Nó theo dõi studio khung hình từng khung, không có âm thanh, và đóng như bất kỳ cửa sổ nào."
     },
     "sequenceSplit": {
-      "title": "Split clip",
-      "help": "Cuts the clip in two where the playhead sits, so each half can be handled on its own."
+      "title": "Tách clip",
+      "help": "Cắt clip thành hai nơi đầu đọc ngồi, để mỗi nửa có thể xử lý riêng."
     },
     "sequenceDelete": {
-      "title": "Delete clip",
-      "help": "Removes the chosen clip from the edit. The original file stays in your assets."
+      "title": "Xóa clip",
+      "help": "Loại bỏ clip được chọn khỏi montage. Tệp gốc vẫn trong tài nguyên của bạn."
     },
     "sequenceUnlink": {
-      "title": "Unlink picture and sound",
-      "help": "Separates the two clips of one take. While they are linked, moving, cutting or deleting one does the same to the other."
+      "title": "Hủy liên kết hình ảnh và âm thanh",
+      "help": "Tách hai clip của một cảnh quay. Trong khi chúng được liên kết, di chuyển, cắt hoặc xóa một cái làm điều tương tự với cái kia."
     },
     "sequenceZoomIn": {
-      "title": "Zoom in",
-      "help": "Spreads the edit out to see detail: clips get wider and are easier to aim at."
+      "title": "Phóng to",
+      "help": "Mở montage ra để xem chi tiết: các clip trở nên rộng hơn và dễ dàng nhắm tới hơn."
     },
     "sequenceZoomOut": {
-      "title": "Zoom out",
-      "help": "Draws the edit together to see more of it at once, at the cost of the detail."
+      "title": "Thu nhỏ",
+      "help": "Kéo montage lại để xem nhiều hơn cùng một lúc, với chi phí chi tiết."
     },
     "sequenceFit": {
-      "title": "Fit to view",
-      "help": "Sets the zoom so the whole edit fits on screen, end to end."
+      "title": "Vừa với chế độ xem",
+      "help": "Đặt mức phóng sao cho toàn bộ montage vừa với màn hình, từ đầu đến cuối."
     },
     "sequenceStart": {
-      "title": "Go to start",
-      "help": "Brings the playhead right back to the beginning of the edit, moving nothing else."
+      "title": "Đi đến đầu",
+      "help": "Đưa đầu đọc ngay về đầu montage, không di chuyển bất kỳ thứ gì khác."
     },
     "sequenceEnd": {
-      "title": "Go to end",
-      "help": "Sends the playhead right to the end of the edit, past the last clip."
+      "title": "Đi đến cuối",
+      "help": "Gửi đầu đọc ngay đến cuối montage, qua clip cuối cùng."
     },
     "canvasZoomIn": {
-      "title": "Zoom in",
-      "help": "Magnifies the view one step, around the middle of what is visible. The image itself is untouched — only the way it is looked at."
+      "title": "Phóng to",
+      "help": "Phóng đại chế độ xem một bước, xung quanh giữa những gì có thể nhìn thấy. Hình ảnh chính nó không bị chạm — chỉ cách nhìn nó."
     },
     "canvasZoomOut": {
-      "title": "Zoom out",
-      "help": "Shrinks the view one step, to take in the whole image again."
+      "title": "Thu nhỏ",
+      "help": "Thu nhỏ chế độ xem một bước, để lấy lại hình ảnh toàn bộ."
     },
     "canvasZoomFit": {
-      "title": "Fit to window",
-      "help": "Frames the whole image in the panel, with a margin, and never magnifies it past its actual size."
+      "title": "Vừa với cửa sổ",
+      "help": "Khung toàn bộ hình ảnh trong bảng, với một lề, và không bao giờ phóng to nó vượt quá kích thước thực tế của nó."
     },
     "canvasZoomActual": {
-      "title": "Actual size",
-      "help": "One image pixel per screen pixel: the only scale at which sharpness can be judged."
+      "title": "Kích thước thực tế",
+      "help": "Một pixel hình ảnh cho mỗi pixel màn hình: cái duy nhất tại đó độ sắc nét có thể được đánh giá."
     },
     "canvasRulers": {
-      "title": "Rulers",
-      "help": "Shows or hides the two graduated rulers, at the top and on the left. Guides are pulled off them."
+      "title": "Thước",
+      "help": "Hiển thị hoặc ẩn hai thước chia độ, ở trên cùng và bên trái. Các hướng dẫn được kéo ra từ chúng."
     },
     "canvasGuides": {
-      "title": "Guides",
-      "help": "Shows or hides the guides laid on the image. Hiding them does not remove them."
+      "title": "Hướng dẫn",
+      "help": "Hiển thị hoặc ẩn các hướng dẫn được đặt trên hình ảnh. Ẩn chúng không loại bỏ chúng."
     },
     "canvasGrid": {
-      "title": "Pixel grid",
-      "help": "Shows or hides the grid of the artwork’s own pixels. Only on a document set to pixel art."
+      "title": "Lưới pixel",
+      "help": "Hiển thị hoặc ẩn lưới các pixel của tác phẩm. Chỉ trên tài liệu được đặt thành pixel art."
     },
     "canvasClearGuides": {
-      "title": "Clear guides",
-      "help": "Removes every guide from the image. Undoable, like any other edit."
+      "title": "Xóa hướng dẫn",
+      "help": "Loại bỏ mọi hướng dẫn khỏi hình ảnh. Có thể hoàn tác, như bất kỳ chỉnh sửa nào khác."
     },
     "canvasSnap": {
-      "title": "Snap",
-      "help": "Makes what is dragged stick to guides, to the image edges and to its centre, within a few pixels."
+      "title": "Từ tính",
+      "help": "Làm cho những gì được kéo bám vào các hướng dẫn, các cạnh hình ảnh và trung tâm của nó, trong vài pixel."
     },
     "canvasSelectAll": {
-      "title": "Select all",
-      "help": "Selects the whole document, which the system’s own select-all cannot do on an image."
+      "title": "Chọn tất cả",
+      "help": "Chọn toàn bộ tài liệu, mà chính hệ thống không thể làm trên hình ảnh."
     },
     "canvasDeselect": {
-      "title": "Deselect",
-      "help": "Drops the selected region, so the brush reaches the whole layer again."
+      "title": "Bỏ chọn",
+      "help": "Bỏ vùng được chọn, để cọ có thể tiếp cận toàn bộ layer lại."
     },
     "canvasCropApply": {
-      "title": "Apply the crop",
-      "help": "Trims the document to the placed frame. ⌘Z gives the frame back, not the pixels."
+      "title": "Áp dụng crop",
+      "help": "Cắt tài liệu sang khung được đặt. ⌘Z trả khung lại, không phải pixel bị loại bỏ."
     },
     "canvasCropCancel": {
-      "title": "Abandon the crop",
-      "help": "Takes the crop frame away without trimming anything at all."
+      "title": "Hủy bỏ crop",
+      "help": "Lấy khung crop đi mà không cắt bất cứ gì."
     },
     "canvasMaskFromSelection": {
-      "title": "Make a mask of the selection",
-      "help": "Hides the active layer outside the selected region."
+      "title": "Tạo mặt nạ từ vùng được chọn",
+      "help": "Che giấu layer hoạt động bên ngoài vùng được chọn."
     },
     "canvasRegenerate": {
-      "title": "Regenerate the region",
-      "help": "Asks the model to repaint the masked region of the active layer."
+      "title": "Tạo lại vùng",
+      "help": "Yêu cầu mô hình vẽ lại vùng được che của layer hoạt động."
     },
     "canvasCutout": {
-      "title": "Cut out",
-      "help": "Removes the background of the flattened image with the default model."
+      "title": "Cắt ra ngoài",
+      "help": "Loại bỏ nền của hình ảnh được sáp nhập với mô hình mặc định."
     },
     "canvasEnlarge": {
-      "title": "Upscale",
-      "help": "Raises the resolution of the flattened image with the default model."
+      "title": "Nâng độ phân giải",
+      "help": "Tăng độ phân giải của hình ảnh được sáp nhập với mô hình mặc định."
     },
     "canvasVectorize": {
-      "title": "Vectorise",
-      "help": "Turns the flattened image into paths with the default model."
+      "title": "Vector hóa",
+      "help": "Chuyển đổi hình ảnh được sáp nhập thành đường dẫn với mô hình mặc định."
     },
     "canvasExtend": {
-      "title": "Extend",
-      "help": "Asks the model to paint beyond the edges of the flattened image."
+      "title": "Mở rộng",
+      "help": "Yêu cầu mô hình vẽ vượt quá các cạnh của hình ảnh được sáp nhập."
     },
     "canvasMergeDown": {
-      "title": "Merge down",
-      "help": "Joins the active layer and the one just below it into one, keeping the lower one’s name."
+      "title": "Nhập xuống",
+      "help": "Kết hợp layer hoạt động và cái ngay bên dưới nó thành một, giữ tên của cái dưới."
     },
     "canvasFlatten": {
-      "title": "Flatten image",
-      "help": "Reduces the whole stack to a single layer: hidden layers are dropped, not merged.",
-      "layerName": "Background"
+      "title": "Sáp nhập hình ảnh",
+      "help": "Giảm toàn bộ ngăn xếp thành một layer: các layer ẩn bị loại bỏ, không được nhập.",
+      "layerName": "Nền"
     },
     "canvasFlipHorizontal": {
-      "title": "Flip horizontal",
-      "help": "Mirrors the whole document left to right, layers included."
+      "title": "Lật ngang",
+      "help": "Gương toàn bộ tài liệu từ trái sang phải, bao gồm layer."
     },
     "canvasFlipVertical": {
-      "title": "Flip vertical",
-      "help": "Mirrors the whole document top to bottom, layers included."
+      "title": "Lật dọc",
+      "help": "Gương toàn bộ tài liệu từ trên xuống dưới, bao gồm layer."
     },
     "canvasRotateCw": {
-      "title": "Rotate clockwise",
-      "help": "Turns the document a quarter turn to the right: the frame turns with it."
+      "title": "Xoay theo chiều kim đồng hồ",
+      "help": "Xoay tài liệu một phần tư vòng sang phải: khung xoay theo nó."
     },
     "canvasRotateCcw": {
-      "title": "Rotate counter-clockwise",
-      "help": "Turns the document a quarter turn to the left: the frame turns with it."
+      "title": "Xoay ngược chiều kim đồng hồ",
+      "help": "Xoay tài liệu một phần tư vòng sang trái: khung xoay theo nó."
     },
     "canvasExport": {
-      "title": "Export the image",
-      "help": "Writes the flattened document to disk, as a PNG."
+      "title": "Xuất hình ảnh",
+      "help": "Ghi tài liệu được sáp nhập vào đĩa, dưới dạng PNG."
     },
     "canvasExportLayered": {
-      "title": "Export the layers (PSD)…",
-      "help": "Writes the document with its layers, as a Photoshop file. Groups are flattened away: their layers arrive side by side."
+      "title": "Xuất các layer (PSD)…",
+      "help": "Ghi tài liệu với các layer của nó, dưới dạng tệp Photoshop. Các nhóm được sáp nhập: các layer của chúng đến cạnh nhau."
     },
     "skyboxView": {
-      "title": "Change the view",
-      "help": "Cycles through the four ways of looking at the sky: immersive, panoramic, cross, faces."
+      "title": "Thay đổi chế độ xem",
+      "help": "Lặp lại bốn cách nhìn bầu trời: ngập trong, toàn cảnh, chéo, các mặt."
     },
     "skyboxProbes": {
-      "title": "Light probes",
-      "help": "Shows or hides the witness spheres. A sky is judged by what it lights, not by its own image."
+      "title": "Đầu dò ánh sáng",
+      "help": "Hiển thị hoặc ẩn các quả cầu chứng thực. Một bầu trời được đánh giá bằng những gì nó chiếu sáng, không phải hình ảnh của nó."
     },
     "canvasToolMove": {
-      "title": "Move tool",
-      "help": "Arms the pointer: a drag moves the active layer, and its handles resize or turn it."
+      "title": "Công cụ di chuyển",
+      "help": "Vũ trang con trỏ: một kéo di chuyển layer hoạt động, và các tay cầm của nó đổi kích thước hoặc xoay nó."
     },
     "canvasToolHand": {
-      "title": "Hand tool",
-      "help": "Arms the hand: a drag pans the view without touching the document. Holding space does the same without changing tool."
+      "title": "Công cụ tay",
+      "help": "Vũ trang tay: một kéo quét chế độ xem mà không chạm gì đến tài liệu. Giữ dấu cách làm điều tương tự mà không thay đổi công cụ."
     },
     "canvasToolCrop": {
-      "title": "Crop tool",
-      "help": "Arms the crop frame. Draw a frame, then ⏎ to crop or ⎋ to drop it."
+      "title": "Công cụ crop",
+      "help": "Vũ trang khung crop. Vẽ một khung, rồi ⏎ để crop hoặc ⎋ để bỏ nó."
     },
     "canvasToolSelectRectangle": {
-      "title": "Rectangular selection",
-      "help": "Arms the rectangular selection. What is selected bounds the brush, the eraser and the bucket."
+      "title": "Vùng chọn hình chữ nhật",
+      "help": "Vũ trang vùng chọn hình chữ nhật. Những gì được chọn ràng buộc cọ, tẩy và thùng."
     },
     "canvasToolSelectEllipse": {
-      "title": "Elliptical selection",
-      "help": "Arms the elliptical selection: a drag inscribes the ellipse in the rectangle swept, and Shift makes it a circle."
+      "title": "Vùng chọn hình elip",
+      "help": "Vũ trang vùng chọn hình elip: một kéo ghi hình elip vào hình chữ nhật được quét, và Shift làm nó thành hình tròn."
     },
     "canvasToolSelectLasso": {
-      "title": "Lasso",
-      "help": "Arms the lasso: the selection follows the hand, freehand."
+      "title": "Vòng bằng",
+      "help": "Vũ trang lasso: vùng được chọn theo tay, tự do."
     },
     "canvasToolSmartSelect": {
-      "title": "Click Smart Select",
-      "help": "Arms object selection from a click, using the local selection model."
+      "title": "Nhấp — Chọn thông minh",
+      "help": "Vũ trang lựa chọn đối tượng từ một nhấp, sử dụng mô hình lựa chọn cục bộ."
     },
     "canvasToolSmartSelectBox": {
-      "title": "Rectangle Smart Select",
-      "help": "Arms object selection from an approximate box, using the local selection model."
+      "title": "Hình chữ nhật — Chọn thông minh",
+      "help": "Vũ trang lựa chọn đối tượng từ một hộp gần đúng, sử dụng mô hình lựa chọn cục bộ."
     },
     "canvasToolShapeRectangle": {
-      "title": "Rectangle shape",
-      "help": "Arms drawing a rectangle on the active layer; Shift makes it a square."
+      "title": "Hình dạng hình chữ nhật",
+      "help": "Vũ trang vẽ hình chữ nhật trên layer hoạt động; Shift làm nó thành hình vuông."
     },
     "canvasToolShapeLine": {
-      "title": "Line shape",
-      "help": "Arms drawing a line. Same group as the rectangle, hence its key with Shift added."
+      "title": "Hình dạng dòng",
+      "help": "Vũ trang vẽ một dòng. Cùng nhóm với hình chữ nhật, do đó phím của nó được thêm Shift."
     },
     "canvasToolShapeArrow": {
-      "title": "Arrow shape",
-      "help": "Arms drawing an arrow, from where the drag began to where the hand lets go."
+      "title": "Hình dạng mũi tên",
+      "help": "Vũ trang vẽ một mũi tên, từ nơi kéo bắt đầu đến nơi tay buông."
     },
     "canvasToolShapeEllipse": {
-      "title": "Ellipse shape",
-      "help": "Arms drawing an ellipse on the active layer; Shift makes it a circle."
+      "title": "Hình dạng elip",
+      "help": "Vũ trang vẽ hình elip trên layer hoạt động; Shift làm nó thành hình tròn."
     },
     "canvasToolShapePolygon": {
-      "title": "Polygon shape",
-      "help": "Arms drawing a regular polygon, whose number of sides is set in the inspector before drawing."
+      "title": "Hình dạng đa giác",
+      "help": "Vũ trang vẽ một đa giác đều, có số cạnh được đặt trong bảng thuộc tính trước khi vẽ."
     },
     "canvasToolShapeStar": {
-      "title": "Star shape",
-      "help": "Arms drawing a star, whose number of points is set in the inspector before drawing."
+      "title": "Hình dạng sao",
+      "help": "Vũ trang vẽ một ngôi sao, có số lượng điểm được đặt trong bảng thuộc tính trước khi vẽ."
     },
     "canvasToolBrush": {
-      "title": "Brush tool",
-      "help": "Arms the brush, with a softened edge. It paints on the active layer, bounded by the selection when there is one."
+      "title": "Công cụ cọ",
+      "help": "Vũ trang cọ, với cạnh mềm. Nó vẽ trên layer hoạt động, bị ràng buộc bởi vùng được chọn khi có."
     },
     "canvasToolPencil": {
-      "title": "Pencil tool",
-      "help": "Arms the pencil, with a hard edge: the same gesture as the brush, without the softening."
+      "title": "Công cụ bút chì",
+      "help": "Vũ trang bút chì, với cạnh cứng: cùng một cử chỉ với cọ, không có làm mềm."
     },
     "canvasToolText": {
-      "title": "Text tool",
-      "help": "Arms text: a click places a caption, whose words are typed in the inspector."
+      "title": "Công cụ văn bản",
+      "help": "Vũ trang văn bản: một nhấp đặt một chú thích, có từ được nhập trong bảng thuộc tính."
     },
     "canvasToolEraser": {
-      "title": "Eraser tool",
-      "help": "Arms the point eraser: it clears where the hand passes, bounded by the selection when there is one."
+      "title": "Công cụ tẩy",
+      "help": "Vũ trang tẩy điểm: nó xóa nơi tay qua, bị ràng buộc bởi vùng được chọn khi có."
     },
     "canvasToolFill": {
-      "title": "Paint bucket tool",
-      "help": "Arms the bucket: a click fills the layer, or the selection when there is one."
+      "title": "Công cụ thùng sơn",
+      "help": "Vũ trang thùng: một nhấp lấp đầy layer, hoặc vùng được chọn khi có."
     },
     "canvasToolPicker": {
-      "title": "Eyedropper tool",
-      "help": "Arms the eyedropper: a click takes the colour under the pointer and hands it to the brush."
+      "title": "Công cụ thuốc nhỏ",
+      "help": "Vũ trang thuốc nhỏ: một nhấp lấy màu dưới con trỏ và đưa nó cho cọ."
     },
     "canvasBrushSmaller": {
-      "title": "Smaller brush",
-      "help": "Narrows the brush, the eraser and the shape stroke by one step of the scale."
+      "title": "Cọ nhỏ hơn",
+      "help": "Thu hẹp cọ, tẩy và độ dày đường viền hình dạng một bước."
     },
     "canvasBrushLarger": {
-      "title": "Larger brush",
-      "help": "Widens the brush, the eraser and the shape stroke by one step of the scale."
+      "title": "Cọ lớn hơn",
+      "help": "Mở rộng cọ, tẩy và độ dày đường viền hình dạng một bước."
     },
     "sceneSkeletons": {
-      "title": "Show skeletons",
-      "help": "Draws the bones of every rigged model over the scene."
+      "title": "Hiển thị các bộ xương",
+      "help": "Vẽ xương của mỗi mô hình có rig trên cảnh."
     },
     "scenePoseMode": {
-      "title": "Pose mode",
-      "help": "Switches between picking objects and picking the bones of a rig."
+      "title": "Chế độ tư thế",
+      "help": "Chuyển đổi giữa chọn đối tượng và chọn xương của một rig."
     },
     "sceneNavigate": {
-      "title": "Navigate",
-      "help": "Move through the scene as in a game: the mouse holds the view, W A S D travel, E and Q rise and fall. The wheel sets the speed. Escape gives the mouse back."
+      "title": "Điều hướng",
+      "help": "Di chuyển qua cảnh như trong một game: chuột giữ chế độ xem, W A S D di chuyển, E và Q nâng và hạ. Bánh xe đặt tốc độ. Escape trả chuột."
     },
     "sceneNegate": {
-      "title": "Negate",
-      "help": "Marks the selected shapes as tools: they are cut out of the others, whichever button is pressed next and in whatever order they were clicked. A marked shape shows translucent red. Press again to take the mark off."
+      "title": "Phủ định",
+      "help": "Đánh dấu các hình dạng được chọn làm công cụ: chúng được cắt ra khỏi những hình khác, bất kỳ nút nào được nhấn tiếp theo và bất kỳ thứ tự nào họ được nhấp. Một hình dạng được đánh dấu hiển thị màu đỏ bán trong suốt. Nhấn lại để bỏ dấu."
     },
     "sceneCarve": {
-      "title": "Carve",
-      "help": "Cuts the shapes marked Negate — failing that, the smaller ones — out of the biggest selected shape: a cube set inside a wall opens a window in it. The order of the clicks changes nothing. The original shapes are kept — Separate gives them back."
+      "title": "Khắc",
+      "help": "Cắt các hình dạng được đánh dấu phủ định — không thì những hình nhỏ hơn — ra khỏi hình dạng được chọn lớn nhất: một khối lập phương đặt trong một bức tường mở một cửa sổ trong đó. Thứ tự của các nhấp không thay đổi gì. Các hình dạng gốc được giữ lại — Tách trao trả chúng."
     },
     "sceneWeld": {
-      "title": "Join",
-      "help": "Merges the selected shapes into a single solid. A shape marked Negate is cut out of it instead of being added to it. The original shapes are kept — Separate gives them back."
+      "title": "Hàn",
+      "help": "Hợp nhất các hình dạng được chọn thành một chất rắn. Một hình dạng được đánh dấu phủ định được cắt ra từ đó thay vì được thêm vào. Các hình dạng gốc được giữ lại — Tách trao trả chúng."
     },
     "sceneIntersect": {
-      "title": "Keep overlap",
-      "help": "Keeps only the part where the selected shapes overlap, and throws the rest away. A shape marked Negate is cut out of it instead of being kept. The original shapes are kept — Separate gives them back."
+      "title": "Giữ phần giao",
+      "help": "Chỉ giữ phần nơi các hình dạng được chọn chồng lên nhau, và ném cái còn lại đi. Một hình dạng được đánh dấu phủ định được cắt ra từ đó thay vì được giữ. Các hình dạng gốc được giữ lại — Tách trao trả chúng."
     },
     "sceneInvertCarve": {
-      "title": "Flip the fold",
-      "help": "Folds the same shapes the other way round: what was carved becomes the matter, and the matter becomes the tool. One click, no undo — for the fold that ran backwards."
+      "title": "Lật gấp",
+      "help": "Gấp cùng một hình dạng cách khác: những gì được khắc trở thành vật liệu, và vật liệu trở thành công cụ. Một nhấp, không hoàn tác — vì gấp chạy ra phía sau."
     },
     "sceneSeparate": {
-      "title": "Separate",
-      "help": "Breaks a solid apart and gives back the shapes it was made of, each where it stood."
+      "title": "Tách",
+      "help": "Chia sẻ chất rắn và trả các hình dạng nó được làm, mỗi cái nơi nó đứng."
     }
   }
 }
