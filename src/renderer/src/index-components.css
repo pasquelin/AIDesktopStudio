@@ -54,8 +54,9 @@
   --radius-selector: 4px;
   --radius-field: 4px;
   --radius-box: 6px;
-  --size-selector: 0.25rem;
-  --size-field: 0.25rem;
+  /* Restated like every colour above; the dark theme carries the why. */
+  --size-selector: 0.2rem;
+  --size-field: 0.21875rem;
   --border: 1px;
   --depth: 0;
   --noise: 0;
@@ -344,6 +345,10 @@
 
 :root[data-density='compact'] {
   --sc-control: 24px;
+  /* The daisyUI pair follows the gauge down: 3px * 8 = 24px for a field, 2.8px * 5 = 14px for a
+     box one ticks. A theme block cannot answer the density, so both are restated here. */
+  --size-field: 0.1875rem;
+  --size-selector: 0.175rem;
   --sc-control-inline: 18px;
   --sc-slider-rail: 3px;
   --sc-slider-thumb: 12px;
