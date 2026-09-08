@@ -12,7 +12,7 @@ import { z } from 'zod'
  *
  * 2: `worker.hello` no longer carries `device`.
  */
-export const PROTOCOL_VERSION = 2
+export const PROTOCOL_VERSION = 3
 
 /** What the core answers itself, in the same turn — neither wakes a door. */
 export type EngineOp = 'hardware.info' | 'memory.ledger' | 'engine.requirements'
@@ -178,6 +178,9 @@ const requirements = z.object({
   declaration: z.array(z.string()),
   absent: z.array(z.object({ name: z.string(), wanted: z.string() })),
   stale: z.array(z.object({ name: z.string(), wanted: z.string(), installed: z.string() })),
+  // torch's LOCAL version — `cpu`, `cu126`, `rocm7.14` — and `null` when it names none, which is
+  // "unknown" rather than "no CUDA": the macOS and default PyPI Linux wheels carry no suffix.
+  torchBuild: z.string().nullable(),
   complete: z.boolean(),
 })
 

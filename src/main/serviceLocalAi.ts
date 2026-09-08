@@ -2,8 +2,7 @@ import type { EngineFailure } from '@shared/domain/failure'
 import type { AiOverview, OwnModelProfile } from '@shared/domain/aiOverview'
 import { chatModelOf, CLOUD_PROVIDERS, type HttpChat } from '@shared/domain/aiCloud'
 import { STT_MODEL } from '@shared/domain/dictation'
-import type { LocalModel } from '@shared/domain/localModel'
-import { needsOwnFolder } from '@shared/domain/localModel'
+import { needsOwnFolder, type LocalModel } from '@shared/domain/localModel'
 import type { WorkspaceId } from '@shared/domain/workspace'
 import { app, systemPreferences } from 'electron'
 import { spawn } from 'node:child_process'
@@ -421,14 +420,15 @@ function createManager(
     engineMissing: async profile => {
       const client = await engine.supervisor.engine()
       if (!client) return null
-      const needs = await client.requirements(profile)
-      return [...needs.absent.map(one => one.name), ...needs.stale.map(one => one.name)]
+      const { absent, stale, torchBuild } = await client.requirements(profile)
+      return { missing: [...absent, ...stale].map(one => one.name), torchBuild }
     },
     installEngine: async (onProgress, signal, profile) => {
       const client = await engine.supervisor.engine()
       if (!client) throw notAnswering(engine.supervisor.whyNot())
       await installEngineLibraries({
         python: enginePython(),
+        platform: process.platform,
         declaration: (await client.requirements(profile)).declaration,
         spawn: spawnLines,
         onProgress,

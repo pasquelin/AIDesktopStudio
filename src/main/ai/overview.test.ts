@@ -10,7 +10,7 @@ import {
 } from '@shared/domain/aiRole'
 import { GIBI, localModel } from '@shared/domain/localModel-fixtures'
 import type { HardwareFacts } from './hardwareProbe'
-import { aiOverviewOf, type OverviewInput } from './overview'
+import { aiOverviewOf, cudaUsableWith, type OverviewInput } from './overview'
 
 const FACTS: HardwareFacts = {
   platform: 'linux',
@@ -61,6 +61,7 @@ const input = (over: Partial<OverviewInput> = {}): OverviewInput => ({
   ollamaFailed: false,
   engineKnown: false,
   engineMissing: [],
+  engineTorchBuild: null,
   engineProgress: null,
   engineFailed: false,
   ...over,
@@ -215,5 +216,33 @@ describe('aiOverviewOf', () => {
     // Every cloud that DECLARES serving the role, which is not every cloud on file: one of them
     // only generates, and offering it here would open on an account that answers no conversation.
     expect(rowOf(overview, ASSISTANT_ROLE)?.clouds).toEqual(cloudsServing(ASSISTANT_ROLE))
+  })
+})
+
+describe('what makes CUDA usable and not merely present', () => {
+  const NVIDIA = {
+    vendorId: 0x10de,
+    deviceId: null,
+    renderer: 'NVIDIA RTX 4090',
+    machineModel: null,
+  }
+
+  it('takes an NVIDIA card and a torch that names no build at its word', () => {
+    expect(cudaUsableWith(NVIDIA, null)).toBe(true)
+  })
+
+  /** The Windows machine that announced TRELLIS, then answered `needs CUDA, this machine is cpu`. */
+  it('refuses a card whose torch was built without CUDA', () => {
+    expect(cudaUsableWith(NVIDIA, 'cpu')).toBe(false)
+  })
+
+  it('takes a card whose torch names a CUDA build', () => {
+    expect(cudaUsableWith(NVIDIA, 'cu126')).toBe(true)
+  })
+
+  it('refuses a machine with no NVIDIA card, whatever torch says', () => {
+    const apple = { vendorId: null, deviceId: null, renderer: 'Apple M2 Max', machineModel: null }
+
+    expect(cudaUsableWith(apple, 'cu126')).toBe(false)
   })
 })

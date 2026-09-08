@@ -139,6 +139,22 @@ def pretrained_file_kwargs(torch_weights: bool, folder: str | None = None) -> di
     return files
 
 
+#: Where fp16 is a real kernel path. Anything else reads as CPU and stays wide, on purpose.
+NARROW_DEVICES = frozenset({"mps", "cuda"})
+
+
+def compute_dtype_name(on: str) -> str:
+    """
+    The compute dtype FOLLOWS the device, and `variant` does not decide it.
+
+    PyTorch covers fp16 poorly on the CPU: half kernels are missing — `addmm_impl_cpu_ not
+    implemented for 'Half'` — or fall back to a path slower than fp32. A name rather than a
+    `torch.dtype` so the choice is testable in an environment with no torch, which `engine/tests`
+    is. An unknown device reads as CPU: fp32 runs everywhere, fp16 does not.
+    """
+    return "float16" if on in NARROW_DEVICES else "float32"
+
+
 def pretrained_optional_overrides(folder: str) -> dict[str, None]:
     """Skip a safety checker the index names when the folder did not fetch it."""
     root = Path(folder)
@@ -222,12 +238,14 @@ class DiffusersAdapter:
         # `variant` picks which FILES are read; it does NOT set the compute dtype. Measured
         # 2026-08-22 on Sana 600M: with `variant="fp16"` alone the transformer and the VAE came
         # back `float32`, and only the text encoder was narrow. `dtype` is what makes it 3.21 Md
-        # parameters at two bytes rather than four.
+        # parameters at two bytes rather than four — where the device has half kernels at all.
+        # The variant stays fp16 on the CPU too: reading the narrow files and widening them at load
+        # costs nothing and spares a second download of the same weights.
         pipeline = DiffusionPipeline.from_pretrained(
             folder,
             **pretrained_file_kwargs(torch_weights, folder),
             **pretrained_optional_overrides(folder),
-            dtype=torch.float16,
+            dtype=getattr(torch, compute_dtype_name(on)),
         ).to(on)
 
         if (

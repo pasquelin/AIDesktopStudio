@@ -2,7 +2,7 @@ import type { AiOverview, OwnModelProfile } from '@shared/domain/aiOverview'
 import type { RuntimeReading } from './localRuntimes'
 import type { ModelLoader } from '@shared/domain/localModel'
 import { DownloadCancelled } from './modelInstall'
-import type { ManagerDeps } from './managerTypes'
+import type { EngineEnvironment, ManagerDeps } from './managerTypes'
 
 type InstallerView = {
   ollamaReady: boolean
@@ -12,6 +12,7 @@ type InstallerView = {
   engineProfile?: OwnModelProfile
   engineKnown: boolean
   engineMissing: readonly string[]
+  engineTorchBuild: string | null
   engineProgress: number | null
   engineFailed: boolean
 }
@@ -42,7 +43,7 @@ export function createRuntimeInstaller(deps: ManagerDeps, host: InstallerHost): 
   let ollamaDone: Promise<AiOverview> | null = null
   let engineProfile: OwnModelProfile | undefined
   let engineReadVersion = 0
-  let engineMissing: readonly string[] | null = null
+  let engineEnvironment: EngineEnvironment | null = null
   let engineProgress: number | null = null
   let engineFailed = false
   let engineDone: Promise<AiOverview> | null = null
@@ -65,14 +66,14 @@ export function createRuntimeInstaller(deps: ManagerDeps, host: InstallerHost): 
   async function runEngineInstall(profile?: OwnModelProfile): Promise<AiOverview> {
     engineReadVersion += 1
     engineProfile = profile
-    engineMissing = null
+    engineEnvironment = null
     engineAbort = new AbortController()
     engineProgress = 0
     engineFailed = false
     void host.announce()
     try {
       await deps.installEngine(reportEngineProgress, engineAbort.signal, profile)
-      engineMissing = await deps.engineMissing(profile)
+      engineEnvironment = await deps.engineMissing(profile)
     } catch (error) {
       engineFailed = true
       deps.log('warn', `the engine repair stopped: ${String(error)}`)
@@ -126,8 +127,9 @@ export function createRuntimeInstaller(deps: ManagerDeps, host: InstallerHost): 
       ollamaProgress,
       ollamaFailed,
       ...(engineProfile ? { engineProfile } : {}),
-      engineKnown: engineMissing !== null,
-      engineMissing: engineMissing ?? [],
+      engineKnown: engineEnvironment !== null,
+      engineMissing: engineEnvironment?.missing ?? [],
+      engineTorchBuild: engineEnvironment?.torchBuild ?? null,
       engineProgress,
       engineFailed,
     }),
@@ -147,10 +149,10 @@ export function createRuntimeInstaller(deps: ManagerDeps, host: InstallerHost): 
     readEngine: async profile => {
       if (engineDone) return host.current() ?? host.compose()
       const revision = ++engineReadVersion
-      const missing = await deps.engineMissing(profile)
+      const answered = await deps.engineMissing(profile)
       if (revision === engineReadVersion && !engineDone) {
         engineProfile = profile
-        engineMissing = missing
+        engineEnvironment = answered
       }
       return host.compose()
     },

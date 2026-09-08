@@ -242,7 +242,7 @@ describe('what a compose costs', () => {
 
 describe('motion engine requirements', () => {
   it('keeps the requested profile through inspection and installation', async () => {
-    const engineMissing = vi.fn(async () => ['peft'])
+    const engineMissing = vi.fn(async () => ({ missing: ['peft'], torchBuild: null }))
     const installEngine = vi.fn(async () => {})
     const ai = manager({ engineMissing, installEngine })
     expect((await ai.readEngine('motion')).engine).toMatchObject({

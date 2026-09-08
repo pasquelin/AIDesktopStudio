@@ -68,6 +68,24 @@ def declared(extra: str = DOOR_EXTRA) -> list[str]:
     return [line for line in optional.get(extra, []) if not line.startswith(package)]
 
 
+def torch_build() -> str | None:
+    """
+    Which build torch was compiled as, read off its LOCAL version: `cpu`, `cu126`, `rocm7.14`…
+
+    `None` where torch is absent, and `None` too where the wheel names no build at all — those are
+    the same answer for the studio: unknown. macOS and the default PyPI Linux wheel carry no
+    suffix, so reading that absence as "no CUDA" would take every CUDA plugin away from a Linux
+    machine that has a card. Only an explicit `+cpu` is a certain no.
+
+    Read and not imported, like everything else here: measured 2026-09-08 on the embedded runtime,
+    `import torch` costs 1 317 ms and takes the core from 33 MB to 208.
+    """
+    try:
+        return version("torch").partition("+")[2] or None
+    except PackageNotFoundError:
+        return None
+
+
 def survey(extra: str = DOOR_EXTRA) -> dict[str, Any]:
     """
     Three states, and the studio needs all three: absent, present but older than declared, ready.
@@ -95,4 +113,5 @@ def survey(extra: str = DOOR_EXTRA) -> dict[str, Any]:
         "absent": absent,
         "stale": stale,
         "complete": not absent and not stale,
+        "torchBuild": torch_build(),
     }

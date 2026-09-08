@@ -78,3 +78,25 @@ def test_a_version_is_compared_on_its_release_numbers(
 ) -> None:
     """The last case is the blind spot in the open: a pre-release reads as its numbers."""
     assert requirements._satisfies(installed, specifier) is satisfied
+
+
+def test_reads_the_build_off_the_local_version(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(requirements, "version", lambda _name: "2.14.0+cu126")
+
+    assert requirements.torch_build() == "cu126"
+
+
+def test_a_wheel_that_names_no_build_answers_unknown(monkeypatch: pytest.MonkeyPatch) -> None:
+    """macOS and the default PyPI Linux wheel carry no suffix: unknown, never "no CUDA"."""
+    monkeypatch.setattr(requirements, "version", lambda _name: "2.14.0")
+
+    assert requirements.torch_build() is None
+
+
+def test_a_torch_nobody_installed_answers_unknown(monkeypatch: pytest.MonkeyPatch) -> None:
+    def absent(_name: str) -> str:
+        raise requirements.PackageNotFoundError
+
+    monkeypatch.setattr(requirements, "version", absent)
+
+    assert requirements.torch_build() is None

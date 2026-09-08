@@ -12,6 +12,7 @@ import pytest
 from aidesktopstudio_engine.adapters.diffusers_adapter import (
     DiffusersAdapter,
     accepted_kwargs,
+    compute_dtype_name,
     pretrained_file_kwargs,
     pretrained_optional_overrides,
     tune_pipeline,
@@ -292,3 +293,12 @@ def test_keeps_a_still_when_the_pipeline_declares_it() -> None:
     kept = accepted_kwargs(ImageToVideo(), {"prompt": "walk", "image": "opened:/a.png"})
 
     assert kept == {"prompt": "walk", "image": "opened:/a.png"}
+
+
+def test_stays_narrow_where_the_device_has_half_kernels() -> None:
+    assert compute_dtype_name("mps") == "float16"
+    assert compute_dtype_name("cuda") == "float16"
+
+
+def test_widens_on_a_cpu_that_has_no_half_kernels() -> None:
+    assert compute_dtype_name("cpu") == "float32"

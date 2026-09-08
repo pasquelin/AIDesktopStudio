@@ -1,5 +1,10 @@
-import { describe, expect, it, vi } from 'vitest'
-import { installEngineLibraries, pipProgress } from './installEngineLibraries'
+import { describe, expect, it, vi, type Mock } from 'vitest'
+import {
+  installEngineLibraries,
+  pipProgress,
+  torchIndexArgsFor,
+  type InstallEngineLibraries,
+} from './installEngineLibraries'
 
 describe('reading pip’s own bar', () => {
   it('answers nothing for a line that carries no size', () => {
@@ -32,42 +37,74 @@ describe('reading pip’s own bar', () => {
 })
 
 describe('installing what the engine named', () => {
-  const spawned = () => {
-    const spawn = vi.fn(() => Promise.resolve())
-    return { spawn }
-  }
+  type Spawned = Mock<InstallEngineLibraries['spawn']>
+  const spawned = () => ({ spawn: vi.fn(() => Promise.resolve()) as unknown as Spawned })
+  const argsOf = (spawn: Spawned): readonly string[] => spawn.mock.calls[0]?.[1] ?? []
 
-  it('hands pip the declaration verbatim, in one run', async () => {
-    const held = spawned()
-
-    await installEngineLibraries({
+  const install = (platform: NodeJS.Platform, declaration: readonly string[], spawn: Spawned) =>
+    installEngineLibraries({
       python: '/app/engine/python/bin/python3',
-      declaration: ['torch>=2.6', 'diffusers>=0.40'],
-      spawn: held.spawn,
+      platform,
+      declaration,
+      spawn,
       onProgress: () => {},
       signal: new AbortController().signal,
     })
 
+  it('hands pip the declaration verbatim, in one run', async () => {
+    const held = spawned()
+
+    await install('darwin', ['torch>=2.6', 'diffusers>=0.40'], held.spawn)
+
     expect(held.spawn).toHaveBeenCalledWith(
       '/app/engine/python/bin/python3',
-      ['-m', 'pip', 'install', '--upgrade', '--no-input', 'torch>=2.6', 'diffusers>=0.40'],
+      ['-m', 'pip', 'install', '--no-input', 'torch>=2.6', 'diffusers>=0.40'],
       expect.any(Function),
       expect.anything(),
     )
+  })
+
+  /**
+   * `--upgrade` replaced the signed torch this build ships, which `dlopen` then refuses under the
+   * hardened runtime. Its absence is what leaves a satisfied `torch>=2.6` where pip found it.
+   */
+  it('never asks pip to upgrade what is already satisfying', async () => {
+    const held = spawned()
+
+    await install('darwin', ['torch>=2.6'], held.spawn)
+
+    expect(argsOf(held.spawn)).not.toContain('--upgrade')
   })
 
   /** An engine that answered a complete environment must not spawn pip to install nothing. */
   it('runs nothing when there is nothing to install', async () => {
     const held = spawned()
 
-    await installEngineLibraries({
-      python: '/app/engine/python/bin/python3',
-      declaration: [],
-      spawn: held.spawn,
-      onProgress: () => {},
-      signal: new AbortController().signal,
-    })
+    await install('darwin', [], held.spawn)
 
     expect(held.spawn).not.toHaveBeenCalled()
+  })
+})
+
+describe('choosing the wheel index the machine needs', () => {
+  /** PyPI's Linux torch drags 4.9 GB of nvidia-* wheels for an AppImage of ~3 GB. */
+  it('sends Linux to the CPU index', () => {
+    expect(torchIndexArgsFor('linux')).toEqual([
+      '--extra-index-url',
+      'https://download.pytorch.org/whl/cpu',
+    ])
+  })
+
+  /** PyPI serves the CPU wheel on Windows: an NVIDIA card generated on the processor unnoticed. */
+  it('sends Windows to a CUDA index', () => {
+    expect(torchIndexArgsFor('win32')).toEqual([
+      '--extra-index-url',
+      'https://download.pytorch.org/whl/cu126',
+    ])
+  })
+
+  /** PyPI already answers the arm64 wheel Metal runs on; a second index would only add a hop. */
+  it('leaves macOS on PyPI', () => {
+    expect(torchIndexArgsFor('darwin')).toEqual([])
   })
 })

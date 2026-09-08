@@ -23,7 +23,7 @@ import {
   type LocalModel,
 } from '@shared/domain/localModel'
 import { fitReadingOf } from '@shared/domain/modelFit'
-import type { HardwareFacts } from './hardwareProbe'
+import type { GpuIdentity, HardwareFacts } from './hardwareProbe'
 
 /**
  * Composing what the manager screen reads, from the pieces that already answer separately.
@@ -62,8 +62,26 @@ export type OverviewInput = {
   readonly engineProfile?: OwnModelProfile
   readonly engineKnown: boolean
   readonly engineMissing: readonly string[]
+  /** torch's build, as `engine.requirements` read it — see `cudaUsableWith`. */
+  readonly engineTorchBuild: string | null
   readonly engineProgress: number | null
   readonly engineFailed: boolean
+}
+
+/**
+ * An NVIDIA card AND a torch that was not built without CUDA — both, or the screen lies.
+ *
+ * The card alone announced TRELLIS, InstantMesh and LGM as compatible on a Windows machine whose
+ * PyPI torch is a CPU build, and the load then answered `needs CUDA, this machine is cpu`. The
+ * engine cannot answer `torch.cuda.is_available()` for the screen: measured 2026-09-08, `import
+ * torch` costs 1 317 ms and takes the core from 33 MB to 208, and `hardware.info` is what stays
+ * at 33. The wheel's local version stands in — `cpu` is a certain no, and NO suffix is UNKNOWN
+ * rather than a no, which is what macOS and the default PyPI Linux wheel carry.
+ */
+export function cudaUsableWith(gpu: GpuIdentity | null, torchBuild: string | null): boolean {
+  const nvidia =
+    gpu?.vendorId === 0x10de || /NVIDIA|GeForce|Quadro|Tesla|CUDA/i.test(gpu?.renderer ?? '')
+  return nvidia && torchBuild !== 'cpu'
 }
 
 /**
@@ -92,9 +110,7 @@ export function rowFor(role: AiRoleId, input: OverviewInput, choices: RoleChoice
         diskFreeBytes: input.facts.diskFreeBytes,
         installed,
         runtimeReady: input.runtimeReady(model),
-        hasCuda:
-          input.facts.gpu?.vendorId === 0x10de ||
-          /NVIDIA|GeForce|Quadro|Tesla|CUDA/i.test(input.facts.gpu?.renderer ?? ''),
+        hasCuda: cudaUsableWith(input.facts.gpu, input.engineTorchBuild),
       }
 
       return {

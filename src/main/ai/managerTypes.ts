@@ -46,18 +46,30 @@ export type ManagerDeps = {
   /** Fetches the official archive into the studio folder when none is on this computer. */
   installOllama: (onProgress: (ratio: number) => void, signal: AbortSignal) => Promise<void>
   /**
-   * What the door's environment lacks, by name, and `null` while nothing has answered.
+   * What the ENGINE says of the door's environment, and `null` while nothing has answered.
    *
-   * Asked of the ENGINE and never computed here: the declaration lives in `pyproject.toml`, and a
+   * Asked of the engine and never computed here: the declaration lives in `pyproject.toml`, and a
    * second reading of it in TypeScript would drift from the one `uv` resolves.
    */
-  engineMissing: (profile?: OwnModelProfile) => Promise<readonly string[] | null>
+  engineMissing: (profile?: OwnModelProfile) => Promise<EngineEnvironment | null>
   /** Installs exactly what the engine named, with the interpreter the app ships. */
   installEngine: (
     onProgress: (ratio: number) => void,
     signal: AbortSignal,
     profile?: OwnModelProfile,
   ) => Promise<void>
+}
+
+/** What one `engine.requirements` answered, kept as the screen needs to read it. */
+export type EngineEnvironment = {
+  /** Absent or older than declared, by name. Empty is a complete environment. */
+  readonly missing: readonly string[]
+  /**
+   * torch's build, off its local version — `cpu`, `cu126`, `rocm7.14` — `null` when it names none.
+   *
+   * `null` is UNKNOWN, never "no CUDA": the macOS and default PyPI Linux wheels carry no suffix.
+   */
+  readonly torchBuild: string | null
 }
 
 export type AiManager = {

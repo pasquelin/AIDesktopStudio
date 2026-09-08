@@ -427,6 +427,7 @@ describe('a door whose environment is incomplete', () => {
           declaration: ['torch>=2.6', 'torchvision>=0.21'],
           absent: [{ name: 'torchvision', wanted: '>=0.21' }],
           stale: [{ name: 'torch', wanted: '>=2.6', installed: '2.1.0' }],
+          torchBuild: null,
           complete: false,
         }),
     })
