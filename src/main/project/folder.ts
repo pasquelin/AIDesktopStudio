@@ -75,7 +75,7 @@ export type FolderReader = {
    * Every entry of the WHOLE project folder called exactly `name`, hidden ones included.
    *
    * Beside `walk` rather than a filter over it: `walk` materialises a `FolderEntry` per file of
-   * the project — a hundred thousand of them — and the role markers are ten. The predicate goes
+   * the project — a hundred thousand of them — and the role markers are one per shelf. The predicate goes
    * DOWN into the one traversal instead of the array coming back up.
    */
   named: (name: string) => Promise<FolderEntry[]>

@@ -46,7 +46,7 @@ describe('gltfDocumentOf', () => {
   })
 
   it('names the model another application follows, by uri', () => {
-    const uri = '.resources/Modelling/Models/HeroMedium.glb'
+    const uri = '.resources/Models/HeroMedium.glb'
     const document = gltfDocumentOf(
       { ...EMPTY_SCENE, nodes: [modelNodeFixture('Character', 'asset-hero')] },
       { ...WRITTEN, uriOf: id => (id === 'asset-hero' ? uri : null) },

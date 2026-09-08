@@ -371,7 +371,7 @@ export const characterTab = async (studio: Studio): Promise<void> => {
     title: 'Knight',
     sourceAssetId: assetId,
     kind: 'character',
-    path: 'Modelling/Models/knight in plate armour, character.glb',
+    path: 'Models/knight in plate armour, character.glb',
   })
   if (!created) throw new Error('the studio refused to open the model tab')
   useDocuments.getState().activate(created.id)

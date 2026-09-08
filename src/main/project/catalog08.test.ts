@@ -87,7 +87,7 @@ describe('the studio’s own resources, in the catalogue', () => {
   })
 
   it('hides one under a NESTED dot folder, not only a leading one', () => {
-    catalog.add(asset({ id: 'asset_deep', path: 'Modelling/.private/Hidden.png' }))
+    catalog.add(asset({ id: 'asset_deep', path: 'Models/.private/Hidden.png' }))
 
     expect(catalog.search({}).map(one => one.id)).toEqual(['asset_own'])
   })
@@ -105,7 +105,7 @@ describe('the two spellings of a private path', () => {
   const PATHS = [
     'Images/Boulder.png',
     '.resources/Materials/GridLarge.png',
-    'Modelling/.private/Hidden.png',
+    'Models/.private/Hidden.png',
     '.ai-desktop-studio/memory.ndjson',
     'Images/.hidden/One.png',
     'Images/not.a.folder/Two.png',

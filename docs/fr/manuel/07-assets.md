@@ -40,9 +40,9 @@ Six types d’assets :
 | **Image** | une image fixe | `Images/`, ou `Materials/` si elle sert une matière |
 | **Vidéo** | un plan animé | `Video/` |
 | **Audio** | un son, une musique | `Audio/` |
-| **Maille** | un objet en 3D | `Modelling/Models/` |
+| **Maille** | un objet en 3D | `Models/` |
 | **Skybox** | un ciel à 360° | `Skyboxes/` |
-| **Animation** | un mouvement, à rejouer sur un personnage | `Modelling/Animations/` |
+| **Animation** | un mouvement, à rejouer sur un personnage | `Animations/` |
 
 **Où il atterrit, pas où il vit.** Ces dossiers sont posés à la création du projet, avec
 `Materials/` qui n’est le dossier d’aucun type, et ne sont qu’un point de départ : déplacez un

@@ -423,7 +423,7 @@ first one carries on quietly.
 The line turns to **Done**, and the asset appears:
 
 - in your account's **Library**, from which you can download it;
-- on your disk, in `Images/`, `Video/`, `Modelling/Models/`… depending on its type — or in `Materials/` when
+- on your disk, in `Images/`, `Video/`, `Models/`… depending on its type — or in `Materials/` when
   it is a picture that serves a material — until you file it elsewhere.
 
 **What you can then do with it depends on its type**, and this is where the studio surprises

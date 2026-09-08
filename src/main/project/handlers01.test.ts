@@ -168,14 +168,14 @@ describe('project handlers', () => {
       const injected = deps(catalog)
       registerProjectHandlers(injected)
 
-      await invoke(CHANNELS.documentOpened, 'Modelling/Scenes/Niveau.gltf', 'scene')
+      await invoke(CHANNELS.documentOpened, 'Scenes/Niveau.gltf', 'scene')
 
       expect(injected.settings.write).toHaveBeenCalledWith({
         storage: {
           recentDocuments: [
             expect.objectContaining({
               project: PROJECT,
-              path: 'Modelling/Scenes/Niveau.gltf',
+              path: 'Scenes/Niveau.gltf',
               kind: 'scene',
             }),
           ],
@@ -196,7 +196,7 @@ describe('project handlers', () => {
           recentDocuments: [
             {
               project: PROJECT,
-              path: 'Modelling/Scenes/Niveau.gltf',
+              path: 'Scenes/Niveau.gltf',
               kind: 'scene',
               openedAt: '2026-09-01T10:00:00.000Z',
             },
@@ -205,7 +205,7 @@ describe('project handlers', () => {
       })
       registerProjectHandlers(injected)
 
-      await invoke(CHANNELS.documentOpened, 'Modelling/Scenes/Niveau.gltf', 'scene')
+      await invoke(CHANNELS.documentOpened, 'Scenes/Niveau.gltf', 'scene')
 
       expect(injected.settings.write).not.toHaveBeenCalled()
     })
@@ -216,7 +216,7 @@ describe('project handlers', () => {
       injected.project.current = () => null
       registerProjectHandlers(injected)
 
-      await invoke(CHANNELS.documentOpened, 'Modelling/Scenes/Niveau.gltf', 'scene')
+      await invoke(CHANNELS.documentOpened, 'Scenes/Niveau.gltf', 'scene')
 
       expect(injected.settings.write).not.toHaveBeenCalled()
     })

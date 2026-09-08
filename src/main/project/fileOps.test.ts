@@ -286,44 +286,44 @@ describe('taking a batch back', () => {
 describe('retargeting a motion that changed folder', () => {
   it('retypes an FBX moved from Models to Animations', async () => {
     const { files, root, catalog } = harnessed
-    await mkdir(join(root, 'Modelling/Models'), { recursive: true })
-    await mkdir(join(root, 'Modelling/Animations'), { recursive: true })
-    await writeFile(join(root, 'Modelling/Models/walk.fbx'), 'clip')
+    await mkdir(join(root, 'Models'), { recursive: true })
+    await mkdir(join(root, 'Animations'), { recursive: true })
+    await writeFile(join(root, 'Models/walk.fbx'), 'clip')
     await catalog.add(
       asset({
         id: 'asset-walk',
         name: 'walk',
         type: 'mesh',
-        path: 'Modelling/Models/walk.fbx',
+        path: 'Models/walk.fbx',
       }),
     )
 
-    await files.move(['Modelling/Models/walk.fbx'], 'Modelling/Animations')
+    await files.move(['Models/walk.fbx'], 'Animations')
 
     expect(await catalog.find('asset-walk')).toMatchObject({
-      path: 'Modelling/Animations/walk.fbx',
+      path: 'Animations/walk.fbx',
       type: 'animation',
     })
   })
 
   it('retypes every clip inside a folder dragged onto Animations', async () => {
     const { files, root, catalog } = harnessed
-    await mkdir(join(root, 'Modelling/Models/mixamo'), { recursive: true })
-    await mkdir(join(root, 'Modelling/Animations'), { recursive: true })
-    await writeFile(join(root, 'Modelling/Models/mixamo/walk.fbx'), 'clip')
+    await mkdir(join(root, 'Models/mixamo'), { recursive: true })
+    await mkdir(join(root, 'Animations'), { recursive: true })
+    await writeFile(join(root, 'Models/mixamo/walk.fbx'), 'clip')
     await catalog.add(
       asset({
         id: 'asset-walk',
         name: 'walk',
         type: 'mesh',
-        path: 'Modelling/Models/mixamo/walk.fbx',
+        path: 'Models/mixamo/walk.fbx',
       }),
     )
 
-    await files.move(['Modelling/Models/mixamo'], 'Modelling/Animations')
+    await files.move(['Models/mixamo'], 'Animations')
 
     expect(await catalog.find('asset-walk')).toMatchObject({
-      path: 'Modelling/Animations/mixamo/walk.fbx',
+      path: 'Animations/mixamo/walk.fbx',
       type: 'animation',
     })
   })

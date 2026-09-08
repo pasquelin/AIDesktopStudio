@@ -48,7 +48,7 @@ const FBX: Asset = {
   location: 'local',
   tags: [],
   createdAt: '2026-08-07T10:00:00.000Z',
-  path: 'Modelling/Models/knight.fbx',
+  path: 'Models/knight.fbx',
 }
 
 const picture = (overrides: Partial<Asset> = {}): Asset =>
@@ -185,7 +185,7 @@ describe('opening an asset', () => {
         id: 'mesh-4',
         type: 'mesh',
         name: 'tripo-character',
-        path: 'Modelling/Models/tripo-character.glb',
+        path: 'Models/tripo-character.glb',
       }),
     )
 

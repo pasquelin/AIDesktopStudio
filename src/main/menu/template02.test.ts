@@ -338,7 +338,7 @@ describe('File ▸ Open recent', () => {
   const DOCUMENTS: RecentDocument[] = [
     {
       project: '/projects/One',
-      path: 'Modelling/Scenes/Niveau.gltf',
+      path: 'Scenes/Niveau.gltf',
       kind: 'scene',
       openedAt: '2026-09-02T11:00:00.000Z',
     },

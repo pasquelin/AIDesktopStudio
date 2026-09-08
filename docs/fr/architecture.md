@@ -892,25 +892,26 @@ Il refuse d’être écrasé quand il est illisible ou d’une version plus réc
 `jobStore.ts` : ce qu’il porte est le texte de quelqu’un.
 
 Le **rôle d’un dossier** est dit par un marqueur qu’il porte, `.ai-desktop-studio-role`, et non par son
-nom : dix rôles (`shared/domain/folderRole.ts`), un par endroit où le studio dépose quelque chose.
-`DEFAULT_ROLE_PATHS` dit où chacun COMMENCE — `Images/`, `Modelling/Scenes/`, `Scripts/`… — et rien
-de plus : le dossier est ordinaire dès la première seconde, et un renommage fait dans le Finder ne
+nom : un rôle par endroit où le studio dépose quelque chose (`shared/domain/folderRole.ts`).
+`DEFAULT_ROLE_PATHS` dit où chacun COMMENCE — `Images/`, `Scenes/`, `Scripts/`… — et rien de
+plus : le dossier est ordinaire dès la première seconde, et un renommage fait dans le Finder ne
 lui fait rien perdre, le marqueur voyageant avec lui. Une table de chemins tenue ailleurs serait
 fausse dès ce renommage-là.
 
-La résolution est en deux temps (`main/project/folderRoles.ts`). `.index/folder-roles.json`
-mémorise le dernier chemin de chaque rôle, et l’ouverture le VÉRIFIE contre le marqueur — dix
-lectures. Seul un rôle qui ne répond plus déclenche une marche, qui réutilise `FolderReader.walk`
-en montrant les fichiers cachés : un marqueur EN est un. Un rôle dont le dossier a disparu est
-absent de la carte plutôt que pointé sur son défaut — absent dit « nulle part encore » quand un
-défaut dirait « ici », et on écrit dans ce qui est ici ; le dossier revient au premier besoin
-d’écriture (`ProjectStore.folderFor`), jamais à l’ouverture. Deux dossiers réclamant un rôle sont
-arbitrés par la profondeur puis par l’ordre de code unit, jamais par un collateur.
+La résolution est en deux temps (`main/project/folderRoles.ts`). `.index/folder-roles.json` mémorise
+le dernier chemin de chaque rôle, et l’ouverture le VÉRIFIE contre le marqueur — une lecture par
+rôle. Seul un rôle qui ne répond plus déclenche une marche, qui réutilise `FolderReader.walk` en
+montrant les fichiers cachés : un marqueur EN est un. Un rôle dont le dossier a disparu est absent
+de la carte plutôt que pointé sur son défaut — absent dit « nulle part encore » quand un défaut
+dirait « ici », et on écrit dans ce qui est ici ; le dossier revient au premier besoin d’écriture
+(`ProjectStore.folderFor`), jamais à l’ouverture. Deux dossiers réclamant un rôle sont arbitrés par
+la profondeur puis par l’ordre de code unit, jamais par un collateur.
 
 Les noms sont en ANGLAIS et fixes : un dossier qui suivrait la langue serait renommé à chaque
 changement, et chaque ligne de catalogue en dessous pointerait à côté du fichier. Ce qui se traduit
-est le RÔLE — dix clés `folderRoles.*` — que l’explorateur dit par une icône de section et une
-infobulle, le nom montré restant toujours celui du disque.
+est le RÔLE — les clés `folderRoles.*`, les dossiers qui SONT leur section en partageant une —
+que l’explorateur dit par une icône de section et une infobulle, le nom montré restant toujours
+celui du disque.
 
 Le **catalogue** est `.index/catalog.db`, un index SQLite de chaque asset : identifiant, nom,
 type, emplacement, étiquettes, dates, et le chemin quand l’asset est local. Il existe pour que

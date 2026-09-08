@@ -191,8 +191,6 @@ const COMPOSED_KEYS: readonly string[] = [
   // The rail label, built by `workspaceLabelKey` — the most visible string in the window, and
   // the one thing the workspace table does NOT make the compiler demand of a new space.
   ...WORKSPACE_IDS.map(workspace => `workspaces.${workspace}`),
-  // What a folder in the explorer SERVES — the seven that ARE their section share one line,
-  // filled with the section's own label, so no name of a section is written twice.
   ...FOLDER_ROLES.map(roleLabelKey),
   // Why a typed name was refused, read off the failure the shared check answers with. The
   // compiler holds the other half — the record has one entry per failure or it does not build.

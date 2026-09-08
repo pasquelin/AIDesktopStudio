@@ -339,7 +339,7 @@ describe('activeSceneOrWorkshopId', () => {
       kind: 'character',
       title: 'Hero',
       workspace: '3d',
-      path: 'Modelling/Models/hero.glb',
+      path: 'Models/hero.glb',
       sourceAssetId: 'asset-hero',
     })
 

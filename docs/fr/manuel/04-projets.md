@@ -105,10 +105,9 @@ Mon projet/
 ├── Materials/            vos matières, et les images qui les servent
 ├── Skyboxes/
 ├── Scripts/
-├── Modelling/            la section Modélisation range trois choses
-│   ├── Scenes/             vos scènes
-│   ├── Models/             vos maillages
-│   └── Animations/         vos mouvements
+├── Scenes/               vos scènes
+├── Models/               vos maillages
+├── Animations/           vos mouvements
 │                           …et tout ce que vous créez à côté
 │
 │   Chacun porte un .ai-desktop-studio-role — CACHÉ — qui dit à quelle section il sert
@@ -141,7 +140,7 @@ les outils du studio, pas votre travail.
 > **Renommez-les, déplacez-les : ils continuent de servir leur section.** Ce qui lie un dossier à
 > une section n’est pas son nom mais un petit fichier caché qu’il porte, `.ai-desktop-studio-role`. Il
 > voyage avec le dossier — un renommage dans le Finder ou l’Explorateur de Windows, un
-> déplacement, une copie, un zip. Renommez `Modelling/` en « Mes modèles » et le prochain maillage
+> déplacement, une copie, un zip. Renommez `Models/` en « Mes maillages » et le prochain maillage
 > y atterrit quand même.
 >
 > Dans l’explorateur du studio, un dossier qui sert une section porte l’icône de cette section, et
@@ -388,7 +387,7 @@ suivre. Le chemin complet est écrit au-dessus des colonnes. On ne sort jamais d
 d’autre n’est proposé.
 
 Les colonnes s’ouvrent sur le dossier que l’Explorateur montre, ou, si rien n’y est sélectionné,
-sur le dossier de la section — `Modelling/Scenes/` pour une scène, `Images/` pour une image,
+sur le dossier de la section — `Scenes/` pour une scène, `Images/` pour une image,
 `Materials/` pour une matière. En dessous, **Nouveau dossier** en crée un dans le dossier choisi,
 sans quitter la fenêtre.
 
