@@ -65,7 +65,7 @@ export function WindowNavItem({
         style={
           depth === undefined ? undefined : { paddingLeft: `calc(var(--sc-indent) * ${depth + 1})` }
         }
-        className={cn(windowChoice(active), 'w-full text-left', className)}
+        className={cn(windowChoice(active), 'w-full text-start', className)}
       >
         {children}
       </button>

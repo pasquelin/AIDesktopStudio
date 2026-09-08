@@ -67,7 +67,7 @@ export function PropertySection({
             onClick={() => setHeld(current => ({ ...current, open: !current.open }))}
             className={cn(
               'text-text flex h-(--sc-control) w-full cursor-pointer items-center gap-2',
-              'text-tiny border-none bg-transparent px-2 text-left font-medium tracking-wide uppercase',
+              'text-tiny border-none bg-transparent px-2 text-start font-medium tracking-wide uppercase',
             )}
           >
             <UiIcon path={open ? mdiChevronDown : mdiChevronRight} size={14} />

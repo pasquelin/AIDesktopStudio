@@ -88,7 +88,7 @@ export function MenuRow({
         // `shrink-0` next to the height, not instead of it: a row is a flex item of a column
         // that stops at `max-h`, so a full menu squeezed every row to 16.5px of the gauge's 28.
         'h-(--sc-control) shrink-0 gap-2 rounded-(--radius-sc-md) border-none bg-transparent px-2',
-        'text-tiny text-left transition-colors',
+        'text-tiny text-start transition-colors',
         'disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent',
         'disabled:hover:text-text',
         // The keyboard walks these rows without the pointer being anywhere near them, so the
@@ -113,7 +113,7 @@ export function MenuRow({
       {(shortcut ?? note) && (
         <span
           className={cn(
-            'text-muted text-mini shrink-0 pl-3',
+            'text-muted text-mini shrink-0 ps-3',
             'group-hover:text-accent-content group-focus-within:text-accent-content',
           )}
         >

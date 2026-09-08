@@ -27,7 +27,7 @@ export function SearchField({ label, value, onChange, scId, className, hint }: S
       <UiIcon
         path={mdiMagnify}
         size={14}
-        className="text-muted pointer-events-none absolute left-2"
+        className="text-muted pointer-events-none absolute start-2"
       />
       <input
         type="search"
@@ -35,7 +35,7 @@ export function SearchField({ label, value, onChange, scId, className, hint }: S
         placeholder={label}
         aria-label={label}
         onChange={event => onChange(event.target.value)}
-        className={cn(CONTROL, 'w-full py-0 pr-2 pl-7')}
+        className={cn(CONTROL, 'w-full py-0 pe-2 ps-7')}
         data-sc={fieldHandle(scId)}
         {...hint}
       />

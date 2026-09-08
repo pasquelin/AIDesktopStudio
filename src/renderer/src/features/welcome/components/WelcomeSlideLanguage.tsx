@@ -13,6 +13,7 @@ export function WelcomeSlideLanguage() {
     <div>
       <WelcomeCopy title={t('welcome.language.title')} body={t('welcome.language.body')} />
       <SelectField
+        scId="welcome.language"
         label={t('settings.language.title')}
         value={language}
         options={LANGUAGE_PREFERENCES.map(preference => {

@@ -12,7 +12,7 @@ export type ToastStackProps = { children: ReactNode }
 export function ToastStack({ children }: ToastStackProps) {
   return (
     <div
-      className="pointer-events-none fixed right-3 bottom-9 z-50 flex w-80 flex-col gap-1.5"
+      className="pointer-events-none fixed end-3 bottom-9 z-50 flex w-80 flex-col gap-1.5"
       role="status"
       aria-live="polite"
     >

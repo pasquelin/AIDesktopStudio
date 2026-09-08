@@ -60,10 +60,10 @@ function numberInputClass(disabled: boolean | undefined, axis: NumberFieldProps[
     FIELD_FILL,
     'touch-none',
     disabled ? 'text-muted cursor-not-allowed' : 'cursor-ew-resize focus:cursor-text',
-    axis && 'border-l-2',
-    axis === 'x' && 'border-l-axis-x',
-    axis === 'y' && 'border-l-axis-y',
-    axis === 'z' && 'border-l-axis-z',
+    axis && 'border-s-2',
+    axis === 'x' && 'border-s-axis-x',
+    axis === 'y' && 'border-s-axis-y',
+    axis === 'z' && 'border-s-axis-z',
   )
 }
 
