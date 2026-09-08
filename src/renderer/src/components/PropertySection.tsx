@@ -60,7 +60,7 @@ export function PropertySection({
         scId={scId}
       />
 
-      {open && description && <p className={cn(FIELD_HELP, 'm-0 px-2 pb-1')}>{description}</p>}
+      {open && description && <p className={cn(FIELD_HELP, 'm-0 px-2 pb-2')}>{description}</p>}
 
       {/* Unmounted rather than hidden: a folded section keeps no field mounted, and a scene with
           six sections folded costs nothing to render. */}

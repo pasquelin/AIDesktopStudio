@@ -45,13 +45,13 @@ export const PROPERTY_BODY = 'flex flex-col gap-2 px-2 pt-1 pb-2'
  * One repeated sub-item of a property section — a binding, a transition, a parameter, a
  * condition: a block one can see the edges of, with its own name and its own bin.
  *
- * 🛑 The pull-back is the point: given a padding of its own, the block started its labels eight
- * pixels to the right of the fields above it, and a section read as two forms poorly stacked.
- * `-mx-2` cancels `PROPERTY_BODY`'s inset and `px-2` gives it back inside, so every label of the
- * document lands on ONE column.
+ * 🛑 It sits INSIDE the body's inset rather than cancelling it: pulled back to the plate's own
+ * edge, the block touched it on three sides and read as a band cut out of the section instead of
+ * a thing standing in it. What its labels then owe the fields above them is one indent, which is
+ * what a block one can see the edges of is allowed to cost.
  */
 export const FIELD_BLOCK =
-  'border-border bg-surface -mx-2 flex flex-col gap-2 rounded-(--radius-sc-md) border px-2 py-2'
+  'border-border bg-surface flex flex-col gap-2 rounded-(--radius-sc-md) border p-2'
 
 /**
  * A picture standing in a property FIELD — the texture a slot holds, the map a model carries.
