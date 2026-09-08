@@ -94,6 +94,25 @@ function isDerived(value: string): boolean {
   return value.includes('var(--')
 }
 
+/**
+ * 🛑 The four `--color-comment-*` are written TWICE — in `@theme` and on `.generation-comment` —
+ * and the copy is structural: a custom property reading another is substituted where it is
+ * DECLARED, so the `:root` copy resolves against the root's hue and an element's angle is lost.
+ * Nothing else in the sheet does this, so nothing else would notice one copy drifting.
+ */
+describe('a token composed from the hue an element posts', () => {
+  const onElement = colorsIn(blockFrom('.generation-comment {'))
+
+  it('says the same thing in `@theme` and on the element that posts an angle', () => {
+    const composed = [...reference].filter(([name]) => name.startsWith('--color-comment-'))
+
+    expect(composed.length).toBeGreaterThan(0)
+    expect(composed.map(([name]) => [name, onElement.get(name)?.trim()])).toEqual(
+      composed.map(([name, value]) => [name, value.trim()]),
+    )
+  })
+})
+
 describe('the light theme', () => {
   it('restates every studio colour, so none of them stays on its dark value', () => {
     // `@theme` declares the dark values in `:root`, and a theme block only wins where it

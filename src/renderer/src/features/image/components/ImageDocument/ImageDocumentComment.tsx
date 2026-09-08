@@ -2,13 +2,25 @@ import type { CSSProperties } from 'react'
 import { mdiClose, mdiCreationOutline } from '@mdi/js'
 import { useTranslation } from 'react-i18next'
 import { GENERATION_COMMENT_TEXT_MAX } from '@shared/domain/generationComment'
-import { MENU_RAISED } from '@/components/panelStyles'
+import { MENU_RAISED } from '@/components/styles'
 import { ToolButton } from '@/components/ToolButton'
 import { cn } from '@/helpers/cn'
 import type { CanvasView } from '@/engines/canvas/viewport'
-import type { Size } from '@/engines/core/geometry'
+import type { Point, Size } from '@/engines/core/geometry'
 import { TIP_TOP } from '@/helpers/tooltip'
 import { commentHue, type GenerationComment } from '../../generationComments'
+
+/** Document units, spelled once: the outline never changes after the mask came back. */
+const outlinePoints = (outline: readonly Point[]): string =>
+  outline.map(point => `${point.x},${point.y}`).join(' ')
+
+/** Nothing here reads a prop, so it is built once rather than per comment per pan frame. */
+const NOTE = cn(
+  MENU_RAISED,
+  'generation-comment generation-comment-note text-text',
+  'bg-comment-note border-comment-note-border',
+  'pointer-events-auto absolute z-10 gap-2 p-2',
+)
 
 type ImageDocumentCommentProps = {
   comment: GenerationComment
@@ -40,24 +52,16 @@ export function ImageDocumentComment(props: ImageDocumentCommentProps) {
             strokeWidth="var(--sc-comment-outline)"
             strokeLinecap="round"
             strokeLinejoin="round"
-            points={comment.outline
-              .map(point =>
-                [
-                  props.view.viewport.x + point.x * props.view.viewport.scale,
-                  props.view.viewport.y + point.y * props.view.viewport.scale,
-                ].join(','),
-              )
-              .join(' ')}
+            // Placed by a TRANSFORM, never by recomputed points: a mask outline runs to the 512
+            // `boundedOutline` allows, and rebuilding them per pan frame cost 46 µs per comment.
+            vectorEffect="non-scaling-stroke"
+            transform={`translate(${props.view.viewport.x} ${props.view.viewport.y}) scale(${props.view.viewport.scale})`}
+            points={outlinePoints(comment.outline)}
           />
         </svg>
       )}
       <div
-        className={cn(
-          MENU_RAISED,
-          'generation-comment generation-comment-note text-text',
-          'bg-comment-note border-comment-note-border',
-          'pointer-events-auto absolute z-10 gap-2 p-2',
-        )}
+        className={NOTE}
         style={{
           ...hue,
           left: props.view.viewport.x + comment.at.x * props.view.viewport.scale,

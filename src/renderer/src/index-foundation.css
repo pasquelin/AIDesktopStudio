@@ -134,17 +134,12 @@
    */
   --color-warning: #e0a350;
   /*
-   * A comment's own colour, outline and note alike. The ANGLE comes from the comment
-   * (`commentHue`), so two notes over one picture never wear the same one; the chroma and the
-   * lightness are written here, which is what keeps a free hue from being a free contrast.
-   *
-   * 🛑 No guard holds these four: `tokensHue` and `tokensContrast` read hexadecimals only, and
-   * skip a token composed like this one — measured 2026-09-08, they stay green whatever is
-   * written here. The angle is the only thing a caller may move.
+   * A comment's own colour, outline and note alike: the ANGLE comes from the comment
+   * (`commentHue`), the ink stays here. 🛑 No guard holds these four — `tokensHue` and
+   * `tokensContrast` read hexadecimals only and skip a composed token, measured 2026-09-08.
    */
   --sc-comment-hue: 265;
-  /* Lightness and chroma, the half a comment may NOT move — `.generation-comment` composes the
-     four tokens from these and the angle. The light theme restates the pair one step darker. */
+  /* The half a comment may NOT move; the light theme restates this pair one step darker. */
   --sc-comment-ink: 0.72 0.16;
   --color-comment-mark: oklch(var(--sc-comment-ink) var(--sc-comment-hue));
   --color-comment-mark-overlay: color-mix(in srgb, var(--color-comment-mark) 20%, transparent);

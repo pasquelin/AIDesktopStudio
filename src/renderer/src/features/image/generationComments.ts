@@ -3,6 +3,7 @@ import { formatPercent } from '@/helpers/format'
 import { layerById, type CanvasState } from '@/engines/canvas/canvasState'
 import type { FieldDescriptor } from '@shared/domain/model'
 import { promptKeyOf } from '@shared/domain/projectContext'
+import { digest } from '@shared/hash'
 
 export type GenerationComment = {
   id: string
@@ -17,18 +18,12 @@ export function commentFor(id: string, at: Point, layerId: string | null): Gener
 }
 
 /**
- * The hue one comment wears, on its outline as on its note. Two notes over the same picture were
- * the same blue, so which area a note spoke of could only be found by dragging it — this is what
- * tells them apart. Taken from the ID rather than from the position in the list: removing the
- * first comment would otherwise repaint every one below it.
- *
- * The angle alone. Chroma and lightness stay in `index-foundation.css`, which is what keeps a
- * random hue from also being a random contrast.
+ * The hue one comment wears, outline and note alike. From the ID and not the position: removing
+ * the first would otherwise repaint every one below it. The ANGLE alone — chroma and lightness
+ * stay in `index-foundation.css`, which keeps a free hue from being a free contrast.
  */
 export function commentHue(id: string): number {
-  let spread = 0
-  for (const code of id) spread = (spread * 31 + code.charCodeAt(0)) % 360
-  return spread
+  return parseInt(digest(id).slice(-8), 16) % 360
 }
 
 export function writtenGenerationComments(

@@ -2,7 +2,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Asset } from '@shared/domain/asset'
-import type { AiOverview, RoleRow } from '@shared/domain/aiOverview'
+import { aiOverview, roleRow } from '@shared/domain/aiOverview-fixtures'
 import { SMART_SELECTION_ROLE } from '@shared/domain/aiRole'
 import { localModel } from '@shared/domain/localModel-fixtures'
 import { useAiModels } from '@/stores/aiModels'
@@ -183,43 +183,36 @@ describe('ImageDocument', () => {
     expect(await screen.findByRole('menuitemradio', { name: /^Crayon/ })).toBeInTheDocument()
   })
 
-  /**
-   * Both promptable modes hang on ONE model, and the bar named only the comment: the selector's
-   * smart mode stayed armable with nothing behind it, so the click reached the engine and came
-   * back as a journal line rather than as a mode a person could see was out of reach.
-   */
+  /** Both promptable modes hang on ONE model, and the bar named only the comment. */
   describe('the two modes a selection model serves', () => {
-    const OFFERED: RoleRow = {
-      role: SMART_SELECTION_ROLE,
-      provider: { kind: 'local', modelId: 'efficient-sam-ti' },
-      chosen: { app: { kind: 'local', modelId: 'efficient-sam-ti' }, project: null },
-      candidates: [
-        {
-          model: localModel({ id: 'efficient-sam-ti' }),
-          installed: true,
-          loaded: false,
-          holdable: true,
-          unverified: false,
-          supplied: false,
-          serves: 1,
-          fit: 'compatible',
-          obstacle: null,
-        },
-      ],
-      clouds: [],
-    }
+    /** The bar reads the `fr` bundle, so each button is found by the label it wears there. */
+    const PROMPTABLE: readonly [string, RegExp][] = [
+      ['the region', /^Sélection/],
+      ['the comment', /^Commentaire/],
+    ]
 
-    const overview: AiOverview = {
-      roles: [OFFERED],
-      machine: { physicalBytes: 1, availableBytes: 1, diskFreeBytes: 1, gpu: null, vram: null },
-      projectPath: null,
-      installing: null,
-      loading: null,
-      loadFailure: null,
-      installFailure: null,
-      ollama: { ready: false, installed: false, names: [], progress: null, failed: false },
-      engine: { known: false, missing: [], progress: null, failed: false },
-    }
+    const served = aiOverview({
+      roles: [
+        roleRow({
+          role: SMART_SELECTION_ROLE,
+          provider: { kind: 'local', modelId: 'efficient-sam-ti' },
+          chosen: { app: { kind: 'local', modelId: 'efficient-sam-ti' }, project: null },
+          candidates: [
+            {
+              model: localModel({ id: 'efficient-sam-ti' }),
+              installed: true,
+              loaded: false,
+              holdable: true,
+              unverified: false,
+              supplied: false,
+              serves: 1,
+              fit: 'compatible',
+              obstacle: null,
+            },
+          ],
+        }),
+      ],
+    })
 
     async function smartRowOf(tool: RegExp): Promise<HTMLElement> {
       render(<ImageDocument documentId="doc-1" />)
@@ -227,19 +220,16 @@ describe('ImageDocument', () => {
       return await screen.findByRole('menuitemradio', { name: /intelligent/i })
     }
 
-    it.each([
-      ['la région', /^Sélection/],
-      ['le commentaire', /^Commentaire/],
-    ])('leaves %s out of reach while no model serves the role', async (_name, tool) => {
-      useAiModels.setState({ overview: null })
+    it.each(PROMPTABLE)(
+      'leaves %s out of reach while no model serves the role',
+      async (_, tool) => {
+        useAiModels.setState({ overview: null })
 
-      expect(await smartRowOf(tool)).toBeDisabled()
-    })
+        expect(await smartRowOf(tool)).toBeDisabled()
+      },
+    )
 
-    it.each([
-      ['la région', /^Sélection/],
-      ['le commentaire', /^Commentaire/],
-    ])('says where the model is picked rather than what %s would do', async (_name, tool) => {
+    it.each(PROMPTABLE)('says where the model is picked, not what %s would do', async (_, tool) => {
       useAiModels.setState({ overview: null })
 
       // The sentence rides on the tooltip attribute, which is where `HINT_RIGHT` puts it.
@@ -249,12 +239,9 @@ describe('ImageDocument', () => {
       )
     })
 
-    it.each([
-      ['la région', /^Sélection/],
-      ['le commentaire', /^Commentaire/],
-    ])('arms %s once one does', async (_name, tool) => {
+    it.each(PROMPTABLE)('arms %s once one does', async (_, tool) => {
       chooseModels({ [SMART_SELECTION_ROLE]: 'efficient-sam-ti' })
-      useAiModels.setState({ overview })
+      useAiModels.setState({ overview: served })
 
       expect(await smartRowOf(tool)).toBeEnabled()
     })

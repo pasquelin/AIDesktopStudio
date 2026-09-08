@@ -138,7 +138,11 @@ describe('image generation comment placement', () => {
       left: '25px',
       top: '47px',
     })
-    expect(container.querySelector('polygon')).toHaveAttribute('points', '25,47 65,87')
+    // The outline is placed by a transform and its points stay in document units, so the two
+    // halves are read together: 10,20 through this transform lands on the note's own 25,47.
+    const outline = container.querySelector('polygon')
+    expect(outline).toHaveAttribute('points', '10,20 30,40')
+    expect(outline).toHaveAttribute('transform', 'translate(5 7) scale(2)')
   })
 
   it('opens notes inward from every image edge', () => {

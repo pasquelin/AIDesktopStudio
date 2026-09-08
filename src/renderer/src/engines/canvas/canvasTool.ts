@@ -26,13 +26,16 @@ export type CanvasTool =
   | 'hand'
 
 /**
- * The two promptable tools: one click or one drag, the same prompt, and only what is done with
- * the mask told apart. Named once because four places read it — the gesture it opens, the box the
- * overlay draws, the ants it keeps marching, and the prompt it commits — and a fifth reader that
- * listed one of the two left the other dragging blind.
+ * The two promptable tools: the same gesture and the same prompt, only what is done with the mask
+ * told apart. Four places read this, and one that listed a single member left the other blind.
  */
 export type SmartTool = Extract<CanvasTool, 'smartSelect' | 'smartComment'>
 
-export function isSmartTool(tool: string): tool is SmartTool {
-  return tool === 'smartSelect' || tool === 'smartComment'
+// A `Record` and not two comparisons: the union and its members cannot part company, where a
+// hand-written `===` per member stays green while a third tool falls through to the brush.
+const SMART_TOOLS: Record<SmartTool, true> = { smartSelect: true, smartComment: true }
+
+/** `in` takes any string, which is what lets a gesture kind ask without widening the signature. */
+export function isSmartTool(tool: CanvasTool | string): tool is SmartTool {
+  return tool in SMART_TOOLS
 }

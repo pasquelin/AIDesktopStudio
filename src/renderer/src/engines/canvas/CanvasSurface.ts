@@ -227,14 +227,11 @@ export abstract class CanvasSurface extends CanvasEditing {
       selectionOutline(this.selection).length > 0 ||
       this.cropping !== null ||
       this.textBox !== null ||
-      this.smartDrag() !== null
+      isSmartGesture(this.gesture)
     )
   }
 
-  /**
-   * The two corners a promptable drag stands between, for either tool: the comment used to draw
-   * nothing at all, so a box was traced blind and only the mask that came back said where.
-   */
+  /** The two corners a promptable drag stands between, for either tool. */
   private smartDrag(): { from: Point; to: Point } | null {
     if (!isSmartGesture(this.gesture)) return null
     return this.gridBox(this.gesture.from, this.gesture.to)

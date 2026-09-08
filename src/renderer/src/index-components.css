@@ -320,10 +320,9 @@
 }
 
 /*
- * 🛑 The four colour tokens are RESTATED here, on the element, and that is not a duplicate of
- * `@theme`: a custom property that reads another is substituted where it is DECLARED, so the
- * `:root` copies resolve against the root's hue and an element's own angle changes nothing.
- * `@theme` still carries them — that is what makes Tailwind emit `bg-comment-note` at all.
+ * 🛑 Restated on the ELEMENT, and that is not a duplicate: a custom property reading another is
+ * substituted where it is DECLARED, so the `:root` copies resolve against the root's hue. Those
+ * stay all the same — they are what makes Tailwind emit `bg-comment-note` at all.
  */
 .generation-comment {
   --color-comment-mark: oklch(var(--sc-comment-ink) var(--sc-comment-hue));

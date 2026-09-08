@@ -219,6 +219,9 @@ function overlayRecorder(): { fills: number[][]; rings: number[][]; corners: num
   const fills: number[][] = []
   const rings: number[][] = []
   const corners: number[][] = []
+  const corner = (x: number, y: number): void => {
+    corners.push([x, y])
+  }
   const ignore = (): void => {}
   const context = {
     save: ignore,
@@ -226,12 +229,8 @@ function overlayRecorder(): { fills: number[][]; rings: number[][]; corners: num
     setTransform: ignore,
     clearRect: ignore,
     beginPath: ignore,
-    moveTo: (x: number, y: number): void => {
-      corners.push([x, y])
-    },
-    lineTo: (x: number, y: number): void => {
-      corners.push([x, y])
-    },
+    moveTo: corner,
+    lineTo: corner,
     stroke: ignore,
     strokeRect: ignore,
     fillText: ignore,

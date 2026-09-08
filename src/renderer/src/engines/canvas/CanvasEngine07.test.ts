@@ -108,7 +108,7 @@ describe('the ruler bands', () => {
   it('throws a guide away when it is dropped back on the chrome', async () => {
     const { host, guides } = await mounted()
     press(host, 120, 5)
-    window.dispatchEvent(new PointerEvent('pointerup', { clientX: 8, clientY: 8 }))
+    release(8, 8)
 
     expect(guides.calls).toEqual(['begin', 'add:y:5', 'remove:guide-1', 'end'])
   })
@@ -124,7 +124,7 @@ describe('the ruler bands', () => {
   it('keeps it when it is dropped on the canvas', async () => {
     const { host, guides } = await mounted()
     press(host, 120, 5)
-    window.dispatchEvent(new PointerEvent('pointerup', { clientX: 200, clientY: 200 }))
+    release(200, 200)
 
     expect(guides.calls).toEqual(['begin', 'add:y:5', 'end'])
   })
@@ -145,7 +145,7 @@ describe('the view', () => {
     const { host, viewports } = await mounted()
     press(host, 200, 200, 1)
     for (const x of [210, 220, 230]) {
-      host.dispatchEvent(new PointerEvent('pointermove', { clientX: x, clientY: 200 }))
+      drag(host, x, 200)
     }
 
     expect(viewports).toEqual([])
@@ -160,14 +160,14 @@ describe('the view', () => {
   it('takes a command that arrives while a pan is still being published', async () => {
     const { engine, host } = await mounted()
     press(host, 200, 200, 1)
-    host.dispatchEvent(new PointerEvent('pointermove', { clientX: 260, clientY: 200 }))
+    drag(host, 260, 200)
 
     const commanded: Viewport = { x: 12, y: 34, scale: 3 }
     engine.setView({ ...DEFAULT_VIEW, viewport: commanded })
     // A second push of the same viewport, as React re-renders: still the command, not the pan.
     engine.setView({ ...DEFAULT_VIEW, viewport: commanded })
 
-    host.dispatchEvent(new PointerEvent('pointermove', { clientX: 261, clientY: 200 }))
+    drag(host, 261, 200)
     expect(canvasGpu().renders).toBeGreaterThan(0)
   })
 })
