@@ -114,6 +114,8 @@
   var stageTransit = null;
   var stageOpened = 0;
   var stageCompleted = false;
+  var stageAdjustment = null;
+  var entryAnchor = window.location && window.location.hash ? document.getElementById(window.location.hash.slice(1)) : null;
 
   function releaseNavigation() {
     if (!navigation) return;
@@ -217,10 +219,11 @@
       dRects: dRects,
       scrollY: scrollY,
       page: maxScroll > 0 ? clamp(scrollY / maxScroll, 0, 1) : 0,
-      stageRect: stage && !stageCompleted ? stage.getBoundingClientRect() : null,
+      stageRect: stage && (!stageCompleted || stageAdjustment) ? stage.getBoundingClientRect() : null,
       pinH: stagePin && !stageCompleted ? stagePin.offsetHeight : 0,
       pinTop: stagePin && !stageCompleted ? parseFloat(getComputedStyle(stagePin).top) : 0,
-      stageH: stage && !stageCompleted ? stage.offsetHeight : 0
+      stageH: stage && !stageCompleted ? stage.offsetHeight : 0,
+      entryTop: entryAnchor ? entryAnchor.getBoundingClientRect().top + scrollY - (parseFloat(getComputedStyle(entryAnchor).scrollMarginTop) || 0) : null
     };
   }
 
@@ -306,7 +309,8 @@
     return hole;
   }
 
-  function completeStage() {
+  function completeStage(frame) {
+    stageAdjustment = { height: frame.stageH, top: frame.stageRect.top + frame.scrollY, scrollY: frame.scrollY };
     stageCompleted = true;
     stageOpened = 1;
     stageTransit = null;
@@ -319,6 +323,7 @@
 
   function animateStage(frame, vh, now) {
     if (stageCompleted) return 0;
+    if (entryAnchor && stageFrame) { completeStage(frame); return 0; }
     if (stage && stageFrame && wide.matches && frame.stageH > frame.pinH) {
       var q = clamp(-frame.stageRect.top / (frame.stageH - frame.pinH), 0, 1);
       var opened = cube(clamp(q / 0.78, 0, 1));
@@ -329,7 +334,7 @@
         opened += (stageTransit.opened - opened) * weight;
         if (weight === 0) { stageTransit = null; stagePin.style.transform = ''; }
       }
-      if (opened >= 1) { completeStage(); return 0; }
+      if (opened >= 1) { completeStage(frame); return 0; }
       stageOpened = opened;
       var scale = 0.60 + 0.40 * opened;
       stageFrame.style.transform = 'scale(' + scale.toFixed(4) + ')';
@@ -340,7 +345,7 @@
         clamp(frame.stageRect.bottom / (vh * 0.8), 0, 1)
       );
     }
-    if (stageFrame && !wide.matches) completeStage();
+    if (stageFrame && !wide.matches) completeStage(frame);
     return 0;
   }
 
@@ -351,6 +356,17 @@
     var vh = window.innerHeight;
 
     var frame = readFrame(vh);
+    if (stageAdjustment) {
+      var removed = Math.max(0, stageAdjustment.height - frame.stageRect.height);
+      var adjusted = stageAdjustment.scrollY - clamp(stageAdjustment.scrollY - stageAdjustment.top, 0, removed);
+      if (navigation && navigation.top > stageAdjustment.top) navigation.top = Math.max(stageAdjustment.top, navigation.top - removed);
+      stageAdjustment = null;
+      if (entryAnchor) { adjusted = frame.entryTop; entryAnchor = null; }
+      if (Math.abs(frame.scrollY - adjusted) > 1) {
+        window.scrollTo({ top: adjusted, behavior: 'instant' });
+        return;
+      }
+    }
     if (navigation && Math.abs(frame.scrollY - navigation.top) < 1) releaseNavigation();
 
     animateItems(now, vh);
