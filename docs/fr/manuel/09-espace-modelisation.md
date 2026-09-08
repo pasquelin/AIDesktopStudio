@@ -928,7 +928,7 @@ est dans la scène, pas là où il est dans son groupe.
 
 ## Enregistrer
 
-`⌘S` / `Ctrl+S` écrit la scène dans le projet, sous `Modelling/Scenes/`.
+`⌘S` / `Ctrl+S` écrit la scène dans le projet, sous `Scenes/`.
 
 **Les scènes 3D savent s’enregistrer**, comme les six autres types de documents.
 

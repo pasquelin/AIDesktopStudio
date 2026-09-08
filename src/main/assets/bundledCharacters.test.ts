@@ -41,7 +41,7 @@ function backend(): LocalBackend {
       name: request.name,
       type: 'mesh',
       location: 'local',
-      path: `${request.resource ? '.resources/Modelling/Models' : 'Modelling/Models'}/${request.name}.glb`,
+      path: `${request.resource ? '.resources/Models' : 'Models'}/${request.name}.glb`,
       tags: [],
       createdAt: '2026-09-06T10:00:00.000Z',
     }
@@ -98,9 +98,9 @@ describe('the character shipped with the app', () => {
     expect(installed).toEqual({
       level: 'medium',
       assetId: 'asset_1',
-      path: '.resources/Modelling/Models/HeroMedium.glb',
+      path: '.resources/Models/HeroMedium.glb',
     })
-    expect(written.map(asset => asset.path)).toEqual(['.resources/Modelling/Models/HeroMedium.glb'])
+    expect(written.map(asset => asset.path)).toEqual(['.resources/Models/HeroMedium.glb'])
   })
 
   // Nineteen megabytes of which three densities nothing looks at is what asking for all four costs.
@@ -129,7 +129,7 @@ describe('the character shipped with the app', () => {
   it('writes again the one whose file has gone, keeping the id its scenes point at', async () => {
     const folder = shippedFolder()
     const first = await install(folder, 'low')
-    onDisk.delete(`${PROJECT}/.resources/Modelling/Models/HeroLow.glb`)
+    onDisk.delete(`${PROJECT}/.resources/Models/HeroLow.glb`)
     written = []
 
     const second = await install(folder, 'low', 100)

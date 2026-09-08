@@ -98,10 +98,9 @@ My project/
 ├── Materials/            your materials, and the pictures that serve one
 ├── Skyboxes/
 ├── Scripts/
-├── Modelling/            the Modelling section files three things
-│   ├── Scenes/             your scenes
-│   ├── Models/             your meshes
-│   └── Animations/         your motions
+├── Scenes/               your scenes
+├── Models/               your meshes
+├── Animations/           your motions
 │                           …and whatever you make beside them
 │
 │   Each carries a .ai-desktop-studio-role — HIDDEN — saying which section it serves
@@ -134,7 +133,7 @@ tools, not your work.
 > **Rename them, move them: they go on serving their section.** What binds a folder to a section
 > is not its name but a small hidden file it carries, `.ai-desktop-studio-role`. It travels with the
 > folder — a rename in the Finder or in Windows Explorer, a move, a copy, a zip. Rename
-> `Modelling/` to “My models” and the next mesh still lands there.
+> `Models/` to “My meshes” and the next mesh still lands there.
 >
 > In the studio's explorer, a folder serving a section wears that section's icon, and **its name
 > stays the one on disk** — what you read in the studio is what you read in the Finder. The icon
@@ -373,7 +372,7 @@ folder chosen is where the document goes** — there are not two things to keep 
 path is written above the columns. You never leave the project: nothing else is offered.
 
 The columns open on the folder the Explorer is showing, or, when nothing is picked there, on
-the section's own folder — `Modelling/Scenes/` for a scene, `Images/` for an image, `Materials/`
+the section's own folder — `Scenes/` for a scene, `Images/` for an image, `Materials/`
 for a material. Below them, **New folder** makes one in the chosen folder without leaving the
 window.
 

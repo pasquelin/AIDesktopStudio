@@ -230,7 +230,7 @@ describe('saving the character tab in front', () => {
           kind: 'character',
           workspace: '3d',
           title: 'orphan',
-          path: 'Modelling/Models/orphan.glb',
+          path: 'Models/orphan.glb',
         },
       },
       activeId: DOCUMENT,

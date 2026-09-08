@@ -119,7 +119,7 @@ describe('the still brought down beside the bytes', () => {
       thumbnailUrl: 'https://cdn.example/thumb/gone.jpg',
     })
 
-    expect(asset.path).toBe('Modelling/Models/Skeleton.glb')
+    expect(asset.path).toBe('Models/Skeleton.glb')
     expect(asset.posterPath).toBeUndefined()
   })
 

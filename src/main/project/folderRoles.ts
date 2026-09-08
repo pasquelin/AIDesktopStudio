@@ -65,22 +65,12 @@ export async function markRoleFolder(
 
 /** The tree a new project is given, each folder carrying the marker that says what it is for. */
 export async function layRoleFolders(root: string): Promise<void> {
-  // Three rounds, not ten: `Modelling` has to exist before its children claim their own markers,
-  // and the six roots depend on nothing.
-  const under: readonly FolderRole[] = ['scenes', 'models', 'animations']
-  const roots = FOLDER_ROLES.filter(role => role !== 'modelling' && !under.includes(role))
-
   const laid = await Promise.all(
-    roots.map(role => writeMarker(root, DEFAULT_ROLE_PATHS[role], role)),
-  )
-  laid.push(await writeMarker(root, DEFAULT_ROLE_PATHS.modelling, 'modelling'))
-  laid.push(
-    ...(await Promise.all(under.map(role => writeMarker(root, DEFAULT_ROLE_PATHS[role], role)))),
+    FOLDER_ROLES.map(role => writeMarker(root, DEFAULT_ROLE_PATHS[role], role)),
   )
 
-  // ONE `attrib` for the ten, which is what `hideFromExplorer` promises — one process per
-  // project. Ten spawns, serialised, on the path that creates a project is a tenth of a second
-  // of Windows for a file attribute.
+  // ONE `attrib` for them all, which is what `hideFromExplorer` promises: one spawn per shelf,
+  // serialised, is a tenth of a second of Windows on the path that creates a project.
   await hideFromExplorer(...laid)
 }
 
@@ -208,6 +198,9 @@ export async function writeRoleCache(root: string, roles: RoleFolders): Promise<
 /**
  * The folder a role names, laid down with its marker if the project has none — the one door
  * every marker the studio lays goes through, and only ever on a write.
+ *
+ * A project whose other shelves sit elsewhere gets this one at TODAY's default, so it ends up
+ * wearing two trees. That is the price of migrating nothing, written rather than discovered.
  */
 export async function ensureRoleFolder(
   root: string,

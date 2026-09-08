@@ -81,7 +81,7 @@ export function assetIcon(type: AssetType): string {
 
 /**
  * A glyph of its own, or `null` to keep its section's — the shape `OWN_ICON` has, for the same
- * reason: four roles answer `3d`, and one cube on all four would say they are one shelf.
+ * reason: several roles answer `3d`, and one cube on all of them would say they are one shelf.
  */
 const OWN_ROLE_ICON: Record<FolderRole, string | null> = {
   image: null,
@@ -90,14 +90,11 @@ const OWN_ROLE_ICON: Record<FolderRole, string | null> = {
   materials: null,
   skyboxes: null,
   code: null,
-  modelling: null,
   scenes: mdiCubeScan,
   models: mdiVectorTriangle,
   // The same runner an animation ASSET wears: two glyphs for one idea, in one panel, is what
   // relisting the table produced the first time.
   animations: assetIcon('animation'),
-  // A glyph of its own though it serves 3D: an interface sits at the TOP of the project, and
-  // wearing the section's cube would file it under what is modelled.
   gui: mdiViewDashboardOutline,
   input: mdiGamepadVariantOutline,
 }
@@ -116,7 +113,7 @@ const DOMAIN_INK: Record<WorkspaceId, string> = {
   skyboxes: 'text-domain-skyboxes',
 }
 
-/** What a workspace's glyph is inked in — its four folder roles share it, being one section. */
+/** What a workspace's glyph is inked in. */
 export function workspaceInk(workspace: WorkspaceId): string {
   return DOMAIN_INK[workspace]
 }
@@ -142,8 +139,8 @@ export function roleIcon(role: FolderRole): string {
 }
 
 /**
- * Which line names this role — the seven that ARE their section share one, filled with the
- * section's label. Total rather than a test on the id: a role with no answer would compose a key
+ * Which line names this role — those that ARE their section share one, filled with the section's
+ * label. Total rather than a test on the id: a role with no answer would compose a key
  * nothing translates, and a raw key on screen is this repository's costliest defect.
  */
 const ROLE_LABEL: Record<
@@ -156,12 +153,9 @@ const ROLE_LABEL: Record<
   materials: 'section',
   skyboxes: 'section',
   code: 'section',
-  modelling: 'section',
   scenes: 'scenes',
   models: 'models',
   animations: 'animations',
-  // Its own line rather than the section's: this folder is not under Modelling, so « folder of
-  // the 3D section » would send whoever reads it looking in the wrong place.
   gui: 'gui',
   input: 'input',
 }

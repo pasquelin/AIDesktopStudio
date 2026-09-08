@@ -53,9 +53,9 @@ describe('a folder the user moved behind the studio', () => {
     await layRoleFolders(root)
     await resolved()
 
-    await rename(join(root, 'Modelling/Models'), join(root, 'Modelling/Mes modèles'))
+    await rename(join(root, 'Models'), join(root, 'Mes modèles'))
 
-    expect((await resolved()).models).toBe('Modelling/Mes modèles')
+    expect((await resolved()).models).toBe('Mes modèles')
   })
 
   it('goes on serving after being moved under another folder entirely', async () => {
@@ -101,6 +101,28 @@ describe('a project no folder of which carries a role', () => {
     await markRoleFolder(root, 'Venu dailleurs', 'image')
 
     expect((await resolveRoleFolders(root)).roles.image).toBeUndefined()
+  })
+})
+
+/**
+ * 🛑 No role folder is migrated, and none needs to be: the marker binds a role to a FOLDER, so
+ * the three shelves a project laid one fold deeper go on serving where they sit. The folder above
+ * them carried a role of its own, which this build no longer knows — it turns ordinary.
+ */
+describe('a project laid out while the 3D shelves sat under a folder of their own', () => {
+  it('keeps them where they sit', async () => {
+    await mkdir(join(root, 'Modelling'), { recursive: true })
+    await writeFile(join(root, 'Modelling', ROLE_MARKER), 'modelling\n')
+    await markRoleFolder(root, 'Modelling/Scenes', 'scenes')
+    await markRoleFolder(root, 'Modelling/Models', 'models')
+    await markRoleFolder(root, 'Modelling/Animations', 'animations')
+
+    const roles = await resolved()
+
+    expect(roles.scenes).toBe('Modelling/Scenes')
+    expect(roles.models).toBe('Modelling/Models')
+    expect(roles.animations).toBe('Modelling/Animations')
+    expect(Object.values(roles)).not.toContain('Modelling')
   })
 })
 

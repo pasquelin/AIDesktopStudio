@@ -87,7 +87,7 @@ describe('local backend', () => {
       return asset.path
     }
 
-    expect(await landed('mesh')).toBe('Modelling/Models/Prise.bin')
+    expect(await landed('mesh')).toBe('Models/Prise.bin')
     expect(await landed('audio')).toBe('Audio/Prise.bin')
     expect(await landed('skybox')).toBe('Skyboxes/Prise.bin')
   })

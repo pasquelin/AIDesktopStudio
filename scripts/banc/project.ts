@@ -22,8 +22,8 @@ export const PROJECT: readonly Seeded[] = [
   { path: 'Images/fais moi un bateau.png', kind: 'file' },
   { path: 'Images/a bicycle.png', kind: 'file' },
   { path: 'Images/a red sports car in a paris street.png', kind: 'file' },
-  { path: 'Modelling/Models/a medieval stone castle with towers.glb', kind: 'file' },
-  { path: 'Modelling/Models/a knight in plate armour, character.glb', kind: 'file' },
+  { path: 'Models/a medieval stone castle with towers.glb', kind: 'file' },
+  { path: 'Models/a knight in plate armour, character.glb', kind: 'file' },
   { path: 'Video/a drone shot over the sea.mp4', kind: 'file' },
   { path: 'Video/a slow pan across the harbour.mp4', kind: 'file' },
   { path: 'Audio/a calm ambient pad, loopable.wav', kind: 'file' },
@@ -32,8 +32,8 @@ export const PROJECT: readonly Seeded[] = [
   { path: 'Skyboxes/an overcast sky at dusk.png', kind: 'file' },
   { path: 'Materials/weathered oak planks, seamless.png', kind: 'file' },
   { path: 'Materials/weathered oak planks, seamless, normal.png', kind: 'file' },
-  { path: 'Modelling/Scenes/Charge 2000 blocs.gltf', kind: 'file' },
-  { path: 'Modelling/Scenes/Scène 1.gltf', kind: 'file' },
+  { path: 'Scenes/Charge 2000 blocs.gltf', kind: 'file' },
+  { path: 'Scenes/Scène 1.gltf', kind: 'file' },
   { path: 'Images/demo image.ora', kind: 'file' },
 ]
 
@@ -47,5 +47,5 @@ export const DOCUMENT_SOURCES: readonly { path: string; source: string }[] = [
   // 🛑 The path the document LIVES at, which `documents.read` looks the content up by: written
   // under `documents/` it was nowhere the reader goes, so instancing it refused `notFound` twelve
   // times over — 63.4 and 63.5 could not be won by any model, measured 2026-09-01.
-  { path: 'Modelling/Scenes/Scène 1.gltf', source: barrelDocument().content },
+  { path: 'Scenes/Scène 1.gltf', source: barrelDocument().content },
 ]

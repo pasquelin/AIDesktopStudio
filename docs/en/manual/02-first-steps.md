@@ -135,7 +135,9 @@ My first project/          ← the folder YOU chose
 ├── Materials/
 ├── Skyboxes/
 ├── Scripts/
-├── Modelling/        scenes, models and animations, in three subfolders
+├── Scenes/           your scenes
+├── Models/           your meshes
+├── Animations/       your motions
 ├── .project.json     the project's identity card — hidden
 └── .index/           the catalogue and its caches — keep this, hidden
 ```

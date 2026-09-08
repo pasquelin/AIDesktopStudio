@@ -49,19 +49,15 @@ describe('the folder a role names', () => {
   })
 
   it('starts where the role starts when nothing resolved it', () => {
-    expect(folderForRole('models', { image: 'Photos' })).toBe('Modelling/Models')
-    expect(folderForRole('models', {})).toBe('Modelling/Models')
+    expect(folderForRole('models', { image: 'Photos' })).toBe('Models')
+    expect(folderForRole('models', {})).toBe('Models')
   })
 })
 
 describe('two folders claiming one role', () => {
   it('keeps the shallower, which a copy filed underneath cannot be', () => {
-    expect(preferredRoleFolder('Modelling/Models', 'Archive/Old/Modelling/Models')).toBe(
-      'Modelling/Models',
-    )
-    expect(preferredRoleFolder('Archive/Old/Modelling/Models', 'Modelling/Models')).toBe(
-      'Modelling/Models',
-    )
+    expect(preferredRoleFolder('Models', 'Archive/Old/Models')).toBe('Models')
+    expect(preferredRoleFolder('Archive/Old/Models', 'Models')).toBe('Models')
   })
 
   /**

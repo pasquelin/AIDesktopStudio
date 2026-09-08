@@ -16,7 +16,7 @@ const DOCUMENT: DocumentDescriptor = {
   kind: 'scene',
   workspace: '3d',
   title: 'Niveau',
-  path: 'Modelling/Scenes/Niveau.gltf',
+  path: 'Scenes/Niveau.gltf',
 }
 
 const project = (path: string): Project => ({

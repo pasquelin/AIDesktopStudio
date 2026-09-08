@@ -61,22 +61,21 @@ export const REST_SCENARIOS: readonly Scenario[] = [
     name: '41.4 closes Scène Finale and deletes its file',
     said: ['Ferme Scène Finale et supprime son fichier du projet.'],
     setup: async studio => {
-      await studio.run('file.open', { path: 'Modelling/Scenes/Scène 1.gltf' })
+      await studio.run('file.open', { path: 'Scenes/Scène 1.gltf' })
       await studio.run('document.rename', {
         documentId: studio.front()?.id ?? '',
         title: 'Scène Finale',
       })
     },
     passed: run =>
-      read.titled(run, 'Scène Finale') === undefined &&
-      !read.holds(run, 'Modelling/Scenes/Scène 1.gltf'),
+      read.titled(run, 'Scène Finale') === undefined && !read.holds(run, 'Scenes/Scène 1.gltf'),
   },
   {
     name: '41.5 exports the open scene into the documents folder',
     said: ['Exporte la scène ouverte dans mon dossier documents.'],
     setup: scene('Export Test'),
     /**
-     * 🛑 Anywhere but the scenes folder: `Modelling/Scenes/Export Test.gltf` is what a SAVE
+     * 🛑 Anywhere but the scenes folder: `Scenes/Export Test.gltf` is what a SAVE
      * writes, and an oracle reading that scores a save as an export. Every format of
      * `EXPORT_FORMATS`, since the sentence names none.
      */
@@ -85,7 +84,7 @@ export const REST_SCENARIOS: readonly Scenario[] = [
         .files(run)
         .some(
           one =>
-            !one.startsWith('Modelling/Scenes/') &&
+            !one.startsWith('Scenes/') &&
             EXPORT_FORMATS.some(format => one.endsWith(`Export Test.${format}`)),
         ),
   },

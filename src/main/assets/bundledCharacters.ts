@@ -5,6 +5,7 @@ import {
   type InstalledCharacter,
 } from '@shared/domain/bundledCharacter'
 import { nearestCharacterLevel, type CharacterLevel } from '@shared/domain/characterLevel'
+import { pathIn } from '@shared/domain/folder'
 import { CHANNELS } from '@shared/ipc'
 import { handle } from '@main/ipc/handle'
 import {
@@ -24,6 +25,9 @@ function resourceOf(level: CharacterLevel): BundledResource {
     name: BUNDLED_CHARACTER_NAMES[level],
     type: 'mesh',
     role: 'models',
+    // A LITERAL: this names where the file WAS, which no value the studio may still change can
+    // spell. Projects laid out while models sat under a modelling folder hold it there.
+    formerPaths: [pathIn('.resources/Modelling/Models', bundledCharacterFile(level))],
   }
 }
 

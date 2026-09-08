@@ -8,8 +8,8 @@ import type { WorkspaceId } from './workspace'
  * it files meshes into. The marker travels with the folder — a rename, a move, a copy, a zip, a
  * commit all keep it — so the name on disk becomes the user's, entirely.
  *
- * Ten roles for seven workspaces: Modelling ranges three things, and one folder cannot hold
- * scenes, meshes and motions without becoming the `documents/` this replaced.
+ * One role per place the studio files something: one folder cannot hold scenes, meshes and
+ * motions without becoming the `documents/` this replaced.
  */
 export type FolderRole =
   | 'image'
@@ -18,7 +18,6 @@ export type FolderRole =
   | 'materials'
   | 'skyboxes'
   | 'code'
-  | 'modelling'
   | 'scenes'
   | 'models'
   | 'animations'
@@ -38,7 +37,6 @@ export const FOLDER_ROLES: readonly FolderRole[] = [
   'materials',
   'skyboxes',
   'code',
-  'modelling',
   'scenes',
   'models',
   'animations',
@@ -54,13 +52,16 @@ export function isFolderRole(value: unknown): value is FolderRole {
  * Where each role STARTS — the tree a new project is given, and the fallback for a role whose
  * folder has gone away.
  *
- * The names are the ENGLISH label of the workspace each serves, and they are fixed: a folder whose
- * name followed the interface language would be renamed on disk at every language change, and
- * every catalogue row under it would point beside the file. The interface says «Modélisation» by
- * translating the ROLE, never by touching the disk.
+ * The names are ENGLISH, and they are fixed: a folder whose name followed the interface language
+ * would be renamed on disk at every language change, and every catalogue row under it would point
+ * beside the file. The interface says «Scènes» by translating the ROLE, never by touching the
+ * disk.
  *
  * Only a default: the marker is what binds a role to a folder, so any of these may be renamed,
  * moved or nested and go on serving.
+ *
+ * 🛑 Moving one orphans what `resourceFolderOf` already laid under the old spelling, which no
+ * marker rescues: the role then owes its shipped files a `formerPaths` naming where they were.
  */
 export const DEFAULT_ROLE_PATHS: Record<FolderRole, string> = {
   image: 'Images',
@@ -69,15 +70,10 @@ export const DEFAULT_ROLE_PATHS: Record<FolderRole, string> = {
   materials: 'Materials',
   skyboxes: 'Skyboxes',
   code: 'Scripts',
-  modelling: 'Modelling',
-  scenes: 'Modelling/Scenes',
-  models: 'Modelling/Models',
-  animations: 'Modelling/Animations',
-  // At the TOP of the project, never under Modelling: an interface belongs to the game rather
-  // than to what is modelled, and several scenes share one.
+  scenes: 'Scenes',
+  models: 'Models',
+  animations: 'Animations',
   gui: 'GUI',
-  // Same reason, and one more: a control map is what a PLAYER rebinds, so it outlives the scene
-  // it was written for and every scene of the project reads the same one.
   input: 'Controls',
 }
 
@@ -99,11 +95,9 @@ export const ROLE_MARKER = '.ai-desktop-studio-role'
 export type RoleFolders = Partial<Record<FolderRole, string>>
 
 /**
- * The workspace each role serves. Four answer `3d`: Modelling files three things, and the folder
- * above them is the section itself.
- *
- * Here rather than beside the icons, because it is what lets a folder's glyph and its label both
- * be READ off the workspace tables instead of relisted — one glyph per section, changed once.
+ * The workspace each role serves. Here rather than beside the icons, because it is what lets a
+ * folder's glyph and its label both be READ off the workspace tables instead of relisted — one
+ * glyph per section, changed once.
  */
 export const WORKSPACE_BY_ROLE: Record<FolderRole, WorkspaceId> = {
   image: 'image',
@@ -112,7 +106,6 @@ export const WORKSPACE_BY_ROLE: Record<FolderRole, WorkspaceId> = {
   materials: 'materials',
   skyboxes: 'skyboxes',
   code: 'code',
-  modelling: '3d',
   scenes: '3d',
   models: '3d',
   animations: '3d',
@@ -136,6 +129,9 @@ export function folderForRole(role: FolderRole, roles: RoleFolders): string {
  * A copied folder brings its marker, so two claims is an ordinary accident rather than a corrupt
  * project. Depth puts the original ahead of a copy filed under it; `byCodeUnit` settles the tie,
  * and it is what keeps a project resolving the same way on every machine.
+ *
+ * 🛑 Depth ignores what a folder HOLDS, so a shelf laid at today's default wins over a fuller one
+ * a project keeps a fold deeper. Written rather than fixed: files are not moved either way.
  */
 export function preferredRoleFolder(one: string, other: string): string {
   const depth = one.split('/').length - other.split('/').length

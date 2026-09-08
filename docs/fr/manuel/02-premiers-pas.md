@@ -138,7 +138,9 @@ Mon premier projet/        ← le dossier que VOUS avez choisi
 ├── Materials/
 ├── Skyboxes/
 ├── Scripts/
-├── Modelling/        scènes, modèles et animations, dans trois sous-dossiers
+├── Scenes/           vos scènes
+├── Models/           vos maillages
+├── Animations/       vos mouvements
 ├── .project.json     la carte d'identité du projet — caché
 └── .index/           le catalogue et ses caches — à garder, caché
 ```

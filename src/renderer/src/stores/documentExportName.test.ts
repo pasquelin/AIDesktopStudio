@@ -14,7 +14,7 @@ describe('documentExportName', () => {
           kind: 'character',
           title: 'Hero Knight',
           workspace: '3d',
-          path: 'Modelling/Models/hero.glb',
+          path: 'Models/hero.glb',
           sourceAssetId: 'asset-hero',
         },
       },
