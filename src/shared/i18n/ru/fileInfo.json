@@ -1,24 +1,24 @@
 {
   "fileInfo": {
-    "title": "Information about {{name}}",
+    "title": "Информация о {{name}}",
     "sections": {
-      "general": "General",
-      "media": "Media",
-      "catalogue": "Catalogue",
+      "general": "Общее",
+      "media": "Медиа",
+      "catalogue": "Каталог",
       "git": "Git"
     },
-    "gitUnchanged": "No pending changes",
+    "gitUnchanged": "Нет ожидающих изменений",
     "kind": {
-      "file": "File",
-      "folder": "Folder"
+      "file": "Файл",
+      "folder": "Папка"
     },
-    "type": "Type",
-    "modified": "Modified",
-    "codec": "Codec",
-    "identifier": "Identifier",
-    "fingerprint": "Content fingerprint",
-    "added": "Added",
-    "reading": "Reading the folder…",
-    "missing": "This entry is no longer in the project folder."
+    "type": "Тип",
+    "modified": "Изменён",
+    "codec": "Кодек",
+    "identifier": "Идентификатор",
+    "fingerprint": "Отпечаток содержимого",
+    "added": "Добавлен",
+    "reading": "Чтение папки…",
+    "missing": "Этой записи больше нет в папке проекта."
   }
 }

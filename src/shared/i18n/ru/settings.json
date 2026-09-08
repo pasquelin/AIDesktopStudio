@@ -1,499 +1,503 @@
 {
   "settings": {
-    "title": "Settings",
-    "sections": "Settings sections",
-    "search": "Search settings",
-    "results": "Results",
-    "noResult": "No setting matches this search.",
-    "restoreDefault": "Restore the default value",
-    "restoreDefaultHint": "Puts back the original value, the one from before any change",
-    "account": "API keys",
-    "appearance": "Appearance",
-    "generation": "Generation",
-    "media": "Media",
-    "git": "Versions",
-    "dictation": "Dictation",
-    "input": "Devices",
-    "ai": "AI models",
-    "accountDescription": "One key per service, encrypted by the keychain.",
-    "appearanceDescription": "Theme and control density.",
-    "generationDescription": "Generation queue and default models, per family.",
-    "gitDescription": "Version tracking of the project folder, by git. Your files only.",
-    "mediaDescription": "Preparation of imported files: proxies and waveforms.",
-    "dictationDescription": "Speaking a text instead of typing it. Everything happens on this computer: nothing you say is sent anywhere.",
-    "inputDescription": "How the studio is navigated with a gamepad, and the devices connected to this computer.",
-    "aiDescription": "Which AI serves each operation. The studio here, Ollama here, or an online service you have a key for.",
+    "title": "Настройки",
+    "sections": "Разделы настроек",
+    "search": "Поиск по настройкам",
+    "results": "Результаты",
+    "noResult": "Ни одна настройка не соответствует этому запросу.",
+    "restoreDefault": "Восстановить значение по умолчанию",
+    "restoreDefaultHint": "Возвращает исходное значение, то, что было до любых изменений",
+    "account": "Ключи API",
+    "appearance": "Внешний вид",
+    "generation": "Генерация",
+    "media": "Медиа",
+    "git": "Версии",
+    "dictation": "Диктовка",
+    "input": "Устройства",
+    "ai": "Модели ИИ",
+    "accountDescription": "Один ключ на сервис, зашифрованный связкой ключей.",
+    "appearanceDescription": "Тема и плотность элементов управления.",
+    "generationDescription": "Очередь генерации и модели по умолчанию, по семействам.",
+    "gitDescription": "Отслеживание версий папки проекта через git. Только ваши файлы.",
+    "mediaDescription": "Подготовка импортированных файлов: прокси и формы волны.",
+    "dictationDescription": "Надиктовать текст вместо того, чтобы набирать его. Всё происходит на этом компьютере: ничего из сказанного никуда не отправляется.",
+    "inputDescription": "Как перемещаться по студии геймпадом и какие устройства подключены к этому компьютеру.",
+    "aiDescription": "Какой ИИ обслуживает каждую операцию. Студия здесь, Ollama здесь или онлайн-сервис, ключ от которого у вас есть.",
     "gamepadNavigation": {
-      "title": "Navigate the studio with a gamepad",
-      "help": "Lets a connected gamepad move through the studio interface and confirm or dismiss controls. It stays off until you enable it, so playing a game cannot move the editor behind it."
+      "title": "Перемещаться по студии геймпадом",
+      "help": "Позволяет подключённому геймпаду перемещаться по интерфейсу студии, подтверждать и закрывать элементы управления. Параметр остаётся выключенным, пока вы его не включите, чтобы игра не двигала редактор за собой."
     },
     "inputDevices": {
-      "title": "Detected controls",
-      "keyboard": "Keyboard",
-      "mouse": "Mouse",
-      "gamepadUnsupported": "This controller does not use the standard layout: the studio cannot read its buttons.",
-      "noGamepad": "No gamepad is connected.",
-      "gamepadSleeps": "A gamepad only appears once one of its buttons has been pressed: the browser does not show it before that. Plugged in but silent, it looks exactly like no gamepad at all."
+      "title": "Обнаруженные устройства управления",
+      "keyboard": "Клавиатура",
+      "mouse": "Мышь",
+      "gamepadUnsupported": "Этот контроллер не использует стандартную раскладку: студия не может прочитать его кнопки.",
+      "noGamepad": "Геймпад не подключён.",
+      "gamepadSleeps": "Геймпад появляется только после первого нажатия на одну из его кнопок: до этого браузер его не показывает. Подключённый, но молчащий, он ничем не отличается от отсутствующего."
     },
     "theme": {
-      "title": "Theme",
-      "help": "Picks the colours of the whole application. The dark theme rests the eyes over a long session in a dimly lit room; the light one reads better in broad daylight. “System” follows your computer’s own setting and switches on its own, for instance when evening comes.",
-      "dark": "Dark",
-      "light": "Light",
-      "system": "System"
+      "title": "Тема",
+      "help": "Выбирает цвета всего приложения. Тёмная тема бережёт глаза при долгой работе в слабо освещённой комнате; светлая лучше читается при дневном свете. «Системная» следует настройке компьютера и переключается сама, например с наступлением вечера.",
+      "dark": "Тёмная",
+      "light": "Светлая",
+      "system": "Системная"
     },
     "density": {
-      "title": "Density",
-      "help": "Sets how big the buttons are and how tall the rows sit. “Compact” fits more on screen; “Comfortable” leaves more air between things, which makes them easier to aim at with a mouse.",
-      "comfortable": "Comfortable",
-      "compact": "Compact"
+      "title": "Плотность",
+      "help": "Задаёт размер кнопок и высоту строк. «Компактная» вмещает больше на экране; «Просторная» оставляет больше воздуха между элементами, и по ним легче попасть мышью.",
+      "comfortable": "Просторная",
+      "compact": "Компактная"
     },
     "assistantSteps": {
-      "title": "Assistant chaining steps",
-      "help": "How many actions the assistant may chain for one request, when each depends on what the one before answered — find a file, open it, then place it in a scene. Every step is a billed round trip, so this number is the only thing keeping a misread request from running without end. Twelve covers most chains."
+      "title": "Шаги цепочки ассистента",
+      "help": "Сколько действий ассистент может выстроить в цепочку для одного запроса, когда каждое зависит от ответа предыдущего — найти файл, открыть его, затем поставить его в сцену. Каждый шаг — это оплачиваемый обмен, поэтому только это число не даёт неверно понятому запросу работать без конца. Двенадцати хватает для большинства цепочек."
     },
     "concurrentJobs": {
-      "title": "Concurrent generations",
-      "help": "How many creations work at the same time. The higher it is, the more you can start at once — but each may take longer to come back, and the service can turn away the ones beyond its limit. Three is a good balance."
+      "title": "Одновременные генерации",
+      "help": "Сколько созданий работает одновременно. Чем это число больше, тем больше можно запустить разом, но каждое может возвращаться дольше, а сервис может отклонить те, что вышли за его предел. Три — хороший баланс."
     },
     "captionArrivals": {
-      "title": "Name fetched assets",
-      "help": "Automatically name an image that arrives without a useful name. Spends creative units."
+      "title": "Именовать полученные ресурсы",
+      "help": "Автоматически именует изображение, которое приходит без полезного имени. Тратит креативные единицы."
     },
     "maxRetries": {
-      "title": "Max retries",
-      "help": "When a generation fails because the network dropped or a server was busy, the application tries again on its own. This number says how many times before giving up. At 0 it never tries twice. An invalid API key is never retried: trying again would not fix it."
+      "title": "Максимум попыток",
+      "help": "Когда генерация не удалась из-за обрыва сети или занятого сервера, приложение повторяет попытку само. Это число говорит, сколько раз, прежде чем сдаться. При 0 вторая попытка не делается никогда. Неверный ключ API не повторяется никогда: повтор его не исправит."
     },
     "ffmpegPath": {
-      "title": "Path to ffmpeg",
-      "help": "Where to find an ffmpeg to use instead of the one shipped with the application. Leave empty unless you insist on your own.",
+      "title": "Путь к ffmpeg",
+      "help": "Где найти ffmpeg, который будет использован вместо поставляемого с приложением. Оставьте пустым, если только вы не настаиваете на своём.",
       "placeholder": "/opt/homebrew/bin/ffmpeg"
     },
     "gitBinary": {
-      "title": "Path to git",
-      "help": "Where to find a git to use instead of the system one. Leave empty in nearly every case. A path holding a space is refused, and the application then behaves as it does when git is missing altogether.",
+      "title": "Путь к git",
+      "help": "Где найти git, который будет использован вместо системного. Почти во всех случаях оставьте пустым. Путь с пробелом отклоняется, и приложение ведёт себя так же, как когда git отсутствует совсем.",
       "placeholder": "/usr/bin/git"
     },
     "gitUserName": {
-      "title": "Author name",
-      "help": "The name written into every recorded version. Leave empty to take the one git already knows on this computer.",
-      "placeholder": "Your name"
+      "title": "Имя автора",
+      "help": "Имя, записываемое в каждую сохранённую версию. Оставьте пустым, чтобы взять то, которое git уже знает на этом компьютере.",
+      "placeholder": "Ваше имя"
     },
     "gitUserEmail": {
-      "title": "Author address",
-      "help": "The address written beside the name in every recorded version. Leave empty to take the one git already knows.",
+      "title": "Адрес автора",
+      "help": "Адрес, записываемый рядом с именем в каждой сохранённой версии. Оставьте пустым, чтобы взять тот, который git уже знает.",
       "placeholder": "you@example.com"
     },
     "dictationEnabled": {
-      "title": "Enable dictation",
-      "help": "Offers a microphone button beside text fields, and puts the listening shortcut into service. Switched off, dictation loads nothing and never asks for microphone access."
+      "title": "Включить диктовку",
+      "help": "Показывает кнопку микрофона рядом с текстовыми полями и вводит в строй сочетание клавиш, которое слушает. Выключенная, диктовка ничего не загружает и никогда не запрашивает доступ к микрофону."
     },
     "dictationMode": {
-      "title": "How it is triggered",
-      "help": "“Hold” listens for as long as you keep the shortcut pressed and stops the moment you let go: it is the safest, since the microphone is never left open by mistake. “Toggle” starts on the first press and stops on the next, which rests the hand over a long dictation.",
-      "pushToTalk": "Hold the key",
-      "continuous": "Toggle on and off"
+      "title": "Способ запуска",
+      "help": "«Удерживать» слушает, пока сочетание клавиш нажато, и останавливается, как только его отпустили: так безопаснее всего, микрофон никогда не остаётся открытым по забывчивости. «Переключать» запускает по первому нажатию и останавливает по следующему, что бережёт руку при долгой диктовке.",
+      "pushToTalk": "Удерживать клавишу",
+      "continuous": "Переключать вкл./выкл."
     },
     "dictationSilence": {
-      "title": "Silence that ends a sentence",
-      "help": "How much quiet, in milliseconds, before what you have just said counts as finished and gets transcribed. Raise it if your sentences are cut in half because you pause to think."
+      "title": "Тишина, завершающая фразу",
+      "help": "Сколько тишины, в миллисекундах, должно пройти, чтобы только что сказанное считалось законченным и было расшифровано. Увеличьте её, если фразы разрываются пополам из-за пауз на размышление."
     },
     "dictationPreview": {
-      "title": "Preview while you speak",
-      "help": "How long, in milliseconds, between two previews of the text being spoken. The model does not write as the words come: every preview reads back everything said since the sentence began, and so costs computation. Set it to 0 to show only the settled text of each sentence."
+      "title": "Предпросмотр во время речи",
+      "help": "Интервал в миллисекундах между двумя предпросмотрами произносимого текста. Модель не пишет по ходу речи: каждый предпросмотр перечитывает всё сказанное с начала фразы и потому стоит вычислений. Поставьте 0, чтобы показывать только окончательный текст каждой фразы."
     },
     "dictationThreads": {
-      "title": "Compute threads",
-      "help": "How many cores recognition may occupy. Higher is faster up to a point, but every thread is a core taken away from the rest of the application."
+      "title": "Потоки вычислений",
+      "help": "Сколько ядер разрешено занимать распознаванию. Больше — быстрее, до определённого предела, но каждый поток — это ядро, отнятое у остального приложения."
     },
     "dictationIdleUnload": {
-      "title": "Free the memory after",
-      "help": "Minutes without dictating before the model is unloaded, returning around 700 MB of memory. It loads itself again on the next dictation, which takes a few seconds. Set it to 0 to keep it resident."
+      "title": "Освобождать память через",
+      "help": "Сколько минут без диктовки должно пройти, прежде чем модель будет выгружена, вернув около 700 MB памяти. При следующей диктовке она загружается сама, это занимает несколько секунд. Поставьте 0, чтобы держать её в памяти постоянно."
     },
     "dictationModelFolder": {
-      "title": "Model folder",
-      "help": "Where to find a recognition model already on this disk, to use instead of the one the application downloads. Leave empty in the normal case.",
+      "title": "Папка модели",
+      "help": "Где найти модель распознавания, уже имеющуюся на этом диске, чтобы использовать её вместо той, которую скачивает приложение. В обычном случае оставьте пустым.",
       "placeholder": "/Volumes/Models/parakeet-tdt-0.6b-v3-int8"
     },
-    "defaultModel": "Default model",
-    "noDefaultModel": "Ask every time",
-    "ffmpegFound": "ffmpeg is available: proxies and waveforms will be prepared.",
-    "ffmpegMissing": "ffmpeg is still not found. Importing works, without proxy or waveform.",
-    "browse": "Browse…",
+    "defaultModel": "Модель по умолчанию",
+    "noDefaultModel": "Спрашивать каждый раз",
+    "ffmpegFound": "ffmpeg доступен: прокси и формы волны будут подготовлены.",
+    "ffmpegMissing": "ffmpeg по-прежнему не найден. Импорт работает, но без прокси и формы волны.",
+    "browse": "Обзор…",
     "accent": {
-      "title": "Accent colour",
-      "help": "The colour that marks what is selected or under way: the outline of the active panel, the timeline playhead, the frame around a selection. It changes nothing about what you make, only how the application shows you where you are. Leave it be to keep the theme’s own."
+      "title": "Цвет акцента",
+      "help": "Цвет, которым отмечено выбранное или идущее сейчас: контур активной панели, головка воспроизведения на таймлайне, рамка вокруг выделения. Он ничего не меняет в том, что вы создаёте, только в том, как приложение показывает, где вы находитесь. Оставьте его как есть, чтобы сохранить цвет темы."
     },
     "fontScale": {
-      "title": "Text size",
-      "help": "Makes every text in the application bigger or smaller at once. 1 is the size it was drawn at; above that words get larger and less fits on screen; below, the opposite. Buttons keep their size: density is what handles those."
+      "title": "Размер текста",
+      "help": "Увеличивает или уменьшает сразу весь текст приложения. 1 — исходный размер; выше слова становятся крупнее и на экране их помещается меньше; ниже — наоборот. Кнопки сохраняют свой размер: ими занимается плотность."
     },
     "reduceMotion": {
-      "title": "Limit animations",
-      "help": "Turns off the small movements of the interface: panels appear at once instead of sliding in. Useful if animation tires you or makes you queasy, and on a slower machine where it stutters."
+      "title": "Ограничить анимацию",
+      "help": "Отключает мелкие движения интерфейса: панели появляются сразу, а не выезжают. Полезно, если анимация утомляет или вызывает дурноту, и на медленной машине, где она подтормаживает."
     },
-    "general": "General",
-    "generalDescription": "The application’s language, and what it does when it opens.",
+    "general": "Общие",
+    "generalDescription": "Язык приложения и то, что оно делает при запуске.",
     "language": {
-      "title": "Language",
-      "help": "The language of every text in the application: menus, buttons, messages. “System” follows your computer’s own language. The change takes effect as soon as you click Apply or OK, with nothing to relaunch. It leaves your projects, and anything you write in them, alone.",
-      "system": "System"
+      "title": "Язык",
+      "help": "Язык всех текстов приложения: меню, кнопок, сообщений. «Системный» берёт язык вашего компьютера. Изменение вступает в силу, как только вы нажмёте Применить или ОК, перезапускать ничего не нужно. Проекты и всё, что в них написано, остаются нетронутыми.",
+      "system": "Системный"
     },
     "startup": {
-      "title": "On opening",
-      "help": "What the application does when you launch it. “Reopen the last project” puts you back where you left off. “Open nothing” starts on an empty window, which is quicker and calmer if you juggle a lot of projects.",
-      "lastProject": "Reopen the last project",
-      "nothing": "Open nothing"
+      "title": "При запуске",
+      "help": "Что приложение делает при запуске. «Открывать последний проект» возвращает туда, где вы остановились. «Ничего не открывать» начинает с пустого окна — это быстрее и спокойнее, если проектов много.",
+      "lastProject": "Открывать последний проект",
+      "nothing": "Ничего не открывать"
     },
     "autosave": {
-      "title": "Save automatically",
-      "help": "Writes open documents every thirty seconds, without waiting for your ⌘S. Whatever you have done since the last save then survives a power cut or a crash. Image documents are left out of it whatever this says: their layers are read back off the graphics card, and writing every thirty seconds would make drawing stutter."
+      "title": "Сохранять автоматически",
+      "help": "Записывает открытые документы каждые тридцать секунд, не дожидаясь ⌘S. Всё сделанное с последнего сохранения тогда переживёт отключение питания или сбой. Документы-изображения исключены из этого при любом значении: их слои перечитываются с видеокарты, и запись каждые тридцать секунд заставила бы рисование подтормаживать."
     },
     "home": {
-      "title": "Show the home screen",
-      "help": "The full-width screen the studio opens on: your projects, what you were working on, what is running, and what the models can do. Turn it off to go straight to the workspace you left. Which sections it shows, and in which order, is set on the home itself."
+      "title": "Показывать домашний экран",
+      "help": "Экран во всю ширину, на котором открывается студия: ваши проекты, то, над чем вы работали, то, что выполняется, и то, что умеют модели. Отключите его, чтобы сразу попасть в оставленное рабочее пространство. Какие разделы он показывает и в каком порядке, настраивается на самом домашнем экране."
     },
-    "modified": "Changed, not applied yet",
-    "apply": "Apply",
-    "cancel": "Cancel",
-    "confirm": "OK",
-    "discardTitle": "Some settings have not been applied",
-    "discardBody": "You changed settings without applying them. What would you like to do?",
-    "discard": "Don’t apply",
-    "shortcuts": "Shortcuts",
-    "shortcutsDescription": "The keys that trigger each action. Click a key to replace it.",
-    "pressAKey": "Press…",
-    "unbound": "None",
-    "shortcutConflict": "Two actions are fighting over this key: only one will answer.",
-    "findByChord": "Find by key",
-    "showAll": "Show all",
-    "chordFree": "No action uses this key: it is free.",
+    "modified": "Изменено, ещё не применено",
+    "apply": "Применить",
+    "cancel": "Отмена",
+    "confirm": "ОК",
+    "discardTitle": "Некоторые настройки не были применены",
+    "discardBody": "Настройки изменены, но не применены. Что сделать?",
+    "discard": "Не применять",
+    "shortcuts": "Сочетания клавиш",
+    "shortcutsDescription": "Клавиши, запускающие каждое действие. Нажмите на клавишу, чтобы заменить её.",
+    "pressAKey": "Нажмите…",
+    "unbound": "Нет",
+    "shortcutConflict": "Два действия спорят за эту клавишу: ответит только одно.",
+    "findByChord": "Найти по клавише",
+    "showAll": "Показать все",
+    "chordFree": "Ни одно действие не использует эту клавишу: она свободна.",
     "scope": {
-      "global": "Anywhere in the application",
-      "spaces": "In the bar of spaces",
-      "explorer": "In the explorer",
-      "scene": "In the 3D view",
-      "character": "In the skeleton",
-      "sequence": "In the edit",
-      "canvas": "In the image",
-      "skybox": "In the sky",
-      "audio": "In the audio editor",
-      "material": "In the material",
-      "gui": "In an interface"
+      "global": "Везде в приложении",
+      "spaces": "В панели пространств",
+      "explorer": "В проводнике",
+      "scene": "В 3D-виде",
+      "character": "В скелете",
+      "sequence": "В монтаже",
+      "canvas": "В изображении",
+      "skybox": "В небе",
+      "audio": "В аудиоредакторе",
+      "material": "В материале",
+      "gui": "В интерфейсе"
     },
-    "spaces": "Workspaces",
-    "spacesDescription": "What only makes sense inside one space: the 3D view, the edit, the image.",
-    "requires": "Has no effect while “{{setting}}” is off.",
+    "spaces": "Рабочие пространства",
+    "spacesDescription": "То, что имеет смысл только внутри одного пространства: 3D-вид, монтаж, изображение.",
+    "requires": "Не действует, пока «{{setting}}» выключено.",
     "showGrid": {
-      "title": "Show the grid",
-      "help": "The squared floor of the 3D view. It is not part of what you are making: it is a landmark for where things are and how high. Hide it to judge an image with nothing around it."
+      "title": "Показывать сетку",
+      "help": "Клетчатый пол 3D-вида. Он не часть того, что вы создаёте: это ориентир того, где находятся вещи и на какой они высоте. Сетку скрывают, чтобы оценить изображение без всего вокруг."
     },
     "gridSize": {
-      "title": "Grid size",
-      "help": "How far the grid reaches, in metres, and therefore how many squares it has — a square is always one metre. Make it bigger for a wide scene, smaller for a little object sitting near the camera."
+      "title": "Размер сетки",
+      "help": "Насколько далеко простирается сетка, в метрах, и, значит, сколько в ней клеток — клетка всегда равна одному метру. Увеличьте её для просторной сцены, уменьшите для маленького объекта рядом с камерой."
     },
     "navigationPreset": {
-      "title": "Navigation scheme",
-      "help": "Which 3D application this viewport drives like: its mouse gestures and its shortcuts. A scheme only moves what its own application does differently — everything else keeps AI Desktop Studio’s keys, including what the others have no equivalent for. Your own remaps always win.",
+      "title": "Схема навигации",
+      "help": "Какому 3D-приложению подражает этот вьюпорт: его жестам мыши и его сочетаниям клавиш. Схема меняет только то, что её приложение делает иначе — всё остальное сохраняет клавиши AI Desktop Studio, включая то, чему у других нет соответствия. Ваши собственные переназначения всегда важнее.",
       "studio": "AI Desktop Studio",
       "unreal": "Unreal Engine",
       "unity": "Unity",
       "blender": "Blender",
       "roblox": "Roblox Studio",
-      "custom": "Custom"
+      "custom": "Своя"
     },
     "navigationCustomOrbit": {
-      "title": "Turn with",
-      "help": "The gesture that rotates the view in your own scheme.",
-      "leftAlt": "Alt + left click",
-      "left": "Left click, with or without Alt",
-      "middle": "Middle button"
+      "title": "Поворот с помощью",
+      "help": "Жест, который поворачивает вид в вашей собственной схеме.",
+      "leftAlt": "Alt + левый щелчок",
+      "left": "Левый щелчок, с Alt или без",
+      "middle": "Средняя кнопка"
     },
     "navigationCustomPan": {
-      "title": "Slide sideways with",
-      "help": "The gesture that slides the view without turning it.",
-      "middle": "Middle button",
-      "middleShift": "Shift + middle button",
-      "leftAltShift": "Shift + Alt + left click"
+      "title": "Сдвиг в сторону с помощью",
+      "help": "Жест, который сдвигает вид, не поворачивая его.",
+      "middle": "Средняя кнопка",
+      "middleShift": "Shift + средняя кнопка",
+      "leftAltShift": "Shift + Alt + левый щелчок"
     },
     "navigationCustomDolly": {
-      "title": "Move in and out with",
-      "help": "The gesture that closes the view in on what it aims at, beside the wheel.",
-      "altRight": "Alt + right click",
-      "ctrlMiddle": "Ctrl + middle button",
-      "rightOntoLeft": "Right click, left already held"
+      "title": "Приближение и отдаление с помощью",
+      "help": "Жест, который приближает вид к тому, на что он нацелен, помимо колеса.",
+      "altRight": "Alt + правый щелчок",
+      "ctrlMiddle": "Ctrl + средняя кнопка",
+      "rightOntoLeft": "Правый щелчок при удерживаемом левом"
     },
     "navigationCustomFly": {
-      "title": "Movement keys",
-      "help": "When WASD belong to the camera. Held always, the letters stop being available to the scene’s commands — which is why Unity and Unreal ask for a button.",
-      "anyButton": "While a button is held",
-      "rightButton": "While the right button is held",
-      "always": "Always"
+      "title": "Клавиши перемещения",
+      "help": "Когда WASD принадлежат камере. Если это так всегда, буквы перестают быть доступны командам сцены — поэтому Unity и Unreal требуют кнопку.",
+      "anyButton": "Пока удерживается кнопка",
+      "rightButton": "Пока удерживается правая кнопка",
+      "always": "Всегда"
     },
     "orbitAroundSelection": {
-      "title": "Orbit around selection",
-      "help": "When you rotate the 3D view, it turns around whatever is selected rather than around a floating point ahead of you. That is what stops you losing your object as you close in on it. With nothing selected, or with the selection off screen, the view turns around the last point you looked at."
+      "title": "Вращать вокруг выделения",
+      "help": "При повороте 3D-вида он вращается вокруг выделенного, а не вокруг парящей впереди точки. Именно это не даёт потерять объект при приближении к нему. Если ничего не выделено или выделение вне экрана, вид вращается вокруг последней точки, на которую смотрели."
     },
     "orbitUnderCursor": {
-      "title": "Orbit under the cursor",
-      "help": "The view turns around whatever the pointer is over when you start rotating, rather than around a point set earlier. Handy for close work with no reframing; surprising if you come from Unity or Unreal, which offer no such option."
+      "title": "Вращать под курсором",
+      "help": "Вид вращается вокруг того, над чем находится указатель в момент начала поворота, а не вокруг заданной ранее точки. Удобно для работы вблизи без перекадрирования; непривычно, если вы пришли из Unity или Unreal, где такой настройки нет."
     },
     "flySpeed": {
-      "title": "Fly speed",
-      "help": "How fast the camera moves when you fly through the 3D view, in metres per second. Too slow and crossing the scene takes ten seconds; too fast and you shoot past it without seeing it."
+      "title": "Скорость полёта",
+      "help": "С какой скоростью движется камера при полёте по 3D-виду, в метрах в секунду. Слишком медленно — пересечение сцены занимает десять секунд; слишком быстро — вы проскакиваете мимо, не увидев её."
     },
     "boostFactor": {
-      "title": "Boost",
-      "help": "What the speed is multiplied by while you hold the boost key. At 3 you go three times faster — enough to cross a large scene without changing the setting above."
+      "title": "Ускорение",
+      "help": "На сколько умножается скорость, пока удерживается клавиша ускорения. При 3 движение втрое быстрее — этого хватает, чтобы пересечь большую сцену, не меняя настройку выше."
     },
     "shadows": {
-      "title": "Cast shadows",
-      "help": "Works out the shadows the lights throw. Every light that casts one costs an extra render pass per frame: turning this off is the most direct way to lighten a heavy scene."
+      "title": "Отбрасывать тени",
+      "help": "Вычисляет тени, отбрасываемые источниками света. Каждый источник, который её отбрасывает, стоит дополнительного прохода рендера на кадр: отключить это — самый прямой способ облегчить тяжёлую сцену."
     },
     "viewportQuality": {
-      "title": "Viewport quality",
-      "help": "How finely the same frame is drawn. Nothing about the models or the images changes — only the number of pixels worked out. Performance also caps how fine the shadows get.",
-      "performance": "Performance",
-      "balanced": "Balanced",
-      "high": "High"
+      "title": "Качество вьюпорта",
+      "help": "Насколько тонко отрисовывается один и тот же кадр. Ни модели, ни изображения не меняются — меняется только число вычисляемых пикселей. Режим «Производительность» также ограничивает тонкость теней.",
+      "performance": "Производительность",
+      "balanced": "Сбалансированное",
+      "high": "Высокое"
     },
     "units": {
-      "title": "Display unit",
-      "help": "The unit lengths are written and read in. One scene unit stays one metre whatever this says: it changes what is shown, never what the document holds.",
-      "mm": "Millimetres",
-      "cm": "Centimetres",
-      "m": "Metres"
+      "title": "Единица отображения",
+      "help": "Единица, в которой длины пишутся и читаются. Одна единица сцены остаётся одним метром при любом значении: меняется только показанное, но не то, что содержит документ.",
+      "mm": "Миллиметры",
+      "cm": "Сантиметры",
+      "m": "Метры"
     },
     "shadowQuality": {
-      "title": "Shadow softness",
-      "help": "The grain of a shadow’s edge. Hard cuts cleanly and costs the least; Soft smooths the edge. What throws a shadow, on the other hand, is decided object by object in the inspector.",
-      "hard": "Hard",
-      "soft": "Soft"
+      "title": "Мягкость теней",
+      "help": "Зерно края тени. «Жёсткая» режет чисто и стоит меньше всего; «Мягкая» сглаживает край. А то, что отбрасывает тень, решается объект за объектом в инспекторе.",
+      "hard": "Жёсткая",
+      "soft": "Мягкая"
     },
     "shadowMapSize": {
-      "title": "Shadow detail",
-      "help": "The side, in pixels, of the shadow map each shadow-casting light computes. Doubling it costs four times the memory: 2048 is plenty for a scene of a few objects, 4096 earns its keep when one light covers a whole set."
+      "title": "Детализация теней",
+      "help": "Сторона карты теней в пикселях, которую вычисляет каждый источник света, отбрасывающий тень. Удвоение стоит вчетверо больше памяти: 2048 с запасом хватает сцене из нескольких объектов, 4096 оправдывает себя, когда один источник освещает целую декорацию."
     },
     "snapTranslate": {
-      "title": "Move step",
-      "help": "How far an object travels in one step while snapping is on, in metres. Snapping itself is switched on from the scene toolbar; this only says how fine it is."
+      "title": "Шаг перемещения",
+      "help": "На сколько объект продвигается за один шаг при включённой привязке, в метрах. Сама привязка включается на панели инструментов сцены; это значение говорит только о том, насколько она мелкая."
     },
     "snapRotate": {
-      "title": "Rotate step",
-      "help": "The angle of one step of rotation while snapping is on, in degrees. Rotation steps on from wherever it started: 15° gives twenty-four steps per turn, 90° quarter turns."
+      "title": "Шаг поворота",
+      "help": "Угол одного шага поворота при включённой привязке, в градусах. Поворот идёт шагами от того места, где он начался: 15° даёт двадцать четыре шага на оборот, 90° — четверти оборота."
     },
     "snapScale": {
-      "title": "Scale step",
-      "help": "How much the scale moves in one step while snapping is on. What is reachable is the multiples of the step: 0.1 lands exactly on tenths and halves, 0.25 on quarters."
+      "title": "Шаг масштаба",
+      "help": "На сколько меняется масштаб за один шаг при включённой привязке. Достижимы значения, кратные шагу: 0,1 попадает ровно на десятые и половины, 0,25 — на четверти."
     },
     "gizmoSize": {
-      "title": "Handle size",
-      "help": "The MOST room the transform handles take on screen. They never grow past the object they hold: on a small part they follow its size, and beyond that they keep to this share of the view rather than growing without end."
+      "title": "Размер манипуляторов",
+      "help": "МАКСИМАЛЬНОЕ место, которое манипуляторы трансформации занимают на экране. Они никогда не вырастают больше объекта, который держат: на маленькой детали они следуют её размеру, а дальше держатся этой доли вида, вместо того чтобы расти без конца."
     },
     "snapSurfaceAlign": {
-      "title": "Align to surface",
-      "help": "While the surface snap is on, what you lay down lies along the slope it meets. Unchecked, it keeps its own orientation and only drops."
+      "title": "Ориентировать по поверхности",
+      "help": "Пока включена привязка к поверхности, положенное ложится вдоль уклона того, чего оно касается. Без флажка объект сохраняет свою ориентацию и только опускается."
     },
     "snapSurfaceOffset": {
-      "title": "Surface offset",
-      "help": "How many metres what you lay down floats above the surface. Zero rests it on contact; a few centimetres keep two faces from fighting over the same plane on screen."
+      "title": "Смещение от поверхности",
+      "help": "На сколько метров помещаемое приподнято над поверхностью. Ноль ставит его вплотную; несколько сантиметров не дают двум граням спорить за одну плоскость на экране."
     },
     "fieldOfView": {
-      "title": "Field of view",
-      "help": "How much the camera takes in, in degrees. A narrow angle pulls close and flattens, like a telephoto lens; a wide one shows far more but bends the edges. 60 is close to what an eye sees."
+      "title": "Угол обзора",
+      "help": "Сколько камера охватывает, в градусах. Узкий угол приближает и уплощает, как телеобъектив; широкий показывает намного больше, но искривляет края. 60 близко к тому, что видит глаз."
     },
-    "advanced": "Advanced",
-    "advancedDescription": "What is only needed to understand a problem, or to start over.",
-    "reveal": "Show in folder",
-    "open": "Open",
+    "advanced": "Дополнительно",
+    "advancedDescription": "То, что нужно только чтобы разобраться в проблеме или начать заново.",
+    "reveal": "Показать в папке",
+    "open": "Открыть",
     "logLevel": {
-      "title": "Log detail",
-      "help": "How much the application says about what it is doing, in the console. “Nothing” says nothing at all; “Errors” reports only what failed; “Everything” narrates each step, which helps to understand a problem and is chatty the rest of the time.",
-      "silent": "Nothing",
-      "error": "Errors only",
-      "warn": "Errors and warnings",
-      "info": "Everything"
+      "title": "Подробность журнала",
+      "help": "Насколько подробно приложение рассказывает в консоли о том, что делает. «Ничего» не сообщает вообще ничего; «Ошибки» сообщают только о том, что не удалось; «Всё» описывает каждый шаг — это помогает разобраться в проблеме и многословно в остальное время.",
+      "silent": "Ничего",
+      "error": "Только ошибки",
+      "warn": "Ошибки и предупреждения",
+      "info": "Всё"
     },
     "openLogFolder": {
-      "title": "Technical log",
-      "help": "Opens the file manager on the logs the studio writes on every launch: “main.log”, the one you will be asked for when something fails with nothing on screen, and “assistant.log”, which keeps in full what is sent to each model and what it answers.",
-      "button": "Show the technical log"
+      "title": "Технический журнал",
+      "help": "Открывает файловый менеджер на журналах, которые студия пишет при каждом запуске: «main.log» — тот, который у вас попросят, когда что-то не удалось, а на экране ничего нет, — и «assistant.log», который целиком хранит то, что отправлено каждой модели, и то, что она отвечает.",
+      "button": "Показать технический журнал"
     },
     "openSettingsFile": {
-      "title": "Settings file",
-      "help": "Opens the file manager where your settings are saved. Useful to copy them before moving to another machine, or to send them to someone helping you."
+      "title": "Файл настроек",
+      "help": "Открывает файловый менеджер там, где сохранены ваши настройки. Полезно, чтобы сделать их копию перед переездом на другую машину или отправить их тому, кто вам помогает."
     },
     "mcpEnabled": {
-      "title": "Drive the studio from outside",
-      "help": "Opens a way in on this machine alone, through which a client such as Claude Code can run the same actions the assistant runs. Anything that spends or uploads asks for a yes on screen, exactly as it does here. Switched off, nothing is listening."
+      "title": "Управлять студией извне",
+      "help": "Открывает точку входа только на этой машине: через неё клиент вроде Claude Code запускает те же действия, что и ассистент. Всё, что тратит или загружает, спрашивает согласия на экране, ровно как здесь. Когда отключено, никто не слушает."
     },
     "mcpDelegateFiles": {
-      "title": "Move and delete my files without asking me",
-      "help": "An outside client may move, rename or bin a file of your project, and put a git-tracked file back, without showing anything. The Explorer takes some of those back, never all. Unticked, every gesture is put in front of you first."
+      "title": "Перемещать и удалять мои файлы без запроса",
+      "help": "Внешний клиент может переместить, переименовать или отправить в корзину файл вашего проекта, а также вернуть назад файл, отслеживаемый git, ничего не показывая. Проводник забирает часть этих действий обратно, но никогда все. Если флажок снят, каждое действие сначала показывается на экране."
     },
     "mcpDelegateAsset": {
-      "title": "Upload to my library without asking me",
-      "help": "An outside client may send an image to your library, where it stays. It costs no creative units. Unticked, every upload is put in front of you first."
+      "title": "Загружать в мою библиотеку без запроса",
+      "help": "Внешний клиент может отправить изображение в вашу библиотеку, где оно и останется. Это не стоит креативных единиц. Если флажок снят, каждая загрузка сначала показывается на экране."
     },
     "mcpDelegateRemote": {
-      "title": "Publish to a remote server without asking me",
-      "help": "An outside client may send a branch to a remote git repository. It is the only gesture that leaves this machine, and nothing here takes it back. Arm it knowingly."
+      "title": "Публиковать на удалённый сервер без запроса",
+      "help": "Внешний клиент может отправить ветку в удалённый репозиторий git. Это единственное действие, которое покидает эту машину, и здесь ничто его не вернёт. Включать только осознанно."
     },
     "mcpDelegateBudget": {
-      "title": "Spend creative units without asking me",
-      "help": "What an outside client may spend in this window before the studio starts asking again. At zero, every spend is put in front of you first. A generation the API declines to price is never started without you, whatever this holds."
+      "title": "Тратить креативные единицы без запроса",
+      "help": "Сколько внешний клиент может потратить в этом окне, прежде чем студия снова начнёт спрашивать. На нуле каждая трата сначала показывается на экране. Генерация, которую API отказывается оценить, никогда не запускается без вас, каким бы ни было это значение."
     },
     "copyMcpCommand": {
-      "title": "Connection command",
-      "help": "Copies the line to paste in a terminal to connect a client. It holds no port and no token, so it stays true for every launch to come.",
-      "button": "Copy"
+      "title": "Команда подключения",
+      "help": "Копирует строку, которую вставляют в терминал, чтобы подключить клиент. В ней нет ни порта, ни токена, поэтому она остаётся верной для всех будущих запусков.",
+      "button": "Копировать"
     },
     "installResolveBridge": {
-      "title": "DaVinci Resolve bridge",
-      "help": "Drops a script into the folder Resolve reads, to import an edit written here from its own scripts menu. It appears without restarting Resolve. Removing it is done by hand, and Resolve only notices on its next start.",
-      "button": "Install",
-      "confirm": "A script will be written into DaVinci Resolve’s folder, on this machine. Nothing else is touched.",
-      "missing": "DaVinci Resolve was not found on this machine",
-      "missingDetail": "Its folder does not exist, so nothing was written. Install Resolve, run it once, then come back here.",
-      "missingOk": "Close"
+      "title": "Мост DaVinci Resolve",
+      "help": "Кладёт скрипт в папку, которую читает Resolve, чтобы импортировать написанный здесь монтаж из его собственного меню скриптов. Он появляется без перезапуска Resolve. Убирается вручную, и Resolve замечает это только при следующем запуске.",
+      "button": "Установить",
+      "confirm": "Скрипт будет записан в папку DaVinci Resolve на этой машине. Ничего другого не затрагивается.",
+      "missing": "DaVinci Resolve не найден на этой машине",
+      "missingDetail": "Его папки не существует, поэтому ничего не записано. Установите Resolve, запустите его один раз, затем вернитесь сюда.",
+      "missingOk": "Закрыть"
     },
     "openDevtools": {
-      "title": "Developer tools",
-      "help": "Opens the technical console of the embedded browser. It shows the log messages and the errors. For troubleshooting only: nothing in there is needed to use the software."
+      "title": "Инструменты разработчика",
+      "help": "Открывает техническую консоль встроенного браузера. Она показывает сообщения журнала и ошибки. Только для устранения неполадок: ничто из того, что там есть, не нужно для работы с программой."
     },
     "resetAll": {
-      "title": "Reset everything",
-      "help": "Puts EVERY setting back to a fresh install: theme, language, shortcuts, all of it. Your projects, images and edits are untouched — only the settings are. There is no going back.",
-      "button": "Reset",
-      "confirm": "Reset every setting? Your projects are untouched, but this cannot be undone."
+      "title": "Сбросить всё",
+      "help": "Возвращает ВСЕ настройки в состояние новой установки: тема, язык, сочетания клавиш — всё. Ваши проекты, изображения и монтажи не затронуты — только настройки. Это без возврата.",
+      "button": "Сбросить",
+      "confirm": "Сбросить все настройки? Ваши проекты не затронуты, но этот возврат назад окончателен."
     },
-    "storage": "Storage",
-    "storageDescription": "Where your projects are kept on disk.",
+    "storage": "Хранилище",
+    "storageDescription": "Где ваши проекты хранятся на диске.",
     "projectsFolder": {
-      "title": "Projects folder",
-      "help": "The folder the application offers when you create or open a project. It moves nothing: projects already created stay where they are. Leave it empty to start from wherever you last were."
+      "title": "Папка проектов",
+      "help": "Папка, которую приложение предлагает при создании или открытии проекта. Это ничего не перемещает: уже созданные проекты остаются на месте. Оставьте пустым, чтобы каждый раз начинать с последнего посещённого места."
     },
-    "cancelHint": "Drops the pending changes, without closing the window",
-    "applyHint": "Writes the changes now, and leaves the window open",
-    "confirmHint": "Writes the changes, then closes the window",
-    "browseHint": "Pick the folder in a system window",
-    "findByChordHint": "Click, then press a chord: the list keeps only what uses it",
-    "showAllHint": "Clears the filter and shows every shortcut again",
-    "captureHint": "Click, then press the chord to assign",
-    "sectionHint": "Shows the settings of this section",
-    "sectionStagedHint": "This section has changes that were not applied",
-    "searchSectionHint": "Opens the whole section, rather than the one result",
-    "searchResultHint": "Goes to the setting, in the section it belongs to",
+    "cancelHint": "Отбрасывает неприменённые изменения, не закрывая окно",
+    "applyHint": "Записывает изменения сейчас и оставляет окно открытым",
+    "confirmHint": "Записывает изменения, затем закрывает окно",
+    "browseHint": "Выбрать папку в системном окне",
+    "findByChordHint": "Щёлкните, затем нажмите сочетание: в списке останется только то, что его использует",
+    "showAllHint": "Снимает фильтр и снова показывает все сочетания клавиш",
+    "captureHint": "Щёлкните, затем нажмите сочетание, которое нужно назначить",
+    "sectionHint": "Показывает настройки этого раздела",
+    "sectionStagedHint": "В этом разделе есть неприменённые изменения",
+    "searchSectionHint": "Открывает весь раздел, а не один результат",
+    "searchResultHint": "Переходит к настройке, в тот раздел, которому она принадлежит",
     "landing": {
-      "title": "Where a generation lands",
-      "help": "When a document of the same kind is already open. With nothing open, the result opens.",
-      "ask": "Ask every time",
-      "document": "Into the open document",
-      "newTab": "In a tab of its own"
+      "title": "Куда попадает генерация",
+      "help": "Когда документ того же вида уже открыт. Если не открыто ничего, результат открывается.",
+      "ask": "Спрашивать каждый раз",
+      "document": "В открытый документ",
+      "newTab": "В отдельную вкладку"
     },
     "homeNews": {
-      "title": "Model news",
-      "help": "Reads the trending models and the articles published on Hugging Face, the host every weight of the catalogue already comes from. Unticked, the studio contacts nobody for this band."
+      "title": "Новости моделей",
+      "help": "Читает набирающие популярность модели и статьи, опубликованные на Hugging Face — узле, откуда уже приходят все веса каталога. Если флажок снят, студия ни с кем не связывается ради этой ленты."
     },
-    "mcp": "Way in (MCP)",
-    "mcpDescription": "The studio’s second door: another program on this machine — Claude Code, Cursor, any client speaking the MCP protocol — runs the same actions the assistant runs, from its own project. Shut to start with.",
-    "mcpListening": "Open: the studio is listening on 127.0.0.1:{{port}}, on this machine alone.",
-    "mcpClosed": "Shut: nothing is listening. Tick the setting above to open the door.",
-    "mcpHowTo": "Connect a client",
-    "mcpStepOpen": "Tick “Drive the studio from outside”, whenever suits you. The way in starts at once, and a client already configured finds it.",
-    "mcpStepCopy": "Copy the connection command, for a client driven from a terminal — or the configuration block, for a client that reads a file. Neither holds a port or a token.",
-    "mcpStepPaste": "Paste it into a terminal open in your project, or the block into your client’s configuration file.",
-    "mcpNothingToRedo": "Only needs doing once. What you paste names the studio as a program to start, never an address to reach, so it keeps working across every launch — including the ones where the port and the token are new, which is all of them. A client already registered under the same name is replaced; there is nothing to remove first.",
-    "mcpExamples": "What a client can do",
-    "mcpExampleGenerate": "“Find a night skybox model, prepare the generation, but do not send it.”",
-    "mcpExampleTidy": "“Sort this week’s rushes into one folder per day.”",
-    "mcpExampleScene": "“Put a sphere two metres to the right of the cube and light it warm.”",
-    "mcpGuards": "What guards the door",
-    "mcpGuardLocal": "The way in listens on this machine only: nothing from the network reaches it.",
-    "mcpGuardToken": "A new token every launch; a request without it is refused.",
-    "mcpGuardOrigin": "A request from a web page open in your browser is refused on that ground alone.",
-    "mcpGuardConsent": "Anything that spends or uploads shows on screen and waits for your yes — except what you delegated above.",
+    "mcp": "Точка входа (MCP)",
+    "mcpDescription": "Вторая дверь студии: другая программа этой машины — Claude Code, Cursor, любой клиент, говорящий по протоколу MCP, — запускает те же действия, что и ассистент, из своего собственного проекта. Изначально закрыта.",
+    "mcpListening": "Открыто: студия слушает на 127.0.0.1:{{port}}, только на этой машине.",
+    "mcpClosed": "Закрыто: никто не слушает. Отметьте настройку выше, чтобы открыть дверь.",
+    "mcpHowTo": "Подключить клиент",
+    "mcpStepOpen": "Отметьте «Управлять студией извне», когда вам удобно. Точка входа запускается сразу, и уже настроенный клиент её находит.",
+    "mcpStepCopy": "Скопируйте команду подключения — для клиента, управляемого из терминала, — или блок конфигурации, для клиента, который читает файл. Ни в той, ни в другом нет ни порта, ни токена.",
+    "mcpStepPaste": "Вставьте её в терминал, открытый в вашем проекте, или блок — в файл конфигурации вашего клиента.",
+    "mcpNothingToRedo": "Делается один раз. То, что вы вставляете, называет студию программой, которую нужно запустить, а не адресом, к которому нужно обратиться, — поэтому оно остаётся верным при всех запусках, включая те, где порт и токен новые, то есть при всех. Клиент, уже зарегистрированный под тем же именем, заменяется; удалять что-либо заранее не нужно.",
+    "mcpExamples": "Что может сделать клиент",
+    "mcpExampleGenerate": "«Найди модель ночного скайбокса, подготовь генерацию, но не отправляй её.»",
+    "mcpExampleTidy": "«Разложи исходники этой недели по одной папке на день.»",
+    "mcpExampleScene": "«Поставь сферу в двух метрах справа от куба и освети её тёплым светом.»",
+    "mcpGuards": "Что охраняет дверь",
+    "mcpGuardLocal": "Точка входа слушает только на этой машине: из сети до неё ничто не доходит.",
+    "mcpGuardToken": "Новый токен при каждом запуске; запрос без него отклоняется.",
+    "mcpGuardOrigin": "Запрос, пришедший с веб-страницы, открытой в вашем браузере, отклоняется уже по одному этому признаку.",
+    "mcpGuardConsent": "Всё, что тратит или загружает, показывается на экране и ждёт вашего согласия — кроме того, что вы делегировали выше.",
     "copyMcpConfig": {
-      "title": "Configuration block",
-      "help": "Copies the same connection as JSON, for a client configured by a file rather than by a command. Like the command, it stays true for every launch.",
-      "button": "Copy the JSON"
+      "title": "Блок конфигурации",
+      "help": "Копирует то же подключение в формате JSON, для клиента, который настраивается файлом, а не командой. Как и она, он остаётся верным при каждом запуске.",
+      "button": "Копировать JSON"
     },
-    "memory": "Assistant memory",
-    "memoryDescription": "What the assistant has learned about your projects. What it learned about a project lives in that project’s folder and travels with it; what it learned about how you work stays on this machine.",
-    "memoryProject": "This project",
-    "memoryGlobal": "This machine",
-    "memoryProjectHint": "What the assistant learned about the open project. That file travels with the folder.",
-    "memoryGlobalHint": "What the assistant learned about how you work. It never leaves this machine.",
-    "memoryGraph": "Graph",
-    "memoryGraphCount": "{{memories, number}} memories · {{links, number}} links",
-    "memoryGraphDescription": "What the assistant has learned, and what holds together. One dot per memory, a line between two that are about the same thing.",
-    "memoryGraphEmpty": "It takes at least two connected memories before a graph shows anything.",
-    "memorySearch": "Search the memory",
-    "memoryEmpty": "The assistant has learned nothing here yet.",
-    "memoryUnmatched": "No memory answers that search.",
-    "memoryNoProject": "Open a project to see what the assistant learned about it.",
-    "memoryUnreadable": "The memory file could not be read whole. What follows may be incomplete.",
-    "memoryTooNew": "This file was written by a newer build of the studio. Nothing has been changed.",
-    "memoryPin": "Pin",
-    "memoryPinHint": "A pinned memory is always given to the assistant, whatever the question.",
-    "memoryUnpin": "Unpin",
-    "memoryUnpinHint": "The assistant will only receive it when it answers the question asked.",
-    "memoryArchive": "Archive",
-    "memoryArchiveHint": "Sets it aside without erasing it: still readable, no longer given.",
-    "memoryRestore": "Put back to use",
-    "memoryRestoreHint": "The assistant may draw on it again.",
-    "memoryForget": "Forget",
-    "memoryForgetHint": "The forgetting is written into the file: nothing is erased, the trace remains.",
-    "memoryEdit": "Edit the summary",
-    "memorySource": "Written by",
-    "memorySourceAction": "an action ({{ref}})",
-    "memorySourcePerson": "you",
-    "memorySourceAssistant": "the assistant",
-    "memorySourceImport": "an import",
-    "memoryRefs": "It is about",
-    "memoryReplaces": "It replaces",
-    "memoryAlsoAbout": "is about it too",
-    "memoryLinks": "It points to",
-    "memorySupersedes": "Replaces {{id}}",
-    "memoryReindex": "Rebuild the index",
-    "memoryReindexHelp": "Reads the file back and rebuilds the search index. Nothing learned is lost.",
-    "memoryEmbed": "Compute the vectors",
-    "memoryEmbedHelp": "Lets the assistant find a memory without knowing its exact words. Needs an embedding model installed.",
-    "memoryEmbedPending_other": "{{count, number}} memories to compute",
-    "memoryEmbedNone": "Every memory has its vector.",
-    "memoryEmbedNoModel": "No embedding model is chosen. The search runs on words alone.",
-    "memoryStopEmbed": "Stop",
-    "memoryStopEmbedHelp": "What has already been computed is kept.",
-    "memoryPurge": "Forget everything",
-    "memoryPurgeHelp": "Erases this project’s memory file, and everything the assistant had learned from it.",
-    "memoryPurgeConfirm": "Erase everything the assistant learned about this project?",
-    "memoryFilterAll": "All",
-    "memoryCount_other": "{{count, number}} memories",
-    "memoryEmbedPending_one": "{{count, number}} memory to compute",
-    "memoryCount_one": "{{count, number}} memory",
-    "memoryEmbedPending_many": "{{count, number}} memories to compute",
-    "memoryCount_many": "{{count, number}} memories",
-    "memoryUpkeep": "Upkeep",
-    "memoryMerge": "Merge the duplicates",
-    "memoryMergeHelp": "Keeps the most important of each group saying the same thing, links the others to it and archives them. Nothing is erased.",
-    "memoryMergeNone": "Nothing says the same thing twice.",
-    "memoryMergeFound_one": "{{count, number}} duplicate",
-    "memoryMergeFound_many": "{{count, number}} duplicates",
-    "memoryMergeFound_other": "{{count, number}} duplicates",
-    "memoryStale": "Archive what sleeps",
-    "memoryStaleHelp": "Sets aside what nothing has drawn on for six months. Pinned memories are never touched.",
-    "memoryStaleNone": "Nothing has slept long enough.",
-    "memoryStaleFound_one": "{{count, number}} sleeping memory",
-    "memoryStaleFound_many": "{{count, number}} sleeping memories",
-    "memoryStaleFound_other": "{{count, number}} sleeping memories",
-    "memoryCompact": "Compact the file",
-    "memoryCompactHelp": "Rewrites the file with one line per standing memory. This is where what was forgotten finally leaves the disk.",
-    "memoryRelations": "What this memory touches",
-    "memoryPromote": "Keep everywhere",
-    "memoryPromoteHint": "Copies this memory into the machine’s own, so it serves in every project of yours. What the project learned stays there too.",
+    "memory": "Память ассистента",
+    "memoryDescription": "Что ассистент узнал о ваших проектах. То, что он запомнил о проекте, живёт в папке этого проекта и следует за ней; то, что он запомнил о вашей манере работать, остаётся на этой машине.",
+    "memoryProject": "Этот проект",
+    "memoryGlobal": "Эта машина",
+    "memoryProjectHint": "Что ассистент узнал об открытом проекте. Этот файл путешествует вместе с папкой.",
+    "memoryGlobalHint": "Что ассистент узнал о вашей манере работать. Это никогда не покидает эту машину.",
+    "memoryGraph": "Граф",
+    "memoryGraphCount": "{{memories, number}} записей памяти · {{links, number}} связей",
+    "memoryGraphDescription": "Что ассистент узнал и что держится вместе. Одна точка на запись памяти, линия между двумя, которые говорят об одном и том же.",
+    "memoryGraphEmpty": "Нужно не меньше двух связанных записей памяти, чтобы граф что-то показал.",
+    "memorySearch": "Искать в памяти",
+    "memoryEmpty": "Ассистент здесь пока ничего не запомнил.",
+    "memoryUnmatched": "Ни одна запись памяти не отвечает этому поиску.",
+    "memoryNoProject": "Откройте проект, чтобы увидеть, что ассистент о нём узнал.",
+    "memoryUnreadable": "Файл памяти не удалось прочитать целиком. То, что следует ниже, может быть неполным.",
+    "memoryTooNew": "Этот файл записан более новой сборкой студии. Ничего не изменено.",
+    "memoryPin": "Закрепить",
+    "memoryPinHint": "Закреплённая запись памяти всегда передаётся ассистенту, каким бы ни был вопрос.",
+    "memoryUnpin": "Открепить",
+    "memoryUnpinHint": "Ассистент получит её только тогда, когда она отвечает на заданный вопрос.",
+    "memoryArchive": "Архивировать",
+    "memoryArchiveHint": "Откладывает её в сторону, не стирая: она остаётся читаемой и больше не передаётся.",
+    "memoryRestore": "Вернуть в работу",
+    "memoryRestoreHint": "Ассистент снова сможет ею пользоваться.",
+    "memoryForget": "Забыть",
+    "memoryForgetHint": "Забывание записывается в файл: ничего не стирается, след остаётся.",
+    "memoryEdit": "Изменить сводку",
+    "memorySource": "Кем записано",
+    "memorySourceAction": "действием ({{ref}})",
+    "memorySourcePerson": "вами",
+    "memorySourceAssistant": "ассистентом",
+    "memorySourceImport": "импортом",
+    "memoryRefs": "Она говорит о",
+    "memoryReplaces": "Она заменяет",
+    "memoryAlsoAbout": "тоже говорит о ней",
+    "memoryLinks": "Она ссылается на",
+    "memorySupersedes": "Заменяет {{id}}",
+    "memoryReindex": "Перестроить индекс",
+    "memoryReindexHelp": "Перечитывает файл и перестраивает поисковый индекс. Ничего из усвоенного не теряется.",
+    "memoryEmbed": "Вычислить векторы",
+    "memoryEmbedHelp": "Позволяет ассистенту найти запись памяти, не зная её точных слов. Требует установленной модели эмбеддингов.",
+    "memoryEmbedPending_other": "{{count, number}} записи памяти для расчёта",
+    "memoryEmbedPending_few": "{{count, number}} записи памяти для расчёта",
+    "memoryEmbedNone": "У каждой записи памяти есть свой вектор.",
+    "memoryEmbedNoModel": "Модель эмбеддингов не выбрана. Поиск идёт только по словам.",
+    "memoryStopEmbed": "Остановить",
+    "memoryStopEmbedHelp": "То, что уже вычислено, сохраняется.",
+    "memoryPurge": "Забыть всё",
+    "memoryPurgeHelp": "Стирает файл памяти этого проекта и всё, что ассистент из него узнал.",
+    "memoryPurgeConfirm": "Стереть всё, что ассистент узнал об этом проекте?",
+    "memoryFilterAll": "Все",
+    "memoryCount_other": "{{count, number}} записи памяти",
+    "memoryCount_few": "{{count, number}} записи памяти",
+    "memoryEmbedPending_one": "{{count, number}} запись памяти для расчёта",
+    "memoryCount_one": "{{count, number}} запись памяти",
+    "memoryEmbedPending_many": "{{count, number}} записей памяти для расчёта",
+    "memoryCount_many": "{{count, number}} записей памяти",
+    "memoryUpkeep": "Обслуживание",
+    "memoryMerge": "Объединить дубликаты",
+    "memoryMergeHelp": "Оставляет самую важную из каждой группы, которая говорит одно и то же, связывает с ней остальные и архивирует их. Ничего не стирается.",
+    "memoryMergeNone": "Ничто не говорит одно и то же дважды.",
+    "memoryMergeFound_one": "{{count, number}} дубликат",
+    "memoryMergeFound_many": "{{count, number}} дубликатов",
+    "memoryMergeFound_other": "{{count, number}} дубликата",
+    "memoryMergeFound_few": "{{count, number}} дубликата",
+    "memoryStale": "Архивировать спящее",
+    "memoryStaleHelp": "Откладывает в сторону то, к чему ничто не обращалось полгода. Закреплённые записи памяти не трогаются никогда.",
+    "memoryStaleNone": "Ничто не спит достаточно долго.",
+    "memoryStaleFound_one": "{{count, number}} спящая запись памяти",
+    "memoryStaleFound_many": "{{count, number}} спящих записей памяти",
+    "memoryStaleFound_other": "{{count, number}} спящие записи памяти",
+    "memoryStaleFound_few": "{{count, number}} спящие записи памяти",
+    "memoryCompact": "Уплотнить файл",
+    "memoryCompactHelp": "Переписывает файл, по одной строке на каждую действующую запись памяти. Именно здесь забытое окончательно покидает диск.",
+    "memoryRelations": "Чего касается эта запись памяти",
+    "memoryPromote": "Хранить везде",
+    "memoryPromoteHint": "Копирует эту запись памяти в память машины, чтобы она служила во всех ваших проектах. То, что узнал проект, остаётся и там.",
     "gameControls": {
-      "title": "The game’s controls",
-      "help": "They are not set here. A game reads a control map of the project, filed under “Game controls” in the Explorer, and the “New control map” button creates one. This page covers the studio interface alone, and what is plugged into this computer."
+      "title": "Управление игрой",
+      "help": "Здесь оно не настраивается. Игра читает карту управления проекта, лежащую в Проводнике под «Управление игрой», а кнопка «Новая карта управления» её создаёт. Эта страница касается только интерфейса студии и того, что подключено к этому компьютеру."
     }
   }
 }

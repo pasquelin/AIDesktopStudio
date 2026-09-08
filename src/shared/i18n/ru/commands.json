@@ -1,549 +1,549 @@
 {
   "commands": {
     "scenePlay": {
-      "title": "Play scene",
-      "help": "Starts or resumes the scene in the game window."
+      "title": "Запустить сцену",
+      "help": "Запускает или возобновляет сцену в окне игры."
     },
     "appNew": {
-      "title": "New…",
-      "help": "Opens the window that makes a project or a document, from any screen"
+      "title": "Создать…",
+      "help": "Открывает окно, которое создаёт проект или документ, с любого экрана"
     },
     "projectNew": {
-      "title": "New project",
-      "help": "Creates an empty project and opens it. A project is the folder holding everything you make: the images, the videos, the sounds, and how they are arranged."
+      "title": "Новый проект",
+      "help": "Создаёт пустой проект и открывает его. Проект — это папка, в которой лежит всё, что вы делаете: изображения, видео, звуки и то, как они разложены."
     },
     "projectOpen": {
-      "title": "Open project",
-      "help": "Picks a project already on your disk and opens it in place of the current one. The open project is saved as you go, so there is nothing to save first."
+      "title": "Открыть проект",
+      "help": "Выбирает уже существующий на вашем диске проект и открывает его вместо текущего. Открытый проект сохраняется по ходу работы, так что заранее сохранять нечего."
     },
     "documentSaveAs": {
-      "title": "Save as",
-      "help": "Writes a copy of the asset beside the original and carries on with it. The asset that was open stays as it was at the last save."
+      "title": "Сохранить как",
+      "help": "Записывает копию ресурса рядом с оригиналом и продолжает работу с ней. Ресурс, который был открыт, остаётся таким, каким был на последнем сохранении."
     },
     "documentSave": {
-      "title": "Save document",
-      "help": "Writes the document in front into the project. Until it is saved, it lives in the window: the tab carries an asterisk for as long as what is on screen is not what is on disk."
+      "title": "Сохранить документ",
+      "help": "Записывает активный документ в проект. Пока он не сохранён, он живёт в окне: вкладка несёт звёздочку до тех пор, пока то, что на экране, не совпадёт с тем, что на диске."
     },
     "documentClose": {
-      "title": "Close tab",
-      "help": "Closes the document in front. If it holds unsaved work, the studio asks what to do with it. With no tab left, the window closes."
+      "title": "Закрыть вкладку",
+      "help": "Закрывает активный документ. Если в нём остались несохранённые изменения, студия спрашивает, что с ними делать. Когда не остаётся ни одной вкладки, окно закрывается."
     },
     "layoutReset": {
-      "title": "Reset layout",
-      "help": "Puts the panels back where they started. Useful once the windows have been dragged all over and nothing is where you expect. Your work is untouched."
+      "title": "Сбросить расположение панелей",
+      "help": "Возвращает панели туда, где они были изначально. Полезно, когда окна растащены во все стороны и ничего не найти на своём месте. Ваша работа при этом не затрагивается."
     },
     "appSettings": {
-      "title": "Settings",
-      "help": "Opens the settings window — this one: the language, the colours, the account, the shortcuts, and everything else that is adjustable."
+      "title": "Настройки",
+      "help": "Открывает окно настроек — вот это самое: язык, цвета, аккаунт, сочетания клавиш и всё остальное, что настраивается."
     },
     "appAssistant": {
-      "title": "Assistant",
-      "help": "Opens the window where you say what you want done, by voice or by keyboard. The assistant carries it out itself, and asks for a yes before anything that costs."
+      "title": "Ассистент",
+      "help": "Открывает окно, где вы говорите, что нужно сделать, голосом или с клавиатуры. Ассистент выполняет это сам и спрашивает согласия перед всем, что стоит денег."
     },
     "appDictate": {
-      "title": "Dictate",
-      "help": "Listens to the microphone and writes what you say at the caret, in the field you are in. Held down by default: speak, let go, the text appears."
+      "title": "Диктовать",
+      "help": "Слушает микрофон и пишет сказанное на месте курсора, в том поле, где вы находитесь. По умолчанию удерживается нажатой: говорите, отпускаете — текст появляется."
     },
     "windowFullScreen": {
-      "title": "Full screen",
-      "help": "Gives the window the whole screen, with no bar and no border, to work with nothing around it."
+      "title": "Полный экран",
+      "help": "Отдаёт окну весь экран, без панели и без рамки, чтобы работать, когда вокруг ничего нет."
     },
     "spacesMoveLeft": {
-      "title": "Move the space left",
-      "help": "Shifts the focused space one place to the left in the top bar. The order you settle on is kept from one session to the next."
+      "title": "Переместить пространство влево",
+      "help": "Сдвигает на одно место влево пространство, на котором находится фокус, в верхней панели. Выбранный порядок сохраняется от сеанса к сеансу."
     },
     "spacesMoveRight": {
-      "title": "Move the space right",
-      "help": "Shifts the focused space one place to the right in the top bar. The order you settle on is kept from one session to the next."
+      "title": "Переместить пространство вправо",
+      "help": "Сдвигает на одно место вправо пространство, на котором находится фокус, в верхней панели. Выбранный порядок сохраняется от сеанса к сеансу."
     },
     "explorerNewFolder": {
-      "title": "New folder",
-      "help": "Creates an empty folder inside the one the explorer is showing, and opens its name for typing. The folder is yours, as is everything you put in it."
+      "title": "Новая папка",
+      "help": "Создаёт пустую папку внутри той, что показывает проводник, и открывает её имя для ввода. Папка принадлежит вам, как и всё, что вы в неё кладёте."
     },
     "explorerDuplicate": {
-      "title": "Duplicate",
-      "help": "Lays a copy of each chosen item beside the original, under the first free name. A folder is copied with everything inside it."
+      "title": "Дублировать",
+      "help": "Кладёт копию каждого выбранного элемента рядом с оригиналом, под первым свободным именем. Папка копируется со всем, что в ней лежит."
     },
     "explorerCut": {
-      "title": "Cut",
-      "help": "Holds the selection, to be moved on the next paste. Nothing moves until you paste, and the rows being held are drawn dimmed."
+      "title": "Вырезать",
+      "help": "Удерживает выделение, чтобы переместить его при следующей вставке. Ничего не двигается, пока вы не вставите, и удерживаемые строки рисуются приглушёнными."
     },
     "explorerCopy": {
-      "title": "Copy",
-      "help": "Holds the selection, to be copied on the next paste. The original stays where it is."
+      "title": "Копировать",
+      "help": "Удерживает выделение, чтобы скопировать его при следующей вставке. Оригинал остаётся на месте."
     },
     "explorerPaste": {
-      "title": "Paste",
-      "help": "Drops what the clipboard holds into the folder on screen. An item whose name is already taken is refused, and the rest go through."
+      "title": "Вставить",
+      "help": "Кладёт то, что держит буфер обмена, в показанную на экране папку. Элемент, чьё имя уже занято, отклоняется, а остальные проходят."
     },
     "explorerTrash": {
-      "title": "Move to trash",
-      "help": "Sends the selection to the system trash, where you can get it back. It is the one explorer gesture the studio cannot undo."
+      "title": "Переместить в корзину",
+      "help": "Отправляет выделение в системную корзину, откуда его можно вернуть. Это единственный жест проводника, который студия не умеет отменить."
     },
     "explorerUndo": {
-      "title": "Undo the last file gesture",
-      "help": "Puts the last batch moved, renamed, duplicated or created back where it was. The stack belongs to the project rather than to a window, and the trash gesture never enters it."
+      "title": "Отменить последний жест над файлами",
+      "help": "Возвращает на место последнюю партию перемещённых, переименованных, продублированных или созданных файлов. Стек принадлежит проекту, а не окну, и отправка в корзину в него никогда не попадает."
     },
     "explorerRedo": {
-      "title": "Redo the file gesture",
-      "help": "Redoes the batch of files that was just undone, exactly as it was."
+      "title": "Повторить жест над файлами",
+      "help": "Заново выполняет только что отменённую партию файлов, в точности как было."
     },
     "sceneSelect": {
-      "title": "Select",
-      "help": "The plain tool: click an object in the scene to choose it, without doing anything to it. It is the one you come back to between manipulations."
+      "title": "Выделить",
+      "help": "Простой инструмент: щелчок по объекту сцены выбирает его, ничего с ним не делая. К нему возвращаются между двумя манипуляциями."
     },
     "sceneTranslate": {
-      "title": "Move",
-      "help": "Drags the chosen object from one place to another, by pulling the coloured arrows — one per direction."
+      "title": "Переместить",
+      "help": "Перетаскивает выбранный объект из одного места в другое, за цветные стрелки — по одной на направление."
     },
     "sceneRotate": {
-      "title": "Rotate",
-      "help": "Turns the chosen object on itself, by pulling the coloured rings — one per axis."
+      "title": "Повернуть",
+      "help": "Вращает выбранный объект вокруг себя, за цветные кольца — по одному на ось."
     },
     "sceneScale": {
-      "title": "Scale",
-      "help": "Makes the chosen object bigger or smaller, by pulling its handles. Holding Shift keeps its proportions."
+      "title": "Масштабировать",
+      "help": "Увеличивает или уменьшает выбранный объект, за его ручки. Удержание Shift сохраняет пропорции."
     },
     "sceneFrame": {
-      "title": "Frame selection",
-      "help": "Brings the camera close enough that the chosen object fills the view. Handy when you are lost, or when an object is tiny."
+      "title": "Навести на выделение",
+      "help": "Подводит камеру к выбранному объекту настолько, чтобы он заполнил вид. Удобно, когда вы потерялись или объект крошечный."
     },
     "sceneFrameFollow": {
-      "title": "Follow the selection",
-      "help": "Frames the selection and keeps it in view: whatever moves takes the camera along, at the angle and distance already chosen. Called again, it lets go."
+      "title": "Следовать за выделением",
+      "help": "Наводит на выделение и удерживает его в виде: то, что движется, уводит камеру за собой, не меняя угол и расстояние. При повторном вызове отпускает."
     },
     "sceneIsolate": {
-      "title": "Isolate selection",
-      "help": "Leaves only the chosen objects on screen while you work on them. Nothing is changed: pressing it again gives the scene back exactly as it was, including the objects you had hidden yourself."
+      "title": "Изолировать выделение",
+      "help": "Оставляет на экране только выбранные объекты на время работы с ними. Ничего не изменяется: повторное нажатие возвращает сцену ровно такой, какой она была, включая объекты, которые вы скрыли сами."
     },
     "sceneHide": {
-      "title": "Hide selection",
-      "help": "Takes the chosen objects out of the view without touching the document. Show all brings them back."
+      "title": "Скрыть выделение",
+      "help": "Убирает выбранные объекты из отображения, не трогая документ. «Показать всё» возвращает их обратно."
     },
     "sceneShowAll": {
-      "title": "Show all",
-      "help": "Undoes the hiding and isolating done from the viewport. Objects the document itself declares hidden stay hidden."
+      "title": "Показать всё",
+      "help": "Отменяет скрытие и изоляцию, сделанные из вьюпорта. Объекты, которые сам документ объявляет скрытыми, остаются скрытыми."
     },
     "sceneSnap": {
-      "title": "All snaps",
-      "help": "Turns all four snaps on or off at once — surface, grid, angle, scale. A second press gives back exactly the ones that were on. The bar at the top of the viewport sets them one by one."
+      "title": "Все привязки",
+      "help": "Включает или выключает разом все четыре привязки — по поверхности, по сетке, по углу, по масштабу. Второе нажатие возвращает ровно те, что были включены. Панель вверху вьюпорта настраивает их по одной."
     },
     "sceneSpace": {
-      "title": "Local frame",
-      "help": "Lines the handles up with the object’s own orientation rather than the world’s. On a turned object, that is what lets you move it “towards its front” rather than north."
+      "title": "Локальные координаты",
+      "help": "Выравнивает ручки по собственной ориентации объекта, а не по ориентации мира. На повёрнутом объекте именно это и позволяет двигать его «вперёд себя», а не на север."
     },
     "sceneProjection": {
-      "title": "Projection",
-      "help": "Switches between perspective, where receding lines converge, and orthographic projection, where parallels stay parallel. That is what lets an alignment be judged by eye."
+      "title": "Проекция",
+      "help": "Переключает между перспективой, где уходящие линии сходятся, и ортографической проекцией, где параллели остаются параллельными. Именно это и позволяет оценить выравнивание на глаз."
     },
     "sceneViewFront": {
-      "title": "Look from the front",
-      "help": "Puts the camera in front of the scene, square to the axis. The reference view for judging a silhouette."
+      "title": "Смотреть спереди",
+      "help": "Ставит камеру перед сценой, выровненную по оси. Опорный вид для оценки силуэта."
     },
     "sceneViewBack": {
-      "title": "Look from behind",
-      "help": "Puts the camera behind the scene, on the same axis: what the front hides."
+      "title": "Смотреть сзади",
+      "help": "Ставит камеру позади сцены, на той же оси: то, что скрывает передняя сторона."
     },
     "sceneViewRight": {
-      "title": "Look from the right",
-      "help": "Puts the camera on the right-hand side, square to the axis. What a depth is judged from."
+      "title": "Смотреть справа",
+      "help": "Ставит камеру с правой стороны, выровненную по оси. То, по чему судят о глубине."
     },
     "sceneViewLeft": {
-      "title": "Look from the left",
-      "help": "Puts the camera on the left-hand side, on the same axis as the right view."
+      "title": "Смотреть слева",
+      "help": "Ставит камеру с левой стороны, на той же оси, что и вид справа."
     },
     "sceneViewTop": {
-      "title": "Look from above",
-      "help": "Puts the camera above the scene, looking straight down. What the objects are laid out on the ground from."
+      "title": "Смотреть сверху",
+      "help": "Ставит камеру над сценой, вертикально вниз. То, по чему объекты раскладывают по земле."
     },
     "sceneViewBottom": {
-      "title": "Look from below",
-      "help": "Puts the camera under the scene, looking straight up, the other way from the top view."
+      "title": "Смотреть снизу",
+      "help": "Ставит камеру под сценой, вертикально вверх, в другую сторону, чем вид сверху."
     },
     "sceneViewCamera": {
-      "title": "Look through the camera",
-      "help": "Draws the view through the chosen camera, and steps back out on a second call. With no camera chosen, it takes the first in the scene."
+      "title": "Смотреть через камеру",
+      "help": "Проводит вид через выбранную камеру и выходит из неё при втором вызове. Если камера не выбрана, берёт первую в сцене."
     },
     "sceneQuad": {
-      "title": "Four views",
-      "help": "Splits the viewport in four — top, front and side around the view being flown. Each quarter orbits under the pointer; the flown one keeps the gizmos."
+      "title": "Четыре вида",
+      "help": "Делит вьюпорт на четыре части — сверху, спереди и сбоку вокруг текущего вида. Каждая четверть вращается под указателем; текущий вид сохраняет гизмо."
     },
     "sceneQuadEdges": {
-      "title": "Quad edges",
-      "help": "Redraws the wireframe without the diagonals triangulation added. A GLB never holds quads: this is a reconstruction by angle, faithful except on strongly curved surfaces."
+      "title": "Рёбра по квадам",
+      "help": "Перерисовывает каркас без диагоналей, добавленных триангуляцией. Файл GLB никогда не содержит квадов: это реконструкция по углу, точная везде, кроме сильно изогнутых поверхностей."
     },
     "sceneDisplay": {
-      "title": "Display mode",
-      "help": "Cycles what the viewport draws: the surfaces, their edges alone, or both together. The button’s menu picks one directly."
+      "title": "Режим отображения",
+      "help": "Перебирает то, что рисует вьюпорт: поверхности, только их рёбра или и то и другое вместе. В меню кнопки выбор делается напрямую."
     },
     "sceneCapture": {
-      "title": "Capture the view",
-      "help": "Saves an image of the 3D view into the project’s images — without the grid, the handles or the rails. The menu offers resolutions larger than the panel’s own."
+      "title": "Захватить вид",
+      "help": "Сохраняет изображение 3D-вида в изображения проекта — без сетки, ручек и путей. Меню предлагает разрешения больше собственного разрешения панели."
     },
     "sceneAdd": {
-      "title": "Add",
-      "help": "Opens the list of what a scene can take: meshes, lights and objects. A right-click on empty space opens the same list."
+      "title": "Добавить",
+      "help": "Открывает список того, что может принять сцена: меши, источники света и объекты. Правый щелчок по пустому месту открывает тот же список."
     },
     "sceneAddToSheet": {
-      "title": "Add to the animation band",
-      "help": "Puts the selected objects on the band, where keys are set. The band shows only what is put there, so a scene of thousands of objects stays readable."
+      "title": "Добавить на ленту анимации",
+      "help": "Кладёт выбранные объекты на ленту, где ставятся ключи. Лента показывает только то, что на неё положили, поэтому сцена из тысяч объектов остаётся читаемой."
     },
     "sceneRemoveFromSheet": {
-      "title": "Remove from the animation band",
-      "help": "Removes the line from the band. Keys already set stay, and an object keeps its line for as long as it holds one."
+      "title": "Убрать с ленты анимации",
+      "help": "Убирает строку с ленты. Уже поставленные ключи остаются, и объект сохраняет свою строку, пока она у него есть."
     },
     "sceneGroup": {
-      "title": "Group",
-      "help": "Files the selected objects under one group. Moving the group moves them all, and ⌘Z takes the grouping back."
+      "title": "Сгруппировать",
+      "help": "Складывает выбранные объекты под одну группу. Перемещение группы перемещает их все, а ⌘Z отменяет группировку."
     },
     "sceneDuplicate": {
-      "title": "Duplicate",
-      "help": "Puts a copy of the selection under the same parent and at the very same place, then selects it. A group duplicates whole, with everything hanging from it."
+      "title": "Дублировать",
+      "help": "Кладёт копию выделения под тем же родителем и ровно на том же месте, затем выделяет её. Группа дублируется целиком, со всем, что под ней висит."
     },
     "sceneOptimizeSelection": {
-      "title": "Optimise selection…",
-      "help": "Measures the selection and previews a SAFE runtime representation before changing its optimisation settings."
+      "title": "Оптимизировать выделение…",
+      "help": "Измеряет выделение и показывает SAFE-представление рантайма до изменения его настроек оптимизации."
     },
     "sceneWorldPerformance": {
-      "title": "World performance…",
-      "help": "Measures the whole scene and reports SAFE optimisation opportunities without changing the authoring world."
+      "title": "Производительность мира…",
+      "help": "Измеряет всю сцену и сообщает о возможностях SAFE-оптимизации, не изменяя авторский мир."
     },
     "sceneExportGame": {
-      "title": "Export the game…",
-      "help": "Builds a standalone game from an optimised runtime copy while leaving the authoring scenes untouched."
+      "title": "Экспортировать игру…",
+      "help": "Собирает автономную игру из оптимизированной копии рантайма, не трогая сцены редактирования."
     },
     "sceneCopy": {
-      "title": "Copy",
-      "help": "Holds on to the selection so it can be pasted, here or in another scene. This is the studio’s own clipboard: it leaves the system one alone."
+      "title": "Копировать",
+      "help": "Удерживает выделенное, чтобы вставить его здесь или в другой сцене. Это собственный буфер обмена студии: системный он не трогает."
     },
     "sceneCut": {
-      "title": "Cut",
-      "help": "Holds on to the selection and takes it out of the scene. ⌘Z brings it back."
+      "title": "Вырезать",
+      "help": "Удерживает выделенное и убирает его из сцены. ⌘Z возвращает его обратно."
     },
     "scenePaste": {
-      "title": "Paste",
-      "help": "Puts what was copied into the scene in front, and selects it. Pasting twice makes two separate copies."
+      "title": "Вставить",
+      "help": "Помещает скопированное в текущую сцену и выделяет его. Вставка дважды даёт две отдельные копии."
     },
     "sceneDelete": {
-      "title": "Delete",
-      "help": "Removes everything selected from the scene. Nothing is lost for good: ⌘Z brings it back."
+      "title": "Удалить",
+      "help": "Убирает из сцены всё выделенное. Ничто не теряется навсегда: ⌘Z возвращает это обратно."
     },
     "undo": {
-      "title": "Undo",
-      "help": "Takes back the last thing you did in this document. Each document has its own stack: undo acts on the tab in front, not on the others."
+      "title": "Отменить",
+      "help": "Отменяет последнее действие в этом документе. У каждого документа свой стек: отмена действует на текущую вкладку, а не на остальные."
     },
     "redo": {
-      "title": "Redo",
-      "help": "Does again what you have just undone. Handy after undoing once too often."
+      "title": "Повторить",
+      "help": "Заново выполняет то, что было только что отменено. Полезно, когда отмена зашла на один шаг дальше нужного."
     },
     "sequencePlayPause": {
-      "title": "Play / Pause",
-      "help": "Starts playing the edit, or stops it where it is. Starting again picks up where you left off."
+      "title": "Воспроизвести / Пауза",
+      "help": "Запускает воспроизведение монтажа или останавливает его на месте. Повторный запуск продолжает с того же места."
     },
     "sequenceExport": {
-      "title": "Export video…",
-      "help": "Writes the edit out as a video file, frame by frame, 3D scenes included. The sound is not in it yet."
+      "title": "Экспортировать видео…",
+      "help": "Записывает монтаж в видеофайл, кадр за кадром, включая 3D-сцены. Звука в нём пока нет."
     },
     "sequenceExportCut": {
-      "title": "Export edit (OTIO)…",
-      "help": "Writes the edit itself out as an OpenTimelineIO file, which other editing applications open — tracks, clips, in points, speeds and links to the media. Fades, gains and image/sound links travel in it too, but only AI Desktop Studio reads them back."
+      "title": "Экспортировать монтаж (OTIO)…",
+      "help": "Записывает сам монтаж в файл OpenTimelineIO, который открывают другие монтажные программы — дорожки, клипы, точки входа, скорости и ссылки на медиафайлы. Затухания, усиления и связи изображения со звуком тоже путешествуют в нём, но обратно их читает только AI Desktop Studio."
     },
     "sequenceExportEdl": {
-      "title": "Export edit list (EDL)…",
-      "help": "Writes the cuts and their timecodes as CMX3600, which every online room reads. The format holds one image track and two sound ones, and nothing of the fades, the gains or the speeds."
+      "title": "Экспортировать монтажный лист (EDL)…",
+      "help": "Записывает склейки и их тайм-коды в формате CMX3600, который читает любая монтажная. Формат несёт одну дорожку изображения и две звуковые, и ничего из затуханий, усилений и скоростей."
     },
     "sequenceExportFcpxml": {
-      "title": "Export edit (FCPXML)…",
-      "help": "Writes the edit in the format Final Cut reads and Premiere and Resolve import. The tracks survive, a lane each, and so does the frame size; the fades, the gains and the speeds stay here."
+      "title": "Экспортировать монтаж (FCPXML)…",
+      "help": "Записывает монтаж в формате, который читает Final Cut и импортируют Premiere и Resolve. Дорожки сохраняются, каждая на своей полосе, и размер кадра тоже; затухания, усиления и скорости остаются здесь."
     },
     "sequenceExportStems": {
-      "title": "Export sound per track (WAV)…",
-      "help": "Writes one WAV per audible track, mixed the way the edit plays it — the placements, the trims, the fades, the gains and the speeds are baked into the samples. A muted track is not written."
+      "title": "Экспортировать звук по дорожкам (WAV)…",
+      "help": "Записывает один файл WAV на каждую слышимую дорожку, сведённый так, как его играет монтаж, — размещения, подрезки, затухания, усиления и скорости запечены в отсчётах. Заглушённая дорожка не записывается."
     },
     "sequenceExportBundle": {
-      "title": "Export edit with its media (OTIOZ)…",
-      "help": "Writes the same edit with the media it uses inside the file. This is the one to hand to somebody else, or to open in DaVinci Resolve, which then finds the rushes on its own instead of asking for them one by one."
+      "title": "Экспортировать монтаж с медиафайлами (OTIOZ)…",
+      "help": "Записывает тот же монтаж вместе с медиафайлами, которые он использует, внутри одного файла. Именно его передают другому человеку или открывают в DaVinci Resolve, который тогда сам находит исходники, вместо того чтобы просить их по одному."
     },
     "montageImport": {
-      "title": "Import an edit with its media (OTIOZ)…",
-      "help": "Opens an edit written by another application, rushes and all. The media are copied into the project and enter the catalogue, then the edit opens linked to them. What the opened file does not bring is said as it opens, and starts from its default only there."
+      "title": "Импортировать монтаж с медиафайлами (OTIOZ)…",
+      "help": "Открывает монтаж, записанный другой программой, вместе с исходниками. Медиафайлы копируются в проект и попадают в каталог, затем монтаж открывается связанным с ними. О том, чего открытый файл не несёт, сообщается при открытии, и только там это берётся из значения по умолчанию."
     },
     "sequenceMirror": {
-      "title": "Return window",
-      "help": "Opens the edit in a window of its own, to put on a second screen. It follows the studio frame by frame, without the sound, and closes like any window."
+      "title": "Окно возврата",
+      "help": "Открывает монтаж в отдельном окне, чтобы поставить его на второй экран. Оно следует за студией кадр за кадром, без звука, и закрывается как любое окно."
     },
     "sequenceSplit": {
-      "title": "Split clip",
-      "help": "Cuts the clip in two where the playhead sits, so each half can be handled on its own."
+      "title": "Разрезать клип",
+      "help": "Разрезает клип надвое там, где стоит головка воспроизведения, чтобы работать с каждой половиной отдельно."
     },
     "sequenceDelete": {
-      "title": "Delete clip",
-      "help": "Removes the chosen clip from the edit. The original file stays in your assets."
+      "title": "Удалить клип",
+      "help": "Убирает выбранный клип из монтажа. Исходный файл остаётся среди ресурсов."
     },
     "sequenceUnlink": {
-      "title": "Unlink picture and sound",
-      "help": "Separates the two clips of one take. While they are linked, moving, cutting or deleting one does the same to the other."
+      "title": "Разъединить изображение и звук",
+      "help": "Разделяет два клипа одного дубля. Пока они связаны, перемещение, разрезание или удаление одного делает то же самое с другим."
     },
     "sequenceZoomIn": {
-      "title": "Zoom in",
-      "help": "Spreads the edit out to see detail: clips get wider and are easier to aim at."
+      "title": "Приблизить",
+      "help": "Растягивает монтаж, чтобы видеть детали: клипы становятся шире, и по ним легче попадать."
     },
     "sequenceZoomOut": {
-      "title": "Zoom out",
-      "help": "Draws the edit together to see more of it at once, at the cost of the detail."
+      "title": "Отдалить",
+      "help": "Сжимает монтаж, чтобы видеть больше сразу, ценой детализации."
     },
     "sequenceFit": {
-      "title": "Fit to view",
-      "help": "Sets the zoom so the whole edit fits on screen, end to end."
+      "title": "Показать целиком",
+      "help": "Подбирает масштаб так, чтобы весь монтаж уместился на экране, от начала до конца."
     },
     "sequenceStart": {
-      "title": "Go to start",
-      "help": "Brings the playhead right back to the beginning of the edit, moving nothing else."
+      "title": "Перейти в начало",
+      "help": "Возвращает головку воспроизведения в самое начало монтажа, ничего больше не сдвигая."
     },
     "sequenceEnd": {
-      "title": "Go to end",
-      "help": "Sends the playhead right to the end of the edit, past the last clip."
+      "title": "Перейти в конец",
+      "help": "Отправляет головку воспроизведения в самый конец монтажа, за последний клип."
     },
     "canvasZoomIn": {
-      "title": "Zoom in",
-      "help": "Magnifies the view one step, around the middle of what is visible. The image itself is untouched — only the way it is looked at."
+      "title": "Приблизить",
+      "help": "Увеличивает вид на один шаг, вокруг центра видимого. Само изображение не затрагивается — только способ смотреть на него."
     },
     "canvasZoomOut": {
-      "title": "Zoom out",
-      "help": "Shrinks the view one step, to take in the whole image again."
+      "title": "Отдалить",
+      "help": "Уменьшает вид на один шаг, чтобы снова охватить изображение целиком."
     },
     "canvasZoomFit": {
-      "title": "Fit to window",
-      "help": "Frames the whole image in the panel, with a margin, and never magnifies it past its actual size."
+      "title": "Вписать в окно",
+      "help": "Вписывает всё изображение в панель, с полем, и никогда не увеличивает его сверх реального размера."
     },
     "canvasZoomActual": {
-      "title": "Actual size",
-      "help": "One image pixel per screen pixel: the only scale at which sharpness can be judged."
+      "title": "Реальный размер",
+      "help": "Один пиксель изображения на пиксель экрана: единственный масштаб, на котором судят о резкости."
     },
     "canvasRulers": {
-      "title": "Rulers",
-      "help": "Shows or hides the two graduated rulers, at the top and on the left. Guides are pulled off them."
+      "title": "Линейки",
+      "help": "Показывает или скрывает две градуированные линейки, сверху и слева. Именно от них тянут направляющие."
     },
     "canvasGuides": {
-      "title": "Guides",
-      "help": "Shows or hides the guides laid on the image. Hiding them does not remove them."
+      "title": "Направляющие",
+      "help": "Показывает или скрывает направляющие, положенные на изображение. Скрытие их не удаляет."
     },
     "canvasGrid": {
-      "title": "Pixel grid",
-      "help": "Shows or hides the grid of the artwork’s own pixels. Only on a document set to pixel art."
+      "title": "Пиксельная сетка",
+      "help": "Показывает или скрывает сетку собственных пикселей работы. Только на документе в режиме пиксель-арта."
     },
     "canvasClearGuides": {
-      "title": "Clear guides",
-      "help": "Removes every guide from the image. Undoable, like any other edit."
+      "title": "Убрать направляющие",
+      "help": "Убирает с изображения все направляющие. Отменяемо, как любое другое изменение."
     },
     "canvasSnap": {
-      "title": "Snap",
-      "help": "Makes what is dragged stick to guides, to the image edges and to its centre, within a few pixels."
+      "title": "Привязка",
+      "help": "Заставляет перетаскиваемое прилипать к направляющим, к краям изображения и к его центру, с точностью до нескольких пикселей."
     },
     "canvasSelectAll": {
-      "title": "Select all",
-      "help": "Selects the whole document, which the system’s own select-all cannot do on an image."
+      "title": "Выделить всё",
+      "help": "Выделяет весь документ — то, чего системное выделение всего не умеет на изображении."
     },
     "canvasDeselect": {
-      "title": "Deselect",
-      "help": "Drops the selected region, so the brush reaches the whole layer again."
+      "title": "Снять выделение",
+      "help": "Отбрасывает выделенную область: кисть снова достаёт до всего слоя."
     },
     "canvasCropApply": {
-      "title": "Apply the crop",
-      "help": "Trims the document to the placed frame. ⌘Z gives the frame back, not the pixels."
+      "title": "Применить кадрирование",
+      "help": "Обрезает документ по поставленной рамке. ⌘Z возвращает рамку, но не пиксели."
     },
     "canvasCropCancel": {
-      "title": "Abandon the crop",
-      "help": "Takes the crop frame away without trimming anything at all."
+      "title": "Отказаться от кадрирования",
+      "help": "Убирает рамку кадрирования, ничего при этом не обрезая."
     },
     "canvasMaskFromSelection": {
-      "title": "Make a mask of the selection",
-      "help": "Hides the active layer outside the selected region."
+      "title": "Сделать маску из выделения",
+      "help": "Скрывает активный слой за пределами выделенной области."
     },
     "canvasRegenerate": {
-      "title": "Regenerate the region",
-      "help": "Asks the model to repaint the masked region of the active layer."
+      "title": "Перегенерировать область",
+      "help": "Просит модель перерисовать замаскированную область активного слоя."
     },
     "canvasCutout": {
-      "title": "Cut out",
-      "help": "Removes the background of the flattened image with the default model."
+      "title": "Удалить фон",
+      "help": "Убирает фон сведённого изображения моделью по умолчанию."
     },
     "canvasEnlarge": {
-      "title": "Upscale",
-      "help": "Raises the resolution of the flattened image with the default model."
+      "title": "Апскейл",
+      "help": "Повышает разрешение сведённого изображения моделью по умолчанию."
     },
     "canvasVectorize": {
-      "title": "Vectorise",
-      "help": "Turns the flattened image into paths with the default model."
+      "title": "Векторизовать",
+      "help": "Превращает сведённое изображение в контуры моделью по умолчанию."
     },
     "canvasExtend": {
-      "title": "Extend",
-      "help": "Asks the model to paint beyond the edges of the flattened image."
+      "title": "Расширить",
+      "help": "Просит модель дорисовать за краями сведённого изображения."
     },
     "canvasMergeDown": {
-      "title": "Merge down",
-      "help": "Joins the active layer and the one just below it into one, keeping the lower one’s name."
+      "title": "Объединить с нижним",
+      "help": "Соединяет активный слой и тот, что прямо под ним, в один, сохраняя имя нижнего."
     },
     "canvasFlatten": {
-      "title": "Flatten image",
-      "help": "Reduces the whole stack to a single layer: hidden layers are dropped, not merged.",
-      "layerName": "Background"
+      "title": "Свести изображение",
+      "help": "Сводит всю стопку к одному слою: скрытые слои отбрасываются, а не объединяются.",
+      "layerName": "Фон"
     },
     "canvasFlipHorizontal": {
-      "title": "Flip horizontal",
-      "help": "Mirrors the whole document left to right, layers included."
+      "title": "Отразить по горизонтали",
+      "help": "Отражает весь документ слева направо, включая слои."
     },
     "canvasFlipVertical": {
-      "title": "Flip vertical",
-      "help": "Mirrors the whole document top to bottom, layers included."
+      "title": "Отразить по вертикали",
+      "help": "Отражает весь документ сверху вниз, включая слои."
     },
     "canvasRotateCw": {
-      "title": "Rotate clockwise",
-      "help": "Turns the document a quarter turn to the right: the frame turns with it."
+      "title": "Повернуть по часовой стрелке",
+      "help": "Поворачивает документ на четверть оборота вправо: рамка поворачивается вместе с ним."
     },
     "canvasRotateCcw": {
-      "title": "Rotate counter-clockwise",
-      "help": "Turns the document a quarter turn to the left: the frame turns with it."
+      "title": "Повернуть против часовой стрелки",
+      "help": "Поворачивает документ на четверть оборота влево: рамка поворачивается вместе с ним."
     },
     "canvasExport": {
-      "title": "Export the image",
-      "help": "Writes the flattened document to disk, as a PNG."
+      "title": "Экспортировать изображение",
+      "help": "Записывает сведённый документ на диск в формате PNG."
     },
     "canvasExportLayered": {
-      "title": "Export the layers (PSD)…",
-      "help": "Writes the document with its layers, as a Photoshop file. Groups are flattened away: their layers arrive side by side."
+      "title": "Экспортировать слои (PSD)…",
+      "help": "Записывает документ со слоями в файл Photoshop. Группы сводятся: их слои приходят рядом друг с другом."
     },
     "skyboxView": {
-      "title": "Change the view",
-      "help": "Cycles through the four ways of looking at the sky: immersive, panoramic, cross, faces."
+      "title": "Сменить вид",
+      "help": "Перебирает четыре способа смотреть на небо: погружение, панорама, крест, грани."
     },
     "skyboxProbes": {
-      "title": "Light probes",
-      "help": "Shows or hides the witness spheres. A sky is judged by what it lights, not by its own image."
+      "title": "Зонды света",
+      "help": "Показывает или скрывает контрольные сферы. Небо судят по тому, что оно освещает, а не по его собственному изображению."
     },
     "canvasToolMove": {
-      "title": "Move tool",
-      "help": "Arms the pointer: a drag moves the active layer, and its handles resize or turn it."
+      "title": "Инструмент «Перемещение»",
+      "help": "Взводит указатель: перетаскивание перемещает активный слой, а его манипуляторы меняют размер или поворачивают его."
     },
     "canvasToolHand": {
-      "title": "Hand tool",
-      "help": "Arms the hand: a drag pans the view without touching the document. Holding space does the same without changing tool."
+      "title": "Инструмент «Рука»",
+      "help": "Взводит руку: перетаскивание сдвигает вид, не трогая документ. Удержание пробела делает то же самое без смены инструмента."
     },
     "canvasToolCrop": {
-      "title": "Crop tool",
-      "help": "Arms the crop frame. Draw a frame, then ⏎ to crop or ⎋ to drop it."
+      "title": "Инструмент «Кадрирование»",
+      "help": "Взводит рамку кадрирования. Нарисовать рамку, затем ⏎ — обрезать, ⎋ — отказаться."
     },
     "canvasToolSelectRectangle": {
-      "title": "Rectangular selection",
-      "help": "Arms the rectangular selection. What is selected bounds the brush, the eraser and the bucket."
+      "title": "Прямоугольное выделение",
+      "help": "Взводит прямоугольное выделение. Выделенное ограничивает кисть, ластик и заливку."
     },
     "canvasToolSelectEllipse": {
-      "title": "Elliptical selection",
-      "help": "Arms the elliptical selection: a drag inscribes the ellipse in the rectangle swept, and Shift makes it a circle."
+      "title": "Эллиптическое выделение",
+      "help": "Взводит эллиптическое выделение: перетаскивание вписывает эллипс в описанный прямоугольник, а Shift делает из него круг."
     },
     "canvasToolSelectLasso": {
-      "title": "Lasso",
-      "help": "Arms the lasso: the selection follows the hand, freehand."
+      "title": "Лассо",
+      "help": "Взводит лассо: выделение идёт за рукой, произвольным контуром."
     },
     "canvasToolSmartSelect": {
-      "title": "Click Smart Select",
-      "help": "Arms object selection from a click, using the local selection model."
+      "title": "Клик — умное выделение",
+      "help": "Взводит выделение объекта по клику с помощью локальной модели выделения."
     },
     "canvasToolSmartSelectBox": {
-      "title": "Rectangle Smart Select",
-      "help": "Arms object selection from an approximate box, using the local selection model."
+      "title": "Прямоугольник — умное выделение",
+      "help": "Взводит выделение объекта в приблизительном прямоугольнике с помощью локальной модели выделения."
     },
     "canvasToolShapeRectangle": {
-      "title": "Rectangle shape",
-      "help": "Arms drawing a rectangle on the active layer; Shift makes it a square."
+      "title": "Фигура «Прямоугольник»",
+      "help": "Взводит рисование прямоугольника на активном слое; Shift делает из него квадрат."
     },
     "canvasToolShapeLine": {
-      "title": "Line shape",
-      "help": "Arms drawing a line. Same group as the rectangle, hence its key with Shift added."
+      "title": "Фигура «Линия»",
+      "help": "Взводит рисование линии. Та же группа, что и прямоугольник, отсюда та же клавиша с добавленным Shift."
     },
     "canvasToolShapeArrow": {
-      "title": "Arrow shape",
-      "help": "Arms drawing an arrow, from where the drag began to where the hand lets go."
+      "title": "Фигура «Стрелка»",
+      "help": "Взводит рисование стрелки, от места, где началось перетаскивание, до места, где рука отпускает."
     },
     "canvasToolShapeEllipse": {
-      "title": "Ellipse shape",
-      "help": "Arms drawing an ellipse on the active layer; Shift makes it a circle."
+      "title": "Фигура «Эллипс»",
+      "help": "Взводит рисование эллипса на активном слое; Shift делает из него круг."
     },
     "canvasToolShapePolygon": {
-      "title": "Polygon shape",
-      "help": "Arms drawing a regular polygon, whose number of sides is set in the inspector before drawing."
+      "title": "Фигура «Многоугольник»",
+      "help": "Взводит рисование правильного многоугольника, число сторон которого задаётся в инспекторе до рисования."
     },
     "canvasToolShapeStar": {
-      "title": "Star shape",
-      "help": "Arms drawing a star, whose number of points is set in the inspector before drawing."
+      "title": "Фигура «Звезда»",
+      "help": "Взводит рисование звезды, число лучей которой задаётся в инспекторе до рисования."
     },
     "canvasToolBrush": {
-      "title": "Brush tool",
-      "help": "Arms the brush, with a softened edge. It paints on the active layer, bounded by the selection when there is one."
+      "title": "Инструмент «Кисть»",
+      "help": "Взводит кисть с мягким краем. Она пишет по активному слою, ограниченная выделением, если оно есть."
     },
     "canvasToolPencil": {
-      "title": "Pencil tool",
-      "help": "Arms the pencil, with a hard edge: the same gesture as the brush, without the softening."
+      "title": "Инструмент «Карандаш»",
+      "help": "Взводит карандаш с жёстким краем: тот же жест, что и кистью, но без смягчения."
     },
     "canvasToolText": {
-      "title": "Text tool",
-      "help": "Arms text: a click places a caption, whose words are typed in the inspector."
+      "title": "Инструмент «Текст»",
+      "help": "Взводит текст: клик ставит надпись, слова которой набираются в инспекторе."
     },
     "canvasToolEraser": {
-      "title": "Eraser tool",
-      "help": "Arms the point eraser: it clears where the hand passes, bounded by the selection when there is one."
+      "title": "Инструмент «Ластик»",
+      "help": "Взводит точечный ластик: он стирает там, где проходит рука, ограниченный выделением, если оно есть."
     },
     "canvasToolFill": {
-      "title": "Paint bucket tool",
-      "help": "Arms the bucket: a click fills the layer, or the selection when there is one."
+      "title": "Инструмент «Заливка»",
+      "help": "Взводит заливку: клик заполняет слой или выделение, если оно есть."
     },
     "canvasToolPicker": {
-      "title": "Eyedropper tool",
-      "help": "Arms the eyedropper: a click takes the colour under the pointer and hands it to the brush."
+      "title": "Инструмент «Пипетка»",
+      "help": "Взводит пипетку: клик берёт цвет под указателем и отдаёт его кисти."
     },
     "canvasBrushSmaller": {
-      "title": "Smaller brush",
-      "help": "Narrows the brush, the eraser and the shape stroke by one step of the scale."
+      "title": "Уменьшить кисть",
+      "help": "Сужает кисть, ластик и штрих фигур на один шаг шкалы."
     },
     "canvasBrushLarger": {
-      "title": "Larger brush",
-      "help": "Widens the brush, the eraser and the shape stroke by one step of the scale."
+      "title": "Увеличить кисть",
+      "help": "Расширяет кисть, ластик и штрих фигур на один шаг шкалы."
     },
     "sceneSkeletons": {
-      "title": "Show skeletons",
-      "help": "Draws the bones of every rigged model over the scene."
+      "title": "Показать скелеты",
+      "help": "Рисует кости каждой модели со скелетом поверх сцены."
     },
     "scenePoseMode": {
-      "title": "Pose mode",
-      "help": "Switches between picking objects and picking the bones of a rig."
+      "title": "Режим позы",
+      "help": "Переключает между выбором объектов и выбором костей рига."
     },
     "sceneNavigate": {
-      "title": "Navigate",
-      "help": "Move through the scene as in a game: the mouse holds the view, W A S D travel, E and Q rise and fall. The wheel sets the speed. Escape gives the mouse back."
+      "title": "Навигация",
+      "help": "Перемещаться по сцене как в игре: мышь держит взгляд, W A S D перемещают, E и Q поднимают и опускают. Колесо задаёт скорость. Escape возвращает мышь."
     },
     "sceneNegate": {
-      "title": "Negate",
-      "help": "Marks the selected shapes as tools: they are cut out of the others, whichever button is pressed next and in whatever order they were clicked. A marked shape shows translucent red. Press again to take the mark off."
+      "title": "Вычесть",
+      "help": "Помечает выделенные формы как инструменты: они будут прорезаны в остальных, какая бы кнопка ни была нажата дальше и в каком бы порядке по ним ни кликали. Помеченная форма показывается полупрозрачным красным. Повторное нажатие снимает метку."
     },
     "sceneCarve": {
-      "title": "Carve",
-      "help": "Cuts the shapes marked Negate — failing that, the smaller ones — out of the biggest selected shape: a cube set inside a wall opens a window in it. The order of the clicks changes nothing. The original shapes are kept — Separate gives them back."
+      "title": "Прорезать",
+      "help": "Прорезает формы с меткой «Вычесть» — а если их нет, самые мелкие — в самой крупной выделенной форме: куб, поставленный в стену, открывает в ней окно. Порядок кликов ничего не меняет. Исходные формы сохраняются — «Разделить» их возвращает."
     },
     "sceneWeld": {
-      "title": "Join",
-      "help": "Merges the selected shapes into a single solid. A shape marked Negate is cut out of it instead of being added to it. The original shapes are kept — Separate gives them back."
+      "title": "Объединить",
+      "help": "Соединяет выделенные формы в одно тело. Форма с меткой «Вычесть» прорезается в нём, а не добавляется к нему. Исходные формы сохраняются — «Разделить» их возвращает."
     },
     "sceneIntersect": {
-      "title": "Keep overlap",
-      "help": "Keeps only the part where the selected shapes overlap, and throws the rest away. A shape marked Negate is cut out of it instead of being kept. The original shapes are kept — Separate gives them back."
+      "title": "Оставить общее",
+      "help": "Оставляет только ту часть, где выделенные формы перекрываются, а остальное выбрасывает. Форма с меткой «Вычесть» прорезается в ней, а не сохраняется. Исходные формы сохраняются — «Разделить» их возвращает."
     },
     "sceneInvertCarve": {
-      "title": "Flip the fold",
-      "help": "Folds the same shapes the other way round: what was carved becomes the matter, and the matter becomes the tool. One click, no undo — for the fold that ran backwards."
+      "title": "Обратить вычитание",
+      "help": "Складывает те же формы наоборот: то, что было прорезано, становится материалом, а материал становится инструментом. Один клик, без отмены — для операции, которая пошла в обратную сторону."
     },
     "sceneSeparate": {
-      "title": "Separate",
-      "help": "Breaks a solid apart and gives back the shapes it was made of, each where it stood."
+      "title": "Разделить",
+      "help": "Разбирает тело и возвращает формы, из которых оно было сделано, каждую там, где она стояла."
     }
   }
 }
