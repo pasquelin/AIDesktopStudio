@@ -235,7 +235,7 @@
       },
       "assetsCounts": {
         "title": "Contar el catálogo del proyecto",
-        "description": "Devuelve cuántas imágenes, vídeos, recursos de audio, modelos 3D, cielos y animaciones contiene este proyecto en esta máquina, contados en el catálogo en lugar de listándolos. Se devuelve cada naturaleza, incluidas aquellas cuyo recuento vale cero."
+        "description": "Devuelve cuántas imágenes, vídeos, recursos de audio, modelos 3D, skyboxes y animaciones contiene este proyecto en esta máquina, contados en el catálogo en lugar de listándolos. Se devuelve cada naturaleza, incluidas aquellas cuyo recuento vale cero."
       },
       "assetGet": {
         "title": "Leer recursos",
@@ -1716,7 +1716,7 @@
       "skyboxExport": "Exporta un cielo",
       "skyboxSun": "Mueve el sol",
       "skyboxApply": "Aplica este cielo a mi escena",
-      "skyboxOpen": "Abre un cielo del proyecto"
+      "skyboxOpen": "Abre una skybox del proyecto"
     },
     "unserved": "Ningún modelo responde por el asistente. Elige uno y podrá trabajar aquí.",
     "chooseModelHint": "Abre el gestor de IA, donde se elige el modelo del asistente.",
