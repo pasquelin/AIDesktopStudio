@@ -148,6 +148,37 @@ function writeRuntimeManifest(manifest) {
   )
 }
 
+/**
+ * 🛑 `uv pip install` reads no project config, so the index `engine/pyproject.toml` declares for
+ * Linux is named here too: the export asks for `torch==2.14.0+cpu`, which PyPI does not carry at
+ * all. `unsafe-best-match` because the default stops at the first index holding ANY version of a
+ * package, and PyPI holds torch.
+ *
+ * Safe despite the name: every line of the export is hash-pinned, so no index can substitute
+ * anything for anything.
+ */
+function installRequirements(python, requirements) {
+  execFileSync(
+    'uv',
+    [
+      'pip',
+      'install',
+      '--python',
+      python,
+      '--exact',
+      '--only-binary',
+      ':all:',
+      '--extra-index-url',
+      'https://download.pytorch.org/whl/cpu',
+      '--index-strategy',
+      'unsafe-best-match',
+      '--requirement',
+      requirements,
+    ],
+    { cwd: ROOT, stdio: 'inherit' },
+  )
+}
+
 export function prepareEngineRuntime(platform = process.platform, arch = process.arch) {
   const python = pythonOf(platform)
   if (!existsSync(python)) throw new Error('Fetch the embedded Python runtime before preparing it')
@@ -171,21 +202,7 @@ export function prepareEngineRuntime(platform = process.platform, arch = process
       ],
       { cwd: ROOT, stdio: 'inherit' },
     )
-    execFileSync(
-      'uv',
-      [
-        'pip',
-        'install',
-        '--python',
-        python,
-        '--exact',
-        '--only-binary',
-        ':all:',
-        '--requirement',
-        requirements,
-      ],
-      { cwd: ROOT, stdio: 'inherit' },
-    )
+    installRequirements(python, requirements)
     const sitePackages = sitePackagesOf(python)
     removeBytecode(join(RUNTIME, 'python'))
     const manifest = runtimeManifest(sitePackages, platform, arch)
