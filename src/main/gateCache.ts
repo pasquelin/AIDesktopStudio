@@ -2,6 +2,9 @@ import { execFileSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
+// Relative and with the extension, because `scripts/gate.mjs` imports this from bare Node, which
+// resolves neither the `@shared` alias nor a missing extension.
+import { byCodeUnit } from '../shared/text.ts'
 import type { GateLink } from './gateLinks'
 
 /**
@@ -43,7 +46,7 @@ export function filesRead(root: string, reads: readonly string[]): string[] {
       ...ask(root, 'ls-files', '-z', '--others', '--exclude-standard', '--', ...paths),
       ...(whole ? ask(root, 'ls-files', '-z', '--others', '--', ...IGNORED_BUT_READ) : []),
     ]),
-  ].sort()
+  ].sort(byCodeUnit)
 }
 
 /** A path git lists and disk no longer has is a deletion, which must move the fingerprint. */
