@@ -20,7 +20,7 @@
     "dist": "pnpm build && bash scripts/dist.sh",
     "preview": "electron-vite preview",
     "typecheck": "tsc --noEmit -p config/tsconfig.node.json && tsc --noEmit -p config/tsconfig.web.json && tsc --noEmit -p config/tsconfig.banc.json",
-    "test": "vitest run",
+    "test": "node scripts/vitest.mjs whole run",
     "test:watch": "vitest",
     "bench": "vitest bench --run",
     "banc": "vitest run --config config/vitest.banc.config.ts",
