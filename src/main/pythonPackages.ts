@@ -42,37 +42,15 @@ export const BUILD_ONLY_PYTHON: readonly string[] = [
 ]
 
 /**
- * 🛑 **Locked, distributed on Linux, and their licences have NEVER been read.**
+ * 🛑 **EMPTY, and it has to stay so.** It held the CUDA stack: under Linux the PyPI `torch` wheel
+ * pulled it unconditionally — 5 638 MB of embedded runtime against 684 on macOS, measured
+ * 2026-09-08 — and no such environment materialises here, so `collect-python-licences.mjs` had
+ * never read a `METADATA` for any of it and the notice a Linux release shipped was INCOMPLETE.
  *
- * Measured 2026-08-22: under `platform_system == "Linux"` the `torch` wheel pulls the CUDA stack
- * unconditionally — 4,7 Go against 682 Mo on macOS. None of it materialises on this machine, so
- * `collect-python-licences.mjs` has never seen a `METADATA` for any of it, and the notice a Linux
- * release ships is therefore INCOMPLETE.
- *
- * Written here rather than filtered away in silence: reading them needs one run of the collector
- * on a Linux machine, and until that happens this list is the size of the hole.
+ * `engine/pyproject.toml` now takes `torch` from the PyTorch CPU index on Linux, so none of it is
+ * locked, downloaded or distributed any more. A name reappearing here is a licence hole reopening.
  */
-export const UNREAD_ON_THIS_PLATFORM: readonly string[] = [
-  'cuda-bindings',
-  'cuda-pathfinder',
-  'cuda-toolkit',
-  'nvidia-cublas',
-  'nvidia-cuda-cupti',
-  'nvidia-cuda-nvrtc',
-  'nvidia-cuda-runtime',
-  'nvidia-cudnn-cu13',
-  'nvidia-cufft',
-  'nvidia-cufile',
-  'nvidia-curand',
-  'nvidia-cusolver',
-  'nvidia-cusparse',
-  'nvidia-cusparselt-cu13',
-  'nvidia-nccl-cu13',
-  'nvidia-nvjitlink',
-  'nvidia-nvshmem-cu13',
-  'nvidia-nvtx',
-  'triton',
-]
+export const UNREAD_ON_THIS_PLATFORM: readonly string[] = []
 
 /**
  * 🛑 **Locked, distributed everywhere, and their licences have NOT been read yet.**
