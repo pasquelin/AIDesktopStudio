@@ -43,6 +43,7 @@
 <link rel="stylesheet" href="{{root}}assets/css/style.css">
 <link rel="stylesheet" href="{{root}}assets/css/content.css">
 <link rel="stylesheet" href="{{root}}assets/css/responsive.css">
+<link rel="stylesheet" href="{{root}}assets/css/aiModels.css">
 
 <script type="application/ld+json">
 {{jsonld}}
@@ -91,6 +92,7 @@
   </nav>
 
   <div class="bar-right">
+    {{aiModelsNav}}
     <a class="chip chip--nav" href="#architecture">{{nav.architecture}}</a>
     <a class="chip chip--nav" href="#docs">{{nav.docs}}</a>
     <a class="chip chip--nav" href="https://github.com/pasquelin/AIDesktopStudio" target="_blank" rel="noopener">{{nav.source}}</a>
@@ -191,6 +193,8 @@
        le rythme.
        ================================================================ -->
   {{workspaces}}
+  {{aiModels}}
+  {{architecture}}
 
 
   <!-- ================================================================

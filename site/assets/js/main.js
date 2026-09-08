@@ -219,7 +219,6 @@
       page: maxScroll > 0 ? clamp(scrollY / maxScroll, 0, 1) : 0,
       stageRect: stage && !stageCompleted ? stage.getBoundingClientRect() : null,
       pinH: stagePin && !stageCompleted ? stagePin.offsetHeight : 0,
-      pinRectTop: stagePin && !stageCompleted ? stagePin.getBoundingClientRect().top : 0,
       pinTop: stagePin && !stageCompleted ? parseFloat(getComputedStyle(stagePin).top) : 0,
       stageH: stage && !stageCompleted ? stage.offsetHeight : 0
     };
@@ -307,13 +306,10 @@
     return hole;
   }
 
-  function completeStage(frame) {
+  function completeStage() {
     stageCompleted = true;
     stageOpened = 1;
     stageTransit = null;
-    var travel = frame.stageH - frame.pinH;
-    var rest = wide.matches && travel > 0 ? clamp((frame.pinRectTop - frame.stageRect.top) / travel, 0, 1) : 0;
-    stage.style.setProperty('--stage-rest', rest);
     stage.classList.add('stage--complete');
     stagePin.style.transform = '';
     stageFrame.style.transform = 'scale(1.0000)';
@@ -333,7 +329,7 @@
         opened += (stageTransit.opened - opened) * weight;
         if (weight === 0) { stageTransit = null; stagePin.style.transform = ''; }
       }
-      if (opened >= 1) { completeStage(frame); return 0; }
+      if (opened >= 1) { completeStage(); return 0; }
       stageOpened = opened;
       var scale = 0.60 + 0.40 * opened;
       stageFrame.style.transform = 'scale(' + scale.toFixed(4) + ')';
@@ -344,7 +340,7 @@
         clamp(frame.stageRect.bottom / (vh * 0.8), 0, 1)
       );
     }
-    if (stageFrame && !wide.matches) completeStage(frame);
+    if (stageFrame && !wide.matches) completeStage();
     return 0;
   }
 

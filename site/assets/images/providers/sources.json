@@ -1,0 +1,11 @@
+{
+  "scenario.png": "https://www.scenario.com/favicon-196x196.png",
+  "anthropic.png": "https://cdn.prod.website-files.com/67ce28cfec624e2b733f8a52/67d31dd7aa394792257596c5_webclip.png",
+  "google.svg": "https://www.gstatic.com/lamda/images/gemini_sparkle_aurora_33f86dc0c0257da337c63.svg",
+  "deepseek.ico": "https://www.deepseek.com/favicon.ico",
+  "openrouter.png": "https://openrouter.ai/favicon/glyph.png",
+  "openai.svg": "https://cdn.jsdelivr.net/npm/@lobehub/icons-static-svg@latest/icons/openai.svg",
+  "xai.svg": "https://cdn.jsdelivr.net/npm/@lobehub/icons-static-svg@latest/icons/xai.svg",
+  "mistral.svg": "https://cdn.jsdelivr.net/npm/@lobehub/icons-static-svg@latest/icons/mistral-color.svg",
+  "tripo.svg": "https://cdn.jsdelivr.net/npm/@lobehub/icons-static-svg@latest/icons/tripo-color.svg"
+}

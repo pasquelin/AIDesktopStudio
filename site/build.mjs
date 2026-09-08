@@ -84,11 +84,10 @@ for (const locale of locales) {
    remplacement, donc un partiel passé comme VALEUR publiait ses marqueurs en clair — 141 par page,
    121 distincts, dans les 15 langues (04/09). La forme fonction neutralise les `$&` du HTML injecté. */
 const PARTIALS = join(HERE, 'partials')
-let template = await readFile(join(HERE, 'template.html'), 'utf8')
+const template = await readFile(join(HERE, 'template.html'), 'utf8')
+const partials = new Map()
 for (const file of existsSync(PARTIALS) ? await readdir(PARTIALS) : []) {
-  if (!file.endsWith('.html')) continue
-  const partial = await readFile(join(PARTIALS, file), 'utf8')
-  template = template.replaceAll(`{{${file.slice(0, -'.html'.length)}}}`, () => partial)
+  if (file.endsWith('.html')) partials.set(file, await readFile(join(PARTIALS, file), 'utf8'))
 }
 const { version } = JSON.parse(await readFile(join(ROOT, 'package.json'), 'utf8'))
 
@@ -98,6 +97,12 @@ const pathOf = (lang) => (lang === DEFAULT_LANG ? '' : `${lang}/`)
 for (const locale of locales) {
   const { lang } = locale.meta
   const dir = pathOf(lang)
+  let localizedTemplate = template
+  for (const [file, fallback] of partials) {
+    const localized = join(PARTIALS, lang, file)
+    const partial = existsSync(localized) ? await readFile(localized, 'utf8') : fallback
+    localizedTemplate = localizedTemplate.replaceAll(`{{${file.slice(0, -'.html'.length)}}}`, () => partial)
+  }
 
   // Les autres langues déclarées aux moteurs de recherche, plus le repli x-default.
   const alternates = [
@@ -168,7 +173,7 @@ for (const locale of locales) {
   }
 
   const missing = []
-  const html = template.replace(/\{\{([\w.]+)\}\}/g, (_, key) => {
+  const html = localizedTemplate.replace(/\{\{([\w.]+)\}\}/g, (_, key) => {
     const value = values[key] ?? lookup(locale, key)
     if (value === undefined) missing.push(key)
     // Les valeurs portent du balisage volontaire (<code>, <a>, <br />) : c'est notre

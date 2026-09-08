@@ -81,13 +81,8 @@
   .hero-mascot-slot { height: min(522px, 63vw); margin-top: 20px; }
 }
 
-.stage--complete .stage__pin {
-  position: relative;
-  top: calc((190vh - (100svh - var(--bar-h))) * var(--stage-rest, 0));
-}
-@media (max-width: 860px) {
-  .stage--complete .stage__pin { top: 0; }
-}
+.stage--complete { height: auto; }
+.stage--complete .stage__pin { position: relative; top: 0; height: auto; }
 
 /* Ambiance : un contrôle dédié, voisin du téléchargement. */
 .chip--ambient { padding: 0; width: 36px; flex: none; justify-content: center; background: transparent; cursor: pointer; }

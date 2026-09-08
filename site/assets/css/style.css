@@ -382,7 +382,7 @@ main, .footer { position: relative; z-index: 2; }
 
 .specs {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1px;
   margin-top: clamp(60px, 8vw, 110px);
   background: var(--edge);
@@ -390,6 +390,7 @@ main, .footer { position: relative; z-index: 2; }
   border-radius: 12px;
   overflow: hidden;
 }
+@media (max-width: 999px) { .specs { grid-template-columns: minmax(0, 1fr); } }
 .spec { background: var(--panel); padding: 30px 28px 34px; }
 .spec dt {
   font-family: var(--mono); font-size: 11px; letter-spacing: .14em;
