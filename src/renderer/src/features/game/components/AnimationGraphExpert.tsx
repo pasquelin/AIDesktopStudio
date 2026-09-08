@@ -12,8 +12,9 @@ import { Button } from '@/components/Button'
 import { PropertySection } from '@/components/PropertySection'
 import { SelectField } from '@/components/SelectField'
 import { TextField } from '@/components/TextField'
+import { FieldActions } from '@/components/FieldActions'
 import { ToolButton } from '@/components/ToolButton'
-import { FIELD_HELP, PANEL_GROUP_LABEL } from '@/components/styles'
+import { FIELD_HELP, PANEL_GROUP_LABEL_WIDE } from '@/components/styles'
 import { FIELD_BLOCK } from '@/components/panelStyles'
 import { cn } from '@/helpers/cn'
 import { TIP_LEFT } from '@/helpers/tooltip'
@@ -105,17 +106,18 @@ export function AnimationGraphExpert({ graph, onChange }: AnimationGraphExpertPr
         {graph.parameters.map((parameter, at) => (
           <div key={`${parameter.id}:${at}`} className={FIELD_BLOCK}>
             <div className="flex items-center gap-2">
-              <span className={PANEL_GROUP_LABEL}>
+              <span className={PANEL_GROUP_LABEL_WIDE}>
                 {t('game.animationGraph.parameterRank', { rank: at + 1 })}
               </span>
-              <span className="flex-1" />
-              <ToolButton
-                icon={mdiTrashCanOutline}
-                label={t('game.animationGraph.removeParameter')}
-                tooltip={TIP_LEFT}
-                variant="row"
-                onClick={() => changedParameter(at, null)}
-              />
+              <FieldActions>
+                <ToolButton
+                  icon={mdiTrashCanOutline}
+                  label={t('game.animationGraph.removeParameter')}
+                  tooltip={TIP_LEFT}
+                  variant="row"
+                  onClick={() => changedParameter(at, null)}
+                />
+              </FieldActions>
             </div>
             <TextField
               scId={`animationGraph.parameter.${at}.id`}

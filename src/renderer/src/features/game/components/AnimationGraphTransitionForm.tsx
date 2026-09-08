@@ -13,8 +13,9 @@ import { MAX_CLIP_FADE } from '@shared/domain/sceneModel'
 import { Button } from '@/components/Button'
 import { NumberField } from '@/components/NumberField'
 import { SelectField } from '@/components/SelectField'
+import { FieldActions } from '@/components/FieldActions'
 import { ToolButton } from '@/components/ToolButton'
-import { PANEL_GROUP_LABEL } from '@/components/styles'
+import { PANEL_GROUP_LABEL, PANEL_GROUP_LABEL_WIDE } from '@/components/styles'
 import { FIELD_BLOCK } from '@/components/panelStyles'
 import { TIP_LEFT } from '@/helpers/tooltip'
 import { AnimationGraphConditionRow } from './AnimationGraphConditionRow'
@@ -59,17 +60,18 @@ export function AnimationGraphTransitionForm({
   return (
     <div className={FIELD_BLOCK}>
       <div className="flex items-center gap-2">
-        <span className={PANEL_GROUP_LABEL}>
+        <span className={PANEL_GROUP_LABEL_WIDE}>
           {t('game.animationGraph.transitionRank', { rank })}
         </span>
-        <span className="flex-1" />
-        <ToolButton
-          icon={mdiTrashCanOutline}
-          label={t('game.animationGraph.removeTransition')}
-          tooltip={TIP_LEFT}
-          variant="row"
-          onClick={() => onChange(null)}
-        />
+        <FieldActions>
+          <ToolButton
+            icon={mdiTrashCanOutline}
+            label={t('game.animationGraph.removeTransition')}
+            tooltip={TIP_LEFT}
+            variant="row"
+            onClick={() => onChange(null)}
+          />
+        </FieldActions>
       </div>
 
       <div className="flex flex-col gap-2">

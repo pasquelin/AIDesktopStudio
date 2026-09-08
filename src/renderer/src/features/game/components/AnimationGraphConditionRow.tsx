@@ -9,8 +9,9 @@ import {
 import { NumberField } from '@/components/NumberField'
 import { SelectField } from '@/components/SelectField'
 import { ToggleField } from '@/components/ToggleField'
+import { FieldActions } from '@/components/FieldActions'
 import { ToolButton } from '@/components/ToolButton'
-import { PANEL_GROUP_LABEL } from '@/components/styles'
+import { PANEL_GROUP_LABEL_WIDE } from '@/components/styles'
 import { FIELD_BLOCK } from '@/components/panelStyles'
 import { TIP_LEFT } from '@/helpers/tooltip'
 
@@ -58,17 +59,18 @@ export function AnimationGraphConditionRow({
   return (
     <div className={FIELD_BLOCK}>
       <div className="flex items-center gap-2">
-        <span className={PANEL_GROUP_LABEL}>
+        <span className={PANEL_GROUP_LABEL_WIDE}>
           {t('game.animationGraph.conditionRank', { rank })}
         </span>
-        <span className="flex-1" />
-        <ToolButton
-          icon={mdiTrashCanOutline}
-          label={t('inspector.removeCondition')}
-          tooltip={TIP_LEFT}
-          variant="row"
-          onClick={() => onChange(null)}
-        />
+        <FieldActions>
+          <ToolButton
+            icon={mdiTrashCanOutline}
+            label={t('inspector.removeCondition')}
+            tooltip={TIP_LEFT}
+            variant="row"
+            onClick={() => onChange(null)}
+          />
+        </FieldActions>
       </div>
       <SelectField
         scId={`${scId}.param`}
