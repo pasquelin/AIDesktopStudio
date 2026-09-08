@@ -276,9 +276,9 @@
     "section": {
       "title": "Componentes",
       "add": "Adicionar um componente",
-      "addHint": "Dar a este objeto algo a fazer enquanto o jogo roda",
+      "addHint": "Dá a este objeto algo a fazer enquanto o jogo roda",
       "remove": "Desanexar",
-      "removeHint": "Desanexar este componente do objeto",
+      "removeHint": "Desanexa este componente do objeto",
       "empty": "Este objeto não faz nada enquanto o jogo roda.",
       "emptyHint": "Um componente diz o que o objeto FAZ, enquanto o seu tipo diz o que ele desenha."
     },

@@ -931,7 +931,7 @@
       },
       "worldSetToneMapping": {
         "title": "Imposta come viene resa la scena",
-        "description": "Sceglie come l’ampia gamma dinamica viene riportata sullo schermo, e di quanti stop viene esposta. Entrambe appartengono al documento, non alla finestra che si trova a guardarlo."
+        "description": "Sceglie come l’ampia gamma dinamica viene riportata sullo schermo, e di quanti stop viene esposta. Entrambi appartengono al documento, non alla finestra che si trova a guardarlo."
       },
       "gitStatus": {
         "title": "Leggi lo stato delle versioni del repository",
@@ -966,7 +966,7 @@
         "description": "Fa passare delle modifiche in ciò che porterà la prossima versione registrata. Risponde con lo stato lasciato, così non serve rileggere nulla."
       },
       "gitUnstage": {
-        "title": "Deindicizza dei file",
+        "title": "Togli dei file dall’indice",
         "description": "Toglie delle modifiche da ciò che porterà la prossima versione registrata, senza toccare i file stessi."
       },
       "gitRestore": {
@@ -1223,7 +1223,7 @@
       },
       "memoryRecall": {
         "title": "Ritrova ciò che è stato appreso",
-        "description": "Cerca ciò che l’assistente ha CONSTATATO lavorando e risponde con i riassunti trovati, con i loro identificatori. Ciò che la persona ha detto che il progetto è vive nelle schede di contesto."
+        "description": "Cerca ciò che l’assistente ha CONSTATATO lavorando e risponde con i riassunti trovati, con i loro identificatori. Ciò che la persona ha detto del progetto vive nelle schede di contesto."
       },
       "memoryRead": {
         "title": "Leggi una memoria per intero",
@@ -1265,7 +1265,7 @@
       "notFound": "Nulla con quel nome è lì a ricevere questa azione. La chiamata, in sé, era ben formata.",
       "notAllowed": "Lo studio non lascia che una chiamata venuta dall’esterno cambi questo. Solo la sua stessa finestra lo fa.",
       "nativeDialog": "Questo comando apre una finestra di sistema: l’assistente non può né compilarla né rileggerla. Usa l’azione che prende un percorso.",
-      "notRenderable": "Il documento in primo piano non ha nulla che questo possa rendere — un cielo vuoto, un materiale senza canale, o un motore che non è montato.",
+      "notRenderable": "Il documento in primo piano non ha nulla che questo possa produrre — un cielo vuoto, un materiale senza canale, o un motore che non è montato.",
       "needsConsent": "Nulla è stato avviato: questa chiamata richiede un token di consenso. Il rifiuto ne porta uno nuovo, e la stessa chiamata rinviata con esso viene eseguita.",
       "failed": "Lo studio ha provato e non è andata a buon fine. Il motivo è nel suo registro delle attività, e non erano i parametri."
     },
@@ -1285,15 +1285,15 @@
       "modelId": "Identificatore del modello",
       "aiOperation": "Operazione sul modello locale",
       "aiRole": "Ruolo IA",
-      "aiScope": "Portata della scelta",
+      "aiScope": "Ambito della scelta",
       "aiProfile": "Profilo del runtime locale",
-      "operation": "Impiego, es. code2code",
+      "operation": "Operazione, es. code2code",
       "parameters": "Parametri del modello",
       "landing": "Dove va il risultato",
       "draft": "Frase da rielaborare",
       "text": "Testo da tradurre",
       "generationInstruction": "Istruzione per la prossima generazione",
-      "commentAction": "Aggiungi, modifica o rimuovi",
+      "commentAction": "Aggiungi, aggiorna o rimuovi",
       "commentId": "Identificatore del commento di generazione",
       "commentOutline": "Poligono facoltativo, elenco di punti {x, y} del documento",
       "documentId": "Identificatore del documento",
@@ -1303,7 +1303,7 @@
       "filePath": "Percorso dentro il progetto, con / tra i segmenti",
       "filePaths": "Percorsi dentro il progetto, con / tra i segmenti",
       "folderPath": "Percorso della cartella",
-      "template": "Modello di partenza della scena",
+      "template": "Ciò su cui si apre la scena",
       "hidden": "Includi le voci nascoste",
       "jobId": "Identificatore del lavoro",
       "taskId": "Identificatore del lavoro locale",
@@ -1322,7 +1322,7 @@
       "days": "Finestra in giorni",
       "assetId": "Identificatore dell’asset",
       "assetIds": "Identificatori degli asset",
-      "assetType": "Natura dell’asset",
+      "assetType": "Tipo di asset",
       "tags": "Tag",
       "generated": "Solo ciò che è stato generato",
       "offset": "Numero di voci da saltare",
@@ -1377,7 +1377,7 @@
       "invertNormalGreen": "Inverti il canale verde del rilievo",
       "clipId": "Identificatore della clip",
       "trackId": "Identificatore della traccia",
-      "trackKind": "Natura della traccia",
+      "trackKind": "Contenuto della traccia",
       "clipEdge": "Bordo della clip, attacco o stacco",
       "time": "Istante sul montaggio, in microsecondi",
       "start": "Inizio sul montaggio, in microsecondi",
@@ -1389,8 +1389,8 @@
       "muted": "Traccia in muto",
       "solo": "Unica traccia udibile",
       "locked": "Traccia bloccata",
-      "layerKind": "Natura del livello",
-      "adjustment": "Regolazione che porta il livello",
+      "layerKind": "Tipo di livello",
+      "adjustment": "Manopola che porta il livello",
       "parentId": "Gruppo in cui spostarlo",
       "index": "Posizione nella pila, contata dal basso",
       "nodeIndex": "Posizione tra gli oggetti dello stesso livello, contata dall’alto dell’elenco",

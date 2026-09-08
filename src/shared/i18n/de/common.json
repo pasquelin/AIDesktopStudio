@@ -32,7 +32,7 @@
       "cancelled": "Abgebrochen"
     },
     "cancel": "Auftrag abbrechen",
-    "cancelRefused": "Dieser Dienst hält eine einmal gestartete Generierung nicht an: sie läuft bis zum Ende und wird berechnet."
+    "cancelRefused": "Dieser Dienst stoppt eine einmal gestartete Generierung nicht: sie läuft bis zum Ende und wird abgerechnet."
   },
   "tasks": {
     "running_one": "{{count, number}} Aufgabe",
@@ -40,7 +40,7 @@
     "running_other": "{{count, number}} Aufgaben",
     "open": "Aufgaben anzeigen",
     "openHint": "Öffnet die Liste der laufenden Aufgaben",
-    "cancel": "Diese Aufgabe anhalten",
+    "cancel": "Diese Aufgabe stoppen",
     "phases": {
       "prepare": "Modell wird vorbereitet",
       "load": "Engine wird geladen",

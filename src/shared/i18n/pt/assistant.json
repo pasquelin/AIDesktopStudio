@@ -539,7 +539,7 @@
       },
       "cloudPreviewSync": {
         "title": "Ver o que uma sincronização faria",
-        "description": "Diz o que um envio ou uma busca faria com cada asset nomeado, antes que isso custe uma única requisição. Nada é enviado e nada é baixado."
+        "description": "Diz o que enviar ou baixar faria com cada asset nomeado, antes que isso custe uma única requisição. Nada é enviado e nada é baixado."
       },
       "cloudPull": {
         "title": "Baixar assets remotos",
@@ -675,7 +675,7 @@
       },
       "optimizationExclude": {
         "title": "Excluir objetos da otimização",
-        "description": "Mantém individuais na renderização otimizada os objetos lógicos nomeados."
+        "description": "Mantém os objetos lógicos nomeados individuais na renderização otimizada."
       },
       "optimizationSetMode": {
         "title": "Definir o modo de otimização dos objetos",
@@ -735,7 +735,7 @@
       },
       "pathAddPoint": {
         "title": "Adicionar um ponto a um caminho",
-        "description": "Coloca um ponto de controle. Com coordenadas, ele é adicionado depois do último, onde foi mirado. Com um índice, ele é encaixado logo após esse ponto, a meio caminho do vizinho. Sem nenhum dos dois, ele prolonga o caminho pela ponta."
+        "description": "Coloca um ponto de controle. Com coordenadas, ele é adicionado depois do último, onde foi mirado. Com um índice, ele é encaixado logo após esse ponto, na metade da distância até o vizinho. Sem nenhum dos dois, ele prolonga o caminho pela ponta."
       },
       "pathMovePoint": {
         "title": "Mover um ponto de um caminho",
@@ -807,7 +807,7 @@
       },
       "socketAdd": {
         "title": "Colocar um ponto de fixação",
-        "description": "Coloca em um osso do personagem à frente um ponto que um objeto de uma cena pode seguir — uma mão, uma costa. O ponto vive no arquivo do personagem."
+        "description": "Coloca em um osso do personagem à frente um ponto que um objeto de uma cena pode seguir — uma mão, as costas. O ponto vive no arquivo do personagem."
       },
       "socketRemove": {
         "title": "Remover um ponto de fixação",
@@ -859,15 +859,15 @@
       },
       "animationAutoKey": {
         "title": "Ativar a criação automática de chaves",
-        "description": "Decide se mover um osso escreve uma chave no caminho. É um estado de sessão, como toda maneira de olhar uma cena, e nada disso é salvo com o documento."
+        "description": "Decide se mover um osso escreve uma chave de passagem. É um estado de sessão, como toda maneira de olhar uma cena, e nada disso é salvo com o documento."
       },
       "keyWritePoseKeys": {
         "title": "Colocar uma chave em um sujeito",
-        "description": "Escreve uma chave em cada canal de um objeto ou de um osso, no instante dado ou no cursor de reprodução, mantendo a pose mostrada no cursor de reprodução — aquela que node.transform posicionou. Em um objeto animado, node.transform escreve a chave no próprio cursor de reprodução; então, para posar outro instante, escreva primeiro a chave ali, depois posicione o objeto com o cursor sobre ele. Os canais que faltam são abertos no caminho, já que exigir uma trilha antes seria pedir o que já está no viewport."
+        "description": "Escreve uma chave em cada canal de um objeto ou de um osso, no instante dado ou no cursor de reprodução, mantendo a pose mostrada no cursor de reprodução — aquela que node.transform posicionou. Em um objeto animado, node.transform escreve a chave no próprio cursor de reprodução; então, para posar outro instante, escreva primeiro a chave ali, depois posicione o objeto com o cursor sobre ele. Os canais que faltam são abertos de passagem, já que exigir uma trilha antes seria pedir o que já está no viewport."
       },
       "keyRemoveSubjectKeys": {
         "title": "Retirar as chaves de um sujeito",
-        "description": "Retoma a chave que cada canal de um objeto ou de um osso contém naquele instante. Sem isso uma pose seria algo que ninguém poderia desfazer, e nada mais no painel remove uma."
+        "description": "Retira a chave que cada canal de um objeto ou de um osso contém naquele instante. Sem isso uma pose seria algo que ninguém poderia desfazer, e nada mais no painel remove uma."
       },
       "keyWriteKeysOnOpenChannels": {
         "title": "Colocar uma chave em tudo o que é animado",

@@ -52,7 +52,7 @@
     "cameraHelpers": "Câmeras",
     "boundingBoxes": "Caixas delimitadoras",
     "boundingBoxesHint": "O volume que cada objeto ocupa, útil para julgar o espaço de que ele precisa",
-    "visibility_off": "Nenhum",
+    "visibility_off": "Nenhuma",
     "visibility_offHint": "Mantém a vista limpa, sem desenhar nenhum desses indicadores",
     "visibility_selected": "Seleção",
     "visibility_selectedHint": "Somente no que está selecionado, o padrão que mantém a vista legível",

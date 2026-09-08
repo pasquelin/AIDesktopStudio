@@ -333,7 +333,7 @@
     "wholeModel": "Das ganze Modell",
     "blockSettings": "Blockeinstellungen",
     "loop": "Wiedergabe in Schleife",
-    "loopHint": "Der Kopf beginnt von vorn, statt am Ende anzuhalten",
+    "loopHint": "Der Abspielkopf beginnt von vorn, statt am Ende anzuhalten",
     "autoKey": "Auto-Key",
     "autoKeyHint": "Ein Objekt zu bewegen schreibt einen Key, statt seine Ruhepose zu verschieben",
     "keySubject": "Key auf {{name}} setzen",

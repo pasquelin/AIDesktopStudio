@@ -238,7 +238,7 @@
     },
     "sequencePlayPause": {
       "title": "Abspielen / Pausieren",
-      "help": "Startet die Wiedergabe des Schnitts oder hält sie dort an, wo sie steht. Ein erneuter Start setzt dort fort, wo aufgehört wurde."
+      "help": "Startet die Wiedergabe des Schnitts oder stoppt sie dort, wo sie steht. Ein erneuter Start setzt dort fort, wo aufgehört wurde."
     },
     "sequenceExport": {
       "title": "Video exportieren…",
@@ -262,11 +262,11 @@
     },
     "sequenceExportBundle": {
       "title": "Schnitt mit seinen Medien exportieren (OTIOZ)…",
-      "help": "Schreibt denselben Schnitt mit den Medien, die er benutzt, in die Datei hinein. Diese Datei gibt man jemand anderem weiter oder öffnet sie in DaVinci Resolve, das die Rushes dann von selbst findet, statt sie einzeln zu erfragen."
+      "help": "Schreibt denselben Schnitt mit den Medien, die er benutzt, in die Datei hinein. Diese Datei gibt man jemand anderem weiter oder öffnet sie in DaVinci Resolve, das das Rohmaterial dann von selbst findet, statt es einzeln zu erfragen."
     },
     "montageImport": {
       "title": "Schnitt mit seinen Medien importieren (OTIOZ)…",
-      "help": "Öffnet einen Schnitt, den ein anderes Programm geschrieben hat, mitsamt seinen Rushes. Die Medien werden in das Projekt kopiert und in den Katalog aufgenommen, dann öffnet sich der Schnitt mit ihnen verbunden. Was die geöffnete Datei nicht mitbringt, wird beim Öffnen gesagt und geht nur dort von seinem Standard aus."
+      "help": "Öffnet einen Schnitt, den ein anderes Programm geschrieben hat, mitsamt seinem Rohmaterial. Die Medien werden in das Projekt kopiert und in den Katalog aufgenommen, dann öffnet sich der Schnitt mit ihnen verbunden. Was die geöffnete Datei nicht mitbringt, wird beim Öffnen gesagt und geht nur dort von seinem Standard aus."
     },
     "sequenceMirror": {
       "title": "Rückmonitor",

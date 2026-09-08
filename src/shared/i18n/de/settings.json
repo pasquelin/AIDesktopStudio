@@ -6,7 +6,7 @@
     "results": "Ergebnisse",
     "noResult": "Keine Einstellung entspricht dieser Suche.",
     "restoreDefault": "Standardwert wiederherstellen",
-    "restoreDefaultHint": "Stellt den ursprünglichen Wert wieder her, den von vor jeder Änderung",
+    "restoreDefaultHint": "Stellt den ursprünglichen Wert wieder her, den Wert von vor jeder Änderung",
     "account": "API-Schlüssel",
     "appearance": "Erscheinungsbild",
     "generation": "Generierung",
@@ -151,7 +151,7 @@
     },
     "home": {
       "title": "Startseite anzeigen",
-      "help": "Der bildschirmbreite Bereich, mit dem das Studio öffnet: Ihre Projekte, woran Sie gearbeitet haben, was gerade läuft, und was die Modelle können. Schalten Sie ihn aus, um direkt zu dem Arbeitsbereich zu gelangen, den Sie verlassen haben. Welche Abschnitte er zeigt und in welcher Reihenfolge, wird auf der Startseite selbst eingestellt."
+      "help": "Der bildschirmbreite Bereich, mit dem das Studio startet: Ihre Projekte, woran Sie gearbeitet haben, was gerade läuft, und was die Modelle können. Schalten Sie ihn aus, um direkt zu dem Arbeitsbereich zu gelangen, den Sie verlassen haben. Welche Abschnitte er zeigt und in welcher Reihenfolge, wird auf der Startseite selbst eingestellt."
     },
     "modified": "Geändert, noch nicht angewendet",
     "apply": "Anwenden",
