@@ -5,6 +5,7 @@ import type { GamepadBinding, GamepadControl, InputActionKind } from '@shared/do
 import { NumberField } from '@/components/NumberField'
 import { SelectField } from '@/components/SelectField'
 import { ToggleField } from '@/components/ToggleField'
+import { ROW_ACTION_SPACER } from '@/components/styles'
 import { useInputCapture } from '@/hooks/useInputCapture'
 import { TIP_LEFT } from '@/helpers/tooltip'
 import { useLatest } from '@/hooks/useLatest'
@@ -52,15 +53,22 @@ export function InputMapExpertGamepad({
         options={CONTROLS.filter(fits).map(control => ({ value: control, label: control }))}
         onChange={control => onChange({ ...binding, control })}
         actions={
-          <InputMapCaptureButton
-            capture={capture}
-            onArm={() =>
-              capture.captureGamepadControl(
-                control => onChange({ ...latest.current, control }),
-                fits,
-              )
-            }
-          />
+          <>
+            <InputMapCaptureButton
+              capture={capture}
+              onArm={() =>
+                capture.captureGamepadControl(
+                  control => onChange({ ...latest.current, control }),
+                  fits,
+                )
+              }
+            />
+            {/* 🛑 The place a reset would hold: this line has none, and `justify-end` puts a lone
+                button on the LAST place — so the same capture sat one column right of the
+                keyboard's, which does carry a reset beside it. `ROW_ACTION_SPACER` exists for
+                exactly this, and not using it is what made two rows of one form disagree. */}
+            <span aria-hidden className={ROW_ACTION_SPACER} />
+          </>
         }
       />
       <NumberField
