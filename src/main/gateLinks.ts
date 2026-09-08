@@ -16,6 +16,11 @@ export type GateLink = {
    * honest answer for the suite — its 140 wide guards sweep docs, workflows and the site too.
    */
   readonly reads: readonly string[]
+  /**
+   * Trees git ignores that the link reads all the same — the wide guards walk the agent contract.
+   * Named by the link rather than held in a constant elsewhere, so `reads` stays the whole answer.
+   */
+  readonly readsIgnored?: readonly string[]
   /** A file the link leaves behind. Missing on disk, the link runs whatever its inputs say. */
   readonly produces?: string
 }
@@ -45,7 +50,7 @@ export const GATE: readonly GateLink[] = [
     command: 'pnpm format:check',
     reads: ['src', 'scripts', 'config', '.prettierrc', '.prettierignore'],
   },
-  { command: 'pnpm test', reads: ['.'] },
+  { command: 'pnpm test', reads: ['.'], readsIgnored: ['.agents', '.claude', '.grok'] },
   { command: 'pnpm unused:main', reads: ['src', 'scripts', 'site', 'config', 'knip.json'] },
   { command: 'pnpm engine:check', reads: ['engine', 'scripts'] },
   {

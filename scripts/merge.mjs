@@ -12,10 +12,9 @@
  * since the last `pnpm validate` has no green verdict, and the merge is refused naming the links.
  */
 import { execFileSync } from 'node:child_process'
-import { existsSync, readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { CACHE_DIR, fingerprinterFor, markerNameOf } from '../src/main/gateCache.ts'
+import { alreadyGreen, fingerprinterFor } from '../src/main/gateCache.ts'
 import { GATE } from '../src/main/gateLinks.ts'
 import { reasonsToRefuse, staleLinks } from '../src/main/mergeGuard.ts'
 
@@ -28,18 +27,16 @@ const git = (cwd, ...args) => execFileSync('git', args, { cwd, encoding: 'utf8' 
 const MAIN = dirname(git(ROOT, 'rev-parse', '--path-format=absolute', '--git-common-dir'))
 
 const branch = git(ROOT, 'rev-parse', '--abbrev-ref', 'HEAD')
-const greenOn = link => {
-  const marker = join(ROOT, CACHE_DIR, markerNameOf(link.command))
-  return existsSync(marker) ? readFileSync(marker, 'utf8').trim() : undefined
-}
-
 const reasons = reasonsToRefuse(
   {
     branch,
     dirty: git(ROOT, 'status', '--porcelain').split('\n').filter(Boolean),
     hostDirty: git(MAIN, 'status', '--porcelain').split('\n').filter(Boolean),
     rebased: git(ROOT, 'merge-base', 'HEAD', INTO) === git(MAIN, 'rev-parse', INTO),
-    stale: staleLinks(GATE, fingerprinterFor(ROOT, process.version), greenOn),
+    stale: () => {
+      const fingerprintOf = fingerprinterFor(ROOT, process.version, GATE)
+      return staleLinks(GATE, link => alreadyGreen(ROOT, link, fingerprintOf(link)))
+    },
   },
   INTO,
 )

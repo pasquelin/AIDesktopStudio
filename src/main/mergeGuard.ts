@@ -1,18 +1,17 @@
 import type { GateLink } from './gateLinks'
 
 /**
- * Whether a link's last green verdict still describes the tree as it stands.
+ * The links whose last green verdict no longer describes the tree.
  *
- * The gate's markers already hold the fingerprint each link was green on, so proving the gate
- * green on a revision costs a hash rather than a run. That is the whole guard: a merge asks the
- * cache what it knows, and refuses when the answer is "not this content".
+ * The gate's markers already hold the fingerprint each link was green on, so proving the gate green
+ * on a revision costs a hash rather than a run. That is the whole guard: a merge asks the cache
+ * what it knows, and refuses when the answer is "not this content".
  */
 export function staleLinks(
   links: readonly GateLink[],
-  fingerprintOf: (link: GateLink) => string,
-  greenOn: (link: GateLink) => string | undefined,
+  isGreen: (link: GateLink) => boolean,
 ): string[] {
-  return links.filter(link => greenOn(link) !== fingerprintOf(link)).map(link => link.command)
+  return links.filter(link => !isGreen(link)).map(link => link.command)
 }
 
 export type MergeState = {
@@ -23,33 +22,42 @@ export type MergeState = {
   readonly hostDirty: readonly string[]
   /** Whether the branch sits directly on the tip it merges into. */
   readonly rebased: boolean
-  readonly stale: readonly string[]
+  /**
+   * Deferred on purpose: hashing the tree costs a second, the three reasons above cost a git call
+   * each, and a dirty tree is refused whatever the cache says.
+   */
+  readonly stale: () => readonly string[]
 }
+
+const listed = (headline: string, items: readonly string[], advice?: string): string =>
+  `${headline}\n${items.map(item => `    ${item}`).join('\n')}${advice === undefined ? '' : `\n  ${advice}`}`
 
 /**
  * Why a merge must not happen, in the order a reader can act on: the tree first, then the shape of
  * the history, then the gate. Empty means it may.
  *
- * Written as a list rather than a throw so the caller prints all of it at once — a script that
- * stops on the first reason sends its reader round the loop three times.
+ * All of them at once rather than a throw on the first: a script that stops on one reason sends its
+ * reader round the loop as many times as there are reasons.
  */
 export function reasonsToRefuse(state: MergeState, into: string): string[] {
   const reasons: string[] = []
 
-  if (state.branch === into) {
-    reasons.push(`Nothing to merge: this checkout is already on ${into}.`)
-  }
+  if (state.branch === into) reasons.push(`Nothing to merge: this checkout is already on ${into}.`)
   if (state.dirty.length > 0) {
     reasons.push(
-      `The tree carries ${state.dirty.length} uncommitted change(s), which the gate did not judge:\n` +
-        state.dirty.map(path => `    ${path}`).join('\n'),
+      listed(
+        `The tree carries ${state.dirty.length} uncommitted change(s), which the gate did not judge:`,
+        state.dirty,
+      ),
     )
   }
   if (state.hostDirty.length > 0) {
     reasons.push(
-      `The checkout holding ${into} carries ${state.hostDirty.length} uncommitted change(s).\n` +
-        state.hostDirty.map(path => `    ${path}`).join('\n') +
-        '\n  A merge lands there, and git would either refuse or bury them.',
+      listed(
+        `The checkout holding ${into} carries ${state.hostDirty.length} uncommitted change(s):`,
+        state.hostDirty,
+        'A merge lands there, and git would either refuse or bury them.',
+      ),
     )
   }
   if (!state.rebased) {
@@ -58,12 +66,16 @@ export function reasonsToRefuse(state: MergeState, into: string): string[] {
         `  says nothing about the merge result, which is what CI will read.`,
     )
   }
-  if (state.stale.length > 0) {
-    reasons.push(
-      `The gate is not green on THIS content. Never run, or run before the last edit:\n` +
-        state.stale.map(command => `    ${command}`).join('\n') +
-        '\n  Run `pnpm validate` and merge again.',
-    )
-  }
-  return reasons
+  if (reasons.length > 0) return reasons
+
+  const stale = state.stale()
+  return stale.length === 0
+    ? []
+    : [
+        listed(
+          'The gate is not green on THIS content. Never run, or run before the last edit:',
+          stale,
+          'Run `pnpm validate` and merge again.',
+        ),
+      ]
 }

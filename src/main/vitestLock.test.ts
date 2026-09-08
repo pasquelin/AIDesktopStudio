@@ -1,9 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { holderOf, laneOf, lockPathIn, workerArgsFor, NARROW_WORKERS } from './vitestLock'
+import { holderOf, isRunning, laneOf, workersFor } from './vitestLock'
 
-describe('the lock every checkout of one machine shares', () => {
-  it('names one file under the machine temp directory, whichever checkout asks', () => {
-    expect(lockPathIn('/var/folders/x/T')).toBe('/var/folders/x/T/ia-studio-vitest.lock')
+describe('the machine several checkouts share', () => {
+  it('gives a lone run the width vitest would have taken, and divides it beyond', () => {
+    expect(workersFor(12, 1)).toBe(11)
+    expect(workersFor(12, 3)).toBe(3)
+    expect(workersFor(2, 8)).toBe(1)
   })
 
   it('reads no holder out of a file being written, so a waiter does not steal a fresh lock', () => {
@@ -11,15 +13,15 @@ describe('the lock every checkout of one machine shares', () => {
     expect(holderOf('')).toBeUndefined()
   })
 
+  /** Only a pid git can prove gone is gone: an unanswerable errno must not free the machine. */
+  it('calls this very process running, and a pid nothing can own gone', () => {
+    expect(isRunning(process.pid)).toBe(true)
+    expect(isRunning(2_147_483_646)).toBe(false)
+  })
+
   it('sends a run that names files to the lane that never waits', () => {
     expect(laneOf('whole', ['run'])).toBe('whole')
     expect(laneOf('whole', ['run', '--project', 'node'])).toBe('whole')
     expect(laneOf('whole', ['run', 'src/main/vitestLock.test.ts'])).toBe('narrow')
-  })
-
-  it('caps a selection only while another checkout holds the machine', () => {
-    expect(workerArgsFor('narrow', true)).toEqual([`--maxWorkers=${NARROW_WORKERS}`])
-    expect(workerArgsFor('narrow', false)).toEqual([])
-    expect(workerArgsFor('whole', true)).toEqual([])
   })
 })

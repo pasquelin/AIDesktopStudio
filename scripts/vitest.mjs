@@ -1,28 +1,49 @@
 /**
- * Every vitest run of this repository goes through here, so that several checkouts of one machine
- * share its cores instead of each asking for all of them.
+ * Every vitest run of this repository goes through here, so that several runs of one machine share
+ * its cores instead of each asking for all of them.
  *
  * Measured 2026-09-08, twelve cores: three sessions running their suite at once asked for 33
- * workers, load average 90, and `pnpm test` took 338 s against the 150 s it costs alone. A whole
- * suite now waits its turn and then runs at full width; a selection never waits and is capped, so
- * `pnpm check` stays the short loop.
+ * workers, load average 90, and `pnpm test` took 338 s against the 150 s it costs alone.
  *
- * What this does NOT do, and it is the honest half: the work is unchanged. Three suites still cost
- * three suites. What it removes is the thrash of running them on top of one another, and it makes
- * a timing mean something again.
+ * Two mechanisms, and the second is the general one. Every run holds a SLOT — a pid file in a
+ * folder shared by every checkout — and takes `cpus / slots` workers, so a lone run keeps vitest's
+ * own width and three runs divide the machine instead of tripling it. On top of that a whole suite
+ * takes a MUTEX and runs in its turn: three suites cost three suites either way, but queued, the
+ * first session gets its answer in 150 s rather than all three waiting 450 s.
+ *
+ * 🛑 Slots count EVERY run, not whole suites: `pnpm check` spawns its two selections side by side
+ * on purpose, so one checkout in its short loop is already two runs — the case a lane-only rule
+ * left uncovered.
  */
 import { spawn } from 'node:child_process'
-import { closeSync, existsSync, openSync, readFileSync, rmSync, writeSync } from 'node:fs'
-import { tmpdir } from 'node:os'
+import {
+  closeSync,
+  existsSync,
+  mkdirSync,
+  openSync,
+  readdirSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+  writeSync,
+} from 'node:fs'
+import { availableParallelism, tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { setTimeout as pause } from 'node:timers/promises'
 import { fileURLToPath } from 'node:url'
-// A `.ts` from a `.mjs`, as `check.mjs` does: Node 24 strips the types on the way in, so the rule
-// the tests check is the one that runs rather than a twin of it.
-import { holderOf, laneOf, lockPathIn, workerArgsFor } from '../src/main/vitestLock.ts'
+import {
+  holderOf,
+  isRunning,
+  laneOf,
+  lockPathIn,
+  slotsDirIn,
+  workersFor,
+} from '../src/main/vitestLock.ts'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 const LOCK = lockPathIn(tmpdir())
+const SLOTS = slotsDirIn(tmpdir())
+const MINE = join(SLOTS, String(process.pid))
 const POLL_MS = 500
 /** A holder that never releases must not keep the machine for a night. */
 const MOST_WAIT_MS = 30 * 60_000
@@ -59,17 +80,11 @@ function clearIfDead() {
     process.stderr.write(`vitest lock: unreadable, left alone — ${failure.message}\n`)
     return
   }
-  if (holder === undefined) return
-
-  try {
-    process.kill(holder, 0)
-  } catch (failure) {
-    // ESRCH alone. EPERM says the holder runs under another user, which is a holder all the same.
-    if (failure.code === 'ESRCH') rmSync(LOCK, { force: true })
-  }
+  if (holder !== undefined && !isRunning(holder)) rmSync(LOCK, { force: true })
 }
 
 function release() {
+  rmSync(MINE, { force: true })
   if (!existsSync(LOCK)) return
   try {
     if (holderOf(readFileSync(LOCK, 'utf8')) === process.pid) rmSync(LOCK, { force: true })
@@ -98,6 +113,17 @@ async function hold() {
   }
 }
 
+/** How many runs share the machine right now, this one included, sweeping the ones that died. */
+function liveRuns() {
+  let live = 1
+  for (const name of readdirSync(SLOTS)) {
+    if (name === String(process.pid)) continue
+    if (isRunning(Number(name))) live += 1
+    else rmSync(join(SLOTS, name), { force: true })
+  }
+  return live
+}
+
 process.on('exit', release)
 for (const signal of ['SIGINT', 'SIGTERM']) {
   process.on(signal, () => {
@@ -106,20 +132,24 @@ for (const signal of ['SIGINT', 'SIGTERM']) {
   })
 }
 
-/** Whether another run holds the machine right now — read once, just before spawning. */
-function machineHeld() {
-  clearIfDead()
-  return existsSync(LOCK)
-}
+if (laneOf(asked, forwarded) === 'whole') await hold()
 
-const lane = laneOf(asked, forwarded)
+// Claimed after the wait, so a queued suite counts the machine it is about to get, not the one it
+// waited on.
+mkdirSync(SLOTS, { recursive: true })
+writeFileSync(MINE, '')
 
-if (lane === 'whole') await hold()
-
-const child = spawn('npx', ['vitest', ...forwarded, ...workerArgsFor(lane, machineHeld())], {
-  cwd: ROOT,
-  stdio: 'inherit',
-})
+const workers = workersFor(availableParallelism(), liveRuns())
+// The local binary rather than `npx`: measured 2026-09-08, `npx vitest --version` costs 733 ms
+// against 82 ms, paid twice on every short loop.
+const child = spawn(
+  join(ROOT, 'node_modules', '.bin', 'vitest'),
+  [...forwarded, `--maxWorkers=${workers}`],
+  {
+    cwd: ROOT,
+    stdio: 'inherit',
+  },
+)
 child.on('error', failure => {
   process.stderr.write(`${failure.message}\n`)
   process.exitCode = 1
