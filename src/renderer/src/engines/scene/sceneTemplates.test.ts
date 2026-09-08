@@ -164,6 +164,18 @@ describe('sceneFromTemplate', () => {
     expect(camera?.transform.rotation).toEqual({ x: 0, y: 0, z: 0 })
   })
 
+  it('configures first-person camera limits and exact vertical following', () => {
+    const arm = sceneFromTemplate('firstPerson')
+      .nodes.find(node => node.name === 'SpringArm')
+      ?.components?.find(one => one.type === 'SpringArm')
+
+    expect(arm).toMatchObject({
+      pitchMin: -60,
+      pitchMax: 60,
+      followVertical: true,
+    })
+  })
+
   // Three cadrages over an empty floor proved nothing: what makes them worth picking is a set
   // one can climb, fall off and bump into — the same one for the three.
   it('opens the three character views on the same level, moving only the camera', () => {

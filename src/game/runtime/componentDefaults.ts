@@ -28,6 +28,7 @@ export const COMPONENT_DEFAULTS = {
     rotationLag: 0.05,
     collisionInLag: 0.04,
     collisionOutLag: 0.25,
+    followVertical: false,
     pitchMin: -60,
     pitchMax: 60,
     lookAt: 'pivot',

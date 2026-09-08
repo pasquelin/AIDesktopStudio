@@ -85,6 +85,7 @@
       "collision": "Avoid walls",
       "collisionInLag": "Collision enter",
       "collisionOutLag": "Collision exit",
+      "followVertical": "Follow vertical movement",
       "coyoteTime": "Coyote time",
       "current": "Current",
       "deceleration": "Deceleration",

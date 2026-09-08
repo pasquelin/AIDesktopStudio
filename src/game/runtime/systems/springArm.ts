@@ -140,7 +140,9 @@ function aimAndPlace(
   armSeat(PIVOT, AHEAD, numberOf(settings, 'length', ARM.length), WANTED)
   const glide = approach(numberOf(settings, 'positionLag', ARM.positionLag), over)
   kept.at.x += (WANTED.x - kept.at.x) * glide
-  kept.at.y += (WANTED.y - kept.at.y) * glide
+  kept.at.y = flagOf(settings, 'followVertical', ARM.followVertical)
+    ? WANTED.y
+    : kept.at.y + (WANTED.y - kept.at.y) * glide
   kept.at.z += (WANTED.z - kept.at.z) * glide
 }
 

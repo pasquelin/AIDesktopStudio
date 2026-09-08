@@ -85,6 +85,7 @@
       "collision": "Éviter les murs",
       "collisionInLag": "Entrée en collision",
       "collisionOutLag": "Sortie de collision",
+      "followVertical": "Suivre les mouvements verticaux",
       "coyoteTime": "Tolérance de saut",
       "current": "Actuelle",
       "deceleration": "Décélération",

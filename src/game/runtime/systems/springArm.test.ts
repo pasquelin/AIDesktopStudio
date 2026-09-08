@@ -162,6 +162,27 @@ describe('the arm a camera hangs on', () => {
     expect(eye.transform.position.x).toBeCloseTo(10, 6)
   })
 
+  it('follows the subject vertically without lag when vertical following is enabled', () => {
+    const { world, hero, eye } = rigged({ positionLag: 0.2, followVertical: true })
+
+    world.lateUpdate(0, FRAME)
+    hero.transform.position.y = 2
+    world.lateUpdate(0, FRAME)
+
+    expect(eye.transform.position.y).toBeCloseTo(3.6, 6)
+  })
+
+  it('smooths vertical following when the option is disabled', () => {
+    const { world, hero, eye } = rigged({ positionLag: 0.2 })
+
+    world.lateUpdate(0, FRAME)
+    hero.transform.position.y = 2
+    world.lateUpdate(0, FRAME)
+
+    expect(eye.transform.position.y).toBeGreaterThan(1.6)
+    expect(eye.transform.position.y).toBeLessThan(3.6)
+  })
+
   /** Everything else is drawn between two steps; what the picture hangs on must be too. */
   it('anchors on the subject where it is drawn, not where the last step left it', () => {
     const { world, hero, eye } = rigged({ positionLag: 0 })
