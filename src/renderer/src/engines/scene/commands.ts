@@ -7,7 +7,6 @@ export {
   setGeometry,
   setLight,
   setMeshMaterial,
-  setNodeMaterial,
   setNodeVisible,
   setTransform,
   withAxisHeld,
@@ -32,8 +31,6 @@ export {
   setPath,
   setSprite,
   setSpriteOn,
-  setText,
-  setTextMaterial,
   setTextOn,
   wearMaterialAt,
 } from './nodeDescriptorCommands'

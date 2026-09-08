@@ -20,10 +20,10 @@ export const ANIMATION_GRAPH_EXTENSION = '.anim.json'
  * declaring none of its own still has all of these to branch on. A parameter of the author's may
  * not take one of these names: which of the two a condition meant would be unanswerable.
  */
-export type BuiltInParameter =
+type BuiltInParameter =
   'speed' | 'forward' | 'strafe' | 'grounded' | 'airborne' | 'verticalSpeed' | 'jumped' | 'turning'
 
-export const BUILT_IN_PARAMETERS: Readonly<Record<BuiltInParameter, AnimationParameterKind>> = {
+const BUILT_IN_PARAMETERS: Readonly<Record<BuiltInParameter, AnimationParameterKind>> = {
   /** Metres a second over the ground, whichever way the body is facing. */
   speed: 'number',
   /** Metres a second along the body's own heading, negative walking backwards. */
@@ -40,9 +40,9 @@ export const BUILT_IN_PARAMETERS: Readonly<Record<BuiltInParameter, AnimationPar
   turning: 'number',
 }
 
-export type AnimationParameterKind = 'number' | 'boolean'
+type AnimationParameterKind = 'number' | 'boolean'
 
-export type AnimationParameter = { id: string; kind: AnimationParameterKind }
+type AnimationParameter = { id: string; kind: AnimationParameterKind }
 
 /**
  * A moment inside a clip that puts an event on the bus — a footstep, the frame a blow lands on.
@@ -50,7 +50,7 @@ export type AnimationParameter = { id: string; kind: AnimationParameterKind }
  * `at` is a FRACTION of the clip and never a time: the same marker then holds when the state is
  * played slower, and a clip swapped for a longer one keeps its footfalls where they were.
  */
-export type AnimationMarker = { id: string; at: number; name: string }
+type AnimationMarker = { id: string; at: number; name: string }
 
 /**
  * One thing the body can be doing, and the clip it looks like.
@@ -69,9 +69,9 @@ export type AnimationState = {
   events?: readonly AnimationMarker[]
 }
 
-export type ConditionOperator = '>' | '>=' | '<' | '<=' | '==' | '!='
+type ConditionOperator = '>' | '>=' | '<' | '<=' | '==' | '!='
 
-export const CONDITION_OPERATORS: readonly ConditionOperator[] = ['>', '>=', '<', '<=', '==', '!=']
+const CONDITION_OPERATORS: readonly ConditionOperator[] = ['>', '>=', '<', '<=', '==', '!=']
 
 /**
  * 🛑 Declarative, never an expression: this is read by the RUNTIME, which has no sandbox to

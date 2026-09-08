@@ -136,7 +136,7 @@ export const activeSceneId = (state: DocumentsSlice): string | null =>
 /** The interface in front, as a selector. Same reason as `activeSceneId`, for its outliner. */
 export const activeGuiId = (state: DocumentsSlice): string | null => activeIdOfKind(state, 'gui')
 
-export const activeCharacterId = (state: DocumentsSlice): string | null =>
+const activeCharacterId = (state: DocumentsSlice): string | null =>
   activeIdOfKind(state, 'character')
 
 /**

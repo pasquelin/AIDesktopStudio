@@ -17,7 +17,7 @@ export const HANDLE_IDS: readonly HandleId[] = ['nw', 'n', 'ne', 'e', 'se', 's',
 /** The four corners, in the order that walks the outline. */
 export type CornerId = 'nw' | 'ne' | 'se' | 'sw'
 
-export const CORNER_IDS: readonly CornerId[] = ['nw', 'ne', 'se', 'sw']
+const CORNER_IDS: readonly CornerId[] = ['nw', 'ne', 'se', 'sw']
 
 /**
  * A box as its four corners rather than as an origin and a size: under a rotation it is not an

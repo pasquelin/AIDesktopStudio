@@ -32,7 +32,7 @@ export function scatterCellSize(category: ScatterCategory): number {
   return category === 'grass' ? GRASS_CELL_SIZE : CELL_SIZE
 }
 
-export function scatterBatchKey(assetId: string, cell: CellKey): string {
+function scatterBatchKey(assetId: string, cell: CellKey): string {
   return `${assetId}:${cell}`
 }
 

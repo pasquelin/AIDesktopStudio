@@ -92,7 +92,7 @@ export const QUAD: LocalFieldTemplate = {
   costImpact: true,
 }
 
-export const SMART_LOW_POLY: LocalFieldTemplate = {
+const SMART_LOW_POLY: LocalFieldTemplate = {
   key: 'smart_low_poly',
   kind: 'boolean',
   labelKey: 'tripoFields.smart_low_poly',
@@ -102,7 +102,7 @@ export const SMART_LOW_POLY: LocalFieldTemplate = {
   costImpact: true,
 }
 
-export const GENERATE_PARTS: LocalFieldTemplate = {
+const GENERATE_PARTS: LocalFieldTemplate = {
   key: 'generate_parts',
   kind: 'boolean',
   labelKey: 'tripoFields.generate_parts',
@@ -113,7 +113,7 @@ export const GENERATE_PARTS: LocalFieldTemplate = {
   costImpact: true,
 }
 
-export const AUTO_SIZE: LocalFieldTemplate = {
+const AUTO_SIZE: LocalFieldTemplate = {
   key: 'auto_size',
   kind: 'boolean',
   labelKey: 'tripoFields.auto_size',
@@ -122,7 +122,7 @@ export const AUTO_SIZE: LocalFieldTemplate = {
   group: ADVANCED_GROUP,
 }
 
-export const EXPORT_UV: LocalFieldTemplate = {
+const EXPORT_UV: LocalFieldTemplate = {
   key: 'export_uv',
   kind: 'boolean',
   labelKey: 'tripoFields.export_uv',

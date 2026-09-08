@@ -49,7 +49,7 @@ export const WORKSHOP_TOOLS: readonly SceneTool[] = [
  * the bone arriving at a joint, so no length can change there, and editing a skeleton is where
  * one shortens a bone that came out too long — holding it forbade the state's only gesture.
  */
-export const CHARACTER_POSE = 'poseCharacter'
+const CHARACTER_POSE = 'poseCharacter'
 export const CHARACTER_EDIT_REST = 'editSkeleton'
 
 export const CHARACTER_STATE_TOOLS: readonly ToolbarItem[] = [

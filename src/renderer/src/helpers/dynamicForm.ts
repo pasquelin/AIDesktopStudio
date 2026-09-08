@@ -21,7 +21,7 @@ export function blankToUndefined(value: unknown): unknown {
 }
 
 /** A field whose dependency is unmet is not rendered, and does not take part in the body. */
-export function isVisible(field: FieldDescriptor, values: FormValues): boolean {
+function isVisible(field: FieldDescriptor, values: FormValues): boolean {
   if (!field.dependsOn) return true
   return values[field.dependsOn.key] === field.dependsOn.value
 }

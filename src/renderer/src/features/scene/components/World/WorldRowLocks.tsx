@@ -6,7 +6,7 @@ import { setScatterLocked } from '@/engines/scene/scatterCommands'
 import { useScenes } from '@/stores/scenes'
 import type { WorldNode } from './worldNodes'
 
-export type WorldRowLabels = {
+type WorldRowLabels = {
   rename: string
   locks: string
   locksHint: string

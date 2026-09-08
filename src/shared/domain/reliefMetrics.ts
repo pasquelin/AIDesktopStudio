@@ -13,7 +13,7 @@ export type ReliefChunkLayout = ReliefChunkKey & {
   height: number
 }
 
-export type ReliefOrigin = { x: number; z: number }
+type ReliefOrigin = { x: number; z: number }
 export type ReliefSize = { x: number; z: number }
 
 /**

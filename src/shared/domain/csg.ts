@@ -52,7 +52,7 @@ export type CsgPart = {
   material: MaterialDescriptor
 }
 
-export type CsgStep = {
+type CsgStep = {
   operation: CsgOperation
   part: CsgPart
 }

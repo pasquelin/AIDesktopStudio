@@ -32,32 +32,14 @@ import {
 import type { InstanceCandidate, OptimizationPlan, OptimizationReport } from './worldAnalyzerTypes'
 
 export type {
-  BatchCandidate,
-  ClassifiedObject,
-  GeometryDeduplication,
-  InstanceCandidate,
-  LossyCandidate,
-  LossyOptimizationImpact,
   LossyWorldPlan,
-  MaterialDeduplication,
-  MergeCandidate,
   ModelOptimizationCandidate,
-  OptimizationClassification,
-  OptimizationImpact,
-  OptimizationMetrics,
   OptimizationPlan,
   OptimizationReport,
-  OptimizationWarning,
-  OptimizationWarningReason,
-  SpatialCellPlan,
-  TextureOptimizationCandidate,
 } from './worldAnalyzerTypes'
 export { OPTIMIZATION_WARNING_REASONS } from './worldAnalyzerTypes'
 
-export {
-  DEFAULT_OPTIMIZATION_POLICY,
-  type OptimizationPolicy,
-} from '@shared/domain/optimizationPolicy'
+export { type OptimizationPolicy } from '@shared/domain/optimizationPolicy'
 
 /**
  * What the authoring world would draw. A runtime group parks its sources on another layer but

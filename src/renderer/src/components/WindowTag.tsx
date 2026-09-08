@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import { cn } from '@/helpers/cn'
 
-export type WindowTagTone = 'neutral' | 'success' | 'error'
+type WindowTagTone = 'neutral' | 'success' | 'error'
 
 export type WindowTagProps = {
   children: ReactNode

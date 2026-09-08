@@ -11,7 +11,7 @@ import { createMountedHost } from '@/helpers/hostRegistry'
  * feature is on screen would gain a branch per feature. Here it knows only that somebody may
  * have claimed the words, and asks.
  */
-export type DictationTarget = (text: string) => void
+type DictationTarget = (text: string) => void
 
 const host = createMountedHost<DictationTarget>()
 

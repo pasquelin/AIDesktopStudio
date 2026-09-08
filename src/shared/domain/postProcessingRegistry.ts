@@ -152,7 +152,7 @@ const picture = (value = ''): PostParamSpec => ({
 })
 
 export const HALFTONE_SHAPES: readonly string[] = ['dot', 'ellipse', 'line', 'square']
-export const BLUR_KINDS: readonly string[] = ['gaussian', 'box']
+const BLUR_KINDS: readonly string[] = ['gaussian', 'box']
 
 /**
  * Every effect the studio knows, and everything a panel needs to draw one.

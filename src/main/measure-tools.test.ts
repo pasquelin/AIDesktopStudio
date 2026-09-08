@@ -2,6 +2,8 @@ import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import manifest from '../../package.json'
+import { SOURCE_ROOT } from './sourceFiles'
+import { testFilesUnder } from './wideGuards'
 
 /**
  * The two detectors that answer a question no other gate asks: what is dead, and what is written
@@ -96,6 +98,12 @@ const dryTs = (): Record<string, unknown> => {
  * public site, which knip does not parse. The scripts are entry points because they hold code; the
  * CSS is ignored outright, having no graph to enter.
  *
+ * `src/renderer/src/game/exportEntry.ts` is the bundle an exported game starts on, declared as
+ * `build.lib.entry` by `config/vite.game.config.ts` — a vite config away from the root, which knip
+ * does not read. Its only caller is the page `main/export/gameExport.ts` writes, which imports
+ * `startExportedGame` from `runtime.js` inside a string: an import no resolver follows, so without
+ * this line knip reports the one export an exported game cannot start without.
+ *
  * `vendor/**` is the physics engine we compile ourselves: a package the manifest depends on by
  * `file:`, so what reaches it goes through `node_modules` and knip reads its files as orphans.
  *
@@ -107,6 +115,24 @@ const dryTs = (): Record<string, unknown> => {
  * sibling it declares. Measured on `check-sizes.d.mts` — deleting it fails the typecheck with
  * TS7016 on `check-sizes.test.ts`, which imports the `.mjs`.
  *
+ * `tags: -@adr` names no file: it drops from the report any export whose JSDoc carries `@adr`.
+ * `PortOccupancy` and `RuntimeCapabilities` in `shared/domain/aiRuntime.ts` are the two, published
+ * by `docs/ci/adr/ADR-18-capacites-runtime-par-porte.md` and reached by no import yet — knip is
+ * right that nothing calls them and wrong about what to do next, since deleting them would leave
+ * the ADR describing code that does not exist. An exemption written on the declaration rather
+ * than on a path is what keeps that reason beside the type, and what expires with it.
+ *
+ * It goes on a SHAPE an ADR publishes, never on the axis types that shape is built from: ADR-18
+ * quotes those INLINE, so seven of the eight lost their export in the same batch without costing
+ * the document a line — `Residency` kept its own because `aiMemory.ts` imports it.
+ * `ConstraintSource` is that case one ADR on, inside a `Governed<T>` ADR-19 does publish.
+ *
+ * `ignoreIssues` drops ONE issue type for ONE file, and `renderPolicy.ts` is the only entry: the
+ * two JSDoc blocks there argue why `SCATTER_DISTANCE = VIEW_DISTANCE` is an equality on purpose,
+ * and are the reason not to repeat here. `tags` cannot express it: measured on 2026-09-08, an
+ * `@adr` on `SCATTER_DISTANCE` left the duplicate reported and knip answered `Unused tag` — the
+ * option filters exports, and a duplicate is a pair.
+ *
  * They are here because a detector that always reports the same false positives is a detector
  * whose red gets read as normal. The three entry points for `src/main`, `src/preload` and the
  * renderer are NOT here: knip finds them itself and reports each as redundant, which is what
@@ -115,8 +141,15 @@ const dryTs = (): Record<string, unknown> => {
 const KNIP_CONFIG = {
   $schema: 'https://unpkg.com/knip@6/schema.json',
   ignoreBinaries: ['sips', 'iconutil', 'uv'],
-  entry: ['scripts/before-pack.mjs', 'scripts/after-pack.mjs', 'site/assets/js/*.js'],
+  entry: [
+    'scripts/before-pack.mjs',
+    'scripts/after-pack.mjs',
+    'site/assets/js/*.js',
+    'src/renderer/src/game/exportEntry.ts',
+  ],
   ignore: ['site/assets/css/**', 'vendor/**', '.agents/**', 'scripts/*.d.mts'],
+  tags: ['-@adr'],
+  ignoreIssues: { 'src/shared/domain/renderPolicy.ts': ['duplicates'] },
 }
 
 describe('the structural duplicate detector still looking at the tree', () => {
@@ -142,17 +175,21 @@ describe('the structural duplicate detector still looking at the tree', () => {
 })
 
 /**
- * **knip reaches `src/main` and nothing else here, and no configuration found so far changes
- * that.** Measured, not assumed: the same unreachable export appended to `src/main/log.ts`, to
- * `src/renderer/src/helpers/cn.ts` and to `src/shared/hash.ts` is reported for the first alone.
- * Five configurations were tried and none moved it — explicit entry lists for all three targets,
- * `--tsConfig` pointed at `tsconfig.web.json` and at `tsconfig.node.json`, a `workspaces` block, a
- * `paths` map for the three aliases, and `includeEntryExports`. The renderer's files ARE reached —
- * none is reported as an unused file — so this is not a project that stops at `src/main`.
+ * **knip no longer stops at `src/main`, and it does not cover the tree either.** knip 6.35 stopped
+ * counting a `?raw` glob as an import, and the guards of this repository read their own sources
+ * that way — so every file they sweep used to pass for imported and every export of it for read.
+ * Lifting that mask surfaced 328 unread exports in one step, most of them under `src/renderer`.
  *
- * Hence the script is `unused:main` and not `unused`: the name is the scope. A detector whose
- * reach is a third of the tree is worth having; one presented as covering all of it is worse than
- * none, because a clean run then reads as a clean repository.
+ * Remeasured on 2026-09-08, not assumed: the same unreachable export appended to seven files is
+ * reported for `src/main/log.ts`, `src/renderer/src/helpers/cn.ts`, `src/game/pooled.ts` and
+ * `src/shared/domain/otio.ts`, and stays silent for `src/shared/hash.ts`, for the i18n barrel and
+ * for `src/preload/index.ts`. The boundary is therefore not a directory, and naming one would be
+ * the mistake the old measurement made in the other direction.
+ *
+ * The script keeps the name `unused:main`, which now UNDERSTATES its reach rather than overstating
+ * it — the safe direction, and a rename touches the gate. What the sentence above protects is
+ * unchanged: a detector presented as covering the whole tree is worse than none, because a clean
+ * run then reads as a clean repository.
  */
 describe('the dead-code detector still looking at the tree', () => {
   it('exempts the shelled-out binaries and what knip cannot see is used', () => {
@@ -171,11 +208,54 @@ describe('the dead-code detector still looking at the tree', () => {
   })
 
   /**
-   * The name carries the scope, so renaming it to a bare `unused` in the belief that the reach
-   * widened is what this case refuses. Nothing here can measure the reach itself: one knip run
-   * costs 3.39 s, median of five on 2026-08-17, which no suite case may spend.
+   * The same bargain for the game bundle: a rename on either side would leave knip naming a file
+   * vite no longer builds, and `startExportedGame` would go back to reading as a dead export.
    */
-  it('is named for the third of the tree it actually reaches', () => {
+  it('names the file the game bundle is built from', () => {
+    expect(read('config/vite.game.config.ts')).toContain('src/renderer/src/game/exportEntry.ts')
+    expect(read('src/main/export/gameExport.ts')).toContain('startExportedGame')
+  })
+
+  /**
+   * The other side of the `-@adr` line: an export the tag no longer sits on goes back to being
+   * reported, and the shortest way out of that red is the deletion the ADR would then survive
+   * alone. This is the only place the exemption and the two types it covers are held together.
+   *
+   * Swept across `src/` rather than read in `aiRuntime.ts`, because the option is repository wide:
+   * a tag posted anywhere else would exempt that export with no test moving. Through
+   * `testFilesUnder` and not `sourceFiles`, which skips tests, benches and fixtures — measured on
+   * 2026-09-08, an `@adr` in a `-fixtures.ts` did exempt its export and left this case green.
+   * This file is dropped from its own sweep: it spells the tag to name it.
+   */
+  it('carries the tag on the two types ADR-18 publishes and no import reaches', () => {
+    const tagged = testFilesUnder(SOURCE_ROOT, /\.tsx?$/)
+      .filter(file => file !== import.meta.filename)
+      .filter(file => readFileSync(file, 'utf8').includes('@adr'))
+    const source = read('src/shared/domain/aiRuntime.ts')
+
+    for (const name of ['PortOccupancy', 'RuntimeCapabilities']) {
+      expect(source, `${name} is no longer exported`).toContain(`export type ${name} = {`)
+    }
+    expect(tagged).toEqual([join(SOURCE_ROOT, 'shared', 'domain', 'aiRuntime.ts')])
+    expect(source.match(/@adr/g)).toHaveLength(2)
+  })
+
+  /**
+   * The other side of the `ignoreIssues` line: it blinds one file to one issue type, so it must
+   * not outlive its reason. Fuse the two distances and the entry stops naming a false positive —
+   * it starts hiding whatever duplicate lands in that file next, and nothing would say so.
+   */
+  it('leaves the two distances of renderPolicy standing apart', () => {
+    expect(read('src/shared/domain/renderPolicy.ts')).toContain(
+      'export const SCATTER_DISTANCE = VIEW_DISTANCE',
+    )
+  })
+
+  /**
+   * Nothing here can measure the reach the paragraph above states: one knip run costs 3.39 s,
+   * median of five on 2026-08-17, which no suite case may spend.
+   */
+  it('keeps a name that understates the reach rather than claiming the tree', () => {
     expect(manifest.scripts['unused:main']).toContain('knip')
     expect(manifest.scripts).not.toHaveProperty('unused')
   })

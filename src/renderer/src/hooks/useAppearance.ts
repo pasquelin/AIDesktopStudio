@@ -22,7 +22,7 @@ function systemPrefersDark(): boolean {
   return darkQuery()?.matches ?? true
 }
 
-export function resolveTheme(theme: Theme, systemDark: boolean): ResolvedTheme {
+function resolveTheme(theme: Theme, systemDark: boolean): ResolvedTheme {
   if (theme !== 'system') return theme
   return systemDark ? 'dark' : 'light'
 }

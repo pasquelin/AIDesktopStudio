@@ -16,7 +16,7 @@ import {
  */
 
 /** Radians turned per pixel dragged. Tuned so a full turn takes roughly a screen width. */
-export const LOOK_SENSITIVITY = 0.005
+const LOOK_SENSITIVITY = 0.005
 
 export const DEFAULT_LOOK: SphericalAngles = { elevation: 0, azimuth: 0 }
 

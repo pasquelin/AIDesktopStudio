@@ -12,7 +12,7 @@ import type { ReliefChunkKey, ReliefExtent } from './reliefMetrics'
 import type { ReliefOverlay } from './reliefOverlay'
 import { reliefReader } from './reliefRead'
 
-export { packDeltas, unpackDeltas, payloadsOf } from './reliefPacking'
+export { packDeltas, unpackDeltas } from './reliefPacking'
 export type { PackedReliefChunk, ReliefSculpt } from './reliefPacking'
 export { readReliefSculpt, readReliefMask } from './reliefParsing'
 export * from './reliefMetrics'

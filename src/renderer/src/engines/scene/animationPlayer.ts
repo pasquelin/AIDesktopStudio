@@ -7,7 +7,7 @@ import { blockClip, travelsWith } from './rootMotion'
 import { bonesDrivenBy } from './boneRoles'
 
 /** One block of the document, and the clip object it plays. */
-export type Bound = {
+type Bound = {
   ref: ClipRef
   /** Whether that object kept the travel, so a decision that flips rebuilds it. */
   travel: boolean

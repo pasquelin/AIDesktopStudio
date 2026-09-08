@@ -4,7 +4,7 @@ import { SettingLine } from './SettingLine'
 import { WindowButton, type WindowButtonVariant } from '@/components/WindowButton'
 
 /** What paints the button, where nothing is being confirmed. */
-export type SettingActionTone = 'action' | 'quiet'
+type SettingActionTone = 'action' | 'quiet'
 
 export type SettingActionLineProps = {
   title: string

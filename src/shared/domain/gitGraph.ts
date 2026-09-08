@@ -7,7 +7,7 @@
  */
 import type { GitCommit } from './git'
 
-export type GitLink = {
+type GitLink = {
   /** Column the line enters this row from, above. */
   from: number
   /** Column it leaves by, below. */

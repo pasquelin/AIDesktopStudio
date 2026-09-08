@@ -3,7 +3,7 @@ import { UiIcon } from './UiIcon'
 import { HINT_TOP } from '@/helpers/tooltip'
 
 /** A way out of an empty panel: what it says, and what it does. */
-export type EmptyStateAction = {
+type EmptyStateAction = {
   label: string
   /** What the label does not say — required, so a way out is never a word on its own. */
   hint: string

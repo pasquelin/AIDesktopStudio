@@ -312,7 +312,7 @@ const letterbox: FusableEffect = {
  * `satisfies` rather than an annotation, so the KEYS stay literal — which is what lets the other
  * table be typed on `Exclude<PostEffectId, FusedId>` and hold the partition at compile time.
  */
-export const FUSABLE_EFFECTS = {
+const FUSABLE_EFFECTS = {
   lensDistortion,
   heatHaze,
   pixelate,

@@ -26,7 +26,6 @@ export {
   type InputBinding,
   type InputMap,
   type KeyboardBinding,
-  type MouseBinding,
 } from '@game/runtime/inputMap'
 
 /**
@@ -78,7 +77,7 @@ function inputActionOf(value: unknown): InputAction {
  * A file the studio opens is one a person can be told about; the game reads the same bytes at
  * launch and has nobody to tell, so it drops the binding and plays on. One rule, two answers.
  */
-export function inputBindingOf(value: unknown) {
+function inputBindingOf(value: unknown) {
   const binding = inputBindingOrNull(value)
   if (!binding) throw new Error('invalid input binding')
   return binding

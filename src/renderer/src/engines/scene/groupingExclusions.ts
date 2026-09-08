@@ -3,7 +3,7 @@ import type { SceneNode } from './sceneState'
 
 export type GroupingStrategy = 'instance' | 'batch'
 
-export function excludesGrouping(node: SceneNode, strategy: GroupingStrategy): boolean {
+function excludesGrouping(node: SceneNode, strategy: GroupingStrategy): boolean {
   const mode = node.optimization?.mode ?? 'auto'
   return (
     mode === 'exclude' ||

@@ -1,6 +1,13 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
   "ignoreBinaries": ["sips", "iconutil", "uv"],
-  "entry": ["scripts/before-pack.mjs", "scripts/after-pack.mjs", "site/assets/js/*.js"],
-  "ignore": ["site/assets/css/**", "vendor/**", ".agents/**", "scripts/*.d.mts"]
+  "entry": [
+    "scripts/before-pack.mjs",
+    "scripts/after-pack.mjs",
+    "site/assets/js/*.js",
+    "src/renderer/src/game/exportEntry.ts"
+  ],
+  "ignore": ["site/assets/css/**", "vendor/**", ".agents/**", "scripts/*.d.mts"],
+  "tags": ["-@adr"],
+  "ignoreIssues": { "src/shared/domain/renderPolicy.ts": ["duplicates"] }
 }

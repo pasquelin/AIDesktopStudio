@@ -6,7 +6,7 @@
  * is why it is checked here rather than looked at on screen.
  */
 
-export type GitDiffSide = 'added' | 'removed' | 'context'
+type GitDiffSide = 'added' | 'removed' | 'context'
 
 export type GitDiffLine = {
   side: GitDiffSide

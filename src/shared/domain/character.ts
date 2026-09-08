@@ -119,7 +119,7 @@ export function socketsFaultOf(sockets: readonly CharacterSocket[]): SocketFault
   return null
 }
 
-export function isCharacterSocket(value: unknown): value is CharacterSocket {
+function isCharacterSocket(value: unknown): value is CharacterSocket {
   if (!isRecord(value)) return false
   if (typeof value.id !== 'string' || value.id === '') return false
   if (typeof value.name !== 'string' || typeof value.bone !== 'string') return false
@@ -127,7 +127,7 @@ export function isCharacterSocket(value: unknown): value is CharacterSocket {
   return isTransform(value.rest)
 }
 
-export function isMotionRef(value: unknown): value is MotionRef {
+function isMotionRef(value: unknown): value is MotionRef {
   if (!isRecord(value)) return false
 
   return (

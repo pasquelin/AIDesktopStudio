@@ -337,7 +337,7 @@ export function postPresetNamed(
   return saved.find(preset => preset.id === named || preset.name === named)
 }
 
-export const POST_PRESET_FILE_TYPE = 'post-processing-preset'
+const POST_PRESET_FILE_TYPE = 'post-processing-preset'
 
 /** Bumped when the shape below changes in a way an older reader cannot ignore. */
 export const POST_PRESET_VERSION = 1

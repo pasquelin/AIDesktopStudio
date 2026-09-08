@@ -47,7 +47,7 @@ export const NO_SCENE =
   'document.activate brings a scene forward'
 
 /** Why a model tab takes no node: its workshop is drawn, never saved. Said to every editing door. */
-export const NO_EDIT_ON_MODEL =
+const NO_EDIT_ON_MODEL =
   'the model tab in front holds one model and saves no scene — open the model in a scene to add ' +
   'or edit nodes; what reaches it here is the view: scene.state, view.setDisplayMode, scene.capture'
 
@@ -112,8 +112,8 @@ export function editNode(
 }
 
 /** The three vectors, as the fields of a call name them. */
-export const VECTORS: readonly (keyof Transform)[] = ['position', 'rotation', 'scale']
-export const AXES = ['X', 'Y', 'Z']
+const VECTORS: readonly (keyof Transform)[] = ['position', 'rotation', 'scale']
+const AXES = ['X', 'Y', 'Z']
 
 /**
  * 🛑 What a move ANSWERS, and the reason every write answers something: told a bare `ok`, a model
@@ -286,7 +286,7 @@ export function apartFrom<T extends object>(held: T, standing: T): Partial<T> {
  * un mètre de large » is computed from, and unlike a colour it cannot be guessed back — a default
  * is per primitive. Only the segment counts go.
  */
-export const SEGMENT_FIELDS: readonly string[] = [
+const SEGMENT_FIELDS: readonly string[] = [
   'widthSegments',
   'heightSegments',
   'depthSegments',
@@ -350,7 +350,7 @@ export function noSuchNode(named: string, nodes: readonly SceneNode[]): string {
 }
 
 /** How many names a refusal spells. Past this a busy scene spends the turn on a list. */
-export const NAMES_IN_A_REFUSAL = 8
+const NAMES_IN_A_REFUSAL = 8
 
 /** A node's `transform`, or nothing at all when it has not left where a fresh one stands. */
 export function moved(transform: Transform): { transform: Partial<Transform> } | null {

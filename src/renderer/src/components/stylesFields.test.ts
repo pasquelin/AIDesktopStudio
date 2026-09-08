@@ -212,7 +212,6 @@ describe('the shape of a row line', () => {
       '../features/material/components/StylesSection/StylesSectionRow.tsx',
       '../features/project/components/Project/ProjectRow.tsx',
       './Row.tsx',
-      './TreeViewGap.tsx',
       './TreeViewRow.tsx',
     ])
   })

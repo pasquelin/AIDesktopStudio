@@ -37,8 +37,6 @@ import type { ReliefSurface } from './reliefSurface'
 import type { ReliefSculptor } from './reliefSculptor'
 import type { GroundPaint } from '@shared/domain/groundPaint'
 
-export type { TransformMode, TransformSpace } from './gizmoTarget'
-
 export type GroupingStrategy = 'instanced' | 'batched'
 
 /**
@@ -275,7 +273,7 @@ export type ViewportOptions = Settings['three']
 export const STUDIO_INTENSITY = 0.4
 
 /** How far the pointer may wander between press and release and still count as a click, in px. */
-export const CLICK_SLOP = 4
+const CLICK_SLOP = 4
 
 /** Either modifier adds and removes: a viewport draws no rows, so it has no range to extend. */
 export function extendsSelection(event: Modifiers): boolean {

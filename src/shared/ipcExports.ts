@@ -10,7 +10,7 @@ import type { PbrChannel } from './domain/material'
  * Written once because the three that extend it went from two to three in one batch, and the
  * per-field contract had already drifted: two spelled it out and the newcomer left it bare.
  */
-export type SaveRequestBase = {
+type SaveRequestBase = {
   /** The asset to overwrite, keeping its id and its place in the shelf. Absent creates one. */
   replaces?: string
   name: string

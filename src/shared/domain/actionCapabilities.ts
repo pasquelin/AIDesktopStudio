@@ -91,7 +91,7 @@ export const ACTION_TARGET_DESCRIPTORS: readonly ActionTargetDescriptor[] = [
 ]
 
 /** Most specific last: a name that says `read` and `find` is a search, and a query likewise. */
-export const ACTION_INTENT_ORDER: readonly ActionIntent[] = [
+const ACTION_INTENT_ORDER: readonly ActionIntent[] = [
   'read',
   'create',
   'mutate',

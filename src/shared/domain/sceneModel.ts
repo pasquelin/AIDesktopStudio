@@ -22,7 +22,6 @@ export { isTransform, isVector3, type Transform, type Vector3 } from './transfor
 
 /** Re-exported for the same reason as the transform above: this is where a scene is read from. */
 export type { GeometryDescriptor } from './geometry'
-export type { ReliefExtent, ReliefOverlay, ReliefSculpt } from './relief'
 
 /**
  * A texture is a reference to an asset of the project, never an image and never a three.js
@@ -138,7 +137,6 @@ export {
   handleAt,
   handlesMatch,
   type PathDescriptor,
-  type PathHandle,
   type SmoothPath,
 } from './path'
 
@@ -319,7 +317,7 @@ export type RootMotion = 'inPlace' | 'travel' | 'auto'
 export const ROOT_MOTIONS: readonly RootMotion[] = ['inPlace', 'travel', 'auto']
 
 /** What a block is worth before anything is chosen for it. */
-export const DEFAULT_CLIP: Omit<ClipRef, 'id' | 'source' | 'label'> = Object.freeze({
+const DEFAULT_CLIP: Omit<ClipRef, 'id' | 'source' | 'label'> = Object.freeze({
   start: 0,
   duration: 0,
   offset: 0,

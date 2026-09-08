@@ -21,7 +21,7 @@ export type GlbChunks = {
   extra?: readonly GlbChunk[]
 }
 
-export type GlbChunk = { kind: number; bytes: Uint8Array }
+type GlbChunk = { kind: number; bytes: Uint8Array }
 
 /** The two chunks a `.glb` is made of, or `null` for bytes that are not one. */
 export function glbChunksOf(file: Uint8Array): GlbChunks | null {

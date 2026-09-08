@@ -7,7 +7,7 @@ import { characterStore, seedCharacter, useCharacters } from '@/stores/character
 import { sceneOf, useScenes } from '@/stores/scenes'
 
 /** What a stage needs of an engine: a workshop scene laid over it, and what the file turned out to be. */
-export type CharacterDraw = {
+type CharacterDraw = {
   apply: (state: SceneState) => void
   frameContents: () => boolean
 }

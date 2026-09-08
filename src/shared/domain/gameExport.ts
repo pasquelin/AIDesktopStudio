@@ -124,7 +124,7 @@ export type CompiledSceneOptimization = {
   nodes: readonly CompiledNodeGeometry[]
 }
 
-export type ExportedScript = {
+type ExportedScript = {
   /** The reference a `Script` component carries, as `refToString` spells one. */
   script: string
   file: string

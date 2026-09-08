@@ -21,7 +21,7 @@ export const OTIOZ_MAJOR = 1
 
 export const OTIOZ_VERSION_PATH = 'version.txt'
 export const OTIOZ_CONTENT_PATH = 'content.otio'
-export const OTIOZ_MEDIA_FOLDER = 'media'
+const OTIOZ_MEDIA_FOLDER = 'media'
 
 /** The ceiling on `content.otio`, held on both sides. A cut is JSON; a claim past this is not one. */
 export const MAX_CONTENT_BYTES = 64 * 1024 * 1024
@@ -48,7 +48,7 @@ export function otiozMajorOf(version: string): number {
  *
  * Says only what the entry CLAIMS to be — `bundleEntryOf` is what says whether the claim is safe.
  */
-export function mediaNameOf(entry: string): string | null {
+function mediaNameOf(entry: string): string | null {
   return entry.startsWith(`${OTIOZ_MEDIA_FOLDER}/`)
     ? entry.slice(OTIOZ_MEDIA_FOLDER.length + 1)
     : null

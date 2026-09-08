@@ -8,7 +8,7 @@
 import type { CharacterExtras } from '@shared/domain/character'
 import type { RigBone } from '@shared/domain/rig'
 
-export type GlbSkinWire = {
+type GlbSkinWire = {
   mesh: number
   primitive: number
   joints: Uint16Array

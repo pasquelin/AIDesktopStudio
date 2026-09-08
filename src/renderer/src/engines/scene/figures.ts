@@ -13,7 +13,7 @@ export type Figure = {
 }
 
 /** One box of a body: what it is called, how big it is, where it sits, and what it is painted. */
-export type FigurePart = {
+type FigurePart = {
   name: string
   size: Vector3
   at: Vector3
@@ -61,7 +61,7 @@ const HUMANOID: readonly FigurePart[] = [
 ]
 
 /** How tall a walking body stands, and the size every figure of the family is drawn at. */
-export const FIGURE_HEIGHT = 1.8
+const FIGURE_HEIGHT = 1.8
 
 /**
  * 🛑 The scale at which a figure fits INSIDE the capsule a controller feels — measured on every

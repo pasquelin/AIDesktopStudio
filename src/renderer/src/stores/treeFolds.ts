@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 
-export type TreeFoldPanel = 'explorer' | 'scene'
+type TreeFoldPanel = 'explorer' | 'scene'
 
 type FoldOrder = { stamp: number; wanted: boolean; anyExpanded: boolean }
 type TreeFoldsState = Record<TreeFoldPanel, FoldOrder> & {

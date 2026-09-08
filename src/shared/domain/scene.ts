@@ -17,7 +17,6 @@ import type { TextureSlot } from './sceneTexture'
 export * from './sceneModel'
 export * from './sceneTexture'
 export * from './scatter'
-export type { ReliefMask } from './relief'
 
 export type EnvironmentRef =
   { kind: 'studio' } | { kind: 'skybox'; assetId: string } | { kind: 'sky'; documentId: string }

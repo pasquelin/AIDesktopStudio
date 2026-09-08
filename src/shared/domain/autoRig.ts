@@ -1,8 +1,8 @@
 import { rigFaultOf, type Rig } from './rig'
 
-export type AutoRigTarget = 'humanoid' | 'generic'
+type AutoRigTarget = 'humanoid' | 'generic'
 
-export type AutoRigCapabilities = {
+type AutoRigCapabilities = {
   target: AutoRigTarget
   skeleton: boolean
   skinWeights: boolean
@@ -35,11 +35,11 @@ export type AutoRigBackendDescriptor = {
   platformSupport?: readonly AutoRigPlatformSupport[]
 }
 
-export type AutoRigDevice = 'cpu' | 'mps'
+type AutoRigDevice = 'cpu' | 'mps'
 export type AutoRigAvailability = 'available' | 'unavailable' | 'untested' | 'unsupported'
 export type AutoRigPlatform = 'darwin' | 'linux' | 'win32'
 export type AutoRigArchitecture = 'arm64' | 'x64'
-export type AutoRigPlatformSupport = {
+type AutoRigPlatformSupport = {
   platform: AutoRigPlatform
   architecture: AutoRigArchitecture
   status: AutoRigAvailability

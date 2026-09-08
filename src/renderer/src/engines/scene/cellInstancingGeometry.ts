@@ -187,11 +187,7 @@ export function rewriteBy(bucket: Bucket, members: Members): boolean {
 }
 
 /** `fround` because the buffer holds singles: a double compared raw is never equal to its copy. */
-export function samePlace(
-  held: ArrayLike<number>,
-  base: number,
-  stands: readonly number[],
-): boolean {
+function samePlace(held: ArrayLike<number>, base: number, stands: readonly number[]): boolean {
   for (let at = 0; at < 16; at += 1) {
     if (held[base + at] !== Math.fround(stands[at] ?? 0)) return false
   }

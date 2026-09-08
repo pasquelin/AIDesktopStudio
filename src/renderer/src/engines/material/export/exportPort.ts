@@ -27,14 +27,14 @@ import { buildGlb } from './gltf'
  */
 
 /** One file the export writes. The extension travels with it: a `.glb` sits beside `.png`s. */
-export type ExportedFile = {
+type ExportedFile = {
   /** Without extension, and already safe to be a file name — see `safeFileName`. */
   name: string
   extension: string
   bytes: Uint8Array
 }
 
-export type MaterialPackRequest = {
+type MaterialPackRequest = {
   target: MaterialExportTarget
   channels: ExportChannels
   /** What the files are named after, already cleaned of everything a name cannot hold. */

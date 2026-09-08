@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { isRecord } from '../guards'
 import { LANGUAGES, TRANSLATIONS } from '../i18n'
 import { SETTING_ACTION_IDS } from './settingAction'
-import { defaultAt } from './settingsPath'
+import { defaultAt, type SettingPath } from './settingsPath'
 import {
   ACTION_REGISTRY,
   boundsOf,
@@ -66,6 +66,18 @@ function keysOf(): string[] {
 /** The kinds a number stands behind, and therefore the ones zod bounds. */
 const NUMERIC: ReadonlySet<SettingKind> = new Set<SettingKind>(['number', 'slider'])
 
+/** Compiles only for `never`, which is what turns the alias below into an assertion. */
+type Accounted<Path extends never> = Path
+
+/**
+ * A setting added to `Settings` and forgotten in both the registry and `UNLISTED_PATHS` widens
+ * this past `never`, and the annotation that reads it stops compiling — the gap surfaces at build
+ * time, not on an empty screen. `pnpm typecheck` is what fails; the case below only reads it.
+ */
+type UnaccountedPath = Accounted<
+  Exclude<SettingPath, (typeof SETTING_REGISTRY)[number]['path'] | (typeof UNLISTED_PATHS)[number]>
+>
+
 describe('settings registry', () => {
   /**
    * The ids were DERIVED from the registry until the action catalogue needed them: importing this
@@ -84,28 +96,14 @@ describe('settings registry', () => {
 
   it('never lists a path as both described and deliberately unlisted', () => {
     const described = new Set<string>(SETTING_REGISTRY.map(descriptor => descriptor.path))
+    const unaccounted: UnaccountedPath[] = []
+
     expect(UNLISTED_PATHS.filter(path => described.has(path))).toEqual([])
+    expect(unaccounted).toEqual([])
   })
+})
 
-  // The point of the whole registry: a setting nobody can explain is a setting nobody can use.
-  it.each(LANGUAGES.map(language => language.code))('says what every setting does in %s', code => {
-    for (const key of keysOf()) {
-      const text = resolve(TRANSLATIONS[code], key)
-      expect(typeof text === 'string' && text.trim() !== '', `${key} is missing`).toBe(true)
-    }
-  })
-
-  it('explains, and does not merely repeat the title', () => {
-    for (const descriptor of SETTING_REGISTRY) {
-      const help = resolve(TRANSLATIONS.fr, descriptor.helpKey)
-      // Short enough to be a label rather than an explanation, which is what this guards.
-      expect(
-        String(help).length,
-        `${descriptor.helpKey} is too short to explain anything`,
-      ).toBeGreaterThan(40)
-    }
-  })
-
+describe('what the registry declares about each setting', () => {
   it('bounds every numeric setting, so zod never falls back to infinity', () => {
     for (const descriptor of SETTING_REGISTRY) {
       if (!NUMERIC.has(descriptor.kind)) continue
@@ -166,6 +164,30 @@ describe('settings registry', () => {
     }
   })
 
+  // A slider without a step lands on the browser's default of 1, which for a 0.85 to 1.4 range
+  // means three reachable values.
+  it('gives every slider a step, which is the reason it is a slider at all', () => {
+    for (const descriptor of SETTING_REGISTRY) {
+      if (descriptor.kind !== 'slider') continue
+      expect(descriptor.step, `${descriptor.path} has no step`).toBeGreaterThan(0)
+    }
+  })
+
+  // Without one the control has to guess which native picker to open, and guessing wrong sends
+  // someone hunting for a folder when they were asked for a binary.
+  it('says what every path setting points at', () => {
+    for (const descriptor of SETTING_REGISTRY) {
+      if (descriptor.kind !== 'path') continue
+      expect(PATH_KINDS, `${descriptor.path}`).toContain(descriptor.pathKind)
+    }
+  })
+
+  it('leaves bounds open for a setting that declares none', () => {
+    expect(boundsOf('media.ffmpegPath').max).toBe(Number.POSITIVE_INFINITY)
+  })
+})
+
+describe('the screens a setting is shown on', () => {
   it('groups settings by the screen that shows them, in registry order', () => {
     const shown = descriptorsIn('appearance')
 
@@ -233,27 +255,26 @@ describe('settings registry', () => {
     expect(descriptorAt('appearance.theme')?.kind).toBe('choice')
     expect(descriptorAt('storage.lastProject')).toBeNull()
   })
+})
 
-  // A slider without a step lands on the browser's default of 1, which for a 0.85 to 1.4 range
-  // means three reachable values.
-  it('gives every slider a step, which is the reason it is a slider at all', () => {
-    for (const descriptor of SETTING_REGISTRY) {
-      if (descriptor.kind !== 'slider') continue
-      expect(descriptor.step, `${descriptor.path} has no step`).toBeGreaterThan(0)
+describe('the words a setting is shown with', () => {
+  // The point of the whole registry: a setting nobody can explain is a setting nobody can use.
+  it.each(LANGUAGES.map(language => language.code))('says what every setting does in %s', code => {
+    for (const key of keysOf()) {
+      const text = resolve(TRANSLATIONS[code], key)
+      expect(typeof text === 'string' && text.trim() !== '', `${key} is missing`).toBe(true)
     }
   })
 
-  // Without one the control has to guess which native picker to open, and guessing wrong sends
-  // someone hunting for a folder when they were asked for a binary.
-  it('says what every path setting points at', () => {
+  it('explains, and does not merely repeat the title', () => {
     for (const descriptor of SETTING_REGISTRY) {
-      if (descriptor.kind !== 'path') continue
-      expect(PATH_KINDS, `${descriptor.path}`).toContain(descriptor.pathKind)
+      const help = resolve(TRANSLATIONS.fr, descriptor.helpKey)
+      // Short enough to be a label rather than an explanation, which is what this guards.
+      expect(
+        String(help).length,
+        `${descriptor.helpKey} is too short to explain anything`,
+      ).toBeGreaterThan(40)
     }
-  })
-
-  it('leaves bounds open for a setting that declares none', () => {
-    expect(boundsOf('media.ffmpegPath').max).toBe(Number.POSITIVE_INFINITY)
   })
 })
 

@@ -7,12 +7,7 @@ import { isInstanceable, meshesOf, modelShapeKey } from './instanceableModel'
 import { isDrawn } from './groupPlacement'
 import { forcesGrouping } from './groupingExclusions'
 import { heldSourceAncestors } from './heldSourceAncestors'
-export {
-  behavioralGroupingExclusions,
-  excludesGrouping,
-  groupingExclusions,
-  type GroupingStrategy,
-} from './groupingExclusions'
+export { behavioralGroupingExclusions, groupingExclusions } from './groupingExclusions'
 
 export {
   dropSlotsOf,
@@ -24,7 +19,6 @@ export {
   worldReach,
   writeMoved,
   type Placed,
-  type PlacedSlot,
 } from './groupPlacement'
 
 /**
@@ -180,7 +174,7 @@ export type GroupingStats = {
  * The five fields every strategy answers with once it holds sources — written here rather than in
  * each of the four, where they were the same nine lines.
  */
-export type HeldSourceFields = Pick<
+type HeldSourceFields = Pick<
   InstancedGroups,
   'hangSources' | 'dropSources' | 'refreshSources' | 'holdsSource' | 'dispose'
 >

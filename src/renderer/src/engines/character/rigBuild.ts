@@ -49,7 +49,7 @@ export function reskinnableMeshesOf(root: Object3D): Mesh[] {
  * Takes the bones a previous rig hung on this model off it, so one of another shape is laid on a
  * bare model rather than beside the skeleton it replaces — where `wearsRig` would then count both.
  */
-export function unrig(holder: Object3D): void {
+function unrig(holder: Object3D): void {
   for (const root of [...holder.children]) {
     if (root instanceof Bone) root.removeFromParent()
   }

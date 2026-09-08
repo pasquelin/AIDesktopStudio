@@ -27,7 +27,7 @@ export function createPlaybackToken(): PlaybackToken {
 export const playbackToken = createPlaybackToken()
 
 /** What a player exposes to whoever asks it to start, beyond taking the token itself. */
-export type Transport = {
+type Transport = {
   play: () => void
   pause: () => void
   playing: () => boolean

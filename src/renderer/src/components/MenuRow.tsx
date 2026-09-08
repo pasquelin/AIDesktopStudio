@@ -9,7 +9,7 @@ import { UiIcon } from './UiIcon'
  * ticking one unticks the rest. `on-off` is a row that answers for itself, like a layer's two
  * padlocks, where any number can be on at once.
  */
-export type MenuTick = 'one-of' | 'on-off'
+type MenuTick = 'one-of' | 'on-off'
 
 const ROLE: Record<MenuTick, 'menuitemradio' | 'menuitemcheckbox'> = {
   'one-of': 'menuitemradio',

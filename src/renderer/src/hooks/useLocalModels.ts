@@ -6,7 +6,7 @@ import { getBridge } from '@/services/bridge'
 const EVERY_LOCAL = 100
 
 /** A stable empty answer, so a surface with nothing to ask hands the same identity to every memo. */
-export const NO_MODELS: readonly ModelSummary[] = []
+const NO_MODELS: readonly ModelSummary[] = []
 
 /**
  * What this MACHINE holds, off the manifests alone: `runsOn: LOCAL_RUNTIME` closes the walk in the

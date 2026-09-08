@@ -3,10 +3,9 @@ import { isRecord } from '../guards'
 import type { ActivityMessageKey, ActivityParams } from './activity'
 import type { Ref } from './ref'
 
-export type StudioEventState =
-  'created' | 'running' | 'waiting' | 'completed' | 'failed' | 'cancelled'
+type StudioEventState = 'created' | 'running' | 'waiting' | 'completed' | 'failed' | 'cancelled'
 
-export type StudioEventCategory =
+type StudioEventCategory =
   | 'assistant'
   | 'mission'
   | 'step'
@@ -20,9 +19,9 @@ export type StudioEventCategory =
   | 'memory'
   | 'system'
 
-export type StudioEventPriority = 'background' | 'normal' | 'important' | 'critical'
+type StudioEventPriority = 'background' | 'normal' | 'important' | 'critical'
 
-export type StudioEventProgress = {
+type StudioEventProgress = {
   current?: number
   total?: number
   ratio?: number
