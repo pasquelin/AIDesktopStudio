@@ -116,6 +116,7 @@ const settledJob = z.object({
   peakRssBytes: z.number().optional(),
   width: z.number().optional(),
   height: z.number().optional(),
+  mask: z.string().optional(),
   alpha: z.string().optional(),
 })
 
