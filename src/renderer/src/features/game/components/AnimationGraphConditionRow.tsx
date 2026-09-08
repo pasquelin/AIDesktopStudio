@@ -67,7 +67,7 @@ export function AnimationGraphConditionRow({
             icon={mdiTrashCanOutline}
             label={t('inspector.removeCondition')}
             tooltip={TIP_LEFT}
-            variant="row"
+            variant="header"
             onClick={() => onChange(null)}
           />
         </FieldActions>

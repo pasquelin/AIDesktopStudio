@@ -14,9 +14,9 @@ export type PropertySectionHeadProps = {
   /** Beside the fold, never inside it: a button within a button is not markup a browser keeps. */
   actions?: ReactNode
   /**
-   * On a plate the section IS its own edge, so the end column's bleed — which exists to land a
-   * glyph on the column the fields end on, inside a panel that has no edge — hangs the bin one
-   * pixel from that border. The gutter is given back, and the bleed with it.
+   * On a plate the section IS its own edge, and its head carries none of the inset its body
+   * has: the end column then hung its bin one pixel from that border. The body's own inset,
+   * exactly — more, and the bin leaves the column every reset under it stands in.
    */
   plate?: boolean
   scId?: string
@@ -43,7 +43,7 @@ export function PropertySectionHead({
     <div
       className={cn(
         'flex items-center',
-        plate && 'pe-[calc(var(--sc-gutter)+var(--sc-row-action-bleed))]',
+        plate && 'pe-2',
       )}
     >
       <h3 className="m-0 min-w-0 flex-1 font-normal text-inherit">

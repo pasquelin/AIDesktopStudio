@@ -68,7 +68,7 @@ export function AnimationGraphTransitionForm({
             icon={mdiTrashCanOutline}
             label={t('game.animationGraph.removeTransition')}
             tooltip={TIP_LEFT}
-            variant="row"
+            variant="header"
             onClick={() => onChange(null)}
           />
         </FieldActions>

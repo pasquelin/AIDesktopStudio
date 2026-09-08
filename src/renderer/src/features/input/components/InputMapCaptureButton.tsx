@@ -23,7 +23,7 @@ export function InputMapCaptureButton({ capture, onArm }: InputMapCaptureButtonP
       label={capture.capturing ? t('game.inputMap.capturing') : t('game.inputMap.capture')}
       description={t('game.inputMap.captureHint')}
       tooltip={TIP_LEFT}
-      variant="row"
+      variant="header"
       // Armed, it is a control that is ON — and the one thing on screen waiting for a gesture.
       accented={capture.capturing}
       onClick={() => (capture.capturing ? capture.cancel() : onArm())}

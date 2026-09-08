@@ -53,7 +53,7 @@ export function InputMapExpertBinding({
             icon={mdiTrashCanOutline}
             label={t('game.inputMap.removeBinding')}
             tooltip={TIP_LEFT}
-            variant="row"
+            variant="header"
             onClick={() => onChange(null)}
           />
         </FieldActions>

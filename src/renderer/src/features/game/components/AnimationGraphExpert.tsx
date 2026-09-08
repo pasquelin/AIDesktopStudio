@@ -114,7 +114,7 @@ export function AnimationGraphExpert({ graph, onChange }: AnimationGraphExpertPr
                   icon={mdiTrashCanOutline}
                   label={t('game.animationGraph.removeParameter')}
                   tooltip={TIP_LEFT}
-                  variant="row"
+                  variant="header"
                   onClick={() => changedParameter(at, null)}
                 />
               </FieldActions>
