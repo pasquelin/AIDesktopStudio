@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { describe, expect, it, vi } from 'vitest'
 import type { AutoRigResult } from '@shared/domain/autoRig'
 import type { AutoRigBackend } from './autoRig'
@@ -74,7 +75,9 @@ describe('Auto Rig backends', () => {
       }),
     }
 
-    expect(() => new AutoRigService([backend, backend])).toThrow('Duplicate Auto Rig backend')
+    expect(() => new AutoRigService([backend, backend])).toThrow(
+      localizedError('autoRigBackendDuplicate', { name: backend.id }).message,
+    )
   })
 
   it('discards a result that arrives after cancellation', async () => {

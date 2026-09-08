@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { assetUrl } from '@shared/domain/asset'
 import { setChannel } from '@/engines/material/commands'
@@ -47,7 +48,7 @@ describe('measuring the seam of a material', () => {
     await expect(measureMaterialSeam('doc-1', measure)).resolves.toBe(false)
 
     expect(measure).not.toHaveBeenCalled()
-    expect(entries().at(-1)?.message).toContain('baseColor is empty')
+    expect(entries().at(-1)?.message).toContain(localizedError('baseColorEmpty').message)
     expect(reading()).toBeNull()
   })
 

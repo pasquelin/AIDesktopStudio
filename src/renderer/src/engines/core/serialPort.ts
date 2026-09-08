@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import type { PortWatch, WorkerPort } from './workerPort'
 
 /**
@@ -63,7 +64,7 @@ export function serial<T>(
     request: Parameters<WorkerPort<T>['send']>[0],
     watch?: PortWatch,
   ): Promise<T | null> => {
-    if (queued.length >= depth) throw new Error(`${what} queue is full`)
+    if (queued.length >= depth) throw localizedError('queueFull', { name: what })
     if (!(await waitTurn(watch))) return null
     return taken(request, watch)
   }

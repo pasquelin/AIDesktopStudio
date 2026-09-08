@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { type Object3D, PerspectiveCamera, WebGLRenderTarget } from 'three'
 import { isolating } from './isolation'
 import { aspectLoan } from '../viewport/aspectLoan'
@@ -152,7 +153,7 @@ export abstract class SceneRendererFilm extends SceneRendererPreview {
   ): Promise<void> {
     const gl = this.viewport.gl
     const initialCamera = this.cameraObject(cameraAt(0))
-    if (!gl || !initialCamera) throw new Error('no camera to render from')
+    if (!gl || !initialCamera) throw localizedError('renderCameraMissing')
     let camera = initialCamera
     const { width, height } = evenSize(request)
     const target = new WebGLRenderTarget(width, height)

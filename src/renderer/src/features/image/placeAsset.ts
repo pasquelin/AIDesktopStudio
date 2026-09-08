@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { isLocalPicture, type Asset } from '@shared/domain/asset'
 import { DEFAULT_CANVAS, pixelLayer, type CanvasState } from '@/engines/canvas/canvasState'
 import { addLayer } from '@/engines/canvas/commands'
@@ -23,7 +24,7 @@ export function placeAsset(documentId: string, asset: Asset, targetLayerId?: str
     // Said rather than swallowed, exactly as `placeMaterialChannel` says it: `AssetDropTarget`
     // cannot refuse this one while it flies — a drag announces its TYPE and not where its file
     // is — so the refusal can only be spoken here, and a silent drop is the worse of the two.
-    reportFailure('canvas.place', asset.id, new Error(`${asset.name} has no local file yet`))
+    reportFailure('canvas.place', asset.id, localizedError('assetNotLocal', { name: asset.name }))
     return
   }
 
@@ -55,7 +56,7 @@ async function becomeContainer(documentId: string, asset: Asset): Promise<boolea
   // size back. Said out loud for the same reason the flat path says it.
   const held = withinCeiling(opened)
   if (held.width !== opened.width || held.height !== opened.height) {
-    reportFailure('canvas.size', asset.name, new Error('picture opened below its own size'))
+    reportFailure('canvas.size', asset.name, localizedError('imageOpenedTooSmall'))
   }
 
   const canvases = useCanvases.getState()
@@ -90,7 +91,7 @@ export async function becomeAsset(
   if (!isLocalPicture(asset)) {
     // Same refusal, same reason as `placeAsset`: a double-click on a cloud row that has not been
     // downloaded opened nothing and said nothing.
-    reportFailure('canvas.place', asset.id, new Error(`${asset.name} has no local file yet`))
+    reportFailure('canvas.place', asset.id, localizedError('assetNotLocal', { name: asset.name }))
     return
   }
   // A container opens as the stack it holds. Its pixels arrive later, at `rehydrateDocument`:
@@ -108,9 +109,9 @@ export async function becomeAsset(
   // quietly. The ceiling biting was said; the file that would not decode was NOT, and that
   // silence is how a 4112 × 2658 photo came to sit in a 1024² document and be overwritten by it.
   if (!measured) {
-    reportFailure('canvas.size', asset.name, new Error('picture would not measure'))
+    reportFailure('canvas.size', asset.name, localizedError('imageSizeUnknown'))
   } else if (size.width !== measured.width || size.height !== measured.height) {
-    reportFailure('canvas.size', asset.name, new Error('picture opened below its own size'))
+    reportFailure('canvas.size', asset.name, localizedError('imageOpenedTooSmall'))
   }
   const layer = sourceLayer(asset)
   const state: CanvasState = {

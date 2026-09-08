@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { describe, expect, it } from 'vitest'
 import { createBundleClient, type BundlePort } from './bundleClient'
 import type { BundleMessage, BundleResponse } from './bundleProtocol'
@@ -110,7 +111,7 @@ describe('the bundle client', () => {
     port.die(new Error('bundle process exited with code 1'))
 
     await expect(writing).rejects.toThrow('exited with code 1')
-    await expect(client.write(JOB)).rejects.toThrow('the bundle process is gone')
+    await expect(client.write(JOB)).rejects.toThrow(localizedError('bundleProcessStopped').message)
   })
 })
 

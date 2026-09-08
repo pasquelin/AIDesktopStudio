@@ -1,3 +1,4 @@
+import { localizeErrorMessage } from '@shared/localizedError'
 import {
   mdiAlertCircleOutline,
   mdiCheckCircleOutline,
@@ -65,7 +66,13 @@ export function AssistantConversationMissionEvent({ event }: { event: StudioEven
           <span>{label}</span>
         </summary>
         {detail !== undefined && <p className="text-muted m-0 pt-1 pl-5">{detail}</p>}
-        {error !== undefined && <p className="text-danger m-0 pt-1 pl-5">{error}</p>}
+        {error !== undefined && (
+          <p className="text-danger m-0 pt-1 pl-5">
+            {typeof error === 'string'
+              ? localizeErrorMessage(error, (key, values) => t(key, values))
+              : error}
+          </p>
+        )}
         {ratio !== undefined && <ProgressBar ratio={ratio} label={label} className="mt-1 ml-5" />}
       </details>
     </li>

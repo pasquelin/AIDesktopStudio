@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { ShaderMaterial, type Texture } from 'three'
 import type { PbrChannel } from '@shared/domain/material'
 import { QUAD_VERTEX_SHADER } from '../../gpu/passes/quad'
@@ -36,7 +37,7 @@ const COMPONENT_BY_CHANNEL: Record<PbrChannel, string | null> = {
  */
 export function createUnpackPass(channel: PbrChannel, source: Texture): ShaderMaterial {
   const component = COMPONENT_BY_CHANNEL[channel]
-  if (component === null) throw new Error(`no component of a packed picture holds ${channel}`)
+  if (component === null) throw localizedError('packedChannelMissing', { channel: channel })
 
   return new ShaderMaterial({
     vertexShader: QUAD_VERTEX_SHADER,

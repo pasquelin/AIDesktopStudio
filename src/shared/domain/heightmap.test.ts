@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { describe, expect, it } from 'vitest'
 import { heightmapSamplesOf } from './heightmap'
 
@@ -22,6 +23,6 @@ describe('heightmapSamplesOf', () => {
   it('refuses a buffer that is not a grid of samples', () => {
     expect(() =>
       heightmapSamplesOf({ data: new Float32Array([1, 2, 3]), width: 2, height: 2 }),
-    ).toThrow('heightmap is not a grid of samples')
+    ).toThrow(localizedError('heightmapGridInvalid').message)
   })
 })

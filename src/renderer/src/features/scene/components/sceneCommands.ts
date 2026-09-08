@@ -1,3 +1,4 @@
+import { localizedError, type DiagnosticKey } from '@shared/localizedError'
 import { VIEW_SIDE_OF, type CommandId } from '@shared/domain/command'
 import type { LogScope } from '@shared/ipc'
 import type { CsgOperation } from '@shared/domain/csg'
@@ -66,22 +67,20 @@ export function toggleNodeVisible(documentId: string, nodeId: string): void {
  * The commands refuse on their own; this is what SAYS so, since a gesture that quietly does
  * nothing reads as a studio that ignored the key. Answers true so a caller can stop there.
  */
-function saysRefusal(nodes: readonly SceneNode[], scope: LogScope, why: string): boolean {
-  reportFailure(scope, playerPartsOf(nodes)?.module.name ?? '', new Error(why))
+function saysRefusal(nodes: readonly SceneNode[], scope: LogScope, why: DiagnosticKey): boolean {
+  reportFailure(scope, playerPartsOf(nodes)?.module.name ?? '', localizedError(why))
   return true
 }
 /** A removal that would leave a module standing without its body or its eye. */
 function refusesRemoval(nodes: readonly SceneNode[], ids: readonly string[]): boolean {
   return (
-    tearsPlayerApart(nodes, ids) &&
-    saysRefusal(nodes, 'scene.playerParts', 'a player module keeps its body and its camera')
+    tearsPlayerApart(nodes, ids) && saysRefusal(nodes, 'scene.playerParts', 'playerPartsRequired')
   )
 }
 /** The same for what comes IN: a scene arbitrating between two modules is what the module ended. */
 function refusesArrival(nodes: readonly SceneNode[], copies: readonly SceneNode[]): boolean {
   return (
-    bringsSecondPlayer(nodes, copies) &&
-    saysRefusal(nodes, 'scene.player', 'this scene already holds a player module')
+    bringsSecondPlayer(nodes, copies) && saysRefusal(nodes, 'scene.player', 'playerAlreadyPresent')
   )
 }
 /**

@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import {
   DataTexture,
   RepeatWrapping,
@@ -38,7 +39,7 @@ const SIGNATURE_BYTES = 64
  */
 export const loadTexture: TextureSource = async (url, orientation = 'flipY') => {
   const answer = await fetch(url)
-  if (!answer.ok) throw new Error(`${url} answered ${answer.status}`)
+  if (!answer.ok) throw localizedError('httpStatus', { url: url, status: answer.status })
 
   // The BLOB rather than the bytes, and the HEAD of it rather than the whole. Two things ride on
   // that: the served type stays on it — a blob with none renders no SVG at all, `<img>` reading
@@ -99,7 +100,7 @@ async function oraFlatten(bytes: Uint8Array): Promise<Blob> {
   const merged = (await import('fflate')).unzipSync(bytes, {
     filter: file => file.name === ORA_MERGED_PATH,
   })[ORA_MERGED_PATH]
-  if (!merged) throw new Error(`this OpenRaster carries no ${ORA_MERGED_PATH}`)
+  if (!merged) throw localizedError('openRasterImageMissing', { path: ORA_MERGED_PATH })
 
   return new Blob([merged], { type: 'image/png' })
 }
@@ -118,7 +119,7 @@ async function loaderFor(decoder: PictureDecoder | null): Promise<Loader<Texture
   if (decoder === 'openexr') {
     return new (await import('three/addons/loaders/EXRLoader.js')).EXRLoader()
   }
-  throw new Error(`no three loader for ${decoder ?? 'this picture'}`)
+  throw localizedError('imageDecoderMissing', { format: decoder ?? '' })
 }
 
 /**
@@ -130,7 +131,7 @@ async function tiffTexture(bytes: Uint8Array, orientation: PictureOrientation): 
 
   const pages = decode(bytes)
   const [first] = pages
-  if (!first) throw new Error('this TIFF holds no image at all')
+  if (!first) throw localizedError('tiffImageMissing')
 
   decodeImage(bytes, first, pages)
   const texture = new DataTexture(toRGBA8(first), first.width, first.height)

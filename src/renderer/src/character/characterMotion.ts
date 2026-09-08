@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import type { AnimationTimeline } from '@shared/domain/animation'
 import { SCENE_SUBJECT_ID } from '@shared/domain/animation'
 import { glbChunksOf, glbJson } from '@shared/domain/glbContainer'
@@ -58,7 +59,7 @@ export async function reopenCharacterMotion(
   assetId: string,
 ): Promise<void> {
   const timeline = motionTimelineOf(await assetBytes(assetId), nodeId)
-  if (!timeline) throw new Error('this motion carries no band of this studio')
+  if (!timeline) throw localizedError('motionTimelineMissing')
 
   useScenes.getState().runCommand(documentId, loadAnimation(timeline))
   useAnimationViews.getState().openMotion(documentId, assetId)

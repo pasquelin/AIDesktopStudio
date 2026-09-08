@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { link, mkdir, realpath, rename, rm, rmdir, writeFile } from 'node:fs/promises'
 import { basename, dirname, join, posix } from 'node:path'
 import { pathIsInside } from '@main/export/pathIsInside'
@@ -54,9 +55,9 @@ export async function saveConverted(
   project: ConvertedMeshHost,
   record: ConvertedMeshRecord,
 ): Promise<Asset> {
-  if (!glbChunksOf(request.glb)) throw new Error('expected a binary glTF payload')
+  if (!glbChunksOf(request.glb)) throw localizedError('gltfPayloadInvalid')
   return await project.duringWrite(async (root, catalog) => {
-    if (request.projectPath !== root) throw new Error('the conversion belongs to another project')
+    if (request.projectPath !== root) throw localizedError('conversionProjectMismatch')
     const landed = await landConvertedMesh(request, {
       projectPath: () => root,
       folderFor: role => project.folderFor(role),
@@ -102,7 +103,7 @@ async function targetPath(
     return await freeAssetPath(root, folder, existing.name, GLB_EXTENSION)
   }
   const folder = await folderFor(roleForAsset({ type }))
-  if (!assetFilePath(root, folder)) throw new Error('asset path leaves the project')
+  if (!assetFilePath(root, folder)) throw localizedError('assetPathOutside')
   await mkdir(join(root, folder), { recursive: true })
   await requireExistingInside(root, folder)
   if (type !== 'animation') return freeAssetPath(root, folder, existing.name, GLB_EXTENSION)
@@ -111,9 +112,9 @@ async function targetPath(
 }
 
 async function requireExistingInside(root: string, path: string): Promise<void> {
-  if (!assetFilePath(root, path)) throw new Error('asset path leaves the project')
+  if (!assetFilePath(root, path)) throw localizedError('assetPathOutside')
   const [projectRoot, directory] = await Promise.all([realpath(root), realpath(join(root, path))])
-  if (!pathIsInside(projectRoot, directory)) throw new Error('asset path leaves the project')
+  if (!pathIsInside(projectRoot, directory)) throw localizedError('assetPathOutside')
 }
 
 async function moveSourcePackage(
@@ -134,7 +135,7 @@ async function moveSourcePackage(
       if (moveNeighbours && (await exists(join(root, oldSources)))) {
         await requireExistingInside(root, oldSources)
         await requireExistingInside(root, posix.dirname(packageTo))
-        if (!assetFilePath(root, packageTo)) throw new Error('asset path leaves the project')
+        if (!assetFilePath(root, packageTo)) throw localizedError('assetPathOutside')
         await rename(join(root, oldSources), join(root, packageTo))
         await requireExistingInside(root, packageTo)
         packageFrom = oldSources
@@ -262,16 +263,16 @@ export async function landConvertedMesh(
 ): Promise<Asset> {
   const existing = await deps.find(request.replaces)
   if (!existing?.path || existing.location !== 'local' || !isConvertibleType(existing.type)) {
-    throw new Error(`asset ${request.replaces} is not a 3D file of the project`)
+    throw localizedError('assetNotProjectModel', { name: request.replaces })
   }
   if (existing.convertedFrom !== undefined) {
-    throw new Error(`asset ${request.replaces} was already converted`)
+    throw localizedError('assetAlreadyConverted', { name: request.replaces })
   }
 
   const sourceAsset = { ...existing, path: existing.path }
   const root = deps.projectPath()
   await requireExistingInside(root, sourceAsset.path)
   const target = await targetPath(root, sourceAsset, request.type, deps.folderFor)
-  if (await exists(join(root, target))) throw new Error(`asset target ${target} already exists`)
+  if (await exists(join(root, target))) throw localizedError('assetTargetExists', { name: target })
   return await executeConversion(sourceAsset, request, deps, root, target)
 }

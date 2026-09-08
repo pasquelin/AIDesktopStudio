@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { ShaderMaterial, Vector2, type Texture } from 'three'
 import { QUAD_VERTEX_SHADER } from '../../gpu/passes/quad'
 import { LUMA, SOURCE_PREAMBLE } from './glsl'
@@ -72,7 +73,7 @@ export type SeamPass = {
 }
 
 export function createSeamPass(source: Texture, size: PictureSize): SeamPass {
-  if (size.width <= 0 || size.height <= 0) throw new Error('seam source has no pixels')
+  if (size.width <= 0 || size.height <= 0) throw localizedError('seamSourceEmpty')
 
   const uniforms: SeamUniforms = {
     uSource: { value: source },

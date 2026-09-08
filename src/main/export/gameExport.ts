@@ -1,3 +1,5 @@
+import { TRANSLATIONS } from '@shared/i18n'
+import { windowLanguage } from '@main/window/language'
 import { pathBaseNameOf, safeFileName, stemOf } from '@shared/domain/fileName'
 import { escapeXml } from '@shared/domain/xmlText'
 import type { AnimationGraph, AnimationGraphModule } from '@shared/domain/animationGraph'
@@ -455,7 +457,7 @@ const fileNameOf = (script: ScriptToExport): string => `${stemOf(pathBaseNameOf(
  * discovered.
  */
 const pageFor = (title: string): string => `<!doctype html>
-<html lang="en">
+<html lang="${windowLanguage()}">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -470,14 +472,15 @@ const pageFor = (title: string): string => `<!doctype html>
     <canvas id="game"></canvas>
     <p id="trouble" hidden></p>
     <script type="module">
-      import { startExportedGame } from './runtime.js'
       const start = async () => {
         try {
+          const { startExportedGame } = await import('./runtime.js')
           await startExportedGame(document.getElementById('game'))
         } catch (error) {
           const said = document.getElementById('trouble')
           said.hidden = false
-          said.textContent = String(error)
+          console.error(error)
+          said.textContent = ${JSON.stringify(TRANSLATIONS[windowLanguage()].diagnostics.gameStartFailed)}
         }
       }
       void start()

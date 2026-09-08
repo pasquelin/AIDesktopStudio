@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { MATERIAL_TARGET_OF } from '@shared/domain/exportRegistry'
 import { useDocuments } from '@/stores/documents'
@@ -46,6 +47,8 @@ describe('what a material hands the writer', () => {
   it('refuses a material that bakes to no file at all', async () => {
     gpu.mockResolvedValueOnce([])
 
-    await expect(materialExportFiles('doc-1', 'raw')).rejects.toThrow('no channel to export')
+    await expect(materialExportFiles('doc-1', 'raw')).rejects.toThrow(
+      localizedError('materialExportEmpty').message,
+    )
   })
 })

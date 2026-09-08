@@ -7,6 +7,7 @@ import code from './code.json'
 import commands from './commands.json'
 import common from './common.json'
 import context from './context.json'
+import diagnostics from './diagnostics.json'
 import environment from './environment.json'
 import fileInfo from './fileInfo.json'
 import game from './game.json'
@@ -34,6 +35,7 @@ import welcome from './welcome.json'
  * contract.
  */
 export const fr = {
+  ...diagnostics,
   ...activity,
   ...ai,
   ...assets,

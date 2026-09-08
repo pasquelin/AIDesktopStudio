@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { ShaderMaterial, Texture } from 'three'
 import { describe, expect, it, vi } from 'vitest'
 import { runOffscreenPass } from './offscreen'
@@ -192,7 +193,7 @@ describe('a pass over several channels', () => {
         pass,
         draw: () => 1,
       }),
-    ).rejects.toThrow(/needs a source/)
+    ).rejects.toThrow(localizedError('passSourceMissing').message)
 
     expect(pass).not.toHaveBeenCalled()
   })

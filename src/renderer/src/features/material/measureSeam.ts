@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { assetUrl } from '@shared/domain/asset'
 import { loadTexture } from '@/engines/scene/textureCache'
 import { createSeamPort, type SeamPort } from '@/engines/material/derive/seamPort'
@@ -23,7 +24,7 @@ export async function measureMaterialSeam(
 ): Promise<boolean> {
   const source = materialOf(useMaterials.getState(), documentId).channels.baseColor
   if (!source) {
-    reportFailure('material.seam', 'baseColor', new Error('baseColor is empty'))
+    reportFailure('material.seam', 'baseColor', localizedError('baseColorEmpty'))
     return false
   }
 

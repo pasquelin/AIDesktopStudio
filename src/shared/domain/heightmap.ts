@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 /**
  * Elevations a heightmap holds after decode: one float per pixel, first channel, row-major.
  * The file is OpenEXR float32; this is the grid, never the bytes.
@@ -20,11 +21,11 @@ export function heightmapSamplesOf(image: {
   height: number
 }): HeightmapSamples {
   const count = image.width * image.height
-  if (count === 0) throw new Error('heightmap has no samples')
+  if (count === 0) throw localizedError('heightmapSamplesMissing')
 
   const stride = image.data.length / count
   if (!Number.isInteger(stride) || stride < 1) {
-    throw new Error('heightmap is not a grid of samples')
+    throw localizedError('heightmapGridInvalid')
   }
 
   const values = new Float32Array(count)

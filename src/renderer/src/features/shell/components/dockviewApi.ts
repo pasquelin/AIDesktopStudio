@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import type { DocumentDescriptor } from '@shared/domain/document'
 import { fileViewOf, type FileView } from '@shared/domain/fileView'
 import type { WorkspaceId } from '@shared/domain/workspace'
@@ -98,7 +99,7 @@ async function settleFileView(id: string): Promise<boolean> {
   // 🛑 A `false` nobody was ASKED for: the callers — leaving a project, quitting — all read it as
   // "the person said no", so a silent one stops the whole gesture with nothing on screen.
   if (!view) {
-    reportFailure('document.close', id, new Error('the view holding these edits is gone'))
+    reportFailure('document.close', id, localizedError('documentViewMissing'))
     return false
   }
   if (!bridge) return false
@@ -107,7 +108,7 @@ async function settleFileView(id: string): Promise<boolean> {
   if (choice === 'save') {
     const save = fileViewSaves.get(id)
     if (!save) {
-      reportFailure('document.save', view.title, new Error('this view has no way to save'))
+      reportFailure('document.save', view.title, localizedError('documentSaveUnavailable'))
       return false
     }
     if (!(await save())) return false

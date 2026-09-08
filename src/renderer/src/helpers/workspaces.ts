@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import {
   mdiCodeBraces,
   mdiCubeScan,
@@ -234,7 +235,7 @@ export function workspaceLabelKey(id: WorkspaceId): string {
  */
 export function workspaceById(id: string): Workspace {
   const workspace = WORKSPACES.find(candidate => candidate.id === id)
-  if (!workspace) throw new Error(`Unknown workspace: ${id}`)
+  if (!workspace) throw localizedError('workspaceUnknown', { name: id })
   return workspace
 }
 

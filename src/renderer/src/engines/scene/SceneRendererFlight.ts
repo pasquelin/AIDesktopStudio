@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { PerspectiveCamera, WebGLRenderTarget, type WebGLRenderer } from 'three'
 import type { MotionId } from '@shared/domain/shortcut'
 import { anglesFromDirection } from '@shared/domain/angles'
@@ -49,7 +50,7 @@ export abstract class SceneRendererFlight extends SceneRendererFilm {
    */
   async captureStill(quality: CaptureQuality): Promise<Uint8Array> {
     const gl = this.viewport.gl
-    if (!gl) throw new Error('this scene has no viewport mounted to capture from')
+    if (!gl) throw localizedError('captureViewportMissing')
     const camera = this.cameraInHand()
     const { width, height } = this.captureShape(gl, quality)
     // Antialiased, unlike a film's frames: a still is looked at, and the resolve happens at the

@@ -1,3 +1,5 @@
+import { TRANSLATIONS, LANGUAGES } from '@shared/i18n'
+import { setWindowLanguage } from '@main/window/language'
 import { describe, expect, it } from 'vitest'
 import { animationGraphPreset } from '@shared/domain/animationPresets'
 import { EXPORTED_GAME_FILE, type ExportedGame } from '@shared/domain/gameExport'
@@ -461,4 +463,20 @@ describe('a game written to run with no studio', () => {
     expect(manifestOf(written).modelAssets).toEqual({ tree: [] })
     expect(written.get('assets/checker.jpg')).toEqual(new Uint8Array([7, 8]))
   })
+})
+
+it('exports a page with a startup failure in the selected language', async () => {
+  try {
+    for (const { code } of LANGUAGES) {
+      setWindowLanguage(code)
+      const { ports, written } = writing()
+      await writeExportedGame(ports, ASKED)
+      const page = written.get('index.html')
+      expect(page).toContain(`<html lang="${code}">`)
+      expect(page).toContain(JSON.stringify(TRANSLATIONS[code].diagnostics.gameStartFailed))
+      expect(page).not.toContain('said.textContent = String(error)')
+    }
+  } finally {
+    setWindowLanguage('fr')
+  }
 })

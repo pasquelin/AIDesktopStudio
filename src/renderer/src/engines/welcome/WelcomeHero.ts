@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 /**
  * The shipped character, strolling. Loads through the studio's own glTF source, borrows the
  * shipped clips through the studio's own retarget, and plays them on ONE clock — the walk's.
@@ -189,7 +190,7 @@ export class WelcomeHero {
     const bones = skeletonBonesOf(body)
     this.rest = fill(this.played, { body, bones, files, adapted, mixer })
     if (!this.played.has('Walk') || !this.played.has('WalkStop')) {
-      throw new Error('Welcome character is missing Walk or WalkStop')
+      throw localizedError('welcomeAnimationsMissing')
     }
     for (const file of files) disposeTree(file)
     castAndKeep(body)

@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import i18next from 'i18next'
 import { aiRoleId, partsOfRole, type AiRoleId } from '@shared/domain/aiRole'
 import type { FieldDescriptor } from '@shared/domain/model'
@@ -67,7 +68,7 @@ async function editValues(
   bridge: EditBridge,
 ) {
   const image = await host.snapshot()
-  if (!image) throw new Error('this image has no picture to send yet')
+  if (!image) throw localizedError('imageSendEmpty')
 
   const canvas = canvasOf(useCanvases.getState(), documentId)
   const layer = layerById(canvas, canvas.activeLayerId)

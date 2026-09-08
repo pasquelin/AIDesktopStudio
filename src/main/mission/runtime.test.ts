@@ -1,3 +1,5 @@
+import { localizedError } from '@shared/localizedError'
+import { TRANSLATIONS } from '@shared/i18n'
 import { describe, expect, it, vi } from 'vitest'
 import type {
   ActionOutcome,
@@ -24,6 +26,7 @@ import type { AssistantContext } from './context'
 import {
   missionTestBrain as brainWith,
   missionTestClock as clock,
+  missionTestRuntime,
   missionTestContext as contextFor,
 } from './runtimeTestSupport'
 
@@ -298,9 +301,6 @@ describe('mission runtime', () => {
   })
 
   it('replans after a reparable action input refusal', async () => {
-    const time = clock()
-    const journal: MissionJournal = { read: async () => [], append: vi.fn(), flush: vi.fn() }
-    const manager = createMissionManager(createMissionStore(journal), createStudioEventBus(), time)
     const first: AssistantCall = { action: 'project.create', input: { wrong: true } }
     const corrected: AssistantCall = { action: 'project.create', input: { name: 'Boat' } }
     const { brain, requests } = brainWith([
@@ -312,24 +312,18 @@ describe('mission runtime', () => {
     let attempts = 0
     const run = vi.fn(async (_call: AssistantCall): Promise<ActionOutcome> =>
       attempts++ === 0
-        ? { ok: false, refusal: 'badInput', detail: 'no field "wrong" — use "name"' }
+        ? { ok: false, refusal: 'badInput', detail: localizedError('missingDocument').message }
         : { ok: true },
     )
-    const runtime = createMissionRuntime({
-      manager,
-      context: { build: async ({ mission }) => contextFor(mission) },
-      brain,
-      actions: { run, settle: vi.fn() },
-      jobs: { list: () => [] },
-      revisions: { read: async () => ({ current: [], unavailable: [] }) },
-      clock: time,
-    })
+    const { runtime } = missionTestRuntime(brain, { actions: { run, settle: vi.fn() } })
 
     const mission = await runtime.create('Create a project', {})
 
     expect(mission.state).toBe('completed')
     expect(run.mock.calls.map(call => call[0])).toEqual([first, corrected])
     expect(requests).toHaveLength(3)
+    expect(requests[1]?.context).toContain(TRANSLATIONS.en.diagnostics.missingDocument)
+    expect(requests[1]?.context).not.toContain('\\u001e')
     expect(mission.plan.steps.filter(step => step.kind === 'verify')).toHaveLength(1)
   })
 

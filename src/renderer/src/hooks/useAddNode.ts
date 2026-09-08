@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { useCallback } from 'react'
 import { addNodes } from '@/engines/scene/commands'
 import { createNodesOf } from '@/engines/scene/nodeFactory'
@@ -13,7 +14,7 @@ export function addNodeTo(documentId: string, kind: string): void {
   if (!root) return
 
   if (bringsSecondPlayer(sceneOf(useScenes.getState(), documentId).nodes, nodes)) {
-    reportFailure('scene.player', root.name, new Error('this scene already holds a player module'))
+    reportFailure('scene.player', root.name, localizedError('playerAlreadyPresent'))
     return
   }
 

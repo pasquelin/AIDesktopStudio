@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { describe, expect, it, vi } from 'vitest'
 import type { Rig } from '@shared/domain/rig'
 import { HUMANOID_ROLES } from '@shared/domain/humanoid'
@@ -264,7 +265,10 @@ describe('when the worker dies or the port goes', () => {
     const bound = port.bind(POSITIONS(), RIG)
     fake.garble()
 
-    await expect(bound).rejects.toThrow(/unreadable/)
+    await expect(bound).rejects.toThrow(
+      localizedError('workerUnreadable', { name: localizedError('workerSkinning').message })
+        .message,
+    )
   })
 
   it('resolves rather than rejects when the port is disposed of', async () => {

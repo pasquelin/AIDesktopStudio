@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { z } from 'zod'
 import {
   EXPORT_TARGET_IDS,
@@ -72,7 +73,7 @@ export function parseFolderExport(
 ): FolderExportRequest {
   const request = folderExport.parse(value)
   if (allowed && exportTargetOf(request.target).domain !== allowed) {
-    throw new Error(`this channel writes ${allowed}, not ${request.target}`)
+    throw localizedError('exportTargetMismatch', { expected: allowed, actual: request.target })
   }
 
   return request

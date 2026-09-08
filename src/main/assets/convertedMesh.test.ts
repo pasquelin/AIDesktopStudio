@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { access, mkdir, mkdtemp, readFile, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
@@ -143,10 +144,10 @@ describe('landConvertedMesh', () => {
     }
 
     await expect(landConvertedMesh({ ...request, replaces: 'done' }, deps)).rejects.toThrow(
-      'already converted',
+      localizedError('assetAlreadyConverted', { name: 'done' }).message,
     )
     await expect(landConvertedMesh({ ...request, replaces: 'picture' }, deps)).rejects.toThrow(
-      'not a 3D file',
+      localizedError('assetNotProjectModel', { name: 'picture' }).message,
     )
   })
 
@@ -228,7 +229,7 @@ describe('landConvertedMesh', () => {
 
     await expect(
       landConvertedMesh({ replaces: 'asset-1', glb: GLB, type: 'mesh', losses: [] }, deps),
-    ).rejects.toThrow('leaves the project')
+    ).rejects.toThrow(localizedError('assetPathOutside').message)
     expect(await readFile(join(parent, 'victim.obj'), 'utf8')).toBe('kept')
   })
 })
@@ -250,7 +251,7 @@ describe('saveConverted', () => {
         host(deps),
         record,
       ),
-    ).rejects.toThrow('binary glTF')
+    ).rejects.toThrow(localizedError('gltfPayloadInvalid').message)
     expect(record).not.toHaveBeenCalled()
     expect(await readFile(join(root, 'Models/Robot.fbx'), 'utf8')).toBe('bytes of Robot')
   })
@@ -270,7 +271,7 @@ describe('saveConverted', () => {
         host(deps),
         vi.fn(),
       ),
-    ).rejects.toThrow('another project')
+    ).rejects.toThrow(localizedError('conversionProjectMismatch').message)
 
     expect(await readFile(join(root, 'Models/Robot.fbx'), 'utf8')).toBe('bytes of Robot')
   })

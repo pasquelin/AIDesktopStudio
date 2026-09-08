@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import type { NewsPage, NewsTopic } from '@shared/domain/news'
 import { getBridge } from '@/services/bridge'
@@ -16,7 +17,7 @@ export function useNews(topic: NewsTopic, enabled: boolean) {
     queryKey: ['news', topic],
     queryFn: () => {
       const bridge = getBridge()
-      if (!bridge) throw new Error('no bridge')
+      if (!bridge) throw localizedError('bridgeMissing')
 
       return bridge.news.read(topic)
     },

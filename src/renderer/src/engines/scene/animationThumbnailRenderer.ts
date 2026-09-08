@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import {
   ACESFilmicToneMapping,
   AnimationMixer,
@@ -57,7 +58,7 @@ export async function createAnimationThumbnailRenderer(model: ArrayBuffer, decod
   rim.position.set(-5, 4, -6)
   scene.add(rim)
   const loader = createGltfSource(() => renderer, undefined, decoderRoot)
-  if (!loader.parse) throw new Error('The model parser is unavailable')
+  if (!loader.parse) throw localizedError('modelParserMissing')
   const character = await loader.parse(model, '')
   scene.add(character)
   scene.updateMatrixWorld(true)
@@ -76,7 +77,7 @@ export async function createAnimationThumbnailRenderer(model: ArrayBuffer, decod
     ]),
   )
   const foundHip = bones.find(b => b.name === 'Hips')
-  if (!foundHip) throw new Error('The character must have a Hips bone')
+  if (!foundHip) throw localizedError('characterHipsMissing')
   const hip = foundHip
   const bounds = () => {
     scene.updateMatrixWorld(true)
@@ -120,9 +121,9 @@ export async function createAnimationThumbnailRenderer(model: ArrayBuffer, decod
       })
       const names = retargetPlanOf(wireBonesOf(character), wireBonesOf(source), []).names
       const clip = source.animations[0]
-      if (!clip) throw new Error(`No clip in ${name}`)
+      if (!clip) throw localizedError('animationClipMissing', { name: name })
       const sourceHip = refs.get(names.Hips ?? 'Hips')
-      if (!sourceHip) throw new Error(`Hips missing in ${name}`)
+      if (!sourceHip) throw localizedError('animationHipsMissing', { name: name })
       // Aliased, as `hip` is above: the narrowing is what the nested pose helpers read.
       const sh = sourceHip
 

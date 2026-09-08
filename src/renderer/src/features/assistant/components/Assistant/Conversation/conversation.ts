@@ -1,3 +1,4 @@
+import { localizeErrorMessage } from '@shared/localizedError'
 import {
   assistantAction,
   type AskedAnswer,
@@ -9,7 +10,7 @@ import {
 import { isRecord } from '@shared/guards'
 import { stableKey } from '@shared/hash'
 import { byCodeUnit } from '@shared/text'
-import { englishText } from '@shared/i18n'
+import { englishText, fillHoles } from '@shared/i18n'
 
 /**
  * What one action of a turn did. `refusal` is `null` when it ran.
@@ -291,7 +292,7 @@ function blockOf(turn: AssistantTurn): string {
 function stepLine(step: AssistantTurn['steps'][number]): string {
   if (step.refusal !== null) {
     const why = englishText(refusalKey(step.refusal))
-    return `You tried ${step.action}, refused: ${why}${step.detail === undefined ? '' : ` — ${step.detail}`}`
+    return `You tried ${step.action}, refused: ${why}${step.detail === undefined ? '' : ` — ${localizeErrorMessage(step.detail, (key, values) => fillHoles(englishText(key), values, 'en'))}`}`
   }
 
   return step.data === undefined

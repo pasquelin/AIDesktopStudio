@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import type { Object3D } from 'three'
 import type { GltfSource } from '@/engines/scene/gltfSource'
 import { disposeTree, type ModelSource } from '@/engines/scene/modelCache'
@@ -13,7 +14,7 @@ export function createRetargetModelSource(
   let gone = false
   let prepared: Object3D | null = null
   const load: ModelSource = async () => {
-    if (!prepared) throw new Error('missing prepared retarget source')
+    if (!prepared) throw localizedError('retargetSourceMissing')
     const object = prepared
     prepared = null // Ownership passes to the renderer's model cache.
     return object

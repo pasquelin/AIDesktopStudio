@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { Texture } from 'three'
 import { describe, expect, it } from 'vitest'
 import {
@@ -154,7 +155,9 @@ describe('the packing shader', () => {
   })
 
   it('refuses a picture whose channel nobody decoded, rather than sampling black', () => {
-    expect(() => createPackPass(pictureNamed('unreal', '_ORM'), [])).toThrow(/was not decoded/)
+    expect(() => createPackPass(pictureNamed('unreal', '_ORM'), [])).toThrow(
+      localizedError('packedImageNotDecoded', { name: 'mat_ORM', asset: 'a-ao' }).message,
+    )
   })
 })
 

@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 type Pending<Response> = {
   resolve: (value: Response) => void
   reject: (error: Error) => void
@@ -55,7 +56,7 @@ export function createWorkerSession<
         }
       }),
     dispose: (): void => {
-      const error = new Error('the worker was stopped')
+      const error = localizedError('workerStopped')
       for (const waiting of pending.values()) waiting.reject(error)
       pending.clear()
       worker?.terminate()

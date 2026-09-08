@@ -1,4 +1,5 @@
 /// <reference lib="webworker" />
+import { localizedError } from '@shared/localizedError'
 /**
  * Wiring only, like `audio.worker.ts`: everything that can be reasoned about lives in
  * `skinVertices.ts`, which needs no worker to be measured.
@@ -57,7 +58,7 @@ async function run(request: SkinRequest): Promise<void> {
     if (cancels.stopped(request.id)) return
 
     const binding = wasm ? wasm.binding() : fallback
-    if (!binding) throw new Error('Skinning produced no binding')
+    if (!binding) throw localizedError('skinningBindingMissing')
     self.postMessage({ id: request.id, done: true, ok: true, ...binding } satisfies SkinResponse, {
       transfer: [binding.skinIndex.buffer, binding.skinWeight.buffer],
     })

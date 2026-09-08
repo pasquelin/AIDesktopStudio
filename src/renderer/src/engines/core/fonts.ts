@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import type { Font } from 'opentype.js'
 import { EMBEDDED_FONTS, fontKey, type FontRef } from '@shared/domain/font'
 import { reportFailure } from '@/services/diagnostics'
@@ -43,7 +44,7 @@ export function createFontLibrary(source: FontSource): FontLibrary {
   const parseFace = async (ref: FontRef): Promise<Font | null> => {
     try {
       const bytes = await source.bytes(ref)
-      if (!bytes) throw new Error('no outlines under that name')
+      if (!bytes) throw localizedError('fontOutlinesMissing')
 
       // Fetched, not imported: the parser is half a megabyte, and the field that lists families
       // never parses one — a static import puts it all on the first screen for a list of names.

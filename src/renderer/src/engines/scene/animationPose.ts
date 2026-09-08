@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { Vector3 } from 'three'
 import type { Quaternion } from 'three'
 
@@ -30,7 +31,7 @@ export function poseFractionOf(
 ): number {
   const chosen = settled ?? bestSampleOf(samples, scoreAt)
   if (chosen === undefined || !Number.isFinite(chosen) || chosen < 0 || chosen > 1)
-    throw new Error('The pose fraction must be between 0 and 1')
+    throw localizedError('poseFractionInvalid')
 
   return chosen
 }

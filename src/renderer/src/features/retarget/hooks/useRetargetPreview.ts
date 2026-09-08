@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { useEffect, useRef, useState } from 'react'
 import type { SkeletonProfile } from '@shared/domain/skeletonProfile'
 import { createRetarget, type Retarget } from '@/engines/scene/retarget'
@@ -109,7 +110,7 @@ async function computePreview(
   if (watch.signal.aborted || watch.current() !== watch.generation || !adapted) return null
   const key = `retarget:${crypto.randomUUID()}`
   if (!target.engine.installMotion(target.nodeId, key, adapted))
-    throw new Error('model unavailable')
+    throw localizedError('modelUnavailable')
   if (watch.signal.aborted || watch.current() !== watch.generation) {
     target.engine.removeMotion(target.nodeId, key)
     return null

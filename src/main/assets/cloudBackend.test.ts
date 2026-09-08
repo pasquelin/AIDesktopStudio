@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { beforeEach, describe, expect, it, onTestFinished } from 'vitest'
 import type { Asset } from '@shared/domain/asset'
 import type { CloudAsset } from '@shared/domain/cloudAsset'
@@ -301,18 +302,24 @@ describe('sending an asset up', () => {
   it('refuses a format the API does not take, before spending the transfer on it', async () => {
     await harnessed.catalog.add(localAsset({ path: 'assets/img/asset_1.psd' }))
 
-    await expect(harnessed.backend.push('asset_1')).rejects.toThrow(/does not accept/)
+    await expect(harnessed.backend.push('asset_1')).rejects.toThrow(
+      localizedError('uploadFormatUnsupported', { name: 'Boulder.psd' }).message,
+    )
     expect(harnessed.smalls).toHaveLength(0)
     expect(harnessed.multiparts).toHaveLength(0)
   })
 
   it('refuses an asset that holds no file of its own', async () => {
     await harnessed.catalog.add(localAsset({ path: undefined, location: 'cloud' }))
-    await expect(harnessed.backend.push('asset_1')).rejects.toThrow(/no file/)
+    await expect(harnessed.backend.push('asset_1')).rejects.toThrow(
+      localizedError('assetFileMissing', { name: 'asset_1' }).message,
+    )
   })
 
   it('refuses an asset the catalogue has never heard of', async () => {
-    await expect(harnessed.backend.push('asset_missing')).rejects.toThrow(/not in the catalogue/)
+    await expect(harnessed.backend.push('asset_missing')).rejects.toThrow(
+      localizedError('assetNotCatalogued', { name: 'asset_missing' }).message,
+    )
   })
 })
 

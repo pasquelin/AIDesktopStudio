@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import type { SoundPort } from '@/engines/timeline/soundSchedule'
 
 /**
@@ -19,6 +20,6 @@ export function silentSound(): SoundPort {
     // read a flat zero over an edit the other window is playing aloud.
     tap: () => null,
     resume: () => undefined,
-    load: () => Promise.reject(new Error('the video return plays no sound')),
+    load: () => Promise.reject(localizedError('videoReturnSilent')),
   }
 }

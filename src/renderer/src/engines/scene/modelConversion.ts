@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import {
   LoadingManager,
   Line,
@@ -181,7 +182,7 @@ export async function convertModelToGlb(
   const clips = clipsIn([root])
   const geometryCount = geometryCountOf(root)
   if (format !== 'gltf' && geometryCount === 0 && clips.length === 0) {
-    throw new Error('not a 3D file this build converts')
+    throw localizedError('modelConversionUnsupported')
   }
   const scene = new Scene()
   scene.add(root)
@@ -192,7 +193,7 @@ export async function convertModelToGlb(
     onlyVisible: false,
     animations: clips,
   })
-  if (!(written instanceof ArrayBuffer)) throw new Error('the exporter wrote no binary glTF')
+  if (!(written instanceof ArrayBuffer)) throw localizedError('binaryGltfMissing')
 
   return {
     glb: new Uint8Array(written),

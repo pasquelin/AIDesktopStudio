@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { exportTargetOf } from '@shared/domain/exportRegistry'
 import { bundleOf } from '@shared/domain/otioz'
 import type { FolderExportRequest } from '@shared/ipc'
@@ -39,7 +40,7 @@ function fileUrlsUnder(projectPath: string): (relative: string) => string {
  */
 export function otioExportFiles(documentId: string): FolderExportRequest {
   const projectPath = useProject.getState().project?.path
-  if (!projectPath) throw new Error('no project is open to resolve the media against')
+  if (!projectPath) throw localizedError('mediaProjectMissing')
 
   // No `identifies`: an export is a COPY, and one landing inside the project would claim the id
   // of the document it copied — the listing settles a shared id by path order, and the copy wins.
@@ -159,7 +160,7 @@ export async function exportOtioz(documentId: string): Promise<string | null> {
 
   try {
     const projectPath = useProject.getState().project?.path
-    if (!projectPath) throw new Error('no project is open to resolve the media against')
+    if (!projectPath) throw localizedError('mediaProjectMissing')
 
     const bundle = bundleOf(
       otioTimelineFor(sequenceOf(useSequences.getState(), documentId), documentId, {

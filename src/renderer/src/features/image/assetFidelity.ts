@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { reportFailure } from '@/services/diagnostics'
 import { canvasOf, canvasStore, useCanvases } from '@/stores/canvases'
 
@@ -52,6 +53,6 @@ export async function reportAssetDrift(
     // false at both call sites: at ⌘S the asset IS rewritten — the save happens either way — and
     // on a revisit nothing is saved at all. Both moments say the same thing as the two warnings
     // in `placeAsset`: the document does not measure its picture, and ⌘S writes that size back.
-    reportFailure('canvas.size', name, new Error('document no longer measures its asset'))
+    reportFailure('canvas.size', name, localizedError('assetSizeMismatch'))
   }
 }

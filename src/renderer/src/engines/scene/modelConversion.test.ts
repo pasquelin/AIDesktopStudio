@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 // @vitest-environment jsdom
 // The binary writer reads its blob through `FileReader`, which only a DOM has.
 import { describe, expect, it } from 'vitest'
@@ -187,7 +188,7 @@ describe('convertModelToGlb', () => {
   it('refuses what is not a 3D file, rather than writing an empty glb', async () => {
     await expect(
       convertModelToGlb(bytesOf('hello'), 'ai-desktop-studio://file/x/', 'mesh', 'obj', ports()),
-    ).rejects.toThrow('not a 3D file')
+    ).rejects.toThrow(localizedError('modelConversionUnsupported').message)
   })
 
   it('folds a glTF JSON file into one binary container', async () => {

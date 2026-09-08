@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { LinearFilter, NoColorSpace, WebGLRenderer, type ShaderMaterial, type Texture } from 'three'
 import { isRecord, readNumber } from '@shared/guards'
 import { createGpuPipeline, type GpuPipeline } from '../../gpu/gpuPipeline'
@@ -119,7 +120,7 @@ async function loadSources(load: TextureSource, urls: readonly string[]): Promis
   // this is where the tuple is built — a pass over nothing would draw an untouched frame.
   if (failure || !first) {
     for (const source of loaded) source.texture.dispose()
-    throw failure ? failure.reason : new Error('a pass needs a source to read')
+    throw failure ? failure.reason : localizedError('passSourceMissing')
   }
 
   return [first, ...rest]
@@ -151,10 +152,10 @@ async function loadSource(load: TextureSource, url: string): Promise<Source> {
 /** What the loader decoded, in pixels. Anything else is a source there is nothing to read in. */
 function sizeOf(texture: Texture): PictureSize {
   const image: unknown = texture.image
-  if (!isRecord(image)) throw new Error('source decoded to nothing')
+  if (!isRecord(image)) throw localizedError('decodedSourceEmpty')
 
   const size = { width: readNumber(image, 'width', 0), height: readNumber(image, 'height', 0) }
-  if (size.width <= 0 || size.height <= 0) throw new Error('source decoded to nothing')
+  if (size.width <= 0 || size.height <= 0) throw localizedError('decodedSourceEmpty')
   return size
 }
 
@@ -217,6 +218,6 @@ export async function pngDrawn({
 /** The browser's own encoder — the one place where a per-pixel loop is not ours to write. */
 export async function encodePng(canvas: HTMLCanvasElement): Promise<Uint8Array> {
   const blob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, 'image/png'))
-  if (!blob) throw new Error('the canvas encoded to nothing')
+  if (!blob) throw localizedError('canvasEncodingEmpty')
   return new Uint8Array(await blob.arrayBuffer())
 }

@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import type { ExportedAssetOverride, LossyOptimization } from '@shared/domain/gameExport'
 import { DEFAULT_OPTIMIZATION_POLICY } from '@shared/domain/optimizationPolicy'
 import { fetchOriginalAsset } from '@/helpers/assetFetch'
@@ -135,7 +136,7 @@ function browserTexturePorts(): TextureCompilerPorts {
   const ports = Array.from({ length: size }, () =>
     createWorkerPort<ExportedAssetOverride | undefined, LossyTextureResponse>(
       () => new LossyTextureWorker(),
-      'lossy texture',
+      localizedError('workerLossyTexture').message,
       answer => answer.override,
     ),
   )

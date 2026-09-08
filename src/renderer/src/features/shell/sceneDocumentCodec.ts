@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import type { SceneState } from '@/engines/scene/sceneState'
 import SceneDocumentWorker from './sceneDocumentCodec.worker?worker'
 import type {
@@ -61,10 +62,10 @@ export function createSceneDocumentCodec(
       acceptResponse(waiting, event.data),
     )
     started.addEventListener('error', event =>
-      failWorker(started, `scene document worker failed: ${event.message}`),
+      failWorker(started, localizedError('sceneWorkerFailed', { reason: event.message }).message),
     )
     started.addEventListener('messageerror', () =>
-      failWorker(started, 'scene document worker sent an unreadable answer'),
+      failWorker(started, localizedError('sceneWorkerUnreadable').message),
     )
     worker = started
     return started
@@ -75,7 +76,10 @@ export function createSceneDocumentCodec(
       workerOf().postMessage(message)
     } catch (error) {
       if (worker) {
-        failWorker(worker, `scene document worker rejected a chunk: ${errorOf(error).message}`)
+        failWorker(
+          worker,
+          localizedError('sceneWorkerChunkRejected', { reason: errorOf(error).message }).message,
+        )
       } else rejectPending(waiting, message.id, errorOf(error))
     }
   }
@@ -97,7 +101,7 @@ export function createSceneDocumentCodec(
         } catch {
           // Nothing to do about a worker that will not take a cancel; the request is rejected.
         }
-        rejectPending(waiting, id, new Error('scene document worker timed out'))
+        rejectPending(waiting, id, localizedError('sceneWorkerTimeout'))
       }, options.timeoutMs)
       const pending: Pending = { content: [], nextIndex: 0, resolve, reject, signal, timer }
       const abort = (): void => {
@@ -218,7 +222,7 @@ function acceptResponse(waiting: Map<number, Pending>, response: SceneDocumentCo
       rejectPending(
         waiting,
         response.id,
-        new Error(`scene document worker returned chunk ${response.index} out of order`),
+        localizedError('sceneWorkerChunkOrder', { index: response.index }),
       )
       return
     }
@@ -229,11 +233,7 @@ function acceptResponse(waiting: Map<number, Pending>, response: SceneDocumentCo
   if (response.ok) {
     const content = pending.content.join('')
     if (response.chunks !== pending.nextIndex || response.characters !== content.length) {
-      rejectPending(
-        waiting,
-        response.id,
-        new Error('scene document worker returned an incomplete file'),
-      )
+      rejectPending(waiting, response.id, localizedError('sceneWorkerFileIncomplete'))
       return
     }
     settlePending(waiting, response.id, content)
