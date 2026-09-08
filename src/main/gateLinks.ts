@@ -22,6 +22,10 @@ export type GateLink = {
 
 /**
  * Order kept from the chain: the cheap verdicts first, so a red one does not wait behind the suite.
+ *
+ * 🛑 Every link is `pnpm <script>`, never a bare `node scripts/x.mjs`: knip finds a build script
+ * through the package scripts, and the one link spelled that way here made `check-as-const.mjs`
+ * read as an unused file the day the chain left `package.json`.
  */
 export const GATE: readonly GateLink[] = [
   { command: 'pnpm site:check', reads: ['site', 'scripts', 'repo.config.json'] },
@@ -34,7 +38,7 @@ export const GATE: readonly GateLink[] = [
     reads: ['scripts', 'src/shared', 'THIRD-PARTY-NOTICES.md'],
   },
   { command: 'pnpm sizes:check', reads: ['scripts', 'src', 'engine', 'config'] },
-  { command: 'node scripts/check-as-const.mjs', reads: ['scripts', 'src', 'config'] },
+  { command: 'pnpm as-const:check', reads: ['scripts', 'src', 'config'] },
   { command: 'pnpm typecheck', reads: ['src', 'scripts', 'config', 'tsconfig.json'] },
   { command: 'pnpm lint', reads: ['src', 'scripts', 'config', 'oxlint.json'] },
   {

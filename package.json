@@ -34,6 +34,7 @@
     "format": "prettier --write --cache \"{src,scripts,config}/**/*.{ts,tsx,css,mjs}\"",
     "format:check": "prettier --check --cache \"{src,scripts,config}/**/*.{ts,tsx,css,mjs}\"",
     "sizes:check": "node scripts/check-sizes.mjs",
+    "as-const:check": "node scripts/check-as-const.mjs",
     "check": "node scripts/check.mjs",
     "gate:baseline": "node scripts/gate-baseline.mjs",
     "merge": "node scripts/merge.mjs",
