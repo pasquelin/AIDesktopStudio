@@ -78,8 +78,8 @@ export function useImageDocumentEngine(
         alpha: result.alpha,
       }
       if (comment) {
-        const outline = boundedOutline(selectionOutline(raster))
-        if (outline.length > 2) onComment(anchorOf(prompt), outline)
+        const mark = markFor(boundedOutline(selectionOutline(raster)), prompt)
+        onComment(mark.at, mark.outline)
         return
       }
       created.setSelection(raster)
@@ -147,15 +147,30 @@ export function useImageDocumentEngine(
   return { hostRef, engineRef, editing, setEditing }
 }
 
-function anchorOf(prompt: SmartSelectionPrompt): Point {
-  return 'point' in prompt ? prompt.point : { x: prompt.box.x, y: prompt.box.y }
+/**
+ * The note a traced object gets: anchored on the shape itself rather than on the box drawn to hint
+ * at it, and — when nothing was outlined — still a note, as a freeform comment under three points.
+ */
+function markFor(
+  outline: readonly Point[],
+  prompt: SmartSelectionPrompt,
+): { at: Point; outline?: readonly Point[] } {
+  const start = outline.length > 2 ? outline[0] : undefined
+  if (start === undefined) {
+    return { at: 'point' in prompt ? prompt.point : { x: prompt.box.x, y: prompt.box.y } }
+  }
+
+  return { at: start, outline }
 }
 
+/** A traced outline thinned to what a comment may carry — `canvasHandlers` refuses a longer one. */
 function boundedOutline(outline: readonly Point[]): readonly Point[] {
   if (outline.length <= GENERATION_COMMENT_OUTLINE_MAX) return outline
   const step = (outline.length - 1) / (GENERATION_COMMENT_OUTLINE_MAX - 1)
+  // The filter drops nothing — the last index lands on `length - 1` exactly — it is how the
+  // indexing is typed rather than a case that happens.
   return Array.from(
     { length: GENERATION_COMMENT_OUTLINE_MAX },
-    (_, index) => outline[Math.round(index * step)] ?? outline[outline.length - 1]!,
-  )
+    (_, index) => outline[Math.round(index * step)],
+  ).filter(point => point !== undefined)
 }

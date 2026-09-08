@@ -1,5 +1,6 @@
 import i18next from 'i18next'
 import { describe, expect, it } from 'vitest'
+import { SMART_SELECTION_ROLE } from '@shared/domain/aiRole'
 import { UNBUILT_TOOLS } from '@/engines/canvas/CanvasEngine'
 import type { CanvasTool } from '@/engines/canvas/canvasTool'
 import { AI_EDITS } from './aiActions'
@@ -53,6 +54,18 @@ describe('image tools', () => {
 
   it('uses a visible selection cursor for the intelligent gesture', () => {
     expect(cursorFor('region', 'smart')).toContain('data:image/svg+xml')
+  })
+
+  /**
+   * 🛑 The blind spot of `ImageDocument`'s `served`: it answers ONE employment and reads any other
+   * as served, so a second one declared here would grey nothing. This is what reddens instead.
+   */
+  it('asks the two intelligent modes for the one employment the document resolves', () => {
+    const asked = IMAGE_TOOLS.flatMap(tool => tool.modes ?? []).flatMap(mode =>
+      mode.needsRole === undefined ? [] : [mode.needsRole],
+    )
+
+    expect(asked).toEqual([SMART_SELECTION_ROLE, SMART_SELECTION_ROLE])
   })
 
   it('names every tool through i18n rather than a literal', () => {

@@ -37,6 +37,7 @@ import type { CommandId } from '@shared/domain/command'
 import type { SelectionShape } from '@/engines/canvas/canvasSelection'
 import { SHAPE_KINDS, type ShapeKind } from '@/engines/canvas/canvasState'
 import type { CanvasTool } from '@/engines/canvas/canvasTool'
+import { SMART_SELECTION_ROLE } from '@shared/domain/aiRole'
 import type { ToolbarItem } from '@/components/Toolbar/tools'
 import type { AiEdit } from './aiActions'
 import { COMMENT_TOOL } from './imageCommentTool'
@@ -177,6 +178,7 @@ export const IMAGE_TOOLS: readonly ImageTool[] = [
         labelKey: 'imageTools.smartSelect',
         descriptionKey: 'imageTools.smartSelectHint',
         icon: mdiAutoFix,
+        needsRole: SMART_SELECTION_ROLE,
       },
     ],
   },

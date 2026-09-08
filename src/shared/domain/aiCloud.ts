@@ -47,10 +47,6 @@ export type CloudProvider = {
 /** The one cloud the studio was built on: a stored key written before clouds were a list is one. */
 export const SCENARIO_CLOUD: CloudProviderId = 'scenario'
 
-const SCENARIO_GENERATION_FAMILIES: readonly ModelFamily[] = CATALOGUE_FAMILIES.filter(
-  family => !['upscale', 'background-removal', 'vectorization'].includes(family),
-)
-
 /**
  * A cloud reached over HTTP chat: it answers the assistant, and it writes code.
  *
@@ -75,7 +71,7 @@ function chatCloud(id: CloudProviderId, chat: HttpChat): CloudProvider {
 export const CLOUD_PROVIDERS: readonly CloudProvider[] = [
   {
     id: SCENARIO_CLOUD,
-    families: SCENARIO_GENERATION_FAMILIES,
+    families: CATALOGUE_FAMILIES,
     standalone: [ASSISTANT_ROLE],
     auth: 'key-secret',
     chat: { kind: 'scenario' },

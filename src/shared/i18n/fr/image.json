@@ -14,6 +14,7 @@
     "sectionHint": "Regrouper une zone — pas encore disponible",
     "slice": "Découpe",
     "sliceHint": "Découper une zone pour l’export — pas encore disponible",
+    "needsModelHint": "Installer un modèle de sélection intelligente dans les réglages IA",
     "pen": "Plume",
     "penHint": "Tracer un chemin vectoriel — pas encore disponible",
     "textPath": "Texte sur chemin",
