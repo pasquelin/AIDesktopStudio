@@ -73,6 +73,21 @@ describe('reading a frame off the socket', () => {
     expect(readFrame('a PyTorch warning')).toBeNull()
     expect(readFrame(JSON.stringify({ v: PROTOCOL_VERSION, id: 'four' }))).toBeNull()
   })
+
+  it('keeps the mask path returned by the selection worker', () => {
+    const frame = readFrame(
+      JSON.stringify({
+        v: PROTOCOL_VERSION,
+        evt: 'job.completed',
+        job: 'selection-1',
+        width: 2,
+        height: 2,
+        mask: '/tmp/mask.png',
+      }),
+    )
+
+    expect(frame).toMatchObject({ mask: '/tmp/mask.png', width: 2, height: 2 })
+  })
 })
 
 describe('the machine the engine measured', () => {
