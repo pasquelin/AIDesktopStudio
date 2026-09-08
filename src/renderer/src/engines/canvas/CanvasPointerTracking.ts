@@ -232,7 +232,7 @@ export abstract class CanvasPointerTracking extends CanvasPainting {
     if (event.buttons !== 0) return
 
     const host = this.toHost(event)
-    if (this.gesture.kind === 'smartSelect') {
+    if (this.gesture.kind === 'smartSelect' || this.gesture.kind === 'smartComment') {
       this.gesture.to = toDocument(this.shownViewport(), host)
     }
     // The corner counts: a guide dropped anywhere on the chrome is a guide thrown away.

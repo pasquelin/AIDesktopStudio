@@ -372,4 +372,14 @@ describe('intelligent generation comments', () => {
 
     expect(smartCommentPrompts).toEqual([{ box: { x: 120, y: 80, width: 200, height: 200 } }])
   })
+
+  it('uses the release point when an intelligent comment box has no intervening move event', async () => {
+    const { engine, host, smartCommentPrompts } = await mounted()
+    engine.setTool('smartComment')
+
+    press(host, 320, 280)
+    release(120, 80)
+
+    expect(smartCommentPrompts).toEqual([{ box: { x: 120, y: 80, width: 200, height: 200 } }])
+  })
 })
