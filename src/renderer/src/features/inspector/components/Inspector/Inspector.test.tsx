@@ -68,7 +68,7 @@ describe('Inspector, on the document in front', () => {
       selectedIds: ['Character'],
     })
     // The FILE has bones, which is what a scene reads: a motion is offered where it has joints
-    // to drive, and a bare mesh is sent to the skeleton section instead — `MotionsSection`.
+    // to drive, and a bare mesh is sent to `RigSection` instead.
     useModelFiles.getState().reportRig('doc-1', 'Character', rigStateFixture(['Hips', 'Spine']))
     seedCharacter('asset-hero', null, {
       motions: [{ id: 'motion-1', name: 'Walk', assetId: 'asset-walk' }],
