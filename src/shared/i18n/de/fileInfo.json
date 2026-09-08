@@ -1,24 +1,24 @@
 {
   "fileInfo": {
-    "title": "Information about {{name}}",
+    "title": "Informationen zu {{name}}",
     "sections": {
-      "general": "General",
-      "media": "Media",
-      "catalogue": "Catalogue",
+      "general": "Allgemein",
+      "media": "Medien",
+      "catalogue": "Katalog",
       "git": "Git"
     },
-    "gitUnchanged": "No pending changes",
+    "gitUnchanged": "Keine ausstehenden Änderungen",
     "kind": {
-      "file": "File",
-      "folder": "Folder"
+      "file": "Datei",
+      "folder": "Ordner"
     },
-    "type": "Type",
-    "modified": "Modified",
+    "type": "Typ",
+    "modified": "Geändert am",
     "codec": "Codec",
-    "identifier": "Identifier",
-    "fingerprint": "Content fingerprint",
-    "added": "Added",
-    "reading": "Reading the folder…",
-    "missing": "This entry is no longer in the project folder."
+    "identifier": "Kennung",
+    "fingerprint": "Fingerabdruck des Inhalts",
+    "added": "Hinzugefügt am",
+    "reading": "Ordner wird gelesen…",
+    "missing": "Dieser Eintrag ist nicht mehr im Projektordner."
   }
 }

@@ -1,72 +1,72 @@
 {
   "welcome": {
-    "skip": "Skip",
-    "skipHint": "Closes this introduction and opens the studio with the current settings",
-    "back": "Back",
-    "backHint": "Returns to the previous screen",
-    "next": "Continue",
-    "nextHint": "Goes to the next screen",
-    "done": "Get started",
-    "doneHint": "Closes this introduction and opens the studio",
-    "steps": "Step {{current, number}} of {{total, number}}",
-    "goToStep": "Go to step {{current, number}} — {{title}}",
+    "skip": "Überspringen",
+    "skipHint": "Schließt diese Einführung und öffnet das Studio mit den aktuellen Einstellungen",
+    "back": "Zurück",
+    "backHint": "Kehrt zum vorherigen Bildschirm zurück",
+    "next": "Weiter",
+    "nextHint": "Geht zum nächsten Bildschirm",
+    "done": "Loslegen",
+    "doneHint": "Schließt diese Einführung und öffnet das Studio",
+    "steps": "Schritt {{current, number}} von {{total, number}}",
+    "goToStep": "Zu Schritt {{current, number}} gehen — {{title}}",
     "language": {
-      "title": "Choose your language",
-      "body": "Every menu, button and message uses this language. You can change it later in Settings.",
-      "hint": "Shows the application in {{name}}"
+      "title": "Wählen Sie Ihre Sprache",
+      "body": "Alle Menüs, Schaltflächen und Meldungen erscheinen in dieser Sprache. Sie können sie später in den Einstellungen ändern.",
+      "hint": "Zeigt die Anwendung auf {{name}}"
     },
     "look": {
-      "title": "How it looks",
-      "body": "Dark is the studio’s own theme. Switch it if you work in daylight.",
-      "themeHint": "Switches the application to the {{name}} theme"
+      "title": "Das Erscheinungsbild",
+      "body": "Dunkel ist das eigene Design des Studios. Wechseln Sie es, wenn Sie bei Tageslicht arbeiten.",
+      "themeHint": "Stellt die Anwendung auf das Design {{name}} um"
     },
     "craft": {
-      "title": "Your 3D navigation",
-      "body": "The 3D view mirrors the gestures of the software you already know. You can change it later in the settings.",
-      "navigationHint": "Uses {{name}} viewport gestures in the 3D view"
+      "title": "Ihre 3D-Navigation",
+      "body": "Die 3D-Ansicht ahmt die Gesten der Software nach, die Sie bereits kennen. Sie können das später in den Einstellungen ändern.",
+      "navigationHint": "Verwendet in der 3D-Ansicht die Viewport-Gesten von {{name}}"
     },
     "ai": {
-      "title": "AI, through every door",
-      "body": "The studio depends on no AI in particular: they plug in, they swap out, and they can even drive it.",
+      "title": "KI, durch jede Tür",
+      "body": "Das Studio hängt von keiner KI im Besonderen ab: Sie werden angebunden, sie werden ausgetauscht, und sie können es sogar steuern.",
       "local": {
-        "title": "On this machine",
-        "body": "The studio downloads the weights and runs them here. Nothing leaves, nothing is billed."
+        "title": "Auf dieser Maschine",
+        "body": "Das Studio lädt die Gewichte herunter und lässt sie hier laufen. Nichts geht hinaus, nichts wird abgerechnet."
       },
       "ollama": {
-        "title": "With Ollama",
-        "body": "Already installed? The studio reads your models and uses them as they are."
+        "title": "Mit Ollama",
+        "body": "Schon installiert? Das Studio liest Ihre Modelle und nutzt sie, wie sie sind."
       },
       "cloud": {
-        "title": "At a provider",
-        "body": "One key, and generation goes out. Interchangeable: none of them is the product."
+        "title": "Bei einem Anbieter",
+        "body": "Ein Schlüssel, und die Generierung geht hinaus. Austauschbar: Keiner von ihnen ist das Produkt."
       },
       "mcp": {
-        "title": "And the other way round",
-        "body": "The studio publishes its tools: Claude Code, or any MCP agent, opens a project and generates for you."
+        "title": "Und umgekehrt",
+        "body": "Das Studio veröffentlicht seine Werkzeuge: Claude Code oder jeder MCP-Agent öffnet ein Projekt und generiert für Sie."
       }
     },
     "models": {
-      "title": "Models, section by section",
-      "body": "The studio downloads the weights, then runs them here. Some models require access from their publisher. The size shows the disk space needed.",
-      "sectionHint": "Shows the models of: {{name}}",
-      "more": "The full catalogue lives in the settings.",
-      "motionOptional": "Motion generation is optional. Install a model now, or continue and find it later in Settings → AI → 3D. Animation retargeting works without AI."
+      "title": "Modelle, Abschnitt für Abschnitt",
+      "body": "Das Studio lädt die Gewichte herunter und lässt sie dann hier laufen. Manche Modelle verlangen einen Zugang bei ihrem Herausgeber. Die Größe gibt den nötigen Speicherplatz auf der Festplatte an.",
+      "sectionHint": "Zeigt die Modelle von: {{name}}",
+      "more": "Der vollständige Katalog liegt in den Einstellungen.",
+      "motionOptional": "Die Generierung von Bewegungen ist optional. Installieren Sie jetzt ein Modell oder fahren Sie fort und finden Sie es später unter Einstellungen → KI → 3D. Das Retargeting von Animationen funktioniert ohne KI."
     },
     "account": {
-      "title": "A cloud, if you have one",
-      "body": "The studio works without an account, on your own files. A key unlocks generation and the shared library.",
-      "stored": "These services are already saved on this machine. Add another one, or carry on.",
-      "addService": "Add a service",
-      "addServiceHint": "Opens the form to store one more key",
-      "adding": "Paste the key of the service to store.",
-      "backToList": "Back to the list",
-      "backToListHint": "Drops what is typed here and shows the stored services again"
+      "title": "Eine Cloud, falls Sie eine haben",
+      "body": "Das Studio funktioniert ohne Konto, auf Ihren eigenen Dateien. Ein Schlüssel schaltet die Generierung und die geteilte Bibliothek frei.",
+      "stored": "Diese Dienste sind auf dieser Maschine bereits gespeichert. Fügen Sie einen weiteren hinzu oder fahren Sie fort.",
+      "addService": "Einen Dienst hinzufügen",
+      "addServiceHint": "Öffnet das Formular, um einen weiteren Schlüssel zu speichern",
+      "adding": "Fügen Sie den Schlüssel des zu speichernden Dienstes ein.",
+      "backToList": "Zurück zur Liste",
+      "backToListHint": "Verwirft die Eingabe und zeigt die gespeicherten Dienste wieder an"
     },
     "project": {
-      "title": "Your first project",
-      "body": "A project is a folder on your disk. Create one, open one, or skip and start from Home.",
-      "createHint": "Picks an empty folder and makes it the project",
-      "openHint": "Opens a project folder already on this disk"
+      "title": "Ihr erstes Projekt",
+      "body": "Ein Projekt ist ein Ordner auf Ihrer Festplatte. Legen Sie eines an, öffnen Sie eines, oder überspringen Sie und beginnen Sie auf der Startseite.",
+      "createHint": "Wählt einen leeren Ordner und macht ihn zum Projekt",
+      "openHint": "Öffnet einen Projektordner, der bereits auf dieser Festplatte liegt"
     }
   }
 }

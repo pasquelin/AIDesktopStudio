@@ -1,8 +1,8 @@
 {
   "code": {
-    "unavailable": "The editor could not load.",
-    "noProblems": "No problems",
-    "openProblem": "Open at this line",
-    "at": "line {{line, number}}, column {{column, number}}"
+    "unavailable": "Der Editor konnte nicht geladen werden.",
+    "noProblems": "Keine Probleme",
+    "openProblem": "In dieser Zeile öffnen",
+    "at": "Zeile {{line, number}}, Spalte {{column, number}}"
   }
 }

@@ -1,549 +1,549 @@
 {
   "commands": {
     "scenePlay": {
-      "title": "Play scene",
-      "help": "Starts or resumes the scene in the game window."
+      "title": "Szene abspielen",
+      "help": "Startet die Szene im Spielfenster oder setzt sie fort."
     },
     "appNew": {
-      "title": "New…",
-      "help": "Opens the window that makes a project or a document, from any screen"
+      "title": "Neu…",
+      "help": "Öffnet das Fenster, das ein Projekt oder ein Dokument erstellt, von jedem Bildschirm aus"
     },
     "projectNew": {
-      "title": "New project",
-      "help": "Creates an empty project and opens it. A project is the folder holding everything you make: the images, the videos, the sounds, and how they are arranged."
+      "title": "Neues Projekt",
+      "help": "Erstellt ein leeres Projekt und öffnet es. Ein Projekt ist der Ordner, der alles enthält, was Sie herstellen: die Bilder, die Videos, die Töne und die Art, wie sie geordnet sind."
     },
     "projectOpen": {
-      "title": "Open project",
-      "help": "Picks a project already on your disk and opens it in place of the current one. The open project is saved as you go, so there is nothing to save first."
+      "title": "Projekt öffnen",
+      "help": "Wählt ein Projekt, das bereits auf Ihrer Festplatte liegt, und öffnet es anstelle des aktuellen. Das geöffnete Projekt wird laufend gespeichert, es ist also vorher nichts zu speichern."
     },
     "documentSaveAs": {
-      "title": "Save as",
-      "help": "Writes a copy of the asset beside the original and carries on with it. The asset that was open stays as it was at the last save."
+      "title": "Speichern unter",
+      "help": "Schreibt eine Kopie des Assets neben das Original und arbeitet mit ihr weiter. Das Asset, das offen war, bleibt so, wie es beim letzten Speichern war."
     },
     "documentSave": {
-      "title": "Save document",
-      "help": "Writes the document in front into the project. Until it is saved, it lives in the window: the tab carries an asterisk for as long as what is on screen is not what is on disk."
+      "title": "Dokument speichern",
+      "help": "Schreibt das vorderste Dokument in das Projekt. Solange es nicht gespeichert ist, lebt es im Fenster: der Tab trägt ein Sternchen, solange das, was auf dem Bildschirm steht, nicht das ist, was auf der Festplatte liegt."
     },
     "documentClose": {
-      "title": "Close tab",
-      "help": "Closes the document in front. If it holds unsaved work, the studio asks what to do with it. With no tab left, the window closes."
+      "title": "Tab schließen",
+      "help": "Schließt das vorderste Dokument. Enthält es nicht gespeicherte Arbeit, fragt das Studio, was damit geschehen soll. Bleibt kein Tab übrig, schließt sich das Fenster."
     },
     "layoutReset": {
-      "title": "Reset layout",
-      "help": "Puts the panels back where they started. Useful once the windows have been dragged all over and nothing is where you expect. Your work is untouched."
+      "title": "Anordnung zurücksetzen",
+      "help": "Stellt die Panels dorthin zurück, wo sie am Anfang waren. Nützlich, wenn die Fenster kreuz und quer verschoben wurden und nichts mehr dort ist, wo man es erwartet. Ihre Arbeit bleibt unberührt."
     },
     "appSettings": {
-      "title": "Settings",
-      "help": "Opens the settings window — this one: the language, the colours, the account, the shortcuts, and everything else that is adjustable."
+      "title": "Einstellungen",
+      "help": "Öffnet das Fenster der Einstellungen — eben dieses: die Sprache, die Farben, das Konto, die Tastenkürzel und alles andere, was sich einstellen lässt."
     },
     "appAssistant": {
-      "title": "Assistant",
-      "help": "Opens the window where you say what you want done, by voice or by keyboard. The assistant carries it out itself, and asks for a yes before anything that costs."
+      "title": "Assistent",
+      "help": "Öffnet das Fenster, in dem Sie sagen, was getan werden soll, per Stimme oder per Tastatur. Der Assistent führt es selbst aus und fragt, bevor etwas kostet, nach Ihrem Ja."
     },
     "appDictate": {
-      "title": "Dictate",
-      "help": "Listens to the microphone and writes what you say at the caret, in the field you are in. Held down by default: speak, let go, the text appears."
+      "title": "Diktieren",
+      "help": "Hört das Mikrofon ab und schreibt, was Sie sagen, an der Einfügemarke in das Feld, in dem Sie sind. Wird standardmäßig gedrückt gehalten: sprechen, loslassen, der Text erscheint."
     },
     "windowFullScreen": {
-      "title": "Full screen",
-      "help": "Gives the window the whole screen, with no bar and no border, to work with nothing around it."
+      "title": "Vollbild",
+      "help": "Gibt dem Fenster den ganzen Bildschirm, ohne Leiste und ohne Rand, um ohne alles ringsum zu arbeiten."
     },
     "spacesMoveLeft": {
-      "title": "Move the space left",
-      "help": "Shifts the focused space one place to the left in the top bar. The order you settle on is kept from one session to the next."
+      "title": "Bereich nach links verschieben",
+      "help": "Verschiebt den fokussierten Bereich in der oberen Leiste um einen Platz nach links. Die gewählte Reihenfolge bleibt von einer Sitzung zur nächsten erhalten."
     },
     "spacesMoveRight": {
-      "title": "Move the space right",
-      "help": "Shifts the focused space one place to the right in the top bar. The order you settle on is kept from one session to the next."
+      "title": "Bereich nach rechts verschieben",
+      "help": "Verschiebt den fokussierten Bereich in der oberen Leiste um einen Platz nach rechts. Die gewählte Reihenfolge bleibt von einer Sitzung zur nächsten erhalten."
     },
     "explorerNewFolder": {
-      "title": "New folder",
-      "help": "Creates an empty folder inside the one the explorer is showing, and opens its name for typing. The folder is yours, as is everything you put in it."
+      "title": "Neuer Ordner",
+      "help": "Erstellt einen leeren Ordner in dem, den der Explorer zeigt, und öffnet seinen Namen zur Eingabe. Der Ordner gehört Ihnen, wie alles, was Sie hineinlegen."
     },
     "explorerDuplicate": {
-      "title": "Duplicate",
-      "help": "Lays a copy of each chosen item beside the original, under the first free name. A folder is copied with everything inside it."
+      "title": "Duplizieren",
+      "help": "Legt eine Kopie jedes gewählten Elements neben das Original, unter dem ersten freien Namen. Ein Ordner wird mit allem kopiert, was darin liegt."
     },
     "explorerCut": {
-      "title": "Cut",
-      "help": "Holds the selection, to be moved on the next paste. Nothing moves until you paste, and the rows being held are drawn dimmed."
+      "title": "Ausschneiden",
+      "help": "Hält die Auswahl fest, um sie beim nächsten Einfügen zu verschieben. Nichts bewegt sich, solange Sie nicht eingefügt haben, und die festgehaltenen Zeilen werden abgeblendet dargestellt."
     },
     "explorerCopy": {
-      "title": "Copy",
-      "help": "Holds the selection, to be copied on the next paste. The original stays where it is."
+      "title": "Kopieren",
+      "help": "Hält die Auswahl fest, um sie beim nächsten Einfügen zu kopieren. Das Original bleibt, wo es ist."
     },
     "explorerPaste": {
-      "title": "Paste",
-      "help": "Drops what the clipboard holds into the folder on screen. An item whose name is already taken is refused, and the rest go through."
+      "title": "Einfügen",
+      "help": "Legt in den angezeigten Ordner, was die Zwischenablage festhält. Ein Element, dessen Name schon vergeben ist, wird abgelehnt, und der Rest geht durch."
     },
     "explorerTrash": {
-      "title": "Move to trash",
-      "help": "Sends the selection to the system trash, where you can get it back. It is the one explorer gesture the studio cannot undo."
+      "title": "In den Papierkorb legen",
+      "help": "Schickt die Auswahl in den Papierkorb des Systems, aus dem Sie sie zurückholen können. Es ist die einzige Geste des Explorers, die das Studio nicht rückgängig machen kann."
     },
     "explorerUndo": {
-      "title": "Undo the last file gesture",
-      "help": "Puts the last batch moved, renamed, duplicated or created back where it was. The stack belongs to the project rather than to a window, and the trash gesture never enters it."
+      "title": "Letzte Geste an den Dateien rückgängig machen",
+      "help": "Legt den zuletzt verschobenen, umbenannten, duplizierten oder erstellten Stapel dorthin zurück, wo er war. Der Verlauf gehört zum Projekt und nicht zu einem Fenster, und die Geste zum Papierkorb kommt nie hinein."
     },
     "explorerRedo": {
-      "title": "Redo the file gesture",
-      "help": "Redoes the batch of files that was just undone, exactly as it was."
+      "title": "Geste an den Dateien wiederholen",
+      "help": "Wiederholt den Stapel an Dateien, der gerade rückgängig gemacht wurde, genau so, wie er war."
     },
     "sceneSelect": {
-      "title": "Select",
-      "help": "The plain tool: click an object in the scene to choose it, without doing anything to it. It is the one you come back to between manipulations."
+      "title": "Auswählen",
+      "help": "Das schlichte Werkzeug: ein Objekt in der Szene anklicken, um es zu wählen, ohne ihm etwas zu tun. Es ist das, zu dem man zwischen zwei Handgriffen zurückkehrt."
     },
     "sceneTranslate": {
-      "title": "Move",
-      "help": "Drags the chosen object from one place to another, by pulling the coloured arrows — one per direction."
+      "title": "Verschieben",
+      "help": "Zieht das gewählte Objekt von einem Ort an einen anderen, indem man an den farbigen Pfeilen zieht — einer je Richtung."
     },
     "sceneRotate": {
-      "title": "Rotate",
-      "help": "Turns the chosen object on itself, by pulling the coloured rings — one per axis."
+      "title": "Drehen",
+      "help": "Dreht das gewählte Objekt um sich selbst, indem man an den farbigen Ringen zieht — einer je Achse."
     },
     "sceneScale": {
-      "title": "Scale",
-      "help": "Makes the chosen object bigger or smaller, by pulling its handles. Holding Shift keeps its proportions."
+      "title": "Skalieren",
+      "help": "Macht das gewählte Objekt größer oder kleiner, indem man an seinen Griffen zieht. Shift gedrückt zu halten wahrt seine Proportionen."
     },
     "sceneFrame": {
-      "title": "Frame selection",
-      "help": "Brings the camera close enough that the chosen object fills the view. Handy when you are lost, or when an object is tiny."
+      "title": "Auswahl einrahmen",
+      "help": "Bringt die Kamera nah genug heran, dass das gewählte Objekt die Ansicht ausfüllt. Praktisch, wenn man sich verloren hat oder ein Objekt winzig ist."
     },
     "sceneFrameFollow": {
-      "title": "Follow the selection",
-      "help": "Frames the selection and keeps it in view: whatever moves takes the camera along, at the angle and distance already chosen. Called again, it lets go."
+      "title": "Der Auswahl folgen",
+      "help": "Rahmt die Auswahl ein und behält sie in der Ansicht: was sich bewegt, nimmt die Kamera mit, im bereits gewählten Winkel und Abstand. Erneut aufgerufen, lässt sie los."
     },
     "sceneIsolate": {
-      "title": "Isolate selection",
-      "help": "Leaves only the chosen objects on screen while you work on them. Nothing is changed: pressing it again gives the scene back exactly as it was, including the objects you had hidden yourself."
+      "title": "Auswahl isolieren",
+      "help": "Lässt nur die gewählten Objekte auf dem Bildschirm, solange Sie daran arbeiten. Nichts wird verändert: ein zweiter Druck gibt die Szene genau so zurück, wie sie war, einschließlich der Objekte, die Sie selbst ausgeblendet hatten."
     },
     "sceneHide": {
-      "title": "Hide selection",
-      "help": "Takes the chosen objects out of the view without touching the document. Show all brings them back."
+      "title": "Auswahl ausblenden",
+      "help": "Nimmt die gewählten Objekte aus der Ansicht, ohne das Dokument anzurühren. „Alle anzeigen“ holt sie zurück."
     },
     "sceneShowAll": {
-      "title": "Show all",
-      "help": "Undoes the hiding and isolating done from the viewport. Objects the document itself declares hidden stay hidden."
+      "title": "Alle anzeigen",
+      "help": "Hebt das Ausblenden und das Isolieren auf, die vom Viewport aus gemacht wurden. Objekte, die das Dokument selbst als ausgeblendet führt, bleiben ausgeblendet."
     },
     "sceneSnap": {
-      "title": "All snaps",
-      "help": "Turns all four snaps on or off at once — surface, grid, angle, scale. A second press gives back exactly the ones that were on. The bar at the top of the viewport sets them one by one."
+      "title": "Alle Einrastungen",
+      "help": "Schaltet alle vier Einrastungen auf einmal ein oder aus — Oberfläche, Raster, Winkel, Skalierung. Ein zweiter Druck gibt genau die zurück, die eingeschaltet waren. Die Leiste oben im Viewport stellt sie einzeln ein."
     },
     "sceneSpace": {
-      "title": "Local frame",
-      "help": "Lines the handles up with the object’s own orientation rather than the world’s. On a turned object, that is what lets you move it “towards its front” rather than north."
+      "title": "Lokales Koordinatensystem",
+      "help": "Richtet die Griffe an der Ausrichtung des Objekts selbst aus statt an der der Welt. Bei einem gedrehten Objekt lässt es sich so „nach vorn“ verschieben statt nach Norden."
     },
     "sceneProjection": {
-      "title": "Projection",
-      "help": "Switches between perspective, where receding lines converge, and orthographic projection, where parallels stay parallel. That is what lets an alignment be judged by eye."
+      "title": "Projektion",
+      "help": "Wechselt zwischen der Perspektive, in der die Fluchtlinien zusammenlaufen, und der orthografischen Projektion, in der Parallelen parallel bleiben. Das ist es, was erlaubt, eine Ausrichtung mit dem Auge zu beurteilen."
     },
     "sceneViewFront": {
-      "title": "Look from the front",
-      "help": "Puts the camera in front of the scene, square to the axis. The reference view for judging a silhouette."
+      "title": "Von vorn betrachten",
+      "help": "Setzt die Kamera vor die Szene, rechtwinklig zur Achse. Die Referenzansicht, um eine Silhouette zu beurteilen."
     },
     "sceneViewBack": {
-      "title": "Look from behind",
-      "help": "Puts the camera behind the scene, on the same axis: what the front hides."
+      "title": "Von hinten betrachten",
+      "help": "Setzt die Kamera hinter die Szene, auf dieselbe Achse: was die Vorderseite verbirgt."
     },
     "sceneViewRight": {
-      "title": "Look from the right",
-      "help": "Puts the camera on the right-hand side, square to the axis. What a depth is judged from."
+      "title": "Von rechts betrachten",
+      "help": "Setzt die Kamera auf die rechte Seite, rechtwinklig zur Achse. Das, woran eine Tiefe beurteilt wird."
     },
     "sceneViewLeft": {
-      "title": "Look from the left",
-      "help": "Puts the camera on the left-hand side, on the same axis as the right view."
+      "title": "Von links betrachten",
+      "help": "Setzt die Kamera auf die linke Seite, auf dieselbe Achse wie die Ansicht von rechts."
     },
     "sceneViewTop": {
-      "title": "Look from above",
-      "help": "Puts the camera above the scene, looking straight down. What the objects are laid out on the ground from."
+      "title": "Von oben betrachten",
+      "help": "Setzt die Kamera über die Szene, senkrecht nach unten blickend. Das, woran die Objekte auf dem Boden angeordnet werden."
     },
     "sceneViewBottom": {
-      "title": "Look from below",
-      "help": "Puts the camera under the scene, looking straight up, the other way from the top view."
+      "title": "Von unten betrachten",
+      "help": "Setzt die Kamera unter die Szene, senkrecht nach oben blickend, in der anderen Richtung als die Ansicht von oben."
     },
     "sceneViewCamera": {
-      "title": "Look through the camera",
-      "help": "Draws the view through the chosen camera, and steps back out on a second call. With no camera chosen, it takes the first in the scene."
+      "title": "Durch die Kamera blicken",
+      "help": "Zeichnet die Ansicht durch die gewählte Kamera und tritt beim zweiten Aufruf wieder heraus. Ist keine Kamera gewählt, nimmt sie die erste der Szene."
     },
     "sceneQuad": {
-      "title": "Four views",
-      "help": "Splits the viewport in four — top, front and side around the view being flown. Each quarter orbits under the pointer; the flown one keeps the gizmos."
+      "title": "Vier Ansichten",
+      "help": "Teilt den Viewport in vier — oben, vorn und Seite rund um die Ansicht, in der geflogen wird. Jedes Viertel orbitiert unter dem Zeiger; die geflogene behält die Gizmos."
     },
     "sceneQuadEdges": {
-      "title": "Quad edges",
-      "help": "Redraws the wireframe without the diagonals triangulation added. A GLB never holds quads: this is a reconstruction by angle, faithful except on strongly curved surfaces."
+      "title": "Quad-Kanten",
+      "help": "Zeichnet das Drahtgitter ohne die Diagonalen neu, die die Triangulierung hinzugefügt hat. Eine GLB-Datei enthält nie Quads: das ist eine Rekonstruktion über den Winkel, treu außer auf stark gekrümmten Oberflächen."
     },
     "sceneDisplay": {
-      "title": "Display mode",
-      "help": "Cycles what the viewport draws: the surfaces, their edges alone, or both together. The button’s menu picks one directly."
+      "title": "Darstellungsmodus",
+      "help": "Wechselt durch das, was der Viewport zeichnet: die Oberflächen, ihre Kanten allein oder beides zusammen. Das Menü der Schaltfläche wählt direkt eines aus."
     },
     "sceneCapture": {
-      "title": "Capture the view",
-      "help": "Saves an image of the 3D view into the project’s images — without the grid, the handles or the rails. The menu offers resolutions larger than the panel’s own."
+      "title": "Ansicht aufnehmen",
+      "help": "Speichert ein Bild der 3D-Ansicht in den Bildern des Projekts — ohne das Raster, die Griffe und die Pfade. Das Menü bietet Auflösungen an, die größer sind als die des Panels selbst."
     },
     "sceneAdd": {
-      "title": "Add",
-      "help": "Opens the list of what a scene can take: meshes, lights and objects. A right-click on empty space opens the same list."
+      "title": "Hinzufügen",
+      "help": "Öffnet die Liste dessen, was eine Szene aufnehmen kann: Meshes, Lichter und Objekte. Ein Rechtsklick ins Leere öffnet dieselbe Liste."
     },
     "sceneAddToSheet": {
-      "title": "Add to the animation band",
-      "help": "Puts the selected objects on the band, where keys are set. The band shows only what is put there, so a scene of thousands of objects stays readable."
+      "title": "Zum Animationsband hinzufügen",
+      "help": "Setzt die ausgewählten Objekte auf das Band, wo die Keys gesetzt werden. Das Band zeigt nur, was man darauf legt, sodass eine Szene mit Tausenden von Objekten lesbar bleibt."
     },
     "sceneRemoveFromSheet": {
-      "title": "Remove from the animation band",
-      "help": "Removes the line from the band. Keys already set stay, and an object keeps its line for as long as it holds one."
+      "title": "Vom Animationsband entfernen",
+      "help": "Entfernt die Zeile vom Band. Bereits gesetzte Keys bleiben, und ein Objekt behält seine Zeile, solange es welche trägt."
     },
     "sceneGroup": {
-      "title": "Group",
-      "help": "Files the selected objects under one group. Moving the group moves them all, and ⌘Z takes the grouping back."
+      "title": "Gruppieren",
+      "help": "Ordnet die ausgewählten Objekte unter einer Gruppe ein. Die Gruppe zu verschieben verschiebt sie alle, und ⌘Z nimmt die Gruppierung zurück."
     },
     "sceneDuplicate": {
-      "title": "Duplicate",
-      "help": "Puts a copy of the selection under the same parent and at the very same place, then selects it. A group duplicates whole, with everything hanging from it."
+      "title": "Duplizieren",
+      "help": "Legt eine Kopie der Auswahl unter dasselbe Elternobjekt und genau an dieselbe Stelle und wählt sie dann aus. Eine Gruppe wird ganz dupliziert, mit allem, was daran hängt."
     },
     "sceneOptimizeSelection": {
-      "title": "Optimise selection…",
-      "help": "Measures the selection and previews a SAFE runtime representation before changing its optimisation settings."
+      "title": "Auswahl optimieren…",
+      "help": "Misst die Auswahl und zeigt eine SAFE-Laufzeitdarstellung in der Vorschau, bevor deren Optimierungseinstellungen geändert werden."
     },
     "sceneWorldPerformance": {
-      "title": "World performance…",
-      "help": "Measures the whole scene and reports SAFE optimisation opportunities without changing the authoring world."
+      "title": "Leistung der Welt…",
+      "help": "Misst die ganze Szene und meldet SAFE-Optimierungsmöglichkeiten, ohne die Autorenwelt zu verändern."
     },
     "sceneExportGame": {
-      "title": "Export the game…",
-      "help": "Builds a standalone game from an optimised runtime copy while leaving the authoring scenes untouched."
+      "title": "Spiel exportieren…",
+      "help": "Erstellt aus einer optimierten Laufzeitkopie ein eigenständiges Spiel, ohne die Szenen der Bearbeitung anzurühren."
     },
     "sceneCopy": {
-      "title": "Copy",
-      "help": "Holds on to the selection so it can be pasted, here or in another scene. This is the studio’s own clipboard: it leaves the system one alone."
+      "title": "Kopieren",
+      "help": "Behält die Auswahl, um sie später einzufügen, hier oder in einer anderen Szene. Dies ist die eigene Zwischenablage des Studios: die des Systems bleibt unberührt."
     },
     "sceneCut": {
-      "title": "Cut",
-      "help": "Holds on to the selection and takes it out of the scene. ⌘Z brings it back."
+      "title": "Ausschneiden",
+      "help": "Behält die Auswahl und entfernt sie aus der Szene. ⌘Z holt sie zurück."
     },
     "scenePaste": {
-      "title": "Paste",
-      "help": "Puts what was copied into the scene in front, and selects it. Pasting twice makes two separate copies."
+      "title": "Einfügen",
+      "help": "Setzt das Kopierte in die vorderste Szene ein und wählt es aus. Zweimal einfügen ergibt zwei getrennte Kopien."
     },
     "sceneDelete": {
-      "title": "Delete",
-      "help": "Removes everything selected from the scene. Nothing is lost for good: ⌘Z brings it back."
+      "title": "Löschen",
+      "help": "Entfernt alles Ausgewählte aus der Szene. Nichts geht endgültig verloren: ⌘Z holt es zurück."
     },
     "undo": {
-      "title": "Undo",
-      "help": "Takes back the last thing you did in this document. Each document has its own stack: undo acts on the tab in front, not on the others."
+      "title": "Rückgängig",
+      "help": "Nimmt die letzte Änderung in diesem Dokument zurück. Jedes Dokument hat seinen eigenen Stapel: Rückgängig wirkt auf den vordersten Tab, nicht auf die anderen."
     },
     "redo": {
-      "title": "Redo",
-      "help": "Does again what you have just undone. Handy after undoing once too often."
+      "title": "Wiederholen",
+      "help": "Führt erneut aus, was Sie gerade rückgängig gemacht haben. Nützlich, wenn einmal zu oft rückgängig gemacht wurde."
     },
     "sequencePlayPause": {
-      "title": "Play / Pause",
-      "help": "Starts playing the edit, or stops it where it is. Starting again picks up where you left off."
+      "title": "Abspielen / Pausieren",
+      "help": "Startet die Wiedergabe des Schnitts oder hält sie dort an, wo sie steht. Ein erneuter Start setzt dort fort, wo aufgehört wurde."
     },
     "sequenceExport": {
-      "title": "Export video…",
-      "help": "Writes the edit out as a video file, frame by frame, 3D scenes included. The sound is not in it yet."
+      "title": "Video exportieren…",
+      "help": "Schreibt den Schnitt Frame für Frame in eine Videodatei, 3D-Szenen eingeschlossen. Der Ton ist darin noch nicht enthalten."
     },
     "sequenceExportCut": {
-      "title": "Export edit (OTIO)…",
-      "help": "Writes the edit itself out as an OpenTimelineIO file, which other editing applications open — tracks, clips, in points, speeds and links to the media. Fades, gains and image/sound links travel in it too, but only AI Desktop Studio reads them back."
+      "title": "Schnitt exportieren (OTIO)…",
+      "help": "Schreibt den Schnitt selbst in eine OpenTimelineIO-Datei, die andere Schnittprogramme öffnen — Spuren, Clips, In-Punkte, Geschwindigkeiten und Verweise auf die Medien. Blenden, Gains und Bild-Ton-Verbindungen reisen ebenfalls mit, aber nur AI Desktop Studio liest sie wieder ein."
     },
     "sequenceExportEdl": {
-      "title": "Export edit list (EDL)…",
-      "help": "Writes the cuts and their timecodes as CMX3600, which every online room reads. The format holds one image track and two sound ones, and nothing of the fades, the gains or the speeds."
+      "title": "Schnittliste exportieren (EDL)…",
+      "help": "Schreibt die Schnitte und ihre Timecodes als CMX3600, das jeder Online-Schnittplatz liest. Das Format trägt eine Bildspur und zwei Tonspuren, und nichts von den Blenden, den Gains oder den Geschwindigkeiten."
     },
     "sequenceExportFcpxml": {
-      "title": "Export edit (FCPXML)…",
-      "help": "Writes the edit in the format Final Cut reads and Premiere and Resolve import. The tracks survive, a lane each, and so does the frame size; the fades, the gains and the speeds stay here."
+      "title": "Schnitt exportieren (FCPXML)…",
+      "help": "Schreibt den Schnitt in dem Format, das Final Cut liest und das Premiere und Resolve importieren. Die Spuren bleiben erhalten, je eine Bahn, und die Framegröße ebenso; die Blenden, die Gains und die Geschwindigkeiten bleiben hier."
     },
     "sequenceExportStems": {
-      "title": "Export sound per track (WAV)…",
-      "help": "Writes one WAV per audible track, mixed the way the edit plays it — the placements, the trims, the fades, the gains and the speeds are baked into the samples. A muted track is not written."
+      "title": "Ton pro Spur exportieren (WAV)…",
+      "help": "Schreibt eine WAV-Datei pro hörbarer Spur, gemischt so, wie der Schnitt sie abspielt — die Platzierungen, die Trimmungen, die Blenden, die Gains und die Geschwindigkeiten sind in die Samples eingerechnet. Eine stummgeschaltete Spur wird nicht geschrieben."
     },
     "sequenceExportBundle": {
-      "title": "Export edit with its media (OTIOZ)…",
-      "help": "Writes the same edit with the media it uses inside the file. This is the one to hand to somebody else, or to open in DaVinci Resolve, which then finds the rushes on its own instead of asking for them one by one."
+      "title": "Schnitt mit seinen Medien exportieren (OTIOZ)…",
+      "help": "Schreibt denselben Schnitt mit den Medien, die er benutzt, in die Datei hinein. Diese Datei gibt man jemand anderem weiter oder öffnet sie in DaVinci Resolve, das die Rushes dann von selbst findet, statt sie einzeln zu erfragen."
     },
     "montageImport": {
-      "title": "Import an edit with its media (OTIOZ)…",
-      "help": "Opens an edit written by another application, rushes and all. The media are copied into the project and enter the catalogue, then the edit opens linked to them. What the opened file does not bring is said as it opens, and starts from its default only there."
+      "title": "Schnitt mit seinen Medien importieren (OTIOZ)…",
+      "help": "Öffnet einen Schnitt, den ein anderes Programm geschrieben hat, mitsamt seinen Rushes. Die Medien werden in das Projekt kopiert und in den Katalog aufgenommen, dann öffnet sich der Schnitt mit ihnen verbunden. Was die geöffnete Datei nicht mitbringt, wird beim Öffnen gesagt und geht nur dort von seinem Standard aus."
     },
     "sequenceMirror": {
-      "title": "Return window",
-      "help": "Opens the edit in a window of its own, to put on a second screen. It follows the studio frame by frame, without the sound, and closes like any window."
+      "title": "Rückmonitor",
+      "help": "Öffnet den Schnitt in einem eigenen Fenster, das auf einen zweiten Bildschirm gehört. Es folgt dem Studio Frame für Frame, ohne Ton, und schließt sich wie jedes andere Fenster."
     },
     "sequenceSplit": {
-      "title": "Split clip",
-      "help": "Cuts the clip in two where the playhead sits, so each half can be handled on its own."
+      "title": "Clip teilen",
+      "help": "Teilt den Clip dort in zwei, wo der Abspielkopf steht, damit jede Hälfte für sich bearbeitet werden kann."
     },
     "sequenceDelete": {
-      "title": "Delete clip",
-      "help": "Removes the chosen clip from the edit. The original file stays in your assets."
+      "title": "Clip löschen",
+      "help": "Entfernt den gewählten Clip aus dem Schnitt. Die Originaldatei bleibt in Ihren Assets."
     },
     "sequenceUnlink": {
-      "title": "Unlink picture and sound",
-      "help": "Separates the two clips of one take. While they are linked, moving, cutting or deleting one does the same to the other."
+      "title": "Bild und Ton entkoppeln",
+      "help": "Trennt die beiden Clips einer Aufnahme. Solange sie verbunden sind, wirkt Verschieben, Schneiden oder Löschen des einen genauso auf den anderen."
     },
     "sequenceZoomIn": {
-      "title": "Zoom in",
-      "help": "Spreads the edit out to see detail: clips get wider and are easier to aim at."
+      "title": "Hineinzoomen",
+      "help": "Zieht den Schnitt auseinander, um Details zu sehen: die Clips werden breiter und lassen sich genauer treffen."
     },
     "sequenceZoomOut": {
-      "title": "Zoom out",
-      "help": "Draws the edit together to see more of it at once, at the cost of the detail."
+      "title": "Herauszoomen",
+      "help": "Zieht den Schnitt zusammen, um mehr davon auf einmal zu sehen, auf Kosten der Details."
     },
     "sequenceFit": {
-      "title": "Fit to view",
-      "help": "Sets the zoom so the whole edit fits on screen, end to end."
+      "title": "Alles einpassen",
+      "help": "Stellt den Zoom so ein, dass der ganze Schnitt von Anfang bis Ende auf den Bildschirm passt."
     },
     "sequenceStart": {
-      "title": "Go to start",
-      "help": "Brings the playhead right back to the beginning of the edit, moving nothing else."
+      "title": "Zum Anfang",
+      "help": "Bringt den Abspielkopf ganz an den Anfang des Schnitts zurück, ohne sonst etwas zu verschieben."
     },
     "sequenceEnd": {
-      "title": "Go to end",
-      "help": "Sends the playhead right to the end of the edit, past the last clip."
+      "title": "Zum Ende",
+      "help": "Schickt den Abspielkopf ganz ans Ende des Schnitts, hinter den letzten Clip."
     },
     "canvasZoomIn": {
-      "title": "Zoom in",
-      "help": "Magnifies the view one step, around the middle of what is visible. The image itself is untouched — only the way it is looked at."
+      "title": "Hineinzoomen",
+      "help": "Vergrößert die Ansicht um eine Stufe, um die Mitte des Sichtbaren herum. Das Bild selbst bleibt unberührt — nur die Art, es zu betrachten, ändert sich."
     },
     "canvasZoomOut": {
-      "title": "Zoom out",
-      "help": "Shrinks the view one step, to take in the whole image again."
+      "title": "Herauszoomen",
+      "help": "Verkleinert die Ansicht um eine Stufe, um das ganze Bild wieder zu überblicken."
     },
     "canvasZoomFit": {
-      "title": "Fit to window",
-      "help": "Frames the whole image in the panel, with a margin, and never magnifies it past its actual size."
+      "title": "An Fenster anpassen",
+      "help": "Rahmt das ganze Bild im Panel ein, mit einem Rand, und vergrößert es nie über seine tatsächliche Größe hinaus."
     },
     "canvasZoomActual": {
-      "title": "Actual size",
-      "help": "One image pixel per screen pixel: the only scale at which sharpness can be judged."
+      "title": "Tatsächliche Größe",
+      "help": "Ein Bildpixel pro Bildschirmpixel: der einzige Maßstab, auf dem sich die Schärfe beurteilen lässt."
     },
     "canvasRulers": {
-      "title": "Rulers",
-      "help": "Shows or hides the two graduated rulers, at the top and on the left. Guides are pulled off them."
+      "title": "Lineale",
+      "help": "Zeigt oder verbirgt die beiden Maßlineale oben und links. Von ihnen werden die Hilfslinien herausgezogen."
     },
     "canvasGuides": {
-      "title": "Guides",
-      "help": "Shows or hides the guides laid on the image. Hiding them does not remove them."
+      "title": "Hilfslinien",
+      "help": "Zeigt oder verbirgt die auf dem Bild liegenden Hilfslinien. Sie zu verbergen löscht sie nicht."
     },
     "canvasGrid": {
-      "title": "Pixel grid",
-      "help": "Shows or hides the grid of the artwork’s own pixels. Only on a document set to pixel art."
+      "title": "Pixelraster",
+      "help": "Zeigt oder verbirgt das Raster der Pixel des Werks selbst. Nur bei einem Dokument im Modus Pixel Art."
     },
     "canvasClearGuides": {
-      "title": "Clear guides",
-      "help": "Removes every guide from the image. Undoable, like any other edit."
+      "title": "Hilfslinien entfernen",
+      "help": "Entfernt alle Hilfslinien vom Bild. Rückgängig zu machen wie jede andere Änderung."
     },
     "canvasSnap": {
-      "title": "Snap",
-      "help": "Makes what is dragged stick to guides, to the image edges and to its centre, within a few pixels."
+      "title": "Einrasten",
+      "help": "Lässt das Gezogene an den Hilfslinien, an den Bildrändern und an der Bildmitte einrasten, auf wenige Pixel genau."
     },
     "canvasSelectAll": {
-      "title": "Select all",
-      "help": "Selects the whole document, which the system’s own select-all cannot do on an image."
+      "title": "Alles auswählen",
+      "help": "Wählt das ganze Dokument aus, was das Alles-auswählen des Systems auf einem Bild nicht kann."
     },
     "canvasDeselect": {
-      "title": "Deselect",
-      "help": "Drops the selected region, so the brush reaches the whole layer again."
+      "title": "Auswahl aufheben",
+      "help": "Gibt die ausgewählte Region frei, damit der Pinsel wieder die ganze Ebene erreicht."
     },
     "canvasCropApply": {
-      "title": "Apply the crop",
-      "help": "Trims the document to the placed frame. ⌘Z gives the frame back, not the pixels."
+      "title": "Zuschnitt anwenden",
+      "help": "Beschneidet das Dokument auf den gesetzten Rahmen. ⌘Z gibt den Rahmen zurück, nicht die Pixel."
     },
     "canvasCropCancel": {
-      "title": "Abandon the crop",
-      "help": "Takes the crop frame away without trimming anything at all."
+      "title": "Zuschnitt verwerfen",
+      "help": "Nimmt den Zuschnittrahmen weg, ohne überhaupt etwas zu beschneiden."
     },
     "canvasMaskFromSelection": {
-      "title": "Make a mask of the selection",
-      "help": "Hides the active layer outside the selected region."
+      "title": "Maske aus der Auswahl erstellen",
+      "help": "Verbirgt die aktive Ebene außerhalb der ausgewählten Region."
     },
     "canvasRegenerate": {
-      "title": "Regenerate the region",
-      "help": "Asks the model to repaint the masked region of the active layer."
+      "title": "Region neu generieren",
+      "help": "Bittet das Modell, die maskierte Region der aktiven Ebene neu zu malen."
     },
     "canvasCutout": {
-      "title": "Cut out",
-      "help": "Removes the background of the flattened image with the default model."
+      "title": "Freistellen",
+      "help": "Entfernt den Hintergrund des reduzierten Bildes mit dem Standardmodell."
     },
     "canvasEnlarge": {
-      "title": "Upscale",
-      "help": "Raises the resolution of the flattened image with the default model."
+      "title": "Hochskalieren",
+      "help": "Erhöht die Auflösung des reduzierten Bildes mit dem Standardmodell."
     },
     "canvasVectorize": {
-      "title": "Vectorise",
-      "help": "Turns the flattened image into paths with the default model."
+      "title": "Vektorisieren",
+      "help": "Wandelt das reduzierte Bild mit dem Standardmodell in Pfade um."
     },
     "canvasExtend": {
-      "title": "Extend",
-      "help": "Asks the model to paint beyond the edges of the flattened image."
+      "title": "Erweitern",
+      "help": "Bittet das Modell, über die Ränder des reduzierten Bildes hinaus zu malen."
     },
     "canvasMergeDown": {
-      "title": "Merge down",
-      "help": "Joins the active layer and the one just below it into one, keeping the lower one’s name."
+      "title": "Nach unten reduzieren",
+      "help": "Vereint die aktive Ebene mit der direkt darunter liegenden zu einer einzigen, die den Namen der unteren behält."
     },
     "canvasFlatten": {
-      "title": "Flatten image",
-      "help": "Reduces the whole stack to a single layer: hidden layers are dropped, not merged.",
-      "layerName": "Background"
+      "title": "Auf eine Ebene reduzieren",
+      "help": "Reduziert den ganzen Stapel auf eine einzige Ebene: verborgene Ebenen gehen verloren, sie werden nicht vereint.",
+      "layerName": "Hintergrund"
     },
     "canvasFlipHorizontal": {
-      "title": "Flip horizontal",
-      "help": "Mirrors the whole document left to right, layers included."
+      "title": "Horizontal spiegeln",
+      "help": "Spiegelt das ganze Dokument von links nach rechts, Ebenen eingeschlossen."
     },
     "canvasFlipVertical": {
-      "title": "Flip vertical",
-      "help": "Mirrors the whole document top to bottom, layers included."
+      "title": "Vertikal spiegeln",
+      "help": "Spiegelt das ganze Dokument von oben nach unten, Ebenen eingeschlossen."
     },
     "canvasRotateCw": {
-      "title": "Rotate clockwise",
-      "help": "Turns the document a quarter turn to the right: the frame turns with it."
+      "title": "Im Uhrzeigersinn drehen",
+      "help": "Dreht das Dokument um eine Vierteldrehung nach rechts: der Rahmen dreht sich mit."
     },
     "canvasRotateCcw": {
-      "title": "Rotate counter-clockwise",
-      "help": "Turns the document a quarter turn to the left: the frame turns with it."
+      "title": "Gegen den Uhrzeigersinn drehen",
+      "help": "Dreht das Dokument um eine Vierteldrehung nach links: der Rahmen dreht sich mit."
     },
     "canvasExport": {
-      "title": "Export the image",
-      "help": "Writes the flattened document to disk, as a PNG."
+      "title": "Bild exportieren",
+      "help": "Schreibt das reduzierte Dokument als PNG auf die Festplatte."
     },
     "canvasExportLayered": {
-      "title": "Export the layers (PSD)…",
-      "help": "Writes the document with its layers, as a Photoshop file. Groups are flattened away: their layers arrive side by side."
+      "title": "Ebenen exportieren (PSD)…",
+      "help": "Schreibt das Dokument mit seinen Ebenen als Photoshop-Datei. Gruppen werden aufgelöst: ihre Ebenen kommen nebeneinander an."
     },
     "skyboxView": {
-      "title": "Change the view",
-      "help": "Cycles through the four ways of looking at the sky: immersive, panoramic, cross, faces."
+      "title": "Ansicht wechseln",
+      "help": "Schaltet durch die vier Arten, den Himmel zu betrachten: immersiv, panoramisch, Kreuz, Flächen."
     },
     "skyboxProbes": {
-      "title": "Light probes",
-      "help": "Shows or hides the witness spheres. A sky is judged by what it lights, not by its own image."
+      "title": "Lichtsonden",
+      "help": "Zeigt oder verbirgt die Prüfkugeln. Ein Himmel wird danach beurteilt, was er beleuchtet, nicht nach seinem eigenen Bild."
     },
     "canvasToolMove": {
-      "title": "Move tool",
-      "help": "Arms the pointer: a drag moves the active layer, and its handles resize or turn it."
+      "title": "Verschiebewerkzeug",
+      "help": "Aktiviert den Zeiger: ein Ziehen verschiebt die aktive Ebene, und ihre Griffe ändern ihre Größe oder drehen sie."
     },
     "canvasToolHand": {
-      "title": "Hand tool",
-      "help": "Arms the hand: a drag pans the view without touching the document. Holding space does the same without changing tool."
+      "title": "Handwerkzeug",
+      "help": "Aktiviert die Hand: ein Ziehen verschiebt die Ansicht, ohne das Dokument anzurühren. Die Leertaste gedrückt zu halten tut dasselbe, ohne das Werkzeug zu wechseln."
     },
     "canvasToolCrop": {
-      "title": "Crop tool",
-      "help": "Arms the crop frame. Draw a frame, then ⏎ to crop or ⎋ to drop it."
+      "title": "Zuschneidewerkzeug",
+      "help": "Aktiviert den Zuschnittrahmen. Einen Rahmen ziehen, dann ⏎ zum Zuschneiden oder ⎋ zum Verwerfen."
     },
     "canvasToolSelectRectangle": {
-      "title": "Rectangular selection",
-      "help": "Arms the rectangular selection. What is selected bounds the brush, the eraser and the bucket."
+      "title": "Rechteckige Auswahl",
+      "help": "Aktiviert die rechteckige Auswahl. Das Ausgewählte begrenzt den Pinsel, den Radierer und die Füllung."
     },
     "canvasToolSelectEllipse": {
-      "title": "Elliptical selection",
-      "help": "Arms the elliptical selection: a drag inscribes the ellipse in the rectangle swept, and Shift makes it a circle."
+      "title": "Elliptische Auswahl",
+      "help": "Aktiviert die elliptische Auswahl: ein Ziehen schreibt die Ellipse in das überstrichene Rechteck ein, und Umschalt macht daraus einen Kreis."
     },
     "canvasToolSelectLasso": {
       "title": "Lasso",
-      "help": "Arms the lasso: the selection follows the hand, freehand."
+      "help": "Aktiviert das Lasso: die Auswahl folgt der Hand, freihändig."
     },
     "canvasToolSmartSelect": {
-      "title": "Click Smart Select",
-      "help": "Arms object selection from a click, using the local selection model."
+      "title": "Intelligente Auswahl per Klick",
+      "help": "Aktiviert die Objektauswahl per Klick mit dem lokalen Auswahlmodell."
     },
     "canvasToolSmartSelectBox": {
-      "title": "Rectangle Smart Select",
-      "help": "Arms object selection from an approximate box, using the local selection model."
+      "title": "Intelligente Auswahl per Rechteck",
+      "help": "Aktiviert die Objektauswahl in einem ungefähren Rechteck mit dem lokalen Auswahlmodell."
     },
     "canvasToolShapeRectangle": {
-      "title": "Rectangle shape",
-      "help": "Arms drawing a rectangle on the active layer; Shift makes it a square."
+      "title": "Rechteckform",
+      "help": "Aktiviert das Zeichnen eines Rechtecks auf der aktiven Ebene; Umschalt macht daraus ein Quadrat."
     },
     "canvasToolShapeLine": {
-      "title": "Line shape",
-      "help": "Arms drawing a line. Same group as the rectangle, hence its key with Shift added."
+      "title": "Linienform",
+      "help": "Aktiviert das Zeichnen einer Linie. In derselben Gruppe wie das Rechteck, daher seine Taste mit zusätzlichem Umschalt."
     },
     "canvasToolShapeArrow": {
-      "title": "Arrow shape",
-      "help": "Arms drawing an arrow, from where the drag began to where the hand lets go."
+      "title": "Pfeilform",
+      "help": "Aktiviert das Zeichnen eines Pfeils, vom Beginn des Ziehens bis dorthin, wo die Hand loslässt."
     },
     "canvasToolShapeEllipse": {
-      "title": "Ellipse shape",
-      "help": "Arms drawing an ellipse on the active layer; Shift makes it a circle."
+      "title": "Ellipsenform",
+      "help": "Aktiviert das Zeichnen einer Ellipse auf der aktiven Ebene; Umschalt macht daraus einen Kreis."
     },
     "canvasToolShapePolygon": {
-      "title": "Polygon shape",
-      "help": "Arms drawing a regular polygon, whose number of sides is set in the inspector before drawing."
+      "title": "Polygonform",
+      "help": "Aktiviert das Zeichnen eines regelmäßigen Vielecks, dessen Seitenzahl vor dem Zeichnen im Inspektor eingestellt wird."
     },
     "canvasToolShapeStar": {
-      "title": "Star shape",
-      "help": "Arms drawing a star, whose number of points is set in the inspector before drawing."
+      "title": "Sternform",
+      "help": "Aktiviert das Zeichnen eines Sterns, dessen Zackenzahl vor dem Zeichnen im Inspektor eingestellt wird."
     },
     "canvasToolBrush": {
-      "title": "Brush tool",
-      "help": "Arms the brush, with a softened edge. It paints on the active layer, bounded by the selection when there is one."
+      "title": "Pinselwerkzeug",
+      "help": "Aktiviert den Pinsel mit weichem Rand. Er malt auf der aktiven Ebene, begrenzt durch die Auswahl, wenn es eine gibt."
     },
     "canvasToolPencil": {
-      "title": "Pencil tool",
-      "help": "Arms the pencil, with a hard edge: the same gesture as the brush, without the softening."
+      "title": "Bleistiftwerkzeug",
+      "help": "Aktiviert den Bleistift mit hartem Rand: dieselbe Geste wie beim Pinsel, ohne die weiche Kante."
     },
     "canvasToolText": {
-      "title": "Text tool",
-      "help": "Arms text: a click places a caption, whose words are typed in the inspector."
+      "title": "Textwerkzeug",
+      "help": "Aktiviert den Text: ein Klick setzt eine Beschriftung, deren Wörter im Inspektor eingegeben werden."
     },
     "canvasToolEraser": {
-      "title": "Eraser tool",
-      "help": "Arms the point eraser: it clears where the hand passes, bounded by the selection when there is one."
+      "title": "Radiererwerkzeug",
+      "help": "Aktiviert den punktuellen Radierer: er löscht dort, wo die Hand vorbeigeht, begrenzt durch die Auswahl, wenn es eine gibt."
     },
     "canvasToolFill": {
-      "title": "Paint bucket tool",
-      "help": "Arms the bucket: a click fills the layer, or the selection when there is one."
+      "title": "Füllwerkzeug",
+      "help": "Aktiviert die Füllung: ein Klick füllt die Ebene oder die Auswahl, wenn es eine gibt."
     },
     "canvasToolPicker": {
-      "title": "Eyedropper tool",
-      "help": "Arms the eyedropper: a click takes the colour under the pointer and hands it to the brush."
+      "title": "Pipettenwerkzeug",
+      "help": "Aktiviert die Pipette: ein Klick nimmt die Farbe unter dem Zeiger auf und gibt sie an den Pinsel weiter."
     },
     "canvasBrushSmaller": {
-      "title": "Smaller brush",
-      "help": "Narrows the brush, the eraser and the shape stroke by one step of the scale."
+      "title": "Pinsel verkleinern",
+      "help": "Verringert den Durchmesser von Pinsel, Radierer und Formkontur um eine Stufe der Skala."
     },
     "canvasBrushLarger": {
-      "title": "Larger brush",
-      "help": "Widens the brush, the eraser and the shape stroke by one step of the scale."
+      "title": "Pinsel vergrößern",
+      "help": "Erhöht den Durchmesser von Pinsel, Radierer und Formkontur um eine Stufe der Skala."
     },
     "sceneSkeletons": {
-      "title": "Show skeletons",
-      "help": "Draws the bones of every rigged model over the scene."
+      "title": "Skelette anzeigen",
+      "help": "Zeichnet die Knochen jedes Modells mit Rig über die Szene."
     },
     "scenePoseMode": {
-      "title": "Pose mode",
-      "help": "Switches between picking objects and picking the bones of a rig."
+      "title": "Posenmodus",
+      "help": "Wechselt zwischen dem Auswählen von Objekten und dem Auswählen der Knochen eines Rigs."
     },
     "sceneNavigate": {
-      "title": "Navigate",
-      "help": "Move through the scene as in a game: the mouse holds the view, W A S D travel, E and Q rise and fall. The wheel sets the speed. Escape gives the mouse back."
+      "title": "Navigieren",
+      "help": "Sich durch die Szene bewegen wie in einem Spiel: die Maus hält den Blick, W A S D bewegen, E und Q steigen und sinken. Das Mausrad stellt die Geschwindigkeit ein. Esc gibt die Maus zurück."
     },
     "sceneNegate": {
-      "title": "Negate",
-      "help": "Marks the selected shapes as tools: they are cut out of the others, whichever button is pressed next and in whatever order they were clicked. A marked shape shows translucent red. Press again to take the mark off."
+      "title": "Negativ",
+      "help": "Markiert die ausgewählten Formen als Werkzeuge: sie werden aus den anderen ausgespart, gleich welche Schaltfläche als Nächstes gedrückt wird und in welcher Reihenfolge geklickt wurde. Eine markierte Form erscheint durchscheinend rot. Erneut drücken nimmt die Markierung wieder weg."
     },
     "sceneCarve": {
-      "title": "Carve",
-      "help": "Cuts the shapes marked Negate — failing that, the smaller ones — out of the biggest selected shape: a cube set inside a wall opens a window in it. The order of the clicks changes nothing. The original shapes are kept — Separate gives them back."
+      "title": "Aussparen",
+      "help": "Spart die mit „Negativ“ markierten Formen — sonst die kleineren — aus der größten ausgewählten Form aus: ein Würfel in einer Wand öffnet darin ein Fenster. Die Reihenfolge der Klicks ändert nichts. Die ursprünglichen Formen bleiben erhalten — „Trennen“ gibt sie zurück."
     },
     "sceneWeld": {
-      "title": "Join",
-      "help": "Merges the selected shapes into a single solid. A shape marked Negate is cut out of it instead of being added to it. The original shapes are kept — Separate gives them back."
+      "title": "Vereinen",
+      "help": "Vereint die ausgewählten Formen zu einem einzigen Körper. Eine mit „Negativ“ markierte Form wird darin ausgespart, statt hinzugefügt zu werden. Die ursprünglichen Formen bleiben erhalten — „Trennen“ gibt sie zurück."
     },
     "sceneIntersect": {
-      "title": "Keep overlap",
-      "help": "Keeps only the part where the selected shapes overlap, and throws the rest away. A shape marked Negate is cut out of it instead of being kept. The original shapes are kept — Separate gives them back."
+      "title": "Schnittmenge behalten",
+      "help": "Behält nur den Teil, in dem sich die ausgewählten Formen überschneiden, und verwirft den Rest. Eine mit „Negativ“ markierte Form wird darin ausgespart, statt behalten zu werden. Die ursprünglichen Formen bleiben erhalten — „Trennen“ gibt sie zurück."
     },
     "sceneInvertCarve": {
-      "title": "Flip the fold",
-      "help": "Folds the same shapes the other way round: what was carved becomes the matter, and the matter becomes the tool. One click, no undo — for the fold that ran backwards."
+      "title": "Faltung umkehren",
+      "help": "Faltet dieselben Formen andersherum: was ausgespart wurde, wird zur Materie, und die Materie wird zum Werkzeug. Ein Klick, ohne Rückgängig — für die Faltung, die verkehrt herum lief."
     },
     "sceneSeparate": {
-      "title": "Separate",
-      "help": "Breaks a solid apart and gives back the shapes it was made of, each where it stood."
+      "title": "Trennen",
+      "help": "Zerlegt einen Körper und gibt die Formen zurück, aus denen er gemacht war, jede dort, wo sie stand."
     }
   }
 }
