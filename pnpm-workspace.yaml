@@ -11,16 +11,40 @@ allowBuilds:
   node-llama-cpp: true
 minimumReleaseAgeExclude:
   - immer@11.1.16
-  - jscpd-darwin-arm64@5.0.15
-  - jscpd-darwin-x64@5.0.15
-  - jscpd-linux-arm64-gnu@5.0.15
-  - jscpd-linux-x64-gnu@5.0.15
-  - jscpd-linux-x64-musl@5.0.15
-  - jscpd-windows-x64-msvc@5.0.15
-  - jscpd@5.0.15
+  - jscpd-darwin-arm64@5.0.15 || 5.2.0
+  - jscpd-darwin-x64@5.0.15 || 5.2.0
+  - jscpd-linux-arm64-gnu@5.0.15 || 5.2.0
+  - jscpd-linux-x64-gnu@5.0.15 || 5.2.0
+  - jscpd-linux-x64-musl@5.0.15 || 5.2.0
+  - jscpd-windows-x64-msvc@5.0.15 || 5.2.0
+  - jscpd@5.0.15 || 5.2.0
   - mediabunny@1.53.1 || 1.55.7
   - zustand@5.0.15
   - dockview-core@8.1.0
   - dockview-react@8.1.0
   - dockview@8.1.0
   - '@pasquelin/panels@0.4.1'
+  - '@oxlint/binding-android-arm-eabi@1.82.0'
+  - '@oxlint/binding-android-arm64@1.82.0'
+  - '@oxlint/binding-darwin-arm64@1.82.0'
+  - '@oxlint/binding-darwin-x64@1.82.0'
+  - '@oxlint/binding-freebsd-x64@1.82.0'
+  - '@oxlint/binding-linux-arm-gnueabihf@1.82.0'
+  - '@oxlint/binding-linux-arm-musleabihf@1.82.0'
+  - '@oxlint/binding-linux-arm64-gnu@1.82.0'
+  - '@oxlint/binding-linux-arm64-musl@1.82.0'
+  - '@oxlint/binding-linux-ppc64-gnu@1.82.0'
+  - '@oxlint/binding-linux-riscv64-gnu@1.82.0'
+  - '@oxlint/binding-linux-riscv64-musl@1.82.0'
+  - '@oxlint/binding-linux-s390x-gnu@1.82.0'
+  - '@oxlint/binding-linux-x64-gnu@1.82.0'
+  - '@oxlint/binding-linux-x64-musl@1.82.0'
+  - '@oxlint/binding-openharmony-arm64@1.82.0'
+  - '@oxlint/binding-win32-arm64-msvc@1.82.0'
+  - '@oxlint/binding-win32-ia32-msvc@1.82.0'
+  - '@oxlint/binding-win32-x64-msvc@1.82.0'
+  - '@tanstack/react-virtual@3.14.11'
+  - '@tanstack/virtual-core@3.17.9'
+  - jscpd-linux-arm64-musl@5.2.0
+  - jscpd-windows-arm64-msvc@5.2.0
+  - oxlint@1.82.0
