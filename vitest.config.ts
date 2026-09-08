@@ -295,7 +295,7 @@ export default defineConfig({
           include: ['src/{main,preload,shared}/**/*.test.ts'],
           // Anchored like the line above, and for a reason `include` alone does not cover: the
           // benchmark glob is a SEPARATE setting with its own default, `**/*.bench.*`, which is
-          // not anchored at all. Left to it, `pnpm bench` walked into `.claude/worktrees/` and
+          // not anchored at all. Left to it, `pnpm bench` walked into `worktrees/` and
           // measured the branches of other sessions — 72 lines of another checkout's numbers,
           // presented as this one's.
           benchmark: { include: ['src/{main,preload,shared}/**/*.bench.ts'] },
