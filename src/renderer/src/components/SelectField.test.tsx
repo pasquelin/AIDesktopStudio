@@ -111,11 +111,13 @@ describe('SelectField', () => {
       expect(screen.getByRole('combobox')).toHaveClass('appearance-none')
     })
 
+    // Read on the BOX, which is where `Select` takes its ink: the list is `text-inherit`, so a
+    // colour written on the control itself would be the skin's `text-text` and never this one.
     it('reads quieter while nothing is chosen, and at full ink once something is', () => {
       const { rerender } = render(
         <SelectField layout="bar" label="Type" value="" options={BLENDS} onChange={vi.fn()} />,
       )
-      expect(screen.getByRole('combobox')).toHaveClass('text-muted')
+      expect(screen.getByRole('combobox').parentElement).toHaveClass('text-muted')
 
       rerender(
         <SelectField
@@ -126,7 +128,7 @@ describe('SelectField', () => {
           onChange={vi.fn()}
         />,
       )
-      expect(screen.getByRole('combobox')).not.toHaveClass('text-muted')
+      expect(screen.getByRole('combobox').parentElement).not.toHaveClass('text-muted')
     })
   })
 

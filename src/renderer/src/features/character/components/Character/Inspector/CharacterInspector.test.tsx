@@ -273,7 +273,9 @@ describe('what a character is made of', () => {
 
     const mode = screen.getByLabelText('Recouvert par')
     const extractButton = screen.getByRole('button', { name: 'Extraire les textures du modèle' })
-    expect(mode.parentElement).toContainElement(extractButton)
+    // Two hops up, not one: `Select` draws the box its chevron is pinned to, and the line the
+    // action shares is that box's parent.
+    expect(mode.parentElement?.parentElement).toContainElement(extractButton)
     await userEvent.click(extractButton)
 
     await vi.waitFor(() => expect(extractTextures).toHaveBeenCalledWith(ASSET))

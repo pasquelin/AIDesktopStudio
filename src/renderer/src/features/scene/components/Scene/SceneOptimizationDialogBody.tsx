@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Dialog } from '@/features/shell/components/Dialog'
 import { WindowButton } from '@/components/WindowButton'
 import { fieldHandle } from '@/components/scHandle'
+import { Select } from '@/components/Select'
 import { setNodesOptimization } from '@/engines/scene/commands'
 import { bakeOptimization } from '@/engines/scene/bakeOptimization'
 import type { SceneNode } from '@/engines/scene/sceneState'
@@ -158,8 +159,8 @@ export function SceneOptimizationDialogBody({
       {!readOnly && (
         <label className="form-control">
           <span className="label-text">{t('optimization.mode')}</span>
-          <select
-            className="select select-bordered"
+          <Select
+            className="w-full"
             data-sc={fieldHandle('optimization.mode')}
             value={mode}
             onChange={event => {
@@ -174,7 +175,7 @@ export function SceneOptimizationDialogBody({
                 {t(`optimization.modes.${value}`)}
               </option>
             ))}
-          </select>
+          </Select>
         </label>
       )}
     </Dialog>

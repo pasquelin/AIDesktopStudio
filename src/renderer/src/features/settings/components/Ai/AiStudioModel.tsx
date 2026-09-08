@@ -4,7 +4,7 @@ import { WINDOW_CAPTION, WINDOW_HELP, WINDOW_ROW } from '@/components/windowStyl
 import { cn } from '@/helpers/cn'
 import { useAssistant } from '@/stores/assistant'
 import { useSettings } from '@/stores/settings'
-import { WindowSelect } from '@/components/WindowSelect'
+import { Select } from '@/components/Select'
 
 /** Which of the studio's four answers. Enumerated where a cloud's is typed: these are priced. */
 export function AiStudioModel() {
@@ -15,7 +15,7 @@ export function AiStudioModel() {
     <li className={cn(WINDOW_ROW, 'flex-col items-start pl-6')}>
       <label className="flex w-full items-center gap-2">
         <span className={WINDOW_CAPTION}>{t('aiModels.cloudModel')}</span>
-        <WindowSelect
+        <Select
           data-sc="field:ai.cloud.scenario.model"
           className="w-full max-w-xs"
           value={model}
@@ -29,7 +29,7 @@ export function AiStudioModel() {
               {t(`assistant.models.${name}`)}
             </option>
           ))}
-        </WindowSelect>
+        </Select>
       </label>
       <p className={WINDOW_HELP}>{t('aiModels.studioModelHelp')}</p>
     </li>

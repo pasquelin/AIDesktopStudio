@@ -1,11 +1,9 @@
-import { mdiChevronDown } from '@mdi/js'
 import { useId, type ReactNode } from 'react'
 import { cn } from '@/helpers/cn'
 import { FormField } from './FormField'
 import { PropertyLine } from './PropertyLine'
 import { fieldHandle } from './scHandle'
-import { CONTROL, FIELD, NATIVE_SELECT } from './styles'
-import { UiIcon } from './UiIcon'
+import { Select } from './Select'
 export type SelectOption<V extends string> = {
   value: V
   label: string
@@ -81,14 +79,8 @@ function selectControl<V extends string>({
   unnamed,
   named,
 }: SelectControlProps<V>) {
-  const skin =
-    layout === 'bar'
-      ? cn(CONTROL, 'w-full cursor-pointer appearance-none border-none pe-6 ps-2')
-      : layout === 'stacked'
-        ? cn(FIELD, 'appearance-none pe-6')
-        : NATIVE_SELECT
   return (
-    <select
+    <Select
       id={id}
       aria-label={named ? undefined : label}
       data-sc={scId && fieldHandle(scId)}
@@ -98,7 +90,14 @@ function selectControl<V extends string>({
         if (picked) onChange(picked.value)
       }}
       {...hint}
-      className={cn(skin, 'min-w-0 flex-1', layout === 'bar' && !value && 'text-muted')}
+      // The skin is `Select`'s; what is left here is the room the layout gives it. `text-tiny`
+      // for the three that stand in a BAR or on a property line, where the studio writes its
+      // controls one step down — a stacked field reads at the size of the form around it.
+      className={cn(
+        'flex min-w-0 flex-1',
+        layout !== 'stacked' && 'text-tiny',
+        layout === 'bar' && !value && 'text-muted',
+      )}
     >
       {unnamed && (
         <option value={UNNAMED} disabled>
@@ -106,7 +105,7 @@ function selectControl<V extends string>({
         </option>
       )}
       {selectOptions({ options })}
-    </select>
+    </Select>
   )
 }
 
@@ -114,24 +113,6 @@ type SelectLayoutProps = Pick<
   SelectFieldProps<string>,
   'label' | 'layout' | 'leading' | 'actions' | 'className'
 > & { id: string; children: ReactNode; compactActions?: boolean }
-
-/**
- * The chevron the two `appearance-none` layouts owe their control: the browser draws none once
- * the appearance is dropped, and the room `pe-6` reserves for it was standing empty. Pinned to
- * the SELECT rather than to the row, so what stands beside it never lands under the glyph.
- */
-function chevronedSelect(children: ReactNode) {
-  return (
-    <div className="relative flex min-w-0 flex-1 items-center">
-      {children}
-      <UiIcon
-        path={mdiChevronDown}
-        size={12}
-        className="text-muted pointer-events-none absolute end-2"
-      />
-    </div>
-  )
-}
 
 function stackedSelectLayout({
   label,
@@ -145,7 +126,7 @@ function stackedSelectLayout({
     <FormField label={label} htmlFor={id} className={className}>
       <div className="flex min-w-0 items-center gap-2">
         {leading}
-        {chevronedSelect(children)}
+        {children}
         {actions}
       </div>
     </FormField>
@@ -190,7 +171,7 @@ function selectLayout({
   return (
     <div className={cn('flex min-w-0 items-center', className)}>
       {leading}
-      {chevronedSelect(children)}
+      {children}
       {actions}
     </div>
   )

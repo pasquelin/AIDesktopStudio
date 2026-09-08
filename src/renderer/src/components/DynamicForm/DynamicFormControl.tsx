@@ -9,6 +9,7 @@ import { useModelText } from '@/hooks/useModelText'
 import { AssetDropField } from '../AssetDropField'
 import { AssetDropList } from '../AssetDropList'
 import { fieldHandle } from '../scHandle'
+import { Select } from '../Select'
 import { CHECKBOX, FIELD, FIELD_FILL } from '../styles'
 import { ToolButton } from '../ToolButton'
 import { isGenerationCanvasSource } from '@shared/domain/generationComment'
@@ -70,10 +71,9 @@ type Translate = ReturnType<typeof useTranslation>['t']
 function choiceControl(input: ControlInput, say: ReturnType<typeof useModelText>) {
   if (input.field.kind === 'task' && !input.field.options?.length) return textControl(input)
   return (
-    <select
+    <Select
       id={input.id}
       data-sc={fieldHandle(`generation.${input.field.key}`)}
-      className={FIELD}
       {...input.registration}
     >
       {!input.field.required && <option value="" />}
@@ -82,7 +82,7 @@ function choiceControl(input: ControlInput, say: ReturnType<typeof useModelText>
           {say(option.label)}
         </option>
       ))}
-    </select>
+    </Select>
   )
 }
 

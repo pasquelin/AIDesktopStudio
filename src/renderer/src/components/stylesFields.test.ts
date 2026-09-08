@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest'
 import {
-  CONTROL,
   FIELD,
   FIELD_FILL,
   NATIVE_SELECT,
@@ -77,9 +76,14 @@ describe('the word a bar sets beside its buttons', () => {
     expect(wearing.length).toBeGreaterThanOrEqual(4)
   })
 })
-describe('the OS list wearing the control language', () => {
-  it('is the control, plus the room around its text and nothing more', () => {
-    expect(NATIVE_SELECT.split(' ')).toEqual([...CONTROL.split(' '), 'px-1'])
+describe('the OS list wearing the field language', () => {
+  it('is the field, plus the room its own chevron needs and nothing more', () => {
+    expect(NATIVE_SELECT.split(' ')).toEqual([
+      ...FIELD.split(' '),
+      'cursor-pointer',
+      'appearance-none',
+      'pe-8',
+    ])
   })
 
   it('is worn rather than padded again at the call', () => {
@@ -102,15 +106,15 @@ describe('the OS list wearing the control language', () => {
 
   /**
    * It was extracted from four pickers and is now worn by ONE, which is the stronger rule: a
-   * second wearer means a `<select>` was drawn by hand again instead of through `SelectField`,
-   * and that is how twenty-one of them each read their own value back into their own union.
+   * second wearer means a `<select>` was drawn by hand again instead of through `Select`, and
+   * that is how the studio came to hold four apparences of the same control at once.
    */
-  it('is worn by `SelectField`, and by nothing else', () => {
+  it('is worn by `Select`, and by nothing else', () => {
     const wearing = WRITTEN_SOURCES.filter(
       ([path, source]) => !GUARDED.includes(path) && source.includes('NATIVE_SELECT'),
     ).map(([path]) => path)
 
-    expect(wearing).toEqual([expect.stringContaining('SelectField.tsx')])
+    expect(wearing).toEqual([expect.stringContaining('/Select.tsx')])
   })
 })
 

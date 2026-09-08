@@ -16,7 +16,7 @@ import { SettingRowColorControl } from './SettingRowColorControl'
 import { SettingRowPathControl } from './SettingRowPathControl'
 import { SettingRowTextControl } from './SettingRowTextControl'
 import { WindowInput } from '@/components/WindowInput'
-import { WindowSelect } from '@/components/WindowSelect'
+import { Select } from '@/components/Select'
 import { WindowToggle } from '@/components/WindowToggle'
 
 /**
@@ -61,7 +61,7 @@ export function SettingRowControl({
   switch (descriptor.kind) {
     case 'choice':
       return (
-        <WindowSelect
+        <Select
           id={id}
           data-sc={fieldHandle(scId)}
           aria-describedby={describedBy}
@@ -81,7 +81,7 @@ export function SettingRowControl({
               {optionLabel(option, t)}
             </option>
           ))}
-        </WindowSelect>
+        </Select>
       )
 
     case 'number':

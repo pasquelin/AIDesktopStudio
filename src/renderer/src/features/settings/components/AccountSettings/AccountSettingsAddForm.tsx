@@ -18,7 +18,7 @@ import { useAccounts, type AccountSaveFailure } from '@/stores/accounts'
 import { FAILURE_KEYS } from './failureKeys'
 import { WindowButton } from '@/components/WindowButton'
 import { WindowInput } from '@/components/WindowInput'
-import { WindowSelect } from '@/components/WindowSelect'
+import { Select } from '@/components/Select'
 
 const accountFields = z
   .object({
@@ -86,7 +86,7 @@ export function AccountSettingsAddForm() {
       onSubmit={event => void handleSubmit(submit)(event)}
     >
       <FormField label={t('accounts.provider')} htmlFor={`${form}provider`} required>
-        <WindowSelect
+        <Select
           id={`${form}provider`}
           data-sc="field:newAccount.provider"
           className="w-full"
@@ -103,7 +103,7 @@ export function AccountSettingsAddForm() {
               ))}
             </optgroup>
           ))}
-        </WindowSelect>
+        </Select>
       </FormField>
 
       <FormField label={t('accounts.name')} htmlFor={`${form}name`} required>

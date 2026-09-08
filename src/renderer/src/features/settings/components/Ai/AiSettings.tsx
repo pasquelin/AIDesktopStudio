@@ -21,7 +21,7 @@ import { useAiModels } from '@/stores/aiModels'
 import { SettingLine } from '../Setting/SettingLine'
 import { SETTING_COLUMN } from '../settingStyles'
 import { AiOwnModels } from './AiOwnModels'
-import { WindowSelect } from '@/components/WindowSelect'
+import { Select } from '@/components/Select'
 import { AiEngineOffer } from './AiEngineOffer'
 import { AiOllamaOffer } from './AiOllamaOffer'
 import { AiRoleRow } from './AiRoleRow'
@@ -155,7 +155,7 @@ export function AiSettings({ family }: AiSettingsProps) {
 
         {overview.projectPath !== null && (
           <SettingLine title={t('aiModels.scope')} labelFor={SCOPE_FIELD}>
-            <WindowSelect
+            <Select
               id={SCOPE_FIELD}
               data-sc="field:ai.scope"
               className="w-full max-w-xs"
@@ -167,7 +167,7 @@ export function AiSettings({ family }: AiSettingsProps) {
                   {t(`aiModels.scope_${value}`)}
                 </option>
               ))}
-            </WindowSelect>
+            </Select>
           </SettingLine>
         )}
 

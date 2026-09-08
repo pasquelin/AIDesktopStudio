@@ -19,7 +19,7 @@ import { MemoryRowActions } from './Row/MemoryRowActions'
 import { MemoryRowDetail } from './Row/MemoryRowDetail'
 import { MemoryUpkeep } from './MemoryUpkeep'
 import { WindowInput } from '@/components/WindowInput'
-import { WindowSelect } from '@/components/WindowSelect'
+import { Select } from '@/components/Select'
 
 /**
  * What the assistant has learned, and the only screen that can correct it.
@@ -107,7 +107,7 @@ export function MemorySettings() {
           value={text}
           onChange={event => setText(event.target.value)}
         />
-        <WindowSelect
+        <Select
           data-sc="field:memory.type"
           aria-label={t('settings.memoryFilterAll')}
           /**
@@ -126,7 +126,7 @@ export function MemorySettings() {
               {t(`memoryTypes.${one}`)}
             </option>
           ))}
-        </WindowSelect>
+        </Select>
       </div>
 
       <p className={WINDOW_CAPTION}>{t('settings.memoryCount', { count: memories.length })}</p>
