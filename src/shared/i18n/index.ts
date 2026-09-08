@@ -1,6 +1,19 @@
 import { isRecord } from '../guards'
 import { en } from './en'
 import { fr } from './fr'
+import { ar } from './ar'
+import { de } from './de'
+import { es } from './es'
+import { hi } from './hi'
+import { id } from './id'
+import { it } from './it'
+import { ja } from './ja'
+import { ko } from './ko'
+import { pt } from './pt'
+import { ru } from './ru'
+import { tr } from './tr'
+import { vi } from './vi'
+import { zh } from './zh'
 import type { Language } from './languages'
 
 /**
@@ -8,7 +21,23 @@ import type { Language } from './languages'
  * the renderer, and both must say the same thing. One directory of sections per language,
  * merged by that directory's index — see `fr/index.ts` for why the storage is split.
  */
-export const TRANSLATIONS: Record<Language, typeof fr> = { fr, en }
+export const TRANSLATIONS: Record<Language, typeof fr> = {
+  fr,
+  en,
+  ar,
+  de,
+  es,
+  hi,
+  id,
+  it,
+  ja,
+  ko,
+  pt,
+  ru,
+  tr,
+  vi,
+  zh,
+}
 
 export type { Translations } from './fr'
 

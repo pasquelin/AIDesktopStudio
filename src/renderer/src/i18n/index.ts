@@ -1,6 +1,7 @@
 import i18next from 'i18next'
 import { initReactI18next } from 'react-i18next'
 import { DEFAULT_LANGUAGE, PSEUDO_LANGUAGE, pseudoLocalize, TRANSLATIONS } from '@shared/i18n'
+import { LANGUAGES } from '@shared/i18n/languages'
 import type { Bundle, Language } from '@shared/i18n'
 
 const NAMESPACE = 'studio'
@@ -26,6 +27,7 @@ function pseudoRequested(): boolean {
  */
 function declareLanguage(language: Language): void {
   document.documentElement.lang = language
+  document.documentElement.dir = LANGUAGES.find(one => one.code === language)?.direction ?? 'ltr'
 }
 
 export async function initI18n(language: Language = DEFAULT_LANGUAGE): Promise<void> {
@@ -51,8 +53,9 @@ export async function initI18n(language: Language = DEFAULT_LANGUAGE): Promise<v
     defaultNS: NAMESPACE,
     ns: [NAMESPACE],
     resources: {
-      fr: { [NAMESPACE]: TRANSLATIONS.fr },
-      en: { [NAMESPACE]: TRANSLATIONS.en },
+      ...Object.fromEntries(
+        LANGUAGES.map(({ code }) => [code, { [NAMESPACE]: TRANSLATIONS[code] }]),
+      ),
       ...(pseudo ? { [PSEUDO_LANGUAGE]: { [NAMESPACE]: pseudoBundle() } } : {}),
     },
     interpolation: { escapeValue: false },

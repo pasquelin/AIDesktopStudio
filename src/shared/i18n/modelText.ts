@@ -20,7 +20,7 @@ import type { Language } from './languages'
  * A word stays in English only where no surface and no glossary entry names it in French.
  * `KEPT_IN_ENGLISH`, in `modelText.i18n.test.ts`, holds that list and is what decides.
  */
-const DICTIONARIES: Partial<Record<Language, Record<string, string>>> = { fr: frDictionary }
+const DICTIONARIES: Partial<Record<string, Record<string, string>>> = { fr: frDictionary }
 
 /**
  * The shape a text is looked up by. Every difference it erases is one Scenario can introduce

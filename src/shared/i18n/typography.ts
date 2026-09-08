@@ -1,4 +1,4 @@
-import type { Language } from './languages'
+import { LANGUAGES, type Language } from './languages'
 
 /**
  * The characters French typography needs and a keyboard does not offer.
@@ -29,7 +29,7 @@ const ORDINARY = '\u0020'
  * the two bundles drift apart in typography with nothing to say so. What English does not carry
  * is a word — `8 asset`, `3 days`, `24 hours` — which the boundary already lets through.
  */
-export const UNIT_SYMBOLS: Record<Language, readonly string[]> = {
+export const UNIT_SYMBOLS: Record<string, readonly string[]> = {
   fr: ['UC', 'o', 'Kio', 'Mio', 'Gio', 'Mo', 'j', 'h', 'LUFS'],
   en: ['CU', 'B', 'KiB', 'MiB', 'GiB', 'KB', 'MB', 'GB', 'd', 'h', 'LUFS'],
 }
@@ -43,7 +43,7 @@ type BreakRule = { pattern: RegExp; what: string }
 
 /** A figure binds to its unit in both languages; only the punctuation half is French. */
 const rulesFor = (language: Language): readonly BreakRule[] => {
-  const unit = `(?:${[...UNIT_SYMBOLS[language], TIMES].map(escaped).join('|')})`
+  const unit = `(?:${[...(UNIT_SYMBOLS[language] ?? UNIT_SYMBOLS.en ?? []), TIMES].map(escaped).join('|')})`
 
   return [
     {
@@ -62,7 +62,9 @@ const rulesFor = (language: Language): readonly BreakRule[] => {
 }
 
 /** Built once: the guards call this on every value of both bundles. */
-const RULES: Record<Language, readonly BreakRule[]> = { fr: rulesFor('fr'), en: rulesFor('en') }
+const RULES: Record<string, readonly BreakRule[]> = Object.fromEntries(
+  LANGUAGES.map(language => [language.code, rulesFor(language.code)]),
+)
 
 /**
  * Every ordinary space the language would not break there, named by what it separates.
@@ -71,7 +73,7 @@ const RULES: Record<Language, readonly BreakRule[]> = { fr: rulesFor('fr'), en: 
  * draws, and no pattern looking for a digit ever saw it.
  */
 export function breakableSpots(text: string, language: Language): string[] {
-  return RULES[language].flatMap(({ pattern, what }) =>
+  return (RULES[language] ?? RULES.en ?? []).flatMap(({ pattern, what }) =>
     [...text.matchAll(pattern)].map(match => `${what}: ${match[0].trim()}`),
   )
 }

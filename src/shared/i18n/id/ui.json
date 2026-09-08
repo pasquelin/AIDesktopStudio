@@ -1,0 +1,76 @@
+{
+  "gui": {
+    "stage": "Interface page",
+    "tools": "Interface tools",
+    "tree": "Interface elements",
+    "noDocument": "Open an interface to see what it holds.",
+    "visible": "Visible",
+    "locked": "Locked — the pointer does not catch it"
+  },
+  "guiTools": {
+    "add": "Add",
+    "addHint": "Lays an element inside what is selected",
+    "duplicate": "Duplicate",
+    "duplicateHint": "Copies the selection right beside itself",
+    "group": "Group",
+    "groupHint": "Files the selection into a panel",
+    "delete": "Delete",
+    "deleteHint": "Takes the selection out of the interface",
+    "lock": "Lock",
+    "lockHint": "Puts the selection out of the pointer’s reach",
+    "zoomIn": "Zoom in",
+    "zoomInHint": "Brings the page closer",
+    "zoomOut": "Zoom out",
+    "zoomOutHint": "Takes the page further away",
+    "fit": "Fit",
+    "fitHint": "Frames the whole page in the panel",
+    "actual": "Actual size",
+    "actualHint": "One page pixel for one screen pixel",
+    "resolution": "Resolution",
+    "resolutionHint": "The canvas this interface is composed for",
+    "types": {
+      "panel": "Panel",
+      "stack": "Stack",
+      "grid": "Grid",
+      "scroll": "Scroll view",
+      "spacer": "Spacer",
+      "text": "Text",
+      "image": "Image",
+      "button": "Button",
+      "progress": "Progress bar",
+      "slider": "Slider",
+      "input": "Input",
+      "checkbox": "Checkbox",
+      "screen": "Interface screen"
+    },
+    "typeHints": {
+      "panel": "A frame that holds others",
+      "stack": "Lays its children in a row or a column",
+      "grid": "Lays its children in even columns",
+      "scroll": "A frame whose content scrolls",
+      "spacer": "Pushes its neighbours apart in a stack",
+      "text": "Words on screen",
+      "image": "An image from the project",
+      "button": "What one acts on, with or without an icon",
+      "progress": "A bar filled to a value",
+      "slider": "A value one drags",
+      "input": "Text to type",
+      "checkbox": "A box one ticks",
+      "screen": "The root of the interface"
+    },
+    "resolutions": {
+      "desktopHd": "1920 × 1080",
+      "desktop720": "1280 × 720",
+      "phonePortrait": "Phone, portrait",
+      "phoneLandscape": "Phone, landscape",
+      "free": "Free"
+    },
+    "resolutionHints": {
+      "desktopHd": "Desktop, sixteen ninths",
+      "desktop720": "Desktop, sixteen ninths, half the pixels",
+      "phonePortrait": "390 × 844",
+      "phoneLandscape": "844 × 390",
+      "free": "Whatever size the document already holds"
+    }
+  }
+}

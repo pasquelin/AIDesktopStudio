@@ -1,0 +1,319 @@
+{
+  "game": {
+    "components": {
+      "Aircraft": {
+        "title": "Aircraft",
+        "description": "Makes the object fly: lift, drag and thrust computed on its own motion, and control surfaces that only answer with air over them."
+      },
+      "Animator": {
+        "title": "Animator",
+        "description": "Plays the clip that matches what the body is doing — walking, jumping, standing — from an animation graph of the project."
+      },
+      "CharacterController": {
+        "description": "Makes the object the one being driven: it walks, it jumps, it climbs steps.",
+        "title": "Character"
+      },
+      "Collider": {
+        "description": "Gives the object a volume the others cannot pass through.",
+        "title": "Volume"
+      },
+      "Follow": {
+        "description": "Follows another entity and stops at the distance asked for — a companion, a shoulder camera, an enemy.",
+        "title": "Chase"
+      },
+      "Health": {
+        "description": "Hit points, which fall as the entity is hurt and kill it at zero.",
+        "title": "Health"
+      },
+      "LookAt": {
+        "description": "Points the entity at another one, at once or at a capped turning speed — a turret, a sign, a head.",
+        "title": "Gaze"
+      },
+      "Movement": {
+        "description": "Makes the entity travel on its own along one axis — a platform, a lift, a hazard.",
+        "title": "Motion"
+      },
+      "Orbit": {
+        "description": "Turns the entity about another one, or about the origin — a moon, a satellite, a circling camera.",
+        "title": "Orbit"
+      },
+      "Path": {
+        "description": "Walks the entity along a run of points at a steady pace — a cart, a dolly shot, a platform on rails.",
+        "title": "Rail"
+      },
+      "Patrol": {
+        "description": "Walks the entity from one named point to the next, waiting at each — a sentry, a lift.",
+        "title": "Patrol"
+      },
+      "RigidBody": {
+        "description": "Hands the object to the simulation: it falls, it slides, it gets pushed.",
+        "title": "Physics"
+      },
+      "Script": {
+        "title": "Script",
+        "description": "Hands the object to code: what its author wrote runs on every step."
+      },
+      "Player": {
+        "title": "Player",
+        "description": "Names whoever is played. One per scene: what hangs under it is its body and its eye, and it is what the camera follows."
+      },
+      "Spin": {
+        "description": "Turns the entity about one axis, endlessly — a pickup, a propeller, a mechanism.",
+        "title": "Spin"
+      },
+      "SpringArm": {
+        "title": "Spring arm",
+        "description": "Hangs a camera behind an element at a distance you set: it pulls in when a wall comes between them, and follows with lag rather than sticking."
+      },
+      "Trigger": {
+        "description": "Blocks nothing, and says so when something enters its volume or leaves it.",
+        "title": "Sensor"
+      },
+      "Vehicle": {
+        "title": "Vehicle",
+        "description": "Puts the object on suspended, driven, steered wheels: it rolls, brakes and turns. The wheels are its child objects, named here."
+      }
+    },
+    "fields": {
+      "acceleration": "Acceleration",
+      "agility": "Agility",
+      "airControl": "Air control",
+      "axis": "Axis",
+      "body": "Driving body",
+      "bodyTurnSpeed": "Body turn speed (0: none)",
+      "camera": "Camera",
+      "collision": "Avoid walls",
+      "collisionInLag": "Collision enter",
+      "collisionOutLag": "Collision exit",
+      "coyoteTime": "Coyote time",
+      "current": "Current",
+      "deceleration": "Deceleration",
+      "distance": "Distance",
+      "drag": "Drag",
+      "drive": "Drive",
+      "fidelity": "Fidelity",
+      "friction": "Friction",
+      "from": "Source file",
+      "graph": "Animation graph",
+      "gravityScale": "Gravity",
+      "height": "Height",
+      "hysteresis": "Hysteresis",
+      "jumpBuffer": "Jump buffer",
+      "jumpSpeed": "Jump",
+      "kind": "Simulation",
+      "length": "Length",
+      "lockRotation": "Lock turning",
+      "lookAt": "Framing",
+      "mass": "Mass",
+      "max": "Maximum",
+      "maxSteerAngle": "Maximum steering angle",
+      "maxThrust": "Maximum thrust",
+      "maxTorque": "Engine torque",
+      "mode": "Course",
+      "moveSpeed": "Walking speed (0: the scene’s)",
+      "orientation": "Orientation",
+      "orientToTangent": "Follow the tangent",
+      "pitchMax": "Maximum pitch",
+      "pitchMin": "Minimum pitch",
+      "positionLag": "Position lag",
+      "possesses": "Possessed item",
+      "probeRadius": "Probe radius",
+      "radius": "Radius",
+      "restitution": "Bounce",
+      "rotationLag": "Rotation lag",
+      "runSpeed": "Running speed (0: no running)",
+      "safetyMargin": "Safety margin",
+      "script": "File",
+      "shoulder": "Shoulder offset",
+      "slopeLimit": "Slope",
+      "snapDistance": "Grip",
+      "speed": "Speed",
+      "stallAngle": "Stall angle",
+      "stepHeight": "Step",
+      "stopDistance": "Stop distance",
+      "subject": "Subject",
+      "suspensionLength": "Suspension travel",
+      "target": "Target",
+      "turnSpeed": "Turning speed",
+      "waitSeconds": "Wait",
+      "waypoints": "Points",
+      "wheelRadius": "Wheel radius",
+      "wheels": "Wheels",
+      "wheelWidth": "Wheel width",
+      "wingArea": "Wing area"
+    },
+    "export": {
+      "title": "Optimise game",
+      "action": "Export",
+      "safeTitle": "SAFE runtime optimisations",
+      "safeRuntime": "Optimise the runtime representation",
+      "instancing": "Instance repeated objects",
+      "batching": "Batch compatible static geometry",
+      "deduplication": "Deduplicate resources",
+      "geometryBuffers": "Optimise geometry buffers",
+      "losslessCompression": "Compress without visual loss",
+      "removeUnused": "Remove unused resources",
+      "currentSceneMeasured": "Measured · current scene",
+      "projectEstimated": "Estimated · complete game · {{count, number}} scenes",
+      "currentSceneLossyEstimate": "Current scene with visual loss · {{triangles}} triangles · {{geometry}} geometry · {{images}} images",
+      "triangleResult": "Visible triangles {{before}} → {{after}}",
+      "geometryResult": "Geometry {{before}} → {{after}}",
+      "imageResult": "Images {{before}} → {{after}}",
+      "visualTitle": "Advanced · visual changes",
+      "generateLods": "Generate distance levels",
+      "geometryLabel": "Geometry simplification",
+      "compressionLabel": "Image compression",
+      "reductionLabel": "Image resolution",
+      "quality": {
+        "off": "Off",
+        "conservative": "Conservative",
+        "balanced": "Balanced",
+        "aggressive": "Aggressive"
+      },
+      "reduction": {
+        "off": "Original",
+        "half": "Half",
+        "quarter": "Quarter"
+      },
+      "visualChangesNone": "Visual changes: NONE",
+      "visualChangesPossible": "Visual changes: POSSIBLE",
+      "failed": "The game could not be exported."
+    },
+    "inputMap": {
+      "actionId": "Action",
+      "actionKind": "Value",
+      "addAction": "Add action",
+      "addBinding": "Add binding",
+      "binding": "{{device}} binding",
+      "applyPresetHint": "Replaces this map with the chosen starting point",
+      "axis": "Axis",
+      "context": "Context",
+      "create": "New control map",
+      "createHint": "Creates an input map from a standard starting point",
+      "defaultActive": "Active on start",
+      "deadZone": "Dead zone",
+      "deviceLabel": "Device",
+      "duplicateId": "Several input maps use the identifier “{{id}}”. Give each context a unique identifier.",
+      "device": {
+        "gamepad": "Gamepad",
+        "keyboard": "Keyboard",
+        "mouse": "Mouse"
+      },
+      "id": "Identifier",
+      "invalid": "The JSON does not describe a valid input map.",
+      "invert": "Invert",
+      "jsonLabel": "Input map JSON",
+      "kind": {
+        "axis1": "One axis",
+        "axis2": "Two axes",
+        "button": "Button"
+      },
+      "loadFailed": "This input map could not be read.",
+      "loading": "Loading input map…",
+      "mode": {
+        "expert": "Expert",
+        "json": "JSON",
+        "simple": "Simple"
+      },
+      "modeHint": "Changes how the same input map is edited",
+      "preset": {
+        "character": "Character",
+        "flight": "Flight",
+        "menu": "Menu",
+        "studio": "Studio",
+        "vehicle": "Vehicle"
+      },
+      "presets": "Starting points",
+      "priority": "Priority",
+      "removeAction": "Remove action",
+      "removeBinding": "Remove binding",
+      "save": "Save",
+      "scale": "Scale",
+      "unnamedAction": "Unnamed action",
+      "capture": "Press",
+      "capturing": "Press…",
+      "captureHint": "Binds this control to the next key or the next gamepad control pushed. Escape gives up.",
+      "help": {
+        "id": "The context’s name — what a script pushes, and what the built-in fallback completes. It comes from the file name; two files carrying one identifier would make a single context.",
+        "priority": "Who wins when two active contexts declare the same action. The HIGHER number writes last and takes it. The built-in character, vehicle and flight contexts sit at 0, 10 and 10.",
+        "defaultActive": "Whether this map is in service from the start of a game. Otherwise a script has to push it — a menu context opens and closes that way.",
+        "actionId": "The name a script reads, and the built-in controllers with it: `move`, `jump`, `steer`. That name is what counts, never the key.",
+        "actionKind": "What the action answers: a button answers yes or no, one axis answers a number between −1 and 1, two axes answer a pair — what a stick says.",
+        "device": "Where the control comes from. One action may carry several: that is how a game answers a keyboard AND a gamepad without knowing which spoke.",
+        "axis": "Which of the two halves this key pushes on. A two-axis action is made of four keys, two per axis.",
+        "scale": "How far this binding pushes, and which way. −1 for the half that goes left or backwards, 1 for the other.",
+        "deadZone": "Below this value the stick counts as at rest. A worn stick drifts: with no dead zone, the character walks off on its own.",
+        "invert": "Turns this control round. What some pilots expect of pitch, and nobody of anything else."
+      }
+    },
+    "controlsMenu": {
+      "add": "Add binding",
+      "capture": "Press a key or controller button",
+      "change": "Change",
+      "close": "Close",
+      "gamepad": "Gamepad",
+      "keyboard": "Keyboard",
+      "mouse": "Mouse",
+      "reset": "Reset everything",
+      "title": "Controls"
+    },
+    "play": {
+      "faults_many": "{{count, number}} errors",
+      "faults_one": "{{count, number}} error",
+      "faults_other": "{{count, number}} errors",
+      "objects_many": "{{count, number}} objects",
+      "objects_one": "{{count, number}} object",
+      "objects_other": "{{count, number}} objects",
+      "pause": "Pause",
+      "pauseHint": "Freezes the game where it stands",
+      "readout": "{{fps}} fps · step {{tick}}",
+      "start": "Run",
+      "startHint": "Plays the scene as a game, without touching the document",
+      "stop": "Stop",
+      "stopHint": "Throws the game away and puts the scene back as it was",
+      "openFault": "Opens the script at the line of the fault"
+    },
+    "section": {
+      "title": "Components",
+      "add": "Add a component",
+      "addHint": "Give this object something to do while the game runs",
+      "remove": "Detach",
+      "removeHint": "Detach this component from the object",
+      "empty": "This object does nothing while the game runs.",
+      "emptyHint": "A component says what the object DOES, where its type says what it draws."
+    },
+    "values": {
+      "all": "All-wheel",
+      "auto": "Automatic",
+      "box": "Box",
+      "convexes": "Convexes",
+      "dynamic": "Dynamic",
+      "fixed": "Fixed",
+      "front": "Front-wheel",
+      "hull": "Hull",
+      "kinematic": "Driven",
+      "loop": "Loop",
+      "once": "Once",
+      "pingPong": "Back and forth",
+      "pivot": "The shoulder",
+      "pointer": "The look",
+      "rear": "Rear-wheel",
+      "subject": "The subject",
+      "trimesh": "Triangles",
+      "unknown": "Unknown value",
+      "unnamedNode": "None",
+      "x": "X",
+      "y": "Y",
+      "z": "Z"
+    },
+    "window": {
+      "debug": "Debug",
+      "debugHint": "What the game says about itself: objects, frames per second, steps, faults",
+      "framePerformance": "CPU {{cpu}} ms · render {{render}} ms",
+      "renderPerformance": "{{calls, number}} draw calls · {{triangles, number}} triangles",
+      "noFaults": "No faults",
+      "title": "Play mode",
+      "waiting": "Waiting for the studio…"
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "fileInfo": {
+    "title": "Information about {{name}}",
+    "sections": {
+      "general": "General",
+      "media": "Media",
+      "catalogue": "Catalogue",
+      "git": "Git"
+    },
+    "gitUnchanged": "No pending changes",
+    "kind": {
+      "file": "File",
+      "folder": "Folder"
+    },
+    "type": "Type",
+    "modified": "Modified",
+    "codec": "Codec",
+    "identifier": "Identifier",
+    "fingerprint": "Content fingerprint",
+    "added": "Added",
+    "reading": "Reading the folder…",
+    "missing": "This entry is no longer in the project folder."
+  }
+}

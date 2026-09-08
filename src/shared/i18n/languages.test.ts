@@ -20,10 +20,10 @@ describe('resolving one tag', () => {
    * studio is the only thing standing between them and a window they cannot use — they would
    * have to find the settings, in French, to discover that English exists.
    */
-  it('serves English to a tag naming neither language', () => {
-    expect(resolveLanguage('de-DE')).toBe('en')
-    expect(resolveLanguage('es-ES')).toBe('en')
-    expect(resolveLanguage('ja-JP')).toBe('en')
+  it('serves the language named by a regional tag', () => {
+    expect(resolveLanguage('de-DE')).toBe('de')
+    expect(resolveLanguage('es-ES')).toBe('es')
+    expect(resolveLanguage('ja-JP')).toBe('ja')
     // `i18next.language` is `undefined` until `initI18n` resolves, and `pseudo` under the flag.
     expect(resolveLanguage(undefined)).toBe('en')
     expect(resolveLanguage('pseudo')).toBe('en')
@@ -49,9 +49,9 @@ describe('choosing among the machine languages', () => {
     expect(preferredLanguage(['en-GB', 'fr-FR'])).toBe('en')
   })
 
-  it('falls through to the system preferences when it cannot speak the application locale', () => {
-    expect(preferredLanguage(['de', 'fr-FR'])).toBe('fr')
-    expect(preferredLanguage(['br-FR', 'de-DE', 'en-US'])).toBe('en')
+  it('chooses the first supported system language', () => {
+    expect(preferredLanguage(['de', 'fr-FR'])).toBe('de')
+    expect(preferredLanguage(['br-FR', 'de-DE', 'en-US'])).toBe('de')
   })
 
   /**

@@ -1,15 +1,47 @@
-export type Language = 'fr' | 'en'
+export type Language =
+  | 'fr'
+  | 'en'
+  | 'de'
+  | 'es'
+  | 'hi'
+  | 'id'
+  | 'it'
+  | 'ja'
+  | 'ko'
+  | 'pt'
+  | 'ru'
+  | 'tr'
+  | 'vi'
+  | 'zh'
+  | 'ar'
 
 export type LanguageDefinition = {
   code: Language
   /** The language's name in that language — never translated. */
   name: string
+  flag: string
+  direction: 'ltr' | 'rtl'
 }
 
 export const LANGUAGES: readonly LanguageDefinition[] = [
-  { code: 'fr', name: 'Français' },
-  { code: 'en', name: 'English' },
+  { code: 'fr', name: 'Français', flag: '🇫🇷', direction: 'ltr' },
+  { code: 'en', name: 'English', flag: '🇺🇸', direction: 'ltr' },
+  { code: 'de', name: 'Deutsch', flag: '🇩🇪', direction: 'ltr' },
+  { code: 'es', name: 'Español', flag: '🇪🇸', direction: 'ltr' },
+  { code: 'hi', name: 'हिन्दी', flag: '🇮🇳', direction: 'ltr' },
+  { code: 'id', name: 'Bahasa Indonesia', flag: '🇮🇩', direction: 'ltr' },
+  { code: 'it', name: 'Italiano', flag: '🇮🇹', direction: 'ltr' },
+  { code: 'ja', name: '日本語', flag: '🇯🇵', direction: 'ltr' },
+  { code: 'ko', name: '한국어', flag: '🇰🇷', direction: 'ltr' },
+  { code: 'pt', name: 'Português', flag: '🇧🇷', direction: 'ltr' },
+  { code: 'ru', name: 'Русский', flag: '🇷🇺', direction: 'ltr' },
+  { code: 'tr', name: 'Türkçe', flag: '🇹🇷', direction: 'ltr' },
+  { code: 'vi', name: 'Tiếng Việt', flag: '🇻🇳', direction: 'ltr' },
+  { code: 'zh', name: '简体中文', flag: '🇨🇳', direction: 'ltr' },
+  { code: 'ar', name: 'العربية', flag: '🌐', direction: 'rtl' },
 ]
+
+export const RTL_LANGUAGES: readonly Language[] = ['ar']
 
 /**
  * The bundle everything else falls back to: the reference, and the fullest — a key missing

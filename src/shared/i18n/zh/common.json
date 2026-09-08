@@ -1,0 +1,121 @@
+{
+  "a11y": {
+    "namedValue": "{{value}} — {{name}}"
+  },
+  "actions": {
+    "generate": "Generate",
+    "close": "Close",
+    "removeTool": "Remove tool",
+    "resizeZone": "Resize panel area",
+    "resizeSplit": "Resize the two panels",
+    "resizeBand": "Resize the bottom panels",
+    "retry": "Try again",
+    "retryHint": "Renders this area again, without restarting the studio",
+    "generateHint": "Starts the generation with the settings above; it is followed in the generations bar",
+    "cancel": "Cancel"
+  },
+  "jobs": {
+    "none": "No generation running.",
+    "running_one": "{{count, number}} generation",
+    "running_many": "{{count, number}} generations",
+    "running_other": "{{count, number}} generations",
+    "failed_one": "{{count, number}} failure",
+    "failed_many": "{{count, number}} failures",
+    "failed_other": "{{count, number}} failures",
+    "open": "Show generations",
+    "openHint": "Opens the list of generations, running and finished alike",
+    "status": {
+      "queued": "Queued",
+      "running": "Running",
+      "succeeded": "Done",
+      "failed": "Failed",
+      "cancelled": "Cancelled"
+    },
+    "cancel": "Cancel job",
+    "cancelRefused": "This service does not stop a generation once started: it runs to its end and is billed."
+  },
+  "tasks": {
+    "running_one": "{{count, number}} task",
+    "running_many": "{{count, number}} tasks",
+    "running_other": "{{count, number}} tasks",
+    "open": "Show tasks",
+    "openHint": "Opens the list of tasks in progress",
+    "cancel": "Stop this task",
+    "phases": {
+      "prepare": "Preparing model",
+      "load": "Loading engine",
+      "analyse": "Analysing character",
+      "skeleton": "Generating skeleton",
+      "pose": "Computing rest pose",
+      "skinning": "Computing skinning",
+      "apply": "Applying skeleton"
+    }
+  },
+  "dialog": {
+    "allMedia": "All media",
+    "video": "Video",
+    "audio": "Audio",
+    "image": "Image",
+    "mesh": "3D model",
+    "animation": "Animation",
+    "bundle": "Edit with its media",
+    "weights": "Model weights"
+  },
+  "sorts": {
+    "relevance": "Quality: highest first",
+    "recent": "Created: newest first",
+    "oldest": "Created: oldest first"
+  },
+  "exportFormats": {
+    "glb": "Binary glTF (.glb)",
+    "gltf": "glTF (.gltf)",
+    "usdz": "USDZ (.usdz)",
+    "obj": "Wavefront, shapes only (.obj)",
+    "ply": "Stanford, shapes only (.ply)",
+    "stl": "STL, triangles only (.stl)"
+  },
+  "errors": {
+    "missingCredentials": "No credentials saved.",
+    "invalidCredentials": "Invalid API key or secret.",
+    "forbidden": "This API key lacks the required permissions.",
+    "planRestricted": "This model is not included in your plan.",
+    "notFound": "Resource not found.",
+    "rateLimited": "Too many requests. Retrying…",
+    "server": "The generation service is temporarily unavailable.",
+    "network": "The connection was interrupted. Check the network and try again.",
+    "unexpected": "An unexpected error occurred.",
+    "invalidValue": "Invalid value.",
+    "rejected": "The generation failed.",
+    "incompleteModel": "The model files are incomplete. Reinstall the model, then run it again.",
+    "engineMissing": "The local AI engine is not installed on this machine, so nothing here can run the model.",
+    "engineFailed": "The local AI engine did not start. Check the activity journal, then try again.",
+    "storage": "Could not save the result to disk.",
+    "panelCrashed": "This panel ran into an error.",
+    "windowCrashed": "The application ran into an error."
+  },
+  "licences": {
+    "title": "Licences",
+    "intro": "AI Desktop Studio ships with the software below. Each keeps its own licence, reproduced here in full.",
+    "sources": "Corresponding sources:",
+    "sourcesUnmodified": "Corresponding sources, unmodified:",
+    "bundled": "shipped with the application",
+    "unfold": "Unfolds the full text of this licence, right here",
+    "fold": "Folds this text back — only one licence stays open at a time"
+  },
+  "manual": {
+    "title": "User manual",
+    "chapters": "Chapters",
+    "search": "Search the manual",
+    "results": "Results",
+    "noResult": "No chapter contains those words.",
+    "chapterHint": "Opens this chapter in the panel on the right",
+    "searchResultHint": "Opens the chapter these words appear in"
+  },
+  "units": {
+    "byte": "B",
+    "kibibyte": "KiB",
+    "mebibyte": "MiB",
+    "gibibyte": "GiB",
+    "creative": "{{units}} CU"
+  }
+}

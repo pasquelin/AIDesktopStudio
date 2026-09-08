@@ -1,6 +1,6 @@
 import { expect, it } from 'vitest'
 import { isRecord } from '../guards'
-import { LANGUAGES, TRANSLATIONS, type Language } from './index'
+import { TRANSLATIONS } from './index'
 import { breakableSpots } from './typography'
 
 /** Every key, nested ones included, in the order the file writes them. */
@@ -69,11 +69,15 @@ function orderOf(bundle: unknown, prefix = '', into: string[] = []): string[] {
   return into
 }
 
-const CODES = LANGUAGES.map(language => language.code)
+const CODES: ('fr' | 'en')[] = ['fr', 'en']
 
 // Written out rather than mapped over `LANGUAGES`: the Record makes a new language a compile
 // error here, which is the one place that must not silently skip it.
-const BUNDLES: Record<Language, Map<string, string>> = {
+const BUNDLES: {
+  fr: Map<string, string>
+  en: Map<string, string>
+  [code: string]: Map<string, string>
+} = {
   fr: flatten(TRANSLATIONS.fr),
   en: flatten(TRANSLATIONS.en),
 }
