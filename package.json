@@ -36,6 +36,7 @@
     "sizes:check": "node scripts/check-sizes.mjs",
     "check": "node scripts/check.mjs",
     "gate:baseline": "node scripts/gate-baseline.mjs",
+    "merge": "node scripts/merge.mjs",
     "engine:check": "node scripts/engine-check.mjs",
     "validate": "node scripts/gate.mjs",
     "ffmpeg:fetch": "node scripts/fetch-ffmpeg.mjs",
