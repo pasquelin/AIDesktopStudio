@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { checkAccountName, type AccountSummary } from '@shared/domain/account'
 import { WindowButton } from '@/components/WindowButton'
 import { WindowFailure } from '@/components/WindowFailure'
-import { WindowInput } from '@/components/WindowInput'
+import { Input } from '@/components/Input'
 import { HINT_TOP } from '@/helpers/tooltip'
 import { useAccounts, type AccountSaveFailure } from '@/stores/accounts'
 import { FAILURE_KEYS } from './failureKeys'
@@ -24,7 +24,7 @@ export function AccountSettingsRowEditor({ account, draft, onDraft }: Props) {
   return (
     <li>
       <form className="flex items-center gap-2" onSubmit={submit}>
-        <WindowInput
+        <Input
           data-sc="field:account.name"
           className="flex-1"
           aria-label={t('accounts.name')}

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Checkbox } from '@/components/Checkbox'
 import { WindowButton } from '@/components/WindowButton'
 import { useTranslation } from 'react-i18next'
 import type { LandingTarget } from '@shared/domain/landingTarget'
@@ -43,9 +44,7 @@ export function GeneratorLandingDialog({ onAnswer, onCancel }: GeneratorLandingD
       <p>{t('generation.landingHint')}</p>
 
       <label className="mt-4 flex items-center gap-2 text-sm">
-        <input
-          type="checkbox"
-          className="checkbox checkbox-sm"
+        <Checkbox
           data-sc={fieldHandle('generation.landingRemember')}
           checked={remember}
           onChange={event => setRemember(event.target.checked)}

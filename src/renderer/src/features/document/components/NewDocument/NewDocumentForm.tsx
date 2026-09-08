@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react'
+import { Input } from '@/components/Input'
 import { useTranslation } from 'react-i18next'
 import { orElse } from '@shared/promises'
 import {
@@ -14,7 +15,7 @@ import { DEFAULT_SCENE_TEMPLATE, type SceneTemplateId } from '@shared/domain/sce
 import { DEFAULT_UI_TEMPLATE, type UiTemplateId } from '@shared/domain/uiTemplates'
 import { Button } from '@/components/Button'
 import { FolderPicker } from '@/components/FolderPicker/FolderPicker'
-import { FIELD_FILL, FILE_EXTENSION } from '@/components/styles'
+import { FILE_EXTENSION } from '@/components/styles'
 import { cn } from '@/helpers/cn'
 import { isComposing } from '@/helpers/composition'
 import { getBridge } from '@/services/bridge'
@@ -154,13 +155,13 @@ export function NewDocumentForm({
           {t('documents.nameField')}
         </label>
         <div className="flex items-center gap-2">
-          <input
+          <Input
             ref={field}
             data-sc="field:newDocument.name"
             id={nameId}
             aria-describedby={refusal ? `${extensionId} ${refusalId}` : extensionId}
             value={draft}
-            className={cn(FIELD_FILL, 'text-xs')}
+            className="flex-1 text-xs"
             onChange={event => setDraft(event.target.value)}
           />
           {/* Read off the kind, and shown rather than offered: one format per kind is the whole

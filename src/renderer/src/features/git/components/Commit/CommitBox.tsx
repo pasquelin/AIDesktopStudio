@@ -1,8 +1,9 @@
 import { useTranslation } from 'react-i18next'
+import { TextArea } from '@/components/TextArea'
 import { canCommit, type GitStatus } from '@shared/domain/git'
+import { Checkbox } from '@/components/Checkbox'
 import { Button } from '@/components/Button'
-import { CHECKBOX, FIELD, PANEL_HEAD } from '@/components/styles'
-import { cn } from '@/helpers/cn'
+import { PANEL_HEAD } from '@/components/styles'
 import { HINT_TOP } from '@/helpers/tooltip'
 import { useGit } from '@/stores/git'
 
@@ -24,7 +25,7 @@ export function CommitBox({ status }: { status: GitStatus }) {
 
   return (
     <div className={PANEL_HEAD}>
-      <textarea
+      <TextArea
         data-sc="field:git.message"
         rows={3}
         value={message}
@@ -32,7 +33,6 @@ export function CommitBox({ status }: { status: GitStatus }) {
         placeholder={t('git.messagePlaceholder')}
         disabled={busy}
         onChange={event => writeMessage(event.target.value)}
-        className={cn(FIELD, 'h-auto resize-y py-1 text-xs')}
       />
 
       <div className="flex items-center justify-between gap-2">
@@ -40,10 +40,8 @@ export function CommitBox({ status }: { status: GitStatus }) {
             commit has not happened, the box would be a promise about nothing. */}
         {status.head !== null ? (
           <label className="text-muted flex items-center gap-2 text-xs">
-            <input
+            <Checkbox
               data-sc="field:git.amend"
-              type="checkbox"
-              className={cn(CHECKBOX, 'size-3')}
               checked={amend}
               disabled={busy}
               onChange={event => setAmend(event.target.checked)}

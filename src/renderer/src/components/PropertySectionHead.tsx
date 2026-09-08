@@ -40,12 +40,7 @@ export function PropertySectionHead({
   const { t } = useTranslation()
 
   return (
-    <div
-      className={cn(
-        'flex items-center',
-        plate && 'pe-2',
-      )}
-    >
+    <div className={cn('flex items-center', plate && 'pe-2')}>
       <h3 className="m-0 min-w-0 flex-1 font-normal text-inherit">
         <button
           type="button"

@@ -313,3 +313,24 @@ body {
   transition-duration: 1ms !important;
   scroll-behavior: auto !important;
 }
+
+/*
+ * The text INSIDE a daisyUI control, put back on the studio's ladder.
+ *
+ * The plugin writes `font-size: max(var(--font-size), var(--font-size-min))`, and each size class
+ * sets the floor: `.75rem` for `-sm`, `.6875rem` for `-xs`. Those sit one and two pixels above
+ * `--text-tiny` and `--text-mini` — and being fixed rem values they ignore `--sc-font-scale`
+ * outright, so the appearance setting scaled every word of the studio except the ones written in
+ * a control. The token goes ON the floor rather than beside it, since `max()` is what reads it.
+ */
+.input-sm,
+.select-sm,
+.textarea-sm,
+.btn-sm {
+  --font-size-min: var(--text-tiny);
+}
+
+/* `-xs` is the buttons alone: no field of the studio is drawn at that step. */
+.btn-xs {
+  --font-size-min: var(--text-mini);
+}

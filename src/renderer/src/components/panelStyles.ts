@@ -155,15 +155,6 @@ export const FIELD_LABEL =
  */
 export const FIELD_READOUT = 'text-muted w-14 shrink-0 text-end tabular-nums'
 
-/**
- * A tick, wherever one is drawn. `accent-accent` is the whole of it and the whole of why this is
- * written once: left off, a checkbox comes out in the browser's own blue — the one colour in the
- * studio that answers to nothing in `index.css`, on the control a reader scans a list for.
- *
- * The size is the caller's: a tick in a property row is bigger than one in a list of files.
- */
-export const CHECKBOX = 'accent-accent cursor-pointer'
-
 /** The box a slider is drawn in: the rail sits absolute inside it, the input covers it whole. */
 export const SLIDER_TRACK = 'relative h-(--sc-control) min-w-0'
 
@@ -204,17 +195,6 @@ export type FieldReset = {
  */
 export const FIELD =
   'bg-surface border-border text-text h-(--sc-control) rounded-(--radius-sc-sm) border px-2'
-
-/**
- * The same field where it takes what the line has left — beside a label, a thumbnail, a dice.
- *
- * `min-w-0` is the half that gets forgotten: a flex child sizes to its content by default, so a
- * long value pushes the row wider than the panel holding it instead of scrolling inside itself.
- *
- * No text size of its own, and that is measured rather than left out: Tailwind's preflight gives
- * a control `font: inherit`, so a field inside a `FIELD_ROW` already reads at the row's size.
- */
-export const FIELD_FILL = cn(FIELD, 'min-w-0 flex-1')
 
 /**
  * The surface a menu wears. The SKIN only — never where it sits, and never whether it is raised:

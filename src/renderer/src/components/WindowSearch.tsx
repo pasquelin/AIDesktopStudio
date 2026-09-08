@@ -1,4 +1,4 @@
-import { WindowInput } from './WindowInput'
+import { Input } from './Input'
 
 export type WindowSearchProps = {
   /** Names the field AND stands in it. Already translated, as every design component takes its words. */
@@ -14,11 +14,10 @@ export type WindowSearchProps = {
  */
 export function WindowSearch({ label, value, onChange }: WindowSearchProps) {
   return (
-    <WindowInput
+    <Input
       data-sc="field:window.search"
       type="search"
-      controlSize="xs"
-      className="w-full shrink-0"
+      className="shrink-0"
       aria-label={label}
       placeholder={label}
       value={value}

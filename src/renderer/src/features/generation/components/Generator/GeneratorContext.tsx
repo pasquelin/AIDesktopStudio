@@ -3,11 +3,11 @@ import type { AiRoleId } from '@shared/domain/aiRole'
 import { assetUrl } from '@shared/domain/asset'
 import type { FieldDescriptor } from '@shared/domain/model'
 import { contextPictures, promptKeyOf, type ContextUse } from '@shared/domain/projectContext'
+import { Checkbox } from '@/components/Checkbox'
 import { Button } from '@/components/Button'
-import { CHECKBOX, FIELD_THUMBNAIL } from '@/components/styles'
+import { FIELD_THUMBNAIL } from '@/components/styles'
 import { Thumbnail } from '@/components/Thumbnail'
 import { fillSourceFields } from '@/features/image/components/aiFields'
-import { cn } from '@/helpers/cn'
 import { HINT_TOP } from '@/helpers/tooltip'
 import { useModels } from '@/stores/models'
 import { useProjectContext, projectContextText } from '@/stores/projectContext'
@@ -51,10 +51,8 @@ export function GeneratorContext({ fields, modelId, role, use, onUse }: Generato
     <div className="border-border flex flex-col gap-2 border-t pt-2">
       {says && (
         <label className="text-muted flex items-center gap-2 text-xs">
-          <input
+          <Checkbox
             data-sc="field:generation.context"
-            type="checkbox"
-            className={cn(CHECKBOX, 'size-3')}
             checked={use === 'apply'}
             onChange={event => onUse(event.target.checked ? 'apply' : 'skip')}
           />

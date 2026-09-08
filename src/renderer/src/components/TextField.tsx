@@ -1,8 +1,9 @@
 import type { ReactNode } from 'react'
+import { Input } from './Input'
 import { PropertyLine } from './PropertyLine'
 import { ResetButton } from './ResetButton'
 import { fieldHandle } from './scHandle'
-import { FIELD_FILL, type GestureProps, type FieldHandle, type FieldReset } from './styles'
+import type { GestureProps, FieldHandle, FieldReset } from './styles'
 
 export type TextFieldProps = GestureProps &
   FieldHandle &
@@ -46,7 +47,7 @@ export function TextField({
         </>
       }
     >
-      <input
+      <Input
         type="text"
         data-sc={scId && fieldHandle(scId)}
         value={value}
@@ -54,7 +55,7 @@ export function TextField({
         // One entry per session at the field, not one per keystroke.
         onFocus={() => onGestureStart?.()}
         onBlur={() => onGestureEnd?.()}
-        className={FIELD_FILL}
+        className="flex-1"
         {...hint}
       />
     </PropertyLine>

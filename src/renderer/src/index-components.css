@@ -54,8 +54,9 @@
   --radius-selector: 4px;
   --radius-field: 4px;
   --radius-box: 6px;
-  --size-selector: 0.25rem;
-  --size-field: 0.25rem;
+  /* Restated like every colour above; the dark theme carries the why. */
+  --size-selector: calc(var(--sc-tick) / 5);
+  --size-field: calc(var(--sc-control) / 8);
   --border: 1px;
   --depth: 0;
   --noise: 0;
@@ -157,6 +158,10 @@
   /* Overwritten inline by `useAppearance`; the value here is what an unstyled root falls to. */
   --sc-font-scale: 1;
   --sc-control: 28px;
+  /* The box one TICKS — a checkbox, a radio, the switch beside a setting. Its own gauge and not
+     a share of `--sc-control`: a control is as tall as a line of text, a tick box is square and
+     wants to stay smaller than the field beside it. */
+  --sc-tick: 16px;
   /* The bar over every window, centring its text on the native traffic lights. Not redeclared
      under compact: the lights do not move with it. `main/window/theme.test.ts` holds both numbers. */
   --sc-title-bar: 40px;
@@ -344,6 +349,7 @@
 
 :root[data-density='compact'] {
   --sc-control: 24px;
+  --sc-tick: 14px;
   --sc-control-inline: 18px;
   --sc-slider-rail: 3px;
   --sc-slider-thumb: 12px;

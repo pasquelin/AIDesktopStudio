@@ -25,11 +25,15 @@ describe('Select', () => {
     expect(select).toHaveValue('screen')
   })
 
-  it('draws the chevron the browser stops drawing, in the room the list reserves for it', () => {
+  /**
+   * The plugin draws its chevron as a pair of background gradients; the studio opens every other
+   * list with the mdi glyph. `bg-none` is what keeps one shape rather than two side by side.
+   */
+  it('replaces the plugin chevron with the studio one', () => {
     const { container, select } = renderSelect()
 
-    expect(select.className).toContain('appearance-none')
-    expect(select.className).toContain('pe-8')
+    expect(select.className).toContain('select')
+    expect(select.className).toContain('bg-none')
     expect(container.querySelector('svg')).not.toBeNull()
   })
 

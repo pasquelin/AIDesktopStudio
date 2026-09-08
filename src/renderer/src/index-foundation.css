@@ -429,8 +429,19 @@
   --radius-selector: 4px;
   --radius-field: 4px;
   --radius-box: 6px;
-  --size-selector: 0.25rem;
-  --size-field: 0.25rem;
+  /*
+   * What daisyUI measures its controls FROM, divided out of the studio's own gauges rather than
+   * typed as a number: `.input-sm`, `.select-sm` and `.btn-sm` compute `--size-field * 8`, and
+   * `.checkbox-sm`, `.radio-sm` and `.toggle-sm` compute `--size-selector * 5`. Written as a
+   * `calc`, the density block needs no restatement — `--sc-control` and `--sc-tick` already
+   * change there — and a future gauge carries the plugin with it.
+   *
+   * At the plugin's `.25rem` they stood at 32px and 20px whatever the density setting said: a
+   * daisyUI field beside a studio one was four pixels taller, and compact reached neither.
+   * `daisy-gauge.test.ts` holds the two divisors, which are DaisyUI 5.7.28's.
+   */
+  --size-selector: calc(var(--sc-tick) / 5);
+  --size-field: calc(var(--sc-control) / 8);
   --border: 1px;
   --depth: 0;
   --noise: 0;

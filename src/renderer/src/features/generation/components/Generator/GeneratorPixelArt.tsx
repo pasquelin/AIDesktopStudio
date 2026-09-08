@@ -2,8 +2,7 @@ import { useTranslation } from 'react-i18next'
 import type { FieldDescriptor } from '@shared/domain/model'
 import { pixelArtWords } from '@shared/domain/pixelArtPrompt'
 import { promptKeyOf } from '@shared/domain/projectContext'
-import { CHECKBOX } from '@/components/styles'
-import { cn } from '@/helpers/cn'
+import { Checkbox } from '@/components/Checkbox'
 
 export type GeneratorPixelArtProps = {
   fields: readonly FieldDescriptor[]
@@ -27,10 +26,8 @@ export function GeneratorPixelArt({ fields, grid, applies, onApplies }: Generato
   return (
     <div className="border-border flex flex-col gap-2 border-t pt-2">
       <label className="text-muted flex items-center gap-2 text-xs">
-        <input
+        <Checkbox
           data-sc="field:generation.pixelArt"
-          type="checkbox"
-          className={cn(CHECKBOX, 'size-3')}
           checked={applies}
           onChange={event => onApplies(event.target.checked)}
         />

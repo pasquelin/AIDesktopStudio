@@ -39,9 +39,11 @@ import { resolveSpecifier } from './sourceFiles.ts'
  * against 138 the same day, `no-physical-direction` sweeping the shared components for a layout
  * written from the left rather than from the inline start; 129 against 139 the same day, when
  * `rerunEverything` put the short loop's whole-suite trigger under a guard of its own; 130 against 140
- * the same day, when `agents-contract` put the agent contract's own wiring under a guard.
+ * the same day, when `agents-contract` put the agent contract's own wiring under a guard;
+ * 131 against 141 the same day, when `daisy-gauge` read the stylesheet to hold daisyUI's
+ * own gauges against `--sc-control`.
  */
-export const LEAST_GUARDS = 130
+export const LEAST_GUARDS = 131
 
 /**
  * How far the floor may sit below the real count before it stops meaning anything.
