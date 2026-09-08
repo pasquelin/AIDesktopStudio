@@ -28,6 +28,8 @@ export type CharacterMotionListProps = {
   /** The workshop scene this window drives, which is where a motion is tried out. */
   documentId: string
   nodeId: string
+  /** Whether a motion laid here would drive anything — see `CharacterMotionSection`. */
+  playable: boolean
   /**
    * Files what the band plays, over the motion being edited or as a new file. Absent where
    * nothing can export it.
@@ -45,6 +47,7 @@ export function CharacterMotionList({
   assetId,
   documentId,
   nodeId,
+  playable,
   onSave,
 }: CharacterMotionListProps) {
   const { t } = useTranslation()
@@ -104,7 +107,7 @@ export function CharacterMotionList({
 
   return (
     <>
-      {motions.length === 0 && <QuietNote>{t('character.motionEmpty')}</QuietNote>}
+      {playable && motions.length === 0 && <QuietNote>{t('character.motionEmpty')}</QuietNote>}
 
       {motions.map(motion => (
         <div key={motion.id} className="flex items-center justify-between gap-2">
@@ -139,7 +142,7 @@ export function CharacterMotionList({
 
       {/* Only once the band holds a key: a file claiming a motion it does not have is worse
           than no file. What it writes is a motion of the PROJECT, playable by any character. */}
-      {played && onSave && (
+      {playable && played && onSave && (
         <Button onClick={() => void onSave(false)}>
           {openMotion ? t('character.motionUpdate') : t('character.motionSave')}
         </Button>
@@ -147,15 +150,17 @@ export function CharacterMotionList({
 
       {/* 🛑 The only way back off a reopened motion: without it the bench stays aimed at that
           file, and the NEXT movement posed here overwrites it rather than being filed. */}
-      {played && onSave && openMotion && (
+      {playable && played && onSave && openMotion && (
         <Button onClick={() => void onSave(true)}>{t('character.motionSaveNew')}</Button>
       )}
 
-      <Button ref={setOpener} onClick={() => setOpen(!open)}>
-        {t('character.motionAdd')}
-      </Button>
+      {playable && (
+        <Button ref={setOpener} onClick={() => setOpen(!open)}>
+          {t('character.motionAdd')}
+        </Button>
+      )}
 
-      {open && (
+      {playable && open && (
         <CharacterMotionPicker
           documentId={documentId}
           nodeId={nodeId}

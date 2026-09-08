@@ -31,7 +31,7 @@ import { CameraAlignButton } from '../Camera/CameraAlignButton'
 import { CameraShotSection } from '../Camera/ShotSection/CameraShotSection'
 import { ComponentsSection } from '../ComponentsSection'
 import { RigSection } from '../RigSection'
-import { MotionsSection } from '../MotionsSection'
+import { CharacterMotionSection } from '@/features/character/components/Character/Motion/CharacterMotionSection'
 import { EnvironmentPanel } from '../Environment/EnvironmentPanel'
 import { CameraPostSection } from '../Camera/CameraPostSection'
 import { PostProcessingSection } from '../Post/PostProcessingSection'
@@ -263,7 +263,11 @@ export function SceneInspector({ documentId }: SceneInspectorProps) {
               onChange={dress => edit.run(dressModel(model.id, dress))}
               onWearAt={(slot, materialId) => edit.run(wearMaterialAt(model.id, slot, materialId))}
             />
-            <MotionsSection documentId={documentId} node={model} />
+            <CharacterMotionSection
+              assetId={model.model.assetId}
+              documentId={documentId}
+              nodeId={model.id}
+            />
           </>
         )}
 

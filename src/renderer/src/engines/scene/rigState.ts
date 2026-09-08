@@ -34,11 +34,14 @@ export const RIG_STATUSES: readonly RigStatus[] = [
 ]
 
 /**
- * Whether a motion clip would have anything to drive here. A bare mesh makes `retargetPlanOf`
- * pair no bone at all, so a block laid on it plays and moves nothing.
+ * Whether a motion clip would have anything to drive here.
+ *
+ * 🛑 The NAMED bones, never the status: `boneCount` counts the unnamed ones too, so a file whose
+ * export stripped its joint names reads `skinnedMesh` while `wireBonesOf` skips every bone —
+ * `retargetPlanOf` then pairs nothing and the block plays over a model that never moves.
  */
-export function rigPlaysMotion(status: RigStatus): boolean {
-  return status !== 'staticMesh'
+export function rigPlaysMotion(rig: Pick<RigState, 'status' | 'boneNames'>): boolean {
+  return rig.status !== 'staticMesh' && rig.boneNames.length > 0
 }
 
 /** One bone as the graph holds it, with the parent a rig needs and `bonesOf` never gave. */

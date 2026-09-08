@@ -434,3 +434,23 @@ it('refuses to transfer an animation until the model has a skeleton', () => {
 
   expect(screen.getByRole('button', { name: 'Transférer une animation' })).toBeEnabled()
 })
+
+/**
+ * 🛑 An empty `rig` says nothing until the file has LANDED: refusing on it greyed the transfer
+ * out on every character for as long as its tab took to read, and pointed at a skeleton nobody
+ * had looked for.
+ */
+it('offers the transfer while the file is still being read', () => {
+  showTab()
+
+  expect(screen.getByRole('button', { name: 'Transférer une animation' })).toBeEnabled()
+})
+
+// A disabled button fires no pointer event, so the reason rides on the span around it.
+it('says why it refuses, beside the button that cannot say it', () => {
+  seedCharacter(ASSET, null, {})
+  showTab()
+
+  const refused = screen.getByRole('button', { name: 'Transférer une animation' }).parentElement
+  expect(refused).toHaveAttribute('data-tooltip-content', expect.stringMatching(/squelette/))
+})

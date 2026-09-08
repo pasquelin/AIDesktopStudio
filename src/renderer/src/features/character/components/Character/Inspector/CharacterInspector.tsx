@@ -27,7 +27,8 @@ import { rigHandBones } from '@/engines/scene/rigHandBones'
 import type { MeshSample } from '@/engines/scene/rigSnap'
 import { CharacterInspectorFit } from './CharacterInspectorFit'
 import { CharacterInspectorMorphs } from './CharacterInspectorMorphs'
-import { CharacterInspectorMotions } from './CharacterInspectorMotions'
+import { CharacterMotionSection } from '../Motion/CharacterMotionSection'
+import { saveWorkshopMotion } from '@/character/characterMotion'
 import { CharacterInspectorSockets } from './CharacterInspectorSockets'
 import { characterOf, useCharacters } from '@/stores/character'
 import { HINT_LEFT } from '@/helpers/tooltip'
@@ -202,7 +203,12 @@ export function CharacterInspector({ assetId }: CharacterInspectorProps) {
       <CharacterInspectorSockets assetId={assetId} rig={rig} />
       <CharacterInspectorMorphs assetId={assetId} documentId={documentId} nodeId={nodeId} />
 
-      <CharacterInspectorMotions assetId={assetId} documentId={documentId} nodeId={nodeId} />
+      <CharacterMotionSection
+        assetId={assetId}
+        documentId={documentId}
+        nodeId={nodeId}
+        onSave={asNew => saveWorkshopMotion(assetId, asNew)}
+      />
     </>
   )
 }

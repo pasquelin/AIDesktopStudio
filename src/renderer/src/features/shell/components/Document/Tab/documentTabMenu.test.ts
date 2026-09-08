@@ -82,12 +82,36 @@ describe("transferring an animation onto the tab's character", () => {
    * no joint drawn and nothing to map a motion onto. The tab is open all the same — that is where
    * a skeleton is created.
    */
-  it('refuses it on a model that has none, host or no host', () => {
+  it('refuses it on a read model that has none, host or no host', () => {
     installCharacterDocument('doc-prop', 'asset-prop')
+    seedCharacter('asset-prop', null, {})
     registerRetargetHost('asset-prop', () => Promise.resolve())
 
     open('doc-prop')
 
     expect(rowNamed('character.retarget.title')?.disabled).toBe(true)
+  })
+
+  /**
+   * 🛑 An empty `rig` says nothing until the file has LANDED: refusing on it took the transfer
+   * away from every character for as long as its tab took to read, and said `needsSkeleton` about
+   * a model nobody had looked at.
+   */
+  it('offers it while the file is still being read', () => {
+    installCharacterDocument('doc-late', 'asset-late')
+    registerRetargetHost('asset-late', () => Promise.resolve())
+
+    open('doc-late')
+
+    expect(rowNamed('character.retarget.title')?.disabled).toBe(false)
+  })
+
+  it('says why it refuses, on the row a disabled button cannot speak from', () => {
+    installCharacterDocument('doc-prop', 'asset-prop')
+    seedCharacter('asset-prop', null, {})
+
+    open('doc-prop')
+
+    expect(rowNamed('character.retarget.title')?.tooltip).toBe('character.retarget.needsSkeleton')
   })
 })

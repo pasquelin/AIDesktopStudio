@@ -59,7 +59,13 @@ beforeEach(() => {
 
 const list = (onSave?: (asNew: boolean) => Promise<void>) =>
   render(
-    <CharacterMotionList assetId={ASSET} documentId={DOCUMENT} nodeId={NODE} onSave={onSave} />,
+    <CharacterMotionList
+      assetId={ASSET}
+      documentId={DOCUMENT}
+      nodeId={NODE}
+      playable
+      onSave={onSave}
+    />,
   )
 
 describe('the motions a character knows', () => {
@@ -123,6 +129,7 @@ describe('the motions a character knows', () => {
         assetId={ASSET}
         documentId={DOCUMENT}
         nodeId={NODE}
+        playable
         onSave={() => Promise.resolve()}
       />,
     )

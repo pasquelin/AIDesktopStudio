@@ -15,6 +15,7 @@ import { workshopScene } from '@/character/characterStage'
 import { clearScenes } from '@/stores/scene-fixtures'
 import { sceneOf, useScenes } from '@/stores/scenes'
 import { useModelFiles } from '@/stores/modelFiles'
+import { rigStateFixture } from '@/engines/scene/scene-fixtures'
 import { useAssets } from '@/stores/assets'
 
 const openModelMaterial = vi.hoisted(() => vi.fn<() => Promise<string | null>>())
@@ -54,6 +55,18 @@ const show = (): void => {
 
 const held = () => characterOf(useCharacters.getState(), ASSET)
 
+/**
+ * What the engine read off the FILE, which is what the motion section gates on — the stored rig
+ * reads `null` on a fault the engine tolerates, and would take the section away from a model
+ * whose own skeleton plays perfectly well.
+ */
+const readAs = (...boneNames: string[]): void => {
+  const documentId = workshopIdOf(ASSET)
+  useScenes.getState().ensure(documentId, () => workshopScene(ASSET))
+  const nodeId = sceneOf(useScenes.getState(), documentId).nodes[0]?.id ?? ''
+  useModelFiles.getState().reportRig(documentId, nodeId, rigStateFixture(boneNames))
+}
+
 beforeEach(() => {
   clearCharacters()
   clearScenes()
@@ -64,6 +77,7 @@ beforeEach(() => {
     parts: {},
     selectedParts: {},
     stats: {},
+    rigs: {},
   })
   useCharacterView.setState({ views: {} })
   openModelMaterial.mockReset()
@@ -139,6 +153,7 @@ describe('what a character is made of', () => {
 
   it('says this character knows no motion yet', () => {
     seedCharacter(ASSET, RIG, {})
+    readAs('Hips', 'Spine')
     show()
 
     expect(screen.getByText(/aucun mouvement/)).toBeInTheDocument()
@@ -151,6 +166,7 @@ describe('what a character is made of', () => {
    */
   it('offers no motion at all on a mesh that has no skeleton', () => {
     seedCharacter(ASSET, null, {})
+    readAs()
     show()
 
     expect(screen.queryByText(/aucun mouvement/)).not.toBeInTheDocument()
