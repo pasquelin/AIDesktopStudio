@@ -2,23 +2,27 @@ import { loadEnv } from 'vite'
 import { defineConfig } from 'vitest/config'
 import { resolve } from 'node:path'
 
+/** `include` and `setupFiles` resolve against `root`: the cwd by default, never this folder. */
+const ROOT = resolve(import.meta.dirname, '..')
+
 /**
  * The bench, which is not the suite: it spends money, needs a key and answers differently twice
  * in a row — hence a config of its own and a suffix `pnpm test` never picks up.
  */
 
 /** From `secret/.env`, which git does not carry. `''` as the prefix: these are read in Node. */
-const env = loadEnv('test', resolve('secret'), '')
+const env = loadEnv('test', resolve(ROOT, 'secret'), '')
 
 export default defineConfig({
   resolve: {
     alias: {
-      '@shared': resolve('src/shared'),
-      '@main': resolve('src/main'),
-      '@game': resolve('src/game'),
-      '@': resolve('src/renderer/src'),
+      '@shared': resolve(ROOT, 'src/shared'),
+      '@main': resolve(ROOT, 'src/main'),
+      '@game': resolve(ROOT, 'src/game'),
+      '@': resolve(ROOT, 'src/renderer/src'),
     },
   },
+  root: ROOT,
   test: {
     include: ['scripts/banc/**/*.banc.ts'],
     // jsdom and the store setup, like the `scripts` project of the suite: the bench drives the

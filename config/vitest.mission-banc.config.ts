@@ -2,17 +2,21 @@ import { loadEnv } from 'vite'
 import { defineConfig } from 'vitest/config'
 import { resolve } from 'node:path'
 
-const env = loadEnv('test', resolve('secret'), '')
+/** `include` and `setupFiles` resolve against `root`: the cwd by default, never this folder. */
+const ROOT = resolve(import.meta.dirname, '..')
+
+const env = loadEnv('test', resolve(ROOT, 'secret'), '')
 
 export default defineConfig({
   resolve: {
     alias: {
-      '@shared': resolve('src/shared'),
-      '@main': resolve('src/main'),
-      '@game': resolve('src/game'),
-      '@': resolve('src/renderer/src'),
+      '@shared': resolve(ROOT, 'src/shared'),
+      '@main': resolve(ROOT, 'src/main'),
+      '@game': resolve(ROOT, 'src/game'),
+      '@': resolve(ROOT, 'src/renderer/src'),
     },
   },
+  root: ROOT,
   test: {
     include: [
       'scripts/banc/**/*.mission-banc.ts',

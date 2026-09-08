@@ -29,7 +29,7 @@ Le banc est dans `scripts/banc/semanticActionSearch.mission-banc.ts`. Il exige `
 SEMANTIC_ACTION_MODEL=/chemin/vers/multilingual-e5-small.gguf \
 SEMANTIC_ACTION_OUTPUT=.agents/loop-todo \
 SEMANTIC_DEEP_DIAGNOSTIC=1 \
-pnpm exec vitest run --config vitest.mission-banc.config.ts scripts/banc/semanticActionSearch.mission-banc.ts
+pnpm exec vitest run --config config/vitest.mission-banc.config.ts scripts/banc/semanticActionSearch.mission-banc.ts
 node scripts/banc/semanticDeepDiagnosticReport.mjs
 node scripts/banc/semanticRetrievalPhase2Report.mjs
 node scripts/banc/semanticRetrievalPhase3Report.mjs

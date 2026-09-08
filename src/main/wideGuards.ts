@@ -37,9 +37,10 @@ import { resolveSpecifier } from './sourceFiles.ts'
  * against 136 the same day, `site-leaves-pages` reading the workflow beside the one that already
  * did; 127 against 137 on 2026-09-08, when `localizedErrors.i18n.test.ts` added diagnostic coverage; 128
  * against 138 the same day, `no-physical-direction` sweeping the shared components for a layout
- * written from the left rather than from the inline start.
+ * written from the left rather than from the inline start; 129 against 139 the same day, when
+ * `rerunEverything` put the short loop's whole-suite trigger under a guard of its own.
  */
-export const LEAST_GUARDS = 128
+export const LEAST_GUARDS = 129
 
 /**
  * How far the floor may sit below the real count before it stops meaning anything.

@@ -2,8 +2,11 @@ import { defineConfig } from 'vite'
 import { basename, resolve } from 'node:path'
 import { cpSync } from 'node:fs'
 import type { Plugin } from 'vite'
-import { DECODER_MODULES, withoutDecoderUrls } from './src/main/decoderUrls'
-import { withoutNodeModuleImport } from './src/main/export/withoutNodeModuleImport'
+
+import { DECODER_MODULES, withoutDecoderUrls } from '../src/main/decoderUrls'
+import { withoutNodeModuleImport } from '../src/main/export/withoutNodeModuleImport'
+
+const ROOT = resolve(import.meta.dirname, '..')
 
 /**
  * The runtime an EXPORTED game ships — one ES module, no studio, no React, no Electron.
@@ -31,9 +34,13 @@ function gameDecoders(): Plugin {
   return {
     name: 'game:decoders',
     closeBundle() {
-      cpSync(resolve('src/renderer/public/decoders'), resolve('resources/gameRuntime/decoders'), {
-        recursive: true,
-      })
+      cpSync(
+        resolve(ROOT, 'src/renderer/public/decoders'),
+        resolve(ROOT, 'resources/gameRuntime/decoders'),
+        {
+          recursive: true,
+        },
+      )
     },
   }
 }
@@ -60,17 +67,17 @@ export default defineConfig({
   plugins: [stubNodeBuiltins(), strippedDecoderUrls(), gameDecoders()],
   resolve: {
     alias: {
-      '@': resolve('src/renderer/src'),
-      '@game': resolve('src/game'),
-      '@shared': resolve('src/shared'),
+      '@': resolve(ROOT, 'src/renderer/src'),
+      '@game': resolve(ROOT, 'src/game'),
+      '@shared': resolve(ROOT, 'src/shared'),
     },
   },
   build: {
-    outDir: resolve('resources/gameRuntime'),
+    outDir: resolve(ROOT, 'resources/gameRuntime'),
     emptyOutDir: true,
     // A library, not a page: the page an export writes imports `./runtime.js` by name.
     lib: {
-      entry: resolve('src/renderer/src/game/exportEntry.ts'),
+      entry: resolve(ROOT, 'src/renderer/src/game/exportEntry.ts'),
       formats: ['es'],
       fileName: () => 'runtime.js',
     },

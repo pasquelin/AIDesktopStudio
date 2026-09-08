@@ -14,7 +14,7 @@ describe('what an exported runtime may import', () => {
   })
 
   it('is wired into the game runtime build, not left as a helper nobody calls', () => {
-    const config = readFileSync(join(process.cwd(), 'vite.game.config.ts'), 'utf8')
+    const config = readFileSync(join(process.cwd(), 'config', 'vite.game.config.ts'), 'utf8')
 
     expect(config).toContain('withoutNodeModuleImport')
     expect(config).toContain('stubNodeBuiltins')
