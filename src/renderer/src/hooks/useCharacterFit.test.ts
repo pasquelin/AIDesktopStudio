@@ -61,6 +61,28 @@ describe('the rig backends the inspector offers', () => {
     expect(offered([refused], null)).toEqual([])
     expect(offered([refused], 'make-it-animatable')).toEqual(['make-it-animatable'])
   })
+
+  /**
+   * 🛑 `backendId` is the ENGINE's plugin id and the studio implements only some of them for
+   * rigging. Offered, such a row was picked and answered `Unknown Auto Rig backend`, read on
+   * screen as « le squelettage avancé n'a pas pu terminer » — with every gate green.
+   */
+  it('drops a candidate whose engine this studio has no Auto Rig backend for', () => {
+    const stranded = rigger('some-future-rigger')
+
+    expect(offered([stranded], null)).toEqual([])
+    expect(offered([stranded], 'some-future-rigger')).toEqual([])
+  })
+
+  /** And it falls back to the studio's own rather than naming an engine it cannot call. */
+  it('names Simple where the chosen engine is one it does not implement', () => {
+    const stranded = rigger('some-future-rigger', { installed: false })
+
+    const state = inspector([stranded], null, { app: local('some-future-rigger') })
+
+    expect(state.selectedBackend).toBe('simple')
+    expect(state.needsDownload).toBe(false)
+  })
 })
 
 describe('the backend the inspector says it will use', () => {

@@ -3,10 +3,12 @@ import {
   aiRoleId,
   allRoles,
   ASSISTANT_ROLE,
+  AUTO_RIG_ROLE,
   DICTATION_ROLE,
   partsOfRole,
   type AiRoleId,
 } from '@shared/domain/aiRole'
+import { AUTO_RIG_BACKEND_IDS, isAutoRigBackendId } from '@shared/domain/autoRig'
 import { STT_MODEL } from '@shared/domain/dictation'
 import type { LocalModel } from '@shared/domain/localModel'
 import licences from '@shared/licences.json'
@@ -389,6 +391,22 @@ describe('what a manifest owes the panel', () => {
       .map(({ role, model }) => `${model.id} under ${role}`)
 
     expect(naked).toEqual([])
+  })
+
+  /**
+   * 🛑 `backendId` is the ENGINE's plugin id, shared with motion, and the studio implements only
+   * `AUTO_RIG_BACKEND_IDS` of them for rigging. A rig entry naming another was offered in the
+   * service field and answered `Unknown Auto Rig backend`, read on screen as « le squelettage
+   * avancé n'a pas pu terminer » — every gate green.
+   */
+  it('names an Auto Rig backend the studio implements, on every rig model it ships', () => {
+    const stranded = shippedModelsFor(AUTO_RIG_ROLE)
+      .filter(model => !isAutoRigBackendId(model.backendId))
+      .map(model => `${model.id} runs on ${model.backendId ?? 'no backend'}`)
+
+    expect(stranded).toEqual([])
+    // The union is not empty by accident: an offer filtered against nothing offers nothing.
+    expect(AUTO_RIG_BACKEND_IDS.length).toBeGreaterThan(0)
   })
 })
 

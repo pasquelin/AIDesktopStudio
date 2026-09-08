@@ -1,6 +1,7 @@
 import {
   autoRigResultFaultOf,
   type AutoRigBackendDescriptor,
+  type AutoRigBackendId,
   type AutoRigPrimitiveTarget,
   type AutoRigResult,
 } from '@shared/domain/autoRig'
@@ -40,7 +41,11 @@ export class AutoRigService<Input> {
     )
   }
 
-  async run(backendId: string, input: Input, context: AutoRigRunContext): Promise<AutoRigResult> {
+  async run(
+    backendId: AutoRigBackendId,
+    input: Input,
+    context: AutoRigRunContext,
+  ): Promise<AutoRigResult> {
     const backend = this.backends.get(backendId)
     if (!backend) throw new Error(`Unknown Auto Rig backend: ${backendId}`)
     if (context.signal.aborted) throw new Error('CANCELLED')
