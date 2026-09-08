@@ -57,7 +57,7 @@ describe('the gate not rereading what it has already judged', () => {
   /**
    * `benchmark.include` is a setting of its own, with its own default — `**\/*.bench.*`, anchored
    * nowhere. A project that states its `include` and forgets this one keeps that default and
-   * walks the whole disk from the repository root, which here means `.claude/worktrees/`: on
+   * walks the whole disk from the repository root, which here means `worktrees/`: on
    * 2026-08-16 `pnpm bench` ran the benchmarks of two OTHER sessions' branches and printed their
    * numbers as this checkout's, 54 runs where 6 exist.
    *
