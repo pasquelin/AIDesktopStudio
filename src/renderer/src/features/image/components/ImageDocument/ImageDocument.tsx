@@ -37,27 +37,27 @@ import { generationCommentsOf, useGenerationComments } from '@/stores/generation
 import { useCanvasGenerationComments } from '@/hooks/useCanvasGenerationComments'
 import { useGeneratorCommentSubmission } from '@/hooks/useGeneratorCommentSubmission'
 import { reportFailure } from '@/services/diagnostics'
-import { SMART_SELECTION_ROLE, type AiRoleId } from '@shared/domain/aiRole'
-import { useModelForCapability } from '@/hooks/useModelForCapability'
+import { SMART_SELECTION_MODEL } from '@shared/domain/smartSelectionInference'
+import { useLocalModelReady } from '@/hooks/useLocalModelReady'
 import type { ImageTool } from '../../imageTools'
 
 export type ImageDocumentProps = { documentId: string }
 
 /**
- * 🛑 One arm per employment a mode declares, and an unknown one reads as SERVED: greying it would
- * hide a tool for ever with nothing on screen to say why. `imageTools.test.ts` holds the list to one.
+ * 🛑 One arm per model a mode declares, and an unknown one reads as READY: greying it would hide a
+ * tool for ever with nothing on screen to say why. `imageTools.test.ts` holds the list to one.
  */
-const served = (role: AiRoleId, smartSelection: string | null): boolean =>
-  role !== SMART_SELECTION_ROLE || smartSelection !== null
+const runnable = (modelId: string, smartSelectionReady: boolean): boolean =>
+  modelId !== SMART_SELECTION_MODEL || smartSelectionReady
 
 /** A mode whose employment has no model is greyed, and says so instead of repeating its own label. */
 function modeItems(
   entry: ImageTool,
   keyOf: (toolId: string, modeId?: string) => string | undefined,
-  smartSelection: string | null,
+  smartSelectionReady: boolean,
 ) {
   return entry.modes?.map(item => {
-    const missing = item.needsRole !== undefined && !served(item.needsRole, smartSelection)
+    const missing = item.needsModel !== undefined && !runnable(item.needsModel, smartSelectionReady)
     return {
       ...item,
       ...(missing ? { disabled: true, descriptionKey: 'imageTools.needsModelHint' } : {}),
@@ -99,7 +99,7 @@ export function ImageDocument({ documentId }: ImageDocumentProps) {
   const removeComment = useGenerationComments(state => state.remove)
   const addCanvasComment = useCanvasGenerationComments(documentId)
   const submitComment = useGeneratorCommentSubmission()
-  const smartSelectionModel = useModelForCapability(SMART_SELECTION_ROLE)
+  const smartSelectionReady = useLocalModelReady(SMART_SELECTION_MODEL)
 
   const canvas = useCanvases(state => canvasOf(state, documentId))
   const view = useCanvasViews(state => canvasViewOf(state, documentId))
@@ -254,7 +254,7 @@ export function ImageDocument({ documentId }: ImageDocumentProps) {
         ...entry,
         activeMode: modes[entry.id],
         shortcut: keyOf(entry.id),
-        modes: modeItems(entry, keyOf, smartSelectionModel),
+        modes: modeItems(entry, keyOf, smartSelectionReady),
       })),
       // No `activeMode`, and that is what makes it a menu of actions rather than a choice of
       // tool: none of its rows can be armed, so the click opens what hovering would have.
@@ -269,7 +269,7 @@ export function ImageDocument({ documentId }: ImageDocumentProps) {
         shortcut: keyFor(entry.command),
       })),
     ]
-  }, [modes, bindings, label, cropFrame, preparing, smartSelectionModel])
+  }, [modes, bindings, label, cropFrame, preparing, smartSelectionReady])
 
   // Read off the registry rather than written on the buttons: a key remapped in the settings
   // has to move on the bar with it.

@@ -1,12 +1,13 @@
 import { act, renderHook } from '@testing-library/react'
 import { beforeEach, describe, expect, it } from 'vitest'
 import type { AiOverview, RoleRow } from '@shared/domain/aiOverview'
-import { aiRoleId } from '@shared/domain/aiRole'
+import { aiRoleId, SMART_SELECTION_ROLE } from '@shared/domain/aiRole'
 import { localModel } from '@shared/domain/localModel-fixtures'
 import { useAiModels } from '@/stores/aiModels'
 import { chooseModels } from '@/stores/models-fixtures'
 import { useModelForCapability } from '@/hooks/useModelForCapability'
-import { modelForCapability, modelIsOnThisMachine } from './modelForCapability'
+import { SMART_SELECTION_MODEL } from '@shared/domain/smartSelectionInference'
+import { localModelReady, modelForCapability, modelIsOnThisMachine } from './modelForCapability'
 
 const imageRow = (over: Partial<RoleRow> = {}): RoleRow => ({
   role: aiRoleId('image', 'txt2img'),
@@ -155,4 +156,57 @@ it('does not re-render when a republished overview leaves the answer alone', () 
 
   expect(result.current).toBe('flux')
   expect(renders).toBe(before)
+})
+
+/**
+ * The gesture and the batch edit part company here. `smartSelectionHost` loads the shipped model
+ * by NAME, so a cloud chosen for `background-removal/cutout` serves the menu's cutout and never
+ * the pointer: reading the employment armed the tool, and the engine then refused the click.
+ */
+describe('whether a model of this machine is there to be run', () => {
+  const cutoutRow = (over: Partial<RoleRow> = {}): RoleRow => ({
+    ...imageRow(),
+    role: SMART_SELECTION_ROLE,
+    candidates: [
+      {
+        ...imageRow().candidates[0]!,
+        model: localModel({ id: SMART_SELECTION_MODEL }),
+      },
+    ],
+    ...over,
+  })
+
+  it('says no while nothing has been read at all', () => {
+    expect(localModelReady(SMART_SELECTION_MODEL, null)).toBe(false)
+  })
+
+  it('says yes for a shipped model on the disk and allowed by the machine', () => {
+    expect(localModelReady(SMART_SELECTION_MODEL, overviewOf(cutoutRow()))).toBe(true)
+  })
+
+  it('says no for one the machine has not the memory for, though it sits on the disk', () => {
+    const refused = cutoutRow({
+      candidates: [{ ...cutoutRow().candidates[0]!, fit: 'insufficient-memory' }],
+    })
+
+    expect(localModelReady(SMART_SELECTION_MODEL, overviewOf(refused))).toBe(false)
+  })
+
+  it('says no for one that was never downloaded', () => {
+    const absent = cutoutRow({
+      candidates: [{ ...cutoutRow().candidates[0]!, installed: false }],
+    })
+
+    expect(localModelReady(SMART_SELECTION_MODEL, overviewOf(absent))).toBe(false)
+  })
+
+  /** The whole point: the employment is served, and what runs the gesture is still not there. */
+  it('says no when a cloud serves the employment and the shipped model is absent', () => {
+    const cloudServed = cutoutRow({
+      provider: { kind: 'cloud', providerId: 'scenario' },
+      candidates: [{ ...cutoutRow().candidates[0]!, installed: false }],
+    })
+
+    expect(localModelReady(SMART_SELECTION_MODEL, overviewOf(cloudServed))).toBe(false)
+  })
 })

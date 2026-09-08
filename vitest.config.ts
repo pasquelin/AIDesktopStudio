@@ -9,15 +9,20 @@ const alias = {
 }
 
 /**
- * Three times the default. A rendering case with `userEvent` takes a few hundred milliseconds
- * on an idle machine and several times that when the whole suite runs across every core — two
- * of them started timing out at five seconds as the suite grew, and neither was slow for a
- * reason anyone could act on. Long enough to tell a busy machine from a wedged test.
+ * Twelve times the default, raised from 15 s on 2026-09-08. A rendering case with `userEvent`
+ * takes a few hundred milliseconds on an idle machine and several times that when the whole suite
+ * runs across every core — and this one carries a dozen sessions at once. Long enough to tell a
+ * busy machine from a wedged test.
+ *
+ * 🛑 Raised HERE and never test by test. Measured over five passes: the set of victims MOVES —
+ * `world.determinism`, `missionCatalogue`, `batterie`, `no-unclosed-memory-database`, five
+ * different verdicts — so naming the slow ones only redirects the next red somewhere else. Every
+ * one of them passes alone in seconds.
  *
  * Named because every project below has to repeat it: a project inherits nothing from the root
  * `test` block, so the value written once governed nothing.
  */
-const TEST_TIMEOUT = 15_000
+const TEST_TIMEOUT = 60_000
 
 /**
  * The zone every suite reads its clocks in, so a date test answers the same everywhere.

@@ -1,5 +1,5 @@
 import { mdiAutoFix, mdiCommentOutline } from '@mdi/js'
-import { SMART_SELECTION_ROLE } from '@shared/domain/aiRole'
+import { SMART_SELECTION_MODEL } from '@shared/domain/smartSelectionInference'
 import type { ImageTool } from './imageTool'
 
 export const COMMENT_TOOL: ImageTool = {
@@ -20,7 +20,7 @@ export const COMMENT_TOOL: ImageTool = {
       labelKey: 'imageTools.smartComment',
       descriptionKey: 'imageTools.smartCommentHint',
       icon: mdiAutoFix,
-      needsRole: SMART_SELECTION_ROLE,
+      needsModel: SMART_SELECTION_MODEL,
     },
   ],
 }

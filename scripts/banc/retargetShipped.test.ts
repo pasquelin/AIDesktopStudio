@@ -112,5 +112,5 @@ describe('a shipped clip on the shipped character', () => {
       expect(hips).toBeGreaterThan(0.5)
       expect(hips).toBeLessThan(1.2)
     }
-  }, 30000)
+  })
 })

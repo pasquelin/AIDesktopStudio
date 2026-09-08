@@ -193,7 +193,7 @@ function localHosts(
       ensureLoaded,
       hold,
       engine: () => engine.supervisor.engine(),
-      epoch: () => ai.loadedEpoch?.('efficient-sam-ti') ?? null,
+      loadedEpoch: modelId => ai.loadedEpoch?.(modelId) ?? null,
       readBitmap,
     }),
   }

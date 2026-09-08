@@ -1,6 +1,6 @@
 import i18next from 'i18next'
 import { describe, expect, it } from 'vitest'
-import { SMART_SELECTION_ROLE } from '@shared/domain/aiRole'
+import { SMART_SELECTION_MODEL } from '@shared/domain/smartSelectionInference'
 import { UNBUILT_TOOLS } from '@/engines/canvas/CanvasEngine'
 import type { CanvasTool } from '@/engines/canvas/canvasTool'
 import { AI_EDITS } from './aiActions'
@@ -57,15 +57,18 @@ describe('image tools', () => {
   })
 
   /**
-   * 🛑 The blind spot of `ImageDocument`'s `served`: it answers ONE employment and reads any other
-   * as served, so a second one declared here would grey nothing. This is what reddens instead.
+   * 🛑 The blind spot of `ImageDocument`'s `runnable`: it answers ONE model and reads any other as
+   * ready, so a second one declared here would grey nothing. This is what reddens instead.
+   *
+   * The MODEL and not the `background-removal/cutout` employment: `smartSelectionHost` loads this
+   * one by name, so a cloud chosen for that employment serves the batch edit and never the gesture.
    */
-  it('asks the two intelligent modes for the one employment the document resolves', () => {
+  it('asks the two intelligent modes for the one model the gesture actually runs', () => {
     const asked = IMAGE_TOOLS.flatMap(tool => tool.modes ?? []).flatMap(mode =>
-      mode.needsRole === undefined ? [] : [mode.needsRole],
+      mode.needsModel === undefined ? [] : [mode.needsModel],
     )
 
-    expect(asked).toEqual([SMART_SELECTION_ROLE, SMART_SELECTION_ROLE])
+    expect(asked).toEqual([SMART_SELECTION_MODEL, SMART_SELECTION_MODEL])
   })
 
   it('names every tool through i18n rather than a literal', () => {
