@@ -35,7 +35,7 @@ export function SearchField({ label, value, onChange, scId, className, hint }: S
         placeholder={label}
         aria-label={label}
         onChange={event => onChange(event.target.value)}
-        className={cn(CONTROL, 'w-full py-0 pe-2 ps-7')}
+        className={cn(CONTROL, 'w-full py-0 ps-7 pe-2')}
         data-sc={fieldHandle(scId)}
         {...hint}
       />

@@ -19,7 +19,7 @@ export function TileMark({ icon, label }: TileMarkProps) {
   return (
     <span
       className={cn(
-        'text-muted pointer-events-none absolute top-1 start-1 inline-flex items-center',
+        'text-muted pointer-events-none absolute start-1 top-1 inline-flex items-center',
         TILE_MARK,
       )}
       title={label}

@@ -65,15 +65,15 @@ export function AssistantConversationMissionEvent({ event }: { event: StudioEven
           <UiIcon path={iconOf(event)} size={14} />
           <span>{label}</span>
         </summary>
-        {detail !== undefined && <p className="text-muted m-0 pt-1 ps-5">{detail}</p>}
+        {detail !== undefined && <p className="text-muted m-0 ps-5 pt-1">{detail}</p>}
         {error !== undefined && (
-          <p className="text-danger m-0 pt-1 ps-5">
+          <p className="text-danger m-0 ps-5 pt-1">
             {typeof error === 'string'
               ? localizeErrorMessage(error, (key, values) => t(key, values))
               : error}
           </p>
         )}
-        {ratio !== undefined && <ProgressBar ratio={ratio} label={label} className="mt-1 ms-5" />}
+        {ratio !== undefined && <ProgressBar ratio={ratio} label={label} className="ms-5 mt-1" />}
       </details>
     </li>
   )
