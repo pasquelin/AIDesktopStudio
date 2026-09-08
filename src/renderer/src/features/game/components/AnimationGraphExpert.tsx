@@ -18,6 +18,7 @@ import { FIELD_HELP, PANEL_GROUP_LABEL_WIDE } from '@/components/styles'
 import { FIELD_BLOCK } from '@/components/panelStyles'
 import { cn } from '@/helpers/cn'
 import { TIP_LEFT } from '@/helpers/tooltip'
+import { AnimationGraphParameterTags } from './AnimationGraphParameterTags'
 import { AnimationGraphStateForm } from './AnimationGraphStateForm'
 import { AnimationGraphTransitionForm } from './AnimationGraphTransitionForm'
 import { layerOf, withLayer } from './animationGraphPresentation'
@@ -99,6 +100,7 @@ export function AnimationGraphExpert({ graph, onChange }: AnimationGraphExpertPr
         scId="animationGraph.parameters"
         plate
       >
+        <AnimationGraphParameterTags parameters={graph.parameters} />
         <p className={cn(FIELD_HELP, 'm-0')}>{t('game.animationGraph.builtInDescription')}</p>
         {graph.parameters.length === 0 && (
           <p className={cn(FIELD_HELP, 'm-0')}>{t('game.animationGraph.noParameter')}</p>

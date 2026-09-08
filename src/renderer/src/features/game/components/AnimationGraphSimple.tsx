@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MIT
 import { useTranslation } from 'react-i18next'
-import { BUILT_IN_PARAMETERS, type AnimationGraph } from '@shared/domain/animationGraph'
+import type { AnimationGraph } from '@shared/domain/animationGraph'
 import { PropertySection } from '@/components/PropertySection'
 import { Tag } from '@/components/Tag'
 import { FIELD_HELP } from '@/components/styles'
 import { cn } from '@/helpers/cn'
+import { AnimationGraphParameterTags } from './AnimationGraphParameterTags'
 import { clipSourceLabel, conditionLabel, layerOf } from './animationGraphPresentation'
 
 type AnimationGraphSimpleProps = { graph: AnimationGraph }
@@ -22,16 +23,7 @@ export function AnimationGraphSimple({ graph }: AnimationGraphSimpleProps) {
         scId="animationGraph.parameters"
         plate
       >
-        <div className="flex flex-wrap gap-1.5">
-          {Object.keys(BUILT_IN_PARAMETERS).map(id => (
-            <Tag key={id}>{id}</Tag>
-          ))}
-          {graph.parameters.map(parameter => (
-            <Tag key={parameter.id}>
-              {parameter.id} · {t(`game.animationGraph.parameterKinds.${parameter.kind}`)}
-            </Tag>
-          ))}
-        </div>
+        <AnimationGraphParameterTags parameters={graph.parameters} />
         <p className={cn(FIELD_HELP, 'm-0')}>{t('game.animationGraph.builtInDescription')}</p>
       </PropertySection>
 
