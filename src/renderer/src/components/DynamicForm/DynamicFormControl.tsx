@@ -157,7 +157,7 @@ function simpleControl(input: ControlInput, onRoll: () => void, t: Translate) {
           id={input.id}
           data-sc={fieldHandle(`generation.${input.field.key}`)}
           type="number"
-          className="min-w-0 flex-1"
+          className="flex-1"
           {...input.registration}
         />
         <ToolButton

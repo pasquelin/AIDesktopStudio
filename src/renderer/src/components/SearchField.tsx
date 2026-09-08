@@ -35,8 +35,7 @@ export function SearchField({ label, value, onChange, scId, className, hint }: S
         placeholder={label}
         aria-label={label}
         onChange={event => onChange(event.target.value)}
-        // The left inset is the magnifier's room; everything else is the field's own skin. It
-        // wore `CONTROL` and had no border at all until 2026-09-08, alone among the fields.
+        // The left inset is the magnifier's room; the rest of the skin is the field's own.
         className="ps-7 pe-2"
         data-sc={fieldHandle(scId)}
         {...hint}

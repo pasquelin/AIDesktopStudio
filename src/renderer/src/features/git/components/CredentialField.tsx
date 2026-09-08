@@ -61,7 +61,7 @@ export function CredentialField({ host }: { host: string }) {
         placeholder={t('git.tokenUserPlaceholder')}
         autoComplete="username"
         disabled={busy}
-        className="min-w-0 flex-1"
+        className="flex-1"
         onChange={event => setUser(event.target.value)}
       />
       <Input
@@ -72,7 +72,7 @@ export function CredentialField({ host }: { host: string }) {
         placeholder={t('git.tokenPlaceholder')}
         autoComplete="current-password"
         disabled={busy}
-        className="min-w-0 flex-1"
+        className="flex-1"
         onChange={event => setToken(event.target.value)}
         onKeyDown={event => {
           // Enter belongs to the input method while it composes — see `isComposing`.

@@ -109,7 +109,7 @@ function assetInput(input: AssetInput): ReactNode {
           id={input.id}
           type="text"
           data-sc={input.scId && fieldHandle(input.scId)}
-          className="min-w-0 flex-1"
+          className="flex-1"
           value={input.implicit}
           readOnly
         />
@@ -122,7 +122,7 @@ function assetInput(input: AssetInput): ReactNode {
       type="text"
       data-sc={input.scId && fieldHandle(input.scId)}
       placeholder={input.placeholder}
-      className="min-w-0 flex-1"
+      className="flex-1"
       {...input.registration}
       value={input.assetId}
       onChange={event => {

@@ -42,7 +42,7 @@ export function NameField({
       value={name}
       aria-label={label}
       placeholder={placeholder}
-      className="min-w-0 flex-1"
+      className="flex-1"
       onChange={event => setName(event.target.value)}
       onKeyDown={event => {
         if (isComposing(event)) return

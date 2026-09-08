@@ -76,7 +76,6 @@ export function AssetPickerBody({
           placeholder={labels.search}
           aria-label={labels.search}
           onChange={event => onSearch(event.target.value)}
-          className="w-full"
         />
 
         {shown.length === 0 ? (

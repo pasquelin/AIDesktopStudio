@@ -33,7 +33,7 @@ export function AiCloudModel({ providerId }: AiCloudModelProps) {
         <Input
           type="text"
           data-sc={fieldHandle(`ai.cloud.${providerId}.model`)}
-          className="w-full max-w-xs"
+          className="max-w-xs"
           placeholder={defaultChatModel(providerId) ?? undefined}
           {...field}
         />

@@ -33,7 +33,7 @@ export function RemoteSetup() {
         aria-label={t('git.remoteUrl')}
         placeholder={t('git.remoteUrlPlaceholder')}
         disabled={busy}
-        className="min-w-0 flex-1"
+        className="flex-1"
         onChange={event => setUrl(event.target.value)}
         onKeyDown={event => {
           // Enter belongs to the input method while it composes — see `isComposing`.

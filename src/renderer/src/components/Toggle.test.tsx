@@ -13,13 +13,10 @@ describe('Toggle', () => {
     expect(screen.getByRole('checkbox')).toBeChecked()
   })
 
-  /**
-   * `-md` and not `-sm`, because the plugin measures a switch at `--size-selector * 5` on the
-   * first and `* 4` on the second: `-md` is the step that lands on the 16px a ticked box takes.
-   */
+  /** `-sm`, where the plugin measures both a switch and a tick box at `--size-selector * 5`. */
   it('stands at the gauge a ticked box does', () => {
     render(<Toggle aria-label="Enabled" />)
 
-    expect(screen.getByRole('checkbox')).toHaveClass('toggle', 'toggle-md')
+    expect(screen.getByRole('checkbox')).toHaveClass('toggle', 'toggle-sm')
   })
 })

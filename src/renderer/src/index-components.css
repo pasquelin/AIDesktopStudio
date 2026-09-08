@@ -55,8 +55,8 @@
   --radius-field: 4px;
   --radius-box: 6px;
   /* Restated like every colour above; the dark theme carries the why. */
-  --size-selector: 0.2rem;
-  --size-field: 0.21875rem;
+  --size-selector: calc(var(--sc-tick) / 5);
+  --size-field: calc(var(--sc-control) / 8);
   --border: 1px;
   --depth: 0;
   --noise: 0;
@@ -158,6 +158,10 @@
   /* Overwritten inline by `useAppearance`; the value here is what an unstyled root falls to. */
   --sc-font-scale: 1;
   --sc-control: 28px;
+  /* The box one TICKS — a checkbox, a radio, the switch beside a setting. Its own gauge and not
+     a share of `--sc-control`: a control is as tall as a line of text, a tick box is square and
+     wants to stay smaller than the field beside it. */
+  --sc-tick: 16px;
   /* The bar over every window, centring its text on the native traffic lights. Not redeclared
      under compact: the lights do not move with it. `main/window/theme.test.ts` holds both numbers. */
   --sc-title-bar: 40px;
@@ -345,10 +349,7 @@
 
 :root[data-density='compact'] {
   --sc-control: 24px;
-  /* The daisyUI pair follows the gauge down: 3px * 8 = 24px for a field, 2.8px * 5 = 14px for a
-     box one ticks. A theme block cannot answer the density, so both are restated here. */
-  --size-field: 0.1875rem;
-  --size-selector: 0.175rem;
+  --sc-tick: 14px;
   --sc-control-inline: 18px;
   --sc-slider-rail: 3px;
   --sc-slider-thumb: 12px;

@@ -89,7 +89,6 @@ export function AccountSettingsAddForm() {
         <Select
           id={`${form}provider`}
           data-sc="field:newAccount.provider"
-          className="w-full"
           {...register('providerId')}
         >
           {/* Grouped rather than flat: nine services in one run made a reader read every line to
@@ -110,7 +109,6 @@ export function AccountSettingsAddForm() {
         <Input
           id={`${form}name`}
           data-sc="field:newAccount.name"
-          className="w-full"
           type="text"
           autoComplete="off"
           spellCheck={false}
@@ -123,7 +121,6 @@ export function AccountSettingsAddForm() {
         <Input
           id={`${form}key`}
           data-sc="field:newAccount.key"
-          className="w-full"
           type="text"
           autoComplete="off"
           spellCheck={false}

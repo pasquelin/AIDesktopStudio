@@ -161,7 +161,7 @@ export function NewDocumentForm({
             id={nameId}
             aria-describedby={refusal ? `${extensionId} ${refusalId}` : extensionId}
             value={draft}
-            className="min-w-0 flex-1 text-xs"
+            className="flex-1 text-xs"
             onChange={event => setDraft(event.target.value)}
           />
           {/* Read off the kind, and shown rather than offered: one format per kind is the whole

@@ -13,10 +13,10 @@ describe('TextArea', () => {
     expect(screen.getByRole('textbox')).toHaveValue('Corrige la porte')
   })
 
-  /** Two call sites wrote the same `FIELD` and the same three classes, word for word. */
-  it('wears the plugin field, and leaves its height to the host', () => {
-    render(<TextArea aria-label="Message" className="resize-y py-1 text-xs" />)
+  /** The shape both panels asked for is the component's, which is why they wrote it twice. */
+  it('carries the shape its two call sites used to spell out', () => {
+    render(<TextArea aria-label="Message" />)
 
-    expect(screen.getByRole('textbox')).toHaveClass('textarea', 'textarea-sm', 'resize-y')
+    expect(screen.getByRole('textbox')).toHaveClass('textarea', 'textarea-sm', 'resize-y', 'py-1')
   })
 })

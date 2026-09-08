@@ -13,11 +13,7 @@ describe('Checkbox', () => {
     expect(screen.getByRole('checkbox')).toBeChecked()
   })
 
-  /**
-   * The gauge is the whole point of the component: six call sites wrote `size-3` or `size-4`
-   * beside the skin, neither of which followed the density setting. It comes from the class now,
-   * and `daisy-gauge.test.ts` is what ties that class to `--size-selector`.
-   */
+  /** The gauge comes from the class; `daisy-gauge.test.ts` ties that class to `--sc-tick`. */
   it('takes its gauge from the plugin rather than from the call', () => {
     render(<Checkbox aria-label="Amend" className="me-auto" />)
 

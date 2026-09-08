@@ -58,46 +58,62 @@ describe('the word a bar sets beside its buttons', () => {
     expect(wearing.length).toBeGreaterThanOrEqual(4)
   })
 })
-describe('a list one picks from', () => {
-  /**
-   * The rule the four skins were replaced by: a `<select>` is written ONCE, in `Select`, and
-   * every other surface asks for that component. Four pickers had each drawn their own, which is
-   * how the studio came to hold a bordered one, a borderless one, the browser's chevron and
-   * daisyUI's triangles at the same time.
-   *
-   * 🛑 Blind spot: it reads the TAG, so a copy built through `createElement('select')` or a
-   * daisyUI `.select` written on a `<div>` stays green. Neither exists today.
-   */
-  it('is drawn by `Select` and by nothing else', () => {
-    const drawing = WRITTEN_SOURCES.filter(
-      ([path, source]) => !GUARDED.includes(path) && /<select[\s/>]/.test(withoutComments(source)),
-    ).map(([path]) => path)
+/**
+ * Every source with its prose taken out, stripped ONCE: the four sweeps below each read the whole
+ * renderer, and `withoutComments` over 1 762 modules is 8 ms a pass.
+ */
+const CODE = WRITTEN_SOURCES.map(([path, source]) => [path, withoutComments(source)] as const)
 
-    expect(drawing).toEqual([expect.stringContaining('/Select.tsx')])
-  })
-})
+const opening = (tag: RegExp): string[] =>
+  CODE.filter(([, code]) => tag.test(code))
+    .map(([path]) => path)
+    .sort()
 
 describe('a control that goes straight to the platform', () => {
   /**
-   * The tag itself, and everything allowed to open it. `Input`, `Checkbox`, `Toggle` and
-   * `SliderHandle` are the four that DRESS one; the rest of the list is what has not been given
-   * a component yet, written out rather than waved through:
-   *
-   * - the four colour swatches, which are a batch of their own;
-   * - the single radio of the AI settings, alone and therefore not yet a shape;
-   * - `AssetDropField`'s hidden field and the comment's own bare title, which are plumbing;
-   * - the shortcut fixtures, which render a field to be typed into by a test.
+   * A `<select>` is written once, in `Select`, and every other surface asks for that component.
+   * Four pickers had each drawn their own, which is how the studio came to hold a bordered one, a
+   * borderless one, the browser's chevron and daisyUI's triangles at the same time.
+   */
+  it('opens a list in `Select` and nowhere else', () => {
+    expect(opening(/<select[\s/>]/)).toEqual([expect.stringContaining('/Select.tsx')])
+  })
+
+  /** `Checkbox` holds a value one fills in, `Toggle` a setting that acts where it stands. */
+  it('opens a tick box in `Checkbox` and `Toggle`, and nowhere else', () => {
+    expect(opening(/type="checkbox"/)).toEqual([
+      expect.stringContaining('/Checkbox.tsx'),
+      expect.stringContaining('/Toggle.tsx'),
+    ])
+  })
+
+  /**
+   * The three areas left outside `TextArea` are TRANSPARENT and say so: the card, the note and
+   * the picture behind them carry the frame. `DynamicFormControl` is the fourth and is not — its
+   * border sits on the wrapper that holds the accessory row.
+   */
+  it('opens a text area in `TextArea` and in the four that carry no frame', () => {
+    expect(opening(/<textarea[\s/>]/)).toEqual(
+      [
+        './DynamicForm/DynamicFormControl.tsx',
+        './TextArea.tsx',
+        '../features/assistant/components/Assistant/Conversation/AssistantConversationView.tsx',
+        '../features/image/components/ImageDocument/ImageDocumentComment.tsx',
+        '../features/image/components/ImageDocument/ImageDocumentText.tsx',
+      ].sort(),
+    )
+  })
+
+  /**
+   * The tag itself. `Input`, `Checkbox`, `Toggle` and `SliderHandle` DRESS one; the rest of the
+   * list is what has not been given a component yet, written out rather than waved through — the
+   * four colour swatches, the single radio of the AI settings, two pieces of plumbing and the
+   * fixture a shortcut test types into.
    *
    * 🛑 It reads the TAG: a control built through `createElement('input')` stays green.
    */
-  it('is opened by the components that dress one, and by the list below', () => {
-    const opening = WRITTEN_SOURCES.filter(
-      ([path, source]) => !GUARDED.includes(path) && /<input[\s/>]/.test(withoutComments(source)),
-    )
-      .map(([path]) => path)
-      .sort()
-
-    expect(opening).toEqual(
+  it('opens a field in the components that dress one, and in the list below', () => {
+    expect(opening(/<input[\s/>]/)).toEqual(
       [
         './AssetDropField.tsx',
         './Checkbox.tsx',
@@ -113,28 +129,6 @@ describe('a control that goes straight to the platform', () => {
         '../hooks/shortcuts-fixtures.tsx',
       ].sort(),
     )
-  })
-})
-
-describe('a box one ticks', () => {
-  /**
-   * The same rule for the other native control the studio kept redrawing: six sites wrote
-   * `type="checkbox"` with a size of their own, in two gauges, and a seventh reached for the
-   * plugin's class directly. `Checkbox` holds the value one FILLS IN, `Toggle` the setting that
-   * takes effect where it stands — and nothing else opens the tag.
-   */
-  it('is drawn by `Checkbox` and `Toggle`, and by nothing else', () => {
-    const drawing = WRITTEN_SOURCES.filter(
-      ([path, source]) =>
-        !GUARDED.includes(path) && /type="checkbox"/.test(withoutComments(source)),
-    )
-      .map(([path]) => path)
-      .sort()
-
-    expect(drawing).toEqual([
-      expect.stringContaining('/Checkbox.tsx'),
-      expect.stringContaining('/Toggle.tsx'),
-    ])
   })
 })
 

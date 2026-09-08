@@ -108,7 +108,7 @@ export function FolderPickerCreate({
           id="sc-folder-picker-name"
           aria-label={labels.newFolderLabel}
           value={draft}
-          className="min-w-0 flex-1 text-xs"
+          className="flex-1 text-xs"
           onChange={event => {
             setDraft(event.target.value)
             setRefusal(null)

@@ -1,23 +1,16 @@
-import type { InputHTMLAttributes, Ref } from 'react'
+import type { ComponentProps } from 'react'
 import { cn } from '@/helpers/cn'
-import { windowFieldHandle } from './scHandle'
+import { windowFieldHandle, type ScHandle } from './scHandle'
 
-export type ToggleProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> & {
-  /** Room and alignment only: the gauge is `--size-selector`'s, at every density. */
-  className?: string
-  /** On the tag rather than spread in, for the reason `Select` gives. */
-  'data-sc'?: string
-  ref?: Ref<HTMLInputElement>
-}
+export type ToggleProps = Omit<ComponentProps<'input'>, 'type'> & ScHandle
 
 /**
- * A switch one FLIPS: a setting that takes effect where it stands — the preferences, an option
- * of a window. `Checkbox` is the other half, for a value something else will act on.
+ * A switch one FLIPS: a setting that takes effect where it stands. `Checkbox` is the other half,
+ * for a value something else will act on.
  *
- * `toggle-md` rather than `-sm`, and it is the gauge that says so: the plugin measures a switch
- * at `--size-selector * 5` on `-md` and `* 4` on `-sm`, so `-md` is the step that lands on the
- * 16px a ticked box takes. Reading the class as a size rather than as a multiplier is how the
- * two would drift apart again.
+ * `-sm` like the checkbox, and the multiplier is why: the plugin measures both at
+ * `--size-selector * 5` on that step, so the two stand at the same 16px. `-md` reads as the same
+ * word and computes `* 6`.
  */
 export function Toggle({ className, ref, 'data-sc': sc, ...rest }: ToggleProps) {
   return (
@@ -25,7 +18,7 @@ export function Toggle({ className, ref, 'data-sc': sc, ...rest }: ToggleProps) 
       ref={ref}
       data-sc={windowFieldHandle(sc)}
       type="checkbox"
-      className={cn('toggle toggle-md shrink-0', className)}
+      className={cn('toggle toggle-sm shrink-0', className)}
       {...rest}
     />
   )

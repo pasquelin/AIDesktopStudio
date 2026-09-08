@@ -325,12 +325,12 @@ body {
  */
 .input-sm,
 .select-sm,
+.textarea-sm,
 .btn-sm {
   --font-size-min: var(--text-tiny);
 }
 
-.input-xs,
-.select-xs,
+/* `-xs` is the buttons alone: no field of the studio is drawn at that step. */
 .btn-xs {
   --font-size-min: var(--text-mini);
 }

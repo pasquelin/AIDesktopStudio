@@ -33,7 +33,6 @@ export function CommitBox({ status }: { status: GitStatus }) {
         placeholder={t('git.messagePlaceholder')}
         disabled={busy}
         onChange={event => writeMessage(event.target.value)}
-        className="resize-y py-1 text-xs"
       />
 
       <div className="flex items-center justify-between gap-2">

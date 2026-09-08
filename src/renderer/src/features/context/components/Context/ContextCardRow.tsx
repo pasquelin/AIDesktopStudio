@@ -47,7 +47,7 @@ export function ContextCardRow({ card, onChange, onRemove }: ContextCardRowProps
           placeholder={t('context.titlePlaceholder')}
           onChange={event => setTitle(event.target.value)}
           onBlur={() => onChange({ ...card, title })}
-          className="min-w-0 flex-1 text-xs"
+          className="flex-1 text-xs"
         />
         <ToolButton
           icon={mdiTrashCanOutline}
@@ -67,7 +67,6 @@ export function ContextCardRow({ card, onChange, onRemove }: ContextCardRowProps
         placeholder={t('context.bodyPlaceholder')}
         onChange={event => setBody(event.target.value)}
         onBlur={() => onChange({ ...card, body })}
-        className="resize-y py-1 text-xs"
       />
 
       <ContextPictures

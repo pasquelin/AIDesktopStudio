@@ -58,7 +58,7 @@ type NumberInputProps = Pick<
 
 function numberInputClass(disabled: boolean | undefined, axis: NumberFieldProps['axis']): string {
   return cn(
-    'min-w-0 flex-1 touch-none',
+    'flex-1 touch-none',
     disabled ? 'text-muted cursor-not-allowed' : 'cursor-ew-resize focus:cursor-text',
     axis && 'border-s-2',
     axis === 'x' && 'border-s-axis-x',
