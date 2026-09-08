@@ -52,7 +52,10 @@ describe('all application languages', () => {
     const reference = flatten(TRANSLATIONS.en)
     for (const { code } of LANGUAGES) {
       const bundle = flatten(TRANSLATIONS[code])
-      expect([...reference.keys()].filter(key => !bundle.has(key)), code).toEqual([])
+      expect(
+        [...reference.keys()].filter(key => !bundle.has(key)),
+        code,
+      ).toEqual([])
       for (const [key, text] of reference)
         expect(holes(bundle.get(key) ?? ''), `${code}.${key}`).toEqual(holes(text))
     }

@@ -37,7 +37,7 @@
     "shapeHint": "アクティブなレイヤーにシェイプを描きます。",
     "shapeRectangle": "長方形",
     "shapeRectangleHint": "ドラッグして長方形を描きます。Shiftで正方形になります。",
-    "shapeLine": "直線",
+    "shapeLine": "ライン",
     "shapeLineHint": "ドラッグして直線を描きます。Shiftで45°に固定します。",
     "shapeArrow": "矢印",
     "shapeArrowHint": "ドラッグして矢印を描きます。Shiftで45°に固定します。",

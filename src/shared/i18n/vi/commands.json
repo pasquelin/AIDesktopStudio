@@ -105,7 +105,7 @@
       "help": "Làm đối tượng đã chọn to lên hay nhỏ đi, bằng cách kéo các tay nắm của nó. Giữ phím Shift thì giữ nguyên tỉ lệ hình."
     },
     "sceneFrame": {
-      "title": "Đóng khung vùng chọn",
+      "title": "Căn khung Vùng chọn",
       "help": "Đưa camera lại đủ gần để đối tượng đã chọn lấp đầy khung nhìn. Tiện khi bạn bị lạc, hoặc khi một đối tượng quá nhỏ."
     },
     "sceneFrameFollow": {
@@ -426,11 +426,11 @@
       "help": "Vũ trang con trỏ: một kéo di chuyển layer hoạt động, và các tay cầm của nó đổi kích thước hoặc xoay nó."
     },
     "canvasToolHand": {
-      "title": "Công cụ tay",
+      "title": "Công cụ Bàn tay",
       "help": "Vũ trang tay: một kéo quét chế độ xem mà không chạm gì đến tài liệu. Giữ dấu cách làm điều tương tự mà không thay đổi công cụ."
     },
     "canvasToolCrop": {
-      "title": "Công cụ crop",
+      "title": "Công cụ Cắt xén",
       "help": "Vũ trang khung crop. Vẽ một khung, rồi ⏎ để crop hoặc ⎋ để bỏ nó."
     },
     "canvasToolSelectRectangle": {
@@ -466,7 +466,7 @@
       "help": "Vũ trang vẽ một mũi tên, từ nơi kéo bắt đầu đến nơi tay buông."
     },
     "canvasToolShapeEllipse": {
-      "title": "Hình dạng elip",
+      "title": "Dạng Hình elip",
       "help": "Vũ trang vẽ hình elip trên layer hoạt động; Shift làm nó thành hình tròn."
     },
     "canvasToolShapePolygon": {
@@ -494,11 +494,11 @@
       "help": "Vũ trang tẩy điểm: nó xóa nơi tay qua, bị ràng buộc bởi vùng được chọn khi có."
     },
     "canvasToolFill": {
-      "title": "Công cụ thùng sơn",
+      "title": "Công cụ Thùng sơn",
       "help": "Vũ trang thùng: một nhấp lấp đầy layer, hoặc vùng được chọn khi có."
     },
     "canvasToolPicker": {
-      "title": "Công cụ thuốc nhỏ",
+      "title": "Công cụ Pipette",
       "help": "Vũ trang thuốc nhỏ: một nhấp lấy màu dưới con trỏ và đưa nó cho cọ."
     },
     "canvasBrushSmaller": {

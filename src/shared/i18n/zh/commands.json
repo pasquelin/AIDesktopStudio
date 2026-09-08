@@ -518,7 +518,7 @@
       "help": "在选取对象和选取绑定骨骼之间切换。"
     },
     "sceneNavigate": {
-      "title": "漫游",
+      "title": "导航",
       "help": "像在游戏里一样穿行场景：鼠标控制视线，W A S D 前后左右移动，E 和 Q 上升下降。滚轮设定速度。Escape 键把鼠标交还。"
     },
     "sceneNegate": {

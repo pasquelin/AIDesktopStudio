@@ -125,11 +125,11 @@
       "help": "Görünüm alanından yapılan gizlemeleri ve yalıtmaları geri alır. Belgenin kendisinin gizli saydığı nesneler gizli kalır."
     },
     "sceneSnap": {
-      "title": "Tüm yapışmalar",
+      "title": "Tüm manyetizmalar",
       "help": "Dört yapışmayı birden açar ya da kapatır — yüzey, ızgara, açı, ölçek. İkinci basış, açık olanları tam olarak geri verir. Görünüm alanının üstündeki çubuk bunları tek tek ayarlar."
     },
     "sceneSpace": {
-      "title": "Yerel eksen",
+      "title": "Yerel çerçeve",
       "help": "Tutamaçları dünyanınki yerine nesnenin kendi yönelimine hizalar. Döndürülmüş bir nesnede, onu kuzeye değil de “kendi önüne doğru” taşımayı sağlayan budur."
     },
     "sceneProjection": {
@@ -438,7 +438,7 @@
       "help": "Dikdörtgen seçimi hazırlar. Seçili olan; fırçayı, silgiyi ve kovayı sınırlar."
     },
     "canvasToolSelectEllipse": {
-      "title": "Elips seçim",
+      "title": "Eliptik seçim",
       "help": "Elips seçimi hazırlar: bir sürükleme, elipsi taranan dikdörtgenin içine yerleştirir, Shift ise onu daireye çevirir."
     },
     "canvasToolSelectLasso": {

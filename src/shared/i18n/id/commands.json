@@ -422,7 +422,7 @@
       "help": "Menampilkan atau menyembunyikan bola penguji. Sebuah langit dinilai dari apa yang diteranginya, bukan dari gambarnya sendiri."
     },
     "canvasToolMove": {
-      "title": "Alat pindah",
+      "title": "Alat Pindahkan",
       "help": "Menyiapkan penunjuk: seretan memindahkan lapisan aktif, dan pegangannya mengubah ukuran atau memutarnya."
     },
     "canvasToolHand": {
@@ -434,7 +434,7 @@
       "help": "Menyiapkan bingkai pangkas. Buat bingkai, lalu ⏎ untuk memangkas atau ⎋ untuk membatalkannya."
     },
     "canvasToolSelectRectangle": {
-      "title": "Seleksi persegi",
+      "title": "Seleksi persegi panjang",
       "help": "Menyiapkan seleksi persegi. Apa yang terpilih membatasi kuas, penghapus dan ember cat."
     },
     "canvasToolSelectEllipse": {
@@ -454,7 +454,7 @@
       "help": "Menyiapkan seleksi objek di dalam persegi perkiraan, dengan model seleksi lokal."
     },
     "canvasToolShapeRectangle": {
-      "title": "Bentuk persegi",
+      "title": "Bentuk persegi panjang",
       "help": "Menyiapkan penggambaran persegi pada lapisan aktif; Shift menjadikannya bujur sangkar."
     },
     "canvasToolShapeLine": {
@@ -518,7 +518,7 @@
       "help": "Beralih antara memilih objek dan memilih tulang sebuah rig."
     },
     "sceneNavigate": {
-      "title": "Jelajahi",
+      "title": "Navigasi",
       "help": "Menjelajahi adegan seperti dalam game: tetikus memegang arah pandang, W A S D untuk berpindah, E dan Q untuk naik dan turun. Roda tetikus mengatur kecepatan. Escape mengembalikan tetikus."
     },
     "sceneNegate": {

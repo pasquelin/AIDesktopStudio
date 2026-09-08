@@ -230,7 +230,7 @@
     "rotateHint": "旋转所选对象",
     "scale": "缩放",
     "scaleHint": "更改所选对象的缩放",
-    "frame": "框显所选",
+    "frame": "框显选择内容",
     "frameHint": "让相机重新对准所选对象",
     "isolateHint": "屏幕上只留下所选的内容",
     "leaveIsolation": "恢复视图",
