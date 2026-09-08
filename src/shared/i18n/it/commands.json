@@ -173,7 +173,7 @@
       "help": "Ridisegna il reticolo senza le diagonali aggiunte dalla triangolazione. Un GLB non contiene mai quad: è una ricostruzione per angolo, fedele tranne che sulle superfici molto curve."
     },
     "sceneDisplay": {
-      "title": "Modo di visualizzazione",
+      "title": "Modalità di visualizzazione",
       "help": "Fa scorrere ciò che la vista disegna: le superfici, i loro spigoli soli, o entrambi insieme. Il menu del pulsante permette di sceglierne uno direttamente."
     },
     "sceneCapture": {
@@ -422,7 +422,7 @@
       "help": "Mostra o nasconde le sfere testimone. Un cielo si giudica da ciò che illumina, non dalla sua immagine."
     },
     "canvasToolMove": {
-      "title": "Strumento sposta",
+      "title": "Strumento spostamento",
       "help": "Arma il puntatore: un trascinamento sposta il livello attivo, e le sue maniglie lo ridimensionano o lo fanno ruotare."
     },
     "canvasToolHand": {

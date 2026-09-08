@@ -101,7 +101,7 @@
       "help": "Gira o objeto escolhido sobre si mesmo, puxando os círculos coloridos — um por eixo."
     },
     "sceneScale": {
-      "title": "Escala",
+      "title": "Redimensionar",
       "help": "Aumenta ou diminui o objeto escolhido, puxando as alças dele. Manter Shift pressionado conserva as proporções."
     },
     "sceneFrame": {

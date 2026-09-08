@@ -125,11 +125,11 @@
       "help": "Hebt das Ausblenden und das Isolieren auf, die vom Viewport aus gemacht wurden. Objekte, die das Dokument selbst als ausgeblendet führt, bleiben ausgeblendet."
     },
     "sceneSnap": {
-      "title": "Alle Einrastungen",
+      "title": "Alle Fangarten",
       "help": "Schaltet alle vier Einrastungen auf einmal ein oder aus — Oberfläche, Raster, Winkel, Skalierung. Ein zweiter Druck gibt genau die zurück, die eingeschaltet waren. Die Leiste oben im Viewport stellt sie einzeln ein."
     },
     "sceneSpace": {
-      "title": "Lokales Koordinatensystem",
+      "title": "Lokale Achsen",
       "help": "Richtet die Griffe an der Ausrichtung des Objekts selbst aus statt an der der Welt. Bei einem gedrehten Objekt lässt es sich so „nach vorn“ verschieben statt nach Norden."
     },
     "sceneProjection": {
@@ -422,7 +422,7 @@
       "help": "Zeigt oder verbirgt die Prüfkugeln. Ein Himmel wird danach beurteilt, was er beleuchtet, nicht nach seinem eigenen Bild."
     },
     "canvasToolMove": {
-      "title": "Verschiebewerkzeug",
+      "title": "Verschieben-Werkzeug",
       "help": "Aktiviert den Zeiger: ein Ziehen verschiebt die aktive Ebene, und ihre Griffe ändern ihre Größe oder drehen sie."
     },
     "canvasToolHand": {
@@ -430,7 +430,7 @@
       "help": "Aktiviert die Hand: ein Ziehen verschiebt die Ansicht, ohne das Dokument anzurühren. Die Leertaste gedrückt zu halten tut dasselbe, ohne das Werkzeug zu wechseln."
     },
     "canvasToolCrop": {
-      "title": "Zuschneidewerkzeug",
+      "title": "Zuschneiden-Werkzeug",
       "help": "Aktiviert den Zuschnittrahmen. Einen Rahmen ziehen, dann ⏎ zum Zuschneiden oder ⎋ zum Verwerfen."
     },
     "canvasToolSelectRectangle": {
@@ -482,7 +482,7 @@
       "help": "Aktiviert den Pinsel mit weichem Rand. Er malt auf der aktiven Ebene, begrenzt durch die Auswahl, wenn es eine gibt."
     },
     "canvasToolPencil": {
-      "title": "Bleistiftwerkzeug",
+      "title": "Buntstift-Werkzeug",
       "help": "Aktiviert den Bleistift mit hartem Rand: dieselbe Geste wie beim Pinsel, ohne die weiche Kante."
     },
     "canvasToolText": {
@@ -490,11 +490,11 @@
       "help": "Aktiviert den Text: ein Klick setzt eine Beschriftung, deren Wörter im Inspektor eingegeben werden."
     },
     "canvasToolEraser": {
-      "title": "Radiererwerkzeug",
+      "title": "Radiergummi-Werkzeug",
       "help": "Aktiviert den punktuellen Radierer: er löscht dort, wo die Hand vorbeigeht, begrenzt durch die Auswahl, wenn es eine gibt."
     },
     "canvasToolFill": {
-      "title": "Füllwerkzeug",
+      "title": "Farbeimer-Werkzeug",
       "help": "Aktiviert die Füllung: ein Klick füllt die Ebene oder die Auswahl, wenn es eine gibt."
     },
     "canvasToolPicker": {

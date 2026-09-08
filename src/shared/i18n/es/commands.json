@@ -129,7 +129,7 @@
       "help": "Enciende o apaga de una vez los cuatro magnetismos — superficie, cuadrícula, ángulo, escala. Una segunda pulsación devuelve exactamente los que estaban encendidos. La barra de la parte superior del visor los ajusta uno a uno."
     },
     "sceneSpace": {
-      "title": "Ejes locales",
+      "title": "Referencia local",
       "help": "Alinea las asas con la orientación del propio objeto en lugar de la del mundo. En un objeto girado, es lo que permite moverlo «hacia su frente» en lugar de hacia el norte."
     },
     "sceneProjection": {
@@ -430,7 +430,7 @@
       "help": "Activa la mano: al arrastrar se desplaza la vista sin tocar el documento. Mantener la barra espaciadora hace lo mismo sin cambiar de herramienta."
     },
     "canvasToolCrop": {
-      "title": "Herramienta Recorte",
+      "title": "Herramienta Recortar",
       "help": "Activa el marco de recorte. Dibuja un marco, y después ⏎ para recortar o ⎋ para abandonarlo."
     },
     "canvasToolSelectRectangle": {
