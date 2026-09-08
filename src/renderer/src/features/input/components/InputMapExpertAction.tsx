@@ -3,7 +3,6 @@ import { mdiTrashCanOutline } from '@mdi/js'
 import { useTranslation } from 'react-i18next'
 import type { InputAction, InputActionKind } from '@shared/domain/inputMap'
 import { Button } from '@/components/Button'
-import { FieldGrid } from '@/components/FieldGrid'
 import { PropertySection } from '@/components/PropertySection'
 import { SelectField } from '@/components/SelectField'
 import { TextField } from '@/components/TextField'
@@ -41,7 +40,7 @@ export function InputMapExpertAction({ action, kinds, onChange }: InputMapExpert
         />
       }
     >
-      <FieldGrid>
+      <div className="flex flex-col gap-2">
         <TextField
           scId={`input.action.${action.id}.id`}
           label={t('game.inputMap.actionId')}
@@ -57,7 +56,7 @@ export function InputMapExpertAction({ action, kinds, onChange }: InputMapExpert
           options={kinds}
           onChange={kind => onChange({ ...action, kind, bindings: [defaultInputBinding(kind)] })}
         />
-      </FieldGrid>
+      </div>
 
       <div className="flex flex-col gap-1.5">
         <span className={PANEL_GROUP_LABEL}>{t('game.inputMap.bindings')}</span>

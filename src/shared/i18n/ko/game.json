@@ -240,7 +240,9 @@
       "exitTimeHelp": "나가기 전에 재생할 애니메이션의 비율. 착지가 잘리지 않고 끝나게 합니다.",
       "priority": "우선순위",
       "priorityHelp": "같은 순간에 두 전이가 가능할 때 누가 이기는지. 큰 숫자가 가져갑니다.",
-      "fadeHelp": "두 애니메이션 사이의 크로스페이드, 초. 0이면 전환이 즉각적입니다."
+      "fadeHelp": "두 애니메이션 사이의 크로스페이드, 초. 0이면 전환이 즉각적입니다.",
+      "parameterRank": "매개변수 {{rank}}",
+      "conditionRank": "조건 {{rank}}"
     },
     "inputMap": {
       "actionId": "액션",

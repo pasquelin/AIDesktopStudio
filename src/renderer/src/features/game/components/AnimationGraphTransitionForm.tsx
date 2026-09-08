@@ -11,11 +11,11 @@ import {
 } from '@shared/domain/animationGraph'
 import { MAX_CLIP_FADE } from '@shared/domain/sceneModel'
 import { Button } from '@/components/Button'
-import { FieldGrid } from '@/components/FieldGrid'
 import { NumberField } from '@/components/NumberField'
 import { SelectField } from '@/components/SelectField'
 import { ToolButton } from '@/components/ToolButton'
 import { PANEL_GROUP_LABEL } from '@/components/styles'
+import { FIELD_BLOCK } from '@/components/panelStyles'
 import { TIP_LEFT } from '@/helpers/tooltip'
 import { AnimationGraphConditionRow } from './AnimationGraphConditionRow'
 
@@ -57,7 +57,7 @@ export function AnimationGraphTransitionForm({
   }
 
   return (
-    <div className="border-border bg-surface -mx-2 flex flex-col gap-2 border-y px-2 py-2">
+    <div className={FIELD_BLOCK}>
       <div className="flex items-center gap-2">
         <span className={PANEL_GROUP_LABEL}>
           {t('game.animationGraph.transitionRank', { rank })}
@@ -72,7 +72,7 @@ export function AnimationGraphTransitionForm({
         />
       </div>
 
-      <FieldGrid>
+      <div className="flex flex-col gap-2">
         <SelectField
           scId={`${scId}.from`}
           label={t('game.animationGraph.from')}
@@ -125,13 +125,14 @@ export function AnimationGraphTransitionForm({
           step={1}
           onChange={priority => onChange({ ...transition, priority })}
         />
-      </FieldGrid>
+      </div>
 
       <span className={PANEL_GROUP_LABEL}>{t('inspector.conditions')}</span>
       {transition.when.map((condition, at) => (
         <AnimationGraphConditionRow
           key={`${condition.param}:${at}`}
           condition={condition}
+          rank={at + 1}
           parameters={parameters}
           scId={`${scId}.when.${at}`}
           onChange={next => changedCondition(at, next)}

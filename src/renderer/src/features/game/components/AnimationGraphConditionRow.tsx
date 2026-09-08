@@ -6,15 +6,18 @@ import {
   type AnimationCondition,
   type AnimationParameterKind,
 } from '@shared/domain/animationGraph'
-import { FieldGrid } from '@/components/FieldGrid'
 import { NumberField } from '@/components/NumberField'
 import { SelectField } from '@/components/SelectField'
 import { ToggleField } from '@/components/ToggleField'
 import { ToolButton } from '@/components/ToolButton'
+import { PANEL_GROUP_LABEL } from '@/components/styles'
+import { FIELD_BLOCK } from '@/components/panelStyles'
 import { TIP_LEFT } from '@/helpers/tooltip'
 
 export type AnimationGraphConditionRowProps = {
   condition: AnimationCondition
+  /** Which one of the branch it is, as the reader counts them — from one. */
+  rank: number
   /** Every name a condition may stand on — the runtime's own, then the author's — and what it holds. */
   parameters: ReadonlyMap<string, AnimationParameterKind>
   scId: string
@@ -31,6 +34,7 @@ const SWITCH_OPERATORS: readonly AnimationCondition['op'][] = ['==', '!=']
 
 export function AnimationGraphConditionRow({
   condition,
+  rank,
   parameters,
   scId,
   onChange,
@@ -52,7 +56,20 @@ export function AnimationGraphConditionRow({
   }
 
   return (
-    <FieldGrid>
+    <div className={FIELD_BLOCK}>
+      <div className="flex items-center gap-2">
+        <span className={PANEL_GROUP_LABEL}>
+          {t('game.animationGraph.conditionRank', { rank })}
+        </span>
+        <span className="flex-1" />
+        <ToolButton
+          icon={mdiTrashCanOutline}
+          label={t('inspector.removeCondition')}
+          tooltip={TIP_LEFT}
+          variant="row"
+          onClick={() => onChange(null)}
+        />
+      </div>
       <SelectField
         scId={`${scId}.param`}
         label={t('inspector.conditionField')}
@@ -82,15 +99,6 @@ export function AnimationGraphConditionRow({
           onChange={value => onChange({ ...condition, value })}
         />
       )}
-      <div className="flex items-center justify-end">
-        <ToolButton
-          icon={mdiTrashCanOutline}
-          label={t('inspector.removeCondition')}
-          tooltip={TIP_LEFT}
-          variant="row"
-          onClick={() => onChange(null)}
-        />
-      </div>
-    </FieldGrid>
+    </div>
   )
 }

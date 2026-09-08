@@ -240,7 +240,9 @@
       "exitTimeHelp": "A parte da animação a reproduzir antes de a saída ser permitida. É o que deixa uma aterragem acabar em vez de ser cortada.",
       "priority": "Prioridade",
       "priorityHelp": "Quem ganha quando duas transições são possíveis no mesmo instante. O número maior leva-a.",
-      "fadeHelp": "O esbatimento entre as duas animações, em segundos. A zero, a mudança é seca."
+      "fadeHelp": "O esbatimento entre as duas animações, em segundos. A zero, a mudança é seca.",
+      "parameterRank": "Parâmetro {{rank}}",
+      "conditionRank": "Condição {{rank}}"
     },
     "inputMap": {
       "actionId": "Ação",

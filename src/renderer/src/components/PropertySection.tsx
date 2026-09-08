@@ -56,6 +56,7 @@ export function PropertySection({
         open={open}
         toggle={toggle}
         actions={actions}
+        plate={plate}
         scId={scId}
       />
 

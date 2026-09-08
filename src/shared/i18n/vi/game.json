@@ -240,7 +240,9 @@
       "exitTimeHelp": "Phần hoạt ảnh phải phát trước khi được thoát. Nhờ đó cú tiếp đất được kết thúc thay vì bị cắt.",
       "priority": "Ưu tiên",
       "priorityHelp": "Ai thắng khi hai chuyển tiếp cùng khả dĩ. Số lớn hơn thắng.",
-      "fadeHelp": "Thời gian hòa trộn giữa hai hoạt ảnh, tính bằng giây. Bằng không thì đổi dứt khoát."
+      "fadeHelp": "Thời gian hòa trộn giữa hai hoạt ảnh, tính bằng giây. Bằng không thì đổi dứt khoát.",
+      "parameterRank": "Tham số {{rank}}",
+      "conditionRank": "Điều kiện {{rank}}"
     },
     "inputMap": {
       "actionId": "Hành động",

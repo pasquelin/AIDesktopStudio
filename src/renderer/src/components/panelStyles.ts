@@ -42,6 +42,18 @@ export const PANEL_BAR = 'border-border flex items-center gap-2 border-b'
 export const PROPERTY_BODY = 'flex flex-col gap-2 px-2 pt-1 pb-2'
 
 /**
+ * One repeated sub-item of a property section — a binding, a transition, a parameter, a
+ * condition: a block one can see the edges of, with its own name and its own bin.
+ *
+ * 🛑 The pull-back is the point: given a padding of its own, the block started its labels eight
+ * pixels to the right of the fields above it, and a section read as two forms poorly stacked.
+ * `-mx-2` cancels `PROPERTY_BODY`'s inset and `px-2` gives it back inside, so every label of the
+ * document lands on ONE column.
+ */
+export const FIELD_BLOCK =
+  'border-border bg-surface -mx-2 flex flex-col gap-2 rounded-(--radius-sc-md) border px-2 py-2'
+
+/**
  * A picture standing in a property FIELD — the texture a slot holds, the map a model carries.
  * A picture standing in a ROW is not this: `Row` sizes its own, see `ROW_MEDIA_CONTROL`.
  */

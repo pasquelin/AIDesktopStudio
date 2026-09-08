@@ -240,7 +240,9 @@
       "exitTimeHelp": "Çıkışa izin verilmeden önce oynatılacak animasyon payı. Bir inişin kesilmek yerine bitmesini sağlar.",
       "priority": "Öncelik",
       "priorityHelp": "Aynı anda iki geçiş mümkünse hangisinin kazanacağı. Büyük sayı kazanır.",
-      "fadeHelp": "İki animasyon arasındaki geçiş süresi, saniye. Sıfırda değişim serttir."
+      "fadeHelp": "İki animasyon arasındaki geçiş süresi, saniye. Sıfırda değişim serttir.",
+      "parameterRank": "Parametre {{rank}}",
+      "conditionRank": "Koşul {{rank}}"
     },
     "inputMap": {
       "actionId": "Eylem",

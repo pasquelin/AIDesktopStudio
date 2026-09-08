@@ -240,7 +240,9 @@
       "exitTimeHelp": "La parte de la animación que se reproduce antes de permitir la salida. Es lo que deja terminar un aterrizaje en vez de cortarlo.",
       "priority": "Prioridad",
       "priorityHelp": "Quién gana cuando dos transiciones son posibles a la vez. El número más alto se la lleva.",
-      "fadeHelp": "El fundido entre las dos animaciones, en segundos. A cero, el cambio es seco."
+      "fadeHelp": "El fundido entre las dos animaciones, en segundos. A cero, el cambio es seco.",
+      "parameterRank": "Parámetro {{rank}}",
+      "conditionRank": "Condición {{rank}}"
     },
     "inputMap": {
       "actionId": "Acción",

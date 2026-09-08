@@ -240,7 +240,9 @@
       "exitTimeHelp": "Bagian animasi yang dimainkan sebelum keluar diizinkan. Itulah yang membiarkan pendaratan selesai alih-alih terpotong.",
       "priority": "Prioritas",
       "priorityHelp": "Siapa yang menang ketika dua peralihan sama-sama mungkin. Angka yang lebih besar mengambilnya.",
-      "fadeHelp": "Lama pudar-silang antara dua animasi, dalam detik. Pada nol, pergantiannya tegas."
+      "fadeHelp": "Lama pudar-silang antara dua animasi, dalam detik. Pada nol, pergantiannya tegas.",
+      "parameterRank": "Parameter {{rank}}",
+      "conditionRank": "Syarat {{rank}}"
     },
     "inputMap": {
       "actionId": "Aksi",

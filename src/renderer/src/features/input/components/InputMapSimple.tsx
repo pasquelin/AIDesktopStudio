@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next'
 import type { InputMap } from '@shared/domain/inputMap'
 import { INPUT_PRESET_IDS, inputMapPreset } from '@shared/domain/inputPresets'
 import { Chip } from '@/components/Chip'
-import { FieldGrid } from '@/components/FieldGrid'
 import { PropertySection } from '@/components/PropertySection'
 import { Tag } from '@/components/Tag'
 import { FIELD_HELP } from '@/components/styles'
@@ -55,7 +54,7 @@ export function InputMapSimple({ map, onChange }: InputMapSimpleProps) {
         {map.actions.length === 0 ? (
           <p className={cn(FIELD_HELP, 'm-0')}>{t('game.inputMap.noAction')}</p>
         ) : (
-          <FieldGrid>
+          <div className="flex flex-col gap-2">
             {map.actions.map(action => (
               <article
                 key={action.id}
@@ -81,7 +80,7 @@ export function InputMapSimple({ map, onChange }: InputMapSimpleProps) {
                 </div>
               </article>
             ))}
-          </FieldGrid>
+          </div>
         )}
       </PropertySection>
     </div>

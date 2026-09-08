@@ -240,7 +240,9 @@
       "exitTimeHelp": "La parte di animazione da riprodurre prima che l’uscita sia permessa. È ciò che lascia finire un atterraggio invece di troncarlo.",
       "priority": "Priorità",
       "priorityHelp": "Chi vince quando due transizioni sono possibili nello stesso istante. Il numero più alto la spunta.",
-      "fadeHelp": "La dissolvenza tra le due animazioni, in secondi. A zero il cambio è netto."
+      "fadeHelp": "La dissolvenza tra le due animazioni, in secondi. A zero il cambio è netto.",
+      "parameterRank": "Parametro {{rank}}",
+      "conditionRank": "Condizione {{rank}}"
     },
     "inputMap": {
       "actionId": "Azione",

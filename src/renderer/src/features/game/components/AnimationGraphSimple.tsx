@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 import { useTranslation } from 'react-i18next'
 import { BUILT_IN_PARAMETERS, type AnimationGraph } from '@shared/domain/animationGraph'
-import { FieldGrid } from '@/components/FieldGrid'
 import { PropertySection } from '@/components/PropertySection'
 import { Tag } from '@/components/Tag'
 import { FIELD_HELP } from '@/components/styles'
@@ -42,7 +41,7 @@ export function AnimationGraphSimple({ graph }: AnimationGraphSimpleProps) {
         scId="animationGraph.states"
         plate
       >
-        <FieldGrid>
+        <div className="flex flex-col gap-2">
           {(layer?.states ?? []).map(state => (
             <article
               key={state.id}
@@ -63,7 +62,7 @@ export function AnimationGraphSimple({ graph }: AnimationGraphSimpleProps) {
               </div>
             </article>
           ))}
-        </FieldGrid>
+        </div>
       </PropertySection>
 
       <PropertySection
@@ -75,7 +74,7 @@ export function AnimationGraphSimple({ graph }: AnimationGraphSimpleProps) {
         {(layer?.transitions ?? []).length === 0 ? (
           <p className={cn(FIELD_HELP, 'm-0')}>{t('game.animationGraph.noTransition')}</p>
         ) : (
-          <FieldGrid>
+          <div className="flex flex-col gap-2">
             {(layer?.transitions ?? []).map((transition, index) => (
               <article
                 key={`${transition.from}:${transition.to}:${index}`}
@@ -94,7 +93,7 @@ export function AnimationGraphSimple({ graph }: AnimationGraphSimpleProps) {
                 </div>
               </article>
             ))}
-          </FieldGrid>
+          </div>
         )}
       </PropertySection>
     </div>

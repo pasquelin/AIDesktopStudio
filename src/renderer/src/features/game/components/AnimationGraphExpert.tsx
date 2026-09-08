@@ -9,12 +9,12 @@ import type {
 } from '@shared/domain/animationGraph'
 import { BODY_PARTS, type BodyPart } from '@shared/domain/humanoid'
 import { Button } from '@/components/Button'
-import { FieldGrid } from '@/components/FieldGrid'
 import { PropertySection } from '@/components/PropertySection'
 import { SelectField } from '@/components/SelectField'
 import { TextField } from '@/components/TextField'
 import { ToolButton } from '@/components/ToolButton'
-import { FIELD_HELP } from '@/components/styles'
+import { FIELD_HELP, PANEL_GROUP_LABEL } from '@/components/styles'
+import { FIELD_BLOCK } from '@/components/panelStyles'
 import { cn } from '@/helpers/cn'
 import { TIP_LEFT } from '@/helpers/tooltip'
 import { AnimationGraphStateForm } from './AnimationGraphStateForm'
@@ -59,7 +59,7 @@ export function AnimationGraphExpert({ graph, onChange }: AnimationGraphExpertPr
         scId="animationGraph.context"
         plate
       >
-        <FieldGrid>
+        <div className="flex flex-col gap-2">
           <TextField
             scId="animationGraph.context.id"
             label={t('game.animationGraph.id')}
@@ -89,7 +89,7 @@ export function AnimationGraphExpert({ graph, onChange }: AnimationGraphExpertPr
             options={layer.states.map(state => ({ value: state.id, label: state.id }))}
             onChange={initial => onChange(withLayer(graph, { ...layer, initial }))}
           />
-        </FieldGrid>
+        </div>
       </PropertySection>
 
       <PropertySection
@@ -103,7 +103,20 @@ export function AnimationGraphExpert({ graph, onChange }: AnimationGraphExpertPr
           <p className={cn(FIELD_HELP, 'm-0')}>{t('game.animationGraph.noParameter')}</p>
         )}
         {graph.parameters.map((parameter, at) => (
-          <FieldGrid key={`${parameter.id}:${at}`}>
+          <div key={`${parameter.id}:${at}`} className={FIELD_BLOCK}>
+            <div className="flex items-center gap-2">
+              <span className={PANEL_GROUP_LABEL}>
+                {t('game.animationGraph.parameterRank', { rank: at + 1 })}
+              </span>
+              <span className="flex-1" />
+              <ToolButton
+                icon={mdiTrashCanOutline}
+                label={t('game.animationGraph.removeParameter')}
+                tooltip={TIP_LEFT}
+                variant="row"
+                onClick={() => changedParameter(at, null)}
+              />
+            </div>
             <TextField
               scId={`animationGraph.parameter.${at}.id`}
               label={t('inspector.name')}
@@ -120,16 +133,7 @@ export function AnimationGraphExpert({ graph, onChange }: AnimationGraphExpertPr
               }))}
               onChange={kind => changedParameter(at, { ...parameter, kind })}
             />
-            <div className="flex items-center justify-end">
-              <ToolButton
-                icon={mdiTrashCanOutline}
-                label={t('game.animationGraph.removeParameter')}
-                tooltip={TIP_LEFT}
-                variant="row"
-                onClick={() => changedParameter(at, null)}
-              />
-            </div>
-          </FieldGrid>
+          </div>
         ))}
         <div className="flex">
           <Button

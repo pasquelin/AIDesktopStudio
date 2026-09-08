@@ -3,10 +3,10 @@ import { mdiTrashCanOutline } from '@mdi/js'
 import { useTranslation } from 'react-i18next'
 import { inputBindingFits } from '@shared/domain/inputMap'
 import type { InputAction, InputBinding } from '@shared/domain/inputMap'
-import { FieldGrid } from '@/components/FieldGrid'
 import { SelectField } from '@/components/SelectField'
 import { ToolButton } from '@/components/ToolButton'
 import { PANEL_GROUP_LABEL } from '@/components/styles'
+import { FIELD_BLOCK } from '@/components/panelStyles'
 import { TIP_LEFT } from '@/helpers/tooltip'
 import { defaultInputBinding, inputBindingLabel } from './inputMapPresentation'
 import { InputMapExpertGamepad } from './InputMapExpertGamepad'
@@ -42,7 +42,7 @@ export function InputMapExpertBinding({
   ]
 
   return (
-    <div className="border-border bg-surface -mx-2 flex flex-col gap-2 border-y px-2 py-2">
+    <div className={FIELD_BLOCK}>
       <div className="flex items-center gap-2">
         <span className={PANEL_GROUP_LABEL}>
           {t('game.inputMap.bindingRank', { rank: index + 1 })}
@@ -57,7 +57,7 @@ export function InputMapExpertBinding({
         />
       </div>
 
-      <FieldGrid>
+      <div className="flex flex-col gap-2">
         <SelectField
           scId={`input.action.${action.id}.binding.${index}.device`}
           label={t('game.inputMap.deviceLabel')}
@@ -93,7 +93,7 @@ export function InputMapExpertBinding({
             onChange={control => onChange({ ...binding, control })}
           />
         )}
-      </FieldGrid>
+      </div>
     </div>
   )
 }

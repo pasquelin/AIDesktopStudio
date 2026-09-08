@@ -5,7 +5,6 @@ import type { AnimationGraph, AnimationState } from '@shared/domain/animationGra
 import { CLIP_SOURCES, CLIP_SPEED } from '@shared/domain/sceneModel'
 import type { ClipSource, RootMotion } from '@shared/domain/sceneModel'
 import { ROOT_MOTIONS } from '@shared/domain/sceneModel'
-import { FieldGrid } from '@/components/FieldGrid'
 import { NumberField } from '@/components/NumberField'
 import { PropertySection } from '@/components/PropertySection'
 import { SelectField } from '@/components/SelectField'
@@ -50,7 +49,7 @@ export function AnimationGraphStateForm({ graph, state, onChange }: AnimationGra
         />
       }
     >
-      <FieldGrid>
+      <div className="flex flex-col gap-2">
         <TextField
           scId={`animationGraph.state.${state.id}.id`}
           label={t('inspector.name')}
@@ -117,7 +116,7 @@ export function AnimationGraphStateForm({ graph, state, onChange }: AnimationGra
           }))}
           onChange={rootMotion => onChange({ ...state, rootMotion })}
         />
-      </FieldGrid>
+      </div>
     </PropertySection>
   )
 }

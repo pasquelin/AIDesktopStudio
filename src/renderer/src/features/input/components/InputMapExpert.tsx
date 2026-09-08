@@ -2,7 +2,6 @@
 import { useTranslation } from 'react-i18next'
 import type { InputActionKind, InputMap } from '@shared/domain/inputMap'
 import { Button } from '@/components/Button'
-import { FieldGrid } from '@/components/FieldGrid'
 import { NumberField } from '@/components/NumberField'
 import { PropertySection } from '@/components/PropertySection'
 import { TextField } from '@/components/TextField'
@@ -29,7 +28,7 @@ export function InputMapExpert({ map, onChange }: InputMapExpertProps) {
       >
         {/* 🛑 Every one of these carries its own line of help: the six notions of this editor
             were nowhere explained on screen, while each Preferences setting has a paragraph. */}
-        <FieldGrid>
+        <div className="flex flex-col gap-2">
           <TextField
             scId="input.context.id"
             label={t('game.inputMap.id')}
@@ -56,7 +55,7 @@ export function InputMapExpert({ map, onChange }: InputMapExpertProps) {
             value={map.defaultActive}
             onChange={defaultActive => onChange({ ...map, defaultActive })}
           />
-        </FieldGrid>
+        </div>
       </PropertySection>
 
       {map.actions.map((action, index) => (

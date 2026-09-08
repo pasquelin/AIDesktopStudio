@@ -240,7 +240,9 @@
       "exitTimeHelp": "The share of the animation to play before the way out is allowed. It is what lets a landing finish instead of being cut off.",
       "priority": "Priority",
       "priorityHelp": "Who wins when two transitions are possible at the same moment. The higher number takes it.",
-      "fadeHelp": "The cross-fade between the two animations, in seconds. At zero the change is instant."
+      "fadeHelp": "The cross-fade between the two animations, in seconds. At zero the change is instant.",
+      "parameterRank": "Parameter {{rank}}",
+      "conditionRank": "Condition {{rank}}"
     },
     "inputMap": {
       "actionId": "Action",

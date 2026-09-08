@@ -13,6 +13,8 @@ export type PropertySectionHeadProps = {
   toggle: () => void
   /** Beside the fold, never inside it: a button within a button is not markup a browser keeps. */
   actions?: ReactNode
+  /** On a plate, the end column's bleed would hang the glyph over the section's own edge. */
+  plate?: boolean
   scId?: string
 }
 
@@ -28,12 +30,13 @@ export function PropertySectionHead({
   open,
   toggle,
   actions,
+  plate,
   scId,
 }: PropertySectionHeadProps) {
   const { t } = useTranslation()
 
   return (
-    <div className="flex items-center">
+    <div className={cn('flex items-center', plate && 'pe-1')}>
       <h3 className="m-0 min-w-0 flex-1 font-normal text-inherit">
         <button
           type="button"
