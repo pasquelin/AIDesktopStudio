@@ -180,6 +180,15 @@
       "visualChangesPossible": "Perubahan visual: MUNGKIN",
       "failed": "Game tidak dapat diekspor."
     },
+    "animationGraph": {
+      "hint": "Graf yang dimainkan permainan: parameter, keadaan, dan transisi.",
+      "invalid": "JSON ini tidak menggambarkan graf animasi yang sah.",
+      "jsonLabel": "JSON graf animasi",
+      "loadFailed": "Graf animasi ini tidak dapat dibaca.",
+      "loading": "Memuat graf animasi…",
+      "save": "Simpan",
+      "writeFailed": "Graf animasi ini tidak dapat ditulis ke disk."
+    },
     "inputMap": {
       "actionId": "Aksi",
       "actionKind": "Nilai",

@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { inputMapOf, type InputMap } from '@shared/domain/inputMap'
 import { Button } from '@/components/Button'
 import { Chip } from '@/components/Chip'
+import { JsonSource } from '@/components/JsonSource'
 import { getBridge } from '@/services/bridge'
 import {
   inputMapsChanged,
@@ -17,7 +18,6 @@ import {
   setDocumentTitle,
 } from '@/features/shell/components/dockviewApi'
 import { InputMapExpert } from './InputMapExpert'
-import { InputMapJson } from './InputMapJson'
 import { InputMapSimple } from './InputMapSimple'
 
 type EditorMode = 'simple' | 'expert' | 'json'
@@ -157,8 +157,10 @@ export function InputMapDocument({ path }: InputMapDocumentProps) {
       {mode === 'simple' && <InputMapSimple map={map} onChange={changeMap} />}
       {mode === 'expert' && <InputMapExpert map={map} onChange={changeMap} />}
       {mode === 'json' && (
-        <InputMapJson
+        <JsonSource
           value={source}
+          label={t('game.inputMap.jsonLabel')}
+          scId="input.source"
           onChange={value => {
             revision.current += 1
             setSource(value)

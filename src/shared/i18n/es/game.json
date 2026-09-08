@@ -180,6 +180,15 @@
       "visualChangesPossible": "Cambios visuales: POSIBLES",
       "failed": "No se ha podido exportar el juego."
     },
+    "animationGraph": {
+      "hint": "El grafo que reproduce la partida: parámetros, estados y transiciones.",
+      "invalid": "El JSON no describe un grafo de animación válido.",
+      "jsonLabel": "JSON del grafo de animación",
+      "loadFailed": "No se ha podido leer este grafo de animación.",
+      "loading": "Cargando el grafo de animación…",
+      "save": "Guardar",
+      "writeFailed": "No se ha podido escribir este grafo de animación en el disco."
+    },
     "inputMap": {
       "actionId": "Acción",
       "actionKind": "Valor",

@@ -180,6 +180,15 @@
       "visualChangesPossible": "Sichtbare Änderungen: MÖGLICH",
       "failed": "Das Spiel konnte nicht exportiert werden."
     },
+    "animationGraph": {
+      "hint": "Der Graph, den das Spiel abspielt: Parameter, Zustände und Übergänge.",
+      "invalid": "Das JSON beschreibt keinen gültigen Animationsgraph.",
+      "jsonLabel": "JSON des Animationsgraphs",
+      "loadFailed": "Dieser Animationsgraph konnte nicht gelesen werden.",
+      "loading": "Animationsgraph wird geladen…",
+      "save": "Speichern",
+      "writeFailed": "Dieser Animationsgraph konnte nicht auf die Festplatte geschrieben werden."
+    },
     "inputMap": {
       "actionId": "Aktion",
       "actionKind": "Wert",

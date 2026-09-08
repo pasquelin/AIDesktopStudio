@@ -180,6 +180,15 @@
       "visualChangesPossible": "Görsel değişiklikler: OLASI",
       "failed": "Oyun dışa aktarılamadı."
     },
+    "animationGraph": {
+      "hint": "Oyunun oynattığı grafik: parametreler, durumlar ve geçişler.",
+      "invalid": "Bu JSON geçerli bir animasyon grafiği tanımlamıyor.",
+      "jsonLabel": "Animasyon grafiği JSON’u",
+      "loadFailed": "Bu animasyon grafiği okunamadı.",
+      "loading": "Animasyon grafiği yükleniyor…",
+      "save": "Kaydet",
+      "writeFailed": "Bu animasyon grafiği diske yazılamadı."
+    },
     "inputMap": {
       "actionId": "Eylem",
       "actionKind": "Değer",
