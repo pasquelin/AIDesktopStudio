@@ -13,7 +13,11 @@ export type PropertySectionHeadProps = {
   toggle: () => void
   /** Beside the fold, never inside it: a button within a button is not markup a browser keeps. */
   actions?: ReactNode
-  /** On a plate, the end column's bleed would hang the glyph over the section's own edge. */
+  /**
+   * On a plate the section IS its own edge, so the end column's bleed — which exists to land a
+   * glyph on the column the fields end on, inside a panel that has no edge — hangs the bin one
+   * pixel from that border. The gutter is given back, and the bleed with it.
+   */
   plate?: boolean
   scId?: string
 }
@@ -36,7 +40,12 @@ export function PropertySectionHead({
   const { t } = useTranslation()
 
   return (
-    <div className={cn('flex items-center', plate && 'pe-1')}>
+    <div
+      className={cn(
+        'flex items-center',
+        plate && 'pe-[calc(var(--sc-gutter)+var(--sc-row-action-bleed))]',
+      )}
+    >
       <h3 className="m-0 min-w-0 flex-1 font-normal text-inherit">
         <button
           type="button"
