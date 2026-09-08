@@ -14,6 +14,7 @@
     "sectionHint": "Group an area — not available yet",
     "slice": "Slice",
     "sliceHint": "Slice an area for export — not available yet",
+    "needsModelHint": "Install a smart selection model in the AI settings",
     "pen": "Pen",
     "penHint": "Draw a vector path — not available yet",
     "textPath": "Text on path",

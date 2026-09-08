@@ -1,3 +1,4 @@
+import type { AiRoleId } from '@shared/domain/aiRole'
 import type { ToolButtonProps } from '../ToolButton'
 import type { TooltipFactory } from '@/helpers/tooltip'
 
@@ -19,8 +20,13 @@ export type ToolMode = {
   descriptionKey: string
   icon: string
   shortcut?: string
-  /** Declared but not wired yet: shown greyed, so the bar never hides what is coming. */
+  /** Greyed rather than hidden — the bar never conceals what is coming, nor what is missing. */
   disabled?: boolean
+  /**
+   * The employment it cannot run without. DECLARED here rather than branched on in the view: two
+   * modes ride the same model, and the one the view named was greyed while the other was not.
+   */
+  needsRole?: AiRoleId
 }
 
 export type ToolbarItem = {

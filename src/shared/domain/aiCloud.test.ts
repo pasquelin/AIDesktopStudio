@@ -28,10 +28,15 @@ describe('the cloud registry', () => {
     expect(cloudsServing(DICTATION_ROLE)).toEqual([])
   })
 
-  it('does not offer Scenario for capabilities without a Scenario model', () => {
-    expect(cloudsServing(aiRoleId('upscale', 'upscale'))).toEqual([])
-    expect(cloudsServing(aiRoleId('background-removal', 'cutout'))).toEqual([])
-    expect(cloudsServing(aiRoleId('vectorization', 'vectorize'))).toEqual([])
+  /**
+   * The three families whose whole membership IS their employment. `FAMILY_TAGS` files the
+   * catalogue's own models under each of them, so a cloud refused here would leave the model
+   * browser with nothing to list and the prepared edit opening on an empty panel.
+   */
+  it('offers Scenario for the three single-employment families its catalogue publishes', () => {
+    expect(cloudsServing(aiRoleId('upscale', 'upscale'))).toEqual([SCENARIO_CLOUD])
+    expect(cloudsServing(aiRoleId('background-removal', 'cutout'))).toEqual([SCENARIO_CLOUD])
+    expect(cloudsServing(aiRoleId('vectorization', 'vectorize'))).toEqual([SCENARIO_CLOUD])
   })
 
   /**

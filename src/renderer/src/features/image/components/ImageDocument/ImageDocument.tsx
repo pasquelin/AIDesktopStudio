@@ -37,24 +37,33 @@ import { generationCommentsOf, useGenerationComments } from '@/stores/generation
 import { useCanvasGenerationComments } from '@/hooks/useCanvasGenerationComments'
 import { useGeneratorCommentSubmission } from '@/hooks/useGeneratorCommentSubmission'
 import { reportFailure } from '@/services/diagnostics'
-import { SMART_SELECTION_ROLE } from '@shared/domain/aiRole'
+import { SMART_SELECTION_ROLE, type AiRoleId } from '@shared/domain/aiRole'
 import { useModelForCapability } from '@/hooks/useModelForCapability'
 import type { ImageTool } from '../../imageTools'
 
 export type ImageDocumentProps = { documentId: string }
 
+/**
+ * 🛑 One arm per employment a mode declares, and an unknown one reads as SERVED: greying it would
+ * hide a tool for ever with nothing on screen to say why. `imageTools.test.ts` holds the list to one.
+ */
+const served = (role: AiRoleId, smartSelection: string | null): boolean =>
+  role !== SMART_SELECTION_ROLE || smartSelection !== null
+
+/** A mode whose employment has no model is greyed, and says so instead of repeating its own label. */
 function modeItems(
   entry: ImageTool,
   keyOf: (toolId: string, modeId?: string) => string | undefined,
-  smartSelectionAvailable: boolean,
+  smartSelection: string | null,
 ) {
-  return entry.modes?.map(item => ({
-    ...item,
-    disabled:
-      item.disabled === true ||
-      (entry.id === 'comment' && item.id === 'smart' && !smartSelectionAvailable),
-    shortcut: keyOf(entry.id, item.id),
-  }))
+  return entry.modes?.map(item => {
+    const missing = item.needsRole !== undefined && !served(item.needsRole, smartSelection)
+    return {
+      ...item,
+      ...(missing ? { disabled: true, descriptionKey: 'imageTools.needsModelHint' } : {}),
+      shortcut: keyOf(entry.id, item.id),
+    }
+  })
 }
 
 /**
@@ -245,7 +254,7 @@ export function ImageDocument({ documentId }: ImageDocumentProps) {
         ...entry,
         activeMode: modes[entry.id],
         shortcut: keyOf(entry.id),
-        modes: modeItems(entry, keyOf, smartSelectionModel !== null),
+        modes: modeItems(entry, keyOf, smartSelectionModel),
       })),
       // No `activeMode`, and that is what makes it a menu of actions rather than a choice of
       // tool: none of its rows can be armed, so the click opens what hovering would have.

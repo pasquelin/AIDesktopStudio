@@ -349,6 +349,21 @@
     return 0;
   }
 
+  /* La scène qui vient de se replier a retiré de la hauteur au-dessus du pouce : on rend au scroll
+     ce qui a disparu, sinon la page saute. Vrai quand la vue a bougé — l'image est alors périmée. */
+  function settleStage(frame) {
+    if (!stageAdjustment) return false;
+    var removed = Math.max(0, stageAdjustment.height - frame.stageRect.height);
+    var adjusted = stageAdjustment.scrollY - clamp(stageAdjustment.scrollY - stageAdjustment.top, 0, removed);
+    if (navigation && navigation.top > stageAdjustment.top) navigation.top = Math.max(stageAdjustment.top, navigation.top - removed);
+    stageAdjustment = null;
+    if (entryAnchor) { adjusted = frame.entryTop; entryAnchor = null; }
+    if (Math.abs(frame.scrollY - adjusted) <= 1) return false;
+
+    window.scrollTo({ top: adjusted, behavior: 'instant' });
+    return true;
+  }
+
   function loop(now) {
     requestAnimationFrame(loop);
     if (document.hidden) return;
@@ -356,17 +371,7 @@
     var vh = window.innerHeight;
 
     var frame = readFrame(vh);
-    if (stageAdjustment) {
-      var removed = Math.max(0, stageAdjustment.height - frame.stageRect.height);
-      var adjusted = stageAdjustment.scrollY - clamp(stageAdjustment.scrollY - stageAdjustment.top, 0, removed);
-      if (navigation && navigation.top > stageAdjustment.top) navigation.top = Math.max(stageAdjustment.top, navigation.top - removed);
-      stageAdjustment = null;
-      if (entryAnchor) { adjusted = frame.entryTop; entryAnchor = null; }
-      if (Math.abs(frame.scrollY - adjusted) > 1) {
-        window.scrollTo({ top: adjusted, behavior: 'instant' });
-        return;
-      }
-    }
+    if (settleStage(frame)) return;
     if (navigation && Math.abs(frame.scrollY - navigation.top) < 1) releaseNavigation();
 
     animateItems(now, vh);
