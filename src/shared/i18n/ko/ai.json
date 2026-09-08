@@ -2,8 +2,7 @@
   "aiRoles": {
     "assistant": "어시스턴트",
     "dictation": "받아쓰기",
-    "embedding": "기억(벡터)",
-    "smart-selection": "스마트 선택"
+    "embedding": "기억(벡터)"
   },
   "aiClouds": {
     "scenario": "Scenario",

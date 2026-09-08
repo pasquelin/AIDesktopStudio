@@ -2,8 +2,7 @@
   "aiRoles": {
     "assistant": "助手",
     "dictation": "听写",
-    "embedding": "记忆（向量）",
-    "smart-selection": "智能选区"
+    "embedding": "记忆（向量）"
   },
   "aiClouds": {
     "scenario": "Scenario",

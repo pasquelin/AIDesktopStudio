@@ -78,6 +78,8 @@
   "imageComments": {
     "edit": "Hướng dẫn tạo sinh",
     "placeholder": "Thay đổi để làm…",
+    "title": "Tên vùng",
+    "titlePlaceholder": "Đặt tên…",
     "remove": "Loại bỏ bình luận",
     "removeHint": "Loại bỏ ghi chú này khỏi bối cảnh tạo sinh",
     "generate": "Tạo từ bình luận này",

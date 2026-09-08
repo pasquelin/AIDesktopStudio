@@ -78,6 +78,8 @@
   "imageComments": {
     "edit": "Üretim talimatı",
     "placeholder": "Yapılacak değişiklik…",
+    "title": "Alan adı",
+    "titlePlaceholder": "Adlandır…",
     "remove": "Yorumu kaldır",
     "removeHint": "Bu notu üretim bağlamından kaldırır",
     "generate": "Bu yorumdan üret",

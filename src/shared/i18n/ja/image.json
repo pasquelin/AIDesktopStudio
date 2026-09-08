@@ -78,6 +78,8 @@
   "imageComments": {
     "edit": "生成の指示",
     "placeholder": "加える変更…",
+    "title": "領域の名前",
+    "titlePlaceholder": "名前を付ける…",
     "remove": "コメントを削除",
     "removeHint": "このノートを生成のコンテキストから外します。",
     "generate": "このコメントから生成",

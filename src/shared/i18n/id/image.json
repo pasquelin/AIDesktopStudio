@@ -78,6 +78,8 @@
   "imageComments": {
     "edit": "Instruksi pembuatan",
     "placeholder": "Perubahan yang ingin dibuat…",
+    "title": "Nama area",
+    "titlePlaceholder": "Beri nama…",
     "remove": "Hapus komentar",
     "removeHint": "Menghapus catatan ini dari konteks pembuatan",
     "generate": "Buat dari komentar ini",

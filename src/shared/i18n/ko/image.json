@@ -78,6 +78,8 @@
   "imageComments": {
     "edit": "생성 지시",
     "placeholder": "적용할 변경 사항…",
+    "title": "영역 이름",
+    "titlePlaceholder": "이름 지정…",
     "remove": "주석 제거",
     "removeHint": "이 메모를 생성 컨텍스트에서 제거합니다",
     "generate": "이 주석으로 생성",

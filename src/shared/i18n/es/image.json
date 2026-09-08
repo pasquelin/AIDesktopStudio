@@ -78,6 +78,8 @@
   "imageComments": {
     "edit": "Instrucción de generación",
     "placeholder": "Cambio que hay que hacer…",
+    "title": "Nombre de la zona",
+    "titlePlaceholder": "Nombrar…",
     "remove": "Retirar el comentario",
     "removeHint": "Retira esta nota del contexto de generación",
     "generate": "Generar a partir de este comentario",

@@ -2,8 +2,7 @@
   "aiRoles": {
     "assistant": "Asistan",
     "dictation": "Dikte",
-    "embedding": "Hafıza (vektörler)",
-    "smart-selection": "Akıllı seçim"
+    "embedding": "Hafıza (vektörler)"
   },
   "aiClouds": {
     "scenario": "Scenario",

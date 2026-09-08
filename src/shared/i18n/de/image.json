@@ -78,6 +78,8 @@
   "imageComments": {
     "edit": "Anweisung für die Generierung",
     "placeholder": "Vorzunehmende Änderung…",
+    "title": "Name des Bereichs",
+    "titlePlaceholder": "Benennen…",
     "remove": "Kommentar entfernen",
     "removeHint": "Entfernt diese Notiz aus dem Kontext der Generierung",
     "generate": "Aus diesem Kommentar generieren",

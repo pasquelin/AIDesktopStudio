@@ -2,8 +2,7 @@
   "aiRoles": {
     "assistant": "アシスタント",
     "dictation": "音声入力",
-    "embedding": "記憶（ベクトル）",
-    "smart-selection": "スマート選択"
+    "embedding": "記憶（ベクトル）"
   },
   "aiClouds": {
     "scenario": "Scenario",

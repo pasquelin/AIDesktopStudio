@@ -2,8 +2,7 @@
   "aiRoles": {
     "assistant": "المساعد",
     "dictation": "إملاء",
-    "embedding": "الذاكرة (متجهات)",
-    "smart-selection": "التحديد الذكي"
+    "embedding": "الذاكرة (متجهات)"
   },
   "aiClouds": {
     "scenario": "Scenario",

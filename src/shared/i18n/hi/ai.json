@@ -2,8 +2,7 @@
   "aiRoles": {
     "assistant": "असिस्टेंट",
     "dictation": "डिक्टेशन",
-    "embedding": "मेमोरी (वेक्टर)",
-    "smart-selection": "स्मार्ट चयन"
+    "embedding": "मेमोरी (वेक्टर)"
   },
   "aiClouds": {
     "scenario": "Scenario",

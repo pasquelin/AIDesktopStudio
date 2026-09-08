@@ -2,8 +2,7 @@
   "aiRoles": {
     "assistant": "Trợ lý",
     "dictation": "Đọc chính tả",
-    "embedding": "Bộ nhớ (vectơ)",
-    "smart-selection": "Chọn thông minh"
+    "embedding": "Bộ nhớ (vectơ)"
   },
   "aiClouds": {
     "scenario": "Scenario",

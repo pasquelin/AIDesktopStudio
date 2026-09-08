@@ -2,8 +2,7 @@
   "aiRoles": {
     "assistant": "Asisten",
     "dictation": "Dikte",
-    "embedding": "Ingatan (vektor)",
-    "smart-selection": "Seleksi cerdas"
+    "embedding": "Ingatan (vektor)"
   },
   "aiClouds": {
     "scenario": "Scenario",
