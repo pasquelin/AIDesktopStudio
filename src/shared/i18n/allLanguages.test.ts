@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { isRecord } from '../guards'
 import { ENGLISH_COGNATES } from './englishCognates.testFixtures'
-import { LANGUAGES, TRANSLATIONS } from './index'
+import { LANGUAGES, TRANSLATIONS, type Language } from './index'
 
 function flatten(
   bundle: unknown,
@@ -24,14 +24,68 @@ const holes = (text: string): string[] =>
 const bareWords = (text: string): string =>
   text.replace(/\{\{[^}]*\}\}/g, '').replace(/`[^`]*`/g, '')
 
+/**
+ * The plural forms a language HAS that the source key set does not name.
+ *
+ * The keys are French: `_one`, `_many`, `_other`. Arabic separates six counts and Russian four,
+ * so a bundle for either carries keys no other bundle does — and it MUST, because `fallbackLng`
+ * is French: i18next looks up `key_few`, finds nothing, and prints the FRENCH sentence on an
+ * Arabic screen at a count of three.
+ */
+const extraForms = (code: Language): string[] =>
+  new Intl.PluralRules(code)
+    .resolvedOptions()
+    .pluralCategories.filter(form => !['one', 'many', 'other'].includes(form))
+
+/** Whether a key a bundle carries alone is one of those forms, rather than a stray. */
+const isExtraForm = (key: string, code: Language, reference: Map<string, string>): boolean => {
+  const cut = key.lastIndexOf('_')
+  return (
+    cut > 0 &&
+    extraForms(code).includes(key.slice(cut + 1)) &&
+    reference.has(`${key.slice(0, cut)}_other`)
+  )
+}
+
 describe('all application languages', () => {
-  it('ships the same keys and interpolation holes for every locale', () => {
+  it('ships every key of the source, and interpolates each of them the same way', () => {
     const reference = flatten(TRANSLATIONS.en)
     for (const { code } of LANGUAGES) {
       const bundle = flatten(TRANSLATIONS[code])
-      expect([...bundle.keys()].sort(), code).toEqual([...reference.keys()].sort())
+      expect([...reference.keys()].filter(key => !bundle.has(key)), code).toEqual([])
       for (const [key, text] of reference)
         expect(holes(bundle.get(key) ?? ''), `${code}.${key}`).toEqual(holes(text))
+    }
+  })
+
+  /**
+   * The other half, and it is not the same rule: a key the source does not name is a stray —
+   * a renamed line left behind, a typo — unless it is a plural form of that language.
+   */
+  it('adds no key of its own but a plural form its language has', () => {
+    const reference = flatten(TRANSLATIONS.en)
+    for (const { code } of LANGUAGES) {
+      const stray = [...flatten(TRANSLATIONS[code]).keys()].filter(
+        key => !reference.has(key) && !isExtraForm(key, code, reference),
+      )
+
+      expect(stray, code).toEqual([])
+    }
+  })
+
+  /**
+   * An extra form is the SAME sentence at another count, so it holds the same holes as the
+   * `_other` it belongs to — a dropped `{{count}}` there reads as a sentence missing its number.
+   */
+  it('interpolates an extra plural form the way its own family does', () => {
+    const reference = flatten(TRANSLATIONS.en)
+    for (const { code } of LANGUAGES) {
+      const bundle = flatten(TRANSLATIONS[code])
+      for (const [key, text] of bundle) {
+        if (reference.has(key) || !isExtraForm(key, code, reference)) continue
+        const twin = `${key.slice(0, key.lastIndexOf('_'))}_other`
+        expect(holes(text), `${code}.${key}`).toEqual(holes(reference.get(twin) ?? ''))
+      }
     }
   })
 
@@ -88,6 +142,32 @@ describe('all application languages', () => {
     })
 
     expect(idle).toEqual([])
+  })
+
+  /**
+   * Every form `Intl` says the language HAS, filled — the rule `bundlesStyle.test.ts` holds for
+   * French and English, here for the other thirteen.
+   *
+   * It is not a tidiness rule. `fallbackLng` is FRENCH, so a missing `_few` does not fall back to
+   * the key or to English: i18next serves the French sentence. Measured on the key set as the
+   * French source names it — `_one`, `_many`, `_other` — Arabic wants three forms more and
+   * Russian one, which is 135 keys and 45.
+   */
+  it('fills every plural form its own language distinguishes', () => {
+    const reference = flatten(TRANSLATIONS.en)
+    const bases = [...reference.keys()]
+      .filter(key => key.endsWith('_other'))
+      .map(key => key.slice(0, -'_other'.length))
+
+    for (const { code } of LANGUAGES) {
+      const bundle = flatten(TRANSLATIONS[code])
+      const forms = new Intl.PluralRules(code).resolvedOptions().pluralCategories
+      const missing = forms.flatMap(form =>
+        bases.filter(base => !bundle.has(`${base}_${form}`)).map(base => `${base}_${form}`),
+      )
+
+      expect(missing, code).toEqual([])
+    }
   })
 
   /**
