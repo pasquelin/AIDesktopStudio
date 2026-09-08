@@ -90,6 +90,19 @@ plugin = [
   "typeguard>=4.0",
 ]
 
+# 🛑 Linux ONLY, and it is what keeps the installer from tripling. `pip install torch` from PyPI
+# drags the whole CUDA runtime on Linux and nothing on macOS or Windows: measured 2026-09-08, the
+# embedded runtime weighed 5 638 MB there against 684 on macOS and 622 on Windows — 4.9 GB of
+# nvidia-* wheels plus triton, for an AppImage of ~3 GB. The CPU index gives the same torch
+# without them. Auto Rig then runs on the CPU under Linux, as it already does on the other two.
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = [{ index = "pytorch-cpu", marker = "sys_platform == 'linux'" }]
+
 [tool.ai-desktop-studio]
 embedded-profiles = ["autorig", "selection"]
 
