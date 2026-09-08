@@ -1,24 +1,24 @@
 {
   "fileInfo": {
-    "title": "Information about {{name}}",
+    "title": "Informações sobre {{name}}",
     "sections": {
-      "general": "General",
-      "media": "Media",
-      "catalogue": "Catalogue",
+      "general": "Geral",
+      "media": "Mídia",
+      "catalogue": "Catálogo",
       "git": "Git"
     },
-    "gitUnchanged": "No pending changes",
+    "gitUnchanged": "Nenhuma alteração pendente",
     "kind": {
-      "file": "File",
-      "folder": "Folder"
+      "file": "Arquivo",
+      "folder": "Pasta"
     },
-    "type": "Type",
-    "modified": "Modified",
+    "type": "Tipo",
+    "modified": "Modificado em",
     "codec": "Codec",
-    "identifier": "Identifier",
-    "fingerprint": "Content fingerprint",
-    "added": "Added",
-    "reading": "Reading the folder…",
-    "missing": "This entry is no longer in the project folder."
+    "identifier": "Identificador",
+    "fingerprint": "Impressão do conteúdo",
+    "added": "Adicionado em",
+    "reading": "Lendo a pasta…",
+    "missing": "Esta entrada não está mais na pasta do projeto."
   }
 }
