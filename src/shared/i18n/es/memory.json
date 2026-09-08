@@ -1,20 +1,20 @@
 {
   "memoryWorth": {
-    "scriptWrite": "The script {{path}} was written by the assistant",
-    "prefabDefine": "“{{name}}” is a prefab of this project",
-    "styleSave": "“{{name}}” is a way of reading a material, saved for this project",
-    "postSave": "“{{name}}” is a post-processing preset saved for this project",
-    "animationAdd": "The animation “{{clipName}}” was added to the rig",
-    "gitCommit": "Decided and recorded in git: {{message}}"
+    "scriptWrite": "El script {{path}} lo ha escrito el asistente",
+    "prefabDefine": "«{{name}}» es un prefab de este proyecto",
+    "styleSave": "«{{name}}» es una forma de leer un material, guardada para este proyecto",
+    "postSave": "«{{name}}» es un preajuste de posprocesado guardado para este proyecto",
+    "animationAdd": "La animación «{{clipName}}» se ha añadido al esqueleto",
+    "gitCommit": "Decidido y registrado en git: {{message}}"
   },
   "memoryTypes": {
-    "decision": "Decision",
-    "architecture": "Architecture",
-    "feature": "Feature",
-    "entity": "Entity",
+    "decision": "Decisión",
+    "architecture": "Arquitectura",
+    "feature": "Funcionalidad",
+    "entity": "Entidad",
     "script": "Script",
-    "problem": "Problem",
-    "intent": "Intent",
-    "convention": "Convention"
+    "problem": "Problema",
+    "intent": "Intención",
+    "convention": "Convención"
   }
 }
