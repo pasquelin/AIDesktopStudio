@@ -77,6 +77,9 @@ describe('the word that names a group in a panel', () => {
     ).map(([path]) => path)
 
     expect(wearing.sort()).toEqual([
+      '../features/game/components/AnimationGraphConditionRow.tsx',
+      '../features/game/components/AnimationGraphExpert.tsx',
+      '../features/game/components/AnimationGraphSimple.tsx',
       '../features/game/components/AnimationGraphTransitionForm.tsx',
       '../features/generation/components/Generator/GeneratorComments.tsx',
       '../features/generation/components/Generator/GeneratorSources.tsx',

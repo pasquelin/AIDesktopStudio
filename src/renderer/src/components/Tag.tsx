@@ -27,7 +27,7 @@ export function Tag({ children, icon, ink }: TagProps) {
   return (
     <span
       className={cn(
-        'bg-surface text-tiny inline-flex items-center gap-1 rounded-(--radius-sc-sm) px-2 py-1',
+        'bg-surface text-tiny inline-flex items-center gap-1.5 rounded-(--radius-sc-sm) px-2 py-1',
         ink ?? 'text-muted',
       )}
     >
