@@ -34,8 +34,8 @@ const RERUN_EVERYTHING = [
   'package.json',
   'pnpm-lock.yaml',
   'tsconfig.json',
-  'tsconfig.node.json',
-  'tsconfig.web.json',
+  'config/tsconfig.node.json',
+  'config/tsconfig.web.json',
   'oxlint.json',
   '.prettierrc',
 ]

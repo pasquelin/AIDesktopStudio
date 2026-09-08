@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs'
-import { join } from 'node:path'
+import { join, resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import manifest from '../../package.json'
 
@@ -43,8 +43,15 @@ describe('the gate not rereading what it has already judged', () => {
    * never be what makes it green.
    */
   it('keeps reusable compiler caches out of the tree git tracks', () => {
-    for (const config of ['tsconfig.node.json', 'tsconfig.web.json']) {
-      expect(read(config)).toContain('"tsBuildInfoFile": "node_modules/')
+    for (const config of ['config/tsconfig.node.json', 'config/tsconfig.web.json']) {
+      const stated = read(config).match(/"tsBuildInfoFile": "([^"]+)"/)?.[1]
+
+      expect(stated).toBeDefined()
+      // Resolved rather than prefix-matched: from `config/` the path reads `../node_modules/`,
+      // which the literal check this replaced called a cache written beside the source.
+      expect(resolve(ROOT, 'config', stated ?? '').startsWith(join(ROOT, 'node_modules'))).toBe(
+        true,
+      )
     }
   })
 
@@ -89,7 +96,7 @@ describe('the gate not rereading what it has already judged', () => {
   })
 
   it('lets tsc reuse its previous pass', () => {
-    expect(read('tsconfig.base.json')).toContain('"incremental": true')
+    expect(read('config/tsconfig.base.json')).toContain('"incremental": true')
   })
 
   /**
@@ -98,8 +105,8 @@ describe('the gate not rereading what it has already judged', () => {
    * A gain that vanishes while every flag still reads as set is what this case exists to catch.
    */
   it('gives each of the two typecheck passes its own state file', () => {
-    const node = read('tsconfig.node.json').match(/"tsBuildInfoFile": "([^"]+)"/)?.[1]
-    const web = read('tsconfig.web.json').match(/"tsBuildInfoFile": "([^"]+)"/)?.[1]
+    const node = read('config/tsconfig.node.json').match(/"tsBuildInfoFile": "([^"]+)"/)?.[1]
+    const web = read('config/tsconfig.web.json').match(/"tsBuildInfoFile": "([^"]+)"/)?.[1]
 
     expect(node).toBeDefined()
     expect(web).not.toBe(node)

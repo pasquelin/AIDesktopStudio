@@ -1,7 +1,7 @@
 {
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "tsBuildInfoFile": "node_modules/.cache/tsc/banc.tsbuildinfo",
+    "tsBuildInfoFile": "../node_modules/.cache/tsc/banc.tsbuildinfo",
     "lib": [
       "ES2023",
       "DOM",
@@ -14,22 +14,22 @@
     "jsx": "react-jsx",
     "paths": {
       "@/*": [
-        "./src/renderer/src/*"
+        "../src/renderer/src/*"
       ],
       "@game/*": [
-        "./src/game/*"
+        "../src/game/*"
       ],
       "@main/*": [
-        "./src/main/*"
+        "../src/main/*"
       ],
       "@shared/*": [
-        "./src/shared/*"
+        "../src/shared/*"
       ]
     }
   },
   "include": [
-    "scripts/banc/**/*.ts",
-    "src/**/*.d.ts",
-    "vitest.banc.config.ts"
+    "../scripts/banc/**/*.ts",
+    "../src/**/*.d.ts",
+    "./vitest.banc.config.ts"
   ]
 }
