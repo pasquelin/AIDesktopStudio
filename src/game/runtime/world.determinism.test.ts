@@ -58,7 +58,5 @@ describe('a world of a thousand entities over ten thousand steps', () => {
 
     expect(valueOf(ranWorld(42))).toBe(once)
     expect(valueOf(ranWorld(43))).not.toBe(once)
-    // 60 s and not the 15 s default: three worlds of a thousand entities over ten thousand steps
-    // each, on a Mac that carries other sessions. Timed out at 15 s under load and passed alone.
-  }, 60000)
+  })
 })
