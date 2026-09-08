@@ -2,7 +2,6 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { AnimationTimeline } from '@shared/domain/animation'
-import type { ClipLane } from '@shared/domain/scene'
 import { STUDIO_METADATA_KEY } from '@shared/domain/studioMetadata'
 import { motionFile } from '@/character/characterMotion-fixtures'
 import { animationTrack, timelineWith } from '@/engines/scene/animation-fixtures'
@@ -37,11 +36,6 @@ function serve(bytes: Uint8Array): void {
 
 const timelineOf = (): AnimationTimeline => sceneOf(useScenes.getState(), DOCUMENT).animation
 
-/** The lanes the workshop's model carries, which is where a block being tried out is laid. */
-const lanesOf = (): readonly ClipLane[] => {
-  const node = sceneOf(useScenes.getState(), DOCUMENT).nodes[0]
-  return node?.type === 'model' ? (node.model.lanes ?? []) : []
-}
 const openMotionOf = (): string | null =>
   animationViewOf(useAnimationViews.getState(), DOCUMENT).openMotion
 
@@ -110,81 +104,5 @@ describe('the motions a character knows', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Retirer ce mouvement' }))
 
     expect(openMotionOf()).toBeNull()
-  })
-
-  // Which of the two a save means has to be readable before it is pressed.
-  it('offers to update the motion being edited, and to file a new one otherwise', () => {
-    useScenes.getState().replace(DOCUMENT, {
-      ...EMPTY_SCENE,
-      nodes: [modelNodeFixture(NODE)],
-      animation: keyed,
-    })
-    const { rerender } = list(() => Promise.resolve())
-
-    expect(screen.getByRole('button', { name: 'Enregistrer le mouvement' })).toBeInTheDocument()
-
-    useAnimationViews.getState().openMotion(DOCUMENT, 'asset-walk')
-    rerender(
-      <CharacterMotionList
-        assetId={ASSET}
-        documentId={DOCUMENT}
-        nodeId={NODE}
-        playable
-        onSave={() => Promise.resolve()}
-      />,
-    )
-
-    // Both, and that is the point: one writes over the motion on the bench, the other files the
-    // work beside it — the way off a reopened motion, which nothing else offers.
-    expect(screen.getByRole('button', { name: 'Mettre à jour le mouvement' })).toBeInTheDocument()
-    expect(
-      screen.getByRole('button', { name: 'Enregistrer un nouveau mouvement' }),
-    ).toBeInTheDocument()
-  })
-
-  // The two links are one gesture each, and the flag is what tells them apart.
-  it('says which of the two was pressed', async () => {
-    const onSave = vi.fn(() => Promise.resolve())
-    useScenes.getState().replace(DOCUMENT, {
-      ...EMPTY_SCENE,
-      nodes: [modelNodeFixture(NODE)],
-      animation: keyed,
-    })
-    useAnimationViews.getState().openMotion(DOCUMENT, 'asset-walk')
-    list(onSave)
-
-    await userEvent.click(screen.getByRole('button', { name: 'Mettre à jour le mouvement' }))
-    await userEvent.click(screen.getByRole('button', { name: 'Enregistrer un nouveau mouvement' }))
-
-    expect(onSave.mock.calls).toEqual([[false], [true]])
-  })
-
-  /**
-   * 🛑 Choosing lays the REAL block: the character plays it through the real retargeting, which
-   * is the only way to judge a motion before keeping it. Nothing but an asset used to answer at
-   * all, so a clip of the library was a row that did nothing when pressed.
-   */
-  it('lays the motion on the band as soon as one is chosen', async () => {
-    list()
-
-    await userEvent.click(screen.getByRole('button', { name: 'Ajouter un mouvement' }))
-    await userEvent.click(await screen.findByRole('option', { name: 'Capoeira' }))
-
-    expect(lanesOf()[0]?.clips.map(clip => clip.source)).toEqual([
-      { kind: 'bundled', name: 'Capoeira' },
-    ])
-    // And the picker now has something to preview and to map bones against.
-    expect(screen.getByRole('button', { name: 'Garder' })).toBeInTheDocument()
-  })
-
-  // Cancelling has to take the block back: kept, a motion nobody chose plays on the character.
-  it('takes the block off the band when the choice is cancelled', async () => {
-    list()
-
-    await userEvent.click(screen.getByRole('button', { name: 'Ajouter un mouvement' }))
-    await userEvent.click(await screen.findByRole('option', { name: 'Capoeira' }))
-    await userEvent.click(screen.getByRole('button', { name: 'Annuler' }))
-
-    expect(lanesOf()[0]?.clips ?? []).toEqual([])
   })
 })

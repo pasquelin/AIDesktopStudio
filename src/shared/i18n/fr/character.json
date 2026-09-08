@@ -42,7 +42,7 @@
     "motionSaveNew": "Enregistrer un nouveau mouvement",
     "motionRemove": "Retirer ce mouvement",
     "motionEmpty": "Ce personnage ne sait encore jouer aucun mouvement.",
-    "motionNeedsSkeleton": "Ce modèle n’a pas de squelette : il ne peut jouer aucun mouvement. Donnez-lui-en un depuis la section Squelette.",
+    "motionNeedsSkeleton": "Ce modèle n’a pas de squelette : il ne peut jouer aucun mouvement. Donnez-lui-en un depuis la section Squelette.",
     "motionNew": "Nouveau mouvement",
     "saveFault_not-glb": "Ce fichier n’est pas un modèle que le studio sait réécrire.",
     "saveFault_no-buffer": "Ce fichier ne porte aucune géométrie à habiller.",
@@ -50,7 +50,7 @@
     "saveFault_compressed-primitive": "La géométrie de ce fichier est compressée. Le studio ne sait pas y écrire un squelette.",
     "retarget": {
       "title": "Transférer une animation",
-      "needsSkeleton": "Ce modèle n’a pas encore de squelette : il n’y a rien sur quoi transférer une animation.",
+      "needsSkeleton": "Ce modèle n’a pas encore de squelette : il n’y a rien sur quoi transférer une animation.",
       "source": "Source",
       "sourceTitle": "Source · {{name}}",
       "groupCount": "{{name}} ({{count, number}})",
