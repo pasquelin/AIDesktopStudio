@@ -17,6 +17,9 @@ import { commentHue, type GenerationComment } from '../../generationComments'
 const outlinePoints = (outline: readonly Point[]): string =>
   outline.map(point => `${point.x},${point.y}`).join(' ')
 
+/** What the two fields of a note share: no surface of their own, the note IS the surface. */
+const NOTE_FIELD = 'text-text placeholder:text-muted bg-transparent text-xs outline-none'
+
 /** Nothing here reads a prop, so it is built once rather than per comment per pan frame. */
 const NOTE = cn(
   MENU_RAISED,
@@ -24,7 +27,7 @@ const NOTE = cn(
   'bg-comment-note border-comment-note-border',
   // The one being written comes forward: notes overlap, and without this the last one created
   // covers whichever the hand is actually in.
-  'pointer-events-auto absolute z-10 gap-2 p-2 focus-within:z-20',
+  'pointer-events-auto absolute z-10 gap-2 p-2 hover:z-20 focus-within:z-20',
 )
 
 type ImageDocumentCommentProps = {
@@ -81,7 +84,7 @@ export function ImageDocumentComment(props: ImageDocumentCommentProps) {
             {props.number}
           </span>
           <input
-            className="text-text placeholder:text-muted min-w-0 flex-1 bg-transparent text-xs font-semibold outline-none"
+            className={cn(NOTE_FIELD, 'min-w-0 flex-1 font-semibold')}
             data-sc="field:image.generationCommentTitle"
             aria-label={t('imageComments.title')}
             value={comment.title}
@@ -113,9 +116,14 @@ export function ImageDocumentComment(props: ImageDocumentCommentProps) {
           />
         </div>
         <textarea
-          className="text-text placeholder:text-muted min-h-(--sc-comment-note-text) w-full resize-none bg-transparent text-xs leading-normal outline-none"
+          className={cn(
+            NOTE_FIELD,
+            'min-h-(--sc-comment-note-text) w-full resize-none leading-normal',
+          )}
           data-sc="field:image.generationComment"
           aria-label={t('imageComments.edit')}
+          // The DEMAND takes the caret, not the name: a note is worth opening for what it asks,
+          // and naming the area is the step one skips more often than not.
           autoFocus={comment.text.length === 0}
           value={comment.text}
           placeholder={t('imageComments.placeholder')}

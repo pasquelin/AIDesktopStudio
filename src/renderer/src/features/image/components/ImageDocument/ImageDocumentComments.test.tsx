@@ -7,7 +7,7 @@ describe('image generation comment placement', () => {
   it('uses a concise prompt that remains readable inside the note', () => {
     render(
       <ImageDocumentComments
-        comments={[{ id: 'note', at: { x: 50, y: 50 }, title: '', text: '' }]}
+        comments={[{ id: 'note', at: { x: 50, y: 50 }, text: '' }]}
         view={DEFAULT_VIEW}
         size={{ width: 100, height: 100 }}
         onChange={() => {}}
@@ -25,7 +25,7 @@ describe('image generation comment placement', () => {
     const onGenerate = vi.fn()
     render(
       <ImageDocumentComments
-        comments={[{ id: 'note', at: { x: 50, y: 50 }, title: '', text: 'Remove the reflection' }]}
+        comments={[{ id: 'note', at: { x: 50, y: 50 }, text: 'Remove the reflection' }]}
         view={DEFAULT_VIEW}
         size={{ width: 100, height: 100 }}
         onChange={() => {}}
@@ -43,7 +43,7 @@ describe('image generation comment placement', () => {
   it('shows no generation action without an active compatible generator', () => {
     render(
       <ImageDocumentComments
-        comments={[{ id: 'note', at: { x: 50, y: 50 }, title: '', text: 'Remove the reflection' }]}
+        comments={[{ id: 'note', at: { x: 50, y: 50 }, text: 'Remove the reflection' }]}
         view={DEFAULT_VIEW}
         size={{ width: 100, height: 100 }}
         onChange={() => {}}
@@ -62,7 +62,6 @@ describe('image generation comment placement', () => {
           {
             id: 'note',
             at: { x: 50, y: 50 },
-            title: '',
             outline: [
               { x: 10, y: 10 },
               { x: 20, y: 20 },
@@ -91,7 +90,6 @@ describe('image generation comment placement', () => {
           {
             id: 'note',
             at: { x: 50, y: 50 },
-            title: '',
             outline: [
               { x: 10, y: 10 },
               { x: 20, y: 10 },
@@ -115,7 +113,6 @@ describe('image generation comment placement', () => {
     const comment = {
       id: 'note',
       at: { x: 10, y: 20 },
-      title: '',
       outline: [
         { x: 10, y: 20 },
         { x: 30, y: 40 },
@@ -159,10 +156,10 @@ describe('image generation comment placement', () => {
     render(
       <ImageDocumentComments
         comments={[
-          { id: 'top-left', at: { x: 10, y: 10 }, title: '', text: 'Top left' },
-          { id: 'top-right', at: { x: 90, y: 10 }, title: '', text: 'Top right' },
-          { id: 'bottom-left', at: { x: 10, y: 90 }, title: '', text: 'Bottom left' },
-          { id: 'bottom-right', at: { x: 90, y: 90 }, title: '', text: 'Bottom right' },
+          { id: 'top-left', at: { x: 10, y: 10 }, text: 'Top left' },
+          { id: 'top-right', at: { x: 90, y: 10 }, text: 'Top right' },
+          { id: 'bottom-left', at: { x: 10, y: 90 }, text: 'Bottom left' },
+          { id: 'bottom-right', at: { x: 90, y: 90 }, text: 'Bottom right' },
         ]}
         view={DEFAULT_VIEW}
         size={{ width: 100, height: 100 }}
@@ -186,11 +183,11 @@ describe('image generation comment placement', () => {
     })
   })
 
-  it('names an area from the canvas, and the name is what carries the emphasis', () => {
+  it('names an area from the canvas', () => {
     const onRename = vi.fn()
     render(
       <ImageDocumentComments
-        comments={[{ id: 'note', at: { x: 50, y: 50 }, title: '', text: '' }]}
+        comments={[{ id: 'note', at: { x: 50, y: 50 }, text: '' }]}
         view={DEFAULT_VIEW}
         size={{ width: 100, height: 100 }}
         onChange={() => {}}
@@ -199,18 +196,16 @@ describe('image generation comment placement', () => {
       />,
     )
 
-    const field = screen.getByPlaceholderText('Nommer…')
-    fireEvent.change(field, { target: { value: 'Le ciel' } })
+    fireEvent.change(screen.getByPlaceholderText('Nommer…'), { target: { value: 'The sky' } })
 
-    expect(onRename).toHaveBeenCalledWith('note', 'Le ciel')
-    expect(field).toHaveClass('font-semibold')
+    expect(onRename).toHaveBeenCalledWith('note', 'The sky')
   })
 
   it('edits a note from the canvas', () => {
     const onChange = vi.fn()
     render(
       <ImageDocumentComments
-        comments={[{ id: 'note', at: { x: 50, y: 50 }, title: '', text: 'Before' }]}
+        comments={[{ id: 'note', at: { x: 50, y: 50 }, text: 'Before' }]}
         view={DEFAULT_VIEW}
         size={{ width: 100, height: 100 }}
         onChange={onChange}
@@ -228,7 +223,7 @@ describe('image generation comment placement', () => {
     const onRemove = vi.fn()
     render(
       <ImageDocumentComments
-        comments={[{ id: 'note', at: { x: 50, y: 50 }, title: '', text: 'Remove me' }]}
+        comments={[{ id: 'note', at: { x: 50, y: 50 }, text: 'Remove me' }]}
         view={DEFAULT_VIEW}
         size={{ width: 100, height: 100 }}
         onChange={() => {}}
@@ -246,7 +241,6 @@ describe('image generation comment placement', () => {
     const comment = {
       id: 'note',
       at: { x: 50, y: 50 },
-      title: '',
       outline: [
         { x: 10, y: 10 },
         { x: 20, y: 10 },

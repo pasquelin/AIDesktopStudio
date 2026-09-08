@@ -135,8 +135,10 @@
   --color-warning: #e0a350;
   /*
    * A comment's own colour, outline and note alike: the ANGLE comes from the comment
-   * (`commentHue`), the ink stays here. 🛑 No guard holds these four — `tokensHue` and
-   * `tokensContrast` read hexadecimals only and skip a composed token, measured 2026-09-08.
+   * (`commentHue`), the ink stays here. 🛑 No RATIO guard reaches these four — `tokensHue` and
+   * `tokensContrast` read hexadecimals and skip a composed token. What holds them is written
+   * elsewhere: `theme.test.ts` for the two copies and the light ink, `tokensOpacitySources` for
+   * the one rule a ratio would have caught, that the hue may not letter.
    */
   --sc-comment-hue: 265;
   /* The half a comment may NOT move; the light theme restates this pair one step darker. */

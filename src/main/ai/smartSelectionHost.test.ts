@@ -242,7 +242,7 @@ describe('SmartSelectionHost', () => {
       ensureLoaded: vi.fn(),
       hold: () => vi.fn(),
       engine: () => Promise.resolve(engine(job)),
-      epoch: () => 1,
+      loadedEpoch: () => 1,
       readBitmap: read,
     })
 

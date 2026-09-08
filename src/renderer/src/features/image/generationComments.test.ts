@@ -26,21 +26,20 @@ describe('generation comments', () => {
     expect(commentFor('note-1', AT, 'layer-car')).toEqual({
       id: 'note-1',
       at: AT,
-      title: '',
       text: '',
       layerId: 'layer-car',
     })
   })
 
   it('keeps a comment global when no layer is active', () => {
-    expect(commentFor('note-1', AT, null)).toEqual({ id: 'note-1', at: AT, title: '', text: '' })
+    expect(commentFor('note-1', AT, null)).toEqual({ id: 'note-1', at: AT, text: '' })
   })
 
   it('names the area ahead of what is asked of it, once the person named it', () => {
     const named = { ...commentFor('note-1', AT, null), title: 'The sky', text: 'Make it stormy' }
 
     expect(promptWithComments('A wooden crate', [named], DEFAULT_CANVAS)).toContain(
-      '1. The sky: Make it stormy (',
+      '1. Make it stormy (area "The sky", whole image,',
     )
   })
 
@@ -51,7 +50,6 @@ describe('generation comments', () => {
         {
           id: 'note-1',
           at: AT,
-          title: '',
           text: 'Extract this car',
           outline: [AT, { x: 80, y: 80 }, { x: 80, y: 120 }],
         },
@@ -67,24 +65,21 @@ describe('generation comments', () => {
   it('ignores empty notes when preparing a generation', () => {
     expect(
       writtenGenerationComments([
-        { id: 'empty', at: AT, title: '', text: '  ' },
-        { id: 'written', at: AT, title: '', text: 'Keep this' },
+        { id: 'empty', at: AT, text: '  ' },
+        { id: 'written', at: AT, text: 'Keep this' },
       ]).map(comment => comment.id),
     ).toEqual(['written'])
   })
 
   it('isolates one layer only when every written note targets it', () => {
     const comments = [
-      { id: 'one', at: AT, title: '', text: 'First', layerId: 'car' },
-      { id: 'two', at: AT, title: '', text: 'Second', layerId: 'car' },
+      { id: 'one', at: AT, text: 'First', layerId: 'car' },
+      { id: 'two', at: AT, text: 'Second', layerId: 'car' },
     ]
 
     expect(generationCommentLayerId(comments)).toBe('car')
     expect(
-      generationCommentLayerId([
-        ...comments,
-        { id: 'global', at: AT, title: '', text: 'Whole image' },
-      ]),
+      generationCommentLayerId([...comments, { id: 'global', at: AT, text: 'Whole image' }]),
     ).toBeNull()
   })
 
@@ -100,8 +95,8 @@ describe('generation comments', () => {
       promptWithComments(
         'Improve the image',
         [
-          { id: 'one', at: AT, title: '', text: 'Extract it', layerId: 'car' },
-          { id: 'two', at: AT, title: '', text: 'Brighten it', layerId: 'sky' },
+          { id: 'one', at: AT, text: 'Extract it', layerId: 'car' },
+          { id: 'two', at: AT, text: 'Brighten it', layerId: 'sky' },
         ],
         canvas,
       ),
@@ -120,8 +115,8 @@ describe('generation comments', () => {
       promptWithComments(
         'Improve the image',
         [
-          { id: 'layer', at: AT, title: '', text: 'Extract it', layerId: 'car' },
-          { id: 'global', at: AT, title: '', text: 'Warm the scene' },
+          { id: 'layer', at: AT, text: 'Extract it', layerId: 'car' },
+          { id: 'global', at: AT, text: 'Warm the scene' },
         ],
         canvas,
       ),
@@ -138,9 +133,9 @@ describe('generation comments', () => {
 
     expect(
       generationCommentOutlines([
-        { id: 'one', at: AT, title: '', text: 'First', outline: first },
-        { id: 'pin', at: AT, title: '', text: 'Pin only' },
-        { id: 'two', at: AT, title: '', text: 'Second', outline: second },
+        { id: 'one', at: AT, text: 'First', outline: first },
+        { id: 'pin', at: AT, text: 'Pin only' },
+        { id: 'two', at: AT, text: 'Second', outline: second },
       ]),
     ).toEqual([first, second])
   })

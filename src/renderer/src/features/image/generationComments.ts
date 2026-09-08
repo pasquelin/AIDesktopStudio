@@ -8,15 +8,15 @@ import { digest } from '@shared/hash'
 export type GenerationComment = {
   id: string
   at: Point
-  /** What the area is called, in the person's own words. Empty until they name it. */
-  title: string
+  /** What the area is called, in the person's own words. Absent until they name it. */
+  title?: string
   text: string
   layerId?: string
   outline?: readonly Point[]
 }
 
 export function commentFor(id: string, at: Point, layerId: string | null): GenerationComment {
-  return { id, at, title: '', text: '', ...(layerId === null ? {} : { layerId }) }
+  return { id, at, text: '', ...(layerId === null ? {} : { layerId }) }
 }
 
 /**
@@ -57,17 +57,16 @@ export function supportsGenerationComments(fields: readonly FieldDescriptor[]): 
   )
 }
 
-/** The name the person gave the area, ahead of what they ask of it. Nothing when unnamed. */
-const named = (comment: GenerationComment): string =>
-  comment.title.trim() === '' ? '' : `${comment.title.trim()}: `
-
 function locationOf(comment: GenerationComment, canvas: Size | CanvasState): string {
   const size: Size = canvas
   const x = formatPercent(comment.at.x / size.width, 'en')
   const y = formatPercent(comment.at.y / size.height, 'en')
   const layer = comment.layerId && 'layers' in canvas ? layerById(canvas, comment.layerId) : null
   const scope = layer ? `layer "${layer.name}"` : 'whole image'
-  return `${scope}, ${comment.outline ? 'outlined area, ' : ''}anchored at ${x} × ${y}`
+  // The name belongs to the SCOPE, quoted as the layer already is — never as a `Title: ` prefix
+  // on the instruction, which a title holding a colon reads as a second one.
+  const named = comment.title?.trim() ? `area "${comment.title.trim()}", ` : ''
+  return `${named}${scope}, ${comment.outline ? 'outlined area, ' : ''}anchored at ${x} × ${y}`
 }
 
 export function promptWithComments(
@@ -76,8 +75,7 @@ export function promptWithComments(
   canvas: Size | CanvasState,
 ): string {
   const written = writtenGenerationComments(comments).map(
-    (comment, index) =>
-      `${index + 1}. ${named(comment)}${comment.text.trim()} (${locationOf(comment, canvas)})`,
+    (comment, index) => `${index + 1}. ${comment.text.trim()} (${locationOf(comment, canvas)})`,
   )
 
   return written.length === 0 ? prompt : `${prompt}\n\nImage comments:\n${written.join('\n')}`

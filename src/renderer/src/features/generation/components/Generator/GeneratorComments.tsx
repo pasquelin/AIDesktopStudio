@@ -31,7 +31,11 @@ export function GeneratorComments({ fields }: { fields: readonly FieldDescriptor
             <li key={comment.id}>
               <Row
                 icon={mdiCommentOutline}
-                title={comment.text.trim() || t('generation.imageCommentEmpty')}
+                // The name when there is one: this list is the only place that shows what will
+                // be sent, and it knew the note by its body while the canvas knew it by its name.
+                title={
+                  comment.title?.trim() || comment.text.trim() || t('generation.imageCommentEmpty')
+                }
                 subtitle={
                   layer
                     ? t('generation.imageCommentLayer', { name: layer.name })

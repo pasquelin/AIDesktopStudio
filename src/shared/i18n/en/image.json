@@ -33,7 +33,6 @@
     "selectLassoHint": "Draw a freehand selection",
     "smartSelect": "Smart Select",
     "smartSelectHint": "Select an object with the local selection model",
-    "smartNeedsModel": "No model serves cutout — pick one in Settings ▸ AI models",
     "shape": "Shapes",
     "shapeHint": "Draw a shape on the active layer",
     "shapeRectangle": "Rectangle",

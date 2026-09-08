@@ -24,7 +24,6 @@ describe('a commented image prepared for generation', () => {
         {
           id: 'note-1',
           at: { x: 10, y: 20 },
-          title: '',
           text: 'Remove this',
           layerId: 'car',
           outline: [
@@ -63,8 +62,8 @@ describe('a commented image prepared for generation', () => {
       {},
       FIELDS,
       [
-        { id: 'layer', at: { x: 1, y: 1 }, title: '', text: 'Layer', layerId: 'car' },
-        { id: 'global', at: { x: 2, y: 2 }, title: '', text: 'Global' },
+        { id: 'layer', at: { x: 1, y: 1 }, text: 'Layer', layerId: 'car' },
+        { id: 'global', at: { x: 2, y: 2 }, text: 'Global' },
       ],
       host,
       upload,
@@ -81,7 +80,7 @@ describe('a commented image prepared for generation', () => {
     const prepared = await prepareCommentedImage(
       { prompt: 'Keep it' },
       FIELDS,
-      [{ id: 'empty', at: { x: 1, y: 1 }, title: '', text: '  ' }],
+      [{ id: 'empty', at: { x: 1, y: 1 }, text: '  ' }],
       {
         snapshot,
         layerSnapshot: async () => null,
@@ -106,7 +105,7 @@ describe('a commented image prepared for generation', () => {
         { key: 'prompt', kind: 'longText', label: 'Prompt', promptSpark: true, required: true },
         { key: 'mask', kind: 'image', label: 'Mask', maskFrom: 'source', required: true },
       ],
-      [{ id: 'note', at: { x: 1, y: 1 }, title: '', text: 'Change this area' }],
+      [{ id: 'note', at: { x: 1, y: 1 }, text: 'Change this area' }],
       {
         snapshot,
         layerSnapshot: async () => null,

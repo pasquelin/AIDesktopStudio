@@ -247,17 +247,21 @@ describe('the contrast of the inks', () => {
   })
 
   /**
-   * 🛑 A comment's hue is FREE — `commentHue` takes the angle off an id — so a word painted in it
-   * is a word whose contrast nobody chose: measured over the 360 angles, 3.38:1 at 190° on the
-   * light theme, where WCAG 1.4.3 asks 4.5. The hue may stroke and fill, never letter, and no
-   * ratio guard can see it: `tokensContrast` reads hexadecimals and skips a composed token.
+   * 🛑 A comment's hue is FREE — measured 3.38:1 at 190° on the light theme, under the 4.5 of
+   * WCAG 1.4.3 — so it may stroke and fill, never LETTER. `tokensContrast` reads hexadecimals
+   * and cannot see a token composed like this one.
    */
   it('letters nothing in the hue a comment picks for itself', () => {
-    const offenders = WRITTEN_SOURCES.filter(([, source]) =>
-      /\btext-comment-mark(?![\w-])/.test(source),
-    ).map(([path]) => path)
+    const lettered = /\btext-comment-mark(?![\w-])/
+    const offenders = WRITTEN_SOURCES.filter(([, source]) => lettered.test(source)).map(
+      ([path]) => path,
+    )
 
     expect(offenders).toEqual([])
+    // The rule refuses something, which a sweep that only ever returns nothing cannot show.
+    expect(lettered.test("'text-comment-mark'")).toBe(true)
+    expect(lettered.test("'fill-comment-mark-overlay'")).toBe(false)
+    expect(lettered.test("'stroke-comment-mark'")).toBe(false)
   })
 })
 

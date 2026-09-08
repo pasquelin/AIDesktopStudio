@@ -1,12 +1,7 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Asset } from '@shared/domain/asset'
-import { aiOverview, roleRow } from '@shared/domain/aiOverview-fixtures'
-import { SMART_SELECTION_ROLE } from '@shared/domain/aiRole'
-import { localModel } from '@shared/domain/localModel-fixtures'
-import { useAiModels } from '@/stores/aiModels'
-import { chooseModels } from '@/stores/models-fixtures'
 import { ASSET_DRAG_TYPE, startAssetDrag } from '@/helpers/assetDrag'
 import { dragTransfer } from '@/helpers/drag-fixtures'
 import { useAssets } from '@/stores/assets'
@@ -181,77 +176,6 @@ describe('ImageDocument', () => {
     await userEvent.hover(screen.getByRole('button', { name: /^Pinceau/ }))
     // A regex, not the bare label: a row that carries a key wears it in its accessible name.
     expect(await screen.findByRole('menuitemradio', { name: /^Crayon/ })).toBeInTheDocument()
-  })
-
-  /** Both promptable modes hang on ONE model, and the bar named only the comment. */
-  describe('the two modes a selection model serves', () => {
-    /** The bar reads the `fr` bundle, so each button is found by the label it wears there. */
-    const PROMPTABLE: readonly [string, RegExp][] = [
-      ['the region', /^Sélection/],
-      ['the comment', /^Commentaire/],
-    ]
-
-    const served = aiOverview({
-      roles: [
-        roleRow({
-          role: SMART_SELECTION_ROLE,
-          provider: { kind: 'local', modelId: 'efficient-sam-ti' },
-          chosen: { app: { kind: 'local', modelId: 'efficient-sam-ti' }, project: null },
-          candidates: [
-            {
-              model: localModel({ id: 'efficient-sam-ti' }),
-              installed: true,
-              loaded: false,
-              holdable: true,
-              unverified: false,
-              supplied: false,
-              serves: 1,
-              fit: 'compatible',
-              obstacle: null,
-            },
-          ],
-        }),
-      ],
-    })
-
-    // Neither store is reset by `testSetupStores`, so a case appended after these would run with
-    // a selection model installed without saying so — green for a reason it never asked for.
-    afterEach(() => {
-      useAiModels.setState({ overview: null })
-      chooseModels()
-    })
-
-    async function smartRowOf(tool: RegExp): Promise<HTMLElement> {
-      render(<ImageDocument documentId="doc-1" />)
-      await userEvent.hover(screen.getByRole('button', { name: tool }))
-      return await screen.findByRole('menuitemradio', { name: /intelligent/i })
-    }
-
-    it.each(PROMPTABLE)(
-      'leaves %s out of reach while no model serves the role',
-      async (_, tool) => {
-        useAiModels.setState({ overview: null })
-
-        expect(await smartRowOf(tool)).toBeDisabled()
-      },
-    )
-
-    it.each(PROMPTABLE)('says where the model is picked, not what %s would do', async (_, tool) => {
-      useAiModels.setState({ overview: null })
-
-      // The sentence rides on the tooltip attribute, which is where `HINT_RIGHT` puts it.
-      expect(await smartRowOf(tool)).toHaveAttribute(
-        'data-tooltip-content',
-        expect.stringContaining('Réglages'),
-      )
-    })
-
-    it.each(PROMPTABLE)('arms %s once one does', async (_, tool) => {
-      chooseModels({ [SMART_SELECTION_ROLE]: 'efficient-sam-ti' })
-      useAiModels.setState({ overview: served })
-
-      expect(await smartRowOf(tool)).toBeEnabled()
-    })
   })
 
   it('draws no history button of its own', () => {

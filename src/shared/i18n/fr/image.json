@@ -33,7 +33,6 @@
     "selectLassoHint": "Tracer une sélection à main levée",
     "smartSelect": "Sélection intelligente",
     "smartSelectHint": "Sélectionner un objet avec le modèle local",
-    "smartNeedsModel": "Aucun modèle ne sert le détourage — en choisir un dans Réglages ▸ Modèles d’IA",
     "shape": "Formes",
     "shapeHint": "Tracer une forme sur le calque actif",
     "shapeRectangle": "Rectangle",
