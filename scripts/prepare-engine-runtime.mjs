@@ -149,15 +149,26 @@ function writeRuntimeManifest(manifest) {
 }
 
 /**
- * 🛑 `uv pip install` reads no project config, so the index `engine/pyproject.toml` declares for
- * Linux is named here too: the export asks for `torch==2.14.0+cpu`, which PyPI does not carry at
- * all. `unsafe-best-match` because the default stops at the first index holding ANY version of a
- * package, and PyPI holds torch.
+ * 🛑 LINUX ONLY. `uv pip install` reads no project config, so the index `engine/pyproject.toml`
+ * declares has to be named here too — the export asks for `torch==2.14.0+cpu`, which PyPI does
+ * not carry. `unsafe-best-match` with it, the default stopping at the first index holding ANY
+ * version of a package, and PyPI holding torch.
  *
- * Safe despite the name: every line of the export is hash-pinned, so no index can substitute
- * anything for anything.
+ * Never elsewhere: the PyTorch index also publishes a plain `2.14.0`, a DIFFERENT artefact from
+ * PyPI's, and the two indexes searched together made uv take that one on macOS — `Hash mismatch
+ * for torch==2.14.0`, measured 2026-09-08. Hashes do not PREVENT a substitution, they catch it.
  */
-function installRequirements(python, requirements) {
+const cpuIndexFor = platform =>
+  platform === 'linux'
+    ? [
+        '--extra-index-url',
+        'https://download.pytorch.org/whl/cpu',
+        '--index-strategy',
+        'unsafe-best-match',
+      ]
+    : []
+
+function installRequirements(python, requirements, platform) {
   execFileSync(
     'uv',
     [
@@ -168,10 +179,7 @@ function installRequirements(python, requirements) {
       '--exact',
       '--only-binary',
       ':all:',
-      '--extra-index-url',
-      'https://download.pytorch.org/whl/cpu',
-      '--index-strategy',
-      'unsafe-best-match',
+      ...cpuIndexFor(platform),
       '--requirement',
       requirements,
     ],
@@ -202,7 +210,7 @@ export function prepareEngineRuntime(platform = process.platform, arch = process
       ],
       { cwd: ROOT, stdio: 'inherit' },
     )
-    installRequirements(python, requirements)
+    installRequirements(python, requirements, platform)
     const sitePackages = sitePackagesOf(python)
     removeBytecode(join(RUNTIME, 'python'))
     const manifest = runtimeManifest(sitePackages, platform, arch)
