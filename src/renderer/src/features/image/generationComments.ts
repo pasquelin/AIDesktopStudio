@@ -16,6 +16,21 @@ export function commentFor(id: string, at: Point, layerId: string | null): Gener
   return { id, at, text: '', ...(layerId === null ? {} : { layerId }) }
 }
 
+/**
+ * The hue one comment wears, on its outline as on its note. Two notes over the same picture were
+ * the same blue, so which area a note spoke of could only be found by dragging it — this is what
+ * tells them apart. Taken from the ID rather than from the position in the list: removing the
+ * first comment would otherwise repaint every one below it.
+ *
+ * The angle alone. Chroma and lightness stay in `index-foundation.css`, which is what keeps a
+ * random hue from also being a random contrast.
+ */
+export function commentHue(id: string): number {
+  let spread = 0
+  for (const code of id) spread = (spread * 31 + code.charCodeAt(0)) % 360
+  return spread
+}
+
 export function writtenGenerationComments(
   comments: readonly GenerationComment[],
 ): readonly GenerationComment[] {

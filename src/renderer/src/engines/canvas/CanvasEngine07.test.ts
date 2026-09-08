@@ -22,7 +22,16 @@ import { DEFAULT_VIEW, type Viewport } from './viewport'
  * building a texture, and nothing caught it.
  */
 import type { Placed } from './canvasEngineTest-fixtures'
-import { canvasGpu, mounted, nextFrame, press, VIEW_1_1 } from './canvasEngineTest-fixtures'
+import {
+  canvasGpu,
+  drag,
+  mounted,
+  nextFrame,
+  overlayRecorder,
+  press,
+  release,
+  VIEW_1_1,
+} from './canvasEngineTest-fixtures'
 
 describe('the layer transform', () => {
   /** One layer, with the transform under test, and the sprite the engine built for it. */
@@ -162,15 +171,6 @@ describe('the view', () => {
     expect(canvasGpu().renders).toBeGreaterThan(0)
   })
 })
-
-/** `pointermove` goes to the host, `pointerup` to the window — as the engine listens for them. */
-function drag(host: HTMLElement, x: number, y: number, shiftKey = false): void {
-  host.dispatchEvent(new PointerEvent('pointermove', { clientX: x, clientY: y, shiftKey }))
-}
-
-function release(x = 400, y = 400): void {
-  window.dispatchEvent(new PointerEvent('pointerup', { clientX: x, clientY: y }))
-}
 
 describe('painting cells by call', () => {
   const CELL = { x: 0, y: 0, width: 1, height: 1 }
@@ -381,5 +381,36 @@ describe('intelligent generation comments', () => {
     release(120, 80)
 
     expect(smartCommentPrompts).toEqual([{ box: { x: 120, y: 80, width: 200, height: 200 } }])
+  })
+
+  it('normalizes an intelligent comment box dragged toward its origin', async () => {
+    const { engine, host, smartCommentPrompts } = await mounted()
+    engine.setTool('smartComment')
+
+    press(host, 320, 280)
+    drag(host, 120, 80)
+    release(120, 80)
+
+    expect(smartCommentPrompts).toEqual([{ box: { x: 120, y: 80, width: 200, height: 200 } }])
+  })
+
+  /**
+   * The comment drew nothing while the hand was down, where the selector outlined its box: the
+   * area was traced blind, and only the mask coming back said where it had been.
+   */
+  it('outlines the box an intelligent comment is being dragged over', async () => {
+    const { corners } = overlayRecorder()
+    const { engine, host } = await mounted()
+    engine.setTool('smartComment')
+    engine.setView({ ...VIEW_1_1, rulers: false, guides: false, snap: false })
+    await nextFrame()
+
+    press(host, 120, 80)
+    drag(host, 320, 280)
+    corners.length = 0
+    await nextFrame()
+
+    expect(corners).toContainEqual([120.5, 80.5])
+    expect(corners).toContainEqual([320.5, 280.5])
   })
 })

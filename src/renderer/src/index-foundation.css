@@ -133,12 +133,27 @@
    * order, which is the lesson `--color-accent` cost below.
    */
   --color-warning: #e0a350;
-  --color-comment-note: #5a4b22;
-  --color-comment-note-border: #a98d3e;
-  --color-comment-note-content: #fff3bd;
-  --color-comment-note-fold: #806d32;
-  --color-comment-mark: #7694ff;
-  --color-comment-mark-overlay: color-mix(in srgb, #7694ff 20%, transparent);
+  /*
+   * A comment's own colour, outline and note alike. The ANGLE comes from the comment
+   * (`commentHue`), so two notes over one picture never wear the same one; the chroma and the
+   * lightness are written here, which is what keeps a free hue from being a free contrast.
+   *
+   * 🛑 No guard holds these four: `tokensHue` and `tokensContrast` read hexadecimals only, and
+   * skip a token composed like this one — measured 2026-09-08, they stay green whatever is
+   * written here. The angle is the only thing a caller may move.
+   */
+  --sc-comment-hue: 265;
+  /* Lightness and chroma, the half a comment may NOT move — `.generation-comment` composes the
+     four tokens from these and the angle. The light theme restates the pair one step darker. */
+  --sc-comment-ink: 0.72 0.16;
+  --color-comment-mark: oklch(var(--sc-comment-ink) var(--sc-comment-hue));
+  --color-comment-mark-overlay: color-mix(in srgb, var(--color-comment-mark) 20%, transparent);
+  --color-comment-note: color-mix(in srgb, var(--color-comment-mark) 14%, var(--color-surface));
+  --color-comment-note-border: color-mix(
+    in srgb,
+    var(--color-comment-mark) 45%,
+    var(--color-border)
+  );
   /*
    * The one button that CREATES rather than shows. Its own token, apart from the blue accent of
    * everything that merely selects: the new-document button has to be findable in a rail of grey

@@ -85,9 +85,13 @@ const light = colorsIn(blockFrom(`name: '${THEME_ATTRIBUTE.light}'`))
  *
  * Read off the value rather than listed by name, so the next one costs nothing — and so nobody
  * has to notice that the rule below would otherwise ask for a duplicate.
+ *
+ * ANY variable, not only `--color-*`: `--color-comment-mark` composes a gauge pair and an angle
+ * (`--sc-comment-ink`, `--sc-comment-hue`), and the substitution reaches it the same way. A
+ * colour written out is still owed a light one, which the assertion below keeps showing.
  */
 function isDerived(value: string): boolean {
-  return value.includes('var(--color-')
+  return value.includes('var(--')
 }
 
 describe('the light theme', () => {

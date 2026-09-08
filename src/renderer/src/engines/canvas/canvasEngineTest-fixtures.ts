@@ -210,14 +210,15 @@ function doubleClick(host: HTMLElement, x: number, y: number): void {
 }
 
 /**
- * What the overlay put on screen, in order: the rectangles it filled — the grips — and the
- * circles it traced — the brush ring. The overlay paints only when its canvas hands out a 2D
- * context, and `testSetup` denies one to the whole renderer, so lending it a recorder for the
- * length of one test is the only outlet this chrome has.
+ * What the overlay put on screen, in order: the rectangles it filled — the grips — the circles
+ * it traced — the brush ring — and the corners its dashed outlines pass through. The overlay paints
+ * only when its canvas hands out a 2D context, and `testSetup` denies one to the whole renderer,
+ * so lending it a recorder for the length of one test is the only outlet this chrome has.
  */
-function overlayRecorder(): { fills: number[][]; rings: number[][] } {
+function overlayRecorder(): { fills: number[][]; rings: number[][]; corners: number[][] } {
   const fills: number[][] = []
   const rings: number[][] = []
+  const corners: number[][] = []
   const ignore = (): void => {}
   const context = {
     save: ignore,
@@ -225,8 +226,12 @@ function overlayRecorder(): { fills: number[][]; rings: number[][] } {
     setTransform: ignore,
     clearRect: ignore,
     beginPath: ignore,
-    moveTo: ignore,
-    lineTo: ignore,
+    moveTo: (x: number, y: number): void => {
+      corners.push([x, y])
+    },
+    lineTo: (x: number, y: number): void => {
+      corners.push([x, y])
+    },
     stroke: ignore,
     strokeRect: ignore,
     fillText: ignore,
@@ -254,7 +259,7 @@ function overlayRecorder(): { fills: number[][]; rings: number[][] } {
     HTMLCanvasElement.prototype.getContext = previous
   })
 
-  return { fills, rings }
+  return { fills, rings, corners }
 }
 
 /** How many tree mutations happen from here on, read when the assertion needs it. */

@@ -10,8 +10,8 @@ import { box } from './shapeGeometry'
 import type { Point } from '../core/geometry'
 import { wheelStep, toDocument, zoomCanvasAt } from './viewport'
 import type { LayerSurface } from './canvasEngineSupport1'
-import { NO_GESTURE, LAYER_DRAGS, sameHit, cursorFor } from './canvasEngineSupport2'
-import type { HoverBox } from './canvasEngineSupport2'
+import { NO_GESTURE, LAYER_DRAGS, isSmartGesture, sameHit, cursorFor } from './canvasEngineSupport2'
+import type { HoverBox, SmartGesture } from './canvasEngineSupport2'
 import { CanvasPointerTracking } from './CanvasPointerTracking'
 
 export abstract class CanvasInput extends CanvasPointerTracking {
@@ -39,7 +39,7 @@ export abstract class CanvasInput extends CanvasPointerTracking {
     if (gesture.kind === 'paint') this.endPixels()
     if (gesture.kind === 'shape') this.commitShape(gesture.from, gesture.to)
     if (gesture.kind === 'text') this.commitText(gesture.from, gesture.to)
-    if (gesture.kind === 'smartSelect' || gesture.kind === 'smartComment') {
+    if (isSmartGesture(gesture)) {
       this.smartPrompt(gesture)
       this.overlay.invalidate()
     }
@@ -52,9 +52,7 @@ export abstract class CanvasInput extends CanvasPointerTracking {
     if (gesture.kind === 'select' && isEmptySelection(this.selection)) this.publishSelection(null)
   }
 
-  private smartPrompt(
-    gesture: Extract<typeof this.gesture, { kind: 'smartSelect' | 'smartComment' }>,
-  ): void {
+  private smartPrompt(gesture: SmartGesture): void {
     const callback =
       gesture.kind === 'smartSelect' ? this.options.onSmartSelect : this.options.onSmartComment
     const corners = this.gridBox(gesture.from, gesture.to)

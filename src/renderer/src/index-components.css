@@ -40,12 +40,13 @@
   /* Darkened from the dark theme's amber: #e0a350 on white carries no text and reads as beige. */
   --color-warning: #885606;
   --color-warning-content: #ffffff;
-  --color-comment-note: #fff0a6;
-  --color-comment-note-border: #c5a548;
-  --color-comment-note-content: #2f2915;
-  --color-comment-note-fold: #dcc15c;
-  --color-comment-mark: #5978e8;
-  --color-comment-mark-overlay: color-mix(in srgb, #5978e8 20%, transparent);
+  /*
+   * The comment's INK only, one step darker: the dark theme's is a highlight on black and a
+   * pastel on white. The four colours themselves are not restated — they compose from this pair
+   * and from the angle, identically on both themes, and a copy here would be a line `theme.test`
+   * reads as a light value that forgot to change.
+   */
+  --sc-comment-ink: 0.55 0.17;
   /* Same reason: the dark theme's coral is a highlight on black and a pastel on white. */
   --color-error: #b72e27;
   --color-error-content: #ffffff;
@@ -170,7 +171,6 @@
   --sc-comment-outline: 3px;
   --sc-comment-note-width: calc(220px * var(--sc-font-scale));
   --sc-comment-note-text: calc(44px * var(--sc-font-scale));
-  --sc-comment-note-fold: 10px;
   /* The rail a slider runs on, and the handle that runs along it. Gauges rather than classes
      because the browser's own slider honours neither: its track is white on one field and blue
      on the next, at a thickness nothing here chose. `slider-handle` drops it and the rail is
@@ -319,25 +319,28 @@
   --sc-shadow-floating: 0 8px 24px rgb(0 0 0 / 0.55);
 }
 
+/*
+ * 🛑 The four colour tokens are RESTATED here, on the element, and that is not a duplicate of
+ * `@theme`: a custom property that reads another is substituted where it is DECLARED, so the
+ * `:root` copies resolve against the root's hue and an element's own angle changes nothing.
+ * `@theme` still carries them — that is what makes Tailwind emit `bg-comment-note` at all.
+ */
+.generation-comment {
+  --color-comment-mark: oklch(var(--sc-comment-ink) var(--sc-comment-hue));
+  --color-comment-mark-overlay: color-mix(in srgb, var(--color-comment-mark) 20%, transparent);
+  --color-comment-note: color-mix(in srgb, var(--color-comment-mark) 14%, var(--color-surface));
+  --color-comment-note-border: color-mix(
+    in srgb,
+    var(--color-comment-mark) 45%,
+    var(--color-border)
+  );
+}
+
+/* Its own size only: the skin, the corner and the shadow come from `MENU_RAISED`, like every
+   other surface that floats over a pane. */
 .generation-comment-note {
   width: var(--sc-comment-note-width);
   min-height: var(--sc-comment-note-text);
-  gap: calc(var(--sc-control-inline) / 4);
-  padding: calc(var(--sc-control-inline) / 2);
-  border-radius: var(--radius-sc-sm);
-  box-shadow: var(--sc-shadow-floating);
-}
-
-.generation-comment-note::after {
-  position: absolute;
-  right: -1px;
-  bottom: -1px;
-  width: 0;
-  height: 0;
-  border-width: var(--sc-comment-note-fold) var(--sc-comment-note-fold) 0 0;
-  border-style: solid;
-  border-color: var(--color-comment-note-fold) transparent transparent transparent;
-  content: '';
 }
 
 :root[data-density='compact'] {

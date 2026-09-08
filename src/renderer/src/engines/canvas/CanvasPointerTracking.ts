@@ -8,6 +8,7 @@ import type { Point } from '../core/geometry'
 import { onCellBoundary } from './pixelGrid'
 import { toDocument } from './viewport'
 import type { BrushTarget } from './canvasEngineSupport1'
+import { isSmartGesture, type SmartGesture } from './canvasEngineSupport2'
 import { CanvasPainting } from './CanvasPainting'
 import { GENERATION_COMMENT_OUTLINE_MAX } from '@shared/domain/generationComment'
 
@@ -67,10 +68,7 @@ export abstract class CanvasPointerTracking extends CanvasPainting {
     }
   }
 
-  private trackSmart(
-    gesture: Extract<typeof this.gesture, { kind: 'smartSelect' | 'smartComment' }>,
-    point: Point,
-  ): void {
+  private trackSmart(gesture: SmartGesture, point: Point): void {
     gesture.to = point
     this.overlay.invalidate()
   }
@@ -232,9 +230,9 @@ export abstract class CanvasPointerTracking extends CanvasPainting {
     if (event.buttons !== 0) return
 
     const host = this.toHost(event)
-    if (this.gesture.kind === 'smartSelect' || this.gesture.kind === 'smartComment') {
-      this.gesture.to = toDocument(this.shownViewport(), host)
-    }
+    // The RELEASE point, and not the last move: a box drawn in one throw emits no `pointermove`
+    // at all, and both tools then prompted on a zero-area box that fell back to a click.
+    if (isSmartGesture(this.gesture)) this.gesture.to = toDocument(this.shownViewport(), host)
     // The corner counts: a guide dropped anywhere on the chrome is a guide thrown away.
     const onChrome = this.inRuler(host) !== null
     this.forgetHover()

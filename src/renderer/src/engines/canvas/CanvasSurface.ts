@@ -8,8 +8,15 @@ import { type Corners } from './handles'
 import { box } from './shapeGeometry'
 import { RULER_SIZE, type OverlayScene, type PendingShape, type ToolChrome } from './CanvasOverlay'
 import { fitTo, onDevicePixels, type Viewport } from './viewport'
+import type { Point } from '../core/geometry'
 import { strokeWidth } from './canvasEngineSupport1'
-import { RULER_FAMILY, RULER_FONT_SIZE, readColors, released } from './canvasEngineSupport2'
+import {
+  RULER_FAMILY,
+  RULER_FONT_SIZE,
+  isSmartGesture,
+  readColors,
+  released,
+} from './canvasEngineSupport2'
 import { CanvasEditing } from './CanvasEditing'
 
 export abstract class CanvasSurface extends CanvasEditing {
@@ -168,8 +175,7 @@ export abstract class CanvasSurface extends CanvasEditing {
   }
 
   private toolChrome(): ToolChrome {
-    const smartDrag =
-      this.gesture.kind === 'smartSelect' ? this.gridBox(this.gesture.from, this.gesture.to) : null
+    const smartDrag = this.smartDrag()
     return {
       crop: this.cropping,
       handles: this.activeCorners(),
@@ -221,8 +227,17 @@ export abstract class CanvasSurface extends CanvasEditing {
       selectionOutline(this.selection).length > 0 ||
       this.cropping !== null ||
       this.textBox !== null ||
-      this.gesture.kind === 'smartSelect'
+      this.smartDrag() !== null
     )
+  }
+
+  /**
+   * The two corners a promptable drag stands between, for either tool: the comment used to draw
+   * nothing at all, so a box was traced blind and only the mask that came back said where.
+   */
+  private smartDrag(): { from: Point; to: Point } | null {
+    if (!isSmartGesture(this.gesture)) return null
+    return this.gridBox(this.gesture.from, this.gesture.to)
   }
 
   /**

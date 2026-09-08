@@ -1,11 +1,14 @@
+import type { CSSProperties } from 'react'
 import { mdiClose, mdiCreationOutline } from '@mdi/js'
 import { useTranslation } from 'react-i18next'
 import { GENERATION_COMMENT_TEXT_MAX } from '@shared/domain/generationComment'
+import { MENU_RAISED } from '@/components/panelStyles'
 import { ToolButton } from '@/components/ToolButton'
+import { cn } from '@/helpers/cn'
 import type { CanvasView } from '@/engines/canvas/viewport'
 import type { Size } from '@/engines/core/geometry'
 import { TIP_TOP } from '@/helpers/tooltip'
-import type { GenerationComment } from '../../generationComments'
+import { commentHue, type GenerationComment } from '../../generationComments'
 
 type ImageDocumentCommentProps = {
   comment: GenerationComment
@@ -20,10 +23,18 @@ type ImageDocumentCommentProps = {
 export function ImageDocumentComment(props: ImageDocumentCommentProps) {
   const { t } = useTranslation()
   const { comment } = props
+  // Its own hue, on the outline and on the note: the four colours of `index-foundation.css` all
+  // compose from this one angle, so posting it is all a comment does about its colour. Cast
+  // because React types no custom property, the same reason `appRegion.ts` casts.
+  const hue = { '--sc-comment-hue': commentHue(comment.id) } as CSSProperties
   return (
     <>
       {comment.outline && (
-        <svg aria-hidden className="pointer-events-none absolute inset-0 size-full">
+        <svg
+          aria-hidden
+          className="generation-comment pointer-events-none absolute inset-0 size-full"
+          style={hue}
+        >
           <polygon
             className="fill-comment-mark-overlay stroke-comment-mark"
             strokeWidth="var(--sc-comment-outline)"
@@ -41,8 +52,14 @@ export function ImageDocumentComment(props: ImageDocumentCommentProps) {
         </svg>
       )}
       <div
-        className="generation-comment-note bg-comment-note border-comment-note-border text-comment-note-content pointer-events-auto absolute z-10 flex flex-col border"
+        className={cn(
+          MENU_RAISED,
+          'generation-comment generation-comment-note text-text',
+          'bg-comment-note border-comment-note-border',
+          'pointer-events-auto absolute z-10 gap-2 p-2',
+        )}
         style={{
+          ...hue,
           left: props.view.viewport.x + comment.at.x * props.view.viewport.scale,
           top: props.view.viewport.y + comment.at.y * props.view.viewport.scale,
           transform: `translate(${comment.at.x > props.size.width / 2 ? '-100%' : '0'}, ${comment.at.y > props.size.height / 2 ? '-100%' : '0'})`,
@@ -50,7 +67,7 @@ export function ImageDocumentComment(props: ImageDocumentCommentProps) {
         onPointerDown={event => event.stopPropagation()}
       >
         <div className="flex w-full items-center gap-1.5">
-          <span className="border-comment-note-border text-tiny flex size-(--sc-control-inline) shrink-0 items-center justify-center rounded-full border font-medium">
+          <span className="border-comment-note-border text-comment-mark text-tiny flex size-(--sc-control-inline) shrink-0 items-center justify-center rounded-full border font-medium">
             {props.number}
           </span>
           <span className="flex-1" />
@@ -78,7 +95,7 @@ export function ImageDocumentComment(props: ImageDocumentCommentProps) {
           />
         </div>
         <textarea
-          className="text-comment-note-content min-h-(--sc-comment-note-text) w-full resize-none bg-transparent text-xs leading-normal outline-none"
+          className="text-text placeholder:text-muted min-h-(--sc-comment-note-text) w-full resize-none bg-transparent text-xs leading-normal outline-none"
           data-sc="field:image.generationComment"
           aria-label={t('imageComments.edit')}
           autoFocus={comment.text.length === 0}

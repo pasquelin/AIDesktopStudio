@@ -7,7 +7,7 @@ import { type OverlayColors } from './CanvasOverlay'
 import { type Axis } from './guides'
 import { PATCH_BUDGET } from './PixelPatches'
 import type { Point, Size } from '../core/geometry'
-import type { CanvasTool } from './canvasTool'
+import { isSmartTool, type CanvasTool, type SmartTool } from './canvasTool'
 import type { BrushTarget } from './canvasEngineSupport1'
 
 /** The stencil that cuts a clipped layer out of the one below it, and what holds the pair. */
@@ -44,6 +44,16 @@ export type Gesture =
   | { kind: 'handle'; id: string; handle: HandleId; from: Point; origin: Transform }
   /** Turning by the zone outside a corner. `center` is the middle the layer pivots about. */
   | { kind: 'rotate'; id: string; center: Point; from: Point; origin: Transform }
+
+/**
+ * The drag of a promptable tool, whichever of the two armed it — a gesture kind and a tool name
+ * are the SAME word here, which is what lets one predicate answer for both.
+ */
+export type SmartGesture = Extract<Gesture, { kind: SmartTool }>
+
+export function isSmartGesture(gesture: Gesture): gesture is SmartGesture {
+  return isSmartTool(gesture.kind)
+}
 
 export const NO_GESTURE: Gesture = { kind: 'none' }
 
