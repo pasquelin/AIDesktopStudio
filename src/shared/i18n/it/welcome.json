@@ -1,72 +1,72 @@
 {
   "welcome": {
-    "skip": "Skip",
-    "skipHint": "Closes this introduction and opens the studio with the current settings",
-    "back": "Back",
-    "backHint": "Returns to the previous screen",
-    "next": "Continue",
-    "nextHint": "Goes to the next screen",
-    "done": "Get started",
-    "doneHint": "Closes this introduction and opens the studio",
-    "steps": "Step {{current, number}} of {{total, number}}",
-    "goToStep": "Go to step {{current, number}} — {{title}}",
+    "skip": "Salta",
+    "skipHint": "Chiude questa introduzione e apre lo studio con le impostazioni attuali",
+    "back": "Indietro",
+    "backHint": "Torna alla schermata precedente",
+    "next": "Continua",
+    "nextHint": "Passa alla schermata successiva",
+    "done": "Inizia",
+    "doneHint": "Chiude questa introduzione e apre lo studio",
+    "steps": "Passo {{current, number}} di {{total, number}}",
+    "goToStep": "Vai al passo {{current, number}} — {{title}}",
     "language": {
-      "title": "Choose your language",
-      "body": "Every menu, button and message uses this language. You can change it later in Settings.",
-      "hint": "Shows the application in {{name}}"
+      "title": "Scegli la tua lingua",
+      "body": "Tutti i menu, i pulsanti e i messaggi usano questa lingua. Puoi cambiarla più tardi nelle impostazioni.",
+      "hint": "Mostra l’applicazione in {{name}}"
     },
     "look": {
-      "title": "How it looks",
-      "body": "Dark is the studio’s own theme. Switch it if you work in daylight.",
-      "themeHint": "Switches the application to the {{name}} theme"
+      "title": "L’aspetto",
+      "body": "Il tema scuro è quello dello studio. Cambialo se lavori alla luce del giorno.",
+      "themeHint": "Passa l’applicazione al tema {{name}}"
     },
     "craft": {
-      "title": "Your 3D navigation",
-      "body": "The 3D view mirrors the gestures of the software you already know. You can change it later in the settings.",
-      "navigationHint": "Uses {{name}} viewport gestures in the 3D view"
+      "title": "La tua navigazione 3D",
+      "body": "La vista 3D riprende i gesti del software che già conosci. Puoi cambiarla più tardi nelle impostazioni.",
+      "navigationHint": "Usa i gesti di {{name}} nella vista 3D"
     },
     "ai": {
-      "title": "AI, through every door",
-      "body": "The studio depends on no AI in particular: they plug in, they swap out, and they can even drive it.",
+      "title": "L’IA, da ogni porta",
+      "body": "Lo studio non dipende da nessuna IA in particolare: si collegano, si sostituiscono, e possono perfino pilotarlo.",
       "local": {
-        "title": "On this machine",
-        "body": "The studio downloads the weights and runs them here. Nothing leaves, nothing is billed."
+        "title": "Su questa macchina",
+        "body": "Lo studio scarica i pesi e li fa girare qui. Non esce nulla, non si fattura nulla."
       },
       "ollama": {
-        "title": "With Ollama",
-        "body": "Already installed? The studio reads your models and uses them as they are."
+        "title": "Con Ollama",
+        "body": "Già installato? Lo studio legge i tuoi modelli e se ne serve così come sono."
       },
       "cloud": {
-        "title": "At a provider",
-        "body": "One key, and generation goes out. Interchangeable: none of them is the product."
+        "title": "Presso un fornitore",
+        "body": "Una chiave, e la generazione parte lontano. Intercambiabili: nessuno di loro è il prodotto."
       },
       "mcp": {
-        "title": "And the other way round",
-        "body": "The studio publishes its tools: Claude Code, or any MCP agent, opens a project and generates for you."
+        "title": "E nell’altro senso",
+        "body": "Lo studio pubblica i suoi strumenti: Claude Code, o qualsiasi agente MCP, apre un progetto e genera al posto tuo."
       }
     },
     "models": {
-      "title": "Models, section by section",
-      "body": "The studio downloads the weights, then runs them here. Some models require access from their publisher. The size shows the disk space needed.",
-      "sectionHint": "Shows the models of: {{name}}",
-      "more": "The full catalogue lives in the settings.",
-      "motionOptional": "Motion generation is optional. Install a model now, or continue and find it later in Settings → AI → 3D. Animation retargeting works without AI."
+      "title": "I modelli, sezione per sezione",
+      "body": "Lo studio scarica i pesi, poi li fa girare qui. Alcuni modelli richiedono un accesso presso il loro editore. La dimensione indica lo spazio su disco necessario.",
+      "sectionHint": "Mostra i modelli di: {{name}}",
+      "more": "Il catalogo completo è nelle impostazioni.",
+      "motionOptional": "La generazione di movimenti è facoltativa. Installa un modello adesso, oppure continua e ritrovalo più tardi in Impostazioni → IA → 3D. Il trasferimento di animazione funziona senza IA."
     },
     "account": {
-      "title": "A cloud, if you have one",
-      "body": "The studio works without an account, on your own files. A key unlocks generation and the shared library.",
-      "stored": "These services are already saved on this machine. Add another one, or carry on.",
-      "addService": "Add a service",
-      "addServiceHint": "Opens the form to store one more key",
-      "adding": "Paste the key of the service to store.",
-      "backToList": "Back to the list",
-      "backToListHint": "Drops what is typed here and shows the stored services again"
+      "title": "Un cloud, se ne hai uno",
+      "body": "Lo studio funziona senza account, sui tuoi file. Una chiave sblocca la generazione e la libreria condivisa.",
+      "stored": "Questi servizi sono già registrati su questa macchina. Aggiungine un altro, oppure prosegui.",
+      "addService": "Aggiungi un servizio",
+      "addServiceHint": "Apre il modulo per registrare un’altra chiave",
+      "adding": "Incolla la chiave del servizio da registrare.",
+      "backToList": "Torna alla lista",
+      "backToListHint": "Abbandona ciò che è digitato qui e rimostra i servizi registrati"
     },
     "project": {
-      "title": "Your first project",
-      "body": "A project is a folder on your disk. Create one, open one, or skip and start from Home.",
-      "createHint": "Picks an empty folder and makes it the project",
-      "openHint": "Opens a project folder already on this disk"
+      "title": "Il tuo primo progetto",
+      "body": "Un progetto è una cartella sul tuo disco. Creane uno, aprine uno, oppure salta e comincia dalla Home.",
+      "createHint": "Sceglie una cartella vuota e ne fa il progetto",
+      "openHint": "Apre una cartella di progetto già presente su questo disco"
     }
   }
 }
