@@ -1,72 +1,72 @@
 {
   "welcome": {
-    "skip": "Skip",
-    "skipHint": "Closes this introduction and opens the studio with the current settings",
-    "back": "Back",
-    "backHint": "Returns to the previous screen",
-    "next": "Continue",
-    "nextHint": "Goes to the next screen",
-    "done": "Get started",
-    "doneHint": "Closes this introduction and opens the studio",
-    "steps": "Step {{current, number}} of {{total, number}}",
-    "goToStep": "Go to step {{current, number}} — {{title}}",
+    "skip": "跳过",
+    "skipHint": "关闭本介绍，并以当前设置打开工作室",
+    "back": "上一步",
+    "backHint": "回到上一屏",
+    "next": "继续",
+    "nextHint": "前往下一屏",
+    "done": "开始使用",
+    "doneHint": "关闭本介绍并打开工作室",
+    "steps": "第 {{current, number}} 步，共 {{total, number}} 步",
+    "goToStep": "转到第 {{current, number}} 步 —— {{title}}",
     "language": {
-      "title": "Choose your language",
-      "body": "Every menu, button and message uses this language. You can change it later in Settings.",
-      "hint": "Shows the application in {{name}}"
+      "title": "选择你的语言",
+      "body": "所有菜单、按钮和消息都使用这种语言。你以后可以在设置中更改。",
+      "hint": "以 {{name}} 显示应用"
     },
     "look": {
-      "title": "How it looks",
-      "body": "Dark is the studio’s own theme. Switch it if you work in daylight.",
-      "themeHint": "Switches the application to the {{name}} theme"
+      "title": "外观",
+      "body": "深色是工作室自己的主题。如果你在白天的光线下工作，可以换掉它。",
+      "themeHint": "把应用切换到 {{name}} 主题"
     },
     "craft": {
-      "title": "Your 3D navigation",
-      "body": "The 3D view mirrors the gestures of the software you already know. You can change it later in the settings.",
-      "navigationHint": "Uses {{name}} viewport gestures in the 3D view"
+      "title": "你的 3D 导航",
+      "body": "3D 视图沿用你已经熟悉的软件的操作手势。你以后可以在设置中更改。",
+      "navigationHint": "在 3D 视图中使用 {{name}} 的视口手势"
     },
     "ai": {
-      "title": "AI, through every door",
-      "body": "The studio depends on no AI in particular: they plug in, they swap out, and they can even drive it.",
+      "title": "AI，从每一扇门进来",
+      "body": "工作室不依赖任何一个特定的 AI：它们可以接入，可以替换，甚至可以反过来驱动它。",
       "local": {
-        "title": "On this machine",
-        "body": "The studio downloads the weights and runs them here. Nothing leaves, nothing is billed."
+        "title": "在本机上",
+        "body": "工作室下载权重并在这里运行它们。没有东西外传，也不产生费用。"
       },
       "ollama": {
-        "title": "With Ollama",
-        "body": "Already installed? The studio reads your models and uses them as they are."
+        "title": "使用 Ollama",
+        "body": "已经装好了？工作室会读取你的模型，原样使用它们。"
       },
       "cloud": {
-        "title": "At a provider",
-        "body": "One key, and generation goes out. Interchangeable: none of them is the product."
+        "title": "在服务商那里",
+        "body": "一个密钥，生成就发往远端。它们可以互换：没有哪一个是产品本身。"
       },
       "mcp": {
-        "title": "And the other way round",
-        "body": "The studio publishes its tools: Claude Code, or any MCP agent, opens a project and generates for you."
+        "title": "反过来也一样",
+        "body": "工作室把自己的工具发布出去：Claude Code，或任何 MCP 智能体，都能打开一个项目并替你生成。"
       }
     },
     "models": {
-      "title": "Models, section by section",
-      "body": "The studio downloads the weights, then runs them here. Some models require access from their publisher. The size shows the disk space needed.",
-      "sectionHint": "Shows the models of: {{name}}",
-      "more": "The full catalogue lives in the settings.",
-      "motionOptional": "Motion generation is optional. Install a model now, or continue and find it later in Settings → AI → 3D. Animation retargeting works without AI."
+      "title": "模型，一节一节来",
+      "body": "工作室下载权重，然后在这里运行它们。有些模型需要向发布方申请访问权限。大小表示所需的磁盘空间。",
+      "sectionHint": "显示这一类的模型：{{name}}",
+      "more": "完整的编目在设置里。",
+      "motionOptional": "动作生成是可选的。现在安装一个模型，或者继续，稍后在设置 → AI → 3D 中找到它。动画重定向不用 AI 也能工作。"
     },
     "account": {
-      "title": "A cloud, if you have one",
-      "body": "The studio works without an account, on your own files. A key unlocks generation and the shared library.",
-      "stored": "These services are already saved on this machine. Add another one, or carry on.",
-      "addService": "Add a service",
-      "addServiceHint": "Opens the form to store one more key",
-      "adding": "Paste the key of the service to store.",
-      "backToList": "Back to the list",
-      "backToListHint": "Drops what is typed here and shows the stored services again"
+      "title": "一项云端服务，如果你有的话",
+      "body": "工作室不需要账户也能在你自己的文件上工作。一个密钥可以解锁生成和共享素材库。",
+      "stored": "这些服务已经保存在本机上。你可以再添加一个，或者继续。",
+      "addService": "添加服务",
+      "addServiceHint": "打开表单，再保存一个密钥",
+      "adding": "粘贴要保存的服务的密钥。",
+      "backToList": "返回列表",
+      "backToListHint": "放弃这里输入的内容，重新显示已保存的服务"
     },
     "project": {
-      "title": "Your first project",
-      "body": "A project is a folder on your disk. Create one, open one, or skip and start from Home.",
-      "createHint": "Picks an empty folder and makes it the project",
-      "openHint": "Opens a project folder already on this disk"
+      "title": "你的第一个项目",
+      "body": "项目就是你磁盘上的一个文件夹。创建一个、打开一个，或者跳过，从主页开始。",
+      "createHint": "选择一个空文件夹，把它变成项目",
+      "openHint": "打开这个磁盘上已有的项目文件夹"
     }
   }
 }

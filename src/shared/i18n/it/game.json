@@ -92,6 +92,7 @@
       "drag": "Resistenza",
       "drive": "Trazione",
       "fidelity": "Fedeltà",
+      "followVertical": "Segui l’altezza del soggetto",
       "friction": "Attrito",
       "from": "File di origine",
       "graph": "Grafo di animazione",

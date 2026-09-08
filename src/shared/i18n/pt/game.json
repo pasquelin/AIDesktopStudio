@@ -92,6 +92,7 @@
       "drag": "Arrasto",
       "drive": "Transmissão",
       "fidelity": "Precisão",
+      "followVertical": "Colar na altura do elemento seguido",
       "friction": "Atrito",
       "from": "Arquivo de origem",
       "graph": "Grafo de animação",

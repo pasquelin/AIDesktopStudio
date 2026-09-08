@@ -140,6 +140,7 @@
       "canvas.size": "Esta imagen no ha podido conservar su tamaño",
       "canvas.edit": "No se ha podido enviar la imagen al modelo",
       "canvas.smartSelect": "No se ha podido hacer la selección inteligente",
+      "canvas.smartComment": "No se ha podido colocar el comentario inteligente",
       "image.export": "La exportación de la imagen ha fallado",
       "document.save": "El guardado del documento ha fallado",
       "assets.reveal": "No se ha podido mostrar el archivo en la carpeta",

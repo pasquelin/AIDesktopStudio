@@ -1,549 +1,549 @@
 {
   "commands": {
     "scenePlay": {
-      "title": "Play scene",
-      "help": "Starts or resumes the scene in the game window."
+      "title": "运行场景",
+      "help": "在游戏窗口中运行或继续该场景。"
     },
     "appNew": {
-      "title": "New…",
-      "help": "Opens the window that makes a project or a document, from any screen"
+      "title": "新建…",
+      "help": "在任何界面上打开用于新建项目或文档的窗口"
     },
     "projectNew": {
-      "title": "New project",
-      "help": "Creates an empty project and opens it. A project is the folder holding everything you make: the images, the videos, the sounds, and how they are arranged."
+      "title": "新建项目",
+      "help": "创建一个空项目并打开它。项目就是存放你所做一切的文件夹：图像、视频、声音，以及它们的组织方式。"
     },
     "projectOpen": {
-      "title": "Open project",
-      "help": "Picks a project already on your disk and opens it in place of the current one. The open project is saved as you go, so there is nothing to save first."
+      "title": "打开项目",
+      "help": "选择磁盘上已有的项目，替换当前项目打开。打开的项目会随时保存，因此不需要先保存什么。"
     },
     "documentSaveAs": {
-      "title": "Save as",
-      "help": "Writes a copy of the asset beside the original and carries on with it. The asset that was open stays as it was at the last save."
+      "title": "另存为",
+      "help": "在原文件旁边写入该资产的一份副本，并继续在副本上工作。原先打开的资产保持在上次保存时的状态。"
     },
     "documentSave": {
-      "title": "Save document",
-      "help": "Writes the document in front into the project. Until it is saved, it lives in the window: the tab carries an asterisk for as long as what is on screen is not what is on disk."
+      "title": "保存文档",
+      "help": "把最前面的文档写入项目。在保存之前，它只存在于窗口中：只要屏幕上的内容与磁盘上的不一致，标签页就带一个星号。"
     },
     "documentClose": {
-      "title": "Close tab",
-      "help": "Closes the document in front. If it holds unsaved work, the studio asks what to do with it. With no tab left, the window closes."
+      "title": "关闭标签页",
+      "help": "关闭最前面的文档。如果其中还有未保存的更改，工作室会询问如何处理。当没有标签页剩下时，窗口会关闭。"
     },
     "layoutReset": {
-      "title": "Reset layout",
-      "help": "Puts the panels back where they started. Useful once the windows have been dragged all over and nothing is where you expect. Your work is untouched."
+      "title": "重置布局",
+      "help": "把面板放回它们最初的位置。当窗口被拖得到处都是、什么都找不到时很有用。你的作品不受影响。"
     },
     "appSettings": {
-      "title": "Settings",
-      "help": "Opens the settings window — this one: the language, the colours, the account, the shortcuts, and everything else that is adjustable."
+      "title": "设置",
+      "help": "打开设置窗口，也就是这一个：语言、颜色、账户、快捷键，以及其他所有可调整的内容。"
     },
     "appAssistant": {
-      "title": "Assistant",
-      "help": "Opens the window where you say what you want done, by voice or by keyboard. The assistant carries it out itself, and asks for a yes before anything that costs."
+      "title": "助手",
+      "help": "打开一个窗口，在那里用语音或键盘说出你想做的事。助手会自己执行，并在任何产生花费的操作之前征求你的同意。"
     },
     "appDictate": {
-      "title": "Dictate",
-      "help": "Listens to the microphone and writes what you say at the caret, in the field you are in. Held down by default: speak, let go, the text appears."
+      "title": "听写",
+      "help": "监听麦克风，把你说的话写到光标所在的位置，也就是你正在使用的输入框里。默认为按住使用：按住说话，松开后文字就写出来。"
     },
     "windowFullScreen": {
-      "title": "Full screen",
-      "help": "Gives the window the whole screen, with no bar and no border, to work with nothing around it."
+      "title": "全屏",
+      "help": "让窗口占据整个屏幕，没有标题栏也没有边框，可以在周围什么都没有的情况下工作。"
     },
     "spacesMoveLeft": {
-      "title": "Move the space left",
-      "help": "Shifts the focused space one place to the left in the top bar. The order you settle on is kept from one session to the next."
+      "title": "向左移动工作区",
+      "help": "把带有焦点的工作区在顶部栏中向左挪一格。你确定的顺序会在下次会话中保留。"
     },
     "spacesMoveRight": {
-      "title": "Move the space right",
-      "help": "Shifts the focused space one place to the right in the top bar. The order you settle on is kept from one session to the next."
+      "title": "向右移动工作区",
+      "help": "把带有焦点的工作区在顶部栏中向右挪一格。你确定的顺序会在下次会话中保留。"
     },
     "explorerNewFolder": {
-      "title": "New folder",
-      "help": "Creates an empty folder inside the one the explorer is showing, and opens its name for typing. The folder is yours, as is everything you put in it."
+      "title": "新建文件夹",
+      "help": "在资源管理器当前显示的文件夹中创建一个空文件夹，并打开它的名称供输入。这个文件夹属于你，放进去的一切也一样。"
     },
     "explorerDuplicate": {
-      "title": "Duplicate",
-      "help": "Lays a copy of each chosen item beside the original, under the first free name. A folder is copied with everything inside it."
+      "title": "创建副本",
+      "help": "在每个选中项旁边放一份副本，使用第一个可用的名称。文件夹连同其中的全部内容一起复制。"
     },
     "explorerCut": {
-      "title": "Cut",
-      "help": "Holds the selection, to be moved on the next paste. Nothing moves until you paste, and the rows being held are drawn dimmed."
+      "title": "剪切",
+      "help": "保留所选内容，在下次粘贴时移动它们。在你粘贴之前什么都不会动，被保留的行会以变淡的方式显示。"
     },
     "explorerCopy": {
-      "title": "Copy",
-      "help": "Holds the selection, to be copied on the next paste. The original stays where it is."
+      "title": "复制",
+      "help": "保留所选内容，在下次粘贴时复制它们。原件留在原处。"
     },
     "explorerPaste": {
-      "title": "Paste",
-      "help": "Drops what the clipboard holds into the folder on screen. An item whose name is already taken is refused, and the rest go through."
+      "title": "粘贴",
+      "help": "把剪贴板中保留的内容放进当前显示的文件夹。名称已被占用的项会被拒绝，其余的照常通过。"
     },
     "explorerTrash": {
-      "title": "Move to trash",
-      "help": "Sends the selection to the system trash, where you can get it back. It is the one explorer gesture the studio cannot undo."
+      "title": "移到回收站",
+      "help": "把所选内容送进系统回收站，你可以从那里找回。这是工作室唯一无法撤销的资源管理器操作。"
     },
     "explorerUndo": {
-      "title": "Undo the last file gesture",
-      "help": "Puts the last batch moved, renamed, duplicated or created back where it was. The stack belongs to the project rather than to a window, and the trash gesture never enters it."
+      "title": "撤销上一次文件操作",
+      "help": "把上一批被移动、重命名、创建副本或新建的文件放回原处。这个堆栈属于项目而不是某个窗口，移到回收站的操作永远不会进入其中。"
     },
     "explorerRedo": {
-      "title": "Redo the file gesture",
-      "help": "Redoes the batch of files that was just undone, exactly as it was."
+      "title": "重做文件操作",
+      "help": "原样重做刚刚被撤销的那一批文件操作。"
     },
     "sceneSelect": {
-      "title": "Select",
-      "help": "The plain tool: click an object in the scene to choose it, without doing anything to it. It is the one you come back to between manipulations."
+      "title": "选择",
+      "help": "最基本的工具：在场景中点击一个对象即可选中它，而不对它做任何改动。它是两次操作之间总会回到的工具。"
     },
     "sceneTranslate": {
-      "title": "Move",
-      "help": "Drags the chosen object from one place to another, by pulling the coloured arrows — one per direction."
+      "title": "移动",
+      "help": "拖动彩色箭头，把选中的对象从一个位置移到另一个位置——每个方向一根箭头。"
     },
     "sceneRotate": {
-      "title": "Rotate",
-      "help": "Turns the chosen object on itself, by pulling the coloured rings — one per axis."
+      "title": "旋转",
+      "help": "拖动彩色圆环，让选中的对象绕自身转动——每个轴一个圆环。"
     },
     "sceneScale": {
-      "title": "Scale",
-      "help": "Makes the chosen object bigger or smaller, by pulling its handles. Holding Shift keeps its proportions."
+      "title": "缩放",
+      "help": "拖动控制柄，把选中的对象放大或缩小。按住 Shift 键可保持比例。"
     },
     "sceneFrame": {
-      "title": "Frame selection",
-      "help": "Brings the camera close enough that the chosen object fills the view. Handy when you are lost, or when an object is tiny."
+      "title": "框显选择内容",
+      "help": "把相机拉近到选中的对象填满视图。当你迷失方向或对象很小时很有用。"
     },
     "sceneFrameFollow": {
-      "title": "Follow the selection",
-      "help": "Frames the selection and keeps it in view: whatever moves takes the camera along, at the angle and distance already chosen. Called again, it lets go."
+      "title": "跟随选择内容",
+      "help": "框显选择内容并把它保持在视图中：它移动到哪里，相机就跟到哪里，角度和距离维持不变。再次调用则松开。"
     },
     "sceneIsolate": {
-      "title": "Isolate selection",
-      "help": "Leaves only the chosen objects on screen while you work on them. Nothing is changed: pressing it again gives the scene back exactly as it was, including the objects you had hidden yourself."
+      "title": "隔离选择内容",
+      "help": "在你处理选中对象期间，屏幕上只留下这些对象。什么都不会被修改：再按一次会把场景原样还回来，包括你自己隐藏过的对象。"
     },
     "sceneHide": {
-      "title": "Hide selection",
-      "help": "Takes the chosen objects out of the view without touching the document. Show all brings them back."
+      "title": "隐藏选择内容",
+      "help": "把选中的对象从显示中移除，而不改动文档。“全部显示”会让它们回来。"
     },
     "sceneShowAll": {
-      "title": "Show all",
-      "help": "Undoes the hiding and isolating done from the viewport. Objects the document itself declares hidden stay hidden."
+      "title": "全部显示",
+      "help": "撤销从视口中所做的隐藏与隔离。文档本身声明为隐藏的对象仍然保持隐藏。"
     },
     "sceneSnap": {
-      "title": "All snaps",
-      "help": "Turns all four snaps on or off at once — surface, grid, angle, scale. A second press gives back exactly the ones that were on. The bar at the top of the viewport sets them one by one."
+      "title": "全部吸附",
+      "help": "一次性打开或关闭全部四种吸附——表面、栅格、角度、缩放。再按一次会原样还回原先打开的那些。视口顶部的工具栏可以逐个设置。"
     },
     "sceneSpace": {
-      "title": "Local frame",
-      "help": "Lines the handles up with the object’s own orientation rather than the world’s. On a turned object, that is what lets you move it “towards its front” rather than north."
+      "title": "局部坐标系",
+      "help": "让控制柄对齐对象自身的朝向，而不是世界的朝向。对于一个转过方向的对象，这正是让你把它“朝它的前方”移动而不是朝北移动的方式。"
     },
     "sceneProjection": {
-      "title": "Projection",
-      "help": "Switches between perspective, where receding lines converge, and orthographic projection, where parallels stay parallel. That is what lets an alignment be judged by eye."
+      "title": "投影",
+      "help": "在透视投影与正交投影之间切换：前者中的纵深线会汇聚，后者中的平行线保持平行。正是后者让人可以用眼睛判断对齐。"
     },
     "sceneViewFront": {
-      "title": "Look from the front",
-      "help": "Puts the camera in front of the scene, square to the axis. The reference view for judging a silhouette."
+      "title": "从正面观察",
+      "help": "把相机放在场景正前方，与轴对齐。判断轮廓时的参考视图。"
     },
     "sceneViewBack": {
-      "title": "Look from behind",
-      "help": "Puts the camera behind the scene, on the same axis: what the front hides."
+      "title": "从背面观察",
+      "help": "把相机放在场景后方，在同一根轴上：正面挡住的东西。"
     },
     "sceneViewRight": {
-      "title": "Look from the right",
-      "help": "Puts the camera on the right-hand side, square to the axis. What a depth is judged from."
+      "title": "从右侧观察",
+      "help": "把相机放在右侧，与轴对齐。用来判断纵深。"
     },
     "sceneViewLeft": {
-      "title": "Look from the left",
-      "help": "Puts the camera on the left-hand side, on the same axis as the right view."
+      "title": "从左侧观察",
+      "help": "把相机放在左侧，与右视图在同一根轴上。"
     },
     "sceneViewTop": {
-      "title": "Look from above",
-      "help": "Puts the camera above the scene, looking straight down. What the objects are laid out on the ground from."
+      "title": "从上方观察",
+      "help": "把相机放在场景上方，垂直向下看。用来把对象摆放在地面上。"
     },
     "sceneViewBottom": {
-      "title": "Look from below",
-      "help": "Puts the camera under the scene, looking straight up, the other way from the top view."
+      "title": "从下方观察",
+      "help": "把相机放在场景下方，垂直向上看，与俯视方向相反。"
     },
     "sceneViewCamera": {
-      "title": "Look through the camera",
-      "help": "Draws the view through the chosen camera, and steps back out on a second call. With no camera chosen, it takes the first in the scene."
+      "title": "通过相机观察",
+      "help": "让视图从选中的相机中看出去，再次调用则退出。没有选中相机时，取场景中的第一台。"
     },
     "sceneQuad": {
-      "title": "Four views",
-      "help": "Splits the viewport in four — top, front and side around the view being flown. Each quarter orbits under the pointer; the flown one keeps the gizmos."
+      "title": "四视图",
+      "help": "把视口分成四块——顶视、正视和侧视围绕着当前操作的视图。每一块都能在指针下环绕；当前操作的那一块保留操纵器。"
     },
     "sceneQuadEdges": {
-      "title": "Quad edges",
-      "help": "Redraws the wireframe without the diagonals triangulation added. A GLB never holds quads: this is a reconstruction by angle, faithful except on strongly curved surfaces."
+      "title": "四边形边线",
+      "help": "重新绘制线框，去掉三角化添加的对角线。GLB 文件中从不保存四边形：这是按角度做的重建，除强烈弯曲的表面外都是忠实的。"
     },
     "sceneDisplay": {
-      "title": "Display mode",
-      "help": "Cycles what the viewport draws: the surfaces, their edges alone, or both together. The button’s menu picks one directly."
+      "title": "显示模式",
+      "help": "循环切换视口绘制的内容：表面、仅其边线，或两者同时。按钮的菜单可以直接选择其中一种。"
     },
     "sceneCapture": {
-      "title": "Capture the view",
-      "help": "Saves an image of the 3D view into the project’s images — without the grid, the handles or the rails. The menu offers resolutions larger than the panel’s own."
+      "title": "捕获视图",
+      "help": "把 3D 视图的一张图像保存到项目的图像中——不含栅格、控制柄和路径。菜单提供比面板本身更大的分辨率。"
     },
     "sceneAdd": {
-      "title": "Add",
-      "help": "Opens the list of what a scene can take: meshes, lights and objects. A right-click on empty space opens the same list."
+      "title": "添加",
+      "help": "打开场景可以接收的内容列表：网格、灯光和对象。在空白处点击右键会打开同一个列表。"
     },
     "sceneAddToSheet": {
-      "title": "Add to the animation band",
-      "help": "Puts the selected objects on the band, where keys are set. The band shows only what is put there, so a scene of thousands of objects stays readable."
+      "title": "添加到动画带",
+      "help": "把选中的对象放到动画带上，关键帧就记录在那里。动画带只显示放上去的内容，因此包含数千个对象的场景依然可读。"
     },
     "sceneRemoveFromSheet": {
-      "title": "Remove from the animation band",
-      "help": "Removes the line from the band. Keys already set stay, and an object keeps its line for as long as it holds one."
+      "title": "从动画带中移除",
+      "help": "把该行从动画带中移除。已经记录的关键帧仍然保留，只要对象还带有关键帧，它就保留自己的行。"
     },
     "sceneGroup": {
-      "title": "Group",
-      "help": "Files the selected objects under one group. Moving the group moves them all, and ⌘Z takes the grouping back."
+      "title": "编组",
+      "help": "把选中的对象归入同一个组。移动这个组会移动其中所有对象，⌘Z 可以撤销这次编组。"
     },
     "sceneDuplicate": {
-      "title": "Duplicate",
-      "help": "Puts a copy of the selection under the same parent and at the very same place, then selects it. A group duplicates whole, with everything hanging from it."
+      "title": "创建副本",
+      "help": "在同一个父级下、完全相同的位置放一份所选内容的副本，然后选中它。一个组会整体复制，连同挂在它下面的所有内容。"
     },
     "sceneOptimizeSelection": {
-      "title": "Optimise selection…",
-      "help": "Measures the selection and previews a SAFE runtime representation before changing its optimisation settings."
+      "title": "优化选择内容…",
+      "help": "测量选择内容，并在修改其优化设置之前预览一个 SAFE 的运行时表示。"
     },
     "sceneWorldPerformance": {
-      "title": "World performance…",
-      "help": "Measures the whole scene and reports SAFE optimisation opportunities without changing the authoring world."
+      "title": "世界性能…",
+      "help": "测量整个场景，并在不修改创作世界的前提下给出 SAFE 优化机会。"
     },
     "sceneExportGame": {
-      "title": "Export the game…",
-      "help": "Builds a standalone game from an optimised runtime copy while leaving the authoring scenes untouched."
+      "title": "导出游戏…",
+      "help": "从优化过的运行时副本构建一个独立游戏，编辑用的场景不受影响。"
     },
     "sceneCopy": {
-      "title": "Copy",
-      "help": "Holds on to the selection so it can be pasted, here or in another scene. This is the studio’s own clipboard: it leaves the system one alone."
+      "title": "复制",
+      "help": "保留选中的内容以便粘贴，可以粘贴在这里，也可以粘贴到另一个场景。这是工作室自己的剪贴板：它不会动系统的剪贴板。"
     },
     "sceneCut": {
-      "title": "Cut",
-      "help": "Holds on to the selection and takes it out of the scene. ⌘Z brings it back."
+      "title": "剪切",
+      "help": "保留选中的内容，并把它从场景中移除。⌘Z 会把它找回来。"
     },
     "scenePaste": {
-      "title": "Paste",
-      "help": "Puts what was copied into the scene in front, and selects it. Pasting twice makes two separate copies."
+      "title": "粘贴",
+      "help": "把复制的内容放入当前场景，并将其选中。粘贴两次会得到两份互相独立的副本。"
     },
     "sceneDelete": {
-      "title": "Delete",
-      "help": "Removes everything selected from the scene. Nothing is lost for good: ⌘Z brings it back."
+      "title": "删除",
+      "help": "从场景中移除所有选中的内容。什么都不会永久丢失：⌘Z 会把它找回来。"
     },
     "undo": {
-      "title": "Undo",
-      "help": "Takes back the last thing you did in this document. Each document has its own stack: undo acts on the tab in front, not on the others."
+      "title": "撤销",
+      "help": "撤回你在本文档中做的最后一步。每个文档都有自己的撤销栈：撤销作用于当前标签页，不影响其他标签页。"
     },
     "redo": {
-      "title": "Redo",
-      "help": "Does again what you have just undone. Handy after undoing once too often."
+      "title": "重做",
+      "help": "重新执行你刚刚撤销的操作。撤销多了一次时很有用。"
     },
     "sequencePlayPause": {
-      "title": "Play / Pause",
-      "help": "Starts playing the edit, or stops it where it is. Starting again picks up where you left off."
+      "title": "播放 / 暂停",
+      "help": "开始播放这段剪辑，或在当前位置停下。再次开始时会从停下的地方继续。"
     },
     "sequenceExport": {
-      "title": "Export video…",
-      "help": "Writes the edit out as a video file, frame by frame, 3D scenes included. The sound is not in it yet."
+      "title": "导出视频…",
+      "help": "把剪辑逐帧写成一个视频文件，包含三维场景。声音暂时还不在里面。"
     },
     "sequenceExportCut": {
-      "title": "Export edit (OTIO)…",
-      "help": "Writes the edit itself out as an OpenTimelineIO file, which other editing applications open — tracks, clips, in points, speeds and links to the media. Fades, gains and image/sound links travel in it too, but only AI Desktop Studio reads them back."
+      "title": "导出剪辑（OTIO）…",
+      "help": "把剪辑本身写成一个 OpenTimelineIO 文件，其他剪辑软件都能打开——轨道、片段、入点、速度以及指向媒体的链接。淡化、增益和图像与声音的关联也一起写入，但只有 AI Desktop Studio 能把它们重新读出来。"
     },
     "sequenceExportEdl": {
-      "title": "Export edit list (EDL)…",
-      "help": "Writes the cuts and their timecodes as CMX3600, which every online room reads. The format holds one image track and two sound ones, and nothing of the fades, the gains or the speeds."
+      "title": "导出剪辑表（EDL）…",
+      "help": "把剪切点和它们的时间码写成 CMX3600 格式，任何在线精编机房都能读取。这个格式只容纳一条图像轨道和两条声音轨道，淡化、增益和速度都不在其中。"
     },
     "sequenceExportFcpxml": {
-      "title": "Export edit (FCPXML)…",
-      "help": "Writes the edit in the format Final Cut reads and Premiere and Resolve import. The tracks survive, a lane each, and so does the frame size; the fades, the gains and the speeds stay here."
+      "title": "导出剪辑（FCPXML）…",
+      "help": "以 Final Cut 能读取、Premiere 和 Resolve 能导入的格式写出剪辑。轨道会保留下来，每条各占一层，画面尺寸也会保留；淡化、增益和速度则留在这里。"
     },
     "sequenceExportStems": {
-      "title": "Export sound per track (WAV)…",
-      "help": "Writes one WAV per audible track, mixed the way the edit plays it — the placements, the trims, the fades, the gains and the speeds are baked into the samples. A muted track is not written."
+      "title": "按轨道导出声音（WAV）…",
+      "help": "为每条可听见的轨道写出一个 WAV 文件，按剪辑播放的样子混音——位置、修剪、淡化、增益和速度都已烘焙进采样数据。静音的轨道不会写出。"
     },
     "sequenceExportBundle": {
-      "title": "Export edit with its media (OTIOZ)…",
-      "help": "Writes the same edit with the media it uses inside the file. This is the one to hand to somebody else, or to open in DaVinci Resolve, which then finds the rushes on its own instead of asking for them one by one."
+      "title": "导出剪辑及其媒体（OTIOZ）…",
+      "help": "把同一份剪辑连同它用到的媒体一起写进文件里。要交给别人，或要在 DaVinci Resolve 中打开时就用这一个：它随后会自己找到原始素材，不必逐个去指定。"
     },
     "montageImport": {
-      "title": "Import an edit with its media (OTIOZ)…",
-      "help": "Opens an edit written by another application, rushes and all. The media are copied into the project and enter the catalogue, then the edit opens linked to them. What the opened file does not bring is said as it opens, and starts from its default only there."
+      "title": "导入剪辑及其媒体（OTIOZ）…",
+      "help": "打开由其他软件写出的剪辑，连同它的原始素材。媒体会被复制进项目并进入编目，随后剪辑打开时已经与它们关联。打开的文件没有带来的内容会在打开时说明，也只有那些内容才从默认值开始。"
     },
     "sequenceMirror": {
-      "title": "Return window",
-      "help": "Opens the edit in a window of its own, to put on a second screen. It follows the studio frame by frame, without the sound, and closes like any window."
+      "title": "回传窗口",
+      "help": "在一个独立窗口中打开剪辑，可以放到第二块屏幕上。它逐帧跟随工作室，没有声音，关闭方式和普通窗口一样。"
     },
     "sequenceSplit": {
-      "title": "Split clip",
-      "help": "Cuts the clip in two where the playhead sits, so each half can be handled on its own."
+      "title": "分割片段",
+      "help": "在播放头所在的位置把片段一分为二，两半可以分别处理。"
     },
     "sequenceDelete": {
-      "title": "Delete clip",
-      "help": "Removes the chosen clip from the edit. The original file stays in your assets."
+      "title": "删除片段",
+      "help": "把选中的片段从剪辑中移除。原始文件仍然留在你的资产里。"
     },
     "sequenceUnlink": {
-      "title": "Unlink picture and sound",
-      "help": "Separates the two clips of one take. While they are linked, moving, cutting or deleting one does the same to the other."
+      "title": "解除图像与声音的关联",
+      "help": "把同一条素材的两个片段分开。只要它们还关联着，移动、剪切或删除其中一个，另一个也会跟着变。"
     },
     "sequenceZoomIn": {
-      "title": "Zoom in",
-      "help": "Spreads the edit out to see detail: clips get wider and are easier to aim at."
+      "title": "放大视图",
+      "help": "把剪辑展开以看清细节：片段变宽，也更容易对准。"
     },
     "sequenceZoomOut": {
-      "title": "Zoom out",
-      "help": "Draws the edit together to see more of it at once, at the cost of the detail."
+      "title": "缩小视图",
+      "help": "把剪辑收拢，一眼能看到更多内容，代价是失去细节。"
     },
     "sequenceFit": {
-      "title": "Fit to view",
-      "help": "Sets the zoom so the whole edit fits on screen, end to end."
+      "title": "适应视图",
+      "help": "调整缩放，让整段剪辑从头到尾都装进屏幕。"
     },
     "sequenceStart": {
-      "title": "Go to start",
-      "help": "Brings the playhead right back to the beginning of the edit, moving nothing else."
+      "title": "跳到开头",
+      "help": "把播放头一直带回剪辑的最开头，不移动其他任何东西。"
     },
     "sequenceEnd": {
-      "title": "Go to end",
-      "help": "Sends the playhead right to the end of the edit, past the last clip."
+      "title": "跳到结尾",
+      "help": "把播放头一直送到剪辑的最末尾，越过最后一个片段。"
     },
     "canvasZoomIn": {
-      "title": "Zoom in",
-      "help": "Magnifies the view one step, around the middle of what is visible. The image itself is untouched — only the way it is looked at."
+      "title": "放大视图",
+      "help": "把视图放大一级，以可见范围的中心为基准。图像本身不受影响——变的只是观看的方式。"
     },
     "canvasZoomOut": {
-      "title": "Zoom out",
-      "help": "Shrinks the view one step, to take in the whole image again."
+      "title": "缩小视图",
+      "help": "把视图缩小一级，重新看到整幅图像。"
     },
     "canvasZoomFit": {
-      "title": "Fit to window",
-      "help": "Frames the whole image in the panel, with a margin, and never magnifies it past its actual size."
+      "title": "适应窗口",
+      "help": "把整幅图像连同留白一起装进面板，并且绝不会放大到超过它的实际尺寸。"
     },
     "canvasZoomActual": {
-      "title": "Actual size",
-      "help": "One image pixel per screen pixel: the only scale at which sharpness can be judged."
+      "title": "实际尺寸",
+      "help": "一个图像像素对应一个屏幕像素：只有在这个比例下才能判断锐度。"
     },
     "canvasRulers": {
-      "title": "Rulers",
-      "help": "Shows or hides the two graduated rulers, at the top and on the left. Guides are pulled off them."
+      "title": "标尺",
+      "help": "显示或隐藏顶部和左侧那两条带刻度的标尺。参考线就是从标尺上拉出来的。"
     },
     "canvasGuides": {
-      "title": "Guides",
-      "help": "Shows or hides the guides laid on the image. Hiding them does not remove them."
+      "title": "参考线",
+      "help": "显示或隐藏放在图像上的参考线。隐藏并不会删除它们。"
     },
     "canvasGrid": {
-      "title": "Pixel grid",
-      "help": "Shows or hides the grid of the artwork’s own pixels. Only on a document set to pixel art."
+      "title": "像素栅格",
+      "help": "显示或隐藏由作品自身像素构成的栅格。仅在设为像素画的文档上可用。"
     },
     "canvasClearGuides": {
-      "title": "Clear guides",
-      "help": "Removes every guide from the image. Undoable, like any other edit."
+      "title": "清除参考线",
+      "help": "从图像上移除所有参考线。和其他任何修改一样可以撤销。"
     },
     "canvasSnap": {
-      "title": "Snap",
-      "help": "Makes what is dragged stick to guides, to the image edges and to its centre, within a few pixels."
+      "title": "吸附",
+      "help": "让拖动的对象在几个像素的范围内吸附到参考线、图像边缘和图像中心。"
     },
     "canvasSelectAll": {
-      "title": "Select all",
-      "help": "Selects the whole document, which the system’s own select-all cannot do on an image."
+      "title": "全选",
+      "help": "选中整个文档——系统自带的全选在图像上做不到这一点。"
     },
     "canvasDeselect": {
-      "title": "Deselect",
-      "help": "Drops the selected region, so the brush reaches the whole layer again."
+      "title": "取消选择",
+      "help": "放弃已选中的区域，画笔重新覆盖整个图层。"
     },
     "canvasCropApply": {
-      "title": "Apply the crop",
-      "help": "Trims the document to the placed frame. ⌘Z gives the frame back, not the pixels."
+      "title": "应用裁剪",
+      "help": "把文档裁剪到放好的框内。⌘Z 会把框还回来，但不会还回像素。"
     },
     "canvasCropCancel": {
-      "title": "Abandon the crop",
-      "help": "Takes the crop frame away without trimming anything at all."
+      "title": "放弃裁剪",
+      "help": "移走裁剪框，完全不做任何裁剪。"
     },
     "canvasMaskFromSelection": {
-      "title": "Make a mask of the selection",
-      "help": "Hides the active layer outside the selected region."
+      "title": "用选区创建蒙版",
+      "help": "把选中区域以外的当前图层隐藏起来。"
     },
     "canvasRegenerate": {
-      "title": "Regenerate the region",
-      "help": "Asks the model to repaint the masked region of the active layer."
+      "title": "重新生成该区域",
+      "help": "让模型重新绘制当前图层上被蒙版标出的区域。"
     },
     "canvasCutout": {
-      "title": "Cut out",
-      "help": "Removes the background of the flattened image with the default model."
+      "title": "抠图",
+      "help": "用默认模型去除拼合后图像的背景。"
     },
     "canvasEnlarge": {
-      "title": "Upscale",
-      "help": "Raises the resolution of the flattened image with the default model."
+      "title": "超分放大",
+      "help": "用默认模型提高拼合后图像的分辨率。"
     },
     "canvasVectorize": {
-      "title": "Vectorise",
-      "help": "Turns the flattened image into paths with the default model."
+      "title": "矢量化",
+      "help": "用默认模型把拼合后的图像转成路径。"
     },
     "canvasExtend": {
-      "title": "Extend",
-      "help": "Asks the model to paint beyond the edges of the flattened image."
+      "title": "扩展",
+      "help": "让模型在拼合后图像的边缘之外继续绘制。"
     },
     "canvasMergeDown": {
-      "title": "Merge down",
-      "help": "Joins the active layer and the one just below it into one, keeping the lower one’s name."
+      "title": "向下合并",
+      "help": "把当前图层和紧邻其下的图层合成一个，保留下面那个图层的名称。"
     },
     "canvasFlatten": {
-      "title": "Flatten image",
-      "help": "Reduces the whole stack to a single layer: hidden layers are dropped, not merged.",
-      "layerName": "Background"
+      "title": "拼合图像",
+      "help": "把整叠图层压成一个图层：隐藏的图层会被丢弃，而不是合并进来。",
+      "layerName": "背景"
     },
     "canvasFlipHorizontal": {
-      "title": "Flip horizontal",
-      "help": "Mirrors the whole document left to right, layers included."
+      "title": "水平翻转",
+      "help": "把整个文档左右镜像，包括所有图层。"
     },
     "canvasFlipVertical": {
-      "title": "Flip vertical",
-      "help": "Mirrors the whole document top to bottom, layers included."
+      "title": "垂直翻转",
+      "help": "把整个文档上下镜像，包括所有图层。"
     },
     "canvasRotateCw": {
-      "title": "Rotate clockwise",
-      "help": "Turns the document a quarter turn to the right: the frame turns with it."
+      "title": "顺时针旋转",
+      "help": "把文档向右旋转四分之一圈：画布也跟着一起转。"
     },
     "canvasRotateCcw": {
-      "title": "Rotate counter-clockwise",
-      "help": "Turns the document a quarter turn to the left: the frame turns with it."
+      "title": "逆时针旋转",
+      "help": "把文档向左旋转四分之一圈：画布也跟着一起转。"
     },
     "canvasExport": {
-      "title": "Export the image",
-      "help": "Writes the flattened document to disk, as a PNG."
+      "title": "导出图像",
+      "help": "把拼合后的文档以 PNG 格式写到磁盘上。"
     },
     "canvasExportLayered": {
-      "title": "Export the layers (PSD)…",
-      "help": "Writes the document with its layers, as a Photoshop file. Groups are flattened away: their layers arrive side by side."
+      "title": "导出图层（PSD）…",
+      "help": "把文档连同它的图层写成 Photoshop 文件。图层组会被拼合掉：组里的图层并排排列。"
     },
     "skyboxView": {
-      "title": "Change the view",
-      "help": "Cycles through the four ways of looking at the sky: immersive, panoramic, cross, faces."
+      "title": "切换视图",
+      "help": "在观看天空的四种方式之间循环切换：沉浸、全景、十字展开、六面。"
     },
     "skyboxProbes": {
-      "title": "Light probes",
-      "help": "Shows or hides the witness spheres. A sky is judged by what it lights, not by its own image."
+      "title": "光照探针",
+      "help": "显示或隐藏参照球。评判一片天空要看它照亮了什么，而不是看它本身的图像。"
     },
     "canvasToolMove": {
-      "title": "Move tool",
-      "help": "Arms the pointer: a drag moves the active layer, and its handles resize or turn it."
+      "title": "移动工具",
+      "help": "启用指针：拖动可以移动当前图层，拖它的控制柄可以调整尺寸或旋转。"
     },
     "canvasToolHand": {
-      "title": "Hand tool",
-      "help": "Arms the hand: a drag pans the view without touching the document. Holding space does the same without changing tool."
+      "title": "抓手工具",
+      "help": "启用抓手：拖动会平移视图，不会动到文档。按住空格键效果相同，而且不用切换工具。"
     },
     "canvasToolCrop": {
-      "title": "Crop tool",
-      "help": "Arms the crop frame. Draw a frame, then ⏎ to crop or ⎋ to drop it."
+      "title": "裁剪工具",
+      "help": "启用裁剪框。画出一个框，然后按 ⏎ 裁剪，或按 ⎋ 放弃。"
     },
     "canvasToolSelectRectangle": {
-      "title": "Rectangular selection",
-      "help": "Arms the rectangular selection. What is selected bounds the brush, the eraser and the bucket."
+      "title": "矩形选区",
+      "help": "启用矩形选区。选中的范围会限定画笔、橡皮擦和油漆桶的作用区域。"
     },
     "canvasToolSelectEllipse": {
-      "title": "Elliptical selection",
-      "help": "Arms the elliptical selection: a drag inscribes the ellipse in the rectangle swept, and Shift makes it a circle."
+      "title": "椭圆选区",
+      "help": "启用椭圆选区：拖动会把椭圆内接在划过的矩形里，按住 Shift 则得到正圆。"
     },
     "canvasToolSelectLasso": {
-      "title": "Lasso",
-      "help": "Arms the lasso: the selection follows the hand, freehand."
+      "title": "套索",
+      "help": "启用套索：选区随手而动，自由绘制。"
     },
     "canvasToolSmartSelect": {
-      "title": "Click Smart Select",
-      "help": "Arms object selection from a click, using the local selection model."
+      "title": "点击智能选择",
+      "help": "启用点击选取对象，使用本地的选择模型。"
     },
     "canvasToolSmartSelectBox": {
-      "title": "Rectangle Smart Select",
-      "help": "Arms object selection from an approximate box, using the local selection model."
+      "title": "矩形智能选择",
+      "help": "启用在大致矩形范围内选取对象，使用本地的选择模型。"
     },
     "canvasToolShapeRectangle": {
-      "title": "Rectangle shape",
-      "help": "Arms drawing a rectangle on the active layer; Shift makes it a square."
+      "title": "矩形形状",
+      "help": "启用在当前图层上绘制矩形；按住 Shift 则得到正方形。"
     },
     "canvasToolShapeLine": {
-      "title": "Line shape",
-      "help": "Arms drawing a line. Same group as the rectangle, hence its key with Shift added."
+      "title": "直线形状",
+      "help": "启用绘制直线。它和矩形属于同一组，所以快捷键是在矩形的基础上加了 Shift。"
     },
     "canvasToolShapeArrow": {
-      "title": "Arrow shape",
-      "help": "Arms drawing an arrow, from where the drag began to where the hand lets go."
+      "title": "箭头形状",
+      "help": "启用绘制箭头，从拖动起点指向松手的位置。"
     },
     "canvasToolShapeEllipse": {
-      "title": "Ellipse shape",
-      "help": "Arms drawing an ellipse on the active layer; Shift makes it a circle."
+      "title": "椭圆形状",
+      "help": "启用在当前图层上绘制椭圆；按住 Shift 则得到正圆。"
     },
     "canvasToolShapePolygon": {
-      "title": "Polygon shape",
-      "help": "Arms drawing a regular polygon, whose number of sides is set in the inspector before drawing."
+      "title": "多边形形状",
+      "help": "启用绘制正多边形，边数在绘制前于检查器中设定。"
     },
     "canvasToolShapeStar": {
-      "title": "Star shape",
-      "help": "Arms drawing a star, whose number of points is set in the inspector before drawing."
+      "title": "星形形状",
+      "help": "启用绘制星形，角数在绘制前于检查器中设定。"
     },
     "canvasToolBrush": {
-      "title": "Brush tool",
-      "help": "Arms the brush, with a softened edge. It paints on the active layer, bounded by the selection when there is one."
+      "title": "画笔工具",
+      "help": "启用画笔，边缘柔化。它在当前图层上绘制，若存在选区则受选区限定。"
     },
     "canvasToolPencil": {
-      "title": "Pencil tool",
-      "help": "Arms the pencil, with a hard edge: the same gesture as the brush, without the softening."
+      "title": "铅笔工具",
+      "help": "启用铅笔，边缘硬朗：和画笔是同样的动作，只是不做边缘柔化。"
     },
     "canvasToolText": {
-      "title": "Text tool",
-      "help": "Arms text: a click places a caption, whose words are typed in the inspector."
+      "title": "文字工具",
+      "help": "启用文字：点击即可放置一段文字标注，内容在检查器中输入。"
     },
     "canvasToolEraser": {
-      "title": "Eraser tool",
-      "help": "Arms the point eraser: it clears where the hand passes, bounded by the selection when there is one."
+      "title": "橡皮擦工具",
+      "help": "启用点状橡皮擦：手划过的地方会被擦除，若存在选区则受选区限定。"
     },
     "canvasToolFill": {
-      "title": "Paint bucket tool",
-      "help": "Arms the bucket: a click fills the layer, or the selection when there is one."
+      "title": "油漆桶工具",
+      "help": "启用油漆桶：点击即可填充图层，若存在选区则填充选区。"
     },
     "canvasToolPicker": {
-      "title": "Eyedropper tool",
-      "help": "Arms the eyedropper: a click takes the colour under the pointer and hands it to the brush."
+      "title": "吸管工具",
+      "help": "启用吸管：点击会取走指针下方的颜色，并把它交给画笔。"
     },
     "canvasBrushSmaller": {
-      "title": "Smaller brush",
-      "help": "Narrows the brush, the eraser and the shape stroke by one step of the scale."
+      "title": "缩小画笔",
+      "help": "按比例把画笔、橡皮擦和形状描边的直径缩小一级。"
     },
     "canvasBrushLarger": {
-      "title": "Larger brush",
-      "help": "Widens the brush, the eraser and the shape stroke by one step of the scale."
+      "title": "放大画笔",
+      "help": "按比例把画笔、橡皮擦和形状描边的直径放大一级。"
     },
     "sceneSkeletons": {
-      "title": "Show skeletons",
-      "help": "Draws the bones of every rigged model over the scene."
+      "title": "显示骨架",
+      "help": "在场景之上画出每个带骨架模型的骨骼。"
     },
     "scenePoseMode": {
-      "title": "Pose mode",
-      "help": "Switches between picking objects and picking the bones of a rig."
+      "title": "姿态模式",
+      "help": "在选取对象和选取绑定骨骼之间切换。"
     },
     "sceneNavigate": {
-      "title": "Navigate",
-      "help": "Move through the scene as in a game: the mouse holds the view, W A S D travel, E and Q rise and fall. The wheel sets the speed. Escape gives the mouse back."
+      "title": "漫游",
+      "help": "像在游戏里一样穿行场景：鼠标控制视线，W A S D 前后左右移动，E 和 Q 上升下降。滚轮设定速度。Escape 键把鼠标交还。"
     },
     "sceneNegate": {
-      "title": "Negate",
-      "help": "Marks the selected shapes as tools: they are cut out of the others, whichever button is pressed next and in whatever order they were clicked. A marked shape shows translucent red. Press again to take the mark off."
+      "title": "负形",
+      "help": "把选中的形状标记为工具：无论接下来按哪个按钮，也无论点击的先后顺序如何，它们都会从其他形状中被挖去。被标记的形状显示为半透明红色。再按一次可以取消标记。"
     },
     "sceneCarve": {
-      "title": "Carve",
-      "help": "Cuts the shapes marked Negate — failing that, the smaller ones — out of the biggest selected shape: a cube set inside a wall opens a window in it. The order of the clicks changes nothing. The original shapes are kept — Separate gives them back."
+      "title": "挖空",
+      "help": "把标记为负形的形状——没有标记时则是较小的那些——从选中的最大形状中挖去：放进墙里的一个立方体会在墙上开出一扇窗。点击的先后顺序不起作用。原始形状会保留下来——“分离”会把它们还回来。"
     },
     "sceneWeld": {
-      "title": "Join",
-      "help": "Merges the selected shapes into a single solid. A shape marked Negate is cut out of it instead of being added to it. The original shapes are kept — Separate gives them back."
+      "title": "合并",
+      "help": "把选中的形状合并成一个实体。标记为负形的形状会从中被挖去，而不是加进去。原始形状会保留下来——“分离”会把它们还回来。"
     },
     "sceneIntersect": {
-      "title": "Keep overlap",
-      "help": "Keeps only the part where the selected shapes overlap, and throws the rest away. A shape marked Negate is cut out of it instead of being kept. The original shapes are kept — Separate gives them back."
+      "title": "保留相交部分",
+      "help": "只保留选中形状彼此重叠的部分，其余部分丢弃。标记为负形的形状会从中被挖去，而不是被保留。原始形状会保留下来——“分离”会把它们还回来。"
     },
     "sceneInvertCarve": {
-      "title": "Flip the fold",
-      "help": "Folds the same shapes the other way round: what was carved becomes the matter, and the matter becomes the tool. One click, no undo — for the fold that ran backwards."
+      "title": "反转折叠",
+      "help": "把同样的形状按相反的方向折叠一次：被挖去的部分变成实体，实体变成工具。一次点击，不用撤销——用于方向做反了的那次折叠。"
     },
     "sceneSeparate": {
-      "title": "Separate",
-      "help": "Breaks a solid apart and gives back the shapes it was made of, each where it stood."
+      "title": "分离",
+      "help": "拆开一个实体，把构成它的形状还回来，每个都回到原来的位置。"
     }
   }
 }

@@ -1,24 +1,24 @@
 {
   "fileInfo": {
-    "title": "Information about {{name}}",
+    "title": "معلومات عن {{name}}",
     "sections": {
-      "general": "General",
-      "media": "Media",
-      "catalogue": "Catalogue",
+      "general": "عام",
+      "media": "وسائط",
+      "catalogue": "فهرس",
       "git": "Git"
     },
-    "gitUnchanged": "No pending changes",
+    "gitUnchanged": "لا تغييرات معلقة",
     "kind": {
-      "file": "File",
-      "folder": "Folder"
+      "file": "ملف",
+      "folder": "مجلد"
     },
-    "type": "Type",
-    "modified": "Modified",
-    "codec": "Codec",
-    "identifier": "Identifier",
-    "fingerprint": "Content fingerprint",
-    "added": "Added",
-    "reading": "Reading the folder…",
-    "missing": "This entry is no longer in the project folder."
+    "type": "نوع",
+    "modified": "تاريخ التعديل",
+    "codec": "ترميز",
+    "identifier": "معرف",
+    "fingerprint": "بصمة المحتوى",
+    "added": "تاريخ الإضافة",
+    "reading": "قراءة المجلد…",
+    "missing": "لم يعد هذا العنصر في مجلد المشروع."
   }
 }

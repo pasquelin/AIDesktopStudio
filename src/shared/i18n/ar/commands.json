@@ -1,549 +1,549 @@
 {
   "commands": {
     "scenePlay": {
-      "title": "Play scene",
-      "help": "Starts or resumes the scene in the game window."
+      "title": "تشغيل المشهد",
+      "help": "يشغّل المشهد في نافذة اللعبة أو يستأنفه."
     },
     "appNew": {
-      "title": "New…",
-      "help": "Opens the window that makes a project or a document, from any screen"
+      "title": "جديد…",
+      "help": "يفتح النافذة التي تنشئ مشروعًا أو مستندًا، من أي شاشة"
     },
     "projectNew": {
-      "title": "New project",
-      "help": "Creates an empty project and opens it. A project is the folder holding everything you make: the images, the videos, the sounds, and how they are arranged."
+      "title": "مشروع جديد",
+      "help": "ينشئ مشروعًا فارغًا ويفتحه. المشروع هو المجلد الذي يحتوي كل ما تصنعه: الصور والفيديوهات والأصوات، وطريقة ترتيبها."
     },
     "projectOpen": {
-      "title": "Open project",
-      "help": "Picks a project already on your disk and opens it in place of the current one. The open project is saved as you go, so there is nothing to save first."
+      "title": "فتح مشروع",
+      "help": "يختار مشروعًا موجودًا على قرصك ويفتحه مكان المشروع الحالي. ويجري حفظ المشروع المفتوح أولًا بأول، فلا شيء يحتاج إلى حفظ قبل ذلك."
     },
     "documentSaveAs": {
-      "title": "Save as",
-      "help": "Writes a copy of the asset beside the original and carries on with it. The asset that was open stays as it was at the last save."
+      "title": "حفظ باسم",
+      "help": "يكتب نسخة من الأصل بجوار النسخة الأصلية ويتابع العمل عليها. ويبقى الأصل المفتوح كما كان عند آخر حفظ."
     },
     "documentSave": {
-      "title": "Save document",
-      "help": "Writes the document in front into the project. Until it is saved, it lives in the window: the tab carries an asterisk for as long as what is on screen is not what is on disk."
+      "title": "حفظ المستند",
+      "help": "يكتب المستند الأمامي في المشروع. وما دام غير محفوظ فهو يعيش في النافذة: علامة التبويب تحمل نجمة ما دام ما على الشاشة يخالف ما على القرص."
     },
     "documentClose": {
-      "title": "Close tab",
-      "help": "Closes the document in front. If it holds unsaved work, the studio asks what to do with it. With no tab left, the window closes."
+      "title": "إغلاق علامة التبويب",
+      "help": "يغلق المستند الأمامي. وإن كان يحمل عملًا غير محفوظ، يسأل الاستوديو عما يجب فعله به. وإذا لم تبق علامة تبويب، تغلق النافذة."
     },
     "layoutReset": {
-      "title": "Reset layout",
-      "help": "Puts the panels back where they started. Useful once the windows have been dragged all over and nothing is where you expect. Your work is untouched."
+      "title": "إعادة تعيين التخطيط",
+      "help": "يعيد اللوحات إلى مواضعها الأولى. مفيد بعد سحب النوافذ في كل اتجاه حتى لم يعد شيء في مكانه المتوقع. ولا يمس عملك."
     },
     "appSettings": {
-      "title": "Settings",
-      "help": "Opens the settings window — this one: the language, the colours, the account, the shortcuts, and everything else that is adjustable."
+      "title": "الإعدادات",
+      "help": "يفتح نافذة الإعدادات، هذه بعينها: اللغة والألوان والحساب والاختصارات وكل ما يمكن ضبطه."
     },
     "appAssistant": {
-      "title": "Assistant",
-      "help": "Opens the window where you say what you want done, by voice or by keyboard. The assistant carries it out itself, and asks for a yes before anything that costs."
+      "title": "المساعد",
+      "help": "يفتح النافذة التي تقول فيها ما تريد إنجازه، بالصوت أو بلوحة المفاتيح. وينفّذ المساعد ذلك بنفسه، ويطلب موافقتك قبل كل ما يكلّف."
     },
     "appDictate": {
-      "title": "Dictate",
-      "help": "Listens to the microphone and writes what you say at the caret, in the field you are in. Held down by default: speak, let go, the text appears."
+      "title": "إملاء",
+      "help": "يستمع إلى الميكروفون ويكتب ما تقوله عند المؤشر، في الحقل الذي أنت فيه. ويبقى مضغوطًا افتراضيًا: تتكلم، ثم تفلته، فيظهر النص."
     },
     "windowFullScreen": {
-      "title": "Full screen",
-      "help": "Gives the window the whole screen, with no bar and no border, to work with nothing around it."
+      "title": "ملء الشاشة",
+      "help": "يمنح النافذة الشاشة كاملة، بلا شريط ولا حدود، للعمل دون شيء حولها."
     },
     "spacesMoveLeft": {
-      "title": "Move the space left",
-      "help": "Shifts the focused space one place to the left in the top bar. The order you settle on is kept from one session to the next."
+      "title": "نقل المساحة إلى اليسار",
+      "help": "يزيح المساحة صاحبة التركيز موضعًا واحدًا إلى اليسار في الشريط العلوي. والترتيب الذي تستقر عليه يبقى محفوظًا من جلسة إلى أخرى."
     },
     "spacesMoveRight": {
-      "title": "Move the space right",
-      "help": "Shifts the focused space one place to the right in the top bar. The order you settle on is kept from one session to the next."
+      "title": "نقل المساحة إلى اليمين",
+      "help": "يزيح المساحة صاحبة التركيز موضعًا واحدًا إلى اليمين في الشريط العلوي. والترتيب الذي تستقر عليه يبقى محفوظًا من جلسة إلى أخرى."
     },
     "explorerNewFolder": {
-      "title": "New folder",
-      "help": "Creates an empty folder inside the one the explorer is showing, and opens its name for typing. The folder is yours, as is everything you put in it."
+      "title": "مجلد جديد",
+      "help": "ينشئ مجلدًا فارغًا داخل المجلد الذي يعرضه المستكشف، ويفتح اسمه للكتابة. والمجلد ملكك، وكذلك كل ما تضعه فيه."
     },
     "explorerDuplicate": {
-      "title": "Duplicate",
-      "help": "Lays a copy of each chosen item beside the original, under the first free name. A folder is copied with everything inside it."
+      "title": "تكرار",
+      "help": "يضع نسخة من كل عنصر مختار بجوار الأصل، تحت أول اسم متاح. والمجلد ينسخ بكل ما فيه."
     },
     "explorerCut": {
-      "title": "Cut",
-      "help": "Holds the selection, to be moved on the next paste. Nothing moves until you paste, and the rows being held are drawn dimmed."
+      "title": "قص",
+      "help": "يحتفظ بالتحديد لنقله عند اللصق التالي. ولا شيء يتحرك قبل اللصق، وتظهر الأسطر المحتفظ بها باهتة."
     },
     "explorerCopy": {
-      "title": "Copy",
-      "help": "Holds the selection, to be copied on the next paste. The original stays where it is."
+      "title": "نسخ",
+      "help": "يحتفظ بالتحديد لنسخه عند اللصق التالي. ويبقى الأصل في مكانه."
     },
     "explorerPaste": {
-      "title": "Paste",
-      "help": "Drops what the clipboard holds into the folder on screen. An item whose name is already taken is refused, and the rest go through."
+      "title": "لصق",
+      "help": "يضع ما تحمله الحافظة في المجلد المعروض. ويرفض العنصر الذي اسمه مأخوذ سلفًا، ويمر الباقي."
     },
     "explorerTrash": {
-      "title": "Move to trash",
-      "help": "Sends the selection to the system trash, where you can get it back. It is the one explorer gesture the studio cannot undo."
+      "title": "نقل إلى سلة المهملات",
+      "help": "يرسل التحديد إلى سلة مهملات النظام، حيث يمكنك استعادته. وهو الإجراء الوحيد في المستكشف الذي لا يعرف الاستوديو التراجع عنه."
     },
     "explorerUndo": {
-      "title": "Undo the last file gesture",
-      "help": "Puts the last batch moved, renamed, duplicated or created back where it was. The stack belongs to the project rather than to a window, and the trash gesture never enters it."
+      "title": "تراجع عن آخر إجراء على الملفات",
+      "help": "يعيد إلى مكانها آخر دفعة جرى نقلها أو إعادة تسميتها أو تكرارها أو إنشاؤها. والمكدّس يخص المشروع لا نافذة بعينها، والنقل إلى سلة المهملات لا يدخله أبدًا."
     },
     "explorerRedo": {
-      "title": "Redo the file gesture",
-      "help": "Redoes the batch of files that was just undone, exactly as it was."
+      "title": "إعادة الإجراء على الملفات",
+      "help": "يعيد تنفيذ دفعة الملفات التي جرى التراجع عنها للتو، كما كانت تمامًا."
     },
     "sceneSelect": {
-      "title": "Select",
-      "help": "The plain tool: click an object in the scene to choose it, without doing anything to it. It is the one you come back to between manipulations."
+      "title": "تحديد",
+      "help": "الأداة الأساسية: النقر على كائن في المشهد يختاره دون أن يفعل به شيئًا. وإليها تعود بين كل معالجتين."
     },
     "sceneTranslate": {
-      "title": "Move",
-      "help": "Drags the chosen object from one place to another, by pulling the coloured arrows — one per direction."
+      "title": "نقل",
+      "help": "يسحب الكائن المختار من موضع إلى آخر، بجذب الأسهم الملونة — سهم لكل اتجاه."
     },
     "sceneRotate": {
-      "title": "Rotate",
-      "help": "Turns the chosen object on itself, by pulling the coloured rings — one per axis."
+      "title": "تدوير",
+      "help": "يدير الكائن المختار حول نفسه، بجذب الحلقات الملونة — حلقة لكل محور."
     },
     "sceneScale": {
-      "title": "Scale",
-      "help": "Makes the chosen object bigger or smaller, by pulling its handles. Holding Shift keeps its proportions."
+      "title": "تحجيم",
+      "help": "يكبّر الكائن المختار أو يصغّره، بجذب مقابضه. وإبقاء Shift مضغوطًا يحفظ نسبه."
     },
     "sceneFrame": {
-      "title": "Frame selection",
-      "help": "Brings the camera close enough that the chosen object fills the view. Handy when you are lost, or when an object is tiny."
+      "title": "تأطير التحديد",
+      "help": "يقرّب الكاميرا حتى يملأ الكائن المختار المنظر. مفيد عندما تضيع، أو عندما يكون الكائن ضئيلًا."
     },
     "sceneFrameFollow": {
-      "title": "Follow the selection",
-      "help": "Frames the selection and keeps it in view: whatever moves takes the camera along, at the angle and distance already chosen. Called again, it lets go."
+      "title": "متابعة التحديد",
+      "help": "يؤطّر التحديد ويبقيه في المنظر: ما يتحرك يجرّ الكاميرا معه، بالزاوية والمسافة المختارتين سلفًا. واستدعاؤه ثانية يطلقه."
     },
     "sceneIsolate": {
-      "title": "Isolate selection",
-      "help": "Leaves only the chosen objects on screen while you work on them. Nothing is changed: pressing it again gives the scene back exactly as it was, including the objects you had hidden yourself."
+      "title": "عزل التحديد",
+      "help": "لا يترك على الشاشة سوى الكائنات المختارة ريثما تعمل عليها. ولا يتغير شيء: الضغط مرة ثانية يعيد المشهد كما كان تمامًا، بما في ذلك الكائنات التي أخفيتها بنفسك."
     },
     "sceneHide": {
-      "title": "Hide selection",
-      "help": "Takes the chosen objects out of the view without touching the document. Show all brings them back."
+      "title": "إخفاء التحديد",
+      "help": "يزيل الكائنات المختارة من العرض دون المساس بالمستند. و«إظهار الكل» يعيدها."
     },
     "sceneShowAll": {
-      "title": "Show all",
-      "help": "Undoes the hiding and isolating done from the viewport. Objects the document itself declares hidden stay hidden."
+      "title": "إظهار الكل",
+      "help": "يلغي ما جرى من إخفاء وعزل في منفذ العرض. أما الكائنات التي يعلن المستند نفسه إخفاءها فتبقى مخفية."
     },
     "sceneSnap": {
-      "title": "All snaps",
-      "help": "Turns all four snaps on or off at once — surface, grid, angle, scale. A second press gives back exactly the ones that were on. The bar at the top of the viewport sets them one by one."
+      "title": "كل أنواع التجاذب",
+      "help": "يشغّل أنواع التجاذب الأربعة أو يوقفها دفعة واحدة — السطح والشبكة والزاوية والتحجيم. والضغطة الثانية تعيد تمامًا ما كان مشتغلًا. أما الشريط أعلى منفذ العرض فيضبطها واحدًا واحدًا."
     },
     "sceneSpace": {
-      "title": "Local frame",
-      "help": "Lines the handles up with the object’s own orientation rather than the world’s. On a turned object, that is what lets you move it “towards its front” rather than north."
+      "title": "المرجع المحلي",
+      "help": "يحاذي المقابض مع اتجاه الكائن نفسه بدل اتجاه العالم. وعلى كائن جرى تدويره، هذا ما يتيح نقله «نحو مقدمته» بدل نقله نحو الشمال."
     },
     "sceneProjection": {
-      "title": "Projection",
-      "help": "Switches between perspective, where receding lines converge, and orthographic projection, where parallels stay parallel. That is what lets an alignment be judged by eye."
+      "title": "إسقاط",
+      "help": "يبدّل بين المنظور، حيث تتلاقى الخطوط المتباعدة، والإسقاط المتعامد، حيث تبقى المتوازيات متوازية. وهذا ما يتيح الحكم على المحاذاة بالعين."
     },
     "sceneViewFront": {
-      "title": "Look from the front",
-      "help": "Puts the camera in front of the scene, square to the axis. The reference view for judging a silhouette."
+      "title": "النظر من الأمام",
+      "help": "يضع الكاميرا أمام المشهد، متعامدة على المحور. وهو المنظر المرجعي للحكم على الهيئة الخارجية."
     },
     "sceneViewBack": {
-      "title": "Look from behind",
-      "help": "Puts the camera behind the scene, on the same axis: what the front hides."
+      "title": "النظر من الخلف",
+      "help": "يضع الكاميرا خلف المشهد، على المحور نفسه: ما تخفيه الواجهة."
     },
     "sceneViewRight": {
-      "title": "Look from the right",
-      "help": "Puts the camera on the right-hand side, square to the axis. What a depth is judged from."
+      "title": "النظر من اليمين",
+      "help": "يضع الكاميرا على الجانب الأيمن، متعامدة على المحور. ومنه يجري الحكم على العمق."
     },
     "sceneViewLeft": {
-      "title": "Look from the left",
-      "help": "Puts the camera on the left-hand side, on the same axis as the right view."
+      "title": "النظر من اليسار",
+      "help": "يضع الكاميرا على الجانب الأيسر، على المحور نفسه الذي عليه منظر اليمين."
     },
     "sceneViewTop": {
-      "title": "Look from above",
-      "help": "Puts the camera above the scene, looking straight down. What the objects are laid out on the ground from."
+      "title": "النظر من الأعلى",
+      "help": "يضع الكاميرا فوق المشهد، ناظرة عموديًا إلى الأسفل. ومنه ترتّب الكائنات على الأرض."
     },
     "sceneViewBottom": {
-      "title": "Look from below",
-      "help": "Puts the camera under the scene, looking straight up, the other way from the top view."
+      "title": "النظر من الأسفل",
+      "help": "يضع الكاميرا تحت المشهد، ناظرة عموديًا إلى الأعلى، في الاتجاه المعاكس لمنظر الأعلى."
     },
     "sceneViewCamera": {
-      "title": "Look through the camera",
-      "help": "Draws the view through the chosen camera, and steps back out on a second call. With no camera chosen, it takes the first in the scene."
+      "title": "النظر عبر الكاميرا",
+      "help": "يرسم المنظر عبر الكاميرا المختارة، ويخرج منه عند الاستدعاء الثاني. وإن لم تكن هناك كاميرا مختارة، يأخذ أول كاميرا في المشهد."
     },
     "sceneQuad": {
-      "title": "Four views",
-      "help": "Splits the viewport in four — top, front and side around the view being flown. Each quarter orbits under the pointer; the flown one keeps the gizmos."
+      "title": "أربعة مناظر",
+      "help": "يقسم منفذ العرض إلى أربعة — الأعلى والأمام والجانب حول المنظر الجاري التنقل فيه. وكل ربع يدور تحت المؤشر؛ والمنظر الجاري يحتفظ بأدوات التحكم."
     },
     "sceneQuadEdges": {
-      "title": "Quad edges",
-      "help": "Redraws the wireframe without the diagonals triangulation added. A GLB never holds quads: this is a reconstruction by angle, faithful except on strongly curved surfaces."
+      "title": "حواف رباعية",
+      "help": "يعيد رسم الشكل السلكي دون الأقطار التي أضافها التثليث. وملف GLB لا يحمل رباعيات أبدًا: هذه إعادة بناء بحسب الزاوية، أمينة إلا على السطوح الشديدة الانحناء."
     },
     "sceneDisplay": {
-      "title": "Display mode",
-      "help": "Cycles what the viewport draws: the surfaces, their edges alone, or both together. The button’s menu picks one directly."
+      "title": "وضع العرض",
+      "help": "يتنقل بين ما يرسمه منفذ العرض: السطوح، أو حوافها وحدها، أو الاثنين معًا. وقائمة الزر تتيح الاختيار مباشرة."
     },
     "sceneCapture": {
-      "title": "Capture the view",
-      "help": "Saves an image of the 3D view into the project’s images — without the grid, the handles or the rails. The menu offers resolutions larger than the panel’s own."
+      "title": "التقاط المنظر",
+      "help": "يحفظ صورة من المنظر ثلاثي الأبعاد في صور المشروع — بلا شبكة ولا مقابض ولا مسارات. وتقدّم القائمة دقّات أكبر من دقة اللوحة نفسها."
     },
     "sceneAdd": {
-      "title": "Add",
-      "help": "Opens the list of what a scene can take: meshes, lights and objects. A right-click on empty space opens the same list."
+      "title": "إضافة",
+      "help": "يفتح قائمة ما يمكن للمشهد أن يستقبله: المُجسَّمات والأضواء والكائنات. والنقر الأيمن في الفراغ يفتح القائمة نفسها."
     },
     "sceneAddToSheet": {
-      "title": "Add to the animation band",
-      "help": "Puts the selected objects on the band, where keys are set. The band shows only what is put there, so a scene of thousands of objects stays readable."
+      "title": "إضافة إلى شريط الحركة",
+      "help": "يضع الكائنات المحددة على الشريط، حيث توضع المفاتيح. والشريط لا يعرض إلا ما يوضع فيه، فيبقى مشهد من آلاف الكائنات مقروءًا."
     },
     "sceneRemoveFromSheet": {
-      "title": "Remove from the animation band",
-      "help": "Removes the line from the band. Keys already set stay, and an object keeps its line for as long as it holds one."
+      "title": "إزالة من شريط الحركة",
+      "help": "يزيل السطر من الشريط. والمفاتيح الموضوعة سلفًا تبقى، ويحتفظ الكائن بسطره ما دام يحمل مفتاحًا."
     },
     "sceneGroup": {
-      "title": "Group",
-      "help": "Files the selected objects under one group. Moving the group moves them all, and ⌘Z takes the grouping back."
+      "title": "تجميع",
+      "help": "يرتّب الكائنات المحددة تحت مجموعة واحدة. ونقل المجموعة ينقلها كلها، ويلغي ⌘Z التجميع."
     },
     "sceneDuplicate": {
-      "title": "Duplicate",
-      "help": "Puts a copy of the selection under the same parent and at the very same place, then selects it. A group duplicates whole, with everything hanging from it."
+      "title": "تكرار",
+      "help": "يضع نسخة مما هو محدد، تحت الأب نفسه وفي الموضع نفسه تمامًا، ثم يحددها. والمجموعة تتكرر كاملة، بكل ما يتدلى منها."
     },
     "sceneOptimizeSelection": {
-      "title": "Optimise selection…",
-      "help": "Measures the selection and previews a SAFE runtime representation before changing its optimisation settings."
+      "title": "تحسين التحديد…",
+      "help": "يقيس التحديد ويعرض تمثيلًا لبيئة التشغيل من نوع SAFE قبل تغيير إعدادات تحسينه."
     },
     "sceneWorldPerformance": {
-      "title": "World performance…",
-      "help": "Measures the whole scene and reports SAFE optimisation opportunities without changing the authoring world."
+      "title": "أداء العالم…",
+      "help": "يقيس المشهد كله ويعرض فرص التحسين من نوع SAFE دون تغيير عالم التأليف."
     },
     "sceneExportGame": {
-      "title": "Export the game…",
-      "help": "Builds a standalone game from an optimised runtime copy while leaving the authoring scenes untouched."
+      "title": "تصدير اللعبة…",
+      "help": "يبني لعبة مستقلة من نسخة محسّنة لبيئة التشغيل دون المساس بمشاهد التحرير."
     },
     "sceneCopy": {
-      "title": "Copy",
-      "help": "Holds on to the selection so it can be pasted, here or in another scene. This is the studio’s own clipboard: it leaves the system one alone."
+      "title": "نسخ",
+      "help": "يحتفظ بالتحديد ليمكن لصقه لاحقًا، هنا أو في مشهد آخر. هذه حافظة الاستوديو الخاصة: لا تمسّ حافظة النظام."
     },
     "sceneCut": {
-      "title": "Cut",
-      "help": "Holds on to the selection and takes it out of the scene. ⌘Z brings it back."
+      "title": "قص",
+      "help": "يحتفظ بالتحديد ثم يزيله من المشهد. و⌘Z يعيده."
     },
     "scenePaste": {
-      "title": "Paste",
-      "help": "Puts what was copied into the scene in front, and selects it. Pasting twice makes two separate copies."
+      "title": "لصق",
+      "help": "يضع ما تم نسخه في المشهد الحالي، ويحدده. واللصق مرتين يضع نسختين منفصلتين."
     },
     "sceneDelete": {
-      "title": "Delete",
-      "help": "Removes everything selected from the scene. Nothing is lost for good: ⌘Z brings it back."
+      "title": "حذف",
+      "help": "يزيل من المشهد كل ما هو محدد. ولا شيء يضيع نهائيًا: ⌘Z يعيده."
     },
     "undo": {
-      "title": "Undo",
-      "help": "Takes back the last thing you did in this document. Each document has its own stack: undo acts on the tab in front, not on the others."
+      "title": "تراجع",
+      "help": "يلغي آخر ما فعلته في هذا المستند. ولكل مستند مكدسه الخاص: التراجع يعمل على علامة التبويب الحالية، لا على غيرها."
     },
     "redo": {
-      "title": "Redo",
-      "help": "Does again what you have just undone. Handy after undoing once too often."
+      "title": "إعادة",
+      "help": "يعيد ما تراجعت عنه للتو. مفيد بعد تراجع زائد عن الحاجة."
     },
     "sequencePlayPause": {
-      "title": "Play / Pause",
-      "help": "Starts playing the edit, or stops it where it is. Starting again picks up where you left off."
+      "title": "تشغيل / إيقاف مؤقت",
+      "help": "يبدأ تشغيل المونتاج، أو يوقفه حيث وصل. وإعادة التشغيل تستأنف من حيث توقفت."
     },
     "sequenceExport": {
-      "title": "Export video…",
-      "help": "Writes the edit out as a video file, frame by frame, 3D scenes included. The sound is not in it yet."
+      "title": "تصدير الفيديو…",
+      "help": "يكتب المونتاج في ملف فيديو، إطارًا بإطار، بما في ذلك المشاهد ثلاثية الأبعاد. والصوت غير مضمّن فيه بعد."
     },
     "sequenceExportCut": {
-      "title": "Export edit (OTIO)…",
-      "help": "Writes the edit itself out as an OpenTimelineIO file, which other editing applications open — tracks, clips, in points, speeds and links to the media. Fades, gains and image/sound links travel in it too, but only AI Desktop Studio reads them back."
+      "title": "تصدير المونتاج (OTIO)…",
+      "help": "يكتب المونتاج نفسه في ملف OpenTimelineIO تفتحه برامج المونتاج الأخرى — المسارات والمقاطع ونقاط البداية والسرعات والروابط إلى الوسائط. وتسافر فيه أيضًا التلاشيات والكسب وروابط الصورة والصوت، لكن AI Desktop Studio وحده يعيد قراءتها."
     },
     "sequenceExportEdl": {
-      "title": "Export edit list (EDL)…",
-      "help": "Writes the cuts and their timecodes as CMX3600, which every online room reads. The format holds one image track and two sound ones, and nothing of the fades, the gains or the speeds."
+      "title": "تصدير قائمة المونتاج (EDL)…",
+      "help": "يكتب القطعات ورموزها الزمنية بصيغة CMX3600 التي تقرأها كل غرف التصحيح اللوني. وتحمل الصيغة مسار صورة واحدًا ومسارَي صوت، ولا تحمل شيئًا من التلاشيات ولا الكسب ولا السرعات."
     },
     "sequenceExportFcpxml": {
-      "title": "Export edit (FCPXML)…",
-      "help": "Writes the edit in the format Final Cut reads and Premiere and Resolve import. The tracks survive, a lane each, and so does the frame size; the fades, the gains and the speeds stay here."
+      "title": "تصدير المونتاج (FCPXML)…",
+      "help": "يكتب المونتاج بالصيغة التي يقرأها Final Cut ويستوردها برنامجا Premiere وResolve. وتبقى المسارات، كل مسار في ممر خاص، ويبقى حجم الإطار؛ أما التلاشيات والكسب والسرعات فتبقى هنا."
     },
     "sequenceExportStems": {
-      "title": "Export sound per track (WAV)…",
-      "help": "Writes one WAV per audible track, mixed the way the edit plays it — the placements, the trims, the fades, the gains and the speeds are baked into the samples. A muted track is not written."
+      "title": "تصدير الصوت لكل مسار (WAV)…",
+      "help": "يكتب ملف WAV لكل مسار مسموع، ممزوجًا كما يشغّله المونتاج — المواضع والتشذيبات والتلاشيات والكسب والسرعات كلها مدمجة في العينات. ولا تتم كتابة المسار المكتوم."
     },
     "sequenceExportBundle": {
-      "title": "Export edit with its media (OTIOZ)…",
-      "help": "Writes the same edit with the media it uses inside the file. This is the one to hand to somebody else, or to open in DaVinci Resolve, which then finds the rushes on its own instead of asking for them one by one."
+      "title": "تصدير المونتاج مع وسائطه (OTIOZ)…",
+      "help": "يكتب المونتاج نفسه مع الوسائط التي يستخدمها داخل الملف. وهذا هو الملف الذي تعطيه لشخص آخر، أو تفتحه في DaVinci Resolve الذي يجد اللقطات الخام وحده بدل أن يطلبها واحدة واحدة."
     },
     "montageImport": {
-      "title": "Import an edit with its media (OTIOZ)…",
-      "help": "Opens an edit written by another application, rushes and all. The media are copied into the project and enter the catalogue, then the edit opens linked to them. What the opened file does not bring is said as it opens, and starts from its default only there."
+      "title": "استيراد مونتاج مع وسائطه (OTIOZ)…",
+      "help": "يفتح مونتاجًا كتبه برنامج آخر، بلقطاته الخام. وتنتقل نسخة من الوسائط إلى المشروع وتدخل الفهرس، ثم يفتح المونتاج مرتبطًا بها. وما لا يحمله الملف المفتوح يذكره الاستوديو عند الفتح، ولا يعود إلى قيمته الافتراضية إلا هناك."
     },
     "sequenceMirror": {
-      "title": "Return window",
-      "help": "Opens the edit in a window of its own, to put on a second screen. It follows the studio frame by frame, without the sound, and closes like any window."
+      "title": "نافذة الرجوع",
+      "help": "يفتح المونتاج في نافذة مستقلة توضع على شاشة ثانية. وهي تتابع الاستوديو إطارًا بإطار، بلا صوت، وتغلق كأي نافذة عادية."
     },
     "sequenceSplit": {
-      "title": "Split clip",
-      "help": "Cuts the clip in two where the playhead sits, so each half can be handled on its own."
+      "title": "تقسيم المقطع",
+      "help": "يقسم المقطع إلى قسمين عند موضع رأس التشغيل، ليعالج كل نصف على حدة."
     },
     "sequenceDelete": {
-      "title": "Delete clip",
-      "help": "Removes the chosen clip from the edit. The original file stays in your assets."
+      "title": "حذف المقطع",
+      "help": "يزيل المقطع المختار من المونتاج. أما الملف الأصلي فيبقى في أصولك."
     },
     "sequenceUnlink": {
-      "title": "Unlink picture and sound",
-      "help": "Separates the two clips of one take. While they are linked, moving, cutting or deleting one does the same to the other."
+      "title": "فصل الصورة والصوت",
+      "help": "يفصل مقطعي اللقطة الواحدة. وما داما مرتبطين، فإن نقل أحدهما أو قصه أو حذفه يفعل الشيء نفسه بالآخر."
     },
     "sequenceZoomIn": {
-      "title": "Zoom in",
-      "help": "Spreads the edit out to see detail: clips get wider and are easier to aim at."
+      "title": "تكبير",
+      "help": "يوسّع عرض المونتاج لرؤية التفاصيل: تصبح المقاطع أعرض وأسهل في التصويب."
     },
     "sequenceZoomOut": {
-      "title": "Zoom out",
-      "help": "Draws the edit together to see more of it at once, at the cost of the detail."
+      "title": "تصغير",
+      "help": "يضم المونتاج لرؤية جزء أكبر منه دفعة واحدة، على حساب التفاصيل."
     },
     "sequenceFit": {
-      "title": "Fit to view",
-      "help": "Sets the zoom so the whole edit fits on screen, end to end."
+      "title": "ملاءمة العرض",
+      "help": "يضبط التكبير ليتسع المونتاج كله على الشاشة، من أوله إلى آخره."
     },
     "sequenceStart": {
-      "title": "Go to start",
-      "help": "Brings the playhead right back to the beginning of the edit, moving nothing else."
+      "title": "الانتقال إلى البداية",
+      "help": "يعيد رأس التشغيل إلى بداية المونتاج تمامًا، دون تحريك أي شيء آخر."
     },
     "sequenceEnd": {
-      "title": "Go to end",
-      "help": "Sends the playhead right to the end of the edit, past the last clip."
+      "title": "الانتقال إلى النهاية",
+      "help": "يرسل رأس التشغيل إلى نهاية المونتاج، بعد آخر مقطع."
     },
     "canvasZoomIn": {
-      "title": "Zoom in",
-      "help": "Magnifies the view one step, around the middle of what is visible. The image itself is untouched — only the way it is looked at."
+      "title": "تكبير",
+      "help": "يكبّر العرض درجة واحدة، حول منتصف ما هو ظاهر. والصورة نفسها لا تتغير، بل طريقة النظر إليها فقط."
     },
     "canvasZoomOut": {
-      "title": "Zoom out",
-      "help": "Shrinks the view one step, to take in the whole image again."
+      "title": "تصغير",
+      "help": "يصغّر العرض درجة واحدة، للعودة إلى رؤية الصورة كاملة."
     },
     "canvasZoomFit": {
-      "title": "Fit to window",
-      "help": "Frames the whole image in the panel, with a margin, and never magnifies it past its actual size."
+      "title": "ملاءمة النافذة",
+      "help": "يؤطر الصورة كاملة داخل اللوحة، مع هامش، ودون تكبيرها أبدًا فوق حجمها الحقيقي."
     },
     "canvasZoomActual": {
-      "title": "Actual size",
-      "help": "One image pixel per screen pixel: the only scale at which sharpness can be judged."
+      "title": "الحجم الحقيقي",
+      "help": "بكسل واحد من الصورة لكل بكسل من الشاشة: المقياس الوحيد الذي يمكن الحكم فيه على الحدة."
     },
     "canvasRulers": {
-      "title": "Rulers",
-      "help": "Shows or hides the two graduated rulers, at the top and on the left. Guides are pulled off them."
+      "title": "المساطر",
+      "help": "يظهر أو يخفي المسطرتين المدرجتين، في الأعلى وعلى اليسار. ومنهما تسحب الخطوط الإرشادية."
     },
     "canvasGuides": {
-      "title": "Guides",
-      "help": "Shows or hides the guides laid on the image. Hiding them does not remove them."
+      "title": "الخطوط الإرشادية",
+      "help": "يظهر أو يخفي الخطوط الإرشادية الموضوعة على الصورة. وإخفاؤها لا يحذفها."
     },
     "canvasGrid": {
-      "title": "Pixel grid",
-      "help": "Shows or hides the grid of the artwork’s own pixels. Only on a document set to pixel art."
+      "title": "شبكة البكسل",
+      "help": "يظهر أو يخفي شبكة بكسلات العمل نفسها. في المستندات المضبوطة على فن البكسل فقط."
     },
     "canvasClearGuides": {
-      "title": "Clear guides",
-      "help": "Removes every guide from the image. Undoable, like any other edit."
+      "title": "مسح الخطوط الإرشادية",
+      "help": "يزيل كل خط إرشادي من الصورة. وهو قابل للتراجع، كأي تعديل آخر."
     },
     "canvasSnap": {
-      "title": "Snap",
-      "help": "Makes what is dragged stick to guides, to the image edges and to its centre, within a few pixels."
+      "title": "المحاذاة المغناطيسية",
+      "help": "يجعل ما تسحبه يلتصق بالخطوط الإرشادية وبحواف الصورة وبمركزها، ضمن بضعة بكسلات."
     },
     "canvasSelectAll": {
-      "title": "Select all",
-      "help": "Selects the whole document, which the system’s own select-all cannot do on an image."
+      "title": "تحديد الكل",
+      "help": "يحدد المستند بأكمله، وهو ما لا يقدر عليه تحديد الكل في النظام على صورة."
     },
     "canvasDeselect": {
-      "title": "Deselect",
-      "help": "Drops the selected region, so the brush reaches the whole layer again."
+      "title": "إلغاء التحديد",
+      "help": "يترك المنطقة المحددة، فتعود الفرشاة إلى الطبقة كلها."
     },
     "canvasCropApply": {
-      "title": "Apply the crop",
-      "help": "Trims the document to the placed frame. ⌘Z gives the frame back, not the pixels."
+      "title": "تطبيق الاقتصاص",
+      "help": "يقتص المستند إلى الإطار الموضوع. و⌘Z يعيد الإطار، لا البكسلات."
     },
     "canvasCropCancel": {
-      "title": "Abandon the crop",
-      "help": "Takes the crop frame away without trimming anything at all."
+      "title": "إلغاء الاقتصاص",
+      "help": "يزيل إطار الاقتصاص دون اقتصاص أي شيء على الإطلاق."
     },
     "canvasMaskFromSelection": {
-      "title": "Make a mask of the selection",
-      "help": "Hides the active layer outside the selected region."
+      "title": "إنشاء قناع من التحديد",
+      "help": "يخفي الطبقة النشطة خارج المنطقة المحددة."
     },
     "canvasRegenerate": {
-      "title": "Regenerate the region",
-      "help": "Asks the model to repaint the masked region of the active layer."
+      "title": "إعادة توليد المنطقة",
+      "help": "يطلب من النموذج إعادة رسم المنطقة المقنّعة من الطبقة النشطة."
     },
     "canvasCutout": {
-      "title": "Cut out",
-      "help": "Removes the background of the flattened image with the default model."
+      "title": "إزالة الخلفية",
+      "help": "يزيل خلفية الصورة المسطّحة بالنموذج الافتراضي."
     },
     "canvasEnlarge": {
-      "title": "Upscale",
-      "help": "Raises the resolution of the flattened image with the default model."
+      "title": "تكبير الدقة",
+      "help": "يرفع دقة الصورة المسطّحة بالنموذج الافتراضي."
     },
     "canvasVectorize": {
-      "title": "Vectorise",
-      "help": "Turns the flattened image into paths with the default model."
+      "title": "تحويل إلى متجهات",
+      "help": "يحوّل الصورة المسطّحة إلى مسارات بالنموذج الافتراضي."
     },
     "canvasExtend": {
-      "title": "Extend",
-      "help": "Asks the model to paint beyond the edges of the flattened image."
+      "title": "توسيع",
+      "help": "يطلب من النموذج الرسم خارج حدود الصورة المسطّحة."
     },
     "canvasMergeDown": {
-      "title": "Merge down",
-      "help": "Joins the active layer and the one just below it into one, keeping the lower one’s name."
+      "title": "دمج مع الأسفل",
+      "help": "يوحّد الطبقة النشطة مع التي تحتها مباشرة في طبقة واحدة تحمل اسم السفلى."
     },
     "canvasFlatten": {
-      "title": "Flatten image",
-      "help": "Reduces the whole stack to a single layer: hidden layers are dropped, not merged.",
-      "layerName": "Background"
+      "title": "تسطيح الصورة",
+      "help": "يختزل المكدس كله في طبقة واحدة: الطبقات المخفية تسقط ولا تدمج.",
+      "layerName": "خلفية"
     },
     "canvasFlipHorizontal": {
-      "title": "Flip horizontal",
-      "help": "Mirrors the whole document left to right, layers included."
+      "title": "قلب أفقي",
+      "help": "يقلب المستند كله من اليسار إلى اليمين، بطبقاته."
     },
     "canvasFlipVertical": {
-      "title": "Flip vertical",
-      "help": "Mirrors the whole document top to bottom, layers included."
+      "title": "قلب رأسي",
+      "help": "يقلب المستند كله من الأعلى إلى الأسفل، بطبقاته."
     },
     "canvasRotateCw": {
-      "title": "Rotate clockwise",
-      "help": "Turns the document a quarter turn to the right: the frame turns with it."
+      "title": "تدوير مع عقارب الساعة",
+      "help": "يدير المستند ربع دورة إلى اليمين: والإطار يدور معه."
     },
     "canvasRotateCcw": {
-      "title": "Rotate counter-clockwise",
-      "help": "Turns the document a quarter turn to the left: the frame turns with it."
+      "title": "تدوير عكس عقارب الساعة",
+      "help": "يدير المستند ربع دورة إلى اليسار: والإطار يدور معه."
     },
     "canvasExport": {
-      "title": "Export the image",
-      "help": "Writes the flattened document to disk, as a PNG."
+      "title": "تصدير الصورة",
+      "help": "يكتب المستند المسطّح على القرص، بصيغة PNG."
     },
     "canvasExportLayered": {
-      "title": "Export the layers (PSD)…",
-      "help": "Writes the document with its layers, as a Photoshop file. Groups are flattened away: their layers arrive side by side."
+      "title": "تصدير الطبقات (PSD)…",
+      "help": "يكتب المستند بطبقاته، بصيغة Photoshop. أما المجموعات فتصبح مسطّحة، وتصل طبقاتها جنبًا إلى جنب."
     },
     "skyboxView": {
-      "title": "Change the view",
-      "help": "Cycles through the four ways of looking at the sky: immersive, panoramic, cross, faces."
+      "title": "تغيير العرض",
+      "help": "يتنقل بين الطرق الأربع للنظر إلى السماء: الانغماسية والبانورامية والصليبية والوجوه."
     },
     "skyboxProbes": {
-      "title": "Light probes",
-      "help": "Shows or hides the witness spheres. A sky is judged by what it lights, not by its own image."
+      "title": "مجسات الضوء",
+      "help": "يظهر أو يخفي الكرات الشاهدة. فالسماء يحكم عليها بما تضيئه، لا بصورتها هي."
     },
     "canvasToolMove": {
-      "title": "Move tool",
-      "help": "Arms the pointer: a drag moves the active layer, and its handles resize or turn it."
+      "title": "أداة النقل",
+      "help": "يجهّز المؤشر: السحب ينقل الطبقة النشطة، ومقابضها تغيّر حجمها أو تديرها."
     },
     "canvasToolHand": {
-      "title": "Hand tool",
-      "help": "Arms the hand: a drag pans the view without touching the document. Holding space does the same without changing tool."
+      "title": "أداة اليد",
+      "help": "يجهّز اليد: السحب يحرّك العرض دون المساس بالمستند. وإبقاء مفتاح المسافة مضغوطًا يفعل الشيء نفسه دون تغيير الأداة."
     },
     "canvasToolCrop": {
-      "title": "Crop tool",
-      "help": "Arms the crop frame. Draw a frame, then ⏎ to crop or ⎋ to drop it."
+      "title": "أداة الاقتصاص",
+      "help": "يجهّز إطار الاقتصاص. ارسم إطارًا، ثم ⏎ للاقتصاص أو ⎋ للتخلي عنه."
     },
     "canvasToolSelectRectangle": {
-      "title": "Rectangular selection",
-      "help": "Arms the rectangular selection. What is selected bounds the brush, the eraser and the bucket."
+      "title": "تحديد مستطيل",
+      "help": "يجهّز التحديد المستطيل. وما تحدده يحدّ الفرشاة والممحاة ودلو الطلاء."
     },
     "canvasToolSelectEllipse": {
-      "title": "Elliptical selection",
-      "help": "Arms the elliptical selection: a drag inscribes the ellipse in the rectangle swept, and Shift makes it a circle."
+      "title": "تحديد بيضاوي",
+      "help": "يجهّز التحديد البيضاوي: السحب يرسم الشكل البيضاوي داخل المستطيل الممسوح، ومفتاح Shift يجعله دائرة."
     },
     "canvasToolSelectLasso": {
-      "title": "Lasso",
-      "help": "Arms the lasso: the selection follows the hand, freehand."
+      "title": "لاسو",
+      "help": "يجهّز اللاسو: التحديد يتبع اليد، بحركة حرة."
     },
     "canvasToolSmartSelect": {
-      "title": "Click Smart Select",
-      "help": "Arms object selection from a click, using the local selection model."
+      "title": "نقر — تحديد ذكي",
+      "help": "يجهّز تحديد الكائن بنقرة واحدة، بالاعتماد على نموذج التحديد المحلي."
     },
     "canvasToolSmartSelectBox": {
-      "title": "Rectangle Smart Select",
-      "help": "Arms object selection from an approximate box, using the local selection model."
+      "title": "مستطيل — تحديد ذكي",
+      "help": "يجهّز تحديد الكائن داخل مستطيل تقريبي، بالاعتماد على نموذج التحديد المحلي."
     },
     "canvasToolShapeRectangle": {
-      "title": "Rectangle shape",
-      "help": "Arms drawing a rectangle on the active layer; Shift makes it a square."
+      "title": "شكل مستطيل",
+      "help": "يجهّز رسم مستطيل على الطبقة النشطة؛ ومفتاح Shift يجعله مربعًا."
     },
     "canvasToolShapeLine": {
-      "title": "Line shape",
-      "help": "Arms drawing a line. Same group as the rectangle, hence its key with Shift added."
+      "title": "شكل خط",
+      "help": "يجهّز رسم خط. وهو في مجموعة المستطيل نفسها، ولذلك يضاف مفتاح Shift إلى اختصاره."
     },
     "canvasToolShapeArrow": {
-      "title": "Arrow shape",
-      "help": "Arms drawing an arrow, from where the drag began to where the hand lets go."
+      "title": "شكل سهم",
+      "help": "يجهّز رسم سهم، من نقطة بدء السحب إلى حيث ترفع اليد."
     },
     "canvasToolShapeEllipse": {
-      "title": "Ellipse shape",
-      "help": "Arms drawing an ellipse on the active layer; Shift makes it a circle."
+      "title": "شكل بيضاوي",
+      "help": "يجهّز رسم شكل بيضاوي على الطبقة النشطة؛ ومفتاح Shift يجعله دائرة."
     },
     "canvasToolShapePolygon": {
-      "title": "Polygon shape",
-      "help": "Arms drawing a regular polygon, whose number of sides is set in the inspector before drawing."
+      "title": "شكل مضلع",
+      "help": "يجهّز رسم مضلع منتظم، يضبط عدد أضلاعه في المفتّش قبل الرسم."
     },
     "canvasToolShapeStar": {
-      "title": "Star shape",
-      "help": "Arms drawing a star, whose number of points is set in the inspector before drawing."
+      "title": "شكل نجمة",
+      "help": "يجهّز رسم نجمة، يضبط عدد رؤوسها في المفتّش قبل الرسم."
     },
     "canvasToolBrush": {
-      "title": "Brush tool",
-      "help": "Arms the brush, with a softened edge. It paints on the active layer, bounded by the selection when there is one."
+      "title": "أداة الفرشاة",
+      "help": "يجهّز الفرشاة، ذات الحواف الناعمة. وهي ترسم على الطبقة النشطة، محدودة بالتحديد إن وجد."
     },
     "canvasToolPencil": {
-      "title": "Pencil tool",
-      "help": "Arms the pencil, with a hard edge: the same gesture as the brush, without the softening."
+      "title": "أداة القلم",
+      "help": "يجهّز القلم، ذا الحواف الحادة: الحركة نفسها كالفرشاة، بلا تنعيم للحواف."
     },
     "canvasToolText": {
-      "title": "Text tool",
-      "help": "Arms text: a click places a caption, whose words are typed in the inspector."
+      "title": "أداة النص",
+      "help": "يجهّز النص: النقر يضع تسمية، تكتب كلماتها في المفتّش."
     },
     "canvasToolEraser": {
-      "title": "Eraser tool",
-      "help": "Arms the point eraser: it clears where the hand passes, bounded by the selection when there is one."
+      "title": "أداة الممحاة",
+      "help": "يجهّز الممحاة النقطية: تمحو حيث تمر اليد، محدودة بالتحديد إن وجد."
     },
     "canvasToolFill": {
-      "title": "Paint bucket tool",
-      "help": "Arms the bucket: a click fills the layer, or the selection when there is one."
+      "title": "أداة دلو الطلاء",
+      "help": "يجهّز الدلو: النقر يملأ الطبقة، أو التحديد إن وجد."
     },
     "canvasToolPicker": {
-      "title": "Eyedropper tool",
-      "help": "Arms the eyedropper: a click takes the colour under the pointer and hands it to the brush."
+      "title": "أداة القطارة",
+      "help": "يجهّز القطارة: النقر يأخذ اللون الذي تحت المؤشر ويعطيه للفرشاة."
     },
     "canvasBrushSmaller": {
-      "title": "Smaller brush",
-      "help": "Narrows the brush, the eraser and the shape stroke by one step of the scale."
+      "title": "تصغير الفرشاة",
+      "help": "يضيّق الفرشاة والممحاة وخط الأشكال درجة واحدة من السلّم."
     },
     "canvasBrushLarger": {
-      "title": "Larger brush",
-      "help": "Widens the brush, the eraser and the shape stroke by one step of the scale."
+      "title": "تكبير الفرشاة",
+      "help": "يوسّع الفرشاة والممحاة وخط الأشكال درجة واحدة من السلّم."
     },
     "sceneSkeletons": {
-      "title": "Show skeletons",
-      "help": "Draws the bones of every rigged model over the scene."
+      "title": "إظهار الهياكل العظمية",
+      "help": "يرسم عظام كل نموذج مجهّز بهيكل عظمي فوق المشهد."
     },
     "scenePoseMode": {
-      "title": "Pose mode",
-      "help": "Switches between picking objects and picking the bones of a rig."
+      "title": "نمط الوضعية",
+      "help": "يبدّل بين اختيار الكائنات واختيار عظام التجهيز."
     },
     "sceneNavigate": {
-      "title": "Navigate",
-      "help": "Move through the scene as in a game: the mouse holds the view, W A S D travel, E and Q rise and fall. The wheel sets the speed. Escape gives the mouse back."
+      "title": "تنقّل",
+      "help": "يتنقل في المشهد كما في لعبة: الفأرة تمسك النظر، ومفاتيح W A S D تتحرك، ومفتاحا E وQ يصعدان وينزلان. والعجلة تضبط السرعة. ومفتاح Escape يعيد الفأرة."
     },
     "sceneNegate": {
-      "title": "Negate",
-      "help": "Marks the selected shapes as tools: they are cut out of the others, whichever button is pressed next and in whatever order they were clicked. A marked shape shows translucent red. Press again to take the mark off."
+      "title": "سالب",
+      "help": "يعلّم الأشكال المحددة كأدوات: تحفر في غيرها، أيًا كان الزر الذي تضغطه بعد ذلك وأيًا كان ترتيب النقرات. ويظهر الشكل المعلّم بأحمر شفاف. والضغط مرة أخرى يزيل العلامة."
     },
     "sceneCarve": {
-      "title": "Carve",
-      "help": "Cuts the shapes marked Negate — failing that, the smaller ones — out of the biggest selected shape: a cube set inside a wall opens a window in it. The order of the clicks changes nothing. The original shapes are kept — Separate gives them back."
+      "title": "حفر",
+      "help": "يحفر الأشكال المعلّمة «سالب» — أو الأصغر منها إن لم توجد — داخل أكبر شكل محدد: مكعب موضوع في جدار يفتح فيه نافذة. وترتيب النقرات لا يغيّر شيئًا. وتبقى الأشكال الأصلية محفوظة — و«فصل» يعيدها."
     },
     "sceneWeld": {
-      "title": "Join",
-      "help": "Merges the selected shapes into a single solid. A shape marked Negate is cut out of it instead of being added to it. The original shapes are kept — Separate gives them back."
+      "title": "دمج",
+      "help": "يوحّد الأشكال المحددة في جسم صلب واحد. والشكل المعلّم «سالب» يحفر فيه بدل أن يضاف إليه. وتبقى الأشكال الأصلية محفوظة — و«فصل» يعيدها."
     },
     "sceneIntersect": {
-      "title": "Keep overlap",
-      "help": "Keeps only the part where the selected shapes overlap, and throws the rest away. A shape marked Negate is cut out of it instead of being kept. The original shapes are kept — Separate gives them back."
+      "title": "إبقاء التقاطع",
+      "help": "لا يبقي إلا الجزء الذي تتداخل فيه الأشكال المحددة، ويطرح الباقي. والشكل المعلّم «سالب» يحفر فيه بدل أن يبقى. وتبقى الأشكال الأصلية محفوظة — و«فصل» يعيدها."
     },
     "sceneInvertCarve": {
-      "title": "Flip the fold",
-      "help": "Folds the same shapes the other way round: what was carved becomes the matter, and the matter becomes the tool. One click, no undo — for the fold that ran backwards."
+      "title": "عكس الطيّ",
+      "help": "يعيد الطيّ في الاتجاه المعاكس: ما تم حفره يصبح المادة، والمادة تصبح الأداة. نقرة واحدة، بلا تراجع — للطيّ الذي جاء مقلوبًا."
     },
     "sceneSeparate": {
-      "title": "Separate",
-      "help": "Breaks a solid apart and gives back the shapes it was made of, each where it stood."
+      "title": "فصل",
+      "help": "يفكّ الجسم الصلب ويعيد الأشكال التي صنع منها، كل واحدة في مكانها."
     }
   }
 }

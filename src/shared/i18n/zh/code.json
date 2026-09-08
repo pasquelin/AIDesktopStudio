@@ -1,8 +1,8 @@
 {
   "code": {
-    "unavailable": "The editor could not load.",
-    "noProblems": "No problems",
-    "openProblem": "Open at this line",
-    "at": "line {{line, number}}, column {{column, number}}"
+    "unavailable": "编辑器无法加载。",
+    "noProblems": "没有问题",
+    "openProblem": "在该行打开",
+    "at": "第 {{line, number}} 行，第 {{column, number}} 列"
   }
 }

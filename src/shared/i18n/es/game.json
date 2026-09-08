@@ -92,6 +92,7 @@
       "drag": "Resistencia",
       "drive": "Tracción",
       "fidelity": "Fidelidad",
+      "followVertical": "Pegarse a la altura del elemento seguido",
       "friction": "Fricción",
       "from": "Archivo de origen",
       "graph": "Grafo de animación",

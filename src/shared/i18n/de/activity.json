@@ -140,6 +140,7 @@
       "canvas.size": "Dieses Bild konnte seine eigene Größe nicht behalten",
       "canvas.edit": "Das Bild konnte nicht an das Modell gesendet werden",
       "canvas.smartSelect": "Die intelligente Auswahl konnte nicht erstellt werden",
+      "canvas.smartComment": "Der intelligente Kommentar konnte nicht gesetzt werden",
       "image.export": "Der Export des Bildes ist fehlgeschlagen",
       "document.save": "Das Speichern des Dokuments ist fehlgeschlagen",
       "assets.reveal": "Die Datei konnte nicht im Ordner angezeigt werden",

@@ -1,121 +1,121 @@
 {
   "a11y": {
-    "namedValue": "{{value}} — {{name}}"
+    "namedValue": "{{value}}——{{name}}"
   },
   "actions": {
-    "generate": "Generate",
-    "close": "Close",
-    "removeTool": "Remove tool",
-    "resizeZone": "Resize panel area",
-    "resizeSplit": "Resize the two panels",
-    "resizeBand": "Resize the bottom panels",
-    "retry": "Try again",
-    "retryHint": "Renders this area again, without restarting the studio",
-    "generateHint": "Starts the generation with the settings above; it is followed in the generations bar",
-    "cancel": "Cancel"
+    "generate": "生成",
+    "close": "关闭",
+    "removeTool": "移除工具",
+    "resizeZone": "调整面板区的尺寸",
+    "resizeSplit": "调整两个面板的尺寸",
+    "resizeBand": "调整底部面板的尺寸",
+    "retry": "重试",
+    "retryHint": "重新渲染这块区域，不必重启工作室",
+    "generateHint": "用上面的设置启动生成；可以在生成栏中跟进",
+    "cancel": "取消"
   },
   "jobs": {
-    "none": "No generation running.",
-    "running_one": "{{count, number}} generation",
-    "running_many": "{{count, number}} generations",
-    "running_other": "{{count, number}} generations",
-    "failed_one": "{{count, number}} failure",
-    "failed_many": "{{count, number}} failures",
-    "failed_other": "{{count, number}} failures",
-    "open": "Show generations",
-    "openHint": "Opens the list of generations, running and finished alike",
+    "none": "没有正在进行的生成。",
+    "running_one": "{{count, number}} 项生成",
+    "running_many": "{{count, number}} 项生成",
+    "running_other": "{{count, number}} 项生成",
+    "failed_one": "{{count, number}} 项失败",
+    "failed_many": "{{count, number}} 项失败",
+    "failed_other": "{{count, number}} 项失败",
+    "open": "显示生成",
+    "openHint": "打开生成列表，进行中的和已完成的都在其中",
     "status": {
-      "queued": "Queued",
-      "running": "Running",
-      "succeeded": "Done",
-      "failed": "Failed",
-      "cancelled": "Cancelled"
+      "queued": "排队中",
+      "running": "进行中",
+      "succeeded": "已完成",
+      "failed": "失败",
+      "cancelled": "已取消"
     },
-    "cancel": "Cancel job",
-    "cancelRefused": "This service does not stop a generation once started: it runs to its end and is billed."
+    "cancel": "取消作业",
+    "cancelRefused": "该服务不会中止已经开始的生成：它会一直跑到结束，并且照常计费。"
   },
   "tasks": {
-    "running_one": "{{count, number}} task",
-    "running_many": "{{count, number}} tasks",
-    "running_other": "{{count, number}} tasks",
-    "open": "Show tasks",
-    "openHint": "Opens the list of tasks in progress",
-    "cancel": "Stop this task",
+    "running_one": "{{count, number}} 项任务",
+    "running_many": "{{count, number}} 项任务",
+    "running_other": "{{count, number}} 项任务",
+    "open": "显示任务",
+    "openHint": "打开进行中的任务列表",
+    "cancel": "停止此任务",
     "phases": {
-      "prepare": "Preparing model",
-      "load": "Loading engine",
-      "analyse": "Analysing character",
-      "skeleton": "Generating skeleton",
-      "pose": "Computing rest pose",
-      "skinning": "Computing skinning",
-      "apply": "Applying skeleton"
+      "prepare": "正在准备模型",
+      "load": "正在加载引擎",
+      "analyse": "正在分析角色",
+      "skeleton": "正在生成骨架",
+      "pose": "正在计算静止姿态",
+      "skinning": "正在计算蒙皮",
+      "apply": "正在应用骨架"
     }
   },
   "dialog": {
-    "allMedia": "All media",
-    "video": "Video",
-    "audio": "Audio",
-    "image": "Image",
-    "mesh": "3D model",
-    "animation": "Animation",
-    "bundle": "Edit with its media",
-    "weights": "Model weights"
+    "allMedia": "所有媒体",
+    "video": "视频",
+    "audio": "音频",
+    "image": "图像",
+    "mesh": "三维模型",
+    "animation": "动画",
+    "bundle": "剪辑及其媒体",
+    "weights": "模型权重"
   },
   "sorts": {
-    "relevance": "Quality: highest first",
-    "recent": "Created: newest first",
-    "oldest": "Created: oldest first"
+    "relevance": "质量：从高到低",
+    "recent": "创建时间：从新到旧",
+    "oldest": "创建时间：从旧到新"
   },
   "exportFormats": {
-    "glb": "Binary glTF (.glb)",
-    "gltf": "glTF (.gltf)",
-    "usdz": "USDZ (.usdz)",
-    "obj": "Wavefront, shapes only (.obj)",
-    "ply": "Stanford, shapes only (.ply)",
-    "stl": "STL, triangles only (.stl)"
+    "glb": "二进制 glTF（.glb）",
+    "gltf": "glTF（.gltf）",
+    "usdz": "USDZ（.usdz）",
+    "obj": "Wavefront，仅形状（.obj）",
+    "ply": "Stanford，仅形状（.ply）",
+    "stl": "STL，仅三角面（.stl）"
   },
   "errors": {
-    "missingCredentials": "No credentials saved.",
-    "invalidCredentials": "Invalid API key or secret.",
-    "forbidden": "This API key lacks the required permissions.",
-    "planRestricted": "This model is not included in your plan.",
-    "notFound": "Resource not found.",
-    "rateLimited": "Too many requests. Retrying…",
-    "server": "The generation service is temporarily unavailable.",
-    "network": "The connection was interrupted. Check the network and try again.",
-    "unexpected": "An unexpected error occurred.",
-    "invalidValue": "Invalid value.",
-    "rejected": "The generation failed.",
-    "incompleteModel": "The model files are incomplete. Reinstall the model, then run it again.",
-    "engineMissing": "The local AI engine is not installed on this machine, so nothing here can run the model.",
-    "engineFailed": "The local AI engine did not start. Check the activity journal, then try again.",
-    "storage": "Could not save the result to disk.",
-    "panelCrashed": "This panel ran into an error.",
-    "windowCrashed": "The application ran into an error."
+    "missingCredentials": "没有保存任何凭据。",
+    "invalidCredentials": "API 密钥对无效。",
+    "forbidden": "这个 API 密钥没有所需的权限。",
+    "planRestricted": "你的套餐不包含这个模型。",
+    "notFound": "找不到资源。",
+    "rateLimited": "请求过多。正在重试…",
+    "server": "生成服务暂时不可用。",
+    "network": "连接中断了。检查网络后重试。",
+    "unexpected": "发生了意外错误。",
+    "invalidValue": "值无效。",
+    "rejected": "生成失败了。",
+    "incompleteModel": "模型文件不完整。重新安装模型，然后再运行一次。",
+    "engineMissing": "这台机器上没有安装本地引擎，所以这里没有任何东西能运行这个模型。",
+    "engineFailed": "本地引擎没有启动。查看活动日志，然后重试。",
+    "storage": "无法把结果保存到磁盘。",
+    "panelCrashed": "这个面板遇到了错误。",
+    "windowCrashed": "应用程序遇到了错误。"
   },
   "licences": {
-    "title": "Licences",
-    "intro": "AI Desktop Studio ships with the software below. Each keeps its own licence, reproduced here in full.",
-    "sources": "Corresponding sources:",
-    "sourcesUnmodified": "Corresponding sources, unmodified:",
-    "bundled": "shipped with the application",
-    "unfold": "Unfolds the full text of this licence, right here",
-    "fold": "Folds this text back — only one licence stays open at a time"
+    "title": "许可证",
+    "intro": "AI Desktop Studio 随附下列软件。每一项都保留自己的许可证，此处全文照录。",
+    "sources": "对应源代码：",
+    "sourcesUnmodified": "对应源代码，未经修改：",
+    "bundled": "随应用一起发布",
+    "unfold": "就在这里展开这份许可证的全文",
+    "fold": "把这段文字收起来——同一时间只有一份许可证保持展开"
   },
   "manual": {
-    "title": "User manual",
-    "chapters": "Chapters",
-    "search": "Search the manual",
-    "results": "Results",
-    "noResult": "No chapter contains those words.",
-    "chapterHint": "Opens this chapter in the panel on the right",
-    "searchResultHint": "Opens the chapter these words appear in"
+    "title": "用户手册",
+    "chapters": "章节",
+    "search": "在手册中搜索",
+    "results": "结果",
+    "noResult": "没有章节包含这些词。",
+    "chapterHint": "在右侧面板中打开这一章",
+    "searchResultHint": "打开出现这些词的那一章"
   },
   "units": {
     "byte": "B",
     "kibibyte": "KiB",
     "mebibyte": "MiB",
     "gibibyte": "GiB",
-    "creative": "{{units}} CU"
+    "creative": "{{units}} CU"
   }
 }

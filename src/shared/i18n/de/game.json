@@ -92,6 +92,7 @@
       "drag": "Luftwiderstand",
       "drive": "Antrieb",
       "fidelity": "Genauigkeit",
+      "followVertical": "Der Höhe des Elements folgen",
       "friction": "Reibung",
       "from": "Quelldatei",
       "graph": "Animationsgraph",
