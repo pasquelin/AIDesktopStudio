@@ -4,7 +4,7 @@ import type { TFunction } from 'i18next'
 import { isFiledKind } from '@shared/domain/document'
 import { showContextMenu } from '@/helpers/contextMenu'
 import { characterAssetOf, useDocuments } from '@/stores/documents'
-import { characterOf, characterStore, useCharacters } from '@/stores/character'
+import { isCharacterRetargetable, useCharacters } from '@/stores/character'
 import { reportFailure } from '@/services/diagnostics'
 import { closeTab, closeTabAsking } from './closeTab'
 import { deleteDocument } from '../../../documentIo'
@@ -33,6 +33,7 @@ export function openDocumentTabMenu({ documentId, t, onRename }: DocumentTabMenu
   const kind = useDocuments.getState().documents[documentId]?.kind
   const character = characterAssetOf(useDocuments.getState(), documentId)
   const filed = kind !== undefined && isFiledKind(kind)
+  const rigged = character !== null && isCharacterRetargetable(useCharacters.getState(), character)
 
   void showContextMenu([
     ...(character
@@ -40,12 +41,10 @@ export function openDocumentTabMenu({ documentId, t, onRename }: DocumentTabMenu
           {
             label: t('character.retarget.title'),
             // The refusal is the only thing worth saying: the label is already on the row.
-            tooltip: riggedForRetarget(character)
-              ? t('character.retarget.title')
-              : t('character.retarget.needsSkeleton'),
+            tooltip: rigged ? t('character.retarget.title') : t('character.retarget.needsSkeleton'),
             // A rig too, and not the host alone: the window restores the stored skeleton, so
             // on a model that has none it opens on a bare mesh with nothing to map.
-            disabled: !hasRetargetHost(character) || !riggedForRetarget(character),
+            disabled: !hasRetargetHost(character) || !rigged,
             onSelect: () => void openRetargetForAsset(character),
           },
         ]
@@ -96,13 +95,4 @@ async function closeOthers(keptId: string): Promise<void> {
     if (id === keptId) continue
     if (!(await closeTabAsking(id))) return
   }
-}
-
-/**
- * 🛑 Whether the transfer window has a skeleton to restore — TRUE while the file is still landing,
- * where `rig` is empty for a reason that says nothing about the model.
- */
-function riggedForRetarget(assetId: string): boolean {
-  const state = useCharacters.getState()
-  return !characterStore.hasState(state, assetId) || Boolean(characterOf(state, assetId).rig)
 }

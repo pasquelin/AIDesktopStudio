@@ -51,16 +51,8 @@ beforeEach(() => {
   })
 })
 
-const list = (onSave?: (asNew: boolean) => Promise<void>) =>
-  render(
-    <CharacterMotionList
-      assetId={ASSET}
-      documentId={DOCUMENT}
-      nodeId={NODE}
-      playable
-      onSave={onSave}
-    />,
-  )
+const list = () =>
+  render(<CharacterMotionList assetId={ASSET} documentId={DOCUMENT} nodeId={NODE} />)
 
 describe('the motions a character knows', () => {
   /** 🛑 The keys a hand posed, never the clip baked frame by frame. */

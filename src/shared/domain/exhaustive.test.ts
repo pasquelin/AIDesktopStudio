@@ -10,6 +10,7 @@ import {
 } from './activity'
 import { ASSET_BADGES, ASSET_TYPES, type AssetBadge, type AssetType } from './asset'
 import { ACTION_REFUSALS, type ActionRefusal } from './assistant'
+import { AUTO_RIG_BACKEND_IDS, type AutoRigBackendId } from './autoRig'
 import { CLOUD_ORDERS, type CloudOrder } from './cloudAsset'
 import { FONT_SOURCES, type FontSource } from './font'
 import { PLAY_STATES, type PlayState } from './gameRuntime'
@@ -40,6 +41,16 @@ import { TARGET_KINDS, type TargetKind } from './target'
  * check. These have no such file to live in.
  */
 const sorted = (values: readonly string[]): readonly string[] => [...values].sort()
+
+/**
+ * The service field filters the catalogue against this list: a backend added to the union and
+ * forgotten here is never offered, and the entry naming it stays invisible rather than failing.
+ */
+it('names every Auto Rig backend the studio implements', () => {
+  const all: Record<AutoRigBackendId, true> = { simple: true, 'make-it-animatable': true }
+
+  expect(sorted(AUTO_RIG_BACKEND_IDS)).toEqual(sorted(Object.keys(all)))
+})
 
 /**
  * `z.enum(TARGET_KINDS)` decides whether a whole thought parses, so a kind added to the union

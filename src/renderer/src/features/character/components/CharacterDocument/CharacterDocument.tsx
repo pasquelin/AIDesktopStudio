@@ -26,7 +26,12 @@ import { useDocumentTitle } from '@/hooks/useDocumentTitle'
 import { useRestoredDocument } from '@/hooks/useRestoredDocument'
 import { restWithin } from '@/engines/character/boneRest'
 import { setCharacterBoneRest } from '@/engines/character/characterCommands'
-import { characterOf, characterStore, isCharacterDirty, useCharacters } from '@/stores/character'
+import {
+  characterOf,
+  isCharacterDirty,
+  isCharacterRetargetable,
+  useCharacters,
+} from '@/stores/character'
 import { characterViewOf, useCharacterView } from '@/stores/characterView'
 import { characterAssetOf, useDocuments, useDocumentIsInFront } from '@/stores/documents'
 import { useSettings } from '@/stores/settings'
@@ -82,9 +87,7 @@ export function CharacterDocument({ documentId }: { documentId: string }) {
   const [live, setLive] = useState<SceneRenderer | null>(null)
   const [landedAssetId, setLandedAssetId] = useState<string | null>(null)
   const character = useCharacters(state => characterOf(state, assetId))
-  // 🛑 Only once the file has been READ: `rig` is empty while it lands too, and refusing then
-  // greyed the transfer out on a perfectly rigged character for as long as the load took.
-  const fileRead = useCharacters(state => characterStore.hasState(state, assetId))
+  const retargetRefused = useCharacters(state => !isCharacterRetargetable(state, assetId))
   const name = useAssets(state => assetsById(state).get(assetId)?.name ?? assetId)
   // The workshop this tab lays the model on: a scene document of this window, which is what the
   // band, the motion picker and the preview all speak.
@@ -107,7 +110,6 @@ export function CharacterDocument({ documentId }: { documentId: string }) {
   /** Metres per second the wheel left the flight at, or `null` while it has said nothing. */
   const [flySpeed, setFlySpeed] = useState<number | null>(null)
   const context = { workshopId, assetId, setNavigating }
-  const retargetRefused = fileRead && !character.rig
 
   // Its OWN scope and not the scene's: ⌘Z on this tab must not reach the scene open beside it.
   // ⌘S is not here — `commandRouter` routes it to the document in front, and this kind writes

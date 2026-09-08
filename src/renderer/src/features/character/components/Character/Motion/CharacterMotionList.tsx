@@ -8,20 +8,12 @@ import { unlinkCharacterMotion } from '@/engines/character/characterCommands'
 import { TIP_LEFT } from '@/helpers/tooltip'
 import { animationViewOf, useAnimationViews } from '@/stores/animationView'
 import { characterOf, useCharacters } from '@/stores/character'
-import { CharacterMotionOffer } from './CharacterMotionOffer'
 
 export type CharacterMotionListProps = {
   assetId: string
   /** The workshop scene this window drives, which is where a motion is tried out. */
   documentId: string
   nodeId: string
-  /** Whether a motion laid here would drive anything — see `CharacterMotionSection`. */
-  playable: boolean
-  /**
-   * Files what the band plays, over the motion being edited or as a new file. Absent where
-   * nothing can export it.
-   */
-  onSave?: (asNew: boolean) => Promise<void>
 }
 
 /**
@@ -29,15 +21,9 @@ export type CharacterMotionListProps = {
  *
  * 🛑 References, never copies: a motion is a file of its own, playable by every character whose
  * bones carry the same names — swallowing one into a `.glb` would take it from the others. The
- * rows stand whatever `playable` answers: they hold the only way to unlink what a `.glb` claims.
+ * rows stand whatever the file answers: they hold the only way to unlink what a `.glb` claims.
  */
-export function CharacterMotionList({
-  assetId,
-  documentId,
-  nodeId,
-  playable,
-  onSave,
-}: CharacterMotionListProps) {
+export function CharacterMotionList({ assetId, documentId, nodeId }: CharacterMotionListProps) {
   const { t } = useTranslation()
   const motions = useCharacters(state => characterOf(state, assetId).motions)
   const openMotion = useAnimationViews(state => animationViewOf(state, documentId).openMotion)
@@ -82,15 +68,6 @@ export function CharacterMotionList({
           </div>
         </div>
       ))}
-
-      {playable && (
-        <CharacterMotionOffer
-          assetId={assetId}
-          documentId={documentId}
-          nodeId={nodeId}
-          onSave={onSave}
-        />
-      )}
     </>
   )
 }

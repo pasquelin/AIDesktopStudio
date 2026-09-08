@@ -8,7 +8,7 @@ import {
   partsOfRole,
   type AiRoleId,
 } from '@shared/domain/aiRole'
-import { AUTO_RIG_BACKEND_IDS, isAutoRigBackendId } from '@shared/domain/autoRig'
+import { isAutoRigBackendId } from '@shared/domain/autoRig'
 import { STT_MODEL } from '@shared/domain/dictation'
 import type { LocalModel } from '@shared/domain/localModel'
 import licences from '@shared/licences.json'
@@ -405,8 +405,6 @@ describe('what a manifest owes the panel', () => {
       .map(model => `${model.id} runs on ${model.backendId ?? 'no backend'}`)
 
     expect(stranded).toEqual([])
-    // The union is not empty by accident: an offer filtered against nothing offers nothing.
-    expect(AUTO_RIG_BACKEND_IDS.length).toBeGreaterThan(0)
   })
 })
 
