@@ -1,72 +1,72 @@
 {
   "welcome": {
-    "skip": "Skip",
-    "skipHint": "Closes this introduction and opens the studio with the current settings",
-    "back": "Back",
-    "backHint": "Returns to the previous screen",
-    "next": "Continue",
-    "nextHint": "Goes to the next screen",
-    "done": "Get started",
-    "doneHint": "Closes this introduction and opens the studio",
-    "steps": "Step {{current, number}} of {{total, number}}",
-    "goToStep": "Go to step {{current, number}} — {{title}}",
+    "skip": "スキップ",
+    "skipHint": "この紹介を閉じ、スタジオを現在の設定で開く",
+    "back": "前のページ",
+    "backHint": "前のスクリーンに戻る",
+    "next": "続行",
+    "nextHint": "次のスクリーンに行く",
+    "done": "はじめる",
+    "doneHint": "この紹介を閉じ、スタジオを開く",
+    "steps": "ステップ{{current, number}}の{{total, number}}",
+    "goToStep": "ステップ{{current, number}}―{{title}}に行く",
     "language": {
-      "title": "Choose your language",
-      "body": "Every menu, button and message uses this language. You can change it later in Settings.",
-      "hint": "Shows the application in {{name}}"
+      "title": "言語を選択",
+      "body": "すべてのメニュー、ボタン、メッセージがこの言語を使う。設定で後で変更できます。",
+      "hint": "アプリケーションを{{name}}で表示"
     },
     "look": {
-      "title": "How it looks",
-      "body": "Dark is the studio’s own theme. Switch it if you work in daylight.",
-      "themeHint": "Switches the application to the {{name}} theme"
+      "title": "外観",
+      "body": "暗いはスタジオ自体のテーマ。昼光で働く場合はそれを切り替える。",
+      "themeHint": "アプリケーションを{{name}}テーマに切り替え"
     },
     "craft": {
-      "title": "Your 3D navigation",
-      "body": "The 3D view mirrors the gestures of the software you already know. You can change it later in the settings.",
-      "navigationHint": "Uses {{name}} viewport gestures in the 3D view"
+      "title": "あなたの3Dナビゲーション",
+      "body": "3Dビューはすでに知っているソフトウェアのジェスチャーを反映する。設定で後で変更できます。",
+      "navigationHint": "3Dビューで{{name}}ビューポートジェスチャーを使う"
     },
     "ai": {
-      "title": "AI, through every door",
-      "body": "The studio depends on no AI in particular: they plug in, they swap out, and they can even drive it.",
+      "title": "AI、すべてのドアを通じて",
+      "body": "スタジオはいかなるAIにも依存しない。それらは接続、入れ替え、さらにそれを操作することもできる。",
       "local": {
-        "title": "On this machine",
-        "body": "The studio downloads the weights and runs them here. Nothing leaves, nothing is billed."
+        "title": "このマシン上",
+        "body": "スタジオはウエイトをダウンロード、ここで実行。何も行かず、何も請求されない。"
       },
       "ollama": {
-        "title": "With Ollama",
-        "body": "Already installed? The studio reads your models and uses them as they are."
+        "title": "Ollamaで",
+        "body": "すでにインストール? スタジオはモデルを読み、あるがままを使用。"
       },
       "cloud": {
-        "title": "At a provider",
-        "body": "One key, and generation goes out. Interchangeable: none of them is the product."
+        "title": "プロバイダー時",
+        "body": "1つのキー、生成は出て行く。相互交換可能。誰も製品ではない。"
       },
       "mcp": {
-        "title": "And the other way round",
-        "body": "The studio publishes its tools: Claude Code, or any MCP agent, opens a project and generates for you."
+        "title": "そして別の方法で",
+        "body": "スタジオはそのツールを公開。Claude CodeまたはいずれかのMCPエージェント、プロジェクトを開き、あなたの代わりに生成。"
       }
     },
     "models": {
-      "title": "Models, section by section",
-      "body": "The studio downloads the weights, then runs them here. Some models require access from their publisher. The size shows the disk space needed.",
-      "sectionHint": "Shows the models of: {{name}}",
-      "more": "The full catalogue lives in the settings.",
-      "motionOptional": "Motion generation is optional. Install a model now, or continue and find it later in Settings → AI → 3D. Animation retargeting works without AI."
+      "title": "セクションごとのモデル",
+      "body": "スタジオはウエイトをダウンロード、ここで実行。いくつかのモデルはそのパブリッシャーからのアクセスが必要。サイズはディスク空間が必要を示す。",
+      "sectionHint": "モデルを表示する。{{name}}",
+      "more": "完全なカタログが設定に住んでいる。",
+      "motionOptional": "モーション生成はオプション。今モデルをインストールするか、続けて設定→AI→3Dで後で見つけて。アニメーションリターゲットはAIなしで機能。"
     },
     "account": {
-      "title": "A cloud, if you have one",
-      "body": "The studio works without an account, on your own files. A key unlocks generation and the shared library.",
-      "stored": "These services are already saved on this machine. Add another one, or carry on.",
-      "addService": "Add a service",
-      "addServiceHint": "Opens the form to store one more key",
-      "adding": "Paste the key of the service to store.",
-      "backToList": "Back to the list",
-      "backToListHint": "Drops what is typed here and shows the stored services again"
+      "title": "クラウド、もし持てば",
+      "body": "スタジオはアカウントなしで、自分のファイルで機能する。キーは生成と共有ライブラリーをロック解除。",
+      "stored": "これらのサービスはすでにこのマシンに保存。別を追加するか、続行。",
+      "addService": "サービスを追加",
+      "addServiceHint": "さらにキーを保存するフォーム開く",
+      "adding": "保存するサービスのキーを貼り付け。",
+      "backToList": "リストに戻る",
+      "backToListHint": "ここに何が入力されても破棄し、保存されたサービスを再度表示"
     },
     "project": {
-      "title": "Your first project",
-      "body": "A project is a folder on your disk. Create one, open one, or skip and start from Home.",
-      "createHint": "Picks an empty folder and makes it the project",
-      "openHint": "Opens a project folder already on this disk"
+      "title": "あなたの最初のプロジェクト",
+      "body": "プロジェクトはディスク上のフォルダー。作成、開く、またはスキップしてホームから開始。",
+      "createHint": "空のフォルダーをプロジェクトにする",
+      "openHint": "このディスク上に既にあるプロジェクトフォルダーを開く"
     }
   }
 }

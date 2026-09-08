@@ -1,24 +1,24 @@
 {
   "fileInfo": {
-    "title": "Information about {{name}}",
+    "title": "{{name}} की जानकारी",
     "sections": {
-      "general": "General",
-      "media": "Media",
-      "catalogue": "Catalogue",
+      "general": "सामान्य",
+      "media": "मीडिया",
+      "catalogue": "कैटलॉग",
       "git": "Git"
     },
-    "gitUnchanged": "No pending changes",
+    "gitUnchanged": "कोई बदलाव लंबित नहीं",
     "kind": {
-      "file": "File",
-      "folder": "Folder"
+      "file": "फ़ाइल",
+      "folder": "फ़ोल्डर"
     },
-    "type": "Type",
-    "modified": "Modified",
-    "codec": "Codec",
-    "identifier": "Identifier",
-    "fingerprint": "Content fingerprint",
-    "added": "Added",
-    "reading": "Reading the folder…",
-    "missing": "This entry is no longer in the project folder."
+    "type": "प्रकार",
+    "modified": "बदला गया",
+    "codec": "कोडेक",
+    "identifier": "पहचानकर्ता",
+    "fingerprint": "कंटेंट फ़िंगरप्रिंट",
+    "added": "जोड़ा गया",
+    "reading": "फ़ोल्डर पढ़ा जा रहा है…",
+    "missing": "यह प्रविष्टि अब प्रोजेक्ट फ़ोल्डर में नहीं है।"
   }
 }

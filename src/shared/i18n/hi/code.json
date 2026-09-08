@@ -1,8 +1,8 @@
 {
   "code": {
-    "unavailable": "The editor could not load.",
-    "noProblems": "No problems",
-    "openProblem": "Open at this line",
-    "at": "line {{line, number}}, column {{column, number}}"
+    "unavailable": "एडिटर लोड नहीं हो सका।",
+    "noProblems": "कोई समस्या नहीं",
+    "openProblem": "इस लाइन पर खोलें",
+    "at": "लाइन {{line, number}}, कॉलम {{column, number}}"
   }
 }

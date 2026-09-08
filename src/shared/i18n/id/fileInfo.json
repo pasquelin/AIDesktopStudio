@@ -1,24 +1,24 @@
 {
   "fileInfo": {
-    "title": "Information about {{name}}",
+    "title": "Informasi tentang {{name}}",
     "sections": {
-      "general": "General",
+      "general": "Umum",
       "media": "Media",
-      "catalogue": "Catalogue",
+      "catalogue": "Katalog",
       "git": "Git"
     },
-    "gitUnchanged": "No pending changes",
+    "gitUnchanged": "Tidak ada perubahan yang tertunda",
     "kind": {
       "file": "File",
       "folder": "Folder"
     },
-    "type": "Type",
-    "modified": "Modified",
+    "type": "Tipe",
+    "modified": "Diubah",
     "codec": "Codec",
-    "identifier": "Identifier",
-    "fingerprint": "Content fingerprint",
-    "added": "Added",
-    "reading": "Reading the folder…",
-    "missing": "This entry is no longer in the project folder."
+    "identifier": "Pengidentifikasi",
+    "fingerprint": "Sidik jari konten",
+    "added": "Ditambahkan",
+    "reading": "Membaca folder…",
+    "missing": "Entri ini tidak ada lagi di folder proyek."
   }
 }

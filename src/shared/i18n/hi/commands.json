@@ -1,549 +1,549 @@
 {
   "commands": {
     "scenePlay": {
-      "title": "Play scene",
-      "help": "Starts or resumes the scene in the game window."
+      "title": "सीन चलाएं",
+      "help": "गेम विंडो में सीन शुरू करता है या फिर से चलाता है।"
     },
     "appNew": {
-      "title": "New…",
-      "help": "Opens the window that makes a project or a document, from any screen"
+      "title": "नया…",
+      "help": "वह विंडो खोलता है जो प्रोजेक्ट या दस्तावेज़ बनाती है, किसी भी स्क्रीन से"
     },
     "projectNew": {
-      "title": "New project",
-      "help": "Creates an empty project and opens it. A project is the folder holding everything you make: the images, the videos, the sounds, and how they are arranged."
+      "title": "नया प्रोजेक्ट",
+      "help": "एक ख़ाली प्रोजेक्ट बनाकर उसे खोलता है। प्रोजेक्ट वह फ़ोल्डर है जिसमें आपका बनाया सब कुछ रहता है: इमेजें, वीडियो, ध्वनियां, और वे किस तरह रखे गए हैं।"
     },
     "projectOpen": {
-      "title": "Open project",
-      "help": "Picks a project already on your disk and opens it in place of the current one. The open project is saved as you go, so there is nothing to save first."
+      "title": "प्रोजेक्ट खोलें",
+      "help": "आपकी डिस्क पर पहले से मौजूद एक प्रोजेक्ट चुनकर उसे मौजूदा प्रोजेक्ट की जगह खोलता है। खुला प्रोजेक्ट साथ-साथ सहेजा जाता है, इसलिए पहले कुछ सहेजना नहीं पड़ता।"
     },
     "documentSaveAs": {
-      "title": "Save as",
-      "help": "Writes a copy of the asset beside the original and carries on with it. The asset that was open stays as it was at the last save."
+      "title": "इस नाम से सहेजें",
+      "help": "ऐसेट की एक कॉपी मूल के बगल में लिखता है और उसी पर आगे चलता है। जो ऐसेट खुला था वह पिछली बार सहेजे जाने के समय जैसा था वैसा ही रहता है।"
     },
     "documentSave": {
-      "title": "Save document",
-      "help": "Writes the document in front into the project. Until it is saved, it lives in the window: the tab carries an asterisk for as long as what is on screen is not what is on disk."
+      "title": "दस्तावेज़ सहेजें",
+      "help": "सामने वाले दस्तावेज़ को प्रोजेक्ट में लिखता है। जब तक वह सहेजा नहीं जाता, वह विंडो में ही रहता है: जब तक स्क्रीन पर जो है वह डिस्क पर नहीं है, तब तक टैब पर तारांकन चिह्न रहता है।"
     },
     "documentClose": {
-      "title": "Close tab",
-      "help": "Closes the document in front. If it holds unsaved work, the studio asks what to do with it. With no tab left, the window closes."
+      "title": "टैब बंद करें",
+      "help": "सामने वाले दस्तावेज़ को बंद करता है। अगर उसमें बिना सहेजे बदलाव हैं, तो स्टूडियो पूछता है कि उनका क्या करना है। कोई टैब न बचे तो विंडो बंद हो जाती है।"
     },
     "layoutReset": {
-      "title": "Reset layout",
-      "help": "Puts the panels back where they started. Useful once the windows have been dragged all over and nothing is where you expect. Your work is untouched."
+      "title": "लेआउट रीसेट करें",
+      "help": "पैनल को वहीं वापस रख देता है जहां वे शुरू में थे। तब काम आता है जब विंडो इधर-उधर खींच दी गई हों और कुछ भी वहां न मिले जहां आप उम्मीद करते हैं। आपके काम को कुछ नहीं होता।"
     },
     "appSettings": {
-      "title": "Settings",
-      "help": "Opens the settings window — this one: the language, the colours, the account, the shortcuts, and everything else that is adjustable."
+      "title": "सेटिंग",
+      "help": "सेटिंग की विंडो खोलता है — यही वाली: भाषा, रंग, खाता, शॉर्टकट, और बाकी सब कुछ जो सेट किया जा सकता है।"
     },
     "appAssistant": {
-      "title": "Assistant",
-      "help": "Opens the window where you say what you want done, by voice or by keyboard. The assistant carries it out itself, and asks for a yes before anything that costs."
+      "title": "असिस्टेंट",
+      "help": "वह विंडो खोलता है जहां आप बोलकर या कीबोर्ड से कहते हैं कि क्या कराना है। असिस्टेंट उसे ख़ुद पूरा करता है, और जो कुछ भी ख़र्च कराता है उससे पहले आपकी हां मांगता है।"
     },
     "appDictate": {
-      "title": "Dictate",
-      "help": "Listens to the microphone and writes what you say at the caret, in the field you are in. Held down by default: speak, let go, the text appears."
+      "title": "बोलकर लिखें",
+      "help": "माइक सुनता है और आप जो कहते हैं उसे कर्सर की जगह पर, जिस फ़ील्ड में आप हैं उसी में लिखता है। डिफ़ॉल्ट रूप से दबाए रखना होता है: बोलें, छोड़ें, टेक्स्ट लिख जाता है।"
     },
     "windowFullScreen": {
-      "title": "Full screen",
-      "help": "Gives the window the whole screen, with no bar and no border, to work with nothing around it."
+      "title": "पूरी स्क्रीन",
+      "help": "विंडो को पूरी स्क्रीन दे देता है, बिना किसी बार और बिना किसी किनारे के, ताकि आसपास कुछ न रहे और काम हो सके।"
     },
     "spacesMoveLeft": {
-      "title": "Move the space left",
-      "help": "Shifts the focused space one place to the left in the top bar. The order you settle on is kept from one session to the next."
+      "title": "स्पेस को बाईं ओर ले जाएं",
+      "help": "ऊपर की बार में जिस स्पेस पर फ़ोकस है उसे एक जगह बाईं ओर खिसकाता है। आप जो क्रम तय करते हैं वह एक सेशन से दूसरे तक बना रहता है।"
     },
     "spacesMoveRight": {
-      "title": "Move the space right",
-      "help": "Shifts the focused space one place to the right in the top bar. The order you settle on is kept from one session to the next."
+      "title": "स्पेस को दाईं ओर ले जाएं",
+      "help": "ऊपर की बार में जिस स्पेस पर फ़ोकस है उसे एक जगह दाईं ओर खिसकाता है। आप जो क्रम तय करते हैं वह एक सेशन से दूसरे तक बना रहता है।"
     },
     "explorerNewFolder": {
-      "title": "New folder",
-      "help": "Creates an empty folder inside the one the explorer is showing, and opens its name for typing. The folder is yours, as is everything you put in it."
+      "title": "नया फ़ोल्डर",
+      "help": "एक्सप्लोरर जो फ़ोल्डर दिखा रहा है उसके भीतर एक ख़ाली फ़ोल्डर बनाता है, और उसका नाम टाइप करने के लिए खोल देता है। फ़ोल्डर आपका है, और उसमें आप जो कुछ रखते हैं वह भी।"
     },
     "explorerDuplicate": {
-      "title": "Duplicate",
-      "help": "Lays a copy of each chosen item beside the original, under the first free name. A folder is copied with everything inside it."
+      "title": "डुप्लिकेट करें",
+      "help": "चुनी गई हर चीज़ की एक कॉपी मूल के बगल में रखता है, पहले ख़ाली नाम के साथ। फ़ोल्डर उसके भीतर की हर चीज़ के साथ कॉपी होता है।"
     },
     "explorerCut": {
-      "title": "Cut",
-      "help": "Holds the selection, to be moved on the next paste. Nothing moves until you paste, and the rows being held are drawn dimmed."
+      "title": "काटें",
+      "help": "चयन को रोक रखता है, ताकि अगली बार पेस्ट करने पर वह वहां चला जाए। जब तक आप पेस्ट न करें कुछ नहीं हिलता, और रोकी गई पंक्तियां हल्की दिखती हैं।"
     },
     "explorerCopy": {
-      "title": "Copy",
-      "help": "Holds the selection, to be copied on the next paste. The original stays where it is."
+      "title": "कॉपी करें",
+      "help": "चयन को रोक रखता है, ताकि अगली बार पेस्ट करने पर उसकी कॉपी बने। मूल जहां है वहीं रहता है।"
     },
     "explorerPaste": {
-      "title": "Paste",
-      "help": "Drops what the clipboard holds into the folder on screen. An item whose name is already taken is refused, and the rest go through."
+      "title": "पेस्ट करें",
+      "help": "क्लिपबोर्ड में जो है उसे स्क्रीन पर दिख रहे फ़ोल्डर में डाल देता है। जिस चीज़ का नाम पहले से लिया जा चुका है वह अस्वीकृत होती है, और बाकी चली जाती हैं।"
     },
     "explorerTrash": {
-      "title": "Move to trash",
-      "help": "Sends the selection to the system trash, where you can get it back. It is the one explorer gesture the studio cannot undo."
+      "title": "ट्रैश में ले जाएं",
+      "help": "चयन को सिस्टम के ट्रैश में भेजता है, जहां से आप उसे वापस पा सकते हैं। एक्सप्लोरर का यही एक काम है जिसे स्टूडियो पूर्ववत नहीं कर सकता।"
     },
     "explorerUndo": {
-      "title": "Undo the last file gesture",
-      "help": "Puts the last batch moved, renamed, duplicated or created back where it was. The stack belongs to the project rather than to a window, and the trash gesture never enters it."
+      "title": "फ़ाइलों पर किया गया पिछला काम पूर्ववत करें",
+      "help": "जो आख़िरी बैच ले जाया गया, जिसका नाम बदला गया, जो डुप्लिकेट किया गया या नया बनाया गया, उसे वापस अपनी जगह पर रख देता है। यह स्टैक किसी विंडो का नहीं, प्रोजेक्ट का होता है, और ट्रैश में डालना उसमें कभी नहीं आता।"
     },
     "explorerRedo": {
-      "title": "Redo the file gesture",
-      "help": "Redoes the batch of files that was just undone, exactly as it was."
+      "title": "फ़ाइलों पर किया गया काम फिर से करें",
+      "help": "फ़ाइलों का जो बैच अभी पूर्ववत किया गया, उसे हूबहू फिर से कर देता है।"
     },
     "sceneSelect": {
-      "title": "Select",
-      "help": "The plain tool: click an object in the scene to choose it, without doing anything to it. It is the one you come back to between manipulations."
+      "title": "चुनें",
+      "help": "सादा टूल: सीन के किसी ऑब्जेक्ट को चुनने के लिए उस पर क्लिक करें, उसके साथ कुछ किए बिना। दो कामों के बीच में इसी पर लौटा जाता है।"
     },
     "sceneTranslate": {
-      "title": "Move",
-      "help": "Drags the chosen object from one place to another, by pulling the coloured arrows — one per direction."
+      "title": "ले जाएं",
+      "help": "चुने हुए ऑब्जेक्ट को रंगीन तीरों को खींचकर एक जगह से दूसरी जगह ले जाता है — हर दिशा के लिए एक तीर।"
     },
     "sceneRotate": {
-      "title": "Rotate",
-      "help": "Turns the chosen object on itself, by pulling the coloured rings — one per axis."
+      "title": "घुमाएं",
+      "help": "चुने हुए ऑब्जेक्ट को रंगीन छल्लों को खींचकर उसी की धुरी पर घुमाता है — हर अक्ष के लिए एक छल्ला।"
     },
     "sceneScale": {
-      "title": "Scale",
-      "help": "Makes the chosen object bigger or smaller, by pulling its handles. Holding Shift keeps its proportions."
+      "title": "स्केल करें",
+      "help": "चुने हुए ऑब्जेक्ट को उसके हैंडल खींचकर बड़ा या छोटा करता है। Shift दबाए रखने पर उसका अनुपात बना रहता है।"
     },
     "sceneFrame": {
-      "title": "Frame selection",
-      "help": "Brings the camera close enough that the chosen object fills the view. Handy when you are lost, or when an object is tiny."
+      "title": "चयन को व्यू में लाएं",
+      "help": "कैमरे को इतना पास लाता है कि चुना हुआ ऑब्जेक्ट पूरे व्यू में भर जाए। तब काम आता है जब आप भटक गए हों, या कोई ऑब्जेक्ट बहुत छोटा हो।"
     },
     "sceneFrameFollow": {
-      "title": "Follow the selection",
-      "help": "Frames the selection and keeps it in view: whatever moves takes the camera along, at the angle and distance already chosen. Called again, it lets go."
+      "title": "चयन को फ़ॉलो करें",
+      "help": "चयन को व्यू में लाकर उसे व्यू में बनाए रखता है: जो हिलता है वह कैमरे को साथ ले जाता है, पहले से चुने कोण और दूरी पर। दोबारा चलाने पर वह छोड़ देता है।"
     },
     "sceneIsolate": {
-      "title": "Isolate selection",
-      "help": "Leaves only the chosen objects on screen while you work on them. Nothing is changed: pressing it again gives the scene back exactly as it was, including the objects you had hidden yourself."
+      "title": "चयन को अलग करें",
+      "help": "जब तक आप उन पर काम करते हैं, स्क्रीन पर सिर्फ़ चुने हुए ऑब्जेक्ट छोड़ता है। कुछ बदलता नहीं: दोबारा दबाने पर सीन ठीक वैसा ही लौट आता है जैसा था, उन ऑब्जेक्ट के साथ भी जिन्हें आपने ख़ुद छिपाया था।"
     },
     "sceneHide": {
-      "title": "Hide selection",
-      "help": "Takes the chosen objects out of the view without touching the document. Show all brings them back."
+      "title": "चयन छिपाएं",
+      "help": "चुने हुए ऑब्जेक्ट को दस्तावेज़ को छुए बिना व्यू से हटा देता है। “सब दिखाएं” उन्हें वापस लाता है।"
     },
     "sceneShowAll": {
-      "title": "Show all",
-      "help": "Undoes the hiding and isolating done from the viewport. Objects the document itself declares hidden stay hidden."
+      "title": "सब दिखाएं",
+      "help": "व्यूपोर्ट से किए गए छिपाने और अलग करने को पूर्ववत करता है। दस्तावेज़ ख़ुद जिन ऑब्जेक्ट को छिपा हुआ बताता है वे छिपे ही रहते हैं।"
     },
     "sceneSnap": {
-      "title": "All snaps",
-      "help": "Turns all four snaps on or off at once — surface, grid, angle, scale. A second press gives back exactly the ones that were on. The bar at the top of the viewport sets them one by one."
+      "title": "सभी स्नैप",
+      "help": "चारों स्नैप एक साथ चालू या बंद करता है — सतह, ग्रिड, कोण, स्केल। दूसरी बार दबाने पर ठीक वही लौट आते हैं जो चालू थे। व्यूपोर्ट के ऊपर वाली बार उन्हें एक-एक करके सेट करती है।"
     },
     "sceneSpace": {
-      "title": "Local frame",
-      "help": "Lines the handles up with the object’s own orientation rather than the world’s. On a turned object, that is what lets you move it “towards its front” rather than north."
+      "title": "लोकल अक्ष",
+      "help": "हैंडल को वर्ल्ड की नहीं, बल्कि ऑब्जेक्ट की अपनी दिशा के साथ पंक्तिबद्ध करता है। घुमाए हुए ऑब्जेक्ट पर यही उसे उत्तर की ओर नहीं, बल्कि “उसके आगे की ओर” ले जाने देता है।"
     },
     "sceneProjection": {
-      "title": "Projection",
-      "help": "Switches between perspective, where receding lines converge, and orthographic projection, where parallels stay parallel. That is what lets an alignment be judged by eye."
+      "title": "प्रोजेक्शन",
+      "help": "पर्सपेक्टिव — जहां दूर जाती रेखाएं मिलती हैं — और ऑर्थोग्राफ़िक प्रोजेक्शन — जहां समानांतर रेखाएं समानांतर ही रहती हैं — के बीच अदल-बदल करता है। यही आंख से संरेखण परखने देता है।"
     },
     "sceneViewFront": {
-      "title": "Look from the front",
-      "help": "Puts the camera in front of the scene, square to the axis. The reference view for judging a silhouette."
+      "title": "सामने से देखें",
+      "help": "कैमरे को सीन के सामने रखता है, अक्ष के ठीक समकोण पर। सिल्हूट परखने के लिए यही रेफ़रेंस व्यू है।"
     },
     "sceneViewBack": {
-      "title": "Look from behind",
-      "help": "Puts the camera behind the scene, on the same axis: what the front hides."
+      "title": "पीछे से देखें",
+      "help": "कैमरे को सीन के पीछे रखता है, उसी अक्ष पर: जो सामने वाला हिस्सा छिपाता है।"
     },
     "sceneViewRight": {
-      "title": "Look from the right",
-      "help": "Puts the camera on the right-hand side, square to the axis. What a depth is judged from."
+      "title": "दाईं ओर से देखें",
+      "help": "कैमरे को दाईं ओर रखता है, अक्ष के ठीक समकोण पर। गहराई इसी से परखी जाती है।"
     },
     "sceneViewLeft": {
-      "title": "Look from the left",
-      "help": "Puts the camera on the left-hand side, on the same axis as the right view."
+      "title": "बाईं ओर से देखें",
+      "help": "कैमरे को बाईं ओर रखता है, दाईं वाले व्यू के उसी अक्ष पर।"
     },
     "sceneViewTop": {
-      "title": "Look from above",
-      "help": "Puts the camera above the scene, looking straight down. What the objects are laid out on the ground from."
+      "title": "ऊपर से देखें",
+      "help": "कैमरे को सीन के ऊपर रखता है, सीधे नीचे की ओर देखते हुए। ज़मीन पर ऑब्जेक्ट इसी से सजाए जाते हैं।"
     },
     "sceneViewBottom": {
-      "title": "Look from below",
-      "help": "Puts the camera under the scene, looking straight up, the other way from the top view."
+      "title": "नीचे से देखें",
+      "help": "कैमरे को सीन के नीचे रखता है, सीधे ऊपर की ओर देखते हुए, ऊपर वाले व्यू से उलटी दिशा में।"
     },
     "sceneViewCamera": {
-      "title": "Look through the camera",
-      "help": "Draws the view through the chosen camera, and steps back out on a second call. With no camera chosen, it takes the first in the scene."
+      "title": "कैमरे से देखें",
+      "help": "व्यू को चुने हुए कैमरे से बनाता है, और दूसरी बार चलाने पर वापस बाहर आ जाता है। कोई कैमरा न चुना हो तो सीन का पहला कैमरा लेता है।"
     },
     "sceneQuad": {
-      "title": "Four views",
-      "help": "Splits the viewport in four — top, front and side around the view being flown. Each quarter orbits under the pointer; the flown one keeps the gizmos."
+      "title": "चार व्यू",
+      "help": "व्यूपोर्ट को चार में बांटता है — ऊपर, सामने और बगल, उस व्यू के चारों ओर जिसमें आप घूम रहे हैं। हर चौथाई पॉइंटर के नीचे परिक्रमा करता है; जिसमें आप घूम रहे हैं वह गिज़्मो रखता है।"
     },
     "sceneQuadEdges": {
-      "title": "Quad edges",
-      "help": "Redraws the wireframe without the diagonals triangulation added. A GLB never holds quads: this is a reconstruction by angle, faithful except on strongly curved surfaces."
+      "title": "क्वाड एज",
+      "help": "वायरफ़्रेम को ट्राएंगुलेशन से जुड़े विकर्णों के बिना फिर से बनाता है। GLB में कभी क्वाड नहीं होते: यह कोण से किया गया पुनर्निर्माण है, बहुत मुड़ी हुई सतहों को छोड़कर सही।"
     },
     "sceneDisplay": {
-      "title": "Display mode",
-      "help": "Cycles what the viewport draws: the surfaces, their edges alone, or both together. The button’s menu picks one directly."
+      "title": "डिस्प्ले मोड",
+      "help": "व्यूपोर्ट क्या बनाता है उसे बारी-बारी बदलता है: सतहें, सिर्फ़ उनके एज, या दोनों साथ। बटन का मेन्यू सीधे एक चुनने देता है।"
     },
     "sceneCapture": {
-      "title": "Capture the view",
-      "help": "Saves an image of the 3D view into the project’s images — without the grid, the handles or the rails. The menu offers resolutions larger than the panel’s own."
+      "title": "व्यू कैप्चर करें",
+      "help": "3D व्यू की एक इमेज प्रोजेक्ट की इमेजों में सहेजता है — ग्रिड, हैंडल और पाथ के बिना। मेन्यू पैनल के अपने से बड़े रेज़ोल्यूशन भी देता है।"
     },
     "sceneAdd": {
-      "title": "Add",
-      "help": "Opens the list of what a scene can take: meshes, lights and objects. A right-click on empty space opens the same list."
+      "title": "जोड़ें",
+      "help": "सीन जो ले सकता है उसकी सूची खोलता है: मेश, लाइट और ऑब्जेक्ट। ख़ाली जगह पर दायां क्लिक वही सूची खोलता है।"
     },
     "sceneAddToSheet": {
-      "title": "Add to the animation band",
-      "help": "Puts the selected objects on the band, where keys are set. The band shows only what is put there, so a scene of thousands of objects stays readable."
+      "title": "एनिमेशन बैंड में जोड़ें",
+      "help": "चुने हुए ऑब्जेक्ट को बैंड पर रखता है, जहां कीफ़्रेम लगाए जाते हैं। बैंड सिर्फ़ वही दिखाता है जो उस पर रखा जाए, इसलिए हज़ारों ऑब्जेक्ट वाला सीन भी पढ़ने लायक बना रहता है।"
     },
     "sceneRemoveFromSheet": {
-      "title": "Remove from the animation band",
-      "help": "Removes the line from the band. Keys already set stay, and an object keeps its line for as long as it holds one."
+      "title": "एनिमेशन बैंड से हटाएं",
+      "help": "बैंड से पंक्ति हटा देता है। पहले से लगे कीफ़्रेम बने रहते हैं, और ऑब्जेक्ट अपनी पंक्ति तब तक रखता है जब तक उस पर कोई है।"
     },
     "sceneGroup": {
-      "title": "Group",
-      "help": "Files the selected objects under one group. Moving the group moves them all, and ⌘Z takes the grouping back."
+      "title": "ग्रुप बनाएं",
+      "help": "चुने हुए ऑब्जेक्ट को एक ही ग्रुप के नीचे रख देता है। ग्रुप को ले जाने पर वे सब चलते हैं, और ⌘Z ग्रुप बनाना वापस ले लेता है।"
     },
     "sceneDuplicate": {
-      "title": "Duplicate",
-      "help": "Puts a copy of the selection under the same parent and at the very same place, then selects it. A group duplicates whole, with everything hanging from it."
+      "title": "डुप्लिकेट करें",
+      "help": "चयन की एक कॉपी उसी पैरेंट के नीचे और ठीक उसी जगह रखता है, फिर उसे चुन लेता है। ग्रुप पूरा का पूरा डुप्लिकेट होता है, उसके नीचे लटकी हर चीज़ के साथ।"
     },
     "sceneOptimizeSelection": {
-      "title": "Optimise selection…",
-      "help": "Measures the selection and previews a SAFE runtime representation before changing its optimisation settings."
+      "title": "चयन को ऑप्टिमाइज़ करें…",
+      "help": "चयन को मापता है और उसकी ऑप्टिमाइज़ेशन सेटिंग बदलने से पहले एक SAFE रनटाइम प्रस्तुति का प्रीव्यू दिखाता है।"
     },
     "sceneWorldPerformance": {
-      "title": "World performance…",
-      "help": "Measures the whole scene and reports SAFE optimisation opportunities without changing the authoring world."
+      "title": "वर्ल्ड का प्रदर्शन…",
+      "help": "पूरे सीन को मापता है और ऑथरिंग वर्ल्ड को बदले बिना SAFE ऑप्टिमाइज़ेशन की संभावनाएं बताता है।"
     },
     "sceneExportGame": {
-      "title": "Export the game…",
-      "help": "Builds a standalone game from an optimised runtime copy while leaving the authoring scenes untouched."
+      "title": "गेम एक्सपोर्ट करें…",
+      "help": "एडिटिंग के सीन को बिना छुए, एक ऑप्टिमाइज़ की गई रनटाइम कॉपी से स्वतंत्र गेम बनाता है।"
     },
     "sceneCopy": {
-      "title": "Copy",
-      "help": "Holds on to the selection so it can be pasted, here or in another scene. This is the studio’s own clipboard: it leaves the system one alone."
+      "title": "कॉपी करें",
+      "help": "चयन को रोके रखता है ताकि उसे यहां या किसी दूसरे सीन में पेस्ट किया जा सके। यह स्टूडियो का अपना क्लिपबोर्ड है: यह सिस्टम वाले को नहीं छूता।"
     },
     "sceneCut": {
-      "title": "Cut",
-      "help": "Holds on to the selection and takes it out of the scene. ⌘Z brings it back."
+      "title": "कट करें",
+      "help": "चयन को रोके रखता है और उसे सीन से बाहर निकालता है। ⌘Z उसे वापस लाता है।"
     },
     "scenePaste": {
-      "title": "Paste",
-      "help": "Puts what was copied into the scene in front, and selects it. Pasting twice makes two separate copies."
+      "title": "पेस्ट करें",
+      "help": "जो कॉपी किया गया था उसे सामने वाले सीन में रखता है और चुन लेता है। दो बार पेस्ट करने पर दो अलग-अलग कॉपी बनती हैं।"
     },
     "sceneDelete": {
-      "title": "Delete",
-      "help": "Removes everything selected from the scene. Nothing is lost for good: ⌘Z brings it back."
+      "title": "हटाएं",
+      "help": "जो कुछ चुना गया है उसे सीन से हटाता है। कुछ भी हमेशा के लिए नहीं जाता: ⌘Z उसे वापस लाता है।"
     },
     "undo": {
-      "title": "Undo",
-      "help": "Takes back the last thing you did in this document. Each document has its own stack: undo acts on the tab in front, not on the others."
+      "title": "पूर्ववत करें",
+      "help": "इस दस्तावेज़ में आपने जो आख़िरी काम किया, उसे वापस लेता है। हर दस्तावेज़ का अपना स्टैक होता है: पूर्ववत करना सामने वाले टैब पर असर डालता है, दूसरों पर नहीं।"
     },
     "redo": {
-      "title": "Redo",
-      "help": "Does again what you have just undone. Handy after undoing once too often."
+      "title": "फिर से करें",
+      "help": "आपने अभी जो पूर्ववत किया है, उसे फिर से करता है। एक बार ज़्यादा पूर्ववत कर देने पर काम आता है।"
     },
     "sequencePlayPause": {
-      "title": "Play / Pause",
-      "help": "Starts playing the edit, or stops it where it is. Starting again picks up where you left off."
+      "title": "चलाएं / ठहराएं",
+      "help": "एडिट चलाना शुरू करता है, या उसे वहीं ठहरा देता है। दोबारा चलाने पर वहीं से आगे बढ़ता है जहां छोड़ा था।"
     },
     "sequenceExport": {
-      "title": "Export video…",
-      "help": "Writes the edit out as a video file, frame by frame, 3D scenes included. The sound is not in it yet."
+      "title": "वीडियो एक्सपोर्ट करें…",
+      "help": "एडिट को वीडियो फ़ाइल में लिखता है, फ़्रेम दर फ़्रेम, 3D सीन सहित। इसमें ऑडियो अभी नहीं आता।"
     },
     "sequenceExportCut": {
-      "title": "Export edit (OTIO)…",
-      "help": "Writes the edit itself out as an OpenTimelineIO file, which other editing applications open — tracks, clips, in points, speeds and links to the media. Fades, gains and image/sound links travel in it too, but only AI Desktop Studio reads them back."
+      "title": "एडिट एक्सपोर्ट करें (OTIO)…",
+      "help": "एडिट को ही एक OpenTimelineIO फ़ाइल में लिखता है, जिसे दूसरे एडिटिंग एप्लिकेशन खोलते हैं — ट्रैक, क्लिप, इन पॉइंट, गति और मीडिया के लिंक। फ़ेड, गेन और इमेज/ऑडियो के लिंक भी इसमें जाते हैं, पर उन्हें केवल AI Desktop Studio ही वापस पढ़ता है।"
     },
     "sequenceExportEdl": {
-      "title": "Export edit list (EDL)…",
-      "help": "Writes the cuts and their timecodes as CMX3600, which every online room reads. The format holds one image track and two sound ones, and nothing of the fades, the gains or the speeds."
+      "title": "एडिट लिस्ट एक्सपोर्ट करें (EDL)…",
+      "help": "कट और उनके टाइमकोड CMX3600 में लिखता है, जिसे हर ऑनलाइन रूम पढ़ता है। यह फ़ॉर्मैट एक इमेज ट्रैक और दो ऑडियो ट्रैक रखता है, और फ़ेड, गेन या गति में से कुछ नहीं।"
     },
     "sequenceExportFcpxml": {
-      "title": "Export edit (FCPXML)…",
-      "help": "Writes the edit in the format Final Cut reads and Premiere and Resolve import. The tracks survive, a lane each, and so does the frame size; the fades, the gains and the speeds stay here."
+      "title": "एडिट एक्सपोर्ट करें (FCPXML)…",
+      "help": "एडिट को उस फ़ॉर्मैट में लिखता है जिसे Final Cut पढ़ता है और Premiere तथा Resolve इंपोर्ट करते हैं। ट्रैक बचे रहते हैं, हर एक अपनी लेन में, और फ़्रेम का आकार भी; फ़ेड, गेन और गति यहीं रह जाते हैं।"
     },
     "sequenceExportStems": {
-      "title": "Export sound per track (WAV)…",
-      "help": "Writes one WAV per audible track, mixed the way the edit plays it — the placements, the trims, the fades, the gains and the speeds are baked into the samples. A muted track is not written."
+      "title": "हर ट्रैक का ऑडियो एक्सपोर्ट करें (WAV)…",
+      "help": "हर सुनाई देने वाले ट्रैक के लिए एक WAV लिखता है, वैसे ही मिक्स किया हुआ जैसे एडिट उसे चलाता है — प्लेसमेंट, ट्रिम, फ़ेड, गेन और गति सैंपल में पका दिए जाते हैं। म्यूट किया गया ट्रैक नहीं लिखा जाता।"
     },
     "sequenceExportBundle": {
-      "title": "Export edit with its media (OTIOZ)…",
-      "help": "Writes the same edit with the media it uses inside the file. This is the one to hand to somebody else, or to open in DaVinci Resolve, which then finds the rushes on its own instead of asking for them one by one."
+      "title": "एडिट को उसके मीडिया सहित एक्सपोर्ट करें (OTIOZ)…",
+      "help": "वही एडिट लिखता है, और जो मीडिया वह इस्तेमाल करता है उसे फ़ाइल के भीतर रखता है। यही वह फ़ाइल है जो किसी और को देनी है, या DaVinci Resolve में खोलनी है, जो तब रश एक-एक करके मांगने के बजाय खुद ढूंढ लेता है।"
     },
     "montageImport": {
-      "title": "Import an edit with its media (OTIOZ)…",
-      "help": "Opens an edit written by another application, rushes and all. The media are copied into the project and enter the catalogue, then the edit opens linked to them. What the opened file does not bring is said as it opens, and starts from its default only there."
+      "title": "एडिट को उसके मीडिया सहित इंपोर्ट करें (OTIOZ)…",
+      "help": "किसी दूसरे एप्लिकेशन का लिखा एडिट खोलता है, रश सहित। मीडिया प्रोजेक्ट में कॉपी होते हैं और कैटलॉग में आते हैं, फिर एडिट उनसे जुड़ा हुआ खुलता है। खुलने वाली फ़ाइल जो नहीं लाती, वह खुलते समय बता दिया जाता है, और केवल वहीं अपने डिफ़ॉल्ट से शुरू होता है।"
     },
     "sequenceMirror": {
-      "title": "Return window",
-      "help": "Opens the edit in a window of its own, to put on a second screen. It follows the studio frame by frame, without the sound, and closes like any window."
+      "title": "रिटर्न विंडो",
+      "help": "एडिट को उसकी अपनी विंडो में खोलता है, जिसे दूसरी स्क्रीन पर रखा जा सके। वह स्टूडियो के साथ फ़्रेम दर फ़्रेम चलती है, ऑडियो के बिना, और किसी भी विंडो की तरह बंद होती है।"
     },
     "sequenceSplit": {
-      "title": "Split clip",
-      "help": "Cuts the clip in two where the playhead sits, so each half can be handled on its own."
+      "title": "क्लिप स्प्लिट करें",
+      "help": "जहां प्लेहेड है वहां क्लिप को दो हिस्सों में काटता है, ताकि हर हिस्से को अलग से संभाला जा सके।"
     },
     "sequenceDelete": {
-      "title": "Delete clip",
-      "help": "Removes the chosen clip from the edit. The original file stays in your assets."
+      "title": "क्लिप हटाएं",
+      "help": "चुनी गई क्लिप को एडिट से हटाता है। मूल फ़ाइल आपके ऐसेट में बनी रहती है।"
     },
     "sequenceUnlink": {
-      "title": "Unlink picture and sound",
-      "help": "Separates the two clips of one take. While they are linked, moving, cutting or deleting one does the same to the other."
+      "title": "इमेज और ऑडियो का लिंक तोड़ें",
+      "help": "एक ही टेक की दोनों क्लिप को अलग करता है। जब तक वे जुड़ी हैं, एक को ले जाने, काटने या हटाने से दूसरी के साथ भी वही होता है।"
     },
     "sequenceZoomIn": {
-      "title": "Zoom in",
-      "help": "Spreads the edit out to see detail: clips get wider and are easier to aim at."
+      "title": "ज़ूम इन",
+      "help": "विस्तार देखने के लिए एडिट को फैलाता है: क्लिप चौड़ी हो जाती हैं और उन पर निशाना लगाना आसान होता है।"
     },
     "sequenceZoomOut": {
-      "title": "Zoom out",
-      "help": "Draws the edit together to see more of it at once, at the cost of the detail."
+      "title": "ज़ूम आउट",
+      "help": "एक साथ ज़्यादा देखने के लिए एडिट को सिकोड़ता है, विस्तार खोकर।"
     },
     "sequenceFit": {
-      "title": "Fit to view",
-      "help": "Sets the zoom so the whole edit fits on screen, end to end."
+      "title": "पूरा दिखाएं",
+      "help": "ज़ूम को इस तरह सेट करता है कि पूरा एडिट सिरे से सिरे तक स्क्रीन पर आ जाए।"
     },
     "sequenceStart": {
-      "title": "Go to start",
-      "help": "Brings the playhead right back to the beginning of the edit, moving nothing else."
+      "title": "शुरुआत पर जाएं",
+      "help": "प्लेहेड को सीधे एडिट की शुरुआत पर लाता है, और कुछ नहीं हिलाता।"
     },
     "sequenceEnd": {
-      "title": "Go to end",
-      "help": "Sends the playhead right to the end of the edit, past the last clip."
+      "title": "अंत पर जाएं",
+      "help": "प्लेहेड को सीधे एडिट के अंत में भेजता है, आख़िरी क्लिप के आगे।"
     },
     "canvasZoomIn": {
-      "title": "Zoom in",
-      "help": "Magnifies the view one step, around the middle of what is visible. The image itself is untouched — only the way it is looked at."
+      "title": "ज़ूम इन",
+      "help": "जो दिख रहा है उसके बीच के आसपास व्यू को एक कदम बड़ा करता है। इमेज खुद अछूती रहती है — केवल उसे देखने का तरीका बदलता है।"
     },
     "canvasZoomOut": {
-      "title": "Zoom out",
-      "help": "Shrinks the view one step, to take in the whole image again."
+      "title": "ज़ूम आउट",
+      "help": "पूरी इमेज को फिर से देखने के लिए व्यू को एक कदम छोटा करता है।"
     },
     "canvasZoomFit": {
-      "title": "Fit to window",
-      "help": "Frames the whole image in the panel, with a margin, and never magnifies it past its actual size."
+      "title": "विंडो में फ़िट करें",
+      "help": "पूरी इमेज को पैनल में एक हाशिये के साथ बिठाता है, और उसे उसके असली आकार से बड़ा कभी नहीं करता।"
     },
     "canvasZoomActual": {
-      "title": "Actual size",
-      "help": "One image pixel per screen pixel: the only scale at which sharpness can be judged."
+      "title": "असली आकार",
+      "help": "इमेज का एक पिक्सेल स्क्रीन के एक पिक्सेल पर: यही एकमात्र स्केल है जिस पर शार्पनेस परखी जा सकती है।"
     },
     "canvasRulers": {
-      "title": "Rulers",
-      "help": "Shows or hides the two graduated rulers, at the top and on the left. Guides are pulled off them."
+      "title": "रूलर",
+      "help": "ऊपर और बाईं ओर के दोनों अंकित रूलर दिखाता या छिपाता है। गाइड इन्हीं से खींची जाती हैं।"
     },
     "canvasGuides": {
-      "title": "Guides",
-      "help": "Shows or hides the guides laid on the image. Hiding them does not remove them."
+      "title": "गाइड",
+      "help": "इमेज पर रखी गाइड दिखाता या छिपाता है। उन्हें छिपाने से वे हटती नहीं।"
     },
     "canvasGrid": {
-      "title": "Pixel grid",
-      "help": "Shows or hides the grid of the artwork’s own pixels. Only on a document set to pixel art."
+      "title": "पिक्सेल ग्रिड",
+      "help": "कलाकृति के अपने पिक्सेल का ग्रिड दिखाता या छिपाता है। केवल उस दस्तावेज़ पर जो पिक्सेल आर्ट पर सेट है।"
     },
     "canvasClearGuides": {
-      "title": "Clear guides",
-      "help": "Removes every guide from the image. Undoable, like any other edit."
+      "title": "गाइड मिटाएं",
+      "help": "इमेज से हर गाइड हटाता है। किसी भी दूसरे बदलाव की तरह पूर्ववत किया जा सकता है।"
     },
     "canvasSnap": {
-      "title": "Snap",
-      "help": "Makes what is dragged stick to guides, to the image edges and to its centre, within a few pixels."
+      "title": "स्नैप",
+      "help": "जो खींचा जा रहा है उसे कुछ पिक्सेल के भीतर गाइड, इमेज के किनारों और उसके केंद्र से चिपका देता है।"
     },
     "canvasSelectAll": {
-      "title": "Select all",
-      "help": "Selects the whole document, which the system’s own select-all cannot do on an image."
+      "title": "सब चुनें",
+      "help": "पूरा दस्तावेज़ चुनता है, जो सिस्टम का अपना सब-चुनें किसी इमेज पर नहीं कर पाता।"
     },
     "canvasDeselect": {
-      "title": "Deselect",
-      "help": "Drops the selected region, so the brush reaches the whole layer again."
+      "title": "चयन हटाएं",
+      "help": "चुने गए क्षेत्र को छोड़ देता है, ताकि ब्रश फिर से पूरी लेयर तक पहुंचे।"
     },
     "canvasCropApply": {
-      "title": "Apply the crop",
-      "help": "Trims the document to the placed frame. ⌘Z gives the frame back, not the pixels."
+      "title": "क्रॉप लागू करें",
+      "help": "दस्तावेज़ को रखे गए फ़्रेम तक काटता है। ⌘Z फ़्रेम वापस देता है, पिक्सेल नहीं।"
     },
     "canvasCropCancel": {
-      "title": "Abandon the crop",
-      "help": "Takes the crop frame away without trimming anything at all."
+      "title": "क्रॉप छोड़ें",
+      "help": "क्रॉप का फ़्रेम हटा देता है, बिना कुछ भी काटे।"
     },
     "canvasMaskFromSelection": {
-      "title": "Make a mask of the selection",
-      "help": "Hides the active layer outside the selected region."
+      "title": "चयन का मास्क बनाएं",
+      "help": "चुने गए क्षेत्र के बाहर सक्रिय लेयर को छिपाता है।"
     },
     "canvasRegenerate": {
-      "title": "Regenerate the region",
-      "help": "Asks the model to repaint the masked region of the active layer."
+      "title": "क्षेत्र फिर से जेनरेट करें",
+      "help": "मॉडल से कहता है कि वह सक्रिय लेयर के मास्क किए गए क्षेत्र को दोबारा पेंट करे।"
     },
     "canvasCutout": {
-      "title": "Cut out",
-      "help": "Removes the background of the flattened image with the default model."
+      "title": "कट आउट करें",
+      "help": "डिफ़ॉल्ट मॉडल से समतल की गई इमेज का बैकग्राउंड हटाता है।"
     },
     "canvasEnlarge": {
-      "title": "Upscale",
-      "help": "Raises the resolution of the flattened image with the default model."
+      "title": "अपस्केल करें",
+      "help": "डिफ़ॉल्ट मॉडल से समतल की गई इमेज का रेज़ोल्यूशन बढ़ाता है।"
     },
     "canvasVectorize": {
-      "title": "Vectorise",
-      "help": "Turns the flattened image into paths with the default model."
+      "title": "वेक्टराइज़ करें",
+      "help": "डिफ़ॉल्ट मॉडल से समतल की गई इमेज को पाथ में बदलता है।"
     },
     "canvasExtend": {
-      "title": "Extend",
-      "help": "Asks the model to paint beyond the edges of the flattened image."
+      "title": "बढ़ाएं",
+      "help": "मॉडल से कहता है कि वह समतल की गई इमेज के किनारों से आगे पेंट करे।"
     },
     "canvasMergeDown": {
-      "title": "Merge down",
-      "help": "Joins the active layer and the one just below it into one, keeping the lower one’s name."
+      "title": "नीचे वाली में मिलाएं",
+      "help": "सक्रिय लेयर और ठीक उसके नीचे वाली को एक में जोड़ता है, और नीचे वाली का नाम रखता है।"
     },
     "canvasFlatten": {
-      "title": "Flatten image",
-      "help": "Reduces the whole stack to a single layer: hidden layers are dropped, not merged.",
-      "layerName": "Background"
+      "title": "इमेज समतल करें",
+      "help": "पूरे स्टैक को एक ही लेयर में घटाता है: छिपी हुई लेयरें छोड़ दी जाती हैं, मिलाई नहीं जातीं।",
+      "layerName": "बैकग्राउंड"
     },
     "canvasFlipHorizontal": {
-      "title": "Flip horizontal",
-      "help": "Mirrors the whole document left to right, layers included."
+      "title": "क्षैतिज फ़्लिप करें",
+      "help": "पूरे दस्तावेज़ को बाएं से दाएं मिरर करता है, लेयरें सहित।"
     },
     "canvasFlipVertical": {
-      "title": "Flip vertical",
-      "help": "Mirrors the whole document top to bottom, layers included."
+      "title": "लंबवत फ़्लिप करें",
+      "help": "पूरे दस्तावेज़ को ऊपर से नीचे मिरर करता है, लेयरें सहित।"
     },
     "canvasRotateCw": {
-      "title": "Rotate clockwise",
-      "help": "Turns the document a quarter turn to the right: the frame turns with it."
+      "title": "घड़ी की दिशा में घुमाएं",
+      "help": "दस्तावेज़ को दाईं ओर चौथाई घुमाव देता है: फ़्रेम भी उसके साथ घूमता है।"
     },
     "canvasRotateCcw": {
-      "title": "Rotate counter-clockwise",
-      "help": "Turns the document a quarter turn to the left: the frame turns with it."
+      "title": "घड़ी की उल्टी दिशा में घुमाएं",
+      "help": "दस्तावेज़ को बाईं ओर चौथाई घुमाव देता है: फ़्रेम भी उसके साथ घूमता है।"
     },
     "canvasExport": {
-      "title": "Export the image",
-      "help": "Writes the flattened document to disk, as a PNG."
+      "title": "इमेज एक्सपोर्ट करें",
+      "help": "समतल किए गए दस्तावेज़ को PNG के रूप में डिस्क पर लिखता है।"
     },
     "canvasExportLayered": {
-      "title": "Export the layers (PSD)…",
-      "help": "Writes the document with its layers, as a Photoshop file. Groups are flattened away: their layers arrive side by side."
+      "title": "लेयरें एक्सपोर्ट करें (PSD)…",
+      "help": "दस्तावेज़ को उसकी लेयरों सहित Photoshop फ़ाइल के रूप में लिखता है। ग्रुप समतल कर दिए जाते हैं: उनकी लेयरें अगल-बगल आती हैं।"
     },
     "skyboxView": {
-      "title": "Change the view",
-      "help": "Cycles through the four ways of looking at the sky: immersive, panoramic, cross, faces."
+      "title": "व्यू बदलें",
+      "help": "आकाश को देखने के चार तरीकों में बारी-बारी घुमाता है: इमर्सिव, पैनोरमिक, क्रॉस, फ़ेस।"
     },
     "skyboxProbes": {
-      "title": "Light probes",
-      "help": "Shows or hides the witness spheres. A sky is judged by what it lights, not by its own image."
+      "title": "लाइट प्रोब",
+      "help": "परख के गोले दिखाता या छिपाता है। आकाश उसकी अपनी इमेज से नहीं, बल्कि वह जो रोशन करता है उससे परखा जाता है।"
     },
     "canvasToolMove": {
-      "title": "Move tool",
-      "help": "Arms the pointer: a drag moves the active layer, and its handles resize or turn it."
+      "title": "मूव टूल",
+      "help": "पॉइंटर को तैयार करता है: खींचने पर सक्रिय लेयर हिलती है, और उसके हैंडल उसका आकार बदलते या उसे घुमाते हैं।"
     },
     "canvasToolHand": {
-      "title": "Hand tool",
-      "help": "Arms the hand: a drag pans the view without touching the document. Holding space does the same without changing tool."
+      "title": "हैंड टूल",
+      "help": "हाथ को तैयार करता है: खींचने पर व्यू सरकता है, दस्तावेज़ को छुए बिना। स्पेस बार दबाए रखने से बिना टूल बदले वही होता है।"
     },
     "canvasToolCrop": {
-      "title": "Crop tool",
-      "help": "Arms the crop frame. Draw a frame, then ⏎ to crop or ⎋ to drop it."
+      "title": "क्रॉप टूल",
+      "help": "क्रॉप का फ़्रेम तैयार करता है। एक फ़्रेम खींचें, फिर क्रॉप करने के लिए ⏎ या उसे छोड़ने के लिए ⎋।"
     },
     "canvasToolSelectRectangle": {
-      "title": "Rectangular selection",
-      "help": "Arms the rectangular selection. What is selected bounds the brush, the eraser and the bucket."
+      "title": "आयताकार चयन",
+      "help": "आयताकार चयन को तैयार करता है। जो चुना गया है वह ब्रश, इरेज़र और बकेट की सीमा तय करता है।"
     },
     "canvasToolSelectEllipse": {
-      "title": "Elliptical selection",
-      "help": "Arms the elliptical selection: a drag inscribes the ellipse in the rectangle swept, and Shift makes it a circle."
+      "title": "अंडाकार चयन",
+      "help": "अंडाकार चयन को तैयार करता है: खींचने पर जो आयत बनता है उसी में अंडाकार बैठता है, और Shift से वह वृत्त बन जाता है।"
     },
     "canvasToolSelectLasso": {
-      "title": "Lasso",
-      "help": "Arms the lasso: the selection follows the hand, freehand."
+      "title": "लैसो",
+      "help": "लैसो को तैयार करता है: चयन हाथ के पीछे चलता है, मुक्त हाथ से।"
     },
     "canvasToolSmartSelect": {
-      "title": "Click Smart Select",
-      "help": "Arms object selection from a click, using the local selection model."
+      "title": "क्लिक — स्मार्ट चयन",
+      "help": "लोकल चयन मॉडल से, क्लिक पर ऑब्जेक्ट का चयन तैयार करता है।"
     },
     "canvasToolSmartSelectBox": {
-      "title": "Rectangle Smart Select",
-      "help": "Arms object selection from an approximate box, using the local selection model."
+      "title": "आयत — स्मार्ट चयन",
+      "help": "लोकल चयन मॉडल से, एक अनुमानित आयत में ऑब्जेक्ट का चयन तैयार करता है।"
     },
     "canvasToolShapeRectangle": {
-      "title": "Rectangle shape",
-      "help": "Arms drawing a rectangle on the active layer; Shift makes it a square."
+      "title": "आयत आकृति",
+      "help": "सक्रिय लेयर पर आयत खींचना तैयार करता है; Shift से वह वर्ग बन जाता है।"
     },
     "canvasToolShapeLine": {
-      "title": "Line shape",
-      "help": "Arms drawing a line. Same group as the rectangle, hence its key with Shift added."
+      "title": "रेखा आकृति",
+      "help": "रेखा खींचना तैयार करता है। आयत के ही समूह में है, इसलिए इसका शॉर्टकट Shift जोड़कर बनता है।"
     },
     "canvasToolShapeArrow": {
-      "title": "Arrow shape",
-      "help": "Arms drawing an arrow, from where the drag began to where the hand lets go."
+      "title": "तीर आकृति",
+      "help": "तीर खींचना तैयार करता है, जहां से खींचना शुरू हुआ वहां से लेकर जहां हाथ छोड़ता है वहां तक।"
     },
     "canvasToolShapeEllipse": {
-      "title": "Ellipse shape",
-      "help": "Arms drawing an ellipse on the active layer; Shift makes it a circle."
+      "title": "अंडाकार आकृति",
+      "help": "सक्रिय लेयर पर अंडाकार खींचना तैयार करता है; Shift से वह वृत्त बन जाता है।"
     },
     "canvasToolShapePolygon": {
-      "title": "Polygon shape",
-      "help": "Arms drawing a regular polygon, whose number of sides is set in the inspector before drawing."
+      "title": "बहुभुज आकृति",
+      "help": "एक सम बहुभुज खींचना तैयार करता है, जिसकी भुजाओं की संख्या खींचने से पहले इंस्पेक्टर में तय की जाती है।"
     },
     "canvasToolShapeStar": {
-      "title": "Star shape",
-      "help": "Arms drawing a star, whose number of points is set in the inspector before drawing."
+      "title": "तारा आकृति",
+      "help": "एक तारा खींचना तैयार करता है, जिसकी नोकों की संख्या खींचने से पहले इंस्पेक्टर में तय की जाती है।"
     },
     "canvasToolBrush": {
-      "title": "Brush tool",
-      "help": "Arms the brush, with a softened edge. It paints on the active layer, bounded by the selection when there is one."
+      "title": "ब्रश टूल",
+      "help": "ब्रश को तैयार करता है, नरम किनारों के साथ। यह सक्रिय लेयर पर पेंट करता है, और चयन होने पर उसी की सीमा में।"
     },
     "canvasToolPencil": {
-      "title": "Pencil tool",
-      "help": "Arms the pencil, with a hard edge: the same gesture as the brush, without the softening."
+      "title": "पेंसिल टूल",
+      "help": "पेंसिल को तैयार करता है, सख़्त किनारों के साथ: ब्रश जैसा ही इशारा, बिना किनारों को नरम किए।"
     },
     "canvasToolText": {
-      "title": "Text tool",
-      "help": "Arms text: a click places a caption, whose words are typed in the inspector."
+      "title": "टेक्स्ट टूल",
+      "help": "टेक्स्ट को तैयार करता है: एक क्लिक कैप्शन रखता है, जिसके शब्द इंस्पेक्टर में लिखे जाते हैं।"
     },
     "canvasToolEraser": {
-      "title": "Eraser tool",
-      "help": "Arms the point eraser: it clears where the hand passes, bounded by the selection when there is one."
+      "title": "इरेज़र टूल",
+      "help": "बिंदु इरेज़र को तैयार करता है: जहां से हाथ गुज़रता है वहां मिटाता है, और चयन होने पर उसी की सीमा में।"
     },
     "canvasToolFill": {
-      "title": "Paint bucket tool",
-      "help": "Arms the bucket: a click fills the layer, or the selection when there is one."
+      "title": "पेंट बकेट टूल",
+      "help": "बकेट को तैयार करता है: एक क्लिक लेयर को भर देता है, या चयन होने पर उसे।"
     },
     "canvasToolPicker": {
-      "title": "Eyedropper tool",
-      "help": "Arms the eyedropper: a click takes the colour under the pointer and hands it to the brush."
+      "title": "आईड्रॉपर टूल",
+      "help": "आईड्रॉपर को तैयार करता है: एक क्लिक पॉइंटर के नीचे का रंग लेकर ब्रश को दे देता है।"
     },
     "canvasBrushSmaller": {
-      "title": "Smaller brush",
-      "help": "Narrows the brush, the eraser and the shape stroke by one step of the scale."
+      "title": "ब्रश छोटा करें",
+      "help": "ब्रश, इरेज़र और आकृति के स्ट्रोक को स्केल के एक कदम से पतला करता है।"
     },
     "canvasBrushLarger": {
-      "title": "Larger brush",
-      "help": "Widens the brush, the eraser and the shape stroke by one step of the scale."
+      "title": "ब्रश बड़ा करें",
+      "help": "ब्रश, इरेज़र और आकृति के स्ट्रोक को स्केल के एक कदम से चौड़ा करता है।"
     },
     "sceneSkeletons": {
-      "title": "Show skeletons",
-      "help": "Draws the bones of every rigged model over the scene."
+      "title": "स्केलेटन दिखाएं",
+      "help": "हर रिग किए गए मॉडल की बोन सीन के ऊपर बनाता है।"
     },
     "scenePoseMode": {
-      "title": "Pose mode",
-      "help": "Switches between picking objects and picking the bones of a rig."
+      "title": "पोज़ मोड",
+      "help": "ऑब्जेक्ट चुनने और रिग की बोन चुनने के बीच बदलता है।"
     },
     "sceneNavigate": {
-      "title": "Navigate",
-      "help": "Move through the scene as in a game: the mouse holds the view, W A S D travel, E and Q rise and fall. The wheel sets the speed. Escape gives the mouse back."
+      "title": "नेविगेट करें",
+      "help": "सीन में गेम की तरह घूमें: माउस नज़र संभालता है, W A S D चलाते हैं, E और Q ऊपर-नीचे ले जाते हैं। व्हील गति तय करता है। Escape माउस वापस देता है।"
     },
     "sceneNegate": {
-      "title": "Negate",
-      "help": "Marks the selected shapes as tools: they are cut out of the others, whichever button is pressed next and in whatever order they were clicked. A marked shape shows translucent red. Press again to take the mark off."
+      "title": "नेगेट करें",
+      "help": "चुनी गई आकृतियों को औज़ार के रूप में चिह्नित करता है: आगे कोई भी बटन दबाया जाए और क्लिक किसी भी क्रम में हुए हों, वे दूसरों में से काट दी जाती हैं। चिह्नित आकृति पारदर्शी लाल दिखती है। चिह्न हटाने के लिए फिर से दबाएं।"
     },
     "sceneCarve": {
-      "title": "Carve",
-      "help": "Cuts the shapes marked Negate — failing that, the smaller ones — out of the biggest selected shape: a cube set inside a wall opens a window in it. The order of the clicks changes nothing. The original shapes are kept — Separate gives them back."
+      "title": "छेद करें",
+      "help": "“नेगेट करें” से चिह्नित आकृतियों को — और वैसा न हो तो छोटी आकृतियों को — सबसे बड़ी चुनी गई आकृति में से काटता है: दीवार के भीतर रखा घन उसमें एक खिड़की खोल देता है। क्लिक का क्रम कुछ नहीं बदलता। मूल आकृतियां बनी रहती हैं — “अलग करें” उन्हें वापस देता है।"
     },
     "sceneWeld": {
-      "title": "Join",
-      "help": "Merges the selected shapes into a single solid. A shape marked Negate is cut out of it instead of being added to it. The original shapes are kept — Separate gives them back."
+      "title": "जोड़ें",
+      "help": "चुनी गई आकृतियों को एक ही ठोस में मिलाता है। “नेगेट करें” से चिह्नित आकृति उसमें जोड़ी जाने के बजाय उसमें से काट दी जाती है। मूल आकृतियां बनी रहती हैं — “अलग करें” उन्हें वापस देता है।"
     },
     "sceneIntersect": {
-      "title": "Keep overlap",
-      "help": "Keeps only the part where the selected shapes overlap, and throws the rest away. A shape marked Negate is cut out of it instead of being kept. The original shapes are kept — Separate gives them back."
+      "title": "साझा हिस्सा रखें",
+      "help": "केवल वही हिस्सा रखता है जहां चुनी गई आकृतियां एक-दूसरे पर पड़ती हैं, और बाकी फेंक देता है। “नेगेट करें” से चिह्नित आकृति रखी जाने के बजाय उसमें से काट दी जाती है। मूल आकृतियां बनी रहती हैं — “अलग करें” उन्हें वापस देता है।"
     },
     "sceneInvertCarve": {
-      "title": "Flip the fold",
-      "help": "Folds the same shapes the other way round: what was carved becomes the matter, and the matter becomes the tool. One click, no undo — for the fold that ran backwards."
+      "title": "मोड़ उलटें",
+      "help": "उन्हीं आकृतियों को उल्टी दिशा में मोड़ता है: जो काटा गया था वह पदार्थ बन जाता है, और पदार्थ औज़ार बन जाता है। एक क्लिक, बिना पूर्ववत किए — उस मोड़ के लिए जो उल्टा पड़ गया।"
     },
     "sceneSeparate": {
-      "title": "Separate",
-      "help": "Breaks a solid apart and gives back the shapes it was made of, each where it stood."
+      "title": "अलग करें",
+      "help": "एक ठोस को तोड़ता है और जिन आकृतियों से वह बना था उन्हें वापस देता है, हर एक अपनी जगह पर।"
     }
   }
 }

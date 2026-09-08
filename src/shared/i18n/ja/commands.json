@@ -1,549 +1,549 @@
 {
   "commands": {
     "scenePlay": {
-      "title": "Play scene",
-      "help": "Starts or resumes the scene in the game window."
+      "title": "シーンを再生",
+      "help": "ゲームウィンドウでシーンを開始、または再開します。"
     },
     "appNew": {
-      "title": "New…",
-      "help": "Opens the window that makes a project or a document, from any screen"
+      "title": "新規…",
+      "help": "プロジェクトまたはドキュメントを作成するウィンドウを、どの画面からでも開きます。"
     },
     "projectNew": {
-      "title": "New project",
-      "help": "Creates an empty project and opens it. A project is the folder holding everything you make: the images, the videos, the sounds, and how they are arranged."
+      "title": "新しいプロジェクト",
+      "help": "空のプロジェクトを作成して開きます。プロジェクトとは、作ったものすべてを収めるフォルダーです。画像、動画、音、そしてそれらの並べ方が入ります。"
     },
     "projectOpen": {
-      "title": "Open project",
-      "help": "Picks a project already on your disk and opens it in place of the current one. The open project is saved as you go, so there is nothing to save first."
+      "title": "プロジェクトを開く",
+      "help": "ディスクにすでにあるプロジェクトを選び、現在のものに代えて開きます。開いているプロジェクトは随時保存されるため、先に保存しておくものはありません。"
     },
     "documentSaveAs": {
-      "title": "Save as",
-      "help": "Writes a copy of the asset beside the original and carries on with it. The asset that was open stays as it was at the last save."
+      "title": "別名で保存",
+      "help": "アセットの複製を元の隣に書き出し、そのまま複製の側で作業を続けます。開いていたアセットは最後に保存した状態のまま残ります。"
     },
     "documentSave": {
-      "title": "Save document",
-      "help": "Writes the document in front into the project. Until it is saved, it lives in the window: the tab carries an asterisk for as long as what is on screen is not what is on disk."
+      "title": "ドキュメントを保存",
+      "help": "手前にあるドキュメントをプロジェクトに書き込みます。保存されるまではウィンドウの中にあり、画面の内容とディスクの内容が一致しないあいだ、タブにアスタリスクが付きます。"
     },
     "documentClose": {
-      "title": "Close tab",
-      "help": "Closes the document in front. If it holds unsaved work, the studio asks what to do with it. With no tab left, the window closes."
+      "title": "タブを閉じる",
+      "help": "手前にあるドキュメントを閉じます。未保存の変更があれば、スタジオがどうするか尋ねます。タブが1つもなくなると、ウィンドウが閉じます。"
     },
     "layoutReset": {
-      "title": "Reset layout",
-      "help": "Puts the panels back where they started. Useful once the windows have been dragged all over and nothing is where you expect. Your work is untouched."
+      "title": "レイアウトをリセット",
+      "help": "パネルを最初の位置に戻します。ウィンドウをあちこちに動かして、どこに何があるか分からなくなったときに便利です。作業内容には触れません。"
     },
     "appSettings": {
-      "title": "Settings",
-      "help": "Opens the settings window — this one: the language, the colours, the account, the shortcuts, and everything else that is adjustable."
+      "title": "設定",
+      "help": "設定ウィンドウ、つまりこのウィンドウを開きます。言語、カラー、アカウント、ショートカット、そのほか調整できるものすべてがここにあります。"
     },
     "appAssistant": {
-      "title": "Assistant",
-      "help": "Opens the window where you say what you want done, by voice or by keyboard. The assistant carries it out itself, and asks for a yes before anything that costs."
+      "title": "アシスタント",
+      "help": "してほしいことを声かキーボードで伝えるウィンドウを開きます。アシスタントは理解した内容を自分で実行し、費用の発生することの前には同意を求めます。"
     },
     "appDictate": {
-      "title": "Dictate",
-      "help": "Listens to the microphone and writes what you say at the caret, in the field you are in. Held down by default: speak, let go, the text appears."
+      "title": "音声入力",
+      "help": "マイクを聞き取り、話した内容をカーソルの位置、いま入力している欄に書き込みます。既定では押しているあいだだけ有効です。話して、離すと、テキストが入ります。"
     },
     "windowFullScreen": {
-      "title": "Full screen",
-      "help": "Gives the window the whole screen, with no bar and no border, to work with nothing around it."
+      "title": "フルスクリーン",
+      "help": "バーも枠もない状態でウィンドウに画面全体を使わせ、まわりに何もない状態で作業できるようにします。"
     },
     "spacesMoveLeft": {
-      "title": "Move the space left",
-      "help": "Shifts the focused space one place to the left in the top bar. The order you settle on is kept from one session to the next."
+      "title": "スペースを左へ移動",
+      "help": "フォーカスのあるスペースを、上部バーで1つ左へずらします。決めた並び順はセッションをまたいで保たれます。"
     },
     "spacesMoveRight": {
-      "title": "Move the space right",
-      "help": "Shifts the focused space one place to the right in the top bar. The order you settle on is kept from one session to the next."
+      "title": "スペースを右へ移動",
+      "help": "フォーカスのあるスペースを、上部バーで1つ右へずらします。決めた並び順はセッションをまたいで保たれます。"
     },
     "explorerNewFolder": {
-      "title": "New folder",
-      "help": "Creates an empty folder inside the one the explorer is showing, and opens its name for typing. The folder is yours, as is everything you put in it."
+      "title": "新しいフォルダー",
+      "help": "エクスプローラーが表示しているフォルダーの中に空のフォルダーを作り、名前を入力できる状態にします。このフォルダーは自分のものであり、そこに入れたものもすべて同じです。"
     },
     "explorerDuplicate": {
-      "title": "Duplicate",
-      "help": "Lays a copy of each chosen item beside the original, under the first free name. A folder is copied with everything inside it."
+      "title": "複製",
+      "help": "選んだ項目それぞれの複製を、空いている最初の名前で元の隣に置きます。フォルダーは中身ごと複製されます。"
     },
     "explorerCut": {
-      "title": "Cut",
-      "help": "Holds the selection, to be moved on the next paste. Nothing moves until you paste, and the rows being held are drawn dimmed."
+      "title": "切り取り",
+      "help": "選択を保持し、次の貼り付けで移動します。貼り付けるまで何も動かず、保持中の行は薄く表示されます。"
     },
     "explorerCopy": {
-      "title": "Copy",
-      "help": "Holds the selection, to be copied on the next paste. The original stays where it is."
+      "title": "コピー",
+      "help": "選択を保持し、次の貼り付けで複製します。元のものはその場に残ります。"
     },
     "explorerPaste": {
-      "title": "Paste",
-      "help": "Drops what the clipboard holds into the folder on screen. An item whose name is already taken is refused, and the rest go through."
+      "title": "貼り付け",
+      "help": "クリップボードが保持しているものを、表示中のフォルダーに置きます。名前がすでに使われている項目は拒否され、残りは通ります。"
     },
     "explorerTrash": {
-      "title": "Move to trash",
-      "help": "Sends the selection to the system trash, where you can get it back. It is the one explorer gesture the studio cannot undo."
+      "title": "ゴミ箱に入れる",
+      "help": "選択をシステムのゴミ箱に送ります。そこから取り戻せます。スタジオが取り消せない、エクスプローラーで唯一の操作です。"
     },
     "explorerUndo": {
-      "title": "Undo the last file gesture",
-      "help": "Puts the last batch moved, renamed, duplicated or created back where it was. The stack belongs to the project rather than to a window, and the trash gesture never enters it."
+      "title": "直前のファイル操作を取り消し",
+      "help": "直前にまとめて移動・名前変更・複製・作成したものを、元の場所に戻します。この履歴はウィンドウではなくプロジェクトに属し、ゴミ箱への移動は履歴に入りません。"
     },
     "explorerRedo": {
-      "title": "Redo the file gesture",
-      "help": "Redoes the batch of files that was just undone, exactly as it was."
+      "title": "ファイル操作をやり直し",
+      "help": "取り消したばかりのファイルのまとまりを、そのまま実行し直します。"
     },
     "sceneSelect": {
-      "title": "Select",
-      "help": "The plain tool: click an object in the scene to choose it, without doing anything to it. It is the one you come back to between manipulations."
+      "title": "選択",
+      "help": "基本のツールです。シーンのオブジェクトをクリックして選ぶだけで、何も変更しません。操作と操作の合間に戻ってくるツールです。"
     },
     "sceneTranslate": {
-      "title": "Move",
-      "help": "Drags the chosen object from one place to another, by pulling the coloured arrows — one per direction."
+      "title": "移動",
+      "help": "選んだオブジェクトを、方向ごとに1本ずつある色の付いた矢印を引いて、ある場所から別の場所へ動かします。"
     },
     "sceneRotate": {
-      "title": "Rotate",
-      "help": "Turns the chosen object on itself, by pulling the coloured rings — one per axis."
+      "title": "回転",
+      "help": "選んだオブジェクトを、軸ごとに1つずつある色の付いたリングを引いて、その場で回します。"
     },
     "sceneScale": {
-      "title": "Scale",
-      "help": "Makes the chosen object bigger or smaller, by pulling its handles. Holding Shift keeps its proportions."
+      "title": "スケール",
+      "help": "選んだオブジェクトを、ハンドルを引いて大きくしたり小さくしたりします。Shiftを押しながらだと比率を保ちます。"
     },
     "sceneFrame": {
-      "title": "Frame selection",
-      "help": "Brings the camera close enough that the chosen object fills the view. Handy when you are lost, or when an object is tiny."
+      "title": "選択を画面に収める",
+      "help": "選んだオブジェクトが画面いっぱいになるところまでカメラを近づけます。見失ったときや、オブジェクトがとても小さいときに便利です。"
     },
     "sceneFrameFollow": {
-      "title": "Follow the selection",
-      "help": "Frames the selection and keeps it in view: whatever moves takes the camera along, at the angle and distance already chosen. Called again, it lets go."
+      "title": "選択を追う",
+      "help": "選択を画面に収め、そのまま視界に保ちます。動くものがカメラを連れて行き、角度と距離はすでに選んだままです。もう一度呼ぶと追従をやめます。"
     },
     "sceneIsolate": {
-      "title": "Isolate selection",
-      "help": "Leaves only the chosen objects on screen while you work on them. Nothing is changed: pressing it again gives the scene back exactly as it was, including the objects you had hidden yourself."
+      "title": "選択を分離表示",
+      "help": "作業のあいだ、選んだオブジェクトだけを画面に残します。何も変更されません。もう一度押すと、自分で隠したオブジェクトも含め、シーンが元どおりに戻ります。"
     },
     "sceneHide": {
-      "title": "Hide selection",
-      "help": "Takes the chosen objects out of the view without touching the document. Show all brings them back."
+      "title": "選択を非表示",
+      "help": "選んだオブジェクトを、ドキュメントに触れずに表示から外します。「すべて表示」で戻ります。"
     },
     "sceneShowAll": {
-      "title": "Show all",
-      "help": "Undoes the hiding and isolating done from the viewport. Objects the document itself declares hidden stay hidden."
+      "title": "すべて表示",
+      "help": "ビューポートから行った非表示と分離表示を解除します。ドキュメント自身が非表示と宣言しているオブジェクトは、非表示のままです。"
     },
     "sceneSnap": {
-      "title": "All snaps",
-      "help": "Turns all four snaps on or off at once — surface, grid, angle, scale. A second press gives back exactly the ones that were on. The bar at the top of the viewport sets them one by one."
+      "title": "すべてのスナップ",
+      "help": "サーフェス、グリッド、角度、スケールの4つのスナップをまとめて有効・無効にします。もう一度押すと、有効だったものだけが正確に戻ります。ビューポート上部のバーで1つずつ設定できます。"
     },
     "sceneSpace": {
-      "title": "Local frame",
-      "help": "Lines the handles up with the object’s own orientation rather than the world’s. On a turned object, that is what lets you move it “towards its front” rather than north."
+      "title": "ローカル座標",
+      "help": "ハンドルを、ワールドではなくオブジェクト本来の向きに合わせます。回転したオブジェクトでは、北ではなく「その正面へ」動かせるようになるのがこれです。"
     },
     "sceneProjection": {
-      "title": "Projection",
-      "help": "Switches between perspective, where receding lines converge, and orthographic projection, where parallels stay parallel. That is what lets an alignment be judged by eye."
+      "title": "投影",
+      "help": "奥行きの線が収束する透視投影と、平行線が平行のままの正射投影とを切り替えます。位置合わせを目で判断できるのは、これがあるからです。"
     },
     "sceneViewFront": {
-      "title": "Look from the front",
-      "help": "Puts the camera in front of the scene, square to the axis. The reference view for judging a silhouette."
+      "title": "正面から見る",
+      "help": "カメラをシーンの正面、軸に正対する位置に置きます。シルエットを判断するための基準ビューです。"
     },
     "sceneViewBack": {
-      "title": "Look from behind",
-      "help": "Puts the camera behind the scene, on the same axis: what the front hides."
+      "title": "背面から見る",
+      "help": "カメラをシーンの後ろ、同じ軸上に置きます。正面が隠しているものが見えます。"
     },
     "sceneViewRight": {
-      "title": "Look from the right",
-      "help": "Puts the camera on the right-hand side, square to the axis. What a depth is judged from."
+      "title": "右から見る",
+      "help": "カメラを右側、軸に正対する位置に置きます。奥行きを判断するためのビューです。"
     },
     "sceneViewLeft": {
-      "title": "Look from the left",
-      "help": "Puts the camera on the left-hand side, on the same axis as the right view."
+      "title": "左から見る",
+      "help": "カメラを左側、右のビューと同じ軸上に置きます。"
     },
     "sceneViewTop": {
-      "title": "Look from above",
-      "help": "Puts the camera above the scene, looking straight down. What the objects are laid out on the ground from."
+      "title": "上から見る",
+      "help": "カメラをシーンの真上に置き、真下を向かせます。オブジェクトを地面に配置するためのビューです。"
     },
     "sceneViewBottom": {
-      "title": "Look from below",
-      "help": "Puts the camera under the scene, looking straight up, the other way from the top view."
+      "title": "下から見る",
+      "help": "カメラをシーンの真下に置き、真上を向かせます。上からのビューとは逆向きです。"
     },
     "sceneViewCamera": {
-      "title": "Look through the camera",
-      "help": "Draws the view through the chosen camera, and steps back out on a second call. With no camera chosen, it takes the first in the scene."
+      "title": "カメラから見る",
+      "help": "選んだカメラを通してビューを描画し、もう一度呼ぶと元に戻ります。カメラを選んでいない場合は、シーンの最初のカメラを使います。"
     },
     "sceneQuad": {
-      "title": "Four views",
-      "help": "Splits the viewport in four — top, front and side around the view being flown. Each quarter orbits under the pointer; the flown one keeps the gizmos."
+      "title": "4分割ビュー",
+      "help": "ビューポートを4つに分割し、操作中のビューのまわりに上面・正面・側面を並べます。それぞれの区画はポインターの下で回り込み、操作中のビューがギズモを保ちます。"
     },
     "sceneQuadEdges": {
-      "title": "Quad edges",
-      "help": "Redraws the wireframe without the diagonals triangulation added. A GLB never holds quads: this is a reconstruction by angle, faithful except on strongly curved surfaces."
+      "title": "クワッドの辺",
+      "help": "三角形分割が加えた対角線を除いて、ワイヤーフレームを描き直します。GLBファイルはクワッドを保持しないため、これは角度からの再構成であり、強く湾曲した面を除いて忠実です。"
     },
     "sceneDisplay": {
-      "title": "Display mode",
-      "help": "Cycles what the viewport draws: the surfaces, their edges alone, or both together. The button’s menu picks one directly."
+      "title": "表示モード",
+      "help": "ビューポートが描くものを順に切り替えます。サーフェス、その辺だけ、または両方です。ボタンのメニューから直接選ぶこともできます。"
     },
     "sceneCapture": {
-      "title": "Capture the view",
-      "help": "Saves an image of the 3D view into the project’s images — without the grid, the handles or the rails. The menu offers resolutions larger than the panel’s own."
+      "title": "ビューをキャプチャ",
+      "help": "3Dビューの画像を、グリッド・ハンドル・レールを除いてプロジェクトの画像に保存します。メニューでは、パネル自身より大きい解像度も選べます。"
     },
     "sceneAdd": {
-      "title": "Add",
-      "help": "Opens the list of what a scene can take: meshes, lights and objects. A right-click on empty space opens the same list."
+      "title": "追加",
+      "help": "シーンが受け入れられるものの一覧を開きます。メッシュ、ライト、オブジェクトです。何もないところを右クリックしても同じ一覧が開きます。"
     },
     "sceneAddToSheet": {
-      "title": "Add to the animation band",
-      "help": "Puts the selected objects on the band, where keys are set. The band shows only what is put there, so a scene of thousands of objects stays readable."
+      "title": "アニメーションバンドに追加",
+      "help": "選択したオブジェクトを、キーを打つバンドに載せます。バンドには載せたものしか表示されないため、数千のオブジェクトがあるシーンでも読み取れます。"
     },
     "sceneRemoveFromSheet": {
-      "title": "Remove from the animation band",
-      "help": "Removes the line from the band. Keys already set stay, and an object keeps its line for as long as it holds one."
+      "title": "アニメーションバンドから削除",
+      "help": "その行をバンドから外します。すでに打ったキーは残り、オブジェクトはキーを持っているあいだ行を保ちます。"
     },
     "sceneGroup": {
-      "title": "Group",
-      "help": "Files the selected objects under one group. Moving the group moves them all, and ⌘Z takes the grouping back."
+      "title": "グループ化",
+      "help": "選択したオブジェクトを1つのグループにまとめます。グループを動かすと全体が動き、⌘Zでグループ化を取り消せます。"
     },
     "sceneDuplicate": {
-      "title": "Duplicate",
-      "help": "Puts a copy of the selection under the same parent and at the very same place, then selects it. A group duplicates whole, with everything hanging from it."
+      "title": "複製",
+      "help": "選択したものの複製を、同じ親の下のまったく同じ位置に置き、それを選択します。グループはぶら下がっているものすべてを含めて丸ごと複製されます。"
     },
     "sceneOptimizeSelection": {
-      "title": "Optimise selection…",
-      "help": "Measures the selection and previews a SAFE runtime representation before changing its optimisation settings."
+      "title": "選択を最適化…",
+      "help": "選択を計測し、最適化の設定を変更する前にSAFEなランタイム表現をプレビューします。"
     },
     "sceneWorldPerformance": {
-      "title": "World performance…",
-      "help": "Measures the whole scene and reports SAFE optimisation opportunities without changing the authoring world."
+      "title": "ワールドのパフォーマンス…",
+      "help": "シーン全体を計測し、オーサリングのワールドを変更せずにSAFEな最適化の可能性を提示します。"
     },
     "sceneExportGame": {
-      "title": "Export the game…",
-      "help": "Builds a standalone game from an optimised runtime copy while leaving the authoring scenes untouched."
+      "title": "ゲームを書き出す…",
+      "help": "編集用のシーンには手を触れず、最適化したランタイムコピーから単体で動くゲームをビルドします。"
     },
     "sceneCopy": {
-      "title": "Copy",
-      "help": "Holds on to the selection so it can be pasted, here or in another scene. This is the studio’s own clipboard: it leaves the system one alone."
+      "title": "コピー",
+      "help": "選択したものを保持し、このシーンでも別のシーンでもペーストできるようにします。これはスタジオ独自のクリップボードで、システムのクリップボードには触れません。"
     },
     "sceneCut": {
-      "title": "Cut",
-      "help": "Holds on to the selection and takes it out of the scene. ⌘Z brings it back."
+      "title": "カット",
+      "help": "選択したものを保持したうえで、シーンから取り除きます。⌘Zで元に戻ります。"
     },
     "scenePaste": {
-      "title": "Paste",
-      "help": "Puts what was copied into the scene in front, and selects it. Pasting twice makes two separate copies."
+      "title": "ペースト",
+      "help": "コピーしたものを現在のシーンに置き、それを選択します。二回ペーストすると別々の複製が二つできます。"
     },
     "sceneDelete": {
-      "title": "Delete",
-      "help": "Removes everything selected from the scene. Nothing is lost for good: ⌘Z brings it back."
+      "title": "削除",
+      "help": "選択されているものをすべてシーンから取り除きます。完全に失われるものはなく、⌘Zで元に戻ります。"
     },
     "undo": {
-      "title": "Undo",
-      "help": "Takes back the last thing you did in this document. Each document has its own stack: undo acts on the tab in front, not on the others."
+      "title": "取り消し",
+      "help": "このドキュメントで最後に行った操作を取り消します。ドキュメントごとにスタックが別なので、取り消しは前面のタブにだけ効き、ほかのタブには効きません。"
     },
     "redo": {
-      "title": "Redo",
-      "help": "Does again what you have just undone. Handy after undoing once too often."
+      "title": "やり直し",
+      "help": "取り消したばかりの操作をもう一度実行します。取り消しすぎたときに役立ちます。"
     },
     "sequencePlayPause": {
-      "title": "Play / Pause",
-      "help": "Starts playing the edit, or stops it where it is. Starting again picks up where you left off."
+      "title": "再生 / 一時停止",
+      "help": "編集の再生を開始します。または、いまの位置で止めます。もう一度開始すると、止めた位置から続きます。"
     },
     "sequenceExport": {
-      "title": "Export video…",
-      "help": "Writes the edit out as a video file, frame by frame, 3D scenes included. The sound is not in it yet."
+      "title": "ビデオを書き出し…",
+      "help": "編集をフレーム単位でビデオファイルに書き出します。3Dシーンも含まれます。音声はまだ入りません。"
     },
     "sequenceExportCut": {
-      "title": "Export edit (OTIO)…",
-      "help": "Writes the edit itself out as an OpenTimelineIO file, which other editing applications open — tracks, clips, in points, speeds and links to the media. Fades, gains and image/sound links travel in it too, but only AI Desktop Studio reads them back."
+      "title": "編集を書き出し（OTIO）…",
+      "help": "編集そのものをOpenTimelineIOファイルに書き出します。ほかの編集ソフトが開ける形式で、トラック、クリップ、イン点、速度、メディアへのリンクが入ります。フェード、ゲイン、映像と音声のリンクも一緒に運ばれますが、読み戻せるのはAI Desktop Studioだけです。"
     },
     "sequenceExportEdl": {
-      "title": "Export edit list (EDL)…",
-      "help": "Writes the cuts and their timecodes as CMX3600, which every online room reads. The format holds one image track and two sound ones, and nothing of the fades, the gains or the speeds."
+      "title": "編集リストを書き出し（EDL）…",
+      "help": "カットとそのタイムコードをCMX3600形式で書き出します。どのオンライン編集室でも読める形式です。この形式が持てるのは映像トラック1本と音声トラック2本だけで、フェードもゲインも速度も入りません。"
     },
     "sequenceExportFcpxml": {
-      "title": "Export edit (FCPXML)…",
-      "help": "Writes the edit in the format Final Cut reads and Premiere and Resolve import. The tracks survive, a lane each, and so does the frame size; the fades, the gains and the speeds stay here."
+      "title": "編集を書き出し（FCPXML）…",
+      "help": "Final Cutが読み、PremiereとResolveが読み込める形式で編集を書き出します。トラックは1本ずつレーンとして残り、フレームサイズも残ります。フェード、ゲイン、速度はここに残ります。"
     },
     "sequenceExportStems": {
-      "title": "Export sound per track (WAV)…",
-      "help": "Writes one WAV per audible track, mixed the way the edit plays it — the placements, the trims, the fades, the gains and the speeds are baked into the samples. A muted track is not written."
+      "title": "トラックごとに音声を書き出し（WAV）…",
+      "help": "聞こえるトラックごとにWAVを1本ずつ、編集の再生どおりにミックスして書き出します。配置、トリム、フェード、ゲイン、速度はサンプルに焼き込まれます。ミュートしたトラックは書き出されません。"
     },
     "sequenceExportBundle": {
-      "title": "Export edit with its media (OTIOZ)…",
-      "help": "Writes the same edit with the media it uses inside the file. This is the one to hand to somebody else, or to open in DaVinci Resolve, which then finds the rushes on its own instead of asking for them one by one."
+      "title": "編集とメディアを書き出し（OTIOZ）…",
+      "help": "同じ編集を、使っているメディアごとファイルの中に書き出します。他の人に渡すとき、またはDaVinci Resolveで開くときはこれを使います。Resolveは素材を一つずつ尋ねずに自分で見つけます。"
     },
     "montageImport": {
-      "title": "Import an edit with its media (OTIOZ)…",
-      "help": "Opens an edit written by another application, rushes and all. The media are copied into the project and enter the catalogue, then the edit opens linked to them. What the opened file does not bring is said as it opens, and starts from its default only there."
+      "title": "編集とメディアを読み込み（OTIOZ）…",
+      "help": "ほかのソフトが書いた編集を、素材ごと開きます。メディアはプロジェクトにコピーされてカタログに入り、そのうえで編集がメディアとつながった状態で開きます。開いたファイルが持ってこなかったものは開くときに知らされ、そこだけ既定値から始まります。"
     },
     "sequenceMirror": {
-      "title": "Return window",
-      "help": "Opens the edit in a window of its own, to put on a second screen. It follows the studio frame by frame, without the sound, and closes like any window."
+      "title": "リターンウィンドウ",
+      "help": "編集を専用のウィンドウで開きます。2枚目の画面に置くためのものです。音声なしでスタジオをフレーム単位で追いかけ、ふつうのウィンドウと同じように閉じられます。"
     },
     "sequenceSplit": {
-      "title": "Split clip",
-      "help": "Cuts the clip in two where the playhead sits, so each half can be handled on its own."
+      "title": "クリップを分割",
+      "help": "再生ヘッドのある位置でクリップを二つに切り、それぞれを別々に扱えるようにします。"
     },
     "sequenceDelete": {
-      "title": "Delete clip",
-      "help": "Removes the chosen clip from the edit. The original file stays in your assets."
+      "title": "クリップを削除",
+      "help": "選んだクリップを編集から取り除きます。元のファイルはアセットに残ります。"
     },
     "sequenceUnlink": {
-      "title": "Unlink picture and sound",
-      "help": "Separates the two clips of one take. While they are linked, moving, cutting or deleting one does the same to the other."
+      "title": "映像と音声のリンクを解除",
+      "help": "同じテイクの二つのクリップを切り離します。リンクしている間は、片方を移動やカット、削除すると、もう片方にも同じことが起こります。"
     },
     "sequenceZoomIn": {
-      "title": "Zoom in",
-      "help": "Spreads the edit out to see detail: clips get wider and are easier to aim at."
+      "title": "ズームイン",
+      "help": "編集を広げて細部を見えるようにします。クリップの幅が広がり、狙いやすくなります。"
     },
     "sequenceZoomOut": {
-      "title": "Zoom out",
-      "help": "Draws the edit together to see more of it at once, at the cost of the detail."
+      "title": "ズームアウト",
+      "help": "編集を詰めて一度に見える範囲を広げます。そのぶん細部は見えなくなります。"
     },
     "sequenceFit": {
-      "title": "Fit to view",
-      "help": "Sets the zoom so the whole edit fits on screen, end to end."
+      "title": "全体を表示",
+      "help": "編集の端から端までが画面に収まるようにズームを合わせます。"
     },
     "sequenceStart": {
-      "title": "Go to start",
-      "help": "Brings the playhead right back to the beginning of the edit, moving nothing else."
+      "title": "先頭へ移動",
+      "help": "再生ヘッドを編集の先頭まで戻します。ほかには何も動きません。"
     },
     "sequenceEnd": {
-      "title": "Go to end",
-      "help": "Sends the playhead right to the end of the edit, past the last clip."
+      "title": "末尾へ移動",
+      "help": "再生ヘッドを編集の末尾、最後のクリップの先まで送ります。"
     },
     "canvasZoomIn": {
-      "title": "Zoom in",
-      "help": "Magnifies the view one step, around the middle of what is visible. The image itself is untouched — only the way it is looked at."
+      "title": "ズームイン",
+      "help": "表示中の範囲の中心を軸に、ビューを1段階拡大します。画像そのものは変わりません。変わるのは見え方だけです。"
     },
     "canvasZoomOut": {
-      "title": "Zoom out",
-      "help": "Shrinks the view one step, to take in the whole image again."
+      "title": "ズームアウト",
+      "help": "ビューを1段階縮小し、画像全体を見渡せるようにします。"
     },
     "canvasZoomFit": {
-      "title": "Fit to window",
-      "help": "Frames the whole image in the panel, with a margin, and never magnifies it past its actual size."
+      "title": "ウィンドウに合わせる",
+      "help": "画像全体を余白付きでパネルに収めます。実際のサイズを超えて拡大することはありません。"
     },
     "canvasZoomActual": {
-      "title": "Actual size",
-      "help": "One image pixel per screen pixel: the only scale at which sharpness can be judged."
+      "title": "実際のサイズ",
+      "help": "画像の1ピクセルを画面の1ピクセルで表示します。シャープさを判断できるのはこの倍率だけです。"
     },
     "canvasRulers": {
-      "title": "Rulers",
-      "help": "Shows or hides the two graduated rulers, at the top and on the left. Guides are pulled off them."
+      "title": "定規",
+      "help": "上と左にある目盛り付きの定規を表示または非表示にします。ガイドはこの定規から引き出します。"
     },
     "canvasGuides": {
-      "title": "Guides",
-      "help": "Shows or hides the guides laid on the image. Hiding them does not remove them."
+      "title": "ガイド",
+      "help": "画像に置いたガイドを表示または非表示にします。非表示にしても消えるわけではありません。"
     },
     "canvasGrid": {
-      "title": "Pixel grid",
-      "help": "Shows or hides the grid of the artwork’s own pixels. Only on a document set to pixel art."
+      "title": "ピクセルグリッド",
+      "help": "作品そのもののピクセルのグリッドを表示または非表示にします。ピクセルアートに設定したドキュメントでのみ使えます。"
     },
     "canvasClearGuides": {
-      "title": "Clear guides",
-      "help": "Removes every guide from the image. Undoable, like any other edit."
+      "title": "ガイドを消去",
+      "help": "画像からすべてのガイドを取り除きます。ほかの編集と同じように取り消せます。"
     },
     "canvasSnap": {
-      "title": "Snap",
-      "help": "Makes what is dragged stick to guides, to the image edges and to its centre, within a few pixels."
+      "title": "スナップ",
+      "help": "ドラッグしているものを、数ピクセルの範囲でガイド、画像の端、画像の中心に吸い付かせます。"
     },
     "canvasSelectAll": {
-      "title": "Select all",
-      "help": "Selects the whole document, which the system’s own select-all cannot do on an image."
+      "title": "すべてを選択",
+      "help": "ドキュメント全体を選択します。システム標準の全選択は、画像に対してこれができません。"
     },
     "canvasDeselect": {
-      "title": "Deselect",
-      "help": "Drops the selected region, so the brush reaches the whole layer again."
+      "title": "選択を解除",
+      "help": "選択範囲を解除し、ブラシがレイヤー全体に届くようにします。"
     },
     "canvasCropApply": {
-      "title": "Apply the crop",
-      "help": "Trims the document to the placed frame. ⌘Z gives the frame back, not the pixels."
+      "title": "切り抜きを適用",
+      "help": "置いた枠に合わせてドキュメントを切り詰めます。⌘Zで戻るのは枠であって、ピクセルではありません。"
     },
     "canvasCropCancel": {
-      "title": "Abandon the crop",
-      "help": "Takes the crop frame away without trimming anything at all."
+      "title": "切り抜きを中止",
+      "help": "切り抜きの枠を取り除きます。何も切り詰めません。"
     },
     "canvasMaskFromSelection": {
-      "title": "Make a mask of the selection",
-      "help": "Hides the active layer outside the selected region."
+      "title": "選択範囲からマスクを作成",
+      "help": "選択範囲の外側で、アクティブなレイヤーを隠します。"
     },
     "canvasRegenerate": {
-      "title": "Regenerate the region",
-      "help": "Asks the model to repaint the masked region of the active layer."
+      "title": "範囲を再生成",
+      "help": "アクティブなレイヤーのマスクされた範囲を描き直すようモデルに依頼します。"
     },
     "canvasCutout": {
-      "title": "Cut out",
-      "help": "Removes the background of the flattened image with the default model."
+      "title": "背景を除去",
+      "help": "既定のモデルで、統合した画像の背景を取り除きます。"
     },
     "canvasEnlarge": {
-      "title": "Upscale",
-      "help": "Raises the resolution of the flattened image with the default model."
+      "title": "アップスケール",
+      "help": "既定のモデルで、統合した画像の解像度を上げます。"
     },
     "canvasVectorize": {
-      "title": "Vectorise",
-      "help": "Turns the flattened image into paths with the default model."
+      "title": "ベクター化",
+      "help": "既定のモデルで、統合した画像をパスに変換します。"
     },
     "canvasExtend": {
-      "title": "Extend",
-      "help": "Asks the model to paint beyond the edges of the flattened image."
+      "title": "拡張",
+      "help": "統合した画像の端の外側を描くようモデルに依頼します。"
     },
     "canvasMergeDown": {
-      "title": "Merge down",
-      "help": "Joins the active layer and the one just below it into one, keeping the lower one’s name."
+      "title": "下のレイヤーと結合",
+      "help": "アクティブなレイヤーとすぐ下のレイヤーを一つにまとめます。名前は下のレイヤーのものが残ります。"
     },
     "canvasFlatten": {
-      "title": "Flatten image",
-      "help": "Reduces the whole stack to a single layer: hidden layers are dropped, not merged.",
-      "layerName": "Background"
+      "title": "画像を統合",
+      "help": "スタック全体を1枚のレイヤーにまとめます。非表示のレイヤーは結合されず、失われます。",
+      "layerName": "背景"
     },
     "canvasFlipHorizontal": {
-      "title": "Flip horizontal",
-      "help": "Mirrors the whole document left to right, layers included."
+      "title": "水平方向に反転",
+      "help": "レイヤーも含め、ドキュメント全体を左右に反転します。"
     },
     "canvasFlipVertical": {
-      "title": "Flip vertical",
-      "help": "Mirrors the whole document top to bottom, layers included."
+      "title": "垂直方向に反転",
+      "help": "レイヤーも含め、ドキュメント全体を上下に反転します。"
     },
     "canvasRotateCw": {
-      "title": "Rotate clockwise",
-      "help": "Turns the document a quarter turn to the right: the frame turns with it."
+      "title": "時計回りに回転",
+      "help": "ドキュメントを右へ90度回転します。枠も一緒に回ります。"
     },
     "canvasRotateCcw": {
-      "title": "Rotate counter-clockwise",
-      "help": "Turns the document a quarter turn to the left: the frame turns with it."
+      "title": "反時計回りに回転",
+      "help": "ドキュメントを左へ90度回転します。枠も一緒に回ります。"
     },
     "canvasExport": {
-      "title": "Export the image",
-      "help": "Writes the flattened document to disk, as a PNG."
+      "title": "画像を書き出し",
+      "help": "統合したドキュメントをPNGとしてディスクに書き出します。"
     },
     "canvasExportLayered": {
-      "title": "Export the layers (PSD)…",
-      "help": "Writes the document with its layers, as a Photoshop file. Groups are flattened away: their layers arrive side by side."
+      "title": "レイヤーを書き出し（PSD）…",
+      "help": "ドキュメントをレイヤーごとPhotoshopファイルに書き出します。グループは解除され、その中のレイヤーは同じ階層に並びます。"
     },
     "skyboxView": {
-      "title": "Change the view",
-      "help": "Cycles through the four ways of looking at the sky: immersive, panoramic, cross, faces."
+      "title": "表示を切り替え",
+      "help": "空の見方を順に切り替えます。没入、パノラマ、クロス、面の四つです。"
     },
     "skyboxProbes": {
-      "title": "Light probes",
-      "help": "Shows or hides the witness spheres. A sky is judged by what it lights, not by its own image."
+      "title": "ライトプローブ",
+      "help": "確認用の球を表示または非表示にします。空は、それ自体の見た目ではなく何を照らすかで判断するものです。"
     },
     "canvasToolMove": {
-      "title": "Move tool",
-      "help": "Arms the pointer: a drag moves the active layer, and its handles resize or turn it."
+      "title": "移動ツール",
+      "help": "ポインターに持ち替えます。ドラッグでアクティブなレイヤーが移動し、ハンドルでサイズ変更や回転ができます。"
     },
     "canvasToolHand": {
-      "title": "Hand tool",
-      "help": "Arms the hand: a drag pans the view without touching the document. Holding space does the same without changing tool."
+      "title": "手のひらツール",
+      "help": "手のひらに持ち替えます。ドラッグするとドキュメントに触れずにビューが動きます。スペースキーを押している間も、ツールを変えずに同じことができます。"
     },
     "canvasToolCrop": {
-      "title": "Crop tool",
-      "help": "Arms the crop frame. Draw a frame, then ⏎ to crop or ⎋ to drop it."
+      "title": "切り抜きツール",
+      "help": "切り抜きの枠に持ち替えます。枠を描いてから、⏎で切り抜き、⎋で中止します。"
     },
     "canvasToolSelectRectangle": {
-      "title": "Rectangular selection",
-      "help": "Arms the rectangular selection. What is selected bounds the brush, the eraser and the bucket."
+      "title": "長方形選択",
+      "help": "長方形選択に持ち替えます。選択範囲は、ブラシ、消しゴム、塗りつぶしの届く範囲を区切ります。"
     },
     "canvasToolSelectEllipse": {
-      "title": "Elliptical selection",
-      "help": "Arms the elliptical selection: a drag inscribes the ellipse in the rectangle swept, and Shift makes it a circle."
+      "title": "楕円形選択",
+      "help": "楕円形選択に持ち替えます。ドラッグした長方形に内接する楕円になり、Shiftを押すと円になります。"
     },
     "canvasToolSelectLasso": {
-      "title": "Lasso",
-      "help": "Arms the lasso: the selection follows the hand, freehand."
+      "title": "なげなわ",
+      "help": "なげなわに持ち替えます。選択範囲が手の動きにそのまま従います。"
     },
     "canvasToolSmartSelect": {
-      "title": "Click Smart Select",
-      "help": "Arms object selection from a click, using the local selection model."
+      "title": "クリックでスマート選択",
+      "help": "クリックでオブジェクトを選択するツールに持ち替えます。ローカルの選択モデルを使います。"
     },
     "canvasToolSmartSelectBox": {
-      "title": "Rectangle Smart Select",
-      "help": "Arms object selection from an approximate box, using the local selection model."
+      "title": "長方形でスマート選択",
+      "help": "おおよその長方形でオブジェクトを選択するツールに持ち替えます。ローカルの選択モデルを使います。"
     },
     "canvasToolShapeRectangle": {
-      "title": "Rectangle shape",
-      "help": "Arms drawing a rectangle on the active layer; Shift makes it a square."
+      "title": "長方形シェイプ",
+      "help": "アクティブなレイヤーに長方形を描くツールに持ち替えます。Shiftを押すと正方形になります。"
     },
     "canvasToolShapeLine": {
-      "title": "Line shape",
-      "help": "Arms drawing a line. Same group as the rectangle, hence its key with Shift added."
+      "title": "ラインシェイプ",
+      "help": "線を描くツールに持ち替えます。長方形と同じグループなので、ショートカットはShiftを足したものになります。"
     },
     "canvasToolShapeArrow": {
-      "title": "Arrow shape",
-      "help": "Arms drawing an arrow, from where the drag began to where the hand lets go."
+      "title": "矢印シェイプ",
+      "help": "矢印を描くツールに持ち替えます。ドラッグを始めた位置から、手を離した位置に向かって描かれます。"
     },
     "canvasToolShapeEllipse": {
-      "title": "Ellipse shape",
-      "help": "Arms drawing an ellipse on the active layer; Shift makes it a circle."
+      "title": "楕円形シェイプ",
+      "help": "アクティブなレイヤーに楕円を描くツールに持ち替えます。Shiftを押すと円になります。"
     },
     "canvasToolShapePolygon": {
-      "title": "Polygon shape",
-      "help": "Arms drawing a regular polygon, whose number of sides is set in the inspector before drawing."
+      "title": "多角形シェイプ",
+      "help": "正多角形を描くツールに持ち替えます。辺の数は、描く前にインスペクターで設定します。"
     },
     "canvasToolShapeStar": {
-      "title": "Star shape",
-      "help": "Arms drawing a star, whose number of points is set in the inspector before drawing."
+      "title": "星形シェイプ",
+      "help": "星形を描くツールに持ち替えます。頂点の数は、描く前にインスペクターで設定します。"
     },
     "canvasToolBrush": {
-      "title": "Brush tool",
-      "help": "Arms the brush, with a softened edge. It paints on the active layer, bounded by the selection when there is one."
+      "title": "ブラシツール",
+      "help": "縁のぼけたブラシに持ち替えます。アクティブなレイヤーに描き、選択範囲があればその中に限られます。"
     },
     "canvasToolPencil": {
-      "title": "Pencil tool",
-      "help": "Arms the pencil, with a hard edge: the same gesture as the brush, without the softening."
+      "title": "鉛筆ツール",
+      "help": "縁の硬い鉛筆に持ち替えます。ブラシと同じ操作で、縁のぼかしがありません。"
     },
     "canvasToolText": {
-      "title": "Text tool",
-      "help": "Arms text: a click places a caption, whose words are typed in the inspector."
+      "title": "テキストツール",
+      "help": "テキストに持ち替えます。クリックでキャプションを置き、文字はインスペクターで入力します。"
     },
     "canvasToolEraser": {
-      "title": "Eraser tool",
-      "help": "Arms the point eraser: it clears where the hand passes, bounded by the selection when there is one."
+      "title": "消しゴムツール",
+      "help": "点で消す消しゴムに持ち替えます。手が通ったところを消し、選択範囲があればその中に限られます。"
     },
     "canvasToolFill": {
-      "title": "Paint bucket tool",
-      "help": "Arms the bucket: a click fills the layer, or the selection when there is one."
+      "title": "塗りつぶしツール",
+      "help": "塗りつぶしに持ち替えます。クリックでレイヤーを、選択範囲があればその範囲を塗ります。"
     },
     "canvasToolPicker": {
-      "title": "Eyedropper tool",
-      "help": "Arms the eyedropper: a click takes the colour under the pointer and hands it to the brush."
+      "title": "スポイトツール",
+      "help": "スポイトに持ち替えます。クリックでポインターの下のカラーを取り、ブラシに渡します。"
     },
     "canvasBrushSmaller": {
-      "title": "Smaller brush",
-      "help": "Narrows the brush, the eraser and the shape stroke by one step of the scale."
+      "title": "ブラシを細く",
+      "help": "ブラシ、消しゴム、シェイプの線の太さを1段階細くします。"
     },
     "canvasBrushLarger": {
-      "title": "Larger brush",
-      "help": "Widens the brush, the eraser and the shape stroke by one step of the scale."
+      "title": "ブラシを太く",
+      "help": "ブラシ、消しゴム、シェイプの線の太さを1段階太くします。"
     },
     "sceneSkeletons": {
-      "title": "Show skeletons",
-      "help": "Draws the bones of every rigged model over the scene."
+      "title": "スケルトンを表示",
+      "help": "スケルトンを持つすべてのモデルのボーンを、シーンの上に描きます。"
     },
     "scenePoseMode": {
-      "title": "Pose mode",
-      "help": "Switches between picking objects and picking the bones of a rig."
+      "title": "ポーズモード",
+      "help": "オブジェクトを選ぶ状態と、リグのボーンを選ぶ状態を切り替えます。"
     },
     "sceneNavigate": {
-      "title": "Navigate",
-      "help": "Move through the scene as in a game: the mouse holds the view, W A S D travel, E and Q rise and fall. The wheel sets the speed. Escape gives the mouse back."
+      "title": "ナビゲーション",
+      "help": "ゲームのようにシーンの中を移動します。マウスが視線を持ち、W A S Dで前後左右に進み、EとQで上下します。ホイールで速度を決めます。Escでマウスが戻ります。"
     },
     "sceneNegate": {
-      "title": "Negate",
-      "help": "Marks the selected shapes as tools: they are cut out of the others, whichever button is pressed next and in whatever order they were clicked. A marked shape shows translucent red. Press again to take the mark off."
+      "title": "ネガティブ",
+      "help": "選択した形状を切削ツールとして指定します。次にどのボタンを押しても、どの順にクリックしていても、その形状はほかの形状から削り取られます。指定した形状は半透明の赤で表示されます。もう一度押すと指定が外れます。"
     },
     "sceneCarve": {
-      "title": "Carve",
-      "help": "Cuts the shapes marked Negate — failing that, the smaller ones — out of the biggest selected shape: a cube set inside a wall opens a window in it. The order of the clicks changes nothing. The original shapes are kept — Separate gives them back."
+      "title": "くり抜き",
+      "help": "選択した中で最も大きい形状から、「ネガティブ」に指定した形状を、なければ小さいほうの形状をくり抜きます。壁の中に置いた立方体は、そこに窓を開けます。クリックの順序は結果を変えません。元の形状は保持され、「分離」で戻せます。"
     },
     "sceneWeld": {
-      "title": "Join",
-      "help": "Merges the selected shapes into a single solid. A shape marked Negate is cut out of it instead of being added to it. The original shapes are kept — Separate gives them back."
+      "title": "結合",
+      "help": "選択した形状を一つのソリッドにまとめます。「ネガティブ」に指定した形状は、加えられる代わりにくり抜かれます。元の形状は保持され、「分離」で戻せます。"
     },
     "sceneIntersect": {
-      "title": "Keep overlap",
-      "help": "Keeps only the part where the selected shapes overlap, and throws the rest away. A shape marked Negate is cut out of it instead of being kept. The original shapes are kept — Separate gives them back."
+      "title": "重なりを残す",
+      "help": "選択した形状が重なっている部分だけを残し、残りを捨てます。「ネガティブ」に指定した形状は、残される代わりにくり抜かれます。元の形状は保持され、「分離」で戻せます。"
     },
     "sceneInvertCarve": {
-      "title": "Flip the fold",
-      "help": "Folds the same shapes the other way round: what was carved becomes the matter, and the matter becomes the tool. One click, no undo — for the fold that ran backwards."
+      "title": "くり抜きを反転",
+      "help": "同じ形状を逆向きに合成し直します。くり抜かれていたほうが素材になり、素材だったほうが切削ツールになります。取り消さずにクリック一つで直せます。向きが逆になってしまったときのためのものです。"
     },
     "sceneSeparate": {
-      "title": "Separate",
-      "help": "Breaks a solid apart and gives back the shapes it was made of, each where it stood."
+      "title": "分離",
+      "help": "ソリッドを解体し、それを作っていた形状を、それぞれ元の位置に戻します。"
     }
   }
 }

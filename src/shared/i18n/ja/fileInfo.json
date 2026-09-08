@@ -1,24 +1,24 @@
 {
   "fileInfo": {
-    "title": "Information about {{name}}",
+    "title": "{{name}}の情報",
     "sections": {
-      "general": "General",
-      "media": "Media",
-      "catalogue": "Catalogue",
+      "general": "一般",
+      "media": "メディア",
+      "catalogue": "カタログ",
       "git": "Git"
     },
-    "gitUnchanged": "No pending changes",
+    "gitUnchanged": "保留中の変更なし",
     "kind": {
-      "file": "File",
-      "folder": "Folder"
+      "file": "ファイル",
+      "folder": "フォルダー"
     },
-    "type": "Type",
-    "modified": "Modified",
-    "codec": "Codec",
-    "identifier": "Identifier",
-    "fingerprint": "Content fingerprint",
-    "added": "Added",
-    "reading": "Reading the folder…",
-    "missing": "This entry is no longer in the project folder."
+    "type": "種類",
+    "modified": "更新日時",
+    "codec": "コーデック",
+    "identifier": "識別子",
+    "fingerprint": "内容のフィンガープリント",
+    "added": "追加日時",
+    "reading": "フォルダーを読み込んでいます…",
+    "missing": "この項目はプロジェクトフォルダーにありません。"
   }
 }

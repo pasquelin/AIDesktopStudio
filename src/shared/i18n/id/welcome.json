@@ -1,72 +1,72 @@
 {
   "welcome": {
-    "skip": "Skip",
-    "skipHint": "Closes this introduction and opens the studio with the current settings",
-    "back": "Back",
-    "backHint": "Returns to the previous screen",
-    "next": "Continue",
-    "nextHint": "Goes to the next screen",
-    "done": "Get started",
-    "doneHint": "Closes this introduction and opens the studio",
-    "steps": "Step {{current, number}} of {{total, number}}",
-    "goToStep": "Go to step {{current, number}} — {{title}}",
+    "skip": "Lewati",
+    "skipHint": "Menutup pengantar ini dan membuka studio dengan pengaturan saat ini",
+    "back": "Sebelumnya",
+    "backHint": "Kembali ke layar sebelumnya",
+    "next": "Lanjutkan",
+    "nextHint": "Pergi ke layar berikutnya",
+    "done": "Mulai",
+    "doneHint": "Menutup pengantar ini dan membuka studio",
+    "steps": "Langkah {{current, number}} dari {{total, number}}",
+    "goToStep": "Pergi ke langkah {{current, number}} — {{title}}",
     "language": {
-      "title": "Choose your language",
-      "body": "Every menu, button and message uses this language. You can change it later in Settings.",
-      "hint": "Shows the application in {{name}}"
+      "title": "Pilih bahasa Anda",
+      "body": "Setiap menu, tombol, dan pesan menggunakan bahasa ini. Anda dapat mengubahnya nanti di Pengaturan.",
+      "hint": "Menampilkan aplikasi dalam {{name}}"
     },
     "look": {
-      "title": "How it looks",
-      "body": "Dark is the studio’s own theme. Switch it if you work in daylight.",
-      "themeHint": "Switches the application to the {{name}} theme"
+      "title": "Tampilannya",
+      "body": "Dark adalah tema studio sendiri. Ubah jika Anda bekerja di siang hari.",
+      "themeHint": "Beralih aplikasi ke tema {{name}}"
     },
     "craft": {
-      "title": "Your 3D navigation",
-      "body": "The 3D view mirrors the gestures of the software you already know. You can change it later in the settings.",
-      "navigationHint": "Uses {{name}} viewport gestures in the 3D view"
+      "title": "Navigasi 3D Anda",
+      "body": "Tampilan 3D mencerminkan gerakan perangkat lunak yang sudah Anda kenal. Anda dapat mengubahnya nanti di pengaturan.",
+      "navigationHint": "Menggunakan gerakan viewport {{name}} di tampilan 3D"
     },
     "ai": {
-      "title": "AI, through every door",
-      "body": "The studio depends on no AI in particular: they plug in, they swap out, and they can even drive it.",
+      "title": "AI, melalui setiap pintu",
+      "body": "Studio tidak tergantung pada AI tertentu: mereka terhubung, mereka ditukar, dan mereka bahkan dapat memimpinnya.",
       "local": {
-        "title": "On this machine",
-        "body": "The studio downloads the weights and runs them here. Nothing leaves, nothing is billed."
+        "title": "Di mesin ini",
+        "body": "Studio mengunduh bobot dan menjalankannya di sini. Tidak ada yang pergi, tidak ada yang ditagih."
       },
       "ollama": {
-        "title": "With Ollama",
-        "body": "Already installed? The studio reads your models and uses them as they are."
+        "title": "Dengan Ollama",
+        "body": "Sudah diinstal? Studio membaca model Anda dan menggunakannya seperti apa adanya."
       },
       "cloud": {
-        "title": "At a provider",
-        "body": "One key, and generation goes out. Interchangeable: none of them is the product."
+        "title": "Di penyedia",
+        "body": "Satu kunci, dan pembuatan pergi keluar. Dapat ditukar: tidak ada yang menjadi produk."
       },
       "mcp": {
-        "title": "And the other way round",
-        "body": "The studio publishes its tools: Claude Code, or any MCP agent, opens a project and generates for you."
+        "title": "Dan sebaliknya",
+        "body": "Studio menerbitkan alatnya: Claude Code, atau agen MCP apa pun, membuka proyek dan menghasilkan untuk Anda."
       }
     },
     "models": {
-      "title": "Models, section by section",
-      "body": "The studio downloads the weights, then runs them here. Some models require access from their publisher. The size shows the disk space needed.",
-      "sectionHint": "Shows the models of: {{name}}",
-      "more": "The full catalogue lives in the settings.",
-      "motionOptional": "Motion generation is optional. Install a model now, or continue and find it later in Settings → AI → 3D. Animation retargeting works without AI."
+      "title": "Model, bagian demi bagian",
+      "body": "Studio mengunduh bobot, lalu menjalankannya di sini. Beberapa model memerlukan akses dari penerbitnya. Ukuran menunjukkan ruang disk yang diperlukan.",
+      "sectionHint": "Menampilkan model: {{name}}",
+      "more": "Katalog lengkap ada di pengaturan.",
+      "motionOptional": "Pembuatan gerakan bersifat opsional. Instal model sekarang, atau lanjutkan dan temukan nanti di Pengaturan → AI → 3D. Pengalihtargetan animasi berfungsi tanpa AI."
     },
     "account": {
-      "title": "A cloud, if you have one",
-      "body": "The studio works without an account, on your own files. A key unlocks generation and the shared library.",
-      "stored": "These services are already saved on this machine. Add another one, or carry on.",
-      "addService": "Add a service",
-      "addServiceHint": "Opens the form to store one more key",
-      "adding": "Paste the key of the service to store.",
-      "backToList": "Back to the list",
-      "backToListHint": "Drops what is typed here and shows the stored services again"
+      "title": "Layanan cloud, jika Anda memilikinya",
+      "body": "Studio bekerja tanpa akun, pada file Anda sendiri. Kunci membuka pembuatan dan perpustakaan bersama.",
+      "stored": "Layanan-layanan ini sudah disimpan di mesin ini. Tambahkan yang lain, atau lanjutkan.",
+      "addService": "Tambahkan layanan",
+      "addServiceHint": "Membuka formulir untuk menyimpan satu kunci lagi",
+      "adding": "Tempel kunci layanan yang akan disimpan.",
+      "backToList": "Kembali ke daftar",
+      "backToListHint": "Menghapus apa yang diketik di sini dan menampilkan layanan yang disimpan lagi"
     },
     "project": {
-      "title": "Your first project",
-      "body": "A project is a folder on your disk. Create one, open one, or skip and start from Home.",
-      "createHint": "Picks an empty folder and makes it the project",
-      "openHint": "Opens a project folder already on this disk"
+      "title": "Proyek pertama Anda",
+      "body": "Proyek adalah folder di disk Anda. Buat satu, buka satu, atau lewati dan mulai dari Beranda.",
+      "createHint": "Memilih folder kosong dan menjadikannya proyek",
+      "openHint": "Membuka folder proyek yang sudah ada di disk ini"
     }
   }
 }

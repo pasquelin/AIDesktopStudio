@@ -1,549 +1,549 @@
 {
   "commands": {
     "scenePlay": {
-      "title": "Play scene",
-      "help": "Starts or resumes the scene in the game window."
+      "title": "Mainkan adegan",
+      "help": "Memulai atau melanjutkan adegan di jendela game."
     },
     "appNew": {
-      "title": "New…",
-      "help": "Opens the window that makes a project or a document, from any screen"
+      "title": "Baru…",
+      "help": "Membuka jendela yang membuat proyek atau dokumen, dari layar apa pun"
     },
     "projectNew": {
-      "title": "New project",
-      "help": "Creates an empty project and opens it. A project is the folder holding everything you make: the images, the videos, the sounds, and how they are arranged."
+      "title": "Proyek baru",
+      "help": "Membuat proyek kosong dan membukanya. Proyek adalah folder yang menyimpan semua yang Anda buat: gambar, video, suara, dan cara pengaturannya."
     },
     "projectOpen": {
-      "title": "Open project",
-      "help": "Picks a project already on your disk and opens it in place of the current one. The open project is saved as you go, so there is nothing to save first."
+      "title": "Buka proyek",
+      "help": "Memilih proyek yang sudah ada di disk Anda dan membukanya di tempat yang sekarang. Proyek yang terbuka disimpan saat Anda bekerja, jadi tidak ada yang perlu disimpan terlebih dahulu."
     },
     "documentSaveAs": {
-      "title": "Save as",
-      "help": "Writes a copy of the asset beside the original and carries on with it. The asset that was open stays as it was at the last save."
+      "title": "Simpan sebagai",
+      "help": "Menulis salinan aset di sebelah aslinya dan melanjutkan dengannya. Aset yang terbuka tetap sesuai dengan yang terakhir disimpan."
     },
     "documentSave": {
-      "title": "Save document",
-      "help": "Writes the document in front into the project. Until it is saved, it lives in the window: the tab carries an asterisk for as long as what is on screen is not what is on disk."
+      "title": "Simpan dokumen",
+      "help": "Menulis dokumen di depan ke dalam proyek. Sampai disimpan, itu hidup di jendela: tab membawa tanda bintang selama apa yang di layar bukan apa yang di disk."
     },
     "documentClose": {
-      "title": "Close tab",
-      "help": "Closes the document in front. If it holds unsaved work, the studio asks what to do with it. With no tab left, the window closes."
+      "title": "Tutup tab",
+      "help": "Menutup dokumen di depan. Jika ada pekerjaan yang belum disimpan, studio menanyakan apa yang harus dilakukan dengannya. Tanpa tab yang tersisa, jendela ditutup."
     },
     "layoutReset": {
-      "title": "Reset layout",
-      "help": "Puts the panels back where they started. Useful once the windows have been dragged all over and nothing is where you expect. Your work is untouched."
+      "title": "Atur ulang tata letak",
+      "help": "Menempatkan panel kembali ke tempatnya mula-mula. Berguna ketika jendela telah diseret ke mana-mana dan tidak ada di tempat yang Anda harapkan. Pekerjaan Anda tidak tersentuh."
     },
     "appSettings": {
-      "title": "Settings",
-      "help": "Opens the settings window — this one: the language, the colours, the account, the shortcuts, and everything else that is adjustable."
+      "title": "Pengaturan",
+      "help": "Membuka jendela pengaturan — ini: bahasa, warna, akun, pintasan, dan semua yang dapat disesuaikan."
     },
     "appAssistant": {
-      "title": "Assistant",
-      "help": "Opens the window where you say what you want done, by voice or by keyboard. The assistant carries it out itself, and asks for a yes before anything that costs."
+      "title": "Asisten",
+      "help": "Membuka jendela tempat Anda mengatakan apa yang ingin Anda lakukan, dengan suara atau keyboard. Asisten mengeksekusi apa yang dipahami dan meminta persetujuan Anda sebelum apa pun yang biaya."
     },
     "appDictate": {
-      "title": "Dictate",
-      "help": "Listens to the microphone and writes what you say at the caret, in the field you are in. Held down by default: speak, let go, the text appears."
+      "title": "Dikte",
+      "help": "Mendengarkan mikrofon dan menulis apa yang Anda katakan pada karet, di bidang yang Anda masuki. Dipegang turun secara default: berbicara, lepaskan, teks muncul."
     },
     "windowFullScreen": {
-      "title": "Full screen",
-      "help": "Gives the window the whole screen, with no bar and no border, to work with nothing around it."
+      "title": "Layar penuh",
+      "help": "Memberikan jendela seluruh layar, tanpa bar dan tanpa perbatasan, untuk bekerja tanpa ada apa pun di sekitarnya."
     },
     "spacesMoveLeft": {
-      "title": "Move the space left",
-      "help": "Shifts the focused space one place to the left in the top bar. The order you settle on is kept from one session to the next."
+      "title": "Pindahkan ruang ke kiri",
+      "help": "Menggeser ruang fokus satu tempat ke kiri di bilah atas. Urutan yang Anda tentukan disimpan dari satu sesi ke sesi berikutnya."
     },
     "spacesMoveRight": {
-      "title": "Move the space right",
-      "help": "Shifts the focused space one place to the right in the top bar. The order you settle on is kept from one session to the next."
+      "title": "Pindahkan ruang ke kanan",
+      "help": "Menggeser ruang fokus satu tempat ke kanan di bilah atas. Urutan yang Anda tentukan disimpan dari satu sesi ke sesi berikutnya."
     },
     "explorerNewFolder": {
-      "title": "New folder",
-      "help": "Creates an empty folder inside the one the explorer is showing, and opens its name for typing. The folder is yours, as is everything you put in it."
+      "title": "Folder baru",
+      "help": "Membuat folder kosong di dalam yang ditampilkan penjelajah, dan membuka namanya untuk pengetikan. Folder adalah milik Anda, seperti semua yang Anda masukkan."
     },
     "explorerDuplicate": {
-      "title": "Duplicate",
-      "help": "Lays a copy of each chosen item beside the original, under the first free name. A folder is copied with everything inside it."
+      "title": "Duplikat",
+      "help": "Meletakkan salinan setiap item yang dipilih di sebelah aslinya, di bawah nama pertama yang tersedia. Folder disalin dengan semuanya di dalamnya."
     },
     "explorerCut": {
-      "title": "Cut",
-      "help": "Holds the selection, to be moved on the next paste. Nothing moves until you paste, and the rows being held are drawn dimmed."
+      "title": "Potong",
+      "help": "Menyimpan pilihan, untuk dipindahkan pada tempel berikutnya. Tidak ada yang bergerak sampai Anda menempel, dan baris yang disimpan digambar redup."
     },
     "explorerCopy": {
-      "title": "Copy",
-      "help": "Holds the selection, to be copied on the next paste. The original stays where it is."
+      "title": "Salin",
+      "help": "Menyimpan pilihan, untuk disalin pada tempel berikutnya. Aslinya tetap di tempatnya."
     },
     "explorerPaste": {
-      "title": "Paste",
-      "help": "Drops what the clipboard holds into the folder on screen. An item whose name is already taken is refused, and the rest go through."
+      "title": "Tempel",
+      "help": "Menjatuhkan apa yang disimpan clipboard ke folder di layar. Item yang namanya sudah diambil ditolak, dan sisanya lulus."
     },
     "explorerTrash": {
-      "title": "Move to trash",
-      "help": "Sends the selection to the system trash, where you can get it back. It is the one explorer gesture the studio cannot undo."
+      "title": "Pindahkan ke sampah",
+      "help": "Mengirim pilihan ke sampah sistem, di mana Anda dapat mengambilnya kembali. Ini adalah satu-satunya gerakan penjelajah yang tidak dapat dibatalkan studio."
     },
     "explorerUndo": {
-      "title": "Undo the last file gesture",
-      "help": "Puts the last batch moved, renamed, duplicated or created back where it was. The stack belongs to the project rather than to a window, and the trash gesture never enters it."
+      "title": "Batalkan gerakan file terakhir",
+      "help": "Menempatkan batch terakhir yang dipindahkan, diganti nama, diduplikasi atau dibuat kembali di mana itu berada. Tumpukan milik proyek daripada jendela, dan gerakan sampah tidak pernah memasukkannya."
     },
     "explorerRedo": {
-      "title": "Redo the file gesture",
-      "help": "Redoes the batch of files that was just undone, exactly as it was."
+      "title": "Ulangi gerakan file",
+      "help": "Mengulang batch file yang baru saja dibatalkan, persis seperti adanya."
     },
     "sceneSelect": {
-      "title": "Select",
-      "help": "The plain tool: click an object in the scene to choose it, without doing anything to it. It is the one you come back to between manipulations."
+      "title": "Pilih",
+      "help": "Alat biasa: klik objek di adegan untuk memilihnya, tanpa melakukan apa pun pada dirinya. Ini yang Anda kembalikan di antara manipulasi."
     },
     "sceneTranslate": {
-      "title": "Move",
-      "help": "Drags the chosen object from one place to another, by pulling the coloured arrows — one per direction."
+      "title": "Pindahkan",
+      "help": "Menyeret objek yang dipilih dari satu tempat ke tempat lain, dengan menarik panah berwarna — satu per arah."
     },
     "sceneRotate": {
-      "title": "Rotate",
-      "help": "Turns the chosen object on itself, by pulling the coloured rings — one per axis."
+      "title": "Putar",
+      "help": "Memutar objek yang dipilih pada dirinya sendiri, dengan menarik cincin berwarna — satu per sumbu."
     },
     "sceneScale": {
-      "title": "Scale",
-      "help": "Makes the chosen object bigger or smaller, by pulling its handles. Holding Shift keeps its proportions."
+      "title": "Skala",
+      "help": "Membuat objek yang dipilih lebih besar atau lebih kecil, dengan menarik pegangannya. Memegang Shift menjaga proporsinya."
     },
     "sceneFrame": {
-      "title": "Frame selection",
-      "help": "Brings the camera close enough that the chosen object fills the view. Handy when you are lost, or when an object is tiny."
+      "title": "Bingkai pilihan",
+      "help": "Membawa kamera cukup dekat sehingga objek yang dipilih mengisi pandangan. Berguna ketika Anda tersesat, atau ketika objek sangat kecil."
     },
     "sceneFrameFollow": {
-      "title": "Follow the selection",
-      "help": "Frames the selection and keeps it in view: whatever moves takes the camera along, at the angle and distance already chosen. Called again, it lets go."
+      "title": "Ikuti pilihan",
+      "help": "Membingkai pilihan dan menjaganya tetap terlihat: apa pun yang bergerak membawa kamera bersama, pada sudut dan jarak yang sudah dipilih. Dipanggil lagi, itu melepaskan."
     },
     "sceneIsolate": {
-      "title": "Isolate selection",
-      "help": "Leaves only the chosen objects on screen while you work on them. Nothing is changed: pressing it again gives the scene back exactly as it was, including the objects you had hidden yourself."
+      "title": "Isolasi pilihan",
+      "help": "Meninggalkan hanya objek yang dipilih di layar saat Anda mengerjakannya. Tidak ada yang diubah: tekan sekali lagi memberikan adegan kembali persis seperti itu, termasuk objek yang telah Anda sembunyikan sendiri."
     },
     "sceneHide": {
-      "title": "Hide selection",
-      "help": "Takes the chosen objects out of the view without touching the document. Show all brings them back."
+      "title": "Sembunyikan pilihan",
+      "help": "Mengambil objek yang dipilih dari tampilan tanpa menyentuh dokumen. Tampilkan semua membawanya kembali."
     },
     "sceneShowAll": {
-      "title": "Show all",
-      "help": "Undoes the hiding and isolating done from the viewport. Objects the document itself declares hidden stay hidden."
+      "title": "Tampilkan semua",
+      "help": "Membatalkan penyembunyian dan isolasi yang dilakukan dari viewport. Objek yang dideklarasikan dokumen tersembunyi tetap tersembunyi."
     },
     "sceneSnap": {
-      "title": "All snaps",
-      "help": "Turns all four snaps on or off at once — surface, grid, angle, scale. A second press gives back exactly the ones that were on. The bar at the top of the viewport sets them one by one."
+      "title": "Semua magnetisme",
+      "help": "Menghidupkan atau mematikan keempat magnetisme sekaligus — permukaan, kisi, sudut, skala. Tekanan kedua memberikan kembali yang tepat yang menyala. Bilah di atas viewport menetapkannya satu per satu."
     },
     "sceneSpace": {
-      "title": "Local frame",
-      "help": "Lines the handles up with the object’s own orientation rather than the world’s. On a turned object, that is what lets you move it “towards its front” rather than north."
+      "title": "Bingkai lokal",
+      "help": "Menyelaraskan pegangan dengan orientasi objek itu sendiri daripada dunia. Pada objek yang diputar, itu yang memungkinkan Anda memindahkannya “ke depannya” daripada utara."
     },
     "sceneProjection": {
-      "title": "Projection",
-      "help": "Switches between perspective, where receding lines converge, and orthographic projection, where parallels stay parallel. That is what lets an alignment be judged by eye."
+      "title": "Proyeksi",
+      "help": "Beralih antara perspektif, di mana garis mundur bertemu, dan proyeksi ortografis, di mana paralel tetap sejajar. Itu yang memungkinkan keselarasan untuk dihakimi dengan mata."
     },
     "sceneViewFront": {
-      "title": "Look from the front",
-      "help": "Puts the camera in front of the scene, square to the axis. The reference view for judging a silhouette."
+      "title": "Lihat dari depan",
+      "help": "Menempatkan kamera di depan adegan, persegi ke sumbu. Pandangan referensi untuk menilai siluet."
     },
     "sceneViewBack": {
-      "title": "Look from behind",
-      "help": "Puts the camera behind the scene, on the same axis: what the front hides."
+      "title": "Lihat dari belakang",
+      "help": "Menempatkan kamera di belakang adegan, pada sumbu yang sama: apa yang disembunyikan depan."
     },
     "sceneViewRight": {
-      "title": "Look from the right",
-      "help": "Puts the camera on the right-hand side, square to the axis. What a depth is judged from."
+      "title": "Lihat dari kanan",
+      "help": "Menempatkan kamera di sisi kanan, persegi ke sumbu. Apa kedalaman dihakimi dari."
     },
     "sceneViewLeft": {
-      "title": "Look from the left",
-      "help": "Puts the camera on the left-hand side, on the same axis as the right view."
+      "title": "Lihat dari kiri",
+      "help": "Menempatkan kamera di sisi kiri, pada sumbu yang sama dengan pandangan kanan."
     },
     "sceneViewTop": {
-      "title": "Look from above",
-      "help": "Puts the camera above the scene, looking straight down. What the objects are laid out on the ground from."
+      "title": "Lihat dari atas",
+      "help": "Menempatkan kamera di atas adegan, melihat langsung ke bawah. Apa objek diatur di tanah dari."
     },
     "sceneViewBottom": {
-      "title": "Look from below",
-      "help": "Puts the camera under the scene, looking straight up, the other way from the top view."
+      "title": "Lihat dari bawah",
+      "help": "Menempatkan kamera di bawah adegan, melihat langsung ke atas, arah lain dari tampilan atas."
     },
     "sceneViewCamera": {
-      "title": "Look through the camera",
-      "help": "Draws the view through the chosen camera, and steps back out on a second call. With no camera chosen, it takes the first in the scene."
+      "title": "Lihat melalui kamera",
+      "help": "Menggambar tampilan melalui kamera yang dipilih, dan melangkah kembali keluar pada panggilan kedua. Tanpa kamera yang dipilih, itu mengambil yang pertama di adegan."
     },
     "sceneQuad": {
-      "title": "Four views",
-      "help": "Splits the viewport in four — top, front and side around the view being flown. Each quarter orbits under the pointer; the flown one keeps the gizmos."
+      "title": "Empat pandangan",
+      "help": "Membagi viewport menjadi empat — atas, depan dan samping di sekitar pandangan yang diterbangkan. Setiap kuartal mengorbit di bawah pointer; yang diterbangkan menyimpan manipulator."
     },
     "sceneQuadEdges": {
-      "title": "Quad edges",
-      "help": "Redraws the wireframe without the diagonals triangulation added. A GLB never holds quads: this is a reconstruction by angle, faithful except on strongly curved surfaces."
+      "title": "Tepi quad",
+      "help": "Menggambar ulang rangka kawat tanpa diagonal triangulasi yang ditambahkan. GLB tidak pernah memiliki quad: ini adalah rekonstruksi berdasarkan sudut, setia kecuali pada permukaan yang sangat melengkung."
     },
     "sceneDisplay": {
-      "title": "Display mode",
-      "help": "Cycles what the viewport draws: the surfaces, their edges alone, or both together. The button’s menu picks one directly."
+      "title": "Mode tampilan",
+      "help": "Siklus apa yang ditarik viewport: permukaan, tepinya saja, atau keduanya bersama. Menu tombol memilih satu secara langsung."
     },
     "sceneCapture": {
-      "title": "Capture the view",
-      "help": "Saves an image of the 3D view into the project’s images — without the grid, the handles or the rails. The menu offers resolutions larger than the panel’s own."
+      "title": "Tangkap pandangan",
+      "help": "Menyimpan gambar tampilan 3D ke dalam gambar proyek — tanpa kisi, pegangan atau rel. Menu menawarkan resolusi lebih besar dari panel itu sendiri."
     },
     "sceneAdd": {
-      "title": "Add",
-      "help": "Opens the list of what a scene can take: meshes, lights and objects. A right-click on empty space opens the same list."
+      "title": "Tambah",
+      "help": "Membuka daftar apa yang dapat diterima adegan: mesh, lampu dan objek. Klik kanan di ruang kosong membuka daftar yang sama."
     },
     "sceneAddToSheet": {
-      "title": "Add to the animation band",
-      "help": "Puts the selected objects on the band, where keys are set. The band shows only what is put there, so a scene of thousands of objects stays readable."
+      "title": "Tambah ke pita animasi",
+      "help": "Menempatkan objek yang dipilih pada pita, di mana kunci diatur. Pita hanya menunjukkan apa yang dimasukkan, jadi adegan ribuan objek tetap dapat dibaca."
     },
     "sceneRemoveFromSheet": {
-      "title": "Remove from the animation band",
-      "help": "Removes the line from the band. Keys already set stay, and an object keeps its line for as long as it holds one."
+      "title": "Lepaskan dari pita animasi",
+      "help": "Menghapus baris dari pita. Kunci yang sudah diatur tetap, dan objek menyimpan barisnya selama memilikinya."
     },
     "sceneGroup": {
-      "title": "Group",
-      "help": "Files the selected objects under one group. Moving the group moves them all, and ⌘Z takes the grouping back."
+      "title": "Grup",
+      "help": "Mengajukan objek yang dipilih di bawah satu grup. Memindahkan grup memindahkan semuanya, dan ⌘Z mengambil pengelompokan kembali."
     },
     "sceneDuplicate": {
-      "title": "Duplicate",
-      "help": "Puts a copy of the selection under the same parent and at the very same place, then selects it. A group duplicates whole, with everything hanging from it."
+      "title": "Duplikat",
+      "help": "Menempatkan salinan pilihan di bawah induk yang sama dan di tempat yang persis sama, kemudian memilihnya. Grup diduplikasi secara keseluruhan, dengan segalanya menggantung darinya."
     },
     "sceneOptimizeSelection": {
-      "title": "Optimise selection…",
-      "help": "Measures the selection and previews a SAFE runtime representation before changing its optimisation settings."
+      "title": "Optimalkan pilihan…",
+      "help": "Mengukur pilihan dan mengulas representasi runtime AMAN sebelum mengubah pengaturan optimasinya."
     },
     "sceneWorldPerformance": {
-      "title": "World performance…",
-      "help": "Measures the whole scene and reports SAFE optimisation opportunities without changing the authoring world."
+      "title": "Kinerja dunia…",
+      "help": "Mengukur seluruh adegan dan melaporkan peluang optimasi AMAN tanpa mengubah dunia pembuatan."
     },
     "sceneExportGame": {
-      "title": "Export the game…",
-      "help": "Builds a standalone game from an optimised runtime copy while leaving the authoring scenes untouched."
+      "title": "Ekspor game…",
+      "help": "Membangun game mandiri dari salinan runtime yang dioptimalkan tanpa mengubah adegan penyuntingan."
     },
     "sceneCopy": {
-      "title": "Copy",
-      "help": "Holds on to the selection so it can be pasted, here or in another scene. This is the studio’s own clipboard: it leaves the system one alone."
+      "title": "Salin",
+      "help": "Menyimpan seleksi agar bisa ditempel, di sini atau di adegan lain. Ini papan klip milik studio sendiri: papan klip sistem tidak disentuh."
     },
     "sceneCut": {
-      "title": "Cut",
-      "help": "Holds on to the selection and takes it out of the scene. ⌘Z brings it back."
+      "title": "Potong",
+      "help": "Menyimpan seleksi lalu mengeluarkannya dari adegan. ⌘Z mengembalikannya."
     },
     "scenePaste": {
-      "title": "Paste",
-      "help": "Puts what was copied into the scene in front, and selects it. Pasting twice makes two separate copies."
+      "title": "Tempel",
+      "help": "Meletakkan apa yang disalin ke adegan yang sedang terbuka, lalu memilihnya. Menempel dua kali menghasilkan dua salinan terpisah."
     },
     "sceneDelete": {
-      "title": "Delete",
-      "help": "Removes everything selected from the scene. Nothing is lost for good: ⌘Z brings it back."
+      "title": "Hapus",
+      "help": "Menghapus semua yang terpilih dari adegan. Tidak ada yang hilang selamanya: ⌘Z mengembalikannya."
     },
     "undo": {
-      "title": "Undo",
-      "help": "Takes back the last thing you did in this document. Each document has its own stack: undo acts on the tab in front, not on the others."
+      "title": "Urungkan",
+      "help": "Membatalkan hal terakhir yang Anda lakukan di dokumen ini. Setiap dokumen punya tumpukannya sendiri: urungkan bekerja pada tab yang sedang terbuka, bukan pada yang lain."
     },
     "redo": {
-      "title": "Redo",
-      "help": "Does again what you have just undone. Handy after undoing once too often."
+      "title": "Ulangi",
+      "help": "Melakukan kembali apa yang baru saja Anda urungkan. Berguna setelah mengurungkan satu kali terlalu banyak."
     },
     "sequencePlayPause": {
-      "title": "Play / Pause",
-      "help": "Starts playing the edit, or stops it where it is. Starting again picks up where you left off."
+      "title": "Mainkan / Jeda",
+      "help": "Memainkan suntingan, atau menghentikannya di posisi saat ini. Memainkan lagi melanjutkan dari titik berhenti."
     },
     "sequenceExport": {
-      "title": "Export video…",
-      "help": "Writes the edit out as a video file, frame by frame, 3D scenes included. The sound is not in it yet."
+      "title": "Ekspor video…",
+      "help": "Menulis suntingan ke sebuah file video, bingkai demi bingkai, termasuk adegan 3D. Suaranya belum ikut."
     },
     "sequenceExportCut": {
-      "title": "Export edit (OTIO)…",
-      "help": "Writes the edit itself out as an OpenTimelineIO file, which other editing applications open — tracks, clips, in points, speeds and links to the media. Fades, gains and image/sound links travel in it too, but only AI Desktop Studio reads them back."
+      "title": "Ekspor suntingan (OTIO)…",
+      "help": "Menulis suntingan itu sendiri ke sebuah file OpenTimelineIO, yang bisa dibuka aplikasi penyuntingan lain — trek, klip, titik masuk, kecepatan dan tautan ke media. Pudar, gain dan tautan gambar/suara ikut di dalamnya, tetapi hanya AI Desktop Studio yang membacanya kembali."
     },
     "sequenceExportEdl": {
-      "title": "Export edit list (EDL)…",
-      "help": "Writes the cuts and their timecodes as CMX3600, which every online room reads. The format holds one image track and two sound ones, and nothing of the fades, the gains or the speeds."
+      "title": "Ekspor daftar suntingan (EDL)…",
+      "help": "Menulis potongan dan kode waktunya dalam format CMX3600, yang dibaca setiap ruang online. Format ini hanya memuat satu trek gambar dan dua trek suara, serta tidak memuat pudar, gain maupun kecepatan."
     },
     "sequenceExportFcpxml": {
-      "title": "Export edit (FCPXML)…",
-      "help": "Writes the edit in the format Final Cut reads and Premiere and Resolve import. The tracks survive, a lane each, and so does the frame size; the fades, the gains and the speeds stay here."
+      "title": "Ekspor suntingan (FCPXML)…",
+      "help": "Menulis suntingan dalam format yang dibaca Final Cut serta diimpor Premiere dan Resolve. Trek tetap utuh, satu baris masing-masing, begitu pula ukuran bingkai; pudar, gain dan kecepatan tetap tinggal di sini."
     },
     "sequenceExportStems": {
-      "title": "Export sound per track (WAV)…",
-      "help": "Writes one WAV per audible track, mixed the way the edit plays it — the placements, the trims, the fades, the gains and the speeds are baked into the samples. A muted track is not written."
+      "title": "Ekspor suara per trek (WAV)…",
+      "help": "Menulis satu file WAV per trek yang terdengar, dicampur sebagaimana suntingan memainkannya — penempatan, hasil rapikan, pudar, gain dan kecepatan dilekatkan ke dalam sampel. Trek yang dibisukan tidak ditulis."
     },
     "sequenceExportBundle": {
-      "title": "Export edit with its media (OTIOZ)…",
-      "help": "Writes the same edit with the media it uses inside the file. This is the one to hand to somebody else, or to open in DaVinci Resolve, which then finds the rushes on its own instead of asking for them one by one."
+      "title": "Ekspor suntingan beserta medianya (OTIOZ)…",
+      "help": "Menulis suntingan yang sama dengan media yang dipakainya di dalam file. Inilah yang diberikan kepada orang lain, atau dibuka di DaVinci Resolve, yang lalu menemukan sendiri materi mentahnya alih-alih memintanya satu per satu."
     },
     "montageImport": {
-      "title": "Import an edit with its media (OTIOZ)…",
-      "help": "Opens an edit written by another application, rushes and all. The media are copied into the project and enter the catalogue, then the edit opens linked to them. What the opened file does not bring is said as it opens, and starts from its default only there."
+      "title": "Impor suntingan beserta medianya (OTIOZ)…",
+      "help": "Membuka suntingan yang ditulis aplikasi lain, lengkap dengan materi mentahnya. Media disalin ke dalam proyek dan masuk ke katalog, lalu suntingan terbuka dengan tautan ke media itu. Apa yang tidak dibawa file yang dibuka disebutkan saat pembukaan, dan hanya di situ dimulai dari nilai bawaannya."
     },
     "sequenceMirror": {
-      "title": "Return window",
-      "help": "Opens the edit in a window of its own, to put on a second screen. It follows the studio frame by frame, without the sound, and closes like any window."
+      "title": "Jendela pantauan",
+      "help": "Membuka suntingan di jendela tersendiri, untuk diletakkan di layar kedua. Jendela ini mengikuti studio bingkai demi bingkai, tanpa suara, dan ditutup seperti jendela biasa."
     },
     "sequenceSplit": {
-      "title": "Split clip",
-      "help": "Cuts the clip in two where the playhead sits, so each half can be handled on its own."
+      "title": "Pisahkan klip",
+      "help": "Memisahkan klip menjadi dua di posisi penanda waktu, agar tiap bagian bisa ditangani sendiri."
     },
     "sequenceDelete": {
-      "title": "Delete clip",
-      "help": "Removes the chosen clip from the edit. The original file stays in your assets."
+      "title": "Hapus klip",
+      "help": "Menghapus klip yang dipilih dari suntingan. File aslinya tetap ada di aset Anda."
     },
     "sequenceUnlink": {
-      "title": "Unlink picture and sound",
-      "help": "Separates the two clips of one take. While they are linked, moving, cutting or deleting one does the same to the other."
+      "title": "Lepas tautan gambar dan suara",
+      "help": "Memisahkan dua klip dari satu pengambilan. Selama keduanya tertaut, memindahkan, memotong atau menghapus salah satunya berlaku sama untuk yang lain."
     },
     "sequenceZoomIn": {
-      "title": "Zoom in",
-      "help": "Spreads the edit out to see detail: clips get wider and are easier to aim at."
+      "title": "Perbesar",
+      "help": "Merentangkan suntingan agar detailnya terlihat: klip menjadi lebih lebar dan lebih mudah dibidik."
     },
     "sequenceZoomOut": {
-      "title": "Zoom out",
-      "help": "Draws the edit together to see more of it at once, at the cost of the detail."
+      "title": "Perkecil",
+      "help": "Merapatkan suntingan agar lebih banyak terlihat sekaligus, dengan mengorbankan detail."
     },
     "sequenceFit": {
-      "title": "Fit to view",
-      "help": "Sets the zoom so the whole edit fits on screen, end to end."
+      "title": "Tampilkan seluruhnya",
+      "help": "Mengatur perbesaran agar seluruh suntingan muat di layar, dari ujung ke ujung."
     },
     "sequenceStart": {
-      "title": "Go to start",
-      "help": "Brings the playhead right back to the beginning of the edit, moving nothing else."
+      "title": "Lompat ke awal",
+      "help": "Mengembalikan penanda waktu tepat ke awal suntingan, tanpa memindahkan apa pun yang lain."
     },
     "sequenceEnd": {
-      "title": "Go to end",
-      "help": "Sends the playhead right to the end of the edit, past the last clip."
+      "title": "Lompat ke akhir",
+      "help": "Mengirim penanda waktu tepat ke akhir suntingan, melewati klip terakhir."
     },
     "canvasZoomIn": {
-      "title": "Zoom in",
-      "help": "Magnifies the view one step, around the middle of what is visible. The image itself is untouched — only the way it is looked at."
+      "title": "Perbesar",
+      "help": "Memperbesar tampilan satu langkah, di sekitar tengah bagian yang terlihat. Gambarnya sendiri tidak tersentuh — hanya cara melihatnya."
     },
     "canvasZoomOut": {
-      "title": "Zoom out",
-      "help": "Shrinks the view one step, to take in the whole image again."
+      "title": "Perkecil",
+      "help": "Memperkecil tampilan satu langkah, untuk kembali melihat gambar secara utuh."
     },
     "canvasZoomFit": {
-      "title": "Fit to window",
-      "help": "Frames the whole image in the panel, with a margin, and never magnifies it past its actual size."
+      "title": "Sesuaikan ke jendela",
+      "help": "Membingkai seluruh gambar di dalam panel, dengan margin, dan tidak pernah memperbesarnya melebihi ukuran aslinya."
     },
     "canvasZoomActual": {
-      "title": "Actual size",
-      "help": "One image pixel per screen pixel: the only scale at which sharpness can be judged."
+      "title": "Ukuran asli",
+      "help": "Satu piksel gambar untuk satu piksel layar: satu-satunya skala tempat ketajaman bisa dinilai."
     },
     "canvasRulers": {
-      "title": "Rulers",
-      "help": "Shows or hides the two graduated rulers, at the top and on the left. Guides are pulled off them."
+      "title": "Penggaris",
+      "help": "Menampilkan atau menyembunyikan dua penggaris berskala, di atas dan di kiri. Dari penggaris inilah garis bantu ditarik."
     },
     "canvasGuides": {
-      "title": "Guides",
-      "help": "Shows or hides the guides laid on the image. Hiding them does not remove them."
+      "title": "Garis bantu",
+      "help": "Menampilkan atau menyembunyikan garis bantu yang diletakkan pada gambar. Menyembunyikannya tidak menghapusnya."
     },
     "canvasGrid": {
-      "title": "Pixel grid",
-      "help": "Shows or hides the grid of the artwork’s own pixels. Only on a document set to pixel art."
+      "title": "Kisi piksel",
+      "help": "Menampilkan atau menyembunyikan kisi piksel karya itu sendiri. Hanya pada dokumen yang disetel ke pixel art."
     },
     "canvasClearGuides": {
-      "title": "Clear guides",
-      "help": "Removes every guide from the image. Undoable, like any other edit."
+      "title": "Hapus garis bantu",
+      "help": "Menghapus semua garis bantu dari gambar. Bisa diurungkan, seperti perubahan lainnya."
     },
     "canvasSnap": {
-      "title": "Snap",
-      "help": "Makes what is dragged stick to guides, to the image edges and to its centre, within a few pixels."
+      "title": "Magnet",
+      "help": "Membuat apa yang diseret menempel pada garis bantu, pada tepi gambar dan pada titik tengahnya, dalam jarak beberapa piksel."
     },
     "canvasSelectAll": {
-      "title": "Select all",
-      "help": "Selects the whole document, which the system’s own select-all cannot do on an image."
+      "title": "Pilih semua",
+      "help": "Memilih seluruh dokumen, hal yang tidak bisa dilakukan pilih-semua bawaan sistem pada sebuah gambar."
     },
     "canvasDeselect": {
-      "title": "Deselect",
-      "help": "Drops the selected region, so the brush reaches the whole layer again."
+      "title": "Batalkan seleksi",
+      "help": "Melepaskan area yang terpilih, sehingga kuas kembali menjangkau seluruh lapisan."
     },
     "canvasCropApply": {
-      "title": "Apply the crop",
-      "help": "Trims the document to the placed frame. ⌘Z gives the frame back, not the pixels."
+      "title": "Terapkan pangkasan",
+      "help": "Memangkas dokumen sampai bingkai yang diletakkan. ⌘Z mengembalikan bingkainya, bukan pikselnya."
     },
     "canvasCropCancel": {
-      "title": "Abandon the crop",
-      "help": "Takes the crop frame away without trimming anything at all."
+      "title": "Batalkan pangkasan",
+      "help": "Menghilangkan bingkai pangkas tanpa memangkas apa pun."
     },
     "canvasMaskFromSelection": {
-      "title": "Make a mask of the selection",
-      "help": "Hides the active layer outside the selected region."
+      "title": "Buat masker dari seleksi",
+      "help": "Menyembunyikan lapisan aktif di luar area yang terpilih."
     },
     "canvasRegenerate": {
-      "title": "Regenerate the region",
-      "help": "Asks the model to repaint the masked region of the active layer."
+      "title": "Buat ulang area",
+      "help": "Meminta model melukis ulang area lapisan aktif yang tertutup masker."
     },
     "canvasCutout": {
-      "title": "Cut out",
-      "help": "Removes the background of the flattened image with the default model."
+      "title": "Potong objek",
+      "help": "Menghapus latar belakang gambar yang telah diratakan dengan model bawaan."
     },
     "canvasEnlarge": {
-      "title": "Upscale",
-      "help": "Raises the resolution of the flattened image with the default model."
+      "title": "Perbesar resolusi",
+      "help": "Menaikkan resolusi gambar yang telah diratakan dengan model bawaan."
     },
     "canvasVectorize": {
-      "title": "Vectorise",
-      "help": "Turns the flattened image into paths with the default model."
+      "title": "Vektorkan",
+      "help": "Mengubah gambar yang telah diratakan menjadi garis vektor dengan model bawaan."
     },
     "canvasExtend": {
-      "title": "Extend",
-      "help": "Asks the model to paint beyond the edges of the flattened image."
+      "title": "Perluas",
+      "help": "Meminta model melukis melampaui tepi gambar yang telah diratakan."
     },
     "canvasMergeDown": {
-      "title": "Merge down",
-      "help": "Joins the active layer and the one just below it into one, keeping the lower one’s name."
+      "title": "Gabungkan ke bawah",
+      "help": "Menyatukan lapisan aktif dan lapisan tepat di bawahnya menjadi satu, dengan mempertahankan nama lapisan bawah."
     },
     "canvasFlatten": {
-      "title": "Flatten image",
-      "help": "Reduces the whole stack to a single layer: hidden layers are dropped, not merged.",
-      "layerName": "Background"
+      "title": "Ratakan gambar",
+      "help": "Menyusutkan seluruh tumpukan menjadi satu lapisan: lapisan yang disembunyikan dibuang, bukan digabungkan.",
+      "layerName": "Latar belakang"
     },
     "canvasFlipHorizontal": {
-      "title": "Flip horizontal",
-      "help": "Mirrors the whole document left to right, layers included."
+      "title": "Balik horizontal",
+      "help": "Mencerminkan seluruh dokumen dari kiri ke kanan, termasuk lapisannya."
     },
     "canvasFlipVertical": {
-      "title": "Flip vertical",
-      "help": "Mirrors the whole document top to bottom, layers included."
+      "title": "Balik vertikal",
+      "help": "Mencerminkan seluruh dokumen dari atas ke bawah, termasuk lapisannya."
     },
     "canvasRotateCw": {
-      "title": "Rotate clockwise",
-      "help": "Turns the document a quarter turn to the right: the frame turns with it."
+      "title": "Putar searah jarum jam",
+      "help": "Memutar dokumen seperempat putaran ke kanan: bingkainya ikut berputar."
     },
     "canvasRotateCcw": {
-      "title": "Rotate counter-clockwise",
-      "help": "Turns the document a quarter turn to the left: the frame turns with it."
+      "title": "Putar berlawanan jarum jam",
+      "help": "Memutar dokumen seperempat putaran ke kiri: bingkainya ikut berputar."
     },
     "canvasExport": {
-      "title": "Export the image",
-      "help": "Writes the flattened document to disk, as a PNG."
+      "title": "Ekspor gambar",
+      "help": "Menulis dokumen yang telah diratakan ke disk, dalam format PNG."
     },
     "canvasExportLayered": {
-      "title": "Export the layers (PSD)…",
-      "help": "Writes the document with its layers, as a Photoshop file. Groups are flattened away: their layers arrive side by side."
+      "title": "Ekspor lapisan (PSD)…",
+      "help": "Menulis dokumen beserta lapisannya, sebagai file Photoshop. Grup diratakan: lapisan di dalamnya tiba berdampingan."
     },
     "skyboxView": {
-      "title": "Change the view",
-      "help": "Cycles through the four ways of looking at the sky: immersive, panoramic, cross, faces."
+      "title": "Ubah tampilan",
+      "help": "Menelusuri empat cara memandang langit: imersif, panorama, silang, sisi."
     },
     "skyboxProbes": {
-      "title": "Light probes",
-      "help": "Shows or hides the witness spheres. A sky is judged by what it lights, not by its own image."
+      "title": "Probe cahaya",
+      "help": "Menampilkan atau menyembunyikan bola penguji. Sebuah langit dinilai dari apa yang diteranginya, bukan dari gambarnya sendiri."
     },
     "canvasToolMove": {
-      "title": "Move tool",
-      "help": "Arms the pointer: a drag moves the active layer, and its handles resize or turn it."
+      "title": "Alat pindah",
+      "help": "Menyiapkan penunjuk: seretan memindahkan lapisan aktif, dan pegangannya mengubah ukuran atau memutarnya."
     },
     "canvasToolHand": {
-      "title": "Hand tool",
-      "help": "Arms the hand: a drag pans the view without touching the document. Holding space does the same without changing tool."
+      "title": "Alat tangan",
+      "help": "Menyiapkan tangan: seretan menggeser tampilan tanpa menyentuh dokumen. Menahan tombol spasi melakukan hal yang sama tanpa mengganti alat."
     },
     "canvasToolCrop": {
-      "title": "Crop tool",
-      "help": "Arms the crop frame. Draw a frame, then ⏎ to crop or ⎋ to drop it."
+      "title": "Alat pangkas",
+      "help": "Menyiapkan bingkai pangkas. Buat bingkai, lalu ⏎ untuk memangkas atau ⎋ untuk membatalkannya."
     },
     "canvasToolSelectRectangle": {
-      "title": "Rectangular selection",
-      "help": "Arms the rectangular selection. What is selected bounds the brush, the eraser and the bucket."
+      "title": "Seleksi persegi",
+      "help": "Menyiapkan seleksi persegi. Apa yang terpilih membatasi kuas, penghapus dan ember cat."
     },
     "canvasToolSelectEllipse": {
-      "title": "Elliptical selection",
-      "help": "Arms the elliptical selection: a drag inscribes the ellipse in the rectangle swept, and Shift makes it a circle."
+      "title": "Seleksi elips",
+      "help": "Menyiapkan seleksi elips: seretan menuliskan elips di dalam persegi yang disapu, dan Shift menjadikannya lingkaran."
     },
     "canvasToolSelectLasso": {
-      "title": "Lasso",
-      "help": "Arms the lasso: the selection follows the hand, freehand."
+      "title": "Laso",
+      "help": "Menyiapkan laso: seleksi mengikuti gerak tangan, secara bebas."
     },
     "canvasToolSmartSelect": {
-      "title": "Click Smart Select",
-      "help": "Arms object selection from a click, using the local selection model."
+      "title": "Seleksi cerdas klik",
+      "help": "Menyiapkan seleksi objek dari sebuah klik, dengan model seleksi lokal."
     },
     "canvasToolSmartSelectBox": {
-      "title": "Rectangle Smart Select",
-      "help": "Arms object selection from an approximate box, using the local selection model."
+      "title": "Seleksi cerdas persegi",
+      "help": "Menyiapkan seleksi objek di dalam persegi perkiraan, dengan model seleksi lokal."
     },
     "canvasToolShapeRectangle": {
-      "title": "Rectangle shape",
-      "help": "Arms drawing a rectangle on the active layer; Shift makes it a square."
+      "title": "Bentuk persegi",
+      "help": "Menyiapkan penggambaran persegi pada lapisan aktif; Shift menjadikannya bujur sangkar."
     },
     "canvasToolShapeLine": {
-      "title": "Line shape",
-      "help": "Arms drawing a line. Same group as the rectangle, hence its key with Shift added."
+      "title": "Bentuk garis",
+      "help": "Menyiapkan penggambaran garis. Berada dalam grup yang sama dengan persegi, karena itu tombolnya ditambah Shift."
     },
     "canvasToolShapeArrow": {
-      "title": "Arrow shape",
-      "help": "Arms drawing an arrow, from where the drag began to where the hand lets go."
+      "title": "Bentuk panah",
+      "help": "Menyiapkan penggambaran panah, dari titik awal seretan sampai tempat tangan melepasnya."
     },
     "canvasToolShapeEllipse": {
-      "title": "Ellipse shape",
-      "help": "Arms drawing an ellipse on the active layer; Shift makes it a circle."
+      "title": "Bentuk elips",
+      "help": "Menyiapkan penggambaran elips pada lapisan aktif; Shift menjadikannya lingkaran."
     },
     "canvasToolShapePolygon": {
-      "title": "Polygon shape",
-      "help": "Arms drawing a regular polygon, whose number of sides is set in the inspector before drawing."
+      "title": "Bentuk poligon",
+      "help": "Menyiapkan penggambaran poligon beraturan, yang jumlah sisinya diatur di inspektor sebelum menggambar."
     },
     "canvasToolShapeStar": {
-      "title": "Star shape",
-      "help": "Arms drawing a star, whose number of points is set in the inspector before drawing."
+      "title": "Bentuk bintang",
+      "help": "Menyiapkan penggambaran bintang, yang jumlah sudutnya diatur di inspektor sebelum menggambar."
     },
     "canvasToolBrush": {
-      "title": "Brush tool",
-      "help": "Arms the brush, with a softened edge. It paints on the active layer, bounded by the selection when there is one."
+      "title": "Alat kuas",
+      "help": "Menyiapkan kuas, dengan tepi yang dilembutkan. Kuas melukis pada lapisan aktif, dibatasi seleksi bila ada."
     },
     "canvasToolPencil": {
-      "title": "Pencil tool",
-      "help": "Arms the pencil, with a hard edge: the same gesture as the brush, without the softening."
+      "title": "Alat pensil",
+      "help": "Menyiapkan pensil, dengan tepi yang tegas: gerakan yang sama seperti kuas, tanpa pelembutan tepi."
     },
     "canvasToolText": {
-      "title": "Text tool",
-      "help": "Arms text: a click places a caption, whose words are typed in the inspector."
+      "title": "Alat teks",
+      "help": "Menyiapkan teks: sebuah klik meletakkan keterangan, yang kata-katanya diketik di inspektor."
     },
     "canvasToolEraser": {
-      "title": "Eraser tool",
-      "help": "Arms the point eraser: it clears where the hand passes, bounded by the selection when there is one."
+      "title": "Alat penghapus",
+      "help": "Menyiapkan penghapus titik: alat ini menghapus di tempat tangan lewat, dibatasi seleksi bila ada."
     },
     "canvasToolFill": {
-      "title": "Paint bucket tool",
-      "help": "Arms the bucket: a click fills the layer, or the selection when there is one."
+      "title": "Alat ember cat",
+      "help": "Menyiapkan ember cat: sebuah klik mengisi lapisan, atau seleksi bila ada."
     },
     "canvasToolPicker": {
-      "title": "Eyedropper tool",
-      "help": "Arms the eyedropper: a click takes the colour under the pointer and hands it to the brush."
+      "title": "Alat pipet",
+      "help": "Menyiapkan pipet: sebuah klik mengambil warna di bawah penunjuk dan memberikannya kepada kuas."
     },
     "canvasBrushSmaller": {
-      "title": "Smaller brush",
-      "help": "Narrows the brush, the eraser and the shape stroke by one step of the scale."
+      "title": "Perkecil kuas",
+      "help": "Mengecilkan kuas, penghapus dan goresan bentuk satu langkah pada skalanya."
     },
     "canvasBrushLarger": {
-      "title": "Larger brush",
-      "help": "Widens the brush, the eraser and the shape stroke by one step of the scale."
+      "title": "Perbesar kuas",
+      "help": "Membesarkan kuas, penghapus dan goresan bentuk satu langkah pada skalanya."
     },
     "sceneSkeletons": {
-      "title": "Show skeletons",
-      "help": "Draws the bones of every rigged model over the scene."
+      "title": "Tampilkan kerangka",
+      "help": "Menggambar tulang setiap model ber-rig di atas adegan."
     },
     "scenePoseMode": {
-      "title": "Pose mode",
-      "help": "Switches between picking objects and picking the bones of a rig."
+      "title": "Mode pose",
+      "help": "Beralih antara memilih objek dan memilih tulang sebuah rig."
     },
     "sceneNavigate": {
-      "title": "Navigate",
-      "help": "Move through the scene as in a game: the mouse holds the view, W A S D travel, E and Q rise and fall. The wheel sets the speed. Escape gives the mouse back."
+      "title": "Jelajahi",
+      "help": "Menjelajahi adegan seperti dalam game: tetikus memegang arah pandang, W A S D untuk berpindah, E dan Q untuk naik dan turun. Roda tetikus mengatur kecepatan. Escape mengembalikan tetikus."
     },
     "sceneNegate": {
-      "title": "Negate",
-      "help": "Marks the selected shapes as tools: they are cut out of the others, whichever button is pressed next and in whatever order they were clicked. A marked shape shows translucent red. Press again to take the mark off."
+      "title": "Negatif",
+      "help": "Menandai bentuk yang terpilih sebagai alat: bentuk itu akan dilubangkan pada bentuk lain, apa pun tombol yang ditekan berikutnya dan apa pun urutan kliknya. Bentuk yang ditandai tampil merah tembus pandang. Tekan lagi untuk melepas tandanya."
     },
     "sceneCarve": {
-      "title": "Carve",
-      "help": "Cuts the shapes marked Negate — failing that, the smaller ones — out of the biggest selected shape: a cube set inside a wall opens a window in it. The order of the clicks changes nothing. The original shapes are kept — Separate gives them back."
+      "title": "Lubangi",
+      "help": "Melubangi bentuk terpilih yang paling besar dengan bentuk yang ditandai Negatif — atau, bila tidak ada, dengan bentuk yang lebih kecil: sebuah kubus yang diletakkan di dalam dinding membuka jendela di sana. Urutan klik tidak berpengaruh. Bentuk aslinya disimpan — Pisahkan mengembalikannya."
     },
     "sceneWeld": {
-      "title": "Join",
-      "help": "Merges the selected shapes into a single solid. A shape marked Negate is cut out of it instead of being added to it. The original shapes are kept — Separate gives them back."
+      "title": "Gabungkan",
+      "help": "Menyatukan bentuk yang terpilih menjadi satu benda padat. Bentuk yang ditandai Negatif dilubangkan padanya, bukan ditambahkan padanya. Bentuk aslinya disimpan — Pisahkan mengembalikannya."
     },
     "sceneIntersect": {
-      "title": "Keep overlap",
-      "help": "Keeps only the part where the selected shapes overlap, and throws the rest away. A shape marked Negate is cut out of it instead of being kept. The original shapes are kept — Separate gives them back."
+      "title": "Pertahankan irisan",
+      "help": "Hanya mempertahankan bagian tempat bentuk yang terpilih saling bertindih, dan membuang sisanya. Bentuk yang ditandai Negatif dilubangkan padanya, bukan dipertahankan. Bentuk aslinya disimpan — Pisahkan mengembalikannya."
     },
     "sceneInvertCarve": {
-      "title": "Flip the fold",
-      "help": "Folds the same shapes the other way round: what was carved becomes the matter, and the matter becomes the tool. One click, no undo — for the fold that ran backwards."
+      "title": "Balik lipatan",
+      "help": "Melipat bentuk yang sama ke arah sebaliknya: yang tadinya dilubangi menjadi materinya, dan materinya menjadi alat. Satu klik, tanpa mengurungkan — untuk lipatan yang berjalan terbalik."
     },
     "sceneSeparate": {
-      "title": "Separate",
-      "help": "Breaks a solid apart and gives back the shapes it was made of, each where it stood."
+      "title": "Pisahkan",
+      "help": "Membongkar sebuah benda padat dan mengembalikan bentuk penyusunnya, masing-masing di tempatnya semula."
     }
   }
 }

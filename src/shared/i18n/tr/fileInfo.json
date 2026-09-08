@@ -1,24 +1,24 @@
 {
   "fileInfo": {
-    "title": "Information about {{name}}",
+    "title": "{{name}} hakkında bilgi",
     "sections": {
-      "general": "General",
-      "media": "Media",
-      "catalogue": "Catalogue",
+      "general": "Genel",
+      "media": "Medya",
+      "catalogue": "Katalog",
       "git": "Git"
     },
-    "gitUnchanged": "No pending changes",
+    "gitUnchanged": "Bekleyen değişiklik yok",
     "kind": {
-      "file": "File",
-      "folder": "Folder"
+      "file": "Dosya",
+      "folder": "Klasör"
     },
-    "type": "Type",
-    "modified": "Modified",
-    "codec": "Codec",
-    "identifier": "Identifier",
-    "fingerprint": "Content fingerprint",
-    "added": "Added",
-    "reading": "Reading the folder…",
-    "missing": "This entry is no longer in the project folder."
+    "type": "Tür",
+    "modified": "Değiştirilme",
+    "codec": "Kodek",
+    "identifier": "Tanımlayıcı",
+    "fingerprint": "İçerik parmak izi",
+    "added": "Eklenme",
+    "reading": "Klasör okunuyor…",
+    "missing": "Bu girdi artık proje klasöründe değil."
   }
 }
