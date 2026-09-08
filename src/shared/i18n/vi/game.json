@@ -180,6 +180,15 @@
       "visualChangesPossible": "Thay đổi hình ảnh: CÓ THỂ",
       "failed": "Trò chơi không thể được xuất."
     },
+    "animationGraph": {
+      "hint": "Đồ thị mà trò chơi phát: tham số, trạng thái và chuyển tiếp.",
+      "invalid": "JSON không mô tả một đồ thị hoạt ảnh hợp lệ.",
+      "jsonLabel": "JSON đồ thị hoạt ảnh",
+      "loadFailed": "Đồ thị hoạt ảnh này không thể được đọc.",
+      "loading": "Đang tải đồ thị hoạt ảnh…",
+      "save": "Lưu",
+      "writeFailed": "Đồ thị hoạt ảnh này không thể được ghi lên đĩa."
+    },
     "inputMap": {
       "actionId": "Hành động",
       "actionKind": "Giá trị",

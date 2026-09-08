@@ -180,6 +180,15 @@
       "visualChangesPossible": "見た目の変化：可能性あり",
       "failed": "ゲームを書き出せませんでした。"
     },
+    "animationGraph": {
+      "hint": "ゲームが再生するグラフ。パラメーター、ステート、トランジションです。",
+      "invalid": "このJSONは有効なアニメーショングラフを表していません。",
+      "jsonLabel": "アニメーショングラフのJSON",
+      "loadFailed": "このアニメーショングラフを読み込めませんでした。",
+      "loading": "アニメーショングラフを読み込んでいます…",
+      "save": "保存",
+      "writeFailed": "このアニメーショングラフをディスクに書き込めませんでした。"
+    },
     "inputMap": {
       "actionId": "アクション",
       "actionKind": "値",

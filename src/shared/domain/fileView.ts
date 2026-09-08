@@ -1,7 +1,8 @@
+import { ANIMATION_GRAPH_EXTENSION } from './animationGraph'
 import { INPUT_MAP_EXTENSION } from './inputMap'
 import { nameOf } from './folder'
 
-export type FileViewId = 'inputMap'
+export type FileViewId = 'inputMap' | 'animationGraph'
 
 export type FileView = {
   id: FileViewId
@@ -16,6 +17,7 @@ type FileViewEntry = {
 
 export const FILE_VIEW_REGISTRY: readonly FileViewEntry[] = [
   { id: 'inputMap', suffix: INPUT_MAP_EXTENSION },
+  { id: 'animationGraph', suffix: ANIMATION_GRAPH_EXTENSION },
 ]
 
 export function fileViewOf(path: string): FileView | null {

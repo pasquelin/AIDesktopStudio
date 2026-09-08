@@ -10,6 +10,14 @@ describe('file view registry', () => {
     })
   })
 
+  it('routes an animation graph, which used to leave the studio for the system app', () => {
+    expect(fileViewOf('Animations/character.anim.json')).toEqual({
+      id: 'animationGraph',
+      path: 'Animations/character.anim.json',
+      title: 'character',
+    })
+  })
+
   it('leaves an ordinary JSON file to the system', () => {
     expect(fileViewOf('Data/character.json')).toBeNull()
   })

@@ -180,6 +180,15 @@
       "visualChangesPossible": "视觉变化：可能有",
       "failed": "无法导出该游戏。"
     },
+    "animationGraph": {
+      "hint": "游戏播放的图：参数、状态与过渡。",
+      "invalid": "该 JSON 描述的不是有效的动画图。",
+      "jsonLabel": "动画图 JSON",
+      "loadFailed": "无法读取这张动画图。",
+      "loading": "正在加载动画图…",
+      "save": "保存",
+      "writeFailed": "无法将这张动画图写入磁盘。"
+    },
     "inputMap": {
       "actionId": "操作",
       "actionKind": "值",

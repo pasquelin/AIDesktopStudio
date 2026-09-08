@@ -180,6 +180,15 @@
       "visualChangesPossible": "시각적 변화: 있을 수 있음",
       "failed": "게임을 내보낼 수 없습니다."
     },
+    "animationGraph": {
+      "hint": "게임이 재생하는 그래프입니다. 매개변수, 상태, 전환으로 이루어집니다.",
+      "invalid": "이 JSON은 유효한 애니메이션 그래프를 기술하지 않습니다.",
+      "jsonLabel": "애니메이션 그래프 JSON",
+      "loadFailed": "이 애니메이션 그래프를 읽을 수 없습니다.",
+      "loading": "애니메이션 그래프를 불러오는 중…",
+      "save": "저장",
+      "writeFailed": "이 애니메이션 그래프를 디스크에 쓸 수 없습니다."
+    },
     "inputMap": {
       "actionId": "액션",
       "actionKind": "값",

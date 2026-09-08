@@ -10,6 +10,11 @@ const InputMapDocument = lazy(async () => ({
   default: (await import('@/features/input/components/InputMapDocument')).InputMapDocument,
 }))
 
+const AnimationGraphDocument = lazy(async () => ({
+  default: (await import('@/features/game/components/AnimationGraphDocument'))
+    .AnimationGraphDocument,
+}))
+
 function fileViewPanelFor(
   Space: FC<{ path: string }>,
 ): FC<IDockviewPanelProps<FileViewPanelParams>> {
@@ -27,4 +32,5 @@ export const FILE_VIEW_COMPONENTS: Record<
   FC<IDockviewPanelProps<FileViewPanelParams>>
 > = {
   inputMap: fileViewPanelFor(InputMapDocument),
+  animationGraph: fileViewPanelFor(AnimationGraphDocument),
 }
