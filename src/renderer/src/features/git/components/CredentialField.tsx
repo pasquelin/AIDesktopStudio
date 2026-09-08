@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
+import { Input } from '@/components/Input'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/Button'
 import { QuietNote } from '@/components/QuietNote'
-import { FIELD_FILL } from '@/components/styles'
 import { isComposing } from '@/helpers/composition'
 import { HINT_TOP } from '@/helpers/tooltip'
 import { useGit } from '@/stores/git'
@@ -53,7 +53,7 @@ export function CredentialField({ host }: { host: string }) {
     <div className="flex flex-col gap-2 p-3">
       <QuietNote>{held ? t('git.tokenHeld', { host }) : t('git.tokenAsked', { host })}</QuietNote>
 
-      <input
+      <Input
         data-sc="field:git.tokenUser"
         type="text"
         value={user}
@@ -61,10 +61,10 @@ export function CredentialField({ host }: { host: string }) {
         placeholder={t('git.tokenUserPlaceholder')}
         autoComplete="username"
         disabled={busy}
-        className={FIELD_FILL}
+        className="min-w-0 flex-1"
         onChange={event => setUser(event.target.value)}
       />
-      <input
+      <Input
         data-sc="field:git.token"
         type="password"
         value={token}
@@ -72,7 +72,7 @@ export function CredentialField({ host }: { host: string }) {
         placeholder={t('git.tokenPlaceholder')}
         autoComplete="current-password"
         disabled={busy}
-        className={FIELD_FILL}
+        className="min-w-0 flex-1"
         onChange={event => setToken(event.target.value)}
         onKeyDown={event => {
           // Enter belongs to the input method while it composes — see `isComposing`.

@@ -17,7 +17,7 @@ import { HINT_TOP } from '@/helpers/tooltip'
 import { useAccounts, type AccountSaveFailure } from '@/stores/accounts'
 import { FAILURE_KEYS } from './failureKeys'
 import { WindowButton } from '@/components/WindowButton'
-import { WindowInput } from '@/components/WindowInput'
+import { Input } from '@/components/Input'
 import { Select } from '@/components/Select'
 
 const accountFields = z
@@ -107,7 +107,7 @@ export function AccountSettingsAddForm() {
       </FormField>
 
       <FormField label={t('accounts.name')} htmlFor={`${form}name`} required>
-        <WindowInput
+        <Input
           id={`${form}name`}
           data-sc="field:newAccount.name"
           className="w-full"
@@ -120,7 +120,7 @@ export function AccountSettingsAddForm() {
       </FormField>
 
       <FormField label={t('auth.key')} htmlFor={`${form}key`} required>
-        <WindowInput
+        <Input
           id={`${form}key`}
           data-sc="field:newAccount.key"
           className="w-full"
@@ -133,7 +133,7 @@ export function AccountSettingsAddForm() {
 
       {wantsSecret && (
         <FormField label={t('auth.secret')} htmlFor={`${form}secret`} required>
-          <WindowInput
+          <Input
             id={`${form}secret`}
             data-sc="field:newAccount.secret"
             className="w-full"

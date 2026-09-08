@@ -18,7 +18,7 @@ import { MemoryRelations } from './Relations/MemoryRelations'
 import { MemoryRowActions } from './Row/MemoryRowActions'
 import { MemoryRowDetail } from './Row/MemoryRowDetail'
 import { MemoryUpkeep } from './MemoryUpkeep'
-import { WindowInput } from '@/components/WindowInput'
+import { Input } from '@/components/Input'
 import { Select } from '@/components/Select'
 
 /**
@@ -98,7 +98,7 @@ export function MemorySettings() {
         {/* 🛑 `input-sm` and not `WindowSearch`, which is the NAV field of a window: it is
             `input-xs w-full shrink-0`, so it stood eight pixels shorter than the select beside it
             and took the whole row without yielding. Every other settings form is `…-sm`. */}
-        <WindowInput
+        <Input
           data-sc={fieldHandle('memory.search')}
           type="search"
           className="min-w-0 grow"

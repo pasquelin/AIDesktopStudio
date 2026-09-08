@@ -1,6 +1,6 @@
 import { useState } from 'react'
+import { Input } from './Input'
 import { fieldHandle } from './scHandle'
-import { FIELD_FILL } from './styles'
 import { isComposing } from '@/helpers/composition'
 
 export type NameFieldProps = {
@@ -33,7 +33,7 @@ export function NameField({
   const [name, setName] = useState('')
 
   return (
-    <input
+    <Input
       // Focused on sight: the field replaced the control that was just clicked, and asking for a
       // second click to type into what one asked for reads as the gesture having failed.
       autoFocus
@@ -42,7 +42,7 @@ export function NameField({
       value={name}
       aria-label={label}
       placeholder={placeholder}
-      className={FIELD_FILL}
+      className="min-w-0 flex-1"
       onChange={event => setName(event.target.value)}
       onKeyDown={event => {
         if (isComposing(event)) return

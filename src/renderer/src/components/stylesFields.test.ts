@@ -1,12 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import {
-  FIELD,
-  FIELD_FILL,
-  ROW_LINE,
-  TITLE_BAR_GHOST,
-  TITLE_BAR_TRIGGER,
-  TOOLBAR_LABEL,
-} from './styles'
+import { ROW_LINE, TITLE_BAR_GHOST, TITLE_BAR_TRIGGER, TOOLBAR_LABEL } from './styles'
 import { withoutComments } from './sourceText'
 import { rewrites, spellsOut, WRITTEN_SOURCES } from './testHarness'
 
@@ -19,14 +12,6 @@ const spellsOutRowLine = spellsOut(ROW_LINE.split(' '))
  * shape and keep their own `gap-2 px-3 py-1`: a pill is as wide as the space it stands for.
  */
 const respacesTitleBar = rewrites('TITLE_BAR_GHOST', ['h-(--sc-control)', 'px-2'])
-
-/**
- * The way a field was made to fill its line before it had a constant. Both words together and
- * never one, which is what `rewrites` gives: `min-w-0 flex-1` is the studio's commonest pair of
- * layout classes, worn by thirty-odd elements that are not fields at all, and either half on its
- * own is a caller dividing its own row rather than reaching for this shape.
- */
-const refillsField = rewrites('FIELD', ['min-w-0', 'flex-1'])
 
 /**
  * All three words are required, and `text-tiny` is what does the work: `text-muted … px-1` alone
@@ -92,6 +77,45 @@ describe('a list one picks from', () => {
   })
 })
 
+describe('a control that goes straight to the platform', () => {
+  /**
+   * The tag itself, and everything allowed to open it. `Input`, `Checkbox`, `Toggle` and
+   * `SliderHandle` are the four that DRESS one; the rest of the list is what has not been given
+   * a component yet, written out rather than waved through:
+   *
+   * - the four colour swatches, which are a batch of their own;
+   * - the single radio of the AI settings, alone and therefore not yet a shape;
+   * - `AssetDropField`'s hidden field and the comment's own bare title, which are plumbing;
+   * - the shortcut fixtures, which render a field to be typed into by a test.
+   *
+   * 🛑 It reads the TAG: a control built through `createElement('input')` stays green.
+   */
+  it('is opened by the components that dress one, and by the list below', () => {
+    const opening = WRITTEN_SOURCES.filter(
+      ([path, source]) => !GUARDED.includes(path) && /<input[\s/>]/.test(withoutComments(source)),
+    )
+      .map(([path]) => path)
+      .sort()
+
+    expect(opening).toEqual(
+      [
+        './AssetDropField.tsx',
+        './Checkbox.tsx',
+        './ColorField.tsx',
+        './DynamicForm/DynamicFormControl.tsx',
+        './Input.tsx',
+        './SliderHandle.tsx',
+        './Toggle.tsx',
+        '../features/image/components/ImageDocument/ImageDocumentBrush.tsx',
+        '../features/image/components/ImageDocument/ImageDocumentComment.tsx',
+        '../features/settings/components/Ai/AiChoiceRow.tsx',
+        '../features/settings/components/Setting/Row/SettingRowColorControl.tsx',
+        '../hooks/shortcuts-fixtures.tsx',
+      ].sort(),
+    )
+  })
+})
+
 describe('a box one ticks', () => {
   /**
    * The same rule for the other native control the studio kept redrawing: six sites wrote
@@ -111,39 +135,6 @@ describe('a box one ticks', () => {
       expect.stringContaining('/Checkbox.tsx'),
       expect.stringContaining('/Toggle.tsx'),
     ])
-  })
-})
-
-describe('the field that takes what its line has left', () => {
-  it('is the field, plus the room it claims and nothing more', () => {
-    expect(FIELD_FILL.split(' ')).toEqual([...FIELD.split(' '), 'min-w-0', 'flex-1'])
-  })
-
-  it('is worn rather than spread again at the call', () => {
-    const offenders = WRITTEN_SOURCES.filter(
-      ([path, source]) => !GUARDED.includes(path) && refillsField(source),
-    ).map(([path]) => path)
-
-    expect(offenders).toEqual([])
-  })
-
-  it('leaves alone the callers whose own width is not this one', () => {
-    // The shape the four fields had before the constant, then the rename dialog's field — held
-    // to the width of its box rather than to a share of a row — and a colour swatch, which is
-    // square. Last, one half of the pair: a caller stopping an overflow it can see.
-    expect(refillsField("cn(FIELD, 'text-tiny min-w-0 flex-1')")).toBe(true)
-    expect(refillsField("cn(FIELD, 'w-full text-xs')")).toBe(false)
-    expect(refillsField("cn(FIELD, 'px-1')")).toBe(false)
-    expect(refillsField("cn(FIELD, 'min-w-0 truncate')")).toBe(false)
-  })
-
-  // The partner of the rule above: a constant nobody wears is a dead export.
-  it('is worn by the four fields it was extracted from', () => {
-    const wearing = WRITTEN_SOURCES.filter(
-      ([path, source]) => !GUARDED.includes(path) && source.includes('FIELD_FILL'),
-    )
-
-    expect(wearing.length).toBeGreaterThanOrEqual(4)
   })
 })
 

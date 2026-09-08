@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
-import { FIELD } from '@/components/styles'
-import { cn } from '@/helpers/cn'
+import { Input } from './Input'
 import { isComposing } from '@/helpers/composition'
 import { isGoneForGood } from '@/helpers/teardown'
 
@@ -156,7 +155,7 @@ export function InlineRename({ value, label, onCommit, gauge = 'control' }: Inli
   }
 
   return (
-    <input
+    <Input
       ref={field}
       autoFocus
       // One handle for every caller, and it is enough: a rename is a field that replaces the row
@@ -164,7 +163,7 @@ export function InlineRename({ value, label, onCommit, gauge = 'control' }: Inli
       data-sc="field:rename"
       aria-label={label}
       value={draft}
-      className={cn(FIELD, 'w-full', GAUGE[gauge])}
+      className={GAUGE[gauge]}
       onPointerDown={event => event.stopPropagation()}
       onChange={event => setDraft(event.target.value)}
       onBlur={done}

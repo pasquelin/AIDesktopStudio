@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
-import { FIELD_FILL } from './styles'
+import { TextArea } from './TextArea'
 import { fieldHandle } from './scHandle'
-import { cn } from '@/helpers/cn'
 
 type JsonSourceProps = {
   value: string
@@ -14,13 +13,13 @@ type JsonSourceProps = {
 export function JsonSource({ value, label, scId, onChange }: JsonSourceProps) {
   return (
     <div className="min-h-0 flex-1 p-(--sc-gutter)">
-      <textarea
+      <TextArea
         data-sc={fieldHandle(scId)}
         aria-label={label}
         spellCheck={false}
         value={value}
         onChange={event => onChange(event.target.value)}
-        className={cn(FIELD_FILL, 'size-full resize-none p-3 font-mono')}
+        className="size-full resize-none p-3 font-mono"
       />
     </div>
   )

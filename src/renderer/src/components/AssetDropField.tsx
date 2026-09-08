@@ -1,10 +1,11 @@
 import { mdiImagePlusOutline } from '@mdi/js'
+import { Input } from './Input'
 import { useState, type ReactNode } from 'react'
 import type { UseFormRegisterReturn } from 'react-hook-form'
 import { ASSET_TYPES, assetUrl, posterUrl, type Asset } from '@shared/domain/asset'
 import { cn } from '@/helpers/cn'
 import { AssetDropTarget } from './AssetDropTarget'
-import { FIELD_FILL, FIELD_THUMBNAIL } from './styles'
+import { FIELD_THUMBNAIL } from './styles'
 import { fieldHandle } from './scHandle'
 import { Thumbnail } from './Thumbnail'
 import { UiIcon } from './UiIcon'
@@ -104,11 +105,11 @@ function assetInput(input: AssetInput): ReactNode {
           {...input.registration}
           value={input.assetId}
         />
-        <input
+        <Input
           id={input.id}
           type="text"
           data-sc={input.scId && fieldHandle(input.scId)}
-          className={FIELD_FILL}
+          className="min-w-0 flex-1"
           value={input.implicit}
           readOnly
         />
@@ -116,12 +117,12 @@ function assetInput(input: AssetInput): ReactNode {
     )
   }
   return (
-    <input
+    <Input
       id={input.id}
       type="text"
       data-sc={input.scId && fieldHandle(input.scId)}
       placeholder={input.placeholder}
-      className={FIELD_FILL}
+      className="min-w-0 flex-1"
       {...input.registration}
       value={input.assetId}
       onChange={event => {

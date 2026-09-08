@@ -10,8 +10,9 @@ import { AssetDropField } from '../AssetDropField'
 import { AssetDropList } from '../AssetDropList'
 import { fieldHandle } from '../scHandle'
 import { Checkbox } from '../Checkbox'
+import { Input } from '../Input'
 import { Select } from '../Select'
-import { FIELD, FIELD_FILL } from '../styles'
+import { FIELD } from '../styles'
 import { ToolButton } from '../ToolButton'
 import { isGenerationCanvasSource } from '@shared/domain/generationComment'
 export type DynamicFormControlProps = {
@@ -89,14 +90,13 @@ function choiceControl(input: ControlInput, say: ReturnType<typeof useModelText>
 
 function numberControl(input: ControlInput) {
   return (
-    <input
+    <Input
       id={input.id}
       data-sc={fieldHandle(`generation.${input.field.key}`)}
       type="number"
       step={input.field.step ?? (input.field.kind === 'integer' ? 1 : 'any')}
       min={input.field.min}
       max={input.field.max}
-      className={FIELD}
       {...input.registration}
     />
   )
@@ -153,11 +153,11 @@ function simpleControl(input: ControlInput, onRoll: () => void, t: Translate) {
   if (input.field.kind === 'seed')
     return (
       <div className="flex items-center gap-2">
-        <input
+        <Input
           id={input.id}
           data-sc={fieldHandle(`generation.${input.field.key}`)}
           type="number"
-          className={FIELD_FILL}
+          className="min-w-0 flex-1"
           {...input.registration}
         />
         <ToolButton
@@ -173,11 +173,10 @@ function simpleControl(input: ControlInput, onRoll: () => void, t: Translate) {
 
 function textControl(input: ControlInput) {
   return (
-    <input
+    <Input
       id={input.id}
       data-sc={fieldHandle(`generation.${input.field.key}`)}
       type="text"
-      className={FIELD}
       {...input.registration}
     />
   )

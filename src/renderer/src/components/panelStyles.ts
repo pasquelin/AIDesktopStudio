@@ -197,17 +197,6 @@ export const FIELD =
   'bg-surface border-border text-text h-(--sc-control) rounded-(--radius-sc-sm) border px-2'
 
 /**
- * The same field where it takes what the line has left — beside a label, a thumbnail, a dice.
- *
- * `min-w-0` is the half that gets forgotten: a flex child sizes to its content by default, so a
- * long value pushes the row wider than the panel holding it instead of scrolling inside itself.
- *
- * No text size of its own, and that is measured rather than left out: Tailwind's preflight gives
- * a control `font: inherit`, so a field inside a `FIELD_ROW` already reads at the row's size.
- */
-export const FIELD_FILL = cn(FIELD, 'min-w-0 flex-1')
-
-/**
  * The surface a menu wears. The SKIN only — never where it sits, and never whether it is raised:
  * a menu that sits IN a form is one of its fields, and a shadow there says it left the page.
  *

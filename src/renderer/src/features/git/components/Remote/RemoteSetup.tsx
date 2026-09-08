@@ -1,7 +1,8 @@
 import { useState } from 'react'
+import { Input } from '@/components/Input'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/Button'
-import { FIELD_FILL, PANEL_BAR } from '@/components/styles'
+import { PANEL_BAR } from '@/components/styles'
 import { cn } from '@/helpers/cn'
 import { isComposing } from '@/helpers/composition'
 import { HINT_TOP } from '@/helpers/tooltip'
@@ -25,14 +26,14 @@ export function RemoteSetup() {
 
   return (
     <div className={cn(PANEL_BAR, 'p-2')}>
-      <input
+      <Input
         data-sc="field:git.remoteUrl"
         type="url"
         value={url}
         aria-label={t('git.remoteUrl')}
         placeholder={t('git.remoteUrlPlaceholder')}
         disabled={busy}
-        className={FIELD_FILL}
+        className="min-w-0 flex-1"
         onChange={event => setUrl(event.target.value)}
         onKeyDown={event => {
           // Enter belongs to the input method while it composes — see `isComposing`.

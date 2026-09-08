@@ -1,10 +1,10 @@
 import { mdiImageSearchOutline } from '@mdi/js'
+import { Input } from '@/components/Input'
 import { useMemo, useRef } from 'react'
 import { posterUrl, type AssetType } from '@shared/domain/asset'
 import { Button } from '@/components/Button'
 import { EmptyState } from '@/components/EmptyState'
 import { MediaTile } from '@/components/MediaTile'
-import { FIELD } from '@/components/styles'
 import { cn } from '@/helpers/cn'
 import { useDismiss } from '@/hooks/useDismiss'
 import { useProjectPictureAssets } from '@/hooks/useProjectPictureAssets'
@@ -68,7 +68,7 @@ export function AssetPickerBody({
           {labels.title}
         </h2>
 
-        <input
+        <Input
           data-sc="field:assetPicker.search"
           type="search"
           autoFocus
@@ -76,7 +76,7 @@ export function AssetPickerBody({
           placeholder={labels.search}
           aria-label={labels.search}
           onChange={event => onSearch(event.target.value)}
-          className={cn(FIELD, 'w-full')}
+          className="w-full"
         />
 
         {shown.length === 0 ? (

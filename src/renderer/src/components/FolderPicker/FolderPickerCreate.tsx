@@ -1,12 +1,11 @@
 import { orElse } from '@shared/promises'
+import { Input } from '../Input'
 import { mdiFolderPlusOutline } from '@mdi/js'
 import { useState, type KeyboardEvent } from 'react'
 import { isComposing } from '@/helpers/composition'
-import { cn } from '@/helpers/cn'
 import { getBridge } from '@/services/bridge'
 import { Button } from '../Button'
 import { UiIcon } from '../UiIcon'
-import { FIELD_FILL } from '../styles'
 
 export type FolderPickerCreateProps = {
   /** Where the new folder is made — the one the columns have chosen. */
@@ -103,13 +102,13 @@ export function FolderPickerCreate({
       </label>
 
       <div className="flex items-center gap-2">
-        <input
+        <Input
           autoFocus
           data-sc="field:folderPicker.name"
           id="sc-folder-picker-name"
           aria-label={labels.newFolderLabel}
           value={draft}
-          className={cn(FIELD_FILL, 'text-xs')}
+          className="min-w-0 flex-1 text-xs"
           onChange={event => {
             setDraft(event.target.value)
             setRefusal(null)

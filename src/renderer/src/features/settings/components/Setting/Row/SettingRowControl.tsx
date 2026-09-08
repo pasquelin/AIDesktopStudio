@@ -15,7 +15,7 @@ import type { Labelled } from './controls'
 import { SettingRowColorControl } from './SettingRowColorControl'
 import { SettingRowPathControl } from './SettingRowPathControl'
 import { SettingRowTextControl } from './SettingRowTextControl'
-import { WindowInput } from '@/components/WindowInput'
+import { Input } from '@/components/Input'
 import { Select } from '@/components/Select'
 import { Toggle } from '@/components/Toggle'
 
@@ -86,7 +86,7 @@ export function SettingRowControl({
 
     case 'number':
       return (
-        <WindowInput
+        <Input
           id={id}
           data-sc={fieldHandle(scId)}
           aria-describedby={describedBy}

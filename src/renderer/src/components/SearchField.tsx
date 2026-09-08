@@ -1,7 +1,7 @@
 import { mdiMagnify } from '@mdi/js'
+import { Input } from './Input'
 import { cn } from '@/helpers/cn'
 import { fieldHandle } from './scHandle'
-import { CONTROL } from './styles'
 import { UiIcon } from './UiIcon'
 
 export type SearchFieldProps = {
@@ -29,13 +29,15 @@ export function SearchField({ label, value, onChange, scId, className, hint }: S
         size={14}
         className="text-muted pointer-events-none absolute start-2"
       />
-      <input
+      <Input
         type="search"
         value={value}
         placeholder={label}
         aria-label={label}
         onChange={event => onChange(event.target.value)}
-        className={cn(CONTROL, 'w-full py-0 ps-7 pe-2')}
+        // The left inset is the magnifier's room; everything else is the field's own skin. It
+        // wore `CONTROL` and had no border at all until 2026-09-08, alone among the fields.
+        className="ps-7 pe-2"
         data-sc={fieldHandle(scId)}
         {...hint}
       />
