@@ -35,8 +35,7 @@ import { useImageDocumentCommands } from '@/hooks/useImageDocumentCommands'
 import { ImageDocumentView } from './ImageDocumentView'
 import { generationCommentsOf, useGenerationComments } from '@/stores/generationComments'
 import { useCanvasGenerationComments } from '@/hooks/useCanvasGenerationComments'
-import { useGeneratorCommentSubmission } from '@/hooks/useGeneratorCommentSubmission'
-import { reportFailure } from '@/services/diagnostics'
+import { useGenerationCommentActions } from '@/hooks/useGenerationCommentActions'
 import { SMART_SELECTION_MODEL } from '@shared/domain/smartSelectionInference'
 import { useLocalModelReady } from '@/hooks/useLocalModelReady'
 import type { ImageTool } from '../../imageTools'
@@ -95,11 +94,8 @@ export function ImageDocument({ documentId }: ImageDocumentProps) {
   /** Whether a model edit is being flattened and uploaded — the AI group is greyed while it is. */
   const [preparing, setPreparing] = useState(false)
   const comments = useGenerationComments(state => generationCommentsOf(state, documentId))
-  const updateComment = useGenerationComments(state => state.update)
-  const renameComment = useGenerationComments(state => state.rename)
-  const removeComment = useGenerationComments(state => state.remove)
+  const commentActions = useGenerationCommentActions(documentId)
   const addCanvasComment = useCanvasGenerationComments(documentId)
-  const submitComment = useGeneratorCommentSubmission()
   const smartSelectionReady = useLocalModelReady(SMART_SELECTION_MODEL)
 
   const canvas = useCanvases(state => canvasOf(state, documentId))
@@ -316,24 +312,7 @@ export function ImageDocument({ documentId }: ImageDocumentProps) {
       checker={CHECKER}
       comments={comments}
       commentSize={canvas}
-      onCommentChange={(id, text) => updateComment(documentId, id, text)}
-      onCommentRename={(id, title) => renameComment(documentId, id, title)}
-      onCommentRemove={id => removeComment(documentId, id)}
-      onCommentGenerate={
-        submitComment ? id => void submitCanvasComment(submitComment, documentId, id) : undefined
-      }
+      commentActions={commentActions}
     />
   )
-}
-
-async function submitCanvasComment(
-  submit: NonNullable<ReturnType<typeof useGeneratorCommentSubmission>>,
-  documentId: string,
-  commentId: string,
-): Promise<void> {
-  try {
-    await submit(documentId, commentId)
-  } catch (error) {
-    reportFailure('canvas.edit', documentId, error)
-  }
 }

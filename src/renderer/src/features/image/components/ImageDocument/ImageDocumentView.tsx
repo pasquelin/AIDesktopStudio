@@ -19,7 +19,7 @@ import {
 import { ImageDocumentBrush } from './ImageDocumentBrush'
 import { ImageDocumentText } from './ImageDocumentText'
 import { ZoomBar } from '../ZoomBar'
-import { ImageDocumentComments } from './ImageDocumentComments'
+import { ImageDocumentComments, type ImageDocumentCommentsProps } from './ImageDocumentComments'
 import type { GenerationComment } from '../../generationComments'
 import type { Size } from '@/engines/core/geometry'
 
@@ -49,10 +49,8 @@ type ImageDocumentViewProps = {
   checker: string
   comments: readonly GenerationComment[]
   commentSize: Size
-  onCommentChange: (id: string, text: string) => void
-  onCommentRename: (id: string, title: string) => void
-  onCommentRemove: (id: string) => void
-  onCommentGenerate?: (id: string) => void
+  /** What a note can be done to — the four travel together, and the list below takes them so. */
+  commentActions: Omit<ImageDocumentCommentsProps, 'comments' | 'view' | 'size'>
 }
 
 export function ImageDocumentView(props: ImageDocumentViewProps) {
@@ -70,10 +68,7 @@ export function ImageDocumentView(props: ImageDocumentViewProps) {
           comments={props.comments}
           view={view}
           size={props.commentSize}
-          onChange={props.onCommentChange}
-          onRename={props.onCommentRename}
-          onRemove={props.onCommentRemove}
-          onGenerate={props.onCommentGenerate}
+          {...props.commentActions}
         />
         {typing && (
           <ImageDocumentText
