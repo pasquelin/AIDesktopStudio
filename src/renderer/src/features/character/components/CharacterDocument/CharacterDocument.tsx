@@ -189,6 +189,9 @@ export function CharacterDocument({ documentId }: { documentId: string }) {
           .getState()
           .reportMaterials(workshopId, id, count, names, parts, hasFileTextures, sourceIndices)
       },
+      // 🛑 The workshop reads a FILE too: without this the motion section, which gates on the rig
+      // the engine read, never sees one here and takes its whole list away — unlink included.
+      onRig: (id, rig) => useModelFiles.getState().reportRig(workshopId, id, rig),
       onStats: stats => useModelFiles.getState().reportStats(workshopId, stats),
       onMorphs: (id, names) => useModelFiles.getState().reportMorphs(workshopId, id, names),
       // Kept for ⌘S: only the engine ever weighs a mesh against a rig, and the save runs from

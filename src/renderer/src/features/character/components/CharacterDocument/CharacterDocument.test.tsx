@@ -16,6 +16,8 @@ import { publishCommand } from '@/services/commandBus'
 import { useDocuments } from '@/stores/documents'
 import { sceneViewOf, useSceneViews } from '@/stores/sceneViews'
 import { workshopIdOf } from '@shared/domain/character'
+import { rigStateFixture } from '@/engines/scene/scene-fixtures'
+import { useModelFiles } from '@/stores/modelFiles'
 import { useSettings } from '@/stores/settings'
 import { CharacterDocument } from './CharacterDocument'
 
@@ -261,6 +263,24 @@ it('drops the waiting note as soon as the model has landed', async () => {
   })
 
   expect(screen.queryByText('En attente du personnage…')).not.toBeInTheDocument()
+})
+
+/**
+ * 🛑 The workshop reads a FILE like a scene does, and `CharacterMotionSection` gates on what the
+ * engine read: unwired, the section saw no rig here and took the whole motion list away — the
+ * unlink button with it — on every character, rigged or not. Every suite stayed green because
+ * they all `reportRig` by hand.
+ */
+it('reports to the store the rig the engine read off the file', async () => {
+  showTab()
+  await waitFor(() => expect(built[0]).toBeDefined())
+
+  await act(async () => {
+    built[0]?.onRig?.('node-1', rigStateFixture(['Hips', 'Spine']))
+  })
+
+  const rigs = useModelFiles.getState().rigs[workshopIdOf(ASSET)]
+  expect(rigs?.['node-1']?.boneNames).toEqual(['Hips', 'Spine'])
 })
 
 it('does not skin until the model has landed', async () => {
