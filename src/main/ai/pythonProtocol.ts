@@ -11,11 +11,17 @@ import { z } from 'zod'
  * and `pythonProtocol.test.ts` reads it: no compiler sits between the two languages.
  *
  * 2: `worker.hello` no longer carries `device`.
+ * 3: `engine.requirements` answers `torchBuild`, and `door.close` enters the vocabulary.
  */
 export const PROTOCOL_VERSION = 3
 
-/** What the core answers itself, in the same turn — neither wakes a door. */
-export type EngineOp = 'hardware.info' | 'memory.ledger' | 'engine.requirements'
+/**
+ * What the core answers itself, in the same turn — none of them wakes a door.
+ *
+ * `door.close` is one of them and NOT a job: a door blocked inside its own `import torch` would
+ * never read a frame asking it to leave, so the core ends the process from outside.
+ */
+export type EngineOp = 'hardware.info' | 'memory.ledger' | 'engine.requirements' | 'door.close'
 export type EngineRequirementsProfile = 'diffusion' | 'autorig' | 'motion' | 'selection'
 /** Read back by `pythonProtocol.test.ts` against what the engine's supervisor accepts. */
 export const PROFILES: readonly EngineRequirementsProfile[] = [
@@ -188,6 +194,15 @@ export type EngineRequirements = z.infer<typeof requirements>
 
 export function readRequirements(value: unknown): EngineRequirements {
   return requirements.parse(value)
+}
+
+/**
+ * Whether there was a process to end. `false` is a door nobody had opened, never a refusal.
+ */
+const closedDoor = z.object({ closed: z.boolean() })
+
+export function readClosedDoor(value: unknown): boolean {
+  return closedDoor.parse(value).closed
 }
 
 /** What a routed op answers in the same turn: the job it opened, never its result. */

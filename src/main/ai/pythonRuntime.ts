@@ -181,6 +181,10 @@ export function pythonRuntime(deps: PythonRuntimeDeps): LocalRuntime {
       for (const door of asked) {
         await engine.job('models.unload', { door })
         held.delete(door)
+        // Unloaded THEN closed. The first hands the tensors back; only the second returns the
+        // interpreter itself — measured 2026-09-08, a door that has so much as called `device()`
+        // never drops below 208 MB again. `_live` reopens it at the next load, cold.
+        await engine.closeDoor(door)
       }
     },
 

@@ -42,11 +42,13 @@ function harness(over: Partial<PythonClient> = {}, deps: Partial<PythonRuntimeDe
           declaration: [],
           absent: [],
           stale: [],
+          torchBuild: null,
           complete: true,
         })),
   )
+  const closeDoor = vi.fn(over.closeDoor ?? (() => Promise.resolve(true)))
 
-  const client = { ...over, job, memory, requirements } as unknown as PythonClient
+  const client = { ...over, job, memory, requirements, closeDoor } as unknown as PythonClient
 
   const runtime = pythonRuntime({
     folderFor: model => `/models/${model.id}`,
@@ -61,7 +63,7 @@ function harness(over: Partial<PythonClient> = {}, deps: Partial<PythonRuntimeDe
     ...deps,
   })
 
-  return { runtime, job, memory, requirements }
+  return { runtime, job, memory, requirements, closeDoor }
 }
 
 describe('reading what the engine holds', () => {
@@ -342,6 +344,28 @@ describe('unloading', () => {
 
     await expect(held.runtime.unload?.()).rejects.toThrow(/door-gone/)
     expect((await held.runtime.read([MODEL])).loaded).toEqual(new Set(['sana']))
+  })
+
+  /**
+   * `models.unload` hands the tensors back and leaves the interpreter standing: measured
+   * 2026-09-08, a door that has called `device()` never drops below 208 MB again.
+   */
+  it('closes the door it just unloaded, rather than leaving the process alive', async () => {
+    const held = harness()
+    await held.runtime.load?.(MODEL, { onProgress: () => {} })
+
+    await held.runtime.unload?.()
+
+    expect(held.closeDoor).toHaveBeenCalledWith('engine/diffusion')
+  })
+
+  /** A door the engine could not close is still a door whose weights are gone. */
+  it('does not claim the model is loaded again when the close fails', async () => {
+    const held = harness({ closeDoor: () => Promise.reject(new Error('door-gone')) })
+    await held.runtime.load?.(MODEL, { onProgress: () => {} })
+
+    await expect(held.runtime.unload?.()).rejects.toThrow(/door-gone/)
+    expect((await held.runtime.read([MODEL])).loaded).toEqual(new Set())
   })
 })
 

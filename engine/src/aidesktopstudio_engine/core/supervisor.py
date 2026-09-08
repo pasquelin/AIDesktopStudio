@@ -71,6 +71,10 @@ def memory_handlers(router: DoorRouter) -> dict[str, Handler]:
     """
     return {
         "memory.ledger": lambda _params: router.ledger.as_frame(),
+        # Answered here and NEVER routed: a door blocked inside its own import would not read the
+        # frame telling it to leave. `models.unload` hands the tensors back; this ends the process,
+        # which is the only thing that gives the interpreter's own 208 MB back too.
+        "door.close": lambda params: router.close_door(str(params.get("door", ""))),
         # Routed, but never QUEUED: a cancel that waited behind the job it stops stops nothing.
         CANCEL_OP: lambda params: router.cancel(str(params.get("jobId", ""))),
     }

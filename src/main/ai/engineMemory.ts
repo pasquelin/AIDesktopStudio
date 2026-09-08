@@ -18,7 +18,10 @@ export function endpointOfDoor(door: string): RuntimeEndpointId | null {
   }
 }
 
-/** Killing the process returns the bytes (`_worker_left`). Release means death, so no confirmation. */
+/**
+ * Releasing a door unloads it and then CLOSES it — `door.close` ends the process, and a process
+ * that is gone holds nothing. So a plan may count these bytes back without asking twice.
+ */
 const RECLAIMABLE = true
 
 export function occupancyOfDoors(

@@ -20,6 +20,10 @@ from aidesktopstudio_engine.protocol.envelope import CANCEL_OP, encode_event
 #: because the core is the only side that builds an argv.
 DOOR_MODULE = "aidesktopstudio_engine.workers.door"
 
+#: How long closing ONE door waits before killing it. Under the studio's `REQUEST_TIMEOUT_MS` of
+#: 5 s on purpose: a client that gave up would kill the whole engine to free a single door.
+CLOSE_WAIT_S = 3
+
 Send = Callable[[str], None]
 Spawn = Callable[[str, Callable[[dict], None], Callable[[], None]], WorkerProcess]
 
@@ -88,21 +92,47 @@ class DoorRouter:
 
         self.ledger.record(DoorMemory(door=door, held_bytes=held, device=device, backend=backend))
 
+    def _abandon(self, door: str) -> tuple[WorkerProcess | None, list[str]]:
+        """Takes the door out of the router and hands back what it was holding."""
+        with self._lock:
+            worker = self._workers.pop(door, None)
+            orphans = [self._runs.pop(key) for key in list(self._runs) if key[0] == door]
+        # Its process is gone, or is on its way out, so it holds nothing — measured, not assumed.
+        self.ledger.forget(door)
+        return worker, orphans
+
+    def _abandoned(self, orphans: list[str], message: str) -> None:
+        for job in orphans:
+            self._send(encode_event("job.failed", job=job, code="door-gone", message=message))
+
     def _worker_left(self, door: str) -> None:
         """
         A door that died holds every job it was given. § A.5 exception 2: the worker abandons
         and reports. It does not unload another door and try again.
         """
-        with self._lock:
-            orphans = [self._runs.pop(key) for key in list(self._runs) if key[0] == door]
-            self._workers.pop(door, None)
-        # Its process is gone, so it holds nothing — a measurement, not an assumption.
-        self.ledger.forget(door)
+        self._abandoned(self._abandon(door)[1], "the door died")
 
-        for job in orphans:
-            self._send(
-                encode_event("job.failed", job=job, code="door-gone", message="the door died")
-            )
+    def close_door(self, door: str) -> dict[str, Any]:
+        """
+        Ends ONE door's process, where `models.unload` only hands its tensors back.
+
+        Answered by the CORE and never routed: a door stuck inside its own `import torch` would
+        never read the frame asking it to leave. Its next request reopens it through `_live`.
+        """
+        if door not in DOORS:
+            raise ValueError(f"no such door: {door!r}")
+
+        worker, orphans = self._abandon(door)
+        if worker is None:
+            return {"closed": False}
+
+        worker.begin_close()
+        worker.wait_closed(timeout=CLOSE_WAIT_S)
+        # 🛑 `begin_close` set `_closing`, so the pump will NOT call `_on_gone` and `_worker_left`
+        # never runs for this door. Nothing else would ever settle these runs, and every job in
+        # flight would wait for ever on the studio's side. Failing them here is what closes them.
+        self._abandoned(orphans, "the door was closed")
+        return {"closed": True}
 
     def _live(self, door: str) -> WorkerProcess:
         with self._lock:

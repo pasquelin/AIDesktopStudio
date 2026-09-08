@@ -329,3 +329,39 @@ tour d'historique, les sous-estimer coûte le préambule.
 
 `[?]` **Ce que cet amendement ne mesure toujours pas** : le seuil exact en tours réels avant que la
 fenêtre déborde. Le rabattement le rend inoffensif ; il ne le chiffre pas.
+
+---
+
+## Amendement du 8 septembre 2026 — le studio peut enfin fermer une porte, et pas seulement la vider
+
+`[M]` **Le « droit de tuer » que cet ADR décrit n'existait pas pour les portes du moteur.**
+`models.unload` rendait les tenseurs par `adapter.unload()` puis `release_cache()` ; il ne
+terminait pas le processus. Le seul chemin qui tuait une porte était `DoorRouter.close()`, appelé
+uniquement à l'arrêt du moteur. Une session qui touchait l'image, la vidéo, le son, la 3D et le
+skybox laissait donc cinq interpréteurs vivants jusqu'à la fermeture du studio.
+
+`[M]` **Ce que cela coûtait, mesuré ce jour sur le runtime embarqué (torch 2.14.0, macOS arm64)** :
+une porte à l'accueil pèse **33 Mo** et répond en **106 ms** ; après un seul appel à `device()`
+elle pèse **208 Mo** et n'en redescend jamais ; avec l'extra `diffusion` chargé, **682 Mo**. Sur
+Apple Silicon cette RSS sort du même pot que le rendu — c'est le `domain: 'unified'` d'ADR-19.
+
+**Décision : un op `door.close`, répondu par le NOYAU et jamais routé vers la porte.** Une porte
+bloquée dans son propre `import torch` ne lirait pas la trame qui lui demande de partir ; c'est
+le noyau qui ferme le socket depuis l'extérieur. Il vit dans `memory_handlers`, à côté de
+`memory.ledger` et de l'annulation, et `DoorRouter.close_door` fait le retrait de `_workers`, le
+`ledger.forget`, puis `begin_close()` et `wait_closed()`.
+
+🛑 `[M]` **Le piège que cette décision oblige à traiter** : `begin_close()` pose `_closing`, ce qui
+empêche le fil de pompe d'appeler `_on_gone`. `_worker_left` ne tourne donc pas, et les entrées de
+`_runs` de cette porte ne seraient jamais réglées — tout job en vol resterait en attente pour
+toujours côté studio. `close_door` fait explicitement échouer les runs orphelins de la porte, sous
+le même code `door-gone`, et `test_router.py` le prouve.
+
+**Ce que cela coûte en échange** : la première génération après une fermeture repaie le démarrage
+à froid — `import torch` seul vaut **1 317 ms** mesuré ce jour, diffusers en plus. Arbitrage
+mémoire contre latence, assumé : une porte fermée se rouvre seule au chargement suivant, `_live`
+la relance à la première demande.
+
+`[?]` **Non mesuré** : le coût réel de `wait_closed` sur une porte fermée juste après un
+déchargement. La borne est posée à 3 s puis `kill`, sous les 5 s de `REQUEST_TIMEOUT_MS`, pour
+qu'un client qui abandonne ne tue pas le moteur entier afin de libérer une seule porte.
