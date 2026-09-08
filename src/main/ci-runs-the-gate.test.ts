@@ -2,7 +2,7 @@ import { execFileSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import manifest from '../../package.json'
+import { GATE } from './gateLinks'
 
 const ROOT = join(import.meta.dirname, '..', '..')
 
@@ -23,7 +23,13 @@ const runSteps = (): string[] =>
     .map(line => line.replace(/^(- )?run:/, '').trim())
     .filter(Boolean)
 
-const gateLinks = (): string[] => manifest.scripts.validate.split('&&').map(link => link.trim())
+/**
+ * Read from `gateLinks.ts`, which is where the chain moved on 2026-09-08: `validate` used to spell
+ * its links with `&&` and now calls `scripts/gate.mjs`, which runs them from that array. Splitting
+ * the script would leave this guard with one pattern and the doc check below could never reach the
+ * three it needs — green, and blind.
+ */
+const gateLinks = (): string[] => GATE.map(link => link.command)
 
 describe('the integration job running the gate and nothing beside it', () => {
   /**

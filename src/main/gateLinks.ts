@@ -1,0 +1,53 @@
+/**
+ * The links of `pnpm validate`, in the order it runs them, and what each one reads.
+ *
+ * This array is the gate. It used to be the `&&` chain of the `validate` script, split on `&&`;
+ * `scripts/gate.mjs` runs it from here instead, so that a link can be skipped when nothing it
+ * reads has moved. `ci-runs-the-gate.test.ts` still reads the link names from this same place.
+ */
+export type GateLink = {
+  /** Exactly what the chain used to spell, so a red link is named the way the reader runs it. */
+  readonly command: string
+  /**
+   * Everything the link reads, as repository-relative paths, a file or a folder.
+   *
+   * 🛑 A SUPERSET is safe and a gap is not: reading too much reruns a link that would have been
+   * green, reading too little skips one that would have been red. Widen when unsure. `.` is the
+   * honest answer for the suite — its 140 wide guards sweep docs, workflows and the site too.
+   */
+  readonly reads: readonly string[]
+  /** A file the link leaves behind. Missing on disk, the link runs whatever its inputs say. */
+  readonly produces?: string
+}
+
+/**
+ * Order kept from the chain: the cheap verdicts first, so a red one does not wait behind the suite.
+ */
+export const GATE: readonly GateLink[] = [
+  { command: 'pnpm site:check', reads: ['site', 'scripts', 'repo.config.json'] },
+  {
+    command: 'pnpm llms:check',
+    reads: ['scripts', 'repo.config.json', 'llms.txt', 'llms-full.txt', 'docs', 'README.md'],
+  },
+  {
+    command: 'pnpm licences:check',
+    reads: ['scripts', 'src/shared', 'THIRD-PARTY-NOTICES.md'],
+  },
+  { command: 'pnpm sizes:check', reads: ['scripts', 'src', 'engine', 'config'] },
+  { command: 'node scripts/check-as-const.mjs', reads: ['scripts', 'src', 'config'] },
+  { command: 'pnpm typecheck', reads: ['src', 'scripts', 'config', 'tsconfig.json'] },
+  { command: 'pnpm lint', reads: ['src', 'scripts', 'config', 'oxlint.json'] },
+  {
+    command: 'pnpm format:check',
+    reads: ['src', 'scripts', 'config', '.prettierrc', '.prettierignore'],
+  },
+  { command: 'pnpm test', reads: ['.'] },
+  { command: 'pnpm unused:main', reads: ['src', 'scripts', 'site', 'config', 'knip.json'] },
+  { command: 'pnpm engine:check', reads: ['engine', 'scripts'] },
+  {
+    command: 'pnpm build',
+    reads: ['src', 'scripts', 'config', 'electron.vite.config.ts', 'tsconfig.json'],
+    // The bundle a skipped build leaves behind: gone, the link runs however green its inputs are.
+    produces: 'out/main/index.js',
+  },
+]
