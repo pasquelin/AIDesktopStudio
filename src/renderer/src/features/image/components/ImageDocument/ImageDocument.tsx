@@ -37,8 +37,25 @@ import { generationCommentsOf, useGenerationComments } from '@/stores/generation
 import { useCanvasGenerationComments } from '@/hooks/useCanvasGenerationComments'
 import { useGeneratorCommentSubmission } from '@/hooks/useGeneratorCommentSubmission'
 import { reportFailure } from '@/services/diagnostics'
+import { SMART_SELECTION_ROLE } from '@shared/domain/aiRole'
+import { useModelForCapability } from '@/hooks/useModelForCapability'
+import type { ImageTool } from '../../imageTools'
 
 export type ImageDocumentProps = { documentId: string }
+
+function modeItems(
+  entry: ImageTool,
+  keyOf: (toolId: string, modeId?: string) => string | undefined,
+  smartSelectionAvailable: boolean,
+) {
+  return entry.modes?.map(item => ({
+    ...item,
+    disabled:
+      item.disabled === true ||
+      (entry.id === 'comment' && item.id === 'smart' && !smartSelectionAvailable),
+    shortcut: keyOf(entry.id, item.id),
+  }))
+}
 
 /**
  * The transparency checker, as one repeating gradient — no image, and no hex: a painted white
@@ -73,6 +90,7 @@ export function ImageDocument({ documentId }: ImageDocumentProps) {
   const removeComment = useGenerationComments(state => state.remove)
   const addCanvasComment = useCanvasGenerationComments(documentId)
   const submitComment = useGeneratorCommentSubmission()
+  const smartSelectionModel = useModelForCapability(SMART_SELECTION_ROLE)
 
   const canvas = useCanvases(state => canvasOf(state, documentId))
   const view = useCanvasViews(state => canvasViewOf(state, documentId))
@@ -227,7 +245,7 @@ export function ImageDocument({ documentId }: ImageDocumentProps) {
         ...entry,
         activeMode: modes[entry.id],
         shortcut: keyOf(entry.id),
-        modes: entry.modes?.map(item => ({ ...item, shortcut: keyOf(entry.id, item.id) })),
+        modes: modeItems(entry, keyOf, smartSelectionModel !== null),
       })),
       // No `activeMode`, and that is what makes it a menu of actions rather than a choice of
       // tool: none of its rows can be armed, so the click opens what hovering would have.
@@ -242,7 +260,7 @@ export function ImageDocument({ documentId }: ImageDocumentProps) {
         shortcut: keyFor(entry.command),
       })),
     ]
-  }, [modes, bindings, label, cropFrame, preparing])
+  }, [modes, bindings, label, cropFrame, preparing, smartSelectionModel])
 
   // Read off the registry rather than written on the buttons: a key remapped in the settings
   // has to move on the bar with it.

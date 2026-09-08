@@ -20,6 +20,8 @@
     "textPathHint": "Poser du texte le long d’un chemin — pas encore disponible",
     "comment": "Commentaire",
     "commentHint": "Poser une note liée à une zone de l’image",
+    "smartComment": "Commentaire intelligent",
+    "smartCommentHint": "Identifier automatiquement un objet et lui associer une note",
     "region": "Sélection",
     "regionHint": "Délimiter une zone à laquelle les outils se limiteront",
     "selectRectangle": "Sélection rectangulaire",

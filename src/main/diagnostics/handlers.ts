@@ -54,6 +54,7 @@ const TOPIC_OF_SCOPE: Record<LogScope, ActivityTopic> = {
   // and the tab is what the user has to act on.
   'canvas.edit': 'document',
   'canvas.smartSelect': 'document',
+  'canvas.smartComment': 'document',
   'image.export': 'document',
   'document.load': 'document',
   'document.save': 'document',

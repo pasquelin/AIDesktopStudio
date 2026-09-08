@@ -271,6 +271,7 @@ const LOG_SCOPE_SET: Record<LogScope, true> = {
   'canvas.size': true,
   'canvas.edit': true,
   'canvas.smartSelect': true,
+  'canvas.smartComment': true,
   'image.export': true,
   'document.load': true,
   'document.save': true,

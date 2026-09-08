@@ -23,6 +23,7 @@ export type Gesture =
   | { kind: 'move'; id: string; from: Point; origin: Point }
   | { kind: 'select'; from: Point }
   | { kind: 'smartSelect'; from: Point; to: Point }
+  | { kind: 'smartComment'; from: Point; to: Point }
   | { kind: 'comment'; at: Point; points: Point[] }
   /** Drawing a fresh crop frame from `from`; the frame itself lives on past the drag. */
   | { kind: 'crop'; from: Point }

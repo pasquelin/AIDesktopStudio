@@ -51,9 +51,8 @@ export abstract class CanvasPointerTracking extends CanvasPainting {
       case 'select':
         return this.trackSelection(gesture, point, constrained)
       case 'smartSelect':
-        gesture.to = point
-        this.overlay.invalidate()
-        return
+      case 'smartComment':
+        return this.trackSmart(gesture, point)
       case 'comment':
         if (gesture.points.length < GENERATION_COMMENT_OUTLINE_MAX) gesture.points.push(point)
         else gesture.points[gesture.points.length - 1] = point
@@ -66,6 +65,14 @@ export abstract class CanvasPointerTracking extends CanvasPainting {
       default:
         return this.trackDrawingGesture(gesture, point, constrained)
     }
+  }
+
+  private trackSmart(
+    gesture: Extract<typeof this.gesture, { kind: 'smartSelect' | 'smartComment' }>,
+    point: Point,
+  ): void {
+    gesture.to = point
+    this.overlay.invalidate()
   }
 
   private trackDrawingGesture(

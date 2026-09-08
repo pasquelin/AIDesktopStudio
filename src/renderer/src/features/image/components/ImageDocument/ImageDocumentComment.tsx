@@ -24,8 +24,8 @@ export function ImageDocumentComment(props: ImageDocumentCommentProps) {
     <>
       {comment.outline && (
         <svg aria-hidden className="pointer-events-none absolute inset-0 size-full">
-          <polyline
-            className="stroke-comment-mark fill-none"
+          <polygon
+            className="fill-comment-mark-overlay stroke-comment-mark"
             strokeWidth="var(--sc-comment-outline)"
             strokeLinecap="round"
             strokeLinejoin="round"

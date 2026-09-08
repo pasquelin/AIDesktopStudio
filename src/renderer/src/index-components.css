@@ -45,6 +45,7 @@
   --color-comment-note-content: #2f2915;
   --color-comment-note-fold: #dcc15c;
   --color-comment-mark: #5978e8;
+  --color-comment-mark-overlay: color-mix(in srgb, #5978e8 20%, transparent);
   /* Same reason: the dark theme's coral is a highlight on black and a pastel on white. */
   --color-error: #b72e27;
   --color-error-content: #ffffff;

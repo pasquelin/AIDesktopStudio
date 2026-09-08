@@ -47,6 +47,10 @@ describe('image tools', () => {
     ).toEqual([{ command: 'canvas.toolSmartSelect', tool: 'region', mode: 'smart' }])
   })
 
+  it('arms intelligent comments with the smart comment canvas tool', () => {
+    expect(canvasToolFor('comment', 'smart')).toBe('smartComment')
+  })
+
   it('uses a visible selection cursor for the intelligent gesture', () => {
     expect(cursorFor('region', 'smart')).toContain('data:image/svg+xml')
   })

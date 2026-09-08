@@ -20,6 +20,8 @@
     "textPathHint": "Set text along a path — not available yet",
     "comment": "Comment",
     "commentHint": "Leave a note linked to an area of the image",
+    "smartComment": "Smart Comment",
+    "smartCommentHint": "Automatically identify an object and attach a note to it",
     "region": "Selection",
     "regionHint": "Mark out an area the tools will be confined to",
     "selectRectangle": "Rectangular selection",

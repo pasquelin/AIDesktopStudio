@@ -73,10 +73,35 @@ describe('image generation comment placement', () => {
       />,
     )
 
-    expect(container.querySelector('polyline')).toHaveAttribute(
+    expect(container.querySelector('polygon')).toHaveAttribute(
       'stroke-width',
       'var(--sc-comment-outline)',
     )
+  })
+
+  it('fills an outlined comment while keeping the image visible underneath', () => {
+    const { container } = render(
+      <ImageDocumentComments
+        comments={[
+          {
+            id: 'note',
+            at: { x: 50, y: 50 },
+            outline: [
+              { x: 10, y: 10 },
+              { x: 20, y: 10 },
+              { x: 20, y: 20 },
+            ],
+            text: 'Remove this',
+          },
+        ]}
+        view={DEFAULT_VIEW}
+        size={{ width: 100, height: 100 }}
+        onChange={() => {}}
+        onRemove={() => {}}
+      />,
+    )
+
+    expect(container.querySelector('polygon')).toHaveClass('fill-comment-mark-overlay')
   })
 
   it('keeps a note and its outline aligned while the viewport moves and zooms', () => {
@@ -113,7 +138,7 @@ describe('image generation comment placement', () => {
       left: '25px',
       top: '47px',
     })
-    expect(container.querySelector('polyline')).toHaveAttribute('points', '25,47 65,87')
+    expect(container.querySelector('polygon')).toHaveAttribute('points', '25,47 65,87')
   })
 
   it('opens notes inward from every image edge', () => {
@@ -178,5 +203,40 @@ describe('image generation comment placement', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Retirer le commentaire' }))
 
     expect(onRemove).toHaveBeenCalledWith('note')
+  })
+
+  it('renders nothing after the selected comment is removed', () => {
+    const comment = {
+      id: 'note',
+      at: { x: 50, y: 50 },
+      outline: [
+        { x: 10, y: 10 },
+        { x: 20, y: 10 },
+        { x: 20, y: 20 },
+      ],
+      text: 'Remove me',
+    }
+    const { container, rerender } = render(
+      <ImageDocumentComments
+        comments={[comment]}
+        view={DEFAULT_VIEW}
+        size={{ width: 100, height: 100 }}
+        onChange={() => {}}
+        onRemove={() => {}}
+      />,
+    )
+
+    rerender(
+      <ImageDocumentComments
+        comments={[]}
+        view={DEFAULT_VIEW}
+        size={{ width: 100, height: 100 }}
+        onChange={() => {}}
+        onRemove={() => {}}
+      />,
+    )
+
+    expect(container.querySelector('polygon')).toBeNull()
+    expect(container.querySelector('textarea')).toBeNull()
   })
 })

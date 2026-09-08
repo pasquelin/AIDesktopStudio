@@ -8,6 +8,7 @@
 export type CanvasTool =
   | 'select'
   | 'smartSelect'
+  | 'smartComment'
   | 'move'
   | 'crop'
   | 'shape'

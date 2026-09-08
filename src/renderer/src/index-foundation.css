@@ -138,6 +138,7 @@
   --color-comment-note-content: #fff3bd;
   --color-comment-note-fold: #806d32;
   --color-comment-mark: #7694ff;
+  --color-comment-mark-overlay: color-mix(in srgb, #7694ff 20%, transparent);
   /*
    * The one button that CREATES rather than shows. Its own token, apart from the blue accent of
    * everything that merely selects: the new-document button has to be findable in a rail of grey

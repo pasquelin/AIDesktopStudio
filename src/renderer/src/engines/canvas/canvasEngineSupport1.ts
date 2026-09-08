@@ -69,6 +69,7 @@ export type CanvasEngineOptions = {
   onSelection: (selection: CanvasSelection) => void
   /** A document-space prompt for an asynchronous native selection. */
   onSmartSelect: (prompt: { point: Point } | { box: Rect }) => void
+  onSmartComment: (prompt: { point: Point } | { box: Rect }) => void
   onComment: (at: Point, outline?: readonly Point[]) => void
   /** The host's size, which the zoom commands need: they centre on a panel they cannot see. */
   onHost: (size: Size) => void

@@ -107,6 +107,8 @@ export abstract class CanvasPointerStart extends CanvasHitArea {
       this.publishSelection(dragSelection(this.selectionShape, point, point, false))
     } else if (this.tool === 'smartSelect') {
       this.gesture = { kind: 'smartSelect', from: point, to: point }
+    } else if (this.tool === 'smartComment') {
+      this.gesture = { kind: 'smartComment', from: point, to: point }
     } else this.startPaint(point)
   }
 

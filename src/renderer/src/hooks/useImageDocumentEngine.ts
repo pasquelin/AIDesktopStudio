@@ -6,6 +6,7 @@ import { registerFace } from '@/engines/canvas/canvasFonts'
 import type { BrushSettings } from '@/engines/canvas/brush'
 import { addLayer, cropToRect, resizeCaption } from '@/engines/canvas/commands'
 import type { CanvasSelection } from '@/engines/canvas/canvasSelection'
+import { selectionOutline } from '@/engines/canvas/canvasSelection'
 import { shapeLayer, textLayer, type ShapeKind } from '@/engines/canvas/canvasState'
 import { holdCanvas } from '@/features/image/canvasHosts'
 import { guidePort } from '@/features/image/guidePort'
@@ -18,6 +19,7 @@ import { useCanvasViews } from '@/stores/canvasViews'
 import { getBridge } from '@/services/bridge'
 import { reportFailure } from '@/services/diagnostics'
 import type { SmartSelectionPrompt } from '@shared/domain/smartSelectionInference'
+import { GENERATION_COMMENT_OUTLINE_MAX } from '@shared/domain/generationComment'
 
 /** A run the click after it cancelled: not a failure, and nothing for a reader to act on. */
 const isAbortError = (error: unknown): boolean =>
@@ -48,7 +50,7 @@ export function useImageDocumentEngine(
     if (!element) return
     const views = () => useCanvasViews.getState()
     const pixels = pixelPort(documentId, () => engineRef.current)
-    const smartSelect = async (prompt: SmartSelectionPrompt): Promise<void> => {
+    const smartSelect = async (prompt: SmartSelectionPrompt, comment: boolean): Promise<void> => {
       const previous = smartSelectionTask.current
       const id = newId()
       smartSelectionTask.current = id
@@ -75,14 +77,26 @@ export function useImageDocumentEngine(
         height: result.height,
         alpha: result.alpha,
       }
+      if (comment) {
+        const outline = boundedOutline(selectionOutline(raster))
+        if (outline.length > 2) onComment(anchorOf(prompt), outline)
+        return
+      }
       created.setSelection(raster)
       views().setSelection(documentId, raster)
     }
     const reportedSmartSelect = async (prompt: SmartSelectionPrompt): Promise<void> => {
       try {
-        await smartSelect(prompt)
+        await smartSelect(prompt, false)
       } catch (error) {
         if (!isAbortError(error)) reportFailure('canvas.smartSelect', documentId, error)
+      }
+    }
+    const reportedSmartComment = async (prompt: SmartSelectionPrompt): Promise<void> => {
+      try {
+        await smartSelect(prompt, true)
+      } catch (error) {
+        if (!isAbortError(error)) reportFailure('canvas.smartComment', documentId, error)
       }
     }
     const created = new CanvasEngine({
@@ -95,6 +109,7 @@ export function useImageDocumentEngine(
       // and a box too thin all rejected into `traceDroppedRejections`, so the click did nothing
       // and nothing explained why. The cancel of the run before it is not a failure.
       onSmartSelect: prompt => void reportedSmartSelect(prompt),
+      onSmartComment: prompt => void reportedSmartComment(prompt),
       onComment,
       onHost: size => views().setHost(documentId, size),
       onText: asked => {
@@ -130,4 +145,17 @@ export function useImageDocumentEngine(
   }, [documentId, caption, shapeName, setBrush, onComment])
 
   return { hostRef, engineRef, editing, setEditing }
+}
+
+function anchorOf(prompt: SmartSelectionPrompt): Point {
+  return 'point' in prompt ? prompt.point : { x: prompt.box.x, y: prompt.box.y }
+}
+
+function boundedOutline(outline: readonly Point[]): readonly Point[] {
+  if (outline.length <= GENERATION_COMMENT_OUTLINE_MAX) return outline
+  const step = (outline.length - 1) / (GENERATION_COMMENT_OUTLINE_MAX - 1)
+  return Array.from(
+    { length: GENERATION_COMMENT_OUTLINE_MAX },
+    (_, index) => outline[Math.round(index * step)] ?? outline[outline.length - 1]!,
+  )
 }

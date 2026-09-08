@@ -58,6 +58,7 @@ type Harness = {
   /** Every selection the engine carved out, in the order it published them. */
   selections: CanvasSelection[]
   smartPrompts: ({ point: Point } | { box: Rect })[]
+  smartCommentPrompts: ({ point: Point } | { box: Rect })[]
   /** Every caption the hand asked for: a layer to edit, or a box to open a fresh one in. */
   captions: ({ layerId: string } | { at: Point; box: Size | null })[]
   /** Every pull of a caption box's grip: the box it reached, and where its corner now sits. */
@@ -81,6 +82,8 @@ type Harness = {
   picks: number[]
   comments: { at: Point; outline?: readonly Point[] }[]
 }
+
+const smartCommentPrompts: Harness['smartCommentPrompts'] = []
 
 /**
  * A mounted engine with the brush armed. Explicit since the engine opens on the pointer, which
@@ -116,6 +119,7 @@ async function mounted(
       onViewport: viewport => viewports.push(viewport),
       onSelection: selection => selections.push(selection),
       onSmartSelect: prompt => smartPrompts.push(prompt),
+      onSmartComment: prompt => smartCommentPrompts.push(prompt),
       onComment: (at, outline) => comments.push({ at, ...(outline ? { outline } : {}) }),
       onText: asked => captions.push(asked),
       onTextBox: (layerId, box, at) => boxes.push({ layerId, box, at }),
@@ -148,6 +152,7 @@ async function mounted(
     viewports,
     selections,
     smartPrompts,
+    smartCommentPrompts,
     captions,
     boxes,
     shapes,
@@ -161,7 +166,6 @@ async function mounted(
     picks,
     comments,
   }
-
   await finishMount(harness, state, tool)
   return harness
 }
@@ -297,6 +301,7 @@ afterEach(() => {
 })
 
 beforeEach(() => {
+  smartCommentPrompts.length = 0
   gpu.renders = 0
   gpu.masked = 0
   gpu.texturesCreated = 0
@@ -325,6 +330,7 @@ function silentOptions(): ConstructorParameters<typeof CanvasEngine>[0] {
     onViewport: nothing,
     onSelection: nothing,
     onSmartSelect: nothing,
+    onSmartComment: nothing,
     onComment: nothing,
     onCropFrame: nothing,
     onHost: nothing,

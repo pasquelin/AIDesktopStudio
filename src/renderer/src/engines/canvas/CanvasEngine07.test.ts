@@ -348,3 +348,28 @@ describe('generation comments', () => {
     expect(comments[0]?.outline?.at(-1)).toEqual({ x: 640, y: 80 })
   })
 })
+
+describe('intelligent generation comments', () => {
+  it('sends a point prompt for a click without creating a comment immediately', async () => {
+    const { engine, host, smartCommentPrompts, comments } = await mounted()
+    engine.setTool('smartComment')
+
+    press(host, 120, 80)
+    release(120, 80)
+    await nextFrame()
+
+    expect(smartCommentPrompts).toEqual([{ point: { x: 120, y: 80 } }])
+    expect(comments).toEqual([])
+  })
+
+  it('sends a normalized box prompt for a dragged selection', async () => {
+    const { engine, host, smartCommentPrompts } = await mounted()
+    engine.setTool('smartComment')
+
+    press(host, 320, 280)
+    drag(host, 120, 80)
+    release(120, 80)
+
+    expect(smartCommentPrompts).toEqual([{ box: { x: 120, y: 80, width: 200, height: 200 } }])
+  })
+})
