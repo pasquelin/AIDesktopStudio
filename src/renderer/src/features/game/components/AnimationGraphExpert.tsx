@@ -137,21 +137,20 @@ export function AnimationGraphExpert({ graph, onChange }: AnimationGraphExpertPr
             />
           </div>
         ))}
-        <div className="flex">
-          <Button
-            onClick={() =>
-              onChange({
-                ...graph,
-                parameters: [
-                  ...graph.parameters,
-                  { id: `parameter${graph.parameters.length + 1}`, kind: 'number' },
-                ],
-              })
-            }
-          >
-            {t('game.animationGraph.addParameter')}
-          </Button>
-        </div>
+        <Button
+          className="w-full"
+          onClick={() =>
+            onChange({
+              ...graph,
+              parameters: [
+                ...graph.parameters,
+                { id: `parameter${graph.parameters.length + 1}`, kind: 'number' },
+              ],
+            })
+          }
+        >
+          {t('game.animationGraph.addParameter')}
+        </Button>
       </PropertySection>
 
       {layer.states.map((state, at) => (
@@ -200,46 +199,44 @@ export function AnimationGraphExpert({ graph, onChange }: AnimationGraphExpertPr
             }
           />
         ))}
-        <div className="flex">
-          <Button
-            onClick={() =>
-              onChange(
-                withLayer(graph, {
-                  ...layer,
-                  transitions: [
-                    ...layer.transitions,
-                    {
-                      from: layer.initial,
-                      to: layer.states[0]?.id ?? layer.initial,
-                      fade: 0,
-                      when: [{ param: 'speed', op: '>', value: 0 }],
-                      priority: 0,
-                    },
-                  ],
-                }),
-              )
-            }
-          >
-            {t('game.animationGraph.addTransition')}
-          </Button>
-        </div>
-      </PropertySection>
-
-      <div className="flex">
         <Button
-          variant="primary"
+          className="w-full"
           onClick={() =>
             onChange(
               withLayer(graph, {
                 ...layer,
-                states: [...layer.states, newState(layer.states.length)],
+                transitions: [
+                  ...layer.transitions,
+                  {
+                    from: layer.initial,
+                    to: layer.states[0]?.id ?? layer.initial,
+                    fade: 0,
+                    when: [{ param: 'speed', op: '>', value: 0 }],
+                    priority: 0,
+                  },
+                ],
               }),
             )
           }
         >
-          {t('game.animationGraph.addState')}
+          {t('game.animationGraph.addTransition')}
         </Button>
-      </div>
+      </PropertySection>
+
+      <Button
+        className="w-full"
+        variant="primary"
+        onClick={() =>
+          onChange(
+            withLayer(graph, {
+              ...layer,
+              states: [...layer.states, newState(layer.states.length)],
+            }),
+          )
+        }
+      >
+        {t('game.animationGraph.addState')}
+      </Button>
     </div>
   )
 }

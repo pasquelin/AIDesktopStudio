@@ -140,18 +140,17 @@ export function AnimationGraphTransitionForm({
           onChange={next => changedCondition(at, next)}
         />
       ))}
-      <div className="flex">
-        <Button
-          onClick={() =>
-            onChange({
-              ...transition,
-              when: [...transition.when, { param: 'speed', op: '>', value: 0 }],
-            })
-          }
-        >
-          {t('inspector.addCondition')}
-        </Button>
-      </div>
+      <Button
+        className="w-full"
+        onClick={() =>
+          onChange({
+            ...transition,
+            when: [...transition.when, { param: 'speed', op: '>', value: 0 }],
+          })
+        }
+      >
+        {t('inspector.addCondition')}
+      </Button>
     </div>
   )
 }

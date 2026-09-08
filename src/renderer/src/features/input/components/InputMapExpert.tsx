@@ -74,22 +74,21 @@ export function InputMapExpert({ map, onChange }: InputMapExpertProps) {
         />
       ))}
 
-      <div className="flex">
-        <Button
-          variant="primary"
-          onClick={() =>
-            onChange({
-              ...map,
-              actions: [
-                ...map.actions,
-                { id: `action${map.actions.length + 1}`, kind: 'button', bindings: [] },
-              ],
-            })
-          }
-        >
-          {t('game.inputMap.addAction')}
-        </Button>
-      </div>
+      <Button
+        className="w-full"
+        variant="primary"
+        onClick={() =>
+          onChange({
+            ...map,
+            actions: [
+              ...map.actions,
+              { id: `action${map.actions.length + 1}`, kind: 'button', bindings: [] },
+            ],
+          })
+        }
+      >
+        {t('game.inputMap.addAction')}
+      </Button>
     </div>
   )
 }

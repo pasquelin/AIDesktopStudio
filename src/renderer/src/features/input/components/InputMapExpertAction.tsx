@@ -81,18 +81,17 @@ export function InputMapExpertAction({ action, kinds, onChange }: InputMapExpert
           }
         />
       ))}
-      <div className="flex">
-        <Button
-          onClick={() =>
-            onChange({
-              ...action,
-              bindings: [...action.bindings, defaultInputBinding(action.kind)],
-            })
-          }
-        >
-          {t('game.inputMap.addBinding')}
-        </Button>
-      </div>
+      <Button
+        className="w-full"
+        onClick={() =>
+          onChange({
+            ...action,
+            bindings: [...action.bindings, defaultInputBinding(action.kind)],
+          })
+        }
+      >
+        {t('game.inputMap.addBinding')}
+      </Button>
     </PropertySection>
   )
 }
