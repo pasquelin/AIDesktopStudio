@@ -62,11 +62,14 @@ describe('the word a bar sets beside its buttons', () => {
  * Every source with its prose taken out, stripped ONCE: the four sweeps below each read the whole
  * renderer, and `withoutComments` over 1 762 modules is 8 ms a pass.
  */
-const CODE = WRITTEN_SOURCES.map(([path, source]) => [path, withoutComments(source)] as const)
+const CODE: { path: string; code: string }[] = WRITTEN_SOURCES.map(([path, source]) => ({
+  path,
+  code: withoutComments(source),
+}))
 
 const opening = (tag: RegExp): string[] =>
-  CODE.filter(([, code]) => tag.test(code))
-    .map(([path]) => path)
+  CODE.filter(({ code }) => tag.test(code))
+    .map(({ path }) => path)
     .sort()
 
 describe('a control that goes straight to the platform', () => {
