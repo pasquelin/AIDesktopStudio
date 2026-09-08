@@ -115,6 +115,25 @@ describe('PropertySection', () => {
     })
   })
 
+  /**
+   * A document opened in the centre carries formats nobody has seen before, where a dock panel
+   * describes a selection the reader already made. The sentence goes with the rows: kept while
+   * folded, it explained fields nobody could see.
+   */
+  it('explains what its rows are for, and stops explaining once folded', async () => {
+    render(
+      <PropertySection title="Context" description="What this set of controls is called.">
+        <p>fields</p>
+      </PropertySection>,
+    )
+
+    expect(screen.getByText('What this set of controls is called.')).toBeInTheDocument()
+
+    await userEvent.click(screen.getByRole('button', { name: /Context/ }))
+
+    expect(screen.queryByText('What this set of controls is called.')).not.toBeInTheDocument()
+  })
+
   it('can start folded', () => {
     render(
       <PropertySection title="Material" defaultOpen={false}>

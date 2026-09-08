@@ -10,6 +10,7 @@ import { useDocuments } from '@/stores/documents'
 import { useLayouts } from '@/stores/layouts'
 import { useProject } from '@/stores/project'
 import { useSettings } from '@/stores/settings'
+import { registerFileViewSave } from '@/features/shell/components/dockviewApi'
 import { routeCommand } from './commandRouter'
 
 const saveDocument = vi.hoisted(() => vi.fn(() => Promise.resolve(true)))
@@ -106,6 +107,34 @@ describe('a command the application performs itself', () => {
 
     expect(routeCommand('document.save')).toBe('ran')
     expect(saveDocument).toHaveBeenCalledWith('doc-1')
+  })
+
+  /**
+   * 🛑 A file view is not in `documents`, so `saveDocument` found nothing and answered `false`
+   * without a word: ⌘S over a control map did nothing while the menu row promised it would, and
+   * the editor grew a save button of its own to work around it.
+   */
+  it('saves a file view through the save it registered, not through the document one', async () => {
+    const wrote = vi.fn(() => Promise.resolve(true))
+    const forget = registerFileViewSave('file:Entrées/Clavier.input.json', wrote)
+    useDocuments.setState({ activeId: 'file:Entrées/Clavier.input.json', documents: {} })
+
+    expect(routeCommand('document.save')).toBe('ran')
+    expect(saveDocument).not.toHaveBeenCalled()
+    await vi.waitFor(() => expect(wrote).toHaveBeenCalled())
+    forget()
+  })
+
+  /** It IS its path: there is nowhere else to write it, and the menu greys the row for that. */
+  it('refuses to save a file view as something else', () => {
+    const forget = registerFileViewSave('file:Entrées/Clavier.input.json', () =>
+      Promise.resolve(true),
+    )
+    useDocuments.setState({ activeId: 'file:Entrées/Clavier.input.json', documents: {} })
+
+    expect(routeCommand('document.saveAs')).toBe('noSurface')
+    expect(saveDocumentAs).not.toHaveBeenCalled()
+    forget()
   })
 
   it('closes the tab in front, and refuses when there is none', () => {

@@ -57,6 +57,9 @@ import { CLOUD_IDS } from '@shared/domain/aiCloud'
 import { doorLabelKey } from '@/helpers/assistantDoor'
 import { ASSISTANT_STARTERS, starterKey } from '@/features/assistant/starters'
 import { SOURCES } from '@/features/assets/components/Asset/Browser/facets'
+import { INPUT_PRESET_IDS } from '@shared/domain/inputPresets'
+import { INPUT_MAP_VIEWS } from '@/features/input/components/InputMapDocument'
+import { DESCRIBED_ACTION_IDS } from '@/features/input/components/inputMapPresentation'
 
 function resolve(code: Language, key: string): unknown {
   // Widened, not cast: the bundle's inferred type has no index signature, and every key here is
@@ -81,6 +84,16 @@ function explained(prefix: string, values: readonly string[]): string[] {
  * `inspector.layerKind_text` where a word belongs.
  */
 const COMPOSED_KEYS: readonly string[] = [
+  // The three readings of a control map: the word on the segment, and what showing it gives.
+  ...INPUT_MAP_VIEWS.flatMap(view => [
+    `game.inputMap.mode.${view}`,
+    `game.inputMap.viewHint.${view}`,
+  ]),
+  ...INPUT_PRESET_IDS.map(id => `game.inputMap.preset.${id}`),
+  // What each action of the built-in contexts DOES, plus the answer for a name of the project's
+  // own — the question the editor used to leave unanswered on screen.
+  ...DESCRIBED_ACTION_IDS.map(id => `game.inputMap.action.${id}`),
+  'game.inputMap.action.custom',
   // What a model's conversion to glb could not carry — one sentence per loss, composed from the
   // row's own list.
   ...MESH_IMPORT_LOSSES.map(loss => `activity.importLoss.${loss}`),

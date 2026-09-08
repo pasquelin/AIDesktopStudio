@@ -295,6 +295,11 @@
      minimum then overflowed. The ceiling keeps a detached panel from spending 300px on one word. */
   --sc-label-share: 30%;
   --sc-label-max: 200px;
+  /* The narrowest a form field may become before its columns fold into one. Measured against
+     the widest label a document editor draws — « Actif au démarrage » beside its control — plus
+     the room a value needs to stay readable. Below it a two-column form reads as two truncated
+     ones; above it, a 2000px document spends 1700px on a field holding « -1 ». */
+  --sc-field-min: 280px;
   /* One column of the folder browser, which shows folder names and nothing else. Wide enough for
      the names a project actually carries — `Textures`, `Repérages` — and narrow enough that three
      columns fit the dialog without it becoming a window. Truncation is the fallback, as
@@ -358,6 +363,7 @@
   --sc-track-header: 120px;
   /* The share holds at both densities; only what it may never exceed comes down. */
   --sc-label-max: 180px;
+  --sc-field-min: 240px;
   --sc-meter: 12px;
   --sc-spectrum: 56px;
 }

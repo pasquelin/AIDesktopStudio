@@ -129,6 +129,14 @@ export function fileViewsHoldEdits(): boolean {
   return modifiedFileViewIds().length > 0
 }
 
+/**
+ * The save a file view registered, for the command that runs ⌘S over it. `null` where the panel
+ * is not a file view, or has not finished mounting.
+ */
+export function fileViewSave(id: string): (() => Promise<boolean>) | null {
+  return fileViewSaves.get(id) ?? null
+}
+
 export function registerFileViewSave(id: string, save: () => Promise<boolean>): () => void {
   fileViewSaves.set(id, save)
   return () => {

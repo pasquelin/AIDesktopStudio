@@ -11,7 +11,7 @@ import { canMaskFromSelection, canMergeDown } from '@/engines/canvas/canvasState
 import { canvasOf, useCanvases } from '@/stores/canvases'
 import { selectionOf, useCanvasViews } from '@/stores/canvasViews'
 import { activeIdOfKind, activeSceneOrWorkshopId, useDocuments } from '@/stores/documents'
-import { closableTabId } from '@/features/shell/components/dockviewApi'
+import { closableTabId, panelIsFileView } from '@/features/shell/components/dockviewApi'
 import { displayOfPane } from '@/stores/sceneViewChrome'
 import { MAIN_SCENE_PANE, sceneViewOf, useSceneViews } from '@/stores/sceneViews'
 import { sceneOf, useScenes } from '@/stores/scenes'
@@ -119,7 +119,12 @@ function publishMenuContext(): void {
   const front = useDocuments.getState()
   // Both refused in silence over a screen with no document — `routeCommand` answers `noSurface`
   // and nothing on the menu said so, which is what an enabled row promises it will not do.
-  const saving: MenuAbility[] = front.activeId ? ['document.save', 'document.saveAs'] : []
+  // A file view saves but never saves AS: it is opened from a path and has nowhere else to go.
+  const saving: MenuAbility[] = front.activeId
+    ? panelIsFileView(front.activeId)
+      ? ['document.save']
+      : ['document.save', 'document.saveAs']
+    : []
   // The router's own answer, said on the row before it is pressed rather than worked out again.
   const closing: MenuAbility[] = closableTabId() ? ['document.close'] : []
   const abilities = [...saving, ...closing, ...scene.abilities, ...canvas]

@@ -82,6 +82,8 @@ describe('the word that names a group in a panel', () => {
       '../features/git/components/Commit/CommitFiles.tsx',
       '../features/git/components/Diff/DiffImages.tsx',
       '../features/git/components/Git/File/GitFileGroup.tsx',
+      '../features/input/components/InputMapExpert.tsx',
+      '../features/input/components/InputMapExpertBinding.tsx',
       '../features/scene/components/ComponentsSection.tsx',
       './DynamicForm/DynamicForm.tsx',
     ])
