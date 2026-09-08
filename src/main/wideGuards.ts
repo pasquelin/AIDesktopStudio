@@ -38,9 +38,10 @@ import { resolveSpecifier } from './sourceFiles.ts'
  * did; 127 against 137 on 2026-09-08, when `localizedErrors.i18n.test.ts` added diagnostic coverage; 128
  * against 138 the same day, `no-physical-direction` sweeping the shared components for a layout
  * written from the left rather than from the inline start; 129 against 139 the same day, when
- * `rerunEverything` put the short loop's whole-suite trigger under a guard of its own.
+ * `rerunEverything` put the short loop's whole-suite trigger under a guard of its own; 130 against 140
+ * the same day, when `agents-contract` put the agent contract's own wiring under a guard.
  */
-export const LEAST_GUARDS = 129
+export const LEAST_GUARDS = 130
 
 /**
  * How far the floor may sit below the real count before it stops meaning anything.
