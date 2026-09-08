@@ -31,7 +31,8 @@
         }
       ],
       "diskBytes": 41365489,
-      "reservationBytes": 200000000
+      "reservationBytes": 200000000,
+      "serves": ["background-removal/cutout"]
     }
   ],
   "assistant": [

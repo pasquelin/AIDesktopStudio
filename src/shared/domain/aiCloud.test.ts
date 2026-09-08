@@ -28,6 +28,12 @@ describe('the cloud registry', () => {
     expect(cloudsServing(DICTATION_ROLE)).toEqual([])
   })
 
+  it('does not offer Scenario for capabilities without a Scenario model', () => {
+    expect(cloudsServing(aiRoleId('upscale', 'upscale'))).toEqual([])
+    expect(cloudsServing(aiRoleId('background-removal', 'cutout'))).toEqual([])
+    expect(cloudsServing(aiRoleId('vectorization', 'vectorize'))).toEqual([])
+  })
+
   /**
    * A cloud publishing only PART of a family is offered for that part alone. Tripo generates a
    * picture and edits one, and nothing of it inpaints — offered there, the picker would open on

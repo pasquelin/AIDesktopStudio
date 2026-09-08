@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { AiOverview, ModelCandidate, RoleRow } from '@shared/domain/aiOverview'
-import { DICTATION_ROLE } from '@shared/domain/aiRole'
+import { aiRoleId, DICTATION_ROLE } from '@shared/domain/aiRole'
 import { GIBI, localModel } from '@shared/domain/localModel-fixtures'
 import type { ModelFamily } from '@shared/domain/model'
 import { installFakeBridge } from '@/services/fakeBridge'
@@ -83,6 +83,27 @@ describe('AiSettings', () => {
       { kind: 'local', modelId: 'parakeet' },
       'app',
     )
+  })
+
+  it('shows the smart selection model in the background removal settings', () => {
+    show(
+      overview({
+        roles: [
+          row({
+            role: aiRoleId('background-removal', 'cutout'),
+            candidates: [
+              {
+                ...PARAKEET,
+                model: localModel({ id: 'efficient-sam-ti', name: 'EfficientSAM-Ti' }),
+              },
+            ],
+          }),
+        ],
+      }),
+      'background-removal',
+    )
+
+    expect(screen.getByText('EfficientSAM-Ti')).toBeInTheDocument()
   })
 
   it('offers the publisher card on the chosen model, not on the others', () => {
