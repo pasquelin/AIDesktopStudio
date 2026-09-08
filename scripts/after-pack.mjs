@@ -10,7 +10,7 @@ export default async function afterPack(context) {
   // already checked through this hook. The two hooks have to agree, or the merge dies here.
   if (arch === 'universal') return
 
-  // Rien à contrôler là où rien n'a été posé — `beforePack` a vidé le dossier.
+  // Nothing to check where nothing was laid — `beforePack` emptied the folder.
   const platform = context.electronPlatformName
   if (ENGINELESS_TARGETS.has(`${platform}-${arch}`)) return
 

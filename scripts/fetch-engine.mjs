@@ -53,17 +53,17 @@ const TARGETS = {
 }
 
 /**
- * 🛑 Les cibles qui partent SANS moteur. `torch` n'a plus de roue macOS x86-64 depuis la 2.2.2 et
- * `onnxruntime` depuis la 1.23.2 — relevé sur PyPI le 2026-09-07 — donc les deux profils
- * embarqués, Auto Rig et Sélection intelligente, n'y ont aucun binaire installable. Décision
- * d'Alban : livrer le studio entier sur Intel, sans son IA locale, plutôt que rien.
+ * 🛑 The targets that ship WITHOUT an engine. `torch` has published no macOS x86-64 wheel since
+ * 2.2.2 and `onnxruntime` none since 1.23.2 — read off PyPI 2026-09-07 — so neither embedded
+ * profile has an installable binary there. Alban's call: ship the whole studio on Intel without
+ * its local AI rather than nothing at all.
  */
 export const ENGINELESS_TARGETS = new Set(['darwin-x64'])
 
 /**
- * Ce qu'une cible sans moteur laisse à empaqueter : RIEN, et le dossier doit exister vide plutôt
- * que d'être absent — `extraResources` le déclare, et une passe précédente du même run y a laissé
- * l'interpréteur de l'AUTRE architecture.
+ * What an engineless target leaves to pack: NOTHING, and the folder has to exist empty rather
+ * than be absent — `extraResources` declares it, and an earlier pass of the same run left the
+ * OTHER architecture's interpreter in it.
  */
 export function emptyEngine() {
   rmSync(DESTINATION, { recursive: true, force: true })
@@ -138,9 +138,8 @@ export async function fetchEngine(platform = process.platform, arch = process.ar
     )
   }
 
-  // 🛑 À CÔTÉ de la destination, pas dans le dossier temporaire du système. Sur un runner
-  // Windows, `TEMP` est sur C: et le workspace sur D:, et `tar` ne franchit pas les deux lettres
-  // de lecteur : « Error is not recoverable », mesuré le 2026-09-07.
+  // Beside the destination rather than in the system's temp: the two are then siblings and can
+  // name each other relatively — see the `tar` call below.
   const work = mkdtempSync(join(dirname(DESTINATION), 'ai-desktop-studio-engine-'))
   try {
     const archive = join(work, 'python.tar.gz')
@@ -154,7 +153,19 @@ export async function fetchEngine(platform = process.platform, arch = process.ar
     // `tar` and not a Node unpacker: the archive holds symlinks and executable bits, and both
     // matter — an interpreter whose `python3` link is a copy still runs, one whose bit is lost
     // does not.
-    execFileSync('tar', ['xzf', archive, '-C', DESTINATION], { stdio: 'inherit' })
+    //
+    // 🛑 RELATIVE paths, run from their parent. The `tar` a Windows runner's PATH resolves is
+    // Git for Windows' GNU tar, which reads `D:\path` as the remote spec `host:path` and answers
+    // "Cannot connect to D: resolve failed" — measured 2026-09-08. `--force-local` would fix GNU
+    // tar and break bsdtar, which does not know it; never showing a colon works with both.
+    execFileSync(
+      'tar',
+      ['xzf', join(basename(work), 'python.tar.gz'), '-C', basename(DESTINATION)],
+      {
+        cwd: dirname(DESTINATION),
+        stdio: 'inherit',
+      },
+    )
 
     syncEngineSources()
 

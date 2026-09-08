@@ -38,8 +38,8 @@ export default async function beforePack(context) {
   console.log('Fetching the voice detector')
   await fetchStt()
 
-  // 🛑 Vidé, jamais laissé tel quel : la passe précédente d'un run à deux architectures y a écrit
-  // l'interpréteur de l'AUTRE, et le paquet Intel emporterait un moteur Apple Silicon.
+  // 🛑 Emptied, never left as it stands: the previous pass of a two-architecture run wrote the
+  // OTHER interpreter there, and the Intel bundle would carry an Apple Silicon engine.
   if (ENGINELESS_TARGETS.has(`${platform}-${arch}`)) {
     console.log(`No AI engine for ${platform}-${arch} — see ENGINELESS_TARGETS`)
     emptyEngine()
