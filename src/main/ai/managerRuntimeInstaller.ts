@@ -12,7 +12,7 @@ type InstallerView = {
   engineProfile?: OwnModelProfile
   engineKnown: boolean
   engineMissing: readonly string[]
-  engineTorchBuild: string | null
+  engineTorchCuda: boolean | null
   engineProgress: number | null
   engineFailed: boolean
 }
@@ -129,7 +129,7 @@ export function createRuntimeInstaller(deps: ManagerDeps, host: InstallerHost): 
       ...(engineProfile ? { engineProfile } : {}),
       engineKnown: engineEnvironment !== null,
       engineMissing: engineEnvironment?.missing ?? [],
-      engineTorchBuild: engineEnvironment?.torchBuild ?? null,
+      engineTorchCuda: engineEnvironment?.torchCuda ?? null,
       engineProgress,
       engineFailed,
     }),

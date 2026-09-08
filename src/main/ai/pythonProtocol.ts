@@ -11,17 +11,19 @@ import { z } from 'zod'
  * and `pythonProtocol.test.ts` reads it: no compiler sits between the two languages.
  *
  * 2: `worker.hello` no longer carries `device`.
- * 3: `engine.requirements` answers `torchBuild`, and `door.close` enters the vocabulary.
+ * 3: `engine.requirements` answers `torchCuda`, and `door.close` enters the vocabulary.
  */
 export const PROTOCOL_VERSION = 3
 
-/**
- * What the core answers itself, in the same turn — none of them wakes a door.
- *
- * `door.close` is one of them and NOT a job: a door blocked inside its own `import torch` would
- * never read a frame asking it to leave, so the core ends the process from outside.
- */
+/** What the core answers itself, in the same turn — none of them wakes a door. */
 export type EngineOp = 'hardware.info' | 'memory.ledger' | 'engine.requirements' | 'door.close'
+/** Read back by `pythonProtocol.test.ts` against the ops the engine's supervisor answers. */
+export const CORE_OPS: readonly EngineOp[] = [
+  'hardware.info',
+  'memory.ledger',
+  'engine.requirements',
+  'door.close',
+]
 export type EngineRequirementsProfile = 'diffusion' | 'autorig' | 'motion' | 'selection'
 /** Read back by `pythonProtocol.test.ts` against what the engine's supervisor accepts. */
 export const PROFILES: readonly EngineRequirementsProfile[] = [
@@ -184,9 +186,9 @@ const requirements = z.object({
   declaration: z.array(z.string()),
   absent: z.array(z.object({ name: z.string(), wanted: z.string() })),
   stale: z.array(z.object({ name: z.string(), wanted: z.string(), installed: z.string() })),
-  // torch's LOCAL version — `cpu`, `cu126`, `rocm7.14` — and `null` when it names none, which is
-  // "unknown" rather than "no CUDA": the macOS and default PyPI Linux wheels carry no suffix.
-  torchBuild: z.string().nullable(),
+  // Whether the installed torch was BUILT with CUDA, read off its generated `torch/version.py`.
+  // `null` is unknown — an unreadable file, or a torch nobody installed — and never "no CUDA".
+  torchCuda: z.boolean().nullable(),
   complete: z.boolean(),
 })
 

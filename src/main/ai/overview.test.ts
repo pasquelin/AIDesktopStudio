@@ -61,7 +61,7 @@ const input = (over: Partial<OverviewInput> = {}): OverviewInput => ({
   ollamaFailed: false,
   engineKnown: false,
   engineMissing: [],
-  engineTorchBuild: null,
+  engineTorchCuda: null,
   engineProgress: null,
   engineFailed: false,
   ...over,
@@ -220,29 +220,33 @@ describe('aiOverviewOf', () => {
 })
 
 describe('what makes CUDA usable and not merely present', () => {
-  const NVIDIA = {
-    vendorId: 0x10de,
-    deviceId: null,
-    renderer: 'NVIDIA RTX 4090',
-    machineModel: null,
-  }
+  const NVIDIA = { vendorId: 0x10de, deviceId: null, renderer: 'RTX 4090', machineModel: null }
+  const TRELLIS = localModel({ id: 'trellis', needsCuda: true })
+  const facing = (torchCuda: boolean | null) =>
+    input({
+      facts: { ...FACTS, gpu: NVIDIA },
+      engineTorchCuda: torchCuda,
+      modelsFor: role => (role === DICTATION_ROLE ? [TRELLIS] : []),
+    })
 
-  it('takes an NVIDIA card and a torch that names no build at its word', () => {
-    expect(cudaUsableWith(NVIDIA, null)).toBe(true)
+  /**
+   * The card alone announced TRELLIS compatible on a Windows machine whose PyPI torch is a CPU
+   * build, and the load then answered `needs CUDA, this machine is cpu`.
+   */
+  it('stops calling a card compatible when the engine says its torch has no CUDA', () => {
+    const row = rowOf(aiOverviewOf(facing(false)), DICTATION_ROLE)
+
+    expect(row?.candidates[0]?.obstacle).toBe('cuda')
   })
 
-  /** The Windows machine that announced TRELLIS, then answered `needs CUDA, this machine is cpu`. */
-  it('refuses a card whose torch was built without CUDA', () => {
-    expect(cudaUsableWith(NVIDIA, 'cpu')).toBe(false)
+  /** `null` is UNKNOWN, and the engine has not answered yet on the first composition. */
+  it('trusts the card while the engine has said nothing', () => {
+    const row = rowOf(aiOverviewOf(facing(null)), DICTATION_ROLE)
+
+    expect(row?.candidates[0]?.obstacle).not.toBe('cuda')
   })
 
-  it('takes a card whose torch names a CUDA build', () => {
-    expect(cudaUsableWith(NVIDIA, 'cu126')).toBe(true)
-  })
-
-  it('refuses a machine with no NVIDIA card, whatever torch says', () => {
-    const apple = { vendorId: null, deviceId: null, renderer: 'Apple M2 Max', machineModel: null }
-
-    expect(cudaUsableWith(apple, 'cu126')).toBe(false)
+  it('refuses a machine with no NVIDIA card, whatever torch was built with', () => {
+    expect(cudaUsableWith(FACTS.gpu, true)).toBe(false)
   })
 })

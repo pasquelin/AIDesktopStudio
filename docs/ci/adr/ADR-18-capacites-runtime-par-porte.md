@@ -358,9 +358,17 @@ toujours côté studio. `close_door` fait explicitement échouer les runs orphel
 le même code `door-gone`, et `test_router.py` le prouve.
 
 **Ce que cela coûte en échange** : la première génération après une fermeture repaie le démarrage
-à froid — `import torch` seul vaut **1 317 ms** mesuré ce jour, diffusers en plus. Arbitrage
-mémoire contre latence, assumé : une porte fermée se rouvre seule au chargement suivant, `_live`
-la relance à la première demande.
+à froid — `import torch` seul vaut **1 317 ms** mesuré ce jour, diffusers en plus. Une porte fermée
+se rouvre seule au chargement suivant, `_live` la relance à la première demande.
+
+**Et c'est pourquoi fermer est un VERBE distinct de décharger.** `LocalRuntime` gagne un `close`
+optionnel à côté d'`unload`, parce que les deux ont des coûts opposés : décharger fait de la place
+pour le modèle suivant sur la même porte, fermer repaie le démarrage à froid pour la rouvrir.
+`admissionFor` libère délibérément la porte de DESTINATION — « décharger ce qu'elle tient est la
+façon de faire de la place pour le suivant » — donc y fermer ferait payer 1 317 ms à chaque
+changement de modèle sur une même porte, sur le chemin chaud. Seuls le minuteur d'inactivité et le
+déchargement explicite ferment ; `admit` se contente de décharger. Ollama n'implémente pas `close` :
+son serveur survit à toute libération, et c'est la mesure du 21/08, pas un oubli.
 
 `[?]` **Non mesuré** : le coût réel de `wait_closed` sur une porte fermée juste après un
 déchargement. La borne est posée à 3 s puis `kill`, sous les 5 s de `REQUEST_TIMEOUT_MS`, pour

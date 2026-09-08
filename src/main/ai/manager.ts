@@ -40,10 +40,7 @@ export function createAiManager(deps: ManagerDeps): AiManager {
   let cancelIdle: (() => void) | null = null
   const ttl = deps.factsTtlMs ?? managerHelpers.DEFAULT_FACTS_TTL_MS
   let lastDiscovered: readonly LocalModel[] = []
-  let cachedDiscovered: {
-    at: number
-    models: Promise<readonly LocalModel[]>
-  } | null = null
+  let cachedDiscovered: { at: number; models: Promise<readonly LocalModel[]> } | null = null
   function forgetDiscovered(): void {
     cachedDiscovered = null
   }
@@ -68,10 +65,7 @@ export function createAiManager(deps: ManagerDeps): AiManager {
   const modelOf = (modelId: string): LocalModel | null =>
     modelWith(modelId, deps.settings().ai.ownModels, lastDiscovered)
   const loadedEpochs = managerHelpers.createLoadEpochs(modelOf, occupancy)
-  let cachedFacts: {
-    at: number
-    facts: Promise<HardwareFacts>
-  } | null = null
+  let cachedFacts: { at: number; facts: Promise<HardwareFacts> } | null = null
   async function readFacts(): Promise<HardwareFacts> {
     try {
       return await deps.facts()
@@ -230,10 +224,14 @@ export function createAiManager(deps: ManagerDeps): AiManager {
     signal?.addEventListener('abort', () => entry.abort.abort(), { once: true })
     return entry.done
   }
-  const release = async (endpoint: RuntimeEndpointId): Promise<void> => {
+  const release = async (endpoint: RuntimeEndpointId, andClose = false): Promise<void> => {
+    // Only a caller NOT about to reload this door closes it: `admit` releases the DESTINATION
+    // door to make room on it, and closing there repays a cold start on every change of model.
     if (disposed || (working.get(endpoint) ?? 0) > 0) return
+    const runtime = deps.runtimes[managerHelpers.loaderOf(endpoint)]
     try {
-      await deps.runtimes[managerHelpers.loaderOf(endpoint)]?.unload?.(endpoint)
+      await runtime?.unload?.(endpoint)
+      if (andClose) await runtime?.close?.(endpoint)
     } finally {
       if (!disposed && (working.get(endpoint) ?? 0) === 0) occupancy.delete(endpoint)
     }
@@ -254,7 +252,7 @@ export function createAiManager(deps: ManagerDeps): AiManager {
           if (disposed || loading !== null) break
           if ((working.get(endpoint) ?? 0) > 0) continue
           try {
-            await release(endpoint)
+            await release(endpoint, true)
           } catch (error) {
             deps.log('warn', `idle unload of ${endpoint} failed: ${String(error)}`)
           }
@@ -430,7 +428,7 @@ export function createAiManager(deps: ManagerDeps): AiManager {
       const endpoint = endpointOf(model.loader, model.modality)
       if ((working.get(endpoint) ?? 0) > 0) return compose()
       if (isSuppliedModel(model)) {
-        if (occupancy.get(endpoint)?.modelId === modelId) await release(endpoint)
+        if (occupancy.get(endpoint)?.modelId === modelId) await release(endpoint, true)
         const stored = deps.settings()
         await deps.writeSettings({
           ai: { ...stored.ai, ownModels: stored.ai.ownModels.filter(one => one.id !== modelId) },
@@ -478,7 +476,7 @@ export function createAiManager(deps: ManagerDeps): AiManager {
       const model = modelOf(modelId)
       if (model === null) return compose()
       try {
-        await release(endpointOf(model.loader, model.modality))
+        await release(endpointOf(model.loader, model.modality), true)
       } catch (error) {
         deps.log('warn', `unloading ${modelId} failed: ${String(error)}`)
       }

@@ -1,4 +1,4 @@
-import { describe, expect, it, vi, type Mock } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import {
   installEngineLibraries,
   pipProgress,
@@ -37,9 +37,8 @@ describe('reading pip’s own bar', () => {
 })
 
 describe('installing what the engine named', () => {
-  type Spawned = Mock<InstallEngineLibraries['spawn']>
-  const spawned = () => ({ spawn: vi.fn(() => Promise.resolve()) as unknown as Spawned })
-  const argsOf = (spawn: Spawned): readonly string[] => spawn.mock.calls[0]?.[1] ?? []
+  const spawned = () => ({ spawn: vi.fn<InstallEngineLibraries['spawn']>(() => Promise.resolve()) })
+  type Spawned = ReturnType<typeof spawned>['spawn']
 
   const install = (platform: NodeJS.Platform, declaration: readonly string[], spawn: Spawned) =>
     installEngineLibraries({
@@ -51,6 +50,10 @@ describe('installing what the engine named', () => {
       signal: new AbortController().signal,
     })
 
+  /**
+   * No `--upgrade`: it replaced the signed torch this build ships, which `dlopen` then refuses
+   * under the hardened runtime. Its absence leaves a satisfied `torch>=2.6` where pip found it.
+   */
   it('hands pip the declaration verbatim, in one run', async () => {
     const held = spawned()
 
@@ -62,18 +65,6 @@ describe('installing what the engine named', () => {
       expect.any(Function),
       expect.anything(),
     )
-  })
-
-  /**
-   * `--upgrade` replaced the signed torch this build ships, which `dlopen` then refuses under the
-   * hardened runtime. Its absence is what leaves a satisfied `torch>=2.6` where pip found it.
-   */
-  it('never asks pip to upgrade what is already satisfying', async () => {
-    const held = spawned()
-
-    await install('darwin', ['torch>=2.6'], held.spawn)
-
-    expect(argsOf(held.spawn)).not.toContain('--upgrade')
   })
 
   /** An engine that answered a complete environment must not spawn pip to install nothing. */

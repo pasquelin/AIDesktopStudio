@@ -283,11 +283,15 @@ libération tue un processus — condamnait le moteur local sans que personne le
 laissait l'interpréteur debout. Un plan de libération comptait donc des octets qui ne revenaient
 pas : 208 Mo par porte au minimum, mesurés ce jour, une fois `device()` appelé.
 
-**Le commentaire n'a pas été corrigé, c'est le mécanisme qui l'a été.** `pythonRuntime.unload`
-décharge PUIS ferme la porte (`door.close`, voir l'amendement d'ADR-18). Le processus disparaît, et
-un processus qui n'est plus là ne détient rien : `RECLAIMABLE = true` décrit désormais ce qui se
-passe réellement, et R2 n'a pas à être contournée — il n'y a plus rien à re-mesurer quand il n'y a
-plus de processus.
+**Le commentaire n'a pas été corrigé, c'est le mécanisme qui l'a été**, et pas partout de la même
+façon. `pythonRuntime` gagne un `close` distinct d'`unload` (voir l'amendement d'ADR-18) : le
+minuteur d'inactivité et le déchargement explicite ferment la porte, donc le processus disparaît et
+un processus qui n'est plus là ne détient rien. L'admission, elle, décharge sans fermer — elle va
+recharger cette même porte dans la seconde — et laisse donc les 208 Mo de socle.
+
+`RECLAIMABLE = true` reste vrai de ce qu'un plan compte : les POIDS. Ce qui reste derrière une
+libération d'admission est le socle de l'interpréteur, jamais les tenseurs, et le commentaire du
+fichier le dit maintenant plutôt que de promettre une mort de processus qui n'arrivait jamais.
 
 `[M]` **R2 tient toujours pour le déchargement seul.** `release_cache()` reste ce qu'il était et sa
 réponse reste à re-lire : une porte qui répond zéro est une libération confirmée, une porte absente

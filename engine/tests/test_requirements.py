@@ -80,23 +80,48 @@ def test_a_version_is_compared_on_its_release_numbers(
     assert requirements._satisfies(installed, specifier) is satisfied
 
 
-def test_reads_the_build_off_the_local_version(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(requirements, "version", lambda _name: "2.14.0+cu126")
+def stated(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, source: str | None) -> None:
+    """Stands in for the installed torch, whose `version.py` is a generated text file."""
 
-    assert requirements.torch_build() == "cu126"
+    def locate(_name: str) -> object:
+        if source is None:
+            raise requirements.PackageNotFoundError
+        written = tmp_path / "version.py"
+        written.write_text(source, encoding="utf-8")
+        return type("Found", (), {"locate_file": staticmethod(lambda _path: written)})
+
+    monkeypatch.setattr(requirements, "distribution", locate)
 
 
-def test_a_wheel_that_names_no_build_answers_unknown(monkeypatch: pytest.MonkeyPatch) -> None:
-    """macOS and the default PyPI Linux wheel carry no suffix: unknown, never "no CUDA"."""
-    monkeypatch.setattr(requirements, "version", lambda _name: "2.14.0")
+def test_reads_the_cuda_a_torch_was_built_against(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    stated(tmp_path, monkeypatch, "cuda: Optional[str] = '12.6'\n")
 
-    assert requirements.torch_build() is None
+    assert requirements.torch_cuda() is True
 
 
-def test_a_torch_nobody_installed_answers_unknown(monkeypatch: pytest.MonkeyPatch) -> None:
-    def absent(_name: str) -> str:
-        raise requirements.PackageNotFoundError
+def test_a_torch_built_without_cuda_is_a_certain_no(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """PyPI's Windows wheel carries no `+cpu` suffix, and this is what still sees it."""
+    stated(tmp_path, monkeypatch, "cuda: Optional[str] = None\n")
 
-    monkeypatch.setattr(requirements, "version", absent)
+    assert requirements.torch_cuda() is False
 
-    assert requirements.torch_build() is None
+
+def test_a_torch_nobody_installed_answers_unknown(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    stated(tmp_path, monkeypatch, None)
+
+    assert requirements.torch_cuda() is None
+
+
+def test_a_version_file_it_cannot_read_answers_unknown(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Unknown leaves the caller trusting the card — it must never read as "no CUDA"."""
+    stated(tmp_path, monkeypatch, "__version__ = '2.14.0'\n")
+
+    assert requirements.torch_cuda() is None

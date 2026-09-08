@@ -92,25 +92,24 @@ class DoorRouter:
 
         self.ledger.record(DoorMemory(door=door, held_bytes=held, device=device, backend=backend))
 
-    def _abandon(self, door: str) -> tuple[WorkerProcess | None, list[str]]:
-        """Takes the door out of the router and hands back what it was holding."""
+    def _abandon(self, door: str, why: str) -> WorkerProcess | None:
+        """
+        Takes the door out of the router and FAILS every job it was holding, whatever took it out.
+
+        § A.5 exception 2: the worker abandons and reports. It does not unload another door and
+        try again. Its process is gone, or is on its way out, so it holds nothing — measured.
+        """
         with self._lock:
             worker = self._workers.pop(door, None)
             orphans = [self._runs.pop(key) for key in list(self._runs) if key[0] == door]
-        # Its process is gone, or is on its way out, so it holds nothing — measured, not assumed.
         self.ledger.forget(door)
-        return worker, orphans
 
-    def _abandoned(self, orphans: list[str], message: str) -> None:
         for job in orphans:
-            self._send(encode_event("job.failed", job=job, code="door-gone", message=message))
+            self._send(encode_event("job.failed", job=job, code="door-gone", message=why))
+        return worker
 
     def _worker_left(self, door: str) -> None:
-        """
-        A door that died holds every job it was given. § A.5 exception 2: the worker abandons
-        and reports. It does not unload another door and try again.
-        """
-        self._abandoned(self._abandon(door)[1], "the door died")
+        self._abandon(door, "the door died")
 
     def close_door(self, door: str) -> dict[str, Any]:
         """
@@ -118,20 +117,20 @@ class DoorRouter:
 
         Answered by the CORE and never routed: a door stuck inside its own `import torch` would
         never read the frame asking it to leave. Its next request reopens it through `_live`.
+
+        🛑 `_abandon` is what settles the jobs in flight, and it must run: `begin_close` sets
+        `_closing`, so the pump will NOT call `_on_gone` and `_worker_left` never runs for a door
+        that was closed on purpose. Without it, every job in flight waits for ever on the studio.
         """
         if door not in DOORS:
             raise ValueError(f"no such door: {door!r}")
 
-        worker, orphans = self._abandon(door)
+        worker = self._abandon(door, "the door was closed")
         if worker is None:
             return {"closed": False}
 
         worker.begin_close()
         worker.wait_closed(timeout=CLOSE_WAIT_S)
-        # 🛑 `begin_close` set `_closing`, so the pump will NOT call `_on_gone` and `_worker_left`
-        # never runs for this door. Nothing else would ever settle these runs, and every job in
-        # flight would wait for ever on the studio's side. Failing them here is what closes them.
-        self._abandoned(orphans, "the door was closed")
         return {"closed": True}
 
     def _live(self, door: str) -> WorkerProcess:
@@ -201,17 +200,20 @@ class DoorRouter:
 
     def close(self) -> None:
         with self._lock:
-            workers = list(self._workers.items())
-            self._workers.clear()
+            doors = list(self._workers)
+
+        # Through the same helper as a targeted close, so a job in flight hears `door-gone` on the
+        # way out of the studio too rather than being cut off in silence.
+        gone = [self._abandon(door, "the engine is leaving") for door in doors]
+        leaving = [worker for worker in gone if worker is not None]
 
         # Asked to leave first, waited on second, and the split is what keeps the waits
         # OVERLAPPING: a worker mid-inference does not read its socket, so `wait` may burn its
         # whole timeout — four in a row is four times that, paid on the way out of the studio.
-        for door, worker in workers:
-            self.ledger.forget(door)
+        for worker in leaving:
             worker.begin_close()
 
-        for _door, worker in workers:
+        for worker in leaving:
             worker.wait_closed()
 
 

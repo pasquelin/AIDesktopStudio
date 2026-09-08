@@ -420,8 +420,8 @@ function createManager(
     engineMissing: async profile => {
       const client = await engine.supervisor.engine()
       if (!client) return null
-      const { absent, stale, torchBuild } = await client.requirements(profile)
-      return { missing: [...absent, ...stale].map(one => one.name), torchBuild }
+      const { absent, stale, torchCuda } = await client.requirements(profile)
+      return { missing: [...absent, ...stale].map(one => one.name), torchCuda }
     },
     installEngine: async (onProgress, signal, profile) => {
       const client = await engine.supervisor.engine()

@@ -42,7 +42,7 @@ function harness(over: Partial<PythonClient> = {}, deps: Partial<PythonRuntimeDe
           declaration: [],
           absent: [],
           stale: [],
-          torchBuild: null,
+          torchCuda: null,
           complete: true,
         })),
   )
@@ -346,26 +346,35 @@ describe('unloading', () => {
     expect((await held.runtime.read([MODEL])).loaded).toEqual(new Set(['sana']))
   })
 
-  /**
-   * `models.unload` hands the tensors back and leaves the interpreter standing: measured
-   * 2026-09-08, a door that has called `device()` never drops below 208 MB again.
-   */
-  it('closes the door it just unloaded, rather than leaving the process alive', async () => {
+  /** `admit` releases the door it is about to load onto: closing there repays a cold start. */
+  it('hands the tensors back without ending the process', async () => {
     const held = harness()
     await held.runtime.load?.(MODEL, { onProgress: () => {} })
 
     await held.runtime.unload?.()
 
+    expect(held.closeDoor).not.toHaveBeenCalled()
+  })
+})
+
+describe('closing a door', () => {
+  /** Measured 2026-09-08: a door that called `device()` never drops below 208 MB again. */
+  it('ends the process behind the endpoint it was given', async () => {
+    const held = harness()
+
+    await held.runtime.close?.(runtimeEndpointId('diffusers', 'diffusion'))
+
     expect(held.closeDoor).toHaveBeenCalledWith('engine/diffusion')
   })
 
-  /** A door the engine could not close is still a door whose weights are gone. */
-  it('does not claim the model is loaded again when the close fails', async () => {
-    const held = harness({ closeDoor: () => Promise.reject(new Error('door-gone')) })
-    await held.runtime.load?.(MODEL, { onProgress: () => {} })
+  /** Its processes went with it, so there is nothing to close and no reason to start one. */
+  it('does not start the engine to close a door', async () => {
+    const started = vi.fn(() => Promise.resolve(null))
+    const { runtime } = harness({}, { engine: started, running: () => null })
 
-    await expect(held.runtime.unload?.()).rejects.toThrow(/door-gone/)
-    expect((await held.runtime.read([MODEL])).loaded).toEqual(new Set())
+    await runtime.close?.(runtimeEndpointId('diffusers', 'diffusion'))
+
+    expect(started).not.toHaveBeenCalled()
   })
 })
 
@@ -451,7 +460,7 @@ describe('a door whose environment is incomplete', () => {
           declaration: ['torch>=2.6', 'torchvision>=0.21'],
           absent: [{ name: 'torchvision', wanted: '>=0.21' }],
           stale: [{ name: 'torch', wanted: '>=2.6', installed: '2.1.0' }],
-          torchBuild: null,
+          torchCuda: null,
           complete: false,
         }),
     })

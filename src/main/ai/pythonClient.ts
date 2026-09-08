@@ -70,11 +70,8 @@ export type PythonClient = {
    */
   requirements: (profile?: EngineRequirementsProfile) => Promise<EngineRequirements>
   /**
-   * Ends ONE door's process. `models.unload` hands the tensors back; this is what returns the
-   * interpreter's own 208 MB with them. Answers whether there was a process to end.
-   *
-   * A request and not a job: the CORE answers it, because a door stuck in an import would never
-   * read the frame. The engine kills after 3 s, which keeps it under `REQUEST_TIMEOUT_MS`.
+   * Ends ONE door's process — `DoorRouter.close_door`, which carries why the core answers it and
+   * not the door. Answers whether there was a process to end; `false` is nobody had opened it.
    */
   closeDoor: (door: string) => Promise<boolean>
   /**
@@ -221,7 +218,7 @@ export function createPythonClient(port: PythonPort, listeners: PythonListeners)
   const ask = async (op: EngineOp, params: Readonly<Record<string, unknown>> = {}) => {
     if (closed) throw new Error(GONE)
 
-    return await beforeDeadline(
+    return beforeDeadline(
       client.send(id => engineRequest(id, op, params)),
       op,
     )

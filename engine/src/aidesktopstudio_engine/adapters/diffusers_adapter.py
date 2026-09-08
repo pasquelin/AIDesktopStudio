@@ -99,6 +99,22 @@ def tune_pipeline(pipeline: Any) -> None:
             enable()
 
 
+#: Where fp16 is a real kernel path. Anything else reads as CPU and stays wide, on purpose.
+NARROW_DEVICES = frozenset({"mps", "cuda"})
+
+
+def compute_dtype_name(on: str) -> str:
+    """
+    The compute dtype FOLLOWS the device, and `variant` does not decide it.
+
+    PyTorch covers fp16 poorly on the CPU: half kernels are missing — `addmm_impl_cpu_ not
+    implemented for 'Half'` — or fall back to a path slower than fp32. A name rather than a
+    `torch.dtype` so the choice is testable in an environment with no torch, which `engine/tests`
+    is. An unknown device reads as CPU: fp32 runs everywhere, fp16 does not.
+    """
+    return "float16" if on in NARROW_DEVICES else "float32"
+
+
 def _attached(pipeline: Any, attachment: dict[str, Any], on: str) -> Any:
     """
     Weights grafted onto the pipeline that is already resident, never a second pipeline.
@@ -118,7 +134,10 @@ def _attached(pipeline: Any, attachment: dict[str, Any], on: str) -> Any:
         return pipeline
 
     control = ControlNetModel.from_pretrained(
-        attachment["folder"], use_safetensors=True, local_files_only=True, dtype=torch.float16
+        attachment["folder"],
+        use_safetensors=True,
+        local_files_only=True,
+        dtype=getattr(torch, compute_dtype_name(on)),
     ).to(on)
     return AutoPipelineForText2Image.from_pipe(pipeline, controlnet=control)
 
@@ -137,22 +156,6 @@ def pretrained_file_kwargs(torch_weights: bool, folder: str | None = None) -> di
     if folder is None or any(Path(folder).rglob("*.fp16.safetensors")):
         files["variant"] = "fp16"
     return files
-
-
-#: Where fp16 is a real kernel path. Anything else reads as CPU and stays wide, on purpose.
-NARROW_DEVICES = frozenset({"mps", "cuda"})
-
-
-def compute_dtype_name(on: str) -> str:
-    """
-    The compute dtype FOLLOWS the device, and `variant` does not decide it.
-
-    PyTorch covers fp16 poorly on the CPU: half kernels are missing — `addmm_impl_cpu_ not
-    implemented for 'Half'` — or fall back to a path slower than fp32. A name rather than a
-    `torch.dtype` so the choice is testable in an environment with no torch, which `engine/tests`
-    is. An unknown device reads as CPU: fp32 runs everywhere, fp16 does not.
-    """
-    return "float16" if on in NARROW_DEVICES else "float32"
 
 
 def pretrained_optional_overrides(folder: str) -> dict[str, None]:

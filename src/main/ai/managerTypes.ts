@@ -64,12 +64,8 @@ export type ManagerDeps = {
 export type EngineEnvironment = {
   /** Absent or older than declared, by name. Empty is a complete environment. */
   readonly missing: readonly string[]
-  /**
-   * torch's build, off its local version — `cpu`, `cu126`, `rocm7.14` — `null` when it names none.
-   *
-   * `null` is UNKNOWN, never "no CUDA": the macOS and default PyPI Linux wheels carry no suffix.
-   */
-  readonly torchBuild: string | null
+  /** Whether the installed torch was built with CUDA. `null` is UNKNOWN, never "no CUDA". */
+  readonly torchCuda: boolean | null
 }
 
 export type AiManager = {

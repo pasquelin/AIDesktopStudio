@@ -19,8 +19,9 @@ export function endpointOfDoor(door: string): RuntimeEndpointId | null {
 }
 
 /**
- * Releasing a door unloads it and then CLOSES it — `door.close` ends the process, and a process
- * that is gone holds nothing. So a plan may count these bytes back without asking twice.
+ * A release hands the tensors back, and where the caller is not about to reload the door it also
+ * ends the process (`door.close`) — the only thing that returns the interpreter's own 208 MB.
+ * What stays behind on an admission release is that baseline, never the weights a plan counts.
  */
 const RECLAIMABLE = true
 
