@@ -111,31 +111,16 @@ describe('what a build ships twice', () => {
 /**
  * The check has to run where the artefact is, and a build is the only moment it exists.
  *
- * `pnpm build` is not enough on its own: the integration job runs `electron-vite build` directly,
- * to spare the second typecheck, so the check has to be named there too. Both sites are asserted
- * because nothing else would notice either one going missing — a build without it is a green
- * build, and that is exactly what this lot found in the artefact.
+ * `pnpm build` carries it and `validate` carries `pnpm build`, so the job running the gate runs
+ * the check — WHICH job that is belongs to `ci-runs-the-gate.test.ts`. The chain is asserted here
+ * because a build without the check is a green build, which is what this lot found in `out/`.
  */
 describe('the artefact check', () => {
-  it('runs at the end of every local build, hence of every package', () => {
+  it('runs at the end of every build, hence of every package and of the gate', () => {
     expect(manifest.scripts.build).toContain('check-artefact.mjs')
     expect(manifest.scripts.dist).toContain('pnpm build')
-  })
-
-  /**
-   * Read as steps rather than as text: a commented-out `# - run: …` still contains the words, and
-   * a guard that a `#` disarms is one the next rebase disarms by accident.
-   */
-  it('runs in the job that builds before a merge, which does not call `pnpm build`', () => {
-    const ci = readFileSync(
-      join(import.meta.dirname, '..', '..', '.github/workflows/ci.yml'),
-      'utf8',
-    )
-    const steps = ci.split('\n').filter(line => !/^\s*#/.test(line))
-
-    expect(steps.join('\n')).toContain('electron-vite build')
-    expect(steps).toContainEqual(
-      expect.stringMatching(/^\s*- run: node scripts\/check-artefact\.mjs\s*$/),
-    )
+    // Split rather than searched: `pnpm build:site` holds `pnpm build` as a substring, and would
+    // answer for the link that reaches this check while building something else entirely.
+    expect(manifest.scripts.validate.split('&&').map(link => link.trim())).toContain('pnpm build')
   })
 })
