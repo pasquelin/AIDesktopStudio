@@ -2,8 +2,7 @@ import type { EngineFailure } from '@shared/domain/failure'
 import type { AiOverview, OwnModelProfile } from '@shared/domain/aiOverview'
 import { chatModelOf, CLOUD_PROVIDERS, type HttpChat } from '@shared/domain/aiCloud'
 import { STT_MODEL } from '@shared/domain/dictation'
-import type { LocalModel } from '@shared/domain/localModel'
-import { needsOwnFolder } from '@shared/domain/localModel'
+import { needsOwnFolder, type LocalModel } from '@shared/domain/localModel'
 import type { WorkspaceId } from '@shared/domain/workspace'
 import { app, systemPreferences } from 'electron'
 import { spawn } from 'node:child_process'
@@ -14,12 +13,11 @@ import { join } from 'node:path'
 import { setTimeout as sleepFor } from 'node:timers/promises'
 import { createAiManager, type AiManager } from './ai/manager'
 import { catalogueWith, modelWith } from './ai/catalogue'
-import { electronHardwarePort } from './ai/electronHardwarePort'
+import { electronHardwarePort, freeBytesAt } from './ai/electronHardwarePort'
 import { electronLlamaPort } from './ai/electronLlamaPort'
 import { llamaLocalRuntime } from './ai/llamaRuntime'
 import { ensureOllama, ollamaInstalled } from './ai/ensureOllama'
-import { installEngineLibraries } from './ai/installEngineLibraries'
-import { spawnLines } from './ai/spawnLines'
+import { engineRepairDeps } from './ai/engineRepair'
 import {
   extractOllamaArchive,
   fetchOllamaArchive,
@@ -32,7 +30,7 @@ import { hardwareProbe, memorySnapshotOf } from './ai/hardwareProbe'
 import { readyCloudsOf } from './ai/cloudReadiness'
 import { createPythonClient } from './ai/pythonClient'
 import { openPythonProcess } from './ai/pythonProcess'
-import { notAnswering, pythonRuntime } from './ai/pythonRuntime'
+import { pythonRuntime } from './ai/pythonRuntime'
 import { createPythonSupervisor, EngineMissingError } from './ai/pythonSupervisor'
 import { createAutoRigHost } from './ai/autoRigHost'
 import { createSmartSelectionHost } from './ai/smartSelectionHost'
@@ -63,6 +61,7 @@ import { createHttpChatBrain } from './assistant/brainHttp'
 import { activeProvidersOf } from '@shared/domain/account'
 import { broadcast } from './ipc/broadcast'
 import { EVENTS } from '@shared/ipc'
+import { orElse } from '@shared/promises'
 import { log } from './log'
 import type { Language } from '@shared/i18n'
 
@@ -406,8 +405,10 @@ function createManager(
   engine: ReturnType<typeof createEngine>,
   emit: (overview: AiOverview) => void,
 ) {
+  const facts = () => hardwareProbe(electronHardwarePort(modelFolder, llama.vram))
+
   return createAiManager({
-    facts: () => hardwareProbe(electronHardwarePort(modelFolder, llama.vram)),
+    facts,
     snapshotOf: (facts, runtimeBytes) => memorySnapshotOf(facts, BUDGET, Date.now(), runtimeBytes),
     settings: () => deps.settings.read(),
     writeSettings: partial => deps.settings.write(partial),
@@ -418,23 +419,14 @@ function createManager(
     log: (level, message) => log[level]('ai', message),
     now: Date.now,
     ollamaInstalled: ollama.installed,
-    engineMissing: async profile => {
-      const client = await engine.supervisor.engine()
-      if (!client) return null
-      const needs = await client.requirements(profile)
-      return [...needs.absent.map(one => one.name), ...needs.stale.map(one => one.name)]
-    },
-    installEngine: async (onProgress, signal, profile) => {
-      const client = await engine.supervisor.engine()
-      if (!client) throw notAnswering(engine.supervisor.whyNot())
-      await installEngineLibraries({
-        python: enginePython(),
-        declaration: (await client.requirements(profile)).declaration,
-        spawn: spawnLines,
-        onProgress,
-        signal,
-      })
-    },
+    ...engineRepairDeps({
+      supervisor: engine.supervisor,
+      python: enginePython,
+      platform: process.platform,
+      facts,
+      // The interpreter's own volume: site-packages land beside it, wherever the weights go.
+      freeBytes: () => orElse<number | null>(freeBytesAt(enginePython()), null),
+    }),
     installOllama: ollama.install,
   })
 }

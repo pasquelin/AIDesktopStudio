@@ -55,7 +55,7 @@ const manager = (over: Partial<ManagerDeps> = {}) =>
     ollamaInstalled: () => false,
     installOllama: () => Promise.resolve(),
     engineMissing: () => Promise.resolve(null),
-    installEngine: () => Promise.resolve(),
+    installEngine: () => Promise.resolve({ cuda: false }),
     ...over,
   })
 
@@ -242,8 +242,8 @@ describe('what a compose costs', () => {
 
 describe('motion engine requirements', () => {
   it('keeps the requested profile through inspection and installation', async () => {
-    const engineMissing = vi.fn(async () => ['peft'])
-    const installEngine = vi.fn(async () => {})
+    const engineMissing = vi.fn(async () => ({ missing: ['peft'], torchCuda: null }))
+    const installEngine = vi.fn(async () => ({ cuda: false }))
     const ai = manager({ engineMissing, installEngine })
     expect((await ai.readEngine('motion')).engine).toMatchObject({
       profile: 'motion',
@@ -256,5 +256,22 @@ describe('motion engine requirements', () => {
       'motion',
     )
     expect(engineMissing).toHaveBeenLastCalledWith('motion')
+  })
+
+  /**
+   * A CUDA install that lands a CPU torch is silent: the door still generates, on the processor,
+   * and the card sits idle with nobody told. Reading it back is the whole point of asking.
+   */
+  it('says so when the CUDA wheels were asked for and the torch still answers none', async () => {
+    const log = vi.fn()
+    const ai = manager({
+      log,
+      installEngine: () => Promise.resolve({ cuda: true }),
+      engineMissing: () => Promise.resolve({ missing: [], torchCuda: false }),
+    })
+
+    await ai.installEngine()
+
+    expect(log).toHaveBeenCalledWith('warn', expect.stringContaining('CUDA'))
   })
 })

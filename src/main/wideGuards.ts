@@ -41,9 +41,11 @@ import { resolveSpecifier } from './sourceFiles.ts'
  * `rerunEverything` put the short loop's whole-suite trigger under a guard of its own; 130 against 140
  * the same day, when `agents-contract` put the agent contract's own wiring under a guard;
  * 131 against 141 the same day, when `daisy-gauge` read the stylesheet to hold daisyUI's
- * own gauges against `--sc-control`.
+ * own gauges against `--sc-control`; 132 against 142 the same day, when
+ * `installEngineLibraries` read `engine/pyproject.toml` to tie the embedded torch pin to the
+ * `+cu126` build it names.
  */
-export const LEAST_GUARDS = 131
+export const LEAST_GUARDS = 132
 
 /**
  * How far the floor may sit below the real count before it stops meaning anything.

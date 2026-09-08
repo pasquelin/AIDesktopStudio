@@ -46,18 +46,31 @@ export type ManagerDeps = {
   /** Fetches the official archive into the studio folder when none is on this computer. */
   installOllama: (onProgress: (ratio: number) => void, signal: AbortSignal) => Promise<void>
   /**
-   * What the door's environment lacks, by name, and `null` while nothing has answered.
+   * What the ENGINE says of the door's environment, and `null` while nothing has answered.
    *
-   * Asked of the ENGINE and never computed here: the declaration lives in `pyproject.toml`, and a
+   * Asked of the engine and never computed here: the declaration lives in `pyproject.toml`, and a
    * second reading of it in TypeScript would drift from the one `uv` resolves.
    */
-  engineMissing: (profile?: OwnModelProfile) => Promise<readonly string[] | null>
-  /** Installs exactly what the engine named, with the interpreter the app ships. */
+  engineMissing: (profile?: OwnModelProfile) => Promise<EngineEnvironment | null>
+  /**
+   * Installs exactly what the engine named, with the interpreter the app ships.
+   *
+   * Answers whether it asked an index for the CUDA wheels, which is never what it GOT: the
+   * installer reads that back off `engineMissing` and says when the two disagree.
+   */
   installEngine: (
     onProgress: (ratio: number) => void,
     signal: AbortSignal,
     profile?: OwnModelProfile,
-  ) => Promise<void>
+  ) => Promise<{ readonly cuda: boolean }>
+}
+
+/** What one `engine.requirements` answered, kept as the screen needs to read it. */
+export type EngineEnvironment = {
+  /** Absent or older than declared, by name. Empty is a complete environment. */
+  readonly missing: readonly string[]
+  /** Whether the installed torch was built with CUDA. `null` is UNKNOWN, never "no CUDA". */
+  readonly torchCuda: boolean | null
 }
 
 export type AiManager = {

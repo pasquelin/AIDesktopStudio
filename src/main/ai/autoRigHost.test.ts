@@ -37,6 +37,7 @@ function engineThatWritesResult(
     hardware: () => Promise.reject(new Error('unused')),
     memory: () => Promise.resolve([]),
     requirements: () => Promise.reject(new Error('unused')),
+    closeDoor: vi.fn(),
     close: vi.fn(),
     job: async (_op, params, watch) => {
       const destination = params.destination

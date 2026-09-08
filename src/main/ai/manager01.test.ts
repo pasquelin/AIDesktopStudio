@@ -103,7 +103,7 @@ const manager = (over: Partial<ManagerDeps> = {}) =>
     ollamaInstalled: () => false,
     installOllama: () => Promise.resolve(),
     engineMissing: () => Promise.resolve(null),
-    installEngine: () => Promise.resolve(),
+    installEngine: () => Promise.resolve({ cuda: false }),
     ...over,
   })
 

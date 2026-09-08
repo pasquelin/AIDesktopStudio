@@ -145,6 +145,37 @@ describe('asking the engine what machine it runs on', () => {
   })
 })
 
+describe('closing a door', () => {
+  /**
+   * A REQUEST and never a job: the core answers it, because a door blocked inside its own
+   * `import torch` would never read the frame asking it to leave.
+   */
+  it('asks the core directly, with no job to settle it', async () => {
+    const { client, sent, say } = harness()
+    say(greeting())
+    await client.ready
+
+    const asked = client.closeDoor('engine/diffusion')
+    expect(sent).toEqual([
+      { v: PROTOCOL_VERSION, id: 1, op: 'door.close', params: { door: 'engine/diffusion' } },
+    ])
+
+    say({ v: PROTOCOL_VERSION, id: 1, ok: { closed: true } })
+    await expect(asked).resolves.toBe(true)
+  })
+
+  it('answers that nothing closed for a door nobody had opened', async () => {
+    const { client, say } = harness()
+    say(greeting())
+    await client.ready
+
+    const asked = client.closeDoor('engine/audio')
+    say({ v: PROTOCOL_VERSION, id: 1, ok: { closed: false } })
+
+    await expect(asked).resolves.toBe(false)
+  })
+})
+
 describe('opening a job on a door', () => {
   const opened = async () => {
     const held = harness()

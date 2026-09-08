@@ -20,6 +20,10 @@ from aidesktopstudio_engine.protocol.envelope import CANCEL_OP, encode_event
 #: because the core is the only side that builds an argv.
 DOOR_MODULE = "aidesktopstudio_engine.workers.door"
 
+#: How long closing ONE door waits before killing it. Under the studio's `REQUEST_TIMEOUT_MS` of
+#: 5 s on purpose: a client that gave up would kill the whole engine to free a single door.
+CLOSE_WAIT_S = 3
+
 Send = Callable[[str], None]
 Spawn = Callable[[str, Callable[[dict], None], Callable[[], None]], WorkerProcess]
 
@@ -88,21 +92,50 @@ class DoorRouter:
 
         self.ledger.record(DoorMemory(door=door, held_bytes=held, device=device, backend=backend))
 
-    def _worker_left(self, door: str) -> None:
+    def _abandon(self, door: str, why: str) -> WorkerProcess | None:
         """
-        A door that died holds every job it was given. § A.5 exception 2: the worker abandons
-        and reports. It does not unload another door and try again.
+        Takes the door out of the router and FAILS every job it was holding, whatever took it out.
+
+        § A.5 exception 2: the worker abandons and reports. It does not unload another door and
+        try again. Its process is gone, or is on its way out, so it holds nothing — measured.
         """
         with self._lock:
+            worker = self._workers.pop(door, None)
             orphans = [self._runs.pop(key) for key in list(self._runs) if key[0] == door]
-            self._workers.pop(door, None)
-        # Its process is gone, so it holds nothing — a measurement, not an assumption.
         self.ledger.forget(door)
 
         for job in orphans:
-            self._send(
-                encode_event("job.failed", job=job, code="door-gone", message="the door died")
-            )
+            self._send(encode_event("job.failed", job=job, code="door-gone", message=why))
+        return worker
+
+    def _worker_left(self, door: str) -> None:
+        self._abandon(door, "the door died")
+
+    def close_door(self, door: str) -> dict[str, Any]:
+        """
+        Ends ONE door's process, where `models.unload` only hands its tensors back.
+
+        Answered by the CORE and never routed: a door stuck inside its own `import torch` would
+        never read the frame asking it to leave. Its next request reopens it through `_live`.
+
+        🛑 `_abandon` is what settles the jobs in flight, and it must run: `begin_close` sets
+        `_closing`, so the pump will NOT call `_on_gone` and `_worker_left` never runs for a door
+        that was closed on purpose. Without it, every job in flight waits for ever on the studio.
+        """
+        if door not in DOORS:
+            raise ValueError(f"no such door: {door!r}")
+
+        worker = self._abandon(door, "the door was closed")
+        if worker is None:
+            return {"closed": False}
+
+        worker.begin_close()
+        # 🛑 Reaped OFF this thread. `wait_closed` blocks up to CLOSE_WAIT_S, and the loop calling
+        # this is the one that answers CANCEL_OP — a Stop queued behind another door leaving is
+        # exactly what `memory_handlers` says never happens. `_abandon` already settled the jobs,
+        # so nothing here needs the exit code.
+        threading.Thread(target=worker.wait_closed, args=(CLOSE_WAIT_S,), daemon=True).start()
+        return {"closed": True}
 
     def _live(self, door: str) -> WorkerProcess:
         with self._lock:
@@ -174,6 +207,9 @@ class DoorRouter:
             workers = list(self._workers.items())
             self._workers.clear()
 
+        # NOT through `_abandon`, and the difference matters: it reports each orphan job, and this
+        # path runs because the STUDIO's socket ended. `sendall` on a destroyed peer raises, which
+        # would leave every door unasked and the stream unclosed. Nobody is listening here.
         # Asked to leave first, waited on second, and the split is what keeps the waits
         # OVERLAPPING: a worker mid-inference does not read its socket, so `wait` may burn its
         # whole timeout — four in a row is four times that, paid on the way out of the studio.

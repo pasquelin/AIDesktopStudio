@@ -148,9 +148,11 @@
       "refused": "이 모델의 형식이나 출처가 허용되지 않습니다",
       "runtime": "이 모델은 지금 이 컴퓨터에서 사용할 수 없습니다",
       "plugin": "스튜디오의 어떤 엔진도 아직 이 모델을 열 수 없습니다",
-      "cuda": "이 모델은 NVIDIA GPU (CUDA)가 필요합니다"
+      "cuda": "이 모델은 NVIDIA GPU (CUDA)가 필요합니다",
+      "cudaTorch": "NVIDIA 카드는 있지만 로컬 엔진이 CUDA 없이 설치되었습니다. 라이브러리를 다시 설치하세요"
     },
     "empty": "이 컴퓨터에 제공할 공급자가 있는 작업이 없습니다.",
+    "engineHelpCuda": "로컬 엔진이 프로세서에서 생성합니다. NVIDIA 카드는 있지만 그 라이브러리가 CUDA 없이 설치되었습니다.",
     "engineHelpFailed": "설치가 완료되지 않았습니다. 아무것도 지워지지 않았습니다. 다시 시도할 수 있습니다.",
     "engineHelpMissing": "로컬 엔진이 생성할 수 없습니다: {{names}}가 없습니다.",
     "engineHelpUnknown": "로컬 엔진이 아직 응답하지 않았습니다.",
@@ -167,7 +169,7 @@
     "forgetHint": "목록에서 항목을 제거합니다. 파일은 그대로 유지됩니다",
     "install": "설치",
     "installEngine": "라이브러리 설치",
-    "installEngineHint": "로컬 엔진에 없는 항목을 다운로드합니다. 수백 메가바이트이며 Linux에서는 더 큽니다.",
+    "installEngineHint": "로컬 엔진에 없는 항목을 다운로드합니다. 수백 메가바이트이며 NVIDIA 카드가 있으면 수 기가바이트입니다.",
     "installFailed": "설치가 완료되지 않았습니다. 다시 시도할 수 있습니다.",
     "installFailedChecksum": "도착한 파일이 모델과 일치하지 않습니다. 파일이 삭제되었습니다. 다시 시도하세요.",
     "installFailedNetwork": "다운로드가 중단되었습니다. 다시 시작하세요: 이미 도착한 항목은 계속됩니다.",

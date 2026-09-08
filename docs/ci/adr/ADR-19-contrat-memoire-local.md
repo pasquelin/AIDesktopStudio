@@ -271,3 +271,33 @@ Vérifiées le 21/08 : `panels/models/Models/Models.tsx:141` est un `onSelect` �
 est consommé aux lignes **59, 146, 152 et 159** ; `panels/generator/Generator.tsx:117` est une fin
 de bloc de commentaire, l'appel est en **118**. Le fait annoncé est juste, les deux pointeurs ne
 l'étaient pas.
+
+---
+
+## Amendement du 8 septembre 2026 — « libérer, c'est tuer » devient vrai pour les portes du moteur
+
+`[M]` **La leçon de l'amendement du 21/08 — ce qui prédit le retour des octets est de savoir si la
+libération tue un processus — condamnait le moteur local sans que personne le voie.**
+`engineMemory.ts` posait `RECLAIMABLE = true` en se justifiant par une mort de processus
+(« Killing the process returns the bytes »), alors que `models.unload` rendait les tenseurs et
+laissait l'interpréteur debout. Un plan de libération comptait donc des octets qui ne revenaient
+pas : 208 Mo par porte au minimum, mesurés ce jour, une fois `device()` appelé.
+
+**Le commentaire n'a pas été corrigé, c'est le mécanisme qui l'a été**, et pas partout de la même
+façon. `pythonRuntime` gagne un `close` distinct d'`unload` (voir l'amendement d'ADR-18) : le
+minuteur d'inactivité et le déchargement explicite ferment la porte, donc le processus disparaît et
+un processus qui n'est plus là ne détient rien. L'admission, elle, décharge sans fermer — elle va
+recharger cette même porte dans la seconde — et laisse donc les 208 Mo de socle.
+
+`RECLAIMABLE = true` reste vrai de ce qu'un plan compte : les POIDS. Ce qui reste derrière une
+libération d'admission est le socle de l'interpréteur, jamais les tenseurs, et le commentaire du
+fichier le dit maintenant plutôt que de promettre une mort de processus qui n'arrivait jamais.
+
+`[M]` **R2 tient toujours pour le déchargement seul.** `release_cache()` reste ce qu'il était et sa
+réponse reste à re-lire : une porte qui répond zéro est une libération confirmée, une porte absente
+n'est pas un démenti. La fermeture ne remplace pas cette lecture, elle la rend inutile dans le seul
+cas où le processus s'en va.
+
+`[?]` **Non mesuré** : le retour effectif des octets côté système après `door.close` sur une
+machine à carte dédiée. Sur unifié, la mort du processus est la seule chose qui rende la RSS, et
+c'est ce que cet amendement s'appuie sur.

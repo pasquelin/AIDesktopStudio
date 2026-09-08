@@ -24,7 +24,7 @@ async function linuxAvailableBytes(): Promise<number | null> {
  * Free space on the volume a path names, walking up to a folder that exists: the model folder is
  * created at install time, and a path that is not there yet still names a volume.
  */
-async function freeBytesAt(path: string): Promise<number> {
+export async function freeBytesAt(path: string): Promise<number> {
   for (let at = path; ; at = dirname(at)) {
     try {
       const stats = await statfs(at)

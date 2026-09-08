@@ -1,5 +1,6 @@
 import type { MemorySnapshot } from '@shared/domain/aiMemory'
 import type { AiOverview } from '@shared/domain/aiOverview'
+import { STT_MODEL } from '@shared/domain/dictation'
 import type { LocalModel } from '@shared/domain/localModel'
 import { GIBI, localModel } from '@shared/domain/localModel-fixtures'
 import { DEFAULT_SETTINGS, type PartialSettings, type Settings } from '@shared/domain/settings'
@@ -54,7 +55,7 @@ const manager = (over: Partial<ManagerDeps> = {}) =>
     ollamaInstalled: () => false,
     installOllama: () => Promise.resolve(),
     engineMissing: () => Promise.resolve(null),
-    installEngine: () => Promise.resolve(),
+    installEngine: () => Promise.resolve({ cuda: false }),
     ...over,
   })
 
@@ -180,5 +181,53 @@ describe('a model the person supplied', () => {
     await ai.addOwnModel({ ...OWN, name: 'Renamed' })
 
     expect(written).toMatchObject({ ai: { ownModels: [{ id: OWN.id, name: 'Renamed' }] } })
+  })
+})
+
+describe('closing the door a release emptied', () => {
+  const QWEN = STT_MODEL
+
+  const idling = (over: Partial<LocalRuntime>) => {
+    const armed: { run: (() => void) | null } = { run: null }
+    const runtime = holdingRuntime()
+    const ai = manager({
+      idleUnloadMinutes: () => 10,
+      schedule: run => {
+        armed.run = run
+        return () => {
+          armed.run = null
+        }
+      },
+      runtimes: { 'sherpa-onnx': { ...runtime, ...over } },
+    })
+    return { ai, armed }
+  }
+
+  /**
+   * 🛑 Killing the process hands back the tensors AND the 208 MB of imports an unload never
+   * returned, so unloading first pays a routed round trip and a `gc.collect()` over gigabytes one
+   * line before dropping the process that held them.
+   */
+  it('kills the door instead of emptying it first', async () => {
+    const unload = vi.fn()
+    const close = vi.fn()
+    const { ai, armed } = idling({ unload, close })
+
+    await ai.load(QWEN.id)
+    armed.run?.()
+
+    await vi.waitFor(() => expect(close).toHaveBeenCalledOnce())
+    expect(unload).not.toHaveBeenCalled()
+  })
+
+  /** A runtime whose process the studio does not own has nothing to kill, and still empties. */
+  it('falls back to emptying a door it cannot close', async () => {
+    const unload = vi.fn()
+    const { ai, armed } = idling({ unload })
+
+    await ai.load(QWEN.id)
+    armed.run?.()
+
+    await vi.waitFor(() => expect(unload).toHaveBeenCalledOnce())
   })
 })

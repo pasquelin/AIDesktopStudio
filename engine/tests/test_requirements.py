@@ -78,3 +78,50 @@ def test_a_version_is_compared_on_its_release_numbers(
 ) -> None:
     """The last case is the blind spot in the open: a pre-release reads as its numbers."""
     assert requirements._satisfies(installed, specifier) is satisfied
+
+
+def stated(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, source: str | None) -> None:
+    """Stands in for the installed torch, whose `version.py` is a generated text file."""
+
+    def locate(_name: str) -> object:
+        if source is None:
+            raise requirements.PackageNotFoundError
+        written = tmp_path / "version.py"
+        written.write_text(source, encoding="utf-8")
+        return type("Found", (), {"locate_file": staticmethod(lambda _path: written)})
+
+    monkeypatch.setattr(requirements, "distribution", locate)
+
+
+def test_reads_the_cuda_a_torch_was_built_against(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    stated(tmp_path, monkeypatch, "cuda: Optional[str] = '12.6'\n")
+
+    assert requirements.torch_cuda() is True
+
+
+def test_a_torch_built_without_cuda_is_a_certain_no(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """PyPI's Windows wheel carries no `+cpu` suffix, and this is what still sees it."""
+    stated(tmp_path, monkeypatch, "cuda: Optional[str] = None\n")
+
+    assert requirements.torch_cuda() is False
+
+
+def test_a_torch_nobody_installed_answers_unknown(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    stated(tmp_path, monkeypatch, None)
+
+    assert requirements.torch_cuda() is None
+
+
+def test_a_version_file_it_cannot_read_answers_unknown(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Unknown leaves the caller trusting the card — it must never read as "no CUDA"."""
+    stated(tmp_path, monkeypatch, "__version__ = '2.14.0'\n")
+
+    assert requirements.torch_cuda() is None

@@ -8,8 +8,9 @@ declaration has ONE home — a list copied into Python would drift from the one 
 
 from __future__ import annotations
 
+import re
 import tomllib
-from importlib.metadata import PackageNotFoundError, version
+from importlib.metadata import PackageNotFoundError, distribution, version
 from pathlib import Path
 from typing import Any
 
@@ -68,6 +69,33 @@ def declared(extra: str = DOOR_EXTRA) -> list[str]:
     return [line for line in optional.get(extra, []) if not line.startswith(package)]
 
 
+#: `torch/version.py` is GENERATED at build time and states what torch was built against:
+#: `cuda: Optional[str] = None` on a CPU build, `= '12.6'` on a CUDA one. Verified 2026-09-08 on
+#: the embedded 2.14.0 wheel. Read as text, so it imports nothing.
+_TORCH_CUDA = re.compile(r"^cuda(?:\s*:[^=]*)?\s*=\s*(None|['\"])", re.MULTILINE)
+
+
+def torch_cuda() -> bool | None:
+    """
+    Whether the INSTALLED torch was built with CUDA. `None` where it cannot be established.
+
+    Not `torch.cuda.is_available()`, and not the wheel's local version either. The first costs an
+    import — measured 2026-09-08, 1 317 ms and the core's 33 MB become 208 — and the core must
+    stay free of it. The second is silent on exactly the machine this exists for: PyPI publishes
+    its Windows CPU wheel with NO suffix, so `+cpu` would never appear where the card is an NVIDIA
+    and the torch beside it cannot use it.
+
+    **Blind spot, in clear**: `None` means UNKNOWN and never "no CUDA" — an unreadable or
+    reshaped `version.py`, or a torch nobody installed, leaves the caller trusting the card.
+    """
+    try:
+        stated = Path(distribution("torch").locate_file("torch/version.py")).read_text("utf-8")
+    except (PackageNotFoundError, OSError):
+        return None
+    found = _TORCH_CUDA.search(stated)
+    return None if found is None else found.group(1) != "None"
+
+
 def survey(extra: str = DOOR_EXTRA) -> dict[str, Any]:
     """
     Three states, and the studio needs all three: absent, present but older than declared, ready.
@@ -95,4 +123,5 @@ def survey(extra: str = DOOR_EXTRA) -> dict[str, Any]:
         "absent": absent,
         "stale": stale,
         "complete": not absent and not stale,
+        "torchCuda": torch_cuda(),
     }

@@ -10,6 +10,7 @@ import {
   isWorkerHello,
   PROTOCOL_VERSION,
   readHardware,
+  readClosedDoor,
   readRequirements,
   readMemoryLedger,
   readOpenedJob,
@@ -19,6 +20,7 @@ import {
   type EngineRequirements,
   type EngineHello,
   type EngineJobOp,
+  type EngineOp,
   type EngineRequest,
   type EngineRequirementsProfile,
   type EngineSettledJob,
@@ -67,6 +69,11 @@ export type PythonClient = {
    * door and imports no tensor library — a door started to be told it holds nothing is 682 MB.
    */
   requirements: (profile?: EngineRequirementsProfile) => Promise<EngineRequirements>
+  /**
+   * Ends ONE door's process — `DoorRouter.close_door`, which carries why the core answers it and
+   * not the door. Answers whether there was a process to end; `false` is nobody had opened it.
+   */
+  closeDoor: (door: string) => Promise<boolean>
   /**
    * Opens a JOB on a door and waits for the event that settles it — reading gigabytes and running
    * an inference are the two things `REQUEST_TIMEOUT_MS` must never bound.
@@ -207,39 +214,24 @@ export function createPythonClient(port: PythonPort, listeners: PythonListeners)
       void work.then(resolve, reject).finally(() => clearTimeout(deadline))
     })
 
+  /** What the CORE answers in the same turn. Everything a DOOR answers goes through `job`. */
+  const ask = async (op: EngineOp, params: Readonly<Record<string, unknown>> = {}) => {
+    if (closed) throw new Error(GONE)
+
+    return beforeDeadline(
+      client.send(id => engineRequest(id, op, params)),
+      op,
+    )
+  }
+
   return {
     ready,
 
-    hardware: async () => {
-      if (closed) throw new Error(GONE)
-
-      const answer = await beforeDeadline(
-        client.send(id => engineRequest(id, 'hardware.info')),
-        'hardware.info',
-      )
-      return readHardware(answer)
-    },
-
-    requirements: async (profile = 'diffusion') => {
-      if (closed) throw new Error(GONE)
-
-      return readRequirements(
-        await beforeDeadline(
-          client.send(id => engineRequest(id, 'engine.requirements', { profile })),
-          'engine.requirements',
-        ),
-      )
-    },
-
-    memory: async () => {
-      if (closed) throw new Error(GONE)
-
-      const answer = await beforeDeadline(
-        client.send(id => engineRequest(id, 'memory.ledger')),
-        'memory.ledger',
-      )
-      return readMemoryLedger(answer)
-    },
+    hardware: async () => readHardware(await ask('hardware.info')),
+    requirements: async (profile = 'diffusion') =>
+      readRequirements(await ask('engine.requirements', { profile })),
+    closeDoor: async door => readClosedDoor(await ask('door.close', { door })),
+    memory: async () => readMemoryLedger(await ask('memory.ledger')),
 
     job: async (op, params, watch = {}) => {
       if (closed) throw new Error(GONE)

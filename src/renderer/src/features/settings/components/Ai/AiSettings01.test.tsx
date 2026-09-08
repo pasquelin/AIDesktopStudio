@@ -155,6 +155,21 @@ describe('AiSettings', () => {
     await vi.waitFor(() => expect(installEngine).toHaveBeenCalledWith('motion'))
   })
 
+  /**
+   * A card that generates on the processor lacks NOTHING, so the button used to vanish — while
+   * the verdict on its models told the person to install the libraries again.
+   */
+  it('still offers the repair when the door is complete and its torch has no CUDA', () => {
+    show(
+      overview({
+        engine: { known: true, missing: [], progress: null, failed: false, cuda: 'repairable' },
+      }),
+    )
+
+    expect(screen.getByText(/génère sur le processeur/)).toBeVisible()
+    expect(screen.getByRole('button', { name: 'Installer les bibliothèques' })).toBeEnabled()
+  })
+
   it('puts the catalogue line under a candidate, not only its size', () => {
     show(
       overview({

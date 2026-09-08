@@ -148,9 +148,11 @@
       "refused": "此模型的格式或来源不被接受",
       "runtime": "此模型目前在本机上不可用",
       "plugin": "本工作室还没有引擎能打开此模型",
-      "cuda": "此模型需要 NVIDIA GPU（CUDA）"
+      "cuda": "此模型需要 NVIDIA GPU（CUDA）",
+      "cudaTorch": "有 NVIDIA 显卡，但本地引擎安装时未带 CUDA，请重新安装它的库"
     },
     "empty": "本机上没有任何操作有服务商可供选择。",
+    "engineHelpCuda": "本地引擎正在处理器上生成：NVIDIA 显卡在此，但它的库安装时未带 CUDA。",
     "engineHelpFailed": "安装没有完成。没有任何内容被删除。你可以重试。",
     "engineHelpMissing": "本地引擎无法生成：缺少 {{names}}。",
     "engineHelpUnknown": "本地引擎还没有响应。",
@@ -167,7 +169,7 @@
     "forgetHint": "把该条目从列表中移除。你的文件留在原处",
     "install": "安装",
     "installEngine": "安装库",
-    "installEngineHint": "下载本地引擎缺少的部分。几百兆字节，在 Linux 上更多。",
+    "installEngineHint": "下载本地引擎缺少的部分。几百兆字节，有 NVIDIA 显卡时为几吉字节。",
     "installFailed": "安装没有完成。你可以重试。",
     "installFailedChecksum": "收到的文件与该模型不符。它已被丢弃。重试。",
     "installFailedNetwork": "下载被中断。重新开始：已经收到的部分会续传。",

@@ -18,7 +18,11 @@ export function endpointOfDoor(door: string): RuntimeEndpointId | null {
   }
 }
 
-/** Killing the process returns the bytes (`_worker_left`). Release means death, so no confirmation. */
+/**
+ * A release hands the tensors back, and where the caller is not about to reload the door it also
+ * ends the process (`door.close`) — the only thing that returns the interpreter's own 208 MB.
+ * What stays behind on an admission release is that baseline, never the weights a plan counts.
+ */
 const RECLAIMABLE = true
 
 export function occupancyOfDoors(
