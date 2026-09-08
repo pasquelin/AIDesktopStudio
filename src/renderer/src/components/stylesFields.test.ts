@@ -92,6 +92,28 @@ describe('a list one picks from', () => {
   })
 })
 
+describe('a box one ticks', () => {
+  /**
+   * The same rule for the other native control the studio kept redrawing: six sites wrote
+   * `type="checkbox"` with a size of their own, in two gauges, and a seventh reached for the
+   * plugin's class directly. `Checkbox` holds the value one FILLS IN, `Toggle` the setting that
+   * takes effect where it stands — and nothing else opens the tag.
+   */
+  it('is drawn by `Checkbox` and `Toggle`, and by nothing else', () => {
+    const drawing = WRITTEN_SOURCES.filter(
+      ([path, source]) =>
+        !GUARDED.includes(path) && /type="checkbox"/.test(withoutComments(source)),
+    )
+      .map(([path]) => path)
+      .sort()
+
+    expect(drawing).toEqual([
+      expect.stringContaining('/Checkbox.tsx'),
+      expect.stringContaining('/Toggle.tsx'),
+    ])
+  })
+})
+
 describe('the field that takes what its line has left', () => {
   it('is the field, plus the room it claims and nothing more', () => {
     expect(FIELD_FILL.split(' ')).toEqual([...FIELD.split(' '), 'min-w-0', 'flex-1'])

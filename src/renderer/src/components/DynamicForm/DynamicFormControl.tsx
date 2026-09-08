@@ -9,8 +9,9 @@ import { useModelText } from '@/hooks/useModelText'
 import { AssetDropField } from '../AssetDropField'
 import { AssetDropList } from '../AssetDropList'
 import { fieldHandle } from '../scHandle'
+import { Checkbox } from '../Checkbox'
 import { Select } from '../Select'
-import { CHECKBOX, FIELD, FIELD_FILL } from '../styles'
+import { FIELD, FIELD_FILL } from '../styles'
 import { ToolButton } from '../ToolButton'
 import { isGenerationCanvasSource } from '@shared/domain/generationComment'
 export type DynamicFormControlProps = {
@@ -133,11 +134,9 @@ function assetControl(input: ControlInput, t: Translate) {
 function simpleControl(input: ControlInput, onRoll: () => void, t: Translate) {
   if (input.field.kind === 'boolean')
     return (
-      <input
+      <Checkbox
         id={input.id}
         data-sc={fieldHandle(`generation.${input.field.key}`)}
-        type="checkbox"
-        className={cn(CHECKBOX, 'size-4 shrink-0')}
         {...input.registration}
       />
     )

@@ -17,7 +17,7 @@ import { SettingRowPathControl } from './SettingRowPathControl'
 import { SettingRowTextControl } from './SettingRowTextControl'
 import { WindowInput } from '@/components/WindowInput'
 import { Select } from '@/components/Select'
-import { WindowToggle } from '@/components/WindowToggle'
+import { Toggle } from '@/components/Toggle'
 
 /**
  * What a numeric field may hand over. An emptied field is mid-edit, and a value zod would
@@ -127,7 +127,7 @@ export function SettingRowControl({
 
     case 'boolean':
       return (
-        <WindowToggle
+        <Toggle
           id={id}
           data-sc={fieldHandle(scId)}
           aria-describedby={describedBy}

@@ -1,7 +1,8 @@
 import { useTranslation } from 'react-i18next'
 import { canCommit, type GitStatus } from '@shared/domain/git'
+import { Checkbox } from '@/components/Checkbox'
 import { Button } from '@/components/Button'
-import { CHECKBOX, FIELD, PANEL_HEAD } from '@/components/styles'
+import { FIELD, PANEL_HEAD } from '@/components/styles'
 import { cn } from '@/helpers/cn'
 import { HINT_TOP } from '@/helpers/tooltip'
 import { useGit } from '@/stores/git'
@@ -40,10 +41,8 @@ export function CommitBox({ status }: { status: GitStatus }) {
             commit has not happened, the box would be a promise about nothing. */}
         {status.head !== null ? (
           <label className="text-muted flex items-center gap-2 text-xs">
-            <input
+            <Checkbox
               data-sc="field:git.amend"
-              type="checkbox"
-              className={cn(CHECKBOX, 'size-3')}
               checked={amend}
               disabled={busy}
               onChange={event => setAmend(event.target.checked)}

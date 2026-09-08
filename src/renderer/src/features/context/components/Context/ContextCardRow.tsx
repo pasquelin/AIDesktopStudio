@@ -6,7 +6,8 @@ import {
   CONTEXT_TITLE_MAX,
   type ContextCard,
 } from '@shared/domain/projectContext'
-import { CHECKBOX, FIELD, FIELD_FILL, PANEL_HEAD } from '@/components/styles'
+import { Checkbox } from '@/components/Checkbox'
+import { FIELD, FIELD_FILL, PANEL_HEAD } from '@/components/styles'
 import { ToolButton } from '@/components/ToolButton'
 import { cn } from '@/helpers/cn'
 import { TIP_LEFT } from '@/helpers/tooltip'
@@ -30,10 +31,8 @@ export function ContextCardRow({ card, onChange, onRemove }: ContextCardRowProps
   return (
     <div className={PANEL_HEAD}>
       <div className="flex items-center gap-2">
-        <input
+        <Checkbox
           data-sc="field:context.active"
-          type="checkbox"
-          className={cn(CHECKBOX, 'size-3 shrink-0')}
           checked={card.active}
           aria-label={card.active ? t('context.inactiveHint') : t('context.activeHint')}
           onChange={event => onChange({ ...card, active: event.target.checked })}

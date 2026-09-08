@@ -155,15 +155,6 @@ export const FIELD_LABEL =
  */
 export const FIELD_READOUT = 'text-muted w-14 shrink-0 text-end tabular-nums'
 
-/**
- * A tick, wherever one is drawn. `accent-accent` is the whole of it and the whole of why this is
- * written once: left off, a checkbox comes out in the browser's own blue — the one colour in the
- * studio that answers to nothing in `index.css`, on the control a reader scans a list for.
- *
- * The size is the caller's: a tick in a property row is bigger than one in a list of files.
- */
-export const CHECKBOX = 'accent-accent cursor-pointer'
-
 /** The box a slider is drawn in: the rail sits absolute inside it, the input covers it whole. */
 export const SLIDER_TRACK = 'relative h-(--sc-control) min-w-0'
 
