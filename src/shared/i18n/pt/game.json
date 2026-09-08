@@ -242,7 +242,12 @@
       "priorityHelp": "Quem ganha quando duas transições são possíveis no mesmo instante. O número maior leva-a.",
       "fadeHelp": "O esbatimento entre as duas animações, em segundos. A zero, a mudança é seca.",
       "parameterRank": "Parâmetro {{rank}}",
-      "conditionRank": "Condição {{rank}}"
+      "conditionRank": "Condição {{rank}}",
+      "stateOnce": "Reproduzida uma vez",
+      "stateEntries": "O que leva aqui",
+      "stateEntryWhen": "De {{from}}, se {{when}}",
+      "stateEntryAlways": "De {{from}}, no fim da animação",
+      "stateNoEntry": "Ainda nada leva aqui."
     },
     "inputMap": {
       "actionId": "Ação",

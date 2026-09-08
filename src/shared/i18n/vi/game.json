@@ -242,7 +242,12 @@
       "priorityHelp": "Ai thắng khi hai chuyển tiếp cùng khả dĩ. Số lớn hơn thắng.",
       "fadeHelp": "Thời gian hòa trộn giữa hai hoạt ảnh, tính bằng giây. Bằng không thì đổi dứt khoát.",
       "parameterRank": "Tham số {{rank}}",
-      "conditionRank": "Điều kiện {{rank}}"
+      "conditionRank": "Điều kiện {{rank}}",
+      "stateOnce": "Phát một lần",
+      "stateEntries": "Điều gì dẫn tới đây",
+      "stateEntryWhen": "Từ {{from}}, nếu {{when}}",
+      "stateEntryAlways": "Từ {{from}}, ở cuối hoạt ảnh",
+      "stateNoEntry": "Chưa có gì dẫn tới đây."
     },
     "inputMap": {
       "actionId": "Hành động",

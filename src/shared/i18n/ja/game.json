@@ -242,7 +242,12 @@
       "priorityHelp": "同じ瞬間に二つの遷移が可能なとき、どちらが勝つか。大きい数が取ります。",
       "fadeHelp": "二つのアニメーションのクロスフェード、秒。ゼロなら切り替えは瞬時です。",
       "parameterRank": "パラメーター {{rank}}",
-      "conditionRank": "条件 {{rank}}"
+      "conditionRank": "条件 {{rank}}",
+      "stateOnce": "一度だけ再生",
+      "stateEntries": "ここへ入る道",
+      "stateEntryWhen": "{{from}} から、{{when}} のとき",
+      "stateEntryAlways": "{{from}} から、アニメーションの終わりに",
+      "stateNoEntry": "まだここへ入る道はありません。"
     },
     "inputMap": {
       "actionId": "アクション",

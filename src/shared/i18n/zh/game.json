@@ -242,7 +242,12 @@
       "priorityHelp": "同一时刻两个过渡都成立时谁获胜。数值大的胜出。",
       "fadeHelp": "两个动画之间的交叉淡入淡出时间，单位为秒。为零时切换是硬切。",
       "parameterRank": "参数 {{rank}}",
-      "conditionRank": "条件 {{rank}}"
+      "conditionRank": "条件 {{rank}}",
+      "stateOnce": "只播放一次",
+      "stateEntries": "什么会进入这里",
+      "stateEntryWhen": "从 {{from}}，当 {{when}}",
+      "stateEntryAlways": "从 {{from}}，在动画结束时",
+      "stateNoEntry": "目前没有任何通路进入这里。"
     },
     "inputMap": {
       "actionId": "操作",

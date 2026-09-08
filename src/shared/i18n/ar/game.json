@@ -242,7 +242,12 @@
       "priorityHelp": "من يفوز حين يتاح انتقالان في اللحظة نفسها. العدد الأكبر يفوز.",
       "fadeHelp": "زمن المزج بين الحركتين، بالثواني. عند الصفر يكون التبديل حادًا.",
       "parameterRank": "المعامل {{rank}}",
-      "conditionRank": "الشرط {{rank}}"
+      "conditionRank": "الشرط {{rank}}",
+      "stateOnce": "تُشغَّل مرة واحدة",
+      "stateEntries": "ما يقود إلى هنا",
+      "stateEntryWhen": "من {{from}}، إذا {{when}}",
+      "stateEntryAlways": "من {{from}}، عند نهاية الحركة",
+      "stateNoEntry": "لا شيء يقود إلى هنا بعد."
     },
     "inputMap": {
       "actionId": "إجراء",

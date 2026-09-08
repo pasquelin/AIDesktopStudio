@@ -242,7 +242,12 @@
       "priorityHelp": "Wer gewinnt, wenn zwei Übergänge im selben Augenblick möglich sind. Die höhere Zahl nimmt ihn.",
       "fadeHelp": "Die Überblendung zwischen beiden Animationen, in Sekunden. Bei null ist der Wechsel hart.",
       "parameterRank": "Parameter {{rank}}",
-      "conditionRank": "Bedingung {{rank}}"
+      "conditionRank": "Bedingung {{rank}}",
+      "stateOnce": "Einmal gespielt",
+      "stateEntries": "Was hierher führt",
+      "stateEntryWhen": "Von {{from}}, wenn {{when}}",
+      "stateEntryAlways": "Von {{from}}, am Ende der Animation",
+      "stateNoEntry": "Noch führt nichts hierher."
     },
     "inputMap": {
       "actionId": "Aktion",

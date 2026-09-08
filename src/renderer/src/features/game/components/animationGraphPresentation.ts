@@ -3,6 +3,7 @@ import type {
   AnimationCondition,
   AnimationGraph,
   AnimationLayer,
+  AnimationTransition,
 } from '@shared/domain/animationGraph'
 import type { ClipSource } from '@shared/domain/sceneModel'
 
@@ -24,4 +25,14 @@ export function layerOf(graph: AnimationGraph): AnimationLayer | null {
 /** The graph with that layer in place of its own, which is the whole of what an edit changes. */
 export function withLayer(graph: AnimationGraph, layer: AnimationLayer): AnimationGraph {
   return { ...graph, layers: [layer] }
+}
+
+/** Every way INTO a state, which is what says when it is played at all. */
+export function entriesOf(layer: AnimationLayer, state: string): readonly AnimationTransition[] {
+  return layer.transitions.filter(transition => transition.to === state)
+}
+
+/** Its conditions as one reading — `grounded == true, speed > 0.15`. */
+export function conditionsLabel(transition: AnimationTransition): string {
+  return transition.when.map(conditionLabel).join(', ')
 }

@@ -242,7 +242,12 @@
       "priorityHelp": "Chi vince quando due transizioni sono possibili nello stesso istante. Il numero più alto la spunta.",
       "fadeHelp": "La dissolvenza tra le due animazioni, in secondi. A zero il cambio è netto.",
       "parameterRank": "Parametro {{rank}}",
-      "conditionRank": "Condizione {{rank}}"
+      "conditionRank": "Condizione {{rank}}",
+      "stateOnce": "Riprodotta una volta",
+      "stateEntries": "Ciò che porta qui",
+      "stateEntryWhen": "Da {{from}}, se {{when}}",
+      "stateEntryAlways": "Da {{from}}, alla fine dell’animazione",
+      "stateNoEntry": "Per ora nulla porta qui."
     },
     "inputMap": {
       "actionId": "Azione",

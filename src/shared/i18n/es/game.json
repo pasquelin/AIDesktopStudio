@@ -242,7 +242,12 @@
       "priorityHelp": "Quién gana cuando dos transiciones son posibles a la vez. El número más alto se la lleva.",
       "fadeHelp": "El fundido entre las dos animaciones, en segundos. A cero, el cambio es seco.",
       "parameterRank": "Parámetro {{rank}}",
-      "conditionRank": "Condición {{rank}}"
+      "conditionRank": "Condición {{rank}}",
+      "stateOnce": "Reproducida una vez",
+      "stateEntries": "Lo que lleva aquí",
+      "stateEntryWhen": "Desde {{from}}, si {{when}}",
+      "stateEntryAlways": "Desde {{from}}, al final de la animación",
+      "stateNoEntry": "Todavía nada lleva aquí."
     },
     "inputMap": {
       "actionId": "Acción",

@@ -242,7 +242,12 @@
       "priorityHelp": "Кто выигрывает, когда возможны два перехода сразу. Побеждает большее число.",
       "fadeHelp": "Перекрёстное затухание между анимациями, в секундах. При нуле смена резкая.",
       "parameterRank": "Параметр {{rank}}",
-      "conditionRank": "Условие {{rank}}"
+      "conditionRank": "Условие {{rank}}",
+      "stateOnce": "Проигрывается один раз",
+      "stateEntries": "Что ведёт сюда",
+      "stateEntryWhen": "Из {{from}}, если {{when}}",
+      "stateEntryAlways": "Из {{from}}, в конце анимации",
+      "stateNoEntry": "Пока сюда ничего не ведёт."
     },
     "inputMap": {
       "actionId": "Действие",

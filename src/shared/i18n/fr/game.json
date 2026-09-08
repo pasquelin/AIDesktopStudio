@@ -242,7 +242,12 @@
       "priorityHelp": "Qui gagne quand deux transitions sont possibles au même instant. Le plus grand nombre l’emporte.",
       "fadeHelp": "Le temps de fondu entre les deux animations, en secondes. À zéro, le changement est net.",
       "parameterRank": "Paramètre {{rank}}",
-      "conditionRank": "Condition {{rank}}"
+      "conditionRank": "Condition {{rank}}",
+      "stateOnce": "Jouée une seule fois",
+      "stateEntries": "Ce qui y mène",
+      "stateEntryWhen": "Depuis {{from}}, si {{when}}",
+      "stateEntryAlways": "Depuis {{from}}, à la fin de l’animation",
+      "stateNoEntry": "Rien n’y mène pour l’instant."
     },
     "inputMap": {
       "actionId": "Action",

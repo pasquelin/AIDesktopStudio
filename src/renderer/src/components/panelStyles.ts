@@ -54,6 +54,15 @@ export const FIELD_BLOCK =
   'border-border bg-surface flex flex-col gap-2.5 rounded-(--radius-sc-md) border p-2.5'
 
 /**
+ * The same block, one step further in — a condition inside a transition.
+ *
+ * 🛑 Written out in FULL rather than derived from the one above: Tailwind scans the SOURCE for
+ * class names, and a fill composed at runtime generates nothing of its own.
+ */
+export const FIELD_BLOCK_NESTED =
+  'border-border bg-panel flex flex-col gap-2.5 rounded-(--radius-sc-md) border p-2.5'
+
+/**
  * A picture standing in a property FIELD — the texture a slot holds, the map a model carries.
  * A picture standing in a ROW is not this: `Row` sizes its own, see `ROW_MEDIA_CONTROL`.
  */

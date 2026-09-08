@@ -242,7 +242,12 @@
       "priorityHelp": "Aynı anda iki geçiş mümkünse hangisinin kazanacağı. Büyük sayı kazanır.",
       "fadeHelp": "İki animasyon arasındaki geçiş süresi, saniye. Sıfırda değişim serttir.",
       "parameterRank": "Parametre {{rank}}",
-      "conditionRank": "Koşul {{rank}}"
+      "conditionRank": "Koşul {{rank}}",
+      "stateOnce": "Bir kez oynatılır",
+      "stateEntries": "Buraya ne getirir",
+      "stateEntryWhen": "{{from}} durumundan, eğer {{when}}",
+      "stateEntryAlways": "{{from}} durumundan, animasyonun sonunda",
+      "stateNoEntry": "Buraya henüz hiçbir şey getirmiyor."
     },
     "inputMap": {
       "actionId": "Eylem",

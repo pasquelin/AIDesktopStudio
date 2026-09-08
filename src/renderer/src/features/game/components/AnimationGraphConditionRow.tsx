@@ -12,7 +12,7 @@ import { ToggleField } from '@/components/ToggleField'
 import { FieldActions } from '@/components/FieldActions'
 import { ToolButton } from '@/components/ToolButton'
 import { PANEL_GROUP_LABEL_WIDE } from '@/components/styles'
-import { FIELD_BLOCK } from '@/components/panelStyles'
+import { FIELD_BLOCK_NESTED } from '@/components/panelStyles'
 import { TIP_LEFT } from '@/helpers/tooltip'
 
 export type AnimationGraphConditionRowProps = {
@@ -57,7 +57,7 @@ export function AnimationGraphConditionRow({
   }
 
   return (
-    <div className={FIELD_BLOCK}>
+    <div className={FIELD_BLOCK_NESTED}>
       <div className="flex items-center gap-2">
         <span className={PANEL_GROUP_LABEL_WIDE}>
           {t('game.animationGraph.conditionRank', { rank })}

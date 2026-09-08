@@ -242,7 +242,12 @@
       "priorityHelp": "Who wins when two transitions are possible at the same moment. The higher number takes it.",
       "fadeHelp": "The cross-fade between the two animations, in seconds. At zero the change is instant.",
       "parameterRank": "Parameter {{rank}}",
-      "conditionRank": "Condition {{rank}}"
+      "conditionRank": "Condition {{rank}}",
+      "stateOnce": "Played once",
+      "stateEntries": "What leads here",
+      "stateEntryWhen": "From {{from}}, if {{when}}",
+      "stateEntryAlways": "From {{from}}, at the end of the animation",
+      "stateNoEntry": "Nothing leads here yet."
     },
     "inputMap": {
       "actionId": "Action",

@@ -242,7 +242,12 @@
       "priorityHelp": "जब एक ही क्षण में दो संक्रमण संभव हों तो कौन जीतता है। बड़ी संख्या जीतती है।",
       "fadeHelp": "दोनों एनिमेशन के बीच घुलने का समय, सेकंड में। शून्य पर बदलाव तीखा होता है।",
       "parameterRank": "पैरामीटर {{rank}}",
-      "conditionRank": "शर्त {{rank}}"
+      "conditionRank": "शर्त {{rank}}",
+      "stateOnce": "एक बार चलाई जाती है",
+      "stateEntries": "यहाँ क्या लाता है",
+      "stateEntryWhen": "{{from}} से, यदि {{when}}",
+      "stateEntryAlways": "{{from}} से, एनिमेशन के अंत में",
+      "stateNoEntry": "अभी यहाँ कुछ नहीं लाता।"
     },
     "inputMap": {
       "actionId": "एक्शन",

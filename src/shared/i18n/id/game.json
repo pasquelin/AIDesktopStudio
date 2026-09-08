@@ -242,7 +242,12 @@
       "priorityHelp": "Siapa yang menang ketika dua peralihan sama-sama mungkin. Angka yang lebih besar mengambilnya.",
       "fadeHelp": "Lama pudar-silang antara dua animasi, dalam detik. Pada nol, pergantiannya tegas.",
       "parameterRank": "Parameter {{rank}}",
-      "conditionRank": "Syarat {{rank}}"
+      "conditionRank": "Syarat {{rank}}",
+      "stateOnce": "Dimainkan sekali",
+      "stateEntries": "Apa yang menuju ke sini",
+      "stateEntryWhen": "Dari {{from}}, jika {{when}}",
+      "stateEntryAlways": "Dari {{from}}, di akhir animasi",
+      "stateNoEntry": "Belum ada yang menuju ke sini."
     },
     "inputMap": {
       "actionId": "Aksi",

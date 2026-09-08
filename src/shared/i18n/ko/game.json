@@ -242,7 +242,12 @@
       "priorityHelp": "같은 순간에 두 전이가 가능할 때 누가 이기는지. 큰 숫자가 가져갑니다.",
       "fadeHelp": "두 애니메이션 사이의 크로스페이드, 초. 0이면 전환이 즉각적입니다.",
       "parameterRank": "매개변수 {{rank}}",
-      "conditionRank": "조건 {{rank}}"
+      "conditionRank": "조건 {{rank}}",
+      "stateOnce": "한 번만 재생",
+      "stateEntries": "여기로 들어오는 길",
+      "stateEntryWhen": "{{from}} 에서, {{when}} 일 때",
+      "stateEntryAlways": "{{from}} 에서, 애니메이션이 끝날 때",
+      "stateNoEntry": "아직 여기로 들어오는 길이 없습니다."
     },
     "inputMap": {
       "actionId": "액션",
