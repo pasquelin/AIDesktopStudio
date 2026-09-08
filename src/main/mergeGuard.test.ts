@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'vitest'
-import { reasonsToRefuse, staleLinks, wouldBeLandedOn, type MergeState } from './mergeGuard'
+import { reasonsToRefuse, staleLinks, type MergeState } from './mergeGuard'
 
 const READY: MergeState = {
   branch: 'feat/something',
+  hostBranch: 'develop',
   dirty: [],
   hostDirty: [],
   rebased: true,
@@ -12,13 +13,18 @@ const READY: MergeState = {
 const LINK = { command: 'pnpm typecheck', reads: ['src'] }
 
 describe('the merge that has to prove itself first', () => {
-  it('names the links the cache cannot vouch for', () => {
-    expect(staleLinks([LINK], () => true)).toEqual([])
-    expect(staleLinks([LINK], () => false)).toEqual(['pnpm typecheck'])
+  it('names the link the cache cannot vouch for, and says what to run', () => {
+    const reasons = reasonsToRefuse(
+      { ...READY, stale: () => staleLinks([LINK], () => false) },
+      'develop',
+    )
+
+    expect(reasons.join('\n')).toContain('pnpm typecheck')
+    expect(reasons.join('\n')).toContain('pnpm validate')
   })
 
   it('lets a stray folder sit in the integration checkout, which no merge can bury', () => {
-    expect(wouldBeLandedOn(['?? .codex/', ' M src/a.ts'])).toEqual([' M src/a.ts'])
+    expect(reasonsToRefuse({ ...READY, hostDirty: ['?? .codex/'] }, 'develop')).toEqual([])
   })
 
   it('lets a rebased branch through when the gate is green on this very content', () => {
@@ -46,6 +52,13 @@ describe('the merge that has to prove itself first', () => {
 
     expect(reasonsToRefuse(state, 'develop')).toHaveLength(1)
     expect(asked).toBe(false)
+  })
+
+  /** Every other reason passes during a release, when the main checkout sits on `main`. */
+  it('refuses when the checkout it would land on is not the integration branch', () => {
+    const reasons = reasonsToRefuse({ ...READY, hostBranch: 'main' }, 'develop')
+
+    expect(reasons.join()).toContain('is on main, not develop')
   })
 
   it('refuses to merge the integration branch into itself', () => {

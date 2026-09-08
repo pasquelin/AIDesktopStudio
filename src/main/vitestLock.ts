@@ -1,7 +1,5 @@
+import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
-
-/** How a checkout asks for the machine: `whole` waits its turn, `narrow` never waits. */
-type Lane = 'whole' | 'narrow'
 
 /** The mutex a whole suite holds, shared by every checkout: the cores are the machine's. */
 export function lockPathIn(tmpdir: string): string {
@@ -20,6 +18,15 @@ export function slotsDirIn(tmpdir: string): string {
 export function holderOf(contents: string): number | undefined {
   const pid = Number(contents.trim())
   return Number.isSafeInteger(pid) && pid > 0 ? pid : undefined
+}
+
+/** The same, read off disk: absent, unreadable and half-written all answer nothing. */
+export function holderIn(path: string): number | undefined {
+  try {
+    return holderOf(readFileSync(path, 'utf8'))
+  } catch {
+    return undefined
+  }
 }
 
 /**
@@ -47,7 +54,7 @@ export function isRunning(pid: number): boolean {
  * side on purpose, so one checkout in its short loop is already two runs.
  */
 export function workersFor(cores: number, runs: number): number {
-  return Math.max(1, Math.floor(Math.max(1, cores - 1) / Math.max(1, runs)))
+  return Math.max(1, Math.floor((cores - 1) / runs))
 }
 
 /**
@@ -58,10 +65,12 @@ const namesAFile = (argument: string): boolean =>
   !argument.startsWith('-') && (argument.includes('/') || /\.tsx?$/.test(argument))
 
 /**
- * A run that names files is a selection whatever the caller asked for — `pnpm test <path>` is what
- * the protocol says to rerun a failed link with, and it must not queue behind a whole suite. The
- * wrapper is the only place that sees that path, so the lane is read here rather than declared.
+ * Whether a run must queue for the machine. A run that names files is a selection and never waits
+ * — `pnpm test <path>` is what the protocol says to rerun a failed link with.
+ *
+ * Read from the argv rather than declared, because nothing else can: `"test"` in `package.json` is
+ * a PREFIX, and pnpm appends the reader's path after it, so the declaring site never sees it.
  */
-export function laneOf(asked: Lane, forwarded: readonly string[]): Lane {
-  return asked === 'whole' && !forwarded.some(namesAFile) ? 'whole' : 'narrow'
+export function waitsForTheMachine(forwarded: readonly string[]): boolean {
+  return !forwarded.some(namesAFile)
 }

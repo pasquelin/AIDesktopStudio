@@ -12,17 +12,14 @@
  * first session gets its answer in 150 s rather than all three waiting 450 s.
  *
  * 🛑 Slots count EVERY run, not whole suites: `pnpm check` spawns its two selections side by side
- * on purpose, so one checkout in its short loop is already two runs — the case a lane-only rule
- * left uncovered.
+ * on purpose, so one checkout in its short loop is already two runs.
  */
-import { spawn } from 'node:child_process'
 import {
   closeSync,
   existsSync,
   mkdirSync,
   openSync,
   readdirSync,
-  readFileSync,
   rmSync,
   writeFileSync,
   writeSync,
@@ -32,13 +29,15 @@ import { dirname, join } from 'node:path'
 import { setTimeout as pause } from 'node:timers/promises'
 import { fileURLToPath } from 'node:url'
 import {
+  holderIn,
   holderOf,
   isRunning,
-  laneOf,
   lockPathIn,
   slotsDirIn,
+  waitsForTheMachine,
   workersFor,
 } from '../src/main/vitestLock.ts'
+import { timedRun } from './timedRun.mjs'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 const LOCK = lockPathIn(tmpdir())
@@ -48,12 +47,7 @@ const POLL_MS = 500
 /** A holder that never releases must not keep the machine for a night. */
 const MOST_WAIT_MS = 30 * 60_000
 
-const [asked, ...forwarded] = process.argv.slice(2)
-
-if (asked !== 'whole' && asked !== 'narrow') {
-  process.stderr.write('\nusage: node scripts/vitest.mjs <whole|narrow> <vitest arguments>\n\n')
-  process.exit(1)
-}
+const forwarded = process.argv.slice(2)
 
 function take() {
   try {
@@ -69,28 +63,13 @@ function take() {
 
 /** A holder killed outright leaves its file behind, and nothing else would ever clear it. */
 function clearIfDead() {
-  if (!existsSync(LOCK)) return
-
-  let holder
-  try {
-    holder = holderOf(readFileSync(LOCK, 'utf8'))
-  } catch (failure) {
-    // Read between another run's create and its write, or removed under us. Waiting one more
-    // round is what a holder mid-take deserves, and the timeout below covers a file that stays.
-    process.stderr.write(`vitest lock: unreadable, left alone — ${failure.message}\n`)
-    return
-  }
+  const holder = holderIn(LOCK)
   if (holder !== undefined && !isRunning(holder)) rmSync(LOCK, { force: true })
 }
 
 function release() {
   rmSync(MINE, { force: true })
-  if (!existsSync(LOCK)) return
-  try {
-    if (holderOf(readFileSync(LOCK, 'utf8')) === process.pid) rmSync(LOCK, { force: true })
-  } catch (failure) {
-    process.stderr.write(`vitest lock: could not be released — ${failure.message}\n`)
-  }
+  if (holderIn(LOCK) === process.pid) rmSync(LOCK, { force: true })
 }
 
 async function hold() {
@@ -113,47 +92,47 @@ async function hold() {
   }
 }
 
-/** How many runs share the machine right now, this one included, sweeping the ones that died. */
-function liveRuns() {
-  let live = 1
+/** How many runs share the machine right now, this one included. */
+export function liveRuns() {
+  if (!existsSync(SLOTS)) return 0
+
+  let live = 0
   for (const name of readdirSync(SLOTS)) {
-    if (name === String(process.pid)) continue
-    if (isRunning(Number(name))) live += 1
-    else rmSync(join(SLOTS, name), { force: true })
+    // Through `holderOf` rather than `Number`: a name that is not a pid makes `process.kill` throw
+    // ERR_INVALID_ARG_TYPE, which `isRunning` reads as alive — one phantom run, for ever.
+    const pid = holderOf(name)
+    if (pid !== undefined && isRunning(pid)) live += 1
+    else rmSync(join(SLOTS, name), { force: true, recursive: true })
   }
   return live
 }
 
+let running
+
 process.on('exit', release)
 for (const signal of ['SIGINT', 'SIGTERM']) {
+  // The child first, and `exit` releases: killed from a parent rather than from a terminal, vitest
+  // keeps every worker while the lock and the slot are given back, and the next run divides a
+  // machine still busy.
   process.on(signal, () => {
-    release()
+    running?.kill(signal)
     process.exit(1)
   })
 }
 
-if (laneOf(asked, forwarded) === 'whole') await hold()
+if (waitsForTheMachine(forwarded)) await hold()
 
 // Claimed after the wait, so a queued suite counts the machine it is about to get, not the one it
 // waited on.
 mkdirSync(SLOTS, { recursive: true })
-writeFileSync(MINE, '')
+writeFileSync(MINE, String(process.pid))
 
 const workers = workersFor(availableParallelism(), liveRuns())
 // The local binary rather than `npx`: measured 2026-09-08, `npx vitest --version` costs 733 ms
 // against 82 ms, paid twice on every short loop.
-const child = spawn(
-  join(ROOT, 'node_modules', '.bin', 'vitest'),
-  [...forwarded, `--maxWorkers=${workers}`],
-  {
-    cwd: ROOT,
-    stdio: 'inherit',
-  },
+const { child, finished } = timedRun(
+  [join(ROOT, 'node_modules', '.bin', 'vitest'), ...forwarded, `--maxWorkers=${workers}`],
+  ROOT,
 )
-child.on('error', failure => {
-  process.stderr.write(`${failure.message}\n`)
-  process.exitCode = 1
-})
-child.on('close', code => {
-  process.exitCode = code ?? 1
-})
+running = child
+process.exitCode = (await finished).code ?? 1

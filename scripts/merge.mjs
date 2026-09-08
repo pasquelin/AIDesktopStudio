@@ -16,7 +16,7 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { alreadyGreen, fingerprinterFor } from '../src/main/gateCache.ts'
 import { GATE } from '../src/main/gateLinks.ts'
-import { reasonsToRefuse, staleLinks, wouldBeLandedOn } from '../src/main/mergeGuard.ts'
+import { reasonsToRefuse, staleLinks } from '../src/main/mergeGuard.ts'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 const INTO = 'develop'
@@ -27,11 +27,13 @@ const git = (cwd, ...args) => execFileSync('git', args, { cwd, encoding: 'utf8' 
 const MAIN = dirname(git(ROOT, 'rev-parse', '--path-format=absolute', '--git-common-dir'))
 
 const branch = git(ROOT, 'rev-parse', '--abbrev-ref', 'HEAD')
+const status = cwd => git(cwd, 'status', '--porcelain').split('\n').filter(Boolean)
 const reasons = reasonsToRefuse(
   {
     branch,
-    dirty: git(ROOT, 'status', '--porcelain').split('\n').filter(Boolean),
-    hostDirty: wouldBeLandedOn(git(MAIN, 'status', '--porcelain').split('\n').filter(Boolean)),
+    dirty: status(ROOT),
+    hostBranch: git(MAIN, 'rev-parse', '--abbrev-ref', 'HEAD'),
+    hostDirty: status(MAIN),
     rebased: git(ROOT, 'merge-base', 'HEAD', INTO) === git(MAIN, 'rev-parse', INTO),
     stale: () => {
       const fingerprintOf = fingerprinterFor(ROOT, process.version, GATE)

@@ -6,6 +6,7 @@ import { describe, expect, it, onTestFinished } from 'vitest'
 import { CACHE_DIR, filesRead, fingerprinterFor, markerNameOf, treeOf } from './gateCache'
 import { GATE } from './gateLinks'
 import manifest from '../../package.json'
+import { pathIsInside } from './export/pathIsInside'
 
 const ROOT = join(import.meta.dirname, '..', '..')
 const LINK = { command: 'pnpm nothing', reads: ['read.txt'] }
@@ -114,7 +115,7 @@ describe('the gate that cannot cache a link it has not described', () => {
    * ignored whole, which is what `gate-caches.test.ts` already demands of the compiler caches.
    */
   it('keeps its markers where no clone can carry them', () => {
-    expect(CACHE_DIR.startsWith('node_modules')).toBe(true)
+    expect(pathIsInside(join(ROOT, 'node_modules'), join(ROOT, CACHE_DIR))).toBe(true)
   })
 
   it('names a marker after the command it remembers', () => {

@@ -13,6 +13,9 @@ import type { GateLink } from './gateLinks'
  */
 export const CACHE_DIR = join('node_modules', '.cache', 'gate')
 
+/** The relevé `gate-baseline` keeps beside the markers, which the orphan sweep must not take. */
+export const BASELINE_NAME = 'baseline.json'
+
 /** What must be identical for ANY verdict to hold, whatever the link says it reads. */
 const ALWAYS_READ = ['package.json', 'pnpm-lock.yaml', '.nvmrc']
 
@@ -53,13 +56,12 @@ const ask = (root: string, ...args: string[]): string[] =>
  * pass — more than reading and hashing all 95 MB of the tree. Three spawns and a filter: 158 ms.
  */
 export function treeOf(root: string, alsoIgnored: readonly string[]): string[] {
-  const ignored =
-    alsoIgnored.length > 0 ? ask(root, 'ls-files', '-z', '--others', '--', ...alsoIgnored) : []
-
   return [
     ...new Set([
       ...ask(root, 'ls-files', '-z', '--cached', '--others', '--exclude-standard'),
-      ...ignored,
+      ...(alsoIgnored.length > 0
+        ? ask(root, 'ls-files', '-z', '--others', '--', ...alsoIgnored)
+        : []),
     ]),
   ].sort(byCodeUnit)
 }
@@ -99,7 +101,10 @@ export function fingerprinterFor(
   runtime: string,
   links: readonly GateLink[],
 ): (link: GateLink) => string {
-  const tree = treeOf(root, [...new Set(links.flatMap(link => link.readsIgnored ?? []))])
+  const tree = treeOf(
+    root,
+    links.flatMap(link => link.readsIgnored ?? []),
+  )
   const seen = new Map<string, string>()
   const hashOf = (path: string): string => {
     const known = seen.get(path)

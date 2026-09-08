@@ -1,6 +1,7 @@
 import { existsSync, readFileSync, readdirSync, readlinkSync, statSync } from 'node:fs'
 import { basename, join } from 'node:path'
 import { describe, expect, it } from 'vitest'
+import manifest from '../../package.json'
 
 /**
  * The agent contract holds by review, and until this file existed nothing checked it. Five ways it
@@ -67,6 +68,17 @@ const walk = (dir: string): string[] =>
     : []
 
 const ruleFiles = present ? readdirSync(RULES).filter(name => name.endsWith('.md')) : []
+
+/**
+ * Every hand-written contract file, rules plus the core. `AGENTS.md` held only the character cap
+ * while citing paths and scripts like any rule, so its citations were checked by nothing.
+ */
+const written: [string, string][] = present
+  ? [
+      ...ruleFiles.map((name): [string, string] => [name, join(RULES, name)]),
+      ['AGENTS.md', join(AGENTS, 'AGENTS.md')],
+    ]
+  : []
 const claudeMd = present ? readFileSync(CLAUDE_MD, 'utf8') : ''
 const imported = [...claudeMd.matchAll(/^@\.\.\/\.agents\/rules\/(.+\.md)$/gm)].flatMap(
   match => match[1] ?? [],
@@ -131,8 +143,8 @@ describeLocal('the agent contract, held rather than reviewed', () => {
   })
 
   it('cites no path that has gone', () => {
-    const dead = ruleFiles.flatMap(name => {
-      const text = readFileSync(join(RULES, name), 'utf8')
+    const dead = written.flatMap(([name, path]) => {
+      const text = readFileSync(path, 'utf8')
       return (
         [...text.matchAll(/`([\w.@/-]+\.(?:md|mjs|sh|ts|tsx|json|txt|py|css|yml))`/g)]
           .flatMap(match => match[1] ?? [])
@@ -144,5 +156,23 @@ describeLocal('the agent contract, held rather than reviewed', () => {
       )
     })
     expect(dead).toEqual([])
+  })
+
+  /**
+   * A renamed script leaves the contract confidently telling an agent to run something that is not
+   * there — the same failure as a dead path, one line above, which was already worth a guard.
+   */
+  it('names no pnpm script that has gone', () => {
+    // pnpm's own verbs, which no `scripts` block declares and every rule file quotes.
+    const builtIn = new Set(['install', 'add', 'remove', 'update', 'exec', 'dlx', 'run', 'why'])
+
+    const gone = written.flatMap(([name, path]) =>
+      [...readFileSync(path, 'utf8').matchAll(/`pnpm ([a-z][\w:-]*)/g)]
+        .flatMap(match => match[1] ?? [])
+        .filter(script => !builtIn.has(script) && !(script in manifest.scripts))
+        .map(script => `${name} → pnpm ${script}`),
+    )
+
+    expect([...new Set(gone)]).toEqual([])
   })
 })

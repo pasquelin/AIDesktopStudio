@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { holderOf, isRunning, laneOf, workersFor } from './vitestLock'
+import { holderOf, isRunning, waitsForTheMachine, workersFor } from './vitestLock'
 
 describe('the machine several checkouts share', () => {
   it('gives a lone run the width vitest would have taken, and divides it beyond', () => {
@@ -19,9 +19,9 @@ describe('the machine several checkouts share', () => {
     expect(isRunning(2_147_483_646)).toBe(false)
   })
 
-  it('sends a run that names files to the lane that never waits', () => {
-    expect(laneOf('whole', ['run'])).toBe('whole')
-    expect(laneOf('whole', ['run', '--project', 'node'])).toBe('whole')
-    expect(laneOf('whole', ['run', 'src/main/vitestLock.test.ts'])).toBe('narrow')
+  it('never makes a run that names files wait for the machine', () => {
+    expect(waitsForTheMachine(['run'])).toBe(true)
+    expect(waitsForTheMachine(['run', '--project', 'node'])).toBe(true)
+    expect(waitsForTheMachine(['run', 'src/main/vitestLock.test.ts'])).toBe(false)
   })
 })

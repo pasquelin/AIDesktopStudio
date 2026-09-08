@@ -32,6 +32,9 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 /** Every vitest run goes through the wrapper, which is what keeps two checkouts off the same cores. */
 const WRAPPER = 'scripts/vitest.mjs'
 
+/** The local binaries: `npx` costs 200 ms of resolution against 40 ms, measured 2026-09-08. */
+const LOCAL_BIN = join(ROOT, 'node_modules', '.bin')
+
 function git(...args) {
   return execFileSync('git', args, { cwd: ROOT, encoding: 'utf8' })
     .split('\n')
@@ -121,15 +124,12 @@ function selectedFiles(touched) {
 }
 
 function testSuites(sources, wholeSuite) {
-  if (wholeSuite) return [run('tests (whole suite)', 'node', [WRAPPER, 'whole', 'run'])]
+  if (wholeSuite) return [run('tests (whole suite)', 'node', [WRAPPER, 'run'])]
   const related =
     sources.length > 0
-      ? [run('tests (related)', 'node', [WRAPPER, 'narrow', 'related', '--run', ...sources])]
+      ? [run('tests (related)', 'node', [WRAPPER, 'related', '--run', ...sources])]
       : []
-  return [
-    ...related,
-    run('tests (wide guards)', 'node', [WRAPPER, 'narrow', 'run', ...wideGuards()]),
-  ]
+  return [...related, run('tests (wide guards)', 'node', [WRAPPER, 'run', ...wideGuards()])]
 }
 
 function sourceGates(sources) {
@@ -138,11 +138,11 @@ function sourceGates(sources) {
   const lintable = formattable.filter(path => !path.endsWith('.css'))
   const lint =
     lintable.length > 0
-      ? [run('lint', 'npx', ['oxlint', '-c', 'oxlint.json', '--deny-warnings', ...lintable])]
+      ? [run('lint', LOCAL_BIN + '/oxlint', ['-c', 'oxlint.json', '--deny-warnings', ...lintable])]
       : []
   const format =
     formattable.length > 0
-      ? [run('format', 'npx', ['prettier', '--check', '--cache', ...formattable])]
+      ? [run('format', LOCAL_BIN + '/prettier', ['--check', '--cache', ...formattable])]
       : []
   return [...lint, ...format]
 }
@@ -159,7 +159,11 @@ async function runTouched(touched, since) {
       `${guarded ? ', and the engine moved — its own gate is `pnpm engine:check`' : ''}.\n`,
   )
   if (wholeSuite) {
-    process.stdout.write('A config file moved, so the whole suite runs rather than a selection.\n')
+    process.stdout.write(
+      'A config file moved, so the whole suite runs rather than a selection.\n' +
+        'It waits its turn if another checkout holds the machine, and says nothing until it has\n' +
+        'the answer: this leg buffers its output, so silence here is a queue, not a freeze.\n',
+    )
   }
 
   const results = await Promise.all([
