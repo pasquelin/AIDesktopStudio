@@ -84,10 +84,12 @@ export function ImageDocumentComment(props: ImageDocumentCommentProps) {
             {props.number}
           </span>
           <input
-            className={cn(NOTE_FIELD, 'min-w-0 flex-1 font-semibold')}
+            className={cn(NOTE_FIELD, 'min-w-0 flex-1 text-sm font-bold')}
             data-sc="field:image.generationCommentTitle"
             aria-label={t('imageComments.title')}
-            value={comment.title}
+            // `?? ''` and not `title ?? ''` upstream: an undefined value hands React an
+            // UNCONTROLLED field, which then keeps whatever was typed after a re-render.
+            value={comment.title ?? ''}
             placeholder={t('imageComments.titlePlaceholder')}
             maxLength={GENERATION_COMMENT_TITLE_MAX}
             onChange={event => props.onRename(comment.id, event.target.value)}
