@@ -186,8 +186,61 @@
       "jsonLabel": "Animasyon grafiği JSON’u",
       "loadFailed": "Bu animasyon grafiği okunamadı.",
       "loading": "Animasyon grafiği yükleniyor…",
-      "save": "Kaydet",
-      "writeFailed": "Bu animasyon grafiği diske yazılamadı."
+      "writeFailed": "Bu animasyon grafiği diske yazılamadı.",
+      "views": "Düzenleme görünümü",
+      "viewHint": {
+        "simple": "Grafın ne oynattığını, durum durum, ayar olmadan gösterir",
+        "expert": "Her ayarı bir form olarak açar",
+        "json": "Dosyayı diskte yazıldığı biçimiyle gösterir"
+      },
+      "context": "Bağlam",
+      "contextDescription": "Bu grafın adı, bedenin hangi yarısını sürdüğü ve oyunun hangi durumla başladığı.",
+      "id": "Tanımlayıcı",
+      "idHelp": "Bir betiğin bu grafı istediği ad. Dosya adından gelir.",
+      "initial": "Başlangıç durumu",
+      "initialHelp": "Karakter sahneye girer girmez oynatılan durum. İlk geçişler ondan çıkar.",
+      "parameters": "Parametreler",
+      "parametersDescription": "Geçişlerin karar verdiği değerler. Oyun bir kısmını kendi yayımlar; kalanı sizindir.",
+      "builtInDescription": "İlkleri oyun her adımda yayımlar: hız, yere basma, zıplama. Hiçbir şey bildirmeden kullanabilirsiniz.",
+      "parameterKind": "Tür",
+      "parameterKinds": {
+        "number": "Sayı",
+        "boolean": "Evet ya da hayır"
+      },
+      "addParameter": "Parametre ekle",
+      "removeParameter": "Bu parametreyi sil",
+      "noParameter": "Kendi parametreniz yok: yalnızca oyunun parametreleri var.",
+      "states": "Durumlar",
+      "statesDescription": "Karakterin yapıyor olabileceği şeyler ve her durumun oynattığı animasyon.",
+      "stateDescription": "Bir durum, kendisinden çıkaran bir şey olmadıkça bir animasyonu oynatır.",
+      "addState": "Durum ekle",
+      "removeState": "Bu durumu sil",
+      "initialBadge": "Başlangıç",
+      "clipKindHelp": "Animasyonun nereden geldiği: modelin dosyasından, stüdyoyla gelenlerden ya da projedeki bir dosyadan.",
+      "clipKinds": {
+        "embedded": "Modelin kendisi",
+        "bundled": "Stüdyoyla gelen",
+        "asset": "Projedeki bir dosya"
+      },
+      "speedFrom": "Hızı süren",
+      "speedFromHelp": "Animasyonun hızını çarpan parametre. Hızlanan bir karakterin altında yürüyüş döngüsünü tutan budur.",
+      "speedFromNone": "Yok",
+      "transitions": "Geçişler",
+      "transitionsDescription": "Bir durumdan diğerine geçiş ve bunun için doğru olması gerekenler.",
+      "transitionRank": "Geçiş {{rank}}",
+      "transitionSentence": "{{from}} → {{to}}",
+      "addTransition": "Geçiş ekle",
+      "removeTransition": "Bu geçişi sil",
+      "noTransition": "Geçiş yok: başlangıç durumu sonsuza dek oynatılacak.",
+      "anyState": "Herhangi bir durum",
+      "from": "Şuradan",
+      "fromHelp": "Terk edilen durum. « Herhangi bir durum », bir zıplamanın oynayanı kesmesini sağlayan şeydir.",
+      "to": "Şuraya",
+      "exitTime": "Çıkışa izin verilen an",
+      "exitTimeHelp": "Çıkışa izin verilmeden önce oynatılacak animasyon payı. Bir inişin kesilmek yerine bitmesini sağlar.",
+      "priority": "Öncelik",
+      "priorityHelp": "Aynı anda iki geçiş mümkünse hangisinin kazanacağı. Büyük sayı kazanır.",
+      "fadeHelp": "İki animasyon arasındaki geçiş süresi, saniye. Sıfırda değişim serttir."
     },
     "inputMap": {
       "actionId": "Eylem",
@@ -220,11 +273,6 @@
       },
       "loadFailed": "Bu girdi eşlemesi okunamadı.",
       "loading": "Girdi eşlemesi yükleniyor…",
-      "mode": {
-        "expert": "Uzman",
-        "json": "JSON",
-        "simple": "Basit"
-      },
       "modeHint": "Aynı girdi eşlemesinin düzenlenme biçimini değiştirir",
       "preset": {
         "character": "Karakter",
@@ -237,7 +285,6 @@
       "priority": "Öncelik",
       "removeAction": "Eylemi kaldır",
       "removeBinding": "Bağlamayı kaldır",
-      "save": "Kaydet",
       "scale": "Ölçek",
       "unnamedAction": "Adsız eylem",
       "capture": "Basın",
@@ -254,6 +301,45 @@
         "scale": "Bu bağlamanın ne kadar ve hangi yöne ittiği. Sola ya da geriye giden yarım için −1, diğeri için 1.",
         "deadZone": "Bu değerin altında analog çubuk durgun sayılır. Yıpranmış bir çubuk kayar: ölü bölge olmadan karakter kendi başına yürür.",
         "invert": "Bu denetimin yönünü ters çevirir. Kimi pilotların eğimden beklediği, başka hiçbir şeyden kimsenin beklemediği şey."
+      },
+      "documentDescription": "Bir kontrol haritası, oyunun her eylemini hangi tuşun ya da hangi düğmenin tetiklediğini söyler. Oyun eylemlerin ADINI okur, tuşları değil: buradaki bir tuşu değiştirmek hiçbir betiği değiştirmez.",
+      "views": "Düzenleme görünümü",
+      "writeFailed": "Bu kontrol haritası diske yazılamadı.",
+      "contextDescription": "Bu kontrol takımının adı ve ne zaman devreye girdiği.",
+      "actionsTitle": "Eylemler",
+      "actionsDescription": "Oyuncunun yapabildiği her şey için bir eylem. Ad, oyunun okuduğu şeydir; altındaki bağlar onu tetikleyen tuşlardır.",
+      "bindings": "Bağlar",
+      "bindingsDescription": "Bu eylemi tetikleyen tüm tuşlar ve kontroller. Bir eylem birden çoğunu taşıyabilir: bir oyun klavyeye VE oyun koluna böyle yanıt verir.",
+      "bindingRank": "Bağ {{rank}}",
+      "noBinding": "Bağ yok: bu eylem hiçbir şeye yanıt vermeyecek.",
+      "noAction": "Eylem yok: bu bağlam henüz bir şey yapmıyor.",
+      "presetsDescription": "Hazır bir başlangıç noktası. Bu haritanın eylemlerinin yerine geçer; bağlamın adı olduğu gibi kalır.",
+      "viewHint": {
+        "simple": "Haritanın ne yaptığını, ayar olmadan, eylem eylem gösterir",
+        "expert": "Her ayarı bir form olarak açar",
+        "json": "Dosyayı diskte yazıldığı biçimiyle gösterir"
+      },
+      "action": {
+        "move": "Karakteri hareket ettirir: sol, sağ, ileri, geri.",
+        "look": "Etrafa bakar: başı ya da kamerayı çevirir.",
+        "jump": "Zıplar.",
+        "run": "Kontrol basılı tutuldukça koşar.",
+        "interact": "Öndekine etki eder: açar, alır, konuşur.",
+        "steer": "Direksiyonu çevirir: araç sola ya da sağa gider.",
+        "accelerate": "Hızlanır.",
+        "brake": "Fren yapar.",
+        "handBrake": "El freni: arka tekerlekler kilitlenir, araç kayar.",
+        "exit": "Araçtan iner.",
+        "pitch": "Yunuslama: aracın burnu iner ya da kalkar.",
+        "roll": "Yatış: araç yana yatar.",
+        "yaw": "Sapma: burun yatmadan sola ya da sağa döner.",
+        "throttle": "Gaz: motorun verdiği güç.",
+        "navigate": "Bir menüde seçimi hareket ettirir.",
+        "next": "Sonraki ögeye gider.",
+        "previous": "Önceki ögeye döner.",
+        "confirm": "Seçileni onaylar.",
+        "back": "Geri döner ya da kapatır.",
+        "custom": "Size ait bir eylem: bir betik ne zaman tetiklendiğini bilmek için bu adı okur."
       }
     },
     "controlsMenu": {
@@ -324,6 +410,11 @@
       "noFaults": "Hata yok",
       "title": "Oynatma modu",
       "waiting": "Stüdyo bekleniyor…"
+    },
+    "scriptView": {
+      "simple": "Basit",
+      "expert": "Uzman",
+      "json": "JSON"
     }
   }
 }

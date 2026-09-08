@@ -16,6 +16,7 @@ import {
 import { ASSET_TYPES, type AssetType } from '@shared/domain/asset'
 import { workspaceOfType } from '@shared/domain/assetKind'
 import type { FileDomain } from '@shared/domain/fileRole'
+import type { FileViewId } from '@shared/domain/fileView'
 import { WORKSPACE_BY_ROLE, type FolderRole } from '@shared/domain/folderRole'
 import { type ModelFamily } from '@shared/domain/model'
 import { HOME_SURFACE, type ToolSurface } from '@shared/domain/tool'
@@ -163,6 +164,21 @@ const ROLE_LABEL: Record<
 
 export function roleLabelKey(role: FolderRole): string {
   return `folderRoles.${ROLE_LABEL[role]}`
+}
+
+/**
+ * The folder a file view's files live in — so a `.anim.json` tab wears the runner the Animations
+ * shelf wears, and a `.input.json` tab the gamepad of Controls. A `Record`, so a new file view
+ * has to answer the question rather than opening a tab with no glyph at all, which is what a
+ * control map did beside six documents that each had one.
+ */
+const FILE_VIEW_ROLE: Record<FileViewId, FolderRole> = {
+  inputMap: 'input',
+  animationGraph: 'animations',
+}
+
+export function fileViewRole(id: FileViewId): FolderRole {
+  return FILE_VIEW_ROLE[id]
 }
 
 /**

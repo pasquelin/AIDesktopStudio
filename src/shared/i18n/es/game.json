@@ -186,8 +186,61 @@
       "jsonLabel": "JSON del grafo de animación",
       "loadFailed": "No se ha podido leer este grafo de animación.",
       "loading": "Cargando el grafo de animación…",
-      "save": "Guardar",
-      "writeFailed": "No se ha podido escribir este grafo de animación en el disco."
+      "writeFailed": "No se ha podido escribir este grafo de animación en el disco.",
+      "views": "Vista de edición",
+      "viewHint": {
+        "simple": "Muestra lo que reproduce el grafo, estado por estado, sin ajustes",
+        "expert": "Abre cada ajuste como un formulario",
+        "json": "Muestra el archivo tal como está escrito en el disco"
+      },
+      "context": "Contexto",
+      "contextDescription": "Cómo se llama este grafo, qué mitad del cuerpo dirige, y con qué estado empieza la partida.",
+      "id": "Identificador",
+      "idHelp": "El nombre con el que un script pide este grafo. Viene del nombre del archivo.",
+      "initial": "Estado inicial",
+      "initialHelp": "El estado que se reproduce en cuanto el personaje entra. De él salen las primeras transiciones.",
+      "parameters": "Parámetros",
+      "parametersDescription": "Los valores sobre los que deciden las transiciones. El juego publica algunos por su cuenta; los demás son tuyos.",
+      "builtInDescription": "Los primeros los publica el juego en cada paso: velocidad, apoyo en el suelo, salto. Puedes usarlos sin declarar nada.",
+      "parameterKind": "Tipo",
+      "parameterKinds": {
+        "number": "Número",
+        "boolean": "Sí o no"
+      },
+      "addParameter": "Añadir parámetro",
+      "removeParameter": "Eliminar este parámetro",
+      "noParameter": "Ningún parámetro propio: solo están los del juego.",
+      "states": "Estados",
+      "statesDescription": "Lo que el personaje puede estar haciendo, y la animación que reproduce cada estado.",
+      "stateDescription": "Un estado reproduce una animación mientras nada lo saque de ella.",
+      "addState": "Añadir estado",
+      "removeState": "Eliminar este estado",
+      "initialBadge": "Inicio",
+      "clipKindHelp": "De dónde viene la animación: del archivo del modelo, de las que trae el estudio, o de un archivo del proyecto.",
+      "clipKinds": {
+        "embedded": "La del modelo",
+        "bundled": "Incluida en el estudio",
+        "asset": "Un archivo del proyecto"
+      },
+      "speedFrom": "Velocidad dirigida por",
+      "speedFromHelp": "El parámetro que multiplica la velocidad de la animación. Es lo que mantiene un ciclo de marcha bajo un personaje que acelera.",
+      "speedFromNone": "Ninguno",
+      "transitions": "Transiciones",
+      "transitionsDescription": "El paso de un estado a otro, y lo que debe ser cierto para que ocurra.",
+      "transitionRank": "Transición {{rank}}",
+      "transitionSentence": "{{from}} → {{to}}",
+      "addTransition": "Añadir transición",
+      "removeTransition": "Eliminar esta transición",
+      "noTransition": "Sin transiciones: el estado inicial se reproducirá sin fin.",
+      "anyState": "Cualquier estado",
+      "from": "Desde",
+      "fromHelp": "El estado que se abandona. «Cualquier estado» es lo que permite que un salto interrumpa lo que sonaba.",
+      "to": "Hacia",
+      "exitTime": "Salida permitida a partir de",
+      "exitTimeHelp": "La parte de la animación que se reproduce antes de permitir la salida. Es lo que deja terminar un aterrizaje en vez de cortarlo.",
+      "priority": "Prioridad",
+      "priorityHelp": "Quién gana cuando dos transiciones son posibles a la vez. El número más alto se la lleva.",
+      "fadeHelp": "El fundido entre las dos animaciones, en segundos. A cero, el cambio es seco."
     },
     "inputMap": {
       "actionId": "Acción",
@@ -220,11 +273,6 @@
       },
       "loadFailed": "No se ha podido leer este mapa de controles.",
       "loading": "Cargando el mapa de controles…",
-      "mode": {
-        "expert": "Experto",
-        "json": "JSON",
-        "simple": "Simple"
-      },
       "modeHint": "Cambia la forma de editar el mismo mapa de controles",
       "preset": {
         "character": "Personaje",
@@ -237,7 +285,6 @@
       "priority": "Prioridad",
       "removeAction": "Eliminar la acción",
       "removeBinding": "Eliminar la asignación",
-      "save": "Guardar",
       "scale": "Escala",
       "unnamedAction": "Acción sin nombre",
       "capture": "Pulsar",
@@ -254,6 +301,45 @@
         "scale": "Cuánto empuja esta asignación, y en qué sentido. −1 para la mitad que va hacia la izquierda o hacia atrás, 1 para la otra.",
         "deadZone": "Por debajo de este valor, la palanca se considera en reposo. Una palanca desgastada deriva: sin zona muerta, el personaje se va andando solo.",
         "invert": "Invierte el sentido de este control. Lo que algunos pilotos esperan del cabeceo, y nadie de nada más."
+      },
+      "documentDescription": "Un mapa de controles dice qué tecla o qué botón dispara cada acción del juego. El juego lee los NOMBRES de las acciones, nunca las teclas: cambiar una tecla aquí no cambia ningún script.",
+      "views": "Vista de edición",
+      "writeFailed": "Este mapa de controles no se ha podido escribir en el disco.",
+      "contextDescription": "Cómo se llama este conjunto de controles y cuándo entra en servicio.",
+      "actionsTitle": "Acciones",
+      "actionsDescription": "Una acción por cada cosa que el jugador puede hacer. El nombre es lo que lee el juego; los enlaces de abajo son las teclas que la disparan.",
+      "bindings": "Enlaces",
+      "bindingsDescription": "Todas las teclas y controles que disparan esta acción. Una acción puede acumular varios: así un juego responde al teclado Y al mando.",
+      "bindingRank": "Enlace {{rank}}",
+      "noBinding": "Sin enlace: esta acción no responderá a nada.",
+      "noAction": "Sin acciones: este contexto todavía no hace nada.",
+      "presetsDescription": "Un punto de partida ya hecho. Reemplaza las acciones de este mapa; el nombre del contexto no cambia.",
+      "viewHint": {
+        "simple": "Muestra lo que hace el mapa, acción por acción, sin ajustes",
+        "expert": "Abre cada ajuste como un formulario",
+        "json": "Muestra el archivo tal como está escrito en el disco"
+      },
+      "action": {
+        "move": "Mover el personaje: izquierda, derecha, adelante, atrás.",
+        "look": "Mirar alrededor: girar la cabeza o la cámara.",
+        "jump": "Saltar.",
+        "run": "Correr mientras se mantenga el control.",
+        "interact": "Actuar sobre lo que hay delante: abrir, recoger, hablar.",
+        "steer": "Girar: el vehículo va a la izquierda o a la derecha.",
+        "accelerate": "Acelerar.",
+        "brake": "Frenar.",
+        "handBrake": "Freno de mano: las ruedas traseras se bloquean y el vehículo derrapa.",
+        "exit": "Salir del vehículo.",
+        "pitch": "Cabeceo: el morro del aparato baja o sube.",
+        "roll": "Alabeo: el aparato se inclina de lado.",
+        "yaw": "Guiñada: el morro gira a izquierda o derecha sin inclinarse.",
+        "throttle": "El acelerador: cuánta potencia da el motor.",
+        "navigate": "Mover la selección dentro de un menú.",
+        "next": "Ir al elemento siguiente.",
+        "previous": "Volver al elemento anterior.",
+        "confirm": "Confirmar lo elegido.",
+        "back": "Volver atrás o cerrar.",
+        "custom": "Una acción tuya: un script lee este nombre para saber cuándo se ha disparado."
       }
     },
     "controlsMenu": {
@@ -324,6 +410,11 @@
       "noFaults": "Sin errores",
       "title": "Modo de juego",
       "waiting": "A la espera del estudio…"
+    },
+    "scriptView": {
+      "simple": "Simple",
+      "expert": "Experto",
+      "json": "JSON"
     }
   }
 }

@@ -186,8 +186,61 @@
       "jsonLabel": "JSON des Animationsgraphs",
       "loadFailed": "Dieser Animationsgraph konnte nicht gelesen werden.",
       "loading": "Animationsgraph wird geladen…",
-      "save": "Speichern",
-      "writeFailed": "Dieser Animationsgraph konnte nicht auf die Festplatte geschrieben werden."
+      "writeFailed": "Dieser Animationsgraph konnte nicht auf die Festplatte geschrieben werden.",
+      "views": "Bearbeitungsansicht",
+      "viewHint": {
+        "simple": "Zeigt Zustand für Zustand, was der Graph spielt, ohne Einstellungen",
+        "expert": "Öffnet jede Einstellung als Formular",
+        "json": "Zeigt die Datei genau so, wie sie auf der Festplatte steht"
+      },
+      "context": "Kontext",
+      "contextDescription": "Wie dieser Graph heißt, welche Körperhälfte er steuert, und mit welchem Zustand ein Spiel beginnt.",
+      "id": "Bezeichner",
+      "idHelp": "Der Name, unter dem ein Skript diesen Graphen anfordert. Er kommt vom Dateinamen.",
+      "initial": "Anfangszustand",
+      "initialHelp": "Der Zustand, der gespielt wird, sobald die Figur auftritt. Von ihm gehen die ersten Übergänge aus.",
+      "parameters": "Parameter",
+      "parametersDescription": "Die Werte, über die Übergänge entscheiden. Einige veröffentlicht das Spiel selbst; die anderen gehören Ihnen.",
+      "builtInDescription": "Die ersten veröffentlicht das Spiel bei jedem Schritt: Tempo, Bodenkontakt, Sprung. Sie können sie ohne Deklaration verwenden.",
+      "parameterKind": "Art",
+      "parameterKinds": {
+        "number": "Zahl",
+        "boolean": "Ja oder nein"
+      },
+      "addParameter": "Parameter hinzufügen",
+      "removeParameter": "Diesen Parameter entfernen",
+      "noParameter": "Kein eigener Parameter: nur die des Spiels stehen bereit.",
+      "states": "Zustände",
+      "statesDescription": "Was die Figur gerade tun kann, und welche Animation jeder Zustand spielt.",
+      "stateDescription": "Ein Zustand spielt eine Animation, solange nichts ihn verlässt.",
+      "addState": "Zustand hinzufügen",
+      "removeState": "Diesen Zustand entfernen",
+      "initialBadge": "Beginn",
+      "clipKindHelp": "Woher die Animation kommt: aus der Datei des Modells, mit dem Studio geliefert, oder aus einer Datei des Projekts.",
+      "clipKinds": {
+        "embedded": "Die des Modells",
+        "bundled": "Mit dem Studio geliefert",
+        "asset": "Eine Datei des Projekts"
+      },
+      "speedFrom": "Tempo gesteuert von",
+      "speedFromHelp": "Der Parameter, der das Tempo der Animation multipliziert. So bleibt ein Gehzyklus unter einer schneller werdenden Figur.",
+      "speedFromNone": "Keiner",
+      "transitions": "Übergänge",
+      "transitionsDescription": "Der Weg von einem Zustand zum anderen, und was dafür wahr sein muss.",
+      "transitionRank": "Übergang {{rank}}",
+      "transitionSentence": "{{from}} → {{to}}",
+      "addTransition": "Übergang hinzufügen",
+      "removeTransition": "Diesen Übergang entfernen",
+      "noTransition": "Kein Übergang: der Anfangszustand wird endlos gespielt.",
+      "anyState": "Beliebiger Zustand",
+      "from": "Von",
+      "fromHelp": "Der Zustand, der verlassen wird. „Beliebiger Zustand“ lässt einen Sprung unterbrechen, was gerade lief.",
+      "to": "Nach",
+      "exitTime": "Ausgang erlaubt ab",
+      "exitTimeHelp": "Der Anteil der Animation, der vor dem Ausgang gespielt wird. So darf eine Landung zu Ende gehen, statt abgeschnitten zu werden.",
+      "priority": "Priorität",
+      "priorityHelp": "Wer gewinnt, wenn zwei Übergänge im selben Augenblick möglich sind. Die höhere Zahl nimmt ihn.",
+      "fadeHelp": "Die Überblendung zwischen beiden Animationen, in Sekunden. Bei null ist der Wechsel hart."
     },
     "inputMap": {
       "actionId": "Aktion",
@@ -220,11 +273,6 @@
       },
       "loadFailed": "Diese Eingabebelegung konnte nicht gelesen werden.",
       "loading": "Eingabebelegung wird geladen…",
-      "mode": {
-        "expert": "Experte",
-        "json": "JSON",
-        "simple": "Einfach"
-      },
       "modeHint": "Ändert, wie dieselbe Eingabebelegung bearbeitet wird",
       "preset": {
         "character": "Charakter",
@@ -237,7 +285,6 @@
       "priority": "Priorität",
       "removeAction": "Aktion entfernen",
       "removeBinding": "Belegung entfernen",
-      "save": "Speichern",
       "scale": "Skalierung",
       "unnamedAction": "Aktion ohne Namen",
       "capture": "Drücken",
@@ -254,6 +301,45 @@
         "scale": "Wie weit diese Belegung drückt und in welche Richtung. −1 für die Hälfte, die nach links oder nach hinten geht, 1 für die andere.",
         "deadZone": "Unterhalb dieses Werts gilt der Stick als in Ruhe. Ein abgenutzter Stick driftet: ohne Totzone läuft der Charakter von allein los.",
         "invert": "Kehrt diese Steuerung um. Was manche Piloten von der Neigung erwarten, und niemand von etwas anderem."
+      },
+      "documentDescription": "Eine Steuerungskarte sagt, welche Taste oder welcher Knopf jede Aktion des Spiels auslöst. Das Spiel liest die NAMEN der Aktionen, nie die Tasten: eine Taste hier zu ändern ändert kein Skript.",
+      "views": "Bearbeitungsansicht",
+      "writeFailed": "Diese Steuerungskarte konnte nicht auf die Festplatte geschrieben werden.",
+      "contextDescription": "Wie dieser Satz von Steuerungen heißt, und wann er in Dienst tritt.",
+      "actionsTitle": "Aktionen",
+      "actionsDescription": "Eine Aktion pro Sache, die die Spielerin oder der Spieler tun kann. Der Name ist, was das Spiel liest; die Zuordnungen darunter sind die Tasten, die sie auslösen.",
+      "bindings": "Zuordnungen",
+      "bindingsDescription": "Jede Taste und jeder Regler, der diese Aktion auslöst. Eine Aktion kann mehrere tragen: so antwortet ein Spiel auf Tastatur UND Gamepad.",
+      "bindingRank": "Zuordnung {{rank}}",
+      "noBinding": "Keine Zuordnung: diese Aktion antwortet auf nichts.",
+      "noAction": "Keine Aktion: dieser Kontext tut noch nichts.",
+      "presetsDescription": "Ein fertiger Ausgangspunkt. Er ersetzt die Aktionen dieser Karte; der Name des Kontexts bleibt, wie er ist.",
+      "viewHint": {
+        "simple": "Zeigt Aktion für Aktion, was die Karte tut, ohne Einstellungen",
+        "expert": "Öffnet jede Einstellung als Formular",
+        "json": "Zeigt die Datei genau so, wie sie auf der Festplatte steht"
+      },
+      "action": {
+        "move": "Die Figur bewegen: links, rechts, vorwärts, rückwärts.",
+        "look": "Umsehen: Kopf oder Kamera drehen.",
+        "jump": "Springen.",
+        "run": "Rennen, solange der Regler gehalten wird.",
+        "interact": "Auf das wirken, was davor steht: öffnen, aufheben, sprechen.",
+        "steer": "Lenken: das Fahrzeug fährt nach links oder rechts.",
+        "accelerate": "Beschleunigen.",
+        "brake": "Bremsen.",
+        "handBrake": "Handbremse: die Hinterräder blockieren, das Fahrzeug driftet.",
+        "exit": "Das Fahrzeug verlassen.",
+        "pitch": "Nicken: die Nase des Fluggeräts senkt oder hebt sich.",
+        "roll": "Rollen: das Fluggerät neigt sich zur Seite.",
+        "yaw": "Gieren: die Nase schwenkt nach links oder rechts, ohne sich zu neigen.",
+        "throttle": "Der Schub: wie viel Kraft der Motor gibt.",
+        "navigate": "Die Auswahl in einem Menü bewegen.",
+        "next": "Zum nächsten Eintrag gehen.",
+        "previous": "Zum vorherigen Eintrag zurück.",
+        "confirm": "Das Gewählte bestätigen.",
+        "back": "Zurückgehen oder schließen.",
+        "custom": "Eine eigene Aktion: ein Skript liest diesen Namen, um zu wissen, wann sie ausgelöst wurde."
       }
     },
     "controlsMenu": {
@@ -324,6 +410,11 @@
       "noFaults": "Keine Fehler",
       "title": "Spielmodus",
       "waiting": "Warten auf das Studio…"
+    },
+    "scriptView": {
+      "simple": "Einfach",
+      "expert": "Experte",
+      "json": "JSON"
     }
   }
 }

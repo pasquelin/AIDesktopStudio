@@ -57,6 +57,11 @@ import { CLOUD_IDS } from '@shared/domain/aiCloud'
 import { doorLabelKey } from '@/helpers/assistantDoor'
 import { ASSISTANT_STARTERS, starterKey } from '@/features/assistant/starters'
 import { SOURCES } from '@/features/assets/components/Asset/Browser/facets'
+import { INPUT_PRESET_IDS } from '@shared/domain/inputPresets'
+import { INPUT_MAP_VIEWS } from '@/features/input/components/InputMapDocument'
+import { DESCRIBED_ACTION_IDS } from '@/features/input/components/inputMapPresentation'
+import { ANIMATION_GRAPH_VIEWS } from '@/features/game/components/AnimationGraphDocument'
+import { CLIP_SOURCES } from '@shared/domain/sceneModel'
 
 function resolve(code: Language, key: string): unknown {
   // Widened, not cast: the bundle's inferred type has no index signature, and every key here is
@@ -81,6 +86,21 @@ function explained(prefix: string, values: readonly string[]): string[] {
  * `inspector.layerKind_text` where a word belongs.
  */
 const COMPOSED_KEYS: readonly string[] = [
+  // The three readings of a control map: the word on the segment, and what showing it gives.
+  // One word per reading, shared by both script documents; the sentence beside it is each
+  // format's own — « ce que la carte fait » is not « ce que le graphe joue ».
+  ...INPUT_MAP_VIEWS.flatMap(view => [`game.scriptView.${view}`, `game.inputMap.viewHint.${view}`]),
+  ...INPUT_PRESET_IDS.map(id => `game.inputMap.preset.${id}`),
+  // The animation graph, whose editor speaks the same three views and reaches the inspector's
+  // words for what a clip does — one vocabulary for one idea, checked on both sides.
+  ...ANIMATION_GRAPH_VIEWS.map(view => `game.animationGraph.viewHint.${view}`),
+  ...CLIP_SOURCES.map(kind => `game.animationGraph.clipKinds.${kind}`),
+  'game.animationGraph.parameterKinds.number',
+  'game.animationGraph.parameterKinds.boolean',
+  // What each action of the built-in contexts DOES, plus the answer for a name of the project's
+  // own — the question the editor used to leave unanswered on screen.
+  ...DESCRIBED_ACTION_IDS.map(id => `game.inputMap.action.${id}`),
+  'game.inputMap.action.custom',
   // What a model's conversion to glb could not carry — one sentence per loss, composed from the
   // row's own list.
   ...MESH_IMPORT_LOSSES.map(loss => `activity.importLoss.${loss}`),

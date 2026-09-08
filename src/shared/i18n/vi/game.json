@@ -186,8 +186,61 @@
       "jsonLabel": "JSON đồ thị hoạt ảnh",
       "loadFailed": "Đồ thị hoạt ảnh này không thể được đọc.",
       "loading": "Đang tải đồ thị hoạt ảnh…",
-      "save": "Lưu",
-      "writeFailed": "Đồ thị hoạt ảnh này không thể được ghi lên đĩa."
+      "writeFailed": "Đồ thị hoạt ảnh này không thể được ghi lên đĩa.",
+      "views": "Cách chỉnh sửa",
+      "viewHint": {
+        "simple": "Cho thấy đồ thị phát gì, từng trạng thái một, không có thiết lập",
+        "expert": "Mở từng thiết lập dưới dạng biểu mẫu",
+        "json": "Cho thấy tệp đúng như được ghi trên đĩa"
+      },
+      "context": "Bối cảnh",
+      "contextDescription": "Đồ thị này tên gì, điều khiển nửa nào của cơ thể, và ván chơi bắt đầu ở trạng thái nào.",
+      "id": "Định danh",
+      "idHelp": "Tên mà kịch bản dùng để gọi đồ thị này. Nó lấy từ tên tệp.",
+      "initial": "Trạng thái ban đầu",
+      "initialHelp": "Trạng thái được phát ngay khi nhân vật xuất hiện. Các chuyển tiếp đầu tiên đi ra từ đó.",
+      "parameters": "Tham số",
+      "parametersDescription": "Những giá trị mà các chuyển tiếp dựa vào. Trò chơi tự công bố một phần; phần còn lại là của bạn.",
+      "builtInDescription": "Những cái đầu do trò chơi công bố ở mỗi bước: tốc độ, chạm đất, nhảy. Bạn dùng được mà không cần khai báo.",
+      "parameterKind": "Loại",
+      "parameterKinds": {
+        "number": "Số",
+        "boolean": "Có hoặc không"
+      },
+      "addParameter": "Thêm tham số",
+      "removeParameter": "Xóa tham số này",
+      "noParameter": "Không có tham số riêng: chỉ có những cái của trò chơi.",
+      "states": "Trạng thái",
+      "statesDescription": "Những gì nhân vật có thể đang làm, và hoạt ảnh mà mỗi trạng thái phát.",
+      "stateDescription": "Một trạng thái phát một hoạt ảnh cho tới khi có gì đó đưa nó ra.",
+      "addState": "Thêm trạng thái",
+      "removeState": "Xóa trạng thái này",
+      "initialBadge": "Khởi đầu",
+      "clipKindHelp": "Hoạt ảnh đến từ đâu: từ tệp của mô hình, từ những cái đi kèm studio, hay từ một tệp của dự án.",
+      "clipKinds": {
+        "embedded": "Của mô hình",
+        "bundled": "Đi kèm studio",
+        "asset": "Một tệp của dự án"
+      },
+      "speedFrom": "Tốc độ điều khiển bởi",
+      "speedFromHelp": "Tham số nhân với tốc độ hoạt ảnh. Nhờ nó mà chu kỳ bước chân theo kịp nhân vật đang tăng tốc.",
+      "speedFromNone": "Không có",
+      "transitions": "Chuyển tiếp",
+      "transitionsDescription": "Đường đi từ trạng thái này sang trạng thái khác, và điều gì phải đúng để nó xảy ra.",
+      "transitionRank": "Chuyển tiếp {{rank}}",
+      "transitionSentence": "{{from}} → {{to}}",
+      "addTransition": "Thêm chuyển tiếp",
+      "removeTransition": "Xóa chuyển tiếp này",
+      "noTransition": "Không có chuyển tiếp: trạng thái ban đầu sẽ phát mãi.",
+      "anyState": "Bất kỳ trạng thái nào",
+      "from": "Từ",
+      "fromHelp": "Trạng thái được rời khỏi. « Bất kỳ trạng thái nào » cho phép một cú nhảy cắt ngang thứ đang phát.",
+      "to": "Đến",
+      "exitTime": "Cho phép thoát từ",
+      "exitTimeHelp": "Phần hoạt ảnh phải phát trước khi được thoát. Nhờ đó cú tiếp đất được kết thúc thay vì bị cắt.",
+      "priority": "Ưu tiên",
+      "priorityHelp": "Ai thắng khi hai chuyển tiếp cùng khả dĩ. Số lớn hơn thắng.",
+      "fadeHelp": "Thời gian hòa trộn giữa hai hoạt ảnh, tính bằng giây. Bằng không thì đổi dứt khoát."
     },
     "inputMap": {
       "actionId": "Hành động",
@@ -220,11 +273,6 @@
       },
       "loadFailed": "Bản đồ đầu vào này không thể được đọc.",
       "loading": "Đang tải bản đồ đầu vào…",
-      "mode": {
-        "expert": "Chuyên gia",
-        "json": "JSON",
-        "simple": "Đơn giản"
-      },
       "modeHint": "Thay đổi cách chỉnh sửa cùng một bản đồ đầu vào",
       "preset": {
         "character": "Nhân vật",
@@ -237,7 +285,6 @@
       "priority": "Ưu tiên",
       "removeAction": "Loại bỏ hành động",
       "removeBinding": "Loại bỏ ràng buộc",
-      "save": "Lưu",
       "scale": "Tỉ lệ",
       "unnamedAction": "Hành động không tên",
       "capture": "Nhấn",
@@ -254,6 +301,45 @@
         "scale": "Bao xa ràng buộc này đẩy, và chiều nào. −1 cho nửa đó đi trái hoặc lùi, 1 cho cái kia.",
         "deadZone": "Dưới giá trị này thanh gạt được coi là đang ở vị trí ngừng. Một thanh gạt hỏng trôi: không có vùng chết, nhân vật tự đi bộ.",
         "invert": "Biến lệnh này thành mặt khác. Những gì một số phi công mong đợi từ sân, và không ai từ bất cứ thứ gì khác."
+      },
+      "documentDescription": "Bản đồ điều khiển cho biết phím nào hoặc nút nào kích hoạt từng hành động của trò chơi. Trò chơi đọc TÊN hành động, không bao giờ đọc phím: đổi một phím ở đây không đổi bất kỳ kịch bản nào.",
+      "views": "Cách chỉnh sửa",
+      "writeFailed": "Không ghi được bản đồ điều khiển này lên đĩa.",
+      "contextDescription": "Bộ điều khiển này tên là gì, và khi nào nó có hiệu lực.",
+      "actionsTitle": "Hành động",
+      "actionsDescription": "Mỗi việc người chơi có thể làm là một hành động. Tên là thứ trò chơi đọc; các liên kết bên dưới là những phím kích hoạt nó.",
+      "bindings": "Liên kết",
+      "bindingsDescription": "Mọi phím và nút kích hoạt hành động này. Một hành động có thể mang nhiều liên kết: nhờ vậy trò chơi đáp lại cả bàn phím VÀ tay cầm.",
+      "bindingRank": "Liên kết {{rank}}",
+      "noBinding": "Không có liên kết: hành động này sẽ không đáp lại gì cả.",
+      "noAction": "Không có hành động: bối cảnh này chưa làm gì.",
+      "presetsDescription": "Một điểm khởi đầu có sẵn. Nó thay thế các hành động của bản đồ này; tên bối cảnh vẫn giữ nguyên.",
+      "viewHint": {
+        "simple": "Cho thấy bản đồ làm gì, từng hành động một, không có thiết lập",
+        "expert": "Mở từng thiết lập dưới dạng biểu mẫu",
+        "json": "Cho thấy tệp đúng như được ghi trên đĩa"
+      },
+      "action": {
+        "move": "Di chuyển nhân vật: trái, phải, tiến, lùi.",
+        "look": "Nhìn quanh: xoay đầu hoặc máy quay.",
+        "jump": "Nhảy.",
+        "run": "Chạy, chừng nào còn giữ nút.",
+        "interact": "Tác động lên thứ phía trước: mở, nhặt, nói chuyện.",
+        "steer": "Bẻ lái: xe đi sang trái hoặc sang phải.",
+        "accelerate": "Tăng tốc.",
+        "brake": "Phanh.",
+        "handBrake": "Phanh tay: bánh sau khóa lại, xe trượt.",
+        "exit": "Ra khỏi xe.",
+        "pitch": "Chúc ngóc: mũi máy bay hạ xuống hoặc ngóc lên.",
+        "roll": "Nghiêng: máy bay nghiêng sang một bên.",
+        "yaw": "Đảo hướng: mũi quay sang trái hoặc phải mà không nghiêng.",
+        "throttle": "Ga: động cơ cho bao nhiêu lực.",
+        "navigate": "Di chuyển lựa chọn trong một trình đơn.",
+        "next": "Sang mục kế tiếp.",
+        "previous": "Về mục trước.",
+        "confirm": "Xác nhận điều đang chọn.",
+        "back": "Quay lại, hoặc đóng.",
+        "custom": "Một hành động của riêng bạn: kịch bản đọc tên này để biết khi nào nó được kích hoạt."
       }
     },
     "controlsMenu": {
@@ -324,6 +410,11 @@
       "noFaults": "Không có lỗi",
       "title": "Chế độ chơi",
       "waiting": "Đang chờ studio…"
+    },
+    "scriptView": {
+      "simple": "Đơn giản",
+      "expert": "Chuyên sâu",
+      "json": "JSON"
     }
   }
 }

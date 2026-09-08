@@ -69,6 +69,17 @@ const show = async (): Promise<void> => {
 /** The `<select>` of a channel's row — what the shared label column names. */
 const slotOf = (channel: string): HTMLElement => screen.getByLabelText(channel)
 
+/**
+ * The whole LINE of a channel, reached by its name rather than by climbing from its picker: the
+ * picker sits in a box of its own — the one holding its chevron — and a climb of one step landed
+ * inside that box, beside none of the buttons the line ends on.
+ */
+const lineOf = (channel: string): HTMLElement => {
+  const line = screen.getByText(channel).closest('div')
+  if (!line) throw new Error(`no line drawn for ${channel}`)
+  return line
+}
+
 const optionsOf = (channel: string): string[] =>
   within(slotOf(channel))
     .getAllByRole('option')
@@ -141,10 +152,9 @@ describe('the channels of a material', () => {
 
     // Aimed inside ONE line: every row of the section ends on the same two buttons, under the
     // same two names, so a name is not enough to say which of the eight is being emptied.
-    const row = slotOf('Rugosité').closest('div')
-    if (!row) throw new Error('no line drawn for Rugosité')
-
-    await userEvent.click(within(row).getByRole('button', { name: 'Retirer l’image' }))
+    await userEvent.click(
+      within(lineOf('Rugosité')).getByRole('button', { name: 'Retirer l’image' }),
+    )
 
     expect(channels().roughness).toBeUndefined()
   })
@@ -223,8 +233,7 @@ describe('the channels of a material', () => {
       await show()
 
       // The picture of THIS row: eight slots draw the same press, and the label column names them.
-      const row = slotOf('Couleur de base').closest('div')
-      const picture = within(row as HTMLElement).getByRole('button', {
+      const picture = within(lineOf('Couleur de base')).getByRole('button', {
         name: /Choisir une image/,
       })
       await userEvent.dblClick(picture)

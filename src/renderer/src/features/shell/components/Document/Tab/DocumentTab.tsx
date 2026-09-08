@@ -7,11 +7,17 @@ import { UiIcon } from '@/components/UiIcon'
 import { InlineRename } from '@/components/InlineRename'
 import { cn } from '@/helpers/cn'
 import { renameDocument } from '@/helpers/rename'
-import { workspaceById, workspaceLabelKey } from '@/helpers/workspaces'
+import {
+  fileViewRole,
+  roleIcon,
+  roleLabelKey,
+  workspaceById,
+  workspaceLabelKey,
+} from '@/helpers/workspaces'
 import { useDocumentModified } from '@/hooks/useDocumentModified'
 import { useDocuments } from '@/stores/documents'
 import { closeTab } from './closeTab'
-import { panelIsFileView } from '../../dockviewApi'
+import { fileViewOfPanel, panelIsFileView } from '../../dockviewApi'
 import { openDocumentTabMenu } from './documentTabMenu'
 import { HINT_BOTTOM, TIP_BOTTOM } from '@/helpers/tooltip'
 
@@ -34,6 +40,18 @@ export function DocumentTab(props: IDockviewPanelHeaderProps) {
   const modified = useDocumentModified(props.api.id)
   const [renaming, setRenaming] = useState(false)
   const isFileView = panelIsFileView(props.api.id)
+  // A file view has no document behind it, so the workspace table answers nothing for it: its
+  // glyph comes from the FOLDER its kind lives in — the runner of Animations, the gamepad of
+  // Controls — which is the vocabulary the rail and the explorer already speak.
+  const fileView = fileViewOfPanel(props.api.id)
+  const glyph = fileView
+    ? {
+        icon: roleIcon(fileViewRole(fileView.id)),
+        label: t(roleLabelKey(fileViewRole(fileView.id))),
+      }
+    : workspace
+      ? { icon: workspaceById(workspace).icon, label: t(workspaceLabelKey(workspace)) }
+      : null
 
   const close = (event: MouseEvent): void => {
     // Dockview reads a click on the tab as "activate me"; this one is not that.
@@ -71,14 +89,11 @@ export function DocumentTab(props: IDockviewPanelHeaderProps) {
 
   return (
     <span className="flex min-w-0 flex-1 items-center" onContextMenu={openMenu}>
-      {workspace && (
+      {glyph && (
         // A hint and no `aria-label`: the tab's own title is its accessible name, and one set
         // here would replace it (WCAG 2.5.3). The sentence is what the glyph cannot spell.
-        <span
-          className="flex shrink-0 items-center"
-          {...HINT_BOTTOM(t(workspaceLabelKey(workspace)))}
-        >
-          <UiIcon path={workspaceById(workspace).icon} size={14} className="text-muted" />
+        <span className="flex shrink-0 items-center" {...HINT_BOTTOM(glyph.label)}>
+          <UiIcon path={glyph.icon} size={14} className="text-muted" />
         </span>
       )}
       {/* Double-click renames, as it does in the layer stack, the outliner and the track

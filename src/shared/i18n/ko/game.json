@@ -186,8 +186,61 @@
       "jsonLabel": "애니메이션 그래프 JSON",
       "loadFailed": "이 애니메이션 그래프를 읽을 수 없습니다.",
       "loading": "애니메이션 그래프를 불러오는 중…",
-      "save": "저장",
-      "writeFailed": "이 애니메이션 그래프를 디스크에 쓸 수 없습니다."
+      "writeFailed": "이 애니메이션 그래프를 디스크에 쓸 수 없습니다.",
+      "views": "편집 방식",
+      "viewHint": {
+        "simple": "설정 없이, 그래프가 무엇을 재생하는지 상태별로 보여 줍니다",
+        "expert": "모든 설정을 양식으로 엽니다",
+        "json": "디스크에 적힌 그대로 파일을 보여 줍니다"
+      },
+      "context": "컨텍스트",
+      "contextDescription": "이 그래프의 이름, 몸의 어느 절반을 움직이는지, 그리고 게임이 시작하는 상태.",
+      "id": "식별자",
+      "idHelp": "스크립트가 이 그래프를 요청하는 이름. 파일 이름에서 옵니다.",
+      "initial": "시작 상태",
+      "initialHelp": "캐릭터가 등장하자마자 재생되는 상태. 첫 전이가 여기서 나갑니다.",
+      "parameters": "매개변수",
+      "parametersDescription": "전이가 판단하는 값. 일부는 게임이 스스로 게시하고, 나머지는 당신 것입니다.",
+      "builtInDescription": "앞의 것들은 게임이 매 걸음 게시합니다. 속도, 지면 접촉, 점프. 아무것도 선언하지 않고 쓸 수 있습니다.",
+      "parameterKind": "종류",
+      "parameterKinds": {
+        "number": "숫자",
+        "boolean": "예 또는 아니오"
+      },
+      "addParameter": "매개변수 추가",
+      "removeParameter": "이 매개변수 삭제",
+      "noParameter": "당신의 매개변수가 없습니다. 게임의 것만 쓸 수 있습니다.",
+      "states": "상태",
+      "statesDescription": "캐릭터가 하고 있을 수 있는 일과, 각 상태가 재생하는 애니메이션.",
+      "stateDescription": "상태는 무언가가 빼내지 않는 한 하나의 애니메이션을 재생합니다.",
+      "addState": "상태 추가",
+      "removeState": "이 상태 삭제",
+      "initialBadge": "시작",
+      "clipKindHelp": "애니메이션이 어디서 오는지. 모델 자신의 파일, 스튜디오에 포함된 것, 또는 프로젝트의 파일.",
+      "clipKinds": {
+        "embedded": "모델의 것",
+        "bundled": "스튜디오 포함",
+        "asset": "프로젝트의 파일"
+      },
+      "speedFrom": "속도를 움직이는 것",
+      "speedFromHelp": "애니메이션 속도에 곱해지는 매개변수. 빨라지는 캐릭터 아래에서 걷기 주기를 유지합니다.",
+      "speedFromNone": "없음",
+      "transitions": "전이",
+      "transitionsDescription": "한 상태에서 다른 상태로 가는 길과, 그러기 위해 참이어야 하는 것.",
+      "transitionRank": "전이 {{rank}}",
+      "transitionSentence": "{{from}} → {{to}}",
+      "addTransition": "전이 추가",
+      "removeTransition": "이 전이 삭제",
+      "noTransition": "전이가 없습니다. 시작 상태가 끝없이 재생됩니다.",
+      "anyState": "아무 상태",
+      "from": "출발",
+      "fromHelp": "떠나는 상태. ‘아무 상태’가 있기에 점프가 재생 중인 것을 끊을 수 있습니다.",
+      "to": "도착",
+      "exitTime": "나갈 수 있는 시점",
+      "exitTimeHelp": "나가기 전에 재생할 애니메이션의 비율. 착지가 잘리지 않고 끝나게 합니다.",
+      "priority": "우선순위",
+      "priorityHelp": "같은 순간에 두 전이가 가능할 때 누가 이기는지. 큰 숫자가 가져갑니다.",
+      "fadeHelp": "두 애니메이션 사이의 크로스페이드, 초. 0이면 전환이 즉각적입니다."
     },
     "inputMap": {
       "actionId": "액션",
@@ -220,11 +273,6 @@
       },
       "loadFailed": "이 입력 맵을 읽을 수 없습니다.",
       "loading": "입력 맵을 불러오는 중…",
-      "mode": {
-        "expert": "전문가",
-        "json": "JSON",
-        "simple": "간단"
-      },
       "modeHint": "같은 입력 맵을 편집하는 방식을 바꿉니다",
       "preset": {
         "character": "캐릭터",
@@ -237,7 +285,6 @@
       "priority": "우선순위",
       "removeAction": "액션 제거",
       "removeBinding": "바인딩 제거",
-      "save": "저장",
       "scale": "스케일",
       "unnamedAction": "이름 없는 액션",
       "capture": "누르기",
@@ -254,6 +301,45 @@
         "scale": "이 바인딩이 얼마나, 어느 방향으로 미는지입니다. 왼쪽이나 뒤로 가는 쪽은 −1, 반대쪽은 1입니다.",
         "deadZone": "이 값 아래에서는 스틱이 정지 상태로 간주됩니다. 낡은 스틱은 값이 흔들립니다: 데드 존이 없으면 캐릭터가 저절로 걸어갑니다.",
         "invert": "이 컨트롤의 방향을 뒤집습니다. 일부 조종사가 피치에 기대하는 방식이며, 그 밖의 것에는 아무도 기대하지 않습니다."
+      },
+      "documentDescription": "입력 맵은 게임의 각 동작을 어떤 키나 버튼이 일으키는지 알려 줍니다. 게임은 키가 아니라 동작의 이름을 읽습니다. 여기서 키를 바꿔도 스크립트는 바뀌지 않습니다.",
+      "views": "편집 방식",
+      "writeFailed": "이 입력 맵을 디스크에 기록하지 못했습니다.",
+      "contextDescription": "이 조작 묶음의 이름과, 언제 작동하는지.",
+      "actionsTitle": "동작",
+      "actionsDescription": "플레이어가 할 수 있는 일마다 동작 하나. 이름은 게임이 읽는 것이고, 아래의 연결은 그것을 일으키는 키입니다.",
+      "bindings": "연결",
+      "bindingsDescription": "이 동작을 일으키는 모든 키와 컨트롤. 한 동작이 여러 개를 가질 수 있어, 게임이 키보드와 게임패드 모두에 응답합니다.",
+      "bindingRank": "연결 {{rank}}",
+      "noBinding": "연결 없음. 이 동작은 아무것에도 응답하지 않습니다.",
+      "noAction": "동작 없음. 이 컨텍스트는 아직 아무 일도 하지 않습니다.",
+      "presetsDescription": "이미 만들어진 출발점. 이 맵의 동작을 대체하며, 컨텍스트 이름은 그대로 둡니다.",
+      "viewHint": {
+        "simple": "설정 없이, 맵이 하는 일을 동작별로 보여 줍니다",
+        "expert": "모든 설정을 양식으로 엽니다",
+        "json": "디스크에 적힌 그대로 파일을 보여 줍니다"
+      },
+      "action": {
+        "move": "캐릭터를 움직입니다. 왼쪽, 오른쪽, 앞, 뒤.",
+        "look": "둘러봅니다. 머리나 카메라를 돌립니다.",
+        "jump": "점프합니다.",
+        "run": "누르고 있는 동안 달립니다.",
+        "interact": "앞에 있는 것에 작용합니다. 열고, 줍고, 말합니다.",
+        "steer": "방향을 틉니다. 차량이 왼쪽이나 오른쪽으로 갑니다.",
+        "accelerate": "가속합니다.",
+        "brake": "제동합니다.",
+        "handBrake": "핸드브레이크. 뒷바퀴가 잠기고 차량이 미끄러집니다.",
+        "exit": "차량에서 내립니다.",
+        "pitch": "피치. 기수가 내려가거나 올라갑니다.",
+        "roll": "롤. 기체가 옆으로 기웁니다.",
+        "yaw": "요. 기울지 않은 채 기수가 좌우로 돕니다.",
+        "throttle": "스로틀. 엔진이 내는 힘의 크기.",
+        "navigate": "메뉴 안에서 선택을 옮깁니다.",
+        "next": "다음 항목으로 갑니다.",
+        "previous": "이전 항목으로 돌아갑니다.",
+        "confirm": "고른 것을 확인합니다.",
+        "back": "뒤로 가거나 닫습니다.",
+        "custom": "당신만의 동작. 스크립트가 이 이름을 읽어 언제 일어났는지 압니다."
       }
     },
     "controlsMenu": {
@@ -324,6 +410,11 @@
       "noFaults": "오류 없음",
       "title": "재생 모드",
       "waiting": "스튜디오를 기다리는 중…"
+    },
+    "scriptView": {
+      "simple": "간단",
+      "expert": "전문",
+      "json": "JSON"
     }
   }
 }
