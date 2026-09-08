@@ -43,9 +43,10 @@ import { resolveSpecifier } from './sourceFiles.ts'
  * 131 against 141 the same day, when `daisy-gauge` read the stylesheet to hold daisyUI's
  * own gauges against `--sc-control`; 132 against 142 the same day, when
  * `installEngineLibraries` read `engine/pyproject.toml` to tie the embedded torch pin to the
- * `+cu126` build it names.
+ * `+cu126` build it names; 133 against 143 the same day, `gateCache` reading the tree through git
+ * to fingerprint what a link of the gate reads.
  */
-export const LEAST_GUARDS = 132
+export const LEAST_GUARDS = 133
 
 /**
  * How far the floor may sit below the real count before it stops meaning anything.

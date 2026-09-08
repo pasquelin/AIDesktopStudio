@@ -29,6 +29,9 @@ import { RERUN_EVERYTHING } from '../src/main/rerunEverything.ts'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 
+/** Every vitest run goes through the wrapper, which is what keeps two checkouts off the same cores. */
+const WRAPPER = 'scripts/vitest.mjs'
+
 function git(...args) {
   return execFileSync('git', args, { cwd: ROOT, encoding: 'utf8' })
     .split('\n')
@@ -118,12 +121,15 @@ function selectedFiles(touched) {
 }
 
 function testSuites(sources, wholeSuite) {
-  if (wholeSuite) return [run('tests (whole suite)', 'npx', ['vitest', 'run'])]
+  if (wholeSuite) return [run('tests (whole suite)', 'node', [WRAPPER, 'whole', 'run'])]
   const related =
     sources.length > 0
-      ? [run('tests (related)', 'npx', ['vitest', 'related', '--run', ...sources])]
+      ? [run('tests (related)', 'node', [WRAPPER, 'narrow', 'related', '--run', ...sources])]
       : []
-  return [...related, run('tests (wide guards)', 'npx', ['vitest', 'run', ...wideGuards()])]
+  return [
+    ...related,
+    run('tests (wide guards)', 'node', [WRAPPER, 'narrow', 'run', ...wideGuards()]),
+  ]
 }
 
 function sourceGates(sources) {

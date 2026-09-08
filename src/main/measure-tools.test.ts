@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import manifest from '../../package.json'
+import { GATE } from './gateLinks'
 import { SOURCE_ROOT } from './sourceFiles'
 import { testFilesUnder } from './wideGuards'
 
@@ -266,6 +267,6 @@ describe('the dead-code detector still looking at the tree', () => {
    * sources, so it would run as well first, in 3 s against the minute the four before it take.
    */
   it('is a link of the gate, not a report waiting for someone to run it', () => {
-    expect(manifest.scripts.validate).toContain('pnpm unused:main')
+    expect(GATE.map(link => link.command)).toContain('pnpm unused:main')
   })
 })

@@ -11,6 +11,7 @@ import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { filesUnder, replaceDirectory, shippedTwice, wastedBytes } from './artefact'
 import manifest from '../../package.json'
+import { GATE } from './gateLinks'
 
 // Under `src/main` rather than `src/shared`: it judges what sits at the repository root, and
 // `src/shared` compiles for the renderer, which has no filesystem.
@@ -119,8 +120,9 @@ describe('the artefact check', () => {
   it('runs at the end of every build, hence of every package and of the gate', () => {
     expect(manifest.scripts.build).toContain('check-artefact.mjs')
     expect(manifest.scripts.dist).toContain('pnpm build')
-    // Split rather than searched: `pnpm build:site` holds `pnpm build` as a substring, and would
-    // answer for the link that reaches this check while building something else entirely.
-    expect(manifest.scripts.validate.split('&&').map(link => link.trim())).toContain('pnpm build')
+    // Read from the chain rather than from the `validate` script, which since 2026-09-08 only
+    // calls `scripts/gate.mjs`. A whole command rather than a substring: `pnpm build:site` holds
+    // `pnpm build` and would answer for the link that builds something else entirely.
+    expect(GATE.map(link => link.command)).toContain('pnpm build')
   })
 })
