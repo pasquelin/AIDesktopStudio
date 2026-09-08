@@ -41,7 +41,10 @@ describe('accountsByProvider', () => {
 describe('useAccounts', () => {
   beforeEach(() => {
     useAccounts.setState({ accounts: [] })
-    useSettings.setState({ auth: { authenticated: false, reason: 'missing' } })
+    useSettings.setState({
+      auth: { authenticated: false, reason: 'missing' },
+      refreshAuth: useSettings.getInitialState().refreshAuth,
+    })
     vi.restoreAllMocks()
   })
 
@@ -89,6 +92,31 @@ describe('useAccounts', () => {
 
       await useAccounts.getState().connect()
       expect(useAccounts.getState().accounts).toHaveLength(2)
+    })
+
+    it('refreshes authentication when another window adds or removes the active account', async () => {
+      const listeners: ((accounts: AccountSummary[]) => void)[] = []
+      const probe = vi.fn(async (): Promise<AuthState> => ({ authenticated: true }))
+      installFakeBridge({
+        settings: { authState: probe },
+        accounts: {
+          list: async () => [],
+          onChange: callback => {
+            listeners.push(callback)
+            return () => {}
+          },
+        },
+      })
+      const stop = await useAccounts.getState().connect()
+      listeners[0]?.([studio])
+      await vi.waitFor(() => expect(useSettings.getState().auth.authenticated).toBe(true))
+      listeners[0]?.([{ ...studio, name: 'Renamed' }])
+      expect(probe).toHaveBeenCalledTimes(1)
+      probe.mockResolvedValue({ authenticated: false, reason: 'missing' })
+      listeners[0]?.([])
+      await vi.waitFor(() => expect(useSettings.getState().auth.authenticated).toBe(false))
+      expect(probe).toHaveBeenCalledTimes(2)
+      stop()
     })
 
     it('still hands back the unsubscribe when the read fails', async () => {
@@ -165,6 +193,28 @@ describe('useAccounts', () => {
 
     // Saving a second key is configuring, not switching: the probe is a real round trip the
     // user waits on, and the answer would be arithmetically identical.
+    it('probes only once when its own mutation is broadcast before answering', async () => {
+      const probe = watchProbe()
+      const listeners: ((accounts: AccountSummary[]) => void)[] = []
+      installFakeBridge({
+        accounts: {
+          list: async () => [],
+          onChange: callback => {
+            listeners.push(callback)
+            return () => {}
+          },
+          add: async () => {
+            listeners[0]?.([studio])
+            return { accounts: [studio] }
+          },
+        },
+      })
+      const stop = await useAccounts.getState().connect()
+      await useAccounts.getState().add('Studio', 'k', 's')
+      expect(probe).toHaveBeenCalledOnce()
+      stop()
+    })
+
     it('does not probe when the active account stayed put', async () => {
       const probe = watchProbe()
       installFakeBridge({ accounts: { add: () => result([studio, client]) } })

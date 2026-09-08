@@ -92,8 +92,6 @@ export const useAccounts = create<AccountsState>()((set, get) => {
     // Answering null would read as "saved", and the form would clear the key just typed.
     if (!bridge) return 'unexpected'
 
-    const before = scenarioAccount(get().accounts)?.id ?? null
-
     let result: AccountsResult
     try {
       result = await change(bridge.accounts)
@@ -103,6 +101,7 @@ export const useAccounts = create<AccountsState>()((set, get) => {
       return 'unexpected'
     }
 
+    const before = scenarioAccount(get().accounts)?.id ?? null
     set({ accounts: result.accounts })
     if (result.failure) return result.failure
 
@@ -121,7 +120,11 @@ export const useAccounts = create<AccountsState>()((set, get) => {
       let pushed = false
       const stop = bridge.accounts.onChange(accounts => {
         pushed = true
+        const before = scenarioAccount(get().accounts)?.id ?? null
         set({ accounts, accountsLoaded: true })
+        if ((scenarioAccount(accounts)?.id ?? null) !== before) {
+          void useSettings.getState().refreshAuth()
+        }
       })
 
       try {
