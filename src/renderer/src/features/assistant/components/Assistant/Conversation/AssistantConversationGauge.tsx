@@ -75,7 +75,7 @@ export function AssistantConversationGauge() {
       <ProgressBar
         ratio={read / shown.size}
         label={t('assistant.contextGauge')}
-        className="w-12 shrink-0"
+        className="assistant-conversation-gauge-bar w-12 shrink-0"
       />
     </span>
   )

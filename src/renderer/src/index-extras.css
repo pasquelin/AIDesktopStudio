@@ -269,7 +269,8 @@ body {
     max-width: 11rem;
   }
 
-  .assistant-conversation-gauge {
+  /* The bar goes, the count stays: the figure is what informs, the track only decorates it. */
+  .assistant-conversation-gauge-bar {
     display: none;
   }
 }
