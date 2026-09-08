@@ -15,7 +15,7 @@ export function AnimationGraphSimple({ graph }: AnimationGraphSimpleProps) {
   const layer = layerOf(graph)
 
   return (
-    <div className="flex flex-col gap-2 p-(--sc-gutter)">
+    <div className="flex flex-col gap-3 p-3">
       <PropertySection
         title={t('game.animationGraph.parameters')}
         description={t('game.animationGraph.parametersDescription')}

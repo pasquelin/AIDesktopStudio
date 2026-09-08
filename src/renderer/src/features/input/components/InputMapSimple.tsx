@@ -20,7 +20,7 @@ export function InputMapSimple({ map, onChange }: InputMapSimpleProps) {
   const { t } = useTranslation()
 
   return (
-    <div className="flex flex-col gap-2 p-(--sc-gutter)">
+    <div className="flex flex-col gap-3 p-3">
       <PropertySection
         title={t('game.inputMap.presets')}
         description={t('game.inputMap.presetsDescription')}

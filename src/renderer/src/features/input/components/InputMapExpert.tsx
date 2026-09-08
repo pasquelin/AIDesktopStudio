@@ -19,7 +19,7 @@ export function InputMapExpert({ map, onChange }: InputMapExpertProps) {
     { value: 'axis2', label: t('game.inputMap.kind.axis2') },
   ]
   return (
-    <div className="flex flex-col gap-2 p-(--sc-gutter)">
+    <div className="flex flex-col gap-3 p-3">
       <PropertySection
         title={t('game.inputMap.context')}
         description={t('game.inputMap.contextDescription')}

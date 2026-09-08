@@ -51,7 +51,7 @@ export const PROPERTY_BODY = 'flex flex-col gap-2 px-2 pt-1 pb-2'
  * what a block one can see the edges of is allowed to cost.
  */
 export const FIELD_BLOCK =
-  'border-border bg-surface flex flex-col gap-2 rounded-(--radius-sc-md) border p-2'
+  'border-border bg-surface flex flex-col gap-2.5 rounded-(--radius-sc-md) border p-2.5'
 
 /**
  * A picture standing in a property FIELD — the texture a slot holds, the map a model carries.

@@ -53,7 +53,7 @@ export function AnimationGraphExpert({ graph, onChange }: AnimationGraphExpertPr
   }
 
   return (
-    <div className="flex flex-col gap-2 p-(--sc-gutter)">
+    <div className="flex flex-col gap-3 p-3">
       <PropertySection
         title={t('game.animationGraph.context')}
         description={t('game.animationGraph.contextDescription')}
