@@ -53,6 +53,24 @@ const TARGETS = {
 }
 
 /**
+ * 🛑 The targets that ship WITHOUT an engine. `torch` has published no macOS x86-64 wheel since
+ * 2.2.2 and `onnxruntime` none since 1.23.2 — read off PyPI 2026-09-07 — so neither embedded
+ * profile has an installable binary there. Alban's call: ship the whole studio on Intel without
+ * its local AI rather than nothing at all.
+ */
+export const ENGINELESS_TARGETS = new Set(['darwin-x64'])
+
+/**
+ * What an engineless target leaves to pack: NOTHING, and the folder has to exist empty rather
+ * than be absent — `extraResources` declares it, and an earlier pass of the same run left the
+ * OTHER architecture's interpreter in it.
+ */
+export function emptyEngine() {
+  rmSync(DESTINATION, { recursive: true, force: true })
+  mkdirSync(DESTINATION, { recursive: true })
+}
+
+/**
  * What each archive must hash to, read 2026-08-22. Two builds of one tag must ship the same
  * interpreter, so a rotated URL without a rotated digest fails here rather than shipping
  * something unread. A missing entry REFUSES rather than warns.
@@ -120,7 +138,9 @@ export async function fetchEngine(platform = process.platform, arch = process.ar
     )
   }
 
-  const work = mkdtempSync(join(tmpdir(), 'ai-desktop-studio-engine-'))
+  // Beside the destination rather than in the system's temp: the two are then siblings and can
+  // name each other relatively — see the `tar` call below.
+  const work = mkdtempSync(join(dirname(DESTINATION), 'ai-desktop-studio-engine-'))
   try {
     const archive = join(work, 'python.tar.gz')
     const digest = await download(urlOf(triple), archive)
@@ -133,7 +153,19 @@ export async function fetchEngine(platform = process.platform, arch = process.ar
     // `tar` and not a Node unpacker: the archive holds symlinks and executable bits, and both
     // matter — an interpreter whose `python3` link is a copy still runs, one whose bit is lost
     // does not.
-    execFileSync('tar', ['xzf', archive, '-C', DESTINATION], { stdio: 'inherit' })
+    //
+    // 🛑 RELATIVE paths, run from their parent. The `tar` a Windows runner's PATH resolves is
+    // Git for Windows' GNU tar, which reads `D:\path` as the remote spec `host:path` and answers
+    // "Cannot connect to D: resolve failed" — measured 2026-09-08. `--force-local` would fix GNU
+    // tar and break bsdtar, which does not know it; never showing a colon works with both.
+    execFileSync(
+      'tar',
+      ['xzf', join(basename(work), 'python.tar.gz'), '-C', basename(DESTINATION)],
+      {
+        cwd: dirname(DESTINATION),
+        stdio: 'inherit',
+      },
+    )
 
     syncEngineSources()
 

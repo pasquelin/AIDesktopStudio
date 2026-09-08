@@ -15,7 +15,7 @@
  * race over the folder.
  */
 import { Arch } from 'electron-builder'
-import { fetchEngine } from './fetch-engine.mjs'
+import { emptyEngine, ENGINELESS_TARGETS, fetchEngine } from './fetch-engine.mjs'
 import { fetchFfmpeg } from './fetch-ffmpeg.mjs'
 import { fetchStt } from './fetch-stt.mjs'
 import { prepareEngineRuntime } from './prepare-engine-runtime.mjs'
@@ -37,6 +37,14 @@ export default async function beforePack(context) {
   // hook that runs before each pack — and re-fetching 640 KB costs nothing worth optimising.
   console.log('Fetching the voice detector')
   await fetchStt()
+
+  // 🛑 Emptied, never left as it stands: the previous pass of a two-architecture run wrote the
+  // OTHER interpreter there, and the Intel bundle would carry an Apple Silicon engine.
+  if (ENGINELESS_TARGETS.has(`${platform}-${arch}`)) {
+    console.log(`No AI engine for ${platform}-${arch} — see ENGINELESS_TARGETS`)
+    emptyEngine()
+    return
+  }
 
   // Per target for the same reason ffmpeg is: an interpreter is a native binary, and the second
   // bundle of a two-arch run would otherwise carry the first one's.

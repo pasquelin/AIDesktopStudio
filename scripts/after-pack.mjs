@@ -1,5 +1,6 @@
 import { Arch } from 'electron-builder'
 import { checkEngineRuntime, packagedEngineOf } from './check-engine-runtime.mjs'
+import { ENGINELESS_TARGETS } from './fetch-engine.mjs'
 
 export default async function afterPack(context) {
   const arch = Arch[context.arch]
@@ -9,5 +10,9 @@ export default async function afterPack(context) {
   // already checked through this hook. The two hooks have to agree, or the merge dies here.
   if (arch === 'universal') return
 
-  checkEngineRuntime(packagedEngineOf(context), context.electronPlatformName, arch)
+  // Nothing to check where nothing was laid — `beforePack` emptied the folder.
+  const platform = context.electronPlatformName
+  if (ENGINELESS_TARGETS.has(`${platform}-${arch}`)) return
+
+  checkEngineRuntime(packagedEngineOf(context), platform, arch)
 }

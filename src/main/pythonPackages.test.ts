@@ -78,12 +78,10 @@ describe('what the Python side distributes', () => {
   })
 
   /**
-   * 🛑 The hole, held rather than described: the CUDA stack is locked, ships on Linux, and its
-   * licences have never been read — no such environment materialises on this machine. This case
-   * is what stops the list from quietly growing, and it goes red the day someone reads them.
+   * 🛑 The hole is CLOSED, and this is what keeps it so: the CUDA stack it held is no longer
+   * locked. A name arriving here is a distribution whose licence nobody has read.
    */
-  it('holds the size of what has never been read on this platform', () => {
-    expect(UNREAD_ON_THIS_PLATFORM).toHaveLength(19)
-    expect(UNREAD_ON_THIS_PLATFORM.every(name => lockedPackages().includes(name))).toBe(true)
+  it('distributes nothing whose licence has not been read', () => {
+    expect(UNREAD_ON_THIS_PLATFORM).toEqual([])
   })
 })
