@@ -1,5 +1,5 @@
 {
-  "smart-selection": [
+  "background-removal/cutout": [
     {
       "id": "efficient-sam-ti",
       "name": "EfficientSAM-Ti",
