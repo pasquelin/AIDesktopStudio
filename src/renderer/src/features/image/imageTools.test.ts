@@ -86,15 +86,13 @@ describe('image tools', () => {
    */
   it('gives each mode a glyph no other tool already wears armed', () => {
     const armed = IMAGE_TOOLS.flatMap(tool =>
-      (tool.modes ?? []).map(mode => ({ at: `${tool.id}/${mode.id}`, icon: mode.icon })),
+      (tool.modes ?? []).map(mode => ({ tool: tool.id, mode: mode.id, icon: mode.icon })),
     )
     const shared = armed.filter(one =>
-      armed.some(
-        other => other.at.split('/')[0] !== one.at.split('/')[0] && other.icon === one.icon,
-      ),
+      armed.some(other => other.tool !== one.tool && other.icon === one.icon),
     )
 
-    expect(shared.map(one => one.at)).toEqual([])
+    expect(shared.map(one => `${one.tool}/${one.mode}`)).toEqual([])
   })
 
   it('gives the pointer two modes, so it opens a flyout', () => {

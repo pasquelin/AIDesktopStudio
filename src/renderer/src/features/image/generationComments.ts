@@ -15,15 +15,20 @@ export type GenerationComment = {
   outline?: readonly Point[]
 }
 
+/** What a note can be done to, wherever it is drawn — the four travel together. */
+export type GenerationCommentActions = {
+  onChange: (id: string, text: string) => void
+  onRename: (id: string, title: string) => void
+  onRemove: (id: string) => void
+  onGenerate?: (id: string) => void
+}
+
 export function commentFor(id: string, at: Point, layerId: string | null): GenerationComment {
   return { id, at, text: '', ...(layerId === null ? {} : { layerId }) }
 }
 
-/**
- * The hue one comment wears, outline and note alike. From the ID and not the position: removing
- * the first would otherwise repaint every one below it. The ANGLE alone — chroma and lightness
- * stay in `index-foundation.css`, which keeps a free hue from being a free contrast.
- */
+/** From the ID and not the position: removing the first would repaint every one below it. The
+ * ANGLE alone — chroma and lightness stay in `index-foundation.css`. */
 export function commentHue(id: string): number {
   return parseInt(digest(id).slice(-8), 16) % 360
 }

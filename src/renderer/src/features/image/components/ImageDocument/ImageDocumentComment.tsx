@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react'
+import { useMemo, type CSSProperties } from 'react'
 import { mdiClose, mdiCreationOutline } from '@mdi/js'
 import { useTranslation } from 'react-i18next'
 import {
@@ -44,10 +44,12 @@ type ImageDocumentCommentProps = {
 export function ImageDocumentComment(props: ImageDocumentCommentProps) {
   const { t } = useTranslation()
   const { comment } = props
-  // Its own hue, on the outline and on the note: the four colours of `index-foundation.css` all
-  // compose from this one angle, so posting it is all a comment does about its colour. Cast
-  // because React types no custom property, the same reason `appRegion.ts` casts.
-  const hue = { '--sc-comment-hue': commentHue(comment.id) } as CSSProperties
+  // Held across renders: the note re-renders on every pan frame, and `digest` is a BigInt walk.
+  // Cast because React types no custom property, the same reason `appRegion.ts` casts.
+  const hue = useMemo(
+    () => ({ '--sc-comment-hue': commentHue(comment.id) }) as CSSProperties,
+    [comment.id],
+  )
   return (
     <>
       {comment.outline && (

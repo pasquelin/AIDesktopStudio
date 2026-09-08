@@ -25,17 +25,15 @@ export type CanvasTool =
   | 'picker'
   | 'hand'
 
-/**
- * The two promptable tools: the same gesture and the same prompt, only what is done with the mask
- * told apart. Four places read this, and one that listed a single member left the other blind.
- */
+/** The two promptable tools: one gesture, one prompt, only the mask's use told apart. */
 export type SmartTool = Extract<CanvasTool, 'smartSelect' | 'smartComment'>
 
-// A `Record` and not two comparisons: the union and its members cannot part company, where a
-// hand-written `===` per member stays green while a third tool falls through to the brush.
+// A `Record` and not two comparisons: a hand-written `===` per member stays green while a third
+// tool falls through to the brush.
 const SMART_TOOLS: Record<SmartTool, true> = { smartSelect: true, smartComment: true }
 
-/** `hasOwn` and not `in`: `in` walks the prototype, so `'toString'` would read as a tool. */
-export function isSmartTool(tool: CanvasTool | string): tool is SmartTool {
+/** A `string`, because a gesture kind asks too and its union is not this one. `hasOwn` and not
+ * `in`, which walks the prototype and would read `'toString'` as a tool. */
+export function isSmartTool(tool: string): tool is SmartTool {
   return Object.hasOwn(SMART_TOOLS, tool)
 }

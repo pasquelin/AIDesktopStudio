@@ -1,15 +1,10 @@
 import { useGeneratorCommentSubmission } from '@/hooks/useGeneratorCommentSubmission'
 import { reportFailure } from '@/services/diagnostics'
 import { useGenerationComments } from '@/stores/generationComments'
-import type { ImageDocumentCommentsProps } from '@/features/image/components/ImageDocument/ImageDocumentComments'
+import type { GenerationCommentActions } from '@/features/image/generationComments'
 
-type CommentActions = Omit<ImageDocumentCommentsProps, 'comments' | 'view' | 'size'>
-
-/**
- * What a note on the canvas can be done to. Gathered here rather than in the document: the four
- * are handed on together, and `ImageDocument` sits at the size guard's ceiling.
- */
-export function useGenerationCommentActions(documentId: string): CommentActions {
+/** Gathered out of the document, which sits at the size guard's ceiling. */
+export function useGenerationCommentActions(documentId: string): GenerationCommentActions {
   const update = useGenerationComments(state => state.update)
   const rename = useGenerationComments(state => state.rename)
   const remove = useGenerationComments(state => state.remove)

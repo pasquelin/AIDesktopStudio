@@ -19,8 +19,8 @@ import {
 import { ImageDocumentBrush } from './ImageDocumentBrush'
 import { ImageDocumentText } from './ImageDocumentText'
 import { ZoomBar } from '../ZoomBar'
-import { ImageDocumentComments, type ImageDocumentCommentsProps } from './ImageDocumentComments'
-import type { GenerationComment } from '../../generationComments'
+import { ImageDocumentComments } from './ImageDocumentComments'
+import type { GenerationComment, GenerationCommentActions } from '../../generationComments'
 import type { Size } from '@/engines/core/geometry'
 
 type Shortcuts = { zoomIn: string; zoomOut: string; fit: string; actual: string }
@@ -49,8 +49,7 @@ type ImageDocumentViewProps = {
   checker: string
   comments: readonly GenerationComment[]
   commentSize: Size
-  /** What a note can be done to — the four travel together, and the list below takes them so. */
-  commentActions: Omit<ImageDocumentCommentsProps, 'comments' | 'view' | 'size'>
+  commentActions: GenerationCommentActions
 }
 
 export function ImageDocumentView(props: ImageDocumentViewProps) {

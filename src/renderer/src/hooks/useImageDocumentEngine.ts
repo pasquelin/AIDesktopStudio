@@ -88,15 +88,13 @@ export function useImageDocumentEngine(
     }
     // One run for both tools, told apart by what it does with the mask and by the channel a
     // failure is said on. The cancel of the run before it is not a failure.
-    const reportedSmart =
-      (tool: SmartTool) =>
-      async (prompt: SmartSelectionPrompt): Promise<void> => {
-        try {
-          await smartSelect(prompt, tool)
-        } catch (error) {
-          if (!isAbortError(error)) reportFailure(`canvas.${tool}`, documentId, error)
-        }
+    const reportedSmart = async (tool: SmartTool, prompt: SmartSelectionPrompt): Promise<void> => {
+      try {
+        await smartSelect(prompt, tool)
+      } catch (error) {
+        if (!isAbortError(error)) reportFailure(`canvas.${tool}`, documentId, error)
       }
+    }
     const created = new CanvasEngine({
       onPick: color => setBrush(current => ({ ...current, color })),
       onPixels: pixels.record,
@@ -106,8 +104,8 @@ export function useImageDocumentEngine(
       // 🛑 Said and not dropped: a model that is not installed, an engine that does not answer
       // and a box too thin all rejected into `traceDroppedRejections`, so the click did nothing
       // and nothing explained why.
-      onSmartSelect: prompt => void reportedSmart('smartSelect')(prompt),
-      onSmartComment: prompt => void reportedSmart('smartComment')(prompt),
+      onSmartSelect: prompt => void reportedSmart('smartSelect', prompt),
+      onSmartComment: prompt => void reportedSmart('smartComment', prompt),
       onComment,
       onHost: size => views().setHost(documentId, size),
       onText: asked => {

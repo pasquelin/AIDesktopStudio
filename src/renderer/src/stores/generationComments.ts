@@ -13,10 +13,8 @@ type GenerationCommentsState = {
 
 const NO_COMMENTS: readonly GenerationComment[] = []
 
-/**
- * One comment of one document, patched. Private and NARROW: `removeSubmitted` tells its comments
- * apart by reference, so an open patch would let a caller move `at` or `id` under it.
- */
+/** Private and NARROW: `removeSubmitted` tells its comments apart by REFERENCE, so an open patch
+ * would let a caller move `at` or `id` under it. */
 function changed(
   state: Pick<GenerationCommentsState, 'comments'>,
   documentId: string,
