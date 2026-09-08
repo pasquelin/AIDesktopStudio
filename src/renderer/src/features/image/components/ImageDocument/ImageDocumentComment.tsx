@@ -19,7 +19,9 @@ const NOTE = cn(
   MENU_RAISED,
   'generation-comment generation-comment-note text-text',
   'bg-comment-note border-comment-note-border',
-  'pointer-events-auto absolute z-10 gap-2 p-2',
+  // The one being written comes forward: notes overlap, and without this the last one created
+  // covers whichever the hand is actually in.
+  'pointer-events-auto absolute z-10 gap-2 p-2 focus-within:z-20',
 )
 
 type ImageDocumentCommentProps = {
