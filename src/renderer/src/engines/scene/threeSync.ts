@@ -90,7 +90,7 @@ export function applyNegative(
 }
 
 /** Where `applyNegative` leaves the paint a marked material had — read by `unmarkTools`. */
-export const NEGATIVE_PAINT = 'negativePaint'
+const NEGATIVE_PAINT = 'negativePaint'
 
 /**
  * The tool mark taken off a COPY, paint and all. A mark is an editing role, not a finish: Roblox

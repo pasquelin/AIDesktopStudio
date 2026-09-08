@@ -251,9 +251,9 @@ export function capsuleBodiesOf(nodes: readonly SceneNode[]): ReadonlyMap<string
   return cachedOn(bodiesByNodes, nodes, () => walkCapsuleBodies(nodes))
 }
 
-export const bodiesByNodes = new WeakMap<readonly SceneNode[], ReadonlyMap<string, AidBody>>()
+const bodiesByNodes = new WeakMap<readonly SceneNode[], ReadonlyMap<string, AidBody>>()
 
-export function walkCapsuleBodies(nodes: readonly SceneNode[]): ReadonlyMap<string, AidBody> {
+function walkCapsuleBodies(nodes: readonly SceneNode[]): ReadonlyMap<string, AidBody> {
   const found = new Map<string, AidBody>()
   for (const node of nodes) {
     const walker = node.components?.find(one => one.type === 'CharacterController')
@@ -271,7 +271,7 @@ export function walkCapsuleBodies(nodes: readonly SceneNode[]): ReadonlyMap<stri
 }
 
 /** The runtime's own defaults, so what is DRAWN is what is FELT — see `characters.capsuleOf`. */
-export const WALKER = COMPONENT_DEFAULTS.CharacterController
+const WALKER = COMPONENT_DEFAULTS.CharacterController
 
 // Rewritten in place: `facingOf` answers once per arm per apply.
 export const FACING = new Euler()

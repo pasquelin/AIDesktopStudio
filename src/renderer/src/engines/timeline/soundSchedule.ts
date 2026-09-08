@@ -13,7 +13,7 @@ import {
 } from './timelineState'
 
 /** One corner of the slice's envelope: the level to reach, and when to have reached it. */
-export type SoundRamp = {
+type SoundRamp = {
   /** On the output clock, like `SoundCue.when` — never a timeline microsecond. */
   when: number
   /** Linear amplitude, the clip's own gain already folded in. */
@@ -40,7 +40,7 @@ export type SoundCue = {
   ramps: readonly SoundRamp[]
 }
 
-export type PlayingSound = { stop: () => void }
+type PlayingSound = { stop: () => void }
 
 /** A sound in memory, ready to be started. */
 export type LoadedSound = (cue: SoundCue) => PlayingSound

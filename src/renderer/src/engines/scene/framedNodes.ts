@@ -5,7 +5,7 @@ import type { SceneNodeType } from './sceneState'
  * are placed away from what they light or watch, and a group is only ever as big as its children,
  * which are counted on their own.
  */
-export const UNFRAMED_NODES: ReadonlySet<SceneNodeType> = new Set<SceneNodeType>([
+const UNFRAMED_NODES: ReadonlySet<SceneNodeType> = new Set<SceneNodeType>([
   'light',
   'camera',
   'group',

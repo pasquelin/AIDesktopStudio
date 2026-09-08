@@ -104,7 +104,6 @@ export {
   closePanel,
   closeWindow,
   deleteDocument,
-  openDocument,
   oraContent,
   patched,
   picture,

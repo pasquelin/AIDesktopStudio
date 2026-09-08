@@ -325,7 +325,7 @@ const FIT: Frustum = { left: 0, right: 0, top: 0, bottom: 0, near: 0, far: 0 }
  * Whether sizing a frustum for this light means anything — a caller that measures the whole
  * scene to answer `extent` can skip the walk entirely when no light would read it.
  */
-export function needsShadowFrustum(
+function needsShadowFrustum(
   object: Object3D,
 ): object is Object3D & { shadow: LightShadow & { camera: Orthographic } } {
   return castsShadow(object) && isOrthographic(object.shadow.camera)

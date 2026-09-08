@@ -187,7 +187,7 @@ export function studioSnapshot(): StudioSnapshot {
   }
 }
 
-export const studioState = (): ActionOutcome => ({ ok: true, data: studioSnapshot() })
+const studioState = (): ActionOutcome => ({ ok: true, data: studioSnapshot() })
 
 function listDocuments(): ActionOutcome {
   const { stored, documents, activeId } = useDocuments.getState()

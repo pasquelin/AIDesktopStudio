@@ -494,6 +494,5 @@ export {
   setCanvasDpi,
   setPixelCell,
   ungroupLayer,
-  type FlipAxis,
   type TurnPort,
 } from './commandsStructure'

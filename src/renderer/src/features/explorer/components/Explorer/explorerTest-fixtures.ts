@@ -257,11 +257,9 @@ export {
   listing,
   menu,
   montage,
-  nothingMoved,
   openAsset,
   openDocument,
   picture,
   scene,
-  WHEN_FACTS,
   withProject,
 }

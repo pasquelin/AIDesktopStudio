@@ -76,7 +76,7 @@ function kindForAsset(asset: Asset | null): TrackKind {
  * The same question asked of a TYPE, which is all a drag announces before it lands — and so the
  * only form a surface can answer in time to say whether it takes the drop.
  */
-export function kindForType(type: AssetType | null): TrackKind {
+function kindForType(type: AssetType | null): TrackKind {
   return type === 'audio' ? 'audio' : 'video'
 }
 

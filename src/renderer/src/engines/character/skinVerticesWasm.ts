@@ -30,7 +30,7 @@ export async function loadSkinVerticesWasm(): Promise<(request: SkinRequest) => 
   return createSkinVerticesWasm(binary)
 }
 
-export async function createSkinVerticesWasm(
+async function createSkinVerticesWasm(
   bytes: BufferSource,
 ): Promise<(request: SkinRequest) => WasmSkinBinding> {
   const module = await WebAssembly.compile(bytes)

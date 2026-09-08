@@ -27,7 +27,7 @@ export type FieldKind =
    */
   | 'task'
 
-export type FieldOption = {
+type FieldOption = {
   value: string
   label: string
 }
@@ -414,15 +414,8 @@ export function servesStudioCapability(
   return entry.tags === undefined || ownsTag(model.tags, entry.tags)
 }
 
-/**
- * 🛑 Named rather than described: in a DESCRIPTION these say bit depth, not a genre — « outputs
- * 16-bit color », « 8-bit quantization » — and promoting a depth map as pixel art is worse than
- * missing a sprite model, a promotion costing nothing when it does not fire. Measured 2026-09-02
- * on the catalogue this profile reaches: 24 image models, zero tags, none carrying either word.
- */
 export {
   PUBLISHERS_BY_FAMILY,
-  RETRO_NAMES,
   TAGS_BY_FAMILY,
   TAG_LABEL_KEYS,
   TAG_LABEL_KEY_LIST,

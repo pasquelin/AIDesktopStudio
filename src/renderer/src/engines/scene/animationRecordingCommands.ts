@@ -8,8 +8,6 @@ import { moveNodes, multi, setCamera, setCameraOn } from './commands'
 import type { FieldValue } from './propertyFields'
 import { nodeById, type NodeMove, type SceneNode, type SceneState } from './sceneState'
 
-export { recordingTracksFor } from './animationTrackCommands'
-
 /**
  * Whether a gesture writes KEYS rather than the thing underneath.
  *

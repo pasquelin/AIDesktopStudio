@@ -81,7 +81,7 @@ import {
   skyRefusesToSave,
 } from './skyboxDocument'
 export type CapturedDraft = Omit<DocumentDraft, 'title'>
-export type AssetTarget = {
+type AssetTarget = {
   replaces?: string
   derivedFrom?: string
   name: string

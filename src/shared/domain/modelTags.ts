@@ -1,6 +1,12 @@
 import { saysPixelArt } from './pixelArtPrompt'
 
-export const RETRO_NAMES: readonly string[] = ['8-bit', '16-bit']
+/**
+ * 🛑 Named rather than described: in a DESCRIPTION these say bit depth, not a genre — « outputs
+ * 16-bit color », « 8-bit quantization » — and promoting a depth map as pixel art is worse than
+ * missing a sprite model, a promotion costing nothing when it does not fire. Measured 2026-09-02
+ * on the catalogue this profile reaches: 24 image models, zero tags, none carrying either word.
+ */
+const RETRO_NAMES: readonly string[] = ['8-bit', '16-bit']
 
 /**
  * Whether a model says it draws pixel art. Used to PROMOTE, never to filter — a catalogue that

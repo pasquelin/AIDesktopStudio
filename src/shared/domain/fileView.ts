@@ -15,7 +15,7 @@ type FileViewEntry = {
   suffix: string
 }
 
-export const FILE_VIEW_REGISTRY: readonly FileViewEntry[] = [
+const FILE_VIEW_REGISTRY: readonly FileViewEntry[] = [
   { id: 'inputMap', suffix: INPUT_MAP_EXTENSION },
   { id: 'animationGraph', suffix: ANIMATION_GRAPH_EXTENSION },
 ]

@@ -29,8 +29,8 @@ export function nodesDeclaring(
   )
 }
 
-export type SceneComponentRef = { nodeId: string; component: Component }
-export type SceneRuntimePick = { sourceId: string; runtimeId: string }
+type SceneComponentRef = { nodeId: string; component: Component }
+type SceneRuntimePick = { sourceId: string; runtimeId: string }
 export type RuntimeValidationPick = { sample: string; resolved: string | null }
 
 /** What a scene DECLARES, per SAFE check — the half a mounted engine is compared against. */

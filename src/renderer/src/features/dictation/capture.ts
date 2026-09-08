@@ -11,7 +11,7 @@ import workletUrl from './pcmWorklet?worker&url'
 /** The name the worklet registers itself under. Written on both sides, and nowhere else. */
 const PROCESSOR = 'pcm-collector'
 
-export type CaptureListeners = {
+type CaptureListeners = {
   /** One chunk of 16-bit samples, ready to cross the boundary. */
   onChunk: (chunk: Int16Array) => void
   /** Input level, 0 to 1, measured where the samples already are. */

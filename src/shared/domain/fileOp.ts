@@ -25,7 +25,7 @@ export type PathChange = {
  * the reconciliation pass exists, so a picture dragged out of `assets/img` would stop being a
  * picture. Trashing one is a different question, and is allowed — the catalogue follows.
  */
-export type RefusalReason = 'exists' | 'into-itself' | 'missing' | 'private'
+type RefusalReason = 'exists' | 'into-itself' | 'missing' | 'private'
 
 export type Refusal = { path: string; reason: RefusalReason }
 

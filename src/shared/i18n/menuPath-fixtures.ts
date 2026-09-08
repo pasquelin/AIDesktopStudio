@@ -16,7 +16,7 @@ import { actionsIn, childSections, descriptorsIn, rootSections } from '../domain
  * returning half a table row as a path — measured. Refusing the break outright was the other
  * failure: a path a reflow had split was quoted correctly and read by nobody.
  */
-export const MENU_PATH =
+const MENU_PATH =
   /\*\*(?=\S)((?:[^*\n]|\n(?!\s*\n)){1,90}[▸›](?:[^*\n]|\n(?!\s*\n)){1,90})(?<=\S)\*\*/g
 
 /**

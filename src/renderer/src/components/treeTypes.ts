@@ -5,7 +5,7 @@ import type { SelectionMode } from '@/helpers/selection'
 export type TreeNode = { id: string; parentId: string | null }
 export type DropTarget =
   { zone: 'into' } | { zone: 'before' | 'after'; parentId: string | null; index: number }
-export type ForeignDrop<T> = {
+type ForeignDrop<T> = {
   carries: (event: DragLike) => boolean
   tone?: (event: DragLike) => DropTone
   accepts: (node: T) => boolean

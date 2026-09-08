@@ -224,7 +224,7 @@ export function cameraBody(fill: string, edge: string): Object3D {
 }
 
 /** How big a control point is built, in scene units. What it ends up drawn at is `KNOB_SHARE`. */
-export const PATH_KNOB_RADIUS = 0.14
+const PATH_KNOB_RADIUS = 0.14
 
 /** Past every surface, which all draw at zero — a handle one cannot see is no handle. */
 const HANDLE_ORDER = 10
@@ -266,7 +266,7 @@ export function knobIndexOf(name: string): number | null {
  * The two tangents of an anchor, and the bar that ties each to it. Named apart from a knob: a
  * pick has to say WHICH of the three it caught, the gizmo writing a different field for each.
  */
-export const HANDLE_PREFIX = { in: 'path-in-', out: 'path-out-' }
+const HANDLE_PREFIX = { in: 'path-in-', out: 'path-out-' }
 export const HANDLE_BAR_PREFIX = 'path-bar-'
 
 export type HandlePart = 'in' | 'out'
@@ -277,7 +277,7 @@ export function isRailAid(name: string): boolean {
 }
 
 /** What every helper of a rail is named after — the line, the knobs, the tangents and their bars. */
-export const RAIL_AID_PREFIX = 'path-'
+const RAIL_AID_PREFIX = 'path-'
 
 export function handleName(part: HandlePart, index: number): string {
   return `${HANDLE_PREFIX[part]}${index}`
@@ -400,7 +400,7 @@ export function placeHandles(
  * The matrix is recomposed by hand because three had already composed it for this draw: a scale
  * written and left there is a scale that shows up one frame late, and reads as a lag.
  */
-export function pathKnob(index: number, colour: string, through = false): Mesh {
+function pathKnob(index: number, colour: string, through = false): Mesh {
   const knob = new Mesh(
     new SphereGeometry(PATH_KNOB_RADIUS, 8, 6),
     new MeshBasicMaterial({ color: colour, depthTest: !through }),
@@ -427,7 +427,7 @@ export function sizeKnobFor(knob: Object3D, camera: Camera): void {
  * where the view stood before, the frustum of the side views would breathe, and exporting the
  * same scene twice would write two different files.
  */
-export function restoreKnob(knob: Object3D): void {
+function restoreKnob(knob: Object3D): void {
   knob.scale.setScalar(1)
   knob.updateMatrixWorld(true)
 }

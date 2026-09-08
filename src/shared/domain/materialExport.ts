@@ -22,7 +22,7 @@ export const MATERIAL_EXPORT_TARGETS: readonly MaterialExportTarget[] = [
 ]
 
 /** Which of a channel's own components is read. A grey map holds its value on all three. */
-export type PackComponent = 'r' | 'g' | 'b'
+type PackComponent = 'r' | 'g' | 'b'
 
 /**
  * One component of an exported picture, read off one channel.
@@ -32,7 +32,7 @@ export type PackComponent = 'r' | 'g' | 'b'
  * occlusion has to hold "not occluded" in the slot an engine will read as occlusion, and a
  * recipe that had to reason backwards through its own `invert` would get that wrong once.
  */
-export type PackSource = {
+type PackSource = {
   channel: PbrChannel
   from: PackComponent
   /** Written as `1 - v`: a roughness an engine wants as smoothness, and back. */
@@ -45,7 +45,7 @@ export type PackSource = {
  *
  * Four rather than a list, because a picture is exactly RGBA and a list would allow five.
  */
-export type ExportPicture = {
+type ExportPicture = {
   /** Appended to the texture's name — `<name>_BaseColor.png`. */
   suffix: string
   red: PackSource | number
@@ -315,7 +315,7 @@ export type ResolvedPicture = {
 }
 
 /** What `resolvePictures` needs to know about a channel, and nothing more. */
-export type ExportChannel = {
+type ExportChannel = {
   assetId: string
   /** The pixels read the other way round — a smoothness map stored as roughness. */
   inverted?: true

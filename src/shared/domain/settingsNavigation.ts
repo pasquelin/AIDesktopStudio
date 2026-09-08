@@ -90,7 +90,7 @@ export function isSettingsSection(value: unknown): value is SettingsSectionId {
 }
 
 /** URL fragment that tells the shared bundle it is rendering the settings window. */
-export const SETTINGS_ROUTE = 'settings'
+const SETTINGS_ROUTE = 'settings'
 
 /**
  * The route the settings window loads, section included. Written by the main process and read

@@ -189,7 +189,7 @@ export function spriteNode(): SceneNode {
  * Words as a solid. Born with something written in it rather than empty: a text node that draws
  * nothing until someone finds the field is a node the Add menu appears to have failed at.
  */
-export function textNode(): SceneNode {
+function textNode(): SceneNode {
   return {
     id: newId(),
     parentId: null,

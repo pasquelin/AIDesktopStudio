@@ -1,6 +1,5 @@
 export {
   addAnimationTrack,
-  keyableProperties,
   keyNode,
   keySubject,
   moveAnimationKey,

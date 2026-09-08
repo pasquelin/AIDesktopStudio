@@ -6,7 +6,7 @@ import { localizedError } from '@shared/localizedError'
  * request many times, and RESOLVES `null` where that one rejects — three opposites, not gaps.
  */
 
-export type PortSlot<T> = {
+type PortSlot<T> = {
   resolve: (value: T | null) => void
   reject: (error: Error) => void
   onProgress?: (progress: number) => void

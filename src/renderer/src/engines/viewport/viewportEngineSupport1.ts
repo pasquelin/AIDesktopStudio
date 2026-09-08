@@ -132,7 +132,7 @@ export type ViewportEngineOptions = {
  * a pane films through the SCENE's, a preview through its camera's, and an off-screen render
  * through whichever camera the film is on at that instant.
  */
-export type DrawSurface = 'pane' | 'inset' | 'offscreen'
+type DrawSurface = 'pane' | 'inset' | 'offscreen'
 
 /**
  * One request to draw the scene somewhere. Sizes are in DEVICE pixels — an effect that reads a

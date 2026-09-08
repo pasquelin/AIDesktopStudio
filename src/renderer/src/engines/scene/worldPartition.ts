@@ -21,7 +21,7 @@ export const MAX_SPATIAL_REACH = 2_048
 
 export type CellKey = number
 
-export type PartitionStats = {
+type PartitionStats = {
   cells: number
   macros: number
   /** What the last query walked: the macro-chunks in range, plus the cells of those it opened. */

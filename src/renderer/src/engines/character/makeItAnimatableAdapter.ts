@@ -7,7 +7,7 @@ import type { AutoRigInferencePrimitive } from '@shared/domain/autoRigInference'
 
 const OUTPUT_INFLUENCES = 4
 
-export type MakeItAnimatablePrimitive = AutoRigInferencePrimitive
+type MakeItAnimatablePrimitive = AutoRigInferencePrimitive
 
 export type MakeItAnimatableOutput = {
   jointNames: readonly string[]
@@ -21,7 +21,7 @@ export type MakeItAnimatableOutput = {
   primitives: readonly MakeItAnimatablePrimitive[]
 }
 
-export type MakeItAnimatableFault =
+type MakeItAnimatableFault =
   | 'invalid-hierarchy'
   | 'invalid-joints'
   | 'invalid-weights'

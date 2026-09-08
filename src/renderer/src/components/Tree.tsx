@@ -7,7 +7,7 @@ import { rowDrag } from './rowDrag'
 import { TreeView } from './TreeView'
 import { focusVirtualCell } from './virtual'
 import type { DropTarget, TreeNode, TreeProps, TreeRow } from './treeTypes'
-export type { DropTarget, ForeignDrop, TreeNode, TreeProps, TreeRow } from './treeTypes'
+export type { DropTarget, TreeNode, TreeProps, TreeRow } from './treeTypes'
 
 export function flattenTree<T extends TreeNode>(
   nodes: readonly T[],

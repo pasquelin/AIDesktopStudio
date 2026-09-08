@@ -39,7 +39,7 @@ import { unmarkTools } from './threeSync'
  * whole file over a picture. KTX2 is wired into the model loader, so an imported model wearing
  * one is ordinary rather than exotic.
  */
-export type TextureDecoder = { decompress: (texture: Texture) => Texture }
+type TextureDecoder = { decompress: (texture: Texture) => Texture }
 
 type OwnedDecoder = TextureDecoder & { dispose: () => void }
 

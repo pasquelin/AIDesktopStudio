@@ -106,12 +106,10 @@ const COMBINATORS: readonly string[] = [
   // edit means.
   'setMeshMaterial',
   'setNodeMaterial',
-  'setTextMaterial',
   // The single-node writer `addNodes` builds from, and what every command composing an add uses.
   // The published gesture is the plural one: an Add puts down a whole module, never one node.
   'addNode',
   'setSprite',
-  'setText',
   'setTransform',
   'moveNodes',
   'recordMove',
@@ -183,7 +181,6 @@ const THROUGH_A_COMMAND: Readonly<Record<string, string>> = {
  */
 const NOT_PUBLISHED: readonly string[] = [
   'sweep',
-  'removePostEffect',
   'reorderPostEffects',
   'sculptRelief',
   'addTerrain',

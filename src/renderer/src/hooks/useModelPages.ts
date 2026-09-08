@@ -9,7 +9,7 @@ import { usePages, type Pages } from './usePages'
  * MATCHES, so a wide ask multiplies round trips. Measured at a hundred — 4,99 s and five listings
  * in series, four of them chasing a quota the capability filter could never fill.
  */
-export const FIRST_PAGE = 12
+const FIRST_PAGE = 12
 
 /**
  * Pages pulled on their own once the first is drawn, `FIRST_PAGE` apiece.

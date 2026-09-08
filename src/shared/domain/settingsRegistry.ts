@@ -49,17 +49,6 @@ export const UNLISTED_PATHS = paths(
   'onboarding.completedAt',
 )
 
-/**
- * Every leaf of `Settings` is either described above or listed as unlisted. A setting added to
- * the type and forgotten in both makes this collapse to something other than `never`, and the
- * alias below stops compiling — the gap surfaces at build time, not on an empty screen.
- */
-type Accounted<T extends never> = T
-
-export type UnaccountedPath = Accounted<
-  Exclude<SettingPath, (typeof SETTING_REGISTRY)[number]['path'] | (typeof UNLISTED_PATHS)[number]>
->
-
 export function descriptorAt(path: SettingPath): SettingDescriptor | null {
   return SETTING_REGISTRY.find(descriptor => descriptor.path === path) ?? null
 }

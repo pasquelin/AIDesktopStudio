@@ -17,7 +17,7 @@ export type FileFacts = {
 }
 
 /** URL fragment that tells the shared bundle it is rendering a file's information. */
-export const FILE_INFO_ROUTE = 'file-info'
+const FILE_INFO_ROUTE = 'file-info'
 
 /**
  * The route one file's window loads, the path included — which is what makes it ONE window per

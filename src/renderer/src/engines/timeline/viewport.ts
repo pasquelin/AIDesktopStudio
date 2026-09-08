@@ -15,7 +15,7 @@ import type { Size } from '../core/geometry'
 export const MIN_SCALE = 1 / 1_000_000
 /** Two thousand pixels a second: a couple of frames fill the strip, which is as far as trimming needs. */
 export const MAX_SCALE = 2_000 / 1_000_000
-export const DEFAULT_SCALE = 100 / 1_000_000
+const DEFAULT_SCALE = 100 / 1_000_000
 
 export const DEFAULT_VIEWPORT: Viewport = { scale: DEFAULT_SCALE, offset: 0, scrollTop: 0 }
 
@@ -31,7 +31,7 @@ export function clampScale(scale: number): number {
  * the strip, so there is room to drop a clip after the last one, and no further — scrolling
  * into unbounded emptiness loses the montage off the left edge.
  */
-export function maxOffset(state: SequenceState, scale: number, width: number): Us {
+function maxOffset(state: SequenceState, scale: number, width: number): Us {
   return maxOffsetFor(sequenceDuration(state), scale, width)
 }
 

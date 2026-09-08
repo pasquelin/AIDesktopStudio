@@ -2,7 +2,7 @@ import { createKeptStore } from '@game/host/keptStore'
 import type { ScenePort } from '@game/ports/scenePort'
 
 /** A load a running game asked for, waiting for the gap between two steps. */
-export type SceneRequest = { scene: string; fade: number }
+type SceneRequest = { scene: string; fade: number }
 
 export type SceneSwap = {
   port: ScenePort

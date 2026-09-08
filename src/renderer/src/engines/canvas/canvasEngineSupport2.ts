@@ -188,7 +188,7 @@ export const DEPARTED_BUDGET = PATCH_BUDGET / 4
  * texture away from every other tab still drawing that same picture — the survivor then reloaded
  * and re-decoded it. Counted here because that is where the cache lives: at the module.
  */
-export const leases = new Map<string, number>()
+const leases = new Map<string, number>()
 
 export function lease(url: string): void {
   leases.set(url, (leases.get(url) ?? 0) + 1)

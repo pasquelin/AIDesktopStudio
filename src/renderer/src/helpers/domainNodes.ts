@@ -15,7 +15,7 @@ export type DomainHeading = {
 /** What the explorer's tree holds in either mode: a file of the project, or a domain naming some. */
 export type ExplorerNode = FolderNode | DomainHeading
 
-export const domainRowId = (domain: FileDomain): string => `domain:${domain}`
+const domainRowId = (domain: FileDomain): string => `domain:${domain}`
 
 export function isDomainHeading(node: ExplorerNode): node is DomainHeading {
   return 'domain' in node

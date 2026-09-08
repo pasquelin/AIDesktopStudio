@@ -18,7 +18,7 @@ import { ToolButton } from '../ToolButton'
 import { SearchField } from '../SearchField'
 import { SelectField } from '../SelectField'
 const FACETS_BEFORE_FOLD = 2
-export type CollectionLayout = 'stacked' | 'inline' | 'header'
+type CollectionLayout = 'stacked' | 'inline' | 'header'
 export type CollectionBarProps = {
   scId: string
   state: CollectionState

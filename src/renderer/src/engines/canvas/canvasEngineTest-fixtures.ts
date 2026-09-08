@@ -30,7 +30,7 @@ vi.mock('pixi.js', async () => {
  * at all. A guard added to `apply` then silently stopped a freshly opened document from ever
  * building a texture, and nothing caught it.
  */
-import type { Pair, Placed } from './canvasEngineState-fixtures'
+import type { Placed } from './canvasEngineState-fixtures'
 import { EXTRACTED, gpu } from './canvasEngineState-fixtures'
 
 const { BLEND_BY_MODE, CanvasEngine } = await import('./CanvasEngine')
@@ -365,41 +365,21 @@ const cursorOn = (host: HTMLElement): string => {
   return only ? only.style.cursor : `expected one paintable canvas, found ${pixi.length}`
 }
 
-function cursorOf(host: HTMLElement): string {
-  return host.querySelector('canvas')?.style.cursor ?? ''
-}
-
-function wheel(host: HTMLElement, init: WheelEventInit): void {
-  host.dispatchEvent(new WheelEvent('wheel', { cancelable: true, ...init }))
-}
-
-function key(type: 'keydown' | 'keyup', init: KeyboardEventInit): void {
-  window.dispatchEvent(new KeyboardEvent(type, init))
-}
-
 export {
   BLEND_BY_MODE,
   CanvasEngine,
   canvasGpu,
-  cursorOf,
   cursorOn,
   doubleClick,
   drag,
-  EXTRACTED,
   extractedBytes,
-  FALLBACK_COLORS,
   fallbackColors,
-  firstPaintable,
   flushMicrotasks,
-  gpu,
   groupContainer,
-  key,
   mounted,
-  mountedEngines,
   mountedWithoutFace,
   mutationsCounted,
   nextFrame,
-  OVERLAY_TOKENS,
   overlayRecorder,
   overlayTokens,
   PARAGRAPH,
@@ -409,6 +389,5 @@ export {
   silentOptions,
   stacked,
   VIEW_1_1,
-  wheel,
 }
-export type { Harness, Pair, Placed }
+export type { Placed }

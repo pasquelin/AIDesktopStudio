@@ -53,11 +53,11 @@ export const EDGE_GRAB = 8
 /** Share of a clip's width its body keeps, however narrow it gets: a clip must stay draggable. */
 const BODY_SHARE = 1 / 3
 /** Pixels around a fade handle that grab it. */
-export const FADE_GRAB = 7
+const FADE_GRAB = 7
 /** Depth of the strip along a clip's top where fade handles win over everything else. */
 export const FADE_BAND = 12
 /** Pixels within which a snap candidate wins over the frame grid. */
-export const SNAP_THRESHOLD = 8
+const SNAP_THRESHOLD = 8
 /** Inset of a clip's rectangle inside its row, so neighbouring rows stay readable. */
 export const CLIP_INSET = 2
 /**

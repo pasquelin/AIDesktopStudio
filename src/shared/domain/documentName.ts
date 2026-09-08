@@ -20,7 +20,7 @@ import {
  */
 
 /** Long enough for a sentence of a title, short enough for every file system to hold it. */
-export const DOCUMENT_NAME_MAX_LENGTH = 80
+const DOCUMENT_NAME_MAX_LENGTH = 80
 
 /**
  * Listed as well as typed: the failure crosses the IPC boundary as an error message, so one

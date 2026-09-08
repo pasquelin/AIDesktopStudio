@@ -107,6 +107,9 @@ R1 rend `unknown` fréquent : sans relevé de runtime, c'est l'honnête réponse
 ### D. `requested` / `constraint` / `effective` : deux champs, un sélecteur
 
 ```ts
+/** Ce qui a posé la borne. NON publié : un axe interne, comme ceux de `RuntimeCapabilities`. */
+type ConstraintSource = 'memory-pressure'
+
 export type Governed<T> = {
   /** Ce que la personne a réglé. Le SEUL des trois qui soit persisté. */
   requested: T

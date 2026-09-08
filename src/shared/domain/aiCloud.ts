@@ -12,7 +12,7 @@ export type CloudProviderId = string
 export type CloudAuth = 'key' | 'key-secret'
 
 /** How the assistant talks to it: Scenario's catalogue job, or HTTP chat. */
-export type CloudChat =
+type CloudChat =
   | { readonly kind: 'scenario' }
   | {
       readonly kind: 'openai'
@@ -203,7 +203,7 @@ export type CloudGroup = 'generation' | 'assistant'
 /** Generation first: it is what a key is most often typed for, and Scenario opens the registry. */
 export const CLOUD_GROUPS: readonly CloudGroup[] = ['generation', 'assistant']
 
-export function cloudGroupOf(provider: CloudProvider): CloudGroup {
+function cloudGroupOf(provider: CloudProvider): CloudGroup {
   return provider.families.some(family => family !== CODE_FAMILY) ? 'generation' : 'assistant'
 }
 

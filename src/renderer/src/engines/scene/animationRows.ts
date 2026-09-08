@@ -33,7 +33,7 @@ export type SheetLane = {
 }
 
 /** An object of the scene, as the sheet needs to name a line for it. */
-export type SheetNode = {
+type SheetNode = {
   id: string
   name: string
 }
@@ -46,10 +46,7 @@ export type SheetNode = {
  * the top. It never touches the scene: the outliner keeps its own order, and an object moved here
  * stays exactly where the hierarchy put it.
  */
-export function orderedSubjects(
-  natural: readonly string[],
-  preferred: readonly string[],
-): string[] {
+function orderedSubjects(natural: readonly string[], preferred: readonly string[]): string[] {
   const known = new Set(natural)
   // `reconcileOrder` rather than appending the newcomers at the end, and the difference is what
   // one SEES: an object added to the scene lands under the neighbours the hierarchy already gives
@@ -232,7 +229,7 @@ function barsOf(
 }
 
 /** How a lane row is named, and what a hit test hands back — one spelling for both. */
-export function laneKey(nodeId: string, laneId: string): string {
+function laneKey(nodeId: string, laneId: string): string {
   return `lane:${nodeId}:${laneId}`
 }
 

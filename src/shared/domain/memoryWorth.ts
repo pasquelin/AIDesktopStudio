@@ -14,7 +14,7 @@ import type { MemoryRefKind, MemoryType } from './assistantMemory'
  * A KEY and not a sentence: the summary is shown in Réglages ▸ Mémoire, so it is a word of the
  * interface and the window resolves it in the person's language.
  */
-export type MemoryDrawn = {
+type MemoryDrawn = {
   type: MemoryType
   summaryKey: string
   /** What fills the holes of the key. Values, never sentences — a path, a name, a message. */

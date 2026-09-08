@@ -2,7 +2,7 @@ import type { ButtonHTMLAttributes, Ref } from 'react'
 import { cn } from '@/helpers/cn'
 import { BUTTON_BASE, BUTTON_NEUTRAL } from './styles'
 
-export type ButtonVariant = 'primary' | 'neutral'
+type ButtonVariant = 'primary' | 'neutral'
 
 // The hover is a token, not an alpha of the fill: an alpha lets the surface through, so it
 // darkened this button on the dark theme and lightened it on the light one — 3.52:1 for the label.

@@ -41,7 +41,7 @@ export type GpuPipeline = {
   dispose: () => void
 }
 
-export type TargetPrecision = 'byte' | 'float'
+type TargetPrecision = 'byte' | 'float'
 
 const PRECISION_TYPES: Record<TargetPrecision, TextureDataType> = {
   byte: UnsignedByteType,

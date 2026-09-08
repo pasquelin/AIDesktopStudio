@@ -7,7 +7,7 @@ import { cn } from '@/helpers/cn'
  * How each door is told apart at a glance. Three hues and an INVERSION rather than four hues: the
  * theme publishes three that clear both modes, and `info` is the same blue as `primary`.
  */
-export type WelcomeAiTone = 'local' | 'ollama' | 'cloud' | 'studio'
+type WelcomeAiTone = 'local' | 'ollama' | 'cloud' | 'studio'
 
 const TILE: Record<WelcomeAiTone, string> = {
   local: 'bg-base-200 text-success',

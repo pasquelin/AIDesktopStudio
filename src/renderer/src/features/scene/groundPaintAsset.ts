@@ -16,7 +16,7 @@ export type GroundPaintCodec = {
   decode: (assetId: string) => Promise<GroundPaint>
 }
 
-export const groundPaintCodec: GroundPaintCodec = {
+const groundPaintCodec: GroundPaintCodec = {
   encode: async paint => {
     const canvas = document.createElement('canvas')
     canvas.width = paint.width

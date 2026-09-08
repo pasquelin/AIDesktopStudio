@@ -7,7 +7,7 @@ import { matchesWords, searchWords } from '@shared/text'
 import { clamp } from '@shared/numeric'
 import { THUMBNAIL_SIZE } from '@shared/domain/project'
 
-export type CollectionView = 'grid' | 'list'
+type CollectionView = 'grid' | 'list'
 
 export type FacetOption = {
   value: string

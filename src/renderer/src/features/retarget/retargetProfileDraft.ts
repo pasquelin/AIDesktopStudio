@@ -5,10 +5,7 @@ import type { MotionView } from './components/Retarget/RetargetViewport'
 import { profileWithRole, type SkeletonProfile } from '@shared/domain/skeletonProfile'
 import type { Rig } from '@shared/domain/rig'
 
-export function withRigRoles(
-  profile: SkeletonProfile,
-  rig: Rig | null | undefined,
-): SkeletonProfile {
+function withRigRoles(profile: SkeletonProfile, rig: Rig | null | undefined): SkeletonProfile {
   return (rig?.bones ?? []).reduce(
     (held, bone) => (bone.role ? profileWithRole(held, bone.name, bone.role) : held),
     profile,

@@ -18,7 +18,7 @@ minimumReleaseAgeExclude:
   - jscpd-linux-x64-musl@5.0.15 || 5.2.0
   - jscpd-windows-x64-msvc@5.0.15 || 5.2.0
   - jscpd@5.0.15 || 5.2.0
-  - mediabunny@1.53.1 || 1.55.7
+  - mediabunny@1.53.1 || 1.55.7 || 1.56.0
   - zustand@5.0.15
   - dockview-core@8.1.0
   - dockview-react@8.1.0
@@ -48,3 +48,4 @@ minimumReleaseAgeExclude:
   - jscpd-linux-arm64-musl@5.2.0
   - jscpd-windows-arm64-msvc@5.2.0
   - oxlint@1.82.0
+  - knip@6.35.0

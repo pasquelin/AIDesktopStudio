@@ -105,7 +105,7 @@ export function addPostEffect(
   }))
 }
 
-export function removePostEffect(target: PostTargetRef, effectId: string): Command<SceneState> {
+function removePostEffect(target: PostTargetRef, effectId: string): Command<SceneState> {
   return editStack(target, `post:remove:${handleOf(target)}:${effectId}`, stack => ({
     ...stack,
     effects: stack.effects.filter(one => one.id !== effectId),

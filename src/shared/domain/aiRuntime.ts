@@ -44,26 +44,26 @@ export function runtimeEndpointId(runtime: string, door: string): RuntimeEndpoin
 export type Residency = 'owned' | 'advisory' | 'opaque'
 
 /** Orthogonal to `Residency`: `owned` + `none` unloads without being able to confirm the effect. */
-export type MemoryReporting = 'authoritative' | 'best-effort' | 'none'
+type MemoryReporting = 'authoritative' | 'best-effort' | 'none'
 
 /** `per-install` means the window is fixed outside our control, so our own bounds clamp to it. */
-export type ContextControl = 'per-request' | 'per-install' | 'unknown'
+type ContextControl = 'per-request' | 'per-install' | 'unknown'
 
 /** `none` shows an indeterminate state: no percentage is ever composed from nothing. */
-export type ProgressChannel = 'push' | 'poll' | 'none'
+type ProgressChannel = 'push' | 'poll' | 'none'
 
 /** `process-only` kills every job the worker holds, so such a job is never co-located. */
-export type Cancellation = 'cooperative' | 'process-only' | 'none'
+type Cancellation = 'cooperative' | 'process-only' | 'none'
 
 /** `workflow-graph` submits a versioned graph, so the installable artefact is the graph. */
-export type Submission = 'params' | 'workflow-graph'
+type Submission = 'params' | 'workflow-graph'
 
 /**
  * How many jobs a process holds — NOT how many bytes it holds, which is `RuntimeOccupancy` in
  * `aiMemory.ts`. `exclusive-process` makes the process topology a function of the parallelism
  * wanted, and is irreversible once shipped.
  */
-export type ProcessOccupancy = 'multi-job' | 'exclusive-process'
+type ProcessOccupancy = 'multi-job' | 'exclusive-process'
 
 /**
  * How a DEVICE is contended for, which two processes can do without either being busy.
@@ -72,7 +72,7 @@ export type ProcessOccupancy = 'multi-job' | 'exclusive-process'
  * `ProcessOccupancy` would put two decisions on one axis, and a saturated GPU is not a busy
  * process. The ADR already keeps `residency` and `memoryReporting` apart for the same reason.
  */
-export type DeviceContention = 'shared' | 'exclusive'
+type DeviceContention = 'shared' | 'exclusive'
 
 /**
  * What a worker ANNOUNCES about one door, at its handshake. Never a constant of the TypeScript.
@@ -80,15 +80,23 @@ export type DeviceContention = 'shared' | 'exclusive'
  * `[?]` No diffusion workload has been measured on any class of machine, here or on a dedicated
  * card, so no value below is decided — only the AXES are. A worker knows its backend, its adapter,
  * its model and its machine; the TypeScript knows none of the four.
+ *
+ * @adr Published by ADR-18 and reached by no import yet: the tag is what stops knip reading a
+ * contract as dead code, and a deletion reading as a cleanup.
  */
 export type PortOccupancy = {
   /** ADR-18, UNCHANGED: how many jobs this PROCESS holds. */
   readonly process: ProcessOccupancy
   readonly device: DeviceContention
-  /** Chiffré. `null` when the worker bounds nothing itself. */
+  /** Numeric, where the two above enumerate. `null` when the worker bounds nothing itself. */
   readonly maxConcurrent: number | null
 }
 
+/**
+ * What one door permits, one axis per line — the shape ADR-18 quotes at its line 62.
+ *
+ * @adr Same reason as `PortOccupancy` above.
+ */
 export type RuntimeCapabilities = {
   residency: Residency
   memoryReporting: MemoryReporting

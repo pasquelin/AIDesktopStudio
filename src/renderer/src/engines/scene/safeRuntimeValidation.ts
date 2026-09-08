@@ -41,9 +41,9 @@ export const SAFE_FUNCTIONAL_CHECKS: readonly SafeFunctionalCheck[] = [
  * the same producer, and `stableKey` asks nothing more than that it serialise.
  */
 export type SafeRuntimeSnapshot = Record<SafeFunctionalCheck, unknown>
-export type SafeValidationCamera = { id: string }
-export type SafeFunctionalResult = { check: SafeFunctionalCheck; equivalent: boolean }
-export type SafeVisualResult = VisualRegressionResult & { cameraId: string }
+type SafeValidationCamera = { id: string }
+type SafeFunctionalResult = { check: SafeFunctionalCheck; equivalent: boolean }
+type SafeVisualResult = VisualRegressionResult & { cameraId: string }
 export type SafeRuntimeValidationReport = {
   visual: readonly SafeVisualResult[]
   functional: readonly SafeFunctionalResult[]

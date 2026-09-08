@@ -69,7 +69,7 @@ export type ModelFile = {
  * grafted onto the attention of the one already loaded. Neither generates anything alone, so an
  * entry carrying this names the model it completes — and that one is what gets loaded first.
  */
-export type ModelAttachment = {
+type ModelAttachment = {
   readonly model: string
   readonly as: 'controlnet' | 'ip-adapter'
   /** Where inside the download the weights sit, for a repository shipping several sets. */
@@ -294,7 +294,7 @@ export function admitsLoad(format: ModelFormat, loader: ModelLoader): boolean {
  * the person's machine fetches from there. What the studio ships is a pointer and a digest, which
  * is why a licence that forbids redistribution does not, by itself, keep a model out.
  */
-export type ModelDistribution = 'bundled' | 'direct-download' | 'user-import'
+type ModelDistribution = 'bundled' | 'direct-download' | 'user-import'
 
 /**
  * What the licence permits, as the catalogue PRESENTS it — never a legal opinion.
@@ -305,7 +305,7 @@ export type ModelDistribution = 'bundled' | 'direct-download' | 'user-import'
  * `unsupported-region` is the one that keeps a model out entirely — a licence that excludes the
  * territory the studio is used from is not a reservation, it is an absence of permission.
  */
-export type LicenceStatus = 'commercial' | 'non-commercial' | 'restricted' | 'unsupported-region'
+type LicenceStatus = 'commercial' | 'non-commercial' | 'restricted' | 'unsupported-region'
 
 /** Whether anything here can actually RUN it today. Orthogonal to the licence, and to the disk. */
 export type RuntimeStatus = 'supported' | 'plugin-required' | 'unsupported'
@@ -373,7 +373,7 @@ export function licenceAdmitted(model: LocalModel): boolean {
 }
 
 /** `commercial` where a manifest says nothing — every entry written before the three dimensions. */
-export function licenceStatusOf(model: LocalModel): LicenceStatus {
+function licenceStatusOf(model: LocalModel): LicenceStatus {
   return model.licenceStatus ?? 'commercial'
 }
 
@@ -396,7 +396,7 @@ export function runtimeStatusOf(model: LocalModel): RuntimeStatus {
 const CODE_EXTENSIONS: readonly string[] = ['.py', '.pyc', '.pyd', '.pyw', '.so', '.dylib', '.dll']
 
 /** Whether any file this manifest names would put executable code beside the weights. */
-export function weightsCarryCode(model: LocalModel): boolean {
+function weightsCarryCode(model: LocalModel): boolean {
   return model.files.some(file => {
     const name = file.name.toLowerCase()
     return CODE_EXTENSIONS.some(extension => name.endsWith(extension))

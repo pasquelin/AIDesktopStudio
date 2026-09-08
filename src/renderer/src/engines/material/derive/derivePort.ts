@@ -9,7 +9,7 @@ export type DeriveRequest = {
   sourceUrl: string
 }
 
-export type DerivedPicture = PictureSize & {
+type DerivedPicture = PictureSize & {
   /** PNG, because a channel is data before it is a picture and JPEG would invent gradients. */
   png: Uint8Array
 }

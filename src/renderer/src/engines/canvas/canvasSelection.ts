@@ -17,7 +17,7 @@ export type CanvasSelection =
   | null
 
 /** A pixel-accurate temporary selection in document coordinates. */
-export type RasterSelection = {
+type RasterSelection = {
   kind: 'raster'
   bounds: Rect
   width: number

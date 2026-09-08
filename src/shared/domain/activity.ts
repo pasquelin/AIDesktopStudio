@@ -166,7 +166,7 @@ export const ACTIVITY_MESSAGES: readonly ActivityMessage[] = [
  * What belongs here is a line the user cannot afford to read later: switching accounts changes
  * which remote library the open project reads, and nobody has the journal open at that moment.
  */
-export const ATTENTION_MESSAGES: readonly ActivityMessage[] = [
+const ATTENTION_MESSAGES: readonly ActivityMessage[] = [
   'projectAccountMissing',
   'projectAccountSwitched',
 ]

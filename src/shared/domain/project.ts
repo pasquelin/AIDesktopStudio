@@ -49,7 +49,7 @@ export const STUDIO_FOLDER = '.ai-desktop-studio'
  * throw away what it holds. It travels with the project like `.ai-desktop-studio/`, being what the
  * project's own scenes point at.
  */
-export const RESOURCES_FOLDER = '.resources'
+const RESOURCES_FOLDER = '.resources'
 
 /**
  * Where a resource of this role lands inside `.resources/` — the ONE spelling of that path.
@@ -247,9 +247,9 @@ export type ProjectOpenFailure =
 /** Why a project cannot take a NAME. About the name asked for, never about the folder. */
 export type ProjectRenameFailure = 'unsafe-name' | 'taken'
 
-export const PROJECT_RENAME_FAILURES: readonly ProjectRenameFailure[] = ['unsafe-name', 'taken']
+const PROJECT_RENAME_FAILURES: readonly ProjectRenameFailure[] = ['unsafe-name', 'taken']
 
-export const PROJECT_OPEN_FAILURES: readonly ProjectOpenFailure[] = [
+const PROJECT_OPEN_FAILURES: readonly ProjectOpenFailure[] = [
   'not-a-project',
   'unreadable',
   'too-new',
@@ -494,6 +494,5 @@ export {
   RECENT_DOCUMENTS_MAX,
   withRecentDocument,
   withoutProjectDocuments,
-  withoutRecentDocument,
   type RecentDocument,
 } from './projectRecent'

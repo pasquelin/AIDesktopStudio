@@ -37,7 +37,7 @@ import { standaloneFor, type BuildContext } from './standaloneEffects'
  * multiply by the device ratio themselves. The `width`/`height` of the job beside it are device
  * pixels; pre-multiplying this rect too would scissor a pane off screen on any HiDPI display.
  */
-export type PostRect = { x: number; y: number; width: number; height: number }
+type PostRect = { x: number; y: number; width: number; height: number }
 
 export type PostDrawJob = {
   /** Stable destination identity, independent of dimensions, cameras and temporary targets. */

@@ -3,7 +3,7 @@ import type { Component, ComponentType, JsonValue } from './component'
 import { choiceField, flagField, numberField, textField } from './descriptorFields'
 import type { GameEventName } from './gameEvent'
 
-export type ComponentCategory =
+type ComponentCategory =
   'transform' | 'render' | 'physics' | 'gameplay' | 'audio' | 'video' | 'ui' | 'ai' | 'net'
 
 /**

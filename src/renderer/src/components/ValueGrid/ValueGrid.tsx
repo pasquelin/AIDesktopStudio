@@ -2,7 +2,7 @@ import { cn } from '@/helpers/cn'
 import { fieldHandle } from '../scHandle'
 import { BUTTON_BASE } from '../styles'
 
-export type ValueGridOption = {
+type ValueGridOption = {
   value: number
   /** Already formatted and translated: the grid prints what it is handed and looks nothing up. */
   label: string

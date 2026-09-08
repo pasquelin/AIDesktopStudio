@@ -35,7 +35,7 @@ export const INGEST_STAGES: readonly IngestStage[] = [
  * Nothing more will happen to this file. Every one of these left the catalogue different from
  * how it found it — a length and a waveform filled in, or the row dropped outright.
  */
-export const TERMINAL_STAGES: readonly IngestStage[] = [
+const TERMINAL_STAGES: readonly IngestStage[] = [
   'done',
   'cancelled',
   'failed',
@@ -48,7 +48,7 @@ export function isTerminal(stage: IngestStage): boolean {
 }
 
 /** Ended badly. Shown in red, and there is no retry — re-picking the file makes another row. */
-export const FAILED_STAGES: readonly IngestStage[] = ['failed', 'unreadable']
+const FAILED_STAGES: readonly IngestStage[] = ['failed', 'unreadable']
 
 export function hasFailed(stage: IngestStage): boolean {
   return FAILED_STAGES.includes(stage)

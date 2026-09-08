@@ -16,7 +16,7 @@ import type { ModelFamily } from './model'
  */
 
 /** What an input is FOR, which is what lets a source be carried across a model switch. */
-export type CapabilityInputRole = 'prompt' | 'source' | 'mask' | 'reference'
+type CapabilityInputRole = 'prompt' | 'source' | 'mask' | 'reference'
 
 /**
  * What a generation is made of and lands as: an asset the catalogue files, or source text.
@@ -26,10 +26,10 @@ export type CapabilityInputRole = 'prompt' | 'source' | 'mask' | 'reference'
  * value beside them, and it is NOT an `AssetType`: a script is a document of the project, never
  * a row of the shelf, so widening `AssetType` would have put it in every catalogue query.
  */
-export type CapabilityMedium = AssetType | 'code'
+type CapabilityMedium = AssetType | 'code'
 
 /** What an input is MADE of: words, or one of the media above. */
-export type CapabilityInputKind = 'text' | CapabilityMedium
+type CapabilityInputKind = 'text' | CapabilityMedium
 
 export type CapabilityInput = {
   role: CapabilityInputRole

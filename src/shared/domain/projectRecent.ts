@@ -48,7 +48,7 @@ export function withRecentDocument(
 }
 
 /** Drops one entry. Both halves of the identity, or one project's copy would take another's. */
-export function withoutRecentDocument(
+function withoutRecentDocument(
   recent: readonly RecentDocument[],
   project: string,
   path: string,

@@ -196,7 +196,7 @@ export function removeAnimationKey(trackId: string, time: number): Command<Scene
  * Read off the node rather than fixed, so keying a cube never opens a channel that drives
  * nothing — and a bone, which lives inside a file, has no lens of its own to open.
  */
-export function keyableProperties(
+function keyableProperties(
   state: SceneState,
   subject: { nodeId: string; bone?: string },
 ): readonly TrackProperty[] {

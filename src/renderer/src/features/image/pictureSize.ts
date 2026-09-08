@@ -17,7 +17,7 @@ export type PictureMeasure = (url: string) => Promise<Size>
 export const MAX_PICTURE_SIDE = 8192
 
 /** The picture's own size, as the browser decodes it. */
-export function naturalSize(url: string): Promise<Size> {
+function naturalSize(url: string): Promise<Size> {
   return new Promise((resolve, reject) => {
     const image = new Image()
     image.addEventListener('load', () =>

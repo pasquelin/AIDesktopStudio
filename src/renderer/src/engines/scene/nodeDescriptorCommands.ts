@@ -6,7 +6,6 @@ import {
   type CameraDescriptor,
   type ClipLane,
   type ClipRef,
-  type MaterialDescriptor,
   type ModelDressRef,
   type ModelRef,
   type PathDescriptor,
@@ -152,13 +151,8 @@ function editModel(id: string, edited: string, next: (model: ModelRef) => ModelR
  * The words, the face and the three numbers that shape them. A node of another type is left
  * alone rather than patched, exactly as `editMesh` refuses to give a light a geometry.
  */
-export function setText(id: string, text: TextDescriptor): NodeEdit {
+function setText(id: string, text: TextDescriptor): NodeEdit {
   return editPart('text', id, 'text', { text })
-}
-
-/** The material a text wears — the same descriptor a mesh does, on the other node type. */
-export function setTextMaterial(id: string, material: MaterialDescriptor): NodeEdit {
-  return editPart('material', id, 'text', { material })
 }
 
 /** The same, spread over a selection — the text counterpart of `setMaterialOn`. */

@@ -20,7 +20,7 @@ import {
 } from '@/features/image/generationComments'
 
 /** The grid of the image in front — `null` when no image is there, or it is not on one. */
-export function gridInFront(): { columns: number; rows: number } | null {
+function gridInFront(): { columns: number; rows: number } | null {
   const documentId = activeImageId(useDocuments.getState())
   return documentId === null ? null : gridOf(canvasOf(useCanvases.getState(), documentId))
 }

@@ -14,7 +14,7 @@ import type { TextureSource } from '../../scene/textureCache'
 export type PictureSize = { width: number; height: number }
 
 /** A picture ready to be sampled, and the size the frame drawn from it must have. */
-export type Source = { texture: Texture; size: PictureSize }
+type Source = { texture: Texture; size: PictureSize }
 
 /**
  * The sources of one pass, in the order they were asked for. A tuple rather than an array

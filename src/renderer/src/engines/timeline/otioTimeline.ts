@@ -68,7 +68,7 @@ export type OtioWriteOptions = {
 }
 
 /** What a clip points at once this project has answered for it. Empty for what it does not hold. */
-export type OtioSourceIds = { assetId: string; sceneId: string }
+type OtioSourceIds = { assetId: string; sceneId: string }
 
 /**
  * Where a clip's source is looked up. Asked the only question that has one answer: DOES THIS
@@ -214,7 +214,7 @@ function trackOf(
  * Written here rather than listed by the reader that skips them: a key added to one copy and not
  * the other is carried AND written, and the spread hides it — nothing reddens.
  */
-export function studioComposedBy(state: SequenceState): Record<string, unknown> {
+function studioComposedBy(state: SequenceState): Record<string, unknown> {
   const { width, height, sampleRate } = state.settings
   return {
     width,

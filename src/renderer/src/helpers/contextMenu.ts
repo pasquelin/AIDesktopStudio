@@ -25,7 +25,7 @@ export type ContextMenuAction = {
 }
 
 /** A rule between two groups. Nothing to choose, so nothing to explain. */
-export type ContextMenuRule = { separator: true }
+type ContextMenuRule = { separator: true }
 
 /**
  * A row that opens onto others rather than doing anything itself — Add ▸ Mesh ▸ Cube.
@@ -33,7 +33,7 @@ export type ContextMenuRule = { separator: true }
  * Its rows are actions and only actions: one level, which the shared type is what bounds. Twenty-
  * four ways of adding to a scene are unreadable flat, and unpointable three deep.
  */
-export type ContextMenuGroup = {
+type ContextMenuGroup = {
   label: string
   icon?: string
   disabled?: boolean

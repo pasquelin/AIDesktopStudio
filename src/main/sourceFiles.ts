@@ -62,9 +62,11 @@ export const PROJECT_TREES: readonly string[] = [
 /**
  * Every name a module DECLARES and exports, mapped to whether it survives compilation.
  *
- * A VALUE is code that ships; a TYPE is gone by then, and one of them — `UnaccountedPath` — is
- * read by nobody ON PURPOSE, its export being what keeps a compile-time check alive. Guards that
- * weigh the two differently need the distinction, so it is drawn once, here.
+ * A VALUE is code that ships; a TYPE is gone by then, and an unread one is not always spare — an
+ * exhaustiveness alias reddens by being READ, not by being exported, so a guard that deletes it
+ * for want of a reader takes the check with it. Guards that weigh the two differently need the
+ * distinction, so it is drawn once, here. No such type is exported today; the split is kept for
+ * the guards, not for a current case.
  *
  * What it does not see, and why each would need a parser rather than a line: `export { x }` and
  * `export * from`, which re-publish a name declared elsewhere; `export default`, which carries no
