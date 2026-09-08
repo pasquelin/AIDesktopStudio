@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { reasonsToRefuse, staleLinks, type MergeState } from './mergeGuard'
+import { reasonsToRefuse, staleLinks, wouldBeLandedOn, type MergeState } from './mergeGuard'
 
 const READY: MergeState = {
   branch: 'feat/something',
@@ -15,6 +15,10 @@ describe('the merge that has to prove itself first', () => {
   it('names the links the cache cannot vouch for', () => {
     expect(staleLinks([LINK], () => true)).toEqual([])
     expect(staleLinks([LINK], () => false)).toEqual(['pnpm typecheck'])
+  })
+
+  it('lets a stray folder sit in the integration checkout, which no merge can bury', () => {
+    expect(wouldBeLandedOn(['?? .codex/', ' M src/a.ts'])).toEqual([' M src/a.ts'])
   })
 
   it('lets a rebased branch through when the gate is green on this very content', () => {

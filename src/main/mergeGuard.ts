@@ -14,11 +14,19 @@ export function staleLinks(
   return links.filter(link => !isGreen(link)).map(link => link.command)
 }
 
+/**
+ * What a merge would land on. Untracked files are dropped: git refuses to overwrite one rather
+ * than bury it, so a stray folder in the integration checkout is not a reason to stop. In the
+ * FEATURE worktree they are kept — there they are work the commit does not carry.
+ */
+export const wouldBeLandedOn = (status: readonly string[]): string[] =>
+  status.filter(line => !line.startsWith('??'))
+
 export type MergeState = {
   readonly branch: string
   /** Paths git reports as modified, staged or untracked. A merge must carry what was judged. */
   readonly dirty: readonly string[]
-  /** The same, in the checkout that holds the integration branch: a merge lands THERE. */
+  /** The tracked half of the same, in the checkout that holds the integration branch. */
   readonly hostDirty: readonly string[]
   /** Whether the branch sits directly on the tip it merges into. */
   readonly rebased: boolean

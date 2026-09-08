@@ -16,7 +16,7 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { alreadyGreen, fingerprinterFor } from '../src/main/gateCache.ts'
 import { GATE } from '../src/main/gateLinks.ts'
-import { reasonsToRefuse, staleLinks } from '../src/main/mergeGuard.ts'
+import { reasonsToRefuse, staleLinks, wouldBeLandedOn } from '../src/main/mergeGuard.ts'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 const INTO = 'develop'
@@ -31,7 +31,7 @@ const reasons = reasonsToRefuse(
   {
     branch,
     dirty: git(ROOT, 'status', '--porcelain').split('\n').filter(Boolean),
-    hostDirty: git(MAIN, 'status', '--porcelain').split('\n').filter(Boolean),
+    hostDirty: wouldBeLandedOn(git(MAIN, 'status', '--porcelain').split('\n').filter(Boolean)),
     rebased: git(ROOT, 'merge-base', 'HEAD', INTO) === git(MAIN, 'rev-parse', INTO),
     stale: () => {
       const fingerprintOf = fingerprinterFor(ROOT, process.version, GATE)
