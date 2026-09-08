@@ -200,20 +200,20 @@ class DoorRouter:
 
     def close(self) -> None:
         with self._lock:
-            doors = list(self._workers)
+            workers = list(self._workers.items())
+            self._workers.clear()
 
-        # Through the same helper as a targeted close, so a job in flight hears `door-gone` on the
-        # way out of the studio too rather than being cut off in silence.
-        gone = [self._abandon(door, "the engine is leaving") for door in doors]
-        leaving = [worker for worker in gone if worker is not None]
-
+        # NOT through `_abandon`, and the difference matters: it reports each orphan job, and this
+        # path runs because the STUDIO's socket ended. `sendall` on a destroyed peer raises, which
+        # would leave every door unasked and the stream unclosed. Nobody is listening here.
         # Asked to leave first, waited on second, and the split is what keeps the waits
         # OVERLAPPING: a worker mid-inference does not read its socket, so `wait` may burn its
         # whole timeout — four in a row is four times that, paid on the way out of the studio.
-        for worker in leaving:
+        for door, worker in workers:
+            self.ledger.forget(door)
             worker.begin_close()
 
-        for worker in leaving:
+        for _door, worker in workers:
             worker.wait_closed()
 
 

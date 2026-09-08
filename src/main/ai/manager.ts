@@ -428,7 +428,10 @@ export function createAiManager(deps: ManagerDeps): AiManager {
       const endpoint = endpointOf(model.loader, model.modality)
       if ((working.get(endpoint) ?? 0) > 0) return compose()
       if (isSuppliedModel(model)) {
-        if (occupancy.get(endpoint)?.modelId === modelId) await release(endpoint, true)
+        // `orElse`: closing is a round trip that can time out, and the delete asked for must not
+        // be undone by a door that would not answer.
+        const resident = occupancy.get(endpoint)?.modelId === modelId
+        if (resident) await orElse(release(endpoint, true), undefined)
         const stored = deps.settings()
         await deps.writeSettings({
           ai: { ...stored.ai, ownModels: stored.ai.ownModels.filter(one => one.id !== modelId) },

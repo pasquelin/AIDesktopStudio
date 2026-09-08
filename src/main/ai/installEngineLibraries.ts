@@ -45,11 +45,14 @@ export function torchIndexArgsFor(platform: NodeJS.Platform): readonly string[] 
   // Measured 2026-09-08: PyPI's Linux torch drags 4.9 GB of nvidia-* wheels plus triton — 5 638 MB
   // installed against 684 on macOS. The CPU index answers the same torch without them.
   if (platform === 'linux') return ['--extra-index-url', 'https://download.pytorch.org/whl/cpu']
-  // PyPI serves the CPU wheel on Windows, so an NVIDIA card generated on the processor unnoticed.
-  // `cu126` and not the newer `cu130` or `cu132`, all three of which publish a 2.14.0 wheel
-  // (verified 2026-09-08 on the index): it is what pytorch.org's own selector preselects, and its
-  // driver floor is the lowest — a machine too old for CUDA 13 would be back to the silent CPU.
-  if (platform === 'win32') return ['--extra-index-url', 'https://download.pytorch.org/whl/cu126']
+  // 🛑 NOTHING for Windows, where PyPI serves the CPU wheel and an NVIDIA card therefore generates
+  // on the processor unnoticed. Naming a CUDA index here MAKES IT WORSE: the bundled interpreter
+  // already carries `torch==2.14.0` (`embedded-profiles`), so `torch>=2.6` is satisfied and pip
+  // leaves it — while torchvision, which is absent, comes from that index as `0.29.0+cu126`, and
+  // its metadata reads `Requires-Dist: torch (==2.14.0)` with NO local segment (index, 2026-09-08).
+  // A plain `==` accepts the CPU build, so pip keeps it, and `import torchvision` then dies on the
+  // CUDA symbols it was built against. Serving CUDA on Windows is a decision for the BUILD —
+  // `scripts/prepare-engine-runtime.mjs` — not for a repair run.
   return []
 }
 

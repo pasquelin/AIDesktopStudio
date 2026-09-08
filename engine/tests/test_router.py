@@ -488,12 +488,3 @@ def test_refuses_to_close_a_door_that_does_not_exist() -> None:
 
     with pytest.raises(ValueError):
         router.close_door("engine/nowhere")
-
-
-def test_the_engine_leaving_settles_the_jobs_its_doors_were_holding() -> None:
-    router, written, _workers = harness()
-    router.submit("generate", DOOR, job="local_a1")
-
-    router.close()
-
-    assert [(one["evt"], one["job"]) for one in written] == [("job.failed", "local_a1")]

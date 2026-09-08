@@ -86,16 +86,13 @@ describe('choosing the wheel index the machine needs', () => {
     ])
   })
 
-  /** PyPI serves the CPU wheel on Windows: an NVIDIA card generated on the processor unnoticed. */
-  it('sends Windows to a CUDA index', () => {
-    expect(torchIndexArgsFor('win32')).toEqual([
-      '--extra-index-url',
-      'https://download.pytorch.org/whl/cu126',
-    ])
-  })
-
-  /** PyPI already answers the arm64 wheel Metal runs on; a second index would only add a hop. */
-  it('leaves macOS on PyPI', () => {
+  /**
+   * A CUDA index on Windows leaves the satisfied CPU torch in place and brings a `+cu126`
+   * torchvision beside it, whose `Requires-Dist: torch (==2.14.0)` accepts it — a door that dies
+   * at `import torchvision`. macOS already gets its arm64 wheel from PyPI.
+   */
+  it('names no index where PyPI is what the platform must be served from', () => {
+    expect(torchIndexArgsFor('win32')).toEqual([])
     expect(torchIndexArgsFor('darwin')).toEqual([])
   })
 })
