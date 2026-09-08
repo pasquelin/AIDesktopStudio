@@ -55,7 +55,7 @@ export function AssistantConversationPicker() {
       onChange={choose}
       // `min-w-0`: the ceiling is what keeps it from eating a wide row, and without the floor
       // removed a narrow column cannot shrink it — the row overflowed instead of wrapping.
-      className="max-w-56 min-w-0"
+      className="assistant-conversation-picker min-w-0"
     />
   )
 }

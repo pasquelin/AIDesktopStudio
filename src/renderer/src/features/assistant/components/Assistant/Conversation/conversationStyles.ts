@@ -12,6 +12,9 @@
 export const CONVERSATION_CARD =
   'border-border flex shrink-0 flex-col gap-2 rounded-(--radius-sc-lg) border p-2'
 
+export const CONVERSATION_ACTIONS =
+  'assistant-conversation-actions flex min-w-0 flex-nowrap items-center gap-2'
+
 /**
  * The type and gutters the field and the mirror behind it MUST share: read from two places, the
  * grey tail lands a character off the writing it continues.

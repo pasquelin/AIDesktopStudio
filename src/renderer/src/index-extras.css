@@ -251,6 +251,52 @@ body {
   user-select: none;
 }
 
+.assistant-conversation-card {
+  container: assistant-composer / inline-size;
+}
+
+.assistant-conversation-picker {
+  flex: 1 1 auto;
+  max-width: 14rem;
+}
+
+.assistant-conversation-submit-group {
+  min-width: max-content;
+}
+
+@container assistant-composer (max-width: 30rem) {
+  .assistant-conversation-picker {
+    max-width: 11rem;
+  }
+
+  .assistant-conversation-gauge {
+    display: none;
+  }
+}
+
+@container assistant-composer (max-width: 22rem) {
+  .assistant-conversation-picker {
+    max-width: 8rem;
+  }
+
+  .assistant-conversation-submit-group > button[type='submit'] {
+    width: var(--sc-control);
+    padding-inline: 0;
+  }
+
+  .assistant-conversation-submit-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+}
+
 /*
  * Not `prefers-reduced-motion`: that one is the system's answer, and this is the setting. The
  * studio is where someone may want the interface still while the OS animates everywhere else.

@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest'
 import { spellsOut, WRITTEN_SOURCES } from '@/components/testHarness'
-import { CONVERSATION_CARD, CONVERSATION_FIELD_TYPE } from './conversationStyles'
+import {
+  CONVERSATION_ACTIONS,
+  CONVERSATION_CARD,
+  CONVERSATION_FIELD_TYPE,
+} from './conversationStyles'
 
 /** As `WRITTEN_SOURCES` keys it: the glob resolves against `design/testHarness.ts`. */
 const GUARDED = '../features/assistant/components/Assistant/Conversation/conversationStyles.ts'
@@ -27,6 +31,13 @@ describe('the card of the assistant conversation', () => {
     ).map(([path]) => path)
 
     expect(offenders).toEqual([])
+  })
+})
+
+describe('the assistant composer action row', () => {
+  it('keeps the picker, context and actions on one responsive line', () => {
+    expect(CONVERSATION_ACTIONS).toContain('flex-nowrap')
+    expect(CONVERSATION_ACTIONS).toContain('min-w-0')
   })
 })
 

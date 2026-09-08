@@ -63,7 +63,7 @@ export function AssistantConversationGauge() {
 
   return (
     <span
-      className="flex min-w-0 items-center gap-2"
+      className="assistant-conversation-gauge flex min-w-0 items-center gap-2"
       {...HINT_TOP(byLength ? t('assistant.contextHintChars') : t('assistant.contextHint'))}
     >
       <span className="text-muted text-tiny truncate">
