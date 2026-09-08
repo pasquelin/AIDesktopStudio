@@ -23,7 +23,7 @@ export const ANIMATION_GRAPH_EXTENSION = '.anim.json'
 type BuiltInParameter =
   'speed' | 'forward' | 'strafe' | 'grounded' | 'airborne' | 'verticalSpeed' | 'jumped' | 'turning'
 
-const BUILT_IN_PARAMETERS: Readonly<Record<BuiltInParameter, AnimationParameterKind>> = {
+export const BUILT_IN_PARAMETERS: Readonly<Record<BuiltInParameter, AnimationParameterKind>> = {
   /** Metres a second over the ground, whichever way the body is facing. */
   speed: 'number',
   /** Metres a second along the body's own heading, negative walking backwards. */
@@ -40,9 +40,9 @@ const BUILT_IN_PARAMETERS: Readonly<Record<BuiltInParameter, AnimationParameterK
   turning: 'number',
 }
 
-type AnimationParameterKind = 'number' | 'boolean'
+export type AnimationParameterKind = 'number' | 'boolean'
 
-type AnimationParameter = { id: string; kind: AnimationParameterKind }
+export type AnimationParameter = { id: string; kind: AnimationParameterKind }
 
 /**
  * A moment inside a clip that puts an event on the bus — a footstep, the frame a blow lands on.
@@ -71,7 +71,7 @@ export type AnimationState = {
 
 type ConditionOperator = '>' | '>=' | '<' | '<=' | '==' | '!='
 
-const CONDITION_OPERATORS: readonly ConditionOperator[] = ['>', '>=', '<', '<=', '==', '!=']
+export const CONDITION_OPERATORS: readonly ConditionOperator[] = ['>', '>=', '<', '<=', '==', '!=']
 
 /**
  * 🛑 Declarative, never an expression: this is read by the RUNTIME, which has no sandbox to
