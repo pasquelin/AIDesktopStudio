@@ -22,7 +22,16 @@ import { DEFAULT_VIEW, type Viewport } from './viewport'
  * building a texture, and nothing caught it.
  */
 import type { Placed } from './canvasEngineTest-fixtures'
-import { canvasGpu, mounted, nextFrame, press, VIEW_1_1 } from './canvasEngineTest-fixtures'
+import {
+  canvasGpu,
+  drag,
+  mounted,
+  nextFrame,
+  overlayRecorder,
+  press,
+  release,
+  VIEW_1_1,
+} from './canvasEngineTest-fixtures'
 
 describe('the layer transform', () => {
   /** One layer, with the transform under test, and the sprite the engine built for it. */
@@ -99,7 +108,7 @@ describe('the ruler bands', () => {
   it('throws a guide away when it is dropped back on the chrome', async () => {
     const { host, guides } = await mounted()
     press(host, 120, 5)
-    window.dispatchEvent(new PointerEvent('pointerup', { clientX: 8, clientY: 8 }))
+    release(8, 8)
 
     expect(guides.calls).toEqual(['begin', 'add:y:5', 'remove:guide-1', 'end'])
   })
@@ -115,7 +124,7 @@ describe('the ruler bands', () => {
   it('keeps it when it is dropped on the canvas', async () => {
     const { host, guides } = await mounted()
     press(host, 120, 5)
-    window.dispatchEvent(new PointerEvent('pointerup', { clientX: 200, clientY: 200 }))
+    release(200, 200)
 
     expect(guides.calls).toEqual(['begin', 'add:y:5', 'end'])
   })
@@ -136,7 +145,7 @@ describe('the view', () => {
     const { host, viewports } = await mounted()
     press(host, 200, 200, 1)
     for (const x of [210, 220, 230]) {
-      host.dispatchEvent(new PointerEvent('pointermove', { clientX: x, clientY: 200 }))
+      drag(host, x, 200)
     }
 
     expect(viewports).toEqual([])
@@ -151,26 +160,17 @@ describe('the view', () => {
   it('takes a command that arrives while a pan is still being published', async () => {
     const { engine, host } = await mounted()
     press(host, 200, 200, 1)
-    host.dispatchEvent(new PointerEvent('pointermove', { clientX: 260, clientY: 200 }))
+    drag(host, 260, 200)
 
     const commanded: Viewport = { x: 12, y: 34, scale: 3 }
     engine.setView({ ...DEFAULT_VIEW, viewport: commanded })
     // A second push of the same viewport, as React re-renders: still the command, not the pan.
     engine.setView({ ...DEFAULT_VIEW, viewport: commanded })
 
-    host.dispatchEvent(new PointerEvent('pointermove', { clientX: 261, clientY: 200 }))
+    drag(host, 261, 200)
     expect(canvasGpu().renders).toBeGreaterThan(0)
   })
 })
-
-/** `pointermove` goes to the host, `pointerup` to the window — as the engine listens for them. */
-function drag(host: HTMLElement, x: number, y: number, shiftKey = false): void {
-  host.dispatchEvent(new PointerEvent('pointermove', { clientX: x, clientY: y, shiftKey }))
-}
-
-function release(x = 400, y = 400): void {
-  window.dispatchEvent(new PointerEvent('pointerup', { clientX: x, clientY: y }))
-}
 
 describe('painting cells by call', () => {
   const CELL = { x: 0, y: 0, width: 1, height: 1 }
@@ -381,5 +381,36 @@ describe('intelligent generation comments', () => {
     release(120, 80)
 
     expect(smartCommentPrompts).toEqual([{ box: { x: 120, y: 80, width: 200, height: 200 } }])
+  })
+
+  it('normalizes an intelligent comment box dragged toward its origin', async () => {
+    const { engine, host, smartCommentPrompts } = await mounted()
+    engine.setTool('smartComment')
+
+    press(host, 320, 280)
+    drag(host, 120, 80)
+    release(120, 80)
+
+    expect(smartCommentPrompts).toEqual([{ box: { x: 120, y: 80, width: 200, height: 200 } }])
+  })
+
+  /**
+   * The comment drew nothing while the hand was down, where the selector outlined its box: the
+   * area was traced blind, and only the mask coming back said where it had been.
+   */
+  it('outlines the box an intelligent comment is being dragged over', async () => {
+    const { corners } = overlayRecorder()
+    const { engine, host } = await mounted()
+    engine.setTool('smartComment')
+    engine.setView({ ...VIEW_1_1, rulers: false, guides: false, snap: false })
+    await nextFrame()
+
+    press(host, 120, 80)
+    drag(host, 320, 280)
+    corners.length = 0
+    await nextFrame()
+
+    expect(corners).toContainEqual([120.5, 80.5])
+    expect(corners).toContainEqual([320.5, 280.5])
   })
 })

@@ -20,7 +20,7 @@ import { ImageDocumentBrush } from './ImageDocumentBrush'
 import { ImageDocumentText } from './ImageDocumentText'
 import { ZoomBar } from '../ZoomBar'
 import { ImageDocumentComments } from './ImageDocumentComments'
-import type { GenerationComment } from '../../generationComments'
+import type { GenerationComment, GenerationCommentActions } from '../../generationComments'
 import type { Size } from '@/engines/core/geometry'
 
 type Shortcuts = { zoomIn: string; zoomOut: string; fit: string; actual: string }
@@ -49,9 +49,7 @@ type ImageDocumentViewProps = {
   checker: string
   comments: readonly GenerationComment[]
   commentSize: Size
-  onCommentChange: (id: string, text: string) => void
-  onCommentRemove: (id: string) => void
-  onCommentGenerate?: (id: string) => void
+  commentActions: GenerationCommentActions
 }
 
 export function ImageDocumentView(props: ImageDocumentViewProps) {
@@ -69,9 +67,7 @@ export function ImageDocumentView(props: ImageDocumentViewProps) {
           comments={props.comments}
           view={view}
           size={props.commentSize}
-          onChange={props.onCommentChange}
-          onRemove={props.onCommentRemove}
-          onGenerate={props.onCommentGenerate}
+          {...props.commentActions}
         />
         {typing && (
           <ImageDocumentText

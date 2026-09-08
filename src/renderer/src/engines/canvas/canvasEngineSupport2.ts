@@ -7,7 +7,7 @@ import { type OverlayColors } from './CanvasOverlay'
 import { type Axis } from './guides'
 import { PATCH_BUDGET } from './PixelPatches'
 import type { Point, Size } from '../core/geometry'
-import type { CanvasTool } from './canvasTool'
+import { isSmartTool, type CanvasTool, type SmartTool } from './canvasTool'
 import type { BrushTarget } from './canvasEngineSupport1'
 
 /** The stencil that cuts a clipped layer out of the one below it, and what holds the pair. */
@@ -22,8 +22,8 @@ export type Gesture =
   /** `origin` is where the layer stood when the drag began: every step is absolute from it. */
   | { kind: 'move'; id: string; from: Point; origin: Point }
   | { kind: 'select'; from: Point }
-  | { kind: 'smartSelect'; from: Point; to: Point }
-  | { kind: 'smartComment'; from: Point; to: Point }
+  /** ONE member for both promptable tools: their gesture is the same, only the mask's use parts. */
+  | { kind: SmartTool; from: Point; to: Point }
   | { kind: 'comment'; at: Point; points: Point[] }
   /** Drawing a fresh crop frame from `from`; the frame itself lives on past the drag. */
   | { kind: 'crop'; from: Point }
@@ -44,6 +44,13 @@ export type Gesture =
   | { kind: 'handle'; id: string; handle: HandleId; from: Point; origin: Transform }
   /** Turning by the zone outside a corner. `center` is the middle the layer pivots about. */
   | { kind: 'rotate'; id: string; center: Point; from: Point; origin: Transform }
+
+/** The drag of a promptable tool — a gesture kind and a tool name are the SAME word here. */
+export type SmartGesture = Extract<Gesture, { kind: SmartTool }>
+
+export function isSmartGesture(gesture: Gesture): gesture is SmartGesture {
+  return isSmartTool(gesture.kind)
+}
 
 export const NO_GESTURE: Gesture = { kind: 'none' }
 

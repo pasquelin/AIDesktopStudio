@@ -79,6 +79,22 @@ describe('image tools', () => {
     for (const tool of IMAGE_TOOLS) expect(tool.icon).toBeTruthy()
   })
 
+  /**
+   * An armed mode REPLACES its tool's glyph in the bar, so two modes wearing the same one leave
+   * the bar saying the same thing twice. Both promptable modes wore the plain wand: armed, the
+   * comment stopped looking like a comment, and only its tooltip still said which it was.
+   */
+  it('gives each mode a glyph no other tool already wears armed', () => {
+    const armed = IMAGE_TOOLS.flatMap(tool =>
+      (tool.modes ?? []).map(mode => ({ tool: tool.id, mode: mode.id, icon: mode.icon })),
+    )
+    const shared = armed.filter(one =>
+      armed.some(other => other.tool !== one.tool && other.icon === one.icon),
+    )
+
+    expect(shared.map(one => `${one.tool}/${one.mode}`)).toEqual([])
+  })
+
   it('gives the pointer two modes, so it opens a flyout', () => {
     expect(toolById('pointer')?.modes).toHaveLength(2)
   })

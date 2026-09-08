@@ -225,4 +225,28 @@ describe('SmartSelectionHost', () => {
 
     await expect(host.run(request, new AbortController().signal)).rejects.toThrow('invalid mask')
   })
+
+  /**
+   * What a frame stripped of its `mask` field reads as — the shape the protocol produced while
+   * its schema did not name the field, a zod object dropping whatever it does not list.
+   */
+  it('refuses an answer that names no mask file rather than reading one from nowhere', async () => {
+    const job = vi.fn<PythonClient['job']>(async op => ({
+      v: 1,
+      evt: 'job.completed',
+      job: op,
+      ...(op === 'selection.decode' ? { width: 2, height: 2 } : {}),
+    }))
+    const read = vi.fn(readBitmap)
+    const host = createSmartSelectionHost({
+      ensureLoaded: vi.fn(),
+      hold: () => vi.fn(),
+      engine: () => Promise.resolve(engine(job)),
+      loadedEpoch: () => 1,
+      readBitmap: read,
+    })
+
+    await expect(host.run(request, new AbortController().signal)).rejects.toThrow('invalid mask')
+    expect(read).not.toHaveBeenCalled()
+  })
 })

@@ -3,17 +3,34 @@ import { formatPercent } from '@/helpers/format'
 import { layerById, type CanvasState } from '@/engines/canvas/canvasState'
 import type { FieldDescriptor } from '@shared/domain/model'
 import { promptKeyOf } from '@shared/domain/projectContext'
+import { digest } from '@shared/hash'
 
 export type GenerationComment = {
   id: string
   at: Point
+  /** What the area is called, in the person's own words. Absent until they name it. */
+  title?: string
   text: string
   layerId?: string
   outline?: readonly Point[]
 }
 
+/** What a note can be done to, wherever it is drawn — the four travel together. */
+export type GenerationCommentActions = {
+  onChange: (id: string, text: string) => void
+  onRename: (id: string, title: string) => void
+  onRemove: (id: string) => void
+  onGenerate?: (id: string) => void
+}
+
 export function commentFor(id: string, at: Point, layerId: string | null): GenerationComment {
   return { id, at, text: '', ...(layerId === null ? {} : { layerId }) }
+}
+
+/** From the ID and not the position: removing the first would repaint every one below it. The
+ * ANGLE alone — chroma and lightness stay in `index-foundation.css`. */
+export function commentHue(id: string): number {
+  return parseInt(digest(id).slice(-8), 16) % 360
 }
 
 export function writtenGenerationComments(
@@ -51,7 +68,10 @@ function locationOf(comment: GenerationComment, canvas: Size | CanvasState): str
   const y = formatPercent(comment.at.y / size.height, 'en')
   const layer = comment.layerId && 'layers' in canvas ? layerById(canvas, comment.layerId) : null
   const scope = layer ? `layer "${layer.name}"` : 'whole image'
-  return `${scope}, ${comment.outline ? 'outlined area, ' : ''}anchored at ${x} × ${y}`
+  // The name belongs to the SCOPE, quoted as the layer already is — never as a `Title: ` prefix
+  // on the instruction, which a title holding a colon reads as a second one.
+  const named = comment.title?.trim() ? `area "${comment.title.trim()}", ` : ''
+  return `${named}${scope}, ${comment.outline ? 'outlined area, ' : ''}anchored at ${x} × ${y}`
 }
 
 export function promptWithComments(

@@ -11,6 +11,7 @@ describe('image generation comment placement', () => {
         view={DEFAULT_VIEW}
         size={{ width: 100, height: 100 }}
         onChange={() => {}}
+        onRename={() => {}}
         onRemove={() => {}}
       />,
     )
@@ -28,6 +29,7 @@ describe('image generation comment placement', () => {
         view={DEFAULT_VIEW}
         size={{ width: 100, height: 100 }}
         onChange={() => {}}
+        onRename={() => {}}
         onRemove={() => {}}
         onGenerate={onGenerate}
       />,
@@ -45,6 +47,7 @@ describe('image generation comment placement', () => {
         view={DEFAULT_VIEW}
         size={{ width: 100, height: 100 }}
         onChange={() => {}}
+        onRename={() => {}}
         onRemove={() => {}}
       />,
     )
@@ -69,6 +72,7 @@ describe('image generation comment placement', () => {
         view={DEFAULT_VIEW}
         size={{ width: 100, height: 100 }}
         onChange={() => {}}
+        onRename={() => {}}
         onRemove={() => {}}
       />,
     )
@@ -97,6 +101,7 @@ describe('image generation comment placement', () => {
         view={DEFAULT_VIEW}
         size={{ width: 100, height: 100 }}
         onChange={() => {}}
+        onRename={() => {}}
         onRemove={() => {}}
       />,
     )
@@ -120,6 +125,7 @@ describe('image generation comment placement', () => {
         view={DEFAULT_VIEW}
         size={{ width: 100, height: 100 }}
         onChange={() => {}}
+        onRename={() => {}}
         onRemove={() => {}}
       />,
     )
@@ -130,6 +136,7 @@ describe('image generation comment placement', () => {
         view={{ ...DEFAULT_VIEW, viewport: { x: 5, y: 7, scale: 2 } }}
         size={{ width: 100, height: 100 }}
         onChange={() => {}}
+        onRename={() => {}}
         onRemove={() => {}}
       />,
     )
@@ -138,7 +145,11 @@ describe('image generation comment placement', () => {
       left: '25px',
       top: '47px',
     })
-    expect(container.querySelector('polygon')).toHaveAttribute('points', '25,47 65,87')
+    // The outline is placed by a transform and its points stay in document units, so the two
+    // halves are read together: 10,20 through this transform lands on the note's own 25,47.
+    const outline = container.querySelector('polygon')
+    expect(outline).toHaveAttribute('points', '10,20 30,40')
+    expect(outline).toHaveAttribute('transform', 'translate(5 7) scale(2)')
   })
 
   it('opens notes inward from every image edge', () => {
@@ -153,6 +164,7 @@ describe('image generation comment placement', () => {
         view={DEFAULT_VIEW}
         size={{ width: 100, height: 100 }}
         onChange={() => {}}
+        onRename={() => {}}
         onRemove={() => {}}
       />,
     )
@@ -171,6 +183,24 @@ describe('image generation comment placement', () => {
     })
   })
 
+  it('names an area from the canvas', () => {
+    const onRename = vi.fn()
+    render(
+      <ImageDocumentComments
+        comments={[{ id: 'note', at: { x: 50, y: 50 }, text: '' }]}
+        view={DEFAULT_VIEW}
+        size={{ width: 100, height: 100 }}
+        onChange={() => {}}
+        onRename={onRename}
+        onRemove={() => {}}
+      />,
+    )
+
+    fireEvent.change(screen.getByPlaceholderText('Nommer…'), { target: { value: 'The sky' } })
+
+    expect(onRename).toHaveBeenCalledWith('note', 'The sky')
+  })
+
   it('edits a note from the canvas', () => {
     const onChange = vi.fn()
     render(
@@ -179,6 +209,7 @@ describe('image generation comment placement', () => {
         view={DEFAULT_VIEW}
         size={{ width: 100, height: 100 }}
         onChange={onChange}
+        onRename={() => {}}
         onRemove={() => {}}
       />,
     )
@@ -196,6 +227,7 @@ describe('image generation comment placement', () => {
         view={DEFAULT_VIEW}
         size={{ width: 100, height: 100 }}
         onChange={() => {}}
+        onRename={() => {}}
         onRemove={onRemove}
       />,
     )
@@ -222,6 +254,7 @@ describe('image generation comment placement', () => {
         view={DEFAULT_VIEW}
         size={{ width: 100, height: 100 }}
         onChange={() => {}}
+        onRename={() => {}}
         onRemove={() => {}}
       />,
     )
@@ -232,6 +265,7 @@ describe('image generation comment placement', () => {
         view={DEFAULT_VIEW}
         size={{ width: 100, height: 100 }}
         onChange={() => {}}
+        onRename={() => {}}
         onRemove={() => {}}
       />,
     )

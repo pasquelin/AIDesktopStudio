@@ -245,6 +245,24 @@ describe('the contrast of the inks', () => {
 
     expect(offenders).toEqual([])
   })
+
+  /**
+   * 🛑 A comment's hue is FREE — measured 3.38:1 at 190° on the light theme, under the 4.5 of
+   * WCAG 1.4.3 — so it may stroke and fill, never LETTER. `tokensContrast` reads hexadecimals
+   * and cannot see a token composed like this one.
+   */
+  it('letters nothing in the hue a comment picks for itself', () => {
+    const lettered = /\btext-comment-mark(?![\w-])/
+    const offenders = WRITTEN_SOURCES.filter(([, source]) => lettered.test(source)).map(
+      ([path]) => path,
+    )
+
+    expect(offenders).toEqual([])
+    // The rule refuses something, which a sweep that only ever returns nothing cannot show.
+    expect(lettered.test("'text-comment-mark'")).toBe(true)
+    expect(lettered.test("'fill-comment-mark-overlay'")).toBe(false)
+    expect(lettered.test("'stroke-comment-mark'")).toBe(false)
+  })
 })
 
 describe('the contrast of translucent inks', () => {

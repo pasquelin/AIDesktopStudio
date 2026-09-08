@@ -78,6 +78,8 @@
   "imageComments": {
     "edit": "Generation instruction",
     "placeholder": "Change to make…",
+    "title": "Area name",
+    "titlePlaceholder": "Name it…",
     "remove": "Remove comment",
     "removeHint": "Removes this note from the generation context",
     "generate": "Generate from this comment",

@@ -35,6 +35,14 @@ describe('generation comments', () => {
     expect(commentFor('note-1', AT, null)).toEqual({ id: 'note-1', at: AT, text: '' })
   })
 
+  it('names the area ahead of what is asked of it, once the person named it', () => {
+    const named = { ...commentFor('note-1', AT, null), title: 'The sky', text: 'Make it stormy' }
+
+    expect(promptWithComments('A wooden crate', [named], DEFAULT_CANVAS)).toContain(
+      '1. Make it stormy (area "The sky", whole image,',
+    )
+  })
+
   it('adds a lasso note to the model prompt without changing the original request', () => {
     const prompt = promptWithComments(
       'A wooden crate',
