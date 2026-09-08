@@ -130,7 +130,11 @@ class DoorRouter:
             return {"closed": False}
 
         worker.begin_close()
-        worker.wait_closed(timeout=CLOSE_WAIT_S)
+        # 🛑 Reaped OFF this thread. `wait_closed` blocks up to CLOSE_WAIT_S, and the loop calling
+        # this is the one that answers CANCEL_OP — a Stop queued behind another door leaving is
+        # exactly what `memory_handlers` says never happens. `_abandon` already settled the jobs,
+        # so nothing here needs the exit code.
+        threading.Thread(target=worker.wait_closed, args=(CLOSE_WAIT_S,), daemon=True).start()
         return {"closed": True}
 
     def _live(self, door: str) -> WorkerProcess:

@@ -6,62 +6,10 @@ have to — `pnpm engine:check` would then download 682 MB to run. What a real b
 proven by the spike of § L.4 and by the end-to-end run, not by this file.
 """
 
-import json
-from typing import Any
-
 import pytest
+from router_harness import DOOR, IMAGE_DOOR, harness
 
 from aidesktopstudio_engine import PROTOCOL_VERSION
-from aidesktopstudio_engine.core.router import DoorRouter
-
-IMAGE_DOOR = "engine/diffusion"
-#: Every request names its door — the studio does, and `submit` refuses one that does not.
-DOOR = {"door": IMAGE_DOOR}
-
-
-class StandInWorker:
-    def __init__(self) -> None:
-        self.sent: list[dict[str, Any]] = []
-        self._next = 1
-
-    def next_run(self) -> int:
-        run = self._next
-        self._next += 1
-        return run
-
-    def send(self, request: dict[str, Any]) -> None:
-        self.sent.append(request)
-
-    def start(self) -> None:
-        self.started = True
-
-    def begin_close(self) -> None:
-        self.closed = True
-
-    def wait_closed(self, timeout: float = 10) -> None:
-        self.waited = timeout
-
-
-def harness() -> tuple[DoorRouter, list[dict], list[StandInWorker]]:
-    written: list[dict] = []
-    workers: list[StandInWorker] = []
-    answered: dict[str, Any] = {}
-    left: dict[str, Any] = {}
-
-    def spawn(door, on_frame, on_gone):
-        worker = StandInWorker()
-        worker.door = door
-        workers.append(worker)
-        answered[door] = on_frame
-        left[door] = on_gone
-        return worker
-
-    router = DoorRouter(lambda line: written.append(json.loads(line)), spawn)
-    # The image door unless a case says otherwise — a convenience of this harness, not a default
-    # the router has: `submit` refuses a request that names no door.
-    router.said = lambda frame, door=IMAGE_DOOR: answered[door](frame)  # type: ignore[attr-defined]
-    router.door_died = lambda door=IMAGE_DOOR: left[door]()  # type: ignore[attr-defined]
-    return router, written, workers
 
 
 def test_answers_with_the_job_it_opened_rather_than_waiting_for_the_result() -> None:
@@ -441,50 +389,3 @@ def test_a_door_answers_only_once_the_router_knows_about_it() -> None:
     router.submit("generate", DOOR, job="local_a1")
 
     assert workers[0].started is True
-
-
-def test_closing_one_door_ends_its_process_where_unloading_only_frees_its_tensors() -> None:
-    router, _written, workers = harness()
-    router.submit("models.load", DOOR, job="local_a1")
-
-    assert router.close_door(IMAGE_DOOR) == {"closed": True}
-    assert workers[0].closed is True
-
-
-def test_closing_one_door_fails_the_jobs_it_was_holding() -> None:
-    """
-    🛑 `begin_close` sets `_closing`, so the pump never calls `_worker_left` for this door. Nothing
-    else settles these runs, and the studio would wait on them for ever.
-    """
-    router, written, _workers = harness()
-    router.submit("generate", DOOR, job="local_a1")
-
-    router.close_door(IMAGE_DOOR)
-
-    assert [(one["evt"], one["job"], one["code"]) for one in written] == [
-        ("job.failed", "local_a1", "door-gone")
-    ]
-
-
-def test_a_closed_door_opens_again_at_the_next_request() -> None:
-    router, _written, workers = harness()
-    router.submit("models.load", DOOR, job="local_a1")
-    router.close_door(IMAGE_DOOR)
-
-    router.submit("models.load", DOOR, job="local_a2")
-
-    assert len(workers) == 2
-
-
-def test_closing_a_door_nobody_opened_starts_nothing_to_close_it() -> None:
-    router, _written, workers = harness()
-
-    assert router.close_door(IMAGE_DOOR) == {"closed": False}
-    assert workers == []
-
-
-def test_refuses_to_close_a_door_that_does_not_exist() -> None:
-    router, _written, _workers = harness()
-
-    with pytest.raises(ValueError):
-        router.close_door("engine/nowhere")

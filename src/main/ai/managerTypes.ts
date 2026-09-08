@@ -52,12 +52,17 @@ export type ManagerDeps = {
    * second reading of it in TypeScript would drift from the one `uv` resolves.
    */
   engineMissing: (profile?: OwnModelProfile) => Promise<EngineEnvironment | null>
-  /** Installs exactly what the engine named, with the interpreter the app ships. */
+  /**
+   * Installs exactly what the engine named, with the interpreter the app ships.
+   *
+   * Answers whether it asked an index for the CUDA wheels, which is never what it GOT: the
+   * installer reads that back off `engineMissing` and says when the two disagree.
+   */
   installEngine: (
     onProgress: (ratio: number) => void,
     signal: AbortSignal,
     profile?: OwnModelProfile,
-  ) => Promise<void>
+  ) => Promise<{ readonly cuda: boolean }>
 }
 
 /** What one `engine.requirements` answered, kept as the screen needs to read it. */

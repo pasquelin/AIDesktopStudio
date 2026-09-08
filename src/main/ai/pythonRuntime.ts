@@ -190,10 +190,15 @@ export function pythonRuntime(deps: PythonRuntimeDeps): LocalRuntime {
      * process leaving returns them. `_live` reopens it at the next load, cold.
      */
     close: async (endpoint: RuntimeEndpointId) => {
+      const door = engineDoorOfEndpoint(endpoint)
+      // Forgotten whether the engine answers or not: its process holds the model, and a door whose
+      // engine is gone holds nothing either. This is why a close needs no unload before it.
+      held.delete(door)
+
       const engine = deps.running()
       if (!engine) return
 
-      await engine.closeDoor(engineDoorOfEndpoint(endpoint))
+      await engine.closeDoor(door)
     },
 
     generate: async (request: GenerateRequest): Promise<GenerateResult> => {

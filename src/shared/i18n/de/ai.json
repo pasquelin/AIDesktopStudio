@@ -148,9 +148,11 @@
       "refused": "das Format oder die Herkunft dieses Modells wird nicht akzeptiert",
       "runtime": "dieses Modell ist auf diesem Rechner derzeit nicht verfügbar",
       "plugin": "keine Engine dieses Studios kann dieses Modell bisher öffnen",
-      "cuda": "dieses Modell benötigt eine NVIDIA-GPU (CUDA)"
+      "cuda": "dieses Modell benötigt eine NVIDIA-GPU (CUDA)",
+      "cudaTorch": "eine NVIDIA-Karte ist da, aber die lokale Engine wurde ohne CUDA installiert — installieren Sie ihre Bibliotheken erneut"
     },
     "empty": "Für keinen Vorgang gibt es auf diesem Rechner einen Anbieter.",
+    "engineHelpCuda": "Die lokale Engine erzeugt auf dem Prozessor: diese NVIDIA-Karte ist da, aber ihre Bibliotheken wurden ohne CUDA installiert.",
     "engineHelpFailed": "Die Installation ist nicht angekommen. Es wurde nichts gelöscht. Sie können es erneut versuchen.",
     "engineHelpMissing": "Die lokale Engine kann nicht generieren: {{names}} fehlt.",
     "engineHelpUnknown": "Die lokale Engine hat noch nicht geantwortet.",
@@ -167,7 +169,7 @@
     "forgetHint": "Entfernt den Eintrag aus der Liste. Ihre Datei bleibt, wo sie ist",
     "install": "Installieren",
     "installEngine": "Bibliotheken installieren",
-    "installEngineHint": "Lädt herunter, was der lokalen Engine fehlt. Mehrere hundert Megabyte, unter Linux mehr.",
+    "installEngineHint": "Lädt herunter, was der lokalen Engine fehlt. Mehrere hundert Megabyte, mit einer NVIDIA-Karte mehrere Gigabyte.",
     "installFailed": "Die Installation wurde nicht abgeschlossen. Sie können es erneut versuchen.",
     "installFailedChecksum": "Die eingetroffene Datei passt nicht zum Modell. Sie wurde verworfen. Versuchen Sie es erneut.",
     "installFailedNetwork": "Der Download wurde unterbrochen. Starten Sie ihn erneut: Was bereits angekommen ist, wird fortgesetzt.",

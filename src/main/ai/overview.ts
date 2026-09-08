@@ -22,8 +22,8 @@ import {
   type DownloadProgress,
   type LocalModel,
 } from '@shared/domain/localModel'
-import { fitReadingOf } from '@shared/domain/modelFit'
-import type { GpuIdentity, HardwareFacts } from './hardwareProbe'
+import { fitReadingOf, type CudaState } from '@shared/domain/modelFit'
+import { isNvidia, type GpuIdentity, type HardwareFacts } from './hardwareProbe'
 
 /**
  * Composing what the manager screen reads, from the pieces that already answer separately.
@@ -69,17 +69,21 @@ export type OverviewInput = {
 }
 
 /**
- * An NVIDIA card AND a torch that was not built without CUDA — both, or the screen lies.
+ * What the card and the torch beside it allow together — `null` where there is no card at all.
  *
  * The card alone announced TRELLIS, InstantMesh and LGM as compatible on a Windows machine whose
  * PyPI torch is a CPU build, and the load then answered `needs CUDA, this machine is cpu`.
- * `torchCuda` is `null` until the engine has answered, and a `null` trusts the card — which is
- * the reading this used to make on its own.
+ * `torchCuda` is `null` until the engine has answered, and a `null` trusts the card. Only an
+ * ANSWERED `false` reads `repairable`: installing the libraries again then fetches CUDA wheels.
  */
-export function cudaUsableWith(gpu: GpuIdentity | null, torchCuda: boolean | null): boolean {
-  const nvidia =
-    gpu?.vendorId === 0x10de || /NVIDIA|GeForce|Quadro|Tesla|CUDA/i.test(gpu?.renderer ?? '')
-  return nvidia && torchCuda !== false
+export function cudaStateOf(
+  gpu: GpuIdentity | null,
+  torchCuda: boolean | null,
+): CudaState | undefined {
+  // `undefined` and not `null`: this is what `MachineOffer.cuda` and `EngineOffer.cuda` are
+  // OPTIONAL of, and two spellings of « no card » is the confusion this whole reading removes.
+  if (!isNvidia(gpu)) return undefined
+  return torchCuda === false ? 'repairable' : 'usable'
 }
 
 /**
@@ -99,6 +103,8 @@ function localOptionsFor(candidates: readonly ModelCandidate[]): readonly string
  * twenty-one rows, their candidates and their verdicts, to read one field.
  */
 export function rowFor(role: AiRoleId, input: OverviewInput, choices: RoleChoices): RoleRow {
+  // Read once for the whole row: the card and the engine's answer are the same for every model.
+  const cuda = cudaStateOf(input.facts.gpu, input.engineTorchCuda)
   const candidates: readonly ModelCandidate[] = input
     .modelsFor(role)
     .map(model => {
@@ -108,7 +114,7 @@ export function rowFor(role: AiRoleId, input: OverviewInput, choices: RoleChoice
         diskFreeBytes: input.facts.diskFreeBytes,
         installed,
         runtimeReady: input.runtimeReady(model),
-        hasCuda: cudaUsableWith(input.facts.gpu, input.engineTorchCuda),
+        cuda,
       }
 
       return {
@@ -194,6 +200,10 @@ export function aiOverviewOf(input: OverviewInput): AiOverview {
       missing: input.engineMissing,
       progress: input.engineProgress,
       failed: input.engineFailed,
+      // Said HERE and not only on the models: the button that repairs it lives on this offer, and
+      // a complete door hides it — which would leave the verdict on the models pointing at
+      // nothing. See `AiEngineOffer`.
+      cuda: cudaStateOf(input.facts.gpu, input.engineTorchCuda),
     },
   }
 }

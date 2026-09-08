@@ -225,15 +225,15 @@ export function createAiManager(deps: ManagerDeps): AiManager {
     return entry.done
   }
   const release = async (endpoint: RuntimeEndpointId, andClose = false): Promise<void> => {
-    // Only a caller NOT about to reload this door closes it: `admit` releases the DESTINATION
-    // door to make room on it, and closing there repays a cold start on every change of model.
-    if (disposed || (working.get(endpoint) ?? 0) > 0) return
+    const idle = (): boolean => !disposed && (working.get(endpoint) ?? 0) === 0
+    if (!idle()) return
     const runtime = deps.runtimes[managerHelpers.loaderOf(endpoint)]
     try {
-      await runtime?.unload?.(endpoint)
-      if (andClose) await runtime?.close?.(endpoint)
+      // Killing the door returns its tensors AND the 208 MB an unload never gave back (ADR-18).
+      if (andClose && runtime?.close) await runtime.close(endpoint)
+      else await runtime?.unload?.(endpoint)
     } finally {
-      if (!disposed && (working.get(endpoint) ?? 0) === 0) occupancy.delete(endpoint)
+      if (idle()) occupancy.delete(endpoint)
     }
   }
   const armIdle = (): void => {

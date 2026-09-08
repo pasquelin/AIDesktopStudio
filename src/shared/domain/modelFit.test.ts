@@ -51,7 +51,17 @@ describe('fitOf', () => {
       fitOf(model({ format: 'pickle', loader: 'plugin', runtimeStatus: 'supported' }), offer()),
     ).toBe('compatible')
     expect(fitObstacleOf(model({ needsCuda: true }), offer())).toBe('cuda')
-    expect(fitObstacleOf(model({ needsCuda: true }), offer({ hasCuda: true }))).toBeNull()
+    expect(fitObstacleOf(model({ needsCuda: true }), offer({ cuda: 'usable' }))).toBeNull()
+  })
+
+  /**
+   * Telling someone holding an RTX that their model needs an NVIDIA card is the sentence this
+   * separates out: the card is here, the torch beside it is not, and that is a download away.
+   */
+  it('names the card that is here apart from the card that is missing', () => {
+    expect(fitObstacleOf(model({ needsCuda: true }), offer({ cuda: 'repairable' }))).toBe(
+      'cudaTorch',
+    )
   })
 
   it('refuses a model that does not fit in memory', () => {

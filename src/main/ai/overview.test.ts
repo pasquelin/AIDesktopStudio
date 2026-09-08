@@ -10,7 +10,7 @@ import {
 } from '@shared/domain/aiRole'
 import { GIBI, localModel } from '@shared/domain/localModel-fixtures'
 import type { HardwareFacts } from './hardwareProbe'
-import { aiOverviewOf, cudaUsableWith, type OverviewInput } from './overview'
+import { aiOverviewOf, cudaStateOf, type OverviewInput } from './overview'
 
 const FACTS: HardwareFacts = {
   platform: 'linux',
@@ -231,12 +231,13 @@ describe('what makes CUDA usable and not merely present', () => {
 
   /**
    * The card alone announced TRELLIS compatible on a Windows machine whose PyPI torch is a CPU
-   * build, and the load then answered `needs CUDA, this machine is cpu`.
+   * build, and the load then answered `needs CUDA, this machine is cpu`. `cudaTorch` and not
+   * `cuda`: the card IS there, so what the person needs is the repair, not a refusal.
    */
   it('stops calling a card compatible when the engine says its torch has no CUDA', () => {
     const row = rowOf(aiOverviewOf(facing(false)), DICTATION_ROLE)
 
-    expect(row?.candidates[0]?.obstacle).toBe('cuda')
+    expect(row?.candidates[0]?.obstacle).toBe('cudaTorch')
   })
 
   /** `null` is UNKNOWN, and the engine has not answered yet on the first composition. */
@@ -244,9 +245,19 @@ describe('what makes CUDA usable and not merely present', () => {
     const row = rowOf(aiOverviewOf(facing(null)), DICTATION_ROLE)
 
     expect(row?.candidates[0]?.obstacle).not.toBe('cuda')
+    expect(row?.candidates[0]?.obstacle).not.toBe('cudaTorch')
   })
 
   it('refuses a machine with no NVIDIA card, whatever torch was built with', () => {
-    expect(cudaUsableWith(FACTS.gpu, true)).toBe(false)
+    expect(cudaStateOf(FACTS.gpu, true)).toBeUndefined()
+  })
+
+  /**
+   * The engine offer carries it too, and not only the models: the button that installs the CUDA
+   * wheels lives there, and a complete door hides it — see `AiEngineOffer`.
+   */
+  it('tells the engine offer a complete door is still on the processor', () => {
+    expect(aiOverviewOf(facing(false)).engine.cuda).toBe('repairable')
+    expect(aiOverviewOf(input()).engine.cuda).toBeUndefined()
   })
 })

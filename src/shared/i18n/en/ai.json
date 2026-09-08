@@ -148,9 +148,11 @@
       "refused": "the format or the provenance of this model is not accepted",
       "runtime": "this model is not available on this machine right now",
       "plugin": "no engine in this studio can open this model yet",
-      "cuda": "this model needs an NVIDIA GPU (CUDA)"
+      "cuda": "this model needs an NVIDIA GPU (CUDA)",
+      "cudaTorch": "an NVIDIA card is here, but the local engine was installed without CUDA — install its libraries again"
     },
     "empty": "No operation has a provider to offer on this machine.",
+    "engineHelpCuda": "The local engine generates on the processor: this NVIDIA card is here, but its libraries were installed without CUDA.",
     "engineHelpFailed": "The install did not land. Nothing was erased. You can try again.",
     "engineHelpMissing": "The local engine cannot generate: {{names}} missing.",
     "engineHelpUnknown": "The local engine has not answered yet.",
@@ -167,7 +169,7 @@
     "forgetHint": "Removes the entry from the list. Your file stays where it is",
     "install": "Install",
     "installEngine": "Install the libraries",
-    "installEngineHint": "Downloads what the local engine lacks. Several hundred megabytes, and more on Linux.",
+    "installEngineHint": "Downloads what the local engine lacks. Several hundred megabytes, and several gigabytes with an NVIDIA card.",
     "installFailed": "The install did not finish. You can try again.",
     "installFailedChecksum": "The file that arrived does not match the model. It was discarded. Try again.",
     "installFailedNetwork": "The download was interrupted. Start it again: what already arrived will be resumed.",

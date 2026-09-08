@@ -148,9 +148,11 @@
       "refused": "định dạng hoặc nguồn gốc của mô hình này không được chấp nhận",
       "runtime": "mô hình này hiện không dùng được trên máy này",
       "plugin": "chưa có engine nào trong studio này mở được mô hình này",
-      "cuda": "mô hình này cần một GPU NVIDIA (CUDA)"
+      "cuda": "mô hình này cần một GPU NVIDIA (CUDA)",
+      "cudaTorch": "có một card NVIDIA, nhưng engine cục bộ được cài đặt mà không có CUDA — hãy cài lại các thư viện của nó"
     },
     "empty": "Không thao tác nào có nhà cung cấp để đề nghị trên máy này.",
+    "engineHelpCuda": "Engine cục bộ đang tạo trên bộ xử lý: card NVIDIA có ở đây, nhưng các thư viện của nó được cài mà không có CUDA.",
     "engineHelpFailed": "Việc cài đặt không thành. Không có gì bị xóa. Bạn có thể thử lại.",
     "engineHelpMissing": "Engine cục bộ không thể tạo: thiếu {{names}}.",
     "engineHelpUnknown": "Engine cục bộ chưa trả lời.",
@@ -167,7 +169,7 @@
     "forgetHint": "Xóa mục khỏi danh sách. Tệp của bạn vẫn ở nguyên chỗ cũ",
     "install": "Cài đặt",
     "installEngine": "Cài đặt các thư viện",
-    "installEngineHint": "Tải về những gì engine cục bộ còn thiếu. Vài trăm megabyte, và nhiều hơn trên Linux.",
+    "installEngineHint": "Tải về những gì engine cục bộ còn thiếu. Vài trăm megabyte, và vài gigabyte nếu có card NVIDIA.",
     "installFailed": "Việc cài đặt chưa hoàn tất. Bạn có thể thử lại.",
     "installFailedChecksum": "Tệp nhận được không khớp với mô hình. Nó đã bị loại bỏ. Thử lại.",
     "installFailedNetwork": "Việc tải xuống đã bị gián đoạn. Khởi động lại: phần đã nhận sẽ được tiếp tục.",

@@ -72,8 +72,20 @@ export function createRuntimeInstaller(deps: ManagerDeps, host: InstallerHost): 
     engineFailed = false
     void host.announce()
     try {
-      await deps.installEngine(reportEngineProgress, engineAbort.signal, profile)
+      const asked = await deps.installEngine(reportEngineProgress, engineAbort.signal, profile)
       engineEnvironment = await deps.engineMissing(profile)
+      // 🛑 A CUDA install that leaves a CPU torch behind fails SILENTLY: the door still generates,
+      // on the processor, and nobody is told why a card sits idle. It is the failure this branch
+      // exists to repair, so the one run that asked for CUDA reads back what it got.
+      if (asked.cuda) {
+        const landed = engineEnvironment?.torchCuda === true
+        deps.log(
+          landed ? 'info' : 'warn',
+          landed
+            ? 'the door was repaired with CUDA: its torch answers so'
+            : `the CUDA install left a torch answering ${String(engineEnvironment?.torchCuda)}`,
+        )
+      }
     } catch (error) {
       engineFailed = true
       deps.log('warn', `the engine repair stopped: ${String(error)}`)

@@ -148,9 +148,11 @@
       "refused": "il formato o la provenienza di questo modello non è ammesso",
       "runtime": "questo modello non è disponibile su questa macchina al momento",
       "plugin": "nessun motore di questo studio sa ancora aprire questo modello",
-      "cuda": "questo modello richiede una GPU NVIDIA (CUDA)"
+      "cuda": "questo modello richiede una GPU NVIDIA (CUDA)",
+      "cudaTorch": "c’è una scheda NVIDIA, ma il motore locale è stato installato senza CUDA: reinstalla le sue librerie"
     },
     "empty": "Nessuna operazione ha un fornitore da proporre su questa macchina.",
+    "engineHelpCuda": "Il motore locale genera sul processore: questa scheda NVIDIA è qui, ma le sue librerie sono state installate senza CUDA.",
     "engineHelpFailed": "L’installazione non è andata a buon fine. Non è stato cancellato nulla. Puoi riprovare.",
     "engineHelpMissing": "Il motore locale non può generare: manca {{names}}.",
     "engineHelpUnknown": "Il motore locale non ha ancora risposto.",
@@ -167,7 +169,7 @@
     "forgetHint": "Toglie la voce dall’elenco. Il tuo file resta dov’è",
     "install": "Installa",
     "installEngine": "Installa le librerie",
-    "installEngineHint": "Scarica ciò che manca al motore locale. Diverse centinaia di megabyte, e di più su Linux.",
+    "installEngineHint": "Scarica ciò che manca al motore locale. Diverse centinaia di megabyte, e diversi gigabyte con una scheda NVIDIA.",
     "installFailed": "L’installazione non è stata completata. Puoi riprovare.",
     "installFailedChecksum": "Il file arrivato non corrisponde al modello. È stato scartato. Riprova.",
     "installFailedNetwork": "Il download si è interrotto. Riavvialo: ciò che è già arrivato sarà ripreso.",

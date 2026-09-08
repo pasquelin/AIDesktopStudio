@@ -3,8 +3,10 @@ import {
   asRuntimeSnapshot,
   gpuIdentityOf,
   hardwareProbe,
+  isNvidia,
   memoryDomainOf,
   memorySnapshotOf,
+  type GpuIdentity,
   type HardwareFacts,
   type HardwarePort,
 } from './hardwareProbe'
@@ -110,6 +112,31 @@ describe('gpuIdentityOf', () => {
         ],
       }),
     ).toMatchObject({ vendorId: 2, deviceId: 2 })
+  })
+})
+
+describe('isNvidia', () => {
+  const card = (over: Partial<GpuIdentity>): GpuIdentity => ({
+    vendorId: null,
+    deviceId: null,
+    renderer: null,
+    machineModel: null,
+    ...over,
+  })
+
+  it('reads NVIDIA off the vendor id', () => {
+    expect(isNvidia(card({ vendorId: 0x10de }))).toBe(true)
+    expect(isNvidia(card({ vendorId: 0x8086 }))).toBe(false)
+    expect(isNvidia(null)).toBe(false)
+  })
+
+  /**
+   * Some drivers answer a renderer and no id at all, and a card nobody identified is a card whose
+   * owner generates on the processor without ever being told.
+   */
+  it('falls back to the name where the driver gave no id', () => {
+    expect(isNvidia(card({ renderer: 'ANGLE (NVIDIA GeForce RTX 4090 Direct3D11)' }))).toBe(true)
+    expect(isNvidia(card({ renderer: 'ANGLE (Apple, ANGLE Metal Renderer)' }))).toBe(false)
   })
 })
 

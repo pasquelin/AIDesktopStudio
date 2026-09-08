@@ -148,9 +148,11 @@
       "refused": "format atau asal model ini tidak diterima",
       "runtime": "model ini untuk saat ini tidak tersedia di mesin ini",
       "plugin": "belum ada mesin di studio ini yang dapat membuka model ini",
-      "cuda": "model ini memerlukan GPU NVIDIA (CUDA)"
+      "cuda": "model ini memerlukan GPU NVIDIA (CUDA)",
+      "cudaTorch": "ada kartu NVIDIA, tetapi mesin lokal dipasang tanpa CUDA: pasang ulang pustakanya"
     },
     "empty": "Tidak ada operasi yang punya penyedia untuk ditawarkan di mesin ini.",
+    "engineHelpCuda": "Mesin lokal menghasilkan di prosesor: kartu NVIDIA ada di sini, tetapi pustakanya dipasang tanpa CUDA.",
     "engineHelpFailed": "Pemasangan tidak berhasil. Tidak ada yang dihapus. Anda dapat mencoba lagi.",
     "engineHelpMissing": "Mesin lokal tidak dapat membuat: {{names}} tidak ada.",
     "engineHelpUnknown": "Mesin lokal belum menjawab.",
@@ -167,7 +169,7 @@
     "forgetHint": "Menghapus entri dari daftar. File Anda tetap di tempatnya",
     "install": "Pasang",
     "installEngine": "Pasang pustaka",
-    "installEngineHint": "Mengunduh apa yang kurang pada mesin lokal. Beberapa ratus megabita, dan lebih banyak lagi di Linux.",
+    "installEngineHint": "Mengunduh apa yang kurang pada mesin lokal. Beberapa ratus megabita, dan beberapa gigabita dengan kartu NVIDIA.",
     "installFailed": "Pemasangan tidak selesai. Anda dapat mencoba lagi.",
     "installFailedChecksum": "File yang diterima tidak cocok dengan model. File itu dibuang. Coba lagi.",
     "installFailedNetwork": "Unduhan terputus. Mulai lagi: yang sudah diterima akan dilanjutkan.",

@@ -2,7 +2,7 @@ import type { EngineFailure } from './failure'
 import type { AiRoleId, RoleProvider } from './aiRole'
 import type { Compatibility } from './aiMemory'
 import type { DownloadProgress, LocalModel } from './localModel'
-import { fitAllowsUse, type FitObstacle } from './modelFit'
+import { fitAllowsUse, type CudaState, type FitObstacle } from './modelFit'
 
 /**
  * What the manager screen reads — one row per ROLE, never one per model.
@@ -184,6 +184,14 @@ export type EngineOffer = {
   readonly progress: number | null
   /** The last repair did not land. Cleared by the next try. */
   readonly failed: boolean
+  /**
+   * What this machine's card and the installed torch allow together.
+   *
+   * `repairable` is a complete door that still generates on the processor, and it is the one
+   * reading that offers the button while `missing` is empty — a repair nobody could reach would
+   * make the verdict on the models a lie.
+   */
+  readonly cuda?: CudaState
 }
 
 export type OllamaOffer = {

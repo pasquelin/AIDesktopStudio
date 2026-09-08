@@ -355,7 +355,7 @@ le noyau qui ferme le socket depuis l'extérieur. Il vit dans `memory_handlers`,
 empêche le fil de pompe d'appeler `_on_gone`. `_worker_left` ne tourne donc pas, et les entrées de
 `_runs` de cette porte ne seraient jamais réglées — tout job en vol resterait en attente pour
 toujours côté studio. `close_door` fait explicitement échouer les runs orphelins de la porte, sous
-le même code `door-gone`, et `test_router.py` le prouve.
+le même code `door-gone`, et `test_router_close.py` le prouve.
 
 **Ce que cela coûte en échange** : la première génération après une fermeture repaie le démarrage
 à froid — `import torch` seul vaut **1 317 ms** mesuré ce jour, diffusers en plus. Une porte fermée
@@ -370,6 +370,16 @@ changement de modèle sur une même porte, sur le chemin chaud. Seuls le minuteu
 déchargement explicite ferment ; `admit` se contente de décharger. Ollama n'implémente pas `close` :
 son serveur survit à toute libération, et c'est la mesure du 21/08, pas un oubli.
 
-`[?]` **Non mesuré** : le coût réel de `wait_closed` sur une porte fermée juste après un
-déchargement. La borne est posée à 3 s puis `kill`, sous les 5 s de `REQUEST_TIMEOUT_MS`, pour
-qu'un client qui abandonne ne tue pas le moteur entier afin de libérer une seule porte.
+**Le fauchage se fait hors de la boucle.** `close_door` appelle `begin_close()`, lance
+`wait_closed()` sur un fil démon et rend la main aussitôt : la boucle unique du cœur répond aussi
+`engine.cancel`, et un Stop qui attendrait la sortie d'une AUTRE porte contredirait ce que
+`memory_handlers` déclare. `_abandon` ayant déjà réglé les jobs, cette réponse n'a pas besoin du
+code de sortie.
+
+**Fermer ne décharge plus d'abord.** Tuer le processus rend ses tenseurs ET les 208 Mo d'imports
+qu'un déchargement ne rendait pas : `release` ferme donc au lieu de décharger, partout où la porte
+sait se fermer. Décharger avant aurait payé un aller-retour routé et un `gc.collect()` sur plusieurs
+gigaoctets une ligne avant de laisser tomber le processus qui les tenait.
+
+`[?]` **Non mesuré** : le coût réel de `wait_closed`. La borne de 3 s puis `kill` ne borne plus une
+requête — elle borne le temps qu'un processus mourant peut occuper un fil avant d'être tué net.

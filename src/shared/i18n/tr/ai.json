@@ -148,9 +148,11 @@
       "refused": "bu modelin biçimi ya da kaynağı kabul edilmiyor",
       "runtime": "bu model şu anda bu makinede kullanılamıyor",
       "plugin": "bu stüdyodaki hiçbir motor bu modeli henüz açamıyor",
-      "cuda": "bu model bir NVIDIA GPU (CUDA) gerektiriyor"
+      "cuda": "bu model bir NVIDIA GPU (CUDA) gerektiriyor",
+      "cudaTorch": "bir NVIDIA kartı var, ama yerel motor CUDA olmadan kuruldu: kitaplıklarını yeniden kurun"
     },
     "empty": "Bu makinede hiçbir işlem için sunulacak bir sağlayıcı yok.",
+    "engineHelpCuda": "Yerel motor işlemcide üretiyor: bu NVIDIA kartı burada, ama kitaplıkları CUDA olmadan kuruldu.",
     "engineHelpFailed": "Kurulum tamamlanmadı. Hiçbir şey silinmedi. Yeniden deneyebilirsiniz.",
     "engineHelpMissing": "Yerel motor üretemiyor; şunlar eksik: {{names}}.",
     "engineHelpUnknown": "Yerel motor henüz yanıt vermedi.",
@@ -167,7 +169,7 @@
     "forgetHint": "Girdiyi listeden kaldırır. Dosyanız olduğu yerde kalır",
     "install": "Kur",
     "installEngine": "Kütüphaneleri kur",
-    "installEngineHint": "Yerel motorda eksik olanları indirir. Birkaç yüz megabayt, Linux’ta daha fazla.",
+    "installEngineHint": "Yerel motorda eksik olanları indirir. Birkaç yüz megabayt, NVIDIA kartı varsa birkaç gigabayt.",
     "installFailed": "Kurulum tamamlanmadı. Yeniden deneyebilirsiniz.",
     "installFailedChecksum": "Gelen dosya modelle eşleşmiyor. Dosya atıldı. Yeniden deneyin.",
     "installFailedNetwork": "İndirme kesildi. Yeniden başlatın: şimdiye kadar gelenlerden devam edilir.",

@@ -94,6 +94,17 @@ export function gpuIdentityOf(info: unknown): GpuIdentity | null {
 }
 
 /**
+ * Whether the card in this machine is an NVIDIA one — which is the whole of what CUDA needs here.
+ *
+ * `0x10de` is NVIDIA's PCI vendor id. The name is read as well, and not as a nicety: `getGPUInfo`
+ * answers a renderer and no id under some drivers, and a card nobody identified is a card whose
+ * owner generates on the processor without being told.
+ */
+export function isNvidia(gpu: GpuIdentity | null): boolean {
+  return gpu?.vendorId === 0x10de || /NVIDIA|GeForce|Quadro|Tesla|CUDA/i.test(gpu?.renderer ?? '')
+}
+
+/**
  * Whether the CPU and the GPU draw from one pot — MEASURED where a runtime answered.
  *
  * `[D]` Without a reading it falls back to the deduction it has always made: Apple Silicon is
