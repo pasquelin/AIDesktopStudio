@@ -242,26 +242,24 @@ describe('NewDocumentWindow', () => {
     open(ASK)
     render(<NewDocumentWindow />)
 
-    // Taken back until it HOLDS: the name field grabs focus when the folder lands, and under load
-    // that effect settled after a plain `.focus()`, sending Enter to the form — which answered
-    // `made` instead of `null`, once in three full gate runs. Measured in isolation the field
-    // already holds focus by this point, so waiting on it alone changed nothing.
-    const focusOn = async (name: string): Promise<HTMLElement> => {
+    // Awaited FIRST, and that is the fix: the field is focused by an effect on a folder that is
+    // set once, so once it holds focus nothing steals it again. Under load that effect settled
+    // AFTER the button had taken it, and Enter reached the form — `made` instead of `null`, once
+    // in three gate runs. `userEvent.type` would close the gap by CLICKING, and a click alone
+    // answers both cases below: the case would then prove nothing about Enter.
+    await waitFor(() => expect(screen.getByRole('textbox')).toHaveFocus())
+
+    const enterOn = async (name: string): Promise<void> => {
       const button = await screen.findByRole('button', { name })
-      await waitFor(() => {
-        button.focus()
-        expect(document.activeElement).toBe(button)
-      })
-      return button
+      button.focus()
+      await userEvent.keyboard('{Enter}')
     }
 
-    await focusOn('Annuler')
-    await userEvent.keyboard('{Enter}')
+    await enterOn('Annuler')
     expect(answer).toHaveBeenCalledWith(null)
 
     answer.mockClear()
-    await focusOn('Nouveau dossier')
-    await userEvent.keyboard('{Enter}')
+    await enterOn('Nouveau dossier')
     // The field opened instead: nothing was answered, and a document was certainly not made.
     expect(answer).not.toHaveBeenCalled()
   })

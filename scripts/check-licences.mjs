@@ -10,7 +10,6 @@
  * les paquets embarqués et la nature du dépôt vivent dans `repo.config.json`.
  */
 import { readFileSync, existsSync } from 'node:fs'
-import { execFileSync } from 'node:child_process'
 import { resolve } from 'node:path'
 
 const root = resolve(import.meta.dirname, '..')
@@ -54,37 +53,35 @@ for (const nom of EMBARQUES) {
   if (!propre.devDependencies?.[nom]) problemes.push(`${nom} est déclaré embarqué mais n'est pas installé.`)
 }
 
-/** La licence qu'un paquet déclare, lue dans l'arbre installé. */
+/**
+ * La licence qu'un paquet déclare, par le lien que le gestionnaire pose pour toute dépendance
+ * déclarée — alias `npm:` compris. Le balayage de `node_modules/.pnpm` qui la précédait s'arrêtait
+ * un segment trop haut, et ne voyait aucun paquet scopé.
+ */
 function licenceDe(nom) {
   try {
-    const trouves = execFileSync('find', [
-      'node_modules/.pnpm',
-      '-maxdepth',
-      '4',
-      '-path',
-      `*/node_modules/${nom}/package.json`,
-    ])
-      .toString()
-      .split('\n')
-      .filter(Boolean)
-
-    if (trouves.length === 0) return null
-    return JSON.parse(readFileSync(trouves[0], 'utf8')).license ?? null
+    return JSON.parse(readFileSync(resolve(root, 'node_modules', nom, 'package.json'), 'utf8'))
+      .license ?? null
   } catch {
     return null
   }
 }
 
-const declarees = [
+const installees = [
   ...Object.keys(propre.dependencies ?? {}),
   ...Object.keys(propre.devDependencies ?? {}),
-  ...Object.keys(propre.peerDependencies ?? {}),
 ]
+// Une pair est déclarée pour le consommateur, et le gestionnaire n'installe pas celles qui sont
+// optionnelles : absente ici, elle n'a rien à juger. Ce que CE dépôt installe, si.
+const declarees = [...installees, ...Object.keys(propre.peerDependencies ?? {})]
+const lues = declarees.map(nom => [nom, licenceDe(nom)])
 
-for (const nom of declarees) {
-  const licence = licenceDe(nom)
-  if (licence === null) continue // pas installé ici ; rien à juger
-  if (!AUTORISEES.has(licence)) problemes.push(`${nom} est en ${licence}, absent de la liste blanche.`)
+for (const [nom, licence] of lues) {
+  // Taire l'échec de lecture est ce qui faisait passer pour jugé tout paquet que la lecture ratait.
+  if (licence === null && installees.includes(nom))
+    problemes.push(`${nom} est déclaré mais sa licence est illisible : paquet absent, ou sans champ « license ».`)
+  else if (licence !== null && !AUTORISEES.has(licence))
+    problemes.push(`${nom} est en ${licence}, absent de la liste blanche.`)
 }
 
 if (problemes.length > 0) {
@@ -93,4 +90,7 @@ if (problemes.length > 0) {
   process.exit(1)
 }
 
-console.log(`Licences contrôlées — ${declarees.length} paquets, tous permissifs, mentions présentes.`)
+const jugees = lues.filter(([, licence]) => licence !== null).length
+console.log(
+  `Licences contrôlées — ${jugees} paquets lus sur ${declarees.length} déclarés, tous permissifs, mentions présentes.`,
+)

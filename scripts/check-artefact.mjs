@@ -1,10 +1,9 @@
 /**
  * Refuses an artefact that carries the same bytes under two paths.
  *
- * Runs at the end of `pnpm build`, hence of `pnpm dist` — and named again in `ci.yml`, which
- * calls `electron-vite build` directly to spare a second typecheck and would otherwise never
- * reach this. The check has to sit where the artefact is, and a build is the only moment it
- * exists. Both sites are asserted by `artefact.test.ts`.
+ * Runs at the end of `pnpm build`, hence of `pnpm dist` and of `pnpm validate` — which is how the
+ * integration job reaches it. The check has to sit where the artefact is, and a build is the only
+ * moment it exists; `artefact.test.ts` asserts that chain.
  *
  * The rule itself is `src/main/artefact.ts`, where the suite can reach it — this file only points
  * it at `out/` and turns its answer into an exit code.

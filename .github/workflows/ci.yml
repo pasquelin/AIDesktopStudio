@@ -42,13 +42,5 @@ jobs:
       # step list and a job that silently stopped matching the desk: `unused:main` was added to
       # `validate` and this file kept passing pull requests with dead code. `validate` fails on
       # its first red link exactly as before — the log names it, the step list no longer does.
+      # `pnpm build` is one of those links, so the bundle and `check-artefact` run here through it.
       - run: pnpm validate
-
-      # `electron-vite build` rather than `pnpm build`, which would run the typecheck a second
-      # time. The gate above already did it, and did it first so a type error answers early.
-      - run: pnpm exec electron-vite build
-
-      # What `pnpm build` adds beyond the bundler, spelled out because this job cannot call it:
-      # nothing else in the pipeline looks at the artefact, and a duplicate is made by the
-      # bundler out of files no import graph reaches.
-      - run: node scripts/check-artefact.mjs
