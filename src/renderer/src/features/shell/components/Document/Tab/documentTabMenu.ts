@@ -4,6 +4,7 @@ import type { TFunction } from 'i18next'
 import { isFiledKind } from '@shared/domain/document'
 import { showContextMenu } from '@/helpers/contextMenu'
 import { characterAssetOf, useDocuments } from '@/stores/documents'
+import { characterOf, useCharacters } from '@/stores/character'
 import { reportFailure } from '@/services/diagnostics'
 import { closeTab, closeTabAsking } from './closeTab'
 import { deleteDocument } from '../../../documentIo'
@@ -39,7 +40,10 @@ export function openDocumentTabMenu({ documentId, t, onRename }: DocumentTabMenu
           {
             label: t('character.retarget.title'),
             tooltip: t('character.retarget.title'),
-            disabled: !hasRetargetHost(character),
+            // A rig too, and not the host alone: the window restores the stored skeleton, so
+            // on a model that has none it opens on a bare mesh with nothing to map.
+            disabled:
+              !hasRetargetHost(character) || !characterOf(useCharacters.getState(), character).rig,
             onSelect: () => void openRetargetForAsset(character),
           },
         ]

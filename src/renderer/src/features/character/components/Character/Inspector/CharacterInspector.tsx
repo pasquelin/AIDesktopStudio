@@ -25,9 +25,9 @@ import {
 import { restWithin } from '@/engines/character/boneRest'
 import { rigHandBones } from '@/engines/scene/rigHandBones'
 import type { MeshSample } from '@/engines/scene/rigSnap'
-import { CharacterMotionList } from '../Motion/CharacterMotionList'
 import { CharacterInspectorFit } from './CharacterInspectorFit'
 import { CharacterInspectorMorphs } from './CharacterInspectorMorphs'
+import { CharacterInspectorMotions } from './CharacterInspectorMotions'
 import { CharacterInspectorSockets } from './CharacterInspectorSockets'
 import { characterOf, useCharacters } from '@/stores/character'
 import { HINT_LEFT } from '@/helpers/tooltip'
@@ -36,7 +36,6 @@ import { characterViewOf, useCharacterView } from '@/stores/characterView'
 import { sceneOf, useScenes } from '@/stores/scenes'
 import { sceneEngineOf } from '@/stores/sceneEngines'
 import { workshopIdOf } from '@shared/domain/character'
-import { saveWorkshopMotion } from '@/character/characterMotion'
 import { CharacterInspectorModel } from './CharacterInspectorModel'
 
 export type CharacterInspectorProps = { assetId: string }
@@ -203,14 +202,7 @@ export function CharacterInspector({ assetId }: CharacterInspectorProps) {
       <CharacterInspectorSockets assetId={assetId} rig={rig} />
       <CharacterInspectorMorphs assetId={assetId} documentId={documentId} nodeId={nodeId} />
 
-      <PropertySection title={t('character.motions')} scId="character.motions">
-        <CharacterMotionList
-          assetId={assetId}
-          documentId={documentId}
-          nodeId={nodeId}
-          onSave={asNew => saveWorkshopMotion(assetId, asNew)}
-        />
-      </PropertySection>
+      <CharacterInspectorMotions assetId={assetId} documentId={documentId} nodeId={nodeId} />
     </>
   )
 }

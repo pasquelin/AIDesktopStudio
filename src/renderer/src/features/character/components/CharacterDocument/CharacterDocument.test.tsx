@@ -418,3 +418,19 @@ it('undoes the character on its own key, and leaves the scene undo unanswered', 
   expect(publishCommand('character.undo')).toBe(true)
   expect(restOfSpine()?.position.y).toBe(0)
 })
+
+/**
+ * 🛑 The retarget window restores the STORED skeleton onto the model: opened on one that has
+ * none, it showed a bare mesh, no joint drawn and no role to map a motion onto — a door onto a
+ * screen that could not answer. The inspector beside it is where a skeleton is created.
+ */
+it('refuses to transfer an animation until the model has a skeleton', () => {
+  seedCharacter(ASSET, null, {})
+  showTab()
+
+  expect(screen.getByRole('button', { name: 'Transférer une animation' })).toBeDisabled()
+
+  act(() => seedCharacter(ASSET, RIG, {}))
+
+  expect(screen.getByRole('button', { name: 'Transférer une animation' })).toBeEnabled()
+})

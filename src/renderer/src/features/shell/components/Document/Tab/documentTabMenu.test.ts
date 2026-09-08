@@ -1,8 +1,17 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { IDENTITY_TRANSFORM } from '@shared/domain/transform'
+import type { Rig } from '@shared/domain/rig'
+import { registerRetargetHost } from '@/character/retargetHosts'
 import type { ContextMenuAction, ContextMenuRow } from '@/helpers/contextMenu'
-import { installCharacterDocument } from '@/stores/character-fixtures'
+import { seedCharacter } from '@/stores/character'
+import { clearCharacters, installCharacterDocument } from '@/stores/character-fixtures'
 import { installDocument } from '@/stores/document-fixtures'
 import { openDocumentTabMenu } from './documentTabMenu'
+
+const RIG: Rig = {
+  origin: 'local',
+  bones: [{ name: 'Spine', parent: null, rest: IDENTITY_TRANSFORM }],
+}
 
 /** The rows the menu was asked to show, which is the whole of what it decides. */
 const shown = vi.hoisted((): ContextMenuRow[][] => [])
@@ -27,6 +36,7 @@ const open = (documentId: string): void =>
 
 beforeEach(() => {
   shown.length = 0
+  clearCharacters()
 })
 
 describe('what can be done to a tab', () => {
@@ -53,5 +63,31 @@ describe('what can be done to a tab', () => {
     expect(rowNamed('documents.delete')?.disabled).toBe(true)
     // The rest of the menu stands: closing a tab has never touched a file.
     expect(rowNamed('documents.close')?.disabled).toBeFalsy()
+  })
+})
+
+describe("transferring an animation onto the tab's character", () => {
+  it('offers it on a character that has a skeleton', () => {
+    installCharacterDocument('doc-hero', 'asset-hero')
+    seedCharacter('asset-hero', RIG, {})
+    registerRetargetHost('asset-hero', () => Promise.resolve())
+
+    open('doc-hero')
+
+    expect(rowNamed('character.retarget.title')?.disabled).toBe(false)
+  })
+
+  /**
+   * 🛑 The window restores the STORED skeleton onto the model: with none it opens on a bare mesh,
+   * no joint drawn and nothing to map a motion onto. The tab is open all the same — that is where
+   * a skeleton is created.
+   */
+  it('refuses it on a model that has none, host or no host', () => {
+    installCharacterDocument('doc-prop', 'asset-prop')
+    registerRetargetHost('asset-prop', () => Promise.resolve())
+
+    open('doc-prop')
+
+    expect(rowNamed('character.retarget.title')?.disabled).toBe(true)
   })
 })

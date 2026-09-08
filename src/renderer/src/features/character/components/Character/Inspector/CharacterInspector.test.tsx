@@ -144,6 +144,19 @@ describe('what a character is made of', () => {
     expect(screen.getByText(/aucun mouvement/)).toBeInTheDocument()
   })
 
+  /**
+   * 🛑 A motion drives JOINTS. On a bare mesh the picker laid a block onto a skeleton that does
+   * not exist: it played, the head ran, and the model stood still — with nothing on screen
+   * saying why. The section above is where a skeleton is created, and it says so.
+   */
+  it('offers no motion at all on a mesh that has no skeleton', () => {
+    seedCharacter(ASSET, null, {})
+    show()
+
+    expect(screen.queryByText(/aucun mouvement/)).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Ajouter un mouvement' })).not.toBeInTheDocument()
+  })
+
   it('offers the existing model material workflow on the character itself', async () => {
     seedCharacter(ASSET, RIG, {})
     show()

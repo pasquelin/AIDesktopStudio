@@ -18,7 +18,8 @@ import { useSelection } from '@/stores/selection'
 import { withQueries } from '@/features/shell/components/query-fixtures'
 import { clearCharacters, installCharacterDocument } from '@/stores/character-fixtures'
 import { seedCharacter } from '@/stores/character'
-import { modelNodeFixture } from '@/engines/scene/scene-fixtures'
+import { modelNodeFixture, rigStateFixture } from '@/engines/scene/scene-fixtures'
+import { useModelFiles } from '@/stores/modelFiles'
 import { EMPTY_SCENE } from '@/engines/scene/sceneState'
 import { installScene } from '@/stores/scene-fixtures'
 import { Inspector } from './Inspector'
@@ -44,6 +45,7 @@ describe('Inspector, on the document in front', () => {
     useAssets.setState({ items: [asset()] })
     useJobs.setState({ jobs: [], bodies: {} })
     useDocuments.setState({ documents: {}, activeId: null })
+    useModelFiles.setState({ rigs: {} })
   })
 
   // The tab rigs a model of the library, and its skeleton is what the studio's one inspector
@@ -65,6 +67,9 @@ describe('Inspector, on the document in front', () => {
       nodes: [modelNodeFixture('Character', 'asset-hero')],
       selectedIds: ['Character'],
     })
+    // The FILE has bones, which is what a scene reads: a motion is offered where it has joints
+    // to drive, and a bare mesh is sent to the skeleton section instead — `MotionsSection`.
+    useModelFiles.getState().reportRig('doc-1', 'Character', rigStateFixture(['Hips', 'Spine']))
     seedCharacter('asset-hero', null, {
       motions: [{ id: 'motion-1', name: 'Walk', assetId: 'asset-walk' }],
     })

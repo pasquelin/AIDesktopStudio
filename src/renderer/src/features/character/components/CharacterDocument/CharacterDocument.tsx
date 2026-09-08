@@ -247,7 +247,11 @@ export function CharacterDocument({ documentId }: { documentId: string }) {
         className={PANE_TOOLBAR_ASIDE}
         extras={
           <>
-            <Button onClick={() => void openRetarget()}>{t('character.retarget.title')}</Button>
+            {/* The window restores the STORED rig: without one it opens on a bare mesh, no joint
+                drawn and no role to map. The inspector beside it is where one is created. */}
+            <Button disabled={!character.rig} onClick={() => void openRetarget()}>
+              {t('character.retarget.title')}
+            </Button>
             <SceneSpeedControl
               speed={flySpeed}
               onSpeed={speed => engineRef.current?.setFlySpeed(speed)}

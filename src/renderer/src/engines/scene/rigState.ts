@@ -33,6 +33,14 @@ export const RIG_STATUSES: readonly RigStatus[] = [
   'skeletonOnly',
 ]
 
+/**
+ * Whether a motion clip would have anything to drive here. A bare mesh makes `retargetPlanOf`
+ * pair no bone at all, so a block laid on it plays and moves nothing.
+ */
+export function rigPlaysMotion(status: RigStatus): boolean {
+  return status !== 'staticMesh'
+}
+
 /** One bone as the graph holds it, with the parent a rig needs and `bonesOf` never gave. */
 export type SkeletonBone = {
   name: string
