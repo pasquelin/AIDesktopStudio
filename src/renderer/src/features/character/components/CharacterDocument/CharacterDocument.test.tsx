@@ -418,3 +418,39 @@ it('undoes the character on its own key, and leaves the scene undo unanswered', 
   expect(publishCommand('character.undo')).toBe(true)
   expect(restOfSpine()?.position.y).toBe(0)
 })
+
+/**
+ * 🛑 The retarget window restores the STORED skeleton onto the model: opened on one that has
+ * none, it showed a bare mesh, no joint drawn and no role to map a motion onto — a door onto a
+ * screen that could not answer. The inspector beside it is where a skeleton is created.
+ */
+it('refuses to transfer an animation until the model has a skeleton', () => {
+  seedCharacter(ASSET, null, {})
+  showTab()
+
+  expect(screen.getByRole('button', { name: 'Transférer une animation' })).toBeDisabled()
+
+  act(() => seedCharacter(ASSET, RIG, {}))
+
+  expect(screen.getByRole('button', { name: 'Transférer une animation' })).toBeEnabled()
+})
+
+/**
+ * 🛑 An empty `rig` says nothing until the file has LANDED: refusing on it greyed the transfer
+ * out on every character for as long as its tab took to read, and pointed at a skeleton nobody
+ * had looked for.
+ */
+it('offers the transfer while the file is still being read', () => {
+  showTab()
+
+  expect(screen.getByRole('button', { name: 'Transférer une animation' })).toBeEnabled()
+})
+
+// A disabled button fires no pointer event, so the reason rides on the span around it.
+it('says why it refuses, beside the button that cannot say it', () => {
+  seedCharacter(ASSET, null, {})
+  showTab()
+
+  const refused = screen.getByRole('button', { name: 'Transférer une animation' }).parentElement
+  expect(refused).toHaveAttribute('data-tooltip-content', expect.stringMatching(/squelette/))
+})

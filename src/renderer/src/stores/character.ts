@@ -18,6 +18,19 @@ export const characterOf = store.stateOf
 export const isCharacterDirty = store.isDirty
 
 /**
+ * Whether the transfer window has a skeleton to restore onto this model.
+ *
+ * 🛑 TRUE while the file is still landing: `rig` is empty then too, for a reason that says
+ * nothing about the model, and refusing on it greys the transfer out for as long as a tab reads.
+ */
+export function isCharacterRetargetable(
+  state: Parameters<typeof store.stateOf>[0],
+  assetId: string,
+): boolean {
+  return !store.hasState(state, assetId) || Boolean(store.stateOf(state, assetId).rig)
+}
+
+/**
  * What the window read off the file, installed before anything is edited.
  *
  * `ensure` would be wrong here: reopening the same character has to show the FILE again, not

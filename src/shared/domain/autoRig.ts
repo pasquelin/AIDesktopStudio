@@ -10,8 +10,23 @@ export type AutoRigCapabilities = {
   local: boolean
 }
 
+/**
+ * The Auto Rig backends the studio implements. A closed union rather than a string: a catalogue
+ * entry naming a `backendId` nothing here runs was offered in the service field and answered
+ * `Unknown Auto Rig backend`, shown to the reader as « le squelettage avancé n'a pas pu terminer ».
+ */
+export type AutoRigBackendId = 'simple' | 'make-it-animatable'
+
+/** The values beside the union — what the offer filters the catalogue against. */
+export const AUTO_RIG_BACKEND_IDS: readonly AutoRigBackendId[] = ['simple', 'make-it-animatable']
+
+/** A `backendId` off a model manifest, which is a plain string there — motion uses one too. */
+export function isAutoRigBackendId(value: unknown): value is AutoRigBackendId {
+  return AUTO_RIG_BACKEND_IDS.some(candidate => candidate === value)
+}
+
 export type AutoRigBackendDescriptor = {
-  id: string
+  id: AutoRigBackendId
   requiresModel: boolean
   modelIds: readonly string[]
   devices: readonly AutoRigDevice[]

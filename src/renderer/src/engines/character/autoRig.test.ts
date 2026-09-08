@@ -6,7 +6,7 @@ import { simpleAutoRigBackend } from './simpleAutoRigBackend'
 import { makeItAnimatableBackend } from './makeItAnimatableBackend'
 
 const descriptor: Omit<AutoRigBackend<string>, 'run'> = {
-  id: 'test',
+  id: 'simple',
   requiresModel: false,
   modelIds: [],
   devices: ['cpu'],
@@ -57,8 +57,8 @@ describe('Auto Rig backends', () => {
       targets: [{ mesh: 0, primitive: 0, vertexCount: 1 }],
     }
 
-    await expect(service.run('test', 'mesh', context)).resolves.toMatchObject({
-      metadata: { backendId: 'test' },
+    await expect(service.run('simple', 'mesh', context)).resolves.toMatchObject({
+      metadata: { backendId: 'simple' },
     })
     expect(run).toHaveBeenCalledWith('mesh', context)
     expect(service.available()).toEqual([descriptor])
@@ -70,7 +70,7 @@ describe('Auto Rig backends', () => {
       run: async () => ({
         rig: { bones: [], origin: 'local' },
         bindings: [],
-        metadata: { backendId: 'test', sourceInfluences: 4, outputInfluences: 4, fingers: false },
+        metadata: { backendId: 'simple', sourceInfluences: 4, outputInfluences: 4, fingers: false },
       }),
     }
 
@@ -89,7 +89,7 @@ describe('Auto Rig backends', () => {
     const service = new AutoRigService([backend])
 
     await expect(
-      service.run('test', 'mesh', {
+      service.run('simple', 'mesh', {
         signal: controller.signal,
         onProgress: vi.fn(),
         targets: [{ mesh: 0, primitive: 0, vertexCount: 1 }],
@@ -102,7 +102,7 @@ describe('Auto Rig backends', () => {
     const service = new AutoRigService([backend])
 
     await expect(
-      service.run('test', 'mesh', {
+      service.run('simple', 'mesh', {
         signal: new AbortController().signal,
         onProgress: vi.fn(),
         targets: [{ mesh: 1, primitive: 0, vertexCount: 10 }],
@@ -115,7 +115,7 @@ describe('Auto Rig backends', () => {
     const service = new AutoRigService([backend])
 
     await expect(
-      service.run('test', 'mesh', {
+      service.run('simple', 'mesh', {
         signal: new AbortController().signal,
         onProgress: vi.fn(),
         targets: [{ mesh: 0, primitive: 0, vertexCount: 2 }],
@@ -131,7 +131,7 @@ describe('Auto Rig backends', () => {
     const service = new AutoRigService([backend])
 
     await expect(
-      service.run('test', 'mesh', {
+      service.run('simple', 'mesh', {
         signal: new AbortController().signal,
         onProgress: vi.fn(),
         targets: [{ mesh: 0, primitive: 0, vertexCount: 1 }],

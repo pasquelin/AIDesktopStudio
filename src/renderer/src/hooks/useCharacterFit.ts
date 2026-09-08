@@ -11,7 +11,12 @@ import { assetsById, useAssets } from '@/stores/assets'
 import { characterOf, useCharacters } from '@/stores/character'
 import { useAiModels } from '@/stores/aiModels'
 import { AUTO_RIG_ROLE } from '@shared/domain/aiRole'
-import { canServe, writeScopeFor, type RoleRow } from '@shared/domain/aiOverview'
+import {
+  canServe,
+  writeScopeFor,
+  type ModelCandidate,
+  type RoleRow,
+} from '@shared/domain/aiOverview'
 import { sceneEngineOf } from '@/stores/sceneEngines'
 import { getBridge } from '@/services/bridge'
 import { autoRigServiceFor } from '@/engines/character/autoRigBackends'
@@ -22,6 +27,7 @@ import {
   type AutoRigInferenceOptions,
   type AutoRigProductError,
 } from '@shared/domain/autoRigInference'
+import { isAutoRigBackendId, type AutoRigBackendId } from '@shared/domain/autoRig'
 
 export function useCharacterFit(
   assetId: string,
@@ -161,16 +167,17 @@ function rigOfferOf(row: RoleRow | undefined) {
     configured?.kind === 'local'
       ? row?.candidates.find(one => one.model.id === configured.modelId)
       : undefined
-  const advanced = candidate?.model.backendId
+  const advanced = implementedBackendOf(candidate)
   const needsDownload = advanced !== undefined && !candidate?.installed
   const serving = row?.provider?.kind === 'local' ? row.provider.modelId : null
   const rigBackends =
-    row?.candidates.flatMap(one =>
-      (canServe(one) || one.model.id === serving || one === candidate) && one.model.backendId
-        ? [{ backendId: one.model.backendId, modelId: one.model.id, name: one.model.name }]
-        : [],
-    ) ?? []
-  const servingBackend = row?.candidates.find(one => one.model.id === serving)?.model.backendId
+    row?.candidates.flatMap(one => {
+      const backendId = implementedBackendOf(one)
+      return (canServe(one) || one.model.id === serving || one === candidate) && backendId
+        ? [{ backendId, modelId: one.model.id, name: one.model.name }]
+        : []
+    }) ?? []
+  const servingBackend = implementedBackendOf(row?.candidates.find(one => one.model.id === serving))
 
   return {
     candidate,
@@ -178,6 +185,15 @@ function rigOfferOf(row: RoleRow | undefined) {
     rigBackends,
     selectedBackend: (needsDownload ? advanced : undefined) ?? servingBackend ?? 'simple',
   }
+}
+
+/**
+ * The backend a candidate runs on, or nothing where this studio implements none of that name —
+ * `main/ai/catalogue.test.ts` refuses such an entry, and this keeps it out of the field meanwhile.
+ */
+function implementedBackendOf(candidate: ModelCandidate | undefined): AutoRigBackendId | undefined {
+  const backendId = candidate?.model.backendId
+  return isAutoRigBackendId(backendId) ? backendId : undefined
 }
 
 function productErrorOf(error: unknown): AutoRigProductError {
