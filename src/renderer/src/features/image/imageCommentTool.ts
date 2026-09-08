@@ -1,5 +1,5 @@
 import { mdiAutoFix, mdiCommentOutline } from '@mdi/js'
-import type { ImageTool } from './imageTools'
+import type { ImageTool } from './imageTool'
 
 export const COMMENT_TOOL: ImageTool = {
   id: 'comment',

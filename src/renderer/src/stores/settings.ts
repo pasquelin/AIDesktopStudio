@@ -81,14 +81,16 @@ export const useSettings = create<SettingsState>()((set, get) => ({
     const bridge = getBridge()
     if (!bridge) return get().auth
 
+    // The previous answer stands while the probe flies: blanking it first makes every account
+    // change in ANOTHER window flash the home back to its waiting state and the docks to "no key".
     const request = ++authRequest
-    set({ auth: UNKNOWN_AUTH, authKnown: false })
     try {
       const auth = await bridge.settings.authState()
       if (request === authRequest) set({ auth, authKnown: true })
     } catch {
-      // An IPC failure must not keep the previous account authenticated or reject an event listener.
-      if (request === authRequest) set({ authKnown: true })
+      // Answered, badly — and still an answer. Left authenticated, the docks would keep offering
+      // a key that no longer works; left unknown, the home would wait for ever.
+      if (request === authRequest) set({ auth: UNKNOWN_AUTH, authKnown: true })
     }
     return get().auth
   },
