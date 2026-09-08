@@ -1,0 +1,24 @@
+{
+  "fileInfo": {
+    "title": "Informazioni su {{name}}",
+    "sections": {
+      "general": "Generale",
+      "media": "Media",
+      "catalogue": "Catalogo",
+      "git": "Git"
+    },
+    "gitUnchanged": "Nessuna modifica in sospeso",
+    "kind": {
+      "file": "File",
+      "folder": "Cartella"
+    },
+    "type": "Tipo",
+    "modified": "Modificato il",
+    "codec": "Codec",
+    "identifier": "Identificatore",
+    "fingerprint": "Impronta del contenuto",
+    "added": "Aggiunto il",
+    "reading": "Lettura della cartella…",
+    "missing": "Questa voce non è più nella cartella del progetto."
+  }
+}

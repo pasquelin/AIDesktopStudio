@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 /**
  * One worker, the requests out on it, and what happens when it dies.
  *
@@ -116,7 +117,8 @@ export function createWorkerPort<T, R extends PortResponse>(
     // 🛑 Killed whatever the port holds NOW: `abandon` leaves alone a worker it no longer owns —
     // one replaced since the post, by an error that respawned it — and that worker would run its
     // request to the end for nobody. Terminated once either way, which its suite counts.
-    if (worker === running) abandon(running, `${what} request taken back`)
+    if (worker === running)
+      abandon(running, localizedError('workerCancelled', { name: what }).message)
     else running.terminate()
   }
 
@@ -131,10 +133,13 @@ export function createWorkerPort<T, R extends PortResponse>(
         if (worker === started) settle(event.data)
       })
       started.addEventListener('error', event =>
-        abandon(started, `${what} worker failed: ${event.message}`),
+        abandon(
+          started,
+          localizedError('workerFailed', { name: what, reason: event.message }).message,
+        ),
       )
       started.addEventListener('messageerror', () =>
-        abandon(started, `${what} worker sent an unreadable answer`),
+        abandon(started, localizedError('workerUnreadable', { name: what }).message),
       )
       worker = started
       return started

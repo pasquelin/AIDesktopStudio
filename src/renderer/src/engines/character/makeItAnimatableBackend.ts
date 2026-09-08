@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import type { AutoRigBackend } from './autoRig'
 import { adaptMakeItAnimatable, type MakeItAnimatableOutput } from './makeItAnimatableAdapter'
 
@@ -21,7 +22,8 @@ export function makeItAnimatableBackend<Input>(
     run: async (input, { signal, onProgress }) => {
       onProgress(0)
       const adaptation = adaptMakeItAnimatable(await infer(input, signal))
-      if (adaptation.fault) throw new Error(`Make-It-Animatable output: ${adaptation.fault}`)
+      if (adaptation.fault)
+        throw localizedError('autoRigOutputInvalid', { reason: adaptation.fault })
       onProgress(1)
       return adaptation.result
     },

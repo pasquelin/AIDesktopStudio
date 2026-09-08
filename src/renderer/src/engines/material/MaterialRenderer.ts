@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import {
   Mesh,
   MeshStandardMaterial,
@@ -154,7 +155,11 @@ export class MaterialRenderer {
       for (const anchor of missing) {
         if (this.reported.has(anchor)) continue
         this.reported.add(anchor)
-        reportFailure('material.shader', anchor, new Error(`three no longer ships ${anchor}`))
+        reportFailure(
+          'material.shader',
+          anchor,
+          localizedError('shaderAnchorMissing', { name: anchor }),
+        )
       }
     }
   }

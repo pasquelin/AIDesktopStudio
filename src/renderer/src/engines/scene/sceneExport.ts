@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import {
   DirectionalLight,
   type AnimationClip,
@@ -120,7 +121,7 @@ export async function exportObjects(
   // Said rather than written: both exporters default to `onlyVisible`, so a hidden node used to
   // produce a valid, empty file — and nothing on screen distinguished that from a success.
   if (objects.length > 0 && objects.every(object => !object.visible)) {
-    throw new Error('nothing visible to export')
+    throw localizedError('exportNothingVisible')
   }
 
   const owned = decoder ? null : ownedDecoder()
@@ -182,7 +183,7 @@ async function toShapes(
     // `requestAnimationFrame`, which a hidden window never runs — and it returns before scheduling
     // anything at all when it refuses a mesh. Waiting on the callback hung both ways.
     const parsed: unknown = new PLYExporter().parse(root, () => {}, { binary: true })
-    if (!(parsed instanceof ArrayBuffer)) throw new Error('this scene has no PLY to write')
+    if (!(parsed instanceof ArrayBuffer)) throw localizedError('plyExportEmpty')
     return new Uint8Array(parsed)
   }
 

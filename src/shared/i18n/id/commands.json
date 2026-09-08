@@ -1,0 +1,549 @@
+{
+  "commands": {
+    "scenePlay": {
+      "title": "Mainkan adegan",
+      "help": "Memulai atau melanjutkan adegan di jendela game."
+    },
+    "appNew": {
+      "title": "Baru…",
+      "help": "Membuka jendela yang membuat proyek atau dokumen, dari layar apa pun"
+    },
+    "projectNew": {
+      "title": "Proyek baru",
+      "help": "Membuat proyek kosong dan membukanya. Proyek adalah folder yang menyimpan semua yang Anda buat: gambar, video, suara, dan cara pengaturannya."
+    },
+    "projectOpen": {
+      "title": "Buka proyek",
+      "help": "Memilih proyek yang sudah ada di disk Anda dan membukanya di tempat yang sekarang. Proyek yang terbuka disimpan saat Anda bekerja, jadi tidak ada yang perlu disimpan terlebih dahulu."
+    },
+    "documentSaveAs": {
+      "title": "Simpan sebagai",
+      "help": "Menulis salinan aset di sebelah aslinya dan melanjutkan dengannya. Aset yang terbuka tetap sesuai dengan yang terakhir disimpan."
+    },
+    "documentSave": {
+      "title": "Simpan dokumen",
+      "help": "Menulis dokumen di depan ke dalam proyek. Sampai disimpan, itu hidup di jendela: tab membawa tanda bintang selama apa yang di layar bukan apa yang di disk."
+    },
+    "documentClose": {
+      "title": "Tutup tab",
+      "help": "Menutup dokumen di depan. Jika ada pekerjaan yang belum disimpan, studio menanyakan apa yang harus dilakukan dengannya. Tanpa tab yang tersisa, jendela ditutup."
+    },
+    "layoutReset": {
+      "title": "Atur ulang tata letak",
+      "help": "Menempatkan panel kembali ke tempatnya mula-mula. Berguna ketika jendela telah diseret ke mana-mana dan tidak ada di tempat yang Anda harapkan. Pekerjaan Anda tidak tersentuh."
+    },
+    "appSettings": {
+      "title": "Pengaturan",
+      "help": "Membuka jendela pengaturan — ini: bahasa, warna, akun, pintasan, dan semua yang dapat disesuaikan."
+    },
+    "appAssistant": {
+      "title": "Asisten",
+      "help": "Membuka jendela tempat Anda mengatakan apa yang ingin Anda lakukan, dengan suara atau keyboard. Asisten mengeksekusi apa yang dipahami dan meminta persetujuan Anda sebelum apa pun yang biaya."
+    },
+    "appDictate": {
+      "title": "Dikte",
+      "help": "Mendengarkan mikrofon dan menulis apa yang Anda katakan pada karet, di bidang yang Anda masuki. Dipegang turun secara default: berbicara, lepaskan, teks muncul."
+    },
+    "windowFullScreen": {
+      "title": "Layar penuh",
+      "help": "Memberikan jendela seluruh layar, tanpa bar dan tanpa perbatasan, untuk bekerja tanpa ada apa pun di sekitarnya."
+    },
+    "spacesMoveLeft": {
+      "title": "Pindahkan ruang ke kiri",
+      "help": "Menggeser ruang fokus satu tempat ke kiri di bilah atas. Urutan yang Anda tentukan disimpan dari satu sesi ke sesi berikutnya."
+    },
+    "spacesMoveRight": {
+      "title": "Pindahkan ruang ke kanan",
+      "help": "Menggeser ruang fokus satu tempat ke kanan di bilah atas. Urutan yang Anda tentukan disimpan dari satu sesi ke sesi berikutnya."
+    },
+    "explorerNewFolder": {
+      "title": "Folder baru",
+      "help": "Membuat folder kosong di dalam yang ditampilkan penjelajah, dan membuka namanya untuk pengetikan. Folder adalah milik Anda, seperti semua yang Anda masukkan."
+    },
+    "explorerDuplicate": {
+      "title": "Duplikat",
+      "help": "Meletakkan salinan setiap item yang dipilih di sebelah aslinya, di bawah nama pertama yang tersedia. Folder disalin dengan semuanya di dalamnya."
+    },
+    "explorerCut": {
+      "title": "Potong",
+      "help": "Menyimpan pilihan, untuk dipindahkan pada tempel berikutnya. Tidak ada yang bergerak sampai Anda menempel, dan baris yang disimpan digambar redup."
+    },
+    "explorerCopy": {
+      "title": "Salin",
+      "help": "Menyimpan pilihan, untuk disalin pada tempel berikutnya. Aslinya tetap di tempatnya."
+    },
+    "explorerPaste": {
+      "title": "Tempel",
+      "help": "Menjatuhkan apa yang disimpan clipboard ke folder di layar. Item yang namanya sudah diambil ditolak, dan sisanya lulus."
+    },
+    "explorerTrash": {
+      "title": "Pindahkan ke sampah",
+      "help": "Mengirim pilihan ke sampah sistem, di mana Anda dapat mengambilnya kembali. Ini adalah satu-satunya gerakan penjelajah yang tidak dapat dibatalkan studio."
+    },
+    "explorerUndo": {
+      "title": "Batalkan gerakan file terakhir",
+      "help": "Menempatkan batch terakhir yang dipindahkan, diganti nama, diduplikasi atau dibuat kembali di mana itu berada. Tumpukan milik proyek daripada jendela, dan gerakan sampah tidak pernah memasukkannya."
+    },
+    "explorerRedo": {
+      "title": "Ulangi gerakan file",
+      "help": "Mengulang batch file yang baru saja dibatalkan, persis seperti adanya."
+    },
+    "sceneSelect": {
+      "title": "Pilih",
+      "help": "Alat biasa: klik objek di adegan untuk memilihnya, tanpa melakukan apa pun pada dirinya. Ini yang Anda kembalikan di antara manipulasi."
+    },
+    "sceneTranslate": {
+      "title": "Pindahkan",
+      "help": "Menyeret objek yang dipilih dari satu tempat ke tempat lain, dengan menarik panah berwarna — satu per arah."
+    },
+    "sceneRotate": {
+      "title": "Putar",
+      "help": "Memutar objek yang dipilih pada dirinya sendiri, dengan menarik cincin berwarna — satu per sumbu."
+    },
+    "sceneScale": {
+      "title": "Skala",
+      "help": "Membuat objek yang dipilih lebih besar atau lebih kecil, dengan menarik pegangannya. Memegang Shift menjaga proporsinya."
+    },
+    "sceneFrame": {
+      "title": "Bingkai pilihan",
+      "help": "Membawa kamera cukup dekat sehingga objek yang dipilih mengisi pandangan. Berguna ketika Anda tersesat, atau ketika objek sangat kecil."
+    },
+    "sceneFrameFollow": {
+      "title": "Ikuti pilihan",
+      "help": "Membingkai pilihan dan menjaganya tetap terlihat: apa pun yang bergerak membawa kamera bersama, pada sudut dan jarak yang sudah dipilih. Dipanggil lagi, itu melepaskan."
+    },
+    "sceneIsolate": {
+      "title": "Isolasi pilihan",
+      "help": "Meninggalkan hanya objek yang dipilih di layar saat Anda mengerjakannya. Tidak ada yang diubah: tekan sekali lagi memberikan adegan kembali persis seperti itu, termasuk objek yang telah Anda sembunyikan sendiri."
+    },
+    "sceneHide": {
+      "title": "Sembunyikan pilihan",
+      "help": "Mengambil objek yang dipilih dari tampilan tanpa menyentuh dokumen. Tampilkan semua membawanya kembali."
+    },
+    "sceneShowAll": {
+      "title": "Tampilkan semua",
+      "help": "Membatalkan penyembunyian dan isolasi yang dilakukan dari viewport. Objek yang dideklarasikan dokumen tersembunyi tetap tersembunyi."
+    },
+    "sceneSnap": {
+      "title": "Semua magnetisme",
+      "help": "Menghidupkan atau mematikan keempat magnetisme sekaligus — permukaan, kisi, sudut, skala. Tekanan kedua memberikan kembali yang tepat yang menyala. Bilah di atas viewport menetapkannya satu per satu."
+    },
+    "sceneSpace": {
+      "title": "Bingkai lokal",
+      "help": "Menyelaraskan pegangan dengan orientasi objek itu sendiri daripada dunia. Pada objek yang diputar, itu yang memungkinkan Anda memindahkannya “ke depannya” daripada utara."
+    },
+    "sceneProjection": {
+      "title": "Proyeksi",
+      "help": "Beralih antara perspektif, di mana garis mundur bertemu, dan proyeksi ortografis, di mana paralel tetap sejajar. Itu yang memungkinkan keselarasan untuk dihakimi dengan mata."
+    },
+    "sceneViewFront": {
+      "title": "Lihat dari depan",
+      "help": "Menempatkan kamera di depan adegan, persegi ke sumbu. Pandangan referensi untuk menilai siluet."
+    },
+    "sceneViewBack": {
+      "title": "Lihat dari belakang",
+      "help": "Menempatkan kamera di belakang adegan, pada sumbu yang sama: apa yang disembunyikan depan."
+    },
+    "sceneViewRight": {
+      "title": "Lihat dari kanan",
+      "help": "Menempatkan kamera di sisi kanan, persegi ke sumbu. Apa kedalaman dihakimi dari."
+    },
+    "sceneViewLeft": {
+      "title": "Lihat dari kiri",
+      "help": "Menempatkan kamera di sisi kiri, pada sumbu yang sama dengan pandangan kanan."
+    },
+    "sceneViewTop": {
+      "title": "Lihat dari atas",
+      "help": "Menempatkan kamera di atas adegan, melihat langsung ke bawah. Apa objek diatur di tanah dari."
+    },
+    "sceneViewBottom": {
+      "title": "Lihat dari bawah",
+      "help": "Menempatkan kamera di bawah adegan, melihat langsung ke atas, arah lain dari tampilan atas."
+    },
+    "sceneViewCamera": {
+      "title": "Lihat melalui kamera",
+      "help": "Menggambar tampilan melalui kamera yang dipilih, dan melangkah kembali keluar pada panggilan kedua. Tanpa kamera yang dipilih, itu mengambil yang pertama di adegan."
+    },
+    "sceneQuad": {
+      "title": "Empat pandangan",
+      "help": "Membagi viewport menjadi empat — atas, depan dan samping di sekitar pandangan yang diterbangkan. Setiap kuartal mengorbit di bawah pointer; yang diterbangkan menyimpan manipulator."
+    },
+    "sceneQuadEdges": {
+      "title": "Tepi quad",
+      "help": "Menggambar ulang rangka kawat tanpa diagonal triangulasi yang ditambahkan. GLB tidak pernah memiliki quad: ini adalah rekonstruksi berdasarkan sudut, setia kecuali pada permukaan yang sangat melengkung."
+    },
+    "sceneDisplay": {
+      "title": "Mode tampilan",
+      "help": "Siklus apa yang ditarik viewport: permukaan, tepinya saja, atau keduanya bersama. Menu tombol memilih satu secara langsung."
+    },
+    "sceneCapture": {
+      "title": "Tangkap pandangan",
+      "help": "Menyimpan gambar tampilan 3D ke dalam gambar proyek — tanpa kisi, pegangan atau rel. Menu menawarkan resolusi lebih besar dari panel itu sendiri."
+    },
+    "sceneAdd": {
+      "title": "Tambah",
+      "help": "Membuka daftar apa yang dapat diterima adegan: mesh, lampu dan objek. Klik kanan di ruang kosong membuka daftar yang sama."
+    },
+    "sceneAddToSheet": {
+      "title": "Tambah ke pita animasi",
+      "help": "Menempatkan objek yang dipilih pada pita, di mana kunci diatur. Pita hanya menunjukkan apa yang dimasukkan, jadi adegan ribuan objek tetap dapat dibaca."
+    },
+    "sceneRemoveFromSheet": {
+      "title": "Lepaskan dari pita animasi",
+      "help": "Menghapus baris dari pita. Kunci yang sudah diatur tetap, dan objek menyimpan barisnya selama memilikinya."
+    },
+    "sceneGroup": {
+      "title": "Grup",
+      "help": "Mengajukan objek yang dipilih di bawah satu grup. Memindahkan grup memindahkan semuanya, dan ⌘Z mengambil pengelompokan kembali."
+    },
+    "sceneDuplicate": {
+      "title": "Duplikat",
+      "help": "Menempatkan salinan pilihan di bawah induk yang sama dan di tempat yang persis sama, kemudian memilihnya. Grup diduplikasi secara keseluruhan, dengan segalanya menggantung darinya."
+    },
+    "sceneOptimizeSelection": {
+      "title": "Optimalkan pilihan…",
+      "help": "Mengukur pilihan dan mengulas representasi runtime AMAN sebelum mengubah pengaturan optimasinya."
+    },
+    "sceneWorldPerformance": {
+      "title": "Kinerja dunia…",
+      "help": "Mengukur seluruh adegan dan melaporkan peluang optimasi AMAN tanpa mengubah dunia pembuatan."
+    },
+    "sceneExportGame": {
+      "title": "Ekspor game…",
+      "help": "Membangun game mandiri dari salinan runtime yang dioptimalkan tanpa mengubah adegan penyuntingan."
+    },
+    "sceneCopy": {
+      "title": "Salin",
+      "help": "Menyimpan seleksi agar bisa ditempel, di sini atau di adegan lain. Ini papan klip milik studio sendiri: papan klip sistem tidak disentuh."
+    },
+    "sceneCut": {
+      "title": "Potong",
+      "help": "Menyimpan seleksi lalu mengeluarkannya dari adegan. ⌘Z mengembalikannya."
+    },
+    "scenePaste": {
+      "title": "Tempel",
+      "help": "Meletakkan apa yang disalin ke adegan yang sedang terbuka, lalu memilihnya. Menempel dua kali menghasilkan dua salinan terpisah."
+    },
+    "sceneDelete": {
+      "title": "Hapus",
+      "help": "Menghapus semua yang terpilih dari adegan. Tidak ada yang hilang selamanya: ⌘Z mengembalikannya."
+    },
+    "undo": {
+      "title": "Urungkan",
+      "help": "Membatalkan hal terakhir yang Anda lakukan di dokumen ini. Setiap dokumen punya tumpukannya sendiri: urungkan bekerja pada tab yang sedang terbuka, bukan pada yang lain."
+    },
+    "redo": {
+      "title": "Ulangi",
+      "help": "Melakukan kembali apa yang baru saja Anda urungkan. Berguna setelah mengurungkan satu kali terlalu banyak."
+    },
+    "sequencePlayPause": {
+      "title": "Mainkan / Jeda",
+      "help": "Memainkan suntingan, atau menghentikannya di posisi saat ini. Memainkan lagi melanjutkan dari titik berhenti."
+    },
+    "sequenceExport": {
+      "title": "Ekspor video…",
+      "help": "Menulis suntingan ke sebuah file video, bingkai demi bingkai, termasuk adegan 3D. Suaranya belum ikut."
+    },
+    "sequenceExportCut": {
+      "title": "Ekspor suntingan (OTIO)…",
+      "help": "Menulis suntingan itu sendiri ke sebuah file OpenTimelineIO, yang bisa dibuka aplikasi penyuntingan lain — trek, klip, titik masuk, kecepatan dan tautan ke media. Pudar, gain dan tautan gambar/suara ikut di dalamnya, tetapi hanya AI Desktop Studio yang membacanya kembali."
+    },
+    "sequenceExportEdl": {
+      "title": "Ekspor daftar suntingan (EDL)…",
+      "help": "Menulis potongan dan kode waktunya dalam format CMX3600, yang dibaca setiap ruang online. Format ini hanya memuat satu trek gambar dan dua trek suara, serta tidak memuat pudar, gain maupun kecepatan."
+    },
+    "sequenceExportFcpxml": {
+      "title": "Ekspor suntingan (FCPXML)…",
+      "help": "Menulis suntingan dalam format yang dibaca Final Cut serta diimpor Premiere dan Resolve. Trek tetap utuh, satu baris masing-masing, begitu pula ukuran bingkai; pudar, gain dan kecepatan tetap tinggal di sini."
+    },
+    "sequenceExportStems": {
+      "title": "Ekspor suara per trek (WAV)…",
+      "help": "Menulis satu file WAV per trek yang terdengar, dicampur sebagaimana suntingan memainkannya — penempatan, hasil rapikan, pudar, gain dan kecepatan dilekatkan ke dalam sampel. Trek yang dibisukan tidak ditulis."
+    },
+    "sequenceExportBundle": {
+      "title": "Ekspor suntingan beserta medianya (OTIOZ)…",
+      "help": "Menulis suntingan yang sama dengan media yang dipakainya di dalam file. Inilah yang diberikan kepada orang lain, atau dibuka di DaVinci Resolve, yang lalu menemukan sendiri materi mentahnya alih-alih memintanya satu per satu."
+    },
+    "montageImport": {
+      "title": "Impor suntingan beserta medianya (OTIOZ)…",
+      "help": "Membuka suntingan yang ditulis aplikasi lain, lengkap dengan materi mentahnya. Media disalin ke dalam proyek dan masuk ke katalog, lalu suntingan terbuka dengan tautan ke media itu. Apa yang tidak dibawa file yang dibuka disebutkan saat pembukaan, dan hanya di situ dimulai dari nilai bawaannya."
+    },
+    "sequenceMirror": {
+      "title": "Jendela pantauan",
+      "help": "Membuka suntingan di jendela tersendiri, untuk diletakkan di layar kedua. Jendela ini mengikuti studio bingkai demi bingkai, tanpa suara, dan ditutup seperti jendela biasa."
+    },
+    "sequenceSplit": {
+      "title": "Pisahkan klip",
+      "help": "Memisahkan klip menjadi dua di posisi penanda waktu, agar tiap bagian bisa ditangani sendiri."
+    },
+    "sequenceDelete": {
+      "title": "Hapus klip",
+      "help": "Menghapus klip yang dipilih dari suntingan. File aslinya tetap ada di aset Anda."
+    },
+    "sequenceUnlink": {
+      "title": "Lepas tautan gambar dan suara",
+      "help": "Memisahkan dua klip dari satu pengambilan. Selama keduanya tertaut, memindahkan, memotong atau menghapus salah satunya berlaku sama untuk yang lain."
+    },
+    "sequenceZoomIn": {
+      "title": "Perbesar",
+      "help": "Merentangkan suntingan agar detailnya terlihat: klip menjadi lebih lebar dan lebih mudah dibidik."
+    },
+    "sequenceZoomOut": {
+      "title": "Perkecil",
+      "help": "Merapatkan suntingan agar lebih banyak terlihat sekaligus, dengan mengorbankan detail."
+    },
+    "sequenceFit": {
+      "title": "Tampilkan seluruhnya",
+      "help": "Mengatur perbesaran agar seluruh suntingan muat di layar, dari ujung ke ujung."
+    },
+    "sequenceStart": {
+      "title": "Lompat ke awal",
+      "help": "Mengembalikan penanda waktu tepat ke awal suntingan, tanpa memindahkan apa pun yang lain."
+    },
+    "sequenceEnd": {
+      "title": "Lompat ke akhir",
+      "help": "Mengirim penanda waktu tepat ke akhir suntingan, melewati klip terakhir."
+    },
+    "canvasZoomIn": {
+      "title": "Perbesar",
+      "help": "Memperbesar tampilan satu langkah, di sekitar tengah bagian yang terlihat. Gambarnya sendiri tidak tersentuh — hanya cara melihatnya."
+    },
+    "canvasZoomOut": {
+      "title": "Perkecil",
+      "help": "Memperkecil tampilan satu langkah, untuk kembali melihat gambar secara utuh."
+    },
+    "canvasZoomFit": {
+      "title": "Sesuaikan ke jendela",
+      "help": "Membingkai seluruh gambar di dalam panel, dengan margin, dan tidak pernah memperbesarnya melebihi ukuran aslinya."
+    },
+    "canvasZoomActual": {
+      "title": "Ukuran asli",
+      "help": "Satu piksel gambar untuk satu piksel layar: satu-satunya skala tempat ketajaman bisa dinilai."
+    },
+    "canvasRulers": {
+      "title": "Penggaris",
+      "help": "Menampilkan atau menyembunyikan dua penggaris berskala, di atas dan di kiri. Dari penggaris inilah garis bantu ditarik."
+    },
+    "canvasGuides": {
+      "title": "Garis bantu",
+      "help": "Menampilkan atau menyembunyikan garis bantu yang diletakkan pada gambar. Menyembunyikannya tidak menghapusnya."
+    },
+    "canvasGrid": {
+      "title": "Kisi piksel",
+      "help": "Menampilkan atau menyembunyikan kisi piksel karya itu sendiri. Hanya pada dokumen yang disetel ke pixel art."
+    },
+    "canvasClearGuides": {
+      "title": "Hapus garis bantu",
+      "help": "Menghapus semua garis bantu dari gambar. Bisa diurungkan, seperti perubahan lainnya."
+    },
+    "canvasSnap": {
+      "title": "Magnet",
+      "help": "Membuat apa yang diseret menempel pada garis bantu, pada tepi gambar dan pada titik tengahnya, dalam jarak beberapa piksel."
+    },
+    "canvasSelectAll": {
+      "title": "Pilih semua",
+      "help": "Memilih seluruh dokumen, hal yang tidak bisa dilakukan pilih-semua bawaan sistem pada sebuah gambar."
+    },
+    "canvasDeselect": {
+      "title": "Batalkan seleksi",
+      "help": "Melepaskan area yang terpilih, sehingga kuas kembali menjangkau seluruh lapisan."
+    },
+    "canvasCropApply": {
+      "title": "Terapkan pangkasan",
+      "help": "Memangkas dokumen sampai bingkai yang diletakkan. ⌘Z mengembalikan bingkainya, bukan pikselnya."
+    },
+    "canvasCropCancel": {
+      "title": "Batalkan pangkasan",
+      "help": "Menghilangkan bingkai pangkas tanpa memangkas apa pun."
+    },
+    "canvasMaskFromSelection": {
+      "title": "Buat masker dari seleksi",
+      "help": "Menyembunyikan lapisan aktif di luar area yang terpilih."
+    },
+    "canvasRegenerate": {
+      "title": "Buat ulang area",
+      "help": "Meminta model melukis ulang area lapisan aktif yang tertutup masker."
+    },
+    "canvasCutout": {
+      "title": "Potong objek",
+      "help": "Menghapus latar belakang gambar yang telah diratakan dengan model bawaan."
+    },
+    "canvasEnlarge": {
+      "title": "Perbesar resolusi",
+      "help": "Menaikkan resolusi gambar yang telah diratakan dengan model bawaan."
+    },
+    "canvasVectorize": {
+      "title": "Vektorkan",
+      "help": "Mengubah gambar yang telah diratakan menjadi garis vektor dengan model bawaan."
+    },
+    "canvasExtend": {
+      "title": "Perluas",
+      "help": "Meminta model melukis melampaui tepi gambar yang telah diratakan."
+    },
+    "canvasMergeDown": {
+      "title": "Gabungkan ke bawah",
+      "help": "Menyatukan lapisan aktif dan lapisan tepat di bawahnya menjadi satu, dengan mempertahankan nama lapisan bawah."
+    },
+    "canvasFlatten": {
+      "title": "Ratakan gambar",
+      "help": "Menyusutkan seluruh tumpukan menjadi satu lapisan: lapisan yang disembunyikan dibuang, bukan digabungkan.",
+      "layerName": "Latar belakang"
+    },
+    "canvasFlipHorizontal": {
+      "title": "Balik horizontal",
+      "help": "Mencerminkan seluruh dokumen dari kiri ke kanan, termasuk lapisannya."
+    },
+    "canvasFlipVertical": {
+      "title": "Balik vertikal",
+      "help": "Mencerminkan seluruh dokumen dari atas ke bawah, termasuk lapisannya."
+    },
+    "canvasRotateCw": {
+      "title": "Putar searah jarum jam",
+      "help": "Memutar dokumen seperempat putaran ke kanan: bingkainya ikut berputar."
+    },
+    "canvasRotateCcw": {
+      "title": "Putar berlawanan jarum jam",
+      "help": "Memutar dokumen seperempat putaran ke kiri: bingkainya ikut berputar."
+    },
+    "canvasExport": {
+      "title": "Ekspor gambar",
+      "help": "Menulis dokumen yang telah diratakan ke disk, dalam format PNG."
+    },
+    "canvasExportLayered": {
+      "title": "Ekspor lapisan (PSD)…",
+      "help": "Menulis dokumen beserta lapisannya, sebagai file Photoshop. Grup diratakan: lapisan di dalamnya tiba berdampingan."
+    },
+    "skyboxView": {
+      "title": "Ubah tampilan",
+      "help": "Menelusuri empat cara memandang langit: imersif, panorama, silang, sisi."
+    },
+    "skyboxProbes": {
+      "title": "Probe cahaya",
+      "help": "Menampilkan atau menyembunyikan bola penguji. Sebuah langit dinilai dari apa yang diteranginya, bukan dari gambarnya sendiri."
+    },
+    "canvasToolMove": {
+      "title": "Alat Pindahkan",
+      "help": "Menyiapkan penunjuk: seretan memindahkan lapisan aktif, dan pegangannya mengubah ukuran atau memutarnya."
+    },
+    "canvasToolHand": {
+      "title": "Alat tangan",
+      "help": "Menyiapkan tangan: seretan menggeser tampilan tanpa menyentuh dokumen. Menahan tombol spasi melakukan hal yang sama tanpa mengganti alat."
+    },
+    "canvasToolCrop": {
+      "title": "Alat pangkas",
+      "help": "Menyiapkan bingkai pangkas. Buat bingkai, lalu ⏎ untuk memangkas atau ⎋ untuk membatalkannya."
+    },
+    "canvasToolSelectRectangle": {
+      "title": "Seleksi persegi panjang",
+      "help": "Menyiapkan seleksi persegi. Apa yang terpilih membatasi kuas, penghapus dan ember cat."
+    },
+    "canvasToolSelectEllipse": {
+      "title": "Seleksi elips",
+      "help": "Menyiapkan seleksi elips: seretan menuliskan elips di dalam persegi yang disapu, dan Shift menjadikannya lingkaran."
+    },
+    "canvasToolSelectLasso": {
+      "title": "Laso",
+      "help": "Menyiapkan laso: seleksi mengikuti gerak tangan, secara bebas."
+    },
+    "canvasToolSmartSelect": {
+      "title": "Seleksi cerdas klik",
+      "help": "Menyiapkan seleksi objek dari sebuah klik, dengan model seleksi lokal."
+    },
+    "canvasToolSmartSelectBox": {
+      "title": "Seleksi cerdas persegi",
+      "help": "Menyiapkan seleksi objek di dalam persegi perkiraan, dengan model seleksi lokal."
+    },
+    "canvasToolShapeRectangle": {
+      "title": "Bentuk persegi panjang",
+      "help": "Menyiapkan penggambaran persegi pada lapisan aktif; Shift menjadikannya bujur sangkar."
+    },
+    "canvasToolShapeLine": {
+      "title": "Bentuk garis",
+      "help": "Menyiapkan penggambaran garis. Berada dalam grup yang sama dengan persegi, karena itu tombolnya ditambah Shift."
+    },
+    "canvasToolShapeArrow": {
+      "title": "Bentuk panah",
+      "help": "Menyiapkan penggambaran panah, dari titik awal seretan sampai tempat tangan melepasnya."
+    },
+    "canvasToolShapeEllipse": {
+      "title": "Bentuk elips",
+      "help": "Menyiapkan penggambaran elips pada lapisan aktif; Shift menjadikannya lingkaran."
+    },
+    "canvasToolShapePolygon": {
+      "title": "Bentuk poligon",
+      "help": "Menyiapkan penggambaran poligon beraturan, yang jumlah sisinya diatur di inspektor sebelum menggambar."
+    },
+    "canvasToolShapeStar": {
+      "title": "Bentuk bintang",
+      "help": "Menyiapkan penggambaran bintang, yang jumlah sudutnya diatur di inspektor sebelum menggambar."
+    },
+    "canvasToolBrush": {
+      "title": "Alat kuas",
+      "help": "Menyiapkan kuas, dengan tepi yang dilembutkan. Kuas melukis pada lapisan aktif, dibatasi seleksi bila ada."
+    },
+    "canvasToolPencil": {
+      "title": "Alat pensil",
+      "help": "Menyiapkan pensil, dengan tepi yang tegas: gerakan yang sama seperti kuas, tanpa pelembutan tepi."
+    },
+    "canvasToolText": {
+      "title": "Alat teks",
+      "help": "Menyiapkan teks: sebuah klik meletakkan keterangan, yang kata-katanya diketik di inspektor."
+    },
+    "canvasToolEraser": {
+      "title": "Alat penghapus",
+      "help": "Menyiapkan penghapus titik: alat ini menghapus di tempat tangan lewat, dibatasi seleksi bila ada."
+    },
+    "canvasToolFill": {
+      "title": "Alat ember cat",
+      "help": "Menyiapkan ember cat: sebuah klik mengisi lapisan, atau seleksi bila ada."
+    },
+    "canvasToolPicker": {
+      "title": "Alat pipet",
+      "help": "Menyiapkan pipet: sebuah klik mengambil warna di bawah penunjuk dan memberikannya kepada kuas."
+    },
+    "canvasBrushSmaller": {
+      "title": "Perkecil kuas",
+      "help": "Mengecilkan kuas, penghapus dan goresan bentuk satu langkah pada skalanya."
+    },
+    "canvasBrushLarger": {
+      "title": "Perbesar kuas",
+      "help": "Membesarkan kuas, penghapus dan goresan bentuk satu langkah pada skalanya."
+    },
+    "sceneSkeletons": {
+      "title": "Tampilkan kerangka",
+      "help": "Menggambar tulang setiap model ber-rig di atas adegan."
+    },
+    "scenePoseMode": {
+      "title": "Mode pose",
+      "help": "Beralih antara memilih objek dan memilih tulang sebuah rig."
+    },
+    "sceneNavigate": {
+      "title": "Navigasi",
+      "help": "Menjelajahi adegan seperti dalam game: tetikus memegang arah pandang, W A S D untuk berpindah, E dan Q untuk naik dan turun. Roda tetikus mengatur kecepatan. Escape mengembalikan tetikus."
+    },
+    "sceneNegate": {
+      "title": "Negatif",
+      "help": "Menandai bentuk yang terpilih sebagai alat: bentuk itu akan dilubangkan pada bentuk lain, apa pun tombol yang ditekan berikutnya dan apa pun urutan kliknya. Bentuk yang ditandai tampil merah tembus pandang. Tekan lagi untuk melepas tandanya."
+    },
+    "sceneCarve": {
+      "title": "Lubangi",
+      "help": "Melubangi bentuk terpilih yang paling besar dengan bentuk yang ditandai Negatif — atau, bila tidak ada, dengan bentuk yang lebih kecil: sebuah kubus yang diletakkan di dalam dinding membuka jendela di sana. Urutan klik tidak berpengaruh. Bentuk aslinya disimpan — Pisahkan mengembalikannya."
+    },
+    "sceneWeld": {
+      "title": "Gabungkan",
+      "help": "Menyatukan bentuk yang terpilih menjadi satu benda padat. Bentuk yang ditandai Negatif dilubangkan padanya, bukan ditambahkan padanya. Bentuk aslinya disimpan — Pisahkan mengembalikannya."
+    },
+    "sceneIntersect": {
+      "title": "Pertahankan irisan",
+      "help": "Hanya mempertahankan bagian tempat bentuk yang terpilih saling bertindih, dan membuang sisanya. Bentuk yang ditandai Negatif dilubangkan padanya, bukan dipertahankan. Bentuk aslinya disimpan — Pisahkan mengembalikannya."
+    },
+    "sceneInvertCarve": {
+      "title": "Balik lipatan",
+      "help": "Melipat bentuk yang sama ke arah sebaliknya: yang tadinya dilubangi menjadi materinya, dan materinya menjadi alat. Satu klik, tanpa mengurungkan — untuk lipatan yang berjalan terbalik."
+    },
+    "sceneSeparate": {
+      "title": "Pisahkan",
+      "help": "Membongkar sebuah benda padat dan mengembalikan bentuk penyusunnya, masing-masing di tempatnya semula."
+    }
+  }
+}

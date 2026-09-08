@@ -7,14 +7,14 @@ export const PANEL_INSET = 'p-2'
  * OVER the content rather than beside it, and with no room reserved it lands on the last column
  * of every row — which in an inspector is the value one is trying to read.
  */
-export const PANEL_SCROLL = 'flex min-h-0 flex-1 flex-col overflow-y-auto pr-2'
+export const PANEL_SCROLL = 'flex min-h-0 flex-1 flex-col overflow-y-auto pe-2'
 
 /**
  * What a row of a list opens onto, drawn UNDER it and inside the list. Indented past the column
  * the chevron stands in, so what a row says lines up with its own name rather than with the edge
  * of the panel — the reading a tree gives its children.
  */
-export const ROW_DETAIL = 'flex flex-col pb-1 pl-4'
+export const ROW_DETAIL = 'flex flex-col pb-1 ps-4'
 
 /**
  * The stacked box a panel puts ABOVE what it acts on — a bar of filters, a message being written.
@@ -121,7 +121,7 @@ export const FIELD_NAME = 'text-text text-xs font-medium'
  * `PropertyLabel` wears it and stretches, so the rule runs the row's whole height.
  */
 export const FIELD_LABEL =
-  'text-muted border-border w-(--sc-label-share) max-w-(--sc-label-max) shrink-0 border-r pr-2'
+  'text-muted border-border w-(--sc-label-share) max-w-(--sc-label-max) shrink-0 border-e pe-2'
 
 /**
  * The number beside a track — "somewhere past the middle" is not a value anyone can write down.
@@ -132,7 +132,7 @@ export const FIELD_LABEL =
  * takes it off the track beside it, and an inspector ends up stacking sliders of two lengths.
  * Fourteen fits the widest of them, a range's `0–1`.
  */
-export const FIELD_READOUT = 'text-muted w-14 shrink-0 text-right tabular-nums'
+export const FIELD_READOUT = 'text-muted w-14 shrink-0 text-end tabular-nums'
 
 /**
  * A tick, wherever one is drawn. `accent-accent` is the whole of it and the whole of why this is
@@ -223,14 +223,14 @@ export const MENU_FLOATING = cn(MENU_RAISED, 'fixed z-70')
  *
  * The inset only, never the skin: the shared bar wears that.
  */
-export const PANE_TOOLBAR = 'absolute top-2 left-2'
+export const PANE_TOOLBAR = 'absolute top-2 start-2'
 
 /**
  * A surface laid beside that column rather than under it — the snap bar. The offset is a gauge
  * (`--sc-pane-aside`) and not a number here: it follows `--sc-control`, so a change of density
  * cannot leave the two overlapping.
  */
-export const PANE_TOOLBAR_ASIDE = 'absolute top-2 left-(--sc-pane-aside)'
+export const PANE_TOOLBAR_ASIDE = 'absolute top-2 start-(--sc-pane-aside)'
 
 /**
  * The word a bar sets beside its buttons: which take is loaded, which half of a pair this

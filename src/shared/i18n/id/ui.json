@@ -1,0 +1,76 @@
+{
+  "gui": {
+    "stage": "Halaman antarmuka",
+    "tools": "Alat antarmuka",
+    "tree": "Elemen antarmuka",
+    "noDocument": "Buka antarmuka untuk melihat apa yang ditampungnya.",
+    "visible": "Terlihat",
+    "locked": "Terkunci — penunjuk tidak menangkapnya"
+  },
+  "guiTools": {
+    "add": "Tambahkan",
+    "addHint": "Meletakkan elemen di dalam apa yang dipilih",
+    "duplicate": "Duplikat",
+    "duplicateHint": "Menyalin pilihan tepat di sampingnya",
+    "group": "Grup",
+    "groupHint": "Mengarsipkan pilihan ke panel",
+    "delete": "Hapus",
+    "deleteHint": "Mengeluarkan pilihan dari antarmuka",
+    "lock": "Kunci",
+    "lockHint": "Menempatkan pilihan di luar jangkauan penunjuk",
+    "zoomIn": "Zoom masuk",
+    "zoomInHint": "Membawa halaman lebih dekat",
+    "zoomOut": "Zoom keluar",
+    "zoomOutHint": "Membawa halaman lebih jauh",
+    "fit": "Sesuaikan",
+    "fitHint": "Membingkai seluruh halaman di panel",
+    "actual": "Ukuran sebenarnya",
+    "actualHint": "Satu piksel halaman untuk satu piksel layar",
+    "resolution": "Resolusi",
+    "resolutionHint": "Kanvas di mana antarmuka terdiri",
+    "types": {
+      "panel": "Panel",
+      "stack": "Tumpukan",
+      "grid": "Kisi",
+      "scroll": "Tampilan gulir",
+      "spacer": "Pemisah",
+      "text": "Teks",
+      "image": "Gambar",
+      "button": "Tombol",
+      "progress": "Bilah kemajuan",
+      "slider": "Slider",
+      "input": "Masukan",
+      "checkbox": "Kotak centang",
+      "screen": "Layar antarmuka"
+    },
+    "typeHints": {
+      "panel": "Bingkai yang menyimpan yang lain",
+      "stack": "Menyusun anak-anak dalam baris atau kolom",
+      "grid": "Menyusun anak-anak dalam kolom genap",
+      "scroll": "Bingkai yang kontennya bergulir",
+      "spacer": "Mendorong tetangganya terpisah dalam tumpukan",
+      "text": "Kata-kata di layar",
+      "image": "Gambar dari proyek",
+      "button": "Apa yang ditindaklanjuti, dengan atau tanpa ikon",
+      "progress": "Bilah yang diisi ke nilai",
+      "slider": "Nilai yang Anda seret",
+      "input": "Teks untuk diketik",
+      "checkbox": "Kotak yang Anda centang",
+      "screen": "Akar antarmuka"
+    },
+    "resolutions": {
+      "desktopHd": "1920 × 1080",
+      "desktop720": "1280 × 720",
+      "phonePortrait": "Ponsel, potret",
+      "phoneLandscape": "Ponsel, pemandangan",
+      "free": "Bebas"
+    },
+    "resolutionHints": {
+      "desktopHd": "Desktop, enam belas ketiga",
+      "desktop720": "Desktop, enam belas ketiga, setengah dari piksel",
+      "phonePortrait": "390 × 844",
+      "phoneLandscape": "844 × 390",
+      "free": "Ukuran apa pun yang sudah dimiliki dokumen"
+    }
+  }
+}

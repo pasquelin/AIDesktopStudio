@@ -83,9 +83,9 @@ function selectControl<V extends string>({
 }: SelectControlProps<V>) {
   const skin =
     layout === 'bar'
-      ? cn(CONTROL, 'w-full cursor-pointer appearance-none border-none pr-6 pl-2')
+      ? cn(CONTROL, 'w-full cursor-pointer appearance-none border-none pe-6 ps-2')
       : layout === 'stacked'
-        ? cn(FIELD, 'appearance-none pr-6')
+        ? cn(FIELD, 'appearance-none pe-6')
         : NATIVE_SELECT
   return (
     <select
@@ -176,7 +176,7 @@ function selectLayout({
       <UiIcon
         path={mdiChevronDown}
         size={12}
-        className="text-muted pointer-events-none absolute right-2"
+        className="text-muted pointer-events-none absolute end-2"
       />
       {actions}
     </div>

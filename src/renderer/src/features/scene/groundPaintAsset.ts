@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import i18next from 'i18next'
 import { bytesToBase64 } from '@shared/base64'
 import type { GroundPaint } from '@shared/domain/groundPaint'
@@ -21,7 +22,7 @@ export const groundPaintCodec: GroundPaintCodec = {
     canvas.width = paint.width
     canvas.height = paint.height
     const context = canvas.getContext('2d')
-    if (!context) throw new Error('2D canvas is unavailable')
+    if (!context) throw localizedError('canvasContextMissing')
     context.putImageData(
       new ImageData(Uint8ClampedArray.from(paint.pixels), paint.width, paint.height),
       0,
@@ -35,7 +36,7 @@ export const groundPaintCodec: GroundPaintCodec = {
     canvas.width = bitmap.width
     canvas.height = bitmap.height
     const context = canvas.getContext('2d')
-    if (!context) throw new Error('2D canvas is unavailable')
+    if (!context) throw localizedError('canvasContextMissing')
     context.drawImage(bitmap, 0, 0)
     bitmap.close()
     return {

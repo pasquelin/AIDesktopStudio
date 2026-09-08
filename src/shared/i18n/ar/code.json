@@ -1,0 +1,8 @@
+{
+  "code": {
+    "unavailable": "تعذّر تحميل المحرّر.",
+    "noProblems": "لا مشاكل",
+    "openProblem": "فتح عند هذا السطر",
+    "at": "سطر {{line, number}}، عمود {{column, number}}"
+  }
+}

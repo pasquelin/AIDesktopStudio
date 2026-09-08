@@ -1,0 +1,20 @@
+{
+  "memoryWorth": {
+    "scriptWrite": "كتب المساعد النص البرمجي {{path}}",
+    "prefabDefine": "«{{name}}» نموذج جاهز في هذا المشروع",
+    "styleSave": "«{{name}}» طريقة لقراءة خامة، محفوظة لهذا المشروع",
+    "postSave": "«{{name}}» إعداد مسبق للمعالجة اللاحقة محفوظ لهذا المشروع",
+    "animationAdd": "أُضيفت الحركة «{{clipName}}» إلى الهيكل العظمي",
+    "gitCommit": "قُرِّر وسُجِّل في git: {{message}}"
+  },
+  "memoryTypes": {
+    "decision": "قرار",
+    "architecture": "بنية",
+    "feature": "ميزة",
+    "entity": "كيان",
+    "script": "نص برمجي",
+    "problem": "مشكلة",
+    "intent": "نيّة",
+    "convention": "عُرف"
+  }
+}

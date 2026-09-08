@@ -1,0 +1,499 @@
+{
+  "settings": {
+    "title": "Ayarlar",
+    "sections": "Ayarlar bölümleri",
+    "search": "Ayar ara",
+    "results": "Sonuçlar",
+    "noResult": "Bu aramaya hiçbir ayar uymuyor.",
+    "restoreDefault": "Varsayılan değeri geri yükle",
+    "restoreDefaultHint": "Özgün değeri, herhangi bir değişiklikten öncekini geri koyar",
+    "account": "API anahtarları",
+    "appearance": "Görünüm",
+    "generation": "Üretim",
+    "media": "Medya",
+    "git": "Sürümler",
+    "dictation": "Dikte",
+    "input": "Aygıtlar",
+    "ai": "Yapay zekâ modelleri",
+    "accountDescription": "Hizmet başına bir anahtar, anahtar zinciri tarafından şifreli.",
+    "appearanceDescription": "Tema ve kontrol yoğunluğu.",
+    "generationDescription": "Üretim kuyruğu ve varsayılan modeller, aile başına.",
+    "gitDescription": "Proje klasörünün sürüm takibi, git ile. Sadece dosyalarınız.",
+    "mediaDescription": "İçe aktarılan dosyaların hazırlanması: geçitler ve dalgabiçimleri.",
+    "dictationDescription": "Yazı yerine metin dikte et. Her şey bu bilgisayarda olur: söylediğiniz hiçbir şey hiçbir yere gönderilmez.",
+    "inputDescription": "Stüdyonun gamepad ile gezilmesi ve bu bilgisayara bağlı aygıtlar.",
+    "aiDescription": "Her işlemi hangi yapay zekâ yapı. Stüdyo burası, Ollama burası veya anahtarı olan çevrimiçi hizmet.",
+    "gamepadNavigation": {
+      "title": "Stüdyoyu gamepad ile gezin",
+      "help": "Bağlı gamepad’i stüdyo arayüzünde gezmenize, kontrolleri onaylamanıza veya reddetmenize izin verir. Siz açmadan kapalı kalır, böylece oyun editörü arkasında hareket ettiremez."
+    },
+    "inputDevices": {
+      "title": "Tespit edilen kontroller",
+      "keyboard": "Klavye",
+      "mouse": "Fare",
+      "gamepadUnsupported": "Bu kumanda standart yerleşimi kullanmaz: stüdyo düğmelerini okuyamaz.",
+      "noGamepad": "Hiçbir gamepad bağlı değil.",
+      "gamepadSleeps": "Gamepad sadece düğmelerinden birine basıldıktan sonra görünür: tarayıcı ondan önce göstermez. Takılı ama sessiz, bağlı olmayan gamepad gibi görünür."
+    },
+    "theme": {
+      "title": "Tema",
+      "help": "Tüm uygulamanın renklarını seçer. Karanlık tema, loş bir odada uzun oturum gözleri dinlendirir; ışık, geniş güneşte daha iyi okunur. « Sistem » bilgisayarınızın kendi ayarını takip eder ve örneğin akşam geldiğinde kendi kendini değiştirir.",
+      "dark": "Koyu",
+      "light": "Açık",
+      "system": "Sistem"
+    },
+    "density": {
+      "title": "Yoğunluk",
+      "help": "Düğmelerin boyutunu ve satırların yüksekliğini ayarlar. « Kompakt » ekrana daha çok uyar; « Rahat » şeyler arasında daha çok hava bırakır, fare ile hedef almayı kolaylaştırır.",
+      "comfortable": "Rahat",
+      "compact": "Kompakt"
+    },
+    "assistantSteps": {
+      "title": "Asistan zincirleme adımları",
+      "help": "Asistan, bir istekle zincirleme yapabileceği işlem sayısı, her biri önceki yanıtına bağlı — dosya bul, aç, sonra sahneye koy. Her adım faturalandırılan gidiş-dönüştür, bu sayı yanlış okunan isteğin sonsuza dek koşmasının tek nedenidir. On iki çoğu zinciri kapsar."
+    },
+    "concurrentJobs": {
+      "title": "Eşzamanlı üretimler",
+      "help": "Kaç yaratının aynı anda çalıştığı. Ne kadar yüksekse, o kadar çok birdenbire başlatabilirsin — ama her biri geri dönüşte uzun alabilir, ve hizmet sınırının ötesindekini çevire bilir. Üç iyi bir dengetir."
+    },
+    "captionArrivals": {
+      "title": "Alınan varlıklara ad ver",
+      "help": "Faydalı bir ad olmadan gelen görüntüye otomatik ad ver. Yaratım birimleri harcar."
+    },
+    "maxRetries": {
+      "title": "Max denemeler",
+      "help": "Üretim ağ düştü veya sunucu meşgul olduğu için başarısız olduğunda, uygulama kendi kendine yeniden dener. Bu sayı bırakmadan kaç kez söyler. 0’da hiçbir zaman iki kez denemez. Geçersiz API anahtarı hiçbir zaman yeniden denenmez: yeniden denemek onu düzeltemezdi."
+    },
+    "ffmpegPath": {
+      "title": "FFmpeg yolu",
+      "help": "Uygulama ile gelen yerine kullanılacak ffmpeg nereyi bul. Kendinizinkine ısrar etmedikçe boş bırakın.",
+      "placeholder": "/opt/homebrew/bin/ffmpeg"
+    },
+    "gitBinary": {
+      "title": "Git yolu",
+      "help": "Sistem olanı yerine kullanılacak git nereyi bul. Neredeyse her durumda boş bırakın. Alan tutan yol reddedildi, ve uygulama sonra git eksik gibi çalışır.",
+      "placeholder": "/usr/bin/git"
+    },
+    "gitUserName": {
+      "title": "Yazar adı",
+      "help": "Kaydedilen her sürüme yazılan ad. Boş bırakarak git bu bilgisayarda zaten bildiği tane al.",
+      "placeholder": "Adınız"
+    },
+    "gitUserEmail": {
+      "title": "Yazar adresi",
+      "help": "Kaydedilen her sürümdeki ad ile birlikte yazılan adres. Boş bırakarak git zaten bildiği tane al.",
+      "placeholder": "siz@örnek.tr"
+    },
+    "dictationEnabled": {
+      "title": "Dikteyi etkinleştir",
+      "help": "Metin alanlarının yanında mikrofon düğmesi teklif eder ve dinleme kısayolunu hizmete koyar. Kapalı, dikte hiçbir şey yüklemez ve hiçbir zaman mikrofon erişimi soramaz."
+    },
+    "dictationMode": {
+      "title": "Nasıl tetiklenilir",
+      "help": "« Tut » kısayolu basılı tuttuğunuz sürece dinler ve bıraktığınız an durur: en güvenli, mikrofon hiç unutma tarafından açık kalır. « Geçiş » birinci basışta başlar ve ikincisinde durur, uzun dikte sırasında eli dinlendirir.",
+      "pushToTalk": "Tuşu tut",
+      "continuous": "Aç/Kapat’ı geçiş yap"
+    },
+    "dictationSilence": {
+      "title": "Cümleyi bitiren sessizlik",
+      "help": "Kaç milisaniye sessiz, söylediğiniz şey biter ve yazıya dönüştürülür. Düşünmek için duraklarsanız cümleleriniz ortasında kesiliyor."
+    },
+    "dictationPreview": {
+      "title": "Konuştukça önizleme",
+      "help": "Konuşulan metin arasında iki önizleme kaç milisaniye. Model sözcükler gelirken yazmaz: her önizleme cümle başladığından beri söyleneni yeniden okur ve hesaplamaya mal olur. Her cümlenin yerleşen metnini göstermek için 0 olarak ayarla."
+    },
+    "dictationThreads": {
+      "title": "İşlem iş parçacıkları",
+      "help": "Tanıma kaç çekirdeği işgal edebilir. Daha yüksek noktaya kadar daha hızlı, ama her iş parçacığı uygulamanın kalanı için bir çekirdektir."
+    },
+    "dictationIdleUnload": {
+      "title": "Bundan sonra belleği boşalt",
+      "help": "Model boşaltıldıktan kaç dakika dikte yok, yaklaşık 700 MB bellek geri verir. Bir sonraki dikte kendi kendini yükler, birkaç saniye alır. Yerleşik tutmak için 0 olarak ayarla."
+    },
+    "dictationModelFolder": {
+      "title": "Model klasörü",
+      "help": "Bu diskte zaten olan tanıma modeli nereyi bul, uygulamanın indirdiği yerine kullanmak için. Normal durumda boş bırakın.",
+      "placeholder": "/Volumes/Models/parakeet-tdt-0.6b-v3-int8"
+    },
+    "defaultModel": "Varsayılan model",
+    "noDefaultModel": "Her seferinde sor",
+    "ffmpegFound": "FFmpeg kullanılabilir: geçitler ve dalgabiçimleri hazırlanır.",
+    "ffmpegMissing": "FFmpeg hala bulunamıyor. İçe aktarma geçit veya dalgabiçim olmaksızın çalışır.",
+    "browse": "Gezin…",
+    "accent": {
+      "title": "Aksan rengi",
+      "help": "Seçileni veya devamında olanı işaretleyen renk: etkin panelin ana hatı, zaman çizelgesi oynatma kafası, seçim çerçevesi. Yaptığınızda hiçbir şeyi değiştiremez, sadece uygulama nerede olduğunuzu gösterir. Temanın kendi tutmak için bırak."
+    },
+    "fontScale": {
+      "title": "Metin boyutu",
+      "help": "Uygulamada tüm metni birdenbire büyütür veya küçültür. 1 çizildiği boyut; bunun üstünde sözcükler büyür ve ekrana daha az uyar; altında, tersi. Düğmeler boyutlarını tutar: yoğunluk bunlarla ilgilenir."
+    },
+    "reduceMotion": {
+      "title": "Animasyonları sınırla",
+      "help": "Arayüzün küçük hareketlerini kapatır: paneller kaydırmak yerine birdenbire görünür. Animasyon sizi yorarsa veya hasta etmesini sağlarsa, ve bir animasyon titreyen daha yavaş makinede kullanışlı."
+    },
+    "general": "Genel",
+    "generalDescription": "Uygulamanın dili ve açıldığında yaptığı şey.",
+    "language": {
+      "title": "Dil",
+      "help": "Uygulamadaki tüm metinlerin dili: menüler, düğmeler, iletiler. « Sistem » bilgisayarınızın kendi dilini alır. Değişiklik Uygula veya Tamam’ı tıkladığınızda, hiçbir şey yeniden başlatılmadan hemen yürürlüğe girer. Projelerinize veya yazılanları tek başına bırakır.",
+      "system": "Sistem"
+    },
+    "startup": {
+      "title": "Açılırken",
+      "help": "Uygulamayı başlattığınızda ne olur. « Son projeyi yeniden aç » sizi bıraktığınız yere geri koyar. « Hiçbir şeyin açılmadığı » boş pencere başlatır, çok proje birarada oynarsan daha hızlı ve sakindir.",
+      "lastProject": "Son projeyi yeniden aç",
+      "nothing": "Hiçbir şey açma"
+    },
+    "autosave": {
+      "title": "Otomatik kaydet",
+      "help": "Açık belgeleri ⌘S beklemeksizin otuz saniyede bir yazar. O zamandan beri yapılan şey güç kesintisine veya çöküşe hayatta kalır. Görüntü belgeleri ne dediye hariç tutulur: katmanları grafik kartından okunur ve otuz saniyede bir yazma çizmede titrer."
+    },
+    "home": {
+      "title": "Anasayfayı göster",
+      "help": "Stüdyo açılırken tam genişlik ekranı: projeleriniz, üzerinde çalıştığınız, çalışan ve modellerin yapabilecekleri. Direkt bıraktığınız alana gitmek için kapatın. Hangi bölümler ve hangi sırada gösterileceği anasayfada ayarlanır."
+    },
+    "modified": "Değiştirildi, henüz uygulanmadı",
+    "apply": "Uygula",
+    "cancel": "İptal et",
+    "confirm": "Tamam",
+    "discardTitle": "Bazı ayarlar uygulanmadı",
+    "discardBody": "Uygulamaksızın ayarları değiştirdiniz. Ne yapmak istiyorsunuz?",
+    "discard": "Uygulama",
+    "shortcuts": "Kısayollar",
+    "shortcutsDescription": "Her işlemi tetikleyen tuşlar. Değiştirmek için tuşa tıkla.",
+    "pressAKey": "Basın…",
+    "unbound": "Yok",
+    "shortcutConflict": "İki işlem bu tuş üzerinde kavga ediyor: sadece biri cevap verecek.",
+    "findByChord": "Tuşla bul",
+    "showAll": "Tümünü göster",
+    "chordFree": "Hiçbir işlem bu tuşu kullanmaz: özgür.",
+    "scope": {
+      "global": "Uygulamanın herhangi bir yerinde",
+      "spaces": "Alanlar çubuğunda",
+      "explorer": "Gezgin içinde",
+      "scene": "3B görünümde",
+      "character": "İskelet içinde",
+      "sequence": "Montajda",
+      "canvas": "Görüntüde",
+      "skybox": "Gökyüzünde",
+      "audio": "Ses editöründe",
+      "material": "Materyalde",
+      "gui": "Arayüzde"
+    },
+    "spaces": "Çalışma alanları",
+    "spacesDescription": "Sadece bir alanda mantıklı olanlar: 3B görünüm, montaj, görüntü.",
+    "requires": "« {{setting}} » kapalı olunca etkisiz.",
+    "showGrid": {
+      "title": "Izgarayı göster",
+      "help": "3B görünümün karelenmesi. Yaptığınız şeyin parçası değil: konumu ve yüksekliği nerede olduğunu bildirmesi. Etrafında hiçbir şey olmadığında görüntüyü değerlendirmek için gizle."
+    },
+    "gridSize": {
+      "title": "Izgara boyutu",
+      "help": "Izgaranın kaç metre uzandığı ve o kadar kare sayı — kare her zaman bir metredir. Geniş sahne için büyütün, kameraya yakın küçük nesne için küçültün."
+    },
+    "navigationPreset": {
+      "title": "Navigasyon şeması",
+      "help": "Bu görünüm hangi 3B uygulamayı taklit eder: fare hareketleri ve kısayolları. Bir şema sadece uygulaması farklı olan şeyi hareket ettirir — her şey AI Desktop Studio tuşlarını tutar, başkalarının dengi olmayan şey dahil. Kendi yeniden haritalarınız her zaman kazanır.",
+      "studio": "AI Desktop Studio",
+      "unreal": "Unreal Engine",
+      "unity": "Unity",
+      "blender": "Blender",
+      "roblox": "Roblox Studio",
+      "custom": "Özel"
+    },
+    "navigationCustomOrbit": {
+      "title": "İle döndür",
+      "help": "Kendi şemanızda görünümü döndüren hareket.",
+      "leftAlt": "Alt + sol tıkla",
+      "left": "Sol tıkla, Alt olsun veya olmasın",
+      "middle": "Orta düğme"
+    },
+    "navigationCustomPan": {
+      "title": "Yan kaydırma ile",
+      "help": "Görünümü çevirmeden kaydırmayan hareket.",
+      "middle": "Orta düğme",
+      "middleShift": "Shift + orta düğme",
+      "leftAltShift": "Shift + Alt + sol tıkla"
+    },
+    "navigationCustomDolly": {
+      "title": "Çarpa ve ger ile",
+      "help": "Görünümü hedef aldığı şeye yaklaştıran hareket, çark yanında.",
+      "altRight": "Alt + sağ tıkla",
+      "ctrlMiddle": "Ctrl + orta düğme",
+      "rightOntoLeft": "Sağ tıkla, sol zaten tutulmuş"
+    },
+    "navigationCustomFly": {
+      "title": "Taşıma tuşları",
+      "help": "WASD kameraya ait olunca. Tutulmuş, harf sahne komutlarına kullanılabilir durdu — bu Unity ve Unreal düğme istemesi nedenidir.",
+      "anyButton": "Düğme tutulduğu sürece",
+      "rightButton": "Sağ düğme tutulduğu sürece",
+      "always": "Her zaman"
+    },
+    "orbitAroundSelection": {
+      "title": "Seçimi orbitla",
+      "help": "3B görünümü döndürdüğünde, seçilen şey etrafında döner, yanında kayan nokta yerine. Yaklaşınca nesneyi kaybetmek durdurmadır. Seçilmesi olmadan, veya seçim ekran dışında, görünüm son baktığı noktada döner."
+    },
+    "orbitUnderCursor": {
+      "title": "İmlecin altında orbitla",
+      "help": "Görünüm, daha önceden ayarlanmış noktaya değil, döndürmeyi başlattığınızda işaretçi üzerinde olanı orbitlar. Önceden çerçeve olmadan yakında çalışmak için kullanışlı; Unity veya Unreal’den, bu seçenek olmayan, şaşırırsan."
+    },
+    "flySpeed": {
+      "title": "Uçuş hızı",
+      "help": "Kamera 3B görünümde ne kadar hızlı hareket ediyor, metre/saniye. Çok yavaş, sahne on saniye tarımak; çok hızlı, onu görmeksizin geçersin."
+    },
+    "boostFactor": {
+      "title": "Hızlan",
+      "help": "Hızlanma tuşu tutulduğu sürece hız kaç ile çarpılır. 3’te üç kat hızlı gidersiz — yukarıda ayarı değiştirecek kadar geniş sahneyi geçmek."
+    },
+    "shadows": {
+      "title": "Gölge at",
+      "help": "Işıkların attığı gölgeleri hesaplar. Gölge atan her ışık kare başına fazladan render geçişi maliyeti: bunu kapatmak ağır sahneyi hafifletmek en doğrudan yoludur."
+    },
+    "viewportQuality": {
+      "title": "Görünüm alanı kalitesi",
+      "help": "Aynı çerçeve ne kadar ince çizilir. Modellerden veya görüntülerden hiçbir şey değişmez — sadece hesaplanan piksel sayısı. Performans gölgelerin ince olmasını da sınırlar.",
+      "performance": "Performans",
+      "balanced": "Dengeli",
+      "high": "Yüksek"
+    },
+    "units": {
+      "title": "Görüntüleme birimi",
+      "help": "Boyların yazılı ve okunur olduğu birim. Bir sahne birimi ne dediye bir metre kalır: bu gösterilenler değiştirir, hiçbir zaman belge tutarı.",
+      "mm": "Milimetreler",
+      "cm": "Santimetreler",
+      "m": "Metreler"
+    },
+    "shadowQuality": {
+      "title": "Gölge yumuşaklığı",
+      "help": "Gölge kenarının tanesi. Keskin temiz keser ve en az maliyetlidir; Yumuşak kenar yumuşatır. Gölge atan, diğer tarafta, inspektörde nesne-nesnesidir.",
+      "hard": "Sert",
+      "soft": "Yumuşak"
+    },
+    "shadowMapSize": {
+      "title": "Gölge ayrıntısı",
+      "help": "Her gölge atan ışık hesapladığı gölge haritasının tarafı, piksel cinsi. Dörtlemek dört katı bellek maliyeti: 2048 birkaç nesnenin sahnesi yeterlidir, 4096 bir ışık tüm seti kapsarken kendi kazancını yapar."
+    },
+    "snapTranslate": {
+      "title": "Taşı adımı",
+      "help": "Manyetizma açıkken nesne bir adımda meter seyahat ediyor. Manyetizma sahne araç çubuğundan açılır; bu sadece ince olduğunu söyler."
+    },
+    "snapRotate": {
+      "title": "Döndür adımı",
+      "help": "Manyetizma açıkken döndürme bir adımının açısı, derece. Döndürme başladığı yerden adımlar: 15° her turun yirmi dört adımı, 90° çeyrek dönüşü."
+    },
+    "snapScale": {
+      "title": "Ölçek adımı",
+      "help": "Manyetizma açıkken ölçek bir adımda kaç hareket ediyor. Ulaşılabilir adım katları: 0.1 tam onda ve yarmılara iner, 0.25 çeyreğe."
+    },
+    "gizmoSize": {
+      "title": "İşleyici boyutu",
+      "help": "Taşıma işleyicileri ekranda en çok yer. Tuttuğu nesneden asla büyürler: küçük bölümde boyutunu takip ederler, ve bunun ötesinde bu görünüm payını tutar, sonsuzca büyümek yerine."
+    },
+    "snapSurfaceAlign": {
+      "title": "Yüzeye hizala",
+      "help": "Yüzey manyetizması açıkken, koyduğun şey bulduğu eğimde yatır. İşaretsiz, kendi yönünü tutar ve sadece düşer."
+    },
+    "snapSurfaceOffset": {
+      "title": "Yüzey ofs",
+      "help": "Koyduğunuz şeyin yüzeyinin üstünde kaç metre yüksekte durduğunu tanımlar. Sıfır onu temas noktasına koyar; birkaç santimetre aynı düzlemdeki iki yüzeyin ekranda titreşmesini engeller."
+    },
+    "fieldOfView": {
+      "title": "Görüş açısı",
+      "help": "Kameranın ne kadar gördüğünü derece cinsinden tanımlar. Dar bir açı yakınlaştırır ve düzleştirir, tıpkı uzun odak lensi gibi; geniş bir açı çok daha fazlasını gösterir ama kenarları çarpıtır. 60 bir gözün gördüğüne yakındır."
+    },
+    "advanced": "Gelişmiş",
+    "advancedDescription": "Sadece bir problemi anlamak için veya baştan başlamak için gereken şeyler.",
+    "reveal": "Klasörde göster",
+    "open": "Aç",
+    "logLevel": {
+      "title": "Günlük detayı",
+      "help": "Uygulamanın konsolda yaptığı şeyler hakkında ne kadar anlattığını tanımlar. “Hiçbir şey” hiç bir şey söylemez; “Hatalar” sadece neyin başarısız olduğunu bildirir; “Her şey” her adımı anlatır, bu bir problemi anlamaya yardımcı olur ve geri kalan zamanlarda konuşkandır.",
+      "silent": "Hiçbir şey",
+      "error": "Sadece hatalar",
+      "warn": "Hatalar ve uyarılar",
+      "info": "Her şey"
+    },
+    "openLogFolder": {
+      "title": "Teknik günlük",
+      "help": "Stüdyonun her başlatışta yazdığı günlükler üzerinde dosya yöneticisini açar: “main.log”, ekranda bir şey göstermeden bir şey başarısız olursa talep edilecek olanı, ve “assistant.log”, her modele gönderilen ve aldığı şeyi bütün olarak tutar.",
+      "button": "Teknik günlüğü göster"
+    },
+    "openSettingsFile": {
+      "title": "Ayarlar dosyası",
+      "help": "Ayarlarınızın kaydedildiği dosya yöneticisini açar. Başka bir makineye taşımadan önce kopyasını almak veya size yardım eden birine göndermek için faydalı."
+    },
+    "mcpEnabled": {
+      "title": "Stüdyoyu dışarıdan pilo",
+      "help": "Bu makinede ve yalnız burada bir giriş yolu açar; Claude Code gibi bir istemci asistanın çalıştırdığı aynı eylemleri çalıştırabilir. Harcayan veya yükleyen her şey burası gibi ekranda bir evet ister. Kapatılırsa hiçbir şey dinlemez."
+    },
+    "mcpDelegateFiles": {
+      "title": "Dosyalarımı sormadan taşı ve sil",
+      "help": "Dış bir istemci projenizin bir dosyasını taşıyabilir, yeniden adlandırabilir veya çöpe atabilir ve git tarafından izlenen bir dosyaya geri dönebilir, hiçbir şey göstermeden. Gezgin bunların bazılarını geri alır, hiçbirini değil. İşaretini kaldırırsanız, her eylem önce size sunulur."
+    },
+    "mcpDelegateAsset": {
+      "title": "Kitaplığıma sormadan yükle",
+      "help": "Dış bir istemci kitaplığınıza bir görüntü gönderebilir; orada kalır. Hiçbir yaratım birimi maliyeti olmaz. İşaretini kaldırırsanız, her yükleme önce size sunulur."
+    },
+    "mcpDelegateRemote": {
+      "title": "Uzak sunucuya sormadan yayınla",
+      "help": "Dış bir istemci uzak bir git deposuna dal gönderebilir. Bu, bu makineden çıkan tek eylemdir ve buradaki hiçbir şey bunu geri almaz. Bilerek etkinleştirin."
+    },
+    "mcpDelegateBudget": {
+      "title": "Yaratım birimleri sormadan harca",
+      "help": "Dış bir istemcinin stüdyo yeniden sormaya başlamadan önce bu pencerede ne kadar harcayabileceğini tanımlar. Sıfırda, her harcama önce size sunulur. API fiyatlandırmayı reddeden bir üretim, bu sayı ne olursa olsun sizin onsuzun asla başlatılmaz."
+    },
+    "copyMcpCommand": {
+      "title": "Bağlantı komutu",
+      "help": "İstemci bağlamak için terminale yapıştırılacak satırı kopyalar. Port veya jeton içermez, bu nedenle gelecekteki her başlatış için geçerli kalır.",
+      "button": "Kopyala"
+    },
+    "installResolveBridge": {
+      "title": "DaVinci Resolve köprüsü",
+      "help": "Resolve’un okuduğu klasöre bir betik bırakır; buradan yazılan bir montajı kendi betikler menüsünden içe aktarabilir. Resolve’u yeniden başlatmadan görünür. Kaldırmak elle yapılır ve Resolve bunu sadece bir sonraki başlatışta görür.",
+      "button": "Kur",
+      "confirm": "Bir betik DaVinci Resolve’un klasörüne bu makineye yazılacak. Başka hiçbir şey dokunulmaz.",
+      "missing": "Bu makinede DaVinci Resolve bulunamadı",
+      "missingDetail": "Klasörü yoktur, bu nedenle hiçbir şey yazılmadı. Resolve kurun, bir kez çalıştırın, sonra buraya geri dönün.",
+      "missingOk": "Kapat"
+    },
+    "openDevtools": {
+      "title": "Geliştirici araçları",
+      "help": "Gömülü tarayıcının teknik konsolunu açar. Günlük iletilerini ve hataları gösterir. Sadece sorun giderme için: içindeki hiçbir şey yazılımı kullanmak için gerekli değildir."
+    },
+    "resetAll": {
+      "title": "Tümünü sıfırla",
+      "help": "TÜM ayarları yeni bir kuruluma geri koyar: tema, dil, kısayollar, her şey. Projeleriniz, görüntüleriniz ve montajlarınız dokunulmaz — sadece ayarlar. Geri dönüş yoktur.",
+      "button": "Sıfırla",
+      "confirm": "Tüm ayarları sıfırlamak mı? Projeleriniz dokunulmaz, ama bu geri döndürülemez."
+    },
+    "storage": "Depolama",
+    "storageDescription": "Projelerinizin disktte nerede tutulduğunu tanımlar.",
+    "projectsFolder": {
+      "title": "Projeler klasörü",
+      "help": "Proje oluşturduğunuzda veya açtığınızda uygulamanın teklif ettiği klasörü tanımlar. Hiçbir şeyi taşımaz: önceden oluşturulan projeler nerede olduysa kalır. Boş bırakmak için her seferinde son ziyaret ettiğiniz yerden başlayın."
+    },
+    "cancelHint": "Bekleyen değişiklikleri bırakır, pencereyi kapatmaz",
+    "applyHint": "Değişiklikleri şimdi yazar ve pencereyi açık tutar",
+    "confirmHint": "Değişiklikleri yazar, sonra pencereyi kapatır",
+    "browseHint": "Klasörü bir sistem penceresinde seçin",
+    "findByChordHint": "Tıklayın, sonra akor basın: liste sadece onu kullananları tutar",
+    "showAllHint": "Filtreyi kaldırır ve tüm kısayolları yeniden gösterir",
+    "captureHint": "Tıklayın, sonra atanacak akoru basın",
+    "sectionHint": "Bu bölümün ayarlarını gösterir",
+    "sectionStagedHint": "Bu bölümün uygulanmamış değişiklikleri vardır",
+    "searchSectionHint": "Sadece sonucu değil, tüm bölümü açar",
+    "searchResultHint": "Ait olduğu bölümdeki ayara gider",
+    "landing": {
+      "title": "Bir üretim nereye iner",
+      "help": "Aynı türde bir belge zaten açık olduğunda. Hiçbir şey açık değilse, sonuç açılır.",
+      "ask": "Her zaman sor",
+      "document": "Açık belgeye",
+      "newTab": "Kendi sekmesinde"
+    },
+    "homeNews": {
+      "title": "Model haberleri",
+      "help": "Trendi olan modelleri ve katalog pesos zaten gelen barındırıcı Hugging Face’de yayınlanan makaleleri okur. İşaretini kaldırırsanız, stüdyo bu bant için kimseyle iletişime geçmez."
+    },
+    "mcp": "Giriş yolu (MCP)",
+    "mcpDescription": "Stüdyonun ikinci kapısı: bu makinede başka bir program — Claude Code, Cursor, MCP protokolünü konuşan herhangi bir istemci — asistanın çalıştırdığı aynı eylemleri kendi projesinden çalıştırır. Başlangıçta kapalı.",
+    "mcpListening": "Açık: stüdyo 127.0.0.1:{{port}} üzerinde sadece bu makinede dinliyor.",
+    "mcpClosed": "Kapalı: hiçbir şey dinlemez. İstemciyi açmak için yukarıdaki ayarı işaretleyin.",
+    "mcpHowTo": "İstemci bağlayın",
+    "mcpStepOpen": "“Stüdyoyu dışarıdan pilo” işaretleyin, hangi zaman uygun olursa. Giriş yolu hemen başlar ve önceden yapılandırılmış bir istemci bunu bulur.",
+    "mcpStepCopy": "Bağlantı komutunu kopyalayın (terminalde pilotlanan istemci için) veya yapılandırma bloğunu (bir dosya okuyan istemci için). Hiçbiri port veya jeton içermez.",
+    "mcpStepPaste": "Projenizde açık bir terminale yapıştırın veya bloğu istemcinizin yapılandırma dosyasına yapıştırın.",
+    "mcpNothingToRedo": "Sadece bir kez yapılması gerekir. Yapıştırdığınız şey stüdyoyu bir adres olarak değil bir program olarak adlandırır, bu nedenle bu — port ve jeton yeniyken bunlar hepsi dahil olmak üzere — her başlatışta geçerli kalır. Aynı adın altında önceden kayıtlı bir istemci değiştirilir; önce kaldırılması gereken bir şey yok.",
+    "mcpExamples": "İstemcinin yapabileceği şeyler",
+    "mcpExampleGenerate": "“Bir gece gökyüzü modeli bul, üretimi hazırla, ama gönderme.”",
+    "mcpExampleTidy": "“Bu haftanın tolahs’ını günlük bir klasöre sırala.”",
+    "mcpExampleScene": "“Küpün sağında iki metre bir küre koy ve onu sıcak ışık.”",
+    "mcpGuards": "Kapıyı ne güvenç kılar",
+    "mcpGuardLocal": "Giriş yolu sadece bu makinede dinliyor: ağdan hiçbir şey onu ulaşmaz.",
+    "mcpGuardToken": "Her başlatışta yeni jeton; istemi olmayan bir istek reddedilir.",
+    "mcpGuardOrigin": "Tarayıcınızda açık bir web sayfasından gelen istek sadece bu sebepten reddedilir.",
+    "mcpGuardConsent": "Harcayan veya yükleyen her şey ekranda gösterilir ve onayınızı bekler — yukarıda devrettiğiniz hariç.",
+    "copyMcpConfig": {
+      "title": "Yapılandırma bloğu",
+      "help": "Komut yerine bir dosya tarafından yapılandırılan istemci için aynı bağlantıyı JSON olarak kopyalar. Komut gibi, her başlatış için geçerli kalır.",
+      "button": "JSON’u kopyala"
+    },
+    "memory": "Asistan hafızası",
+    "memoryDescription": "Asistanın projeleriniz hakkında öğrendiğini tanımlar. Bir proje hakkında öğrendikleri o projenin klasörüne yaşar ve onunla seyahat eder; nasıl çalıştığınız hakkında öğrendikleri bu makinede kalır.",
+    "memoryProject": "Bu proje",
+    "memoryGlobal": "Bu makine",
+    "memoryProjectHint": "Asistanın açık proje hakkında öğrendiği şeyleri tanımlar. Bu dosya klasörle seyahat eder.",
+    "memoryGlobalHint": "Asistanın nasıl çalıştığınız hakkında öğrendiği şeyleri tanımlar. Bu makineyi asla terk etmez.",
+    "memoryGraph": "Grafik",
+    "memoryGraphCount": "{{memories, number}} hafıza · {{links, number}} bağlantı",
+    "memoryGraphDescription": "Asistanın öğrendiği şeyler ve birlikte ne tuttuğu. Her hafıza için bir nokta, aynı şeyden bahseden iki arasında bir satır.",
+    "memoryGraphEmpty": "Bir grafik bir şey göstermeden önce en az iki bağlı hafıza gerekir.",
+    "memorySearch": "Hafızayı ara",
+    "memoryEmpty": "Asistan henüz burada hiçbir şey hatırlamadı.",
+    "memoryUnmatched": "Hiçbir hafıza bu aramaya cevap vermez.",
+    "memoryNoProject": "Asistanın onun hakkında öğrendiğini görmek için bir proje açın.",
+    "memoryUnreadable": "Hafıza dosyası bütünüyle okunamadı. Aşağıdakiler eksik olabilir.",
+    "memoryTooNew": "Bu dosya stüdyonun daha yeni bir yapısı tarafından yazıldı. Hiçbir şey değişmedi.",
+    "memoryPin": "İğnele",
+    "memoryPinHint": "İğnelenen hafıza her zaman asistana verilir, soru ne olursa olsun.",
+    "memoryUnpin": "İğneyi çıkar",
+    "memoryUnpinHint": "Asistan bunu sadece sorulan soruya cevap verirse alır.",
+    "memoryArchive": "Arşivle",
+    "memoryArchiveHint": "Onu silmeden ayırır: yine okunabilir, artık verilmez.",
+    "memoryRestore": "Kullanıma geri koy",
+    "memoryRestoreHint": "Asistan yeniden ondan yararlanabilir.",
+    "memoryForget": "Unut",
+    "memoryForgetHint": "Unutma dosyaya yazılır: hiçbir şey silinmez, iz kalır.",
+    "memoryEdit": "Özeti düzenle",
+    "memorySource": "Kimin tarafından yazıldı",
+    "memorySourceAction": "bir eylem ({{ref}})",
+    "memorySourcePerson": "sen",
+    "memorySourceAssistant": "asistan",
+    "memorySourceImport": "bir içe aktarma",
+    "memoryRefs": "Şunun hakkında",
+    "memoryReplaces": "Bunu değiştirir",
+    "memoryAlsoAbout": "de onun hakkında",
+    "memoryLinks": "Bunu gösterir",
+    "memorySupersedes": "{{id}}’i değiştirir",
+    "memoryReindex": "İndeksi yeniden oluştur",
+    "memoryReindexHelp": "Dosyayı yeniden okur ve arama dizinini yeniden oluşturur. Öğrenilen hiçbir şey kaybolmaz.",
+    "memoryEmbed": "Vektörleri hesapla",
+    "memoryEmbedHelp": "Asistanın tam sözleri bilemeden bir hafızayı bulmasına izin verir. Kurulu bir yerleştirme modeli gerektirir.",
+    "memoryEmbedPending_other": "{{count, number}} hafıza hesaplanacak",
+    "memoryEmbedNone": "Her hafızanın vektörü vardır.",
+    "memoryEmbedNoModel": "Hiçbir yerleştirme modeli seçilmedi. Arama sadece sözcüklerde çalışır.",
+    "memoryStopEmbed": "Durdur",
+    "memoryStopEmbedHelp": "Zaten hesaplanan tutar tutulur.",
+    "memoryPurge": "Tümünü unut",
+    "memoryPurgeHelp": "Bu projenin hafıza dosyasını siler ve asistanın ondan öğrendiği her şeyi.",
+    "memoryPurgeConfirm": "Asistanın bu proje hakkında öğrendiği her şeyi sil?",
+    "memoryFilterAll": "Tümü",
+    "memoryCount_other": "{{count, number}} hafıza",
+    "memoryEmbedPending_one": "{{count, number}} hafıza hesaplanacak",
+    "memoryCount_one": "{{count, number}} hafıza",
+    "memoryEmbedPending_many": "{{count, number}} hafıza hesaplanacak",
+    "memoryCount_many": "{{count, number}} hafıza",
+    "memoryUpkeep": "Bakım",
+    "memoryMerge": "Çoğunlukları birleştir",
+    "memoryMergeHelp": "Aynı şeyi söyleyen her grup grubunun en önemli olanını tutar, diğerlerini ona bağlar ve onları arşivler. Hiçbir şey silinmez.",
+    "memoryMergeNone": "Hiçbir şey iki kez aynı şeyi söylemez.",
+    "memoryMergeFound_one": "{{count, number}} çoğunluk",
+    "memoryMergeFound_many": "{{count, number}} çoğunluk",
+    "memoryMergeFound_other": "{{count, number}} çoğunluk",
+    "memoryStale": "Uyuyan olanları arşivle",
+    "memoryStaleHelp": "Altı ay boyunca hiçbir şey yararlanmadığını ayırır. İğnelenen hafızalara asla dokunulmaz.",
+    "memoryStaleNone": "Hiçbir şey yeterince uzun uyumadı.",
+    "memoryStaleFound_one": "{{count, number}} uyuyan hafıza",
+    "memoryStaleFound_many": "{{count, number}} uyuyan hafıza",
+    "memoryStaleFound_other": "{{count, number}} uyuyan hafıza",
+    "memoryCompact": "Dosyayı sıkıştır",
+    "memoryCompactHelp": "Dosyayı ayakta duran hafıza başına bir satırla yeniden yazar. Burası unutulan şeyi sonunda disk bırakır.",
+    "memoryRelations": "Bu hafızanın dokunduğu şeyler",
+    "memoryPromote": "Her yerde tut",
+    "memoryPromoteHint": "Bu hafızayı makinenin kendisine kopyalar, böylece tüm projelerinizde hizmet eder. Projenin öğrendiği orada da kalır.",
+    "gameControls": {
+      "title": "Oyunun denetimleri",
+      "help": "Burası ayarlanmaz. Bir oyun projenin bir kontrol haritasını okur, Gezgin’de “Oyun kontrolleri” altında dosyalanmış ve “Yeni kontrol haritası” düğmesi bir tane oluşturur. Bu sayfa sadece stüdyo arayüzünü ve bu bilgisayara takılan şeyleri kapsar."
+    }
+  }
+}

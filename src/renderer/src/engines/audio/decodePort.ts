@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import DecodeWorker from './decode.worker?worker'
 import { createWorkerSession } from '../core/workerSession'
 import type { AudioData } from './audioData'
@@ -11,7 +12,7 @@ export async function decodeBytesOffThread(bytes: ArrayBuffer): Promise<AudioDat
   const id = session.nextId()
   const answer = await session.send({ kind: 'decode', id, bytes }, [bytes])
   if (answer.kind !== 'decoded')
-    throw new Error(answer.kind === 'failed' ? answer.message : 'decode failed')
+    throw answer.kind === 'failed' ? new Error(answer.message) : localizedError('audioDecodeFailed')
   return { sampleRate: answer.sampleRate, channels: answer.channels }
 }
 
@@ -22,6 +23,6 @@ export async function peaksFromBytesOffThread(
   const id = session.nextId()
   const answer = await session.send({ kind: 'peaks', id, bytes, perSecond }, [bytes])
   if (answer.kind !== 'peaked')
-    throw new Error(answer.kind === 'failed' ? answer.message : 'peaks failed')
+    throw answer.kind === 'failed' ? new Error(answer.message) : localizedError('audioPeaksFailed')
   return answer.peaks
 }

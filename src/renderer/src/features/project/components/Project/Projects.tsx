@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { mdiFolderOpenOutline } from '@mdi/js'
 import { useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -50,7 +51,11 @@ export function Projects() {
     const renamed = await useProject.getState().rename(project.path, name)
     if (renamed.ok) return
 
-    reportFailure('project.rename', project.path, new Error(renamed.why ?? 'rename refused'))
+    reportFailure(
+      'project.rename',
+      project.path,
+      renamed.why ? new Error(renamed.why) : localizedError('renameRefused'),
+    )
   }
 
   const commitRename = useCallback((project: RecentProject, name: string): void => {

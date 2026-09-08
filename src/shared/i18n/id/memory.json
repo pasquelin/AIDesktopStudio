@@ -1,0 +1,20 @@
+{
+  "memoryWorth": {
+    "scriptWrite": "Skrip {{path}} ditulis oleh asisten",
+    "prefabDefine": "« {{name}} » adalah prefab dari proyek ini",
+    "styleSave": "« {{name}} » adalah cara membaca material, disimpan untuk proyek ini",
+    "postSave": "« {{name}} » adalah preset pemrosesan pasca-produksi yang disimpan untuk proyek ini",
+    "animationAdd": "Animasi « {{clipName}} » ditambahkan ke kerangka",
+    "gitCommit": "Diputuskan dan dicatat di git: {{message}}"
+  },
+  "memoryTypes": {
+    "decision": "Keputusan",
+    "architecture": "Arsitektur",
+    "feature": "Fitur",
+    "entity": "Entitas",
+    "script": "Skrip",
+    "problem": "Masalah",
+    "intent": "Niat",
+    "convention": "Konvensi"
+  }
+}

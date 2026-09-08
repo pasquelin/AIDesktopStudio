@@ -1,0 +1,320 @@
+{
+  "game": {
+    "components": {
+      "Aircraft": {
+        "title": "Pesawat",
+        "description": "Membuat objek terbang: gaya angkat, hambatan, dan dorongan dihitung dari geraknya sendiri, serta bidang kendali yang hanya menjawab bila ada aliran udara di atasnya."
+      },
+      "Animator": {
+        "title": "Animator",
+        "description": "Memainkan klip yang sesuai dengan apa yang sedang dilakukan tubuh — berjalan, melompat, berdiri — dari graf animasi milik proyek."
+      },
+      "CharacterController": {
+        "description": "Menjadikan objek sebagai yang dikendalikan: ia berjalan, ia melompat, ia menaiki anak tangga.",
+        "title": "Karakter"
+      },
+      "Collider": {
+        "description": "Memberi objek sebuah volume yang tidak dapat ditembus objek lain.",
+        "title": "Volume"
+      },
+      "Follow": {
+        "description": "Mengikuti entitas lain dan berhenti pada jarak yang diminta — pendamping, kamera bahu, musuh.",
+        "title": "Pengejaran"
+      },
+      "Health": {
+        "description": "Poin nyawa, yang menurun saat entitas terluka dan membuatnya mati di angka nol.",
+        "title": "Nyawa"
+      },
+      "LookAt": {
+        "description": "Mengarahkan entitas ke entitas lain, seketika atau dengan kecepatan putar terbatas — menara meriam, papan penunjuk, kepala.",
+        "title": "Pandangan"
+      },
+      "Movement": {
+        "description": "Membuat entitas bergerak sendiri di sepanjang satu sumbu — platform, lift, jebakan.",
+        "title": "Gerak"
+      },
+      "Orbit": {
+        "description": "Memutar entitas mengelilingi entitas lain, atau mengelilingi titik asal — bulan, satelit, kamera yang berputar.",
+        "title": "Orbit"
+      },
+      "Path": {
+        "description": "Menjalankan entitas menyusuri rangkaian titik dengan laju tetap — kereta, bidikan dolly, platform di atas rel.",
+        "title": "Rel"
+      },
+      "Patrol": {
+        "description": "Menjalankan entitas dari satu titik bernama ke titik berikutnya, dengan waktu tunggu di setiap titik — penjaga, lift.",
+        "title": "Patroli"
+      },
+      "RigidBody": {
+        "description": "Menyerahkan objek kepada simulasi: ia jatuh, ia meluncur, ia terdorong.",
+        "title": "Fisika"
+      },
+      "Script": {
+        "title": "Skrip",
+        "description": "Menyerahkan objek kepada kode: apa yang ditulis pembuatnya dijalankan pada setiap langkah."
+      },
+      "Player": {
+        "title": "Pemain",
+        "description": "Menunjuk siapa yang dimainkan. Satu per adegan: yang bergantung di bawahnya adalah tubuh dan matanya, dan itulah yang diikuti kamera."
+      },
+      "Spin": {
+        "description": "Memutar entitas pada satu sumbu, tanpa henti — benda yang dipungut, baling-baling, mekanisme.",
+        "title": "Putaran"
+      },
+      "SpringArm": {
+        "title": "Lengan pegas",
+        "description": "Menggantungkan kamera di belakang sebuah elemen pada jarak yang Anda atur: kamera mendekat saat ada dinding di antaranya, dan mengikuti dengan tundaan alih-alih menempel."
+      },
+      "Trigger": {
+        "description": "Tidak menghalangi apa pun, dan memberi tahu saat ada yang masuk ke volumenya atau keluar darinya.",
+        "title": "Sensor"
+      },
+      "Vehicle": {
+        "title": "Kendaraan",
+        "description": "Menempatkan objek pada roda bersuspensi, berpenggerak, dan dapat dikemudikan: ia menggelinding, mengerem, dan berbelok. Rodanya adalah objek anak, yang dinamai di sini."
+      }
+    },
+    "fields": {
+      "acceleration": "Percepatan",
+      "agility": "Kelincahan",
+      "airControl": "Kendali di udara",
+      "axis": "Sumbu",
+      "body": "Badan penggerak",
+      "bodyTurnSpeed": "Kecepatan putar badan (0: tidak ada)",
+      "camera": "Kamera",
+      "collision": "Hindari dinding",
+      "collisionInLag": "Masuk tabrakan",
+      "collisionOutLag": "Keluar tabrakan",
+      "coyoteTime": "Tenggang lompat",
+      "current": "Saat ini",
+      "deceleration": "Perlambatan",
+      "distance": "Jarak",
+      "drag": "Hambatan",
+      "drive": "Penggerak",
+      "fidelity": "Ketelitian",
+      "followVertical": "Ikuti tinggi subjek",
+      "friction": "Gesekan",
+      "from": "File sumber",
+      "graph": "Graf animasi",
+      "gravityScale": "Gravitasi",
+      "height": "Tinggi",
+      "hysteresis": "Histeresis",
+      "jumpBuffer": "Antisipasi lompat",
+      "jumpSpeed": "Lompat",
+      "kind": "Simulasi",
+      "length": "Panjang",
+      "lockRotation": "Kunci rotasi",
+      "lookAt": "Pembingkaian",
+      "mass": "Massa",
+      "max": "Maksimum",
+      "maxSteerAngle": "Sudut kemudi maksimum",
+      "maxThrust": "Dorongan maksimum",
+      "maxTorque": "Torsi mesin",
+      "mode": "Perjalanan",
+      "moveSpeed": "Kecepatan jalan (0: milik adegan)",
+      "orientation": "Orientasi",
+      "orientToTangent": "Ikuti tangen",
+      "pitchMax": "Angguk maksimum",
+      "pitchMin": "Angguk minimum",
+      "positionLag": "Tundaan posisi",
+      "possesses": "Elemen yang dikuasai",
+      "probeRadius": "Radius sonda",
+      "radius": "Radius",
+      "restitution": "Pantulan",
+      "rotationLag": "Tundaan rotasi",
+      "runSpeed": "Kecepatan lari (0: tanpa lari)",
+      "safetyMargin": "Margin keamanan",
+      "script": "File",
+      "shoulder": "Pergeseran bahu",
+      "slopeLimit": "Kemiringan",
+      "snapDistance": "Cengkeraman",
+      "speed": "Kecepatan",
+      "stallAngle": "Sudut kritis",
+      "stepHeight": "Anak tangga",
+      "stopDistance": "Jarak berhenti",
+      "subject": "Subjek",
+      "suspensionLength": "Ayunan suspensi",
+      "target": "Target",
+      "turnSpeed": "Kecepatan putar",
+      "waitSeconds": "Waktu tunggu",
+      "waypoints": "Titik",
+      "wheelRadius": "Radius roda",
+      "wheels": "Roda",
+      "wheelWidth": "Lebar roda",
+      "wingArea": "Luas sayap"
+    },
+    "export": {
+      "title": "Optimalkan game",
+      "action": "Ekspor",
+      "safeTitle": "Optimasi runtime SAFE",
+      "safeRuntime": "Optimalkan representasi runtime",
+      "instancing": "Jadikan instans objek yang berulang",
+      "batching": "Gabungkan geometri statis yang kompatibel",
+      "deduplication": "Deduplikasi sumber daya",
+      "geometryBuffers": "Optimalkan buffer geometri",
+      "losslessCompression": "Kompres tanpa kehilangan visual",
+      "removeUnused": "Hapus sumber daya yang tidak terpakai",
+      "currentSceneMeasured": "Terukur · adegan saat ini",
+      "projectEstimated": "Perkiraan · game lengkap · {{count, number}} adegan",
+      "currentSceneLossyEstimate": "Adegan saat ini dengan kehilangan visual · {{triangles}} segitiga · {{geometry}} geometri · {{images}} gambar",
+      "triangleResult": "Segitiga terlihat {{before}} → {{after}}",
+      "geometryResult": "Geometri {{before}} → {{after}}",
+      "imageResult": "Gambar {{before}} → {{after}}",
+      "visualTitle": "Lanjutan · perubahan visual",
+      "generateLods": "Buat tingkat jarak",
+      "geometryLabel": "Penyederhanaan geometri",
+      "compressionLabel": "Kompresi gambar",
+      "reductionLabel": "Resolusi gambar",
+      "quality": {
+        "off": "Nonaktif",
+        "conservative": "Konservatif",
+        "balanced": "Seimbang",
+        "aggressive": "Agresif"
+      },
+      "reduction": {
+        "off": "Asli",
+        "half": "Setengah",
+        "quarter": "Seperempat"
+      },
+      "visualChangesNone": "Perubahan visual: TIDAK ADA",
+      "visualChangesPossible": "Perubahan visual: MUNGKIN",
+      "failed": "Game tidak dapat diekspor."
+    },
+    "inputMap": {
+      "actionId": "Aksi",
+      "actionKind": "Nilai",
+      "addAction": "Tambah aksi",
+      "addBinding": "Tambah ikatan",
+      "binding": "Ikatan {{device}}",
+      "applyPresetHint": "Mengganti peta ini dengan titik awal yang dipilih",
+      "axis": "Sumbu",
+      "context": "Konteks",
+      "create": "Peta masukan baru",
+      "createHint": "Membuat peta masukan dari titik awal standar",
+      "defaultActive": "Aktif saat mulai",
+      "deadZone": "Zona mati",
+      "deviceLabel": "Perangkat",
+      "duplicateId": "Beberapa peta masukan memakai pengidentifikasi “{{id}}”. Beri setiap konteks pengidentifikasi yang unik.",
+      "device": {
+        "gamepad": "Gamepad",
+        "keyboard": "Keyboard",
+        "mouse": "Mouse"
+      },
+      "id": "Pengidentifikasi",
+      "invalid": "JSON ini tidak menggambarkan peta masukan yang sah.",
+      "invert": "Balikkan",
+      "jsonLabel": "JSON peta masukan",
+      "kind": {
+        "axis1": "Satu sumbu",
+        "axis2": "Dua sumbu",
+        "button": "Tombol"
+      },
+      "loadFailed": "Peta masukan ini tidak dapat dibaca.",
+      "loading": "Memuat peta masukan…",
+      "mode": {
+        "expert": "Ahli",
+        "json": "JSON",
+        "simple": "Sederhana"
+      },
+      "modeHint": "Mengubah cara peta masukan yang sama disunting",
+      "preset": {
+        "character": "Karakter",
+        "flight": "Penerbangan",
+        "menu": "Menu",
+        "studio": "Studio",
+        "vehicle": "Kendaraan"
+      },
+      "presets": "Titik awal",
+      "priority": "Prioritas",
+      "removeAction": "Hapus aksi",
+      "removeBinding": "Hapus ikatan",
+      "save": "Simpan",
+      "scale": "Skala",
+      "unnamedAction": "Aksi tanpa nama",
+      "capture": "Tekan",
+      "capturing": "Tekan…",
+      "captureHint": "Mengikat kendali ini ke tombol berikutnya atau kendali gamepad berikutnya yang ditekan. Escape membatalkan.",
+      "help": {
+        "id": "Nama konteks — yang didorong sebuah skrip, dan yang dilengkapi oleh cadangan bawaan. Nama itu berasal dari nama file; dua file yang membawa satu pengidentifikasi akan menjadi satu konteks saja.",
+        "priority": "Siapa yang menang ketika dua konteks aktif menyatakan aksi yang sama. Angka yang LEBIH BESAR menulis terakhir dan mengambilnya. Konteks bawaan karakter, kendaraan, dan penerbangan berada di 0, 10, dan 10.",
+        "defaultActive": "Apakah peta ini bertugas sejak awal sebuah game. Jika tidak, sebuah skrip harus mendorongnya — konteks menu membuka dan menutup dengan cara itu.",
+        "actionId": "Nama yang dibaca sebuah skrip, dan yang dibaca pengendali bawaan bersamanya: `move`, `jump`, `steer`. Nama itulah yang penting, bukan tombolnya.",
+        "actionKind": "Apa yang dijawab aksi: tombol menjawab ya atau tidak, satu sumbu menjawab angka antara −1 dan 1, dua sumbu menjawab sepasang nilai — apa yang dikatakan sebuah stik.",
+        "device": "Dari mana kendali itu datang. Satu aksi dapat membawa beberapa sekaligus: begitulah sebuah game menjawab keyboard DAN gamepad tanpa tahu mana yang berbicara.",
+        "axis": "Pada separuh yang mana tombol ini mendorong. Aksi dua sumbu terdiri atas empat tombol, dua untuk setiap sumbu.",
+        "scale": "Seberapa jauh ikatan ini mendorong, dan ke arah mana. −1 untuk separuh yang menuju kiri atau mundur, 1 untuk yang lain.",
+        "deadZone": "Di bawah nilai ini stik dianggap diam. Stik yang aus akan melenceng: tanpa zona mati, karakter berjalan sendiri.",
+        "invert": "Membalikkan arah kendali ini. Yang diharapkan sebagian pilot untuk angguk, dan tidak seorang pun untuk hal lain."
+      }
+    },
+    "controlsMenu": {
+      "add": "Tambah ikatan",
+      "capture": "Tekan sebuah tombol atau tombol pada pengendali",
+      "change": "Ubah",
+      "close": "Tutup",
+      "gamepad": "Gamepad",
+      "keyboard": "Keyboard",
+      "mouse": "Mouse",
+      "reset": "Atur ulang semua",
+      "title": "Kontrol"
+    },
+    "play": {
+      "faults_many": "{{count, number}} kesalahan",
+      "faults_one": "{{count, number}} kesalahan",
+      "faults_other": "{{count, number}} kesalahan",
+      "objects_many": "{{count, number}} objek",
+      "objects_one": "{{count, number}} objek",
+      "objects_other": "{{count, number}} objek",
+      "pause": "Jeda",
+      "pauseHint": "Membekukan game pada keadaannya saat ini",
+      "readout": "{{fps}} fps · langkah {{tick}}",
+      "start": "Mainkan",
+      "startHint": "Memainkan adegan sebagai game, tanpa menyentuh dokumen",
+      "stop": "Hentikan",
+      "stopHint": "Membuang game dan mengembalikan adegan seperti semula",
+      "openFault": "Membuka skrip pada baris kesalahan"
+    },
+    "section": {
+      "title": "Komponen",
+      "add": "Tambah komponen",
+      "addHint": "Memberi objek ini sesuatu untuk dilakukan selama game berjalan",
+      "remove": "Lepaskan",
+      "removeHint": "Melepaskan komponen ini dari objek",
+      "empty": "Objek ini tidak melakukan apa pun selama game berjalan.",
+      "emptyHint": "Komponen menyatakan apa yang DILAKUKAN objek, sedangkan tipenya menyatakan apa yang digambarnya."
+    },
+    "values": {
+      "all": "Semua roda",
+      "auto": "Otomatis",
+      "box": "Kotak",
+      "convexes": "Konveks",
+      "dynamic": "Dinamis",
+      "fixed": "Tetap",
+      "front": "Roda depan",
+      "hull": "Selubung",
+      "kinematic": "Dikendalikan",
+      "loop": "Loop",
+      "once": "Sekali",
+      "pingPong": "Bolak-balik",
+      "pivot": "Bahu",
+      "pointer": "Arah pandang",
+      "rear": "Roda belakang",
+      "subject": "Subjek",
+      "trimesh": "Segitiga",
+      "unknown": "Nilai tidak dikenal",
+      "unnamedNode": "Tidak ada",
+      "x": "X",
+      "y": "Y",
+      "z": "Z"
+    },
+    "window": {
+      "debug": "Debug",
+      "debugHint": "Apa yang dikatakan game tentang dirinya sendiri: objek, bingkai per detik, langkah, kesalahan",
+      "framePerformance": "CPU {{cpu}} ms · render {{render}} ms",
+      "renderPerformance": "{{calls, number}} panggilan gambar · {{triangles, number}} segitiga",
+      "noFaults": "Tidak ada kesalahan",
+      "title": "Mode main",
+      "waiting": "Menunggu studio…"
+    }
+  }
+}

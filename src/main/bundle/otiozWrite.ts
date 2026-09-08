@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { orElse } from '@shared/promises'
 import { createReadStream, createWriteStream } from 'node:fs'
 import { rm, stat } from 'node:fs/promises'
@@ -37,7 +38,7 @@ export type OtiozContents = {
  */
 export class MissingMediumError extends Error {
   constructor(readonly entry: string) {
-    super(`this montage points at a file that is not there: ${entry}`)
+    super(localizedError('bundleMediumMissing', { entry }).message)
   }
 }
 

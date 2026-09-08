@@ -24,6 +24,6 @@ describe('AssistantConversationMissionEvent', () => {
     expect(screen.getByText(/Génération|Generation/)).toBeInTheDocument()
     expect(screen.getByText('Generate the boat')).toBeInTheDocument()
     expect(screen.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '50')
-    expect(screen.getByRole('listitem')).toHaveClass('pl-4')
+    expect(screen.getByRole('listitem')).toHaveClass('ps-4')
   })
 })

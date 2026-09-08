@@ -1,0 +1,76 @@
+{
+  "gui": {
+    "stage": "Trang giao diện",
+    "tools": "Công cụ giao diện",
+    "tree": "Phần tử giao diện",
+    "noDocument": "Mở một giao diện để xem nó chứa gì.",
+    "visible": "Hiện",
+    "locked": "Đã khóa — con trỏ không bắt được"
+  },
+  "guiTools": {
+    "add": "Thêm",
+    "addHint": "Đặt một phần tử vào bên trong phần đang chọn",
+    "duplicate": "Nhân bản",
+    "duplicateHint": "Chép phần đang chọn ngay bên cạnh",
+    "group": "Nhóm",
+    "groupHint": "Xếp phần đang chọn vào một bảng",
+    "delete": "Xóa",
+    "deleteHint": "Bỏ phần đang chọn khỏi giao diện",
+    "lock": "Khóa",
+    "lockHint": "Đưa phần đang chọn ra ngoài tầm con trỏ",
+    "zoomIn": "Phóng to",
+    "zoomInHint": "Đưa trang lại gần",
+    "zoomOut": "Thu nhỏ",
+    "zoomOutHint": "Đưa trang ra xa",
+    "fit": "Vừa khung",
+    "fitHint": "Đưa trọn trang vào khung của bảng",
+    "actual": "Kích thước thật",
+    "actualHint": "Một pixel của trang cho một pixel của màn hình",
+    "resolution": "Độ phân giải",
+    "resolutionHint": "Khung vẽ mà giao diện này được soạn cho",
+    "types": {
+      "panel": "Bảng",
+      "stack": "Chồng",
+      "grid": "Lưới",
+      "scroll": "Vùng cuộn",
+      "spacer": "Khoảng đệm",
+      "text": "Văn bản",
+      "image": "Hình ảnh",
+      "button": "Nút",
+      "progress": "Thanh tiến độ",
+      "slider": "Thanh trượt",
+      "input": "Ô nhập",
+      "checkbox": "Hộp kiểm",
+      "screen": "Màn hình giao diện"
+    },
+    "typeHints": {
+      "panel": "Một khung chứa các khung khác",
+      "stack": "Xếp các con của nó thành hàng hoặc cột",
+      "grid": "Xếp các con của nó thành các cột đều nhau",
+      "scroll": "Một khung có nội dung cuộn được",
+      "spacer": "Đẩy các phần tử bên cạnh ra xa trong một chồng",
+      "text": "Chữ trên màn hình",
+      "image": "Một hình ảnh của dự án",
+      "button": "Thứ để bấm, có hoặc không có biểu tượng",
+      "progress": "Một thanh được lấp đầy tới một giá trị",
+      "slider": "Một giá trị kéo được",
+      "input": "Văn bản để gõ",
+      "checkbox": "Một ô để đánh dấu",
+      "screen": "Gốc của giao diện"
+    },
+    "resolutions": {
+      "desktopHd": "1920 × 1080",
+      "desktop720": "1280 × 720",
+      "phonePortrait": "Điện thoại, dọc",
+      "phoneLandscape": "Điện thoại, ngang",
+      "free": "Tự do"
+    },
+    "resolutionHints": {
+      "desktopHd": "Máy tính để bàn, mười sáu phần chín",
+      "desktop720": "Máy tính để bàn, mười sáu phần chín, một nửa số pixel",
+      "phonePortrait": "390 × 844",
+      "phoneLandscape": "844 × 390",
+      "free": "Kích thước mà tài liệu đã có"
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "code": {
+    "unavailable": "Düzenleyici yüklenemedi.",
+    "noProblems": "Sorun yok",
+    "openProblem": "Bu satırda aç",
+    "at": "{{line, number}}. satır, {{column, number}}. sütun"
+  }
+}

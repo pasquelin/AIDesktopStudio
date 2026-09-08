@@ -1,0 +1,72 @@
+{
+  "welcome": {
+    "skip": "Bỏ qua",
+    "skipHint": "Đóng phần giới thiệu này và mở studio với cài đặt hiện tại",
+    "back": "Quay lại",
+    "backHint": "Trở về màn hình trước",
+    "next": "Tiếp tục",
+    "nextHint": "Đi tới màn hình sau",
+    "done": "Bắt đầu",
+    "doneHint": "Đóng phần giới thiệu này và mở studio",
+    "steps": "Bước {{current, number}} trên {{total, number}}",
+    "goToStep": "Đi tới bước {{current, number}} — {{title}}",
+    "language": {
+      "title": "Chọn ngôn ngữ của bạn",
+      "body": "Mọi trình đơn, nút và thông báo đều dùng ngôn ngữ này. Bạn có thể đổi sau trong Cài đặt.",
+      "hint": "Hiển thị ứng dụng bằng {{name}}"
+    },
+    "look": {
+      "title": "Diện mạo",
+      "body": "Tối là chủ đề riêng của studio. Đổi nó nếu bạn làm việc dưới ánh sáng ban ngày.",
+      "themeHint": "Chuyển ứng dụng sang chủ đề {{name}}"
+    },
+    "craft": {
+      "title": "Cách bạn điều hướng 3D",
+      "body": "Khung nhìn 3D mô phỏng các thao tác của phần mềm bạn đã quen. Bạn có thể đổi sau trong cài đặt.",
+      "navigationHint": "Dùng thao tác khung nhìn của {{name}} trong khung nhìn 3D"
+    },
+    "ai": {
+      "title": "AI, qua mọi cánh cửa",
+      "body": "Studio không phụ thuộc vào AI nào cụ thể: chúng cắm vào, thay ra, và thậm chí có thể điều khiển nó.",
+      "local": {
+        "title": "Trên máy này",
+        "body": "Studio tải các trọng số về và chạy chúng ở đây. Không gì ra khỏi máy, không gì bị tính phí."
+      },
+      "ollama": {
+        "title": "Với Ollama",
+        "body": "Đã cài sẵn? Studio đọc các mô hình của bạn và dùng chúng nguyên như vậy."
+      },
+      "cloud": {
+        "title": "Ở một nhà cung cấp",
+        "body": "Một khóa, và việc tạo sinh đi ra ngoài. Có thể thay thế cho nhau: không cái nào trong số đó là sản phẩm."
+      },
+      "mcp": {
+        "title": "Và theo chiều ngược lại",
+        "body": "Studio công bố các công cụ của mình: Claude Code, hay bất kỳ tác nhân MCP nào, mở một dự án và tạo sinh thay bạn."
+      }
+    },
+    "models": {
+      "title": "Mô hình, theo từng phần",
+      "body": "Studio tải các trọng số về, rồi chạy chúng ở đây. Một số mô hình đòi quyền truy cập từ nhà phát hành. Kích thước cho biết dung lượng đĩa cần có.",
+      "sectionHint": "Hiện các mô hình của: {{name}}",
+      "more": "Danh mục đầy đủ nằm trong cài đặt.",
+      "motionOptional": "Tạo sinh chuyển động là tùy chọn. Cài một mô hình ngay, hoặc tiếp tục và tìm lại nó trong Cài đặt → AI → 3D. Việc retarget hoạt ảnh chạy được mà không cần AI."
+    },
+    "account": {
+      "title": "Một đám mây, nếu bạn có",
+      "body": "Studio chạy được mà không cần tài khoản, trên chính các tệp của bạn. Một khóa mở ra việc tạo sinh và thư viện dùng chung.",
+      "stored": "Các dịch vụ này đã được lưu trên máy này. Thêm một dịch vụ nữa, hoặc đi tiếp.",
+      "addService": "Thêm một dịch vụ",
+      "addServiceHint": "Mở biểu mẫu để lưu thêm một khóa",
+      "adding": "Dán khóa của dịch vụ cần lưu.",
+      "backToList": "Quay lại danh sách",
+      "backToListHint": "Bỏ những gì đang gõ ở đây và hiện lại các dịch vụ đã lưu"
+    },
+    "project": {
+      "title": "Dự án đầu tiên của bạn",
+      "body": "Một dự án là một thư mục trên đĩa của bạn. Tạo một dự án, mở một dự án, hoặc bỏ qua và bắt đầu từ Trang chủ.",
+      "createHint": "Chọn một thư mục rỗng và biến nó thành dự án",
+      "openHint": "Mở một thư mục dự án đã có trên đĩa này"
+    }
+  }
+}

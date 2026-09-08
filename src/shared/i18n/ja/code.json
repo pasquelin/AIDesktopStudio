@@ -1,0 +1,8 @@
+{
+  "code": {
+    "unavailable": "エディターを読み込めませんでした。",
+    "noProblems": "問題なし",
+    "openProblem": "この行で開く",
+    "at": "{{line, number}}行、{{column, number}}列"
+  }
+}

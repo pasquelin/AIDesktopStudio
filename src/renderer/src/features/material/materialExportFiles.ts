@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import type { TaskWatch } from '@shared/domain/taskProgress'
 import { MATERIAL_TARGET_OF } from '@shared/domain/exportRegistry'
 import type { MaterialExportTarget } from '@shared/domain/materialExport'
@@ -52,7 +53,7 @@ export async function materialExportFiles(
 
   // A material with no channels resolves to no file, and a destination asked for nothing is a
   // question nobody can answer — whoever asked it.
-  if (files.length === 0) throw new Error('this material has no channel to export')
+  if (files.length === 0) throw localizedError('materialExportEmpty')
 
   return { folder: name, target: MATERIAL_TARGET_OF[target], files }
 }

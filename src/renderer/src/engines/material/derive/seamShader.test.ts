@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { Texture } from 'three'
 import { describe, expect, it } from 'vitest'
 import { createSeamPass, SEAM_SCALE } from './seamShader'
@@ -14,7 +15,9 @@ const shader = (): string => createSeamPass(source, { width: 8, height: 8 }).mat
 describe('the seam shader', () => {
   /** A zero divides into an infinite texel step, and every tap lands on the same pixel. */
   it('refuses a source with no pixels', () => {
-    expect(() => createSeamPass(source, { width: 8, height: 0 })).toThrow(/no pixels/)
+    expect(() => createSeamPass(source, { width: 8, height: 0 })).toThrow(
+      localizedError('seamSourceEmpty').message,
+    )
   })
 
   it('steps by one texel of the source it was given, on each axis separately', () => {

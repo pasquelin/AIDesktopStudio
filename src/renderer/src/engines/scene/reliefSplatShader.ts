@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import type {
   IUniform,
   MeshStandardMaterial,
@@ -100,7 +101,7 @@ function bindUniforms(
   for (let index = 0; index < GROUND_MATERIAL_CHANNELS.length; index += 1) {
     const albedo = uniforms.albedos[index]
     const normal = uniforms.normals[index]
-    if (!albedo || !normal) throw new Error('relief splat uniforms need four material layers')
+    if (!albedo || !normal) throw localizedError('reliefLayersMissing')
     shader.uniforms[`scGroundAlbedo${index}`] = albedo
     shader.uniforms[`scGroundNormal${index}`] = normal
   }

@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { Texture } from 'three'
 import { describe, expect, it } from 'vitest'
 import { PBR_CHANNELS, type PbrChannel } from '@shared/domain/material'
@@ -21,13 +22,15 @@ describe('the derivation shaders', () => {
     for (const channel of PBR_CHANNELS) {
       const build = () => shaderFor(channel)
       if (sourceFor(channel)) expect(build).not.toThrow()
-      else expect(build).toThrow(/no shader derives/)
+      else expect(build).toThrow(localizedError('channelShaderMissing', { channel }).message)
     }
   })
 
   /** A zero divides into an infinite texel step, and every tap lands on the same pixel. */
   it('refuses a source with no pixels', () => {
-    expect(() => createDerivePass('normal', source, { width: 0, height: 8 })).toThrow(/no pixels/)
+    expect(() => createDerivePass('normal', source, { width: 0, height: 8 })).toThrow(
+      localizedError('channelSourceEmpty', { channel: 'normal' }).message,
+    )
   })
 
   it('steps by one texel of the source it was given, on each axis separately', () => {

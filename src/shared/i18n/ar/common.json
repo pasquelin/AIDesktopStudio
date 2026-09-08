@@ -1,0 +1,130 @@
+{
+  "a11y": {
+    "namedValue": "{{value}} — {{name}}"
+  },
+  "actions": {
+    "generate": "توليد",
+    "close": "إغلاق",
+    "removeTool": "إزالة الأداة",
+    "resizeZone": "تغيير حجم منطقة اللوحات",
+    "resizeSplit": "تغيير حجم اللوحتين",
+    "resizeBand": "تغيير حجم اللوحات السفلية",
+    "retry": "إعادة المحاولة",
+    "retryHint": "يعيد رسم هذه المنطقة، دون إعادة تشغيل الاستوديو",
+    "generateHint": "يبدأ التوليد بالإعدادات أعلاه؛ ويمكن متابعته في شريط التوليدات",
+    "cancel": "إلغاء"
+  },
+  "jobs": {
+    "none": "لا توجد عملية توليد جارية.",
+    "running_one": "{{count, number}} عملية توليد",
+    "running_many": "{{count, number}} عملية توليد",
+    "running_other": "{{count, number}} من عمليات التوليد",
+    "running_zero": "{{count, number}} عمليات توليد",
+    "running_two": "{{count, number}} عمليتا توليد",
+    "running_few": "{{count, number}} عمليات توليد",
+    "failed_one": "{{count, number}} إخفاق",
+    "failed_many": "{{count, number}} إخفاقًا",
+    "failed_other": "{{count, number}} من الإخفاقات",
+    "failed_zero": "{{count, number}} إخفاقات",
+    "failed_two": "{{count, number}} إخفاقان",
+    "failed_few": "{{count, number}} إخفاقات",
+    "open": "إظهار التوليدات",
+    "openHint": "يفتح قائمة التوليدات، الجارية والمنتهية على السواء",
+    "status": {
+      "queued": "في قائمة الانتظار",
+      "running": "جارية",
+      "succeeded": "منتهية",
+      "failed": "أخفقت",
+      "cancelled": "ملغاة"
+    },
+    "cancel": "إلغاء العملية",
+    "cancelRefused": "لا توقف هذه الخدمة عملية توليد بدأت بالفعل: تمضي حتى نهايتها وتحتسب عليك تكلفتها."
+  },
+  "tasks": {
+    "running_one": "{{count, number}} مهمة",
+    "running_many": "{{count, number}} مهمة",
+    "running_other": "{{count, number}} من المهام",
+    "running_zero": "{{count, number}} مهام",
+    "running_two": "{{count, number}} مهمتان",
+    "running_few": "{{count, number}} مهام",
+    "open": "إظهار المهام",
+    "openHint": "يفتح قائمة المهام الجارية",
+    "cancel": "إيقاف هذه المهمة",
+    "phases": {
+      "prepare": "تحضير النموذج",
+      "load": "تحميل المحرّك",
+      "analyse": "تحليل الشخصية",
+      "skeleton": "توليد الهيكل العظمي",
+      "pose": "حساب وضعية الراحة",
+      "skinning": "حساب ربط الجلد",
+      "apply": "تطبيق الهيكل العظمي"
+    }
+  },
+  "dialog": {
+    "allMedia": "كل الوسائط",
+    "video": "فيديو",
+    "audio": "صوت",
+    "image": "صورة",
+    "mesh": "نموذج ثلاثي الأبعاد",
+    "animation": "حركة",
+    "bundle": "مونتاج ووسائطه",
+    "weights": "أوزان النموذج"
+  },
+  "sorts": {
+    "relevance": "الجودة: الأعلى أولًا",
+    "recent": "الإنشاء: الأحدث أولًا",
+    "oldest": "الإنشاء: الأقدم أولًا"
+  },
+  "exportFormats": {
+    "glb": "glTF ثنائي (.glb)",
+    "gltf": "glTF (.gltf)",
+    "usdz": "USDZ (.usdz)",
+    "obj": "Wavefront، الأشكال فقط (.obj)",
+    "ply": "Stanford، الأشكال فقط (.ply)",
+    "stl": "STL، المثلثات فقط (.stl)"
+  },
+  "errors": {
+    "missingCredentials": "لا توجد بيانات اعتماد محفوظة.",
+    "invalidCredentials": "مفتاح API أو السر غير صالح.",
+    "forbidden": "لا يملك مفتاح API هذا الأذونات المطلوبة.",
+    "planRestricted": "هذا النموذج غير مشمول في اشتراكك.",
+    "notFound": "المورد غير موجود.",
+    "rateLimited": "طلبات كثيرة جدًا. جارٍ إعادة المحاولة…",
+    "server": "خدمة التوليد غير متاحة مؤقتًا.",
+    "network": "انقطع الاتصال. تحقق من الشبكة ثم أعد المحاولة.",
+    "unexpected": "حدث خطأ غير متوقع.",
+    "invalidValue": "قيمة غير صالحة.",
+    "rejected": "أخفق التوليد.",
+    "incompleteModel": "ملفات النموذج غير كاملة. أعد تثبيت النموذج، ثم شغّله من جديد.",
+    "engineMissing": "محرّك الذكاء الاصطناعي المحلي غير مثبت على هذا الجهاز، فلا شيء هنا يستطيع تشغيل النموذج.",
+    "engineFailed": "لم يبدأ محرّك الذكاء الاصطناعي المحلي. راجع سجل النشاط، ثم أعد المحاولة.",
+    "storage": "تعذّر حفظ النتيجة على القرص.",
+    "panelCrashed": "واجهت هذه اللوحة خطأ.",
+    "windowCrashed": "واجه التطبيق خطأ."
+  },
+  "licences": {
+    "title": "التراخيص",
+    "intro": "يأتي AI Desktop Studio مع البرمجيات أدناه. ويحتفظ كل منها بترخيصه الخاص، وهو منسوخ هنا بالكامل.",
+    "sources": "المصادر المقابلة:",
+    "sourcesUnmodified": "المصادر المقابلة، دون تعديل:",
+    "bundled": "مرفق مع التطبيق",
+    "unfold": "ينشر النص الكامل لهذا الترخيص، هنا مباشرة",
+    "fold": "يطوي هذا النص — يبقى ترخيص واحد مفتوحًا في كل مرة"
+  },
+  "manual": {
+    "title": "دليل المستخدم",
+    "chapters": "الفصول",
+    "search": "البحث في الدليل",
+    "results": "النتائج",
+    "noResult": "لا يحتوي أي فصل على هذه الكلمات.",
+    "chapterHint": "يفتح هذا الفصل في اللوحة على اليمين",
+    "searchResultHint": "يفتح الفصل الذي تظهر فيه هذه الكلمات"
+  },
+  "units": {
+    "byte": "بايت",
+    "kibibyte": "كيبي بايت",
+    "mebibyte": "ميبي بايت",
+    "gibibyte": "جيبي بايت",
+    "creative": "{{units}} CU"
+  }
+}

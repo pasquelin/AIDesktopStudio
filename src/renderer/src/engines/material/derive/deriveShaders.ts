@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { ShaderMaterial, Vector2, type Texture } from 'three'
 import type { PbrChannel } from '@shared/domain/material'
 import { QUAD_VERTEX_SHADER } from '../../gpu/passes/quad'
@@ -146,8 +147,9 @@ export function createDerivePass(
   size: PictureSize,
 ): DerivePass {
   const fragmentShader = FRAGMENT_BY_CHANNEL[channel]
-  if (fragmentShader === null) throw new Error(`no shader derives ${channel}`)
-  if (size.width <= 0 || size.height <= 0) throw new Error(`${channel} source has no pixels`)
+  if (fragmentShader === null) throw localizedError('channelShaderMissing', { channel: channel })
+  if (size.width <= 0 || size.height <= 0)
+    throw localizedError('channelSourceEmpty', { channel: channel })
 
   const uniforms: DeriveUniforms = {
     uSource: { value: source },

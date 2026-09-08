@@ -1,0 +1,76 @@
+{
+  "gui": {
+    "stage": "Página da interface",
+    "tools": "Ferramentas da interface",
+    "tree": "Elementos da interface",
+    "noDocument": "Abra uma interface para ver o que ela contém.",
+    "visible": "Visível",
+    "locked": "Bloqueado — o ponteiro não o pega"
+  },
+  "guiTools": {
+    "add": "Adicionar",
+    "addHint": "Coloca um elemento dentro do que está selecionado",
+    "duplicate": "Duplicar",
+    "duplicateHint": "Copia a seleção logo ao lado dela",
+    "group": "Agrupar",
+    "groupHint": "Guarda a seleção em um painel",
+    "delete": "Excluir",
+    "deleteHint": "Retira a seleção da interface",
+    "lock": "Bloquear",
+    "lockHint": "Coloca a seleção fora do alcance do ponteiro",
+    "zoomIn": "Ampliar",
+    "zoomInHint": "Aproxima a página",
+    "zoomOut": "Reduzir",
+    "zoomOutHint": "Afasta a página",
+    "fit": "Ajustar",
+    "fitHint": "Enquadra a página inteira no painel",
+    "actual": "Tamanho real",
+    "actualHint": "Um pixel da página para um pixel da tela",
+    "resolution": "Resolução",
+    "resolutionHint": "A tela para a qual esta interface é composta",
+    "types": {
+      "panel": "Painel",
+      "stack": "Pilha",
+      "grid": "Grade",
+      "scroll": "Área rolável",
+      "spacer": "Espaçador",
+      "text": "Texto",
+      "image": "Imagem",
+      "button": "Botão",
+      "progress": "Barra de progresso",
+      "slider": "Controle deslizante",
+      "input": "Entrada",
+      "checkbox": "Caixa de seleção",
+      "screen": "Tela da interface"
+    },
+    "typeHints": {
+      "panel": "Um quadro que contém outros",
+      "stack": "Dispõe seus filhos em linha ou em coluna",
+      "grid": "Dispõe seus filhos em colunas regulares",
+      "scroll": "Um quadro cujo conteúdo rola",
+      "spacer": "Afasta seus vizinhos dentro de uma pilha",
+      "text": "Palavras na tela",
+      "image": "Uma imagem do projeto",
+      "button": "O que se aciona, com ou sem ícone",
+      "progress": "Uma barra preenchida até um valor",
+      "slider": "Um valor que se arrasta",
+      "input": "Texto a digitar",
+      "checkbox": "Uma caixa que se marca",
+      "screen": "A raiz da interface"
+    },
+    "resolutions": {
+      "desktopHd": "1920 × 1080",
+      "desktop720": "1280 × 720",
+      "phonePortrait": "Telefone, retrato",
+      "phoneLandscape": "Telefone, paisagem",
+      "free": "Livre"
+    },
+    "resolutionHints": {
+      "desktopHd": "Computador, dezesseis nonos",
+      "desktop720": "Computador, dezesseis nonos, metade dos pixels",
+      "phonePortrait": "390 × 844",
+      "phoneLandscape": "844 × 390",
+      "free": "O tamanho que o documento já carrega"
+    }
+  }
+}

@@ -1,0 +1,1756 @@
+{
+  "assistant": {
+    "actions": {
+      "inputMapsList": {
+        "title": "Eingabebelegungen auflisten",
+        "description": "Listet die Eingabebelegungen für Tastatur und Gamepad auf."
+      },
+      "inputMapRead": {
+        "title": "Eine Eingabebelegung lesen",
+        "description": "Liest eine Eingabebelegung für Tastatur und Gamepad anhand ihres Pfads."
+      },
+      "inputMapWrite": {
+        "title": "Eine Eingabebelegung schreiben",
+        "description": "Schreibt eine validierte Eingabebelegung."
+      },
+      "animationGraphsList": {
+        "title": "Animationsgraphen auflisten",
+        "description": "Listet die Animationsgraphen des Projekts auf."
+      },
+      "animationGraphRead": {
+        "title": "Einen Animationsgraphen lesen",
+        "description": "Liest einen Animationsgraphen anhand seines Pfads."
+      },
+      "animationGraphWrite": {
+        "title": "Einen Animationsgraphen schreiben",
+        "description": "Schreibt einen validierten Animationsgraphen."
+      },
+      "animationRetargetStatus": {
+        "title": "Das Retargeting einer Animation lesen",
+        "description": "Liest die gemessene Retargeting-Passung für eine Bewegung."
+      },
+      "commandRunStudioCommand": {
+        "title": "Einen Befehl ausführen",
+        "description": "Löst einen Befehl des Studios über seine Kennung aus, genau so, wie es ein Tastenkürzel oder ein Menüeintrag täte. Das Dokument, auf das er wirkt, muss im Vordergrund sein. Eine Kennung lautet [Bereich].[Verb], und studio.state antwortet mit dem Bereich dessen, was im Vordergrund ist: Eine Änderung an einem Dokument zurückzunehmen ist [Bereich].undo — scene.undo, canvas.undo, sequence.undo — und sie wiederherzustellen [Bereich].redo. EIN Aufruf nimmt EINE Geste zurück, ein zweiter also die davor: Lesen Sie das Dokument erneut, statt ihn zweimal zu senden. Keine andere Aktion macht eine Änderung rückgängig, da files.undoFileOperation nur die Projektdateien abdeckt."
+      },
+      "workspaceOpen": {
+        "title": "Einen Arbeitsbereich öffnen",
+        "description": "Wechselt in einen Arbeitsbereich und erstellt dort ein Dokument, wenn darum gebeten wird — jedes Mal ein NEUES, es ist also nicht der Weg zurück zu einem bereits geöffneten Dokument. Geben Sie immer einen Titel an: Ohne ihn öffnet sich ein Fenster zur Namensvergabe, und der Aufruf wartet auf eine Person."
+      },
+      "modelsSearch": {
+        "title": "Ein Modell suchen",
+        "description": "Sucht Generierungs-Engines nach Modellname oder Kennung, Familie und Operation. Die Anfrage ist optional und benennt die Engine, nicht den zu generierenden Inhalt; passt keine Engine dazu, bleibt die kompatible Familie verfügbar. Ändert nichts auf dem Bildschirm."
+      },
+      "modelsSelect": {
+        "title": "Ein Modell wählen",
+        "description": "Wählt ein Modell für eine Generierungsfamilie an. Das Formular des Generators wird daraufhin auf den eigenen Feldern dieses Modells neu aufgebaut."
+      },
+      "generatorPrepare": {
+        "title": "Eine Generierung vorbereiten",
+        "description": "Füllt das Formular des Generators mit einem Modell und seinen Parametern und zeigt es dann an. Nichts wird gesendet."
+      },
+      "generatorReadArmedGeneration": {
+        "title": "Lesen, was angewählt ist",
+        "description": "Antwortet mit Modell, Operation, Quellen und Ziel des Generators, so wie er steht. Sendet nichts und verbraucht nichts."
+      },
+      "generatorSubmit": {
+        "title": "Die vorbereitete Generierung starten",
+        "description": "Sendet das Formular, so wie es angezeigt wird. Verbraucht auf dem Konto, das dieses Modell bedient, und die Schätzung wird zuerst genannt, wo es eine gibt."
+      },
+      "jobsList": {
+        "title": "Die Aufträge auflisten",
+        "description": "Gibt die laufenden Generierungen und ihren Fortschritt zurück, so wie das Studio sie verfolgt. Ändert nichts auf dem Bildschirm."
+      },
+      "promptSuggest": {
+        "title": "Prompt-Varianten vorschlagen",
+        "description": "Schreibt einen Satz in mehrere Varianten um, zugeschnitten auf das im Generator angewählte Modell, samt der zugehörigen Einstellungen. Verbraucht nichts und ändert nichts auf dem Bildschirm."
+      },
+      "promptTranslate": {
+        "title": "Einen Prompt ins Englische übersetzen",
+        "description": "Überträgt einen Text in die Sprache, auf der die Modelle trainiert sind, und nennt die Sprache, die er erkannt hat. Verbraucht nichts und ändert nichts auf dem Bildschirm."
+      },
+      "actionsFind": {
+        "title": "Aktionen finden",
+        "description": "Sucht mit Stichwörtern in allen Aktionen, die das Studio veröffentlicht, und gibt die passenden zurück, samt ihren Feldern. Ändert nichts auf dem Bildschirm. Das ist auch die Antwort auf „was kannst du zu X tun“: das Wort suchen und dann sagen, was zurückkam."
+      },
+      "chatClose": {
+        "title": "Die Unterhaltung schließen",
+        "description": "Nimmt die Unterhaltung vom Bildschirm, damit das Ergebnis zu sehen ist. Zuletzt aufzurufen, und erst, wenn das Ergebnis da ist — nie, wenn die Antwort die Worte selbst sind, und nicht, während eine Berechtigung erfragt wird."
+      },
+      "promptDescribeStyle": {
+        "title": "Den Stil der Referenzen beschreiben",
+        "description": "Liest die Referenzbilder, die auf dem Formular des Generators liegen, und gibt eine als Prompt verwendbare Beschreibung zurück. Verbraucht nichts."
+      },
+      "studioState": {
+        "title": "Den Zustand des Studios lesen",
+        "description": "Gibt das geöffnete Projekt zurück, den aktiven Arbeitsbereich und die aktive Oberfläche, jedes geöffnete Dokument mit dem vordersten markiert, das je Familie angewählte Modell und ob das Studio angemeldet ist. Fragen Sie das ab, bevor Sie einen Befehl auslösen: Ein Befehl erreicht nur die aktive Oberfläche."
+      },
+      "documentsList": {
+        "title": "Die Dokumente des Projekts auflisten",
+        "description": "Gibt die bearbeitbaren Dokumente zurück, die der Projektordner enthält — Bilder mit Ebenen, Szenen, Schnitte, Materialien — ob in einem Tab geöffnet oder nicht. Die übrigen Dateien des Projekts, Bilder und Modelle eingeschlossen, sind nicht dabei."
+      },
+      "documentOpen": {
+        "title": "Ein Dokument öffnen",
+        "description": "Öffnet ein Dokument des Projektordners anhand seines Pfads und holt es in den Vordergrund, wobei bei Bedarf der Arbeitsbereich gewechselt wird. Der Pfad ist der, den eine Auflistung geliefert hat."
+      },
+      "documentActivate": {
+        "title": "Ein Dokument in den Vordergrund holen",
+        "description": "Macht ein bereits geöffnetes Dokument zum aktiven Tab, damit Befehle für seine Oberfläche es erreichen. Das ist die Antwort auf einen Befehl, der abgelehnt wurde, weil er die falsche Oberfläche betraf. Benennen Sie es über seine Kennung, seinen Pfad oder den Titel, den das Studio in Anführungszeichen zeigt — ein Titel, den sich zwei Dokumente teilen, benennt keines von beiden. „X wieder öffnen“, „zurück zu X“ für ein bereits geöffnetes Dokument ist dies, nicht file.open."
+      },
+      "documentClose": {
+        "title": "Ein Dokument schließen",
+        "description": "Schließt den Tab eines geöffneten Dokuments. Arbeit, die nie auf der Festplatte angekommen ist, geht damit verloren."
+      },
+      "documentRename": {
+        "title": "Ein Dokument umbenennen",
+        "description": "Nennt ein Dokument anders, auf der Festplatte und auf dem Bildschirm in einem Zug. Das Dokument behält seine Identität, ein geöffneter Tab wird also umbenannt, ohne sich zu schließen."
+      },
+      "documentSave": {
+        "title": "Ein Dokument speichern",
+        "description": "Schreibt das genannte Dokument in das Projekt und wartet, bis es angekommen ist. Ohne Kennung das vorderste. Antwortet, ob überhaupt etwas geschrieben wurde: Ein unangetasteter Tab hat nichts zu schreiben, und das ist kein Fehlschlag."
+      },
+      "documentDeleteFromDisk": {
+        "title": "Ein Dokument löschen",
+        "description": "Nimmt die Datei des Dokuments aus dem Projekt und schließt dann seinen Tab. Nicht gespeicherte Arbeit geht mit: Die Datei verschwindet, und sie zu speichern, bevor sie zerstört wird, hätte keinen Sinn."
+      },
+      "activityRecent": {
+        "title": "Die letzte Aktivität lesen",
+        "description": "Gibt zurück, was das Studio zuletzt festgehalten hat — Generierungen, Dateioperationen, Fehlschläge — das Neueste zuerst. So erfährt man, was eine Aktion tatsächlich getan hat. Wie eine einzelne Generierung VERLIEF, sagt job.readCloudGeneration, das sie ganz zurückgibt."
+      },
+      "projectsList": {
+        "title": "Die letzten Projekte auflisten",
+        "description": "Antwortet mit den letzten Projekten in der Reihenfolge, in der das Studio sie zeigt, jedes mit dem absoluten Pfad, der es öffnet — diesen Pfad an project.open übergeben."
+      },
+      "projectOpen": {
+        "title": "Einen Projektordner öffnen",
+        "description": "Öffnet ein Projekt über einen absoluten Pfad auf diesem Rechner, ohne den Systemdialog aufzurufen, den eine Person benutzen würde. Antwortet, ob der Ordner ein Projekt war."
+      },
+      "projectClose": {
+        "title": "Das geöffnete Projekt schließen",
+        "description": "Schließt das geöffnete Projekt und lässt das Studio ohne eines zurück: Alle Panels leeren sich, und der Katalog antwortet nicht mehr. Der Ordner bleibt unberührt und bleibt unter den letzten Projekten."
+      },
+      "projectCreate": {
+        "title": "Einen Projektordner erstellen",
+        "description": "Legt ein Projekt an und öffnet es, ohne den Systemdialog aufzurufen, den eine Person benutzen würde. Ein NAME genügt — das Studio legt es dort ab, wo diese Person ihre Projekte aufbewahrt, oben genannt. Das Feld folder sagt, in welchem Ordner es anzulegen ist, wenn der Satz einen nennt."
+      },
+      "projectForget": {
+        "title": "Ein Projekt aus den letzten Projekten entfernen",
+        "description": "Entfernt ein Projekt aus der Liste der letzten Projekte, die nichts weiter als eine Liste von Verknüpfungen ist. DER ORDNER WIRD NICHT ANGERÜHRT, und nichts wird gelöscht: Das Projekt erneut zu öffnen bringt die Zeile zurück. Um den Ordner in den Papierkorb zu legen, ist project.trash zuständig. Benannt über den absoluten Pfad, den projects.list liefert."
+      },
+      "projectTrash": {
+        "title": "Ein Projekt in den Papierkorb legen",
+        "description": "Verschiebt den ORDNER des Projekts und alles darin — Dokumente, Assets, Katalog — in den Papierkorb des Systems. Nichts im Studio macht das rückgängig: Nur der Papierkorb des Systems kann es zurückgeben. Das Projekt wird geschlossen, falls es geöffnet war, und seine Zeile verlässt die letzten Projekte. Um allein die Zeile zu entfernen, ohne den Ordner anzurühren, ist project.forget zuständig. Benannt über den absoluten Pfad, den projects.list liefert."
+      },
+      "fileOpen": {
+        "title": "Eine Datei des Projekts öffnen",
+        "description": "Öffnet jede Datei, die der Projektordner enthält — ein Bild, ein 3D-Modell, ein Material, ein Dokument — in dem Arbeitsbereich, der sie bearbeitet, so wie es ein Doppelklick im Explorer tut. Eine Datei, die hier kein Editor annimmt, wird dem Programm übergeben, dem sie gehört."
+      },
+      "filesList": {
+        "title": "Einen Ordner auflisten",
+        "description": "Gibt die Einträge eines Ordners des geöffneten Projekts zurück, Dateien wie Ordner, mit dem Pfad, unter dem jeder bekannt ist. Ohne angegebenen Ordner wird die Wurzel des Projekts aufgelistet."
+      },
+      "filesSearch": {
+        "title": "In den Dateien des Projekts suchen",
+        "description": "Durchsucht das gesamte geöffnete Projekt nach dem Namen und gibt die gefundenen Einträge mit ihrem Pfad zurück. Ändert nichts auf dem Bildschirm. Finden ist nicht Öffnen: file.open öffnet, was gefunden wurde, und file.rename benennt es um."
+      },
+      "filesMove": {
+        "title": "Dateien verschieben",
+        "description": "Verschiebt Dateien und Ordner des Projekts in einen anderen seiner Ordner. Die Festplatte ändert sich, doch der Explorer kann es danach noch rückgängig machen."
+      },
+      "filesCopy": {
+        "title": "Dateien kopieren",
+        "description": "Kopiert Dateien und Ordner des Projekts in einen anderen seiner Ordner und lässt die Originale, wo sie sind."
+      },
+      "filesDuplicate": {
+        "title": "Dateien duplizieren",
+        "description": "Legt neben jeder genannten Datei und jedem genannten Ordner eine Kopie an, unter einem Namen, den das Studio wählt, damit nichts überschrieben wird."
+      },
+      "filesTrash": {
+        "title": "Dateien in den Papierkorb legen",
+        "description": "Schickt Dateien und Ordner des Projekts in den Papierkorb des Systems. Was mitgenommen wurde, steht in der letzten Aktivität."
+      },
+      "fileRename": {
+        "title": "Eine Datei umbenennen",
+        "description": "Gibt einer Datei oder einem Ordner des Projekts einen anderen Namen, in dem Ordner, in dem sie ohnehin liegt. Ein anderes Programm kennt sie vielleicht noch unter dem alten."
+      },
+      "fileFacts": {
+        "title": "Die Fakten einer Datei lesen",
+        "description": "Gibt zurück, was das Dateisystem über einen Eintrag festhält — seine Art, seine Größe in Bytes, wann er erstellt und zuletzt geändert wurde. Ändert nichts auf dem Bildschirm."
+      },
+      "folderNew": {
+        "title": "Einen Ordner erstellen",
+        "description": "Legt einen neuen Ordner in einem Ordner des geöffneten Projekts an. Antwortet mit dem Pfad, den er bekommen hat, der abweichen kann, wenn der Name vergeben war."
+      },
+      "filesUndoFileOperation": {
+        "title": "Den letzten Stapel von Dateiänderungen rückgängig machen",
+        "description": "Nimmt das letzte Verschieben, Umbenennen oder Duplizieren von Projektdateien zurück. Der Stapel liegt im Hauptprozess und gilt für alle Fenster, doch ein Verschieben in den Papierkorb wird nicht zurückgenommen."
+      },
+      "filesRedoFileOperation": {
+        "title": "Den letzten Stapel von Dateiänderungen wiederholen",
+        "description": "Spielt den Stapel von Dateiänderungen erneut ab, der gerade rückgängig gemacht wurde, genau so, wie es der Explorer tut. Antwortet mit dem, was sich bewegt hat, und dem, was abgelehnt wurde."
+      },
+      "filesCanUndoRedo": {
+        "title": "Den Rückgängig-Stapel der Dateien lesen",
+        "description": "Sagt, ob Rückgängig oder Wiederholen etwas bewirken würde, ohne beides zu versuchen. Es ist das, was die beiden Menüeinträge ausgraut, bevor man darauf klickt."
+      },
+      "fileReveal": {
+        "title": "Eine Datei im Dateimanager des Systems anzeigen",
+        "description": "Öffnet den Finder oder den Explorer des Systems auf der genannten Datei, ausgewählt. Der Pfad verlässt nie den Hauptprozess."
+      },
+      "projectRename": {
+        "title": "Ein Projekt umbenennen",
+        "description": "Benennt ein Projekt um, was seinen Ordner VERSCHIEBT: Ein Projekt wird über seinen Ordner benannt und über nichts sonst. Was es enthält, wandert mit, und nichts wird gelöscht. Benannt über den absoluten Pfad, den projects.list liefert, also lässt sich auch ein geschlossenes umbenennen — und der geantwortete Pfad ist der NEUE."
+      },
+      "modelsReadGenerationModelFields": {
+        "title": "Die eigenen Eingaben eines Modells lesen",
+        "description": "Gibt die Felder zurück, die ein Generierungsmodell annimmt, mit ihrer Art und ihren Grenzen, so wie das Studio daraus sein Formular baut. Damit werden die Parameter einer vorbereiteten Generierung gefüllt."
+      },
+      "costEstimate": {
+        "title": "Schätzen, was eine Generierung kosten würde",
+        "description": "Beziffert ein Modell und einen Satz von Parametern, ohne etwas zu starten. Seine Parameter haben die Form, mit der models_readGenerationModelFields antwortet. Antwortet mit gar keinem Betrag, wo die API es ablehnt, dieses Modell zu beziffern, statt eine Zahl zu erfinden."
+      },
+      "jobReadCloudGeneration": {
+        "title": "Einen Auftrag lesen",
+        "description": "Gibt eine Generierung ganz zurück — ihren Status, wie weit sie ist, was sie erzeugt hat, was sie gekostet hat und warum sie fehlgeschlagen ist, falls sie es ist. Auf „das Ergebnis meiner letzten Generierung“ hin ist dies das, was sagt, wie sie VERLIEF; das Bild oder das 3D-Modell, das sie erzeugt hat, liegt im Katalog des Projekts."
+      },
+      "jobWaitForCloudGeneration": {
+        "title": "Auf das Ende eines Auftrags warten",
+        "description": "Wartet, bis eine Generierung gelingt, fehlschlägt oder abgebrochen wird, und gibt sie dann mit den erzeugten Assets zurück. Läuft die Wartezeit ab, wird der Auftrag zurückgegeben, wie er steht, was eine Antwort ist und kein Fehlschlag."
+      },
+      "jobCancelCloudGeneration": {
+        "title": "Einen Auftrag abbrechen",
+        "description": "Hält eine Generierung an, die noch in der Warteschlange oder in Arbeit ist. Was bereits verbraucht wurde, wird nicht zurückgegeben."
+      },
+      "taskCancelLocalTask": {
+        "title": "Eine lokale Aufgabe abbrechen",
+        "description": "Hält eine Aufgabe an, die das Studio auf diesem Rechner ausführt — ein Rendering, einen Import, einen Indexierungslauf — samt halb geschriebener Datei. Antwortet, ob eine noch lief, was eine bereits beendete Kennung nicht ist."
+      },
+      "usageReport": {
+        "title": "Den Nutzungsbericht lesen",
+        "description": "Gibt zurück, was das Konto über ein Fenster von sieben, einunddreißig oder hundertzwanzig Tagen verbraucht hat, so wie es das Nutzungsfenster zeigt. Das ist die Antwort auf „wie viele Credits habe ich noch“."
+      },
+      "assetsSearchProjectCatalogue": {
+        "title": "Im Katalog des Projekts suchen",
+        "description": "Durchsucht den eigenen Katalog DIESES Projekts auf diesem Rechner nach Text, Art und Tags und kann sich auf Generiertes beschränken. Der Katalog enthält Assets, nicht die Dateien des Projekts: Eine Datei, die die Person benennt, findet man, indem man die Dateien des Projekts durchsucht. Die entfernte Bibliothek des Kontos liegt noch einmal woanders. Was der Katalog ZU einem Asset enthält — woher es kommt, wie es getaggt ist — ist asset.get, auf den Kennungen, die dies zurückgibt."
+      },
+      "assetsCounts": {
+        "title": "Den Katalog des Projekts zählen",
+        "description": "Gibt zurück, wie viele Bilder, Videos, Audio-Assets, 3D-Modelle, Skyboxen und Animationen dieses Projekt auf diesem Rechner enthält, im Katalog gezählt statt durch Auflisten. Jede Art wird zurückgegeben, auch die, deren Zahl null ist."
+      },
+      "assetGet": {
+        "title": "Assets lesen",
+        "description": "Gibt alles zurück, was der Katalog über die genannten Assets enthält — wo sie liegen, woher sie kommen und wie sie getaggt sind. Das ist es, was auf den Kennungen aufzurufen ist, die eine fertige Generierung zurückgegeben hat."
+      },
+      "assetUpdate": {
+        "title": "Ein Asset korrigieren",
+        "description": "Ändert den Namen eines Assets, seine Tags oder die Art, die das Studio aus seiner Endung gelesen hat. Tags werden vollständig ersetzt, eine leere Liste löscht sie also wirklich."
+      },
+      "assetsRemoveFromLibrary": {
+        "title": "Assets entfernen",
+        "description": "Nimmt Assets aus der Bibliothek des Projekts und, wenn darum gebeten wird, auch aus der entfernten. Was entfernt wurde, steht in der letzten Aktivität."
+      },
+      "assetsCaptionImages": {
+        "title": "Bildbeschreibungen erstellen",
+        "description": "Lässt die API die genannten Bilder lesen und schreibt, was sie darin sieht, als Namen des Assets. Nur Bilder, die die Bibliothek bereits kennt, können beschrieben werden, eine rein lokale Auswahl antwortet also null."
+      },
+      "assetsListMissing": {
+        "title": "Assets finden, deren Datei verschwunden ist",
+        "description": "Gibt unter den genannten Assets diejenigen zurück, für die der Katalog eine Datei erwartet, die nicht mehr da ist. Ein Asset, das nie eine lokale Datei hatte, ist nie darunter, da nichts von ihm erwartet wurde."
+      },
+      "assetExtractTextures": {
+        "title": "Die Bilder eines Modells extrahieren",
+        "description": "Holt die Bilder, die eine 3D-Datei mit sich trägt, aus ihr heraus und bringt sie als eigenständige Assets in die Bibliothek des Projekts. Gibt die soeben erstellten Zeilen zurück."
+      },
+      "assetReveal": {
+        "title": "Ein Asset im Dateimanager des Systems anzeigen",
+        "description": "Öffnet den Finder oder den Explorer des Systems auf der Datei eines Assets. Ein Asset, das nur in der entfernten Bibliothek lebt, hat nichts zu zeigen, und sagt das."
+      },
+      "canvasState": {
+        "title": "Das Bild lesen, das gerade bearbeitet wird",
+        "description": "Antwortet mit dem Bild im Vordergrund — seiner Größe, seiner Auflösung, seinen Hilfslinien und jeder Ebene des Stapels, flach ausgebreitet: Kennung, Name, Art und was jede trägt. Ein Feld AUF SEINEM STANDARD wird weggelassen, und Abwesenheit bedeutet diesen Standard: Eine Ebene ist sichtbar, vollständig deckend, entsperrt, normal gemischt, nicht beschnitten und nicht transformiert."
+      },
+      "animationReopenMotion": {
+        "title": "Eine Charakterbewegung erneut öffnen",
+        "description": "Ersetzt die Animationswerkbank durch die Bewegung, die in einem Animations-Asset für das genannte Modell gespeichert ist. Das Asset muss Bewegungsdaten tragen, die dieses Studio erstellt hat."
+      },
+      "aiLocalState": {
+        "title": "Die lokale KI-Laufzeit lesen",
+        "description": "Gibt die lokalen KI-Kandidaten zurück, ihren Installations- und Ladezustand, ihre Rollen, die Eignung des Rechners, die Downloads und die Bereitschaft der Laufzeit."
+      },
+      "aiManageLocalRuntime": {
+        "title": "Die lokale KI-Laufzeit verwalten",
+        "description": "Wählt, installiert, entfernt, lädt oder entlädt einen lokalen KI-Kandidaten oder liest und repariert seine Laufzeit. Lesen Sie zuerst ai.localState. Jede Operation außer dem Lesen der Engine verändert das Studio und erfordert eine Bestätigung."
+      },
+      "canvasSetDocumentProperties": {
+        "title": "Die Eigenschaften des Bilddokuments festlegen",
+        "description": "Ändert die Druckauflösung, den Farbmodus oder die Bittiefe des Bildes im Vordergrund. Lesen Sie zuerst canvas.state; nicht genannte Werte bleiben unverändert."
+      },
+      "canvasGenerationComment": {
+        "title": "Generierungskommentare auf dem Bild verwalten",
+        "description": "Fügt eine Anweisung für die nächste Generierung auf dem Bild im Vordergrund hinzu, ändert sie oder entfernt sie. Koordinaten und ein optionales Polygon verwenden Dokumentpixel. Eine Ebenenkennung begrenzt eine neue Notiz auf diese Ebene; ohne sie gilt sie für das ganze Bild. canvas.state gibt die ausstehenden Kommentare und ihre Kennungen zurück."
+      },
+      "canvasResize": {
+        "title": "Die Bildgröße ändern",
+        "description": "Ändert den Rahmen des Bildes im Vordergrund. Skaliert die Ebenen mit, wenn darum gebeten wird, und lässt sie andernfalls, wo sie sind — das ist der Unterschied zwischen Bildgröße und Leinwandgröße."
+      },
+      "canvasSetPixelArt": {
+        "title": "Den Pixel-Art-Modus festlegen",
+        "description": "Setzt das Bild im Vordergrund auf ein Pixel-Art-Raster oder nimmt es davon herunter. Mit einer Anzahl von Spalten und Zeilen wird das Dokument so in der Größe geändert, dass das Werk genau das in Zellen misst. 🛑 Eine Größenänderung verwirft die Pixelhistorie — bereits gesetzte Striche bleiben, aber ⌘Z macht sie nicht mehr rückgängig. Die Größe zu ändern und das Raster zu legen sind ZWEI Rückgängig-Schritte: Das erste ⌘Z nimmt das Raster weg und lässt die Größe stehen."
+      },
+      "canvasDrawPixels": {
+        "title": "Pixel zeichnen",
+        "description": "Legt Zellen auf das Bild im Vordergrund, in einem Zug und mit einem einzigen Rückgängig — einzeln genannte Zellen, eine Linie, ein gefülltes oder hohles Rechteck oder eine Füllung. Die Koordinaten sind in Rasterzellen angegeben, nicht in Dokumentpixeln."
+      },
+      "canvasCrop": {
+        "title": "Das Bild zuschneiden",
+        "description": "Schließt den Rahmen auf ein Rechteck, das in Dokumentkoordinaten angegeben wird. Die Ebenen behalten ihren Platz, was also draußen liegt, ist das, was weggeschnitten wird."
+      },
+      "canvasFlipOrRotate": {
+        "title": "Das Bild spiegeln oder drehen",
+        "description": "Spiegelt das Bild an einer Achse oder dreht es eine Vierteldrehung in die eine oder die andere Richtung. Eine Drehung tauscht Breite und Höhe des Rahmens, aus einem Hochformat wird also ein Querformat."
+      },
+      "layerSetMaskOptions": {
+        "title": "Die Maske einer Ebene festlegen",
+        "description": "Sagt, ob eine MASKE — eine aus einer Auswahl geschnittene Form, die eine Ebene trägt — verbirgt, was sie bedeckt, und ob sie mit der Ebene wandert, oder nimmt sie ganz ab. Die Ebene SELBST auszublenden ist layer.setOpacityBlendAndVisibility. Eine Ebene, die keine Maske trägt, wird abgelehnt: Eine zu schneiden gehört der Engine, über den Befehl, der eine aus der Auswahl macht."
+      },
+      "guideAdd": {
+        "title": "Eine Hilfslinie legen",
+        "description": "Legt eine senkrechte oder waagerechte Hilfslinie an die angegebene Stelle, in Dokumentkoordinaten, und antwortet mit der Kennung, die sie soeben erhalten hat. Die beiden Aktionen daneben verschieben und entfernen sie über diese Kennung."
+      },
+      "guideMove": {
+        "title": "Eine Hilfslinie verschieben",
+        "description": "Ändert, wo eine Hilfslinie sitzt, in Dokumentkoordinaten, wie es ein Ziehen aus dem Lineal täte. Eine Kennung, auf die nichts hört, wird abgelehnt."
+      },
+      "guideRemove": {
+        "title": "Eine Hilfslinie entfernen",
+        "description": "Nimmt eine Hilfslinie vom Bild, so wie es ein Ziehen tut, das sie auf ihr Lineal zurücklegt. Alle Hilfslinien auf einmal zu entfernen ist ein Befehl des Registers, anders auszulösen."
+      },
+      "layerAdd": {
+        "title": "Eine Ebene hinzufügen",
+        "description": "Legt eine neue Pixel-, Text- oder Einstellungsebene oben auf den Stapel des Bildes im Vordergrund und antwortet mit der Kennung, die sie erhalten hat. Eine Einstellungsebene muss den Regler benennen, den sie trägt."
+      },
+      "layerRemove": {
+        "title": "Eine Ebene entfernen",
+        "description": "Nimmt eine Ebene aus dem Stapel des Bildes im Vordergrund. Lässt sich wie jede andere Änderung an diesem Dokument rückgängig machen."
+      },
+      "layerSelect": {
+        "title": "Eine Ebene anwählen",
+        "description": "Macht eine Ebene zur angewählten, also zu der, auf die die Werkzeuge des Arbeitsbereichs Bild wirken. Das ist eher eine Art, den Stapel anzusehen, als eine Änderung, es kommt also nichts in die Historie."
+      },
+      "layerRename": {
+        "title": "Eine Ebene umbenennen",
+        "description": "Nennt eine Ebene des Bildes im Vordergrund anders. Die Kennung ändert sich nicht, es geht also nichts verloren, was auf sie verwies."
+      },
+      "layerSetOpacityBlendAndVisibility": {
+        "title": "Festlegen, wie eine Ebene zusammengesetzt wird",
+        "description": "Ändert die Deckkraft einer Ebene, ihre Flächendeckkraft, ihren Mischmodus, ihre Sichtbarkeit oder ihr Beschneiden. Jedes Feld ist optional, und was nicht angegeben wird, bleibt genau so, wie es war. DIES ist es, was eine Ebene ausblendet und wieder zeigt — „diese Ebene maskieren“ setzt visible auf false und hat nichts mit einer Maske zu tun."
+      },
+      "layerTransform": {
+        "title": "Eine Ebene verschieben, skalieren oder drehen",
+        "description": "Verschiebt, skaliert oder dreht eine Ebene innerhalb des Rahmens. Die Drehung wird in Grad angegeben, und jedes ausgelassene Feld behält den Wert, den die Ebene bereits hatte."
+      },
+      "layerEditTextLayer": {
+        "title": "Die Worte einer Textebene festlegen",
+        "description": "Ändert, was eine Textebene sagt, die Schrift und die Größe, in der sie es sagt, ihre Farbe, ihre Ausrichtung und ihren Rahmen. Lehnt eine Ebene ab, die Pixel statt Worte trägt, die der Befehl sonst unberührt ließe."
+      },
+      "layerReorderInStack": {
+        "title": "Eine Ebene umsortieren",
+        "description": "Verschiebt eine Ebene an eine andere Stelle im Stapel und in eine Gruppe hinein oder aus ihr heraus. Index null ist der Boden des Stapels, also das, was das Auge zuletzt sieht."
+      },
+      "layerDuplicate": {
+        "title": "Eine Ebene duplizieren",
+        "description": "Kopiert eine Ebene direkt über sich selbst, Kinder eingeschlossen, wobei jede Kopie eine frische Kennung erhält. Antwortet mit der Kennung der Kopie. Die DATEI des Bildes wird von files.duplicate kopiert; dies kopiert eine Ebene darin."
+      },
+      "layerGroup": {
+        "title": "Ebenen gruppieren",
+        "description": "Fasst Ebenen der obersten Stufe zu einer Gruppe zusammen, die sich danach als Ganzes bewegt. Antwortet mit der eigenen Kennung der Gruppe."
+      },
+      "layerUngroup": {
+        "title": "Eine Gruppe auflösen",
+        "description": "Nimmt eine Gruppe auseinander und lässt ihre Kinder dort, wo die Gruppe im Stapel stand."
+      },
+      "layerMergeDown": {
+        "title": "Eine Ebene nach unten zusammenführen",
+        "description": "Faltet eine Ebene in die Ebene darunter, innerhalb ihrer eigenen Stufe des Stapels. Das Ergebnis behält die Identität der unteren Ebene."
+      },
+      "sequenceState": {
+        "title": "Den Schnitt lesen, an dem gerade gearbeitet wird",
+        "description": "Antwortet mit dem Schnitt im Vordergrund — seinen Einstellungen, seiner Länge, dem Abspielkopf und dem, was ausgewählt ist — dann mit jeder Spur samt ihren Clips, ihren Grenzen, ihrem Einstieg in die Quelle, ihrer Geschwindigkeit, ihren Blenden und ihrem Pegel. Ein Feld AUF SEINEM STANDARD wird weggelassen, und Abwesenheit bedeutet diesen Standard: Eine Zeile ist hörbar und entsperrt, ein Clip läuft mit Geschwindigkeit 1 ab seinem Anfang, ohne Blende und auf dem Pegel, mit dem er aufgenommen wurde."
+      },
+      "sequenceSeek": {
+        "title": "Den Abspielkopf setzen",
+        "description": "Verschiebt den Abspielkopf des Schnitts im Vordergrund auf den angegebenen Zeitpunkt, in Mikrosekunden. Keine Änderung: Nichts kommt in die Historie, und Rückgängig holt ihn nicht zurück."
+      },
+      "clipAdd": {
+        "title": "Einen Clip auf den Schnitt legen",
+        "description": "Legt ein Asset aus der Bibliothek auf eine Spur des Schnitts im Vordergrund, zum angegebenen Zeitpunkt oder unter dem Abspielkopf. Öffnet die Spuren, die es braucht, und verknüpft das Bild einer Aufnahme mit ihrem Ton, wenn sie einen trägt."
+      },
+      "clipRemove": {
+        "title": "Einen Clip aus dem Schnitt nehmen",
+        "description": "Entfernt einen Clip von seiner Spur, und mit ihm die Hälfte, die mit ihm verknüpft ist. Der Platz, den er einnahm, bleibt leer, statt sich über seinen Nachbarn zu schließen."
+      },
+      "clipMove": {
+        "title": "Einen Clip verschieben",
+        "description": "Trägt einen Clip auf eine angegebene Spur und einen angegebenen Zeitpunkt und überschreibt, was dort liegt. Eine gesperrte Spur oder eine anderer Art nimmt nichts an."
+      },
+      "clipTrim": {
+        "title": "Einen Clip-Rand trimmen",
+        "description": "Zieht den In- oder Out-Punkt eines Clips auf den angegebenen Zeitpunkt, nie über die dahinterliegende Quelle hinaus. Ein Standbild hat keine Quelle, über die es hinauslaufen könnte, und dehnt sich frei. „at“ ist ein Zeitpunkt auf der ZEITLEISTE und nie eine Dauer: um einen Clip zwei Sekunden länger zu machen, sein „end“ lesen und diesen Wert plus 2000000 senden."
+      },
+      "clipSplit": {
+        "title": "Einen Clip in zwei Teile schneiden",
+        "description": "Schneidet einen Clip am angegebenen Zeitpunkt und lässt beide Hälften Ende an Ende liegen. Ein Zeitpunkt außerhalb des Clips hat nichts zu schneiden und wird abgelehnt, statt als erledigt gemeldet zu werden."
+      },
+      "clipFade": {
+        "title": "Die Blende eines Clips festlegen",
+        "description": "Gibt der Ein- oder Ausblendung eines CLIPS die gewünschte Länge, ein Video- oder Audioschnitt muss also im Vordergrund stehen. Zwei Rampen, die länger sind als der Clip selbst, werden auf das zurückgeführt, was er tragen kann. Für eine Blende in der Kinematik einer 3D-Szene ist das timeline.addSceneCue."
+      },
+      "clipGain": {
+        "title": "Den Pegel eines Clips festlegen",
+        "description": "Ändert den Pegel eines Clips in Dezibel, null lässt die Aufnahme so, wie sie aufgenommen wurde. Der Wert wird auf das begrenzt, was die Wiedergabe tragen kann."
+      },
+      "clipSpeed": {
+        "title": "Die Geschwindigkeit eines Clips festlegen",
+        "description": "Ändert, wie schnell ein Clip abgespielt wird, eins ist seine ursprüngliche Geschwindigkeit. Seine Länge im Schnitt folgt, die gelesene Quelle bleibt dieselbe."
+      },
+      "clipUnlink": {
+        "title": "Bild und Ton trennen",
+        "description": "Trennt die beiden Hälften einer Aufnahme, sodass Verschieben, Trimmen oder Schneiden der einen die andere nicht mehr erreicht. Nichts verbindet sie danach wieder."
+      },
+      "clipSelect": {
+        "title": "Auf einen Clip zeigen",
+        "description": "Benennt den Clip, auf den der Inspektor und die Gesten ohne Ziel wirken. Keine Änderung, und Rückgängig nimmt es nicht zurück."
+      },
+      "trackAdd": {
+        "title": "Eine Spur hinzufügen",
+        "description": "Öffnet eine Bild- oder Tonspur unter den anderen. Eine Bildspur kann nichts von einem Ton tragen, und umgekehrt gilt dasselbe."
+      },
+      "trackRemove": {
+        "title": "Eine Spur entfernen",
+        "description": "Nimmt eine Spur aus dem Schnitt, und mit ihr jeden Clip, den sie trug. Eine gesperrte Spur wird nicht entfernt."
+      },
+      "trackReorderTracks": {
+        "title": "Die Reihenfolge der Spuren ändern",
+        "description": "Verschiebt eine Spur um die angegebene Anzahl Reihen, was ändert, was was überdeckt. Die Reihen werden von OBEN gezählt, eine negative Zahl schiebt sie also nach oben und eine positive nach unten — sequence.state antwortet sie in dieser Reihenfolge, die erste ist die oberste."
+      },
+      "trackRename": {
+        "title": "Eine Spur umbenennen",
+        "description": "Gibt einer Spur den Namen, den die Kopfspalte zeigt. Ihre Kennung ändert sich nie."
+      },
+      "trackSetMuteSoloLockHeight": {
+        "title": "Festlegen, wie mit einer Spur gearbeitet wird",
+        "description": "Ändert Stummschaltung, Solo, Sperre oder Höhe einer Spur. Diese vier sagen, wie gearbeitet wird, und nicht, was gemacht wurde, und gehen deshalb nie in den Verlauf ein."
+      },
+      "skyboxState": {
+        "title": "Den Himmel in Bearbeitung lesen",
+        "description": "Antwortet den Himmel im Vordergrund — seine equirektangulare Quelle, seine Bildeinstellungen, wo seine Sonne steht und welche Farbe sie hat, und was seine Umgebung beleuchtet — dazu, was ihn erzeugt hat, wenn er aus einer Generierung stammt."
+      },
+      "skyboxSetViewportOptions": {
+        "title": "Festlegen, wie ein Himmel betrachtet wird",
+        "description": "Wählt die Projektion, unter der der Himmel gezeichnet wird, wie weit das Objektiv öffnet, und ob die Testobjekte darin stehen. Es ist Sitzungszustand, wie jede Art, ein Dokument zu betrachten, und nichts davon wird gespeichert."
+      },
+      "skyboxAdjustImage": {
+        "title": "Das Bild eines Himmels anpassen",
+        "description": "Ändert Belichtung, Kontrast, Sättigung, Temperatur, Tönung, Horizontdrehung oder Weichzeichnung. Jedes Feld ist optional, und was nicht angegeben wird, bleibt, wie es war."
+      },
+      "skyboxResetAdjustments": {
+        "title": "Die Bildeinstellungen auf neutral zurücksetzen",
+        "description": "Setzt alle Bildeinstellungen des Himmels auf einmal auf ihren neutralen Wert zurück, in einem einzigen Verlaufseintrag. Die Quelle und die Sonne bleiben unangetastet."
+      },
+      "skyboxSetSun": {
+        "title": "Die Sonne platzieren und einstellen",
+        "description": "Ändert Elevation, Azimut, Intensität oder Farbe der Sonne im Himmel im Vordergrund. Beide Winkel sind in Radiant, wie überall sonst in der Szene."
+      },
+      "skyboxSetPreviewLighting": {
+        "title": "Festlegen, was der Himmel beleuchtet",
+        "description": "Ändert, wie stark der Himmel die Testobjekte beleuchtet, und entscheidet, ob das Bild hinter ihnen gezeichnet wird oder sie nur beleuchtet."
+      },
+      "skyboxSetSourceImage": {
+        "title": "Das Bild eines Himmels wählen",
+        "description": "Hängt ein equirektangulares Bild aus der Bibliothek in den Himmel im Vordergrund. Das Asset muss eine Datei auf diesem Rechner haben, ein noch in der Cloud liegendes hat nichts zu decodieren."
+      },
+      "materialState": {
+        "title": "Das Material in Bearbeitung lesen",
+        "description": "Antwortet das Material im Vordergrund — die acht Kanäle und was sie füllt, jede Render-Einstellung wie Farbe, Rauheit und Kachelung, und wie die Vorschau dargestellt wird."
+      },
+      "materialSetSurfaceSettings": {
+        "title": "Ein Material einstellen",
+        "description": "Ändert Tönung, Rauheit, Metallgrad, Relief, Okklusion, Emission, Kachelung, Versatz oder Drehung des Materials im Vordergrund. Jedes Feld ist optional."
+      },
+      "materialSetPreviewEnvironment": {
+        "title": "Wählen, was eine Materialvorschau beleuchtet",
+        "description": "Beleuchtet die Vorschau durch das prozedurale Studio, durch ein Bild des Projekts, das über seine Asset-Kennung benannt wird, oder durch ein Himmelsdokument, das über seinen Titel benannt wird — die Vorschau übernimmt dann dessen farbkorrigiertes Bild und dessen Intensität, wie es eine Szene tut."
+      },
+      "materialSetPreviewDisplay": {
+        "title": "Die Vorschau eines Materials einstellen",
+        "description": "Ändert Intensität und Drehung der Umgebung, die die Vorschau beleuchtet, ob der Hintergrund gezeichnet wird, die automatische Drehung und die Nahthervorhebung."
+      },
+      "materialSetChannelImage": {
+        "title": "Einen Kanal füllen oder leeren",
+        "description": "Legt ein Bild aus der Bibliothek in einen der acht Kanäle des Materials im Vordergrund. Ohne benanntes Asset wird der Kanal geleert statt gefüllt."
+      },
+      "documentExport": {
+        "title": "Das Dokument im Vordergrund ins Projekt exportieren",
+        "description": "Schreibt das Dokument im Vordergrund — Bild, Szene, Himmel, Material oder Schnitt — in einen Ordner des Projekts, benannt nach seinem Titel, wenn kein Name angegeben wird. Ein Schnitt kommt als OpenTimelineIO heraus, also der Schnitt und kein Film, denn das Rendern Frame für Frame braucht eine Sitzung, die nichts von außen halten kann. Das Ziel kann das Projekt nicht verlassen."
+      },
+      "gitStashDrop": {
+        "title": "Einen Stash verwerfen",
+        "description": "Entfernt einen Stash vom Stapel, ohne ihn wieder anzuwenden. Was er enthielt, wurde nie aufgezeichnet, also gibt nichts es zurück."
+      },
+      "gitResolve": {
+        "title": "Einen Merge-Konflikt beilegen",
+        "description": "Behält für die genannten Dateien eine der beiden Seiten eines Konflikts. Was die andere Seite enthielt, ist aus der Arbeitskopie verschwunden."
+      },
+      "gitAbortMerge": {
+        "title": "Den laufenden Merge abbrechen",
+        "description": "Bringt das Repository dorthin zurück, wo es vor dem Merge stand, und macht rückgängig, was er bereits in die Arbeitskopie geschrieben hatte."
+      },
+      "gitRemotes": {
+        "title": "Die Remote-Repositories auflisten",
+        "description": "Antwortet die deklarierten Remotes mit ihrem Namen und ihrer Adresse. Dorthin ginge ein Push."
+      },
+      "gitAddRemote": {
+        "title": "Ein Remote-Repository deklarieren",
+        "description": "Fügt ein Remote unter dem angegebenen Namen hinzu. Allein dadurch wird nichts gesendet und nichts abgerufen, es wird in die lokale Konfiguration geschrieben."
+      },
+      "gitFetch": {
+        "title": "Die Remote-Referenzen abrufen",
+        "description": "Liest, wo das Remote-Repository steht, ändert nichts an Ihrer Arbeitskopie und veröffentlicht nichts. Es ist die harmlose Hälfte eines Pulls."
+      },
+      "gitPull": {
+        "title": "Abrufen und zusammenführen",
+        "description": "Ruft das Remote ab und führt in den aktuellen Branch zusammen, was die Arbeitskopie neu schreibt. Ein Konflikt hält dort an und wird danach beigelegt. Wird nur nach dem gefragt, was das Remote enthält, ist dies der falsche Aufruf: git.fetch liest es, ohne die Arbeitskopie anzurühren."
+      },
+      "gitPush": {
+        "title": "Zum Remote-Repository veröffentlichen",
+        "description": "Sendet den aktuellen Branch zum Remote-Repository. Es ist die einzige Geste des Studios, die diesen Rechner verlässt, und nichts hier holt sie zurück."
+      },
+      "cloudBrowseAccountLibrary": {
+        "title": "Die entfernte Bibliothek durchsuchen",
+        "description": "Antwortet eine Seite der Bibliothek des Kontos, eingegrenzt nach Text, Tags oder Art. Geblättert wird per Cursor, und es gibt keine Gesamtzahl — die API gibt keine."
+      },
+      "cloudExplorePublicFeed": {
+        "title": "Durchsuchen, was alle veröffentlicht haben",
+        "description": "Antwortet eine Seite des öffentlichen Feeds einer bestimmten Art, die neuesten zuerst. Diese Assets gehören Ihnen nicht, und sie anzusehen ruft keines davon ab. cloud.pull ist das, was eines in das Projekt herunterholt, samt Bytes."
+      },
+      "cloudFindSimilarPublished": {
+        "title": "Finden, was einem Asset ähnelt",
+        "description": "Antwortet veröffentlichte Assets, die dem genannten ähneln, wobei dieses aus seinen eigenen Ergebnissen herausgenommen wird. Die Referenz wählt der Aufrufer."
+      },
+      "cloudPreviewSync": {
+        "title": "Sehen, was eine Synchronisierung tun würde",
+        "description": "Sagt, was ein Push oder ein Pull mit jedem genannten Asset täte, bevor es eine einzige Anfrage kostet. Es wird nichts gesendet und nichts abgerufen."
+      },
+      "cloudPull": {
+        "title": "Entfernte Assets abrufen",
+        "description": "Holt Assets in das Projekt, samt Bytes, und sagt, was jedes ergeben hat. Ein Download, der auf halbem Weg abbricht, behält, was er bereits geschrieben hatte."
+      },
+      "cloudPush": {
+        "title": "Assets an das Konto senden",
+        "description": "Sendet lokale Assets in die Bibliothek des Kontos, wo sie bleiben. Es ist die einzige Geste dieser Familie, die etwas zurücklässt."
+      },
+      "stylesList": {
+        "title": "Die Materialstile auflisten",
+        "description": "Antwortet die gespeicherten Materialstile mit ihrer Kennung, ihrem Namen und den Werten, die sie behalten. Sie leben außerhalb jedes Projekts und folgen dem Rechner."
+      },
+      "styleSave": {
+        "title": "Das Material als Stil speichern",
+        "description": "Zeichnet das Material des Dokuments im Vordergrund unter dem angegebenen Namen auf. Der Name dient als Basis, das Studio macht ihn eindeutig, wenn er schon vergeben ist."
+      },
+      "styleRename": {
+        "title": "Einen Materialstil umbenennen",
+        "description": "Gibt einem gespeicherten Stil seinen Namen. Sonst bewegt sich nichts am Stil, und seine Kennung bleibt dieselbe."
+      },
+      "styleRemove": {
+        "title": "Einen Materialstil löschen",
+        "description": "Entfernt einen gespeicherten Stil. Er lebt außerhalb jedes Projekts, also gibt ihn nichts zurück — weder Rückgängig noch der Explorer."
+      },
+      "authState": {
+        "title": "Sagen, ob das Studio angemeldet ist",
+        "description": "Sagt, ob ein API-Schlüssel hinterlegt ist und an welchem Konto das Studio arbeitet. Antwortet nie den Schlüssel selbst, der den Hauptprozess nicht verlässt."
+      },
+      "windowState": {
+        "title": "Den Zustand des Fensters lesen",
+        "description": "Antwortet die Größe des Fensters, ob es maximiert oder im Vollbild ist, und die Sprache, in der es zeichnet — die, auf die sich der Hauptprozess tatsächlich festgelegt hat."
+      },
+      "windowFullScreen": {
+        "title": "Vollbild umschalten",
+        "description": "Bringt das Fenster ins Vollbild oder wieder heraus. Es ist ein Umschalter, es gibt keine Möglichkeit, einen der beiden Zustände zu verlangen."
+      },
+      "settingsOpen": {
+        "title": "Die Einstellungen auf einem Abschnitt öffnen",
+        "description": "Öffnet das Einstellungsfenster auf dem gewünschten Abschnitt oder bringt es dorthin, wenn es schon offen ist. Eine Einstellung zu lesen und zu schreiben verlangt nicht, es zu öffnen."
+      },
+      "updatesState": {
+        "title": "Lesen, wo das Update steht",
+        "description": "Sagt, wo das Update der Anwendung steht — nichts in Sicht, wird geladen, oder bereit zur Installation beim nächsten Beenden. updates.install ist das, was es installiert und das Studio neu startet."
+      },
+      "mediaCapabilities": {
+        "title": "Sagen, was das Studio decodieren kann",
+        "description": "Sagt, wozu dieser Rechner auf der Medienseite fähig ist, was davon abhängt, dass ffmpeg vorhanden ist. Ohne es funktioniert der Import weiterhin, und die Oberfläche sagt, was sie nicht kann."
+      },
+      "mediaIndexFileInPlace": {
+        "title": "Einer Datei eine Katalogzeile geben",
+        "description": "Holt eine Datei, die der Projektordner schon enthält, in den Katalog, ohne sie zu kopieren. Es ist die Hälfte des Imports, die keinen Systemdialog öffnet."
+      },
+      "fontsList": {
+        "title": "Die installierten Schriften auflisten",
+        "description": "Antwortet die Schriften, in denen ein Text gesetzt werden kann, zuerst die, die mit dem Studio geliefert werden, dann die auf diesem Rechner installierten. Jede kommt mit ihrer Herkunft, die das Setzen einer Schrift ebenso verlangt wie ihren Namen."
+      },
+      "favoritesListPinnedRecipes": {
+        "title": "Die angehefteten Rezepte auflisten",
+        "description": "Antwortet die an das Projekt angehefteten Rezepte, mit dem Modell, das sie erzeugt hat, und dem Arbeitsbereich, der sie wieder herzustellen weiß. Ein Rezept behält genug, um eine Generierung neu zu starten."
+      },
+      "favoritePinAssetRecipe": {
+        "title": "Anheften, was ein Asset erzeugt hat",
+        "description": "Heftet an, was ein Asset des offenen Projekts erzeugt hat, damit es sich wieder herstellen lässt. Ein Asset, das niemand generiert hat, hat kein Rezept zu behalten."
+      },
+      "favoriteUnpinAssetRecipe": {
+        "title": "Ein angeheftetes Rezept entfernen",
+        "description": "Nimmt ein Rezept von der Liste der angehefteten. Das Asset, das es erzeugt hatte, bleibt unangetastet."
+      },
+      "fileInfoOpenWindow": {
+        "title": "Die Informationen einer Datei öffnen",
+        "description": "Öffnet das Fenster, das eine Datei des Projekts beschreibt — ihre Größe, ihre Art, ihren Verlauf und was der Katalog von ihr weiß."
+      },
+      "mirrorOpenVideoReturnWindow": {
+        "title": "Die Videorückführung öffnen",
+        "description": "Öffnet das Rückführungsfenster oder bringt es nach vorn, wenn es schon da ist. Es zeigt, was der Schnitt abspielt, und trägt nichts von der Bearbeitung."
+      },
+      "helpOpenStudioWindow": {
+        "title": "Ein Studiofenster öffnen",
+        "description": "Öffnet das Benutzerhandbuch, das Lizenzfenster, das Verbrauchsfenster, das Protokoll oder das Willkommensfenster — oder bringt es nach vorn, wenn es schon da ist. Es sind Fenster des Hauptprozesses, und kein Befehl des Registers erreicht sie."
+      },
+      "updatesInstall": {
+        "title": "Das heruntergeladene Update installieren",
+        "description": "Beendet das Studio und startet die schon heruntergeladene Version neu. Tut nur etwas, sobald das Update bereit ist, und was nicht gespeichert ist, geht mit dem Beenden verloren."
+      },
+      "dictationState": {
+        "title": "Den Zustand des Diktats lesen",
+        "description": "Sagt, wo die Spracherkennung steht — im Ruhezustand, hörend, auf eine Berechtigung oder auf ein Modell wartend — und was fehlgeschlagen ist, falls etwas fehlgeschlagen ist."
+      },
+      "dictationStart": {
+        "title": "Diktat starten",
+        "description": "Öffnet das Mikrofon und schreibt, was es hört, dorthin, wo der Text-Cursor steht. Ohne aktives Feld hat das Diktat nirgendwohin zu schreiben, der Cursor wird also vor dem Aufruf gesetzt."
+      },
+      "dictationStop": {
+        "title": "Diktat beenden",
+        "description": "Schließt das Mikrofon. Behält standardmäßig, was gehört wurde, und kann es stattdessen verwerfen — genau darin unterscheiden sich die beiden Gesten."
+      },
+      "panelsList": {
+        "title": "Die Panels auflisten",
+        "description": "Gibt die Panels zurück, die die Oberfläche im Vordergrund zeigen kann, und sagt, welche offen sind. Ein Panel, das diese Oberfläche nicht bedient, wird nicht aufgeführt, da es dort nicht geöffnet werden kann."
+      },
+      "panelOpen": {
+        "title": "Ein Panel öffnen",
+        "description": "Bringt ein Panel nach vorn, an den Platz, den die Oberfläche im Vordergrund ihm vorbehält. Ein bereits offenes Panel erhält den Fokus, statt neu geschrieben zu werden."
+      },
+      "panelClose": {
+        "title": "Ein Panel schließen",
+        "description": "Leert die Hälfte, in der die Oberfläche im Vordergrund dieses Panel hält. Die Anordnung der anderen Panels bewegt sich nicht."
+      },
+      "sceneState": {
+        "title": "Die Szene in Bearbeitung lesen",
+        "description": "Gibt jedes Objekt des 3D-Dokuments im Vordergrund zurück — seine Kennung, seinen Namen, seinen Typ, sein Elternobjekt, seine Sichtbarkeit und seine Transformation, mit der Geometrie, dem Material oder dem Licht, das es trägt — dazu, was ausgewählt ist, die Kamera-Shots und die Einstellung der Szene. Ein Feld AUF SEINEM STANDARD wird weggelassen, und Abwesenheit bedeutet diesen Standard: kein Elternobjekt, gezeichnet, im Ursprung ohne Drehung und ohne Skalierung, die eigene Farbe des Studios, eine Form so unterteilt, wie ihre Art es immer ist. Maße werden nie weggelassen. Eine Liste, die nichts enthält, wird ganz weggelassen. Um EIN Objekt mit seinen Komponenten und dem, was ihm noch hinzugefügt werden kann, zu beschreiben: studio.describe."
+      },
+      "optimizationAnalyze": {
+        "title": "Die Szenenoptimierung analysieren",
+        "description": "Gibt den deterministischen Optimierungsplan für die genannten Objekte zurück, oder für die ganze Szene, wenn keine genannt sind. Ändert nichts."
+      },
+      "optimizationSelection": {
+        "title": "Auswahl optimieren",
+        "description": "Setzt die ausgewählten Objekte auf automatische SAFE-Laufzeitoptimierung und hält dabei jedes Autorenobjekt editierbar."
+      },
+      "optimizationWorld": {
+        "title": "Die Szene optimieren",
+        "description": "Setzt jedes Objekt auf automatische SAFE-Laufzeitoptimierung, ohne die Autorenszene zu verändern."
+      },
+      "optimizationReport": {
+        "title": "Den Optimierungsbericht lesen",
+        "description": "Gibt die gemessenen Kosten der Szene getrennt von den geschätzten SAFE-Laufzeitgewinnen zurück."
+      },
+      "optimizationClearCache": {
+        "title": "Den Optimierungs-Cache leeren",
+        "description": "Verwirft die verwerfbare optimierte Darstellung des Szenen-Viewports, damit sie aus dem Autorenzustand neu aufgebaut wird."
+      },
+      "optimizationExclude": {
+        "title": "Objekte von der Optimierung ausschließen",
+        "description": "Hält die genannten logischen Objekte im optimierten Rendering einzeln."
+      },
+      "optimizationSetMode": {
+        "title": "Den Optimierungsmodus eines Objekts festlegen",
+        "description": "Setzt Auto, Individuell erzwingen, Instanz erzwingen, Batch erzwingen oder Ausschließen auf den genannten Objekten."
+      },
+      "nodeAdd": {
+        "title": "Ein Objekt zur Szene hinzufügen",
+        "description": "Setzt ein Primitiv, ein Licht, eine Kamera, ein Sprite oder einen Text in das 3D-Dokument im Vordergrund, an die angegebene Position. Antwortet mit der Kennung, mit der das Objekt geboren wurde. Ein Modell des Projekts, oder das, was eine Generierung gerade geantwortet hat, kommt über node.addModel herein; dies erzeugt ein Primitiv."
+      },
+      "nodeAddModel": {
+        "title": "Ein Modell aus der Bibliothek platzieren",
+        "description": "Setzt ein 3D-Modell aus der Bibliothek des Projekts in die Szene im Vordergrund, benannt nach seinem Asset. So kommt ein generiertes Mesh in eine Szene."
+      },
+      "nodeRemove": {
+        "title": "Ein Objekt entfernen",
+        "description": "Nimmt ein Objekt aus der Szene im Vordergrund, mit allem, was daran hängt. Lässt sich rückgängig machen wie jede andere Bearbeitung dieses Dokuments."
+      },
+      "nodeRename": {
+        "title": "Ein Objekt umbenennen",
+        "description": "Nennt ein Objekt der Szene im Vordergrund anders. Die Kennung ändert sich nicht, also geht nichts verloren, was darauf zeigte."
+      },
+      "nodeAttach": {
+        "title": "Ein Objekt an einen Charakter hängen",
+        "description": "Hängt ein Objekt an den Befestigungspunkt des Charakters, zu dem es gehört — ein Schwert in eine Hand. Ohne benannten Punkt folgt das Objekt dem ganzen Charakter."
+      },
+      "nodeTransform": {
+        "title": "Ein Objekt platzieren",
+        "description": "Verschiebt, dreht oder skaliert ein Objekt. Drehungen sind Eulerwinkel in Radiant, und jede weggelassene Achse behält den Wert, den das Objekt schon hatte."
+      },
+      "nodeSetVisible": {
+        "title": "Ein Objekt ein- oder ausblenden",
+        "description": "Nimmt ein Objekt aus dem, was gezeichnet wird, oder setzt es wieder hinein. Es bleibt in beiden Fällen in der Szene, und genau das unterscheidet Ausblenden von Entfernen."
+      },
+      "nodeSetMeshMaterial": {
+        "title": "Das Material eines Objekts festlegen",
+        "description": "Ändert Farbe, Rauheit, Metallgrad, Kachelungsdichte und die fünf Maps eines Meshs oder eines Textes. Ein Slot, der mit leerer Kennung benannt wird, ist eine entfernte Map. Kachelung wird bei einem Text abgelehnt, dessen Kontur kein Primitiv ist."
+      },
+      "nodeSetPrimitiveParameters": {
+        "title": "Die Parameter eines Primitivs festlegen",
+        "description": "Ändert die Maße und die Segmentzahlen der Form, aus der ein Mesh gebaut wurde. Jedes Primitiv trägt seine eigenen, die das Lesen der Szene herausgibt — ein Feld, das nicht zur Form gehört, wird abgelehnt statt ignoriert."
+      },
+      "nodeSetShadowCastAndReceive": {
+        "title": "Die Schatten eines Objekts festlegen",
+        "description": "Sagt, ob ein Objekt einen Schatten wirft und ob es die auffängt, die andere werfen. Ein Licht fängt keinen auf, ein Sprite tut weder das eine noch das andere, und das Feld, das das Objekt nicht tragen kann, wird abgelehnt."
+      },
+      "nodeSetSpriteSettings": {
+        "title": "Ein Sprite einstellen",
+        "description": "Ändert Tönung, Deckkraft und Bild eines Sprites, das immer zur Kamera zeigt. Eine leere Kennung nimmt das Bild weg und lässt das einfarbige Viereck stehen."
+      },
+      "nodeSetTextSettings": {
+        "title": "Einen 3D-Text einstellen",
+        "description": "Ändert die Wörter, die Schriftart, die Größe, die Tiefe aus der eigenen Ebene heraus und die Feinheit der Kurven eines Textes. Sein Material wird über die Material-Aktion eingestellt, wie das eines Meshs."
+      },
+      "nodeSetPathShape": {
+        "title": "Die Form eines Pfads festlegen",
+        "description": "Ändert die Spannung eines Pfads, von 0 kantig bis 1 rund, und ob er sich wieder schließt. Seine Kontrollpunkte werden von den drei Aktionen daneben hinzugefügt, verschoben und entfernt."
+      },
+      "pathAddPoint": {
+        "title": "Einen Punkt zu einem Pfad hinzufügen",
+        "description": "Setzt einen Kontrollpunkt. Mit Koordinaten wird er hinter dem letzten hinzugefügt, dort, wohin er gezielt wurde. Mit einem Index wird er direkt hinter diesen Punkt geschoben, auf halbem Weg zu seinem Nachbarn. Ohne beides verlängert er den Pfad an seinem Ende."
+      },
+      "pathMovePoint": {
+        "title": "Einen Punkt eines Pfads verschieben",
+        "description": "Ändert die Koordinaten eines Kontrollpunkts, im eigenen Bezugssystem des Pfads — den Pfad zu verschieben verschiebt also die ganze Bahn. Ein Index, der keinen Punkt benennt, wird abgelehnt."
+      },
+      "pathRemovePoint": {
+        "title": "Einen Punkt aus einem Pfad entfernen",
+        "description": "Entfernt einen Kontrollpunkt. Ein Pfad fällt nie unter zwei Punkte, denn ein Punkt ist keine Linie, und der Aufruf wird dort abgelehnt."
+      },
+      "modelSetMaterialDocument": {
+        "title": "Ein Modell mit einem Material bekleiden",
+        "description": "Lässt ein importiertes Modell ein Material des Projekts tragen, benannt nach dem Titel seines Dokuments. Das Modell folgt danach diesem Material, sodass das Bearbeiten eines seiner Kanäle oder Regler es neu einfärbt, ohne dass hier noch einmal etwas verlangt wird. Ein leerer Titel nimmt es ihm weg, und das Modell fällt auf das zurück, was seine eigene Datei trägt."
+      },
+      "nodeSetLightSettings": {
+        "title": "Ein Licht einstellen",
+        "description": "Ändert alles, was die vorliegende Art von Licht trägt — seine Farbe, Intensität, Reichweite, Abnahme, die Breite und Weichheit seines Kegels, sein Ziel, und die beiden Farben eines Hemisphärenlichts. Ein Feld, das die Art nicht trägt, wird abgelehnt. Ein Glühen, ein Bloom oder irgendein anderer Effekt ist kein Licht: post.set schreibt einen Parameter eines Effekts und post.reset setzt ihn zurück."
+      },
+      "nodeSetCameraLens": {
+        "title": "Ein Kameraobjektiv einstellen",
+        "description": "Ändert den Sichtwinkel und die nahe und die ferne Distanz einer Kamera. Wo sie steht, wird über ihre Transformation eingestellt, wie bei allem anderen im Baum."
+      },
+      "cameraAddShot": {
+        "title": "Eine Kamera auf Sendung nehmen",
+        "description": "Öffnet einen Shot für diese Kamera, ab dem angegebenen Zeitpunkt in Sekunden, und antwortet seine Kennung. Auf welcher Zeile er landet, folgt der eigenen Regel des Bands, wo eine Kamera, die noch nicht auf dem Band ist, oben ankommt. Eine Kamera mit einem Shot ist die AKTIVE Kamera, die, durch die die Szene gesehen wird."
+      },
+      "cameraBindPathToShot": {
+        "title": "Eine Kamera einen Pfad entlangführen",
+        "description": "Bindet einen Pfad an den genannten Shot: die Kamera fährt ihn für die ganze Dauer des Shots ab, mit gleichmäßiger Geschwindigkeit über seine Länge. Ohne Pfad bewegt der Shot die Kamera nicht mehr. Ein Start hinter dem Ende lässt den Pfad rückwärts laufen."
+      },
+      "cameraCreateAndBindPath": {
+        "title": "Einen Pfad unter eine Kamera legen",
+        "description": "Erzeugt einen Pfad dort, wo die Kamera steht, ausgerichtet entlang ihrer Blickrichtung, und bindet ihn in einer Geste an den Shot. Die Aktion daneben bindet einen Pfad, der schon existiert; diese erzeugt ihn, denn ein Pfad führt nichts ohne einen Shot, der ihn abfährt."
+      },
+      "cameraReorder": {
+        "title": "Die Zeile einer Kamera auf dem Band verschieben",
+        "description": "Bewegt die Zeile einer Kamera nach oben oder nach unten, was entscheidet, wodurch der Film schaut, wo zwei Shots sich überlappen. Die Zahl ist eine Anzahl Reihen, negativ, um nach unten zu gehen, und die Antwort sagt, wie weit die Zeile sich tatsächlich bewegen konnte."
+      },
+      "cameraAimShotAt": {
+        "title": "Einer Kamera ein Ziel geben",
+        "description": "Richtet die Kamera des genannten Shots auf ein Objekt — dem sie auch dann folgt, wenn es animiert ist — oder auf einen festen Punkt. Ohne beides bleibt die Kamera allein durch ihre eigene Drehung ausgerichtet."
+      },
+      "nodeReparent": {
+        "title": "Ein Objekt neu einhängen",
+        "description": "Hängt ein Objekt unter ein anderes, oder unter die Szene selbst, wenn kein Elternobjekt angegeben wird, und setzt es dorthin, wo es unter seinen neuen Nachbarn stehen soll. Einen Platz ohne Elternobjekt anzugeben hebt das Objekt also auf die Szene hoch: das Elternobjekt wiederholen, um nur den Platz zu ändern. Das Objekt behält seine eigene Transformation, die dann relativ zu seinem neuen Elternobjekt gelesen wird."
+      },
+      "nodeSelect": {
+        "title": "Objekte auswählen",
+        "description": "Macht diese Objekte zu der Auswahl, die der Inspektor liest und das Gizmo bewegt. Eine Auswahl ist keine Bearbeitung, sie fügt dem Verlauf also nichts hinzu."
+      },
+      "viewDirection": {
+        "title": "Die Szene von einer Seite betrachten",
+        "description": "Setzt die Kamera der Hauptansicht über, unter, vor, hinter, links oder rechts von der Szene. Es ist eine Bewegung, sie fügt dem Verlauf also nichts hinzu."
+      },
+      "rigState": {
+        "title": "Das Skelett eines Charakters lesen",
+        "description": "Gibt die Knochen eines Modells mit ihren Rollen zurück, die Griffe, nach denen seine Gelenke greifen, die Blöcke, die auf seinem Band liegen, und was die Engine am Mesh gemessen hat."
+      },
+      "rigFit": {
+        "title": "Ein Modell animierbar machen",
+        "description": "Legt auf das Mesh das Skelett, das das Studio an das anpasst, was es daran gemessen hat. Lehnt ab, solange die Engine das Modell nicht gelesen hat, was ein Warten und kein Fehler ist."
+      },
+      "rigClear": {
+        "title": "Das Skelett eines Modells entfernen",
+        "description": "Bringt das Modell in den Zustand eines Meshs zurück, ohne Knochen und ohne Griffe. Die Geste lässt sich rückgängig machen wie jede andere der Szene."
+      },
+      "rigConfigureHands": {
+        "title": "Die Fingerknochen hinzufügen",
+        "description": "Legt die dreißig Fingerknochen in Ruhestellung auf die Hände, die das Skelett schon trägt. Ohne erkannte Hände wird nichts geschrieben."
+      },
+      "socketAdd": {
+        "title": "Einen Befestigungspunkt setzen",
+        "description": "Setzt auf einen Knochen des Charakters im Vordergrund einen Punkt, dem ein Objekt einer Szene folgen kann — eine Hand, ein Rücken. Der Punkt lebt in der Datei des Charakters."
+      },
+      "socketRemove": {
+        "title": "Einen Befestigungspunkt entfernen",
+        "description": "Entfernt einen Befestigungspunkt vom Charakter im Vordergrund. Was ihm folgte, fällt auf den Charakter selbst zurück."
+      },
+      "boneAdd": {
+        "title": "Einen Knochen hinzufügen",
+        "description": "Hängt einen Knochen unter den genannten, genau auf ihm ruhend — das Gizmo ist das, was ihn dorthin setzt, wo er hingehört. Sein Name wird aus dem des Elternobjekts gebildet."
+      },
+      "boneRemove": {
+        "title": "Einen Knochen entfernen",
+        "description": "Nimmt einen Knochen aus dem Skelett und hängt seine Kindobjekte dorthin, wo er hing: ein Ellenbogen geht, die Hand bleibt."
+      },
+      "boneRename": {
+        "title": "Einen Knochen umbenennen",
+        "description": "Ändert den Namen eines Knochens, seine Kindobjekte folgen von allein. Ein schon vergebener Name wird abgelehnt, statt halb geschrieben zu werden."
+      },
+      "boneSetRole": {
+        "title": "Sagen, welches Gelenk ein Knochen IST",
+        "description": "Bindet einen Knochen an eines der Gelenke des humanoiden Standards, oder an keines, wenn die Rolle weggelassen wird. Welcher Knochen diese Rolle auch hielt, er verliert sie im selben Zug."
+      },
+      "ikAdd": {
+        "title": "Einen Griff auf ein Gelenk setzen",
+        "description": "Fügt einen Griff hinzu, nach dem ein Gelenk greift, und die Kette, die ihm folgt — die zwei Knochen darüber drehen sich mit, und genau das setzt einen Fuß auf den Boden oder eine Hand an einen Halt."
+      },
+      "ikRemove": {
+        "title": "Einen Griff entfernen",
+        "description": "Nimmt eine Kette und den Griff, nach dem sie griff, beide: ein zurückgelassener Griff wäre ein Knochen, den nichts antreibt."
+      },
+      "animationsList": {
+        "title": "Auflisten, was ein Charakter abspielen kann",
+        "description": "Antwortet die drei Herkünfte einer Bewegung — die Clips, die die eigene Datei des Modells trägt, die mit dem Studio gelieferten Animationen, und die, die die Projektbibliothek behält. Das ist es, was auf „welche Animationen trägt diese Szene“ antwortet; die Keys, die ein Band hält, werden stattdessen mit scene.state gelesen."
+      },
+      "animationAddBlock": {
+        "title": "Einen Animationsblock setzen",
+        "description": "Legt auf das Band eines Charakters eine Bewegung aus einer der drei Quellen. Die Kennung benennt ein Asset der Bibliothek, der Name benennt die beiden anderen, und genau eines von beiden gehört zu einem Aufruf. Das Band wird erzeugt, wenn der Charakter keines hatte."
+      },
+      "animationSetBlockSettings": {
+        "title": "Einen Animationsblock einstellen",
+        "description": "Ändert, wo ein Block auf dem Band sitzt, wo die Wiedergabe innerhalb der Bewegung beginnt, seine Geschwindigkeit, seine Schleife, die Länge seiner Blenden, was er mit der Bewegung der Wurzel macht, und den Teil des Körpers, den er antreibt. Der Block wird an Ort und Stelle neu geschrieben, jede andere Bahn bleibt unangetastet."
+      },
+      "animationRemoveBlock": {
+        "title": "Einen Animationsblock entfernen",
+        "description": "Entfernt einen Block vom Band, wo immer er saß. Das Band bleibt, leer, wenn es sein muss."
+      },
+      "animationSetBandLengthAndRate": {
+        "title": "Das Animationsband einstellen",
+        "description": "Ändert die Länge des Bands, seine Rate in Frames pro Sekunde, oder beides. Was nicht genannt wird, bleibt unangetastet."
+      },
+      "animationAutoKey": {
+        "title": "Das automatische Setzen von Keys einschalten",
+        "description": "Entscheidet, ob das Bewegen eines Knochens dabei einen Key schreibt. Es ist Sitzungszustand, wie jede Art, eine Szene zu betrachten, und nichts davon wird mit dem Dokument gespeichert."
+      },
+      "keyWritePoseKeys": {
+        "title": "Einen Key auf ein Subjekt setzen",
+        "description": "Schreibt einen Key auf jeden Kanal eines Objekts oder eines Knochens, zum angegebenen Zeitpunkt oder am Abspielkopf, und hält dabei die am Abspielkopf gezeigte Pose — die, die node.transform gesetzt hat. Auf einem animierten Objekt keyt node.transform den Abspielkopf selbst, um also einen anderen Zeitpunkt zu posieren: dort zuerst den Key schreiben, dann das Objekt mit dem Abspielkopf darauf setzen. Die Kanäle, die ihm fehlen, werden dabei geöffnet, denn zuerst eine Spur zu verlangen hieße, das zu fordern, was schon im Viewport steht."
+      },
+      "keyRemoveSubjectKeys": {
+        "title": "Die Keys eines Subjekts entfernen",
+        "description": "Nimmt den Key zurück, den jeder Kanal eines Objekts oder eines Knochens zu diesem Zeitpunkt hält. Ohne dies wäre eine Pose eine, die niemand rückgängig machen könnte, und nichts anderes im Panel entfernt einen."
+      },
+      "keyWriteKeysOnOpenChannels": {
+        "title": "Einen Key auf alles Animierte setzen",
+        "description": "Schreibt einen Key auf jeden Kanal, den die Szene schon geöffnet hat, zum angegebenen Zeitpunkt oder am Abspielkopf. Öffnet keinen, und genau das unterscheidet dies vom Keyen eines einzelnen Subjekts."
+      },
+      "keyMove": {
+        "title": "Einen Key verschieben",
+        "description": "Schiebt einen Key seinen Kanal entlang und behält seinen Wert. Ein Key, der auf einem Zeitpunkt landet, den schon ein anderer hält, ersetzt ihn, denn zwei Keys auf einem Frame wären ein Zustand, den keine Wiedergabe zurücklesen könnte."
+      },
+      "channelRemove": {
+        "title": "Einen Animationskanal entfernen",
+        "description": "Nimmt einen Kanal weg, und mit ihm die Keys, die er trug. Ein gesperrter Kanal wird abgelehnt, statt stillschweigend stehen zu bleiben."
+      },
+      "channelSetMuteSoloLock": {
+        "title": "Die Flags eines Kanals setzen",
+        "description": "Schaltet einen Kanal stumm, spielt ihn allein, oder sperrt ihn. Es ist eine Art zu ARBEITEN und keine Änderung am Dokument, dem Verlauf wird also nichts hinzugefügt."
+      },
+      "viewSetDisplayMode": {
+        "title": "Wählen, wie die Szene gezeichnet wird",
+        "description": "Schaltet die Hauptansicht auf schattiert, Drahtgitter, nur Material oder eine der anderen Zeichenarten um. Der Menübefehl wechselt nur von einer zur nächsten; dieser benennt, welche."
+      },
+      "sceneCapture": {
+        "title": "Ein Standbild der 3D-Ansicht aufnehmen",
+        "description": "Schreibt ein Standbild von dem, was die Ansicht zeigt, in die Bilder des Projekts, in der gewünschten Größe. Der Bildausschnitt ändert sich nie — nur die Pixelzahl, sonst zeigte die Aufnahme etwas anderes als der Bildschirm."
+      },
+      "worldApplyPreset": {
+        "title": "Eine fertige Welt anwenden",
+        "description": "Setzt Beleuchtung, Hintergrund, Nebel und Farbkorrektur einer Szene in einem einzigen Aufruf, für einen bestimmten Look. Jede Vorgabe schreibt nur die Felder, um die es ihr geht, und lässt den Rest, wie er war, sodass ein Boden, den jemand eingeschaltet hat, eingeschaltet bleibt."
+      },
+      "layerLock": {
+        "title": "Eine Ebene sperren",
+        "description": "Setzt oder löst die drei Schlösser einer Ebene: das auf ihren Pixeln, das auf ihrem Platz und das auf ihrer Transparenz. Sie halten die Hand auf der Leinwand auf; ein von einer anderen Aktion geschriebener Wert geht hindurch, so wie er es aus den Panels tut."
+      },
+      "layerEditShapeLayer": {
+        "title": "Eine Form neu bemalen",
+        "description": "Ändert die Füllung, die Kontur, die Strichstärke und die Anzahl der Seiten einer bereits gezeichneten Form, ohne sie neu zu zeichnen. Füllung und Kontur zugleich zu entfernen wird abgelehnt, da nichts mehr zu sehen bliebe."
+      },
+      "layerSetAdjustmentAmount": {
+        "title": "Eine Einstellungsebene regeln",
+        "description": "Bewegt den einen Regler, den eine Einstellungsebene trägt — Belichtung, Kontrast, Sättigung oder Temperatur. Einen anderen Regler als ihren eigenen zu nennen wird abgelehnt, statt stillschweigend unter den Tisch zu fallen."
+      },
+      "worldSetSceneLighting": {
+        "title": "Wählen, was die Szene beleuchtet",
+        "description": "Beleuchtet die Szene durch das prozedurale Studio, durch ein Bild des Projekts, das über seine Asset-Kennung genannt wird, oder durch ein Himmelsdokument, das über seinen Titel genannt wird — die Szene übernimmt dann dessen farbkorrigiertes Bild, dessen Sonne und dessen Intensität. Setzt außerdem, wie stark diese Beleuchtung ist und wie weit sie um die Senkrechte gedreht wird, gelegt über das, was der Himmel sagt."
+      },
+      "worldSetBackground": {
+        "title": "Wählen, was hinter der Szene hängt",
+        "description": "Setzt hinter die Szene die Umgebung selbst, eine einfarbige Fläche oder gar nichts — Letzteres lässt den Hintergrund transparent, was eine Aufnahme braucht, die über etwas anderes gelegt werden soll."
+      },
+      "worldSetFog": {
+        "title": "Den Nebel der Szene regeln",
+        "description": "Schaltet den Nebel aus, blendet ihn zwischen zwei Entfernungen ein oder verdichtet ihn mit der Tiefe. Die Farbe und die Entfernungen gehören zu der gewählten Form und bleiben sonst genau so, wie sie waren."
+      },
+      "worldSetGroundPlane": {
+        "title": "Den Boden der Szene regeln",
+        "description": "Zeigt oder verbirgt den Boden, den die Szene besitzt, und setzt seine Farbe, seine Seitenlänge, seine Deckkraft und ob Schatten darauf fallen. So wird einer Szene ein Boden HINZUGEFÜGT: eine als Objekt hinzugefügte Fläche ist Kulisse, nicht der Boden. Dieser Boden gehört zum Dokument, anders als das Raster, das eine Einstellung der Anwendung ist."
+      },
+      "worldSetLayers": {
+        "title": "Relief- und Streueinträge ersetzen",
+        "description": "Ersetzt die dauerhafte Liste der Relief- und Streueinträge der Szene durch eine vollständige, geprüfte Liste. Lesen Sie die vorhandenen Einträge mit scene.state, bevor Sie einen davon ändern."
+      },
+      "worldSetToneMapping": {
+        "title": "Regeln, wie die Szene gerendert wird",
+        "description": "Wählt, wie der hohe Dynamikumfang auf den Bildschirm heruntergebracht wird, und um wie viele Blendenstufen er belichtet wird. Beides gehört zum Dokument und nicht zu dem Fenster, das es gerade betrachtet."
+      },
+      "gitStatus": {
+        "title": "Den Versionsstand des Repositorys lesen",
+        "description": "Gibt den Branch zurück, was er verfolgt, wie weit er voraus oder zurück ist, und jede geänderte Datei mit der Hälfte von Git, in der sie liegt. Sagt auch, wenn das Projekt überhaupt kein Repository hat. Was sich INNERHALB einer Datei geändert hat, ist git.diff; dies nennt nur die Dateien."
+      },
+      "gitLog": {
+        "title": "Den Verlauf lesen",
+        "description": "Gibt eine Seite aufgezeichneter Versionen zurück, die neueste zuerst, über alle Branches hinweg, mit den Namen, die auf jede einzelne zeigen. Was sich zwischen zwei Versionen innerhalb einer Datei geändert hat, ist git.diff."
+      },
+      "gitListCommitFiles": {
+        "title": "Lesen, was eine Version geändert hat",
+        "description": "Gibt die Dateien zurück, die eine aufgezeichnete Version berührt hat, und wie jede berührt wurde — hinzugefügt, geändert, entfernt oder umbenannt."
+      },
+      "gitDiff": {
+        "title": "Lesen, was sich in einer Datei geändert hat",
+        "description": "Gibt die Änderung innerhalb einer Datei zurück, in einer aufgezeichneten Version oder gegen die letzte, wenn keine Version genannt wird."
+      },
+      "gitBranches": {
+        "title": "Die Branches auflisten",
+        "description": "Gibt jeden Branch des Repositorys des Projekts zurück und sagt, welcher ausgecheckt ist."
+      },
+      "gitStashes": {
+        "title": "Die beiseitegelegten Änderungen auflisten",
+        "description": "Gibt zurück, was beiseitegelegt wurde, das Neueste zuerst, damit ein Client eines davon über seinen Platz in der Liste zurückholen kann."
+      },
+      "gitInit": {
+        "title": "Mit dem Aufzeichnen von Versionen beginnen",
+        "description": "Führt git init auf dem geöffneten Projekt aus und schreibt dessen Ignore-Datei, dann antwortet es mit dem Zustand, den es hinterlassen hat. Tut nichts an einem Projekt, das bereits aufzeichnet."
+      },
+      "gitStage": {
+        "title": "Dateien vormerken",
+        "description": "Verschiebt Änderungen in das, was die nächste aufgezeichnete Version enthalten wird. Antwortet mit dem hinterlassenen Zustand, sodass nichts zurückgelesen werden muss."
+      },
+      "gitUnstage": {
+        "title": "Dateien aus der Vormerkung nehmen",
+        "description": "Nimmt Änderungen wieder aus dem heraus, was die nächste aufgezeichnete Version enthalten wird, ohne die Dateien selbst zu berühren."
+      },
+      "gitRestore": {
+        "title": "Änderungen an Dateien verwerfen",
+        "description": "Setzt Dateien so zurück, wie die letzte aufgezeichnete Version sie hält. Was nie aufgezeichnet wurde, ist verloren, und kein Rückgängig des Studios erreicht es."
+      },
+      "gitCommit": {
+        "title": "Eine Version aufzeichnen",
+        "description": "Zeichnet auf, was vorgemerkt ist, unter einer Nachricht. Kann die letzte Version berichtigen, statt eine hinzuzufügen, was sie umschreibt, statt ihr zu folgen."
+      },
+      "gitCreateBranch": {
+        "title": "Einen Branch erstellen",
+        "description": "Startet einen Branch bei der aktuellen Version und wechselt auf ihn. Die Arbeitskopie bleibt genau so, wie sie steht."
+      },
+      "gitCheckout": {
+        "title": "Branch wechseln",
+        "description": "Wechselt auf einen anderen Branch und schreibt die Arbeitskopie passend um. Ein in einem Tab geöffnetes Dokument ist dann ein Dokument, dessen Datei sich unter ihm geändert hat."
+      },
+      "gitStash": {
+        "title": "Die aktuellen Änderungen beiseitelegen",
+        "description": "Legt die Änderungen der Arbeitskopie beiseite und bringt sie auf die letzte aufgezeichnete Version zurück. Die Änderungen verlassen damit die Festplatte."
+      },
+      "gitStashPop": {
+        "title": "Beiseitegelegte Änderungen zurückholen",
+        "description": "Legt einen Satz beiseitegelegter Änderungen zurück in die Arbeitskopie und entfernt ihn aus der Ablage. Dabei werden Dateien umgeschrieben."
+      },
+      "gitTag": {
+        "title": "Eine Version mit einem Tag versehen",
+        "description": "Setzt einen Namen auf eine aufgezeichnete Version, damit sie ohne ihren Hash wiedergefunden werden kann."
+      },
+      "settingsRead": {
+        "title": "Die Einstellungen lesen",
+        "description": "Antwortet { settings, choices }: unter settings jede Einstellung, die das Studio hält, Abschnitt für Abschnitt, und unter choices, was jede Einstellung mit fester Liste akzeptiert, mit ihrem Titel und ihrer Hilfe. Was der Viewport ZEICHNET, lebt hier — das Raster, die Schatten, die Hilfsobjekte — und ebenso die Einheiten, das Design und die Sprache. Keine Szenenaktion schaltet etwas davon ein."
+      },
+      "settingsWrite": {
+        "title": "Die Einstellungen ändern",
+        "description": "Schreibt eine oder mehrere Einstellungen, Abschnitt für Abschnitt. So werden das Raster und die Schatten eingeschaltet oder geregelt — lesen Sie sie zuerst, denn eine Änderung, die nichts dem Studio Bekanntes nennt, wird abgelehnt statt blind geschrieben. Was nicht genannt wird, bleibt unangetastet."
+      },
+      "accountsList": {
+        "title": "Die Konten auflisten",
+        "description": "Gibt die Generierungskonten zurück, die dieses Studio hält, und sagt, welches aktiv ist und welche umbenannt oder entfernt werden dürfen. Kein Schlüssel und kein Geheimnis wird je zurückgegeben."
+      },
+      "accountsActivate": {
+        "title": "Konto wechseln",
+        "description": "Macht eines der gehaltenen Konten zu dem, über das das Studio generiert. Alles, was von da an gesendet wird, geht mit dessen Zugangsdaten hinaus."
+      },
+      "accountsRename": {
+        "title": "Ein Konto umbenennen",
+        "description": "Ändert die Bezeichnung, unter der ein Konto im Studio erscheint. Weder der Schlüssel noch das Geheimnis überquert diese Grenze, in keiner der beiden Richtungen."
+      },
+      "settingsTriggerAction": {
+        "title": "Eine Schaltfläche der Einstellungen betätigen",
+        "description": "Löst eine der Schaltflächen des Einstellungsfensters aus — eine Datei anzeigen, die Entwicklerwerkzeuge öffnen, den Verbindungsbefehl kopieren, die Brücke installieren, alles zurücksetzen. Die letzten beiden hinterlassen etwas und werden auf dem Bildschirm nachgefragt."
+      },
+      "contextReadProjectCards": {
+        "title": "Den Kontext des Projekts lesen",
+        "description": "Antwortet mit den Kontextkarten — dem, was die PERSON über dieses Projekt gesagt hat — mit ihrem Titel, ihrem Text und ob sie gelten."
+      },
+      "contextWriteProjectCard": {
+        "title": "Eine Kontextkarte schreiben",
+        "description": "Schreibt, was die PERSON sagt, dass das Projekt IST oder ANSTREBT, als Ganzes, als dauerhafte Karte, die in jedem Zug wieder gelesen wird. Eine Arbeitsregel darüber, wie eine Sache hier gemacht wird — wie sich Kameras bewegen, wie Dateien benannt werden — ist stattdessen ein Gedächtniseintrag (memory.write)."
+      },
+      "contextDeleteProjectCard": {
+        "title": "Eine Kontextkarte löschen",
+        "description": "Nimmt die Karte, die eine ID nennt, aus dem Kontext des Projekts heraus — was die Person gesagt hat, zurückgenommen. Ihr Text ist verloren."
+      },
+      "targetSelect": {
+        "title": "Ein Ziel anvisieren",
+        "description": "Zeigt im geöffneten Dokument auf das, worauf der nächste Schritt wirken wird — eine Ebene, ein Szenenobjekt, ein Clip. Nehmen Sie die Kennung aus der Zielliste dieses Briefings; ohne diese Liste gibt es nichts anzuvisieren."
+      },
+      "nodeMarkAsCuttingTool": {
+        "title": "Objekte als Werkzeuge markieren",
+        "description": "Markiert Objekte der Szene im Vordergrund oder nimmt die Markierung mit „negative“ auf FALSCH zurück: ein markiertes Objekt wird bei der nächsten Faltung aus den anderen HERAUSGESCHNITTEN, welche Faltung auch verlangt wird und in welcher Reihenfolge die IDs auch stehen. Ohne Markierung ist die größte Form die Materie."
+      },
+      "nodeCombineIntoSolid": {
+        "title": "Objekte aushöhlen, vereinen oder schneiden",
+        "description": "Faltet mehrere Objekte der Szene im Vordergrund zu einem einzigen Volumenkörper. DIE REIHENFOLGE DER IDS SPIELT KEINE ROLLE: die Materie ist die größte Form, es sei denn, matterId nennt sie, und ein über node.markAsCuttingTool markiertes Objekt ist immer ein Werkzeug. Die ursprünglichen Formen bleiben im Volumenkörper erhalten, und node.separate gibt sie zurück. Antwortet mit der ID des Volumenkörpers. „intersect“ behält nur den Teil, in dem sie sich überlappen."
+      },
+      "nodeSwapSolidMatterAndTool": {
+        "title": "Eine Faltung umkehren",
+        "description": "Faltet einen Volumenkörper der Szene im Vordergrund andersherum: was ausgehöhlt worden war, wird zur Materie, und die Materie wird zum Werkzeug. Für die Faltung, die verkehrt herum lief, ohne etwas rückgängig zu machen."
+      },
+      "nodeSeparate": {
+        "title": "Einen Volumenkörper trennen",
+        "description": "Bricht einen Volumenkörper der Szene im Vordergrund auseinander und gibt die Formen zurück, aus denen er gemacht war, jede dort, wo sie stand. Antwortet mit den IDs der zurückgegebenen Objekte."
+      },
+      "modelSetBaseColorImage": {
+        "title": "Ein Modell mit einem Bild überziehen",
+        "description": "Legt ein einziges Bild des Projekts über ein ganzes importiertes Modell, als seine Grundfarbe — der einfache Weg, es einzukleiden. Das schließt Materialien aus: ein mit einem Bild überzogenes Modell trägt keines, und umgekehrt. Kein weiterer Kanal wird daraus abgeleitet. Ohne Bild wird die Kleidung abgenommen und das Modell kehrt zu dem zurück, was seine eigene Datei trägt."
+      },
+      "postState": {
+        "title": "Die Komposition der Nachbearbeitung lesen",
+        "description": "Gibt den Stapel der Effekte zurück, durch den die Szene — oder die genannte Kamera — filmt, mit der ID jeder Instanz, welcher Effekt sie ist, ihren Parametern, ob sie an ist und ob die Kette sie auslässt."
+      },
+      "postAdd": {
+        "title": "Einen Effekt der Nachbearbeitung hinzufügen",
+        "description": "Setzt einen Effekt aus dem Katalog ans Ende des Stapels, auf seine eigenen Standardwerte. Ohne genannte Kamera empfängt ihn die Komposition der Szene, die der Viewport bereits zeigt."
+      },
+      "postRemove": {
+        "title": "Einen Effekt der Nachbearbeitung entfernen",
+        "description": "Nimmt eine Instanz aus dem Stapel heraus, und mit ihr die Kanäle der Zeitleiste, die sie steuerten — blieben sie zurück, zielten sie auf einen Effekt, den nichts mehr erreichen kann."
+      },
+      "postMove": {
+        "title": "Einen Effekt im Stapel verschieben",
+        "description": "Ändert, wo eine Instanz in der Kette sitzt, was das erhaltene Bild ändert — eine Farbkorrektur vor einem Bloom ergibt nicht dasselbe wie eine Farbkorrektur danach."
+      },
+      "postSet": {
+        "title": "Einen Parameter eines Effekts regeln",
+        "description": "Schreibt einen Wert auf einen Parameter einer Instanz, gehalten in den Grenzen, die der Katalog für diesen Parameter erklärt. Welches Feld zu füllen ist, hängt von seiner Natur ab — eine Zahl, ein Schalter oder ein Wort."
+      },
+      "postSetEffectEnabled": {
+        "title": "Einen Effekt ein- oder ausschalten",
+        "description": "Schaltet eine Instanz aus, ohne sie zu entfernen, was sie aus der Berechnung nimmt und nicht nur aus dem Bild. Ihre Parameter bleiben, wo sie sind, bereit, wieder eingeschaltet zu werden."
+      },
+      "postSetWholeStackEnabled": {
+        "title": "Die ganze Komposition abschalten",
+        "description": "Schaltet den gesamten Stapel in einem Zug aus oder wieder ein, ohne etwas zu verlieren — das Vorher/Nachher, als Wert des Dokuments, den Rückgängig zurücknehmen kann."
+      },
+      "postApplyPreset": {
+        "title": "Eine Vorgabe der Nachbearbeitung anwenden",
+        "description": "Ersetzt den Stapel durch eine fertige Komposition — eine Menge von Effekten, in einer Reihenfolge, auf Werten, die zueinander passen. Das Dokument empfängt den Stapel selbst, nie einen Verweis auf die Vorgabe."
+      },
+      "postSetCameraStackMode": {
+        "title": "Sagen, was eine Kamera mit der Nachbearbeitung macht",
+        "description": "Wählt, ob diese Kamera der Komposition der Szene folgt, ihre eigene trägt oder gar keine anwendet. Der Wechsel auf ihre eigene startet sie mit dem, was sie bereits gefilmt hat."
+      },
+      "postListPresets": {
+        "title": "Die Vorgaben der Nachbearbeitung auflisten",
+        "description": "Antwortet mit den fertigen Kompositionen, die das Studio mitliefert, und denen, die auf diesem Rechner gespeichert sind, mit ihrem Namen. Das ist die Liste, die post.applyPreset akzeptiert."
+      },
+      "postDuplicate": {
+        "title": "Einen Effekt der Nachbearbeitung duplizieren",
+        "description": "Setzt eine Kopie des Effekts direkt hinter ihn, auf denselben Werten und unter einer neuen Identität. Abgelehnt bei einem Effekt, bei dem eine zweite Instanz nichts bedeutet — eine Kantenglättung, eine Verdeckung."
+      },
+      "postReset": {
+        "title": "Einen Effekt der Nachbearbeitung zurücksetzen",
+        "description": "Bringt jeden Parameter dieses Effekts auf das zurück, was der Katalog erklärt, ohne ihn aus dem Stapel zu nehmen oder seinen Platz zu berühren."
+      },
+      "postAddKeyframe": {
+        "title": "Einen Key auf einen Parameter der Nachbearbeitung setzen",
+        "description": "Öffnet einen Animationskanal auf diesem Parameter, wenn er keinen hat, und legt dort einen Key am Abspielkopf ab. Der angegebene Wert ist der, den man SEHEN will, und der Abstand zum Stapel wird hier ausgerechnet."
+      },
+      "postRemoveKeyframe": {
+        "title": "Einen Key der Nachbearbeitung entfernen",
+        "description": "Entfernt den Key, der am Abspielkopf auf diesem Parameter steht. Der Kanal bleibt bestehen, genau wie wenn ein Key vom Band entfernt wird."
+      },
+      "postSavePreset": {
+        "title": "Die Komposition als Vorgabe speichern",
+        "description": "Bewahrt den Stapel im Vordergrund unter einem Namen auf, auf diesem Rechner. Nichts wird in das Dokument oder das Projekt geschrieben."
+      },
+      "postRenamePreset": {
+        "title": "Eine gespeicherte Vorgabe umbenennen",
+        "description": "Ändert den Namen einer Vorgabe auf diesem Rechner, benannt über ihre ID oder über den Namen, den sie trägt. Was sie enthält, bewegt sich nicht."
+      },
+      "postDeleteSavedPreset": {
+        "title": "Eine gespeicherte Vorgabe vergessen",
+        "description": "Nimmt eine gespeicherte Vorgabe von diesem Rechner. Bereits angewendete Kompositionen ändern sich nicht: ein Dokument hält seinen Stapel, nie einen Verweis."
+      },
+      "componentAttach": {
+        "title": "Eine Komponente anhängen",
+        "description": "Gibt einem Objekt der Szene etwas zu TUN, während das Spiel läuft — seine Gesundheit, seine Bewegung. So bringt man ein Objekt dazu, sich von selbst zu bewegen: node.transform setzt es einmal irgendwohin und dort bleibt es. Abgelehnt, wenn das Objekt bereits eine dieses Typs trägt."
+      },
+      "componentDetach": {
+        "title": "Eine Komponente abhängen",
+        "description": "Nimmt die Komponente des genannten Typs von einem Objekt der Szene. Abgelehnt, wenn das Objekt keine hat."
+      },
+      "componentSetProperties": {
+        "title": "Eine Komponente regeln",
+        "description": "Schreibt ein Feld einer Komponente, die das Objekt trägt. Ein Feld, das die Komponente nicht erklärt, wird ignoriert."
+      },
+      "playStart": {
+        "title": "Das Spiel starten",
+        "description": "Startet das Spiel auf der Szene im Vordergrund. Antwortet sofort, lesen Sie den Zustand daher mit runtime.report."
+      },
+      "playStop": {
+        "title": "Das Spiel stoppen",
+        "description": "Stoppt das Spiel und setzt die Szene so zurück, wie sie bearbeitet wurde."
+      },
+      "playPause": {
+        "title": "Das Spiel pausieren",
+        "description": "Hält das Spiel an, ohne es zu verlassen. Vor play.step erforderlich."
+      },
+      "playResume": {
+        "title": "Das Spiel fortsetzen",
+        "description": "Läuft dort weiter, wo die Pause das Spiel gelassen hat, ohne die Zeit des Stillstands nachzuholen."
+      },
+      "playLoadScene": {
+        "title": "Das Spiel in eine andere Szene schicken",
+        "description": "Lädt eine andere Szene des Projekts in das laufende Spiel, mit einer optionalen Blende. Die Szene wird über ihren Titel oder ihre ID genannt."
+      },
+      "playStep": {
+        "title": "Das Spiel im Einzelschritt weiterführen",
+        "description": "Führt ein PAUSIERTES Spiel um einen oder mehrere feste Einzelschritte weiter und antwortet mit seinem Zustand. So wird eine Messung genommen, ohne dass etwas davonläuft."
+      },
+      "runtimeReport": {
+        "title": "Den Zustand des Spiels lesen",
+        "description": "Antwortet mit dem Tick, der Rate, der Anzahl der Entitäten, wie viele Fehler es gibt, und den letzten Zeilen, die das Spiel geschrieben hat."
+      },
+      "runtimeErrors": {
+        "title": "Die Fehler des Spiels lesen",
+        "description": "Antwortet mit ADRESSIERBAREN Fehlern — dem Verweis auf das Skript, dem Verweis auf die Entität, der Zeile und der Spalte."
+      },
+      "scriptList": {
+        "title": "Die Skripte auflisten",
+        "description": "Antwortet mit jedem Skript des Projekts, mit seinem Verweis und seiner Länge."
+      },
+      "scriptRead": {
+        "title": "Ein Skript lesen",
+        "description": "Antwortet mit dem Text eines Skripts, einschließlich dessen, was noch nicht gespeichert ist."
+      },
+      "scriptWrite": {
+        "title": "Ein Skript schreiben",
+        "description": "Schreibt ein Skript in das Projekt. Abgelehnt, mit der Zeile, wenn die Datei nicht kompiliert."
+      },
+      "studioDescribe": {
+        "title": "Beschreiben, was im Vordergrund ist",
+        "description": "Antwortet mit der Szene, einem Objekt, seinen Komponenten samt ihrem Schema, seinen Beziehungen und dem, was ihm noch hinzugefügt werden kann."
+      },
+      "studioDocs": {
+        "title": "Die dokumentierten Einstellungen einer Komponente oder des Skriptens lesen",
+        "description": "Antwortet mit dem Ausschnitt der Dokumentation, der eine Frage beantwortet — eine Komponente oder die Oberfläche, die ein Skript sieht."
+      },
+      "studioBatch": {
+        "title": "Eine Reihe von Aufrufen ausführen",
+        "description": "Führt eine Reihe von Aufrufen als einen einzigen aus, mit einer einzigen Frage. Hält bei der ersten Ablehnung an."
+      },
+      "timelineAddSceneCue": {
+        "title": "Ein Ereignis, ein Medium oder eine Blende auf der Zeitleiste setzen",
+        "description": "Fügt der Zeitleiste der 3D-SZENE ein Ereignis, einen Ton, ein Video oder einen Übergang hinzu. Ein Ereignis ist ein NAME, der zum angegebenen Zeitpunkt auf den Bus gelegt wird und den ein Skript über onMessage hört — so lässt man an einem Punkt einer Zwischensequenz etwas geschehen, statt Animations-Keys zu legen. Eine Blende einer Zwischensequenz gehört hierher, mit list=transitions und what=fade. Was das dritte Feld nennt, hängt von der Liste ab — ein Name eines Ereignisses, eine Asset-ID oder eine Art von Übergang. Für eine Blende auf einem Clip eines Schnitts ist das clip.fade."
+      },
+      "timelineRemoveSceneCue": {
+        "title": "Einen Marker von der Zeitleiste nehmen",
+        "description": "Nimmt einen Marker von der Zeitleiste der 3D-SZENE — ein Ereignis, einen Ton, ein Video oder einen Übergang, darunter eine Blende einer Zwischensequenz. Die ID wird aus dem Member cues gelesen, den scene.state antwortet, und nirgendwo sonst. Um eine Blende von einem Clip eines Schnitts zu nehmen, ist das clip.fade mit einer Länge von null."
+      },
+      "timelineSetPanelRows": {
+        "title": "Wählen, was die Zeitleiste anbietet",
+        "description": "Entscheidet, welche Zeilen das Panel vorschlägt. Nimmt der Engine nie etwas weg, die die ganze Zeitleiste ohnehin abspielt."
+      },
+      "gameApplyTemplate": {
+        "title": "Eine Spielvorlage anlegen",
+        "description": "Legt den Boden, die Figur und die Objekte einer Art von Spiel in die geöffnete Szene und regelt die Kamera und die Schwerkraft dazu. Ein einziges Rückgängig nimmt alles davon zurück."
+      },
+      "gameExport": {
+        "title": "Das Spiel exportieren",
+        "description": "Schreibt in einen Ordner ein Spiel, das ohne Studio in einem Browser läuft, mit der Seite, der Laufzeit, den Szenen, den transpilierten Skripten und nur den Assets, die sie erreichen."
+      },
+      "prefabDefine": {
+        "title": "Ein Prefab benennen",
+        "description": "Trägt eine Szene des Projekts als wiederverwendbares Stück unter dem gegebenen Namen in game.json ein. Ohne genanntes Dokument ist es die Szene im Vordergrund."
+      },
+      "prefabInstantiate": {
+        "title": "Ein Prefab instanziieren",
+        "description": "Legt die Objekte eines anderen Szenendokuments des Projekts in die geöffnete Szene, mit neuen IDs, an der verlangten Stelle. Ein bereits LAUFENDES Spiel wird über play.loadScene in eine andere Szene geschickt, was dies nicht tut."
+      },
+      "memoryRecall": {
+        "title": "Abrufen, was gelernt wurde",
+        "description": "Durchsucht, was der Assistent bei der Arbeit BEMERKT hat, und antwortet mit den gefundenen Zusammenfassungen samt ihren IDs. Was die Person über das Projekt gesagt hat, lebt in den Kontextkarten."
+      },
+      "memoryRead": {
+        "title": "Einen Gedächtniseintrag ganz lesen",
+        "description": "Antwortet mit dem DETAIL eines Gedächtniseintrags — worauf er sich bezieht und woher er kam — anhand einer ID, die memory.recall übergibt. Der Abruf gibt die Zusammenfassungen; dies ist das, wonach „gib mir das Detail“ verlangt."
+      },
+      "memoryWrite": {
+        "title": "Sich etwas über das Projekt merken",
+        "description": "Notiert eine Arbeitsregel dieses Projekts oder etwas, das der Assistent beim Handeln bemerkt hat — wie eine Sache hier gemacht wird, wozu eine Datei oder ein Objekt da ist. Was die Person sagt, dass das Projekt IST oder ANSTREBT, ist stattdessen eine Kontextkarte. Ersetzt den Eintrag, der bereits auf derselben Referenz stand."
+      },
+      "memoryForget": {
+        "title": "Einen Gedächtniseintrag vergessen",
+        "description": "Markiert als vergessen, was der Assistent bemerkt hatte. Nichts wird aus der Datei gelöscht: was gelernt wurde, bleibt nachvollziehbar."
+      },
+      "memoryLink": {
+        "title": "Zwei Gedächtniseinträge verknüpfen",
+        "description": "Fügt eine Verknüpfung von einem Gedächtniseintrag zu einem anderen hinzu, um zu sagen, dass der eine den anderen erhellt."
+      }
+    },
+    "consent": {
+      "ask": " Fragen Sie die Person, für die Sie handeln, und senden Sie dann denselben Aufruf erneut, mit seinem Parameter consent auf {{token}} gesetzt. Das Token ist einmalig verwendbar, gilt 5 Minuten und antwortet allein für diesen Aufruf.",
+      "askInLot": " Fragen Sie die Person, für die Sie handeln, und senden Sie dann dieselbe Reihe erneut, mit einem Feld consent auf {{token}} gesetzt, im Input DIESES Aufrufs. Das Token ist einmalig verwendbar, gilt 5 Minuten und antwortet allein für diesen Aufruf."
+    },
+    "refusals": {
+      "unknownCommand": "Diesen Befehl gibt es im Studio nicht.",
+      "wrongSurface": "Keine Oberfläche des Studios war da, um diesen Befehl anzunehmen. Öffnen Sie das Dokument oder das Panel, an das er sich richtet.",
+      "generatorClosed": "Der Generator war nicht geöffnet. Jetzt ist er es.",
+      "nothingPrepared": "Der Generator hat im Moment kein Modell vorbereitet.",
+      "notSubmitted": "Die Generierung ist nicht hinausgegangen.",
+      "badInput": "Die angegebenen Parameter passen nicht zu dieser Aktion.",
+      "noBridge": "Das Studio antwortet nicht.",
+      "noProject": "Es ist kein Projekt geöffnet, und diese Pfade sind relativ zu einem Projekt.",
+      "noConfirmer": "Diese Aktion braucht ein Ja, und kein Fenster war da, um es zu geben.",
+      "declined": "Sie haben diese Aktion abgelehnt.",
+      "noWindow": "Kein Fenster des Studios war im Vordergrund, um diese Aktion auszuführen.",
+      "timedOut": "Die Anfrage stand unbeantwortet auf dem Bildschirm und wurde aufgegeben.",
+      "noReference": "Das Formular trägt kein Referenzbild, aus dem ein Stil gelesen werden könnte.",
+      "ambiguousLanding": "Zwei Ziele sind möglich und das Studio hätte gefragt, aber ein Aufruf von außen hat keinen Bildschirm für diese Frage. Nennen Sie eines: die falsche Wahl überschreibt eine geöffnete Datei.",
+      "formChanged": "Das Formular hat sich geändert, nachdem die Kosten genannt wurden. Nichts wurde gesendet — fragen Sie erneut nach einer neuen Zahl.",
+      "notFound": "Nichts dieses Namens ist da, um diese Aktion zu empfangen. Der Aufruf selbst war wohlgeformt.",
+      "notAllowed": "Das Studio lässt einen Aufruf von außen das nicht ändern. Nur sein eigenes Fenster tut es.",
+      "nativeDialog": "Dieser Befehl öffnet ein Fenster des Systems: der Assistent kann es weder ausfüllen noch zurücklesen. Verwenden Sie die Aktion, die einen Pfad nimmt.",
+      "notRenderable": "Das Dokument im Vordergrund hat nichts, was dies rendern könnte — ein leerer Himmel, ein Material ohne Kanal oder eine Engine, die nicht eingehängt ist.",
+      "needsConsent": "Nichts wurde angestoßen: dieser Aufruf braucht ein Zustimmungs-Token. Die Ablehnung trägt ein neues, und derselbe Aufruf, mit ihm zurückgesendet, läuft.",
+      "failed": "Das Studio hat es versucht und es ist nicht durchgegangen. Der Grund steht in seinem Aktivitätsprotokoll, und es waren nicht die Parameter."
+    },
+    "models": {
+      "claude-haiku-4-5": "Haiku 4.5 — das schnellste und das günstigste",
+      "claude-sonnet-4-6": "Sonnet 4.6 — das Gleichgewicht",
+      "claude-opus-4-8": "Opus 4.8 — das zuverlässigste über mehrere Schritte",
+      "gemini-3.5-flash": "Gemini 3.5 Flash — die schnelle Alternative"
+    },
+    "fields": {
+      "command": "Kennung des Befehls",
+      "consent": "Token aus einer früheren needsConsent-Ablehnung. Einmalig verwendbar, 5 Minuten, antwortet allein für diesen Aufruf",
+      "workspace": "Arbeitsbereich",
+      "createDocument": "Ein Dokument erstellen",
+      "query": "Stichwörter",
+      "family": "Familie der Generierung",
+      "modelId": "Kennung des Modells",
+      "aiOperation": "Vorgang am lokalen Modell",
+      "aiRole": "KI-Rolle",
+      "aiScope": "Geltungsbereich der Wahl",
+      "aiProfile": "Profil der lokalen Laufzeit",
+      "operation": "Einsatzzweck, z. B. code2code",
+      "parameters": "Parameter des Modells",
+      "landing": "Wohin das Ergebnis geht",
+      "draft": "Zu überarbeitender Satz",
+      "text": "Zu übersetzender Text",
+      "generationInstruction": "Anweisung für die nächste Generierung",
+      "commentAction": "Hinzufügen, ändern oder entfernen",
+      "commentId": "Kennung des Kommentars der Generierung",
+      "commentOutline": "Optionales Polygon als Liste von {x, y}-Punkten des Dokuments",
+      "documentId": "Kennung des Dokuments",
+      "title": "Titel",
+      "name": "Name",
+      "limit": "Wie viele Einträge höchstens",
+      "filePath": "Pfad innerhalb des Projekts, mit / zwischen den Segmenten",
+      "filePaths": "Pfade innerhalb des Projekts, mit / zwischen den Segmenten",
+      "folderPath": "Pfad des Ordners",
+      "template": "Womit die Szene beginnt",
+      "hidden": "Versteckte Einträge einbeziehen",
+      "jobId": "Kennung des Auftrags",
+      "taskId": "Kennung der lokalen Aufgabe",
+      "panel": "Panel des Studios",
+      "discard": "Wegwerfen, was gehört wurde",
+      "viewDirection": "Seite, von der aus geschaut wird",
+      "displayMode": "Wie die Szene gezeichnet wird",
+      "settingsAction": "Schaltfläche der Einstellungen",
+      "boneName": "Name des Knochens",
+      "parentBone": "Knochen, unter den er gehängt wird",
+      "boneRole": "Gelenk des humanoiden Standards",
+      "chainId": "Kennung der Kette",
+      "fps": "Frames pro Sekunde",
+      "autoKey": "Bei jeder Bewegung einen Key setzen",
+      "timeoutMs": "Wie lange höchstens gewartet wird, in Millisekunden",
+      "days": "Zeitfenster in Tagen",
+      "assetId": "Kennung des Assets",
+      "assetIds": "Kennungen der Assets",
+      "assetType": "Art des Assets",
+      "tags": "Tags",
+      "generated": "Nur was generiert wurde",
+      "offset": "Wie viele Einträge übersprungen werden",
+      "alsoRemote": "Auch aus der entfernten Bibliothek entfernen",
+      "layerId": "Kennung der Ebene",
+      "dpi": "Druckauflösung, in Punkten pro Zoll",
+      "colorMode": "Farbmodus",
+      "bitDepth": "Bittiefe",
+      "localId": "Kennung des lokalen KI-Kandidaten",
+      "layerIds": "Kennungen der Ebenen",
+      "exportFolder": "Name eines Ordners im Projekt, in den geschrieben wird; fehlt er, fragt ein Auswahldialog",
+      "generateLods": "Distanzstufen generieren (sichtbare Änderungen möglich)",
+      "geometrySimplification": "Vereinfachung der Geometrie — aus, vorsichtig, ausgewogen oder stark",
+      "textureCompression": "Verlustbehaftete Bildkompression — aus, vorsichtig, ausgewogen oder stark",
+      "textureReduction": "Auflösung der Bilder — original, halb oder ein Viertel",
+      "exportFormat": "Format der 3D-Datei",
+      "exportScope": "Die ganze Szene oder die Auswahl",
+      "exportTarget": "Für welche Engine der Export des Materials gedacht ist",
+      "faceSize": "Seite einer Fläche, in Pixeln",
+      "conflictSide": "Welche Seite des Konflikts behalten wird",
+      "remoteName": "Name des entfernten Repositorys",
+      "remoteUrl": "Adresse des entfernten Repositorys",
+      "setUpstream": "Den Branch an das entfernte Repository binden",
+      "cursor": "Seiten-Cursor, direkt von der vorherigen Seite",
+      "order": "Wie die Ergebnisse zurückkommen: die neuesten oder die am besten passenden — wofür Wörter zum Suchen nötig sind",
+      "syncPolicy": "In welche Richtung die Synchronisierung geht",
+      "styleId": "Kennung des Stils",
+      "favoriteId": "Kennung des Rezepts",
+      "settingsSection": "Abschnitt der Einstellungen",
+      "exposure": "Belichtung, in Blendenstufen",
+      "contrast": "Kontrast, wobei 1 neutral ist",
+      "saturation": "Sättigung, wobei 1 neutral ist",
+      "temperature": "Temperatur, von -1 kalt bis +1 warm",
+      "tint": "Tönung, von -1 grün bis +1 magenta",
+      "blur": "Weichzeichnung, von 0 scharf bis 1 unscharf",
+      "elevation": "Höhenwinkel, in Radiant",
+      "azimuth": "Azimut, in Radiant",
+      "showBackground": "Das Bild hinter dem Motiv zeichnen",
+      "autoSpin": "Die Vorschau von selbst drehen lassen",
+      "showSeam": "Die Nähte in die Mitte der Vorschau bringen",
+      "pbrChannel": "Kanal des Materials",
+      "normalScale": "Stärke des Reliefs",
+      "heightScale": "Stärke der Verschiebung",
+      "aoIntensity": "Stärke der Verdeckung",
+      "edgeIntensity": "Wie stark die Kanten abgedunkelt werden",
+      "emissive": "Abgestrahlte Farbe",
+      "emissiveIntensity": "Stärke der Abstrahlung",
+      "tilingX": "Wiederholungen in der Breite",
+      "tilingY": "Wiederholungen in der Höhe",
+      "offsetX": "Versatz in der Breite",
+      "offsetY": "Versatz in der Höhe",
+      "invertNormalGreen": "Den grünen Kanal des Reliefs umkehren",
+      "clipId": "Kennung des Clips",
+      "trackId": "Kennung der Spur",
+      "trackKind": "Was die Spur trägt",
+      "clipEdge": "Welche Kante des Clips, In-Punkt oder Out-Punkt",
+      "time": "Zeitpunkt im Schnitt, in Mikrosekunden",
+      "start": "Beginn im Schnitt, in Mikrosekunden",
+      "at": "Der anvisierte Zeitpunkt, in Mikrosekunden",
+      "fadeLength": "Länge der Blende, in Mikrosekunden",
+      "gain": "Pegel, in Dezibel",
+      "speed": "Wiedergabegeschwindigkeit, wobei 1 die ursprüngliche ist",
+      "by": "Anzahl der Reihen, negativ zum Absenken",
+      "muted": "Spur stummgeschaltet",
+      "solo": "Einzige hörbare Spur",
+      "locked": "Spur gesperrt",
+      "layerKind": "Art der Ebene",
+      "adjustment": "Welchen Regler die Ebene trägt",
+      "parentId": "Gruppe, in die sie verschoben wird",
+      "index": "Platz im Stapel, von unten gezählt",
+      "nodeIndex": "Platz unter den Objekten derselben Stufe, vom Anfang der Liste gezählt",
+      "opacity": "Deckkraft, von 0 bis 1",
+      "fillOpacity": "Deckkraft der Füllung, von 0 bis 1",
+      "blend": "Mischmodus",
+      "visible": "Sichtbar",
+      "clipped": "Von der Ebene darunter beschnitten",
+      "x": "X, in Koordinaten des Dokuments",
+      "y": "Y, in Koordinaten des Dokuments",
+      "scaleX": "Skalierung in der Breite",
+      "scaleY": "Skalierung in der Höhe",
+      "rotation": "Drehung, in Grad",
+      "fontSize": "Schriftgröße",
+      "colour": "Farbe, als #rrggbb",
+      "pixelArtEnabled": "Pixel-Art-Modus",
+      "columns": "Spalten",
+      "rows": "Zeilen",
+      "cell": "Größe der Zelle",
+      "pixelShape": "Form",
+      "cells": "Zellen",
+      "toX": "Ziel-X",
+      "toY": "Ziel-Y",
+      "filled": "Gefüllt",
+      "erase": "Löschen",
+      "width": "Breite",
+      "height": "Höhe",
+      "align": "Wie der Text ausgerichtet ist",
+      "lineHeight": "Zeilenabstand, als Vielfaches der Schriftgröße",
+      "tracking": "Laufweite, in Tausendsteln eines Geviertes",
+      "shape": "Welche Form gezeichnet wird",
+      "sides": "Wie viele Punkte",
+      "fill": "Farbe der Füllung, als 0xrrggbb",
+      "scalePixels": "Die Ebenen mit dem Rahmen skalieren",
+      "turn": "In welche Richtung gespiegelt oder gedreht wird",
+      "nodeId": "Kennung des Objekts",
+      "nodeIds": "Kennungen der Objekte",
+      "optimizationMode": "Modus der Laufzeitoptimierung",
+      "matterId": "Kennung der Form, die ausgehöhlt wird",
+      "negative": "Wahr markiert es als Schneidewerkzeug, falsch nimmt die Markierung zurück",
+      "nodeKind": "Was hinzugefügt wird",
+      "relative": "Auf wahr gesetzt werden ÄNDERUNGEN statt Endwerten angegeben: Position und Drehung werden zu dem ADDIERT, was steht, Skalierung und Intensität MULTIPLIZIEREN es. Einen Meter höher heißt positionY 1 mit relative auf wahr; auf die Hälfte heißt scaleX 0,5 mit relative auf wahr",
+      "positionX": "Position in der Breite",
+      "positionY": "Position in der Höhe",
+      "positionZ": "Position zum Betrachter hin",
+      "rotationX": "Drehung um X, in Radiant",
+      "rotationY": "Drehung um Y, in Radiant",
+      "rotationZ": "Drehung um Z, in Radiant",
+      "scaleZ": "Skalierung in der Tiefe",
+      "material": "Material",
+      "roughness": "Rauheit, von 0 bis 1",
+      "metalness": "Metallgrad, von 0 bis 1",
+      "intensity": "Intensität",
+      "fov": "Sichtfeld, in Grad",
+      "near": "Nahe Distanz",
+      "far": "Ferne Distanz",
+      "startSeconds": "Beginn des Shots, in Sekunden",
+      "durationSeconds": "Dauer des Shots, in Sekunden — mindestens ein Frame",
+      "shotId": "Kennung des Shots",
+      "pathId": "Kennung des Pfads, oder nichts, um die Kamera nicht mehr zu bewegen",
+      "railFrom": "Wo auf dem Pfad es beginnt, von 0 bis 1",
+      "railTo": "Wo auf dem Pfad es endet, von 0 bis 1",
+      "easing": "Geschwindigkeitskurve entlang des Pfads",
+      "targetId": "Objekt, das die Kamera anvisiert, oder nichts, um sie frei zu lassen",
+      "gitPath": "Pfad im Repository",
+      "gitPaths": "Pfade im Repository",
+      "commitHash": "Kennung der Version",
+      "skip": "Wie viele Einträge übersprungen werden",
+      "message": "Nachricht",
+      "amend": "Die letzte Version ändern, statt eine neue anzulegen",
+      "branchName": "Name des Branches",
+      "tagName": "Name des Tags",
+      "stashIndex": "Platz im Stash, die neueste zuerst",
+      "settings": "Zu ändernde Einstellungen, nach Abschnitt",
+      "accountId": "Kennung des Kontos",
+      "lockPixels": "Die Pixel der Ebene sperren",
+      "lockPosition": "Die Position der Ebene sperren",
+      "lockAlpha": "Die Transparenz der Ebene sperren",
+      "shapeFilled": "Die Form ist gefüllt",
+      "shapeFill": "Füllfarbe, als #rrggbb",
+      "shapeStroked": "Die Form hat eine Kontur",
+      "shapeStroke": "Farbe der Kontur, als #rrggbb",
+      "strokeWidth": "Breite der Kontur, in Pixel",
+      "fontFamily": "Name der Schrift, so wie die Schriftliste ihn ausgibt",
+      "fontSource": "Herkunft der Schrift, mit dem Studio geliefert oder auf dem Rechner installiert",
+      "environmentKind": "Woher die Beleuchtung kommt: das Studio, ein Bild oder ein Himmel",
+      "backgroundKind": "Was dahinter liegt: die Umgebung, eine Farbe oder nichts",
+      "fogKind": "Form des Nebels: keiner, linear oder exponentiell",
+      "fogDensity": "Dichte des exponentiellen Nebels",
+      "groundSize": "Seitenlänge des Bodens, in Szeneneinheiten",
+      "receiveShadow": "Schatten fallen auf den Boden",
+      "worldLayers": "Vollständige Liste der Gelände- und Streueinträge",
+      "toneMapping": "Wie der hohe Dynamikumfang auf den Bildschirm gebracht wird",
+      "toneExposure": "Belichtungsfaktor des Renderings, 1 lässt es unverändert",
+      "depth": "Tiefe",
+      "radius": "Radius",
+      "radiusTop": "Oberer Radius, 0 ergibt einen Kegel",
+      "radiusBottom": "Unterer Radius",
+      "innerRadius": "Innerer Radius",
+      "outerRadius": "Äußerer Radius",
+      "tube": "Radius der Röhre",
+      "segments": "Segmente um die Achse",
+      "capSegments": "Segmente einer Kappe",
+      "radialSegments": "Segmente um die Röhre",
+      "widthSegments": "Segmente der Längengrade",
+      "heightSegments": "Segmente der Breitengrade",
+      "tubularSegments": "Segmente entlang der Röhre",
+      "p": "Umdrehungen um die Achse des Knotens",
+      "q": "Umdrehungen um den Torus",
+      "castShadow": "Das Objekt wirft einen Schatten",
+      "skyColour": "Farbe, die vom Himmel kommt, als #rrggbb",
+      "groundColour": "Farbe, die vom Boden kommt, als #rrggbb",
+      "distance": "Reichweite, über die das Licht nicht mehr hinausgeht, 0 ist unbegrenzt",
+      "decay": "Wie schnell das Licht mit der Entfernung abfällt, 2 ist physikalisch",
+      "angle": "Halber Öffnungswinkel des Kegels, im Bogenmaß",
+      "penumbra": "Weichheit der Kegelkante, von 0 scharf bis 1 diffus",
+      "targetX": "Ziel in der Breite",
+      "targetY": "Ziel in der Höhe",
+      "targetZ": "Ziel in Richtung des Betrachters",
+      "tilesPerMetre": "Wiederholungen der Maps pro Meter",
+      "textures": "Maps nach Slot, eine leere Kennung entfernt die, die dort war",
+      "map": "Kennung des Bildes, oder nichts für gar keines",
+      "inputMap": "Geprüfte Eingabebelegung für Tastatur und Gamepad",
+      "animationGraph": "Geprüfter Animationsgraph",
+      "value": "Zu schreibende Wörter",
+      "textSize": "Größe der Buchstaben, in Szeneneinheiten",
+      "textDepth": "Tiefe, mit der die Buchstaben aus ihrer Fläche treten, 0 lässt sie flach",
+      "curveSegments": "Wie fein die Kurven unterteilt werden",
+      "tension": "Spannung des Pfads, von 0 kantig bis 1 rund",
+      "closed": "Der Pfad schließt sich in sich selbst",
+      "pointIndex": "Index des Kontrollpunkts, ab dem ersten gezählt",
+      "pointX": "Punkt in der Breite",
+      "pointY": "Punkt in der Höhe",
+      "pointZ": "Punkt in Richtung des Betrachters",
+      "clipSource": "Woher die Bewegung kommt: die Datei des Modells selbst, die mitgelieferten Animationen oder die Bibliothek des Projekts",
+      "clipName": "Name der Bewegung, so wie die Animationsliste ihn ausgibt",
+      "offsetSeconds": "Wo die Wiedergabe innerhalb der Bewegung beginnt, in Sekunden",
+      "clipLoop": "Der Block spielt endlos weiter",
+      "clipFade": "Länge der Blende an beiden Enden des Blocks, in Sekunden",
+      "rootMotion": "Was der Block mit der Bewegung der Wurzel macht",
+      "bodyPart": "Körperteil, den der Block steuert",
+      "channelId": "Kennung des Animationskanals",
+      "timeSeconds": "Zeitpunkt auf dem Band, in Sekunden, ersatzweise der Abspielkopf",
+      "trackProperty": "Gemeinter Kanal, ersatzweise alle des Subjekts",
+      "fromSeconds": "Zeitpunkt, ab dem begonnen wird, in Sekunden",
+      "toSeconds": "Zeitpunkt, auf dem gelandet wird, in Sekunden",
+      "maskEnabled": "Die Maske verbirgt, was sie bedeckt",
+      "maskLinked": "Die Maske wandert mit der Ebene, wenn diese sich bewegt",
+      "maskRemove": "Die Maske von der Ebene entfernen",
+      "guideId": "Kennung der Hilfslinie",
+      "guideAxis": "Verlauf der Hilfslinie, senkrecht auf x oder waagerecht auf y",
+      "guidePosition": "Position der Hilfslinie, in Koordinaten des Dokuments",
+      "helpPage": "Welches Hilfefenster geöffnet wird",
+      "captureQuality": "Wie groß die Aufnahme wird, ersatzweise die Pixel der Ansicht selbst",
+      "environmentPreset": "Welche fertige Welt angewendet wird",
+      "skyDocument": "Titel des Himmelsdokuments, dem die Szene folgt",
+      "skyboxView": "Unter welcher Projektion der Himmel betrachtet wird",
+      "fieldOfView": "Wie weit das Objektiv öffnet, in Grad",
+      "probes": "Die Testobjekte im Himmel anzeigen",
+      "roughnessMin": "Untergrenze der Rauheit, auf die die Map umgelegt wird",
+      "roughnessMax": "Obergrenze der Rauheit, auf die die Map umgelegt wird",
+      "metalnessMin": "Untergrenze des Metallgrads, auf den die Map umgelegt wird",
+      "metalnessMax": "Obergrenze des Metallgrads, auf den die Map umgelegt wird",
+      "previewShape": "Form, an der das Material beurteilt wird",
+      "tilingPreview": "Wiederholungsfaktor der Vorschau, 1, 2 oder 4",
+      "cardId": "Kennung der Karte",
+      "cardTitle": "Titel der Karte",
+      "cardBody": "Text der Karte",
+      "cardActive": "Die Karte gilt",
+      "aimId": "Kennung des Ziels",
+      "csgOperation": "Was damit geschehen soll",
+      "materialSlot": "Material-Slot",
+      "postCameraId": "Kennung der Kamera, deren Komposition eingestellt wird — fehlt sie, ist die der Szene gemeint",
+      "postEffectId": "Kennung der Instanz im Stapel",
+      "postEffect": "Effekt aus dem Katalog, der eingesetzt wird",
+      "postBy": "Um wie viele Plätze der Effekt verschoben wird, negativ nach vorn",
+      "postParam": "Name des einzustellenden Parameters",
+      "postValue": "Numerischer Wert des Parameters",
+      "postText": "Textwert des Parameters — ein Wort aus einer Liste, eine Farbe, eine Asset-Kennung",
+      "postOn": "Wert eines Parameters, der ein Schalter ist",
+      "postEnabled": "Wahr schaltet die ganze Komposition ein, falsch aus",
+      "postPreset": "Anzuwendende Voreinstellung",
+      "postMode": "Was die Kamera mit der Komposition der Szene macht",
+      "postPresetName": "Name für die Voreinstellung",
+      "componentType": "Typ der Komponente",
+      "componentField": "Feld",
+      "componentValue": "Wert",
+      "scriptPath": "Pfad des Skripts",
+      "scriptSource": "Quelltext des Skripts",
+      "describeRef": "Zu beschreibende Referenz",
+      "docsTopic": "Thema",
+      "batchCalls": "Aufrufe (JSON)",
+      "fixedSteps": "Feste Schritte",
+      "sceneToLoad": "Zu ladende Szene",
+      "fadeSeconds": "Blende, in Sekunden",
+      "timelineList": "Liste",
+      "timelineAt": "Zeitpunkt, in Mikrosekunden",
+      "timelineWhat": "Was",
+      "timelineDuration": "Dauer, in Mikrosekunden",
+      "timelineRowId": "Kennung der Zeile",
+      "timelineTemplate": "Was die Zeitleiste anbietet",
+      "gameTemplate": "Spielvorlage",
+      "prefabRef": "Zu instanzierendes Prefab",
+      "prefabName": "Name des Prefabs",
+      "prefabSource": "Szene, aus der ein Prefab wird",
+      "entryScene": "Startszene",
+      "gameTitle": "Titel des Spiels",
+      "memoryQuery": "Wonach gesucht wird",
+      "memoryLimit": "Wie viele höchstens",
+      "memoryId": "Kennung des Gedächtniseintrags",
+      "memoryType": "Worum es im Gedächtniseintrag geht",
+      "memorySummary": "Zusammenfassung in einem Satz",
+      "memoryBody": "Die Einzelheiten",
+      "memoryImportance": "Wichtigkeit, von 1 bis 5",
+      "memoryFile": "Datei des Projekts, um die es geht",
+      "memoryTo": "Kennung des gemeinten Gedächtniseintrags",
+      "projectName": "Name des Projekts",
+      "projectParent": "Erstellt in",
+      "socket": "Befestigungspunkt"
+    },
+    "listening": "Der Assistent hört zu",
+    "done": "Der Assistent hat geantwortet",
+    "reviewHint": "Öffnet den Assistenten und zeigt, was er verstanden und was er getan hat",
+    "dismissHint": "Entfernt diesen Hinweis. Was der Assistent getan hat, bleibt in seinem Fenster",
+    "empty": "Sagen Sie, was getan werden soll, und der Assistent erledigt es.",
+    "placeholder": "Öffne eine 3D-Datei, suche ein Modell, bereite eine Generierung vor…",
+    "send": "Senden",
+    "sendHint": "Sendet den Satz an den Assistenten, der die Aktionen auswählt und ausführt",
+    "tokens": "{{prompt, number}} Token gelesen · {{reply, number}} geschrieben",
+    "chooseHint": "Beantwortet die Frage und lässt den Assistenten weiterarbeiten",
+    "answerBelow": "Antworten Sie unten, im Feld",
+    "answerLabel": "Antwort",
+    "noteLabel": "Notiz",
+    "sendAnswers": "Antworten senden",
+    "sendAnswersHint": "Gibt alle Antworten auf einmal zurück und lässt den Assistenten weiterarbeiten",
+    "skipChoice": "Nicht beantworten",
+    "skipChoiceHint": "Schließt die Frage ohne Antwort: der Assistent hört dort auf",
+    "contextOf": "{{read}} / {{window}}",
+    "contextUnknown": "{{read}}",
+    "contextGauge": "Gelesener Kontext",
+    "contextHint": "Was der letzte Austausch das Modell hat lesen lassen, gemessen an dem, was es auf einmal liest",
+    "contextHintChars": "Was der letzte Austausch gesendet hat, gemessen an dem, was dieser Zugang auf einmal annimmt — in Zeichen, nicht in Token",
+    "contextHintUnknown": "Dieser Zugang sagt nicht, was er auf einmal liest: die Zahl ist echt, das Verhältnis wäre erfunden",
+    "contextHintAssumed": "Diese Grenze ist ein erklärter Rückfallwert: der Zugang konnte sein eigenes Schema nicht lesen",
+    "thinking": "Der Assistent denkt nach…",
+    "workingRound": "Der Assistent arbeitet — Schritt {{round}}",
+    "stopping": "Wird gestoppt — das Studio beendet, was gerade läuft…",
+    "stop": "Stoppen",
+    "stopHint": "Stoppt den Assistenten nach der laufenden Aktion; nichts von dem, was bereits getan wurde, wird rückgängig gemacht",
+    "stepAnswered_one": "{{count, number}} Ergebnis",
+    "stepAnswered_many": "{{count, number}} Ergebnisse",
+    "stepAnswered_other": "{{count, number}} Ergebnisse",
+    "ending": {
+      "halted": "Der Assistent hat hier aufgehört: zu viele Schritte für eine einzige Anfrage. Bitten Sie ihn weiterzumachen, oder erhöhen Sie die Grenze in den Einstellungen.",
+      "stopped": "Sie haben den Assistenten hier gestoppt."
+    },
+    "lost": "Der Assistent konnte diese Anfrage nicht beantworten.",
+    "refused": "{{action}} — {{reason}}",
+    "confirm": {
+      "credits": "Diese Aktion gibt {{cost}} aus.",
+      "value": "{{label}}: {{value}}",
+      "unknownCost": "Diese Aktion gibt etwas von Ihrem Konto aus. Das Studio konnte den Betrag nicht schätzen und erfindet keinen.",
+      "noCost": "Diese Aktion gibt nichts aus: das Modell läuft auf diesem Rechner, oder es kostet nichts.",
+      "files": "Diese Aktion verändert, was Ihr Projekt enthält — Dateien oder die Assets seiner Bibliothek. Sie gibt nichts aus.",
+      "asset": "Diese Aktion lädt ein Bild hoch, das danach in Ihrer Bibliothek bleibt. Sie gibt nichts aus.",
+      "remote": "Diese Aktion veröffentlicht auf einem Server, außerhalb dieses Rechners. Sie gibt nichts aus, und nichts hier holt sie zurück.",
+      "studio": "Diese Aktion ändert den Zustand des Studios selbst, und kein ⌘Z kommt darauf zurück. Sie gibt nichts aus.",
+      "yes": "Erlauben",
+      "pickFolder": "Auswählen…",
+      "pickFolderHint": "Öffnet die Auswahl des Systems, und die Aktion verwendet den dort gewählten Ordner",
+      "yesHint": "Führt die oben beschriebene Aktion aus und geht ein, was sie eingeht",
+      "no": "Nicht erlauben",
+      "noHint": "Führt nichts aus, und der Assistent berücksichtigt das für das Weitere",
+      "on": "Ja",
+      "off": "Nein",
+      "pickUnset": "dort, wo Sie Ihre Projekte aufbewahren"
+    },
+    "starters": {
+      "projectOpen": "Öffne ein zuletzt benutztes Projekt",
+      "projectCreate": "Erstelle ein neues Projekt",
+      "projectFind": "Finde ein Dokument im Projekt",
+      "projectChanges": "Was hat sich im Projekt geändert?",
+      "projectCommit": "Halte eine Version des Projekts fest",
+      "libraryFind": "Suche ein Bild in der Bibliothek",
+      "imageMake": "Generiere ein Bild",
+      "imageRework": "Überarbeite ein Bild aus dem Projekt",
+      "imageUpscale": "Skaliere ein Bild hoch",
+      "imageVariant": "Generiere eine Variante dieses Bildes",
+      "imageText": "Füge eine Textebene hinzu",
+      "imageResize": "Ändere die Größe dieses Dokuments auf 1080 mal 1080",
+      "videoMake": "Generiere ein Video",
+      "videoFromImage": "Animiere ein Bild",
+      "videoCut": "Schneide eine Sequenz",
+      "videoAppend": "Füge ein Video hinter diesem an",
+      "videoVolume": "Mach die Musik leiser",
+      "videoExport": "Exportiere den Schnitt",
+      "meshMake": "Generiere ein 3D-Modell",
+      "meshFromImage": "Mach ein 3D-Modell aus einem Bild",
+      "meshRig": "Bereite ein Skelett vor",
+      "sceneShape": "Füge einen Würfel in der Mitte der Szene hinzu",
+      "sceneLight": "Füge ein gerichtetes Licht hinzu",
+      "sceneCamera": "Füge eine Kamera hinzu",
+      "scriptMake": "Schreibe ein Skript für eine Entität",
+      "scriptExplain": "Erkläre dieses Skript",
+      "scriptFix": "Behebe die Fehler im Skript",
+      "scriptRun": "Starte das Spiel, das ich schreibe",
+      "scriptAttach": "Hänge eine Komponente an eine Entität",
+      "scriptProblems": "Zeige die Probleme im Skript",
+      "audioMake": "Generiere einen Ton",
+      "audioFromVideo": "Extrahiere den Ton aus einem Video",
+      "audioTrim": "Trimme einen Audio-Clip",
+      "audioTrack": "Füge einen Ton auf einer neuen Spur hinzu",
+      "audioVolume": "Mach den ganzen Schnitt leiser",
+      "audioExport": "Exportiere den Audioschnitt",
+      "materialMake": "Generiere ein Material",
+      "materialFromImage": "Mach ein Material aus einem Bild",
+      "materialTile": "Mach ein Material kachelbar",
+      "materialAssign": "Weise dieses Material einem Modell zu",
+      "materialTexture": "Verwende ein Bild des Projekts als Grundfarbe",
+      "materialExport": "Exportiere das Material",
+      "skyboxMake": "Generiere einen Himmel",
+      "skyboxRelight": "Ändere das Licht eines Himmels",
+      "skyboxExport": "Exportiere einen Himmel",
+      "skyboxSun": "Verschiebe die Sonne",
+      "skyboxApply": "Wende diesen Himmel auf meine Szene an",
+      "skyboxOpen": "Öffne eine Skybox aus dem Projekt"
+    },
+    "unserved": "Nichts antwortet für den Assistenten. Wählen Sie ein Modell, dann kann er hier arbeiten.",
+    "chooseModelHint": "Öffnet die KI-Verwaltung, in der das Modell des Assistenten gewählt wird.",
+    "brain": "Wer antwortet",
+    "brainHint": "Wählt, was Ihre Sätze liest: ein Modell auf diesem Rechner, ein Dienst, für den Sie einen Schlüssel haben, oder das Studio. Dieselbe Wahl, die die Einstellungen für KI-Modelle schreiben.",
+    "brainNone": "nichts gewählt",
+    "cloudBrain": "{{cloud}} — {{model}}",
+    "groupMachine": "Auf diesem Rechner",
+    "groupClouds": "Ihre Schlüssel",
+    "groupStudio": "Das Studio",
+    "suggestions": "Was Sie fragen können",
+    "starterHint": "Schreibt den Satz in das Feld. Es wird nichts gesendet, solange Sie es nicht senden.",
+    "completeHint": "Vervollständigt den grauen Satz mit {{accept}} oder der Pfeiltaste nach rechts",
+    "completing": "{{sentence}} — {{accept}} oder {{arrow}} zum Vervollständigen",
+    "suggested_one": "{{count, number}} Anfrage vorgeschlagen",
+    "suggested_many": "{{count, number}} Anfragen vorgeschlagen",
+    "suggested_other": "{{count, number}} Anfragen vorgeschlagen",
+    "missionEvent": {
+      "mission": {
+        "created": "Mission erstellt",
+        "planning": "Mission wird geplant",
+        "ready": "Mission bereit",
+        "running": "Mission läuft",
+        "waiting": "Mission wartet",
+        "completed": "Mission abgeschlossen",
+        "failed": "Mission fehlgeschlagen",
+        "cancelled": "Mission abgebrochen"
+      },
+      "step": "Aufgabe",
+      "action": "Aktion des Studios",
+      "job": "Generierung",
+      "user": "Wartet auf Ihre Antwort",
+      "child": "Untermission",
+      "verify": "Überprüfung"
+    }
+  }
+}

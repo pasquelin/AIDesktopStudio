@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { extname } from 'node:path'
 import type { Asset } from '@shared/domain/asset'
 import { UPLOAD_KIND_BY_TYPE, uploadMimeTypeOf, type UploadKind } from '@shared/domain/assetMime'
@@ -134,19 +135,19 @@ export function createCloudBackend({
 
     push: async assetId => {
       const asset = await catalog().find(assetId)
-      if (!asset) throw new Error(`asset ${assetId} is not in the catalogue`)
+      if (!asset) throw localizedError('assetNotCatalogued', { name: assetId })
 
       // What is pushed is the file the project holds, or the media it links to. An asset that
       // lives only in the library has nothing to send.
       const absolutePath = fileOf(asset)
-      if (!absolutePath) throw new Error(`asset ${assetId} has no file to send`)
+      if (!absolutePath) throw localizedError('assetFileMissing', { name: assetId })
 
       // The name becomes a file name on the way up; a separator in it would name another path.
       const fileName = `${asset.name.replace(/[/\\]/g, '-')}${extname(absolutePath)}`
       const contentType = uploadMimeTypeOf(absolutePath)
       // Refused here rather than after the transfer: the API validates the content type once the
       // whole file has arrived, which for a rush is minutes of upload spent to be told no.
-      if (!contentType) throw new Error(`the API does not accept ${fileName}`)
+      if (!contentType) throw localizedError('uploadFormatUnsupported', { name: fileName })
 
       // Decided BEFORE reading. The multipart helper takes a path and streams it itself, so
       // loading the file here would pull a two-gigabyte rush into the main process only to

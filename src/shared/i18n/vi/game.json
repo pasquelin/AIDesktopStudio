@@ -1,0 +1,320 @@
+{
+  "game": {
+    "components": {
+      "Aircraft": {
+        "title": "Máy bay",
+        "description": "Làm cho đối tượng bay lên: nâng, kéo và lực đẩy được tính trên chuyển động của chính nó, và các bề mặt điều khiển chỉ phản ứng với không khí trên chúng."
+      },
+      "Animator": {
+        "title": "Animator",
+        "description": "Phát clip phù hợp với những gì cơ thể đang làm — đi bộ, nhảy, đứng yên — từ một đồ thị hoạt ảnh của dự án."
+      },
+      "CharacterController": {
+        "description": "Làm cho đối tượng trở thành cái đang được lái: nó đi bộ, nó nhảy, nó leo các bậc.",
+        "title": "Nhân vật"
+      },
+      "Collider": {
+        "description": "Trao cho đối tượng một khối lượng mà những cái khác không thể vượt qua.",
+        "title": "Khối lượng"
+      },
+      "Follow": {
+        "description": "Theo một thực thể khác và dừng lại ở khoảng cách yêu cầu — một người bạn, camera vai, kẻ thù.",
+        "title": "Theo dõi"
+      },
+      "Health": {
+        "description": "Điểm sức khỏe, giảm khi thực thể bị tấn công và làm nó chết ở mức không.",
+        "title": "Sức khỏe"
+      },
+      "LookAt": {
+        "description": "Hướng thực thể tới một cái khác, ngay lập tức hoặc ở tốc độ quay bị giới hạn — một lô hung, biển báo, một đầu.",
+        "title": "Ánh nhìn"
+      },
+      "Movement": {
+        "description": "Làm cho thực thể di chuyển trên chính nó dọc theo một trục — một nền tảng, thang máy, nguy hiểm.",
+        "title": "Chuyển động"
+      },
+      "Orbit": {
+        "description": "Xoay thực thể quanh một cái khác, hoặc quanh gốc — mặt trăng, vệ tinh, camera quay vòng.",
+        "title": "Quỹ đạo"
+      },
+      "Path": {
+        "description": "Đi dạo dọc theo một dãy điểm ở tốc độ ổn định — một xe, cú quay dolly, nền tảng trên đường ray.",
+        "title": "Ray"
+      },
+      "Patrol": {
+        "description": "Đi bộ từ một điểm được đặt tên sang điểm tiếp theo, chờ đợi ở mỗi — một cảnh gác, thang máy.",
+        "title": "Tuần tra"
+      },
+      "RigidBody": {
+        "description": "Giao đối tượng cho mô phỏng: nó rơi, nó trượt, nó bị đẩy.",
+        "title": "Vật lý"
+      },
+      "Script": {
+        "title": "Script",
+        "description": "Giao đối tượng cho mã: những gì tác giả viết chạy ở mỗi bước."
+      },
+      "Player": {
+        "title": "Người chơi",
+        "description": "Gọi tên những gì được chơi. Một mỗi cảnh: những gì treo dưới nó là cơ thể và mắt của nó, và đó là những gì camera theo."
+      },
+      "Spin": {
+        "description": "Xoay thực thể trên một trục, vô tận — lợi thụ, cánh quạt, cơ chế.",
+        "title": "Xoay liên tục"
+      },
+      "SpringArm": {
+        "title": "Cánh tay lò xo",
+        "description": "Treo camera phía sau một yếu tố ở khoảng cách bạn đặt: nó kéo vào khi tường xen giữa chúng, và theo dõi với độ chậm trễ chứ không dán."
+      },
+      "Trigger": {
+        "description": "Không chặn gì, và nói rằng khi cái gì vào khối lượng của nó hoặc để lại nó.",
+        "title": "Cảm biến"
+      },
+      "Vehicle": {
+        "title": "Phương tiện",
+        "description": "Đặt đối tượng trên bánh xe được treo, được lái, được điều khiển: nó lăn, nó hãm phanh, nó quay. Bánh xe là những đối tượng con của nó, được đặt tên ở đây."
+      }
+    },
+    "fields": {
+      "acceleration": "Tăng tốc",
+      "agility": "Anh ta",
+      "airControl": "Kiểm soát trên không",
+      "axis": "Trục",
+      "body": "Cơ thể được lái",
+      "bodyTurnSpeed": "Quay cơ thể (0: không có)",
+      "camera": "Camera",
+      "collision": "Tránh các bức tường",
+      "collisionInLag": "Nhập va chạm",
+      "collisionOutLag": "Thoát va chạm",
+      "coyoteTime": "Dung sai nhảy",
+      "current": "Hiện tại",
+      "deceleration": "Giảm tốc",
+      "distance": "Khoảng cách",
+      "drag": "Kéo",
+      "drive": "Truyền động",
+      "fidelity": "Độ chính xác",
+      "followVertical": "Theo chiều cao của chủ thể",
+      "friction": "Ma sát",
+      "from": "Tệp nguồn",
+      "graph": "Đồ thị hoạt ảnh",
+      "gravityScale": "Trọng lực",
+      "height": "Chiều cao",
+      "hysteresis": "Phát lại",
+      "jumpBuffer": "Nhảy sớm",
+      "jumpSpeed": "Nhảy",
+      "kind": "Mô phỏng",
+      "length": "Độ dài",
+      "lockRotation": "Chặn xoay",
+      "lookAt": "Khung hình",
+      "mass": "Khối lượng",
+      "max": "Tối đa",
+      "maxSteerAngle": "Braking tối đa",
+      "maxThrust": "Lực đẩy tối đa",
+      "maxTorque": "Mô-men xoắn động cơ",
+      "mode": "Khóa học",
+      "moveSpeed": "Tốc độ đi bộ (0: của cảnh)",
+      "orientation": "Hướng",
+      "orientToTangent": "Theo tiếp tuyến",
+      "pitchMax": "Sân tối đa",
+      "pitchMin": "Sân tối thiểu",
+      "positionLag": "Độ chậm trễ vị trí",
+      "possesses": "Mục được sở hữu",
+      "probeRadius": "Bán kính sonde",
+      "radius": "Bán kính",
+      "restitution": "Rebound",
+      "rotationLag": "Độ chậm trễ xoay",
+      "runSpeed": "Tốc độ chạy (0: không chạy)",
+      "safetyMargin": "Lề an toàn",
+      "script": "Tệp",
+      "shoulder": "Đóng vai phụ",
+      "slopeLimit": "Độ dốc",
+      "snapDistance": "Nắm chặt",
+      "speed": "Tốc độ",
+      "stallAngle": "Góc suy giảm hiệu suất",
+      "stepHeight": "Bước",
+      "stopDistance": "Khoảng cách dừng",
+      "subject": "Chủ thể được theo",
+      "suspensionLength": "Du hành treo",
+      "target": "Mục tiêu",
+      "turnSpeed": "Tốc độ quay",
+      "waitSeconds": "Chờ",
+      "waypoints": "Điểm",
+      "wheelRadius": "Bán kính bánh xe",
+      "wheels": "Bánh xe",
+      "wheelWidth": "Độ rộng bánh xe",
+      "wingArea": "Diện tích cánh"
+    },
+    "export": {
+      "title": "Tối ưu hóa game",
+      "action": "Xuất",
+      "safeTitle": "Tối ưu hóa runtime SAFE",
+      "safeRuntime": "Tối ưu hóa biểu diễn runtime",
+      "instancing": "Instance các đối tượng được lặp lại",
+      "batching": "Batch hình học tĩnh tương thích",
+      "deduplication": "Khử trùng lặp tài nguyên",
+      "geometryBuffers": "Tối ưu hóa bộ đệm hình học",
+      "losslessCompression": "Nén mà không mất mát hình ảnh",
+      "removeUnused": "Loại bỏ tài nguyên không sử dụng",
+      "currentSceneMeasured": "Được đo · cảnh hiện tại",
+      "projectEstimated": "Ước tính · trò chơi hoàn chỉnh · {{count, number}} cảnh",
+      "currentSceneLossyEstimate": "Cảnh hiện tại với mất mát hình ảnh · {{triangles}} tam giác · {{geometry}} hình học · {{images}} hình ảnh",
+      "triangleResult": "Tam giác hiển thị {{before}} → {{after}}",
+      "geometryResult": "Hình học {{before}} → {{after}}",
+      "imageResult": "Hình ảnh {{before}} → {{after}}",
+      "visualTitle": "Nâng cao · thay đổi hình ảnh",
+      "generateLods": "Tạo mức khoảng cách",
+      "geometryLabel": "Đơn giản hóa hình học",
+      "compressionLabel": "Nén hình ảnh",
+      "reductionLabel": "Độ phân giải hình ảnh",
+      "quality": {
+        "off": "Tắt",
+        "conservative": "Bảo thủ",
+        "balanced": "Cân bằng",
+        "aggressive": "Hung hãn"
+      },
+      "reduction": {
+        "off": "Ban đầu",
+        "half": "Nửa",
+        "quarter": "Phần tư"
+      },
+      "visualChangesNone": "Thay đổi hình ảnh: KHÔNG",
+      "visualChangesPossible": "Thay đổi hình ảnh: CÓ THỂ",
+      "failed": "Trò chơi không thể được xuất."
+    },
+    "inputMap": {
+      "actionId": "Hành động",
+      "actionKind": "Giá trị",
+      "addAction": "Thêm hành động",
+      "addBinding": "Thêm ràng buộc",
+      "binding": "Ràng buộc {{device}}",
+      "applyPresetHint": "Thay thế bản đồ này bằng điểm bắt đầu được chọn",
+      "axis": "Trục",
+      "context": "Bối cảnh",
+      "create": "Bản đồ kiểm soát mới",
+      "createHint": "Tạo một bản đồ đầu vào từ một điểm bắt đầu tiêu chuẩn",
+      "defaultActive": "Hoạt động khi khởi động",
+      "deadZone": "Vùng chết",
+      "deviceLabel": "Thiết bị",
+      "duplicateId": "Một số bản đồ đầu vào sử dụng định danh “{{id}}”. Cung cấp mỗi bối cảnh một định danh duy nhất.",
+      "device": {
+        "gamepad": "Tay cầm",
+        "keyboard": "Bàn phím",
+        "mouse": "Chuột"
+      },
+      "id": "Định danh",
+      "invalid": "JSON không mô tả một bản đồ đầu vào hợp lệ.",
+      "invert": "Đảo ngược",
+      "jsonLabel": "JSON bản đồ",
+      "kind": {
+        "axis1": "Một trục",
+        "axis2": "Hai trục",
+        "button": "Nút"
+      },
+      "loadFailed": "Bản đồ đầu vào này không thể được đọc.",
+      "loading": "Đang tải bản đồ đầu vào…",
+      "mode": {
+        "expert": "Chuyên gia",
+        "json": "JSON",
+        "simple": "Đơn giản"
+      },
+      "modeHint": "Thay đổi cách chỉnh sửa cùng một bản đồ đầu vào",
+      "preset": {
+        "character": "Nhân vật",
+        "flight": "Chuyến bay",
+        "menu": "Trình đơn",
+        "studio": "Studio",
+        "vehicle": "Phương tiện"
+      },
+      "presets": "Điểm bắt đầu",
+      "priority": "Ưu tiên",
+      "removeAction": "Loại bỏ hành động",
+      "removeBinding": "Loại bỏ ràng buộc",
+      "save": "Lưu",
+      "scale": "Tỉ lệ",
+      "unnamedAction": "Hành động không tên",
+      "capture": "Nhấn",
+      "capturing": "Nhấn…",
+      "captureHint": "Liên kết lệnh này với phím tiếp theo hoặc nút điều khiển tay cầm tiếp theo. Escape từ bỏ.",
+      "help": {
+        "id": "Tên của bối cảnh — cái một script đẩy, và cái fallback tích hợp hoàn tất. Nó đến từ tên tệp; hai tệp mang một định danh sẽ chỉ là một bối cảnh.",
+        "priority": "Ai thắng khi hai bối cảnh hoạt động khai báo cùng một hành động. Số CAO HƠN viết cuối cùng và lấy nó. Các bối cảnh tích hợp nhân vật, phương tiện và chuyến bay là 0, 10 và 10.",
+        "defaultActive": "Cho dù bản đồ này đang hoạt động từ đầu trò chơi. Nếu không, một script phải đẩy nó — một bối cảnh menu mở và đóng lại như vậy.",
+        "actionId": "Tên một script đọc, và các bộ điều khiển tích hợp với nó: `move`, `jump`, `steer`. Tên đó là những gì đếm, không bao giờ là chìa khóa.",
+        "actionKind": "Những gì hành động trả lời: một nút trả lời có hoặc không, một trục trả lời một số giữa −1 và 1, hai trục trả lời một cặp — những gì một thanh gạt nói.",
+        "device": "Nơi lệnh đến từ đó. Một hành động có thể mang nhiều: đó là cách trò chơi trả lời bàn phím VÀ tay cầm mà không biết cái nào nói.",
+        "axis": "Đó là nửa nào của hai nửa này chìa khóa đẩy. Một hành động hai trục được tạo thành bởi bốn chìa khóa, hai mỗi trục.",
+        "scale": "Bao xa ràng buộc này đẩy, và chiều nào. −1 cho nửa đó đi trái hoặc lùi, 1 cho cái kia.",
+        "deadZone": "Dưới giá trị này thanh gạt được coi là đang ở vị trí ngừng. Một thanh gạt hỏng trôi: không có vùng chết, nhân vật tự đi bộ.",
+        "invert": "Biến lệnh này thành mặt khác. Những gì một số phi công mong đợi từ sân, và không ai từ bất cứ thứ gì khác."
+      }
+    },
+    "controlsMenu": {
+      "add": "Thêm ràng buộc",
+      "capture": "Nhấn một phím hoặc nút bộ điều khiển",
+      "change": "Chuyển đổi",
+      "close": "Đóng",
+      "gamepad": "Tay cầm",
+      "keyboard": "Bàn phím",
+      "mouse": "Chuột",
+      "reset": "Đặt lại mọi thứ",
+      "title": "Kiểm soát"
+    },
+    "play": {
+      "faults_many": "{{count, number}} lỗi",
+      "faults_one": "{{count, number}} lỗi",
+      "faults_other": "{{count, number}} lỗi",
+      "objects_many": "{{count, number}} đối tượng",
+      "objects_one": "{{count, number}} đối tượng",
+      "objects_other": "{{count, number}} đối tượng",
+      "pause": "Tạm dừng",
+      "pauseHint": "Đóng băng trò chơi nơi nó đang đứng",
+      "readout": "{{fps}} i/s · bước {{tick}}",
+      "start": "Chạy",
+      "startHint": "Phát cảnh như một trò chơi, mà không cần chạm tài liệu",
+      "stop": "Dừng",
+      "stopHint": "Loại bỏ trò chơi và đặt cảnh trở lại như cách nó là",
+      "openFault": "Mở script tại dòng của lỗi"
+    },
+    "section": {
+      "title": "Thành phần",
+      "add": "Thêm một thành phần",
+      "addHint": "Cho đối tượng này cái gì để làm trong khi trò chơi chạy",
+      "remove": "Tách rời",
+      "removeHint": "Tách thành phần này khỏi đối tượng",
+      "empty": "Đối tượng này không làm gì trong khi trò chơi chạy.",
+      "emptyHint": "Một thành phần nói những gì đối tượng LÀM, nơi loại của nó nói những gì nó vẽ."
+    },
+    "values": {
+      "all": "Tất cả các bánh xe",
+      "auto": "Tự động",
+      "box": "Khối",
+      "convexes": "Convex",
+      "dynamic": "Động",
+      "fixed": "Cố định",
+      "front": "Kéo",
+      "hull": "Vỏ",
+      "kinematic": "Lái",
+      "loop": "Lặp",
+      "once": "Một lần",
+      "pingPong": "Qua lại",
+      "pivot": "Vai",
+      "pointer": "Ánh nhìn",
+      "rear": "Dẫn động sau",
+      "subject": "Chủ thể",
+      "trimesh": "Tam giác",
+      "unknown": "Giá trị không xác định",
+      "unnamedNode": "Không",
+      "x": "X",
+      "y": "Y",
+      "z": "Z"
+    },
+    "window": {
+      "debug": "Gỡ lỗi",
+      "debugHint": "Những gì trò chơi nói về chính nó: đối tượng, khung hình mỗi giây, bước, lỗi",
+      "framePerformance": "CPU {{cpu}} ms · render {{render}} ms",
+      "renderPerformance": "{{calls, number}} lời gọi vẽ · {{triangles, number}} tam giác",
+      "noFaults": "Không có lỗi",
+      "title": "Chế độ chơi",
+      "waiting": "Đang chờ studio…"
+    }
+  }
+}

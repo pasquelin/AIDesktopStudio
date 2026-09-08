@@ -1,0 +1,72 @@
+{
+  "welcome": {
+    "skip": "Geç",
+    "skipHint": "Bu tanıtımı kapatır ve stüdyoyu mevcut ayarlarla açar",
+    "back": "Önceki",
+    "backHint": "Önceki ekrana döner",
+    "next": "Devam et",
+    "nextHint": "Sonraki ekrana gider",
+    "done": "Başla",
+    "doneHint": "Bu tanıtımı kapatır ve stüdyoyu açar",
+    "steps": "Adım {{current, number}} / {{total, number}}",
+    "goToStep": "Adım {{current, number}}’ye git — {{title}}",
+    "language": {
+      "title": "Dilinizi seçin",
+      "body": "Her menü, düğme ve ileti bu dili kullanır. Bunu daha sonra Ayarlar’da değiştirebilirsiniz.",
+      "hint": "Uygulamayı {{name}}’de gösterir"
+    },
+    "look": {
+      "title": "Nasıl görünüyor",
+      "body": "Koyu stüdyonun kendi temasıdır. Gün ışığında çalışıyorsanız değiştirin.",
+      "themeHint": "Uygulamayı {{name}} temasına geçirir"
+    },
+    "craft": {
+      "title": "3B gezintime",
+      "body": "3B görünüm zaten bildiğiniz yazılımın hareketlerini yansıtır. Bunu daha sonra ayarlar’da değiştirebilirsiniz.",
+      "navigationHint": "3B görünümde {{name}} görünüm hareketlerini kullanır"
+    },
+    "ai": {
+      "title": "AI, tüm kapılar arasında",
+      "body": "Stüdyo hiçbir özel AI’ye bağlı değildir: takıldıkları, değiştirildikleri ve hatta onu yönetebilirler.",
+      "local": {
+        "title": "Bu makinede",
+        "body": "Stüdyo ağırlıkları indirir ve burada çalıştırır. Hiçbir şey çıkmaz, hiçbir şey faturalandırılmaz."
+      },
+      "ollama": {
+        "title": "Ollama ile",
+        "body": "Zaten kurulu? Stüdyo modellerinizi okur ve olduğu gibi kullanır."
+      },
+      "cloud": {
+        "title": "Bir sağlayıcıda",
+        "body": "Bir anahtar ve üretim dışarı gider. Değiştirilebilir: hiçbiri ürün değildir."
+      },
+      "mcp": {
+        "title": "Ve diğer yolda",
+        "body": "Stüdyo araçlarını yayınlar: Claude Code veya herhangi bir MCP ajanı bir proje açar ve sizin için üretir."
+      }
+    },
+    "models": {
+      "title": "Modeller, bölüm başına bölüm",
+      "body": "Stüdyo ağırlıkları indirir, sonra burada çalıştırır. Bazı modeller yayıncılarından erişim talep eder. Boyut gerekli disk alanını gösterir.",
+      "sectionHint": "Modelleri gösterir: {{name}}",
+      "more": "Tam katalog ayarlar’da yaşıyor.",
+      "motionOptional": "Hareket üretimi isteğe bağlıdır. Şimdi bir model kurun veya devam edin ve daha sonra Ayarlar → IA → 3B’de bulun. Animasyon yeniden hedefleme AI olmadan çalışır."
+    },
+    "account": {
+      "title": "Bulut, varsa",
+      "body": "Stüdyo bir hesap olmadan çalışır, kendi dosyalarınız. Bir anahtar üretim ve paylaşılan kitaplığı açar.",
+      "stored": "Bu hizmetler bu makinede zaten kaydedildi. Başka bir tane ekleyebilir veya devam edebilirsiniz.",
+      "addService": "Bir hizmet ekle",
+      "addServiceHint": "Başka bir anahtarı kaydetmek için formu açar",
+      "adding": "Kaydedilecek hizmetin anahtarını yapıştırın.",
+      "backToList": "Listeye geri dön",
+      "backToListHint": "Burada yazılanları bırakır ve kaydedilen hizmetleri yeniden gösterir"
+    },
+    "project": {
+      "title": "İlk projeniz",
+      "body": "Bir proje disk’teki bir klasördür. Bir tane oluşturun, bir tane açın veya geçin ve Anasayfa’dan başlayın.",
+      "createHint": "Boş bir klasör seçer ve projeyi yapar",
+      "openHint": "Bu disk üzerinde zaten olan bir proje klasörü açar"
+    }
+  }
+}

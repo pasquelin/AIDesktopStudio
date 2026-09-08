@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { basename } from 'node:path'
 import { z } from 'zod'
 import { taskRatio } from '@shared/domain/taskProgress'
@@ -35,7 +36,7 @@ const MAX_MEDIA = 2048
  */
 class UnreachableMediumError extends Error {
   constructor(readonly entry: string) {
-    super(`this montage points at a file that is missing, or outside the project: ${entry}`)
+    super(localizedError('bundleMediumUnreachable', { entry }).message)
   }
 }
 

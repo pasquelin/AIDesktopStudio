@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { writeFile } from 'node:fs/promises'
 import { basename } from 'node:path'
 import { isRecord, readString } from '@shared/guards'
@@ -28,7 +29,9 @@ export async function writePickedFile(
     // The message Node builds carries the absolute path, and a rejected `ipcMain.handle` hands
     // it to the renderer, which files it in the journal. The code says what went wrong without
     // saying where. The cause stays here: Electron rebuilds the rejection from the message alone.
-    throw new Error(`the file could not be written${codeOf(error)}`, { cause: error })
+    throw Object.assign(localizedError('fileWriteFailed', { code: codeOf(error) }), {
+      cause: error,
+    })
   }
 
   return basename(path)

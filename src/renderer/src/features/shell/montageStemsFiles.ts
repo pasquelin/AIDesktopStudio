@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import type { TaskWatch } from '@shared/domain/taskProgress'
 import { exportTargetOf, MAX_EXPORT_WEIGHT } from '@shared/domain/exportRegistry'
 import { freeName, safeName } from '@shared/domain/otioz'
@@ -28,7 +29,7 @@ export async function montageStemsFiles(
   // BEFORE the mix, not after: the writer refuses past this weight, and finding out there means
   // the person waited through every minute of it for a refusal with nothing to act on.
   if (stemsWeight(state) > MAX_EXPORT_WEIGHT) {
-    throw new Error('this montage is too long to write as stems')
+    throw localizedError('montageStemsTooLong')
   }
 
   const stems = await stemsOf(state, decodeAsset, {
@@ -36,7 +37,7 @@ export async function montageStemsFiles(
     signal: watch?.signal,
   })
 
-  if (stems.length === 0) throw new Error('this montage has no audible track to write')
+  if (stems.length === 0) throw localizedError('montageStemsEmpty')
 
   // Numbered, and the number comes FIRST: two tracks left under the studio's default name are the
   // ordinary case, and a folder holding one `track.wav` is a stem set missing every other row.

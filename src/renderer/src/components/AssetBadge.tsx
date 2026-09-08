@@ -82,7 +82,7 @@ export function AssetBadge({ badge, label, showQuiet = false, overlay = false }:
     <span
       className={cn(
         'pointer-events-none inline-flex items-center',
-        overlay && cn('absolute top-1 right-1', TILE_MARK),
+        overlay && cn('absolute end-1 top-1', TILE_MARK),
         mark.busy && 'animate-pulse',
         mark.tone,
       )}

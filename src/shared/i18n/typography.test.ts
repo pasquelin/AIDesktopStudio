@@ -56,7 +56,7 @@ describe('the spots French would not break', () => {
 
   // The list is written out, so it is worth saying what it may not hold.
   it('names symbols only, never a French word', () => {
-    for (const symbol of UNIT_SYMBOLS.fr) expect(symbol).toMatch(/^[A-Za-z]{1,4}$/)
+    for (const symbol of UNIT_SYMBOLS.fr ?? []) expect(symbol).toMatch(/^[A-Za-z]{1,4}$/)
   })
 })
 
@@ -86,6 +86,6 @@ describe('the spots English would not break', () => {
   })
 
   it('names symbols only, never an English word', () => {
-    for (const symbol of UNIT_SYMBOLS.en) expect(symbol).toMatch(/^[A-Za-z]{1,4}$/)
+    for (const symbol of UNIT_SYMBOLS.en ?? []) expect(symbol).toMatch(/^[A-Za-z]{1,4}$/)
   })
 })

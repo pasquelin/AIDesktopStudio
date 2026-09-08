@@ -1,0 +1,24 @@
+{
+  "fileInfo": {
+    "title": "معلومات عن {{name}}",
+    "sections": {
+      "general": "عام",
+      "media": "وسائط",
+      "catalogue": "فهرس",
+      "git": "Git"
+    },
+    "gitUnchanged": "لا تغييرات معلقة",
+    "kind": {
+      "file": "ملف",
+      "folder": "مجلد"
+    },
+    "type": "نوع",
+    "modified": "تاريخ التعديل",
+    "codec": "ترميز",
+    "identifier": "معرف",
+    "fingerprint": "بصمة المحتوى",
+    "added": "تاريخ الإضافة",
+    "reading": "قراءة المجلد…",
+    "missing": "لم يعد هذا العنصر في مجلد المشروع."
+  }
+}

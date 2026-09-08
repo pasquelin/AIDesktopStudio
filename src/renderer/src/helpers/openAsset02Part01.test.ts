@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { type Asset } from '@shared/domain/asset'
 import type { DocumentDescriptor } from '@shared/domain/document'
@@ -83,7 +84,9 @@ describe('opening an asset', () => {
     await openAsset(picture())
 
     expect(entries()).toEqual([
-      expect.objectContaining({ message: expect.stringContaining('no longer measures') }),
+      expect.objectContaining({
+        message: expect.stringContaining(localizedError('assetSizeMismatch').message),
+      }),
     ])
   })
 

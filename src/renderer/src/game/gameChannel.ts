@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { animationGraphOf, type AnimationGraphModule } from '@shared/domain/animationGraph'
 import { isRecord } from '@shared/guards'
 import type { RuntimeReport } from '@shared/domain/gameRuntime'
@@ -98,7 +99,7 @@ function animationGraphsOf(value: unknown): AnimationGraphModule[] | null {
   if (!Array.isArray(value)) return null
   try {
     return value.map(one => {
-      if (!isFields(one) || typeof one.path !== 'string') throw new Error('unnamed graph')
+      if (!isFields(one) || typeof one.path !== 'string') throw localizedError('graphNameMissing')
       return { path: one.path, graph: animationGraphOf(one.graph) }
     })
   } catch {

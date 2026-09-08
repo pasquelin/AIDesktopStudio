@@ -1,3 +1,5 @@
+import { localizedError } from '@shared/localizedError'
+import { TRANSLATIONS } from '@shared/i18n'
 import { describe, expect, it } from 'vitest'
 import { HISTORY_BLOCK_MAX } from '@shared/domain/assistant'
 import {
@@ -100,10 +102,20 @@ describe('the conversation the model reads', () => {
    */
   it('states a refusal in English, whatever the studio is running in', () => {
     const [block] = assistantHistory([
-      turn({ steps: [{ action: 'generator.submit', refusal: 'declined' }] }),
+      turn({
+        steps: [
+          {
+            action: 'generator.submit',
+            refusal: 'declined',
+            detail: localizedError('missingDocument').message,
+          },
+        ],
+      }),
     ])
 
     expect(block).toContain('You turned that action down.')
+    expect(block).toContain(TRANSLATIONS.en.diagnostics.missingDocument)
+    expect(block).not.toContain('\u001e')
   })
 
   // A turn showing as nothing at all has the model repeat the sentence it already failed on.

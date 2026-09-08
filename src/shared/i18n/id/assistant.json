@@ -1,0 +1,1756 @@
+{
+  "assistant": {
+    "actions": {
+      "inputMapsList": {
+        "title": "Lihat daftar peta masukan",
+        "description": "Menampilkan daftar peta masukan keyboard/gamepad."
+      },
+      "inputMapRead": {
+        "title": "Baca peta masukan",
+        "description": "Membaca sebuah peta masukan keyboard/gamepad berdasarkan jalurnya."
+      },
+      "inputMapWrite": {
+        "title": "Tulis peta masukan",
+        "description": "Menulis sebuah peta masukan yang telah divalidasi."
+      },
+      "animationGraphsList": {
+        "title": "Lihat daftar graf animasi",
+        "description": "Menampilkan daftar graf animasi proyek."
+      },
+      "animationGraphRead": {
+        "title": "Baca graf animasi",
+        "description": "Membaca sebuah graf animasi berdasarkan jalurnya."
+      },
+      "animationGraphWrite": {
+        "title": "Tulis graf animasi",
+        "description": "Menulis sebuah graf animasi yang telah divalidasi."
+      },
+      "animationRetargetStatus": {
+        "title": "Baca alih target animasi",
+        "description": "Membaca hasil pengukuran kecocokan alih target untuk sebuah gerak."
+      },
+      "commandRunStudioCommand": {
+        "title": "Jalankan perintah",
+        "description": "Menjalankan sebuah perintah studio berdasarkan pengenalnya, persis seperti yang dilakukan pintasan keyboard atau entri menu. Dokumen yang dituju harus berada di depan. Sebuah pengenal ditulis [cakupan].[verba], dan studio.state menjawab cakupan dari apa yang berada di depan: menarik kembali sebuah suntingan pada dokumen adalah [cakupan].undo — scene.undo, canvas.undo, sequence.undo — dan mengembalikannya adalah [cakupan].redo. SATU panggilan menarik kembali SATU gerakan, jadi panggilan kedua menarik kembali gerakan sebelumnya: baca ulang dokumen alih-alih mengirimnya dua kali. Tidak ada tindakan lain yang mengurungkan sebuah suntingan, karena files.undoFileOperation hanya mencakup file proyek."
+      },
+      "workspaceOpen": {
+        "title": "Buka ruang kerja",
+        "description": "Beralih ke sebuah ruang kerja, dan membuat dokumen di sana bila diminta — selalu yang BARU, jadi ini bukan jalan kembali ke dokumen yang sudah terbuka. Selalu berikan judul: tanpa judul, sebuah jendela penamaan terbuka dan panggilan menunggu seseorang."
+      },
+      "modelsSearch": {
+        "title": "Cari model",
+        "description": "Mencari mesin pembuatan berdasarkan nama atau pengenal model, keluarga dan operasi. Kueri bersifat opsional dan menyebut mesinnya, bukan isi yang akan dibuat; jika tidak ada mesin yang cocok dengannya, keluarga yang kompatibel tetap tersedia. Tidak mengubah apa pun di layar."
+      },
+      "modelsSelect": {
+        "title": "Pilih model",
+        "description": "Menyiagakan sebuah model untuk satu keluarga pembuatan. Formulir Pembuat lalu dibangun ulang di atas kolom milik model itu."
+      },
+      "generatorPrepare": {
+        "title": "Siapkan pembuatan",
+        "description": "Mengisi formulir Pembuat dengan sebuah model dan parameternya, lalu menampilkannya. Tidak ada yang dikirim."
+      },
+      "generatorReadArmedGeneration": {
+        "title": "Baca apa yang disiagakan",
+        "description": "Menjawab model, operasi, sumber dan tujuan Pembuat sebagaimana adanya. Tidak mengirim apa pun dan tidak membelanjakan apa pun."
+      },
+      "generatorSubmit": {
+        "title": "Jalankan pembuatan yang telah disiapkan",
+        "description": "Mengirim formulir sebagaimana adanya. Membelanjakan dari akun yang melayani model itu, dan perkiraan biaya disebutkan lebih dulu bila ada."
+      },
+      "jobsList": {
+        "title": "Lihat daftar pekerjaan",
+        "description": "Mengembalikan pembuatan yang sedang berjalan beserta sejauh mana kemajuannya, sebagaimana studio melacaknya. Tidak mengubah apa pun di layar."
+      },
+      "promptSuggest": {
+        "title": "Usulkan varian prompt",
+        "description": "Menulis ulang sebuah kalimat menjadi beberapa varian yang disesuaikan dengan model yang disiagakan di Pembuat, beserta pengaturan yang menyertainya. Tidak membelanjakan apa pun dan tidak mengubah apa pun di layar."
+      },
+      "promptTranslate": {
+        "title": "Terjemahkan prompt ke bahasa Inggris",
+        "description": "Membawa sebuah teks ke dalam bahasa tempat model dilatih, dan menyebutkan bahasa apa yang dikenalinya. Tidak membelanjakan apa pun dan tidak mengubah apa pun di layar."
+      },
+      "actionsFind": {
+        "title": "Cari tindakan",
+        "description": "Mencari berdasarkan kata kunci di seluruh tindakan yang diterbitkan studio dan mengembalikan yang cocok, beserta kolomnya. Tidak mengubah apa pun di layar. Ini juga yang menjawab “apa yang bisa Anda lakukan soal X”: cari kata itu, lalu sebutkan apa yang kembali."
+      },
+      "chatClose": {
+        "title": "Tutup percakapan",
+        "description": "Menyingkirkan percakapan dari layar agar hasilnya terlihat. Panggil paling akhir, dan hanya setelah hasilnya ada — jangan pernah ketika jawabannya adalah kata-kata itu sendiri, atau selagi izin sedang diminta."
+      },
+      "promptDescribeStyle": {
+        "title": "Deskripsikan gaya gambar acuan",
+        "description": "Membaca gambar acuan yang terpasang pada formulir Pembuat dan mengembalikan sebuah deskripsi yang dapat dipakai sebagai prompt. Tidak membelanjakan apa pun."
+      },
+      "studioState": {
+        "title": "Baca keadaan studio",
+        "description": "Mengembalikan proyek yang terbuka, ruang kerja dan permukaan yang aktif, setiap dokumen yang terbuka dengan tanda pada yang berada di depan, model yang disiagakan per keluarga, dan apakah studio sudah masuk. Tanyakan ini sebelum menjalankan sebuah perintah: sebuah perintah hanya mencapai permukaan yang aktif."
+      },
+      "documentsList": {
+        "title": "Lihat daftar dokumen proyek",
+        "description": "Mengembalikan dokumen yang dapat disunting yang dimuat folder proyek — gambar berlapis, adegan, suntingan, material — baik terbuka di sebuah tab maupun tidak. File proyek yang lain, termasuk gambar dan model, tidak ada di sini."
+      },
+      "documentOpen": {
+        "title": "Buka dokumen",
+        "description": "Membuka sebuah dokumen dari folder proyek berdasarkan jalurnya dan membawanya ke depan, berpindah ruang kerja bila perlu. Jalurnya adalah jalur yang diberikan oleh sebuah daftar."
+      },
+      "documentActivate": {
+        "title": "Bawa dokumen ke depan",
+        "description": "Menjadikan dokumen yang sudah terbuka sebagai tab aktif, agar perintah yang ditujukan ke permukaannya mencapainya. Inilah jawaban untuk sebuah perintah yang ditolak karena berada di permukaan yang salah. Sebutkan lewat idnya, lewat jalurnya, atau lewat judul yang ditampilkan studio di dalam tanda kutip — judul yang dipakai bersama oleh dua dokumen tidak menyebut satu pun. “Buka lagi X”, “kembali ke X” untuk dokumen yang sudah terbuka adalah ini, bukan file.open."
+      },
+      "documentClose": {
+        "title": "Tutup dokumen",
+        "description": "Menutup tab sebuah dokumen yang terbuka. Hasil kerja yang belum pernah sampai ke disk hilang bersamanya."
+      },
+      "documentRename": {
+        "title": "Ganti nama dokumen",
+        "description": "Menyebut sebuah dokumen dengan nama lain, di disk dan di layar sekaligus. Dokumen itu mempertahankan identitasnya, sehingga tab yang terbuka berganti nama tanpa menutup."
+      },
+      "documentSave": {
+        "title": "Simpan dokumen",
+        "description": "Menulis dokumen yang disebut ke dalam proyek, dan menunggu sampai tuntas. Tanpa id, yang ditulis adalah yang berada di depan. Menjawab apakah ada sesuatu yang ditulis: sebuah tab yang tak tersentuh tidak punya apa pun untuk ditulis, dan itu bukan kegagalan."
+      },
+      "documentDeleteFromDisk": {
+        "title": "Hapus dokumen",
+        "description": "Mengeluarkan file dokumen dari proyek, lalu menutup tabnya. Hasil kerja yang belum disimpan ikut pergi bersamanya: file itu meninggalkan proyek, dan menyimpannya sebelum menghancurkannya tidak berarti apa-apa."
+      },
+      "activityRecent": {
+        "title": "Baca aktivitas terbaru",
+        "description": "Mengembalikan apa yang dicatat studio belakangan ini — pembuatan, operasi file, kegagalan — dari yang terbaru lebih dulu. Beginilah caranya mengetahui apa yang sebenarnya dilakukan sebuah tindakan. Bagaimana JALANNYA satu pembuatan adalah job.readCloudGeneration, yang mengembalikannya secara utuh."
+      },
+      "projectsList": {
+        "title": "Lihat daftar proyek terbaru",
+        "description": "Menjawab proyek terbaru dalam urutan yang ditampilkan studio, masing-masing dengan jalur absolut yang membukanya — berikan jalur itu ke project.open."
+      },
+      "projectOpen": {
+        "title": "Buka folder proyek",
+        "description": "Membuka sebuah proyek dari sebuah jalur absolut di mesin ini, tanpa memunculkan dialog sistem yang akan dipakai seseorang. Menjawab apakah folder itu memang sebuah proyek."
+      },
+      "projectClose": {
+        "title": "Tutup proyek yang terbuka",
+        "description": "Menutup proyek yang terbuka dan meninggalkan studio tanpa proyek: setiap panel mengosong dan katalog berhenti menjawab. Foldernya tidak tersentuh dan tetap berada di antara proyek terbaru."
+      },
+      "projectCreate": {
+        "title": "Buat folder proyek",
+        "description": "Membuat sebuah proyek dan membukanya, tanpa memunculkan dialog sistem yang akan dipakai seseorang. Sebuah NAMA sudah cukup — studio meletakkannya di tempat orang ini menyimpan proyek, yang disebut di atas. Kolom folder menyebut di folder mana proyek itu dibuat, bila kalimatnya menyebut satu."
+      },
+      "projectForget": {
+        "title": "Keluarkan proyek dari proyek terbaru",
+        "description": "Mengeluarkan sebuah proyek dari daftar proyek terbaru, yang tidak lebih dari sebuah daftar pintasan. FOLDERNYA TIDAK TERSENTUH dan tidak ada yang terhapus: membuka kembali proyek itu mengembalikan barisnya. Untuk memindahkan foldernya ke tempat sampah, itu project.trash. Disebut lewat jalur absolut yang dijawab projects.list."
+      },
+      "projectTrash": {
+        "title": "Pindahkan proyek ke tempat sampah",
+        "description": "Memindahkan FOLDER proyek beserta seluruh isinya — dokumen, aset, katalog — ke tempat sampah sistem. Tidak ada di studio yang mengurungkannya: hanya tempat sampah sistem yang dapat mengembalikannya. Proyek ditutup bila sedang terbuka, dan barisnya meninggalkan proyek terbaru. Untuk hanya mengeluarkan barisnya tanpa menyentuh foldernya, itu project.forget. Disebut lewat jalur absolut yang dijawab projects.list."
+      },
+      "fileOpen": {
+        "title": "Buka sebuah file proyek",
+        "description": "Membuka file apa pun yang dimuat folder proyek — sebuah gambar, model 3D, material, dokumen — di ruang yang menyuntingnya, seperti yang dilakukan klik ganda di Penjelajah. File yang tidak diterima editor mana pun di sini diserahkan kepada program pemiliknya."
+      },
+      "filesList": {
+        "title": "Lihat daftar isi folder",
+        "description": "Mengembalikan entri satu folder dari proyek yang terbuka, baik file maupun folder, beserta jalur yang mengenali masing-masing. Jangan berikan folder untuk mendaftar akar proyek."
+      },
+      "filesSearch": {
+        "title": "Cari di file proyek",
+        "description": "Mencari di seluruh proyek yang terbuka berdasarkan nama dan mengembalikan entri yang cocok beserta jalurnya. Tidak mengubah apa pun di layar. Menemukan bukan berarti membuka: file.open membuka apa yang ditemukan, dan file.rename mengganti namanya."
+      },
+      "filesMove": {
+        "title": "Pindahkan file",
+        "description": "Memindahkan file dan folder proyek ke folder lain di dalamnya. Disk berubah, meskipun Penjelajah masih dapat mengurungkannya setelahnya."
+      },
+      "filesCopy": {
+        "title": "Salin file",
+        "description": "Menyalin file dan folder proyek ke folder lain di dalamnya, dan meninggalkan aslinya di tempatnya."
+      },
+      "filesDuplicate": {
+        "title": "Duplikat file",
+        "description": "Membuat sebuah salinan dari setiap file atau folder yang disebut, di sampingnya, dengan nama yang dipilih studio agar tidak ada yang tertimpa."
+      },
+      "filesTrash": {
+        "title": "Pindahkan file ke tempat sampah",
+        "description": "Mengirim file dan folder proyek ke tempat sampah sistem. Apa yang terbawa tercantum di aktivitas terbaru."
+      },
+      "fileRename": {
+        "title": "Ganti nama file",
+        "description": "Memberi satu file atau folder proyek nama lain, di folder tempatnya sudah berada. Program lain mungkin sudah mengenalnya dengan nama yang lama."
+      },
+      "fileFacts": {
+        "title": "Baca fakta sebuah file",
+        "description": "Mengembalikan apa yang dicatat sistem file tentang satu entri — jenisnya, ukurannya dalam byte, kapan dibuat dan kapan terakhir diubah. Tidak mengubah apa pun di layar."
+      },
+      "folderNew": {
+        "title": "Buat folder",
+        "description": "Membuat sebuah folder baru di dalam sebuah folder proyek yang terbuka. Menjawab dengan jalur yang diberikan kepadanya, yang dapat berbeda bila namanya sudah dipakai."
+      },
+      "filesUndoFileOperation": {
+        "title": "Urungkan kumpulan perubahan file terakhir",
+        "description": "Menarik kembali pemindahan, penggantian nama atau duplikasi file proyek yang terakhir. Tumpukannya hidup di proses utama dan berlaku untuk setiap jendela, tetapi pembuangan ke tempat sampah tidak ditarik kembali."
+      },
+      "filesRedoFileOperation": {
+        "title": "Ulangi kumpulan perubahan file terakhir",
+        "description": "Memutar ulang kumpulan perubahan file yang baru saja diurungkan, persis seperti yang dilakukan Penjelajah. Menjawab dengan apa yang berpindah dan apa yang ditolak."
+      },
+      "filesCanUndoRedo": {
+        "title": "Baca tumpukan urung file",
+        "description": "Menyebutkan apakah mengurungkan atau mengulangi akan melakukan sesuatu, tanpa mencoba keduanya. Inilah yang membuat dua baris menu itu kelabu sebelum diklik."
+      },
+      "fileReveal": {
+        "title": "Tampilkan file di pengelola file sistem",
+        "description": "Membuka Finder atau penjelajah sistem pada file yang disebut, dalam keadaan terpilih. Jalurnya tidak pernah keluar dari proses utama."
+      },
+      "projectRename": {
+        "title": "Ganti nama proyek",
+        "description": "Mengganti nama sebuah proyek, yang berarti MEMINDAHKAN foldernya: sebuah proyek dinamai oleh foldernya dan bukan oleh apa pun yang lain. Isinya ikut berpindah, dan tidak ada yang terhapus. Disebut lewat jalur absolut yang dijawab projects.list, sehingga proyek yang tertutup pun dapat diganti namanya — dan jalur yang dijawab adalah jalur yang BARU."
+      },
+      "modelsReadGenerationModelFields": {
+        "title": "Baca masukan milik sebuah model",
+        "description": "Mengembalikan kolom yang diterima satu model pembuatan, beserta jenis dan batasnya, sebagaimana studio membangun formulirnya. Inilah bekal untuk mengisi parameter sebuah pembuatan yang telah disiapkan."
+      },
+      "costEstimate": {
+        "title": "Perkirakan biaya sebuah pembuatan",
+        "description": "Menghitung harga sebuah model dan sekumpulan parameter tanpa menjalankan apa pun. Parameternya mengambil bentuk yang dijawab models_readGenerationModelFields. Tidak menjawab jumlah apa pun ketika API menolak menghargai model itu, alih-alih mengarang sebuah angka."
+      },
+      "jobReadCloudGeneration": {
+        "title": "Baca satu pekerjaan",
+        "description": "Mengembalikan satu pembuatan secara utuh — statusnya, sejauh mana kemajuannya, apa yang dihasilkannya, berapa biayanya, dan mengapa ia gagal bila memang gagal. Ketika diminta “hasil pembuatan terakhir saya”, inilah yang menyebutkan bagaimana JALANNYA; gambar atau model 3D yang dihasilkannya ada di katalog proyek."
+      },
+      "jobWaitForCloudGeneration": {
+        "title": "Tunggu sebuah pekerjaan selesai",
+        "description": "Menunggu hingga sebuah pembuatan berhasil, gagal atau dibatalkan, lalu mengembalikannya beserta aset yang dihasilkannya. Mengembalikan pekerjaan itu apa adanya bila waktu tunggu habis, yang merupakan sebuah jawaban dan bukan kegagalan."
+      },
+      "jobCancelCloudGeneration": {
+        "title": "Batalkan sebuah pekerjaan",
+        "description": "Menghentikan sebuah pembuatan yang masih dalam antrean atau sedang berjalan. Apa yang sudah dibelanjakan tidak dikembalikan."
+      },
+      "taskCancelLocalTask": {
+        "title": "Batalkan sebuah tugas lokal",
+        "description": "Menghentikan sebuah tugas yang dijalankan studio di mesin ini — sebuah render, impor, atau pengindeksan — berikut file yang tertulis separuh. Menjawab apakah masih ada yang berjalan, yang tidak berlaku bagi id yang sudah selesai."
+      },
+      "usageReport": {
+        "title": "Baca laporan pemakaian",
+        "description": "Mengembalikan apa yang telah dibelanjakan akun selama jendela tujuh, tiga puluh satu atau seratus dua puluh hari, sebagaimana ditampilkan jendela pemakaian. Inilah yang menjawab “berapa kredit yang tersisa”."
+      },
+      "assetsSearchProjectCatalogue": {
+        "title": "Cari di katalog proyek",
+        "description": "Mencari di dalam katalog milik proyek INI, di mesin ini, berdasarkan teks, jenis dan tag, dan dapat dipersempit ke apa yang telah dibuat. Katalog memuat aset, bukan file proyek: sebuah file yang disebut orang ditemukan dengan mencari di file proyek. Pustaka jarak jauh milik akun berada di tempat lain lagi. Apa yang dimuat katalog TENTANG satu aset — dari mana ia datang, bagaimana ia ditandai — adalah asset.get, atas id yang dikembalikan tindakan ini."
+      },
+      "assetsCounts": {
+        "title": "Hitung katalog proyek",
+        "description": "Mengembalikan berapa banyak gambar, video, aset audio, model 3D, skybox dan animasi yang dimiliki proyek ini di mesin ini, dihitung di dalam katalog alih-alih dengan mendaftarnya. Setiap jenis dikembalikan, termasuk jenis yang jumlahnya nol."
+      },
+      "assetGet": {
+        "title": "Baca aset",
+        "description": "Mengembalikan segala yang dimuat katalog tentang aset yang disebut — di mana letaknya, dari mana asalnya, dan bagaimana ditandai. Inilah yang dipanggil atas id yang dikembalikan sebuah pembuatan yang selesai."
+      },
+      "assetUpdate": {
+        "title": "Perbaiki sebuah aset",
+        "description": "Mengubah nama sebuah aset, tagnya, atau jenis yang dibaca studio dari ekstensinya. Tag diganti seluruhnya, jadi sebuah daftar kosong benar-benar mengosongkannya."
+      },
+      "assetsRemoveFromLibrary": {
+        "title": "Keluarkan aset",
+        "description": "Mengeluarkan aset dari pustaka proyek, dan dari pustaka jarak jauh bila diminta. Apa yang dikeluarkan tercantum di aktivitas terbaru."
+      },
+      "assetsCaptionImages": {
+        "title": "Beri keterangan pada gambar",
+        "description": "Meminta API membaca gambar yang disebut dan menuliskan apa yang dilihatnya di sana sebagai nama aset. Hanya gambar yang sudah dikenal pustaka yang dapat diberi keterangan, jadi sebuah seleksi yang murni lokal menjawab nol."
+      },
+      "assetsListMissing": {
+        "title": "Cari aset yang filenya hilang",
+        "description": "Di antara aset yang disebut, mengembalikan aset yang filenya diharapkan katalog tetapi sudah tidak ada lagi. Aset yang tidak pernah punya file lokal tidak pernah termasuk di dalamnya, karena tidak ada yang diharapkan darinya."
+      },
+      "assetExtractTextures": {
+        "title": "Ekstrak gambar sebuah model",
+        "description": "Menarik keluar gambar yang dibawa sebuah file 3D dan memasukkannya ke pustaka proyek sebagai aset tersendiri. Mengembalikan baris yang baru saja dibuatnya."
+      },
+      "assetReveal": {
+        "title": "Tampilkan aset di pengelola file sistem",
+        "description": "Membuka Finder atau penjelajah sistem pada file sebuah aset. Aset yang hanya hidup di pustaka jarak jauh tidak punya apa pun untuk ditampilkan, dan mengatakannya."
+      },
+      "canvasState": {
+        "title": "Baca gambar yang sedang disunting",
+        "description": "Menjawab gambar yang berada di depan — ukurannya, resolusinya, garis bantunya, dan setiap lapisan tumpukan dalam bentuk datar: id, nama, jenis, dan apa yang dibawa masing-masing. Kolom yang BERADA PADA NILAI BAWAANNYA dihilangkan, dan ketiadaannya berarti nilai bawaan itu: sebuah lapisan tergambar, utuh, tidak terkunci, tercampur normal, tidak terpangkas dan tidak ditransformasi."
+      },
+      "animationReopenMotion": {
+        "title": "Buka lagi gerak karakter",
+        "description": "Mengganti meja kerja animasi dengan gerak yang tersimpan di sebuah aset animasi untuk model yang disebut. Aset itu harus membawa data gerak yang dibuat oleh studio ini."
+      },
+      "aiLocalState": {
+        "title": "Baca runtime AI lokal",
+        "description": "Mengembalikan kandidat AI lokal, keadaan terpasang dan termuat, peran, kecocokan dengan mesin, unduhan dan kesiapan runtime."
+      },
+      "aiManageLocalRuntime": {
+        "title": "Kelola runtime AI lokal",
+        "description": "Memilih, memasang, menghapus, memuat atau melepas sebuah kandidat AI lokal, atau membaca dan memperbaiki runtimenya. Baca ai.localState lebih dulu. Setiap operasi kecuali membaca mesinnya mengubah studio dan memerlukan konfirmasi."
+      },
+      "canvasSetDocumentProperties": {
+        "title": "Atur properti dokumen gambar",
+        "description": "Mengubah resolusi cetak, mode warna atau kedalaman bit gambar yang berada di depan. Baca canvas.state lebih dulu; nilai yang tidak disebut tetap tidak berubah."
+      },
+      "canvasGenerationComment": {
+        "title": "Kelola komentar pembuatan pada gambar",
+        "description": "Menambah, memperbarui atau menghapus sebuah instruksi untuk pembuatan berikutnya pada gambar yang berada di depan. Koordinat dan poligon opsional memakai piksel dokumen. Sebuah id lapisan membatasi catatan baru pada lapisan itu; tanpa id, catatan berlaku untuk seluruh gambar. canvas.state mengembalikan komentar yang tertunda beserta pengenalnya."
+      },
+      "canvasResize": {
+        "title": "Ubah ukuran gambar",
+        "description": "Mengubah bingkai gambar yang berada di depan. Menskalakan ulang lapisan bersamanya bila diminta, dan jika tidak, membiarkannya di tempatnya — itulah beda antara ukuran gambar dan ukuran kanvas."
+      },
+      "canvasSetPixelArt": {
+        "title": "Atur mode pixel art",
+        "description": "Menempatkan gambar yang berada di depan pada sebuah kisi pixel art, atau mengeluarkannya dari kisi. Bila diberi jumlah kolom dan baris, mengubah ukuran dokumen agar karyanya berukuran persis sekian sel. 🛑 Sebuah perubahan ukuran membuang riwayat piksel — goresan yang sudah dibuat tetap ada, tetapi ⌘Z tidak lagi mengurungkannya. Mengubah ukuran dan memasang kisi adalah DUA pengurungan: ⌘Z yang pertama melepas kisi dan membiarkan ukurannya."
+      },
+      "canvasDrawPixels": {
+        "title": "Gambar piksel",
+        "description": "Menempatkan sel pada gambar yang berada di depan, sekali jalan dan satu pengurungan — sel yang disebut satu per satu, sebuah garis, sebuah persegi panjang penuh atau kosong, atau sebuah isian. Koordinat dinyatakan dalam sel kisi, bukan dalam piksel dokumen."
+      },
+      "canvasCrop": {
+        "title": "Pangkas gambar",
+        "description": "Menutup bingkai pada sebuah persegi panjang yang diberikan dalam koordinat dokumen. Lapisan tetap di tempatnya, jadi apa yang jatuh di luar itulah yang terpotong."
+      },
+      "canvasFlipOrRotate": {
+        "title": "Balik atau putar gambar",
+        "description": "Mencerminkan gambar pada sebuah sumbu, atau memutarnya seperempat putaran ke salah satu arah. Satu putaran menukar lebar dan tinggi bingkai, sehingga sebuah potret menjadi lanskap."
+      },
+      "layerSetMaskOptions": {
+        "title": "Atur masker sebuah lapisan",
+        "description": "Menyebutkan apakah sebuah MASKER — sebuah bentuk yang dipahat dari sebuah seleksi, yang dikenakan sebuah lapisan — menyembunyikan apa yang ditutupinya dan apakah ia ikut berpindah bersama lapisan, atau melepasnya sama sekali. Menyembunyikan lapisan ITU SENDIRI adalah layer.setOpacityBlendAndVisibility. Lapisan yang tidak mengenakan masker ditolak: memahat masker adalah urusan mesin, lewat perintah yang membuatnya dari seleksi."
+      },
+      "guideAdd": {
+        "title": "Pasang garis bantu",
+        "description": "Memasang sebuah garis bantu vertikal atau horizontal di tempat yang diberikan, dalam koordinat dokumen, dan menjawab id yang baru saja diberikan kepadanya. Dua tindakan di sebelahnya memindahkannya dan menghapusnya lewat id itu."
+      },
+      "guideMove": {
+        "title": "Pindahkan garis bantu",
+        "description": "Mengubah letak sebuah garis bantu, dalam koordinat dokumen, seperti yang dilakukan sebuah seretan dari penggaris. Sebuah id yang tidak dijawab apa pun akan ditolak."
+      },
+      "guideRemove": {
+        "title": "Hapus garis bantu",
+        "description": "Mengangkat sebuah garis bantu dari gambar, seperti sebuah seretan yang menjatuhkannya kembali ke penggarisnya. Menghapus setiap garis bantu sekaligus adalah sebuah perintah registri, yang dijalankan dengan cara lain."
+      },
+      "layerAdd": {
+        "title": "Tambah lapisan",
+        "description": "Menaruh sebuah lapisan piksel, teks atau penyesuaian yang baru di puncak tumpukan gambar yang berada di depan, dan menjawab dengan id yang diberikan kepadanya. Sebuah lapisan penyesuaian harus menyebutkan pengatur yang dibawanya."
+      },
+      "layerRemove": {
+        "title": "Hapus lapisan",
+        "description": "Mengeluarkan satu lapisan dari tumpukan gambar yang berada di depan. Diurungkan seperti suntingan lain pada dokumen itu."
+      },
+      "layerSelect": {
+        "title": "Siagakan lapisan",
+        "description": "Menjadikan satu lapisan sebagai lapisan yang disiagakan, yaitu lapisan tempat alat ruang kerja Gambar bekerja. Ini adalah cara memandang tumpukan, bukan sebuah suntingan, jadi tidak ada yang ditambahkan ke riwayat."
+      },
+      "layerRename": {
+        "title": "Ganti nama lapisan",
+        "description": "Menyebut satu lapisan gambar yang berada di depan dengan nama lain. Idnya tidak berubah, jadi tidak ada yang merujuk kepadanya yang hilang."
+      },
+      "layerSetOpacityBlendAndVisibility": {
+        "title": "Atur cara sebuah lapisan dikomposisikan",
+        "description": "Mengubah opasitas sebuah lapisan, opasitas isiannya, mode campurnya, visibilitasnya atau klipingnya. Setiap kolom bersifat opsional, dan apa yang tidak diberikan dibiarkan persis seperti sebelumnya. INILAH yang menyembunyikan sebuah lapisan dan menampilkannya lagi — “masker lapisan ini” menyetel visible menjadi false, dan tidak ada hubungannya dengan sebuah masker."
+      },
+      "layerTransform": {
+        "title": "Pindahkan, skalakan atau putar lapisan",
+        "description": "Memindahkan, menskalakan atau memutar satu lapisan di dalam bingkai. Rotasi diberikan dalam derajat, dan setiap kolom yang dihilangkan mempertahankan nilai yang sudah dimiliki lapisan itu."
+      },
+      "layerEditTextLayer": {
+        "title": "Atur kata pada lapisan teks",
+        "description": "Mengubah apa yang dikatakan sebuah lapisan teks, jenis huruf dan ukuran yang dipakainya, warnanya, perataannya dan kotaknya. Menolak lapisan yang memuat piksel alih-alih kata, yang jika tidak akan dibiarkan utuh oleh perintah ini."
+      },
+      "layerReorderInStack": {
+        "title": "Urutkan ulang lapisan",
+        "description": "Memindahkan sebuah lapisan ke tempat lain dalam tumpukan, dan ke dalam atau ke luar sebuah grup. Indeks nol adalah dasar tumpukan, yaitu yang terakhir dilihat mata."
+      },
+      "layerDuplicate": {
+        "title": "Duplikat lapisan",
+        "description": "Menyalin satu lapisan tepat di atas dirinya sendiri, termasuk anaknya, setiap salinan diberi id yang baru. Menjawab dengan id salinan itu. FILE gambarnya disalin oleh files.duplicate; ini menyalin satu lapisan di dalamnya."
+      },
+      "layerGroup": {
+        "title": "Kelompokkan lapisan",
+        "description": "Mengumpulkan lapisan tingkat atas ke dalam satu grup, yang kemudian berpindah sebagai satu kesatuan. Menjawab dengan id grup itu sendiri."
+      },
+      "layerUngroup": {
+        "title": "Bubarkan grup",
+        "description": "Membongkar sebuah grup, dan meninggalkan anaknya di tempat grup itu berada dalam tumpukan."
+      },
+      "layerMergeDown": {
+        "title": "Gabungkan lapisan ke bawah",
+        "description": "Melipat satu lapisan ke dalam lapisan di bawahnya, di dalam tingkat tumpukannya sendiri. Hasilnya mempertahankan identitas lapisan yang di bawah."
+      },
+      "sequenceState": {
+        "title": "Baca suntingan yang sedang digarap",
+        "description": "Menjawab suntingan yang berada di depan — pengaturannya, durasinya, penanda waktu dan apa yang terpilih — lalu setiap trek beserta klipnya, batasnya, titik masuknya ke dalam sumber, kecepatannya, pudarnya dan levelnya. Kolom yang BERADA PADA NILAI BAWAANNYA dihilangkan, dan ketiadaannya berarti nilai bawaan itu: sebuah baris terdengar dan tidak terkunci, sebuah klip berjalan pada kecepatan 1 dari awalnya, tanpa pudar dan pada level saat ia direkam."
+      },
+      "sequenceSeek": {
+        "title": "Tempatkan penanda waktu",
+        "description": "Memindahkan penanda waktu suntingan yang berada di depan ke saat yang diberikan, dalam mikrodetik. Bukan sebuah perubahan: tidak ada yang masuk ke riwayat, dan pengurungan tidak mengembalikannya."
+      },
+      "clipAdd": {
+        "title": "Pasang sebuah klip pada suntingan",
+        "description": "Memasang sebuah aset dari pustaka pada sebuah trek suntingan yang berada di depan, pada saat yang diberikan atau di bawah penanda waktu. Membuka trek yang diperlukannya, dan menautkan gambar sebuah rekaman ke suaranya bila rekaman itu membawanya."
+      },
+      "clipRemove": {
+        "title": "Angkat sebuah klip dari suntingan",
+        "description": "Menghapus sebuah klip dari treknya, berikut belahan yang tertaut padanya. Ruang yang ditempatinya tetap kosong alih-alih menutup ke arah tetangganya."
+      },
+      "clipMove": {
+        "title": "Pindahkan klip",
+        "description": "Membawa sebuah klip ke trek dan saat yang diberikan, menimpa apa pun yang ada di sana. Trek yang terkunci, atau trek jenis lain, tidak menerima apa pun."
+      },
+      "clipTrim": {
+        "title": "Rapikan satu tepi klip",
+        "description": "Menarik titik masuk atau titik keluar sebuah klip ke saat yang diberikan, tidak pernah melewati sumber di belakangnya. Gambar diam tidak punya sumber untuk dilewati dan meregang bebas. “at” adalah sebuah saat pada LINIMASA dan tidak pernah sebuah durasi: untuk memperpanjang klip dua detik, baca “end” miliknya lalu kirim nilai itu ditambah 2000000."
+      },
+      "clipSplit": {
+        "title": "Pisahkan klip menjadi dua",
+        "description": "Memisahkan sebuah klip pada saat yang diberikan dan meninggalkan kedua bagiannya ujung bertemu ujung. Saat yang berada di luar klip tidak punya apa pun untuk dipisahkan, dan ditolak alih-alih dilaporkan selesai."
+      },
+      "clipFade": {
+        "title": "Atur pudar klip",
+        "description": "Memberi pudar masuk atau pudar keluar sebuah KLIP panjang yang diminta, jadi harus ada suntingan video atau audio di depan. Dua landaian yang lebih panjang daripada klipnya sendiri dikembalikan ke apa yang bisa dibawanya. Untuk pudar di dalam sinematik sebuah adegan 3D, itu timeline.addSceneCue."
+      },
+      "clipGain": {
+        "title": "Atur level klip",
+        "description": "Mengubah level sebuah klip dalam desibel, nol membiarkan rekaman seperti saat direkam. Nilainya dibatasi pada apa yang bisa ditahan pemutaran."
+      },
+      "clipSpeed": {
+        "title": "Atur kecepatan klip",
+        "description": "Mengubah seberapa cepat sebuah klip dimainkan, satu adalah kecepatan aslinya. Panjangnya pada suntingan mengikuti, sedangkan sumber yang dibacanya tetap sama."
+      },
+      "clipUnlink": {
+        "title": "Lepaskan gambar dari suaranya",
+        "description": "Melepaskan dua bagian sebuah rekaman, sehingga memindahkan, merapikan atau memisahkan yang satu tidak lagi mengenai yang lain. Tidak ada yang mengikat keduanya kembali setelah itu."
+      },
+      "clipSelect": {
+        "title": "Tunjuk klip",
+        "description": "Menyebut klip yang akan dikenai inspektor dan gerakan yang tidak menyasar apa pun. Bukan sebuah perubahan, dan tidak bisa diurungkan."
+      },
+      "trackAdd": {
+        "title": "Tambah trek",
+        "description": "Membuka sebuah trek gambar atau suara di bawah yang lain. Trek gambar tidak bisa membawa apa pun dari suara, dan sebaliknya juga berlaku."
+      },
+      "trackRemove": {
+        "title": "Hapus trek",
+        "description": "Mengeluarkan sebuah trek dari suntingan, beserta setiap klip yang dibawanya. Trek yang terkunci tidak dihapus."
+      },
+      "trackReorderTracks": {
+        "title": "Ubah urutan trek",
+        "description": "Memindahkan sebuah trek sebanyak baris yang diberikan, yang mengubah apa menutupi apa. Baris dihitung dari ATAS, jadi angka negatif menaikkannya dan angka positif menurunkannya — sequence.state mengembalikannya dalam urutan itu, yang pertama adalah yang paling atas."
+      },
+      "trackRename": {
+        "title": "Ganti nama trek",
+        "description": "Memberi sebuah trek nama yang ditampilkan kolom tajuk. ID-nya tidak pernah berubah."
+      },
+      "trackSetMuteSoloLockHeight": {
+        "title": "Atur cara trek dikerjakan",
+        "description": "Mengubah bisu, solo, kunci atau tinggi sebuah trek. Keempatnya menyatakan bagaimana orang bekerja dan bukan apa yang dibuatnya, sehingga tidak pernah masuk ke riwayat."
+      },
+      "skyboxState": {
+        "title": "Baca langit yang sedang disunting",
+        "description": "Mengembalikan langit di depan — sumber ekuirektangularnya, pengaturan gambarnya, letak mataharinya dan warnanya, serta apa yang diterangi lingkungannya — ditambah apa yang menghasilkannya bila ia datang dari sebuah pembuatan."
+      },
+      "skyboxSetViewportOptions": {
+        "title": "Atur cara langit dipandang",
+        "description": "Memilih proyeksi yang dipakai untuk menggambar langit, seberapa lebar lensa terbuka, dan apakah objek penguji berdiri di dalamnya. Ini keadaan sesi, seperti setiap cara memandang sebuah dokumen, dan tidak ada satu pun yang disimpan."
+      },
+      "skyboxAdjustImage": {
+        "title": "Sesuaikan gambar langit",
+        "description": "Mengubah eksposur, kontras, saturasi, suhu, rona, rotasi horizon atau buram. Setiap bidang bersifat opsional, dan apa yang tidak diberikan dibiarkan seperti semula."
+      },
+      "skyboxResetAdjustments": {
+        "title": "Kembalikan pengaturan gambar ke netral",
+        "description": "Mengembalikan setiap pengaturan gambar langit ke nilai netralnya sekaligus, dalam satu entri riwayat. Sumber dan matahari tidak disentuh."
+      },
+      "skyboxSetSun": {
+        "title": "Tempatkan dan atur matahari",
+        "description": "Mengubah elevasi, azimut, intensitas atau warna matahari pada langit di depan. Kedua sudut dinyatakan dalam radian, seperti di mana pun dalam adegan."
+      },
+      "skyboxSetPreviewLighting": {
+        "title": "Atur apa yang diterangi langit",
+        "description": "Mengubah seberapa kuat langit menerangi objek penguji, dan menentukan apakah gambarnya digambar di belakang objek itu atau sekadar meneranginya."
+      },
+      "skyboxSetSourceImage": {
+        "title": "Pilih gambar langit",
+        "description": "Menggantungkan sebuah gambar ekuirektangular dari pustaka pada langit di depan. Aset itu harus punya file di komputer ini, sebab aset yang masih berada di cloud tidak punya apa pun untuk didekode."
+      },
+      "materialState": {
+        "title": "Baca material yang sedang disunting",
+        "description": "Mengembalikan material di depan — delapan kanalnya dan apa yang mengisinya, setiap pengaturan render seperti warna, kekasaran dan pengubinan, serta cara pratinjau ditampilkan."
+      },
+      "materialSetSurfaceSettings": {
+        "title": "Atur material",
+        "description": "Mengubah rona, kekasaran, kadar logam, relief, oklusi, emisi, pengubinan, pergeseran atau rotasi material di depan. Setiap bidang bersifat opsional."
+      },
+      "materialSetPreviewEnvironment": {
+        "title": "Pilih apa yang menerangi pratinjau material",
+        "description": "Menerangi pratinjau dengan studio prosedural, dengan sebuah gambar proyek yang disebut lewat ID asetnya, atau dengan sebuah dokumen langit yang disebut lewat judulnya — pratinjau lalu mengambil gambar gradasi dan intensitasnya, seperti yang dilakukan sebuah adegan."
+      },
+      "materialSetPreviewDisplay": {
+        "title": "Atur pratinjau material",
+        "description": "Mengubah kekuatan dan rotasi lingkungan yang menerangi pratinjau, apakah latar digambar, putaran otomatis dan penyorotan jahitan."
+      },
+      "materialSetChannelImage": {
+        "title": "Isi atau kosongkan kanal",
+        "description": "Menaruh sebuah gambar dari pustaka ke salah satu dari delapan kanal material di depan. Tanpa aset yang disebut, kanal itu dikosongkan alih-alih diisi."
+      },
+      "documentExport": {
+        "title": "Ekspor dokumen di depan ke dalam proyek",
+        "description": "Menulis dokumen di depan — gambar, adegan, langit, material atau suntingan — ke dalam sebuah folder proyek, memakai judulnya bila tidak ada nama yang diberikan. Sebuah suntingan keluar sebagai OpenTimelineIO, yaitu potongannya dan bukan sebuah film, sebab render bingkai demi bingkai memerlukan sesi yang tidak bisa ditahan apa pun dari luar. Tujuannya tidak bisa keluar dari proyek."
+      },
+      "gitStashDrop": {
+        "title": "Buang pekerjaan yang disisihkan",
+        "description": "Menghapus sebuah sisihan dari tumpukan tanpa menerapkannya kembali. Apa yang dibawanya tidak pernah direkam, jadi tidak ada yang mengembalikannya."
+      },
+      "gitResolve": {
+        "title": "Selesaikan konflik penggabungan",
+        "description": "Mempertahankan salah satu dari dua sisi sebuah konflik untuk file yang disebut. Apa yang dibawa sisi lain hilang dari salinan kerja."
+      },
+      "gitAbortMerge": {
+        "title": "Batalkan penggabungan yang sedang berjalan",
+        "description": "Mengembalikan repositori ke tempatnya sebelum penggabungan, membatalkan apa yang sudah ditulisnya ke dalam salinan kerja."
+      },
+      "gitRemotes": {
+        "title": "Daftar repositori jarak jauh",
+        "description": "Mengembalikan repositori jarak jauh yang dideklarasikan, dengan nama dan alamatnya. Itulah tujuan sebuah pengiriman."
+      },
+      "gitAddRemote": {
+        "title": "Deklarasikan repositori jarak jauh",
+        "description": "Menambahkan sebuah repositori jarak jauh dengan nama yang diberikan. Tidak ada yang dikirim atau diambil oleh gerakan ini sendiri, yang hanya menulis ke konfigurasi lokal."
+      },
+      "gitFetch": {
+        "title": "Ambil referensi jarak jauh",
+        "description": "Membaca di mana repositori jarak jauh berada, tanpa mengubah apa pun di salinan kerja Anda dan tanpa menerbitkan apa pun. Inilah separuh yang tidak berbahaya dari sebuah penarikan."
+      },
+      "gitPull": {
+        "title": "Ambil dan gabungkan",
+        "description": "Mengambil dari repositori jarak jauh dan menggabungkannya ke cabang saat ini, yang menulis ulang salinan kerja. Sebuah konflik berhenti di sana dan diselesaikan setelahnya. Bila yang diminta hanya apa yang dibawa repositori jarak jauh, ini panggilan yang salah: git.fetch membacanya tanpa menyentuh salinan kerja."
+      },
+      "gitPush": {
+        "title": "Terbitkan ke repositori jarak jauh",
+        "description": "Mengirim cabang saat ini ke repositori jarak jauh. Inilah satu-satunya gerakan studio yang keluar dari komputer ini, dan tidak ada apa pun di sini yang menariknya kembali."
+      },
+      "cloudBrowseAccountLibrary": {
+        "title": "Telusuri pustaka jarak jauh",
+        "description": "Mengembalikan satu halaman pustaka akun, dipersempit oleh teks, tag atau jenis. Penomoran halaman memakai kursor, dan tidak ada totalnya — API tidak memberikannya."
+      },
+      "cloudExplorePublicFeed": {
+        "title": "Telusuri apa yang diterbitkan semua orang",
+        "description": "Mengembalikan satu halaman umpan publik untuk jenis yang diberikan, dari yang terbaru. Aset ini bukan milik Anda, dan melihatnya tidak mengambil satu pun. cloud.pull adalah yang menurunkan salah satunya ke dalam proyek, beserta byte-nya."
+      },
+      "cloudFindSimilarPublished": {
+        "title": "Cari yang mirip dengan aset",
+        "description": "Mengembalikan aset terbitan yang mirip dengan aset yang disebut, sedangkan aset itu sendiri dikeluarkan dari hasilnya. Acuannya dipilih oleh pemanggil."
+      },
+      "cloudPreviewSync": {
+        "title": "Lihat apa yang akan dilakukan sinkronisasi",
+        "description": "Menyatakan apa yang akan dilakukan sebuah pengiriman atau penarikan terhadap setiap aset yang disebut, sebelum hal itu memakan satu permintaan pun. Tidak ada yang dikirim dan tidak ada yang diambil."
+      },
+      "cloudPull": {
+        "title": "Ambil aset jarak jauh",
+        "description": "Memasukkan aset ke dalam proyek, beserta byte-nya, dan menyatakan hasil masing-masing. Unduhan yang berhenti di tengah jalan mempertahankan apa yang sudah ditulisnya."
+      },
+      "cloudPush": {
+        "title": "Kirim aset ke akun",
+        "description": "Mengirim aset lokal ke pustaka akun, tempat aset itu tinggal. Inilah satu-satunya gerakan dari keluarga ini yang meninggalkan sesuatu di belakang."
+      },
+      "stylesList": {
+        "title": "Daftar gaya material",
+        "description": "Mengembalikan gaya material yang tersimpan, dengan ID, nama dan nilai yang disimpannya. Semuanya berada di luar setiap proyek dan mengikuti komputer ini."
+      },
+      "styleSave": {
+        "title": "Simpan material sebagai gaya",
+        "description": "Merekam material dokumen di depan dengan nama yang diberikan. Nama itu hanya dasar, dan studio membuatnya unik bila nama tersebut sudah dipakai."
+      },
+      "styleRename": {
+        "title": "Ganti nama gaya material",
+        "description": "Memberi nama pada sebuah gaya yang tersimpan. Tidak ada hal lain dari gaya itu yang berubah, dan ID-nya tetap sama."
+      },
+      "styleRemove": {
+        "title": "Hapus gaya material",
+        "description": "Menghapus sebuah gaya yang tersimpan. Gaya itu berada di luar setiap proyek, jadi tidak ada yang mengembalikannya — baik perintah urungkan maupun Explorer."
+      },
+      "authState": {
+        "title": "Ketahui apakah studio sudah masuk",
+        "description": "Menyatakan apakah sebuah kunci API sudah terpasang dan pada akun mana studio bekerja. Tidak pernah mengembalikan kunci itu sendiri, yang tidak keluar dari proses utama."
+      },
+      "windowState": {
+        "title": "Baca keadaan jendela",
+        "description": "Mengembalikan ukuran jendela, apakah ia dimaksimalkan atau dalam layar penuh, dan bahasa yang dipakainya menggambar — bahasa yang benar-benar dipilih proses utama."
+      },
+      "windowFullScreen": {
+        "title": "Alihkan layar penuh",
+        "description": "Membawa jendela ke layar penuh, atau mengeluarkannya dari sana. Ini sebuah pengalihan, dan tidak ada cara untuk meminta salah satu dari dua keadaan itu."
+      },
+      "settingsOpen": {
+        "title": "Buka pengaturan pada bagian",
+        "description": "Membuka jendela pengaturan pada bagian yang diminta, atau membawanya ke sana bila jendela itu sudah terbuka. Membaca dan menulis sebuah pengaturan tidak memerlukan jendela itu terbuka."
+      },
+      "updatesState": {
+        "title": "Baca keadaan pembaruan",
+        "description": "Menyatakan di mana pembaruan aplikasi berada — tidak ada yang terlihat, sedang diunduh, atau siap dipasang saat keluar berikutnya. updates.install adalah yang memasangnya dan menjalankan ulang studio."
+      },
+      "mediaCapabilities": {
+        "title": "Ketahui apa yang bisa didekode studio",
+        "description": "Menyatakan apa yang mampu dilakukan komputer ini di sisi media, yang bergantung pada keberadaan ffmpeg. Tanpanya impor tetap berjalan dan antarmuka menyatakan apa yang tidak bisa dilakukannya."
+      },
+      "mediaIndexFileInPlace": {
+        "title": "Beri file baris katalog",
+        "description": "Memasukkan ke dalam katalog sebuah file yang sudah ada di folder proyek, tanpa menyalinnya. Inilah separuh dari impor yang tidak memunculkan dialog sistem."
+      },
+      "fontsList": {
+        "title": "Daftar font yang terpasang",
+        "description": "Mengembalikan jenis huruf yang bisa dipakai untuk menulis sebuah teks, mulai dari yang dibawa studio, lalu yang terpasang di komputer ini. Masing-masing datang dengan asalnya, yang diperlukan untuk memasang sebuah huruf sama seperti namanya."
+      },
+      "favoritesListPinnedRecipes": {
+        "title": "Daftar resep tersemat",
+        "description": "Mengembalikan resep yang disematkan pada proyek, dengan model yang menghasilkannya dan ruang kerja yang tahu cara membuatnya lagi. Sebuah resep menyimpan cukup banyak untuk memulai kembali sebuah pembuatan."
+      },
+      "favoritePinAssetRecipe": {
+        "title": "Sematkan apa yang menghasilkan aset",
+        "description": "Menyematkan apa yang menghasilkan sebuah aset dari proyek yang terbuka, agar bisa dibuat lagi. Aset yang tidak dibuat siapa pun tidak punya resep untuk disimpan."
+      },
+      "favoriteUnpinAssetRecipe": {
+        "title": "Hapus resep tersemat",
+        "description": "Mengeluarkan sebuah resep dari daftar tersemat. Aset yang telah dihasilkannya tidak disentuh."
+      },
+      "fileInfoOpenWindow": {
+        "title": "Buka informasi file",
+        "description": "Membuka jendela yang menjelaskan sebuah file proyek — ukurannya, jenisnya, riwayatnya dan apa yang diketahui katalog tentangnya."
+      },
+      "mirrorOpenVideoReturnWindow": {
+        "title": "Buka monitor video",
+        "description": "Membuka jendela monitor, atau membawanya ke depan bila jendela itu sudah ada. Jendela itu menampilkan apa yang dimainkan suntingan, dan tidak membawa apa pun dari pekerjaan penyuntingan."
+      },
+      "helpOpenStudioWindow": {
+        "title": "Buka jendela studio",
+        "description": "Membuka manual pengguna, jendela lisensi, jendela penggunaan, log atau layar sambutan — atau membawanya ke depan bila sudah ada. Ini jendela milik proses utama, dan tidak ada perintah dari registri yang menjangkaunya."
+      },
+      "updatesInstall": {
+        "title": "Pasang pembaruan yang sudah diunduh",
+        "description": "Menutup studio dan menjalankan ulang versi yang sudah diunduh. Baru melakukan sesuatu setelah pembaruan siap, dan apa pun yang belum disimpan ikut hilang bersama penutupan itu."
+      },
+      "dictationState": {
+        "title": "Baca keadaan dikte",
+        "description": "Menyatakan di mana pengenalan suara berada — diam, mendengarkan, menunggu sebuah izin atau sebuah model — dan apa yang gagal bila ada yang gagal."
+      },
+      "dictationStart": {
+        "title": "Mulai dikte",
+        "description": "Membuka mikrofon dan menulis apa yang didengarnya di tempat kursor teks berada. Tanpa bidang yang aktif, dikte tidak punya tempat untuk menulis, jadi kursor teks ditempatkan sebelum panggilan."
+      },
+      "dictationStop": {
+        "title": "Hentikan dikte",
+        "description": "Menutup mikrofon. Secara bawaan menyimpan apa yang telah didengar, dan bisa membuangnya sebagai gantinya — persis di situlah kedua gerakan itu berbeda."
+      },
+      "panelsList": {
+        "title": "Daftar panel",
+        "description": "Mengembalikan panel yang bisa ditampilkan permukaan di depan, dan menyatakan mana saja yang terbuka. Panel yang tidak dilayani permukaan itu tidak dicantumkan, karena panel tersebut tidak bisa dibuka di sana."
+      },
+      "panelOpen": {
+        "title": "Buka panel",
+        "description": "Membawa sebuah panel ke depan, di tempat yang disediakan permukaan di depan untuknya. Panel yang sudah terbuka diberi fokus alih-alih ditulis ulang."
+      },
+      "panelClose": {
+        "title": "Tutup panel",
+        "description": "Mengosongkan separuh area tempat permukaan di depan menyimpan panel itu. Susunan panel yang lain tidak bergeser."
+      },
+      "sceneState": {
+        "title": "Baca adegan yang sedang disunting",
+        "description": "Mengembalikan setiap objek dokumen 3D di depan — ID, nama, tipe, induk, visibilitas dan transformasinya, beserta geometri, material atau lampu yang dibawanya — ditambah apa yang terpilih, bidikan kamera, dan pengaturan adegan. Bidang YANG BERADA PADA NILAI BAWAANNYA dihilangkan, dan ketiadaannya berarti nilai bawaan itu: tanpa induk, digambar, berdiri di titik asal tanpa putaran dan tanpa penskalaan, warna milik studio sendiri, sebuah bentuk yang dibagi seperti jenisnya selalu dibagi. Ukuran tidak pernah dihilangkan. Daftar yang tidak berisi apa pun dihilangkan seluruhnya. Untuk menjelaskan SATU objek dengan komponennya dan apa yang masih bisa ditambahkan padanya, studio.describe."
+      },
+      "optimizationAnalyze": {
+        "title": "Analisis optimasi adegan",
+        "description": "Mengembalikan rencana optimasi deterministik untuk objek yang disebut, atau untuk seluruh adegan bila tidak ada yang disebut. Tidak mengubah apa pun."
+      },
+      "optimizationSelection": {
+        "title": "Optimalkan seleksi",
+        "description": "Menyetel objek terpilih ke optimasi runtime SAFE otomatis sambil menjaga setiap objek asli tetap bisa disunting."
+      },
+      "optimizationWorld": {
+        "title": "Optimalkan adegan",
+        "description": "Menyetel setiap objek ke optimasi runtime SAFE otomatis tanpa mengubah adegan asli."
+      },
+      "optimizationReport": {
+        "title": "Baca laporan optimasi",
+        "description": "Mengembalikan biaya adegan yang terukur secara terpisah dari perkiraan keuntungan runtime SAFE."
+      },
+      "optimizationClearCache": {
+        "title": "Bersihkan cache optimasi",
+        "description": "Membuang representasi teroptimasi sekali pakai milik viewport adegan agar dibangun ulang dari keadaan asli."
+      },
+      "optimizationExclude": {
+        "title": "Kecualikan objek dari optimasi",
+        "description": "Mempertahankan objek logis yang disebut tetap individual di dalam render yang dioptimalkan."
+      },
+      "optimizationSetMode": {
+        "title": "Atur mode optimasi objek",
+        "description": "Menyetel Auto, Paksa individual, Paksa instans, Paksa batch atau Kecualikan pada objek yang disebut."
+      },
+      "nodeAdd": {
+        "title": "Tambah objek ke adegan",
+        "description": "Menaruh sebuah primitif, lampu, kamera, sprite atau teks ke dalam dokumen 3D di depan, pada posisi yang diberikan. Menjawab dengan ID yang dibawa objek itu sejak lahir. Model milik proyek, atau model yang baru saja dihasilkan sebuah pembuatan, masuk lewat node.addModel; yang ini membuat sebuah primitif."
+      },
+      "nodeAddModel": {
+        "title": "Tempatkan model dari pustaka",
+        "description": "Menaruh sebuah model 3D dari pustaka proyek ke dalam adegan di depan, disebut lewat asetnya. Beginilah sebuah mesh hasil pembuatan masuk ke dalam adegan."
+      },
+      "nodeRemove": {
+        "title": "Hapus objek",
+        "description": "Mengeluarkan satu objek dari adegan di depan, beserta apa pun yang menggantung padanya. Bisa diurungkan seperti perubahan lain pada dokumen itu."
+      },
+      "nodeRename": {
+        "title": "Ganti nama objek",
+        "description": "Menyebut satu objek adegan di depan dengan nama lain. ID-nya tidak berubah, jadi tidak ada rujukan kepadanya yang hilang."
+      },
+      "nodeAttach": {
+        "title": "Gantungkan objek pada karakter",
+        "description": "Menggantungkan sebuah objek pada titik pemasangan karakter yang memilikinya — sebilah pedang di tangan. Tanpa titik yang disebut, objek mengikuti seluruh karakter."
+      },
+      "nodeTransform": {
+        "title": "Tempatkan objek",
+        "description": "Memindahkan, memutar atau menskalakan satu objek. Rotasi adalah sudut Euler dalam radian, dan setiap sumbu yang dihilangkan mempertahankan nilai yang sudah dimiliki objek."
+      },
+      "nodeSetVisible": {
+        "title": "Tampilkan atau sembunyikan objek",
+        "description": "Mengeluarkan satu objek dari apa yang digambar, atau mengembalikannya. Objek itu tetap berada di dalam adegan pada kedua keadaan, dan itulah yang membedakan menyembunyikan dari menghapus."
+      },
+      "nodeSetMeshMaterial": {
+        "title": "Atur material objek",
+        "description": "Mengubah warna, kekasaran, kadar logam, kerapatan pengubinan dan lima peta sebuah mesh atau teks. Slot yang disebut dengan ID kosong berarti sebuah peta yang dilepas. Pengubinan ditolak pada teks, yang garis luarnya bukan sebuah primitif."
+      },
+      "nodeSetPrimitiveParameters": {
+        "title": "Atur parameter primitif",
+        "description": "Mengubah ukuran dan jumlah segmen bentuk yang menjadi dasar pembuatan sebuah mesh. Setiap primitif membawa miliknya sendiri, yang diserahkan saat adegan dibaca — bidang yang bukan milik bentuk itu ditolak alih-alih diabaikan."
+      },
+      "nodeSetShadowCastAndReceive": {
+        "title": "Atur bayangan objek",
+        "description": "Menyatakan apakah sebuah objek melemparkan bayangan dan apakah ia menangkap bayangan yang dilemparkan objek lain. Lampu tidak menangkap satu pun, sprite tidak melakukan keduanya, dan bidang yang tidak bisa dibawa objek itu ditolak."
+      },
+      "nodeSetSpriteSettings": {
+        "title": "Atur sprite",
+        "description": "Mengubah rona, opasitas dan gambar sebuah sprite, yang selalu menghadap kamera. ID kosong melepas gambarnya dan menyisakan bidang segi empat berwarna polos."
+      },
+      "nodeSetTextSettings": {
+        "title": "Atur teks 3D",
+        "description": "Mengubah kata-katanya, jenis hurufnya, ukurannya, kedalaman yang keluar dari bidangnya sendiri dan kehalusan kurva sebuah teks. Materialnya diatur lewat aksi material, seperti material sebuah mesh."
+      },
+      "nodeSetPathShape": {
+        "title": "Atur bentuk lintasan",
+        "description": "Mengubah ketegangan sebuah lintasan, dari 0 bersudut sampai 1 membulat, dan apakah ia menutup kembali pada dirinya sendiri. Titik kendalinya ditambah, dipindahkan dan dihapus oleh tiga aksi di samping yang ini."
+      },
+      "pathAddPoint": {
+        "title": "Tambah titik ke lintasan",
+        "description": "Meletakkan sebuah titik kendali. Dengan koordinat, titik itu ditambahkan setelah yang terakhir, di tempat yang dituju. Dengan indeks, ia diselipkan tepat setelah titik tersebut, di tengah jalan menuju tetangganya. Tanpa keduanya, ia memperpanjang lintasan dari ujungnya."
+      },
+      "pathMovePoint": {
+        "title": "Pindahkan titik lintasan",
+        "description": "Mengubah koordinat sebuah titik kendali, dalam koordinat lintasan itu sendiri — jadi memindahkan lintasan memindahkan seluruh alur geraknya. Indeks yang tidak menyebut titik mana pun ditolak."
+      },
+      "pathRemovePoint": {
+        "title": "Hapus titik dari lintasan",
+        "description": "Menghapus sebuah titik kendali. Sebuah lintasan tidak pernah turun di bawah dua titik, sebab satu titik bukanlah garis, dan permintaan itu ditolak di sana."
+      },
+      "modelSetMaterialDocument": {
+        "title": "Kenakan material pada model",
+        "description": "Membuat sebuah model yang diimpor mengenakan material proyek, disebut lewat judul dokumennya. Model lalu mengikuti material itu, sehingga menyunting salah satu kanal atau pengaturnya mengecat ulang model, tanpa perlu meminta apa pun lagi di sini. Judul kosong melepasnya, dan model kembali ke apa yang dibawa filenya sendiri."
+      },
+      "nodeSetLightSettings": {
+        "title": "Atur lampu",
+        "description": "Mengubah semua yang dibawa jenis lampu yang sedang dipegang — warnanya, intensitasnya, jangkauannya, peluruhannya, lebar dan kelembutan kerucutnya, targetnya, dan dua warna sebuah lampu hemisfer. Bidang yang tidak dibawa jenis itu ditolak. Pendar, bloom atau efek lain bukanlah sebuah lampu: post.set menulis satu parameter sebuah efek dan post.reset mengembalikannya."
+      },
+      "nodeSetCameraLens": {
+        "title": "Atur lensa kamera",
+        "description": "Mengubah sudut pandang serta jarak dekat dan jauh sebuah kamera. Di mana kamera itu berdiri diatur oleh transformasinya, seperti apa pun yang lain di dalam hierarki."
+      },
+      "cameraAddShot": {
+        "title": "Buat kamera mengudara",
+        "description": "Membuka sebuah bidikan untuk kamera ini, mulai dari saat yang diberikan dalam detik, dan mengembalikan ID-nya. Baris tempat bidikan itu mendarat mengikuti aturan pita itu sendiri, di mana kamera yang belum ada di pita datang paling atas. Kamera yang punya bidikan adalah kamera AKTIF, yaitu kamera yang dipakai untuk melihat adegan."
+      },
+      "cameraBindPathToShot": {
+        "title": "Jalankan kamera menyusuri lintasan",
+        "description": "Mengikat sebuah lintasan ke bidikan yang disebut: kamera menyusurinya selama bidikan berlangsung, dengan kecepatan tetap di sepanjang panjangnya. Tanpa lintasan, bidikan tidak lagi memindahkan kamera. Titik awal yang melewati titik akhir menjalankan lintasan secara mundur."
+      },
+      "cameraCreateAndBindPath": {
+        "title": "Pasang lintasan di bawah kamera",
+        "description": "Membuat sebuah lintasan di tempat kamera berdiri, searah garis pandangnya, dan mengikatnya ke bidikan dalam satu gerakan. Aksi di sampingnya mengikat lintasan yang sudah ada; yang ini membuatnya, sebab sebuah lintasan tidak mengendalikan apa pun tanpa bidikan yang menjalankannya."
+      },
+      "cameraReorder": {
+        "title": "Ubah baris kamera pada pita",
+        "description": "Menaikkan atau menurunkan baris sebuah kamera, yang menentukan lewat apa film itu melihat ketika dua bidikan bertumpang tindih. Angkanya adalah jumlah baris, negatif untuk turun, dan jawabannya menyatakan sejauh mana baris tersebut benar-benar bisa bergerak."
+      },
+      "cameraAimShotAt": {
+        "title": "Beri kamera sasaran bidik",
+        "description": "Mengarahkan kamera bidikan yang disebut ke sebuah objek — yang diikutinya bahkan ketika objek itu dianimasikan — atau ke sebuah titik tetap. Tanpa keduanya, kamera tetap diarahkan oleh rotasinya sendiri saja."
+      },
+      "nodeReparent": {
+        "title": "Pindahkan induk objek",
+        "description": "Menggantungkan satu objek di bawah objek lain, atau di bawah adegan itu sendiri bila tidak ada induk yang diberikan, dan menaruhnya di tempat yang diminta di antara tetangga barunya. Memberi tempat tanpa memberi induk karena itu menaikkan objek sampai ke adegan: sebut ulang induknya agar hanya tempatnya yang berubah. Objek mempertahankan transformasinya sendiri, yang lalu dibaca relatif terhadap induk barunya."
+      },
+      "nodeSelect": {
+        "title": "Pilih objek",
+        "description": "Menjadikan objek ini seleksi yang dibaca inspektor dan digerakkan gizmo. Seleksi bukan sebuah perubahan, jadi tidak ada yang ditambahkan ke riwayat."
+      },
+      "viewDirection": {
+        "title": "Lihat adegan dari satu sisi",
+        "description": "Menempatkan kamera tampilan utama di atas, di bawah, di depan, di belakang, di kiri atau di kanan adegan. Ini sebuah perpindahan, jadi tidak ada yang ditambahkan ke riwayat."
+      },
+      "rigState": {
+        "title": "Baca kerangka karakter",
+        "description": "Mengembalikan tulang sebuah model beserta perannya, pegangan yang dijangkau sendinya, blok yang diletakkan pada pitanya, dan apa yang telah diukur mesin dari mesh itu."
+      },
+      "rigFit": {
+        "title": "Buat model bisa dianimasikan",
+        "description": "Memasang pada mesh kerangka yang disesuaikan studio dengan apa yang telah diukurnya. Menolak selama mesin belum membaca model, dan itu sebuah penantian, bukan sebuah kesalahan."
+      },
+      "rigClear": {
+        "title": "Lepas kerangka model",
+        "description": "Mengembalikan model menjadi sebuah mesh saja, tanpa tulang dan tanpa pegangan. Gerakan ini bisa diurungkan seperti semua gerakan lain pada adegan."
+      },
+      "rigConfigureHands": {
+        "title": "Tambah tulang jari",
+        "description": "Memasang tiga puluh tulang jari dalam keadaan istirahat pada tangan mana pun yang sudah dibawa kerangka. Tanpa tangan yang dikenali, tidak ada yang ditulis."
+      },
+      "socketAdd": {
+        "title": "Letakkan titik pemasangan",
+        "description": "Meletakkan pada sebuah tulang karakter di depan sebuah titik yang bisa diikuti objek dari sebuah adegan — tangan, punggung. Titik itu berada di dalam file karakter."
+      },
+      "socketRemove": {
+        "title": "Hapus titik pemasangan",
+        "description": "Menghapus sebuah titik pemasangan dari karakter di depan. Apa pun yang mengikutinya jatuh kembali ke karakter itu sendiri."
+      },
+      "boneAdd": {
+        "title": "Tambah tulang",
+        "description": "Menggantungkan sebuah tulang di bawah tulang yang disebut, tepat berada di atasnya — gizmo-lah yang menaruhnya di tempat semestinya. Namanya disusun dari nama induknya."
+      },
+      "boneRemove": {
+        "title": "Hapus tulang",
+        "description": "Mengeluarkan sebuah tulang dari kerangka dan menggantungkan anaknya di tempat tulang itu tergantung: siku pergi, tangan tetap tinggal."
+      },
+      "boneRename": {
+        "title": "Ganti nama tulang",
+        "description": "Mengubah nama sebuah tulang, anaknya mengikuti dengan sendirinya. Nama yang sudah dipakai ditolak alih-alih ditulis setengah."
+      },
+      "boneSetRole": {
+        "title": "Nyatakan tulang ITU sendi yang mana",
+        "description": "Mengikat sebuah tulang ke salah satu sendi standar humanoid, atau ke tidak satu pun bila perannya dihilangkan. Tulang mana pun yang memegang peran itu kehilangannya dalam gerakan yang sama."
+      },
+      "ikAdd": {
+        "title": "Pasang pegangan pada sendi",
+        "description": "Menambahkan sebuah pegangan yang dijangkau sendi, beserta rantai yang mengikutinya — dua tulang di atasnya berputar untuk ikut serta, dan itulah yang menaruh kaki di tanah atau tangan pada sebuah tumpuan."
+      },
+      "ikRemove": {
+        "title": "Hapus pegangan",
+        "description": "Menghapus sebuah rantai beserta pegangan yang dijangkaunya, keduanya sekaligus: pegangan yang ditinggalkan akan menjadi tulang yang tidak dikendalikan apa pun."
+      },
+      "animationsList": {
+        "title": "Daftar apa yang bisa dimainkan karakter",
+        "description": "Mengembalikan tiga tempat asal sebuah gerak — klip yang dibawa file model itu sendiri, animasi yang dikirim bersama studio, dan animasi yang disimpan pustaka proyek. Inilah yang menjawab “animasi apa saja yang dibawa adegan ini”; sedangkan key yang dipegang sebuah pita dibaca dengan scene.state."
+      },
+      "animationAddBlock": {
+        "title": "Letakkan blok animasi",
+        "description": "Meletakkan pada pita sebuah karakter sebuah gerak dari salah satu dari tiga sumber. ID menyebut aset pustaka, nama menyebut dua sumber lainnya, dan tepat satu di antaranya yang boleh ada dalam sebuah panggilan. Pita dibuat bila karakter belum punya."
+      },
+      "animationSetBlockSettings": {
+        "title": "Atur blok animasi",
+        "description": "Mengubah tempat sebuah blok duduk pada pita, tempat pemutaran dimulai di dalam gerak, kecepatannya, loop-nya, panjang pudarnya, apa yang dilakukannya terhadap perpindahan akar, dan bagian tubuh yang dikendalikannya. Blok ditulis ulang di tempatnya, sedangkan setiap jalur lain dibiarkan tidak tersentuh."
+      },
+      "animationRemoveBlock": {
+        "title": "Lepas blok animasi",
+        "description": "Menghapus sebuah blok dari pita, di mana pun ia berada. Pita tetap ada, kosong bila memang harus."
+      },
+      "animationSetBandLengthAndRate": {
+        "title": "Atur pita animasi",
+        "description": "Mengubah panjang pita, lajunya dalam bingkai per detik, atau keduanya. Apa pun yang tidak disebut tidak disentuh."
+      },
+      "animationAutoKey": {
+        "title": "Nyalakan penulisan key otomatis",
+        "description": "Menentukan apakah memindahkan sebuah tulang menulis sebuah key sambil jalan. Ini keadaan sesi, seperti setiap cara memandang sebuah adegan, dan tidak ada satu pun yang disimpan bersama dokumen."
+      },
+      "keyWritePoseKeys": {
+        "title": "Tulis key pada subjek",
+        "description": "Menulis sebuah key pada setiap kanal sebuah objek atau tulang, pada saat yang diberikan atau di penanda waktu, dengan menahan pose yang tampil di penanda waktu — pose yang ditaruh node.transform. Pada objek yang dianimasikan, node.transform memasang key di penanda waktu itu sendiri, jadi untuk memasang pose pada saat lain: tulis dulu key di sana, lalu tempatkan objek dengan penanda waktu berada di atasnya. Kanal yang belum ada dibuka sambil jalan, sebab menuntut sebuah trek lebih dulu berarti meminta hal yang sudah berdiri di dalam viewport."
+      },
+      "keyRemoveSubjectKeys": {
+        "title": "Lepas key subjek",
+        "description": "Menarik kembali key yang dipegang setiap kanal sebuah objek atau tulang pada saat itu. Tanpa gerakan ini sebuah pose tidak bisa diurungkan siapa pun, dan tidak ada hal lain di panel yang menghapusnya."
+      },
+      "keyWriteKeysOnOpenChannels": {
+        "title": "Tulis key pada semua yang dianimasikan",
+        "description": "Menulis sebuah key pada setiap kanal yang sudah dibuka adegan, pada saat yang diberikan atau di penanda waktu. Tidak membuka satu pun, dan itulah yang membedakan gerakan ini dari memasang key pada satu subjek."
+      },
+      "keyMove": {
+        "title": "Pindahkan key",
+        "description": "Menggeser sebuah key di sepanjang kanalnya, dengan mempertahankan nilainya. Key yang mendarat pada saat yang sudah dipegang key lain menggantikannya, sebab dua key pada satu bingkai adalah keadaan yang tidak bisa dibaca ulang oleh pemutaran mana pun."
+      },
+      "channelRemove": {
+        "title": "Hapus kanal animasi",
+        "description": "Menghapus sebuah kanal, beserta key yang dibawanya. Kanal yang terkunci ditolak alih-alih dibiarkan berdiri diam-diam."
+      },
+      "channelSetMuteSoloLock": {
+        "title": "Atur status kanal",
+        "description": "Membisukan sebuah kanal, memainkannya sendirian, atau menguncinya. Ini cara BEKERJA dan bukan sebuah perubahan pada dokumen, jadi tidak ada yang ditambahkan ke riwayat."
+      },
+      "viewSetDisplayMode": {
+        "title": "Pilih cara adegan digambar",
+        "description": "Mengalihkan tampilan utama ke berbayang, rangka kawat, material saja atau salah satu cara menggambar lainnya. Perintah menu hanya berputar dari satu ke berikutnya; yang ini menyebut yang mana."
+      },
+      "sceneCapture": {
+        "title": "Ambil gambar diam dari tampilan 3D",
+        "description": "Menulis sebuah gambar diam dari apa yang ditampilkan tampilan itu ke dalam gambar proyek, pada ukuran yang diminta. Pembingkaiannya tidak pernah berubah — hanya jumlah pikselnya, sebab kalau tidak, tangkapan itu akan menampilkan sesuatu yang lain dari layar."
+      },
+      "worldApplyPreset": {
+        "title": "Terapkan dunia siap pakai",
+        "description": "Mengatur pencahayaan, latar belakang, kabut dan penilaian adegan dalam satu pemanggilan, untuk sejenis penampilan. Masing-masing hanya menulis bidang yang menjadi miliknya dan meninggalkan sisanya seperti semula, jadi tanah yang dinyalakan seseorang tetap menyala."
+      },
+      "layerLock": {
+        "title": "Kunci lapisan",
+        "description": "Mengatur atau menghapus tiga kunci lapisan, yang satu untuk pikselnya, yang satu untuk tempatnya dan yang satu untuk transparansinya. Mereka menghentikan tangan di kanvas; nilai yang ditulis oleh aksi lain melewatinya, seperti yang dilakukan dari panel."
+      },
+      "layerEditShapeLayer": {
+        "title": "Cat ulang bentuk",
+        "description": "Mengubah isian, garis luar, lebar goresan dan jumlah sisi bentuk yang sudah digambar, tanpa menggambarnya lagi. Menghapus isian dan garis luar pada saat yang sama ditolak, karena tidak akan meninggalkan apa pun untuk dilihat."
+      },
+      "layerSetAdjustmentAmount": {
+        "title": "Atur lapisan penyesuaian",
+        "description": "Memindahkan satu tombol yang dibawa lapisan penyesuaian — eksposur, kontras, saturasi atau suhu. Menyebut tombol lain selain miliknya sendiri ditolak daripada dihilangkan diam-diam."
+      },
+      "worldSetSceneLighting": {
+        "title": "Pilih apa yang menerangi adegan",
+        "description": "Menerangi adegan oleh studio prosedural, oleh gambar proyek yang dinamai dengan pengenal asetnya, atau oleh dokumen langit yang dinamai dengan judulnya — adegan lalu mengambil gambar gradasinya, mataharinya dan intensitasnya. Juga mengatur seberapa kuat pencahayaan itu dan seberapa jauh ia berpaling di sekitar vertikal, diletakkan di atas apa yang langit katakan."
+      },
+      "worldSetBackground": {
+        "title": "Pilih apa yang ada di belakang adegan",
+        "description": "Menaruh lingkungan itu sendiri di belakang adegan, warna solid, atau tidak sama sekali — yang terakhir meninggalkan latar belakang transparan, yang diperlukan tangkapan yang dimaksudkan untuk diletakkan di atas sesuatu yang lain."
+      },
+      "worldSetFog": {
+        "title": "Atur kabut adegan",
+        "description": "Mematikan kabut, memudarnya di antara dua jarak, atau memadatkannya dengan kedalaman. Warna dan jarak milik bentuk yang dipilih, dan ditinggalkan persis seperti semula."
+      },
+      "worldSetGroundPlane": {
+        "title": "Atur tanah adegan",
+        "description": "Menampilkan atau menyembunyikan tanah yang dimiliki adegan, dan mengatur warnanya, sisinya, opasitasnya dan apakah bayangan jatuh di atasnya. Inilah cara tanah DITAMBAHKAN ke adegan: permukaan yang ditambahkan sebagai objek adalah pemandangan, bukan tanah. Tanah itu milik dokumen, tidak seperti kisi, yang merupakan pengaturan aplikasi."
+      },
+      "worldSetLayers": {
+        "title": "Ganti lapisan medan dan entri semis",
+        "description": "Menggantikan daftar lapisan medan dan entri semis proyek adegan dengan daftar lengkap yang divalidasi. Gunakan scene.state untuk membaca entri saat ini sebelum mengubah satu."
+      },
+      "worldSetToneMapping": {
+        "title": "Atur cara adegan dirender",
+        "description": "Memilih cara jangkauan dinamis tinggi dibawa ke layar, dan berapa banyak pemberhentian itu terbuka. Keduanya milik dokumen daripada jendela yang kebetulan memandangnya."
+      },
+      "gitStatus": {
+        "title": "Baca status versi repositori",
+        "description": "Mengembalikan cabang, apa yang diikutinya, seberapa jauh di depan atau di belakangnya, dan setiap file yang diubah dengan setengah dari git yang ditempati. Juga mengatakan kapan proyek tidak memiliki repositori sama sekali. Apa yang berubah DI DALAM file adalah git.diff; ini hanya menyebutkan file."
+      },
+      "gitLog": {
+        "title": "Baca riwayat",
+        "description": "Mengembalikan halaman versi yang dicatat, terbaru terlebih dahulu, di semua cabang, dengan nama yang menunjuk pada masing-masing. Apa yang berubah di dalam file di antara dua versi adalah git.diff."
+      },
+      "gitListCommitFiles": {
+        "title": "Baca apa yang diubah versi",
+        "description": "Mengembalikan file yang menyentuh versi yang dicatat, dan cara masing-masing disentuh — ditambahkan, diubah, dihapus atau diganti nama."
+      },
+      "gitDiff": {
+        "title": "Baca apa yang berubah dalam file",
+        "description": "Mengembalikan perubahan di dalam satu file, dalam versi yang dicatat, atau terhadap yang terakhir ketika tidak ada versi yang disebutkan."
+      },
+      "gitBranches": {
+        "title": "Daftarkan cabang",
+        "description": "Mengembalikan setiap cabang repositori proyek, dengan mengatakan mana yang diperiksa."
+      },
+      "gitStashes": {
+        "title": "Daftarkan perubahan yang disimpan",
+        "description": "Mengembalikan apa yang telah disimpan, terbaru terlebih dahulu, sehingga klien dapat memasukkan kembali satu menurut tempatnya dalam daftar."
+      },
+      "gitInit": {
+        "title": "Mulai merekam versi",
+        "description": "Menjalankan git init pada proyek yang terbuka dan menulis file penolaknya, lalu menjawab keadaan yang ditinggalkannya. Tidak berbuat apa-apa dengan proyek yang sudah merekam."
+      },
+      "gitStage": {
+        "title": "Indekskan file",
+        "description": "Memindahkan perubahan ke dalam apa yang akan dibawa versi yang dicatat berikutnya. Menjawab dengan keadaan yang ditinggalkan, jadi tidak ada yang perlu dibaca kembali."
+      },
+      "gitUnstage": {
+        "title": "Batalkan indeks file",
+        "description": "Mengeluarkan perubahan dari apa yang akan dibawa versi yang dicatat berikutnya, meninggalkan file itu sendiri tidak tersentuh."
+      },
+      "gitRestore": {
+        "title": "Abaikan perubahan pada file",
+        "description": "Mengembalikan file sesuai dengan cara versi yang terakhir dicatat memilikinya. Apa yang tidak pernah dicatat hilang, dan tidak ada pembatalan di studio yang mencapainya."
+      },
+      "gitCommit": {
+        "title": "Catat versi",
+        "description": "Mencatat apa yang diindeks, di bawah pesan. Dapat mengubah versi terakhir alih-alih menambahkan satu, yang menulisnya ulang daripada mengikutinya."
+      },
+      "gitCreateBranch": {
+        "title": "Buat cabang",
+        "description": "Memulai cabang pada versi saat ini dan berpindah ke atasnya. Pohon kerja ditinggalkan persis seperti keadaannya."
+      },
+      "gitCheckout": {
+        "title": "Alihkan cabang",
+        "description": "Berpindah ke cabang lain, menulis ulang pohon kerja agar sesuai. Dokumen yang terbuka dalam tab menjadi dokumen yang filenya berubah di bawahnya."
+      },
+      "gitStash": {
+        "title": "Simpan perubahan saat ini",
+        "description": "Menyimpan perubahan pohon kerja dan mengembalikannya ke versi yang terakhir dicatat. Perubahan meninggalkan disk."
+      },
+      "gitStashPop": {
+        "title": "Kembalikan perubahan yang disimpan",
+        "description": "Memasukkan kembali satu set perubahan yang disimpan ke dalam pohon kerja dan menghapusnya dari rak. File ditulis ulang."
+      },
+      "gitTag": {
+        "title": "Beri tag versi",
+        "description": "Menaruh nama pada satu versi yang dicatat, jadi itu dapat ditemukan lagi tanpa hash-nya."
+      },
+      "settingsRead": {
+        "title": "Baca pengaturan",
+        "description": "Menjawab { settings, choices }: di bawah settings, setiap pengaturan yang dipegang studio, bagian demi bagian; di bawah choices, apa yang diterima setiap pengaturan dengan daftar tetap, dengan judul dan bantuan. Apa yang DIGAMBAR viewport hidup di sini — kisi, bayangan, pembantu — begitu juga unit, tema dan bahasa. Tidak ada aksi adegan yang mengaktifkannya."
+      },
+      "settingsWrite": {
+        "title": "Ubah pengaturan",
+        "description": "Menulis satu atau lebih pengaturan, bagian demi bagian. Inilah cara kisi dan bayangan diaktifkan atau diatur — bacanya terlebih dahulu, perubahan yang tidak menyebut apa pun yang diketahui studio ditolak daripada ditulis buta. Apa yang tidak disebutkan ditinggalkan saja."
+      },
+      "accountsList": {
+        "title": "Daftarkan akun",
+        "description": "Mengembalikan akun pembuatan yang dipegang studio ini, dengan mengatakan mana yang aktif dan mana yang dapat diganti nama atau dihapus. Tidak ada kunci atau rahasia yang pernah dikembalikan."
+      },
+      "accountsActivate": {
+        "title": "Alihkan akun",
+        "description": "Membuat salah satu akun yang dipegang menjadi yang dihasilkan studio melalui. Segalanya yang dikirim setelah itu melakukannya dengan kredensialnya."
+      },
+      "accountsRename": {
+        "title": "Ganti nama akun",
+        "description": "Mengubah label tempat akun muncul di studio. Baik kunci maupun rahasia tidak melewati batas ini, dalam kedua arah."
+      },
+      "settingsTriggerAction": {
+        "title": "Tekan tombol pengaturan",
+        "description": "Memicu salah satu tombol jendela pengaturan — tampilkan file, buka alat pengembang, salin perintah koneksi, pasang jembatan, setel ulang semuanya. Dua yang terakhir meninggalkan sesuatu di belakang dan ditanyakan di layar."
+      },
+      "contextReadProjectCards": {
+        "title": "Baca konteks proyek",
+        "description": "Menjawab kartu konteks — apa yang DIKATAKAN ORANG proyek ini adalah — dengan judul, teks dan apakah mereka berlaku."
+      },
+      "contextWriteProjectCard": {
+        "title": "Tulis kartu konteks",
+        "description": "Menulis apa yang DIKATAKAN ORANG proyek INI atau BERTUJUAN, secara keseluruhan, sebagai kartu yang bertahan dibaca kembali setiap putaran. Aturan kerja tentang cara sesuatu dilakukan di sini — cara kamera bergerak, cara file dinamai — adalah memori alih-alih (memory.write)."
+      },
+      "contextDeleteProjectCard": {
+        "title": "Hapus kartu konteks",
+        "description": "Menghilangkan dari konteks proyek kartu yang dinamai identitas — apa yang dikatakan orang, belum dipesan. Teksnya hilang."
+      },
+      "targetSelect": {
+        "title": "Bidik sasaran",
+        "description": "Menunjuk apa yang akan diambil tindakan oleh langkah berikutnya dalam dokumen terbuka — lapisan, objek adegan, klip. Ambil pengidentifikasi dari daftar target dalam pengarahan ini; tanpanya tidak ada yang dapat dibidik."
+      },
+      "nodeMarkAsCuttingTool": {
+        "title": "Tandai objek sebagai alat",
+        "description": "Menandai objek adegan di depan, atau menghapus tanda dengan “negative” SALAH: objek yang ditandai DILUBANGI dari yang lain pada lipatan berikutnya, apakah pun lipatan yang diminta dan apapun urutan id. Tanpa tanda, bentuk terbesar adalah materi."
+      },
+      "nodeCombineIntoSolid": {
+        "title": "Potong, gabung atau potong objek",
+        "description": "Melipatgandakan beberapa objek adegan di depan menjadi satu padatan. URUTAN ID TIDAK PENTING: materi adalah bentuk terbesar kecuali matterId menyebutnya, dan objek yang ditandai melalui node.markAsCuttingTool selalu merupakan alat. Bentuk asli disimpan dalam padatan dan node.separate mengembalikannya. Menjawab dengan identitas padatan. “intersect” hanya menyimpan bagian tempat mereka tumpang tindih."
+      },
+      "nodeSwapSolidMatterAndTool": {
+        "title": "Balik lipatan",
+        "description": "Melipat ulang padatan adegan di depan dengan cara lain: apa yang telah dilubangi menjadi materi, dan materi menjadi alat. Untuk lipatan yang pergi ke belakang, tanpa urungkan."
+      },
+      "nodeSeparate": {
+        "title": "Pisahkan padatan",
+        "description": "Membongkar padatan adegan di depan dan mengembalikan bentuk yang dibuat, masing-masing di tempat berdirinya. Menjawab dengan identitas objek yang dikembalikan."
+      },
+      "modelSetBaseColorImage": {
+        "title": "Tutupi model dengan gambar",
+        "description": "Menaruh satu gambar proyek di atas seluruh model yang diimpor, sebagai warna dasarnya — cara sederhana mengenakan. Ini mengecualikan material: model yang ditutup gambar tidak mengenakan satupun, dan sebaliknya. Tidak ada saluran lain yang berasal darinya. Tanpa gambar, gaun itu lepas dan model kembali ke apa yang dibawa file-nya sendiri."
+      },
+      "postState": {
+        "title": "Baca komposisi pasca-pemrosesan",
+        "description": "Mengembalikan tumpukan efek yang difilmkan adegan — atau kamera yang dinamai — melalui, dengan identitas setiap instance, efek apa itu, parameternya, apakah itu aktif, dan apakah rantai meninggalkannya."
+      },
+      "postAdd": {
+        "title": "Tambahkan efek pasca-pemrosesan",
+        "description": "Menaruh efek dari katalog di akhir tumpukan, pada nilai bakunya. Tanpa kamera yang disebutkan, itu adalah komposisi adegan yang menerima, yang sudah ditampilkan viewport."
+      },
+      "postRemove": {
+        "title": "Hapus efek pasca-pemrosesan",
+        "description": "Mengeluarkan instance dari tumpukan, dan dengannya saluran linimasa yang mengendarainya — ditinggalkan, mereka akan menargetkan efek yang tidak bisa dijangkau lagi oleh apa pun."
+      },
+      "postMove": {
+        "title": "Pindahkan efek dalam tumpukan",
+        "description": "Mengubah tempat instance berada dalam rantai, yang mengubah gambar yang diperoleh — nilai akhir sebelum percikan tidak memberikan hasil yang sama seperti setelahnya."
+      },
+      "postSet": {
+        "title": "Atur satu parameter efek",
+        "description": "Menulis nilai pada satu parameter instance, dipertahankan ke batas yang dideklarasikan katalog untuk parameter itu. Bidang mana untuk diisi tergantung pada sifatnya — angka, sakelar atau kata."
+      },
+      "postSetEffectEnabled": {
+        "title": "Aktifkan atau matikan satu efek",
+        "description": "Mematikan instance tanpa menghapusnya, yang mengeluarkannya dari komputasi dan bukan hanya dari gambar. Parameternya tetap di tempat mereka, siap untuk diaktifkan kembali."
+      },
+      "postSetWholeStackEnabled": {
+        "title": "Matikan seluruh komposisi",
+        "description": "Mematikan atau menghidupkan kembali seluruh tumpukan sekaligus, tanpa kehilangan apa pun — Sebelum/Sesudah, sebagai nilai dokumen yang dapat diambil kembali urungkan."
+      },
+      "postApplyPreset": {
+        "title": "Terapkan pengaturan awal pasca-pemrosesan",
+        "description": "Menggantikan tumpukan dengan komposisi siap pakai — satu set efek, dalam urutan, pada nilai yang bersangkutan satu sama lain. Dokumen menerima tumpukan itu sendiri, tidak pernah referensi ke pengaturan awal."
+      },
+      "postSetCameraStackMode": {
+        "title": "Katakan apa yang dilakukan kamera dengan pasca-pemrosesan",
+        "description": "Memilih apakah kamera ini mengikuti komposisi adegan, membawa miliknya sendiri, atau tidak menerapkan satupun. Memindahkannya ke miliknya sendiri memulainya dari apa yang sudah difilmnya."
+      },
+      "postListPresets": {
+        "title": "Daftarkan pengaturan awal pasca-pemrosesan",
+        "description": "Menjawab komposisi siap pakai yang dikirim studio dan yang tersimpan di mesin ini, berdasarkan nama. Ini adalah daftar yang post.applyPreset terima."
+      },
+      "postDuplicate": {
+        "title": "Duplikat efek pasca-pemrosesan",
+        "description": "Menaruh salinan efek tepat setelahnya, pada nilai yang sama dan di bawah identitas baru. Ditolak untuk efek yang instance kedua tidak berarti apa pun — anti-alias, oklusi."
+      },
+      "postReset": {
+        "title": "Setel ulang efek pasca-pemrosesan",
+        "description": "Mengembalikan setiap parameter efek itu ke apa yang dideklarasikan katalog, tanpa mengeluarkannya dari tumpukan atau memindahkannya."
+      },
+      "postAddKeyframe": {
+        "title": "Kunci parameter pasca-pemrosesan",
+        "description": "Membuka saluran animasi pada parameter itu di mana ia tidak memiliki satupun, dan meletakkan key di kepala. Nilai yang diberikan adalah yang DILIHAT, dan delta terhadap tumpukan dikerjakan di sini."
+      },
+      "postRemoveKeyframe": {
+        "title": "Lepas kunci pasca-pemrosesan",
+        "description": "Menghapus key yang berdiri di kepala pada parameter itu. Saluran tetap berada di tempat, persis seperti ketika key dilepas dari pita."
+      },
+      "postSavePreset": {
+        "title": "Simpan komposisi sebagai pengaturan awal",
+        "description": "Menyimpan tumpukan di depan di bawah nama, di mesin ini. Tidak ada yang ditulis ke dokumen atau proyek."
+      },
+      "postRenamePreset": {
+        "title": "Ganti nama pengaturan awal yang disimpan",
+        "description": "Mengubah nama pengaturan awal di mesin ini, dinamai dengan id atau nama yang dipegang. Apa yang dikandungnya tidak bergerak."
+      },
+      "postDeleteSavedPreset": {
+        "title": "Lupakan pengaturan awal yang disimpan",
+        "description": "Menghilangkan pengaturan awal yang disimpan dari mesin ini. Komposisi yang sudah diterapkan tidak berubah: dokumen memegang tumpukannya, tidak pernah referensi."
+      },
+      "componentAttach": {
+        "title": "Pasang komponen",
+        "description": "Memberi objek adegan sesuatu untuk DILAKUKAN saat game berjalan — kesehatannya, gerakannya. Inilah cara objek dibuat untuk bergerak sendiri: node.transform menempatkannya di suatu tempat sekali dan ia tetap di sana. Ditolak ketika objek sudah membawa satu jenis itu."
+      },
+      "componentDetach": {
+        "title": "Lepaskan komponen",
+        "description": "Mengeluarkan komponen jenis yang dinamai dari objek adegan. Ditolak ketika objek tidak memilikinya."
+      },
+      "componentSetProperties": {
+        "title": "Atur komponen",
+        "description": "Menulis satu bidang komponen yang dibawa objek. Bidang yang tidak dideklarasikan komponen diabaikan."
+      },
+      "playStart": {
+        "title": "Mulai game",
+        "description": "Memulai game pada adegan di depan. Menjawab segera, jadi baca keadaan dengan runtime.report."
+      },
+      "playStop": {
+        "title": "Hentikan game",
+        "description": "Menghentikan game dan menempatkan adegan kembali seperti yang sedang disunting."
+      },
+      "playPause": {
+        "title": "Jeda game",
+        "description": "Menangguhkan game tanpa meninggalkannya. Diperlukan sebelum play.step."
+      },
+      "playResume": {
+        "title": "Lanjutkan game",
+        "description": "Berlanjut dari mana jeda meninggalkan game, tanpa mengejar waktu yang berdiri diam."
+      },
+      "playLoadScene": {
+        "title": "Kirim game ke adegan lain",
+        "description": "Memuat adegan lain proyek ke dalam game yang sedang berjalan, dengan pudar opsional. Adegan dinamai dengan judul atau identitasnya."
+      },
+      "playStep": {
+        "title": "Langkah game",
+        "description": "Menjalankan satu atau lebih langkah tetap dari game yang DIJEDA dan menjawab keadaannya. Inilah cara pembacaan dilakukan tanpa balap."
+      },
+      "runtimeReport": {
+        "title": "Baca keadaan game",
+        "description": "Menjawab tick, laju, jumlah entitas, berapa banyak kesalahan dan baris terakhir yang ditulis game."
+      },
+      "runtimeErrors": {
+        "title": "Baca kesalahan game",
+        "description": "Menjawab kesalahan YANG DAPAT DITANGANI — referensi skrip, referensi entitas, baris dan kolom."
+      },
+      "scriptList": {
+        "title": "Daftarkan skrip",
+        "description": "Menjawab setiap skrip proyek, dengan referensi dan panjangnya."
+      },
+      "scriptRead": {
+        "title": "Baca skrip",
+        "description": "Menjawab teks skrip, termasuk apa yang belum disimpan."
+      },
+      "scriptWrite": {
+        "title": "Tulis skrip",
+        "description": "Menulis skrip ke dalam proyek. Ditolak, dengan baris, ketika file tidak akan dikompilasi."
+      },
+      "studioDescribe": {
+        "title": "Jelaskan apa yang ada di depan",
+        "description": "Menjawab adegan, objek, komponennya dengan skema, hubungannya dan apa yang masih dapat ditambahkan padanya."
+      },
+      "studioDocs": {
+        "title": "Baca pengaturan komponen atau skrip yang terdokumentasi",
+        "description": "Menjawab irisan dokumentasi yang menjawab satu pertanyaan — komponen, atau permukaan yang dilihat skrip."
+      },
+      "studioBatch": {
+        "title": "Jalankan batch pemanggilan",
+        "description": "Menjalankan batch pemanggilan sebagai satu, dengan satu pertanyaan. Berhenti pada penolakan pertama."
+      },
+      "timelineAddSceneCue": {
+        "title": "Cue acara, item media atau pudar pada linimasa",
+        "description": "Menambahkan acara, suara, video atau transisi ke linimasa ADEGAN 3D. Acara adalah NAMA yang dikirim pada bus pada waktu yang diberikan, yang didengarkan skrip melalui onMessage — inilah cara sesuatu dibuat untuk terjadi pada titik sinematik, daripada dengan meletakkan kunci animasi. Pudar sinematik pergi ke sini, dengan list=transitions dan what=fade. Apa yang disebutkan bidang ketiga tergantung pada daftar — nama acara, pengenal aset, atau jenis transisi. Untuk pudar pada klip edit, itu clip.fade."
+      },
+      "timelineRemoveSceneCue": {
+        "title": "Lepas isyarat dari linimasa",
+        "description": "Mengeluarkan satu isyarat dari linimasa ADEGAN 3D — acara, suara, video atau transisi, termasuk pudar sinematik. Identitas dibaca dari anggota cues yang dijawab scene.state, tidak di tempat lain. Untuk menghapus pudar dari klip edit, itu clip.fade dengan panjang nol."
+      },
+      "timelineSetPanelRows": {
+        "title": "Pilih apa yang ditawarkan linimasa",
+        "description": "Memutuskan baris mana yang diusulkan panel. Tidak pernah mengambil apa pun dari mesin, yang memainkan seluruh linimasa terlepas."
+      },
+      "gameApplyTemplate": {
+        "title": "Letakkan templat game",
+        "description": "Meletakkan lantai, karakter dan objek jenis game ke adegan terbuka, dan mengatur kamera dan gravitasi dengannya. Satu urungkan mengambil semuanya kembali."
+      },
+      "gameExport": {
+        "title": "Ekspor game",
+        "description": "Menulis ke folder game yang berjalan di browser tanpa studio, dengan halaman, runtime, adegan, skrip yang ditranspilasi dan hanya aset yang mereka capai."
+      },
+      "prefabDefine": {
+        "title": "Namai prefab",
+        "description": "Menulis adegan proyek ke dalam game.json sebagai bagian yang dapat digunakan kembali, di bawah nama yang diberikan. Tanpa dokumen yang disebutkan, itu adalah adegan di depan."
+      },
+      "prefabInstantiate": {
+        "title": "Instansi prefab",
+        "description": "Meletakkan objek dokumen adegan lain proyek ke dalam adegan terbuka, dengan identitas segar, di mana diminta. Game yang SUDAH BERJALAN dikirim ke adegan lain oleh play.loadScene, yang tidak dilakukan ini."
+      },
+      "memoryRecall": {
+        "title": "Ingat kembali apa yang dipelajari",
+        "description": "Mencari apa yang DIAMATI asisten saat bekerja dan menjawab ringkasan yang ditemukan, dengan identitasnya. Apa yang dikatakan orang proyek ini hidup dalam kartu konteks."
+      },
+      "memoryRead": {
+        "title": "Baca satu memori sepenuhnya",
+        "description": "Menjawab DETAIL dari satu memori — apa yang dirujuknya dan dari mana asalnya — dari identitas yang diserahkan memory.recall. Recall memberikan ringkasan; ini adalah apa yang diminta “berikan saya detailnya”."
+      },
+      "memoryWrite": {
+        "title": "Ingat sesuatu tentang proyek",
+        "description": "Menulis aturan kerja proyek ini, atau sesuatu yang diamati asisten saat bertindak — cara sesuatu dilakukan di sini, untuk apa file atau objek. Apa yang dikatakan orang proyek ADALAH atau BERTUJUAN adalah kartu konteks alih-alih. Menggantikan kartu yang sudah berdiri pada referensi yang sama."
+      },
+      "memoryForget": {
+        "title": "Lupakan memori",
+        "description": "Menandai sesuatu yang diamati asisten sebagai terlupakan. Tidak ada yang dihapus dari file: apa yang dipelajari tetap dapat dilacak."
+      },
+      "memoryLink": {
+        "title": "Hubungkan dua memori",
+        "description": "Menambahkan tautan dari satu memori ke memori lain, untuk mengatakan bahwa yang satu menerangi yang lain."
+      }
+    },
+    "consent": {
+      "ask": " Tanyakan siapa pun yang Anda lakukan tindakan, kemudian kirim panggilan yang sama ini lagi, parameter persetujuannya diatur ke {{token}}. Token adalah sekali pakai, bertahan 5 menit, dan hanya menjawab untuk panggilan ini.",
+      "askInLot": " Tanyakan siapa pun yang Anda lakukan tindakan, kemudian kirim batch yang sama ini lagi dengan bidang persetujuan diatur ke {{token}} DALAM input panggilan ini sendiri. Token adalah sekali pakai, bertahan 5 menit, dan hanya menjawab untuk panggilan ini."
+    },
+    "refusals": {
+      "unknownCommand": "Perintah itu tidak ada dalam studio.",
+      "wrongSurface": "Tidak ada permukaan studio yang ada untuk menerima perintah itu. Buka dokumen atau panel yang dibicarakannya.",
+      "generatorClosed": "Generator tidak terbuka. Sekarang sudah.",
+      "nothingPrepared": "Generator tidak memiliki model yang siap pada saat ini.",
+      "notSubmitted": "Pembuatan tidak pergi.",
+      "badInput": "Parameter yang diberikan tidak sesuai dengan tindakan ini.",
+      "noBridge": "Studio tidak menjawab.",
+      "noProject": "Tidak ada proyek yang terbuka, dan jalur ini relatif terhadap satu.",
+      "noConfirmer": "Tindakan itu membutuhkan ya, dan tidak ada jendela yang ada untuk memberikannya.",
+      "declined": "Anda menolak tindakan itu.",
+      "noWindow": "Tidak ada jendela studio yang ada di depan untuk menjalankan tindakan itu.",
+      "timedOut": "Permintaan tetap di layar tanpa jawaban, dan ditinggalkan.",
+      "noReference": "Formulir tidak membawa gambar referensi untuk membaca gaya darinya.",
+      "ambiguousLanding": "Dua tujuan mungkin dan studio akan ditanya, tetapi panggilan dari luar tidak memiliki layar untuk pertanyaan itu. Namai satu: pilihan yang salah menulis di atas file yang terbuka.",
+      "formChanged": "Formulir berubah setelah biaya dikutip. Tidak ada yang dikirim — minta lagi untuk angka baru.",
+      "notFound": "Tidak ada yang dinamai itu di sana untuk bertindak. Panggilan itu sendiri dibentuk dengan baik.",
+      "notAllowed": "Studio tidak membiarkan panggilan dari luar mengubah itu. Hanya jendelanya sendiri yang melakukannya.",
+      "nativeDialog": "Perintah ini memunculkan dialog sistem: asisten tidak dapat mengisinya maupun membacanya kembali. Gunakan tindakan yang mengambil jalur.",
+      "notRenderable": "Dokumen di depan tidak memiliki apa pun yang dapat dirender ini — langit kosong, material tanpa saluran, atau mesin yang tidak dipasang.",
+      "needsConsent": "Tidak ada yang terlibat: panggilan itu membutuhkan token persetujuan. Penolakan membawa yang baru, dan panggilan yang sama yang dikirim kembali dengannya berjalan.",
+      "failed": "Studio mencoba dan itu tidak berhasil. Alasannya ada dalam jurnal aktivitasnya, dan itu bukan parameternya."
+    },
+    "models": {
+      "claude-haiku-4-5": "Haiku 4.5 — yang tercepat dan termurah",
+      "claude-sonnet-4-6": "Sonnet 4.6 — keseimbangannya",
+      "claude-opus-4-8": "Opus 4.8 — yang paling dapat diandalkan dalam beberapa langkah",
+      "gemini-3.5-flash": "Gemini 3.5 Flash — alternatif cepat"
+    },
+    "fields": {
+      "command": "Pengenal perintah",
+      "consent": "Token dari penolakan needsConsent sebelumnya. Sekali pakai, 5 menit, hanya menjawab untuk panggilan ini",
+      "workspace": "Ruang kerja",
+      "createDocument": "Buat dokumen",
+      "query": "Kata kunci",
+      "family": "Keluarga pembuatan",
+      "modelId": "Pengenal model",
+      "aiOperation": "Operasi model lokal",
+      "aiRole": "Peran AI",
+      "aiScope": "Ruang lingkup pilihan",
+      "aiProfile": "Profil runtime lokal",
+      "operation": "Operasi, misalnya code2code",
+      "parameters": "Parameter model",
+      "landing": "Ke mana hasilnya pergi",
+      "draft": "Kalimat untuk dikerjakan ulang",
+      "text": "Teks untuk diterjemahkan",
+      "generationInstruction": "Instruksi untuk pembuatan berikutnya",
+      "commentAction": "Tambah, perbarui atau hapus",
+      "commentId": "Pengenal komentar pembuatan",
+      "commentOutline": "Poligon opsional, daftar poin {x, y} dokumen",
+      "documentId": "Pengenal dokumen",
+      "title": "Judul",
+      "name": "Nama",
+      "limit": "Berapa banyak entri paling banyak",
+      "filePath": "Jalur di dalam proyek, dengan / di antara segmen",
+      "filePaths": "Jalur di dalam proyek, dengan / di antara segmen",
+      "folderPath": "Jalur folder",
+      "template": "Apa pembukaan adegan",
+      "hidden": "Sertakan entri tersembunyi",
+      "jobId": "Pengenal pekerjaan",
+      "taskId": "Pengenal tugas lokal",
+      "panel": "Panel studio",
+      "discard": "Buang apa yang didengar",
+      "viewDirection": "Sisi untuk melihat dari",
+      "displayMode": "Cara adegan digambar",
+      "settingsAction": "Tombol pengaturan",
+      "boneName": "Nama tulang",
+      "parentBone": "Tulang untuk digantungkan",
+      "boneRole": "Sendi standar humanoid",
+      "chainId": "Pengenal rantai",
+      "fps": "Bingkai per detik",
+      "autoKey": "Tulis kunci pada setiap gerakan",
+      "timeoutMs": "Berapa lama menunggu paling banyak, dalam milidetik",
+      "days": "Jendela dalam hari",
+      "assetId": "Pengenal aset",
+      "assetIds": "Pengenal aset",
+      "assetType": "Jenis aset",
+      "tags": "Tag",
+      "generated": "Hanya apa yang dihasilkan",
+      "offset": "Berapa banyak entri untuk dilewati",
+      "alsoRemote": "Hapus juga dari perpustakaan jarak jauh",
+      "layerId": "Pengenal lapisan",
+      "dpi": "Resolusi cetak, dalam titik per inci",
+      "colorMode": "Mode warna",
+      "bitDepth": "Kedalaman bit",
+      "localId": "Pengenal kandidat AI lokal",
+      "layerIds": "Pengenal lapisan",
+      "exportFolder": "Nama satu folder di dalam proyek untuk ditulis, atau pemilih menanyakan ketika ditinggalkan",
+      "generateLods": "Hasilkan tingkat jarak (perubahan visual mungkin)",
+      "geometrySimplification": "Penyederhanaan geometri — mati, konservatif, seimbang atau agresif",
+      "textureCompression": "Kompresi gambar rugi — mati, konservatif, seimbang atau agresif",
+      "textureReduction": "Resolusi gambar — asli, setengah atau seperempat",
+      "exportFormat": "Format file 3D",
+      "exportScope": "Seluruh adegan, atau seleksi",
+      "exportTarget": "Mesin mana yang dimaksudkan ekspor material untuk",
+      "faceSize": "Sisi satu wajah, dalam piksel",
+      "conflictSide": "Sisi konflik mana yang disimpan",
+      "remoteName": "Nama jarak jauh",
+      "remoteUrl": "Alamat jarak jauh",
+      "setUpstream": "Pasang cabang ke jarak jauh",
+      "cursor": "Kursor halaman, langsung dari halaman sebelumnya",
+      "order": "Cara hasil kembali: yang paling baru, atau yang paling cocok — yang membutuhkan kata untuk dicari",
+      "syncPolicy": "Cara sinkronisasi pergi",
+      "styleId": "Pengenal gaya",
+      "favoriteId": "Pengenal resep",
+      "settingsSection": "Bagian pengaturan",
+      "exposure": "Eksposur, dalam pemberhentian",
+      "contrast": "Kontras, 1 menjadi netral",
+      "saturation": "Saturasi, 1 menjadi netral",
+      "temperature": "Suhu, dari -1 dingin hingga +1 hangat",
+      "tint": "Rona, dari -1 hijau hingga +1 magenta",
+      "blur": "Pelunakan, dari 0 tajam hingga 1 buram",
+      "elevation": "Elevasi, dalam radian",
+      "azimuth": "Azimut, dalam radian",
+      "showBackground": "Gambar gambar di belakang subjek",
+      "autoSpin": "Biarkan pratinjau berputar sendiri",
+      "showSeam": "Bawa jahitan ke tengah pratinjau",
+      "pbrChannel": "Saluran material",
+      "normalScale": "Kekuatan relief",
+      "heightScale": "Kekuatan perpindahan",
+      "aoIntensity": "Kekuatan oklusi",
+      "edgeIntensity": "Seberapa banyak tepi gelap",
+      "emissive": "Warna yang dipancarkan",
+      "emissiveIntensity": "Kekuatan emisi",
+      "tilingX": "Pengulangan dalam lebar",
+      "tilingY": "Pengulangan dalam tinggi",
+      "offsetX": "Offset dalam lebar",
+      "offsetY": "Offset dalam tinggi",
+      "invertNormalGreen": "Balikkan saluran hijau relief",
+      "clipId": "Pengenal klip",
+      "trackId": "Pengenal trek",
+      "trackKind": "Apa yang dibawa trek",
+      "clipEdge": "Tepi klip mana, masuk atau keluar",
+      "time": "Saat di edit, dalam mikrodetik",
+      "start": "Mulai di edit, dalam mikrodetik",
+      "at": "Saat yang dituju, dalam mikrodetik",
+      "fadeLength": "Panjang pudar, dalam mikrodetik",
+      "gain": "Level, dalam desibel",
+      "speed": "Kecepatan pemutaran, 1 menjadi yang asli",
+      "by": "Jumlah baris, negatif untuk menurunkan",
+      "muted": "Trek dibisukan",
+      "solo": "Satu-satunya trek yang didengar",
+      "locked": "Trek terkunci",
+      "layerKind": "Jenis lapisan",
+      "adjustment": "Tombol mana yang dibawa lapisan",
+      "parentId": "Grup untuk dipindahkan ke dalamnya",
+      "index": "Tempat dalam tumpukan, dihitung dari bawah",
+      "nodeIndex": "Tempat di antara objek tingkat yang sama, dihitung dari atas daftar",
+      "opacity": "Opasitas, dari 0 hingga 1",
+      "fillOpacity": "Opasitas isian, dari 0 hingga 1",
+      "blend": "Mode campur",
+      "visible": "Terlihat",
+      "clipped": "Dipotong oleh lapisan di bawah",
+      "x": "X, dalam koordinat dokumen",
+      "y": "Y, dalam koordinat dokumen",
+      "scaleX": "Skala dalam lebar",
+      "scaleY": "Skala dalam tinggi",
+      "rotation": "Rotasi, dalam derajat",
+      "fontSize": "Ukuran tipe",
+      "colour": "Warna, sebagai #rrggbb",
+      "pixelArtEnabled": "Mode pixel art",
+      "columns": "Kolom",
+      "rows": "Baris",
+      "cell": "Ukuran sel",
+      "pixelShape": "Bentuk",
+      "cells": "Sel",
+      "toX": "Ke X",
+      "toY": "Ke Y",
+      "filled": "Penuh",
+      "erase": "Hapus",
+      "width": "Lebar",
+      "height": "Tinggi",
+      "align": "Cara teks selaras",
+      "lineHeight": "Interlinie, sebagai kelipatan ukuran",
+      "tracking": "Pelacakan, dalam seperseribu em",
+      "shape": "Bentuk mana untuk digambar",
+      "sides": "Berapa banyak poin",
+      "fill": "Warna isian, sebagai 0xrrggbb",
+      "scalePixels": "Ubah ukuran lapisan dengan bingkai",
+      "turn": "Cara mana untuk dibalik atau diputar seperempat",
+      "nodeId": "Pengenal objek",
+      "nodeIds": "Pengenal objek",
+      "optimizationMode": "Mode optimasi runtime",
+      "matterId": "Pengenal bentuk yang akan dilubangi",
+      "negative": "Benar menandainya sebagai alat potong, salah menghapus tanda",
+      "nodeKind": "Apa yang harus ditambahkan",
+      "relative": "Atur benar untuk memberikan PERUBAHAN daripada nilai akhir: posisi dan rotasi DITAMBAHKAN ke apa yang berdiri, skala dan intensitas MENGALIKANNYA. Satu meter ke atas adalah positionY 1 dengan relatif benar; setengah adalah scaleX 0.5 dengan relatif benar",
+      "positionX": "Posisi dalam lebar",
+      "positionY": "Posisi dalam tinggi",
+      "positionZ": "Posisi menuju penonton",
+      "rotationX": "Rotasi tentang X, dalam radian",
+      "rotationY": "Rotasi tentang Y, dalam radian",
+      "rotationZ": "Rotasi tentang Z, dalam radian",
+      "scaleZ": "Skala dalam kedalaman",
+      "material": "Material",
+      "roughness": "Kekasaran, dari 0 ke 1",
+      "metalness": "Tingkat logam, dari 0 ke 1",
+      "intensity": "Intensitas",
+      "fov": "Sudut pandang, dalam derajat",
+      "near": "Jarak dekat",
+      "far": "Jarak jauh",
+      "startSeconds": "Tempat bidikan dimulai, dalam detik",
+      "durationSeconds": "Lama bidikan berlangsung, dalam detik — setidaknya satu bingkai",
+      "shotId": "Pengenal bidikan",
+      "pathId": "Pengenal lintasan, atau tidak ada untuk berhenti memindahkan kamera",
+      "railFrom": "Tempat pada lintasan yang dimulai, dari 0 ke 1",
+      "railTo": "Tempat pada lintasan yang berakhir, dari 0 ke 1",
+      "easing": "Kurva kecepatan sepanjang lintasan",
+      "targetId": "Objek yang ditargetkan kamera, atau tidak ada untuk membiarkannya bebas",
+      "gitPath": "Jalur dalam repositori",
+      "gitPaths": "Jalur dalam repositori",
+      "commitHash": "Pengenal versi",
+      "skip": "Berapa banyak entri untuk dilewatkan",
+      "message": "Pesan",
+      "amend": "Perbaiki versi terakhir alih-alih menambahkan yang baru",
+      "branchName": "Nama cabang",
+      "tagName": "Nama label",
+      "stashIndex": "Tempat dalam tumpukan, yang terbaru terlebih dahulu",
+      "settings": "Pengaturan untuk diubah, per bagian",
+      "accountId": "Pengenal akun",
+      "lockPixels": "Kunci piksel lapisan",
+      "lockPosition": "Kunci tempat lapisan",
+      "lockAlpha": "Kunci transparansi lapisan",
+      "shapeFilled": "Bentuk terisi",
+      "shapeFill": "Warna isian, sebagai #rrggbb",
+      "shapeStroked": "Bentuk memiliki garis tepi",
+      "shapeStroke": "Warna garis tepi, sebagai #rrggbb",
+      "strokeWidth": "Lebar garis tepi, dalam piksel",
+      "fontFamily": "Nama tipografi, seperti yang diberikan daftar font",
+      "fontSource": "Asal tipografi, disertakan dengan studio atau dipasang di mesin",
+      "environmentKind": "Tempat cahaya berasal: studio, gambar atau langit",
+      "backgroundKind": "Apa yang terletak di belakang: lingkungan, warna atau tidak ada",
+      "fogKind": "Bentuk kabut: tidak ada, linier atau eksponensial",
+      "fogDensity": "Kepadatan kabut eksponensial",
+      "groundSize": "Sisi tanah, dalam satuan adegan",
+      "receiveShadow": "Bayangan jatuh di atas tanah",
+      "worldLayers": "Daftar lapisan medan dan penabur yang lengkap",
+      "toneMapping": "Cara rentang dinamis tinggi diturunkan ke layar",
+      "toneExposure": "Pengali eksposur render, 1 membiarkannya apa adanya",
+      "depth": "Kedalaman",
+      "radius": "Radius",
+      "radiusTop": "Radius atas, 0 membuat kerucut",
+      "radiusBottom": "Radius bawah",
+      "innerRadius": "Radius dalam",
+      "outerRadius": "Radius luar",
+      "tube": "Radius tabung",
+      "segments": "Segmen di sekitar sumbu",
+      "capSegments": "Segmen dari satu tutup",
+      "radialSegments": "Segmen di sekitar tabung",
+      "widthSegments": "Segmen bujur",
+      "heightSegments": "Segmen lintang",
+      "tubularSegments": "Segmen sepanjang tabung",
+      "p": "Putaran di sekitar sumbu simpul",
+      "q": "Putaran di sekitar torus",
+      "castShadow": "Objek melempar bayangan",
+      "skyColour": "Warna dari langit, sebagai #rrggbb",
+      "groundColour": "Warna dari tanah, sebagai #rrggbb",
+      "distance": "Jangkauan di mana cahaya tidak lagi menjangkau, 0 tidak terbatas",
+      "decay": "Seberapa cepat cahaya meluruh dengan jarak, 2 fisik",
+      "angle": "Setengah sudut kerucut, dalam radian",
+      "penumbra": "Kelembutan tepi kerucut, dari 0 tajam ke 1 difus",
+      "targetX": "Target melintasi lebar",
+      "targetY": "Target naik tinggi",
+      "targetZ": "Target ke arah penonton",
+      "tilesPerMetre": "Pengulangan peta per meter",
+      "textures": "Peta per slot, pengenal kosong menghapus yang ada",
+      "map": "Pengenal gambar, atau tidak ada untuk tidak ada sama sekali",
+      "inputMap": "Peta masukan keyboard dan gamepad yang divalidasi",
+      "animationGraph": "Graf animasi yang divalidasi",
+      "value": "Kata yang akan ditetapkan",
+      "textSize": "Ukuran huruf, dalam satuan adegan",
+      "textDepth": "Kedalaman relief huruf, 0 membiarkannya rata",
+      "curveSegments": "Seberapa halus kurva dipotong",
+      "tension": "Tegangan lintasan, dari 0 sudut ke 1 bulat",
+      "closed": "Lintasan menutup kembali ke dirinya sendiri",
+      "pointIndex": "Indeks titik kontrol, dihitung dari yang pertama",
+      "pointX": "Titik melintasi lebar",
+      "pointY": "Titik naik tinggi",
+      "pointZ": "Titik ke arah penonton",
+      "clipSource": "Tempat gerak berasal, file model, animasi disertakan, atau pustaka proyek",
+      "clipName": "Nama gerak, seperti yang diberikan daftar animasi",
+      "offsetSeconds": "Tempat pemutaran dimulai dalam gerak, dalam detik",
+      "clipLoop": "Blok diputar berulang kali",
+      "clipFade": "Panjang pudar di kedua ujung blok, dalam detik",
+      "rootMotion": "Apa yang dilakukan blok dengan gerak akar",
+      "bodyPart": "Bagian tubuh yang didorong blok",
+      "channelId": "Pengenal kanal animasi",
+      "timeSeconds": "Saat pada pita, dalam detik, atau penanda waktu jika tidak ada",
+      "trackProperty": "Kanal yang ditargetkan, atau semua subjek jika tidak ada",
+      "fromSeconds": "Saat untuk dimulai, dalam detik",
+      "toSeconds": "Saat untuk mendarat, dalam detik",
+      "maskEnabled": "Masker menyembunyikan apa yang dicakupnya",
+      "maskLinked": "Masker bergerak dengan lapisan saat bergerak",
+      "maskRemove": "Lepaskan masker dari lapisan",
+      "guideId": "Pengenal garis bantu",
+      "guideAxis": "Arah garis bantu berjalan, vertikal pada x atau horizontal pada y",
+      "guidePosition": "Tempat garis bantu berada, dalam koordinat dokumen",
+      "helpPage": "Jendela bantuan mana untuk dibuka",
+      "captureQuality": "Seberapa besar gambar diam keluar, atau piksel tampilan itu sendiri jika tidak ada",
+      "environmentPreset": "Dunia siap pakai mana yang diterapkan",
+      "skyDocument": "Judul dokumen langit yang diikuti adegan",
+      "skyboxView": "Proyeksi mana untuk melihat langit",
+      "fieldOfView": "Seberapa lebar lensa terbuka, dalam derajat",
+      "probes": "Tampilkan objek uji berdiri di langit",
+      "roughnessMin": "Lantai kekasaran yang dipetakan peta",
+      "roughnessMax": "Plafon kekasaran yang dipetakan peta",
+      "metalnessMin": "Lantai tingkat logam yang dipetakan peta",
+      "metalnessMax": "Plafon tingkat logam yang dipetakan peta",
+      "previewShape": "Bentuk mana untuk menilai material",
+      "tilingPreview": "Pengali pengulangan pratinjau, 1, 2 atau 4",
+      "cardId": "Pengenal fiche",
+      "cardTitle": "Judul fiche",
+      "cardBody": "Teks fiche",
+      "cardActive": "Fiche berlaku",
+      "aimId": "Pengenal target",
+      "csgOperation": "Apa yang harus dilakukan dengannya",
+      "materialSlot": "Slot material",
+      "postCameraId": "Pengenal kamera yang komposisinya sedang diatur — tidak ada berarti milik adegan",
+      "postEffectId": "Pengenal instans dalam tumpukan",
+      "postEffect": "Efek katalog untuk diletakkan",
+      "postBy": "Berapa banyak tempat untuk memindahkan efek, negatif untuk memindahkannya lebih awal",
+      "postParam": "Nama parameter yang akan diatur",
+      "postValue": "Nilai numerik parameter",
+      "postText": "Nilai tekstual parameter — sebuah kata dari daftar, warna, pengenal aset",
+      "postOn": "Nilai parameter yang merupakan saklar",
+      "postEnabled": "Benar menghidupkan seluruh komposisi, salah mematikannya",
+      "postPreset": "Prasetel untuk diterapkan",
+      "postMode": "Apa yang dilakukan kamera dengan komposisi adegan",
+      "postPresetName": "Nama untuk diberikan ke prasetel",
+      "componentType": "Jenis komponen",
+      "componentField": "Bidang",
+      "componentValue": "Nilai",
+      "scriptPath": "Jalur skrip",
+      "scriptSource": "Teks skrip",
+      "describeRef": "Referensi yang akan dijelaskan",
+      "docsTopic": "Topik",
+      "batchCalls": "Panggilan (JSON)",
+      "fixedSteps": "Langkah tetap",
+      "sceneToLoad": "Adegan untuk dimuat",
+      "fadeSeconds": "Pudar, dalam detik",
+      "timelineList": "Daftar",
+      "timelineAt": "Saat, dalam mikrodetik",
+      "timelineWhat": "Apa",
+      "timelineDuration": "Durasi, dalam mikrodetik",
+      "timelineRowId": "Pengenal baris",
+      "timelineTemplate": "Apa yang ditawarkan linimasa",
+      "gameTemplate": "Templat game",
+      "prefabRef": "Prefab untuk diinstans",
+      "prefabName": "Nama prefab",
+      "prefabSource": "Adegan untuk dijadikan prefab",
+      "entryScene": "Adegan pembukaan",
+      "gameTitle": "Judul game",
+      "memoryQuery": "Apa yang sedang dicari",
+      "memoryLimit": "Berapa banyak paling banyak",
+      "memoryId": "Pengenal ingatan",
+      "memoryType": "Apa ingatan itu tentang",
+      "memorySummary": "Ringkasan satu baris",
+      "memoryBody": "Detailnya",
+      "memoryImportance": "Kepentingan, dari 1 ke 5",
+      "memoryFile": "File proyek yang ini tentang",
+      "memoryTo": "Pengenal ingatan yang ditunjuk",
+      "projectName": "Nama proyek",
+      "projectParent": "Dibuat dalam",
+      "socket": "Titik lampiran"
+    },
+    "listening": "Asisten mendengarkan Anda",
+    "done": "Asisten telah menjawab",
+    "reviewHint": "Membuka asisten untuk menunjukkan apa yang dipahami dan apa yang dilakukannya",
+    "dismissHint": "Menghapus pengingat ini. Apa yang dilakukan asisten tetap berada di jendelanya",
+    "empty": "Katakan apa yang ingin Anda lakukan, dan asisten mengerjakannya.",
+    "placeholder": "Buka file 3D, temukan model, siapkan pembuatan…",
+    "send": "Kirim",
+    "sendHint": "Mengirim kalimat ke asisten, yang memilih tindakan dan menjalankannya",
+    "tokens": "{{prompt, number}} jetons dibaca · {{reply, number}} ditulis",
+    "chooseHint": "Menjawab pertanyaan dan membiarkan asisten melanjutkan",
+    "answerBelow": "Jawab di bawah, di bidang",
+    "answerLabel": "Jawab",
+    "noteLabel": "Catatan",
+    "sendAnswers": "Kirim jawaban",
+    "sendAnswersHint": "Memberikan setiap jawaban sekaligus dan membiarkan asisten melanjutkan",
+    "skipChoice": "Tidak perlu",
+    "skipChoiceHint": "Menutup pertanyaan tanpa menjawab: asisten berhenti di sana",
+    "contextOf": "{{read}} / {{window}}",
+    "contextUnknown": "{{read}}",
+    "contextGauge": "Konteks dibaca",
+    "contextHint": "Apa yang dibaca model pertukaran terakhir, keluar dari apa yang dibacanya dalam satu kali",
+    "contextHintChars": "Apa yang dikirim pertukaran terakhir, keluar dari apa yang diterima pintu ini dalam satu kali — dalam karakter, bukan jetons",
+    "contextHintUnknown": "Pintu ini tidak mengatakan apa yang dibacanya dalam satu kali: hitungannya nyata, rasionya akan diada-adakan",
+    "contextHintAssumed": "Batas ini adalah fallback yang dideklarasikan: pintu tidak dapat membaca skemanya sendiri",
+    "thinking": "Asisten sedang memikirkan…",
+    "workingRound": "Asisten bekerja — langkah {{round}}",
+    "stopping": "Penghentian — studio menyelesaikan apa yang berjalan…",
+    "stop": "Berhenti",
+    "stopHint": "Menghentikan asisten setelah tindakan yang sedang berjalan; tidak ada apa pun yang telah dilakukan yang dibatalkan",
+    "stepAnswered_one": "{{count, number}} hasil",
+    "stepAnswered_many": "{{count, number}} hasil",
+    "stepAnswered_other": "{{count, number}} hasil",
+    "ending": {
+      "halted": "Asisten berhenti di sana: terlalu banyak langkah untuk satu permintaan. Minta itu melanjutkan, atau tingkatkan batasnya dalam pengaturan.",
+      "stopped": "Anda menghentikan asisten di sini."
+    },
+    "lost": "Asisten tidak dapat menjawab itu.",
+    "refused": "{{action}} — {{reason}}",
+    "confirm": {
+      "credits": "Tindakan ini akan menghabiskan {{cost}}.",
+      "value": "{{label}}: {{value}}",
+      "unknownCost": "Tindakan ini akan menghabiskan dari akun Anda. Studio tidak dapat memperkirakan berapa banyak, dan tidak mengada-adakan angka.",
+      "noCost": "Tindakan ini tidak menghabiskan apa pun: model berjalan di mesin ini, atau dihargai tidak ada.",
+      "files": "Tindakan ini akan mengubah apa yang dipegang proyek Anda — file, atau aset dalam pustakanya. Tidak menghabiskan apa pun.",
+      "asset": "Tindakan ini akan mengunggah gambar, yang kemudian tetap berada di pustaka Anda. Tidak menghabiskan apa pun.",
+      "remote": "Tindakan ini akan menerbitkan ke server, di luar mesin ini. Tidak menghabiskan apa pun, dan tidak ada yang di sini mengambilnya kembali.",
+      "studio": "Ini mengubah keadaan studio itu sendiri, dan tidak ada ⌘Z yang kembali darinya. Tidak menghabiskan apa pun.",
+      "yes": "Izinkan",
+      "pickFolder": "Pilih…",
+      "pickFolderHint": "Membuka pemilih sistem, dan tindakan akan menggunakan folder yang dipilih di sana",
+      "yesHint": "Menjalankan tindakan di atas, dan berkomitmen apa yang dilakukan",
+      "no": "Jangan izinkan",
+      "noHint": "Tidak menjalankan apa pun, dan asisten memperhitungkannya untuk yang berikutnya",
+      "on": "Ya",
+      "off": "Tidak",
+      "pickUnset": "di mana Anda menyimpan proyek Anda"
+    },
+    "starters": {
+      "projectOpen": "Buka proyek baru-baru ini",
+      "projectCreate": "Buat proyek baru",
+      "projectFind": "Temukan dokumen dalam proyek",
+      "projectChanges": "Apa yang berubah dalam proyek?",
+      "projectCommit": "Catat versi proyek",
+      "libraryFind": "Cari gambar dalam pustaka",
+      "imageMake": "Buat gambar",
+      "imageRework": "Bekerja ulang gambar dari proyek",
+      "imageUpscale": "Perbesar gambar",
+      "imageVariant": "Buat varian dari gambar ini",
+      "imageText": "Tambah lapisan teks",
+      "imageResize": "Ubah ukuran dokumen ini menjadi 1080 x 1080",
+      "videoMake": "Buat video",
+      "videoFromImage": "Animasikan gambar",
+      "videoCut": "Potong urutan",
+      "videoAppend": "Tambah video setelahnya",
+      "videoVolume": "Turunkan volume musik",
+      "videoExport": "Ekspor edit",
+      "meshMake": "Buat model 3D",
+      "meshFromImage": "Buat model 3D dari gambar",
+      "meshRig": "Siapkan kerangka",
+      "sceneShape": "Tambah kubus di pusat adegan",
+      "sceneLight": "Tambah lampu arah",
+      "sceneCamera": "Tambah kamera",
+      "scriptMake": "Tulis skrip untuk entitas",
+      "scriptExplain": "Jelaskan skrip ini",
+      "scriptFix": "Perbaiki kesalahan dalam skrip",
+      "scriptRun": "Mainkan game yang sedang saya tulis",
+      "scriptAttach": "Lampirkan komponen ke entitas",
+      "scriptProblems": "Tampilkan masalah dalam skrip",
+      "audioMake": "Buat suara",
+      "audioFromVideo": "Ekstrak suara dari video",
+      "audioTrim": "Potongi klip audio",
+      "audioTrack": "Tambah suara pada trek baru",
+      "audioVolume": "Turunkan volume seluruh edit",
+      "audioExport": "Ekspor edit audio",
+      "materialMake": "Buat material",
+      "materialFromImage": "Buat material dari gambar",
+      "materialTile": "Buat material yang dapat diubin",
+      "materialAssign": "Tetapkan material ini ke model",
+      "materialTexture": "Gunakan gambar proyek sebagai warna dasar",
+      "materialExport": "Ekspor material",
+      "skyboxMake": "Buat langit",
+      "skyboxRelight": "Ubah cahaya langit",
+      "skyboxExport": "Ekspor langit",
+      "skyboxSun": "Pindahkan matahari",
+      "skyboxApply": "Terapkan langit ini ke adegan saya",
+      "skyboxOpen": "Buka skybox dari proyek"
+    },
+    "unserved": "Tidak ada yang menjawab untuk asisten. Pilih model dan itu dapat bekerja di sini.",
+    "chooseModelHint": "Membuka pengelola AI, di mana model asisten dipilih.",
+    "brain": "Siapa yang menjawab",
+    "brainHint": "Memilih apa yang membaca kalimat Anda: model di mesin ini, layanan yang Anda pegang kunci, atau studio. Pilihan yang sama yang ditulis pengaturan model AI.",
+    "brainNone": "tidak ada yang dipilih",
+    "cloudBrain": "{{cloud}} — {{model}}",
+    "groupMachine": "Di mesin ini",
+    "groupClouds": "Kunci Anda",
+    "groupStudio": "Studio",
+    "suggestions": "Apa yang bisa Anda tanyakan",
+    "starterHint": "Menulis kalimat ke dalam bidang. Tidak ada yang dikirim sampai Anda mengirimnya.",
+    "completeHint": "Melengkapi kalimat abu-abu dengan {{accept}}, atau panah kanan",
+    "completing": "{{sentence}} — {{accept}} atau {{arrow}} untuk melengkapi",
+    "suggested_one": "{{count, number}} permintaan disarankan",
+    "suggested_many": "{{count, number}} permintaan disarankan",
+    "suggested_other": "{{count, number}} permintaan disarankan",
+    "missionEvent": {
+      "mission": {
+        "created": "Misi dibuat",
+        "planning": "Perencanaan misi",
+        "ready": "Misi siap",
+        "running": "Misi sedang berlangsung",
+        "waiting": "Misi menunggu",
+        "completed": "Misi selesai",
+        "failed": "Misi gagal",
+        "cancelled": "Misi dibatalkan"
+      },
+      "step": "Tugas",
+      "action": "Tindakan studio",
+      "job": "Pembuatan",
+      "user": "Menunggu jawaban Anda",
+      "child": "Sub-misi",
+      "verify": "Verifikasi"
+    }
+  }
+}

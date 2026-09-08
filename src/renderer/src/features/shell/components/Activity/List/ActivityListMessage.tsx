@@ -1,3 +1,4 @@
+import { localizeErrorMessage } from '@shared/localizedError'
 import type { TFunction } from 'i18next'
 import { useTranslation } from 'react-i18next'
 import type { ActivityEntry, ActivityParams } from '@shared/domain/activity'
@@ -76,7 +77,7 @@ export function ActivityListMessage({
             clamp ? 'line-clamp-3' : 'whitespace-pre-wrap',
           )}
         >
-          {entry.detail}
+          {localizeErrorMessage(entry.detail, (key, values) => t(key, values))}
         </span>
       )}
     </div>

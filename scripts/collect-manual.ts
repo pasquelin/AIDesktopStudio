@@ -17,6 +17,7 @@ import { fileURLToPath } from 'node:url'
 import type { Language } from '../src/shared/i18n/languages.ts'
 import {
   deadManualLinks,
+  chaptersForLanguage,
   manualAnchorOf,
   type Manual,
   type ManualChapter,
@@ -27,7 +28,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 const OUTPUT = join(ROOT, 'src', 'shared', 'manual.json')
 
 /** Where each language keeps its chapters. The index page is deliberately not among them. */
-const CHAPTERS: Record<Language, string> = {
+const CHAPTERS: Record<string, string> = {
   fr: join('docs', 'fr', 'manuel'),
   en: join('docs', 'en', 'manual'),
 }
@@ -92,13 +93,14 @@ export function buildManual(root: string = ROOT): Manual {
   const dead: string[] = []
 
   for (const language of Object.keys(CHAPTERS) as Language[]) {
-    const directory = join(root, CHAPTERS[language])
+    const chapterDirectory = CHAPTERS[language] ?? CHAPTERS.en ?? ''
+    const directory = join(root, chapterDirectory)
     const files = readdirSync(directory)
       .filter(file => /^\d{2}-.+\.md$/.test(file))
       .sort()
 
     manual[language] = files.map(file => chapterFrom(directory, file))
-    dead.push(...deadManualLinks(manual[language], language))
+    dead.push(...deadManualLinks(chaptersForLanguage(manual, language), language))
   }
 
   if (dead.length > 0) {

@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { DEFAULT_CANVAS } from '@/engines/canvas/canvasState'
 import { fakeCanvas } from '@/features/image/canvasHost-fixtures'
 import { holdCanvas } from '@/features/image/canvasHosts'
@@ -66,7 +67,9 @@ describe('an image document', () => {
       fakeCanvas({ flatten: () => Promise.resolve(null) }),
     )
 
-    await expect(saveDocument(documentId)).rejects.toThrow(/would open as nothing/)
+    await expect(saveDocument(documentId)).rejects.toThrow(
+      localizedError('documentFlattenUnavailable', { document: documentId }).message,
+    )
     expect(write).not.toHaveBeenCalled()
     release()
   })
@@ -107,7 +110,9 @@ describe('an image document', () => {
     installFakeBridge({ documents: { write } })
     const documentId = await openImage()
 
-    await expect(saveDocument(documentId)).rejects.toThrow(/pixels cannot be read/)
+    await expect(saveDocument(documentId)).rejects.toThrow(
+      localizedError('documentPixelsUnavailable', { document: documentId }).message,
+    )
     expect(write).not.toHaveBeenCalled()
   })
 

@@ -1,0 +1,20 @@
+{
+  "memoryWorth": {
+    "scriptWrite": "Скрипт {{path}} написан ассистентом",
+    "prefabDefine": "«{{name}}» — префаб этого проекта",
+    "styleSave": "«{{name}}» — способ читать материал, сохранённый для этого проекта",
+    "postSave": "«{{name}}» — пресет постобработки, сохранённый для этого проекта",
+    "animationAdd": "Анимация «{{clipName}}» добавлена к скелету",
+    "gitCommit": "Решено и записано в git: {{message}}"
+  },
+  "memoryTypes": {
+    "decision": "Решение",
+    "architecture": "Архитектура",
+    "feature": "Функция",
+    "entity": "Сущность",
+    "script": "Скрипт",
+    "problem": "Проблема",
+    "intent": "Намерение",
+    "convention": "Соглашение"
+  }
+}

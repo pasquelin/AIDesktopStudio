@@ -1,0 +1,320 @@
+{
+  "game": {
+    "components": {
+      "Aircraft": {
+        "title": "Avión",
+        "description": "Hace volar al objeto: sustentación, resistencia y empuje calculados sobre su propio movimiento, y superficies de control que solo responden con aire sobre ellas."
+      },
+      "Animator": {
+        "title": "Animador",
+        "description": "Reproduce el clip que corresponde a lo que hace el cuerpo — andar, saltar, estar parado — a partir de un grafo de animación del proyecto."
+      },
+      "CharacterController": {
+        "description": "Convierte el objeto en aquel al que se dirige: anda, salta y sube escalones.",
+        "title": "Personaje"
+      },
+      "Collider": {
+        "description": "Da al objeto un volumen que los demás no pueden atravesar.",
+        "title": "Volumen"
+      },
+      "Follow": {
+        "description": "Sigue a otra entidad y se detiene a la distancia pedida — un acompañante, una cámara al hombro, un enemigo.",
+        "title": "Persecución"
+      },
+      "Health": {
+        "description": "Puntos de vida, que bajan cuando la entidad recibe daño y la matan al llegar a cero.",
+        "title": "Salud"
+      },
+      "LookAt": {
+        "description": "Orienta la entidad hacia otra, de golpe o a una velocidad de giro limitada — una torreta, un cartel, una cabeza.",
+        "title": "Mirada"
+      },
+      "Movement": {
+        "description": "Hace que la entidad se desplace sola a lo largo de un eje — una plataforma, un ascensor, una trampa.",
+        "title": "Movimiento"
+      },
+      "Orbit": {
+        "description": "Hace girar la entidad alrededor de otra, o alrededor del origen — una luna, un satélite, una cámara que da vueltas.",
+        "title": "Órbita"
+      },
+      "Path": {
+        "description": "Hace recorrer a la entidad una serie de puntos a velocidad constante — una vagoneta, un travelling, una plataforma sobre raíles.",
+        "title": "Raíl"
+      },
+      "Patrol": {
+        "description": "Lleva la entidad de un punto con nombre al siguiente, esperando en cada uno — un centinela, un ascensor.",
+        "title": "Patrulla"
+      },
+      "RigidBody": {
+        "description": "Entrega el objeto a la simulación: cae, resbala y recibe empujones.",
+        "title": "Física"
+      },
+      "Script": {
+        "title": "Script",
+        "description": "Entrega el objeto al código: lo que escribió su autor se ejecuta en cada paso."
+      },
+      "Player": {
+        "title": "Jugador",
+        "description": "Designa a quien se juega. Uno solo por escena: lo que cuelga de él es su cuerpo y su ojo, y es a él a quien sigue la cámara."
+      },
+      "Spin": {
+        "description": "Hace girar la entidad sobre un eje, sin fin — un objeto que recoger, una hélice, un mecanismo.",
+        "title": "Giro continuo"
+      },
+      "SpringArm": {
+        "title": "Brazo elástico",
+        "description": "Cuelga una cámara detrás de un elemento, a la distancia que fijes: se acerca cuando un muro se interpone y sigue con retardo en lugar de ir pegada."
+      },
+      "Trigger": {
+        "description": "No bloquea nada, y avisa cuando algo entra en su volumen o sale de él.",
+        "title": "Sensor"
+      },
+      "Vehicle": {
+        "title": "Vehículo",
+        "description": "Pone el objeto sobre ruedas con suspensión, motrices y directrices: rueda, frena y gira. Las ruedas son sus objetos hijos, nombrados aquí."
+      }
+    },
+    "fields": {
+      "acceleration": "Aceleración",
+      "agility": "Agilidad",
+      "airControl": "Control en el aire",
+      "axis": "Eje",
+      "body": "Cuerpo guía",
+      "bodyTurnSpeed": "Velocidad de giro del cuerpo (0: ninguna)",
+      "camera": "Cámara",
+      "collision": "Evitar los muros",
+      "collisionInLag": "Entrada en colisión",
+      "collisionOutLag": "Salida de colisión",
+      "coyoteTime": "Tiempo de coyote",
+      "current": "Actual",
+      "deceleration": "Deceleración",
+      "distance": "Distancia",
+      "drag": "Resistencia",
+      "drive": "Tracción",
+      "fidelity": "Fidelidad",
+      "followVertical": "Pegarse a la altura del elemento seguido",
+      "friction": "Fricción",
+      "from": "Archivo de origen",
+      "graph": "Grafo de animación",
+      "gravityScale": "Gravedad",
+      "height": "Altura",
+      "hysteresis": "Histéresis",
+      "jumpBuffer": "Salto anticipado",
+      "jumpSpeed": "Salto",
+      "kind": "Simulación",
+      "length": "Longitud",
+      "lockRotation": "Bloquear el giro",
+      "lookAt": "Encuadre",
+      "mass": "Masa",
+      "max": "Máximo",
+      "maxSteerAngle": "Ángulo de giro máximo",
+      "maxThrust": "Empuje máximo",
+      "maxTorque": "Par motor",
+      "mode": "Recorrido",
+      "moveSpeed": "Velocidad de marcha (0: la de la escena)",
+      "orientation": "Orientación",
+      "orientToTangent": "Seguir la tangente",
+      "pitchMax": "Inclinación máxima",
+      "pitchMin": "Inclinación mínima",
+      "positionLag": "Retardo de posición",
+      "possesses": "Elemento poseído",
+      "probeRadius": "Radio de sonda",
+      "radius": "Radio",
+      "restitution": "Rebote",
+      "rotationLag": "Retardo de rotación",
+      "runSpeed": "Velocidad de carrera (0: sin carrera)",
+      "safetyMargin": "Margen de seguridad",
+      "script": "Archivo",
+      "shoulder": "Desplazamiento lateral",
+      "slopeLimit": "Pendiente",
+      "snapDistance": "Agarre",
+      "speed": "Velocidad",
+      "stallAngle": "Ángulo de pérdida",
+      "stepHeight": "Escalón",
+      "stopDistance": "Distancia de parada",
+      "subject": "Elemento seguido",
+      "suspensionLength": "Recorrido de la suspensión",
+      "target": "Objetivo",
+      "turnSpeed": "Velocidad de giro",
+      "waitSeconds": "Espera",
+      "waypoints": "Puntos",
+      "wheelRadius": "Radio de las ruedas",
+      "wheels": "Ruedas",
+      "wheelWidth": "Ancho de las ruedas",
+      "wingArea": "Superficie alar"
+    },
+    "export": {
+      "title": "Optimizar el juego",
+      "action": "Exportar",
+      "safeTitle": "Optimizaciones SAFE en tiempo de ejecución",
+      "safeRuntime": "Optimizar la representación en tiempo de ejecución",
+      "instancing": "Instanciar los objetos repetidos",
+      "batching": "Agrupar las geometrías estáticas compatibles",
+      "deduplication": "Desduplicar los recursos",
+      "geometryBuffers": "Optimizar los búferes de geometría",
+      "losslessCompression": "Comprimir sin pérdida visual",
+      "removeUnused": "Eliminar los recursos sin usar",
+      "currentSceneMeasured": "Medido · escena actual",
+      "projectEstimated": "Estimado · juego completo · {{count, number}} escenas",
+      "currentSceneLossyEstimate": "Escena actual con pérdida visual · {{triangles}} triángulos · {{geometry}} de geometría · {{images}} de imágenes",
+      "triangleResult": "Triángulos visibles {{before}} → {{after}}",
+      "geometryResult": "Geometría {{before}} → {{after}}",
+      "imageResult": "Imágenes {{before}} → {{after}}",
+      "visualTitle": "Avanzado · cambios visuales",
+      "generateLods": "Generar los niveles de distancia",
+      "geometryLabel": "Simplificación de la geometría",
+      "compressionLabel": "Compresión de las imágenes",
+      "reductionLabel": "Resolución de las imágenes",
+      "quality": {
+        "off": "Desactivada",
+        "conservative": "Prudente",
+        "balanced": "Equilibrada",
+        "aggressive": "Agresiva"
+      },
+      "reduction": {
+        "off": "Original",
+        "half": "Mitad",
+        "quarter": "Cuarto"
+      },
+      "visualChangesNone": "Cambios visuales: NINGUNO",
+      "visualChangesPossible": "Cambios visuales: POSIBLES",
+      "failed": "No se ha podido exportar el juego."
+    },
+    "inputMap": {
+      "actionId": "Acción",
+      "actionKind": "Valor",
+      "addAction": "Añadir una acción",
+      "addBinding": "Añadir una asignación",
+      "binding": "Asignación {{device}}",
+      "applyPresetHint": "Sustituye este mapa por el punto de partida elegido",
+      "axis": "Eje",
+      "context": "Contexto",
+      "create": "Nuevo mapa de controles",
+      "createHint": "Crea un mapa de controles a partir de un punto de partida estándar",
+      "defaultActive": "Activo al iniciar",
+      "deadZone": "Zona muerta",
+      "deviceLabel": "Dispositivo",
+      "duplicateId": "Varios mapas de controles usan el identificador «{{id}}». Da a cada contexto un identificador único.",
+      "device": {
+        "gamepad": "Mando",
+        "keyboard": "Teclado",
+        "mouse": "Ratón"
+      },
+      "id": "Identificador",
+      "invalid": "El JSON no describe un mapa de controles válido.",
+      "invert": "Invertir",
+      "jsonLabel": "JSON del mapa de controles",
+      "kind": {
+        "axis1": "Un eje",
+        "axis2": "Dos ejes",
+        "button": "Botón"
+      },
+      "loadFailed": "No se ha podido leer este mapa de controles.",
+      "loading": "Cargando el mapa de controles…",
+      "mode": {
+        "expert": "Experto",
+        "json": "JSON",
+        "simple": "Simple"
+      },
+      "modeHint": "Cambia la forma de editar el mismo mapa de controles",
+      "preset": {
+        "character": "Personaje",
+        "flight": "Vuelo",
+        "menu": "Menú",
+        "studio": "Estudio",
+        "vehicle": "Vehículo"
+      },
+      "presets": "Puntos de partida",
+      "priority": "Prioridad",
+      "removeAction": "Eliminar la acción",
+      "removeBinding": "Eliminar la asignación",
+      "save": "Guardar",
+      "scale": "Escala",
+      "unnamedAction": "Acción sin nombre",
+      "capture": "Pulsar",
+      "capturing": "Pulsa…",
+      "captureHint": "Asigna este control a la próxima tecla o al próximo control del mando que se pulse. Escape cancela.",
+      "help": {
+        "id": "El nombre del contexto — el que empuja un script y el que completa el respaldo integrado. Viene del nombre del archivo; dos archivos con un mismo identificador formarían un solo contexto.",
+        "priority": "Quién gana cuando dos contextos activos declaran la misma acción. El número MÁS ALTO escribe el último y se la lleva. Los contextos integrados de personaje, vehículo y vuelo están en 0, 10 y 10.",
+        "defaultActive": "Si este mapa está en servicio desde el principio de la partida. Si no, es un script el que debe empujarlo — un contexto de menú se abre y se cierra así.",
+        "actionId": "El nombre que lee un script, y con él los controladores integrados: `move`, `jump`, `steer`. Lo que cuenta es ese nombre, nunca la tecla.",
+        "actionKind": "Lo que devuelve la acción: un botón devuelve sí o no, un eje devuelve un número entre −1 y 1, dos ejes devuelven un par — lo que dice una palanca.",
+        "device": "De dónde viene el control. Una misma acción puede acumular varios: así es como un juego responde al teclado Y al mando sin saber cuál ha hablado.",
+        "axis": "Sobre cuál de las dos mitades empuja esta tecla. Una acción de dos ejes se compone de cuatro teclas, dos por eje.",
+        "scale": "Cuánto empuja esta asignación, y en qué sentido. −1 para la mitad que va hacia la izquierda o hacia atrás, 1 para la otra.",
+        "deadZone": "Por debajo de este valor, la palanca se considera en reposo. Una palanca desgastada deriva: sin zona muerta, el personaje se va andando solo.",
+        "invert": "Invierte el sentido de este control. Lo que algunos pilotos esperan del cabeceo, y nadie de nada más."
+      }
+    },
+    "controlsMenu": {
+      "add": "Añadir una asignación",
+      "capture": "Pulsa una tecla o un botón del mando",
+      "change": "Cambiar",
+      "close": "Cerrar",
+      "gamepad": "Mando",
+      "keyboard": "Teclado",
+      "mouse": "Ratón",
+      "reset": "Restablecer todo",
+      "title": "Controles"
+    },
+    "play": {
+      "faults_many": "{{count, number}} errores",
+      "faults_one": "{{count, number}} error",
+      "faults_other": "{{count, number}} errores",
+      "objects_many": "{{count, number}} objetos",
+      "objects_one": "{{count, number}} objeto",
+      "objects_other": "{{count, number}} objetos",
+      "pause": "Pausar",
+      "pauseHint": "Congela la partida donde está",
+      "readout": "{{fps}} fps · paso {{tick}}",
+      "start": "Ejecutar",
+      "startHint": "Ejecuta la escena como una partida, sin tocar el documento",
+      "stop": "Detener",
+      "stopHint": "Descarta la partida y devuelve la escena a como estaba",
+      "openFault": "Abre el script en la línea del error"
+    },
+    "section": {
+      "title": "Componentes",
+      "add": "Añadir un componente",
+      "addHint": "Dar a este objeto algo que hacer durante la partida",
+      "remove": "Desacoplar",
+      "removeHint": "Desacoplar este componente del objeto",
+      "empty": "Este objeto no hace nada durante la partida.",
+      "emptyHint": "Un componente dice lo que el objeto HACE, mientras que su tipo dice lo que dibuja."
+    },
+    "values": {
+      "all": "Tracción total",
+      "auto": "Automático",
+      "box": "Cubo",
+      "convexes": "Convexos",
+      "dynamic": "Dinámica",
+      "fixed": "Fija",
+      "front": "Tracción delantera",
+      "hull": "Envolvente",
+      "kinematic": "Pilotada",
+      "loop": "En bucle",
+      "once": "Una vez",
+      "pingPong": "Ida y vuelta",
+      "pivot": "El hombro",
+      "pointer": "La mirada",
+      "rear": "Propulsión trasera",
+      "subject": "El elemento seguido",
+      "trimesh": "Triángulos",
+      "unknown": "Valor desconocido",
+      "unnamedNode": "Ninguno",
+      "x": "X",
+      "y": "Y",
+      "z": "Z"
+    },
+    "window": {
+      "debug": "Depuración",
+      "debugHint": "Lo que la partida dice de sí misma: objetos, imágenes por segundo, pasos, errores",
+      "framePerformance": "CPU {{cpu}} ms · renderizado {{render}} ms",
+      "renderPerformance": "{{calls, number}} llamadas de dibujo · {{triangles, number}} triángulos",
+      "noFaults": "Sin errores",
+      "title": "Modo de juego",
+      "waiting": "A la espera del estudio…"
+    }
+  }
+}

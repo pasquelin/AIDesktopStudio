@@ -1,0 +1,24 @@
+{
+  "fileInfo": {
+    "title": "Informasi tentang {{name}}",
+    "sections": {
+      "general": "Umum",
+      "media": "Media",
+      "catalogue": "Katalog",
+      "git": "Git"
+    },
+    "gitUnchanged": "Tidak ada perubahan yang tertunda",
+    "kind": {
+      "file": "File",
+      "folder": "Folder"
+    },
+    "type": "Tipe",
+    "modified": "Diubah",
+    "codec": "Codec",
+    "identifier": "Pengidentifikasi",
+    "fingerprint": "Sidik jari konten",
+    "added": "Ditambahkan",
+    "reading": "Membaca folder…",
+    "missing": "Entri ini tidak ada lagi di folder proyek."
+  }
+}

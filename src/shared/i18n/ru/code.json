@@ -1,0 +1,8 @@
+{
+  "code": {
+    "unavailable": "Редактор не удалось загрузить.",
+    "noProblems": "Проблем нет",
+    "openProblem": "Открыть на этой строке",
+    "at": "строка {{line, number}}, столбец {{column, number}}"
+  }
+}

@@ -1,3 +1,4 @@
+import { TRANSLATIONS, preferredLanguage } from '@shared/i18n'
 import { app, dialog } from 'electron'
 import { APP_NAME } from '@shared/constants'
 import { registerAssetScheme } from '@main/assets/protocol'
@@ -68,7 +69,11 @@ async function openTheStudio(): Promise<void> {
      * lock it still holds. The synchronous call this replaced raised Electron's own error box.
      */
     process.stderr.write(`${APP_NAME}: could not start: ${String(error)}\n`)
-    dialog.showErrorBox(APP_NAME, String(error))
+    dialog.showErrorBox(
+      APP_NAME,
+      TRANSLATIONS[preferredLanguage(app.getPreferredSystemLanguages())].diagnostics
+        .bootstrapFailed,
+    )
     app.exit(1)
   }
 }

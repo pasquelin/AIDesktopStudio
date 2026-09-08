@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { mdiFolderOpenOutline, mdiPlaylistRemove, mdiRenameOutline } from '@mdi/js'
 import type { TFunction } from 'i18next'
 import type { MenuRowSpec } from '@/components/menuRows'
@@ -10,7 +11,7 @@ import { useProject } from '@/stores/project'
 async function revealFolder(path: string): Promise<void> {
   try {
     const shown = await getBridge()?.project.revealFolder(path)
-    if (shown === false) reportFailure('project.reveal', path, new Error('folder not found'))
+    if (shown === false) reportFailure('project.reveal', path, localizedError('folderMissing'))
   } catch (error) {
     reportFailure('project.reveal', path, error)
   }

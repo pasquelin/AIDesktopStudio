@@ -1,0 +1,24 @@
+{
+  "fileInfo": {
+    "title": "Thông tin về {{name}}",
+    "sections": {
+      "general": "Chung",
+      "media": "Phương tiện",
+      "catalogue": "Danh mục",
+      "git": "Git"
+    },
+    "gitUnchanged": "Không có thay đổi nào chờ xử lý",
+    "kind": {
+      "file": "Tệp",
+      "folder": "Thư mục"
+    },
+    "type": "Loại",
+    "modified": "Sửa đổi lần cuối",
+    "codec": "Codec",
+    "identifier": "Định danh",
+    "fingerprint": "Dấu vân tay nội dung",
+    "added": "Thêm vào ngày",
+    "reading": "Đang đọc thư mục…",
+    "missing": "Mục này không còn nằm trong thư mục dự án."
+  }
+}

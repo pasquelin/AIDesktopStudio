@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import {
   EXPORTED_GAME_FILE,
   exportedSceneNamed,
@@ -205,7 +206,7 @@ function openStage(
   const render = createWebRender(canvas, assets, game.render, log.write)
   rollback.add(render.dispose)
   const entry = exportedSceneNamed(game, game.entryScene)
-  if (!entry) throw new Error(`no scene "${game.entryScene}" in this game`)
+  if (!entry) throw localizedError('gameSceneMissing', { name: game.entryScene })
   return { assets, render, log, drawn: createDrawnPort(render), swap: createSceneSwap(), entry }
 }
 
@@ -286,7 +287,7 @@ async function modulesOf(game: ExportedGame): Promise<readonly ScriptModule[]> {
 }
 async function heightmapFromBundle(assets: AssetPort, assetId: string) {
   const url = assets.urlOf({ kind: 'asset', id: assetId })
-  if (!url) throw new Error(`no file for ${assetId}`)
+  if (!url) throw localizedError('assetFileMissing', { name: assetId })
   return heightmapFromExr(await (await answering(url)).arrayBuffer())
 }
 

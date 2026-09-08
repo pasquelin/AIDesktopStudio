@@ -33,7 +33,7 @@ export const WINDOW_ROW = 'border-base-300 flex gap-2 border-b py-3 last:border-
  * became the chassis: `base-300` is the divider now, and `elevated` reads 1.086:1 on a light
  * chassis — under the 1.1 of `HOVER_IS_SEEN`. `tokens.test.ts` measures it.
  */
-export const WINDOW_ROW_BUTTON = cn(WINDOW_ROW, 'hover:bg-base-200 w-full text-left')
+export const WINDOW_ROW_BUTTON = cn(WINDOW_ROW, 'hover:bg-base-200 w-full text-start')
 
 /**
  * A control of one of these windows: a section of the column, a period, a refresh.

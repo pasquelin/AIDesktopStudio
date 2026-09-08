@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import i18next from 'i18next'
 import { assetUrl } from '@shared/domain/asset'
 import type { PbrChannel } from '@shared/domain/material'
@@ -27,7 +28,7 @@ function movedChannel(
 }
 
 function reportStale(channel: PbrChannel, which: PbrChannel): false {
-  reportFailure('material.channel', channel, new Error(`${which} changed while deriving`))
+  reportFailure('material.channel', channel, localizedError('channelChanged', { channel: which }))
   return false
 }
 
@@ -90,7 +91,7 @@ export async function deriveMaterialChannel(
 
   const source = channels(documentId)[from]
   if (!source) {
-    reportFailure('material.channel', channel, new Error(`${from} is empty`))
+    reportFailure('material.channel', channel, localizedError('channelEmpty', { channel: from }))
     return false
   }
 

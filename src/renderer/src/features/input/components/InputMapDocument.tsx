@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 // SPDX-License-Identifier: MIT
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -103,7 +104,7 @@ export function InputMapDocument({ path }: InputMapDocumentProps) {
     try {
       const next = mode === 'json' ? inputMapOf(JSON.parse(source)) : inputMapOf(map)
       const written = await getBridge()?.inputMaps.write(path, next)
-      if (!written) throw new Error('write refused')
+      if (!written) throw localizedError('writeRefused')
       inputMapsChanged()
       const unchanged = revision.current === savedRevision
       if (unchanged) {

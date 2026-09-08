@@ -1,0 +1,24 @@
+{
+  "fileInfo": {
+    "title": "Информация о {{name}}",
+    "sections": {
+      "general": "Общее",
+      "media": "Медиа",
+      "catalogue": "Каталог",
+      "git": "Git"
+    },
+    "gitUnchanged": "Нет ожидающих изменений",
+    "kind": {
+      "file": "Файл",
+      "folder": "Папка"
+    },
+    "type": "Тип",
+    "modified": "Изменён",
+    "codec": "Кодек",
+    "identifier": "Идентификатор",
+    "fingerprint": "Отпечаток содержимого",
+    "added": "Добавлен",
+    "reading": "Чтение папки…",
+    "missing": "Этой записи больше нет в папке проекта."
+  }
+}

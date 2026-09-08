@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { type Container, Graphics, Rectangle, Sprite, type Texture } from 'pixi.js'
 import { bytesToBase64 } from '@shared/base64'
 import { layerById, type Layer, type Rect, WHITE } from './canvasState'
@@ -191,7 +192,7 @@ export abstract class CanvasPixels extends CanvasBrush {
      * surface — the container is replaced whole — and then marked the document clean. A layer
      * gone, silently, on a save that looked like it worked.
      */
-    if (!blob) throw new Error('the renderer would not encode this surface')
+    if (!blob) throw localizedError('imageEncodingFailed')
     return new Uint8Array(await blob.arrayBuffer())
   }
 }

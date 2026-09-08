@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import {
   BufferAttribute,
   BufferGeometry,
@@ -314,7 +315,7 @@ describe('when a build does not come back', () => {
     const done = builder.accelerate(dense())
     scripted.garble()
 
-    await expect(done).rejects.toThrow('unreadable')
+    await expect(done).rejects.toThrow(localizedError('workerUnreadable', { name: 'BVH' }).message)
     expect(scripted.terminated).toHaveBeenCalled()
   })
 

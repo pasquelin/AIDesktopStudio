@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { exportTargetOf } from '@shared/domain/exportRegistry'
 import type { FolderExportRequest } from '@shared/ipc'
 import { useDocuments } from '@/stores/documents'
@@ -16,10 +17,10 @@ import { canvasHost } from './canvasHosts'
  */
 export async function imageExportFiles(documentId: string): Promise<FolderExportRequest> {
   const host = canvasHost(documentId)
-  if (!host) throw new Error('this image has no engine mounted to export from')
+  if (!host) throw localizedError('imageExportEngineMissing')
 
   const bytes = await host.flatten()
-  if (!bytes) throw new Error('this image has nothing to export yet')
+  if (!bytes) throw localizedError('imageExportEmptyContent')
 
   // The tab's own title, so the file is findable afterwards — an opaque id is not.
   const name = documentExportName(useDocuments.getState(), documentId, 'image')

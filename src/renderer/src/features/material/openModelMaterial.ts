@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { isLocalPicture, type Asset, type ModelTextureUse } from '@shared/domain/asset'
 import { hasChannel } from '@shared/domain/channelTexture'
 import { openDocument } from '@/features/shell/components/dockviewApi'
@@ -13,7 +14,7 @@ import { unpackMaterialChannels } from './unpackChannels'
 import { setMaterialSetting } from '@/engines/material/commands'
 
 /** Said of a picture no channel claims and nothing knows how to split. */
-const UNCLAIMED = new Error('this picture fits in no single channel')
+const UNCLAIMED = localizedError('materialChannelAmbiguous')
 
 async function materialDocumentFor(model: {
   id: string
@@ -25,14 +26,14 @@ async function materialDocumentFor(model: {
     return { id: already.id, created: false }
   }
   if (!useProject.getState().project) {
-    reportFailure('assets.open', model.name, new Error('no project'))
+    reportFailure('assets.open', model.name, localizedError('projectMissing'))
     return null
   }
   const created = await useDocuments
     .getState()
     .create('materials', { title: model.name, sourceAssetId: model.id })
   if (!created) {
-    reportFailure('assets.open', model.name, new Error('no document'))
+    reportFailure('assets.open', model.name, localizedError('missingDocument'))
     return null
   }
   return { id: created.id, created: true }
@@ -98,7 +99,7 @@ export async function openModelMaterial(
    */
   const local = pictures.filter(isLocalPicture)
   if (local.length === 0) {
-    reportFailure('assets.open', model.name, new Error('no channel to assemble'))
+    reportFailure('assets.open', model.name, localizedError('materialChannelsMissing'))
     return null
   }
 
@@ -124,7 +125,7 @@ export async function openModelMaterial(
   // document the store no longer holds: answering its id anyway would put an EMPTY material on
   // the slot the gesture came from.
   if (!materialStore.hasState(useMaterials.getState(), document.id)) {
-    reportFailure('assets.open', model.name, new Error('the material was closed while it filled'))
+    reportFailure('assets.open', model.name, localizedError('materialClosed'))
     discardMaterial(document.id)
     return null
   }

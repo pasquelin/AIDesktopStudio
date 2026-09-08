@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { createSkyBinding } from '../viewport/skyBinding'
 import { reportFailure } from '@/services/diagnostics'
 import { studioFonts } from '@/services/fonts'
@@ -88,7 +89,7 @@ export class SceneRendererConstruction extends SceneRendererFrame {
         reportFailure(
           'scene.model',
           assetId,
-          new Error(`scatter requires a static model; received ${status}`),
+          localizedError('scatterModelNotStatic', { status: status }),
         ),
       onReady: () => this.redraw(),
     })

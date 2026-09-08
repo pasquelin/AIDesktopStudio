@@ -1,0 +1,499 @@
+{
+  "settings": {
+    "title": "Impostazioni",
+    "sections": "Sezioni delle impostazioni",
+    "search": "Cerca un’impostazione",
+    "results": "Risultati",
+    "noResult": "Nessuna impostazione corrisponde a questa ricerca.",
+    "restoreDefault": "Ripristina il valore predefinito",
+    "restoreDefaultHint": "Rimette il valore originale, quello di prima di ogni modifica",
+    "account": "Chiavi API",
+    "appearance": "Aspetto",
+    "generation": "Generazione",
+    "media": "Media",
+    "git": "Versioni",
+    "dictation": "Dettatura",
+    "input": "Periferiche",
+    "ai": "Modelli di IA",
+    "accountDescription": "Una chiave per servizio, cifrata dal portachiavi.",
+    "appearanceDescription": "Tema e densità dei controlli.",
+    "generationDescription": "Coda di generazione e modelli predefiniti, per famiglia.",
+    "gitDescription": "Tracciamento delle versioni della cartella di progetto, tramite git. Riguarda solo i tuoi file.",
+    "mediaDescription": "Preparazione dei file importati: proxy e forme d’onda.",
+    "dictationDescription": "Dettare un testo invece di digitarlo. Tutto avviene su questo computer: nulla di ciò che dici viene inviato da nessuna parte.",
+    "inputDescription": "Come si naviga nello studio con un controller, e le periferiche collegate a questo computer.",
+    "aiDescription": "Quale IA serve ciascuna operazione. Lo studio qui, Ollama qui, o un servizio online di cui hai la chiave.",
+    "gamepadNavigation": {
+      "title": "Naviga nello studio con un controller",
+      "help": "Consente a un controller collegato di muoversi nell’interfaccia dello studio e di confermare o annullare i controlli. Resta disattivato finché non lo attivi, così una partita non può spostare l’editor dietro di essa."
+    },
+    "inputDevices": {
+      "title": "Controlli rilevati",
+      "keyboard": "Tastiera",
+      "mouse": "Mouse",
+      "gamepadUnsupported": "Questo controller non usa la disposizione standard: lo studio non riesce a leggerne i pulsanti.",
+      "noGamepad": "Nessun controller collegato.",
+      "gamepadSleeps": "Un controller compare solo dopo la prima pressione di uno dei suoi pulsanti: prima di allora il browser non lo mostra. Collegato ma muto, non si distingue in nulla da un controller assente."
+    },
+    "theme": {
+      "title": "Tema",
+      "help": "Sceglie i colori di tutta l’applicazione. Il tema scuro riposa gli occhi durante una lunga sessione in una stanza poco illuminata; quello chiaro si legge meglio in piena luce. «Sistema» segue l’impostazione del tuo computer e cambia da solo, per esempio quando arriva la sera.",
+      "dark": "Scuro",
+      "light": "Chiaro",
+      "system": "Sistema"
+    },
+    "density": {
+      "title": "Densità",
+      "help": "Regola quanto sono grandi i pulsanti e quanto sono alte le righe. «Compatta» fa stare più cose sullo schermo; «Comoda» lascia più aria tra di esse, il che le rende più facili da colpire con il mouse.",
+      "comfortable": "Comoda",
+      "compact": "Compatta"
+    },
+    "assistantSteps": {
+      "title": "Passi di concatenamento dell’assistente",
+      "help": "Quante azioni l’assistente può concatenare per una sola richiesta, quando ciascuna dipende da ciò che ha risposto la precedente — trovare un file, aprirlo, poi posarlo in una scena. Ogni passo è uno scambio fatturato, quindi questo numero è l’unica cosa che impedisce a una richiesta fraintesa di girare all’infinito. Dodici copre la maggior parte dei concatenamenti."
+    },
+    "concurrentJobs": {
+      "title": "Generazioni simultanee",
+      "help": "Quante creazioni lavorano nello stesso momento. Più il numero è alto, più ne puoi avviare in una volta — ma ciascuna può metterci di più a tornare, e il servizio può respingere quelle che superano il suo limite. Tre è un buon equilibrio."
+    },
+    "captionArrivals": {
+      "title": "Nomina gli asset scaricati",
+      "help": "Nomina automaticamente un’immagine che arriva senza un nome utile. Consuma unità creative."
+    },
+    "maxRetries": {
+      "title": "Tentativi massimi",
+      "help": "Quando una generazione non riesce perché la rete è caduta o un server era occupato, l’applicazione riprova da sola. Questo numero dice quante volte prima di rinunciare. A 0 non prova mai due volte. Una chiave API non valida non viene mai riprovata: riprovare non la correggerebbe."
+    },
+    "ffmpegPath": {
+      "title": "Percorso di ffmpeg",
+      "help": "Dove trovare un ffmpeg da usare al posto di quello fornito con l’applicazione. Lascia vuoto, a meno che tu non tenga al tuo.",
+      "placeholder": "/opt/homebrew/bin/ffmpeg"
+    },
+    "gitBinary": {
+      "title": "Percorso di git",
+      "help": "Dove trovare un git da usare al posto di quello di sistema. Lascia vuoto in quasi tutti i casi. Un percorso che contiene uno spazio viene rifiutato, e l’applicazione si comporta allora come quando git manca del tutto.",
+      "placeholder": "/usr/bin/git"
+    },
+    "gitUserName": {
+      "title": "Nome dell’autore",
+      "help": "Il nome scritto in ogni versione registrata. Lascia vuoto per riprendere quello che git conosce già su questo computer.",
+      "placeholder": "Il tuo nome"
+    },
+    "gitUserEmail": {
+      "title": "Indirizzo dell’autore",
+      "help": "L’indirizzo scritto accanto al nome in ogni versione registrata. Lascia vuoto per riprendere quello che git conosce già.",
+      "placeholder": "tu@esempio.it"
+    },
+    "dictationEnabled": {
+      "title": "Attiva la dettatura",
+      "help": "Propone un pulsante del microfono accanto ai campi di testo, e mette in servizio la scorciatoia che ascolta. Disattivata, la dettatura non carica nulla e non chiede mai l’accesso al microfono."
+    },
+    "dictationMode": {
+      "title": "Come si attiva",
+      "help": "«Tieni premuto il tasto» ascolta finché mantieni premuta la scorciatoia e si ferma nel momento in cui la lasci: è il più sicuro, perché il microfono non resta mai aperto per errore. «Attiva e disattiva» parte alla prima pressione e si ferma alla successiva, il che riposa la mano su una dettatura lunga.",
+      "pushToTalk": "Tieni premuto il tasto",
+      "continuous": "Attiva e disattiva"
+    },
+    "dictationSilence": {
+      "title": "Silenzio che chiude una frase",
+      "help": "Quanto silenzio, in millisecondi, prima che ciò che hai appena detto conti come finito e venga trascritto. Alzalo se le tue frasi vengono tagliate a metà perché fai una pausa per pensare."
+    },
+    "dictationPreview": {
+      "title": "Anteprima mentre parli",
+      "help": "Quanto tempo passa, in millisecondi, tra due anteprime del testo che stai pronunciando. Il modello non scrive man mano che arrivano le parole: ogni anteprima rilegge tutto ciò che è stato detto dall’inizio della frase, e costa quindi calcolo. Mettilo a 0 per mostrare solo il testo definitivo di ogni frase."
+    },
+    "dictationThreads": {
+      "title": "Thread di calcolo",
+      "help": "Quanti core può occupare il riconoscimento. Più alto va più veloce fino a un certo punto, ma ogni thread è un core tolto al resto dell’applicazione."
+    },
+    "dictationIdleUnload": {
+      "title": "Libera la memoria dopo",
+      "help": "Minuti senza dettare al termine dei quali il modello viene scaricato, restituendo circa 700 MB di memoria. Si ricarica da solo alla dettatura successiva, il che richiede qualche secondo. Mettilo a 0 per tenerlo sempre in memoria."
+    },
+    "dictationModelFolder": {
+      "title": "Cartella del modello",
+      "help": "Dove trovare un modello di riconoscimento già presente su questo disco, da usare al posto di quello che l’applicazione scarica. Lascia vuoto nel caso normale.",
+      "placeholder": "/Volumes/Modelli/parakeet-tdt-0.6b-v3-int8"
+    },
+    "defaultModel": "Modello predefinito",
+    "noDefaultModel": "Chiedi ogni volta",
+    "ffmpegFound": "ffmpeg è disponibile: proxy e forme d’onda saranno preparati.",
+    "ffmpegMissing": "ffmpeg resta introvabile. L’importazione funziona, senza proxy né forma d’onda.",
+    "browse": "Sfoglia…",
+    "accent": {
+      "title": "Colore di accento",
+      "help": "Il colore che segnala ciò che è selezionato o in corso: il contorno del pannello attivo, la testina della timeline, la cornice attorno a una selezione. Non cambia nulla di ciò che crei, solo il modo in cui l’applicazione ti mostra dove sei. Lascialo com’è per mantenere quello del tema."
+    },
+    "fontScale": {
+      "title": "Dimensione del testo",
+      "help": "Ingrandisce o riduce tutti i testi dell’applicazione in una volta sola. 1 è la dimensione con cui sono stati disegnati; sopra, le parole diventano più grandi e ne sta di meno sullo schermo; sotto, il contrario. I pulsanti, invece, mantengono la loro dimensione: di quelli si occupa la densità."
+    },
+    "reduceMotion": {
+      "title": "Limita le animazioni",
+      "help": "Disattiva i piccoli movimenti dell’interfaccia: i pannelli compaiono di colpo invece di scorrere. Utile se le animazioni ti stancano o ti danno la nausea, e su una macchina più lenta dove scattano."
+    },
+    "general": "Generale",
+    "generalDescription": "La lingua dell’applicazione, e ciò che fa quando si apre.",
+    "language": {
+      "title": "Lingua",
+      "help": "La lingua di ogni testo dell’applicazione: menu, pulsanti, messaggi. «Sistema» segue la lingua del tuo computer. Il cambiamento ha effetto non appena fai clic su Applica o su OK, senza dover riavviare nulla. Non tocca i tuoi progetti né ciò che scrivi al loro interno.",
+      "system": "Sistema"
+    },
+    "startup": {
+      "title": "All’apertura",
+      "help": "Ciò che l’applicazione fa quando la avvii. «Riapri l’ultimo progetto» ti rimette dove ti eri fermato. «Non aprire nulla» parte su una finestra vuota, il che è più rapido e più tranquillo se hai per le mani molti progetti.",
+      "lastProject": "Riapri l’ultimo progetto",
+      "nothing": "Non aprire nulla"
+    },
+    "autosave": {
+      "title": "Salvataggio automatico",
+      "help": "Scrive i documenti aperti ogni trenta secondi, senza aspettare il tuo ⌘S. Ciò che hai fatto dall’ultimo salvataggio sopravvive allora a un’interruzione di corrente o a un crash. I documenti immagine ne restano esclusi in ogni caso: i loro livelli vengono riletti dalla scheda grafica, e scrivere ogni trenta secondi farebbe scattare il disegno."
+    },
+    "home": {
+      "title": "Mostra la schermata iniziale",
+      "help": "La schermata a tutta larghezza su cui si apre lo studio: i tuoi progetti, ciò su cui stavi lavorando, ciò che è in corso, e ciò che i modelli sanno fare. Disattivala per andare dritto all’area di lavoro che avevi lasciato. Quali sezioni mostra, e in quale ordine, si regola sulla schermata iniziale stessa."
+    },
+    "modified": "Modificato, non ancora applicato",
+    "apply": "Applica",
+    "cancel": "Annulla",
+    "confirm": "OK",
+    "discardTitle": "Alcune impostazioni non sono state applicate",
+    "discardBody": "Hai cambiato delle impostazioni senza applicarle. Che cosa vuoi fare?",
+    "discard": "Non applicare",
+    "shortcuts": "Scorciatoie",
+    "shortcutsDescription": "I tasti che attivano ciascuna azione. Fai clic su un tasto per sostituirlo.",
+    "pressAKey": "Premi…",
+    "unbound": "Nessuna",
+    "shortcutConflict": "Due azioni si contendono questo tasto: ne risponderà una sola.",
+    "findByChord": "Cerca per tasto",
+    "showAll": "Mostra tutto",
+    "chordFree": "Nessuna azione usa questo tasto: è libero.",
+    "scope": {
+      "global": "Ovunque nell’applicazione",
+      "spaces": "Nella barra delle aree",
+      "explorer": "Nell’esploratore",
+      "scene": "Nella vista 3D",
+      "character": "Nello scheletro",
+      "sequence": "Nel montaggio",
+      "canvas": "Nell’immagine",
+      "skybox": "Nel cielo",
+      "audio": "Nell’editor audio",
+      "material": "Nel materiale",
+      "gui": "In un’interfaccia"
+    },
+    "spaces": "Aree di lavoro",
+    "spacesDescription": "Ciò che ha senso solo dentro un’area precisa: la vista 3D, il montaggio, l’immagine.",
+    "requires": "Nessun effetto finché «{{setting}}» è disattivo.",
+    "showGrid": {
+      "title": "Mostra la griglia",
+      "help": "Il pavimento a quadretti della vista 3D. Non fa parte di ciò che stai creando: è un riferimento per sapere dove sono le cose e a che altezza. Nascondila per giudicare un’immagine senza nulla attorno."
+    },
+    "gridSize": {
+      "title": "Dimensione della griglia",
+      "help": "Fin dove arriva la griglia, in metri, e quindi quanti quadretti ha — un quadretto vale sempre un metro. Ingrandiscila per una scena vasta, riducila per un piccolo oggetto posato vicino alla camera."
+    },
+    "navigationPreset": {
+      "title": "Schema di navigazione",
+      "help": "Quale applicazione 3D questa vista imita: i suoi gesti del mouse e le sue scorciatoie. Uno schema sposta solo ciò che la sua applicazione fa in modo diverso — tutto il resto mantiene i tasti di AI Desktop Studio, compreso ciò per cui le altre non hanno un equivalente. Le tue rimappature hanno sempre la precedenza.",
+      "studio": "AI Desktop Studio",
+      "unreal": "Unreal Engine",
+      "unity": "Unity",
+      "blender": "Blender",
+      "roblox": "Roblox Studio",
+      "custom": "Personalizzato"
+    },
+    "navigationCustomOrbit": {
+      "title": "Ruota con",
+      "help": "Il gesto che fa ruotare la vista nel tuo schema personale.",
+      "leftAlt": "Alt + clic sinistro",
+      "left": "Clic sinistro, con o senza Alt",
+      "middle": "Pulsante centrale"
+    },
+    "navigationCustomPan": {
+      "title": "Sposta lateralmente con",
+      "help": "Il gesto che fa scorrere la vista senza farla ruotare.",
+      "middle": "Pulsante centrale",
+      "middleShift": "Maiusc + pulsante centrale",
+      "leftAltShift": "Maiusc + Alt + clic sinistro"
+    },
+    "navigationCustomDolly": {
+      "title": "Avvicina e allontana con",
+      "help": "Il gesto che avvicina la vista a ciò che inquadra, oltre alla rotellina.",
+      "altRight": "Alt + clic destro",
+      "ctrlMiddle": "Ctrl + pulsante centrale",
+      "rightOntoLeft": "Clic destro, con il sinistro già premuto"
+    },
+    "navigationCustomFly": {
+      "title": "Tasti di spostamento",
+      "help": "Quando i tasti WASD appartengono alla camera. Attivi in permanenza, le lettere non sono più disponibili per i comandi della scena — è per questo che Unity e Unreal richiedono un pulsante.",
+      "anyButton": "Mentre un pulsante è premuto",
+      "rightButton": "Mentre il pulsante destro è premuto",
+      "always": "Sempre"
+    },
+    "orbitAroundSelection": {
+      "title": "Orbita attorno alla selezione",
+      "help": "Quando fai ruotare la vista 3D, gira attorno a ciò che è selezionato piuttosto che attorno a un punto fluttuante davanti a te. È questo che evita di perdere il proprio oggetto appena ci si avvicina. Senza nulla di selezionato, o con la selezione fuori dallo schermo, la vista gira attorno all’ultimo punto guardato."
+    },
+    "orbitUnderCursor": {
+      "title": "Orbita sotto il cursore",
+      "help": "La vista gira attorno a ciò che il puntatore sorvola nel momento in cui inizi a ruotare, piuttosto che attorno a un punto fissato prima. Comodo per lavorare da vicino senza dover reinquadrare; spiazzante se vieni da Unity o da Unreal, che non offrono questa opzione."
+    },
+    "flySpeed": {
+      "title": "Velocità di volo",
+      "help": "A che velocità si muove la camera quando voli nella vista 3D, in metri al secondo. Troppo lenta e attraversare la scena richiede dieci secondi; troppo rapida e la superi senza vederla."
+    },
+    "boostFactor": {
+      "title": "Accelerazione",
+      "help": "Per quanto viene moltiplicata la velocità mentre tieni premuto il tasto di accelerazione. A 3 vai tre volte più veloce — abbastanza per attraversare una scena grande senza cambiare l’impostazione qui sopra."
+    },
+    "shadows": {
+      "title": "Ombre proiettate",
+      "help": "Calcola le ombre che le luci proiettano. Ogni luce che ne proietta una costa una passata di rendering in più per fotogramma: disattivare questa opzione è il modo più diretto di alleggerire una scena carica."
+    },
+    "viewportQuality": {
+      "title": "Qualità della vista",
+      "help": "Con quanta finezza viene disegnato lo stesso fotogramma. Nulla cambia dei modelli né delle immagini — solo il numero di pixel calcolati. Prestazioni limita anche la finezza delle ombre.",
+      "performance": "Prestazioni",
+      "balanced": "Bilanciata",
+      "high": "Alta"
+    },
+    "units": {
+      "title": "Unità di visualizzazione",
+      "help": "L’unità in cui le lunghezze vengono scritte e lette. Un’unità di scena resta un metro qualunque cosa dica questa impostazione: cambia ciò che viene mostrato, mai ciò che il documento contiene.",
+      "mm": "Millimetri",
+      "cm": "Centimetri",
+      "m": "Metri"
+    },
+    "shadowQuality": {
+      "title": "Morbidezza delle ombre",
+      "help": "Il grano del bordo di un’ombra. «Dura» taglia netto e costa meno; «Morbida» ammorbidisce il bordo. Ciò che proietta un’ombra, invece, si decide oggetto per oggetto nell’ispettore.",
+      "hard": "Dura",
+      "soft": "Morbida"
+    },
+    "shadowMapSize": {
+      "title": "Finezza delle ombre",
+      "help": "Il lato, in pixel, della mappa d’ombra che calcola ogni luce che proietta ombre. Raddoppiarlo costa quattro volte la memoria: 2048 basta e avanza per una scena di pochi oggetti, 4096 si ripaga quando una sola luce copre un intero set."
+    },
+    "snapTranslate": {
+      "title": "Passo di spostamento",
+      "help": "Di quanto un oggetto avanza in un passo mentre il magnetismo è attivo, in metri. Il magnetismo stesso si accende dalla barra degli strumenti della scena; questo dice soltanto quanto è fine."
+    },
+    "snapRotate": {
+      "title": "Passo di rotazione",
+      "help": "L’angolo di un passo di rotazione mentre il magnetismo è attivo, in gradi. La rotazione avanza a scatti da dove è cominciata: 15° dà ventiquattro scatti per giro, 90° dei quarti di giro."
+    },
+    "snapScale": {
+      "title": "Passo di scala",
+      "help": "Di quanto la scala si sposta in un passo mentre il magnetismo è attivo. I valori raggiungibili sono i multipli del passo: 0,1 cade esattamente sui decimi e sui mezzi, 0,25 sui quarti."
+    },
+    "gizmoSize": {
+      "title": "Dimensione delle maniglie",
+      "help": "Lo spazio MASSIMO che le maniglie di trasformazione occupano sullo schermo. Non crescono mai oltre l’oggetto che tengono: su un pezzo piccolo ne seguono la dimensione, e oltre si attengono a questa quota della vista invece di crescere all’infinito."
+    },
+    "snapSurfaceAlign": {
+      "title": "Orienta secondo la superficie",
+      "help": "Mentre il magnetismo di superficie è attivo, ciò che posi si adagia sulla pendenza che incontra. Deselezionato, l’oggetto mantiene il proprio orientamento e si limita a scendere."
+    },
+    "snapSurfaceOffset": {
+      "title": "Scostamento dalla superficie",
+      "help": "Di quanti metri ciò che posi resta sospeso sopra la superficie. Zero lo appoggia al contatto; qualche centimetro evita che due facce si contendano lo stesso piano sullo schermo."
+    },
+    "fieldOfView": {
+      "title": "Campo visivo",
+      "help": "Quanto abbraccia la camera, in gradi. Un angolo stretto avvicina e appiattisce, come un teleobiettivo; uno largo mostra molto di più ma curva i bordi. 60 è vicino a ciò che vede un occhio."
+    },
+    "advanced": "Avanzate",
+    "advancedDescription": "Ciò che serve solo per capire un problema, o per ricominciare da zero.",
+    "reveal": "Mostra nella cartella",
+    "open": "Apri",
+    "logLevel": {
+      "title": "Dettaglio del registro",
+      "help": "Quanto l’applicazione racconta di ciò che fa, nella console. «Niente» non dice più nulla; «Errori» segnala solo ciò che non è riuscito; «Tutto» racconta ogni passo, il che aiuta a capire un problema ed è loquace il resto del tempo.",
+      "silent": "Niente",
+      "error": "Solo errori",
+      "warn": "Errori e avvisi",
+      "info": "Tutto"
+    },
+    "openLogFolder": {
+      "title": "Registro tecnico",
+      "help": "Apre il gestore file sui registri che lo studio scrive a ogni avvio: «main.log», quello che ti verrà chiesto se qualcosa non riesce senza mostrare nulla, e «assistant.log», che conserva per intero ciò che viene inviato a ogni modello e ciò che risponde.",
+      "button": "Mostra il registro tecnico"
+    },
+    "openSettingsFile": {
+      "title": "File delle impostazioni",
+      "help": "Apre il gestore file dove sono salvate le tue impostazioni. Utile per copiarle prima di passare a un’altra macchina, o per inviarle a chi ti aiuta."
+    },
+    "mcpEnabled": {
+      "title": "Pilota lo studio dall’esterno",
+      "help": "Apre un punto d’ingresso su questa macchina soltanto, attraverso il quale un client come Claude Code può lanciare le stesse azioni dell’assistente. Tutto ciò che spende o carica chiede il tuo consenso sullo schermo, esattamente come qui. Disattivato, non ascolta nulla."
+    },
+    "mcpDelegateFiles": {
+      "title": "Sposta ed elimina i miei file senza chiedermelo",
+      "help": "Un client esterno può spostare, rinominare o cestinare un file del tuo progetto, e riportare indietro un file tracciato da Git, senza mostrare nulla. L’Esplora risorse ne annulla una parte, mai tutti. Deselezionato, ogni gesto ti viene presentato prima."
+    },
+    "mcpDelegateAsset": {
+      "title": "Carica nella mia libreria senza chiedermelo",
+      "help": "Un client esterno può inviare un’immagine alla tua libreria, dove resterà. Non costa alcuna unità creativa. Deselezionato, ogni caricamento ti viene presentato prima."
+    },
+    "mcpDelegateRemote": {
+      "title": "Pubblica su un server remoto senza chiedermelo",
+      "help": "Un client esterno può inviare un ramo a un repository Git remoto. È l’unico gesto che esce da questa macchina, e nulla qui lo recupera. Attivalo con cognizione di causa."
+    },
+    "mcpDelegateBudget": {
+      "title": "Spendi unità creative senza chiedermelo",
+      "help": "Quanto un client esterno può spendere in questa finestra prima che lo studio ricominci a chiedere. A zero, ogni spesa ti viene presentata prima. Una generazione che l’API rifiuta di quotare non parte mai senza di te, qualunque sia questo importo."
+    },
+    "copyMcpCommand": {
+      "title": "Comando di connessione",
+      "help": "Copia la riga da incollare in un terminale per collegare un client. Non contiene né porta né token, quindi resta valida per tutti gli avvii a venire.",
+      "button": "Copia"
+    },
+    "installResolveBridge": {
+      "title": "Ponte DaVinci Resolve",
+      "help": "Depone uno script nella cartella che Resolve legge, per importare un montaggio scritto qui dal suo menu degli script. Appare senza riavviare Resolve. Toglierlo si fa a mano, e Resolve se ne accorge solo al riavvio successivo.",
+      "button": "Installa",
+      "confirm": "Verrà scritto uno script nella cartella di DaVinci Resolve, su questa macchina. Nient’altro viene toccato.",
+      "missing": "DaVinci Resolve non è stato trovato su questa macchina",
+      "missingDetail": "La sua cartella non esiste, quindi non è stato scritto nulla. Installa Resolve, avvialo una volta, poi torna qui.",
+      "missingOk": "Chiudi"
+    },
+    "openDevtools": {
+      "title": "Strumenti di sviluppo",
+      "help": "Apre la console tecnica del browser integrato. Mostra i messaggi del registro e gli errori. Solo per la diagnostica: nulla di ciò che c’è dentro serve per usare il software."
+    },
+    "resetAll": {
+      "title": "Reimposta tutto",
+      "help": "Riporta TUTTE le impostazioni allo stato di un’installazione nuova: tema, lingua, scorciatoie, tutto. I tuoi progetti, le immagini e i montaggi non vengono toccati — solo le impostazioni. Non si torna indietro.",
+      "button": "Reimposta",
+      "confirm": "Reimpostare tutte le impostazioni? I tuoi progetti non vengono toccati, ma non si può tornare indietro."
+    },
+    "storage": "Archiviazione",
+    "storageDescription": "Dove sono conservati i tuoi progetti sul disco.",
+    "projectsFolder": {
+      "title": "Cartella dei progetti",
+      "help": "La cartella che l’applicazione propone quando crei o apri un progetto. Non sposta nulla: i progetti già creati restano dove sono. Lasciala vuota per ripartire ogni volta dall’ultimo posto visitato."
+    },
+    "cancelHint": "Abbandona le modifiche in attesa, senza chiudere la finestra",
+    "applyHint": "Scrive le modifiche subito, e lascia la finestra aperta",
+    "confirmHint": "Scrive le modifiche, poi chiude la finestra",
+    "browseHint": "Scegli la cartella in una finestra di sistema",
+    "findByChordHint": "Fai clic, poi premi una combinazione: la lista tiene solo ciò che la usa",
+    "showAllHint": "Toglie il filtro e rimostra tutte le scorciatoie",
+    "captureHint": "Fai clic, poi premi la combinazione da assegnare",
+    "sectionHint": "Mostra le impostazioni di questa sezione",
+    "sectionStagedHint": "Questa sezione ha modifiche non applicate",
+    "searchSectionHint": "Apre l’intera sezione, invece del solo risultato",
+    "searchResultHint": "Va all’impostazione, nella sezione a cui appartiene",
+    "landing": {
+      "title": "Dove atterra una generazione",
+      "help": "Quando un documento dello stesso tipo è già aperto. Senza nulla di aperto, il risultato si apre.",
+      "ask": "Chiedi ogni volta",
+      "document": "Nel documento aperto",
+      "newTab": "In una scheda a parte"
+    },
+    "homeNews": {
+      "title": "Novità dei modelli",
+      "help": "Legge i modelli di tendenza e gli articoli pubblicati su Hugging Face, l’host da cui provengono già tutti i pesi del catalogo. Deselezionato, lo studio non contatta nessuno per questa banda."
+    },
+    "mcp": "Punto d’ingresso (MCP)",
+    "mcpDescription": "La seconda porta dello studio: un altro programma di questa macchina — Claude Code, Cursor, qualsiasi client che parli il protocollo MCP — lancia le stesse azioni dell’assistente, dal suo progetto. Chiusa all’inizio.",
+    "mcpListening": "Aperto: lo studio ascolta su 127.0.0.1:{{port}}, su questa macchina soltanto.",
+    "mcpClosed": "Chiuso: non ascolta nulla. Spunta l’impostazione qui sopra per aprire la porta.",
+    "mcpHowTo": "Collega un client",
+    "mcpStepOpen": "Spunta «Pilota lo studio dall’esterno», quando vuoi. Il punto d’ingresso parte subito, e un client già configurato lo trova.",
+    "mcpStepCopy": "Copia il comando di connessione, per un client pilotato da un terminale — oppure il blocco di configurazione, per un client che legge un file. Né l’uno né l’altro contiene una porta o un token.",
+    "mcpStepPaste": "Incollalo in un terminale aperto sul tuo progetto, o il blocco nel file di configurazione del tuo client.",
+    "mcpNothingToRedo": "Da fare una volta sola. Ciò che incolli designa lo studio come un programma da avviare, mai un indirizzo da raggiungere, quindi continua a funzionare a ogni avvio — compresi quelli in cui la porta e il token sono nuovi, cioè tutti. Un client già registrato con lo stesso nome viene sostituito; non c’è nulla da rimuovere prima.",
+    "mcpExamples": "Cosa può fare un client",
+    "mcpExampleGenerate": "«Cerca un modello di skybox notturna, prepara la generazione, ma non inviarla.»",
+    "mcpExampleTidy": "«Ordina i girati di questa settimana in una cartella per ogni giorno.»",
+    "mcpExampleScene": "«Metti una sfera due metri a destra del cubo e illuminala con luce calda.»",
+    "mcpGuards": "Cosa sorveglia la porta",
+    "mcpGuardLocal": "Il punto d’ingresso ascolta solo su questa macchina: nulla dalla rete lo raggiunge.",
+    "mcpGuardToken": "Un token nuovo a ogni avvio; una richiesta senza di esso viene rifiutata.",
+    "mcpGuardOrigin": "Una richiesta proveniente da una pagina web aperta nel tuo browser viene rifiutata solo per questo motivo.",
+    "mcpGuardConsent": "Tutto ciò che spende o carica appare sullo schermo e aspetta il tuo consenso — tranne ciò che hai delegato qui sopra.",
+    "copyMcpConfig": {
+      "title": "Blocco di configurazione",
+      "help": "Copia la stessa connessione in formato JSON, per un client che si configura con un file anziché con un comando. Come il comando, resta valida a ogni avvio.",
+      "button": "Copia il JSON"
+    },
+    "memory": "Memoria dell’assistente",
+    "memoryDescription": "Ciò che l’assistente ha imparato sui tuoi progetti. Quello che ha imparato su un progetto vive nella cartella di quel progetto e viaggia con essa; quello che ha imparato sul tuo modo di lavorare resta su questa macchina.",
+    "memoryProject": "Questo progetto",
+    "memoryGlobal": "Questa macchina",
+    "memoryProjectHint": "Ciò che l’assistente ha imparato sul progetto aperto. Quel file viaggia con la cartella.",
+    "memoryGlobalHint": "Ciò che l’assistente ha imparato sul tuo modo di lavorare. Non lascia mai questa macchina.",
+    "memoryGraph": "Grafo",
+    "memoryGraphCount": "{{memories, number}} memorie · {{links, number}} collegamenti",
+    "memoryGraphDescription": "Ciò che l’assistente ha imparato, e ciò che sta insieme. Un punto per memoria, una linea fra due memorie che parlano della stessa cosa.",
+    "memoryGraphEmpty": "Servono almeno due memorie collegate perché un grafo mostri qualcosa.",
+    "memorySearch": "Cerca nella memoria",
+    "memoryEmpty": "L’assistente non ha ancora imparato nulla qui.",
+    "memoryUnmatched": "Nessuna memoria risponde a questa ricerca.",
+    "memoryNoProject": "Apri un progetto per vedere ciò che l’assistente ne ha imparato.",
+    "memoryUnreadable": "Non è stato possibile leggere per intero il file della memoria. Ciò che segue può essere incompleto.",
+    "memoryTooNew": "Questo file è stato scritto da una versione più recente dello studio. Non è stato modificato nulla.",
+    "memoryPin": "Fissa",
+    "memoryPinHint": "Una memoria fissata viene sempre data all’assistente, qualunque sia la domanda.",
+    "memoryUnpin": "Non fissare più",
+    "memoryUnpinHint": "L’assistente la riceverà solo se risponde alla domanda posta.",
+    "memoryArchive": "Archivia",
+    "memoryArchiveHint": "La mette da parte senza cancellarla: resta leggibile, non viene più data.",
+    "memoryRestore": "Rimetti in servizio",
+    "memoryRestoreHint": "L’assistente potrà di nuovo servirsene.",
+    "memoryForget": "Dimentica",
+    "memoryForgetHint": "L’oblio viene scritto nel file: non si cancella nulla, la traccia resta.",
+    "memoryEdit": "Modifica il riassunto",
+    "memorySource": "Scritta da",
+    "memorySourceAction": "un’azione ({{ref}})",
+    "memorySourcePerson": "te",
+    "memorySourceAssistant": "l’assistente",
+    "memorySourceImport": "un’importazione",
+    "memoryRefs": "Parla di",
+    "memoryReplaces": "Sostituisce",
+    "memoryAlsoAbout": "ne parla anche",
+    "memoryLinks": "Rimanda a",
+    "memorySupersedes": "Sostituisce {{id}}",
+    "memoryReindex": "Ricostruisci l’indice",
+    "memoryReindexHelp": "Rilegge il file e ricostruisce l’indice di ricerca. Nulla di ciò che è stato imparato va perso.",
+    "memoryEmbed": "Calcola i vettori",
+    "memoryEmbedHelp": "Permette all’assistente di ritrovare una memoria senza conoscerne le parole esatte. Richiede un modello di embedding installato.",
+    "memoryEmbedPending_other": "{{count, number}} memorie da calcolare",
+    "memoryEmbedNone": "Tutte le memorie hanno il loro vettore.",
+    "memoryEmbedNoModel": "Non è stato scelto alcun modello di embedding. La ricerca si fa sulle sole parole.",
+    "memoryStopEmbed": "Arresta",
+    "memoryStopEmbedHelp": "Ciò che è già stato calcolato viene conservato.",
+    "memoryPurge": "Dimentica tutto",
+    "memoryPurgeHelp": "Cancella il file di memoria di questo progetto, e tutto ciò che l’assistente ne aveva imparato.",
+    "memoryPurgeConfirm": "Cancellare tutto ciò che l’assistente ha imparato su questo progetto?",
+    "memoryFilterAll": "Tutto",
+    "memoryCount_other": "{{count, number}} memorie",
+    "memoryEmbedPending_one": "{{count, number}} memoria da calcolare",
+    "memoryCount_one": "{{count, number}} memoria",
+    "memoryEmbedPending_many": "{{count, number}} memorie da calcolare",
+    "memoryCount_many": "{{count, number}} memorie",
+    "memoryUpkeep": "Manutenzione",
+    "memoryMerge": "Unisci i duplicati",
+    "memoryMergeHelp": "Tiene la più importante di ogni gruppo che dice la stessa cosa, collega le altre a lei e le archivia. Non si cancella nulla.",
+    "memoryMergeNone": "Nulla dice due volte la stessa cosa.",
+    "memoryMergeFound_one": "{{count, number}} duplicato",
+    "memoryMergeFound_many": "{{count, number}} duplicati",
+    "memoryMergeFound_other": "{{count, number}} duplicati",
+    "memoryStale": "Archivia ciò che dorme",
+    "memoryStaleHelp": "Mette da parte ciò che nulla ha usato da sei mesi. Le memorie fissate non vengono mai toccate.",
+    "memoryStaleNone": "Nulla dorme da abbastanza tempo.",
+    "memoryStaleFound_one": "{{count, number}} memoria dormiente",
+    "memoryStaleFound_many": "{{count, number}} memorie dormienti",
+    "memoryStaleFound_other": "{{count, number}} memorie dormienti",
+    "memoryCompact": "Compatta il file",
+    "memoryCompactHelp": "Riscrive il file con una riga per ogni memoria in piedi. È qui che ciò che è stato dimenticato lascia davvero il disco.",
+    "memoryRelations": "Cosa tocca questa memoria",
+    "memoryPromote": "Tieni ovunque",
+    "memoryPromoteHint": "Copia questa memoria in quella della macchina, perché serva in tutti i tuoi progetti. Ciò che il progetto ha imparato resta anche lì.",
+    "gameControls": {
+      "title": "I comandi del gioco",
+      "help": "Non si impostano qui. Una partita legge una mappa dei comandi del progetto, riposta sotto «Comandi del gioco» nell’Esplora risorse, e il pulsante «Nuova mappa dei comandi» ne crea una. Questa pagina riguarda solo l’interfaccia dello studio e ciò che è collegato a questo computer."
+    }
+  }
+}

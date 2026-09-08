@@ -6,6 +6,7 @@ import {
   LANGUAGES,
   preferredLanguage,
   resolveLanguage,
+  RTL_LANGUAGES,
 } from './languages'
 
 describe('resolving one tag', () => {
@@ -20,10 +21,10 @@ describe('resolving one tag', () => {
    * studio is the only thing standing between them and a window they cannot use — they would
    * have to find the settings, in French, to discover that English exists.
    */
-  it('serves English to a tag naming neither language', () => {
-    expect(resolveLanguage('de-DE')).toBe('en')
-    expect(resolveLanguage('es-ES')).toBe('en')
-    expect(resolveLanguage('ja-JP')).toBe('en')
+  it('serves the language named by a regional tag', () => {
+    expect(resolveLanguage('de-DE')).toBe('de')
+    expect(resolveLanguage('es-ES')).toBe('es')
+    expect(resolveLanguage('ja-JP')).toBe('ja')
     // `i18next.language` is `undefined` until `initI18n` resolves, and `pseudo` under the flag.
     expect(resolveLanguage(undefined)).toBe('en')
     expect(resolveLanguage('pseudo')).toBe('en')
@@ -49,9 +50,9 @@ describe('choosing among the machine languages', () => {
     expect(preferredLanguage(['en-GB', 'fr-FR'])).toBe('en')
   })
 
-  it('falls through to the system preferences when it cannot speak the application locale', () => {
-    expect(preferredLanguage(['de', 'fr-FR'])).toBe('fr')
-    expect(preferredLanguage(['br-FR', 'de-DE', 'en-US'])).toBe('en')
+  it('chooses the first supported system language', () => {
+    expect(preferredLanguage(['de', 'fr-FR'])).toBe('de')
+    expect(preferredLanguage(['br-FR', 'de-DE', 'en-US'])).toBe('de')
   })
 
   /**
@@ -91,5 +92,57 @@ describe('what the setting may hold', () => {
     for (const language of LANGUAGES) {
       expect(language.name.trim(), `${language.code} has no name`).not.toBe('')
     }
+  })
+
+  /**
+   * The fifteen the site offers, written out rather than counted: a count stays green the day
+   * one language is dropped and another added, and what a reader coming from the site checks is
+   * that the one they were promised is here.
+   */
+  it('speaks the fifteen languages the site offers', () => {
+    expect([...LANGUAGES.map(entry => entry.code)].sort()).toEqual([
+      'ar',
+      'de',
+      'en',
+      'es',
+      'fr',
+      'hi',
+      'id',
+      'it',
+      'ja',
+      'ko',
+      'pt',
+      'ru',
+      'tr',
+      'vi',
+      'zh',
+    ])
+  })
+
+  // The picker shows the flag before the name, and a missing one shifts every label beside it.
+  it('gives each language a flag to be picked out by', () => {
+    const flagless = LANGUAGES.filter(entry => entry.flag.trim() === '').map(entry => entry.code)
+
+    expect(flagless).toEqual([])
+  })
+})
+
+/**
+ * `RTL_LANGUAGES` and the `direction` of the table are two spellings of one fact, and the window
+ * reads one while the guards read the other — `initI18n` sets `document.documentElement.dir` off
+ * the table. A language added to one and not the other lays itself out one way and hyphenates
+ * the other, with nothing to say so.
+ */
+describe('the direction a language reads in', () => {
+  it('lists as right-to-left exactly what the table marks as one', () => {
+    expect([...RTL_LANGUAGES].sort()).toEqual(
+      LANGUAGES.filter(entry => entry.direction === 'rtl')
+        .map(entry => entry.code)
+        .sort(),
+    )
+  })
+
+  it('reads Arabic from the right', () => {
+    expect(RTL_LANGUAGES).toContain('ar')
   })
 })

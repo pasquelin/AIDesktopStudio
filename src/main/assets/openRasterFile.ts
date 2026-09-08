@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { strFromU8, strToU8, Unzip, UnzipInflate, unzipSync, zipSync, type Zippable } from 'fflate'
 import {
   isOraGroup,
@@ -354,7 +355,7 @@ async function pictureIn(file: string, wanted: string): Promise<Uint8Array | nul
 export function unpackOpenRaster(bytes: Uint8Array): OraDocument {
   const entries = unzipSync(bytes)
   const xml = entries[STACK_PATH]
-  if (!xml) throw new Error('not an OpenRaster container: no stack.xml')
+  if (!xml) throw localizedError('openRasterStackMissing')
 
   const image = strFromU8(xml)
   const studio = entries[ORA_STUDIO_PATH]

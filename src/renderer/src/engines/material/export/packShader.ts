@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { ShaderMaterial, type Texture } from 'three'
 import {
   assetsOf,
@@ -67,7 +68,8 @@ export function createPackPass(
 
   const declarations = assets.map((assetId, index) => {
     const texture = textures[index]
-    if (!texture) throw new Error(`${picture.name} reads ${assetId}, which was not decoded`)
+    if (!texture)
+      throw localizedError('packedImageNotDecoded', { name: picture.name, asset: assetId })
 
     uniforms[`uSource${index}`] = { value: texture }
     return `uniform sampler2D uSource${index};`

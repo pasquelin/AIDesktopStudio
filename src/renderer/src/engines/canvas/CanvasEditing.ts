@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { orElse } from '@shared/promises'
 import { Assets, Container, Graphics, Rectangle, Sprite } from 'pixi.js'
 import { assetUrl } from '@shared/domain/asset'
@@ -134,7 +135,7 @@ export abstract class CanvasEditing extends CanvasPixels {
         // A surface the engine HAS and cannot hand over is a loss, not an absence — the engine
         // going down mid-loop is the ordinary way here. Skipping it wrote the container without
         // that layer and called the save a success.
-        if (!data) throw new Error(`Layer ${layer.id} has a surface this engine can no longer read`)
+        if (!data) throw localizedError('layerUnreadable', { name: layer.id })
         taken.push({ layerId: layer.id, mask, data })
       }
     }

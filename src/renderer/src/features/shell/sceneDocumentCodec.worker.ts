@@ -1,4 +1,5 @@
 /// <reference lib="webworker" />
+import { localizedError } from '@shared/localizedError'
 import { breathe } from '@/engines/core/breathe'
 import type { SceneNode } from '@/engines/scene/sceneState'
 import { messageOf } from '@shared/guards'
@@ -63,7 +64,10 @@ async function finishEncode(
   if (!pending || cancelled.delete(id)) return
   if (index !== pending.nextIndex) {
     encoding.delete(id)
-    throw new Error(`scene document worker expected chunk ${pending.nextIndex}, received ${index}`)
+    throw localizedError('sceneWorkerChunkUnexpected', {
+      expected: pending.nextIndex,
+      received: index,
+    })
   }
   pending.nextIndex += 1
   pending.nodes.push(...nodes)

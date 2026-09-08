@@ -57,7 +57,11 @@ export type ManualChapter = {
   headings: ManualHeading[]
 }
 
-export type Manual = Record<Language, ManualChapter[]>
+export type Manual = Partial<Record<Language, ManualChapter[]>>
+
+export function chaptersForLanguage(manual: Manual, language: Language): ManualChapter[] {
+  return manual[language] ?? manual.en ?? []
+}
 
 export const MANUAL_ROUTE = 'manual'
 

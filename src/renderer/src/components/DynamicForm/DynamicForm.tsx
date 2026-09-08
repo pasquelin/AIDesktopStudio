@@ -233,7 +233,7 @@ export function DynamicForm({
             {/* Spaced here rather than by a gap on the button: every tool button in the studio is
                 built on the same base, and most of them are an icon beside a word. Set apart by
                 its SIZE alone — an `opacity-70` read 3.03:1 on the accent, and this is a price. */}
-            {submitNote && <span className="text-tiny ml-1.5">{submitNote}</span>}
+            {submitNote && <span className="text-tiny ms-1.5">{submitNote}</span>}
           </Button>
         </div>
       )}

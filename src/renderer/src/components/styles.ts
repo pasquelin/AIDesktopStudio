@@ -263,7 +263,7 @@ export const FILE_EXTENSION = 'text-muted font-mono'
  * The same at the end of a row's title, where the ink has to lift with the row — `ROW_QUIET`.
  * `shrink-0`, so a name too wide for the panel is what gets cut, never the extension.
  */
-export const ROW_SUFFIX = cn(ROW_QUIET, 'ml-1 shrink-0 font-mono')
+export const ROW_SUFFIX = cn(ROW_QUIET, 'ms-1 shrink-0 font-mono')
 
 /**
  * What a line NAMES, among metadata left muted beside it: the room the rest leaves, cut short.

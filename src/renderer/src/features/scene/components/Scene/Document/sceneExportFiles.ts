@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { exportTargetOf, SCENE_TARGET_OF_FORMAT } from '@shared/domain/exportRegistry'
 import type { ExportFormat } from '@shared/domain/scene'
 import type { FolderExportRequest } from '@shared/ipc'
@@ -23,12 +24,12 @@ export async function sceneExportFiles(
   scope: 'scene' | 'selection',
 ): Promise<FolderExportRequest> {
   const engine = sceneEngineOf(documentId)
-  if (!engine) throw new Error('this scene has no viewport mounted to export from')
+  if (!engine) throw localizedError('sceneExportViewportMissing')
 
   // Refused where BOTH doors pass, and not at the menu row alone: the menu greys the row, but the
   // assistant asks for this scope straight out — and an empty one wrote a glTF holding no node.
   if (scope === 'selection' && sceneOf(useScenes.getState(), documentId).selectedIds.length === 0)
-    throw new Error('this scene has nothing selected to export')
+    throw localizedError('sceneExportSelectionEmpty')
 
   const name = documentExportName(useDocuments.getState(), documentId, 'scene')
   return {

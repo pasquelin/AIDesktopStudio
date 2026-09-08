@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { isRetargetRoute } from '@shared/domain/retargetWindow'
 import { orElse } from '@shared/promises'
 import { lazy, StrictMode, Suspense, type ReactNode } from 'react'
@@ -27,7 +28,7 @@ import '@/index.css'
 traceDroppedRejections()
 
 const root = document.getElementById('root')
-if (!root) throw new Error('Root element not found in index.html')
+if (!root) throw localizedError('rootElementMissing')
 
 // Asked, never worked out here — see `StudioBridge['window']['language']`. Falling back rather
 // than letting it throw: this runs during module evaluation, which the boundary below cannot

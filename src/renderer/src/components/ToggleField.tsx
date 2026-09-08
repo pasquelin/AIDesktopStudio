@@ -51,8 +51,8 @@ export function ToggleField({
         data-sc={scId && fieldHandle(scId)}
         checked={value}
         onChange={event => onChange(event.target.checked)}
-        // `mr-auto` rather than a filler element: the box keeps its size and takes the column.
-        className={cn(CHECKBOX, 'mr-auto size-4 shrink-0')}
+        // `me-auto` rather than a filler element: the box keeps its size and takes the column.
+        className={cn(CHECKBOX, 'me-auto size-4 shrink-0')}
         {...hint}
       />
     </PropertyLine>

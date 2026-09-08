@@ -35,9 +35,11 @@ import { resolveSpecifier } from './sourceFiles.ts'
  * 134 the same day, the welcome reading its shipped clip folders off the disk; 125 against 135 on
  * 2026-09-07, when `no-unpainted-framing` swept the renderer for framings that draw nothing; 126
  * against 136 the same day, `site-leaves-pages` reading the workflow beside the one that already
- * did.
+ * did; 127 against 137 on 2026-09-08, when `localizedErrors.i18n.test.ts` added diagnostic coverage; 128
+ * against 138 the same day, `no-physical-direction` sweeping the shared components for a layout
+ * written from the left rather than from the inline start.
  */
-export const LEAST_GUARDS = 126
+export const LEAST_GUARDS = 128
 
 /**
  * How far the floor may sit below the real count before it stops meaning anything.

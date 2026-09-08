@@ -1,0 +1,20 @@
+{
+  "memoryWorth": {
+    "scriptWrite": "{{path}} 스크립트를 어시스턴트가 작성했습니다",
+    "prefabDefine": "“{{name}}” 항목은 이 프로젝트의 프리팹입니다",
+    "styleSave": "“{{name}}” 항목은 이 프로젝트에 저장된 머티리얼 표현 방식입니다",
+    "postSave": "“{{name}}” 항목은 이 프로젝트에 저장된 후처리 프리셋입니다",
+    "animationAdd": "“{{clipName}}” 애니메이션이 리그에 추가되었습니다",
+    "gitCommit": "결정하여 git에 기록함: {{message}}"
+  },
+  "memoryTypes": {
+    "decision": "결정",
+    "architecture": "아키텍처",
+    "feature": "기능",
+    "entity": "엔티티",
+    "script": "스크립트",
+    "problem": "문제",
+    "intent": "의도",
+    "convention": "규약"
+  }
+}

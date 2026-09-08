@@ -1,0 +1,24 @@
+{
+  "fileInfo": {
+    "title": "Información sobre {{name}}",
+    "sections": {
+      "general": "General",
+      "media": "Medios",
+      "catalogue": "Catálogo",
+      "git": "Git"
+    },
+    "gitUnchanged": "Ninguna modificación pendiente",
+    "kind": {
+      "file": "Archivo",
+      "folder": "Carpeta"
+    },
+    "type": "Tipo",
+    "modified": "Modificado",
+    "codec": "Códec",
+    "identifier": "Identificador",
+    "fingerprint": "Huella del contenido",
+    "added": "Añadido",
+    "reading": "Leyendo la carpeta…",
+    "missing": "Esta entrada ya no está en la carpeta del proyecto."
+  }
+}

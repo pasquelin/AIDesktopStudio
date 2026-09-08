@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Asset } from '@shared/domain/asset'
 import type { OraDocument, OraLayer } from '@shared/domain/openRaster'
@@ -139,14 +140,14 @@ describe('making a document be the asset', () => {
   it('says so when the picture will not measure, because the document is then not the picture', async () => {
     await becomeAsset(DOCUMENT, picture, () => Promise.reject(new Error('gone')))
 
-    expect(said()).toEqual([expect.stringContaining('would not measure')])
+    expect(said()).toEqual([expect.stringContaining(localizedError('imageSizeUnknown').message)])
     expect(scopes()).toEqual(['canvas.size'])
   })
 
   it('says so when the ceiling brought the picture under its own size', async () => {
     await becomeAsset(DOCUMENT, picture, measuring(20000, 10000))
 
-    expect(said()).toEqual([expect.stringContaining('below its own size')])
+    expect(said()).toEqual([expect.stringContaining(localizedError('imageOpenedTooSmall').message)])
     expect(scopes()).toEqual(['canvas.size'])
   })
 

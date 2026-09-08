@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import type { TaskWatch } from '@shared/domain/taskProgress'
 import type { FolderExportRequest, SkyboxExportCommand } from '@shared/ipc'
 import { loadTexture } from '@/engines/scene/textureCache'
@@ -37,7 +38,7 @@ export async function skyboxExportFiles(
   // `import()` — and a slider moved while the chunk downloads would export one sky's pixels
   // under another sky's settings, with nothing in the six files to say so.
   const sky = skyboxOf(useSkyboxes.getState(), documentId)
-  if (!sky.source) throw new Error('this sky has no source to export')
+  if (!sky.source) throw localizedError('skyboxSourceMissing')
 
   const name = documentExportName(useDocuments.getState(), documentId, 'skybox')
 

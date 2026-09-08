@@ -1,0 +1,320 @@
+{
+  "game": {
+    "components": {
+      "Aircraft": {
+        "title": "Uçak",
+        "description": "Nesneyi uçurur: kendi hareketine göre hesaplanan taşıma, sürükleme ve itki; yalnızca üzerlerinden hava geçtiğinde yanıt veren kumanda yüzeyleri."
+      },
+      "Animator": {
+        "title": "Animatör",
+        "description": "Gövdenin yaptığı işe uyan klibi — yürüme, zıplama, durma — projenin bir animasyon grafiğinden oynatır."
+      },
+      "CharacterController": {
+        "description": "Nesneyi yönlendirilen öğe yapar: yürür, zıplar, basamak çıkar.",
+        "title": "Karakter"
+      },
+      "Collider": {
+        "description": "Nesneye, diğerlerinin içinden geçemeyeceği bir hacim verir.",
+        "title": "Hacim"
+      },
+      "Follow": {
+        "description": "Başka bir öğeyi izler ve istenen mesafede durur — bir yoldaş, bir omuz kamerası, bir düşman.",
+        "title": "Takip"
+      },
+      "Health": {
+        "description": "Can puanı; öğe hasar aldıkça azalır ve sıfırda onu öldürür.",
+        "title": "Can"
+      },
+      "LookAt": {
+        "description": "Öğeyi bir başkasına yöneltir, anında ya da sınırlı bir dönüş hızıyla — bir taret, bir tabela, bir baş.",
+        "title": "Bakış"
+      },
+      "Movement": {
+        "description": "Öğeyi tek bir eksen boyunca kendi başına gidip getirir — bir platform, bir asansör, bir tuzak.",
+        "title": "Hareket"
+      },
+      "Orbit": {
+        "description": "Öğeyi bir başkasının çevresinde ya da orijinin çevresinde döndürür — bir ay, bir uydu, dönen bir kamera.",
+        "title": "Yörünge"
+      },
+      "Path": {
+        "description": "Öğeyi bir dizi nokta boyunca sabit hızda yürütür — bir vagonet, bir kaydırma çekimi, raylı bir platform.",
+        "title": "Ray"
+      },
+      "Patrol": {
+        "description": "Öğeyi adlandırılmış bir noktadan diğerine yürütür, her birinde bekleterek — bir nöbetçi, bir asansör.",
+        "title": "Devriye"
+      },
+      "RigidBody": {
+        "description": "Nesneyi simülasyona teslim eder: düşer, kayar, itilir.",
+        "title": "Fizik"
+      },
+      "Script": {
+        "title": "Betik",
+        "description": "Nesneyi koda teslim eder: yazarının yazdığı şey her adımda çalışır."
+      },
+      "Player": {
+        "title": "Oyuncu",
+        "description": "Oynanan kişiyi belirler. Sahne başına bir tane: altında asılı duranlar onun gövdesi ve gözüdür, kameranın izlediği de odur."
+      },
+      "Spin": {
+        "description": "Öğeyi tek bir eksen çevresinde durmadan döndürür — toplanacak bir eşya, bir pervane, bir mekanizma.",
+        "title": "Sürekli dönüş"
+      },
+      "SpringArm": {
+        "title": "Yaylı kol",
+        "description": "Bir kamerayı, bir öğenin arkasına belirlediğiniz mesafede asar: araya bir duvar girdiğinde yaklaşır ve yapışmak yerine gecikmeli izler."
+      },
+      "Trigger": {
+        "description": "Hiçbir şeyi engellemez; bir şey hacmine girdiğinde ya da oradan çıktığında bunu bildirir.",
+        "title": "Algılayıcı"
+      },
+      "Vehicle": {
+        "title": "Araç",
+        "description": "Nesneyi süspansiyonlu, tahrikli ve yönlendirilebilir tekerlekler üzerine oturtur: yuvarlanır, frenler ve döner. Tekerlekler onun alt nesneleridir, burada adlandırılır."
+      }
+    },
+    "fields": {
+      "acceleration": "Hızlanma",
+      "agility": "Çeviklik",
+      "airControl": "Havada kontrol",
+      "axis": "Eksen",
+      "body": "Yönlendiren gövde",
+      "bodyTurnSpeed": "Gövde dönüş hızı (0: yok)",
+      "camera": "Kamera",
+      "collision": "Duvarlardan kaçın",
+      "collisionInLag": "Çarpışmaya giriş",
+      "collisionOutLag": "Çarpışmadan çıkış",
+      "coyoteTime": "Zıplama payı",
+      "current": "Mevcut",
+      "deceleration": "Yavaşlama",
+      "distance": "Mesafe",
+      "drag": "Sürükleme",
+      "drive": "Tahrik",
+      "fidelity": "Doğruluk",
+      "followVertical": "Konunun yüksekliğine yapışır",
+      "friction": "Sürtünme",
+      "from": "Kaynak dosya",
+      "graph": "Animasyon grafiği",
+      "gravityScale": "Yerçekimi",
+      "height": "Yükseklik",
+      "hysteresis": "Histerezis",
+      "jumpBuffer": "Zıplama tamponu",
+      "jumpSpeed": "Zıplama",
+      "kind": "Simülasyon",
+      "length": "Uzunluk",
+      "lockRotation": "Dönüşü kilitle",
+      "lookAt": "Kadraj",
+      "mass": "Kütle",
+      "max": "Maksimum",
+      "maxSteerAngle": "Maksimum direksiyon açısı",
+      "maxThrust": "Maksimum itki",
+      "maxTorque": "Motor torku",
+      "mode": "Parkur",
+      "moveSpeed": "Yürüme hızı (0: sahnenin hızı)",
+      "orientation": "Yönelim",
+      "orientToTangent": "Teğeti izle",
+      "pitchMax": "Maksimum eğim",
+      "pitchMin": "Minimum eğim",
+      "positionLag": "Konum gecikmesi",
+      "possesses": "Sahiplenilen öğe",
+      "probeRadius": "Sonda yarıçapı",
+      "radius": "Yarıçap",
+      "restitution": "Sekme",
+      "rotationLag": "Dönüş gecikmesi",
+      "runSpeed": "Koşma hızı (0: koşma yok)",
+      "safetyMargin": "Güvenlik payı",
+      "script": "Dosya",
+      "shoulder": "Omuz kaydırması",
+      "slopeLimit": "Yokuş eğimi",
+      "snapDistance": "Tutunma",
+      "speed": "Hız",
+      "stallAngle": "Perdövites açısı",
+      "stepHeight": "Basamak",
+      "stopDistance": "Durma mesafesi",
+      "subject": "İzlenen öğe",
+      "suspensionLength": "Süspansiyon hareketi",
+      "target": "Hedef",
+      "turnSpeed": "Dönüş hızı",
+      "waitSeconds": "Bekleme",
+      "waypoints": "Noktalar",
+      "wheelRadius": "Tekerlek yarıçapı",
+      "wheels": "Tekerlekler",
+      "wheelWidth": "Tekerlek genişliği",
+      "wingArea": "Kanat alanı"
+    },
+    "export": {
+      "title": "Oyunu optimize et",
+      "action": "Dışa aktar",
+      "safeTitle": "SAFE çalışma zamanı optimizasyonları",
+      "safeRuntime": "Çalışma zamanı temsilini optimize et",
+      "instancing": "Yinelenen nesneleri örnekle",
+      "batching": "Uyumlu statik geometrileri toplu işle",
+      "deduplication": "Kaynakları tekilleştir",
+      "geometryBuffers": "Geometri arabelleklerini optimize et",
+      "losslessCompression": "Görsel kayıp olmadan sıkıştır",
+      "removeUnused": "Kullanılmayan kaynakları kaldır",
+      "currentSceneMeasured": "Ölçüldü · mevcut sahne",
+      "projectEstimated": "Tahmini · tam oyun · {{count, number}} sahne",
+      "currentSceneLossyEstimate": "Görsel kayıplı mevcut sahne · {{triangles}} üçgen · {{geometry}} geometri · {{images}} görüntü",
+      "triangleResult": "Görünen üçgenler {{before}} → {{after}}",
+      "geometryResult": "Geometri {{before}} → {{after}}",
+      "imageResult": "Görüntüler {{before}} → {{after}}",
+      "visualTitle": "Gelişmiş · görsel değişiklikler",
+      "generateLods": "Mesafe düzeyleri üret",
+      "geometryLabel": "Geometri sadeleştirmesi",
+      "compressionLabel": "Görüntü sıkıştırma",
+      "reductionLabel": "Görüntü çözünürlüğü",
+      "quality": {
+        "off": "Kapalı",
+        "conservative": "Tutucu",
+        "balanced": "Dengeli",
+        "aggressive": "Agresif"
+      },
+      "reduction": {
+        "off": "Özgün",
+        "half": "Yarım",
+        "quarter": "Çeyrek"
+      },
+      "visualChangesNone": "Görsel değişiklikler: YOK",
+      "visualChangesPossible": "Görsel değişiklikler: OLASI",
+      "failed": "Oyun dışa aktarılamadı."
+    },
+    "inputMap": {
+      "actionId": "Eylem",
+      "actionKind": "Değer",
+      "addAction": "Eylem ekle",
+      "addBinding": "Bağlama ekle",
+      "binding": "{{device}} bağlaması",
+      "applyPresetHint": "Bu eşlemeyi seçilen başlangıç noktasıyla değiştirir",
+      "axis": "Eksen",
+      "context": "Bağlam",
+      "create": "Yeni girdi eşlemesi",
+      "createHint": "Standart bir başlangıç noktasından bir girdi eşlemesi oluşturur",
+      "defaultActive": "Başlangıçta etkin",
+      "deadZone": "Ölü bölge",
+      "deviceLabel": "Aygıt",
+      "duplicateId": "Birden fazla girdi eşlemesi “{{id}}” tanımlayıcısını kullanıyor. Her bağlam için benzersiz bir tanımlayıcı verin.",
+      "device": {
+        "gamepad": "Oyun kumandası",
+        "keyboard": "Klavye",
+        "mouse": "Fare"
+      },
+      "id": "Tanımlayıcı",
+      "invalid": "Bu JSON geçerli bir girdi eşlemesi tanımlamıyor.",
+      "invert": "Ters çevir",
+      "jsonLabel": "Girdi eşlemesi JSON’u",
+      "kind": {
+        "axis1": "Tek eksen",
+        "axis2": "İki eksen",
+        "button": "Düğme"
+      },
+      "loadFailed": "Bu girdi eşlemesi okunamadı.",
+      "loading": "Girdi eşlemesi yükleniyor…",
+      "mode": {
+        "expert": "Uzman",
+        "json": "JSON",
+        "simple": "Basit"
+      },
+      "modeHint": "Aynı girdi eşlemesinin düzenlenme biçimini değiştirir",
+      "preset": {
+        "character": "Karakter",
+        "flight": "Uçuş",
+        "menu": "Menü",
+        "studio": "Stüdyo",
+        "vehicle": "Araç"
+      },
+      "presets": "Başlangıç noktaları",
+      "priority": "Öncelik",
+      "removeAction": "Eylemi kaldır",
+      "removeBinding": "Bağlamayı kaldır",
+      "save": "Kaydet",
+      "scale": "Ölçek",
+      "unnamedAction": "Adsız eylem",
+      "capture": "Basın",
+      "capturing": "Basın…",
+      "captureHint": "Bu denetimi, basılacak bir sonraki tuşa ya da oyun kumandası denetimine bağlar. Escape vazgeçer.",
+      "help": {
+        "id": "Bağlamın adı — bir betiğin ittiği ve yerleşik yedeğin tamamladığı ad. Dosya adından gelir; aynı tanımlayıcıyı taşıyan iki dosya tek bir bağlam oluşturur.",
+        "priority": "İki etkin bağlam aynı eylemi bildirdiğinde kimin kazanacağı. BÜYÜK olan sayı en son yazar ve kazanır. Yerleşik karakter, araç ve uçuş bağlamları 0, 10 ve 10’dadır.",
+        "defaultActive": "Bu eşlemenin bir oyunun başından itibaren yürürlükte olup olmadığı. Aksi hâlde onu bir betiğin itmesi gerekir — bir menü bağlamı böyle açılır ve kapanır.",
+        "actionId": "Bir betiğin ve onunla birlikte yerleşik denetleyicilerin okuduğu ad: `move`, `jump`, `steer`. Önemli olan bu addır, hiçbir zaman tuş değil.",
+        "actionKind": "Eylemin ne yanıtladığı: bir düğme evet ya da hayır yanıtlar, tek eksen −1 ile 1 arasında bir sayı yanıtlar, iki eksen bir çift yanıtlar — bir analog çubuğun söylediği şey.",
+        "device": "Denetimin nereden geldiği. Tek bir eylem birkaçını birden taşıyabilir: bir oyun, kimin konuştuğunu bilmeden hem klavyeye HEM oyun kumandasına böyle yanıt verir.",
+        "axis": "Bu tuşun iki yarımdan hangisine bastığı. İki eksenli bir eylem dört tuştan oluşur, eksen başına iki tane.",
+        "scale": "Bu bağlamanın ne kadar ve hangi yöne ittiği. Sola ya da geriye giden yarım için −1, diğeri için 1.",
+        "deadZone": "Bu değerin altında analog çubuk durgun sayılır. Yıpranmış bir çubuk kayar: ölü bölge olmadan karakter kendi başına yürür.",
+        "invert": "Bu denetimin yönünü ters çevirir. Kimi pilotların eğimden beklediği, başka hiçbir şeyden kimsenin beklemediği şey."
+      }
+    },
+    "controlsMenu": {
+      "add": "Bağlama ekle",
+      "capture": "Bir tuşa ya da kumanda düğmesine basın",
+      "change": "Değiştir",
+      "close": "Kapat",
+      "gamepad": "Oyun kumandası",
+      "keyboard": "Klavye",
+      "mouse": "Fare",
+      "reset": "Tümünü sıfırla",
+      "title": "Denetimler"
+    },
+    "play": {
+      "faults_many": "{{count, number}} hata",
+      "faults_one": "{{count, number}} hata",
+      "faults_other": "{{count, number}} hata",
+      "objects_many": "{{count, number}} nesne",
+      "objects_one": "{{count, number}} nesne",
+      "objects_other": "{{count, number}} nesne",
+      "pause": "Duraklat",
+      "pauseHint": "Oyunu olduğu yerde dondurur",
+      "readout": "{{fps}} fps · adım {{tick}}",
+      "start": "Oynat",
+      "startHint": "Sahneyi belgeye dokunmadan bir oyun olarak oynatır",
+      "stop": "Durdur",
+      "stopHint": "Oyunu atar ve sahneyi olduğu hâline geri getirir",
+      "openFault": "Betiği, hatanın bulunduğu satırda açar"
+    },
+    "section": {
+      "title": "Bileşenler",
+      "add": "Bileşen ekle",
+      "addHint": "Oyun sürerken bu nesneye yapacak bir şey verin",
+      "remove": "Ayır",
+      "removeHint": "Bu bileşeni nesneden ayırır",
+      "empty": "Bu nesne, oyun sürerken hiçbir şey yapmıyor.",
+      "emptyHint": "Bir bileşen nesnenin ne YAPTIĞINI söyler; türü ise ne çizdiğini söyler."
+    },
+    "values": {
+      "all": "Dört çeker",
+      "auto": "Otomatik",
+      "box": "Kutu",
+      "convexes": "Dışbükeyler",
+      "dynamic": "Dinamik",
+      "fixed": "Sabit",
+      "front": "Önden çekiş",
+      "hull": "Kabuk",
+      "kinematic": "Yönlendirilen",
+      "loop": "Döngü",
+      "once": "Bir kez",
+      "pingPong": "İleri geri",
+      "pivot": "Omuz",
+      "pointer": "Bakış",
+      "rear": "Arkadan itiş",
+      "subject": "İzlenen öğe",
+      "trimesh": "Üçgenler",
+      "unknown": "Bilinmeyen değer",
+      "unnamedNode": "Yok",
+      "x": "X",
+      "y": "Y",
+      "z": "Z"
+    },
+    "window": {
+      "debug": "Hata ayıklama",
+      "debugHint": "Oyunun kendisi hakkında söyledikleri: nesneler, saniyedeki kare sayısı, adımlar, hatalar",
+      "framePerformance": "CPU {{cpu}} ms · render {{render}} ms",
+      "renderPerformance": "{{calls, number}} çizim çağrısı · {{triangles, number}} üçgen",
+      "noFaults": "Hata yok",
+      "title": "Oynatma modu",
+      "waiting": "Stüdyo bekleniyor…"
+    }
+  }
+}

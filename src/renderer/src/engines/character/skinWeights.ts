@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 /**
  * The port onto the skinning worker: what a rig looks like on the wire, and who is waiting.
  *
@@ -45,10 +46,14 @@ export function createSkinWeights(
   maximumWorkers = workerPoolSize(),
 ): SkinWeights {
   const ports = Array.from({ length: Math.max(1, Math.floor(maximumWorkers)) }, () =>
-    createWorkerPort<SkinBinding, SkinResponse>(spawn, 'skinning', answer => ({
-      skinIndex: answer.skinIndex,
-      skinWeight: answer.skinWeight,
-    })),
+    createWorkerPort<SkinBinding, SkinResponse>(
+      spawn,
+      localizedError('workerSkinning').message,
+      answer => ({
+        skinIndex: answer.skinIndex,
+        skinWeight: answer.skinWeight,
+      }),
+    ),
   )
 
   return {

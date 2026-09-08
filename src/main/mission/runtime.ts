@@ -1,3 +1,5 @@
+import { localizeErrorMessage } from '@shared/localizedError'
+import { englishText, fillHoles } from '@shared/i18n'
 import {
   ACTION_RESOURCES,
   ACTION_REGISTRY,
@@ -57,7 +59,11 @@ const contextText = (context: Awaited<ReturnType<AssistantContextBuilder['build'
     actions: context.actions.map(hit => ({ name: hit.action.name, score: hit.score })),
   }
   return JSON.stringify(compact, (_key, value: unknown) =>
-    value instanceof Uint8Array ? `[${value.byteLength} image bytes]` : value,
+    value instanceof Uint8Array
+      ? `[${value.byteLength} image bytes]`
+      : typeof value === 'string'
+        ? localizeErrorMessage(value, (key, values) => fillHoles(englishText(key), values, 'en'))
+        : value,
   )
 }
 

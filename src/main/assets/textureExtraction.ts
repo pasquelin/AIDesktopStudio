@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { readFile } from 'node:fs/promises'
 import type { Asset, AssetQuery } from '@shared/domain/asset'
 import type { ActivityReport } from '@main/project/activityLog'
@@ -74,12 +75,12 @@ export function createTextureExtraction(deps: TextureExtractionDeps): TextureExt
 }
 
 async function extract(deps: TextureExtractionDeps, source: Asset): Promise<Asset[]> {
-  if (source.type !== 'mesh') throw new Error(`asset ${source.id} is not a mesh`)
+  if (source.type !== 'mesh') throw localizedError('assetNotMesh', { name: source.id })
 
   const derived = await deps.search({ derivedFrom: source.id, type: 'image' })
   const already = derived.filter(asset => asset.map !== undefined || asset.packedSlot !== undefined)
   const file = deps.fileOf(source)
-  if (!file) throw new Error(`asset ${source.id} has no file to read`)
+  if (!file) throw localizedError('assetFileMissing', { name: source.id })
   const bytes = await readModel(deps, source, file)
   const found = embeddedTextures(bytes)
   if (found.length === 0 && already.length > 0) return [...already]
