@@ -8,9 +8,9 @@
     "ogLocale": "en_US"
   },
   "head": {
-    "title": "AI Desktop Studio — six generation workshops, one window",
+    "title": "AI Desktop Studio — Imagine. Generate. Create.",
     "description": "Multimodal desktop application: image, video, 3D, audio, textures and skyboxes in a dockable panel interface. Offline dictation and control through an MCP server.",
-    "ogTitle": "AI Desktop Studio — six generation workshops, one window",
+    "ogTitle": "AI Desktop Studio — Imagine. Generate. Create.",
     "ogDescription": "Six generation workshops in a single window. Electron, React 19, TypeScript. macOS, Windows, Linux."
   },
   "nav": {
@@ -27,38 +27,39 @@
     "build": "Development build",
     "download": "Download",
     "languageLabel": "Language",
-    "source": "GitHub"
+    "source": "GitHub",
+    "workshopsLabel": "Workshops"
   },
   "hero": {
-    "eyebrow": "Desktop application · independent project",
-    "lede": "Six generation workshops in a single window. Dockable panels, a timecoded timeline, an inspector, a library on disk: the tools of production software, applied to generative models.",
-    "browse": "Browse the workshops",
+    "eyebrow": "Imagine. Generate. Create.",
+    "lede": "From images to sound, video to 3D. Generate and refine your creations in one project.",
+    "browse": "Explore the studio",
     "meta": {
-      "stack": "Electron · React 19 · TypeScript",
+      "stack": "Local or cloud models",
       "platforms": "macOS, Windows, Linux",
-      "languages": "French and English"
+      "languages": "Open formats"
     }
   },
   "home": {
     "eyebrow": "Home · the starting point",
-    "title": "A project is a folder. Nothing more.",
-    "lede": "Open a folder and it becomes a project: documents, imported assets, generations. Everything stays on disk, in formats other software already reads — OpenRaster, OpenTimelineIO, glTF, MaterialX — browsed from the application and versioned by git without leaving the window.",
+    "title": "Your ideas take shape here.",
+    "lede": "Keep images, sounds, scenes and references in one project. Switch workshops, arrange your panels and keep your files in open formats.",
     "alt": "Home screen: a banner to resume the last project, a list of recently opened projects, shortcuts to the six workshops, a feed of creations published by everyone, and the account library panel.",
     "specs": {
       "0": {
-        "term": "Workshops",
-        "title": "Six spaces, one window",
-        "text": "Image, Video, 3D, Audio, Materials and Skyboxes. Each has its own tools and opens in a tab, beside the others."
+        "term": "Creation",
+        "title": "A workshop for every medium",
+        "text": "Image, video, audio, 3D, materials and skies. Extend your scenes with scripts in the Code workspace."
       },
       "1": {
-        "term": "Panels",
-        "title": "Dockable and detachable",
-        "text": "Models, Explorer, Assets, Inspector, Timeline. Arrange the window as you like; the layout is remembered per workshop."
+        "term": "Context",
+        "title": "Your project’s thread",
+        "text": "Share references and instructions with generation tools and the assistant, without repeating them for every attempt."
       },
       "2": {
-        "term": "Library",
-        "title": "Disk first",
-        "text": "Generations land in the project folder. The remote account library plugs in afterwards, with an API key."
+        "term": "Freedom",
+        "title": "Files that stay open",
+        "text": "OpenRaster, OpenTimelineIO, glTF and MaterialX keep your creations readable beyond the studio."
       }
     }
   },
@@ -75,8 +76,8 @@
         "text": "Video and audio tracks, selection, blade and hand tools, timecoded playback."
       },
       "2": {
-        "term": "Models",
-        "text": "Sequence-to-Video, Video Cut, Video Concat, Video Studio."
+        "term": "Generation",
+        "text": "Create shots with the available models, then assemble your media in the edit."
       }
     },
     "alt": "Video workshop: Source and Program monitors side by side, Assets panel, clip inspector, four-track timeline V1, A1, V2 and A2.",
@@ -88,53 +89,53 @@
     }
   },
   "threeD": {
-    "eyebrow": "Workshop · .glb output",
-    "lede": "A generated mesh, placed in a scene you light, animate and export.",
+    "eyebrow": "3D · composition and animation",
+    "lede": "Compose a scene. Animate a character. Put your ideas in motion.",
     "list": {
       "0": {
-        "term": "Viewport",
-        "text": "Grid, orientation gizmo and an overlaid counter: triangles, vertices, draw calls, texture memory."
+        "term": "Character",
+        "text": "Prepare skeletons, adjust rigs, reuse animations and combine movement states in a dedicated workshop."
       },
       "1": {
-        "term": "Lighting",
-        "text": "Five sources — ambient, directional, hemispheric, point, spot — exposed as tracks, with keyframes on the timeline."
+        "term": "Creation",
+        "text": "Compose scenes, sculpt terrain and work on materials, lighting and effects."
       },
       "2": {
-        "term": "Export",
-        "text": "The mesh leaves as .glb wherever you drop it, ready for an engine."
+        "term": "Interaction",
+        "text": "Add scripts and use a gamepad. Try your scene’s behaviors without leaving the studio."
       }
     },
     "alt": "3D workshop: a generated car placed in a mountain setting, move gizmo and triangle counter overlaid, scene tree and inspector on the right, light timeline at the bottom.",
     "chips": {
-      "0": "Triangles · Vertices · Calls",
-      "1": "Length 5 s",
-      "2": "25 fps",
-      "3": "Studio environment"
+      "0": "Rigging and animation",
+      "1": "Scripts",
+      "2": "Effects",
+      "3": "Gamepad"
     }
   },
   "image": {
-    "eyebrow": "Workshop · .png output",
-    "lede": "A layered canvas, where generation is one tool among the others.",
+    "eyebrow": "Image · creation and editing",
+    "lede": "Generate an image. Select what matters. Refine it, layer by layer.",
     "list": {
       "0": {
-        "term": "Layers",
-        "text": "Stacking, visibility, locking. Every generation arrives as a layer, above what is already there."
+        "term": "AI",
+        "text": "Choose a suitable local or remote model, then generate and refine your image in the studio."
       },
       "1": {
-        "term": "Tools",
-        "text": "Move, hand, scale, frame, selection, shapes, brush, pencil, eraser, text, layer fill, eyedropper."
+        "term": "Selection",
+        "text": "Local smart selection finds a region from a point or rectangle, ready for editing."
       },
       "2": {
-        "term": "Provenance",
-        "text": "The inspector keeps the model that produced the layer, its weight and its creation date."
+        "term": "Editing",
+        "text": "Layers, masks, brushes, text and pixel art. Manual tools and models complement each other."
       }
     },
     "alt": "Image workshop: a transparent canvas with a cut-out skeleton, model catalogue on the left, Layers and Inspector panels on the right, asset strip at the bottom.",
     "chips": {
-      "0": "Layers",
-      "1": "Zoom 84.6%",
-      "2": "Model kept",
-      "3": "Asset strip"
+      "0": "AI generation",
+      "1": "Smart selection",
+      "2": "Layers and masks",
+      "3": "Pixel art"
     }
   },
   "audio": {
@@ -163,12 +164,12 @@
     }
   },
   "textures": {
-    "eyebrow": "Workshop · .png ×4 output",
+    "eyebrow": "Materials · channels and 3D preview",
     "lede": "A material, not an image: each channel is produced then checked separately.",
     "list": {
       "0": {
         "term": "Channels",
-        "text": "Eight: Base colour, Normal, Roughness, Metal, Occlusion, Height, Emission, Cavity. Seven come out of a generation, Emission is set right here; all export file by file."
+        "text": "Inspect and edit color, normal, roughness, metalness, occlusion, height, emission and cavity channels."
       },
       "1": {
         "term": "Preview",
@@ -176,19 +177,19 @@
       },
       "2": {
         "term": "Tiling",
-        "text": "Channels tileable at 4096 × 4096, usable as they are in an engine."
+        "text": "Check tiling and seams, then export your maps to the tools that need them."
       }
     },
     "alt": "Materials workshop: preview cube carrying the material, inspector open on the channels — base colour and normal — then on the material settings, strip of generated images.",
     "chips": {
       "0": "4096 × 4096",
-      "1": "4 channels",
+      "1": "8 channels",
       "2": "Preview on a volume",
       "3": "Separate export"
     }
   },
   "skyboxes": {
-    "eyebrow": "Workshop · .hdr output",
+    "eyebrow": "Skies · environment and light",
     "lede": "A sky that serves as a backdrop and, at the same time, as a light source.",
     "list": {
       "0": {
@@ -232,59 +233,59 @@
     "15": "Equirectangular"
   },
   "architecture": {
-    "eyebrow": "Under the hood",
-    "title": "No generation form is written by hand.",
-    "lede": "A model's parameters are its own and change without warning. They are therefore read at runtime and turned into fields: a new model shows up with its settings, without one more line of code.",
+    "eyebrow": "Your models, your project",
+    "title": "AI on your terms.",
+    "lede": "Choose models for what you want to create. Local or cloud, the tools stay together in one studio.",
     "racks": {
       "0": "Interface",
-      "1": "The bridge to the API",
+      "1": "Models and generation",
       "2": "On your machine"
     },
     "cells": {
       "0": {
         "tag": "Workshops",
-        "title": "Six modes, one layout",
-        "text": "Dockable and detachable panels, tabs, a layout remembered per workshop between sessions."
+        "title": "Your workspace",
+        "text": "Arrange panels and tabs, or detach them into another window. Each workshop remembers its layout for the next session."
       },
       "1": {
         "tag": "Engines",
-        "title": "Rebuilt from their state",
-        "text": "Detaching a panel destroys its graphics context. The engine rebuilds itself identically — which gives undo and saving at the same time."
+        "title": "Return to your work",
+        "text": "Documents rebuild from their saved state, including in detached panels. The same foundation supports saving and undo."
       },
       "2": {
         "tag": "Library",
         "title": "Project folder",
-        "text": "A project is a folder readable without the application, browsed by a real file explorer and tracked by git from the studio — branches, versions, conflicts. Import, export and catalogue share one index, which finds its files again even when they are moved outside the application."
+        "text": "Browse files even without the studio. Manage versions, branches and conflicts with Git. Import, export and the library find the same media, even after moves outside the app."
       },
       "3": {
-        "tag": "ModelRegistry",
-        "title": "The fields come from the model",
-        "text": "The schema the model declares becomes a list of fields, rendered as such. An unknown type falls back to raw input rather than making the form disappear."
+        "tag": "Models",
+        "title": "Settings for your chosen model",
+        "text": "Find each model’s options in one panel, for every kind of generation."
       },
       "4": {
-        "tag": "JobManager",
-        "title": "One place asks",
-        "text": "Every generation is asynchronous. A single component follows progress, caps the number of concurrent tasks and backs off when the service refuses."
+        "tag": "Generation",
+        "title": "Keep your attempts in view",
+        "text": "Follow your generations and find their results alongside other media in your project."
       },
       "5": {
         "tag": "Secrets",
-        "title": "The interface never sees the key",
-        "text": "Key and secret are encrypted by the system store. The window asks “am I signed in?”, never “what is my key?”."
+        "title": "Keys separate from the interface",
+        "text": "The system encrypts your keys. The interface receives connection status without receiving secrets."
       },
       "6": {
-        "tag": "Dictation",
-        "title": "Offline, entirely",
-        "text": "A speech recognition engine runs in a separate process, on your computer. Once the model is fetched, nothing that is said leaves for the network."
+        "tag": "Local AI",
+        "title": "Models on your machine",
+        "text": "Download and manage compatible models. Availability depends on the operation, model and your computer’s resources."
       },
       "7": {
         "tag": "MCP server",
         "title": "The studio is driven from outside",
-        "text": "233 actions across 16 families, from documents to assets, from the scene to the edit, from the file to the git repository: an agent does what the interface does, by the same paths."
+        "text": "Documents, images, scenes, animation, settings and files: connect an external assistant to the studio’s published MCP actions."
       },
       "8": {
         "tag": "Load",
-        "title": "The display thread stays free",
-        "text": "Thumbnails, waveforms, heavy meshes and video encoding go to the graphics processor, into worker threads or into a separate process."
+        "title": "Background processing",
+        "text": "Thumbnails, waveforms, heavy geometry and video encoding use the GPU or tasks separate from the interface."
       }
     }
   },
@@ -324,7 +325,7 @@
   "download": {
     "eyebrow": "Installation",
     "title": "Three platforms, one repository.",
-    "lede": "Five installers, produced by the same integration pipeline at every release. Until the first public release, the repository clones and runs in three commands.",
+    "lede": "Download the published version for your computer.",
     "items": {
       "0": {
         "os": "macOS",
@@ -352,7 +353,9 @@
         "state": "Release to come"
       }
     },
-    "note": "The installer is governed by the <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">terms of use</a>; the source code, by the <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial&nbsp;1.0.0</a> licence. The application gives access to no generation service: it uses the API key you provide, under your account and at your expense."
+    "note": "The installer is governed by the <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">terms of use</a>; the source code, by the <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial&nbsp;1.0.0</a> licence. Cloud services use your account and credits. Local models retain their own terms of use.",
+    "unavailable": "Not published for this version",
+    "available": "Download · {size}"
   },
   "foot": {
     "groups": {
@@ -376,5 +379,13 @@
     "project": "project",
     "workshop": "workshop",
     "position": "position"
+  },
+  "ambience": {
+    "start": "Enable ambient sound, very low volume",
+    "stop": "Mute ambient sound",
+    "loading": "Loading ambience, click to cancel",
+    "error": "Ambience unavailable, retry",
+    "prompt": "Enable sound",
+    "blocked": "Sound enabled preference saved. Click to start music."
   }
 }

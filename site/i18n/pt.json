@@ -8,9 +8,9 @@
     "ogLocale": "pt_BR"
   },
   "head": {
-    "title": "AI Desktop Studio — seis ateliês de geração, uma só janela",
+    "title": "AI Desktop Studio — Imagine. Gere. Crie.",
     "description": "Aplicação de desktop multimodal: imagem, vídeo, 3D, áudio, texturas e skyboxes numa interface de painéis acopláveis. Ditado offline e pilotagem por servidor MCP.",
-    "ogTitle": "AI Desktop Studio — seis ateliês de geração, uma só janela",
+    "ogTitle": "AI Desktop Studio — Imagine. Gere. Crie.",
     "ogDescription": "Seis ateliês de geração numa só janela. Electron, React 19, TypeScript. macOS, Windows, Linux."
   },
   "nav": {
@@ -27,38 +27,39 @@
     "build": "Versão de desenvolvimento",
     "download": "Baixar",
     "languageLabel": "Idioma",
-    "source": "GitHub"
+    "source": "GitHub",
+    "workshopsLabel": "Oficinas"
   },
   "hero": {
-    "eyebrow": "Aplicação de desktop · projeto independente",
-    "lede": "Seis ateliês de geração numa só janela. Painéis acopláveis, linha de tempo com timecode, inspetor, biblioteca em disco: as ferramentas de um software de produção, aplicadas aos modelos generativos.",
-    "browse": "Percorrer os ateliês",
+    "eyebrow": "Imagine. Gere. Crie.",
+    "lede": "Da imagem ao som, do vídeo ao 3D. Gere e refine suas criações no mesmo projeto.",
+    "browse": "Explorar o estúdio",
     "meta": {
-      "stack": "Electron · React 19 · TypeScript",
+      "stack": "Modelos locais ou na nuvem",
       "platforms": "macOS, Windows, Linux",
-      "languages": "Francês e inglês"
+      "languages": "Formatos abertos"
     }
   },
   "home": {
     "eyebrow": "Início · o ponto de partida",
-    "title": "Um projeto é uma pasta. Nada mais.",
-    "lede": "Abra uma pasta e ela vira um projeto: documentos, assets importados, gerações. Tudo fica no disco, em formatos que outros programas já leem — OpenRaster, OpenTimelineIO, glTF, MaterialX —, explorado a partir da aplicação e versionado por git sem sair da janela.",
+    "title": "Suas ideias ganham forma aqui.",
+    "lede": "Reúna imagens, sons, cenas e referências. Alterne entre oficinas, organize os painéis e mantenha arquivos em formatos abertos.",
     "alt": "Tela inicial: faixa para retomar o último projeto, lista dos projetos abertos recentemente, atalhos para os seis ateliês, fluxo das criações publicadas por todos e painel de biblioteca da conta.",
     "specs": {
       "0": {
-        "term": "Ateliês",
-        "title": "Seis espaços, uma janela",
-        "text": "Imagem, Vídeo, 3D, Áudio, Materiais e Skyboxes. Cada um tem as suas ferramentas e abre numa aba, ao lado dos outros."
+        "term": "Criação",
+        "title": "Uma oficina para cada mídia",
+        "text": "Imagem, vídeo, áudio, 3D, materiais e céus. Scripts ampliam suas cenas no espaço Código."
       },
       "1": {
-        "term": "Painéis",
-        "title": "Acopláveis e destacáveis",
-        "text": "Modelos, Explorador, Assets, Inspetor, Linha de tempo. A janela arruma-se como se quiser, e a disposição fica guardada por ateliê."
+        "term": "Contexto",
+        "title": "O fio do seu projeto",
+        "text": "Compartilhe referências e instruções com a geração e o assistente, sem repetir tudo a cada tentativa."
       },
       "2": {
-        "term": "Biblioteca",
-        "title": "O disco primeiro",
-        "text": "As gerações caem na pasta do projeto. A biblioteca da conta remota liga-se depois, com uma chave de API."
+        "term": "Liberdade",
+        "title": "Arquivos que continuam abertos",
+        "text": "OpenRaster, OpenTimelineIO, glTF e MaterialX mantêm suas criações legíveis fora do estúdio."
       }
     }
   },
@@ -75,8 +76,8 @@
         "text": "Pistas de vídeo e áudio, ferramentas de seleção, lâmina e mão, reprodução por timecode."
       },
       "2": {
-        "term": "Modelos",
-        "text": "Sequence-to-Video, Video Cut, Video Concat, Video Studio."
+        "term": "Geração",
+        "text": "Crie tomadas com os modelos disponíveis e reúna suas mídias na edição."
       }
     },
     "alt": "Ateliê Vídeo: monitores Fonte e Programa lado a lado, painel Assets, inspetor de clipe, linha de tempo de quatro pistas V1, A1, V2 e A2.",
@@ -88,53 +89,53 @@
     }
   },
   "threeD": {
-    "eyebrow": "Ateliê · saída .glb",
-    "lede": "Uma malha gerada, posta numa cena que se ilumina, se anima e se exporta.",
+    "eyebrow": "3D · composição e animação",
+    "lede": "Componha uma cena. Anime um personagem. Coloque suas ideias em movimento.",
     "list": {
       "0": {
-        "term": "Viewport",
-        "text": "Grade, gizmo de orientação e contador sobreposto: triângulos, vértices, chamadas de desenho, memória de texturas."
+        "term": "Personagem",
+        "text": "Prepare esqueletos, ajuste rigs, reutilize animações e combine estados de movimento em uma oficina dedicada."
       },
       "1": {
-        "term": "Iluminação",
-        "text": "Cinco fontes — ambiente, direcional, hemisférica, pontual, holofote — expostas como pistas, com quadros-chave na linha de tempo."
+        "term": "Criação",
+        "text": "Componha cenas, esculpa o terreno e trabalhe materiais, luzes e efeitos."
       },
       "2": {
-        "term": "Exportação",
-        "text": "A malha sai em .glb onde a largar, pronta para um motor."
+        "term": "Interação",
+        "text": "Adicione scripts e use um controle. Teste os comportamentos da cena sem sair do estúdio."
       }
     },
     "alt": "Ateliê 3D: carro gerado posto num cenário de montanha, gizmo de deslocação e contador de triângulos sobrepostos, árvore de cena e inspetor à direita, linha de tempo das luzes em baixo.",
     "chips": {
-      "0": "Triângulos · Vértices · Chamadas",
-      "1": "Duração 5 s",
-      "2": "25 qps",
-      "3": "Ambiente Estúdio"
+      "0": "Rig e animação",
+      "1": "Scripts",
+      "2": "Efeitos",
+      "3": "Controle"
     }
   },
   "image": {
-    "eyebrow": "Ateliê · saída .png",
-    "lede": "Uma tela com camadas, onde a geração é uma ferramenta entre outras.",
+    "eyebrow": "Imagem · criação e retoque",
+    "lede": "Gere uma imagem. Selecione o que importa. Refine cada camada.",
     "list": {
       "0": {
-        "term": "Camadas",
-        "text": "Empilhamento, visibilidade, bloqueio. Cada geração chega como camada, acima do que já existe."
+        "term": "IA",
+        "text": "Escolha o modelo local ou remoto adequado e gere e refine sua imagem no estúdio."
       },
       "1": {
-        "term": "Ferramentas",
-        "text": "Mover, mão, escala, enquadramento, seleção, formas, pincel, lápis, borracha, texto, preenchimento da camada, conta-gotas."
+        "term": "Seleção",
+        "text": "A seleção inteligente local identifica uma região a partir de um ponto ou retângulo, pronta para o retoque."
       },
       "2": {
-        "term": "Rastreabilidade",
-        "text": "O inspetor guarda o modelo que produziu a camada, o seu peso e a sua data de criação."
+        "term": "Retoque",
+        "text": "Camadas, máscaras, pincéis, texto e pixel art. Ferramentas manuais e modelos se complementam."
       }
     },
     "alt": "Ateliê Imagem: tela de fundo transparente com um esqueleto recortado, catálogo de modelos à esquerda, painéis Camadas e Inspetor à direita, faixa de assets em baixo.",
     "chips": {
-      "0": "Camadas",
-      "1": "Zoom 84,6 %",
-      "2": "Modelo guardado",
-      "3": "Faixa de assets"
+      "0": "Geração por IA",
+      "1": "Seleção inteligente",
+      "2": "Camadas e máscaras",
+      "3": "Pixel art"
     }
   },
   "audio": {
@@ -163,12 +164,12 @@
     }
   },
   "textures": {
-    "eyebrow": "Ateliê · saída .png ×4",
+    "eyebrow": "Materiais · canais e prévia 3D",
     "lede": "Um material, não uma imagem: cada canal é produzido e depois verificado separadamente.",
     "list": {
       "0": {
         "term": "Canais",
-        "text": "Oito: Cor base, Normal, Rugosidade, Metal, Oclusão, Altura, Emissão, Cavidade. Sete saem de uma geração, a Emissão regula-se aqui mesmo; todos se exportam ficheiro a ficheiro."
+        "text": "Inspecione e edite cor, normal, rugosidade, metal, oclusão, altura, emissão e cavidade."
       },
       "1": {
         "term": "Pré-visualização",
@@ -176,19 +177,19 @@
       },
       "2": {
         "term": "Emendas",
-        "text": "Canais lado a lado em 4096 × 4096, utilizáveis tal como estão num motor."
+        "text": "Confira repetições e emendas e exporte os mapas para outras ferramentas."
       }
     },
     "alt": "Ateliê Materiais: cubo de pré-visualização com o material, inspetor aberto nos canais — cor base e normal — e depois nas definições do material, faixa de imagens geradas.",
     "chips": {
       "0": "4096 × 4096",
-      "1": "4 canais",
+      "1": "8 canais",
       "2": "Pré-visualização em volume",
       "3": "Exportação separada"
     }
   },
   "skyboxes": {
-    "eyebrow": "Ateliê · saída .hdr",
+    "eyebrow": "Céus · ambiente e luz",
     "lede": "Um céu que serve de cenário e, ao mesmo tempo, de fonte de luz.",
     "list": {
       "0": {
@@ -232,59 +233,59 @@
     "15": "Equirretangular"
   },
   "architecture": {
-    "eyebrow": "Sob o capô",
-    "title": "Nenhum formulário de geração é escrito à mão.",
-    "lede": "Os parâmetros de um modelo são próprios dele e mudam sem aviso. São por isso lidos em tempo de execução e transformados em campos: um modelo novo aparece com as suas definições, sem uma linha de código a mais.",
+    "eyebrow": "Seus modelos, seu projeto",
+    "title": "IA à sua medida.",
+    "lede": "Escolha modelos para o que deseja criar. Locais ou na nuvem, as ferramentas ficam reunidas no mesmo estúdio.",
     "racks": {
       "0": "Interface",
-      "1": "A ponte para a API",
+      "1": "Modelos e geração",
       "2": "Na sua máquina"
     },
     "cells": {
       "0": {
         "tag": "Ateliês",
-        "title": "Seis modos, uma disposição",
-        "text": "Painéis acopláveis e destacáveis, abas, disposição guardada por ateliê entre duas sessões."
+        "title": "Seu espaço de trabalho",
+        "text": "Organize painéis e abas ou destaque-os em outra janela. Cada oficina lembra a disposição na próxima sessão."
       },
       "1": {
         "tag": "Motores",
-        "title": "Recriados a partir do seu estado",
-        "text": "Destacar um painel destrói o seu contexto gráfico. O motor reconstrói-se idêntico — o que dá a anulação e a gravação de uma só vez."
+        "title": "Retome seu trabalho",
+        "text": "Documentos são reconstruídos do estado salvo, inclusive em painéis destacados. A mesma base serve para salvar e desfazer."
       },
       "2": {
         "tag": "Biblioteca",
         "title": "Pasta de projeto",
-        "text": "Um projeto é uma pasta legível sem a aplicação, explorada por um verdadeiro gestor de ficheiros e seguida por git a partir do estúdio — ramos, versões, conflitos. Importação, exportação e catálogo partilham o mesmo índice, que reencontra os seus ficheiros mesmo deslocados para fora da aplicação."
+        "text": "Explore arquivos sem o estúdio. Gerencie versões, branches e conflitos com Git. Importação, exportação e biblioteca encontram as mesmas mídias, mesmo movidas fora do aplicativo."
       },
       "3": {
-        "tag": "ModelRegistry",
-        "title": "Os campos vêm do modelo",
-        "text": "O esquema declarado pelo modelo torna-se uma lista de campos, apresentada tal como está. Um tipo desconhecido recai numa entrada bruta em vez de fazer desaparecer o formulário."
+        "tag": "Modelos",
+        "title": "Ajustes do modelo escolhido",
+        "text": "Encontre as opções de cada modelo no mesmo painel para cada tipo de geração."
       },
       "4": {
-        "tag": "JobManager",
-        "title": "Um só sítio interroga",
-        "text": "Toda a geração é assíncrona. Um único componente segue o avanço, limita o número de tarefas simultâneas e espera em caso de recusa do serviço."
+        "tag": "Geração",
+        "title": "Suas tentativas à vista",
+        "text": "Acompanhe as gerações e encontre os resultados junto às outras mídias do projeto."
       },
       "5": {
         "tag": "Segredos",
-        "title": "A interface nunca vê a chave",
-        "text": "Chave e segredo são cifrados pelo cofre do sistema. A janela pergunta «estou ligado?», nunca «qual é a minha chave?»."
+        "title": "Chaves separadas da interface",
+        "text": "O sistema criptografa suas chaves. A interface recebe o estado da conexão, sem receber os segredos."
       },
       "6": {
-        "tag": "Ditado",
-        "title": "Offline, por inteiro",
-        "text": "Um motor de reconhecimento de voz corre num processo separado, no seu computador. Uma vez trazido o modelo, nada do que é dito sai para a rede."
+        "tag": "IA local",
+        "title": "Modelos no seu computador",
+        "text": "Baixe e gerencie modelos compatíveis. A disponibilidade depende da operação, do modelo e dos recursos do computador."
       },
       "7": {
         "tag": "Servidor MCP",
         "title": "O estúdio pilota-se de fora",
-        "text": "233 ações em 16 famílias, dos documentos aos assets, da cena à montagem, do ficheiro ao repositório git: um agente faz o que a interface faz, pelos mesmos caminhos."
+        "text": "Documentos, imagens, cenas, animação, ajustes e arquivos: conecte um assistente externo às ações MCP publicadas pelo estúdio."
       },
       "8": {
         "tag": "Carga",
-        "title": "A linha de exibição fica livre",
-        "text": "Miniaturas, formas de onda, malhas pesadas e codificação de vídeo vão para o processador gráfico, para linhas de cálculo ou para um processo à parte."
+        "title": "Cálculos em segundo plano",
+        "text": "Miniaturas, formas de onda, geometrias pesadas e codificação de vídeo usam a GPU ou tarefas separadas da interface."
       }
     }
   },
@@ -324,7 +325,7 @@
   "download": {
     "eyebrow": "Instalação",
     "title": "Três plataformas, um só repositório.",
-    "lede": "Cinco instaladores, produzidos pela mesma cadeia de integração a cada versão. Enquanto a primeira versão pública não chega, o repositório clona-se e arranca em três comandos.",
+    "lede": "Baixe a versão publicada para o seu computador.",
     "items": {
       "0": {
         "os": "macOS",
@@ -352,7 +353,9 @@
         "state": "Versão a caminho"
       }
     },
-    "note": "O instalador rege-se pelas <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">condições de utilização</a>; o código-fonte, pela licença <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial&nbsp;1.0.0</a>. A aplicação não dá acesso a nenhum serviço de geração: usa a chave de API que você fornece, sob a sua conta e a suas expensas."
+    "note": "O instalador rege-se pelas <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">condições de utilização</a>; o código-fonte, pela licença <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial&nbsp;1.0.0</a>. Serviços na nuvem usam sua conta e seus créditos. Modelos locais mantêm suas próprias condições de uso.",
+    "unavailable": "Não publicado para esta versão",
+    "available": "Baixar · {size}"
   },
   "foot": {
     "groups": {
@@ -376,5 +379,13 @@
     "project": "projeto",
     "workshop": "ateliê",
     "position": "posição"
+  },
+  "ambience": {
+    "start": "Ativar ambiente em volume muito baixo",
+    "stop": "Silenciar ambiente",
+    "loading": "Carregando ambiente, clique para cancelar",
+    "error": "Ambiente indisponível, tentar novamente",
+    "prompt": "Ativar som",
+    "blocked": "Preferência de som ativado salva. Clique para iniciar a música."
   }
 }

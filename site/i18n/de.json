@@ -8,9 +8,9 @@
     "ogLocale": "de_DE"
   },
   "head": {
-    "title": "AI Desktop Studio — sechs Generierungswerkstätten, ein einziges Fenster",
+    "title": "AI Desktop Studio — Vorstellen. Generieren. Gestalten.",
     "description": "Multimodale Desktop-Anwendung: Bild, Video, 3D, Audio, Texturen und Skyboxen in einer Oberfläche mit andockbaren Panels. Diktat offline und Steuerung über einen MCP-Server.",
-    "ogTitle": "AI Desktop Studio — sechs Generierungswerkstätten, ein einziges Fenster",
+    "ogTitle": "AI Desktop Studio — Vorstellen. Generieren. Gestalten.",
     "ogDescription": "Sechs Generierungswerkstätten in einem einzigen Fenster. Electron, React 19, TypeScript. macOS, Windows, Linux."
   },
   "nav": {
@@ -27,38 +27,39 @@
     "build": "Entwicklungsversion",
     "download": "Herunterladen",
     "languageLabel": "Sprache",
-    "source": "GitHub"
+    "source": "GitHub",
+    "workshopsLabel": "Werkstätten"
   },
   "hero": {
-    "eyebrow": "Desktop-Anwendung · unabhängiges Projekt",
-    "lede": "Sechs Generierungswerkstätten in einem einzigen Fenster. Andockbare Panels, Timeline mit Timecode, Inspektor, Bibliothek auf der Festplatte: die Werkzeuge einer Produktionssoftware, angewandt auf generative Modelle.",
-    "browse": "Werkstätten durchgehen",
+    "eyebrow": "Vorstellen. Generieren. Gestalten.",
+    "lede": "Von Bildern zu Klang, von Video zu 3D. Erstellen und verfeinern Sie Ihre Werke in einem Projekt.",
+    "browse": "Studio entdecken",
     "meta": {
-      "stack": "Electron · React 19 · TypeScript",
+      "stack": "Lokale oder Cloud-Modelle",
       "platforms": "macOS, Windows, Linux",
-      "languages": "Französisch und Englisch"
+      "languages": "Offene Formate"
     }
   },
   "home": {
     "eyebrow": "Start · der Ausgangspunkt",
-    "title": "Ein Projekt ist ein Ordner. Mehr nicht.",
-    "lede": "Öffnen Sie einen Ordner, und er wird zum Projekt: Dokumente, importierte Assets, Generierungen. Alles bleibt auf der Festplatte, in Formaten, die andere Programme längst lesen — OpenRaster, OpenTimelineIO, glTF, MaterialX —, aus der Anwendung heraus durchsucht und per git versioniert, ohne das Fenster zu verlassen.",
+    "title": "Hier nehmen Ihre Ideen Gestalt an.",
+    "lede": "Bilder, Klänge, Szenen und Referenzen in einem Projekt. Wechseln Sie Werkstätten, ordnen Sie Panels und behalten Sie offene Dateiformate.",
     "alt": "Startbildschirm: Leiste zum Fortsetzen des letzten Projekts, Liste zuletzt geöffneter Projekte, Verknüpfungen zu den sechs Werkstätten, Strom der von allen veröffentlichten Werke und Bibliotheks-Panel des Kontos.",
     "specs": {
       "0": {
-        "term": "Werkstätten",
-        "title": "Sechs Räume, ein Fenster",
-        "text": "Bild, Video, 3D, Audio, Materialien und Skyboxen. Jede hat eigene Werkzeuge und öffnet sich als Reiter, neben den anderen."
+        "term": "Gestaltung",
+        "title": "Eine Werkstatt für jedes Medium",
+        "text": "Bild, Video, Audio, 3D, Materialien und Himmel. Skripte erweitern Ihre Szenen im Code-Bereich."
       },
       "1": {
-        "term": "Panels",
-        "title": "Andockbar und ablösbar",
-        "text": "Modelle, Explorer, Assets, Inspektor, Timeline. Das Fenster wird geordnet, wie man will; die Anordnung wird je Werkstatt gemerkt."
+        "term": "Kontext",
+        "title": "Der rote Faden Ihres Projekts",
+        "text": "Teilen Sie Referenzen und Anweisungen mit Generierung und Assistent, ohne sie bei jedem Versuch zu wiederholen."
       },
       "2": {
-        "term": "Bibliothek",
-        "title": "Zuerst die Festplatte",
-        "text": "Generierungen landen im Projektordner. Die Bibliothek des entfernten Kontos kommt danach dazu, mit einem API-Schlüssel."
+        "term": "Freiheit",
+        "title": "Dateien bleiben offen",
+        "text": "OpenRaster, OpenTimelineIO, glTF und MaterialX halten Ihre Werke auch außerhalb des Studios lesbar."
       }
     }
   },
@@ -75,8 +76,8 @@
         "text": "Video- und Audiospuren, Werkzeuge Auswahl, Klinge und Hand, Wiedergabe im Timecode."
       },
       "2": {
-        "term": "Modelle",
-        "text": "Sequence-to-Video, Video Cut, Video Concat, Video Studio."
+        "term": "Generierung",
+        "text": "Erstellen Sie Einstellungen mit verfügbaren Modellen und verbinden Sie Ihre Medien im Schnitt."
       }
     },
     "alt": "Werkstatt Video: Monitore Quelle und Programm nebeneinander, Assets-Panel, Clip-Inspektor, Timeline mit vier Spuren V1, A1, V2 und A2.",
@@ -88,53 +89,53 @@
     }
   },
   "threeD": {
-    "eyebrow": "Werkstatt · Ausgabe .glb",
-    "lede": "Ein generiertes Mesh, gesetzt in eine Szene, die man beleuchtet, animiert und exportiert.",
+    "eyebrow": "3D · Komposition und Animation",
+    "lede": "Eine Szene gestalten. Eine Figur animieren. Ideen in Bewegung bringen.",
     "list": {
       "0": {
-        "term": "Viewport",
-        "text": "Raster, Orientierungs-Gizmo und eingeblendeter Zähler: Dreiecke, Eckpunkte, Draw Calls, Texturspeicher."
+        "term": "Figur",
+        "text": "Skelette vorbereiten, Rigs anpassen, Animationen wiederverwenden und Bewegungszustände in einer eigenen Werkstatt verbinden."
       },
       "1": {
-        "term": "Beleuchtung",
-        "text": "Fünf Quellen — ambient, gerichtet, hemisphärisch, punktförmig, Spot — als Spuren offengelegt, mit Keyframes auf der Timeline."
+        "term": "Gestaltung",
+        "text": "Szenen komponieren, Gelände formen und Materialien, Licht und Effekte bearbeiten."
       },
       "2": {
-        "term": "Export",
-        "text": "Das Mesh geht als .glb dorthin, wo Sie es ablegen, bereit für eine Engine."
+        "term": "Interaktion",
+        "text": "Skripte hinzufügen und per Gamepad steuern. Testen Sie das Verhalten Ihrer Szene direkt im Studio."
       }
     },
     "alt": "Werkstatt 3D: generiertes Auto in einer Bergkulisse, Verschiebe-Gizmo und Dreieckszähler eingeblendet, Szenenbaum und Inspektor rechts, Licht-Timeline unten.",
     "chips": {
-      "0": "Dreiecke · Eckpunkte · Calls",
-      "1": "Dauer 5 s",
-      "2": "25 B/s",
-      "3": "Umgebung Studio"
+      "0": "Rigging und Animation",
+      "1": "Skripte",
+      "2": "Effekte",
+      "3": "Gamepad"
     }
   },
   "image": {
-    "eyebrow": "Werkstatt · Ausgabe .png",
-    "lede": "Eine Leinwand mit Ebenen, auf der die Generierung ein Werkzeug unter anderen ist.",
+    "eyebrow": "Bild · Erstellung und Bearbeitung",
+    "lede": "Ein Bild generieren. Wichtiges auswählen. Ebene für Ebene verfeinern.",
     "list": {
       "0": {
-        "term": "Ebenen",
-        "text": "Stapelung, Sichtbarkeit, Sperren. Jede Generierung kommt als Ebene an, über dem, was schon da ist."
+        "term": "KI",
+        "text": "Ein passendes lokales oder entferntes Modell wählen und Bilder im Studio generieren und verfeinern."
       },
       "1": {
-        "term": "Werkzeuge",
-        "text": "Verschieben, Hand, Skalieren, Rahmen, Auswahl, Formen, Pinsel, Stift, Radierer, Text, Ebenenfüllung, Pipette."
+        "term": "Auswahl",
+        "text": "Die lokale intelligente Auswahl erkennt Bereiche anhand eines Punkts oder Rechtecks und bereitet die Bearbeitung vor."
       },
       "2": {
-        "term": "Nachvollziehbarkeit",
-        "text": "Der Inspektor behält das Modell, das die Ebene erzeugt hat, ihr Gewicht und ihr Erstellungsdatum."
+        "term": "Bearbeitung",
+        "text": "Ebenen, Masken, Pinsel, Text und Pixel-Art. Manuelle Werkzeuge und Modelle ergänzen sich."
       }
     },
     "alt": "Werkstatt Bild: Leinwand mit transparentem Hintergrund und freigestelltem Skelett, Modellkatalog links, Panels Ebenen und Inspektor rechts, Asset-Leiste unten.",
     "chips": {
-      "0": "Ebenen",
-      "1": "Zoom 84,6 %",
-      "2": "Modell erhalten",
-      "3": "Asset-Leiste"
+      "0": "KI-Generierung",
+      "1": "Intelligente Auswahl",
+      "2": "Ebenen und Masken",
+      "3": "Pixel-Art"
     }
   },
   "audio": {
@@ -163,12 +164,12 @@
     }
   },
   "textures": {
-    "eyebrow": "Werkstatt · Ausgabe .png ×4",
+    "eyebrow": "Materialien · Kanäle und 3D-Vorschau",
     "lede": "Ein Material, kein Bild: jeder Kanal wird einzeln erzeugt und dann geprüft.",
     "list": {
       "0": {
         "term": "Kanäle",
-        "text": "Acht: Grundfarbe, Normale, Rauheit, Metall, Okklusion, Höhe, Emission, Kavität. Sieben stammen aus einer Generierung, die Emission wird hier eingestellt; alle werden Datei für Datei exportiert."
+        "text": "Farbe, Normalen, Rauheit, Metall, Verdeckung, Höhe, Emission und Vertiefungen: Materialkanäle prüfen und bearbeiten."
       },
       "1": {
         "term": "Vorschau",
@@ -176,19 +177,19 @@
       },
       "2": {
         "term": "Übergänge",
-        "text": "Kachelbare Kanäle in 4096 × 4096, unverändert in einer Engine verwendbar."
+        "text": "Wiederholungen und Nähte prüfen und Maps für andere Werkzeuge exportieren."
       }
     },
     "alt": "Werkstatt Materialien: Vorschauwürfel mit dem Material, Inspektor geöffnet auf den Kanälen — Grundfarbe und Normale — und dann auf den Materialeinstellungen, Leiste generierter Bilder.",
     "chips": {
       "0": "4096 × 4096",
-      "1": "4 Kanäle",
+      "1": "8 Kanäle",
       "2": "Vorschau am Körper",
       "3": "Getrennter Export"
     }
   },
   "skyboxes": {
-    "eyebrow": "Werkstatt · Ausgabe .hdr",
+    "eyebrow": "Himmel · Umgebung und Licht",
     "lede": "Ein Himmel, der zugleich Kulisse und Lichtquelle ist.",
     "list": {
       "0": {
@@ -232,59 +233,59 @@
     "15": "Äquirektangulär"
   },
   "architecture": {
-    "eyebrow": "Unter der Haube",
-    "title": "Kein Generierungsformular wird von Hand geschrieben.",
-    "lede": "Die Parameter eines Modells gehören ihm allein und ändern sich ohne Vorwarnung. Sie werden deshalb zur Laufzeit gelesen und in Felder verwandelt: ein neues Modell erscheint mit seinen Einstellungen, ohne eine weitere Zeile Code.",
+    "eyebrow": "Ihre Modelle, Ihr Projekt",
+    "title": "KI nach Ihren Vorstellungen.",
+    "lede": "Wählen Sie Modelle passend zu Ihren Ideen. Lokal oder in der Cloud bleiben alle Werkzeuge in einem Studio vereint.",
     "racks": {
       "0": "Oberfläche",
-      "1": "Die Brücke zur API",
+      "1": "Modelle und Generierung",
       "2": "Auf Ihrem Rechner"
     },
     "cells": {
       "0": {
         "tag": "Werkstätten",
-        "title": "Sechs Modi, eine Anordnung",
-        "text": "Andockbare und ablösbare Panels, Reiter, je Werkstatt zwischen zwei Sitzungen gemerkte Anordnung."
+        "title": "Ihr Arbeitsbereich",
+        "text": "Panels und Tabs anordnen oder in eigene Fenster auslagern. Jede Werkstatt behält ihr Layout für die nächste Sitzung."
       },
       "1": {
         "tag": "Engines",
-        "title": "Aus ihrem Zustand neu erzeugt",
-        "text": "Ein Panel abzulösen zerstört seinen Grafikkontext. Die Engine baut sich identisch wieder auf — was zugleich das Rückgängigmachen und das Speichern ergibt."
+        "title": "Zur Arbeit zurückkehren",
+        "text": "Dokumente werden aus ihrem gespeicherten Zustand wiederhergestellt, auch in ausgelagerten Panels. Diese Basis trägt Speichern und Rückgängig."
       },
       "2": {
         "tag": "Bibliothek",
         "title": "Projektordner",
-        "text": "Ein Projekt ist ein Ordner, der ohne die Anwendung lesbar ist, von einem echten Dateimanager durchsucht und aus dem Studio heraus per git verfolgt wird — Branches, Versionen, Konflikte. Import, Export und Katalog teilen sich denselben Index, der seine Dateien auch dann wiederfindet, wenn sie außerhalb der Anwendung verschoben wurden."
+        "text": "Dateien auch ohne Studio durchsuchen. Versionen, Branches und Konflikte mit Git verwalten. Import, Export und Bibliothek finden dieselben Medien auch nach externem Verschieben."
       },
       "3": {
-        "tag": "ModelRegistry",
-        "title": "Die Felder kommen vom Modell",
-        "text": "Das vom Modell deklarierte Schema wird zu einer Feldliste, so wiedergegeben, wie sie ist. Ein unbekannter Typ fällt auf Roheingabe zurück, statt das Formular verschwinden zu lassen."
+        "tag": "Modelle",
+        "title": "Einstellungen des gewählten Modells",
+        "text": "Die passenden Modelloptionen stehen für jede Generierungsart in einem gemeinsamen Panel."
       },
       "4": {
-        "tag": "JobManager",
-        "title": "Nur eine Stelle fragt",
-        "text": "Jede Generierung ist asynchron. Eine einzige Komponente verfolgt den Fortschritt, begrenzt die Zahl gleichzeitiger Aufgaben und wartet ab, wenn der Dienst ablehnt."
+        "tag": "Generierung",
+        "title": "Versuche im Blick behalten",
+        "text": "Verfolgen Sie Generierungen und finden Sie Ergebnisse neben den anderen Medien Ihres Projekts."
       },
       "5": {
         "tag": "Geheimnisse",
-        "title": "Die Oberfläche sieht den Schlüssel nie",
-        "text": "Schlüssel und Geheimnis werden vom Speicher des Systems verschlüsselt. Das Fenster fragt „bin ich angemeldet?“, nie „wie lautet mein Schlüssel?“."
+        "title": "Schlüssel getrennt von der Oberfläche",
+        "text": "Das System verschlüsselt Ihre Schlüssel. Die Oberfläche erhält den Verbindungsstatus, nicht die Geheimnisse."
       },
       "6": {
-        "tag": "Diktat",
-        "title": "Offline, vollständig",
-        "text": "Eine Spracherkennung läuft in einem eigenen Prozess, auf Ihrem Rechner. Ist das Modell einmal geholt, verlässt nichts von dem Gesagten den Rechner."
+        "tag": "Lokale KI",
+        "title": "Modelle auf Ihrem Rechner",
+        "text": "Kompatible Modelle herunterladen und verwalten. Die Verfügbarkeit hängt von Vorgang, Modell und Rechnerressourcen ab."
       },
       "7": {
         "tag": "MCP-Server",
         "title": "Das Studio wird von außen gesteuert",
-        "text": "233 Aktionen in 16 Familien, von den Dokumenten zu den Assets, von der Szene zum Schnitt, von der Datei zum git-Repository: ein Agent tut, was die Oberfläche tut, auf denselben Wegen."
+        "text": "Dokumente, Bilder, Szenen, Animationen, Einstellungen und Dateien: externe Assistenten über die veröffentlichten MCP-Aktionen verbinden."
       },
       "8": {
         "tag": "Last",
-        "title": "Der Anzeige-Thread bleibt frei",
-        "text": "Miniaturen, Wellenformen, schwere Meshes und Videokodierung gehen auf den Grafikprozessor, in Worker-Threads oder in einen eigenen Prozess."
+        "title": "Berechnungen im Hintergrund",
+        "text": "Vorschaubilder, Wellenformen, komplexe Geometrie und Videokodierung laufen auf der GPU oder getrennt von der Oberfläche."
       }
     }
   },
@@ -324,7 +325,7 @@
   "download": {
     "eyebrow": "Installation",
     "title": "Drei Plattformen, ein einziges Repository.",
-    "lede": "Fünf Installationsprogramme, bei jeder Version von derselben Integrationskette erzeugt. Bis zur ersten öffentlichen Version klont und startet man das Repository in drei Befehlen.",
+    "lede": "Laden Sie die veröffentlichte Version für Ihren Rechner herunter.",
     "items": {
       "0": {
         "os": "macOS",
@@ -352,7 +353,9 @@
         "state": "Version folgt"
       }
     },
-    "note": "Das Installationsprogramm unterliegt den <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">Nutzungsbedingungen</a>; der Quellcode der Lizenz <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial&nbsp;1.0.0</a>. Die Anwendung gibt keinen Zugang zu irgendeinem Generierungsdienst: sie nutzt den API-Schlüssel, den Sie bereitstellen, unter Ihrem Konto und auf Ihre Kosten."
+    "note": "Das Installationsprogramm unterliegt den <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">Nutzungsbedingungen</a>; der Quellcode der Lizenz <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial&nbsp;1.0.0</a>. Cloud-Dienste nutzen Ihr Konto und Guthaben. Für lokale Modelle gelten deren eigene Nutzungsbedingungen.",
+    "unavailable": "Für diese Version nicht veröffentlicht",
+    "available": "Herunterladen · {size}"
   },
   "foot": {
     "groups": {
@@ -376,5 +379,13 @@
     "project": "Projekt",
     "workshop": "Werkstatt",
     "position": "Position"
+  },
+  "ambience": {
+    "start": "Hintergrundklang leise einschalten",
+    "stop": "Hintergrundklang ausschalten",
+    "loading": "Klang wird geladen, zum Abbrechen klicken",
+    "error": "Klang nicht verfügbar, erneut versuchen",
+    "prompt": "Ton starten",
+    "blocked": "Ton eingeschaltet gespeichert. Klicken, um Musik zu starten."
   }
 }

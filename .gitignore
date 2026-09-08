@@ -60,3 +60,6 @@ _site/
 
 # vitest json reporter output
 .vitest/
+
+# Manifeste de la release publique, écrit par le workflow du site.
+site/assets/release.json

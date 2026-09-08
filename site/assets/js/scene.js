@@ -22,6 +22,7 @@
    ========================================================================= */
 
 import * as THREE from 'three';
+import { createMascot } from './mascot.js';
 
 var canvas = document.getElementById('scene');
 if (canvas) {
@@ -33,10 +34,8 @@ if (canvas) {
     canvas: canvas, antialias: true, alpha: true, powerPreference: 'high-performance'
   });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, small ? 1.25 : 1.6));
-  /* Depuis three 0.152 la sortie est convertie en sRGB par défaut, ce qui éclaircirait
-     ces grains additifs déjà réglés à l'œil. On garde la sortie linéaire d'origine : le
-     champ rend exactement ce qu'il rendait, la version seule a changé. */
-  renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
+  /* Les matières du personnage sortent en sRGB ; le shader des particules reste inchangé. */
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
 
   var scene = new THREE.Scene();
   var camera = new THREE.PerspectiveCamera(58, 1, 0.1, 320);
@@ -45,8 +44,6 @@ if (canvas) {
   var world = new THREE.Group();
   scene.add(world);
 
-  /* -------------------------------------------- grille, propre au héros */
-
   /* Les couleurs peintes ici sont les mêmes que celles du CSS, et le sont en le lisant :
      une valeur recopiée dériverait au premier changement de palette. */
   var token = function (name) {
@@ -54,12 +51,26 @@ if (canvas) {
     return new THREE.Color(value || '#000000');
   };
   var ACCENT = token('--accent');
+  var mascotScene = new THREE.Scene();
+  var mascotCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 2000);
+  mascotCamera.position.z = 1000;
+  var mascot = createMascot(mascotScene);
+  var halo = document.getElementById('halo');
+  var haloPosition = new THREE.Vector3();
+  renderer.autoClear = false;
 
-  var grid = new THREE.GridHelper(240, 120, token('--edge'), token('--panel'));
-  grid.material.transparent = true;
-  grid.material.opacity = 0.5;
-  grid.position.y = -6;
-  world.add(grid);
+  function paint() {
+    if (halo) {
+      camera.updateMatrixWorld(true);
+      points.getWorldPosition(haloPosition).project(camera);
+      halo.style.setProperty('--halo-x', ((haloPosition.x + 1) * window.innerWidth / 2).toFixed(2) + 'px');
+      halo.style.setProperty('--halo-y', ((1 - haloPosition.y) * window.innerHeight / 2).toFixed(2) + 'px');
+    }
+    renderer.clear();
+    renderer.render(scene, camera);
+    renderer.clearDepth();
+    renderer.render(mascotScene, mascotCamera);
+  }
 
   /* ------------------------------------------------------ les particules */
 
@@ -187,6 +198,11 @@ if (canvas) {
     var w = window.innerWidth, h = window.innerHeight;
     renderer.setSize(w, h, false);
     uniforms.uPix.value = renderer.getPixelRatio();
+    mascotCamera.left = -w / 2;
+    mascotCamera.right = w / 2;
+    mascotCamera.top = h / 2;
+    mascotCamera.bottom = -h / 2;
+    mascotCamera.updateProjectionMatrix();
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
   }
@@ -230,10 +246,8 @@ if (canvas) {
     var t = (now - t0) * 0.001;
     var vh = window.innerHeight;
 
-    /* passage héros -> lecture sur la première hauteur d'écran */
     morph = smooth(clamp(window.scrollY / vh, 0, 1));
 
-    /* réaction à la vitesse de défilement : le champ traîne, puis revient */
     var y = window.scrollY;
     var target_flow = clamp(-(y - lastY) * 0.020, -1.5, 1.5);
     lastY = y;
@@ -253,8 +267,13 @@ if (canvas) {
     hole += ((window.__fxHole || 0) - hole) * 0.055;
     uniforms.uHole.value.z = hole * 7.5;
 
-    grid.material.opacity = 0.5 * (1 - morph);
-    grid.visible = morph < 0.99;
+    var portrait = window.innerWidth < 1000 && vh > window.innerWidth;
+    points.position.x = (portrait ? 0 : 6.5) * (1 - morph);
+    points.position.y = portrait ? -3 * (1 - morph) : 0;
+    points.scale.setScalar(portrait ? 0.6 + 0.4 * morph : 1);
+    wire.scale.copy(points.scale);
+    wire.position.y = points.position.y;
+    wire.position.x = points.position.x;
     wire.material.opacity = 0.16 * (1 - morph);
     wire.visible = morph < 0.99;
     wire.rotation.y = -t * 0.07;
@@ -267,17 +286,28 @@ if (canvas) {
     camera.position.z = 26 + morph * 9;
     camera.lookAt(0, 1.2 * (1 - morph), 0);
 
-    renderer.render(scene, camera);
+    mascot.update({ time: t, reduced: reduced, scrollY: y, height: vh });
+
+    if (halo) halo.style.opacity = String(1 - morph);
+    paint();
   }
 
   if (reduced) {
     morph = 1;
     uniforms.uOpacity.value = 0.55;
     uniforms.uSize.value = 0.74;
-    grid.visible = false; wire.visible = false;
+    wire.visible = false;
     build(0);
-    renderer.render(scene, camera);
-    window.addEventListener('resize', function () { resize(); renderer.render(scene, camera); }, { passive: true });
+    paint();
+    function paintStill() {
+      mascot.update({ time: 0, reduced: true, scrollY: window.scrollY, height: window.innerHeight });
+      if (halo) halo.style.opacity = String(1 - smooth(clamp(window.scrollY / window.innerHeight, 0, 1)));
+      paint();
+    }
+    var loadedMascot = new MutationObserver(paintStill);
+    loadedMascot.observe(document.documentElement, { attributes: true, attributeFilter: ['data-mascot'] });
+    window.addEventListener('resize', function () { resize(); paintStill(); }, { passive: true });
+    window.addEventListener('scroll', paintStill, { passive: true });
   } else {
     (function loop(now) {
       requestAnimationFrame(loop);

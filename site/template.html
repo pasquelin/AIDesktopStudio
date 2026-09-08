@@ -16,6 +16,7 @@
 
 <!-- Le SVG est l'icône de l'application elle-même ; le PNG aplati sert iOS, qui masque les coins
      lui-même et peint le sien derrière une image transparente. -->
+
 <link rel="icon" href="{{root}}assets/images/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="{{root}}assets/images/apple-touch-icon.png">
 
@@ -41,6 +42,7 @@
 </noscript>
 <link rel="stylesheet" href="{{root}}assets/css/style.css">
 <link rel="stylesheet" href="{{root}}assets/css/content.css">
+<link rel="stylesheet" href="{{root}}assets/css/responsive.css">
 
 <script type="application/ld+json">
 {{jsonld}}
@@ -76,13 +78,13 @@
      BARRE DE TITRE — c'est le menu. Chaque onglet vise une section.
      =================================================================== -->
 <header class="app-bar">
-  <div class="lights" aria-hidden="true"><i></i><i></i><i></i></div>
+  <a class="brand-mark" href="#contenu" aria-label="AI Desktop Studio"><img src="{{root}}assets/images/icon.svg" alt="" width="36" height="36"></a>
 
-  <nav class="tabs" aria-label="Ateliers">
+  <nav class="tabs" aria-label="{{nav.workshopsLabel}}">
     <a class="tab" href="#accueil"   data-tab="{{nav.home}}"  aria-current="true"><svg><use href="#i-home"/></svg>{{nav.home}}</a>
-    <a class="tab" href="#video"     data-tab="{{nav.video}}"><svg><use href="#i-video"/></svg>{{nav.video}}</a>
-    <a class="tab" href="#trois-d"   data-tab="{{nav.threeD}}"><svg><use href="#i-3d"/></svg>{{nav.threeD}}</a>
     <a class="tab" href="#image"     data-tab="{{nav.image}}"><svg><use href="#i-image"/></svg>{{nav.image}}</a>
+    <a class="tab" href="#trois-d"   data-tab="{{nav.threeD}}"><svg><use href="#i-3d"/></svg>{{nav.threeD}}</a>
+    <a class="tab" href="#video"     data-tab="{{nav.video}}"><svg><use href="#i-video"/></svg>{{nav.video}}</a>
     <a class="tab" href="#audio"     data-tab="{{nav.audio}}"><svg><use href="#i-audio"/></svg>{{nav.audio}}</a>
     <a class="tab" href="#textures" data-tab="{{nav.textures}}"><svg><use href="#i-tex"/></svg>{{nav.textures}}</a>
     <a class="tab" href="#skyboxes"  data-tab="{{nav.skyboxes}}"><svg><use href="#i-sky"/></svg>{{nav.skyboxes}}</a>
@@ -92,14 +94,22 @@
     <a class="chip chip--nav" href="#architecture">{{nav.architecture}}</a>
     <a class="chip chip--nav" href="#docs">{{nav.docs}}</a>
     <a class="chip chip--nav" href="https://github.com/pasquelin/AIDesktopStudio" target="_blank" rel="noopener">{{nav.source}}</a>
-    <!-- Le texte est réécrit par main.js depuis assets/release.json, que la CI produit au tag.
+    <!-- Le texte est réécrit par release.js depuis assets/release.json, que la CI produit à la publication.
          Ce qui est écrit ici est le repli quand aucune version n'a encore été publiée. -->
     <span class="chip chip--build" data-release-tag><span class="dot"></span>{{nav.build}}</span>
     {{langSwitch}}
     <a class="chip chip--cta" href="#telecharger">{{nav.download}}</a>
+    <button class="chip chip--ambient" type="button" data-ambient hidden aria-pressed="false"
+            aria-label="{{ambience.start}}" title="{{ambience.start}}"
+            data-src="{{root}}assets/audio/lueur-bleue-v3.mp3" data-start="{{ambience.start}}"
+            data-stop="{{ambience.stop}}" data-blocked="{{ambience.blocked}}" data-loading="{{ambience.loading}}" data-error="{{ambience.error}}">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><use class="ambient-speaker" href="#i-audio"/><path class="ambient-play" d="M8 5 19 12 8 19Z"/><path class="ambient-slash" d="M3 3 21 21"/></svg>
+      <span class="ambient-prompt" aria-hidden="true">{{ambience.prompt}}</span>
+    </button>
   </div>
 </header>
 
+<div id="halo" aria-hidden="true"></div>
 <canvas id="scene" aria-hidden="true"></canvas>
 <div id="veil" aria-hidden="true"></div>
 
@@ -119,7 +129,8 @@
       </h1>
       <p class="lede" data-fx data-rise="22" data-delay="520">{{hero.lede}}</p>
       <div class="hero-actions" data-fx data-rise="20" data-delay="620">
-        <a class="btn btn--fill" href="#video">{{hero.browse}}</a>
+        <a class="btn btn--fill" href="#telecharger">{{nav.download}}</a>
+        <a class="btn" href="#image">{{hero.browse}}</a>
         
       </div>
       <p class="hero-meta" data-fx data-rise="16" data-delay="720">
@@ -127,12 +138,13 @@
         <span>{{hero.meta.platforms}}</span>
         <span>{{hero.meta.languages}}</span>
       </p>
+      <div class="hero-mascot-slot" aria-hidden="true"></div>
     </div>
   </section>
 
   <!-- ================================================================
        ACCUEIL — la capture s'ouvre en plein cadre pendant le scroll.
-       Le bloc .stage est épinglé : sa hauteur (210vh) détermine la
+       Le bloc .stage est épinglé : sa hauteur (190vh) détermine la
        durée de l'ouverture.
        ================================================================ -->
   <section class="panel" id="accueil">
@@ -145,7 +157,7 @@
     </div>
 
     <div class="stage" data-stage>
-      <div class="stage__pin">
+      <div class="stage__pin wrap">
         <div class="stage__frame frame frame--glow">
           <img src="{{root}}assets/images/accueil.webp" width="1800" height="1129"
                alt="{{home.alt}}" loading="eager">
@@ -178,31 +190,8 @@
        et data-speedx ici, c'est l'alternance entre sections qui donne
        le rythme.
        ================================================================ -->
-  <section class="panel" id="video">
-    <div class="wrap mode">
-      <div class="mode__text" data-fx data-still data-speed="-0.035">
-        <p class="eyebrow" data-fx data-rise="16">{{video.eyebrow}}</p>
-        <h2 class="mode__title" data-fx data-split data-delay="60">{{nav.video}}</h2>
-        <p class="lede" data-fx data-rise="20" data-delay="220">{{video.lede}}</p>
-        <ul class="mode__list" data-stagger="60" data-stagger-rise="20">
-          <li><b>{{video.list.0.term}}</b>{{video.list.0.text}}</li>
-          <li><b>{{video.list.1.term}}</b>{{video.list.1.text}}</li>
-          <li><b>{{video.list.2.term}}</b>{{video.list.2.text}}</li>
-        </ul>
-      </div>
-      <figure class="mode__shot" data-fx data-still data-speed="0.07">
-        <div class="frame" data-fx data-rise="0" data-zoom="0.05">
-          <img src="{{root}}assets/images/video.webp" width="1800" height="1129" data-depth
-               alt="{{video.alt}}" loading="lazy">
-        </div>
-        <figcaption class="chipset" data-stagger="50" data-stagger-rise="14">
-          <span>{{video.chips.0}}</span><span>{{video.chips.1}}</span><span>{{video.chips.2}}</span><span>{{video.chips.3}}</span>
-        </figcaption>
-      </figure>
-    </div>
-  </section>
-
   {{workspaces}}
+
 
   <!-- ================================================================
        DOCUMENTATION + DÉMO
@@ -221,7 +210,7 @@
 
       <div class="split">
         <div class="player" data-fx data-rise="0" data-zoom="0.04" data-speedx="0.026">
-          <video src="{{root}}assets/video/demo.mp4" poster="assets/images/demo-poster.webp"
+          <video src="{{root}}assets/video/demo.mp4" poster="{{root}}assets/images/demo-poster.webp"
                  controls playsinline preload="none"
                  aria-label="{{docs.videoLabel}}"></video>
         </div>
@@ -252,31 +241,31 @@
       </div>
 
       <!-- AXE : vertical
-           Les liens et les états sont remplis par main.js depuis assets/release.json,
-           que la chaîne de publication écrit au moment du tag. Ce qui est écrit ici
+           Les liens et les états sont remplis par release.js depuis assets/release.json,
+           que la chaîne écrit à la publication de la version. Ce qui est écrit ici
            est l'état affiché tant qu'aucune version n'a été publiée. -->
       <div class="dl" data-fx data-rise="28">
-        <a class="dl__item" data-dl="darwin-arm64" href="https://github.com/pasquelin/AIDesktopStudio/releases" target="_blank" rel="noopener">
+        <a class="dl__item" data-download="{{nav.download}}" data-available="{{download.available}}" data-unavailable="{{download.unavailable}}" data-dl="darwin-arm64" href="https://github.com/pasquelin/AIDesktopStudio/releases" target="_blank" rel="noopener">
           <h3>{{download.items.0.os}}</h3>
           <p>{{download.items.0.kind}}</p>
           <span class="state">{{download.items.0.state}}</span>
         </a>
-        <a class="dl__item" data-dl="darwin-x64" href="https://github.com/pasquelin/AIDesktopStudio/releases" target="_blank" rel="noopener">
+        <a class="dl__item" data-download="{{nav.download}}" data-available="{{download.available}}" data-unavailable="{{download.unavailable}}" data-dl="darwin-x64" href="https://github.com/pasquelin/AIDesktopStudio/releases" target="_blank" rel="noopener">
           <h3>{{download.items.1.os}}</h3>
           <p>{{download.items.1.kind}}</p>
           <span class="state">{{download.items.1.state}}</span>
         </a>
-        <a class="dl__item" data-dl="win32-x64" href="https://github.com/pasquelin/AIDesktopStudio/releases" target="_blank" rel="noopener">
+        <a class="dl__item" data-download="{{nav.download}}" data-available="{{download.available}}" data-unavailable="{{download.unavailable}}" data-dl="win32-x64" href="https://github.com/pasquelin/AIDesktopStudio/releases" target="_blank" rel="noopener">
           <h3>{{download.items.2.os}}</h3>
           <p>{{download.items.2.kind}}</p>
           <span class="state">{{download.items.2.state}}</span>
         </a>
-        <a class="dl__item" data-dl="linux-AppImage" href="https://github.com/pasquelin/AIDesktopStudio/releases" target="_blank" rel="noopener">
+        <a class="dl__item" data-download="{{nav.download}}" data-available="{{download.available}}" data-unavailable="{{download.unavailable}}" data-dl="linux-AppImage" href="https://github.com/pasquelin/AIDesktopStudio/releases" target="_blank" rel="noopener">
           <h3>{{download.items.3.os}}</h3>
           <p>{{download.items.3.kind}}</p>
           <span class="state">{{download.items.3.state}}</span>
         </a>
-        <a class="dl__item" data-dl="linux-deb" href="https://github.com/pasquelin/AIDesktopStudio/releases" target="_blank" rel="noopener">
+        <a class="dl__item" data-download="{{nav.download}}" data-available="{{download.available}}" data-unavailable="{{download.unavailable}}" data-dl="linux-deb" href="https://github.com/pasquelin/AIDesktopStudio/releases" target="_blank" rel="noopener">
           <h3>{{download.items.4.os}}</h3>
           <p>{{download.items.4.kind}}</p>
           <span class="state">{{download.items.4.state}}</span>
@@ -350,28 +339,13 @@
 </div>
 <div class="progress" aria-hidden="true"></div>
 
-<!-- three 0.185.1, la version que l'application embarque. Depuis 0.16x la bibliothèque ne
-     publie plus de build global : seul le module existe, d'où la carte d'import. Le module
-     tire `./three.core.min.js` en relatif, résolu contre cette même URL.
-
-     Les deux empreintes sont celles publiées par cdnjs. Un fichier altéré chez l'hébergeur
-     ne s'exécute pas : le navigateur refuse le module. Le `<script integrity>` habituel ne
-     s'applique pas ici — un module chargé par carte d'import passe par CE champ, qui prend
-     l'URL pour clé, y compris celle que le module résout tout seul. Les navigateurs qui ne
-     connaissent pas encore ce champ l'ignorent sans erreur et chargent le module sans
-     vérification : l'unique garantie de bout en bout serait d'héberger le fichier ici. -->
+<!-- Bibliothèque Three.js locale, version identique à celle du studio. -->
 <script type="importmap">
-{
-  "imports": {
-    "three": "https://cdnjs.cloudflare.com/ajax/libs/three.js/0.185.1/three.module.min.js"
-  },
-  "integrity": {
-    "https://cdnjs.cloudflare.com/ajax/libs/three.js/0.185.1/three.module.min.js": "sha512-I68i240tOgV4+XEaWOhSb6g0DSYHBZvh5xV/OD4r8gMQLzMlCiGLKJMv2cLv/NSSclI/1OOqBQbcCa2GtLKToQ==",
-    "https://cdnjs.cloudflare.com/ajax/libs/three.js/0.185.1/three.core.min.js": "sha512-WzP39n+gKzHN+GRInj+FL4+JPbBPkGQiJf8oCBXqaqlqc57jW+sPYFn48ds+slQBe18f4Mctw5c+RAEVrhCO3g=="
-  }
-}
+{"imports":{"three":"./{{root}}assets/vendor/three/three.module.js","three/addons/":"./{{root}}assets/vendor/three/addons/"}}
 </script>
 <script type="module" src="{{root}}assets/js/scene.js"></script>
 <script src="{{root}}assets/js/main.js" defer></script>
+<script type="module" src="{{root}}assets/js/release.js"></script>
+<script type="module" src="{{root}}assets/js/ambient.js"></script>
 </body>
 </html>

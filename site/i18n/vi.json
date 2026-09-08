@@ -8,9 +8,9 @@
     "ogLocale": "vi_VN"
   },
   "head": {
-    "title": "AI Desktop Studio — sáu xưởng tạo sinh, một cửa sổ duy nhất",
+    "title": "AI Desktop Studio — Tưởng tượng. Tạo sinh. Sáng tạo.",
     "description": "Ứng dụng máy tính đa phương thức: hình ảnh, video, 3D, âm thanh, vân bề mặt và skybox trong một giao diện gồm các bảng có thể neo. Đọc chính tả ngoại tuyến và điều khiển qua máy chủ MCP.",
-    "ogTitle": "AI Desktop Studio — sáu xưởng tạo sinh, một cửa sổ duy nhất",
+    "ogTitle": "AI Desktop Studio — Tưởng tượng. Tạo sinh. Sáng tạo.",
     "ogDescription": "Sáu xưởng tạo sinh trong một cửa sổ duy nhất. Electron, React 19, TypeScript. macOS, Windows, Linux."
   },
   "nav": {
@@ -27,38 +27,39 @@
     "build": "Bản phát triển",
     "download": "Tải về",
     "languageLabel": "Ngôn ngữ",
-    "source": "GitHub"
+    "source": "GitHub",
+    "workshopsLabel": "Không gian làm việc"
   },
   "hero": {
-    "eyebrow": "Ứng dụng máy tính · dự án độc lập",
-    "lede": "Sáu xưởng tạo sinh trong một cửa sổ duy nhất. Bảng có thể neo, dòng thời gian theo mã thời gian, bảng thuộc tính, thư viện nằm trên đĩa: bộ công cụ của một phần mềm sản xuất, đem áp dụng cho các mô hình tạo sinh.",
-    "browse": "Dạo qua các xưởng",
+    "eyebrow": "Tưởng tượng. Tạo sinh. Sáng tạo.",
+    "lede": "Từ hình ảnh đến âm thanh, từ video đến 3D. Tạo và hoàn thiện tác phẩm trong cùng một dự án.",
+    "browse": "Khám phá studio",
     "meta": {
-      "stack": "Electron · React 19 · TypeScript",
+      "stack": "Mô hình cục bộ hoặc đám mây",
       "platforms": "macOS, Windows, Linux",
-      "languages": "Tiếng Pháp và tiếng Anh"
+      "languages": "Định dạng mở"
     }
   },
   "home": {
     "eyebrow": "Trang chính · điểm khởi đầu",
-    "title": "Một dự án là một thư mục. Không hơn.",
-    "lede": "Mở một thư mục, nó thành dự án: tài liệu, tài nguyên nhập vào, kết quả tạo sinh. Mọi thứ ở lại trên đĩa, trong những định dạng mà phần mềm khác đã đọc được — OpenRaster, OpenTimelineIO, glTF, MaterialX —, duyệt ngay trong ứng dụng và quản lý phiên bản bằng git mà không rời cửa sổ.",
+    "title": "Ý tưởng thành hình tại đây.",
+    "lede": "Tập hợp ảnh, âm thanh, cảnh và tài liệu tham khảo. Chuyển không gian làm việc, sắp xếp bảng và giữ tệp ở định dạng mở.",
     "alt": "Màn hình chính: dải tiếp tục dự án gần nhất, danh sách các dự án mới mở, lối tắt tới sáu xưởng, dòng tác phẩm mọi người đã công bố, và bảng thư viện của tài khoản.",
     "specs": {
       "0": {
-        "term": "Xưởng",
-        "title": "Sáu không gian, một cửa sổ",
-        "text": "Hình ảnh, Video, 3D, Âm thanh, Vật liệu và Skybox. Mỗi xưởng có công cụ riêng và mở ra thành một thẻ, bên cạnh những xưởng khác."
+        "term": "Sáng tạo",
+        "title": "Mỗi loại nội dung có một không gian",
+        "text": "Ảnh, video, âm thanh, 3D, vật liệu và bầu trời. Mở rộng cảnh bằng tập lệnh trong không gian Mã."
       },
       "1": {
-        "term": "Bảng",
-        "title": "Neo được và tách được",
-        "text": "Mô hình, Trình duyệt tệp, Tài nguyên, Bảng thuộc tính, Dòng thời gian. Cửa sổ sắp xếp tuỳ ý, bố cục được nhớ riêng cho từng xưởng."
+        "term": "Ngữ cảnh",
+        "title": "Mạch dự án của bạn",
+        "text": "Chia sẻ tham khảo và chỉ dẫn với công cụ tạo sinh và trợ lý, không cần lặp lại ở mỗi lần thử."
       },
       "2": {
-        "term": "Thư viện",
-        "title": "Đĩa trước đã",
-        "text": "Kết quả tạo sinh rơi vào thư mục dự án. Thư viện của tài khoản từ xa nối vào sau, với một khoá API."
+        "term": "Tự do",
+        "title": "Tệp luôn mở",
+        "text": "OpenRaster, OpenTimelineIO, glTF và MaterialX giúp tác phẩm đọc được cả ngoài studio."
       }
     }
   },
@@ -75,8 +76,8 @@
         "text": "Rãnh hình và rãnh tiếng, công cụ chọn, dao cắt và bàn tay, phát theo mã thời gian."
       },
       "2": {
-        "term": "Mô hình",
-        "text": "Sequence-to-Video, Video Cut, Video Concat, Video Studio."
+        "term": "Tạo sinh",
+        "text": "Tạo các cảnh quay bằng mô hình có sẵn rồi kết hợp nội dung khi dựng phim."
       }
     },
     "alt": "Xưởng Video: hai màn hình Nguồn và Chương trình đặt cạnh nhau, bảng Tài nguyên, bảng thuộc tính của cảnh, dòng thời gian bốn rãnh V1, A1, V2 và A2.",
@@ -88,53 +89,53 @@
     }
   },
   "threeD": {
-    "eyebrow": "Xưởng · đầu ra .glb",
-    "lede": "Một lưới được tạo ra, đặt vào một cảnh để chiếu sáng, làm chuyển động và xuất đi.",
+    "eyebrow": "3D · bố cục và hoạt ảnh",
+    "lede": "Dựng một cảnh. Tạo hoạt ảnh nhân vật. Đưa ý tưởng vào chuyển động.",
     "list": {
       "0": {
-        "term": "Khung nhìn",
-        "text": "Lưới nền, gizmo định hướng và bộ đếm chồng lên: tam giác, đỉnh, lượt vẽ, bộ nhớ vân bề mặt."
+        "term": "Nhân vật",
+        "text": "Chuẩn bị bộ xương, chỉnh rig, dùng lại hoạt ảnh và kết hợp trạng thái chuyển động trong không gian chuyên dụng."
       },
       "1": {
-        "term": "Chiếu sáng",
-        "text": "Năm nguồn — môi trường, định hướng, bán cầu, điểm, đèn rọi — bày ra thành rãnh, với khung hình khoá trên dòng thời gian."
+        "term": "Sáng tạo",
+        "text": "Dựng cảnh, điêu khắc địa hình, chỉnh vật liệu, ánh sáng và hiệu ứng."
       },
       "2": {
-        "term": "Xuất",
-        "text": "Lưới ra thành .glb ngay chỗ bạn thả nó, sẵn sàng cho một engine."
+        "term": "Tương tác",
+        "text": "Thêm tập lệnh và dùng tay cầm. Thử hành vi của cảnh ngay trong studio."
       }
     },
     "alt": "Xưởng 3D: chiếc xe được tạo ra đặt trong khung cảnh núi non, gizmo di chuyển và bộ đếm tam giác chồng lên, cây cảnh và bảng thuộc tính bên phải, dòng thời gian đèn ở dưới.",
     "chips": {
-      "0": "Tam giác · Đỉnh · Lượt vẽ",
-      "1": "Thời lượng 5 giây",
-      "2": "25 hình/giây",
-      "3": "Môi trường Studio"
+      "0": "Rig và hoạt ảnh",
+      "1": "Tập lệnh",
+      "2": "Hiệu ứng",
+      "3": "Tay cầm"
     }
   },
   "image": {
-    "eyebrow": "Xưởng · đầu ra .png",
-    "lede": "Một khung vẽ có lớp, nơi việc tạo sinh chỉ là một công cụ trong số nhiều công cụ.",
+    "eyebrow": "Ảnh · tạo và chỉnh sửa",
+    "lede": "Tạo một ảnh. Chọn phần quan trọng. Chỉnh từng lớp.",
     "list": {
       "0": {
-        "term": "Lớp",
-        "text": "Xếp chồng, ẩn hiện, khoá. Mỗi lần tạo sinh đến dưới dạng một lớp, nằm trên những gì đã có."
+        "term": "AI",
+        "text": "Chọn mô hình cục bộ hoặc từ xa phù hợp rồi tạo và hoàn thiện ảnh trong studio."
       },
       "1": {
-        "term": "Công cụ",
-        "text": "Di chuyển, bàn tay, thu phóng, khung, chọn, hình khối, cọ, bút chì, tẩy, chữ, tô lớp, ống hút màu."
+        "term": "Vùng chọn",
+        "text": "Chọn thông minh cục bộ tìm vùng từ một điểm hoặc hình chữ nhật để chuẩn bị chỉnh sửa."
       },
       "2": {
-        "term": "Truy vết",
-        "text": "Bảng thuộc tính giữ lại mô hình đã tạo ra lớp đó, dung lượng và ngày tạo của nó."
+        "term": "Chỉnh sửa",
+        "text": "Lớp, mặt nạ, cọ, văn bản và pixel art. Công cụ thủ công và mô hình bổ sung cho nhau."
       }
     },
     "alt": "Xưởng Hình ảnh: khung vẽ nền trong suốt với một bộ xương đã tách nền, danh mục mô hình bên trái, bảng Lớp và Bảng thuộc tính bên phải, dải tài nguyên phía dưới.",
     "chips": {
-      "0": "Lớp",
-      "1": "Thu phóng 84,6 %",
-      "2": "Giữ lại mô hình",
-      "3": "Dải tài nguyên"
+      "0": "Tạo ảnh bằng AI",
+      "1": "Chọn thông minh",
+      "2": "Lớp và mặt nạ",
+      "3": "Pixel art"
     }
   },
   "audio": {
@@ -163,12 +164,12 @@
     }
   },
   "textures": {
-    "eyebrow": "Xưởng · đầu ra .png ×4",
+    "eyebrow": "Vật liệu · kênh và xem trước 3D",
     "lede": "Một vật liệu, không phải một tấm ảnh: mỗi kênh được làm ra rồi kiểm riêng.",
     "list": {
       "0": {
         "term": "Kênh",
-        "text": "Tám kênh: Màu nền, Pháp tuyến, Độ nhám, Kim loại, Che khuất, Độ cao, Phát sáng, Hốc. Bảy kênh ra từ một lần tạo sinh, riêng Phát sáng chỉnh ngay tại đây; tất cả đều xuất được từng tệp một."
+        "text": "Kiểm tra và chỉnh màu, pháp tuyến, độ nhám, kim loại, che khuất, độ cao, phát sáng và hốc."
       },
       "1": {
         "term": "Xem trước",
@@ -176,19 +177,19 @@
       },
       "2": {
         "term": "Mối nối",
-        "text": "Các kênh lát được ở 4096 × 4096, dùng nguyên xi trong một engine."
+        "text": "Kiểm tra độ lặp và đường nối rồi xuất bản đồ cho các công cụ khác."
       }
     },
     "alt": "Xưởng Vật liệu: khối lập phương xem trước mang vật liệu, bảng thuộc tính mở ở các kênh — màu nền và pháp tuyến — rồi tới phần thiết lập vật liệu, dải ảnh đã tạo bên dưới.",
     "chips": {
       "0": "4096 × 4096",
-      "1": "4 kênh",
+      "1": "8 kênh",
       "2": "Xem trước trên khối",
       "3": "Xuất riêng từng kênh"
     }
   },
   "skyboxes": {
-    "eyebrow": "Xưởng · đầu ra .hdr",
+    "eyebrow": "Bầu trời · môi trường và ánh sáng",
     "lede": "Một bầu trời vừa làm phông nền, vừa làm nguồn sáng.",
     "list": {
       "0": {
@@ -232,59 +233,59 @@
     "15": "Hình chữ nhật đều"
   },
   "architecture": {
-    "eyebrow": "Bên dưới nắp máy",
-    "title": "Không một biểu mẫu tạo sinh nào được viết bằng tay.",
-    "lede": "Tham số của một mô hình là của riêng nó và thay đổi không báo trước. Vì vậy chúng được đọc lúc chạy và biến thành các trường nhập: một mô hình mới hiện ra cùng thiết lập của nó, không thêm một dòng mã nào.",
+    "eyebrow": "Mô hình của bạn, dự án của bạn",
+    "title": "AI theo nhu cầu của bạn.",
+    "lede": "Chọn mô hình theo ý tưởng muốn tạo. Cục bộ hay đám mây, công cụ vẫn tập trung trong một studio.",
     "racks": {
       "0": "Giao diện",
-      "1": "Cầu nối sang API",
+      "1": "Mô hình và tạo sinh",
       "2": "Trên máy của bạn"
     },
     "cells": {
       "0": {
         "tag": "Xưởng",
-        "title": "Sáu chế độ, một bố cục",
-        "text": "Bảng neo được và tách được, thẻ, bố cục được nhớ theo từng xưởng giữa hai phiên làm việc."
+        "title": "Không gian của bạn",
+        "text": "Sắp xếp bảng và thẻ hoặc tách sang cửa sổ khác. Mỗi không gian nhớ bố cục cho phiên tiếp theo."
       },
       "1": {
         "tag": "Engine",
-        "title": "Dựng lại từ trạng thái của chúng",
-        "text": "Tách một bảng ra là phá huỷ ngữ cảnh đồ hoạ của nó. Engine tự dựng lại y hệt — và nhờ đó ta có luôn cả hoàn tác lẫn lưu lại."
+        "title": "Trở lại công việc",
+        "text": "Tài liệu được dựng lại từ trạng thái đã lưu, cả trong bảng tách rời. Nền tảng này hỗ trợ lưu và hoàn tác."
       },
       "2": {
         "tag": "Thư viện",
         "title": "Thư mục dự án",
-        "text": "Dự án là một thư mục đọc được mà không cần ứng dụng, duyệt bằng trình quản lý tệp thật sự và theo dõi bằng git ngay trong studio — nhánh, phiên bản, xung đột. Nhập, xuất và danh mục dùng chung một chỉ mục, chỉ mục ấy tìm lại được tệp của mình ngay cả khi chúng bị chuyển ra ngoài ứng dụng."
+        "text": "Duyệt tệp ngay cả khi không có studio. Quản lý phiên bản, nhánh và xung đột bằng Git. Nhập, xuất và thư viện tìm lại cùng nội dung dù đã di chuyển ngoài ứng dụng."
       },
       "3": {
-        "tag": "ModelRegistry",
-        "title": "Các trường đến từ mô hình",
-        "text": "Lược đồ do mô hình khai báo trở thành một danh sách trường, hiển thị đúng như vậy. Một kiểu lạ sẽ lui về ô nhập thô thay vì làm biểu mẫu biến mất."
+        "tag": "Mô hình",
+        "title": "Cài đặt của mô hình đã chọn",
+        "text": "Tìm tùy chọn từng mô hình trong cùng một bảng cho mỗi kiểu tạo sinh."
       },
       "4": {
-        "tag": "JobManager",
-        "title": "Chỉ một nơi đi hỏi",
-        "text": "Mọi lần tạo sinh đều bất đồng bộ. Chỉ một thành phần theo dõi tiến độ, giới hạn số việc chạy cùng lúc và chờ lại khi dịch vụ từ chối."
+        "tag": "Tạo sinh",
+        "title": "Theo dõi các lần thử",
+        "text": "Theo dõi quá trình tạo và tìm kết quả cạnh những nội dung khác của dự án."
       },
       "5": {
         "tag": "Bí mật",
-        "title": "Giao diện không bao giờ thấy khoá",
-        "text": "Khoá và bí mật được kho của hệ điều hành mã hoá. Cửa sổ hỏi «tôi đã đăng nhập chưa?», chứ không bao giờ hỏi «khoá của tôi là gì?»."
+        "title": "Khóa tách khỏi giao diện",
+        "text": "Hệ thống mã hóa khóa. Giao diện chỉ nhận trạng thái kết nối, không nhận bí mật."
       },
       "6": {
-        "tag": "Đọc chính tả",
-        "title": "Ngoại tuyến, hoàn toàn",
-        "text": "Một engine nhận dạng giọng nói chạy trong tiến trình riêng, ngay trên máy bạn. Khi mô hình đã tải về, không lời nào được nói ra đi lên mạng."
+        "tag": "AI cục bộ",
+        "title": "Mô hình trên máy của bạn",
+        "text": "Tải và quản lý mô hình tương thích. Khả năng sử dụng tùy thao tác, mô hình và tài nguyên máy tính."
       },
       "7": {
         "tag": "Máy chủ MCP",
         "title": "Studio điều khiển được từ bên ngoài",
-        "text": "233 hành động thuộc 16 nhóm, từ tài liệu tới tài nguyên, từ cảnh tới bản dựng, từ tệp tới kho git: một tác nhân làm đúng những gì giao diện làm, bằng chính những lối đi ấy."
+        "text": "Tài liệu, ảnh, cảnh, hoạt ảnh, cài đặt và tệp: kết nối trợ lý bên ngoài với các hành động MCP mà studio cung cấp."
       },
       "8": {
         "tag": "Tải",
-        "title": "Luồng hiển thị luôn rảnh",
-        "text": "Ảnh thu nhỏ, dạng sóng, lưới nặng và việc mã hoá video đều chuyển sang bộ xử lý đồ hoạ, sang luồng tính toán hoặc sang một tiến trình riêng."
+        "title": "Tính toán nền",
+        "text": "Ảnh thu nhỏ, dạng sóng, hình học nặng và mã hóa video dùng GPU hoặc tác vụ tách khỏi giao diện."
       }
     }
   },
@@ -324,7 +325,7 @@
   "download": {
     "eyebrow": "Cài đặt",
     "title": "Ba nền tảng, một kho mã duy nhất.",
-    "lede": "Năm bộ cài, do cùng một dây chuyền tích hợp làm ra ở mỗi phiên bản. Trong khi chờ bản công khai đầu tiên, kho mã có thể sao về và chạy bằng ba câu lệnh.",
+    "lede": "Tải phiên bản đã phát hành cho máy tính của bạn.",
     "items": {
       "0": {
         "os": "macOS",
@@ -352,7 +353,9 @@
         "state": "Phiên bản sắp có"
       }
     },
-    "note": "Bộ cài chịu sự điều chỉnh của <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">điều khoản sử dụng</a>; còn mã nguồn thì theo giấy phép <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial&nbsp;1.0.0</a>. Ứng dụng không cho truy cập bất kỳ dịch vụ tạo sinh nào: nó dùng khoá API do chính bạn cung cấp, trên tài khoản của bạn và bạn chịu chi phí."
+    "note": "Bộ cài chịu sự điều chỉnh của <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">điều khoản sử dụng</a>; còn mã nguồn thì theo giấy phép <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial&nbsp;1.0.0</a>. Dịch vụ đám mây dùng tài khoản và tín dụng của bạn. Mô hình cục bộ có điều kiện sử dụng riêng.",
+    "unavailable": "Chưa phát hành cho phiên bản này",
+    "available": "Tải xuống · {size}"
   },
   "foot": {
     "groups": {
@@ -376,5 +379,13 @@
     "project": "dự án",
     "workshop": "xưởng",
     "position": "vị trí"
+  },
+  "ambience": {
+    "start": "Bật âm thanh nền ở mức rất nhỏ",
+    "stop": "Tắt âm thanh nền",
+    "loading": "Đang tải âm thanh, nhấn để hủy",
+    "error": "Âm thanh không khả dụng, thử lại",
+    "prompt": "Bật âm thanh",
+    "blocked": "Đã lưu lựa chọn bật âm thanh. Nhấn để phát nhạc."
   }
 }

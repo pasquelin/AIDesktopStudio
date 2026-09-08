@@ -53,7 +53,7 @@
     "models:pin": "node scripts/pin-models.mjs",
     "models:thumbnails": "node scripts/make-model-thumbnails.mjs",
     "llms": "node scripts/make-llms.mjs",
-    "site:check": "node scripts/check-site.mjs",
+    "site:check": "node --test site/assets/js/*.test.mjs && node scripts/check-site.mjs",
     "llms:check": "node scripts/make-llms.mjs --check",
     "licences:check": "node scripts/check-licences.mjs",
     "build:site": "node site/build.mjs _site",
