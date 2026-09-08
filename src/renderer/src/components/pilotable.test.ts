@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { WINDOW_SOURCES } from '../windowSources'
+import { withoutComments } from './sourceText'
 
 /**
  * The studio is driven from outside — by an MCP client over CDP, and by whatever a script reaches
@@ -44,13 +45,6 @@ function openingTag(source: string, from: number): string {
 
   return source.slice(from)
 }
-
-/**
- * The code with its prose taken out. `Flyout` explains its placements by writing « the way a
- * `<select>` does », which read as a control going straight to the platform.
- */
-const withoutComments = (source: string): string =>
-  source.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*/g, '')
 
 /** Every place a pilotable control is rendered, with the attributes it was given. */
 function sitesOf(name: string): { path: string; tag: string }[] {

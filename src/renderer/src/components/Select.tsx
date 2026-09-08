@@ -2,7 +2,6 @@ import { mdiChevronDown } from '@mdi/js'
 import type { Ref, SelectHTMLAttributes } from 'react'
 import { cn } from '@/helpers/cn'
 import { windowFieldHandle } from './scHandle'
-import { NATIVE_SELECT } from './styles'
 import { UiIcon } from './UiIcon'
 
 export type SelectProps = SelectHTMLAttributes<HTMLSelectElement> & {
@@ -25,20 +24,25 @@ export type SelectProps = SelectHTMLAttributes<HTMLSelectElement> & {
 }
 
 /**
- * The studio's `<select>`: the field skin, the OS list, and the chevron `appearance-none` takes
- * away.
+ * The studio's `<select>`: daisyUI's list wearing the studio's gauges, with the chevron the
+ * plugin draws replaced by the studio's own.
  *
  * Every select goes through it — the four layouts of `SelectField`, the generation form, the
  * settings windows — because they had drifted into four apparences: bordered here, borderless
  * there, the browser's own glyph in the docks and daisyUI's two triangles in the windows.
+ *
+ * `bg-none` is what removes those triangles: the plugin draws its chevron as a pair of gradients
+ * in the background, and `RowChevron`, `MenuButton` and `TitleBarSelect` all open a list with the
+ * mdi glyph — a fifth shape for the same gesture is what this component exists to stop. The room
+ * it stands in is daisyUI's own `padding-inline: .75rem 1.75rem`, which is why none is added.
  */
 export function Select({ className, children, ref, 'data-sc': sc, ...rest }: SelectProps) {
   return (
     <span
       className={cn(
-        // The ink is the box's, and `text-inherit` below is why: the skin writes `text-text`,
-        // which a colour passed by the caller could not have got past — the filter bars read
-        // `text-muted` while nothing is chosen.
+        // The ink is the box's, and `text-inherit` below is why: a colour written on the list
+        // itself is one the caller could not have got past — the filter bars read `text-muted`
+        // while nothing is chosen.
         'text-text relative inline-flex h-(--sc-control) min-w-0 items-center',
         className,
       )}
@@ -46,7 +50,7 @@ export function Select({ className, children, ref, 'data-sc': sc, ...rest }: Sel
       <select
         ref={ref}
         data-sc={windowFieldHandle(sc)}
-        className={cn(NATIVE_SELECT, 'h-full w-full text-inherit')}
+        className="select select-sm h-full w-full bg-none text-inherit"
         {...rest}
       >
         {children}

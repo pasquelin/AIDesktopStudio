@@ -1,5 +1,4 @@
 import { cn } from '@/helpers/cn'
-import { FIELD } from './panelStyles'
 
 /**
  * Class strings shared by more than one component in `design/`. A shape used by a single
@@ -58,21 +57,6 @@ export const OVERLAY_BUTTON = 'absolute inset-0 cursor-pointer border-none bg-tr
  * every one of them at once.
  */
 export const CONTROL = 'bg-surface text-text h-(--sc-control) rounded-(--radius-sc-md) text-tiny'
-
-/**
- * The OS list, wearing the studio's FIELD language — a blend mode, an animation clip, a bone, a
- * model. Chosen native each time for the same reason: past a dozen entries the OS list is
- * searchable by keystroke and a flyout is a menu to scroll.
- *
- * `CONTROL` until 2026-09-08, which is what left a picker in the docks borderless beside a
- * bordered one in the same form: a select is something one FILLS IN, and it now reads as the
- * fields around it. `appearance-none` is what makes `pe-8` necessary — the browser stops drawing
- * its glyph, and `Select` draws the chevron in the room reserved for it.
- *
- * No text size, so a select reads at the size of whatever holds it, and no WIDTH: that belongs
- * to the host — a full row in an inspector, a capped one on a toolbar.
- */
-export const NATIVE_SELECT = cn(FIELD, 'cursor-pointer appearance-none pe-8')
 
 /**
  * A button of the status line. Icon-first, the glyph measured 12 x 12 — half of what WCAG 2.2

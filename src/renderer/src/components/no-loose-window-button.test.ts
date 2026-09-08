@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { WINDOW_SOURCES } from '../windowSources'
+import { withoutComments } from './sourceText'
 
 /**
  * The windows that are NOT docks dress themselves in DaisyUI, and every button of theirs used to
@@ -27,11 +28,6 @@ import { WINDOW_SOURCES } from '../windowSources'
  * compulsory — publishing it from `windowStyles.ts` would reopen exactly that door.
  */
 const HOMES: readonly string[] = ['WindowButton.tsx', 'WindowIconButton.tsx']
-
-/** Comments talk ABOUT the classes — this guard's own prose would fail it otherwise. */
-function withoutComments(code: string): string {
-  return code.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/[^\n]*/g, '$1')
-}
 
 /**
  * A string literal opening a DaisyUI button: the bare `btn` token, whatever follows it.

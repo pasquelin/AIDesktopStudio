@@ -2,12 +2,12 @@ import { describe, expect, it } from 'vitest'
 import {
   FIELD,
   FIELD_FILL,
-  NATIVE_SELECT,
   ROW_LINE,
   TITLE_BAR_GHOST,
   TITLE_BAR_TRIGGER,
   TOOLBAR_LABEL,
 } from './styles'
+import { withoutComments } from './sourceText'
 import { rewrites, spellsOut, WRITTEN_SOURCES } from './testHarness'
 
 /** The blind spot of `rewrites`: a site that never wore the constant leaves no call to read. */
@@ -27,9 +27,6 @@ const respacesTitleBar = rewrites('TITLE_BAR_GHOST', ['h-(--sc-control)', 'px-2'
  * own is a caller dividing its own row rather than reaching for this shape.
  */
 const refillsField = rewrites('FIELD', ['min-w-0', 'flex-1'])
-
-/** The shape the four native pickers had before they were given a constant. */
-const repadsControl = rewrites('CONTROL', ['px-1'])
 
 /**
  * All three words are required, and `text-tiny` is what does the work: `text-muted … px-1` alone
@@ -76,45 +73,22 @@ describe('the word a bar sets beside its buttons', () => {
     expect(wearing.length).toBeGreaterThanOrEqual(4)
   })
 })
-describe('the OS list wearing the field language', () => {
-  it('is the field, plus the room its own chevron needs and nothing more', () => {
-    expect(NATIVE_SELECT.split(' ')).toEqual([
-      ...FIELD.split(' '),
-      'cursor-pointer',
-      'appearance-none',
-      'pe-8',
-    ])
-  })
-
-  it('is worn rather than padded again at the call', () => {
-    const offenders = WRITTEN_SOURCES.filter(
-      ([path, source]) => !GUARDED.includes(path) && repadsControl(source),
-    ).map(([path]) => path)
-
-    expect(offenders).toEqual([])
-  })
-
-  it('leaves alone the callers whose own padding is not this one', () => {
-    // The search field of `CollectionBar`, which pulls its left inset in for the magnifier, and
-    // the colour swatch of the image space — both wear `CONTROL` and neither is a picker.
-    expect(repadsControl("cn(CONTROL, 'w-full px-1')")).toBe(true)
-    expect(repadsControl("cn(CONTROL, 'w-full py-0 pr-2 pl-7')")).toBe(false)
-    expect(repadsControl("cn(CONTROL, 'w-(--sc-control) cursor-pointer border-none p-0.5')")).toBe(
-      false,
-    )
-  })
-
+describe('a list one picks from', () => {
   /**
-   * It was extracted from four pickers and is now worn by ONE, which is the stronger rule: a
-   * second wearer means a `<select>` was drawn by hand again instead of through `Select`, and
-   * that is how the studio came to hold four apparences of the same control at once.
+   * The rule the four skins were replaced by: a `<select>` is written ONCE, in `Select`, and
+   * every other surface asks for that component. Four pickers had each drawn their own, which is
+   * how the studio came to hold a bordered one, a borderless one, the browser's chevron and
+   * daisyUI's triangles at the same time.
+   *
+   * 🛑 Blind spot: it reads the TAG, so a copy built through `createElement('select')` or a
+   * daisyUI `.select` written on a `<div>` stays green. Neither exists today.
    */
-  it('is worn by `Select`, and by nothing else', () => {
-    const wearing = WRITTEN_SOURCES.filter(
-      ([path, source]) => !GUARDED.includes(path) && source.includes('NATIVE_SELECT'),
+  it('is drawn by `Select` and by nothing else', () => {
+    const drawing = WRITTEN_SOURCES.filter(
+      ([path, source]) => !GUARDED.includes(path) && /<select[\s/>]/.test(withoutComments(source)),
     ).map(([path]) => path)
 
-    expect(wearing).toEqual([expect.stringContaining('/Select.tsx')])
+    expect(drawing).toEqual([expect.stringContaining('/Select.tsx')])
   })
 })
 

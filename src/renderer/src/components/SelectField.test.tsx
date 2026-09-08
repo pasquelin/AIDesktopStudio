@@ -108,7 +108,8 @@ describe('SelectField', () => {
       )
 
       expect(container.querySelector('svg')).toBeInTheDocument()
-      expect(screen.getByRole('combobox')).toHaveClass('appearance-none')
+      // `bg-none` is the plugin's own chevron being dropped: it draws it in the background.
+      expect(screen.getByRole('combobox')).toHaveClass('bg-none')
     })
 
     // Read on the BOX, which is where `Select` takes its ink: the list is `text-inherit`, so a
@@ -203,7 +204,7 @@ describe('SelectField', () => {
     const { container } = renderField({ layout: 'stacked' })
 
     expect(container.querySelector('svg')).toBeInTheDocument()
-    expect(screen.getByRole('combobox')).toHaveClass('appearance-none')
+    expect(screen.getByRole('combobox')).toHaveClass('bg-none')
   })
 
   it('still draws what follows a stacked select', () => {

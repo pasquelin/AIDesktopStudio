@@ -90,14 +90,10 @@ function selectControl<V extends string>({
         if (picked) onChange(picked.value)
       }}
       {...hint}
-      // The skin is `Select`'s; what is left here is the room the layout gives it. `text-tiny`
-      // for the three that stand in a BAR or on a property line, where the studio writes its
-      // controls one step down — a stacked field reads at the size of the form around it.
-      className={cn(
-        'flex min-w-0 flex-1',
-        layout !== 'stacked' && 'text-tiny',
-        layout === 'bar' && !value && 'text-muted',
-      )}
+      // The skin is `Select`'s, text size included: daisyUI writes `font-size` on the control
+      // itself, so a step set on the box here would be overwritten rather than inherited. What
+      // is left is the room the layout gives it, and the ink a bar reads while nothing is chosen.
+      className={cn('flex min-w-0 flex-1', layout === 'bar' && !value && 'text-muted')}
     >
       {unnamed && (
         <option value={UNNAMED} disabled>
