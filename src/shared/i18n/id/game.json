@@ -186,8 +186,61 @@
       "jsonLabel": "JSON graf animasi",
       "loadFailed": "Graf animasi ini tidak dapat dibaca.",
       "loading": "Memuat graf animasi…",
-      "save": "Simpan",
-      "writeFailed": "Graf animasi ini tidak dapat ditulis ke disk."
+      "writeFailed": "Graf animasi ini tidak dapat ditulis ke disk.",
+      "views": "Cara menyunting",
+      "viewHint": {
+        "simple": "Menunjukkan apa yang dimainkan graf, keadaan demi keadaan, tanpa setelan",
+        "expert": "Membuka tiap setelan sebagai formulir",
+        "json": "Menunjukkan berkas persis seperti tertulis di diska"
+      },
+      "context": "Konteks",
+      "contextDescription": "Nama graf ini, separuh badan mana yang dikemudikannya, dan keadaan tempat permainan bermula.",
+      "id": "Pengenal",
+      "idHelp": "Nama yang dipakai skrip untuk meminta graf ini. Ia datang dari nama berkas.",
+      "initial": "Keadaan awal",
+      "initialHelp": "Keadaan yang dimainkan begitu tokoh muncul. Peralihan pertama berangkat darinya.",
+      "parameters": "Parameter",
+      "parametersDescription": "Nilai yang dipakai peralihan untuk memutuskan. Sebagian diterbitkan permainan sendiri; sisanya milik Anda.",
+      "builtInDescription": "Yang pertama diterbitkan permainan pada tiap langkah: laju, pijakan tanah, lompatan. Anda boleh memakainya tanpa mendeklarasikan apa pun.",
+      "parameterKind": "Jenis",
+      "parameterKinds": {
+        "number": "Bilangan",
+        "boolean": "Ya atau tidak"
+      },
+      "addParameter": "Tambah parameter",
+      "removeParameter": "Hapus parameter ini",
+      "noParameter": "Tidak ada parameter milik Anda: hanya milik permainan yang tersedia.",
+      "states": "Keadaan",
+      "statesDescription": "Apa yang mungkin sedang dilakukan tokoh, dan animasi yang dimainkan tiap keadaan.",
+      "stateDescription": "Sebuah keadaan memainkan satu animasi selama tak ada yang mengeluarkannya.",
+      "addState": "Tambah keadaan",
+      "removeState": "Hapus keadaan ini",
+      "initialBadge": "Mulai",
+      "clipKindHelp": "Dari mana animasi berasal: dari berkas model, dari yang disertakan studio, atau dari berkas proyek.",
+      "clipKinds": {
+        "embedded": "Milik model",
+        "bundled": "Disertakan studio",
+        "asset": "Sebuah berkas proyek"
+      },
+      "speedFrom": "Laju dikemudikan oleh",
+      "speedFromHelp": "Parameter yang mengalikan laju animasi. Itulah yang menjaga siklus langkah di bawah tokoh yang menambah laju.",
+      "speedFromNone": "Tidak ada",
+      "transitions": "Peralihan",
+      "transitionsDescription": "Jalan dari satu keadaan ke keadaan lain, dan apa yang harus benar agar ia diambil.",
+      "transitionRank": "Peralihan {{rank}}",
+      "transitionSentence": "{{from}} → {{to}}",
+      "addTransition": "Tambah peralihan",
+      "removeTransition": "Hapus peralihan ini",
+      "noTransition": "Tanpa peralihan: keadaan awal akan dimainkan tanpa henti.",
+      "anyState": "Keadaan mana pun",
+      "from": "Dari",
+      "fromHelp": "Keadaan yang ditinggalkan. « Keadaan mana pun » itulah yang membiarkan lompatan memotong apa yang sedang berjalan.",
+      "to": "Ke",
+      "exitTime": "Keluar diizinkan mulai",
+      "exitTimeHelp": "Bagian animasi yang dimainkan sebelum keluar diizinkan. Itulah yang membiarkan pendaratan selesai alih-alih terpotong.",
+      "priority": "Prioritas",
+      "priorityHelp": "Siapa yang menang ketika dua peralihan sama-sama mungkin. Angka yang lebih besar mengambilnya.",
+      "fadeHelp": "Lama pudar-silang antara dua animasi, dalam detik. Pada nol, pergantiannya tegas."
     },
     "inputMap": {
       "actionId": "Aksi",
@@ -220,11 +273,6 @@
       },
       "loadFailed": "Peta masukan ini tidak dapat dibaca.",
       "loading": "Memuat peta masukan…",
-      "mode": {
-        "expert": "Ahli",
-        "json": "JSON",
-        "simple": "Sederhana"
-      },
       "modeHint": "Mengubah cara peta masukan yang sama disunting",
       "preset": {
         "character": "Karakter",
@@ -362,6 +410,11 @@
       "noFaults": "Tidak ada kesalahan",
       "title": "Mode main",
       "waiting": "Menunggu studio…"
+    },
+    "scriptView": {
+      "simple": "Sederhana",
+      "expert": "Mahir",
+      "json": "JSON"
     }
   }
 }

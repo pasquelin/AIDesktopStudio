@@ -186,8 +186,61 @@
       "jsonLabel": "JSON đồ thị hoạt ảnh",
       "loadFailed": "Đồ thị hoạt ảnh này không thể được đọc.",
       "loading": "Đang tải đồ thị hoạt ảnh…",
-      "save": "Lưu",
-      "writeFailed": "Đồ thị hoạt ảnh này không thể được ghi lên đĩa."
+      "writeFailed": "Đồ thị hoạt ảnh này không thể được ghi lên đĩa.",
+      "views": "Cách chỉnh sửa",
+      "viewHint": {
+        "simple": "Cho thấy đồ thị phát gì, từng trạng thái một, không có thiết lập",
+        "expert": "Mở từng thiết lập dưới dạng biểu mẫu",
+        "json": "Cho thấy tệp đúng như được ghi trên đĩa"
+      },
+      "context": "Bối cảnh",
+      "contextDescription": "Đồ thị này tên gì, điều khiển nửa nào của cơ thể, và ván chơi bắt đầu ở trạng thái nào.",
+      "id": "Định danh",
+      "idHelp": "Tên mà kịch bản dùng để gọi đồ thị này. Nó lấy từ tên tệp.",
+      "initial": "Trạng thái ban đầu",
+      "initialHelp": "Trạng thái được phát ngay khi nhân vật xuất hiện. Các chuyển tiếp đầu tiên đi ra từ đó.",
+      "parameters": "Tham số",
+      "parametersDescription": "Những giá trị mà các chuyển tiếp dựa vào. Trò chơi tự công bố một phần; phần còn lại là của bạn.",
+      "builtInDescription": "Những cái đầu do trò chơi công bố ở mỗi bước: tốc độ, chạm đất, nhảy. Bạn dùng được mà không cần khai báo.",
+      "parameterKind": "Loại",
+      "parameterKinds": {
+        "number": "Số",
+        "boolean": "Có hoặc không"
+      },
+      "addParameter": "Thêm tham số",
+      "removeParameter": "Xóa tham số này",
+      "noParameter": "Không có tham số riêng: chỉ có những cái của trò chơi.",
+      "states": "Trạng thái",
+      "statesDescription": "Những gì nhân vật có thể đang làm, và hoạt ảnh mà mỗi trạng thái phát.",
+      "stateDescription": "Một trạng thái phát một hoạt ảnh cho tới khi có gì đó đưa nó ra.",
+      "addState": "Thêm trạng thái",
+      "removeState": "Xóa trạng thái này",
+      "initialBadge": "Khởi đầu",
+      "clipKindHelp": "Hoạt ảnh đến từ đâu: từ tệp của mô hình, từ những cái đi kèm studio, hay từ một tệp của dự án.",
+      "clipKinds": {
+        "embedded": "Của mô hình",
+        "bundled": "Đi kèm studio",
+        "asset": "Một tệp của dự án"
+      },
+      "speedFrom": "Tốc độ điều khiển bởi",
+      "speedFromHelp": "Tham số nhân với tốc độ hoạt ảnh. Nhờ nó mà chu kỳ bước chân theo kịp nhân vật đang tăng tốc.",
+      "speedFromNone": "Không có",
+      "transitions": "Chuyển tiếp",
+      "transitionsDescription": "Đường đi từ trạng thái này sang trạng thái khác, và điều gì phải đúng để nó xảy ra.",
+      "transitionRank": "Chuyển tiếp {{rank}}",
+      "transitionSentence": "{{from}} → {{to}}",
+      "addTransition": "Thêm chuyển tiếp",
+      "removeTransition": "Xóa chuyển tiếp này",
+      "noTransition": "Không có chuyển tiếp: trạng thái ban đầu sẽ phát mãi.",
+      "anyState": "Bất kỳ trạng thái nào",
+      "from": "Từ",
+      "fromHelp": "Trạng thái được rời khỏi. « Bất kỳ trạng thái nào » cho phép một cú nhảy cắt ngang thứ đang phát.",
+      "to": "Đến",
+      "exitTime": "Cho phép thoát từ",
+      "exitTimeHelp": "Phần hoạt ảnh phải phát trước khi được thoát. Nhờ đó cú tiếp đất được kết thúc thay vì bị cắt.",
+      "priority": "Ưu tiên",
+      "priorityHelp": "Ai thắng khi hai chuyển tiếp cùng khả dĩ. Số lớn hơn thắng.",
+      "fadeHelp": "Thời gian hòa trộn giữa hai hoạt ảnh, tính bằng giây. Bằng không thì đổi dứt khoát."
     },
     "inputMap": {
       "actionId": "Hành động",
@@ -220,11 +273,6 @@
       },
       "loadFailed": "Bản đồ đầu vào này không thể được đọc.",
       "loading": "Đang tải bản đồ đầu vào…",
-      "mode": {
-        "expert": "Chuyên gia",
-        "json": "JSON",
-        "simple": "Đơn giản"
-      },
       "modeHint": "Thay đổi cách chỉnh sửa cùng một bản đồ đầu vào",
       "preset": {
         "character": "Nhân vật",
@@ -362,6 +410,11 @@
       "noFaults": "Không có lỗi",
       "title": "Chế độ chơi",
       "waiting": "Đang chờ studio…"
+    },
+    "scriptView": {
+      "simple": "Đơn giản",
+      "expert": "Chuyên sâu",
+      "json": "JSON"
     }
   }
 }

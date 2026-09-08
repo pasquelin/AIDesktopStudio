@@ -186,8 +186,61 @@
       "jsonLabel": "JSON des Animationsgraphs",
       "loadFailed": "Dieser Animationsgraph konnte nicht gelesen werden.",
       "loading": "Animationsgraph wird geladen…",
-      "save": "Speichern",
-      "writeFailed": "Dieser Animationsgraph konnte nicht auf die Festplatte geschrieben werden."
+      "writeFailed": "Dieser Animationsgraph konnte nicht auf die Festplatte geschrieben werden.",
+      "views": "Bearbeitungsansicht",
+      "viewHint": {
+        "simple": "Zeigt Zustand für Zustand, was der Graph spielt, ohne Einstellungen",
+        "expert": "Öffnet jede Einstellung als Formular",
+        "json": "Zeigt die Datei genau so, wie sie auf der Festplatte steht"
+      },
+      "context": "Kontext",
+      "contextDescription": "Wie dieser Graph heißt, welche Körperhälfte er steuert, und mit welchem Zustand ein Spiel beginnt.",
+      "id": "Bezeichner",
+      "idHelp": "Der Name, unter dem ein Skript diesen Graphen anfordert. Er kommt vom Dateinamen.",
+      "initial": "Anfangszustand",
+      "initialHelp": "Der Zustand, der gespielt wird, sobald die Figur auftritt. Von ihm gehen die ersten Übergänge aus.",
+      "parameters": "Parameter",
+      "parametersDescription": "Die Werte, über die Übergänge entscheiden. Einige veröffentlicht das Spiel selbst; die anderen gehören Ihnen.",
+      "builtInDescription": "Die ersten veröffentlicht das Spiel bei jedem Schritt: Tempo, Bodenkontakt, Sprung. Sie können sie ohne Deklaration verwenden.",
+      "parameterKind": "Art",
+      "parameterKinds": {
+        "number": "Zahl",
+        "boolean": "Ja oder nein"
+      },
+      "addParameter": "Parameter hinzufügen",
+      "removeParameter": "Diesen Parameter entfernen",
+      "noParameter": "Kein eigener Parameter: nur die des Spiels stehen bereit.",
+      "states": "Zustände",
+      "statesDescription": "Was die Figur gerade tun kann, und welche Animation jeder Zustand spielt.",
+      "stateDescription": "Ein Zustand spielt eine Animation, solange nichts ihn verlässt.",
+      "addState": "Zustand hinzufügen",
+      "removeState": "Diesen Zustand entfernen",
+      "initialBadge": "Beginn",
+      "clipKindHelp": "Woher die Animation kommt: aus der Datei des Modells, mit dem Studio geliefert, oder aus einer Datei des Projekts.",
+      "clipKinds": {
+        "embedded": "Die des Modells",
+        "bundled": "Mit dem Studio geliefert",
+        "asset": "Eine Datei des Projekts"
+      },
+      "speedFrom": "Tempo gesteuert von",
+      "speedFromHelp": "Der Parameter, der das Tempo der Animation multipliziert. So bleibt ein Gehzyklus unter einer schneller werdenden Figur.",
+      "speedFromNone": "Keiner",
+      "transitions": "Übergänge",
+      "transitionsDescription": "Der Weg von einem Zustand zum anderen, und was dafür wahr sein muss.",
+      "transitionRank": "Übergang {{rank}}",
+      "transitionSentence": "{{from}} → {{to}}",
+      "addTransition": "Übergang hinzufügen",
+      "removeTransition": "Diesen Übergang entfernen",
+      "noTransition": "Kein Übergang: der Anfangszustand wird endlos gespielt.",
+      "anyState": "Beliebiger Zustand",
+      "from": "Von",
+      "fromHelp": "Der Zustand, der verlassen wird. „Beliebiger Zustand“ lässt einen Sprung unterbrechen, was gerade lief.",
+      "to": "Nach",
+      "exitTime": "Ausgang erlaubt ab",
+      "exitTimeHelp": "Der Anteil der Animation, der vor dem Ausgang gespielt wird. So darf eine Landung zu Ende gehen, statt abgeschnitten zu werden.",
+      "priority": "Priorität",
+      "priorityHelp": "Wer gewinnt, wenn zwei Übergänge im selben Augenblick möglich sind. Die höhere Zahl nimmt ihn.",
+      "fadeHelp": "Die Überblendung zwischen beiden Animationen, in Sekunden. Bei null ist der Wechsel hart."
     },
     "inputMap": {
       "actionId": "Aktion",
@@ -220,11 +273,6 @@
       },
       "loadFailed": "Diese Eingabebelegung konnte nicht gelesen werden.",
       "loading": "Eingabebelegung wird geladen…",
-      "mode": {
-        "expert": "Experte",
-        "json": "JSON",
-        "simple": "Einfach"
-      },
       "modeHint": "Ändert, wie dieselbe Eingabebelegung bearbeitet wird",
       "preset": {
         "character": "Charakter",
@@ -362,6 +410,11 @@
       "noFaults": "Keine Fehler",
       "title": "Spielmodus",
       "waiting": "Warten auf das Studio…"
+    },
+    "scriptView": {
+      "simple": "Einfach",
+      "expert": "Experte",
+      "json": "JSON"
     }
   }
 }

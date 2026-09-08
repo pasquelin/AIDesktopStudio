@@ -75,7 +75,7 @@ export function InputMapDocument({ path }: InputMapDocumentProps) {
       viewsLabel={t('game.inputMap.views')}
       views={INPUT_MAP_VIEWS.map(id => ({
         id,
-        label: t(`game.inputMap.mode.${id}`),
+        label: t(`game.scriptView.${id}`),
         hint: t(`game.inputMap.viewHint.${id}`),
       }))}
       view={view}

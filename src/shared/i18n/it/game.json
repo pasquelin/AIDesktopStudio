@@ -186,8 +186,61 @@
       "jsonLabel": "JSON del grafo di animazione",
       "loadFailed": "Non è stato possibile leggere questo grafo di animazione.",
       "loading": "Caricamento del grafo di animazione…",
-      "save": "Salva",
-      "writeFailed": "Non è stato possibile scrivere questo grafo di animazione sul disco."
+      "writeFailed": "Non è stato possibile scrivere questo grafo di animazione sul disco.",
+      "views": "Vista di modifica",
+      "viewHint": {
+        "simple": "Mostra ciò che il grafo riproduce, stato per stato, senza impostazioni",
+        "expert": "Apre ogni impostazione come modulo",
+        "json": "Mostra il file esattamente come è scritto sul disco"
+      },
+      "context": "Contesto",
+      "contextDescription": "Come si chiama questo grafo, quale metà del corpo guida, e con quale stato inizia la partita.",
+      "id": "Identificatore",
+      "idHelp": "Il nome con cui uno script chiede questo grafo. Viene dal nome del file.",
+      "initial": "Stato iniziale",
+      "initialHelp": "Lo stato riprodotto appena il personaggio entra in scena. Da lì partono le prime transizioni.",
+      "parameters": "Parametri",
+      "parametersDescription": "I valori su cui decidono le transizioni. Il gioco ne pubblica alcuni da sé; gli altri sono vostri.",
+      "builtInDescription": "I primi li pubblica il gioco a ogni passo: velocità, appoggio a terra, salto. Potete usarli senza dichiarare nulla.",
+      "parameterKind": "Genere",
+      "parameterKinds": {
+        "number": "Numero",
+        "boolean": "Sì o no"
+      },
+      "addParameter": "Aggiungi parametro",
+      "removeParameter": "Elimina questo parametro",
+      "noParameter": "Nessun parametro vostro: ci sono solo quelli del gioco.",
+      "states": "Stati",
+      "statesDescription": "Ciò che il personaggio può stare facendo, e l’animazione che ogni stato riproduce.",
+      "stateDescription": "Uno stato riproduce un’animazione finché nulla lo fa uscire.",
+      "addState": "Aggiungi stato",
+      "removeState": "Elimina questo stato",
+      "initialBadge": "Partenza",
+      "clipKindHelp": "Da dove viene l’animazione: dal file del modello, tra quelle fornite con lo studio, o da un file del progetto.",
+      "clipKinds": {
+        "embedded": "Quella del modello",
+        "bundled": "Fornita con lo studio",
+        "asset": "Un file del progetto"
+      },
+      "speedFrom": "Velocità guidata da",
+      "speedFromHelp": "Il parametro che moltiplica la velocità dell’animazione. È ciò che tiene un ciclo di camminata sotto un personaggio che accelera.",
+      "speedFromNone": "Nessuno",
+      "transitions": "Transizioni",
+      "transitionsDescription": "Il passaggio da uno stato all’altro, e ciò che deve essere vero perché avvenga.",
+      "transitionRank": "Transizione {{rank}}",
+      "transitionSentence": "{{from}} → {{to}}",
+      "addTransition": "Aggiungi transizione",
+      "removeTransition": "Elimina questa transizione",
+      "noTransition": "Nessuna transizione: lo stato iniziale sarà riprodotto all’infinito.",
+      "anyState": "Qualsiasi stato",
+      "from": "Da",
+      "fromHelp": "Lo stato che si lascia. « Qualsiasi stato » è ciò che permette a un salto di interrompere quanto era in corso.",
+      "to": "A",
+      "exitTime": "Uscita permessa a partire da",
+      "exitTimeHelp": "La parte di animazione da riprodurre prima che l’uscita sia permessa. È ciò che lascia finire un atterraggio invece di troncarlo.",
+      "priority": "Priorità",
+      "priorityHelp": "Chi vince quando due transizioni sono possibili nello stesso istante. Il numero più alto la spunta.",
+      "fadeHelp": "La dissolvenza tra le due animazioni, in secondi. A zero il cambio è netto."
     },
     "inputMap": {
       "actionId": "Azione",
@@ -220,11 +273,6 @@
       },
       "loadFailed": "Non è stato possibile leggere questa mappa dei comandi.",
       "loading": "Caricamento della mappa dei comandi…",
-      "mode": {
-        "expert": "Esperto",
-        "json": "JSON",
-        "simple": "Semplice"
-      },
       "modeHint": "Cambia il modo in cui si modifica la stessa mappa dei comandi",
       "preset": {
         "character": "Personaggio",
@@ -362,6 +410,11 @@
       "noFaults": "Nessun errore",
       "title": "Modalità gioco",
       "waiting": "In attesa dello studio…"
+    },
+    "scriptView": {
+      "simple": "Semplice",
+      "expert": "Esperto",
+      "json": "JSON"
     }
   }
 }

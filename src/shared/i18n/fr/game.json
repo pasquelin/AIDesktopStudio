@@ -186,8 +186,61 @@
       "jsonLabel": "JSON du graphe d’animation",
       "loadFailed": "Ce graphe d’animation n’a pas pu être lu.",
       "loading": "Chargement du graphe d’animation…",
-      "save": "Enregistrer",
-      "writeFailed": "Ce graphe d’animation n’a pas pu être écrit sur le disque."
+      "writeFailed": "Ce graphe d’animation n’a pas pu être écrit sur le disque.",
+      "views": "Façon de modifier",
+      "viewHint": {
+        "simple": "Montre ce que le graphe joue, état par état, sans réglage",
+        "expert": "Ouvre chaque réglage sous forme de formulaire",
+        "json": "Montre le fichier tel qu’il est écrit sur le disque"
+      },
+      "context": "Contexte",
+      "contextDescription": "Le nom de ce graphe, la moitié du corps qu’il pilote, et l’état sur lequel la partie démarre.",
+      "id": "Identifiant",
+      "idHelp": "Le nom sous lequel un script demande ce graphe. Il vient du nom du fichier.",
+      "initial": "État de départ",
+      "initialHelp": "L’état joué dès que le personnage entre en scène. C’est de là que partent les premières transitions.",
+      "parameters": "Paramètres",
+      "parametersDescription": "Les valeurs sur lesquelles les transitions se décident. Le jeu en publie une partie tout seul ; les autres sont à vous.",
+      "builtInDescription": "Les premiers sont publiés par le jeu à chaque pas : vitesse, appui au sol, saut. Vous pouvez vous en servir sans rien déclarer.",
+      "parameterKind": "Nature",
+      "parameterKinds": {
+        "number": "Valeur numérique",
+        "boolean": "Oui ou non"
+      },
+      "addParameter": "Ajouter un paramètre",
+      "removeParameter": "Supprimer ce paramètre",
+      "noParameter": "Aucun paramètre à vous : seuls ceux du jeu sont disponibles.",
+      "states": "États",
+      "statesDescription": "Ce que le personnage peut être en train de faire, et l’animation que chacun joue.",
+      "stateDescription": "Un état joue une animation tant que rien ne l’en fait sortir.",
+      "addState": "Ajouter un état",
+      "removeState": "Supprimer cet état",
+      "initialBadge": "Début",
+      "clipKindHelp": "D’où vient l’animation : celle du fichier du modèle, une animation livrée avec le studio, ou un fichier du projet.",
+      "clipKinds": {
+        "embedded": "Celle du modèle",
+        "bundled": "Livrée avec le studio",
+        "asset": "Un fichier du projet"
+      },
+      "speedFrom": "Vitesse pilotée par",
+      "speedFromHelp": "Le paramètre qui multiplie la vitesse de l’animation. C’est ce qui garde un cycle de marche sous un personnage qui accélère.",
+      "speedFromNone": "Aucun",
+      "transitions": "Transitions",
+      "transitionsDescription": "Le passage d’un état à un autre, et ce qui doit être vrai pour qu’il ait lieu.",
+      "transitionRank": "Transition {{rank}}",
+      "transitionSentence": "{{from}} → {{to}}",
+      "addTransition": "Ajouter une transition",
+      "removeTransition": "Supprimer cette transition",
+      "noTransition": "Aucune transition : l’état de départ sera joué sans fin.",
+      "anyState": "N’importe quel état",
+      "from": "Depuis",
+      "fromHelp": "L’état que l’on quitte. « N’importe quel état » est ce qui permet à un saut d’interrompre ce qui jouait.",
+      "to": "Vers",
+      "exitTime": "Sortie autorisée à partir de",
+      "exitTimeHelp": "La part de l’animation à jouer avant que la sortie soit permise. C’est ce qui laisse un atterrissage finir au lieu d’être coupé.",
+      "priority": "Priorité",
+      "priorityHelp": "Qui gagne quand deux transitions sont possibles au même instant. Le plus grand nombre l’emporte.",
+      "fadeHelp": "Le temps de fondu entre les deux animations, en secondes. À zéro, le changement est net."
     },
     "inputMap": {
       "actionId": "Action",
@@ -220,11 +273,6 @@
       },
       "loadFailed": "Cette carte de contrôles n’a pas pu être lue.",
       "loading": "Chargement de la carte de contrôles…",
-      "mode": {
-        "expert": "Expert",
-        "json": "JSON",
-        "simple": "Simple"
-      },
       "modeHint": "Change la façon de modifier la même carte de contrôles",
       "preset": {
         "character": "Personnage",
@@ -362,6 +410,11 @@
       "noFaults": "Aucune faute",
       "title": "Partie",
       "waiting": "En attente du studio…"
+    },
+    "scriptView": {
+      "simple": "Simple",
+      "expert": "Expert",
+      "json": "JSON"
     }
   }
 }

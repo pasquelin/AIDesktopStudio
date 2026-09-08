@@ -83,7 +83,7 @@ describe('openProjectFile', () => {
     expect(dockview.openFileView).toHaveBeenCalledWith({
       id: 'inputMap',
       path: 'Controls/character.input.json',
-      title: 'character',
+      title: 'character.input',
     })
     expect(adopt).not.toHaveBeenCalled()
   })

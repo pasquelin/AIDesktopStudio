@@ -186,8 +186,61 @@
       "jsonLabel": "アニメーショングラフのJSON",
       "loadFailed": "このアニメーショングラフを読み込めませんでした。",
       "loading": "アニメーショングラフを読み込んでいます…",
-      "save": "保存",
-      "writeFailed": "このアニメーショングラフをディスクに書き込めませんでした。"
+      "writeFailed": "このアニメーショングラフをディスクに書き込めませんでした。",
+      "views": "編集の方法",
+      "viewHint": {
+        "simple": "設定なしで、グラフが何を再生するかを状態ごとに示します",
+        "expert": "各設定をフォームとして開きます",
+        "json": "ディスクに書かれたままのファイルを示します"
+      },
+      "context": "コンテキスト",
+      "contextDescription": "このグラフの名前、動かす体の半分、そしてゲームが始まる状態。",
+      "id": "識別子",
+      "idHelp": "スクリプトがこのグラフを求める名前。ファイル名から来ます。",
+      "initial": "開始状態",
+      "initialHelp": "キャラクターが登場した瞬間に再生される状態。最初の遷移はここから出ます。",
+      "parameters": "パラメーター",
+      "parametersDescription": "遷移が判断に使う値。一部はゲームが自ら公開し、残りはあなたのものです。",
+      "builtInDescription": "はじめのものはゲームが毎ステップ公開します。速度、接地、ジャンプ。宣言なしで使えます。",
+      "parameterKind": "種類",
+      "parameterKinds": {
+        "number": "数値",
+        "boolean": "はい・いいえ"
+      },
+      "addParameter": "パラメーターを追加",
+      "removeParameter": "このパラメーターを削除",
+      "noParameter": "独自のパラメーターはありません。ゲームのものだけが使えます。",
+      "states": "状態",
+      "statesDescription": "キャラクターがしていられること、そして各状態が再生するアニメーション。",
+      "stateDescription": "状態は、そこから出す何かがない限り一つのアニメーションを再生し続けます。",
+      "addState": "状態を追加",
+      "removeState": "この状態を削除",
+      "initialBadge": "開始",
+      "clipKindHelp": "アニメーションの出どころ。モデル自身のファイル、スタジオ同梱のもの、あるいはプロジェクトのファイル。",
+      "clipKinds": {
+        "embedded": "モデル自身のもの",
+        "bundled": "スタジオ同梱",
+        "asset": "プロジェクトのファイル"
+      },
+      "speedFrom": "速度を動かすもの",
+      "speedFromHelp": "アニメーションの速度に掛かるパラメーター。加速するキャラクターの下で歩行サイクルを保ちます。",
+      "speedFromNone": "なし",
+      "transitions": "遷移",
+      "transitionsDescription": "ある状態から別の状態への道と、そのために真であるべきこと。",
+      "transitionRank": "遷移 {{rank}}",
+      "transitionSentence": "{{from}} → {{to}}",
+      "addTransition": "遷移を追加",
+      "removeTransition": "この遷移を削除",
+      "noTransition": "遷移がありません。開始状態が延々と再生されます。",
+      "anyState": "任意の状態",
+      "from": "元",
+      "fromHelp": "離れる状態。「任意の状態」があるから、ジャンプが再生中のものを断ち切れます。",
+      "to": "先",
+      "exitTime": "退出が許される時点",
+      "exitTimeHelp": "退出が許される前に再生するアニメーションの割合。着地を切らずに終わらせます。",
+      "priority": "優先度",
+      "priorityHelp": "同じ瞬間に二つの遷移が可能なとき、どちらが勝つか。大きい数が取ります。",
+      "fadeHelp": "二つのアニメーションのクロスフェード、秒。ゼロなら切り替えは瞬時です。"
     },
     "inputMap": {
       "actionId": "アクション",
@@ -220,11 +273,6 @@
       },
       "loadFailed": "この入力マップを読み込めませんでした。",
       "loading": "入力マップを読み込んでいます…",
-      "mode": {
-        "expert": "エキスパート",
-        "json": "JSON",
-        "simple": "シンプル"
-      },
       "modeHint": "同じ入力マップの編集方法を切り替えます。",
       "preset": {
         "character": "キャラクター",
@@ -362,6 +410,11 @@
       "noFaults": "エラーなし",
       "title": "再生モード",
       "waiting": "スタジオを待っています…"
+    },
+    "scriptView": {
+      "simple": "簡易",
+      "expert": "詳細",
+      "json": "JSON"
     }
   }
 }

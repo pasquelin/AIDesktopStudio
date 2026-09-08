@@ -186,8 +186,61 @@
       "jsonLabel": "Animasyon grafiği JSON’u",
       "loadFailed": "Bu animasyon grafiği okunamadı.",
       "loading": "Animasyon grafiği yükleniyor…",
-      "save": "Kaydet",
-      "writeFailed": "Bu animasyon grafiği diske yazılamadı."
+      "writeFailed": "Bu animasyon grafiği diske yazılamadı.",
+      "views": "Düzenleme görünümü",
+      "viewHint": {
+        "simple": "Grafın ne oynattığını, durum durum, ayar olmadan gösterir",
+        "expert": "Her ayarı bir form olarak açar",
+        "json": "Dosyayı diskte yazıldığı biçimiyle gösterir"
+      },
+      "context": "Bağlam",
+      "contextDescription": "Bu grafın adı, bedenin hangi yarısını sürdüğü ve oyunun hangi durumla başladığı.",
+      "id": "Tanımlayıcı",
+      "idHelp": "Bir betiğin bu grafı istediği ad. Dosya adından gelir.",
+      "initial": "Başlangıç durumu",
+      "initialHelp": "Karakter sahneye girer girmez oynatılan durum. İlk geçişler ondan çıkar.",
+      "parameters": "Parametreler",
+      "parametersDescription": "Geçişlerin karar verdiği değerler. Oyun bir kısmını kendi yayımlar; kalanı sizindir.",
+      "builtInDescription": "İlkleri oyun her adımda yayımlar: hız, yere basma, zıplama. Hiçbir şey bildirmeden kullanabilirsiniz.",
+      "parameterKind": "Tür",
+      "parameterKinds": {
+        "number": "Sayı",
+        "boolean": "Evet ya da hayır"
+      },
+      "addParameter": "Parametre ekle",
+      "removeParameter": "Bu parametreyi sil",
+      "noParameter": "Kendi parametreniz yok: yalnızca oyunun parametreleri var.",
+      "states": "Durumlar",
+      "statesDescription": "Karakterin yapıyor olabileceği şeyler ve her durumun oynattığı animasyon.",
+      "stateDescription": "Bir durum, kendisinden çıkaran bir şey olmadıkça bir animasyonu oynatır.",
+      "addState": "Durum ekle",
+      "removeState": "Bu durumu sil",
+      "initialBadge": "Başlangıç",
+      "clipKindHelp": "Animasyonun nereden geldiği: modelin dosyasından, stüdyoyla gelenlerden ya da projedeki bir dosyadan.",
+      "clipKinds": {
+        "embedded": "Modelin kendisi",
+        "bundled": "Stüdyoyla gelen",
+        "asset": "Projedeki bir dosya"
+      },
+      "speedFrom": "Hızı süren",
+      "speedFromHelp": "Animasyonun hızını çarpan parametre. Hızlanan bir karakterin altında yürüyüş döngüsünü tutan budur.",
+      "speedFromNone": "Yok",
+      "transitions": "Geçişler",
+      "transitionsDescription": "Bir durumdan diğerine geçiş ve bunun için doğru olması gerekenler.",
+      "transitionRank": "Geçiş {{rank}}",
+      "transitionSentence": "{{from}} → {{to}}",
+      "addTransition": "Geçiş ekle",
+      "removeTransition": "Bu geçişi sil",
+      "noTransition": "Geçiş yok: başlangıç durumu sonsuza dek oynatılacak.",
+      "anyState": "Herhangi bir durum",
+      "from": "Şuradan",
+      "fromHelp": "Terk edilen durum. « Herhangi bir durum », bir zıplamanın oynayanı kesmesini sağlayan şeydir.",
+      "to": "Şuraya",
+      "exitTime": "Çıkışa izin verilen an",
+      "exitTimeHelp": "Çıkışa izin verilmeden önce oynatılacak animasyon payı. Bir inişin kesilmek yerine bitmesini sağlar.",
+      "priority": "Öncelik",
+      "priorityHelp": "Aynı anda iki geçiş mümkünse hangisinin kazanacağı. Büyük sayı kazanır.",
+      "fadeHelp": "İki animasyon arasındaki geçiş süresi, saniye. Sıfırda değişim serttir."
     },
     "inputMap": {
       "actionId": "Eylem",
@@ -220,11 +273,6 @@
       },
       "loadFailed": "Bu girdi eşlemesi okunamadı.",
       "loading": "Girdi eşlemesi yükleniyor…",
-      "mode": {
-        "expert": "Uzman",
-        "json": "JSON",
-        "simple": "Basit"
-      },
       "modeHint": "Aynı girdi eşlemesinin düzenlenme biçimini değiştirir",
       "preset": {
         "character": "Karakter",
@@ -362,6 +410,11 @@
       "noFaults": "Hata yok",
       "title": "Oynatma modu",
       "waiting": "Stüdyo bekleniyor…"
+    },
+    "scriptView": {
+      "simple": "Basit",
+      "expert": "Uzman",
+      "json": "JSON"
     }
   }
 }

@@ -74,6 +74,11 @@ export function panelIsFileView(id: string): boolean {
   return id.startsWith(FILE_VIEW_PREFIX)
 }
 
+/** The file a `file:` panel opens, read off the id for the same reason — a restored panel. */
+export function fileViewOfPanel(id: string): FileView | null {
+  return panelIsFileView(id) ? fileViewOf(id.slice(FILE_VIEW_PREFIX.length)) : null
+}
+
 // The tab ⌘W acts on, read by the router that runs the gesture and by the menu that greys its
 // row. Nothing behind the home, which covers tabs rather than replacing them.
 export function closableTabId(): string | null {

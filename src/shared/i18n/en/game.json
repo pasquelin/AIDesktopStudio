@@ -186,8 +186,61 @@
       "jsonLabel": "Animation graph JSON",
       "loadFailed": "This animation graph could not be read.",
       "loading": "Loading animation graph…",
-      "save": "Save",
-      "writeFailed": "This animation graph could not be written to disk."
+      "writeFailed": "This animation graph could not be written to disk.",
+      "views": "Editing view",
+      "viewHint": {
+        "simple": "Shows what the graph plays, state by state, with no setting",
+        "expert": "Opens every setting as a form",
+        "json": "Shows the file exactly as it is written on disk"
+      },
+      "context": "Context",
+      "contextDescription": "What this graph is called, which half of the body it drives, and the state a game starts on.",
+      "id": "Identifier",
+      "idHelp": "The name a script asks for this graph by. It comes from the file name.",
+      "initial": "Starting state",
+      "initialHelp": "The state played the moment the character enters. The first transitions leave from it.",
+      "parameters": "Parameters",
+      "parametersDescription": "The values transitions decide on. The game publishes some by itself; the others are yours.",
+      "builtInDescription": "The first ones are published by the game on every step: speed, ground contact, jump. You may use them without declaring anything.",
+      "parameterKind": "Kind",
+      "parameterKinds": {
+        "number": "Number",
+        "boolean": "Yes or no"
+      },
+      "addParameter": "Add parameter",
+      "removeParameter": "Remove this parameter",
+      "noParameter": "No parameter of your own: only the game’s are available.",
+      "states": "States",
+      "statesDescription": "What the character can be doing, and the animation each one plays.",
+      "stateDescription": "A state plays one animation for as long as nothing takes it out of it.",
+      "addState": "Add state",
+      "removeState": "Remove this state",
+      "initialBadge": "Start",
+      "clipKindHelp": "Where the animation comes from: the model’s own file, one shipped with the studio, or a file of the project.",
+      "clipKinds": {
+        "embedded": "The model’s own",
+        "bundled": "Shipped with the studio",
+        "asset": "A file of the project"
+      },
+      "speedFrom": "Speed driven by",
+      "speedFromHelp": "The parameter that multiplies the animation’s speed. It is what keeps a walk cycle under a character speeding up.",
+      "speedFromNone": "None",
+      "transitions": "Transitions",
+      "transitionsDescription": "The way from one state to another, and what must be true for it to be taken.",
+      "transitionRank": "Transition {{rank}}",
+      "transitionSentence": "{{from}} → {{to}}",
+      "addTransition": "Add transition",
+      "removeTransition": "Remove this transition",
+      "noTransition": "No transition: the starting state will play forever.",
+      "anyState": "Any state",
+      "from": "From",
+      "fromHelp": "The state being left. “Any state” is what lets a jump interrupt whatever was playing.",
+      "to": "To",
+      "exitTime": "Way out allowed from",
+      "exitTimeHelp": "The share of the animation to play before the way out is allowed. It is what lets a landing finish instead of being cut off.",
+      "priority": "Priority",
+      "priorityHelp": "Who wins when two transitions are possible at the same moment. The higher number takes it.",
+      "fadeHelp": "The cross-fade between the two animations, in seconds. At zero the change is instant."
     },
     "inputMap": {
       "actionId": "Action",
@@ -220,11 +273,6 @@
       },
       "loadFailed": "This input map could not be read.",
       "loading": "Loading input map…",
-      "mode": {
-        "expert": "Expert",
-        "json": "JSON",
-        "simple": "Simple"
-      },
       "modeHint": "Changes how the same input map is edited",
       "preset": {
         "character": "Character",
@@ -362,6 +410,11 @@
       "noFaults": "No faults",
       "title": "Play mode",
       "waiting": "Waiting for the studio…"
+    },
+    "scriptView": {
+      "simple": "Simple",
+      "expert": "Expert",
+      "json": "JSON"
     }
   }
 }

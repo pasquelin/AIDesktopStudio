@@ -29,10 +29,16 @@ const CHARACTER: InputMap = {
 const askedToSave = (path: string): (() => Promise<boolean>) | null =>
   fileViewSave(fileViewPanelId(path))
 
-const save = async (path: string): Promise<void> => {
+const save = async (path: string): Promise<boolean> => {
+  const run = askedToSave(path)
+  // 🛑 Said out loud rather than left to a missing message three assertions later: a view that
+  // registered no save fails here, naming the cause, instead of timing out on a text.
+  if (!run) throw new Error(`no save registered for ${path}`)
+  let answered = false
   await act(async () => {
-    await askedToSave(path)?.()
+    answered = await run()
   })
+  return answered
 }
 
 describe('the input map editor', () => {
@@ -125,11 +131,12 @@ describe('the input map editor', () => {
     render(<InputMapDocument path="Controls/character.input.json" />)
     await screen.findByText('jump')
 
-    await save('Controls/character.input.json')
+    expect(await save('Controls/character.input.json')).toBe(false)
 
-    expect(
-      await screen.findByText('Cette carte de contrôles n’a pas pu être écrite sur le disque.'),
-    ).toBeInTheDocument()
+    // The BAND, by its role: what a refusal is on this shell, whichever sentence it carries.
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Cette carte de contrôles n’a pas pu être écrite sur le disque.',
+    )
   })
 
   it('keeps a valid JSON edit when switching back to the expert view before saving', async () => {

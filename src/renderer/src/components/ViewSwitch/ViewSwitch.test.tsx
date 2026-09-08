@@ -1,12 +1,14 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
-import { ViewSwitch } from './ViewSwitch'
+import { ViewSwitch, type ViewSwitchOption } from './ViewSwitch'
 
-const OPTIONS = [
+type TestView = 'simple' | 'expert'
+
+const OPTIONS: readonly ViewSwitchOption<TestView>[] = [
   { id: 'simple', label: 'Simple', hint: 'Montre ce que le fichier fait' },
   { id: 'expert', label: 'Expert', hint: 'Ouvre chaque réglage' },
-] as const
+]
 
 const switchOf = (onChange = vi.fn()) => {
   render(

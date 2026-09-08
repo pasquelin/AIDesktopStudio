@@ -186,8 +186,61 @@
       "jsonLabel": "JSON do grafo de animação",
       "loadFailed": "Não foi possível ler este grafo de animação.",
       "loading": "Carregando o grafo de animação…",
-      "save": "Salvar",
-      "writeFailed": "Não foi possível gravar este grafo de animação no disco."
+      "writeFailed": "Não foi possível gravar este grafo de animação no disco.",
+      "views": "Vista de edição",
+      "viewHint": {
+        "simple": "Mostra o que o grafo reproduz, estado a estado, sem definições",
+        "expert": "Abre cada definição como formulário",
+        "json": "Mostra o ficheiro tal como está escrito no disco"
+      },
+      "context": "Contexto",
+      "contextDescription": "Como se chama este grafo, que metade do corpo comanda, e em que estado o jogo começa.",
+      "id": "Identificador",
+      "idHelp": "O nome pelo qual um script pede este grafo. Vem do nome do ficheiro.",
+      "initial": "Estado inicial",
+      "initialHelp": "O estado reproduzido assim que a personagem entra. É dele que partem as primeiras transições.",
+      "parameters": "Parâmetros",
+      "parametersDescription": "Os valores sobre os quais as transições decidem. O jogo publica alguns sozinho; os outros são seus.",
+      "builtInDescription": "Os primeiros são publicados pelo jogo a cada passo: velocidade, apoio no chão, salto. Pode usá-los sem declarar nada.",
+      "parameterKind": "Género",
+      "parameterKinds": {
+        "number": "Número",
+        "boolean": "Sim ou não"
+      },
+      "addParameter": "Adicionar parâmetro",
+      "removeParameter": "Remover este parâmetro",
+      "noParameter": "Nenhum parâmetro seu: só existem os do jogo.",
+      "states": "Estados",
+      "statesDescription": "O que a personagem pode estar a fazer, e a animação que cada estado reproduz.",
+      "stateDescription": "Um estado reproduz uma animação enquanto nada o fizer sair dela.",
+      "addState": "Adicionar estado",
+      "removeState": "Remover este estado",
+      "initialBadge": "Início",
+      "clipKindHelp": "De onde vem a animação: do ficheiro do modelo, das que vêm com o estúdio, ou de um ficheiro do projeto.",
+      "clipKinds": {
+        "embedded": "A do modelo",
+        "bundled": "Incluída no estúdio",
+        "asset": "Um ficheiro do projeto"
+      },
+      "speedFrom": "Velocidade comandada por",
+      "speedFromHelp": "O parâmetro que multiplica a velocidade da animação. É o que mantém um ciclo de marcha sob uma personagem que acelera.",
+      "speedFromNone": "Nenhum",
+      "transitions": "Transições",
+      "transitionsDescription": "A passagem de um estado para outro, e o que tem de ser verdade para acontecer.",
+      "transitionRank": "Transição {{rank}}",
+      "transitionSentence": "{{from}} → {{to}}",
+      "addTransition": "Adicionar transição",
+      "removeTransition": "Remover esta transição",
+      "noTransition": "Sem transições: o estado inicial será reproduzido sem fim.",
+      "anyState": "Qualquer estado",
+      "from": "De",
+      "fromHelp": "O estado que se deixa. «Qualquer estado» é o que permite a um salto interromper o que estava a tocar.",
+      "to": "Para",
+      "exitTime": "Saída permitida a partir de",
+      "exitTimeHelp": "A parte da animação a reproduzir antes de a saída ser permitida. É o que deixa uma aterragem acabar em vez de ser cortada.",
+      "priority": "Prioridade",
+      "priorityHelp": "Quem ganha quando duas transições são possíveis no mesmo instante. O número maior leva-a.",
+      "fadeHelp": "O esbatimento entre as duas animações, em segundos. A zero, a mudança é seca."
     },
     "inputMap": {
       "actionId": "Ação",
@@ -220,11 +273,6 @@
       },
       "loadFailed": "Não foi possível ler este mapa de comandos.",
       "loading": "Carregando o mapa de comandos…",
-      "mode": {
-        "expert": "Especialista",
-        "json": "JSON",
-        "simple": "Simples"
-      },
       "modeHint": "Muda a forma de editar o mesmo mapa de comandos",
       "preset": {
         "character": "Personagem",
@@ -362,6 +410,11 @@
       "noFaults": "Nenhuma falha",
       "title": "Modo de reprodução",
       "waiting": "Aguardando o estúdio…"
+    },
+    "scriptView": {
+      "simple": "Simples",
+      "expert": "Perito",
+      "json": "JSON"
     }
   }
 }

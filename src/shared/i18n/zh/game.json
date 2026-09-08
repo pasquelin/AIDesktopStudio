@@ -186,8 +186,61 @@
       "jsonLabel": "动画图 JSON",
       "loadFailed": "无法读取这张动画图。",
       "loading": "正在加载动画图…",
-      "save": "保存",
-      "writeFailed": "无法将这张动画图写入磁盘。"
+      "writeFailed": "无法将这张动画图写入磁盘。",
+      "views": "编辑方式",
+      "viewHint": {
+        "simple": "逐个状态显示图播放什么，不含设置",
+        "expert": "以表单形式打开每一项设置",
+        "json": "按磁盘上写入的原样显示文件"
+      },
+      "context": "上下文",
+      "contextDescription": "这个图叫什么、驱动身体的哪一半，以及游戏从哪个状态开始。",
+      "id": "标识符",
+      "idHelp": "脚本请求这个图时使用的名字。它来自文件名。",
+      "initial": "起始状态",
+      "initialHelp": "角色一登场就播放的状态。最初的过渡都从它出发。",
+      "parameters": "参数",
+      "parametersDescription": "过渡据以判断的值。游戏自己发布一部分；其余由你定义。",
+      "builtInDescription": "前面这些由游戏在每一步发布：速度、着地、跳跃。无需声明即可使用。",
+      "parameterKind": "种类",
+      "parameterKinds": {
+        "number": "数值",
+        "boolean": "是或否"
+      },
+      "addParameter": "添加参数",
+      "removeParameter": "删除这个参数",
+      "noParameter": "没有你自己的参数：只有游戏提供的可用。",
+      "states": "状态",
+      "statesDescription": "角色可能正在做的事，以及每个状态播放的动画。",
+      "stateDescription": "只要没有东西把它带走，状态就一直播放一个动画。",
+      "addState": "添加状态",
+      "removeState": "删除这个状态",
+      "initialBadge": "起点",
+      "clipKindHelp": "动画来自哪里：模型自带的文件、随工作室提供的动画，或项目里的文件。",
+      "clipKinds": {
+        "embedded": "模型自带",
+        "bundled": "随工作室提供",
+        "asset": "项目中的文件"
+      },
+      "speedFrom": "速度由谁驱动",
+      "speedFromHelp": "与动画速度相乘的参数。正是它让行走循环跟上加速中的角色。",
+      "speedFromNone": "无",
+      "transitions": "过渡",
+      "transitionsDescription": "从一个状态到另一个状态的通路，以及成立所需的条件。",
+      "transitionRank": "过渡 {{rank}}",
+      "transitionSentence": "{{from}} → {{to}}",
+      "addTransition": "添加过渡",
+      "removeTransition": "删除这个过渡",
+      "noTransition": "没有过渡：起始状态会一直播放下去。",
+      "anyState": "任意状态",
+      "from": "从",
+      "fromHelp": "被离开的状态。“任意状态”让跳跃可以打断正在播放的动作。",
+      "to": "到",
+      "exitTime": "允许退出的时点",
+      "exitTimeHelp": "允许退出之前要播放的动画比例。它让落地能够播完，而不是被截断。",
+      "priority": "优先级",
+      "priorityHelp": "同一时刻两个过渡都成立时谁获胜。数值大的胜出。",
+      "fadeHelp": "两个动画之间的交叉淡入淡出时间，单位为秒。为零时切换是硬切。"
     },
     "inputMap": {
       "actionId": "操作",
@@ -220,11 +273,6 @@
       },
       "loadFailed": "无法读取这张输入映射。",
       "loading": "正在加载输入映射…",
-      "mode": {
-        "expert": "专家",
-        "json": "JSON",
-        "simple": "简单"
-      },
       "modeHint": "改变编辑同一张输入映射的方式",
       "preset": {
         "character": "角色",
@@ -362,6 +410,11 @@
       "noFaults": "没有错误",
       "title": "运行模式",
       "waiting": "正在等待工作室…"
+    },
+    "scriptView": {
+      "simple": "简单",
+      "expert": "专家",
+      "json": "JSON"
     }
   }
 }
