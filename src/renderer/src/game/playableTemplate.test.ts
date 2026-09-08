@@ -267,10 +267,11 @@ it('keeps the first-person camera at eye height throughout a jump', async () => 
   }
 })
 
-it('follows the first-person camera through a vertical climb', () => {
+/** Six frames of a straight vertical climb, as the height the body reached and the one filmed. */
+function climbedHeights(template: 'firstPerson' | 'thirdPerson'): { body: number; view: number }[] {
   const physics = notedPhysics()
   const views: CameraView[] = []
-  const world = worldFromScene('doc-1', sceneFromTemplate('firstPerson'), {
+  const world = worldFromScene('doc-1', sceneFromTemplate(template), {
     ...createExportHost({
       input: new EventTarget(),
       player: { id: 'p1', name: 'Alba', local: true },
@@ -289,15 +290,32 @@ it('follows the first-person camera through a vertical climb', () => {
     const body = [...world.entities.withComponent('CharacterController')][0]
     if (!body) throw new Error('Missing climbing character')
 
-    for (let step = 0; step < 6; step++) {
+    return Array.from({ length: 6 }, (_, step) => {
       body.transform.position.y = 0.9 + step * 0.35
       world.lateUpdate(0, STEP)
       const view = views.at(-1)
-      if (!view) throw new Error('Missing climbing first-person view')
-      expect(view.position.y).toBeCloseTo(body.transform.position.y + 0.8, 5)
-    }
+      if (!view) throw new Error('Missing climbing view')
+      return { body: body.transform.position.y, view: view.position.y }
+    })
   } finally {
     world.dispose()
     physics.dispose()
   }
+}
+
+it('follows the first-person camera through a vertical climb', () => {
+  for (const frame of climbedHeights('firstPerson')) {
+    expect(frame.view).toBeCloseTo(frame.body + 0.8, 5)
+  }
+})
+
+// The arm that films it lags on purpose, and that lag stops at the height: an eye held back on the
+// way up reads as the ground dropping away rather than the body rising.
+it('follows the over-the-shoulder camera through a vertical climb', () => {
+  const frames = climbedHeights('thirdPerson')
+  const first = frames[0]
+  if (!first) throw new Error('Missing over-the-shoulder climb')
+
+  for (const frame of frames)
+    expect(frame.view).toBeCloseTo(frame.body + (first.view - first.body), 5)
 })

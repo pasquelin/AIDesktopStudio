@@ -302,6 +302,9 @@ export function playerModuleNodes(
 function playerArm(view: 'firstPerson' | 'thirdPerson', subject: string): Component {
   return {
     ...newComponent('SpringArm'),
+    // A camera that lags in height reads as the ground moving under a jump rather than the body
+    // rising. It is the third person this buys: the first sets `positionLag` to zero outright.
+    followVertical: true,
     ...(view === 'firstPerson'
       ? {
           length: 0,
@@ -309,7 +312,6 @@ function playerArm(view: 'firstPerson' | 'thirdPerson', subject: string): Compon
           rotationLag: 0,
           height: DEFAULT_PLAY.eyeHeight - WALKER_HEIGHT / 2,
           collision: false,
-          followVertical: true,
         }
       : {}),
     subject,

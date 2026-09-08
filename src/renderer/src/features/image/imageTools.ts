@@ -41,7 +41,9 @@ import type { ToolbarItem } from '@/components/Toolbar/tools'
 import type { AiEdit } from './aiActions'
 import { COMMENT_TOOL } from './imageCommentTool'
 
-export type ImageTool = ToolbarItem & { tool: CanvasTool }
+import type { ImageTool } from './imageTool'
+
+export type { ImageTool } from './imageTool'
 
 /**
  * Which command arms which button. The bar carries no key of its own: it reads them off the

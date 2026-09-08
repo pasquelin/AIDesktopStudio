@@ -171,6 +171,27 @@ describe('settings store', () => {
     expect(useSettings.getState().auth.authenticated).toBe(true)
   })
 
+  it('leaves the previous answer standing while a new probe is in flight', async () => {
+    useSettings.setState({ auth: { authenticated: true }, authKnown: true })
+    let finish = (): void => {}
+    installFakeBridge({
+      settings: {
+        authState: () =>
+          new Promise<AuthState>(resolve => {
+            finish = () => resolve({ authenticated: false, reason: 'missing' })
+          }),
+      },
+    })
+
+    const answered = useSettings.getState().refreshAuth()
+    expect(useSettings.getState().authKnown).toBe(true)
+    expect(useSettings.getState().auth.authenticated).toBe(true)
+
+    finish()
+    await answered
+    expect(useSettings.getState().auth.authenticated).toBe(false)
+  })
+
   it('clears the previous authentication when a new probe fails to reach the main process', async () => {
     useSettings.setState({ auth: { authenticated: true }, authKnown: true })
     installFakeBridge({
