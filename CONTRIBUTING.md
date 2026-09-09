@@ -30,13 +30,13 @@ Running the studio needs an API key and secret from a generation provider, enter
 ## The gate
 
 `pnpm validate` must be green on the exact content you propose. It chains every check this
-repository enforces — types, lint, format, dead exports, sizes, the Python engine, the build, and
-a suite north of 9,000 colocated tests. The CI job runs that very command rather than a copy of
-its links, so a green run locally is the same verdict.
+repository enforces — `package.json` is where they are listed, so that no second list can drift
+from it — and the suite it runs is colocated with the code, north of 9,000 tests. The CI job runs
+that very command rather than a copy of its links, so a green run locally is the same verdict.
 
-While you are still writing, `pnpm check` answers in seconds and covers the fast links;
-`pnpm typecheck`, `pnpm lint` and `pnpm test <path>` narrow it further. Run the full gate once,
-when the change is finished.
+While you are still writing, `pnpm check` answers in seconds on the fast half of it. When one
+link comes back red, replay that link alone — `package.json` names every one of them, and reading
+the whole error beats running the chain again. Keep the full gate for the end.
 
 `pnpm sizes:check` is the link that surprises people: strict physical-line limits on every
 tracked source, tests included, with no debt baseline. [README ▸ Quality bar](README.md#quality-bar)
