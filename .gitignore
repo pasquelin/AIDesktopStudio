@@ -18,6 +18,7 @@ CLAUDE.md
 # Outillage des sessions Claude : il vit dans le dépôt, il n'en est pas le contenu.
 # `skills/` n'est qu'un lien vers hors du dépôt.
 .claude/
+.codex/
 # Les worktrees des sessions pèsent des gigaoctets. Ils sont à la RACINE depuis le 2026-09-08 :
 # `.claude/` les cachait, et toute règle du contrat devait alors nommer un chemin sous un dossier
 # d'outillage. Cette ligne suffit à knip, mesuré le 2026-09-08 — il lit bien `.gitignore` ; le
