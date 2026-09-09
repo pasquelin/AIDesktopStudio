@@ -1,12 +1,7 @@
 import { orElse } from '@shared/promises'
 import { messageOf } from '@shared/guards'
 import { create } from 'zustand'
-import {
-  projectPickerFolder,
-  movedProjectKey,
-  movedRecentProject,
-  type Project,
-} from '@shared/domain/project'
+import { projectPickerFolder, type Project } from '@shared/domain/project'
 import type { ProjectBinned, ProjectMade } from '@shared/ipc'
 import type { StudioBridge } from '@shared/ipc'
 import {
@@ -103,10 +98,11 @@ type ProjectState = {
   /**
    * Gives a project a new name, which MOVES its folder — a project is named by its folder.
    *
-   * Two writes, and they belong together: the main process owns the folder, and this owns
-   * everything keyed on the path it just left — the shelf, `lastProject`, the account link, the
-   * per-project roles and the adopted layout. The folder moves FIRST, so nothing here ever claims
-   * a path the disk refused.
+   * Two writes, and they belong together: the main process owns the folder AND everything keyed
+   * on the path it just left — the shelf, `lastProject`, the account link and the per-project
+   * roles, moved by `settings.moveProject`. What stays here is the adopted layout, which lives in
+   * this window's own storage. The folder moves FIRST, so nothing ever claims a path the disk
+   * refused.
    *
    * Here rather than in the row that offered it, for the same reason the forgetting above is: two
    * surfaces list projects, and a rename wired into one of them would be missing from the other.
@@ -454,21 +450,18 @@ const projectState: ProjectState = {
     }
 
     /**
-     * 🛑 Everything keyed BY FOLDER moves with it, and the account link above all: orphaned at the
-     * old path, `planProjectAccount` answers `adopt` and the project silently comes back on
-     * whichever key is active — a destructive write nobody asked for.
+     * 🛑 Everything keyed BY FOLDER moves with it, and the main process is what moves it — see
+     * `settingsWithMovedProject`. Composed here it was composed from THIS window's replica, and a
+     * rename touches four tables, so four went stale at once.
      */
-    const { settings, write } = useSettings.getState()
-    await write({
-      storage: {
-        recentProjects: movedRecentProject(settings.storage.recentProjects, path, renamed.path),
-        projectAccounts: movedProjectKey(settings.storage.projectAccounts, path, renamed.path),
-        // The pointer the next launch reopens names a FOLDER: left at the old one the studio
-        // starts on a path nothing answers, and forgets the project on the way.
-        ...(settings.storage.lastProject === path ? { lastProject: renamed.path } : {}),
-      },
-      ai: { projectRoles: movedProjectKey(settings.ai.projectRoles, path, renamed.path) },
-    })
+    try {
+      useSettings.setState({ settings: await bridge.settings.moveProject(path, renamed.path) })
+    } catch (error) {
+      // The FOLDER has already moved, so answering a refusal would be a lie — and the caller
+      // documents that this answers WHY rather than throwing. What is lost is written down: the
+      // shelf still names the old folder, and the account link is orphaned at it.
+      reportFailure('project.rename', path, error)
+    }
 
     // The tabs a person arranged are adopted BY FOLDER too, and `adopt` blanks the layout when the
     // path it holds is not the one in front — the arrangement would be lost at the next opening.

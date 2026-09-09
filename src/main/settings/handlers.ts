@@ -1,7 +1,7 @@
 import type { AccountsResult, AccountSummary } from '@shared/domain/account'
 import { cloudAuth } from '@shared/domain/aiCloud'
 import type { AuthState, SettingsSectionId } from '@shared/domain/settings'
-import { settingsWithoutProject } from '@shared/domain/settingsProject'
+import { settingsWithMovedProject, settingsWithoutProject } from '@shared/domain/settingsProject'
 import { CHANNELS, type McpState } from '@shared/ipc'
 import { handle } from '@main/ipc/handle'
 import type { CreditsReader } from '@main/provider/credits'
@@ -57,6 +57,12 @@ export function registerSettingsHandlers({
 
   // 🛑 Read HERE and written here: composing the new lists in a window meant composing them from
   // a replica, and everything this process had written since the last broadcast went with them.
+  handle(CHANNELS.settingsMoveProject, (_event, from, to) =>
+    settings.write(
+      settingsWithMovedProject(settings.read(), parseProjectPath(from), parseProjectPath(to)),
+    ),
+  )
+
   handle(CHANNELS.settingsForgetProject, (_event, path, owned) =>
     settings.write(settingsWithoutProject(settings.read(), parseProjectPath(path), owned === true)),
   )

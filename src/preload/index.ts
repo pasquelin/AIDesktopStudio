@@ -54,6 +54,7 @@ const bridge: StudioBridge = {
     read: () => ipcRenderer.invoke(CHANNELS.settingsRead),
     write: partial => ipcRenderer.invoke(CHANNELS.settingsWrite, partial),
     forgetProject: (path, owned) => ipcRenderer.invoke(CHANNELS.settingsForgetProject, path, owned),
+    moveProject: (from, to) => ipcRenderer.invoke(CHANNELS.settingsMoveProject, from, to),
     authState: () => ipcRenderer.invoke(CHANNELS.settingsAuthState),
     open: section => ipcRenderer.invoke(CHANNELS.settingsOpen, section),
     runAction: id => ipcRenderer.invoke(CHANNELS.settingsRunAction, id),

@@ -11,6 +11,7 @@ export function fakeBridgeSettings(
     read: () => Promise.resolve(DEFAULT_SETTINGS),
     write: () => Promise.resolve(DEFAULT_SETTINGS),
     forgetProject: () => Promise.resolve(DEFAULT_SETTINGS),
+    moveProject: () => Promise.resolve(DEFAULT_SETTINGS),
     authState: () => Promise.resolve({ authenticated: false, reason: 'missing' }),
     open: () => Promise.resolve(),
     runAction: () => Promise.resolve(),

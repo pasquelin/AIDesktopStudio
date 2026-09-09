@@ -80,6 +80,20 @@ describe('settings handlers', () => {
     expect(settings.read().storage.projectAccounts).toEqual({})
   })
 
+  // The other half of the same rule: a rename moves four tables, so a window composing them from
+  // its replica loses four at once.
+  it('moves one project to its new folder in the settings this process holds', () => {
+    const shelved = (path: string) => ({ path, openedAt: '2026-09-09', createdAt: '2026-09-09' })
+    settings.write({
+      storage: { recentProjects: [shelved('/a'), shelved('/b')], projectAccounts: { '/a': 'clé' } },
+    })
+
+    invoke(CHANNELS.settingsMoveProject, '/a', '/c')
+
+    expect(settings.read().storage.recentProjects.map(one => one.path)).toEqual(['/c', '/b'])
+    expect(settings.read().storage.projectAccounts).toEqual({ '/c': 'clé' })
+  })
+
   // The channel is typed, but the type is gone at runtime and the sender is a renderer.
   it('rejects a malformed write without persisting anything', () => {
     expect(() => invoke(CHANNELS.settingsWrite, { generation: { concurrentJobs: 999 } })).toThrow()
