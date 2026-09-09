@@ -76,10 +76,13 @@ function moveActiveSpace(move: 'left' | 'right'): CommandRouting {
  * NOT `setHeld`: outside push-to-talk that one acts on the press alone, so a release asked for
  * from here did nothing at all while the caller was told it ran.
  */
-async function toggleDictation(): Promise<CommandRouting> {
+async function toggleDictation(command: CommandId): Promise<CommandRouting> {
   const dictation = useDictation.getState()
-  await (dictation.state === 'listening' ? dictation.stop() : dictation.start())
-  return 'ran'
+
+  return await ranOrFailed(
+    dictation.state === 'listening' ? dictation.stop() : dictation.start(),
+    error => traceFailure('shell.dropped', command, error),
+  )
 }
 
 function runProjectCommand(command: CommandId): CommandRouting | null {
@@ -153,7 +156,7 @@ async function runHere(command: CommandId): Promise<CommandRouting | null> {
     case 'app.assistant':
       return revealChat() ? 'ran' : 'noSurface'
     case 'app.dictate':
-      return await toggleDictation()
+      return await toggleDictation(command)
     case 'spaces.moveLeft':
       return moveActiveSpace('left')
     case 'spaces.moveRight':

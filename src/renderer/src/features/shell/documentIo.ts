@@ -22,6 +22,7 @@ import i18next from 'i18next'
 import { closePanel, openDocument } from './components/dockviewApi'
 import { IO_BY_KIND, ioOf, type CapturedDraft, type DocumentIo } from './documentIoAdapters'
 import {
+  epochIsCurrent,
   epochOf,
   forgetLoadState,
   invalidateLoad,
@@ -100,6 +101,10 @@ export async function saveDocument(documentId: string, byHand = true): Promise<b
   const savable = savableDocument(documentId, byHand)
   if (!savable) return false
   const { io } = savable
+  // Waited HERE rather than at the doors: `capture` reads the mounted engine, which trails the
+  // store by a render — see `createAppliedGate`. One of the seven callers had it, so ⌘S right
+  // after an edit still wrote the pixels from before it.
+  await io.settled?.(documentId)
   if (io.assetOnly) return await io.saveOwn(documentId)
   const writable: WritableSavableDocument = { ...savable, io }
   const epoch = epochOf(documentId)
@@ -134,7 +139,7 @@ async function writeCaptured(
   const captured = capturedOrThrow(result, controller.signal)
   if (!captured) return false
   let { document } = savable
-  if (!saveIsCurrent(document, epoch, controller.signal)) return false
+  if (!epochIsCurrent(document, epoch, controller.signal)) return false
   document = useDocuments.getState().documents[document.id] ?? document
   const { draft, commit, wasEdited } = captured
   const payload = {
@@ -144,7 +149,7 @@ async function writeCaptured(
   }
   if (!(await writeDraft(savable, document, payload, epoch, controller.signal, byHand)))
     return false
-  if (!saveIsCurrent(document, epoch, controller.signal)) return false
+  if (!epochIsCurrent(document, epoch, controller.signal)) return false
   commit()
   if (!byHand) return true
   await rewriteSourceAsset(document, savable.io, wasEdited, draft)
@@ -170,15 +175,11 @@ async function writeDraft(
   const result = await bridge.documents.write(document.id, document.kind, draft, false, folder)
   if (result !== 'stale') return true
   if (!byHand || !(await bridge.documents.confirmOverwrite(document.title))) return false
-  if (!saveIsCurrent(document, epoch, signal)) return false
+  if (!epochIsCurrent(document, epoch, signal)) return false
   await bridge.documents.write(document.id, document.kind, draft, true, folder)
   return true
 }
 
-function saveIsCurrent(document: DocumentDescriptor, epoch: number, signal: AbortSignal): boolean {
-  const current = useDocuments.getState().documents[document.id]
-  return !signal.aborted && epochOf(document.id) === epoch && current?.kind === document.kind
-}
 function writePlanFor(
   document: DocumentDescriptor,
   io: DocumentIo,

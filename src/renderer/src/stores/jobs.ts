@@ -3,7 +3,7 @@ import { defined } from '@shared/guards'
 import { isFinished, type Job, type JobProgress, type JobTarget } from '@shared/domain/job'
 import type { ContextUse } from '@shared/domain/projectContext'
 import { connectThroughBridge, getBridge } from '@/services/bridge'
-import { withoutKey } from '@/helpers/objects'
+import { withoutKey } from '@shared/collections'
 import { useAssets } from './assets'
 
 type JobsState = {

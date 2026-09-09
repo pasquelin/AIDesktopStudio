@@ -3,6 +3,7 @@ import { saveDocument } from '@/features/shell/documentIo'
 import { forgetLoadState } from '@/features/shell/documentLoad'
 import { addNode } from '@/engines/scene/commands'
 import { meshNode } from '@/engines/scene/scene-fixtures'
+import { stillWaiting } from '@/helpers/waiting-fixtures'
 import { installFakeBridge } from '@/services/fakeBridge'
 import { useDocuments } from '@/stores/documents'
 import { useProject } from '@/stores/project'
@@ -145,17 +146,11 @@ describe('opening a document from outside the window', () => {
     await savePilotScene()
     reopenProject()
 
-    const settled: unknown[] = []
-    const opening = runAction('document.open', { path: PILOT.path }).then(outcome =>
-      settled.push(outcome),
-    )
-    await Promise.resolve()
-    await Promise.resolve()
-    expect(settled).toEqual([])
+    const opening = runAction('document.open', { path: PILOT.path })
+    expect(await stillWaiting(opening)).toBe(true)
 
     deliver?.()
-    await opening
-    expect(settled).toEqual([{ ok: true, data: { documentId: PILOT.id } }])
+    await expect(opening).resolves.toEqual({ ok: true, data: { documentId: PILOT.id } })
   })
 
   // The tab is up either way; what must not happen is a client being told to write into it.

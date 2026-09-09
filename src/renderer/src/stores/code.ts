@@ -3,7 +3,7 @@ import { refFromString, refToString } from '@shared/domain/ref'
 import { byCodeUnit } from '@shared/text'
 import type { CodeProblem } from '@/engines/code/CodeEditor'
 import { getBridge } from '@/services/bridge'
-import { withoutKey } from '@/helpers/objects'
+import { withoutKey } from '@shared/collections'
 import { documentById, useDocuments } from './documents'
 
 /** One script of the project, as the editor holds it. */

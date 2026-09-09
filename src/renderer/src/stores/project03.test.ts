@@ -5,7 +5,6 @@ import { installFakeBridge, type BridgeOverrides } from '@/services/fakeBridge'
 import { useProject } from './project'
 import type { ProjectBinned } from '@shared/ipc'
 import { useSettings } from './settings'
-import { ASSISTANT_ROLE, type AiRoleId, type RoleProvider } from '@shared/domain/aiRole'
 
 const closeOrphanTabs = vi.hoisted(() => vi.fn())
 vi.mock('@/features/shell/orphanTabs', () => ({ closeOrphanTabs }))
@@ -38,30 +37,14 @@ describe('putting a project folder in the trash', () => {
     path: '/projects/Summer',
     openedAt: '2026-08-10T09:00:00.000Z',
   }
-  const WINTER: RecentProject = {
-    path: '/projects/Winter',
-    openedAt: '2026-08-09T09:00:00.000Z',
-  }
-  const ROLE_HELD: Partial<Record<AiRoleId, RoleProvider>> = {
-    [ASSISTANT_ROLE]: { kind: 'cloud', providerId: 'deepseek' },
-  }
-
-  /** The shelf, the pointer, the account link and the roles — all four keyed on the folder. */
-  const binning = (project: BridgeOverrides['project'], lastProject = SUMMER.path) => {
+  /**
+   * The door, and nothing keyed behind it: what the shelf, the pointer, the account link and the
+   * roles become is composed in the main process and covered by `settingsProject.test.ts`. What
+   * is asserted here is which folder is named, and whether it is named as really binned.
+   */
+  const binning = (project: BridgeOverrides['project']) => {
     const forgetProject = vi.fn(() => Promise.resolve(useSettings.getState().settings))
     installFakeBridge({ project, settings: { forgetProject } })
-    useSettings.setState(state => ({
-      settings: {
-        ...state.settings,
-        storage: {
-          ...state.settings.storage,
-          recentProjects: [SUMMER, WINTER],
-          lastProject,
-          projectAccounts: { [SUMMER.path]: 'account-1', [WINTER.path]: 'account-2' },
-        },
-        ai: { ...state.settings.ai, projectRoles: { [SUMMER.path]: ROLE_HELD } },
-      },
-    }))
     return forgetProject
   }
 
@@ -149,7 +132,7 @@ describe('putting a project folder in the trash', () => {
    * still holds is a project nobody can find again.
    */
   it('leaves the shelf alone when the system refused the folder', async () => {
-    const write = binning({ trash: () => Promise.reject(new Error('EPERM')) })
+    const forgetProject = binning({ trash: () => Promise.reject(new Error('EPERM')) })
 
     await expect(useProject.getState().trash(SUMMER.path)).resolves.toEqual({
       ok: false,
@@ -157,6 +140,6 @@ describe('putting a project folder in the trash', () => {
       why: expect.stringContaining('EPERM'),
     })
 
-    expect(write).not.toHaveBeenCalled()
+    expect(forgetProject).not.toHaveBeenCalled()
   })
 })

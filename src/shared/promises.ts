@@ -54,10 +54,15 @@ export function waitUntil(
       if (ready()) settle()
     }
     for (const subscribe of subscriptions) {
-      // Pushed before the next one is registered: a subscription that wakes AS it registers would
-      // otherwise settle over a list holding none of the subscriptions after it.
-      dropped.push(subscribe(wake))
-      if (settled) return
+      const drop = subscribe(wake)
+      // Dropped here rather than by `settle`: a subscription that wakes AS it registers settles
+      // over a list that cannot hold its own way to let go yet, and stays registered for the
+      // window's life — woken by every note, holding the whole wait's scope with it.
+      if (settled) {
+        drop()
+        return
+      }
+      dropped.push(drop)
     }
     // Asked again with everything subscribed: a condition that came true between the two would
     // otherwise wait for a wake-up that has already been and gone.

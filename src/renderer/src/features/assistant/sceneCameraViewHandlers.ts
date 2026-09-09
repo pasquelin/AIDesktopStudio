@@ -12,7 +12,6 @@ import { ENVIRONMENT_PRESETS, presetPatch } from '@/engines/scene/environmentPre
 import { CAMERA_SPECS, LIGHT_SPECS, withField } from '@/engines/scene/propertyFields'
 import { nodeById, type SceneNode } from '@/engines/scene/sceneState'
 import { captureSceneView } from '@/helpers/captureSceneView'
-import { sceneEngineSettled } from '@/stores/sceneEngines'
 import { sceneKeyingAt } from '@/helpers/sceneKeyingAt'
 import { sceneEngineOf } from '@/stores/sceneEngines'
 import { useScenes } from '@/stores/scenes'
@@ -246,9 +245,6 @@ export const SCENE_CAMERA_VIEW_HANDLERS: ActionHandlers = {
     const quality = oneOf(input, 'quality', CAPTURE_QUALITIES) ?? DEFAULT_CAPTURE_QUALITY
     if (!open) return refused('wrongSurface', NO_SCENE)
 
-    await sceneEngineSettled(open.documentId)
-    // The still is drawn by the ENGINE, which is given the scene a render after the store holds
-    // it: without this, a lot that added a node and captured drew the scene without it.
     return (await captureSceneView(open.documentId, quality))
       ? { ok: true }
       : refused(

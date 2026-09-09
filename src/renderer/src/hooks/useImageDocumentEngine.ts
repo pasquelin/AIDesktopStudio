@@ -8,7 +8,7 @@ import { addLayer, cropToRect, resizeCaption } from '@/engines/canvas/commands'
 import type { CanvasSelection } from '@/engines/canvas/canvasSelection'
 import { selectionOutline } from '@/engines/canvas/canvasSelection'
 import { shapeLayer, textLayer, type ShapeKind } from '@/engines/canvas/canvasState'
-import { canvasHost, forgetCanvasApplied, holdCanvas } from '@/features/image/canvasHosts'
+import { holdCanvas } from '@/features/image/canvasHosts'
 import { guidePort } from '@/features/image/guidePort'
 import { layerPort } from '@/features/image/layerPort'
 import { pixelPort } from '@/features/image/pixelPort'
@@ -132,9 +132,6 @@ export function useImageDocumentEngine(
     void created.mount(element)
     return () => {
       release()
-      // Only when nothing took its place, for the reason `release` itself checks: a remount
-      // registers the new engine before this cleanup runs, and forgetting then would strand it.
-      if (!canvasHost(documentId)) forgetCanvasApplied(documentId)
       created.dispose()
       engineRef.current = null
     }

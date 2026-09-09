@@ -101,7 +101,7 @@ async function readDocument(
   const { document, controller } = load
   try {
     const file = await bridge.documents.read(document.id, document.kind)
-    if (loadIsStale(load)) return { state: 'cancelled' }
+    if (!epochIsCurrent(document, load.epoch, controller.signal)) return { state: 'cancelled' }
     // Filled while the read was in flight: the tab is live and the Add menu acts on it. What it
     // holds is what a caller reads next, so the document IS available — this read alone is dropped.
     if (io.holds(document.id)) return { state: 'ready' }
@@ -118,10 +118,17 @@ async function readDocument(
   }
 }
 
-function loadIsStale({ document, epoch, controller }: DocumentLoad): boolean {
-  const current = useDocuments.getState().documents[document.id]
+/**
+ * Whether what was started at `epoch` still belongs to the tab in front — the one rule a read and
+ * a write both answer to, written once because the two used to hold it in opposite polarities.
+ */
+export function epochIsCurrent(
+  { id, kind }: Pick<DocumentDescriptor, 'id' | 'kind'>,
+  epoch: number,
+  signal: AbortSignal,
+): boolean {
   return (
-    controller.signal.aborted || epochOf(document.id) !== epoch || current?.kind !== document.kind
+    !signal.aborted && epochOf(id) === epoch && useDocuments.getState().documents[id]?.kind === kind
   )
 }
 

@@ -8,7 +8,7 @@ import {
   type ScriptCompiler,
   type ScriptTrouble,
 } from '@/engines/code/scriptCompiler'
-import { withoutKey } from '@/helpers/objects'
+import { withoutKey } from '@shared/collections'
 import { gameMessageOf, openGameChannel, type GameCommand } from '@/game/gameChannel'
 import type { SceneLookup } from '@/game/playSession'
 import { getBridge } from '@/services/bridge'

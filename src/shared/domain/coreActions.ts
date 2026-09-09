@@ -122,6 +122,12 @@ export const CORE_ACTIONS: readonly AssistantAction[] = [
      * first has already happened — a command meant twice is two turns, or two different ids.
      */
     repeatable: false,
+    /**
+     * The router awaits what it fires — a save, a dictation starting its microphone and its local
+     * model, a settings window. `raises` buys the time only for a command that engages something,
+     * and `app.dictate` engages nothing while taking the longest of them all.
+     */
+    awaitsItsEffect: true,
     raises: input =>
       typeof input.command === 'string' ? commitmentOfCommand(input.command) : 'none',
     reach: 'both',

@@ -285,7 +285,6 @@ async function save(input: Record<string, unknown>): Promise<ActionOutcome> {
       `no open document answers to "${textOf(input, 'documentId') ?? ''}", and nothing is in front to save — documents.list answers what is open`,
     )
 
-  await ioOf(documentId)?.settled?.(documentId)
   try {
     return { ok: true, data: { written: await saveDocument(documentId) } }
   } catch (error) {

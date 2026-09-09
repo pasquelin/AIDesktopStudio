@@ -85,8 +85,8 @@ export function subscribeGenerator(listener: () => void): () => void {
  * panel that was in fact opening.
  *
  * Two ways out and no clock in either: the panel declares itself, or the chassis stops showing
- * it — a surface that will never mount one is an answer, not a wait that ran out. A caller that
- * gives up hands its own signal, and everything held here goes with it.
+ * it — a surface that will never mount one is an answer, not a wait that ran out. Both are
+ * gestures of the window, so nothing here waits on a door the window never opens.
  */
 export async function generatorMounted(): Promise<GeneratorBridge | null> {
   await waitUntil(

@@ -1,3 +1,4 @@
+import { withoutKey } from '../collections'
 import {
   movedProjectKey,
   movedRecentProject,
@@ -24,19 +25,15 @@ export function settingsWithoutProject(
   owned: boolean,
 ): PartialSettings {
   const { storage, ai } = settings
-  const withoutAccount = { ...storage.projectAccounts }
-  const withoutRoles = { ...ai.projectRoles }
-  delete withoutAccount[path]
-  delete withoutRoles[path]
 
   return {
     storage: {
       recentProjects: withoutRecentProject(storage.recentProjects, path),
       recentDocuments: withoutProjectDocuments(storage.recentDocuments, path),
       ...(storage.lastProject === path ? { lastProject: undefined } : {}),
-      ...(owned ? { projectAccounts: withoutAccount } : {}),
+      ...(owned ? { projectAccounts: withoutKey(storage.projectAccounts, path) } : {}),
     },
-    ...(owned ? { ai: { projectRoles: withoutRoles } } : {}),
+    ...(owned ? { ai: { projectRoles: withoutKey(ai.projectRoles, path) } } : {}),
   }
 }
 

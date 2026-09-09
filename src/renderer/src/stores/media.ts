@@ -5,7 +5,7 @@ import {
   type IngestProgress,
   type MediaCapabilities,
 } from '@shared/domain/media'
-import { withoutKey } from '@/helpers/objects'
+import { withoutKey } from '@shared/collections'
 import { connectThroughBridge, getBridge } from '@/services/bridge'
 import { reportFailure } from '@/services/diagnostics'
 import { reportImportNotices } from '@/services/externalFiles'
