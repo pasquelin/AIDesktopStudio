@@ -27,6 +27,27 @@ export async function orElse<T>(promise: Promise<T> | undefined, fallback: T): P
 }
 
 /**
+ * One call in flight at a time, shared by every caller that asks while it runs.
+ *
+ * 🛑 Nothing is CACHED between flights: what a caller reads here changes, and asking after one
+ * settles starts another. Written for a read a turn takes TWICE in one breath — the window is
+ * asked what is in front to describe it, and asked again to weigh an action search — where each
+ * ask is an IPC round trip and a rebuild on the window's own UI thread.
+ */
+export function coalesced<T>(run: () => Promise<T>): () => Promise<T> {
+  let flight: Promise<T> | null = null
+
+  return async () => {
+    flight ??= run()
+    try {
+      return await flight
+    } finally {
+      flight = null
+    }
+  }
+}
+
+/**
  * Settles when `ready` answers true — woken by the subscriptions given, never by a clock.
  *
  * Written because three sites needed the same shape: a caller told something is done before it

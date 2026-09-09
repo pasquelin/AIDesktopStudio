@@ -1,11 +1,10 @@
 import { describe, expect, it, vi } from 'vitest'
 import type { Embedder } from '@main/memory/embedder'
 import type { AsyncActionIndex } from './actionIndexClient'
-import {
-  createActionNames,
-  createActionSearchService,
-  type ActionSearchService,
-} from './actionSearchService'
+import type { ActionName } from '@shared/domain/assistant'
+import { actionCorpus } from './actionCorpus'
+import type { ActionHit } from './actionIndex'
+import { createActionNames, createActionSearchService } from './actionSearchService'
 
 function indexFixture(model: string | null): {
   index: AsyncActionIndex
@@ -39,6 +38,21 @@ function indexFixture(model: string | null): {
       count: async () => 298,
       close: async () => undefined,
     },
+  }
+}
+
+/** One hit of the real corpus, scored flat: what is read here is the ORDER, never a score. */
+function hitOf(name: ActionName): ActionHit {
+  const action = actionCorpus().actions.find(one => one.name === name)
+  if (!action) throw new Error(`${name} is not in the action corpus`)
+
+  return {
+    action,
+    score: 1,
+    lexicalScore: 1,
+    relevanceScore: 1,
+    applicabilityScore: 1,
+    documentAffinity: 'transversal',
   }
 }
 
@@ -129,15 +143,8 @@ describe('Action search service', () => {
    * the model was shown and what it could ask for did not agree.
    */
   it('answers the names a sentence points at, scoped by what is in front', async () => {
-    const search = vi.fn(async () => [
-      { action: { name: 'git.checkout' } },
-      { action: { name: 'git.branches' } },
-    ])
-    const names = createActionNames({
-      // The names alone are read here; a whole `ActionHit` carries fourteen fields nothing asserts.
-      search: search as unknown as ActionSearchService['search'],
-      snapshot: async () => null,
-    })
+    const search = vi.fn(async () => [hitOf('git.checkout'), hitOf('git.branches')])
+    const names = createActionNames({ search, snapshot: async () => null })
 
     await expect(names('switch branch', 2)).resolves.toEqual(['git.checkout', 'git.branches'])
     expect(search).toHaveBeenCalledWith('switch branch', 2, undefined, expect.anything())

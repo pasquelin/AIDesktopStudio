@@ -6,7 +6,7 @@ import {
   type AssistantActionResult,
   type AssistantVisualCaptureResult,
 } from '@shared/ipc'
-import type { ActionOutcome } from '@shared/domain/assistant'
+import { refused, type ActionOutcome } from '@shared/domain/assistant'
 import type { AssistantNote } from '@shared/domain/assistantNote'
 import { clipped } from '@shared/text'
 import { handle } from '@main/ipc/handle'
@@ -140,6 +140,11 @@ export function registerAssistantHandlers({
   )
 
   handle(CHANNELS.assistantFindActions, async (_event, query) =>
-    typeof query === 'string' ? await findActions(query) : { ok: false, refusal: 'badInput' },
+    typeof query === 'string'
+      ? await findActions(query)
+      : refused(
+          'badInput',
+          '"query" is wanted — the words to look for among the studio\'s actions',
+        ),
   )
 }

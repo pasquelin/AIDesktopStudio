@@ -56,7 +56,7 @@ import {
   type ActionSearchService,
 } from './actionIndex/actionSearchService'
 import type { WorkspaceId } from '@shared/domain/workspace'
-import { orElse } from '@shared/promises'
+import { coalesced, orElse } from '@shared/promises'
 import { catalogOf } from './provider/modelCatalog'
 
 type AssistantDeps = {
@@ -109,10 +109,13 @@ export function createAssistantBrains(deps: AssistantDeps) {
     send: request => sendTo(studioWindow(), EVENTS.assistantVisualCapture, request),
     now: () => new Date().toISOString(),
   })
-  snapshot = async () => {
+  // Coalesced: one turn asks for it twice on the same tick — `stateOf` to describe the studio,
+  // `findActions` to weigh a search by what is in front — and each ask is an IPC round trip plus
+  // a rebuild on the window's UI thread.
+  snapshot = coalesced(async () => {
     const outcome = await remoteActions.run({ action: 'studio.state', input: {} })
     return outcome.ok ? parseSnapshot(outcome.data) : null
-  }
+  })
   const brain = createRoutedBrain({
     providerOf: () => deps.ai.providerOf(ASSISTANT_ROLE),
     modelOf: deps.modelOf,

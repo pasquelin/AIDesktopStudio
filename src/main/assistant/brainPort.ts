@@ -38,6 +38,13 @@ type AssistantProviderCapabilities = {
   maxOutputTokens?: number
 }
 
+/**
+ * The studio's one search over its actions, as a turn reaches it — `actionIndex` behind it.
+ * Named here because four modules pass the same shape around, and a shape spelled four times is
+ * a shape free to disagree with itself.
+ */
+export type ActionLookup = (query: string, limit?: number) => Promise<readonly ActionName[]>
+
 /** What follows a turn while it runs: what ends it, and what it is writing. */
 export type TurnWatch = {
   /**
@@ -50,7 +57,7 @@ export type TurnWatch = {
   /** What went out and what came back, kept rather than shown — see `AssistantNote`. */
   onNote?: (note: AssistantNote) => void
   /** Resolves a bounded action discovery query through the caller's current search context. */
-  discover?: (query: string) => Promise<readonly ActionName[]>
+  discover?: ActionLookup
 }
 
 /**
