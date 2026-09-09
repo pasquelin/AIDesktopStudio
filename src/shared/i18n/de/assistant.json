@@ -1723,6 +1723,8 @@
     "brain": "Wer antwortet",
     "brainHint": "Wählt, was Ihre Sätze liest: ein Modell auf diesem Rechner, ein Dienst, für den Sie einen Schlüssel haben, oder das Studio. Dieselbe Wahl, die die Einstellungen für KI-Modelle schreiben.",
     "brainNone": "nichts gewählt",
+    "keepBrain": "Welcher Assistent wird im neuen Projekt arbeiten?",
+    "keepBrainNotice": "Die aktuelle Wahl gilt für dieses Projekt und folgt nicht mit. Ohne Antwort hat das neue Projekt keinen Assistenten, bis in den Einstellungen einer gewählt wird.",
     "cloudBrain": "{{cloud}} — {{model}}",
     "groupMachine": "Auf diesem Rechner",
     "groupClouds": "Ihre Schlüssel",

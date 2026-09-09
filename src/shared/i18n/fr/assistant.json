@@ -1723,6 +1723,8 @@
     "brain": "Qui répond",
     "brainHint": "Choisit ce qui lit vos phrases : un modèle sur cette machine, un service dont vous avez la clé, ou le studio. Le même choix que dans les réglages Modèles d’IA.",
     "brainNone": "rien de choisi",
+    "keepBrain": "Quel assistant travaillera dans le nouveau projet ?",
+    "keepBrainNotice": "Le choix actuel vaut pour ce projet-ci et ne suivra pas. Sans réponse, le nouveau projet n’aura pas d’assistant, à choisir plus tard dans les réglages.",
     "cloudBrain": "{{cloud}} — {{model}}",
     "groupMachine": "Sur cette machine",
     "groupClouds": "Vos clés",

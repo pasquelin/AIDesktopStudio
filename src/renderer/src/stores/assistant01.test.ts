@@ -129,6 +129,26 @@ describe('what a turn writes down', () => {
 
     expect(notes).toContainEqual({ kind: 'asked', question: 'Quel nom ?', answer: 'Bateaux' })
   })
+
+  /**
+   * 🛑 A question the STUDIO opens ticked is answered on its card and nowhere else: read as a
+   * label, a sentence typed below matches no answer and settles the card on nothing.
+   */
+  it('leaves a question the studio opened to its own card', async () => {
+    installFakeBridge({})
+    const answers = useAssistant
+      .getState()
+      .askChoice([{ question: 'Lequel ?', choices: ['Bateau'] }], {
+        notice: 'Sans réponse, rien ne sera armé.',
+        chosen: [{ answers: ['Bateau'] }],
+      })
+
+    await useAssistant.getState().say('je ne sais pas')
+
+    expect(useAssistant.getState().choosing).not.toBeNull()
+    useAssistant.getState().choose(null)
+    await expect(answers).resolves.toBeNull()
+  })
 })
 
 /** Answers whatever question is standing, as a person pressing a button or typing would. */

@@ -15,7 +15,9 @@ import {
 import { messageOf } from '@shared/guards'
 import type { StudioBridge } from '@shared/ipc'
 import { getBridge } from '@/services/bridge'
+import { traceFailure } from '@/services/diagnostics'
 import { openProjectFile, type FileOpening } from '@/helpers/openProjectFile'
+import { askKeptAssistant } from './keptAssistant'
 import { documentAtPath, useDocuments } from '@/stores/documents'
 import { useProject } from '@/stores/project'
 import { useSettings } from '@/stores/settings'
@@ -208,6 +210,9 @@ async function createProject(input: Record<string, unknown>): Promise<ActionOutc
 }
 
 async function createProjectAt(path: string): Promise<ActionOutcome> {
+  // Asked before the switch, armed once the project exists — see `askKeptAssistant`.
+  const arm = await askKeptAssistant()
+
   let created: Project | null
   try {
     created = await useProject.getState().createAt(path)
@@ -220,6 +225,16 @@ async function createProjectAt(path: string): Promise<ActionOutcome> {
       'declined',
       'the new project was turned down — either by the person at the screen, or because that folder already holds files',
     )
+
+  if (arm) {
+    try {
+      await arm()
+    } catch (error) {
+      // The project EXISTS: a settings write that refused is no reason to tell the model the
+      // creation did not happen.
+      traceFailure('shell.dropped', 'assistant kept for a new project', error)
+    }
+  }
 
   return { ok: true, data: created }
 }

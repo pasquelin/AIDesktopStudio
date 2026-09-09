@@ -1723,6 +1723,8 @@
     "brain": "Who answers",
     "brainHint": "Picks what reads your sentences: a model on this machine, a service you hold a key for, or the studio. The same choice the AI models settings write.",
     "brainNone": "none chosen",
+    "keepBrain": "Which assistant will work in the new project?",
+    "keepBrainNotice": "The choice in force belongs to this project and will not follow. Left unanswered, the new project has no assistant until one is chosen in the settings.",
     "cloudBrain": "{{cloud}} — {{model}}",
     "groupMachine": "On this machine",
     "groupClouds": "Your keys",

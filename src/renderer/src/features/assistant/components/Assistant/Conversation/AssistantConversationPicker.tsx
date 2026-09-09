@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { SelectField, type SelectOption } from '@/components/SelectField'
 import { TIP_TOP } from '@/helpers/tooltip'
 import { useAssistantChoices } from '@/hooks/useAssistantChoices'
-import type { AssistantChoice, AssistantGroup } from '../../../choices'
+import { assistantChoiceLabel, type AssistantGroup } from '../../../choices'
 
 const GROUP_KEYS: Record<AssistantGroup, string> = {
   machine: 'assistant.groupMachine',
@@ -22,25 +22,10 @@ export function AssistantConversationPicker() {
     studio: t(GROUP_KEYS.studio),
   }
 
-  const labelOf = (choice: AssistantChoice): string => {
-    switch (choice.group) {
-      case 'machine':
-        return choice.name
-      case 'clouds':
-        // A model's own name is data and stays as it is; the cloud is named from the bundle.
-        return t('assistant.cloudBrain', {
-          cloud: t(`aiClouds.${choice.providerId}`),
-          model: choice.name,
-        })
-      case 'studio':
-        return t(`assistant.models.${choice.model}`)
-    }
-  }
-
   const options: SelectOption<string>[] = choices.map(choice => ({
     value: choice.value,
     group: groups[choice.group],
-    label: labelOf(choice),
+    label: assistantChoiceLabel(choice, t),
   }))
 
   return (

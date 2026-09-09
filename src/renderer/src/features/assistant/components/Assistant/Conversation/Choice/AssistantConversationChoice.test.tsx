@@ -133,6 +133,28 @@ describe('a question the model asked', () => {
     await expect(answers).resolves.toEqual([{ answers: ['Image', 'Audio'] }])
   })
 
+  /**
+   * 🛑 The question the STUDIO puts before creating a project: it opens on the assistant in
+   * force, and says what declining costs. Answering on the first tick could not have left the
+   * row that opened ticked alone, so it takes the form and its send button.
+   */
+  it('opens a studio question on what is armed, and says what declining costs', async () => {
+    const answers = useAssistant
+      .getState()
+      .askChoice([{ question: 'Quel assistant ?', choices: ['DeepSeek', 'Sonnet'] }], {
+        notice: 'Sans réponse, le projet n’aura pas d’assistant.',
+        chosen: [{ answers: ['Sonnet'] }],
+      })
+    drawn()
+
+    expect(screen.getByRole('radio', { name: 'Sonnet' })).toBeChecked()
+    expect(screen.getByText(/pas d’assistant/)).toBeInTheDocument()
+
+    await userEvent.click(screen.getByRole('button', { name: /Envoyer les réponses/ }))
+
+    await expect(answers).resolves.toEqual([{ answers: ['Sonnet'] }])
+  })
+
   /** 🛑 Several questions in one breath: the composer answers ONE, so a form collects the rest
    * and hands them all back together. */
   it('hands back one answer per question of a questionnaire', async () => {
