@@ -2,6 +2,7 @@
 import { mdiTrashCanOutline } from '@mdi/js'
 import { useTranslation } from 'react-i18next'
 import type { InputAction, InputActionKind } from '@shared/domain/inputMap'
+import { withItemAt } from '@shared/collections'
 import { Button } from '@/components/Button'
 import { PropertySection } from '@/components/PropertySection'
 import { SelectField } from '@/components/SelectField'
@@ -15,14 +16,19 @@ import { defaultInputBinding, inputActionKey } from './inputMapPresentation'
 
 export type InputMapExpertActionProps = {
   action: InputAction
-  kinds: readonly { value: InputActionKind; label: string }[]
   /** `null` removes it — the shape a binding row already answers with. */
   onChange: (action: InputAction | null) => void
 }
 
 /** One action of the map: the name a script reads, and every control that fires it. */
-export function InputMapExpertAction({ action, kinds, onChange }: InputMapExpertActionProps) {
+export function InputMapExpertAction({ action, onChange }: InputMapExpertActionProps) {
   const { t } = useTranslation()
+  // Named here rather than handed down, the way a binding row names its own devices.
+  const kinds: readonly { value: InputActionKind; label: string }[] = [
+    { value: 'button', label: t('game.inputMap.kind.button') },
+    { value: 'axis1', label: t('game.inputMap.kind.axis1') },
+    { value: 'axis2', label: t('game.inputMap.kind.axis2') },
+  ]
 
   return (
     <PropertySection
@@ -72,12 +78,7 @@ export function InputMapExpertAction({ action, kinds, onChange }: InputMapExpert
           binding={binding}
           index={at}
           onChange={next =>
-            onChange({
-              ...action,
-              bindings: next
-                ? action.bindings.map((one, index) => (index === at ? next : one))
-                : action.bindings.filter((_, index) => index !== at),
-            })
+            onChange({ ...action, bindings: withItemAt(action.bindings, at, next) })
           }
         />
       ))}

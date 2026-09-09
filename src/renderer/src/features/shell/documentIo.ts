@@ -1,3 +1,4 @@
+import { isAbortError } from '@shared/guards'
 import { localizedError } from '@shared/localizedError'
 import { getBridge } from '@/services/bridge'
 import { reportFailure, reportNotice } from '@/services/diagnostics'
@@ -339,9 +340,6 @@ function loadIsCurrent(load: DocumentLoad, io: DocumentIo): boolean {
   )
 }
 
-function isAbortError(error: unknown): boolean {
-  return error instanceof DOMException && error.name === 'AbortError'
-}
 export async function rehydrateDocument(documentId: string): Promise<void> {
   const bridge = getBridge()
   const document = useDocuments.getState().documents[documentId]

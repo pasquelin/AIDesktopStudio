@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 import { mdiTrashCanOutline } from '@mdi/js'
 import { useTranslation } from 'react-i18next'
-import type { AnimationGraph, AnimationState } from '@shared/domain/animationGraph'
+import type { AnimationParameter, AnimationState } from '@shared/domain/animationGraph'
 import { CLIP_SOURCES, CLIP_SPEED } from '@shared/domain/sceneModel'
 import type { ClipSource, RootMotion } from '@shared/domain/sceneModel'
 import { ROOT_MOTIONS } from '@shared/domain/sceneModel'
@@ -14,7 +14,12 @@ import { ToolButton } from '@/components/ToolButton'
 import { TIP_LEFT } from '@/helpers/tooltip'
 
 export type AnimationGraphStateFormProps = {
-  graph: AnimationGraph
+  /**
+   * The declarations a speed may be read from — only a NUMBER can multiply one, and the reader
+   * refuses anything else, so the picker offers exactly what would be accepted. Sifted by the
+   * form above, which holds the same list for every state it draws.
+   */
+  numbers: readonly AnimationParameter[]
   state: AnimationState
   /** `null` removes it — the shape `InputMapExpertBinding` uses, for the same reason. */
   onChange: (state: AnimationState | null) => void
@@ -27,11 +32,12 @@ function sourceWithKind(source: ClipSource, kind: ClipSource['kind']): ClipSourc
 }
 
 /** One state of the layer: the clip it plays, and how it is played. */
-export function AnimationGraphStateForm({ graph, state, onChange }: AnimationGraphStateFormProps) {
+export function AnimationGraphStateForm({
+  numbers,
+  state,
+  onChange,
+}: AnimationGraphStateFormProps) {
   const { t } = useTranslation()
-  // Only a NUMBER can multiply a speed, and the reader refuses anything else — so the picker
-  // offers exactly what would be accepted rather than letting a save explain it afterwards.
-  const numbers = graph.parameters.filter(parameter => parameter.kind === 'number')
 
   return (
     <PropertySection

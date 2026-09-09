@@ -18,13 +18,10 @@ import { canvasOf, canvasStore, useCanvases } from '@/stores/canvases'
 import { useCanvasViews } from '@/stores/canvasViews'
 import { getBridge } from '@/services/bridge'
 import { reportFailure } from '@/services/diagnostics'
+import { isAbortError } from '@shared/guards'
 import type { SmartSelectionPrompt } from '@shared/domain/smartSelectionInference'
 import type { SmartTool } from '@/engines/canvas/canvasTool'
 import { GENERATION_COMMENT_OUTLINE_MAX } from '@shared/domain/generationComment'
-
-/** A run the click after it cancelled: not a failure, and nothing for a reader to act on. */
-const isAbortError = (error: unknown): boolean =>
-  error instanceof DOMException && error.name === 'AbortError'
 
 type EngineHandle = {
   hostRef: React.RefObject<HTMLDivElement | null>

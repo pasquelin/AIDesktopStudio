@@ -55,10 +55,6 @@ const SHORTHAND_ROOTS = [
  */
 const NOT_PATHS = new Set(['hooks/useItsName.ts', 'hooks/useSonNom.ts', 'assets/release.json'])
 
-const resolvesUnderRepo = (cited: string): boolean =>
-  SHORTHAND_ROOTS.some(root => existsSync(join(ROOT, root, cited))) ||
-  walk(join(ROOT, 'src')).some(file => file.endsWith(`/${cited}`))
-
 const walk = (dir: string): string[] =>
   existsSync(dir)
     ? readdirSync(dir).flatMap(entry => {
@@ -66,6 +62,13 @@ const walk = (dir: string): string[] =>
         return statSync(full).isDirectory() ? walk(full) : [full]
       })
     : []
+
+/** Walked once: the fallback below ran it again for every citation the shorthands miss. */
+const SOURCES = present ? walk(join(ROOT, 'src')) : []
+
+const resolvesUnderRepo = (cited: string): boolean =>
+  SHORTHAND_ROOTS.some(root => existsSync(join(ROOT, root, cited))) ||
+  SOURCES.some(file => file.endsWith(`/${cited}`))
 
 const ruleFiles = present ? readdirSync(RULES).filter(name => name.endsWith('.md')) : []
 

@@ -1,3 +1,4 @@
+import { isAbortError } from '@shared/guards'
 import { localizedError } from '@shared/localizedError'
 import type { SceneState } from '@/engines/scene/sceneState'
 import SceneDocumentWorker from './sceneDocumentCodec.worker?worker'
@@ -174,7 +175,7 @@ export function createSceneDocumentCodec(
   }
 
   return {
-    encode: async (state, documentId, signal) => await queuedEncode(state, documentId, signal),
+    encode: queuedEncode,
     dispose: () => {
       gone = true
       worker?.terminate()
@@ -240,26 +241,22 @@ function acceptResponse(waiting: Map<number, Pending>, response: SceneDocumentCo
   } else rejectPending(waiting, response.id, new Error(response.error))
 }
 
-function settlePending(waiting: Map<number, Pending>, id: number, content: string): void {
+/** A request taken out of the map, timer and abort listener released — settled either way. */
+function takePending(waiting: Map<number, Pending>, id: number): Pending | null {
   const pending = waiting.get(id)
-  if (!pending) return
+  if (!pending) return null
   waiting.delete(id)
   clearTimeout(pending.timer)
   if (pending.abort) pending.signal?.removeEventListener('abort', pending.abort)
-  pending.resolve(content)
+  return pending
+}
+
+function settlePending(waiting: Map<number, Pending>, id: number, content: string): void {
+  takePending(waiting, id)?.resolve(content)
 }
 
 function rejectPending(waiting: Map<number, Pending>, id: number, error: Error): void {
-  const pending = waiting.get(id)
-  if (!pending) return
-  waiting.delete(id)
-  clearTimeout(pending.timer)
-  if (pending.abort) pending.signal?.removeEventListener('abort', pending.abort)
-  pending.reject(error)
-}
-
-function isAbortError(error: unknown): boolean {
-  return error instanceof DOMException && error.name === 'AbortError'
+  takePending(waiting, id)?.reject(error)
 }
 
 function abortError(): DOMException {

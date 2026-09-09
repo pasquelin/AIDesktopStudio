@@ -39,50 +39,47 @@ export function createAiManager(deps: ManagerDeps): AiManager {
   const schedule = managerHelpers.scheduleWith(deps)
   let cancelIdle: (() => void) | null = null
   const ttl = deps.factsTtlMs ?? managerHelpers.DEFAULT_FACTS_TTL_MS
+  /**
+   * One reading held for `ttl`, and dropped the moment it fails: a probe that threw must be asked
+   * again rather than served from a cache holding its rejection.
+   */
+  function keptFor<T>(read: () => Promise<T>): { read: () => Promise<T>; forget: () => void } {
+    let held: { at: number; value: Promise<T> } | null = null
+    const forget = (): void => {
+      held = null
+    }
+    return {
+      read: () => {
+        if (held !== null && deps.now() - held.at < ttl) return held.value
+        const reading = (async () => {
+          try {
+            return await read()
+          } catch (error) {
+            forget()
+            throw error
+          }
+        })()
+        held = { at: deps.now(), value: reading }
+        return reading
+      },
+      forget,
+    }
+  }
   let lastDiscovered: readonly LocalModel[] = []
-  let cachedDiscovered: { at: number; models: Promise<readonly LocalModel[]> } | null = null
-  function forgetDiscovered(): void {
-    cachedDiscovered = null
-  }
-  async function readDiscovered(): Promise<readonly LocalModel[]> {
-    try {
-      const models = await discoveredOf(deps.runtimes)
-      lastDiscovered = models
-      return models
-    } catch (error) {
-      forgetDiscovered()
-      throw error
-    }
-  }
-  const discover = (): Promise<readonly LocalModel[]> => {
-    if (cachedDiscovered !== null && deps.now() - cachedDiscovered.at < ttl) {
-      return cachedDiscovered.models
-    }
-    const reading = readDiscovered()
-    cachedDiscovered = { at: deps.now(), models: reading }
-    return reading
-  }
+  const heldDiscovered = keptFor(async () => {
+    lastDiscovered = await discoveredOf(deps.runtimes)
+    return lastDiscovered
+  })
+  const discover = heldDiscovered.read
+  const forgetDiscovered = heldDiscovered.forget
   const modelOf = (modelId: string): LocalModel | null =>
     modelWith(modelId, deps.settings().ai.ownModels, lastDiscovered)
   const loadedEpochs = managerHelpers.createLoadEpochs(modelOf, occupancy)
-  let cachedFacts: { at: number; facts: Promise<HardwareFacts> } | null = null
-  async function readFacts(): Promise<HardwareFacts> {
-    try {
-      return await deps.facts()
-    } catch (error) {
-      cachedFacts = null
-      throw error
-    }
-  }
-  const facts = (): Promise<HardwareFacts> => {
-    if (cachedFacts !== null && deps.now() - cachedFacts.at < ttl) return cachedFacts.facts
-    const reading = readFacts()
-    cachedFacts = { at: deps.now(), facts: reading }
-    return reading
-  }
+  const heldFacts = keptFor(() => deps.facts())
+  const facts = heldFacts.read
   const freshFacts = (): Promise<HardwareFacts> => {
-    cachedFacts = null
-    return facts()
+    heldFacts.forget()
+    return heldFacts.read()
   }
   const readingsOf = async (
     models: readonly LocalModel[],

@@ -1,11 +1,18 @@
-import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, onTestFinished } from 'vitest'
 import manifest from '../../package.json'
 import { RERUN_EVERYTHING, typecheckConfigsOf } from './rerunEverything'
 
 const ROOT = join(import.meta.dirname, '..', '..')
+
+/** A throwaway tree of tsconfigs, swept when the case ends. */
+const scratch = (): string => {
+  const root = mkdtempSync(join(tmpdir(), 'reruns-'))
+  onTestFinished(() => rmSync(root, { recursive: true, force: true }))
+  return root
+}
 
 describe('the short loop’s whole-suite trigger', () => {
   /**
@@ -22,7 +29,7 @@ describe('the short loop’s whole-suite trigger', () => {
 
   /** Both are legal TypeScript, and a base skipped here is a base nobody reruns the suite for. */
   it('follows an `extends` written as an array, package specifiers aside', () => {
-    const root = mkdtempSync(join(tmpdir(), 'reruns-'))
+    const root = scratch()
     writeFileSync(join(root, 'base.json'), '{}')
     writeFileSync(
       join(root, 'one.json'),
@@ -33,7 +40,7 @@ describe('the short loop’s whole-suite trigger', () => {
   })
 
   it('reads the long spelling of the project flag as well as the short one', () => {
-    const root = mkdtempSync(join(tmpdir(), 'reruns-'))
+    const root = scratch()
     writeFileSync(join(root, 'one.json'), '{}')
 
     expect(typecheckConfigsOf(root, 'tsc --noEmit --project one.json')).toEqual(['one.json'])

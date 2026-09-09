@@ -50,10 +50,11 @@ beforeEach(() => {
   })
 })
 
-const offer = (onSave?: (asNew: boolean) => Promise<void>) =>
-  render(
-    <CharacterMotionOffer assetId={ASSET} documentId={DOCUMENT} nodeId={NODE} onSave={onSave} />,
-  )
+const offering = (onSave?: (asNew: boolean) => Promise<void>) => (
+  <CharacterMotionOffer assetId={ASSET} documentId={DOCUMENT} nodeId={NODE} onSave={onSave} />
+)
+
+const offer = (onSave?: (asNew: boolean) => Promise<void>) => render(offering(onSave))
 
 describe('what a character with joints is offered', () => {
   // Which of the two a save means has to be readable before it is pressed.
@@ -64,14 +65,7 @@ describe('what a character with joints is offered', () => {
     expect(screen.getByRole('button', { name: 'Enregistrer le mouvement' })).toBeInTheDocument()
 
     useAnimationViews.getState().openMotion(DOCUMENT, 'asset-walk')
-    rerender(
-      <CharacterMotionOffer
-        assetId={ASSET}
-        documentId={DOCUMENT}
-        nodeId={NODE}
-        onSave={() => Promise.resolve()}
-      />,
-    )
+    rerender(offering(() => Promise.resolve()))
 
     // Both, and that is the point: one writes over the motion on the bench, the other files the
     // work beside it — the way off a reopened motion, which nothing else offers.

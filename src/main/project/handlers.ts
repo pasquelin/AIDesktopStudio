@@ -266,7 +266,7 @@ export function registerProjectHandlers({
     try {
       return peaksFromBytes(await readFile(file))
     } catch {
-      return null
+      return null // Like an asset carrying no peaks: the two guards above answer this same null.
     }
   })
   handle(CHANNELS.assetsSaveAudio, async (_event, value) => {
@@ -405,7 +405,7 @@ export function registerProjectHandlers({
     try {
       return unpackOpenRaster(await readFile(file))
     } catch {
-      return null
+      return null // Like a file that is not layered: the guard above answers this same null.
     }
   })
   handle(CHANNELS.assetsSaveTexture, async (_event, value) => {

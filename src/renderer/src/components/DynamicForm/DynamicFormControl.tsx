@@ -35,7 +35,7 @@ export function DynamicFormControl({
   const say = useModelText()
   const box = useRef<HTMLTextAreaElement | null>(null)
   const handle = fieldHandle(`generation.${field.key}`)
-  const input = { field, id, registration, initial }
+  const input = { field, id, registration, initial, handle }
   if (field.kind === 'longText')
     return (
       <div className={cn(FIELD, 'flex h-auto resize-y flex-col overflow-hidden p-0')}>
@@ -67,19 +67,19 @@ export function DynamicFormControl({
   return simpleControl(input, onRoll, t)
 }
 
-type ControlInput = Pick<DynamicFormControlProps, 'field' | 'id' | 'registration' | 'initial'>
+type ControlInput = Pick<DynamicFormControlProps, 'field' | 'id' | 'registration' | 'initial'> & {
+  /** `field:generation.<key>`, spent across the branches rather than composed again in each. */
+  handle: string
+}
 type Translate = ReturnType<typeof useTranslation>['t']
 
 function choiceControl(input: ControlInput, say: ReturnType<typeof useModelText>) {
-  if (input.field.kind === 'task' && !input.field.options?.length) return textControl(input)
+  const { field, id, registration, handle } = input
+  if (field.kind === 'task' && !field.options?.length) return textControl(input)
   return (
-    <Select
-      id={input.id}
-      data-sc={fieldHandle(`generation.${input.field.key}`)}
-      {...input.registration}
-    >
-      {!input.field.required && <option value="" />}
-      {input.field.options?.map(option => (
+    <Select id={id} data-sc={handle} {...registration}>
+      {!field.required && <option value="" />}
+      {field.options?.map(option => (
         <option key={option.value} value={option.value}>
           {say(option.label)}
         </option>
@@ -88,16 +88,16 @@ function choiceControl(input: ControlInput, say: ReturnType<typeof useModelText>
   )
 }
 
-function numberControl(input: ControlInput) {
+function numberControl({ field, id, registration, handle }: ControlInput) {
   return (
     <Input
-      id={input.id}
-      data-sc={fieldHandle(`generation.${input.field.key}`)}
+      id={id}
+      data-sc={handle}
       type="number"
-      step={input.field.step ?? (input.field.kind === 'integer' ? 1 : 'any')}
-      min={input.field.min}
-      max={input.field.max}
-      {...input.registration}
+      step={field.step ?? (field.kind === 'integer' ? 1 : 'any')}
+      min={field.min}
+      max={field.max}
+      {...registration}
     />
   )
 }
@@ -132,34 +132,22 @@ function assetControl(input: ControlInput, t: Translate) {
 }
 
 function simpleControl(input: ControlInput, onRoll: () => void, t: Translate) {
-  if (input.field.kind === 'boolean')
-    return (
-      <Checkbox
-        id={input.id}
-        data-sc={fieldHandle(`generation.${input.field.key}`)}
-        {...input.registration}
-      />
-    )
-  if (input.field.kind === 'color')
+  const { field, id, registration, handle } = input
+  if (field.kind === 'boolean') return <Checkbox id={id} data-sc={handle} {...registration} />
+  if (field.kind === 'color')
     return (
       <input
-        id={input.id}
-        data-sc={fieldHandle(`generation.${input.field.key}`)}
+        id={id}
+        data-sc={handle}
         type="color"
         className={cn(FIELD, 'px-1')}
-        {...input.registration}
+        {...registration}
       />
     )
-  if (input.field.kind === 'seed')
+  if (field.kind === 'seed')
     return (
       <div className="flex items-center gap-2">
-        <Input
-          id={input.id}
-          data-sc={fieldHandle(`generation.${input.field.key}`)}
-          type="number"
-          className="flex-1"
-          {...input.registration}
-        />
+        <Input id={id} data-sc={handle} type="number" className="flex-1" {...registration} />
         <ToolButton
           icon={mdiDiceMultipleOutline}
           label={t('generation.randomSeed')}
@@ -171,15 +159,8 @@ function simpleControl(input: ControlInput, onRoll: () => void, t: Translate) {
   return textControl(input)
 }
 
-function textControl(input: ControlInput) {
-  return (
-    <Input
-      id={input.id}
-      data-sc={fieldHandle(`generation.${input.field.key}`)}
-      type="text"
-      {...input.registration}
-    />
-  )
+function textControl({ id, registration, handle }: ControlInput) {
+  return <Input id={id} data-sc={handle} type="text" {...registration} />
 }
 
 function initialAssetId(initial: unknown): string | undefined {

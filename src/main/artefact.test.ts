@@ -4,11 +4,12 @@ import {
   mkdtempSync,
   readFileSync,
   readdirSync,
+  rmSync,
   writeFileSync,
 } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, onTestFinished } from 'vitest'
 import { filesUnder, replaceDirectory, shippedTwice, wastedBytes } from './artefact'
 import manifest from '../../package.json'
 import { GATE } from './gateLinks'
@@ -17,6 +18,7 @@ import { GATE } from './gateLinks'
 // `src/shared` compiles for the renderer, which has no filesystem.
 function folderHolding(files: Record<string, string>): string {
   const root = mkdtempSync(join(tmpdir(), 'artefact-'))
+  onTestFinished(() => rmSync(root, { recursive: true, force: true }))
 
   for (const [path, content] of Object.entries(files)) {
     const file = join(root, path)
@@ -30,6 +32,7 @@ function folderHolding(files: Record<string, string>): string {
 describe('what a build ships twice', () => {
   it('keeps a complete runtime when staging reports a truncated download', async () => {
     const root = mkdtempSync(join(tmpdir(), 'artefact-runtime-'))
+    onTestFinished(() => rmSync(root, { recursive: true, force: true }))
     const runtime = join(root, 'ffmpeg')
     mkdirSync(runtime)
     writeFileSync(join(runtime, 'ffmpeg'), 'verified')

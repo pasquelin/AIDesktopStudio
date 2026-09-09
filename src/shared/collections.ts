@@ -26,3 +26,14 @@ export function sameOrder<T>(one: readonly T[], other: readonly T[]): boolean {
   for (let at = 0; at < one.length; at += 1) if (one[at] !== other[at]) return false
   return true
 }
+
+/**
+ * The list with its `at`-th item replaced, or without it when the row answers `null` — the one
+ * move every « change or remove this row » handler of an expert editor makes. Seven copies had
+ * been written across the animation graph and the input map.
+ */
+export function withItemAt<T>(items: readonly T[], at: number, item: T | null): T[] {
+  return item === null
+    ? items.filter((_, index) => index !== at)
+    : items.map((one, index) => (index === at ? item : one))
+}

@@ -9,6 +9,8 @@ import {
   type InstallEngineLibraries,
 } from './installEngineLibraries'
 
+const ROOT = join(import.meta.dirname, '..', '..', '..')
+
 describe('reading pip’s own bar', () => {
   it('answers nothing for a line that carries no size', () => {
     const read = pipProgress()
@@ -40,13 +42,12 @@ describe('reading pip’s own bar', () => {
 })
 
 describe('installing what the engine named', () => {
-  const spawned = () => ({ spawn: vi.fn<InstallEngineLibraries['spawn']>(() => Promise.resolve()) })
-  type Spawned = ReturnType<typeof spawned>['spawn']
+  const spawned = () => vi.fn<InstallEngineLibraries['spawn']>(() => Promise.resolve())
 
   const install = (
     platform: NodeJS.Platform,
     declaration: readonly string[],
-    spawn: Spawned,
+    spawn: ReturnType<typeof spawned>,
     hasNvidia = false,
     freeBytes: number | null = 100e9,
   ) =>
@@ -66,11 +67,11 @@ describe('installing what the engine named', () => {
    * under the hardened runtime. Its absence leaves a satisfied `torch>=2.6` where pip found it.
    */
   it('hands pip the declaration verbatim, in one run', async () => {
-    const held = spawned()
+    const spawn = spawned()
 
-    await install('darwin', ['torch>=2.6', 'diffusers>=0.40'], held.spawn)
+    await install('darwin', ['torch>=2.6', 'diffusers>=0.40'], spawn)
 
-    expect(held.spawn).toHaveBeenCalledWith(
+    expect(spawn).toHaveBeenCalledWith(
       '/app/engine/python/bin/python3',
       ['-m', 'pip', 'install', '--no-input', 'torch>=2.6', 'diffusers>=0.40'],
       expect.any(Function),
@@ -80,11 +81,11 @@ describe('installing what the engine named', () => {
 
   /** An engine that answered a complete environment must not spawn pip to install nothing. */
   it('runs nothing when there is nothing to install', async () => {
-    const held = spawned()
+    const spawn = spawned()
 
-    await install('darwin', [], held.spawn)
+    await install('darwin', [], spawn)
 
-    expect(held.spawn).not.toHaveBeenCalled()
+    expect(spawn).not.toHaveBeenCalled()
   })
 
   /**
@@ -93,11 +94,11 @@ describe('installing what the engine named', () => {
    * it with `torch_cuda()`.
    */
   it('asks the CUDA index first, PyPI second, and says it asked for CUDA', async () => {
-    const held = spawned()
+    const spawn = spawned()
 
-    const asked = await install('win32', ['torch>=2.6', 'diffusers>=0.40'], held.spawn, true)
+    const asked = await install('win32', ['torch>=2.6', 'diffusers>=0.40'], spawn, true)
 
-    expect(held.spawn.mock.calls.map(call => call[1])).toEqual([
+    expect(spawn.mock.calls.map(call => call[1])).toEqual([
       [
         '-m',
         'pip',
@@ -114,33 +115,33 @@ describe('installing what the engine named', () => {
 
   /** Half an environment is worse than none: pip must not start on a volume that cannot hold it. */
   it('refuses before spawning pip when the volume cannot hold the install', async () => {
-    const held = spawned()
+    const spawn = spawned()
 
-    await expect(
-      install('darwin', ['torch>=2.6'], held.spawn, false, 100e6),
-    ).rejects.toBeInstanceOf(NotEnoughDiskError)
-    expect(held.spawn).not.toHaveBeenCalled()
+    await expect(install('darwin', ['torch>=2.6'], spawn, false, 100e6)).rejects.toBeInstanceOf(
+      NotEnoughDiskError,
+    )
+    expect(spawn).not.toHaveBeenCalled()
   })
 
   /** A volume that could not be read is an absence, and an absence refuses nothing. */
   it('installs anyway when the free space could not be read', async () => {
-    const held = spawned()
+    const spawn = spawned()
 
-    await install('darwin', ['torch>=2.6'], held.spawn, false, null)
+    await install('darwin', ['torch>=2.6'], spawn, false, null)
 
-    expect(held.spawn).toHaveBeenCalledOnce()
+    expect(spawn).toHaveBeenCalledOnce()
   })
 
   /** A card turns 682 MB of wheels into gigabytes, and the threshold follows it. */
   it('refuses on a volume the same install would have fitted in without a card', async () => {
-    const held = spawned()
+    const spawn = spawned()
 
-    await expect(install('win32', ['torch>=2.6'], held.spawn, true, 1e9)).rejects.toBeInstanceOf(
+    await expect(install('win32', ['torch>=2.6'], spawn, true, 1e9)).rejects.toBeInstanceOf(
       NotEnoughDiskError,
     )
-    await install('win32', ['torch>=2.6'], held.spawn, false, 1e9)
+    await install('win32', ['torch>=2.6'], spawn, false, 1e9)
 
-    expect(held.spawn).toHaveBeenCalledOnce()
+    expect(spawn).toHaveBeenCalledOnce()
   })
 })
 
@@ -155,8 +156,7 @@ describe('choosing the runs the machine needs', () => {
    * what held them together. uv adds `--index-strategy` there; the URL is what must not drift.
    */
   it('fetches from the same CPU index the build pins', () => {
-    const root = join(import.meta.dirname, '..', '..', '..')
-    const prepare = readFileSync(join(root, 'scripts/prepare-engine-runtime.mjs'), 'utf8')
+    const prepare = readFileSync(join(ROOT, 'scripts/prepare-engine-runtime.mjs'), 'utf8')
     const [, url] = pipRunsFor('linux', false, ['torch>=2.6']).runs[0]?.index ?? []
 
     expect(url).toBeDefined()
@@ -204,8 +204,7 @@ describe('choosing the runs the machine needs', () => {
    * the runtime embeds and the `+cu126` build named here would land a different one beside it.
    */
   it('names the same torch release the embedded runtime pins', () => {
-    const root = join(import.meta.dirname, '..', '..', '..')
-    const project = readFileSync(join(root, 'engine/pyproject.toml'), 'utf8')
+    const project = readFileSync(join(ROOT, 'engine/pyproject.toml'), 'utf8')
     // Bounded to the array: `[\s\S]*?` crossed the closing bracket, so an `autorig` that stopped
     // pinning would have captured the next `torch==` in the file and stayed green on nothing.
     const autorig = /autorig\s*=\s*\[([^\]]*)\]/.exec(project)?.[1] ?? ''

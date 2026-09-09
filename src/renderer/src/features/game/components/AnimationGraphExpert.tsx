@@ -1,13 +1,15 @@
 // SPDX-License-Identifier: MIT
 import { mdiTrashCanOutline } from '@mdi/js'
 import { useTranslation } from 'react-i18next'
-import type {
-  AnimationGraph,
-  AnimationParameter,
-  AnimationParameterKind,
-  AnimationState,
+import {
+  BUILT_IN_PARAMETERS,
+  type AnimationGraph,
+  type AnimationParameter,
+  type AnimationParameterKind,
+  type AnimationState,
 } from '@shared/domain/animationGraph'
 import { BODY_PARTS, type BodyPart } from '@shared/domain/humanoid'
+import { withItemAt } from '@shared/collections'
 import { Button } from '@/components/Button'
 import { PropertySection } from '@/components/PropertySection'
 import { SelectField } from '@/components/SelectField'
@@ -46,12 +48,17 @@ export function AnimationGraphExpert({ graph, onChange }: AnimationGraphExpertPr
   const layer = layerOf(graph)
   if (!layer) return null
 
-  const changedParameter = (at: number, parameter: AnimationParameter | null): void => {
-    const parameters = parameter
-      ? graph.parameters.map((one, index) => (index === at ? parameter : one))
-      : graph.parameters.filter((_, index) => index !== at)
-    onChange({ ...graph, parameters })
-  }
+  // Sifted once for the whole form, not inside each state and each transition: every row picks
+  // from the same declarations. Only a NUMBER can multiply a speed, and a condition also stands on
+  // the runtime's own names — the reader refuses the rest, so no picker offers what it would refuse.
+  const numbers = graph.parameters.filter(parameter => parameter.kind === 'number')
+  const conditionParameters = new Map<string, AnimationParameterKind>([
+    ...Object.entries(BUILT_IN_PARAMETERS),
+    ...graph.parameters.map((one): [string, AnimationParameterKind] => [one.id, one.kind]),
+  ])
+
+  const changedParameter = (at: number, parameter: AnimationParameter | null): void =>
+    onChange({ ...graph, parameters: withItemAt(graph.parameters, at, parameter) })
 
   return (
     <div className="flex flex-col gap-3 p-3">
@@ -158,17 +165,10 @@ export function AnimationGraphExpert({ graph, onChange }: AnimationGraphExpertPr
       {layer.states.map((state, at) => (
         <AnimationGraphStateForm
           key={`${state.id}:${at}`}
-          graph={graph}
+          numbers={numbers}
           state={state}
           onChange={next =>
-            onChange(
-              withLayer(graph, {
-                ...layer,
-                states: next
-                  ? layer.states.map((one, index) => (index === at ? next : one))
-                  : layer.states.filter((_, index) => index !== at),
-              }),
-            )
+            onChange(withLayer(graph, { ...layer, states: withItemAt(layer.states, at, next) }))
           }
         />
       ))}
@@ -185,17 +185,15 @@ export function AnimationGraphExpert({ graph, onChange }: AnimationGraphExpertPr
         {layer.transitions.map((transition, at) => (
           <AnimationGraphTransitionForm
             key={`${transition.from}:${transition.to}:${at}`}
-            graph={graph}
             layer={layer}
             transition={transition}
             rank={at + 1}
+            parameters={conditionParameters}
             onChange={next =>
               onChange(
                 withLayer(graph, {
                   ...layer,
-                  transitions: next
-                    ? layer.transitions.map((one, index) => (index === at ? next : one))
-                    : layer.transitions.filter((_, index) => index !== at),
+                  transitions: withItemAt(layer.transitions, at, next),
                 }),
               )
             }

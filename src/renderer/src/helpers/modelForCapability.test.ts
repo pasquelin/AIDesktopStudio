@@ -1,6 +1,7 @@
 import { act, renderHook } from '@testing-library/react'
 import { beforeEach, describe, expect, it } from 'vitest'
 import type { AiOverview, RoleRow } from '@shared/domain/aiOverview'
+import { aiOverview, roleRow } from '@shared/domain/aiOverview-fixtures'
 import { aiRoleId, SMART_SELECTION_ROLE } from '@shared/domain/aiRole'
 import { localModel } from '@shared/domain/localModel-fixtures'
 import { useAiModels } from '@/stores/aiModels'
@@ -9,38 +10,26 @@ import { useModelForCapability } from '@/hooks/useModelForCapability'
 import { SMART_SELECTION_MODEL } from '@shared/domain/smartSelectionInference'
 import { localModelReady, modelForCapability, modelIsOnThisMachine } from './modelForCapability'
 
-const imageRow = (over: Partial<RoleRow> = {}): RoleRow => ({
-  role: aiRoleId('image', 'txt2img'),
-  provider: null,
-  chosen: { app: null, project: null },
-  candidates: [
-    {
-      model: localModel({ id: 'ssd-1b' }),
-      installed: true,
-      loaded: false,
-      holdable: true,
-      unverified: false,
-      supplied: false,
-      serves: 1,
-      fit: 'compatible',
-      obstacle: null,
-    },
-  ],
-  clouds: ['scenario'],
-  ...over,
-})
+const imageRow = (over: Partial<RoleRow> = {}): RoleRow =>
+  roleRow({
+    candidates: [
+      {
+        model: localModel({ id: 'ssd-1b' }),
+        installed: true,
+        loaded: false,
+        holdable: true,
+        unverified: false,
+        supplied: false,
+        serves: 1,
+        fit: 'compatible',
+        obstacle: null,
+      },
+    ],
+    clouds: ['scenario'],
+    ...over,
+  })
 
-const overviewOf = (row: RoleRow): AiOverview => ({
-  roles: [row],
-  machine: { physicalBytes: 1, availableBytes: 1, diskFreeBytes: 1, gpu: null, vram: null },
-  projectPath: null,
-  installing: null,
-  loading: null,
-  loadFailure: null,
-  installFailure: null,
-  ollama: { ready: false, installed: false, names: [], progress: null, failed: false },
-  engine: { known: false, missing: [], progress: null, failed: false },
-})
+const overviewOf = (row: RoleRow): AiOverview => aiOverview({ roles: [row] })
 
 const TXT2IMG = aiRoleId('image', 'txt2img')
 

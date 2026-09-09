@@ -389,7 +389,7 @@ function reusedArtifacts(
   let count = 0
   const held = compiled.map(artifact => {
     const forced = artifact.sourceIds.some(id => invalidatedIds.has(id))
-    const cached = invalidatedIds.size > 0 && forced ? undefined : previous.get(artifact.signature)
+    const cached = forced ? undefined : previous.get(artifact.signature)
     if (cached) return cached
     count += 1
     return artifact

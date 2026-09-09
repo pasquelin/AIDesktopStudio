@@ -24,6 +24,10 @@ const read = (name: string) => readFileSync(join(ROOT, name), 'utf8')
  */
 const caches = (script: string) => /--cache(\s|$)/.test(script)
 
+/** Where a tsconfig parks its incremental state, or nothing when it names none. */
+const buildInfoOf = (config: string): string | undefined =>
+  read(config).match(/"tsBuildInfoFile": "([^"]+)"/)?.[1]
+
 describe('the gate not rereading what it has already judged', () => {
   it('runs Oxlint over source and build scripts, rejecting warnings', () => {
     expect(manifest.scripts.lint).toContain('oxlint')
@@ -45,7 +49,7 @@ describe('the gate not rereading what it has already judged', () => {
    */
   it('keeps reusable compiler caches out of the tree git tracks', () => {
     for (const config of ['config/tsconfig.node.json', 'config/tsconfig.web.json']) {
-      const stated = read(config).match(/"tsBuildInfoFile": "([^"]+)"/)?.[1]
+      const stated = buildInfoOf(config)
 
       expect(stated).toBeDefined()
       expect(
@@ -105,8 +109,8 @@ describe('the gate not rereading what it has already judged', () => {
    * A gain that vanishes while every flag still reads as set is what this case exists to catch.
    */
   it('gives each of the two typecheck passes its own state file', () => {
-    const node = read('config/tsconfig.node.json').match(/"tsBuildInfoFile": "([^"]+)"/)?.[1]
-    const web = read('config/tsconfig.web.json').match(/"tsBuildInfoFile": "([^"]+)"/)?.[1]
+    const node = buildInfoOf('config/tsconfig.node.json')
+    const web = buildInfoOf('config/tsconfig.web.json')
 
     expect(node).toBeDefined()
     expect(web).not.toBe(node)

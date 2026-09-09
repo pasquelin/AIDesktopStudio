@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest'
 import { CLOUD_IDS, cloudsServing } from '@shared/domain/aiCloud'
-import type { MemorySnapshot } from '@shared/domain/aiMemory'
 import {
   aiRoleId,
   ASSISTANT_ROLE,
@@ -10,6 +9,7 @@ import {
 } from '@shared/domain/aiRole'
 import { GIBI, localModel } from '@shared/domain/localModel-fixtures'
 import type { HardwareFacts } from './hardwareProbe'
+import { SNAPSHOT } from './managerTest-fixtures'
 import { aiOverviewOf, cudaStateOf, type OverviewInput } from './overview'
 
 const FACTS: HardwareFacts = {
@@ -21,18 +21,6 @@ const FACTS: HardwareFacts = {
   diskFreeBytes: 500 * GIBI,
   gpu: { vendorId: null, deviceId: null, renderer: 'Apple M2 Max', machineModel: null },
   vram: null,
-}
-
-const SNAPSHOT: MemorySnapshot = {
-  domain: 'unified',
-  source: 'probe',
-  at: 0,
-  physicalBytes: 96 * GIBI,
-  appBudgetBytes: 48 * GIBI,
-  rendererReservedBytes: GIBI,
-  runtimeBytes: {},
-  headroomBytes: 2 * GIBI,
-  availableBytes: 34 * GIBI,
 }
 
 const PARAKEET = localModel()

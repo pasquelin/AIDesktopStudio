@@ -35,7 +35,7 @@ import { createPythonSupervisor, EngineMissingError } from './ai/pythonSuperviso
 import { createAutoRigHost } from './ai/autoRigHost'
 import { createSmartSelectionHost } from './ai/smartSelectionHost'
 import { readBitmap } from './media/readBitmap'
-import { fileRuntime, type LocalRuntimes } from './ai/localRuntimes'
+import { fileRuntime, type FileRuntimeDeps, type LocalRuntimes } from './ai/localRuntimes'
 import { createOwnModelAdder } from './ai/ownModelAdder'
 import { fetchModel, modelIsComplete } from './ai/modelInstall'
 import {
@@ -149,7 +149,7 @@ export function createLocalAiServices(deps: LocalAiDeps) {
       existsSync(enginePython()) ? engine.supervisor.whyNot() : 'engine-missing',
   } satisfies FromManager)
   const { memoryVectors, embedder } = createVectors(deps, ai, modelOf, weightsOf)
-  const { autoRig, smartSelection } = localHosts(deps, ai, engine, ensureLoaded, hold)
+  const { autoRig, smartSelection } = localHosts(deps, ai, engine)
   const addOwnAiModel = createOwnModelAdder(deps, ai)
   dictation = createDictation(deps, ai, modelFolder, downloads)
   return {
@@ -173,13 +173,7 @@ export function createLocalAiServices(deps: LocalAiDeps) {
   }
 }
 
-function localHosts(
-  deps: LocalAiDeps,
-  ai: AiManager,
-  engine: ReturnType<typeof createEngine>,
-  ensureLoaded: (modelId: string) => Promise<void>,
-  hold: (modelId: string) => () => void,
-) {
+function localHosts(deps: LocalAiDeps, ai: AiManager, engine: ReturnType<typeof createEngine>) {
   return {
     autoRig: createAutoRigHost({
       models: () => catalogueWith(deps.settings.read().ai.ownModels, ai.discovered()),
@@ -189,8 +183,8 @@ function localHosts(
       engine: () => engine.supervisor.engine(),
     }),
     smartSelection: createSmartSelectionHost({
-      ensureLoaded,
-      hold,
+      ensureLoaded: ai.ensureLoaded,
+      hold: ai.hold,
       engine: () => engine.supervisor.engine(),
       loadedEpoch: modelId => ai.loadedEpoch?.(modelId) ?? null,
       readBitmap,
@@ -214,17 +208,26 @@ async function refreshAfterStale(refresh: () => Promise<void>): Promise<void> {
   }
 }
 
+/** Whether the files are all there, and how they are fetched — the same pair for every runtime. */
+function filesWith(
+  downloads: ReturnType<typeof createDownloadHost>,
+): Pick<FileRuntimeDeps, 'isComplete' | 'fetch'> {
+  return {
+    isComplete: (model, folder) => modelIsComplete(downloads, model, folder),
+    fetch: async (model, folder, onProgress, signal) => {
+      await ensureFolder(folder)
+      await fetchModel(downloads, model, { folder, onProgress, signal })
+    },
+  }
+}
+
 function createFileRuntime(
   folderFor: (model: LocalModel) => string,
   downloads: ReturnType<typeof createDownloadHost>,
 ) {
   return fileRuntime({
     folderFor,
-    isComplete: (model, folder) => modelIsComplete(downloads, model, folder),
-    fetch: async (model, folder, onProgress, signal) => {
-      await ensureFolder(folder)
-      await fetchModel(downloads, model, { folder, onProgress, signal })
-    },
+    ...filesWith(downloads),
     removeFiles: async (model, folder) => {
       if (needsOwnFolder(model.loader)) return await rm(folder, { recursive: true, force: true })
       for (const file of model.files) await rm(join(folder, file.name), { force: true })
@@ -257,11 +260,7 @@ function createEngine(
   })
   const runtime = pythonRuntime({
     folderFor,
-    isComplete: (model, folder) => modelIsComplete(downloads, model, folder),
-    fetch: async (model, folder, onProgress, signal) => {
-      await ensureFolder(folder)
-      await fetchModel(downloads, model, { folder, onProgress, signal })
-    },
+    ...filesWith(downloads),
     removeFiles: (_model, folder) => rm(folder, { recursive: true, force: true }),
     baseOf: model => (model.attaches ? modelOf(model.attaches.model) : null),
     engine: () => engine.engine(),
