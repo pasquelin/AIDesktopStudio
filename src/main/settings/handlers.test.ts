@@ -52,6 +52,34 @@ describe('settings handlers', () => {
     expect(settings.read().appearance.density).toBe('compact')
   })
 
+  /**
+   * 🛑 Measured 2026-09-09: a window composed the new shelf from its own replica, so everything
+   * this process had written since the last broadcast went with it — two trashings straight after
+   * an open dropped the OPEN project off the shelf.
+   */
+  it('drops one project from the shelf this process holds, and keeps the rest', () => {
+    const shelved = (path: string) => ({ path, openedAt: '2026-09-09', createdAt: '2026-09-09' })
+    settings.write({ storage: { recentProjects: [shelved('/a'), shelved('/b')] } })
+
+    invoke(CHANNELS.settingsForgetProject, '/a', false)
+
+    expect(settings.read().storage.recentProjects.map(one => one.path)).toEqual(['/b'])
+  })
+
+  /**
+   * `missing` is a drive that is merely unplugged: pruning the account link there is the silent
+   * adoption `projectAccounts` was split out to prevent.
+   */
+  it('keeps the account link of a folder that was not binned', () => {
+    settings.write({ storage: { projectAccounts: { '/a': 'compte' } } })
+
+    invoke(CHANNELS.settingsForgetProject, '/a', false)
+    expect(settings.read().storage.projectAccounts).toEqual({ '/a': 'compte' })
+
+    invoke(CHANNELS.settingsForgetProject, '/a', true)
+    expect(settings.read().storage.projectAccounts).toEqual({})
+  })
+
   // The channel is typed, but the type is gone at runtime and the sender is a renderer.
   it('rejects a malformed write without persisting anything', () => {
     expect(() => invoke(CHANNELS.settingsWrite, { generation: { concurrentJobs: 999 } })).toThrow()

@@ -15,6 +15,7 @@ type ChannelMethod = {
   [CHANNELS.missionsResume]: StudioBridge['missions']['resume']
   [CHANNELS.settingsRead]: StudioBridge['settings']['read']
   [CHANNELS.settingsWrite]: StudioBridge['settings']['write']
+  [CHANNELS.settingsForgetProject]: StudioBridge['settings']['forgetProject']
   [CHANNELS.settingsAuthState]: StudioBridge['settings']['authState']
   [CHANNELS.mcpState]: StudioBridge['mcp']['state']
   [CHANNELS.settingsOpen]: StudioBridge['settings']['open']
