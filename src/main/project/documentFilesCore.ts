@@ -99,14 +99,18 @@ export function createDocumentFiles({
 
     await context.sweep([...orphans, ...staged.flat()])
 
-    context.index.clear()
-
     // By code unit, and said so: this ordering reaches no reader — it only settles WHICH of two
     // files claiming one id keeps it, and that answer has to be the same on every machine.
     candidates.sort((one, other) => (one < other ? -1 : one > other ? 1 : 0))
 
+    // Heads first, then clear and refill without awaiting once: emptied BEFORE the reads, the map
+    // stayed open across them and two walks read each other's entries as duplicates of their own,
+    // so a concurrent listing answered a PATH — which `document:read` refuses — for a stable id.
+    const descriptors = await pooledHeads(candidates, descriptorOf)
+    context.index.clear()
+
     const found: DocumentDescriptor[] = []
-    for (const descriptor of await pooledHeads(candidates, descriptorOf)) {
+    for (const descriptor of descriptors) {
       if (!descriptor) continue
 
       const claimed = context.index.has(context.keyOf(descriptor.id, descriptor.kind))

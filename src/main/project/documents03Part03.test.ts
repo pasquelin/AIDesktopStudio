@@ -67,6 +67,25 @@ describe('createDocumentFiles', () => {
   })
 
   /**
+   * Four windows listing at once are four walks over ONE index, and only the first answered the
+   * envelope's id: the others read its entries as duplicates of their own and gave the document
+   * its PATH instead — which `document:read` then refuses, a path being no id.
+   */
+  it('keeps one identity when listings overlap', async () => {
+    await documents.write('doc-1', 'scene', { title: 'Level', content: '{"nodes":["mine"]}' })
+
+    const listings = await Promise.all(Array.from({ length: 4 }, () => documents.list()))
+
+    expect(listings.map(listing => listing.map(one => one.id))).toEqual([
+      ['doc-1'],
+      ['doc-1'],
+      ['doc-1'],
+      ['doc-1'],
+    ])
+    expect((await documents.read('doc-1', 'scene'))?.content).toBe('{"nodes":["mine"]}')
+  })
+
+  /**
    * A document duplicated in the Finder carries the id of the one it was copied from. The listing
    * keeps that id for the first in path order and calls the second after its own PATH, which is
    * unique by construction — the alternative being a file plainly sitting in the folder and
