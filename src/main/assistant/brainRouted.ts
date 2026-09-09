@@ -1,7 +1,6 @@
 import type { RoleProvider } from '@shared/domain/aiRole'
 import type { LocalModel } from '@shared/domain/localModel'
-import type { ActionName } from '@shared/domain/assistant'
-import type { AssistantBrain } from './brainPort'
+import type { ActionLookup, AssistantBrain } from './brainPort'
 
 /**
  * Which brain answers a turn — the manager's decision, honoured rather than second-guessed.
@@ -51,7 +50,7 @@ export type RoutedBrainDeps = {
    * that skipped it was composed EVERY manual instead — 310 of them, 106 391 of the 117 364
    * characters sent per round trip (measured 2026-09-09 on deepseek-chat).
    */
-  findActions: (query: string, limit?: number) => Promise<readonly ActionName[]>
+  findActions: ActionLookup
 }
 
 /** The brain and, when there is none, the reason — which is the only thing left to say. */
@@ -71,8 +70,8 @@ function brainFor(
 }
 
 /**
- * How many manuals a chat sentence opens. A mission takes twelve (`CONTEXT_BUDGETS.actions`); a
- * chat has no step to narrow it, so it takes the double — at the registry's ~343 characters a
+ * How many manuals a chat sentence opens. Twice what a mission's step takes, which has a title
+ * and a goal to narrow it where a sentence has neither — at the registry's ~343 characters a
  * manual, some 8 200 against the 106 391 that every manual costs.
  *
  * 🛑 Not a ceiling on what the turn may reach: `unloadedIn` opens what the model names anyway,
@@ -110,7 +109,7 @@ export function createRoutedBrain(deps: RoutedBrainDeps): AssistantBrain {
         deps.memoriesOf(),
         // A mission packed its own candidates from the same engine; searching again would rank
         // the STEP's sentence against the mission's and hand back a different set.
-        request.candidates ? [] : deps.findActions(request.utterance, CHAT_CANDIDATES),
+        request.candidates ? undefined : deps.findActions(request.utterance, CHAT_CANDIDATES),
       ])
 
       const [brain, why] = brainFor(deps, provider)
@@ -129,12 +128,12 @@ export function createRoutedBrain(deps: RoutedBrainDeps): AssistantBrain {
           memories,
           folders: deps.foldersOf(),
           /**
-           * 🛑 Left ALONE when the search answered nothing — an index still building, an engine
+           * 🛑 Undefined when the search answered nothing — an index still building, an engine
            * that failed, a sentence of two words nothing matches. Undefined means every manual,
            * which is heavy and complete; an empty list would mean a model shown the names of 310
            * actions and the fields of none.
            */
-          ...(found.length > 0 ? { candidates: found } : {}),
+          candidates: accepted.candidates ?? (found?.length ? found : undefined),
         },
         {
           ...watch,

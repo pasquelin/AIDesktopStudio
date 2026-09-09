@@ -9,7 +9,7 @@ import {
 import type { AssistantNote } from '@shared/domain/assistantNote'
 import { OversizedRequest } from '@main/ai/cloudChat'
 import { log } from '@main/log'
-import type { TurnWatch } from './brainPort'
+import type { ActionLookup, TurnWatch } from './brainPort'
 import type { Briefing } from './instruction'
 import { recentHistory } from './instruction'
 import { parseReply, readReply, type Reply, type ReplyFault } from './reply'
@@ -55,20 +55,17 @@ const stopped = (error: unknown): boolean =>
   error instanceof TurnStopped ||
   (error instanceof Error && (error.name === 'AbortError' || error.name === 'TimeoutError'))
 
-/** What a name a model invented is closest to — the studio's one search engine, or nothing. */
-type Discover = (query: string) => Promise<readonly ActionName[]>
-
 /** Quoting the answer back is what works; bounded so an essay does not eat the history budget. */
 async function complaintAbout(
   answer: string,
   fault: ReplyFault,
-  discover?: Discover,
+  discover?: ActionLookup,
 ): Promise<string> {
   const lines = await faultLines(fault, discover)
   return [...lines, 'This is what you sent:', answer.slice(0, 500)].join('\n')
 }
 
-async function faultLines(fault: ReplyFault, discover?: Discover): Promise<readonly string[]> {
+async function faultLines(fault: ReplyFault, discover?: ActionLookup): Promise<readonly string[]> {
   switch (fault.kind) {
     case 'unknownAction': {
       // The invented name IS the query: dots and colons apart, a model that wrote
@@ -128,7 +125,7 @@ async function readOnce(
   budget: Budget,
   restart: () => void,
   notes?: TurnNotes,
-  discover?: Discover,
+  discover?: ActionLookup,
 ): Promise<Read> {
   budget.left -= 1
   restart()
@@ -179,7 +176,7 @@ async function readOrNarrow(
   budget: Budget,
   restart: () => void,
   notes?: TurnNotes,
-  discover?: Discover,
+  discover?: ActionLookup,
 ): Promise<[Briefing, Read]> {
   try {
     return [briefing, await readOnce(briefing, round, budget, restart, notes, discover)]
@@ -246,7 +243,7 @@ export async function answeredTurn(
   round: BrainRound,
   onProgress?: (progress: AssistantProgress) => void,
   notes?: TurnNotes,
-  discover?: Discover,
+  discover?: ActionLookup,
 ): Promise<AssistantAnswer> {
   const budget: Budget = { left: TURN_ATTEMPTS }
   // 🛑 Here and in no brain: this is what KNOWS an attempt is starting, and an answer thrown away

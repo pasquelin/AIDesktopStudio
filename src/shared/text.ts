@@ -24,7 +24,7 @@ export function foldForSearch(text: string): string {
  * Punctuation is not part of a word: a dictated `le voilier.` ends in a full stop, and a search
  * that kept it attached answered nothing for a file plainly there. Letters and NUMBERS by their
  * Unicode class, never `[a-z0-9]`: « génération » shattered into `g`, `n` and `ration`, and the
- * one-letter tokens scored against dozens of actions in `findActions`.
+ * one-letter tokens scored against dozens of actions in the search this once served.
  */
 export function searchWords(term: string): readonly string[] {
   return foldForSearch(term).match(/[\p{Letter}\p{Number}]+/gu) ?? []
