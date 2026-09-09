@@ -24,11 +24,11 @@
  * That is why a shipped profile is materialized before signing rather than after installation.
  */
 import { execFileSync } from 'node:child_process'
-import { createHash } from 'node:crypto'
 import { cpSync, existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { basename, dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { download } from './download.mjs'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 const DESTINATION = join(ROOT, 'resources', 'engine')
@@ -108,15 +108,6 @@ function tripleFor(platform, arch) {
   if (!triple) throw new Error(`no interpreter build for ${platform}-${arch}`)
 
   return triple
-}
-
-async function download(url, into) {
-  const response = await fetch(url, { redirect: 'follow' })
-  if (!response.ok) throw new Error(`${url} answered ${response.status}`)
-
-  const bytes = new Uint8Array(await response.arrayBuffer())
-  writeFileSync(into, bytes)
-  return createHash('sha256').update(bytes).digest('hex')
 }
 
 /**
