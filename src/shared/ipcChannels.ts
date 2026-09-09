@@ -41,6 +41,7 @@ export const CHANNELS: Channels = {
   projectRevealFolder: 'project:reveal-folder',
   projectRename: 'project:rename',
   projectTrash: 'project:trash',
+  projectConfirmTrash: 'project:confirm-trash',
   projectRenameFile: 'project:rename-file',
   projectMoveFiles: 'project:move-files',
   projectTrashFiles: 'project:trash-files',

@@ -237,6 +237,8 @@
       "revealHint": "Apre il gestore file su questo progetto",
       "forget": "Togli dalla lista",
       "forgetHint": "Toglie il progetto da questa lista, senza toccare la sua cartella né ciò che contiene",
+      "trash": "Sposta nel cestino",
+      "trashHint": "Manda la cartella del progetto e tutto ciò che contiene nel cestino di sistema; prima viene posta una domanda",
       "rename": "Rinomina",
       "renameHint": "Cambia il nome del progetto, lasciando la sua cartella sul disco dov’è"
     },

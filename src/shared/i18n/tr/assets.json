@@ -299,6 +299,10 @@
     "leaveRunningBody": "Süren üretim sayısı: {{count, number}}. Devam ederler ve ürettikleri bu projeye kaydedilir — projeyi yeniden açtığınızda orada bulacaksınız. Bu arada hiçbiri başka bir yere düşmez.",
     "leaveRunningConfirm": "Yine de çık",
     "leaveRunningCancel": "Burada kal",
+    "trashTitle": "«{{name}}» projesi çöpe taşınsın mı?",
+    "trashBody": "Klasörü ve içindeki her şey sistemin çöpüne gider. Oradan geri alabilirsiniz; stüdyo ise onları yerine koyamaz.",
+    "trashConfirm": "Çöpe taşı",
+    "trashCancel": "Vazgeç",
     "closeHint": "Tüm sekmeleri kapatır ve stüdyoyu karşılama ekranına döndürür. Klasör olduğu yerde, proje de listede kalır",
     "context": "Projenin bağlamı",
     "contextHint": "Bu projenin neyi anlattığının yazıldığı paneli açar"

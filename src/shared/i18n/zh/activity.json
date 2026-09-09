@@ -153,6 +153,7 @@
       "assets.retype": "此文件的角色无法更正",
       "project.reveal": "项目文件夹无法显示",
       "project.forget": "项目无法从列表中移除",
+      "project.trash": "无法把项目移到废纸篓",
       "project.close": "项目已经关闭，但工作室没能记住下次启动时不要重新打开它",
       "project.rename": "项目无法重命名",
       "font.face": "某种字体无法加载",

@@ -139,6 +139,7 @@ const bridge: StudioBridge = {
     revealFolder: path => ipcRenderer.invoke(CHANNELS.projectRevealFolder, path),
     rename: (path, name) => ipcRenderer.invoke(CHANNELS.projectRename, path, name),
     trash: path => ipcRenderer.invoke(CHANNELS.projectTrash, path),
+    confirmTrash: name => ipcRenderer.invoke(CHANNELS.projectConfirmTrash, name),
     renameFile: (relative, name) => ipcRenderer.invoke(CHANNELS.projectRenameFile, relative, name),
     moveFiles: (paths, folder) => ipcRenderer.invoke(CHANNELS.projectMoveFiles, paths, folder),
     trashFiles: paths => ipcRenderer.invoke(CHANNELS.projectTrashFiles, paths),

@@ -153,6 +153,7 @@
       "assets.retype": "The role of this file could not be corrected",
       "project.reveal": "The project folder could not be shown",
       "project.forget": "The project could not be removed from the list",
+      "project.trash": "The project could not be moved to the trash",
       "project.close": "The project was closed, but the studio could not record that the next launch should not reopen it",
       "project.rename": "The project could not be renamed",
       "font.face": "A font could not be loaded",

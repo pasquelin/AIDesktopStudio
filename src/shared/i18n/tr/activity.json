@@ -153,6 +153,7 @@
       "assets.retype": "Bu dosyanın rolü düzeltilemedi",
       "project.reveal": "Proje klasörü gösterilemedi",
       "project.forget": "Proje listeden kaldırılamadı",
+      "project.trash": "Proje çöpe taşınamadı",
       "project.close": "Proje kapatıldı, ancak stüdyo bir sonraki açılışta yeniden açılmaması gerektiğini kaydedemedi",
       "project.rename": "Proje yeniden adlandırılamadı",
       "font.face": "Bir yazı tipi yüklenemedi",

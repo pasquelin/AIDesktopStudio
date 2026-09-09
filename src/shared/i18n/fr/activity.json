@@ -153,6 +153,7 @@
       "assets.retype": "Le rôle de ce fichier n’a pas pu être corrigé",
       "project.reveal": "Le dossier du projet n’a pas pu être affiché",
       "project.forget": "Le projet n’a pas pu être retiré de la liste",
+      "project.trash": "Le projet n’a pas pu être mis à la corbeille",
       "project.close": "Le projet a bien été fermé, mais le studio n’a pas pu retenir de ne pas le rouvrir au prochain lancement",
       "project.rename": "Le projet n’a pas pu être renommé",
       "font.face": "Une police n’a pas pu être chargée",

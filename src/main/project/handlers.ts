@@ -28,12 +28,7 @@ import { oraThumbnailOf } from '@main/media/oraThumbnail'
 import { ORA_MERGED_PATH } from '@shared/domain/openRaster'
 import { probeWav } from '@main/media/wav'
 import { fileFactsOf } from './fileFacts'
-import {
-  askCloseChoice,
-  askDeleteDocument,
-  askFlattenDocument,
-  askOverwriteDocument,
-} from './documentDialogs'
+import { registerAskHandlers } from './askHandlers'
 import { askLeaveWithJobs, askTrashFiles, askUseOccupiedFolder } from './projectDialogs'
 import { holdsAProject, openFailureKey, orWhenGone } from './store'
 import type { ProjectHandlerDeps } from './handlerTypes'
@@ -484,16 +479,6 @@ export function registerProjectHandlers({
   handle(CHANNELS.documentRemove, (_event, id, kind) =>
     documents.remove(parseDocumentId(id), parseDocumentKind(kind)),
   )
-  handle(CHANNELS.documentConfirmClose, (_event, title) =>
-    askCloseChoice(askUser, parseDocumentTitle(title)),
-  )
-  handle(CHANNELS.documentConfirmDelete, (_event, title) =>
-    askDeleteDocument(askUser, parseDocumentTitle(title)),
-  )
-  handle(CHANNELS.documentConfirmFlatten, (_event, title, format, lost) =>
-    askFlattenDocument(askUser, parseDocumentTitle(title), String(format), String(lost)),
-  )
-  handle(CHANNELS.documentConfirmOverwrite, (_event, title) =>
-    askOverwriteDocument(askUser, parseDocumentTitle(title)),
-  )
+  // The four routes that only raise a question live apart — see `askHandlers.ts`.
+  registerAskHandlers(askUser)
 }

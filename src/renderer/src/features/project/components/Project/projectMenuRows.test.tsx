@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { FileOutcome } from '@shared/domain/fileOp'
 import { ContextMenu } from '@/components/ContextMenu'
 import { installFakeBridge, type BridgeOverrides } from '@/services/fakeBridge'
-import { useProject, type ProjectRenamed } from '@/stores/project'
+import { useProject, type ProjectRenamed, type ProjectTrashed } from '@/stores/project'
 import { useTranslation } from 'react-i18next'
 import { renderMenuRows } from '@/components/menuRows'
 import { projectMenuRows } from './projectMenuRows'
@@ -183,13 +183,21 @@ describe('the menu of a recent project', () => {
     })
   })
 
-  // What the row promises in words, held in code: the studio does not erase a folder someone made.
-  it('offers nothing that reaches the folder itself', async () => {
+  /**
+   * What the three other rows promise in words, held in code: pressed one after another they
+   * reach nothing on the disk. The fourth is the one that does, and it is answered NO here —
+   * `confirmTrash` refuses by default in the fake bridge, exactly as `confirmDelete` does.
+   */
+  it('reaches the folder from no row but the one that asks first', async () => {
     const trashFiles = vi.fn(nothingMoved)
     const rename = vi.fn(() => Promise.resolve(RENAMED_OK))
-    useProject.setState({ forget: () => Promise.resolve(), rename })
-    install({ project: { trashFiles } })
-    // Every row enabled, so the sweep below actually presses all three rather than bouncing off
+    const trash = vi.fn(() => Promise.resolve<ProjectTrashed>({ ok: true, trashed: true }))
+    // 🛑 Watched rather than left to the fake's default no: a row that asked NOTHING would pass a
+    // sweep that only reads what was binned, and it is the asking that this rule is about.
+    const confirmTrash = vi.fn(() => Promise.resolve(false))
+    useProject.setState({ forget: () => Promise.resolve(), rename, trash })
+    install({ project: { trashFiles, confirmTrash } })
+    // Every row enabled, so the sweep below actually presses all four rather than bouncing off
     // a disabled one and reporting that nothing reached the disk.
     open(vi.fn(), vi.fn())
 
@@ -199,5 +207,119 @@ describe('the menu of a recent project', () => {
     // The rename reaches the manifest and never the folder: it opens a field here, and even the
     // store's own call renames in place.
     expect(rename).not.toHaveBeenCalled()
+    expect(confirmTrash).toHaveBeenCalled()
+    expect(trash).not.toHaveBeenCalled()
+  })
+})
+
+/**
+ * The one row of this menu that reaches the disk, and the only one whose promise cannot be
+ * undone: nothing in the studio puts a folder back, so the question is the whole safeguard.
+ */
+describe('sending a project to the trash', () => {
+  const binned = (): Promise<ProjectTrashed> => Promise.resolve({ ok: true, trashed: true })
+
+  it('bins the folder once the person has said yes, naming that project alone', async () => {
+    const confirmTrash = vi.fn(() => Promise.resolve(true))
+    const trash = vi.fn(binned)
+    useProject.setState({ trash })
+    install({ project: { confirmTrash } })
+    open()
+
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Mettre à la corbeille' }))
+
+    // The FOLDER's own name, never the whole path: it is what the system's dialog reads out.
+    expect(confirmTrash).toHaveBeenCalledWith('Summer')
+    expect(trash).toHaveBeenCalledWith(PATH)
+  })
+
+  // 🛑 A no leaves the folder exactly where it is. Asked and then binned anyway is the one
+  // outcome this route exists to make impossible.
+  it('leaves the folder alone when the question is answered no', async () => {
+    const trash = vi.fn(binned)
+    useProject.setState({ trash })
+    install({ project: { confirmTrash: () => Promise.resolve(false) } })
+    open()
+
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Mettre à la corbeille' }))
+
+    expect(trash).not.toHaveBeenCalled()
+  })
+
+  /**
+   * The menu is closed BEFORE the dialog opens — it is the system's, and modal — so the failure
+   * has nowhere to land but the journal. `missing` and `not-a-project` are endings rather than
+   * throws, and a row that swallowed them did nothing in silence.
+   */
+  it('says so when the folder could not go', async () => {
+    // A folder that holds no project — one of the two endings the store answers `ok: false` for.
+    // 🛑 `missing` is NOT one of them: see the case below.
+    useProject.setState({
+      trash: () => Promise.resolve({ ok: false, declined: false, why: 'not-a-project' }),
+    })
+    install({ project: { confirmTrash: () => Promise.resolve(true) } })
+    open()
+
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Mettre à la corbeille' }))
+
+    expect(report).toHaveBeenCalledWith(
+      expect.objectContaining({ level: 'error', scope: 'project.trash' }),
+    )
+  })
+
+  /**
+   * 🛑 A folder the disk no longer holds is `{ ok: true, trashed: false }`, not a failure — an
+   * unplugged drive as much as a deletion. There is nothing to bin and nothing to say: the shelf
+   * row goes either way, and a red line about a folder already gone reads as a defect.
+   */
+  it('stays silent where there was no folder left to bin', async () => {
+    useProject.setState({ trash: () => Promise.resolve({ ok: true, trashed: false }) })
+    install({ project: { confirmTrash: () => Promise.resolve(true) } })
+    open()
+
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Mettre à la corbeille' }))
+
+    expect(report).not.toHaveBeenCalled()
+  })
+
+  // The question travels the boundary like any other call, and the menu is gone by the time it
+  // answers — so a channel that refuses outright has the journal or nothing.
+  it('says so when the question itself could not be raised', async () => {
+    install({ project: { confirmTrash: () => Promise.reject(new Error('no window')) } })
+    open()
+
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Mettre à la corbeille' }))
+
+    expect(report).toHaveBeenCalledWith(
+      expect.objectContaining({ level: 'error', scope: 'project.trash' }),
+    )
+  })
+
+  /**
+   * 🛑 The menu closes BEFORE the question opens. The dialog is the system's and it is modal: a
+   * menu left standing under it hangs there for as long as nobody answers, and the pointer has
+   * nothing to dismiss it with.
+   */
+  it('closes before the question opens, leaving nothing standing under the dialog', async () => {
+    const confirmTrash = vi.fn(() => Promise.resolve(false))
+    const onClose = vi.fn()
+    install({ project: { confirmTrash } })
+    open(onClose)
+
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Mettre à la corbeille' }))
+
+    expect(onClose).toHaveBeenCalled()
+    expect(onClose.mock.invocationCallOrder[0]).toBeLessThan(
+      confirmTrash.mock.invocationCallOrder[0] ?? 0,
+    )
+  })
+
+  it('says what it reaches, so it cannot be read as the row above it', () => {
+    open()
+
+    expect(screen.getByRole('menuitem', { name: 'Mettre à la corbeille' })).toHaveAttribute(
+      'data-tooltip-content',
+      'Envoie le dossier du projet et tout ce qu’il contient à la corbeille du système ; une question est posée d’abord',
+    )
   })
 })

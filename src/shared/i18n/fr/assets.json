@@ -299,6 +299,10 @@
     "leaveRunningBody": "Générations en cours : {{count, number}}. Elles continuent, et ce qu’elles produisent sera rangé dans ce projet — vous le retrouverez en le rouvrant. Rien n’en arrivera ailleurs entre-temps.",
     "leaveRunningConfirm": "Quitter quand même",
     "leaveRunningCancel": "Rester ici",
+    "trashTitle": "Mettre le projet « {{name}} » à la corbeille ?",
+    "trashBody": "Son dossier et tout ce qu’il contient partent à la corbeille du système. Vous pourrez les récupérer depuis la corbeille ; le studio, lui, ne sait pas les remettre en place.",
+    "trashConfirm": "Mettre à la corbeille",
+    "trashCancel": "Annuler",
     "closeHint": "Ferme les onglets et rend le studio à l’accueil. Le dossier reste où il est, et le projet dans la liste",
     "context": "Contexte du projet",
     "contextHint": "Ouvrir le panneau où s’écrit ce que ce projet raconte"

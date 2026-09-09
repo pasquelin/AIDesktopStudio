@@ -299,6 +299,10 @@
     "leaveRunningBody": "Laufende Generierungen: {{count, number}}. Sie laufen weiter, und was sie erzeugen, wird in diesem Projekt abgelegt — Sie finden es dort wieder, wenn Sie es erneut öffnen. Nichts davon landet in der Zwischenzeit anderswo.",
     "leaveRunningConfirm": "Trotzdem verlassen",
     "leaveRunningCancel": "Hier bleiben",
+    "trashTitle": "Projekt „{{name}}“ in den Papierkorb verschieben?",
+    "trashBody": "Sein Ordner und alles darin wandern in den Papierkorb des Systems. Von dort lässt sich alles zurückholen; das Studio selbst kann es nicht zurücklegen.",
+    "trashConfirm": "In den Papierkorb",
+    "trashCancel": "Abbrechen",
     "closeHint": "Schließt alle Tabs und gibt das Studio an den Startbildschirm zurück. Der Ordner bleibt, wo er ist, und das Projekt in der Liste",
     "context": "Kontext des Projekts",
     "contextHint": "Öffnet das Panel, in dem steht, worum es in diesem Projekt geht"

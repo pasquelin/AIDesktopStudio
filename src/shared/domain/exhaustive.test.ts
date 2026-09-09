@@ -299,6 +299,7 @@ const LOG_SCOPE_SET: Record<LogScope, true> = {
   'document.rename': true,
   'project.reveal': true,
   'project.forget': true,
+  'project.trash': true,
   'project.close': true,
   'project.rename': true,
   'font.face': true,
