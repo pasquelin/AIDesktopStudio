@@ -71,6 +71,8 @@ def memory_handlers(router: DoorRouter) -> dict[str, Handler]:
     """
     return {
         "memory.ledger": lambda _params: router.ledger.as_frame(),
+        # Answered here and NEVER routed — see `DoorRouter.close_door`, and ADR-18.
+        "door.close": lambda params: router.close_door(str(params.get("door", ""))),
         # Routed, but never QUEUED: a cancel that waited behind the job it stops stops nothing.
         CANCEL_OP: lambda params: router.cancel(str(params.get("jobId", ""))),
     }

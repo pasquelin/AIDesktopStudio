@@ -11,8 +11,9 @@ import { usePointerDrag } from '@/hooks/usePointerDrag'
 import { bound, type NumericBounds } from '@shared/numeric'
 import { PropertyLine } from './PropertyLine'
 import { ResetButton } from './ResetButton'
+import { Input } from './Input'
 import { fieldHandle } from './scHandle'
-import { FIELD_FILL, type GestureProps, type FieldHandle, type FieldReset } from './styles'
+import { type GestureProps, type FieldHandle, type FieldReset } from './styles'
 export type NumberFieldProps = NumericBounds &
   GestureProps &
   FieldHandle &
@@ -57,19 +58,18 @@ type NumberInputProps = Pick<
 
 function numberInputClass(disabled: boolean | undefined, axis: NumberFieldProps['axis']): string {
   return cn(
-    FIELD_FILL,
-    'touch-none',
+    'flex-1 touch-none',
     disabled ? 'text-muted cursor-not-allowed' : 'cursor-ew-resize focus:cursor-text',
-    axis && 'border-l-2',
-    axis === 'x' && 'border-l-axis-x',
-    axis === 'y' && 'border-l-axis-y',
-    axis === 'z' && 'border-l-axis-z',
+    axis && 'border-s-2',
+    axis === 'x' && 'border-s-axis-x',
+    axis === 'y' && 'border-s-axis-y',
+    axis === 'z' && 'border-s-axis-z',
   )
 }
 
 function numberInput({ shown, typed, setTyped, emit, axis, scId, ...props }: NumberInputProps) {
   return (
-    <input
+    <Input
       type="text"
       inputMode="decimal"
       role="spinbutton"

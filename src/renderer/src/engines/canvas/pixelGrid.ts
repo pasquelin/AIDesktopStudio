@@ -191,7 +191,7 @@ export function cellsOfRect(from: Point, to: Point, filled: boolean): Point[] {
 }
 
 /** Under this a hairline covers a sixth of the gap, and the grid reads as a grey wash. */
-export const MIN_GRID_PX = 6
+const MIN_GRID_PX = 6
 
 export function gridIsLegible(step: number, scale: number): boolean {
   return step * scale >= MIN_GRID_PX

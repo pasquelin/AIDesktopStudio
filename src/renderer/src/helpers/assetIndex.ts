@@ -8,7 +8,7 @@ import {
 } from '@/engines/timeline/mediaLink'
 import { assetsById, useAssets } from '@/stores/assets'
 
-export type AssetIndex = {
+type AssetIndex = {
   byPath: ReadonlyMap<string, string>
   byName: ReadonlyMap<string, string>
 }
@@ -29,7 +29,7 @@ let indexed: { of: ReadonlyMap<string, Asset>; index: AssetIndex } | null = null
  * Asking the catalogue by path (`helpers/assetAt`) is a round trip, and the readers that need this
  * — `DocumentIo.install` among them — are synchronous.
  */
-export function assetIndex(): AssetIndex {
+function assetIndex(): AssetIndex {
   const assets = assetsById(useAssets.getState())
   if (indexed?.of === assets) return indexed.index
 

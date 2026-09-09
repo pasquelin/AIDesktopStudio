@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { describe, expect, it } from 'vitest'
 import { Euler, Quaternion } from 'three'
 import { poseFractionOf, yawOf } from './animationPose'
@@ -62,8 +63,14 @@ describe('which frame of a clip gets drawn', () => {
   // A clip with nothing to sample has no frame to answer with, and a fraction outside the clip
   // would be clamped into one silently by the mixer — a picture of something nobody chose.
   it('refuses rather than answering a fraction that is not one', () => {
-    expect(() => poseFractionOf(undefined, 1, scoreless)).toThrow('between 0 and 1')
-    expect(() => poseFractionOf(1.5, 17, scoreless)).toThrow('between 0 and 1')
-    expect(() => poseFractionOf(Number.NaN, 17, scoreless)).toThrow('between 0 and 1')
+    expect(() => poseFractionOf(undefined, 1, scoreless)).toThrow(
+      localizedError('poseFractionInvalid').message,
+    )
+    expect(() => poseFractionOf(1.5, 17, scoreless)).toThrow(
+      localizedError('poseFractionInvalid').message,
+    )
+    expect(() => poseFractionOf(Number.NaN, 17, scoreless)).toThrow(
+      localizedError('poseFractionInvalid').message,
+    )
   })
 })

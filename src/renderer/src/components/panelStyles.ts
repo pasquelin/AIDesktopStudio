@@ -7,14 +7,14 @@ export const PANEL_INSET = 'p-2'
  * OVER the content rather than beside it, and with no room reserved it lands on the last column
  * of every row — which in an inspector is the value one is trying to read.
  */
-export const PANEL_SCROLL = 'flex min-h-0 flex-1 flex-col overflow-y-auto pr-2'
+export const PANEL_SCROLL = 'flex min-h-0 flex-1 flex-col overflow-y-auto pe-2'
 
 /**
  * What a row of a list opens onto, drawn UNDER it and inside the list. Indented past the column
  * the chevron stands in, so what a row says lines up with its own name rather than with the edge
  * of the panel — the reading a tree gives its children.
  */
-export const ROW_DETAIL = 'flex flex-col pb-1 pl-4'
+export const ROW_DETAIL = 'flex flex-col pb-1 ps-4'
 
 /**
  * The stacked box a panel puts ABOVE what it acts on — a bar of filters, a message being written.
@@ -40,6 +40,38 @@ export const PANEL_BAR = 'border-border flex items-center gap-2 border-b'
  * below it. The contrast half is measured in `tokens.test.ts`.
  */
 export const PROPERTY_BODY = 'flex flex-col gap-2 px-2 pt-1 pb-2'
+
+/**
+ * One repeated sub-item of a property section — a binding, a transition, a parameter, a
+ * condition: a block one can see the edges of, with its own name and its own bin.
+ *
+ * 🛑 It sits INSIDE the body's inset rather than cancelling it: pulled back to the plate's own
+ * edge, the block touched it on three sides and read as a band cut out of the section instead of
+ * a thing standing in it. What its labels then owe the fields above them is one indent, which is
+ * what a block one can see the edges of is allowed to cost.
+ */
+export const FIELD_BLOCK =
+  'border-border bg-surface flex flex-col gap-2.5 rounded-(--radius-sc-md) border p-2.5'
+
+/**
+ * The same block, one step further in — a condition inside a transition.
+ *
+ * 🛑 Written out in FULL rather than derived from the one above: Tailwind scans the SOURCE for
+ * class names, and a fill composed at runtime generates nothing of its own.
+ */
+export const FIELD_BLOCK_NESTED =
+  'border-border bg-panel flex flex-col gap-2.5 rounded-(--radius-sc-md) border p-2.5'
+
+/**
+ * One item READ rather than edited — a state of an animation graph, an action of an input map, as
+ * the simple view of a script document lists them.
+ *
+ * 🛑 Tighter than `FIELD_BLOCK` on purpose: a block one reads carries a line and a badge, not a
+ * column of controls, and the field block's breathing left it floating. Written out in full for
+ * the same reason as the block above — Tailwind scans the source.
+ */
+export const READING_BLOCK =
+  'border-border bg-surface flex flex-col gap-1.5 rounded-(--radius-sc-md) border p-2'
 
 /**
  * A picture standing in a property FIELD — the texture a slot holds, the map a model carries.
@@ -121,7 +153,7 @@ export const FIELD_NAME = 'text-text text-xs font-medium'
  * `PropertyLabel` wears it and stretches, so the rule runs the row's whole height.
  */
 export const FIELD_LABEL =
-  'text-muted border-border w-(--sc-label-share) max-w-(--sc-label-max) shrink-0 border-r pr-2'
+  'text-muted border-border w-(--sc-label-share) max-w-(--sc-label-max) shrink-0 border-e pe-2'
 
 /**
  * The number beside a track — "somewhere past the middle" is not a value anyone can write down.
@@ -132,16 +164,7 @@ export const FIELD_LABEL =
  * takes it off the track beside it, and an inspector ends up stacking sliders of two lengths.
  * Fourteen fits the widest of them, a range's `0–1`.
  */
-export const FIELD_READOUT = 'text-muted w-14 shrink-0 text-right tabular-nums'
-
-/**
- * A tick, wherever one is drawn. `accent-accent` is the whole of it and the whole of why this is
- * written once: left off, a checkbox comes out in the browser's own blue — the one colour in the
- * studio that answers to nothing in `index.css`, on the control a reader scans a list for.
- *
- * The size is the caller's: a tick in a property row is bigger than one in a list of files.
- */
-export const CHECKBOX = 'accent-accent cursor-pointer'
+export const FIELD_READOUT = 'text-muted w-14 shrink-0 text-end tabular-nums'
 
 /** The box a slider is drawn in: the rail sits absolute inside it, the input covers it whole. */
 export const SLIDER_TRACK = 'relative h-(--sc-control) min-w-0'
@@ -185,17 +208,6 @@ export const FIELD =
   'bg-surface border-border text-text h-(--sc-control) rounded-(--radius-sc-sm) border px-2'
 
 /**
- * The same field where it takes what the line has left — beside a label, a thumbnail, a dice.
- *
- * `min-w-0` is the half that gets forgotten: a flex child sizes to its content by default, so a
- * long value pushes the row wider than the panel holding it instead of scrolling inside itself.
- *
- * No text size of its own, and that is measured rather than left out: Tailwind's preflight gives
- * a control `font: inherit`, so a field inside a `FIELD_ROW` already reads at the row's size.
- */
-export const FIELD_FILL = cn(FIELD, 'min-w-0 flex-1')
-
-/**
  * The surface a menu wears. The SKIN only — never where it sits, and never whether it is raised:
  * a menu that sits IN a form is one of its fields, and a shadow there says it left the page.
  *
@@ -223,14 +235,14 @@ export const MENU_FLOATING = cn(MENU_RAISED, 'fixed z-70')
  *
  * The inset only, never the skin: the shared bar wears that.
  */
-export const PANE_TOOLBAR = 'absolute top-2 left-2'
+export const PANE_TOOLBAR = 'absolute top-2 start-2'
 
 /**
  * A surface laid beside that column rather than under it — the snap bar. The offset is a gauge
  * (`--sc-pane-aside`) and not a number here: it follows `--sc-control`, so a change of density
  * cannot leave the two overlapping.
  */
-export const PANE_TOOLBAR_ASIDE = 'absolute top-2 left-(--sc-pane-aside)'
+export const PANE_TOOLBAR_ASIDE = 'absolute top-2 start-(--sc-pane-aside)'
 
 /**
  * The word a bar sets beside its buttons: which take is loaded, which half of a pair this

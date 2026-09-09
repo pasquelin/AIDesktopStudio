@@ -1,0 +1,427 @@
+{
+  "game": {
+    "components": {
+      "Aircraft": {
+        "title": "Aereo",
+        "description": "Fa volare l’oggetto: portanza, resistenza e spinta calcolate sul suo stesso movimento, e superfici di comando che rispondono solo con l’aria addosso."
+      },
+      "Animator": {
+        "title": "Animatore",
+        "description": "Fa suonare la clip che corrisponde a ciò che il corpo sta facendo — camminare, saltare, stare fermo — a partire da un grafo di animazione del progetto."
+      },
+      "CharacterController": {
+        "description": "Fa dell’oggetto quello che si guida: cammina, salta, sale i gradini.",
+        "title": "Personaggio"
+      },
+      "Collider": {
+        "description": "Dà all’oggetto un volume che gli altri non possono attraversare.",
+        "title": "Volume"
+      },
+      "Follow": {
+        "description": "Segue un’altra entità e si ferma alla distanza richiesta — un compagno, una camera di spalla, un nemico.",
+        "title": "Inseguimento"
+      },
+      "Health": {
+        "description": "Punti vita, che scendono quando l’entità è colpita e la uccidono a zero.",
+        "title": "Salute"
+      },
+      "LookAt": {
+        "description": "Orienta l’entità verso un’altra, subito o a velocità di rotazione limitata — una torretta, un cartello, una testa.",
+        "title": "Sguardo"
+      },
+      "Movement": {
+        "description": "Fa spostare l’entità da sola lungo un asse — una piattaforma, un ascensore, una trappola.",
+        "title": "Movimento"
+      },
+      "Orbit": {
+        "description": "Fa girare l’entità attorno a un’altra, o attorno all’origine — una luna, un satellite, una camera che ruota.",
+        "title": "Orbita"
+      },
+      "Path": {
+        "description": "Fa percorrere all’entità una serie di punti a velocità costante — un carrello, una carrellata, una piattaforma su binario.",
+        "title": "Binario"
+      },
+      "Patrol": {
+        "description": "Fa andare l’entità da un punto nominato al successivo, con un’attesa a ciascuno — una sentinella, un ascensore.",
+        "title": "Pattuglia"
+      },
+      "RigidBody": {
+        "description": "Affida l’oggetto alla simulazione: cade, scivola, si fa spingere.",
+        "title": "Fisica"
+      },
+      "Script": {
+        "title": "Script",
+        "description": "Affida l’oggetto al codice: ciò che il suo autore ha scritto viene eseguito a ogni passo."
+      },
+      "Player": {
+        "title": "Giocatore",
+        "description": "Designa chi viene giocato. Uno solo per scena: ciò che pende sotto di lui è il suo corpo e il suo occhio, ed è lui che la camera segue."
+      },
+      "Spin": {
+        "description": "Fa girare l’entità su un asse, senza fine — un oggetto da raccogliere, un’elica, un meccanismo.",
+        "title": "Rotazione continua"
+      },
+      "SpringArm": {
+        "title": "Braccio elastico",
+        "description": "Appende una camera dietro un elemento, alla distanza che imposti: si avvicina quando un muro si mette in mezzo, e segue con del ritardo anziché restare incollata."
+      },
+      "Trigger": {
+        "description": "Non blocca niente, e avvisa quando qualcosa entra nel suo volume o ne esce.",
+        "title": "Sensore"
+      },
+      "Vehicle": {
+        "title": "Veicolo",
+        "description": "Mette l’oggetto su ruote sospese, motrici e sterzanti: rotola, frena e curva. Le ruote sono i suoi oggetti figli, nominati qui."
+      }
+    },
+    "fields": {
+      "acceleration": "Accelerazione",
+      "agility": "Agilità",
+      "airControl": "Controllo in aria",
+      "axis": "Asse",
+      "body": "Corpo guida",
+      "bodyTurnSpeed": "Rotazione del corpo (0: nessuna)",
+      "camera": "Camera",
+      "collision": "Evita i muri",
+      "collisionInLag": "Entrata in collisione",
+      "collisionOutLag": "Uscita dalla collisione",
+      "coyoteTime": "Tolleranza di salto",
+      "current": "Attuale",
+      "deceleration": "Decelerazione",
+      "distance": "Distanza",
+      "drag": "Resistenza",
+      "drive": "Trazione",
+      "fidelity": "Fedeltà",
+      "followVertical": "Segui l’altezza del soggetto",
+      "friction": "Attrito",
+      "from": "File di origine",
+      "graph": "Grafo di animazione",
+      "gravityScale": "Gravità",
+      "height": "Altezza",
+      "hysteresis": "Isteresi",
+      "jumpBuffer": "Salto anticipato",
+      "jumpSpeed": "Salto",
+      "kind": "Simulazione",
+      "length": "Lunghezza",
+      "lockRotation": "Blocca la rotazione",
+      "lookAt": "Inquadratura",
+      "mass": "Massa",
+      "max": "Massimo",
+      "maxSteerAngle": "Angolo di sterzata massimo",
+      "maxThrust": "Spinta massima",
+      "maxTorque": "Coppia motrice",
+      "mode": "Andamento",
+      "moveSpeed": "Velocità di camminata (0: quella della scena)",
+      "orientation": "Orientamento",
+      "orientToTangent": "Segui la tangente",
+      "pitchMax": "Inclinazione massima",
+      "pitchMin": "Inclinazione minima",
+      "positionLag": "Ritardo di posizione",
+      "possesses": "Elemento posseduto",
+      "probeRadius": "Raggio della sonda",
+      "radius": "Raggio",
+      "restitution": "Rimbalzo",
+      "rotationLag": "Ritardo di rotazione",
+      "runSpeed": "Velocità di corsa (0: nessuna corsa)",
+      "safetyMargin": "Margine di sicurezza",
+      "script": "File",
+      "shoulder": "Scostamento laterale",
+      "slopeLimit": "Pendenza",
+      "snapDistance": "Aderenza",
+      "speed": "Velocità",
+      "stallAngle": "Angolo di stallo",
+      "stepHeight": "Gradino",
+      "stopDistance": "Distanza di arresto",
+      "subject": "Soggetto",
+      "suspensionLength": "Escursione della sospensione",
+      "target": "Bersaglio",
+      "turnSpeed": "Velocità di rotazione",
+      "waitSeconds": "Attesa",
+      "waypoints": "Punti",
+      "wheelRadius": "Raggio delle ruote",
+      "wheels": "Ruote",
+      "wheelWidth": "Larghezza delle ruote",
+      "wingArea": "Superficie alare"
+    },
+    "export": {
+      "title": "Ottimizza il gioco",
+      "action": "Esporta",
+      "safeTitle": "Ottimizzazioni runtime SAFE",
+      "safeRuntime": "Ottimizza la rappresentazione runtime",
+      "instancing": "Istanzia gli oggetti ripetuti",
+      "batching": "Raggruppa le geometrie statiche compatibili",
+      "deduplication": "Deduplica le risorse",
+      "geometryBuffers": "Ottimizza i buffer geometrici",
+      "losslessCompression": "Comprimi senza perdita visiva",
+      "removeUnused": "Rimuovi le risorse inutilizzate",
+      "currentSceneMeasured": "Misurato · scena corrente",
+      "projectEstimated": "Stimato · gioco completo · {{count, number}} scene",
+      "currentSceneLossyEstimate": "Scena corrente con perdite visive · {{triangles}} triangoli · {{geometry}} di geometria · {{images}} di immagini",
+      "triangleResult": "Triangoli visibili {{before}} → {{after}}",
+      "geometryResult": "Geometria {{before}} → {{after}}",
+      "imageResult": "Immagini {{before}} → {{after}}",
+      "visualTitle": "Avanzate · cambiamenti visivi",
+      "generateLods": "Genera i livelli di distanza",
+      "geometryLabel": "Semplificazione geometrica",
+      "compressionLabel": "Compressione delle immagini",
+      "reductionLabel": "Risoluzione delle immagini",
+      "quality": {
+        "off": "Disattivata",
+        "conservative": "Prudente",
+        "balanced": "Equilibrata",
+        "aggressive": "Aggressiva"
+      },
+      "reduction": {
+        "off": "Originale",
+        "half": "Metà",
+        "quarter": "Quarto"
+      },
+      "visualChangesNone": "Cambiamenti visivi: NESSUNO",
+      "visualChangesPossible": "Cambiamenti visivi: POSSIBILI",
+      "failed": "Non è stato possibile esportare il gioco."
+    },
+    "animationGraph": {
+      "hint": "Il grafo che la partita riproduce: parametri, stati e transizioni.",
+      "invalid": "Il JSON non descrive un grafo di animazione valido.",
+      "jsonLabel": "JSON del grafo di animazione",
+      "loadFailed": "Non è stato possibile leggere questo grafo di animazione.",
+      "loading": "Caricamento del grafo di animazione…",
+      "writeFailed": "Non è stato possibile scrivere questo grafo di animazione sul disco.",
+      "views": "Vista di modifica",
+      "viewHint": {
+        "simple": "Mostra ciò che il grafo riproduce, stato per stato, senza impostazioni",
+        "expert": "Apre ogni impostazione come modulo",
+        "json": "Mostra il file esattamente come è scritto sul disco"
+      },
+      "context": "Contesto",
+      "contextDescription": "Come si chiama questo grafo, quale metà del corpo guida, e con quale stato inizia la partita.",
+      "id": "Identificatore",
+      "idHelp": "Il nome con cui uno script chiede questo grafo. Viene dal nome del file.",
+      "initial": "Stato iniziale",
+      "initialHelp": "Lo stato riprodotto appena il personaggio entra in scena. Da lì partono le prime transizioni.",
+      "parameters": "Parametri",
+      "parametersDescription": "I valori su cui decidono le transizioni. Il gioco ne pubblica alcuni da sé; gli altri sono vostri.",
+      "builtInDescription": "I primi li pubblica il gioco a ogni passo: velocità, appoggio a terra, salto. Potete usarli senza dichiarare nulla.",
+      "parameterKind": "Genere",
+      "parameterKinds": {
+        "number": "Numero",
+        "boolean": "Sì o no"
+      },
+      "addParameter": "Aggiungi parametro",
+      "removeParameter": "Elimina questo parametro",
+      "noParameter": "Nessun parametro vostro: ci sono solo quelli del gioco.",
+      "states": "Stati",
+      "statesDescription": "Ciò che il personaggio può stare facendo, e l’animazione che ogni stato riproduce.",
+      "stateDescription": "Uno stato riproduce un’animazione finché nulla lo fa uscire.",
+      "addState": "Aggiungi stato",
+      "removeState": "Elimina questo stato",
+      "initialBadge": "Partenza",
+      "clipKindHelp": "Da dove viene l’animazione: dal file del modello, tra quelle fornite con lo studio, o da un file del progetto.",
+      "clipKinds": {
+        "embedded": "Quella del modello",
+        "bundled": "Fornita con lo studio",
+        "asset": "Un file del progetto"
+      },
+      "speedFrom": "Velocità guidata da",
+      "speedFromHelp": "Il parametro che moltiplica la velocità dell’animazione. È ciò che tiene un ciclo di camminata sotto un personaggio che accelera.",
+      "speedFromNone": "Nessuno",
+      "transitions": "Transizioni",
+      "transitionsDescription": "Il passaggio da uno stato all’altro, e ciò che deve essere vero perché avvenga.",
+      "transitionRank": "Transizione {{rank}}",
+      "transitionSentence": "{{from}} → {{to}}",
+      "addTransition": "Aggiungi transizione",
+      "removeTransition": "Elimina questa transizione",
+      "noTransition": "Nessuna transizione: lo stato iniziale sarà riprodotto all’infinito.",
+      "anyState": "Qualsiasi stato",
+      "from": "Da",
+      "fromHelp": "Lo stato che si lascia. « Qualsiasi stato » è ciò che permette a un salto di interrompere quanto era in corso.",
+      "to": "A",
+      "exitTime": "Uscita permessa a partire da",
+      "exitTimeHelp": "La parte di animazione da riprodurre prima che l’uscita sia permessa. È ciò che lascia finire un atterraggio invece di troncarlo.",
+      "priority": "Priorità",
+      "priorityHelp": "Chi vince quando due transizioni sono possibili nello stesso istante. Il numero più alto la spunta.",
+      "fadeHelp": "La dissolvenza tra le due animazioni, in secondi. A zero il cambio è netto.",
+      "parameterRank": "Parametro {{rank}}",
+      "conditionRank": "Condizione {{rank}}",
+      "stateOnce": "Riprodotta una volta",
+      "stateEntries": "Ciò che porta qui",
+      "stateEntryWhen": "Da {{from}}, se {{when}}",
+      "stateEntryAlways": "Da {{from}}, alla fine dell’animazione",
+      "stateNoEntry": "Per ora nulla porta qui."
+    },
+    "inputMap": {
+      "actionId": "Azione",
+      "actionKind": "Valore",
+      "addAction": "Aggiungi un’azione",
+      "addBinding": "Aggiungi un’associazione",
+      "binding": "Associazione {{device}}",
+      "applyPresetHint": "Sostituisce questa mappa con il punto di partenza scelto",
+      "axis": "Asse",
+      "context": "Contesto",
+      "create": "Nuova mappa dei comandi",
+      "createHint": "Crea una mappa dei comandi da un punto di partenza standard",
+      "defaultActive": "Attiva all’avvio",
+      "deadZone": "Zona morta",
+      "deviceLabel": "Dispositivo",
+      "duplicateId": "Più mappe dei comandi usano l’identificatore «{{id}}». Dai a ogni contesto un identificatore unico.",
+      "device": {
+        "gamepad": "Gamepad",
+        "keyboard": "Tastiera",
+        "mouse": "Mouse"
+      },
+      "id": "Identificatore",
+      "invalid": "Il JSON non descrive una mappa dei comandi valida.",
+      "invert": "Inverti",
+      "jsonLabel": "JSON della mappa",
+      "kind": {
+        "axis1": "Un asse",
+        "axis2": "Due assi",
+        "button": "Pulsante"
+      },
+      "loadFailed": "Non è stato possibile leggere questa mappa dei comandi.",
+      "loading": "Caricamento della mappa dei comandi…",
+      "modeHint": "Cambia il modo in cui si modifica la stessa mappa dei comandi",
+      "preset": {
+        "character": "Personaggio",
+        "flight": "Volo",
+        "menu": "Menu",
+        "studio": "Studio",
+        "vehicle": "Veicolo"
+      },
+      "presets": "Punti di partenza",
+      "priority": "Priorità",
+      "removeAction": "Rimuovi l’azione",
+      "removeBinding": "Rimuovi l’associazione",
+      "scale": "Scala",
+      "unnamedAction": "Azione senza nome",
+      "capture": "Premi",
+      "capturing": "Premi…",
+      "captureHint": "Lega questo comando al prossimo tasto o al prossimo controllo del gamepad premuto. Esc rinuncia.",
+      "help": {
+        "id": "Il nome del contesto, quello che uno script attiva e che il ripiego integrato completa. Viene dal nome del file; due file che portano lo stesso identificatore formerebbero un solo contesto.",
+        "priority": "Chi vince quando due contesti attivi dichiarano la stessa azione. Il numero PIÙ ALTO scrive per ultimo e se la prende. I contesti integrati personaggio, veicolo e volo stanno a 0, 10 e 10.",
+        "defaultActive": "Se questa mappa è in servizio fin dall’inizio di una partita. Altrimenti tocca a uno script attivarla — un contesto di menu si apre e si richiude così.",
+        "actionId": "Il nome che legge uno script, e con lui i controller integrati: `move`, `jump`, `steer`. È quel nome a contare, mai il tasto.",
+        "actionKind": "Ciò che l’azione restituisce: un pulsante restituisce sì o no, un asse restituisce un numero fra −1 e 1, due assi restituiscono una coppia — quello che dice una levetta.",
+        "device": "Da dove viene il comando. Una stessa azione può portarne diversi: è così che un gioco risponde alla tastiera E al gamepad senza sapere chi ha parlato.",
+        "axis": "Su quale delle due metà spinge questo tasto. Un’azione a due assi si compone di quattro tasti, due per asse.",
+        "scale": "Di quanto spinge questa associazione, e in che verso. −1 per la metà che va a sinistra o all’indietro, 1 per l’altra.",
+        "deadZone": "Sotto questo valore la levetta è considerata a riposo. Una levetta consumata deriva: senza zona morta, il personaggio cammina da solo.",
+        "invert": "Rovescia il verso di questo comando. Quello che certi piloti si aspettano dal beccheggio, e nessuno dal resto."
+      },
+      "documentDescription": "Una mappa dei controlli dice quale tasto o quale pulsante attiva ogni azione del gioco. Il gioco legge i NOMI delle azioni, mai i tasti: cambiare un tasto qui non cambia alcuno script.",
+      "views": "Vista di modifica",
+      "writeFailed": "Non è stato possibile scrivere questa mappa dei controlli sul disco.",
+      "contextDescription": "Come si chiama questo insieme di controlli e quando entra in servizio.",
+      "actionsTitle": "Azioni",
+      "actionsDescription": "Un’azione per ogni cosa che il giocatore può fare. Il nome è ciò che legge il gioco; i collegamenti sotto sono i tasti che la attivano.",
+      "bindings": "Collegamenti",
+      "bindingsDescription": "Tutti i tasti e i controlli che attivano questa azione. Un’azione può accumularne più di uno: è così che un gioco risponde alla tastiera E al gamepad.",
+      "bindingRank": "Collegamento {{rank}}",
+      "noBinding": "Nessun collegamento: questa azione non risponderà a nulla.",
+      "noAction": "Nessuna azione: questo contesto non fa ancora nulla.",
+      "presetsDescription": "Un punto di partenza già pronto. Sostituisce le azioni di questa mappa; il nome del contesto resta com’è.",
+      "viewHint": {
+        "simple": "Mostra ciò che la mappa fa, azione per azione, senza impostazioni",
+        "expert": "Apre ogni impostazione come modulo",
+        "json": "Mostra il file esattamente come è scritto sul disco"
+      },
+      "action": {
+        "move": "Muovere il personaggio: sinistra, destra, avanti, indietro.",
+        "look": "Guardarsi intorno: girare la testa o la telecamera.",
+        "jump": "Saltare.",
+        "run": "Correre, finché il controllo resta premuto.",
+        "interact": "Agire su ciò che sta davanti: aprire, raccogliere, parlare.",
+        "steer": "Sterzare: il veicolo va a sinistra o a destra.",
+        "accelerate": "Accelerare.",
+        "brake": "Frenare.",
+        "handBrake": "Freno a mano: le ruote posteriori si bloccano e il veicolo slitta.",
+        "exit": "Uscire dal veicolo.",
+        "pitch": "Beccheggio: il muso del velivolo scende o sale.",
+        "roll": "Rollio: il velivolo si inclina di lato.",
+        "yaw": "Imbardata: il muso gira a sinistra o a destra senza inclinarsi.",
+        "throttle": "La manetta: quanta potenza dà il motore.",
+        "navigate": "Spostare la selezione in un menu.",
+        "next": "Andare all’elemento successivo.",
+        "previous": "Tornare all’elemento precedente.",
+        "confirm": "Confermare ciò che è scelto.",
+        "back": "Tornare indietro, o chiudere.",
+        "custom": "Un’azione tua: uno script legge questo nome per sapere quando è stata attivata."
+      }
+    },
+    "controlsMenu": {
+      "add": "Aggiungi un’associazione",
+      "capture": "Premi un tasto o un pulsante del gamepad",
+      "change": "Modifica",
+      "close": "Chiudi",
+      "gamepad": "Gamepad",
+      "keyboard": "Tastiera",
+      "mouse": "Mouse",
+      "reset": "Reimposta tutto",
+      "title": "Comandi"
+    },
+    "play": {
+      "faults_many": "{{count, number}} errori",
+      "faults_one": "{{count, number}} errore",
+      "faults_other": "{{count, number}} errori",
+      "objects_many": "{{count, number}} oggetti",
+      "objects_one": "{{count, number}} oggetto",
+      "objects_other": "{{count, number}} oggetti",
+      "pause": "Pausa",
+      "pauseHint": "Congela la partita dov’è arrivata",
+      "readout": "{{fps}} fps · passo {{tick}}",
+      "start": "Avvia",
+      "startHint": "Avvia la scena come una partita, senza toccare il documento",
+      "stop": "Arresta",
+      "stopHint": "Getta via la partita e rimette la scena com’era",
+      "openFault": "Apre lo script alla riga dell’errore"
+    },
+    "section": {
+      "title": "Componenti",
+      "add": "Aggiungi un componente",
+      "addHint": "Dare a questo oggetto qualcosa da fare mentre il gioco è in corso",
+      "remove": "Stacca",
+      "removeHint": "Staccare questo componente dall’oggetto",
+      "empty": "Questo oggetto non fa niente mentre il gioco è in corso.",
+      "emptyHint": "Un componente dice ciò che l’oggetto FA, mentre il suo tipo dice ciò che disegna."
+    },
+    "values": {
+      "all": "Integrale",
+      "auto": "Automatica",
+      "box": "Cubo",
+      "convexes": "Convessi",
+      "dynamic": "Dinamica",
+      "fixed": "Fissa",
+      "front": "Anteriore",
+      "hull": "Involucro",
+      "kinematic": "Pilotata",
+      "loop": "In loop",
+      "once": "Una volta",
+      "pingPong": "Avanti e indietro",
+      "pivot": "La spalla",
+      "pointer": "Lo sguardo",
+      "rear": "Posteriore",
+      "subject": "Il soggetto",
+      "trimesh": "Triangoli",
+      "unknown": "Valore sconosciuto",
+      "unnamedNode": "Nessuno",
+      "x": "X",
+      "y": "Y",
+      "z": "Z"
+    },
+    "window": {
+      "debug": "Debug",
+      "debugHint": "Ciò che la partita dice di sé: oggetti, fotogrammi al secondo, passi, errori",
+      "framePerformance": "CPU {{cpu}} ms · rendering {{render}} ms",
+      "renderPerformance": "{{calls, number}} chiamate di disegno · {{triangles, number}} triangoli",
+      "noFaults": "Nessun errore",
+      "title": "Modalità gioco",
+      "waiting": "In attesa dello studio…"
+    },
+    "scriptView": {
+      "simple": "Semplice",
+      "expert": "Esperto",
+      "json": "JSON"
+    }
+  }
+}

@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { DEFAULT_CANVAS } from '@/engines/canvas/canvasState'
 import { reportFailure } from '@/services/diagnostics'
@@ -77,7 +78,7 @@ describe('saying that a document drifted from its asset', () => {
     expect(reportFailure).toHaveBeenCalledWith(
       'canvas.size',
       'concept art',
-      expect.objectContaining({ message: expect.stringContaining('no longer measures') }),
+      expect.objectContaining({ message: localizedError('assetSizeMismatch').message }),
     )
   })
 

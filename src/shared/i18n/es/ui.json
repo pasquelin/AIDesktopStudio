@@ -1,0 +1,76 @@
+{
+  "gui": {
+    "stage": "Página de la interfaz",
+    "tools": "Herramientas de la interfaz",
+    "tree": "Elementos de la interfaz",
+    "noDocument": "Abre una interfaz para ver lo que contiene.",
+    "visible": "Visible",
+    "locked": "Bloqueado — el puntero no lo atrapa"
+  },
+  "guiTools": {
+    "add": "Añadir",
+    "addHint": "Coloca un elemento dentro de lo que está seleccionado",
+    "duplicate": "Duplicar",
+    "duplicateHint": "Copia la selección justo al lado",
+    "group": "Agrupar",
+    "groupHint": "Guarda la selección en un panel",
+    "delete": "Eliminar",
+    "deleteHint": "Retira la selección de la interfaz",
+    "lock": "Bloquear",
+    "lockHint": "Pone la selección fuera del alcance del puntero",
+    "zoomIn": "Acercar",
+    "zoomInHint": "Acerca la página",
+    "zoomOut": "Alejar",
+    "zoomOutHint": "Aleja la página",
+    "fit": "Ajustar",
+    "fitHint": "Encuadra la página entera en el panel",
+    "actual": "Tamaño real",
+    "actualHint": "Un píxel de la página por un píxel de la pantalla",
+    "resolution": "Resolución",
+    "resolutionHint": "El lienzo sobre el que se compone esta interfaz",
+    "types": {
+      "panel": "Panel",
+      "stack": "Pila",
+      "grid": "Cuadrícula",
+      "scroll": "Zona desplazable",
+      "spacer": "Separador",
+      "text": "Texto",
+      "image": "Imagen",
+      "button": "Botón",
+      "progress": "Barra de progreso",
+      "slider": "Deslizador",
+      "input": "Entrada",
+      "checkbox": "Casilla",
+      "screen": "Pantalla de la interfaz"
+    },
+    "typeHints": {
+      "panel": "Un marco que contiene otros",
+      "stack": "Coloca sus hijos en fila o en columna",
+      "grid": "Coloca sus hijos en columnas regulares",
+      "scroll": "Un marco cuyo contenido se desplaza",
+      "spacer": "Separa a sus vecinos dentro de una pila",
+      "text": "Palabras en pantalla",
+      "image": "Una imagen del proyecto",
+      "button": "Lo que se acciona, con icono o sin él",
+      "progress": "Una barra llena hasta un valor",
+      "slider": "Un valor que se arrastra",
+      "input": "Texto que se escribe",
+      "checkbox": "Una casilla que se marca",
+      "screen": "La raíz de la interfaz"
+    },
+    "resolutions": {
+      "desktopHd": "1920 × 1080",
+      "desktop720": "1280 × 720",
+      "phonePortrait": "Teléfono, vertical",
+      "phoneLandscape": "Teléfono, horizontal",
+      "free": "Libre"
+    },
+    "resolutionHints": {
+      "desktopHd": "Escritorio, dieciséis novenos",
+      "desktop720": "Escritorio, dieciséis novenos, la mitad de píxeles",
+      "phonePortrait": "390 × 844",
+      "phoneLandscape": "844 × 390",
+      "free": "El tamaño que el documento ya tiene"
+    }
+  }
+}

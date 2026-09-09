@@ -23,7 +23,7 @@ export type LocalBackendDeps = {
   projectPath: () => string
   /**
    * Where an asset of this role lands — `ProjectStore.folderFor`. Asked rather than composed: a
-   * project whose `Modelling/Models` was renamed in the Finder goes on filing meshes there.
+   * project whose `Models` was renamed in the Finder goes on filing meshes there.
    */
   folderFor: (role: FolderRole) => Promise<string>
   catalog: () => AsyncCatalog

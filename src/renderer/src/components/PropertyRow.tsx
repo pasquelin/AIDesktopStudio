@@ -13,7 +13,7 @@ import { PropertyLine } from './PropertyLine'
  * costs a line and shows nothing the far end did not already say, the file's own name being
  * what a reader looks for. The same reading `Row` gives a path with `clip="start"`.
  */
-export type PropertyShape = 'inline' | 'stacked' | 'wrap' | 'path'
+type PropertyShape = 'inline' | 'stacked' | 'wrap' | 'path'
 
 export type PropertyRowProps = {
   label: string

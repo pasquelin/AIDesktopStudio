@@ -40,9 +40,9 @@ Six asset types:
 | **Image** | a still image | `Images/`, or `Materials/` when it serves a material |
 | **Video** | a moving shot | `Video/` |
 | **Audio** | a sound, a piece of music | `Audio/` |
-| **Mesh** | a 3D object | `Modelling/Models/` |
+| **Mesh** | a 3D object | `Models/` |
 | **Skybox** | a 360° sky | `Skyboxes/` |
-| **Animation** | a motion, to be replayed on a character | `Modelling/Animations/` |
+| **Animation** | a motion, to be replayed on a character | `Animations/` |
 
 **Where it lands, not where it lives.** These folders are laid down when the project is created,
 alongside `Materials/` which answers to no kind, and are only a starting point: move an asset

@@ -1,0 +1,549 @@
+{
+  "commands": {
+    "scenePlay": {
+      "title": "Sahneyi oynat",
+      "help": "Sahneyi oyun penceresinde başlatır ya da sürdürür."
+    },
+    "appNew": {
+      "title": "Yeni…",
+      "help": "Hangi ekranda olunursa olunsun, bir proje ya da belge oluşturan pencereyi açar"
+    },
+    "projectNew": {
+      "title": "Yeni proje",
+      "help": "Boş bir proje oluşturur ve açar. Proje, yaptığınız her şeyi tutan klasördür: görüntüler, videolar, sesler ve bunların düzeni."
+    },
+    "projectOpen": {
+      "title": "Proje aç",
+      "help": "Diskinizde hâlihazırda bulunan bir projeyi seçer ve açık olanın yerine açar. Açık proje siz çalışırken kaydedilir, bu yüzden önceden kaydedilecek bir şey yoktur."
+    },
+    "documentSaveAs": {
+      "title": "Farklı kaydet",
+      "help": "Varlığın bir kopyasını aslının yanına yazar ve onun üzerinden devam eder. Açık olan varlık son kaydedildiği hâliyle kalır."
+    },
+    "documentSave": {
+      "title": "Belgeyi kaydet",
+      "help": "Öndeki belgeyi projeye yazar. Kaydedilene kadar pencerede yaşar: ekrandaki ile diskteki aynı olmadığı sürece sekme bir yıldız taşır."
+    },
+    "documentClose": {
+      "title": "Sekmeyi kapat",
+      "help": "Öndeki belgeyi kapatır. Kaydedilmemiş çalışma taşıyorsa stüdyo bununla ne yapılacağını sorar. Hiç sekme kalmazsa pencere kapanır."
+    },
+    "layoutReset": {
+      "title": "Düzeni sıfırla",
+      "help": "Panelleri başlangıçtaki yerlerine koyar. Pencereler her yöne sürüklendikten ve hiçbir şey beklediğiniz yerde kalmadıktan sonra işe yarar. Çalışmanıza dokunulmaz."
+    },
+    "appSettings": {
+      "title": "Ayarlar",
+      "help": "Ayarlar penceresini açar — bu pencereyi: dil, renkler, hesap, kısayollar ve ayarlanabilen her şey."
+    },
+    "appAssistant": {
+      "title": "Asistan",
+      "help": "Ne yapılmasını istediğinizi sesle ya da klavyeyle söylediğiniz pencereyi açar. Asistan bunu kendisi yerine getirir ve maliyeti olan her şeyden önce onay ister."
+    },
+    "appDictate": {
+      "title": "Dikte et",
+      "help": "Mikrofonu dinler ve söylediklerinizi, bulunduğunuz alanda imlecin olduğu yere yazar. Varsayılan olarak basılı tutulur: konuşursunuz, bırakırsınız, metin görünür."
+    },
+    "windowFullScreen": {
+      "title": "Tam ekran",
+      "help": "Pencereye tüm ekranı verir; çubuksuz ve kenarlıksız, çevrede hiçbir şey olmadan çalışmak için."
+    },
+    "spacesMoveLeft": {
+      "title": "Çalışma alanını sola taşı",
+      "help": "Odaktaki çalışma alanını üst çubukta bir sıra sola kaydırır. Belirlediğiniz sıra bir oturumdan diğerine korunur."
+    },
+    "spacesMoveRight": {
+      "title": "Çalışma alanını sağa taşı",
+      "help": "Odaktaki çalışma alanını üst çubukta bir sıra sağa kaydırır. Belirlediğiniz sıra bir oturumdan diğerine korunur."
+    },
+    "explorerNewFolder": {
+      "title": "Yeni klasör",
+      "help": "Gezginin gösterdiği klasörün içinde boş bir klasör oluşturur ve adını yazmaya açar. Klasör size aittir, içine koyduğunuz her şey gibi."
+    },
+    "explorerDuplicate": {
+      "title": "Çoğalt",
+      "help": "Seçilen her ögenin bir kopyasını aslının yanına, ilk boş adla koyar. Bir klasör, içindeki her şeyle birlikte kopyalanır."
+    },
+    "explorerCut": {
+      "title": "Kes",
+      "help": "Seçimi, bir sonraki yapıştırmada taşınmak üzere tutar. Siz yapıştırana kadar hiçbir şey yer değiştirmez ve tutulan satırlar soluk çizilir."
+    },
+    "explorerCopy": {
+      "title": "Kopyala",
+      "help": "Seçimi, bir sonraki yapıştırmada kopyalanmak üzere tutar. Aslı olduğu yerde kalır."
+    },
+    "explorerPaste": {
+      "title": "Yapıştır",
+      "help": "Panonun tuttuklarını ekrandaki klasöre bırakır. Adı önceden alınmış bir öge reddedilir, geri kalanlar geçer."
+    },
+    "explorerTrash": {
+      "title": "Çöp kutusuna taşı",
+      "help": "Seçimi, geri alabileceğiniz sistem çöp kutusuna gönderir. Stüdyonun geri alamadığı tek gezgin hareketi budur."
+    },
+    "explorerUndo": {
+      "title": "Son dosya hareketini geri al",
+      "help": "Taşınan, yeniden adlandırılan, çoğaltılan ya da oluşturulan son grubu eski yerine koyar. Yığın bir pencereye değil projeye aittir ve çöp kutusuna taşıma buraya hiç girmez."
+    },
+    "explorerRedo": {
+      "title": "Dosya hareketini yinele",
+      "help": "Az önce geri alınan dosya grubunu aynen yeniden yapar."
+    },
+    "sceneSelect": {
+      "title": "Seç",
+      "help": "Sade araç: sahnedeki bir nesneyi seçmek için ona tıklayın, ona hiçbir şey yapmadan. İki işlem arasında geri dönülen araç budur."
+    },
+    "sceneTranslate": {
+      "title": "Taşı",
+      "help": "Seçilen nesneyi renkli okları çekerek bir yerden başka bir yere sürükler — her yön için bir ok."
+    },
+    "sceneRotate": {
+      "title": "Döndür",
+      "help": "Seçilen nesneyi renkli halkaları çekerek kendi üzerinde döndürür — her eksen için bir halka."
+    },
+    "sceneScale": {
+      "title": "Ölçekle",
+      "help": "Seçilen nesneyi tutamaçlarını çekerek büyütür ya da küçültür. Shift basılı tutulduğunda oranları korunur."
+    },
+    "sceneFrame": {
+      "title": "Seçimi çerçevele",
+      "help": "Kamerayı, seçilen nesne görünümü dolduracak kadar yaklaştırır. Kaybolduğunuzda ya da bir nesne çok küçük olduğunda işe yarar."
+    },
+    "sceneFrameFollow": {
+      "title": "Seçimi izle",
+      "help": "Seçimi çerçeveler ve görünümde tutar: ne hareket ederse kamerayı, daha önce seçilmiş açı ve mesafeyle birlikte götürür. Yeniden çağrıldığında bırakır."
+    },
+    "sceneIsolate": {
+      "title": "Seçimi yalıt",
+      "help": "Üzerlerinde çalıştığınız sürece ekranda yalnızca seçilen nesneleri bırakır. Hiçbir şey değişmez: yeniden basmak sahneyi tam olduğu gibi geri verir, kendi gizlediğiniz nesneler dâhil."
+    },
+    "sceneHide": {
+      "title": "Seçimi gizle",
+      "help": "Seçilen nesneleri belgeye dokunmadan görünümden çıkarır. “Tümünü göster” onları geri getirir."
+    },
+    "sceneShowAll": {
+      "title": "Tümünü göster",
+      "help": "Görünüm alanından yapılan gizlemeleri ve yalıtmaları geri alır. Belgenin kendisinin gizli saydığı nesneler gizli kalır."
+    },
+    "sceneSnap": {
+      "title": "Tüm manyetizmalar",
+      "help": "Dört yapışmayı birden açar ya da kapatır — yüzey, ızgara, açı, ölçek. İkinci basış, açık olanları tam olarak geri verir. Görünüm alanının üstündeki çubuk bunları tek tek ayarlar."
+    },
+    "sceneSpace": {
+      "title": "Yerel çerçeve",
+      "help": "Tutamaçları dünyanınki yerine nesnenin kendi yönelimine hizalar. Döndürülmüş bir nesnede, onu kuzeye değil de “kendi önüne doğru” taşımayı sağlayan budur."
+    },
+    "sceneProjection": {
+      "title": "İzdüşüm",
+      "help": "Kaçış çizgilerinin birleştiği perspektif ile paralellerin paralel kaldığı ortografik izdüşüm arasında geçiş yapar. Bir hizalamayı gözle yargılamayı sağlayan budur."
+    },
+    "sceneViewFront": {
+      "title": "Önden bak",
+      "help": "Kamerayı sahnenin önüne, eksene dik olarak koyar. Bir siluet yargılanırken başvurulan görünüm."
+    },
+    "sceneViewBack": {
+      "title": "Arkadan bak",
+      "help": "Kamerayı sahnenin arkasına, aynı eksen üzerine koyar: önün gizlediği."
+    },
+    "sceneViewRight": {
+      "title": "Sağdan bak",
+      "help": "Kamerayı sağ yana, eksene dik olarak koyar. Bir derinliğin yargılandığı görünüm."
+    },
+    "sceneViewLeft": {
+      "title": "Soldan bak",
+      "help": "Kamerayı sol yana, sağ görünümle aynı eksen üzerine koyar."
+    },
+    "sceneViewTop": {
+      "title": "Üstten bak",
+      "help": "Kamerayı sahnenin üstüne, dosdoğru aşağı bakacak biçimde koyar. Nesnelerin yere yerleştirildiği görünüm."
+    },
+    "sceneViewBottom": {
+      "title": "Alttan bak",
+      "help": "Kamerayı sahnenin altına, dosdoğru yukarı bakacak biçimde, üst görünümün tersi yönde koyar."
+    },
+    "sceneViewCamera": {
+      "title": "Kameradan bak",
+      "help": "Görünümü seçilen kameradan çizer ve ikinci çağrıda oradan geri çıkar. Kamera seçilmemişse sahnedeki ilkini alır."
+    },
+    "sceneQuad": {
+      "title": "Dört görünüm",
+      "help": "Görünüm alanını dörde böler — gezilen görünümün çevresinde üst, ön ve yan. Her çeyrek imlecin altında yörüngeye girer; gezilen görünüm gizmoları korur."
+    },
+    "sceneQuadEdges": {
+      "title": "Dörtgen kenarlar",
+      "help": "Tel kafesi, üçgenlemenin eklediği köşegenler olmadan yeniden çizer. Bir GLB hiçbir zaman dörtgen taşımaz: bu, açıya göre bir yeniden kurulumdur, çok kavisli yüzeyler dışında sadıktır."
+    },
+    "sceneDisplay": {
+      "title": "Görüntüleme modu",
+      "help": "Görünüm alanının çizdiklerini sırayla değiştirir: yüzeyler, yalnızca kenarları ya da ikisi birlikte. Düğmenin menüsü doğrudan birini seçer."
+    },
+    "sceneCapture": {
+      "title": "Görünümü yakala",
+      "help": "3B görünümün bir görüntüsünü projenin görüntülerine kaydeder — ızgara, tutamaçlar ve yollar olmadan. Menü, panelin kendisininkinden daha büyük çözünürlükler sunar."
+    },
+    "sceneAdd": {
+      "title": "Ekle",
+      "help": "Bir sahnenin alabileceklerinin listesini açar: meshler, ışıklar ve nesneler. Boşluğa sağ tıklamak aynı listeyi açar."
+    },
+    "sceneAddToSheet": {
+      "title": "Animasyon bandına ekle",
+      "help": "Seçilen nesneleri, anahtarların konduğu banda koyar. Bant yalnızca oraya konulanı gösterir, böylece binlerce nesneli bir sahne okunabilir kalır."
+    },
+    "sceneRemoveFromSheet": {
+      "title": "Animasyon bandından çıkar",
+      "help": "Satırı banttan çıkarır. Konmuş anahtarlar kalır ve bir nesne anahtar taşıdığı sürece satırını korur."
+    },
+    "sceneGroup": {
+      "title": "Grupla",
+      "help": "Seçilen nesneleri tek bir grup altında toplar. Grubu taşımak hepsini taşır ve ⌘Z gruplamayı geri alır."
+    },
+    "sceneDuplicate": {
+      "title": "Çoğalt",
+      "help": "Seçilenin bir kopyasını aynı üst öğenin altına ve tam olarak aynı yere koyar, sonra onu seçer. Bir grup, altında asılı olan her şeyle birlikte bütün olarak çoğaltılır."
+    },
+    "sceneOptimizeSelection": {
+      "title": "Seçimi optimize et…",
+      "help": "Optimizasyon ayarlarını değiştirmeden önce seçimi ölçer ve SAFE bir çalışma zamanı temsilini önizler."
+    },
+    "sceneWorldPerformance": {
+      "title": "Dünya performansı…",
+      "help": "Tüm sahneyi ölçer ve düzenlenen dünyayı değiştirmeden SAFE optimizasyon olanaklarını bildirir."
+    },
+    "sceneExportGame": {
+      "title": "Oyunu dışa aktar…",
+      "help": "Optimize edilmiş bir çalışma zamanı kopyasından bağımsız bir oyun oluşturur; düzenleme sahnelerine dokunmaz."
+    },
+    "sceneCopy": {
+      "title": "Kopyala",
+      "help": "Seçimi, burada ya da başka bir sahnede yapıştırılabilsin diye tutar. Bu, stüdyonun kendi panosudur: sistemin panosuna dokunmaz."
+    },
+    "sceneCut": {
+      "title": "Kes",
+      "help": "Seçimi tutar ve sahneden çıkarır. ⌘Z onu geri getirir."
+    },
+    "scenePaste": {
+      "title": "Yapıştır",
+      "help": "Kopyalananı öndeki sahneye koyar ve seçer. İki kez yapıştırmak iki ayrı kopya oluşturur."
+    },
+    "sceneDelete": {
+      "title": "Sil",
+      "help": "Sahnede seçili olan her şeyi kaldırır. Hiçbir şey büsbütün kaybolmaz: ⌘Z onu geri getirir."
+    },
+    "undo": {
+      "title": "Geri al",
+      "help": "Bu belgede yaptığınız son şeyi geri alır. Her belgenin kendi yığını vardır: geri alma, öndeki sekmede etkilidir, diğerlerinde değil."
+    },
+    "redo": {
+      "title": "Yinele",
+      "help": "Az önce geri aldığınızı yeniden yapar. Bir kez fazla geri alındığında işe yarar."
+    },
+    "sequencePlayPause": {
+      "title": "Oynat / Duraklat",
+      "help": "Kurgunun oynatımını başlatır ya da bulunduğu yerde durdurur. Yeniden başlatmak kalınan yerden devam eder."
+    },
+    "sequenceExport": {
+      "title": "Videoyu dışa aktar…",
+      "help": "Kurguyu, 3B sahneler dâhil kare kare bir video dosyasına yazar. Ses henüz içinde değildir."
+    },
+    "sequenceExportCut": {
+      "title": "Kurguyu dışa aktar (OTIO)…",
+      "help": "Kurgunun kendisini, başka kurgu programlarının açtığı bir OpenTimelineIO dosyasına yazar — izler, klipler, giriş noktaları, hızlar ve medya bağlantıları. Solmalar, kazançlar ve görüntü/ses bağları da bu dosyada yolculuk eder, ama onları yalnızca AI Desktop Studio geri okur."
+    },
+    "sequenceExportEdl": {
+      "title": "Kurgu listesini dışa aktar (EDL)…",
+      "help": "Kesmeleri ve zaman kodlarını, her post prodüksiyon odasının okuduğu CMX3600 biçiminde yazar. Bu biçim bir görüntü izi ile iki ses izi taşır; solmaların, kazançların ve hızların hiçbirini taşımaz."
+    },
+    "sequenceExportFcpxml": {
+      "title": "Kurguyu dışa aktar (FCPXML)…",
+      "help": "Kurguyu, Final Cut’ın okuduğu, Premiere ile Resolve’un içe aktardığı biçimde yazar. İzler her biri bir şerit olarak korunur, kare boyutu da öyle; solmalar, kazançlar ve hızlar burada kalır."
+    },
+    "sequenceExportStems": {
+      "title": "İz başına sesi dışa aktar (WAV)…",
+      "help": "Duyulabilir her iz için bir WAV dosyası yazar, kurgunun çaldığı gibi mikslenmiş olarak — yerleşimler, budamalar, solmalar, kazançlar ve hızlar örneklere işlenir. Susturulmuş bir iz yazılmaz."
+    },
+    "sequenceExportBundle": {
+      "title": "Kurguyu medyalarıyla dışa aktar (OTIOZ)…",
+      "help": "Aynı kurguyu, kullandığı medyalarla birlikte dosyanın içine yazar. Başkasına verilecek ya da DaVinci Resolve’da açılacak olan budur; Resolve o zaman ham çekimleri tek tek istemek yerine kendisi bulur."
+    },
+    "montageImport": {
+      "title": "Bir kurguyu medyalarıyla içe aktar (OTIOZ)…",
+      "help": "Başka bir uygulamanın yazdığı bir kurguyu ham çekimleriyle açar. Medyalar projeye kopyalanır ve kataloğa girer, sonra kurgu onlara bağlı olarak açılır. Açılan dosyanın getirmedikleri açılışta bildirilir ve yalnızca orada varsayılan değerinden başlar."
+    },
+    "sequenceMirror": {
+      "title": "Geri dönüş penceresi",
+      "help": "Kurguyu, ikinci bir ekrana koymak üzere kendi penceresinde açar. Stüdyoyu kare kare izler, sessizdir ve sıradan bir pencere gibi kapanır."
+    },
+    "sequenceSplit": {
+      "title": "Klibi böl",
+      "help": "Klibi, oynatma kafasının bulunduğu yerde ikiye böler; böylece her yarısı ayrı ayrı işlenebilir."
+    },
+    "sequenceDelete": {
+      "title": "Klibi sil",
+      "help": "Seçilen klibi kurgudan kaldırır. Özgün dosya varlıklarınızda kalır."
+    },
+    "sequenceUnlink": {
+      "title": "Görüntü ile sesi ayır",
+      "help": "Aynı çekimin iki klibini birbirinden ayırır. Bağlı oldukları sürece birini taşımak, kesmek ya da silmek diğerine de aynısını yapar."
+    },
+    "sequenceZoomIn": {
+      "title": "Yakınlaştır",
+      "help": "Ayrıntıyı görmek için kurguyu yayar: klipler genişler, nişan almak kolaylaşır."
+    },
+    "sequenceZoomOut": {
+      "title": "Uzaklaştır",
+      "help": "Bir bakışta daha çoğunu görmek için kurguyu sıkıştırır; bunun bedeli ayrıntıdır."
+    },
+    "sequenceFit": {
+      "title": "Tümünü sığdır",
+      "help": "Yakınlaştırmayı, kurgunun tamamı baştan sona ekrana sığacak biçimde ayarlar."
+    },
+    "sequenceStart": {
+      "title": "Başa git",
+      "help": "Oynatma kafasını kurgunun en başına geri getirir, başka hiçbir şeyi kıpırdatmadan."
+    },
+    "sequenceEnd": {
+      "title": "Sona git",
+      "help": "Oynatma kafasını kurgunun en sonuna, son klibin ötesine gönderir."
+    },
+    "canvasZoomIn": {
+      "title": "Yakınlaştır",
+      "help": "Görüntülemeyi bir kademe büyütür; merkez, görünen bölgenin ortasıdır. Görüntünün kendisine dokunulmaz — yalnızca ona bakış biçimine."
+    },
+    "canvasZoomOut": {
+      "title": "Uzaklaştır",
+      "help": "Görüntünün tamamına yeniden geri çekilmek için görüntülemeyi bir kademe küçültür."
+    },
+    "canvasZoomFit": {
+      "title": "Pencereye sığdır",
+      "help": "Görüntünün tamamını bir kenar boşluğuyla panele sığdırır ve onu asla gerçek boyutunun ötesine büyütmez."
+    },
+    "canvasZoomActual": {
+      "title": "Gerçek boyut",
+      "help": "Görüntünün bir pikseline ekranın bir pikseli: keskinliğin yargılanabileceği tek ölçek."
+    },
+    "canvasRulers": {
+      "title": "Cetveller",
+      "help": "Üstteki ve soldaki iki dereceli cetveli gösterir ya da gizler. Kılavuzlar onlardan çekilir."
+    },
+    "canvasGuides": {
+      "title": "Kılavuzlar",
+      "help": "Görüntünün üzerine konmuş kılavuzları gösterir ya da gizler. Onları gizlemek silmez."
+    },
+    "canvasGrid": {
+      "title": "Piksel ızgarası",
+      "help": "Eserin kendi piksellerinin ızgarasını gösterir ya da gizler. Yalnızca piksel sanatına ayarlı bir belgede."
+    },
+    "canvasClearGuides": {
+      "title": "Kılavuzları temizle",
+      "help": "Görüntüdeki her kılavuzu kaldırır. Diğer düzenlemeler gibi geri alınabilir."
+    },
+    "canvasSnap": {
+      "title": "Yapışma",
+      "help": "Sürüklenen şeyin, birkaç piksellik yakınlıkta kılavuzlara, görüntünün kenarlarına ve merkezine yapışmasını sağlar."
+    },
+    "canvasSelectAll": {
+      "title": "Tümünü seç",
+      "help": "Belgenin tamamını seçer; sistemin kendi tümünü seçme komutu bunu bir görüntüde yapamaz."
+    },
+    "canvasDeselect": {
+      "title": "Seçimi kaldır",
+      "help": "Seçili bölgeyi bırakır, böylece fırça yeniden katmanın tamamına erişir."
+    },
+    "canvasCropApply": {
+      "title": "Kırpmayı uygula",
+      "help": "Belgeyi, konulan çerçeveye göre budar. ⌘Z çerçeveyi geri verir, pikselleri değil."
+    },
+    "canvasCropCancel": {
+      "title": "Kırpmadan vazgeç",
+      "help": "Kırpma çerçevesini, hiçbir şeyi budamadan kaldırır."
+    },
+    "canvasMaskFromSelection": {
+      "title": "Seçimden maske oluştur",
+      "help": "Etkin katmanı, seçili bölgenin dışında gizler."
+    },
+    "canvasRegenerate": {
+      "title": "Bölgeyi yeniden üret",
+      "help": "Modelden, etkin katmanın maskelenmiş bölgesini yeniden boyamasını ister."
+    },
+    "canvasCutout": {
+      "title": "Kesip çıkar",
+      "help": "Düzleştirilmiş görüntünün arka planını varsayılan modelle kaldırır."
+    },
+    "canvasEnlarge": {
+      "title": "Büyüt",
+      "help": "Düzleştirilmiş görüntünün çözünürlüğünü varsayılan modelle yükseltir."
+    },
+    "canvasVectorize": {
+      "title": "Vektörleştir",
+      "help": "Düzleştirilmiş görüntüyü varsayılan modelle vektör yollarına dönüştürür."
+    },
+    "canvasExtend": {
+      "title": "Genişlet",
+      "help": "Modelden, düzleştirilmiş görüntünün kenarlarının ötesine boyamasını ister."
+    },
+    "canvasMergeDown": {
+      "title": "Aşağıyla birleştir",
+      "help": "Etkin katmanı, hemen altındakiyle tek bir katmanda birleştirir; alttakinin adı korunur."
+    },
+    "canvasFlatten": {
+      "title": "Görüntüyü düzleştir",
+      "help": "Tüm yığını tek bir katmana indirger: gizli katmanlar birleştirilmez, atılır.",
+      "layerName": "Arka plan"
+    },
+    "canvasFlipHorizontal": {
+      "title": "Yatay çevir",
+      "help": "Belgenin tamamını, katmanlar dâhil soldan sağa aynalar."
+    },
+    "canvasFlipVertical": {
+      "title": "Dikey çevir",
+      "help": "Belgenin tamamını, katmanlar dâhil yukarıdan aşağıya aynalar."
+    },
+    "canvasRotateCw": {
+      "title": "Saat yönünde döndür",
+      "help": "Belgeyi çeyrek tur sağa döndürür: çerçeve de onunla döner."
+    },
+    "canvasRotateCcw": {
+      "title": "Saat yönünün tersine döndür",
+      "help": "Belgeyi çeyrek tur sola döndürür: çerçeve de onunla döner."
+    },
+    "canvasExport": {
+      "title": "Görüntüyü dışa aktar",
+      "help": "Düzleştirilmiş belgeyi PNG olarak diske yazar."
+    },
+    "canvasExportLayered": {
+      "title": "Katmanları dışa aktar (PSD)…",
+      "help": "Belgeyi katmanlarıyla birlikte Photoshop dosyası olarak yazar. Gruplar düzleştirilir: katmanları yan yana gelir."
+    },
+    "skyboxView": {
+      "title": "Bakışı değiştir",
+      "help": "Gökyüzüne bakmanın dört yolunu sırayla geçirir: sarmalayıcı, panoramik, haç, yüzler."
+    },
+    "skyboxProbes": {
+      "title": "Işık sondaları",
+      "help": "Tanık kürelerini gösterir ya da gizler. Bir gökyüzü, kendi görüntüsüyle değil, aydınlattığı şeyle yargılanır."
+    },
+    "canvasToolMove": {
+      "title": "Taşıma aracı",
+      "help": "İşaretçiyi hazırlar: bir sürükleme etkin katmanı taşır, tutamakları da onu yeniden boyutlandırır ya da döndürür."
+    },
+    "canvasToolHand": {
+      "title": "El aracı",
+      "help": "Eli hazırlar: bir sürükleme, belgeye dokunmadan görüntülemeyi kaydırır. Boşluk çubuğunu basılı tutmak, araç değiştirmeden aynısını yapar."
+    },
+    "canvasToolCrop": {
+      "title": "Kırpma aracı",
+      "help": "Kırpma çerçevesini hazırlar. Bir çerçeve çizin, sonra kırpmak için ⏎, vazgeçmek için ⎋."
+    },
+    "canvasToolSelectRectangle": {
+      "title": "Dikdörtgen seçim",
+      "help": "Dikdörtgen seçimi hazırlar. Seçili olan; fırçayı, silgiyi ve kovayı sınırlar."
+    },
+    "canvasToolSelectEllipse": {
+      "title": "Eliptik seçim",
+      "help": "Elips seçimi hazırlar: bir sürükleme, elipsi taranan dikdörtgenin içine yerleştirir, Shift ise onu daireye çevirir."
+    },
+    "canvasToolSelectLasso": {
+      "title": "Kement",
+      "help": "Kementi hazırlar: seçim, serbest elle eli izler."
+    },
+    "canvasToolSmartSelect": {
+      "title": "Tıklama — akıllı seçim",
+      "help": "Yerel seçim modeliyle, bir tıklamadan nesne seçimini hazırlar."
+    },
+    "canvasToolSmartSelectBox": {
+      "title": "Dikdörtgen — akıllı seçim",
+      "help": "Yerel seçim modeliyle, yaklaşık bir dikdörtgenden nesne seçimini hazırlar."
+    },
+    "canvasToolShapeRectangle": {
+      "title": "Dikdörtgen şekli",
+      "help": "Etkin katmana dikdörtgen çizmeyi hazırlar; Shift onu kareye çevirir."
+    },
+    "canvasToolShapeLine": {
+      "title": "Çizgi şekli",
+      "help": "Çizgi çizmeyi hazırlar. Dikdörtgenle aynı grupta olduğundan tuşuna Shift eklenmiştir."
+    },
+    "canvasToolShapeArrow": {
+      "title": "Ok şekli",
+      "help": "Sürüklemenin başladığı yerden elin bıraktığı yere ok çizmeyi hazırlar."
+    },
+    "canvasToolShapeEllipse": {
+      "title": "Elips şekli",
+      "help": "Etkin katmana elips çizmeyi hazırlar; Shift onu daireye çevirir."
+    },
+    "canvasToolShapePolygon": {
+      "title": "Çokgen şekli",
+      "help": "Kenar sayısı çizmeden önce denetçide ayarlanan düzgün bir çokgen çizmeyi hazırlar."
+    },
+    "canvasToolShapeStar": {
+      "title": "Yıldız şekli",
+      "help": "Uç sayısı çizmeden önce denetçide ayarlanan bir yıldız çizmeyi hazırlar."
+    },
+    "canvasToolBrush": {
+      "title": "Fırça aracı",
+      "help": "Yumuşak kenarlı fırçayı hazırlar. Etkin katmana boyar, seçim varsa onunla sınırlanır."
+    },
+    "canvasToolPencil": {
+      "title": "Kalem aracı",
+      "help": "Sert kenarlı kalemi hazırlar: fırçayla aynı hareket, kenar yumuşatması olmadan."
+    },
+    "canvasToolText": {
+      "title": "Metin aracı",
+      "help": "Metni hazırlar: bir tıklama, sözcükleri denetçide yazılan bir yazı koyar."
+    },
+    "canvasToolEraser": {
+      "title": "Silgi aracı",
+      "help": "Noktasal silgiyi hazırlar: elin geçtiği yeri temizler, seçim varsa onunla sınırlanır."
+    },
+    "canvasToolFill": {
+      "title": "Boya kovası aracı",
+      "help": "Kovayı hazırlar: bir tıklama katmanı, seçim varsa seçimi doldurur."
+    },
+    "canvasToolPicker": {
+      "title": "Damlalık aracı",
+      "help": "Damlalığı hazırlar: bir tıklama, işaretçinin altındaki rengi alıp fırçaya verir."
+    },
+    "canvasBrushSmaller": {
+      "title": "Fırçayı küçült",
+      "help": "Fırçanın, silginin ve şekil çizgisinin kalınlığını ölçekte bir kademe daraltır."
+    },
+    "canvasBrushLarger": {
+      "title": "Fırçayı büyüt",
+      "help": "Fırçanın, silginin ve şekil çizgisinin kalınlığını ölçekte bir kademe genişletir."
+    },
+    "sceneSkeletons": {
+      "title": "İskeletleri göster",
+      "help": "Rig taşıyan her modelin kemiklerini sahnenin üzerine çizer."
+    },
+    "scenePoseMode": {
+      "title": "Poz modu",
+      "help": "Nesne seçimi ile bir rigin kemiklerini seçme arasında geçiş yapar."
+    },
+    "sceneNavigate": {
+      "title": "Gezin",
+      "help": "Sahnede oyundaki gibi dolaşın: fare bakışı tutar, W A S D ilerletir, E ve Q yükseltip alçaltır. Tekerlek hızı ayarlar. Escape fareyi geri verir."
+    },
+    "sceneNegate": {
+      "title": "Negatif",
+      "help": "Seçili şekilleri araç olarak işaretler: sonra hangi düğmeye basılırsa basılsın ve hangi sırayla tıklanmış olurlarsa olsunlar, diğerlerinin içinden oyulurlar. İşaretli bir şekil yarı saydam kırmızı görünür. Yeniden basmak işareti kaldırır."
+    },
+    "sceneCarve": {
+      "title": "Oyup çıkar",
+      "help": "“Negatif” işaretli şekilleri — yoksa daha küçük olanları — seçili en büyük şeklin içinden oyar: bir duvarın içine konan küp orada bir pencere açar. Tıklama sırası hiçbir şeyi değiştirmez. Özgün şekiller korunur — “Ayır” onları geri verir."
+    },
+    "sceneWeld": {
+      "title": "Birleştir",
+      "help": "Seçili şekilleri tek bir katıda birleştirir. “Negatif” işaretli bir şekil ona eklenmek yerine içinden oyulur. Özgün şekiller korunur — “Ayır” onları geri verir."
+    },
+    "sceneIntersect": {
+      "title": "Ortak alanı koru",
+      "help": "Yalnızca seçili şekillerin çakıştığı kısmı korur, gerisini atar. “Negatif” işaretli bir şekil korunmak yerine içinden oyulur. Özgün şekiller korunur — “Ayır” onları geri verir."
+    },
+    "sceneInvertCarve": {
+      "title": "Katlamayı ters çevir",
+      "help": "Aynı şekilleri ters yönde katlar: oyulan madde olur, madde de araç olur. Tek tıklama, geri alma yok — ters yöne gitmiş katlama için."
+    },
+    "sceneSeparate": {
+      "title": "Ayır",
+      "help": "Bir katıyı parçalarına ayırır ve yapıldığı şekilleri, her birini durduğu yerde geri verir."
+    }
+  }
+}

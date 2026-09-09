@@ -93,9 +93,7 @@ describe('project store', () => {
   it('says what each folder it laid down is for, so a rename cannot lose one', async () => {
     const project = await store.create(root)
 
-    expect(await readFile(join(project.path, 'Modelling/Models', ROLE_MARKER), 'utf8')).toBe(
-      'models\n',
-    )
+    expect(await readFile(join(project.path, 'Models', ROLE_MARKER), 'utf8')).toBe('models\n')
   })
 
   /**

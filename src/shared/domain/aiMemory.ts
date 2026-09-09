@@ -93,7 +93,7 @@ export const COMPATIBILITIES: readonly Compatibility[] = [
  * What put a bound on a setting — temporary, and never written to disk. One member because
  * ADR-19 defers the pressure LEVELS, not the identity of whatever bounds.
  */
-export type ConstraintSource = 'memory-pressure'
+type ConstraintSource = 'memory-pressure'
 
 /**
  * A setting the person owns and the system may BOUND, never overwrite.

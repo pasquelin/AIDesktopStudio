@@ -1,0 +1,76 @@
+{
+  "gui": {
+    "stage": "インターフェースページ",
+    "tools": "インターフェースツール",
+    "tree": "インターフェース要素",
+    "noDocument": "インターフェースを開いて何を保有しているか見る。",
+    "visible": "表示",
+    "locked": "ロック―ポインターそれを捕捉しない"
+  },
+  "guiTools": {
+    "add": "追加",
+    "addHint": "選択されたものの中に要素を置く",
+    "duplicate": "複製",
+    "duplicateHint": "選択されたものをちょうど横にコピー",
+    "group": "グループ化",
+    "groupHint": "選択されたものをパネルにファイル",
+    "delete": "削除",
+    "deleteHint": "インターフェースから選択されたものを取る",
+    "lock": "ロック",
+    "lockHint": "選択されたものをポインターの手の届かないところに置く",
+    "zoomIn": "ズームイン",
+    "zoomInHint": "ページを近くに持ってくる",
+    "zoomOut": "ズームアウト",
+    "zoomOutHint": "ページをもっと遠くに持ってくる",
+    "fit": "調整",
+    "fitHint": "パネルの全体ページをフレーム",
+    "actual": "実サイズ",
+    "actualHint": "ページピクセルごとにスクリーンピクセル1つ",
+    "resolution": "解像度",
+    "resolutionHint": "インターフェースが構成される板",
+    "types": {
+      "panel": "パネル",
+      "stack": "スタック",
+      "grid": "グリッド",
+      "scroll": "スクロールビュー",
+      "spacer": "スペーサー",
+      "text": "テキスト",
+      "image": "画像",
+      "button": "ボタン",
+      "progress": "プログレスバー",
+      "slider": "スライダー",
+      "input": "入力",
+      "checkbox": "チェックボックス",
+      "screen": "インターフェース画面"
+    },
+    "typeHints": {
+      "panel": "他を保有するフレーム",
+      "stack": "その子供を行または列に配置",
+      "grid": "その子供を規則的な列に配置",
+      "scroll": "内容がスクロールするフレーム",
+      "spacer": "スタックの隣人を押す",
+      "text": "スクリーン上の単語",
+      "image": "プロジェクトからの画像",
+      "button": "何か行う、アイコンありまたはなし",
+      "progress": "値に満たされたバー",
+      "slider": "誰かがドラッグする値",
+      "input": "タイプするテキスト",
+      "checkbox": "誰かがチェックするボックス",
+      "screen": "インターフェースのルート"
+    },
+    "resolutions": {
+      "desktopHd": "1920 × 1080",
+      "desktop720": "1280 × 720",
+      "phonePortrait": "携帯、ポートレート",
+      "phoneLandscape": "携帯、ランドスケープ",
+      "free": "自由"
+    },
+    "resolutionHints": {
+      "desktopHd": "デスクトップ、16:9",
+      "desktop720": "デスクトップ、16:9、ピクセル半分",
+      "phonePortrait": "390 × 844",
+      "phoneLandscape": "844 × 390",
+      "free": "ドキュメントがすでに保有する何でもサイズ"
+    }
+  }
+}

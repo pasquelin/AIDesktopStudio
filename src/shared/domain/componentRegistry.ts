@@ -1,8 +1,9 @@
 import type { ActionField } from './assistantAction'
 import type { Component, ComponentType, JsonValue } from './component'
+import { choiceField, flagField, numberField, textField } from './descriptorFields'
 import type { GameEventName } from './gameEvent'
 
-export type ComponentCategory =
+type ComponentCategory =
   'transform' | 'render' | 'physics' | 'gameplay' | 'audio' | 'video' | 'ui' | 'ai' | 'net'
 
 /**
@@ -30,43 +31,6 @@ export type ComponentDescriptor = {
   /** What it puts on the bus, so a script author can be told without reading the system. */
   events?: readonly GameEventName[]
 }
-
-/**
- * A field and its label, which is its key: written out, twelve of them repeated
- * `labelKey: 'game.fields.<key>'` and each was a chance for the two to drift.
- */
-const numberField = (key: string, min: number, max?: number): ActionField => ({
-  key,
-  kind: 'number',
-  labelKey: `game.fields.${key}`,
-  required: true,
-  min,
-  ...(max === undefined ? {} : { max }),
-})
-
-const choiceField = (key: string, options: readonly string[]): ActionField => ({
-  key,
-  kind: 'choice',
-  labelKey: `game.fields.${key}`,
-  required: true,
-  options,
-})
-
-/** A name, a list of names, or a list of points — what no number and no closed list can say. */
-const textField = (key: string, picks?: ActionField['picks']): ActionField => ({
-  key,
-  kind: 'text',
-  labelKey: `game.fields.${key}`,
-  required: true,
-  ...(picks === undefined ? {} : { picks }),
-})
-
-const flagField = (key: string): ActionField => ({
-  key,
-  kind: 'boolean',
-  labelKey: `game.fields.${key}`,
-  required: true,
-})
 
 /**
  * Who is PLAYED. What the player IS — a body, an eye — is the STRUCTURE hanging under the node
@@ -221,6 +185,7 @@ const SPRING_ARM: ComponentDescriptor = {
     numberField('rotationLag', 0, 2),
     numberField('collisionInLag', 0, 2),
     numberField('collisionOutLag', 0, 2),
+    flagField('followVertical'),
     numberField('pitchMin', -89, 89),
     numberField('pitchMax', -89, 89),
     choiceField('lookAt', ['pivot', 'subject']),
@@ -244,6 +209,7 @@ const SPRING_ARM: ComponentDescriptor = {
     rotationLag: 0.05,
     collisionInLag: 0.04,
     collisionOutLag: 0.25,
+    followVertical: false,
     pitchMin: -60,
     pitchMax: 60,
     lookAt: 'pivot',

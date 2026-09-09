@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { describe, expect, it, vi } from 'vitest'
 import { createWorkerSession } from './workerSession'
 
@@ -41,7 +42,7 @@ describe('createWorkerSession', () => {
     const pending = session.send({ id: session.nextId() })
     session.dispose()
 
-    await expect(pending).rejects.toThrow(/stopped/)
+    await expect(pending).rejects.toThrow(localizedError('workerStopped').message)
     expect(fake.worker.terminate).toHaveBeenCalledOnce()
   })
 })

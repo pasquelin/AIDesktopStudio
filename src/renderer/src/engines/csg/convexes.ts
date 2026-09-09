@@ -43,7 +43,7 @@ const FLAT = 1e-4
  * hundred faces, which is 1,2 × 10⁸ triples and a renderer thread that never comes back. The
  * caller falls back on a hull.
  */
-export const CONVEXES_CAP = 32
+const CONVEXES_CAP = 32
 
 /**
  * 🛑 And how many a PIECE may reach. Each subtraction adds up to a tool's worth of planes to
@@ -151,7 +151,7 @@ export function pointsOf(planes: Polytope): Float32Array {
 }
 
 /** The pieces of `from` that lie OUTSIDE `tool`: at most one per plane of the tool, and exact. */
-export function subtractConvex(from: readonly Polytope[], tool: Polytope): Polytope[] | null {
+function subtractConvex(from: readonly Polytope[], tool: Polytope): Polytope[] | null {
   // 🛑 The tool's plane count IS the piece count per solid, so a sphere of 512 faces would ask
   // for 512 colliders. Refused rather than capped mid-way, which would carve half a hole.
   if (tool.length === 0 || tool.length > CONVEXES_CAP) return null

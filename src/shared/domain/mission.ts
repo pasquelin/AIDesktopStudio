@@ -36,7 +36,7 @@ export type MissionWaiting =
   | { kind: 'job'; stepId: MissionStepId; jobId: string }
   | { kind: 'dependency'; stepId: MissionStepId; missionId: MissionId }
 
-export type MissionResult = {
+type MissionResult = {
   summary?: string
   data?: unknown
 }
@@ -70,7 +70,7 @@ export type MissionStepDraft =
 
 export type MissionStepKind = MissionStepDraft['kind']
 
-export type MissionPlan = {
+type MissionPlan = {
   readonly steps: readonly MissionStep[]
 }
 
@@ -456,6 +456,6 @@ export function isMissionFinished(state: MissionState): boolean {
   return state === 'completed' || state === 'failed' || state === 'cancelled'
 }
 
-export function isMissionStepFinished(state: MissionStepState): boolean {
+function isMissionStepFinished(state: MissionStepState): boolean {
   return state === 'completed' || state === 'failed' || state === 'cancelled' || state === 'skipped'
 }

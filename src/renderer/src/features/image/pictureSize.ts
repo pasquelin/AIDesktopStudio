@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { assetUrl } from '@shared/domain/asset'
 import { lendable } from '@/helpers/lendable'
 import type { Size } from '@/engines/core/geometry'
@@ -16,13 +17,15 @@ export type PictureMeasure = (url: string) => Promise<Size>
 export const MAX_PICTURE_SIDE = 8192
 
 /** The picture's own size, as the browser decodes it. */
-export function naturalSize(url: string): Promise<Size> {
+function naturalSize(url: string): Promise<Size> {
   return new Promise((resolve, reject) => {
     const image = new Image()
     image.addEventListener('load', () =>
       resolve({ width: image.naturalWidth, height: image.naturalHeight }),
     )
-    image.addEventListener('error', () => reject(new Error(`could not measure ${url}`)))
+    image.addEventListener('error', () =>
+      reject(localizedError('imageMeasureFailed', { url: url })),
+    )
     image.src = url
   })
 }

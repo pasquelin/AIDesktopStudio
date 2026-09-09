@@ -38,7 +38,6 @@ export {
   swapTexture,
   videoTracksByDepth,
 } from './timelinePresentation'
-export type { Placement } from './timelinePresentation'
 
 /* Under every track: the depths handed to the sprites start at zero — see `seek`. */
 const BACKDROP_DEPTH = -1

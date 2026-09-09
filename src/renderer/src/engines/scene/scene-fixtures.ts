@@ -178,7 +178,7 @@ export function modelNodeFixture(id: string, assetId = 'asset-1'): ModelNode {
  * would otherwise each spell a whole `RigState` of their own.
  */
 /** A standing figure of ordinary proportions, for a suite that is not testing the shape. */
-export const STANDING_BOUNDS: Bounds = {
+const STANDING_BOUNDS: Bounds = {
   min: { x: -0.3, y: 0, z: -0.2 },
   max: { x: 0.3, y: 1.8, z: 0.2 },
 }

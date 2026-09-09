@@ -5,7 +5,7 @@ const backend = (
   platformSupport?: AutoRigBackendDescriptor['platformSupport'],
 ): AutoRigBackendDescriptor => {
   const descriptor: AutoRigBackendDescriptor = {
-    id: 'backend',
+    id: 'simple',
     requiresModel: false,
     modelIds: [],
     devices: ['cpu'],

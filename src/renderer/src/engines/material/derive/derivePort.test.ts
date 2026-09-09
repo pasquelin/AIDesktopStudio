@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { LinearFilter, NoColorSpace, SRGBColorSpace, Texture } from 'three'
 import { describe, expect, it, vi } from 'vitest'
 import { fakeTextureSource } from '../../viewport/viewport-fixtures'
@@ -50,7 +51,7 @@ describe('the derivation port', () => {
     const port = createDerivePort({ loadTexture: () => Promise.resolve(source) })
 
     await expect(port({ channel: 'baseColor', sourceUrl: 'asset://a' })).rejects.toThrow(
-      /no shader derives/,
+      localizedError('channelShaderMissing', { channel: 'baseColor' }).message,
     )
 
     expect(freed).toHaveBeenCalled()
@@ -65,7 +66,7 @@ describe('the derivation port', () => {
     const port = createDerivePort({ loadTexture: load })
 
     await expect(port({ channel: 'normal', sourceUrl: 'asset://a' })).rejects.toThrow(
-      /decoded to nothing/,
+      localizedError('decodedSourceEmpty').message,
     )
   })
 
@@ -75,7 +76,7 @@ describe('the derivation port', () => {
     const port = createDerivePort({ loadTexture: () => Promise.resolve(source) })
 
     await expect(port({ channel: 'normal', sourceUrl: 'asset://a' })).rejects.toThrow(
-      /decoded to nothing/,
+      localizedError('decodedSourceEmpty').message,
     )
   })
 

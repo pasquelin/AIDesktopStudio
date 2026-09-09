@@ -443,7 +443,7 @@ un modèle, et la première continue tranquillement.
 La ligne passe à **Terminée**, et l’asset apparaît :
 
 - dans la **Bibliothèque** de votre compte, d’où vous pouvez le télécharger ;
-- sur votre disque, dans `Images/`, `Video/`, `Modelling/Models/`… selon son type — ou dans `Materials/`
+- sur votre disque, dans `Images/`, `Video/`, `Models/`… selon son type — ou dans `Materials/`
   quand c’est une image qui sert une matière — tant que vous ne l’avez pas rangé ailleurs.
 
 **Ce que vous pouvez en faire ensuite dépend de son type**, et c’est là que le studio surprend le

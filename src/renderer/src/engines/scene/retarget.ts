@@ -1,11 +1,5 @@
-/**
- * The port onto the retargeting worker: an animation authored for one skeleton, replayed on
- * another.
- *
- * `skinWeights`'s shape, over the same `workerPort`. What is its own is the short circuit: two
- * identical skeletons need no worker at all, and asking for one would replace an exact clip with
- * a resampled approximation of itself.
- */
+import { localizedError } from '@shared/localizedError'
+// Identical skeletons bypass the worker to preserve the exact clip instead of resampling it.
 import { type AnimationClip, Euler, Matrix4, Quaternion, Vector3, type Object3D } from 'three'
 import { isFingerRole, type HumanoidRole } from '@shared/domain/humanoid'
 import {
@@ -96,11 +90,11 @@ export function createRetarget(spawn: () => Worker): Retarget {
   const port = serial(
     createWorkerPort<readonly WireClip[], RetargetResponse>(
       spawn,
-      'retargeting',
+      localizedError('workerRetarget').message,
       answer => answer.clips,
       'terminate',
     ),
-    { what: 'retargeting', depth: 32 },
+    { what: localizedError('workerRetarget').message, depth: 32 },
   )
   const profiles = new Map<string, SkeletonProfile>()
 
@@ -154,7 +148,7 @@ export function createRetarget(spawn: () => Worker): Retarget {
 
 function validateOptions(options?: RetargetOptions): void {
   if (options?.scale !== undefined && (!Number.isFinite(options.scale) || options.scale <= 0))
-    throw new Error('retarget scale must be finite and positive')
+    throw localizedError('retargetScaleInvalid')
 }
 
 function profilesFor(
@@ -207,7 +201,7 @@ export function rigProfileOf(
 }
 
 function rememberProfile(profiles: Map<string, SkeletonProfile>, profile: SkeletonProfile): void {
-  if (!isSkeletonProfile(profile)) throw new Error('invalid skeleton profile')
+  if (!isSkeletonProfile(profile)) throw localizedError('skeletonProfileInvalid')
   if (JSON.stringify(profiles.get(profile.signature)) === JSON.stringify(profile)) return
   profiles.set(profile.signature, profile)
 }

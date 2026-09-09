@@ -4,18 +4,21 @@ import {
   mkdtempSync,
   readFileSync,
   readdirSync,
+  rmSync,
   writeFileSync,
 } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, onTestFinished } from 'vitest'
 import { filesUnder, replaceDirectory, shippedTwice, wastedBytes } from './artefact'
 import manifest from '../../package.json'
+import { GATE } from './gateLinks'
 
 // Under `src/main` rather than `src/shared`: it judges what sits at the repository root, and
 // `src/shared` compiles for the renderer, which has no filesystem.
 function folderHolding(files: Record<string, string>): string {
   const root = mkdtempSync(join(tmpdir(), 'artefact-'))
+  onTestFinished(() => rmSync(root, { recursive: true, force: true }))
 
   for (const [path, content] of Object.entries(files)) {
     const file = join(root, path)
@@ -29,6 +32,7 @@ function folderHolding(files: Record<string, string>): string {
 describe('what a build ships twice', () => {
   it('keeps a complete runtime when staging reports a truncated download', async () => {
     const root = mkdtempSync(join(tmpdir(), 'artefact-runtime-'))
+    onTestFinished(() => rmSync(root, { recursive: true, force: true }))
     const runtime = join(root, 'ffmpeg')
     mkdirSync(runtime)
     writeFileSync(join(runtime, 'ffmpeg'), 'verified')
@@ -111,31 +115,17 @@ describe('what a build ships twice', () => {
 /**
  * The check has to run where the artefact is, and a build is the only moment it exists.
  *
- * `pnpm build` is not enough on its own: the integration job runs `electron-vite build` directly,
- * to spare the second typecheck, so the check has to be named there too. Both sites are asserted
- * because nothing else would notice either one going missing — a build without it is a green
- * build, and that is exactly what this lot found in the artefact.
+ * `pnpm build` carries it and `validate` carries `pnpm build`, so the job running the gate runs
+ * the check — WHICH job that is belongs to `ci-runs-the-gate.test.ts`. The chain is asserted here
+ * because a build without the check is a green build, which is what this lot found in `out/`.
  */
 describe('the artefact check', () => {
-  it('runs at the end of every local build, hence of every package', () => {
+  it('runs at the end of every build, hence of every package and of the gate', () => {
     expect(manifest.scripts.build).toContain('check-artefact.mjs')
     expect(manifest.scripts.dist).toContain('pnpm build')
-  })
-
-  /**
-   * Read as steps rather than as text: a commented-out `# - run: …` still contains the words, and
-   * a guard that a `#` disarms is one the next rebase disarms by accident.
-   */
-  it('runs in the job that builds before a merge, which does not call `pnpm build`', () => {
-    const ci = readFileSync(
-      join(import.meta.dirname, '..', '..', '.github/workflows/ci.yml'),
-      'utf8',
-    )
-    const steps = ci.split('\n').filter(line => !/^\s*#/.test(line))
-
-    expect(steps.join('\n')).toContain('electron-vite build')
-    expect(steps).toContainEqual(
-      expect.stringMatching(/^\s*- run: node scripts\/check-artefact\.mjs\s*$/),
-    )
+    // Read from the chain rather than from the `validate` script, which since 2026-09-08 only
+    // calls `scripts/gate.mjs`. A whole command rather than a substring: `pnpm build:site` holds
+    // `pnpm build` and would answer for the link that builds something else entirely.
+    expect(GATE.map(link => link.command)).toContain('pnpm build')
   })
 })

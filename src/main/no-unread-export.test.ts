@@ -18,16 +18,18 @@ import { testFilesUnder } from './wideGuards'
  * next door do.
  *
  * **Values only, and not for want of symmetry.** A type unread is gone by compile time, and
- * deleting one is not always the fix: `UnaccountedPath` (`shared/domain/settingsRegistry.ts`) is
- * read by nobody ON PURPOSE — drop its `export` and `tsc` answers TS6196, because that export is
- * what keeps a compile-time check alive. A value has no such property: unread, it ships and never
- * runs.
+ * deleting one is not always the fix: `UnaccountedPath` (`shared/domain/settingsRegistry.test.ts`)
+ * is exported to nobody and read once, by the annotation that turns it into an assertion — a
+ * setting described nowhere widens it past `never`, and that line stops compiling. Delete the case
+ * instead and `noUnusedLocals` answers TS6196, measured 2026-09-08: it cannot be dropped in
+ * silence. A value has no such property: unread, it ships and never runs.
  *
  * **What it does not see, in clear.** A value whose only reader is its own test PASSES — tests
- * count as readers, deliberately: **84** names are read by no production file, and calling all of
- * them dead would drown the seven that no file reads at all. "Tested but never called" is a real
- * question and a different one. A name a registry reaches by string passes too, the sweep matching
- * identifiers, and every blind spot of `exportedNames` is inherited.
+ * count as readers, deliberately: **112** names are read by no production file, remeasured on
+ * 2026-09-08 after knip 6.35 stopped counting `?raw` globs as imports, and none is read by no file
+ * at all. "Tested but never called" is a real question and a different one. A name a registry
+ * reaches by string passes too, the sweep matching identifiers, and every blind spot of
+ * `exportedNames` is inherited.
  *
  * **The direction of the error is chosen**: it under-reports and never accuses wrongly. A name
  * appearing anywhere else — as a property, in a comment, inside a sentence — counts as read.

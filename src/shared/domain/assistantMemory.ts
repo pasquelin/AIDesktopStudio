@@ -67,7 +67,7 @@ export const MEMORY_SOURCE_KINDS: readonly MemorySourceKind[] = [
   'import',
 ]
 
-export type MemorySource = {
+type MemorySource = {
   kind: MemorySourceKind
   /** The action's name for `action`, nothing otherwise. Never a sentence: this is not for a screen. */
   ref?: string

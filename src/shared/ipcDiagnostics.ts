@@ -62,6 +62,7 @@ export type LogScope =
   // An edit sent to a model, whose picture the editor could not produce.
   | 'canvas.edit'
   | 'canvas.smartSelect'
+  | 'canvas.smartComment'
   | 'image.export'
   | 'document.load'
   | 'document.save'
@@ -178,6 +179,7 @@ export const LOG_SCOPES: readonly LogScope[] = [
   'canvas.size',
   'canvas.edit',
   'canvas.smartSelect',
+  'canvas.smartComment',
   'image.export',
   'document.load',
   'document.save',

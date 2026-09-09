@@ -1,4 +1,5 @@
 /// <reference lib="webworker" />
+import { localizedError } from '@shared/localizedError'
 import { messageOf } from '@shared/guards'
 import { createAnimationThumbnailRenderer } from './animationThumbnailRenderer'
 import type {
@@ -14,7 +15,7 @@ self.addEventListener('message', (event: MessageEvent<AnimationThumbnailRequest>
 async function render(request: AnimationThumbnailRequest): Promise<void> {
   try {
     if (!renderer) {
-      if (!request.model) throw new Error('The thumbnail character is missing')
+      if (!request.model) throw localizedError('thumbnailCharacterMissing')
       renderer = await createAnimationThumbnailRenderer(request.model, request.decoderRoot)
     }
     const { png } = await renderer.render(request)

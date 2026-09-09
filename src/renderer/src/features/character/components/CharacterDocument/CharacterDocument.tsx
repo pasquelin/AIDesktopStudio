@@ -21,11 +21,17 @@ import { createCharacterStage } from '@/character/characterStage'
 import { noteCharacterSkins } from '@/character/characterSkins'
 import { assetsById, assetVersionOf, useAssets } from '@/stores/assets'
 import { useShortcuts } from '@/hooks/useShortcuts'
+import { HINT_BOTTOM } from '@/helpers/tooltip'
 import { useDocumentTitle } from '@/hooks/useDocumentTitle'
 import { useRestoredDocument } from '@/hooks/useRestoredDocument'
 import { restWithin } from '@/engines/character/boneRest'
 import { setCharacterBoneRest } from '@/engines/character/characterCommands'
-import { characterOf, isCharacterDirty, useCharacters } from '@/stores/character'
+import {
+  characterOf,
+  isCharacterDirty,
+  isCharacterRetargetable,
+  useCharacters,
+} from '@/stores/character'
 import { characterViewOf, useCharacterView } from '@/stores/characterView'
 import { characterAssetOf, useDocuments, useDocumentIsInFront } from '@/stores/documents'
 import { useSettings } from '@/stores/settings'
@@ -81,6 +87,7 @@ export function CharacterDocument({ documentId }: { documentId: string }) {
   const [live, setLive] = useState<SceneRenderer | null>(null)
   const [landedAssetId, setLandedAssetId] = useState<string | null>(null)
   const character = useCharacters(state => characterOf(state, assetId))
+  const retargetRefused = useCharacters(state => !isCharacterRetargetable(state, assetId))
   const name = useAssets(state => assetsById(state).get(assetId)?.name ?? assetId)
   // The workshop this tab lays the model on: a scene document of this window, which is what the
   // band, the motion picker and the preview all speak.
@@ -182,6 +189,9 @@ export function CharacterDocument({ documentId }: { documentId: string }) {
           .getState()
           .reportMaterials(workshopId, id, count, names, parts, hasFileTextures, sourceIndices)
       },
+      // 🛑 The workshop reads a FILE too: without this the motion section, which gates on the rig
+      // the engine read, never sees one here and takes its whole list away — unlink included.
+      onRig: (id, rig) => useModelFiles.getState().reportRig(workshopId, id, rig),
       onStats: stats => useModelFiles.getState().reportStats(workshopId, stats),
       onMorphs: (id, names) => useModelFiles.getState().reportMorphs(workshopId, id, names),
       // Kept for ⌘S: only the engine ever weighs a mesh against a rig, and the save runs from
@@ -247,7 +257,18 @@ export function CharacterDocument({ documentId }: { documentId: string }) {
         className={PANE_TOOLBAR_ASIDE}
         extras={
           <>
-            <Button onClick={() => void openRetarget()}>{t('character.retarget.title')}</Button>
+            {/* The window restores the STORED rig: without one it opens on a bare mesh, no joint
+                drawn and no role to map. The hint rides on the SPAN — a disabled button fires no
+                pointer event, so the tip anchored on it was a reason nobody could read. */}
+            <span {...(retargetRefused ? HINT_BOTTOM(t('character.retarget.needsSkeleton')) : {})}>
+              <Button
+                disabled={retargetRefused}
+                className={retargetRefused ? 'pointer-events-none' : undefined}
+                onClick={() => void openRetarget()}
+              >
+                {t('character.retarget.title')}
+              </Button>
+            </span>
             <SceneSpeedControl
               speed={flySpeed}
               onSpeed={speed => engineRef.current?.setFlySpeed(speed)}

@@ -8,7 +8,7 @@ const DOCUMENT: DocumentDescriptor = {
   kind: 'scene',
   workspace: '3d',
   title: 'Niveau',
-  path: 'Modelling/Scenes/Niveau.gltf',
+  path: 'Scenes/Niveau.gltf',
 }
 
 describe('noteOpenedDocument', () => {
@@ -35,7 +35,7 @@ describe('noteOpenedDocument', () => {
   it('names the document, and leaves the project to the main process', async () => {
     await noteOpenedDocument(DOCUMENT)
 
-    expect(told).toEqual([['Modelling/Scenes/Niveau.gltf', 'scene']])
+    expect(told).toEqual([['Scenes/Niveau.gltf', 'scene']])
   })
 
   /** A window with no bridge — a mirror, a test with no preload — must not throw for a shelf. */

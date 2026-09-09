@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 /**
  * A humanoid skeleton fitted to a mesh, from its bounding box alone.
  *
@@ -183,14 +184,14 @@ function mirrored(side: 'Left' | 'Right', spread: number): Placement[] {
 function roleOf(side: 'Left' | 'Right', part: string): HumanoidBodyRole {
   const name = `${side}${part}`
   const role = HUMANOID_BODY_ROLES.find(candidate => candidate === name)
-  if (!role) throw new Error(`the limb table spells a role that does not exist: ${name}`)
+  if (!role) throw localizedError('rigRoleUnknown', { name: name })
   return role
 }
 
 /** A bone rests in its PARENT's space, so the parent's place is taken off before it is written. */
 function boneOf(placement: Placement, world: Map<HumanoidBodyRole, Vector3>): RigBone {
   const here = world.get(placement.role)
-  if (!here) throw new Error(`the fit placed no bone for ${placement.role}`)
+  if (!here) throw localizedError('rigBoneMissing', { role: placement.role })
 
   const parent = placement.parent === null ? null : world.get(placement.parent)
 

@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import type { TaskWatch } from '@shared/domain/taskProgress'
 import { createProcessClient } from '@main/processClient'
 import type { BundleMessage, BundleReadJob, BundleResponse, BundleWriteJob } from './bundleProtocol'
@@ -34,21 +35,16 @@ export function createBundleClient(port: BundlePort): BundleClient {
       if (response.kind === 'read') return { kind: 'settled', result: response.contents }
       return { kind: 'failed', error: response.error }
     },
-    gone: 'the bundle process is gone',
+    gone: localizedError('bundleProcessStopped').message,
     cancel: id => ({ id, cancel: true }),
-    // A bundle stopped before it left produced nothing, and BOTH directions have a word for
-    // that — `false` and `null`. The casts below turn the shared one into each.
+    // A stopped write maps null to false; a stopped read keeps null.
     stopped: () => null,
   })
 
   return {
-    // The two casts are the boundary itself: the worker answers `wrote` to a write and `read` to
-    // a read, and nothing in the type system carries that pairing across a `postMessage`. A stop
-    // before the start answers `null`, which a write reads as its own `false`.
-    write: ({ onStep, signal, ...job }) =>
-      client
-        .send(id => ({ id, writes: true, ...job }), { onStep, signal })
-        .then(settled => settled === true) as Promise<boolean>,
+    write: async ({ onStep, signal, ...job }) =>
+      (await client.send(id => ({ id, writes: true, ...job }), { onStep, signal })) === true,
+    // The worker pairs read requests with read responses across the untyped process boundary.
     read: ({ onStep, signal, ...job }) =>
       client.send(id => ({ id, writes: false, ...job }), {
         onStep,

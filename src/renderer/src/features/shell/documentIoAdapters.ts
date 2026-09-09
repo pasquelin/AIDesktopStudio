@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { saveCharacterDocument } from '@/character/characterSave'
 import { forgetCharacterSkins } from '@/character/characterSkins'
 import { workshopIdOf } from '@shared/domain/character'
@@ -80,7 +81,7 @@ import {
   skyRefusesToSave,
 } from './skyboxDocument'
 export type CapturedDraft = Omit<DocumentDraft, 'title'>
-export type AssetTarget = {
+type AssetTarget = {
   replaces?: string
   derivedFrom?: string
   name: string
@@ -269,10 +270,9 @@ const IMAGE_IO: DocumentIo = {
     const wasEdited = canvasStore.hasUnsavedWork(canvases, documentId)
     const state = canvasOf(canvases, documentId)
     const host = canvasHost(documentId)
-    if (!host) throw new Error(`No editor holds ${documentId}: its pixels cannot be read`)
+    if (!host) throw localizedError('documentPixelsUnavailable', { document: documentId })
     const merged = await host.flatten()
-    if (!merged)
-      throw new Error(`No flatten for ${documentId}: the container would open as nothing`)
+    if (!merged) throw localizedError('documentFlattenUnavailable', { document: documentId })
     const parts = oraSurfacesOf(await host.pixelSnapshots(), merged)
     return {
       draft: { content: JSON.stringify(oraStackOf(state, parts)), parts },

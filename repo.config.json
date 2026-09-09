@@ -20,7 +20,12 @@
         "hint": "aucune version publiée ; les cartes gardent leur libellé (pages.yml l'écrit à la release)"
       }
     ],
-    "examples": []
+    "examples": [
+      {
+        "from": "vendor/site-runtime",
+        "to": "assets"
+      }
+    ]
   },
   "llms": {
     "parts": [

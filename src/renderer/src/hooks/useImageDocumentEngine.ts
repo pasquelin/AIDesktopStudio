@@ -6,6 +6,7 @@ import { registerFace } from '@/engines/canvas/canvasFonts'
 import type { BrushSettings } from '@/engines/canvas/brush'
 import { addLayer, cropToRect, resizeCaption } from '@/engines/canvas/commands'
 import type { CanvasSelection } from '@/engines/canvas/canvasSelection'
+import { selectionOutline } from '@/engines/canvas/canvasSelection'
 import { shapeLayer, textLayer, type ShapeKind } from '@/engines/canvas/canvasState'
 import { holdCanvas } from '@/features/image/canvasHosts'
 import { guidePort } from '@/features/image/guidePort'
@@ -17,11 +18,10 @@ import { canvasOf, canvasStore, useCanvases } from '@/stores/canvases'
 import { useCanvasViews } from '@/stores/canvasViews'
 import { getBridge } from '@/services/bridge'
 import { reportFailure } from '@/services/diagnostics'
+import { isAbortError } from '@shared/guards'
 import type { SmartSelectionPrompt } from '@shared/domain/smartSelectionInference'
-
-/** A run the click after it cancelled: not a failure, and nothing for a reader to act on. */
-const isAbortError = (error: unknown): boolean =>
-  error instanceof DOMException && error.name === 'AbortError'
+import type { SmartTool } from '@/engines/canvas/canvasTool'
+import { GENERATION_COMMENT_OUTLINE_MAX } from '@shared/domain/generationComment'
 
 type EngineHandle = {
   hostRef: React.RefObject<HTMLDivElement | null>
@@ -48,7 +48,7 @@ export function useImageDocumentEngine(
     if (!element) return
     const views = () => useCanvasViews.getState()
     const pixels = pixelPort(documentId, () => engineRef.current)
-    const smartSelect = async (prompt: SmartSelectionPrompt): Promise<void> => {
+    const smartSelect = async (prompt: SmartSelectionPrompt, tool: SmartTool): Promise<void> => {
       const previous = smartSelectionTask.current
       const id = newId()
       smartSelectionTask.current = id
@@ -75,14 +75,21 @@ export function useImageDocumentEngine(
         height: result.height,
         alpha: result.alpha,
       }
+      if (tool === 'smartComment') {
+        const mark = markFor(boundedOutline(selectionOutline(raster)), prompt)
+        onComment(mark.at, mark.outline)
+        return
+      }
       created.setSelection(raster)
       views().setSelection(documentId, raster)
     }
-    const reportedSmartSelect = async (prompt: SmartSelectionPrompt): Promise<void> => {
+    // One run for both tools, told apart by what it does with the mask and by the channel a
+    // failure is said on. The cancel of the run before it is not a failure.
+    const reportedSmart = async (tool: SmartTool, prompt: SmartSelectionPrompt): Promise<void> => {
       try {
-        await smartSelect(prompt)
+        await smartSelect(prompt, tool)
       } catch (error) {
-        if (!isAbortError(error)) reportFailure('canvas.smartSelect', documentId, error)
+        if (!isAbortError(error)) reportFailure(`canvas.${tool}`, documentId, error)
       }
     }
     const created = new CanvasEngine({
@@ -93,8 +100,9 @@ export function useImageDocumentEngine(
       onSelection: selection => views().setSelection(documentId, selection),
       // 🛑 Said and not dropped: a model that is not installed, an engine that does not answer
       // and a box too thin all rejected into `traceDroppedRejections`, so the click did nothing
-      // and nothing explained why. The cancel of the run before it is not a failure.
-      onSmartSelect: prompt => void reportedSmartSelect(prompt),
+      // and nothing explained why.
+      onSmartSelect: prompt => void reportedSmart('smartSelect', prompt),
+      onSmartComment: prompt => void reportedSmart('smartComment', prompt),
       onComment,
       onHost: size => views().setHost(documentId, size),
       onText: asked => {
@@ -130,4 +138,32 @@ export function useImageDocumentEngine(
   }, [documentId, caption, shapeName, setBrush, onComment])
 
   return { hostRef, engineRef, editing, setEditing }
+}
+
+/**
+ * The note a traced object gets: anchored on the shape itself rather than on the box drawn to hint
+ * at it, and — when nothing was outlined — still a note, as a freeform comment under three points.
+ */
+function markFor(
+  outline: readonly Point[],
+  prompt: SmartSelectionPrompt,
+): { at: Point; outline?: readonly Point[] } {
+  const start = outline.length > 2 ? outline[0] : undefined
+  if (start === undefined) {
+    return { at: 'point' in prompt ? prompt.point : { x: prompt.box.x, y: prompt.box.y } }
+  }
+
+  return { at: start, outline }
+}
+
+/** A traced outline thinned to what a comment may carry — `canvasHandlers` refuses a longer one. */
+function boundedOutline(outline: readonly Point[]): readonly Point[] {
+  if (outline.length <= GENERATION_COMMENT_OUTLINE_MAX) return outline
+  const step = (outline.length - 1) / (GENERATION_COMMENT_OUTLINE_MAX - 1)
+  // The filter drops nothing — the last index lands on `length - 1` exactly — it is how the
+  // indexing is typed rather than a case that happens.
+  return Array.from(
+    { length: GENERATION_COMMENT_OUTLINE_MAX },
+    (_, index) => outline[Math.round(index * step)],
+  ).filter(point => point !== undefined)
 }

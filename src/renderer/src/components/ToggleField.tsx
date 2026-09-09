@@ -1,9 +1,9 @@
 import type { ReactNode } from 'react'
+import { Checkbox } from './Checkbox'
 import { PropertyLine } from './PropertyLine'
 import { ResetButton } from './ResetButton'
 import { fieldHandle } from './scHandle'
-import { CHECKBOX, type FieldHandle, type FieldReset } from './styles'
-import { cn } from '@/helpers/cn'
+import type { FieldHandle, FieldReset } from './styles'
 
 export type ToggleFieldProps = FieldHandle &
   FieldReset & {
@@ -46,13 +46,12 @@ export function ToggleField({
       {/* At the START of the control column like every other field, since 2026-08-19: pinned to
           the far end it was the one line of the panel that began nowhere the others did, and it
           held its name to a gauge that read « Projette une … ». */}
-      <input
-        type="checkbox"
+      <Checkbox
         data-sc={scId && fieldHandle(scId)}
         checked={value}
         onChange={event => onChange(event.target.checked)}
-        // `mr-auto` rather than a filler element: the box keeps its size and takes the column.
-        className={cn(CHECKBOX, 'mr-auto size-4 shrink-0')}
+        // `me-auto` rather than a filler element: the box keeps its size and takes the column.
+        className="me-auto"
         {...hint}
       />
     </PropertyLine>

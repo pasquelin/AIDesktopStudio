@@ -1,7 +1,11 @@
 import { commandDescriptor, type CommandId } from '@shared/domain/command'
 import type { StudioBridge } from '@shared/ipc'
 import { saveDocument, saveDocumentAs } from '@/features/shell/documentIo'
-import { closableTabId } from '@/features/shell/components/dockviewApi'
+import {
+  closableTabId,
+  fileViewSave,
+  panelIsFileView,
+} from '@/features/shell/components/dockviewApi'
 import { closeTab } from '@/features/shell/components/Document/Tab/closeTab'
 import { openNewDocument } from '@/features/shell/newDocument'
 import { importOtioz } from '@/features/shell/otioImport'
@@ -80,6 +84,16 @@ function runDocumentCommand(command: CommandId): CommandRouting | null {
   if (command !== 'document.save' && command !== 'document.saveAs') return null
   const documentId = useDocuments.getState().activeId
   if (!documentId) return 'noSurface'
+  // 🛑 A file view is not in `documents`, so `saveDocument` found nothing and answered `false`
+  // without a word: ⌘S over a control map did nothing while the menu row promised it would, and
+  // the editor grew a save button of its own to work around it. `saveAs` is not offered at all —
+  // a file view IS its path, and the menu greys the row rather than failing here.
+  if (panelIsFileView(documentId)) {
+    const save = fileViewSave(documentId)
+    if (!save || command === 'document.saveAs') return 'noSurface'
+    void save().catch(error => reportFailure('document.save', documentId, error))
+    return 'ran'
+  }
   if (command === 'document.save') {
     void saveDocument(documentId).catch(error => reportFailure('document.save', documentId, error))
   } else {

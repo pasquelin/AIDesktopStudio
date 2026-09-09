@@ -1,0 +1,24 @@
+{
+  "fileInfo": {
+    "title": "Informationen zu {{name}}",
+    "sections": {
+      "general": "Allgemein",
+      "media": "Medien",
+      "catalogue": "Katalog",
+      "git": "Git"
+    },
+    "gitUnchanged": "Keine ausstehenden Änderungen",
+    "kind": {
+      "file": "Datei",
+      "folder": "Ordner"
+    },
+    "type": "Typ",
+    "modified": "Geändert am",
+    "codec": "Codec",
+    "identifier": "Kennung",
+    "fingerprint": "Fingerabdruck des Inhalts",
+    "added": "Hinzugefügt am",
+    "reading": "Ordner wird gelesen…",
+    "missing": "Dieser Eintrag ist nicht mehr im Projektordner."
+  }
+}

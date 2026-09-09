@@ -6,7 +6,7 @@ import { useProject } from '@/stores/project'
 import { useSettings } from '@/stores/settings'
 
 /** A project the studio has answered about, for the suites of every section. */
-export const HOME_PROJECT: Project = {
+const HOME_PROJECT: Project = {
   path: '/projects/Summer',
   manifest: {
     version: 1,

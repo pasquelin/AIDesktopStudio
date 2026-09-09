@@ -4,6 +4,7 @@ import type { TFunction } from 'i18next'
 import { isFiledKind } from '@shared/domain/document'
 import { showContextMenu } from '@/helpers/contextMenu'
 import { characterAssetOf, useDocuments } from '@/stores/documents'
+import { isCharacterRetargetable, useCharacters } from '@/stores/character'
 import { reportFailure } from '@/services/diagnostics'
 import { closeTab, closeTabAsking } from './closeTab'
 import { deleteDocument } from '../../../documentIo'
@@ -32,14 +33,18 @@ export function openDocumentTabMenu({ documentId, t, onRename }: DocumentTabMenu
   const kind = useDocuments.getState().documents[documentId]?.kind
   const character = characterAssetOf(useDocuments.getState(), documentId)
   const filed = kind !== undefined && isFiledKind(kind)
+  const rigged = character !== null && isCharacterRetargetable(useCharacters.getState(), character)
 
   void showContextMenu([
     ...(character
       ? [
           {
             label: t('character.retarget.title'),
-            tooltip: t('character.retarget.title'),
-            disabled: !hasRetargetHost(character),
+            // The refusal is the only thing worth saying: the label is already on the row.
+            tooltip: rigged ? t('character.retarget.title') : t('character.retarget.needsSkeleton'),
+            // A rig too, and not the host alone: the window restores the stored skeleton, so
+            // on a model that has none it opens on a bare mesh with nothing to map.
+            disabled: !hasRetargetHost(character) || !rigged,
             onSelect: () => void openRetargetForAsset(character),
           },
         ]

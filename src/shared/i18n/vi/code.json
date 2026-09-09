@@ -1,0 +1,8 @@
+{
+  "code": {
+    "unavailable": "Không tải được trình soạn thảo.",
+    "noProblems": "Không có vấn đề",
+    "openProblem": "Mở tại dòng này",
+    "at": "dòng {{line, number}}, cột {{column, number}}"
+  }
+}

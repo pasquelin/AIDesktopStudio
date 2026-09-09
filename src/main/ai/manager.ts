@@ -39,56 +39,47 @@ export function createAiManager(deps: ManagerDeps): AiManager {
   const schedule = managerHelpers.scheduleWith(deps)
   let cancelIdle: (() => void) | null = null
   const ttl = deps.factsTtlMs ?? managerHelpers.DEFAULT_FACTS_TTL_MS
+  /**
+   * One reading held for `ttl`, and dropped the moment it fails: a probe that threw must be asked
+   * again rather than served from a cache holding its rejection.
+   */
+  function keptFor<T>(read: () => Promise<T>): { read: () => Promise<T>; forget: () => void } {
+    let held: { at: number; value: Promise<T> } | null = null
+    const forget = (): void => {
+      held = null
+    }
+    return {
+      read: () => {
+        if (held !== null && deps.now() - held.at < ttl) return held.value
+        const reading = (async () => {
+          try {
+            return await read()
+          } catch (error) {
+            forget()
+            throw error
+          }
+        })()
+        held = { at: deps.now(), value: reading }
+        return reading
+      },
+      forget,
+    }
+  }
   let lastDiscovered: readonly LocalModel[] = []
-  let cachedDiscovered: {
-    at: number
-    models: Promise<readonly LocalModel[]>
-  } | null = null
-  function forgetDiscovered(): void {
-    cachedDiscovered = null
-  }
-  async function readDiscovered(): Promise<readonly LocalModel[]> {
-    try {
-      const models = await discoveredOf(deps.runtimes)
-      lastDiscovered = models
-      return models
-    } catch (error) {
-      forgetDiscovered()
-      throw error
-    }
-  }
-  const discover = (): Promise<readonly LocalModel[]> => {
-    if (cachedDiscovered !== null && deps.now() - cachedDiscovered.at < ttl) {
-      return cachedDiscovered.models
-    }
-    const reading = readDiscovered()
-    cachedDiscovered = { at: deps.now(), models: reading }
-    return reading
-  }
+  const heldDiscovered = keptFor(async () => {
+    lastDiscovered = await discoveredOf(deps.runtimes)
+    return lastDiscovered
+  })
+  const discover = heldDiscovered.read
+  const forgetDiscovered = heldDiscovered.forget
   const modelOf = (modelId: string): LocalModel | null =>
     modelWith(modelId, deps.settings().ai.ownModels, lastDiscovered)
   const loadedEpochs = managerHelpers.createLoadEpochs(modelOf, occupancy)
-  let cachedFacts: {
-    at: number
-    facts: Promise<HardwareFacts>
-  } | null = null
-  async function readFacts(): Promise<HardwareFacts> {
-    try {
-      return await deps.facts()
-    } catch (error) {
-      cachedFacts = null
-      throw error
-    }
-  }
-  const facts = (): Promise<HardwareFacts> => {
-    if (cachedFacts !== null && deps.now() - cachedFacts.at < ttl) return cachedFacts.facts
-    const reading = readFacts()
-    cachedFacts = { at: deps.now(), facts: reading }
-    return reading
-  }
+  const heldFacts = keptFor(() => deps.facts())
+  const facts = heldFacts.read
   const freshFacts = (): Promise<HardwareFacts> => {
-    cachedFacts = null
-    return facts()
+    heldFacts.forget()
+    return heldFacts.read()
   }
   const readingsOf = async (
     models: readonly LocalModel[],
@@ -230,12 +221,16 @@ export function createAiManager(deps: ManagerDeps): AiManager {
     signal?.addEventListener('abort', () => entry.abort.abort(), { once: true })
     return entry.done
   }
-  const release = async (endpoint: RuntimeEndpointId): Promise<void> => {
-    if (disposed || (working.get(endpoint) ?? 0) > 0) return
+  const release = async (endpoint: RuntimeEndpointId, andClose = false): Promise<void> => {
+    const idle = (): boolean => !disposed && (working.get(endpoint) ?? 0) === 0
+    if (!idle()) return
+    const runtime = deps.runtimes[managerHelpers.loaderOf(endpoint)]
     try {
-      await deps.runtimes[managerHelpers.loaderOf(endpoint)]?.unload?.(endpoint)
+      // Killing the door returns its tensors AND the 208 MB an unload never gave back (ADR-18).
+      if (andClose && runtime?.close) await runtime.close(endpoint)
+      else await runtime?.unload?.(endpoint)
     } finally {
-      if (!disposed && (working.get(endpoint) ?? 0) === 0) occupancy.delete(endpoint)
+      if (idle()) occupancy.delete(endpoint)
     }
   }
   const armIdle = (): void => {
@@ -254,7 +249,7 @@ export function createAiManager(deps: ManagerDeps): AiManager {
           if (disposed || loading !== null) break
           if ((working.get(endpoint) ?? 0) > 0) continue
           try {
-            await release(endpoint)
+            await release(endpoint, true)
           } catch (error) {
             deps.log('warn', `idle unload of ${endpoint} failed: ${String(error)}`)
           }
@@ -430,7 +425,10 @@ export function createAiManager(deps: ManagerDeps): AiManager {
       const endpoint = endpointOf(model.loader, model.modality)
       if ((working.get(endpoint) ?? 0) > 0) return compose()
       if (isSuppliedModel(model)) {
-        if (occupancy.get(endpoint)?.modelId === modelId) await release(endpoint)
+        // `orElse`: closing is a round trip that can time out, and the delete asked for must not
+        // be undone by a door that would not answer.
+        const resident = occupancy.get(endpoint)?.modelId === modelId
+        if (resident) await orElse(release(endpoint, true), undefined)
         const stored = deps.settings()
         await deps.writeSettings({
           ai: { ...stored.ai, ownModels: stored.ai.ownModels.filter(one => one.id !== modelId) },
@@ -478,7 +476,7 @@ export function createAiManager(deps: ManagerDeps): AiManager {
       const model = modelOf(modelId)
       if (model === null) return compose()
       try {
-        await release(endpointOf(model.loader, model.modality))
+        await release(endpointOf(model.loader, model.modality), true)
       } catch (error) {
         deps.log('warn', `unloading ${modelId} failed: ${String(error)}`)
       }

@@ -1,0 +1,76 @@
+{
+  "gui": {
+    "stage": "Pagina dell’interfaccia",
+    "tools": "Strumenti dell’interfaccia",
+    "tree": "Elementi dell’interfaccia",
+    "noDocument": "Apri un’interfaccia per vederne gli elementi.",
+    "visible": "Visibile",
+    "locked": "Bloccato — il puntatore non lo aggancia"
+  },
+  "guiTools": {
+    "add": "Aggiungi",
+    "addHint": "Posa un elemento dentro ciò che è selezionato",
+    "duplicate": "Duplica",
+    "duplicateHint": "Copia la selezione proprio accanto a sé",
+    "group": "Raggruppa",
+    "groupHint": "Ripone la selezione in un pannello",
+    "delete": "Elimina",
+    "deleteHint": "Toglie la selezione dall’interfaccia",
+    "lock": "Blocca",
+    "lockHint": "Mette la selezione fuori dalla portata del puntatore",
+    "zoomIn": "Zoom avanti",
+    "zoomInHint": "Avvicina la pagina",
+    "zoomOut": "Zoom indietro",
+    "zoomOutHint": "Allontana la pagina",
+    "fit": "Adatta",
+    "fitHint": "Inquadra l’intera pagina nel pannello",
+    "actual": "Dimensioni reali",
+    "actualHint": "Un pixel della pagina per un pixel dello schermo",
+    "resolution": "Risoluzione",
+    "resolutionHint": "La tela su cui è composta questa interfaccia",
+    "types": {
+      "panel": "Pannello",
+      "stack": "Pila",
+      "grid": "Griglia",
+      "scroll": "Area scorrevole",
+      "spacer": "Spaziatore",
+      "text": "Testo",
+      "image": "Immagine",
+      "button": "Pulsante",
+      "progress": "Barra di avanzamento",
+      "slider": "Cursore",
+      "input": "Campo di testo",
+      "checkbox": "Casella di spunta",
+      "screen": "Schermata dell’interfaccia"
+    },
+    "typeHints": {
+      "panel": "Una cornice che ne contiene altre",
+      "stack": "Dispone i suoi figli in riga o in colonna",
+      "grid": "Dispone i suoi figli in colonne regolari",
+      "scroll": "Una cornice il cui contenuto scorre",
+      "spacer": "Allontana i suoi vicini in una pila",
+      "text": "Parole sullo schermo",
+      "image": "Un’immagine del progetto",
+      "button": "Ciò che si aziona, con o senza icona",
+      "progress": "Una barra riempita fino a un valore",
+      "slider": "Un valore che si trascina",
+      "input": "Del testo da digitare",
+      "checkbox": "Una casella che si spunta",
+      "screen": "La radice dell’interfaccia"
+    },
+    "resolutions": {
+      "desktopHd": "1920 × 1080",
+      "desktop720": "1280 × 720",
+      "phonePortrait": "Telefono, verticale",
+      "phoneLandscape": "Telefono, orizzontale",
+      "free": "Libera"
+    },
+    "resolutionHints": {
+      "desktopHd": "Desktop, sedici noni",
+      "desktop720": "Desktop, sedici noni, metà dei pixel",
+      "phonePortrait": "390 × 844",
+      "phoneLandscape": "844 × 390",
+      "free": "La dimensione che il documento ha già"
+    }
+  }
+}

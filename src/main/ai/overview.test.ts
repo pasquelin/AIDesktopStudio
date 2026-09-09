@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest'
 import { CLOUD_IDS, cloudsServing } from '@shared/domain/aiCloud'
-import type { MemorySnapshot } from '@shared/domain/aiMemory'
 import {
   aiRoleId,
   ASSISTANT_ROLE,
@@ -10,7 +9,8 @@ import {
 } from '@shared/domain/aiRole'
 import { GIBI, localModel } from '@shared/domain/localModel-fixtures'
 import type { HardwareFacts } from './hardwareProbe'
-import { aiOverviewOf, type OverviewInput } from './overview'
+import { SNAPSHOT } from './managerTest-fixtures'
+import { aiOverviewOf, cudaStateOf, type OverviewInput } from './overview'
 
 const FACTS: HardwareFacts = {
   platform: 'linux',
@@ -21,18 +21,6 @@ const FACTS: HardwareFacts = {
   diskFreeBytes: 500 * GIBI,
   gpu: { vendorId: null, deviceId: null, renderer: 'Apple M2 Max', machineModel: null },
   vram: null,
-}
-
-const SNAPSHOT: MemorySnapshot = {
-  domain: 'unified',
-  source: 'probe',
-  at: 0,
-  physicalBytes: 96 * GIBI,
-  appBudgetBytes: 48 * GIBI,
-  rendererReservedBytes: GIBI,
-  runtimeBytes: {},
-  headroomBytes: 2 * GIBI,
-  availableBytes: 34 * GIBI,
 }
 
 const PARAKEET = localModel()
@@ -61,6 +49,7 @@ const input = (over: Partial<OverviewInput> = {}): OverviewInput => ({
   ollamaFailed: false,
   engineKnown: false,
   engineMissing: [],
+  engineTorchCuda: null,
   engineProgress: null,
   engineFailed: false,
   ...over,
@@ -215,5 +204,48 @@ describe('aiOverviewOf', () => {
     // Every cloud that DECLARES serving the role, which is not every cloud on file: one of them
     // only generates, and offering it here would open on an account that answers no conversation.
     expect(rowOf(overview, ASSISTANT_ROLE)?.clouds).toEqual(cloudsServing(ASSISTANT_ROLE))
+  })
+})
+
+describe('what makes CUDA usable and not merely present', () => {
+  const NVIDIA = { vendorId: 0x10de, deviceId: null, renderer: 'RTX 4090', machineModel: null }
+  const TRELLIS = localModel({ id: 'trellis', needsCuda: true })
+  const facing = (torchCuda: boolean | null) =>
+    input({
+      facts: { ...FACTS, gpu: NVIDIA },
+      engineTorchCuda: torchCuda,
+      modelsFor: role => (role === DICTATION_ROLE ? [TRELLIS] : []),
+    })
+
+  /**
+   * The card alone announced TRELLIS compatible on a Windows machine whose PyPI torch is a CPU
+   * build, and the load then answered `needs CUDA, this machine is cpu`. `cudaTorch` and not
+   * `cuda`: the card IS there, so what the person needs is the repair, not a refusal.
+   */
+  it('stops calling a card compatible when the engine says its torch has no CUDA', () => {
+    const row = rowOf(aiOverviewOf(facing(false)), DICTATION_ROLE)
+
+    expect(row?.candidates[0]?.obstacle).toBe('cudaTorch')
+  })
+
+  /** `null` is UNKNOWN, and the engine has not answered yet on the first composition. */
+  it('trusts the card while the engine has said nothing', () => {
+    const row = rowOf(aiOverviewOf(facing(null)), DICTATION_ROLE)
+
+    expect(row?.candidates[0]?.obstacle).not.toBe('cuda')
+    expect(row?.candidates[0]?.obstacle).not.toBe('cudaTorch')
+  })
+
+  it('refuses a machine with no NVIDIA card, whatever torch was built with', () => {
+    expect(cudaStateOf(FACTS.gpu, true)).toBeUndefined()
+  })
+
+  /**
+   * The engine offer carries it too, and not only the models: the button that installs the CUDA
+   * wheels lives there, and a complete door hides it — see `AiEngineOffer`.
+   */
+  it('tells the engine offer a complete door is still on the processor', () => {
+    expect(aiOverviewOf(facing(false)).engine.cuda).toBe('repairable')
+    expect(aiOverviewOf(input()).engine.cuda).toBeUndefined()
   })
 })

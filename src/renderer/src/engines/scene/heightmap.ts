@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { FloatType } from 'three'
 import { assetUrl, versionedUrl } from '@shared/domain/asset'
 import { heightmapSamplesOf, type HeightmapSamples } from '@shared/domain/heightmap'
@@ -20,21 +21,21 @@ export async function loadHeightmap(
 
 export async function heightmapFromExr(bytes: ArrayBuffer): Promise<HeightmapSamples> {
   const head = new Uint8Array(bytes, 0, Math.min(bytes.byteLength, SIGNATURE_BYTES))
-  if (decoderFor(head) !== 'openexr') throw new Error('heightmap is not OpenEXR')
+  if (decoderFor(head) !== 'openexr') throw localizedError('heightmapFormatInvalid')
 
   const { EXRLoader } = await import('three/addons/loaders/EXRLoader.js')
   const loader = new EXRLoader()
   loader.type = FloatType
   const held = loader.parse(bytes)
   if (typeof held.width !== 'number' || typeof held.height !== 'number') {
-    throw new Error('heightmap has no size')
+    throw localizedError('heightmapSizeMissing')
   }
-  if (!(held.data instanceof Float32Array)) throw new Error('heightmap did not decode as float32')
+  if (!(held.data instanceof Float32Array)) throw localizedError('heightmapPixelsInvalid')
   return heightmapSamplesOf({ data: held.data, width: held.width, height: held.height })
 }
 
 async function bytesAt(url: string): Promise<ArrayBuffer> {
   const answer = await fetch(url)
-  if (!answer.ok) throw new Error(`${url} answered ${answer.status}`)
+  if (!answer.ok) throw localizedError('httpStatus', { url: url, status: answer.status })
   return await answer.arrayBuffer()
 }

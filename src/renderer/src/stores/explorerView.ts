@@ -14,7 +14,7 @@ import {
  * are the same in both, and the second is the only way to find every picture of a project whose
  * folders the user arranged their own way.
  */
-export type ExplorerMode = 'folder' | 'domain'
+type ExplorerMode = 'folder' | 'domain'
 
 export type ExplorerViewState = {
   /**

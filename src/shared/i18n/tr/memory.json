@@ -1,0 +1,20 @@
+{
+  "memoryWorth": {
+    "scriptWrite": "{{path}} betiği asistan tarafından yazıldı",
+    "prefabDefine": "“{{name}}”, bu projenin bir prefabı",
+    "styleSave": "“{{name}}”, bu proje için kaydedilmiş, bir materyali okuma biçimi",
+    "postSave": "“{{name}}”, bu proje için kaydedilmiş bir son işleme ön ayarı",
+    "animationAdd": "“{{clipName}}” animasyonu rige eklendi",
+    "gitCommit": "Kararlaştırıldı ve git’e kaydedildi: {{message}}"
+  },
+  "memoryTypes": {
+    "decision": "Karar",
+    "architecture": "Mimari",
+    "feature": "Özellik",
+    "entity": "Öğe",
+    "script": "Betik",
+    "problem": "Sorun",
+    "intent": "Niyet",
+    "convention": "Kural"
+  }
+}

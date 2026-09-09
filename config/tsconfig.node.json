@@ -1,0 +1,22 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "../node_modules/.cache/tsc/node.tsbuildinfo",
+    "lib": ["ES2023"],
+    "types": ["node"],
+    "allowImportingTsExtensions": true,
+    "paths": {
+      "@shared/*": ["../src/shared/*"],
+      "@main/*": ["../src/main/*"],
+      "@game/*": ["../src/game/*"]
+    }
+  },
+  "include": [
+    "../src/main/**/*.ts",
+    "../src/preload/**/*.ts",
+    "../src/shared/**/*.ts",
+    "../electron.vite.config.ts",
+    "./vite.game.config.ts",
+    "../vitest.config.ts"
+  ]
+}

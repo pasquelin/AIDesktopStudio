@@ -31,7 +31,7 @@ export const WELCOME_SWING_RATE = 2.6
 export const WELCOME_DRIFT = 0.32
 
 /** The idle drift of the angle itself, in radians. What keeps a still frame from being a photo. */
-export const WELCOME_DRIFT_ANGLE = 0.045
+const WELCOME_DRIFT_ANGLE = 0.045
 
 export function welcomeAzimuth(slide: number): number {
   return slide * WELCOME_SWING

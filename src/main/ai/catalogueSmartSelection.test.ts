@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { shippedModel } from './catalogue'
+import { aiRoleId } from '@shared/domain/aiRole'
+import { shippedModel, shippedModelsFor } from './catalogue'
 
 describe('Smart Select catalogue', () => {
   it('pins the two ONNX artifacts', () => {
@@ -20,5 +21,11 @@ describe('Smart Select catalogue', () => {
         },
       ],
     })
+  })
+
+  it('offers EfficientSAM to the background removal settings role', () => {
+    expect(
+      shippedModelsFor(aiRoleId('background-removal', 'cutout')).map(model => model.id),
+    ).toEqual(['efficient-sam-ti'])
   })
 })

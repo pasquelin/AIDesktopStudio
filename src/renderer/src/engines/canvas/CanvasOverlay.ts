@@ -17,9 +17,7 @@ import { drawRulers, drawTools } from './canvasOverlayChrome'
 export {
   ants,
   antPhase,
-  line,
   RULER_SIZE,
-  twoTone,
   type BrushMark,
   type OverlayContext,
   type OverlayColors,

@@ -5,7 +5,7 @@ import { reportFailure } from '@/services/diagnostics'
 import { withoutKey } from '@/helpers/objects'
 
 /** A copy read off disk, and whether that read found everything the file names. */
-export type SourceCopy<S, A> = { state: S; whole: boolean; against: A | undefined }
+type SourceCopy<S, A> = { state: S; whole: boolean; against: A | undefined }
 
 export type DocumentSource<S> = {
   /** What the file holds, or `null` while no read has landed. Never the open tab's — see `held`. */

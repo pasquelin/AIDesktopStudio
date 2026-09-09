@@ -54,8 +54,8 @@ function createQuickjsScripts(machine: Engine): ScriptPort {
   runtime.setInterruptHandler(() => Date.now() > deadline)
 
   /** 🛑 Under a deadline of its own: evaluating a module RUNS its top level. */
-  const evaluate = (code: string, file: string): ScriptFault | null => {
-    deadline = Date.now() + SCRIPT_LOAD_BUDGET_MS
+  const evaluate = (code: string, file: string, budget: number): ScriptFault | null => {
+    deadline = Date.now() + budget
     const held = context.evalCode(code, file)
     deadline = Number.POSITIVE_INFINITY
     if (held.error) {
@@ -68,7 +68,10 @@ function createQuickjsScripts(machine: Engine): ScriptPort {
   }
 
   const loadKernel = (): void => {
-    const fault = evaluate(KERNEL, 'kernel.js')
+    // 🛑 No budget: the kernel is OURS and cannot run away, so the guard against `while (true)` in
+    // somebody's module protects nothing here. Held to the module budget it refused to load at all
+    // on a machine busy enough to spend 100 ms on it, and the sandbox never opened.
+    const fault = evaluate(KERNEL, 'kernel.js', Number.POSITIVE_INFINITY)
     if (fault) throw new Error(`the sandbox kernel did not load: ${fault.message}`)
   }
   loadKernel()
@@ -171,7 +174,7 @@ function createQuickjsScripts(machine: Engine): ScriptPort {
     load: modules => {
       const faults: ScriptFault[] = []
       for (const one of modules) {
-        const trouble = evaluate(wrapped(one), fileOf(one.script))
+        const trouble = evaluate(wrapped(one), fileOf(one.script), SCRIPT_LOAD_BUDGET_MS)
         if (trouble) faults.push({ ...trouble, script: one.script })
       }
       return faults

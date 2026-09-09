@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import type { BufferGeometry, Object3D } from 'three'
 import type {
   CompiledMeshGeometry,
@@ -139,7 +140,7 @@ function browserModelPorts(): LossyModelPorts {
   const ports = Array.from({ length: size }, () =>
     createWorkerPort<readonly BufferGeometry[], LossyModelResponse>(
       () => new LossyModelWorker(),
-      'lossy model',
+      localizedError('workerLossyModel').message,
       answer => answer.geometries.map(geometryOfBuffers),
     ),
   )

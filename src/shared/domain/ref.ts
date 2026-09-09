@@ -22,10 +22,10 @@ export type Ref =
   | { kind: 'script'; path: string }
 
 /** What the project names on its own, without a document to hold it. */
-export type NamedKind = 'asset' | 'document' | 'prefab'
+type NamedKind = 'asset' | 'document' | 'prefab'
 
 /** What a document holds under an identifier of its own. */
-export type PartKind = 'entity' | 'track' | 'clip' | 'shot' | 'layer'
+type PartKind = 'entity' | 'track' | 'clip' | 'shot' | 'layer'
 
 const NAMED_KINDS: readonly NamedKind[] = ['asset', 'document', 'prefab']
 const PART_KINDS: readonly PartKind[] = ['entity', 'track', 'clip', 'shot', 'layer']

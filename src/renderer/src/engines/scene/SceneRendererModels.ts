@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { Object3D, type AnimationClip } from 'three'
 import { type ClipLane } from '@shared/domain/scene'
 import { receivesShadow, type ModelNode, type SceneNode } from './sceneState'
@@ -116,12 +117,7 @@ export abstract class SceneRendererModels extends SceneRendererGeometry {
       this.textureCache,
       holder,
       () => this.redraw(),
-      () =>
-        reportFailure(
-          'scene.texture',
-          assetId,
-          new Error('this model carries no material a map can be written into'),
-        ),
+      () => reportFailure('scene.texture', assetId, localizedError('modelMaterialMissing')),
     )
     this.modelMaps.set(nodeId, maps)
     this.options.onMaterials?.(
@@ -305,7 +301,7 @@ export abstract class SceneRendererModels extends SceneRendererGeometry {
       const source = await loading
       if (!source || stop.signal.aborted || this.objects.get(nodeId) !== holder) return
       const selected = clipsOf(source)[clip.clipIndex ?? 0]
-      if (!selected) throw new Error('the selected animation does not exist in this file')
+      if (!selected) throw localizedError('animationMissing')
       // Before the retarget and not after: it is the only moment both skeletons are in hand, and
       // it is what lets the screen say WHICH joint the motion has nothing to drive.
       this.options.onClipFit?.(nodeId, clip.key, this.retarget.fitOf(holder, source))

@@ -1,17 +1,26 @@
 import { mdiClose } from '@mdi/js'
 import type { IDockviewPanelHeaderProps } from 'dockview-react'
+import type { TFunction } from 'i18next'
 import { useState, type MouseEvent } from 'react'
+import type { FileView } from '@shared/domain/fileView'
+import type { WorkspaceId } from '@shared/domain/workspace'
 import { useTranslation } from 'react-i18next'
 import { ToolButton } from '@/components/ToolButton'
 import { UiIcon } from '@/components/UiIcon'
 import { InlineRename } from '@/components/InlineRename'
 import { cn } from '@/helpers/cn'
 import { renameDocument } from '@/helpers/rename'
-import { workspaceById, workspaceLabelKey } from '@/helpers/workspaces'
+import {
+  fileViewRole,
+  roleIcon,
+  roleLabelKey,
+  workspaceById,
+  workspaceLabelKey,
+} from '@/helpers/workspaces'
 import { useDocumentModified } from '@/hooks/useDocumentModified'
 import { useDocuments } from '@/stores/documents'
 import { closeTab } from './closeTab'
-import { panelIsFileView } from '../../dockviewApi'
+import { fileViewOfPanel, panelIsFileView } from '../../dockviewApi'
 import { openDocumentTabMenu } from './documentTabMenu'
 import { HINT_BOTTOM, TIP_BOTTOM } from '@/helpers/tooltip'
 
@@ -27,6 +36,28 @@ import { HINT_BOTTOM, TIP_BOTTOM } from '@/helpers/tooltip'
  * nothing about which editor a tab opens. Same table as the rail and the document list — one
  * vocabulary, or two lists mean two different things by the same picture.
  */
+type TabGlyph = { icon: string; label: string }
+
+/**
+ * The picture in front of a tab's title, and the sentence a reader hears in its place.
+ *
+ * A file view has no document behind it, so the workspace table answers nothing for it: its glyph
+ * comes from the FOLDER its kind lives in — the runner of Animations, the gamepad of Controls —
+ * which is the vocabulary the rail and the explorer already speak.
+ */
+function glyphOf(
+  fileView: FileView | null,
+  workspace: WorkspaceId | undefined,
+  t: TFunction,
+): TabGlyph | null {
+  if (fileView) {
+    const role = fileViewRole(fileView.id)
+    return { icon: roleIcon(role), label: t(roleLabelKey(role)) }
+  }
+  if (!workspace) return null
+  return { icon: workspaceById(workspace).icon, label: t(workspaceLabelKey(workspace)) }
+}
+
 export function DocumentTab(props: IDockviewPanelHeaderProps) {
   const { t } = useTranslation()
   const workspace = useDocuments(state => state.documents[props.api.id]?.workspace)
@@ -34,6 +65,7 @@ export function DocumentTab(props: IDockviewPanelHeaderProps) {
   const modified = useDocumentModified(props.api.id)
   const [renaming, setRenaming] = useState(false)
   const isFileView = panelIsFileView(props.api.id)
+  const glyph = glyphOf(fileViewOfPanel(props.api.id), workspace, t)
 
   const close = (event: MouseEvent): void => {
     // Dockview reads a click on the tab as "activate me"; this one is not that.
@@ -71,14 +103,11 @@ export function DocumentTab(props: IDockviewPanelHeaderProps) {
 
   return (
     <span className="flex min-w-0 flex-1 items-center" onContextMenu={openMenu}>
-      {workspace && (
+      {glyph && (
         // A hint and no `aria-label`: the tab's own title is its accessible name, and one set
         // here would replace it (WCAG 2.5.3). The sentence is what the glyph cannot spell.
-        <span
-          className="flex shrink-0 items-center"
-          {...HINT_BOTTOM(t(workspaceLabelKey(workspace)))}
-        >
-          <UiIcon path={workspaceById(workspace).icon} size={14} className="text-muted" />
+        <span className="flex shrink-0 items-center" {...HINT_BOTTOM(glyph.label)}>
+          <UiIcon path={glyph.icon} size={14} className="text-muted" />
         </span>
       )}
       {/* Double-click renames, as it does in the layer stack, the outliner and the track

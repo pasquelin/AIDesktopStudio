@@ -74,7 +74,7 @@ function vectorFieldView({
             onClick: () => setStacked(current => !current),
             ...HINT_LEFT(t(stacked ? 'inspector.stackFoldHint' : 'inspector.stackUnfoldHint')),
           },
-          className: 'cursor-pointer border-y-0 border-l-0 bg-transparent p-0 text-left',
+          className: 'cursor-pointer border-y-0 border-s-0 bg-transparent p-0 text-start',
         }}
         actions={
           <>

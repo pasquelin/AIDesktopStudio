@@ -10,7 +10,7 @@
 #
 # Ce que ce workflow ajoute et que la page ne peut pas savoir toute seule : quelle version
 # est sortie, et où vivent ses cinq installeurs. Il écrit `site/assets/release.json`, que
-# `main.js` lit pour remplir la pastille de version et les cartes de téléchargement.
+# `release.js` lit pour remplir la pastille de version et les cartes de téléchargement.
 #
 # Rien n'est réécrit dans le dépôt : le fichier est produit dans l'artefact déployé, donc
 # aucun tag ne crée de commit, et `site/` reste libre d'un fichier généré qui entrerait en
@@ -26,6 +26,7 @@ on:
     branches: [main]
     paths:
       - 'site/**'
+      - 'vendor/site-runtime/**'
       - 'scripts/**'
       - 'repo.config.json'
       - 'package.json'
@@ -35,6 +36,7 @@ on:
   pull_request:
     paths:
       - 'site/**'
+      - 'vendor/site-runtime/**'
       - 'scripts/**'
       - 'repo.config.json'
       - 'package.json'
@@ -130,6 +132,7 @@ jobs:
                   ),
                   value: {
                     url: .browser_download_url,
+                    sizeBytes: .size,
                     size: ((.size / 1048576) | floor | tostring + " Mo")
                   }
                 })

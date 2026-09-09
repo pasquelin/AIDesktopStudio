@@ -6,7 +6,7 @@ import {
   type KeyboardEventHandler,
   type TextareaHTMLAttributes,
 } from 'react'
-import { mdiChatOutline } from '@mdi/js'
+import { mdiChatOutline, mdiSend } from '@mdi/js'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/Button'
 import { EmptyState } from '@/components/EmptyState'
@@ -16,6 +16,7 @@ import { fieldHandle } from '@/components/scHandle'
 import { PANEL_INSET, PANEL_SCROLL } from '@/components/styles'
 import { cn } from '@/helpers/cn'
 import { HINT_TOP, TIP_TOP } from '@/helpers/tooltip'
+import { UiIcon } from '@/components/UiIcon'
 import { DictationButton } from '@/features/dictation/components/Dictation/DictationButton'
 import { Heard } from '@/features/dictation/components/Heard'
 import { AssistantConversationSuggestions, suggestionId } from './AssistantConversationSuggestions'
@@ -25,7 +26,11 @@ import { AssistantConversationGauge } from './AssistantConversationGauge'
 import { AssistantConversationQuestion } from './AssistantConversationQuestion'
 import { AssistantConversationTurn } from './AssistantConversationTurn'
 import { AssistantConversationWorking } from './AssistantConversationWorking'
-import { CONVERSATION_CARD, CONVERSATION_FIELD_TYPE } from './conversationStyles'
+import {
+  CONVERSATION_ACTIONS,
+  CONVERSATION_CARD,
+  CONVERSATION_FIELD_TYPE,
+} from './conversationStyles'
 
 type Turn = ComponentProps<typeof AssistantConversationTurn>['turn']
 type Asked = ComponentProps<typeof AssistantConversationQuestion>['request']
@@ -124,7 +129,7 @@ export function AssistantConversationView(props: Props) {
         />
       ) : (
         <form
-          className={CONVERSATION_CARD}
+          className={cn(CONVERSATION_CARD, 'assistant-conversation-card')}
           onSubmit={event => {
             event.preventDefault()
             props.send()
@@ -187,10 +192,10 @@ export function AssistantConversationView(props: Props) {
           <p role="status" aria-live="polite" className="sr-only">
             {assistantStatus(props, t)}
           </p>
-          <div className="flex flex-wrap items-center gap-2">
+          <div className={CONVERSATION_ACTIONS}>
             <AssistantConversationPicker />
             <AssistantConversationGauge />
-            <span className="ml-auto flex shrink-0 items-center gap-2">
+            <span className="assistant-conversation-submit-group ml-auto flex shrink-0 items-center gap-2">
               <DictationButton variant="header" tooltip={TIP_TOP} />
               {assistantConversationSubmit(props, t)}
             </span>
@@ -267,9 +272,11 @@ function assistantConversationSubmit(props: Props, t: ReturnType<typeof useTrans
       type="submit"
       variant="primary"
       disabled={props.draft.trim() === ''}
+      className="gap-1.5"
       {...HINT_TOP(t('assistant.sendHint'))}
     >
-      {t('assistant.send')}
+      <UiIcon path={mdiSend} size={14} />
+      <span className="assistant-conversation-submit-label">{t('assistant.send')}</span>
     </Button>
   )
 }

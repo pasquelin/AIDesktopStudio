@@ -14,7 +14,7 @@ export type PaneRect = { x: number; y: number; width: number; height: number }
 /** One view filling the surface, or the four of a modelling package: top, front, left, free. */
 export type PaneLayout = 'single' | 'quad'
 
-export const PANE_LAYOUTS: readonly PaneLayout[] = ['single', 'quad']
+const PANE_LAYOUTS: readonly PaneLayout[] = ['single', 'quad']
 
 export function isPaneLayout(value: string): value is PaneLayout {
   return PANE_LAYOUTS.some(layout => layout === value)

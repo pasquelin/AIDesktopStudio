@@ -16,7 +16,7 @@ import { MENU_FLOATING } from './styles'
  * which anchor against the window edge — `below-left` is for a bar that does not, where a menu
  * hung from the right of a narrow button reads as belonging to whatever sits before it.
  */
-export type FlyoutPlacement = 'right' | 'above' | 'below' | 'below-left' | 'under'
+type FlyoutPlacement = 'right' | 'above' | 'below' | 'below-left' | 'under'
 
 export type FlyoutProps = {
   anchor: HTMLElement | null

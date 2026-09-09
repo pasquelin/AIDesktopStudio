@@ -9,6 +9,8 @@ import {
 import { partialFor, type SettingPath, type SettingValue } from '@shared/domain/settingsPath'
 import { connectThroughBridge, getBridge } from '@/services/bridge'
 
+let authRequest = 0
+
 const UNKNOWN_AUTH: AuthState = { authenticated: false, reason: 'missing' }
 
 type SettingsState = {
@@ -51,28 +53,18 @@ export const useSettings = create<SettingsState>()((set, get) => ({
       set({ settings })
     })
 
-    // Applied as each answers rather than together: the settings come off a file and the key is
-    // tried against the API, so waiting for both would hold the whole window on the slower one.
-    // A failure on either side leaves the defaults on screen and the subscription standing —
-    // throwing here would strand the listener with nobody holding the way to remove it.
-    const readSettings = bridge.settings
-      .read()
-      // A change landing while the read was in flight is newer than what the read answered:
-      // applying the snapshot on top of it would put the window back one version.
-      .then(settings => set({ loaded: true, ...(pushed ? {} : { settings }) }))
-      // Answered, badly. The defaults stay on screen — and surfaces that wait to be told, like
-      // the home, must not wait for the rest of the session.
-      .catch(() => set({ loaded: true }))
+    // Settings must remain available while authentication waits on the network.
+    const readSettings = async (): Promise<void> => {
+      try {
+        const settings = await bridge.settings.read()
+        set({ loaded: true, ...(pushed ? {} : { settings }) })
+      } catch {
+        // Keep the subscription and defaults available after a failed initial read.
+        set({ loaded: true })
+      }
+    }
 
-    const readAuth = bridge.settings
-      .authState()
-      .then(auth => set({ auth, authKnown: true }))
-      // Answered, badly — and still an answer. Same reason as the read above: the home's top
-      // band waits on this flag, and a refusal that never sets it leaves a grey placeholder
-      // there for the whole session, with no way left to reach the key dialog.
-      .catch(() => set({ authKnown: true }))
-
-    await Promise.all([readSettings, readAuth])
+    await Promise.all([readSettings(), get().refreshAuth()])
 
     return stop
   }),
@@ -89,9 +81,18 @@ export const useSettings = create<SettingsState>()((set, get) => ({
     const bridge = getBridge()
     if (!bridge) return get().auth
 
-    const auth = await bridge.settings.authState()
-    set({ auth, authKnown: true })
-    return auth
+    // The previous answer stands while the probe flies: blanking it first makes every account
+    // change in ANOTHER window flash the home back to its waiting state and the docks to "no key".
+    const request = ++authRequest
+    try {
+      const auth = await bridge.settings.authState()
+      if (request === authRequest) set({ auth, authKnown: true })
+    } catch {
+      // Answered, badly — and still an answer. Left authenticated, the docks would keep offering
+      // a key that no longer works; left unknown, the home would wait for ever.
+      if (request === authRequest) set({ auth: UNKNOWN_AUTH, authKnown: true })
+    }
+    return get().auth
   },
 
   openSection: section => {

@@ -27,7 +27,7 @@ function deps(overrides: Partial<MediaHandlerDeps> = {}): MediaHandlerDeps {
     adopt: vi.fn(async () => null),
     pickMedia: vi.fn(async () => ['/Volumes/Rushes/A001.mov']),
     pickAnimation: vi.fn(async () => ['/motions/Walking.fbx']),
-    folderFor: vi.fn(async () => 'Modelling/Animations'),
+    folderFor: vi.fn(async () => 'Animations'),
     capabilities: async () => ({ ffmpeg: true }),
     importPaths: async () => ({ assets: [], documents: [], montages: [], refused: [], failed: [] }),
     claimExternalFiles: () => [],
@@ -182,7 +182,7 @@ describe('media handlers', () => {
       refused: [],
       failed: [],
     }))
-    const folderFor = vi.fn(async () => 'Modelling/Animations')
+    const folderFor = vi.fn(async () => 'Animations')
     registerMediaHandlers(deps({ importPaths, folderFor }))
 
     const result = await invoke(CHANNELS.mediaImportPicked, 'animations', 'task-anim')
@@ -190,7 +190,7 @@ describe('media handlers', () => {
     expect(folderFor).toHaveBeenCalledWith('animations')
     expect(importPaths).toHaveBeenCalledWith(
       ['/motions/Walking.fbx'],
-      'Modelling/Animations',
+      'Animations',
       expect.objectContaining({ signal: expect.any(AbortSignal) }),
     )
     expect(result).toEqual({

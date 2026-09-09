@@ -1,0 +1,76 @@
+{
+  "gui": {
+    "stage": "Arayüz sayfası",
+    "tools": "Arayüz araçları",
+    "tree": "Arayüz öğeleri",
+    "noDocument": "Tuttuğunu görmek için bir arayüz açın.",
+    "visible": "Görünür",
+    "locked": "Kilitli — işaretçi bunu yakalar değil"
+  },
+  "guiTools": {
+    "add": "Ekle",
+    "addHint": "Seçilene bir öğe koyar",
+    "duplicate": "Çoğalt",
+    "duplicateHint": "Seçileni hemen yanına kopyalar",
+    "group": "Grupla",
+    "groupHint": "Seçileni bir panele dosyalar",
+    "delete": "Sil",
+    "deleteHint": "Seçileni arayüzden çıkarır",
+    "lock": "Kilitle",
+    "lockHint": "Seçileni işaretçinin ulaşmasından uzaklaştırır",
+    "zoomIn": "Yakınlaştır",
+    "zoomInHint": "Sayfayı yaklaştırır",
+    "zoomOut": "Uzaklaştır",
+    "zoomOutHint": "Sayfayı uzaklaştırır",
+    "fit": "Uydur",
+    "fitHint": "Tüm sayfayı panelde çerçeveler",
+    "actual": "Gerçek boyut",
+    "actualHint": "Bir sayfa pikseli bir ekran pikseli içindir",
+    "resolution": "Çözünürlük",
+    "resolutionHint": "Arayüzün oluşturulduğu tuval",
+    "types": {
+      "panel": "Panel",
+      "stack": "Yığın",
+      "grid": "Izgara",
+      "scroll": "Kaydırma görünümü",
+      "spacer": "Boşluk",
+      "text": "Metin",
+      "image": "Görüntü",
+      "button": "Düğme",
+      "progress": "İlerleme çubuğu",
+      "slider": "Kaydırıcı",
+      "input": "Girdi",
+      "checkbox": "Kontrol kutusu",
+      "screen": "Arayüz ekranı"
+    },
+    "typeHints": {
+      "panel": "Diğerlerini tutan bir çerçeve",
+      "stack": "Çocuklarını bir satırda veya sütunda yerleştirir",
+      "grid": "Çocuklarını eşit sütunlarda yerleştirir",
+      "scroll": "İçeriği kaydırılan bir çerçeve",
+      "spacer": "Yığında komşuları ayırır",
+      "text": "Ekranda sözcükler",
+      "image": "Projeden bir görüntü",
+      "button": "Hareket ettiği şey, simge ile veya olmadan",
+      "progress": "Değere doldurulmuş bir çubuk",
+      "slider": "Sürüklenen bir değer",
+      "input": "Yazılacak metin",
+      "checkbox": "Bir tik atılan kutu",
+      "screen": "Arayüzün kökü"
+    },
+    "resolutions": {
+      "desktopHd": "1920 × 1080",
+      "desktop720": "1280 × 720",
+      "phonePortrait": "Telefon, portre",
+      "phoneLandscape": "Telefon, manzara",
+      "free": "Boş"
+    },
+    "resolutionHints": {
+      "desktopHd": "Masaüstü, on altı dokuzuncu",
+      "desktop720": "Masaüstü, on altı dokuzuncu, yarı pikseller",
+      "phonePortrait": "390 × 844",
+      "phoneLandscape": "844 × 390",
+      "free": "Belgenin zaten tuttuğu boyut"
+    }
+  }
+}

@@ -6,9 +6,8 @@ import {
 } from '@mdi/js'
 import { useTranslation } from 'react-i18next'
 import { canRestore, type GitFile } from '@shared/domain/git'
-import { CHECKBOX } from '@/components/styles'
+import { Checkbox } from '@/components/Checkbox'
 import { ToolButton } from '@/components/ToolButton'
-import { cn } from '@/helpers/cn'
 import { revealTool } from '@/helpers/revealPanel'
 import { TIP_LEFT } from '@/helpers/tooltip'
 import { ChangedFileRow } from '@/features/git/components/ChangedFileRow'
@@ -33,11 +32,9 @@ export function GitFileRow({ file }: { file: GitFile }) {
     <ChangedFileRow
       file={file}
       leading={
-        <input
+        <Checkbox
           // The path, which is what tells one row from the next — its label is the file name.
           data-sc={`field:git.stage.${file.path}`}
-          type="checkbox"
-          className={cn(CHECKBOX, 'size-3')}
           checked={file.stage === 'staged'}
           disabled={busy}
           aria-label={file.path}

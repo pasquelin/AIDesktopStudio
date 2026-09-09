@@ -1,0 +1,549 @@
+{
+  "commands": {
+    "scenePlay": {
+      "title": "Chạy cảnh",
+      "help": "Chạy hoặc tiếp tục cảnh trong cửa sổ game."
+    },
+    "appNew": {
+      "title": "Mới…",
+      "help": "Mở cửa sổ tạo một dự án hoặc một tài liệu, từ bất kỳ màn hình nào"
+    },
+    "projectNew": {
+      "title": "Dự án mới",
+      "help": "Tạo một dự án trống và mở nó. Dự án là thư mục chứa mọi thứ bạn làm ra: hình ảnh, video, âm thanh, và cách chúng được sắp xếp."
+    },
+    "projectOpen": {
+      "title": "Mở dự án",
+      "help": "Chọn một dự án đã có trên đĩa và mở nó thay cho dự án hiện tại. Dự án đang mở được lưu liên tục, nên không có gì phải lưu trước."
+    },
+    "documentSaveAs": {
+      "title": "Lưu thành",
+      "help": "Ghi một bản sao của tài nguyên bên cạnh bản gốc và làm việc tiếp trên bản sao. Tài nguyên đang mở giữ nguyên như ở lần lưu cuối."
+    },
+    "documentSave": {
+      "title": "Lưu tài liệu",
+      "help": "Ghi tài liệu ở phía trước vào dự án. Chừng nào chưa được lưu, nó chỉ sống trong cửa sổ: tab mang một dấu hoa thị chừng nào những gì trên màn hình chưa phải là những gì trên đĩa."
+    },
+    "documentClose": {
+      "title": "Đóng tab",
+      "help": "Đóng tài liệu ở phía trước. Nếu nó còn phần chưa lưu, studio sẽ hỏi phải làm gì với phần đó. Khi không còn tab nào, cửa sổ sẽ đóng."
+    },
+    "layoutReset": {
+      "title": "Đặt lại bố cục",
+      "help": "Đưa các bảng về đúng chỗ ban đầu. Hữu ích khi các cửa sổ đã bị kéo khắp nơi và không còn gì ở chỗ bạn tưởng. Công việc của bạn không bị đụng tới."
+    },
+    "appSettings": {
+      "title": "Cài đặt",
+      "help": "Mở cửa sổ cài đặt — chính cửa sổ này: ngôn ngữ, màu sắc, tài khoản, phím tắt, và mọi thứ khác chỉnh được."
+    },
+    "appAssistant": {
+      "title": "Trợ lý",
+      "help": "Mở cửa sổ nơi bạn nói ra điều mình muốn làm, bằng giọng nói hoặc bàn phím. Trợ lý tự thực hiện, và xin bạn đồng ý trước mọi thứ tốn phí."
+    },
+    "appDictate": {
+      "title": "Đọc chính tả",
+      "help": "Nghe micro và viết những gì bạn nói tại chỗ con trỏ, trong ô bạn đang ở. Mặc định là giữ phím: nói, thả ra, chữ hiện lên."
+    },
+    "windowFullScreen": {
+      "title": "Toàn màn hình",
+      "help": "Cho cửa sổ chiếm trọn màn hình, không thanh và không viền, để làm việc mà không có gì xung quanh."
+    },
+    "spacesMoveLeft": {
+      "title": "Chuyển không gian sang trái",
+      "help": "Dịch không gian đang có tiêu điểm sang trái một vị trí trong thanh trên cùng. Thứ tự bạn chọn được giữ từ phiên này sang phiên khác."
+    },
+    "spacesMoveRight": {
+      "title": "Chuyển không gian sang phải",
+      "help": "Dịch không gian đang có tiêu điểm sang phải một vị trí trong thanh trên cùng. Thứ tự bạn chọn được giữ từ phiên này sang phiên khác."
+    },
+    "explorerNewFolder": {
+      "title": "Thư mục mới",
+      "help": "Tạo một thư mục trống bên trong thư mục mà trình khám phá đang hiện, và mở tên của nó để gõ. Thư mục là của bạn, cũng như mọi thứ bạn cất vào đó."
+    },
+    "explorerDuplicate": {
+      "title": "Nhân bản",
+      "help": "Đặt một bản sao của từng mục đã chọn bên cạnh bản gốc, dưới cái tên còn trống đầu tiên. Một thư mục được sao chép cùng mọi thứ bên trong nó."
+    },
+    "explorerCut": {
+      "title": "Cắt",
+      "help": "Giữ lại vùng chọn để di chuyển ở lần dán tới. Không gì dịch chuyển cho tới khi bạn dán, và những hàng đang được giữ hiện mờ đi."
+    },
+    "explorerCopy": {
+      "title": "Sao chép",
+      "help": "Giữ lại vùng chọn để sao chép ở lần dán tới. Bản gốc vẫn ở nguyên chỗ của nó."
+    },
+    "explorerPaste": {
+      "title": "Dán",
+      "help": "Thả những gì bảng nhớ tạm đang giữ vào thư mục trên màn hình. Mục nào mang cái tên đã bị chiếm thì bị từ chối, số còn lại đi qua."
+    },
+    "explorerTrash": {
+      "title": "Chuyển vào thùng rác",
+      "help": "Gửi vùng chọn vào thùng rác của hệ thống, nơi bạn có thể lấy lại. Đó là thao tác duy nhất của trình khám phá mà studio không hoàn tác được."
+    },
+    "explorerUndo": {
+      "title": "Hoàn tác thao tác tệp cuối cùng",
+      "help": "Đưa lô tệp vừa được di chuyển, đổi tên, nhân bản hay tạo mới về lại chỗ cũ. Ngăn xếp thuộc về dự án chứ không thuộc về một cửa sổ, và thao tác chuyển vào thùng rác không bao giờ vào đó."
+    },
+    "explorerRedo": {
+      "title": "Làm lại thao tác tệp",
+      "help": "Làm lại y nguyên lô tệp vừa được hoàn tác."
+    },
+    "sceneSelect": {
+      "title": "Chọn",
+      "help": "Công cụ cơ bản: bấm vào một đối tượng trong cảnh để chọn nó, mà không làm gì với nó. Đây là công cụ bạn quay về giữa hai lần thao tác."
+    },
+    "sceneTranslate": {
+      "title": "Di chuyển",
+      "help": "Kéo đối tượng đã chọn từ chỗ này sang chỗ khác, bằng cách kéo các mũi tên màu — mỗi hướng một mũi tên."
+    },
+    "sceneRotate": {
+      "title": "Xoay",
+      "help": "Xoay đối tượng đã chọn quanh chính nó, bằng cách kéo các vòng màu — mỗi trục một vòng."
+    },
+    "sceneScale": {
+      "title": "Đổi tỉ lệ",
+      "help": "Làm đối tượng đã chọn to lên hay nhỏ đi, bằng cách kéo các tay nắm của nó. Giữ phím Shift thì giữ nguyên tỉ lệ hình."
+    },
+    "sceneFrame": {
+      "title": "Căn khung Vùng chọn",
+      "help": "Đưa camera lại đủ gần để đối tượng đã chọn lấp đầy khung nhìn. Tiện khi bạn bị lạc, hoặc khi một đối tượng quá nhỏ."
+    },
+    "sceneFrameFollow": {
+      "title": "Theo dõi vùng chọn",
+      "help": "Đóng khung vùng chọn và giữ nó trong khung nhìn: thứ gì di chuyển sẽ kéo camera theo, ở đúng góc và khoảng cách đã chọn. Gọi lại lần nữa thì nó buông ra."
+    },
+    "sceneIsolate": {
+      "title": "Cô lập vùng chọn",
+      "help": "Chỉ để lại trên màn hình các đối tượng đã chọn trong lúc bạn làm việc với chúng. Không gì bị thay đổi: nhấn lần thứ hai trả lại cảnh đúng như cũ, kể cả những đối tượng chính bạn đã ẩn."
+    },
+    "sceneHide": {
+      "title": "Ẩn vùng chọn",
+      "help": "Đưa các đối tượng đã chọn ra khỏi khung nhìn mà không đụng tới tài liệu. “Hiện tất cả” đưa chúng trở lại."
+    },
+    "sceneShowAll": {
+      "title": "Hiện tất cả",
+      "help": "Hủy việc ẩn và cô lập đã làm từ khung nhìn. Những đối tượng mà chính tài liệu khai là ẩn thì vẫn ẩn."
+    },
+    "sceneSnap": {
+      "title": "Tất cả bắt dính",
+      "help": "Bật hoặc tắt cùng lúc cả bốn kiểu bắt dính — bề mặt, lưới, góc, tỉ lệ. Nhấn lần thứ hai trả lại đúng những kiểu đang bật. Thanh trên đỉnh khung nhìn chỉnh từng kiểu một."
+    },
+    "sceneSpace": {
+      "title": "Hệ trục cục bộ",
+      "help": "Căn các tay nắm theo hướng của chính đối tượng thay vì theo hướng của thế giới. Trên một đối tượng đã xoay, đó là thứ cho phép di chuyển nó “về phía trước của nó” thay vì về hướng bắc."
+    },
+    "sceneProjection": {
+      "title": "Phép chiếu",
+      "help": "Chuyển giữa phối cảnh, nơi các đường lùi xa hội tụ, và phép chiếu trực giao, nơi các đường song song vẫn song song. Đó là thứ cho phép đánh giá một sự căn chỉnh bằng mắt."
+    },
+    "sceneViewFront": {
+      "title": "Nhìn từ phía trước",
+      "help": "Đặt camera trước cảnh, vuông góc với trục. Khung nhìn tham chiếu để đánh giá một dáng hình."
+    },
+    "sceneViewBack": {
+      "title": "Nhìn từ phía sau",
+      "help": "Đặt camera sau cảnh, trên cùng một trục: những gì mặt trước che khuất."
+    },
+    "sceneViewRight": {
+      "title": "Nhìn từ bên phải",
+      "help": "Đặt camera ở phía bên phải, vuông góc với trục. Thứ dùng để đánh giá một chiều sâu."
+    },
+    "sceneViewLeft": {
+      "title": "Nhìn từ bên trái",
+      "help": "Đặt camera ở phía bên trái, trên cùng trục với khung nhìn bên phải."
+    },
+    "sceneViewTop": {
+      "title": "Nhìn từ trên xuống",
+      "help": "Đặt camera phía trên cảnh, nhìn thẳng xuống. Thứ dùng để bố trí các đối tượng trên mặt đất."
+    },
+    "sceneViewBottom": {
+      "title": "Nhìn từ dưới lên",
+      "help": "Đặt camera phía dưới cảnh, nhìn thẳng lên, ngược với khung nhìn từ trên xuống."
+    },
+    "sceneViewCamera": {
+      "title": "Nhìn qua camera",
+      "help": "Vẽ khung nhìn qua camera đã chọn, và thoát ra ở lần gọi thứ hai. Khi chưa chọn camera nào, nó lấy camera đầu tiên trong cảnh."
+    },
+    "sceneQuad": {
+      "title": "Bốn khung nhìn",
+      "help": "Chia khung nhìn làm bốn — trên, trước và cạnh, quanh khung nhìn đang bay. Mỗi phần tư xoay quanh theo con trỏ; phần đang bay giữ các gizmo."
+    },
+    "sceneQuadEdges": {
+      "title": "Cạnh tứ giác",
+      "help": "Vẽ lại khung dây mà không có các đường chéo do phép tam giác hóa thêm vào. Một tệp GLB không bao giờ chứa tứ giác: đây là bản dựng lại theo góc, trung thực trừ trên các bề mặt cong mạnh."
+    },
+    "sceneDisplay": {
+      "title": "Chế độ hiển thị",
+      "help": "Lần lượt đổi những gì khung nhìn vẽ: các bề mặt, riêng các cạnh của chúng, hay cả hai cùng lúc. Trình đơn của nút cho phép chọn thẳng một kiểu."
+    },
+    "sceneCapture": {
+      "title": "Chụp khung nhìn",
+      "help": "Lưu một hình ảnh của khung nhìn 3D vào phần hình ảnh của dự án — không có lưới, tay nắm hay đường đi. Trình đơn đưa ra những độ phân giải lớn hơn độ phân giải của chính bảng."
+    },
+    "sceneAdd": {
+      "title": "Thêm",
+      "help": "Mở danh sách những gì một cảnh có thể nhận: mesh, đèn và đối tượng. Bấm chuột phải vào chỗ trống mở đúng danh sách đó."
+    },
+    "sceneAddToSheet": {
+      "title": "Thêm vào dải hoạt ảnh",
+      "help": "Đặt các đối tượng đã chọn lên dải, nơi người ta đặt các key. Dải chỉ hiện những gì được đặt lên đó, nên một cảnh có hàng nghìn đối tượng vẫn đọc được."
+    },
+    "sceneRemoveFromSheet": {
+      "title": "Gỡ khỏi dải hoạt ảnh",
+      "help": "Gỡ hàng khỏi dải. Các key đã đặt vẫn còn, và một đối tượng giữ hàng của nó chừng nào nó còn mang key."
+    },
+    "sceneGroup": {
+      "title": "Nhóm",
+      "help": "Xếp các đối tượng đã chọn dưới cùng một nhóm. Di chuyển nhóm là di chuyển tất cả, và ⌘Z gỡ việc gộp nhóm."
+    },
+    "sceneDuplicate": {
+      "title": "Nhân bản",
+      "help": "Đặt một bản sao của vùng chọn dưới cùng một cha và đúng ngay tại chỗ đó, rồi chọn nó. Một nhóm được nhân bản trọn vẹn, cùng mọi thứ treo dưới nó."
+    },
+    "sceneOptimizeSelection": {
+      "title": "Tối ưu vùng chọn…",
+      "help": "Đo vùng chọn và cho xem trước một biểu diễn runtime SAFE trước khi đổi các cài đặt tối ưu của nó."
+    },
+    "sceneWorldPerformance": {
+      "title": "Hiệu năng thế giới…",
+      "help": "Đo toàn bộ cảnh và báo cáo những cơ hội tối ưu SAFE mà không thay đổi thế giới đang dựng."
+    },
+    "sceneExportGame": {
+      "title": "Xuất game…",
+      "help": "Xây dựng một game độc lập từ bản sao runtime đã tối ưu hóa mà không sửa đổi các cảnh biên tập."
+    },
+    "sceneCopy": {
+      "title": "Sao chép",
+      "help": "Giữ lại những gì được chọn để có thể dán sau này, ở đây hoặc ở một cảnh khác. Đây là bảng tạm riêng của studio: nó không động đến bảng tạm hệ thống."
+    },
+    "sceneCut": {
+      "title": "Cắt",
+      "help": "Giữ lại những gì được chọn rồi lấy nó ra khỏi cảnh. ⌘Z đưa nó trở lại."
+    },
+    "scenePaste": {
+      "title": "Dán",
+      "help": "Đặt những gì đã sao chép vào cảnh hiện tại phía trước, và chọn nó. Dán hai lần tạo hai bản sao riêng biệt."
+    },
+    "sceneDelete": {
+      "title": "Xóa",
+      "help": "Loại bỏ mọi thứ được chọn khỏi cảnh. Không có gì bị mất vĩnh viễn: ⌘Z đưa nó trở lại."
+    },
+    "undo": {
+      "title": "Hoàn tác",
+      "help": "Hoàn tác hành động cuối cùng bạn thực hiện trong tài liệu này. Mỗi tài liệu có ngăn xếp riêng: hoàn tác tác động lên tab ở phía trước, không phải những tab khác."
+    },
+    "redo": {
+      "title": "Làm lại",
+      "help": "Làm lại những gì bạn vừa hoàn tác. Hữu ích khi hoàn tác quá nhiều."
+    },
+    "sequencePlayPause": {
+      "title": "Chạy / Tạm dừng",
+      "help": "Bắt đầu phát montage, hoặc dừng nó ở chỗ hiện tại. Khởi động lại sẽ tiếp tục từ nơi bạn dừng lại."
+    },
+    "sequenceExport": {
+      "title": "Xuất video…",
+      "help": "Ghi montage thành tệp video, khung hình từng khung, bao gồm cả cảnh 3D. Âm thanh chưa có."
+    },
+    "sequenceExportCut": {
+      "title": "Xuất montage (OTIO)…",
+      "help": "Ghi montage thành tệp OpenTimelineIO, mà các ứng dụng biên tập khác mở — pistes, clips, điểm vào, tốc độ và liên kết đến phương tiện. Các chuyển dần, gain và liên kết hình ảnh/âm thanh cũng được đi kèm, nhưng chỉ AI Desktop Studio mới đọc lại chúng."
+    },
+    "sequenceExportEdl": {
+      "title": "Xuất danh sách cắt (EDL)…",
+      "help": "Ghi các cắt và mã thời gian của chúng dưới dạng CMX3600, mà mọi phòng online đều đọc được. Định dạng chỉ chứa một pist hình ảnh và hai pist âm thanh, và không có gì về các chuyển dần, gain hoặc tốc độ."
+    },
+    "sequenceExportFcpxml": {
+      "title": "Xuất montage (FCPXML)…",
+      "help": "Ghi montage theo định dạng mà Final Cut đọc và Premiere và Resolve nhập. Các pist tồn tại, một lane mỗi cái, và kích thước khung hình cũng vậy; các chuyển dần, gain và tốc độ ở đây."
+    },
+    "sequenceExportStems": {
+      "title": "Xuất âm thanh theo pist (WAV)…",
+      "help": "Ghi một tệp WAV cho mỗi pist nghe được, hỗn hợp theo cách montage phát nó — vị trí, cắt gọn, chuyển dần, gain và tốc độ được nướng vào các mẫu. Một pist bị tắt tiếng sẽ không được ghi."
+    },
+    "sequenceExportBundle": {
+      "title": "Xuất montage và phương tiện của nó (OTIOZ)…",
+      "help": "Ghi cùng một montage với phương tiện nó sử dụng bên trong tệp. Đây là cái để gửi cho ai đó, hoặc để mở trong DaVinci Resolve, sau đó sẽ tìm thấy các cảnh quay riêng của nó thay vì hỏi từng cái một."
+    },
+    "montageImport": {
+      "title": "Nhập một montage và phương tiện của nó (OTIOZ)…",
+      "help": "Mở một montage được viết bởi một ứng dụng khác, cảnh quay và tất cả. Phương tiện được sao chép vào dự án và nhập danh mục, sau đó montage mở liên kết với chúng. Những gì tệp đã mở không mang theo được nói khi nó mở, và chỉ bắt đầu từ mặc định của nó ở đó."
+    },
+    "sequenceMirror": {
+      "title": "Cửa sổ trả về",
+      "help": "Mở montage trong cửa sổ riêng của nó, để đặt trên màn hình thứ hai. Nó theo dõi studio khung hình từng khung, không có âm thanh, và đóng như bất kỳ cửa sổ nào."
+    },
+    "sequenceSplit": {
+      "title": "Tách clip",
+      "help": "Cắt clip thành hai nơi đầu đọc ngồi, để mỗi nửa có thể xử lý riêng."
+    },
+    "sequenceDelete": {
+      "title": "Xóa clip",
+      "help": "Loại bỏ clip được chọn khỏi montage. Tệp gốc vẫn trong tài nguyên của bạn."
+    },
+    "sequenceUnlink": {
+      "title": "Hủy liên kết hình ảnh và âm thanh",
+      "help": "Tách hai clip của một cảnh quay. Trong khi chúng được liên kết, di chuyển, cắt hoặc xóa một cái làm điều tương tự với cái kia."
+    },
+    "sequenceZoomIn": {
+      "title": "Phóng to",
+      "help": "Mở montage ra để xem chi tiết: các clip trở nên rộng hơn và dễ dàng nhắm tới hơn."
+    },
+    "sequenceZoomOut": {
+      "title": "Thu nhỏ",
+      "help": "Kéo montage lại để xem nhiều hơn cùng một lúc, với chi phí chi tiết."
+    },
+    "sequenceFit": {
+      "title": "Vừa với chế độ xem",
+      "help": "Đặt mức phóng sao cho toàn bộ montage vừa với màn hình, từ đầu đến cuối."
+    },
+    "sequenceStart": {
+      "title": "Đi đến đầu",
+      "help": "Đưa đầu đọc ngay về đầu montage, không di chuyển bất kỳ thứ gì khác."
+    },
+    "sequenceEnd": {
+      "title": "Đi đến cuối",
+      "help": "Gửi đầu đọc ngay đến cuối montage, qua clip cuối cùng."
+    },
+    "canvasZoomIn": {
+      "title": "Phóng to",
+      "help": "Phóng đại chế độ xem một bước, xung quanh giữa những gì có thể nhìn thấy. Hình ảnh chính nó không bị chạm — chỉ cách nhìn nó."
+    },
+    "canvasZoomOut": {
+      "title": "Thu nhỏ",
+      "help": "Thu nhỏ chế độ xem một bước, để lấy lại hình ảnh toàn bộ."
+    },
+    "canvasZoomFit": {
+      "title": "Vừa với cửa sổ",
+      "help": "Khung toàn bộ hình ảnh trong bảng, với một lề, và không bao giờ phóng to nó vượt quá kích thước thực tế của nó."
+    },
+    "canvasZoomActual": {
+      "title": "Kích thước thực tế",
+      "help": "Một pixel hình ảnh cho mỗi pixel màn hình: cái duy nhất tại đó độ sắc nét có thể được đánh giá."
+    },
+    "canvasRulers": {
+      "title": "Thước",
+      "help": "Hiển thị hoặc ẩn hai thước chia độ, ở trên cùng và bên trái. Các hướng dẫn được kéo ra từ chúng."
+    },
+    "canvasGuides": {
+      "title": "Hướng dẫn",
+      "help": "Hiển thị hoặc ẩn các hướng dẫn được đặt trên hình ảnh. Ẩn chúng không loại bỏ chúng."
+    },
+    "canvasGrid": {
+      "title": "Lưới pixel",
+      "help": "Hiển thị hoặc ẩn lưới các pixel của tác phẩm. Chỉ trên tài liệu được đặt thành pixel art."
+    },
+    "canvasClearGuides": {
+      "title": "Xóa hướng dẫn",
+      "help": "Loại bỏ mọi hướng dẫn khỏi hình ảnh. Có thể hoàn tác, như bất kỳ chỉnh sửa nào khác."
+    },
+    "canvasSnap": {
+      "title": "Từ tính",
+      "help": "Làm cho những gì được kéo bám vào các hướng dẫn, các cạnh hình ảnh và trung tâm của nó, trong vài pixel."
+    },
+    "canvasSelectAll": {
+      "title": "Chọn tất cả",
+      "help": "Chọn toàn bộ tài liệu, mà chính hệ thống không thể làm trên hình ảnh."
+    },
+    "canvasDeselect": {
+      "title": "Bỏ chọn",
+      "help": "Bỏ vùng được chọn, để cọ có thể tiếp cận toàn bộ layer lại."
+    },
+    "canvasCropApply": {
+      "title": "Áp dụng crop",
+      "help": "Cắt tài liệu sang khung được đặt. ⌘Z trả khung lại, không phải pixel bị loại bỏ."
+    },
+    "canvasCropCancel": {
+      "title": "Hủy bỏ crop",
+      "help": "Lấy khung crop đi mà không cắt bất cứ gì."
+    },
+    "canvasMaskFromSelection": {
+      "title": "Tạo mặt nạ từ vùng được chọn",
+      "help": "Che giấu layer hoạt động bên ngoài vùng được chọn."
+    },
+    "canvasRegenerate": {
+      "title": "Tạo lại vùng",
+      "help": "Yêu cầu mô hình vẽ lại vùng được che của layer hoạt động."
+    },
+    "canvasCutout": {
+      "title": "Cắt ra ngoài",
+      "help": "Loại bỏ nền của hình ảnh được sáp nhập với mô hình mặc định."
+    },
+    "canvasEnlarge": {
+      "title": "Nâng độ phân giải",
+      "help": "Tăng độ phân giải của hình ảnh được sáp nhập với mô hình mặc định."
+    },
+    "canvasVectorize": {
+      "title": "Vector hóa",
+      "help": "Chuyển đổi hình ảnh được sáp nhập thành đường dẫn với mô hình mặc định."
+    },
+    "canvasExtend": {
+      "title": "Mở rộng",
+      "help": "Yêu cầu mô hình vẽ vượt quá các cạnh của hình ảnh được sáp nhập."
+    },
+    "canvasMergeDown": {
+      "title": "Nhập xuống",
+      "help": "Kết hợp layer hoạt động và cái ngay bên dưới nó thành một, giữ tên của cái dưới."
+    },
+    "canvasFlatten": {
+      "title": "Sáp nhập hình ảnh",
+      "help": "Giảm toàn bộ ngăn xếp thành một layer: các layer ẩn bị loại bỏ, không được nhập.",
+      "layerName": "Nền"
+    },
+    "canvasFlipHorizontal": {
+      "title": "Lật ngang",
+      "help": "Gương toàn bộ tài liệu từ trái sang phải, bao gồm layer."
+    },
+    "canvasFlipVertical": {
+      "title": "Lật dọc",
+      "help": "Gương toàn bộ tài liệu từ trên xuống dưới, bao gồm layer."
+    },
+    "canvasRotateCw": {
+      "title": "Xoay theo chiều kim đồng hồ",
+      "help": "Xoay tài liệu một phần tư vòng sang phải: khung xoay theo nó."
+    },
+    "canvasRotateCcw": {
+      "title": "Xoay ngược chiều kim đồng hồ",
+      "help": "Xoay tài liệu một phần tư vòng sang trái: khung xoay theo nó."
+    },
+    "canvasExport": {
+      "title": "Xuất hình ảnh",
+      "help": "Ghi tài liệu được sáp nhập vào đĩa, dưới dạng PNG."
+    },
+    "canvasExportLayered": {
+      "title": "Xuất các layer (PSD)…",
+      "help": "Ghi tài liệu với các layer của nó, dưới dạng tệp Photoshop. Các nhóm được sáp nhập: các layer của chúng đến cạnh nhau."
+    },
+    "skyboxView": {
+      "title": "Thay đổi chế độ xem",
+      "help": "Lặp lại bốn cách nhìn bầu trời: ngập trong, toàn cảnh, chéo, các mặt."
+    },
+    "skyboxProbes": {
+      "title": "Đầu dò ánh sáng",
+      "help": "Hiển thị hoặc ẩn các quả cầu chứng thực. Một bầu trời được đánh giá bằng những gì nó chiếu sáng, không phải hình ảnh của nó."
+    },
+    "canvasToolMove": {
+      "title": "Công cụ di chuyển",
+      "help": "Vũ trang con trỏ: một kéo di chuyển layer hoạt động, và các tay cầm của nó đổi kích thước hoặc xoay nó."
+    },
+    "canvasToolHand": {
+      "title": "Công cụ Bàn tay",
+      "help": "Vũ trang tay: một kéo quét chế độ xem mà không chạm gì đến tài liệu. Giữ dấu cách làm điều tương tự mà không thay đổi công cụ."
+    },
+    "canvasToolCrop": {
+      "title": "Công cụ Cắt xén",
+      "help": "Vũ trang khung crop. Vẽ một khung, rồi ⏎ để crop hoặc ⎋ để bỏ nó."
+    },
+    "canvasToolSelectRectangle": {
+      "title": "Vùng chọn hình chữ nhật",
+      "help": "Vũ trang vùng chọn hình chữ nhật. Những gì được chọn ràng buộc cọ, tẩy và thùng."
+    },
+    "canvasToolSelectEllipse": {
+      "title": "Vùng chọn hình elip",
+      "help": "Vũ trang vùng chọn hình elip: một kéo ghi hình elip vào hình chữ nhật được quét, và Shift làm nó thành hình tròn."
+    },
+    "canvasToolSelectLasso": {
+      "title": "Vòng bằng",
+      "help": "Vũ trang lasso: vùng được chọn theo tay, tự do."
+    },
+    "canvasToolSmartSelect": {
+      "title": "Nhấp — Chọn thông minh",
+      "help": "Vũ trang lựa chọn đối tượng từ một nhấp, sử dụng mô hình lựa chọn cục bộ."
+    },
+    "canvasToolSmartSelectBox": {
+      "title": "Hình chữ nhật — Chọn thông minh",
+      "help": "Vũ trang lựa chọn đối tượng từ một hộp gần đúng, sử dụng mô hình lựa chọn cục bộ."
+    },
+    "canvasToolShapeRectangle": {
+      "title": "Hình dạng hình chữ nhật",
+      "help": "Vũ trang vẽ hình chữ nhật trên layer hoạt động; Shift làm nó thành hình vuông."
+    },
+    "canvasToolShapeLine": {
+      "title": "Hình dạng dòng",
+      "help": "Vũ trang vẽ một dòng. Cùng nhóm với hình chữ nhật, do đó phím của nó được thêm Shift."
+    },
+    "canvasToolShapeArrow": {
+      "title": "Hình dạng mũi tên",
+      "help": "Vũ trang vẽ một mũi tên, từ nơi kéo bắt đầu đến nơi tay buông."
+    },
+    "canvasToolShapeEllipse": {
+      "title": "Dạng Hình elip",
+      "help": "Vũ trang vẽ hình elip trên layer hoạt động; Shift làm nó thành hình tròn."
+    },
+    "canvasToolShapePolygon": {
+      "title": "Hình dạng đa giác",
+      "help": "Vũ trang vẽ một đa giác đều, có số cạnh được đặt trong bảng thuộc tính trước khi vẽ."
+    },
+    "canvasToolShapeStar": {
+      "title": "Hình dạng sao",
+      "help": "Vũ trang vẽ một ngôi sao, có số lượng điểm được đặt trong bảng thuộc tính trước khi vẽ."
+    },
+    "canvasToolBrush": {
+      "title": "Công cụ cọ",
+      "help": "Vũ trang cọ, với cạnh mềm. Nó vẽ trên layer hoạt động, bị ràng buộc bởi vùng được chọn khi có."
+    },
+    "canvasToolPencil": {
+      "title": "Công cụ bút chì",
+      "help": "Vũ trang bút chì, với cạnh cứng: cùng một cử chỉ với cọ, không có làm mềm."
+    },
+    "canvasToolText": {
+      "title": "Công cụ văn bản",
+      "help": "Vũ trang văn bản: một nhấp đặt một chú thích, có từ được nhập trong bảng thuộc tính."
+    },
+    "canvasToolEraser": {
+      "title": "Công cụ tẩy",
+      "help": "Vũ trang tẩy điểm: nó xóa nơi tay qua, bị ràng buộc bởi vùng được chọn khi có."
+    },
+    "canvasToolFill": {
+      "title": "Công cụ Thùng sơn",
+      "help": "Vũ trang thùng: một nhấp lấp đầy layer, hoặc vùng được chọn khi có."
+    },
+    "canvasToolPicker": {
+      "title": "Công cụ Pipette",
+      "help": "Vũ trang thuốc nhỏ: một nhấp lấy màu dưới con trỏ và đưa nó cho cọ."
+    },
+    "canvasBrushSmaller": {
+      "title": "Cọ nhỏ hơn",
+      "help": "Thu hẹp cọ, tẩy và độ dày đường viền hình dạng một bước."
+    },
+    "canvasBrushLarger": {
+      "title": "Cọ lớn hơn",
+      "help": "Mở rộng cọ, tẩy và độ dày đường viền hình dạng một bước."
+    },
+    "sceneSkeletons": {
+      "title": "Hiển thị các bộ xương",
+      "help": "Vẽ xương của mỗi mô hình có rig trên cảnh."
+    },
+    "scenePoseMode": {
+      "title": "Chế độ tư thế",
+      "help": "Chuyển đổi giữa chọn đối tượng và chọn xương của một rig."
+    },
+    "sceneNavigate": {
+      "title": "Điều hướng",
+      "help": "Di chuyển qua cảnh như trong một game: chuột giữ chế độ xem, W A S D di chuyển, E và Q nâng và hạ. Bánh xe đặt tốc độ. Escape trả chuột."
+    },
+    "sceneNegate": {
+      "title": "Phủ định",
+      "help": "Đánh dấu các hình dạng được chọn làm công cụ: chúng được cắt ra khỏi những hình khác, bất kỳ nút nào được nhấn tiếp theo và bất kỳ thứ tự nào họ được nhấp. Một hình dạng được đánh dấu hiển thị màu đỏ bán trong suốt. Nhấn lại để bỏ dấu."
+    },
+    "sceneCarve": {
+      "title": "Khắc",
+      "help": "Cắt các hình dạng được đánh dấu phủ định — không thì những hình nhỏ hơn — ra khỏi hình dạng được chọn lớn nhất: một khối lập phương đặt trong một bức tường mở một cửa sổ trong đó. Thứ tự của các nhấp không thay đổi gì. Các hình dạng gốc được giữ lại — Tách trao trả chúng."
+    },
+    "sceneWeld": {
+      "title": "Hàn",
+      "help": "Hợp nhất các hình dạng được chọn thành một chất rắn. Một hình dạng được đánh dấu phủ định được cắt ra từ đó thay vì được thêm vào. Các hình dạng gốc được giữ lại — Tách trao trả chúng."
+    },
+    "sceneIntersect": {
+      "title": "Giữ phần giao",
+      "help": "Chỉ giữ phần nơi các hình dạng được chọn chồng lên nhau, và ném cái còn lại đi. Một hình dạng được đánh dấu phủ định được cắt ra từ đó thay vì được giữ. Các hình dạng gốc được giữ lại — Tách trao trả chúng."
+    },
+    "sceneInvertCarve": {
+      "title": "Lật gấp",
+      "help": "Gấp cùng một hình dạng cách khác: những gì được khắc trở thành vật liệu, và vật liệu trở thành công cụ. Một nhấp, không hoàn tác — vì gấp chạy ra phía sau."
+    },
+    "sceneSeparate": {
+      "title": "Tách",
+      "help": "Chia sẻ chất rắn và trả các hình dạng nó được làm, mỗi cái nơi nó đứng."
+    }
+  }
+}

@@ -12,7 +12,7 @@ import { clampElevation } from '@shared/domain/angles'
  */
 
 /** A full turn per viewport height dragged. `OrbitControls` gives the same, and so does Blender. */
-export const ORBIT_TURN_PER_HEIGHT = Math.PI * 2
+const ORBIT_TURN_PER_HEIGHT = Math.PI * 2
 
 export type OrbitRequest = {
   position: Vector3

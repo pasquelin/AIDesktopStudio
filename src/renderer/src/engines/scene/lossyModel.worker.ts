@@ -1,4 +1,5 @@
 /// <reference lib="webworker" />
+import { localizedError } from '@shared/localizedError'
 import { SimplifyModifier } from 'three/addons/modifiers/SimplifyModifier.js'
 import { messageOf } from '@shared/guards'
 import {
@@ -29,7 +30,7 @@ self.addEventListener('message', (event: MessageEvent<LossyModelRequest>) => {
       )
       const answer = buffersOfGeometry(reduced, false)
       reduced.dispose()
-      if (!answer) throw new Error('simplified positions are not floats')
+      if (!answer) throw localizedError('simplifiedPositionsInvalid')
       geometries.push(answer)
     }
     geometry.dispose()

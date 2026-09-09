@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { MAX_LOG_MESSAGE, type LogScope } from '@shared/ipc'
 import { bridgeWatchingLogs } from './fakeBridge'
@@ -185,7 +186,7 @@ describe('reportRenderFailure', () => {
 
     reportRenderFailure(new Error('boom'), undefined)
 
-    expect(bridge.entries()[0]?.message).toBe('an unnamed component: boom')
+    expect(bridge.entries()[0]?.message).toBe(`${localizedError('unnamedComponent').message}: boom`)
   })
 
   // A component that throws on render throws again on every re-render of its parent, and the

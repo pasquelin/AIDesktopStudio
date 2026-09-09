@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { INFLUENCES, type SkinRequest } from './skinMessage'
 import { type SkinBinding, vertexCountOf } from './skinVertices'
 import { SKIN_VERTICES_WASM } from './skinVerticesWasmBinary'
@@ -29,7 +30,7 @@ export async function loadSkinVerticesWasm(): Promise<(request: SkinRequest) => 
   return createSkinVerticesWasm(binary)
 }
 
-export async function createSkinVerticesWasm(
+async function createSkinVerticesWasm(
   bytes: BufferSource,
 ): Promise<(request: SkinRequest) => WasmSkinBinding> {
   const module = await WebAssembly.compile(bytes)
@@ -39,7 +40,7 @@ export async function createSkinVerticesWasm(
 function kernelOf(instance: WebAssembly.Instance): SkinExports {
   const exports = instance.exports
   if (!(exports.memory instanceof WebAssembly.Memory) || typeof exports.skinRange !== 'function') {
-    throw new Error('Invalid skinning WebAssembly exports')
+    throw localizedError('skinningExportsInvalid')
   }
   const skinRange = exports.skinRange
   return {
@@ -53,7 +54,7 @@ function kernelOf(instance: WebAssembly.Instance): SkinExports {
 function bindRequest(kernel: SkinExports, request: SkinRequest): WasmSkinBinding {
   const vertices = vertexCountOf(request)
   const bones = Math.floor(request.segments.length / 6)
-  if (bones === 0 || bones > 4096) throw new Error('Unsupported WebAssembly bone count')
+  if (bones === 0 || bones > 4096) throw localizedError('skinningBoneCountUnsupported')
   const positions = DATA_START
   const segments = align(positions + request.position.byteLength, 4)
   const regions = segments + request.segments.byteLength

@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { mdiFolderOpenOutline } from '@mdi/js'
 import { useCallback, useEffect, useMemo, useState, type DragEvent } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -120,7 +121,7 @@ export function Explorer() {
     if (node.kind === 'folder') return toggle(node.id)
 
     if ((await openProjectFile(node.path)) === 'missing') {
-      reportFailure('explorer.open', nameOf(node.path), new Error('not there'))
+      reportFailure('explorer.open', nameOf(node.path), localizedError('fileMissing'))
     }
   }
 

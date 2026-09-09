@@ -30,7 +30,7 @@ vi.mock('pixi.js', async () => {
  * at all. A guard added to `apply` then silently stopped a freshly opened document from ever
  * building a texture, and nothing caught it.
  */
-import type { Pair, Placed } from './canvasEngineState-fixtures'
+import type { Placed } from './canvasEngineState-fixtures'
 import { EXTRACTED, gpu } from './canvasEngineState-fixtures'
 
 const { BLEND_BY_MODE, CanvasEngine } = await import('./CanvasEngine')
@@ -58,6 +58,7 @@ type Harness = {
   /** Every selection the engine carved out, in the order it published them. */
   selections: CanvasSelection[]
   smartPrompts: ({ point: Point } | { box: Rect })[]
+  smartCommentPrompts: ({ point: Point } | { box: Rect })[]
   /** Every caption the hand asked for: a layer to edit, or a box to open a fresh one in. */
   captions: ({ layerId: string } | { at: Point; box: Size | null })[]
   /** Every pull of a caption box's grip: the box it reached, and where its corner now sits. */
@@ -81,6 +82,8 @@ type Harness = {
   picks: number[]
   comments: { at: Point; outline?: readonly Point[] }[]
 }
+
+const smartCommentPrompts: Harness['smartCommentPrompts'] = []
 
 /**
  * A mounted engine with the brush armed. Explicit since the engine opens on the pointer, which
@@ -116,6 +119,7 @@ async function mounted(
       onViewport: viewport => viewports.push(viewport),
       onSelection: selection => selections.push(selection),
       onSmartSelect: prompt => smartPrompts.push(prompt),
+      onSmartComment: prompt => smartCommentPrompts.push(prompt),
       onComment: (at, outline) => comments.push({ at, ...(outline ? { outline } : {}) }),
       onText: asked => captions.push(asked),
       onTextBox: (layerId, box, at) => boxes.push({ layerId, box, at }),
@@ -148,6 +152,7 @@ async function mounted(
     viewports,
     selections,
     smartPrompts,
+    smartCommentPrompts,
     captions,
     boxes,
     shapes,
@@ -161,7 +166,6 @@ async function mounted(
     picks,
     comments,
   }
-
   await finishMount(harness, state, tool)
   return harness
 }
@@ -206,14 +210,18 @@ function doubleClick(host: HTMLElement, x: number, y: number): void {
 }
 
 /**
- * What the overlay put on screen, in order: the rectangles it filled — the grips — and the
- * circles it traced — the brush ring. The overlay paints only when its canvas hands out a 2D
- * context, and `testSetup` denies one to the whole renderer, so lending it a recorder for the
- * length of one test is the only outlet this chrome has.
+ * What the overlay put on screen, in order: the rectangles it filled — the grips — the circles
+ * it traced — the brush ring — and the corners its dashed outlines pass through. The overlay paints
+ * only when its canvas hands out a 2D context, and `testSetup` denies one to the whole renderer,
+ * so lending it a recorder for the length of one test is the only outlet this chrome has.
  */
-function overlayRecorder(): { fills: number[][]; rings: number[][] } {
+function overlayRecorder(): { fills: number[][]; rings: number[][]; corners: number[][] } {
   const fills: number[][] = []
   const rings: number[][] = []
+  const corners: number[][] = []
+  const corner = (x: number, y: number): void => {
+    corners.push([x, y])
+  }
   const ignore = (): void => {}
   const context = {
     save: ignore,
@@ -221,8 +229,8 @@ function overlayRecorder(): { fills: number[][]; rings: number[][] } {
     setTransform: ignore,
     clearRect: ignore,
     beginPath: ignore,
-    moveTo: ignore,
-    lineTo: ignore,
+    moveTo: corner,
+    lineTo: corner,
     stroke: ignore,
     strokeRect: ignore,
     fillText: ignore,
@@ -250,7 +258,7 @@ function overlayRecorder(): { fills: number[][]; rings: number[][] } {
     HTMLCanvasElement.prototype.getContext = previous
   })
 
-  return { fills, rings }
+  return { fills, rings, corners }
 }
 
 /** How many tree mutations happen from here on, read when the assertion needs it. */
@@ -297,6 +305,7 @@ afterEach(() => {
 })
 
 beforeEach(() => {
+  smartCommentPrompts.length = 0
   gpu.renders = 0
   gpu.masked = 0
   gpu.texturesCreated = 0
@@ -325,6 +334,7 @@ function silentOptions(): ConstructorParameters<typeof CanvasEngine>[0] {
     onViewport: nothing,
     onSelection: nothing,
     onSmartSelect: nothing,
+    onSmartComment: nothing,
     onComment: nothing,
     onCropFrame: nothing,
     onHost: nothing,
@@ -355,41 +365,21 @@ const cursorOn = (host: HTMLElement): string => {
   return only ? only.style.cursor : `expected one paintable canvas, found ${pixi.length}`
 }
 
-function cursorOf(host: HTMLElement): string {
-  return host.querySelector('canvas')?.style.cursor ?? ''
-}
-
-function wheel(host: HTMLElement, init: WheelEventInit): void {
-  host.dispatchEvent(new WheelEvent('wheel', { cancelable: true, ...init }))
-}
-
-function key(type: 'keydown' | 'keyup', init: KeyboardEventInit): void {
-  window.dispatchEvent(new KeyboardEvent(type, init))
-}
-
 export {
   BLEND_BY_MODE,
   CanvasEngine,
   canvasGpu,
-  cursorOf,
   cursorOn,
   doubleClick,
   drag,
-  EXTRACTED,
   extractedBytes,
-  FALLBACK_COLORS,
   fallbackColors,
-  firstPaintable,
   flushMicrotasks,
-  gpu,
   groupContainer,
-  key,
   mounted,
-  mountedEngines,
   mountedWithoutFace,
   mutationsCounted,
   nextFrame,
-  OVERLAY_TOKENS,
   overlayRecorder,
   overlayTokens,
   PARAGRAPH,
@@ -399,6 +389,5 @@ export {
   silentOptions,
   stacked,
   VIEW_1_1,
-  wheel,
 }
-export type { Harness, Pair, Placed }
+export type { Placed }

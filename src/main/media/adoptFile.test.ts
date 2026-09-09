@@ -91,37 +91,37 @@ describe('adoptFile', () => {
   })
 
   it('adopts an FBX in the animations folder as a motion', async () => {
-    await put('Modelling/Animations/Walking.fbx', new Uint8Array([0x46, 0x42, 0x58]))
+    await put('Animations/Walking.fbx', new Uint8Array([0x46, 0x42, 0x58]))
 
-    expect(await adoptFile('Modelling/Animations/Walking.fbx', deps())).toMatchObject({
+    expect(await adoptFile('Animations/Walking.fbx', deps())).toMatchObject({
       name: 'Walking',
       type: 'animation',
-      path: 'Modelling/Animations/Walking.fbx',
+      path: 'Animations/Walking.fbx',
     })
   })
 
   it('adopts an FBX in the models folder as a mesh', async () => {
-    await put('Modelling/Models/prop.fbx', new Uint8Array([0x46, 0x42, 0x58]))
+    await put('Models/prop.fbx', new Uint8Array([0x46, 0x42, 0x58]))
 
-    expect(await adoptFile('Modelling/Models/prop.fbx', deps())).toMatchObject({
+    expect(await adoptFile('Models/prop.fbx', deps())).toMatchObject({
       type: 'mesh',
-      path: 'Modelling/Models/prop.fbx',
+      path: 'Models/prop.fbx',
     })
   })
 
   it('retargets a row whose folder now says it is a motion', async () => {
-    await put('Modelling/Animations/Walking.fbx', new Uint8Array([0x46, 0x42, 0x58]))
+    await put('Animations/Walking.fbx', new Uint8Array([0x46, 0x42, 0x58]))
     await catalog.add({
       id: 'asset-1',
       name: 'Walking',
       type: 'mesh',
       location: 'local',
-      path: 'Modelling/Animations/Walking.fbx',
+      path: 'Animations/Walking.fbx',
       tags: [],
       createdAt: '2026-09-06T00:00:00.000Z',
     })
 
-    expect(await adoptFile('Modelling/Animations/Walking.fbx', deps())).toMatchObject({
+    expect(await adoptFile('Animations/Walking.fbx', deps())).toMatchObject({
       id: 'asset-1',
       type: 'animation',
     })

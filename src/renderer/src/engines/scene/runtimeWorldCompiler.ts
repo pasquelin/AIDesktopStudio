@@ -16,7 +16,7 @@ import type { RuntimeRenderArtifact } from './grouping'
 import type { SceneNode, SceneState } from './sceneState'
 import type { RuntimeWorldPatch } from './runtimeWorldPatch'
 import type { RuntimeWorld } from './runtimeWorldTypes'
-export type { RuntimeOptimization, RuntimeWorld } from './runtimeWorldTypes'
+export type { RuntimeWorld } from './runtimeWorldTypes'
 export {
   runtimeWorldPatch,
   runtimeWorldPatchIsEmpty,
@@ -24,9 +24,7 @@ export {
   type RuntimeWorldPatch,
 } from './runtimeWorldPatch'
 
-export type OptimizationSignature = string
-
-export type RuntimeCompilationReport = {
+type RuntimeCompilationReport = {
   readonly compiledNodes: number
   readonly reusedNodes: number
   readonly removedNodes: number
@@ -391,31 +389,10 @@ function reusedArtifacts(
   let count = 0
   const held = compiled.map(artifact => {
     const forced = artifact.sourceIds.some(id => invalidatedIds.has(id))
-    const cached = invalidatedIds.size > 0 && forced ? undefined : previous.get(artifact.signature)
+    const cached = forced ? undefined : previous.get(artifact.signature)
     if (cached) return cached
     count += 1
     return artifact
   })
   return { held, compiled: count }
 }
-
-export const compileRuntimeWorld = (
-  compiler: RuntimeWorldCompiler,
-  world: SceneState,
-): RuntimeWorld => compiler.compileRuntimeWorld(world)
-
-export const compileRuntimeRegion = (
-  compiler: RuntimeWorldCompiler,
-  patch: RuntimeWorldPatch,
-): RuntimeWorld | null => compiler.compileRuntimeRegion(patch)
-
-export const invalidateOptimization = (
-  compiler: RuntimeWorldCompiler,
-  entityIds: readonly string[],
-): void => compiler.invalidateOptimization(entityIds)
-
-export const getOptimizationReport = (compiler: RuntimeWorldCompiler): RuntimeCompilationReport =>
-  compiler.getOptimizationReport()
-
-export const clearOptimizationCache = (compiler: RuntimeWorldCompiler): void =>
-  compiler.clearOptimizationCache()

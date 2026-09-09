@@ -121,14 +121,11 @@ function setDisplayRatio(value: number): void {
 
 export {
   clearColor,
-  cleared,
   contextLost,
-  displayRatio,
   disposed,
   HOST_HEIGHT,
   HOST_WIDTH,
   INSET_CADENCE_MS,
-  pixelRatio,
   queryBegun,
   queryEnded,
   rendered,

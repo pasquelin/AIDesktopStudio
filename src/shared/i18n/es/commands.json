@@ -1,0 +1,549 @@
+{
+  "commands": {
+    "scenePlay": {
+      "title": "Reproducir la escena",
+      "help": "Inicia o reanuda la escena en la ventana de juego."
+    },
+    "appNew": {
+      "title": "Nuevo…",
+      "help": "Abre la ventana que crea un proyecto o un documento, desde cualquier pantalla"
+    },
+    "projectNew": {
+      "title": "Nuevo proyecto",
+      "help": "Crea un proyecto vacío y lo abre. Un proyecto es la carpeta que contiene todo lo que fabricas: las imágenes, los vídeos, los sonidos y la forma en que están ordenados."
+    },
+    "projectOpen": {
+      "title": "Abrir un proyecto",
+      "help": "Elige un proyecto que ya existe en tu disco y lo abre en lugar del actual. El proyecto abierto se guarda sobre la marcha, así que no hay nada que guardar antes."
+    },
+    "documentSaveAs": {
+      "title": "Guardar como",
+      "help": "Escribe una copia del recurso junto al original y continúa con ella. El recurso que estaba abierto se queda tal como estaba en el último guardado."
+    },
+    "documentSave": {
+      "title": "Guardar el documento",
+      "help": "Escribe en el proyecto el documento que está delante. Mientras no se guarda, vive en la ventana: la pestaña lleva un asterisco mientras lo que hay en pantalla no sea lo que hay en el disco."
+    },
+    "documentClose": {
+      "title": "Cerrar la pestaña",
+      "help": "Cierra el documento que está delante. Si contiene cambios sin guardar, el estudio pregunta qué hacer con ellos. Si no queda ninguna pestaña, la ventana se cierra."
+    },
+    "layoutReset": {
+      "title": "Restablecer la disposición",
+      "help": "Devuelve los paneles a donde estaban al principio. Útil cuando se han arrastrado las ventanas por todas partes y nada está donde esperas. Tu trabajo no se toca."
+    },
+    "appSettings": {
+      "title": "Ajustes",
+      "help": "Abre la ventana de ajustes, esta misma: el idioma, los colores, la cuenta, los atajos y todo lo demás que se puede ajustar."
+    },
+    "appAssistant": {
+      "title": "Asistente",
+      "help": "Abre la ventana donde dices lo que quieres hacer, con la voz o con el teclado. El asistente ejecuta él mismo lo que entiende, y te pide permiso antes de todo lo que cuesta."
+    },
+    "appDictate": {
+      "title": "Dictar",
+      "help": "Escucha el micrófono y escribe lo que dices en el punto del cursor, en el campo en el que estás. Se mantiene pulsada de forma predeterminada: hablas, sueltas y el texto se escribe."
+    },
+    "windowFullScreen": {
+      "title": "Pantalla completa",
+      "help": "Da a la ventana toda la pantalla, sin barra ni borde, para trabajar sin nada alrededor."
+    },
+    "spacesMoveLeft": {
+      "title": "Mover el espacio a la izquierda",
+      "help": "Desplaza un lugar a la izquierda el espacio que tiene el foco, en la barra superior. El orden que eliges se conserva de una sesión a otra."
+    },
+    "spacesMoveRight": {
+      "title": "Mover el espacio a la derecha",
+      "help": "Desplaza un lugar a la derecha el espacio que tiene el foco, en la barra superior. El orden que eliges se conserva de una sesión a otra."
+    },
+    "explorerNewFolder": {
+      "title": "Nueva carpeta",
+      "help": "Crea una carpeta vacía dentro de la que muestra el explorador, y abre su nombre para escribirlo. La carpeta es tuya, igual que todo lo que guardas dentro."
+    },
+    "explorerDuplicate": {
+      "title": "Duplicar",
+      "help": "Pone una copia de cada elemento elegido junto al original, con el primer nombre libre. Una carpeta se copia con todo lo que contiene."
+    },
+    "explorerCut": {
+      "title": "Cortar",
+      "help": "Retiene la selección para moverla en el próximo pegado. Nada se mueve hasta que pegas, y las filas retenidas se muestran atenuadas."
+    },
+    "explorerCopy": {
+      "title": "Copiar",
+      "help": "Retiene la selección para copiarla en el próximo pegado. El original se queda donde está."
+    },
+    "explorerPaste": {
+      "title": "Pegar",
+      "help": "Deja en la carpeta que hay en pantalla lo que retiene el portapapeles. Un elemento cuyo nombre ya está ocupado se rechaza, y el resto pasa."
+    },
+    "explorerTrash": {
+      "title": "Mover a la papelera",
+      "help": "Envía la selección a la papelera del sistema, de donde puedes recuperarla. Es el único gesto del explorador que el estudio no sabe deshacer."
+    },
+    "explorerUndo": {
+      "title": "Deshacer el último gesto sobre los archivos",
+      "help": "Devuelve a su sitio el último lote movido, renombrado, duplicado o creado. La pila pertenece al proyecto y no a una ventana, y el gesto de la papelera nunca entra en ella."
+    },
+    "explorerRedo": {
+      "title": "Rehacer el gesto sobre los archivos",
+      "help": "Rehace el lote de archivos que se acaba de deshacer, exactamente igual."
+    },
+    "sceneSelect": {
+      "title": "Seleccionar",
+      "help": "La herramienta básica: hacer clic en un objeto de la escena para elegirlo, sin hacerle nada. Es a la que vuelves entre dos manipulaciones."
+    },
+    "sceneTranslate": {
+      "title": "Mover",
+      "help": "Arrastra el objeto elegido de un sitio a otro, tirando de las flechas de color — una por dirección."
+    },
+    "sceneRotate": {
+      "title": "Rotar",
+      "help": "Hace girar el objeto elegido sobre sí mismo, tirando de los anillos de color — uno por eje."
+    },
+    "sceneScale": {
+      "title": "Escalar",
+      "help": "Agranda o reduce el objeto elegido, tirando de sus asas. Mantener Mayús conserva sus proporciones."
+    },
+    "sceneFrame": {
+      "title": "Encuadrar la selección",
+      "help": "Acerca la cámara lo suficiente para que el objeto elegido llene la vista. Práctico cuando te has perdido o cuando un objeto es diminuto."
+    },
+    "sceneFrameFollow": {
+      "title": "Seguir la selección",
+      "help": "Encuadra la selección y la mantiene a la vista: lo que se mueve lleva la cámara consigo, con el ángulo y la distancia ya elegidos. Llamado de nuevo, la suelta."
+    },
+    "sceneIsolate": {
+      "title": "Aislar la selección",
+      "help": "Deja en pantalla solo los objetos elegidos, mientras trabajas en ellos. Nada se modifica: pulsarlo otra vez devuelve la escena tal como estaba, incluidos los objetos que habías ocultado tú mismo."
+    },
+    "sceneHide": {
+      "title": "Ocultar la selección",
+      "help": "Retira los objetos elegidos de la vista sin tocar el documento. «Mostrar todo» los hace volver."
+    },
+    "sceneShowAll": {
+      "title": "Mostrar todo",
+      "help": "Anula las ocultaciones y el aislamiento hechos desde el visor. Los objetos que el propio documento declara ocultos siguen ocultos."
+    },
+    "sceneSnap": {
+      "title": "Todos los magnetismos",
+      "help": "Enciende o apaga de una vez los cuatro magnetismos — superficie, cuadrícula, ángulo, escala. Una segunda pulsación devuelve exactamente los que estaban encendidos. La barra de la parte superior del visor los ajusta uno a uno."
+    },
+    "sceneSpace": {
+      "title": "Referencia local",
+      "help": "Alinea las asas con la orientación del propio objeto en lugar de la del mundo. En un objeto girado, es lo que permite moverlo «hacia su frente» en lugar de hacia el norte."
+    },
+    "sceneProjection": {
+      "title": "Proyección",
+      "help": "Alterna entre la perspectiva, donde las líneas de fuga convergen, y la proyección ortográfica, donde las paralelas siguen siendo paralelas. Es lo que permite juzgar una alineación a ojo."
+    },
+    "sceneViewFront": {
+      "title": "Ver de frente",
+      "help": "Coloca la cámara delante de la escena, alineada con el eje. La vista de referencia para juzgar una silueta."
+    },
+    "sceneViewBack": {
+      "title": "Ver desde atrás",
+      "help": "Coloca la cámara detrás de la escena, sobre el mismo eje: lo que la cara oculta."
+    },
+    "sceneViewRight": {
+      "title": "Ver desde la derecha",
+      "help": "Coloca la cámara en el lado derecho, alineada con el eje. Aquello desde lo que se juzga una profundidad."
+    },
+    "sceneViewLeft": {
+      "title": "Ver desde la izquierda",
+      "help": "Coloca la cámara en el lado izquierdo, sobre el mismo eje que la vista de la derecha."
+    },
+    "sceneViewTop": {
+      "title": "Ver desde arriba",
+      "help": "Coloca la cámara encima de la escena, mirando en vertical. Aquello desde lo que se disponen los objetos en el suelo."
+    },
+    "sceneViewBottom": {
+      "title": "Ver desde abajo",
+      "help": "Coloca la cámara debajo de la escena, mirando en vertical, en el sentido contrario a la vista de arriba."
+    },
+    "sceneViewCamera": {
+      "title": "Ver por la cámara",
+      "help": "Hace pasar la vista por la cámara elegida, y sale de ella en la segunda llamada. Sin cámara elegida, toma la primera de la escena."
+    },
+    "sceneQuad": {
+      "title": "Cuatro vistas",
+      "help": "Divide el visor en cuatro — arriba, frente y perfil alrededor de la vista en curso. Cada cuarto orbita bajo el puntero; la vista en curso conserva los gizmos."
+    },
+    "sceneQuadEdges": {
+      "title": "Aristas en quads",
+      "help": "Redibuja la malla alámbrica sin las diagonales que ha añadido la triangulación. Un GLB nunca contiene quads: es una reconstrucción por ángulo, fiel salvo en superficies muy curvadas."
+    },
+    "sceneDisplay": {
+      "title": "Modo de visualización",
+      "help": "Recorre lo que dibuja el visor: las superficies, sus aristas solas, o ambas juntas. El menú del botón permite elegir directamente."
+    },
+    "sceneCapture": {
+      "title": "Capturar la vista",
+      "help": "Guarda una imagen de la vista 3D en las imágenes del proyecto — sin la cuadrícula, las asas ni las trayectorias. El menú ofrece resoluciones mayores que la del propio panel."
+    },
+    "sceneAdd": {
+      "title": "Añadir",
+      "help": "Abre la lista de lo que puede recibir una escena: mallas, luces y objetos. Un clic derecho en el vacío abre la misma lista."
+    },
+    "sceneAddToSheet": {
+      "title": "Añadir a la banda de animación",
+      "help": "Pone los objetos seleccionados en la banda, donde se colocan las claves. La banda solo muestra lo que se pone en ella, de modo que una escena de miles de objetos sigue siendo legible."
+    },
+    "sceneRemoveFromSheet": {
+      "title": "Quitar de la banda de animación",
+      "help": "Quita la fila de la banda. Las claves ya colocadas se quedan, y un objeto conserva su fila mientras tenga alguna."
+    },
+    "sceneGroup": {
+      "title": "Agrupar",
+      "help": "Ordena los objetos seleccionados bajo un mismo grupo. Mover el grupo los mueve a todos, y ⌘Z deshace la agrupación."
+    },
+    "sceneDuplicate": {
+      "title": "Duplicar",
+      "help": "Pone una copia de la selección bajo el mismo padre y exactamente en el mismo sitio, y luego la selecciona. Un grupo se duplica entero, con todo lo que cuelga de él."
+    },
+    "sceneOptimizeSelection": {
+      "title": "Optimizar la selección…",
+      "help": "Mide la selección y presenta una representación SAFE en tiempo de ejecución antes de cambiar sus ajustes de optimización."
+    },
+    "sceneWorldPerformance": {
+      "title": "Rendimiento del mundo…",
+      "help": "Mide toda la escena y presenta las posibilidades de optimización SAFE sin modificar el mundo de autoría."
+    },
+    "sceneExportGame": {
+      "title": "Exportar el juego…",
+      "help": "Construye un juego autónomo a partir de una copia de tiempo de ejecución optimizada, sin tocar las escenas de edición."
+    },
+    "sceneCopy": {
+      "title": "Copiar",
+      "help": "Retiene lo seleccionado para poder pegarlo, aquí o en otra escena. Este es el portapapeles del estudio: no toca el del sistema."
+    },
+    "sceneCut": {
+      "title": "Cortar",
+      "help": "Retiene lo seleccionado y lo saca de la escena. ⌘Z lo devuelve."
+    },
+    "scenePaste": {
+      "title": "Pegar",
+      "help": "Pone lo copiado en la escena que está delante, y lo selecciona. Pegar dos veces crea dos copias distintas."
+    },
+    "sceneDelete": {
+      "title": "Eliminar",
+      "help": "Retira de la escena todo lo seleccionado. Nada se pierde para siempre: ⌘Z lo devuelve."
+    },
+    "undo": {
+      "title": "Deshacer",
+      "help": "Deshace lo último que has hecho en este documento. Cada documento tiene su propia pila: deshacer actúa sobre la pestaña que está delante, no sobre las demás."
+    },
+    "redo": {
+      "title": "Rehacer",
+      "help": "Vuelve a hacer lo que acabas de deshacer. Útil cuando se deshace una vez de más."
+    },
+    "sequencePlayPause": {
+      "title": "Reproducir / Pausar",
+      "help": "Inicia la reproducción del montaje, o la detiene donde está. Al volver a empezar, continúa desde donde se dejó."
+    },
+    "sequenceExport": {
+      "title": "Exportar el vídeo…",
+      "help": "Escribe el montaje en un archivo de vídeo, fotograma a fotograma, escenas 3D incluidas. El sonido todavía no está."
+    },
+    "sequenceExportCut": {
+      "title": "Exportar el montaje (OTIO)…",
+      "help": "Escribe el montaje en sí en un archivo OpenTimelineIO, que otras aplicaciones de edición abren — pistas, clips, puntos de entrada, velocidades y enlaces a los medios. Los fundidos, las ganancias y los enlaces imagen/sonido también viajan en él, pero solo AI Desktop Studio los vuelve a leer."
+    },
+    "sequenceExportEdl": {
+      "title": "Exportar la lista de montaje (EDL)…",
+      "help": "Escribe los cortes y sus códigos de tiempo en CMX3600, que toda sala de posproducción lee. El formato admite una pista de imagen y dos de sonido, y nada de los fundidos, las ganancias ni las velocidades."
+    },
+    "sequenceExportFcpxml": {
+      "title": "Exportar el montaje (FCPXML)…",
+      "help": "Escribe el montaje en el formato que Final Cut lee y que Premiere y Resolve importan. Las pistas sobreviven, cada una en su carril, y el tamaño de fotograma también; los fundidos, las ganancias y las velocidades se quedan aquí."
+    },
+    "sequenceExportStems": {
+      "title": "Exportar el sonido por pista (WAV)…",
+      "help": "Escribe un WAV por cada pista audible, mezclado tal como lo reproduce el montaje — las posiciones, los recortes, los fundidos, las ganancias y las velocidades quedan grabados en las muestras. Una pista silenciada no se escribe."
+    },
+    "sequenceExportBundle": {
+      "title": "Exportar el montaje con sus medios (OTIOZ)…",
+      "help": "Escribe el mismo montaje con los medios que usa dentro del archivo. Este es el que hay que entregar a otra persona, o abrir en DaVinci Resolve, que entonces encuentra los brutos por su cuenta en lugar de pedirlos uno a uno."
+    },
+    "montageImport": {
+      "title": "Importar un montaje con sus medios (OTIOZ)…",
+      "help": "Abre un montaje escrito por otra aplicación, con sus brutos. Los medios se copian en el proyecto y entran en el catálogo, después el montaje se abre enlazado a ellos. Lo que el archivo abierto no aporta se indica al abrirlo, y solo ahí parte de su valor predeterminado."
+    },
+    "sequenceMirror": {
+      "title": "Ventana de retorno",
+      "help": "Abre el montaje en una ventana aparte, para ponerla en una segunda pantalla. Sigue al estudio fotograma a fotograma, sin el sonido, y se cierra como cualquier ventana."
+    },
+    "sequenceSplit": {
+      "title": "Dividir el clip",
+      "help": "Corta el clip en dos donde está el cabezal, para poder tratar cada mitad por separado."
+    },
+    "sequenceDelete": {
+      "title": "Eliminar el clip",
+      "help": "Retira del montaje el clip elegido. El archivo original permanece en tus recursos."
+    },
+    "sequenceUnlink": {
+      "title": "Desenlazar imagen y sonido",
+      "help": "Separa los dos clips de una misma toma. Mientras están enlazados, mover, cortar o eliminar uno hace lo mismo con el otro."
+    },
+    "sequenceZoomIn": {
+      "title": "Acercar",
+      "help": "Despliega el montaje para ver el detalle: los clips se ensanchan y es más fácil apuntar a ellos."
+    },
+    "sequenceZoomOut": {
+      "title": "Alejar",
+      "help": "Junta el montaje para ver más de una vez, a costa del detalle."
+    },
+    "sequenceFit": {
+      "title": "Ajustar a la vista",
+      "help": "Ajusta el zoom para que el montaje entero quepa en la pantalla, de un extremo al otro."
+    },
+    "sequenceStart": {
+      "title": "Ir al principio",
+      "help": "Devuelve el cabezal justo al principio del montaje, sin mover nada más."
+    },
+    "sequenceEnd": {
+      "title": "Ir al final",
+      "help": "Envía el cabezal justo al final del montaje, más allá del último clip."
+    },
+    "canvasZoomIn": {
+      "title": "Acercar",
+      "help": "Amplía la vista un paso, alrededor del centro de lo que se ve. La imagen no se toca, solo la forma de mirarla."
+    },
+    "canvasZoomOut": {
+      "title": "Alejar",
+      "help": "Reduce la vista un paso, para volver a abarcar la imagen entera."
+    },
+    "canvasZoomFit": {
+      "title": "Ajustar a la ventana",
+      "help": "Encuadra la imagen entera en el panel, con un margen, y nunca la amplía más allá de su tamaño real."
+    },
+    "canvasZoomActual": {
+      "title": "Tamaño real",
+      "help": "Un píxel de la imagen por píxel de pantalla: la única escala en la que se juzga la nitidez."
+    },
+    "canvasRulers": {
+      "title": "Reglas",
+      "help": "Muestra u oculta las dos reglas graduadas, arriba y a la izquierda. Las guías se sacan de ellas."
+    },
+    "canvasGuides": {
+      "title": "Guías",
+      "help": "Muestra u oculta las guías puestas sobre la imagen. Ocultarlas no las elimina."
+    },
+    "canvasGrid": {
+      "title": "Cuadrícula de píxeles",
+      "help": "Muestra u oculta la cuadrícula de los píxeles propios de la obra. Solo en un documento en modo pixel art."
+    },
+    "canvasClearGuides": {
+      "title": "Borrar las guías",
+      "help": "Retira todas las guías de la imagen. Se puede deshacer, como cualquier otra modificación."
+    },
+    "canvasSnap": {
+      "title": "Magnetismo",
+      "help": "Hace que lo que se arrastra se pegue a las guías, a los bordes de la imagen y a su centro, con unos pocos píxeles de margen."
+    },
+    "canvasSelectAll": {
+      "title": "Seleccionar todo",
+      "help": "Selecciona el documento entero, algo que la selección del sistema no sabe hacer sobre una imagen."
+    },
+    "canvasDeselect": {
+      "title": "Deseleccionar",
+      "help": "Abandona la región seleccionada, para que el pincel vuelva a alcanzar toda la capa."
+    },
+    "canvasCropApply": {
+      "title": "Aplicar el recorte",
+      "help": "Recorta el documento al marco colocado. ⌘Z devuelve el marco, no los píxeles."
+    },
+    "canvasCropCancel": {
+      "title": "Abandonar el recorte",
+      "help": "Retira el marco de recorte sin recortar absolutamente nada."
+    },
+    "canvasMaskFromSelection": {
+      "title": "Hacer una máscara de la selección",
+      "help": "Oculta la capa activa fuera de la región seleccionada."
+    },
+    "canvasRegenerate": {
+      "title": "Regenerar la zona",
+      "help": "Pide al modelo que vuelva a pintar la región enmascarada de la capa activa."
+    },
+    "canvasCutout": {
+      "title": "Quitar el fondo",
+      "help": "Elimina el fondo de la imagen acoplada con el modelo predeterminado."
+    },
+    "canvasEnlarge": {
+      "title": "Ampliar",
+      "help": "Aumenta la resolución de la imagen acoplada con el modelo predeterminado."
+    },
+    "canvasVectorize": {
+      "title": "Vectorizar",
+      "help": "Convierte la imagen acoplada en trazados con el modelo predeterminado."
+    },
+    "canvasExtend": {
+      "title": "Extender",
+      "help": "Pide al modelo que pinte más allá de los bordes de la imagen acoplada."
+    },
+    "canvasMergeDown": {
+      "title": "Combinar hacia abajo",
+      "help": "Une la capa activa y la que está justo debajo en una sola, que conserva el nombre de la de abajo."
+    },
+    "canvasFlatten": {
+      "title": "Acoplar la imagen",
+      "help": "Reduce toda la pila a una sola capa: las capas ocultas se pierden, no se combinan.",
+      "layerName": "Fondo"
+    },
+    "canvasFlipHorizontal": {
+      "title": "Voltear horizontalmente",
+      "help": "Refleja todo el documento de izquierda a derecha, capas incluidas."
+    },
+    "canvasFlipVertical": {
+      "title": "Voltear verticalmente",
+      "help": "Refleja todo el documento de arriba abajo, capas incluidas."
+    },
+    "canvasRotateCw": {
+      "title": "Rotar en sentido horario",
+      "help": "Gira el documento un cuarto de vuelta a la derecha: el marco gira con él."
+    },
+    "canvasRotateCcw": {
+      "title": "Rotar en sentido antihorario",
+      "help": "Gira el documento un cuarto de vuelta a la izquierda: el marco gira con él."
+    },
+    "canvasExport": {
+      "title": "Exportar la imagen",
+      "help": "Escribe el documento acoplado en el disco, como un PNG."
+    },
+    "canvasExportLayered": {
+      "title": "Exportar las capas (PSD)…",
+      "help": "Escribe el documento con sus capas, como un archivo de Photoshop. Los grupos se acoplan: sus capas llegan una al lado de la otra."
+    },
+    "skyboxView": {
+      "title": "Cambiar de vista",
+      "help": "Recorre las cuatro formas de mirar el cielo: inmersiva, panorámica, cruz, caras."
+    },
+    "skyboxProbes": {
+      "title": "Sondas de luz",
+      "help": "Muestra u oculta las esferas testigo. Un cielo se juzga por lo que ilumina, no por su propia imagen."
+    },
+    "canvasToolMove": {
+      "title": "Herramienta Mover",
+      "help": "Activa el puntero: al arrastrar se mueve la capa activa, y sus tiradores la redimensionan o la giran."
+    },
+    "canvasToolHand": {
+      "title": "Herramienta Mano",
+      "help": "Activa la mano: al arrastrar se desplaza la vista sin tocar el documento. Mantener la barra espaciadora hace lo mismo sin cambiar de herramienta."
+    },
+    "canvasToolCrop": {
+      "title": "Herramienta Recortar",
+      "help": "Activa el marco de recorte. Dibuja un marco, y después ⏎ para recortar o ⎋ para abandonarlo."
+    },
+    "canvasToolSelectRectangle": {
+      "title": "Selección rectangular",
+      "help": "Activa la selección rectangular. Lo que está seleccionado limita el pincel, el borrador y el bote."
+    },
+    "canvasToolSelectEllipse": {
+      "title": "Selección elíptica",
+      "help": "Activa la selección elíptica: al arrastrar, la elipse se inscribe en el rectángulo recorrido, y Mayús la convierte en círculo."
+    },
+    "canvasToolSelectLasso": {
+      "title": "Lazo",
+      "help": "Activa el lazo: la selección sigue la mano, a mano alzada."
+    },
+    "canvasToolSmartSelect": {
+      "title": "Clic — Selección inteligente",
+      "help": "Activa la selección de objetos con un clic, con el modelo de selección local."
+    },
+    "canvasToolSmartSelectBox": {
+      "title": "Rectángulo — Selección inteligente",
+      "help": "Activa la selección de objetos dentro de un rectángulo aproximado, con el modelo de selección local."
+    },
+    "canvasToolShapeRectangle": {
+      "title": "Forma Rectángulo",
+      "help": "Activa el trazado de un rectángulo sobre la capa activa; Mayús lo convierte en cuadrado."
+    },
+    "canvasToolShapeLine": {
+      "title": "Forma Línea",
+      "help": "Activa el trazado de una línea. Mismo grupo que el rectángulo, de ahí su tecla con Mayús añadido."
+    },
+    "canvasToolShapeArrow": {
+      "title": "Forma Flecha",
+      "help": "Activa el trazado de una flecha, desde donde empezó el arrastre hasta donde la mano suelta."
+    },
+    "canvasToolShapeEllipse": {
+      "title": "Forma Elipse",
+      "help": "Activa el trazado de una elipse sobre la capa activa; Mayús la convierte en círculo."
+    },
+    "canvasToolShapePolygon": {
+      "title": "Forma Polígono",
+      "help": "Activa el trazado de un polígono regular, cuyo número de lados se ajusta en el inspector antes de trazar."
+    },
+    "canvasToolShapeStar": {
+      "title": "Forma Estrella",
+      "help": "Activa el trazado de una estrella, cuyo número de puntas se ajusta en el inspector antes de trazar."
+    },
+    "canvasToolBrush": {
+      "title": "Herramienta Pincel",
+      "help": "Activa el pincel, de borde suavizado. Pinta sobre la capa activa, limitado por la selección cuando la hay."
+    },
+    "canvasToolPencil": {
+      "title": "Herramienta Lápiz",
+      "help": "Activa el lápiz, de borde duro: el mismo gesto que el pincel, sin el suavizado."
+    },
+    "canvasToolText": {
+      "title": "Herramienta Texto",
+      "help": "Activa el texto: un clic coloca un rótulo, cuyas palabras se escriben en el inspector."
+    },
+    "canvasToolEraser": {
+      "title": "Herramienta Borrador",
+      "help": "Activa el borrador puntual: limpia por donde pasa la mano, limitado por la selección cuando la hay."
+    },
+    "canvasToolFill": {
+      "title": "Herramienta Bote de pintura",
+      "help": "Activa el bote: un clic rellena la capa, o la selección cuando la hay."
+    },
+    "canvasToolPicker": {
+      "title": "Herramienta Cuentagotas",
+      "help": "Activa el cuentagotas: un clic toma el color que hay bajo el puntero y se lo da al pincel."
+    },
+    "canvasBrushSmaller": {
+      "title": "Reducir el pincel",
+      "help": "Estrecha un paso de la escala el pincel, el borrador y el trazo de las formas."
+    },
+    "canvasBrushLarger": {
+      "title": "Aumentar el pincel",
+      "help": "Ensancha un paso de la escala el pincel, el borrador y el trazo de las formas."
+    },
+    "sceneSkeletons": {
+      "title": "Mostrar los esqueletos",
+      "help": "Dibuja los huesos de cada modelo con rig sobre la escena."
+    },
+    "scenePoseMode": {
+      "title": "Modo pose",
+      "help": "Alterna entre seleccionar objetos y seleccionar los huesos de un rig."
+    },
+    "sceneNavigate": {
+      "title": "Navegar",
+      "help": "Recorrer la escena como en un juego: el ratón sostiene la mirada, W A S D desplazan, E y Q suben y bajan. La rueda ajusta la velocidad. Esc devuelve el ratón."
+    },
+    "sceneNegate": {
+      "title": "Negativo",
+      "help": "Marca las formas seleccionadas como herramientas: se restan de las demás, sea cual sea el botón que se pulse después y sea cual sea el orden de los clics. Una forma marcada se muestra en rojo translúcido. Pulsar de nuevo quita la marca."
+    },
+    "sceneCarve": {
+      "title": "Perforar",
+      "help": "Resta las formas marcadas como «Negativo» — a falta de ellas, las más pequeñas — de la forma seleccionada más grande: un cubo colocado dentro de un muro abre una ventana en él. El orden de los clics no cambia nada. Las formas originales se conservan — «Separar» las devuelve."
+    },
+    "sceneWeld": {
+      "title": "Fusionar",
+      "help": "Une las formas seleccionadas en un solo sólido. Una forma marcada como «Negativo» se resta de él en lugar de sumarse. Las formas originales se conservan — «Separar» las devuelve."
+    },
+    "sceneIntersect": {
+      "title": "Conservar lo común",
+      "help": "Conserva solo la parte donde las formas seleccionadas se solapan, y desecha el resto. Una forma marcada como «Negativo» se resta de ella en lugar de conservarse. Las formas originales se conservan — «Separar» las devuelve."
+    },
+    "sceneInvertCarve": {
+      "title": "Invertir el pliegue",
+      "help": "Rehace el mismo pliegue al revés: lo que se había perforado se convierte en materia, y la materia se convierte en herramienta. Un clic, sin deshacer — para el pliegue que salió al revés."
+    },
+    "sceneSeparate": {
+      "title": "Separar",
+      "help": "Deshace un sólido y devuelve las formas de las que estaba hecho, cada una donde estaba."
+    }
+  }
+}

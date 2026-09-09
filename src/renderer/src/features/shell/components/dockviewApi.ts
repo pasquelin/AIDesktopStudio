@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import type { DocumentDescriptor } from '@shared/domain/document'
 import { fileViewOf, type FileView } from '@shared/domain/fileView'
 import type { WorkspaceId } from '@shared/domain/workspace'
@@ -73,6 +74,11 @@ export function panelIsFileView(id: string): boolean {
   return id.startsWith(FILE_VIEW_PREFIX)
 }
 
+/** The file a `file:` panel opens, read off the id for the same reason — a restored panel. */
+export function fileViewOfPanel(id: string): FileView | null {
+  return panelIsFileView(id) ? fileViewOf(id.slice(FILE_VIEW_PREFIX.length)) : null
+}
+
 // The tab ⌘W acts on, read by the router that runs the gesture and by the menu that greys its
 // row. Nothing behind the home, which covers tabs rather than replacing them.
 export function closableTabId(): string | null {
@@ -98,7 +104,7 @@ async function settleFileView(id: string): Promise<boolean> {
   // 🛑 A `false` nobody was ASKED for: the callers — leaving a project, quitting — all read it as
   // "the person said no", so a silent one stops the whole gesture with nothing on screen.
   if (!view) {
-    reportFailure('document.close', id, new Error('the view holding these edits is gone'))
+    reportFailure('document.close', id, localizedError('documentViewMissing'))
     return false
   }
   if (!bridge) return false
@@ -107,7 +113,7 @@ async function settleFileView(id: string): Promise<boolean> {
   if (choice === 'save') {
     const save = fileViewSaves.get(id)
     if (!save) {
-      reportFailure('document.save', view.title, new Error('this view has no way to save'))
+      reportFailure('document.save', view.title, localizedError('documentSaveUnavailable'))
       return false
     }
     if (!(await save())) return false
@@ -126,6 +132,14 @@ function finishFileViewClose(id: string): void {
 /** Whether any file view holds edits — what a leaving window asks before it lets go. */
 export function fileViewsHoldEdits(): boolean {
   return modifiedFileViewIds().length > 0
+}
+
+/**
+ * The save a file view registered, for the command that runs ⌘S over it. `null` where the panel
+ * is not a file view, or has not finished mounting.
+ */
+export function fileViewSave(id: string): (() => Promise<boolean>) | null {
+  return fileViewSaves.get(id) ?? null
 }
 
 export function registerFileViewSave(id: string, save: () => Promise<boolean>): () => void {

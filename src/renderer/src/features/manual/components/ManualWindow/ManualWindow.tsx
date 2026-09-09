@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { ManualChapter, ManualTarget } from '@shared/domain/manual'
+import { chaptersForLanguage, type ManualTarget } from '@shared/domain/manual'
 import { isSupportedLanguage, UNKNOWN_SYSTEM_LANGUAGE } from '@shared/i18n'
 import manual from '@shared/manual.json'
 import { foldForSearch } from '@shared/text'
@@ -33,7 +33,7 @@ export function ManualWindow() {
   useAppliedSettings()
 
   const language = isSupportedLanguage(i18n.language) ? i18n.language : UNKNOWN_SYSTEM_LANGUAGE
-  const chapters: ManualChapter[] = manual[language]
+  const chapters = chaptersForLanguage(manual, language)
 
   const [slug, setSlug] = useState(chapters[0]?.slug ?? '')
   const [query, setQuery] = useState('')

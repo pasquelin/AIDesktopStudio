@@ -1,0 +1,499 @@
+{
+  "settings": {
+    "title": "Pengaturan",
+    "sections": "Bagian pengaturan",
+    "search": "Cari pengaturan",
+    "results": "Hasil",
+    "noResult": "Tidak ada pengaturan yang cocok dengan pencarian ini.",
+    "restoreDefault": "Pulihkan nilai bawaan",
+    "restoreDefaultHint": "Mengembalikan nilai asli, yang dari sebelum perubahan apa pun",
+    "account": "Kunci API",
+    "appearance": "Penampilan",
+    "generation": "Pembuatan",
+    "media": "Medias",
+    "git": "Versi",
+    "dictation": "Dictation",
+    "input": "Perangkat",
+    "ai": "Model AI",
+    "accountDescription": "Satu kunci per layanan, dienkripsi oleh gantungan kunci.",
+    "appearanceDescription": "Tema dan kepadatan kontrol.",
+    "generationDescription": "Antrean pembuatan dan model default, per keluarga.",
+    "gitDescription": "Pelacakan versi folder proyek, oleh git. File Anda saja.",
+    "mediaDescription": "Persiapan file yang diimpor: proxy dan waveform.",
+    "dictationDescription": "Mendikte teks daripada mengetiknya. Semuanya terjadi di komputer ini: apa pun yang Anda katakan tidak dikirim ke mana pun.",
+    "inputDescription": "Cara menavigasi studio dengan gamepad, dan perangkat yang terhubung ke komputer ini.",
+    "aiDescription": "AI mana yang melayani setiap operasi. Studio di sini, Ollama di sini, atau layanan online yang Anda memiliki kunci untuknya.",
+    "gamepadNavigation": {
+      "title": "Navigasi studio dengan gamepad",
+      "help": "Memungkinkan gamepad yang terhubung untuk bergerak melalui antarmuka studio, konfirmasi dan batalkan kontrol. Tetap dimatikan sampai Anda mengaktifkannya, sehingga bermain game tidak dapat memindahkan editor di belakangnya."
+    },
+    "inputDevices": {
+      "title": "Kontrol terdeteksi",
+      "keyboard": "Keyboard",
+      "mouse": "Mouse",
+      "gamepadUnsupported": "Pengontrol ini tidak menggunakan tata letak standar: studio tidak dapat membaca tombolnya.",
+      "noGamepad": "Tidak ada gamepad yang terhubung.",
+      "gamepadSleeps": "Gamepad hanya muncul setelah salah satu tombolnya ditekan: browser tidak menampilkannya sebelumnya. Tertancap tetapi senyap, itu terlihat persis seperti tidak ada gamepad sama sekali."
+    },
+    "theme": {
+      "title": "Tema",
+      "help": "Memilih warna seluruh aplikasi. Tema gelap beristirahat mata selama sesi panjang di ruangan yang remang; tema terang membaca lebih baik di siang hari yang cerah. « Sistem » mengikuti pengaturan komputer Anda sendiri dan beralih sendiri, misalnya saat sore tiba.",
+      "dark": "Gelap",
+      "light": "Terang",
+      "system": "Sistem"
+    },
+    "density": {
+      "title": "Kepadatan",
+      "help": "Mengatur ukuran tombol dan ketinggian baris. « Ringkas » muat lebih banyak ke layar; « Nyaman » meninggalkan lebih banyak udara di antara hal-hal, yang membuatnya lebih mudah ditargetkan dengan mouse.",
+      "comfortable": "Nyaman",
+      "compact": "Ringkas"
+    },
+    "assistantSteps": {
+      "title": "Langkah pengencaian asisten",
+      "help": "Berapa banyak tindakan yang dapat dirantai asisten untuk satu permintaan, ketika masing-masing tergantung pada apa yang dijawab sebelumnya — temukan file, buka, kemudian letakkan di adegan. Setiap langkah adalah perjalanan pulang-pergi yang ditagih, jadi angka ini adalah satu-satunya hal yang mencegah permintaan yang salah baca dari berjalan tanpa henti. Dua belas mencakup sebagian besar rantai."
+    },
+    "concurrentJobs": {
+      "title": "Pembuatan simultan",
+      "help": "Berapa banyak kreasi yang bekerja pada waktu yang sama. Semakin tinggi, semakin banyak yang dapat Anda mulai sekaligus — tetapi masing-masing mungkin membutuhkan waktu lebih lama untuk kembali, dan layanan dapat menolak yang melampaui batasnya. Tiga adalah keseimbangan yang baik."
+    },
+    "captionArrivals": {
+      "title": "Beri nama aset yang diambil",
+      "help": "Secara otomatis beri nama gambar yang tiba tanpa nama yang berguna. Menghabiskan unit kreatif."
+    },
+    "maxRetries": {
+      "title": "Coba lagi maksimal",
+      "help": "Ketika pembuatan gagal karena jaringan jatuh atau server sibuk, aplikasi mencoba lagi sendiri. Angka ini mengatakan berapa kali sebelum menyerah. Pada 0 tidak pernah mencoba dua kali. Kunci API yang tidak valid tidak pernah diulang: mencoba lagi tidak akan memperbaikinya."
+    },
+    "ffmpegPath": {
+      "title": "Jalur ke ffmpeg",
+      "help": "Di mana menemukan ffmpeg untuk digunakan sebagai gantinya. Biarkan kosong kecuali Anda bersikeras pada milik Anda.",
+      "placeholder": "/opt/homebrew/bin/ffmpeg"
+    },
+    "gitBinary": {
+      "title": "Jalur ke git",
+      "help": "Di mana menemukan git untuk digunakan sebagai gantinya. Biarkan kosong dalam hampir setiap kasus. Jalur yang menyimpan spasi ditolak, dan aplikasi kemudian berperilaku seperti saat git hilang sama sekali.",
+      "placeholder": "/usr/bin/git"
+    },
+    "gitUserName": {
+      "title": "Nama penulis",
+      "help": "Nama yang ditulis ke setiap versi yang direkam. Biarkan kosong untuk mengambil yang sudah diketahui git di komputer ini.",
+      "placeholder": "Nama Anda"
+    },
+    "gitUserEmail": {
+      "title": "Alamat penulis",
+      "help": "Alamat yang ditulis di sebelah nama dalam setiap versi yang direkam. Biarkan kosong untuk mengambil yang sudah diketahui git.",
+      "placeholder": "anda@contoh.com"
+    },
+    "dictationEnabled": {
+      "title": "Aktifkan dictation",
+      "help": "Menawarkan tombol mikrofon di samping bidang teks, dan memperlakukan pintasan mendengarkan. Dimatikan, dictation tidak memuat apa pun dan tidak pernah meminta akses mikrofon."
+    },
+    "dictationMode": {
+      "title": "Cara dipicu",
+      "help": "« Tahan » mendengarkan selama Anda menahan pintasan yang ditekan dan berhenti saat Anda melepasnya: paling aman, karena mikrofon tidak pernah tertinggal terbuka oleh kekalikatan. « Beralih » dimulai pada tekan pertama dan berhenti pada berikutnya, yang beristirahat tangan melalui dictation panjang.",
+      "pushToTalk": "Tahan tombol",
+      "continuous": "Beralih hidup dan mati"
+    },
+    "dictationSilence": {
+      "title": "Kesunyian yang mengakhiri kalimat",
+      "help": "Berapa banyak keheningan, dalam milidetik, sebelum apa yang baru saja Anda katakan dihitung sebagai selesai dan ditranskripsikan. Naikkan jika kalimat Anda dipotong menjadi dua karena Anda berhenti untuk berpikir."
+    },
+    "dictationPreview": {
+      "title": "Pratinjau saat Anda berbicara",
+      "help": "Berapa lama, dalam milidetik, antara dua pratinjau teks yang sedang diucapkan. Model tidak menulis saat kata-kata datang: setiap pratinjau membaca kembali semua yang dikatakan sejak kalimat dimulai, dan karenanya biaya komputasi. Atur ke 0 untuk menampilkan hanya teks yang stabil dari setiap kalimat."
+    },
+    "dictationThreads": {
+      "title": "Compute threads",
+      "help": "Berapa banyak inti yang dapat digunakan pengenalan. Lebih tinggi lebih cepat sampai batas titik, tetapi setiap utas adalah inti yang diambil dari sisa aplikasi."
+    },
+    "dictationIdleUnload": {
+      "title": "Bebaskan memori setelah",
+      "help": "Menit tanpa mendikte sebelum model dibongkar, mengembalikan sekitar 700 MB memori. Itu memuat sendiri pada dictation berikutnya, yang membutuhkan beberapa detik. Atur ke 0 untuk menyimpannya tinggal."
+    },
+    "dictationModelFolder": {
+      "title": "Folder model",
+      "help": "Di mana menemukan model pengenalan yang sudah ada di disk ini, untuk digunakan sebagai gantinya. Biarkan kosong dalam kasus normal.",
+      "placeholder": "/Volumes/Modeles/parakeet-tdt-0.6b-v3-int8"
+    },
+    "defaultModel": "Model default",
+    "noDefaultModel": "Tanya setiap kali",
+    "ffmpegFound": "ffmpeg tersedia: proxy dan waveform akan disiapkan.",
+    "ffmpegMissing": "ffmpeg masih tidak ditemukan. Impor bekerja, tanpa proxy atau waveform.",
+    "browse": "Jelajahi…",
+    "accent": {
+      "title": "Warna aksen",
+      "help": "Warna yang menandai apa yang dipilih atau sedang berlangsung: garis besar panel aktif, penanda waktu timeline, bingkai di sekitar seleksi. Ini tidak mengubah apa pun tentang apa yang Anda buat, hanya cara aplikasi menunjukkan di mana Anda berada. Biarkan saja untuk menyimpan milik tema."
+    },
+    "fontScale": {
+      "title": "Ukuran teks",
+      "help": "Membuat setiap teks dalam aplikasi lebih besar atau lebih kecil sekaligus. 1 adalah ukuran yang digambar; di atas itu kata-kata menjadi lebih besar dan kurang pas di layar; di bawah, sebaliknya. Tombol menyimpan ukuran mereka: kepadatan adalah yang menangani mereka."
+    },
+    "reduceMotion": {
+      "title": "Batasi animasi",
+      "help": "Mematikan gerakan kecil dari antarmuka: panel muncul sekaligus daripada meluncur. Berguna jika animasi melelahkan Anda atau membuat Anda mual, dan pada mesin yang lebih lambat di mana ia tersentak-sentak."
+    },
+    "general": "Umum",
+    "generalDescription": "Bahasa aplikasi, dan apa yang dilakukannya saat dibuka.",
+    "language": {
+      "title": "Bahasa",
+      "help": "Bahasa setiap teks dalam aplikasi: menu, tombol, pesan. « Sistem » mengikuti bahasa komputer Anda sendiri. Perubahan ini berlaku segera setelah Anda klik Terapkan atau OK, tanpa apa pun untuk diluncurkan ulang. Ini meninggalkan proyek Anda, dan apa pun yang Anda tulis di dalamnya, sendirian.",
+      "system": "Sistem"
+    },
+    "startup": {
+      "title": "Saat pembukaan",
+      "help": "Apa yang dilakukan aplikasi saat Anda meluncurkannya. « Buka kembali proyek terakhir » menempatkan Anda kembali di mana Anda berhenti. « Jangan buka apa pun » dimulai di jendela kosong, yang lebih cepat dan lebih tenang jika Anda menyulap banyak proyek.",
+      "lastProject": "Buka kembali proyek terakhir",
+      "nothing": "Jangan buka apa pun"
+    },
+    "autosave": {
+      "title": "Simpan secara otomatis",
+      "help": "Menulis dokumen terbuka setiap tiga puluh detik, tanpa menunggu ⌘S Anda. Apa pun yang Anda lakukan sejak penyimpanan terakhir kemudian bertahan dari pemadaman atau kerusakan. Dokumen gambar tidak termasuk di dalamnya apa pun yang ini katakan: lapisan mereka dibaca kembali dari kartu grafis, dan penulisan setiap tiga puluh detik akan membuat menggambar tersentak-sentak."
+    },
+    "home": {
+      "title": "Tampilkan layar beranda",
+      "help": "Layar lebar penuh yang dibuka studio: proyek Anda, apa yang Anda kerjakan, apa yang berjalan, dan apa yang dapat dilakukan model. Matikan untuk langsung ke ruang kerja yang Anda tinggalkan. Bagian mana yang ditampilkan, dan dalam urutan apa, diatur di beranda itu sendiri."
+    },
+    "modified": "Diubah, belum diterapkan",
+    "apply": "Terapkan",
+    "cancel": "Batalkan",
+    "confirm": "OK",
+    "discardTitle": "Beberapa pengaturan belum diterapkan",
+    "discardBody": "Anda mengubah pengaturan tanpa menerapkannya. Apa yang ingin Anda lakukan?",
+    "discard": "Jangan terapkan",
+    "shortcuts": "Jalan pintas",
+    "shortcutsDescription": "Kunci yang memicu setiap tindakan. Klik kunci untuk menggantinya.",
+    "pressAKey": "Tekan…",
+    "unbound": "Tidak ada",
+    "shortcutConflict": "Dua tindakan berjuang atas kunci ini: hanya satu yang akan menjawab.",
+    "findByChord": "Temukan berdasarkan kunci",
+    "showAll": "Tampilkan semua",
+    "chordFree": "Tidak ada tindakan yang menggunakan kunci ini: itu gratis.",
+    "scope": {
+      "global": "Di mana saja dalam aplikasi",
+      "spaces": "Di bilah ruang",
+      "explorer": "Di explorer",
+      "scene": "Di tampilan 3D",
+      "character": "Di kerangka",
+      "sequence": "Di montase",
+      "canvas": "Di gambar",
+      "skybox": "Di langit",
+      "audio": "Di editor audio",
+      "material": "Di material",
+      "gui": "Di antarmuka"
+    },
+    "spaces": "Ruang kerja",
+    "spacesDescription": "Apa yang hanya masuk akal di dalam satu ruang: tampilan 3D, montase, gambar.",
+    "requires": "Tidak ada efek sementara « {{setting}} » dimatikan.",
+    "showGrid": {
+      "title": "Tampilkan kisi",
+      "help": "Lantai berbentuk persegi dari tampilan 3D. Bukan bagian dari apa yang Anda buat: ini adalah landmark untuk di mana hal-hal dan ketinggian berapa. Sembunyikan untuk menilai gambar dengan apa pun di sekitarnya."
+    },
+    "gridSize": {
+      "title": "Ukuran kisi",
+      "help": "Seberapa jauh kisi mencapai, dalam meter, dan oleh karena itu berapa banyak kotak yang dimilikinya — persegi selalu satu meter. Buat lebih besar untuk adegan luas, lebih kecil untuk objek kecil duduk dekat kamera."
+    },
+    "navigationPreset": {
+      "title": "Skema navigasi",
+      "help": "Aplikasi 3D mana yang digerakkan viewport ini seperti: gerak mouse dan pintasannya. Skema hanya memindahkan apa yang dilakukan aplikasinya berbeda — segala yang lain menyimpan kunci AI Desktop Studio, termasuk apa yang tidak ada yang tidak setara. Pemetaan kembali Anda sendiri selalu menang.",
+      "studio": "AI Desktop Studio",
+      "unreal": "Unreal Engine",
+      "unity": "Unity",
+      "blender": "Blender",
+      "roblox": "Roblox Studio",
+      "custom": "Kustom"
+    },
+    "navigationCustomOrbit": {
+      "title": "Belok dengan",
+      "help": "Gerak yang memutar tampilan dalam skema Anda sendiri.",
+      "leftAlt": "Alt + klik kiri",
+      "left": "Klik kiri, dengan atau tanpa Alt",
+      "middle": "Tombol tengah"
+    },
+    "navigationCustomPan": {
+      "title": "Geser ke samping dengan",
+      "help": "Gerak yang menggeser tampilan tanpa memutarnya.",
+      "middle": "Tombol tengah",
+      "middleShift": "Shift + tombol tengah",
+      "leftAltShift": "Shift + Alt + klik kiri"
+    },
+    "navigationCustomDolly": {
+      "title": "Pindah masuk dan keluar dengan",
+      "help": "Gerak yang mendekatkan tampilan ke apa yang ditargetkan, di samping roda.",
+      "altRight": "Alt + klik kanan",
+      "ctrlMiddle": "Ctrl + tombol tengah",
+      "rightOntoLeft": "Klik kanan, kiri sudah dipegang"
+    },
+    "navigationCustomFly": {
+      "title": "Tombol gerakan",
+      "help": "Ketika WASD milik kamera. Diadakan selalu, huruf berhenti tersedia untuk perintah adegan — itulah sebabnya Unity dan Unreal meminta tombol.",
+      "anyButton": "Saat tombol dipegang",
+      "rightButton": "Saat tombol kanan dipegang",
+      "always": "Selalu"
+    },
+    "orbitAroundSelection": {
+      "title": "Orbit di sekitar seleksi",
+      "help": "Ketika Anda memutar tampilan 3D, itu berputar di sekitar apa pun yang dipilih daripada di sekitar titik mengambang di depan Anda. Itu yang mencegah Anda kehilangan objek saat Anda mendekat. Tanpa apa pun yang dipilih, atau dengan seleksi di luar layar, tampilan berputar di sekitar titik terakhir yang Anda lihat."
+    },
+    "orbitUnderCursor": {
+      "title": "Orbit di bawah kursor",
+      "help": "Tampilan berputar di sekitar apa pun yang ditunjuk saat Anda mulai berputar, daripada di sekitar titik yang ditetapkan sebelumnya. Berguna untuk pekerjaan dekat tanpa pengiriman ulang; mengejutkan jika Anda berasal dari Unity atau Unreal, yang tidak menawarkan opsi seperti itu."
+    },
+    "flySpeed": {
+      "title": "Kecepatan terbang",
+      "help": "Seberapa cepat kamera bergerak saat Anda terbang melalui tampilan 3D, dalam meter per detik. Terlalu lambat dan menyeberangi adegan membutuhkan sepuluh detik; terlalu cepat dan Anda menembaknya tanpa melihatnya."
+    },
+    "boostFactor": {
+      "title": "Boost",
+      "help": "Apa kecepatan dikalikan dengan saat Anda memegang kunci boost. Pada 3 Anda pergi tiga kali lebih cepat — cukup untuk menyeberang adegan besar tanpa mengubah pengaturan di atas."
+    },
+    "shadows": {
+      "title": "Ciptakan bayangan",
+      "help": "Menghitung bayangan yang dilemparkan lampu. Setiap lampu yang melemparkan satu biaya lulus render ekstra per bingkai: mematikan ini adalah cara paling langsung untuk meringankan adegan berat."
+    },
+    "viewportQuality": {
+      "title": "Kualitas viewport",
+      "help": "Seberapa halus tampilan yang sama digambar. Apa pun dari model atau gambar tidak berubah — hanya jumlah piksel yang dikerjakan. Performa juga menjatuhkan kehalusan bayangan.",
+      "performance": "Performa",
+      "balanced": "Seimbang",
+      "high": "Tinggi"
+    },
+    "units": {
+      "title": "Unit tampilan",
+      "help": "Unit yang panjangnya ditulis dan dibaca. Satu unit adegan tetap satu meter apa pun yang ini katakan: ini mengubah apa yang ditampilkan, tidak pernah apa yang dipegang dokumen.",
+      "mm": "Milimeter",
+      "cm": "Sentimeter",
+      "m": "Meter"
+    },
+    "shadowQuality": {
+      "title": "Kelembutan bayangan",
+      "help": "Butir tepi bayangan. Potong keras dengan bersih dan biaya paling sedikit; Lembut melembutkan tepi. Apa yang melempar bayangan, di sisi lain, ditentukan objek demi objek di inspector.",
+      "hard": "Keras",
+      "soft": "Lembut"
+    },
+    "shadowMapSize": {
+      "title": "Detail bayangan",
+      "help": "Sisi, dalam piksel, peta bayangan setiap cahaya yang melempar bayangan menghitung. Menggandakannya menggandakan empat kali memori: 2048 banyak untuk adegan beberapa objek, 4096 memperoleh yang layaknya ketika satu cahaya mencakup seluruh set."
+    },
+    "snapTranslate": {
+      "title": "Langkah gerakan",
+      "help": "Seberapa jauh objek bepergian dalam satu langkah saat magnet aktif, dalam meter. Magnet itu sendiri beralih dari bilah alat adegan; ini hanya mengatakan seberapa halus itu."
+    },
+    "snapRotate": {
+      "title": "Langkah rotasi",
+      "help": "Sudut satu langkah rotasi saat magnet aktif, dalam derajat. Langkah rotasi dari mana ia mulai: 15° memberikan dua puluh empat langkah per putaran, 90° putaran perempat."
+    },
+    "snapScale": {
+      "title": "Langkah skala",
+      "help": "Berapa banyak skala bergerak dalam satu langkah saat magnet aktif. Yang dapat dijangkau adalah kelipatan dari langkah: 0,1 mendarat tepat pada persepuluhan dan setengah, 0,25 pada perempat."
+    },
+    "gizmoSize": {
+      "title": "Ukuran pegangan",
+      "help": "Ruang PALING yang diambil pegangan transformasi di layar. Mereka tidak pernah tumbuh melampaui objek yang mereka pegang: pada bagian kecil mereka mengikuti ukurannya, dan di luar itu mereka tetap pada bagian tampilan ini daripada tumbuh tanpa henti."
+    },
+    "snapSurfaceAlign": {
+      "title": "Selaraskan dengan permukaan",
+      "help": "Sementara magnet permukaan aktif, apa yang Anda letakkan terletak di sepanjang lereng yang dipenuhi. Tidak dicentang, itu mempertahankan orientasi sendiri dan hanya jatuh."
+    },
+    "snapSurfaceOffset": {
+      "title": "Offset permukaan",
+      "help": "Berapa meter apa yang Anda letakkan melayang di atas permukaan. Nol meletakkannya saat bersentuhan; beberapa sentimeter mencegah dua wajah saling bersaing pada bidang yang sama di layar."
+    },
+    "fieldOfView": {
+      "title": "Sudut pandang",
+      "help": "Berapa banyak yang diambil kamera, dalam derajat. Sudut sempit menarik dekat dan meratakan, seperti lensa telefoto; sudut lebar menunjukkan lebih banyak tetapi membengkokkan tepi. 60 dekat dengan apa yang dilihat mata."
+    },
+    "advanced": "Lanjut",
+    "advancedDescription": "Apa yang hanya diperlukan untuk memahami masalah, atau untuk memulai lagi.",
+    "reveal": "Tampilkan di folder",
+    "open": "Buka",
+    "logLevel": {
+      "title": "Rincian log",
+      "help": "Seberapa banyak aplikasi menceritakan apa yang sedang dilakukan, di konsol. “Tidak ada” tidak mengatakan apa-apa sama sekali; “Kesalahan” hanya melaporkan apa yang gagal; “Semuanya” menceritakan setiap langkah, yang membantu memahami masalah dan cerewet di saat lain.",
+      "silent": "Tidak ada",
+      "error": "Hanya kesalahan",
+      "warn": "Kesalahan dan peringatan",
+      "info": "Semuanya"
+    },
+    "openLogFolder": {
+      "title": "Log teknis",
+      "help": "Membuka pengelola file pada log yang ditulis studio setiap kali meluncur: “main.log”, yang akan diminta saat sesuatu gagal tanpa apa pun di layar, dan “assistant.log”, yang menyimpan seluruh apa yang dikirim ke setiap model dan apa jawabannya.",
+      "button": "Tampilkan log teknis"
+    },
+    "openSettingsFile": {
+      "title": "File pengaturan",
+      "help": "Membuka pengelola file tempat pengaturan Anda disimpan. Berguna untuk menyalinnya sebelum pindah ke mesin lain, atau mengirimnya ke seseorang yang membantu Anda."
+    },
+    "mcpEnabled": {
+      "title": "Pandu studio dari luar",
+      "help": "Membuka jalan masuk hanya di mesin ini, di mana klien seperti Claude Code dapat menjalankan tindakan yang sama yang dijalankan asisten. Apa pun yang dihabiskan atau diunggah meminta ya di layar, persis seperti di sini. Dimatikan, tidak ada yang mendengarkan."
+    },
+    "mcpDelegateFiles": {
+      "title": "Pindahkan dan hapus file saya tanpa bertanya",
+      "help": "Klien luar dapat memindahkan, mengganti nama, atau membuang file proyek Anda, dan kembali pada file yang dilacak git, tanpa menampilkan apa pun. Penjelajah mengambil beberapa dari itu, tidak pernah semua. Jika tidak dicentang, setiap gerakan ditampilkan terlebih dahulu."
+    },
+    "mcpDelegateAsset": {
+      "title": "Unggah ke perpustakaan saya tanpa bertanya",
+      "help": "Klien luar dapat mengirim gambar ke perpustakaan Anda, tempat ia tetap. Ini tidak mengeluarkan unit kreatif apa pun. Jika tidak dicentang, setiap unggahan ditampilkan terlebih dahulu."
+    },
+    "mcpDelegateRemote": {
+      "title": "Terbitkan ke server jarak jauh tanpa bertanya",
+      "help": "Klien luar dapat mengirim cabang ke repositori git jarak jauh. Ini adalah satu-satunya gerakan yang meninggalkan mesin ini, dan tidak ada di sini yang mengambilnya kembali. Aktifkan dengan sepengetahuan."
+    },
+    "mcpDelegateBudget": {
+      "title": "Habiskan unit kreatif tanpa bertanya",
+      "help": "Apa yang dapat dihabiskan klien luar di jendela ini sebelum studio mulai bertanya lagi. Pada nol, setiap pengeluaran ditampilkan terlebih dahulu. Pembuatan yang API tolak untuk menghargai tidak pernah dimulai tanpa Anda, apa pun yang ditahan ini."
+    },
+    "copyMcpCommand": {
+      "title": "Perintah koneksi",
+      "help": "Menyalin baris untuk ditempel di terminal untuk menghubungkan klien. Ini tidak menyimpan port dan token, jadi tetap benar untuk setiap peluncuran yang akan datang.",
+      "button": "Salin"
+    },
+    "installResolveBridge": {
+      "title": "Jembatan DaVinci Resolve",
+      "help": "Menjatuhkan skrip ke folder yang dibaca Resolve, untuk mengimpor edit yang ditulis di sini dari menu skrip miliknya. Muncul tanpa menjalankan ulang Resolve. Menghapusnya dilakukan dengan tangan, dan Resolve hanya memperhatikan saat mulai berikutnya.",
+      "button": "Instal",
+      "confirm": "Skrip akan ditulis ke folder DaVinci Resolve, di mesin ini. Tidak ada yang lain yang disentuh.",
+      "missing": "DaVinci Resolve tidak ditemukan di mesin ini",
+      "missingDetail": "Foldernya tidak ada, jadi tidak ada yang ditulis. Instal Resolve, jalankan sekali, lalu kembali ke sini.",
+      "missingOk": "Tutup"
+    },
+    "openDevtools": {
+      "title": "Alat pengembang",
+      "help": "Membuka konsol teknis dari browser tertanam. Menampilkan pesan log dan kesalahan. Hanya untuk pemecahan masalah: tidak ada yang di sana diperlukan untuk menggunakan perangkat lunak."
+    },
+    "resetAll": {
+      "title": "Atur ulang semuanya",
+      "help": "Mengembalikan SETIAP pengaturan ke instalasi baru: tema, bahasa, pintasan, semuanya. Proyek, gambar, dan pengeditan Anda tidak disentuh — hanya pengaturan yang ada. Tidak ada jalan kembali.",
+      "button": "Atur ulang",
+      "confirm": "Atur ulang setiap pengaturan? Proyek Anda tidak disentuh, tetapi ini tidak dapat dibatalkan."
+    },
+    "storage": "Penyimpanan",
+    "storageDescription": "Di mana proyek Anda disimpan di disk.",
+    "projectsFolder": {
+      "title": "Folder proyek",
+      "help": "Folder yang ditawarkan aplikasi saat Anda membuat atau membuka proyek. Tidak memindahkan apa pun: proyek yang sudah dibuat tetap berada di tempat mereka. Biarkan kosong untuk memulai dari mana pun Anda terakhir kali berada."
+    },
+    "cancelHint": "Menghapus perubahan yang tertunda, tanpa menutup jendela",
+    "applyHint": "Menulis perubahan sekarang, dan meninggalkan jendela tetap terbuka",
+    "confirmHint": "Menulis perubahan, lalu menutup jendela",
+    "browseHint": "Pilih folder di jendela sistem",
+    "findByChordHint": "Klik, lalu tekan kombinasi: daftar hanya menyimpan apa yang menggunakannya",
+    "showAllHint": "Menghapus filter dan menampilkan setiap pintasan lagi",
+    "captureHint": "Klik, lalu tekan kombinasi yang akan ditetapkan",
+    "sectionHint": "Menampilkan pengaturan bagian ini",
+    "sectionStagedHint": "Bagian ini memiliki perubahan yang tidak diterapkan",
+    "searchSectionHint": "Membuka seluruh bagian, daripada hasil yang satu",
+    "searchResultHint": "Pergi ke pengaturan, di bagian yang dimilikinya",
+    "landing": {
+      "title": "Di mana pembuatan mendarat",
+      "help": "Ketika dokumen jenis yang sama sudah terbuka. Tanpa yang terbuka, hasil dibuka.",
+      "ask": "Tanyakan setiap kali",
+      "document": "Ke dalam dokumen terbuka",
+      "newTab": "Di tab sendiri"
+    },
+    "homeNews": {
+      "title": "Berita model",
+      "help": "Membaca model yang sedang berkembang dan artikel yang diterbitkan di Hugging Face, tuan rumah dari mana setiap bobot katalog sudah berasal. Jika tidak dicentang, studio tidak menghubungi siapa pun untuk pita ini."
+    },
+    "mcp": "Titik masuk (MCP)",
+    "mcpDescription": "Pintu kedua studio: program lain di mesin ini — Claude Code, Cursor, klien apa pun yang berbicara protokol MCP — menjalankan tindakan yang sama yang dijalankan asisten, dari proyeknya sendiri. Ditutup untuk memulai.",
+    "mcpListening": "Terbuka: studio mendengarkan di 127.0.0.1:{{port}}, hanya di mesin ini.",
+    "mcpClosed": "Ditutup: tidak ada yang mendengarkan. Centang pengaturan di atas untuk membuka pintu.",
+    "mcpHowTo": "Hubungkan klien",
+    "mcpStepOpen": "Centang “Pandu studio dari luar”, kapan pun sesuai. Titik masuk dimulai sekaligus, dan klien yang sudah dikonfigurasi menemukannya.",
+    "mcpStepCopy": "Salin perintah koneksi, untuk klien yang dijalankan dari terminal — atau blok konfigurasi, untuk klien yang membaca file. Tidak ada yang menyimpan port atau token.",
+    "mcpStepPaste": "Tempel ke dalam terminal yang terbuka di proyek Anda, atau blok ke dalam file konfigurasi klien Anda.",
+    "mcpNothingToRedo": "Hanya perlu dilakukan sekali. Apa yang Anda tempel menamai studio sebagai program untuk memulai, tidak pernah alamat untuk dijangkau, jadi tetap berfungsi di setiap peluncuran — termasuk yang di mana port dan token baru, yaitu semuanya. Klien yang sudah terdaftar di bawah nama yang sama diganti; tidak ada yang perlu dihapus terlebih dahulu.",
+    "mcpExamples": "Apa yang dapat dilakukan klien",
+    "mcpExampleGenerate": "“Temukan model skybox malam, siapkan pembuatan, tetapi jangan mengirimnya.”",
+    "mcpExampleTidy": "“Urutkan siaran minggu ini ke satu folder per hari.”",
+    "mcpExampleScene": "“Letakkan bola dua meter ke kanan kubus dan nyalakan dengan cahaya hangat.”",
+    "mcpGuards": "Apa yang menjaga pintu",
+    "mcpGuardLocal": "Titik masuk mendengarkan hanya di mesin ini: tidak ada dari jaringan yang mencapainya.",
+    "mcpGuardToken": "Token baru setiap peluncuran; permintaan tanpanya ditolak.",
+    "mcpGuardOrigin": "Permintaan dari halaman web yang terbuka di browser Anda ditolak atas dasar itu saja.",
+    "mcpGuardConsent": "Apa pun yang dihabiskan atau diunggah ditampilkan di layar dan menunggu ya Anda — kecuali apa yang Anda delegasikan di atas.",
+    "copyMcpConfig": {
+      "title": "Blok konfigurasi",
+      "help": "Menyalin koneksi yang sama sebagai JSON, untuk klien yang dikonfigurasi oleh file daripada perintah. Seperti perintah, tetap benar untuk setiap peluncuran.",
+      "button": "Salin JSON"
+    },
+    "memory": "Memori asisten",
+    "memoryDescription": "Apa yang telah dipelajari asisten tentang proyek Anda. Apa yang dipelajarinya tentang proyek hidup di folder itu dan berkembang dengannya; apa yang dipelajarinya tentang cara Anda bekerja tetap di mesin ini.",
+    "memoryProject": "Proyek ini",
+    "memoryGlobal": "Mesin ini",
+    "memoryProjectHint": "Apa yang telah dipelajari asisten tentang proyek terbuka. File ini berkembang dengan folder.",
+    "memoryGlobalHint": "Apa yang telah dipelajari asisten tentang cara Anda bekerja. Tidak pernah meninggalkan mesin ini.",
+    "memoryGraph": "Grafik",
+    "memoryGraphCount": "{{memories, number}} memori · {{links, number}} tautan",
+    "memoryGraphDescription": "Apa yang telah dipelajari asisten, dan apa yang bersatu. Satu titik per memori, garis antara dua yang berbicara tentang hal yang sama.",
+    "memoryGraphEmpty": "Diperlukan setidaknya dua memori terhubung sebelum grafik menampilkan apa pun.",
+    "memorySearch": "Cari memori",
+    "memoryEmpty": "Asisten belum mempelajari apa pun di sini.",
+    "memoryUnmatched": "Tidak ada memori yang menjawab pencarian itu.",
+    "memoryNoProject": "Buka proyek untuk melihat apa yang telah dipelajari asisten tentangnya.",
+    "memoryUnreadable": "File memori tidak bisa dibaca sepenuhnya. Apa yang mengikuti mungkin tidak lengkap.",
+    "memoryTooNew": "File ini ditulis oleh build studio yang lebih baru. Tidak ada yang telah diubah.",
+    "memoryPin": "Sematkan",
+    "memoryPinHint": "Memori yang disematkan selalu diberikan kepada asisten, apa pun pertanyaannya.",
+    "memoryUnpin": "Jangan sematkan",
+    "memoryUnpinHint": "Asisten hanya akan menerimanya ketika jawabannya adalah pertanyaan yang diajukan.",
+    "memoryArchive": "Arsipkan",
+    "memoryArchiveHint": "Menyisihkannya tanpa menghapusnya: masih dapat dibaca, tidak lagi diberikan.",
+    "memoryRestore": "Kembalikan ke penggunaan",
+    "memoryRestoreHint": "Asisten dapat menggunakannya lagi.",
+    "memoryForget": "Lupa",
+    "memoryForgetHint": "Kelupaan ditulis ke dalam file: tidak ada yang dihapus, jejaknya tetap.",
+    "memoryEdit": "Ubah ringkasan",
+    "memorySource": "Ditulis oleh",
+    "memorySourceAction": "tindakan ({{ref}})",
+    "memorySourcePerson": "Anda",
+    "memorySourceAssistant": "asisten",
+    "memorySourceImport": "impor",
+    "memoryRefs": "Berbicara tentang",
+    "memoryReplaces": "Menggantikan",
+    "memoryAlsoAbout": "juga berbicara tentang itu",
+    "memoryLinks": "Menunjuk ke",
+    "memorySupersedes": "Menggantikan {{id}}",
+    "memoryReindex": "Bangun kembali indeks",
+    "memoryReindexHelp": "Membaca file dan membangun kembali indeks pencarian. Tidak ada yang dipelajari hilang.",
+    "memoryEmbed": "Hitung vektor",
+    "memoryEmbedHelp": "Memungkinkan asisten menemukan memori tanpa mengetahui kata-katanya yang tepat. Memerlukan model embedding yang diinstal.",
+    "memoryEmbedPending_other": "{{count, number}} memori untuk dihitung",
+    "memoryEmbedNone": "Setiap memori memiliki vektornya.",
+    "memoryEmbedNoModel": "Tidak ada model embedding yang dipilih. Pencarian hanya berjalan di kata-kata.",
+    "memoryStopEmbed": "Hentikan",
+    "memoryStopEmbedHelp": "Apa yang sudah dihitung disimpan.",
+    "memoryPurge": "Lupa semuanya",
+    "memoryPurgeHelp": "Menghapus file memori proyek ini, dan semua yang dipelajari asisten darinya.",
+    "memoryPurgeConfirm": "Hapus semua yang dipelajari asisten tentang proyek ini?",
+    "memoryFilterAll": "Semua",
+    "memoryCount_other": "{{count, number}} memori",
+    "memoryEmbedPending_one": "{{count, number}} memori untuk dihitung",
+    "memoryCount_one": "{{count, number}} memori",
+    "memoryEmbedPending_many": "{{count, number}} memori untuk dihitung",
+    "memoryCount_many": "{{count, number}} memori",
+    "memoryUpkeep": "Pemeliharaan",
+    "memoryMerge": "Gabung duplikat",
+    "memoryMergeHelp": "Menyimpan yang paling penting dari setiap grup yang mengatakan hal yang sama, menghubungkan yang lain ke itu dan mengarsipkannya. Tidak ada yang dihapus.",
+    "memoryMergeNone": "Tidak ada yang mengatakan hal yang sama dua kali.",
+    "memoryMergeFound_one": "{{count, number}} duplikat",
+    "memoryMergeFound_many": "{{count, number}} duplikat",
+    "memoryMergeFound_other": "{{count, number}} duplikat",
+    "memoryStale": "Arsipkan yang tidur",
+    "memoryStaleHelp": "Menyisihkan apa yang tidak pernah dilayani selama enam bulan. Memori yang disematkan tidak pernah disentuh.",
+    "memoryStaleNone": "Tidak ada yang tidur cukup lama.",
+    "memoryStaleFound_one": "{{count, number}} memori tidur",
+    "memoryStaleFound_many": "{{count, number}} memori tidur",
+    "memoryStaleFound_other": "{{count, number}} memori tidur",
+    "memoryCompact": "Padatkan file",
+    "memoryCompactHelp": "Menulis ulang file dengan satu baris per memori yang tegak. Ini adalah di mana apa yang telah dilupakan akhirnya meninggalkan disk.",
+    "memoryRelations": "Apa yang disentuh memori ini",
+    "memoryPromote": "Ingat di mana-mana",
+    "memoryPromoteHint": "Menyalin memori ini ke dalam memori mesin sendiri, sehingga melayani di setiap proyek Anda. Apa yang dipelajari proyek tetap ada di sana juga.",
+    "gameControls": {
+      "title": "Kontrol permainan",
+      "help": "Mereka tidak diatur di sini. Permainan membaca peta kontrol proyek, diarsipkan di bawah “Kontrol permainan” di Penjelajah, dan tombol “Peta kontrol baru” membuat satu. Halaman ini hanya mencakup antarmuka studio dan apa yang terhubung ke komputer ini."
+    }
+  }
+}

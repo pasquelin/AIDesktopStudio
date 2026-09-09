@@ -31,7 +31,7 @@
       },
       "commandRunStudioCommand": {
         "title": "Run a command",
-        "description": "Fires a studio command by its identifier, exactly as a keyboard shortcut or a menu item would. The document it applies to has to be in front. An identifier reads <scope>.<verb>, and studio.state answers the scope of what is in front: taking an edit of a document back is <scope>.undo — scene.undo, canvas.undo, sequence.undo — and putting it back <scope>.redo. ONE call takes back ONE gesture, so a second takes back the one before it: read the document again rather than sending it twice. No other action undoes an edit, files.undoFileOperation covering project files alone."
+        "description": "Fires a studio command by its identifier, exactly as a keyboard shortcut or a menu item would. The document it applies to has to be in front. An identifier reads [scope].[verb], and studio.state answers the scope of what is in front: taking an edit of a document back is [scope].undo — scene.undo, canvas.undo, sequence.undo — and putting it back [scope].redo. ONE call takes back ONE gesture, so a second takes back the one before it: read the document again rather than sending it twice. No other action undoes an edit, files.undoFileOperation covering project files alone."
       },
       "workspaceOpen": {
         "title": "Open a workspace",

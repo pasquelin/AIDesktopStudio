@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { readFile } from 'node:fs/promises'
 import {
   DOCUMENT_ID_KEY,
@@ -276,7 +277,7 @@ export const OPEN_UI: DocumentBodyFormat = {
   write: document => {
     const parsed = jsonOrNull(document.content)
     if (!isRecord(parsed) || !isUiFile(parsed)) {
-      throw new Error('Refusing to write an interface that is not one')
+      throw localizedError('guiDocumentInvalid')
     }
 
     // The stamp FIRST, and the document after it: written last it would sit behind the tree,
@@ -375,7 +376,7 @@ function envelopedDocument(body: string): DocumentFile {
  */
 function otioBody(document: DocumentFile): string {
   const parsed: unknown = JSON.parse(document.content)
-  if (!isOtioTimeline(parsed)) throw new Error('Refusing to write a montage that is not one')
+  if (!isOtioTimeline(parsed)) throw localizedError('timelineDocumentInvalid')
 
   const metadata = isRecord(parsed.metadata) ? parsed.metadata : {}
   return JSON.stringify(
@@ -465,7 +466,7 @@ function sceneDocument(body: string): DocumentFile {
 /** A montage as OpenTimelineIO holds it, `.otio` serving two kinds and the file saying which. */
 function otioDocument(body: string): DocumentFile {
   const parsed: unknown = JSON.parse(body)
-  if (!isOtioTimeline(parsed)) throw new Error('Not an OpenTimelineIO timeline')
+  if (!isOtioTimeline(parsed)) throw localizedError('otioTimelineInvalid')
 
   return openDocument(body, parsed, otioStudioMetadata, 'sequence')
 }

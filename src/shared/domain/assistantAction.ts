@@ -54,7 +54,7 @@ export const ACTION_COMMITMENTS: readonly ActionCommitment[] = [
  * writes and the form shows as-is. A static registry cannot hold a sentence — every word bound
  * for the screen lives in a bundle — so this carries `labelKey` instead.
  */
-export type ActionChoice = string | number | boolean
+type ActionChoice = string | number | boolean
 
 export type ActionField = {
   key: string

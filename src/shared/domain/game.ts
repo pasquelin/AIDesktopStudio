@@ -27,7 +27,7 @@ export const GAME_FILE = 'game.json'
  * 🛑 Nothing FILLS this list yet, and the `Script` component holds the path rather than the id —
  * so `scriptPathOf` has no caller and a rename does not reach a scene. See `keepScriptPaths`.
  */
-export type GameScript = { id: string; path: string }
+type GameScript = { id: string; path: string }
 
 /** What a script IS on disk, and the only extension the studio runs. */
 export const SCRIPT_EXTENSION = '.ts'
@@ -92,7 +92,7 @@ export function prefabIdFor(game: GameManifest, name: string, document: string):
 }
 
 /** What the author sets for the game as a whole rather than for one scene. */
-export type GameSettings = { title: string }
+type GameSettings = { title: string }
 
 export type GameManifest = {
   version: number

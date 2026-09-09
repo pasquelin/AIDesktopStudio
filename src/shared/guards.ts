@@ -30,6 +30,15 @@ export function messageOf(error: unknown): string {
 }
 
 /**
+ * A run the caller cancelled, not a run that failed: nothing for a reader to be told about.
+ * Written three times over — the scene codec, the document io and the image engine all abort a
+ * run in flight and all had to tell the two apart.
+ */
+export function isAbortError(error: unknown): boolean {
+  return error instanceof DOMException && error.name === 'AbortError'
+}
+
+/**
  * The same record under renamed keys, for a blob read back from storage whose keys have since
  * been renamed away. Two persisted shapes migrate this way, one per side of the boundary.
  */

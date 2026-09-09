@@ -7,7 +7,7 @@ import { useSettings } from '@/stores/settings'
 import { useSettingsDraft, useSettingValue } from '@/stores/settingsDraft'
 import { SettingLine } from './Setting/SettingLine'
 import { SETTING_COLUMN } from './settingStyles'
-import { WindowSelect } from '@/components/WindowSelect'
+import { Select } from '@/components/Select'
 import { SettingRestoreButton } from './Setting/SettingRestoreButton'
 
 /** No descriptor names it — its options are whatever is plugged in — but the path is a leaf. */
@@ -63,7 +63,7 @@ export function DictationSettings() {
           ) : undefined
         }
       >
-        <WindowSelect
+        <Select
           id={FIELD_ID}
           data-sc="field:dictation.device"
           // Wider than the shared cap: the registry rows it was drawn for hold short words, and a
@@ -80,7 +80,7 @@ export function DictationSettings() {
               {device.label || device.id}
             </option>
           ))}
-        </WindowSelect>
+        </Select>
 
         <SettingRestoreButton
           restorable={current !== ''}

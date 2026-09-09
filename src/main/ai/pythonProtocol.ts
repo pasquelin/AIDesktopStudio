@@ -11,11 +11,19 @@ import { z } from 'zod'
  * and `pythonProtocol.test.ts` reads it: no compiler sits between the two languages.
  *
  * 2: `worker.hello` no longer carries `device`.
+ * 3: `engine.requirements` answers `torchCuda`, and `door.close` enters the vocabulary.
  */
-export const PROTOCOL_VERSION = 2
+export const PROTOCOL_VERSION = 3
 
-/** What the core answers itself, in the same turn — neither wakes a door. */
-export type EngineOp = 'hardware.info' | 'memory.ledger' | 'engine.requirements'
+/** What the core answers itself, in the same turn — none of them wakes a door. */
+export type EngineOp = 'hardware.info' | 'memory.ledger' | 'engine.requirements' | 'door.close'
+/** Read back by `pythonProtocol.test.ts` against the ops the engine's supervisor answers. */
+export const CORE_OPS: readonly EngineOp[] = [
+  'hardware.info',
+  'memory.ledger',
+  'engine.requirements',
+  'door.close',
+]
 export type EngineRequirementsProfile = 'diffusion' | 'autorig' | 'motion' | 'selection'
 /** Read back by `pythonProtocol.test.ts` against what the engine's supervisor accepts. */
 export const PROFILES: readonly EngineRequirementsProfile[] = [
@@ -116,6 +124,7 @@ const settledJob = z.object({
   peakRssBytes: z.number().optional(),
   width: z.number().optional(),
   height: z.number().optional(),
+  mask: z.string().optional(),
   alpha: z.string().optional(),
 })
 
@@ -177,6 +186,9 @@ const requirements = z.object({
   declaration: z.array(z.string()),
   absent: z.array(z.object({ name: z.string(), wanted: z.string() })),
   stale: z.array(z.object({ name: z.string(), wanted: z.string(), installed: z.string() })),
+  // Whether the installed torch was BUILT with CUDA, read off its generated `torch/version.py`.
+  // `null` is unknown — an unreadable file, or a torch nobody installed — and never "no CUDA".
+  torchCuda: z.boolean().nullable(),
   complete: z.boolean(),
 })
 
@@ -184,6 +196,15 @@ export type EngineRequirements = z.infer<typeof requirements>
 
 export function readRequirements(value: unknown): EngineRequirements {
   return requirements.parse(value)
+}
+
+/**
+ * Whether there was a process to end. `false` is a door nobody had opened, never a refusal.
+ */
+const closedDoor = z.object({ closed: z.boolean() })
+
+export function readClosedDoor(value: unknown): boolean {
+  return closedDoor.parse(value).closed
 }
 
 /** What a routed op answers in the same turn: the job it opened, never its result. */

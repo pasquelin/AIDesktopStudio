@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import i18next from 'i18next'
 import type { Asset } from '@shared/domain/asset'
 import { projectFileUrl } from '@shared/domain/assetAccess'
@@ -145,7 +146,7 @@ async function convertOne(
   if (!asset.path || !isConvertibleType(asset.type)) return null
   try {
     const format = meshFormatForExtension(extensionOf(asset.path).slice(1))
-    if (format === null) throw new Error('not a 3D file this build converts')
+    if (format === null) throw localizedError('modelConversionUnsupported')
     const converted = await convertModelToGlb(
       await assetArrayBuffer(asset.id),
       projectFileUrl(asset.id),

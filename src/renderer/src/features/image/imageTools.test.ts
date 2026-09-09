@@ -1,5 +1,6 @@
 import i18next from 'i18next'
 import { describe, expect, it } from 'vitest'
+import { SMART_SELECTION_MODEL } from '@shared/domain/smartSelectionInference'
 import { UNBUILT_TOOLS } from '@/engines/canvas/CanvasEngine'
 import type { CanvasTool } from '@/engines/canvas/canvasTool'
 import { AI_EDITS } from './aiActions'
@@ -47,8 +48,27 @@ describe('image tools', () => {
     ).toEqual([{ command: 'canvas.toolSmartSelect', tool: 'region', mode: 'smart' }])
   })
 
+  it('arms intelligent comments with the smart comment canvas tool', () => {
+    expect(canvasToolFor('comment', 'smart')).toBe('smartComment')
+  })
+
   it('uses a visible selection cursor for the intelligent gesture', () => {
     expect(cursorFor('region', 'smart')).toContain('data:image/svg+xml')
+  })
+
+  /**
+   * 🛑 The blind spot of `ImageDocument`'s `runnable`: it answers ONE model and reads any other as
+   * ready, so a second one declared here would grey nothing. This is what reddens instead.
+   *
+   * The MODEL and not the `background-removal/cutout` employment: `smartSelectionHost` loads this
+   * one by name, so a cloud chosen for that employment serves the batch edit and never the gesture.
+   */
+  it('asks the two intelligent modes for the one model the gesture actually runs', () => {
+    const asked = IMAGE_TOOLS.flatMap(tool => tool.modes ?? []).flatMap(mode =>
+      mode.needsModel === undefined ? [] : [mode.needsModel],
+    )
+
+    expect(asked).toEqual([SMART_SELECTION_MODEL, SMART_SELECTION_MODEL])
   })
 
   it('names every tool through i18n rather than a literal', () => {
@@ -57,6 +77,22 @@ describe('image tools', () => {
 
   it('gives every tool an icon', () => {
     for (const tool of IMAGE_TOOLS) expect(tool.icon).toBeTruthy()
+  })
+
+  /**
+   * An armed mode REPLACES its tool's glyph in the bar, so two modes wearing the same one leave
+   * the bar saying the same thing twice. Both promptable modes wore the plain wand: armed, the
+   * comment stopped looking like a comment, and only its tooltip still said which it was.
+   */
+  it('gives each mode a glyph no other tool already wears armed', () => {
+    const armed = IMAGE_TOOLS.flatMap(tool =>
+      (tool.modes ?? []).map(mode => ({ tool: tool.id, mode: mode.id, icon: mode.icon })),
+    )
+    const shared = armed.filter(one =>
+      armed.some(other => other.tool !== one.tool && other.icon === one.icon),
+    )
+
+    expect(shared.map(one => `${one.tool}/${one.mode}`)).toEqual([])
   })
 
   it('gives the pointer two modes, so it opens a flyout', () => {

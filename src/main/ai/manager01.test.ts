@@ -1,46 +1,12 @@
-import type { MemorySnapshot } from '@shared/domain/aiMemory'
-import type { AiOverview } from '@shared/domain/aiOverview'
 import { aiRoleId, ASSISTANT_ROLE, AUTO_RIG_ROLE, DICTATION_ROLE } from '@shared/domain/aiRole'
 import { STT_MODEL } from '@shared/domain/dictation'
 import type { DownloadProgress, LocalModel } from '@shared/domain/localModel'
-import { GIBI } from '@shared/domain/localModel-fixtures'
 import { ollamaModel } from '@shared/domain/ollamaModel'
 import { DEFAULT_SETTINGS, type PartialSettings, type Settings } from '@shared/domain/settings'
 import { describe, expect, it, vi } from 'vitest'
-import type { HardwareFacts } from './hardwareProbe'
-import type { LocalRuntime, LocalRuntimes } from './localRuntimes'
+import type { LocalRuntimes } from './localRuntimes'
 import { shippedModel } from './catalogue'
-import { createAiManager, type ManagerDeps } from './manager'
-
-const FACTS: HardwareFacts = {
-  platform: 'linux',
-  arch: 'x64',
-  cpuCount: 8,
-  physicalBytes: 96 * GIBI,
-  freeBytes: 34 * GIBI,
-  diskFreeBytes: 500 * GIBI,
-  gpu: null,
-  vram: null,
-}
-
-const SNAPSHOT: MemorySnapshot = {
-  domain: 'unified',
-  source: 'probe',
-  at: 0,
-  physicalBytes: 96 * GIBI,
-  appBudgetBytes: 48 * GIBI,
-  rendererReservedBytes: GIBI,
-  runtimeBytes: {},
-  headroomBytes: 2 * GIBI,
-  availableBytes: 34 * GIBI,
-}
-
-/** A runtime that installs nothing and holds nothing — what most of these cases need behind them. */
-const idleRuntime = (install: LocalRuntime['install'] = () => Promise.resolve()): LocalRuntime => ({
-  read: () => Promise.resolve({ ready: true, installed: new Set<string>(), loaded: new Set() }),
-  install,
-  remove: () => Promise.resolve(),
-})
+import { candidateOf, idleRuntime, manager, other } from './managerTest-fixtures'
 
 /**
  * A download that hangs until the test lets it go, or until it is aborted.
@@ -87,33 +53,7 @@ const heldInstall = (): Held => {
   }
 }
 
-const manager = (over: Partial<ManagerDeps> = {}) =>
-  createAiManager({
-    facts: () => Promise.resolve(FACTS),
-    snapshotOf: () => SNAPSHOT,
-    settings: () => DEFAULT_SETTINGS,
-    writeSettings: () => undefined,
-    currentProjectPath: () => null,
-    readyClouds: () => [],
-    runtimes: { 'sherpa-onnx': idleRuntime(), ollama: idleRuntime() },
-    emit: () => {},
-    log: () => {},
-    now: () => 0,
-    idleUnloadMinutes: () => 0,
-    ollamaInstalled: () => false,
-    installOllama: () => Promise.resolve(),
-    engineMissing: () => Promise.resolve(null),
-    installEngine: () => Promise.resolve(),
-    ...over,
-  })
-
-const other = (id: string): LocalModel => ({ ...STT_MODEL, id })
-
 const nothing = (_progress: DownloadProgress): void => {}
-
-/** One candidate of the whole overview, whichever row holds it. */
-const candidateOf = (overview: AiOverview, modelId: string) =>
-  overview.roles.flatMap(row => row.candidates).find(one => one.model.id === modelId)
 
 describe('the AI manager', () => {
   it('offers MIA for download without selecting it before its checkpoints are installed', async () => {

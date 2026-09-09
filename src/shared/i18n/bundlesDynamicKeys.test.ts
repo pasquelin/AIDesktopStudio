@@ -51,7 +51,7 @@ import { tripoFieldKeys } from '../domain/tripo'
 import { USAGE_ACTIONS, USAGE_ASSET_KINDS, USAGE_EVENT_ACTIONS } from '../domain/usage'
 import { isRecord } from '../guards'
 import { LOG_SCOPES } from '../ipc'
-import { LANGUAGES, TRANSLATIONS, type Language } from './index'
+import { TRANSLATIONS, type Language } from './index'
 
 const flatten = (bundle: unknown, prefix = '', into = new Map<string, string>()) => {
   if (!isRecord(bundle)) return into
@@ -76,8 +76,12 @@ const orderOf = (bundle: unknown, prefix = '', into: string[] = []): string[] =>
   return into
 }
 
-const CODES = LANGUAGES.map(language => language.code)
-const BUNDLES: Record<Language, Map<string, string>> = {
+const CODES: ('fr' | 'en')[] = ['fr', 'en']
+const BUNDLES: {
+  fr: Map<string, string>
+  en: Map<string, string>
+  [code: string]: Map<string, string>
+} = {
   fr: flatten(TRANSLATIONS.fr),
   en: flatten(TRANSLATIONS.en),
 }
@@ -281,7 +285,7 @@ const DYNAMIC_KEYS: readonly string[] = [
  */
 function named(code: Language, key: string): boolean {
   const written = (form: string): boolean =>
-    (BUNDLES[code].get(`${key}${form}`)?.trim() ?? '') !== ''
+    ((BUNDLES[code] ?? BUNDLES.en).get(`${key}${form}`)?.trim() ?? '') !== ''
   return written('') || written('_other')
 }
 
@@ -330,7 +334,11 @@ describe('the keys the interface composes', () => {
  * the second test drops any wording no line uses yet. A new phrasing is a line added under a
  * reviewer's eyes, deliberately, rather than a sentence that quietly announces nothing.
  */
-const FAILURE_WORDINGS: Record<Language, readonly RegExp[]> = {
+const FAILURE_WORDINGS: {
+  fr: readonly RegExp[]
+  en: readonly RegExp[]
+  [code: string]: readonly RegExp[]
+} = {
   fr: [/a échoué/, /n’a pas pu/, /n’ont pas pu/, /a perdu/, /était illisible/],
   // Not `/ failed\b/`: the leading space and the case made `Failed to open…` a false red, which
   // is how English states a failure most often. Same eight lines matched either way.

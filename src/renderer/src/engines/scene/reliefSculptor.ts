@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import {
   reliefChunkRowsInDisk,
   withPackedChunks,
@@ -161,7 +162,7 @@ async function sculptResponse(
   session: SculptSession | undefined,
   bases: BaseBindings,
 ): Promise<ReliefSculptResponse> {
-  if (!session) throw new Error('Relief sculpt worker is unavailable')
+  if (!session) throw localizedError('reliefWorkerMissing')
   const held = bases.bySession.get(session)
   const binding = bindingOf(job, held, bases)
   if (binding) bases.bySession.set(session, binding)

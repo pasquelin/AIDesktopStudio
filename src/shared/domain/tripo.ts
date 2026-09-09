@@ -109,7 +109,6 @@ function meshEntries(line: TripoLine): TripoEntry[] {
 }
 
 import { PROCESSING, TRIPO_RIG_TYPES } from './tripoProcessing'
-export { TRIPO_RIG_TYPES } from './tripoProcessing'
 
 function imageModelName(model: string): string {
   const named = IMAGE_MODEL_NAMES[model]

@@ -12,7 +12,7 @@
  *
  * Runs on postinstall because pnpm re-extracts the bundle whenever Electron is reinstalled.
  * Takes an optional checkout root, so an existing worktree can be fixed without waiting for
- * its branch to carry this file: `node scripts/dev-app-identity.mjs .claude/worktrees/<name>`.
+ * its branch to carry this file: `node scripts/dev-app-identity.mjs worktrees/<name>`.
  */
 import { execFileSync } from 'node:child_process'
 import { createHash } from 'node:crypto'

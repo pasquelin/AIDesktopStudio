@@ -36,8 +36,8 @@ export const ModelPickerRow = memo(function ModelPickerRow({
       type="button"
       role="menuitem"
       data-selected={selected || undefined}
-      // `text-left`: a button centres its text, and `Row` inherits it.
-      className={cn(rowSkin(selected), 'w-full cursor-pointer text-left')}
+      // `text-start`: a button centres its text, and `Row` inherits it.
+      className={cn(rowSkin(selected), 'w-full cursor-pointer text-start')}
       onClick={() => onPick(model.id)}
     >
       <Row

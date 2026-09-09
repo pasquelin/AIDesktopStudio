@@ -3,7 +3,9 @@ import {
   aiRoleId,
   allRoles,
   ASSISTANT_ROLE,
+  currentAiRoleKey,
   DICTATION_ROLE,
+  SMART_SELECTION_ROLE,
   partsOfRole,
   primaryRoleOf,
   providerFor,
@@ -80,6 +82,11 @@ describe('primaryRoleOf', () => {
   it('is unmoved by a capability appended to a family', () => {
     expect(primaryRoleOf('3d')).toBe(aiRoleId('3d', 'txt23d'))
   })
+})
+
+it('uses the cutout employment for smart image selection', () => {
+  expect(SMART_SELECTION_ROLE).toBe(aiRoleId('background-removal', 'cutout'))
+  expect(currentAiRoleKey('smart-selection')).toBe(SMART_SELECTION_ROLE)
 })
 
 describe('partsOfRole', () => {

@@ -1,3 +1,5 @@
+import { isAbortError } from '@shared/guards'
+import { localizedError } from '@shared/localizedError'
 import type { SceneState } from '@/engines/scene/sceneState'
 import SceneDocumentWorker from './sceneDocumentCodec.worker?worker'
 import type {
@@ -61,10 +63,10 @@ export function createSceneDocumentCodec(
       acceptResponse(waiting, event.data),
     )
     started.addEventListener('error', event =>
-      failWorker(started, `scene document worker failed: ${event.message}`),
+      failWorker(started, localizedError('sceneWorkerFailed', { reason: event.message }).message),
     )
     started.addEventListener('messageerror', () =>
-      failWorker(started, 'scene document worker sent an unreadable answer'),
+      failWorker(started, localizedError('sceneWorkerUnreadable').message),
     )
     worker = started
     return started
@@ -75,7 +77,10 @@ export function createSceneDocumentCodec(
       workerOf().postMessage(message)
     } catch (error) {
       if (worker) {
-        failWorker(worker, `scene document worker rejected a chunk: ${errorOf(error).message}`)
+        failWorker(
+          worker,
+          localizedError('sceneWorkerChunkRejected', { reason: errorOf(error).message }).message,
+        )
       } else rejectPending(waiting, message.id, errorOf(error))
     }
   }
@@ -97,7 +102,7 @@ export function createSceneDocumentCodec(
         } catch {
           // Nothing to do about a worker that will not take a cancel; the request is rejected.
         }
-        rejectPending(waiting, id, new Error('scene document worker timed out'))
+        rejectPending(waiting, id, localizedError('sceneWorkerTimeout'))
       }, options.timeoutMs)
       const pending: Pending = { content: [], nextIndex: 0, resolve, reject, signal, timer }
       const abort = (): void => {
@@ -170,7 +175,7 @@ export function createSceneDocumentCodec(
   }
 
   return {
-    encode: async (state, documentId, signal) => await queuedEncode(state, documentId, signal),
+    encode: queuedEncode,
     dispose: () => {
       gone = true
       worker?.terminate()
@@ -218,7 +223,7 @@ function acceptResponse(waiting: Map<number, Pending>, response: SceneDocumentCo
       rejectPending(
         waiting,
         response.id,
-        new Error(`scene document worker returned chunk ${response.index} out of order`),
+        localizedError('sceneWorkerChunkOrder', { index: response.index }),
       )
       return
     }
@@ -229,37 +234,29 @@ function acceptResponse(waiting: Map<number, Pending>, response: SceneDocumentCo
   if (response.ok) {
     const content = pending.content.join('')
     if (response.chunks !== pending.nextIndex || response.characters !== content.length) {
-      rejectPending(
-        waiting,
-        response.id,
-        new Error('scene document worker returned an incomplete file'),
-      )
+      rejectPending(waiting, response.id, localizedError('sceneWorkerFileIncomplete'))
       return
     }
     settlePending(waiting, response.id, content)
   } else rejectPending(waiting, response.id, new Error(response.error))
 }
 
-function settlePending(waiting: Map<number, Pending>, id: number, content: string): void {
+/** A request taken out of the map, timer and abort listener released — settled either way. */
+function takePending(waiting: Map<number, Pending>, id: number): Pending | null {
   const pending = waiting.get(id)
-  if (!pending) return
+  if (!pending) return null
   waiting.delete(id)
   clearTimeout(pending.timer)
   if (pending.abort) pending.signal?.removeEventListener('abort', pending.abort)
-  pending.resolve(content)
+  return pending
+}
+
+function settlePending(waiting: Map<number, Pending>, id: number, content: string): void {
+  takePending(waiting, id)?.resolve(content)
 }
 
 function rejectPending(waiting: Map<number, Pending>, id: number, error: Error): void {
-  const pending = waiting.get(id)
-  if (!pending) return
-  waiting.delete(id)
-  clearTimeout(pending.timer)
-  if (pending.abort) pending.signal?.removeEventListener('abort', pending.abort)
-  pending.reject(error)
-}
-
-function isAbortError(error: unknown): boolean {
-  return error instanceof DOMException && error.name === 'AbortError'
+  takePending(waiting, id)?.reject(error)
 }
 
 function abortError(): DOMException {

@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { BufferAttribute, BufferGeometry } from 'three'
 import type { CsgGraph } from '@shared/domain/csg'
 import { createRefCache } from '../core/refCache'
@@ -52,7 +53,7 @@ export function createCsgEvaluator({ spawn, onFailure }: CsgEvaluatorOptions): C
       const graph = graphs.get(key)
       // Unreachable through `acquire`, which records the graph first. Thrown rather than
       // defaulted: a cut of a recipe nobody has is a bug, and a silent empty solid hides it.
-      if (!graph) throw new Error(`no CSG graph recorded for ${key}`)
+      if (!graph) throw localizedError('csgGraphMissing', { name: key })
 
       const response = await session.send({ id: session.nextId(), graph })
       if (!response.ok) throw new Error(response.error)

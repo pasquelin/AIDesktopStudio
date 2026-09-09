@@ -1,4 +1,4 @@
-import { messageOf } from '@shared/guards'
+import { boundedDiagnosticMessage, localizedError } from '@shared/localizedError'
 import { MAX_LOG_MESSAGE, type LogLevel, type LogScope, type TraceScope } from '@shared/ipc'
 import { getBridge } from './bridge'
 
@@ -45,6 +45,7 @@ const GESTURE_SCOPES: ReadonlySet<LogScope> = new Set<LogScope>([
   // A click that selects nothing is a click the person makes again: the model may be missing, the
   // engine silent, or the box too thin — silenced from the second, the tool looks simply broken.
   'canvas.smartSelect',
+  'canvas.smartComment',
   // Picking an edit from the Image menu is a gesture too, and it was the one refusal of that menu
   // that said nothing at all — the caller swallowed everything it threw.
   'canvas.edit',
@@ -110,9 +111,7 @@ export function reportNotice(scope: LogScope, message: string): void {
  * report one has nowhere left to go. Silent with no bridge — tests and a plain browser have none.
  */
 function send(level: LogLevel, scope: LogScope, message: string): void {
-  getBridge()
-    ?.diagnostics.report({ level, scope, message })
-    .catch(() => {})
+  void deliverDiagnostic(getBridge()?.diagnostics.report({ level, scope, message }))
 }
 
 /**
@@ -129,16 +128,16 @@ export function traceFailure(scope: TraceScope, subject: string, error: unknown)
   if (traced >= MAX_TRACES) return
   traced += 1
 
-  getBridge()
-    ?.diagnostics.trace({ scope, message: lineFor(subject, error) })
-    .catch(() => {})
+  void deliverDiagnostic(
+    getBridge()?.diagnostics.trace({ scope, message: lineFor(subject, error) }),
+  )
 }
 
 const MAX_TRACES = 100
 let traced = 0
 
 function lineFor(subject: string, error: unknown): string {
-  return `${subject}: ${messageOf(error)}`.slice(0, MAX_LOG_MESSAGE)
+  return boundedDiagnosticMessage(subject, error, MAX_LOG_MESSAGE)
 }
 
 /**
@@ -153,7 +152,7 @@ export function reportRenderFailure(error: unknown, componentStack: string | und
 }
 
 function blamedComponent(componentStack: string | undefined): string {
-  return componentStack?.match(/^\s*at (\S+)/m)?.[1] ?? 'an unnamed component'
+  return componentStack?.match(/^\s*at (\S+)/m)?.[1] ?? localizedError('unnamedComponent').message
 }
 
 const reported = new Set<string>()
@@ -165,4 +164,12 @@ const reported = new Set<string>()
 export function forgetReportedFailures(): void {
   reported.clear()
   traced = 0
+}
+
+async function deliverDiagnostic(report: Promise<void> | undefined): Promise<void> {
+  try {
+    await report
+  } catch {
+    // Reporting failures cannot report themselves without recursing through the broken channel.
+  }
 }

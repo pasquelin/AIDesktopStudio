@@ -21,9 +21,18 @@ export type MachineOffer = {
    * ask for opposite gestures. Always true for a loader the application ships with.
    */
   readonly runtimeReady: boolean
-  /** NVIDIA CUDA. TRELLIS's kernels do not run on Metal. Absent is "no". */
-  readonly hasCuda?: boolean
+  /**
+   * NVIDIA CUDA. TRELLIS's kernels do not run on Metal, and absent is "no card".
+   *
+   * Three states and not two booleans: `repairable` is a card that IS here with a torch built
+   * without CUDA beside it, which a download mends — and telling someone holding an RTX that
+   * their model needs an NVIDIA card is the sentence that separation exists to stop.
+   */
+  readonly cuda?: CudaState
 }
+
+/** What a card and the torch beside it allow. Absent everywhere means there is no card. */
+export type CudaState = 'usable' | 'repairable'
 
 /**
  * What stands between a model and this machine, or `null` when nothing does.
@@ -32,7 +41,8 @@ export type MachineOffer = {
  * that is full as much as for a machine that is small, and a screen that explained the second
  * where the first is true would be telling the person to free the wrong thing.
  */
-export type FitObstacle = 'refused' | 'plugin' | 'runtime' | 'disk' | 'memory' | 'tight' | 'cuda'
+export type FitObstacle =
+  'refused' | 'plugin' | 'runtime' | 'disk' | 'memory' | 'tight' | 'cuda' | 'cudaTorch'
 
 /** The one decision the verdict and the sentence beside it both read, so neither can drift. */
 export function fitObstacleOf(model: LocalModel, offer: MachineOffer): FitObstacle | null {
@@ -42,7 +52,9 @@ export function fitObstacleOf(model: LocalModel, offer: MachineOffer): FitObstac
   // because a process answered. The download is still offered — see the note at the bottom.
   if (runtimeStatusOf(model) !== 'supported') return 'plugin'
 
-  if (model.needsCuda === true && offer.hasCuda !== true) return 'cuda'
+  if (model.needsCuda === true && offer.cuda !== 'usable') {
+    return offer.cuda === 'repairable' ? 'cudaTorch' : 'cuda'
+  }
 
   // Before the disk and before the memory: neither figure changes anything while the runtime that
   // would hold the model is not answering, and what it asks for is a different gesture entirely.
@@ -50,8 +62,8 @@ export function fitObstacleOf(model: LocalModel, offer: MachineOffer): FitObstac
 
   // Disk is checked before memory, and only when the model is not already here: a model that will
   // not fit on the disk cannot be tried at all, whatever the memory says.
-  if (!offer.installed && offer.diskFreeBytes !== null) {
-    if (offer.diskFreeBytes < model.diskBytes) return 'disk'
+  if (!offer.installed && offer.diskFreeBytes !== null && offer.diskFreeBytes < model.diskBytes) {
+    return 'disk'
   }
 
   if (model.reservationBytes > offer.snapshot.availableBytes) return 'memory'
@@ -71,6 +83,7 @@ const VERDICT: Record<FitObstacle, Compatibility> = {
   refused: 'incompatible',
   plugin: 'incompatible',
   cuda: 'incompatible',
+  cudaTorch: 'incompatible',
   runtime: 'incompatible',
   disk: 'insufficient-memory',
   memory: 'insufficient-memory',

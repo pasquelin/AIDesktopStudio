@@ -1,0 +1,20 @@
+{
+  "memoryWorth": {
+    "scriptWrite": "Script {{path}} được viết bởi trợ lý",
+    "prefabDefine": "“{{name}}” là một prefab của dự án này",
+    "styleSave": "“{{name}}” là một cách đọc vật liệu, lưu cho dự án này",
+    "postSave": "“{{name}}” là một cài đặt post-processing được lưu cho dự án này",
+    "animationAdd": "Hoạt ảnh “{{clipName}}” đã được thêm vào bộ xương",
+    "gitCommit": "Quyết định và ghi lại trong git: {{message}}"
+  },
+  "memoryTypes": {
+    "decision": "Quyết định",
+    "architecture": "Kiến trúc",
+    "feature": "Tính năng",
+    "entity": "Thực thể",
+    "script": "Script",
+    "problem": "Vấn đề",
+    "intent": "Ý định",
+    "convention": "Quy ước"
+  }
+}

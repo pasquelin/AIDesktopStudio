@@ -1,0 +1,121 @@
+{
+  "a11y": {
+    "namedValue": "{{value}} — {{name}}"
+  },
+  "actions": {
+    "generate": "Üret",
+    "close": "Kapat",
+    "removeTool": "Aracı kaldır",
+    "resizeZone": "Panel alanını yeniden boyutlandır",
+    "resizeSplit": "İki paneli yeniden boyutlandır",
+    "resizeBand": "Alttaki panelleri yeniden boyutlandır",
+    "retry": "Yeniden dene",
+    "retryHint": "Bu alanı, stüdyoyu yeniden başlatmadan yeniden çizer",
+    "generateHint": "Üretimi yukarıdaki ayarlarla başlatır; üretimler çubuğundan izlenir",
+    "cancel": "İptal et"
+  },
+  "jobs": {
+    "none": "Çalışan üretim yok.",
+    "running_one": "{{count, number}} üretim",
+    "running_many": "{{count, number}} üretim",
+    "running_other": "{{count, number}} üretim",
+    "failed_one": "{{count, number}} başarısızlık",
+    "failed_many": "{{count, number}} başarısızlık",
+    "failed_other": "{{count, number}} başarısızlık",
+    "open": "Üretimleri göster",
+    "openHint": "Çalışan ve bitmiş üretimlerin listesini açar",
+    "status": {
+      "queued": "Kuyrukta",
+      "running": "Çalışıyor",
+      "succeeded": "Bitti",
+      "failed": "Başarısız",
+      "cancelled": "İptal edildi"
+    },
+    "cancel": "İşi iptal et",
+    "cancelRefused": "Bu hizmet, başlamış bir üretimi durdurmaz: sonuna kadar çalışır ve ücretlendirilir."
+  },
+  "tasks": {
+    "running_one": "{{count, number}} işlem",
+    "running_many": "{{count, number}} işlem",
+    "running_other": "{{count, number}} işlem",
+    "open": "İşlemleri göster",
+    "openHint": "Süren işlemlerin listesini açar",
+    "cancel": "Bu işlemi durdur",
+    "phases": {
+      "prepare": "Model hazırlanıyor",
+      "load": "Motor yükleniyor",
+      "analyse": "Karakter çözümleniyor",
+      "skeleton": "İskelet üretiliyor",
+      "pose": "Duruş pozu hesaplanıyor",
+      "skinning": "Deri bağlama hesaplanıyor",
+      "apply": "İskelet uygulanıyor"
+    }
+  },
+  "dialog": {
+    "allMedia": "Tüm medyalar",
+    "video": "Video",
+    "audio": "Ses",
+    "image": "Görüntü",
+    "mesh": "3B model",
+    "animation": "Animasyon",
+    "bundle": "Kurgu ve medyaları",
+    "weights": "Model ağırlıkları"
+  },
+  "sorts": {
+    "relevance": "Kalite: en yüksek önce",
+    "recent": "Oluşturma: en yeni önce",
+    "oldest": "Oluşturma: en eski önce"
+  },
+  "exportFormats": {
+    "glb": "İkili glTF (.glb)",
+    "gltf": "glTF (.gltf)",
+    "usdz": "USDZ (.usdz)",
+    "obj": "Wavefront, yalnızca şekiller (.obj)",
+    "ply": "Stanford, yalnızca şekiller (.ply)",
+    "stl": "STL, yalnızca üçgenler (.stl)"
+  },
+  "errors": {
+    "missingCredentials": "Kayıtlı kimlik bilgisi yok.",
+    "invalidCredentials": "API anahtarı veya gizli anahtar geçersiz.",
+    "forbidden": "Bu API anahtarı gerekli izinlere sahip değil.",
+    "planRestricted": "Bu model aboneliğinize dâhil değil.",
+    "notFound": "Kaynak bulunamadı.",
+    "rateLimited": "Çok fazla istek. Yeniden deneniyor…",
+    "server": "Üretim hizmeti geçici olarak kullanılamıyor.",
+    "network": "Bağlantı kesildi. Ağı denetleyip yeniden deneyin.",
+    "unexpected": "Beklenmeyen bir hata oluştu.",
+    "invalidValue": "Geçersiz değer.",
+    "rejected": "Üretim başarısız oldu.",
+    "incompleteModel": "Model dosyaları eksik. Modeli yeniden kurun, sonra yeniden çalıştırın.",
+    "engineMissing": "Yerel yapay zekâ motoru bu makinede kurulu değil, bu yüzden burada hiçbir şey modeli çalıştıramaz.",
+    "engineFailed": "Yerel yapay zekâ motoru başlamadı. Etkinlik günlüğüne bakıp yeniden deneyin.",
+    "storage": "Sonuç diske kaydedilemedi.",
+    "panelCrashed": "Bu panel bir hatayla karşılaştı.",
+    "windowCrashed": "Uygulama bir hatayla karşılaştı."
+  },
+  "licences": {
+    "title": "Lisanslar",
+    "intro": "AI Desktop Studio aşağıdaki yazılımlarla birlikte gelir. Her biri kendi lisansını korur; lisanslar burada tam olarak yeniden verilmiştir.",
+    "sources": "İlgili kaynak kodları:",
+    "sourcesUnmodified": "İlgili kaynak kodları, değiştirilmemiş:",
+    "bundled": "uygulamayla birlikte gelir",
+    "unfold": "Bu lisansın tam metnini tam burada açar",
+    "fold": "Bu metni geri kapatır — aynı anda yalnızca bir lisans açık kalır"
+  },
+  "manual": {
+    "title": "Kullanıcı kılavuzu",
+    "chapters": "Bölümler",
+    "search": "Kılavuzda ara",
+    "results": "Sonuçlar",
+    "noResult": "Hiçbir bölüm bu sözcükleri içermiyor.",
+    "chapterHint": "Bu bölümü sağdaki panelde açar",
+    "searchResultHint": "Bu sözcüklerin geçtiği bölümü açar"
+  },
+  "units": {
+    "byte": "B",
+    "kibibyte": "KiB",
+    "mebibyte": "MiB",
+    "gibibyte": "GiB",
+    "creative": "{{units}} CU"
+  }
+}

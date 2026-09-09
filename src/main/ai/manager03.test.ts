@@ -1,91 +1,10 @@
-import type { MemorySnapshot } from '@shared/domain/aiMemory'
-import type { AiOverview } from '@shared/domain/aiOverview'
+import { STT_MODEL } from '@shared/domain/dictation'
 import type { LocalModel } from '@shared/domain/localModel'
-import { GIBI, localModel } from '@shared/domain/localModel-fixtures'
+import { localModel } from '@shared/domain/localModel-fixtures'
 import { DEFAULT_SETTINGS, type PartialSettings, type Settings } from '@shared/domain/settings'
 import { describe, expect, it, vi } from 'vitest'
-import type { HardwareFacts } from './hardwareProbe'
 import type { LocalRuntime } from './localRuntimes'
-import { createAiManager, type ManagerDeps } from './manager'
-
-const FACTS: HardwareFacts = {
-  platform: 'linux',
-  arch: 'x64',
-  cpuCount: 8,
-  physicalBytes: 96 * GIBI,
-  freeBytes: 34 * GIBI,
-  diskFreeBytes: 500 * GIBI,
-  gpu: null,
-  vram: null,
-}
-
-const SNAPSHOT: MemorySnapshot = {
-  domain: 'unified',
-  source: 'probe',
-  at: 0,
-  physicalBytes: 96 * GIBI,
-  appBudgetBytes: 48 * GIBI,
-  rendererReservedBytes: GIBI,
-  runtimeBytes: {},
-  headroomBytes: 2 * GIBI,
-  availableBytes: 34 * GIBI,
-}
-
-/** A runtime that installs nothing and holds nothing — what most of these cases need behind them. */
-const idleRuntime = (install: LocalRuntime['install'] = () => Promise.resolve()): LocalRuntime => ({
-  read: () => Promise.resolve({ ready: true, installed: new Set<string>(), loaded: new Set() }),
-  install,
-  remove: () => Promise.resolve(),
-})
-
-const manager = (over: Partial<ManagerDeps> = {}) =>
-  createAiManager({
-    facts: () => Promise.resolve(FACTS),
-    snapshotOf: () => SNAPSHOT,
-    settings: () => DEFAULT_SETTINGS,
-    writeSettings: () => undefined,
-    currentProjectPath: () => null,
-    readyClouds: () => [],
-    runtimes: { 'sherpa-onnx': idleRuntime(), ollama: idleRuntime() },
-    emit: () => {},
-    log: () => {},
-    now: () => 0,
-    idleUnloadMinutes: () => 0,
-    ollamaInstalled: () => false,
-    installOllama: () => Promise.resolve(),
-    engineMissing: () => Promise.resolve(null),
-    installEngine: () => Promise.resolve(),
-    ...over,
-  })
-
-/** One candidate of the whole overview, whichever row holds it. */
-const candidateOf = (overview: AiOverview, modelId: string) =>
-  overview.roles.flatMap(row => row.candidates).find(one => one.model.id === modelId)
-
-const holdingRuntime = (over: Partial<LocalRuntime> = {}): LocalRuntime => {
-  const held = new Set<string>()
-
-  return {
-    read: models =>
-      Promise.resolve({
-        ready: true,
-        installed: new Set(models.map(model => model.id)),
-        loaded: new Set(models.filter(model => held.has(model.id)).map(model => model.id)),
-      }),
-    install: () => Promise.resolve(),
-    remove: () => Promise.resolve(),
-    load: (model, options) => {
-      options.onProgress(0.5)
-      held.add(model.id)
-      return Promise.resolve(3 * GIBI)
-    },
-    unload: () => {
-      held.clear()
-      return Promise.resolve()
-    },
-    ...over,
-  }
-}
+import { candidateOf, holdingRuntime, manager } from './managerTest-fixtures'
 
 const withOwnModel = (model: LocalModel): Settings => ({
   ...DEFAULT_SETTINGS,
@@ -180,5 +99,53 @@ describe('a model the person supplied', () => {
     await ai.addOwnModel({ ...OWN, name: 'Renamed' })
 
     expect(written).toMatchObject({ ai: { ownModels: [{ id: OWN.id, name: 'Renamed' }] } })
+  })
+})
+
+describe('closing the door a release emptied', () => {
+  const QWEN = STT_MODEL
+
+  const idling = (over: Partial<LocalRuntime>) => {
+    const armed: { run: (() => void) | null } = { run: null }
+    const runtime = holdingRuntime()
+    const ai = manager({
+      idleUnloadMinutes: () => 10,
+      schedule: run => {
+        armed.run = run
+        return () => {
+          armed.run = null
+        }
+      },
+      runtimes: { 'sherpa-onnx': { ...runtime, ...over } },
+    })
+    return { ai, armed }
+  }
+
+  /**
+   * 🛑 Killing the process hands back the tensors AND the 208 MB of imports an unload never
+   * returned, so unloading first pays a routed round trip and a `gc.collect()` over gigabytes one
+   * line before dropping the process that held them.
+   */
+  it('kills the door instead of emptying it first', async () => {
+    const unload = vi.fn()
+    const close = vi.fn()
+    const { ai, armed } = idling({ unload, close })
+
+    await ai.load(QWEN.id)
+    armed.run?.()
+
+    await vi.waitFor(() => expect(close).toHaveBeenCalledOnce())
+    expect(unload).not.toHaveBeenCalled()
+  })
+
+  /** A runtime whose process the studio does not own has nothing to kill, and still empties. */
+  it('falls back to emptying a door it cannot close', async () => {
+    const unload = vi.fn()
+    const { ai, armed } = idling({ unload })
+
+    await ai.load(QWEN.id)
+    armed.run?.()
+
+    await vi.waitFor(() => expect(unload).toHaveBeenCalledOnce())
   })
 })

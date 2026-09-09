@@ -1,0 +1,24 @@
+{
+  "fileInfo": {
+    "title": "{{name}} hakkında bilgi",
+    "sections": {
+      "general": "Genel",
+      "media": "Medya",
+      "catalogue": "Katalog",
+      "git": "Git"
+    },
+    "gitUnchanged": "Bekleyen değişiklik yok",
+    "kind": {
+      "file": "Dosya",
+      "folder": "Klasör"
+    },
+    "type": "Tür",
+    "modified": "Değiştirilme",
+    "codec": "Kodek",
+    "identifier": "Tanımlayıcı",
+    "fingerprint": "İçerik parmak izi",
+    "added": "Eklenme",
+    "reading": "Klasör okunuyor…",
+    "missing": "Bu girdi artık proje klasöründe değil."
+  }
+}

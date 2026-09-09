@@ -27,7 +27,7 @@ import { DEFAULT_ONBOARDING, type OnboardingSettings } from './welcome'
 export type Theme = 'dark' | 'light' | 'system'
 export type ResolvedTheme = 'dark' | 'light'
 export type Density = 'compact' | 'comfortable'
-export type AssetBackend = 'local' | 'cloud'
+type AssetBackend = 'local' | 'cloud'
 
 /**
  * How much the log says, from nothing to everything. Ordered from quietest to loudest, which is
@@ -485,7 +485,6 @@ export function mergePartial(base: PartialSettings, next: PartialSettings): Part
 
 export {
   DEFAULT_SETTINGS_SECTION,
-  SETTINGS_ROUTE,
   SETTINGS_SECTION_IDS,
   isSettingsRoute,
   isSettingsSection,

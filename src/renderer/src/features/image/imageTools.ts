@@ -8,7 +8,6 @@ import {
   mdiCircleOutline,
   mdiClose,
   mdiCreation,
-  mdiCommentOutline,
   mdiCropFree,
   mdiCursorMove,
   mdiEllipse,
@@ -38,10 +37,14 @@ import type { CommandId } from '@shared/domain/command'
 import type { SelectionShape } from '@/engines/canvas/canvasSelection'
 import { SHAPE_KINDS, type ShapeKind } from '@/engines/canvas/canvasState'
 import type { CanvasTool } from '@/engines/canvas/canvasTool'
+import { SMART_SELECTION_MODEL } from '@shared/domain/smartSelectionInference'
 import type { ToolbarItem } from '@/components/Toolbar/tools'
 import type { AiEdit } from './aiActions'
+import { COMMENT_TOOL } from './imageCommentTool'
 
-export type ImageTool = ToolbarItem & { tool: CanvasTool }
+import type { ImageTool } from './imageTool'
+
+export type { ImageTool } from './imageTool'
 
 /**
  * Which command arms which button. The bar carries no key of its own: it reads them off the
@@ -175,6 +178,7 @@ export const IMAGE_TOOLS: readonly ImageTool[] = [
         labelKey: 'imageTools.smartSelect',
         descriptionKey: 'imageTools.smartSelectHint',
         icon: mdiAutoFix,
+        needsModel: SMART_SELECTION_MODEL,
       },
     ],
   },
@@ -282,13 +286,7 @@ export const IMAGE_TOOLS: readonly ImageTool[] = [
       },
     ],
   },
-  {
-    id: 'comment',
-    tool: 'comment',
-    labelKey: 'imageTools.comment',
-    descriptionKey: 'imageTools.commentHint',
-    icon: mdiCommentOutline,
-  },
+  COMMENT_TOOL,
   {
     id: 'eraser',
     tool: 'eraser',
@@ -432,6 +430,7 @@ export function canvasToolFor(toolId: string, modeId?: string): CanvasTool | nul
   if (toolId === 'region') {
     if (modeId === 'smart') return 'smartSelect'
   }
+  if (toolId === 'comment' && modeId === 'smart') return 'smartComment'
   // The pencil is not a mode of the brush for the engine: the two lay the same disc down and
   // differ on the edge, which is the whole of what the bundle promises about them.
   if (toolId === 'paint') return modeId === 'pencil' ? 'pencil' : 'brush'
@@ -470,6 +469,7 @@ export function cursorFor(toolId: string, modeId?: string): string {
   if (toolId === 'pointer') return modeId === 'hand' ? 'grab' : 'move'
   if (toolId === 'text') return 'text'
   if (toolId === 'region' && modeId === 'smart') return smartSelectionCursor()
+  if (toolId === 'comment' && modeId === 'smart') return smartSelectionCursor()
   return DRAWN_CURSORS[toolId] ?? 'crosshair'
 }
 const DRAWN_CURSORS: Record<string, string> = {

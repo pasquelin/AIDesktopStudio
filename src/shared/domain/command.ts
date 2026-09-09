@@ -15,7 +15,6 @@ export type {
   CommandScope,
   MenuAbility,
   MenuCheck,
-  SideViewCommand,
 } from './commandTypes'
 export { SIDE_VIEW_COMMAND, VIEW_SIDE_OF } from './commandTypes'
 

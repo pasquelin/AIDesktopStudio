@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { needsMeshConversion } from '@shared/domain/meshImport'
 import { openDocument } from '@/features/shell/components/dockviewApi'
 import { reportFailure } from '@/services/diagnostics'
@@ -35,7 +36,7 @@ export async function openCharacter(wanted: string): Promise<boolean> {
   })
 
   if (!created) {
-    reportFailure('assets.open', name, new Error('no document'))
+    reportFailure('assets.open', name, localizedError('missingDocument'))
     return false
   }
 

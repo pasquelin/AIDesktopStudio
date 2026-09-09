@@ -1,7 +1,8 @@
 import { readFileSync } from 'node:fs'
-import { join } from 'node:path'
+import { dirname, join, resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import manifest from '../../package.json'
+import { pathIsInside } from './export/pathIsInside'
 
 /**
  * What keeps the gate from redoing, on every call, work it has already done.
@@ -12,8 +13,8 @@ import manifest from '../../package.json'
  * None of this changes a verdict; it changes what gets recomputed. So nothing else in the suite
  * would go red the day a flag is dropped, which is why these cases exist.
  *
- * Under `src/main` rather than `src/shared`: these files sit at the repository root, and
- * `src/shared` compiles for the renderer.
+ * Under `src/main` rather than `src/shared`: these files are the repository's own
+ * configuration, and `src/shared` compiles for the renderer.
  */
 const ROOT = join(import.meta.dirname, '..', '..')
 const read = (name: string) => readFileSync(join(ROOT, name), 'utf8')
@@ -22,6 +23,10 @@ const read = (name: string) => readFileSync(join(ROOT, name), 'utf8')
  * The flag itself, not a prefix of a longer one.
  */
 const caches = (script: string) => /--cache(\s|$)/.test(script)
+
+/** Where a tsconfig parks its incremental state, or nothing when it names none. */
+const buildInfoOf = (config: string): string | undefined =>
+  read(config).match(/"tsBuildInfoFile": "([^"]+)"/)?.[1]
 
 describe('the gate not rereading what it has already judged', () => {
   it('runs Oxlint over source and build scripts, rejecting warnings', () => {
@@ -43,15 +48,20 @@ describe('the gate not rereading what it has already judged', () => {
    * never be what makes it green.
    */
   it('keeps reusable compiler caches out of the tree git tracks', () => {
-    for (const config of ['tsconfig.node.json', 'tsconfig.web.json']) {
-      expect(read(config)).toContain('"tsBuildInfoFile": "node_modules/')
+    for (const config of ['config/tsconfig.node.json', 'config/tsconfig.web.json']) {
+      const stated = buildInfoOf(config)
+
+      expect(stated).toBeDefined()
+      expect(
+        pathIsInside(join(ROOT, 'node_modules'), resolve(ROOT, dirname(config), stated ?? '')),
+      ).toBe(true)
     }
   })
 
   /**
    * `benchmark.include` is a setting of its own, with its own default — `**\/*.bench.*`, anchored
    * nowhere. A project that states its `include` and forgets this one keeps that default and
-   * walks the whole disk from the repository root, which here means `.claude/worktrees/`: on
+   * walks the whole disk from the repository root, which here means `worktrees/`: on
    * 2026-08-16 `pnpm bench` ran the benchmarks of two OTHER sessions' branches and printed their
    * numbers as this checkout's, 54 runs where 6 exist.
    *
@@ -78,18 +88,19 @@ describe('the gate not rereading what it has already judged', () => {
    * Held as a rule rather than left to habit: a glob narrowed back to `src` costs nothing to
    * write, reddens nothing, and puts eleven files back in the dark.
    */
-  it('points both gates at the build scripts, not only at the sources', () => {
+  it('points both gates at the build scripts and the configs, not only at the sources', () => {
     expect(manifest.scripts.lint).toContain('scripts')
+    expect(manifest.scripts.lint).toContain('config')
     // The pair, named rather than looped over: indexing the manifest by a string would need a
     // cast, and the two gates are two, not a list.
     for (const glob of [manifest.scripts.format, manifest.scripts['format:check']]) {
-      expect(glob).toContain('{src,scripts}')
+      expect(glob).toContain('{src,scripts,config}')
       expect(glob).toContain('mjs')
     }
   })
 
   it('lets tsc reuse its previous pass', () => {
-    expect(read('tsconfig.base.json')).toContain('"incremental": true')
+    expect(read('config/tsconfig.base.json')).toContain('"incremental": true')
   })
 
   /**
@@ -98,8 +109,8 @@ describe('the gate not rereading what it has already judged', () => {
    * A gain that vanishes while every flag still reads as set is what this case exists to catch.
    */
   it('gives each of the two typecheck passes its own state file', () => {
-    const node = read('tsconfig.node.json').match(/"tsBuildInfoFile": "([^"]+)"/)?.[1]
-    const web = read('tsconfig.web.json').match(/"tsBuildInfoFile": "([^"]+)"/)?.[1]
+    const node = buildInfoOf('config/tsconfig.node.json')
+    const web = buildInfoOf('config/tsconfig.web.json')
 
     expect(node).toBeDefined()
     expect(web).not.toBe(node)

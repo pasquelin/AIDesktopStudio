@@ -27,7 +27,7 @@ export function installScene(documentId: string, state: SceneState = createDefau
  * and for a graph (`shared/domain/graph.ts`). The prefix is what keeps a suite from reading a
  * graph where it meant to read a scene, whichever an editor's auto-import reaches first.
  */
-export const sceneNodeIn = (
+const sceneNodeIn = (
   state: DocumentStoreState<SceneState>,
   documentId: string,
   id: string,

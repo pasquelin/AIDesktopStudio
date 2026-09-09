@@ -35,30 +35,41 @@ function engine(job: PythonClient['job']): PythonClient {
     hardware: () => Promise.reject(new Error('unused')),
     memory: () => Promise.resolve([]),
     requirements: () => Promise.reject(new Error('unused')),
+    closeDoor: vi.fn(),
     close: vi.fn(),
     job,
   }
 }
 
+/** A door that completes every job it is given, answering a decode with the file it was handed. */
+const completing = () =>
+  vi.fn<PythonClient['job']>(async (op, params) => ({
+    v: 1,
+    evt: 'job.completed',
+    job: op,
+    ...decoded(op, params),
+  }))
+
+type SelectionDeps = Parameters<typeof createSmartSelectionHost>[0]
+
+const hostFor = (job: PythonClient['job'], over: Partial<SelectionDeps> = {}) =>
+  createSmartSelectionHost({
+    ensureLoaded: vi.fn(),
+    hold: () => vi.fn(),
+    engine: () => Promise.resolve(engine(job)),
+    loadedEpoch: () => 1,
+    readBitmap,
+    ...over,
+  })
+
 describe('SmartSelectionHost', () => {
   it('reuses the embedding for a second prompt on the same composite revision', async () => {
-    const job = vi.fn<PythonClient['job']>(async (op, params) => ({
-      v: 1,
-      evt: 'job.completed',
-      job: op,
-      ...decoded(op, params),
-    }))
+    const job = completing()
     const ensureLoaded = vi.fn()
     // The SAME client both times: the host re-encodes when the engine object changes, which a
     // fresh `engine(job)` per call would make it do.
     const python = engine(job)
-    const host = createSmartSelectionHost({
-      ensureLoaded,
-      hold: () => vi.fn(),
-      engine: () => Promise.resolve(python),
-      epoch: () => 1,
-      readBitmap,
-    })
+    const host = hostFor(job, { ensureLoaded, engine: () => Promise.resolve(python) })
 
     await host.run(request, new AbortController().signal)
     await host.run(
@@ -72,20 +83,9 @@ describe('SmartSelectionHost', () => {
   })
 
   it('re-encodes a composite that the model reloaded', async () => {
-    const job = vi.fn<PythonClient['job']>(async (op, params) => ({
-      v: 1,
-      evt: 'job.completed',
-      job: op,
-      ...decoded(op, params),
-    }))
+    const job = completing()
     let epoch = 1
-    const host = createSmartSelectionHost({
-      ensureLoaded: vi.fn(),
-      hold: () => vi.fn(),
-      engine: () => Promise.resolve(engine(job)),
-      epoch: () => epoch,
-      readBitmap,
-    })
+    const host = hostFor(job, { loadedEpoch: () => epoch })
 
     await host.run(request, new AbortController().signal)
     epoch += 1
@@ -108,13 +108,7 @@ describe('SmartSelectionHost', () => {
         ...decoded(op, params),
       }
     })
-    const host = createSmartSelectionHost({
-      ensureLoaded: vi.fn(),
-      hold: () => vi.fn(),
-      engine: () => Promise.resolve(engine(job)),
-      epoch: () => epoch,
-      readBitmap,
-    })
+    const host = hostFor(job, { loadedEpoch: () => epoch })
 
     await host.run(request, new AbortController().signal)
     await host.run(
@@ -141,13 +135,7 @@ describe('SmartSelectionHost', () => {
         ...decoded(op, params),
       }
     })
-    const host = createSmartSelectionHost({
-      ensureLoaded: vi.fn(),
-      hold: () => vi.fn(),
-      engine: () => Promise.resolve(engine(job)),
-      epoch: () => 1,
-      readBitmap,
-    })
+    const host = hostFor(job)
 
     const mask = await host.run(request, new AbortController().signal)
 
@@ -156,19 +144,8 @@ describe('SmartSelectionHost', () => {
   })
 
   it('does not start a queued request that was cancelled while waiting', async () => {
-    const job = vi.fn<PythonClient['job']>(async (op, params) => ({
-      v: 1,
-      evt: 'job.completed',
-      job: op,
-      ...decoded(op, params),
-    }))
-    const host = createSmartSelectionHost({
-      ensureLoaded: vi.fn(),
-      hold: () => vi.fn(),
-      engine: () => Promise.resolve(engine(job)),
-      epoch: () => 1,
-      readBitmap,
-    })
+    const job = completing()
+    const host = hostFor(job)
     const cancelled = new AbortController()
     const first = host.run(request, new AbortController().signal)
     // 🛑 Queued BEFORE it is cancelled: aborting first would only measure the guard on the way
@@ -185,20 +162,9 @@ describe('SmartSelectionHost', () => {
   })
 
   it('reads the mask out of the file the frame names, one grey channel per pixel', async () => {
-    const job = vi.fn<PythonClient['job']>(async (op, params) => ({
-      v: 1,
-      evt: 'job.completed',
-      job: op,
-      ...decoded(op, params),
-    }))
+    const job = completing()
     const read = vi.fn(readBitmap)
-    const host = createSmartSelectionHost({
-      ensureLoaded: vi.fn(),
-      hold: () => vi.fn(),
-      engine: () => Promise.resolve(engine(job)),
-      epoch: () => 1,
-      readBitmap: read,
-    })
+    const host = hostFor(job, { readBitmap: read })
 
     const mask = await host.run(request, new AbortController().signal)
 
@@ -209,20 +175,27 @@ describe('SmartSelectionHost', () => {
   })
 
   it('refuses a mask whose pixels do not fill the size the frame announces', async () => {
-    const job = vi.fn<PythonClient['job']>(async (op, params) => ({
+    const job = completing()
+    const host = hostFor(job, { readBitmap: () => Promise.resolve(bgra([0, 255])) })
+
+    await expect(host.run(request, new AbortController().signal)).rejects.toThrow('invalid mask')
+  })
+
+  /**
+   * What a frame stripped of its `mask` field reads as — the shape the protocol produced while
+   * its schema did not name the field, a zod object dropping whatever it does not list.
+   */
+  it('refuses an answer that names no mask file rather than reading one from nowhere', async () => {
+    const job = vi.fn<PythonClient['job']>(async op => ({
       v: 1,
       evt: 'job.completed',
       job: op,
-      ...decoded(op, params),
+      ...(op === 'selection.decode' ? { width: 2, height: 2 } : {}),
     }))
-    const host = createSmartSelectionHost({
-      ensureLoaded: vi.fn(),
-      hold: () => vi.fn(),
-      engine: () => Promise.resolve(engine(job)),
-      epoch: () => 1,
-      readBitmap: () => Promise.resolve(bgra([0, 255])),
-    })
+    const read = vi.fn(readBitmap)
+    const host = hostFor(job, { readBitmap: read })
 
     await expect(host.run(request, new AbortController().signal)).rejects.toThrow('invalid mask')
+    expect(read).not.toHaveBeenCalled()
   })
 })

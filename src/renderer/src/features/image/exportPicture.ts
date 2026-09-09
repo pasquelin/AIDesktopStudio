@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { exportTargetOf } from '@shared/domain/exportRegistry'
 import type { LayerPixels } from '@/engines/canvas/CanvasEngine'
 import { bytesToBase64 } from '@shared/base64'
@@ -24,7 +25,7 @@ export async function exportPicture(documentId: string, host: ExportHost): Promi
   // user dismissed the dialog, and an engine whose context is not up yet would look exactly the
   // same. The caller reports a rejection; it reports nothing at all for a dismissal.
   const image = await host.snapshot()
-  if (!image) throw new Error('this image has no picture to export yet')
+  if (!image) throw localizedError('imageExportEmpty')
 
   // The tab's own title, so the file is findable afterwards. A word rather than the id when there
   // is no title left to clean: an id is no more findable than a word, and shorter to read.
@@ -45,7 +46,7 @@ export async function exportLayeredPicture(
   const merged = await host.flatten()
   // The same refusal the save makes, and for the same reason: a stack read while the engine is
   // booting its GPU context is empty, and an empty PSD is a file that opens on nothing.
-  if (!merged) throw new Error('this image has no picture to export yet')
+  if (!merged) throw localizedError('imageExportEmpty')
 
   const { psdBytesOf } = await import('./psdDocument')
   const { oraStackOf, oraSurfacesOf } = await import('@/engines/canvas/oraDocument')

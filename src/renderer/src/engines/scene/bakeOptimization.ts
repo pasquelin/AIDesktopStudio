@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { IDENTITY_TRANSFORM } from '@shared/domain/transform'
 import { commandId, type Command } from '../core/history'
 import { newId } from '@/helpers/ids'
@@ -55,7 +56,7 @@ function groupsOf(
 
 function bakedNodeOf(nodes: readonly MeshNode[]): MeshNode {
   const first = nodes[0]
-  if (!first) throw new Error('cannot bake an empty group')
+  if (!first) throw localizedError('bakeGroupEmpty')
   return {
     ...first,
     id: newId(),

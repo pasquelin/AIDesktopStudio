@@ -1,7 +1,7 @@
 import { useMemo, useRef, type PointerEvent as ReactPointerEvent } from 'react'
 
 /** What one drag holds, and the pointer it belongs to. Mutable in place: this IS the ref. */
-export type Dragging<T> = T & { pointerId: number }
+type Dragging<T> = T & { pointerId: number }
 
 export type PointerDrag<T> = {
   /** Captures the pointer, so the gesture survives a cursor leaving the element it began on. */

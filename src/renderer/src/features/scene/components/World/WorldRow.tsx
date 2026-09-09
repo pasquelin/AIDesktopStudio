@@ -5,10 +5,10 @@ import { renameTerrain, renameTerrainEdit } from '@/engines/scene/reliefCommands
 import { renameScatter } from '@/engines/scene/scatterCommands'
 import { useScenes } from '@/stores/scenes'
 import type { WorldNode } from './worldNodes'
-import { type WorldRowLabels, type WorldRowProps } from './WorldRowLocks'
+import { type WorldRowProps } from './WorldRowLocks'
 import { WorldRowTitle } from './WorldRowTitle'
 
-export type { WorldRowLabels, WorldRowProps }
+export type { WorldRowProps }
 
 export const WorldRow = memo(function WorldRow(props: WorldRowProps) {
   const name = nameOf(props.node)

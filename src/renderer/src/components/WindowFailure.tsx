@@ -4,7 +4,7 @@ import { HINT_RIGHT } from '@/helpers/tooltip'
 import { WindowButton } from './WindowButton'
 
 /** The way out of a failure: what it offers, what the label leaves unsaid, and what it does. */
-export type WindowFailureAction = {
+type WindowFailureAction = {
   label: string
   hint: string
   onClick: () => void

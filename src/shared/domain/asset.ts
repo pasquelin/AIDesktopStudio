@@ -6,7 +6,7 @@ import type { ModelTextureUse } from './modelTextureUse'
 
 import type { AssetLocation, AssetType, SyncStatus } from './assetTypes'
 import { PICTURES } from './assetAccess'
-export type { AssetLocation, AssetType, SyncStatus } from './assetTypes'
+export type { AssetType, SyncStatus } from './assetTypes'
 export type { ModelTextureUse } from './modelTextureUse'
 
 /** The values, beside the type: a validator and a row reader both need to enumerate them. */
@@ -102,7 +102,7 @@ export const ASSET_ID_PREFIX = 'asset_'
  * computed from a full diff rather than from a selection, that is a change of policy in
  * `planSync`, not a migration.
  */
-export const SYNC_STATUSES: readonly SyncStatus[] = [
+const SYNC_STATUSES: readonly SyncStatus[] = [
   'none',
   'synced',
   'local-ahead',
@@ -449,7 +449,7 @@ export function isTimeless(asset: Asset | null): boolean {
  * Here rather than beside either producer: a still comes down with a generated asset and is
  * grabbed by ffmpeg for an imported one, and the two must not answer this differently.
  */
-export const POSTER_KINDS: readonly AssetType[] = ['mesh', 'video']
+const POSTER_KINDS: readonly AssetType[] = ['mesh', 'video']
 
 export function wantsPoster(type: AssetType): boolean {
   return POSTER_KINDS.includes(type)

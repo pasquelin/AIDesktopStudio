@@ -1,3 +1,4 @@
+import { localizedError, type DiagnosticKey } from '@shared/localizedError'
 import type { Asset } from '@shared/domain/asset'
 import { openDocument } from '@/features/shell/components/dockviewApi'
 import { reportFailure } from '@/services/diagnostics'
@@ -23,10 +24,10 @@ async function openSpecialAsset(asset: Asset, into?: AssetIntent): Promise<boole
   return opensAsCharacter(asset) ? openCharacter(asset.id) : null
 }
 
-function refusalFor(asset: Asset, intent: AssetIntent | null): string | null {
-  if (!intent?.takes(asset)) return 'no destination'
-  if (asset.location !== 'local') return 'not on disk'
-  if (!useProject.getState().project) return 'no project'
+function refusalFor(asset: Asset, intent: AssetIntent | null): DiagnosticKey | null {
+  if (!intent?.takes(asset)) return 'assetDestinationMissing'
+  if (asset.location !== 'local') return 'assetFileMissing'
+  if (!useProject.getState().project) return 'projectMissing'
   return null
 }
 
@@ -35,7 +36,7 @@ async function createAssetDocument(asset: Asset, intent: AssetIntent): Promise<b
     .getState()
     .create(intent.workspace, { title: asset.name, sourceAssetId: asset.id })
   if (!created) {
-    reportFailure('assets.open', asset.name, new Error('no document'))
+    reportFailure('assets.open', asset.name, localizedError('missingDocument'))
     return false
   }
   await (intent.become ?? intent.into)(created.id, asset)
@@ -85,7 +86,11 @@ export async function openAsset(asset: Asset, into?: AssetIntent): Promise<boole
 
   const refusal = refusalFor(asset, intent)
   if (refusal || !intent) {
-    reportFailure('assets.open', asset.name, new Error(refusal ?? 'no destination'))
+    reportFailure(
+      'assets.open',
+      asset.name,
+      localizedError(refusal ?? 'assetDestinationMissing', { name: asset.name }),
+    )
     return false
   }
   return createAssetDocument(asset, intent)

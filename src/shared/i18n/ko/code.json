@@ -1,0 +1,8 @@
+{
+  "code": {
+    "unavailable": "편집기를 불러오지 못했습니다.",
+    "noProblems": "문제 없음",
+    "openProblem": "이 줄에서 열기",
+    "at": "{{line, number}} 줄, {{column, number}} 열"
+  }
+}

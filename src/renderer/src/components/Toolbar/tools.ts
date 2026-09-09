@@ -19,8 +19,15 @@ export type ToolMode = {
   descriptionKey: string
   icon: string
   shortcut?: string
-  /** Declared but not wired yet: shown greyed, so the bar never hides what is coming. */
+  /** Greyed rather than hidden — the bar never conceals what is coming, nor what is missing. */
   disabled?: boolean
+  /**
+   * The model of THIS machine it cannot run without. DECLARED here rather than branched on in the
+   * view: two modes ride the same model, and the one the view named was greyed while the other
+   * was not. A model id, never an employment — a mode runs what its host loads, and the employment
+   * a cloud may serve is the batch edit's business, not the gesture's.
+   */
+  needsModel?: string
 }
 
 export type ToolbarItem = {

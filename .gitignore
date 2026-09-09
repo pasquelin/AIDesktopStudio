@@ -16,8 +16,15 @@ CLAUDE.md
 .idea/
 .vscode/
 # Outillage des sessions Claude : il vit dans le dépôt, il n'en est pas le contenu.
-# Les worktrees pèsent des gigaoctets et `skills/` n'est qu'un lien vers hors du dépôt.
+# `skills/` n'est qu'un lien vers hors du dépôt.
 .claude/
+.codex/
+# Les worktrees des sessions pèsent des gigaoctets. Ils sont à la RACINE depuis le 2026-09-08 :
+# `.claude/` les cachait, et toute règle du contrat devait alors nommer un chemin sous un dossier
+# d'outillage. Cette ligne suffit à knip, mesuré le 2026-09-08 — il lit bien `.gitignore` ; le
+# piège connu ne vise que `.git/info/exclude`, qu'il ignore quand `.git` est un FICHIER, ce qu'il
+# est dans un worktree, et c'est pour cela que `.agents/**` est nommé dans `knip.json`.
+worktrees/
 # Sorties d'exécution, jamais du code
 logs/
 # L'environnement et les caches du moteur Python : uv les matérialise, git ne les porte pas.
@@ -60,3 +67,6 @@ _site/
 
 # vitest json reporter output
 .vitest/
+
+# Manifeste de la release publique, écrit par le workflow du site.
+site/assets/release.json

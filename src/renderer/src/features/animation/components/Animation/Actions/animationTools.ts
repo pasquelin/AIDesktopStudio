@@ -18,9 +18,7 @@ export type AnimationToolsInput = Pick<SceneState, 'nodes' | 'selectedIds'> & {
 }
 
 /** The last thing selected, when it is a camera — the only anchor a shot can be opened for. */
-export function shotCameraOf(
-  input: Pick<AnimationToolsInput, 'nodes' | 'selectedIds'>,
-): SceneNode | null {
+function shotCameraOf(input: Pick<AnimationToolsInput, 'nodes' | 'selectedIds'>): SceneNode | null {
   const anchor = selectedNodes(input.nodes, input.selectedIds).at(-1) ?? null
   return anchor?.type === 'camera' ? anchor : null
 }

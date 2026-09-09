@@ -1,14 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import {
-  CONTROL,
-  FIELD,
-  FIELD_FILL,
-  NATIVE_SELECT,
-  ROW_LINE,
-  TITLE_BAR_GHOST,
-  TITLE_BAR_TRIGGER,
-  TOOLBAR_LABEL,
-} from './styles'
+import { ROW_LINE, TITLE_BAR_GHOST, TITLE_BAR_TRIGGER, TOOLBAR_LABEL } from './styles'
+import { withoutComments } from './sourceText'
 import { rewrites, spellsOut, WRITTEN_SOURCES } from './testHarness'
 
 /** The blind spot of `rewrites`: a site that never wore the constant leaves no call to read. */
@@ -20,17 +12,6 @@ const spellsOutRowLine = spellsOut(ROW_LINE.split(' '))
  * shape and keep their own `gap-2 px-3 py-1`: a pill is as wide as the space it stands for.
  */
 const respacesTitleBar = rewrites('TITLE_BAR_GHOST', ['h-(--sc-control)', 'px-2'])
-
-/**
- * The way a field was made to fill its line before it had a constant. Both words together and
- * never one, which is what `rewrites` gives: `min-w-0 flex-1` is the studio's commonest pair of
- * layout classes, worn by thirty-odd elements that are not fields at all, and either half on its
- * own is a caller dividing its own row rather than reaching for this shape.
- */
-const refillsField = rewrites('FIELD', ['min-w-0', 'flex-1'])
-
-/** The shape the four native pickers had before they were given a constant. */
-const repadsControl = rewrites('CONTROL', ['px-1'])
 
 /**
  * All three words are required, and `text-tiny` is what does the work: `text-muted … px-1` alone
@@ -77,73 +58,80 @@ describe('the word a bar sets beside its buttons', () => {
     expect(wearing.length).toBeGreaterThanOrEqual(4)
   })
 })
-describe('the OS list wearing the control language', () => {
-  it('is the control, plus the room around its text and nothing more', () => {
-    expect(NATIVE_SELECT.split(' ')).toEqual([...CONTROL.split(' '), 'px-1'])
+/**
+ * Every source with its prose taken out, stripped ONCE: the four sweeps below each read the whole
+ * renderer, and `withoutComments` over 1 762 modules is 8 ms a pass.
+ */
+const CODE: { path: string; code: string }[] = WRITTEN_SOURCES.map(([path, source]) => ({
+  path,
+  code: withoutComments(source),
+}))
+
+const opening = (tag: RegExp): string[] =>
+  CODE.filter(({ code }) => tag.test(code))
+    .map(({ path }) => path)
+    .sort()
+
+describe('a control that goes straight to the platform', () => {
+  /**
+   * A `<select>` is written once, in `Select`, and every other surface asks for that component.
+   * Four pickers had each drawn their own, which is how the studio came to hold a bordered one, a
+   * borderless one, the browser's chevron and daisyUI's triangles at the same time.
+   */
+  it('opens a list in `Select` and nowhere else', () => {
+    expect(opening(/<select[\s/>]/)).toEqual([expect.stringContaining('/Select.tsx')])
   })
 
-  it('is worn rather than padded again at the call', () => {
-    const offenders = WRITTEN_SOURCES.filter(
-      ([path, source]) => !GUARDED.includes(path) && repadsControl(source),
-    ).map(([path]) => path)
-
-    expect(offenders).toEqual([])
+  /** `Checkbox` holds a value one fills in, `Toggle` a setting that acts where it stands. */
+  it('opens a tick box in `Checkbox` and `Toggle`, and nowhere else', () => {
+    expect(opening(/type="checkbox"/)).toEqual([
+      expect.stringContaining('/Checkbox.tsx'),
+      expect.stringContaining('/Toggle.tsx'),
+    ])
   })
 
-  it('leaves alone the callers whose own padding is not this one', () => {
-    // The search field of `CollectionBar`, which pulls its left inset in for the magnifier, and
-    // the colour swatch of the image space — both wear `CONTROL` and neither is a picker.
-    expect(repadsControl("cn(CONTROL, 'w-full px-1')")).toBe(true)
-    expect(repadsControl("cn(CONTROL, 'w-full py-0 pr-2 pl-7')")).toBe(false)
-    expect(repadsControl("cn(CONTROL, 'w-(--sc-control) cursor-pointer border-none p-0.5')")).toBe(
-      false,
+  /**
+   * The three areas left outside `TextArea` are TRANSPARENT and say so: the card, the note and
+   * the picture behind them carry the frame. `DynamicFormControl` is the fourth and is not — its
+   * border sits on the wrapper that holds the accessory row.
+   */
+  it('opens a text area in `TextArea` and in the four that carry no frame', () => {
+    expect(opening(/<textarea[\s/>]/)).toEqual(
+      [
+        './DynamicForm/DynamicFormControl.tsx',
+        './TextArea.tsx',
+        '../features/assistant/components/Assistant/Conversation/AssistantConversationView.tsx',
+        '../features/image/components/ImageDocument/ImageDocumentComment.tsx',
+        '../features/image/components/ImageDocument/ImageDocumentText.tsx',
+      ].sort(),
     )
   })
 
   /**
-   * It was extracted from four pickers and is now worn by ONE, which is the stronger rule: a
-   * second wearer means a `<select>` was drawn by hand again instead of through `SelectField`,
-   * and that is how twenty-one of them each read their own value back into their own union.
+   * The tag itself. `Input`, `Checkbox`, `Toggle` and `SliderHandle` DRESS one; the rest of the
+   * list is what has not been given a component yet, written out rather than waved through — the
+   * four colour swatches, the single radio of the AI settings, two pieces of plumbing and the
+   * fixture a shortcut test types into.
+   *
+   * 🛑 It reads the TAG: a control built through `createElement('input')` stays green.
    */
-  it('is worn by `SelectField`, and by nothing else', () => {
-    const wearing = WRITTEN_SOURCES.filter(
-      ([path, source]) => !GUARDED.includes(path) && source.includes('NATIVE_SELECT'),
-    ).map(([path]) => path)
-
-    expect(wearing).toEqual([expect.stringContaining('SelectField.tsx')])
-  })
-})
-
-describe('the field that takes what its line has left', () => {
-  it('is the field, plus the room it claims and nothing more', () => {
-    expect(FIELD_FILL.split(' ')).toEqual([...FIELD.split(' '), 'min-w-0', 'flex-1'])
-  })
-
-  it('is worn rather than spread again at the call', () => {
-    const offenders = WRITTEN_SOURCES.filter(
-      ([path, source]) => !GUARDED.includes(path) && refillsField(source),
-    ).map(([path]) => path)
-
-    expect(offenders).toEqual([])
-  })
-
-  it('leaves alone the callers whose own width is not this one', () => {
-    // The shape the four fields had before the constant, then the rename dialog's field — held
-    // to the width of its box rather than to a share of a row — and a colour swatch, which is
-    // square. Last, one half of the pair: a caller stopping an overflow it can see.
-    expect(refillsField("cn(FIELD, 'text-tiny min-w-0 flex-1')")).toBe(true)
-    expect(refillsField("cn(FIELD, 'w-full text-xs')")).toBe(false)
-    expect(refillsField("cn(FIELD, 'px-1')")).toBe(false)
-    expect(refillsField("cn(FIELD, 'min-w-0 truncate')")).toBe(false)
-  })
-
-  // The partner of the rule above: a constant nobody wears is a dead export.
-  it('is worn by the four fields it was extracted from', () => {
-    const wearing = WRITTEN_SOURCES.filter(
-      ([path, source]) => !GUARDED.includes(path) && source.includes('FIELD_FILL'),
+  it('opens a field in the components that dress one, and in the list below', () => {
+    expect(opening(/<input[\s/>]/)).toEqual(
+      [
+        './AssetDropField.tsx',
+        './Checkbox.tsx',
+        './ColorField.tsx',
+        './DynamicForm/DynamicFormControl.tsx',
+        './Input.tsx',
+        './SliderHandle.tsx',
+        './Toggle.tsx',
+        '../features/image/components/ImageDocument/ImageDocumentBrush.tsx',
+        '../features/image/components/ImageDocument/ImageDocumentComment.tsx',
+        '../features/settings/components/Ai/AiChoiceRow.tsx',
+        '../features/settings/components/Setting/Row/SettingRowColorControl.tsx',
+        '../hooks/shortcuts-fixtures.tsx',
+      ].sort(),
     )
-
-    expect(wearing.length).toBeGreaterThanOrEqual(4)
   })
 })
 
@@ -208,7 +196,6 @@ describe('the shape of a row line', () => {
       '../features/material/components/StylesSection/StylesSectionRow.tsx',
       '../features/project/components/Project/ProjectRow.tsx',
       './Row.tsx',
-      './TreeViewGap.tsx',
       './TreeViewRow.tsx',
     ])
   })

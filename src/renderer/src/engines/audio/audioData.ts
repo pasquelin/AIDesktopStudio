@@ -157,9 +157,9 @@ export function peaksFromSamples(data: AudioData, perSecond: number): Float32Arr
 export type SilenceRange = { from: Us; to: Us }
 
 /** Anything below this is silence, unless the caller says otherwise. */
-export const DEFAULT_SILENCE_DB = -50
+const DEFAULT_SILENCE_DB = -50
 /** Shorter gaps are breath and rhythm, not silence to remove. */
-export const DEFAULT_MIN_SILENCE: Us = 400_000
+const DEFAULT_MIN_SILENCE: Us = 400_000
 
 /**
  * The quiet stretches at the two ends. Only the ends: cutting a gap out of the middle of a

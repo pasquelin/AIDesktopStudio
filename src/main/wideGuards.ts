@@ -35,9 +35,18 @@ import { resolveSpecifier } from './sourceFiles.ts'
  * 134 the same day, the welcome reading its shipped clip folders off the disk; 125 against 135 on
  * 2026-09-07, when `no-unpainted-framing` swept the renderer for framings that draw nothing; 126
  * against 136 the same day, `site-leaves-pages` reading the workflow beside the one that already
- * did.
+ * did; 127 against 137 on 2026-09-08, when `localizedErrors.i18n.test.ts` added diagnostic coverage; 128
+ * against 138 the same day, `no-physical-direction` sweeping the shared components for a layout
+ * written from the left rather than from the inline start; 129 against 139 the same day, when
+ * `rerunEverything` put the short loop's whole-suite trigger under a guard of its own; 130 against 140
+ * the same day, when `agents-contract` put the agent contract's own wiring under a guard;
+ * 131 against 141 the same day, when `daisy-gauge` read the stylesheet to hold daisyUI's
+ * own gauges against `--sc-control`; 132 against 142 the same day, when
+ * `installEngineLibraries` read `engine/pyproject.toml` to tie the embedded torch pin to the
+ * `+cu126` build it names; 133 against 143 the same day, `gateCache` reading the tree through git
+ * to fingerprint what a link of the gate reads.
  */
-export const LEAST_GUARDS = 126
+export const LEAST_GUARDS = 133
 
 /**
  * How far the floor may sit below the real count before it stops meaning anything.

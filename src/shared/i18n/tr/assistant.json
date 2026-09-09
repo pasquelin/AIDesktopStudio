@@ -1,0 +1,1756 @@
+{
+  "assistant": {
+    "actions": {
+      "inputMapsList": {
+        "title": "Girdi eşlemelerini listele",
+        "description": "Klavye/oyun kumandası girdi eşlemelerini listeler."
+      },
+      "inputMapRead": {
+        "title": "Bir girdi eşlemesini oku",
+        "description": "Bir klavye/oyun kumandası girdi eşlemesini yoluna göre okur."
+      },
+      "inputMapWrite": {
+        "title": "Bir girdi eşlemesi yaz",
+        "description": "Doğrulanmış bir girdi eşlemesi yazar."
+      },
+      "animationGraphsList": {
+        "title": "Animasyon grafiklerini listele",
+        "description": "Projenin animasyon grafiklerini listeler."
+      },
+      "animationGraphRead": {
+        "title": "Bir animasyon grafiğini oku",
+        "description": "Bir animasyon grafiğini yoluna göre okur."
+      },
+      "animationGraphWrite": {
+        "title": "Bir animasyon grafiği yaz",
+        "description": "Doğrulanmış bir animasyon grafiği yazar."
+      },
+      "animationRetargetStatus": {
+        "title": "Animasyon yeniden hedeflemesini oku",
+        "description": "Bir hareket için ölçülmüş yeniden hedefleme uyumunu okur."
+      },
+      "commandRunStudioCommand": {
+        "title": "Bir komut çalıştır",
+        "description": "Bir stüdyo komutunu tanımlayıcısıyla, tam olarak bir klavye kısayolunun ya da bir menü öğesinin yapacağı gibi tetikler. Komutun uygulandığı belgenin önde olması gerekir. Bir tanımlayıcı [kapsam].[fiil] biçiminde okunur ve studio.state önde olanın kapsamını yanıtlar: bir belgede yapılan bir düzenlemeyi geri almak [kapsam].undo — scene.undo, canvas.undo, sequence.undo — ve onu yerine koymak [kapsam].redo demektir. BİR çağrı BİR hareketi geri alır, dolayısıyla ikinci bir çağrı ondan öncekini geri alır: iki kez göndermek yerine belgeyi yeniden okuyun. Başka hiçbir eylem bir düzenlemeyi geri almaz; files.undoFileOperation yalnızca projenin dosyalarını kapsar."
+      },
+      "workspaceOpen": {
+        "title": "Bir çalışma alanı aç",
+        "description": "Bir çalışma alanına geçer ve istendiğinde orada bir belge oluşturur — her seferinde YENİ bir tane, dolayısıyla zaten açık bir belgeye dönüş yolu değildir. Her zaman bir başlık verin: başlık olmadan bir adlandırma penceresi açılır ve çağrı bir kişiyi bekler."
+      },
+      "modelsSearch": {
+        "title": "Model ara",
+        "description": "Üretim motorlarını model adına ya da tanımlayıcısına, aileye ve işleme göre arar. Sorgu isteğe bağlıdır ve üretilecek içeriği değil, motoru adlandırır; hiçbir motor sorguyla eşleşmezse uyumlu aile yine de sunulur. Ekranda hiçbir şeyi değiştirmez."
+      },
+      "modelsSelect": {
+        "title": "Model seç",
+        "description": "Bir üretim ailesi için bir modeli devreye alır. Üretici’nin formu bunun ardından o modelin kendi alanları üzerine yeniden kurulur."
+      },
+      "generatorPrepare": {
+        "title": "Bir üretimi hazırla",
+        "description": "Üretici’nin formunu bir model ve parametreleriyle doldurur, sonra gösterir. Hiçbir şey gönderilmez."
+      },
+      "generatorReadArmedGeneration": {
+        "title": "Devreye alınanı oku",
+        "description": "Üretici’nin modelini, işlemini, kaynaklarını ve hedefini olduğu hâliyle yanıtlar. Hiçbir şey göndermez ve hiçbir şey harcamaz."
+      },
+      "generatorSubmit": {
+        "title": "Hazırlanan üretimi başlat",
+        "description": "Formu olduğu hâliyle gönderir. Bu modeli sunan hesaptan harcar ve bir tahmin varsa önce o bildirilir."
+      },
+      "jobsList": {
+        "title": "İşleri listele",
+        "description": "Süren üretimleri ve nereye geldiklerini, stüdyonun izlediği hâliyle döndürür. Ekranda hiçbir şeyi değiştirmez."
+      },
+      "promptSuggest": {
+        "title": "İstem çeşitlemeleri öner",
+        "description": "Bir cümleyi, Üretici’de devreye alınmış modele göre biçilmiş birkaç çeşitlemeye dönüştürür ve yanlarında giden ayarları verir. Hiçbir şey harcamaz ve ekranda hiçbir şeyi değiştirmez."
+      },
+      "promptTranslate": {
+        "title": "Bir istemi İngilizceye çevir",
+        "description": "Bir metni, modellerin üzerinde eğitildiği dile taşır ve hangi dili tanıdığını söyler. Hiçbir şey harcamaz ve ekranda hiçbir şeyi değiştirmez."
+      },
+      "actionsFind": {
+        "title": "Eylem bul",
+        "description": "Stüdyonun yayımladığı tüm eylemlerde anahtar sözcüklere göre arar ve eşleşenleri alanlarıyla birlikte döndürür. Ekranda hiçbir şeyi değiştirmez. “X konusunda ne yapabilirsin” sorusuna yanıt veren de budur: sözcüğü arayın, sonra dönenleri söyleyin."
+      },
+      "chatClose": {
+        "title": "Konuşmayı kapat",
+        "description": "Sonucun görülebilmesi için konuşmayı ekrandan kaldırır. En son çağırın ve yalnızca sonuç oradayken — yanıtın kendisi sözcüklerken asla, izin istenirken de asla."
+      },
+      "promptDescribeStyle": {
+        "title": "Referansların stilini betimle",
+        "description": "Üretici’nin formunda duran referans görüntüleri okur ve istem olarak kullanılabilir bir betimleme döndürür. Hiçbir şey harcamaz."
+      },
+      "studioState": {
+        "title": "Stüdyonun durumunu oku",
+        "description": "Açık projeyi, etkin çalışma alanı ile yüzeyi, önde olanı işaretlenmiş hâlde tüm açık belgeleri, aile başına devreye alınmış modeli ve stüdyonun oturum açıp açmadığını döndürür. Bir komut tetiklemeden önce bunu sorun: bir komut yalnızca etkin olan yüzeye ulaşır."
+      },
+      "documentsList": {
+        "title": "Projenin belgelerini listele",
+        "description": "Proje klasörünün taşıdığı düzenlenebilir belgeleri — katmanlı görüntüler, sahneler, kurgular, materyaller — bir sekmede açık olsun ya da olmasın döndürür. Projenin diğer dosyaları, görüntüler ve modeller dâhil, burada değildir."
+      },
+      "documentOpen": {
+        "title": "Bir belge aç",
+        "description": "Proje klasöründeki bir belgeyi yoluna göre açar ve öne getirir, gerekirse çalışma alanını değiştirir. Yol, bir listelemenin verdiği yoldur."
+      },
+      "documentActivate": {
+        "title": "Bir belgeyi öne getir",
+        "description": "Zaten açık bir belgeyi etkin sekme yapar, böylece yüzeyine yönelen komutlar ona ulaşır. Yanlış yüzeyde olduğu için reddedilen bir komutun yanıtı budur. Belgeyi kimliğiyle, yoluyla ya da stüdyonun tırnak içinde gösterdiği başlığıyla adlandırın — iki belgenin paylaştığı bir başlık hiçbirini adlandırmaz. Zaten açık bir belge için “X’i yeniden aç”, “X’e geri dön” budur, file.open değil."
+      },
+      "documentClose": {
+        "title": "Bir belgeyi kapat",
+        "description": "Açık bir belgenin sekmesini kapatır. Diske hiç ulaşmamış çalışma onunla birlikte kaybolur."
+      },
+      "documentRename": {
+        "title": "Bir belgeyi yeniden adlandır",
+        "description": "Bir belgeye tek bir hareketle hem diskte hem ekranda başka bir ad verir. Belge kimliğini korur, dolayısıyla açık bir sekme kapanmadan yeniden adlandırılır."
+      },
+      "documentSave": {
+        "title": "Bir belgeyi kaydet",
+        "description": "Adı verilen belgeyi projeye yazar ve yerine ulaşmasını bekler. Kimlik verilmezse önde olanı. Bir şey yazılıp yazılmadığını yanıtlar: dokunulmamış bir sekmenin yazacak bir şeyi yoktur ve bu bir başarısızlık değildir."
+      },
+      "documentDeleteFromDisk": {
+        "title": "Bir belgeyi sil",
+        "description": "Belgenin dosyasını projeden çıkarır, sonra sekmesini kapatır. Kaydedilmemiş çalışma onunla gider: dosya gitmektedir ve onu yok etmeden önce kaydetmenin bir anlamı olmaz."
+      },
+      "activityRecent": {
+        "title": "Son etkinliği oku",
+        "description": "Stüdyonun son zamanlarda kaydettiklerini — üretimler, dosya işlemleri, başarısızlıklar — en yeniden başlayarak döndürür. Bir eylemin gerçekte ne yaptığı böyle öğrenilir. Bir üretimin nasıl GEÇTİĞİNİ ise job.readCloudGeneration yanıtlar; onu bütün olarak döndürür."
+      },
+      "projectsList": {
+        "title": "Son projeleri listele",
+        "description": "Son projeleri, stüdyonun gösterdiği sırayla, her biri onu açan mutlak yoluyla birlikte yanıtlar — bu yolu project.open eylemine geçirin."
+      },
+      "projectOpen": {
+        "title": "Bir proje klasörü aç",
+        "description": "Bu makinedeki mutlak bir yoldan bir projeyi, bir kişinin kullanacağı sistem iletişim kutusunu açmadan açar. Klasörün gerçekten bir proje olup olmadığını yanıtlar."
+      },
+      "projectClose": {
+        "title": "Açık projeyi kapat",
+        "description": "Açık projeyi kapatır ve stüdyoyu projesiz bırakır: tüm paneller boşalır ve katalog yanıt vermeyi keser. Klasöre dokunulmaz ve son projeler arasında kalır."
+      },
+      "projectCreate": {
+        "title": "Bir proje klasörü oluştur",
+        "description": "Bir kişinin kullanacağı sistem iletişim kutusunu açmadan bir proje oluşturur ve açar. Bir AD yeter — stüdyo projeyi, yukarıda belirtilen, bu kişinin projelerini tuttuğu yere koyar. Cümle bir klasör adlandırdığında, folder alanı projenin hangi klasörde oluşturulacağını söyler."
+      },
+      "projectForget": {
+        "title": "Bir projeyi son projelerden çıkar",
+        "description": "Bir projeyi, kısayol listesinden başka bir şey olmayan son projeler listesinden çıkarır. KLASÖRE DOKUNULMAZ ve hiçbir şey silinmez: projeyi yeniden açmak satırı geri koyar. Klasörü çöp kutusuna taşımak için project.trash gerekir. projects.list eyleminin yanıtladığı mutlak yolla adlandırılır."
+      },
+      "projectTrash": {
+        "title": "Bir projeyi çöp kutusuna taşı",
+        "description": "Projenin KLASÖRÜNÜ ve içindeki her şeyi — belgeler, varlıklar, katalog — sistemin çöp kutusuna taşır. Stüdyoda bunu geri alan hiçbir şey yoktur: yalnızca sistemin çöp kutusu geri verebilir. Proje açıksa kapatılır ve satırı son projelerden ayrılır. Klasöre dokunmadan yalnızca satırı çıkarmak için project.forget gerekir. projects.list eyleminin yanıtladığı mutlak yolla adlandırılır."
+      },
+      "fileOpen": {
+        "title": "Projenin bir dosyasını aç",
+        "description": "Proje klasörünün taşıdığı herhangi bir dosyayı — bir görüntü, bir 3B model, bir materyal, bir belge — onu düzenleyen alanda, Gezgin’deki bir çift tıklamanın yaptığı gibi açar. Buradaki hiçbir düzenleyicinin almadığı bir dosya, sahibi olan programa devredilir."
+      },
+      "filesList": {
+        "title": "Bir klasörü listele",
+        "description": "Açık projedeki bir klasörün girdilerini, dosyalar ve klasörler birlikte, her birinin bilindiği yolla döndürür. Projenin kökünü listelemek için klasör vermeyin."
+      },
+      "filesSearch": {
+        "title": "Projenin dosyalarında ara",
+        "description": "Açık projenin tamamında ada göre arar ve eşleşen girdileri yollarıyla döndürür. Ekranda hiçbir şeyi değiştirmez. Bulmak açmak değildir: bulunanı file.open açar, file.rename ise yeniden adlandırır."
+      },
+      "filesMove": {
+        "title": "Dosyaları taşı",
+        "description": "Projenin dosyalarını ve klasörlerini onun başka bir klasörüne taşır. Disk değişir, yine de Gezgin bunu sonradan geri alabilir."
+      },
+      "filesCopy": {
+        "title": "Dosyaları kopyala",
+        "description": "Projenin dosyalarını ve klasörlerini, asıllarını yerlerinde bırakarak onun başka bir klasörüne kopyalar."
+      },
+      "filesDuplicate": {
+        "title": "Dosyaları çoğalt",
+        "description": "Adı verilen her dosyanın ya da klasörün bir kopyasını yanında oluşturur; adı, hiçbir şeyin üzerine yazılmaması için stüdyo seçer."
+      },
+      "filesTrash": {
+        "title": "Dosyaları çöp kutusuna taşı",
+        "description": "Projenin dosyalarını ve klasörlerini sistemin çöp kutusuna gönderir. Nelerin götürüldüğü son etkinlikte listelenir."
+      },
+      "fileRename": {
+        "title": "Bir dosyayı yeniden adlandır",
+        "description": "Projenin bir dosyasına ya da klasörüne, hâlihazırda bulunduğu klasörde başka bir ad verir. Başka bir program onu eski adıyla tanıyor olabilir."
+      },
+      "fileFacts": {
+        "title": "Bir dosyanın bilgilerini oku",
+        "description": "Dosya sisteminin bir girdi hakkında kaydettiklerini — türünü, bayt cinsinden boyutunu, ne zaman oluşturulduğunu ve en son ne zaman değiştiğini — döndürür. Ekranda hiçbir şeyi değiştirmez."
+      },
+      "folderNew": {
+        "title": "Bir klasör oluştur",
+        "description": "Açık projenin bir klasörü içinde yeni bir klasör oluşturur. Kendisine verilen yolla yanıtlar; ad alınmışsa bu yol farklı olabilir."
+      },
+      "filesUndoFileOperation": {
+        "title": "Son toplu dosya değişikliğini geri al",
+        "description": "Proje dosyalarının son taşınmasını, yeniden adlandırılmasını ya da çoğaltılmasını geri alır. Yığın ana süreçte yaşar ve tüm pencereleri kapsar, ancak çöp kutusuna taşıma geri alınmaz."
+      },
+      "filesRedoFileOperation": {
+        "title": "Son toplu dosya değişikliğini yinele",
+        "description": "Az önce geri alınan toplu dosya değişikliğini, tam olarak Gezgin’in yaptığı gibi yeniden oynatır. Neyin taşındığını ve neyin reddedildiğini yanıtlar."
+      },
+      "filesCanUndoRedo": {
+        "title": "Dosya geri alma yığınını oku",
+        "description": "Geri almanın ya da yinelemenin bir şey yapıp yapmayacağını, ikisini de denemeden söyler. İki menü satırını, tıklanmadan önce soluklaştıran budur."
+      },
+      "fileReveal": {
+        "title": "Bir dosyayı sistemin dosya yöneticisinde göster",
+        "description": "Finder’ı ya da sistemin dosya gezginini, adı verilen dosya seçili hâlde açar. Yol ana süreçten asla çıkmaz."
+      },
+      "projectRename": {
+        "title": "Bir projeyi yeniden adlandır",
+        "description": "Bir projeyi yeniden adlandırır; bu, klasörünü TAŞIR: bir proje klasörüyle adlandırılır, başka hiçbir şeyle değil. İçindekiler onunla birlikte gider ve hiçbir şey silinmez. projects.list eyleminin yanıtladığı mutlak yolla adlandırılır, dolayısıyla kapalı bir proje de yeniden adlandırılabilir — ve yanıtlanan yol YENİ olandır."
+      },
+      "modelsReadGenerationModelFields": {
+        "title": "Bir modelin kendi girdilerini oku",
+        "description": "Bir üretim modelinin kabul ettiği alanları, türleri ve sınırlarıyla birlikte, stüdyonun formunu kurduğu hâliyle döndürür. Hazırlanmış bir üretimin parametreleri bununla doldurulur."
+      },
+      "costEstimate": {
+        "title": "Bir üretimin ne kadara mal olacağını tahmin et",
+        "description": "Bir modeli ve bir parametre kümesini hiçbir şey çalıştırmadan fiyatlandırır. Parametreleri, models_readGenerationModelFields eyleminin yanıtladığı biçimi alır. API bu modeli fiyatlandırmayı reddettiğinde, bir sayı uydurmak yerine hiçbir tutar yanıtlamaz."
+      },
+      "jobReadCloudGeneration": {
+        "title": "Bir işi oku",
+        "description": "Bir üretimi bütün olarak döndürür — durumunu, nereye geldiğini, ne ürettiğini, ne kadara mal olduğunu ve başarısız olduysa nedenini. “Son üretimimin sonucu” istendiğinde, onun nasıl GEÇTİĞİNİ söyleyen budur; ürettiği görüntü ya da 3B model projenin kataloğundadır."
+      },
+      "jobWaitForCloudGeneration": {
+        "title": "Bir işin bitmesini bekle",
+        "description": "Bir üretim başarılı olana, başarısız olana ya da iptal edilene kadar bekler, sonra onu ürettiği varlıklarla birlikte döndürür. Bekleme süresi dolarsa işi olduğu hâliyle döndürür; bu bir başarısızlık değil, bir yanıttır."
+      },
+      "jobCancelCloudGeneration": {
+        "title": "Bir işi iptal et",
+        "description": "Hâlâ kuyrukta olan ya da süren bir üretimi durdurur. Hâlihazırda harcanan geri verilmez."
+      },
+      "taskCancelLocalTask": {
+        "title": "Yerel bir işi iptal et",
+        "description": "Stüdyonun bu makinede yürüttüğü bir işi — bir render, bir içe aktarma, bir dizinleme — yarım yazılmış dosyasıyla birlikte durdurur. Birinin hâlâ sürüp sürmediğini yanıtlar; çoktan bitmiş bir kimlik sürmüyordur."
+      },
+      "usageReport": {
+        "title": "Kullanım raporunu oku",
+        "description": "Hesabın yedi, otuz bir ya da yüz yirmi günlük bir pencerede ne harcadığını, kullanım penceresinin gösterdiği hâliyle döndürür. “Ne kadar kredim kaldı” sorusuna yanıt veren budur."
+      },
+      "assetsSearchProjectCatalogue": {
+        "title": "Projenin kataloğunda ara",
+        "description": "BU projenin kendi kataloğunda, bu makinede, metne, türe ve etiketlere göre arar ve yalnızca üretilmiş olanlarla sınırlanabilir. Katalog varlıkları taşır, projenin dosyalarını değil: kişinin adlandırdığı bir dosya, projenin dosyalarında aranarak bulunur. Hesabın uzak kitaplığı ise bambaşka bir yerdedir. Kataloğun bir varlık ÜZERİNE taşıdıkları — nereden geldiği, nasıl etiketlendiği — asset.get eylemidir; bunun döndürdüğü kimlikler üzerinde çalışır."
+      },
+      "assetsCounts": {
+        "title": "Projenin kataloğunu say",
+        "description": "Bu projenin bu makinede kaç görüntü, video, ses varlığı, 3B model, skybox ve animasyon taşıdığını, onları listeleyerek değil katalogda sayarak döndürür. Sayısı sıfır olanlar dâhil, her tür döndürülür."
+      },
+      "assetGet": {
+        "title": "Varlıkları oku",
+        "description": "Kataloğun, adı verilen varlıklar hakkında taşıdığı her şeyi döndürür — nerede oldukları, nereden geldikleri ve nasıl etiketlendikleri. Biten bir üretimin döndürdüğü kimlikler üzerinde çağrılması gereken budur."
+      },
+      "assetUpdate": {
+        "title": "Bir varlığı düzelt",
+        "description": "Bir varlığın adını, etiketlerini ya da stüdyonun uzantısından okuduğu türü değiştirir. Etiketler bütün olarak değiştirilir, dolayısıyla boş bir liste onları gerçekten temizler."
+      },
+      "assetsRemoveFromLibrary": {
+        "title": "Varlıkları kaldır",
+        "description": "Varlıkları projenin kitaplığından, istendiğinde uzak kitaplıktan da çıkarır. Nelerin kaldırıldığı son etkinlikte listelenir."
+      },
+      "assetsCaptionImages": {
+        "title": "Görüntülere açıklama yaz",
+        "description": "Adı verilen görüntüleri API’ye okutur ve orada gördüğünü varlığın adı olarak yazar. Yalnızca kitaplığın zaten tanıdığı görüntülere açıklama yazılabilir, dolayısıyla tümüyle yerel bir seçim sıfır yanıtlar."
+      },
+      "assetsListMissing": {
+        "title": "Dosyası kaybolmuş varlıkları bul",
+        "description": "Adı verilen varlıklar arasından, kataloğun artık orada olmayan bir dosya beklediklerini döndürür. Hiç yerel dosyası olmamış bir varlık asla bunlardan biri değildir, çünkü ondan bir şey beklenmiyordu."
+      },
+      "assetExtractTextures": {
+        "title": "Bir modelin görüntülerini çıkar",
+        "description": "Bir 3B dosyanın taşıdığı görüntüleri içinden çeker ve onları kendi başlarına birer varlık olarak projenin kitaplığına alır. Yeni oluşturduğu satırları döndürür."
+      },
+      "assetReveal": {
+        "title": "Bir varlığı sistemin dosya yöneticisinde göster",
+        "description": "Finder’ı ya da sistemin dosya gezginini bir varlığın dosyası üzerinde açar. Yalnızca uzak kitaplıkta yaşayan bir varlığın gösterecek bir şeyi yoktur ve bunu söyler."
+      },
+      "canvasState": {
+        "title": "Düzenlenmekte olan görüntüyü oku",
+        "description": "Öndeki görüntüyü yanıtlar — boyutunu, çözünürlüğünü, kılavuzlarını ve yığının düzleştirilmiş her katmanını: kimlik, ad, tür ve her birinin taşıdığı. VARSAYILANINDA DURAN bir alan atlanır ve yokluğu o varsayılanı imler: bir katman görünürdür, tam opaktır, kilitsizdir, normal karıştırılır, kırpılmamış ve dönüştürülmemiştir."
+      },
+      "animationReopenMotion": {
+        "title": "Bir karakter hareketini yeniden aç",
+        "description": "Animasyon atölyesini, adı verilen model için bir animasyon varlığında kaydedilmiş hareketle değiştirir. Varlık, bu stüdyonun oluşturduğu hareket verisini taşımalıdır."
+      },
+      "aiLocalState": {
+        "title": "Yerel yapay zekâ çalışma zamanını oku",
+        "description": "Yerel yapay zekâ adaylarını, kurulu ve yüklü durumlarını, rollerini, makineye uygunluklarını, indirmeleri ve çalışma zamanının hazır olup olmadığını döndürür."
+      },
+      "aiManageLocalRuntime": {
+        "title": "Yerel yapay zekâ çalışma zamanını yönet",
+        "description": "Yerel bir yapay zekâ adayını seçer, kurar, kaldırır, yükler ya da bellekten çıkarır; ya da çalışma zamanını okur ve onarır. Önce ai.localState okunmalıdır. Motoru okumak dışındaki her işlem stüdyoyu değiştirir ve onay ister."
+      },
+      "canvasSetDocumentProperties": {
+        "title": "Görüntü belgesinin özelliklerini ayarla",
+        "description": "Öndeki görüntünün baskı çözünürlüğünü, renk modunu ya da bit derinliğini değiştirir. Önce canvas.state okunmalıdır; adı verilmeyen değerler değişmeden kalır."
+      },
+      "canvasGenerationComment": {
+        "title": "Görüntü üzerindeki üretim yorumlarını yönet",
+        "description": "Öndeki görüntü üzerinde, bir sonraki üretim için bir yönerge ekler, günceller ya da kaldırır. Koordinatlar ve isteğe bağlı çokgen belge piksellerini kullanır. Bir katman kimliği yeni bir notu o katmanla sınırlar; kimlik verilmezse not görüntünün tamamına uygulanır. Bekleyen yorumları ve tanımlayıcılarını canvas.state döndürür."
+      },
+      "canvasResize": {
+        "title": "Görüntüyü yeniden boyutlandır",
+        "description": "Öndeki görüntünün çerçevesini değiştirir. İstendiğinde katmanları da onunla birlikte yeniden ölçekler, aksi hâlde onları oldukları yerde bırakır; görüntü boyutu ile tuval boyutu arasındaki bütün fark budur."
+      },
+      "canvasSetPixelArt": {
+        "title": "Piksel sanatı modunu ayarla",
+        "description": "Öndeki görüntüyü bir piksel sanatı ızgarasına oturtur ya da ızgaradan çıkarır. Bir sütun ve satır sayısı verildiğinde, eserin hücre cinsinden tam olarak o ölçüde olması için belgeyi yeniden boyutlandırır. 🛑 Yeniden boyutlandırma piksel geçmişini düşürür — çoktan konmuş fırça darbeleri kalır, ama ⌘Z artık onları geri almaz. Yeniden boyutlandırmak ve ızgarayı koymak İKİ geri almadır: ilk ⌘Z ızgarayı kaldırır ve boyutu bırakır."
+      },
+      "canvasDrawPixels": {
+        "title": "Piksel çiz",
+        "description": "Öndeki görüntüye hücreleri tek seferde ve tek bir geri almayla koyar — tek tek adlandırılmış hücreler, bir çizgi, dolu ya da içi boş bir dikdörtgen veya bir doldurma. Koordinatlar belge pikselleri değil, ızgara hücreleri cinsindendir."
+      },
+      "canvasCrop": {
+        "title": "Görüntüyü kırp",
+        "description": "Çerçeveyi, belge koordinatlarında verilen bir dikdörtgene kapatır. Katmanlar yerlerini korur, dolayısıyla dışarıda kalan, kesilen olur."
+      },
+      "canvasFlipOrRotate": {
+        "title": "Görüntüyü çevir ya da döndür",
+        "description": "Görüntüyü bir eksene göre aynalar ya da iki yönden birine çeyrek tur döndürür. Bir çeyrek tur çerçevenin genişliği ile yüksekliğini takas eder, dolayısıyla dikey bir görüntü yatay olur."
+      },
+      "layerSetMaskOptions": {
+        "title": "Bir katmanın maskesini ayarla",
+        "description": "Bir MASKENİN — bir seçimden oyulmuş, bir katmanın taşıdığı bir biçim — örttüğünü gizleyip gizlemediğini ve katmanla birlikte gidip gitmediğini söyler ya da maskeyi büsbütün kaldırır. Katmanın KENDİSİNİ gizlemek layer.setOpacityBlendAndVisibility eylemidir. Hiç maske taşımayan bir katman reddedilir: maske oymak motora aittir ve seçimden maske yapan komutla gerçekleşir."
+      },
+      "guideAdd": {
+        "title": "Kılavuz koy",
+        "description": "Belge koordinatlarında verilen yere dikey ya da yatay bir kılavuz koyar ve ona az önce verilen kimliği yanıtlar. Yanındaki iki eylem, kılavuzu bu kimlikle taşır ve kaldırır."
+      },
+      "guideMove": {
+        "title": "Kılavuzu taşı",
+        "description": "Bir kılavuzun durduğu yeri, cetvelden yapılan bir sürüklemenin yapacağı gibi, belge koordinatlarında değiştirir. Hiçbir şeyin karşılık vermediği bir kimlik reddedilir."
+      },
+      "guideRemove": {
+        "title": "Kılavuzu kaldır",
+        "description": "Bir kılavuzu, onu cetveline geri bırakan bir sürüklemenin yaptığı gibi görüntüden alır. Tüm kılavuzları tek seferde temizlemek, başka bir yolla tetiklenen, komut kaydına ait bir komuttur."
+      },
+      "layerAdd": {
+        "title": "Katman ekle",
+        "description": "Öndeki görüntünün yığınının en üstüne yeni bir piksel, metin ya da ayarlama katmanı koyar ve ona verilen kimlikle yanıtlar. Bir ayarlama katmanı, taşıdığı ayarı adlandırmalıdır."
+      },
+      "layerRemove": {
+        "title": "Bir katmanı kaldır",
+        "description": "Öndeki görüntünün yığınından bir katmanı çıkarır. O belgenin başka herhangi bir düzenlemesi gibi geri alınır."
+      },
+      "layerSelect": {
+        "title": "Bir katmanı devreye al",
+        "description": "Bir katmanı devreye alınmış olan yapar; görüntü çalışma alanının araçları onun üzerinde çalışır. Bu, bir düzenlemeden çok yığına bakma biçimidir, dolayısıyla geçmişe hiçbir şey eklemez."
+      },
+      "layerRename": {
+        "title": "Bir katmanı yeniden adlandır",
+        "description": "Öndeki görüntünün bir katmanına başka bir ad verir. Kimlik değişmez, dolayısıyla ona gönderme yapan hiçbir şey kaybolmaz."
+      },
+      "layerSetOpacityBlendAndVisibility": {
+        "title": "Bir katmanın bileşimini ayarla",
+        "description": "Bir katmanın opaklığını, dolgu opaklığını, karışım modunu, görünürlüğünü ya da kırpmasını değiştirir. Her alan isteğe bağlıdır ve verilmeyen tam olarak olduğu gibi bırakılır. Bir katmanı gizleyen ve yeniden gösteren BUDUR — “bu katmanı maskele” visible alanını false yapar ve maskeyle hiçbir ilgisi yoktur."
+      },
+      "layerTransform": {
+        "title": "Bir katmanı taşı, ölçekle ya da döndür",
+        "description": "Bir katmanı çerçevenin içinde taşır, ölçekler ya da döndürür. Dönme derece cinsinden verilir ve atlanan her alan, katmanın hâlihazırdaki değerini korur."
+      },
+      "layerEditTextLayer": {
+        "title": "Bir metin katmanının sözcüklerini ayarla",
+        "description": "Bir metin katmanının ne söylediğini, bunu hangi yazı tipi ve boyutta söylediğini, rengini, hizalamasını ve kutusunu değiştirir. Sözcük yerine piksel taşıyan bir katmanı reddeder; komut onu aksi hâlde olduğu gibi bırakırdı."
+      },
+      "layerReorderInStack": {
+        "title": "Bir katmanı yeniden sırala",
+        "description": "Bir katmanı yığında başka bir yere, bir grubun içine ya da dışına taşır. Sıfır indisi yığının altıdır, yani gözün en son gördüğü yerdir."
+      },
+      "layerDuplicate": {
+        "title": "Bir katmanı çoğalt",
+        "description": "Bir katmanı, alt öğeleri dâhil, tam kendi üstüne kopyalar; her kopyaya yeni bir kimlik verilir. Kopyanın kimliğiyle yanıtlar. Görüntünün DOSYASINI files.duplicate kopyalar; bu ise içindeki bir katmanı kopyalar."
+      },
+      "layerGroup": {
+        "title": "Katmanları grupla",
+        "description": "Üst düzey katmanları tek bir grupta toplar; grup bundan sonra bir bütün olarak hareket eder. Grubun kendi kimliğiyle yanıtlar."
+      },
+      "layerUngroup": {
+        "title": "Bir grubu dağıt",
+        "description": "Bir grubu dağıtır, alt öğelerini grubun yığında durduğu yerde bırakır."
+      },
+      "layerMergeDown": {
+        "title": "Bir katmanı aşağı birleştir",
+        "description": "Bir katmanı, yığındaki kendi düzeyi içinde, altındaki katmanın içine katlar. Sonuç alttaki katmanın kimliğini korur."
+      },
+      "sequenceState": {
+        "title": "Üzerinde çalışılan kurguyu oku",
+        "description": "Öndeki kurguyu yanıtlar — ayarlarını, süresini, oynatma kafasını ve seçili olanı — sonra her izi klipleriyle, sınırlarıyla, kaynağa giriş noktalarıyla, hızlarıyla, solmalarıyla ve seviyeleriyle birlikte. VARSAYILANINDA DURAN bir alan atlanır ve yokluğu o varsayılanı imler: bir satır duyulur ve kilitli değildir, bir klip başından itibaren 1 hızında gider, solması yoktur ve kaydedildiği seviyededir."
+      },
+      "sequenceSeek": {
+        "title": "Oynatma kafasını yerleştir",
+        "description": "Öndeki kurgunun oynatma kafasını, mikrosaniye cinsinden verilen ana taşır. Bu bir değişiklik değildir: geçmişe hiçbir şey girmez ve geri alma onu geri getirmez."
+      },
+      "clipAdd": {
+        "title": "Kurguya bir klip koy",
+        "description": "Kitaplıktaki bir varlığı, öndeki kurgunun bir izine, verilen anda ya da oynatma kafasının altına koyar. İhtiyaç duyduğu izleri açar ve bir kayıt ses taşıyorsa görüntüsünü sesine bağlar."
+      },
+      "clipRemove": {
+        "title": "Kurgudan bir klip çıkar",
+        "description": "Bir klibi izinden, ona bağlı yarısıyla birlikte kaldırır. Kapladığı yer, komşularının üzerine kapanmak yerine boş kalır."
+      },
+      "clipMove": {
+        "title": "Bir klibi taşı",
+        "description": "Bir klibi verilen ize ve ana taşır, orada duran her neyse üzerine yazar. Kilitli bir iz ya da başka türden bir iz hiçbir şey kabul etmez."
+      },
+      "clipTrim": {
+        "title": "Bir klibin bir kenarını buda",
+        "description": "Bir klibin giriş ya da çıkış noktasını verilen ana çeker, ardındaki kaynağı asla aşmadan. Bir sabit görüntünün aşacak kaynağı yoktur ve serbestçe uzar. “at”, ZAMAN ÇİZELGESİ üzerinde bir andır, asla bir süre değil: bir klibi iki saniye uzatmak için “end” değerini okuyun ve ona 2000000 ekleyip gönderin."
+      },
+      "clipSplit": {
+        "title": "Bir klibi ikiye böl",
+        "description": "Bir klibi verilen anda böler ve iki yarısını uç uca bırakır. Klibin dışındaki bir anın kesecek bir şeyi yoktur ve yapılmış diye bildirilmek yerine reddedilir."
+      },
+      "clipFade": {
+        "title": "Bir klibin solmasını ayarla",
+        "description": "Bir KURGU KLİBİNİN giriş ya da çıkış solmasına istenen uzunluğu verir; bu yüzden önde bir video ya da ses kurgusu bulunmalıdır. Klibin kendisinden uzun iki rampa, onun taşıyabileceğine indirilir. Bir 3B sahnenin sinematiğindeki bir solma için timeline.addSceneCue eylemi gerekir."
+      },
+      "clipGain": {
+        "title": "Bir klibin seviyesini ayarla",
+        "description": "Bir klibin seviyesini desibel cinsinden değiştirir; sıfır, kaydı kaydedildiği hâlde bırakır. Değer, oynatmanın taşıyabileceğiyle sınırlanır."
+      },
+      "clipSpeed": {
+        "title": "Bir klibin hızını ayarla",
+        "description": "Bir klibin ne kadar hızlı oynatıldığını değiştirir; bir, kendi özgün hızıdır. Kurgudaki süresi buna uyar, okuduğu kaynak aynı kalır."
+      },
+      "clipUnlink": {
+        "title": "Görüntüyü sesinden ayır",
+        "description": "Bir kaydın iki yarısını ayırır; böylece birini taşımak, budamak ya da kesmek artık diğerine ulaşmaz. Sonrasında hiçbir şey onları yeniden bağlamaz."
+      },
+      "clipSelect": {
+        "title": "Bir klibi işaret et",
+        "description": "Denetçinin ve hedefsiz hareketlerin üzerinde çalışacağı klibi adlandırır. Bu bir değişiklik değildir ve geri alma onu geri getirmez."
+      },
+      "trackAdd": {
+        "title": "Bir iz ekle",
+        "description": "Diğerlerinin altına bir görüntü ya da ses izi açar. Bir görüntü izi bir sesten hiçbir şey taşıyamaz; tersi de geçerlidir."
+      },
+      "trackRemove": {
+        "title": "Bir izi kaldır",
+        "description": "Bir izi, taşıdığı her kliple birlikte kurgudan çıkarır. Kilitli bir iz kaldırılmaz."
+      },
+      "trackReorderTracks": {
+        "title": "İzlerin sırasını değiştir",
+        "description": "Bir izi verilen satır sayısı kadar taşır; bu, neyin neyi örttüğünü değiştirir. Satırlar YUKARIDAN sayılır, dolayısıyla negatif bir sayı izi yukarı, pozitif bir sayı aşağı taşır — sequence.state onları bu sırayla yanıtlar ve ilki en üstteki olur."
+      },
+      "trackRename": {
+        "title": "Bir izi yeniden adlandır",
+        "description": "Bir ize, başlık sütununun gösterdiği adı verir. Kimliği hiç değişmez."
+      },
+      "trackSetMuteSoloLockHeight": {
+        "title": "Bir izin nasıl çalışıldığını ayarla",
+        "description": "Bir izin susturmasını, solosunu, kilidini ya da yüksekliğini değiştirir. Bu dördü, ne yapıldığını değil nasıl çalışıldığını söyler ve bu yüzden geçmişe hiç girmez."
+      },
+      "skyboxState": {
+        "title": "Düzenlenmekte olan gökyüzünü oku",
+        "description": "Öndeki gökyüzünü yanıtlar — eşdikdörtgensel kaynağını, görüntü ayarlarını, güneşinin nerede durduğunu ve ne renk olduğunu, ortamının neyi aydınlattığını — ayrıca bir üretimden geldiyse onu üreteni."
+      },
+      "skyboxSetViewportOptions": {
+        "title": "Bir gökyüzüne nasıl bakılacağını ayarla",
+        "description": "Gökyüzünün hangi izdüşümle çizileceğini, lensin ne kadar açılacağını ve deneme nesnelerinin içinde durup durmayacağını seçer. Bir belgeye bakmanın her biçimi gibi bu da bir oturum durumudur ve hiçbiri kaydedilmez."
+      },
+      "skyboxAdjustImage": {
+        "title": "Bir gökyüzünün görüntüsünü ayarla",
+        "description": "Pozlamayı, kontrastı, doygunluğu, sıcaklığı, renk tonunu, ufuk dönüşünü ya da bulanıklığı değiştirir. Her alan isteğe bağlıdır ve verilmeyen olduğu gibi kalır."
+      },
+      "skyboxResetAdjustments": {
+        "title": "Görüntü ayarlarını nötre döndür",
+        "description": "Gökyüzünün tüm görüntü ayarlarını tek seferde, tek bir geçmiş girdisiyle nötr değerlerine getirir. Kaynak ile güneşe dokunulmaz."
+      },
+      "skyboxSetSun": {
+        "title": "Güneşi yerleştir ve ayarla",
+        "description": "Öndeki gökyüzündeki güneşin yüksekliğini, azimutunu, şiddetini ya da rengini değiştirir. Her iki açı da, sahnenin her yerinde olduğu gibi, radyan cinsindendir."
+      },
+      "skyboxSetPreviewLighting": {
+        "title": "Gökyüzünün neyi aydınlattığını ayarla",
+        "description": "Gökyüzünün deneme nesnelerini ne kadar güçlü aydınlattığını değiştirir ve görüntünün onların arkasına çizilip çizilmeyeceğine, yoksa yalnızca onları aydınlatmakla mı yetineceğine karar verir."
+      },
+      "skyboxSetSourceImage": {
+        "title": "Bir gökyüzünün görüntüsünü seç",
+        "description": "Kitaplıktaki eşdikdörtgensel bir görüntüyü öndeki gökyüzüne asar. Varlığın bu makinede bir dosyası olmalıdır; hâlâ bulutta duran bir görüntünün çözecek bir şeyi yoktur."
+      },
+      "materialState": {
+        "title": "Düzenlenmekte olan materyali oku",
+        "description": "Öndeki materyali yanıtlar — sekiz kanalı ve onları dolduranları, renk, pürüzlülük ve döşeme gibi tüm render ayarlarını, bir de önizlemenin nasıl sunulduğunu."
+      },
+      "materialSetSurfaceSettings": {
+        "title": "Bir materyali ayarla",
+        "description": "Öndeki materyalin renk tonunu, pürüzlülüğünü, metalikliğini, kabartmasını, oklüzyonunu, ışımasını, döşemesini, kaydırmasını ya da dönüşünü değiştirir. Her alan isteğe bağlıdır."
+      },
+      "materialSetPreviewEnvironment": {
+        "title": "Bir materyal önizlemesini neyin aydınlatacağını seç",
+        "description": "Önizlemeyi yordamsal stüdyoyla, varlık kimliğiyle adlandırılan bir proje görüntüsüyle ya da başlığıyla adlandırılan bir gökyüzü belgesiyle aydınlatır — önizleme o zaman, bir sahnenin yaptığı gibi, onun derecelendirilmiş görüntüsünü ve şiddetini alır."
+      },
+      "materialSetPreviewDisplay": {
+        "title": "Bir materyalin önizlemesini ayarla",
+        "description": "Önizlemeyi aydınlatan ortamın şiddetini ve dönüşünü, arka planın çizilip çizilmediğini, otomatik dönmeyi ve dikiş vurgusunu değiştirir."
+      },
+      "materialSetChannelImage": {
+        "title": "Bir kanalı doldur ya da boşalt",
+        "description": "Kitaplıktaki bir görüntüyü öndeki materyalin sekiz kanalından birine koyar. Varlık adlandırılmazsa kanal doldurulmak yerine boşaltılır."
+      },
+      "documentExport": {
+        "title": "Öndeki belgeyi projeye dışa aktar",
+        "description": "Öndeki belgeyi — görüntü, sahne, gökyüzü, materyal ya da kurgu — projenin bir klasörüne yazar; ad verilmediğinde başlığını taşır. Bir kurgu OpenTimelineIO olarak çıkar, yani bir film değil kesimin kendisi; kare kare render, dışarıdaki hiçbir şeyin tutamayacağı bir oturum ister. Hedef, projenin dışına çıkamaz."
+      },
+      "gitStashDrop": {
+        "title": "Rafa kaldırılan bir değişikliği at",
+        "description": "Rafa kaldırılan bir değişikliği, geri uygulamadan yığından kaldırır. Taşıdıkları hiç kaydedilmedi, dolayısıyla hiçbir şey onları geri vermez."
+      },
+      "gitResolve": {
+        "title": "Bir birleştirme çakışmasını çöz",
+        "description": "Adı verilen dosyalar için çakışmanın iki tarafından birini korur. Diğer tarafın taşıdıkları çalışma kopyasından silinir."
+      },
+      "gitAbortMerge": {
+        "title": "Süren birleştirmeyi bırak",
+        "description": "Depoyu birleştirmeden önce durduğu yere getirir ve birleştirmenin çalışma kopyasına çoktan yazdıklarını geri alır."
+      },
+      "gitRemotes": {
+        "title": "Uzak depoları listele",
+        "description": "Bildirilen uzak depoları, adları ve adresleriyle birlikte yanıtlar. Bir gönderimin gideceği yer burasıdır."
+      },
+      "gitAddRemote": {
+        "title": "Bir uzak depo bildir",
+        "description": "Verilen ad altında bir uzak depo ekler. Yalnızca bununla hiçbir şey gönderilmez ya da getirilmez; bu, yerel yapılandırmaya yazar."
+      },
+      "gitFetch": {
+        "title": "Uzak referansları getir",
+        "description": "Uzak deponun nerede durduğunu okur; çalışma kopyanızda hiçbir şeyi değiştirmez ve hiçbir şey yayımlamaz. Bir çekmenin zararsız yarısıdır."
+      },
+      "gitPull": {
+        "title": "Getir ve birleştir",
+        "description": "Uzak depoyu getirir ve geçerli dala birleştirir; bu, çalışma kopyasını yeniden yazar. Bir çakışma orada durur ve sonrasında çözülür. Yalnızca uzak deponun taşıdıkları sorulduğunda bu yanlış çağrıdır: git.fetch eylemi onu çalışma kopyasına dokunmadan okur."
+      },
+      "gitPush": {
+        "title": "Uzak depoya yayımla",
+        "description": "Geçerli dalı uzak depoya gönderir. Stüdyonun bu makineden çıkan tek hareketidir ve buradaki hiçbir şey onu geri almaz."
+      },
+      "cloudBrowseAccountLibrary": {
+        "title": "Uzak kitaplığa göz at",
+        "description": "Hesabın kitaplığının bir sayfasını, metne, etiketlere ya da türe göre daraltılmış hâlde yanıtlar. Sayfalama bir imleçle yapılır ve toplam yoktur — API hiç vermez."
+      },
+      "cloudExplorePublicFeed": {
+        "title": "Herkesin yayımladıklarına göz at",
+        "description": "Verilen türde herkese açık akışın bir sayfasını, en yeniden başlayarak yanıtlar. Bu varlıklar sizin değildir ve onlara bakmak hiçbirini getirmez. Birini baytlarıyla birlikte projeye indiren cloud.pull eylemidir."
+      },
+      "cloudFindSimilarPublished": {
+        "title": "Bir varlığa benzeyenleri bul",
+        "description": "Adı verilene benzeyen yayımlanmış varlıkları yanıtlar; o varlığın kendisi kendi sonuçlarından çıkarılır. Referansı seçmek çağıranın işidir."
+      },
+      "cloudPreviewSync": {
+        "title": "Bir eşitlemenin ne yapacağını gör",
+        "description": "Bir gönderimin ya da bir getirmenin, adı verilen her varlığa ne yapacağını, tek bir istek harcanmadan önce söyler. Hiçbir şey gönderilmez ve hiçbir şey getirilmez."
+      },
+      "cloudPull": {
+        "title": "Uzak varlıkları getir",
+        "description": "Varlıkları baytlarıyla birlikte projeye alır ve her birinin ne yaptığını söyler. Yarıda kalan bir indirme, çoktan yazdıklarını korur."
+      },
+      "cloudPush": {
+        "title": "Varlıkları hesaba gönder",
+        "description": "Yerel varlıkları hesabın kitaplığına gönderir; orada kalırlar. Bu ailenin arkasında bir şey bırakan tek hareketidir."
+      },
+      "stylesList": {
+        "title": "Materyal stillerini listele",
+        "description": "Kaydedilmiş materyal stillerini, kimlikleri, adları ve tuttukları değerlerle birlikte yanıtlar. Her projenin dışında yaşarlar ve makineye bağlıdırlar."
+      },
+      "styleSave": {
+        "title": "Materyali stil olarak kaydet",
+        "description": "Öndeki belgenin materyalini verilen ad altında kaydeder. Ad bir temeldir; zaten alınmışsa stüdyo onu benzersiz kılar."
+      },
+      "styleRename": {
+        "title": "Bir materyal stilini yeniden adlandır",
+        "description": "Kaydedilmiş bir stile adını verir. Stilin başka hiçbir şeyi değişmez ve kimliği aynı kalır."
+      },
+      "styleRemove": {
+        "title": "Bir materyal stilini sil",
+        "description": "Kaydedilmiş bir stili kaldırır. Her projenin dışında yaşar, dolayısıyla hiçbir şey onu geri vermez — ne geri alma ne de Gezgin."
+      },
+      "authState": {
+        "title": "Stüdyonun oturum açıp açmadığını söyle",
+        "description": "Bir API anahtarının yerinde olup olmadığını ve stüdyonun hangi hesap üzerinde çalıştığını söyler. Anahtarın kendisini asla yanıtlamaz; o, ana süreçten çıkmaz."
+      },
+      "windowState": {
+        "title": "Pencerenin durumunu oku",
+        "description": "Pencerenin boyutunu, büyütülmüş ya da tam ekran olup olmadığını ve hangi dilde çizdiğini — ana sürecin gerçekte karar verdiği dili — yanıtlar."
+      },
+      "windowFullScreen": {
+        "title": "Tam ekranı aç ya da kapat",
+        "description": "Pencereyi tam ekrana sokar ya da oradan çıkarır. Bu bir geçiştir ve iki durumdan birini istemenin bir yolu yoktur."
+      },
+      "settingsOpen": {
+        "title": "Ayarları bir bölümde aç",
+        "description": "Ayarlar penceresini istenen bölümde açar, zaten açıksa oraya getirir. Bir ayarı okumak ve yazmak onun açılmasını gerektirmez."
+      },
+      "updatesState": {
+        "title": "Güncellemenin nerede olduğunu oku",
+        "description": "Uygulama güncellemesinin nerede olduğunu söyler — görünürde bir şey yok, indiriliyor ya da bir sonraki kapanışta kurulmaya hazır. Onu kuran ve stüdyoyu yeniden başlatan updates.install eylemidir."
+      },
+      "mediaCapabilities": {
+        "title": "Stüdyonun neyi çözebildiğini söyle",
+        "description": "Bu makinenin medya tarafında nelere yetkin olduğunu söyler; bu, ffmpeg’in orada olmasına bağlıdır. O olmadan içe aktarma yine çalışır ve arayüz neyi yapamadığını söyler."
+      },
+      "mediaIndexFileInPlace": {
+        "title": "Bir dosyaya katalog satırı ver",
+        "description": "Proje klasörünün zaten taşıdığı bir dosyayı, kopyalamadan kataloğa alır. İçe aktarmanın sistem iletişim kutusu açmayan yarısıdır."
+      },
+      "fontsList": {
+        "title": "Kurulu yazı tiplerini listele",
+        "description": "Bir metnin yazılabileceği yazı tiplerini yanıtlar; önce stüdyoyla birlikte gelenler, sonra bu makineye kurulu olanlar. Her biri nereden geldiğiyle gelir; bir yazı tipi koymak bunu adı kadar ister."
+      },
+      "favoritesListPinnedRecipes": {
+        "title": "Sabitlenmiş tarifleri listele",
+        "description": "Projeye sabitlenmiş tarifleri, onları üreten model ve yeniden yapmayı bilen çalışma alanıyla birlikte yanıtlar. Bir tarif, bir üretimi yeniden başlatmaya yetecek kadarını saklar."
+      },
+      "favoritePinAssetRecipe": {
+        "title": "Bir varlığın tarifini sabitle",
+        "description": "Açık projedeki bir varlığı üreteni sabitler, böylece yeniden yapılabilir. Kimsenin üretmediği bir varlığın saklanacak tarifi yoktur."
+      },
+      "favoriteUnpinAssetRecipe": {
+        "title": "Sabitlenmiş bir tarifi kaldır",
+        "description": "Bir tarifi sabitlenmişler listesinden çıkarır. Onun ürettiği varlığa dokunulmaz."
+      },
+      "fileInfoOpenWindow": {
+        "title": "Bir dosyanın bilgilerini aç",
+        "description": "Projenin bir dosyasını betimleyen pencereyi açar — boyutunu, türünü, geçmişini ve kataloğun onun hakkında bildiklerini."
+      },
+      "mirrorOpenVideoReturnWindow": {
+        "title": "Video dönüşünü aç",
+        "description": "Dönüş penceresini açar, zaten oradaysa öne getirir. Kurgunun oynattığını gösterir ve düzenleme işinden hiçbir şey taşımaz."
+      },
+      "helpOpenStudioWindow": {
+        "title": "Bir stüdyo penceresi aç",
+        "description": "Kullanıcı kılavuzunu, lisanslar penceresini, kullanım penceresini, günlüğü ya da karşılamayı açar — zaten oradaysa öne getirir. Bunlar ana sürecin pencereleridir ve kaydın hiçbir komutu onlara ulaşmaz."
+      },
+      "updatesInstall": {
+        "title": "İndirilen güncellemeyi kur",
+        "description": "Stüdyodan çıkar ve çoktan indirilmiş sürümü yeniden başlatır. Yalnızca güncelleme hazır olduğunda bir şey yapar ve kaydedilmemiş olan ne varsa kapanışla birlikte gider."
+      },
+      "dictationState": {
+        "title": "Dikte durumunu oku",
+        "description": "Konuşma tanımanın nerede olduğunu — boşta, dinlemede, bir izin ya da bir model bekliyor — ve bir şey başarısız olduysa neyin başarısız olduğunu söyler."
+      },
+      "dictationStart": {
+        "title": "Dikteyi başlat",
+        "description": "Mikrofonu açar ve duyduğunu imlecin bulunduğu yere yazar. Odaklanmış bir alan olmadan diktenin yazacak yeri yoktur, dolayısıyla imleç çağrıdan önce yerleştirilir."
+      },
+      "dictationStop": {
+        "title": "Dikteyi durdur",
+        "description": "Mikrofonu kapatır. Duyulanı varsayılan olarak saklar, bunun yerine atabilir de — iki hareket tam olarak burada ayrılır."
+      },
+      "panelsList": {
+        "title": "Panelleri listele",
+        "description": "Öndeki yüzeyin gösterebildiği panelleri döndürür ve hangilerinin açık olduğunu söyler. O yüzeyin sunmadığı bir panel listelenmez, çünkü orada açılamaz."
+      },
+      "panelOpen": {
+        "title": "Bir panel aç",
+        "description": "Bir paneli, öndeki yüzeyin ona ayırdığı yerde öne getirir. Zaten açık bir panel yeniden yazılmak yerine odağı alır."
+      },
+      "panelClose": {
+        "title": "Bir paneli kapat",
+        "description": "Öndeki yüzeyin o paneli tuttuğu yarı bölgeyi boşaltır. Diğer panellerin düzeni değişmez."
+      },
+      "sceneState": {
+        "title": "Düzenlenmekte olan sahneyi oku",
+        "description": "Öndeki 3B belgenin her nesnesini döndürür — kimliğini, adını, türünü, üst öğesini, görünürlüğünü ve dönüşümünü, taşıdığı geometri, materyal ya da ışıkla birlikte — artı neyin seçili olduğunu, kamera çekimlerini ve sahnenin ayarını. VARSAYILANINDA DURAN bir alan atlanır ve yokluğu o varsayılanı imler: üst öğe yok, çizilir, başlangıç noktasında döndürülmemiş ve ölçeklenmemiş, stüdyonun kendi rengi, kendi türünün her zaman bölündüğü gibi bölünmüş bir şekil. Ölçüler asla atlanmaz. Hiçbir şey tutmayan bir liste bütünüyle atlanır. BİR nesneyi bileşenleriyle ve ona daha neler eklenebileceğiyle betimlemek için studio.describe eylemi gerekir."
+      },
+      "optimizationAnalyze": {
+        "title": "Sahne optimizasyonunu çözümle",
+        "description": "Adı verilen nesneler için, hiçbiri adlandırılmadığında ise sahnenin tamamı için belirlenimci optimizasyon planını döndürür. Hiçbir şeyi değiştirmez."
+      },
+      "optimizationSelection": {
+        "title": "Seçimi optimize et",
+        "description": "Seçili nesneleri otomatik SAFE çalışma zamanı optimizasyonuna geçirir ve her tasarım nesnesini düzenlenebilir tutar."
+      },
+      "optimizationWorld": {
+        "title": "Sahneyi optimize et",
+        "description": "Her nesneyi otomatik SAFE çalışma zamanı optimizasyonuna geçirir ve tasarım sahnesini değiştirmeden bırakır."
+      },
+      "optimizationReport": {
+        "title": "Optimizasyon raporunu oku",
+        "description": "Ölçülen sahne maliyetlerini, tahmin edilen SAFE çalışma zamanı kazançlarından ayrı olarak döndürür."
+      },
+      "optimizationClearCache": {
+        "title": "Optimizasyon önbelleğini temizle",
+        "description": "Sahne görünüm alanının atılabilir optimize edilmiş temsilini atar, böylece tasarım durumundan yeniden kurulur."
+      },
+      "optimizationExclude": {
+        "title": "Nesneleri optimizasyonun dışında tut",
+        "description": "Adı verilen mantıksal nesneleri optimize edilmiş render çıktısında tek tek korur."
+      },
+      "optimizationSetMode": {
+        "title": "Nesne optimizasyon modunu ayarla",
+        "description": "Adı verilen nesnelere Otomatik, Bireysel zorla, Örnek zorla, Toplu zorla ya da Hariç tut değerini verir."
+      },
+      "nodeAdd": {
+        "title": "Sahneye bir nesne ekle",
+        "description": "Öndeki 3B belgeye, verilen konumda bir temel şekil, bir ışık, bir kamera, bir sprite ya da bir metin koyar. Nesnenin aldığı kimlikle yanıtlar. Projenin bir modeli ya da bir üretimin az önce yanıtladığı model node.addModel eyleminden girer; bu ise bir temel şekil yapar."
+      },
+      "nodeAddModel": {
+        "title": "Kitaplıktan bir model yerleştir",
+        "description": "Projenin kitaplığındaki bir 3B modeli, varlığıyla adlandırarak öndeki sahneye koyar. Üretilmiş bir mesh bir sahneye böyle girer."
+      },
+      "nodeRemove": {
+        "title": "Bir nesneyi kaldır",
+        "description": "Öndeki sahneden bir nesneyi, altında asılı olan her neyse onunla birlikte çıkarır. O belgenin başka herhangi bir düzenlemesi gibi geri alınır."
+      },
+      "nodeRename": {
+        "title": "Bir nesneyi yeniden adlandır",
+        "description": "Öndeki sahnenin bir nesnesine başka bir ad verir. Kimlik değişmez, dolayısıyla ona gönderme yapan hiçbir şey kaybolmaz."
+      },
+      "nodeAttach": {
+        "title": "Bir nesneyi bir karaktere as",
+        "description": "Bir nesneyi, bağlı olduğu karakterin yuvasına asar — bir eldeki kılıç gibi. Yuva adlandırılmazsa nesne karakterin tamamını izler."
+      },
+      "nodeTransform": {
+        "title": "Bir nesneyi yerleştir",
+        "description": "Bir nesneyi taşır, döndürür ya da ölçekler. Dönmeler radyan cinsinden Euler açılarıdır ve atlanan her eksen, nesnenin hâlihazırdaki değerini korur."
+      },
+      "nodeSetVisible": {
+        "title": "Bir nesneyi göster ya da gizle",
+        "description": "Bir nesneyi çizilenlerin dışına alır ya da geri koyar. İki durumda da sahnede kalır; gizlemeyi kaldırmaktan ayıran budur."
+      },
+      "nodeSetMeshMaterial": {
+        "title": "Bir nesnenin materyalini ayarla",
+        "description": "Bir mesh ya da metin nesnesinin rengini, pürüzlülüğünü, metalikliğini, döşeme yoğunluğunu ve beş haritasını değiştirir. Boş bir kimlikle adlandırılan bir harita kaldırılmış olur. Döşeme, konturu bir temel şekil olmayan bir metinde reddedilir."
+      },
+      "nodeSetPrimitiveParameters": {
+        "title": "Bir temel şeklin parametrelerini ayarla",
+        "description": "Bir mesh nesnesinin kurulduğu şeklin ölçülerini ve bölüm sayılarını değiştirir. Her temel şekil kendine ait olanları taşır; sahneyi okumak bunları verir — şekle ait olmayan bir alan yok sayılmak yerine reddedilir."
+      },
+      "nodeSetShadowCastAndReceive": {
+        "title": "Bir nesnenin gölgelerini ayarla",
+        "description": "Bir nesnenin gölge düşürüp düşürmediğini ve başkalarının düşürdüklerini alıp almadığını söyler. Bir ışık hiçbirini almaz, bir sprite ikisini de yapmaz ve nesnenin taşıyamadığı alan reddedilir."
+      },
+      "nodeSetSpriteSettings": {
+        "title": "Bir sprite ayarla",
+        "description": "Her zaman kameraya bakan bir sprite nesnesinin renk tonunu, opaklığını ve görüntüsünü değiştirir. Boş bir kimlik görüntüyü kaldırır ve düz renkli dörtgeni bırakır."
+      },
+      "nodeSetTextSettings": {
+        "title": "Bir 3B metni ayarla",
+        "description": "Bir metnin sözcüklerini, yazı tipini, boyutunu, kendi düzleminden çıkan derinliğini ve eğri inceliğini değiştirir. Materyali, bir mesh nesnesininki gibi, materyal eylemiyle ayarlanır."
+      },
+      "nodeSetPathShape": {
+        "title": "Bir rayın şeklini ayarla",
+        "description": "Bir rayın gerilimini, 0 köşeliden 1 yuvarlağa değiştirir ve kendi üzerine kapanıp kapanmadığını belirler. Kontrol noktaları, yanındaki üç eylemle eklenir, taşınır ve kaldırılır."
+      },
+      "pathAddPoint": {
+        "title": "Bir raya nokta ekle",
+        "description": "Bir kontrol noktası koyar. Koordinatlarla verildiğinde, sonuncunun ardına, nişan alındığı yere eklenir. Bir indisle verildiğinde, o noktanın hemen ardına, komşusuyla arasının yarısına sokulur. İkisi de yoksa rayı ucundan uzatır."
+      },
+      "pathMovePoint": {
+        "title": "Bir rayın noktasını taşı",
+        "description": "Bir kontrol noktasının koordinatlarını, rayın kendi çerçevesinde değiştirir — dolayısıyla rayı taşımak tüm yörüngeyi taşır. Hiçbir noktayı adlandırmayan bir indis reddedilir."
+      },
+      "pathRemovePoint": {
+        "title": "Bir raydan nokta kaldır",
+        "description": "Bir kontrol noktasını kaldırır. Bir ray asla iki noktanın altına inmez, çünkü tek nokta bir çizgi değildir; çağrı orada reddedilir."
+      },
+      "modelSetMaterialDocument": {
+        "title": "Bir modele materyal giydir",
+        "description": "İçe aktarılmış bir modele, belgesinin başlığıyla adlandırılan bir proje materyalini giydirir. Model bundan sonra o materyali izler, dolayısıyla kanallarından ya da ayarlarından birini düzenlemek onu yeniden boyar, burada yeniden bir şey sorulmadan. Boş bir başlık onu çıkarır ve model kendi dosyasının taşıdığına döner."
+      },
+      "nodeSetLightSettings": {
+        "title": "Bir ışığı ayarla",
+        "description": "Eldeki ışık türünün taşıdığı her şeyi değiştirir — rengini, şiddetini, menzilini, sönümünü, konisinin genişliğini ve yumuşaklığını, hedefini ve bir yarım küre ışığının iki rengini. Türün taşımadığı bir alan reddedilir. Bir parlama, bir bloom ya da başka herhangi bir efekt ışık değildir: post.set bir efektin bir parametresini yazar, post.reset ise onu geri koyar."
+      },
+      "nodeSetCameraLens": {
+        "title": "Bir kamera lensini ayarla",
+        "description": "Bir kameranın görüş açısını, yakın ve uzak mesafelerini değiştirir. Nerede durduğu, ağaçtaki her şey gibi, dönüşümüyle ayarlanır."
+      },
+      "cameraAddShot": {
+        "title": "Bir kamerayı yayına al",
+        "description": "Bu kamera için, saniye cinsinden verilen andan başlayan bir çekim açar ve kimliğini yanıtlar. Hangi satıra düşeceği bandın kendi kuralına uyar; bantta henüz olmayan bir kamera en üste gelir. Çekimi olan kamera ETKİN kameradır, sahnenin içinden görüldüğü kamera."
+      },
+      "cameraBindPathToShot": {
+        "title": "Bir kamerayı bir ray boyunca koştur",
+        "description": "Adı verilen çekime bir ray bağlar: kamera, çekimin tamamı boyunca, uzunluğu boyunca sabit hızla onu kat eder. Ray verilmezse çekim kamerayı artık hareket ettirmez. Bitişten sonraki bir başlangıç, rayı tersten kat ettirir."
+      },
+      "cameraCreateAndBindPath": {
+        "title": "Bir kameranın altına ray döşe",
+        "description": "Kameranın durduğu yerde, bakış doğrultusunda bir ray oluşturur ve tek bir hareketle onu çekime bağlar. Yanındaki eylem zaten var olan bir rayı bağlar; bu ise onu oluşturur, çünkü bir ray, onu kat edecek bir çekim olmadan hiçbir şeyi sürmez."
+      },
+      "cameraReorder": {
+        "title": "Bir kameranın bant üzerindeki satırını değiştir",
+        "description": "Bir kameranın satırını yukarı ya da aşağı alır; iki çekim üst üste bindiğinde filmin neyin içinden baktığını bu belirler. Sayı bir satır sayısıdır, aşağı inmek için negatif, ve yanıt satırın gerçekte ne kadar taşınabildiğini söyler."
+      },
+      "cameraAimShotAt": {
+        "title": "Bir kameraya nişan alacağı bir şey ver",
+        "description": "Adı verilen çekimin kamerasını bir nesneye — animasyonlu olsa bile onu izler — ya da sabit bir noktaya çevirir. İkisi de yoksa kamera yalnızca kendi dönüşüyle yönelmiş kalır."
+      },
+      "nodeReparent": {
+        "title": "Bir nesnenin üst öğesini değiştir",
+        "description": "Bir nesneyi bir başkasının altına, üst öğe verilmediğinde sahnenin kendisinin altına asar ve onu yeni komşuları arasında istenen yere koyar. Üst öğe vermeden yer vermek bu yüzden nesneyi sahneye kadar çıkarır: yalnızca yeri değiştirmek için üst öğeyi yineleyin. Nesne kendi dönüşümünü korur; bu dönüşüm artık yeni üst öğesine göre okunur."
+      },
+      "nodeSelect": {
+        "title": "Nesneleri seç",
+        "description": "Bu nesneleri, denetçinin okuduğu ve gizmonun taşıdığı seçim yapar. Seçim bir düzenleme değildir, dolayısıyla geçmişe hiçbir şey eklemez."
+      },
+      "viewDirection": {
+        "title": "Sahneye bir yüzünden bak",
+        "description": "Ana görünümün kamerasını sahnenin üstüne, altına, önüne, arkasına, soluna ya da sağına koyar. Bu bir yer değiştirmedir, dolayısıyla geçmişe hiçbir şey eklemez."
+      },
+      "rigState": {
+        "title": "Bir karakterin iskeletini oku",
+        "description": "Bir modelin kemiklerini rolleriyle, eklemlerinin uzandığı tutamaçları, bandına konmuş blokları ve motorun mesh hakkında ölçtüklerini döndürür."
+      },
+      "rigFit": {
+        "title": "Bir modeli animasyona hazırla",
+        "description": "Stüdyonun, ölçtüklerine göre uyarladığı iskeleti mesh nesnesinin üzerine koyar. Motor modeli okumadıysa reddeder; bu bir hata değil, bir bekleyiştir."
+      },
+      "rigClear": {
+        "title": "Bir modelin iskeletini kaldır",
+        "description": "Modeli, kemiksiz ve tutamaçsız bir mesh nesnesi hâline döndürür. Hareket, sahnenin diğer hareketleri gibi geri alınır."
+      },
+      "rigConfigureHands": {
+        "title": "Parmak kemiklerini ekle",
+        "description": "İskeletin zaten taşıdığı ellerin üzerine otuz parmak kemiğini dinlenme durumunda koyar. Hiçbir el tanınmazsa hiçbir şey yazılmaz."
+      },
+      "socketAdd": {
+        "title": "Bir yuva koy",
+        "description": "Öndeki karakterin bir kemiğine, bir sahnedeki nesnenin izleyebileceği bir yuva koyar — bir el, bir sırt. Yuva karakterin dosyasında yaşar."
+      },
+      "socketRemove": {
+        "title": "Bir yuvayı kaldır",
+        "description": "Öndeki karakterden bir yuvayı kaldırır. Onu izleyen ne varsa karakterin kendisine düşer."
+      },
+      "boneAdd": {
+        "title": "Bir kemik ekle",
+        "description": "Adı verilenin altına, tam onun üzerinde duran bir kemik asar — onu ait olduğu yere koyan gizmodur. Adı, üst öğesininkinden kurulur."
+      },
+      "boneRemove": {
+        "title": "Bir kemiği kaldır",
+        "description": "Bir kemiği iskeletten çıkarır ve alt öğelerini onun asılı olduğu yere asar: bir dirsek gider, el kalır."
+      },
+      "boneRename": {
+        "title": "Bir kemiği yeniden adlandır",
+        "description": "Bir kemiğin adını değiştirir; alt öğeleri kendiliğinden uyar. Zaten alınmış bir ad, yarım yazılmak yerine reddedilir."
+      },
+      "boneSetRole": {
+        "title": "Bir kemiğin hangi eklem OLDUĞUNU söyle",
+        "description": "Bir kemiği insansı standardın eklemlerinden birine bağlar, rol verilmediğinde hiçbirine. O rolü tutan kemik neyse aynı hareketle onu yitirir."
+      },
+      "ikAdd": {
+        "title": "Bir ekleme tutamaç koy",
+        "description": "Bir eklemin uzandığı bir tutamacı ve onu izleyen zinciri ekler — üstteki iki kemik eşlik etmek için döner; bir ayağı yere ya da bir eli bir dayanağa koyan budur."
+      },
+      "ikRemove": {
+        "title": "Bir tutamacı kaldır",
+        "description": "Bir zinciri ve onun uzandığı tutamacı, ikisini birden alır: geride bırakılmış bir tutamaç, hiçbir şeyin sürmediği bir kemik olurdu."
+      },
+      "animationsList": {
+        "title": "Bir karakterin oynatabileceklerini listele",
+        "description": "Bir hareketin geldiği üç yeri yanıtlar — modelin kendi dosyasının taşıdığı klipler, stüdyoyla birlikte gelen animasyonlar ve proje kitaplığının sakladıkları. “Bu sahne hangi animasyonları taşıyor” sorusuna yanıt veren budur; bir bandın tuttuğu anahtarlar ise scene.state ile okunur."
+      },
+      "animationAddBlock": {
+        "title": "Bir animasyon bloğu koy",
+        "description": "Bir karakterin bandına, üç kaynaktan birinden gelen bir hareket koyar. Kimlik kitaplıktaki bir varlığı, ad ise diğer ikisini adlandırır ve bir çağrıya bunlardan tam olarak biri aittir. Karakterin bandı yoksa oluşturulur."
+      },
+      "animationSetBlockSettings": {
+        "title": "Bir animasyon bloğunu ayarla",
+        "description": "Bir bloğun bant üzerindeki yerini, hareketin içindeki başlangıcını, hızını, döngüsünü, solmalarının uzunluğunu, kökün hareketiyle ne yaptığını ve sürdüğü vücut bölümünü değiştirir. Blok yerinde yeniden yazılır, diğer tüm şeritlere dokunulmaz."
+      },
+      "animationRemoveBlock": {
+        "title": "Bir animasyon bloğunu kaldır",
+        "description": "Bir bloğu, nerede durursa dursun banttan kaldırır. Bant kalır, gerekirse boş."
+      },
+      "animationSetBandLengthAndRate": {
+        "title": "Animasyon bandını ayarla",
+        "description": "Bandın uzunluğunu, saniyedeki kare cinsinden hızını ya da ikisini birden değiştirir. Adlandırılmayan neyse ona dokunulmaz."
+      },
+      "animationAutoKey": {
+        "title": "Otomatik anahtar yazımını aç",
+        "description": "Bir kemiği taşımanın geçerken bir anahtar yazıp yazmayacağına karar verir. Bir sahneye bakmanın her biçimi gibi bu da bir oturum durumudur ve hiçbiri belgeyle birlikte kaydedilmez."
+      },
+      "keyWritePoseKeys": {
+        "title": "Bir özneye anahtar yaz",
+        "description": "Bir nesnenin ya da bir kemiğin her kanalına, verilen anda ya da oynatma kafasında, oynatma kafasında gösterilen pozu — node.transform eyleminin koyduğu pozu — tutarak bir anahtar yazar. Animasyonlu bir nesnede node.transform oynatma kafasının kendisine anahtar yazar; bu yüzden başka bir anı pozlamak için önce anahtarı oraya yazın, sonra nesneyi oynatma kafası üzerindeyken yerleştirin. Eksik kanallar geçerken açılır, çünkü önce bir iz istemek, görünüm alanında çoktan duran şeyi istemek olurdu."
+      },
+      "keyRemoveSubjectKeys": {
+        "title": "Bir öznenin anahtarlarını kaldır",
+        "description": "Bir nesnenin ya da bir kemiğin her kanalının o anda tuttuğu anahtarı geri alır. Bu olmadan bir poz, kimsenin geri alamayacağı bir poz olurdu ve panelde başka hiçbir şey anahtar kaldırmaz."
+      },
+      "keyWriteKeysOnOpenChannels": {
+        "title": "Animasyonlu olan her şeye anahtar yaz",
+        "description": "Sahnenin çoktan açtığı her kanala, verilen anda ya da oynatma kafasında bir anahtar yazar. Hiçbirini açmaz; bunu tek bir özneye anahtar yazmaktan ayıran budur."
+      },
+      "keyMove": {
+        "title": "Bir anahtarı taşı",
+        "description": "Bir anahtarı, değerini koruyarak kendi kanalı boyunca kaydırır. Bir başkasının çoktan tuttuğu bir ana düşen anahtar onun yerini alır; tek bir karede iki anahtar, hiçbir oynatmanın geri okuyamayacağı bir durumdur."
+      },
+      "channelRemove": {
+        "title": "Bir animasyon kanalını kaldır",
+        "description": "Bir kanalı, taşıdığı anahtarlarla birlikte kaldırır. Kilitli bir kanal, sessizce yerinde bırakılmak yerine reddedilir."
+      },
+      "channelSetMuteSoloLock": {
+        "title": "Bir kanalın bayraklarını ayarla",
+        "description": "Bir kanalı susturur, tek başına oynatır ya da kilitler. Bu, belgenin bir değişikliği değil NASIL çalışıldığıdır, dolayısıyla geçmişe hiçbir şey eklenmez."
+      },
+      "viewSetDisplayMode": {
+        "title": "Sahnenin nasıl çizileceğini seç",
+        "description": "Ana görünümü gölgeli, tel kafes, yalnızca materyal ya da diğer çizim biçimlerinden birine geçirir. Menü komutu yalnızca birinden diğerine döner; bu ise hangisi olduğunu adlandırır."
+      },
+      "sceneCapture": {
+        "title": "3B görünümden bir görüntü al",
+        "description": "Görünümün gösterdiğinin bir görüntüsünü, istenen boyutta, projenin görüntülerine yazar. Kadraj hiç değişmez — yalnızca piksel sayısı değişir, yoksa yakalama ekrandan başka bir şey gösterirdi."
+      },
+      "worldApplyPreset": {
+        "title": "Hazır bir dünya uygula",
+        "description": "Bir sahnenin aydınlatmasını, arka planını, sisini ve renk düzenlemesini tek bir çağrıda, belirli bir görünüm için ayarlar. Her biri yalnızca ilgili olduğu alanları yazar ve geri kalanı olduğu gibi bırakır, böylece birinin açtığı zemin açık kalır."
+      },
+      "layerLock": {
+        "title": "Katmanı kilitle",
+        "description": "Bir katmanın üç kilidini koyar ya da kaldırır: piksellerinin kilidi, yerinin kilidi ve saydamlığının kilidi. Bunlar tuval üzerindeki eli durdurur; başka bir eylemin yazdığı değer, panellerden olduğu gibi geçer."
+      },
+      "layerEditShapeLayer": {
+        "title": "Şekli yeniden boya",
+        "description": "Çizilmiş bir şeklin dolgusunu, dış çizgisini, çizgi kalınlığını ve kenar sayısını yeniden çizmeden değiştirir. Dolguyu ve dış çizgiyi aynı anda kaldırmak reddedilir, çünkü geriye görülecek bir şey kalmaz."
+      },
+      "layerSetAdjustmentAmount": {
+        "title": "Bir ayarlama katmanını ayarla",
+        "description": "Bir ayarlama katmanının taşıdığı tek kadranı hareket ettirir — pozlama, kontrast, doygunluk ya da sıcaklık. Kendisininki dışında bir kadran adlandırmak, sessizce yok sayılmak yerine reddedilir."
+      },
+      "worldSetSceneLighting": {
+        "title": "Sahneyi neyin aydınlattığını seç",
+        "description": "Sahneyi prosedürel stüdyoyla, varlık tanımlayıcısıyla adlandırılan bir proje görüntüsüyle ya da başlığıyla adlandırılan bir gökyüzü belgesiyle aydınlatır — sahne o zaman onun renk düzenlemesi yapılmış görüntüsünü, güneşini ve şiddetini alır. Ayrıca bu aydınlatmanın ne kadar güçlü olduğunu ve dikey eksen etrafında ne kadar döndürüldüğünü, gökyüzünün söylediğinin üzerine koyarak ayarlar."
+      },
+      "worldSetBackground": {
+        "title": "Sahnenin arkasında ne duracağını seç",
+        "description": "Sahnenin arkasına ortamın kendisini, düz bir rengi ya da hiçbir şeyi koyar — sonuncusu arka planı saydam bırakır, ki başka bir şeyin üzerine konmak üzere alınan bir yakalamanın ihtiyacı budur."
+      },
+      "worldSetFog": {
+        "title": "Sahnenin sisini ayarla",
+        "description": "Sisi kapatır, iki mesafe arasında soldurur ya da derinlikle birlikte yoğunlaştırır. Renk ve mesafeler seçilen biçime aittir, aksi hâlde oldukları gibi bırakılır."
+      },
+      "worldSetGroundPlane": {
+        "title": "Sahnenin zeminini ayarla",
+        "description": "Sahnenin sahip olduğu zemini gösterir ya da gizler; rengini, kenarını, opaklığını ve gölgelerin üzerine düşüp düşmeyeceğini ayarlar. Bir sahneye zemin böyle EKLENİR: nesne olarak eklenen bir düzlem dekordur, zemin değildir. Bu zemin, uygulamanın bir ayarı olan ızgaranın tersine, belgeye aittir."
+      },
+      "worldSetLayers": {
+        "title": "Arazi ve serpme girdilerini değiştir",
+        "description": "Sahnenin kalıcı arazi ve serpme girdi listesini, eksiksiz ve doğrulanmış bir listeyle değiştirir. Birini değiştirmeden önce mevcut girdileri okumak için scene.state kullanın."
+      },
+      "worldSetToneMapping": {
+        "title": "Sahnenin nasıl işleneceğini ayarla",
+        "description": "Yüksek dinamik aralığın ekrana nasıl indirildiğini ve kaç diyafram kademesi pozlandığını seçer. İkisi de, ona bakmakta olan pencereye değil, belgeye aittir."
+      },
+      "gitStatus": {
+        "title": "Deponun sürüm durumunu oku",
+        "description": "Dalı, neyi izlediğini, ne kadar önde ya da geride olduğunu ve değişen her dosyayı git’in hangi yarısında durduğuyla birlikte döndürür. Projenin hiç deposu olmadığını da söyler. Bir dosyanın İÇİNDE ne değiştiği git.diff’tir; bu yalnızca dosyaları adlandırır."
+      },
+      "gitLog": {
+        "title": "Geçmişi oku",
+        "description": "Kaydedilmiş sürümlerin bir sayfasını, en yenisi başta olmak üzere ve tüm dalları kapsayarak, her birini gösteren adlarla birlikte döndürür. İki sürüm arasında bir dosyanın içinde ne değiştiği git.diff’tir."
+      },
+      "gitListCommitFiles": {
+        "title": "Bir sürümün neyi değiştirdiğini oku",
+        "description": "Kaydedilmiş bir sürümün dokunduğu dosyaları ve her birine nasıl dokunulduğunu döndürür — eklendi, değiştirildi, kaldırıldı ya da yeniden adlandırıldı."
+      },
+      "gitDiff": {
+        "title": "Bir dosyada neyin değiştiğini oku",
+        "description": "Bir dosyanın içindeki değişikliği, kaydedilmiş bir sürümün içinde ya da hiçbir sürüm adlandırılmadığında sonuncusuna karşı döndürür."
+      },
+      "gitBranches": {
+        "title": "Dalları listele",
+        "description": "Proje deposunun tüm dallarını, hangisinin etkin olduğunu söyleyerek döndürür."
+      },
+      "gitStashes": {
+        "title": "Rafa kaldırılmış değişiklikleri listele",
+        "description": "Rafa kaldırılmış olanı, en yenisi başta olmak üzere döndürür; böylece bir istemci birini listedeki yerine göre geri koyabilir."
+      },
+      "gitInit": {
+        "title": "Sürümleri kaydetmeye başla",
+        "description": "Açık projede git init çalıştırır ve yok sayma dosyasını yazar, sonra bıraktığı durumu yanıtlar. Zaten kayıt tutan bir projeye hiçbir şey yapmaz."
+      },
+      "gitStage": {
+        "title": "Dosyaları hazırla",
+        "description": "Değişiklikleri, kaydedilecek sonraki sürümün taşıyacağı şeyin içine taşır. Bıraktığı durumla yanıtlar, böylece hiçbir şeyi geri okumak gerekmez."
+      },
+      "gitUnstage": {
+        "title": "Dosyaları hazırlıktan çıkar",
+        "description": "Değişiklikleri, kaydedilecek sonraki sürümün taşıyacağı şeyin dışına çıkarır; dosyaların kendilerine dokunmaz."
+      },
+      "gitRestore": {
+        "title": "Dosyalardaki değişiklikleri at",
+        "description": "Dosyaları, kaydedilmiş son sürümdeki hâllerine geri koyar. Hiç kaydedilmemiş olan yok olur ve stüdyodaki hiçbir geri alma ona ulaşmaz."
+      },
+      "gitCommit": {
+        "title": "Sürüm kaydet",
+        "description": "Hazırlanmış olanı bir mesaj altında kaydeder. Yeni bir sürüm eklemek yerine sonuncusunu düzeltebilir, ki bu onu izlemek yerine yeniden yazar."
+      },
+      "gitCreateBranch": {
+        "title": "Dal oluştur",
+        "description": "Geçerli sürümde bir dal başlatır ve ona geçer. Çalışma kopyası tam olduğu gibi bırakılır."
+      },
+      "gitCheckout": {
+        "title": "Dal değiştir",
+        "description": "Başka bir dala geçer ve çalışma kopyasını ona uyacak biçimde yeniden yazar. Bir sekmede açık olan belge, o zaman dosyası altından değişmiş bir belge olur."
+      },
+      "gitStash": {
+        "title": "Geçerli değişiklikleri rafa kaldır",
+        "description": "Çalışma kopyasının değişikliklerini rafa kaldırır ve onu kaydedilmiş son sürüme döndürür. Değişiklikleri diskten alır."
+      },
+      "gitStashPop": {
+        "title": "Rafa kaldırılmış değişiklikleri geri getir",
+        "description": "Rafa kaldırılmış bir değişiklik takımını çalışma kopyasına geri koyar ve raftan düşürür. Dosyaları yeniden yazar."
+      },
+      "gitTag": {
+        "title": "Sürümü etiketle",
+        "description": "Kaydedilmiş bir sürüme ad koyar, böylece özet değeri olmadan yeniden bulunabilir."
+      },
+      "settingsRead": {
+        "title": "Ayarları oku",
+        "description": "{ settings, choices } yanıtlar: settings altında stüdyonun tuttuğu her ayar, bölüm bölüm; choices altında ise kapalı listeli her ayarın neyi kabul ettiği, başlığı ve yardımıyla birlikte. Görünüm alanının ÇİZDİĞİ şeyler burada yaşar — ızgara, gölgeler, yardımcı çizimler — birimler, tema ve dil de öyle. Hiçbir sahne eylemi bunlardan birini açmaz."
+      },
+      "settingsWrite": {
+        "title": "Ayarları değiştir",
+        "description": "Bir ya da daha çok ayarı bölüm bölüm yazar. Izgara ve gölgeler böyle açılır ya da ayarlanır — önce onları okuyun, çünkü stüdyonun bildiği hiçbir şeyi adlandırmayan bir değişiklik körlemesine yazılmak yerine reddedilir. Adlandırılmayan olduğu gibi bırakılır."
+      },
+      "accountsList": {
+        "title": "Hesapları listele",
+        "description": "Bu stüdyonun tuttuğu üretim hesaplarını, hangisinin etkin olduğunu ve hangilerinin yeniden adlandırılabileceğini ya da kaldırılabileceğini söyleyerek döndürür. Hiçbir anahtar ya da gizli anahtar asla döndürülmez."
+      },
+      "accountsActivate": {
+        "title": "Hesap değiştir",
+        "description": "Tutulan hesaplardan birini, stüdyonun üzerinden ürettiği hesap yapar. O andan sonra gönderilen her şey onun kimlik bilgileriyle çıkar."
+      },
+      "accountsRename": {
+        "title": "Hesabı yeniden adlandır",
+        "description": "Bir hesabın stüdyoda altında göründüğü etiketi değiştirir. Ne anahtar ne de gizli anahtar bu sınırı geçer, iki yönde de."
+      },
+      "settingsTriggerAction": {
+        "title": "Ayarlar düğmesine bas",
+        "description": "Ayarlar penceresinin düğmelerinden birini tetikler — bir dosyayı klasörde göster, geliştirici araçlarını aç, bağlantı komutunu kopyala, köprüyü kur, her şeyi sıfırla. Son ikisi arkalarında bir şey bırakır ve ekranda sorulur."
+      },
+      "contextReadProjectCards": {
+        "title": "Projenin bağlamını oku",
+        "description": "Bağlam kartlarını — KİŞİNİN bu projenin ne olduğuna dair söylediklerini — başlıkları, metinleri ve geçerli olup olmadıklarıyla birlikte yanıtlar."
+      },
+      "contextWriteProjectCard": {
+        "title": "Bağlam kartı yaz",
+        "description": "KİŞİNİN projenin bir bütün olarak NE OLDUĞU ya da NEYİ AMAÇLADIĞI hakkında söylediğini, her turda yeniden okunan kalıcı bir kart olarak yazar. Burada bir şeyin nasıl yapıldığına dair bir çalışma kuralı — kameraların nasıl hareket ettiği, dosyaların nasıl adlandırıldığı — bunun yerine bir hafızadır (memory.write)."
+      },
+      "contextDeleteProjectCard": {
+        "title": "Bağlam kartını sil",
+        "description": "Bir tanımlayıcının adlandırdığı kartı projenin bağlamından çıkarır — kişinin söylediği, geri alınır. Metni kaybolur."
+      },
+      "targetSelect": {
+        "title": "Hedef belirle",
+        "description": "Açık belgede sonraki adımın üzerinde işlem yapacağı şeyi gösterir — bir katman, bir sahne nesnesi, bir klip. Tanımlayıcıyı bu brifingdeki hedef listesinden alın; o liste olmadan nişan alacak bir şey yoktur."
+      },
+      "nodeMarkAsCuttingTool": {
+        "title": "Nesneleri araç olarak işaretle",
+        "description": "Öndeki sahnenin nesnelerini işaretler ya da “negative” YANLIŞ ile işareti kaldırır: işaretlenmiş bir nesne, sonraki birleştirmede diğerlerinden OYULUR; hangi birleştirme istenirse istensin ve tanımlayıcıların sırası ne olursa olsun. İşaret yoksa en büyük şekil maddedir."
+      },
+      "nodeCombineIntoSolid": {
+        "title": "Nesneleri oy, birleştir ya da kesiştir",
+        "description": "Öndeki sahnenin birkaç nesnesini tek bir katıda birleştirir. TANIMLAYICILARIN SIRASI ÖNEMLİ DEĞİLDİR: matterId onu adlandırmadıkça madde en büyük şekildir ve node.markAsCuttingTool ile işaretlenmiş bir nesne her zaman araçtır. Özgün şekiller katının içinde saklanır ve node.separate onları geri verir. Katının tanımlayıcısıyla yanıtlar. “intersect” yalnızca çakıştıkları kısmı tutar."
+      },
+      "nodeSwapSolidMatterAndTool": {
+        "title": "Birleştirmeyi ters çevir",
+        "description": "Öndeki sahnenin bir katısını ters yönde yeniden birleştirir: oyulmuş olan madde olur, madde de araç olur. Ters giden birleştirme için, geri almadan."
+      },
+      "nodeSeparate": {
+        "title": "Katıyı ayır",
+        "description": "Öndeki sahnenin bir katısını parçalarına ayırır ve yapıldığı şekilleri her biri durduğu yerde geri verir. Geri verilen nesnelerin tanımlayıcılarıyla yanıtlar."
+      },
+      "modelSetBaseColorImage": {
+        "title": "Modeli bir görüntüyle kapla",
+        "description": "Projenin tek bir görüntüsünü, içe aktarılmış bir modelin tamamına temel rengi olarak koyar — onu giydirmenin basit yolu. Materyalleri dışlar: bir görüntüyle kaplanan model hiçbir materyal taşımaz, tersi de geçerlidir. Ondan başka hiçbir kanal türetilmez. Görüntü verilmezse giysi çıkar ve model kendi dosyasının taşıdığına döner."
+      },
+      "postState": {
+        "title": "Son işleme kompozisyonunu oku",
+        "description": "Sahnenin — ya da adlandırılan kameranın — içinden çekim yaptığı efekt yığınını, her örneğin tanımlayıcısı, hangi efekt olduğu, parametreleri, açık olup olmadığı ve zincirin onu dışarıda bırakıp bırakmadığıyla birlikte döndürür."
+      },
+      "postAdd": {
+        "title": "Son işleme efekti ekle",
+        "description": "Katalogdan bir efekti, kendi varsayılan değerleriyle yığının sonuna koyar. Hiçbir kamera adlandırılmazsa onu alan, görünüm alanının zaten gösterdiği sahne kompozisyonudur."
+      },
+      "postRemove": {
+        "title": "Son işleme efektini kaldır",
+        "description": "Bir örneği yığından çıkarır ve onunla birlikte onu süren zaman çizelgesi kanallarını da — geride bırakılsalardı, artık hiçbir şeyin ulaşamadığı bir efekti hedeflerlerdi."
+      },
+      "postMove": {
+        "title": "Efekti yığın içinde taşı",
+        "description": "Bir örneğin zincirdeki yerini değiştirir, bu da elde edilen görüntüyü değiştirir — ışık halesinden önceki bir renk düzenleme, ondan sonrakiyle aynı sonucu vermez."
+      },
+      "postSet": {
+        "title": "Efektin bir parametresini ayarla",
+        "description": "Bir örneğin tek bir parametresine, kataloğun o parametre için bildirdiği sınırlar içinde bir değer yazar. Hangi alanın doldurulacağı, parametrenin türüne bağlıdır — bir sayı, bir açma-kapama ya da bir sözcük."
+      },
+      "postSetEffectEnabled": {
+        "title": "Bir efekti aç ya da kapat",
+        "description": "Bir örneği kaldırmadan kapatır, bu da onu yalnızca görüntüden değil hesaplamadan da çıkarır. Parametreleri oldukları yerde kalır, yeniden açılmaya hazır."
+      },
+      "postSetWholeStackEnabled": {
+        "title": "Tüm kompozisyonu kapat",
+        "description": "Yığının tamamını tek seferde kapatır ya da yeniden açar, hiçbir şey kaybetmeden — geri almanın geri getirebileceği bir belge değeri olarak, Önce/Sonra karşılaştırması."
+      },
+      "postApplyPreset": {
+        "title": "Son işleme hazır ayarını uygula",
+        "description": "Yığını hazır bir kompozisyonla değiştirir — bir sıra içinde, birbiriyle uyumlu değerler üzerinde duran bir efekt takımı. Belge, hazır ayara bir başvuruyu değil, yığının kendisini alır."
+      },
+      "postSetCameraStackMode": {
+        "title": "Bir kameranın son işlemeyle ne yapacağını söyle",
+        "description": "Bu kameranın sahne kompozisyonunu mu izleyeceğini, kendisininkini mi taşıyacağını yoksa hiçbirini mi uygulayacağını seçer. Kendisininkine geçirmek, onu zaten çekmekte olduğu şeyden başlatır."
+      },
+      "postListPresets": {
+        "title": "Son işleme hazır ayarlarını listele",
+        "description": "Stüdyonun getirdiği hazır kompozisyonları ve bu makinede kaydedilmiş olanları adlarıyla yanıtlar. post.applyPreset bu listeyi kabul eder."
+      },
+      "postDuplicate": {
+        "title": "Son işleme efektini çoğalt",
+        "description": "Efektin bir kopyasını, aynı değerlerle ve yeni bir kimlik altında hemen arkasına koyar. İkinci bir örneği anlamsız olan bir efekt için reddedilir — bir kenar yumuşatıcı, bir örtme."
+      },
+      "postReset": {
+        "title": "Son işleme efektini sıfırla",
+        "description": "O efektin her parametresini, yığından çıkarmadan ya da yerini değiştirmeden, kataloğun bildirdiği değere geri getirir."
+      },
+      "postAddKeyframe": {
+        "title": "Son işleme parametresine anahtar koy",
+        "description": "O parametrede kanal yoksa bir animasyon kanalı açar ve oynatma kafasında bir anahtar bırakır. Verilen değer GÖRÜLMEK istenen değerdir ve yığına göre fark burada hesaplanır."
+      },
+      "postRemoveKeyframe": {
+        "title": "Son işleme anahtarını kaldır",
+        "description": "O parametrede oynatma kafasında duran anahtarı kaldırır. Kanal, banttan bir anahtar kaldırıldığındaki gibi yerinde kalır."
+      },
+      "postSavePreset": {
+        "title": "Kompozisyonu hazır ayar olarak kaydet",
+        "description": "Öndeki yığını bu makinede bir ad altında saklar. Belgeye ya da projeye hiçbir şey yazılmaz."
+      },
+      "postRenamePreset": {
+        "title": "Kaydedilmiş hazır ayarı yeniden adlandır",
+        "description": "Bu makinedeki bir hazır ayarın adını, tanımlayıcısıyla ya da taşıdığı adla adlandırarak değiştirir. İçindekiler yerinden oynamaz."
+      },
+      "postDeleteSavedPreset": {
+        "title": "Kaydedilmiş hazır ayarı unut",
+        "description": "Kaydedilmiş bir hazır ayarı bu makineden kaldırır. Zaten uygulanmış kompozisyonlar değişmez: bir belge bir başvuruyu değil, kendi yığınını tutar."
+      },
+      "componentAttach": {
+        "title": "Bileşen tak",
+        "description": "Sahnedeki bir nesneye, oyun çalışırken YAPACAĞI bir şey verir — canı, hareketi. Bir nesne kendi kendine böyle hareket ettirilir: node.transform onu bir kez bir yere koyar ve orada kalır. Nesne o türden birini zaten taşıyorsa reddedilir."
+      },
+      "componentDetach": {
+        "title": "Bileşeni çıkar",
+        "description": "Adlandırılan türdeki bileşeni sahnedeki bir nesneden alır. Nesnede böyle bir bileşen yoksa reddedilir."
+      },
+      "componentSetProperties": {
+        "title": "Bileşeni ayarla",
+        "description": "Nesnenin taşıdığı bir bileşenin tek bir alanını yazar. Bileşenin bildirmediği bir alan yok sayılır."
+      },
+      "playStart": {
+        "title": "Oyunu başlat",
+        "description": "Oyunu öndeki sahnede başlatır. Hemen yanıtlar, bu yüzden durumu runtime.report ile okuyun."
+      },
+      "playStop": {
+        "title": "Oyunu durdur",
+        "description": "Oyunu durdurur ve sahneyi düzenlenmekte olduğu hâline geri koyar."
+      },
+      "playPause": {
+        "title": "Oyunu duraklat",
+        "description": "Oyunu terk etmeden askıya alır. play.step öncesinde gereklidir."
+      },
+      "playResume": {
+        "title": "Oyunu sürdür",
+        "description": "Duraklamanın oyunu bıraktığı yerden devam eder, durduğu süreyi telafi etmeden."
+      },
+      "playLoadScene": {
+        "title": "Oyunu başka bir sahneye gönder",
+        "description": "Projenin başka bir sahnesini, isteğe bağlı bir solmayla birlikte çalışan oyuna yükler. Sahne, başlığıyla ya da tanımlayıcısıyla adlandırılır."
+      },
+      "playStep": {
+        "title": "Oyunu adımla",
+        "description": "DURAKLATILMIŞ bir oyunu bir ya da daha çok sabit adım ilerletir ve durumunu yanıtlar. Ölçüm, yarışmadan böyle alınır."
+      },
+      "runtimeReport": {
+        "title": "Oyunun durumunu oku",
+        "description": "Tik sayısını, hızı, öğe sayısını, kaç hata olduğunu ve oyunun yazdığı son satırları yanıtlar."
+      },
+      "runtimeErrors": {
+        "title": "Oyunun kusurlarını oku",
+        "description": "ADRESLENEBİLİR kusurları yanıtlar — betik başvurusu, öğe başvurusu, satır ve sütun."
+      },
+      "scriptList": {
+        "title": "Betikleri listele",
+        "description": "Projenin tüm betiklerini, başvurusu ve uzunluğuyla birlikte yanıtlar."
+      },
+      "scriptRead": {
+        "title": "Betiği oku",
+        "description": "Bir betiğin metnini, henüz kaydedilmemiş olan da dahil olmak üzere yanıtlar."
+      },
+      "scriptWrite": {
+        "title": "Betik yaz",
+        "description": "Projeye bir betik yazar. Dosya derlenmiyorsa, satırıyla birlikte reddedilir."
+      },
+      "studioDescribe": {
+        "title": "Önde ne olduğunu betimle",
+        "description": "Sahneyi, bir nesneyi, şemalarıyla birlikte bileşenlerini, ilişkilerini ve ona daha neler eklenebileceğini yanıtlar."
+      },
+      "studioDocs": {
+        "title": "Bileşenin ya da betik yazımının belgelenmiş ayarlarını oku",
+        "description": "Tek bir soruyu yanıtlayan belge dilimini yanıtlar — bir bileşen ya da bir betiğin gördüğü yüzey."
+      },
+      "studioBatch": {
+        "title": "Toplu çağrı çalıştır",
+        "description": "Bir dizi çağrıyı tek bir soruyla, tek bir çağrı gibi çalıştırır. İlk rette durur."
+      },
+      "timelineAddSceneCue": {
+        "title": "Zaman çizelgesine olay, medya ya da solma işareti koy",
+        "description": "3B SAHNENİN zaman çizelgesine bir olay, bir ses, bir video ya da bir geçiş ekler. Olay, verilen anda veri yoluna bırakılan ve bir betiğin onMessage ile duyduğu bir AD’dır — bir sinematiğin belirli bir anında bir şeyin olması, animasyon anahtarları koyarak değil, böyle sağlanır. Sinematik bir solma buraya, list=transitions ve what=fade ile konur. Üçüncü alanın neyi adlandırdığı listeye bağlıdır — bir olay adı, bir varlık tanımlayıcısı ya da bir geçiş türü. Kurgudaki bir klip üzerindeki solma için clip.fade kullanılır."
+      },
+      "timelineRemoveSceneCue": {
+        "title": "Zaman çizelgesinden bir işareti kaldır",
+        "description": "3B SAHNENİN zaman çizelgesinden bir işareti kaldırır — bir olay, bir ses, bir video ya da bir geçiş, sinematik bir solma da bunlara dahil. Tanımlayıcı, scene.state yanıtının cues üyesinden okunur, başka hiçbir yerden değil. Kurgudaki bir klipten solmayı kaldırmak için sıfır uzunlukla clip.fade kullanılır."
+      },
+      "timelineSetPanelRows": {
+        "title": "Zaman çizelgesinin neyi sunacağını seç",
+        "description": "Panelin hangi satırları önereceğine karar verir. Motordan asla bir şey almaz; motor ne olursa olsun zaman çizelgesinin tamamını oynatır."
+      },
+      "gameApplyTemplate": {
+        "title": "Oyun şablonu yerleştir",
+        "description": "Bir oyun türünün zeminini, karakterini ve nesnelerini açık sahneye yerleştirir; kamerayı ve yerçekimini de bunlarla birlikte ayarlar. Tek bir geri alma hepsini geri alır."
+      },
+      "gameExport": {
+        "title": "Oyunu dışa aktar",
+        "description": "Bir klasöre, stüdyo olmadan tarayıcıda çalışan bir oyun yazar; sayfası, çalışma zamanı, sahneleri, dönüştürülmüş betikleri ve yalnızca bunların ulaştığı varlıklarla birlikte."
+      },
+      "prefabDefine": {
+        "title": "Prefab adlandır",
+        "description": "Projenin bir sahnesini, verilen ad altında yeniden kullanılabilir bir parça olarak game.json içine yazar. Hiçbir belge adlandırılmazsa öndeki sahne alınır."
+      },
+      "prefabInstantiate": {
+        "title": "Prefab örnekle",
+        "description": "Projenin başka bir sahne belgesinin nesnelerini, yeni tanımlayıcılarla ve istenen yere, açık sahneye yerleştirir. Zaten ÇALIŞAN bir oyun başka bir sahneye play.loadScene ile gönderilir, bu bunu yapmaz."
+      },
+      "memoryRecall": {
+        "title": "Öğrenilenleri hatırla",
+        "description": "Asistanın çalışırken FARK ETTİKLERİNİ arar ve bulduğu özetleri tanımlayıcılarıyla birlikte yanıtlar. Kişinin projenin ne olduğuna dair söyledikleri bağlam kartlarında yaşar."
+      },
+      "memoryRead": {
+        "title": "Bir hafızayı bütünüyle oku",
+        "description": "Bir hafızanın AYRINTISINI — neye gönderme yaptığını ve nereden geldiğini — memory.recall tarafından verilen bir tanımlayıcıdan yola çıkarak yanıtlar. Hatırlama özetleri verir; “bana ayrıntısını ver” diyenin istediği budur."
+      },
+      "memoryWrite": {
+        "title": "Projeye dair bir şeyi hafızaya al",
+        "description": "Bu projenin bir çalışma kuralını ya da asistanın iş görürken fark ettiği bir şeyi not eder — burada bir şeyin nasıl yapıldığını, bir dosyanın ya da bir nesnenin ne işe yaradığını. Kişinin projenin NE OLDUĞU ya da NEYİ AMAÇLADIĞI hakkında söyledikleri ise bir bağlam kartıdır. Aynı başvuru üzerinde zaten duranın yerini alır."
+      },
+      "memoryForget": {
+        "title": "Bir hafızayı unut",
+        "description": "Asistanın fark ettiği bir şeyi unutulmuş olarak işaretler. Dosyadan hiçbir şey silinmez: öğrenilen izlenebilir kalır."
+      },
+      "memoryLink": {
+        "title": "İki hafızayı birbirine bağla",
+        "description": "Bir hafızadan diğerine bir bağ ekler, birinin diğerini aydınlattığını söylemek için."
+      }
+    },
+    "consent": {
+      "ask": " Adına hareket ettiğiniz kişiye sorun, sonra aynı çağrıyı, consent parametresi şu değere ayarlanmış olarak yeniden gönderin: {{token}}. Jeton tek kullanımlıktır, 5 dakika sürer ve yalnızca bu çağrı için geçerlidir.",
+      "askInLot": " Adına hareket ettiğiniz kişiye sorun, sonra aynı toplu çağrıyı, BU çağrının kendi girdisinde şu değere ayarlanmış bir consent alanıyla yeniden gönderin: {{token}}. Jeton tek kullanımlıktır, 5 dakika sürer ve yalnızca bu çağrı için geçerlidir."
+    },
+    "refusals": {
+      "unknownCommand": "Stüdyoda böyle bir komut yok.",
+      "wrongSurface": "Stüdyonun bu komutu alacak hiçbir yüzeyi orada değildi. Hitap ettiği belgeyi ya da paneli açın.",
+      "generatorClosed": "Üretici açık değildi. Şimdi açık.",
+      "nothingPrepared": "Üreticide şu anda hazırlanmış bir model yok.",
+      "notSubmitted": "Üretim gönderilmedi.",
+      "badInput": "Verilen parametreler bu eyleme uymuyor.",
+      "noBridge": "Stüdyo yanıt vermiyor.",
+      "noProject": "Açık bir proje yok ve bu yollar bir projeye göredir.",
+      "noConfirmer": "Bu eylem bir onay ister ve onu verecek hiçbir pencere orada değildi.",
+      "declined": "Bu eylemi reddettiniz.",
+      "noWindow": "Bu eylemi çalıştıracak hiçbir stüdyo penceresi önde değildi.",
+      "timedOut": "İstek ekranda yanıtsız kaldı ve ondan vazgeçildi.",
+      "noReference": "Formda, stilin okunabileceği bir referans görüntü yok.",
+      "ambiguousLanding": "İki hedef mümkün ve stüdyo sorardı, ama dışarıdan gelen bir çağrının bu soru için ekranı yok. Birini adlandırın: yanlış seçim açık bir dosyanın üzerine yazar.",
+      "formChanged": "Maliyet bildirildikten sonra form değişti. Hiçbir şey gönderilmedi — yeni bir rakam için yeniden sorun.",
+      "notFound": "Bu adda, üzerinde işlem yapılacak bir şey yok. Çağrının kendisi ise doğru biçimlendirilmişti.",
+      "notAllowed": "Stüdyo, dışarıdan gelen bir çağrının bunu değiştirmesine izin vermez. Bunu yalnızca kendi penceresi yapar.",
+      "nativeDialog": "Bu komut bir sistem penceresi açar: asistan onu ne doldurabilir ne de geri okuyabilir. Yol kabul eden eylemi kullanın.",
+      "notRenderable": "Öndeki belgede bunun işleyebileceği hiçbir şey yok — boş bir gökyüzü, kanalsız bir materyal ya da bağlanmamış bir motor.",
+      "needsConsent": "Hiçbir şey başlatılmadı: bu çağrı bir onay jetonu ister. Ret, yeni bir jeton taşır ve aynı çağrı onunla geri gönderildiğinde çalışır.",
+      "failed": "Stüdyo denedi ve bu geçmedi. Nedeni etkinlik günlüğünde yazılı ve parametreler değildi."
+    },
+    "models": {
+      "claude-haiku-4-5": "Haiku 4.5 — en hızlısı ve en ucuzu",
+      "claude-sonnet-4-6": "Sonnet 4.6 — dengeli olanı",
+      "claude-opus-4-8": "Opus 4.8 — birkaç adımda en güveniliri",
+      "gemini-3.5-flash": "Gemini 3.5 Flash — hızlı alternatif"
+    },
+    "fields": {
+      "command": "Komut tanımlayıcısı",
+      "consent": "Daha önceki bir needsConsent reddinden gelen jeton. Tek kullanımlık, 5 dakika, yalnızca bu çağrı için geçerli",
+      "workspace": "Çalışma alanı",
+      "createDocument": "Belge oluştur",
+      "query": "Anahtar sözcükler",
+      "family": "Üretim ailesi",
+      "modelId": "Model tanımlayıcısı",
+      "aiOperation": "Yerel model işlemi",
+      "aiRole": "Yapay zekâ rolü",
+      "aiScope": "Seçim kapsamı",
+      "aiProfile": "Yerel çalışma zamanı profili",
+      "operation": "İşlem, örn. code2code",
+      "parameters": "Model parametreleri",
+      "landing": "Sonucun nereye gideceği",
+      "draft": "Yeniden işlenecek cümle",
+      "text": "Çevrilecek metin",
+      "generationInstruction": "Sonraki üretim için yönerge",
+      "commentAction": "Ekle, güncelle ya da kaldır",
+      "commentId": "Üretim yorumunun tanımlayıcısı",
+      "commentOutline": "İsteğe bağlı çokgen, {x, y} belge noktalarından oluşan bir liste",
+      "documentId": "Belge tanımlayıcısı",
+      "title": "Başlık",
+      "name": "Ad",
+      "limit": "En fazla kaç girdi",
+      "filePath": "Proje içindeki yol, bölümler arasında / ile",
+      "filePaths": "Proje içindeki yollar, bölümler arasında / ile",
+      "folderPath": "Klasör yolu",
+      "template": "Sahnenin neyle açılacağı",
+      "hidden": "Gizli girdileri dahil et",
+      "jobId": "İş tanımlayıcısı",
+      "taskId": "Yerel görev tanımlayıcısı",
+      "panel": "Stüdyo paneli",
+      "discard": "Duyulanı at",
+      "viewDirection": "Bakılacak yön",
+      "displayMode": "Sahnenin nasıl çizileceği",
+      "settingsAction": "Ayarlar düğmesi",
+      "boneName": "Kemik adı",
+      "parentBone": "Altına asılacağı kemik",
+      "boneRole": "İnsansı standardın eklemi",
+      "chainId": "Zincir tanımlayıcısı",
+      "fps": "Saniyedeki kare sayısı",
+      "autoKey": "Her harekette bir anahtar yaz",
+      "timeoutMs": "En fazla ne kadar beklenecek, milisaniye cinsinden",
+      "days": "Gün cinsinden pencere",
+      "assetId": "Varlık tanımlayıcısı",
+      "assetIds": "Varlık tanımlayıcıları",
+      "assetType": "Varlık türü",
+      "tags": "Etiketler",
+      "generated": "Yalnızca üretilmiş olanlar",
+      "offset": "Kaç girdi atlanacak",
+      "alsoRemote": "Uzak kitaplıktan da kaldır",
+      "layerId": "Katman tanımlayıcısı",
+      "dpi": "Baskı çözünürlüğü, inç başına nokta cinsinden",
+      "colorMode": "Renk modu",
+      "bitDepth": "Bit derinliği",
+      "localId": "Yerel yapay zekâ adayının tanımlayıcısı",
+      "layerIds": "Katman tanımlayıcıları",
+      "exportFolder": "Yazılacak, proje içindeki bir klasörün adı; verilmezse bir seçici sorar",
+      "generateLods": "Mesafe seviyelerini üret (görsel değişiklikler olabilir)",
+      "geometrySimplification": "Geometri sadeleştirme — kapalı, ihtiyatlı, dengeli ya da agresif",
+      "textureCompression": "Kayıplı görüntü sıkıştırma — kapalı, ihtiyatlı, dengeli ya da agresif",
+      "textureReduction": "Görüntü çözünürlüğü — özgün, yarım ya da çeyrek",
+      "exportFormat": "3B dosyanın biçimi",
+      "exportScope": "Tüm sahne ya da seçim",
+      "exportTarget": "Materyal dışa aktarımının hangi motor için olduğu",
+      "faceSize": "Bir yüzün kenarı, piksel cinsinden",
+      "conflictSide": "Çakışmanın hangi tarafının tutulacağı",
+      "remoteName": "Uzak deponun adı",
+      "remoteUrl": "Uzak deponun adresi",
+      "setUpstream": "Dalı uzak depoya bağla",
+      "cursor": "Sayfa imleci, doğrudan önceki sayfadan",
+      "order": "Sonuçların nasıl döndüğü: en yeniler ya da en iyi uyanlar — ki bu, aranacak sözcükler gerektirir",
+      "syncPolicy": "Eşitlemenin hangi yöne gittiği",
+      "styleId": "Stil tanımlayıcısı",
+      "favoriteId": "Tarif tanımlayıcısı",
+      "settingsSection": "Ayarların bölümü",
+      "exposure": "Pozlama, diyafram kademesi cinsinden",
+      "contrast": "Kontrast, 1 nötr olmak üzere",
+      "saturation": "Doygunluk, 1 nötr olmak üzere",
+      "temperature": "Sıcaklık, -1 soğuktan +1 sıcağa",
+      "tint": "Renk tonu, -1 yeşilden +1 macentaya",
+      "blur": "Bulanıklık, 0 keskinden 1 bulanığa",
+      "elevation": "Yükseklik açısı, radyan cinsinden",
+      "azimuth": "Azimut, radyan cinsinden",
+      "showBackground": "Görüntüyü öznenin arkasına çiz",
+      "autoSpin": "Önizleme kendi kendine dönsün",
+      "showSeam": "Dikişleri önizlemenin ortasına getir",
+      "pbrChannel": "Materyalin kanalı",
+      "normalScale": "Kabartmanın gücü",
+      "heightScale": "Yer değiştirmenin gücü",
+      "aoIntensity": "Örtmenin gücü",
+      "edgeIntensity": "Kenarların ne kadar koyulaştırıldığı",
+      "emissive": "Yayılan renk",
+      "emissiveIntensity": "Yayılımın gücü",
+      "tilingX": "Genişlikte tekrar sayısı",
+      "tilingY": "Yükseklikte tekrar sayısı",
+      "offsetX": "Genişlikte kaydırma",
+      "offsetY": "Yükseklikte kaydırma",
+      "invertNormalGreen": "Kabartmanın yeşil kanalını ters çevir",
+      "clipId": "Klip tanımlayıcısı",
+      "trackId": "İz tanımlayıcısı",
+      "trackKind": "İzin ne taşıdığı",
+      "clipEdge": "Klibin hangi kenarı, giriş ya da çıkış",
+      "time": "Kurgudaki an, mikrosaniye cinsinden",
+      "start": "Kurgudaki başlangıç, mikrosaniye cinsinden",
+      "at": "Hedeflenen an, mikrosaniye cinsinden",
+      "fadeLength": "Solma uzunluğu, mikrosaniye cinsinden",
+      "gain": "Seviye, desibel cinsinden",
+      "speed": "Oynatma hızı, 1 özgün hız olmak üzere",
+      "by": "Sıra sayısı, aşağı indirmek için negatif",
+      "muted": "İz susturulmuş",
+      "solo": "Duyulan tek iz",
+      "locked": "İz kilitli",
+      "layerKind": "Katman türü",
+      "adjustment": "Katmanın taşıdığı kadran",
+      "parentId": "İçine taşınacağı grup",
+      "index": "Yığındaki yer, alttan sayılır",
+      "nodeIndex": "Aynı düzeydeki nesneler arasındaki yer, listenin üstünden sayılır",
+      "opacity": "Opaklık, 0’dan 1’e",
+      "fillOpacity": "Dolgu opaklığı, 0’dan 1’e",
+      "blend": "Karışım modu",
+      "visible": "Görünür",
+      "clipped": "Alttaki katmana kırpılmış",
+      "x": "X, belge koordinatlarında",
+      "y": "Y, belge koordinatlarında",
+      "scaleX": "Genişlikte ölçek",
+      "scaleY": "Yükseklikte ölçek",
+      "rotation": "Döndürme, derece cinsinden",
+      "fontSize": "Yazı boyutu",
+      "colour": "Renk, #rrggbb biçiminde",
+      "pixelArtEnabled": "Piksel sanatı modu",
+      "columns": "Sütunlar",
+      "rows": "Satırlar",
+      "cell": "Hücre boyutu",
+      "pixelShape": "Şekil",
+      "cells": "Hücreler",
+      "toX": "Varış X",
+      "toY": "Varış Y",
+      "filled": "Dolu",
+      "erase": "Sil",
+      "width": "Genişlik",
+      "height": "Yükseklik",
+      "align": "Metnin nasıl hizalandığı",
+      "lineHeight": "Satır aralığı, yazı boyutunun katı olarak",
+      "tracking": "Harf aralığı, em’in binde biri cinsinden",
+      "shape": "Çizilecek şekil",
+      "sides": "Kaç uç",
+      "fill": "Dolgu rengi, 0xrrggbb biçiminde",
+      "scalePixels": "Katmanları çerçeveyle birlikte yeniden boyutlandır",
+      "turn": "Hangi yöne çevrilecek ya da döndürülecek",
+      "nodeId": "Nesne tanımlayıcısı",
+      "nodeIds": "Nesne tanımlayıcıları",
+      "optimizationMode": "Çalışma zamanı optimizasyon modu",
+      "matterId": "Oyulacak şeklin tanımlayıcısı",
+      "negative": "Doğru, onu kesme aracı olarak işaretler; yanlış, işareti kaldırır",
+      "nodeKind": "Ne ekleneceği",
+      "relative": "Son değerler yerine DEĞİŞİKLİKLER vermek için doğru yapın: konum ve döndürme, olana EKLENİR; ölçek ve şiddet onu ÇARPAR. Bir metre yukarısı, relative doğruyken positionY 1’dir; yarısı ise relative doğruyken scaleX 0.5’tir",
+      "positionX": "Genişlikte konum",
+      "positionY": "Yükseklikte konum",
+      "positionZ": "İzleyiciye doğru konum",
+      "rotationX": "X ekseni etrafında döndürme, radyan cinsinden",
+      "rotationY": "Y ekseni etrafında döndürme, radyan cinsinden",
+      "rotationZ": "Z ekseni etrafında döndürme, radyan cinsinden",
+      "scaleZ": "Derinlikte ölçek",
+      "material": "Materyal",
+      "roughness": "Pürüzlülük, 0 ile 1 arasında",
+      "metalness": "Metaliklik, 0 ile 1 arasında",
+      "intensity": "Şiddet",
+      "fov": "Görüş açısı, derece cinsinden",
+      "near": "Yakın mesafe",
+      "far": "Uzak mesafe",
+      "startSeconds": "Çekimin başladığı an, saniye cinsinden",
+      "durationSeconds": "Çekimin ne kadar sürdüğü, saniye cinsinden — en az bir kare",
+      "shotId": "Çekim tanımlayıcısı",
+      "pathId": "Yol tanımlayıcısı, ya da kamerayı artık hareket ettirmemek için boş",
+      "railFrom": "Yol üzerindeki başlangıç, 0 ile 1 arasında",
+      "railTo": "Yol üzerindeki bitiş, 0 ile 1 arasında",
+      "easing": "Yol boyunca hız eğrisi",
+      "targetId": "Kameranın hedeflediği nesne, ya da serbest bırakmak için boş",
+      "gitPath": "Depo içindeki yol",
+      "gitPaths": "Depo içindeki yollar",
+      "commitHash": "Sürüm tanımlayıcısı",
+      "skip": "Atlanacak girdi sayısı",
+      "message": "Mesaj",
+      "amend": "Yeni bir sürüm eklemek yerine sonuncuyu düzelt",
+      "branchName": "Dal adı",
+      "tagName": "Etiket adı",
+      "stashIndex": "Raftaki sıra, en yenisi başta",
+      "settings": "Değiştirilecek ayarlar, bölüm bölüm",
+      "accountId": "Hesap tanımlayıcısı",
+      "lockPixels": "Katmanın piksellerini kilitle",
+      "lockPosition": "Katmanın yerini kilitle",
+      "lockAlpha": "Katmanın saydamlığını kilitle",
+      "shapeFilled": "Şekil dolu",
+      "shapeFill": "Dolgu rengi, #rrggbb biçiminde",
+      "shapeStroked": "Şeklin konturu var",
+      "shapeStroke": "Kontur rengi, #rrggbb biçiminde",
+      "strokeWidth": "Kontur kalınlığı, piksel cinsinden",
+      "fontFamily": "Yazı tipinin adı, yazı tipi listesinde verildiği gibi",
+      "fontSource": "Yazı tipinin kaynağı, stüdyoyla gelen ya da makineye kurulmuş",
+      "environmentKind": "Aydınlatmanın kaynağı: stüdyo, bir görüntü ya da bir gökyüzü",
+      "backgroundKind": "Arkada duran: ortam, bir renk ya da hiçbir şey",
+      "fogKind": "Sisin biçimi: yok, doğrusal ya da üstel",
+      "fogDensity": "Üstel sisin yoğunluğu",
+      "groundSize": "Zeminin kenar uzunluğu, sahne birimi cinsinden",
+      "receiveShadow": "Gölgeler zemine düşer",
+      "worldLayers": "Arazi ve serpme girdilerinin tam listesi",
+      "toneMapping": "Yüksek dinamik aralığın ekrana indirgenme biçimi",
+      "toneExposure": "Görselleştirmenin pozlama çarpanı, 1 olduğu gibi bırakır",
+      "depth": "Derinlik",
+      "radius": "Yarıçap",
+      "radiusTop": "Üst yarıçap, 0 bir koni verir",
+      "radiusBottom": "Alt yarıçap",
+      "innerRadius": "İç yarıçap",
+      "outerRadius": "Dış yarıçap",
+      "tube": "Boru yarıçapı",
+      "segments": "Eksen çevresindeki segment sayısı",
+      "capSegments": "Bir kapaktaki segment sayısı",
+      "radialSegments": "Boru çevresindeki segment sayısı",
+      "widthSegments": "Boylam segmenti sayısı",
+      "heightSegments": "Enlem segmenti sayısı",
+      "tubularSegments": "Boru boyunca segment sayısı",
+      "p": "Düğümün ekseni çevresindeki tur sayısı",
+      "q": "Torus çevresindeki tur sayısı",
+      "castShadow": "Nesne gölge düşürür",
+      "skyColour": "Gökyüzünden gelen renk, #rrggbb biçiminde",
+      "groundColour": "Zeminden gelen renk, #rrggbb biçiminde",
+      "distance": "Işığın ötesine ulaşmadığı menzil, 0 sınırsız demektir",
+      "decay": "Işığın mesafeyle sönümlenme hızı, 2 fiziksel olanıdır",
+      "angle": "Koninin yarı açısı, radyan cinsinden",
+      "penumbra": "Koni kenarının yumuşaklığı, 0 keskin ile 1 dağınık arasında",
+      "targetX": "Genişlik boyunca hedef",
+      "targetY": "Yükseklik boyunca hedef",
+      "targetZ": "İzleyiciye doğru hedef",
+      "tilesPerMetre": "Metre başına harita tekrarı",
+      "textures": "Yuvaya göre haritalar, boş bir tanımlayıcı oradakini kaldırır",
+      "map": "Görüntü tanımlayıcısı, ya da hiç kullanmamak için boş",
+      "inputMap": "Doğrulanmış klavye ve oyun kumandası girdi eşlemesi",
+      "animationGraph": "Doğrulanmış animasyon grafiği",
+      "value": "Yazılacak sözcükler",
+      "textSize": "Harflerin boyutu, sahne birimi cinsinden",
+      "textDepth": "Harflerin kendi yüzeyinden çıkan derinliği, 0 onları düz bırakır",
+      "curveSegments": "Eğrilerin bölünme inceliği",
+      "tension": "Yolun gerilimi, 0 köşeli ile 1 yuvarlak arasında",
+      "closed": "Yol kendi üzerine kapanır",
+      "pointIndex": "Denetim noktasının sırası, ilkinden itibaren sayılır",
+      "pointX": "Genişlik boyunca nokta",
+      "pointY": "Yükseklik boyunca nokta",
+      "pointZ": "İzleyiciye doğru nokta",
+      "clipSource": "Hareketin kaynağı, modelin kendi dosyası, stüdyoyla gelen animasyonlar ya da projenin kitaplığı",
+      "clipName": "Hareketin adı, animasyon listesinde verildiği gibi",
+      "offsetSeconds": "Hareketin içinde oynatmanın başladığı an, saniye cinsinden",
+      "clipLoop": "Blok durmadan yeniden oynar",
+      "clipFade": "Bloğun iki ucundaki solmanın uzunluğu, saniye cinsinden",
+      "rootMotion": "Bloğun, kökün hareketiyle ne yaptığı",
+      "bodyPart": "Bloğun yönettiği vücut bölümü",
+      "channelId": "Animasyon kanalı tanımlayıcısı",
+      "timeSeconds": "Bant üzerindeki an, saniye cinsinden, yoksa oynatma kafası",
+      "trackProperty": "Hedeflenen kanal, yoksa öznenin bütün kanalları",
+      "fromSeconds": "Başlangıç anı, saniye cinsinden",
+      "toSeconds": "Varış anı, saniye cinsinden",
+      "maskEnabled": "Maske örttüğünü gizler",
+      "maskLinked": "Katman taşındığında maske onunla birlikte gider",
+      "maskRemove": "Maskeyi katmandan kaldır",
+      "guideId": "Kılavuz tanımlayıcısı",
+      "guideAxis": "Kılavuzun yönü, x üzerinde dikey ya da y üzerinde yatay",
+      "guidePosition": "Kılavuzun yeri, belge koordinatlarında",
+      "helpPage": "Açılacak yardım penceresi",
+      "captureQuality": "Yakalanan görüntünün büyüklüğü, yoksa görünümün kendi pikselleri",
+      "environmentPreset": "Uygulanacak hazır dünya",
+      "skyDocument": "Sahnenin izlediği gökyüzü belgesinin başlığı",
+      "skyboxView": "Gökyüzüne bakılacak izdüşüm",
+      "fieldOfView": "Lensin açıklığı, derece cinsinden",
+      "probes": "Gökyüzünde duran test nesnelerini göster",
+      "roughnessMin": "Haritanın yeniden eşlendiği pürüzlülüğün alt sınırı",
+      "roughnessMax": "Haritanın yeniden eşlendiği pürüzlülüğün üst sınırı",
+      "metalnessMin": "Haritanın yeniden eşlendiği metalikliğin alt sınırı",
+      "metalnessMax": "Haritanın yeniden eşlendiği metalikliğin üst sınırı",
+      "previewShape": "Materyalin üzerinde değerlendirileceği şekil",
+      "tilingPreview": "Önizlemenin tekrar çarpanı, 1, 2 ya da 4",
+      "cardId": "Kart tanımlayıcısı",
+      "cardTitle": "Kart başlığı",
+      "cardBody": "Kart metni",
+      "cardActive": "Kart geçerlidir",
+      "aimId": "Hedef tanımlayıcısı",
+      "csgOperation": "Onlarla ne yapılacağı",
+      "materialSlot": "Materyal yuvası",
+      "postCameraId": "Kompozisyonu ayarlanan kameranın tanımlayıcısı — yoksa sahneninki",
+      "postEffectId": "Yığın içindeki örneğin tanımlayıcısı",
+      "postEffect": "Katalogdan konulacak efekt",
+      "postBy": "Efektin kaç sıra taşınacağı, öne almak için negatif",
+      "postParam": "Ayarlanacak parametrenin adı",
+      "postValue": "Parametrenin sayısal değeri",
+      "postText": "Parametrenin metin değeri — listeden bir sözcük, bir renk, bir varlık tanımlayıcısı",
+      "postOn": "Açık/kapalı olan bir parametrenin değeri",
+      "postEnabled": "Doğru bütün kompozisyonu açar, yanlış kapatır",
+      "postPreset": "Uygulanacak hazır ayar",
+      "postMode": "Kameranın, sahnenin kompozisyonuyla ne yaptığı",
+      "postPresetName": "Hazır ayara verilecek ad",
+      "componentType": "Bileşen türü",
+      "componentField": "Alan",
+      "componentValue": "Değer",
+      "scriptPath": "Betik yolu",
+      "scriptSource": "Betik metni",
+      "describeRef": "Açıklanacak referans",
+      "docsTopic": "Konu",
+      "batchCalls": "Çağrılar (JSON)",
+      "fixedSteps": "Sabit adım sayısı",
+      "sceneToLoad": "Yüklenecek sahne",
+      "fadeSeconds": "Solma, saniye cinsinden",
+      "timelineList": "Liste",
+      "timelineAt": "An, mikrosaniye cinsinden",
+      "timelineWhat": "Ne",
+      "timelineDuration": "Süre, mikrosaniye cinsinden",
+      "timelineRowId": "Satır tanımlayıcısı",
+      "timelineTemplate": "Zaman çizelgesinin sunduğu",
+      "gameTemplate": "Oyun şablonu",
+      "prefabRef": "Örneklenecek prefab",
+      "prefabName": "Prefab adı",
+      "prefabSource": "Prefab yapılacak sahne",
+      "entryScene": "Açılış sahnesi",
+      "gameTitle": "Oyun başlığı",
+      "memoryQuery": "Aranan şey",
+      "memoryLimit": "En fazla kaç tane",
+      "memoryId": "Hafıza tanımlayıcısı",
+      "memoryType": "Hafızanın konusu",
+      "memorySummary": "Tek cümlelik özet",
+      "memoryBody": "Ayrıntı",
+      "memoryImportance": "Önem, 1 ile 5 arasında",
+      "memoryFile": "Bununla ilgili proje dosyası",
+      "memoryTo": "İşaret edilen hafızanın tanımlayıcısı",
+      "projectName": "Proje adı",
+      "projectParent": "Oluşturulacağı yer",
+      "socket": "Yuva"
+    },
+    "listening": "Asistan sizi dinliyor",
+    "done": "Asistan yanıtladı",
+    "reviewHint": "Asistanı, ne anladığını ve ne yaptığını göstermek üzere açar",
+    "dismissHint": "Bu hatırlatmayı kaldırır. Asistanın yaptıkları kendi penceresinde kalır",
+    "empty": "Ne yapılmasını istediğinizi söyleyin, asistan bunu yapar.",
+    "placeholder": "Bir 3B dosya aç, bir model bul, bir üretim hazırla…",
+    "send": "Gönder",
+    "sendHint": "Cümleyi asistana gönderir; asistan eylemleri seçer ve çalıştırır",
+    "tokens": "{{prompt, number}} jeton okundu · {{reply, number}} yazıldı",
+    "chooseHint": "Soruyu yanıtlar ve asistanın devam etmesini sağlar",
+    "answerBelow": "Aşağıdaki alana yanıt verin",
+    "answerLabel": "Yanıt",
+    "noteLabel": "Not",
+    "sendAnswers": "Yanıtları gönder",
+    "sendAnswersHint": "Bütün yanıtları bir kerede geri verir ve asistanın devam etmesini sağlar",
+    "skipChoice": "Vazgeç",
+    "skipChoiceHint": "Soruyu yanıtsız kapatır: asistan orada durur",
+    "contextOf": "{{read}} / {{window}}",
+    "contextUnknown": "{{read}}",
+    "contextGauge": "Okunan bağlam",
+    "contextHint": "Son alışverişin modele okuttuğu miktar, modelin tek seferde okuduğuna oranla",
+    "contextHintChars": "Son alışverişin gönderdiği miktar, bu kapının tek seferde kabul ettiğine oranla — jeton değil, karakter cinsinden",
+    "contextHintUnknown": "Bu kapı tek seferde ne okuduğunu söylemiyor: sayı gerçek, oran uydurma olurdu",
+    "contextHintAssumed": "Bu sınır bildirilmiş bir yedek değerdir: kapı kendi şemasını okuyamadı",
+    "thinking": "Asistan düşünüyor…",
+    "workingRound": "Asistan çalışıyor — {{round}}. adım",
+    "stopping": "Durduruluyor — stüdyo çalışmakta olanı bitiriyor…",
+    "stop": "Durdur",
+    "stopHint": "Asistanı, şu anda çalışan eylemden sonra durdurur; yapılmış hiçbir şey geri alınmaz",
+    "stepAnswered_one": "{{count, number}} sonuç",
+    "stepAnswered_many": "{{count, number}} sonuç",
+    "stepAnswered_other": "{{count, number}} sonuç",
+    "ending": {
+      "halted": "Asistan burada durdu: tek bir istek için çok fazla adım. Devamını ondan isteyin ya da ayarlardan sınırı yükseltin.",
+      "stopped": "Asistanı burada siz durdurdunuz."
+    },
+    "lost": "Asistan bu isteği yanıtlayamadı.",
+    "refused": "{{action}} — {{reason}}",
+    "confirm": {
+      "credits": "Bu eylem şu kadar harcayacak: {{cost}}.",
+      "value": "{{label}}: {{value}}",
+      "unknownCost": "Bu eylem hesabınızdan harcama yapacak. Stüdyo tutarı tahmin edemedi ve bir rakam uydurmaz.",
+      "noCost": "Bu eylem hiçbir şey harcamaz: model bu makinede çalışıyor ya da fiyatı sıfır.",
+      "files": "Bu eylem projenizin taşıdıklarını değiştirecek — dosyaları ya da kitaplığındaki varlıkları. Hiçbir harcama yapmaz.",
+      "asset": "Bu eylem bir görüntü yükleyecek ve o görüntü kitaplığınızda kalacak. Hiçbir harcama yapmaz.",
+      "remote": "Bu eylem bu makinenin dışındaki bir sunucuya yayımlayacak. Hiçbir harcama yapmaz ve buradan hiçbir şey onu geri almaz.",
+      "studio": "Bu, stüdyonun kendi durumunu değiştirir ve hiçbir ⌘Z bunu geri getirmez. Hiçbir harcama yapmaz.",
+      "yes": "İzin ver",
+      "pickFolder": "Seç…",
+      "pickFolderHint": "Sistemin seçicisini açar ve eylem orada seçilen klasörü kullanır",
+      "yesHint": "Yukarıda anlatılan eylemi çalıştırır ve doğurduğu sonuçları üstlenir",
+      "no": "İzin verme",
+      "noHint": "Hiçbir şey çalıştırmaz ve asistan bunu sonrası için hesaba katar",
+      "on": "Evet",
+      "off": "Hayır",
+      "pickUnset": "projelerinizi sakladığınız yer"
+    },
+    "starters": {
+      "projectOpen": "Son kullanılan bir projeyi aç",
+      "projectCreate": "Yeni bir proje oluştur",
+      "projectFind": "Projede bir belge bul",
+      "projectChanges": "Projede ne değişti?",
+      "projectCommit": "Projenin bir sürümünü kaydet",
+      "libraryFind": "Kitaplıkta bir görüntü ara",
+      "imageMake": "Bir görüntü üret",
+      "imageRework": "Projedeki bir görüntüyü elden geçir",
+      "imageUpscale": "Bir görüntüyü büyüt",
+      "imageVariant": "Bu görüntünün bir varyantını üret",
+      "imageText": "Bir metin katmanı ekle",
+      "imageResize": "Bu belgeyi 1080 x 1080 boyutuna getir",
+      "videoMake": "Bir video üret",
+      "videoFromImage": "Bir görüntüyü canlandır",
+      "videoCut": "Bir sekans kurgula",
+      "videoAppend": "Bunun ardına bir video ekle",
+      "videoVolume": "Müziğin sesini kıs",
+      "videoExport": "Kurguyu dışa aktar",
+      "meshMake": "Bir 3B model üret",
+      "meshFromImage": "Bir görüntüden 3B model yap",
+      "meshRig": "Bir iskelet hazırla",
+      "sceneShape": "Sahnenin merkezine bir küp ekle",
+      "sceneLight": "Bir yönlü ışık ekle",
+      "sceneCamera": "Bir kamera ekle",
+      "scriptMake": "Bir öğe için betik yaz",
+      "scriptExplain": "Bu betiği açıkla",
+      "scriptFix": "Betikteki hataları düzelt",
+      "scriptRun": "Yazmakta olduğum oyunu oynat",
+      "scriptAttach": "Bir öğeye bileşen bağla",
+      "scriptProblems": "Betikteki sorunları göster",
+      "audioMake": "Bir ses üret",
+      "audioFromVideo": "Bir videodan sesi çıkar",
+      "audioTrim": "Bir ses klibini buda",
+      "audioTrack": "Yeni bir ize ses ekle",
+      "audioVolume": "Bütün kurgunun sesini kıs",
+      "audioExport": "Ses kurgusunu dışa aktar",
+      "materialMake": "Bir materyal üret",
+      "materialFromImage": "Bir görüntüden materyal yap",
+      "materialTile": "Bir materyali döşenebilir yap",
+      "materialAssign": "Bu materyali bir modele ata",
+      "materialTexture": "Temel renk olarak projeden bir görüntü kullan",
+      "materialExport": "Materyali dışa aktar",
+      "skyboxMake": "Bir gökyüzü üret",
+      "skyboxRelight": "Bir gökyüzünün ışığını değiştir",
+      "skyboxExport": "Bir gökyüzünü dışa aktar",
+      "skyboxSun": "Güneşi taşı",
+      "skyboxApply": "Bu gökyüzünü sahneme uygula",
+      "skyboxOpen": "Projeden bir skybox aç"
+    },
+    "unserved": "Asistan için yanıt veren hiçbir şey yok. Bir model seçin, o zaman burada çalışabilir.",
+    "chooseModelHint": "Asistanın modelinin seçildiği yapay zekâ yöneticisini açar.",
+    "brain": "Kim yanıtlıyor",
+    "brainHint": "Cümlelerinizi neyin okuyacağını seçer: bu makinedeki bir model, anahtarını taşıdığınız bir hizmet ya da stüdyo. Yapay zekâ modelleri ayarlarındaki seçimin aynısı.",
+    "brainNone": "hiçbiri seçilmedi",
+    "cloudBrain": "{{cloud}} — {{model}}",
+    "groupMachine": "Bu makinede",
+    "groupClouds": "Anahtarlarınız",
+    "groupStudio": "Stüdyo",
+    "suggestions": "Neler isteyebilirsiniz",
+    "starterHint": "Cümleyi alana yazar. Siz göndermeden hiçbir şey gönderilmez.",
+    "completeHint": "Gri yazılı cümleyi tamamlar — {{accept}} ya da sağ ok ile",
+    "completing": "{{sentence}} — tamamlamak için {{accept}} ya da {{arrow}}",
+    "suggested_one": "{{count, number}} istek önerildi",
+    "suggested_many": "{{count, number}} istek önerildi",
+    "suggested_other": "{{count, number}} istek önerildi",
+    "missionEvent": {
+      "mission": {
+        "created": "Görev oluşturuldu",
+        "planning": "Görev planlanıyor",
+        "ready": "Görev hazır",
+        "running": "Görev sürüyor",
+        "waiting": "Görev bekliyor",
+        "completed": "Görev tamamlandı",
+        "failed": "Görev başarısız",
+        "cancelled": "Görev iptal edildi"
+      },
+      "step": "Görev adımı",
+      "action": "Stüdyo eylemi",
+      "job": "Üretim",
+      "user": "Yanıtınız bekleniyor",
+      "child": "Alt görev",
+      "verify": "Doğrulama"
+    }
+  }
+}

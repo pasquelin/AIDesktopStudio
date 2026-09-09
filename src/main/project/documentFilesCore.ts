@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { readFile, rm } from 'node:fs/promises'
 import { basename, join } from 'node:path'
 import {
@@ -192,7 +193,11 @@ export function createDocumentFiles({
     // The file must still be what the caller was listed: a document copied to another extension
     // by hand would otherwise open in the wrong editor, with the wrong content.
     if (document.kind !== kind) {
-      throw new Error(`Document ${id} holds a ${document.kind}, not a ${kind}`)
+      throw localizedError('documentKindMismatch', {
+        name: id,
+        actual: document.kind,
+        expected: kind,
+      })
     }
     return document
   }

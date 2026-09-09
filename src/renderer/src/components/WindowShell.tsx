@@ -72,7 +72,7 @@ export function WindowShell({
         {nav && (
           <nav
             aria-label={navLabel}
-            className="border-base-300 flex w-56 shrink-0 flex-col gap-2 border-r p-2"
+            className="border-base-300 flex w-56 shrink-0 flex-col gap-2 border-e p-2"
           >
             {nav}
           </nav>

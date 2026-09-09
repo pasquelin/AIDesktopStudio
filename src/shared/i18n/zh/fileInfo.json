@@ -1,0 +1,24 @@
+{
+  "fileInfo": {
+    "title": "关于 {{name}} 的信息",
+    "sections": {
+      "general": "常规",
+      "media": "媒体",
+      "catalogue": "编目",
+      "git": "Git"
+    },
+    "gitUnchanged": "没有待处理的更改",
+    "kind": {
+      "file": "文件",
+      "folder": "文件夹"
+    },
+    "type": "类型",
+    "modified": "修改时间",
+    "codec": "编解码器",
+    "identifier": "标识符",
+    "fingerprint": "内容指纹",
+    "added": "添加时间",
+    "reading": "正在读取文件夹…",
+    "missing": "此条目已不在项目文件夹中。"
+  }
+}

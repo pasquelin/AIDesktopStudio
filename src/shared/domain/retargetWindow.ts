@@ -1,6 +1,6 @@
 import { hashPayload, hashRoute } from './hashPayload'
 
-export const RETARGET_ROUTE = 'retarget'
+const RETARGET_ROUTE = 'retarget'
 
 export function retargetRoute(sessionId: string): string {
   return hashRoute(RETARGET_ROUTE, sessionId)

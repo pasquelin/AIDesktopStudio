@@ -1,0 +1,242 @@
+// SPDX-License-Identifier: MIT
+import { mdiTrashCanOutline } from '@mdi/js'
+import { useTranslation } from 'react-i18next'
+import {
+  BUILT_IN_PARAMETERS,
+  type AnimationGraph,
+  type AnimationParameter,
+  type AnimationParameterKind,
+  type AnimationState,
+} from '@shared/domain/animationGraph'
+import { BODY_PARTS, type BodyPart } from '@shared/domain/humanoid'
+import { withItemAt } from '@shared/collections'
+import { Button } from '@/components/Button'
+import { PropertySection } from '@/components/PropertySection'
+import { SelectField } from '@/components/SelectField'
+import { TextField } from '@/components/TextField'
+import { FieldActions } from '@/components/FieldActions'
+import { ToolButton } from '@/components/ToolButton'
+import { FIELD_HELP, PANEL_GROUP_LABEL_WIDE } from '@/components/styles'
+import { FIELD_BLOCK } from '@/components/panelStyles'
+import { cn } from '@/helpers/cn'
+import { TIP_LEFT } from '@/helpers/tooltip'
+import { AnimationGraphParameterTags } from './AnimationGraphParameterTags'
+import { AnimationGraphStateForm } from './AnimationGraphStateForm'
+import { AnimationGraphTransitionForm } from './AnimationGraphTransitionForm'
+import { layerOf, withLayer } from './animationGraphPresentation'
+
+type AnimationGraphExpertProps = {
+  graph: AnimationGraph
+  onChange: (graph: AnimationGraph) => void
+}
+
+const PARAMETER_KINDS: readonly AnimationParameterKind[] = ['number', 'boolean']
+
+/** A state born here plays nothing yet: the clip is named next, and the reader takes an empty one. */
+function newState(count: number): AnimationState {
+  return {
+    id: `state${count + 1}`,
+    source: { kind: 'bundled', name: 'Idle' },
+    loop: true,
+    speed: 1,
+    rootMotion: 'inPlace',
+  }
+}
+
+export function AnimationGraphExpert({ graph, onChange }: AnimationGraphExpertProps) {
+  const { t } = useTranslation()
+  const layer = layerOf(graph)
+  if (!layer) return null
+
+  // Sifted once for the whole form, not inside each state and each transition: every row picks
+  // from the same declarations. Only a NUMBER can multiply a speed, and a condition also stands on
+  // the runtime's own names — the reader refuses the rest, so no picker offers what it would refuse.
+  const numbers = graph.parameters.filter(parameter => parameter.kind === 'number')
+  const conditionParameters = new Map<string, AnimationParameterKind>([
+    ...Object.entries(BUILT_IN_PARAMETERS),
+    ...graph.parameters.map((one): [string, AnimationParameterKind] => [one.id, one.kind]),
+  ])
+
+  const changedParameter = (at: number, parameter: AnimationParameter | null): void =>
+    onChange({ ...graph, parameters: withItemAt(graph.parameters, at, parameter) })
+
+  return (
+    <div className="flex flex-col gap-3 p-3">
+      <PropertySection
+        title={t('game.animationGraph.context')}
+        description={t('game.animationGraph.contextDescription')}
+        scId="animationGraph.context"
+        plate
+      >
+        <div className="flex flex-col gap-2">
+          <TextField
+            scId="animationGraph.context.id"
+            label={t('game.animationGraph.id')}
+            hint={TIP_LEFT(t('game.animationGraph.id'), false, t('game.animationGraph.idHelp'))}
+            value={graph.id}
+            onChange={id => onChange({ ...graph, id })}
+          />
+          <SelectField
+            scId="animationGraph.context.part"
+            label={t('inspector.clipPart')}
+            value={layer.part}
+            options={BODY_PARTS.map((part: BodyPart) => ({
+              value: part,
+              label: t(`inspector.clipPart_${part}`),
+            }))}
+            onChange={part => onChange(withLayer(graph, { ...layer, part }))}
+          />
+          <SelectField
+            scId="animationGraph.context.initial"
+            label={t('game.animationGraph.initial')}
+            hint={TIP_LEFT(
+              t('game.animationGraph.initial'),
+              false,
+              t('game.animationGraph.initialHelp'),
+            )}
+            value={layer.initial}
+            options={layer.states.map(state => ({ value: state.id, label: state.id }))}
+            onChange={initial => onChange(withLayer(graph, { ...layer, initial }))}
+          />
+        </div>
+      </PropertySection>
+
+      <PropertySection
+        title={t('game.animationGraph.parameters')}
+        description={t('game.animationGraph.parametersDescription')}
+        scId="animationGraph.parameters"
+        plate
+      >
+        <AnimationGraphParameterTags parameters={graph.parameters} />
+        <p className={cn(FIELD_HELP, 'm-0')}>{t('game.animationGraph.builtInDescription')}</p>
+        {graph.parameters.length === 0 && (
+          <p className={cn(FIELD_HELP, 'm-0')}>{t('game.animationGraph.noParameter')}</p>
+        )}
+        {graph.parameters.map((parameter, at) => (
+          <div key={`${parameter.id}:${at}`} className={FIELD_BLOCK}>
+            <div className="flex items-center gap-2">
+              <span className={PANEL_GROUP_LABEL_WIDE}>
+                {t('game.animationGraph.parameterRank', { rank: at + 1 })}
+              </span>
+              <FieldActions>
+                <ToolButton
+                  icon={mdiTrashCanOutline}
+                  label={t('game.animationGraph.removeParameter')}
+                  tooltip={TIP_LEFT}
+                  variant="header"
+                  onClick={() => changedParameter(at, null)}
+                />
+              </FieldActions>
+            </div>
+            <TextField
+              scId={`animationGraph.parameter.${at}.id`}
+              label={t('inspector.name')}
+              value={parameter.id}
+              onChange={id => changedParameter(at, { ...parameter, id })}
+            />
+            <SelectField
+              scId={`animationGraph.parameter.${at}.kind`}
+              label={t('game.animationGraph.parameterKind')}
+              value={parameter.kind}
+              options={PARAMETER_KINDS.map(kind => ({
+                value: kind,
+                label: t(`game.animationGraph.parameterKinds.${kind}`),
+              }))}
+              onChange={kind => changedParameter(at, { ...parameter, kind })}
+            />
+          </div>
+        ))}
+        <Button
+          className="w-full"
+          onClick={() =>
+            onChange({
+              ...graph,
+              parameters: [
+                ...graph.parameters,
+                { id: `parameter${graph.parameters.length + 1}`, kind: 'number' },
+              ],
+            })
+          }
+        >
+          {t('game.animationGraph.addParameter')}
+        </Button>
+      </PropertySection>
+
+      {layer.states.map((state, at) => (
+        <AnimationGraphStateForm
+          key={`${state.id}:${at}`}
+          numbers={numbers}
+          state={state}
+          onChange={next =>
+            onChange(withLayer(graph, { ...layer, states: withItemAt(layer.states, at, next) }))
+          }
+        />
+      ))}
+
+      <PropertySection
+        title={t('game.animationGraph.transitions')}
+        description={t('game.animationGraph.transitionsDescription')}
+        scId="animationGraph.transitions"
+        plate
+      >
+        {layer.transitions.length === 0 && (
+          <p className={cn(FIELD_HELP, 'm-0')}>{t('game.animationGraph.noTransition')}</p>
+        )}
+        {layer.transitions.map((transition, at) => (
+          <AnimationGraphTransitionForm
+            key={`${transition.from}:${transition.to}:${at}`}
+            layer={layer}
+            transition={transition}
+            rank={at + 1}
+            parameters={conditionParameters}
+            onChange={next =>
+              onChange(
+                withLayer(graph, {
+                  ...layer,
+                  transitions: withItemAt(layer.transitions, at, next),
+                }),
+              )
+            }
+          />
+        ))}
+        <Button
+          className="w-full"
+          onClick={() =>
+            onChange(
+              withLayer(graph, {
+                ...layer,
+                transitions: [
+                  ...layer.transitions,
+                  {
+                    from: layer.initial,
+                    to: layer.states[0]?.id ?? layer.initial,
+                    fade: 0,
+                    when: [{ param: 'speed', op: '>', value: 0 }],
+                    priority: 0,
+                  },
+                ],
+              }),
+            )
+          }
+        >
+          {t('game.animationGraph.addTransition')}
+        </Button>
+      </PropertySection>
+
+      <Button
+        className="w-full"
+        variant="primary"
+        onClick={() =>
+          onChange(
+            withLayer(graph, {
+              ...layer,
+              states: [...layer.states, newState(layer.states.length)],
+            }),
+          )
+        }
+      >
+        {t('game.animationGraph.addState')}
+      </Button>
+    </div>
+  )
+}

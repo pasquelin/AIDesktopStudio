@@ -112,9 +112,9 @@ export function FolderPicker({ value, onChange, rootName, labels, actions }: Fol
           onReread={() => reread(value)}
         />
 
-        {/* `ml-auto` and not a stretched button on the left: what makes a folder is as wide as its
+        {/* `ms-auto` and not a stretched button at the start: what makes a folder is as wide as its
             own label, and the room between the two ends belongs to neither. */}
-        {!naming && <div className="ml-auto flex items-center gap-2">{actions}</div>}
+        {!naming && <div className="ms-auto flex items-center gap-2">{actions}</div>}
       </div>
     </div>
   )

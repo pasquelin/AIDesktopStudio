@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { glbChunksOf, glbJson, glbFrom } from '@shared/domain/glbContainer'
 import { isRecord } from '@shared/guards'
 import { boneRolesOf } from '@/engines/scene/boneRoles'
@@ -32,12 +33,12 @@ export async function exportRetarget(
     const chunks = glbChunksOf(bytes)
     const json = chunks && glbJson(chunks.json)
     if (!chunks || !isRecord(json) || !Array.isArray(json.nodes))
-      throw new Error('invalid animation export')
+      throw localizedError('animationExportInvalid')
     const names = new Set(bones.map(bone => bone.name))
     const joints = json.nodes.flatMap((node, index) =>
       isRecord(node) && typeof node.name === 'string' && names.has(node.name) ? [index] : [],
     )
-    if (joints.length !== bones.length) throw new Error('missing exported joints')
+    if (joints.length !== bones.length) throw localizedError('exportedJointsMissing')
     json.skins = [{ joints }]
     return glbFrom({ ...chunks, json: new TextEncoder().encode(JSON.stringify(json)) })
   } finally {

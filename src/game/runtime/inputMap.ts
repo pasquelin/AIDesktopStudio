@@ -25,7 +25,7 @@ export type KeyboardBinding = {
   scale?: number
 }
 
-export type MouseBinding = {
+type MouseBinding = {
   device: 'mouse'
   control: 'primary'
 }

@@ -1,0 +1,76 @@
+{
+  "gui": {
+    "stage": "Seite der Oberfläche",
+    "tools": "Werkzeuge der Oberfläche",
+    "tree": "Elemente der Oberfläche",
+    "noDocument": "Öffnen Sie eine Oberfläche, um zu sehen, was sie enthält.",
+    "visible": "Sichtbar",
+    "locked": "Gesperrt — der Zeiger erfasst es nicht"
+  },
+  "guiTools": {
+    "add": "Hinzufügen",
+    "addHint": "Legt ein Element in das Ausgewählte",
+    "duplicate": "Duplizieren",
+    "duplicateHint": "Kopiert die Auswahl direkt daneben",
+    "group": "Gruppieren",
+    "groupHint": "Legt die Auswahl in ein Panel",
+    "delete": "Löschen",
+    "deleteHint": "Nimmt die Auswahl aus der Oberfläche",
+    "lock": "Sperren",
+    "lockHint": "Bringt die Auswahl außer Reichweite des Zeigers",
+    "zoomIn": "Vergrößern",
+    "zoomInHint": "Holt die Seite näher heran",
+    "zoomOut": "Verkleinern",
+    "zoomOutHint": "Rückt die Seite weiter weg",
+    "fit": "Anpassen",
+    "fitHint": "Rahmt die ganze Seite im Panel ein",
+    "actual": "Tatsächliche Größe",
+    "actualHint": "Ein Pixel der Seite für ein Pixel des Bildschirms",
+    "resolution": "Auflösung",
+    "resolutionHint": "Die Leinwand, für die diese Oberfläche gestaltet wird",
+    "types": {
+      "panel": "Panel",
+      "stack": "Stapel",
+      "grid": "Raster",
+      "scroll": "Scrollbereich",
+      "spacer": "Abstandhalter",
+      "text": "Text",
+      "image": "Bild",
+      "button": "Schaltfläche",
+      "progress": "Fortschrittsbalken",
+      "slider": "Schieberegler",
+      "input": "Eingabefeld",
+      "checkbox": "Kontrollkästchen",
+      "screen": "Bildschirm der Oberfläche"
+    },
+    "typeHints": {
+      "panel": "Ein Rahmen, der andere enthält",
+      "stack": "Ordnet seine Kindobjekte in einer Reihe oder Spalte an",
+      "grid": "Ordnet seine Kindobjekte in gleichmäßigen Spalten an",
+      "scroll": "Ein Rahmen, dessen Inhalt scrollt",
+      "spacer": "Drückt seine Nachbarn in einem Stapel auseinander",
+      "text": "Wörter auf dem Bildschirm",
+      "image": "Ein Bild aus dem Projekt",
+      "button": "Was man betätigt, mit oder ohne Symbol",
+      "progress": "Ein bis zu einem Wert gefüllter Balken",
+      "slider": "Ein Wert, den man zieht",
+      "input": "Text zum Eintippen",
+      "checkbox": "Ein Kästchen, das man ankreuzt",
+      "screen": "Die Wurzel der Oberfläche"
+    },
+    "resolutions": {
+      "desktopHd": "1920 × 1080",
+      "desktop720": "1280 × 720",
+      "phonePortrait": "Telefon, Hochformat",
+      "phoneLandscape": "Telefon, Querformat",
+      "free": "Frei"
+    },
+    "resolutionHints": {
+      "desktopHd": "Desktop, sechzehn Neuntel",
+      "desktop720": "Desktop, sechzehn Neuntel, halb so viele Pixel",
+      "phonePortrait": "390 × 844",
+      "phoneLandscape": "844 × 390",
+      "free": "Die Größe, die das Dokument bereits hat"
+    }
+  }
+}

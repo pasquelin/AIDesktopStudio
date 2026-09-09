@@ -24,16 +24,16 @@ export type InstanceCandidate = {
   meshCount: number
 }
 
-export type BatchCandidate = InstanceCandidate
-export type MergeCandidate = InstanceCandidate
+type BatchCandidate = InstanceCandidate
+type MergeCandidate = InstanceCandidate
 
-export type GeometryDeduplication = {
+type GeometryDeduplication = {
   key: string
   sourceIds: readonly string[]
   bytes: number
 }
 
-export type MaterialDeduplication = {
+type MaterialDeduplication = {
   key: string
   sourceIds: readonly string[]
 }
@@ -57,7 +57,7 @@ export type OptimizationWarning = {
   reason: OptimizationWarningReason
 }
 
-export type OptimizationMetrics = SceneStats & {
+type OptimizationMetrics = SceneStats & {
   objects: number
   visibleObjects: number
   meshes: number
@@ -65,15 +65,15 @@ export type OptimizationMetrics = SceneStats & {
   sharedMaterials: number
 }
 
-export type OptimizationImpact = {
+type OptimizationImpact = {
   drawCallsBefore: number
   drawCallsAfter: number
   avoidedGeometryBytes: number
   avoidedTextureBytes: number
 }
 
-export type LossyCandidate = { nodeId: string }
-export type TextureOptimizationCandidate = { assetId: string }
+type LossyCandidate = { nodeId: string }
+type TextureOptimizationCandidate = { assetId: string }
 export type LossyWorldPlan = { nodeIds: readonly string[] }
 export type ModelOptimizationCandidate = { meshIndex: number; geometry: BufferGeometry }
 

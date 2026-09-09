@@ -1,0 +1,499 @@
+{
+  "settings": {
+    "title": "Einstellungen",
+    "sections": "Abschnitte der Einstellungen",
+    "search": "Einstellungen durchsuchen",
+    "results": "Ergebnisse",
+    "noResult": "Keine Einstellung entspricht dieser Suche.",
+    "restoreDefault": "Standardwert wiederherstellen",
+    "restoreDefaultHint": "Stellt den ursprünglichen Wert wieder her, den Wert von vor jeder Änderung",
+    "account": "API-Schlüssel",
+    "appearance": "Erscheinungsbild",
+    "generation": "Generierung",
+    "media": "Medien",
+    "git": "Versionen",
+    "dictation": "Diktat",
+    "input": "Geräte",
+    "ai": "KI-Modelle",
+    "accountDescription": "Ein Schlüssel pro Dienst, vom Schlüsselbund verschlüsselt.",
+    "appearanceDescription": "Design und Dichte der Bedienelemente.",
+    "generationDescription": "Warteschlange der Generierung und Standardmodelle, je Familie.",
+    "gitDescription": "Versionsverfolgung des Projektordners durch git. Betrifft nur Ihre Dateien.",
+    "mediaDescription": "Vorbereitung importierter Dateien: Proxys und Wellenformen.",
+    "dictationDescription": "Einen Text sprechen, statt ihn zu tippen. Alles geschieht auf diesem Computer: nichts von dem, was Sie sagen, wird irgendwohin gesendet.",
+    "inputDescription": "Wie das Studio mit einem Gamepad durchlaufen wird, und die an diesen Computer angeschlossenen Geräte.",
+    "aiDescription": "Welche KI welche Operation bedient. Das Studio hier, Ollama hier, oder ein Onlinedienst, für den Sie einen Schlüssel haben.",
+    "gamepadNavigation": {
+      "title": "Das Studio mit einem Gamepad durchlaufen",
+      "help": "Erlaubt einem angeschlossenen Gamepad, sich durch die Oberfläche des Studios zu bewegen und Bedienelemente zu bestätigen oder zu verwerfen. Diese Einstellung bleibt aus, bis Sie sie aktivieren, damit ein laufendes Spiel nicht den Editor dahinter verschiebt."
+    },
+    "inputDevices": {
+      "title": "Erkannte Eingabegeräte",
+      "keyboard": "Tastatur",
+      "mouse": "Maus",
+      "gamepadUnsupported": "Dieses Gamepad verwendet nicht die Standardbelegung: das Studio kann seine Tasten nicht lesen.",
+      "noGamepad": "Es ist kein Gamepad angeschlossen.",
+      "gamepadSleeps": "Ein Gamepad erscheint erst, nachdem eine seiner Tasten gedrückt wurde: der Browser zeigt es vorher nicht an. Angeschlossen, aber stumm, sieht es genauso aus wie gar kein Gamepad."
+    },
+    "theme": {
+      "title": "Design",
+      "help": "Wählt die Farben der gesamten Anwendung. Das dunkle Design schont die Augen bei langer Arbeit in einem schwach beleuchteten Raum; das helle liest sich bei Tageslicht besser. „System“ folgt der Einstellung Ihres Computers und wechselt von selbst, etwa wenn es Abend wird.",
+      "dark": "Dunkel",
+      "light": "Hell",
+      "system": "System"
+    },
+    "density": {
+      "title": "Dichte",
+      "help": "Legt fest, wie groß die Schaltflächen sind und wie hoch die Zeilen stehen. „Kompakt“ bringt mehr auf den Bildschirm; „Komfortabel“ lässt mehr Luft dazwischen, was das Zielen mit der Maus erleichtert.",
+      "comfortable": "Komfortabel",
+      "compact": "Kompakt"
+    },
+    "assistantSteps": {
+      "title": "Verkettungsschritte des Assistenten",
+      "help": "Wie viele Aktionen der Assistent für eine Anfrage verketten darf, wenn jede davon abhängt, was die vorige geantwortet hat — eine Datei suchen, sie öffnen, sie dann in eine Szene setzen. Jeder Schritt ist ein abgerechneter Hin- und Rückweg, deshalb ist diese Zahl das Einzige, was eine falsch verstandene Anfrage davon abhält, endlos zu laufen. Zwölf deckt die meisten Verkettungen ab."
+    },
+    "concurrentJobs": {
+      "title": "Gleichzeitige Generierungen",
+      "help": "Wie viele Kreationen gleichzeitig arbeiten. Je höher, desto mehr können Sie auf einmal starten — aber jede kann länger brauchen, und der Dienst kann die abweisen, die über sein Limit hinausgehen. Drei ist ein guter Ausgleich."
+    },
+    "captionArrivals": {
+      "title": "Abgerufene Assets benennen",
+      "help": "Benennt ein Bild, das ohne brauchbaren Namen ankommt, automatisch. Verbraucht Kreativeinheiten."
+    },
+    "maxRetries": {
+      "title": "Maximale Wiederholungen",
+      "help": "Wenn eine Generierung scheitert, weil das Netz ausgefallen oder ein Server ausgelastet war, versucht es die Anwendung von selbst erneut. Diese Zahl sagt, wie oft, bevor sie aufgibt. Bei 0 versucht sie es nie ein zweites Mal. Ein ungültiger API-Schlüssel wird nie wiederholt: ein erneuter Versuch würde ihn nicht in Ordnung bringen."
+    },
+    "ffmpegPath": {
+      "title": "Pfad zu ffmpeg",
+      "help": "Wo ein ffmpeg zu finden ist, das anstelle des mitgelieferten verwendet werden soll. Lassen Sie das Feld leer, außer Sie bestehen auf Ihrem eigenen.",
+      "placeholder": "/opt/homebrew/bin/ffmpeg"
+    },
+    "gitBinary": {
+      "title": "Pfad zu git",
+      "help": "Wo ein git zu finden ist, das anstelle des systemeigenen verwendet werden soll. Lassen Sie das Feld in fast allen Fällen leer. Ein Pfad, der ein Leerzeichen enthält, wird abgelehnt, und die Anwendung verhält sich dann so, als fehlte git ganz.",
+      "placeholder": "/usr/bin/git"
+    },
+    "gitUserName": {
+      "title": "Name des Autors",
+      "help": "Der Name, der in jede aufgezeichnete Version geschrieben wird. Lassen Sie das Feld leer, um den zu übernehmen, den git auf diesem Computer bereits kennt.",
+      "placeholder": "Ihr Name"
+    },
+    "gitUserEmail": {
+      "title": "Adresse des Autors",
+      "help": "Die Adresse, die in jeder aufgezeichneten Version neben dem Namen steht. Lassen Sie das Feld leer, um die zu übernehmen, die git bereits kennt.",
+      "placeholder": "sie@beispiel.de"
+    },
+    "dictationEnabled": {
+      "title": "Diktat aktivieren",
+      "help": "Bietet neben Textfeldern eine Mikrofonschaltfläche an und setzt das Tastenkürzel zum Zuhören in Betrieb. Ausgeschaltet lädt das Diktat nichts und fragt nie nach Zugriff auf das Mikrofon."
+    },
+    "dictationMode": {
+      "title": "Art der Auslösung",
+      "help": "Mit „Taste gedrückt halten“ wird zugehört, solange Sie das Tastenkürzel gedrückt halten, und es endet, sobald Sie loslassen: das ist am sichersten, denn das Mikrofon bleibt nie versehentlich offen. „Ein- und ausschalten“ startet beim ersten Druck und endet beim nächsten, was die Hand bei einem langen Diktat schont.",
+      "pushToTalk": "Taste gedrückt halten",
+      "continuous": "Ein- und ausschalten"
+    },
+    "dictationSilence": {
+      "title": "Stille, die einen Satz beendet",
+      "help": "Wie viel Ruhe, in Millisekunden, vergehen muss, bis das gerade Gesagte als abgeschlossen gilt und transkribiert wird. Erhöhen Sie den Wert, wenn Ihre Sätze mittendrin abgeschnitten werden, weil Sie zum Nachdenken innehalten."
+    },
+    "dictationPreview": {
+      "title": "Vorschau beim Sprechen",
+      "help": "Wie lange, in Millisekunden, zwischen zwei Vorschauen des gesprochenen Textes vergeht. Das Modell schreibt nicht mit, während die Wörter kommen: jede Vorschau liest alles noch einmal, was seit Satzbeginn gesagt wurde, und kostet daher Rechenzeit. Setzen Sie den Wert auf 0, um nur den endgültigen Text jedes Satzes anzuzeigen."
+    },
+    "dictationThreads": {
+      "title": "Rechen-Threads",
+      "help": "Wie viele Kerne die Erkennung belegen darf. Höher ist bis zu einem gewissen Punkt schneller, aber jeder Thread ist ein Kern weniger für den Rest der Anwendung."
+    },
+    "dictationIdleUnload": {
+      "title": "Speicher freigeben nach",
+      "help": "Minuten ohne Diktat, nach denen das Modell entladen wird und rund 700 MB Speicher zurückgibt. Beim nächsten Diktat lädt es sich von selbst wieder, was einige Sekunden dauert. Setzen Sie den Wert auf 0, um es geladen zu halten."
+    },
+    "dictationModelFolder": {
+      "title": "Modellordner",
+      "help": "Wo ein Erkennungsmodell zu finden ist, das bereits auf dieser Festplatte liegt, um es statt des von der Anwendung heruntergeladenen zu verwenden. Lassen Sie das Feld im Normalfall leer.",
+      "placeholder": "/Volumes/Modelle/parakeet-tdt-0.6b-v3-int8"
+    },
+    "defaultModel": "Standardmodell",
+    "noDefaultModel": "Jedes Mal fragen",
+    "ffmpegFound": "ffmpeg ist verfügbar: Proxys und Wellenformen werden vorbereitet.",
+    "ffmpegMissing": "ffmpeg wird weiterhin nicht gefunden. Der Import funktioniert, ohne Proxy und Wellenform.",
+    "browse": "Durchsuchen…",
+    "accent": {
+      "title": "Akzentfarbe",
+      "help": "Die Farbe, die kennzeichnet, was ausgewählt ist oder gerade läuft: der Umriss des aktiven Panels, der Abspielkopf der Zeitleiste, der Rahmen um eine Auswahl. Sie ändert nichts an dem, was Sie erstellen, nur daran, wie die Anwendung Ihnen zeigt, wo Sie gerade sind. Lassen Sie sie unverändert, um die des Designs zu behalten."
+    },
+    "fontScale": {
+      "title": "Textgröße",
+      "help": "Vergrößert oder verkleinert alle Texte der Anwendung auf einmal. 1 ist die Größe, in der sie gezeichnet wurden; darüber werden die Wörter größer und es passt weniger auf den Bildschirm; darunter ist es umgekehrt. Die Schaltflächen behalten ihre Größe: dafür ist die Dichte zuständig."
+    },
+    "reduceMotion": {
+      "title": "Animationen begrenzen",
+      "help": "Schaltet die kleinen Bewegungen der Oberfläche ab: Panels erscheinen sofort, statt hereinzugleiten. Nützlich, wenn Animationen Sie ermüden oder Ihnen davon unwohl wird, und auf einer langsameren Maschine, auf der sie ruckeln."
+    },
+    "general": "Allgemein",
+    "generalDescription": "Die Sprache der Anwendung und was sie beim Öffnen tut.",
+    "language": {
+      "title": "Sprache",
+      "help": "Die Sprache aller Texte der Anwendung: Menüs, Schaltflächen, Meldungen. „System“ folgt der Sprache Ihres Computers. Die Änderung wirkt, sobald Sie auf Anwenden oder OK klicken, ohne dass etwas neu gestartet werden muss. Ihre Projekte und alles, was Sie darin schreiben, bleiben unberührt.",
+      "system": "System"
+    },
+    "startup": {
+      "title": "Beim Öffnen",
+      "help": "Was die Anwendung tut, wenn Sie sie starten. „Letztes Projekt erneut öffnen“ setzt Sie dort ab, wo Sie aufgehört haben. „Nichts öffnen“ startet mit einem leeren Fenster, was schneller und ruhiger ist, wenn Sie mit vielen Projekten jonglieren.",
+      "lastProject": "Letztes Projekt erneut öffnen",
+      "nothing": "Nichts öffnen"
+    },
+    "autosave": {
+      "title": "Automatisch speichern",
+      "help": "Schreibt geöffnete Dokumente alle dreißig Sekunden, ohne auf Ihr ⌘S zu warten. Was Sie seit dem letzten Speichern getan haben, übersteht dann einen Stromausfall oder einen Absturz. Bilddokumente bleiben davon ausgenommen, ganz gleich, was hier eingestellt ist: ihre Ebenen werden von der Grafikkarte zurückgelesen, und ein Schreiben alle dreißig Sekunden würde das Zeichnen ruckeln lassen."
+    },
+    "home": {
+      "title": "Startseite anzeigen",
+      "help": "Der bildschirmbreite Bereich, mit dem das Studio startet: Ihre Projekte, woran Sie gearbeitet haben, was gerade läuft, und was die Modelle können. Schalten Sie ihn aus, um direkt zu dem Arbeitsbereich zu gelangen, den Sie verlassen haben. Welche Abschnitte er zeigt und in welcher Reihenfolge, wird auf der Startseite selbst eingestellt."
+    },
+    "modified": "Geändert, noch nicht angewendet",
+    "apply": "Anwenden",
+    "cancel": "Abbrechen",
+    "confirm": "OK",
+    "discardTitle": "Einige Einstellungen wurden nicht angewendet",
+    "discardBody": "Sie haben Einstellungen geändert, ohne sie anzuwenden. Was möchten Sie tun?",
+    "discard": "Nicht anwenden",
+    "shortcuts": "Tastenkürzel",
+    "shortcutsDescription": "Die Tasten, die jede Aktion auslösen. Klicken Sie auf eine Taste, um sie zu ersetzen.",
+    "pressAKey": "Taste drücken…",
+    "unbound": "Keine",
+    "shortcutConflict": "Zwei Aktionen streiten sich um diese Taste: nur eine wird antworten.",
+    "findByChord": "Nach Taste suchen",
+    "showAll": "Alle anzeigen",
+    "chordFree": "Keine Aktion verwendet diese Taste: sie ist frei.",
+    "scope": {
+      "global": "Überall in der Anwendung",
+      "spaces": "In der Leiste der Arbeitsbereiche",
+      "explorer": "Im Explorer",
+      "scene": "In der 3D-Ansicht",
+      "character": "Im Skelett",
+      "sequence": "Im Schnitt",
+      "canvas": "Im Bild",
+      "skybox": "Im Himmel",
+      "audio": "Im Audio-Editor",
+      "material": "Im Material",
+      "gui": "In einer Oberfläche"
+    },
+    "spaces": "Arbeitsbereiche",
+    "spacesDescription": "Was nur innerhalb eines Bereichs Sinn ergibt: die 3D-Ansicht, der Schnitt, das Bild.",
+    "requires": "Ohne Wirkung, solange „{{setting}}“ deaktiviert ist.",
+    "showGrid": {
+      "title": "Raster anzeigen",
+      "help": "Der karierte Boden der 3D-Ansicht. Er gehört nicht zu dem, was Sie erstellen: er ist ein Anhaltspunkt dafür, wo die Dinge sind und wie hoch. Blenden Sie ihn aus, um ein Bild ohne alles ringsum zu beurteilen."
+    },
+    "gridSize": {
+      "title": "Rastergröße",
+      "help": "Wie weit das Raster reicht, in Metern, und damit wie viele Karos es hat — ein Karo ist immer ein Meter. Machen Sie es größer für eine weite Szene, kleiner für ein kleines Objekt nahe der Kamera."
+    },
+    "navigationPreset": {
+      "title": "Navigationsschema",
+      "help": "Welcher 3D-Anwendung dieser Viewport nachempfunden ist: ihre Mausgesten und ihre Tastenkürzel. Ein Schema verschiebt nur das, was seine eigene Anwendung anders macht — alles Übrige behält die Tasten von AI Desktop Studio, auch das, wofür die anderen keine Entsprechung haben. Ihre eigenen Neubelegungen gewinnen immer.",
+      "studio": "AI Desktop Studio",
+      "unreal": "Unreal Engine",
+      "unity": "Unity",
+      "blender": "Blender",
+      "roblox": "Roblox Studio",
+      "custom": "Benutzerdefiniert"
+    },
+    "navigationCustomOrbit": {
+      "title": "Drehen mit",
+      "help": "Die Geste, die die Ansicht in Ihrem eigenen Schema dreht.",
+      "leftAlt": "Alt + Linksklick",
+      "left": "Linksklick, mit oder ohne Alt",
+      "middle": "Mittlere Taste"
+    },
+    "navigationCustomPan": {
+      "title": "Seitwärts schieben mit",
+      "help": "Die Geste, die die Ansicht verschiebt, ohne sie zu drehen.",
+      "middle": "Mittlere Taste",
+      "middleShift": "Umschalt + mittlere Taste",
+      "leftAltShift": "Umschalt + Alt + Linksklick"
+    },
+    "navigationCustomDolly": {
+      "title": "Vor und zurück mit",
+      "help": "Die Geste, die die Ansicht an das heranführt, was sie anvisiert, zusätzlich zum Mausrad.",
+      "altRight": "Alt + Rechtsklick",
+      "ctrlMiddle": "Strg + mittlere Taste",
+      "rightOntoLeft": "Rechtsklick, links bereits gehalten"
+    },
+    "navigationCustomFly": {
+      "title": "Bewegungstasten",
+      "help": "Wann WASD der Kamera gehören. Gehören sie ihr immer, stehen die Buchstaben den Befehlen der Szene nicht mehr zur Verfügung — deshalb verlangen Unity und Unreal eine Taste.",
+      "anyButton": "Solange eine Taste gehalten wird",
+      "rightButton": "Solange die rechte Taste gehalten wird",
+      "always": "Immer"
+    },
+    "orbitAroundSelection": {
+      "title": "Auswahl umkreisen",
+      "help": "Wenn Sie die 3D-Ansicht drehen, kreist sie um das, was ausgewählt ist, statt um einen schwebenden Punkt vor Ihnen. Das ist es, was verhindert, dass Sie Ihr Objekt verlieren, sobald Sie sich ihm nähern. Ist nichts ausgewählt oder liegt die Auswahl außerhalb des Bildschirms, dreht sich die Ansicht um den zuletzt betrachteten Punkt."
+    },
+    "orbitUnderCursor": {
+      "title": "Unter dem Zeiger umkreisen",
+      "help": "Die Ansicht dreht sich um das, worüber der Zeiger steht, wenn Sie mit dem Drehen beginnen, statt um einen früher festgelegten Punkt. Praktisch für nahe Arbeit ohne neues Ausrichten; überraschend, wenn Sie von Unity oder Unreal kommen, die diese Option nicht bieten."
+    },
+    "flySpeed": {
+      "title": "Fluggeschwindigkeit",
+      "help": "Wie schnell sich die Kamera bewegt, wenn Sie durch die 3D-Ansicht fliegen, in Metern pro Sekunde. Zu langsam, und das Durchqueren der Szene dauert zehn Sekunden; zu schnell, und Sie schießen daran vorbei, ohne sie zu sehen."
+    },
+    "boostFactor": {
+      "title": "Beschleunigung",
+      "help": "Womit die Geschwindigkeit multipliziert wird, solange Sie die Beschleunigungstaste halten. Bei 3 fliegen Sie dreimal so schnell — genug, um eine große Szene zu durchqueren, ohne die Einstellung darüber zu ändern."
+    },
+    "shadows": {
+      "title": "Schattenwurf",
+      "help": "Berechnet die Schatten, die die Lichter werfen. Jedes Licht, das einen wirft, kostet einen zusätzlichen Renderdurchgang pro Frame: diese Option abzuschalten ist der direkteste Weg, eine schwere Szene zu entlasten."
+    },
+    "viewportQuality": {
+      "title": "Viewport-Qualität",
+      "help": "Wie fein derselbe Frame gezeichnet wird. An den Modellen und den Bildern ändert sich nichts — nur die Zahl der berechneten Pixel. Die Stufe Leistung begrenzt außerdem, wie fein die Schatten werden.",
+      "performance": "Leistung",
+      "balanced": "Ausgewogen",
+      "high": "Hoch"
+    },
+    "units": {
+      "title": "Anzeigeeinheit",
+      "help": "Die Einheit, in der Längen geschrieben und gelesen werden. Eine Szeneneinheit bleibt ein Meter, ganz gleich, was hier eingestellt ist: es ändert, was angezeigt wird, nie das, was das Dokument enthält.",
+      "mm": "Millimeter",
+      "cm": "Zentimeter",
+      "m": "Meter"
+    },
+    "shadowQuality": {
+      "title": "Schattenweichheit",
+      "help": "Das Korn der Schattenkante. „Hart“ schneidet sauber ab und kostet am wenigsten; „Weich“ glättet die Kante. Was einen Schatten wirft, wird dagegen Objekt für Objekt im Inspektor entschieden.",
+      "hard": "Hart",
+      "soft": "Weich"
+    },
+    "shadowMapSize": {
+      "title": "Schattendetail",
+      "help": "Die Kantenlänge in Pixeln der Shadow-Map, die jedes schattenwerfende Licht berechnet. Sie zu verdoppeln kostet das Vierfache an Speicher: 2048 reicht für eine Szene aus wenigen Objekten, 4096 lohnt sich, wenn ein Licht ein ganzes Set abdeckt."
+    },
+    "snapTranslate": {
+      "title": "Verschiebeschritt",
+      "help": "Wie weit ein Objekt bei aktivem Fang in einem Schritt wandert, in Metern. Der Fang selbst wird in der Werkzeugleiste der Szene eingeschaltet; dieser Wert sagt nur, wie fein er ist."
+    },
+    "snapRotate": {
+      "title": "Drehschritt",
+      "help": "Der Winkel eines Drehschritts bei aktivem Fang, in Grad. Die Drehung schreitet von dort fort, wo sie begonnen hat: 15° ergibt vierundzwanzig Schritte pro Umdrehung, 90° Vierteldrehungen."
+    },
+    "snapScale": {
+      "title": "Skalierungsschritt",
+      "help": "Um wie viel sich die Skalierung bei aktivem Fang in einem Schritt ändert. Erreichbar sind die Vielfachen des Schritts: 0,1 trifft genau die Zehntel und die Halben, 0,25 die Viertel."
+    },
+    "gizmoSize": {
+      "title": "Griffgröße",
+      "help": "Der GRÖSSTE Platz, den die Transformationsgriffe auf dem Bildschirm einnehmen. Sie wachsen nie über das Objekt hinaus, das sie halten: an einem kleinen Teil folgen sie dessen Größe, und darüber hinaus halten sie sich an diesen Anteil der Ansicht, statt endlos zu wachsen."
+    },
+    "snapSurfaceAlign": {
+      "title": "An Oberfläche ausrichten",
+      "help": "Solange der Oberflächenfang aktiv ist, legt sich das, was Sie absetzen, an die Neigung dessen, was es berührt. Nicht angehakt, behält es seine eigene Ausrichtung und fällt nur herab."
+    },
+    "snapSurfaceOffset": {
+      "title": "Oberflächenversatz",
+      "help": "Um wie viele Meter das, was Sie ablegen, über der Oberfläche schwebt. Null legt es auf Kontakt ab; wenige Zentimeter verhindern, dass zwei Flächen auf dem Bildschirm um dieselbe Ebene streiten."
+    },
+    "fieldOfView": {
+      "title": "Sichtfeld",
+      "help": "Wie viel die Kamera erfasst, in Grad. Ein enger Winkel holt heran und flacht ab, wie ein Teleobjektiv; ein weiter zeigt viel mehr, verbiegt aber die Ränder. 60 kommt dem nahe, was ein Auge sieht."
+    },
+    "advanced": "Erweitert",
+    "advancedDescription": "Was nur nötig ist, um ein Problem zu verstehen oder um neu anzufangen.",
+    "reveal": "Im Ordner anzeigen",
+    "open": "Öffnen",
+    "logLevel": {
+      "title": "Protokolldetail",
+      "help": "Wie viel die Anwendung in der Konsole darüber sagt, was sie tut. „Nichts“ sagt gar nichts mehr; „Fehler“ meldet nur, was fehlgeschlagen ist; „Alles“ erzählt jeden Schritt, was beim Verstehen eines Problems hilft und die übrige Zeit geschwätzig ist.",
+      "silent": "Nichts",
+      "error": "Nur Fehler",
+      "warn": "Fehler und Warnungen",
+      "info": "Alles"
+    },
+    "openLogFolder": {
+      "title": "Technisches Protokoll",
+      "help": "Öffnet den Dateimanager mit den Protokollen, die das Studio bei jedem Start schreibt: „main.log“, das man von Ihnen verlangen wird, wenn etwas fehlschlägt, ohne etwas anzuzeigen, und „assistant.log“, das vollständig festhält, was an jedes Modell gesendet wird und was es antwortet.",
+      "button": "Technisches Protokoll anzeigen"
+    },
+    "openSettingsFile": {
+      "title": "Einstellungsdatei",
+      "help": "Öffnet den Dateimanager dort, wo Ihre Einstellungen gespeichert sind. Nützlich, um sie vor einem Wechsel auf eine andere Maschine zu kopieren oder um sie jemandem zu schicken, der Ihnen hilft."
+    },
+    "mcpEnabled": {
+      "title": "Das Studio von außen steuern",
+      "help": "Öffnet einen Zugang allein auf dieser Maschine, über den ein Client wie Claude Code dieselben Aktionen ausführen kann wie der Assistent. Alles, was kostet oder hochlädt, fragt am Bildschirm nach, genau wie hier. Ausgeschaltet hört nichts zu."
+    },
+    "mcpDelegateFiles": {
+      "title": "Meine Dateien verschieben und löschen, ohne mich zu fragen",
+      "help": "Ein externer Client darf eine Datei Ihres Projekts verschieben, umbenennen oder in den Papierkorb legen und eine von git verfolgte Datei zurückholen, ohne etwas anzuzeigen. Der Explorer nimmt einige dieser Gesten zurück, nie alle. Nicht angehakt, wird Ihnen jede Geste vorher vorgelegt."
+    },
+    "mcpDelegateAsset": {
+      "title": "In meine Bibliothek hochladen, ohne mich zu fragen",
+      "help": "Ein externer Client darf ein Bild an Ihre Bibliothek senden, wo es bleibt. Das kostet keine Kreativeinheiten. Nicht angehakt, wird Ihnen jeder Upload vorher vorgelegt."
+    },
+    "mcpDelegateRemote": {
+      "title": "Auf einen entfernten Server veröffentlichen, ohne mich zu fragen",
+      "help": "Ein externer Client darf einen Branch an ein entferntes git-Repository senden. Es ist die einzige Geste, die diese Maschine verlässt, und nichts hier holt sie zurück. Nur bewusst aktivieren."
+    },
+    "mcpDelegateBudget": {
+      "title": "Kreativeinheiten ausgeben, ohne mich zu fragen",
+      "help": "Was ein externer Client in diesem Fenster ausgeben darf, bevor das Studio wieder zu fragen beginnt. Bei null wird Ihnen jede Ausgabe vorher vorgelegt. Eine Generierung, die die API nicht bepreisen will, wird nie ohne Sie gestartet, ganz gleich, was hier steht."
+    },
+    "copyMcpCommand": {
+      "title": "Verbindungsbefehl",
+      "help": "Kopiert die Zeile, die Sie in ein Terminal einfügen, um einen Client anzubinden. Sie enthält weder Port noch Token und bleibt daher für alle kommenden Starts gültig.",
+      "button": "Kopieren"
+    },
+    "installResolveBridge": {
+      "title": "DaVinci-Resolve-Brücke",
+      "help": "Legt ein Skript in den Ordner, den Resolve liest, um einen hier erstellten Schnitt aus seinem eigenen Skriptmenü zu importieren. Es erscheint, ohne Resolve neu zu starten. Das Entfernen geschieht von Hand, und Resolve bemerkt es erst beim nächsten Start.",
+      "button": "Installieren",
+      "confirm": "Es wird ein Skript in den Ordner von DaVinci Resolve auf dieser Maschine geschrieben. Nichts anderes wird angerührt.",
+      "missing": "DaVinci Resolve wurde auf dieser Maschine nicht gefunden",
+      "missingDetail": "Sein Ordner existiert nicht, daher wurde nichts geschrieben. Installieren Sie Resolve, starten Sie es einmal und kommen Sie dann hierher zurück.",
+      "missingOk": "Schließen"
+    },
+    "openDevtools": {
+      "title": "Entwicklerwerkzeuge",
+      "help": "Öffnet die technische Konsole des eingebetteten Browsers. Sie zeigt die Protokollmeldungen und die Fehler. Nur zur Fehlersuche: Nichts darin wird gebraucht, um die Software zu benutzen."
+    },
+    "resetAll": {
+      "title": "Alles zurücksetzen",
+      "help": "Setzt JEDE Einstellung auf den Stand einer frischen Installation zurück: Design, Sprache, Tastenkürzel, alles. Ihre Projekte, Bilder und Schnitte bleiben unberührt — nur die Einstellungen nicht. Es gibt kein Zurück.",
+      "button": "Zurücksetzen",
+      "confirm": "Alle Einstellungen zurücksetzen? Ihre Projekte bleiben unberührt, aber das lässt sich nicht rückgängig machen."
+    },
+    "storage": "Speicherort",
+    "storageDescription": "Wo Ihre Projekte auf der Festplatte abgelegt sind.",
+    "projectsFolder": {
+      "title": "Projektordner",
+      "help": "Der Ordner, den die Anwendung vorschlägt, wenn Sie ein Projekt anlegen oder öffnen. Das verschiebt nichts: Bereits angelegte Projekte bleiben, wo sie sind. Leer lassen, um jedes Mal dort weiterzumachen, wo Sie zuletzt waren."
+    },
+    "cancelHint": "Verwirft die ausstehenden Änderungen, ohne das Fenster zu schließen",
+    "applyHint": "Schreibt die Änderungen jetzt und lässt das Fenster offen",
+    "confirmHint": "Schreibt die Änderungen und schließt dann das Fenster",
+    "browseHint": "Den Ordner in einem Fenster des Systems auswählen",
+    "findByChordHint": "Klicken, dann eine Tastenkombination drücken: Die Liste behält nur, was sie verwendet",
+    "showAllHint": "Entfernt den Filter und zeigt wieder alle Tastenkürzel",
+    "captureHint": "Klicken, dann die zuzuweisende Tastenkombination drücken",
+    "sectionHint": "Zeigt die Einstellungen dieses Abschnitts",
+    "sectionStagedHint": "Dieser Abschnitt hat Änderungen, die nicht angewendet wurden",
+    "searchSectionHint": "Öffnet den ganzen Abschnitt statt nur des einen Treffers",
+    "searchResultHint": "Geht zur Einstellung, in dem Abschnitt, zu dem sie gehört",
+    "landing": {
+      "title": "Wo eine Generierung landet",
+      "help": "Wenn bereits ein Dokument derselben Art geöffnet ist. Ist nichts geöffnet, öffnet sich das Ergebnis.",
+      "ask": "Jedes Mal fragen",
+      "document": "In das geöffnete Dokument",
+      "newTab": "In einem eigenen Tab"
+    },
+    "homeNews": {
+      "title": "Modellneuigkeiten",
+      "help": "Liest die aufsteigenden Modelle und die auf Hugging Face veröffentlichten Artikel, dem Host, von dem bereits jedes Gewicht des Katalogs stammt. Nicht angehakt, kontaktiert das Studio für dieses Band niemanden."
+    },
+    "mcp": "Zugang (MCP)",
+    "mcpDescription": "Die zweite Tür des Studios: Ein anderes Programm auf dieser Maschine — Claude Code, Cursor, jeder Client, der das MCP-Protokoll spricht — führt aus seinem eigenen Projekt heraus dieselben Aktionen aus wie der Assistent. Zu Beginn geschlossen.",
+    "mcpListening": "Offen: Das Studio hört auf 127.0.0.1:{{port}}, allein auf dieser Maschine.",
+    "mcpClosed": "Geschlossen: Nichts hört zu. Haken Sie die Einstellung oben an, um die Tür zu öffnen.",
+    "mcpHowTo": "Einen Client anbinden",
+    "mcpStepOpen": "Haken Sie „Das Studio von außen steuern“ an, wann immer es Ihnen passt. Der Zugang startet sofort, und ein bereits eingerichteter Client findet ihn.",
+    "mcpStepCopy": "Kopieren Sie den Verbindungsbefehl für einen Client, der aus einem Terminal gesteuert wird — oder den Konfigurationsblock für einen Client, der eine Datei liest. Keiner von beiden enthält einen Port oder ein Token.",
+    "mcpStepPaste": "Fügen Sie ihn in ein Terminal ein, das in Ihrem Projekt geöffnet ist, oder den Block in die Konfigurationsdatei Ihres Clients.",
+    "mcpNothingToRedo": "Muss nur einmal getan werden. Was Sie einfügen, benennt das Studio als zu startendes Programm, nie als zu erreichende Adresse; es bleibt daher über alle Starts hinweg gültig — auch über die, bei denen Port und Token neu sind, also über alle. Ein bereits unter demselben Namen eingetragener Client wird ersetzt; es muss vorher nichts entfernt werden.",
+    "mcpExamples": "Was ein Client tun kann",
+    "mcpExampleGenerate": "„Suche ein Modell für eine nächtliche Skybox, bereite die Generierung vor, aber sende sie nicht.“",
+    "mcpExampleTidy": "„Sortiere die Rushes dieser Woche in je einen Ordner pro Tag.“",
+    "mcpExampleScene": "„Setze eine Kugel zwei Meter rechts vom Würfel und beleuchte sie warm.“",
+    "mcpGuards": "Was die Tür bewacht",
+    "mcpGuardLocal": "Der Zugang hört nur auf dieser Maschine: Nichts aus dem Netzwerk erreicht ihn.",
+    "mcpGuardToken": "Bei jedem Start ein neues Token; eine Anfrage ohne es wird abgelehnt.",
+    "mcpGuardOrigin": "Eine Anfrage von einer in Ihrem Browser geöffneten Webseite wird allein aus diesem Grund abgelehnt.",
+    "mcpGuardConsent": "Alles, was ausgibt oder hochlädt, erscheint am Bildschirm und wartet auf Ihr Ja — außer dem, was Sie oben delegiert haben.",
+    "copyMcpConfig": {
+      "title": "Konfigurationsblock",
+      "help": "Kopiert dieselbe Verbindung als JSON, für einen Client, der über eine Datei statt über einen Befehl eingerichtet wird. Wie der Befehl bleibt er bei jedem Start gültig.",
+      "button": "JSON kopieren"
+    },
+    "memory": "Gedächtnis des Assistenten",
+    "memoryDescription": "Was der Assistent über Ihre Projekte gelernt hat. Was er über ein Projekt gelernt hat, liegt im Ordner dieses Projekts und reist mit ihm; was er über Ihre Arbeitsweise gelernt hat, bleibt auf dieser Maschine.",
+    "memoryProject": "Dieses Projekt",
+    "memoryGlobal": "Diese Maschine",
+    "memoryProjectHint": "Was der Assistent über das geöffnete Projekt gelernt hat. Diese Datei reist mit dem Ordner.",
+    "memoryGlobalHint": "Was der Assistent über Ihre Arbeitsweise gelernt hat. Es verlässt diese Maschine nie.",
+    "memoryGraph": "Graph",
+    "memoryGraphCount": "{{memories, number}} Gedächtniseinträge · {{links, number}} Verknüpfungen",
+    "memoryGraphDescription": "Was der Assistent gelernt hat und was zusammenhängt. Ein Punkt je Gedächtniseintrag, eine Linie zwischen zweien, die von derselben Sache handeln.",
+    "memoryGraphEmpty": "Es braucht mindestens zwei verbundene Gedächtniseinträge, damit ein Graph etwas zeigt.",
+    "memorySearch": "Im Gedächtnis suchen",
+    "memoryEmpty": "Der Assistent hat hier noch nichts gelernt.",
+    "memoryUnmatched": "Kein Gedächtniseintrag passt zu dieser Suche.",
+    "memoryNoProject": "Öffnen Sie ein Projekt, um zu sehen, was der Assistent darüber gelernt hat.",
+    "memoryUnreadable": "Die Gedächtnisdatei konnte nicht vollständig gelesen werden. Was folgt, kann unvollständig sein.",
+    "memoryTooNew": "Diese Datei wurde von einer neueren Version des Studios geschrieben. Es wurde nichts geändert.",
+    "memoryPin": "Anheften",
+    "memoryPinHint": "Ein angehefteter Gedächtniseintrag wird dem Assistenten immer übergeben, ganz gleich, welche Frage gestellt wird.",
+    "memoryUnpin": "Nicht mehr anheften",
+    "memoryUnpinHint": "Der Assistent erhält ihn nur noch, wenn er die gestellte Frage beantwortet.",
+    "memoryArchive": "Archivieren",
+    "memoryArchiveHint": "Legt ihn beiseite, ohne ihn zu löschen: weiterhin lesbar, nicht mehr übergeben.",
+    "memoryRestore": "Wieder in Betrieb nehmen",
+    "memoryRestoreHint": "Der Assistent darf wieder darauf zurückgreifen.",
+    "memoryForget": "Vergessen",
+    "memoryForgetHint": "Das Vergessen wird in die Datei geschrieben: Nichts wird gelöscht, die Spur bleibt.",
+    "memoryEdit": "Die Zusammenfassung bearbeiten",
+    "memorySource": "Geschrieben von",
+    "memorySourceAction": "einer Aktion ({{ref}})",
+    "memorySourcePerson": "Ihnen",
+    "memorySourceAssistant": "dem Assistenten",
+    "memorySourceImport": "einem Import",
+    "memoryRefs": "Er handelt von",
+    "memoryReplaces": "Er ersetzt",
+    "memoryAlsoAbout": "handelt ebenfalls davon",
+    "memoryLinks": "Er verweist auf",
+    "memorySupersedes": "Ersetzt {{id}}",
+    "memoryReindex": "Index neu aufbauen",
+    "memoryReindexHelp": "Liest die Datei erneut und baut den Suchindex neu auf. Nichts von dem Gelernten geht verloren.",
+    "memoryEmbed": "Vektoren berechnen",
+    "memoryEmbedHelp": "Ermöglicht dem Assistenten, einen Gedächtniseintrag zu finden, ohne dessen genaue Wörter zu kennen. Erfordert ein installiertes Embedding-Modell.",
+    "memoryEmbedPending_other": "{{count, number}} zu berechnende Gedächtniseinträge",
+    "memoryEmbedNone": "Jeder Gedächtniseintrag hat seinen Vektor.",
+    "memoryEmbedNoModel": "Es ist kein Embedding-Modell gewählt. Die Suche läuft allein über Wörter.",
+    "memoryStopEmbed": "Anhalten",
+    "memoryStopEmbedHelp": "Was bereits berechnet wurde, bleibt erhalten.",
+    "memoryPurge": "Alles vergessen",
+    "memoryPurgeHelp": "Löscht die Gedächtnisdatei dieses Projekts und alles, was der Assistent daraus gelernt hatte.",
+    "memoryPurgeConfirm": "Alles löschen, was der Assistent über dieses Projekt gelernt hat?",
+    "memoryFilterAll": "Alle",
+    "memoryCount_other": "{{count, number}} Gedächtniseinträge",
+    "memoryEmbedPending_one": "{{count, number}} zu berechnender Gedächtniseintrag",
+    "memoryCount_one": "{{count, number}} Gedächtniseintrag",
+    "memoryEmbedPending_many": "{{count, number}} zu berechnende Gedächtniseinträge",
+    "memoryCount_many": "{{count, number}} Gedächtniseinträge",
+    "memoryUpkeep": "Pflege",
+    "memoryMerge": "Duplikate zusammenführen",
+    "memoryMergeHelp": "Behält aus jeder Gruppe, die dasselbe sagt, den wichtigsten Eintrag, verknüpft die anderen damit und archiviert sie. Nichts wird gelöscht.",
+    "memoryMergeNone": "Nichts sagt zweimal dasselbe.",
+    "memoryMergeFound_one": "{{count, number}} Duplikat",
+    "memoryMergeFound_many": "{{count, number}} Duplikate",
+    "memoryMergeFound_other": "{{count, number}} Duplikate",
+    "memoryStale": "Archivieren, was schläft",
+    "memoryStaleHelp": "Legt beiseite, was seit sechs Monaten von nichts genutzt wurde. Angeheftete Gedächtniseinträge werden nie angerührt.",
+    "memoryStaleNone": "Nichts schläft lange genug.",
+    "memoryStaleFound_one": "{{count, number}} schlafender Gedächtniseintrag",
+    "memoryStaleFound_many": "{{count, number}} schlafende Gedächtniseinträge",
+    "memoryStaleFound_other": "{{count, number}} schlafende Gedächtniseinträge",
+    "memoryCompact": "Die Datei verdichten",
+    "memoryCompactHelp": "Schreibt die Datei mit einer Zeile je stehendem Gedächtniseintrag neu. Hier verlässt endgültig die Festplatte, was vergessen wurde.",
+    "memoryRelations": "Was dieser Gedächtniseintrag berührt",
+    "memoryPromote": "Überall behalten",
+    "memoryPromoteHint": "Kopiert diesen Gedächtniseintrag in das Gedächtnis der Maschine, damit er in allen Ihren Projekten dient. Was das Projekt gelernt hat, bleibt auch dort.",
+    "gameControls": {
+      "title": "Die Steuerung des Spiels",
+      "help": "Sie wird nicht hier eingestellt. Ein Spiel liest eine Eingabebelegung des Projekts, im Explorer unter „Spielsteuerung“ abgelegt, und die Schaltfläche „Neue Eingabebelegung“ erstellt eine. Diese Seite betrifft allein die Oberfläche des Studios und das, was an diesen Computer angeschlossen ist."
+    }
+  }
+}

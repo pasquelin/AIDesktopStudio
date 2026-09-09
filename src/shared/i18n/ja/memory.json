@@ -1,0 +1,20 @@
+{
+  "memoryWorth": {
+    "scriptWrite": "スクリプト{{path}}はアシスタントが書きました",
+    "prefabDefine": "「{{name}}」はこのプロジェクトのプレハブです",
+    "styleSave": "「{{name}}」はこのプロジェクトに保存された、マテリアルの読み取り方です",
+    "postSave": "「{{name}}」はこのプロジェクトに保存されたポストプロセスのプリセットです",
+    "animationAdd": "アニメーション「{{clipName}}」がリグに追加されました",
+    "gitCommit": "決定してgitに記録しました：{{message}}"
+  },
+  "memoryTypes": {
+    "decision": "決定",
+    "architecture": "アーキテクチャ",
+    "feature": "機能",
+    "entity": "エンティティ",
+    "script": "スクリプト",
+    "problem": "問題",
+    "intent": "意図",
+    "convention": "規約"
+  }
+}

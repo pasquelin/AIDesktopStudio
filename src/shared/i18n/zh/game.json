@@ -1,0 +1,427 @@
+{
+  "game": {
+    "components": {
+      "Aircraft": {
+        "title": "飞行器",
+        "description": "让对象飞起来：根据它自身的运动计算升力、阻力和推力，操纵面只有在有气流通过时才响应。"
+      },
+      "Animator": {
+        "title": "动画器",
+        "description": "从项目的动画图中，播放与身体当前动作——行走、跳跃、站立——相符的片段。"
+      },
+      "CharacterController": {
+        "description": "让这个对象成为被操控的那一个：它会行走、跳跃、上台阶。",
+        "title": "角色"
+      },
+      "Collider": {
+        "description": "给对象一个其他对象无法穿过的体积。",
+        "title": "体积"
+      },
+      "Follow": {
+        "description": "跟随另一个实体，并在要求的距离处停下——同伴、越肩相机、敌人。",
+        "title": "追逐"
+      },
+      "Health": {
+        "description": "生命值，实体受伤时下降，归零即死亡。",
+        "title": "生命值"
+      },
+      "LookAt": {
+        "description": "让实体朝向另一个实体，可以立刻转过去，也可以按限定的转速转——炮塔、指示牌、头部。",
+        "title": "注视"
+      },
+      "Movement": {
+        "description": "让实体沿一条轴自行往返移动——平台、升降机、机关。",
+        "title": "运动"
+      },
+      "Orbit": {
+        "description": "让实体绕另一个实体旋转，或绕原点旋转——月亮、卫星、环绕的相机。",
+        "title": "环绕"
+      },
+      "Path": {
+        "description": "让实体以匀速沿一串点前进——小车、推轨拍摄、轨道上的平台。",
+        "title": "轨道"
+      },
+      "Patrol": {
+        "description": "让实体从一个命名点走到下一个，并在每处停留等待——哨兵、升降机。",
+        "title": "巡逻"
+      },
+      "RigidBody": {
+        "description": "把对象交给模拟：它会下落、滑动、被推动。",
+        "title": "物理"
+      },
+      "Script": {
+        "title": "脚本",
+        "description": "把对象交给代码：作者写下的内容会在每一步运行。"
+      },
+      "Player": {
+        "title": "玩家",
+        "description": "指定被操控的那一个。每个场景只有一个：挂在它下面的是它的身体和它的眼睛，相机跟随的也是它。"
+      },
+      "Spin": {
+        "description": "让实体绕一条轴不停旋转——可拾取物、螺旋桨、机械装置。",
+        "title": "持续旋转"
+      },
+      "SpringArm": {
+        "title": "弹簧臂",
+        "description": "把相机挂在某个元素后方，距离由你设定：当有墙挡在中间时相机会拉近，跟随时带有延迟而不是紧贴。"
+      },
+      "Trigger": {
+        "description": "不阻挡任何东西，但当有物体进入或离开它的体积时会发出通知。",
+        "title": "感应器"
+      },
+      "Vehicle": {
+        "title": "载具",
+        "description": "把对象架在带悬挂的驱动轮和转向轮上：它会滚动、刹车、转向。轮子是它的子级对象，在这里指定。"
+      }
+    },
+    "fields": {
+      "acceleration": "加速",
+      "agility": "灵活度",
+      "airControl": "空中控制",
+      "axis": "轴",
+      "body": "所驱动的身体",
+      "bodyTurnSpeed": "身体转向速度（0：不转）",
+      "camera": "相机",
+      "collision": "避开墙壁",
+      "collisionInLag": "进入碰撞",
+      "collisionOutLag": "离开碰撞",
+      "coyoteTime": "土狼时间",
+      "current": "当前值",
+      "deceleration": "减速",
+      "distance": "距离",
+      "drag": "阻力",
+      "drive": "驱动方式",
+      "fidelity": "精度",
+      "followVertical": "贴合主体高度",
+      "friction": "摩擦力",
+      "from": "源文件",
+      "graph": "动画图",
+      "gravityScale": "重力",
+      "height": "高度",
+      "hysteresis": "迟滞",
+      "jumpBuffer": "跳跃缓冲",
+      "jumpSpeed": "跳跃",
+      "kind": "模拟",
+      "length": "长度",
+      "lockRotation": "锁定转动",
+      "lookAt": "取景",
+      "mass": "质量",
+      "max": "最大值",
+      "maxSteerAngle": "最大转向角",
+      "maxThrust": "最大推力",
+      "maxTorque": "引擎扭矩",
+      "mode": "路线",
+      "moveSpeed": "行走速度（0：使用场景的）",
+      "orientation": "朝向",
+      "orientToTangent": "沿切线朝向",
+      "pitchMax": "最大俯仰角",
+      "pitchMin": "最小俯仰角",
+      "positionLag": "位置延迟",
+      "possesses": "所操控的元素",
+      "probeRadius": "探测半径",
+      "radius": "半径",
+      "restitution": "弹性",
+      "rotationLag": "旋转延迟",
+      "runSpeed": "奔跑速度（0：不奔跑）",
+      "safetyMargin": "安全余量",
+      "script": "文件",
+      "shoulder": "肩部偏移",
+      "slopeLimit": "坡度",
+      "snapDistance": "附着",
+      "speed": "速度",
+      "stallAngle": "失速角",
+      "stepHeight": "台阶",
+      "stopDistance": "停止距离",
+      "subject": "主体",
+      "suspensionLength": "悬挂行程",
+      "target": "目标",
+      "turnSpeed": "转向速度",
+      "waitSeconds": "等待",
+      "waypoints": "点",
+      "wheelRadius": "车轮半径",
+      "wheels": "车轮",
+      "wheelWidth": "车轮宽度",
+      "wingArea": "机翼面积"
+    },
+    "export": {
+      "title": "优化游戏",
+      "action": "导出",
+      "safeTitle": "SAFE 运行时优化",
+      "safeRuntime": "优化运行时表示",
+      "instancing": "将重复对象实例化",
+      "batching": "合批兼容的静态几何体",
+      "deduplication": "对资源去重",
+      "geometryBuffers": "优化几何缓冲区",
+      "losslessCompression": "无视觉损失地压缩",
+      "removeUnused": "移除未使用的资源",
+      "currentSceneMeasured": "实测 · 当前场景",
+      "projectEstimated": "估算 · 完整游戏 · {{count, number}} 个场景",
+      "currentSceneLossyEstimate": "有视觉损失的当前场景 · {{triangles}} 个三角面 · {{geometry}} 几何数据 · {{images}} 图像数据",
+      "triangleResult": "显示的三角面 {{before}} → {{after}}",
+      "geometryResult": "几何数据 {{before}} → {{after}}",
+      "imageResult": "图像 {{before}} → {{after}}",
+      "visualTitle": "高级 · 视觉变化",
+      "generateLods": "生成距离层级",
+      "geometryLabel": "几何简化",
+      "compressionLabel": "图像压缩",
+      "reductionLabel": "图像分辨率",
+      "quality": {
+        "off": "关闭",
+        "conservative": "保守",
+        "balanced": "均衡",
+        "aggressive": "激进"
+      },
+      "reduction": {
+        "off": "原始",
+        "half": "二分之一",
+        "quarter": "四分之一"
+      },
+      "visualChangesNone": "视觉变化：无",
+      "visualChangesPossible": "视觉变化：可能有",
+      "failed": "无法导出该游戏。"
+    },
+    "animationGraph": {
+      "hint": "游戏播放的图：参数、状态与过渡。",
+      "invalid": "该 JSON 描述的不是有效的动画图。",
+      "jsonLabel": "动画图 JSON",
+      "loadFailed": "无法读取这张动画图。",
+      "loading": "正在加载动画图…",
+      "writeFailed": "无法将这张动画图写入磁盘。",
+      "views": "编辑方式",
+      "viewHint": {
+        "simple": "逐个状态显示图播放什么，不含设置",
+        "expert": "以表单形式打开每一项设置",
+        "json": "按磁盘上写入的原样显示文件"
+      },
+      "context": "上下文",
+      "contextDescription": "这个图叫什么、驱动身体的哪一半，以及游戏从哪个状态开始。",
+      "id": "标识符",
+      "idHelp": "脚本请求这个图时使用的名字。它来自文件名。",
+      "initial": "起始状态",
+      "initialHelp": "角色一登场就播放的状态。最初的过渡都从它出发。",
+      "parameters": "参数",
+      "parametersDescription": "过渡据以判断的值。游戏自己发布一部分；其余由你定义。",
+      "builtInDescription": "前面这些由游戏在每一步发布：速度、着地、跳跃。无需声明即可使用。",
+      "parameterKind": "种类",
+      "parameterKinds": {
+        "number": "数值",
+        "boolean": "是或否"
+      },
+      "addParameter": "添加参数",
+      "removeParameter": "删除这个参数",
+      "noParameter": "没有你自己的参数：只有游戏提供的可用。",
+      "states": "状态",
+      "statesDescription": "角色可能正在做的事，以及每个状态播放的动画。",
+      "stateDescription": "只要没有东西把它带走，状态就一直播放一个动画。",
+      "addState": "添加状态",
+      "removeState": "删除这个状态",
+      "initialBadge": "起点",
+      "clipKindHelp": "动画来自哪里：模型自带的文件、随工作室提供的动画，或项目里的文件。",
+      "clipKinds": {
+        "embedded": "模型自带",
+        "bundled": "随工作室提供",
+        "asset": "项目中的文件"
+      },
+      "speedFrom": "速度由谁驱动",
+      "speedFromHelp": "与动画速度相乘的参数。正是它让行走循环跟上加速中的角色。",
+      "speedFromNone": "无",
+      "transitions": "过渡",
+      "transitionsDescription": "从一个状态到另一个状态的通路，以及成立所需的条件。",
+      "transitionRank": "过渡 {{rank}}",
+      "transitionSentence": "{{from}} → {{to}}",
+      "addTransition": "添加过渡",
+      "removeTransition": "删除这个过渡",
+      "noTransition": "没有过渡：起始状态会一直播放下去。",
+      "anyState": "任意状态",
+      "from": "从",
+      "fromHelp": "被离开的状态。“任意状态”让跳跃可以打断正在播放的动作。",
+      "to": "到",
+      "exitTime": "允许退出的时点",
+      "exitTimeHelp": "允许退出之前要播放的动画比例。它让落地能够播完，而不是被截断。",
+      "priority": "优先级",
+      "priorityHelp": "同一时刻两个过渡都成立时谁获胜。数值大的胜出。",
+      "fadeHelp": "两个动画之间的交叉淡入淡出时间，单位为秒。为零时切换是硬切。",
+      "parameterRank": "参数 {{rank}}",
+      "conditionRank": "条件 {{rank}}",
+      "stateOnce": "只播放一次",
+      "stateEntries": "什么会进入这里",
+      "stateEntryWhen": "从 {{from}}，当 {{when}}",
+      "stateEntryAlways": "从 {{from}}，在动画结束时",
+      "stateNoEntry": "目前没有任何通路进入这里。"
+    },
+    "inputMap": {
+      "actionId": "操作",
+      "actionKind": "值",
+      "addAction": "添加操作",
+      "addBinding": "添加绑定",
+      "binding": "{{device}} 绑定",
+      "applyPresetHint": "用选定的起点替换这张输入映射",
+      "axis": "轴",
+      "context": "上下文",
+      "create": "新建输入映射",
+      "createHint": "从一个标准起点创建输入映射",
+      "defaultActive": "启动时激活",
+      "deadZone": "死区",
+      "deviceLabel": "设备",
+      "duplicateId": "有多张输入映射使用标识符“{{id}}”。给每个上下文一个唯一的标识符。",
+      "device": {
+        "gamepad": "手柄",
+        "keyboard": "键盘",
+        "mouse": "鼠标"
+      },
+      "id": "标识符",
+      "invalid": "该 JSON 描述的不是有效的输入映射。",
+      "invert": "反转",
+      "jsonLabel": "输入映射 JSON",
+      "kind": {
+        "axis1": "一个轴",
+        "axis2": "两个轴",
+        "button": "按钮"
+      },
+      "loadFailed": "无法读取这张输入映射。",
+      "loading": "正在加载输入映射…",
+      "modeHint": "改变编辑同一张输入映射的方式",
+      "preset": {
+        "character": "角色",
+        "flight": "飞行",
+        "menu": "菜单",
+        "studio": "工作室",
+        "vehicle": "载具"
+      },
+      "presets": "起点",
+      "priority": "优先级",
+      "removeAction": "移除操作",
+      "removeBinding": "移除绑定",
+      "scale": "缩放系数",
+      "unnamedAction": "未命名的操作",
+      "capture": "按下",
+      "capturing": "按下…",
+      "captureHint": "把这个控件绑定到接下来按下的按键或手柄控件上。按 Escape 放弃。",
+      "help": {
+        "id": "上下文的名字——脚本推入的是它，内置的兜底补全的也是它。它来自文件名；两个文件带同一个标识符，就只会构成一个上下文。",
+        "priority": "当两个激活的上下文声明同一个操作时，由谁胜出。数字更大的最后写入并取胜。内置的角色、载具和飞行上下文分别为 0、10 和 10。",
+        "defaultActive": "这张输入映射是否从游戏一开始就生效。否则就得由脚本把它推入——菜单上下文就是这样开合的。",
+        "actionId": "脚本读取的名字，内置控制器读的也是它：`move`、`jump`、`steer`。起作用的是这个名字，而不是按键。",
+        "actionKind": "这个操作返回什么：按钮返回是或否，一个轴返回 −1 到 1 之间的数字，两个轴返回一对值——摇杆说的就是这个。",
+        "device": "控件来自哪里。同一个操作可以带上好几个：游戏就是这样在不知道是谁发话的情况下，同时响应键盘和手柄的。",
+        "axis": "这个按键推向两半中的哪一半。一个两轴操作由四个按键组成，每个轴两个。",
+        "scale": "这条绑定推多远，以及朝哪个方向。向左或向后的那一半为 −1，另一半为 1。",
+        "deadZone": "低于这个值时，摇杆视为处于静止。磨损的摇杆会漂移：没有死区，角色就会自己走开。",
+        "invert": "把这个控件的方向反过来。有些飞行员对俯仰有这个期待，别的地方谁都不需要。"
+      },
+      "documentDescription": "控制映射说明哪个按键或哪个按钮触发游戏的每个动作。游戏读取的是动作的名称，而不是按键：在这里改按键不会改动任何脚本。",
+      "views": "编辑方式",
+      "writeFailed": "无法把这个控制映射写入磁盘。",
+      "contextDescription": "这套控制叫什么名字，以及它何时生效。",
+      "actionsTitle": "动作",
+      "actionsDescription": "玩家能做的每件事对应一个动作。名称是游戏读取的东西；下面的绑定是触发它的按键。",
+      "bindings": "绑定",
+      "bindingsDescription": "触发这个动作的所有按键和控件。一个动作可以有多个绑定：游戏就是这样同时响应键盘和手柄的。",
+      "bindingRank": "绑定 {{rank}}",
+      "noBinding": "没有绑定：这个动作不会响应任何输入。",
+      "noAction": "没有动作：这个上下文暂时什么也不做。",
+      "presetsDescription": "一个现成的起点。它会替换这张映射的动作；上下文的名字保持不变。",
+      "viewHint": {
+        "simple": "逐个动作地显示映射做了什么，不含设置",
+        "expert": "以表单形式打开每一项设置",
+        "json": "按磁盘上写入的原样显示文件"
+      },
+      "action": {
+        "move": "移动角色：左、右、前、后。",
+        "look": "环顾四周：转动头部或摄像机。",
+        "jump": "跳跃。",
+        "run": "只要保持按住就奔跑。",
+        "interact": "作用于面前的东西：打开、拾取、交谈。",
+        "steer": "转向：载具向左或向右。",
+        "accelerate": "加速。",
+        "brake": "刹车。",
+        "handBrake": "手刹：后轮抱死，载具漂移。",
+        "exit": "离开载具。",
+        "pitch": "俯仰：机头下压或上抬。",
+        "roll": "横滚：机身向一侧倾斜。",
+        "yaw": "偏航：机头左右转动而不倾斜。",
+        "throttle": "油门：发动机输出多少动力。",
+        "navigate": "在菜单中移动选择。",
+        "next": "转到下一项。",
+        "previous": "回到上一项。",
+        "confirm": "确认当前的选择。",
+        "back": "返回，或关闭。",
+        "custom": "你自己的动作：脚本读取这个名字来知道它何时被触发。"
+      }
+    },
+    "controlsMenu": {
+      "add": "添加绑定",
+      "capture": "按下一个按键或手柄按钮",
+      "change": "修改",
+      "close": "关闭",
+      "gamepad": "手柄",
+      "keyboard": "键盘",
+      "mouse": "鼠标",
+      "reset": "全部重置",
+      "title": "控制"
+    },
+    "play": {
+      "faults_many": "{{count, number}} 个错误",
+      "faults_one": "{{count, number}} 个错误",
+      "faults_other": "{{count, number}} 个错误",
+      "objects_many": "{{count, number}} 个对象",
+      "objects_one": "{{count, number}} 个对象",
+      "objects_other": "{{count, number}} 个对象",
+      "pause": "暂停",
+      "pauseHint": "把游戏冻结在当前状态",
+      "readout": "{{fps}} fps · 第 {{tick}} 步",
+      "start": "运行",
+      "startHint": "把场景当作游戏运行，不改动文档",
+      "stop": "停止",
+      "stopHint": "丢弃这局游戏，把场景恢复原样",
+      "openFault": "在出错的那一行打开脚本"
+    },
+    "section": {
+      "title": "组件",
+      "add": "添加组件",
+      "addHint": "给这个对象一件在游戏运行时要做的事",
+      "remove": "分离",
+      "removeHint": "把这个组件从对象上分离",
+      "empty": "这个对象在游戏运行时什么都不做。",
+      "emptyHint": "组件说的是对象做什么，而它的类型说的是它画出什么。"
+    },
+    "values": {
+      "all": "四轮驱动",
+      "auto": "自动",
+      "box": "盒体",
+      "convexes": "凸包",
+      "dynamic": "动态",
+      "fixed": "固定",
+      "front": "前轮驱动",
+      "hull": "外壳",
+      "kinematic": "受控",
+      "loop": "循环",
+      "once": "一次",
+      "pingPong": "往返",
+      "pivot": "肩部",
+      "pointer": "视线",
+      "rear": "后轮驱动",
+      "subject": "主体",
+      "trimesh": "三角面",
+      "unknown": "未知的值",
+      "unnamedNode": "无",
+      "x": "X",
+      "y": "Y",
+      "z": "Z"
+    },
+    "window": {
+      "debug": "调试",
+      "debugHint": "游戏对自身的报告：对象、每秒帧数、步数、错误",
+      "framePerformance": "CPU {{cpu}} ms · 渲染 {{render}} ms",
+      "renderPerformance": "{{calls, number}} 次绘制调用 · {{triangles, number}} 个三角面",
+      "noFaults": "没有错误",
+      "title": "运行模式",
+      "waiting": "正在等待工作室…"
+    },
+    "scriptView": {
+      "simple": "简单",
+      "expert": "专家",
+      "json": "JSON"
+    }
+  }
+}

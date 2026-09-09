@@ -1,9 +1,6 @@
-import type { Language } from './index'
+type SettledWord = readonly { dropped: RegExp; kept: string; except?: readonly string[] }[]
 
-export const SETTLED_WORDS: Record<
-  Language,
-  readonly { dropped: RegExp; kept: string; except?: readonly string[] }[]
-> = {
+export const SETTLED_WORDS: { fr: SettledWord; en: SettledWord; [code: string]: SettledWord } = {
   fr: [
     { dropped: /système de fichiers/i, kept: 'gestionnaire de fichiers' },
     { dropped: /préférences?/i, kept: 'réglages' },

@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { DEFAULT_SETTINGS, type Settings } from '@shared/domain/settings'
+import { DEFAULT_SETTINGS, type Settings, type AuthState } from '@shared/domain/settings'
 import { installFakeBridge } from '@/services/fakeBridge'
 import { useSettings } from './settings'
 
@@ -152,6 +152,58 @@ describe('settings store', () => {
 
     expect(useSettings.getState().authKnown).toBe(true)
     expect(useSettings.getState().auth.authenticated).toBe(true)
+  })
+
+  it('ignores a startup authentication answer overtaken by an account change', async () => {
+    let finish = (): void => {}
+    const probe = vi.fn(
+      () =>
+        new Promise<AuthState>(resolve => {
+          finish = () => resolve({ authenticated: false, reason: 'missing' })
+        }),
+    )
+    installFakeBridge({ settings: { authState: probe } })
+    const connected = useSettings.getState().connect()
+    probe.mockResolvedValue({ authenticated: true })
+    await useSettings.getState().refreshAuth()
+    finish()
+    await connected
+    expect(useSettings.getState().auth.authenticated).toBe(true)
+  })
+
+  it('leaves the previous answer standing while a new probe is in flight', async () => {
+    useSettings.setState({ auth: { authenticated: true }, authKnown: true })
+    let finish = (): void => {}
+    installFakeBridge({
+      settings: {
+        authState: () =>
+          new Promise<AuthState>(resolve => {
+            finish = () => resolve({ authenticated: false, reason: 'missing' })
+          }),
+      },
+    })
+
+    const answered = useSettings.getState().refreshAuth()
+    expect(useSettings.getState().authKnown).toBe(true)
+    expect(useSettings.getState().auth.authenticated).toBe(true)
+
+    finish()
+    await answered
+    expect(useSettings.getState().auth.authenticated).toBe(false)
+  })
+
+  it('clears the previous authentication when a new probe fails to reach the main process', async () => {
+    useSettings.setState({ auth: { authenticated: true }, authKnown: true })
+    installFakeBridge({
+      settings: {
+        authState: async () => {
+          throw new Error('IPC unavailable')
+        },
+      },
+    })
+    await useSettings.getState().refreshAuth()
+    expect(useSettings.getState().auth.authenticated).toBe(false)
+    expect(useSettings.getState().authKnown).toBe(true)
   })
 
   it('survives having no bridge at all, as a plain browser has none', async () => {

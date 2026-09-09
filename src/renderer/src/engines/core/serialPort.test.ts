@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { describe, expect, it, vi } from 'vitest'
 import { serial } from './serialPort'
 import type { WorkerPort } from './workerPort'
@@ -54,7 +55,9 @@ describe('one request at a time on a port', () => {
     void ask(port, 2).catch(() => null)
     void ask(port, 3).catch(() => null)
 
-    await expect(ask(port, 4)).rejects.toThrow('testing queue is full')
+    await expect(ask(port, 4)).rejects.toThrow(
+      localizedError('queueFull', { name: 'testing' }).message,
+    )
   })
 
   it('answers nothing for one given up before its turn came, and asks nothing', async () => {

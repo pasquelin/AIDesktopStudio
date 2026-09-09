@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { isLocalPicture, type Asset } from '@shared/domain/asset'
 import type { PbrChannel } from '@shared/domain/material'
 import { reportFailure } from '@/services/diagnostics'
@@ -24,7 +25,11 @@ export function placeMaterialChannel(
     // Said rather than swallowed. `AssetDropTarget` cannot refuse this one while it flies — a drag
     // announces its TYPE and not where its file is — so the refusal can only be spoken here, and
     // the JSDoc of that component is explicit that a silent drop is the worse of the two.
-    reportFailure('material.channel', asset.id, new Error(`${asset.name} has no local file yet`))
+    reportFailure(
+      'material.channel',
+      asset.id,
+      localizedError('assetNotLocal', { name: asset.name }),
+    )
     return false
   }
 

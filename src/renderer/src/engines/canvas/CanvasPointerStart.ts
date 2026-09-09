@@ -8,6 +8,7 @@ import { toDocument } from './viewport'
 import { UNBUILT_TOOLS, sizeOf } from './canvasEngineSupport1'
 import type { LayerSurface, BrushTarget } from './canvasEngineSupport1'
 import type { HoverBox } from './canvasEngineSupport2'
+import { isSmartTool } from './canvasTool'
 import { CanvasHitArea } from './CanvasHitArea'
 
 export abstract class CanvasPointerStart extends CanvasHitArea {
@@ -105,8 +106,8 @@ export abstract class CanvasPointerStart extends CanvasHitArea {
     else if (this.tool === 'select') {
       this.gesture = { kind: 'select', from: point }
       this.publishSelection(dragSelection(this.selectionShape, point, point, false))
-    } else if (this.tool === 'smartSelect') {
-      this.gesture = { kind: 'smartSelect', from: point, to: point }
+    } else if (isSmartTool(this.tool)) {
+      this.gesture = { kind: this.tool, from: point, to: point }
     } else this.startPaint(point)
   }
 

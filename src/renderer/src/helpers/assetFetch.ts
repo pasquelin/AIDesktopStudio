@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { assetMasterUrl, assetUrl } from '@shared/domain/asset'
 
 /**
@@ -26,6 +27,6 @@ export async function fetchOriginalAsset(assetId: string, signal?: AbortSignal):
 
 async function fetchOver(url: string, assetId: string, signal?: AbortSignal): Promise<Response> {
   const response = await fetch(url, { signal })
-  if (!response.ok) throw new Error(`asset ${assetId} could not be read`)
+  if (!response.ok) throw localizedError('assetReadFailed', { name: assetId })
   return response
 }

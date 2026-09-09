@@ -37,7 +37,7 @@ export function sectionOfFamily(family: ModelFamily): SettingsSectionId | undefi
  * find a model has one place to send the person, and this is it. The last three have no
  * workspace of their own — they are the families the canvas edits reach for.
  */
-export const AI_FAMILY_SECTIONS: readonly SettingSectionEntry[] = [
+const AI_FAMILY_SECTIONS: readonly SettingSectionEntry[] = [
   { id: 'ai.image', labelKey: 'workspaces.image', parent: 'ai', family: 'image' },
   { id: 'ai.video', labelKey: 'workspaces.video', parent: 'ai', family: 'video' },
   { id: 'ai.3d', labelKey: 'workspaces.3d', parent: 'ai', family: '3d' },

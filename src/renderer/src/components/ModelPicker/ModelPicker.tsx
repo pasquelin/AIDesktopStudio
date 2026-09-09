@@ -139,7 +139,7 @@ export function ModelPicker({
         // `FIELD`, not `CONTROL`: this one stands in a form, beside its bordered fields, not on a bar.
         className={cn(
           FIELD,
-          'flex h-auto min-h-(--sc-control) w-full cursor-pointer items-center gap-2 px-2 py-1 text-left',
+          'flex h-auto min-h-(--sc-control) w-full cursor-pointer items-center gap-2 px-2 py-1 text-start',
         )}
         onClick={() => setOpen(held => !held)}
       >

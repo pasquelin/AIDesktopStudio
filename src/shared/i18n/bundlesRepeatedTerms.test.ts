@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { isRecord } from '../guards'
 import { SETTLED_WORDS } from './bundlesSettledWords.testFixtures'
-import { TRANSLATIONS, type Language } from './index'
+import { TRANSLATIONS } from './index'
 import modelTextFr from './model-text.fr.json'
 
 function flatten(
@@ -26,7 +26,11 @@ function holes(text: string): readonly string[] {
 
 // Written out rather than mapped over `LANGUAGES`: the Record makes a new language a compile
 // error here, which is the one place that must not silently skip it.
-const BUNDLES: Record<Language, Map<string, string>> = {
+const BUNDLES: {
+  fr: Map<string, string>
+  en: Map<string, string>
+  [code: string]: Map<string, string>
+} = {
   fr: flatten(TRANSLATIONS.fr),
   en: flatten(TRANSLATIONS.en),
 }

@@ -1,0 +1,499 @@
+{
+  "settings": {
+    "title": "Cài đặt",
+    "sections": "Các mục cài đặt",
+    "search": "Tìm cài đặt",
+    "results": "Kết quả",
+    "noResult": "Không có cài đặt nào khớp với tìm kiếm này.",
+    "restoreDefault": "Khôi phục giá trị mặc định",
+    "restoreDefaultHint": "Trả lại giá trị ban đầu, giá trị trước mọi thay đổi",
+    "account": "Khóa API",
+    "appearance": "Giao diện",
+    "generation": "Tạo sinh",
+    "media": "Phương tiện",
+    "git": "Phiên bản",
+    "dictation": "Đọc chính tả",
+    "input": "Thiết bị",
+    "ai": "Mô hình AI",
+    "accountDescription": "Mỗi dịch vụ một khóa, được chuỗi khóa mã hóa.",
+    "appearanceDescription": "Chủ đề và mật độ điều khiển.",
+    "generationDescription": "Hàng đợi tạo sinh và mô hình mặc định, theo từng họ.",
+    "gitDescription": "Theo dõi phiên bản của thư mục dự án, bằng git. Chỉ các tệp của bạn.",
+    "mediaDescription": "Chuẩn bị các tệp đã nhập: tệp proxy và dạng sóng.",
+    "dictationDescription": "Nói một văn bản thay vì gõ nó. Mọi thứ diễn ra trên máy tính này: không có gì bạn nói được gửi đi đâu cả.",
+    "inputDescription": "Cách điều hướng studio bằng tay cầm, và các thiết bị đang kết nối với máy tính này.",
+    "aiDescription": "AI nào phục vụ mỗi thao tác. Studio ngay tại đây, Ollama ngay tại đây, hoặc một dịch vụ trực tuyến mà bạn có khóa.",
+    "gamepadNavigation": {
+      "title": "Điều hướng studio bằng tay cầm",
+      "help": "Cho phép một tay cầm đã kết nối di chuyển qua giao diện studio và xác nhận hoặc bỏ qua các điều khiển. Nó vẫn tắt cho tới khi bạn bật lên, để một ván game không làm xê dịch trình biên tập phía sau."
+    },
+    "inputDevices": {
+      "title": "Các điều khiển đã phát hiện",
+      "keyboard": "Bàn phím",
+      "mouse": "Chuột",
+      "gamepadUnsupported": "Tay cầm này không dùng bố cục chuẩn: studio không đọc được các nút của nó.",
+      "noGamepad": "Không có tay cầm nào được kết nối.",
+      "gamepadSleeps": "Một tay cầm chỉ xuất hiện sau khi một nút của nó được nhấn: trước đó trình duyệt không hiển thị nó. Đã cắm nhưng im lặng, nó trông y hệt như không có tay cầm nào."
+    },
+    "theme": {
+      "title": "Chủ đề",
+      "help": "Chọn màu cho toàn bộ ứng dụng. Chủ đề tối giúp mắt đỡ mỏi khi làm việc lâu trong phòng thiếu sáng; chủ đề sáng dễ đọc hơn giữa ban ngày. “Hệ thống” theo đúng cài đặt của máy tính bạn và tự chuyển, chẳng hạn khi trời tối.",
+      "dark": "Tối",
+      "light": "Sáng",
+      "system": "Hệ thống"
+    },
+    "density": {
+      "title": "Mật độ",
+      "help": "Đặt độ lớn của các nút và chiều cao của các dòng. “Gọn” cho phép hiển thị nhiều hơn trên màn hình; “Thoải mái” chừa nhiều khoảng trống hơn giữa các phần tử, khiến chúng dễ nhắm trúng bằng chuột hơn.",
+      "comfortable": "Thoải mái",
+      "compact": "Gọn"
+    },
+    "assistantSteps": {
+      "title": "Số bước nối tiếp của trợ lý",
+      "help": "Số hành động mà trợ lý được phép nối tiếp cho một yêu cầu, khi mỗi hành động phụ thuộc vào câu trả lời của hành động trước — tìm một tệp, mở nó, rồi đặt nó vào một cảnh. Mỗi bước là một lượt gọi có tính phí, nên con số này là thứ duy nhất ngăn một yêu cầu bị hiểu sai chạy mãi không dừng. Mười hai đủ cho hầu hết các chuỗi."
+    },
+    "concurrentJobs": {
+      "title": "Số lượt tạo sinh đồng thời",
+      "help": "Số lượt sáng tạo chạy cùng lúc. Con số càng lớn, bạn càng khởi động được nhiều cùng một lúc — nhưng mỗi lượt có thể lâu quay về hơn, và dịch vụ có thể từ chối những lượt vượt quá giới hạn của nó. Ba là mức cân bằng tốt."
+    },
+    "captionArrivals": {
+      "title": "Đặt tên cho tài nguyên tải về",
+      "help": "Tự động đặt tên cho một hình ảnh đến mà không có tên hữu ích. Tiêu tốn đơn vị sáng tạo."
+    },
+    "maxRetries": {
+      "title": "Số lần thử lại tối đa",
+      "help": "Khi một lượt tạo sinh thất bại vì mạng rớt hoặc máy chủ bận, ứng dụng tự thử lại. Con số này nói bao nhiêu lần trước khi bỏ cuộc. Ở mức 0, nó không bao giờ thử lần thứ hai. Một khóa API không hợp lệ thì không bao giờ được thử lại: thử lại cũng không sửa được."
+    },
+    "ffmpegPath": {
+      "title": "Đường dẫn tới ffmpeg",
+      "help": "Nơi tìm một ffmpeg để dùng thay cho bản đi kèm ứng dụng. Để trống, trừ khi bạn nhất định muốn dùng bản của mình.",
+      "placeholder": "/opt/homebrew/bin/ffmpeg"
+    },
+    "gitBinary": {
+      "title": "Đường dẫn tới git",
+      "help": "Nơi tìm một git để dùng thay cho git của hệ thống. Để trống trong gần như mọi trường hợp. Một đường dẫn có chứa dấu cách sẽ bị từ chối, và khi đó ứng dụng hành xử như thể hoàn toàn không có git.",
+      "placeholder": "/usr/bin/git"
+    },
+    "gitUserName": {
+      "title": "Tên tác giả",
+      "help": "Tên được ghi vào mọi phiên bản đã lưu. Để trống để lấy tên mà git đã biết trên máy tính này.",
+      "placeholder": "Tên của bạn"
+    },
+    "gitUserEmail": {
+      "title": "Địa chỉ tác giả",
+      "help": "Địa chỉ được ghi bên cạnh tên trong mọi phiên bản đã lưu. Để trống để lấy địa chỉ mà git đã biết.",
+      "placeholder": "you@example.com"
+    },
+    "dictationEnabled": {
+      "title": "Bật đọc chính tả",
+      "help": "Đặt một nút micrô bên cạnh các trường văn bản, và đưa phím tắt lắng nghe vào hoạt động. Khi tắt, đọc chính tả không nạp gì cả và không bao giờ xin quyền truy cập micrô."
+    },
+    "dictationMode": {
+      "title": "Cách kích hoạt",
+      "help": "“Giữ phím” lắng nghe chừng nào bạn còn giữ phím tắt và dừng ngay khi bạn buông ra: đây là cách an toàn nhất, vì micrô không bao giờ bị bỏ mở do sơ ý. “Bật tắt” bắt đầu ở lần nhấn thứ nhất và dừng ở lần nhấn kế tiếp, giúp tay đỡ mỏi trong những lần đọc dài.",
+      "pushToTalk": "Giữ phím",
+      "continuous": "Bật tắt luân phiên"
+    },
+    "dictationSilence": {
+      "title": "Khoảng lặng kết thúc một câu",
+      "help": "Cần bao nhiêu im lặng, tính bằng mili giây, trước khi điều bạn vừa nói được coi là đã xong và được chép lại. Tăng giá trị này nếu câu của bạn bị cắt làm đôi vì bạn ngừng lại để suy nghĩ."
+    },
+    "dictationPreview": {
+      "title": "Xem trước trong khi bạn nói",
+      "help": "Khoảng thời gian, tính bằng mili giây, giữa hai lần xem trước văn bản đang được nói. Mô hình không viết theo từng lời: mỗi lần xem trước đều đọc lại toàn bộ những gì đã nói từ đầu câu, nên tốn công tính toán. Đặt 0 để chỉ hiện phần văn bản đã chốt của mỗi câu."
+    },
+    "dictationThreads": {
+      "title": "Số luồng tính toán",
+      "help": "Số lõi mà nhận dạng được phép chiếm. Càng cao càng nhanh, tới một mức nào đó, nhưng mỗi luồng là một lõi bị lấy đi khỏi phần còn lại của ứng dụng."
+    },
+    "dictationIdleUnload": {
+      "title": "Giải phóng bộ nhớ sau",
+      "help": "Số phút không đọc chính tả trước khi mô hình được gỡ khỏi bộ nhớ, trả lại khoảng 700 MB. Nó tự nạp lại ở lần đọc kế tiếp, mất vài giây. Đặt 0 để giữ nó thường trú."
+    },
+    "dictationModelFolder": {
+      "title": "Thư mục mô hình",
+      "help": "Nơi tìm một mô hình nhận dạng đã có sẵn trên đĩa này, để dùng thay cho mô hình mà ứng dụng tải về. Để trống trong trường hợp bình thường.",
+      "placeholder": "/Volumes/Models/parakeet-tdt-0.6b-v3-int8"
+    },
+    "defaultModel": "Mô hình mặc định",
+    "noDefaultModel": "Hỏi mỗi lần",
+    "ffmpegFound": "ffmpeg đã sẵn sàng: các tệp proxy và dạng sóng sẽ được chuẩn bị.",
+    "ffmpegMissing": "Vẫn không tìm thấy ffmpeg. Việc nhập vẫn chạy, nhưng không có tệp proxy hay dạng sóng.",
+    "browse": "Duyệt…",
+    "accent": {
+      "title": "Màu nhấn",
+      "help": "Màu đánh dấu những gì đang được chọn hoặc đang diễn ra: đường viền của bảng đang hoạt động, đầu đọc của timeline, khung quanh một vùng chọn. Nó không thay đổi gì trong thứ bạn làm ra, chỉ thay đổi cách ứng dụng cho bạn thấy mình đang ở đâu. Cứ để nguyên nếu muốn giữ màu của chủ đề."
+    },
+    "fontScale": {
+      "title": "Cỡ chữ",
+      "help": "Phóng to hoặc thu nhỏ mọi văn bản trong ứng dụng cùng một lúc. 1 là cỡ gốc; trên mức đó chữ to hơn và màn hình chứa được ít hơn; dưới mức đó thì ngược lại. Các nút vẫn giữ nguyên kích thước: mật độ mới là thứ lo phần đó."
+    },
+    "reduceMotion": {
+      "title": "Hạn chế hoạt ảnh",
+      "help": "Tắt các chuyển động nhỏ của giao diện: các bảng hiện ra ngay lập tức thay vì trượt vào. Hữu ích nếu hoạt ảnh làm bạn mỏi mắt hoặc khó chịu, và trên một máy chậm nơi chúng bị giật."
+    },
+    "general": "Chung",
+    "generalDescription": "Ngôn ngữ của ứng dụng, và những gì nó làm khi mở lên.",
+    "language": {
+      "title": "Ngôn ngữ",
+      "help": "Ngôn ngữ của mọi văn bản trong ứng dụng: trình đơn, nút, thông báo. “Hệ thống” lấy theo ngôn ngữ của máy tính bạn. Thay đổi có hiệu lực ngay khi bạn nhấp Áp dụng hoặc OK, không cần khởi động lại gì cả. Nó không đụng tới các dự án của bạn, cũng như bất cứ thứ gì bạn viết trong đó.",
+      "system": "Hệ thống"
+    },
+    "startup": {
+      "title": "Khi khởi động",
+      "help": "Những gì ứng dụng làm khi bạn khởi chạy nó. “Mở lại dự án gần nhất” đưa bạn về đúng chỗ đã dừng. “Không mở gì” bắt đầu bằng một cửa sổ trống, nhanh hơn và nhẹ nhàng hơn nếu bạn xoay giữa nhiều dự án.",
+      "lastProject": "Mở lại dự án gần nhất",
+      "nothing": "Không mở gì"
+    },
+    "autosave": {
+      "title": "Tự động lưu",
+      "help": "Ghi các tài liệu đang mở sau mỗi ba mươi giây, không chờ ⌘S của bạn. Khi đó những gì bạn đã làm từ lần lưu trước sẽ sống sót qua một lần mất điện hay treo máy. Tài liệu hình ảnh luôn nằm ngoài việc này dù cài đặt nói gì: các layer của chúng được đọc ngược lại từ card đồ họa, và ghi mỗi ba mươi giây sẽ làm việc vẽ bị giật."
+    },
+    "home": {
+      "title": "Hiện màn hình chính",
+      "help": "Màn hình toàn chiều rộng mà studio mở ra: các dự án của bạn, thứ bạn đang làm dở, thứ đang chạy, và những gì các mô hình làm được. Tắt nó đi để vào thẳng không gian làm việc bạn đã rời. Những mục nào được hiện và theo thứ tự nào thì chỉnh ngay trên màn hình chính."
+    },
+    "modified": "Đã thay đổi, chưa áp dụng",
+    "apply": "Áp dụng",
+    "cancel": "Hủy",
+    "confirm": "OK",
+    "discardTitle": "Một số cài đặt chưa được áp dụng",
+    "discardBody": "Bạn đã thay đổi cài đặt mà không áp dụng. Bạn muốn làm gì?",
+    "discard": "Không áp dụng",
+    "shortcuts": "Phím tắt",
+    "shortcutsDescription": "Các phím kích hoạt từng hành động. Nhấp vào một phím để thay thế nó.",
+    "pressAKey": "Nhấn phím…",
+    "unbound": "Không có",
+    "shortcutConflict": "Hai hành động đang tranh nhau phím này: chỉ một hành động sẽ đáp lại.",
+    "findByChord": "Tìm theo phím",
+    "showAll": "Hiện tất cả",
+    "chordFree": "Không hành động nào dùng phím này: nó đang trống.",
+    "scope": {
+      "global": "Ở bất cứ đâu trong ứng dụng",
+      "spaces": "Trong thanh không gian làm việc",
+      "explorer": "Trong trình duyệt tệp",
+      "scene": "Trong khung nhìn 3D",
+      "character": "Trong bộ xương",
+      "sequence": "Trong bản dựng",
+      "canvas": "Trong hình ảnh",
+      "skybox": "Trong bầu trời",
+      "audio": "Trong trình biên tập âm thanh",
+      "material": "Trong vật liệu",
+      "gui": "Trong một giao diện"
+    },
+    "spaces": "Không gian làm việc",
+    "spacesDescription": "Những gì chỉ có ý nghĩa bên trong một không gian: khung nhìn 3D, bản dựng, hình ảnh.",
+    "requires": "Không có tác dụng khi “{{setting}}” đang tắt.",
+    "showGrid": {
+      "title": "Hiện lưới",
+      "help": "Mặt sàn kẻ ô của khung nhìn 3D. Nó không thuộc về thứ bạn đang làm: nó là mốc để biết mọi thứ nằm ở đâu và cao bao nhiêu. Ẩn nó đi để đánh giá một hình ảnh mà không có gì xung quanh."
+    },
+    "gridSize": {
+      "title": "Kích thước lưới",
+      "help": "Lưới trải ra tới đâu, tính bằng mét, và do đó có bao nhiêu ô — một ô luôn là một mét. Tăng lên cho một cảnh rộng, giảm xuống cho một vật nhỏ đặt gần camera."
+    },
+    "navigationPreset": {
+      "title": "Sơ đồ điều hướng",
+      "help": "Khung nhìn này điều khiển giống ứng dụng 3D nào: các thao tác chuột và phím tắt của nó. Một sơ đồ chỉ đổi những gì ứng dụng của nó làm khác đi — mọi thứ còn lại vẫn giữ phím của AI Desktop Studio, kể cả những gì các ứng dụng kia không có tương đương. Các phím bạn tự gán lại luôn được ưu tiên.",
+      "studio": "AI Desktop Studio",
+      "unreal": "Unreal Engine",
+      "unity": "Unity",
+      "blender": "Blender",
+      "roblox": "Roblox Studio",
+      "custom": "Tùy chỉnh"
+    },
+    "navigationCustomOrbit": {
+      "title": "Xoay bằng",
+      "help": "Thao tác làm xoay khung nhìn trong sơ đồ riêng của bạn.",
+      "leftAlt": "Alt + nhấp trái",
+      "left": "Nhấp trái, có hoặc không có Alt",
+      "middle": "Nút giữa"
+    },
+    "navigationCustomPan": {
+      "title": "Trượt ngang bằng",
+      "help": "Thao tác làm trượt khung nhìn mà không xoay nó.",
+      "middle": "Nút giữa",
+      "middleShift": "Shift + nút giữa",
+      "leftAltShift": "Shift + Alt + nhấp trái"
+    },
+    "navigationCustomDolly": {
+      "title": "Tiến lùi bằng",
+      "help": "Thao tác đưa khung nhìn lại gần thứ nó đang nhắm, ngoài con lăn chuột.",
+      "altRight": "Alt + nhấp phải",
+      "ctrlMiddle": "Ctrl + nút giữa",
+      "rightOntoLeft": "Nhấp phải khi đang giữ nút trái"
+    },
+    "navigationCustomFly": {
+      "title": "Phím di chuyển",
+      "help": "Khi WASD thuộc về camera. Nếu luôn được giữ, các chữ cái này không còn dùng được cho các lệnh của cảnh — đó là lý do Unity và Unreal đòi phải giữ một nút.",
+      "anyButton": "Khi đang giữ một nút",
+      "rightButton": "Khi đang giữ nút phải",
+      "always": "Luôn luôn"
+    },
+    "orbitAroundSelection": {
+      "title": "Xoay quanh vùng chọn",
+      "help": "Khi bạn xoay khung nhìn 3D, nó xoay quanh thứ đang được chọn thay vì quanh một điểm lơ lửng phía trước bạn. Đó là điều giữ cho bạn không lạc mất đối tượng khi lại gần nó. Nếu không có gì được chọn, hoặc vùng chọn nằm ngoài màn hình, khung nhìn xoay quanh điểm cuối cùng bạn đã nhìn."
+    },
+    "orbitUnderCursor": {
+      "title": "Xoay quanh con trỏ",
+      "help": "Khung nhìn xoay quanh thứ mà con trỏ đang nằm trên khi bạn bắt đầu xoay, thay vì quanh một điểm đã định trước. Tiện khi làm việc sát mà không phải căn khung lại; gây ngỡ ngàng nếu bạn đến từ Unity hoặc Unreal, vốn không có tùy chọn này."
+    },
+    "flySpeed": {
+      "title": "Tốc độ bay",
+      "help": "Camera di chuyển nhanh đến mức nào khi bạn bay trong khung nhìn 3D, tính bằng mét trên giây. Quá chậm thì băng qua cảnh mất mười giây; quá nhanh thì bạn vọt qua mà không kịp nhìn."
+    },
+    "boostFactor": {
+      "title": "Tăng tốc",
+      "help": "Tốc độ được nhân với bao nhiêu khi bạn giữ phím tăng tốc. Ở mức 3, bạn đi nhanh gấp ba — đủ để băng qua một cảnh lớn mà không phải đổi cài đặt phía trên."
+    },
+    "shadows": {
+      "title": "Bóng đổ",
+      "help": "Tính các bóng mà đèn hắt ra. Mỗi đèn có đổ bóng tốn thêm một lượt render cho mỗi khung hình: tắt tùy chọn này là cách trực tiếp nhất để làm nhẹ một cảnh nặng."
+    },
+    "viewportQuality": {
+      "title": "Chất lượng khung nhìn",
+      "help": "Cùng một khung hình được vẽ mịn đến mức nào. Không có gì thay đổi ở các mô hình hay hình ảnh — chỉ số pixel được tính là khác. Mức Hiệu năng cũng giới hạn độ mịn của bóng đổ.",
+      "performance": "Hiệu năng",
+      "balanced": "Cân bằng",
+      "high": "Cao"
+    },
+    "units": {
+      "title": "Đơn vị hiển thị",
+      "help": "Đơn vị dùng để viết và đọc các độ dài. Một đơn vị cảnh vẫn là một mét bất kể cài đặt này nói gì: nó chỉ thay đổi thứ được hiển thị, không bao giờ thay đổi thứ tài liệu chứa.",
+      "mm": "Milimét",
+      "cm": "Xentimét",
+      "m": "Mét"
+    },
+    "shadowQuality": {
+      "title": "Độ mềm của bóng đổ",
+      "help": "Độ mịn ở rìa của một bóng đổ. Cứng cắt gọn và tốn ít nhất; Mềm làm dịu rìa. Ngược lại, thứ gì đổ bóng thì được quyết định theo từng đối tượng trong bảng thuộc tính.",
+      "hard": "Cứng",
+      "soft": "Mềm"
+    },
+    "shadowMapSize": {
+      "title": "Độ chi tiết của bóng đổ",
+      "help": "Cạnh của map bóng mà mỗi đèn có đổ bóng tính ra, tính bằng pixel. Nhân đôi con số này thì tốn gấp bốn lần bộ nhớ: 2048 là quá đủ cho một cảnh vài đối tượng, 4096 mới đáng dùng khi một đèn phủ cả một phim trường."
+    },
+    "snapTranslate": {
+      "title": "Bước di chuyển",
+      "help": "Một đối tượng đi được bao xa trong một bước khi bắt dính đang bật, tính bằng mét. Bản thân việc bắt dính được bật từ thanh công cụ của cảnh; giá trị này chỉ nói nó mịn đến mức nào."
+    },
+    "snapRotate": {
+      "title": "Bước xoay",
+      "help": "Góc của một bước xoay khi bắt dính đang bật, tính bằng độ. Phép xoay tiến từng bước kể từ nơi nó bắt đầu: 15° cho hai mươi tư bước một vòng, 90° cho các phần tư vòng."
+    },
+    "snapScale": {
+      "title": "Bước tỉ lệ",
+      "help": "Tỉ lệ thay đổi bao nhiêu trong một bước khi bắt dính đang bật. Những giá trị đạt tới được là bội số của bước: 0.1 rơi đúng vào các phần mười và phần hai, 0.25 vào các phần tư."
+    },
+    "gizmoSize": {
+      "title": "Kích thước gizmo",
+      "help": "Chỗ TỐI ĐA mà các gizmo biến đổi chiếm trên màn hình. Chúng không bao giờ lớn vượt quá đối tượng chúng đang giữ: trên một chi tiết nhỏ chúng theo kích thước của nó, và ngoài mức đó chúng giữ đúng phần này của khung nhìn thay vì lớn lên vô hạn."
+    },
+    "snapSurfaceAlign": {
+      "title": "Xoay theo bề mặt",
+      "help": "Khi bắt dính bề mặt đang bật, thứ bạn đặt xuống sẽ nằm dọc theo độ dốc mà nó chạm tới. Nếu bỏ chọn, nó giữ hướng riêng và chỉ rơi xuống."
+    },
+    "snapSurfaceOffset": {
+      "title": "Độ lệch bề mặt",
+      "help": "Vật bạn đặt xuống lơ lửng bao nhiêu mét trên bề mặt. Số không đặt nó ngay tại điểm chạm; vài xăng-ti-mét giúp hai mặt không tranh nhau cùng một mặt phẳng trên màn hình."
+    },
+    "fieldOfView": {
+      "title": "Góc nhìn",
+      "help": "Camera thu vào bao nhiêu, tính bằng độ. Góc hẹp kéo lại gần và làm phẳng, như ống kính tele; góc rộng cho thấy nhiều hơn hẳn nhưng bẻ cong các cạnh. 60 gần với những gì mắt người nhìn thấy."
+    },
+    "advanced": "Nâng cao",
+    "advancedDescription": "Những gì chỉ cần đến khi tìm hiểu một sự cố, hoặc khi bắt đầu lại từ đầu.",
+    "reveal": "Hiện trong thư mục",
+    "open": "Mở",
+    "logLevel": {
+      "title": "Chi tiết nhật ký",
+      "help": "Ứng dụng nói bao nhiêu về việc mình đang làm, trong bảng điều khiển. “Không gì cả” không nói gì nữa; “Lỗi” chỉ báo những gì thất bại; “Tất cả” thuật lại từng bước, hữu ích khi tìm hiểu một sự cố và dài dòng vào những lúc khác.",
+      "silent": "Không gì cả",
+      "error": "Chỉ lỗi",
+      "warn": "Lỗi và cảnh báo",
+      "info": "Tất cả"
+    },
+    "openLogFolder": {
+      "title": "Nhật ký kỹ thuật",
+      "help": "Mở trình quản lý tệp tại các nhật ký mà studio ghi ở mỗi lần khởi động: “main.log”, tệp sẽ được hỏi đến khi có gì đó thất bại mà không hiện gì trên màn hình, và “assistant.log”, tệp giữ nguyên vẹn những gì được gửi tới từng mô hình và những gì mô hình trả lời.",
+      "button": "Hiện nhật ký kỹ thuật"
+    },
+    "openSettingsFile": {
+      "title": "Tệp cài đặt",
+      "help": "Mở trình quản lý tệp tại nơi lưu cài đặt của bạn. Hữu ích để sao chép chúng trước khi chuyển sang máy khác, hoặc để gửi cho người đang giúp bạn."
+    },
+    "mcpEnabled": {
+      "title": "Điều khiển studio từ bên ngoài",
+      "help": "Mở một điểm vào chỉ trên máy này, qua đó một ứng dụng khách như Claude Code có thể chạy đúng những hành động mà trợ lý chạy. Mọi việc tiêu tiền hoặc tải lên đều hỏi ý bạn trên màn hình, y như ở đây. Khi tắt, không có gì đang lắng nghe."
+    },
+    "mcpDelegateFiles": {
+      "title": "Di chuyển và xóa tệp của tôi mà không hỏi tôi",
+      "help": "Một ứng dụng khách bên ngoài có thể di chuyển, đổi tên hoặc bỏ vào thùng rác một tệp của dự án bạn, và khôi phục một tệp do git theo dõi, mà không hiện gì. Trình khám phá hoàn tác được một phần các thao tác đó, không bao giờ tất cả. Khi bỏ chọn, mỗi thao tác đều được đưa ra trước mắt bạn."
+    },
+    "mcpDelegateAsset": {
+      "title": "Tải lên thư viện của tôi mà không hỏi tôi",
+      "help": "Một ứng dụng khách bên ngoài có thể gửi một hình ảnh vào thư viện của bạn, nơi nó sẽ ở lại. Việc này không tốn đơn vị sáng tạo nào. Khi bỏ chọn, mỗi lần tải lên đều được đưa ra trước mắt bạn."
+    },
+    "mcpDelegateRemote": {
+      "title": "Xuất bản lên máy chủ từ xa mà không hỏi tôi",
+      "help": "Một ứng dụng khách bên ngoài có thể gửi một nhánh tới kho git từ xa. Đây là thao tác duy nhất rời khỏi máy này, và không gì ở đây thu hồi được. Chỉ bật khi bạn hiểu rõ."
+    },
+    "mcpDelegateBudget": {
+      "title": "Tiêu đơn vị sáng tạo mà không hỏi tôi",
+      "help": "Số mà một ứng dụng khách bên ngoài được tiêu trong cửa sổ này trước khi studio hỏi lại. Ở mức không, mọi khoản chi đều được đưa ra trước mắt bạn. Một lần tạo sinh mà API từ chối báo giá thì không bao giờ khởi chạy khi vắng bạn, dù giá trị này là bao nhiêu."
+    },
+    "copyMcpCommand": {
+      "title": "Lệnh kết nối",
+      "help": "Sao chép dòng lệnh cần dán vào cửa sổ dòng lệnh để nối một ứng dụng khách. Nó không chứa cổng cũng không chứa mã thông báo, nên vẫn đúng cho mọi lần khởi động về sau.",
+      "button": "Sao chép"
+    },
+    "installResolveBridge": {
+      "title": "Cầu nối DaVinci Resolve",
+      "help": "Đặt một script vào thư mục mà Resolve đọc, để nhập một bản dựng viết ở đây từ trình đơn script của chính nó. Nó xuất hiện mà không cần khởi động lại Resolve. Việc gỡ bỏ phải làm thủ công, và Resolve chỉ nhận ra ở lần khởi động sau.",
+      "button": "Cài đặt",
+      "confirm": "Một script sẽ được ghi vào thư mục của DaVinci Resolve, trên máy này. Không có gì khác bị đụng tới.",
+      "missing": "Không tìm thấy DaVinci Resolve trên máy này",
+      "missingDetail": "Thư mục của nó không tồn tại, nên không có gì được ghi. Cài đặt Resolve, chạy một lần, rồi quay lại đây.",
+      "missingOk": "Đóng"
+    },
+    "openDevtools": {
+      "title": "Công cụ phát triển",
+      "help": "Mở bảng điều khiển kỹ thuật của trình duyệt tích hợp. Nó hiển thị các thông báo nhật ký và các lỗi. Chỉ dùng để khắc phục sự cố: không có gì trong đó cần thiết để sử dụng phần mềm."
+    },
+    "resetAll": {
+      "title": "Đặt lại tất cả",
+      "help": "Đưa MỌI cài đặt về trạng thái mới cài: chủ đề, ngôn ngữ, phím tắt, tất cả. Dự án, hình ảnh và bản dựng của bạn không bị đụng tới — chỉ cài đặt thôi. Không thể quay lại.",
+      "button": "Đặt lại",
+      "confirm": "Đặt lại mọi cài đặt? Dự án của bạn không bị đụng tới, nhưng không thể hoàn tác."
+    },
+    "storage": "Nơi lưu trữ",
+    "storageDescription": "Nơi các dự án của bạn được cất trên đĩa.",
+    "projectsFolder": {
+      "title": "Thư mục dự án",
+      "help": "Thư mục mà ứng dụng đề xuất khi bạn tạo hoặc mở một dự án. Nó không di chuyển gì: các dự án đã tạo vẫn ở nguyên chỗ. Để trống để mỗi lần bắt đầu từ nơi bạn vừa ở."
+    },
+    "cancelHint": "Bỏ các thay đổi đang chờ, không đóng cửa sổ",
+    "applyHint": "Ghi các thay đổi ngay, và để cửa sổ mở",
+    "confirmHint": "Ghi các thay đổi, rồi đóng cửa sổ",
+    "browseHint": "Chọn thư mục trong một cửa sổ của hệ thống",
+    "findByChordHint": "Bấm, rồi nhấn một tổ hợp phím: danh sách chỉ giữ những gì dùng nó",
+    "showAllHint": "Xóa bộ lọc và hiện lại mọi phím tắt",
+    "captureHint": "Bấm, rồi nhấn tổ hợp phím cần gán",
+    "sectionHint": "Hiện các cài đặt của phần này",
+    "sectionStagedHint": "Phần này có thay đổi chưa được áp dụng",
+    "searchSectionHint": "Mở toàn bộ phần, thay vì chỉ một kết quả",
+    "searchResultHint": "Đi tới cài đặt, trong phần chứa nó",
+    "landing": {
+      "title": "Kết quả tạo sinh đi về đâu",
+      "help": "Khi đã có một tài liệu cùng loại đang mở. Nếu không có gì mở, kết quả sẽ tự mở.",
+      "ask": "Hỏi mỗi lần",
+      "document": "Vào tài liệu đang mở",
+      "newTab": "Trong tab riêng"
+    },
+    "homeNews": {
+      "title": "Tin tức về mô hình",
+      "help": "Đọc các mô hình đang lên và các bài viết đăng trên Hugging Face, nơi lưu trữ mà mọi trọng số của danh mục vốn đã đến từ đó. Khi bỏ chọn, studio không liên hệ với ai cho dải này."
+    },
+    "mcp": "Điểm vào (MCP)",
+    "mcpDescription": "Cánh cửa thứ hai của studio: một chương trình khác trên máy này — Claude Code, Cursor, bất kỳ ứng dụng khách nào nói giao thức MCP — chạy đúng những hành động mà trợ lý chạy, từ dự án của riêng nó. Ban đầu cửa đóng.",
+    "mcpListening": "Đang mở: studio lắng nghe trên 127.0.0.1:{{port}}, chỉ trên máy này.",
+    "mcpClosed": "Đang đóng: không có gì lắng nghe. Đánh dấu cài đặt ở trên để mở cửa.",
+    "mcpHowTo": "Nối một ứng dụng khách",
+    "mcpStepOpen": "Đánh dấu “Điều khiển studio từ bên ngoài”, lúc nào bạn muốn. Điểm vào khởi động ngay, và một ứng dụng khách đã cấu hình sẽ tìm thấy nó.",
+    "mcpStepCopy": "Sao chép lệnh kết nối, cho ứng dụng khách điều khiển từ cửa sổ dòng lệnh — hoặc khối cấu hình, cho ứng dụng khách đọc một tệp. Cả hai đều không chứa cổng hay mã thông báo.",
+    "mcpStepPaste": "Dán nó vào một cửa sổ dòng lệnh đang mở trong dự án của bạn, hoặc dán khối vào tệp cấu hình của ứng dụng khách.",
+    "mcpNothingToRedo": "Chỉ cần làm một lần. Thứ bạn dán chỉ định studio như một chương trình để khởi động, không bao giờ là một địa chỉ để kết nối, nên nó vẫn chạy qua mọi lần khởi động — kể cả những lần cổng và mã thông báo là mới, tức là tất cả. Một ứng dụng khách đã đăng ký dưới cùng tên sẽ được thay thế; không cần gỡ gì trước.",
+    "mcpExamples": "Một ứng dụng khách làm được gì",
+    "mcpExampleGenerate": "“Tìm một mô hình skybox ban đêm, chuẩn bị lần tạo sinh, nhưng đừng gửi đi.”",
+    "mcpExampleTidy": "“Sắp xếp các cảnh quay thô của tuần này vào mỗi ngày một thư mục.”",
+    "mcpExampleScene": "“Đặt một hình cầu cách khối lập phương hai mét về bên phải và chiếu đèn ấm lên nó.”",
+    "mcpGuards": "Điều gì canh cửa",
+    "mcpGuardLocal": "Điểm vào chỉ lắng nghe trên máy này: không gì từ mạng chạm tới được.",
+    "mcpGuardToken": "Mỗi lần khởi động một mã thông báo mới; yêu cầu thiếu nó sẽ bị từ chối.",
+    "mcpGuardOrigin": "Yêu cầu đến từ một trang web đang mở trong trình duyệt của bạn bị từ chối chỉ vì lý do đó.",
+    "mcpGuardConsent": "Mọi việc tiêu tiền hoặc tải lên đều hiện trên màn hình và chờ bạn đồng ý — trừ những gì bạn đã ủy quyền ở trên.",
+    "copyMcpConfig": {
+      "title": "Khối cấu hình",
+      "help": "Sao chép cùng kết nối đó dưới dạng JSON, cho ứng dụng khách được cấu hình bằng một tệp thay vì bằng một lệnh. Như lệnh, nó vẫn đúng ở mọi lần khởi động.",
+      "button": "Sao chép JSON"
+    },
+    "memory": "Bộ nhớ trợ lý",
+    "memoryDescription": "Những gì trợ lý đã học được về các dự án của bạn. Điều học được về một dự án nằm trong thư mục của dự án đó và đi theo nó; điều học được về cách bạn làm việc thì ở lại máy này.",
+    "memoryProject": "Dự án này",
+    "memoryGlobal": "Máy này",
+    "memoryProjectHint": "Những gì trợ lý đã học được về dự án đang mở. Tệp đó đi theo thư mục.",
+    "memoryGlobalHint": "Những gì trợ lý đã học được về cách bạn làm việc. Nó không bao giờ rời khỏi máy này.",
+    "memoryGraph": "Đồ thị",
+    "memoryGraphCount": "{{memories, number}} bộ nhớ · {{links, number}} liên kết",
+    "memoryGraphDescription": "Những gì trợ lý đã học được, và những gì gắn với nhau. Mỗi bộ nhớ một chấm, một đường nối hai bộ nhớ nói về cùng một điều.",
+    "memoryGraphEmpty": "Cần ít nhất hai bộ nhớ có liên kết thì đồ thị mới hiện được gì.",
+    "memorySearch": "Tìm trong bộ nhớ",
+    "memoryEmpty": "Trợ lý chưa học được gì ở đây.",
+    "memoryUnmatched": "Không bộ nhớ nào khớp với tìm kiếm đó.",
+    "memoryNoProject": "Mở một dự án để xem trợ lý đã học được gì về nó.",
+    "memoryUnreadable": "Không đọc được trọn vẹn tệp bộ nhớ. Những gì hiện sau đây có thể thiếu.",
+    "memoryTooNew": "Tệp này do một bản dựng studio mới hơn ghi ra. Không có gì bị thay đổi.",
+    "memoryPin": "Ghim",
+    "memoryPinHint": "Một bộ nhớ đã ghim luôn được đưa cho trợ lý, dù câu hỏi là gì.",
+    "memoryUnpin": "Bỏ ghim",
+    "memoryUnpinHint": "Trợ lý chỉ nhận được nó khi nó trả lời đúng câu hỏi được đặt ra.",
+    "memoryArchive": "Lưu trữ",
+    "memoryArchiveHint": "Đặt nó sang một bên mà không xóa: vẫn đọc được, thôi được đưa ra.",
+    "memoryRestore": "Dùng lại",
+    "memoryRestoreHint": "Trợ lý có thể dùng lại nó.",
+    "memoryForget": "Quên",
+    "memoryForgetHint": "Việc quên được ghi vào tệp: không gì bị xóa, dấu vết vẫn còn.",
+    "memoryEdit": "Sửa phần tóm tắt",
+    "memorySource": "Được viết bởi",
+    "memorySourceAction": "một hành động ({{ref}})",
+    "memorySourcePerson": "bạn",
+    "memorySourceAssistant": "trợ lý",
+    "memorySourceImport": "một lần nhập",
+    "memoryRefs": "Nó nói về",
+    "memoryReplaces": "Nó thay thế",
+    "memoryAlsoAbout": "cũng nói về nó",
+    "memoryLinks": "Nó trỏ tới",
+    "memorySupersedes": "Thay thế {{id}}",
+    "memoryReindex": "Dựng lại chỉ mục",
+    "memoryReindexHelp": "Đọc lại tệp và dựng lại chỉ mục tìm kiếm. Không mất gì đã học được.",
+    "memoryEmbed": "Tính các vectơ",
+    "memoryEmbedHelp": "Cho phép trợ lý tìm một bộ nhớ mà không cần biết chính xác từ ngữ trong đó. Cần cài một mô hình nhúng.",
+    "memoryEmbedPending_other": "{{count, number}} bộ nhớ cần tính",
+    "memoryEmbedNone": "Mọi bộ nhớ đều đã có vectơ.",
+    "memoryEmbedNoModel": "Chưa chọn mô hình nhúng nào. Tìm kiếm chỉ chạy trên từ ngữ.",
+    "memoryStopEmbed": "Dừng",
+    "memoryStopEmbedHelp": "Những gì đã tính được vẫn giữ lại.",
+    "memoryPurge": "Quên tất cả",
+    "memoryPurgeHelp": "Xóa tệp bộ nhớ của dự án này, và mọi điều trợ lý đã học được từ đó.",
+    "memoryPurgeConfirm": "Xóa mọi điều trợ lý đã học được về dự án này?",
+    "memoryFilterAll": "Tất cả",
+    "memoryCount_other": "{{count, number}} bộ nhớ",
+    "memoryEmbedPending_one": "{{count, number}} bộ nhớ cần tính",
+    "memoryCount_one": "{{count, number}} bộ nhớ",
+    "memoryEmbedPending_many": "{{count, number}} bộ nhớ cần tính",
+    "memoryCount_many": "{{count, number}} bộ nhớ",
+    "memoryUpkeep": "Bảo trì",
+    "memoryMerge": "Gộp các bản trùng",
+    "memoryMergeHelp": "Giữ bản quan trọng nhất trong mỗi nhóm nói cùng một điều, nối các bản còn lại vào nó rồi lưu trữ chúng. Không gì bị xóa.",
+    "memoryMergeNone": "Không có gì nói hai lần cùng một điều.",
+    "memoryMergeFound_one": "{{count, number}} bản trùng",
+    "memoryMergeFound_many": "{{count, number}} bản trùng",
+    "memoryMergeFound_other": "{{count, number}} bản trùng",
+    "memoryStale": "Lưu trữ những gì đang ngủ",
+    "memoryStaleHelp": "Đặt sang một bên những gì không ai dùng đến trong sáu tháng. Bộ nhớ đã ghim không bao giờ bị đụng tới.",
+    "memoryStaleNone": "Chưa có gì ngủ đủ lâu.",
+    "memoryStaleFound_one": "{{count, number}} bộ nhớ đang ngủ",
+    "memoryStaleFound_many": "{{count, number}} bộ nhớ đang ngủ",
+    "memoryStaleFound_other": "{{count, number}} bộ nhớ đang ngủ",
+    "memoryCompact": "Nén gọn tệp",
+    "memoryCompactHelp": "Ghi lại tệp với mỗi bộ nhớ còn hiệu lực một dòng. Đây là lúc những gì đã quên rời khỏi đĩa hẳn.",
+    "memoryRelations": "Bộ nhớ này chạm tới những gì",
+    "memoryPromote": "Giữ ở mọi nơi",
+    "memoryPromoteHint": "Chép bộ nhớ này vào bộ nhớ của máy, để nó dùng được trong mọi dự án của bạn. Điều dự án đã học vẫn ở lại đó.",
+    "gameControls": {
+      "title": "Điều khiển của game",
+      "help": "Chúng không được đặt ở đây. Một game đọc sơ đồ điều khiển của dự án, xếp dưới mục “Điều khiển game” trong Trình khám phá, và nút “Sơ đồ điều khiển mới” tạo ra một sơ đồ. Trang này chỉ nói về giao diện studio, và về những gì đang cắm vào máy tính này."
+    }
+  }
+}

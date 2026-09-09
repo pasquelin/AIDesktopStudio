@@ -1,15 +1,12 @@
 import type { CanvasView } from '@/engines/canvas/viewport'
 import type { Size } from '@/engines/core/geometry'
-import type { GenerationComment } from '../../generationComments'
+import type { GenerationComment, GenerationCommentActions } from '../../generationComments'
 import { ImageDocumentComment } from './ImageDocumentComment'
 
-export type ImageDocumentCommentsProps = {
+export type ImageDocumentCommentsProps = GenerationCommentActions & {
   comments: readonly GenerationComment[]
   view: CanvasView
   size: Size
-  onChange: (id: string, text: string) => void
-  onRemove: (id: string) => void
-  onGenerate?: (id: string) => void
 }
 
 export function ImageDocumentComments(props: ImageDocumentCommentsProps) {
@@ -21,6 +18,7 @@ export function ImageDocumentComments(props: ImageDocumentCommentsProps) {
       view={props.view}
       size={props.size}
       onChange={props.onChange}
+      onRename={props.onRename}
       onRemove={props.onRemove}
       onGenerate={props.onGenerate}
     />

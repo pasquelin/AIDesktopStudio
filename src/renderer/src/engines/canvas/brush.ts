@@ -49,6 +49,7 @@ export const BRUSH_SETTINGS_BY_TOOL: Readonly<Record<CanvasTool, readonly BrushS
   text: [],
   select: [],
   smartSelect: [],
+  smartComment: [],
   move: [],
   hand: [],
   crop: [],

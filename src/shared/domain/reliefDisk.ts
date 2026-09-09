@@ -232,7 +232,7 @@ function neighbourMean(
   return count === 0 ? 0 : sum / count
 }
 
-export function addDiskDeltas(
+function addDiskDeltas(
   samples: HeightmapSamples,
   extent: ReliefExtent,
   sculpt: ReliefSculpt | undefined,

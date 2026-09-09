@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import type { BufferGeometry, Mesh } from 'three'
 import { MeshBVH } from 'three-mesh-bvh'
 import { createInflightBuilds } from './bvhInflight'
@@ -58,10 +59,13 @@ export function createBvhBuilder(spawn: () => Worker): BvhBuilder {
     // The two failures no `try` in the worker can catch: one that died before its handler ran,
     // and a response the structured clone could not carry back.
     started.addEventListener('error', event =>
-      abandon(started, `BVH worker failed: ${event.message}`),
+      abandon(
+        started,
+        localizedError('workerFailed', { name: 'BVH', reason: event.message }).message,
+      ),
     )
     started.addEventListener('messageerror', () =>
-      abandon(started, 'BVH worker sent an unreadable answer'),
+      abandon(started, localizedError('workerUnreadable', { name: 'BVH' }).message),
     )
     worker = started
     return started

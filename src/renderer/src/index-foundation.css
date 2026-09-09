@@ -133,11 +133,24 @@
    * order, which is the lesson `--color-accent` cost below.
    */
   --color-warning: #e0a350;
-  --color-comment-note: #5a4b22;
-  --color-comment-note-border: #a98d3e;
-  --color-comment-note-content: #fff3bd;
-  --color-comment-note-fold: #806d32;
-  --color-comment-mark: #7694ff;
+  /*
+   * A comment's own colour, outline and note alike: the ANGLE comes from the comment
+   * (`commentHue`), the ink stays here. 🛑 No RATIO guard reaches these four — `tokensHue` and
+   * `tokensContrast` read hexadecimals and skip a composed token. What holds them is written
+   * elsewhere: `theme.test.ts` for the two copies and the light ink, `tokensOpacitySources` for
+   * the one rule a ratio would have caught, that the hue may not letter.
+   */
+  --sc-comment-hue: 265;
+  /* The half a comment may NOT move; the light theme restates this pair one step darker. */
+  --sc-comment-ink: 0.72 0.16;
+  --color-comment-mark: oklch(var(--sc-comment-ink) var(--sc-comment-hue));
+  --color-comment-mark-overlay: color-mix(in srgb, var(--color-comment-mark) 20%, transparent);
+  --color-comment-note: color-mix(in srgb, var(--color-comment-mark) 14%, var(--color-surface));
+  --color-comment-note-border: color-mix(
+    in srgb,
+    var(--color-comment-mark) 45%,
+    var(--color-border)
+  );
   /*
    * The one button that CREATES rather than shows. Its own token, apart from the blue accent of
    * everything that merely selects: the new-document button has to be findable in a rail of grey
@@ -416,8 +429,19 @@
   --radius-selector: 4px;
   --radius-field: 4px;
   --radius-box: 6px;
-  --size-selector: 0.25rem;
-  --size-field: 0.25rem;
+  /*
+   * What daisyUI measures its controls FROM, divided out of the studio's own gauges rather than
+   * typed as a number: `.input-sm`, `.select-sm` and `.btn-sm` compute `--size-field * 8`, and
+   * `.checkbox-sm`, `.radio-sm` and `.toggle-sm` compute `--size-selector * 5`. Written as a
+   * `calc`, the density block needs no restatement — `--sc-control` and `--sc-tick` already
+   * change there — and a future gauge carries the plugin with it.
+   *
+   * At the plugin's `.25rem` they stood at 32px and 20px whatever the density setting said: a
+   * daisyUI field beside a studio one was four pixels taller, and compact reached neither.
+   * `daisy-gauge.test.ts` holds the two divisors, which are DaisyUI 5.7.28's.
+   */
+  --size-selector: calc(var(--sc-tick) / 5);
+  --size-field: calc(var(--sc-control) / 8);
   --border: 1px;
   --depth: 0;
   --noise: 0;

@@ -1,11 +1,9 @@
-import { mdiChevronDown } from '@mdi/js'
 import { useId, type ReactNode } from 'react'
 import { cn } from '@/helpers/cn'
 import { FormField } from './FormField'
 import { PropertyLine } from './PropertyLine'
 import { fieldHandle } from './scHandle'
-import { CONTROL, FIELD, NATIVE_SELECT } from './styles'
-import { UiIcon } from './UiIcon'
+import { Select } from './Select'
 export type SelectOption<V extends string> = {
   value: V
   label: string
@@ -42,13 +40,12 @@ function runsOf<V extends string>(options: readonly SelectOption<V>[]): OptionRu
   return runs
 }
 
-type SelectControlProps<V extends string> = SelectFieldProps<V> & {
-  id: string
-  unnamed: boolean
-  named: boolean
-}
+type SelectControlProps<V extends string> = Pick<
+  SelectFieldProps<V>,
+  'label' | 'value' | 'options' | 'onChange' | 'unnamedLabel' | 'layout' | 'hint' | 'scId'
+> & { id: string; unnamed: boolean; named: boolean }
 
-function selectOptions<V extends string>({ options }: Pick<SelectFieldProps<V>, 'options'>) {
+function selectOptions<V extends string>(options: readonly SelectOption<V>[]) {
   return runsOf(options).map(({ group, run }, index) => {
     const entries = run.map(option => (
       <option key={option.value} value={option.value} disabled={option.disabled}>
@@ -65,9 +62,6 @@ function selectOptions<V extends string>({ options }: Pick<SelectFieldProps<V>, 
   })
 }
 
-const selectedValue = (value: string | null, unnamed: boolean): string =>
-  unnamed ? UNNAMED : (value ?? UNNAMED)
-
 function selectControl<V extends string>({
   id,
   label,
@@ -81,58 +75,36 @@ function selectControl<V extends string>({
   unnamed,
   named,
 }: SelectControlProps<V>) {
-  const skin =
-    layout === 'bar'
-      ? cn(CONTROL, 'w-full cursor-pointer appearance-none border-none pr-6 pl-2')
-      : layout === 'stacked'
-        ? cn(FIELD, 'appearance-none pr-6')
-        : NATIVE_SELECT
   return (
-    <select
+    <Select
       id={id}
       aria-label={named ? undefined : label}
       data-sc={scId && fieldHandle(scId)}
-      value={selectedValue(value, unnamed)}
+      value={unnamed ? UNNAMED : (value ?? UNNAMED)}
       onChange={event => {
         const picked = options.find(option => option.value === event.target.value)
         if (picked) onChange(picked.value)
       }}
       {...hint}
-      className={cn(skin, 'min-w-0 flex-1', layout === 'bar' && !value && 'text-muted')}
+      // The skin is `Select`'s, text size included: daisyUI writes `font-size` on the control
+      // itself, so a step set on the box here would be overwritten rather than inherited. What
+      // is left is the room the layout gives it, and the ink a bar reads while nothing is chosen.
+      className={cn('flex min-w-0 flex-1', layout === 'bar' && !value && 'text-muted')}
     >
       {unnamed && (
         <option value={UNNAMED} disabled>
           {unnamedLabel}
         </option>
       )}
-      {selectOptions({ options })}
-    </select>
+      {selectOptions(options)}
+    </Select>
   )
 }
 
 type SelectLayoutProps = Pick<
   SelectFieldProps<string>,
-  'label' | 'layout' | 'leading' | 'actions' | 'className'
-> & { id: string; children: ReactNode; compactActions?: boolean }
-
-function stackedSelectLayout({
-  label,
-  className,
-  id,
-  leading,
-  children,
-  actions,
-}: SelectLayoutProps) {
-  return (
-    <FormField label={label} htmlFor={id} className={className}>
-      <div className="flex min-w-0 items-center gap-2">
-        {leading}
-        {children}
-        {actions}
-      </div>
-    </FormField>
-  )
-}
+  'label' | 'layout' | 'leading' | 'actions' | 'compactActions' | 'className'
+> & { id: string; children: ReactNode }
 
 function selectLayout({
   label,
@@ -144,8 +116,19 @@ function selectLayout({
   id,
   children,
 }: SelectLayoutProps) {
+  const inner = (
+    <>
+      {leading}
+      {children}
+      {actions}
+    </>
+  )
   if (layout === 'stacked')
-    return stackedSelectLayout({ label, className, id, leading, children, actions })
+    return (
+      <FormField label={label} htmlFor={id} className={className}>
+        <div className="flex min-w-0 items-center gap-2">{inner}</div>
+      </FormField>
+    )
   if (layout === 'row')
     return (
       <PropertyLine
@@ -164,23 +147,10 @@ function selectLayout({
   if (layout === 'inline')
     return (
       <PropertyLine label={label} root="div" name="none" actions={false} className={className}>
-        {leading}
-        {children}
-        {actions}
+        {inner}
       </PropertyLine>
     )
-  return (
-    <div className={cn('relative flex min-w-0 items-center', className)}>
-      {leading}
-      {children}
-      <UiIcon
-        path={mdiChevronDown}
-        size={12}
-        className="text-muted pointer-events-none absolute right-2"
-      />
-      {actions}
-    </div>
-  )
+  return <div className={cn('flex min-w-0 items-center', className)}>{inner}</div>
 }
 export function SelectField<V extends string>({
   label,
@@ -208,10 +178,7 @@ export function SelectField<V extends string>({
     unnamedLabel,
     layout,
     hint,
-    leading,
-    actions,
     scId,
-    className,
     id,
     unnamed,
     named,

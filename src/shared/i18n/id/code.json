@@ -1,0 +1,8 @@
+{
+  "code": {
+    "unavailable": "Editor tidak dapat dimuat.",
+    "noProblems": "Tidak ada masalah",
+    "openProblem": "Buka pada baris ini",
+    "at": "baris {{line, number}}, kolom {{column, number}}"
+  }
+}

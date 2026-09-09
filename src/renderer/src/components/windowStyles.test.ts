@@ -13,7 +13,7 @@ const GUARDED = './windowStyles.ts'
 const spellsOutRow = spellsOut(WINDOW_ROW.split(' ').filter(one => !one.startsWith('last:')))
 
 /** The way the two search results were made clickable before they had a constant. */
-const redressesRow = rewrites('WINDOW_ROW', ['hover:bg-base-200', 'w-full', 'text-left'])
+const redressesRow = rewrites('WINDOW_ROW', ['hover:bg-base-200', 'w-full', 'text-start'])
 
 describe('the line of a list in an app window', () => {
   it('finds the sources at all, so the rules below cannot pass on an empty list', () => {
@@ -26,7 +26,7 @@ describe('the line of a list in an app window', () => {
       ...WINDOW_ROW.split(' '),
       'hover:bg-base-200',
       'w-full',
-      'text-left',
+      'text-start',
     ])
   })
 

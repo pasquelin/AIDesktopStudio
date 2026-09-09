@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { Group, Mesh, MeshStandardMaterial, type Material, type Object3D } from 'three'
 import type {
   AnimationClip,
@@ -135,7 +136,7 @@ export function createGltfSource(
 
 async function bytesOf(url: string): Promise<ArrayBuffer> {
   const answer = await fetch(url)
-  if (!answer.ok) throw new Error(`${url} answered ${answer.status}`)
+  if (!answer.ok) throw localizedError('httpStatus', { url: url, status: answer.status })
   return answer.arrayBuffer()
 }
 
@@ -204,7 +205,7 @@ async function colladaSceneOf(
 ): Promise<Object3D> {
   const { ColladaLoader } = await import('three/addons/loaders/ColladaLoader.js')
   const collada = new ColladaLoader(manager).parse(text, baseOf(url))
-  if (!collada) throw new Error(`${url} is not a Collada document this build can read`)
+  if (!collada) throw localizedError('colladaUnsupported', { url: url })
   return collada.scene
 }
 

@@ -1,3 +1,4 @@
+import type * as frDiagnostics from '../fr/diagnostics.json'
 import type { Translations } from '../fr'
 import type * as frActivity from '../fr/activity.json'
 import type * as frAi from '../fr/ai.json'
@@ -33,6 +34,7 @@ import code from './code.json'
 import commands from './commands.json'
 import common from './common.json'
 import context from './context.json'
+import diagnostics from './diagnostics.json'
 import environment from './environment.json'
 import fileInfo from './fileInfo.json'
 import game from './game.json'
@@ -64,6 +66,7 @@ type Section<Roots extends keyof Translations> = Pick<Translations, Roots>
  * mutation: derived, a new French root fails at its section; listed, it only failed globally.
  */
 export const en = {
+  ...(diagnostics satisfies Section<keyof typeof frDiagnostics>),
   ...(activity satisfies Section<keyof typeof frActivity>),
   ...(ai satisfies Section<keyof typeof frAi>),
   ...(assets satisfies Section<keyof typeof frAssets>),

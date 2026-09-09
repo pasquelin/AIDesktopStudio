@@ -21,7 +21,7 @@ export function installCharacterDocument(documentId: string, assetId: string): v
         workspace: '3d',
         title: assetId,
         // The model's own file, as `openCharacter` files it: this kind has none of its own.
-        path: `Modelling/Models/${assetId}.glb`,
+        path: `Models/${assetId}.glb`,
         sourceAssetId: assetId,
       },
     },

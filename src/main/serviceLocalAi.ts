@@ -2,8 +2,7 @@ import type { EngineFailure } from '@shared/domain/failure'
 import type { AiOverview, OwnModelProfile } from '@shared/domain/aiOverview'
 import { chatModelOf, CLOUD_PROVIDERS, type HttpChat } from '@shared/domain/aiCloud'
 import { STT_MODEL } from '@shared/domain/dictation'
-import type { LocalModel } from '@shared/domain/localModel'
-import { needsOwnFolder } from '@shared/domain/localModel'
+import { needsOwnFolder, type LocalModel } from '@shared/domain/localModel'
 import type { WorkspaceId } from '@shared/domain/workspace'
 import { app, systemPreferences } from 'electron'
 import { spawn } from 'node:child_process'
@@ -14,12 +13,11 @@ import { join } from 'node:path'
 import { setTimeout as sleepFor } from 'node:timers/promises'
 import { createAiManager, type AiManager } from './ai/manager'
 import { catalogueWith, modelWith } from './ai/catalogue'
-import { electronHardwarePort } from './ai/electronHardwarePort'
+import { electronHardwarePort, freeBytesAt } from './ai/electronHardwarePort'
 import { electronLlamaPort } from './ai/electronLlamaPort'
 import { llamaLocalRuntime } from './ai/llamaRuntime'
 import { ensureOllama, ollamaInstalled } from './ai/ensureOllama'
-import { installEngineLibraries } from './ai/installEngineLibraries'
-import { spawnLines } from './ai/spawnLines'
+import { engineRepairDeps } from './ai/engineRepair'
 import {
   extractOllamaArchive,
   fetchOllamaArchive,
@@ -32,12 +30,12 @@ import { hardwareProbe, memorySnapshotOf } from './ai/hardwareProbe'
 import { readyCloudsOf } from './ai/cloudReadiness'
 import { createPythonClient } from './ai/pythonClient'
 import { openPythonProcess } from './ai/pythonProcess'
-import { notAnswering, pythonRuntime } from './ai/pythonRuntime'
+import { pythonRuntime } from './ai/pythonRuntime'
 import { createPythonSupervisor, EngineMissingError } from './ai/pythonSupervisor'
 import { createAutoRigHost } from './ai/autoRigHost'
 import { createSmartSelectionHost } from './ai/smartSelectionHost'
 import { readBitmap } from './media/readBitmap'
-import { fileRuntime, type LocalRuntimes } from './ai/localRuntimes'
+import { fileRuntime, type FileRuntimeDeps, type LocalRuntimes } from './ai/localRuntimes'
 import { createOwnModelAdder } from './ai/ownModelAdder'
 import { fetchModel, modelIsComplete } from './ai/modelInstall'
 import {
@@ -63,6 +61,7 @@ import { createHttpChatBrain } from './assistant/brainHttp'
 import { activeProvidersOf } from '@shared/domain/account'
 import { broadcast } from './ipc/broadcast'
 import { EVENTS } from '@shared/ipc'
+import { orElse } from '@shared/promises'
 import { log } from './log'
 import type { Language } from '@shared/i18n'
 
@@ -150,7 +149,7 @@ export function createLocalAiServices(deps: LocalAiDeps) {
       existsSync(enginePython()) ? engine.supervisor.whyNot() : 'engine-missing',
   } satisfies FromManager)
   const { memoryVectors, embedder } = createVectors(deps, ai, modelOf, weightsOf)
-  const { autoRig, smartSelection } = localHosts(deps, ai, engine, ensureLoaded, hold)
+  const { autoRig, smartSelection } = localHosts(deps, ai, engine)
   const addOwnAiModel = createOwnModelAdder(deps, ai)
   dictation = createDictation(deps, ai, modelFolder, downloads)
   return {
@@ -174,13 +173,7 @@ export function createLocalAiServices(deps: LocalAiDeps) {
   }
 }
 
-function localHosts(
-  deps: LocalAiDeps,
-  ai: AiManager,
-  engine: ReturnType<typeof createEngine>,
-  ensureLoaded: (modelId: string) => Promise<void>,
-  hold: (modelId: string) => () => void,
-) {
+function localHosts(deps: LocalAiDeps, ai: AiManager, engine: ReturnType<typeof createEngine>) {
   return {
     autoRig: createAutoRigHost({
       models: () => catalogueWith(deps.settings.read().ai.ownModels, ai.discovered()),
@@ -190,10 +183,10 @@ function localHosts(
       engine: () => engine.supervisor.engine(),
     }),
     smartSelection: createSmartSelectionHost({
-      ensureLoaded,
-      hold,
+      ensureLoaded: ai.ensureLoaded,
+      hold: ai.hold,
       engine: () => engine.supervisor.engine(),
-      epoch: () => ai.loadedEpoch?.('efficient-sam-ti') ?? null,
+      loadedEpoch: modelId => ai.loadedEpoch?.(modelId) ?? null,
       readBitmap,
     }),
   }
@@ -215,17 +208,26 @@ async function refreshAfterStale(refresh: () => Promise<void>): Promise<void> {
   }
 }
 
+/** Whether the files are all there, and how they are fetched — the same pair for every runtime. */
+function filesWith(
+  downloads: ReturnType<typeof createDownloadHost>,
+): Pick<FileRuntimeDeps, 'isComplete' | 'fetch'> {
+  return {
+    isComplete: (model, folder) => modelIsComplete(downloads, model, folder),
+    fetch: async (model, folder, onProgress, signal) => {
+      await ensureFolder(folder)
+      await fetchModel(downloads, model, { folder, onProgress, signal })
+    },
+  }
+}
+
 function createFileRuntime(
   folderFor: (model: LocalModel) => string,
   downloads: ReturnType<typeof createDownloadHost>,
 ) {
   return fileRuntime({
     folderFor,
-    isComplete: (model, folder) => modelIsComplete(downloads, model, folder),
-    fetch: async (model, folder, onProgress, signal) => {
-      await ensureFolder(folder)
-      await fetchModel(downloads, model, { folder, onProgress, signal })
-    },
+    ...filesWith(downloads),
     removeFiles: async (model, folder) => {
       if (needsOwnFolder(model.loader)) return await rm(folder, { recursive: true, force: true })
       for (const file of model.files) await rm(join(folder, file.name), { force: true })
@@ -258,11 +260,7 @@ function createEngine(
   })
   const runtime = pythonRuntime({
     folderFor,
-    isComplete: (model, folder) => modelIsComplete(downloads, model, folder),
-    fetch: async (model, folder, onProgress, signal) => {
-      await ensureFolder(folder)
-      await fetchModel(downloads, model, { folder, onProgress, signal })
-    },
+    ...filesWith(downloads),
     removeFiles: (_model, folder) => rm(folder, { recursive: true, force: true }),
     baseOf: model => (model.attaches ? modelOf(model.attaches.model) : null),
     engine: () => engine.engine(),
@@ -406,8 +404,10 @@ function createManager(
   engine: ReturnType<typeof createEngine>,
   emit: (overview: AiOverview) => void,
 ) {
+  const facts = () => hardwareProbe(electronHardwarePort(modelFolder, llama.vram))
+
   return createAiManager({
-    facts: () => hardwareProbe(electronHardwarePort(modelFolder, llama.vram)),
+    facts,
     snapshotOf: (facts, runtimeBytes) => memorySnapshotOf(facts, BUDGET, Date.now(), runtimeBytes),
     settings: () => deps.settings.read(),
     writeSettings: partial => deps.settings.write(partial),
@@ -418,23 +418,14 @@ function createManager(
     log: (level, message) => log[level]('ai', message),
     now: Date.now,
     ollamaInstalled: ollama.installed,
-    engineMissing: async profile => {
-      const client = await engine.supervisor.engine()
-      if (!client) return null
-      const needs = await client.requirements(profile)
-      return [...needs.absent.map(one => one.name), ...needs.stale.map(one => one.name)]
-    },
-    installEngine: async (onProgress, signal, profile) => {
-      const client = await engine.supervisor.engine()
-      if (!client) throw notAnswering(engine.supervisor.whyNot())
-      await installEngineLibraries({
-        python: enginePython(),
-        declaration: (await client.requirements(profile)).declaration,
-        spawn: spawnLines,
-        onProgress,
-        signal,
-      })
-    },
+    ...engineRepairDeps({
+      supervisor: engine.supervisor,
+      python: enginePython,
+      platform: process.platform,
+      facts,
+      // The interpreter's own volume: site-packages land beside it, wherever the weights go.
+      freeBytes: () => orElse<number | null>(freeBytesAt(enginePython()), null),
+    }),
     installOllama: ollama.install,
   })
 }

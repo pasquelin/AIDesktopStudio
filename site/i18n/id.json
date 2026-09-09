@@ -8,9 +8,9 @@
     "ogLocale": "id_ID"
   },
   "head": {
-    "title": "AI Desktop Studio — enam bengkel generasi, satu jendela",
+    "title": "AI Desktop Studio — Bayangkan. Hasilkan. Ciptakan.",
     "description": "Aplikasi desktop multimodal: gambar, video, 3D, audio, tekstur, dan skybox dalam antarmuka panel yang bisa ditambatkan. Dikte luring dan kendali lewat server MCP.",
-    "ogTitle": "AI Desktop Studio — enam bengkel generasi, satu jendela",
+    "ogTitle": "AI Desktop Studio — Bayangkan. Hasilkan. Ciptakan.",
     "ogDescription": "Enam bengkel generasi dalam satu jendela. Electron, React 19, TypeScript. macOS, Windows, Linux."
   },
   "nav": {
@@ -27,38 +27,39 @@
     "build": "Versi pengembangan",
     "download": "Unduh",
     "languageLabel": "Bahasa",
-    "source": "GitHub"
+    "source": "GitHub",
+    "workshopsLabel": "Ruang kerja"
   },
   "hero": {
-    "eyebrow": "Aplikasi desktop · proyek mandiri",
-    "lede": "Enam bengkel generasi dalam satu jendela. Panel yang bisa ditambatkan, lini masa berkode waktu, inspektur, pustaka di disk: perkakas perangkat lunak produksi, diterapkan pada model generatif.",
-    "browse": "Telusuri bengkelnya",
+    "eyebrow": "Bayangkan. Hasilkan. Ciptakan.",
+    "lede": "Dari gambar ke suara, dari video ke 3D. Buat dan sempurnakan kreasi dalam satu proyek.",
+    "browse": "Jelajahi studio",
     "meta": {
-      "stack": "Electron · React 19 · TypeScript",
+      "stack": "Model lokal atau cloud",
       "platforms": "macOS, Windows, Linux",
-      "languages": "Prancis dan Inggris"
+      "languages": "Format terbuka"
     }
   },
   "home": {
     "eyebrow": "Beranda · titik awal",
-    "title": "Sebuah proyek adalah sebuah folder. Tidak lebih.",
-    "lede": "Buka sebuah folder, dan ia menjadi proyek: dokumen, aset yang diimpor, hasil generasi. Semuanya tetap di disk, dalam format yang sudah dibaca perangkat lunak lain — OpenRaster, OpenTimelineIO, glTF, MaterialX —, dijelajahi dari aplikasi dan diversikan dengan git tanpa meninggalkan jendela.",
+    "title": "Ide Anda terbentuk di sini.",
+    "lede": "Satukan gambar, suara, adegan, dan referensi. Beralih ruang kerja, atur panel, dan simpan berkas dalam format terbuka.",
     "alt": "Layar beranda: bilah untuk melanjutkan proyek terakhir, daftar proyek yang baru dibuka, pintasan ke enam bengkel, arus karya yang dipublikasikan semua orang, dan panel pustaka akun.",
     "specs": {
       "0": {
-        "term": "Bengkel",
-        "title": "Enam ruang, satu jendela",
-        "text": "Gambar, Video, 3D, Audio, Material, dan Skybox. Masing-masing punya perkakasnya sendiri dan terbuka sebagai tab, di sebelah yang lain."
+        "term": "Kreasi",
+        "title": "Ruang kerja untuk setiap media",
+        "text": "Gambar, video, audio, 3D, material, dan langit. Perluas adegan dengan skrip di ruang Kode."
       },
       "1": {
-        "term": "Panel",
-        "title": "Bisa ditambatkan dan dilepas",
-        "text": "Model, Penjelajah, Aset, Inspektur, Lini masa. Jendela dirapikan sesuka hati, dan tata letaknya diingat per bengkel."
+        "term": "Konteks",
+        "title": "Alur proyek Anda",
+        "text": "Bagikan referensi dan instruksi kepada alat generasi dan asisten tanpa mengulangnya setiap percobaan."
       },
       "2": {
-        "term": "Pustaka",
-        "title": "Disk lebih dulu",
-        "text": "Hasil generasi jatuh ke folder proyek. Pustaka akun jarak jauh menyusul kemudian, dengan sebuah kunci API."
+        "term": "Kebebasan",
+        "title": "Berkas tetap terbuka",
+        "text": "OpenRaster, OpenTimelineIO, glTF, dan MaterialX menjaga kreasi tetap terbaca di luar studio."
       }
     }
   },
@@ -75,8 +76,8 @@
         "text": "Trek video dan audio, perkakas seleksi, bilah, dan tangan, pemutaran berkode waktu."
       },
       "2": {
-        "term": "Model",
-        "text": "Sequence-to-Video, Video Cut, Video Concat, Video Studio."
+        "term": "Generasi",
+        "text": "Buat cuplikan dengan model yang tersedia, lalu susun media dalam penyuntingan."
       }
     },
     "alt": "Bengkel Video: monitor Sumber dan Program berdampingan, panel Aset, inspektur klip, lini masa empat trek V1, A1, V2, dan A2.",
@@ -88,53 +89,53 @@
     }
   },
   "threeD": {
-    "eyebrow": "Bengkel · keluaran .glb",
-    "lede": "Sebuah jaring yang dihasilkan, diletakkan dalam adegan yang Anda terangi, animasikan, dan ekspor.",
+    "eyebrow": "3D · komposisi dan animasi",
+    "lede": "Susun adegan. Animasikan karakter. Gerakkan ide Anda.",
     "list": {
       "0": {
-        "term": "Viewport",
-        "text": "Kisi, gizmo orientasi, dan penghitung yang ditumpangkan: segitiga, simpul, panggilan gambar, memori tekstur."
+        "term": "Karakter",
+        "text": "Siapkan kerangka, sesuaikan rig, gunakan kembali animasi, dan gabungkan status gerakan di ruang khusus."
       },
       "1": {
-        "term": "Pencahayaan",
-        "text": "Lima sumber — ambien, terarah, hemisferis, titik, sorot — dipaparkan sebagai trek, dengan bingkai kunci pada lini masa."
+        "term": "Kreasi",
+        "text": "Susun adegan, pahat medan, dan olah material, cahaya, serta efek."
       },
       "2": {
-        "term": "Ekspor",
-        "text": "Jaring keluar sebagai .glb ke tempat Anda menaruhnya, siap untuk sebuah mesin."
+        "term": "Interaksi",
+        "text": "Tambahkan skrip dan kendalikan dengan gamepad. Uji perilaku adegan tanpa meninggalkan studio."
       }
     },
     "alt": "Bengkel 3D: mobil hasil generasi diletakkan di latar pegunungan, gizmo pemindah dan penghitung segitiga ditumpangkan, pohon adegan dan inspektur di kanan, lini masa cahaya di bawah.",
     "chips": {
-      "0": "Segitiga · Simpul · Panggilan",
-      "1": "Durasi 5 dtk",
-      "2": "25 bingkai/dtk",
-      "3": "Lingkungan Studio"
+      "0": "Rig dan animasi",
+      "1": "Skrip",
+      "2": "Efek",
+      "3": "Gamepad"
     }
   },
   "image": {
-    "eyebrow": "Bengkel · keluaran .png",
-    "lede": "Sebuah kanvas berlapis, tempat generasi hanyalah satu perkakas di antara yang lain.",
+    "eyebrow": "Gambar · kreasi dan penyuntingan",
+    "lede": "Hasilkan gambar. Pilih bagian penting. Sempurnakan lapis demi lapis.",
     "list": {
       "0": {
-        "term": "Lapisan",
-        "text": "Penumpukan, keterlihatan, penguncian. Setiap generasi datang sebagai lapisan, di atas apa yang sudah ada."
+        "term": "AI",
+        "text": "Pilih model lokal atau jarak jauh yang sesuai, lalu hasilkan dan sempurnakan gambar di studio."
       },
       "1": {
-        "term": "Perkakas",
-        "text": "Pindah, tangan, skala, bingkai, seleksi, bentuk, kuas, pensil, penghapus, teks, isi lapisan, pipet."
+        "term": "Seleksi",
+        "text": "Seleksi cerdas lokal menemukan area dari titik atau persegi panjang untuk menyiapkan penyuntingan."
       },
       "2": {
-        "term": "Keterlacakan",
-        "text": "Inspektur menyimpan model yang menghasilkan lapisan itu, bobotnya, dan tanggal pembuatannya."
+        "term": "Penyuntingan",
+        "text": "Lapisan, masker, kuas, teks, dan seni piksel. Alat manual dan model saling melengkapi."
       }
     },
     "alt": "Bengkel Gambar: kanvas berlatar transparan dengan kerangka yang dipotong, katalog model di kiri, panel Lapisan dan Inspektur di kanan, bilah aset di bawah.",
     "chips": {
-      "0": "Lapisan",
-      "1": "Zoom 84,6 %",
-      "2": "Model tersimpan",
-      "3": "Bilah aset"
+      "0": "Generasi AI",
+      "1": "Seleksi cerdas",
+      "2": "Lapisan dan masker",
+      "3": "Seni piksel"
     }
   },
   "audio": {
@@ -163,12 +164,12 @@
     }
   },
   "textures": {
-    "eyebrow": "Bengkel · keluaran .png ×4",
+    "eyebrow": "Material · kanal dan pratinjau 3D",
     "lede": "Sebuah material, bukan sebuah gambar: tiap kanal dihasilkan lalu diperiksa terpisah.",
     "list": {
       "0": {
         "term": "Kanal",
-        "text": "Delapan: Warna dasar, Normal, Kekasaran, Logam, Oklusi, Ketinggian, Emisi, Rongga. Tujuh keluar dari satu generasi, Emisi diatur di sini juga; semuanya diekspor berkas demi berkas."
+        "text": "Periksa dan sunting kanal warna, normal, kekasaran, logam, oklusi, tinggi, emisi, dan rongga."
       },
       "1": {
         "term": "Pratinjau",
@@ -176,19 +177,19 @@
       },
       "2": {
         "term": "Sambungan",
-        "text": "Kanal yang bisa diubin pada 4096 × 4096, dapat dipakai apa adanya di sebuah mesin."
+        "text": "Periksa pengulangan dan sambungan, lalu ekspor peta ke alat lain."
       }
     },
     "alt": "Bengkel Material: kubus pratinjau membawa materialnya, inspektur terbuka pada kanal — warna dasar dan normal — lalu pada pengaturan material, bilah gambar hasil generasi.",
     "chips": {
       "0": "4096 × 4096",
-      "1": "4 kanal",
+      "1": "8 kanal",
       "2": "Pratinjau pada volume",
       "3": "Ekspor terpisah"
     }
   },
   "skyboxes": {
-    "eyebrow": "Bengkel · keluaran .hdr",
+    "eyebrow": "Langit · lingkungan dan cahaya",
     "lede": "Langit yang menjadi latar dan, pada saat yang sama, sumber cahaya.",
     "list": {
       "0": {
@@ -232,59 +233,59 @@
     "15": "Ekuirektangular"
   },
   "architecture": {
-    "eyebrow": "Di balik kap",
-    "title": "Tidak ada satu pun formulir generasi yang ditulis tangan.",
-    "lede": "Parameter sebuah model adalah miliknya sendiri dan berubah tanpa pemberitahuan. Karena itu parameter dibaca saat dijalankan dan diubah menjadi bidang isian: model baru muncul dengan pengaturannya, tanpa satu baris kode tambahan.",
+    "eyebrow": "Model Anda, proyek Anda",
+    "title": "AI sesuai kebutuhan Anda.",
+    "lede": "Pilih model sesuai kreasi yang diinginkan. Lokal atau cloud, semua alat tetap dalam satu studio.",
     "racks": {
       "0": "Antarmuka",
-      "1": "Jembatan menuju API",
+      "1": "Model dan generasi",
       "2": "Di mesin Anda"
     },
     "cells": {
       "0": {
         "tag": "Bengkel",
-        "title": "Enam mode, satu tata letak",
-        "text": "Panel yang bisa ditambatkan dan dilepas, tab, tata letak yang diingat per bengkel di antara dua sesi."
+        "title": "Ruang kerja Anda",
+        "text": "Atur panel dan tab atau pisahkan ke jendela lain. Setiap ruang kerja mengingat tata letak pada sesi berikutnya."
       },
       "1": {
         "tag": "Mesin",
-        "title": "Dibangun ulang dari keadaannya",
-        "text": "Melepas sebuah panel menghancurkan konteks grafisnya. Mesin membangun dirinya kembali persis sama — dan dari situ datang pembatalan serta penyimpanan sekaligus."
+        "title": "Kembali ke pekerjaan Anda",
+        "text": "Dokumen dibangun kembali dari status tersimpan, termasuk dalam panel terpisah. Dasar yang sama mendukung penyimpanan dan pembatalan."
       },
       "2": {
         "tag": "Pustaka",
         "title": "Folder proyek",
-        "text": "Proyek adalah folder yang terbaca tanpa aplikasi ini, dijelajahi oleh pengelola berkas sungguhan dan dilacak oleh git dari dalam studio — cabang, versi, konflik. Impor, ekspor, dan katalog berbagi indeks yang sama, yang menemukan kembali berkasnya bahkan setelah dipindahkan ke luar aplikasi."
+        "text": "Jelajahi berkas tanpa studio. Kelola versi, cabang, dan konflik dengan Git. Impor, ekspor, dan pustaka menemukan media yang sama meskipun dipindahkan di luar aplikasi."
       },
       "3": {
-        "tag": "ModelRegistry",
-        "title": "Bidang isian datang dari model",
-        "text": "Skema yang dideklarasikan model menjadi daftar bidang isian, ditampilkan apa adanya. Tipe yang tak dikenal jatuh ke masukan mentah alih-alih membuat formulir lenyap."
+        "tag": "Model",
+        "title": "Pengaturan model pilihan",
+        "text": "Temukan opsi setiap model dalam satu panel untuk setiap jenis generasi."
       },
       "4": {
-        "tag": "JobManager",
-        "title": "Hanya satu tempat yang bertanya",
-        "text": "Setiap generasi bersifat asinkron. Satu komponen saja yang mengikuti kemajuan, membatasi jumlah tugas serentak, dan menunggu bila layanan menolak."
+        "tag": "Generasi",
+        "title": "Pantau percobaan Anda",
+        "text": "Ikuti proses generasi dan temukan hasilnya di samping media lain dalam proyek."
       },
       "5": {
         "tag": "Rahasia",
-        "title": "Antarmuka tak pernah melihat kuncinya",
-        "text": "Kunci dan rahasia dienkripsi oleh brankas sistem. Jendela bertanya «apakah saya masuk?», tidak pernah «apa kunci saya?»."
+        "title": "Kunci terpisah dari antarmuka",
+        "text": "Sistem mengenkripsi kunci Anda. Antarmuka menerima status koneksi tanpa menerima rahasia."
       },
       "6": {
-        "tag": "Dikte",
-        "title": "Luring, sepenuhnya",
-        "text": "Mesin pengenalan suara berjalan dalam proses terpisah, di komputer Anda. Setelah modelnya diunduh, tak ada yang diucapkan keluar ke jaringan."
+        "tag": "AI lokal",
+        "title": "Model di komputer Anda",
+        "text": "Unduh dan kelola model yang kompatibel. Ketersediaan bergantung pada operasi, model, dan sumber daya komputer."
       },
       "7": {
         "tag": "Server MCP",
         "title": "Studio dikendalikan dari luar",
-        "text": "233 tindakan dalam 16 keluarga, dari dokumen ke aset, dari adegan ke suntingan, dari berkas ke repositori git: sebuah agen melakukan apa yang dilakukan antarmuka, lewat jalur yang sama."
+        "text": "Dokumen, gambar, adegan, animasi, pengaturan, dan berkas: hubungkan asisten eksternal ke aksi MCP yang diterbitkan studio."
       },
       "8": {
         "tag": "Beban",
-        "title": "Utas tampilan tetap luang",
-        "text": "Gambar mini, bentuk gelombang, jaring berat, dan pengodean video pergi ke prosesor grafis, ke utas pekerja, atau ke proses tersendiri."
+        "title": "Pemrosesan latar belakang",
+        "text": "Thumbnail, bentuk gelombang, geometri berat, dan enkode video menggunakan GPU atau tugas terpisah dari antarmuka."
       }
     }
   },
@@ -324,7 +325,7 @@
   "download": {
     "eyebrow": "Pemasangan",
     "title": "Tiga platform, satu repositori.",
-    "lede": "Lima pemasang, dihasilkan oleh rantai integrasi yang sama pada tiap versi. Sambil menunggu versi publik pertama, repositori bisa diklon dan dijalankan dengan tiga perintah.",
+    "lede": "Unduh versi yang telah diterbitkan untuk komputer Anda.",
     "items": {
       "0": {
         "os": "macOS",
@@ -352,7 +353,9 @@
         "state": "Versi menyusul"
       }
     },
-    "note": "Pemasang tunduk pada <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">ketentuan penggunaan</a>; kode sumbernya, pada lisensi <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial&nbsp;1.0.0</a>. Aplikasi ini tidak memberi akses ke layanan generasi mana pun: ia memakai kunci API yang Anda sediakan, atas akun Anda dan atas biaya Anda."
+    "note": "Pemasang tunduk pada <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/EULA.md\" target=\"_blank\" rel=\"noopener\">ketentuan penggunaan</a>; kode sumbernya, pada lisensi <a href=\"https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/LICENSE\" target=\"_blank\" rel=\"noopener\">PolyForm Noncommercial&nbsp;1.0.0</a>. Layanan cloud menggunakan akun dan kredit Anda. Model lokal memiliki ketentuan penggunaan masing-masing.",
+    "unavailable": "Belum diterbitkan untuk versi ini",
+    "available": "Unduh · {size}"
   },
   "foot": {
     "groups": {
@@ -376,5 +379,83 @@
     "project": "proyek",
     "workshop": "bengkel",
     "position": "posisi"
+  },
+  "ambience": {
+    "start": "Aktifkan suara suasana dengan volume sangat rendah",
+    "stop": "Bisukan suara suasana",
+    "loading": "Memuat suara, klik untuk membatalkan",
+    "error": "Suara tidak tersedia, coba lagi",
+    "prompt": "Aktifkan suara",
+    "blocked": "Pilihan suara aktif tersimpan. Klik untuk memulai musik."
+  },
+  "aiModels": {
+    "eyebrow": "Model AI · lokal &amp; cloud",
+    "titleLead": "Semua AI Anda.",
+    "titleEnd": "Di satu tempat.",
+    "intro": "Buat gambar, animasikan karakter, diktekan ide, atau minta bantuan. Pilih model yang tepat untuk setiap tugas, di komputer Anda atau secara jarak jauh.",
+    "cloudCount": "<b>9</b> penyedia cloud",
+    "localCount": "<b>45</b> referensi lokal",
+    "cloudEyebrow": "Di cloud",
+    "cloudTitle": "Layanan yang dapat Anda hubungkan.",
+    "cloudIntro": "Akun, kunci, dan model milik Anda. Pembuatan konten dan asisten masing-masing memiliki pilihan model sendiri.",
+    "scenarioRole": "Pembuatan multimedia &amp; asisten",
+    "scenarioDescription": "Buat dan ubah gambar, video, audio, model 3D, material, dan skybox. Studio menampilkan model yang tersedia untuk akun Anda serta pengaturan setiap pembuatan.",
+    "images": "Gambar",
+    "video": "Video",
+    "audio": "Audio",
+    "threeD": "3D",
+    "materials": "Material",
+    "skyboxes": "Skybox",
+    "assistant": "Asisten",
+    "tripoRole": "Pembuatan 3D &amp; gambar",
+    "tripoDescription": "Ubah teks, gambar, atau beberapa sudut pandang menjadi 3D. Beri tekstur, sempurnakan, ubah gaya, segmentasikan, atau sederhanakan mesh; siapkan rig dan animasinya. Buat dan sunting juga gambar sumbernya.",
+    "textureMesh": "Tekstur &amp; mesh",
+    "rigAnimation": "Rig &amp; animasi",
+    "assistantTitle": "Asisten Anda, dengan penyedia pilihan Anda.",
+    "assistantDescription": "Percakapan, bantuan kreatif, dan penulisan skrip. Analisis gambar bergantung pada model yang dipilih.",
+    "multiModel": "Katalog multimodel",
+    "cloudNote": "Katalog cloud berubah mengikuti layanan dan izin akun Anda. Kredit dan ketentuan masing-masing penyedia berlaku.",
+    "localEyebrow": "Di komputer Anda",
+    "localTitle": "Model lokal menurut kegunaan.",
+    "localIntro": "Setiap kegunaan, setiap model: katalog lokal lengkap.",
+    "countFour": "4 model",
+    "assistantUse": "Bercakap, memahami permintaan, dan menyiapkan tindakan di studio.",
+    "code": "Kode",
+    "countTwo": "2 model",
+    "codeUse": "Menulis dan menyunting skrip adegan Anda.",
+    "imagesMaterials": "Gambar &amp; material",
+    "countEight": "8 model",
+    "imagesUse": "Pembuatan, penyuntingan, inpainting, perluasan gambar, referensi, dan panduan. Model yang kompatibel juga mendukung material.",
+    "cutout": "Penghapusan latar &amp; seleksi",
+    "countOne": "1 model",
+    "cutoutUse": "Mengisolasi area dengan titik atau persegi panjang, lalu menyunting mask-nya.",
+    "countFive": "5 model",
+    "videoUse": "Membuat dari teks, menganimasikan gambar, atau mengubah video sesuai model.",
+    "musicSound": "Musik &amp; suara",
+    "countSix": "6 model",
+    "musicUse": "Membuat atau mengubah musik dan menghasilkan suara pengiring video.",
+    "objectsScenes": "Objek &amp; adegan 3D",
+    "countTen": "10 model",
+    "threeDUse": "Mengubah teks atau gambar menjadi model 3D, lalu memodifikasi geometrinya.",
+    "skiesPanoramas": "Skybox &amp; panorama",
+    "skyUse": "Membuat lingkungan panorama dari teks atau gambar.",
+    "rigging": "Rigging",
+    "rigUse": "Menyiapkan kerangka dan bobot karakter secara otomatis.",
+    "memory": "Memori asisten",
+    "memoryUse": "Menemukan kembali makna percakapan dan informasi yang tersimpan.",
+    "motion": "Gerakan",
+    "motionUse": "Membuat gerakan dari teks. Tercantum di katalog; unduhan diblokir, perlu impor oleh pengguna.",
+    "unavailable": "Tidak tersedia untuk diunduh",
+    "dictation": "Dikte",
+    "dictationUse": "Mengubah suara menjadi teks tanpa mengirim audio ke cloud.",
+    "ownEyebrow": "Pustaka Anda juga",
+    "ownTitle": "Ollama dan berkas GGUF Anda sendiri.",
+    "ownDescription": "Temukan model Ollama yang kompatibel atau impor berkas GGUF untuk asisten. Anda mengendalikan model yang digunakan.",
+    "localNote": "Model lokal perlu dipasang. Ketersediaannya bergantung pada mesin, memori, dan perangkat keras; setiap model memiliki lisensinya sendiri. Kimodo tercantum, tetapi unduhannya diblokir. Peningkatan resolusi dan vektorisasi dengan AI saat ini belum memiliki mesin yang terdaftar dalam katalog ini.",
+    "choice": "Pilihan Anda untuk setiap kebutuhan",
+    "nav": "Model AI",
+    "navShort": "AI",
+    "discoverScenario": "Jelajahi Scenario",
+    "discoverTripo": "Jelajahi Tripo"
   }
 }

@@ -1,0 +1,80 @@
+<section class="panel ai-models" id="modeles-ia" aria-labelledby="ai-models-title">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">{{aiModels.eyebrow}}</p>
+      <h2 id="ai-models-title">{{aiModels.titleLead}}<br>{{aiModels.titleEnd}}</h2>
+      <p class="lede">{{aiModels.intro}}</p>
+    </div>
+    <div class="ai-overview"><span>{{aiModels.cloudCount}}</span><span>{{aiModels.localCount}}</span><span>{{aiModels.choice}}</span></div>
+    <div class="ai-block-heading"><p class="eyebrow">{{aiModels.cloudEyebrow}}</p><h3>{{aiModels.cloudTitle}}</h3><p>{{aiModels.cloudIntro}}</p></div>
+    <div class="ai-generation">
+      <article class="ai-service"><div class="ai-service-heading"><img class="ai-provider-logo" src="{{root}}assets/images/providers/scenario.png" alt="" width="40" height="40" loading="lazy"><div><h4><a href="https://www.scenario.com" target="_blank" rel="noopener" title="{{aiModels.discoverScenario}}">Scenario <i aria-hidden="true">↗</i></a></h4><span>{{aiModels.scenarioRole}}</span></div></div>
+      <p>{{aiModels.scenarioDescription}}</p>
+      <div class="ai-model-chips"><span>{{aiModels.images}}</span><span>{{aiModels.video}}</span><span>{{aiModels.audio}}</span><span>{{aiModels.threeD}}</span><span>{{aiModels.materials}}</span><span>{{aiModels.skyboxes}}</span><span>{{aiModels.assistant}}</span></div></article>
+      <article class="ai-service"><div class="ai-service-heading"><img class="ai-provider-logo" src="{{root}}assets/images/providers/tripo.svg" alt="" width="40" height="40" loading="lazy"><div><h4><a href="https://www.tripo3d.ai" target="_blank" rel="noopener" title="{{aiModels.discoverTripo}}">Tripo <i aria-hidden="true">↗</i></a></h4><span>{{aiModels.tripoRole}}</span></div></div>
+      <p>{{aiModels.tripoDescription}}</p>
+      <div class="ai-model-chips"><span>Tripo v3.1</span><span>v3.0</span><span>v2.5</span><span>P1</span><span>P2</span><span>{{aiModels.textureMesh}}</span><span>{{aiModels.rigAnimation}}</span></div></article>
+    </div>
+    <div class="ai-chat-heading"><h4>{{aiModels.assistantTitle}}</h4><p>{{aiModels.assistantDescription}}</p></div>
+    <div class="ai-cloud-list"><a class="ai-cloud-brand" href="https://openai.com" target="_blank" rel="noopener"><img class="ai-provider-logo ai-provider-logo--mono" src="{{root}}assets/images/providers/openai.svg" alt="" width="40" height="40" loading="lazy"><span><b>OpenAI</b><small>GPT</small></span><i aria-hidden="true">↗</i></a><a class="ai-cloud-brand" href="https://www.anthropic.com" target="_blank" rel="noopener"><img class="ai-provider-logo" src="{{root}}assets/images/providers/anthropic.png" alt="" width="40" height="40" loading="lazy"><span><b>Anthropic</b><small>Claude</small></span><i aria-hidden="true">↗</i></a><a class="ai-cloud-brand" href="https://gemini.google.com" target="_blank" rel="noopener"><img class="ai-provider-logo" src="{{root}}assets/images/providers/google.svg" alt="" width="40" height="40" loading="lazy"><span><b>Google</b><small>Gemini</small></span><i aria-hidden="true">↗</i></a><a class="ai-cloud-brand" href="https://www.deepseek.com" target="_blank" rel="noopener"><img class="ai-provider-logo" src="{{root}}assets/images/providers/deepseek.ico" alt="" width="40" height="40" loading="lazy"><span><b>DeepSeek</b><small>DeepSeek</small></span><i aria-hidden="true">↗</i></a><a class="ai-cloud-brand" href="https://x.ai" target="_blank" rel="noopener"><img class="ai-provider-logo ai-provider-logo--mono" src="{{root}}assets/images/providers/xai.svg" alt="" width="40" height="40" loading="lazy"><span><b>xAI</b><small>Grok</small></span><i aria-hidden="true">↗</i></a><a class="ai-cloud-brand" href="https://mistral.ai" target="_blank" rel="noopener"><img class="ai-provider-logo" src="{{root}}assets/images/providers/mistral.svg" alt="" width="40" height="40" loading="lazy"><span><b>Mistral AI</b><small>Mistral</small></span><i aria-hidden="true">↗</i></a><a class="ai-cloud-brand" href="https://openrouter.ai" target="_blank" rel="noopener"><img class="ai-provider-logo" src="{{root}}assets/images/providers/openrouter.png" alt="" width="40" height="40" loading="lazy"><span><b>OpenRouter</b><small>{{aiModels.multiModel}}</small></span><i aria-hidden="true">↗</i></a></div>
+    <p class="ai-note">{{aiModels.cloudNote}}</p>
+    <div class="ai-block-heading ai-local-heading" id="modeles-locaux"><div><p class="eyebrow">{{aiModels.localEyebrow}}</p><h3>{{aiModels.localTitle}}</h3><p>{{aiModels.localIntro}}</p></div></div>
+    <div class="ai-local-grid"><article class="ai-local-group">
+    <div class="ai-local-title"><h4>{{aiModels.assistant}}</h4><span class="ai-group-count">{{aiModels.countFour}}</span></div>
+    <p>{{aiModels.assistantUse}}</p><div class="ai-model-chips"><span>Qwen2.5 0.5B Instruct</span><span>Qwen2.5 1.5B Instruct</span><span>Qwen2.5 7B Instruct</span><span>Qwen2.5 14B Instruct</span></div>
+
+  </article>
+<article class="ai-local-group">
+    <div class="ai-local-title"><h4>{{aiModels.code}}</h4><span class="ai-group-count">{{aiModels.countTwo}}</span></div>
+    <p>{{aiModels.codeUse}}</p><div class="ai-model-chips"><span>Qwen2.5-Coder 1.5B Instruct</span><span>Qwen2.5-Coder 7B Instruct</span></div>
+
+  </article>
+<article class="ai-local-group">
+    <div class="ai-local-title"><h4>{{aiModels.imagesMaterials}}</h4><span class="ai-group-count">{{aiModels.countEight}}</span></div>
+    <p>{{aiModels.imagesUse}}</p><div class="ai-model-chips"><span>SSD-1B</span><span>Sana 600M</span><span>Sana 1600M</span><span>SANA 1.5 1.6B</span><span>Qwen-Image</span><span>Qwen-Image-Edit</span><span>ControlNet Canny SDXL</span><span>IP-Adapter SDXL</span></div>
+
+  </article>
+<article class="ai-local-group">
+    <div class="ai-local-title"><h4>{{aiModels.cutout}}</h4><span class="ai-group-count">{{aiModels.countOne}}</span></div>
+    <p>{{aiModels.cutoutUse}}</p><div class="ai-model-chips"><span>EfficientSAM-Ti</span></div>
+
+  </article>
+<article class="ai-local-group">
+    <div class="ai-local-title"><h4>{{aiModels.video}}</h4><span class="ai-group-count">{{aiModels.countFive}}</span></div>
+    <p>{{aiModels.videoUse}}</p><div class="ai-model-chips"><span>CogVideoX 2B</span><span>Wan 2.1 T2V 1.3B</span><span>Wan 2.2 TI2V 5B</span><span>Mochi 1</span><span>Wan 2.1 I2V 14B</span></div>
+
+  </article>
+<article class="ai-local-group">
+    <div class="ai-local-title"><h4>{{aiModels.musicSound}}</h4><span class="ai-group-count">{{aiModels.countSix}}</span></div>
+    <p>{{aiModels.musicUse}}</p><div class="ai-model-chips"><span>ACE-Step 1.5 XL Turbo</span><span>ACE-Step 1.5 XL</span><span>ACE-Step 1.5 XL SFT</span><span>MMAudio Small</span><span>MMAudio Medium</span><span>MMAudio Large</span></div>
+
+  </article>
+<article class="ai-local-group">
+    <div class="ai-local-title"><h4>{{aiModels.objectsScenes}}</h4><span class="ai-group-count">{{aiModels.countTen}}</span></div>
+    <p>{{aiModels.threeDUse}}</p><div class="ai-model-chips"><span>Shap-E</span><span>TripoSR</span><span>Shap-E Image</span><span>TRELLIS.2 4B</span><span>CraftsMan3D</span><span>InstantMesh</span><span>LGM</span><span>TripoSG</span><span>TRELLIS Text</span><span>TRELLIS Image</span></div>
+
+  </article>
+<article class="ai-local-group">
+    <div class="ai-local-title"><h4>{{aiModels.skiesPanoramas}}</h4><span class="ai-group-count">{{aiModels.countFive}}</span></div>
+    <p>{{aiModels.skyUse}}</p><div class="ai-model-chips"><span>PanFusion</span><span>MVDiffusion</span><span>Diffusion360</span><span>UniPano</span><span>GenEx World Initializer</span></div>
+
+  </article>
+<article class="ai-local-group">
+    <div class="ai-local-title"><h4>{{aiModels.rigging}}</h4><span class="ai-group-count">{{aiModels.countOne}}</span></div>
+    <p>{{aiModels.rigUse}}</p><div class="ai-model-chips"><span>Make-It-Animatable</span></div>
+
+  </article>
+<article class="ai-local-group">
+    <div class="ai-local-title"><h4>{{aiModels.memory}}</h4><span class="ai-group-count">{{aiModels.countOne}}</span></div>
+    <p>{{aiModels.memoryUse}}</p><div class="ai-model-chips"><span>EmbeddingGemma 300M</span></div>
+
+  </article>
+<article class="ai-local-group">
+    <div class="ai-local-title"><h4>{{aiModels.motion}}</h4><span class="ai-group-count">{{aiModels.countOne}}</span></div>
+    <p>{{aiModels.motionUse}}</p><div class="ai-model-chips"><span>Kimodo SOMA RP v1.1</span></div>
+    <span class="ai-availability">{{aiModels.unavailable}}</span>
+  </article><article class="ai-local-group"><div class="ai-local-title"><h4>{{aiModels.dictation}}</h4><span class="ai-group-count">{{aiModels.countOne}}</span></div><p>{{aiModels.dictationUse}}</p><div class="ai-model-chips"><span>Parakeet TDT 0.6b v3</span></div></article></div>
+    <div class="ai-own"><div><p class="eyebrow">{{aiModels.ownEyebrow}}</p><h4>{{aiModels.ownTitle}}</h4><p>{{aiModels.ownDescription}}</p></div><div class="ai-own-mark" aria-hidden="true">.gguf<br><span>Ollama</span></div></div>
+    <p class="ai-note">{{aiModels.localNote}}</p>
+  </div>
+</section>

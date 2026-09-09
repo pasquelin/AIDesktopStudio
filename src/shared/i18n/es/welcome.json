@@ -1,0 +1,72 @@
+{
+  "welcome": {
+    "skip": "Omitir",
+    "skipHint": "Cierra esta presentación y abre el estudio con los ajustes actuales",
+    "back": "Anterior",
+    "backHint": "Vuelve a la pantalla anterior",
+    "next": "Continuar",
+    "nextHint": "Pasa a la pantalla siguiente",
+    "done": "Empezar",
+    "doneHint": "Cierra esta presentación y abre el estudio",
+    "steps": "Paso {{current, number}} de {{total, number}}",
+    "goToStep": "Ir al paso {{current, number}} — {{title}}",
+    "language": {
+      "title": "Elige tu idioma",
+      "body": "Todos los menús, botones y mensajes usan este idioma. Podrás cambiarlo más tarde en los ajustes.",
+      "hint": "Muestra la aplicación en {{name}}"
+    },
+    "look": {
+      "title": "La apariencia",
+      "body": "El tema oscuro es el propio del estudio. Cámbialo si trabajas a plena luz del día.",
+      "themeHint": "Pasa la aplicación al tema {{name}}"
+    },
+    "craft": {
+      "title": "Tu navegación 3D",
+      "body": "La vista 3D imita los gestos del software que ya conoces. Podrás cambiarlo más tarde en los ajustes.",
+      "navigationHint": "Usa los gestos de visor de {{name}} en la vista 3D"
+    },
+    "ai": {
+      "title": "La IA, por todas las puertas",
+      "body": "El estudio no depende de ninguna IA en particular: se conectan, se reemplazan y hasta pueden pilotarlo.",
+      "local": {
+        "title": "En esta máquina",
+        "body": "El estudio descarga los pesos y los ejecuta aquí. No sale nada, no se factura nada."
+      },
+      "ollama": {
+        "title": "Con Ollama",
+        "body": "¿Ya lo tienes instalado? El estudio lee tus modelos y los usa tal cual."
+      },
+      "cloud": {
+        "title": "En un proveedor",
+        "body": "Una clave, y la generación sale fuera. Intercambiables: ninguno de ellos es el producto."
+      },
+      "mcp": {
+        "title": "Y en el otro sentido",
+        "body": "El estudio publica sus herramientas: Claude Code, o cualquier agente MCP, abre un proyecto y genera por ti."
+      }
+    },
+    "models": {
+      "title": "Los modelos, sección a sección",
+      "body": "El estudio descarga los pesos y luego los ejecuta aquí. Algunos modelos exigen un acceso concedido por su editor. El tamaño indica el espacio de disco necesario.",
+      "sectionHint": "Muestra los modelos de: {{name}}",
+      "more": "El catálogo completo está en los ajustes.",
+      "motionOptional": "La generación de movimiento es opcional. Instala un modelo ahora, o continúa y encuéntralo más tarde en Ajustes → IA → 3D. La transferencia de animación funciona sin IA."
+    },
+    "account": {
+      "title": "Una nube, si tienes una",
+      "body": "El estudio funciona sin cuenta, sobre tus propios archivos. Una clave desbloquea la generación y la biblioteca compartida.",
+      "stored": "Estos servicios ya están guardados en esta máquina. Añade otro, o sigue adelante.",
+      "addService": "Añadir un servicio",
+      "addServiceHint": "Abre el formulario para guardar una clave más",
+      "adding": "Pega la clave del servicio que quieras guardar.",
+      "backToList": "Volver a la lista",
+      "backToListHint": "Abandona lo que se ha escrito aquí y vuelve a mostrar los servicios guardados"
+    },
+    "project": {
+      "title": "Tu primer proyecto",
+      "body": "Un proyecto es una carpeta de tu disco. Crea uno, abre uno, u omite este paso y empieza desde Inicio.",
+      "createHint": "Elige una carpeta vacía y la convierte en el proyecto",
+      "openHint": "Abre una carpeta de proyecto que ya esté en este disco"
+    }
+  }
+}

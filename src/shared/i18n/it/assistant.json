@@ -1,0 +1,1756 @@
+{
+  "assistant": {
+    "actions": {
+      "inputMapsList": {
+        "title": "Elenca le mappe dei comandi",
+        "description": "Elenca le mappe dei comandi da tastiera e da controller."
+      },
+      "inputMapRead": {
+        "title": "Leggi una mappa dei comandi",
+        "description": "Legge una mappa dei comandi da tastiera e da controller dal suo percorso."
+      },
+      "inputMapWrite": {
+        "title": "Scrivi una mappa dei comandi",
+        "description": "Scrive una mappa dei comandi validata."
+      },
+      "animationGraphsList": {
+        "title": "Elenca i grafi di animazione",
+        "description": "Elenca i grafi di animazione del progetto."
+      },
+      "animationGraphRead": {
+        "title": "Leggi un grafo di animazione",
+        "description": "Legge un grafo di animazione dal suo percorso."
+      },
+      "animationGraphWrite": {
+        "title": "Scrivi un grafo di animazione",
+        "description": "Scrive un grafo di animazione validato."
+      },
+      "animationRetargetStatus": {
+        "title": "Leggi il trasferimento di un’animazione",
+        "description": "Legge l’adattamento misurato di un movimento trasferito."
+      },
+      "commandRunStudioCommand": {
+        "title": "Lancia un comando",
+        "description": "Attiva un comando dello studio dal suo identificatore, esattamente come farebbe una scorciatoia da tastiera o una voce di menu. Il documento a cui si applica deve essere davanti. Un identificatore si scrive [ambito].[verbo], e studio.state restituisce l’ambito di ciò che è davanti: annullare una modifica di un documento è [ambito].undo — scene.undo, canvas.undo, sequence.undo — e rimetterla [ambito].redo. UNA chiamata annulla UN gesto, quindi una seconda annulla quello precedente: rileggi il documento invece di inviarlo due volte. Nessun’altra azione annulla una modifica, poiché files.undoFileOperation copre solo i file del progetto."
+      },
+      "workspaceOpen": {
+        "title": "Apri un’area di lavoro",
+        "description": "Passa a un’area di lavoro, e vi crea un documento se richiesto — uno NUOVO ogni volta, quindi non è la via di ritorno verso un documento già aperto. Dai sempre un titolo: senza, si apre una finestra di denominazione e la chiamata attende una persona."
+      },
+      "modelsSearch": {
+        "title": "Cerca un modello",
+        "description": "Cerca i motori di generazione per nome o identificatore del modello, famiglia e operazione. La richiesta è facoltativa e nomina il motore, non il contenuto da generare; se nessun motore vi corrisponde, la famiglia compatibile resta disponibile. Non cambia nulla sullo schermo."
+      },
+      "modelsSelect": {
+        "title": "Scegli un modello",
+        "description": "Arma un modello per una famiglia di generazione. Il modulo del Generatore viene allora ricostruito sui campi propri di quel modello."
+      },
+      "generatorPrepare": {
+        "title": "Prepara una generazione",
+        "description": "Riempie il modulo del Generatore con un modello e i suoi parametri, poi lo mostra. Nulla viene inviato."
+      },
+      "generatorReadArmedGeneration": {
+        "title": "Leggi ciò che è armato",
+        "description": "Restituisce il modello, l’operazione, le sorgenti e la destinazione del Generatore così com’è. Non invia nulla e non spende nulla."
+      },
+      "generatorSubmit": {
+        "title": "Lancia la generazione preparata",
+        "description": "Invia il modulo così com’è. Spende sull’account che serve quel modello, e la stima viene annunciata prima quando ce n’è una."
+      },
+      "jobsList": {
+        "title": "Elenca i lavori",
+        "description": "Restituisce le generazioni in corso e il loro avanzamento, così come lo studio le segue. Non cambia nulla sullo schermo."
+      },
+      "promptSuggest": {
+        "title": "Proponi varianti di prompt",
+        "description": "Riscrive una frase in più varianti tagliate per il modello armato nel Generatore, con le impostazioni che vi si accompagnano. Non spende nulla e non cambia nulla sullo schermo."
+      },
+      "promptTranslate": {
+        "title": "Traduci un prompt in inglese",
+        "description": "Porta un testo nella lingua su cui i modelli sono addestrati, e dice quale lingua ha riconosciuto. Non spende nulla e non cambia nulla sullo schermo."
+      },
+      "actionsFind": {
+        "title": "Cerca delle azioni",
+        "description": "Cerca per parole chiave in tutte le azioni che lo studio pubblica e restituisce quelle che corrispondono, con i loro campi. Non cambia nulla sullo schermo. È anche ciò che risponde a «di cosa sei capace riguardo a X»: cerca la parola, poi di’ ciò che è tornato."
+      },
+      "chatClose": {
+        "title": "Chiudi la conversazione",
+        "description": "Toglie la conversazione dallo schermo perché si veda il risultato. Va chiamata per ultima, e solo una volta che il risultato è lì — mai quando la risposta sono le parole stesse, né mentre viene chiesto un permesso."
+      },
+      "promptDescribeStyle": {
+        "title": "Descrivi lo stile dei riferimenti",
+        "description": "Legge le immagini di riferimento posate sul modulo del Generatore e ne restituisce una descrizione utilizzabile come prompt. Non spende nulla."
+      },
+      "studioState": {
+        "title": "Leggi lo stato dello studio",
+        "description": "Restituisce il progetto aperto, l’area di lavoro e la superficie attive, ogni documento aperto con quello davanti segnalato, il modello armato per famiglia, e se lo studio è connesso. Chiedilo prima di lanciare un comando: un comando raggiunge solo la superficie attiva."
+      },
+      "documentsList": {
+        "title": "Elenca i documenti del progetto",
+        "description": "Restituisce i documenti modificabili che la cartella del progetto contiene — immagini a livelli, scene, montaggi, materiali — aperti in una scheda o no. Gli altri file del progetto, immagini e modelli compresi, non sono qui."
+      },
+      "documentOpen": {
+        "title": "Apri un documento",
+        "description": "Apre un documento della cartella del progetto dal suo percorso e lo porta davanti, cambiando area di lavoro se serve. Il percorso è quello che un elenco ha restituito."
+      },
+      "documentActivate": {
+        "title": "Porta un documento davanti",
+        "description": "Rende un documento già aperto la scheda attiva, perché i comandi rivolti alla sua superficie lo raggiungano. È la risposta a un comando rifiutato perché si trovava sulla superficie sbagliata. Nominalo con il suo identificatore, con il suo percorso, o con il titolo che lo studio mostra tra virgolette — un titolo condiviso da due documenti non ne nomina nessuno. «Riapri X», «torna a X» per un documento già aperto è questo, non file.open."
+      },
+      "documentClose": {
+        "title": "Chiudi un documento",
+        "description": "Chiude la scheda di un documento aperto. Il lavoro che non ha mai raggiunto il disco se ne va con lei."
+      },
+      "documentRename": {
+        "title": "Rinomina un documento",
+        "description": "Chiama un documento in un altro modo, sul disco e sullo schermo in un solo gesto. Il documento conserva la sua identità, quindi una scheda aperta si rinomina senza chiudersi."
+      },
+      "documentSave": {
+        "title": "Salva un documento",
+        "description": "Scrive il documento nominato nel progetto e attende che sia fatto. Senza identificatore, è quello davanti. Risponde se qualcosa è stato scritto: una scheda intatta non ha nulla da scrivere, e questo non è un errore."
+      },
+      "documentDeleteFromDisk": {
+        "title": "Elimina un documento",
+        "description": "Toglie dal progetto il file del documento, poi ne chiude la scheda. Il lavoro non salvato se ne va con lui: il file se ne sta andando, e salvarlo prima di distruggerlo non avrebbe senso."
+      },
+      "activityRecent": {
+        "title": "Leggi l’attività recente",
+        "description": "Restituisce ciò che lo studio ha registrato ultimamente — generazioni, operazioni sui file, errori — dal più recente. È così che si scopre cosa un’azione ha fatto davvero. Come una generazione sia ANDATA è job.readCloudGeneration, che la restituisce per intero."
+      },
+      "projectsList": {
+        "title": "Elenca i progetti recenti",
+        "description": "Restituisce i progetti recenti nell’ordine in cui lo studio li mostra, ciascuno con il percorso assoluto che lo apre — passa quel percorso a project.open."
+      },
+      "projectOpen": {
+        "title": "Apri una cartella di progetto",
+        "description": "Apre un progetto da un percorso assoluto di questa macchina, senza sollevare la finestra di sistema che userebbe una persona. Risponde se la cartella era un progetto."
+      },
+      "projectClose": {
+        "title": "Chiudi il progetto aperto",
+        "description": "Chiude il progetto aperto e lascia lo studio senza: ogni pannello si svuota e il catalogo smette di rispondere. La cartella non viene toccata e resta tra i progetti recenti."
+      },
+      "projectCreate": {
+        "title": "Crea una cartella di progetto",
+        "description": "Crea un progetto e lo apre, senza sollevare la finestra di sistema che userebbe una persona. Basta un NOME — lo studio lo posa dove questa persona tiene i progetti, indicato sopra. Il campo folder dice in quale cartella crearlo, quando la frase ne nomina una."
+      },
+      "projectForget": {
+        "title": "Togli un progetto dai progetti recenti",
+        "description": "Toglie un progetto dall’elenco dei progetti recenti, che è un elenco di scorciatoie e nulla di più. LA CARTELLA NON VIENE TOCCATA e nulla viene cancellato: riaprire il progetto rimette la riga. Per mettere la cartella nel cestino, è project.trash. Nominato con il percorso assoluto che projects.list restituisce."
+      },
+      "projectTrash": {
+        "title": "Metti un progetto nel cestino",
+        "description": "Sposta nel cestino di sistema la CARTELLA del progetto e tutto ciò che contiene — documenti, asset, catalogo. Nulla nello studio lo annulla: solo il cestino di sistema può restituirla. Il progetto viene chiuso se era aperto, e la sua riga lascia i progetti recenti. Per togliere solo la riga senza toccare la cartella, è project.forget. Nominato con il percorso assoluto che projects.list restituisce."
+      },
+      "fileOpen": {
+        "title": "Apri un file del progetto",
+        "description": "Apre qualunque file la cartella del progetto contenga — un’immagine, un modello 3D, un materiale, un documento — nello spazio che lo modifica, come fa un doppio clic nell’Esploratore. Un file che nessun editor di qui accetta viene affidato al programma a cui appartiene."
+      },
+      "filesList": {
+        "title": "Elenca una cartella",
+        "description": "Restituisce le voci di una cartella del progetto aperto, file e cartelle allo stesso modo, con il percorso sotto il quale ciascuna è conosciuta. Senza cartella indicata, elenca la radice del progetto."
+      },
+      "filesSearch": {
+        "title": "Cerca nei file del progetto",
+        "description": "Cerca per nome in tutto il progetto aperto e restituisce le voci trovate con il loro percorso. Non cambia nulla sullo schermo. Trovare non è aprire: file.open apre ciò che è stato trovato, e file.rename lo rinomina."
+      },
+      "filesMove": {
+        "title": "Sposta dei file",
+        "description": "Sposta file e cartelle del progetto in un’altra sua cartella. Il disco cambia, anche se l’Esploratore può ancora annullarlo dopo."
+      },
+      "filesCopy": {
+        "title": "Copia dei file",
+        "description": "Copia file e cartelle del progetto in un’altra sua cartella, lasciando gli originali dove sono."
+      },
+      "filesDuplicate": {
+        "title": "Duplica dei file",
+        "description": "Crea una copia di ogni file o cartella nominata, accanto a essa, con un nome che lo studio sceglie perché nulla venga sovrascritto."
+      },
+      "filesTrash": {
+        "title": "Metti dei file nel cestino",
+        "description": "Manda file e cartelle del progetto nel cestino di sistema. Ciò che è stato portato via figura nell’attività recente."
+      },
+      "fileRename": {
+        "title": "Rinomina un file",
+        "description": "Dà un altro nome a un file o a una cartella del progetto, nella cartella dove già si trova. Un altro programma potrebbe conoscerlo con il vecchio nome."
+      },
+      "fileFacts": {
+        "title": "Leggi i fatti di un file",
+        "description": "Restituisce ciò che il disco registra di una voce — la sua natura, la sua dimensione in byte, quando è stata creata e modificata l’ultima volta. Non cambia nulla sullo schermo."
+      },
+      "folderNew": {
+        "title": "Crea una cartella",
+        "description": "Crea una nuova cartella dentro una cartella del progetto aperto. Risponde con il percorso che le è stato dato, che può differire se il nome era già preso."
+      },
+      "filesUndoFileOperation": {
+        "title": "Annulla l’ultimo lotto di modifiche ai file",
+        "description": "Annulla l’ultimo spostamento, rinomina o duplicazione di file del progetto. La pila vive nel processo principale e vale per tutte le finestre, ma una messa nel cestino non si annulla."
+      },
+      "filesRedoFileOperation": {
+        "title": "Ripristina l’ultimo lotto di modifiche ai file",
+        "description": "Riesegue il lotto di modifiche ai file appena annullato, esattamente come fa l’Esploratore. Risponde con ciò che si è spostato e ciò che è stato rifiutato."
+      },
+      "filesCanUndoRedo": {
+        "title": "Leggi la pila dei gesti sui file",
+        "description": "Dice se annullare o ripristinare farebbe qualcosa, senza tentare né l’uno né l’altro. È ciò che rende grigie le due voci di menu prima che ci si clicchi sopra."
+      },
+      "fileReveal": {
+        "title": "Mostra un file nel gestore di file del sistema",
+        "description": "Apre il Finder o l’esploratore del sistema sul file nominato, selezionato. Il percorso non esce mai dal processo principale."
+      },
+      "projectRename": {
+        "title": "Rinomina un progetto",
+        "description": "Rinomina un progetto, il che SPOSTA la sua cartella: un progetto è nominato dalla sua cartella e da nient’altro. Ciò che contiene viaggia con lui, e nulla viene cancellato. Nominato con il percorso assoluto che projects.list restituisce, quindi anche uno chiuso si può rinominare — e il percorso risposto è quello NUOVO."
+      },
+      "modelsReadGenerationModelFields": {
+        "title": "Leggi i campi propri di un modello",
+        "description": "Restituisce i campi che un modello di generazione accetta, con la loro natura e i loro limiti, così come lo studio ne costruisce il modulo. È con questo che si riempiono i parametri di una generazione preparata."
+      },
+      "costEstimate": {
+        "title": "Stima quanto costerebbe una generazione",
+        "description": "Valuta il costo di un modello e di un insieme di parametri senza lanciare nulla. I suoi parametri prendono la forma che models_readGenerationModelFields restituisce. Non restituisce alcun importo là dove l’API rifiuta di stimare il costo di quel modello, invece di inventare una cifra."
+      },
+      "jobReadCloudGeneration": {
+        "title": "Leggi un lavoro",
+        "description": "Restituisce una generazione per intero — il suo stato, a che punto è, cosa ha prodotto, quanto è costata, e perché è fallita se è fallita. Chiesto «il risultato della mia ultima generazione», è questo che dice come sia ANDATA; l’immagine o il modello 3D che ha prodotto è nel catalogo del progetto."
+      },
+      "jobWaitForCloudGeneration": {
+        "title": "Attendi la fine di un lavoro",
+        "description": "Attende che una generazione riesca, fallisca o venga annullata, poi la restituisce con gli asset che ha prodotto. Restituisce il lavoro così com’è se l’attesa scade, il che è una risposta e non un errore."
+      },
+      "jobCancelCloudGeneration": {
+        "title": "Annulla un lavoro",
+        "description": "Ferma una generazione ancora in coda o in corso. Ciò che è già stato speso non viene restituito."
+      },
+      "taskCancelLocalTask": {
+        "title": "Annulla un lavoro locale",
+        "description": "Ferma un lavoro che lo studio conduce su questa macchina — un rendering, un’importazione, un’indicizzazione — e con esso il file scritto a metà. Risponde se ce n’era ancora uno in corso, cosa che un identificatore già terminato non è."
+      },
+      "usageReport": {
+        "title": "Leggi il rapporto di consumo",
+        "description": "Restituisce ciò che l’account ha speso su una finestra di sette, trentuno o centoventi giorni, così come la mostra la finestra di consumo. È questo che risponde a «quanti crediti mi restano»."
+      },
+      "assetsSearchProjectCatalogue": {
+        "title": "Cerca nel catalogo del progetto",
+        "description": "Cerca nel catalogo proprio di QUESTO progetto, su questa macchina, per testo, natura e tag, e può restringersi a ciò che è stato generato. Il catalogo contiene asset, non i file del progetto: un file che la persona nomina si trova cercando nei file del progetto. La libreria remota dell’account è ancora altrove. Ciò che il catalogo porta SU un asset — da dove viene, come è etichettato — è asset.get, sugli identificatori che questa restituisce."
+      },
+      "assetsCounts": {
+        "title": "Conta il catalogo del progetto",
+        "description": "Restituisce quante immagini, video, asset audio, modelli 3D, skybox e animazioni questo progetto contiene su questa macchina, contati nel catalogo invece che elencandoli. Ogni natura viene restituita, comprese quelle il cui conteggio è zero."
+      },
+      "assetGet": {
+        "title": "Leggi degli asset",
+        "description": "Restituisce tutto ciò che il catalogo sa degli asset nominati — dove sono, da dove vengono, e come sono etichettati. È questo che va chiamato sugli identificatori che una generazione finita ha restituito."
+      },
+      "assetUpdate": {
+        "title": "Correggi un asset",
+        "description": "Cambia il nome di un asset, i suoi tag, o la natura che lo studio ha letto nella sua estensione. I tag vengono sostituiti per intero, quindi un elenco vuoto li cancella davvero."
+      },
+      "assetsRemoveFromLibrary": {
+        "title": "Togli degli asset",
+        "description": "Toglie degli asset dalla libreria del progetto, e da quella remota quando lo si chiede. Ciò che è stato tolto figura nell’attività recente."
+      },
+      "assetsCaptionImages": {
+        "title": "Aggiungi didascalie alle immagini",
+        "description": "Fa leggere all’API le immagini nominate e scrive ciò che vi vede come nome dell’asset. Solo le immagini che la libreria conosce già possono ricevere una didascalia, quindi una selezione puramente locale restituisce zero."
+      },
+      "assetsListMissing": {
+        "title": "Trova gli asset il cui file è sparito",
+        "description": "Tra gli asset nominati, restituisce quelli di cui il catalogo attende un file che non c’è più. Un asset che non ha mai avuto un file locale non ne fa mai parte, poiché nulla era atteso da lui."
+      },
+      "assetExtractTextures": {
+        "title": "Estrai le immagini di un modello",
+        "description": "Tira fuori le immagini che un file 3D trasporta e le fa entrare nella libreria del progetto come asset a sé stanti. Restituisce le righe appena create."
+      },
+      "assetReveal": {
+        "title": "Mostra un asset nel gestore di file del sistema",
+        "description": "Apre il Finder o l’esploratore del sistema sul file di un asset. Un asset che vive solo nella libreria remota non ha nulla da mostrare, e lo dice."
+      },
+      "canvasState": {
+        "title": "Leggi l’immagine in corso di modifica",
+        "description": "Restituisce l’immagine davanti — la sua dimensione, la sua risoluzione, le sue guide, e ogni livello della pila appiattito: identificatore, nome, natura, e ciò che ciascuno porta. Un campo AL SUO VALORE PREDEFINITO viene omesso, e la sua assenza significa quel valore: un livello è disegnato, intero, sbloccato, fuso normalmente, non ritagliato e non trasformato."
+      },
+      "animationReopenMotion": {
+        "title": "Riapri un movimento di personaggio",
+        "description": "Sostituisce il banco di lavoro dell’animazione con il movimento salvato in un asset di animazione per il modello nominato. L’asset deve portare dati di movimento creati da questo studio."
+      },
+      "aiLocalState": {
+        "title": "Leggi il runtime IA locale",
+        "description": "Restituisce i candidati IA locali, il loro stato di installazione e di caricamento, i ruoli, l’adeguatezza alla macchina, i download e la preparazione del runtime."
+      },
+      "aiManageLocalRuntime": {
+        "title": "Gestisci il runtime IA locale",
+        "description": "Sceglie, installa, rimuove, carica o scarica un candidato IA locale, oppure legge e ripara il suo runtime. Leggi prima ai.localState. Ogni operazione tranne la lettura del motore modifica lo studio e richiede una conferma."
+      },
+      "canvasSetDocumentProperties": {
+        "title": "Regola le proprietà del documento immagine",
+        "description": "Cambia la risoluzione di stampa, il modo colore o la profondità di bit dell’immagine davanti. Leggi prima canvas.state; i valori non nominati restano invariati."
+      },
+      "canvasGenerationComment": {
+        "title": "Gestisci i commenti di generazione sull’immagine",
+        "description": "Aggiunge, modifica o toglie un’istruzione per la prossima generazione sull’immagine davanti. Le coordinate e il poligono facoltativo sono in pixel del documento. Un identificatore di livello limita una nuova nota a quel livello; senza, vale per l’immagine intera. canvas.state restituisce i commenti in attesa e i loro identificatori."
+      },
+      "canvasResize": {
+        "title": "Ridimensiona l’immagine",
+        "description": "Cambia il riquadro dell’immagine davanti. Ridimensiona i livelli insieme a esso quando lo si chiede, e altrimenti li lascia dove sono, che è tutta la differenza tra dimensione dell’immagine e dimensione della tela."
+      },
+      "canvasSetPixelArt": {
+        "title": "Regola il modo pixel art",
+        "description": "Mette l’immagine davanti su una griglia di pixel art, o ve la toglie. Con un numero di colonne e di righe, ridimensiona il documento perché l’opera misuri esattamente quello in celle. 🛑 Un ridimensionamento cancella la cronologia dei pixel — i tratti già posati restano, ma ⌘Z non li annulla più. Ridimensionare e posare la griglia sono DUE annullamenti: il primo ⌘Z toglie la griglia e lascia la dimensione."
+      },
+      "canvasDrawPixels": {
+        "title": "Disegna dei pixel",
+        "description": "Posa delle celle sull’immagine davanti, in una sola volta e un solo annullamento — celle nominate una a una, una linea, un rettangolo pieno o vuoto, o un riempimento. Le coordinate sono in celle della griglia, non in pixel del documento."
+      },
+      "canvasCrop": {
+        "title": "Ritaglia l’immagine",
+        "description": "Richiude il riquadro su un rettangolo dato in coordinate del documento. I livelli mantengono il loro posto, quindi ciò che cade fuori è ciò che viene tagliato."
+      },
+      "canvasFlipOrRotate": {
+        "title": "Capovolgi o ruota l’immagine",
+        "description": "Rispecchia l’immagine lungo un asse, o la fa ruotare di un quarto di giro in un senso o nell’altro. Un quarto di giro scambia la larghezza e l’altezza del riquadro, quindi un ritratto diventa un paesaggio."
+      },
+      "layerSetMaskOptions": {
+        "title": "Regola la maschera di un livello",
+        "description": "Dice se una MASCHERA — una forma scavata in una selezione, che un livello porta — nasconde ciò che copre e se segue il livello, oppure la toglie del tutto. Nascondere il livello STESSO è layer.setOpacityBlendAndVisibility. Un livello che non ne porta nessuna viene rifiutato: scavarne una appartiene al motore, tramite il comando che ne fa una dalla selezione."
+      },
+      "guideAdd": {
+        "title": "Posa una guida",
+        "description": "Posa una guida verticale o orizzontale nel punto dato, in coordinate del documento, e restituisce l’identificatore che ha appena ricevuto. Le due azioni accanto a essa la spostano e la tolgono con quell’identificatore."
+      },
+      "guideMove": {
+        "title": "Sposta una guida",
+        "description": "Cambia il posto di una guida, in coordinate del documento, come farebbe un trascinamento dal righello. Un identificatore a cui nulla risponde viene rifiutato."
+      },
+      "guideRemove": {
+        "title": "Togli una guida",
+        "description": "Toglie una guida dall’immagine, come fa un trascinamento che la riporta sul suo righello. Cancellare tutte le guide in una volta è un comando del registro, da lanciare in altro modo."
+      },
+      "layerAdd": {
+        "title": "Aggiungi un livello",
+        "description": "Posa un nuovo livello di pixel, di testo o di regolazione in cima alla pila dell’immagine davanti, e risponde con l’identificatore che gli è stato dato. Un livello di regolazione deve nominare la regolazione che porta."
+      },
+      "layerRemove": {
+        "title": "Togli un livello",
+        "description": "Toglie un livello dalla pila dell’immagine davanti. Si annulla come qualsiasi altra modifica di quel documento."
+      },
+      "layerSelect": {
+        "title": "Arma un livello",
+        "description": "Rende un livello quello armato, cioè quello su cui agiscono gli strumenti dell’area di lavoro Immagine. È un modo di guardare la pila più che una modifica, quindi non aggiunge nulla alla cronologia."
+      },
+      "layerRename": {
+        "title": "Rinomina un livello",
+        "description": "Chiama in un altro modo un livello dell’immagine davanti. L’identificatore non cambia, quindi nulla di ciò che lo indicava va perduto."
+      },
+      "layerSetOpacityBlendAndVisibility": {
+        "title": "Regola la composizione di un livello",
+        "description": "Cambia l’opacità di un livello, la sua opacità di riempimento, il suo metodo di fusione, la sua visibilità o il suo ritaglio. Ogni campo è facoltativo, e ciò che non viene dato resta esattamente com’era. È QUESTA che nasconde un livello e lo mostra di nuovo — «nascondi questo livello» mette la visibilità a falso, e non ha nulla a che vedere con una maschera."
+      },
+      "layerTransform": {
+        "title": "Sposta, scala o ruota un livello",
+        "description": "Sposta, scala o fa ruotare un livello dentro il riquadro. La rotazione si dà in gradi, e ogni campo omesso conserva il valore che il livello aveva già."
+      },
+      "layerEditTextLayer": {
+        "title": "Regola le parole di un livello di testo",
+        "description": "Cambia ciò che un livello di testo dice, il carattere e la dimensione con cui lo dice, il suo colore, il suo allineamento e il suo riquadro. Rifiuta un livello che porta pixel invece di parole, che il comando lascerebbe altrimenti intatto."
+      },
+      "layerReorderInStack": {
+        "title": "Riordina un livello",
+        "description": "Sposta un livello in un altro punto della pila, e dentro o fuori da un gruppo. L’indice zero è il fondo della pila, cioè ciò che l’occhio vede per ultimo."
+      },
+      "layerDuplicate": {
+        "title": "Duplica un livello",
+        "description": "Copia un livello appena sopra sé stesso, figli compresi, con un identificatore nuovo per ogni copia. Risponde con l’identificatore della copia. Il FILE dell’immagine si copia con files.duplicate; questo copia un livello al suo interno."
+      },
+      "layerGroup": {
+        "title": "Raggruppa dei livelli",
+        "description": "Raccoglie livelli fuori da ogni gruppo in un gruppo unico, che poi si sposta in blocco. Risponde con l’identificatore proprio del gruppo."
+      },
+      "layerUngroup": {
+        "title": "Dissolvi un gruppo",
+        "description": "Disfa un gruppo, lasciando i suoi figli là dove il gruppo stava nella pila."
+      },
+      "layerMergeDown": {
+        "title": "Unisci un livello a quello sotto",
+        "description": "Ripiega un livello in quello sotto di lui, all’interno del suo stesso livello di pila. Il risultato conserva l’identità del livello inferiore."
+      },
+      "sequenceState": {
+        "title": "Leggi il montaggio in corso di lavorazione",
+        "description": "Restituisce il montaggio davanti — le sue impostazioni, la sua durata, la testina e ciò che è selezionato — poi ogni traccia con le sue clip, i loro estremi, il loro attacco nella sorgente, la loro velocità, le loro dissolvenze e il loro livello. Un campo AL SUO VALORE PREDEFINITO viene omesso, e la sua assenza significa quel valore: una traccia si sente e non è bloccata, una clip va a velocità 1 dal suo inizio, senza dissolvenza e al livello registrato."
+      },
+      "sequenceSeek": {
+        "title": "Posiziona la testina",
+        "description": "Sposta la testina del montaggio davanti all’istante dato, in microsecondi. Non è una modifica: nulla entra nella cronologia, e annullare non la riporta indietro."
+      },
+      "clipAdd": {
+        "title": "Posa una clip sul montaggio",
+        "description": "Posa un asset della libreria su una traccia del montaggio davanti, all’istante dato o sotto la testina. Apre le tracce che servono, e lega l’immagine di una ripresa al suo suono quando ne porta uno."
+      },
+      "clipRemove": {
+        "title": "Togli una clip dal montaggio",
+        "description": "Toglie una clip dalla sua traccia, e con essa la metà che le è legata. Lo spazio che occupava resta vuoto invece di richiudersi sui vicini."
+      },
+      "clipMove": {
+        "title": "Sposta una clip",
+        "description": "Porta una clip su una traccia e a un istante dati, sovrascrivendo ciò che si trova lì. Una traccia bloccata, o di natura diversa, non accetta nulla."
+      },
+      "clipTrim": {
+        "title": "Rifila un bordo di una clip",
+        "description": "Tira il punto di attacco o di stacco di una clip fino all’istante dato, mai oltre la sorgente che sta dietro. Un fermo immagine non ha sorgente da superare e si allunga liberamente. «at» è un istante sulla TIMELINE e mai una durata: per allungare una clip di due secondi, leggi il suo «end» e invia quel valore più 2000000."
+      },
+      "clipSplit": {
+        "title": "Dividi una clip in due",
+        "description": "Divide una clip all’istante dato e lascia le due metà una di seguito all’altra. Un istante fuori dalla clip non ha nulla da tagliare, e viene rifiutato invece di essere riportato come eseguito."
+      },
+      "clipFade": {
+        "title": "Regola la dissolvenza di una clip",
+        "description": "Dà alla dissolvenza in entrata o in uscita di una CLIP la durata richiesta, quindi serve un montaggio video o audio in primo piano. Due rampe più lunghe della clip stessa vengono riportate a quanto essa può contenere. Per una dissolvenza nella cinematica di una scena 3D, è timeline.addSceneCue."
+      },
+      "clipGain": {
+        "title": "Regola il livello di una clip",
+        "description": "Cambia il livello di una clip in decibel, lo zero lasciando la ripresa com’è stata registrata. Il valore è limitato a quanto la riproduzione può reggere."
+      },
+      "clipSpeed": {
+        "title": "Regola la velocità di una clip",
+        "description": "Cambia la velocità di riproduzione di una clip, uno essendo la velocità originale. La sua durata sul montaggio segue, mentre la sorgente letta resta la stessa."
+      },
+      "clipUnlink": {
+        "title": "Separa l’immagine dal suo suono",
+        "description": "Separa le due metà di una ripresa, così che spostarne, rifilarne o dividerne una non tocchi più l’altra. Nulla le rilega di nuovo in seguito."
+      },
+      "clipSelect": {
+        "title": "Indica una clip",
+        "description": "Indica la clip su cui agiranno l’ispettore e i gesti senza bersaglio. Non è una modifica, e l’annullamento non la riprende."
+      },
+      "trackAdd": {
+        "title": "Aggiungi una traccia",
+        "description": "Apre una traccia immagine o suono sotto le altre. Una traccia immagine non può portare nulla di un suono, e vale anche il contrario."
+      },
+      "trackRemove": {
+        "title": "Rimuovi una traccia",
+        "description": "Toglie una traccia dal montaggio, e con essa ogni clip che portava. Una traccia bloccata non viene rimossa."
+      },
+      "trackReorderTracks": {
+        "title": "Riordina le tracce",
+        "description": "Sposta una traccia del numero di righe dato, il che cambia ciò che copre cosa. Le righe si contano dall’ALTO, quindi un numero negativo la alza e uno positivo la abbassa — sequence.state le risponde in quest’ordine, la prima essendo la più in alto."
+      },
+      "trackRename": {
+        "title": "Rinomina una traccia",
+        "description": "Dà a una traccia il nome che mostra la colonna delle intestazioni. Il suo identificatore non cambia mai."
+      },
+      "trackSetMuteSoloLockHeight": {
+        "title": "Regola come si lavora una traccia",
+        "description": "Cambia il muto, il solo, il blocco o l’altezza di una traccia. Questi quattro dicono come si lavora e non ciò che si è fatto, e quindi non entrano mai nella cronologia."
+      },
+      "skyboxState": {
+        "title": "Leggi il cielo in modifica",
+        "description": "Risponde il cielo in primo piano — la sua sorgente equirettangolare, le sue impostazioni d’immagine, dove sta il suo sole e di che colore è, e ciò che il suo ambiente illumina — più ciò che l’ha prodotto se viene da una generazione."
+      },
+      "skyboxSetViewportOptions": {
+        "title": "Regola il modo di guardare un cielo",
+        "description": "Sceglie la proiezione con cui il cielo è disegnato, quanto si apre l’obiettivo, e se gli oggetti di prova vi si trovano. È uno stato di sessione, come ogni modo di guardare un documento, e nulla di esso viene salvato."
+      },
+      "skyboxAdjustImage": {
+        "title": "Regola l’immagine di un cielo",
+        "description": "Cambia l’esposizione, il contrasto, la saturazione, la temperatura, la tinta, la rotazione dell’orizzonte o la sfocatura. Ogni campo è facoltativo, e ciò che non è dato resta com’era."
+      },
+      "skyboxResetAdjustments": {
+        "title": "Riporta le impostazioni d’immagine a neutro",
+        "description": "Riporta in un colpo solo tutte le impostazioni d’immagine del cielo al loro valore neutro, in una sola voce di cronologia. La sorgente e il sole non vengono toccati."
+      },
+      "skyboxSetSun": {
+        "title": "Posiziona e regola il sole",
+        "description": "Cambia l’elevazione, l’azimut, l’intensità o il colore del sole del cielo in primo piano. Entrambi gli angoli sono in radianti, come ovunque nella scena."
+      },
+      "skyboxSetPreviewLighting": {
+        "title": "Regola ciò che il cielo illumina",
+        "description": "Cambia quanto intensamente il cielo illumina gli oggetti di prova, e decide se l’immagine è disegnata dietro di loro o si limita a illuminarli."
+      },
+      "skyboxSetSourceImage": {
+        "title": "Scegli l’immagine di un cielo",
+        "description": "Appende un’immagine equirettangolare della libreria nel cielo in primo piano. L’asset deve avere un file su questa macchina, perché uno rimasto nel cloud non ha nulla da decodificare."
+      },
+      "materialState": {
+        "title": "Leggi il materiale in modifica",
+        "description": "Risponde il materiale in primo piano — gli otto canali e ciò che li riempie, tutte le impostazioni di render come colore, rugosità e ripetizione, e il modo in cui è presentata l’anteprima."
+      },
+      "materialSetSurfaceSettings": {
+        "title": "Regola un materiale",
+        "description": "Cambia la tinta, la rugosità, la metallicità, il rilievo, l’occlusione, l’emissione, la ripetizione, lo scostamento o la rotazione del materiale in primo piano. Ogni campo è facoltativo."
+      },
+      "materialSetPreviewEnvironment": {
+        "title": "Scegli ciò che illumina l’anteprima di un materiale",
+        "description": "Illumina l’anteprima con lo studio procedurale, con un’immagine del progetto nominata dal suo identificatore di asset, o con un documento cielo nominato dal suo titolo — l’anteprima ne prende allora l’immagine corretta e l’intensità, come fa una scena."
+      },
+      "materialSetPreviewDisplay": {
+        "title": "Regola l’anteprima di un materiale",
+        "description": "Cambia l’intensità e la rotazione dell’ambiente che illumina l’anteprima, la visualizzazione dello sfondo, la rotazione automatica e l’evidenziazione delle giunzioni."
+      },
+      "materialSetChannelImage": {
+        "title": "Riempi o svuota un canale",
+        "description": "Mette un’immagine della libreria in uno degli otto canali del materiale in primo piano. Senza asset nominato, il canale viene svuotato invece che riempito."
+      },
+      "documentExport": {
+        "title": "Esporta nel progetto il documento in primo piano",
+        "description": "Scrive il documento in primo piano — immagine, scena, cielo, materiale o montaggio — in una cartella del progetto, con il suo titolo se non ne è dato uno. Un montaggio esce in OpenTimelineIO, cioè il montato e non un film, perché il render fotogramma per fotogramma richiede una sessione che nulla di esterno può reggere. La destinazione non può uscire dal progetto."
+      },
+      "gitStashDrop": {
+        "title": "Elimina una modifica accantonata",
+        "description": "Rimuove una modifica accantonata dalla pila senza riapplicarla. Ciò che conteneva non è mai stato registrato, quindi nulla lo restituisce."
+      },
+      "gitResolve": {
+        "title": "Risolvi un conflitto di fusione",
+        "description": "Conserva uno dei due lati di un conflitto per i file nominati. Ciò che portava l’altro lato sparisce dalla copia di lavoro."
+      },
+      "gitAbortMerge": {
+        "title": "Abbandona la fusione in corso",
+        "description": "Riporta il repository dov’era prima della fusione, disfacendo ciò che aveva già scritto nella copia di lavoro."
+      },
+      "gitRemotes": {
+        "title": "Elenca i repository remoti",
+        "description": "Risponde i repository remoti dichiarati, con il loro nome e il loro indirizzo. È là che andrebbe una pubblicazione."
+      },
+      "gitAddRemote": {
+        "title": "Dichiara un repository remoto",
+        "description": "Aggiunge un repository remoto con il nome dato. Nulla viene inviato né recuperato da questo gesto soltanto, che scrive nella configurazione locale."
+      },
+      "gitFetch": {
+        "title": "Recupera i riferimenti remoti",
+        "description": "Legge a che punto sta il repository remoto, senza cambiare nulla nella tua copia di lavoro e senza pubblicare nulla. È la metà innocua di un recupero con fusione."
+      },
+      "gitPull": {
+        "title": "Recupera e fondi",
+        "description": "Recupera il repository remoto e fonde nel ramo corrente, il che riscrive la copia di lavoro. Un conflitto si ferma lì e si risolve in seguito. Quando si chiede solo ciò che il remoto contiene, è la chiamata sbagliata: git.fetch lo legge senza toccare la copia di lavoro."
+      },
+      "gitPush": {
+        "title": "Pubblica sul repository remoto",
+        "description": "Invia il ramo corrente al repository remoto. È l’unico gesto dello studio che esce da questa macchina, e nulla qui lo riprende."
+      },
+      "cloudBrowseAccountLibrary": {
+        "title": "Sfoglia la libreria remota",
+        "description": "Risponde una pagina della libreria dell’account, filtrata per testo, tag o tipo. La paginazione avviene per cursore, e non c’è un totale — l’API non ne dà."
+      },
+      "cloudExplorePublicFeed": {
+        "title": "Sfoglia ciò che tutti hanno pubblicato",
+        "description": "Risponde una pagina del flusso pubblico di un tipo dato, dal più recente al più vecchio. Questi asset non sono tuoi, e guardarli non ne scarica nessuno. cloud.pull è ciò che ne fa scendere uno nel progetto, byte compresi."
+      },
+      "cloudFindSimilarPublished": {
+        "title": "Cerca ciò che assomiglia a un asset",
+        "description": "Risponde gli asset pubblicati che assomigliano a quello nominato, il quale è tolto dai propri risultati. Il riferimento è a scelta del chiamante."
+      },
+      "cloudPreviewSync": {
+        "title": "Prevedi cosa farebbe una sincronizzazione",
+        "description": "Dice cosa farebbero un invio o uno scaricamento su ogni asset nominato, prima che costi una sola richiesta. Nulla viene inviato e nulla viene scaricato."
+      },
+      "cloudPull": {
+        "title": "Scarica asset remoti",
+        "description": "Fa entrare asset nel progetto, byte compresi, e dice cosa ha dato ciascuno. Uno scaricamento interrotto a metà conserva ciò che aveva già scritto."
+      },
+      "cloudPush": {
+        "title": "Invia asset all’account",
+        "description": "Invia asset locali alla libreria dell’account, dove restano. È l’unico gesto di questa famiglia che lascia qualcosa dietro di sé."
+      },
+      "stylesList": {
+        "title": "Elenca gli stili di materiale",
+        "description": "Risponde gli stili di materiale salvati, con il loro identificatore, il loro nome e i valori che conservano. Vivono fuori da ogni progetto e seguono la macchina."
+      },
+      "styleSave": {
+        "title": "Salva il materiale come stile",
+        "description": "Registra il materiale del documento in primo piano con il nome dato. Il nome fa da base, e lo studio lo rende unico se è già preso."
+      },
+      "styleRename": {
+        "title": "Rinomina uno stile di materiale",
+        "description": "Dà il suo nome a uno stile salvato. Nient’altro dello stile si muove, e il suo identificatore resta lo stesso."
+      },
+      "styleRemove": {
+        "title": "Elimina uno stile di materiale",
+        "description": "Rimuove uno stile salvato. Vive fuori da ogni progetto, quindi nulla lo restituisce — né l’annullamento né l’Esploratore."
+      },
+      "authState": {
+        "title": "Indica se lo studio è connesso",
+        "description": "Dice se una chiave API è presente e su quale account lavora lo studio. Non risponde mai la chiave stessa, che non lascia il processo principale."
+      },
+      "windowState": {
+        "title": "Leggi lo stato della finestra",
+        "description": "Risponde la dimensione della finestra, se è ingrandita o a schermo intero, e la lingua in cui disegna — quella che il processo principale ha davvero scelto."
+      },
+      "windowFullScreen": {
+        "title": "Alterna lo schermo intero",
+        "description": "Porta la finestra a schermo intero, o ne la fa uscire. È un’alternanza, e non c’è modo di chiedere uno dei due stati."
+      },
+      "settingsOpen": {
+        "title": "Apri le impostazioni su una sezione",
+        "description": "Apre la finestra delle impostazioni sulla sezione richiesta, o ve la porta se è già aperta. Leggere e scrivere un’impostazione non richiede di aprirla."
+      },
+      "updatesState": {
+        "title": "Leggi lo stato dell’aggiornamento",
+        "description": "Dice a che punto sta l’aggiornamento dell’applicazione — nulla in vista, in scaricamento, o pronto da installare alla prossima chiusura. updates.install è ciò che lo installa e riavvia lo studio."
+      },
+      "mediaCapabilities": {
+        "title": "Indica cosa lo studio sa decodificare",
+        "description": "Dice di cosa è capace questa macchina sul lato media, il che dipende dalla presenza di ffmpeg. Senza di esso l’importazione funziona comunque e l’interfaccia dice ciò che non può fare."
+      },
+      "mediaIndexFileInPlace": {
+        "title": "Dai una riga di catalogo a un file",
+        "description": "Fa entrare nel catalogo un file che la cartella del progetto contiene già, senza copiarlo. È la metà dell’importazione che non apre alcuna finestra di dialogo di sistema."
+      },
+      "fontsList": {
+        "title": "Elenca i font installati",
+        "description": "Risponde i caratteri con cui un testo può essere composto, prima quelli forniti con lo studio, poi quelli installati su questa macchina. Ciascuno arriva con la sua provenienza, che impostare un carattere richiede quanto il suo nome."
+      },
+      "favoritesListPinnedRecipes": {
+        "title": "Elenca le ricette fissate",
+        "description": "Risponde le ricette fissate al progetto, con il modello che le ha prodotte e l’area di lavoro che sa rifarle. Una ricetta conserva quanto basta per rilanciare una generazione."
+      },
+      "favoritePinAssetRecipe": {
+        "title": "Fissa ciò che ha prodotto un asset",
+        "description": "Fissa ciò che ha prodotto un asset del progetto aperto, per poterlo rifare. Un asset che nessuno ha generato non ha una ricetta da conservare."
+      },
+      "favoriteUnpinAssetRecipe": {
+        "title": "Rimuovi una ricetta fissata",
+        "description": "Toglie una ricetta dall’elenco di quelle fissate. L’asset che aveva prodotto non viene toccato."
+      },
+      "fileInfoOpenWindow": {
+        "title": "Apri le informazioni di un file",
+        "description": "Apre la finestra che descrive un file del progetto — la sua dimensione, il suo tipo, la sua cronologia e ciò che il catalogo ne sa."
+      },
+      "mirrorOpenVideoReturnWindow": {
+        "title": "Apri il ritorno video",
+        "description": "Apre la finestra di ritorno, o la porta in primo piano se è già aperta. Mostra ciò che il montaggio riproduce, senza portare nulla del lavoro di montaggio."
+      },
+      "helpOpenStudioWindow": {
+        "title": "Apri una finestra dello studio",
+        "description": "Apre il manuale utente, la finestra delle licenze, quella dei consumi, il registro o l’accoglienza — o la porta in primo piano se è già aperta. Sono finestre del processo principale, e nessun comando del registro delle azioni le raggiunge."
+      },
+      "updatesInstall": {
+        "title": "Installa l’aggiornamento scaricato",
+        "description": "Chiude lo studio e riavvia la versione già scaricata. Fa qualcosa solo una volta che l’aggiornamento è pronto, e ciò che non è salvato se ne va con la chiusura."
+      },
+      "dictationState": {
+        "title": "Leggi lo stato della dettatura",
+        "description": "Dice a che punto sta il riconoscimento vocale — a riposo, in ascolto, in attesa di un’autorizzazione o di un modello — e cosa non è riuscito, se qualcosa non lo è."
+      },
+      "dictationStart": {
+        "title": "Avvia la dettatura",
+        "description": "Apre il microfono e scrive ciò che sente là dove si trova il cursore. Senza un campo attivo la dettatura non ha dove scrivere, quindi il cursore si posiziona prima della chiamata."
+      },
+      "dictationStop": {
+        "title": "Arresta la dettatura",
+        "description": "Chiude il microfono. Per impostazione predefinita conserva ciò che è stato sentito, e può invece buttarlo via — è esattamente lì che i due gesti differiscono."
+      },
+      "panelsList": {
+        "title": "Elenca i pannelli",
+        "description": "Risponde i pannelli che la superficie in primo piano sa mostrare, e dice quali sono aperti. Un pannello che quella superficie non serve non viene elencato, poiché non può esservi aperto."
+      },
+      "panelOpen": {
+        "title": "Apri un pannello",
+        "description": "Porta avanti un pannello, nel posto che la superficie in primo piano gli riserva. Un pannello già aperto riceve il focus invece di essere riscritto."
+      },
+      "panelClose": {
+        "title": "Chiudi un pannello",
+        "description": "Svuota la metà in cui la superficie in primo piano tiene quel pannello. La disposizione degli altri pannelli non si muove."
+      },
+      "sceneState": {
+        "title": "Leggi la scena in modifica",
+        "description": "Risponde ogni oggetto del documento 3D in primo piano — il suo identificatore, nome, tipo, genitore, visibilità e trasformazione, con la geometria, il materiale o la luce che porta — più ciò che è selezionato, le inquadrature di camera e l’impostazione della scena. Un campo AL SUO VALORE PREDEFINITO è omesso, e la sua assenza significa quel valore: nessun genitore, visibile, all’origine senza rotazione né scala, il colore proprio dello studio, una forma suddivisa come lo è sempre il suo tipo. Le misure non sono mai omesse. Un elenco che non contiene nulla è omesso per intero. Per descrivere UN oggetto con i suoi componenti e ciò che gli si può ancora aggiungere, studio.describe."
+      },
+      "optimizationAnalyze": {
+        "title": "Analizza l’ottimizzazione della scena",
+        "description": "Risponde il piano di ottimizzazione deterministico per gli oggetti nominati, o per tutta la scena se non ne è nominato nessuno. Non modifica nulla."
+      },
+      "optimizationSelection": {
+        "title": "Ottimizza la selezione",
+        "description": "Mette gli oggetti selezionati in ottimizzazione runtime SAFE automatica, mantenendo modificabile ogni oggetto di lavoro."
+      },
+      "optimizationWorld": {
+        "title": "Ottimizza la scena",
+        "description": "Mette ogni oggetto in ottimizzazione runtime SAFE automatica senza modificare la scena di lavoro."
+      },
+      "optimizationReport": {
+        "title": "Leggi il rapporto di ottimizzazione",
+        "description": "Risponde i costi misurati della scena separatamente dai guadagni runtime SAFE stimati."
+      },
+      "optimizationClearCache": {
+        "title": "Svuota la cache di ottimizzazione",
+        "description": "Getta la rappresentazione ottimizzata usa e getta della vista della scena, perché sia ricostruita dallo stato di lavoro."
+      },
+      "optimizationExclude": {
+        "title": "Escludi oggetti dall’ottimizzazione",
+        "description": "Mantiene individuali gli oggetti logici nominati nel rendering ottimizzato."
+      },
+      "optimizationSetMode": {
+        "title": "Regola il modo di ottimizzazione degli oggetti",
+        "description": "Imposta Auto, Forza individuale, Forza istanza, Forza batch o Escludi sugli oggetti nominati."
+      },
+      "nodeAdd": {
+        "title": "Aggiungi un oggetto alla scena",
+        "description": "Mette una primitiva, una luce, una camera, uno sprite o un testo nel documento 3D in primo piano, alla posizione data. Risponde con l’identificatore ricevuto dall’oggetto alla nascita. Un modello del progetto, o quello che una generazione ha appena reso, entra da node.addModel; questa fabbrica una primitiva."
+      },
+      "nodeAddModel": {
+        "title": "Colloca un modello della libreria",
+        "description": "Mette un modello 3D della libreria del progetto nella scena in primo piano, nominato dal suo asset. È così che una mesh generata entra in una scena."
+      },
+      "nodeRemove": {
+        "title": "Rimuovi un oggetto",
+        "description": "Toglie un oggetto dalla scena in primo piano, con tutto ciò che vi pende sotto. Si annulla come qualsiasi altra modifica di quel documento."
+      },
+      "nodeRename": {
+        "title": "Rinomina un oggetto",
+        "description": "Chiama in altro modo un oggetto della scena in primo piano. L’identificatore non cambia, quindi nulla di ciò che lo indicava va perduto."
+      },
+      "nodeAttach": {
+        "title": "Aggancia un oggetto a un personaggio",
+        "description": "Aggancia un oggetto al punto di aggancio del personaggio a cui appartiene — una spada in una mano. Senza punto nominato, l’oggetto segue l’intero personaggio."
+      },
+      "nodeTransform": {
+        "title": "Colloca un oggetto",
+        "description": "Sposta, ruota o scala un oggetto. Le rotazioni sono angoli di Eulero in radianti, e ogni asse omesso mantiene il valore che l’oggetto aveva già."
+      },
+      "nodeSetVisible": {
+        "title": "Mostra o nascondi un oggetto",
+        "description": "Toglie un oggetto da ciò che viene disegnato, o ve lo rimette. In entrambi i casi resta nella scena, ed è questo che distingue nascondere da rimuovere."
+      },
+      "nodeSetMeshMaterial": {
+        "title": "Regola il materiale di un oggetto",
+        "description": "Cambia il colore, la rugosità, la metallicità, la densità di ripetizione e le cinque mappe di una mesh o di un testo. Uno slot nominato con un identificatore vuoto è una mappa tolta. La ripetizione è rifiutata su un testo, il cui contorno non è una primitiva."
+      },
+      "nodeSetPrimitiveParameters": {
+        "title": "Regola i parametri di una primitiva",
+        "description": "Cambia le misure e i conteggi di segmenti della forma da cui una mesh è stata costruita. Ogni primitiva porta i propri, che la lettura della scena restituisce — un campo che non appartiene alla forma è rifiutato invece che ignorato."
+      },
+      "nodeSetShadowCastAndReceive": {
+        "title": "Regola le ombre di un oggetto",
+        "description": "Dice se un oggetto proietta un’ombra e se riceve quelle proiettate dagli altri. Una luce non ne riceve nessuna, uno sprite non fa né l’uno né l’altro, e il campo che l’oggetto non può portare è rifiutato."
+      },
+      "nodeSetSpriteSettings": {
+        "title": "Regola uno sprite",
+        "description": "Cambia la tinta, l’opacità e l’immagine di uno sprite, che è sempre rivolto verso la camera. Un identificatore vuoto toglie l’immagine e lascia il semplice quadrato colorato."
+      },
+      "nodeSetTextSettings": {
+        "title": "Regola un testo 3D",
+        "description": "Cambia le parole, il carattere, il corpo, la profondità fuori dal proprio piano e la finezza delle curve di un testo. Il suo materiale si regola con l’azione di materiale, come quello di una mesh."
+      },
+      "nodeSetPathShape": {
+        "title": "Regola la forma di un percorso",
+        "description": "Cambia la tensione di un percorso, da 0 spigoloso a 1 arrotondato, e se si richiude su sé stesso. I suoi punti di controllo si aggiungono, si spostano e si tolgono con le tre azioni vicine."
+      },
+      "pathAddPoint": {
+        "title": "Aggiungi un punto a un percorso",
+        "description": "Posa un punto di controllo. Con delle coordinate, viene aggiunto dopo l’ultimo, là dove è stato puntato. Con un indice, viene inserito subito dopo quel punto, a metà strada dal successivo. Senza né l’uno né l’altro, prolunga il percorso dalla sua estremità."
+      },
+      "pathMovePoint": {
+        "title": "Sposta un punto di un percorso",
+        "description": "Cambia le coordinate di un punto di controllo, nel sistema di riferimento proprio del percorso — quindi spostare il percorso sposta tutta la traiettoria. Un indice che non nomina alcun punto è rifiutato."
+      },
+      "pathRemovePoint": {
+        "title": "Rimuovi un punto da un percorso",
+        "description": "Toglie un punto di controllo. Un percorso non scende mai sotto i due punti, perché un punto non è una linea, e la chiamata viene allora rifiutata."
+      },
+      "modelSetMaterialDocument": {
+        "title": "Vesti un modello con un materiale",
+        "description": "Fa indossare a un modello importato un materiale del progetto, nominato dal titolo del suo documento. Il modello segue poi quel materiale, così che modificarne un canale o una manopola lo ridipinge, senza chiedere di nuovo nulla qui. Un titolo vuoto glielo toglie, e il modello torna a ciò che porta il suo stesso file."
+      },
+      "nodeSetLightSettings": {
+        "title": "Regola una luce",
+        "description": "Cambia tutto ciò che porta il tipo di luce in questione — il suo colore, l’intensità, la portata, l’attenuazione, l’apertura e la morbidezza del suo cono, il suo bersaglio, e i due colori di una luce emisferica. Un campo che il tipo non porta è rifiutato. Un alone, un bloom o qualsiasi altro effetto non è una luce: post.set scrive un parametro di un effetto e post.reset lo rimette."
+      },
+      "nodeSetCameraLens": {
+        "title": "Regola l’obiettivo di una camera",
+        "description": "Cambia il campo visivo e le distanze vicina e lontana di una camera. Dove si trova si regola con la sua trasformazione, come per qualsiasi altra cosa nell’albero."
+      },
+      "cameraAddShot": {
+        "title": "Manda una camera in onda",
+        "description": "Apre un’inquadratura per questa camera, a partire dall’istante dato in secondi, e ne risponde l’identificatore. La riga su cui si posa segue la regola propria della banda, dove una camera non ancora sulla banda arriva in cima. Una camera che ha un’inquadratura è la camera ATTIVA, quella attraverso cui si vede la scena."
+      },
+      "cameraBindPathToShot": {
+        "title": "Fai correre una camera su un percorso",
+        "description": "Lega un percorso all’inquadratura nominata: la camera lo percorre per tutta la durata dell’inquadratura, a velocità costante lungo la sua lunghezza. Senza percorso, l’inquadratura non sposta più la camera. Una partenza oltre l’arrivo fa percorrere il percorso al contrario."
+      },
+      "cameraCreateAndBindPath": {
+        "title": "Posa un percorso sotto una camera",
+        "description": "Crea un percorso là dove la camera si trova, orientato lungo la sua linea di vista, e lo lega all’inquadratura in un solo gesto. L’azione vicina lega un percorso che esiste già; questa lo fabbrica, perché un percorso non guida nulla senza un’inquadratura che lo percorra."
+      },
+      "cameraReorder": {
+        "title": "Cambia la riga di una camera sulla banda",
+        "description": "Alza o abbassa la riga di una camera, il che decide attraverso cosa guarda il film dove due inquadrature si sovrappongono. Il numero è un conteggio di righe, negativo per scendere, e la risposta dice di quanto la riga si è potuta davvero spostare."
+      },
+      "cameraAimShotAt": {
+        "title": "Dai un bersaglio a una camera",
+        "description": "Punta la camera dell’inquadratura nominata verso un oggetto — che segue anche se animato — o verso un punto fisso. Senza né l’uno né l’altro, la camera resta orientata dalla sola rotazione."
+      },
+      "nodeReparent": {
+        "title": "Ricollega un oggetto",
+        "description": "Aggancia un oggetto sotto un altro, o sotto la scena stessa quando non è dato alcun genitore, e lo mette dove si vuole fra i suoi nuovi vicini. Dare un posto senza dare un genitore riporta quindi l’oggetto alla scena: ripeti il genitore per cambiare solo il posto. L’oggetto mantiene la propria trasformazione, che si legge allora rispetto al suo nuovo genitore."
+      },
+      "nodeSelect": {
+        "title": "Seleziona oggetti",
+        "description": "Fa di questi oggetti la selezione che l’ispettore legge e che il gizmo sposta. Una selezione non è una modifica, quindi non aggiunge nulla alla cronologia."
+      },
+      "viewDirection": {
+        "title": "Guarda la scena da una faccia",
+        "description": "Mette la camera della vista principale sopra, sotto, davanti, dietro, a sinistra o a destra della scena. È uno spostamento, quindi non aggiunge nulla alla cronologia."
+      },
+      "rigState": {
+        "title": "Leggi lo scheletro di un personaggio",
+        "description": "Risponde le ossa di un modello con i loro ruoli, le maniglie che i suoi giunti raggiungono, i blocchi posati sulla sua banda, e ciò che il motore ha misurato della mesh."
+      },
+      "rigFit": {
+        "title": "Rendi animabile un modello",
+        "description": "Posa sulla mesh lo scheletro che lo studio adatta a ciò che ne ha misurato. Rifiuta finché il motore non ha letto il modello, il che è un’attesa e non un errore."
+      },
+      "rigClear": {
+        "title": "Rimuovi lo scheletro di un modello",
+        "description": "Riporta il modello allo stato di mesh, senza ossa né maniglie. Il gesto si annulla come tutti gli altri della scena."
+      },
+      "rigConfigureHands": {
+        "title": "Aggiungi le ossa delle dita",
+        "description": "Posa le trenta ossa delle dita a riposo sulle mani che lo scheletro porta già. Senza mani riconosciute, non viene scritto nulla."
+      },
+      "socketAdd": {
+        "title": "Posa un punto di aggancio",
+        "description": "Posa su un osso del personaggio in primo piano un punto che un oggetto di una scena può seguire — una mano, una schiena. Il punto vive nel file del personaggio."
+      },
+      "socketRemove": {
+        "title": "Rimuovi un punto di aggancio",
+        "description": "Rimuove un punto di aggancio dal personaggio in primo piano. Ciò che lo seguiva ricade sul personaggio stesso."
+      },
+      "boneAdd": {
+        "title": "Aggiungi un osso",
+        "description": "Aggancia un osso sotto quello nominato, esattamente sulla sua posizione — è il gizmo a metterlo dove deve stare. Il suo nome è composto da quello del genitore."
+      },
+      "boneRemove": {
+        "title": "Rimuovi un osso",
+        "description": "Toglie un osso dallo scheletro e riaggancia i suoi figli dov’era agganciato: un gomito se ne va, la mano resta."
+      },
+      "boneRename": {
+        "title": "Rinomina un osso",
+        "description": "Cambia il nome di un osso, mentre i suoi figli seguono da soli. Un nome già preso è rifiutato invece che scritto a metà."
+      },
+      "boneSetRole": {
+        "title": "Dì quale giunto è un osso",
+        "description": "Lega un osso a uno dei giunti dello standard umanoide, o a nessuno quando il ruolo è lasciato vuoto. L’osso che teneva quel ruolo lo perde nello stesso movimento."
+      },
+      "ikAdd": {
+        "title": "Posa una maniglia su un giunto",
+        "description": "Aggiunge una maniglia che un giunto raggiunge, e la catena che la segue — le due ossa sopra ruotano per accompagnarla, ed è questo che posa un piede a terra o una mano su un appiglio."
+      },
+      "ikRemove": {
+        "title": "Rimuovi una maniglia",
+        "description": "Toglie una catena e la maniglia che raggiungeva, entrambe: una maniglia lasciata indietro sarebbe un osso che nulla guida."
+      },
+      "animationsList": {
+        "title": "Elenca ciò che un personaggio può riprodurre",
+        "description": "Risponde le tre provenienze di un movimento — le clip che porta il file stesso del modello, le animazioni fornite con lo studio, e quelle che la libreria del progetto conserva. È ciò che risponde a «quali animazioni porta questa scena»; le chiavi che una banda contiene si leggono invece con scene.state."
+      },
+      "animationAddBlock": {
+        "title": "Posa un blocco di animazione",
+        "description": "Posa sulla banda di un personaggio un movimento venuto da una delle tre provenienze. L’identificatore nomina un asset della libreria, il nome nomina gli altri due, e a una chiamata ne appartiene esattamente uno. La banda viene creata se il personaggio non ne aveva."
+      },
+      "animationSetBlockSettings": {
+        "title": "Regola un blocco di animazione",
+        "description": "Cambia la posizione di un blocco sulla banda, il punto in cui la riproduzione parte dentro il movimento, la sua velocità, il suo loop, la durata delle sue dissolvenze, ciò che fa dello spostamento della radice, e la parte del corpo che pilota. Il blocco è riscritto sul posto, mentre ogni altra corsia resta intatta."
+      },
+      "animationRemoveBlock": {
+        "title": "Togli un blocco di animazione",
+        "description": "Rimuove un blocco dalla banda, ovunque si trovi. La banda resta, vuota se necessario."
+      },
+      "animationSetBandLengthAndRate": {
+        "title": "Regola la banda di animazione",
+        "description": "Cambia la durata della banda, la sua frequenza in fotogrammi al secondo, o entrambe. Ciò che non è nominato non viene toccato."
+      },
+      "animationAutoKey": {
+        "title": "Attiva la posa automatica delle chiavi",
+        "description": "Decide se spostare un osso scrive una chiave al passaggio. È uno stato di sessione, come ogni modo di guardare una scena, e nulla di esso viene salvato con il documento."
+      },
+      "keyWritePoseKeys": {
+        "title": "Posa una chiave su un soggetto",
+        "description": "Scrive una chiave su ogni canale di un oggetto o di un osso, all’istante dato o alla testina, tenendo la posa mostrata alla testina — quella che node.transform ha posato. Su un oggetto animato node.transform posa una chiave sulla testina stessa, quindi per posare un altro istante: scrivi prima lì la chiave, poi colloca l’oggetto con la testina sopra. I canali che mancano vengono aperti al passaggio, poiché esigere prima una traccia sarebbe chiedere ciò che già si trova nella vista."
+      },
+      "keyRemoveSubjectKeys": {
+        "title": "Togli le chiavi di un soggetto",
+        "description": "Riprende la chiave che ogni canale di un oggetto o di un osso tiene a quell’istante. Senza questo gesto una posa sarebbe senza ritorno, e nient’altro nel pannello ne toglie una."
+      },
+      "keyWriteKeysOnOpenChannels": {
+        "title": "Posa una chiave su tutto ciò che è animato",
+        "description": "Scrive una chiave su ogni canale già aperto della scena, all’istante dato o alla testina. Non ne apre nessuno, ed è questo che distingue questo gesto dalla posa su un soggetto."
+      },
+      "keyMove": {
+        "title": "Sposta una chiave",
+        "description": "Fa scorrere una chiave lungo il suo canale, mantenendone il valore. Una chiave che arriva su un istante già occupato da un’altra la sostituisce, perché due chiavi su un fotogramma sarebbero uno stato che nessuna riproduzione saprebbe rileggere."
+      },
+      "channelRemove": {
+        "title": "Rimuovi un canale di animazione",
+        "description": "Toglie un canale, e con esso le chiavi che portava. Un canale bloccato è rifiutato invece che lasciato in piedi in silenzio."
+      },
+      "channelSetMuteSoloLock": {
+        "title": "Regola i contrassegni di un canale",
+        "description": "Rende muto un canale, lo mette in solo, o lo blocca. È un modo di LAVORARE e non una modifica del documento, quindi non si aggiunge nulla alla cronologia."
+      },
+      "viewSetDisplayMode": {
+        "title": "Scegli come viene disegnata la scena",
+        "description": "Passa la vista principale in ombreggiato, in wireframe, in solo materiale o in uno degli altri modi di disegnare. Il comando di menu si limita a passare da uno al successivo; questa nomina quale."
+      },
+      "sceneCapture": {
+        "title": "Cattura un’immagine della vista 3D",
+        "description": "Scrive un’immagine di ciò che la vista mostra nelle immagini del progetto, alla dimensione richiesta. L’inquadratura non cambia mai — cambia solo il numero di pixel, altrimenti la cattura mostrerebbe qualcosa di diverso dallo schermo."
+      },
+      "worldApplyPreset": {
+        "title": "Applica un mondo già pronto",
+        "description": "Imposta in una sola chiamata l’illuminazione, lo sfondo, la nebbia e la correzione colore di una scena, per un tipo di resa. Ognuna scrive solo i campi che la riguardano e lascia il resto com’era, così un piano di terra che qualcuno ha acceso resta acceso."
+      },
+      "layerLock": {
+        "title": "Blocca un livello",
+        "description": "Mette o toglie i tre lucchetti di un livello, quello sui suoi pixel, quello sulla sua posizione e quello sulla sua trasparenza. Fermano la mano sulla tela; un valore scritto da un’altra azione passa comunque, come fa dai pannelli."
+      },
+      "layerEditShapeLayer": {
+        "title": "Ridipingi una forma",
+        "description": "Cambia il riempimento, il contorno, lo spessore del tratto e il numero di lati di una forma già disegnata, senza ridisegnarla. Togliere il riempimento e il contorno insieme viene rifiutato, perché non lascerebbe nulla da vedere."
+      },
+      "layerSetAdjustmentAmount": {
+        "title": "Imposta un livello di regolazione",
+        "description": "Sposta l’unica manopola che un livello di regolazione porta — esposizione, contrasto, saturazione o temperatura. Nominare una manopola diversa dalla sua viene rifiutato, anziché lasciato cadere in silenzio."
+      },
+      "worldSetSceneLighting": {
+        "title": "Scegli cosa illumina la scena",
+        "description": "Illumina la scena con lo studio procedurale, con un’immagine del progetto indicata dal suo identificatore di asset, o con un documento cielo indicato dal suo titolo — la scena prende allora la sua immagine corretta, il suo sole e la sua intensità. Imposta anche quanto è forte questa illuminazione e di quanto è ruotata attorno alla verticale, sovrapposte a ciò che dice il cielo."
+      },
+      "worldSetBackground": {
+        "title": "Scegli cosa sta dietro la scena",
+        "description": "Mette dietro la scena l’ambiente stesso, un colore pieno, o nulla del tutto — quest’ultimo caso lascia lo sfondo trasparente, che è ciò che serve a una cattura destinata a essere sovrapposta ad altro."
+      },
+      "worldSetFog": {
+        "title": "Regola la nebbia della scena",
+        "description": "Spegne la nebbia, la fa sfumare tra due distanze, o la ispessisce con la profondità. Il colore e le distanze appartengono alla forma scelta, e altrimenti restano esattamente com’erano."
+      },
+      "worldSetGroundPlane": {
+        "title": "Regola il piano di terra della scena",
+        "description": "Mostra o nasconde il piano di terra che la scena possiede, e ne imposta il colore, il lato, l’opacità e se le ombre vi si posano. È così che un piano di terra si AGGIUNGE a una scena: una superficie aggiunta come oggetto resta un oggetto tra gli altri, non il piano di terra. Quel piano appartiene al documento, a differenza della griglia, che è un’impostazione dell’applicazione."
+      },
+      "worldSetLayers": {
+        "title": "Sostituisci le voci di rilievo e dispersione",
+        "description": "Sostituisce l’elenco completo e validato delle voci durevoli di rilievo e dispersione della scena. Usa scene.state per leggere le voci presenti prima di modificarne una."
+      },
+      "worldSetToneMapping": {
+        "title": "Imposta come viene resa la scena",
+        "description": "Sceglie come l’ampia gamma dinamica viene riportata sullo schermo, e di quanti stop viene esposta. Entrambi appartengono al documento, non alla finestra che si trova a guardarlo."
+      },
+      "gitStatus": {
+        "title": "Leggi lo stato delle versioni del repository",
+        "description": "Restituisce il ramo, ciò che segue, il suo anticipo o il suo ritardo, e ogni file modificato con la metà di git in cui si trova. Dice anche quando il progetto non ha alcun repository. Ciò che è cambiato DENTRO un file è git.diff; questo si limita a nominare i file."
+      },
+      "gitLog": {
+        "title": "Leggi la cronologia",
+        "description": "Restituisce una pagina di versioni registrate, dalla più recente alla più vecchia, su tutti i rami, con i nomi che puntano a ciascuna. Ciò che è cambiato dentro un file tra due versioni è git.diff."
+      },
+      "gitListCommitFiles": {
+        "title": "Leggi cosa ha cambiato una versione",
+        "description": "Restituisce i file che una versione registrata ha toccato, e come ciascuno lo è stato — aggiunto, modificato, rimosso o rinominato."
+      },
+      "gitDiff": {
+        "title": "Leggi cosa è cambiato in un file",
+        "description": "Restituisce la modifica all’interno di un file, dentro una versione registrata, o rispetto all’ultima quando nessuna versione è indicata."
+      },
+      "gitBranches": {
+        "title": "Elenca i rami",
+        "description": "Restituisce tutti i rami del repository del progetto, dicendo quale è attivo."
+      },
+      "gitStashes": {
+        "title": "Elenca le modifiche accantonate",
+        "description": "Restituisce ciò che è stato accantonato, dal più recente al più vecchio, così che un client possa riprenderne uno dalla sua posizione nell’elenco."
+      },
+      "gitInit": {
+        "title": "Inizia a registrare le versioni",
+        "description": "Esegue git init sul progetto aperto e scrive il suo file di esclusioni, poi risponde con lo stato che ha lasciato. Non fa nulla a un progetto che registra già."
+      },
+      "gitStage": {
+        "title": "Indicizza dei file",
+        "description": "Fa passare delle modifiche in ciò che porterà la prossima versione registrata. Risponde con lo stato lasciato, così non serve rileggere nulla."
+      },
+      "gitUnstage": {
+        "title": "Togli dei file dall’indice",
+        "description": "Toglie delle modifiche da ciò che porterà la prossima versione registrata, senza toccare i file stessi."
+      },
+      "gitRestore": {
+        "title": "Abbandona le modifiche ai file",
+        "description": "Rimette i file come li porta l’ultima versione registrata. Ciò che non è mai stato registrato è perduto, e nessun annullamento dello studio lo raggiunge."
+      },
+      "gitCommit": {
+        "title": "Registra una versione",
+        "description": "Registra ciò che è indicizzato, sotto un messaggio. Può correggere l’ultima versione invece di aggiungerne una, il che la riscrive anziché seguirla."
+      },
+      "gitCreateBranch": {
+        "title": "Crea un ramo",
+        "description": "Avvia un ramo alla versione corrente e ci si sposta sopra. La copia di lavoro è lasciata esattamente com’è."
+      },
+      "gitCheckout": {
+        "title": "Cambia ramo",
+        "description": "Passa a un altro ramo riscrivendo la copia di lavoro perché gli corrisponda. Un documento aperto in una scheda diventa allora un documento il cui file è cambiato sotto di lui."
+      },
+      "gitStash": {
+        "title": "Accantona le modifiche in corso",
+        "description": "Accantona le modifiche della copia di lavoro e la riporta all’ultima versione registrata. Le modifiche lasciano quindi il disco."
+      },
+      "gitStashPop": {
+        "title": "Riprendi le modifiche accantonate",
+        "description": "Rimette un insieme di modifiche accantonate nella copia di lavoro e lo toglie dalla pila. Dei file vengono quindi riscritti."
+      },
+      "gitTag": {
+        "title": "Etichetta una versione",
+        "description": "Mette un nome su una versione registrata, per ritrovarla senza il suo hash."
+      },
+      "settingsRead": {
+        "title": "Leggi le impostazioni",
+        "description": "Risponde { settings, choices }: sotto settings, tutte le impostazioni dello studio, sezione per sezione; sotto choices, ciò che ogni impostazione a elenco chiuso accetta, con il suo titolo e il suo aiuto. Ciò che la vista DISEGNA vive qui — la griglia, le ombre, i riferimenti — come le unità, il tema e la lingua. Nessuna azione di scena li attiva."
+      },
+      "settingsWrite": {
+        "title": "Cambia le impostazioni",
+        "description": "Scrive una o più impostazioni, sezione per sezione. È così che la griglia e le ombre si attivano o si regolano — leggile prima, dato che una modifica che non nomina nulla di noto allo studio viene rifiutata anziché scritta alla cieca. Ciò che non è nominato resta com’è."
+      },
+      "accountsList": {
+        "title": "Elenca gli account",
+        "description": "Restituisce gli account di generazione che questo studio possiede, dicendo quale è attivo e quali possono essere rinominati o rimossi. Nessuna chiave e nessun segreto viene mai restituito."
+      },
+      "accountsActivate": {
+        "title": "Cambia account",
+        "description": "Rende uno degli account posseduti quello attraverso cui lo studio genera. Tutto ciò che parte da quel momento lo fa con le sue credenziali."
+      },
+      "accountsRename": {
+        "title": "Rinomina un account",
+        "description": "Cambia l’etichetta sotto cui un account appare nello studio. Né la chiave né il segreto attraversano questo confine, in un senso o nell’altro."
+      },
+      "settingsTriggerAction": {
+        "title": "Premi un pulsante delle impostazioni",
+        "description": "Attiva uno dei pulsanti della finestra delle impostazioni — mostra un file, apri gli strumenti di sviluppo, copia il comando di connessione, installa il ponte, reimposta tutto. Gli ultimi due lasciano qualcosa dietro di sé e vengono chiesti sullo schermo."
+      },
+      "contextReadProjectCards": {
+        "title": "Leggi il contesto del progetto",
+        "description": "Risponde con le schede di contesto — ciò che la PERSONA ha detto che questo progetto è — con il loro titolo, il loro testo e se si applicano."
+      },
+      "contextWriteProjectCard": {
+        "title": "Scrivi una scheda di contesto",
+        "description": "Scrive ciò che la PERSONA dice che il progetto È o MIRA A, nel suo insieme, come scheda permanente riletta a ogni turno. Una regola di lavoro su come una cosa si fa qui — come si muovono le camere, come si nominano i file — è invece una memoria (memory.write)."
+      },
+      "contextDeleteProjectCard": {
+        "title": "Elimina una scheda di contesto",
+        "description": "Toglie dal contesto del progetto la scheda che un identificatore designa — ciò che la persona ha detto, disdetto. Il suo testo è perduto."
+      },
+      "targetSelect": {
+        "title": "Designa un bersaglio",
+        "description": "Indica nel documento aperto ciò su cui agirà il passo successivo — un livello, un oggetto della scena, una clip. Prendi l’identificatore dall’elenco dei bersagli di questo briefing; senza quell’elenco non c’è nulla da puntare."
+      },
+      "nodeMarkAsCuttingTool": {
+        "title": "Contrassegna oggetti come strumenti",
+        "description": "Contrassegna oggetti della scena in primo piano, o toglie il contrassegno con «negative» a FALSO: un oggetto contrassegnato viene SCAVATO negli altri alla piega successiva, qualunque piega sia richiesta e qualunque sia l’ordine degli identificatori. Senza contrassegno, la forma più grande è la materia."
+      },
+      "nodeCombineIntoSolid": {
+        "title": "Scava, unisci o interseca oggetti",
+        "description": "Piega più oggetti della scena in primo piano in un solo solido. L’ORDINE DEGLI IDENTIFICATORI NON CONTA: la materia è la forma più grande, a meno che matterId non la nomini, e un oggetto contrassegnato con node.markAsCuttingTool è sempre uno strumento. Le forme originali sono conservate dentro il solido e node.separate le restituisce. Risponde con l’identificatore del solido. «intersect» tiene solo la parte in cui si sovrappongono."
+      },
+      "nodeSwapSolidMatterAndTool": {
+        "title": "Inverti una piega",
+        "description": "Rifà la piega di un solido della scena in primo piano nell’altro senso: ciò che era stato scavato diventa la materia, e la materia diventa lo strumento. Per la piega che è andata al contrario, senza annullare."
+      },
+      "nodeSeparate": {
+        "title": "Separa un solido",
+        "description": "Disfa un solido della scena in primo piano e restituisce le forme di cui era fatto, ciascuna dov’era. Risponde con gli identificatori degli oggetti restituiti."
+      },
+      "modelSetBaseColorImage": {
+        "title": "Ricopri un modello con un’immagine",
+        "description": "Posa una sola immagine del progetto su tutto un modello importato, come suo colore di base — il modo semplice per vestirlo. Esclude i materiali: un modello ricoperto da un’immagine non ne porta nessuno, e viceversa. Nessun altro canale ne viene ricavato. Senza immagine, il rivestimento è tolto e il modello ritrova ciò che porta il suo file."
+      },
+      "postState": {
+        "title": "Leggi la composizione di post-elaborazione",
+        "description": "Restituisce la pila di effetti attraverso cui la scena — o la camera indicata — riprende, con l’identificatore di ogni istanza, quale effetto è, i suoi parametri, se è attiva, e se la catena la lascia fuori."
+      },
+      "postAdd": {
+        "title": "Aggiungi un effetto di post-elaborazione",
+        "description": "Posa un effetto del catalogo in fondo alla pila, sui suoi valori predefiniti. Senza camera indicata è la composizione della scena a riceverlo, quella che la vista mostra già."
+      },
+      "postRemove": {
+        "title": "Rimuovi un effetto di post-elaborazione",
+        "description": "Toglie un’istanza dalla pila, e con essa i canali della timeline che la pilotavano — lasciati lì, punterebbero a un effetto che più nulla raggiunge."
+      },
+      "postMove": {
+        "title": "Sposta un effetto nella pila",
+        "description": "Cambia la posizione di un’istanza nella catena, il che cambia l’immagine ottenuta — una correzione colore prima di un bagliore non dà lo stesso risultato di una dopo."
+      },
+      "postSet": {
+        "title": "Regola un parametro di un effetto",
+        "description": "Scrive un valore su un parametro di un’istanza, tenuto entro i limiti che il catalogo dichiara per quel parametro. Il campo da riempire dipende dalla sua natura — un numero, un interruttore o una parola."
+      },
+      "postSetEffectEnabled": {
+        "title": "Attiva o disattiva un effetto",
+        "description": "Spegne un’istanza senza rimuoverla, il che la toglie dal calcolo e non solo dall’immagine. I suoi parametri restano dove sono, pronti a essere riaccesi."
+      },
+      "postSetWholeStackEnabled": {
+        "title": "Spegni tutta la composizione",
+        "description": "Spegne o riaccende l’intera pila in una sola volta, senza perdere nulla — il Prima/Dopo, come valore del documento che l’annullamento sa riprendere."
+      },
+      "postApplyPreset": {
+        "title": "Applica una preimpostazione di post-elaborazione",
+        "description": "Sostituisce la pila con una composizione già pronta — un insieme di effetti, in un ordine, su valori che vanno d’accordo tra loro. Il documento riceve la pila stessa, mai un riferimento alla preimpostazione."
+      },
+      "postSetCameraStackMode": {
+        "title": "Stabilisci cosa fa una camera della post-elaborazione",
+        "description": "Sceglie se questa camera segue la composizione della scena, porta la propria, o non ne applica nessuna. Passare alla propria la avvia da ciò che stava già riprendendo."
+      },
+      "postListPresets": {
+        "title": "Elenca le preimpostazioni di post-elaborazione",
+        "description": "Risponde con le composizioni già pronte che lo studio fornisce e quelle salvate su questa macchina, per nome. È l’elenco che post.applyPreset accetta."
+      },
+      "postDuplicate": {
+        "title": "Duplica un effetto di post-elaborazione",
+        "description": "Posa una copia dell’effetto subito dopo di lui, sugli stessi valori e sotto un’identità nuova. Rifiutato per un effetto di cui una seconda istanza non significa nulla — un antialiasing, un’occlusione."
+      },
+      "postReset": {
+        "title": "Reimposta un effetto di post-elaborazione",
+        "description": "Riporta tutti i parametri di quell’effetto a ciò che il catalogo dichiara, senza toglierlo dalla pila né spostarlo."
+      },
+      "postAddKeyframe": {
+        "title": "Posa una chiave su un parametro di post-elaborazione",
+        "description": "Apre un canale di animazione su quel parametro se non ne ha, e vi posa una chiave alla testina. Il valore dato è quello che si vuole VEDERE, e lo scarto rispetto alla pila è calcolato qui."
+      },
+      "postRemoveKeyframe": {
+        "title": "Togli una chiave di post-elaborazione",
+        "description": "Rimuove la chiave posata alla testina su quel parametro. Il canale resta al suo posto, esattamente come quando si toglie una chiave dalla banda."
+      },
+      "postSavePreset": {
+        "title": "Salva la composizione come preimpostazione",
+        "description": "Conserva la pila in corso sotto un nome, su questa macchina. Nulla viene scritto nel documento né nel progetto."
+      },
+      "postRenamePreset": {
+        "title": "Rinomina una preimpostazione salvata",
+        "description": "Cambia il nome di una preimpostazione di questa macchina, designata dal suo identificatore o dal nome che porta. Ciò che contiene non si muove."
+      },
+      "postDeleteSavedPreset": {
+        "title": "Dimentica una preimpostazione salvata",
+        "description": "Toglie da questa macchina una preimpostazione salvata. Le composizioni già applicate non cambiano: un documento tiene la sua pila, mai un riferimento."
+      },
+      "componentAttach": {
+        "title": "Collega un componente",
+        "description": "Dà a un oggetto della scena qualcosa da FARE mentre il gioco è in corso — la sua salute, il suo movimento. È così che un oggetto si mette a muoversi da solo: node.transform lo posa una volta da qualche parte e lì resta. Rifiutato se l’oggetto ne porta già uno di quel tipo."
+      },
+      "componentDetach": {
+        "title": "Scollega un componente",
+        "description": "Toglie da un oggetto della scena il componente del tipo indicato. Rifiutato se l’oggetto non lo porta."
+      },
+      "componentSetProperties": {
+        "title": "Regola un componente",
+        "description": "Scrive un campo di un componente che l’oggetto porta. Un campo che il componente non dichiara viene ignorato."
+      },
+      "playStart": {
+        "title": "Avvia il gioco",
+        "description": "Avvia il gioco sulla scena in primo piano. Risponde subito, quindi leggi lo stato con runtime.report."
+      },
+      "playStop": {
+        "title": "Arresta il gioco",
+        "description": "Arresta il gioco e rimette la scena com’era in modifica."
+      },
+      "playPause": {
+        "title": "Metti il gioco in pausa",
+        "description": "Sospende il gioco senza uscirne. Richiesto prima di play.step."
+      },
+      "playResume": {
+        "title": "Riprendi il gioco",
+        "description": "Riparte da dove la pausa ha lasciato il gioco, senza recuperare il tempo rimasto fermo."
+      },
+      "playLoadScene": {
+        "title": "Manda il gioco in un’altra scena",
+        "description": "Carica un’altra scena del progetto nel gioco in corso, con una dissolvenza facoltativa. La scena si indica con il suo titolo o il suo identificatore."
+      },
+      "playStep": {
+        "title": "Avanza il gioco di un passo",
+        "description": "Fa avanzare un gioco IN PAUSA di uno o più passi fissi e risponde con il suo stato. È così che si prende una misura senza correre."
+      },
+      "runtimeReport": {
+        "title": "Leggi lo stato del gioco",
+        "description": "Risponde con il tick, la cadenza, il numero di entità, quanti errori ci sono e le ultime righe che il gioco ha scritto."
+      },
+      "runtimeErrors": {
+        "title": "Leggi le anomalie del gioco",
+        "description": "Risponde con le anomalie INDIRIZZABILI — il riferimento dello script, quello dell’entità, la riga e la colonna."
+      },
+      "scriptList": {
+        "title": "Elenca gli script",
+        "description": "Risponde con tutti gli script del progetto, con il loro riferimento e la loro lunghezza."
+      },
+      "scriptRead": {
+        "title": "Leggi uno script",
+        "description": "Risponde con il testo di uno script, compreso ciò che non è ancora stato salvato."
+      },
+      "scriptWrite": {
+        "title": "Scrivi uno script",
+        "description": "Scrive uno script nel progetto. Rifiutato, con la riga, se il file non compila."
+      },
+      "studioDescribe": {
+        "title": "Descrivi ciò che è in primo piano",
+        "description": "Risponde con la scena, un oggetto, i suoi componenti con il loro schema, le sue relazioni e ciò che gli si può ancora aggiungere."
+      },
+      "studioDocs": {
+        "title": "Leggi le impostazioni documentate di un componente o di uno script",
+        "description": "Risponde con la porzione di documentazione che risponde a una domanda — un componente, o la superficie che uno script vede."
+      },
+      "studioBatch": {
+        "title": "Esegui un lotto di chiamate",
+        "description": "Esegue un lotto di chiamate come una sola, con una sola domanda. Si ferma al primo rifiuto."
+      },
+      "timelineAddSceneCue": {
+        "title": "Posiziona un evento, un media o una dissolvenza sulla timeline",
+        "description": "Aggiunge un evento, un suono, un video o una transizione alla timeline della SCENA 3D. Un evento è un NOME diffuso sul bus al momento indicato, che uno script ascolta tramite onMessage — è così che si fa accadere qualcosa in un punto di una cinematica, anziché posando chiavi di animazione. Una dissolvenza di cinematica si posa qui, con list=transitions e what=fade. Ciò che il terzo campo designa dipende dall’elenco — un nome di evento, un identificatore di asset, o un tipo di transizione. Per una dissolvenza su una clip di un montaggio, si usa clip.fade."
+      },
+      "timelineRemoveSceneCue": {
+        "title": "Togli un marcatore dalla timeline",
+        "description": "Toglie un marcatore dalla timeline della SCENA 3D — un evento, un suono, un video o una transizione, tra cui una dissolvenza di cinematica. L’identificatore si legge nel membro cues che scene.state restituisce, e da nessun’altra parte. Per togliere una dissolvenza da una clip di un montaggio, si usa clip.fade con una lunghezza nulla."
+      },
+      "timelineSetPanelRows": {
+        "title": "Scegli cosa offre la timeline",
+        "description": "Decide quali righe il pannello propone. Non toglie mai nulla al motore, che riproduce tutta la timeline in ogni caso."
+      },
+      "gameApplyTemplate": {
+        "title": "Posa un modello di gioco",
+        "description": "Posa nella scena aperta il pavimento, il personaggio e gli oggetti di un tipo di gioco, e con essi regola la camera e la gravità. Un solo annullamento riporta tutto indietro."
+      },
+      "gameExport": {
+        "title": "Esporta il gioco",
+        "description": "Scrive in una cartella un gioco che funziona in un browser senza lo studio, con la pagina, il runtime, le scene, gli script transpilati e i soli asset che raggiungono."
+      },
+      "prefabDefine": {
+        "title": "Nomina un prefab",
+        "description": "Iscrive una scena del progetto in game.json come pezzo riutilizzabile, sotto il nome dato. Senza documento indicato, è la scena in primo piano."
+      },
+      "prefabInstantiate": {
+        "title": "Istanzia un prefab",
+        "description": "Posa nella scena aperta gli oggetti di un altro documento di scena del progetto, con identificatori nuovi, nel punto richiesto. Un gioco già IN CORSO si manda in un’altra scena con play.loadScene, cosa che questo non fa."
+      },
+      "memoryRecall": {
+        "title": "Ritrova ciò che è stato appreso",
+        "description": "Cerca ciò che l’assistente ha CONSTATATO lavorando e risponde con i riassunti trovati, con i loro identificatori. Ciò che la persona ha detto del progetto vive nelle schede di contesto."
+      },
+      "memoryRead": {
+        "title": "Leggi una memoria per intero",
+        "description": "Risponde con il DETTAGLIO di una memoria — a cosa si riferisce e da dove viene — a partire da un identificatore che memory.recall restituisce. Il richiamo dà i riassunti; questo è ciò che chiede «dammi il dettaglio»."
+      },
+      "memoryWrite": {
+        "title": "Ricorda qualcosa del progetto",
+        "description": "Annota una regola di lavoro di questo progetto, o qualcosa che l’assistente ha constatato agendo — come si fa qui una cosa, a cosa serve un file o un oggetto. Ciò che la persona dice che il progetto È o MIRA A è invece una scheda di contesto. Sostituisce quella che portava già lo stesso riferimento."
+      },
+      "memoryForget": {
+        "title": "Dimentica una memoria",
+        "description": "Contrassegna come dimenticato ciò che l’assistente aveva constatato. Nulla viene cancellato dal file: ciò che è stato appreso resta tracciabile."
+      },
+      "memoryLink": {
+        "title": "Collega due memorie",
+        "description": "Aggiunge un collegamento da una memoria a un’altra, per dire che l’una illumina l’altra."
+      }
+    },
+    "consent": {
+      "ask": " Chiedi alla persona per cui agisci, poi rinvia la stessa chiamata con il suo parametro consent impostato su {{token}}. Il token è monouso, dura 5 minuti, e risponde solo per questa chiamata.",
+      "askInLot": " Chiedi alla persona per cui agisci, poi rinvia lo stesso lotto con un campo consent impostato su {{token}} dentro l’input di QUESTA chiamata. Il token è monouso, dura 5 minuti, e risponde solo per questa chiamata."
+    },
+    "refusals": {
+      "unknownCommand": "Questo comando non esiste nello studio.",
+      "wrongSurface": "Nessuna superficie dello studio era lì a ricevere quel comando. Apri il documento o il pannello a cui si rivolge.",
+      "generatorClosed": "Il Generatore non era aperto. Ora lo è.",
+      "nothingPrepared": "Il Generatore non ha nessun modello armato al momento.",
+      "notSubmitted": "La generazione non è partita.",
+      "badInput": "I parametri forniti non sono adatti a questa azione.",
+      "noBridge": "Lo studio non risponde.",
+      "noProject": "Nessun progetto è aperto, e questi percorsi sono relativi a un progetto.",
+      "noConfirmer": "Questa azione richiede un consenso, e nessuna finestra era lì a darlo.",
+      "declined": "Hai rifiutato questa azione.",
+      "noWindow": "Nessuna finestra dello studio era in primo piano per eseguire questa azione.",
+      "timedOut": "La richiesta è rimasta sullo schermo senza risposta, ed è stata abbandonata.",
+      "noReference": "Il modulo non porta nessuna immagine di riferimento da cui leggere uno stile.",
+      "ambiguousLanding": "Due destinazioni sono possibili e lo studio avrebbe posto la domanda, ma una chiamata venuta dall’esterno non ha uno schermo per farla. Indicane una: la scelta sbagliata sovrascrive un file aperto.",
+      "formChanged": "Il modulo è cambiato dopo l’annuncio del costo. Nulla è stato inviato — chiedi di nuovo per avere una cifra aggiornata.",
+      "notFound": "Nulla con quel nome è lì a ricevere questa azione. La chiamata, in sé, era ben formata.",
+      "notAllowed": "Lo studio non lascia che una chiamata venuta dall’esterno cambi questo. Solo la sua stessa finestra lo fa.",
+      "nativeDialog": "Questo comando apre una finestra di sistema: l’assistente non può né compilarla né rileggerla. Usa l’azione che prende un percorso.",
+      "notRenderable": "Il documento in primo piano non ha nulla che questo possa produrre — un cielo vuoto, un materiale senza canale, o un motore che non è montato.",
+      "needsConsent": "Nulla è stato avviato: questa chiamata richiede un token di consenso. Il rifiuto ne porta uno nuovo, e la stessa chiamata rinviata con esso viene eseguita.",
+      "failed": "Lo studio ha provato e non è andata a buon fine. Il motivo è nel suo registro delle attività, e non erano i parametri."
+    },
+    "models": {
+      "claude-haiku-4-5": "Haiku 4.5 — il più rapido e il meno costoso",
+      "claude-sonnet-4-6": "Sonnet 4.6 — l’equilibrio",
+      "claude-opus-4-8": "Opus 4.8 — il più affidabile su più passaggi",
+      "gemini-3.5-flash": "Gemini 3.5 Flash — l’alternativa rapida"
+    },
+    "fields": {
+      "command": "Identificatore del comando",
+      "consent": "Token di un rifiuto needsConsent precedente. Monouso, 5 minuti, risponde solo per questa chiamata",
+      "workspace": "Area di lavoro",
+      "createDocument": "Crea un documento",
+      "query": "Parole chiave",
+      "family": "Famiglia di generazione",
+      "modelId": "Identificatore del modello",
+      "aiOperation": "Operazione sul modello locale",
+      "aiRole": "Ruolo IA",
+      "aiScope": "Ambito della scelta",
+      "aiProfile": "Profilo del runtime locale",
+      "operation": "Operazione, es. code2code",
+      "parameters": "Parametri del modello",
+      "landing": "Dove va il risultato",
+      "draft": "Frase da rielaborare",
+      "text": "Testo da tradurre",
+      "generationInstruction": "Istruzione per la prossima generazione",
+      "commentAction": "Aggiungi, aggiorna o rimuovi",
+      "commentId": "Identificatore del commento di generazione",
+      "commentOutline": "Poligono facoltativo, elenco di punti {x, y} del documento",
+      "documentId": "Identificatore del documento",
+      "title": "Titolo",
+      "name": "Nome",
+      "limit": "Numero massimo di voci",
+      "filePath": "Percorso dentro il progetto, con / tra i segmenti",
+      "filePaths": "Percorsi dentro il progetto, con / tra i segmenti",
+      "folderPath": "Percorso della cartella",
+      "template": "Ciò su cui si apre la scena",
+      "hidden": "Includi le voci nascoste",
+      "jobId": "Identificatore del lavoro",
+      "taskId": "Identificatore del lavoro locale",
+      "panel": "Pannello dello studio",
+      "discard": "Scarta ciò che è stato sentito",
+      "viewDirection": "Lato da cui guardare",
+      "displayMode": "Modo in cui la scena è disegnata",
+      "settingsAction": "Pulsante delle impostazioni",
+      "boneName": "Nome dell’osso",
+      "parentBone": "Osso a cui agganciarlo",
+      "boneRole": "Giunto dello standard umanoide",
+      "chainId": "Identificatore della catena",
+      "fps": "Fotogrammi al secondo",
+      "autoKey": "Posa una chiave a ogni spostamento",
+      "timeoutMs": "Attesa massima, in millisecondi",
+      "days": "Finestra in giorni",
+      "assetId": "Identificatore dell’asset",
+      "assetIds": "Identificatori degli asset",
+      "assetType": "Tipo di asset",
+      "tags": "Tag",
+      "generated": "Solo ciò che è stato generato",
+      "offset": "Numero di voci da saltare",
+      "alsoRemote": "Rimuovi anche dalla libreria remota",
+      "layerId": "Identificatore del livello",
+      "dpi": "Risoluzione di stampa, in punti per pollice",
+      "colorMode": "Modalità colore",
+      "bitDepth": "Profondità di bit",
+      "localId": "Identificatore del candidato IA locale",
+      "layerIds": "Identificatori dei livelli",
+      "exportFolder": "Nome di una cartella del progetto in cui scrivere; in mancanza, lo chiede un selettore",
+      "generateLods": "Genera i livelli di distanza (possibili cambiamenti visivi)",
+      "geometrySimplification": "Semplificazione della geometria — disattivata, prudente, equilibrata o aggressiva",
+      "textureCompression": "Compressione delle immagini con perdita — disattivata, prudente, equilibrata o aggressiva",
+      "textureReduction": "Risoluzione delle immagini — originale, metà o un quarto",
+      "exportFormat": "Formato del file 3D",
+      "exportScope": "Tutta la scena, o la selezione",
+      "exportTarget": "Motore a cui è destinata l’esportazione del materiale",
+      "faceSize": "Lato di una faccia, in pixel",
+      "conflictSide": "Lato del conflitto da tenere",
+      "remoteName": "Nome del repository remoto",
+      "remoteUrl": "Indirizzo del repository remoto",
+      "setUpstream": "Collega il ramo al remoto",
+      "cursor": "Cursore di pagina, ripreso tale e quale dalla pagina precedente",
+      "order": "Ordine dei risultati: i più recenti, o i più pertinenti — il che richiede parole da cercare",
+      "syncPolicy": "Verso della sincronizzazione",
+      "styleId": "Identificatore dello stile",
+      "favoriteId": "Identificatore della ricetta",
+      "settingsSection": "Sezione delle impostazioni",
+      "exposure": "Esposizione, in stop",
+      "contrast": "Contrasto, con 1 come valore neutro",
+      "saturation": "Saturazione, con 1 come valore neutro",
+      "temperature": "Temperatura, da -1 freddo a +1 caldo",
+      "tint": "Tinta, da -1 verde a +1 magenta",
+      "blur": "Ammorbidimento, da 0 nitido a 1 sfocato",
+      "elevation": "Elevazione, in radianti",
+      "azimuth": "Azimut, in radianti",
+      "showBackground": "Disegna l’immagine dietro il soggetto",
+      "autoSpin": "Fai ruotare l’anteprima da sola",
+      "showSeam": "Porta le cuciture al centro dell’anteprima",
+      "pbrChannel": "Canale del materiale",
+      "normalScale": "Intensità del rilievo",
+      "heightScale": "Intensità dello spostamento",
+      "aoIntensity": "Intensità dell’occlusione",
+      "edgeIntensity": "Intensità dello scurimento degli spigoli",
+      "emissive": "Colore emesso",
+      "emissiveIntensity": "Intensità dell’emissione",
+      "tilingX": "Ripetizioni in larghezza",
+      "tilingY": "Ripetizioni in altezza",
+      "offsetX": "Scostamento in larghezza",
+      "offsetY": "Scostamento in altezza",
+      "invertNormalGreen": "Inverti il canale verde del rilievo",
+      "clipId": "Identificatore della clip",
+      "trackId": "Identificatore della traccia",
+      "trackKind": "Contenuto della traccia",
+      "clipEdge": "Bordo della clip, attacco o stacco",
+      "time": "Istante sul montaggio, in microsecondi",
+      "start": "Inizio sul montaggio, in microsecondi",
+      "at": "Istante mirato, in microsecondi",
+      "fadeLength": "Lunghezza della dissolvenza, in microsecondi",
+      "gain": "Livello, in decibel",
+      "speed": "Velocità di riproduzione, 1 essendo l’originale",
+      "by": "Numero di righe, negativo per abbassare",
+      "muted": "Traccia in muto",
+      "solo": "Unica traccia udibile",
+      "locked": "Traccia bloccata",
+      "layerKind": "Tipo di livello",
+      "adjustment": "Manopola che porta il livello",
+      "parentId": "Gruppo in cui spostarlo",
+      "index": "Posizione nella pila, contata dal basso",
+      "nodeIndex": "Posizione tra gli oggetti dello stesso livello, contata dall’alto dell’elenco",
+      "opacity": "Opacità, da 0 a 1",
+      "fillOpacity": "Opacità del riempimento, da 0 a 1",
+      "blend": "Metodo di fusione",
+      "visible": "Visibile",
+      "clipped": "Ritagliato dal livello sottostante",
+      "x": "X, in coordinate del documento",
+      "y": "Y, in coordinate del documento",
+      "scaleX": "Scala in larghezza",
+      "scaleY": "Scala in altezza",
+      "rotation": "Rotazione, in gradi",
+      "fontSize": "Corpo del testo",
+      "colour": "Colore, in #rrggbb",
+      "pixelArtEnabled": "Modalità pixel art",
+      "columns": "Colonne",
+      "rows": "Righe",
+      "cell": "Dimensione della cella",
+      "pixelShape": "Forma",
+      "cells": "Celle",
+      "toX": "X di arrivo",
+      "toY": "Y di arrivo",
+      "filled": "Pieno",
+      "erase": "Cancella",
+      "width": "Larghezza",
+      "height": "Altezza",
+      "align": "Allineamento del testo",
+      "lineHeight": "Interlinea, in multipli del corpo",
+      "tracking": "Spaziatura, in millesimi di em",
+      "shape": "Forma da tracciare",
+      "sides": "Numero di punte",
+      "fill": "Colore di riempimento, in 0xrrggbb",
+      "scalePixels": "Ridimensiona i livelli insieme al riquadro",
+      "turn": "Verso del capovolgimento o della rotazione",
+      "nodeId": "Identificatore dell’oggetto",
+      "nodeIds": "Identificatori degli oggetti",
+      "optimizationMode": "Modalità di ottimizzazione del runtime",
+      "matterId": "Identificatore della forma da scavare",
+      "negative": "Vero lo contrassegna come strumento di taglio, falso toglie il contrassegno",
+      "nodeKind": "Cosa aggiungere",
+      "relative": "A vero, i valori sono VARIAZIONI e non valori finali: posizione e rotazione si SOMMANO a ciò che c’è, scala e intensità lo MOLTIPLICANO. Un metro più in alto si scrive positionY 1 con relative vero; della metà si scrive scaleX 0.5 con relative vero",
+      "positionX": "Posizione in larghezza",
+      "positionY": "Posizione in altezza",
+      "positionZ": "Posizione verso l’osservatore",
+      "rotationX": "Rotazione attorno a X, in radianti",
+      "rotationY": "Rotazione attorno a Y, in radianti",
+      "rotationZ": "Rotazione attorno a Z, in radianti",
+      "scaleZ": "Scala in profondità",
+      "material": "Materiale",
+      "roughness": "Rugosità, da 0 a 1",
+      "metalness": "Metallicità, da 0 a 1",
+      "intensity": "Intensità",
+      "fov": "Campo visivo, in gradi",
+      "near": "Distanza vicina",
+      "far": "Distanza lontana",
+      "startSeconds": "Inizio dell’inquadratura, in secondi",
+      "durationSeconds": "Durata dell’inquadratura, in secondi — almeno un fotogramma",
+      "shotId": "Identificatore dell’inquadratura",
+      "pathId": "Identificatore del percorso, o nulla per non spostare più la camera",
+      "railFrom": "Partenza sul percorso, da 0 a 1",
+      "railTo": "Arrivo sul percorso, da 0 a 1",
+      "easing": "Curva di velocità lungo il percorso",
+      "targetId": "Oggetto che la camera inquadra, o nulla per lasciarla libera",
+      "gitPath": "Percorso nel repository",
+      "gitPaths": "Percorsi nel repository",
+      "commitHash": "Identificatore della versione",
+      "skip": "Quante voci saltare",
+      "message": "Messaggio",
+      "amend": "Corregge l’ultima versione invece di aggiungerne una",
+      "branchName": "Nome del ramo",
+      "tagName": "Nome dell’etichetta",
+      "stashIndex": "Posizione nella pila, la più recente per prima",
+      "settings": "Impostazioni da cambiare, per sezione",
+      "accountId": "Identificatore dell’account",
+      "lockPixels": "Blocca i pixel del livello",
+      "lockPosition": "Blocca la posizione del livello",
+      "lockAlpha": "Blocca la trasparenza del livello",
+      "shapeFilled": "La forma è riempita",
+      "shapeFill": "Colore di riempimento, in #rrggbb",
+      "shapeStroked": "La forma ha un contorno",
+      "shapeStroke": "Colore del contorno, in #rrggbb",
+      "strokeWidth": "Spessore del contorno, in pixel",
+      "fontFamily": "Nome del carattere, così come lo riporta l’elenco dei caratteri",
+      "fontSource": "Provenienza del carattere, fornito con lo studio o installato sulla macchina",
+      "environmentKind": "Origine dell’illuminazione: lo studio, un’immagine o un cielo",
+      "backgroundKind": "Ciò che sta dietro: l’ambiente, un colore, o nulla",
+      "fogKind": "Forma della nebbia: nessuna, lineare o esponenziale",
+      "fogDensity": "Densità della nebbia esponenziale",
+      "groundSize": "Lato del piano di terra, in unità di scena",
+      "receiveShadow": "Il piano di terra riceve le ombre",
+      "worldLayers": "Elenco completo delle voci di terreno e di dispersione",
+      "toneMapping": "Come la gamma dinamica alta viene riportata sullo schermo",
+      "toneExposure": "Moltiplicatore di esposizione del rendering, 1 lo lascia com’è",
+      "depth": "Profondità",
+      "radius": "Raggio",
+      "radiusTop": "Raggio superiore, 0 dà un cono",
+      "radiusBottom": "Raggio inferiore",
+      "innerRadius": "Raggio interno",
+      "outerRadius": "Raggio esterno",
+      "tube": "Raggio del tubo",
+      "segments": "Segmenti attorno all’asse",
+      "capSegments": "Segmenti di una calotta",
+      "radialSegments": "Segmenti attorno al tubo",
+      "widthSegments": "Segmenti in longitudine",
+      "heightSegments": "Segmenti in latitudine",
+      "tubularSegments": "Segmenti lungo il tubo",
+      "p": "Giri attorno all’asse del nodo",
+      "q": "Giri attorno al toro",
+      "castShadow": "L’oggetto proietta un’ombra",
+      "skyColour": "Colore proveniente dal cielo, in #rrggbb",
+      "groundColour": "Colore proveniente dal terreno, in #rrggbb",
+      "distance": "Portata oltre la quale la luce non arriva più, 0 senza limite",
+      "decay": "Velocità di attenuazione con la distanza, 2 è il valore fisico",
+      "angle": "Semiapertura del cono, in radianti",
+      "penumbra": "Sfumatura del bordo del cono, da 0 netto a 1 diffuso",
+      "targetX": "Bersaglio in larghezza",
+      "targetY": "Bersaglio in altezza",
+      "targetZ": "Bersaglio verso l’osservatore",
+      "tilesPerMetre": "Ripetizioni delle mappe al metro",
+      "textures": "Mappe per slot, un identificatore vuoto toglie quella che c’era",
+      "map": "Identificatore dell’immagine, o nulla per non metterne alcuna",
+      "inputMap": "Mappa dei comandi di tastiera e gamepad convalidata",
+      "animationGraph": "Grafo di animazione convalidato",
+      "value": "Parole da scrivere",
+      "textSize": "Corpo delle lettere, in unità di scena",
+      "textDepth": "Spessore in rilievo delle lettere, 0 le lascia piatte",
+      "curveSegments": "Finezza di suddivisione delle curve",
+      "tension": "Tensione del percorso, da 0 spigoloso a 1 arrotondato",
+      "closed": "Il percorso si richiude su sé stesso",
+      "pointIndex": "Indice del punto di controllo, contato dal primo",
+      "pointX": "Punto in larghezza",
+      "pointY": "Punto in altezza",
+      "pointZ": "Punto verso l’osservatore",
+      "clipSource": "Provenienza del movimento, il file del modello, le animazioni fornite, o la libreria del progetto",
+      "clipName": "Nome del movimento, così come lo riporta l’elenco delle animazioni",
+      "offsetSeconds": "Punto di partenza all’interno del movimento, in secondi",
+      "clipLoop": "Il blocco si ripete senza fine",
+      "clipFade": "Durata della dissolvenza ai due estremi del blocco, in secondi",
+      "rootMotion": "Ciò che il blocco fa dello spostamento della radice",
+      "bodyPart": "Parte del corpo che il blocco pilota",
+      "channelId": "Identificatore del canale di animazione",
+      "timeSeconds": "Istante sulla banda, in secondi, altrimenti la testina",
+      "trackProperty": "Canale interessato, altrimenti tutti quelli del soggetto",
+      "fromSeconds": "Istante di partenza, in secondi",
+      "toSeconds": "Istante di arrivo, in secondi",
+      "maskEnabled": "La maschera nasconde ciò che copre",
+      "maskLinked": "La maschera segue il livello quando si sposta",
+      "maskRemove": "Toglie la maschera dal livello",
+      "guideId": "Identificatore della guida",
+      "guideAxis": "Direzione della guida, verticale su x o orizzontale su y",
+      "guidePosition": "Posizione della guida, in coordinate del documento",
+      "helpPage": "Finestra di aiuto da aprire",
+      "captureQuality": "Definizione della cattura, altrimenti quella della vista stessa",
+      "environmentPreset": "Mondo già pronto da applicare",
+      "skyDocument": "Titolo del documento cielo che la scena segue",
+      "skyboxView": "Proiezione con cui guardare il cielo",
+      "fieldOfView": "Apertura dell’obiettivo, in gradi",
+      "probes": "Mostra gli oggetti di prova posti nel cielo",
+      "roughnessMin": "Minimo della rugosità in cui la mappa viene rimappata",
+      "roughnessMax": "Massimo della rugosità in cui la mappa viene rimappata",
+      "metalnessMin": "Minimo della metallicità in cui la mappa viene rimappata",
+      "metalnessMax": "Massimo della metallicità in cui la mappa viene rimappata",
+      "previewShape": "Forma su cui giudicare il materiale",
+      "tilingPreview": "Moltiplicatore di ripetizione dell’anteprima, 1, 2 o 4",
+      "cardId": "Identificatore della scheda",
+      "cardTitle": "Titolo della scheda",
+      "cardBody": "Testo della scheda",
+      "cardActive": "La scheda si applica",
+      "aimId": "Identificatore del bersaglio",
+      "csgOperation": "Che cosa farne",
+      "materialSlot": "Slot del materiale",
+      "postCameraId": "Identificatore della camera di cui si regola la composizione — se assente, quella della scena",
+      "postEffectId": "Identificatore dell’istanza nella pila",
+      "postEffect": "Effetto del catalogo da inserire",
+      "postBy": "Di quante posizioni spostare l’effetto, negativo per anticiparlo",
+      "postParam": "Nome del parametro da regolare",
+      "postValue": "Valore numerico del parametro",
+      "postText": "Valore testuale del parametro — una parola di un elenco, un colore, un identificatore di asset",
+      "postOn": "Valore di un parametro che è un interruttore",
+      "postEnabled": "Vero accende tutta la composizione, falso la spegne",
+      "postPreset": "Preset da applicare",
+      "postMode": "Ciò che la camera fa della composizione della scena",
+      "postPresetName": "Nome da dare al preset",
+      "componentType": "Tipo di componente",
+      "componentField": "Campo",
+      "componentValue": "Valore",
+      "scriptPath": "Percorso dello script",
+      "scriptSource": "Testo dello script",
+      "describeRef": "Riferimento da descrivere",
+      "docsTopic": "Argomento",
+      "batchCalls": "Chiamate (JSON)",
+      "fixedSteps": "Passi fissi",
+      "sceneToLoad": "Scena da caricare",
+      "fadeSeconds": "Dissolvenza, in secondi",
+      "timelineList": "Elenco",
+      "timelineAt": "Istante, in microsecondi",
+      "timelineWhat": "Che cosa",
+      "timelineDuration": "Durata, in microsecondi",
+      "timelineRowId": "Identificatore della riga",
+      "timelineTemplate": "Ciò che la timeline offre",
+      "gameTemplate": "Modello di gioco",
+      "prefabRef": "Prefab da istanziare",
+      "prefabName": "Nome del prefab",
+      "prefabSource": "Scena da trasformare in prefab",
+      "entryScene": "Scena iniziale",
+      "gameTitle": "Titolo del gioco",
+      "memoryQuery": "Ciò che si cerca",
+      "memoryLimit": "Quanti al massimo",
+      "memoryId": "Identificatore della memoria",
+      "memoryType": "Natura della memoria",
+      "memorySummary": "Riassunto in una frase",
+      "memoryBody": "Il dettaglio",
+      "memoryImportance": "Importanza, da 1 a 5",
+      "memoryFile": "File del progetto a cui si riferisce",
+      "memoryTo": "Identificatore della memoria indicata",
+      "projectName": "Nome del progetto",
+      "projectParent": "Creato in",
+      "socket": "Punto di aggancio"
+    },
+    "listening": "L’assistente ti ascolta",
+    "done": "L’assistente ha risposto",
+    "reviewHint": "Apre l’assistente su ciò che ha capito e su ciò che ha fatto",
+    "dismissHint": "Rimuove questo promemoria. Ciò che l’assistente ha fatto resta nella sua finestra",
+    "empty": "Di’ che cosa vuoi fare, e l’assistente se ne occupa.",
+    "placeholder": "Apri un file 3D, cerca un modello, prepara una generazione…",
+    "send": "Invia",
+    "sendHint": "Invia la frase all’assistente, che sceglie le azioni e le esegue",
+    "tokens": "{{prompt, number}} token letti · {{reply, number}} scritti",
+    "chooseHint": "Risponde alla domanda e lascia continuare l’assistente",
+    "answerBelow": "Rispondi qui sotto, nel campo",
+    "answerLabel": "Risposta",
+    "noteLabel": "Nota",
+    "sendAnswers": "Invia le risposte",
+    "sendAnswersHint": "Restituisce tutte le risposte in una volta e lascia continuare l’assistente",
+    "skipChoice": "Lascia perdere",
+    "skipChoiceHint": "Chiude la domanda senza rispondere: l’assistente si ferma lì",
+    "contextOf": "{{read}} / {{window}}",
+    "contextUnknown": "{{read}}",
+    "contextGauge": "Contesto letto",
+    "contextHint": "Ciò che l’ultimo scambio ha fatto leggere al modello, su ciò che legge in una sola volta",
+    "contextHintChars": "Ciò che l’ultimo scambio ha inviato, su ciò che questa porta accetta in una sola volta — in caratteri, non in token",
+    "contextHintUnknown": "Questa porta non dice che cosa legge in una sola volta: il conteggio è reale, il rapporto sarebbe inventato",
+    "contextHintAssumed": "Questo limite è un ripiego dichiarato: la porta non ha potuto leggere il proprio schema",
+    "thinking": "L’assistente sta riflettendo…",
+    "workingRound": "L’assistente sta lavorando — passo {{round}}",
+    "stopping": "Arresto in corso — lo studio termina ciò che è in esecuzione…",
+    "stop": "Arresta",
+    "stopHint": "Arresta l’assistente dopo l’azione in corso; nulla di ciò che è già stato fatto viene annullato",
+    "stepAnswered_one": "{{count, number}} risultato",
+    "stepAnswered_many": "{{count, number}} risultati",
+    "stepAnswered_other": "{{count, number}} risultati",
+    "ending": {
+      "halted": "L’assistente si è fermato qui: troppi passi per una sola richiesta. Chiedigli di continuare, oppure alza il limite nelle impostazioni.",
+      "stopped": "Hai fermato qui l’assistente."
+    },
+    "lost": "L’assistente non ha saputo rispondere a questa richiesta.",
+    "refused": "{{action}} — {{reason}}",
+    "confirm": {
+      "credits": "Questa azione spenderà {{cost}}.",
+      "value": "{{label}}: {{value}}",
+      "unknownCost": "Questa azione spenderà sul tuo account. Lo studio non ha potuto stimarne l’importo, e non se lo inventa.",
+      "noCost": "Questa azione non spende nulla: il modello gira su questa macchina, oppure il suo prezzo è zero.",
+      "files": "Questa azione modificherà ciò che contiene il tuo progetto — dei file, o gli asset della sua libreria. Non spende nulla.",
+      "asset": "Questa azione caricherà un’immagine, che poi resterà nella tua libreria. Non spende nulla.",
+      "remote": "Questa azione pubblicherà su un server, fuori da questa macchina. Non spende nulla, e nulla qui la riprende.",
+      "studio": "Questa azione cambia lo stato dello studio, e nessun ⌘Z lo riporta indietro. Non spende nulla.",
+      "yes": "Consenti",
+      "pickFolder": "Scegli…",
+      "pickFolderHint": "Apre il selettore di sistema, e l’azione userà la cartella scelta lì",
+      "yesHint": "Esegue l’azione descritta sopra, e impegna ciò che impegna",
+      "no": "Non consentire",
+      "noHint": "Non esegue nulla, e l’assistente ne tiene conto per il seguito",
+      "on": "Sì",
+      "off": "No",
+      "pickUnset": "dove tieni i tuoi progetti"
+    },
+    "starters": {
+      "projectOpen": "Apri un progetto recente",
+      "projectCreate": "Crea un nuovo progetto",
+      "projectFind": "Trova un documento nel progetto",
+      "projectChanges": "Che cosa è cambiato nel progetto?",
+      "projectCommit": "Registra una versione del progetto",
+      "libraryFind": "Cerca un’immagine nella libreria",
+      "imageMake": "Genera un’immagine",
+      "imageRework": "Ritocca un’immagine del progetto",
+      "imageUpscale": "Fai l’upscale di un’immagine",
+      "imageVariant": "Genera una variante di questa immagine",
+      "imageText": "Aggiungi un livello di testo",
+      "imageResize": "Ridimensiona questo documento a 1080 per 1080",
+      "videoMake": "Genera un video",
+      "videoFromImage": "Anima un’immagine",
+      "videoCut": "Monta una sequenza",
+      "videoAppend": "Aggiungi un video di seguito",
+      "videoVolume": "Abbassa il volume della musica",
+      "videoExport": "Esporta il montaggio",
+      "meshMake": "Genera un modello 3D",
+      "meshFromImage": "Crea un modello 3D da un’immagine",
+      "meshRig": "Prepara uno scheletro",
+      "sceneShape": "Aggiungi un cubo al centro della scena",
+      "sceneLight": "Aggiungi una luce direzionale",
+      "sceneCamera": "Aggiungi una camera",
+      "scriptMake": "Scrivi uno script per un’entità",
+      "scriptExplain": "Spiega questo script",
+      "scriptFix": "Correggi gli errori dello script",
+      "scriptRun": "Avvia il gioco che sto scrivendo",
+      "scriptAttach": "Attacca un componente a un’entità",
+      "scriptProblems": "Mostra i problemi dello script",
+      "audioMake": "Genera un suono",
+      "audioFromVideo": "Estrai il suono da un video",
+      "audioTrim": "Rifila una clip audio",
+      "audioTrack": "Aggiungi un suono su una nuova traccia",
+      "audioVolume": "Abbassa il volume di tutto il montaggio",
+      "audioExport": "Esporta il montaggio audio",
+      "materialMake": "Genera un materiale",
+      "materialFromImage": "Crea un materiale da un’immagine",
+      "materialTile": "Rendi un materiale ripetibile",
+      "materialAssign": "Assegna questo materiale a un modello",
+      "materialTexture": "Usa un’immagine del progetto come colore di base",
+      "materialExport": "Esporta il materiale",
+      "skyboxMake": "Genera un cielo",
+      "skyboxRelight": "Cambia la luce di un cielo",
+      "skyboxExport": "Esporta un cielo",
+      "skyboxSun": "Sposta il sole",
+      "skyboxApply": "Applica questo cielo alla mia scena",
+      "skyboxOpen": "Apri una skybox del progetto"
+    },
+    "unserved": "Nessun modello risponde per l’assistente. Scegline uno e potrà lavorare qui.",
+    "chooseModelHint": "Apre il gestore di IA, dove si sceglie il modello dell’assistente.",
+    "brain": "Chi risponde",
+    "brainHint": "Sceglie ciò che legge le tue frasi: un modello su questa macchina, un servizio di cui hai la chiave, o lo studio. La stessa scelta delle impostazioni Modelli di IA.",
+    "brainNone": "nulla di scelto",
+    "cloudBrain": "{{cloud}} — {{model}}",
+    "groupMachine": "Su questa macchina",
+    "groupClouds": "Le tue chiavi",
+    "groupStudio": "Lo studio",
+    "suggestions": "Che cosa puoi chiedere",
+    "starterHint": "Scrive la frase nel campo. Nulla viene inviato finché non lo fai tu.",
+    "completeHint": "Completa la frase in grigio con {{accept}}, o con la freccia destra",
+    "completing": "{{sentence}} — {{accept}} o {{arrow}} per completare",
+    "suggested_one": "{{count, number}} richiesta proposta",
+    "suggested_many": "{{count, number}} richieste proposte",
+    "suggested_other": "{{count, number}} richieste proposte",
+    "missionEvent": {
+      "mission": {
+        "created": "Missione creata",
+        "planning": "Pianificazione della missione",
+        "ready": "Missione pronta",
+        "running": "Missione in corso",
+        "waiting": "Missione in attesa",
+        "completed": "Missione completata",
+        "failed": "Missione non riuscita",
+        "cancelled": "Missione annullata"
+      },
+      "step": "Compito",
+      "action": "Azione dello studio",
+      "job": "Generazione",
+      "user": "In attesa della tua risposta",
+      "child": "Sotto-missione",
+      "verify": "Verifica"
+    }
+  }
+}

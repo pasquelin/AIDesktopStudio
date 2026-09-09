@@ -1,0 +1,20 @@
+{
+  "memoryWorth": {
+    "scriptWrite": "脚本 {{path}} 由助手编写",
+    "prefabDefine": "“{{name}}”是本项目的一个预制体",
+    "styleSave": "“{{name}}”是一种解读材质的方式，已为本项目保存",
+    "postSave": "“{{name}}”是为本项目保存的后期处理预设",
+    "animationAdd": "动画“{{clipName}}”已添加到该绑定上",
+    "gitCommit": "已决定并记录到 git 中：{{message}}"
+  },
+  "memoryTypes": {
+    "decision": "决定",
+    "architecture": "架构",
+    "feature": "功能",
+    "entity": "实体",
+    "script": "脚本",
+    "problem": "问题",
+    "intent": "意图",
+    "convention": "约定"
+  }
+}

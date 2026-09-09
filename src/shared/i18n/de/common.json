@@ -1,0 +1,121 @@
+{
+  "a11y": {
+    "namedValue": "{{value}} — {{name}}"
+  },
+  "actions": {
+    "generate": "Generieren",
+    "close": "Schließen",
+    "removeTool": "Modul entfernen",
+    "resizeZone": "Größe des Panel-Bereichs ändern",
+    "resizeSplit": "Größe der beiden Panels ändern",
+    "resizeBand": "Größe der unteren Panels ändern",
+    "retry": "Erneut versuchen",
+    "retryHint": "Rendert diesen Bereich erneut, ohne das Studio neu zu starten",
+    "generateHint": "Startet die Generierung mit den Einstellungen oben; sie lässt sich in der Generierungsleiste verfolgen",
+    "cancel": "Abbrechen"
+  },
+  "jobs": {
+    "none": "Keine Generierung läuft.",
+    "running_one": "{{count, number}} Generierung",
+    "running_many": "{{count, number}} Generierungen",
+    "running_other": "{{count, number}} Generierungen",
+    "failed_one": "{{count, number}} Fehlschlag",
+    "failed_many": "{{count, number}} Fehlschläge",
+    "failed_other": "{{count, number}} Fehlschläge",
+    "open": "Generierungen anzeigen",
+    "openHint": "Öffnet die Liste der Generierungen, laufende wie abgeschlossene",
+    "status": {
+      "queued": "In Warteschlange",
+      "running": "Läuft",
+      "succeeded": "Fertig",
+      "failed": "Fehlgeschlagen",
+      "cancelled": "Abgebrochen"
+    },
+    "cancel": "Auftrag abbrechen",
+    "cancelRefused": "Dieser Dienst stoppt eine einmal gestartete Generierung nicht: sie läuft bis zum Ende und wird abgerechnet."
+  },
+  "tasks": {
+    "running_one": "{{count, number}} Aufgabe",
+    "running_many": "{{count, number}} Aufgaben",
+    "running_other": "{{count, number}} Aufgaben",
+    "open": "Aufgaben anzeigen",
+    "openHint": "Öffnet die Liste der laufenden Aufgaben",
+    "cancel": "Diese Aufgabe stoppen",
+    "phases": {
+      "prepare": "Modell wird vorbereitet",
+      "load": "Engine wird geladen",
+      "analyse": "Charakter wird analysiert",
+      "skeleton": "Skelett wird erzeugt",
+      "pose": "Ruhepose wird berechnet",
+      "skinning": "Skinning wird berechnet",
+      "apply": "Skelett wird angewendet"
+    }
+  },
+  "dialog": {
+    "allMedia": "Alle Medien",
+    "video": "Video",
+    "audio": "Audio",
+    "image": "Bild",
+    "mesh": "3D-Modell",
+    "animation": "Animation",
+    "bundle": "Schnitt mit Medien",
+    "weights": "Modellgewichte"
+  },
+  "sorts": {
+    "relevance": "Qualität: beste zuerst",
+    "recent": "Erstellt: neueste zuerst",
+    "oldest": "Erstellt: älteste zuerst"
+  },
+  "exportFormats": {
+    "glb": "glTF binär (.glb)",
+    "gltf": "glTF (.gltf)",
+    "usdz": "USDZ (.usdz)",
+    "obj": "Wavefront, nur Formen (.obj)",
+    "ply": "Stanford, nur Formen (.ply)",
+    "stl": "STL, nur Dreiecke (.stl)"
+  },
+  "errors": {
+    "missingCredentials": "Keine Zugangsdaten gespeichert.",
+    "invalidCredentials": "API-Schlüssel oder Secret ungültig.",
+    "forbidden": "Diesem API-Schlüssel fehlen die erforderlichen Rechte.",
+    "planRestricted": "Dieses Modell ist in Ihrem Tarif nicht enthalten.",
+    "notFound": "Ressource nicht gefunden.",
+    "rateLimited": "Zu viele Anfragen. Neuer Versuch läuft…",
+    "server": "Der Generierungsdienst ist vorübergehend nicht verfügbar.",
+    "network": "Die Verbindung wurde unterbrochen. Prüfen Sie das Netzwerk und versuchen Sie es erneut.",
+    "unexpected": "Ein unerwarteter Fehler ist aufgetreten.",
+    "invalidValue": "Ungültiger Wert.",
+    "rejected": "Die Generierung ist fehlgeschlagen.",
+    "incompleteModel": "Die Dateien des Modells sind unvollständig. Installieren Sie das Modell neu und starten Sie die Generierung erneut.",
+    "engineMissing": "Die lokale KI-Engine ist auf diesem Rechner nicht installiert, daher kann hier nichts das Modell ausführen.",
+    "engineFailed": "Die lokale KI-Engine ist nicht gestartet. Prüfen Sie das Aktivitätsprotokoll und versuchen Sie es erneut.",
+    "storage": "Das Ergebnis konnte nicht auf der Festplatte gespeichert werden.",
+    "panelCrashed": "In diesem Panel ist ein Fehler aufgetreten.",
+    "windowCrashed": "In der Anwendung ist ein Fehler aufgetreten."
+  },
+  "licences": {
+    "title": "Lizenzen",
+    "intro": "AI Desktop Studio wird mit der unten aufgeführten Software ausgeliefert. Jede behält ihre eigene Lizenz, die hier vollständig wiedergegeben ist.",
+    "sources": "Zugehörige Quellen:",
+    "sourcesUnmodified": "Zugehörige Quellen, unverändert:",
+    "bundled": "mit der Anwendung ausgeliefert",
+    "unfold": "Klappt den vollständigen Text dieser Lizenz hier auf",
+    "fold": "Klappt diesen Text wieder zu — es bleibt immer nur eine Lizenz geöffnet"
+  },
+  "manual": {
+    "title": "Benutzerhandbuch",
+    "chapters": "Kapitel",
+    "search": "Im Handbuch suchen",
+    "results": "Ergebnisse",
+    "noResult": "Kein Kapitel enthält diese Wörter.",
+    "chapterHint": "Öffnet dieses Kapitel im rechten Panel",
+    "searchResultHint": "Öffnet das Kapitel, in dem diese Wörter vorkommen"
+  },
+  "units": {
+    "byte": "B",
+    "kibibyte": "KiB",
+    "mebibyte": "MiB",
+    "gibibyte": "GiB",
+    "creative": "{{units}} CU"
+  }
+}

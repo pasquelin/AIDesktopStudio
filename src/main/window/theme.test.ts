@@ -85,22 +85,54 @@ const light = colorsIn(blockFrom(`name: '${THEME_ATTRIBUTE.light}'`))
  *
  * Read off the value rather than listed by name, so the next one costs nothing — and so nobody
  * has to notice that the rule below would otherwise ask for a duplicate.
+ *
+ * A variable of ANY family, `--sc-*` included. The exemption holds while SOMETHING the value
+ * reads is restated by the light block: that is what carries the theme through the composition.
  */
-function isDerived(value: string): boolean {
-  return value.includes('var(--color-')
+function derivedFrom(value: string): readonly string[] {
+  return [...value.matchAll(/var\((--[a-z0-9-]+)/g)].map(match => match[1]!)
 }
+
+/**
+ * 🛑 The four `--color-comment-*` are written TWICE — in `@theme` and on `.generation-comment` —
+ * and the copy is structural: a custom property reading another is substituted where it is
+ * DECLARED, so the `:root` copy resolves against the root's hue and an element's angle is lost.
+ * Nothing else in the sheet does this, so nothing else would notice one copy drifting.
+ */
+describe('a token composed from the hue an element posts', () => {
+  const onElement = colorsIn(blockFrom('.generation-comment {'))
+
+  it('says the same thing in `@theme` and on the element that posts an angle', () => {
+    const composed = [...reference].filter(([name]) => name.startsWith('--color-comment-'))
+
+    expect(composed.length).toBeGreaterThan(0)
+    expect(composed.map(([name]) => [name, onElement.get(name)?.trim()])).toEqual(
+      composed.map(([name, value]) => [name, value.trim()]),
+    )
+  })
+})
 
 describe('the light theme', () => {
   it('restates every studio colour, so none of them stays on its dark value', () => {
     // `@theme` declares the dark values in `:root`, and a theme block only wins where it
     // declares something. A token missed here is a surface that never turns light.
+    // A token is exempt while SOMETHING it composes from follows the theme — through as many
+    // hops as the composition takes. A hexadecimal composes from nothing and is never exempt.
+    const lightBlock = blockFrom(`name: '${THEME_ATTRIBUTE.light}'`)
+    const carried = (value: string, seen = new Set<string>()): boolean =>
+      derivedFrom(value).some(name => {
+        if (seen.has(name)) return false
+        seen.add(name)
+        const restated = lightBlock.includes(`${name}:`) || light.has(name)
+        return restated || carried(reference.get(name) ?? '', seen)
+      })
+
     const missing = [...reference]
-      .filter(([name, value]) => !light.has(name) && !isDerived(value))
+      .filter(([name, value]) => !light.has(name) && !carried(value))
       .map(([name]) => name)
 
     expect(missing).toEqual([])
-    // The exemption is narrow, and shown to be: a colour written out is still owed a light one.
-    expect(isDerived('#346ef2')).toBe(false)
+    expect(carried('#346ef2')).toBe(false)
   })
 
   it('actually changes them, rather than restating the dark value', () => {

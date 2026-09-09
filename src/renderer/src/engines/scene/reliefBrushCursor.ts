@@ -1,6 +1,6 @@
 import { DoubleSide, Mesh, MeshBasicMaterial, RingGeometry } from 'three'
 
-export type ReliefBrushPose = {
+type ReliefBrushPose = {
   x: number
   y: number
   z: number

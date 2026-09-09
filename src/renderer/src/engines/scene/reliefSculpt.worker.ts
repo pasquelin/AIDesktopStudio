@@ -1,4 +1,5 @@
 /// <reference lib="webworker" />
+import { localizedError } from '@shared/localizedError'
 import { messageOf } from '@shared/guards'
 import { applyReliefSculpt, changedChunks } from '@shared/domain/relief'
 import type { ReliefSculptRequest, ReliefSculptResponse } from './reliefSculptMessage'
@@ -45,5 +46,5 @@ function valuesOf(request: ReliefSculptRequest): Float32Array {
   if (baseId === undefined) return NO_VALUES
   if (values) base = { id: baseId, width, height, values }
   if (base?.id === baseId && base.width === width && base.height === height) return base.values
-  throw new Error('relief sculpt base heightfield is unavailable')
+  throw localizedError('reliefHeightfieldMissing')
 }

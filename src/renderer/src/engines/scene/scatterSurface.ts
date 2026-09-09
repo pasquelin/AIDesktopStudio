@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { Group, InstancedMesh, type Camera, type Object3D, type Scene } from 'three'
 import {
   enabledScatters,
@@ -105,7 +106,7 @@ export function createScatterSurface(scene: Scene, options: ScatterSurfaceOption
     object: group,
     get partition() {
       const partition = state.cells.partitions.get('props')
-      if (!partition) throw new Error('Missing props scatter partition')
+      if (!partition) throw localizedError('scatterPartitionMissing')
       return partition
     },
     sync: async (world, heightmaps) => {

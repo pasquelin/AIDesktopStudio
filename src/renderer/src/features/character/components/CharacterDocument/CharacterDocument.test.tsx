@@ -16,6 +16,8 @@ import { publishCommand } from '@/services/commandBus'
 import { useDocuments } from '@/stores/documents'
 import { sceneViewOf, useSceneViews } from '@/stores/sceneViews'
 import { workshopIdOf } from '@shared/domain/character'
+import { rigStateFixture } from '@/engines/scene/scene-fixtures'
+import { useModelFiles } from '@/stores/modelFiles'
 import { useSettings } from '@/stores/settings'
 import { CharacterDocument } from './CharacterDocument'
 
@@ -27,9 +29,6 @@ const posed = vi.hoisted((): string[] => [])
 
 /** Every set of held axes the engine was handed — what a joint may not leave while dragged. */
 const holds = vi.hoisted((): string[][] => [])
-
-/** What each export was asked to carry of the studio's own — the band, for a motion. */
-const carried = vi.hoisted((): (Record<string, unknown> | null)[] => [])
 
 /** Every set of directions the keyboard handed the camera. */
 const flown = vi.hoisted((): string[][] => [])
@@ -97,10 +96,7 @@ vi.mock('@/engines/scene/SceneRenderer', () => ({
     // What the clock pushes into the engine: the head, and what a block is being watched on.
     setPlayhead = vi.fn()
     setPreview = vi.fn()
-    exportTo = (_format: string, _scope: string, extras?: Record<string, unknown>) => {
-      carried.push(extras ?? null)
-      return Promise.resolve(new Uint8Array([1, 2]))
-    }
+    exportTo = vi.fn(() => Promise.resolve(new Uint8Array([1, 2])))
   },
 }))
 
@@ -134,7 +130,6 @@ beforeEach(() => {
   flown.length = 0
   navigated.length = 0
   holds.length = 0
-  carried.length = 0
   configured.length = 0
   engines.length = 0
   clearCharacters()
@@ -261,6 +256,24 @@ it('drops the waiting note as soon as the model has landed', async () => {
   })
 
   expect(screen.queryByText('En attente du personnage…')).not.toBeInTheDocument()
+})
+
+/**
+ * 🛑 The workshop reads a FILE like a scene does, and `CharacterMotionSection` gates on what the
+ * engine read: unwired, the section saw no rig here and took the whole motion list away — the
+ * unlink button with it — on every character, rigged or not. Every suite stayed green because
+ * they all `reportRig` by hand.
+ */
+it('reports to the store the rig the engine read off the file', async () => {
+  showTab()
+  await waitFor(() => expect(built[0]).toBeDefined())
+
+  await act(async () => {
+    built[0]?.onRig?.('node-1', rigStateFixture(['Hips', 'Spine']))
+  })
+
+  const rigs = useModelFiles.getState().rigs[WORKSHOP]
+  expect(rigs?.['node-1']?.boneNames).toEqual(['Hips', 'Spine'])
 })
 
 it('does not skin until the model has landed', async () => {
@@ -417,4 +430,40 @@ it('undoes the character on its own key, and leaves the scene undo unanswered', 
 
   expect(publishCommand('character.undo')).toBe(true)
   expect(restOfSpine()?.position.y).toBe(0)
+})
+
+/**
+ * 🛑 The retarget window restores the STORED skeleton onto the model: opened on one that has
+ * none, it showed a bare mesh, no joint drawn and no role to map a motion onto — a door onto a
+ * screen that could not answer. The inspector beside it is where a skeleton is created.
+ */
+it('refuses to transfer an animation until the model has a skeleton', () => {
+  seedCharacter(ASSET, null, {})
+  showTab()
+
+  expect(screen.getByRole('button', { name: 'Transférer une animation' })).toBeDisabled()
+
+  act(() => seedCharacter(ASSET, RIG, {}))
+
+  expect(screen.getByRole('button', { name: 'Transférer une animation' })).toBeEnabled()
+})
+
+/**
+ * 🛑 An empty `rig` says nothing until the file has LANDED: refusing on it greyed the transfer
+ * out on every character for as long as its tab took to read, and pointed at a skeleton nobody
+ * had looked for.
+ */
+it('offers the transfer while the file is still being read', () => {
+  showTab()
+
+  expect(screen.getByRole('button', { name: 'Transférer une animation' })).toBeEnabled()
+})
+
+// A disabled button fires no pointer event, so the reason rides on the span around it.
+it('says why it refuses, beside the button that cannot say it', () => {
+  seedCharacter(ASSET, null, {})
+  showTab()
+
+  const refused = screen.getByRole('button', { name: 'Transférer une animation' }).parentElement
+  expect(refused).toHaveAttribute('data-tooltip-content', expect.stringMatching(/squelette/))
 })

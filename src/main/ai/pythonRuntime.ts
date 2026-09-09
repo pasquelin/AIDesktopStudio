@@ -184,6 +184,23 @@ export function pythonRuntime(deps: PythonRuntimeDeps): LocalRuntime {
       }
     },
 
+    /**
+     * What `unload` does NOT do, and the reason the two are separate verbs: measured 2026-09-08, a
+     * door that has so much as called `device()` never drops below 208 MB again, and only the
+     * process leaving returns them. `_live` reopens it at the next load, cold.
+     */
+    close: async (endpoint: RuntimeEndpointId) => {
+      const door = engineDoorOfEndpoint(endpoint)
+      // Forgotten whether the engine answers or not: its process holds the model, and a door whose
+      // engine is gone holds nothing either. This is why a close needs no unload before it.
+      held.delete(door)
+
+      const engine = deps.running()
+      if (!engine) return
+
+      await engine.closeDoor(door)
+    },
+
     generate: async (request: GenerateRequest): Promise<GenerateResult> => {
       const engine = await deps.engine()
       if (!engine) throw notAnswering(deps.whyNot())

@@ -39,6 +39,7 @@ function harness(outcomes: readonly boolean[] = []) {
         job: vi.fn(),
         memory: vi.fn(),
         requirements: vi.fn(),
+        closeDoor: vi.fn(),
         close: vi.fn(),
       }
       opened.push(client)

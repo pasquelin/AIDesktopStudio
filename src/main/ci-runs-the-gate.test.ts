@@ -2,7 +2,7 @@ import { execFileSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import manifest from '../../package.json'
+import { GATE } from './gateLinks'
 
 const ROOT = join(import.meta.dirname, '..', '..')
 
@@ -23,26 +23,27 @@ const runSteps = (): string[] =>
     .map(line => line.replace(/^(- )?run:/, '').trim())
     .filter(Boolean)
 
-const gateLinks = (): string[] => manifest.scripts.validate.split('&&').map(link => link.trim())
-
-describe('the integration job running the gate rather than a copy of it', () => {
-  it('calls the gate by name', () => {
-    expect(runSteps()).toContain('pnpm validate')
-  })
-
+describe('the integration job running the gate and nothing beside it', () => {
   /**
-   * The trap this repository fell into: the job spelled the four links out by hand, a fifth was
-   * added to `validate`, and pull requests kept passing with dead code while the desk went red.
-   * Derived from the manifest, so a sixth link is covered the day it is written.
+   * What the job MAY run, not a list of what it may not: enumerating the links by hand let a
+   * fifth link pass unguarded, and naming them as forbidden let `pnpm exec electron-vite build`
+   * sit beside the `pnpm build` link until 2026-09-08 — one whole artefact rebuilt per CI run.
    */
-  it('runs no link of the gate on its own, whatever the links become', () => {
-    for (const link of gateLinks()) expect(runSteps()).not.toContain(link)
+  it('runs the gate and the install it needs, and nothing else', () => {
+    expect(runSteps()).toEqual(['pnpm install --frozen-lockfile', 'pnpm validate'])
   })
 })
 
-/** `pnpm typecheck` → `typecheck`, escaped: a link named `test:e2e(fast)` would break the regex. */
+/**
+ * `pnpm typecheck` → `typecheck`, escaped: a link named `test:e2e(fast)` would break the regex.
+ *
+ * Read from `gateLinks.ts`, which is where the chain moved on 2026-09-08: `validate` used to spell
+ * its links with `&&` and now calls `scripts/gate.mjs`, which runs them from that array. Splitting
+ * the script would leave this guard with one pattern and the doc check below could never reach the
+ * three it needs — green, and blind.
+ */
 const linkPatterns = (): string[] =>
-  gateLinks().map(link => link.replace(/^pnpm\s+/, '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+  GATE.map(link => link.command.replace(/^pnpm\s+/, '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
 
 /**
  * Tracked markdown, asked of git rather than walked: `CLAUDE.md` sits at the root, is ignored, and
@@ -54,9 +55,12 @@ const trackedDocs = (): string[] =>
     .split('\n')
     .filter(Boolean)
 
-/** Bounded on both sides, `:` and `-` kept out of the boundary so `format:check` stays whole. */
-const namedIn = (line: string, pattern: string): boolean =>
-  new RegExp(`(^|[^\\w:-])${pattern}([^\\w:-]|$)`).test(line)
+/**
+ * Bounded on both sides, `:` and `-` kept out of the boundary so `format:check` stays whole.
+ * Compiled once: rebuilding them per line cost 191 ms over the 34 608 lines of tracked markdown,
+ * against 25 ms hoisted — measured 2026-09-08, same verdict.
+ */
+const LINK_BOUNDS = linkPatterns().map(pattern => new RegExp(`(^|[^\\w:-])${pattern}([^\\w:-]|$)`))
 
 /**
  * Three names on one LINE, not two: `lint` and `test` meet in ordinary prose — measured on the
@@ -65,7 +69,7 @@ const namedIn = (line: string, pattern: string): boolean =>
  * one link per bullet, and a link named in French — "vérification de format".
  */
 const copiesTheGate = (line: string): boolean =>
-  linkPatterns().filter(pattern => namedIn(line, pattern)).length >= 3
+  LINK_BOUNDS.filter(bounded => bounded.test(line)).length >= 3
 
 describe('the documents naming the gate rather than copying its links', () => {
   /**

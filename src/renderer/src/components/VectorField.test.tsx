@@ -96,9 +96,9 @@ describe('VectorField', () => {
   it('stripes each field in the colour of its axis', () => {
     renderField()
 
-    expect(screen.getByLabelText('X')).toHaveClass('border-l-axis-x')
-    expect(screen.getByLabelText('Y')).toHaveClass('border-l-axis-y')
-    expect(screen.getByLabelText('Z')).toHaveClass('border-l-axis-z')
+    expect(screen.getByLabelText('X')).toHaveClass('border-s-axis-x')
+    expect(screen.getByLabelText('Y')).toHaveClass('border-s-axis-y')
+    expect(screen.getByLabelText('Z')).toHaveClass('border-s-axis-z')
   })
 
   // One handle per axis, so a script can name the very field it means.

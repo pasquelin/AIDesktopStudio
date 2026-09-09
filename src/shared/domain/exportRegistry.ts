@@ -82,13 +82,13 @@ export const EXPORT_TARGET_IDS: readonly ExportTargetId[] = [
  * costs the person knowing where to click. `script` — the target exposes an automation the studio
  * drives itself.
  */
-export type ExportDoor = 'declared' | 'import' | 'script'
+type ExportDoor = 'declared' | 'import' | 'script'
 
 /**
  * One file the save dialog names, or a folder of files that mean nothing apart — five faces of a
  * sky are not a sky, and a base colour without its ORM is half a material.
  */
-export type ExportDestination = 'file' | 'folder'
+type ExportDestination = 'file' | 'folder'
 
 export type ExportTarget = {
   domain: CapabilityDomain

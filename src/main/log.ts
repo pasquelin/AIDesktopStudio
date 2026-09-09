@@ -1,3 +1,5 @@
+import { localizeErrorMessage } from '@shared/localizedError'
+import { englishText, fillHoles } from '@shared/i18n'
 import type { LogVerbosity } from '@shared/domain/settings'
 import type { LogEntry, LogLevel } from '@shared/ipc'
 
@@ -56,6 +58,9 @@ export const logsSilenced = (): boolean => threshold === RANK_OF_VERBOSITY.silen
 function write(level: LogLevel, scope: string, message: string): void {
   if (quiet || RANK[level] > threshold) return
 
+  message = localizeErrorMessage(message, (key, values) =>
+    fillHoles(englishText(key), values, 'en'),
+  )
   const line = `[${scope}] ${message}`
 
   /* oxlint-disable no-console -- this module IS the main process's logger */

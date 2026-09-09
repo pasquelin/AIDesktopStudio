@@ -42,6 +42,7 @@
     "motionSaveNew": "Save as a new motion",
     "motionRemove": "Remove this motion",
     "motionEmpty": "This character cannot play any motion yet.",
+    "motionNeedsSkeleton": "This model has no skeleton, so it can play no motion. Give it one from the Skeleton section.",
     "motionNew": "New motion",
     "saveFault_not-glb": "This file is not a model the studio can write back.",
     "saveFault_no-buffer": "This file carries no geometry to skin.",
@@ -49,6 +50,7 @@
     "saveFault_compressed-primitive": "The geometry of this file is compressed. The studio cannot write a skeleton into it.",
     "retarget": {
       "title": "Transfer animation",
+      "needsSkeleton": "This model has no skeleton yet, so there is nothing for an animation to be transferred onto.",
       "source": "Source",
       "sourceTitle": "Source · {{name}}",
       "groupCount": "{{name}} ({{count, number}})",

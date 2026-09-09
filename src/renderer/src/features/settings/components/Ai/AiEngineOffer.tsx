@@ -59,7 +59,11 @@ export function AiEngineOffer({ offer, busy, profile }: AiEngineOfferProps) {
   }
 
   if (!offer.known) return <p className={WINDOW_HELP}>{t('aiModels.engineHelpUnknown')}</p>
-  if (offer.missing.length === 0) return <p className={WINDOW_HELP}>{t('aiModels.engineReady')}</p>
+  // A complete door still generating on the processor keeps the button: the CUDA wheels replace
+  // the ones already here, so nothing is MISSING and there is still everything to repair.
+  const onProcessor = offer.cuda === 'repairable'
+  if (offer.missing.length === 0 && !onProcessor)
+    return <p className={WINDOW_HELP}>{t('aiModels.engineReady')}</p>
 
   return (
     <div className="flex flex-col items-start gap-2">
@@ -67,7 +71,9 @@ export function AiEngineOffer({ offer, busy, profile }: AiEngineOfferProps) {
         <UiIcon path={mdiInformationOutline} />
         {offer.failed
           ? t('aiModels.engineHelpFailed')
-          : t('aiModels.engineHelpMissing', { names: offer.missing.join(', ') })}
+          : offer.missing.length === 0
+            ? t('aiModels.engineHelpCuda')
+            : t('aiModels.engineHelpMissing', { names: offer.missing.join(', ') })}
       </span>
       <WindowButton
         disabled={busy}

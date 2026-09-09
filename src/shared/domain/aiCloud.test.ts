@@ -29,6 +29,17 @@ describe('the cloud registry', () => {
   })
 
   /**
+   * The three families whose whole membership IS their employment. `FAMILY_TAGS` files the
+   * catalogue's own models under each of them, so a cloud refused here would leave the model
+   * browser with nothing to list and the prepared edit opening on an empty panel.
+   */
+  it('offers Scenario for the three single-employment families its catalogue publishes', () => {
+    expect(cloudsServing(aiRoleId('upscale', 'upscale'))).toEqual([SCENARIO_CLOUD])
+    expect(cloudsServing(aiRoleId('background-removal', 'cutout'))).toEqual([SCENARIO_CLOUD])
+    expect(cloudsServing(aiRoleId('vectorization', 'vectorize'))).toEqual([SCENARIO_CLOUD])
+  })
+
+  /**
    * A cloud publishing only PART of a family is offered for that part alone. Tripo generates a
    * picture and edits one, and nothing of it inpaints — offered there, the picker would open on
    * an account that has no model to run.

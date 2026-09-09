@@ -1,0 +1,72 @@
+{
+  "welcome": {
+    "skip": "Pular",
+    "skipHint": "Fecha esta apresentação e abre o estúdio com as configurações atuais",
+    "back": "Anterior",
+    "backHint": "Volta à tela anterior",
+    "next": "Continuar",
+    "nextHint": "Passa para a tela seguinte",
+    "done": "Começar",
+    "doneHint": "Fecha esta apresentação e abre o estúdio",
+    "steps": "Etapa {{current, number}} de {{total, number}}",
+    "goToStep": "Ir para a etapa {{current, number}} — {{title}}",
+    "language": {
+      "title": "Escolha o seu idioma",
+      "body": "Todos os menus, botões e mensagens aparecem neste idioma. Você pode alterá-lo depois nas configurações.",
+      "hint": "Mostra o aplicativo em {{name}}"
+    },
+    "look": {
+      "title": "A aparência",
+      "body": "O tema escuro é o do estúdio. Troque-o se você trabalha à luz do dia.",
+      "themeHint": "Passa o aplicativo para o tema {{name}}"
+    },
+    "craft": {
+      "title": "Sua navegação 3D",
+      "body": "A vista 3D imita os gestos do software que você já conhece. Você pode alterá-la depois nas configurações.",
+      "navigationHint": "Usa os gestos de viewport de {{name}} na vista 3D"
+    },
+    "ai": {
+      "title": "IA, por todas as portas",
+      "body": "O estúdio não depende de nenhuma IA em particular: elas se conectam, se substituem, e podem até pilotá-lo.",
+      "local": {
+        "title": "Nesta máquina",
+        "body": "O estúdio baixa os pesos e os executa aqui. Nada sai, nada é cobrado."
+      },
+      "ollama": {
+        "title": "Com o Ollama",
+        "body": "Já instalado? O estúdio lê os seus modelos e os usa tais como estão."
+      },
+      "cloud": {
+        "title": "Em um provedor",
+        "body": "Uma chave, e a geração sai para longe. Intercambiáveis: nenhum deles é o produto."
+      },
+      "mcp": {
+        "title": "E no sentido contrário",
+        "body": "O estúdio publica suas ferramentas: o Claude Code, ou qualquer agente MCP, abre um projeto e gera no seu lugar."
+      }
+    },
+    "models": {
+      "title": "Os modelos, seção por seção",
+      "body": "O estúdio baixa os pesos, depois os executa aqui. Alguns modelos exigem um acesso junto ao editor deles. O tamanho indica o espaço em disco necessário.",
+      "sectionHint": "Mostra os modelos de: {{name}}",
+      "more": "O catálogo completo está nas configurações.",
+      "motionOptional": "A geração de movimentos é opcional. Instale um modelo agora, ou continue e encontre-o depois em Configurações → IA → 3D. O retargeting de animação funciona sem IA."
+    },
+    "account": {
+      "title": "Uma nuvem, se você tiver uma",
+      "body": "O estúdio funciona sem conta, sobre os seus arquivos. Uma chave desbloqueia a geração e a biblioteca compartilhada.",
+      "stored": "Estes serviços já estão salvos nesta máquina. Adicione outro, ou siga em frente.",
+      "addService": "Adicionar um serviço",
+      "addServiceHint": "Abre o formulário para salvar mais uma chave",
+      "adding": "Cole a chave do serviço a salvar.",
+      "backToList": "Voltar para a lista",
+      "backToListHint": "Abandona o que foi digitado aqui e mostra de novo os serviços salvos"
+    },
+    "project": {
+      "title": "Seu primeiro projeto",
+      "body": "Um projeto é uma pasta no seu disco. Crie um, abra um, ou pule e comece pelo início.",
+      "createHint": "Escolhe uma pasta vazia e faz dela o projeto",
+      "openHint": "Abre uma pasta de projeto já presente neste disco"
+    }
+  }
+}

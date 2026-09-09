@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import {
   AnimationClip,
   Bone,
@@ -176,12 +177,8 @@ describe('exportObjects with a compressed texture', () => {
 
 // USDZ is read in `sceneExportUsdz.test.ts`, which runs without a browser — see its head.
 
-/**
- * `USDZExporter` reads `object.matrix` and never refreshes it (`USDZExporter.js:639`), where
- * `GLTFExporter` calls `updateMatrix` first (`GLTFExporter.js:2488`). Decomposing the world matrix
- * into position, quaternion and scale therefore reached one format and not the other: a selected
- * child came out of USDZ where it sits inside its parent, and the glTF test never saw it.
- */
+// USDZExporter.js:639 reads object.matrix without refreshing it; GLTFExporter.js:2488 updates it.
+// A selected child therefore needs its copied local matrix refreshed from the decomposed world pose.
 describe('placedCopy', () => {
   it('leaves the copy a matrix that agrees with where it stands', () => {
     const parent = named('parent')
@@ -230,7 +227,9 @@ describe('exportObjects and what cannot be written', () => {
     const hidden = named('box-1')
     hidden.visible = false
 
-    await expect(exportObjects([hidden], 'gltf')).rejects.toThrow(/nothing visible/)
+    await expect(exportObjects([hidden], 'gltf')).rejects.toThrow(
+      localizedError('exportNothingVisible').message,
+    )
   })
 
   it('writes what is visible when only some of it is hidden', async () => {

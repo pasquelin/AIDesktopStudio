@@ -1,0 +1,427 @@
+{
+  "game": {
+    "components": {
+      "Aircraft": {
+        "title": "航空機",
+        "description": "オブジェクトを飛ばします。揚力・抗力・推力を自身の運動から計算し、舵面は風を受けているときだけ反応します。"
+      },
+      "Animator": {
+        "title": "アニメーター",
+        "description": "プロジェクトのアニメーショングラフに従い、体の動き（歩く・跳ぶ・止まる）に合ったクリップを再生します。"
+      },
+      "CharacterController": {
+        "description": "オブジェクトを操作する対象にします。歩き、跳び、段差を上ります。",
+        "title": "キャラクター"
+      },
+      "Collider": {
+        "description": "他のオブジェクトが通り抜けられない体積を与えます。",
+        "title": "体積"
+      },
+      "Follow": {
+        "description": "別のエンティティを追いかけ、指定した距離で止まります。仲間、肩越しのカメラ、敵などに使えます。",
+        "title": "追跡"
+      },
+      "Health": {
+        "description": "ヒットポイントです。エンティティが傷つくと減り、ゼロで死にます。",
+        "title": "体力"
+      },
+      "LookAt": {
+        "description": "エンティティを別のエンティティに向けます。即座に、あるいは回転速度を制限して向きます。砲塔、標識、頭などに使えます。",
+        "title": "視線"
+      },
+      "Movement": {
+        "description": "エンティティが一つの軸に沿って自ら移動します。動く床、エレベーター、仕掛けなどに使えます。",
+        "title": "モーション"
+      },
+      "Orbit": {
+        "description": "エンティティを別のエンティティの周り、または原点の周りで回します。月、衛星、回り込むカメラなどに使えます。",
+        "title": "周回"
+      },
+      "Path": {
+        "description": "エンティティを一連の点に沿って一定の速度で進めます。トロッコ、ドリーショット、レール上の床などに使えます。",
+        "title": "レール"
+      },
+      "Patrol": {
+        "description": "エンティティを名前の付いた点から次の点へ移動させ、各点で待機します。歩哨、エレベーターなどに使えます。",
+        "title": "パトロール"
+      },
+      "RigidBody": {
+        "description": "オブジェクトをシミュレーションに委ねます。落ち、滑り、押されます。",
+        "title": "物理"
+      },
+      "Script": {
+        "title": "スクリプト",
+        "description": "オブジェクトをコードに委ねます。作者が書いた処理が毎ステップ実行されます。"
+      },
+      "Player": {
+        "title": "プレイヤー",
+        "description": "操作する対象を指定します。シーンに一つだけ置き、その下にぶら下がるものが体と目になり、カメラはこれを追います。"
+      },
+      "Spin": {
+        "description": "エンティティを一つの軸で回し続けます。取得アイテム、プロペラ、機構などに使えます。",
+        "title": "連続回転"
+      },
+      "SpringArm": {
+        "title": "スプリングアーム",
+        "description": "カメラを対象の後方、指定した距離に吊るします。間に壁が入ると近づき、貼り付かずに遅れて追従します。"
+      },
+      "Trigger": {
+        "description": "何も遮らず、体積に何かが入ったときと出たときに知らせます。",
+        "title": "センサー"
+      },
+      "Vehicle": {
+        "title": "車両",
+        "description": "オブジェクトを、サスペンション付きで駆動・操舵する車輪に載せます。走り、ブレーキをかけ、曲がります。車輪は子オブジェクトで、ここで名前を指定します。"
+      }
+    },
+    "fields": {
+      "acceleration": "加速",
+      "agility": "敏捷性",
+      "airControl": "空中制御",
+      "axis": "軸",
+      "body": "追従先の体",
+      "bodyTurnSpeed": "体の回転速度（0：なし）",
+      "camera": "カメラ",
+      "collision": "壁を避ける",
+      "collisionInLag": "衝突の開始",
+      "collisionOutLag": "衝突の終了",
+      "coyoteTime": "コヨーテタイム",
+      "current": "現在",
+      "deceleration": "減速",
+      "distance": "距離",
+      "drag": "抗力",
+      "drive": "駆動",
+      "fidelity": "精度",
+      "followVertical": "対象高さに追従",
+      "friction": "摩擦",
+      "from": "元のファイル",
+      "graph": "アニメーショングラフ",
+      "gravityScale": "重力",
+      "height": "高さ",
+      "hysteresis": "ヒステリシス",
+      "jumpBuffer": "ジャンプ先行入力",
+      "jumpSpeed": "ジャンプ",
+      "kind": "シミュレーション",
+      "length": "長さ",
+      "lockRotation": "回転をロック",
+      "lookAt": "フレーミング",
+      "mass": "質量",
+      "max": "最大",
+      "maxSteerAngle": "最大操舵角",
+      "maxThrust": "最大推力",
+      "maxTorque": "エンジントルク",
+      "mode": "繰り返し",
+      "moveSpeed": "歩行速度（0：シーンの値）",
+      "orientation": "向き",
+      "orientToTangent": "接線に沿わせる",
+      "pitchMax": "最大ピッチ",
+      "pitchMin": "最小ピッチ",
+      "positionLag": "位置の遅れ",
+      "possesses": "所有する要素",
+      "probeRadius": "プローブ半径",
+      "radius": "半径",
+      "restitution": "反発",
+      "rotationLag": "回転の遅れ",
+      "runSpeed": "走行速度（0：走らない）",
+      "safetyMargin": "安全マージン",
+      "script": "ファイル",
+      "shoulder": "肩のオフセット",
+      "slopeLimit": "傾斜",
+      "snapDistance": "吸着",
+      "speed": "速度",
+      "stallAngle": "失速角",
+      "stepHeight": "段差",
+      "stopDistance": "停止距離",
+      "subject": "対象",
+      "suspensionLength": "サスペンションのストローク",
+      "target": "ターゲット",
+      "turnSpeed": "回転速度",
+      "waitSeconds": "待機",
+      "waypoints": "点",
+      "wheelRadius": "車輪の半径",
+      "wheels": "車輪",
+      "wheelWidth": "車輪の幅",
+      "wingArea": "翼面積"
+    },
+    "export": {
+      "title": "ゲームの最適化",
+      "action": "書き出し",
+      "safeTitle": "SAFEランタイム最適化",
+      "safeRuntime": "ランタイム表現を最適化",
+      "instancing": "繰り返しオブジェクトをインスタンス化",
+      "batching": "互換性のある静的ジオメトリをまとめる",
+      "deduplication": "リソースの重複を除去",
+      "geometryBuffers": "ジオメトリバッファーを最適化",
+      "losslessCompression": "見た目を損なわずに圧縮",
+      "removeUnused": "未使用リソースを削除",
+      "currentSceneMeasured": "実測 · 現在のシーン",
+      "projectEstimated": "推定 · ゲーム全体 · {{count, number}}シーン",
+      "currentSceneLossyEstimate": "現在のシーン（劣化あり） · 三角形 {{triangles}} · ジオメトリ {{geometry}} · 画像 {{images}}",
+      "triangleResult": "表示される三角形 {{before}} → {{after}}",
+      "geometryResult": "ジオメトリ {{before}} → {{after}}",
+      "imageResult": "画像 {{before}} → {{after}}",
+      "visualTitle": "詳細 · 見た目の変化",
+      "generateLods": "距離レベルを生成",
+      "geometryLabel": "ジオメトリの簡略化",
+      "compressionLabel": "画像の圧縮",
+      "reductionLabel": "画像の解像度",
+      "quality": {
+        "off": "無効",
+        "conservative": "控えめ",
+        "balanced": "バランス",
+        "aggressive": "積極的"
+      },
+      "reduction": {
+        "off": "原寸",
+        "half": "半分",
+        "quarter": "4分の1"
+      },
+      "visualChangesNone": "見た目の変化：なし",
+      "visualChangesPossible": "見た目の変化：可能性あり",
+      "failed": "ゲームを書き出せませんでした。"
+    },
+    "animationGraph": {
+      "hint": "ゲームが再生するグラフ。パラメーター、ステート、トランジションです。",
+      "invalid": "このJSONは有効なアニメーショングラフを表していません。",
+      "jsonLabel": "アニメーショングラフのJSON",
+      "loadFailed": "このアニメーショングラフを読み込めませんでした。",
+      "loading": "アニメーショングラフを読み込んでいます…",
+      "writeFailed": "このアニメーショングラフをディスクに書き込めませんでした。",
+      "views": "編集の方法",
+      "viewHint": {
+        "simple": "設定なしで、グラフが何を再生するかを状態ごとに示します",
+        "expert": "各設定をフォームとして開きます",
+        "json": "ディスクに書かれたままのファイルを示します"
+      },
+      "context": "コンテキスト",
+      "contextDescription": "このグラフの名前、動かす体の半分、そしてゲームが始まる状態。",
+      "id": "識別子",
+      "idHelp": "スクリプトがこのグラフを求める名前。ファイル名から来ます。",
+      "initial": "開始状態",
+      "initialHelp": "キャラクターが登場した瞬間に再生される状態。最初の遷移はここから出ます。",
+      "parameters": "パラメーター",
+      "parametersDescription": "遷移が判断に使う値。一部はゲームが自ら公開し、残りはあなたのものです。",
+      "builtInDescription": "はじめのものはゲームが毎ステップ公開します。速度、接地、ジャンプ。宣言なしで使えます。",
+      "parameterKind": "種類",
+      "parameterKinds": {
+        "number": "数値",
+        "boolean": "はい・いいえ"
+      },
+      "addParameter": "パラメーターを追加",
+      "removeParameter": "このパラメーターを削除",
+      "noParameter": "独自のパラメーターはありません。ゲームのものだけが使えます。",
+      "states": "状態",
+      "statesDescription": "キャラクターがしていられること、そして各状態が再生するアニメーション。",
+      "stateDescription": "状態は、そこから出す何かがない限り一つのアニメーションを再生し続けます。",
+      "addState": "状態を追加",
+      "removeState": "この状態を削除",
+      "initialBadge": "開始",
+      "clipKindHelp": "アニメーションの出どころ。モデル自身のファイル、スタジオ同梱のもの、あるいはプロジェクトのファイル。",
+      "clipKinds": {
+        "embedded": "モデル自身のもの",
+        "bundled": "スタジオ同梱",
+        "asset": "プロジェクトのファイル"
+      },
+      "speedFrom": "速度を動かすもの",
+      "speedFromHelp": "アニメーションの速度に掛かるパラメーター。加速するキャラクターの下で歩行サイクルを保ちます。",
+      "speedFromNone": "なし",
+      "transitions": "遷移",
+      "transitionsDescription": "ある状態から別の状態への道と、そのために真であるべきこと。",
+      "transitionRank": "遷移 {{rank}}",
+      "transitionSentence": "{{from}} → {{to}}",
+      "addTransition": "遷移を追加",
+      "removeTransition": "この遷移を削除",
+      "noTransition": "遷移がありません。開始状態が延々と再生されます。",
+      "anyState": "任意の状態",
+      "from": "元",
+      "fromHelp": "離れる状態。「任意の状態」があるから、ジャンプが再生中のものを断ち切れます。",
+      "to": "先",
+      "exitTime": "退出が許される時点",
+      "exitTimeHelp": "退出が許される前に再生するアニメーションの割合。着地を切らずに終わらせます。",
+      "priority": "優先度",
+      "priorityHelp": "同じ瞬間に二つの遷移が可能なとき、どちらが勝つか。大きい数が取ります。",
+      "fadeHelp": "二つのアニメーションのクロスフェード、秒。ゼロなら切り替えは瞬時です。",
+      "parameterRank": "パラメーター {{rank}}",
+      "conditionRank": "条件 {{rank}}",
+      "stateOnce": "一度だけ再生",
+      "stateEntries": "ここへ入る道",
+      "stateEntryWhen": "{{from}} から、{{when}} のとき",
+      "stateEntryAlways": "{{from}} から、アニメーションの終わりに",
+      "stateNoEntry": "まだここへ入る道はありません。"
+    },
+    "inputMap": {
+      "actionId": "アクション",
+      "actionKind": "値",
+      "addAction": "アクションを追加",
+      "addBinding": "割り当てを追加",
+      "binding": "{{device}}の割り当て",
+      "applyPresetHint": "このマップを、選んだ出発点で置き換えます。",
+      "axis": "軸",
+      "context": "コンテキスト",
+      "create": "新しい入力マップ",
+      "createHint": "標準の出発点から入力マップを作成します。",
+      "defaultActive": "起動時に有効",
+      "deadZone": "デッドゾーン",
+      "deviceLabel": "デバイス",
+      "duplicateId": "複数の入力マップが識別子「{{id}}」を使っています。各コンテキストに固有の識別子を付けてください。",
+      "device": {
+        "gamepad": "ゲームパッド",
+        "keyboard": "キーボード",
+        "mouse": "マウス"
+      },
+      "id": "識別子",
+      "invalid": "このJSONは有効な入力マップを表していません。",
+      "invert": "反転",
+      "jsonLabel": "入力マップのJSON",
+      "kind": {
+        "axis1": "1軸",
+        "axis2": "2軸",
+        "button": "ボタン"
+      },
+      "loadFailed": "この入力マップを読み込めませんでした。",
+      "loading": "入力マップを読み込んでいます…",
+      "modeHint": "同じ入力マップの編集方法を切り替えます。",
+      "preset": {
+        "character": "キャラクター",
+        "flight": "飛行",
+        "menu": "メニュー",
+        "studio": "スタジオ",
+        "vehicle": "車両"
+      },
+      "presets": "出発点",
+      "priority": "優先度",
+      "removeAction": "アクションを削除",
+      "removeBinding": "割り当てを削除",
+      "scale": "スケール",
+      "unnamedAction": "名前のないアクション",
+      "capture": "押す",
+      "capturing": "押してください…",
+      "captureHint": "次に押されたキー、またはゲームパッドの操作をこのコマンドに割り当てます。Escapeで中止します。",
+      "help": {
+        "id": "コンテキストの名前です。スクリプトが押し込み、組み込みの代替が補完する名前です。ファイル名から決まるため、同じ識別子を持つ二つのファイルは一つのコンテキストになります。",
+        "priority": "二つの有効なコンテキストが同じアクションを宣言したとき、どちらが勝つかを決めます。数値が大きいほうが後から書き込み、優先されます。組み込みのキャラクター、車両、飛行の各コンテキストは0、10、10です。",
+        "defaultActive": "このマップをゲームの開始時から有効にするかどうかです。そうでない場合はスクリプトが押し込む必要があり、メニューのコンテキストはそのように開閉します。",
+        "actionId": "スクリプトと組み込みコントローラーが読む名前です：`move`、`jump`、`steer`。重要なのはこの名前であって、キーではありません。",
+        "actionKind": "アクションが返す値です。ボタンははい・いいえ、1軸は−1から1までの数値、2軸は一組の値、つまりスティックが伝えるものを返します。",
+        "device": "操作がどこから来るかです。一つのアクションが複数を持てます。ゲームがどちらから来たかを知らずに、キーボードとゲームパッドの両方に応えられるのはそのためです。",
+        "axis": "このキーが二つの半分のどちらを押すかです。2軸のアクションは1軸につき2つ、計4つのキーで構成されます。",
+        "scale": "この割り当てがどれだけ、どちらの向きに押すかです。左または後ろへ向かう半分には−1、もう一方には1を指定します。",
+        "deadZone": "この値を下回るとスティックは静止と見なされます。摩耗したスティックはドリフトするため、デッドゾーンがないとキャラクターがひとりでに歩き出します。",
+        "invert": "この操作の向きを逆にします。ピッチについては一部の操縦者が求めますが、それ以外では誰も求めません。"
+      },
+      "documentDescription": "入力マップは、ゲームの各アクションをどのキーやボタンが起動するかを示します。ゲームが読むのはアクションの名前であり、キーではありません。ここでキーを変えてもスクリプトは変わりません。",
+      "views": "編集の方法",
+      "writeFailed": "この入力マップをディスクに書き込めませんでした。",
+      "contextDescription": "この操作一式の名前と、いつ有効になるか。",
+      "actionsTitle": "アクション",
+      "actionsDescription": "プレイヤーができること一つにつき一つのアクション。名前がゲームの読むものであり、下の割り当てがそれを起動するキーです。",
+      "bindings": "割り当て",
+      "bindingsDescription": "このアクションを起動するすべてのキーとコントロール。一つのアクションが複数を持てます。ゲームがキーボードとゲームパッドの両方に応えるのはそのためです。",
+      "bindingRank": "割り当て {{rank}}",
+      "noBinding": "割り当てなし。このアクションは何にも応えません。",
+      "noAction": "アクションなし。このコンテキストはまだ何もしません。",
+      "presetsDescription": "できあいの出発点。このマップのアクションを置き換えますが、コンテキストの名前はそのままです。",
+      "viewHint": {
+        "simple": "設定なしで、マップの働きをアクションごとに示します",
+        "expert": "各設定をフォームとして開きます",
+        "json": "ディスクに書かれたままのファイルを示します"
+      },
+      "action": {
+        "move": "キャラクターを動かす。左、右、前、後ろ。",
+        "look": "見回す。頭かカメラを回す。",
+        "jump": "跳ぶ。",
+        "run": "押している間、走る。",
+        "interact": "目の前のものに働きかける。開ける、拾う、話す。",
+        "steer": "曲がる。車両が左または右へ向かう。",
+        "accelerate": "加速する。",
+        "brake": "ブレーキをかける。",
+        "handBrake": "ハンドブレーキ。後輪が固定され、車両が滑る。",
+        "exit": "車両から降りる。",
+        "pitch": "ピッチ。機首が下がる、または上がる。",
+        "roll": "ロール。機体が横に傾く。",
+        "yaw": "ヨー。傾かずに機首が左右へ振れる。",
+        "throttle": "スロットル。エンジンが出す力の量。",
+        "navigate": "メニューの中で選択を動かす。",
+        "next": "次の項目へ進む。",
+        "previous": "前の項目へ戻る。",
+        "confirm": "選んだものを決定する。",
+        "back": "戻る、または閉じる。",
+        "custom": "あなた独自のアクション。スクリプトがこの名前を読み、いつ起動したかを知ります。"
+      }
+    },
+    "controlsMenu": {
+      "add": "割り当てを追加",
+      "capture": "キーまたはコントローラーのボタンを押してください。",
+      "change": "変更",
+      "close": "閉じる",
+      "gamepad": "ゲームパッド",
+      "keyboard": "キーボード",
+      "mouse": "マウス",
+      "reset": "すべてリセット",
+      "title": "操作"
+    },
+    "play": {
+      "faults_many": "エラー{{count, number}}件",
+      "faults_one": "エラー{{count, number}}件",
+      "faults_other": "エラー{{count, number}}件",
+      "objects_many": "オブジェクト{{count, number}}個",
+      "objects_one": "オブジェクト{{count, number}}個",
+      "objects_other": "オブジェクト{{count, number}}個",
+      "pause": "一時停止",
+      "pauseHint": "進行中のゲームをその場で止めます。",
+      "readout": "{{fps}} fps · ステップ{{tick}}",
+      "start": "再生",
+      "startHint": "ドキュメントに触れずに、シーンをゲームとして再生します。",
+      "stop": "停止",
+      "stopHint": "ゲームを破棄し、シーンを元の状態に戻します。",
+      "openFault": "エラーの行でスクリプトを開きます。"
+    },
+    "section": {
+      "title": "コンポーネント",
+      "add": "コンポーネントを追加",
+      "addHint": "ゲームの実行中にこのオブジェクトがすることを与えます。",
+      "remove": "取り外し",
+      "removeHint": "このコンポーネントをオブジェクトから取り外します。",
+      "empty": "このオブジェクトはゲームの実行中に何もしません。",
+      "emptyHint": "コンポーネントはオブジェクトが何を「する」かを決め、種類は何を描くかを決めます。"
+    },
+    "values": {
+      "all": "全輪",
+      "auto": "自動",
+      "box": "ボックス",
+      "convexes": "凸形状",
+      "dynamic": "ダイナミック",
+      "fixed": "固定",
+      "front": "前輪",
+      "hull": "凸包",
+      "kinematic": "手動制御",
+      "loop": "ループ",
+      "once": "1回",
+      "pingPong": "往復",
+      "pivot": "肩",
+      "pointer": "視線",
+      "rear": "後輪",
+      "subject": "対象",
+      "trimesh": "三角形",
+      "unknown": "不明な値",
+      "unnamedNode": "なし",
+      "x": "X",
+      "y": "Y",
+      "z": "Z"
+    },
+    "window": {
+      "debug": "デバッグ",
+      "debugHint": "ゲームが自身について伝える情報です。オブジェクト、1秒あたりのフレーム数、ステップ、エラーを示します。",
+      "framePerformance": "CPU {{cpu}} ms · レンダリング {{render}} ms",
+      "renderPerformance": "描画呼び出し{{calls, number}}回 · 三角形{{triangles, number}}個",
+      "noFaults": "エラーなし",
+      "title": "再生モード",
+      "waiting": "スタジオを待っています…"
+    },
+    "scriptView": {
+      "simple": "簡易",
+      "expert": "詳細",
+      "json": "JSON"
+    }
+  }
+}

@@ -1,12 +1,16 @@
 import { describe, expect, it, vi } from 'vitest'
 import { autoRigServiceFor } from './autoRigBackends'
-import type { AutoRigResult } from '@shared/domain/autoRig'
+import { AUTO_RIG_BACKEND_IDS, type AutoRigResult } from '@shared/domain/autoRig'
 
 describe('Auto Rig backend registry', () => {
+  /**
+   * 🛑 Against the UNION and not a copy of it: `AUTO_RIG_BACKEND_IDS` is what the service field
+   * filters the catalogue against, so a name the two disagree on is a row offering nothing.
+   */
   it('publishes installed backend implementations without announcing future ones', () => {
     const service = autoRigServiceFor(vi.fn(), vi.fn())
 
-    expect(service.available().map(backend => backend.id)).toEqual(['simple', 'make-it-animatable'])
+    expect(service.available().map(backend => backend.id)).toEqual([...AUTO_RIG_BACKEND_IDS])
   })
 
   it('runs Simple without touching the advanced inference callback', async () => {

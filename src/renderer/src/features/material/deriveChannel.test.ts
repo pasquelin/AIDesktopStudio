@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { assetUrl, type Asset } from '@shared/domain/asset'
 import type { PbrChannel } from '@shared/domain/material'
@@ -122,7 +123,9 @@ describe('deriving one channel from another', () => {
 
     await expect(deriveMaterialChannel('doc-1', 'normal', port())).resolves.toBe(false)
 
-    expect(entries().at(-1)?.message).toContain('height is empty')
+    expect(entries().at(-1)?.message).toContain(
+      localizedError('channelEmpty', { channel: 'height' }).message,
+    )
   })
 
   /**
@@ -142,7 +145,9 @@ describe('deriving one channel from another', () => {
     await expect(deriveMaterialChannel('doc-1', 'normal', derive)).resolves.toBe(false)
 
     expect(channels().normal).toBeUndefined()
-    expect(entries().at(-1)?.message).toContain('height changed while deriving')
+    expect(entries().at(-1)?.message).toContain(
+      localizedError('channelChanged', { channel: 'height' }).message,
+    )
   })
 
   /**
@@ -162,7 +167,9 @@ describe('deriving one channel from another', () => {
     await expect(deriveMaterialChannel('doc-1', 'normal', derive)).resolves.toBe(false)
 
     expect(channels().normal?.assetId).toBe('my-own-normal')
-    expect(entries().at(-1)?.message).toContain('normal changed while deriving')
+    expect(entries().at(-1)?.message).toContain(
+      localizedError('channelChanged', { channel: 'normal' }).message,
+    )
   })
 
   /**
@@ -181,7 +188,9 @@ describe('deriving one channel from another', () => {
     await expect(deriveMaterialChannel('doc-1', 'normal', port())).resolves.toBe(false)
 
     expect(channels().normal).toBeUndefined()
-    expect(entries().at(-1)?.message).toContain('height changed while deriving')
+    expect(entries().at(-1)?.message).toContain(
+      localizedError('channelChanged', { channel: 'height' }).message,
+    )
   })
 
   it('reports a GPU that refused rather than leaving the row silent', async () => {

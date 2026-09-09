@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import type { HeightmapSamples } from '@shared/domain/heightmap'
 import type { ReliefExtent } from '@shared/domain/relief'
 import type { TerrainEditLayer } from '@shared/domain/scene'
@@ -26,7 +27,7 @@ export type ReliefBuilder = {
 export function createReliefBuilder(spawn: () => Worker): ReliefBuilder {
   const port = createWorkerPort<ReliefGeometryData[], ReliefBuildResponse>(
     spawn,
-    'relief geometry',
+    localizedError('workerRelief').message,
     answer => answer.chunks,
   )
 

@@ -8,6 +8,7 @@
 export type CanvasTool =
   | 'select'
   | 'smartSelect'
+  | 'smartComment'
   | 'move'
   | 'crop'
   | 'shape'
@@ -23,3 +24,16 @@ export type CanvasTool =
   | 'fill'
   | 'picker'
   | 'hand'
+
+/** The two promptable tools: one gesture, one prompt, only the mask's use told apart. */
+export type SmartTool = Extract<CanvasTool, 'smartSelect' | 'smartComment'>
+
+// A `Record` and not two comparisons: a hand-written `===` per member stays green while a third
+// tool falls through to the brush.
+const SMART_TOOLS: Record<SmartTool, true> = { smartSelect: true, smartComment: true }
+
+/** A `string`, because a gesture kind asks too and its union is not this one. `hasOwn` and not
+ * `in`, which walks the prototype and would read `'toString'` as a tool. */
+export function isSmartTool(tool: string): tool is SmartTool {
+  return Object.hasOwn(SMART_TOOLS, tool)
+}

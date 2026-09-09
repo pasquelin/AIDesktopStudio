@@ -28,7 +28,7 @@ describe('input map creation', () => {
     expect(openFileView).toHaveBeenCalledWith({
       id: 'inputMap',
       path: 'Controls/character.input.json',
-      title: 'character',
+      title: 'character.input',
     })
   })
 

@@ -32,40 +32,14 @@ import {
 import type { InstanceCandidate, OptimizationPlan, OptimizationReport } from './worldAnalyzerTypes'
 
 export type {
-  BatchCandidate,
-  ClassifiedObject,
-  GeometryDeduplication,
-  InstanceCandidate,
-  LossyCandidate,
-  LossyOptimizationImpact,
   LossyWorldPlan,
-  MaterialDeduplication,
-  MergeCandidate,
   ModelOptimizationCandidate,
-  OptimizationClassification,
-  OptimizationImpact,
-  OptimizationMetrics,
   OptimizationPlan,
   OptimizationReport,
-  OptimizationWarning,
-  OptimizationWarningReason,
-  SpatialCellPlan,
-  TextureOptimizationCandidate,
 } from './worldAnalyzerTypes'
 export { OPTIMIZATION_WARNING_REASONS } from './worldAnalyzerTypes'
 
-export {
-  DEFAULT_OPTIMIZATION_POLICY,
-  type OptimizationPolicy,
-} from '@shared/domain/optimizationPolicy'
-
-/**
- * What the authoring world would draw. A runtime group parks its sources on another layer but
- * leaves them visible, so the report can still measure the editable baseline.
- */
-function isRendered(mesh: Object3D, host: Object3D): boolean {
-  return isDrawn(mesh, host)
-}
+export { type OptimizationPolicy } from '@shared/domain/optimizationPolicy'
 
 export function analyzeOptimization(
   state: Pick<SceneState, 'nodes' | 'animation'>,
@@ -131,7 +105,9 @@ function* collectAnalysis(
     const object = objectOf(node.id)
     const own: Mesh[] = []
     if (object) yield* collectOwnMeshes(node, object, own)
-    const shown = object && isDrawn(object, host) ? own.filter(mesh => isRendered(mesh, host)) : []
+    // What the authoring world would draw: a runtime group parks its sources on another layer
+    // but leaves them visible, so the report still measures the editable baseline.
+    const shown = object && isDrawn(object, host) ? own.filter(mesh => isDrawn(mesh, host)) : []
     if (shown.length > 0) analysis.visibleObjects += 1
     for (const mesh of shown) {
       collectMesh(node.id, mesh, analysis)

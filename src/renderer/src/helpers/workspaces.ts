@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import {
   mdiCodeBraces,
   mdiCubeScan,
@@ -15,6 +16,7 @@ import {
 import { ASSET_TYPES, type AssetType } from '@shared/domain/asset'
 import { workspaceOfType } from '@shared/domain/assetKind'
 import type { FileDomain } from '@shared/domain/fileRole'
+import type { FileViewId } from '@shared/domain/fileView'
 import { WORKSPACE_BY_ROLE, type FolderRole } from '@shared/domain/folderRole'
 import { type ModelFamily } from '@shared/domain/model'
 import { HOME_SURFACE, type ToolSurface } from '@shared/domain/tool'
@@ -81,7 +83,7 @@ export function assetIcon(type: AssetType): string {
 
 /**
  * A glyph of its own, or `null` to keep its section's — the shape `OWN_ICON` has, for the same
- * reason: four roles answer `3d`, and one cube on all four would say they are one shelf.
+ * reason: several roles answer `3d`, and one cube on all of them would say they are one shelf.
  */
 const OWN_ROLE_ICON: Record<FolderRole, string | null> = {
   image: null,
@@ -90,14 +92,11 @@ const OWN_ROLE_ICON: Record<FolderRole, string | null> = {
   materials: null,
   skyboxes: null,
   code: null,
-  modelling: null,
   scenes: mdiCubeScan,
   models: mdiVectorTriangle,
   // The same runner an animation ASSET wears: two glyphs for one idea, in one panel, is what
   // relisting the table produced the first time.
   animations: assetIcon('animation'),
-  // A glyph of its own though it serves 3D: an interface sits at the TOP of the project, and
-  // wearing the section's cube would file it under what is modelled.
   gui: mdiViewDashboardOutline,
   input: mdiGamepadVariantOutline,
 }
@@ -116,7 +115,7 @@ const DOMAIN_INK: Record<WorkspaceId, string> = {
   skyboxes: 'text-domain-skyboxes',
 }
 
-/** What a workspace's glyph is inked in — its four folder roles share it, being one section. */
+/** What a workspace's glyph is inked in. */
 export function workspaceInk(workspace: WorkspaceId): string {
   return DOMAIN_INK[workspace]
 }
@@ -142,8 +141,8 @@ export function roleIcon(role: FolderRole): string {
 }
 
 /**
- * Which line names this role — the seven that ARE their section share one, filled with the
- * section's label. Total rather than a test on the id: a role with no answer would compose a key
+ * Which line names this role — those that ARE their section share one, filled with the section's
+ * label. Total rather than a test on the id: a role with no answer would compose a key
  * nothing translates, and a raw key on screen is this repository's costliest defect.
  */
 const ROLE_LABEL: Record<
@@ -156,18 +155,30 @@ const ROLE_LABEL: Record<
   materials: 'section',
   skyboxes: 'section',
   code: 'section',
-  modelling: 'section',
   scenes: 'scenes',
   models: 'models',
   animations: 'animations',
-  // Its own line rather than the section's: this folder is not under Modelling, so « folder of
-  // the 3D section » would send whoever reads it looking in the wrong place.
   gui: 'gui',
   input: 'input',
 }
 
 export function roleLabelKey(role: FolderRole): string {
   return `folderRoles.${ROLE_LABEL[role]}`
+}
+
+/**
+ * The folder a file view's files live in — so a `.anim.json` tab wears the runner the Animations
+ * shelf wears, and a `.input.json` tab the gamepad of Controls. A `Record`, so a new file view
+ * has to answer the question rather than opening a tab with no glyph at all, which is what a
+ * control map did beside six documents that each had one.
+ */
+const FILE_VIEW_ROLE: Record<FileViewId, FolderRole> = {
+  inputMap: 'input',
+  animationGraph: 'animations',
+}
+
+export function fileViewRole(id: FileViewId): FolderRole {
+  return FILE_VIEW_ROLE[id]
 }
 
 /**
@@ -240,7 +251,7 @@ export function workspaceLabelKey(id: WorkspaceId): string {
  */
 export function workspaceById(id: string): Workspace {
   const workspace = WORKSPACES.find(candidate => candidate.id === id)
-  if (!workspace) throw new Error(`Unknown workspace: ${id}`)
+  if (!workspace) throw localizedError('workspaceUnknown', { name: id })
   return workspace
 }
 

@@ -212,3 +212,110 @@ it('keeps the first-person view forward while the player walks sideways', async 
     physics.dispose()
   }
 })
+
+it('keeps the first-person camera at eye height throughout a jump', async () => {
+  const physics = await loadJoltPhysics()
+  const host = createExportHost({
+    input: new EventTarget(),
+    player: { id: 'p1', name: 'Alba', local: true },
+    files: {},
+  })
+  let input = reading()
+  const views: CameraView[] = []
+  const world = worldFromScene('doc-1', sceneFromTemplate('firstPerson'), {
+    ...host,
+    physics,
+    input: { ...host.input, state: () => input },
+    render: {
+      ...host.render,
+      view: view => {
+        if (view) views.push(structuredClone(view))
+      },
+    },
+  })
+  try {
+    world.step(STEP)
+    world.lateUpdate(1, STEP)
+    const standingView = views.at(-1)
+    if (!standingView) throw new Error('Missing standing first-person view')
+    const standing = standingView.position.y
+
+    input = reading({ pressed: ['Space'] })
+    world.step(STEP)
+    world.lateUpdate(1, STEP)
+
+    const jumpingView = views.at(-1)
+    if (!jumpingView) throw new Error('Missing jumping first-person view')
+    expect(jumpingView.position.y).toBeGreaterThan(standing)
+    const body = [...world.entities.withComponent('CharacterController')][0]
+    const pose = body ? [...physics.poses()].find(one => one.body === body.id) : undefined
+    expect(pose).toBeDefined()
+    expect(jumpingView.position.y).toBeCloseTo((pose?.position.y ?? 0) + 0.8, 5)
+
+    input = reading()
+    for (let frame = 0; frame < 30; frame++) {
+      world.step(STEP)
+      world.lateUpdate(1, STEP)
+      const view = views.at(-1)
+      const currentPose = body ? [...physics.poses()].find(one => one.body === body.id) : undefined
+      if (!view || !currentPose) throw new Error('Missing first-person jump pose')
+      expect(view.position.y).toBeCloseTo(currentPose.position.y + 0.8, 5)
+    }
+  } finally {
+    world.dispose()
+    physics.dispose()
+  }
+})
+
+/** Six frames of a straight vertical climb, as the height the body reached and the one filmed. */
+function climbedHeights(template: 'firstPerson' | 'thirdPerson'): { body: number; view: number }[] {
+  const physics = notedPhysics()
+  const views: CameraView[] = []
+  const world = worldFromScene('doc-1', sceneFromTemplate(template), {
+    ...createExportHost({
+      input: new EventTarget(),
+      player: { id: 'p1', name: 'Alba', local: true },
+      files: {},
+    }),
+    physics,
+    render: {
+      place: () => {},
+      view: view => {
+        if (view) views.push(structuredClone(view))
+      },
+      veil: () => {},
+    },
+  })
+  try {
+    const body = [...world.entities.withComponent('CharacterController')][0]
+    if (!body) throw new Error('Missing climbing character')
+
+    return Array.from({ length: 6 }, (_, step) => {
+      body.transform.position.y = 0.9 + step * 0.35
+      world.lateUpdate(0, STEP)
+      const view = views.at(-1)
+      if (!view) throw new Error('Missing climbing view')
+      return { body: body.transform.position.y, view: view.position.y }
+    })
+  } finally {
+    world.dispose()
+    physics.dispose()
+  }
+}
+
+it('follows the first-person camera through a vertical climb', () => {
+  for (const frame of climbedHeights('firstPerson')) {
+    expect(frame.view).toBeCloseTo(frame.body + 0.8, 5)
+  }
+})
+
+// The arm that films it lags on purpose, and that lag stops at the height: an eye held back on the
+// way up reads as the ground dropping away rather than the body rising.
+it('follows the over-the-shoulder camera through a vertical climb', () => {
+  const frames = climbedHeights('thirdPerson')
+  const first = frames[0]
+  if (!first) throw new Error('Missing over-the-shoulder climb')
+
+  for (const frame of frames)
+    expect(frame.view).toBeCloseTo(frame.body + (first.view - first.body), 5)
+})

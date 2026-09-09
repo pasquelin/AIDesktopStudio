@@ -97,10 +97,9 @@ describe('SelectField', () => {
   })
 
   /**
-   * The one layout carrying bespoke behaviour, and it was tested nowhere: it draws its own
-   * chevron — the browser pins the native one to the edge of the control, where no padding
-   * reaches it — and reads quieter while nothing is chosen, which is how a filter bar shows at a
-   * glance which of its facets are actually filtering.
+   * It draws its own chevron, as `stacked` does — the browser pins the native one to the edge of
+   * the control, where no padding reaches it — and reads quieter while nothing is chosen, which
+   * is how a filter bar shows at a glance which of its facets are actually filtering.
    */
   describe('the filter-bar layout', () => {
     it('draws a chevron of its own, the native one being unreachable', () => {
@@ -109,14 +108,17 @@ describe('SelectField', () => {
       )
 
       expect(container.querySelector('svg')).toBeInTheDocument()
-      expect(screen.getByRole('combobox')).toHaveClass('appearance-none')
+      // `bg-none` is the plugin's own chevron being dropped: it draws it in the background.
+      expect(screen.getByRole('combobox')).toHaveClass('bg-none')
     })
 
+    // Read on the BOX, which is where `Select` takes its ink: the list is `text-inherit`, so a
+    // colour written on the control itself would be the skin's `text-text` and never this one.
     it('reads quieter while nothing is chosen, and at full ink once something is', () => {
       const { rerender } = render(
         <SelectField layout="bar" label="Type" value="" options={BLENDS} onChange={vi.fn()} />,
       )
-      expect(screen.getByRole('combobox')).toHaveClass('text-muted')
+      expect(screen.getByRole('combobox').parentElement).toHaveClass('text-muted')
 
       rerender(
         <SelectField
@@ -127,7 +129,7 @@ describe('SelectField', () => {
           onChange={vi.fn()}
         />,
       )
-      expect(screen.getByRole('combobox')).not.toHaveClass('text-muted')
+      expect(screen.getByRole('combobox').parentElement).not.toHaveClass('text-muted')
     })
   })
 
@@ -190,7 +192,19 @@ describe('SelectField', () => {
   it('holds no end column on a stacked field with nothing to put in it', () => {
     const { container } = renderField({ layout: 'stacked' })
 
-    expect(container.querySelector('[aria-hidden="true"]')).toBeNull()
+    // The column is `FieldActions`' span; the chevron below is an svg and hides itself too.
+    expect(container.querySelector('span[aria-hidden="true"]')).toBeNull()
+  })
+
+  /**
+   * `stacked` drops the appearance and reserves room at its end exactly as `bar` does, but drew
+   * nothing into it: the welcome's language field ended on an empty right edge.
+   */
+  it('draws its own chevron on a stacked field, the appearance being dropped', () => {
+    const { container } = renderField({ layout: 'stacked' })
+
+    expect(container.querySelector('svg')).toBeInTheDocument()
+    expect(screen.getByRole('combobox')).toHaveClass('bg-none')
   })
 
   it('still draws what follows a stacked select', () => {

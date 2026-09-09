@@ -1,3 +1,5 @@
+import { isAbortError } from '@shared/guards'
+import { localizedError } from '@shared/localizedError'
 import { getBridge } from '@/services/bridge'
 import { reportFailure, reportNotice } from '@/services/diagnostics'
 import { assetsById, useAssets } from '@/stores/assets'
@@ -205,7 +207,7 @@ async function rewriteSourceAsset(
       { replaces: source, name: document.title, format },
       captured,
     )
-    if (!written) throw new Error('nothing to bake yet')
+    if (!written) throw localizedError('bakeContentEmpty')
     assetBehind.delete(document.id)
     useLivePreviews.getState().revokePreview(source)
     useAssets.getState().invalidate()
@@ -220,7 +222,7 @@ async function copyDocumentAsset(
 ): Promise<boolean> {
   const source = document.sourceAssetId
   if (!source || !io.writeAsset || io.assetOnly) {
-    reportFailure('assets.copy', document.title, new Error('nothing to copy'))
+    reportFailure('assets.copy', document.title, localizedError('copyContentEmpty'))
     return false
   }
   const name = i18next.t('documents.copyName', { name: document.title })
@@ -233,14 +235,14 @@ async function copyDocumentAsset(
       draft,
     )
     if (!copy) {
-      reportFailure('assets.copy', document.title, new Error('nothing to bake yet'))
+      reportFailure('assets.copy', document.title, localizedError('bakeContentEmpty'))
       return false
     }
     const created = await useDocuments
       .getState()
       .create(document.workspace, { title: name, sourceAssetId: copy.id })
     if (!created) {
-      reportFailure('assets.copy', document.title, new Error('no document for the copy'))
+      reportFailure('assets.copy', document.title, localizedError('copyDocumentMissing'))
       return false
     }
     await bridge.documents.write(
@@ -338,9 +340,6 @@ function loadIsCurrent(load: DocumentLoad, io: DocumentIo): boolean {
   )
 }
 
-function isAbortError(error: unknown): boolean {
-  return error instanceof DOMException && error.name === 'AbortError'
-}
 export async function rehydrateDocument(documentId: string): Promise<void> {
   const bridge = getBridge()
   const document = useDocuments.getState().documents[documentId]

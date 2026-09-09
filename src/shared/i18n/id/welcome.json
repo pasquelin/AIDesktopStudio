@@ -1,0 +1,72 @@
+{
+  "welcome": {
+    "skip": "Lewati",
+    "skipHint": "Menutup pengantar ini dan membuka studio dengan pengaturan saat ini",
+    "back": "Sebelumnya",
+    "backHint": "Kembali ke layar sebelumnya",
+    "next": "Lanjutkan",
+    "nextHint": "Pergi ke layar berikutnya",
+    "done": "Mulai",
+    "doneHint": "Menutup pengantar ini dan membuka studio",
+    "steps": "Langkah {{current, number}} dari {{total, number}}",
+    "goToStep": "Pergi ke langkah {{current, number}} — {{title}}",
+    "language": {
+      "title": "Pilih bahasa Anda",
+      "body": "Setiap menu, tombol, dan pesan menggunakan bahasa ini. Anda dapat mengubahnya nanti di Pengaturan.",
+      "hint": "Menampilkan aplikasi dalam {{name}}"
+    },
+    "look": {
+      "title": "Tampilannya",
+      "body": "Dark adalah tema studio sendiri. Ubah jika Anda bekerja di siang hari.",
+      "themeHint": "Beralih aplikasi ke tema {{name}}"
+    },
+    "craft": {
+      "title": "Navigasi 3D Anda",
+      "body": "Tampilan 3D mencerminkan gerakan perangkat lunak yang sudah Anda kenal. Anda dapat mengubahnya nanti di pengaturan.",
+      "navigationHint": "Menggunakan gerakan viewport {{name}} di tampilan 3D"
+    },
+    "ai": {
+      "title": "AI, melalui setiap pintu",
+      "body": "Studio tidak tergantung pada AI tertentu: mereka terhubung, mereka ditukar, dan mereka bahkan dapat memimpinnya.",
+      "local": {
+        "title": "Di mesin ini",
+        "body": "Studio mengunduh bobot dan menjalankannya di sini. Tidak ada yang pergi, tidak ada yang ditagih."
+      },
+      "ollama": {
+        "title": "Dengan Ollama",
+        "body": "Sudah diinstal? Studio membaca model Anda dan menggunakannya seperti apa adanya."
+      },
+      "cloud": {
+        "title": "Di penyedia",
+        "body": "Satu kunci, dan pembuatan pergi keluar. Dapat ditukar: tidak ada yang menjadi produk."
+      },
+      "mcp": {
+        "title": "Dan sebaliknya",
+        "body": "Studio menerbitkan alatnya: Claude Code, atau agen MCP apa pun, membuka proyek dan menghasilkan untuk Anda."
+      }
+    },
+    "models": {
+      "title": "Model, bagian demi bagian",
+      "body": "Studio mengunduh bobot, lalu menjalankannya di sini. Beberapa model memerlukan akses dari penerbitnya. Ukuran menunjukkan ruang disk yang diperlukan.",
+      "sectionHint": "Menampilkan model: {{name}}",
+      "more": "Katalog lengkap ada di pengaturan.",
+      "motionOptional": "Pembuatan gerakan bersifat opsional. Instal model sekarang, atau lanjutkan dan temukan nanti di Pengaturan → AI → 3D. Pengalihtargetan animasi berfungsi tanpa AI."
+    },
+    "account": {
+      "title": "Layanan cloud, jika Anda memilikinya",
+      "body": "Studio bekerja tanpa akun, pada file Anda sendiri. Kunci membuka pembuatan dan perpustakaan bersama.",
+      "stored": "Layanan-layanan ini sudah disimpan di mesin ini. Tambahkan yang lain, atau lanjutkan.",
+      "addService": "Tambahkan layanan",
+      "addServiceHint": "Membuka formulir untuk menyimpan satu kunci lagi",
+      "adding": "Tempel kunci layanan yang akan disimpan.",
+      "backToList": "Kembali ke daftar",
+      "backToListHint": "Menghapus apa yang diketik di sini dan menampilkan layanan yang disimpan lagi"
+    },
+    "project": {
+      "title": "Proyek pertama Anda",
+      "body": "Proyek adalah folder di disk Anda. Buat satu, buka satu, atau lewati dan mulai dari Beranda.",
+      "createHint": "Memilih folder kosong dan menjadikannya proyek",
+      "openHint": "Membuka folder proyek yang sudah ada di disk ini"
+    }
+  }
+}

@@ -197,6 +197,14 @@ export type LocalRuntime = {
    */
   unload?: (endpoint?: RuntimeEndpointId) => Promise<void>
   /**
+   * Ends the PROCESS behind a door, where `unload` only hands its weights back.
+   *
+   * Its own verb because the two have opposite costs: unloading is what makes room for the next
+   * model on the same door, closing repays a cold start to reopen it. Absent for a runtime the
+   * studio does not own the process of — Ollama's server outlives every release.
+   */
+  close?: (endpoint: RuntimeEndpointId) => Promise<void>
+  /**
    * Models this runtime holds that are not in the shipped catalogue — Ollama tags. Absent for a
    * runtime that only ever serves manifests we already have.
    */

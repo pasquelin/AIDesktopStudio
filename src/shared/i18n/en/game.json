@@ -92,6 +92,7 @@
       "drag": "Drag",
       "drive": "Drive",
       "fidelity": "Fidelity",
+      "followVertical": "Stick to the subject height",
       "friction": "Friction",
       "from": "Source file",
       "graph": "Animation graph",
@@ -179,6 +180,75 @@
       "visualChangesPossible": "Visual changes: POSSIBLE",
       "failed": "The game could not be exported."
     },
+    "animationGraph": {
+      "hint": "The graph the game plays: parameters, states and transitions.",
+      "invalid": "The JSON does not describe a valid animation graph.",
+      "jsonLabel": "Animation graph JSON",
+      "loadFailed": "This animation graph could not be read.",
+      "loading": "Loading animation graph…",
+      "writeFailed": "This animation graph could not be written to disk.",
+      "views": "Editing view",
+      "viewHint": {
+        "simple": "Shows what the graph plays, state by state, with no setting",
+        "expert": "Opens every setting as a form",
+        "json": "Shows the file exactly as it is written on disk"
+      },
+      "context": "Context",
+      "contextDescription": "What this graph is called, which half of the body it drives, and the state a game starts on.",
+      "id": "Identifier",
+      "idHelp": "The name a script asks for this graph by. It comes from the file name.",
+      "initial": "Starting state",
+      "initialHelp": "The state played the moment the character enters. The first transitions leave from it.",
+      "parameters": "Parameters",
+      "parametersDescription": "The values transitions decide on. The game publishes some by itself; the others are yours.",
+      "builtInDescription": "The first ones are published by the game on every step: speed, ground contact, jump. You may use them without declaring anything.",
+      "parameterKind": "Kind",
+      "parameterKinds": {
+        "number": "Number",
+        "boolean": "Yes or no"
+      },
+      "addParameter": "Add parameter",
+      "removeParameter": "Remove this parameter",
+      "noParameter": "No parameter of your own: only the game’s are available.",
+      "states": "States",
+      "statesDescription": "What the character can be doing, and the animation each one plays.",
+      "stateDescription": "A state plays one animation for as long as nothing takes it out of it.",
+      "addState": "Add state",
+      "removeState": "Remove this state",
+      "initialBadge": "Start",
+      "clipKindHelp": "Where the animation comes from: the model’s own file, one shipped with the studio, or a file of the project.",
+      "clipKinds": {
+        "embedded": "The model’s own",
+        "bundled": "Shipped with the studio",
+        "asset": "A file of the project"
+      },
+      "speedFrom": "Speed driven by",
+      "speedFromHelp": "The parameter that multiplies the animation’s speed. It is what keeps a walk cycle under a character speeding up.",
+      "speedFromNone": "None",
+      "transitions": "Transitions",
+      "transitionsDescription": "The way from one state to another, and what must be true for it to be taken.",
+      "transitionRank": "Transition {{rank}}",
+      "transitionSentence": "{{from}} → {{to}}",
+      "addTransition": "Add transition",
+      "removeTransition": "Remove this transition",
+      "noTransition": "No transition: the starting state will play forever.",
+      "anyState": "Any state",
+      "from": "From",
+      "fromHelp": "The state being left. “Any state” is what lets a jump interrupt whatever was playing.",
+      "to": "To",
+      "exitTime": "Way out allowed from",
+      "exitTimeHelp": "The share of the animation to play before the way out is allowed. It is what lets a landing finish instead of being cut off.",
+      "priority": "Priority",
+      "priorityHelp": "Who wins when two transitions are possible at the same moment. The higher number takes it.",
+      "fadeHelp": "The cross-fade between the two animations, in seconds. At zero the change is instant.",
+      "parameterRank": "Parameter {{rank}}",
+      "conditionRank": "Condition {{rank}}",
+      "stateOnce": "Played once",
+      "stateEntries": "What leads here",
+      "stateEntryWhen": "From {{from}}, if {{when}}",
+      "stateEntryAlways": "From {{from}}, at the end of the animation",
+      "stateNoEntry": "Nothing leads here yet."
+    },
     "inputMap": {
       "actionId": "Action",
       "actionKind": "Value",
@@ -210,11 +280,6 @@
       },
       "loadFailed": "This input map could not be read.",
       "loading": "Loading input map…",
-      "mode": {
-        "expert": "Expert",
-        "json": "JSON",
-        "simple": "Simple"
-      },
       "modeHint": "Changes how the same input map is edited",
       "preset": {
         "character": "Character",
@@ -227,7 +292,6 @@
       "priority": "Priority",
       "removeAction": "Remove action",
       "removeBinding": "Remove binding",
-      "save": "Save",
       "scale": "Scale",
       "unnamedAction": "Unnamed action",
       "capture": "Press",
@@ -244,6 +308,45 @@
         "scale": "How far this binding pushes, and which way. −1 for the half that goes left or backwards, 1 for the other.",
         "deadZone": "Below this value the stick counts as at rest. A worn stick drifts: with no dead zone, the character walks off on its own.",
         "invert": "Turns this control round. What some pilots expect of pitch, and nobody of anything else."
+      },
+      "documentDescription": "An input map says which key or button fires each action of the game. The game reads action NAMES, never keys: changing a key here changes no script.",
+      "views": "Editing view",
+      "writeFailed": "This input map could not be written to disk.",
+      "contextDescription": "What this set of controls is called, and when it comes into service.",
+      "actionsTitle": "Actions",
+      "actionsDescription": "One action per thing the player can do. The name is what the game reads; the bindings under it are the keys that fire it.",
+      "bindings": "Bindings",
+      "bindingsDescription": "Every key and control that fires this action. One action may carry several: that is how a game answers the keyboard AND the gamepad.",
+      "bindingRank": "Binding {{rank}}",
+      "noBinding": "No binding: this action will answer nothing.",
+      "noAction": "No action: this context does nothing yet.",
+      "presetsDescription": "A ready-made starting point. It replaces this map’s actions; the context name stays as it is.",
+      "viewHint": {
+        "simple": "Shows what the map does, action by action, with no setting",
+        "expert": "Opens every setting as a form",
+        "json": "Shows the file exactly as it is written on disk"
+      },
+      "action": {
+        "move": "Move the character: left, right, forward, back.",
+        "look": "Look around: turn the head or the camera.",
+        "jump": "Jump.",
+        "run": "Run, for as long as the control is held.",
+        "interact": "Act on what is in front: open, pick up, talk.",
+        "steer": "Steer: the vehicle goes left or right.",
+        "accelerate": "Accelerate.",
+        "brake": "Brake.",
+        "handBrake": "Handbrake: the rear wheels lock and the vehicle slides.",
+        "exit": "Leave the vehicle.",
+        "pitch": "Pitch: the nose of the aircraft goes down or up.",
+        "roll": "Roll: the aircraft banks to one side.",
+        "yaw": "Yaw: the nose swings left or right without banking.",
+        "throttle": "The throttle: how much power the engine gives.",
+        "navigate": "Move the selection inside a menu.",
+        "next": "Go to the next item.",
+        "previous": "Go back to the previous item.",
+        "confirm": "Confirm what is chosen.",
+        "back": "Go back, or close.",
+        "custom": "An action of your own: a script reads this name to know when it fired."
       }
     },
     "controlsMenu": {
@@ -314,6 +417,11 @@
       "noFaults": "No faults",
       "title": "Play mode",
       "waiting": "Waiting for the studio…"
+    },
+    "scriptView": {
+      "simple": "Simple",
+      "expert": "Expert",
+      "json": "JSON"
     }
   }
 }

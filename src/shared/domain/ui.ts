@@ -96,7 +96,7 @@ export type UiEdges = { top: number; right: number; bottom: number; left: number
  * 🛑 NOT scaled by `design`: nothing divides by that resolution, and a second renderer that
  * believed otherwise would disagree with `layoutOf` on every fixed size.
  */
-export type UiLength = { unit: 'px' | 'percent'; value: number }
+type UiLength = { unit: 'px' | 'percent'; value: number }
 
 /**
  * How far an element reaches along one axis.
@@ -170,7 +170,7 @@ export type UiFit = 'contain' | 'cover' | 'fill' | 'none'
 
 export const UI_FITS: readonly UiFit[] = ['contain', 'cover', 'fill', 'none']
 
-export type UiBorder = { width: number; color: string; radius: number }
+type UiBorder = { width: number; color: string; radius: number }
 
 export type UiStyle = {
   background: UiFill

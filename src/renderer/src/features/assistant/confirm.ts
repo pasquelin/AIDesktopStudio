@@ -35,7 +35,7 @@ export type ConfirmRequest = {
  */
 export type ConfirmAnswer = { granted: boolean; input: Record<string, unknown> }
 
-export type Confirmer = (request: ConfirmRequest) => Promise<ConfirmAnswer>
+type Confirmer = (request: ConfirmRequest) => Promise<ConfirmAnswer>
 
 const host = createMountedHost<Confirmer>()
 

@@ -1,0 +1,76 @@
+{
+  "gui": {
+    "stage": "界面页面",
+    "tools": "界面工具",
+    "tree": "界面元素",
+    "noDocument": "打开一个界面，查看它包含什么。",
+    "visible": "可见",
+    "locked": "已锁定——指针抓不到它"
+  },
+  "guiTools": {
+    "add": "添加",
+    "addHint": "在所选内容里面放置一个元素",
+    "duplicate": "创建副本",
+    "duplicateHint": "在所选内容旁边复制一份",
+    "group": "编组",
+    "groupHint": "把所选内容归入一个面板",
+    "delete": "删除",
+    "deleteHint": "把所选内容从界面中移除",
+    "lock": "锁定",
+    "lockHint": "把所选内容放到指针够不到的地方",
+    "zoomIn": "放大",
+    "zoomInHint": "把页面拉近",
+    "zoomOut": "缩小",
+    "zoomOutHint": "把页面推远",
+    "fit": "适应",
+    "fitHint": "把整个页面框进面板里",
+    "actual": "实际大小",
+    "actualHint": "页面的一个像素对应屏幕的一个像素",
+    "resolution": "分辨率",
+    "resolutionHint": "这个界面所依据的画布",
+    "types": {
+      "panel": "面板",
+      "stack": "堆叠",
+      "grid": "栅格",
+      "scroll": "滚动视图",
+      "spacer": "间隔",
+      "text": "文本",
+      "image": "图像",
+      "button": "按钮",
+      "progress": "进度条",
+      "slider": "滑块",
+      "input": "输入框",
+      "checkbox": "复选框",
+      "screen": "界面屏幕"
+    },
+    "typeHints": {
+      "panel": "一个容纳其他元素的框",
+      "stack": "把子元素排成一行或一列",
+      "grid": "把子元素排成等宽的列",
+      "scroll": "一个内容可以滚动的框",
+      "spacer": "在堆叠中把相邻元素推开",
+      "text": "屏幕上的文字",
+      "image": "来自项目的一张图像",
+      "button": "可以按下的东西，带图标或不带",
+      "progress": "一条按数值填充的条",
+      "slider": "一个可以拖动的数值",
+      "input": "供输入的文本",
+      "checkbox": "一个可以勾选的方框",
+      "screen": "界面的根"
+    },
+    "resolutions": {
+      "desktopHd": "1920 × 1080",
+      "desktop720": "1280 × 720",
+      "phonePortrait": "手机，竖向",
+      "phoneLandscape": "手机，横向",
+      "free": "自由"
+    },
+    "resolutionHints": {
+      "desktopHd": "桌面，十六比九",
+      "desktop720": "桌面，十六比九，像素数减半",
+      "phonePortrait": "390 × 844",
+      "phoneLandscape": "844 × 390",
+      "free": "文档本身已有的尺寸"
+    }
+  }
+}

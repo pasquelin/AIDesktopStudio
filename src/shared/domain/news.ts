@@ -27,9 +27,7 @@ export const NEWS_TAGS_BY_FAMILY: Partial<Record<ModelFamily, readonly string[]>
  * The families the band can list, in the order their chips stand. The cast is the one thing
  * `Object.keys` cannot say: the record above is keyed by `ModelFamily` and by nothing else.
  */
-export const NEWS_FAMILIES: readonly ModelFamily[] = Object.keys(
-  NEWS_TAGS_BY_FAMILY,
-) as ModelFamily[]
+const NEWS_FAMILIES: readonly ModelFamily[] = Object.keys(NEWS_TAGS_BY_FAMILY) as ModelFamily[]
 
 /**
  * What one chip asks for: a family of models, or the articles — which belong to no family.

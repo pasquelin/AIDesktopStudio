@@ -34,9 +34,9 @@ export type GltfQuaternion = readonly [number, number, number, number]
 /** A translation, a scale, a linear colour: what glTF calls a VEC3, and always three numbers. */
 export type GltfVec3 = readonly [number, number, number]
 
-export type GltfExtras = Record<string, unknown>
+type GltfExtras = Record<string, unknown>
 
-export type GltfAsset = { version: string; generator?: string; extras?: GltfExtras }
+type GltfAsset = { version: string; generator?: string; extras?: GltfExtras }
 
 export type GltfNode = {
   name?: string
@@ -55,9 +55,9 @@ export type GltfPunctualLight = {
 }
 
 /** An image the file points at rather than embeds — a `.hdr` beside the document stays a `.hdr`. */
-export type GltfImage = { uri: string; name?: string }
+type GltfImage = { uri: string; name?: string }
 
-export type GltfScene = { name?: string; nodes?: readonly number[] }
+type GltfScene = { name?: string; nodes?: readonly number[] }
 
 export type GltfDocument = {
   asset: GltfAsset

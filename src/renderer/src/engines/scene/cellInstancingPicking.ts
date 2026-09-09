@@ -22,7 +22,7 @@ export function sourcesByNode(groups: readonly Grouped[]): ReadonlyMap<string, M
  * The sources of what the view STANDS, which is what the editor may pick. A cell the follow put
  * away draws nothing, and a ray that met its bodies would select over empty space.
  */
-export function standingSources(
+function standingSources(
   buckets: Iterable<Bucket>,
   standing: ReadonlySet<CellKey>,
   movers: Iterable<Mobile>,
@@ -47,7 +47,7 @@ export function standingSources(
 }
 
 /** The lots the view STANDS — the runtime representation, against the sources above. */
-export function standingLots(
+function standingLots(
   buckets: Iterable<Bucket>,
   standing: ReadonlySet<CellKey>,
   movers: Iterable<Mobile>,
@@ -60,7 +60,7 @@ export function standingLots(
 }
 
 /** What `standingSources` would return, counted over the buckets rather than materialised. */
-export function standingSourceCount(
+function standingSourceCount(
   buckets: Iterable<Bucket>,
   standing: ReadonlySet<CellKey>,
   movers: Iterable<Mobile>,

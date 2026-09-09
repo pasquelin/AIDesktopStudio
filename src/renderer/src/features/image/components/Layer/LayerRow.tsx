@@ -18,7 +18,7 @@ import { useCanvases } from '@/stores/canvases'
  * Resolved by the list rather than per row — see `LayerList`. The eye's three are not here: it
  * lives in the tree's pinned column now, and the list hands them straight to it.
  */
-export type LayerRowLabels = {
+type LayerRowLabels = {
   locks: string
   locksHint: string
   rename: string

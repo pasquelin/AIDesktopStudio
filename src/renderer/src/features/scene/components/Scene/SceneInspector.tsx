@@ -27,17 +27,16 @@ import { changedFields } from '@/helpers/objects'
 import { useToken } from '@/hooks/useToken'
 import { sceneOf, useScenes } from '@/stores/scenes'
 import { DescriptorSection } from '../../../../components/DescriptorSection'
-import { PropertySection } from '@/components/PropertySection'
 import { CameraAlignButton } from '../Camera/CameraAlignButton'
 import { CameraShotSection } from '../Camera/ShotSection/CameraShotSection'
 import { ComponentsSection } from '../ComponentsSection'
 import { RigSection } from '../RigSection'
+import { CharacterMotionSection } from '@/features/character/components/Character/Motion/CharacterMotionSection'
 import { EnvironmentPanel } from '../Environment/EnvironmentPanel'
 import { CameraPostSection } from '../Camera/CameraPostSection'
 import { PostProcessingSection } from '../Post/PostProcessingSection'
 import { MaterialSection } from '../../../material/components/Material/MaterialSection'
 import { ModelDressSection } from '../ModelDressSection/ModelDressSection'
-import { CharacterMotionList } from '../../../character/components/Character/Motion/CharacterMotionList'
 import {
   fileTexturesOfNode,
   materialSlotsOfNode,
@@ -264,13 +263,11 @@ export function SceneInspector({ documentId }: SceneInspectorProps) {
               onChange={dress => edit.run(dressModel(model.id, dress))}
               onWearAt={(slot, materialId) => edit.run(wearMaterialAt(model.id, slot, materialId))}
             />
-            <PropertySection title={t('character.motions')} scId="character.motions">
-              <CharacterMotionList
-                assetId={model.model.assetId}
-                documentId={documentId}
-                nodeId={model.id}
-              />
-            </PropertySection>
+            <CharacterMotionSection
+              assetId={model.model.assetId}
+              documentId={documentId}
+              nodeId={model.id}
+            />
           </>
         )}
 

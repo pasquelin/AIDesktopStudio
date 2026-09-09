@@ -55,6 +55,7 @@
     var still = el.hasAttribute('data-still');   /* parallaxe seule, sans fondu */
     items.push({
       el: el,
+      workshop: Boolean(el.closest('.mode')),
       still: still,
       speed: parseFloat(d.speed || 0),
       speedx: parseFloat(d.speedx || 0),
@@ -88,7 +89,7 @@
   });
 
   var depths = Array.prototype.map.call(document.querySelectorAll('[data-depth]'), function (img) {
-    return { img: img, box: img.closest('.frame') || img.parentElement };
+    return { img: img, box: img.closest('.frame') || img.parentElement, workshop: Boolean(img.closest('.mode')) };
   });
 
   /* ------------------------------------------------------------ héros */
@@ -109,6 +110,30 @@
   var stageFrame = stage && stage.querySelector('.stage__frame');
   var stageImg = stageFrame && stageFrame.querySelector('img');
   var wide = window.matchMedia('(min-width: 861px)');
+  var navigation = null;
+  var stageTransit = null;
+  var stageOpened = 0;
+  var stageCompleted = false;
+  var stageAdjustment = null;
+  var entryAnchor = window.location && window.location.hash ? document.getElementById(window.location.hash.slice(1)) : null;
+
+  function releaseNavigation() {
+    if (!navigation) return;
+    navigation = null;
+    if (stageTransit) stageTransit.releasedAt = performance.now();
+  }
+
+  function interruptNavigation() {
+    if (!navigation) return;
+    releaseNavigation();
+    window.scrollTo({ top: window.scrollY, behavior: 'instant' });
+  }
+  window.addEventListener('wheel', interruptNavigation, { passive: true });
+  window.addEventListener('touchstart', interruptNavigation, { passive: true });
+  window.addEventListener('resize', interruptNavigation, { passive: true });
+  window.addEventListener('keydown', function (event) {
+    if (['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'Home', 'End', ' '].includes(event.key)) interruptNavigation();
+  });
 
   /* --------------------------------------------- onglets & barre de statut */
 
@@ -134,16 +159,26 @@
       entries.forEach(function (e) { seen[e.target.id] = e.intersectionRatio; });
       var best = null, top = 0;
       Object.keys(seen).forEach(function (id) { if (seen[id] > top) { top = seen[id]; best = id; } });
-      if (best) setActive(best);
+      if (best && !navigation) setActive(best);
     }, { threshold: [0, .1, .25, .5, .75], rootMargin: '-14% 0px -34% 0px' });
     sections.forEach(function (s) { io.observe(s); });
   }
 
   tabs.forEach(function (a) {
-    a.addEventListener('click', function () {
-      setTimeout(function () {
-        a.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
-      }, 60);
+    a.addEventListener('click', function (event) {
+      var target = document.querySelector(a.getAttribute('href'));
+      if (!target) return;
+      event.preventDefault();
+      var top = target.id === 'accueil' ? 0 : window.scrollY + target.getBoundingClientRect().bottom - window.innerHeight + 42;
+      if (!reduced) {
+        navigation = { top: Math.max(0, Math.min(top, document.documentElement.scrollHeight - window.innerHeight)) };
+        if (stagePin && wide.matches && !stageCompleted) {
+          stageTransit = { offset: stagePin.getBoundingClientRect().top - stage.getBoundingClientRect().top, opened: stageOpened, releasedAt: null };
+        }
+      }
+      setActive(target.id);
+      window.history.pushState(null, '', a.getAttribute('href'));
+      window.scrollTo({ top: Math.max(0, top), behavior: reduced ? 'instant' : 'smooth' });
     });
   });
 
@@ -152,6 +187,23 @@
   function timecode(p) {
     var f = Math.round(p * TOTAL);
     return '00:' + pad(Math.floor(f / (60 * FPS))) + ':' + pad(Math.floor(f / FPS) % 60) + ':' + pad(f % FPS);
+  }
+
+  /* --------------------------------------------------- sélecteur de langue */
+  /* Un `<details>` natif ne se referme ni au clic à côté ni sur Échap : le navigateur ne
+     rend ce service qu'à un popover. Le menu couvre le contenu, donc on le ferme ici. */
+
+  var langs = document.querySelector('.langs');
+  if (langs) {
+    document.addEventListener('click', function (event) {
+      if (langs.open && !langs.contains(event.target)) langs.open = false;
+    });
+    document.addEventListener('keydown', function (event) {
+      if (event.key !== 'Escape' || !langs.open) return;
+      langs.open = false;
+      var summary = langs.querySelector('summary');
+      if (summary) summary.focus();   /* le focus était dans le menu qui vient de disparaître */
+    });
   }
 
   /* ------------------------------------------------- bandeau horizontal */
@@ -174,7 +226,7 @@
     reads.length = 0;
     for (var i = 0; i < items.length; i++) {
       var item = items[i];
-      reads.push(item.done && !item.speed ? null : item.el.getBoundingClientRect());
+      reads.push(item.done && !item.speed && !item.speedx ? null : item.el.getBoundingClientRect());
     }
     var dRects = [];
     for (var j = 0; j < depths.length; j++) dRects.push(depths[j].box.getBoundingClientRect());
@@ -184,9 +236,11 @@
       dRects: dRects,
       scrollY: scrollY,
       page: maxScroll > 0 ? clamp(scrollY / maxScroll, 0, 1) : 0,
-      stageRect: stage ? stage.getBoundingClientRect() : null,
-      pinH: stagePin ? stagePin.offsetHeight : 0,
-      stageH: stage ? stage.offsetHeight : 0
+      stageRect: stage && (!stageCompleted || stageAdjustment) ? stage.getBoundingClientRect() : null,
+      pinH: stagePin && !stageCompleted ? stagePin.offsetHeight : 0,
+      pinTop: stagePin && !stageCompleted ? parseFloat(getComputedStyle(stagePin).top) : 0,
+      stageH: stage && !stageCompleted ? stage.offsetHeight : 0,
+      entryTop: entryAnchor ? entryAnchor.getBoundingClientRect().top + scrollY - (parseFloat(getComputedStyle(entryAnchor).scrollMarginTop) || 0) : null
     };
   }
 
@@ -203,7 +257,7 @@
       return;
     }
     var y = par + (1 - e) * item.rise;
-    var x = parx + (1 - e) * item.shift;
+    var x = parx + (1 - e) * (item.workshop && window.innerWidth <= 940 ? 0 : item.shift);
     var sc = item.zoom ? (1 - item.zoom * (1 - e)) : 1;
     item.el.style.transform = 'translate3d(' + x.toFixed(2) + 'px,' + y.toFixed(2) + 'px,0)' +
       (item.zoom ? ' scale(' + sc.toFixed(4) + ')' : '');
@@ -223,7 +277,7 @@
     var par = -off * item.speed * vh * 1.6;
     var parx = -off * item.speedx * vh * 1.6;
     if (item.px === undefined) { item.px = parx; item.py = par; }
-    item.px += (parx - item.px) * 0.11;
+    item.px = item.workshop && window.innerWidth <= 940 ? 0 : item.px + (parx - item.px) * 0.11;
     item.py += (par - item.py) * 0.11;
     transformItem(item, e, item.px, item.py, now);
   }
@@ -234,6 +288,10 @@
 
   function animateDepths(dRects, vh) {
     for (var d = 0; d < depths.length; d++) {
+      if (depths[d].workshop && window.innerWidth <= 940) {
+        depths[d].img.style.transform = 'none';
+        continue;
+      }
       var rect = dRects[d];
       if (rect.bottom < -200 || rect.top > vh + 200) continue;
       var off = (rect.top + rect.height / 2 - vh / 2) / (vh + rect.height);
@@ -245,6 +303,12 @@
 
   function animateHero(scrollY, vh) {
     if (!heroWrap) return;
+    if (window.innerWidth < 1000 || vh < 620) {
+      heroWrap.style.transform = '';
+      heroWrap.style.opacity = '1';
+      if (veil) veil.style.opacity = '0';
+      return;
+    }
     var hp = clamp(scrollY / vh, 0, 1);
     heroWrap.style.transform = 'translate3d(0,' + (hp * 90).toFixed(1) + 'px,0)';
     heroWrap.style.opacity = clamp(1 - hp * 1.35, 0, 1).toFixed(3);
@@ -262,10 +326,33 @@
     return hole;
   }
 
-  function animateStage(frame, vh) {
+  function completeStage(frame) {
+    stageAdjustment = { height: frame.stageH, top: frame.stageRect.top + frame.scrollY, scrollY: frame.scrollY };
+    stageCompleted = true;
+    stageOpened = 1;
+    stageTransit = null;
+    stage.classList.add('stage--complete');
+    stagePin.style.transform = '';
+    stageFrame.style.transform = 'scale(1.0000)';
+    stageFrame.style.borderRadius = '13px';
+    if (stageImg) stageImg.style.transform = 'scale(1.0000)';
+  }
+
+  function animateStage(frame, vh, now) {
+    if (stageCompleted) return 0;
+    if (entryAnchor && stageFrame) { completeStage(frame); return 0; }
     if (stage && stageFrame && wide.matches && frame.stageH > frame.pinH) {
       var q = clamp(-frame.stageRect.top / (frame.stageH - frame.pinH), 0, 1);
       var opened = cube(clamp(q / 0.78, 0, 1));
+      if (stageTransit) {
+        var weight = stageTransit.releasedAt === null ? 1 : 1 - smooth(clamp((now - stageTransit.releasedAt) / 250, 0, 1));
+        var pinnedTop = Math.min(Math.max(frame.stageRect.top, frame.pinTop), frame.stageRect.bottom - frame.pinH);
+        stagePin.style.transform = 'translateY(' + ((frame.stageRect.top + stageTransit.offset - pinnedTop) * weight).toFixed(3) + 'px)';
+        opened += (stageTransit.opened - opened) * weight;
+        if (weight === 0) { stageTransit = null; stagePin.style.transform = ''; }
+      }
+      if (opened >= 1) { completeStage(frame); return 0; }
+      stageOpened = opened;
       var scale = 0.60 + 0.40 * opened;
       stageFrame.style.transform = 'scale(' + scale.toFixed(4) + ')';
       stageFrame.style.borderRadius = (30 - 17 * opened).toFixed(1) + 'px';
@@ -275,12 +362,23 @@
         clamp(frame.stageRect.bottom / (vh * 0.8), 0, 1)
       );
     }
-    if (stageFrame && !wide.matches) {
-      stageFrame.style.transform = '';
-      stageFrame.style.borderRadius = '';
-      if (stageImg) stageImg.style.transform = '';
-    }
+    if (stageFrame && !wide.matches) completeStage(frame);
     return 0;
+  }
+
+  /* La scène qui vient de se replier a retiré de la hauteur au-dessus du pouce : on rend au scroll
+     ce qui a disparu, sinon la page saute. Vrai quand la vue a bougé — l'image est alors périmée. */
+  function settleStage(frame) {
+    if (!stageAdjustment) return false;
+    var removed = Math.max(0, stageAdjustment.height - frame.stageRect.height);
+    var adjusted = stageAdjustment.scrollY - clamp(stageAdjustment.scrollY - stageAdjustment.top, 0, removed);
+    if (navigation && navigation.top > stageAdjustment.top) navigation.top = Math.max(stageAdjustment.top, navigation.top - removed);
+    stageAdjustment = null;
+    if (entryAnchor) { adjusted = frame.entryTop; entryAnchor = null; }
+    if (Math.abs(frame.scrollY - adjusted) <= 1) return false;
+
+    window.scrollTo({ top: adjusted, behavior: 'instant' });
+    return true;
   }
 
   function loop(now) {
@@ -290,6 +388,8 @@
     var vh = window.innerHeight;
 
     var frame = readFrame(vh);
+    if (settleStage(frame)) return;
+    if (navigation && Math.abs(frame.scrollY - navigation.top) < 1) releaseNavigation();
 
     animateItems(now, vh);
 
@@ -297,7 +397,7 @@
 
     animateHero(frame.scrollY, vh);
 
-    window.__fxHole = Math.max(animateStage(frame, vh), frameHole(frame.dRects, vh) * 0.42);
+    window.__fxHole = Math.max(animateStage(frame, vh, now), frameHole(frame.dRects, vh) * 0.42);
 
     /* ---- bandeau horizontal : dérive lente + poussée du scroll ---- */
     if (tickerRow) {
@@ -312,40 +412,4 @@
 
   requestAnimationFrame(loop);
 
-  /* --------------------------------------------------- version publiée */
-  /* `assets/release.json` est écrit par la chaîne de publication au moment du tag :
-     le site n'a donc aucun numéro de version ni aucun nom de fichier en dur, et rien
-     à rééditer à la main. Le fichier ABSENT est le cas normal tant qu'aucune version
-     n'est sortie — les cartes gardent alors ce que le HTML porte. */
-
-  /* Relatif à la RACINE du site, pas à la page : `/AIDesktopStudio/fr/` aurait demandé
-     `/AIDesktopStudio/fr/assets/release.json`, qui n'existe pas. Le gabarit pose la racine
-     sur <html>, parce que lui seul sait à quelle profondeur la page est rendue. */
-  var root = document.documentElement.dataset.root || '';
-
-  fetch(root + 'assets/release.json', { cache: 'no-cache' })
-    .then(function (r) { return r.ok ? r.json() : null; })
-    .then(function (release) {
-      if (!release || !release.tag) return;
-
-      var tag = document.querySelector('[data-release-tag]');
-      if (tag) {
-        var dot = tag.querySelector('.dot');
-        tag.textContent = release.tag;
-        if (dot) tag.insertBefore(dot, tag.firstChild);
-      }
-
-      Array.prototype.forEach.call(document.querySelectorAll('[data-dl]'), function (card) {
-        var asset = (release.assets || {})[card.dataset.dl];
-        var state = card.querySelector('.state');
-        if (!asset || !asset.url) {
-          if (state) state.textContent = 'Non publié pour cette version';
-          return;
-        }
-        card.href = asset.url;
-        card.setAttribute('download', '');
-        if (state) state.textContent = asset.size ? 'Télécharger · ' + asset.size : 'Télécharger';
-      });
-    })
-    .catch(function () { /* pas de version publiée, ou hors ligne : le HTML fait foi */ });
 }

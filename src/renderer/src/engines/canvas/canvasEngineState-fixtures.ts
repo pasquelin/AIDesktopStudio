@@ -87,4 +87,4 @@ const gpu: {
 
 /** The six numbers of an affine map, which is all the engine ever builds one from. */
 export { EXTRACTED, gpu }
-export type { Pair, Placed }
+export type { Placed }

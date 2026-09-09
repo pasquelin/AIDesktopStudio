@@ -189,7 +189,7 @@ export function spriteNode(): SceneNode {
  * Words as a solid. Born with something written in it rather than empty: a text node that draws
  * nothing until someone finds the field is a node the Add menu appears to have failed at.
  */
-export function textNode(): SceneNode {
+function textNode(): SceneNode {
   return {
     id: newId(),
     parentId: null,
@@ -302,6 +302,9 @@ export function playerModuleNodes(
 function playerArm(view: 'firstPerson' | 'thirdPerson', subject: string): Component {
   return {
     ...newComponent('SpringArm'),
+    // A camera that lags in height reads as the ground moving under a jump rather than the body
+    // rising. It is the third person this buys: the first sets `positionLag` to zero outright.
+    followVertical: true,
     ...(view === 'firstPerson'
       ? {
           length: 0,
@@ -309,8 +312,6 @@ function playerArm(view: 'firstPerson' | 'thirdPerson', subject: string): Compon
           rotationLag: 0,
           height: DEFAULT_PLAY.eyeHeight - WALKER_HEIGHT / 2,
           collision: false,
-          pitchMin: -89,
-          pitchMax: 89,
         }
       : {}),
     subject,

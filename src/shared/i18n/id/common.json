@@ -1,0 +1,121 @@
+{
+  "a11y": {
+    "namedValue": "{{value}} — {{name}}"
+  },
+  "actions": {
+    "generate": "Buat",
+    "close": "Tutup",
+    "removeTool": "Hapus alat",
+    "resizeZone": "Ubah ukuran area panel",
+    "resizeSplit": "Ubah ukuran kedua panel",
+    "resizeBand": "Ubah ukuran panel bawah",
+    "retry": "Coba lagi",
+    "retryHint": "Merender ulang area ini tanpa memulai ulang studio",
+    "generateHint": "Memulai pembuatan dengan pengaturan di atas; kemajuannya diikuti di bilah pembuatan",
+    "cancel": "Batalkan"
+  },
+  "jobs": {
+    "none": "Tidak ada pembuatan yang berjalan.",
+    "running_one": "{{count, number}} pembuatan",
+    "running_many": "{{count, number}} pembuatan",
+    "running_other": "{{count, number}} pembuatan",
+    "failed_one": "{{count, number}} kegagalan",
+    "failed_many": "{{count, number}} kegagalan",
+    "failed_other": "{{count, number}} kegagalan",
+    "open": "Tampilkan pembuatan",
+    "openHint": "Membuka daftar pembuatan, baik yang berjalan maupun yang selesai",
+    "status": {
+      "queued": "Dalam antrean",
+      "running": "Berjalan",
+      "succeeded": "Selesai",
+      "failed": "Gagal",
+      "cancelled": "Dibatalkan"
+    },
+    "cancel": "Batalkan pekerjaan",
+    "cancelRefused": "Layanan ini tidak menghentikan pembuatan yang sudah dimulai: pembuatan berjalan sampai selesai dan tetap ditagih."
+  },
+  "tasks": {
+    "running_one": "{{count, number}} tugas",
+    "running_many": "{{count, number}} tugas",
+    "running_other": "{{count, number}} tugas",
+    "open": "Tampilkan tugas",
+    "openHint": "Membuka daftar tugas yang sedang berjalan",
+    "cancel": "Hentikan tugas ini",
+    "phases": {
+      "prepare": "Menyiapkan model",
+      "load": "Memuat mesin",
+      "analyse": "Menganalisis karakter",
+      "skeleton": "Membuat kerangka",
+      "pose": "Menghitung pose istirahat",
+      "skinning": "Menghitung skinning",
+      "apply": "Menerapkan kerangka"
+    }
+  },
+  "dialog": {
+    "allMedia": "Semua media",
+    "video": "Video",
+    "audio": "Audio",
+    "image": "Gambar",
+    "mesh": "Model 3D",
+    "animation": "Animasi",
+    "bundle": "Suntingan beserta medianya",
+    "weights": "Bobot model"
+  },
+  "sorts": {
+    "relevance": "Kualitas: tertinggi dulu",
+    "recent": "Dibuat: terbaru dulu",
+    "oldest": "Dibuat: terlama dulu"
+  },
+  "exportFormats": {
+    "glb": "glTF biner (.glb)",
+    "gltf": "glTF (.gltf)",
+    "usdz": "USDZ (.usdz)",
+    "obj": "Wavefront, hanya bentuk (.obj)",
+    "ply": "Stanford, hanya bentuk (.ply)",
+    "stl": "STL, hanya segitiga (.stl)"
+  },
+  "errors": {
+    "missingCredentials": "Tidak ada kredensial yang tersimpan.",
+    "invalidCredentials": "Kunci atau rahasia API tidak valid.",
+    "forbidden": "Kunci API ini tidak memiliki izin yang diperlukan.",
+    "planRestricted": "Model ini tidak termasuk dalam paket langganan Anda.",
+    "notFound": "Sumber daya tidak ditemukan.",
+    "rateLimited": "Terlalu banyak permintaan. Mencoba lagi…",
+    "server": "Layanan pembuatan tidak tersedia untuk sementara.",
+    "network": "Koneksi terputus. Periksa jaringan lalu coba lagi.",
+    "unexpected": "Terjadi kesalahan yang tidak terduga.",
+    "invalidValue": "Nilai tidak valid.",
+    "rejected": "Pembuatan gagal.",
+    "incompleteModel": "File model tidak lengkap. Pasang ulang model, lalu jalankan lagi.",
+    "engineMissing": "Mesin AI lokal tidak terpasang di komputer ini, sehingga tidak ada yang bisa menjalankan model di sini.",
+    "engineFailed": "Mesin AI lokal tidak berhasil dijalankan. Periksa log aktivitas, lalu coba lagi.",
+    "storage": "Hasil tidak dapat disimpan ke disk.",
+    "panelCrashed": "Panel ini mengalami kesalahan.",
+    "windowCrashed": "Aplikasi mengalami kesalahan."
+  },
+  "licences": {
+    "title": "Lisensi",
+    "intro": "AI Desktop Studio disertai perangkat lunak di bawah ini. Masing-masing mempertahankan lisensinya sendiri, yang direproduksi di sini secara utuh.",
+    "sources": "Sumber terkait:",
+    "sourcesUnmodified": "Sumber terkait, tanpa modifikasi:",
+    "bundled": "disertakan bersama aplikasi",
+    "unfold": "Membentangkan teks lengkap lisensi ini, di sini juga",
+    "fold": "Melipat kembali teks ini — hanya satu lisensi yang terbuka pada satu waktu"
+  },
+  "manual": {
+    "title": "Panduan pengguna",
+    "chapters": "Bab",
+    "search": "Cari dalam panduan",
+    "results": "Hasil",
+    "noResult": "Tidak ada bab yang memuat kata-kata itu.",
+    "chapterHint": "Membuka bab ini di panel sebelah kanan",
+    "searchResultHint": "Membuka bab tempat kata-kata ini muncul"
+  },
+  "units": {
+    "byte": "B",
+    "kibibyte": "KiB",
+    "mebibyte": "MiB",
+    "gibibyte": "GiB",
+    "creative": "{{units}} CU"
+  }
+}

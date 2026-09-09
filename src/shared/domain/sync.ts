@@ -10,7 +10,7 @@ export type SyncPolicy = 'push' | 'pull' | 'two-way'
 /** The values, beside the type: the boundary parses against them with `z.enum`. */
 export const SYNC_POLICIES: readonly SyncPolicy[] = ['push', 'pull', 'two-way']
 
-export type SkipReason =
+type SkipReason =
   /** The twin belongs to a project this key does not open onto. */
   | 'other-account'
   /** Nothing to send: there are no bytes here. */

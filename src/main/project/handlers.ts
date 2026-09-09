@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { readFile } from 'node:fs/promises'
 import { saveAnimationThumbnail } from './animationThumbnail'
 import { bundledCharacters, resourcesRoot } from '@main/resources'
@@ -190,9 +191,8 @@ export function registerProjectHandlers({
   )
   handle(CHANNELS.projectTrashFiles, async (_event, paths) => {
     const wanted = parseFolderPaths(paths)
-    if (wanted.length > 1 && !(await askTrashFiles(askUser, wanted.length))) {
+    if (wanted.length > 1 && !(await askTrashFiles(askUser, wanted.length)))
       return { done: [], refused: [], batch: '' }
-    }
     return settled(await files.trash(wanted))
   })
   handle(CHANNELS.projectNewFolder, async (_event, folderPath, name) =>
@@ -266,7 +266,7 @@ export function registerProjectHandlers({
     try {
       return peaksFromBytes(await readFile(file))
     } catch {
-      return null
+      return null // Like an asset carrying no peaks: the two guards above answer this same null.
     }
   })
   handle(CHANNELS.assetsSaveAudio, async (_event, value) => {
@@ -303,9 +303,8 @@ export function registerProjectHandlers({
   ): Promise<Asset> => {
     if (request.replaces) {
       const replaced = await project.catalog().find(request.replaces)
-      if (!replaced || !PICTURES.includes(replaced.type)) {
-        throw new Error(`asset ${request.replaces} is not a picture to overwrite`)
-      }
+      if (!replaced || !PICTURES.includes(replaced.type))
+        throw localizedError('assetNotWritableImage', { name: request.replaces })
       return withoutSourcePath(await assets.replaceBytes(request.replaces, bytes, extension, probe))
     }
     const source = request.derivedFrom ? await project.catalog().find(request.derivedFrom) : null
@@ -327,7 +326,7 @@ export function registerProjectHandlers({
   handle(CHANNELS.assetsSavePicture, async (_event, value) => {
     const request = parseSavePicture(value)
     const png = Buffer.from(request.png, 'base64')
-    if (!isPngBytes(png)) throw new Error('expected a PNG payload')
+    if (!isPngBytes(png)) throw localizedError('pngPayloadInvalid')
     const probe = probePng(png) ?? undefined
     return landPicture(request, png, PNG_EXTENSION, probe)
   })
@@ -348,19 +347,20 @@ export function registerProjectHandlers({
   handle(CHANNELS.assetsSaveLayered, async (_event, value) => {
     const request = parseSaveLayered(value)
     const merged = request.document.surfaces.find(one => one.path === ORA_MERGED_PATH)?.png
-    if (!merged || !isPngBytes(merged)) throw new Error('expected a PNG payload')
+    if (!merged || !isPngBytes(merged)) throw localizedError('pngPayloadInvalid')
     const bytes = packOpenRaster(request.document, '', oraThumbnailOf(merged))
     const probe = probePng(merged) ?? undefined
     return landPicture(request, bytes, ORA_EXTENSION, probe)
   })
   const replaceGlb = async (assetId: string, glb: Uint8Array, type: AssetType): Promise<Asset> => {
     const replaced = await project.catalog().find(assetId)
-    if (replaced?.type !== type) throw new Error(`asset ${assetId} is not a ${type} to overwrite`)
+    if (replaced?.type !== type)
+      throw localizedError('assetOverwriteTypeMismatch', { name: assetId, type })
     return withoutSourcePath(await assets.replaceBytes(assetId, glb, '.glb'))
   }
   handle(CHANNELS.assetsSaveMesh, async (_event, value) => {
     const request = parseSaveMesh(value)
-    if (!glbChunksOf(request.glb)) throw new Error('expected a binary glTF payload')
+    if (!glbChunksOf(request.glb)) throw localizedError('gltfPayloadInvalid')
     return replaceGlb(request.replaces, request.glb, 'mesh')
   })
   handle(CHANNELS.assetsSaveConverted, async (_event, value) =>
@@ -383,7 +383,7 @@ export function registerProjectHandlers({
   })
   handle(CHANNELS.assetsSaveAnimation, async (_event, value) => {
     const request = parseSaveAnimation(value)
-    if (!glbChunksOf(request.glb)) throw new Error('expected a binary glTF payload')
+    if (!glbChunksOf(request.glb)) throw localizedError('gltfPayloadInvalid')
     if (request.replaces) return replaceGlb(request.replaces, request.glb, 'animation')
     return withoutSourcePath(
       await assets.importFromBytes(
@@ -405,7 +405,7 @@ export function registerProjectHandlers({
     try {
       return unpackOpenRaster(await readFile(file))
     } catch {
-      return null
+      return null // Like a file that is not layered: the guard above answers this same null.
     }
   })
   handle(CHANNELS.assetsSaveTexture, async (_event, value) => {
@@ -429,7 +429,7 @@ export function registerProjectHandlers({
   handle(CHANNELS.assetsExtractTextures, async (_event, value) => {
     const assetId = parseAssetId(value)
     const source = await project.catalog().find(assetId)
-    if (!source || source.type !== 'mesh') throw new Error(`asset ${assetId} is not a mesh`)
+    if (source?.type !== 'mesh') throw localizedError('assetNotMesh', { name: assetId })
     return (await extractTextures(source)).map(withoutSourcePath)
   })
   handle(CHANNELS.gameRead, () => game.read())

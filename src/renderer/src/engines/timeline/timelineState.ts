@@ -285,7 +285,7 @@ export function clipEnd(clip: Clip): Us {
  * kind has to be known at that moment — a scene whose document is still being read off disk
  * would otherwise be opened as a media file and written off as undecodable for good.
  */
-export const SCENE_SOURCE_PREFIX = 'scene:'
+const SCENE_SOURCE_PREFIX = 'scene:'
 
 /**
  * What a clip draws from, as one key. The decoder pool holds one sink per source, and a scene

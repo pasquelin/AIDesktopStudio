@@ -1,6 +1,6 @@
 import { expect, it } from 'vitest'
-import { LANGUAGES, type Language } from './i18n/languages'
-import { deadManualLinks, type ManualChapter } from './domain/manual'
+import { type Language } from './i18n/languages'
+import { chaptersForLanguage, deadManualLinks, type ManualChapter } from './domain/manual'
 import { americanVerbs, americanWords, frenchWords, proseOf } from './i18n/spelling-fixtures'
 import { asRead, menuPathsOf, screenLabels, settingsTree } from './i18n/menuPath-fixtures'
 import { TRANSLATIONS } from './i18n'
@@ -16,16 +16,17 @@ import manual from './manual.json'
  * Freshness is the one thing not checked here: it needs the filesystem, and lives in
  * `main/manual.test.ts` for the reason `main/licences.test.ts` gives.
  */
-const languages = LANGUAGES.map(language => language.code)
+const languages: Language[] = ['fr', 'en']
 
 /** Per language, never merged: `07-assets` is the slug of a chapter in BOTH — see `ManualChapter`. */
-const chaptersOf = (language: (typeof languages)[number]): ManualChapter[] => manual[language]
+const chaptersOf = (language: (typeof languages)[number]): ManualChapter[] =>
+  chaptersForLanguage(manual, language)
 
 /**
  * Segments that follow the shape of a path without naming a menu entry. One each, and both are
  * the same thing: a GESTURE the chapter puts before the entry it opens.
  */
-const NOT_A_MENU_ENTRY: Record<Language, ReadonlySet<string>> = {
+const NOT_A_MENU_ENTRY: Record<string, ReadonlySet<string>> = {
   fr: new Set(['clic droit']),
   en: new Set(['right-click']),
 }
@@ -60,7 +61,7 @@ const arrowsOf = (language: Language): { slug: string; bold: string }[] =>
  * Its own blind spot is a FOURTH glyph: `->`, `⇒` and their kin would escape both readings. None
  * is written in a bold run of either manual today — measured — so the hole is prospective.
  */
-const A_DIRECTION_NOT_A_PATH: Record<Language, ReadonlySet<string>> = {
+const A_DIRECTION_NOT_A_PATH: Record<string, ReadonlySet<string>> = {
   fr: new Set(['projet → bibliothèque']),
   en: new Set(['project → library']),
 }
@@ -207,7 +208,9 @@ it.each(languages)('quotes no menu path the screen does not carry, in %s', langu
       return segments
         .filter(
           (segment, index) =>
-            segment && !carried(segment, index) && !NOT_A_MENU_ENTRY[language].has(segment),
+            segment &&
+            !carried(segment, index) &&
+            !(NOT_A_MENU_ENTRY[language] ?? new Set()).has(segment),
         )
         .map(segment => `${chapter.slug} — "${segment}" in ${path.trim()}`)
     }),
@@ -240,12 +243,14 @@ it.each(languages)('drops a gesture exemption once no path writes it, in %s', la
     ),
   )
 
-  expect([...NOT_A_MENU_ENTRY[language]].filter(segment => !written.has(segment))).toEqual([])
+  expect(
+    [...(NOT_A_MENU_ENTRY[language] ?? new Set())].filter(segment => !written.has(segment)),
+  ).toEqual([])
 })
 
 it.each(languages)('writes every menu path with a separator it reads, in %s', language => {
   const unread = arrowsOf(language)
-    .filter(({ bold }) => !A_DIRECTION_NOT_A_PATH[language].has(bold))
+    .filter(({ bold }) => !(A_DIRECTION_NOT_A_PATH[language] ?? new Set()).has(bold))
     .map(({ slug, bold }) => `${slug} — ${bold}`)
 
   expect(unread).toEqual([])
@@ -255,7 +260,9 @@ it.each(languages)('writes every menu path with a separator it reads, in %s', la
 it.each(languages)('drops a direction exemption once no chapter writes it, in %s', language => {
   const written = new Set(arrowsOf(language).map(({ bold }) => bold))
 
-  expect([...A_DIRECTION_NOT_A_PATH[language]].filter(bold => !written.has(bold))).toEqual([])
+  expect(
+    [...(A_DIRECTION_NOT_A_PATH[language] ?? new Set())].filter(bold => !written.has(bold)),
+  ).toEqual([])
 })
 
 // The range a literal union would have held, had a JSON import been able to keep one.

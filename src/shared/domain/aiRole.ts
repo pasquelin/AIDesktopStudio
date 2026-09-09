@@ -38,7 +38,7 @@ export const DICTATION_ROLE = 'dictation' as AiRoleId
 export const EMBEDDING_ROLE = 'embedding' as AiRoleId
 
 /** Turns a composite image and a point or box into a raster selection. */
-export const SMART_SELECTION_ROLE = 'smart-selection' as AiRoleId
+export const SMART_SELECTION_ROLE = aiRoleId('background-removal', 'cutout')
 
 /** The Auto Rig employment; no selected provider means the integrated geometric backend. */
 export const AUTO_RIG_ROLE = aiRoleId('3d', 'rig')
@@ -48,7 +48,6 @@ export const STANDALONE_ROLES: readonly AiRoleId[] = [
   ASSISTANT_ROLE,
   DICTATION_ROLE,
   EMBEDDING_ROLE,
-  SMART_SELECTION_ROLE,
 ]
 
 /**
@@ -71,6 +70,8 @@ export function aiRoleId(family: ModelFamily, capability: string): AiRoleId {
  * ADR-23, and what its own migration still reads — or a standalone role, which no rename touches.
  */
 export function currentAiRoleKey(stored: string): string {
+  if (stored === 'smart-selection') return SMART_SELECTION_ROLE
+
   const slash = stored.indexOf('/')
 
   return slash < 0

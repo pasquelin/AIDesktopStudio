@@ -1,4 +1,6 @@
 import { mdiTrashCanOutline } from '@mdi/js'
+import { TextArea } from '@/components/TextArea'
+import { Input } from '@/components/Input'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
@@ -6,9 +8,9 @@ import {
   CONTEXT_TITLE_MAX,
   type ContextCard,
 } from '@shared/domain/projectContext'
-import { CHECKBOX, FIELD, FIELD_FILL, PANEL_HEAD } from '@/components/styles'
+import { Checkbox } from '@/components/Checkbox'
+import { PANEL_HEAD } from '@/components/styles'
 import { ToolButton } from '@/components/ToolButton'
-import { cn } from '@/helpers/cn'
 import { TIP_LEFT } from '@/helpers/tooltip'
 import { ContextPictures } from './ContextPictures'
 
@@ -30,15 +32,13 @@ export function ContextCardRow({ card, onChange, onRemove }: ContextCardRowProps
   return (
     <div className={PANEL_HEAD}>
       <div className="flex items-center gap-2">
-        <input
+        <Checkbox
           data-sc="field:context.active"
-          type="checkbox"
-          className={cn(CHECKBOX, 'size-3 shrink-0')}
           checked={card.active}
           aria-label={card.active ? t('context.inactiveHint') : t('context.activeHint')}
           onChange={event => onChange({ ...card, active: event.target.checked })}
         />
-        <input
+        <Input
           data-sc="field:context.title"
           type="text"
           value={title}
@@ -47,7 +47,7 @@ export function ContextCardRow({ card, onChange, onRemove }: ContextCardRowProps
           placeholder={t('context.titlePlaceholder')}
           onChange={event => setTitle(event.target.value)}
           onBlur={() => onChange({ ...card, title })}
-          className={cn(FIELD_FILL, 'text-xs')}
+          className="flex-1 text-xs"
         />
         <ToolButton
           icon={mdiTrashCanOutline}
@@ -58,7 +58,7 @@ export function ContextCardRow({ card, onChange, onRemove }: ContextCardRowProps
         />
       </div>
 
-      <textarea
+      <TextArea
         data-sc="field:context.body"
         rows={3}
         value={body}
@@ -67,7 +67,6 @@ export function ContextCardRow({ card, onChange, onRemove }: ContextCardRowProps
         placeholder={t('context.bodyPlaceholder')}
         onChange={event => setBody(event.target.value)}
         onBlur={() => onChange({ ...card, body })}
-        className={cn(FIELD, 'h-auto resize-y py-1 text-xs')}
       />
 
       <ContextPictures

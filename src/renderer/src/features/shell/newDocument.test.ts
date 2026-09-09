@@ -93,7 +93,7 @@ beforeEach(() => {
 
 describe('createDocumentIn', () => {
   it('calls the document what the window answers, and opens it', async () => {
-    answering([madeAs('Niveau', 'Modelling/Scenes')])
+    answering([madeAs('Niveau', 'Scenes')])
 
     // 🛑 AWAITED, where the cases below need not be: the opening happens AFTER the seeding, and
     // the seeding awaits what the app ships. Waiting on the document alone read before the
@@ -103,7 +103,7 @@ describe('createDocumentIn', () => {
     expect(created()).toHaveLength(1)
     expect(created()[0]?.title).toBe('Niveau')
     // The name is the file name: there is only ever one name to change afterwards.
-    expect(created()[0]?.path).toBe('Modelling/Scenes/Niveau.gltf')
+    expect(created()[0]?.path).toBe('Scenes/Niveau.gltf')
     expect(openDocument).toHaveBeenCalledWith(created()[0])
   })
 
@@ -139,9 +139,7 @@ describe('createDocumentIn', () => {
     createDocumentIn('3d')
 
     await vi.waitFor(() => expect(asks).toHaveLength(1))
-    expect(asks[0]?.open.map(document => document.path)).toEqual([
-      'Modelling/Scenes/Brouillon.gltf',
-    ])
+    expect(asks[0]?.open.map(document => document.path)).toEqual(['Scenes/Brouillon.gltf'])
   })
 
   // Where the Explorer is pointing, which is where a user looking at a folder means to create.
@@ -230,7 +228,7 @@ describe('createDocumentIn results', () => {
   // person closed is the one answer it must never give.
   describe('what it answers', () => {
     it('the document, once the window is filled', async () => {
-      answering([madeAs('Niveau', 'Modelling/Scenes')])
+      answering([madeAs('Niveau', 'Scenes')])
 
       expect(await createDocumentIn('3d')).toMatchObject({ title: 'Niveau', kind: 'scene' })
     })
@@ -307,7 +305,7 @@ describe('createDocumentIn results', () => {
     it('files it in the documents folder when no folder is named', async () => {
       const made = await createDocumentIn('3d', { title: 'Niveau' })
 
-      expect(made?.path).toBe('Modelling/Scenes/Niveau.gltf')
+      expect(made?.path).toBe('Scenes/Niveau.gltf')
     })
   })
 
@@ -349,7 +347,7 @@ describe('createDocumentIn results', () => {
   // `restoreDocument`, and the template would be lost between the window and the viewport.
   describe('what a new scene opens on', () => {
     it('holds the template the window answered with', async () => {
-      answering([madeAs('Plateau', 'Modelling/Scenes', 'scene', 'topDown')])
+      answering([madeAs('Plateau', 'Scenes', 'scene', 'topDown')])
 
       const made = await createDocumentIn('3d')
 

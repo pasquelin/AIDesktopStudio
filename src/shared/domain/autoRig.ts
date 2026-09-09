@@ -1,8 +1,8 @@
 import { rigFaultOf, type Rig } from './rig'
 
-export type AutoRigTarget = 'humanoid' | 'generic'
+type AutoRigTarget = 'humanoid' | 'generic'
 
-export type AutoRigCapabilities = {
+type AutoRigCapabilities = {
   target: AutoRigTarget
   skeleton: boolean
   skinWeights: boolean
@@ -10,8 +10,23 @@ export type AutoRigCapabilities = {
   local: boolean
 }
 
+/**
+ * The Auto Rig backends the studio implements. A closed union rather than a string: a catalogue
+ * entry naming a `backendId` nothing here runs was offered in the service field and answered
+ * `Unknown Auto Rig backend`, shown to the reader as « le squelettage avancé n'a pas pu terminer ».
+ */
+export type AutoRigBackendId = 'simple' | 'make-it-animatable'
+
+/** The values beside the union — what the offer filters the catalogue against. */
+export const AUTO_RIG_BACKEND_IDS: readonly AutoRigBackendId[] = ['simple', 'make-it-animatable']
+
+/** A `backendId` off a model manifest, which is a plain string there — motion uses one too. */
+export function isAutoRigBackendId(value: unknown): value is AutoRigBackendId {
+  return AUTO_RIG_BACKEND_IDS.some(candidate => candidate === value)
+}
+
 export type AutoRigBackendDescriptor = {
-  id: string
+  id: AutoRigBackendId
   requiresModel: boolean
   modelIds: readonly string[]
   devices: readonly AutoRigDevice[]
@@ -20,11 +35,11 @@ export type AutoRigBackendDescriptor = {
   platformSupport?: readonly AutoRigPlatformSupport[]
 }
 
-export type AutoRigDevice = 'cpu' | 'mps'
+type AutoRigDevice = 'cpu' | 'mps'
 export type AutoRigAvailability = 'available' | 'unavailable' | 'untested' | 'unsupported'
 export type AutoRigPlatform = 'darwin' | 'linux' | 'win32'
 export type AutoRigArchitecture = 'arm64' | 'x64'
-export type AutoRigPlatformSupport = {
+type AutoRigPlatformSupport = {
   platform: AutoRigPlatform
   architecture: AutoRigArchitecture
   status: AutoRigAvailability

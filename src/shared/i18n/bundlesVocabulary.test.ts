@@ -21,8 +21,12 @@ const flatten = (bundle: unknown, prefix = '', into = new Map<string, string>())
   return into
 }
 
-const CODES = LANGUAGES.map(language => language.code)
-const BUNDLES: Record<Language, Map<string, string>> = {
+const CODES: ('fr' | 'en')[] = ['fr', 'en']
+const BUNDLES: {
+  fr: Map<string, string>
+  en: Map<string, string>
+  [code: string]: Map<string, string>
+} = {
   fr: flatten(TRANSLATIONS.fr),
   en: flatten(TRANSLATIONS.en),
 }
@@ -75,14 +79,18 @@ describe('the symbol of a creative unit', () => {
    * rather than concatenates: there the composing happens in one place, and that place is tested.
    */
   it.each(LANGUAGES.map(language => language.code))('never stands alone in %s', code => {
-    const alone = [...BUNDLES[code]].filter(([, value]) => /^(UC|CU)$/.test(value.trim()))
+    const alone = [...(BUNDLES[code] ?? BUNDLES.en)].filter(([, value]) =>
+      /^(UC|CU)$/.test(value.trim()),
+    )
 
     expect(alone.map(([key]) => key)).toEqual([])
   })
 
   // And the sentence that carries it holds its number, so the two arrive together or not at all.
   it.each(LANGUAGES.map(language => language.code))('travels with its number in %s', code => {
-    const carrying = [...BUNDLES[code]].filter(([, value]) => /\b(UC|CU)\b/.test(value))
+    const carrying = [...(BUNDLES[code] ?? BUNDLES.en)].filter(([, value]) =>
+      /\b(UC|CU)\b/.test(value),
+    )
 
     expect(carrying.length).toBeGreaterThan(0)
     for (const [key, value] of carrying) expect(value, key).toContain('{{units}}')
@@ -126,7 +134,9 @@ const UNIT_HOURS: Record<string, number> = {
  * do — so it says it cannot read the label rather than pretending to have measured it.
  */
 function statedHours(code: Language, period: string): number | null {
-  const words = (BUNDLES[code].get(`periods.${period}`) ?? '').toLowerCase().match(/\d+|\p{L}+/gu)
+  const words = ((BUNDLES[code] ?? BUNDLES.en).get(`periods.${period}`) ?? '')
+    .toLowerCase()
+    .match(/\d+|\p{L}+/gu)
   let counted = 0
   let figure: number | null = null
 

@@ -116,10 +116,11 @@
 /* =========================================================================
    Sélecteur de langue
 
-   Rendu par `site/build.mjs`, comme dans map3D et panels : un `<details>` natif,
-   qui se ferme sur Échap et sur un clic à côté sans une ligne de JavaScript. Le
-   BOUTON porte le code à deux lettres — seul format qui tienne dans la barre —,
-   et le menu qui s'ouvre porte les noms natifs, que le lecteur cherche des yeux.
+   Rendu par `site/build.mjs`, comme dans map3D et panels : un `<details>` natif. Le
+   navigateur ne le referme ni sur Échap ni au clic à côté — il ne rend ce service qu'à
+   un popover —, donc `main.js` s'en charge. Le BOUTON porte le code à deux lettres —
+   seul format qui tienne dans la barre —, et le menu qui s'ouvre porte les noms natifs,
+   que le lecteur cherche des yeux.
 
    Tout est en propriétés logiques : en arabe la page entière se retourne, et le
    menu doit s'ouvrir du bon côté sans une règle de plus.
@@ -163,6 +164,9 @@ details[open] > .langs__current {
 }
 
 .langs__menu {
+  color-scheme: dark;
+  scrollbar-color: var(--mist) var(--panel);
+  scrollbar-width: thin;
   position: absolute;
   top: calc(100% + 8px);
   inset-inline-end: 0;
@@ -234,4 +238,44 @@ a.langs__item:hover {
    reste : le drapeau lui reste collé, le code à deux lettres tient la droite. */
 .langs__item i {
   flex: 1;
+}
+
+.langs__menu::-webkit-scrollbar { width: 8px; }
+.langs__menu::-webkit-scrollbar-track { background: var(--panel); }
+.langs__menu::-webkit-scrollbar-thumb { background: var(--mist); border: 2px solid var(--panel); border-radius: 6px; }
+.langs__menu::-webkit-scrollbar-thumb:hover { background: var(--bone); }
+
+/* ---------------------------------------------------------- architecture */
+
+.rack {
+  margin-top: clamp(44px, 6vw, 72px);
+  border: 1px solid var(--edge); border-radius: 14px;
+  background: var(--panel); overflow: hidden;
+}
+.rack__row { display: grid; grid-template-columns: 150px minmax(0, 1fr); border-bottom: 1px solid var(--edge); }
+.rack__row:last-child { border-bottom: 0; }
+.rack__label {
+  padding: 26px 24px; border-right: 1px solid var(--edge);
+  font-family: var(--mono); font-size: 11px; letter-spacing: .13em;
+  text-transform: uppercase; color: var(--dim); background: rgba(0,0,0,.24);
+}
+.rack__cells { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); }
+.cell { padding: 24px; border-right: 1px solid var(--edge); }
+.cell:last-child { border-right: 0; }
+.cell h3 { font-size: 1.02rem; font-family: var(--body); font-weight: 500; letter-spacing: 0; margin-bottom: 7px; }
+.cell p { margin: 0; font-size: .86rem; color: var(--mist); }
+.cell .tag {
+  display: inline-block; margin-bottom: 12px;
+  font-family: var(--mono); font-size: 10px; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--accent);
+}
+.cell--muted .tag { color: var(--dim); }
+
+@media (max-width: 999px) {
+  .rack__cells { grid-template-columns: minmax(0, 1fr); }
+  .rack__row { grid-template-columns: 1fr; }
+  .rack__label { border-right: 0; border-bottom: 1px solid var(--edge); padding: 16px 20px; }
+  .cell { padding: 18px 20px; border-right: 0; border-bottom: 1px solid var(--edge); }
+  .cell .tag { margin-bottom: 8px; }
+  .rack__cells .cell:last-child { border-bottom: 0; }
 }

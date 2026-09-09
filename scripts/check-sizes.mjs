@@ -4,6 +4,7 @@ import { existsSync, readFileSync } from 'node:fs'
 import { dirname, extname, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import ts from 'typescript'
+import { treeOf } from '../src/main/gateCache.ts'
 
 export const LIMITS = Object.freeze({
   file: 500,
@@ -177,12 +178,9 @@ export function violationsFor(filename, source = readFileSync(filename, 'utf8'))
 }
 
 export function maintainedFiles() {
-  return execFileSync('git', ['ls-files', '-z', '--cached', '--others', '--exclude-standard'], {
-    cwd: ROOT,
-  })
-    .toString()
-    .split('\0')
-    .filter(Boolean)
+  // The listing itself belongs to `gateCache`, which asks git the same question for the gate's
+  // fingerprints; only the narrowing below is this file's.
+  return treeOf(ROOT, [])
     .filter(name => existsSync(resolve(ROOT, name)))
     .filter(name => CODE_EXTENSIONS.has(extname(name)))
     .filter(name => !EXCLUDED_PREFIXES.some(prefix => name.startsWith(prefix)))

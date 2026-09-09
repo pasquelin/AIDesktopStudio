@@ -1,0 +1,20 @@
+{
+  "memoryWorth": {
+    "scriptWrite": "O script {{path}} foi escrito pelo assistente",
+    "prefabDefine": "“{{name}}” é um prefab deste projeto",
+    "styleSave": "“{{name}}” é uma forma de ler um material, salva para este projeto",
+    "postSave": "“{{name}}” é uma predefinição de pós-processamento salva para este projeto",
+    "animationAdd": "A animação “{{clipName}}” foi adicionada ao rig",
+    "gitCommit": "Decidido e registrado no git: {{message}}"
+  },
+  "memoryTypes": {
+    "decision": "Decisão",
+    "architecture": "Arquitetura",
+    "feature": "Funcionalidade",
+    "entity": "Entidade",
+    "script": "Script",
+    "problem": "Problema",
+    "intent": "Intenção",
+    "convention": "Convenção"
+  }
+}

@@ -17,8 +17,8 @@ import { HINT_TOP } from '@/helpers/tooltip'
 import { useAccounts, type AccountSaveFailure } from '@/stores/accounts'
 import { FAILURE_KEYS } from './failureKeys'
 import { WindowButton } from '@/components/WindowButton'
-import { WindowInput } from '@/components/WindowInput'
-import { WindowSelect } from '@/components/WindowSelect'
+import { Input } from '@/components/Input'
+import { Select } from '@/components/Select'
 
 const accountFields = z
   .object({
@@ -86,10 +86,9 @@ export function AccountSettingsAddForm() {
       onSubmit={event => void handleSubmit(submit)(event)}
     >
       <FormField label={t('accounts.provider')} htmlFor={`${form}provider`} required>
-        <WindowSelect
+        <Select
           id={`${form}provider`}
           data-sc="field:newAccount.provider"
-          className="w-full"
           {...register('providerId')}
         >
           {/* Grouped rather than flat: nine services in one run made a reader read every line to
@@ -103,14 +102,13 @@ export function AccountSettingsAddForm() {
               ))}
             </optgroup>
           ))}
-        </WindowSelect>
+        </Select>
       </FormField>
 
       <FormField label={t('accounts.name')} htmlFor={`${form}name`} required>
-        <WindowInput
+        <Input
           id={`${form}name`}
           data-sc="field:newAccount.name"
-          className="w-full"
           type="text"
           autoComplete="off"
           spellCheck={false}
@@ -120,10 +118,9 @@ export function AccountSettingsAddForm() {
       </FormField>
 
       <FormField label={t('auth.key')} htmlFor={`${form}key`} required>
-        <WindowInput
+        <Input
           id={`${form}key`}
           data-sc="field:newAccount.key"
-          className="w-full"
           type="text"
           autoComplete="off"
           spellCheck={false}
@@ -133,7 +130,7 @@ export function AccountSettingsAddForm() {
 
       {wantsSecret && (
         <FormField label={t('auth.secret')} htmlFor={`${form}secret`} required>
-          <WindowInput
+          <Input
             id={`${form}secret`}
             data-sc="field:newAccount.secret"
             className="w-full"

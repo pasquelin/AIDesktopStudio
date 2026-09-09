@@ -55,6 +55,14 @@ const machine = {
   totalBytes: 103_079_215_104,
 }
 
+/** A client past its handshake — what every case but the handshake's own starts from. */
+const opened = async () => {
+  const held = harness()
+  held.say(greeting())
+  await held.client.ready
+  return held
+}
+
 beforeEach(() => vi.useFakeTimers())
 afterEach(() => {
   vi.useRealTimers()
@@ -98,9 +106,7 @@ describe('the handshake', () => {
 
 describe('asking the engine what machine it runs on', () => {
   it('sends one run and reads what came back', async () => {
-    const { client, sent, say } = harness()
-    say(greeting())
-    await client.ready
+    const { client, sent, say } = await opened()
 
     const asked = client.hardware()
     expect(sent).toEqual([{ v: PROTOCOL_VERSION, id: 1, op: 'hardware.info', params: {} }])
@@ -110,9 +116,7 @@ describe('asking the engine what machine it runs on', () => {
   })
 
   it('rejects with what the engine refused it for', async () => {
-    const { client, say } = harness()
-    say(greeting())
-    await client.ready
+    const { client, say } = await opened()
 
     const asked = client.hardware()
     say({ v: PROTOCOL_VERSION, id: 1, err: { code: 'failed', message: 'the device is gone' } })
@@ -122,9 +126,7 @@ describe('asking the engine what machine it runs on', () => {
 
   /** An engine that stops answering is dead, whatever the process table says. */
   it('declares an engine that never answers dead, and stops holding it', async () => {
-    const { client, port, listeners, say } = harness()
-    say(greeting())
-    await client.ready
+    const { client, port, listeners } = await opened()
 
     // Asserted BEFORE the clock turns: the rejection lands while the timers run, and a handler
     // attached after it would be one vitest reports as an unhandled rejection.
@@ -136,23 +138,41 @@ describe('asking the engine what machine it runs on', () => {
   })
 
   it('refuses to ask anything of an engine that already died', async () => {
-    const { client, say, crash } = harness()
-    say(greeting())
-    await client.ready
+    const { client, crash } = await opened()
     crash(new Error('the engine exited with code 9'))
 
     await expect(client.hardware()).rejects.toThrow(/gone/)
   })
 })
 
-describe('opening a job on a door', () => {
-  const opened = async () => {
-    const held = harness()
-    held.say(greeting())
-    await held.client.ready
-    return held
-  }
+describe('closing a door', () => {
+  /**
+   * A REQUEST and never a job: the core answers it, because a door blocked inside its own
+   * `import torch` would never read the frame asking it to leave.
+   */
+  it('asks the core directly, with no job to settle it', async () => {
+    const { client, sent, say } = await opened()
 
+    const asked = client.closeDoor('engine/diffusion')
+    expect(sent).toEqual([
+      { v: PROTOCOL_VERSION, id: 1, op: 'door.close', params: { door: 'engine/diffusion' } },
+    ])
+
+    say({ v: PROTOCOL_VERSION, id: 1, ok: { closed: true } })
+    await expect(asked).resolves.toBe(true)
+  })
+
+  it('answers that nothing closed for a door nobody had opened', async () => {
+    const { client, say } = await opened()
+
+    const asked = client.closeDoor('engine/audio')
+    say({ v: PROTOCOL_VERSION, id: 1, ok: { closed: false } })
+
+    await expect(asked).resolves.toBe(false)
+  })
+})
+
+describe('opening a job on a door', () => {
   /** Reading gigabytes and running an inference are the two things a deadline must never bound. */
   it('waits for the event, not for the answer that opened the job', async () => {
     const held = await opened()
@@ -243,13 +263,6 @@ describe('opening a job on a door', () => {
 })
 
 describe('watching a job that runs for seconds', () => {
-  const opened = async () => {
-    const held = harness()
-    held.say(greeting())
-    await held.client.ready
-    return held
-  }
-
   const runs = async (held: Awaited<ReturnType<typeof opened>>, watch = {}) => {
     const running = held.client.job('generate', {}, watch)
     held.say({ v: PROTOCOL_VERSION, id: 1, ok: { jobId: 'local_1' } })
@@ -330,9 +343,7 @@ describe('a door announcing itself', () => {
   /** Named rather than left to the fall-through, which would log its absent `runtime.error`. */
   it('is dropped without a word in the log', async () => {
     const warn = vi.spyOn(log, 'warn').mockImplementation(() => {})
-    const held = harness()
-    held.say(greeting())
-    await held.client.ready
+    const held = await opened()
 
     held.say(workerHello)
 

@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import {
+  CORE_OPS,
   doorMemory,
   PROFILES,
   PROTOCOL_VERSION,
@@ -23,6 +24,19 @@ describe('the version both sides agree on', () => {
     const declared = /^PROTOCOL_VERSION = (\d+)$/m.exec(source)
 
     expect(Number(declared?.[1])).toBe(PROTOCOL_VERSION)
+  })
+
+  /**
+   * A misspelt op is not a type error anywhere: the engine greets, then answers `unknown-op` at
+   * the first ask. `door.close` entered the vocabulary with no compiler between the two halves.
+   */
+  it('names ops the engine actually answers', () => {
+    const supervisor = readFileSync(
+      join(ROOT, 'engine/src/aidesktopstudio_engine/core/supervisor.py'),
+      'utf8',
+    )
+
+    for (const op of CORE_OPS) expect(supervisor).toContain(`"${op}"`)
   })
 
   it('names the same requirement profiles as the engine accepts', () => {
@@ -72,6 +86,21 @@ describe('reading a frame off the socket', () => {
   it('answers nothing for a line that is not a frame', () => {
     expect(readFrame('a PyTorch warning')).toBeNull()
     expect(readFrame(JSON.stringify({ v: PROTOCOL_VERSION, id: 'four' }))).toBeNull()
+  })
+
+  it('keeps the mask path returned by the selection worker', () => {
+    const frame = readFrame(
+      JSON.stringify({
+        v: PROTOCOL_VERSION,
+        evt: 'job.completed',
+        job: 'selection-1',
+        width: 2,
+        height: 2,
+        mask: '/tmp/mask.png',
+      }),
+    )
+
+    expect(frame).toMatchObject({ mask: '/tmp/mask.png', width: 2, height: 2 })
   })
 })
 

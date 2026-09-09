@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { createRetargetModelSource } from '../../retargetModelSource'
 import { restoreStoredRig } from '@/character/restoreStoredRig'
 import { useTranslation } from 'react-i18next'
@@ -156,7 +157,7 @@ async function restoreRig(
 ): Promise<void> {
   if (!snapshot?.rig) return
   if (!(await restoreStoredRig(renderer, nodeId, snapshot.rig, snapshot.bindings)))
-    throw new Error('incompatible skin bindings')
+    throw localizedError('skinBindingsIncompatible')
 }
 
 /** Holds the first frame of the chosen clip so the source never shows its bind pose. */

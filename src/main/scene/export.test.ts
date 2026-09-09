@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { mkdtemp, readFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -94,7 +95,7 @@ describe('the scene export handler', () => {
       refusal = String(error)
     }
 
-    expect(refusal).toMatch(/could not be written/)
+    expect(refusal).toContain(localizedError('fileWriteFailed', { code: ' (ENOENT)' }).message)
     expect(refusal).toContain('ENOENT')
     expect(refusal).not.toContain(folder)
     expect(refusal).not.toContain('private')

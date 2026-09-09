@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { fieldHandle } from '@/components/scHandle'
 import { useCommittedText } from '@/hooks/useCommittedText'
 import type { CommittedProps } from './controls'
-import { WindowInput } from '@/components/WindowInput'
+import { Input } from '@/components/Input'
 
 /** Text settings commit on blur; a controlled input fed by a write hands back a stale word. */
 export function SettingRowTextControl({
@@ -17,7 +17,7 @@ export function SettingRowTextControl({
   const field = useCommittedText(String(stored ?? ''), onCommit)
 
   return (
-    <WindowInput
+    <Input
       id={id}
       data-sc={fieldHandle(scId)}
       aria-describedby={describedBy}

@@ -100,10 +100,15 @@ class WorkerProcess:
             self._socket.shutdown(socket.SHUT_RDWR)
         self._socket.close()
 
-    def wait_closed(self) -> None:
-        """Split from the ask, so several doors leave at once rather than one timeout at a time."""
+    def wait_closed(self, timeout: float = 10) -> None:
+        """
+        Split from the ask, so several doors leave at once rather than one timeout at a time.
+
+        The timeout is an argument because closing ONE door answers a studio request bounded by
+        `REQUEST_TIMEOUT_MS` (5 s), where the shutdown of them all is bounded by nothing.
+        """
         try:
-            self._process.wait(timeout=10)
+            self._process.wait(timeout=timeout)
         except subprocess.TimeoutExpired:
             # A worker mid-inference does not read its socket, and a device call does not interrupt.
             self._process.kill()

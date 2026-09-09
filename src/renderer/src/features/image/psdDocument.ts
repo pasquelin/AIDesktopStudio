@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { writePsd, type Layer } from 'ag-psd'
 import {
   ORA_MERGED_PATH,
@@ -25,7 +26,7 @@ function canvasOf(bitmap: ImageBitmap): HTMLCanvasElement {
   canvas.height = bitmap.height
 
   const context = canvas.getContext('2d')
-  if (!context) throw new Error('this window has no 2D context to compose a PSD with')
+  if (!context) throw localizedError('psdContextMissing')
   context.drawImage(bitmap, 0, 0)
   bitmap.close()
   return canvas

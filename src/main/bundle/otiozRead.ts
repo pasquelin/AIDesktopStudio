@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { createReadStream, createWriteStream, type WriteStream } from 'node:fs'
 import { stat } from 'node:fs/promises'
 import { join } from 'node:path'
@@ -35,7 +36,7 @@ export class NotABundleError extends Error {}
  */
 export class BundleEscapeError extends Error {
   constructor(readonly entry: string) {
-    super(`this bundle names an entry that would land outside it: ${entry}`)
+    super(localizedError('bundleEntryOutside', { entry }).message)
   }
 }
 
@@ -54,7 +55,8 @@ const readState = () => ({
 
 const collect = (into: Collected, chunk: Uint8Array): void => {
   into.bytes += chunk.length
-  if (into.bytes > MAX_CONTENT_BYTES) throw new NotABundleError('this cut is too large to be one')
+  if (into.bytes > MAX_CONTENT_BYTES)
+    throw new NotABundleError(localizedError('bundleTimelineTooLarge').message)
   into.chunks.push(chunk)
 }
 
@@ -125,7 +127,9 @@ async function unpackOtiozFile(
   const refuseUnknownVersion = (): void => {
     const spelled = otiozMajorOf(strFromU8(joined(version)))
     if (spelled !== OTIOZ_MAJOR) {
-      throw new NotABundleError(`this bundle is version ${spelled}, and this reader knows 1`)
+      throw new NotABundleError(
+        localizedError('bundleVersionUnsupported', { version: String(spelled) }).message,
+      )
     }
   }
 
@@ -133,7 +137,7 @@ async function unpackOtiozFile(
   const grew = (bytes: number): boolean => {
     unpacked += bytes
     if (unpacked <= ceiling) return true
-    failure ??= new NotABundleError('this bundle unpacks to far more than it weighs')
+    failure ??= new NotABundleError(localizedError('bundleExpansionTooLarge').message)
     return false
   }
 
@@ -237,7 +241,7 @@ async function unpackOtiozFile(
     if (failure) throw failure
 
     if (version.bytes === 0 || content.bytes === 0) {
-      throw new NotABundleError('this file carries no cut, so it is not a bundle')
+      throw new NotABundleError(localizedError('bundleTimelineMissing').message)
     }
     // Again, for the archive that spells its version LAST: the early refusal never ran there.
     refuseUnknownVersion()

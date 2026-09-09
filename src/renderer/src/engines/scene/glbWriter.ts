@@ -1,3 +1,4 @@
+import { localizedError } from '@shared/localizedError'
 import { createWorkerPort } from '../core/workerPort'
 import { writeBuffers, type GlbWriteRequest, type GlbWriteResponse } from './glbWriteMessage'
 import type { GlbSkinPatch } from './glbSkin'
@@ -19,8 +20,10 @@ export type GlbWriter = {
  * index, and half a pass over one gives a broken file, not a half-right one.
  */
 export function createGlbWriter(spawn: () => Worker): GlbWriter {
-  const port = createWorkerPort<Uint8Array, GlbWriteResponse>(spawn, 'glb-write', answer =>
-    answer.ok ? answer.file : new Uint8Array(),
+  const port = createWorkerPort<Uint8Array, GlbWriteResponse>(
+    spawn,
+    localizedError('workerGltf').message,
+    answer => (answer.ok ? answer.file : new Uint8Array()),
   )
 
   return {

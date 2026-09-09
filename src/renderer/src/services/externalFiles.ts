@@ -250,7 +250,7 @@ function dropToneOf(accepted: readonly boolean[]): DropTone {
   return accepted.some(Boolean) ? 'partial' : 'refused'
 }
 
-export function externalFileNames(event: DragLike): string[] {
+function externalFileNames(event: DragLike): string[] {
   const transfer = event.dataTransfer
   if (!transfer) return []
   const files = [...transfer.files]

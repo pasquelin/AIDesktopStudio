@@ -44,10 +44,10 @@ export type OtioTimeRange = {
 }
 
 /** Free-form by design: the core of OTIO carries it and never looks inside. */
-export type OtioMetadata = Record<string, unknown>
+type OtioMetadata = Record<string, unknown>
 
 /** A media file on disk. `target_url` is what another application resolves to open it. */
-export type OtioExternalReference = {
+type OtioExternalReference = {
   OTIO_SCHEMA: 'ExternalReference.1'
   name: string
   metadata: OtioMetadata
@@ -61,7 +61,7 @@ export type OtioExternalReference = {
  * `MissingReference` means. Naming a scene document in an `ExternalReference` would instead hand
  * another application a file it would try to decode.
  */
-export type OtioMissingReference = {
+type OtioMissingReference = {
   OTIO_SCHEMA: 'MissingReference.1'
   name: string
   metadata: OtioMetadata
@@ -107,7 +107,7 @@ export type OtioGap = OtioItem & {
 export type OtioTrackItem = OtioClip | OtioGap
 
 /** `kind` is a free string in the format; these two are the constants every reader knows. */
-export type OtioTrackKind = 'Video' | 'Audio'
+type OtioTrackKind = 'Video' | 'Audio'
 
 export type OtioTrack = {
   OTIO_SCHEMA: 'Track.1'
@@ -125,7 +125,7 @@ export type OtioTrack = {
  * The root of the tracks. Its children run BOTTOM first: the last one is the layer on top, the
  * opposite of the studio's own array, where the head of the list is what is seen.
  */
-export type OtioStack = {
+type OtioStack = {
   OTIO_SCHEMA: 'Stack.1'
   name: string
   metadata: OtioMetadata

@@ -1,0 +1,121 @@
+{
+  "a11y": {
+    "namedValue": "{{value}} — {{name}}"
+  },
+  "actions": {
+    "generate": "Genera",
+    "close": "Chiudi",
+    "removeTool": "Rimuovi lo strumento",
+    "resizeZone": "Ridimensiona l’area dei pannelli",
+    "resizeSplit": "Ridimensiona i due pannelli",
+    "resizeBand": "Ridimensiona i pannelli in basso",
+    "retry": "Riprova",
+    "retryHint": "Ridisegna quest’area senza riavviare lo studio",
+    "generateHint": "Avvia la generazione con le impostazioni qui sopra; la si segue nella barra delle generazioni",
+    "cancel": "Annulla"
+  },
+  "jobs": {
+    "none": "Nessuna generazione in corso.",
+    "running_one": "{{count, number}} generazione",
+    "running_many": "{{count, number}} generazioni",
+    "running_other": "{{count, number}} generazioni",
+    "failed_one": "{{count, number}} errore",
+    "failed_many": "{{count, number}} errori",
+    "failed_other": "{{count, number}} errori",
+    "open": "Mostra le generazioni",
+    "openHint": "Apre l’elenco delle generazioni, sia in corso sia terminate",
+    "status": {
+      "queued": "In coda",
+      "running": "In corso",
+      "succeeded": "Completata",
+      "failed": "Non riuscita",
+      "cancelled": "Annullata"
+    },
+    "cancel": "Annulla il lavoro",
+    "cancelRefused": "Questo servizio non ferma una generazione già iniziata: arriva fino in fondo e viene fatturata."
+  },
+  "tasks": {
+    "running_one": "{{count, number}} attività",
+    "running_many": "{{count, number}} attività",
+    "running_other": "{{count, number}} attività",
+    "open": "Mostra le attività",
+    "openHint": "Apre l’elenco delle attività in corso",
+    "cancel": "Interrompi questa attività",
+    "phases": {
+      "prepare": "Preparazione del modello",
+      "load": "Caricamento del motore",
+      "analyse": "Analisi del personaggio",
+      "skeleton": "Generazione dello scheletro",
+      "pose": "Calcolo della posa di riposo",
+      "skinning": "Calcolo dello skinning",
+      "apply": "Applicazione dello scheletro"
+    }
+  },
+  "dialog": {
+    "allMedia": "Tutti i media",
+    "video": "Video",
+    "audio": "Audio",
+    "image": "Immagine",
+    "mesh": "Modello 3D",
+    "animation": "Animazione",
+    "bundle": "Montaggio e media",
+    "weights": "Pesi del modello"
+  },
+  "sorts": {
+    "relevance": "Qualità: prima i migliori",
+    "recent": "Creazione: prima i più recenti",
+    "oldest": "Creazione: prima i più vecchi"
+  },
+  "exportFormats": {
+    "glb": "glTF binario (.glb)",
+    "gltf": "glTF (.gltf)",
+    "usdz": "USDZ (.usdz)",
+    "obj": "Wavefront, solo forme (.obj)",
+    "ply": "Stanford, solo forme (.ply)",
+    "stl": "STL, solo triangoli (.stl)"
+  },
+  "errors": {
+    "missingCredentials": "Nessuna credenziale salvata.",
+    "invalidCredentials": "Chiave o segreto API non validi.",
+    "forbidden": "Questa chiave API non ha i permessi necessari.",
+    "planRestricted": "Questo modello non è incluso nel tuo abbonamento.",
+    "notFound": "Risorsa non trovata.",
+    "rateLimited": "Troppe richieste. Nuovo tentativo in corso…",
+    "server": "Il servizio di generazione è temporaneamente non disponibile.",
+    "network": "La connessione è stata interrotta. Controlla la rete e riprova.",
+    "unexpected": "Si è verificato un errore imprevisto.",
+    "invalidValue": "Valore non valido.",
+    "rejected": "La generazione non è riuscita.",
+    "incompleteModel": "I file del modello sono incompleti. Reinstalla il modello, poi rilancia la generazione.",
+    "engineMissing": "Il motore di IA locale non è installato su questa macchina, quindi qui niente può eseguire il modello.",
+    "engineFailed": "Il motore di IA locale non è partito. Consulta il registro delle attività, poi riprova.",
+    "storage": "Impossibile salvare il risultato sul disco.",
+    "panelCrashed": "Questo pannello ha incontrato un errore.",
+    "windowCrashed": "L’applicazione ha incontrato un errore."
+  },
+  "licences": {
+    "title": "Licenze",
+    "intro": "AI Desktop Studio è distribuito con i software qui sotto. Ognuno conserva la propria licenza, riprodotta qui per intero.",
+    "sources": "Sorgenti corrispondenti:",
+    "sourcesUnmodified": "Sorgenti corrispondenti, senza modifiche:",
+    "bundled": "distribuito con l’applicazione",
+    "unfold": "Dispiega il testo completo di questa licenza, qui stesso",
+    "fold": "Ripiega questo testo — resta aperta una sola licenza alla volta"
+  },
+  "manual": {
+    "title": "Manuale utente",
+    "chapters": "Capitoli",
+    "search": "Cerca nel manuale",
+    "results": "Risultati",
+    "noResult": "Nessun capitolo contiene queste parole.",
+    "chapterHint": "Apre questo capitolo nel pannello di destra",
+    "searchResultHint": "Apre il capitolo in cui compaiono queste parole"
+  },
+  "units": {
+    "byte": "B",
+    "kibibyte": "KiB",
+    "mebibyte": "MiB",
+    "gibibyte": "GiB",
+    "creative": "{{units}} CU"
+  }
+}

@@ -20,7 +20,7 @@ export const ANIMATION_GRAPH_EXTENSION = '.anim.json'
  * declaring none of its own still has all of these to branch on. A parameter of the author's may
  * not take one of these names: which of the two a condition meant would be unanswerable.
  */
-export type BuiltInParameter =
+type BuiltInParameter =
   'speed' | 'forward' | 'strafe' | 'grounded' | 'airborne' | 'verticalSpeed' | 'jumped' | 'turning'
 
 export const BUILT_IN_PARAMETERS: Readonly<Record<BuiltInParameter, AnimationParameterKind>> = {
@@ -50,7 +50,7 @@ export type AnimationParameter = { id: string; kind: AnimationParameterKind }
  * `at` is a FRACTION of the clip and never a time: the same marker then holds when the state is
  * played slower, and a clip swapped for a longer one keeps its footfalls where they were.
  */
-export type AnimationMarker = { id: string; at: number; name: string }
+type AnimationMarker = { id: string; at: number; name: string }
 
 /**
  * One thing the body can be doing, and the clip it looks like.
@@ -69,7 +69,7 @@ export type AnimationState = {
   events?: readonly AnimationMarker[]
 }
 
-export type ConditionOperator = '>' | '>=' | '<' | '<=' | '==' | '!='
+type ConditionOperator = '>' | '>=' | '<' | '<=' | '==' | '!='
 
 export const CONDITION_OPERATORS: readonly ConditionOperator[] = ['>', '>=', '<', '<=', '==', '!=']
 

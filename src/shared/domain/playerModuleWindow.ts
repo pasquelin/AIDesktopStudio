@@ -1,7 +1,7 @@
 import { hashPayload, hashRoute } from './hashPayload'
 
 /** URL fragment that tells the shared bundle it is rendering a player module. */
-export const PLAYER_MODULE_ROUTE = 'player-module'
+const PLAYER_MODULE_ROUTE = 'player-module'
 
 /**
  * The route a module's window loads, its asset included — ONE window turned towards whichever

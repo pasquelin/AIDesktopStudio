@@ -18,8 +18,8 @@ import { MemoryRelations } from './Relations/MemoryRelations'
 import { MemoryRowActions } from './Row/MemoryRowActions'
 import { MemoryRowDetail } from './Row/MemoryRowDetail'
 import { MemoryUpkeep } from './MemoryUpkeep'
-import { WindowInput } from '@/components/WindowInput'
-import { WindowSelect } from '@/components/WindowSelect'
+import { Input } from '@/components/Input'
+import { Select } from '@/components/Select'
 
 /**
  * What the assistant has learned, and the only screen that can correct it.
@@ -95,19 +95,20 @@ export function MemorySettings() {
       </div>
 
       <div className="flex gap-2">
-        {/* 🛑 `input-sm` and not `WindowSearch`, which is the NAV field of a window: it is
-            `input-xs w-full shrink-0`, so it stood eight pixels shorter than the select beside it
-            and took the whole row without yielding. Every other settings form is `…-sm`. */}
-        <WindowInput
+        {/* Not `WindowSearch`, which is the NAV field of a window and carries one fixed handle:
+            two of them in the same window would answer to the same name. The gauges have matched
+            since both went through `Input` on 2026-09-08; what differs is the handle and the
+            width — this one yields to the select beside it. */}
+        <Input
           data-sc={fieldHandle('memory.search')}
           type="search"
-          className="min-w-0 grow"
+          className="grow"
           aria-label={t('settings.memorySearch')}
           placeholder={t('settings.memorySearch')}
           value={text}
           onChange={event => setText(event.target.value)}
         />
-        <WindowSelect
+        <Select
           data-sc="field:memory.type"
           aria-label={t('settings.memoryFilterAll')}
           /**
@@ -126,7 +127,7 @@ export function MemorySettings() {
               {t(`memoryTypes.${one}`)}
             </option>
           ))}
-        </WindowSelect>
+        </Select>
       </div>
 
       <p className={WINDOW_CAPTION}>{t('settings.memoryCount', { count: memories.length })}</p>

@@ -1,3 +1,4 @@
+import { localizeErrorMessage } from '@shared/localizedError'
 import { mdiBugOutline } from '@mdi/js'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -49,7 +50,11 @@ export function GameWindowDebug({ report }: { report: RuntimeReport }) {
           </div>
           {/* The last one in full: a count alone sends a reader back to the studio to learn what
               broke, which is the trip this drawer exists to save. */}
-          {faults.length > 0 && <div className="text-muted break-words">{faults.at(-1)}</div>}
+          {faults.length > 0 && (
+            <div className="text-muted break-words">
+              {localizeErrorMessage(faults.at(-1) ?? '', (key, values) => t(key, values))}
+            </div>
+          )}
         </div>
       )}
 

@@ -10,8 +10,8 @@ import { box } from './shapeGeometry'
 import type { Point } from '../core/geometry'
 import { wheelStep, toDocument, zoomCanvasAt } from './viewport'
 import type { LayerSurface } from './canvasEngineSupport1'
-import { NO_GESTURE, LAYER_DRAGS, sameHit, cursorFor } from './canvasEngineSupport2'
-import type { HoverBox } from './canvasEngineSupport2'
+import { NO_GESTURE, LAYER_DRAGS, isSmartGesture, sameHit, cursorFor } from './canvasEngineSupport2'
+import type { HoverBox, SmartGesture } from './canvasEngineSupport2'
 import { CanvasPointerTracking } from './CanvasPointerTracking'
 
 export abstract class CanvasInput extends CanvasPointerTracking {
@@ -39,8 +39,8 @@ export abstract class CanvasInput extends CanvasPointerTracking {
     if (gesture.kind === 'paint') this.endPixels()
     if (gesture.kind === 'shape') this.commitShape(gesture.from, gesture.to)
     if (gesture.kind === 'text') this.commitText(gesture.from, gesture.to)
-    if (gesture.kind === 'smartSelect') {
-      this.smartSelection(gesture.from, gesture.to)
+    if (isSmartGesture(gesture)) {
+      this.smartPrompt(gesture)
       this.overlay.invalidate()
     }
     if (gesture.kind === 'comment') {
@@ -52,12 +52,13 @@ export abstract class CanvasInput extends CanvasPointerTracking {
     if (gesture.kind === 'select' && isEmptySelection(this.selection)) this.publishSelection(null)
   }
 
-  private smartSelection(from: Point, to: Point): void {
-    const corners = this.gridBox(from, to)
+  private smartPrompt(gesture: SmartGesture): void {
+    const callback =
+      gesture.kind === 'smartSelect' ? this.options.onSmartSelect : this.options.onSmartComment
+    const corners = this.gridBox(gesture.from, gesture.to)
     const prompt = box(corners.from, corners.to, false)
-    if (prompt.width === 0 || prompt.height === 0)
-      return this.options.onSmartSelect({ point: from })
-    this.options.onSmartSelect({ box: prompt })
+    if (prompt.width === 0 || prompt.height === 0) return callback({ point: gesture.from })
+    callback({ box: prompt })
   }
 
   /**
