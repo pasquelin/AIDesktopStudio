@@ -13,7 +13,9 @@ const paint = (tail: string) =>
     />,
   )
 
-describe('the grey rest of a sentence', () => {
+// The colour is the HOST's now: a tail can be a whole sentence offered in place of the writing,
+// with a key printed at its end, and only the field that offers it knows which.
+describe('the mirror behind a field one writes in', () => {
   /**
    * 🛑 The written half is PAINTED and hidden, never dropped: without it the tail starts at the
    * left edge instead of under the caret, and the two read as one wrong sentence.
