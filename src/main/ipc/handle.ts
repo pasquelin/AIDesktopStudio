@@ -16,6 +16,7 @@ type ChannelMethod = {
   [CHANNELS.settingsRead]: StudioBridge['settings']['read']
   [CHANNELS.settingsWrite]: StudioBridge['settings']['write']
   [CHANNELS.settingsForgetProject]: StudioBridge['settings']['forgetProject']
+  [CHANNELS.settingsMoveProject]: StudioBridge['settings']['moveProject']
   [CHANNELS.settingsAuthState]: StudioBridge['settings']['authState']
   [CHANNELS.mcpState]: StudioBridge['mcp']['state']
   [CHANNELS.settingsOpen]: StudioBridge['settings']['open']

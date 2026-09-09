@@ -39,6 +39,14 @@ export type StudioBridgeSettings = {
      * per-project roles go, `missing` being a drive that is merely unplugged.
      */
     forgetProject: (path: string, owned: boolean) => Promise<Settings>
+    /**
+     * Moves everything keyed on a project folder to the folder it now lives in — the shelf row,
+     * the startup pointer, the account link and the per-project roles.
+     *
+     * The two paths rather than the new tables, for the reason `forgetProject` gives: a rename
+     * touches four of them, so a window composing from its replica loses four at once.
+     */
+    moveProject: (from: string, to: string) => Promise<Settings>
     authState: () => Promise<AuthState>
 
     /** Opens the settings window on a section, or focuses it there if it is already up. */

@@ -5,7 +5,6 @@ import { installFakeBridge } from '@/services/fakeBridge'
 import type { FileOutcome } from '@shared/domain/fileOp'
 import { useProject } from './project'
 import { useSettings } from './settings'
-import { ASSISTANT_ROLE, type AiRoleId, type RoleProvider } from '@shared/domain/aiRole'
 
 const closeOrphanTabs = vi.hoisted(() => vi.fn())
 vi.mock('@/features/shell/orphanTabs', () => ({ closeOrphanTabs }))
@@ -237,62 +236,44 @@ describe('giving a project a new name', () => {
     }))
   })
 
-  it('moves the folder, then the shelf entry that points at it', async () => {
+  /**
+   * 🛑 The two PATHS travel, never the four tables: composed here they came from this window's
+   * replica, and a rename touches the shelf, the pointer, the account link and the roles — four
+   * losses at once. What moves them is `settingsWithMovedProject`, in the main process.
+   */
+  it('moves the folder, then hands both paths to the main process', async () => {
     const rename = vi.fn(() => Promise.resolve(RENAMED))
-    const write = vi.fn(() => Promise.resolve(useSettings.getState().settings))
-    installFakeBridge({ project: { rename }, settings: { write } })
+    const moveProject = vi.fn(() => Promise.resolve(useSettings.getState().settings))
+    installFakeBridge({ project: { rename }, settings: { moveProject } })
 
     await expect(useProject.getState().rename(SUMMER.path, 'Winter')).resolves.toMatchObject({
       ok: true,
     })
 
     expect(rename).toHaveBeenCalledWith(SUMMER.path, 'Winter')
-    // 🛑 The PATH moves with the name: an entry left where it was points at a folder that is no
-    // longer there, and `projects.list` then answers a path nothing opens.
-    expect(write).toHaveBeenCalledWith(
-      expect.objectContaining({
-        storage: expect.objectContaining({ recentProjects: [{ ...SUMMER, path: RENAMED.path }] }),
-      }),
-    )
+    expect(moveProject).toHaveBeenCalledWith(SUMMER.path, RENAMED.path)
   })
 
-  /** One role override, as `ai.projectRoles` shapes it — the value is not what this case is about. */
-  const ROLE_HELD: Partial<Record<AiRoleId, RoleProvider>> = {
-    [ASSISTANT_ROLE]: { kind: 'cloud', providerId: 'deepseek' },
-  }
-
-  /**
-   * 🛑 EVERYTHING keyed by folder moves with it, and the account link above all: orphaned at the
-   * old path, `planProjectAccount` answers `adopt` and the project silently comes back on whichever
-   * key is active — a destructive write nobody asked for.
-   */
-  it('moves every table keyed on the folder, not only the shelf', async () => {
-    installFakeBridge({ project: { rename: () => Promise.resolve(RENAMED) } })
-    const write = vi.fn(async () => {})
-    useSettings.setState(state => ({
-      write,
-      settings: {
-        ...state.settings,
-        storage: {
-          ...state.settings.storage,
-          recentProjects: [SUMMER],
-          lastProject: SUMMER.path,
-          projectAccounts: { [SUMMER.path]: 'account-1' },
-        },
-        ai: { ...state.settings.ai, projectRoles: { [SUMMER.path]: ROLE_HELD } },
+  // The answer is the whole of the settings: a replica left behind lists the old name until the
+  // broadcast catches up, which is a frame of a list saying the rename did not happen.
+  it('takes the settings the main process answered with', async () => {
+    const moved = {
+      ...useSettings.getState().settings,
+      storage: {
+        ...useSettings.getState().settings.storage,
+        recentProjects: [{ ...SUMMER, path: RENAMED.path }],
       },
-    }))
+    }
+    installFakeBridge({
+      project: { rename: () => Promise.resolve(RENAMED) },
+      settings: { moveProject: () => Promise.resolve(moved) },
+    })
 
     await useProject.getState().rename(SUMMER.path, 'Winter')
 
-    expect(write).toHaveBeenCalledWith({
-      storage: {
-        recentProjects: [{ ...SUMMER, path: RENAMED.path }],
-        projectAccounts: { [RENAMED.path]: 'account-1' },
-        lastProject: RENAMED.path,
-      },
-      ai: { projectRoles: { [RENAMED.path]: ROLE_HELD } },
-    })
+    expect(useSettings.getState().settings.storage.recentProjects).toEqual([
+      { ...SUMMER, path: RENAMED.path },
+    ])
   })
 
   // The title bar reads the folder. Waiting for the broadcast to come back would leave it
@@ -322,10 +303,10 @@ describe('giving a project a new name', () => {
    * ordinary case there, and the settings must not end up claiming a name the disk refused.
    */
   it('leaves the shelf alone when the disk refused the name', async () => {
-    const write = vi.fn(() => Promise.resolve(useSettings.getState().settings))
+    const moveProject = vi.fn(() => Promise.resolve(useSettings.getState().settings))
     installFakeBridge({
       project: { rename: () => Promise.reject(new Error('not a project')) },
-      settings: { write },
+      settings: { moveProject },
     })
 
     await expect(useProject.getState().rename(SUMMER.path, 'Winter')).resolves.toMatchObject({
@@ -333,7 +314,7 @@ describe('giving a project a new name', () => {
       why: expect.stringContaining('not a project'),
     })
 
-    expect(write).not.toHaveBeenCalled()
+    expect(moveProject).not.toHaveBeenCalled()
   })
 
   // The FOLDER moves in the main process, which owns it. No file gesture of this store's may

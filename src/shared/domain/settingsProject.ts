@@ -1,4 +1,9 @@
-import { withoutProjectDocuments, withoutRecentProject } from './project'
+import {
+  movedProjectKey,
+  movedRecentProject,
+  withoutProjectDocuments,
+  withoutRecentProject,
+} from './project'
 import type { PartialSettings, Settings } from './settings'
 
 /**
@@ -32,5 +37,37 @@ export function settingsWithoutProject(
       ...(owned ? { projectAccounts: withoutAccount } : {}),
     },
     ...(owned ? { ai: { projectRoles: withoutRoles } } : {}),
+  }
+}
+
+/**
+ * What follows a project folder that MOVED — the shelf row, the startup pointer, the account link
+ * and the per-project roles. The recent documents do not: nothing follows a rename there, which
+ * `projectRecent.ts` decided and this leaves alone.
+ *
+ * 🛑 Composed from the settings HANDED IN, for the reason `settingsWithoutProject` gives: a
+ * window builds this from its replica, and everything the main process wrote since the last
+ * broadcast goes with it. A rename touches four tables, so it loses four at once.
+ *
+ * 🛑 The account link above all: orphaned at the old path, `planProjectAccount` answers `adopt`
+ * and the project silently comes back on whichever key is active — a destructive write nobody
+ * asked for.
+ */
+export function settingsWithMovedProject(
+  settings: Settings,
+  from: string,
+  to: string,
+): PartialSettings {
+  const { storage, ai } = settings
+
+  return {
+    storage: {
+      recentProjects: movedRecentProject(storage.recentProjects, from, to),
+      projectAccounts: movedProjectKey(storage.projectAccounts, from, to),
+      // The pointer the next launch reopens names a FOLDER: left at the old one the studio
+      // starts on a path nothing answers, and forgets the project on the way.
+      ...(storage.lastProject === from ? { lastProject: to } : {}),
+    },
+    ai: { projectRoles: movedProjectKey(ai.projectRoles, from, to) },
   }
 }

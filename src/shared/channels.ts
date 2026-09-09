@@ -8,6 +8,7 @@ export type Channels = {
   settingsRead: 'settings:read'
   settingsWrite: 'settings:write'
   settingsForgetProject: 'settings:forget-project'
+  settingsMoveProject: 'settings:move-project'
   settingsAuthState: 'settings:auth-state'
   settingsOpen: 'settings:open'
   mcpState: 'mcp:state'
