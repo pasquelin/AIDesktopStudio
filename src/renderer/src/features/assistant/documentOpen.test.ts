@@ -1,5 +1,6 @@
 import type * as DockviewApi from '@/features/shell/components/dockviewApi'
 import { saveDocument } from '@/features/shell/documentIo'
+import { forgetLoadState } from '@/features/shell/documentLoad'
 import { addNode } from '@/engines/scene/commands'
 import { meshNode } from '@/engines/scene/scene-fixtures'
 import { installFakeBridge } from '@/services/fakeBridge'
@@ -54,7 +55,9 @@ const disk = new Map<string, DocumentFile>()
 /** A read the case hands over when it chooses to, so the ask and the landing are two moments. */
 let deliver: (() => void) | null = null
 
-function installDisk({ held = false }: { held?: boolean } = {}): { read: ReturnType<typeof vi.fn> } {
+function installDisk({ held = false }: { held?: boolean } = {}): {
+  read: ReturnType<typeof vi.fn>
+} {
   const read = vi.fn((id: string) => {
     const file = disk.get(id) ?? null
     if (!held) return Promise.resolve(file)
@@ -97,6 +100,7 @@ function reopenProject(): void {
 beforeEach(() => {
   disk.clear()
   deliver = null
+  forgetLoadState(PILOT.id)
   useDocuments.setState({ documents: {}, stored: [], activeId: null })
   useProject.setState({
     project: {
@@ -131,7 +135,7 @@ describe('opening a document from outside the window', () => {
       ok: true,
       data: {
         documentId: PILOT.id,
-        nodes: [{ name: 'Pilot Cube', position: { x: 2, y: 1, z: -3 } }],
+        nodes: [{ name: 'Pilot Cube', transform: { position: { x: 2, y: 1, z: -3 } } }],
       },
     })
   })

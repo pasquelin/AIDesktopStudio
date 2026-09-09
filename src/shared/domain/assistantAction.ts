@@ -117,14 +117,7 @@ export type AssistantAction = {
    * questions included. Read by `asking.ts`, which owes it the long wait, and by `tools.ts`.
    */
   runsOthers?: true
-  /**
-   * The answer waits on a FILE coming off the disk, so the two seconds a call that asks nobody
-   * gets is the wrong ceiling for it. Read by `asking.ts` beside `runsOthers`.
-   *
-   * 🛑 Its own flag rather than `asksItself`: nothing here waits on a person, and borrowing that
-   * one would make the tool announce a confirmation that never comes.
-   */
-  loadsAFile?: true
+  loadsAFile?: true // Waits on a file off the disk; `asking.ts` owes it more than a read's wait.
   reach: ActionReach
   fields: readonly ActionField[]
   requires?: readonly ActionResource[]
