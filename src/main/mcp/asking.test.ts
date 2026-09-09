@@ -129,6 +129,7 @@ describe('asking the window in front to act', () => {
     const waiting = ACTION_REGISTRY.filter(entry => entry.awaitsItsEffect)
 
     expect(waiting.map(entry => entry.name).sort()).toEqual([
+      'command.runStudioCommand',
       'document.activate',
       'document.open',
       'file.open',

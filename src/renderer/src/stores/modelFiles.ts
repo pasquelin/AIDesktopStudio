@@ -1,6 +1,6 @@
 import type { CharacterSocket } from '@shared/domain/character'
 import { create } from 'zustand'
-import { withoutKey } from '@/helpers/objects'
+import { withoutKey } from '@shared/collections'
 import type { RetargetFit } from '@/engines/scene/retarget'
 import type { RigState } from '@/engines/scene/rigState'
 import { EMPTY_STATS, type SceneStats } from '@/engines/scene/sceneStats'

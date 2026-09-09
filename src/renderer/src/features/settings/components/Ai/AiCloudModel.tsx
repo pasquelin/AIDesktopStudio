@@ -4,7 +4,7 @@ import { defaultChatModel } from '@shared/domain/aiCloud'
 import { fieldHandle } from '@/components/scHandle'
 import { WINDOW_CAPTION, WINDOW_HELP, WINDOW_ROW } from '@/components/windowStyles'
 import { cn } from '@/helpers/cn'
-import { withoutKey } from '@/helpers/objects'
+import { withoutKey } from '@shared/collections'
 import { useCommittedText } from '@/hooks/useCommittedText'
 import { useSettings } from '@/stores/settings'
 

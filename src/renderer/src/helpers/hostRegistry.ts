@@ -11,8 +11,12 @@
  * worth having in one place, and it is exactly the part a copy gets wrong.
  */
 export type HostRegistry<H> = {
-  /** Registers a document's host. Returns the undo, for the effect that mounted it. */
-  hold: (documentId: string, host: () => H | null) => () => void
+  /**
+   * Registers a document's host. Returns the undo, which answers whether the entry was DROPPED:
+   * a surface with more than the host to let go of — a wait on it, say — has no other way to
+   * tell a real teardown from an effect cleaning up after its own replacement.
+   */
+  hold: (documentId: string, host: () => H | null) => () => boolean
   /** `null` when no document of this kind by that id is open — every other kind, and a closed tab. */
   get: (documentId: string) => H | null
 }
@@ -26,7 +30,10 @@ export function createHostRegistry<H>(): HostRegistry<H> {
       return () => {
         // Only if it is still ours: a remount registers the new host before the old effect
         // cleans up, and dropping the entry then would leave the live document unreachable.
-        if (hosts.get(documentId) === host) hosts.delete(documentId)
+        if (hosts.get(documentId) !== host) return false
+
+        hosts.delete(documentId)
+        return true
       }
     },
     get: documentId => hosts.get(documentId)?.() ?? null,

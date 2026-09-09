@@ -40,14 +40,24 @@ export function follow(project: Project | null): Promise<void> {
   // would dismiss every toast and refetch three lists to update nothing.
   if (followed === path) return following
   followed = path
-  // Caught here and never rethrown: three callers hand this to a `void`, and a follow that gave
-  // up is not a project that failed to open — the one that DOES answer for the opening is the
-  // main process. Forgotten as well, so the next attempt at this folder tries again.
-  following = followProject(project).catch(error => {
+  following = followedSafely(project, path)
+  return following
+}
+
+/**
+ * The follow, and what a failed one leaves behind.
+ *
+ * Never rethrown: three callers hand this to a `void`, and a follow that gave up is not a project
+ * that failed to open — the one that DOES answer for the opening is the main process. Forgotten
+ * as well, so the next attempt at this folder tries again.
+ */
+async function followedSafely(project: Project | null, path: string | null): Promise<void> {
+  try {
+    await followProject(project)
+  } catch (error) {
     followed = undefined
     traceFailure('shell.dropped', path ?? '', error)
-  })
-  return following
+  }
 }
 
 /**
