@@ -1,13 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { aiOverview, roleRow } from '@shared/domain/aiOverview-fixtures'
-import { ASSISTANT_ROLE } from '@shared/domain/aiRole'
+import { ASSISTANT_ROLE, type RoleProvider } from '@shared/domain/aiRole'
 import type { AskedQuestion } from '@shared/domain/assistantAsk'
 import { installFakeBridge } from '@/services/fakeBridge'
 import { useAiModels } from '@/stores/aiModels'
 import { askKeptAssistant } from './keptAssistant'
 import { registerStudioAsk } from './studioAsk'
 
-const DEEPSEEK = { kind: 'cloud', providerId: 'deepseek' } as const
+const DEEPSEEK: RoleProvider = { kind: 'cloud', providerId: 'deepseek' }
 
 const overviewWith = (chosen: { app: boolean; project: boolean }) =>
   aiOverview({
