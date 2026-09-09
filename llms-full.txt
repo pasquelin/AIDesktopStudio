@@ -3,7 +3,7 @@
 > **Multimodal desktop creation studio** for generative models (Electron 43 + React 19 +
 > TypeScript). Six workshops — Image, Video, 3D, Audio, Materials, Skyboxes — in one window
 > with dockable panels, a timecoded timeline, an inspector and a project library on disk.
-> Offline dictation, and **233 MCP actions across 16 families** so an agent drives the studio
+> Offline dictation, and **310 MCP actions across 26 families** so an agent drives the studio
 > through the same paths the interface uses.
 
 ## Mental model (read this first)
