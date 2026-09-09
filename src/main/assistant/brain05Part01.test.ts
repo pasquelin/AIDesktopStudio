@@ -102,15 +102,28 @@ describe('reading what came back', () => {
       questions: [{ question: 'Lequel ?', choices: ['a', 'b'] }],
     })
   })
+})
 
+/** The `ask` key alone: what a question may hold, and what a card is handed to draw. */
+describe('reading a question that came back', () => {
   /**
-   * A button with no words on it is no button, and losing the turn over one teaches nobody
+   * A row with no words on it is no answer, and losing the turn over one teaches nobody
    * anything: the choices are filtered where the QUESTION is what has to be there.
    */
   it('keeps a question whose choices are half empty', () => {
     const half = '{"say":"","ask":{"question":"Lequel ?","choices":["a","",3]},"calls":[]}'
 
     expect(parseReply(half, SHOWN)?.ask?.questions[0]?.choices).toEqual(['a'])
+  })
+
+  /**
+   * An answer is KEPT in a list now, so a choice offered twice came back twice — read to the
+   * model as « a, a » — and collided as a React key on the card drawing it.
+   */
+  it('offers a choice once even where the model listed it twice', () => {
+    const twice = '{"say":"","ask":{"question":"Lequel ?","choices":["a","b","a"]},"calls":[]}'
+
+    expect(parseReply(twice, SHOWN)?.ask?.questions[0]?.choices).toEqual(['a', 'b'])
   })
 
   /** 🛑 Measured on qwen3.8: the question went out as a bare string, was thrown in silence, and
@@ -122,6 +135,23 @@ describe('reading what came back', () => {
       say: '',
       ask: { questions: [{ question: 'Quel nom ?', choices: [] }] },
       calls: [],
+    })
+  })
+
+  /**
+   * 🛑 « Several answers » of a typed line means nothing, and a card offering boxes over no choice
+   * at all has none to tick: the key is kept where there is something to keep.
+   */
+  it('takes a question that lets several answers, and only where there are choices', () => {
+    const text =
+      '{"say":"","ask":{"questions":[{"question":"Lesquels ?","choices":["a","b"],"many":true},' +
+      '{"question":"Pourquoi ?","many":true}]},"calls":[]}'
+
+    expect(parseReply(text, SHOWN)?.ask).toEqual({
+      questions: [
+        { question: 'Lesquels ?', choices: ['a', 'b'], many: true },
+        { question: 'Pourquoi ?', choices: [] },
+      ],
     })
   })
 

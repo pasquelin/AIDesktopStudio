@@ -7,13 +7,11 @@
  */
 import {
   type ActionName,
-  type AskedQuestion,
   assistantAction,
-  MOST_QUESTIONS,
-  type AssistantAsk,
   type AssistantCall,
   type AssistantAnswer,
 } from '@shared/domain/assistant'
+import { type AskedQuestion, MOST_QUESTIONS, type AssistantAsk } from '@shared/domain/assistantAsk'
 import { isRecord, readText } from '@shared/guards'
 import { closingBrace } from '@shared/text'
 
@@ -103,9 +101,20 @@ function questionIn(value: unknown): AskedQuestion | null {
   if (question === null) return null
 
   const raw = Array.isArray(held.choices) ? held.choices : []
-  const choices = raw.filter((one): one is string => typeof one === 'string' && one.trim() !== '')
+  // 🛑 Deduplicated as well as filtered: an answer is now KEPT in a list, so the same choice
+  // offered twice came back twice — read to the model as « a, a » — and collided as a React key.
+  const choices = [
+    ...new Set(raw.filter((one): one is string => typeof one === 'string' && one.trim() !== '')),
+  ]
 
-  return { question, choices, ...(held.note === true ? { note: true } : {}) }
+  return {
+    question,
+    choices,
+    ...(held.note === true ? { note: true } : {}),
+    // Only where there is something to pick from: « several » of a typed line means nothing, and
+    // a card offering boxes over no choice at all has none to tick.
+    ...(held.many === true && choices.length > 0 ? { many: true } : {}),
+  }
 }
 
 /**

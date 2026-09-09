@@ -244,7 +244,11 @@ function connectAssistant(
   const closeChooser = useAssistant.subscribe((state, before) => {
     if (state.choosing && state.choosing !== before.choosing) {
       state.choose(
-        state.choosing.questions.map(one => ({ answer: one.choices[0] ?? TYPED_ANSWER })),
+        state.choosing.questions.map(one => ({
+          // A question that allows several is answered with several: handed one, the bench would
+          // score « it asked » on a shape nothing ever exercised.
+          answers: one.many === true ? one.choices.slice(0, 2) : [one.choices[0] ?? TYPED_ANSWER],
+        })),
       )
     }
   })

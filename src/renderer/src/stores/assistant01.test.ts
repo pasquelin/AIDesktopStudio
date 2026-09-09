@@ -3,9 +3,9 @@ import type {
   ActionName,
   ActionOutcome,
   AssistantAnswer,
-  AssistantAsk,
   AssistantThought,
 } from '@shared/domain/assistant'
+import type { AssistantAsk } from '@shared/domain/assistantAsk'
 import type { AssistantNote } from '@shared/domain/assistantNote'
 import { installFakeBridge } from '@/services/fakeBridge'
 import { useSettings } from './settings'
@@ -124,7 +124,7 @@ describe('what a turn writes down', () => {
 
     const said = useAssistant.getState().say('crée un projet')
     await vi.waitFor(() => expect(useAssistant.getState().choosing).not.toBeNull())
-    useAssistant.getState().choose([{ answer: 'Bateaux' }])
+    useAssistant.getState().choose([{ answers: ['Bateaux'] }])
     await said
 
     expect(notes).toContainEqual({ kind: 'asked', question: 'Quel nom ?', answer: 'Bateaux' })
@@ -134,7 +134,7 @@ describe('what a turn writes down', () => {
 /** Answers whatever question is standing, as a person pressing a button or typing would. */
 async function answering(chosen: string | null): Promise<void> {
   await vi.waitFor(() => expect(useAssistant.getState().choosing).not.toBeNull())
-  useAssistant.getState().choose(chosen === null ? null : [{ answer: chosen }])
+  useAssistant.getState().choose(chosen === null ? null : [{ answers: [chosen] }])
 }
 
 describe('a question the model asked', () => {
@@ -152,7 +152,7 @@ describe('a question the model asked', () => {
 
     expect(runConfirmedAction).not.toHaveBeenCalled()
     expect(useAssistant.getState().turns[0]?.asks).toEqual([
-      { question: 'Quel nom ?', answer: 'Bateaux' },
+      { question: 'Quel nom ?', answers: ['Bateaux'] },
     ])
   })
 
@@ -277,7 +277,7 @@ describe('a question the model asked', () => {
     await useAssistant.getState().say('Bateaux')
 
     expect(useAssistant.getState().choosing).not.toBeNull()
-    useAssistant.getState().choose([{ answer: 'un bateau' }, { answer: 'pour voir' }])
+    useAssistant.getState().choose([{ answers: ['un bateau'] }, { answers: ['pour voir'] }])
     await said
 
     expect(asked[1]?.history.join('\n')).toContain(

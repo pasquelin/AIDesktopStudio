@@ -1,12 +1,12 @@
 import { localizeErrorMessage } from '@shared/localizedError'
 import {
   assistantAction,
-  type AskedAnswer,
   HISTORY_BLOCK_MAX,
   type ActionName,
   type ActionRefusal,
   refusalKey,
 } from '@shared/domain/assistant'
+import { type AskedAnswer } from '@shared/domain/assistantAsk'
 import { isRecord } from '@shared/guards'
 import { stableKey } from '@shared/hash'
 import { byCodeUnit } from '@shared/text'
@@ -263,9 +263,12 @@ function cameBack(asked: AssistantAsked): string {
   // its note alone, and dropping it there drops what the question existed to collect.
   const note = asked.note === undefined ? '' : ` (${asked.note})`
 
-  return asked.answer === null
+  // ANGLE MORT: the answers are joined by a comma, so a choice holding one of its own reads to
+  // the model as two answers. Nothing offers such a choice today, and quoting each one would
+  // cost the ordinary case — one answer — a pair of quotes on every round.
+  return asked.answers.length === 0
     ? `the person left it blank${note}.`
-    : `the person answered: ${asked.answer}${note}`
+    : `the person answered: ${asked.answers.join(', ')}${note}`
 }
 
 function blockOf(turn: AssistantTurn): string {

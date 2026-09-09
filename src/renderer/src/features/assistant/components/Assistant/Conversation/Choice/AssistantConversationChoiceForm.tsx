@@ -1,11 +1,11 @@
 import { useId, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { AskedAnswer, AskedQuestion } from '@shared/domain/assistant'
+import type { AskedAnswer, AskedQuestion } from '@shared/domain/assistantAsk'
 import { Button } from '@/components/Button'
-import { Chip } from '@/components/Chip'
 import { TextField } from '@/components/TextField'
 import { HINT_TOP } from '@/helpers/tooltip'
 import { useAssistant } from '@/stores/assistant'
+import { AssistantConversationChoiceList } from './AssistantConversationChoiceList'
 import { CONVERSATION_CARD } from '../conversationStyles'
 
 /**
@@ -25,7 +25,7 @@ export function AssistantConversationChoiceForm({
   // carries the question, which is what a reader is told before the field it holds.
   const named = useId()
   const [given, setGiven] = useState<readonly AskedAnswer[]>(() =>
-    questions.map(() => ({ answer: null })),
+    questions.map(() => ({ answers: [] })),
   )
 
   const write = (at: number, written: Partial<AskedAnswer>): void => {
@@ -49,24 +49,16 @@ export function AssistantConversationChoiceForm({
             <TextField
               label={t('assistant.answerLabel')}
               scId={`assistant.answer.${at}`}
-              value={given[at]?.answer ?? ''}
-              onChange={answer => write(at, { answer: answer === '' ? null : answer })}
+              value={given[at]?.answers[0] ?? ''}
+              onChange={answer => write(at, { answers: answer === '' ? [] : [answer] })}
             />
           ) : (
-            <div className="flex flex-wrap items-center gap-2">
-              {one.choices.map(choice => (
-                <Chip
-                  key={choice}
-                  label={choice}
-                  hint={t('assistant.chooseHint')}
-                  tip={HINT_TOP}
-                  selected={given[at]?.answer === choice}
-                  onClick={() =>
-                    write(at, { answer: given[at]?.answer === choice ? null : choice })
-                  }
-                />
-              ))}
-            </div>
+            <AssistantConversationChoiceList
+              asked={one}
+              chosen={given[at]?.answers ?? []}
+              onChange={answers => write(at, { answers })}
+              named={`${named}-${at}`}
+            />
           )}
 
           {one.note === true && (

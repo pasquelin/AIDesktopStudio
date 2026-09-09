@@ -108,10 +108,9 @@ describe('a control that goes straight to the platform', () => {
   })
 
   /**
-   * The tag itself. `Input`, `Checkbox`, `Toggle` and `SliderHandle` DRESS one; the rest of the
-   * list is what has not been given a component yet, written out rather than waved through — the
-   * four colour swatches, the single radio of the AI settings, two pieces of plumbing and the
-   * fixture a shortcut test types into.
+   * The tag itself. `Input`, `Checkbox`, `Radio`, `Toggle` and `SliderHandle` DRESS one; the rest
+   * of the list is what has not been given a component yet, written out rather than waved through
+   * — the four colour swatches, two pieces of plumbing and the fixture a shortcut test types into.
    *
    * 🛑 It reads the TAG: a control built through `createElement('input')` stays green.
    */
@@ -123,11 +122,11 @@ describe('a control that goes straight to the platform', () => {
         './ColorField.tsx',
         './DynamicForm/DynamicFormControl.tsx',
         './Input.tsx',
+        './Radio.tsx',
         './SliderHandle.tsx',
         './Toggle.tsx',
         '../features/image/components/ImageDocument/ImageDocumentBrush.tsx',
         '../features/image/components/ImageDocument/ImageDocumentComment.tsx',
-        '../features/settings/components/Ai/AiChoiceRow.tsx',
         '../features/settings/components/Setting/Row/SettingRowColorControl.tsx',
         '../hooks/shortcuts-fixtures.tsx',
       ].sort(),

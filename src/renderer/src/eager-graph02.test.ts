@@ -239,6 +239,7 @@ describe('the opening chunk', () => {
       './features/assistant/components/Assistant/Conversation/AssistantConversationWorking.tsx',
       './features/assistant/components/Assistant/Conversation/Choice/AssistantConversationChoice.tsx',
       './features/assistant/components/Assistant/Conversation/Choice/AssistantConversationChoiceForm.tsx',
+      './features/assistant/components/Assistant/Conversation/Choice/AssistantConversationChoiceList.tsx',
       './features/assistant/components/Assistant/Conversation/conversation.ts',
       './features/assistant/components/Assistant/Conversation/conversationStyles.ts',
       './features/assistant/components/Assistant/Toast/AssistantToast.tsx',
