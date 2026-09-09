@@ -299,6 +299,10 @@
     "leaveRunningBody": "Số lần tạo sinh đang chạy: {{count, number}}. Chúng vẫn tiếp tục, và những gì chúng tạo ra được xếp vào dự án này — bạn sẽ tìm thấy ở đó khi mở lại. Trong lúc đó không có gì rơi sang chỗ khác.",
     "leaveRunningConfirm": "Vẫn rời đi",
     "leaveRunningCancel": "Ở lại đây",
+    "trashTitle": "Chuyển dự án «{{name}}» vào thùng rác?",
+    "trashBody": "Thư mục của nó và mọi thứ bên trong sẽ vào thùng rác của hệ thống. Bạn có thể lấy lại từ đó; còn studio thì không biết đặt chúng về chỗ cũ.",
+    "trashConfirm": "Chuyển vào thùng rác",
+    "trashCancel": "Huỷ",
     "closeHint": "Đóng mọi tab và trả studio về màn hình chính. Thư mục vẫn ở nguyên chỗ, và dự án vẫn nằm trong danh sách",
     "context": "Bối cảnh của dự án",
     "contextHint": "Mở bảng nơi ghi lại dự án này nói về điều gì"

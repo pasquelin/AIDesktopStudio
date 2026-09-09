@@ -237,6 +237,8 @@
       "revealHint": "Membuka pengelola file di proyek ini",
       "forget": "Hapus dari daftar",
       "forgetHint": "Menghapus proyek dari daftar ini, meninggalkan folder dan semuanya tidak tersentuh",
+      "trash": "Pindahkan ke tempat sampah",
+      "trashHint": "Mengirim folder proyek dan semua isinya ke tempat sampah sistem; ditanyakan lebih dulu",
       "rename": "Ganti nama",
       "renameHint": "Ubah nama proyek, meninggalkan foldernya di disk di mana ia berada"
     },

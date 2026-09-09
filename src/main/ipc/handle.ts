@@ -75,6 +75,7 @@ type ChannelMethod = {
   [CHANNELS.projectRevealFolder]: StudioBridge['project']['revealFolder']
   [CHANNELS.projectRename]: StudioBridge['project']['rename']
   [CHANNELS.projectTrash]: StudioBridge['project']['trash']
+  [CHANNELS.projectConfirmTrash]: StudioBridge['project']['confirmTrash']
   [CHANNELS.projectRenameFile]: StudioBridge['project']['renameFile']
   [CHANNELS.projectMoveFiles]: StudioBridge['project']['moveFiles']
   [CHANNELS.projectTrashFiles]: StudioBridge['project']['trashFiles']

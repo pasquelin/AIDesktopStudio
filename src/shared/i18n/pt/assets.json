@@ -299,6 +299,10 @@
     "leaveRunningBody": "Gerações em andamento: {{count, number}}. Elas continuam, e o que produzirem será arquivado neste projeto — você o encontrará lá ao abri-lo de novo. Nada disso vai parar em outro lugar nesse meio-tempo.",
     "leaveRunningConfirm": "Sair mesmo assim",
     "leaveRunningCancel": "Ficar aqui",
+    "trashTitle": "Mover o projeto «{{name}}» para o lixo?",
+    "trashBody": "A pasta e tudo o que contém vão para o lixo do sistema. Poderá recuperá-los a partir daí; o estúdio, esse, não sabe repô-los.",
+    "trashConfirm": "Mover para o lixo",
+    "trashCancel": "Cancelar",
     "closeHint": "Fecha todas as abas e devolve o estúdio à tela inicial. A pasta continua onde está, e o projeto na lista",
     "context": "O contexto do projeto",
     "contextHint": "Abre o painel onde se escreve do que trata este projeto"

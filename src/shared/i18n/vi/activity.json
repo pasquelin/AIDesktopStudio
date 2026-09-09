@@ -153,6 +153,7 @@
       "assets.retype": "Không thể sửa lại vai trò của tệp này",
       "project.reveal": "Không thể hiện thư mục dự án",
       "project.forget": "Không thể xóa dự án khỏi danh sách",
+      "project.trash": "Không thể chuyển dự án vào thùng rác",
       "project.close": "Dự án đã đóng, nhưng studio không ghi nhớ được rằng lần khởi động sau không nên mở lại nó",
       "project.rename": "Không thể đổi tên dự án",
       "font.face": "Không thể tải một phông chữ",

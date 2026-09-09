@@ -237,6 +237,8 @@
       "revealHint": "Ouvre le gestionnaire de fichiers sur ce projet",
       "forget": "Retirer de la liste",
       "forgetHint": "Retire le projet de cette liste, sans toucher au dossier ni à ce qu’il contient",
+      "trash": "Mettre à la corbeille",
+      "trashHint": "Envoie le dossier du projet et tout ce qu’il contient à la corbeille du système ; une question est posée d’abord",
       "rename": "Renommer",
       "renameHint": "Changer le nom du projet, sans toucher à son dossier sur le disque"
     },

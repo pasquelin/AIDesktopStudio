@@ -153,6 +153,7 @@
       "assets.retype": "O papel deste arquivo não pôde ser corrigido",
       "project.reveal": "A pasta do projeto não pôde ser mostrada",
       "project.forget": "O projeto não pôde ser retirado da lista",
+      "project.trash": "O projeto não pôde ser movido para o lixo",
       "project.close": "O projeto foi fechado, mas o estúdio não conseguiu registrar que a próxima inicialização não deve reabri-lo",
       "project.rename": "O projeto não pôde ser renomeado",
       "font.face": "Uma fonte não pôde ser carregada",

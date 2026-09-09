@@ -45,6 +45,28 @@ export async function askLeaveWithJobs(ask: AskUser, count: number): Promise<boo
 }
 
 /**
+ * Whether a project's whole FOLDER goes to the trash, named so the answer is about that one.
+ *
+ * 🛑 Asked here rather than behind `project.trash`, which the wire can call: a native dialog on
+ * that path would stand for good, nobody on the other side of the machine being able to answer
+ * it. The gesture made AT the machine — the shelf's own menu — comes through this route first.
+ *
+ * Everything else that shelf offers is a shortcut one can put back by reopening the project. This
+ * one is not, so it is the row that asks.
+ */
+export async function askTrashProject(ask: AskUser, name: string): Promise<boolean> {
+  const language = windowLanguage()
+  const t = TRANSLATIONS[language].project
+
+  return await askConfirm(ask, {
+    message: fillHoles(t.trashTitle, { name }, language),
+    detail: t.trashBody,
+    confirm: t.trashConfirm,
+    cancel: t.trashCancel,
+  })
+}
+
+/**
  * Whether a BATCH really goes to the trash. Asked from two files up, never from a window.
  *
  * Asked at all because this is the one gesture the explorer offers that `⌘Z` cannot take back:

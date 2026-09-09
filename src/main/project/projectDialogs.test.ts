@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { setWindowLanguage } from '@main/window/language'
 import type { AskUser } from './documentDialogs'
-import { askLeaveWithJobs, askUseOccupiedFolder } from './projectDialogs'
+import { askLeaveWithJobs, askTrashProject, askUseOccupiedFolder } from './projectDialogs'
 
 type Shown = Parameters<AskUser>[0]
 
@@ -87,5 +87,42 @@ describe('asking before closing a project with generations running', () => {
 
     expect(shown[0]?.detail).toContain('carry on')
     expect(shown[0]?.detail).toContain('open it again')
+  })
+})
+
+/**
+ * The one gesture of the shelf that cannot be taken back — the three others are shortcuts a
+ * reopening puts right. Asked here rather than behind `project.trash`, which the wire can call:
+ * a native dialog raised there would stand for good.
+ */
+describe('asking before a project folder goes to the trash', () => {
+  it('bins only on the confirming button', async () => {
+    await expect(askTrashProject(asking(1).ask, 'Reel')).resolves.toBe(true)
+    await expect(askTrashProject(asking(0).ask, 'Reel')).resolves.toBe(false)
+  })
+
+  it('names the project it is about to take, so the answer is about that one', async () => {
+    const { ask, shown } = asking(0)
+    await askTrashProject(ask, 'Bande-annonce')
+
+    expect(shown[0]?.message).toContain('Bande-annonce')
+    expect(shown[0]?.message).not.toContain('{{name}}')
+  })
+
+  // Both halves of the promise: the folder goes whole, and the way back is the system's alone.
+  it('says the whole folder goes, and that the studio cannot put it back', async () => {
+    const { ask, shown } = asking(0)
+    await askTrashProject(ask, 'Reel')
+
+    expect(shown[0]?.detail).toContain('everything in it')
+    expect(shown[0]?.detail).toContain('cannot put them back')
+  })
+
+  it('speaks the language the windows speak', async () => {
+    setWindowLanguage('fr')
+    const { ask, shown } = asking(0)
+    await askTrashProject(ask, 'Reel')
+
+    expect(shown[0]?.buttons).toEqual(['Annuler', 'Mettre à la corbeille'])
   })
 })

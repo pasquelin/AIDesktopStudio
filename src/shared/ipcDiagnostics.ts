@@ -93,6 +93,7 @@ export type LogScope =
   // all three of its gestures need somewhere to say they did nothing.
   | 'project.reveal'
   | 'project.forget'
+  | 'project.trash'
   | 'project.close'
   | 'project.rename'
   | 'font.face'
@@ -196,6 +197,7 @@ export const LOG_SCOPES: readonly LogScope[] = [
   'document.rename',
   'project.reveal',
   'project.forget',
+  'project.trash',
   'project.close',
   'project.rename',
   'font.face',

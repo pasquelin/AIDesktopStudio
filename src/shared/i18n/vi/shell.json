@@ -237,6 +237,8 @@
       "revealHint": "Mở trình quản lý tệp tại dự án này",
       "forget": "Bỏ khỏi danh sách",
       "forgetHint": "Bỏ dự án khỏi danh sách này, không đụng tới thư mục cũng như mọi thứ bên trong",
+      "trash": "Chuyển vào thùng rác",
+      "trashHint": "Gửi thư mục dự án và mọi thứ bên trong vào thùng rác của hệ thống; bạn được hỏi trước",
       "rename": "Đổi tên",
       "renameHint": "Đổi tên dự án, để nguyên thư mục của nó trên đĩa"
     },

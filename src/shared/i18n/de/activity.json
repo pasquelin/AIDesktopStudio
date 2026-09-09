@@ -153,6 +153,7 @@
       "assets.retype": "Die Rolle dieser Datei konnte nicht korrigiert werden",
       "project.reveal": "Der Projektordner konnte nicht angezeigt werden",
       "project.forget": "Das Projekt konnte nicht aus der Liste entfernt werden",
+      "project.trash": "Das Projekt konnte nicht in den Papierkorb verschoben werden",
       "project.close": "Das Projekt wurde geschlossen, aber das Studio konnte nicht festhalten, dass es beim nächsten Start nicht wieder geöffnet werden soll",
       "project.rename": "Das Projekt konnte nicht umbenannt werden",
       "font.face": "Eine Schriftart konnte nicht geladen werden",

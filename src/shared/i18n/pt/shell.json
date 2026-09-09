@@ -237,6 +237,8 @@
       "revealHint": "Abre o gerenciador de arquivos neste projeto",
       "forget": "Retirar da lista",
       "forgetHint": "Retira o projeto desta lista, sem tocar na pasta dele nem em nada do que ela contém",
+      "trash": "Mover para o lixo",
+      "trashHint": "Envia a pasta do projeto e tudo o que contém para o lixo do sistema; a pergunta é feita primeiro",
       "rename": "Renomear",
       "renameHint": "Mudar o nome do projeto, sem tocar na pasta dele no disco"
     },

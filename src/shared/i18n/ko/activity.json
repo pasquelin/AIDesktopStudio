@@ -153,6 +153,7 @@
       "assets.retype": "이 파일의 역할을 수정할 수 없습니다",
       "project.reveal": "프로젝트 폴더를 표시할 수 없습니다",
       "project.forget": "목록에서 프로젝트를 제거할 수 없습니다",
+      "project.trash": "프로젝트를 휴지통으로 옮기지 못했습니다",
       "project.close": "프로젝트는 닫혔지만, 다음 실행 때 다시 열지 않도록 스튜디오가 기록하지 못했습니다",
       "project.rename": "프로젝트 이름을 바꿀 수 없습니다",
       "font.face": "글꼴을 불러올 수 없습니다",

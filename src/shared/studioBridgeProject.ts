@@ -205,6 +205,16 @@ export type StudioBridgeProject = {
      */
     trash: (path: string) => Promise<ProjectBinned>
     /**
+     * Asks the person whether that project's folder may go, naming it — and answers what they
+     * said. Nothing is moved here.
+     *
+     * 🛑 A route of its OWN, apart from `trash`, and the split is the point: the native dialog
+     * belongs to a gesture made AT the machine, where somebody can answer it. `project.trash` is
+     * reachable from the wire, and a question raised there would stand for good — the measure
+     * `document.deleteFromDisk` holds, and `documents.confirmDelete` is the shape copied here.
+     */
+    confirmTrash: (name: string) => Promise<boolean>
+    /**
      * Renames in place — the name only, never the folder it sits in.
      *
      * The seven gestures below answer the same shape, and it is not a boolean: a batch is a

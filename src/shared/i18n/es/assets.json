@@ -299,6 +299,10 @@
     "leaveRunningBody": "Generaciones en curso: {{count, number}}. Continúan, y lo que producen se archiva en este proyecto — lo encontrarás ahí cuando vuelvas a abrirlo. Nada de ello llega a ningún otro sitio mientras tanto.",
     "leaveRunningConfirm": "Salir de todos modos",
     "leaveRunningCancel": "Quedarse aquí",
+    "trashTitle": "¿Mover el proyecto «{{name}}» a la papelera?",
+    "trashBody": "Su carpeta y todo lo que contiene van a la papelera del sistema. Podrá recuperarlos desde allí; el estudio, en cambio, no sabe devolverlos a su sitio.",
+    "trashConfirm": "Mover a la papelera",
+    "trashCancel": "Cancelar",
     "closeHint": "Cierra todas las pestañas y devuelve el estudio al Inicio. La carpeta se queda donde está, y el proyecto en la lista",
     "context": "El contexto del proyecto",
     "contextHint": "Abre el panel donde se escribe de qué trata este proyecto"

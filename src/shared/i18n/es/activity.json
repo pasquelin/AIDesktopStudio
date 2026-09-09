@@ -153,6 +153,7 @@
       "assets.retype": "No se ha podido corregir el papel de este archivo",
       "project.reveal": "No se ha podido mostrar la carpeta del proyecto",
       "project.forget": "No se ha podido quitar el proyecto de la lista",
+      "project.trash": "El proyecto no se ha podido mover a la papelera",
       "project.close": "El proyecto se ha cerrado, pero el estudio no ha podido recordar que no debe volver a abrirlo en el siguiente arranque",
       "project.rename": "No se ha podido renombrar el proyecto",
       "font.face": "No se ha podido cargar una fuente",

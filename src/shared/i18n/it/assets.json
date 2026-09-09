@@ -299,6 +299,10 @@
     "leaveRunningBody": "Generazioni in corso: {{count, number}}. Proseguono, e ciò che producono viene archiviato in questo progetto — lo ritroverai lì riaprendolo. Nel frattempo nulla di tutto ciò finisce altrove.",
     "leaveRunningConfirm": "Esci comunque",
     "leaveRunningCancel": "Resta qui",
+    "trashTitle": "Spostare il progetto «{{name}}» nel cestino?",
+    "trashBody": "La sua cartella e tutto ciò che contiene finiscono nel cestino di sistema. Potrà recuperarli da lì; lo studio, invece, non sa rimetterli a posto.",
+    "trashConfirm": "Sposta nel cestino",
+    "trashCancel": "Annulla",
     "closeHint": "Chiude tutte le schede e riporta lo studio alla pagina iniziale. La cartella resta dov’è, e il progetto nell’elenco",
     "context": "Contesto del progetto",
     "contextHint": "Apre il pannello dove si scrive di cosa parla questo progetto"
