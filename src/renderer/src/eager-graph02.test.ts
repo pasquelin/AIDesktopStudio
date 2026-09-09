@@ -175,7 +175,7 @@ describe('the opening chunk', () => {
    * `@shared/*` at once — while the negative assertions below sailed through. A dropped edge is
    * a hole in the guard, so it is the guard's first failure.
    */
-  it('pulls only these eighteen neighbours out of the features', () => {
+  it('pulls only these nineteen neighbours out of the features', () => {
     const { files } = GRAPH
 
     const neighbours = [...files].filter(
@@ -183,7 +183,7 @@ describe('the opening chunk', () => {
     )
 
     expect(neighbours.sort()).toEqual([
-      // The assistant's thirteen, same day and same cause: the chat toast is on the first screen,
+      // The assistant's fourteen, same day and same cause: the chat toast is on the first screen,
       // and everything it composes a turn with came in behind it, unseen under `./assistant/`.
       './features/assistant/batch.ts',
       './features/assistant/chatPanel.ts',
@@ -194,6 +194,8 @@ describe('the opening chunk', () => {
       // The studio's own question and where it is asked — the shell holds both, as it holds the
       // confirmer, so a question raised before a project switch lands on a mounted surface.
       './features/assistant/holdStudioAsk.ts',
+      // The project store asks it on every creation, and that store is on the first screen.
+      './features/assistant/keptAssistant.ts',
       './features/assistant/noteAssistant.ts',
       './features/assistant/remoteActions.ts',
       './features/assistant/starters.ts',

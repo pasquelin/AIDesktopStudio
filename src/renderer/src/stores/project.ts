@@ -7,7 +7,7 @@ import {
   movedRecentProject,
   type Project,
 } from '@shared/domain/project'
-import type { ProjectBinned } from '@shared/ipc'
+import type { ProjectBinned, ProjectMade } from '@shared/ipc'
 import type { StudioBridge } from '@shared/ipc'
 import {
   refreshDocuments,
@@ -17,7 +17,8 @@ import {
 import { readProjectScripts } from './code'
 import { closeOrphanTabs } from '@/features/shell/orphanTabs'
 import { getBridge } from '@/services/bridge'
-import { forgetReportedFailures, reportFailure } from '@/services/diagnostics'
+import { askKeptAssistant } from '@/features/assistant/keptAssistant'
+import { forgetReportedFailures, reportFailure, traceFailure } from '@/services/diagnostics'
 import { useSettings } from './settings'
 import { useActivity } from './activity'
 import { useProjectContext } from './projectContext'
@@ -226,6 +227,32 @@ async function forgotten(path: string, owned: boolean): Promise<void> {
 }
 
 /**
+ * A creation, with the question about the assistant the new project keeps around it.
+ *
+ * 🛑 Here rather than in whichever surface creates: what loses the choice is the SWITCH, not the
+ * gesture — the home's button, the empty centre, the command and the assistant all reach one of
+ * the two creations below. Asked before, armed after: `bridge.project.create` still refuses a
+ * folder that holds files, and a creation turned down there used to leave the whole
+ * application's assistant changed for nothing.
+ */
+async function creating(make: () => Promise<ProjectMade | null>): Promise<Project | null> {
+  const arm = await askKeptAssistant()
+  const created = await make()
+  // 🛑 `made`, never the project alone: the same channel OPENS a folder that is already one, and
+  // arming there would write the whole application's assistant for a switch that never happened.
+  if (created?.made === true && arm) {
+    try {
+      await arm()
+    } catch (error) {
+      // The project EXISTS: a settings write that refused is no reason to undo a creation.
+      traceFailure('shell.dropped', 'assistant kept for a new project', error)
+    }
+  }
+
+  return created?.project ?? null
+}
+
+/**
  * The open project is owned by the main process; this is the renderer's replica, refreshed by
  * broadcast so every window agrees on which project is open.
  */
@@ -343,7 +370,7 @@ const projectState: ProjectState = {
     if (!bridge) return null
     if (!(await settleLeaving(bridge))) return null
 
-    const created = await bridge.project.create(path)
+    const created = await creating(() => bridge.project.create(path))
     // Created and then opened, because a project nobody is in is a folder. `open` asks nothing a
     // second time: the folder it is handed is the one the main process has already switched to.
     if (!created) return null
@@ -458,7 +485,9 @@ const projectState: ProjectState = {
   createPicked: async () => {
     // The folder chosen IS the project, and it names itself. What the main process makes of it —
     // a fresh project, the one already there, or a refusal — is its call, not the window's.
-    const picked = await pickedProject((bridge, folder) => bridge.project.create(folder))
+    const picked = await pickedProject((bridge, folder) =>
+      creating(() => bridge.project.create(folder)),
+    )
     if (picked) useProject.setState({ project: picked, known: true })
   },
 }

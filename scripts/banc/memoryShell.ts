@@ -75,7 +75,7 @@ export function createMemoryShell(assetOf: (assetId: string) => Asset | null): M
     project: {
       // A project is a FOLDER, and its name is that folder's — renaming MOVES it.
       open: path => Promise.resolve(projectAt(path)),
-      create: path => Promise.resolve(projectAt(path)),
+      create: path => Promise.resolve({ project: projectAt(path), made: true }),
       // The folder MOVES, as the real store does — see `main/project/store.ts`.
       rename: (path, name) => Promise.resolve(projectAt(`${pathParentOf(path)}/${name}`)),
       // The disk is a port here, so what is scored is that the folder was sent to the trash —

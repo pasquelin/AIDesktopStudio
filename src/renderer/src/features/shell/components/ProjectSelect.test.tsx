@@ -168,7 +168,7 @@ describe('ProjectSelect menu actions', () => {
 
   it('makes a project in the folder the dialog picked', async () => {
     const pickPath = vi.fn(() => Promise.resolve('/projects/autumn'))
-    const create = vi.fn(() => Promise.resolve(summer))
+    const create = vi.fn(() => Promise.resolve({ project: summer, made: true }))
     installFakeBridge({ dialog: { pickPath }, project: { create } })
 
     render(<ProjectSelect />)
