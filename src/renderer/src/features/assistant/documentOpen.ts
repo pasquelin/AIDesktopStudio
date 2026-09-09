@@ -42,9 +42,14 @@ export async function openByPath(input: Record<string, unknown>): Promise<Action
   return openedOutcome(document.id, path, await restoreDocument(document.id))
 }
 
-function openedOutcome(
+/**
+ * A readiness, as the answer a caller acts on. Shared by every action that puts a document up:
+ * `named` is what that caller called it — a path, an id, a title — so the sentence sends them
+ * back to what they typed.
+ */
+export function openedOutcome(
   documentId: string,
-  path: string,
+  named: string,
   readiness: DocumentReadiness,
 ): ActionOutcome {
   switch (readiness.state) {
@@ -53,21 +58,21 @@ function openedOutcome(
     case 'unreadable':
       return refused(
         'failed',
-        `the tab for "${path}" is open, and its file would not read: ${messageOf(readiness.error)}`,
+        `the tab for "${named}" is open, and its file would not read: ${messageOf(readiness.error)}`,
       )
     // Not a failure of the file, and named apart for that reason: the caller's own next gesture —
     // closing the document, changing project — dropped a read it can simply ask for again.
     case 'cancelled':
       return refused(
         'failed',
-        `the read of "${path}" was dropped before it landed — the document was closed or the ` +
+        `the read of "${named}" was dropped before it landed — the document was closed or the ` +
           'project changed while it was opening; call document.open again',
       )
     case 'noBridge':
-      return refused('noBridge', `the window cannot reach the project to read "${path}"`)
+      return refused('noBridge', `the window cannot reach the project to read "${named}"`)
     // `openDocument` has just adopted the descriptor, so nothing answers to this in practice; it
     // is answered rather than assumed away, since a store this reads is not this call's to hold.
     case 'noDocument':
-      return refused('notFound', `no open document answers to the one found at "${path}"`)
+      return refused('notFound', `no open document answers to the one found at "${named}"`)
   }
 }

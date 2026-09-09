@@ -3,7 +3,10 @@ import type { LandingTarget } from '@shared/domain/landingTarget'
 import type { ModelFamily } from '@shared/domain/model'
 import type { ArmedLanding } from '@/generation/landingChoice'
 import type { GenerationInput } from '@/generation/generationInputs'
+import { waitUntil } from '@shared/promises'
 import { createMountedHost } from '@/helpers/hostRegistry'
+import { toolIsShown } from '@/helpers/revealPanel'
+import { panelsStore } from '@/stores/panels'
 
 /** Everything armed, as one answer — read before a call may quote a cost or spend one. */
 export type ArmedGeneration = {
@@ -71,4 +74,24 @@ export const mountedGenerator = host.get
 export function subscribeGenerator(listener: () => void): () => void {
   listeners.add(listener)
   return () => listeners.delete(listener)
+}
+
+/**
+ * The generator once it is MOUNTED, for a caller that has just asked for it to be opened.
+ *
+ * 🛑 The panel declares itself on its own mount, which is a React render away from the store
+ * write that reveals it. `generator.prepare` answered before that render, and the very next call
+ * — `generator.readArmedGeneration`, `generator.submit` — was refused `generatorClosed` about a
+ * panel that was in fact opening.
+ *
+ * Two ways out and no clock in either: the panel declares itself, or the chassis stops showing
+ * it — a surface that will never mount one is an answer, not a wait that ran out. A caller that
+ * gives up hands its own signal, and everything held here goes with it.
+ */
+export async function generatorMounted(): Promise<GeneratorBridge | null> {
+  await waitUntil(
+    () => host.get() !== null || !toolIsShown('generator'),
+    [subscribeGenerator, wake => panelsStore.subscribe(wake)],
+  )
+  return host.get()
 }

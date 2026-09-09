@@ -19,7 +19,7 @@ import {
   EMPTY_SOUND_SEQUENCE,
   type SequenceState,
 } from '@/engines/timeline/timelineState'
-import { canvasHost } from '@/features/image/canvasHosts'
+import { canvasHost, canvasHostSettled } from '@/features/image/canvasHosts'
 import { bytesToBase64 } from '@shared/base64'
 import { getBridge } from '@/services/bridge'
 import { audioEditStore } from '@/stores/audioEdits'
@@ -31,6 +31,7 @@ import { characterAssetOf, useDocuments } from '@/stores/documents'
 import type { DocumentStore } from '@/stores/documentStore'
 import { guiStore } from '@/stores/gui'
 import { materialStore } from '@/stores/materials'
+import { sceneEngineSettled } from '@/stores/sceneEngines'
 import { sceneStore } from '@/stores/scenes'
 import { sequenceStore } from '@/stores/sequences'
 import { skyboxStore } from '@/stores/skyboxes'
@@ -116,6 +117,16 @@ type DocumentFile =
 export type DocumentIo = AssetWriting &
   DocumentFile & {
     autosaves?: false
+    /**
+     * Settles once the engine that DRAWS this kind holds what its store holds — absent for a kind
+     * whose content is read straight from the store, which is most of them.
+     *
+     * 🛑 On the table rather than in a switch of its own: an edit answers the moment the store
+     * takes it and the engine is handed that state one render later, so a still, an export or an
+     * image save read in the same lot saw the state before the edit. A tenth kind that grows an
+     * engine has to answer here.
+     */
+    settled?: (documentId: string) => Promise<void>
     holds: (documentId: string) => boolean
     incomplete?: (documentId: string) => string | null
     dirty: (documentId: string) => boolean
@@ -264,6 +275,7 @@ async function flatAsset(
 }
 const IMAGE_IO: DocumentIo = {
   autosaves: false,
+  settled: canvasHostSettled,
   capture: async documentId => {
     const canvases = useCanvases.getState()
     const mark = canvasStore.markOf(canvases, documentId)
@@ -373,6 +385,7 @@ export const IO_BY_KIND: Record<DocumentKind, DocumentIo> = {
     },
   },
   scene: {
+    settled: sceneEngineSettled,
     ...textDocumentIo(sceneStore, {
       toPayload: scenePayloadOf,
       fromPayload: sceneFromPayloadFile,

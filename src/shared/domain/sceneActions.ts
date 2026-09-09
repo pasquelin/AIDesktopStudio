@@ -26,11 +26,17 @@ function optimizationActions(): AssistantAction[] {
     required: false,
     repeated: true,
   }
+  // The two that READ the mounted engine, which is handed the scene one render after the store:
+  // they answer once it carries the edit, so the two seconds of a reading call would cut them.
   return [
     {
       ...optimizationAction('optimization.analyze', 'optimizationAnalyze', [nodeIds]),
+      awaitsItsEffect: true,
     },
-    optimizationAction('optimization.report', 'optimizationReport', [nodeIds]),
+    {
+      ...optimizationAction('optimization.report', 'optimizationReport', [nodeIds]),
+      awaitsItsEffect: true,
+    },
     ...simple,
     optimizationAction('optimization.exclude', 'optimizationExclude', [
       { ...nodeIds, required: true },

@@ -102,10 +102,9 @@ describe('asking the window in front to act', () => {
   })
 
   /**
-   * 🛑 An open now WAITS for the document's file, which the two seconds a reading call gets would
-   * cut — measured 2026-09-09, a reopened scene took about three seconds to come back. Named
-   * rather than counted, like the flags beside it: a count stays green the day one action is
-   * given the long wait while another that reads a file loses it.
+   * 🛑 These WAIT for the effect they announce — a file read, a panel mounted, a render applied —
+   * which the two seconds a reading call gets would cut: measured 2026-09-09, a reopened scene
+   * took about three seconds to come back.
    */
   it('gives the long wait to a call that waits on a file', async () => {
     vi.useFakeTimers()
@@ -126,9 +125,17 @@ describe('asking the window in front to act', () => {
    * Named rather than counted, like the flags beside it: a count stays green the day one action
    * is given the long wait while another that reads a file quietly loses it.
    */
-  it('names every action whose answer waits on a file', () => {
-    expect(ACTION_REGISTRY.filter(entry => entry.loadsAFile).map(entry => entry.name)).toEqual([
+  it('names every action whose answer waits on its own effect', () => {
+    const waiting = ACTION_REGISTRY.filter(entry => entry.awaitsItsEffect)
+
+    expect(waiting.map(entry => entry.name).sort()).toEqual([
+      'document.activate',
       'document.open',
+      'file.open',
+      'generator.prepare',
+      'optimization.analyze',
+      'optimization.report',
+      'scene.capture',
     ])
   })
 

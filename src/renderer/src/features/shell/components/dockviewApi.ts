@@ -209,17 +209,18 @@ export function openDocument(document: DocumentDescriptor): void {
  * Silent when the section has no tab open: the docks still change, and a centre emptied of the
  * document the user was reading would be a worse answer than leaving it alone.
  */
-export function showWorkspace(workspace: WorkspaceId): void {
+export function showWorkspace(workspace: WorkspaceId): string | null {
   // Read BEFORE the switch: `setActiveWorkspace` leaves the home, and the answer would then be
   // about the studio this call is on its way to mounting.
   const covered = homeIsVisible()
   useLayouts.getState().setActiveWorkspace(workspace)
 
   const id = frontDocumentIn(useDocuments.getState(), workspace)
-  if (id === null) return
+  if (id === null) return null
 
   if (covered || !current) pendingFocus = id
   else current.getPanel(id)?.api.setActive()
+  return id
 }
 
 const markedModified = new Map<string, boolean>()

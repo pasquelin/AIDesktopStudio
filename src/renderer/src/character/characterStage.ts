@@ -4,6 +4,7 @@ import type { SceneState } from '@/engines/scene/sceneState'
 import { EMPTY_SCENE } from '@/engines/scene/sceneState'
 import { modelNode } from '@/engines/scene/nodeFactory'
 import { characterStore, seedCharacter, useCharacters } from '@/stores/character'
+import { noteSceneApplied } from '@/stores/sceneEngines'
 import { sceneOf, useScenes } from '@/stores/scenes'
 
 /** What a stage needs of an engine: a workshop scene laid over it, and what the file turned out to be. */
@@ -24,6 +25,16 @@ export type CharacterStage = {
 }
 
 /**
+ * 🛑 Noted as well as applied: the workshop drives its engine from its own subscription rather
+ * than through the viewport's effect, so an action reading that engine — a still, an
+ * optimisation plan — would wait for a note that never came.
+ */
+function applyWorkshop(renderer: CharacterDraw, documentId: string, state: SceneState): void {
+  renderer.apply(state)
+  noteSceneApplied(documentId, state)
+}
+
+/**
  * Where a character is edited: the workshop laid under it, and the file read into the store.
  *
  * Not a hook, and that is why it exists — `pnpm banc` has no window, and mounts this on a stub
@@ -38,7 +49,7 @@ export function createCharacterStage(deps: CharacterStageDeps): CharacterStage {
 
   const documentId = workshopIdOf(deps.assetId)
   useScenes.getState().ensure(documentId, () => workshopScene(deps.assetId))
-  deps.renderer.apply(sceneOf(useScenes.getState(), documentId))
+  applyWorkshop(deps.renderer, documentId, sceneOf(useScenes.getState(), documentId))
   // Compared before applying: the store writes a fresh object for every command, every mark and
   // every document — and `apply` sweeps the whole scene each time it is called.
   let last = sceneOf(useScenes.getState(), documentId)
@@ -47,7 +58,7 @@ export function createCharacterStage(deps: CharacterStageDeps): CharacterStage {
     if (next === last) return
 
     last = next
-    deps.renderer.apply(next)
+    applyWorkshop(deps.renderer, documentId, next)
   })
 
   return {
