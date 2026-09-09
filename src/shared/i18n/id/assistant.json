@@ -35,7 +35,7 @@
       },
       "workspaceOpen": {
         "title": "Buka ruang kerja",
-        "description": "Beralih ke sebuah ruang kerja, dan membuat dokumen di sana bila diminta — selalu yang BARU, jadi ini bukan jalan kembali ke dokumen yang sudah terbuka. Selalu berikan judul: tanpa judul, sebuah jendela penamaan terbuka dan panggilan menunggu seseorang."
+        "description": "Beralih ke sebuah ruang kerja, dan membuat dokumen di sana bila diminta — selalu yang BARU, jadi ini bukan jalan kembali ke dokumen yang sudah terbuka. Pembuatan memerlukan judul, dan judul itu milik orangnya: tanyakan namanya kepada mereka, jangan mengarang sendiri. Judul yang sudah dimiliki proyek ditolak."
       },
       "modelsSearch": {
         "title": "Cari model",

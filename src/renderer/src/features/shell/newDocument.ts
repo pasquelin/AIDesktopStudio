@@ -1,5 +1,6 @@
 import { orElse } from '@shared/promises'
 import {
+  documentFolderOf,
   kindForWorkspace,
   workspaceForKind,
   type DocumentDescriptor,
@@ -7,7 +8,11 @@ import {
 } from '@shared/domain/document'
 import type { ToolSurface } from '@shared/domain/tool'
 import type { WorkspaceId } from '@shared/domain/workspace'
-import { documentPathFor } from '@shared/domain/documentName'
+import {
+  checkDocumentName,
+  documentPathFor,
+  type DocumentNameFailure,
+} from '@shared/domain/documentName'
 import { parentOf } from '@shared/domain/folder'
 import { SCRIPT_STARTER } from '@shared/domain/game'
 import { DEFAULT_SCENE_TEMPLATE, isSceneTemplateId } from '@shared/domain/sceneTemplate'
@@ -20,7 +25,7 @@ import { DEFAULT_UI_TEMPLATE, isUiTemplateId } from '@shared/domain/uiTemplates'
 import { ensureProjectInstalls } from '@/engines/scene/projectInstalls'
 import { seedGuiTemplate } from '@/stores/gui'
 import { seedSceneTemplate } from '@/stores/scenes'
-import { documentAtPath, useDocuments } from '@/stores/documents'
+import { documentAtPath, takenDocumentNames, useDocuments } from '@/stores/documents'
 import { useProject } from '@/stores/project'
 import { useSettings } from '@/stores/settings'
 import { selectedFilePaths, useSelection } from '@/stores/selection'
@@ -104,17 +109,33 @@ async function enterProject(given: NewDocumentAnswer): Promise<void> {
 }
 
 /**
- * Makes a document of the kind this space opens, and puts it in front.
+ * The same creation for a caller that has nobody to ask — the assistant, the MCP wire — refused
+ * where the title it brings is one this folder already holds, or one the disk would rewrite.
  *
- * Away from `documentIo`, which reaches every engine: the plus button must not import three
- * megabytes to open an empty canvas. Answers `null` for a window called off or a folder that
- * refused — a caller from outside the window is held on the other end of this.
+ * 🛑 `checkDocumentName`, the very guard the naming FIELD answers to: a caller that names its own
+ * file never sees that field, and two tabs stood on `Scenes/3rd Person.gltf` on 2026-09-09, each
+ * saving over the other. It folds case and NFC, which a raw path comparison does not — `niveau`
+ * takes `Niveau.gltf` on APFS and NTFS alike.
  */
-export function createDocumentIn(
+export async function createNamedDocumentIn(
   workspace: WorkspaceId,
-  called?: NamedCreation,
-): Promise<DocumentDescriptor | null> {
-  return made(kindForWorkspace(workspace), workspace, called).catch(() => null)
+  called: NamedCreation,
+): Promise<DocumentDescriptor | DocumentNameFailure | null> {
+  const kind = kindForWorkspace(workspace)
+  if (kind === null) return null
+
+  try {
+    // The folder is listed first, for a file on disk no tab holds — one walk per creation, a
+    // gesture measured in seconds.
+    await useDocuments.getState().relist()
+    const folder = called.folder ?? documentFolderOf(kind)
+    const taken = takenDocumentNames(useDocuments.getState(), folder)
+
+    return checkDocumentName(called.title, kind, taken) ?? (await create(kind, called))
+  } catch {
+    // As `createDocumentIn` answers: nothing was written, and the caller is told only that.
+    return null
+  }
 }
 
 /**
@@ -146,12 +167,7 @@ export type NamedCreation = { title: string; folder?: string; template?: Documen
 async function made(
   kind: DocumentKind | null,
   surface: ToolSurface | null,
-  called?: NamedCreation,
 ): Promise<DocumentDescriptor | null> {
-  // Already named: no window is opened at all. There is nothing left to ask, and asking would
-  // hold a caller outside the window on a question only the person in front of it can answer.
-  if (called) return kind === null ? null : await create(kind, called)
-
   const namer = getBridge()?.newDocument
   if (!namer) return null
 

@@ -35,7 +35,7 @@
       },
       "workspaceOpen": {
         "title": "Bir çalışma alanı aç",
-        "description": "Bir çalışma alanına geçer ve istendiğinde orada bir belge oluşturur — her seferinde YENİ bir tane, dolayısıyla zaten açık bir belgeye dönüş yolu değildir. Her zaman bir başlık verin: başlık olmadan bir adlandırma penceresi açılır ve çağrı bir kişiyi bekler."
+        "description": "Bir çalışma alanına geçer ve istendiğinde orada bir belge oluşturur — her seferinde YENİ bir tane, dolayısıyla zaten açık bir belgeye dönüş yolu değildir. Oluşturma bir başlık ister ve başlık kişinindir: adı uydurmak yerine ona sorun. Projenin zaten taşıdığı bir başlık reddedilir."
       },
       "modelsSearch": {
         "title": "Model ara",

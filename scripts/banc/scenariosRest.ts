@@ -47,7 +47,7 @@ export const REST_SCENARIOS: readonly Scenario[] = [
   {
     name: '41.2 renames the open document Scène Finale',
     said: ['Renomme ce document Scène Finale.'],
-    setup: scene('Scène 1'),
+    setup: scene(),
     passed: run => read.titled(run, 'Scène Finale') !== undefined,
   },
   {
@@ -175,7 +175,7 @@ export const REST_SCENARIOS: readonly Scenario[] = [
     name: '41.14 asks which documents to close, letting several be ticked',
     said: ['Demande-moi lesquels de mes documents je veux fermer.'],
     setup: async studio => {
-      await scene('Scène 1')(studio)
+      await scene()(studio)
       await boatImage(studio)
     },
     passed: read.askedSeveral,

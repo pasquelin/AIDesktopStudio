@@ -24,11 +24,11 @@ const saying =
     Promise.resolve({ granted, input: request.input })
 
 const showWorkspace = vi.hoisted(() => vi.fn())
-const createDocumentIn = vi.hoisted(() => vi.fn())
+const createNamedDocumentIn = vi.hoisted(() => vi.fn())
 const revealTool = vi.hoisted(() => vi.fn())
 
 vi.mock('@/features/shell/components/dockviewApi', () => ({ showWorkspace }))
-vi.mock('@/features/shell/newDocument', () => ({ createDocumentIn }))
+vi.mock('@/features/shell/newDocument', () => ({ createNamedDocumentIn }))
 vi.mock('@/helpers/revealPanel', () => ({ revealTool }))
 
 function onImageDocument(): void {

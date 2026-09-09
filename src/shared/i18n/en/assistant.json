@@ -35,7 +35,7 @@
       },
       "workspaceOpen": {
         "title": "Open a workspace",
-        "description": "Switches to a workspace, and creates a document there when asked to — a NEW one every time, so it is not the way back to a document already open. Always give a title: without one a name window opens and the call waits for a person."
+        "description": "Switches to a workspace, and creates a document there when asked to — a NEW one every time, so it is not the way back to a document already open. A creation wants a title, and the person is the one who gives it: ask them for the name rather than inventing one. A title the project already holds is refused."
       },
       "modelsSearch": {
         "title": "Search for a model",

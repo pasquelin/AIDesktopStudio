@@ -105,8 +105,10 @@ describe('the registry, published as tools', () => {
   })
 
   /**
-   * `document.close` and `workspace.open` commit `none` so that no SECOND question is raised —
+   * `document.close` and `project.close` commit `none` so that no SECOND question is raised —
    * never because there is none. Their tools said "Runs straight away" for a call that hangs.
+   * `workspace.open` left the list on 2026-09-09: a creation with no title is refused now, so it
+   * raises no window of its own and waits on nobody.
    *
    * The commitment is checked too: the note REPLACES the one `commitment` would have written, so
    * `asksItself` on anything above the floor would drop the word that a confirmation is coming.
@@ -117,11 +119,7 @@ describe('tool execution metadata', () => {
   it('says so when the handler raises the studio’s own question', () => {
     const marked = ACTION_REGISTRY.filter(entry => entry.asksItself)
 
-    expect(marked.map(action => action.name).sort()).toEqual([
-      'document.close',
-      'project.close',
-      'workspace.open',
-    ])
+    expect(marked.map(action => action.name).sort()).toEqual(['document.close', 'project.close'])
     for (const action of marked) {
       const tool = mcpTools().find(one => one.name === toolName(action.name))
 

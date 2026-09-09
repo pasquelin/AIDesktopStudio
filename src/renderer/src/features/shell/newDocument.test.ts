@@ -11,10 +11,16 @@ import { CHECKER_TEXTURE_IDS } from '@shared/domain/checkerTexture'
 import { forgetProjectInstalls } from '@/engines/scene/projectInstalls'
 import { installFakeBridge, type BridgeOverrides } from '@/services/fakeBridge'
 import { useDocuments } from '@/stores/documents'
+import type { WorkspaceId } from '@shared/domain/workspace'
 import { useProject } from '@/stores/project'
 import { useSelection } from '@/stores/selection'
 import { sceneOf, useScenes } from '@/stores/scenes'
-import { createDocumentIn, openNewDocument } from './newDocument'
+import {
+  createDocumentOfKind,
+  createNamedDocumentIn,
+  openNewDocument,
+  type NamedCreation,
+} from './newDocument'
 
 const openDocument = vi.fn()
 vi.mock('./components/dockviewApi', () => ({
@@ -76,6 +82,15 @@ const answering = (
 
 const created = (): DocumentDescriptor[] => Object.values(useDocuments.getState().documents)
 
+/** The document a named creation made — `null` where it refused a name the project already holds. */
+const namedIn = async (
+  workspace: WorkspaceId,
+  called: NamedCreation,
+): Promise<DocumentDescriptor | null> => {
+  const one = await createNamedDocumentIn(workspace, called)
+  return typeof one === 'string' ? null : one
+}
+
 beforeEach(() => {
   vi.clearAllMocks()
   asks.length = 0
@@ -98,7 +113,7 @@ describe('createDocumentIn', () => {
     // 🛑 AWAITED, where the cases below need not be: the opening happens AFTER the seeding, and
     // the seeding awaits what the app ships. Waiting on the document alone read before the
     // opening and went red under a loaded suite — green alone, the worst way to be wrong.
-    await createDocumentIn('3d')
+    await createDocumentOfKind('scene')
 
     expect(created()).toHaveLength(1)
     expect(created()[0]?.title).toBe('Niveau')
@@ -115,7 +130,7 @@ describe('createDocumentIn', () => {
   it('tells the window what is being made, and out of which project', async () => {
     answering([null])
 
-    createDocumentIn('3d')
+    createDocumentOfKind('scene')
 
     await vi.waitFor(() => expect(asks).toHaveLength(1))
     expect(asks[0]).toMatchObject({ kind: 'scene', surface: '3d', projectName: 'One' })
@@ -136,7 +151,7 @@ describe('createDocumentIn', () => {
     answering([null])
     useDocuments.setState({ documents: { open: stored('Brouillon', 'Brouillon.gltf') } })
 
-    createDocumentIn('3d')
+    createDocumentOfKind('scene')
 
     await vi.waitFor(() => expect(asks).toHaveLength(1))
     expect(asks[0]?.open.map(document => document.path)).toEqual(['Scenes/Brouillon.gltf'])
@@ -147,7 +162,7 @@ describe('createDocumentIn', () => {
     answering([null], { project: { fileFacts: () => Promise.resolve(FILE_FACTS) } })
     useSelection.getState().selectFiles(['Images/Croquis/etude.jpg'])
 
-    createDocumentIn('3d')
+    createDocumentOfKind('scene')
 
     await vi.waitFor(() => expect(asks).toHaveLength(1))
     expect(asks[0]?.picked).toBe('Images/Croquis')
@@ -157,7 +172,7 @@ describe('createDocumentIn', () => {
     answering([null], { project: { fileFacts: () => Promise.resolve(FOLDER_FACTS) } })
     useSelection.getState().selectFiles(['Images/Croquis'])
 
-    createDocumentIn('3d')
+    createDocumentOfKind('scene')
 
     await vi.waitFor(() => expect(asks).toHaveLength(1))
     expect(asks[0]?.picked).toBe('Images/Croquis')
@@ -170,7 +185,7 @@ describe('createDocumentIn', () => {
   it('points at nothing when the Explorer points at nothing', async () => {
     answering([null])
 
-    createDocumentIn('3d')
+    createDocumentOfKind('scene')
 
     await vi.waitFor(() => expect(asks).toHaveLength(1))
     expect(asks[0]?.picked).toBeNull()
@@ -183,16 +198,40 @@ describe('createDocumentIn results', () => {
    * and the MCP wire both do — and the fallback has to be the same one on both.
    */
   it('files a named material in the materials folder, no window opened', async () => {
-    const created = await createDocumentIn('materials', { title: 'Rouille' })
+    const created = await createNamedDocumentIn('materials', { title: 'Rouille' })
 
-    expect(created?.path).toBe('Materials/Rouille.mtlx')
+    expect(created).toMatchObject({ path: 'Materials/Rouille.mtlx' })
     expect(asks).toHaveLength(0)
+  })
+
+  /**
+   * The window refuses a taken name where it is TYPED, and a caller that brings its own never
+   * sees that field: two tabs stood on `Scenes/3rd Person.gltf` on 2026-09-09, each saving over
+   * the other.
+   */
+  it('refuses a name the project already holds', async () => {
+    await createNamedDocumentIn('materials', { title: 'Rouille' })
+
+    expect(await createNamedDocumentIn('materials', { title: 'Rouille' })).toBe('duplicate')
+    expect(created()).toHaveLength(1)
+  })
+
+  // Folded, as the naming field folds it: APFS and NTFS both answer that these are one file.
+  it('refuses a name the project holds under another case', async () => {
+    await createNamedDocumentIn('materials', { title: 'Rouille' })
+
+    expect(await createNamedDocumentIn('materials', { title: 'rouille' })).toBe('duplicate')
+  })
+
+  // The disk would rewrite it, and a rewritten title is a second name for one document.
+  it('refuses a title the disk would not take', async () => {
+    expect(await createNamedDocumentIn('materials', { title: 'Rouille/../secret' })).toBe('invalid')
   })
 
   it('files the document in the folder the window answers', async () => {
     answering([madeAs('Niveau', 'Images/Croquis')])
 
-    createDocumentIn('3d')
+    createDocumentOfKind('scene')
 
     await vi.waitFor(() => expect(created()).toHaveLength(1))
     expect(created()[0]?.path).toBe('Images/Croquis/Niveau.gltf')
@@ -203,7 +242,7 @@ describe('createDocumentIn results', () => {
   it('makes nothing when the creation is called off', async () => {
     answering([null])
 
-    createDocumentIn('3d')
+    createDocumentOfKind('scene')
 
     await vi.waitFor(() => expect(asks).toHaveLength(1))
     expect(created()).toHaveLength(0)
@@ -218,7 +257,7 @@ describe('createDocumentIn results', () => {
     answering([madeAs('Niveau', '')])
     useProject.setState({ project: null })
 
-    expect(await createDocumentIn('3d')).toBeNull()
+    expect(await createDocumentOfKind('scene')).toBeNull()
     expect(asks).toHaveLength(1)
     expect(asks[0]?.projectName).toBeNull()
     expect(created()).toHaveLength(0)
@@ -230,13 +269,13 @@ describe('createDocumentIn results', () => {
     it('the document, once the window is filled', async () => {
       answering([madeAs('Niveau', 'Scenes')])
 
-      expect(await createDocumentIn('3d')).toMatchObject({ title: 'Niveau', kind: 'scene' })
+      expect(await createDocumentOfKind('scene')).toMatchObject({ title: 'Niveau', kind: 'scene' })
     })
 
     it('nothing when the window is called off', async () => {
       answering([null])
 
-      expect(await createDocumentIn('3d')).toBeNull()
+      expect(await createDocumentOfKind('scene')).toBeNull()
       expect(created()).toHaveLength(0)
     })
 
@@ -244,7 +283,7 @@ describe('createDocumentIn results', () => {
       answering([null])
       useProject.setState({ project: null })
 
-      expect(await createDocumentIn('3d')).toBeNull()
+      expect(await createDocumentOfKind('scene')).toBeNull()
     })
   })
 
@@ -264,7 +303,7 @@ describe('createDocumentIn results', () => {
         },
       })
 
-      expect(await createDocumentIn('3d')).toBeNull()
+      expect(await createDocumentOfKind('scene')).toBeNull()
       expect(opened).toEqual(['/projects/Two'])
       expect(asks).toHaveLength(2)
     })
@@ -283,7 +322,7 @@ describe('createDocumentIn results', () => {
         },
       })
 
-      await createDocumentIn('3d')
+      await createDocumentOfKind('scene')
 
       expect(raised).toEqual(['create', 'open'])
       expect(asks).toHaveLength(3)
@@ -296,14 +335,14 @@ describe('createDocumentIn results', () => {
     it('makes it without opening the window', async () => {
       answering([null])
 
-      const made = await createDocumentIn('3d', { title: 'Niveau', folder: 'Repérages' })
+      const made = await namedIn('3d', { title: 'Niveau', folder: 'Repérages' })
 
       expect(asks).toHaveLength(0)
       expect(made).toMatchObject({ title: 'Niveau', path: 'Repérages/Niveau.gltf' })
     })
 
     it('files it in the documents folder when no folder is named', async () => {
-      const made = await createDocumentIn('3d', { title: 'Niveau' })
+      const made = await namedIn('3d', { title: 'Niveau' })
 
       expect(made?.path).toBe('Scenes/Niveau.gltf')
     })
@@ -326,18 +365,19 @@ describe('createDocumentIn results', () => {
       return asked
     }
 
-    it('cleans a title the disk would refuse, in the folder scripts belong to', async () => {
+    // Refused rather than cleaned, as the naming field refuses it: a title the studio rewrites
+    // is a second name for the document, and the caller is told which of the two it gave.
+    it('writes nothing for a title the disk would refuse', async () => {
       const asked = writing()
 
-      await createDocumentIn('code', { title: 'Niveau/../secret' })
-
-      expect(asked).toEqual(['Scripts/Niveau .. secret.ts'])
+      expect(await createNamedDocumentIn('code', { title: 'Niveau/../secret' })).toBe('invalid')
+      expect(asked).toEqual([])
     })
 
     it('files a plain title where its author asked for it', async () => {
       const asked = writing()
 
-      await createDocumentIn('code', { title: 'Porte', folder: 'Repérages' })
+      await namedIn('code', { title: 'Porte', folder: 'Repérages' })
 
       expect(asked).toEqual(['Repérages/Porte.ts'])
     })
@@ -349,13 +389,13 @@ describe('createDocumentIn results', () => {
     it('holds the template the window answered with', async () => {
       answering([madeAs('Plateau', 'Scenes', 'scene', 'topDown')])
 
-      const made = await createDocumentIn('3d')
+      const made = await createDocumentOfKind('scene')
 
       expect(sceneOf(useScenes.getState(), made?.id ?? '').world.play.camera).toBe('topDown')
     })
 
     it('takes the studio default for a caller that names none', async () => {
-      const made = await createDocumentIn('3d', { title: 'Niveau' })
+      const made = await namedIn('3d', { title: 'Niveau' })
       const scene = sceneOf(useScenes.getState(), made?.id ?? '')
 
       // `basic`: a floor, a cube of one metre, a sun, a fill and a camera.
@@ -390,7 +430,7 @@ describe('createDocumentIn results', () => {
         },
       })
 
-      const made = await createDocumentIn('3d', { title: 'Niveau' })
+      const made = await namedIn('3d', { title: 'Niveau' })
       const bare = sceneOf(useScenes.getState(), made?.id ?? '').nodes.filter(
         node => node.type === 'mesh' && node.material.map === null,
       )
@@ -399,7 +439,7 @@ describe('createDocumentIn results', () => {
     })
 
     it('leaves the other kinds alone', async () => {
-      const made = await createDocumentIn('image', { title: 'Planche' })
+      const made = await namedIn('image', { title: 'Planche' })
 
       expect(made?.kind).toBe('image')
       expect(sceneOf(useScenes.getState(), made?.id ?? '').nodes).toEqual([])

@@ -188,6 +188,7 @@ describe('what a second identical call can bring', () => {
       // 🛑 A command answers `ok` and nothing of what it did: « duplique-le » ran
       // `scene.duplicate` three times and left four cubes where two were asked for.
       'command.runStudioCommand',
+      'context.writeProjectCard',
       'dictation.start',
       'dictation.stop',
       'document.activate',
@@ -210,6 +211,7 @@ describe('what a second identical call can bring', () => {
       'play.resume',
       'play.start',
       'play.stop',
+      'post.savePreset',
       'project.close',
       'project.create',
       'project.forget',

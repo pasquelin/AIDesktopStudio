@@ -35,7 +35,7 @@
       },
       "workspaceOpen": {
         "title": "Einen Arbeitsbereich öffnen",
-        "description": "Wechselt in einen Arbeitsbereich und erstellt dort ein Dokument, wenn darum gebeten wird — jedes Mal ein NEUES, es ist also nicht der Weg zurück zu einem bereits geöffneten Dokument. Geben Sie immer einen Titel an: Ohne ihn öffnet sich ein Fenster zur Namensvergabe, und der Aufruf wartet auf eine Person."
+        "description": "Wechselt in einen Arbeitsbereich und erstellt dort ein Dokument, wenn darum gebeten wird — jedes Mal ein NEUES, es ist also nicht der Weg zurück zu einem bereits geöffneten Dokument. Eine Erstellung will einen Titel, und er gehört der Person: Fragen Sie sie nach dem Namen, statt einen zu erfinden. Ein Titel, den das Projekt schon trägt, wird abgelehnt."
       },
       "modelsSearch": {
         "title": "Ein Modell suchen",

@@ -53,6 +53,10 @@ export const opened =
 /**
  * 🛑 `empty`, the batterie's own word. `basic` seeds a floor, a box, two lights and a camera, so
  * every decor that counted nodes was counting the template's.
+ *
+ * 🛑 The title must be one the fixture project does NOT hold: four decors laid down « Scène 1 »
+ * over `Scenes/Scène 1.gltf` and stood two documents on one file, until the creation started
+ * refusing a taken path (2026-09-09).
  */
 export const scene = (title = 'Test MCP') => opened('3d', title, { template: 'empty' })
 
