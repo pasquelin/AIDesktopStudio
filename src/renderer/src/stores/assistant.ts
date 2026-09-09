@@ -1,20 +1,18 @@
 import { orElse } from '@shared/promises'
 import { create } from 'zustand'
 import {
-  answeredByComposer,
   HISTORY_MAX,
   loadedWith,
   refused,
   type ActionName,
-  type AskedAnswer,
-  type AskedQuestion,
-  type AssistantAsk,
   type AssistantAnswer,
   type AssistantCall,
   type AssistantModel,
   type AssistantProgress,
   type AssistantWindow,
 } from '@shared/domain/assistant'
+import { answeredByComposer } from '@shared/domain/assistantAsk'
+import type { AskedAnswer, AskedQuestion, AssistantAsk } from '@shared/domain/assistantAsk'
 import { assistantStepsWithin } from '@shared/domain/assistantSteps'
 import { narrowTargets, type Target } from '@shared/domain/target'
 import type { ConfirmAnswer, ConfirmRequest } from '@/features/assistant/confirm'
@@ -217,7 +215,7 @@ export const useAssistant = create<AssistantState>()((set, get) => ({
 
     const choosing = get().choosing
     if (choosing && answeredByComposer(choosing.questions)) {
-      get().choose([{ answer: said }])
+      get().choose([{ answers: [said] }])
       return
     }
 
@@ -352,7 +350,8 @@ async function parkedOn(set: Setter, get: Getter, id: number, ask: AssistantAsk)
     noteAssistant({
       kind: 'asked',
       question: asked.question,
-      answer: asked.answer,
+      // A SENTENCE, one line per question and not one per tick.
+      answer: asked.answers.length === 0 ? null : asked.answers.join(', '),
       ...(asked.note === undefined ? {} : { note: asked.note }),
     })
   }
@@ -377,7 +376,7 @@ const askedOf = (
   dismissed: boolean,
 ): AssistantAsked => ({
   question: asked.question,
-  answer: given?.answer ?? null,
+  answers: given?.answers ?? [],
   ...(given?.note ? { note: given.note } : {}),
   ...(dismissed ? { dismissed: true } : {}),
 })

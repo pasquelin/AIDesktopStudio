@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import type { AiRoleId } from '@shared/domain/aiRole'
+import { Radio } from '@/components/Radio'
 import { fieldHandle } from '@/components/scHandle'
 import { WINDOW_CAPTION, WINDOW_HELP, WINDOW_ROW } from '@/components/windowStyles'
 import { cn } from '@/helpers/cn'
@@ -39,11 +40,10 @@ export function AiChoiceRow({
   return (
     <li className={cn(WINDOW_ROW, 'items-center')}>
       <label className="flex flex-1 items-start gap-2 has-[:disabled]:opacity-60">
-        <input
-          type="radio"
+        <Radio
           name={`ai-role-${role}`}
           data-sc={fieldHandle(`ai.${role}.${choice}`)}
-          className="radio radio-sm mt-0.5"
+          className="mt-0.5"
           checked={checked}
           disabled={disabled}
           onChange={onChoose}

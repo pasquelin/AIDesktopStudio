@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { isComposing } from '@/helpers/composition'
-import { answeredByComposer } from '@shared/domain/assistant'
+import { answeredByComposer } from '@shared/domain/assistantAsk'
 import { AI_SECTION } from '@/helpers/aiSectionLazy'
 import { useAssistantDoor } from '@/hooks/useAssistantDoor'
 import { useAssistantOffer } from '@/hooks/useAssistantOffer'

@@ -42,7 +42,7 @@ export const AssistantConversationTurn = memo(function AssistantConversationTurn
           <p className="text-text m-0 text-xs">{asked.question}</p>
           {/* The note as well: for a question that offered one it IS the answer, and shown
               nowhere it read as a question the person had walked away from. */}
-          {[asked.answer, asked.note].map(
+          {[asked.answers.length === 0 ? null : asked.answers.join(', '), asked.note].map(
             (said, at) =>
               said !== null &&
               said !== undefined && (
