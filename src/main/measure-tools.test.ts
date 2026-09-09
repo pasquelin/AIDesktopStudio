@@ -25,6 +25,13 @@ const ROOT = join(import.meta.dirname, '..', '..')
 const read = (name: string): string => readFileSync(join(ROOT, name), 'utf8')
 const readJson = (name: string): unknown => JSON.parse(read(name))
 
+/** A detector's own settings, read as an object rather than as whatever the file holds. */
+const settingsOf = (name: string): Record<string, unknown> => {
+  const config = readJson(name)
+  if (typeof config !== 'object' || config === null) throw new Error(`${name} is not an object`)
+  return { ...config }
+}
+
 /**
  * The floor jscpd was measured at. Sixty tokens over 1281 files found 121 clones — 1217 lines,
  * 0.60 % — stable across consecutive runs with the config as shipped.
@@ -38,11 +45,7 @@ const readJson = (name: string): unknown => JSON.parse(read(name))
  */
 const MIN_TOKENS = 60
 
-const jscpd = (): Record<string, unknown> => {
-  const config = readJson('.jscpd.json')
-  if (typeof config !== 'object' || config === null) throw new Error('.jscpd.json is not an object')
-  return { ...config }
-}
+const jscpd = (): Record<string, unknown> => settingsOf('.jscpd.json')
 
 describe('the duplication detector still looking at the tree', () => {
   it('is pointed at the sources', () => {
@@ -74,12 +77,7 @@ describe('the duplication detector still looking at the tree', () => {
  * does not gate: a fail-on-any-cluster would go red on ipc ↔ main ↔ renderer, which is written
  * twice on purpose. **What it does not see:** two components of the same role with different JSX.
  */
-const dryTs = (): Record<string, unknown> => {
-  const config = readJson('.dry-ts.json')
-  if (typeof config !== 'object' || config === null)
-    throw new Error('.dry-ts.json is not an object')
-  return { ...config }
-}
+const dryTs = (): Record<string, unknown> => settingsOf('.dry-ts.json')
 
 /**
  * What knip is told to overlook, and why each line is there.

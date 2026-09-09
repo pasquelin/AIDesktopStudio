@@ -80,6 +80,13 @@ const lineOf = (channel: string): HTMLElement => {
   return line
 }
 
+/**
+ * The row's own menu, opened by a right-click; Shift+F10 reaches it too, the listener sitting on
+ * an ancestor of every control the focus can be on inside the row.
+ */
+const rightClick = (channel: string): Promise<unknown> =>
+  userEvent.pointer({ keys: '[MouseRight]', target: slotOf(channel) })
+
 const optionsOf = (channel: string): string[] =>
   within(slotOf(channel))
     .getAllByRole('option')
@@ -183,7 +190,7 @@ describe('the channels of a material', () => {
   describe('looking at one channel on its own', () => {
     /** The picture answers choosing and opening; what is left of a channel is in its menu. */
     const openMenu = async (channel: string): Promise<void> => {
-      await userEvent.pointer({ keys: '[MouseRight]', target: slotOf(channel) })
+      await rightClick(channel)
       await screen.findByRole('menu')
     }
 
@@ -233,10 +240,10 @@ describe('the channels of a material', () => {
       await show()
 
       // The picture of THIS row: eight slots draw the same press, and the label column names them.
-      const picture = within(lineOf('Couleur de base')).getByRole('button', {
+      const press = within(lineOf('Couleur de base')).getByRole('button', {
         name: /Choisir une image/,
       })
-      await userEvent.dblClick(picture)
+      await userEvent.dblClick(press)
 
       expect(editPixelsOf).toHaveBeenCalledWith(expect.objectContaining({ id: 'img-1' }))
       expect(paint).toHaveBeenCalled()
@@ -257,13 +264,9 @@ describe('the channels of a material', () => {
 
   /**
    * The gutter of a property line holds two buttons and no more, so the fourth gesture a channel
-   * carries moved to a menu on the row. Opened here by a right-click; Shift+F10 reaches it too,
-   * the listener sitting on an ancestor of every control the focus can be on inside the row.
+   * carries moved to a menu on the row.
    */
   describe('computing a channel from another', () => {
-    const rightClick = (channel: string): Promise<unknown> =>
-      userEvent.pointer({ keys: '[MouseRight]', target: slotOf(channel) })
-
     /**
      * `sourceFor` decides: four channels have a recipe, four have none — and those four opened no
      * menu at all until the slot's own rows moved into it, `baseColor` first among them.

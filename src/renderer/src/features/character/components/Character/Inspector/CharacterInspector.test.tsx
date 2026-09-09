@@ -16,6 +16,7 @@ import { clearScenes } from '@/stores/scene-fixtures'
 import { sceneOf, useScenes } from '@/stores/scenes'
 import { useModelFiles } from '@/stores/modelFiles'
 import { rigStateFixture } from '@/engines/scene/scene-fixtures'
+import type { ModelPart } from '@/engines/scene/modelTextures'
 import { useAssets } from '@/stores/assets'
 
 const openModelMaterial = vi.hoisted(() => vi.fn<() => Promise<string | null>>())
@@ -55,16 +56,26 @@ const show = (): void => {
 
 const held = () => characterOf(useCharacters.getState(), ASSET)
 
+const WORKSHOP = workshopIdOf(ASSET)
+
+/** The model of the workshop, which is what the engine reports a file against. */
+const workshopNode = (): string => {
+  useScenes.getState().ensure(WORKSHOP, () => workshopScene(ASSET))
+  return sceneOf(useScenes.getState(), WORKSHOP).nodes[0]?.id ?? ''
+}
+
 /**
  * What the engine read off the FILE, which is what the motion section gates on — the stored rig
  * reads `null` on a fault the engine tolerates, and would take the section away from a model
  * whose own skeleton plays perfectly well.
  */
 const readAs = (...boneNames: string[]): void => {
-  const documentId = workshopIdOf(ASSET)
-  useScenes.getState().ensure(documentId, () => workshopScene(ASSET))
-  const nodeId = sceneOf(useScenes.getState(), documentId).nodes[0]?.id ?? ''
-  useModelFiles.getState().reportRig(documentId, nodeId, rigStateFixture(boneNames))
+  useModelFiles.getState().reportRig(WORKSHOP, workshopNode(), rigStateFixture(boneNames))
+}
+
+/** The material slots the engine read off that file, which is what the dress rows draw. */
+const slotsRead = (count: number, names: string[], parts?: readonly ModelPart[]): void => {
+  useModelFiles.getState().reportMaterials(WORKSHOP, workshopNode(), count, names, parts)
 }
 
 beforeEach(() => {
@@ -184,10 +195,7 @@ describe('what a character is made of', () => {
   })
 
   it('names a material slot as the model file names it', () => {
-    const documentId = workshopIdOf(ASSET)
-    useScenes.getState().ensure(documentId, () => workshopScene(ASSET))
-    const nodeId = sceneOf(useScenes.getState(), documentId).nodes[0]?.id ?? ''
-    useModelFiles.getState().reportMaterials(documentId, nodeId, 1, ['Coat'])
+    slotsRead(1, ['Coat'])
     seedCharacter(ASSET, RIG, { dress: { kind: 'materials', documentIds: [''] } })
 
     show()
@@ -196,12 +204,7 @@ describe('what a character is made of', () => {
   })
 
   it('shows only the material slots worn by the mesh selected in the scene tree', () => {
-    const documentId = workshopIdOf(ASSET)
-    useScenes.getState().ensure(documentId, () => workshopScene(ASSET))
-    const nodeId = sceneOf(useScenes.getState(), documentId).nodes[0]?.id ?? ''
-    useModelFiles.getState().reportMaterials(
-      documentId,
-      nodeId,
+    slotsRead(
       2,
       ['Hair', 'Skin'],
       [
@@ -209,7 +212,7 @@ describe('what a character is made of', () => {
         { id: 'mesh-1', name: 'Head', materialSlots: [1] },
       ],
     )
-    useModelFiles.getState().selectPart(documentId, `${nodeId}:mesh-0`)
+    useModelFiles.getState().selectPart(WORKSHOP, `${workshopNode()}:mesh-0`)
     seedCharacter(ASSET, RIG, { dress: { kind: 'materials', documentIds: ['', ''] } })
 
     show()
@@ -263,10 +266,7 @@ describe('what a character is made of', () => {
     installFakeBridge({ assets: { extractTextures, update: () => Promise.resolve(texture) } })
     openModelMaterial.mockResolvedValue('material-1')
     useAssets.setState({ items: [LOCAL_MODEL] })
-    const documentId = workshopIdOf(ASSET)
-    useScenes.getState().ensure(documentId, () => workshopScene(ASSET))
-    const nodeId = sceneOf(useScenes.getState(), documentId).nodes[0]?.id ?? ''
-    useModelFiles.getState().reportMaterials(documentId, nodeId, 1, ['Material.001'])
+    slotsRead(1, ['Material.001'])
     seedCharacter(ASSET, RIG, {})
     show()
     invalidate.mockClear()
@@ -328,10 +328,7 @@ describe('what a character is made of', () => {
     installFakeBridge({ assets: { extractTextures, update: () => Promise.resolve(normal) } })
     openModelMaterial.mockResolvedValue('material-1')
     useAssets.setState({ items: [LOCAL_MODEL] })
-    const documentId = workshopIdOf(ASSET)
-    useScenes.getState().ensure(documentId, () => workshopScene(ASSET))
-    const nodeId = sceneOf(useScenes.getState(), documentId).nodes[0]?.id ?? ''
-    useModelFiles.getState().reportMaterials(documentId, nodeId, 1, ['Material.001'])
+    slotsRead(1, ['Material.001'])
     seedCharacter(ASSET, RIG, {})
     show()
 
@@ -358,10 +355,7 @@ describe('what a character is made of', () => {
     installFakeBridge({ assets: { extractTextures, update: () => Promise.resolve(texture) } })
     openModelMaterial.mockResolvedValue('material-1')
     useAssets.setState({ items: [LOCAL_MODEL] })
-    const documentId = workshopIdOf(ASSET)
-    useScenes.getState().ensure(documentId, () => workshopScene(ASSET))
-    const nodeId = sceneOf(useScenes.getState(), documentId).nodes[0]?.id ?? ''
-    useModelFiles.getState().reportMaterials(documentId, nodeId, 2, ['Hair', 'Skin'])
+    slotsRead(2, ['Hair', 'Skin'])
     seedCharacter(ASSET, RIG, {})
     show()
 
@@ -399,10 +393,7 @@ describe('what a character is made of', () => {
   })
 
   it('removes an unused material slot from its own clear button', async () => {
-    const documentId = workshopIdOf(ASSET)
-    useScenes.getState().ensure(documentId, () => workshopScene(ASSET))
-    const nodeId = sceneOf(useScenes.getState(), documentId).nodes[0]?.id ?? ''
-    useModelFiles.getState().reportMaterials(documentId, nodeId, 1, ['Material.001'])
+    slotsRead(1, ['Material.001'])
     seedCharacter(ASSET, RIG, { dress: { kind: 'materials', documentIds: ['', ''] } })
     show()
 

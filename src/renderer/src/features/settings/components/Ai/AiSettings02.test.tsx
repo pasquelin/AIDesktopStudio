@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { AiOverview, ModelCandidate, RoleRow } from '@shared/domain/aiOverview'
+import { aiOverview, roleRow } from '@shared/domain/aiOverview-fixtures'
 import { aiRoleId, DICTATION_ROLE } from '@shared/domain/aiRole'
 import { GIBI, localModel } from '@shared/domain/localModel-fixtures'
 import type { ModelFamily } from '@shared/domain/model'
@@ -21,44 +22,23 @@ const PARAKEET: ModelCandidate = {
 }
 
 const HUGE: ModelCandidate = {
+  ...PARAKEET,
   model: localModel({ id: 'hidream', name: 'HiDream', reservationBytes: 48 * GIBI }),
   installed: false,
-  loaded: false,
-  holdable: true,
-  unverified: false,
-  supplied: false,
-  serves: 1,
   fit: 'insufficient-memory',
   obstacle: 'memory',
 }
 
-const row = (over: Partial<RoleRow> = {}): RoleRow => ({
-  role: DICTATION_ROLE,
-  provider: { kind: 'local', modelId: 'parakeet' },
-  chosen: { app: null, project: null },
-  candidates: [PARAKEET, HUGE],
-  clouds: [],
-  ...over,
-})
+const row = (over: Partial<RoleRow> = {}): RoleRow =>
+  roleRow({
+    role: DICTATION_ROLE,
+    provider: { kind: 'local', modelId: 'parakeet' },
+    candidates: [PARAKEET, HUGE],
+    ...over,
+  })
 
-const overview = (over: Partial<AiOverview> = {}): AiOverview => ({
-  roles: [row()],
-  machine: {
-    physicalBytes: 96 * GIBI,
-    availableBytes: 34 * GIBI,
-    diskFreeBytes: 500 * GIBI,
-    gpu: 'Apple M2 Max',
-    vram: null,
-  },
-  projectPath: null,
-  installing: null,
-  loading: null,
-  loadFailure: null,
-  installFailure: null,
-  ollama: { ready: false, installed: false, names: [], progress: null, failed: false },
-  engine: { known: false, missing: [], progress: null, failed: false },
-  ...over,
-})
+const overview = (over: Partial<AiOverview> = {}): AiOverview =>
+  aiOverview({ roles: [row()], machine: { ...aiOverview().machine, gpu: 'Apple M2 Max' }, ...over })
 
 const show = (one: AiOverview = overview(), family?: ModelFamily) => {
   useAiModels.setState({ overview: one })

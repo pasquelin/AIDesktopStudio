@@ -1,6 +1,7 @@
 import { localizedError } from '@shared/localizedError'
 import { describe, expect, it, vi } from 'vitest'
-import type { AutoRigResult } from '@shared/domain/autoRig'
+import type { AutoRigPrimitiveTarget, AutoRigResult } from '@shared/domain/autoRig'
+import { IDENTITY_TRANSFORM } from '@shared/domain/transform'
 import type { AutoRigBackend } from './autoRig'
 import { AutoRigService } from './autoRig'
 import { simpleAutoRigBackend } from './simpleAutoRigBackend'
@@ -22,20 +23,7 @@ const descriptor: Omit<AutoRigBackend<string>, 'run'> = {
 }
 
 const result: AutoRigResult = {
-  rig: {
-    bones: [
-      {
-        name: 'Hips',
-        parent: null,
-        rest: {
-          position: { x: 0, y: 0, z: 0 },
-          rotation: { x: 0, y: 0, z: 0 },
-          scale: { x: 1, y: 1, z: 1 },
-        },
-      },
-    ],
-    origin: 'local',
-  },
+  rig: { bones: [{ name: 'Hips', parent: null, rest: IDENTITY_TRANSFORM }], origin: 'local' },
   bindings: [
     {
       mesh: 0,
@@ -47,16 +35,23 @@ const result: AutoRigResult = {
   metadata: { backendId: 'ignored', sourceInfluences: 4, outputInfluences: 4, fingers: false },
 }
 
+const serving = (run: AutoRigBackend<string>['run']): AutoRigService<string> =>
+  new AutoRigService([{ ...descriptor, run }])
+
+/** What a run carries: the abort, the progress, and the primitives the result has to cover. */
+const asking = (targets: readonly AutoRigPrimitiveTarget[]) => ({
+  signal: new AbortController().signal,
+  onProgress: vi.fn(),
+  targets,
+})
+
+const ONE_VERTEX: readonly AutoRigPrimitiveTarget[] = [{ mesh: 0, primitive: 0, vertexCount: 1 }]
+
 describe('Auto Rig backends', () => {
   it('selects a backend without exposing its implementation to the caller', async () => {
     const run = vi.fn(async () => result)
-    const backend: AutoRigBackend<string> = { ...descriptor, run }
-    const service = new AutoRigService([backend])
-    const context = {
-      signal: new AbortController().signal,
-      onProgress: vi.fn(),
-      targets: [{ mesh: 0, primitive: 0, vertexCount: 1 }],
-    }
+    const service = serving(run)
+    const context = asking(ONE_VERTEX)
 
     await expect(service.run('simple', 'mesh', context)).resolves.toMatchObject({
       metadata: { backendId: 'simple' },
@@ -66,14 +61,7 @@ describe('Auto Rig backends', () => {
   })
 
   it('refuses duplicate identifiers so selection stays deterministic', () => {
-    const backend: AutoRigBackend<string> = {
-      ...descriptor,
-      run: async () => ({
-        rig: { bones: [], origin: 'local' },
-        bindings: [],
-        metadata: { backendId: 'simple', sourceInfluences: 4, outputInfluences: 4, fingers: false },
-      }),
-    }
+    const backend: AutoRigBackend<string> = { ...descriptor, run: async () => result }
 
     expect(() => new AutoRigService([backend, backend])).toThrow(
       localizedError('autoRigBackendDuplicate', { name: backend.id }).message,
@@ -82,64 +70,38 @@ describe('Auto Rig backends', () => {
 
   it('discards a result that arrives after cancellation', async () => {
     const controller = new AbortController()
-    const backend: AutoRigBackend<string> = {
-      ...descriptor,
-      run: async () => {
-        controller.abort()
-        return result
-      },
-    }
-    const service = new AutoRigService([backend])
+    const service = serving(async () => {
+      controller.abort()
+      return result
+    })
 
     await expect(
-      service.run('simple', 'mesh', {
-        signal: controller.signal,
-        onProgress: vi.fn(),
-        targets: [{ mesh: 0, primitive: 0, vertexCount: 1 }],
-      }),
+      service.run('simple', 'mesh', { ...asking(ONE_VERTEX), signal: controller.signal }),
     ).rejects.toThrow('CANCELLED')
   })
 
   it('refuses a backend result that does not cover the source primitives exactly', async () => {
-    const backend: AutoRigBackend<string> = { ...descriptor, run: async () => result }
-    const service = new AutoRigService([backend])
+    const service = serving(async () => result)
 
     await expect(
-      service.run('simple', 'mesh', {
-        signal: new AbortController().signal,
-        onProgress: vi.fn(),
-        targets: [{ mesh: 1, primitive: 0, vertexCount: 10 }],
-      }),
+      service.run('simple', 'mesh', asking([{ mesh: 1, primitive: 0, vertexCount: 10 }])),
     ).rejects.toThrow('invalid-binding-target')
   })
 
   it('refuses a binding whose vertex count differs from its source primitive', async () => {
-    const backend: AutoRigBackend<string> = { ...descriptor, run: async () => result }
-    const service = new AutoRigService([backend])
+    const service = serving(async () => result)
 
     await expect(
-      service.run('simple', 'mesh', {
-        signal: new AbortController().signal,
-        onProgress: vi.fn(),
-        targets: [{ mesh: 0, primitive: 0, vertexCount: 2 }],
-      }),
+      service.run('simple', 'mesh', asking([{ mesh: 0, primitive: 0, vertexCount: 2 }])),
     ).rejects.toThrow('invalid-binding-size')
   })
 
   it('refuses an empty binding result', async () => {
-    const backend: AutoRigBackend<string> = {
-      ...descriptor,
-      run: async () => ({ ...result, bindings: [] }),
-    }
-    const service = new AutoRigService([backend])
+    const service = serving(async () => ({ ...result, bindings: [] }))
 
-    await expect(
-      service.run('simple', 'mesh', {
-        signal: new AbortController().signal,
-        onProgress: vi.fn(),
-        targets: [{ mesh: 0, primitive: 0, vertexCount: 1 }],
-      }),
-    ).rejects.toThrow('invalid-binding-size')
+    await expect(service.run('simple', 'mesh', asking(ONE_VERTEX))).rejects.toThrow(
+      'invalid-binding-size',
+    )
   })
 
   it('keeps the current local rigger available without a model dependency', () => {
@@ -183,11 +145,7 @@ describe('Auto Rig backends', () => {
       experimental: true,
     })
 
-    await backend.run('mesh', {
-      signal,
-      onProgress: progress,
-      targets: [{ mesh: 0, primitive: 0, vertexCount: 1 }],
-    })
+    await backend.run('mesh', { signal, onProgress: progress, targets: ONE_VERTEX })
 
     expect(infer).toHaveBeenCalledWith('mesh', signal)
     expect(progress.mock.calls).toEqual([[0], [1]])

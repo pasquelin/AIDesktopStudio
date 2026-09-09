@@ -2,6 +2,7 @@
 import { useTranslation } from 'react-i18next'
 import type { InputMap } from '@shared/domain/inputMap'
 import { INPUT_PRESET_IDS, inputMapPreset } from '@shared/domain/inputPresets'
+import { READING_BLOCK } from '@/components/panelStyles'
 import { Chip } from '@/components/Chip'
 import { PropertySection } from '@/components/PropertySection'
 import { Tag } from '@/components/Tag'
@@ -56,10 +57,7 @@ export function InputMapSimple({ map, onChange }: InputMapSimpleProps) {
         ) : (
           <div className="flex flex-col gap-2">
             {map.actions.map(action => (
-              <article
-                key={action.id}
-                className="border-border bg-surface flex flex-col gap-1.5 rounded-(--radius-sc-md) border p-2"
-              >
+              <article key={action.id} className={READING_BLOCK}>
                 <div className="flex items-baseline justify-between gap-2">
                   <strong className="text-xs font-medium">{action.id}</strong>
                   <span className="text-muted text-tiny shrink-0">
@@ -71,11 +69,14 @@ export function InputMapSimple({ map, onChange }: InputMapSimpleProps) {
                   {action.bindings.length === 0 ? (
                     <span className={FIELD_HELP}>{t('game.inputMap.noBinding')}</span>
                   ) : (
-                    action.bindings.map((binding, index) => (
-                      <Tag key={`${binding.device}:${inputBindingLabel(binding)}:${index}`}>
-                        {t(`game.inputMap.device.${binding.device}`)} · {inputBindingLabel(binding)}
-                      </Tag>
-                    ))
+                    action.bindings.map((binding, index) => {
+                      const control = inputBindingLabel(binding)
+                      return (
+                        <Tag key={`${binding.device}:${control}:${index}`}>
+                          {t(`game.inputMap.device.${binding.device}`)} · {control}
+                        </Tag>
+                      )
+                    })
                   )}
                 </div>
               </article>

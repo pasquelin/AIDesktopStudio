@@ -66,6 +66,24 @@ async function harness(): Promise<Harness> {
   return { files, root, catalog, trashed, assetsChanged, pathsChanged }
 }
 
+/** File operations over a root that may move or go away, with its own trash double. */
+const fileOpsOn = (
+  rootOf: () => string | null,
+  catalog: () => AsyncCatalog,
+  trash: (file: string) => Promise<void>,
+): FileOps =>
+  createFileOps({
+    rootOf,
+    folder: {
+      ...createFolderReader(() => rootOf() ?? '', inFrench),
+      ...createFolderWriter(() => rootOf() ?? '', trash),
+    },
+    catalog,
+    newBatchId: () => 'batch-1',
+    assetsChanged: vi.fn(),
+    pathsChanged: vi.fn(),
+  })
+
 const namesIn = async (root: string, folder = ''): Promise<string[]> =>
   (await readdir(join(root, folder))).sort()
 
@@ -242,20 +260,11 @@ describe('taking a batch back', () => {
   it.each(['another', 'none'])('drops what it held when the project becomes %s', async how => {
     const { root, catalog, trashed } = harnessed
     let current: string | null = root
-    const files = createFileOps({
-      rootOf: () => current,
-      folder: {
-        ...createFolderReader(() => current ?? '', inFrench),
-        ...createFolderWriter(
-          () => current ?? '',
-          async file => void trashed.push(file),
-        ),
-      },
-      catalog: () => catalog,
-      newBatchId: () => 'batch-1',
-      assetsChanged: vi.fn(),
-      pathsChanged: vi.fn(),
-    })
+    const files = fileOpsOn(
+      () => current,
+      () => catalog,
+      async file => void trashed.push(file),
+    )
 
     await files.move(['brief.pdf'], 'Rushes')
     expect(files.can().undo).toBe(true)
@@ -351,20 +360,11 @@ describe('retargeting a motion that changed folder', () => {
 
 describe('with no project open', () => {
   it('answers an empty batch rather than resolving a path against nothing', async () => {
-    const files = createFileOps({
-      rootOf: () => null,
-      folder: {
-        ...createFolderReader(() => '', inFrench),
-        ...createFolderWriter(
-          () => '',
-          async () => {},
-        ),
-      },
-      catalog: () => harnessed.catalog,
-      newBatchId: () => 'batch-1',
-      assetsChanged: vi.fn(),
-      pathsChanged: vi.fn(),
-    })
+    const files = fileOpsOn(
+      () => null,
+      () => harnessed.catalog,
+      async () => {},
+    )
 
     expect(await files.move(['a.png'], 'refs')).toEqual({
       done: [],

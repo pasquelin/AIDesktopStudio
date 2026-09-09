@@ -5,12 +5,6 @@ import type {
   AnimationLayer,
   AnimationTransition,
 } from '@shared/domain/animationGraph'
-import type { ClipSource } from '@shared/domain/sceneModel'
-
-/** The clip a state plays, as one word — the name, whatever the source keeps beside it. */
-export function clipSourceLabel(source: ClipSource): string {
-  return source.name
-}
 
 /** `speed > 0.1`, read left to right. The operator is a symbol in every language. */
 export function conditionLabel(condition: AnimationCondition): string {

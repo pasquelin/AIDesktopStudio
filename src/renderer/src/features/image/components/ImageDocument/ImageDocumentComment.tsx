@@ -11,7 +11,11 @@ import { cn } from '@/helpers/cn'
 import type { CanvasView } from '@/engines/canvas/viewport'
 import type { Point, Size } from '@/engines/core/geometry'
 import { TIP_TOP } from '@/helpers/tooltip'
-import { commentHue, type GenerationComment } from '../../generationComments'
+import {
+  commentHue,
+  type GenerationComment,
+  type GenerationCommentActions,
+} from '../../generationComments'
 
 /** Document units, spelled once: the outline never changes after the mask came back. */
 const outlinePoints = (outline: readonly Point[]): string =>
@@ -30,15 +34,11 @@ const NOTE = cn(
   'pointer-events-auto absolute z-10 gap-2 p-2 hover:z-20 focus-within:z-20',
 )
 
-type ImageDocumentCommentProps = {
+type ImageDocumentCommentProps = GenerationCommentActions & {
   comment: GenerationComment
   number: number
   view: CanvasView
   size: Size
-  onChange: (id: string, text: string) => void
-  onRename: (id: string, title: string) => void
-  onRemove: (id: string) => void
-  onGenerate?: (id: string) => void
 }
 
 export function ImageDocumentComment(props: ImageDocumentCommentProps) {

@@ -23,14 +23,6 @@ const runSteps = (): string[] =>
     .map(line => line.replace(/^(- )?run:/, '').trim())
     .filter(Boolean)
 
-/**
- * Read from `gateLinks.ts`, which is where the chain moved on 2026-09-08: `validate` used to spell
- * its links with `&&` and now calls `scripts/gate.mjs`, which runs them from that array. Splitting
- * the script would leave this guard with one pattern and the doc check below could never reach the
- * three it needs — green, and blind.
- */
-const gateLinks = (): string[] => GATE.map(link => link.command)
-
 describe('the integration job running the gate and nothing beside it', () => {
   /**
    * What the job MAY run, not a list of what it may not: enumerating the links by hand let a
@@ -42,9 +34,16 @@ describe('the integration job running the gate and nothing beside it', () => {
   })
 })
 
-/** `pnpm typecheck` → `typecheck`, escaped: a link named `test:e2e(fast)` would break the regex. */
+/**
+ * `pnpm typecheck` → `typecheck`, escaped: a link named `test:e2e(fast)` would break the regex.
+ *
+ * Read from `gateLinks.ts`, which is where the chain moved on 2026-09-08: `validate` used to spell
+ * its links with `&&` and now calls `scripts/gate.mjs`, which runs them from that array. Splitting
+ * the script would leave this guard with one pattern and the doc check below could never reach the
+ * three it needs — green, and blind.
+ */
 const linkPatterns = (): string[] =>
-  gateLinks().map(link => link.replace(/^pnpm\s+/, '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+  GATE.map(link => link.command.replace(/^pnpm\s+/, '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
 
 /**
  * Tracked markdown, asked of git rather than walked: `CLAUDE.md` sits at the root, is ignored, and

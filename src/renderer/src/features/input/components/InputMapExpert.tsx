@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 import { useTranslation } from 'react-i18next'
-import type { InputActionKind, InputMap } from '@shared/domain/inputMap'
+import type { InputMap } from '@shared/domain/inputMap'
+import { withItemAt } from '@shared/collections'
 import { Button } from '@/components/Button'
 import { NumberField } from '@/components/NumberField'
 import { PropertySection } from '@/components/PropertySection'
@@ -13,11 +14,6 @@ type InputMapExpertProps = { map: InputMap; onChange: (map: InputMap) => void }
 
 export function InputMapExpert({ map, onChange }: InputMapExpertProps) {
   const { t } = useTranslation()
-  const kinds: readonly { value: InputActionKind; label: string }[] = [
-    { value: 'button', label: t('game.inputMap.kind.button') },
-    { value: 'axis1', label: t('game.inputMap.kind.axis1') },
-    { value: 'axis2', label: t('game.inputMap.kind.axis2') },
-  ]
   return (
     <div className="flex flex-col gap-3 p-3">
       <PropertySection
@@ -62,15 +58,7 @@ export function InputMapExpert({ map, onChange }: InputMapExpertProps) {
         <InputMapExpertAction
           key={`${action.id}:${index}`}
           action={action}
-          kinds={kinds}
-          onChange={next =>
-            onChange({
-              ...map,
-              actions: next
-                ? map.actions.map((one, at) => (at === index ? next : one))
-                : map.actions.filter((_, at) => at !== index),
-            })
-          }
+          onChange={next => onChange({ ...map, actions: withItemAt(map.actions, index, next) })}
         />
       ))}
 

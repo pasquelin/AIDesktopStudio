@@ -188,12 +188,6 @@ describe('the assistant', () => {
   it('answers noSurface in a window that stages no conversation', () => {
     expect(routeCommand('app.assistant')).toBe('noSurface')
   })
-
-  // A settings window and a mirror have no overlay: saying so beats reporting a window that
-  // never opened.
-  it('is refused in a window that shows none', () => {
-    expect(routeCommand('app.assistant')).toBe('noSurface')
-  })
 })
 
 describe('dictation, which the keyboard holds down', () => {

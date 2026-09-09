@@ -49,7 +49,7 @@ export function useCharacterFit(
   const [running, setRunning] = useState(false)
   // Derived rather than initialised: the rig lands after this hook first runs, and a state seeded
   // once would have offered « simplified » over a rig whose fingers the first pass had asked for.
-  const rigBones = useCharacters(state => characterOf(state, assetId)?.rig?.bones)
+  const rigBones = useCharacters(state => characterOf(state, assetId).rig?.bones)
   const [chosenOptions, setMiaOptions] = useState<AutoRigInferenceOptions | null>(null)
   const miaOptions = chosenOptions ?? autoRigOptionsOf(rigBones)
   const chooseBackend = async (backendId: string): Promise<void> => {

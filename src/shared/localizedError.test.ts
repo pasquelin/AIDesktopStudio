@@ -1,4 +1,4 @@
-import { LANGUAGES, TRANSLATIONS, fillHoles, textAt } from './i18n'
+import { LANGUAGES, TRANSLATIONS, fillHoles, textAt, type Language } from './i18n'
 import { describe, expect, it, vi } from 'vitest'
 import { MAX_LOG_MESSAGE } from './ipcDiagnostics'
 import { boundedDiagnosticMessage, localizeErrorMessage, localizedError } from './localizedError'
@@ -49,17 +49,19 @@ describe('localized diagnostic errors', () => {
   })
 })
 
+/** A relayed message as one language shows it, every diagnostic frame inside it translated. */
+const shownIn = (code: Language, message: string): string =>
+  localizeErrorMessage(message, (key, values) =>
+    fillHoles(textAt(TRANSLATIONS[code], key), values, code),
+  )
+
 it('translates worker names carried inside diagnostic parameters in both languages', () => {
   const error = localizedError('workerFailed', {
     name: localizedError('workerRelief').message,
     reason: 'WebGL2',
   })
   for (const { code } of LANGUAGES) {
-    expect(
-      localizeErrorMessage(error.message, (key, values) =>
-        fillHoles(textAt(TRANSLATIONS[code], key), values, code),
-      ),
-    ).toBe(
+    expect(shownIn(code, error.message)).toBe(
       fillHoles(
         TRANSLATIONS[code].diagnostics.workerFailed,
         { name: TRANSLATIONS[code].diagnostics.workerRelief, reason: 'WebGL2' },
@@ -88,9 +90,7 @@ it('shortens nested error parameters without damaging either diagnostic frame', 
     reason,
   })
   for (const { code } of LANGUAGES) {
-    const text = localizeErrorMessage(error.message, (key, values) =>
-      fillHoles(textAt(TRANSLATIONS[code], key), values, code),
-    )
+    const text = shownIn(code, error.message)
     expect(text).toContain('404')
     expect(text).toContain(TRANSLATIONS[code].diagnostics.workerRelief)
     for (const marker of ['\u001e', '\u001f', '{{']) expect(text).not.toContain(marker)

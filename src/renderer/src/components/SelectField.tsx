@@ -40,13 +40,12 @@ function runsOf<V extends string>(options: readonly SelectOption<V>[]): OptionRu
   return runs
 }
 
-type SelectControlProps<V extends string> = SelectFieldProps<V> & {
-  id: string
-  unnamed: boolean
-  named: boolean
-}
+type SelectControlProps<V extends string> = Pick<
+  SelectFieldProps<V>,
+  'label' | 'value' | 'options' | 'onChange' | 'unnamedLabel' | 'layout' | 'hint' | 'scId'
+> & { id: string; unnamed: boolean; named: boolean }
 
-function selectOptions<V extends string>({ options }: Pick<SelectFieldProps<V>, 'options'>) {
+function selectOptions<V extends string>(options: readonly SelectOption<V>[]) {
   return runsOf(options).map(({ group, run }, index) => {
     const entries = run.map(option => (
       <option key={option.value} value={option.value} disabled={option.disabled}>
@@ -62,9 +61,6 @@ function selectOptions<V extends string>({ options }: Pick<SelectFieldProps<V>, 
     )
   })
 }
-
-const selectedValue = (value: string | null, unnamed: boolean): string =>
-  unnamed ? UNNAMED : (value ?? UNNAMED)
 
 function selectControl<V extends string>({
   id,
@@ -84,7 +80,7 @@ function selectControl<V extends string>({
       id={id}
       aria-label={named ? undefined : label}
       data-sc={scId && fieldHandle(scId)}
-      value={selectedValue(value, unnamed)}
+      value={unnamed ? UNNAMED : (value ?? UNNAMED)}
       onChange={event => {
         const picked = options.find(option => option.value === event.target.value)
         if (picked) onChange(picked.value)
@@ -100,34 +96,15 @@ function selectControl<V extends string>({
           {unnamedLabel}
         </option>
       )}
-      {selectOptions({ options })}
+      {selectOptions(options)}
     </Select>
   )
 }
 
 type SelectLayoutProps = Pick<
   SelectFieldProps<string>,
-  'label' | 'layout' | 'leading' | 'actions' | 'className'
-> & { id: string; children: ReactNode; compactActions?: boolean }
-
-function stackedSelectLayout({
-  label,
-  className,
-  id,
-  leading,
-  children,
-  actions,
-}: SelectLayoutProps) {
-  return (
-    <FormField label={label} htmlFor={id} className={className}>
-      <div className="flex min-w-0 items-center gap-2">
-        {leading}
-        {children}
-        {actions}
-      </div>
-    </FormField>
-  )
-}
+  'label' | 'layout' | 'leading' | 'actions' | 'compactActions' | 'className'
+> & { id: string; children: ReactNode }
 
 function selectLayout({
   label,
@@ -139,8 +116,19 @@ function selectLayout({
   id,
   children,
 }: SelectLayoutProps) {
+  const inner = (
+    <>
+      {leading}
+      {children}
+      {actions}
+    </>
+  )
   if (layout === 'stacked')
-    return stackedSelectLayout({ label, className, id, leading, children, actions })
+    return (
+      <FormField label={label} htmlFor={id} className={className}>
+        <div className="flex min-w-0 items-center gap-2">{inner}</div>
+      </FormField>
+    )
   if (layout === 'row')
     return (
       <PropertyLine
@@ -159,18 +147,10 @@ function selectLayout({
   if (layout === 'inline')
     return (
       <PropertyLine label={label} root="div" name="none" actions={false} className={className}>
-        {leading}
-        {children}
-        {actions}
+        {inner}
       </PropertyLine>
     )
-  return (
-    <div className={cn('flex min-w-0 items-center', className)}>
-      {leading}
-      {children}
-      {actions}
-    </div>
-  )
+  return <div className={cn('flex min-w-0 items-center', className)}>{inner}</div>
 }
 export function SelectField<V extends string>({
   label,
@@ -198,10 +178,7 @@ export function SelectField<V extends string>({
     unnamedLabel,
     layout,
     hint,
-    leading,
-    actions,
     scId,
-    className,
     id,
     unnamed,
     named,

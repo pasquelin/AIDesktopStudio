@@ -48,6 +48,7 @@ function harness(over: Partial<PythonClient> = {}, deps: Partial<PythonRuntimeDe
   )
   const closeDoor = vi.fn(over.closeDoor ?? (() => Promise.resolve(true)))
 
+  // Cast: the runtime under test only ever reaches for these five members of the client.
   const client = { ...over, job, memory, requirements, closeDoor } as unknown as PythonClient
 
   const runtime = pythonRuntime({

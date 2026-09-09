@@ -63,6 +63,17 @@ export const FIELD_BLOCK_NESTED =
   'border-border bg-panel flex flex-col gap-2.5 rounded-(--radius-sc-md) border p-2.5'
 
 /**
+ * One item READ rather than edited — a state of an animation graph, an action of an input map, as
+ * the simple view of a script document lists them.
+ *
+ * 🛑 Tighter than `FIELD_BLOCK` on purpose: a block one reads carries a line and a badge, not a
+ * column of controls, and the field block's breathing left it floating. Written out in full for
+ * the same reason as the block above — Tailwind scans the source.
+ */
+export const READING_BLOCK =
+  'border-border bg-surface flex flex-col gap-1.5 rounded-(--radius-sc-md) border p-2'
+
+/**
  * A picture standing in a property FIELD — the texture a slot holds, the map a model carries.
  * A picture standing in a ROW is not this: `Row` sizes its own, see `ROW_MEDIA_CONTROL`.
  */

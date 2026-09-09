@@ -2,7 +2,11 @@ import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { DocumentDescriptor } from '@shared/domain/document'
-import type { NewDocumentAnswer, NewDocumentAsk } from '@shared/domain/newDocument'
+import type {
+  NamedDocumentPlace,
+  NewDocumentAnswer,
+  NewDocumentAsk,
+} from '@shared/domain/newDocument'
 import { installFakeBridge } from '@/services/fakeBridge'
 import { useDocuments } from '@/stores/documents'
 import { NewDocumentWindow } from './NewDocumentWindow'
@@ -17,8 +21,7 @@ const ASK: NewDocumentAsk = {
 }
 
 /** What a filled form answers with — the place, under the word that says a document was made. */
-const made = (place: Record<string, unknown>): NewDocumentAnswer =>
-  ({ answer: 'made', place }) as NewDocumentAnswer
+const made = (place: NamedDocumentPlace): NewDocumentAnswer => ({ answer: 'made', place })
 
 const stored = (fileName: string): DocumentDescriptor => ({
   id: fileName,
@@ -30,6 +33,7 @@ const stored = (fileName: string): DocumentDescriptor => ({
 
 const answer = vi.fn<(given: NewDocumentAnswer | null) => Promise<void>>()
 
+/** The window, on what the studio would be asking it — every case starts here. */
 function open(ask: NewDocumentAsk | null, onDisk: DocumentDescriptor[] = []): void {
   installFakeBridge({
     newDocument: { request: () => Promise.resolve(ask), answer: given => answer(given) },
@@ -38,6 +42,7 @@ function open(ask: NewDocumentAsk | null, onDisk: DocumentDescriptor[] = []): vo
     // reads the markers a rename in the Finder leaves behind.
     project: { folderFor: (role: string) => Promise.resolve(`Dossiers/${role}`) },
   })
+  render(<NewDocumentWindow />)
 }
 
 describe('NewDocumentWindow', () => {
@@ -59,7 +64,6 @@ describe('NewDocumentWindow', () => {
         },
       ],
     })
-    render(<NewDocumentWindow />)
 
     await userEvent.click(await screen.findByRole('button', { name: 'one' }))
 
@@ -69,7 +73,6 @@ describe('NewDocumentWindow', () => {
 
   it('opens on the suggested name, selected, with its extension beside it', async () => {
     open(ASK)
-    render(<NewDocumentWindow />)
 
     const field = await screen.findByRole('textbox')
     expect(field).toHaveValue('Scène 1')
@@ -85,7 +88,6 @@ describe('NewDocumentWindow', () => {
 
   it('answers with the name, the folder and the template a scene opens on', async () => {
     open(ASK)
-    render(<NewDocumentWindow />)
 
     const field = await screen.findByRole('textbox')
     await userEvent.clear(field)
@@ -98,7 +100,6 @@ describe('NewDocumentWindow', () => {
 
   it('answers the template that was picked, not the one it opened on', async () => {
     open(ASK)
-    render(<NewDocumentWindow />)
 
     await userEvent.click(await screen.findByRole('button', { name: 'Cinéma' }))
     await userEvent.click(screen.getByRole('button', { name: 'Créer' }))
@@ -111,7 +112,6 @@ describe('NewDocumentWindow', () => {
   // The other five kinds have one thing to be, and a choice nobody was offered must not travel.
   it('offers no template for a kind that has none, and answers without one', async () => {
     open({ ...ASK, kind: 'image' })
-    render(<NewDocumentWindow />)
 
     await screen.findByRole('textbox')
     expect(screen.queryByRole('button', { name: 'Base' })).toBeNull()
@@ -124,7 +124,6 @@ describe('NewDocumentWindow', () => {
 
   it('marks the chosen template, and only that one', async () => {
     open(ASK)
-    render(<NewDocumentWindow />)
 
     expect(await screen.findByRole('button', { name: 'Base' })).toHaveAttribute(
       'aria-pressed',
@@ -136,7 +135,6 @@ describe('NewDocumentWindow', () => {
   // Closing the window says the same thing, and the main process answers `null` for both.
   it('answers nothing when the creation is called off', async () => {
     open(ASK)
-    render(<NewDocumentWindow />)
 
     await userEvent.click(await screen.findByRole('button', { name: 'Annuler' }))
 
@@ -145,7 +143,6 @@ describe('NewDocumentWindow', () => {
 
   it('answers nothing on Escape', async () => {
     open(ASK)
-    render(<NewDocumentWindow />)
 
     await userEvent.type(await screen.findByRole('textbox'), '{Escape}')
 
@@ -156,7 +153,6 @@ describe('NewDocumentWindow', () => {
   // first save, and a document called something its author did not write is the outcome to avoid.
   it('refuses a name the folder already holds', async () => {
     open(ASK, [stored('Niveau.gltf')])
-    render(<NewDocumentWindow />)
 
     const field = await screen.findByRole('textbox')
     await userEvent.clear(field)
@@ -169,7 +165,6 @@ describe('NewDocumentWindow', () => {
   // The tabs the studio holds, which no folder listing can answer for.
   it('refuses a name only an open tab holds', async () => {
     open({ ...ASK, open: [stored('Brouillon.gltf')] })
-    render(<NewDocumentWindow />)
 
     const field = await screen.findByRole('textbox')
     await userEvent.clear(field)
@@ -186,7 +181,6 @@ describe('NewDocumentWindow', () => {
    */
   it('offers every kind, the ones of the space it was opened from first', async () => {
     open(ASK)
-    render(<NewDocumentWindow />)
 
     const column = within(await screen.findByRole('navigation'))
     const kinds = column.getAllByRole('listitem').map(row => row.textContent)
@@ -197,7 +191,6 @@ describe('NewDocumentWindow', () => {
 
   it('names the picked kind, and proposes a name of that kind', async () => {
     open(ASK)
-    render(<NewDocumentWindow />)
 
     await userEvent.click(await screen.findByRole('button', { name: 'Image' }))
 
@@ -212,7 +205,6 @@ describe('NewDocumentWindow', () => {
    */
   it("opens on the kind's own folder when the Explorer pointed at nothing", async () => {
     open({ ...ASK, picked: null })
-    render(<NewDocumentWindow />)
 
     await userEvent.click(await screen.findByRole('button', { name: 'Créer' }))
 
@@ -227,7 +219,6 @@ describe('NewDocumentWindow', () => {
    */
   it('creates on Enter from anywhere in the form, not from the name field alone', async () => {
     open(ASK)
-    render(<NewDocumentWindow />)
 
     await userEvent.click(await screen.findByRole('button', { name: 'Cinéma' }))
     await userEvent.keyboard('{Enter}')
@@ -240,7 +231,6 @@ describe('NewDocumentWindow', () => {
   /** A plain button answers Enter with its own click, and these three keep it. */
   it('leaves Enter to the buttons that have their own answer to it', async () => {
     open(ASK)
-    render(<NewDocumentWindow />)
 
     // Awaited FIRST, and that is the fix: the field is focused by an effect on a folder that is
     // set once, so once it holds focus nothing steals it again. Under load that effect settled
@@ -274,7 +264,6 @@ describe('NewDocumentWindow', () => {
     /** Dimmed and not hidden: a column that changes length under the eye reads as a fault. */
     it('offers the kinds and refuses them', async () => {
       open(NO_PROJECT)
-      render(<NewDocumentWindow />)
 
       expect(await screen.findByRole('button', { name: 'Scène' })).toBeDisabled()
       expect(screen.queryByRole('textbox')).toBeNull()
@@ -283,7 +272,6 @@ describe('NewDocumentWindow', () => {
     // The click this whole lot exists to remove: no closing the window, no hunting the title bar.
     it('offers the shelf of projects, and hands the choice to the studio', async () => {
       open(NO_PROJECT)
-      render(<NewDocumentWindow />)
 
       await userEvent.click(await screen.findByRole('button', { name: 'Two' }))
 
@@ -292,7 +280,6 @@ describe('NewDocumentWindow', () => {
 
     it('hands over the two pickers rather than raising them here', async () => {
       open(NO_PROJECT)
-      render(<NewDocumentWindow />)
 
       await userEvent.click(await screen.findByRole('button', { name: 'Ouvrir un projet' }))
       expect(answer).toHaveBeenCalledWith({ answer: 'openProject' })
@@ -301,7 +288,6 @@ describe('NewDocumentWindow', () => {
 
   it('shows nothing to fill in when nothing was asked', async () => {
     open(null)
-    render(<NewDocumentWindow />)
 
     await screen.findByText('Nouveau document')
     expect(screen.queryByRole('textbox')).toBeNull()

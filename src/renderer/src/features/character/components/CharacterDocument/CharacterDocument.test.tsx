@@ -30,9 +30,6 @@ const posed = vi.hoisted((): string[] => [])
 /** Every set of held axes the engine was handed — what a joint may not leave while dragged. */
 const holds = vi.hoisted((): string[][] => [])
 
-/** What each export was asked to carry of the studio's own — the band, for a motion. */
-const carried = vi.hoisted((): (Record<string, unknown> | null)[] => [])
-
 /** Every set of directions the keyboard handed the camera. */
 const flown = vi.hoisted((): string[][] => [])
 
@@ -99,10 +96,7 @@ vi.mock('@/engines/scene/SceneRenderer', () => ({
     // What the clock pushes into the engine: the head, and what a block is being watched on.
     setPlayhead = vi.fn()
     setPreview = vi.fn()
-    exportTo = (_format: string, _scope: string, extras?: Record<string, unknown>) => {
-      carried.push(extras ?? null)
-      return Promise.resolve(new Uint8Array([1, 2]))
-    }
+    exportTo = vi.fn(() => Promise.resolve(new Uint8Array([1, 2])))
   },
 }))
 
@@ -136,7 +130,6 @@ beforeEach(() => {
   flown.length = 0
   navigated.length = 0
   holds.length = 0
-  carried.length = 0
   configured.length = 0
   engines.length = 0
   clearCharacters()
@@ -279,7 +272,7 @@ it('reports to the store the rig the engine read off the file', async () => {
     built[0]?.onRig?.('node-1', rigStateFixture(['Hips', 'Spine']))
   })
 
-  const rigs = useModelFiles.getState().rigs[workshopIdOf(ASSET)]
+  const rigs = useModelFiles.getState().rigs[WORKSHOP]
   expect(rigs?.['node-1']?.boneNames).toEqual(['Hips', 'Spine'])
 })
 

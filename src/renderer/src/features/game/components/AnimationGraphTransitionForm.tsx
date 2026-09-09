@@ -1,15 +1,13 @@
 // SPDX-License-Identifier: MIT
 import { mdiTrashCanOutline } from '@mdi/js'
 import { useTranslation } from 'react-i18next'
-import {
-  BUILT_IN_PARAMETERS,
-  type AnimationCondition,
-  type AnimationGraph,
-  type AnimationLayer,
-  type AnimationParameterKind,
-  type AnimationTransition,
+import type {
+  AnimationLayer,
+  AnimationParameterKind,
+  AnimationTransition,
 } from '@shared/domain/animationGraph'
 import { MAX_CLIP_FADE } from '@shared/domain/sceneModel'
+import { withItemAt } from '@shared/collections'
 import { Button } from '@/components/Button'
 import { NumberField } from '@/components/NumberField'
 import { SelectField } from '@/components/SelectField'
@@ -21,10 +19,11 @@ import { TIP_LEFT } from '@/helpers/tooltip'
 import { AnimationGraphConditionRow } from './AnimationGraphConditionRow'
 
 export type AnimationGraphTransitionFormProps = {
-  graph: AnimationGraph
   layer: AnimationLayer
   transition: AnimationTransition
   rank: number
+  /** Every name a condition may stand on, and what it holds — built once for the whole form. */
+  parameters: ReadonlyMap<string, AnimationParameterKind>
   onChange: (transition: AnimationTransition | null) => void
 }
 
@@ -35,27 +34,14 @@ const ANY_STATE = ''
  * column as the fields above it rather than eight pixels further in.
  */
 export function AnimationGraphTransitionForm({
-  graph,
   layer,
   transition,
   rank,
+  parameters,
   onChange,
 }: AnimationGraphTransitionFormProps) {
   const { t } = useTranslation()
-  // Both halves of what a condition may stand on: the runtime's own, and the author's — the
-  // reader refuses any other name, so the picker offers no name it would refuse.
-  const parameters = new Map<string, AnimationParameterKind>([
-    ...Object.entries(BUILT_IN_PARAMETERS),
-    ...graph.parameters.map((one): [string, AnimationParameterKind] => [one.id, one.kind]),
-  ])
   const scId = `animationGraph.transition.${rank}`
-
-  const changedCondition = (at: number, condition: AnimationCondition | null): void => {
-    const when = condition
-      ? transition.when.map((one, index) => (index === at ? condition : one))
-      : transition.when.filter((_, index) => index !== at)
-    onChange({ ...transition, when })
-  }
 
   return (
     <div className={FIELD_BLOCK}>
@@ -137,7 +123,9 @@ export function AnimationGraphTransitionForm({
           rank={at + 1}
           parameters={parameters}
           scId={`${scId}.when.${at}`}
-          onChange={next => changedCondition(at, next)}
+          onChange={next =>
+            onChange({ ...transition, when: withItemAt(transition.when, at, next) })
+          }
         />
       ))}
       <Button

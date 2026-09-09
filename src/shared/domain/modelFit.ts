@@ -62,8 +62,8 @@ export function fitObstacleOf(model: LocalModel, offer: MachineOffer): FitObstac
 
   // Disk is checked before memory, and only when the model is not already here: a model that will
   // not fit on the disk cannot be tried at all, whatever the memory says.
-  if (!offer.installed && offer.diskFreeBytes !== null) {
-    if (offer.diskFreeBytes < model.diskBytes) return 'disk'
+  if (!offer.installed && offer.diskFreeBytes !== null && offer.diskFreeBytes < model.diskBytes) {
+    return 'disk'
   }
 
   if (model.reservationBytes > offer.snapshot.availableBytes) return 'memory'

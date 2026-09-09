@@ -53,7 +53,7 @@ const ask = (root: string, ...args: string[]): string[] =>
  * reads. `alsoIgnored` are the trees a link names explicitly, ignored yet read by a wide guard.
  *
  * Measured 2026-09-08: listing per link cost 25 git spawns and 524 ms of the 1078 ms fingerprint
- * pass — more than reading and hashing all 95 MB of the tree. Three spawns and a filter: 158 ms.
+ * pass — more than reading and hashing all 95 MB of the tree. Two spawns and a filter: 158 ms.
  */
 export function treeOf(root: string, alsoIgnored: readonly string[]): string[] {
   return [
