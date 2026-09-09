@@ -131,7 +131,7 @@
       },
       "projectCreate": {
         "title": "Créer un dossier de projet",
-        "description": "Crée un projet et l’ouvre, sans lever le dialogue système qu’une personne utiliserait. Un NOM suffit — le studio le pose là où cette personne range ses projets, indiqué plus haut. Le champ folder dit dans quel dossier le créer, quand la phrase en nomme un."
+        "description": "Crée un projet et l’ouvre, sans lever le dialogue système qu’une personne utiliserait. Un NOM suffit — le studio le pose là où cette personne range ses projets, indiqué plus haut. Le champ folder dit dans quel dossier le créer, quand la phrase en nomme un. Pour laisser le choix de l’emplacement, appeler quand même l’action : sa confirmation porte un bouton qui ouvre le sélecteur du système et remplit le champ folder."
       },
       "projectForget": {
         "title": "Retirer un projet des projets récents",

@@ -131,7 +131,7 @@
       },
       "projectCreate": {
         "title": "Criar uma pasta de projeto",
-        "description": "Cria um projeto e o abre, sem levantar o diálogo do sistema que uma pessoa usaria. Um NOME basta — o estúdio o coloca onde esta pessoa guarda seus projetos, indicado acima. O campo folder diz em qual pasta criá-lo, quando a frase nomeia uma."
+        "description": "Cria um projeto e o abre, sem levantar o diálogo do sistema que uma pessoa usaria. Um NOME basta — o estúdio o coloca onde esta pessoa guarda seus projetos, indicado acima. O campo folder diz em qual pasta criá-lo, quando a frase nomeia uma. Para deixar a escolha do lugar em aberto, chamar a ação mesmo assim: sua confirmação traz um botão que abre o seletor do sistema e preenche o campo folder."
       },
       "projectForget": {
         "title": "Retirar um projeto dos projetos recentes",

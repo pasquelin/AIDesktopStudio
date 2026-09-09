@@ -131,7 +131,7 @@
       },
       "projectCreate": {
         "title": "Crea una cartella di progetto",
-        "description": "Crea un progetto e lo apre, senza sollevare la finestra di sistema che userebbe una persona. Basta un NOME — lo studio lo posa dove questa persona tiene i progetti, indicato sopra. Il campo folder dice in quale cartella crearlo, quando la frase ne nomina una."
+        "description": "Crea un progetto e lo apre, senza sollevare la finestra di sistema che userebbe una persona. Basta un NOME — lo studio lo posa dove questa persona tiene i progetti, indicato sopra. Il campo folder dice in quale cartella crearlo, quando la frase ne nomina una. Per lasciare che sia la persona a scegliere il posto, chiamare comunque l’azione: la sua conferma porta un pulsante che apre il selettore di sistema e riempie il campo folder."
       },
       "projectForget": {
         "title": "Togli un progetto dai progetti recenti",
