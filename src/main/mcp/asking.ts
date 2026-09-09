@@ -38,7 +38,8 @@ const READ_TIMEOUT_MS = 2_000
 
 /**
  * 🛑 Whether an answer may be a long time coming, which `commitment` alone does not say: a lot
- * engages nothing of its own and runs up to fifty calls that each may engage, price and ask.
+ * engages nothing of its own and runs up to fifty calls that each may engage, price and ask —
+ * and an open now waits on the document's file, which a read timeout of two seconds would cut.
  */
 const mayOutlastARead = (call: AssistantCall): boolean => {
   const action = assistantAction(call.action)
@@ -46,7 +47,8 @@ const mayOutlastARead = (call: AssistantCall): boolean => {
   return (
     needsConfirmation(commitmentOfCall(call.action, call.input)) ||
     action?.asksItself === true ||
-    action?.runsOthers === true
+    action?.runsOthers === true ||
+    action?.loadsAFile === true
   )
 }
 

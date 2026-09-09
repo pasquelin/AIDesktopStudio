@@ -29,7 +29,6 @@ import {
   activeImageId,
   activeMontageId,
   activeSceneId,
-  documentAtPath,
   useDocuments,
   type DocumentsSlice,
 } from '@/stores/documents'
@@ -42,6 +41,7 @@ import { useProject } from '@/stores/project'
 import { sceneOf, sceneStore, useScenes } from '@/stores/scenes'
 import { sequenceOf, sequenceStore, useSequences } from '@/stores/sequences'
 import { withBridge, type ActionHandlers } from './actionHandler'
+import { openByPath } from './documentOpen'
 import { numberOf, oneOf, textOf } from './actionInputs'
 import { documentRevisionOf, documentStateOf } from './documentStateProviders'
 
@@ -202,33 +202,6 @@ function listDocuments(): ActionOutcome {
       ...Object.values(documents).filter(one => !stored.some(s => s.id === one.id)),
     ].map(one => ({ ...summaryOf(one, activeId), open: open.has(one.id) })),
   }
-}
-
-async function openByPath(input: Record<string, unknown>): Promise<ActionOutcome> {
-  const path = textOf(input, 'path')
-  if (path === null)
-    return refused(
-      'badInput',
-      '"path" is wanted — the path of a document inside the open project, as documents.list answers it',
-    )
-
-  // Re-read first: the listing a client holds may predate a file that has since arrived, and
-  // answering "no such document" for one sitting on the disk is the least useful refusal there is.
-  // `'own-write'` rather than a bare call, which joins a listing already in flight — one that may
-  // have STARTED before the file appeared, and would answer without it.
-  if (!documentAtPath(useDocuments.getState(), path)) {
-    await useDocuments.getState().relist('own-write')
-  }
-
-  const document = documentAtPath(useDocuments.getState(), path)
-  if (!document)
-    return refused(
-      'notFound',
-      `no document at "${path}" in this project — documents.list answers what is there, each with its path`,
-    )
-
-  openDocument(document)
-  return { ok: true, data: { documentId: document.id } }
 }
 
 /**

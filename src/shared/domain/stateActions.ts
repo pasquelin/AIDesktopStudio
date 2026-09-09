@@ -32,11 +32,18 @@ export const STATE_ACTIONS: readonly AssistantAction[] = [
     fields: [],
   }),
   action({
+    /**
+     * Answers once the tab HOLDS its file, not once the tab is up: the call after an open reads
+     * restored content. `loadsAFile` is what buys that answer its time — measured 2026-09-09, a
+     * reopened scene took about three seconds to come back, where a call asking nobody is given
+     * two before it is told `timedOut`.
+     */
     name: 'document.open',
     titleKey: 'assistant.actions.documentOpen.title',
     descriptionKey: 'assistant.actions.documentOpen.description',
     commitment: 'none',
     repeatable: false,
+    loadsAFile: true,
     reach: 'mcp',
     fields: [{ key: 'path', kind: 'text', labelKey: 'assistant.fields.filePath', required: true }],
   }),

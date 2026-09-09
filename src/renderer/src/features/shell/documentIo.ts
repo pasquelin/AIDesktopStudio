@@ -21,14 +21,17 @@ import type { StudioBridge } from '@shared/ipc'
 import i18next from 'i18next'
 import { closePanel, openDocument } from './components/dockviewApi'
 import { IO_BY_KIND, ioOf, type CapturedDraft, type DocumentIo } from './documentIoAdapters'
+import {
+  epochOf,
+  forgetLoadState,
+  invalidateLoad,
+  isUnreadable,
+  restoreDocument,
+} from './documentLoad'
 import { queueDocumentSave } from './documentSaveQueue'
-const unreadable = new Set<string>()
 const assetBehind = new Set<string>()
 const flattenAgreed = new Set<string>()
-const documentEpochs = new Map<string, number>()
 const capturing = new Map<string, Set<AbortController>>()
-
-const epochOf = (documentId: string): number => documentEpochs.get(documentId) ?? 0
 
 function beginCapture(documentId: string): AbortController {
   const controller = new AbortController()
@@ -45,8 +48,7 @@ function endCapture(documentId: string, controller: AbortController): void {
 }
 
 function invalidateDocument(documentId: string): void {
-  documentEpochs.set(documentId, epochOf(documentId) + 1)
-  cancelLoad(documentId)
+  invalidateLoad(documentId)
   const active = capturing.get(documentId)
   if (!active) return
   capturing.delete(documentId)
@@ -86,7 +88,7 @@ function savableDocument(documentId: string, byHand = true): SavableDocument | n
   const document = useDocuments.getState().documents[documentId]
   const io = ioOf(documentId)
   if (!bridge || !document || !io) return null
-  if (unreadable.has(documentId) || !io.holds(documentId)) return null
+  if (isUnreadable(documentId) || !io.holds(documentId)) return null
   const refusal = io.incomplete?.(documentId)
   if (refusal) {
     if (byHand) reportNotice('document.save', refusal)
@@ -270,90 +272,6 @@ export async function saveDocumentAs(documentId: string): Promise<boolean> {
   const savable = savableDocument(documentId)
   return savable ? await copyDocumentAsset(documentId, savable) : false
 }
-type DocumentLoad = {
-  document: DocumentDescriptor
-  epoch: number
-  controller: AbortController
-  promise: Promise<void>
-}
-const loading = new Map<string, DocumentLoad>()
-
-function cancelLoad(documentId: string): void {
-  const current = loading.get(documentId)
-  if (!current) return
-  loading.delete(documentId)
-  current.controller.abort()
-}
-
-export function restoreDocument(documentId: string): Promise<void> {
-  const existing = loading.get(documentId)
-  if (existing) return existing.promise
-  const bridge = getBridge()
-  const document = useDocuments.getState().documents[documentId]
-  const io = ioOf(documentId)
-  if (!io || io.holds(documentId)) return Promise.resolve()
-  if (io.assetOnly) return Promise.resolve()
-  if (!bridge || !document) {
-    io.createDefault(documentId)
-    return Promise.resolve()
-  }
-  unreadable.delete(documentId)
-  const controller = new AbortController()
-  const current: DocumentLoad = {
-    document,
-    epoch: epochOf(documentId),
-    controller,
-    promise: Promise.resolve(),
-  }
-  loading.set(documentId, current)
-  current.promise = readDocument(current, io, bridge)
-  return current.promise
-}
-
-async function readDocument(
-  load: DocumentLoad,
-  io: DocumentIo & { assetOnly?: undefined },
-  bridge: StudioBridge,
-): Promise<void> {
-  const { document, controller } = load
-  try {
-    const file = await bridge.documents.read(document.id, document.kind)
-    if (!loadIsCurrent(load, io)) return
-    if (file) io.install(document.id, file.content, file.parts)
-    else io.createDefault(document.id)
-  } catch (error) {
-    if (controller.signal.aborted || isAbortError(error)) return
-    unreadable.add(document.id)
-    reportFailure('document.load', document.title, error)
-  } finally {
-    if (loading.get(document.id) === load) loading.delete(document.id)
-  }
-}
-
-function loadIsCurrent(load: DocumentLoad, io: DocumentIo): boolean {
-  const current = useDocuments.getState().documents[load.document.id]
-  return (
-    !load.controller.signal.aborted &&
-    epochOf(load.document.id) === load.epoch &&
-    current?.kind === load.document.kind &&
-    !io.holds(load.document.id)
-  )
-}
-
-export async function rehydrateDocument(documentId: string): Promise<void> {
-  const bridge = getBridge()
-  const document = useDocuments.getState().documents[documentId]
-  const io = ioOf(documentId)
-  if (!bridge || !document || !io?.rehydrate) return
-  if (!io.holds(documentId) || unreadable.has(documentId)) return
-  try {
-    const file = await bridge.documents.read(document.id, document.kind)
-    if (file?.parts?.length) return io.rehydrate(documentId, file.content, file.parts)
-    if (document.sourceAssetId) await io.rehydrateFromAsset?.(documentId, document.sourceAssetId)
-  } catch (error) {
-    reportFailure('document.load', document.title, error)
-  }
-}
 export function documentIsDirty(documentId: string): boolean {
   const io = ioOf(documentId)
   return io !== undefined && io.holds(documentId) && io.dirty(documentId)
@@ -473,7 +391,7 @@ function forgetDocument(documentId: string, gone?: DocumentDescriptor): void {
 
 function forgetDocumentState(documentId: string, document?: DocumentDescriptor): void {
   if (document) IO_BY_KIND[document.kind].forget(document)
-  unreadable.delete(documentId)
+  forgetLoadState(documentId)
   assetBehind.delete(documentId)
   flattenAgreed.delete(documentId)
   useMaterialViews.getState().forget(documentId)

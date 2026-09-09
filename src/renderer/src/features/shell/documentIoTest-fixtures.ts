@@ -77,14 +77,13 @@ vi.mock('@/character/characterSave', async importOriginal => ({
   },
 }))
 
+const { rehydrateDocument, restoreDocument } = await import('./documentLoad')
 const {
   autosaveOpenDocuments,
   closeDocument,
   deleteDocument,
   renamedDocumentProject,
   refreshDocuments,
-  rehydrateDocument,
-  restoreDocument,
   saveDocument,
   saveDocumentAs,
   settleUnsavedWork,
