@@ -13,6 +13,108 @@ Conséquence sur l'écriture : **dans une section de version, les liens sont abs
 release ne résout pas les chemins relatifs du dépôt, et ces liens-là sont les premiers qu'un
 lecteur ouvre. Le préambule que voici n'est jamais publié et s'autorise donc le relatif.
 
+## [2.1.0] — 2026-09-09
+
+**Le studio parle quinze langues, et le graphe d'animation s'édite enfin dedans.** Treize bundles
+neufs à côté du français et de l'anglais, l'arabe posant la mise en page de droite à gauche ; les
+états et transitions d'un personnage se règlent au formulaire au lieu du JSON brut ; et une carte
+NVIDIA récupère le travail que l'installation lui refusait, sans que l'installeur grossisse d'un
+octet.
+
+**Un projet de la 2.0.0 s'ouvre tel quel** : aucun format de document n'a bougé, ni l'`appId` —
+l'auto-update fait donc son travail.
+
+> **Les installeurs ne sont toujours pas signés.** Ni certificat Apple, ni certificat Windows n'est
+> provisionné à ce jour
+> ([ADR-04](https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/docs/ci/adr/ADR-04-strategie-de-signature.md)) :
+> macOS opposera Gatekeeper, Windows affichera SmartScreen. L'auto-update vérifie le condensat du
+> manifeste — il garantit qu'un téléchargement n'a pas été corrompu, pas qu'il vient de nous.
+
+### Ajouté
+
+**Le studio parle quinze langues.** Arabe, allemand, espagnol, hindi, indonésien, italien, japonais,
+coréen, portugais du Brésil, russe, turc, vietnamien et chinois simplifié rejoignent le français et
+l'anglais, à plus de 5 500 clés chacun. L'arabe porte 135 formes de plus et le russe 45 — le zéro,
+le duel
+et le paucal que le jeu de clés français ne nomme pas et qui, sans elles, faisaient afficher du
+français à un compte de trois. L'arabe pose aussi la mise en page de droite à gauche dans les
+composants partagés. La langue se choisit dès l'écran d'accueil, et les noms des modèles IA sont
+traduits eux aussi.
+
+**Le graphe d'animation s'ouvre dans le studio**, plus dans l'éditeur de texte du système. Trois
+vues dans un vrai tablist — simple, expert, source — des formulaires à la place du JSON, et une
+carte d'état qui nomme ce qu'elle montre : le clip, le déplacement du personnage, l'animation, et
+la condition qui mène à cet état. Les paramètres du jeu se distinguent à l'œil de ceux de l'auteur.
+⌘S enregistre ; le bouton « Enregistrer » disparaît, il contournait un raccourci qui se taisait.
+
+**Une note se pose sur une zone d'image**, et le mode intelligent lui trouve l'objet tout seul : le
+modèle local identifie ce qui est sous le curseur au lieu qu'on en trace le contour. Une note lance
+la génération qu'elle décrit.
+
+**Le GPU NVIDIA récupère le travail.** La pile CUDA s'installe au moment où l'on installe les
+bibliothèques de génération, et seulement si une carte est là : le runtime embarqué reste en
+processeur, donc l'installeur ne grossit pas. Le téléchargement passant de 682 Mo à 2 602 Mo,
+l'espace disque est vérifié avant la première socket. La capacité CUDA se lit dans torch plutôt que
+sur la carte — l'écran cesse d'annoncer compatibles des modèles que le moteur refuse ensuite — et
+le bouton de réparation reste offert quand la porte est complète mais son torch en processeur.
+
+**Les primitives de formulaire ont chacune leur composant** — champ, select, case, interrupteur,
+zone de texte — assis sur daisyUI. La densité et l'échelle de police atteignent enfin les jauges.
+
+### Modifié
+
+**Les six apparences de select n'en font plus qu'une.** Selon l'endroit, le même contrôle avait une
+bordure ou non, le chevron du navigateur, celui du studio ou les deux triangles de daisyUI. Un seul
+composant porte la base, et tout y passe : les lignes d'inspecteur, les champs empilés, les barres
+de collection, le formulaire de génération, le dialogue d'optimisation et les six écrans de
+réglages.
+
+**Un document de script se lit comme une page.** Les champs reprennent chacun leur ligne, un élément
+répété — liaison, transition, paramètre, condition — devient un bloc bordé avec son nom en tête et
+sa corbeille au bout de cette ligne, et les sections respirent d'un cran. Les corbeilles, les
+captures et les remises à zéro tiennent enfin une seule colonne.
+
+**Le détourage interactif reste sur la machine, la retouche du menu peut partir au cloud.** La
+fenêtre demandait quel modèle sert l'emploi là où l'hôte charge le sien par son nom : un compte
+choisi pour l'emploi armait un geste que le moteur refusait ensuite.
+
+**Le site est refondu** — mascotte, contenus multilingues, et le catalogue des modèles IA dans la
+vitrine : [www.aidesktopstudio.com](https://www.aidesktopstudio.com/).
+
+**Les trois étagères 3D remontent au premier niveau** de l'arbre.
+
+### Corrigé
+
+- Sur **tout** personnage, squelette ou non, la section Mouvements de l'atelier disparaissait avec
+  son bouton de retrait : l'atelier ne recevait pas le rig que le moteur lit.
+- Quatre surfaces proposaient de poser un mouvement sur un maillage sans os, et les quatre ne
+  faisaient rien. Elles refusent maintenant, en disant pourquoi, et seulement après avoir lu le
+  fichier.
+- Une fenêtre qui ajoutait ou retirait le compte Scenario laissait les autres sur un état
+  d'authentification périmé, et une réponse dépassée par une plus récente écrasait l'état.
+- Le catalogue Scenario avait perdu trois familles, ce qui vidait le générateur d'une retouche
+  préparée.
+- Sous 30 rem, le compteur de contexte du composeur partait avec sa jauge alors qu'il est ce qui
+  informe.
+- Le select empilé gardait la place d'un chevron qu'il ne dessinait pas.
+- Fermer une porte de modèle inactive rend les 208 Mo qu'un déchargement gardait.
+- Le sélecteur de langue du site ne se refermait ni au clic à côté ni sur Échap.
+
+### Limites connues
+
+- **Le manuel ne décrit pas encore le panneau Monde**, la sculpture du relief, le Scatter ni le
+  mode pixel art. Il n'existe par ailleurs qu'en français et en anglais : les treize langues neuves
+  couvrent l'interface, pas la documentation.
+- **Les projets et les réglages de la 1.0.0** — voir l'encadré de la
+  [2.0.0](https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/CHANGELOG.md).
+- Les installeurs ne sont pas signés.
+- Le Mac Intel part sans moteur d'IA local : les modèles qu'il porte n'ont pas de roue pour cette
+  plateforme.
+- Sur Linux, un document dont le nom porte un accent écrit sous forme décomposée — ce que produit
+  une archive faite sur macOS — s'affiche dans l'Explorateur sans pouvoir s'ouvrir.
+- La liste complète et par espace :
+  [chapitre 18](https://github.com/pasquelin/AIDesktopStudio/blob/HEAD/docs/fr/manuel/18-limites.md).
+
 ## [2.0.0] — 2026-09-07
 
 **Le studio s'appelle AI Desktop Studio, et il fabrique des mondes.** Un terrain se sculpte au
