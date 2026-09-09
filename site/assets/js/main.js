@@ -189,6 +189,23 @@
     return '00:' + pad(Math.floor(f / (60 * FPS))) + ':' + pad(Math.floor(f / FPS) % 60) + ':' + pad(f % FPS);
   }
 
+  /* --------------------------------------------------- sélecteur de langue */
+  /* Un `<details>` natif ne se referme ni au clic à côté ni sur Échap : le navigateur ne
+     rend ce service qu'à un popover. Le menu couvre le contenu, donc on le ferme ici. */
+
+  var langs = document.querySelector('.langs');
+  if (langs) {
+    document.addEventListener('click', function (event) {
+      if (langs.open && !langs.contains(event.target)) langs.open = false;
+    });
+    document.addEventListener('keydown', function (event) {
+      if (event.key !== 'Escape' || !langs.open) return;
+      langs.open = false;
+      var summary = langs.querySelector('summary');
+      if (summary) summary.focus();   /* le focus était dans le menu qui vient de disparaître */
+    });
+  }
+
   /* ------------------------------------------------- bandeau horizontal */
   /* Le contenu est dupliqué : translater de 50 % de la largeur totale
      revient exactement sur la première copie, donc pas de couture. */
