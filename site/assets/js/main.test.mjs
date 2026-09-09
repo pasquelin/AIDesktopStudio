@@ -5,7 +5,7 @@ import { runInNewContext } from 'node:vm';
 
 const source = readFileSync(new URL('./main.js', import.meta.url), 'utf8');
 function page(workshop = false, hash = '') {
-  const listeners = {}, frames = [], calls = [];
+  const listeners = {}, docListeners = {}, frames = [], calls = [];
   let now = 0;
   const window = { location: { hash }, scrollY: 0, innerHeight: 720, innerWidth: 1280, history: { pushState() {} }, matchMedia: query => ({ matches: query.includes('min-width') }), addEventListener(name, fn) { listeners[name] = fn; }, scrollTo(value) { calls.push(value); } };
   const rect = (top, height) => ({ top: top - window.scrollY, bottom: top + height - window.scrollY, height });
@@ -16,9 +16,11 @@ function page(workshop = false, hash = '') {
   const tabs = Object.keys(targets).map(href => ({ dataset: {}, getAttribute: () => href, setAttribute() {}, addEventListener(name, fn) { this.click = () => fn({ preventDefault() {} }); } }));
   const item = { dataset: { speedx: '.036' }, style: {}, classList: { contains: () => false }, hasAttribute: name => name === 'data-still', closest: () => ({}), getBoundingClientRect: () => rect(300, 100) };
   const img = { style: {}, offsetHeight: 100, closest: selector => selector === '.mode' ? {} : { getBoundingClientRect: () => rect(300, 100) } };
-  const document = { hidden: false, getElementById: id => id === 'modeles-locaux' ? { getBoundingClientRect: () => rect(stage.classList.value === 'stage--complete' ? 4268 : 5000, 100) } : null, documentElement: { classList: { add() {} }, dataset: {}, scrollHeight: 5000 }, querySelector: selector => selector === '[data-stage]' ? stage : targets[selector] ?? null, querySelectorAll: selector => selector === '[data-tab]' ? tabs : workshop && selector === '[data-fx]' ? [item] : workshop && selector === '[data-depth]' ? [img] : [] };
+  const summary = { focused: 0, focus() { this.focused += 1; } };
+  const langs = { open: false, contains: node => node === summary, querySelector: () => summary };
+  const document = { hidden: false, addEventListener(name, fn) { docListeners[name] = fn; }, getElementById: id => id === 'modeles-locaux' ? { getBoundingClientRect: () => rect(stage.classList.value === 'stage--complete' ? 4268 : 5000, 100) } : null, documentElement: { classList: { add() {} }, dataset: {}, scrollHeight: 5000 }, querySelector: selector => selector === '[data-stage]' ? stage : selector === '.langs' ? langs : targets[selector] ?? null, querySelectorAll: selector => selector === '[data-tab]' ? tabs : workshop && selector === '[data-fx]' ? [item] : workshop && selector === '[data-depth]' ? [img] : [] };
   runInNewContext(source, { window, document, performance: { now: () => now }, requestAnimationFrame: fn => frames.push(fn), getComputedStyle: () => ({ top: '52px', scrollMarginTop: '124px' }), fetch: async () => ({ ok: false }) });
-  return { window, calls, tabs, frame, pin, stage, item, img, listeners, step(time, y) { now = time; window.scrollY = y; frames.shift()(time); } };
+  return { window, calls, tabs, frame, pin, stage, item, img, listeners, docListeners, langs, summary, step(time, y) { now = time; window.scrollY = y; frames.shift()(time); } };
 }
 
 test('le menu traverse la scène sans épinglage ni zoom et garde la destination', () => {
@@ -101,4 +103,18 @@ test('un lien direct vers les modèles reste aligné après la réduction de l�
   assert.equal(p.stage.classList.value, 'stage--complete');
   assert.equal(p.calls.at(-1).top, 4144);
   assert.equal(p.calls.at(-1).behavior, 'instant');
+});
+
+test('le menu des langues se referme au clic à côté et sur Échap, jamais sur lui-même', () => {
+  const p = page();
+  p.langs.open = true;
+  p.docListeners.click({ target: p.summary });
+  assert.equal(p.langs.open, true);
+  p.docListeners.click({ target: {} });
+  assert.equal(p.langs.open, false);
+
+  p.langs.open = true;
+  p.docListeners.keydown({ key: 'Escape' });
+  assert.equal(p.langs.open, false);
+  assert.equal(p.summary.focused, 1);
 });

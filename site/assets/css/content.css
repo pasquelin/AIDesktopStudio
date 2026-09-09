@@ -116,10 +116,11 @@
 /* =========================================================================
    Sélecteur de langue
 
-   Rendu par `site/build.mjs`, comme dans map3D et panels : un `<details>` natif,
-   qui se ferme sur Échap et sur un clic à côté sans une ligne de JavaScript. Le
-   BOUTON porte le code à deux lettres — seul format qui tienne dans la barre —,
-   et le menu qui s'ouvre porte les noms natifs, que le lecteur cherche des yeux.
+   Rendu par `site/build.mjs`, comme dans map3D et panels : un `<details>` natif. Le
+   navigateur ne le referme ni sur Échap ni au clic à côté — il ne rend ce service qu'à
+   un popover —, donc `main.js` s'en charge. Le BOUTON porte le code à deux lettres —
+   seul format qui tienne dans la barre —, et le menu qui s'ouvre porte les noms natifs,
+   que le lecteur cherche des yeux.
 
    Tout est en propriétés logiques : en arabe la page entière se retourne, et le
    menu doit s'ouvrir du bon côté sans une règle de plus.
