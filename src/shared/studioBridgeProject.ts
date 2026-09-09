@@ -4,7 +4,7 @@ import type { FolderEntry } from './domain/folder'
 import type { FolderRole, RoleFolders } from './domain/folderRole'
 import type { Project, RescanState } from './domain/project'
 import type { ContextCard, ContextState } from './domain/projectContext'
-import type { ProjectBinned, Unsubscribe } from './ipcEvents'
+import type { ProjectBinned, ProjectMade, Unsubscribe } from './ipcEvents'
 import type { FolderExportRequest } from './ipcExports'
 import type { InputMap } from './domain/inputMap'
 import type { AnimationGraph } from './domain/animationGraph'
@@ -33,8 +33,12 @@ export type StudioBridgeProject = {
      * is already a project is OPENED, never written over. One sitting inside another project is
      * refused. One holding files of its own asks the user first, and `null` is their "no" — a
      * cancelled gesture, not a failure, so nothing is journalled and nothing changes.
+     *
+     * 🛑 `made` tells the first case from the others: a window that reads the project alone acts
+     * as though it had a NEW one, and the studio wrote the assistant of the whole application for
+     * a switch that never happened.
      */
-    create: (path: string) => Promise<Project | null>
+    create: (path: string) => Promise<ProjectMade | null>
     open: (path: string) => Promise<Project>
     current: () => Promise<Project | null>
     /**

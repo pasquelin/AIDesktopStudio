@@ -1,5 +1,6 @@
 import type { ActionOutcome, AssistantCall } from './domain/assistant'
 import type { DocumentKind } from './domain/document'
+import type { Project } from './domain/project'
 import type {
   DisplayMode,
   ExportFormat,
@@ -133,6 +134,15 @@ export type SkyboxExportCommand =
  * can only ever agree is a second field that can one day disagree.
  */
 export type McpState = { port: number | null }
+
+/**
+ * What `project.create` did with the folder it was handed.
+ *
+ * 🛑 `made` is false for a folder that WAS already a project: the channel opens it rather than
+ * writing over it, so nothing was created and nothing switched away from — which is what the
+ * window has to know before it acts as though a new project exists.
+ */
+export type ProjectMade = { project: Project; made: boolean }
 
 /** How binning a project folder ended — see `project.trash`. */
 export type ProjectBinned = 'trashed' | 'missing' | 'not-a-project'

@@ -89,9 +89,11 @@ export function registerProjectHandlers({
     try {
       const named = parseProjectTitle(projectName(root))
       const verdict = await project.inspect(root)
-      if (verdict === 'project') return await project.open(root)
+      // Said rather than left to be guessed: a folder that IS a project is opened, and a window
+      // reading the project alone cannot tell that from a project it has just made.
+      if (verdict === 'project') return { project: await project.open(root), made: false }
       if (verdict === 'occupied' && !(await askUseOccupiedFolder(askUser, named))) return null
-      return await project.create(root)
+      return { project: await project.create(root), made: true }
     } catch (error) {
       record({
         level: 'error',
