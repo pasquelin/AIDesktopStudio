@@ -14,11 +14,13 @@ import { useAiModels } from '@/stores/aiModels'
 
 import userEvent from '@testing-library/user-event'
 
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type { FieldDescriptor, ModelDescriptor } from '@shared/domain/model'
+import type { FieldDescriptor, ModelDescriptor, ModelSummary } from '@shared/domain/model'
 
 import { withQueries } from '@/features/shell/components/query-fixtures'
+
+import { EMPTY_AI_OVERVIEW } from '@/services/fakeAiOverview'
 
 import { installFakeBridge } from '@/services/fakeBridge'
 
@@ -82,6 +84,20 @@ export function descriptor(
 
 export function renderPanel() {
   return render(withQueries(<Generator />))
+}
+
+/** The model the overview below arms, as the catalogue answers it — installed, so it is pickable. */
+const ARMED: ModelSummary = {
+  id: 'ssd-1b',
+  name: 'SSD-1B',
+  family: 'image',
+  runsOn: LOCAL_RUNTIME,
+  source: 'scenario',
+  origin: 'official',
+  featured: false,
+  capabilities: ['txt2img'],
+  tags: [],
+  installed: true,
 }
 
 export const PROJECT = {
@@ -172,6 +188,31 @@ describe('the generator on this machine', () => {
     await userEvent.click(await screen.findByText('Modèle'))
 
     expect(screen.queryByPlaceholderText(/Chercher un modèle/i)).toBeNull()
+  })
+
+  /**
+   * The overview above holds this employment at the APPLICATION with a project open, which is
+   * exactly where a pick used to be lost: it was written into the project and never seen again.
+   */
+  it('writes a pick from the panel where the choice in force lives, not into the open project', async () => {
+    const choose = vi.fn(() => Promise.resolve(EMPTY_AI_OVERVIEW))
+    installFakeBridge({
+      provider: {
+        describeModel: (modelId: string) =>
+          DESCRIPTORS[modelId]
+            ? Promise.resolve(DESCRIPTORS[modelId])
+            : Promise.reject(new Error('no model')),
+        // The picker lists what the catalogue answers, and the row is what carries the click.
+        searchModels: () => Promise.resolve({ items: [ARMED], cursor: null }),
+      },
+      ai: { choose },
+    })
+    renderPanel()
+
+    await userEvent.click(await screen.findByRole('button', { name: /SSD-1B/ }))
+    await userEvent.click(await screen.findByRole('menuitem', { name: /SSD-1B/ }))
+
+    expect(choose).toHaveBeenCalledWith(aiRoleId('image', 'txt2img'), expect.anything(), 'app')
   })
 
   /**

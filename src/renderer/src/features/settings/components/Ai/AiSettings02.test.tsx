@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { AiOverview, ModelCandidate, RoleRow } from '@shared/domain/aiOverview'
 import { aiOverview, roleRow } from '@shared/domain/aiOverview-fixtures'
-import { aiRoleId, DICTATION_ROLE } from '@shared/domain/aiRole'
+import { aiRoleId, ASSISTANT_ROLE, DICTATION_ROLE } from '@shared/domain/aiRole'
 import { GIBI, localModel } from '@shared/domain/localModel-fixtures'
 import type { ModelFamily } from '@shared/domain/model'
 import { installFakeBridge } from '@/services/fakeBridge'
@@ -246,5 +246,28 @@ describe('AiSettings', () => {
     show(overview({ projectPath: '/work/here' }))
 
     expect(screen.getByText(/Ces choix valent pour/)).toBeInTheDocument()
+  })
+
+  /**
+   * Read from the rows this pane draws, never from the whole overview: one project-scoped line
+   * elsewhere — the assistant's, typically — opened every family screen on « the project », so a
+   * picture model chosen there followed a project nobody had asked that of.
+   */
+  it('opens on the side the employments it shows were chosen on', () => {
+    show(
+      aiOverview({
+        projectPath: '/work/here',
+        roles: [
+          roleRow({ role: aiRoleId('image', 'txt2img') }),
+          roleRow({
+            role: ASSISTANT_ROLE,
+            chosen: { app: null, project: { kind: 'cloud', providerId: 'deepseek' } },
+          }),
+        ],
+      }),
+      'image',
+    )
+
+    expect(screen.getByLabelText(/Ces choix valent pour/)).toHaveValue('app')
   })
 })

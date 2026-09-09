@@ -98,6 +98,23 @@ export function writeScopeFor(
 }
 
 /**
+ * The same answer for a caller holding the whole overview rather than one row — a panel that
+ * only learns the employment when a tile is clicked.
+ *
+ * ANGLE MORT: a role the overview does not carry answers `app`, and absent is not the same as
+ * unoverridden — `aiOverviewOf` drops any role with neither candidate nor account-backed cloud,
+ * so a project choice for such a role survives this answer and keeps winning, silently.
+ */
+export function scopeForRole(
+  roles: readonly RoleRow[] | undefined,
+  role: AiRoleId,
+  projectPath: string | null,
+): ChoiceScope {
+  const row = roles?.find(one => one.role === role)
+  return row === undefined ? 'app' : writeScopeFor(row, projectPath)
+}
+
+/**
  * Whether a candidate may be OFFERED for its role: on the disk, and not refused by the machine.
  * Installed first rather than best-fitting — a model nobody downloaded answers nothing.
  */

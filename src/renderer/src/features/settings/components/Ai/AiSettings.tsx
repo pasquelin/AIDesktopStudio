@@ -61,11 +61,14 @@ function installFailureKey(reason: InstallRefusal['reason']): string {
   }
 }
 
-/** Where the choices that apply were written, so reopening the screen lands on that side. */
-function scopeOf(overview: AiOverview): ChoiceScope {
-  return overview.roles.some(row => writeScopeFor(row, overview.projectPath) === 'project')
-    ? 'project'
-    : 'app'
+/**
+ * Where the choices SHOWN here were written, so reopening the screen lands on that side.
+ *
+ * The rows of this pane and not every role: reading the whole overview let one project-scoped
+ * line elsewhere — the assistant's, typically — flip a family screen nobody had set that way.
+ */
+function scopeOf(rows: readonly RoleRow[], projectPath: string | null): ChoiceScope {
+  return rows.some(row => writeScopeFor(row, projectPath) === 'project') ? 'project' : 'app'
 }
 
 function rowsOf(roles: readonly RoleRow[], family: ModelFamily | undefined): readonly RoleRow[] {
@@ -112,7 +115,8 @@ export function AiSettings({ family }: AiSettingsProps) {
 
   // Never `project` with no project open: the select is gone then, and every click would be
   // refused by the main process without a word.
-  const writesTo = overview.projectPath === null ? 'app' : (scope ?? scopeOf(overview))
+  const writesTo =
+    overview.projectPath === null ? 'app' : (scope ?? scopeOf(rows, overview.projectPath))
   // Announced to every row rather than derived per row: the disk is taken, which is true of the
   // whole screen.
   const busy = aiDiskBusy(overview)

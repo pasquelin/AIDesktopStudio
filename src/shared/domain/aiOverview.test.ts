@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import { writeScopeFor } from './aiOverview'
+import { scopeForRole, writeScopeFor } from './aiOverview'
 import type { RoleRow } from './aiOverview'
+import { roleRow } from './aiOverview-fixtures'
+import { ASSISTANT_ROLE, DICTATION_ROLE } from './aiRole'
 
 const chosen = (project: RoleRow['chosen']['project']): Pick<RoleRow, 'chosen'> => ({
   chosen: { app: null, project },
@@ -17,5 +19,16 @@ describe('writeScopeFor', () => {
     expect(writeScopeFor(chosen({ kind: 'cloud', providerId: 'deepseek' }), '/projects/one')).toBe(
       'project',
     )
+  })
+
+  // The panels reach it through the whole overview: the employment is only known at the click.
+  it('answers for a role the overview does not carry', () => {
+    const row = roleRow({
+      role: DICTATION_ROLE,
+      chosen: { app: null, project: { kind: 'cloud', providerId: 'deepseek' } },
+    })
+
+    expect(scopeForRole([row], DICTATION_ROLE, '/projects/one')).toBe('project')
+    expect(scopeForRole([row], ASSISTANT_ROLE, '/projects/one')).toBe('app')
   })
 })

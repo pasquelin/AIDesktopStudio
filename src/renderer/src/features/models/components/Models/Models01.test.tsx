@@ -9,8 +9,12 @@ import {
   type ModelQuery,
   type ModelSummary,
 } from '@shared/domain/model'
+import { aiOverview, roleRow } from '@shared/domain/aiOverview-fixtures'
+import { aiRoleId } from '@shared/domain/aiRole'
 import { withQueries } from '@/features/shell/components/query-fixtures'
+import { EMPTY_AI_OVERVIEW } from '@/services/fakeAiOverview'
 import { installFakeBridge } from '@/services/fakeBridge'
+import { useAiModels } from '@/stores/aiModels'
 import { useLayouts } from '@/stores/layouts'
 import { useModels } from '@/stores/models'
 import { useSettings } from '@/stores/settings'
@@ -214,6 +218,29 @@ describe('Models panel', () => {
     renderPanel()
 
     await waitFor(() => expect(screen.getAllByText('Model flux')).toHaveLength(1))
+  })
+
+  /**
+   * A pick made while a project is open used to be written INTO that project, and vanished with
+   * it. Only a project already overriding the employment keeps the choice — `writeScopeFor`.
+   */
+  it('writes a pick from the browser where the choice in force lives, not into the open project', async () => {
+    const choose = vi.fn(() => Promise.resolve(EMPTY_AI_OVERVIEW))
+    installFakeBridge({
+      provider: { searchModels: () => Promise.resolve({ items: [model('flux')], cursor: null }) },
+      ai: { choose },
+    })
+    useAiModels.setState({
+      overview: aiOverview({
+        projectPath: '/work/here',
+        roles: [roleRow({ role: aiRoleId('image', 'txt2img') })],
+      }),
+    })
+
+    renderPanel()
+    await userEvent.click(await screen.findByText('Model flux'))
+
+    expect(choose).toHaveBeenCalledWith(aiRoleId('image', 'txt2img'), expect.anything(), 'app')
   })
 
   /**
