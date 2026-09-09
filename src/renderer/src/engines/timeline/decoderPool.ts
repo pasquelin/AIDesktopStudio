@@ -12,6 +12,11 @@ export type VideoSampleLike = {
 }
 
 export type SinkLike = {
+  /**
+   * The frame under this second. A sequential sink OWNS what it hands back — closing the sample
+   * is a no-op there, and the frame is only good until the next ask on that sink. Take the
+   * `VideoFrame` out before asking again; a still hands back one that outlives every ask.
+   */
   getSample: (seconds: number) => Promise<VideoSampleLike | null>
   close: () => void
   /**

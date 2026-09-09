@@ -13,7 +13,7 @@ import {
 } from './TimelineEngine'
 import { clipFixture, sequenceWith, settled, trackFixture } from './timeline-fixtures'
 import type { SoundCue, SoundPort } from './soundSchedule'
-import type { Clip, SequenceState } from './timelineState'
+import type { Clip, SequenceState, Us } from './timelineState'
 
 const clip = (id: string, start: number, duration: number, inPoint = 0): Clip =>
   clipFixture(id, start, duration, { inPoint })
@@ -243,6 +243,37 @@ describe('driving the sound', () => {
     await settled()
 
     expect(loaded).toEqual(['asset-far'])
+    engine.dispose()
+  })
+
+  /**
+   * The head moves without the tracks changing, and the monitor then seeks without applying:
+   * read from the applied state, the transport started wherever the head was when a clip was
+   * last touched — a play button that ignored the head the user had just dragged.
+   */
+  it('starts the transport where the head was last seeked, not where it was last applied', async () => {
+    const { port } = soundPort()
+    const reported: Us[] = []
+    const engine = new TimelineEngine({
+      openSink: () => Promise.reject(new Error('no decoder in a test')),
+      sound: port,
+      maxDecoders: 1,
+      maxPictures: 1,
+      owner: 'document',
+      audioTime: () => elapsed,
+      onTime: time => reported.push(time),
+    })
+    elapsed = 0
+
+    engine.apply({ ...audioSequence([clipFixture('a', 0, 4_000_000)]), playhead: 1_000_000 })
+    await engine.seek(0)
+
+    reported.length = 0
+    engine.play()
+    frames.shift()?.()
+    await settled()
+
+    expect(reported[0]).toBe(0)
     engine.dispose()
   })
 
