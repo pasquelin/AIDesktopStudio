@@ -13,7 +13,7 @@ import { revealChat } from '@/features/assistant/components/Assistant/Toast/reve
 import { applyWorkspaceMove } from '@/helpers/applyWorkspaceMove'
 import { getBridge } from '@/services/bridge'
 import { commandScopeIsArmed, publishCommand } from '@/services/commandBus'
-import { reportFailure } from '@/services/diagnostics'
+import { reportFailure, traceFailure } from '@/services/diagnostics'
 import { useDictation } from '@/stores/dictation'
 import { useDocuments } from '@/stores/documents'
 import { toolSurface, useLayouts } from '@/stores/layouts'
@@ -27,18 +27,42 @@ import { panelsStore } from '@/stores/panels'
  * `nothingToDo` is told apart from `noSurface` because a caller reads them differently: a space
  * already at the end of the bar is not a studio showing the wrong thing.
  */
-export type CommandRouting = 'ran' | 'noSurface' | 'nothingToDo' | 'noBridge'
+export type CommandRouting = 'ran' | 'noSurface' | 'nothingToDo' | 'noBridge' | 'failed'
 
 /** `ran`, with what the surface CREATED when the command made something — see `CommandAnswer`. */
 export type RoutedCommand = CommandRouting | Record<string, unknown>
 
 /** Runs it through the bridge, or says the window has none — a mirror, a test with no preload. */
-function through(run: (bridge: StudioBridge) => void): CommandRouting {
+async function through(
+  command: CommandId,
+  run: (bridge: StudioBridge) => Promise<unknown>,
+): Promise<CommandRouting> {
   const bridge = getBridge()
   if (!bridge) return 'noBridge'
 
-  run(bridge)
-  return 'ran'
+  // Traced rather than journalled: these cross to the main process and throw their answer away,
+  // which is the one case `shell.dropped` names — and no scope of the journal fits a command.
+  return await ranOrFailed(run(bridge), error => traceFailure('shell.dropped', command, error))
+}
+
+/**
+ * Awaited, and answered on.
+ *
+ * 🛑 Every one of these used to be a `void`, so `ran` meant "it was started": a ⌘S that threw was
+ * announced as done with one line in the journal nobody reads, and a client reading the tabs back
+ * still saw the document modified. What is awaited here is what the caller is told about.
+ */
+async function ranOrFailed(
+  work: Promise<unknown>,
+  report: (error: unknown) => void,
+): Promise<CommandRouting> {
+  try {
+    await work
+    return 'ran'
+  } catch (error) {
+    report(error)
+    return 'failed'
+  }
 }
 
 /** The space the bar would move: the one in front, since a command names no other. */
@@ -52,9 +76,9 @@ function moveActiveSpace(move: 'left' | 'right'): CommandRouting {
  * NOT `setHeld`: outside push-to-talk that one acts on the press alone, so a release asked for
  * from here did nothing at all while the caller was told it ran.
  */
-function toggleDictation(): CommandRouting {
+async function toggleDictation(): Promise<CommandRouting> {
   const dictation = useDictation.getState()
-  void (dictation.state === 'listening' ? dictation.stop() : dictation.start())
+  await (dictation.state === 'listening' ? dictation.stop() : dictation.start())
   return 'ran'
 }
 
@@ -74,7 +98,7 @@ function runProjectCommand(command: CommandId): CommandRouting | null {
   return null
 }
 
-function runDocumentCommand(command: CommandId): CommandRouting | null {
+async function runDocumentCommand(command: CommandId): Promise<CommandRouting | null> {
   if (command === 'document.close') {
     const tabId = closableTabId()
     if (tabId === null) return 'noSurface'
@@ -91,15 +115,15 @@ function runDocumentCommand(command: CommandId): CommandRouting | null {
   if (panelIsFileView(documentId)) {
     const save = fileViewSave(documentId)
     if (!save || command === 'document.saveAs') return 'noSurface'
-    void save().catch(error => reportFailure('document.save', documentId, error))
-    return 'ran'
+    return await ranOrFailed(save(), error => reportFailure('document.save', documentId, error))
   }
-  if (command === 'document.save') {
-    void saveDocument(documentId).catch(error => reportFailure('document.save', documentId, error))
-  } else {
-    void saveDocumentAs(documentId)
-  }
-  return 'ran'
+  // The `false` these answer stays `ran`: it says BOTH "nothing to write" and "the person said no
+  // to the overwrite question", and calling either one a failure would send a client back to
+  // retry a save it was never owed. Only a throw is a failure.
+  return await ranOrFailed(
+    command === 'document.save' ? saveDocument(documentId) : saveDocumentAs(documentId),
+    error => reportFailure('document.save', documentId, error),
+  )
 }
 
 /**
@@ -107,10 +131,10 @@ function runDocumentCommand(command: CommandId): CommandRouting | null {
  *
  * `null` means "not one of mine", which is the answer for everything a document owns.
  */
-function runHere(command: CommandId): CommandRouting | null {
+async function runHere(command: CommandId): Promise<CommandRouting | null> {
   const project = runProjectCommand(command)
   if (project) return project
-  const document = runDocumentCommand(command)
+  const document = await runDocumentCommand(command)
   if (document) return document
   switch (command) {
     case 'layout.reset':
@@ -123,13 +147,13 @@ function runHere(command: CommandId): CommandRouting | null {
       return 'ran'
     // The section the window opens on when nothing named one — the same one its own row opens.
     case 'app.settings':
-      return through(bridge => void bridge.settings.open('general'))
+      return await through(command, bridge => bridge.settings.open('general'))
     case 'window.fullScreen':
-      return through(bridge => void bridge.window.toggleFullScreen())
+      return await through(command, bridge => bridge.window.toggleFullScreen())
     case 'app.assistant':
       return revealChat() ? 'ran' : 'noSurface'
     case 'app.dictate':
-      return toggleDictation()
+      return await toggleDictation()
     case 'spaces.moveLeft':
       return moveActiveSpace('left')
     case 'spaces.moveRight':
@@ -144,8 +168,8 @@ function runHere(command: CommandId): CommandRouting | null {
  * and a menu row does not: `publishCommand` is memoryless, so a command sent while nothing of
  * that scope is mounted vanishes in silence.
  */
-export function routeCommand(command: CommandId): RoutedCommand {
-  const here = runHere(command)
+export async function routeCommand(command: CommandId): Promise<RoutedCommand> {
+  const here = await runHere(command)
   if (here) return here
 
   // The lookup takes a string, so the type cannot know a `CommandId` is always declared. Anything

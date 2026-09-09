@@ -10,9 +10,10 @@ import { WORKSPACE_IDS } from '@shared/domain/workspace'
 import { englishText } from '@shared/i18n'
 import { failureMessageKey } from '@/services/failureMessage'
 import { showWorkspace } from '@/features/shell/components/dockviewApi'
+import { restoreDocument } from '@/features/shell/documentLoad'
 import { createDocumentIn } from '@/features/shell/newDocument'
 import { openGeneratorOn } from '@/helpers/openGenerator'
-import { revealTool } from '@/helpers/revealPanel'
+import { revealTool, toolIsOffered } from '@/helpers/revealPanel'
 import { routeCommand, type CommandRouting } from '@/services/commandRouter'
 import { useJobs } from '@/stores/jobs'
 import { useModels } from '@/stores/models'
@@ -20,7 +21,7 @@ import { useProject } from '@/stores/project'
 import { getBridge } from '@/services/bridge'
 import { withBridge, type ActionHandlers } from './actionHandler'
 import { boolOf, oneOf, recordOf, textOf } from './actionInputs'
-import { mountedGenerator } from './generatorBridge'
+import { generatorMounted, mountedGenerator } from './generatorBridge'
 
 /**
  * The eleven a spoken request needs.
@@ -44,6 +45,7 @@ const ROUTED: Record<CommandRouting, ActionOutcome> = {
     'that command has nothing left to do — what it names already stands the way it asks for',
   ),
   noBridge: refused('noBridge', 'this window is not connected to the studio process'),
+  failed: refused('failed', 'that command was carried out and it failed — the journal holds why'),
 }
 
 /**
@@ -52,7 +54,7 @@ const ROUTED: Record<CommandRouting, ActionOutcome> = {
  * Nothing is decided here: a second copy of that routing is what let ten commands be offered by
  * the tool schema and refused by the handler for as long as the two existed side by side.
  */
-function runCommand(input: Record<string, unknown>): ActionOutcome {
+async function runCommand(input: Record<string, unknown>): Promise<ActionOutcome> {
   const descriptor = commandDescriptor(textOf(input, 'command') ?? '')
   if (!descriptor)
     return refused(
@@ -67,7 +69,7 @@ function runCommand(input: Record<string, unknown>): ActionOutcome {
       `"${descriptor.id}" raises a dialog of the operating system, which nothing here can fill or read back — use the action that takes a path instead: file.open, project.open, document.open or document.export, depending on what was meant`,
     )
 
-  const routed = routeCommand(descriptor.id)
+  const routed = await routeCommand(descriptor.id)
   return typeof routed === 'string' ? ROUTED[routed] : { ok: true, data: routed }
 }
 
@@ -122,7 +124,7 @@ function armedGeneration(): ActionOutcome {
   return { ok: true, data: armed }
 }
 
-function prepareGenerator(input: Record<string, unknown>): ActionOutcome {
+async function prepareGenerator(input: Record<string, unknown>): Promise<ActionOutcome> {
   const family = oneOf(input, 'family', MODEL_FAMILIES)
   const parameters = recordOf(input, 'parameters')
   if (!family || !parameters)
@@ -137,7 +139,21 @@ function prepareGenerator(input: Record<string, unknown>): ActionOutcome {
     parameters,
     textOf(input, 'operation') ?? undefined,
   )
-  return { ok: true }
+  // The arming stands whatever the answer — as it did before there was one: it is what the panel
+  // reads when a space that carries it does come forward.
+  if (!toolIsOffered('generator'))
+    return refused(
+      'wrongSurface',
+      'the space in front carries no generation panel — workspace.open brings one forward that does',
+    )
+
+  // Awaited: the panel declares itself a render later, and the call after this one reads it.
+  return (await generatorMounted())
+    ? { ok: true }
+    : refused(
+        'generatorClosed',
+        'the generation panel was armed and then closed before it could be read — generator.prepare opens it again',
+      )
 }
 
 // Waits for the document: the creation puts a name field on screen, and answering before it is
@@ -148,8 +164,14 @@ async function openWorkspace(input: Record<string, unknown>): Promise<ActionOutc
     return refused('badInput', `"workspace" wants one of: ${WORKSPACE_IDS.join(', ')}`)
 
   if (!boolOf(input, 'createDocument')) {
-    showWorkspace(workspace)
-    return { ok: true }
+    // The tab brought forward may never have been mounted, so nothing has read its file. Waited
+    // for, so the call after this one reads restored content — but never refused on: the space IS
+    // in front, and a front tab whose file will not read would otherwise make it unreachable.
+    const front = showWorkspace(workspace)
+    if (!front) return { ok: true }
+
+    await restoreDocument(front)
+    return { ok: true, data: { documentId: front } }
   }
 
   // Asked here although the creation asks it too: from there it answers `null`, which is the

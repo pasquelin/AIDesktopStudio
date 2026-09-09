@@ -15,10 +15,11 @@ import { registerGenerator, type ArmedGeneration, type GeneratorBridge } from '.
 const showWorkspace = vi.hoisted(() => vi.fn())
 const createDocumentIn = vi.hoisted(() => vi.fn())
 const revealTool = vi.hoisted(() => vi.fn())
+const toolIsOffered = vi.hoisted(() => vi.fn(() => false))
 
 vi.mock('@/features/shell/components/dockviewApi', () => ({ showWorkspace }))
 vi.mock('@/features/shell/newDocument', () => ({ createDocumentIn }))
-vi.mock('@/helpers/revealPanel', () => ({ revealTool }))
+vi.mock('@/helpers/revealPanel', () => ({ revealTool, toolIsOffered }))
 
 function onImageDocument(): void {
   useLayouts.setState({ activeWorkspace: 'image', home: false })
@@ -259,6 +260,22 @@ describe('choosing and preparing a model', () => {
       prompt: 'a knight helmet',
     })
     expect(useModels.getState().selected[aiRoleId('3d', 'txt23d')]).toBe('model_y')
+  })
+
+  /**
+   * 🛑 The panel is what `generator.readArmedGeneration` and `generator.submit` read, and it is
+   * mounted a render after the store write that reveals it — so `prepare` answered `ok` and the
+   * very next call was refused `generatorClosed` about a panel that was in fact opening. A
+   * surface that carries no generation panel is told so instead of being left waiting for one.
+   */
+  it('refuses when the space in front carries no generation panel', async () => {
+    expect(
+      await runAction('generator.prepare', {
+        family: '3d',
+        modelId: 'model_y',
+        parameters: { prompt: 'a knight helmet' },
+      }),
+    ).toMatchObject({ ok: false, refusal: 'wrongSurface' })
   })
 
   /**

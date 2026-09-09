@@ -34,27 +34,36 @@ beforeEach(() => {
 })
 
 /** What the bus heard while one command was routed. */
-function published(command: CommandId): { verdict: unknown; heard: CommandId[] } {
+async function published(command: CommandId): Promise<{ verdict: unknown; heard: CommandId[] }> {
   const heard: CommandId[] = []
   const stop = subscribeToCommands(id => heard.push(id) > 0)
-  const verdict = routeCommand(command)
+  const verdict = await routeCommand(command)
   stop()
   return { verdict, heard }
 }
 
+/** The commands whose verdict answers a question — a filter that has to await each one. */
+async function filteredByVerdict(
+  descriptors: readonly { id: CommandId }[],
+  wanted: (verdict: unknown) => boolean,
+): Promise<{ id: CommandId }[]> {
+  const verdicts = await Promise.all(descriptors.map(descriptor => routeCommand(descriptor.id)))
+  return descriptors.filter((_descriptor, index) => wanted(verdicts[index]))
+}
+
 describe('a command that belongs to a surface', () => {
-  it('reaches the bus once something is mounted for its scope', () => {
+  it('reaches the bus once something is mounted for its scope', async () => {
     const disarm = armCommandScope('explorer')
 
-    expect(published('explorer.undo')).toEqual({ verdict: 'ran', heard: ['explorer.undo'] })
+    expect(await published('explorer.undo')).toEqual({ verdict: 'ran', heard: ['explorer.undo'] })
     disarm()
   })
 
-  it('hands back what the surface made, in place of a bare « ran »', () => {
+  it('hands back what the surface made, in place of a bare « ran »', async () => {
     const disarm = armCommandScope('scene')
     const stop = subscribeToCommands(() => ({ nodeIds: ['copy-1'] }))
 
-    expect(routeCommand('scene.duplicate')).toEqual({ nodeIds: ['copy-1'] })
+    expect(await routeCommand('scene.duplicate')).toEqual({ nodeIds: ['copy-1'] })
     stop()
     disarm()
   })
@@ -64,49 +73,74 @@ describe('a command that belongs to a surface', () => {
    * workspace in front, which can never carry either: ten commands the tool schema offers were
    * refused whatever the studio was showing, and no test said so.
    */
-  it('is refused, not dropped, while nothing is mounted for its scope', () => {
-    expect(published('explorer.undo')).toEqual({ verdict: 'noSurface', heard: [] })
+  it('is refused, not dropped, while nothing is mounted for its scope', async () => {
+    expect(await published('explorer.undo')).toEqual({ verdict: 'noSurface', heard: [] })
   })
 
-  it('does not reach a scope that is not its own', () => {
+  it('does not reach a scope that is not its own', async () => {
     const disarm = armCommandScope('canvas')
 
-    expect(published('scene.frame')).toEqual({ verdict: 'noSurface', heard: [] })
+    expect(await published('scene.frame')).toEqual({ verdict: 'noSurface', heard: [] })
     disarm()
   })
 })
 
 describe('a command the application performs itself', () => {
-  it('opens the settings window, and toggles full screen, through the main process', () => {
+  it('opens the settings window, and toggles full screen, through the main process', async () => {
     const open = vi.fn(async () => {})
     const toggleFullScreen = vi.fn(async () => {})
     installFakeBridge({ settings: { open }, window: { toggleFullScreen } })
 
-    expect(routeCommand('app.settings')).toBe('ran')
+    expect(await routeCommand('app.settings')).toBe('ran')
     expect(open).toHaveBeenCalledWith('general')
 
-    expect(routeCommand('window.fullScreen')).toBe('ran')
+    expect(await routeCommand('window.fullScreen')).toBe('ran')
     expect(toggleFullScreen).toHaveBeenCalled()
   })
 
-  it('picks a folder for a new project', () => {
-    expect(routeCommand('project.new')).toBe('ran')
+  it('picks a folder for a new project', async () => {
+    expect(await routeCommand('project.new')).toBe('ran')
     expect(createPicked).toHaveBeenCalled()
   })
 
-  it('imports a montage, which has no document to belong to', () => {
-    expect(routeCommand('montage.import')).toBe('ran')
+  it('imports a montage, which has no document to belong to', async () => {
+    expect(await routeCommand('montage.import')).toBe('ran')
     expect(importOtioz).toHaveBeenCalled()
   })
 
-  it('saves the tab in front, and refuses when there is none', () => {
-    expect(routeCommand('document.save')).toBe('noSurface')
+  it('saves the tab in front, and refuses when there is none', async () => {
+    expect(await routeCommand('document.save')).toBe('noSurface')
     expect(saveDocument).not.toHaveBeenCalled()
 
     useDocuments.setState({ activeId: 'doc-1' })
 
-    expect(routeCommand('document.save')).toBe('ran')
+    expect(await routeCommand('document.save')).toBe('ran')
     expect(saveDocument).toHaveBeenCalledWith('doc-1')
+  })
+
+  /**
+   * 🛑 `ran` used to mean "it was started": the save was fired into a `void`, so a client reading
+   * the tabs back still saw the document modified, and a write that threw was announced as done
+   * with one line in the journal nobody reads.
+   */
+  it('answers only once the save has landed', async () => {
+    useDocuments.setState({ activeId: 'doc-1' })
+    const landed: string[] = []
+    saveDocument.mockImplementation(async () => {
+      await Promise.resolve()
+      landed.push('written')
+      return true
+    })
+
+    expect(await routeCommand('document.save')).toBe('ran')
+    expect(landed).toEqual(['written'])
+  })
+
+  it('says so when the save threw rather than calling it done', async () => {
+    useDocuments.setState({ activeId: 'doc-1' })
+    saveDocument.mockRejectedValueOnce(new Error('the disk is full'))
+
+    expect(await routeCommand('document.save')).toBe('failed')
   })
 
   /**
@@ -119,52 +153,52 @@ describe('a command the application performs itself', () => {
     const forget = registerFileViewSave('file:Entrées/Clavier.input.json', wrote)
     useDocuments.setState({ activeId: 'file:Entrées/Clavier.input.json', documents: {} })
 
-    expect(routeCommand('document.save')).toBe('ran')
+    expect(await routeCommand('document.save')).toBe('ran')
     expect(saveDocument).not.toHaveBeenCalled()
     await vi.waitFor(() => expect(wrote).toHaveBeenCalled())
     forget()
   })
 
   /** It IS its path: there is nowhere else to write it, and the menu greys the row for that. */
-  it('refuses to save a file view as something else', () => {
+  it('refuses to save a file view as something else', async () => {
     const forget = registerFileViewSave('file:Entrées/Clavier.input.json', () =>
       Promise.resolve(true),
     )
     useDocuments.setState({ activeId: 'file:Entrées/Clavier.input.json', documents: {} })
 
-    expect(routeCommand('document.saveAs')).toBe('noSurface')
+    expect(await routeCommand('document.saveAs')).toBe('noSurface')
     expect(saveDocumentAs).not.toHaveBeenCalled()
     forget()
   })
 
-  it('closes the tab in front, and refuses when there is none', () => {
-    expect(routeCommand('document.close')).toBe('noSurface')
+  it('closes the tab in front, and refuses when there is none', async () => {
+    expect(await routeCommand('document.close')).toBe('noSurface')
     expect(closeDocument).not.toHaveBeenCalled()
 
     installDocument('doc-1', '3d')
 
-    expect(routeCommand('document.close')).toBe('ran')
+    expect(await routeCommand('document.close')).toBe('ran')
     expect(closeDocument).toHaveBeenCalledWith('doc-1')
   })
 
   // A file view is a tab in front that is not a document: `closeDocument` finds no io for it, so
   // it would ask nothing and drop the edits. ⌘W takes the same branch the tab's cross takes.
-  it('closes a file view through its own closer, not through the document one', () => {
+  it('closes a file view through its own closer, not through the document one', async () => {
     useDocuments.setState({ activeId: 'file:Entrées/Clavier.input.json', documents: {} })
 
-    expect(routeCommand('document.close')).toBe('ran')
+    expect(await routeCommand('document.close')).toBe('ran')
     expect(closeDocument).not.toHaveBeenCalled()
   })
 
   // ⌘W closes a tab or it closes nothing — the window is never the fallback, and the document
   // the home covers is one the reader is not even looking at.
-  it('leaves a tab sitting behind the home alone rather than closing it', () => {
+  it('leaves a tab sitting behind the home alone rather than closing it', async () => {
     const close = vi.fn()
     vi.stubGlobal('window', { close })
     useLayouts.setState({ home: true })
     installDocument('doc-1', '3d')
 
-    expect(routeCommand('document.close')).toBe('noSurface')
+    expect(await routeCommand('document.close')).toBe('noSurface')
     expect(closeDocument).not.toHaveBeenCalled()
     expect(close).not.toHaveBeenCalled()
     vi.unstubAllGlobals()
@@ -172,11 +206,11 @@ describe('a command the application performs itself', () => {
 })
 
 describe('the assistant', () => {
-  it('takes the caret where the conversation already stands', () => {
+  it('takes the caret where the conversation already stands', async () => {
     const focus = vi.fn()
     const drop = registerChatPanel({ focus })
 
-    expect(routeCommand('app.assistant')).toBe('ran')
+    expect(await routeCommand('app.assistant')).toBe('ran')
     expect(focus).toHaveBeenCalled()
     drop()
   })
@@ -185,8 +219,8 @@ describe('the assistant', () => {
    * 🛑 A settings window and a mirror hold neither host and no shell. Writing the docks store
    * there and answering "done" reported a gesture that could not have happened.
    */
-  it('answers noSurface in a window that stages no conversation', () => {
-    expect(routeCommand('app.assistant')).toBe('noSurface')
+  it('answers noSurface in a window that stages no conversation', async () => {
+    expect(await routeCommand('app.assistant')).toBe('noSurface')
   })
 })
 
@@ -195,28 +229,28 @@ describe('dictation, which the keyboard holds down', () => {
    * Started and stopped rather than HELD: outside push-to-talk `setHeld` acts on the press alone,
    * so the release asked for from here did nothing while the caller was told it ran.
    */
-  it('starts when nothing is listening and stops when something is', () => {
+  it('starts when nothing is listening and stops when something is', async () => {
     const start = vi.fn(() => Promise.resolve())
     const stop = vi.fn(() => Promise.resolve())
     useDictation.setState({ state: 'ready', start, stop })
 
-    expect(routeCommand('app.dictate')).toBe('ran')
+    expect(await routeCommand('app.dictate')).toBe('ran')
     expect(start).toHaveBeenCalled()
 
     useDictation.setState({ state: 'listening' })
-    routeCommand('app.dictate')
+    await routeCommand('app.dictate')
 
     expect(stop).toHaveBeenCalled()
   })
 })
 
 describe('moving a space along the bar', () => {
-  it('moves the one in front, and writes the new order', () => {
+  it('moves the one in front, and writes the new order', async () => {
     const write = vi.fn(() => Promise.resolve(DEFAULT_SETTINGS))
     installFakeBridge({ settings: { write } })
     useLayouts.setState({ activeWorkspace: 'video' })
 
-    expect(routeCommand('spaces.moveLeft')).toBe('ran')
+    expect(await routeCommand('spaces.moveLeft')).toBe('ran')
     expect(write).toHaveBeenCalledWith({
       workspaces: { order: ['video', 'image', '3d', 'code', 'audio', 'materials', 'skyboxes'] },
     })
@@ -224,10 +258,10 @@ describe('moving a space along the bar', () => {
 
   // Told apart from `noSurface`: the studio is showing exactly what the command names, and there
   // is simply nowhere left to move it.
-  it('refuses rather than pretending, at the end of the bar', () => {
+  it('refuses rather than pretending, at the end of the bar', async () => {
     useLayouts.setState({ activeWorkspace: 'image' })
 
-    expect(routeCommand('spaces.moveLeft')).toBe('nothingToDo')
+    expect(await routeCommand('spaces.moveLeft')).toBe('nothingToDo')
   })
 })
 
@@ -246,21 +280,24 @@ describe('the registry as a whole', () => {
    * fails on the next `global` command added without one. Arming those two scopes to make the
    * sweep below pass would have hidden exactly that.
    */
-  it('answers itself for every command no surface can take', () => {
+  it('answers itself for every command no surface can take', async () => {
     // `document.save` and `document.saveAs` want a tab, and the spaces one that can still move.
     useDocuments.setState({ activeId: 'doc-1' })
     useLayouts.setState({ activeWorkspace: 'video' })
     const drop = registerChatPanel({ focus: () => {} })
 
-    const unrouted = COMMAND_REGISTRY.filter(
-      descriptor => descriptor.scope === 'global' || descriptor.scope === 'spaces',
-    ).filter(descriptor => routeCommand(descriptor.id) === 'noSurface')
+    const unrouted = await filteredByVerdict(
+      COMMAND_REGISTRY.filter(
+        descriptor => descriptor.scope === 'global' || descriptor.scope === 'spaces',
+      ),
+      verdict => verdict === 'noSurface',
+    )
 
     expect(unrouted.map(descriptor => descriptor.id)).toEqual([])
     drop()
   })
 
-  it('leaves no command of a mounted surface that could not run', () => {
+  it('leaves no command of a mounted surface that could not run', async () => {
     const surfaceScopes = [
       ...new Set(
         COMMAND_REGISTRY.map(descriptor => descriptor.scope).filter(
@@ -273,9 +310,12 @@ describe('the registry as a whole', () => {
     // scope armed with nobody behind it answers `nothingToDo` — which is not what this holds.
     const stopListening = subscribeToCommands(() => true)
 
-    const stranded = COMMAND_REGISTRY.filter(descriptor =>
-      surfaceScopes.some(scope => scope === descriptor.scope),
-    ).filter(descriptor => routeCommand(descriptor.id) !== 'ran')
+    const stranded = await filteredByVerdict(
+      COMMAND_REGISTRY.filter(descriptor =>
+        surfaceScopes.some(scope => scope === descriptor.scope),
+      ),
+      verdict => verdict !== 'ran',
+    )
 
     stopListening()
 

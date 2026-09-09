@@ -6,7 +6,7 @@ import { meshNode } from '@/engines/scene/scene-fixtures'
 import { installFakeBridge } from '@/services/fakeBridge'
 import { useDocuments } from '@/stores/documents'
 import { useProject } from '@/stores/project'
-import { useScenes } from '@/stores/scenes'
+import { sceneOf, useScenes } from '@/stores/scenes'
 import {
   DOCUMENT_VERSION,
   type DocumentDescriptor,
@@ -219,6 +219,76 @@ describe('opening a document from outside the window', () => {
       ok: false,
       refusal: 'notFound',
     })
+  })
+
+  /**
+   * The same seam on the other door, and worse there: Dockview mounts a background tab's panel
+   * only when it comes forward, so a document open behind another has never read its file.
+   */
+  it('brings a tab forward with its content, not just its name', async () => {
+    installDisk()
+    await savePilotScene()
+    // The state a reopened project leaves behind a second tab: adopted, and never mounted.
+    useDocuments.setState({ documents: { [PILOT.id]: PILOT }, stored: [PILOT], activeId: null })
+    useScenes.getState().drop(PILOT.id)
+
+    expect(await runAction('document.activate', { documentId: PILOT.id })).toEqual({
+      ok: true,
+      data: { documentId: PILOT.id },
+    })
+
+    expect(await runAction('scene.state', {})).toMatchObject({
+      ok: true,
+      data: { nodes: [{ name: 'Pilot Cube' }] },
+    })
+  })
+
+  it('refuses to activate a tab whose file will not read', async () => {
+    installFakeBridge({
+      documents: {
+        list: () => Promise.resolve([PILOT]),
+        read: () => Promise.reject(new Error('gltf is truncated')),
+      },
+    })
+    useDocuments.setState({ documents: { [PILOT.id]: PILOT }, stored: [PILOT], activeId: null })
+
+    expect(await runAction('document.activate', { documentId: PILOT.id })).toMatchObject({
+      ok: false,
+      refusal: 'failed',
+      detail: expect.stringContaining('gltf is truncated'),
+    })
+  })
+
+  // The section comes forward with its front tab, which may never have been mounted either.
+  it('opens a space with the content of the tab it brings forward', async () => {
+    installDisk()
+    await savePilotScene()
+    useDocuments.setState({ documents: { [PILOT.id]: PILOT }, stored: [PILOT], activeId: PILOT.id })
+    useScenes.getState().drop(PILOT.id)
+
+    expect(await runAction('workspace.open', { workspace: '3d' })).toEqual({
+      ok: true,
+      data: { documentId: PILOT.id },
+    })
+    expect(sceneOf(useScenes.getState(), PILOT.id).nodes.map(node => node.name)).toContain(
+      'Pilot Cube',
+    )
+  })
+
+  // `file.open` reaches the same tab by its path, and answered `opened: 'document'` before the
+  // read — the handler already re-reads the folder for the same reason, and stopped one step short.
+  it('opens a document file with its content', async () => {
+    installDisk()
+    await savePilotScene()
+    reopenProject()
+
+    expect(await runAction('file.open', { path: PILOT.path })).toEqual({
+      ok: true,
+      data: { opened: 'document' },
+    })
+    expect(sceneOf(useScenes.getState(), PILOT.id).nodes.map(node => node.name)).toContain(
+      'Pilot Cube',
+    )
   })
 
   it('reads the file once for two opens racing on it', async () => {

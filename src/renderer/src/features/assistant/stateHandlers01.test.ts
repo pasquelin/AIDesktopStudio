@@ -226,7 +226,10 @@ describe('putting a document in front', () => {
   it('activates one that is open', async () => {
     installDocuments({ 'doc-a': '3d', 'doc-b': 'image' }, 'doc-a')
 
-    expect(await runAction('document.activate', { documentId: 'doc-b' })).toEqual({ ok: true })
+    expect(await runAction('document.activate', { documentId: 'doc-b' })).toEqual({
+      ok: true,
+      data: { documentId: 'doc-b' },
+    })
     expect(useDocuments.getState().activeId).toBe('doc-b')
   })
 
@@ -250,6 +253,7 @@ describe('putting a document in front', () => {
 
     expect(await runAction('document.activate', { documentId: 'Planche du château' })).toEqual({
       ok: true,
+      data: { documentId: 'doc-b' },
     })
     expect(useDocuments.getState().activeId).toBe('doc-b')
   })

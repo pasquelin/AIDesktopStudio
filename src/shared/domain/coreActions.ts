@@ -226,6 +226,9 @@ export const CORE_ACTIONS: readonly AssistantAction[] = [
     ],
   }),
   action({
+    // Answers once the panel is MOUNTED and readable, and its chunk is loaded on first open —
+    // `generator.readArmedGeneration` right after used to be refused on a panel that was opening.
+    awaitsItsEffect: true,
     name: 'generator.prepare',
     titleKey: 'assistant.actions.generatorPrepare.title',
     descriptionKey: 'assistant.actions.generatorPrepare.description',

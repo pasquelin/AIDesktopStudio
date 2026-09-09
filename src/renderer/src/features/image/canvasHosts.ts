@@ -1,6 +1,8 @@
 import type { LayerPixels } from '@/engines/canvas/CanvasEngine'
-import type { Rect } from '@/engines/canvas/canvasState'
+import type { CanvasState, Rect } from '@/engines/canvas/canvasState'
+import { canvasOf, useCanvases } from '@/stores/canvases'
 import type { Point } from '@/engines/core/geometry'
+import { createAppliedGate } from '@/helpers/appliedGate'
 import { createHostRegistry } from '@/helpers/hostRegistry'
 
 /** The engine, seen from the disk: it hands its pixels over, and takes them back. */
@@ -55,3 +57,15 @@ export const holdCanvas = registry.hold
 
 /** `null` when no image document by that id is open — every other kind, and a closed tab. */
 export const canvasHost = registry.get
+
+/** What the mounted engine has been handed, against the store — see `createAppliedGate`. */
+const canvasApplied = createAppliedGate<CanvasState>(
+  documentId => registry.get(documentId) !== null,
+  documentId => canvasOf(useCanvases.getState(), documentId),
+)
+
+export const noteCanvasApplied = canvasApplied.note
+export const canvasHostSettled = canvasApplied.settled
+
+/** Told when the engine goes: nothing will apply now, and anyone waiting on it is let go. */
+export const forgetCanvasApplied = canvasApplied.forget

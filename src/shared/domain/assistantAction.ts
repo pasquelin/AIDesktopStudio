@@ -117,7 +117,7 @@ export type AssistantAction = {
    * questions included. Read by `asking.ts`, which owes it the long wait, and by `tools.ts`.
    */
   runsOthers?: true
-  loadsAFile?: true // Waits on a file off the disk; `asking.ts` owes it more than a read's wait.
+  awaitsItsEffect?: true // Answers once the effect landed; `asking.ts` owes it time.
   reach: ActionReach
   fields: readonly ActionField[]
   requires?: readonly ActionResource[]
