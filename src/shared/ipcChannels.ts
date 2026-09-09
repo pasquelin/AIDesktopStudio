@@ -3,6 +3,7 @@ import type { Channels } from './channels'
 export const CHANNELS: Channels = {
   settingsRead: 'settings:read',
   settingsWrite: 'settings:write',
+  settingsForgetProject: 'settings:forget-project',
   settingsAuthState: 'settings:auth-state',
   settingsOpen: 'settings:open',
   mcpState: 'mcp:state',

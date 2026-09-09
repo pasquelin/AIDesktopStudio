@@ -6,11 +6,11 @@ import { DEFAULT_ROLE_PATHS } from '@shared/domain/folderRole'
 import { noGame } from '@shared/domain/game'
 import { IDLE_RESCAN } from '@shared/domain/project'
 import { noContext } from '@shared/domain/projectContext'
-import { DEFAULT_SETTINGS } from '@shared/domain/settings'
 import { DEFAULT_LANGUAGE } from '@shared/i18n/languages'
 import type { LogEntry, StudioBridge, TraceEntry } from '@shared/ipc'
 import { EMPTY_AI_OVERVIEW } from './fakeAiOverview'
 import { fakeBridgeGit } from './fakeBridgeGit'
+import { fakeBridgeSettings } from './fakeBridgeSettings'
 import { fakeBridgeMissions } from './fakeBridgeMissions'
 import { fakeBridgeUpdates } from './fakeBridgeUpdates'
 const fakeRetargetWindow = (overrides: BridgeOverrides): StudioBridge['retargetWindow'] => ({
@@ -24,18 +24,6 @@ const nothingMoved = (): Promise<FileOutcome> =>
 export type BridgeOverrides = {
   [K in keyof StudioBridge]?: Partial<StudioBridge[K]>
 }
-const fakeSettings = (overrides: BridgeOverrides): StudioBridge['settings'] => ({
-  read: () => Promise.resolve(DEFAULT_SETTINGS),
-  write: () => Promise.resolve(DEFAULT_SETTINGS),
-  authState: () => Promise.resolve({ authenticated: false, reason: 'missing' }),
-  open: () => Promise.resolve(),
-  runAction: () => Promise.resolve(),
-  setPending: () => Promise.resolve(),
-  onChange: noSubscription,
-  onSection: noSubscription,
-  ...overrides.settings,
-})
-
 const fakeMemory = (overrides: BridgeOverrides): StudioBridge['memory'] => ({
   list: () => Promise.resolve([]),
   recall: () => Promise.resolve([]),
@@ -437,7 +425,7 @@ const fakeSmartSelection = (overrides: BridgeOverrides): StudioBridge['smartSele
 
 function fakeBridge(overrides: BridgeOverrides): StudioBridge {
   return {
-    settings: fakeSettings(overrides),
+    settings: fakeBridgeSettings(overrides.settings),
     memory: fakeMemory(overrides),
     mcp: fakeMcp(overrides),
     accounts: fakeAccounts(overrides),

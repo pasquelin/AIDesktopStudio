@@ -5,11 +5,8 @@ import {
   projectPickerFolder,
   movedProjectKey,
   movedRecentProject,
-  withoutProjectDocuments,
-  withoutRecentProject,
   type Project,
 } from '@shared/domain/project'
-import type { Settings } from '@shared/domain/settings'
 import type { ProjectBinned } from '@shared/ipc'
 import type { StudioBridge } from '@shared/ipc'
 import {
@@ -20,7 +17,6 @@ import {
 import { readProjectScripts } from './code'
 import { closeOrphanTabs } from '@/features/shell/orphanTabs'
 import { getBridge } from '@/services/bridge'
-import { withoutKey } from '@/helpers/objects'
 import { forgetReportedFailures, reportFailure } from '@/services/diagnostics'
 import { useSettings } from './settings'
 import { useActivity } from './activity'
@@ -217,20 +213,16 @@ async function pickedProject(
 }
 
 /**
- * The shelf without one folder, and the startup pointer with it when it named that one.
+ * Drops what is keyed on a folder, THROUGH the main process — see `settingsWithoutProject`.
  *
- * 🛑 Shared by `forget` and `trash`: `startup: 'lastProject'` is the default, so a removal that
- * left the pointer behind was undone by the next launch — the project reopened, `withRecentProject`
- * put the row back at the top, and nothing anywhere said why.
+ * 🛑 The path travels, never the new lists: composed here they would be composed from this
+ * window's replica, and everything the main process wrote since the last broadcast would go with
+ * them. Measured 2026-09-09 — two trashings straight after an open dropped the OPEN project off
+ * the shelf, `lastProject` cleared, and reopening the project it still showed repaired nothing.
  */
-function shelfWithout(storage: Settings['storage'], path: string): Partial<Settings['storage']> {
-  return {
-    recentProjects: withoutRecentProject(storage.recentProjects, path),
-    // Its documents go with it: each row would otherwise reopen the project that was just
-    // dropped, which is the one thing forgetting it has to stop.
-    recentDocuments: withoutProjectDocuments(storage.recentDocuments, path),
-    ...(storage.lastProject === path ? { lastProject: undefined } : {}),
-  }
+async function forgotten(path: string, owned: boolean): Promise<void> {
+  const settings = await getBridge()?.settings.forgetProject(path, owned)
+  if (settings) useSettings.setState({ settings })
 }
 
 /**
@@ -361,9 +353,7 @@ const projectState: ProjectState = {
   },
 
   forget: async path => {
-    const { settings, write } = useSettings.getState()
-
-    await write({ storage: shelfWithout(settings.storage, path) })
+    await forgotten(path, false)
   },
 
   trash: async path => {
@@ -407,15 +397,8 @@ const projectState: ProjectState = {
      * silent adoption `storage.projectAccounts` was split out to prevent. The shelf ROW still
      * goes: it is a shortcut, and a failed opening already drops it.
      */
-    const { settings, write } = useSettings.getState()
     const trashed = binned === 'trashed'
-    await write({
-      storage: {
-        ...shelfWithout(settings.storage, path),
-        ...(trashed ? { projectAccounts: withoutKey(settings.storage.projectAccounts, path) } : {}),
-      },
-      ...(trashed ? { ai: { projectRoles: withoutKey(settings.ai.projectRoles, path) } } : {}),
-    })
+    await forgotten(path, trashed)
 
     return { ok: true, trashed }
   },

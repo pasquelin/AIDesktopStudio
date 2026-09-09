@@ -159,55 +159,31 @@ describe('dropping a project from the shelf', () => {
     }))
   })
 
-  it('writes the shelf back without the folder it was handed', async () => {
-    const write = vi.fn(() => Promise.resolve(useSettings.getState().settings))
-    installFakeBridge({ settings: { write } })
-
-    await useProject.getState().forget(SUMMER.path)
-
-    expect(write).toHaveBeenCalledWith({
-      storage: { recentProjects: [WINTER], recentDocuments: [] },
-    })
-  })
-
   /**
-   * `startup: 'lastProject'` is the default, so a removal that left the pointer behind was undone
-   * by the next launch: the project reopened, `withRecentProject` put it back at the top, and
-   * nothing anywhere said why the row had returned.
+   * 🛑 The PATH travels, never the new lists: composed here they would be composed from this
+   * window's replica, and everything the main process wrote since the last broadcast would go
+   * with them — see `settingsWithoutProject`, which is what does the composing now.
    */
-  it('clears the startup pointer when it named the folder being dropped', async () => {
-    const write = vi.fn(() => Promise.resolve(useSettings.getState().settings))
-    useSettings.setState(state => ({
-      settings: {
-        ...state.settings,
-        storage: { ...state.settings.storage, lastProject: SUMMER.path },
-      },
-    }))
-    installFakeBridge({ settings: { write } })
+  it('hands the folder to the main process rather than a shelf of its own', async () => {
+    const forgetProject = vi.fn(() => Promise.resolve(useSettings.getState().settings))
+    installFakeBridge({ settings: { forgetProject } })
 
     await useProject.getState().forget(SUMMER.path)
 
-    expect(write).toHaveBeenCalledWith({
-      storage: { recentProjects: [WINTER], recentDocuments: [], lastProject: undefined },
-    })
+    expect(forgetProject).toHaveBeenCalledWith(SUMMER.path, false)
   })
 
-  // …and leaves it alone otherwise: dropping one project must not stop another from reopening.
-  it('leaves the startup pointer alone when it names another project', async () => {
-    const write = vi.fn(() => Promise.resolve(useSettings.getState().settings))
-    useSettings.setState(state => ({
-      settings: {
-        ...state.settings,
-        storage: { ...state.settings.storage, lastProject: WINTER.path },
-      },
-    }))
-    installFakeBridge({ settings: { write } })
+  // The answer is the whole of the settings: a replica left as it was would show the row again.
+  it('takes the settings the main process answered with', async () => {
+    const answered = {
+      ...useSettings.getState().settings,
+      storage: { ...useSettings.getState().settings.storage, recentProjects: [WINTER] },
+    }
+    installFakeBridge({ settings: { forgetProject: () => Promise.resolve(answered) } })
 
     await useProject.getState().forget(SUMMER.path)
 
-    expect(write).toHaveBeenCalledWith({
-      storage: { recentProjects: [WINTER], recentDocuments: [] },
-    })
+    expect(useSettings.getState().settings.storage.recentProjects).toEqual([WINTER])
   })
 
   // The row says "removes it from this list only". Nothing may reach the folder itself.
@@ -229,14 +205,12 @@ describe('dropping a project from the shelf', () => {
   // The same forgetting, reached from the other side: an opening can fail anywhere, and a list
   // that only forgets when the home asked it keeps offering a folder nothing can open.
   it('forgets a folder that will not open, wherever the click came from', async () => {
-    const write = vi.fn(() => Promise.resolve(useSettings.getState().settings))
-    installFakeBridge({ settings: { write } })
+    const forgetProject = vi.fn(() => Promise.resolve(useSettings.getState().settings))
+    installFakeBridge({ settings: { forgetProject } })
 
     await expect(useProject.getState().open(SUMMER.path)).resolves.toBe(false)
 
-    expect(write).toHaveBeenCalledWith({
-      storage: { recentProjects: [WINTER], recentDocuments: [] },
-    })
+    expect(forgetProject).toHaveBeenCalledWith(SUMMER.path, false)
   })
 })
 

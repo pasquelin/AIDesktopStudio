@@ -1,9 +1,11 @@
 import type { AccountsResult, AccountSummary } from '@shared/domain/account'
 import { cloudAuth } from '@shared/domain/aiCloud'
 import type { AuthState, SettingsSectionId } from '@shared/domain/settings'
+import { settingsWithoutProject } from '@shared/domain/settingsProject'
 import { CHANNELS, type McpState } from '@shared/ipc'
 import { handle } from '@main/ipc/handle'
 import type { CreditsReader } from '@main/provider/credits'
+import { parseProjectPath } from '@main/project/validation'
 import { AccountError } from './accounts'
 import type { AccountChange, SettingsStore } from './store'
 import type { SettingActionId } from '@shared/domain/settingsRegistry'
@@ -52,6 +54,12 @@ export function registerSettingsHandlers({
   // The channel is typed `PartialSettings`, but TypeScript is gone at runtime and the sender
   // is a renderer: what arrives here is `unknown` until zod says otherwise.
   handle(CHANNELS.settingsWrite, (_event, partial) => settings.write(parsePartialSettings(partial)))
+
+  // 🛑 Read HERE and written here: composing the new lists in a window meant composing them from
+  // a replica, and everything this process had written since the last broadcast went with them.
+  handle(CHANNELS.settingsForgetProject, (_event, path, owned) =>
+    settings.write(settingsWithoutProject(settings.read(), parseProjectPath(path), owned === true)),
+  )
 
   handle(CHANNELS.settingsAuthState, () => authState())
 
