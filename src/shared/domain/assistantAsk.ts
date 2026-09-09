@@ -7,13 +7,15 @@
  * it wrote the question in `say` and sent its calls in the same breath. Here it cannot be cut.
  *
  * `choices` may be empty, and that is the ordinary case rather than the edge: "what shall the
- * project be called" has no answers to press, and the person types it into the composer.
+ * project be called" has no answers to press, and the card opens a field for it — the same field
+ * a questionnaire gives each of its questions.
  */
 export type AssistantAsk = {
   /**
-   * 🛑 One is the ordinary case and stays the light one — a single question with no note is
-   * answered from the composer, as it always was. A list is a QUESTIONNAIRE, answered in its own
-   * card because one typed line cannot say which question it belongs to.
+   * 🛑 One question with answers to PRESS stays the light one — pressing settles it, and a line
+   * typed below names one of them. Anything else is answered in a card of its own: a list because
+   * one typed line cannot say which question it belongs to, and a question with nothing to press
+   * because a title is written in a field, as it is everywhere else in the studio.
    */
   questions: readonly AskedQuestion[]
 }
@@ -30,12 +32,18 @@ export type AskedQuestion = {
 }
 
 /**
- * 🛑 Whether the COMPOSER answers this ask, which is the light case and the ordinary one: ONE
- * question with no note, exactly as it was before there were several. Anything more is a form —
- * a line typed below says nothing about which question it belongs to.
+ * 🛑 Whether the COMPOSER answers this ask: ONE question, no note, and answers to PRESS — a line
+ * typed below then names one of them.
+ *
+ * 🛑 A lone question with NOTHING to press is a form now, and that is the whole point: « quel
+ * titre ? » used to print "answer below" and leave the person hunting for the composer, where
+ * naming a project, a document or a file has a field everywhere else in the studio.
  */
 export const answeredByComposer = (questions: readonly AskedQuestion[]): boolean =>
-  questions.length === 1 && questions[0]?.note !== true && questions[0]?.many !== true
+  questions.length === 1 &&
+  questions[0]?.note !== true &&
+  questions[0]?.many !== true &&
+  (questions[0]?.choices.length ?? 0) > 0
 
 /**
  * 🛑 What one card may hold. Beyond it a reply is REFUSED rather than trimmed: a model told its

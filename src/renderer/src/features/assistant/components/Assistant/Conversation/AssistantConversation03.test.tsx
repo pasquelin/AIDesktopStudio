@@ -72,15 +72,30 @@ const working = (round: number, stopping = false): void =>
   })
 
 describe('while the assistant is accepting input', () => {
-  // 🛑 The one exception to "a plan is running, the field is shut": a question with nothing to
-  // press can only be answered by typing, and a shut field left the chain parked.
-  it('keeps the field open under a question, and offers Send rather than Stop', () => {
+  // 🛑 The one exception to "a plan is running, the field is shut": one question whose answers are
+  // there to press is also answered by typing one of their names, and a shut field parked the chain.
+  it('keeps the field open under a question with answers to press, and offers Send rather than Stop', () => {
     working(1)
-    void useAssistant.getState().askChoice([{ question: 'Quel nom ?', choices: [] }])
+    void useAssistant.getState().askChoice([{ question: 'Lequel ?', choices: ['Bateau', 'Avion'] }])
     render(<AssistantConversation />)
 
     expect(screen.getByRole('textbox')).toBeEnabled()
     expect(screen.queryByRole('button', { name: /Arrêter/ })).not.toBeInTheDocument()
+    useAssistant.getState().choose(null)
+  })
+
+  /**
+   * 🛑 « Quel titre ? » has nothing to press, and it used to print "answer below" and leave the
+   * person hunting for the composer — where naming anything else in the studio has a field. The
+   * card carries its own now, so the composer shuts like it does under a questionnaire.
+   */
+  it('opens a field in the card when a lone question has nothing to press', () => {
+    working(1)
+    void useAssistant.getState().askChoice([{ question: 'Quel titre ?', choices: [] }])
+    render(<AssistantConversation />)
+
+    expect(screen.getByRole('textbox', { name: /Réponse/ })).toBeEnabled()
+    expect(screen.getByRole('button', { name: /Envoyer/ })).toBeInTheDocument()
     useAssistant.getState().choose(null)
   })
 
