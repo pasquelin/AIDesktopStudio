@@ -4,6 +4,7 @@ import {
   type ComponentProps,
   type FocusEventHandler,
   type KeyboardEventHandler,
+  type ReactNode,
   type TextareaHTMLAttributes,
 } from 'react'
 import { mdiChatOutline, mdiSend } from '@mdi/js'
@@ -53,7 +54,7 @@ type Props = {
   take: (sentence: string) => void
   setFieldElement: (element: HTMLTextAreaElement | null) => void
   draft: string
-  ghost?: { sentence: string; tail: string }
+  ghost?: { sentence: string; tail: string | undefined; accepts: boolean }
   keyLabel: (key: string) => string
   busy: boolean
   typing: boolean
@@ -149,7 +150,7 @@ export function AssistantConversationView(props: Props) {
             <GhostText
               ref={mirrorRef}
               typed={props.draft}
-              tail={tail}
+              tail={ghostPainted(props.ghost, props.keyLabel('Tab'))}
               metrics={CONVERSATION_FIELD_TYPE}
             />
             <textarea
@@ -159,7 +160,7 @@ export function AssistantConversationView(props: Props) {
               value={props.draft}
               {...suggestionAttributes(props)}
               placeholder={t('assistant.placeholder')}
-              {...HINT_TOP(t('assistant.completeHint', { accept: props.keyLabel('Tab') }))}
+              {...ghostHint(props, t)}
               disabled={props.busy && !props.typing}
               onChange={event => {
                 props.setDraft(event.target.value)
@@ -206,8 +207,51 @@ export function AssistantConversationView(props: Props) {
   )
 }
 
+/** The words themselves, which is what the mirror must be re-scrolled against when they change. */
 function ghostTail(ghost: Props['ghost']): string {
-  return ghost?.tail ?? ''
+  return ghost === undefined ? '' : (ghost.tail ?? ghost.sentence)
+}
+
+/**
+ * What is painted ahead of the caret: the grey words, and the key that writes them at their end —
+ * as Warp prints it, so the gesture is learnt from the field and not from a tooltip.
+ *
+ * 🛑 Composed HERE and not by the mirror: a sentence the draft does not open is not the end of
+ * the line but a replacement for it, and it stands off so it cannot be read as the next word.
+ * 🛑 The key is printed only where it WRITES: on a preview the field merely shows, Tab still
+ * leaves the composer, and a badge promising otherwise is the field lying about a keystroke.
+ */
+function ghostPainted(ghost: Props['ghost'], accept: string): ReactNode {
+  if (ghost === undefined) return null
+
+  return (
+    <>
+      <span className={cn('text-muted', ghost.tail === undefined && 'ms-2')}>
+        {ghostTail(ghost)}
+      </span>
+      {ghost.accepts && <kbd className="kbd kbd-xs ms-2 align-middle">{accept}</kbd>}
+    </>
+  )
+}
+
+/**
+ * What the field says of the keystroke standing — and nothing at all when none is.
+ *
+ * 🛑 One sentence per case: the hint promised the right arrow unconditionally, and it does not
+ * complete a sentence offered in PLACE of the writing.
+ */
+function ghostHint(
+  props: Props,
+  t: ReturnType<typeof useTranslation>['t'],
+): Record<string, string> {
+  if (props.ghost === undefined || !props.ghost.accepts) return {}
+
+  const accept = props.keyLabel('Tab')
+  return HINT_TOP(
+    props.ghost.tail === undefined
+      ? t('assistant.writeHint', { accept })
+      : t('assistant.completeHint', { accept }),
+  )
 }
 
 function conversationIsEmpty(props: Props): boolean {
@@ -223,14 +267,12 @@ function suggestionAttributes(
   'aria-autocomplete' | 'aria-haspopup' | 'aria-controls' | 'aria-owns' | 'aria-activedescendant'
 > {
   const hasSuggestions = props.listed.length > 0
+  // 🛑 Only a tail that CONTINUES the writing is an inline completion. A sentence offered in its
+  // place is not, and announcing it as `inline` told a reader the field was spelling their own
+  // words on.
+  const inline = props.ghost?.tail !== undefined
   const autocomplete: 'list' | 'both' | 'inline' | undefined =
-    props.ghost === undefined
-      ? hasSuggestions
-        ? 'list'
-        : undefined
-      : hasSuggestions
-        ? 'both'
-        : 'inline'
+    inline && hasSuggestions ? 'both' : inline ? 'inline' : hasSuggestions ? 'list' : undefined
   return {
     'aria-autocomplete': autocomplete,
     'aria-haspopup': hasSuggestions ? 'listbox' : undefined,
@@ -242,13 +284,18 @@ function suggestionAttributes(
 
 function assistantStatus(props: Props, t: ReturnType<typeof useTranslation>['t']): string {
   const completing =
-    props.ghost === undefined
+    props.ghost === undefined || !props.ghost.accepts
       ? ''
-      : t('assistant.completing', {
-          sentence: props.ghost.sentence,
-          accept: props.keyLabel('Tab'),
-          arrow: props.keyLabel('ArrowRight'),
-        })
+      : props.ghost.tail !== undefined
+        ? t('assistant.completing', {
+            sentence: props.ghost.sentence,
+            accept: props.keyLabel('Tab'),
+            arrow: props.keyLabel('ArrowRight'),
+          })
+        : t('assistant.writing', {
+            sentence: props.ghost.sentence,
+            accept: props.keyLabel('Tab'),
+          })
   const suggested =
     props.listed.length > 0 ? t('assistant.suggested', { count: props.listed.length }) : ''
   return [completing, suggested].filter(Boolean).join(' ')
