@@ -44,9 +44,9 @@ import {
 } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
-import { performance } from 'node:perf_hooks'
-import { replaceDirectory } from '../src/main/artefact.ts'
 import { fileURLToPath, pathToFileURL } from 'node:url'
+import { replaceDirectory } from '../src/main/artefact.ts'
+import { download } from './download.mjs'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 const DESTINATION = join(ROOT, 'resources', 'ffmpeg')
@@ -208,27 +208,6 @@ export function sourceArchives() {
 function flag(name, fallback) {
   const at = process.argv.indexOf(`--${name}`)
   return at === -1 ? fallback : process.argv[at + 1]
-}
-
-async function download(url, into) {
-  const started = performance.now()
-  let response
-  try {
-    response = await fetch(url, { redirect: 'follow' })
-  } catch (cause) {
-    throw new Error(`Could not reach ${url}: ${cause.message}`, { cause })
-  }
-  if (!response.ok) throw new Error(`${url} answered ${response.status}`)
-  const length = response.headers.get('content-length')
-  const bytes = new Uint8Array(await response.arrayBuffer())
-  console.log(
-    `  ${response.url} ${response.status} ${response.headers.get('content-type') ?? 'unknown'} ` +
-      `${bytes.byteLength} bytes in ${Math.round(performance.now() - started)} ms`,
-  )
-  if (length !== null && bytes.byteLength !== Number(length)) {
-    throw new Error(`${response.url} closed at ${bytes.byteLength} bytes, expected ${length}`)
-  }
-  writeFileSync(into, bytes)
 }
 
 /** Pulls one member out of the archive into `work`, and answers where it landed. */

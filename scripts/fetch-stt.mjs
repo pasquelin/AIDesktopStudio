@@ -18,6 +18,7 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
+import { download } from './download.mjs'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 const DESTINATION = join(ROOT, 'resources', 'stt')
@@ -33,14 +34,6 @@ export const VAD = {
   licence: 'MIT',
   source: 'https://github.com/snakers4/silero-vad',
   digest: '9e2449e1087496d8d4caba907f23e0bd3f78d91fa552479bb9c23ac09cbb1fd6',
-}
-
-async function download(url, into) {
-  const response = await fetch(url, { redirect: 'follow' }).catch(cause => {
-    throw new Error(`Could not reach ${url}: ${cause.message}`)
-  })
-  if (!response.ok) throw new Error(`${url} answered ${response.status}`)
-  writeFileSync(into, new Uint8Array(await response.arrayBuffer()))
 }
 
 function digestOf(file) {

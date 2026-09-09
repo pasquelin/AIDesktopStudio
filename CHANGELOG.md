@@ -58,6 +58,10 @@ l'espace disque est vérifié avant la première socket. La capacité CUDA se li
 sur la carte — l'écran cesse d'annoncer compatibles des modèles que le moteur refuse ensuite — et
 le bouton de réparation reste offert quand la porte est complète mais son torch en processeur.
 
+**La suggestion de l'assistant se lit sous le curseur.** La phrase que la liste tient s'affiche en
+gris dans le champ, à sa place exacte, et seule celle qu'on choisit s'écrit — plus de complétion
+posée d'office qu'il faut effacer.
+
 **Les primitives de formulaire ont chacune leur composant** — champ, select, case, interrupteur,
 zone de texte — assis sur daisyUI. La densité et l'échelle de police atteignent enfin les jauges.
 
