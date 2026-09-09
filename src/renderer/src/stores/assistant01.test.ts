@@ -214,10 +214,13 @@ describe('a question the model asked', () => {
     expect(asked[1]?.history.join('\n')).toContain('the person answered: Bateaux')
   })
 
-  /** The composer is the only way to answer a question with no choices — see `say`. */
+  /**
+   * 🛑 A question with answers to PRESS is also answered by typing one of their names — see `say`.
+   * One with nothing to press carries its own field instead, and the composer shuts under it.
+   */
   it('takes what is typed as the answer rather than as a new sentence', async () => {
     const { asked } = brain(
-      answer({ say: '', ask: asking('Quel nom ?'), calls: [] }),
+      answer({ say: '', ask: asking('Quel nom ?', ['Bateaux', 'Avions']), calls: [] }),
       answer({ calls: [] }),
     )
 

@@ -34,8 +34,9 @@ export function AssistantConversation() {
   const stopping = useAssistant(state => state.stopping)
   const asked = useAssistant(state => state.asked)
   const choosing = useAssistant(state => state.choosing)
-  // 🛑 The exception to "a plan is running, the field is shut": ONE question with nothing to press
-  // is answered by typing. A questionnaire is answered in its own card, so the field shuts again.
+  // 🛑 The exception to "a plan is running, the field is shut": ONE question whose answers are
+  // there to press is also answered by typing one of their names. Everything else — a
+  // questionnaire, a question with nothing to press — is answered in its own card, field and all.
   const typing = composerAnswers(choosing)
   const micOpen = useDictation(store => store.state === 'listening')
   const draft = useAssistant(state => state.draft)

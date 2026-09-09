@@ -54,14 +54,18 @@ describe('a question the model asked', () => {
     expect(screen.getAllByRole('button').map(one => one.textContent)).toEqual(['Laisser tomber'])
   })
 
-  // 🛑 A question with NO choices is the ordinary case: a card drawing a list alone could not
-  // serve the very question the `ask` key was built for.
-  it('sends a question with nothing to press to the field below', () => {
+  /**
+   * 🛑 A question with NO choices is the ordinary case — « quel nom ? » is what the `ask` key was
+   * built for. It carries its own field: printing "answer below" left the person hunting for the
+   * composer, where naming a project, a document or a file has a field everywhere else.
+   */
+  it('opens a field for a question with nothing to press', () => {
     void useAssistant.getState().askChoice([{ question: 'Quel nom ?', choices: [] }])
     drawn()
 
-    expect(screen.getByText(/dans le champ/)).toBeInTheDocument()
-    expect(screen.getAllByRole('button').map(one => one.textContent)).toEqual(['Laisser tomber'])
+    expect(screen.getByRole('textbox', { name: /Réponse/ })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Envoyer/ })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Laisser tomber/ })).toBeInTheDocument()
   })
 
   /**
@@ -128,7 +132,7 @@ describe('a question the model asked', () => {
 
     await userEvent.click(screen.getByRole('checkbox', { name: 'Audio' }))
     await userEvent.click(screen.getByRole('checkbox', { name: 'Image' }))
-    await userEvent.click(screen.getByRole('button', { name: /Envoyer les réponses/ }))
+    await userEvent.click(screen.getByRole('button', { name: /Envoyer la réponse/ }))
 
     await expect(answers).resolves.toEqual([{ answers: ['Image', 'Audio'] }])
   })
@@ -150,7 +154,7 @@ describe('a question the model asked', () => {
     expect(screen.getByRole('radio', { name: 'Sonnet' })).toBeChecked()
     expect(screen.getByText(/pas d’assistant/)).toBeInTheDocument()
 
-    await userEvent.click(screen.getByRole('button', { name: /Envoyer les réponses/ }))
+    await userEvent.click(screen.getByRole('button', { name: /Envoyer la réponse/ }))
 
     await expect(answers).resolves.toEqual([{ answers: ['Sonnet'] }])
   })
