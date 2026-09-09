@@ -153,6 +153,7 @@
       "assets.retype": "Peran file ini tidak dapat diperbaiki",
       "project.reveal": "Folder proyek tidak dapat ditampilkan",
       "project.forget": "Proyek tidak dapat dihapus dari daftar",
+      "project.trash": "Proyek tidak dapat dipindahkan ke tempat sampah",
       "project.close": "Proyek memang telah ditutup, tetapi studio tidak dapat mencatat bahwa proyek jangan dibuka kembali saat dijalankan berikutnya",
       "project.rename": "Nama proyek tidak dapat diganti",
       "font.face": "Sebuah font tidak dapat dimuat",

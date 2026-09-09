@@ -131,7 +131,7 @@
       },
       "projectCreate": {
         "title": "Crear una carpeta de proyecto",
-        "description": "Crea un proyecto y lo abre, sin levantar el diálogo del sistema que usaría una persona. Basta con un NOMBRE — el estudio lo pone donde esta persona guarda sus proyectos, indicado más arriba. El campo folder dice en qué carpeta crearlo, cuando la frase nombra una."
+        "description": "Crea un proyecto y lo abre, sin levantar el diálogo del sistema que usaría una persona. Basta con un NOMBRE — el estudio lo pone donde esta persona guarda sus proyectos, indicado más arriba. El campo folder dice en qué carpeta crearlo, cuando la frase nombra una. Para dejar que la persona elija el lugar, llamar de todos modos a la acción: su confirmación lleva un botón que abre el selector del sistema y rellena el campo folder."
       },
       "projectForget": {
         "title": "Quitar un proyecto de los recientes",
@@ -1723,6 +1723,8 @@
     "brain": "Quién responde",
     "brainHint": "Elige lo que lee tus frases: un modelo en esta máquina, un servicio del que tienes la clave, o el estudio. La misma elección que escriben los ajustes Modelos de IA.",
     "brainNone": "nada elegido",
+    "keepBrain": "¿Qué asistente trabajará en el nuevo proyecto?",
+    "keepBrainNotice": "La elección actual vale para este proyecto y no le seguirá. Sin respuesta, el nuevo proyecto no tendrá asistente hasta que se elija uno en los ajustes.",
     "cloudBrain": "{{cloud}} — {{model}}",
     "groupMachine": "En esta máquina",
     "groupClouds": "Tus claves",

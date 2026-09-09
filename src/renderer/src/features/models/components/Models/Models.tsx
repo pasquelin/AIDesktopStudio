@@ -1,6 +1,7 @@
 import { mdiCubeScan } from '@mdi/js'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { scopeForRole } from '@shared/domain/aiOverview'
 import { primaryRoleOf, providerOfModel } from '@shared/domain/aiRole'
 import type { ModelFamily, ModelSummary } from '@shared/domain/model'
 import { failureKeyOf } from '@/services/failureMessage'
@@ -62,9 +63,6 @@ export function Models({ family }: ModelsProps) {
   const selectedId = useModelForFamily(family)
   const select = useModels(state => state.select)
   const chooseAiProvider = useAiModels(state => state.chooseAiProvider)
-  // 🛑 From the overview and not from `useProject`: this browser now also renders in the settings
-  // window, which never connects the project store — so the scope read `app` with a project open.
-  const projectPath = useAiModels(state => state.overview?.projectPath ?? null)
   const authenticated = useSettings(state => state.auth.authenticated)
   const accounts = useAccounts(state => state.accounts)
   const plan = usePlanAccess()
@@ -164,10 +162,17 @@ export function Models({ family }: ModelsProps) {
               if (!role) return
 
               select(role, model.id)
+              // Where the choice TAKES EFFECT, not « a project is open »: a pick made under an
+              // open project used to be written into that project and vanish with it.
+              //
+              // 🛑 From the overview and not from `useProject`: this browser also renders in the
+              // settings window, which never connects the project store. Read at the click, since
+              // `roles` is re-sent whole on every download tick and would re-render the grid.
+              const { overview } = useAiModels.getState()
               void chooseAiProvider(
                 role,
                 providerOfModel(model),
-                projectPath === null ? 'app' : 'project',
+                scopeForRole(overview?.roles, role, overview?.projectPath ?? null),
               )
             }}
             onReachEnd={catalogue.more}

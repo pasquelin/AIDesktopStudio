@@ -131,7 +131,7 @@
       },
       "projectCreate": {
         "title": "Tạo một thư mục dự án",
-        "description": "Tạo một dự án và mở nó, mà không dựng lên hộp thoại hệ thống mà một người sẽ dùng. Chỉ một TÊN là đủ — studio đặt nó vào nơi người này cất các dự án, đã nêu ở trên. Trường folder cho biết tạo nó trong thư mục nào, khi câu nói có nêu một thư mục."
+        "description": "Tạo một dự án và mở nó, mà không dựng lên hộp thoại hệ thống mà một người sẽ dùng. Chỉ một TÊN là đủ — studio đặt nó vào nơi người này cất các dự án, đã nêu ở trên. Trường folder cho biết tạo nó trong thư mục nào, khi câu nói có nêu một thư mục. Để người này chọn nơi đặt, vẫn gọi hành động này: xác nhận của nó có một nút mở hộp chọn của hệ thống và điền vào trường folder."
       },
       "projectForget": {
         "title": "Bỏ một dự án khỏi các dự án gần đây",
@@ -1723,6 +1723,8 @@
     "brain": "Ai trả lời",
     "brainHint": "Chọn thứ sẽ đọc câu của bạn: một mô hình trên máy này, một dịch vụ mà bạn có khóa, hoặc studio. Cùng lựa chọn mà cài đặt Mô hình AI ghi lại.",
     "brainNone": "chưa chọn gì",
+    "keepBrain": "Trợ lý nào sẽ làm việc trong dự án mới?",
+    "keepBrainNotice": "Lựa chọn hiện thời thuộc về dự án này và sẽ không đi theo. Không trả lời thì dự án mới không có trợ lý cho tới khi chọn một cái trong cài đặt.",
     "cloudBrain": "{{cloud}} — {{model}}",
     "groupMachine": "Trên máy này",
     "groupClouds": "Khóa của bạn",

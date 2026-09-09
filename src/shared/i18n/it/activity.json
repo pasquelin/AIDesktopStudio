@@ -153,6 +153,7 @@
       "assets.retype": "Non è stato possibile correggere il ruolo di questo file",
       "project.reveal": "Non è stato possibile mostrare la cartella del progetto",
       "project.forget": "Non è stato possibile togliere il progetto dall’elenco",
+      "project.trash": "Il progetto non è stato spostato nel cestino",
       "project.close": "Il progetto è stato chiuso, ma lo studio non ha potuto memorizzare di non riaprirlo al prossimo avvio",
       "project.rename": "Non è stato possibile rinominare il progetto",
       "font.face": "Non è stato possibile caricare un carattere",

@@ -85,6 +85,7 @@ const TOPIC_OF_SCOPE: Record<LogScope, ActivityTopic> = {
   // already writes there.
   'project.reveal': 'project',
   'project.forget': 'project',
+  'project.trash': 'project',
   'project.close': 'project',
   'project.rename': 'project',
   // A face that will not open is read where the document it was set in is read: the caption is

@@ -131,7 +131,7 @@
       },
       "projectCreate": {
         "title": "Create a project folder",
-        "description": "Makes a project and opens it, without raising the system dialogue a person would use. A NAME is enough — the studio puts it where this person keeps projects, named above. The folder field says which folder to make it in, when the sentence names one."
+        "description": "Makes a project and opens it, without raising the system dialogue a person would use. A NAME is enough — the studio puts it where this person keeps projects, named above. The folder field says which folder to make it in, when the sentence names one. To leave the place open to choice, call the action all the same: its confirmation carries a button that opens the system picker and fills the folder field."
       },
       "projectForget": {
         "title": "Drop a project from the recent ones",
@@ -1723,6 +1723,8 @@
     "brain": "Who answers",
     "brainHint": "Picks what reads your sentences: a model on this machine, a service you hold a key for, or the studio. The same choice the AI models settings write.",
     "brainNone": "none chosen",
+    "keepBrain": "Which assistant will work in the new project?",
+    "keepBrainNotice": "The choice in force belongs to this project and will not follow. Left unanswered, the new project has no assistant until one is chosen in the settings.",
     "cloudBrain": "{{cloud}} — {{model}}",
     "groupMachine": "On this machine",
     "groupClouds": "Your keys",

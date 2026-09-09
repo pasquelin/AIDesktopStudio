@@ -1,5 +1,6 @@
 import { useCallback, useId, useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
+import { scopeForRole } from '@shared/domain/aiOverview'
 import { providerOfModel, type AiRoleId } from '@shared/domain/aiRole'
 import { pixelArtFirst, suitsPixelArt, type ModelSummary } from '@shared/domain/model'
 import type { PlanAccess } from '@shared/domain/plan'
@@ -73,7 +74,6 @@ export function GeneratorModel({ capability, modelId, name, plan }: GeneratorMod
 
   const select = useModels(state => state.select)
   const chooseAiProvider = useAiModels(state => state.chooseAiProvider)
-  const projectPath = useAiModels(state => state.overview?.projectPath ?? null)
   const reachOf = useModelReach(plan)
 
   // Memoised on the answer it narrows, which `useModelReach` already keeps stable: an inline
@@ -113,10 +113,14 @@ export function GeneratorModel({ capability, modelId, name, plan }: GeneratorMod
             }
 
             select(capability, id)
+            // Read at the click rather than subscribed to: `roles` is an array the main process
+            // re-sends whole on every download tick, so a selector over it would re-render this
+            // panel and its picker for a model nobody here is waiting on.
+            const { overview } = useAiModels.getState()
             void chooseAiProvider(
               capability,
               providerOfModel(model),
-              projectPath === null ? 'app' : 'project',
+              scopeForRole(overview?.roles, capability, overview?.projectPath ?? null),
             )
           }}
           refusalOf={refusalOf}

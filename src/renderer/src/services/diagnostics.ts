@@ -30,6 +30,9 @@ const GESTURE_SCOPES: ReadonlySet<LogScope> = new Set<LogScope>([
   'document.save',
   'document.close',
   'document.delete',
+  // A menu row pressed a second time because the first bin did nothing: silenced from the second,
+  // a folder that will not go looks exactly like a folder that went.
+  'project.trash',
   'assets.reveal',
   // Asked for again, refused again: a second generation the editor turns down is a second thing
   // the person paid for and did not get.

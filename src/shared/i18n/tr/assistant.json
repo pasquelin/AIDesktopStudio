@@ -131,7 +131,7 @@
       },
       "projectCreate": {
         "title": "Bir proje klasörü oluştur",
-        "description": "Bir kişinin kullanacağı sistem iletişim kutusunu açmadan bir proje oluşturur ve açar. Bir AD yeter — stüdyo projeyi, yukarıda belirtilen, bu kişinin projelerini tuttuğu yere koyar. Cümle bir klasör adlandırdığında, folder alanı projenin hangi klasörde oluşturulacağını söyler."
+        "description": "Bir kişinin kullanacağı sistem iletişim kutusunu açmadan bir proje oluşturur ve açar. Bir AD yeter — stüdyo projeyi, yukarıda belirtilen, bu kişinin projelerini tuttuğu yere koyar. Cümle bir klasör adlandırdığında, folder alanı projenin hangi klasörde oluşturulacağını söyler. Yerin seçimini kişiye bırakmak için eylemi yine de çağırmak gerekir: onayı, sistemin seçicisini açan ve folder alanını dolduran bir düğme taşır."
       },
       "projectForget": {
         "title": "Bir projeyi son projelerden çıkar",
@@ -1723,6 +1723,8 @@
     "brain": "Kim yanıtlıyor",
     "brainHint": "Cümlelerinizi neyin okuyacağını seçer: bu makinedeki bir model, anahtarını taşıdığınız bir hizmet ya da stüdyo. Yapay zekâ modelleri ayarlarındaki seçimin aynısı.",
     "brainNone": "hiçbiri seçilmedi",
+    "keepBrain": "Yeni projede hangi asistan çalışacak?",
+    "keepBrainNotice": "Şimdiki seçim bu projeye aittir ve onunla gelmez. Yanıt verilmezse, yeni proje ayarlardan biri seçilene kadar asistansız kalır.",
     "cloudBrain": "{{cloud}} — {{model}}",
     "groupMachine": "Bu makinede",
     "groupClouds": "Anahtarlarınız",

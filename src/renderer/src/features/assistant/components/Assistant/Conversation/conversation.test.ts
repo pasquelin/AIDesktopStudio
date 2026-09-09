@@ -52,7 +52,7 @@ describe('the conversation the model reads', () => {
    */
   it('carries what was asked and what came back, on one line', () => {
     const [block] = assistantHistory([
-      turn({ asks: [{ question: 'Quel nom ?', answer: 'Bateaux', note: 'court' }] }),
+      turn({ asks: [{ question: 'Quel nom ?', answers: ['Bateaux'], note: 'court' }] }),
     ])
 
     expect(block).toContain('You asked: Quel nom ? — the person answered: Bateaux (court)')
@@ -63,19 +63,29 @@ describe('the conversation the model reads', () => {
    * the same sentence a model has no reason to do either.
    */
   it('tells a question left blank from a card let go', () => {
-    const [blank] = assistantHistory([turn({ asks: [{ question: 'Lequel ?', answer: null }] })])
+    const [blank] = assistantHistory([turn({ asks: [{ question: 'Lequel ?', answers: [] }] })])
     const [gone] = assistantHistory([
-      turn({ asks: [{ question: 'Lequel ?', answer: null, dismissed: true }] }),
+      turn({ asks: [{ question: 'Lequel ?', answers: [], dismissed: true }] }),
     ])
 
     expect(blank).toContain('You asked: Lequel ? — the person left it blank.')
     expect(gone).toContain('You asked: Lequel ? — the person dismissed the question.')
   })
 
+  // A question that let several answers is read back as ONE line: the round after it plans
+  // against the set, not against whichever answer happened to come first.
+  it('joins the answers of a question that allowed several', () => {
+    const [block] = assistantHistory([
+      turn({ asks: [{ question: 'Lesquels ?', answers: ['Image', 'Audio'] }] }),
+    ])
+
+    expect(block).toContain('the person answered: Image, Audio')
+  })
+
   /** 🛑 A question that offered a note and got nothing else is one answered by its note alone. */
   it('carries a note written where nothing was pressed', () => {
     const [block] = assistantHistory([
-      turn({ asks: [{ question: 'Pourquoi ?', answer: null, note: 'pour un test' }] }),
+      turn({ asks: [{ question: 'Pourquoi ?', answers: [], note: 'pour un test' }] }),
     ])
 
     expect(block).toContain('the person left it blank (pour un test).')
@@ -88,7 +98,7 @@ describe('the conversation the model reads', () => {
    */
   it('drops a question too long to keep along with its answer', () => {
     const [block] = assistantHistory([
-      turn({ asks: [{ question: 'q'.repeat(50_000), answer: 'Bateaux' }] }),
+      turn({ asks: [{ question: 'q'.repeat(50_000), answers: ['Bateaux'] }] }),
     ])
 
     expect(block).not.toContain('Bateaux')

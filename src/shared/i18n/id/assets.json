@@ -299,6 +299,10 @@
     "leaveRunningBody": "Pembuatan yang berjalan: {{count, number}}. Semuanya berlanjut, dan hasilnya diarsipkan di proyek ini — Anda akan menemukannya di sana saat membukanya kembali. Sementara itu tidak ada satu pun yang mendarat di tempat lain.",
     "leaveRunningConfirm": "Tetap tinggalkan",
     "leaveRunningCancel": "Tetap di sini",
+    "trashTitle": "Pindahkan proyek «{{name}}» ke tempat sampah?",
+    "trashBody": "Foldernya dan semua isinya masuk ke tempat sampah sistem. Anda bisa mengambilnya kembali dari sana; studio sendiri tidak bisa mengembalikannya.",
+    "trashConfirm": "Pindahkan ke tempat sampah",
+    "trashCancel": "Batal",
     "closeHint": "Menutup semua tab dan mengembalikan studio ke beranda. Folder tetap di tempatnya, dan proyek tetap di dalam daftar",
     "context": "Konteks proyek",
     "contextHint": "Membuka panel tempat dituliskan tentang apa proyek ini"

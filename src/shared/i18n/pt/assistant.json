@@ -131,7 +131,7 @@
       },
       "projectCreate": {
         "title": "Criar uma pasta de projeto",
-        "description": "Cria um projeto e o abre, sem levantar o diálogo do sistema que uma pessoa usaria. Um NOME basta — o estúdio o coloca onde esta pessoa guarda seus projetos, indicado acima. O campo folder diz em qual pasta criá-lo, quando a frase nomeia uma."
+        "description": "Cria um projeto e o abre, sem levantar o diálogo do sistema que uma pessoa usaria. Um NOME basta — o estúdio o coloca onde esta pessoa guarda seus projetos, indicado acima. O campo folder diz em qual pasta criá-lo, quando a frase nomeia uma. Para deixar a escolha do lugar em aberto, chamar a ação mesmo assim: sua confirmação traz um botão que abre o seletor do sistema e preenche o campo folder."
       },
       "projectForget": {
         "title": "Retirar um projeto dos projetos recentes",
@@ -1723,6 +1723,8 @@
     "brain": "Quem responde",
     "brainHint": "Escolhe o que lê suas frases: um modelo nesta máquina, um serviço do qual você tem a chave, ou o estúdio. A mesma escolha das configurações Modelos de IA.",
     "brainNone": "nada escolhido",
+    "keepBrain": "Qual assistente vai trabalhar no novo projeto?",
+    "keepBrainNotice": "A escolha atual vale para este projeto e não o acompanhará. Sem resposta, o novo projeto fica sem assistente até que um seja escolhido nas configurações.",
     "cloudBrain": "{{cloud}} — {{model}}",
     "groupMachine": "Nesta máquina",
     "groupClouds": "Suas chaves",

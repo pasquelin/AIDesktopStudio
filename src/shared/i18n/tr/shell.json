@@ -237,6 +237,8 @@
       "revealHint": "Bu projede dosya yöneticisini açar",
       "forget": "Listeden kaldır",
       "forgetHint": "Projeyi bu listeden kaldırır, klasörü ve içindeki her şeyi dokunmaz",
+      "trash": "Çöpe taşı",
+      "trashHint": "Proje klasörünü ve içindeki her şeyi sistemin çöpüne gönderir; önce sorulur",
       "rename": "Yeniden adlandır",
       "renameHint": "Proje adını değiştirir, disk’teki klasörü nerede olup olduğu bırakır"
     },

@@ -89,7 +89,7 @@ Full walkthrough: [user guide](docs/en/user-guide.md) · every setting explained
 | `pnpm dist` | build, then package and sign with electron-builder |
 | `pnpm typecheck` | `tsc --noEmit` across the three targets |
 | `pnpm test` · `pnpm test:watch` | vitest, single run or watching |
-| `pnpm lint` · `pnpm lint:fix` | eslint over `src` |
+| `pnpm lint` · `pnpm lint:fix` | oxlint over `src`, `scripts` and `config`, warnings included |
 | `pnpm format` · `pnpm format:check` | prettier, write or check |
 | `pnpm validate` | the gate: every check a commit must pass, chained. `package.json` names its links, and the CI job runs this very command rather than a copy of it |
 | `pnpm unused:main` | knip — exports, files and dependencies nothing reaches. **`src/main` only**: the same unreachable export is reported there and ignored under `renderer` and `shared`, and no configuration found so far widens it |

@@ -3,7 +3,7 @@
 > **Multimodal desktop creation studio** for generative models (Electron 43 + React 19 +
 > TypeScript). Six workshops — Image, Video, 3D, Audio, Materials, Skyboxes — in one window
 > with dockable panels, a timecoded timeline, an inspector and a project library on disk.
-> Offline dictation, and **233 MCP actions across 16 families** so an agent drives the studio
+> Offline dictation, and **310 MCP actions across 26 families** so an agent drives the studio
 > through the same paths the interface uses.
 
 ## Mental model (read this first)
@@ -140,7 +140,7 @@ Full walkthrough: [user guide](docs/en/user-guide.md) · every setting explained
 | `pnpm dist` | build, then package and sign with electron-builder |
 | `pnpm typecheck` | `tsc --noEmit` across the three targets |
 | `pnpm test` · `pnpm test:watch` | vitest, single run or watching |
-| `pnpm lint` · `pnpm lint:fix` | eslint over `src` |
+| `pnpm lint` · `pnpm lint:fix` | oxlint over `src`, `scripts` and `config`, warnings included |
 | `pnpm format` · `pnpm format:check` | prettier, write or check |
 | `pnpm validate` | the gate: every check a commit must pass, chained. `package.json` names its links, and the CI job runs this very command rather than a copy of it |
 | `pnpm unused:main` | knip — exports, files and dependencies nothing reaches. **`src/main` only**: the same unreachable export is reported there and ignored under `renderer` and `shared`, and no configuration found so far widens it |

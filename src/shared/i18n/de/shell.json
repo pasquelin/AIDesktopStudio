@@ -237,6 +237,8 @@
       "revealHint": "Öffnet den Dateimanager mit diesem Projekt",
       "forget": "Aus der Liste entfernen",
       "forgetHint": "Entfernt das Projekt aus dieser Liste, ohne seinen Ordner und dessen Inhalt anzurühren",
+      "trash": "In den Papierkorb",
+      "trashHint": "Verschiebt den Projektordner und alles darin in den Papierkorb des Systems; vorher wird gefragt",
       "rename": "Umbenennen",
       "renameHint": "Den Projektnamen ändern, ohne seinen Ordner auf der Festplatte anzurühren"
     },

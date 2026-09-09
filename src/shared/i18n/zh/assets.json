@@ -299,6 +299,10 @@
     "leaveRunningBody": "正在运行的生成：{{count, number}} 项。它们会继续跑下去，产出的东西会归入这个项目——你再次打开它时就能在那里找到。在此期间不会有任何东西落到别处。",
     "leaveRunningConfirm": "仍然离开",
     "leaveRunningCancel": "留在这里",
+    "trashTitle": "把项目「{{name}}」移到废纸篓？",
+    "trashBody": "它的文件夹和其中的一切都会移到系统废纸篓。你可以从那里取回，但工作室自己无法放回原处。",
+    "trashConfirm": "移到废纸篓",
+    "trashCancel": "取消",
     "closeHint": "关闭所有标签页，把工作室交还给主页。文件夹留在原处，项目留在列表中",
     "context": "项目的上下文",
     "contextHint": "打开记录这个项目讲的是什么的面板"

@@ -131,7 +131,7 @@
       },
       "projectCreate": {
         "title": "Buat folder proyek",
-        "description": "Membuat sebuah proyek dan membukanya, tanpa memunculkan dialog sistem yang akan dipakai seseorang. Sebuah NAMA sudah cukup — studio meletakkannya di tempat orang ini menyimpan proyek, yang disebut di atas. Kolom folder menyebut di folder mana proyek itu dibuat, bila kalimatnya menyebut satu."
+        "description": "Membuat sebuah proyek dan membukanya, tanpa memunculkan dialog sistem yang akan dipakai seseorang. Sebuah NAMA sudah cukup — studio meletakkannya di tempat orang ini menyimpan proyek, yang disebut di atas. Kolom folder menyebut di folder mana proyek itu dibuat, bila kalimatnya menyebut satu. Untuk membiarkan tempatnya dipilih, tindakan ini tetap dipanggil: konfirmasinya memuat tombol yang membuka pemilih sistem dan mengisi kolom folder."
       },
       "projectForget": {
         "title": "Keluarkan proyek dari proyek terbaru",
@@ -1723,6 +1723,8 @@
     "brain": "Siapa yang menjawab",
     "brainHint": "Memilih apa yang membaca kalimat Anda: model di mesin ini, layanan yang Anda pegang kunci, atau studio. Pilihan yang sama yang ditulis pengaturan model AI.",
     "brainNone": "tidak ada yang dipilih",
+    "keepBrain": "Asisten mana yang akan bekerja di proyek baru?",
+    "keepBrainNotice": "Pilihan yang berlaku sekarang milik proyek ini dan tidak ikut. Tanpa jawaban, proyek baru tidak punya asisten sampai satu dipilih di pengaturan.",
     "cloudBrain": "{{cloud}} — {{model}}",
     "groupMachine": "Di mesin ini",
     "groupClouds": "Kunci Anda",

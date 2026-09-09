@@ -13,6 +13,7 @@ import { guardUnsavedWork } from '../../unsavedGuard'
 import { useAutosave } from '@/hooks/useAutosave'
 import { useGitWatch } from '@/hooks/useGitWatch'
 import { holdConfirmer } from '@/features/assistant/holdConfirmer'
+import { holdStudioAsk } from '@/features/assistant/holdStudioAsk'
 import { AssistantStatus } from '@/features/assistant/components/Assistant/AssistantStatus'
 import { AssistantToast } from '@/features/assistant/components/Assistant/Toast/AssistantToast'
 import { DictationStatus } from '@/features/dictation/components/Dictation/Status/DictationStatus'
@@ -120,6 +121,8 @@ export function Shell() {
 
   // The window's confirmer: it outlives either host of the conversation, and brings one up.
   useEffect(holdConfirmer, [])
+  // And the questions the studio asks on its own account — the assistant a new project keeps.
+  useEffect(holdStudioAsk, [])
   useAutosave()
 
   // Here rather than in the two panels that draw it: whether git holds the folder decides whether

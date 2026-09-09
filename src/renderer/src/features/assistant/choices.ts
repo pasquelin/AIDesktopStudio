@@ -71,6 +71,29 @@ export function assistantChoicesOf(
   return [...machine, ...clouds, ...studio]
 }
 
+/**
+ * What one choice is CALLED on screen. Beside the list rather than in the picker: the card that
+ * asks which assistant a new project keeps offers the same entries, and two spellings of one
+ * model would read as two models.
+ */
+export function assistantChoiceLabel(
+  choice: AssistantChoice,
+  translate: (key: string, values?: Record<string, string>) => string,
+): string {
+  switch (choice.group) {
+    case 'machine':
+      return choice.name
+    case 'clouds':
+      // A model's own name is data and stays as it is; the cloud is named from the bundle.
+      return translate('assistant.cloudBrain', {
+        cloud: translate(`aiClouds.${choice.providerId}`),
+        model: choice.name,
+      })
+    case 'studio':
+      return translate(`assistant.models.${choice.model}`)
+  }
+}
+
 /** Which entry answers today — the effective provider, and for the studio the model it thinks with. */
 export function servingChoiceValue(
   provider: RoleProvider | null,

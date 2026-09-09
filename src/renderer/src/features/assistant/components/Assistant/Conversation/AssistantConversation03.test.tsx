@@ -115,14 +115,14 @@ describe('while the assistant is accepting input', () => {
     ])
     render(<AssistantConversation />)
 
-    await userEvent.click(screen.getByRole('button', { name: 'Avion' }))
-    expect(screen.getByRole('button', { name: 'Avion' })).toHaveAttribute('aria-pressed', 'true')
+    await userEvent.click(screen.getByRole('radio', { name: 'Avion' }))
+    expect(screen.getByRole('radio', { name: 'Avion' })).toBeChecked()
 
     await userEvent.click(screen.getByRole('button', { name: /Envoyer les réponses/ }))
     await first
 
-    // Same word offered by the question that waited, and nothing pressed on it.
-    expect(screen.getByRole('button', { name: 'Avion' })).toHaveAttribute('aria-pressed', 'false')
+    // Same word offered by the question that waited, and nothing ticked on it.
+    expect(screen.getByRole('radio', { name: 'Avion' })).not.toBeChecked()
     useAssistant.getState().choose(null)
   })
 

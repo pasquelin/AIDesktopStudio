@@ -1,22 +1,17 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { isComposing } from '@/helpers/composition'
-import { answeredByComposer } from '@shared/domain/assistant'
 import { AI_SECTION } from '@/helpers/aiSectionLazy'
 import { useAssistantDoor } from '@/hooks/useAssistantDoor'
 import { useAssistantOffer } from '@/hooks/useAssistantOffer'
 import { useAssistantSuggestions } from '@/hooks/useAssistantSuggestions'
 import { useShortcutLabel } from '@/hooks/useShortcutLabel'
-import { useAssistant, type AssistantChoiceQuestion } from '@/stores/assistant'
+import { composerAnswers, useAssistant } from '@/stores/assistant'
 import { useDictation } from '@/stores/dictation'
 import { useSettings } from '@/stores/settings'
 import { useMissions } from '@/stores/missions'
 import { registerDictationTarget } from '@/features/dictation/destination'
 import { registerChatPanel } from '../../../chatPanel'
 import { AssistantConversationView } from './AssistantConversationView'
-
-/** Whether what is typed — or spoken — is the answer to the question standing. */
-const typedInto = (choosing: AssistantChoiceQuestion | null): boolean =>
-  choosing !== null && answeredByComposer(choosing.questions)
 
 /**
  * The conversation: what has been said, what is asked, and the place one writes. Two hosts — the
@@ -41,7 +36,7 @@ export function AssistantConversation() {
   const choosing = useAssistant(state => state.choosing)
   // 🛑 The exception to "a plan is running, the field is shut": ONE question with nothing to press
   // is answered by typing. A questionnaire is answered in its own card, so the field shuts again.
-  const typing = typedInto(choosing)
+  const typing = composerAnswers(choosing)
   const micOpen = useDictation(store => store.state === 'listening')
   const draft = useAssistant(state => state.draft)
   const setDraft = useAssistant(state => state.setDraft)
@@ -106,7 +101,7 @@ export function AssistantConversation() {
       // While a plan is running the assistant takes no new sentence — but the words were spoken,
       // and dropping them left no trace at all. They land in the field instead. A question
       // STANDING is the exception: `say` reads what is spoken as its answer, as it does typing.
-      if (assistant.busy && !typedInto(assistant.choosing)) {
+      if (assistant.busy && !composerAnswers(assistant.choosing)) {
         assistant.setDraft(assistant.draft === '' ? text : `${assistant.draft} ${text}`)
         return
       }

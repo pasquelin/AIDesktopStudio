@@ -131,7 +131,7 @@
       },
       "projectCreate": {
         "title": "Créer un dossier de projet",
-        "description": "Crée un projet et l’ouvre, sans lever le dialogue système qu’une personne utiliserait. Un NOM suffit — le studio le pose là où cette personne range ses projets, indiqué plus haut. Le champ folder dit dans quel dossier le créer, quand la phrase en nomme un."
+        "description": "Crée un projet et l’ouvre, sans lever le dialogue système qu’une personne utiliserait. Un NOM suffit — le studio le pose là où cette personne range ses projets, indiqué plus haut. Le champ folder dit dans quel dossier le créer, quand la phrase en nomme un. Pour laisser le choix de l’emplacement, appeler quand même l’action : sa confirmation porte un bouton qui ouvre le sélecteur du système et remplit le champ folder."
       },
       "projectForget": {
         "title": "Retirer un projet des projets récents",
@@ -1723,6 +1723,8 @@
     "brain": "Qui répond",
     "brainHint": "Choisit ce qui lit vos phrases : un modèle sur cette machine, un service dont vous avez la clé, ou le studio. Le même choix que dans les réglages Modèles d’IA.",
     "brainNone": "rien de choisi",
+    "keepBrain": "Quel assistant travaillera dans le nouveau projet ?",
+    "keepBrainNotice": "Le choix actuel vaut pour ce projet-ci et ne suivra pas. Sans réponse, le nouveau projet n’aura pas d’assistant, à choisir plus tard dans les réglages.",
     "cloudBrain": "{{cloud}} — {{model}}",
     "groupMachine": "Sur cette machine",
     "groupClouds": "Vos clés",

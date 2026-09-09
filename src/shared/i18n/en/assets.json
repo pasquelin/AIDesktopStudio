@@ -299,6 +299,10 @@
     "leaveRunningBody": "Generations running: {{count, number}}. They carry on, and what they produce is filed in this project — you will find it there when you open it again. Nothing of it lands anywhere else in the meantime.",
     "leaveRunningConfirm": "Leave anyway",
     "leaveRunningCancel": "Stay here",
+    "trashTitle": "Move the project “{{name}}” to the trash?",
+    "trashBody": "Its folder and everything in it go to the system trash. You will be able to get them back from there; the studio itself cannot put them back.",
+    "trashConfirm": "Move to trash",
+    "trashCancel": "Cancel",
     "closeHint": "Closes every tab and hands the studio back to the home. The folder stays where it is, and the project on the shelf",
     "context": "The project’s context",
     "contextHint": "Open the panel where what this project is about is written"

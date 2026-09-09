@@ -237,6 +237,8 @@
       "revealHint": "Opens the file manager on this project",
       "forget": "Remove from the list",
       "forgetHint": "Removes the project from this list, leaving its folder and everything in it untouched",
+      "trash": "Move to trash",
+      "trashHint": "Sends the project folder and everything in it to the system trash; you are asked first",
       "rename": "Rename",
       "renameHint": "Change the project name, leaving its folder on disk where it is"
     },

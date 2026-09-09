@@ -131,7 +131,7 @@
       },
       "projectCreate": {
         "title": "Einen Projektordner erstellen",
-        "description": "Legt ein Projekt an und öffnet es, ohne den Systemdialog aufzurufen, den eine Person benutzen würde. Ein NAME genügt — das Studio legt es dort ab, wo diese Person ihre Projekte aufbewahrt, oben genannt. Das Feld folder sagt, in welchem Ordner es anzulegen ist, wenn der Satz einen nennt."
+        "description": "Legt ein Projekt an und öffnet es, ohne den Systemdialog aufzurufen, den eine Person benutzen würde. Ein NAME genügt — das Studio legt es dort ab, wo diese Person ihre Projekte aufbewahrt, oben genannt. Das Feld folder sagt, in welchem Ordner es anzulegen ist, wenn der Satz einen nennt. Um die Wahl des Ortes offenzulassen, die Aktion dennoch auslösen: ihre Bestätigung trägt eine Schaltfläche, die die Auswahl des Systems öffnet und das Feld folder füllt."
       },
       "projectForget": {
         "title": "Ein Projekt aus den letzten Projekten entfernen",
@@ -1723,6 +1723,8 @@
     "brain": "Wer antwortet",
     "brainHint": "Wählt, was Ihre Sätze liest: ein Modell auf diesem Rechner, ein Dienst, für den Sie einen Schlüssel haben, oder das Studio. Dieselbe Wahl, die die Einstellungen für KI-Modelle schreiben.",
     "brainNone": "nichts gewählt",
+    "keepBrain": "Welcher Assistent wird im neuen Projekt arbeiten?",
+    "keepBrainNotice": "Die aktuelle Wahl gilt für dieses Projekt und folgt nicht mit. Ohne Antwort hat das neue Projekt keinen Assistenten, bis in den Einstellungen einer gewählt wird.",
     "cloudBrain": "{{cloud}} — {{model}}",
     "groupMachine": "Auf diesem Rechner",
     "groupClouds": "Ihre Schlüssel",

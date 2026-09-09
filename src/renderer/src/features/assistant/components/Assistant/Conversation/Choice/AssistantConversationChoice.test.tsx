@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it } from 'vitest'
-import { MOST_QUESTIONS, type AskedAnswer } from '@shared/domain/assistant'
+import { MOST_QUESTIONS, type AskedAnswer } from '@shared/domain/assistantAsk'
 import { useAssistant } from '@/stores/assistant'
 import { AssistantConversationChoice } from './AssistantConversationChoice'
 
@@ -26,9 +26,9 @@ describe('a question the model asked', () => {
     const answer = asked()
     drawn()
 
-    await userEvent.click(screen.getByRole('button', { name: 'Vidéo' }))
+    await userEvent.click(screen.getByRole('radio', { name: 'Vidéo' }))
 
-    await expect(answer).resolves.toEqual([{ answer: 'Vidéo' }])
+    await expect(answer).resolves.toEqual([{ answers: ['Vidéo'] }])
     expect(useAssistant.getState().choosing).toBeNull()
   })
 
@@ -46,15 +46,15 @@ describe('a question the model asked', () => {
     void asked()
     drawn()
 
-    expect(screen.getAllByRole('button').map(one => one.textContent)).toEqual([
+    expect(screen.getAllByRole('radio').map(one => one.parentElement?.textContent)).toEqual([
       'Image',
       'Vidéo',
       'Audio',
-      'Laisser tomber',
     ])
+    expect(screen.getAllByRole('button').map(one => one.textContent)).toEqual(['Laisser tomber'])
   })
 
-  // 🛑 A question with NO choices is the ordinary case: a card drawing buttons alone could not
+  // 🛑 A question with NO choices is the ordinary case: a card drawing a list alone could not
   // serve the very question the `ask` key was built for.
   it('sends a question with nothing to press to the field below', () => {
     void useAssistant.getState().askChoice([{ question: 'Quel nom ?', choices: [] }])
@@ -81,8 +81,8 @@ describe('a question the model asked', () => {
 
     // The one that waited takes the screen the moment the first is settled.
     expect(useAssistant.getState().choosing?.questions[0]?.question).toBe('Autre chose ?')
-    useAssistant.getState().choose([{ answer: 'Oui' }])
-    await expect(second).resolves.toEqual([{ answer: 'Oui' }])
+    useAssistant.getState().choose([{ answers: ['Oui'] }])
+    await expect(second).resolves.toEqual([{ answers: ['Oui'] }])
   })
 
   /** 🛑 Six fields all named « Réponse » say nothing about WHICH question they answer: the group
@@ -112,8 +112,47 @@ describe('a question the model asked', () => {
     )
     drawn()
 
-    expect(screen.getAllByRole('button', { name: 'a' })).toHaveLength(MOST_QUESTIONS)
+    expect(screen.getAllByRole('radio', { name: 'a' })).toHaveLength(MOST_QUESTIONS)
     useAssistant.getState().choose(null)
+  })
+
+  /**
+   * 🛑 A row of look-alike buttons said nothing about how many answers were allowed. A BOX says
+   * several, a radio says one — and the set comes back in the order it was offered.
+   */
+  it('ticks boxes and keeps every answer where the question allows several', async () => {
+    const answers = useAssistant
+      .getState()
+      .askChoice([{ question: 'Lesquels ?', choices: ['Image', 'Vidéo', 'Audio'], many: true }])
+    drawn()
+
+    await userEvent.click(screen.getByRole('checkbox', { name: 'Audio' }))
+    await userEvent.click(screen.getByRole('checkbox', { name: 'Image' }))
+    await userEvent.click(screen.getByRole('button', { name: /Envoyer les réponses/ }))
+
+    await expect(answers).resolves.toEqual([{ answers: ['Image', 'Audio'] }])
+  })
+
+  /**
+   * 🛑 The question the STUDIO puts before creating a project: it opens on the assistant in
+   * force, and says what declining costs. Answering on the first tick could not have left the
+   * row that opened ticked alone, so it takes the form and its send button.
+   */
+  it('opens a studio question on what is armed, and says what declining costs', async () => {
+    const answers = useAssistant
+      .getState()
+      .askChoice([{ question: 'Quel assistant ?', choices: ['DeepSeek', 'Sonnet'] }], {
+        notice: 'Sans réponse, le projet n’aura pas d’assistant.',
+        chosen: [{ answers: ['Sonnet'] }],
+      })
+    drawn()
+
+    expect(screen.getByRole('radio', { name: 'Sonnet' })).toBeChecked()
+    expect(screen.getByText(/pas d’assistant/)).toBeInTheDocument()
+
+    await userEvent.click(screen.getByRole('button', { name: /Envoyer les réponses/ }))
+
+    await expect(answers).resolves.toEqual([{ answers: ['Sonnet'] }])
   })
 
   /** 🛑 Several questions in one breath: the composer answers ONE, so a form collects the rest
@@ -125,14 +164,14 @@ describe('a question the model asked', () => {
     ])
     drawn()
 
-    await userEvent.click(screen.getByRole('button', { name: 'Avion' }))
+    await userEvent.click(screen.getByRole('radio', { name: 'Avion' }))
     await userEvent.type(screen.getByRole('textbox', { name: 'Réponse' }), 'plus rapide')
     await userEvent.type(screen.getByRole('textbox', { name: 'Note' }), 'pour un test')
     await userEvent.click(screen.getByRole('button', { name: /Envoyer les réponses/ }))
 
     await expect(answers).resolves.toEqual([
-      { answer: 'Avion' },
-      { answer: 'plus rapide', note: 'pour un test' },
+      { answers: ['Avion'] },
+      { answers: ['plus rapide'], note: 'pour un test' },
     ])
   })
 

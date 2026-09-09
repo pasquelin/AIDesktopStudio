@@ -237,6 +237,8 @@
       "revealHint": "Abre el gestor de archivos en este proyecto",
       "forget": "Quitar de la lista",
       "forgetHint": "Quita el proyecto de esta lista, sin tocar su carpeta ni nada de lo que contiene",
+      "trash": "Mover a la papelera",
+      "trashHint": "Envía la carpeta del proyecto y todo lo que contiene a la papelera del sistema; primero se le pregunta",
       "rename": "Renombrar",
       "renameHint": "Cambiar el nombre del proyecto, dejando su carpeta del disco donde está"
     },
