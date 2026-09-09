@@ -6,6 +6,7 @@ import {
   type AssistantActionResult,
   type AssistantVisualCaptureResult,
 } from '@shared/ipc'
+import type { ActionOutcome } from '@shared/domain/assistant'
 import type { AssistantNote } from '@shared/domain/assistantNote'
 import { clipped } from '@shared/text'
 import { handle } from '@main/ipc/handle'
@@ -32,6 +33,14 @@ export type AssistantHandlerDeps = {
   transcribe: Transcript
   /** What the last prompts carried, for a reader who unfolds one — see `said.ts`. */
   said: Said
+  /**
+   * The catalogue searched, for a window running `actions.find` among other calls.
+   *
+   * 🛑 Answered HERE and not in the window: the index lives in the main process, and the window
+   * used to carry a second search of its own — same action, two rankings, depending on whether
+   * the caller was this studio or an MCP client.
+   */
+  findActions: (query: string) => Promise<ActionOutcome>
 }
 
 /**
@@ -63,6 +72,7 @@ export function registerAssistantHandlers({
   journal,
   transcribe,
   said,
+  findActions,
 }: AssistantHandlerDeps): void {
   /**
    * 🛑 The one funnel both sides pass through — see `AssistantNote`. Its blind spot: `say` holds
@@ -127,5 +137,9 @@ export function registerAssistantHandlers({
    */
   handle(CHANNELS.assistantSaid, (_event, key) =>
     Promise.resolve(typeof key === 'string' ? said.at(key) : null),
+  )
+
+  handle(CHANNELS.assistantFindActions, async (_event, query) =>
+    typeof query === 'string' ? await findActions(query) : { ok: false, refusal: 'badInput' },
   )
 }

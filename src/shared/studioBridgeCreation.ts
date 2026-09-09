@@ -2,6 +2,7 @@ import type { BundledAnimation } from './domain/animationLibrary'
 import type { WindowNote } from './domain/assistantNote'
 import type { Asset } from './domain/asset'
 import type {
+  ActionOutcome,
   AssistantAnswer,
   AssistantProgress,
   AssistantThought,
@@ -221,5 +222,13 @@ export type StudioBridgeCreation = {
      * 90 505 characters. `null` for a line older than the ring, or written by another launch.
      */
     said: (key: string) => Promise<string | null>
+    /**
+     * The actions a word or two points at, with their fields — what `actions.find` answers.
+     *
+     * 🛑 Asked of the MAIN and never answered here: the search is one SQLite index of the
+     * registry, ranked by FTS5 and by vectors, and a second one written in the window would
+     * answer the same question differently from the one an MCP client reaches.
+     */
+    findActions: (query: string) => Promise<ActionOutcome>
   }
 }

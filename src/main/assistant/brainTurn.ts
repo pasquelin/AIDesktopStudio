@@ -2,7 +2,6 @@ import {
   ACTION_REGISTRY,
   assistantAction,
   DISCOVERY_ACTION,
-  findActions,
   type ActionName,
   type AssistantAnswer,
   type AssistantProgress,
@@ -56,17 +55,25 @@ const stopped = (error: unknown): boolean =>
   error instanceof TurnStopped ||
   (error instanceof Error && (error.name === 'AbortError' || error.name === 'TimeoutError'))
 
+/** What a name a model invented is closest to — the studio's one search engine, or nothing. */
+type Discover = (query: string) => Promise<readonly ActionName[]>
+
 /** Quoting the answer back is what works; bounded so an essay does not eat the history budget. */
-function complaintAbout(answer: string, fault: ReplyFault): string {
-  return [...faultLines(fault), 'This is what you sent:', answer.slice(0, 500)].join('\n')
+async function complaintAbout(
+  answer: string,
+  fault: ReplyFault,
+  discover?: Discover,
+): Promise<string> {
+  const lines = await faultLines(fault, discover)
+  return [...lines, 'This is what you sent:', answer.slice(0, 500)].join('\n')
 }
 
-function faultLines(fault: ReplyFault): readonly string[] {
+async function faultLines(fault: ReplyFault, discover?: Discover): Promise<readonly string[]> {
   switch (fault.kind) {
     case 'unknownAction': {
-      const closest = findActions(fault.name.replace(/[.:]/g, ' '))
-        .slice(0, 5)
-        .map(action => action.name)
+      // The invented name IS the query: dots and colons apart, a model that wrote
+      // `scene.addCube` said what it was looking for.
+      const closest = (await discover?.(fault.name.replace(/[.:]/g, ' ')))?.slice(0, 5) ?? []
       return [
         `Your previous answer named "${fault.name}", which is not an action of the catalogue, so`,
         'none of its calls ran. Use catalogue names only' +
@@ -121,6 +128,7 @@ async function readOnce(
   budget: Budget,
   restart: () => void,
   notes?: TurnNotes,
+  discover?: Discover,
 ): Promise<Read> {
   budget.left -= 1
   restart()
@@ -134,7 +142,7 @@ async function readOnce(
   log.warn('assistant', `unreadable answer (${read.fault.kind}), asking once more`)
   budget.left -= 1
   restart()
-  const complaint = complaintAbout(first.answer, read.fault)
+  const complaint = await complaintAbout(first.answer, read.fault, discover)
   // The briefing goes out AGAIN beside it, so the note carries both — a reader chasing an
   // oversized request would otherwise read the retry as the cheap round.
   notes?.note({
@@ -171,9 +179,10 @@ async function readOrNarrow(
   budget: Budget,
   restart: () => void,
   notes?: TurnNotes,
+  discover?: Discover,
 ): Promise<[Briefing, Read]> {
   try {
-    return [briefing, await readOnce(briefing, round, budget, restart, notes)]
+    return [briefing, await readOnce(briefing, round, budget, restart, notes, discover)]
   } catch (error) {
     // Only a refusal of SIZE narrows. A missing key, a quota, a dropped network and a stopped
     // turn all reach here too, and none of them is answered by a shorter briefing.
@@ -183,7 +192,7 @@ async function readOrNarrow(
 
     log.warn('assistant', `too much for this door, asking with fewer rules: ${String(error)}`)
     const narrow = briefing.narrow()
-    return [narrow, await readOnce(narrow, round, budget, restart, notes)]
+    return [narrow, await readOnce(narrow, round, budget, restart, notes, discover)]
   }
 }
 
@@ -237,7 +246,7 @@ export async function answeredTurn(
   round: BrainRound,
   onProgress?: (progress: AssistantProgress) => void,
   notes?: TurnNotes,
-  discover?: (query: string) => Promise<readonly ActionName[]>,
+  discover?: Discover,
 ): Promise<AssistantAnswer> {
   const budget: Budget = { left: TURN_ATTEMPTS }
   // 🛑 Here and in no brain: this is what KNOWS an attempt is starting, and an answer thrown away
@@ -249,7 +258,7 @@ export async function answeredTurn(
   for (;;) {
     // Through the same fallback every time: a briefing that has grown by a manual is longer than
     // the one that just went through, so it is the read most likely to be refused for its size.
-    const [used, read] = await readOrNarrow(shown, round, budget, restart, notes)
+    const [used, read] = await readOrNarrow(shown, round, budget, restart, notes, discover)
     shown = used
     const before = spent
     spent += read.cost
@@ -265,9 +274,11 @@ export async function answeredTurn(
     }
 
     const query = discoveryIn(read.reply)
-    if (query !== null && shown.expand !== null) {
+    // 🛑 Nothing to expand WITH when no search was handed over: the call then travels back and
+    // the window runs it through the same engine, rather than a second one written here.
+    if (query !== null && shown.expand !== null && discover) {
       log.info('assistant', `the model asked what else there is: "${query}"`)
-      shown = discover ? shown.withLoaded(await discover(query)) : shown.expand(query)
+      shown = shown.expand(query, await discover(query))
       continue
     }
 

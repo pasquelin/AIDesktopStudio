@@ -1,5 +1,6 @@
 import type { RoleProvider } from '@shared/domain/aiRole'
 import type { LocalModel } from '@shared/domain/localModel'
+import type { ActionName } from '@shared/domain/assistant'
 import type { AssistantBrain } from './brainPort'
 
 /**
@@ -43,6 +44,14 @@ export type RoutedBrainDeps = {
   // Read here for the same reason as the context: a path the window named is a path the window
   // chose, and `project.create` acts on it.
   foldersOf: () => string
+  /**
+   * The actions a sentence points at, through the studio's one search engine — `actionIndex`.
+   *
+   * 🛑 Here and not in a door: a mission already picks its candidates this way, and a chat turn
+   * that skipped it was composed EVERY manual instead — 310 of them, 106 391 of the 117 364
+   * characters sent per round trip (measured 2026-09-09 on deepseek-chat).
+   */
+  findActions: (query: string, limit?: number) => Promise<readonly ActionName[]>
 }
 
 /** The brain and, when there is none, the reason — which is the only thing left to say. */
@@ -60,6 +69,16 @@ function brainFor(
 
   return [deps.localBrain(model), `nothing here converses with ${model.id}`]
 }
+
+/**
+ * How many manuals a chat sentence opens. A mission takes twelve (`CONTEXT_BUDGETS.actions`); a
+ * chat has no step to narrow it, so it takes the double — at the registry's ~343 characters a
+ * manual, some 8 200 against the 106 391 that every manual costs.
+ *
+ * 🛑 Not a ceiling on what the turn may reach: `unloadedIn` opens what the model names anyway,
+ * and `actions.find` opens what it cannot name. This is where it STARTS from.
+ */
+const CHAT_CANDIDATES = 24
 
 /**
  * Raised rather than answered with an empty sentence: the window marks a rejected turn LOST and
@@ -82,13 +101,16 @@ export function createRoutedBrain(deps: RoutedBrainDeps): AssistantBrain {
       return brain === null ? null : await brain.window()
     },
     think: async (request, watch) => {
-      // The four together: WHICH brain answers probes the runtimes, and none of the other three
+      // The five together: WHICH brain answers probes the runtimes, and none of the others
       // depends on the answer. Serially, the person waited for their sum.
-      const [provider, context, state, memories] = await Promise.all([
+      const [provider, context, state, memories, found] = await Promise.all([
         deps.providerOf(),
         deps.contextOf(),
         deps.stateOf(),
         deps.memoriesOf(),
+        // A mission packed its own candidates from the same engine; searching again would rank
+        // the STEP's sentence against the mission's and hand back a different set.
+        request.candidates ? [] : deps.findActions(request.utterance, CHAT_CANDIDATES),
       ])
 
       const [brain, why] = brainFor(deps, provider)
@@ -106,8 +128,20 @@ export function createRoutedBrain(deps: RoutedBrainDeps): AssistantBrain {
           state,
           memories,
           folders: deps.foldersOf(),
+          /**
+           * 🛑 Left ALONE when the search answered nothing — an index still building, an engine
+           * that failed, a sentence of two words nothing matches. Undefined means every manual,
+           * which is heavy and complete; an empty list would mean a model shown the names of 310
+           * actions and the fields of none.
+           */
+          ...(found.length > 0 ? { candidates: found } : {}),
         },
-        watch,
+        {
+          ...watch,
+          // The one place it is filled. Without it `answeredTurn` fell back to a second search
+          // engine of its own — see `expand` in `instruction.ts`.
+          discover: watch?.discover ?? (query => deps.findActions(query)),
+        },
       )
     },
   }

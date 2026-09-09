@@ -6,7 +6,7 @@ import type { StudioSnapshot } from '@shared/domain/studioSnapshot'
 import { actionSearchScope } from './actionSearchContext'
 import type { Embedder } from '@main/memory/embedder'
 import { actionCorpus } from './actionCorpus'
-import type { ActionOutcome, ActionResource } from '@shared/domain/assistant'
+import type { ActionName, ActionOutcome, ActionResource } from '@shared/domain/assistant'
 import type { ActionEmbedding, ActionHit, ActionRanking, ActionSearchScope } from './actionIndex'
 import type { AsyncActionIndex } from './actionIndexClient'
 import { openActionIndexThread } from './actionIndexThread'
@@ -19,14 +19,12 @@ const FOUND_LIMIT = 12
  * What `actions.find` answers the model — the hits with their fields, labels in English — built
  * ONCE for the product and the bench: written twice, the two measured different search engines.
  */
-export function createActionFinder(deps: {
-  search: ActionSearchService['search']
-  snapshot: () => Promise<StudioSnapshot | null>
-}): (query: unknown) => Promise<ActionOutcome> {
+export function createActionFinder(
+  deps: ActionSearchDeps,
+): (query: unknown) => Promise<ActionOutcome> {
   return async query => {
     if (typeof query !== 'string') return { ok: false, refusal: 'badInput' }
-    const scope = actionSearchScope(await deps.snapshot(), query)
-    const hits = await deps.search(query, FOUND_LIMIT, undefined, scope)
+    const hits = await hitsFor(deps, query, FOUND_LIMIT)
     return {
       ok: true,
       data: hits.map(hit => ({
@@ -36,6 +34,33 @@ export function createActionFinder(deps: {
       })),
     }
   }
+}
+
+/** What a search needs of the studio: the engine, and what is in front to weigh a hit by. */
+export type ActionSearchDeps = {
+  search: ActionSearchService['search']
+  snapshot: () => Promise<StudioSnapshot | null>
+}
+
+const hitsFor = async (
+  deps: ActionSearchDeps,
+  query: string,
+  limit: number,
+): Promise<readonly ActionHit[]> =>
+  await deps.search(query, limit, undefined, actionSearchScope(await deps.snapshot(), query))
+
+/**
+ * The names one query points at — what a briefing opens the manuals of.
+ *
+ * Beside `createActionFinder` and through the same scope: the model reaching an action by its own
+ * `actions.find` and the briefing composed for its sentence must rank it the same way, or the
+ * catalogue would answer one thing and the manuals carry another.
+ */
+export function createActionNames(
+  deps: ActionSearchDeps,
+): (query: string, limit?: number) => Promise<readonly ActionName[]> {
+  return async (query, limit = FOUND_LIMIT) =>
+    (await hitsFor(deps, query, limit)).map(hit => hit.action.name)
 }
 
 export type ActionSearchService = {

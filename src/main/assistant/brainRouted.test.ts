@@ -1,7 +1,8 @@
 import { describe, expect, it, vi } from 'vitest'
 import type { AssistantAnswer, AssistantThought } from '@shared/domain/assistant'
 import { localModel } from '@shared/domain/localModel-fixtures'
-import type { AssistantBrain } from './brainPort'
+import type { ActionName } from '@shared/domain/assistant'
+import type { AssistantBrain, TurnWatch } from './brainPort'
 import { createRoutedBrain, type RoutedBrainDeps } from './brainRouted'
 
 const llama = localModel({ id: 'llama3.2:3b', loader: 'ollama', files: [] })
@@ -24,6 +25,7 @@ const routed = (over: Partial<RoutedBrainDeps> = {}) =>
     stateOf: () => Promise.resolve(''),
     memoriesOf: () => Promise.resolve(0),
     foldersOf: () => 'home: /Users/someone',
+    findActions: () => Promise.resolve([]),
     ...over,
   })
 
@@ -117,7 +119,7 @@ describe('the routed brain', () => {
         context: 'World: a forest',
         state: 'Studio now:\n  Space: image.',
       }),
-      undefined,
+      expect.anything(),
     )
   })
 
@@ -151,7 +153,7 @@ describe('the routed brain', () => {
         state: 'Studio now:\n  Space: image.',
         candidates: ['layer.add'],
       }),
-      undefined,
+      expect.anything(),
     )
   })
 
@@ -181,6 +183,80 @@ describe('the routed brain', () => {
       images: [{ mimeType: 'image/png', bytes: new Uint8Array([1]) }],
     })
 
-    expect(think).toHaveBeenCalledWith(expect.objectContaining({ images: undefined }), undefined)
+    expect(think).toHaveBeenCalledWith(
+      expect.objectContaining({ images: undefined }),
+      expect.anything(),
+    )
+  })
+})
+
+/**
+ * 🛑 The studio has ONE search over its actions — the SQLite index of `actionIndex` — and this is
+ * where a turn meets it. A chat sentence that skipped it was composed EVERY manual of the
+ * registry: 106 391 of the 117 364 characters sent per round trip, measured 2026-09-09.
+ */
+describe('the manuals a turn opens', () => {
+  const thinking = (seen: AssistantThought[], watches: (TurnWatch | undefined)[]) => ({
+    ...answering(''),
+    think: (request: AssistantThought, watch?: TurnWatch) => {
+      seen.push(request)
+      watches.push(watch)
+      return Promise.resolve<AssistantAnswer>({ say: '', calls: [], cost: 0 })
+    },
+  })
+
+  const turning = (over: Partial<RoutedBrainDeps> = {}) => {
+    const seen: AssistantThought[] = []
+    const watches: (TurnWatch | undefined)[] = []
+    const brain = routed({
+      providerOf: () => Promise.resolve({ kind: 'local', modelId: llama.id }),
+      localBrain: () => thinking(seen, watches),
+      ...over,
+    })
+    return { brain, seen, watches }
+  }
+
+  it('opens the manuals its own sentence points at', async () => {
+    const { brain, seen } = turning({
+      findActions: () => Promise.resolve(['git.checkout', 'git.branches']),
+    })
+
+    await brain.think(thought)
+
+    expect(seen[0]?.candidates).toEqual(['git.checkout', 'git.branches'])
+  })
+
+  /**
+   * 🛑 Every manual rather than none: an index still building or an engine that failed leaves the
+   * turn heavy, where an empty list would show a model 310 names and the fields of nothing.
+   */
+  it('keeps every manual when the search answered nothing', async () => {
+    const { brain, seen } = turning({ findActions: () => Promise.resolve([]) })
+
+    await brain.think(thought)
+
+    expect(seen[0]?.candidates).toBeUndefined()
+  })
+
+  // Ranked against the STEP's sentence, a mission's candidates would not be the ones it packed.
+  it('leaves a mission the candidates it packed itself', async () => {
+    const findActions = vi.fn(() => Promise.resolve<readonly ActionName[]>(['git.checkout']))
+    const { brain, seen } = turning({ findActions })
+
+    await brain.think({ ...thought, candidates: ['project.create'] })
+
+    expect(seen[0]?.candidates).toEqual(['project.create'])
+    expect(findActions).not.toHaveBeenCalled()
+  })
+
+  // What `answeredTurn` reaches for when the model calls `actions.find` — the same engine.
+  it('hands the turn the search to discover with', async () => {
+    const { brain, watches } = turning({
+      findActions: () => Promise.resolve(['scene.state']),
+    })
+
+    await brain.think(thought)
+
+    await expect(watches[0]?.discover?.('what is in front')).resolves.toEqual(['scene.state'])
   })
 })

@@ -1,7 +1,11 @@
 import { describe, expect, it, vi } from 'vitest'
 import type { Embedder } from '@main/memory/embedder'
 import type { AsyncActionIndex } from './actionIndexClient'
-import { createActionSearchService } from './actionSearchService'
+import {
+  createActionNames,
+  createActionSearchService,
+  type ActionSearchService,
+} from './actionSearchService'
 
 function indexFixture(model: string | null): {
   index: AsyncActionIndex
@@ -117,5 +121,25 @@ describe('Action search service', () => {
     await service.search('second')
     expect(attempts).toBe(2)
     expect(trouble).toHaveBeenCalledWith('temporarily unavailable')
+  })
+
+  /**
+   * 🛑 The names a briefing opens the manuals of, taken from the SAME engine and the SAME scope as
+   * `actions.find`: two searches over one registry ranked the same sentence differently, so what
+   * the model was shown and what it could ask for did not agree.
+   */
+  it('answers the names a sentence points at, scoped by what is in front', async () => {
+    const search = vi.fn(async () => [
+      { action: { name: 'git.checkout' } },
+      { action: { name: 'git.branches' } },
+    ])
+    const names = createActionNames({
+      // The names alone are read here; a whole `ActionHit` carries fourteen fields nothing asserts.
+      search: search as unknown as ActionSearchService['search'],
+      snapshot: async () => null,
+    })
+
+    await expect(names('switch branch', 2)).resolves.toEqual(['git.checkout', 'git.branches'])
+    expect(search).toHaveBeenCalledWith('switch branch', 2, undefined, expect.anything())
   })
 })

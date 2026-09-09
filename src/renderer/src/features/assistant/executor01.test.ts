@@ -5,6 +5,7 @@ import { useLayouts } from '@/stores/layouts'
 import { useModels } from '@/stores/models'
 import { useProject } from '@/stores/project'
 import { SCENARIO_CLOUD } from '@shared/domain/aiCloud'
+import type { ActionOutcome } from '@shared/domain/assistant'
 import { aiRoleId } from '@shared/domain/aiRole'
 import type { Job } from '@shared/domain/job'
 import type { ModelSummary } from '@shared/domain/model'
@@ -309,15 +310,23 @@ describe('choosing and preparing a model', () => {
   })
 
   /**
-   * What a model shown only the short list asks with, and what it gets back: the action, what it
-   * is for, and the fields it takes — enough to call it on the next turn without seeing the rest.
+   * 🛑 Asked of the MAIN process, where the SQLite index lives — the window used to rank the query
+   * itself, so the same `actions.find` answered one thing here and another to an MCP client.
    */
-  it('finds actions the short catalogue never named', async () => {
+  it('finds actions the short catalogue never named, through the studio index', async () => {
+    const findActions = vi.fn(() =>
+      Promise.resolve<ActionOutcome>({
+        ok: true,
+        data: [{ name: 'git.checkout', fields: [{}] }],
+      }),
+    )
+    installFakeBridge({ assistant: { findActions } })
+
     const outcome = await runAction('actions.find', { query: 'git branch' })
     const found = outcome.ok ? (outcome.data as { name: string; fields: unknown[] }[]) : []
 
+    expect(findActions).toHaveBeenCalledWith('git branch')
     expect(found.some(one => one.name === 'git.checkout')).toBe(true)
-    expect(found.find(one => one.name === 'git.checkout')?.fields.length).toBeGreaterThan(0)
   })
 
   it('refuses parameters that are not a set of values', async () => {

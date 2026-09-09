@@ -300,6 +300,7 @@ const fakeAssistant = (overrides: BridgeOverrides): StudioBridge['assistant'] =>
   note: () => Promise.resolve(),
   said: () => Promise.resolve(null),
   window: () => Promise.resolve(null),
+  findActions: () => Promise.resolve({ ok: true, data: [] }),
   ...overrides.assistant,
 })
 
