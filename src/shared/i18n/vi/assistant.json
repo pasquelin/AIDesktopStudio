@@ -131,7 +131,7 @@
       },
       "projectCreate": {
         "title": "Tạo một thư mục dự án",
-        "description": "Tạo một dự án và mở nó, mà không dựng lên hộp thoại hệ thống mà một người sẽ dùng. Chỉ một TÊN là đủ — studio đặt nó vào nơi người này cất các dự án, đã nêu ở trên. Trường folder cho biết tạo nó trong thư mục nào, khi câu nói có nêu một thư mục."
+        "description": "Tạo một dự án và mở nó, mà không dựng lên hộp thoại hệ thống mà một người sẽ dùng. Chỉ một TÊN là đủ — studio đặt nó vào nơi người này cất các dự án, đã nêu ở trên. Trường folder cho biết tạo nó trong thư mục nào, khi câu nói có nêu một thư mục. Để người này chọn nơi đặt, vẫn gọi hành động này: xác nhận của nó có một nút mở hộp chọn của hệ thống và điền vào trường folder."
       },
       "projectForget": {
         "title": "Bỏ một dự án khỏi các dự án gần đây",

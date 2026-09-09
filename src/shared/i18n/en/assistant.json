@@ -131,7 +131,7 @@
       },
       "projectCreate": {
         "title": "Create a project folder",
-        "description": "Makes a project and opens it, without raising the system dialogue a person would use. A NAME is enough — the studio puts it where this person keeps projects, named above. The folder field says which folder to make it in, when the sentence names one."
+        "description": "Makes a project and opens it, without raising the system dialogue a person would use. A NAME is enough — the studio puts it where this person keeps projects, named above. The folder field says which folder to make it in, when the sentence names one. To leave the place open to choice, call the action all the same: its confirmation carries a button that opens the system picker and fills the folder field."
       },
       "projectForget": {
         "title": "Drop a project from the recent ones",
