@@ -90,11 +90,11 @@ const ASK_LINES = [
   // 🛑 Two lines of the FORMAT and never a rule of the catalogue: named by a rule, this was
   // described to every model and called by none — the question went in "say" and the calls went
   // out beside it. What gives ground when the room runs out is never this block.
-  '  "ask": {"question":"…","choices":[…]} to ask, or null. It RUNS NOTHING:',
+  '  "ask": {"question":"…","choices":[…],"many":true} to ask, or null. It RUNS NOTHING:',
   '    the calls wait, the answer comes next round. Ask rather than act halfway.',
   // 🛑 Tightened to make room for "many" rather than given a line of its own: measured at 7 175
   // characters against the 7 116 a 4 096-token door leaves, with the catalogue already narrow.
-  `    Several: {"questions":[{"question":"…","choices":[…],"note":true,"many":true},…]}, ${MOST_QUESTIONS} max ("note"=a free line, "many"=several).`,
+  `    Several: {"questions":[{"question":"…","choices":[…],"note":true},…]}, ${MOST_QUESTIONS} max ("note"=a free line, "many"=several).`,
 ]
 
 export const FORMAT = [

@@ -117,16 +117,22 @@ const inputShown = (input: Record<string, unknown>): string =>
  * read the same whether the model searched with the wrong words or believed it was done.
  */
 function transcriptOf(played: Run): string {
-  if (played.called.length === 0) return `no call — said: ${shortly(played.said)}`
+  // 🛑 The questions travel with the calls: a scenario about ASKING failed the same way whether
+  // nothing was asked or the shape was wrong, which is the one thing it measures.
+  const asked = played.asks.map(one => `${one.question}${one.many ? ' (many)' : ''}`).join(' · ')
+  const questions = asked === '' ? '' : `\n      asked: ${asked}`
+  if (played.called.length === 0) return `no call — said: ${shortly(played.said)}${questions}`
 
   const steps = played.called.map((one, at) => {
     const said = inputShown(one.input)
     return `      ${at + 1}. ${one.action}${said ? ` ${said}` : ''} → ${one.answer === undefined ? 'never ran' : shortly(one.answer)}`
   })
 
-  return [`${played.called.length} calls`, ...steps, `      said: ${shortly(played.said)}`].join(
-    '\n',
-  )
+  return [
+    `${played.called.length} calls`,
+    ...steps,
+    `      said: ${shortly(played.said)}${questions}`,
+  ].join('\n')
 }
 
 describe.skipIf(KEY === '' || chat === null)(`what ${PROVIDER} does with a real request`, () => {

@@ -4,6 +4,7 @@ import { REST_ANIMATION_SCENARIOS } from './scenariosRestAnimation'
 import { EXPORT_FORMATS } from '@shared/domain/scene'
 import * as read from './oracle'
 import {
+  boatImage,
   cubeScene,
   generating,
   indexing,
@@ -156,6 +157,28 @@ export const REST_SCENARIOS: readonly Scenario[] = [
     said: ['Mets le projet Voilier à la corbeille.'],
     setup: twoShelved,
     passed: run => rowGone() && read.trashedProjects(run).includes('/projets/Voilier'),
+  },
+
+  {
+    /**
+     * 🛑 The `many` key of the FORMAT block, end to end: the sentence asks for a SUBSET, so a
+     * question that takes one answer cannot carry the reply. What is scored is the SHAPE — a
+     * question worded « lesquels » with the key absent still draws radios and takes one.
+     *
+     * 🛑 TWO documents open, laid by the decor: the state block says « no document is open » on a
+     * bare studio, so a model that READS it rightly answers there is nothing to close — and the
+     * scenario would have scored the models that ignore the state.
+     *
+     * ANGLE MORT: what the answers OFFER is not read. `AskedShape` carries the shape and not the
+     * choices, so a question about something else entirely, asked with `many`, passes.
+     */
+    name: '41.14 asks which documents to close, letting several be ticked',
+    said: ['Demande-moi lesquels de mes documents je veux fermer.'],
+    setup: async studio => {
+      await scene('Scène 1')(studio)
+      await boatImage(studio)
+    },
+    passed: read.askedSeveral,
   },
 
   {
