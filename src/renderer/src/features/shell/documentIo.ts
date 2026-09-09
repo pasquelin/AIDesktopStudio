@@ -3,13 +3,18 @@ import { localizedError } from '@shared/localizedError'
 import { getBridge } from '@/services/bridge'
 import { reportFailure, reportNotice } from '@/services/diagnostics'
 import { assetsById, useAssets } from '@/stores/assets'
-import { useDocuments } from '@/stores/documents'
+import { takenDocumentNames, useDocuments } from '@/stores/documents'
 import { useLivePreviews } from '@/stores/livePreviews'
 import { useMaterialViews } from '@/stores/materialViews'
 import { useMonitorPair } from '@/stores/monitorPair'
 import { usePlayback } from '@/stores/playback'
 import { useSkyboxViews } from '@/stores/skyboxViews'
-import { type CloseChoice, type DocumentDescriptor } from '@shared/domain/document'
+import {
+  documentFolderOf,
+  type CloseChoice,
+  type DocumentDescriptor,
+} from '@shared/domain/document'
+import { nextFreeDocumentName } from '@shared/domain/documentName'
 import { FOLDER_ROOT, parentOf } from '@shared/domain/folder'
 import {
   formatOfFile,
@@ -219,6 +224,18 @@ async function rewriteSourceAsset(
     reportFailure('assets.save', document.title, error)
   }
 }
+/**
+ * What a copy is called, freed of a name the folder already holds: the store leaves a view of an
+ * asset its asset's name, and copying one document twice stood two tabs on one file, each saving
+ * over the other (2026-09-09).
+ */
+const copyName = (document: DocumentDescriptor): string =>
+  nextFreeDocumentName(
+    i18next.t('documents.copyName', { name: document.title }),
+    document.kind,
+    takenDocumentNames(useDocuments.getState(), documentFolderOf(document.kind)),
+  )
+
 async function copyDocumentAsset(
   documentId: string,
   { bridge, document, io }: SavableDocument,
@@ -228,7 +245,7 @@ async function copyDocumentAsset(
     reportFailure('assets.copy', document.title, localizedError('copyContentEmpty'))
     return false
   }
-  const name = i18next.t('documents.copyName', { name: document.title })
+  const name = copyName(document)
   const { format, losses } = writePlanFor(document, io, source)
   try {
     const { draft } = await io.capture(documentId)

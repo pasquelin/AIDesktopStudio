@@ -137,6 +137,9 @@ describe('asking the window in front to act', () => {
       'optimization.analyze',
       'optimization.report',
       'scene.capture',
+      // Since 2026-09-09: it raises no window of its own any more, and a creation still writes a
+      // template's files and reads a tab back before it answers.
+      'workspace.open',
     ])
   })
 

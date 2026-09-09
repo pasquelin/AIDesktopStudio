@@ -35,7 +35,7 @@
       },
       "workspaceOpen": {
         "title": "Mở một không gian làm việc",
-        "description": "Chuyển sang một không gian làm việc, và tạo tài liệu ở đó khi được yêu cầu — một tài liệu MỚI mỗi lần, nên đây không phải là đường quay lại một tài liệu đã mở. Luôn đưa một tiêu đề: thiếu nó, một cửa sổ đặt tên sẽ mở ra và lệnh gọi phải chờ một người."
+        "description": "Chuyển sang một không gian làm việc, và tạo tài liệu ở đó khi được yêu cầu — một tài liệu MỚI mỗi lần, nên đây không phải là đường quay lại một tài liệu đã mở. Việc tạo cần một tiêu đề, và tiêu đề thuộc về người dùng: hãy hỏi họ tên thay vì tự nghĩ ra. Một tiêu đề dự án đã mang thì bị từ chối."
       },
       "modelsSearch": {
         "title": "Tìm một mô hình",

@@ -35,7 +35,7 @@
       },
       "workspaceOpen": {
         "title": "Abrir un espacio de trabajo",
-        "description": "Cambia a un espacio de trabajo, y crea allí un documento cuando se le pide — uno NUEVO cada vez, así que no es el camino de vuelta a un documento ya abierto. Da siempre un título: sin él se abre una ventana de nombre y la llamada espera a una persona."
+        "description": "Cambia a un espacio de trabajo, y crea allí un documento cuando se le pide — uno NUEVO cada vez, así que no es el camino de vuelta a un documento ya abierto. Una creación quiere un título, y es de la persona: pídele el nombre en lugar de inventar uno. Un título que el proyecto ya lleva se rechaza."
       },
       "modelsSearch": {
         "title": "Buscar un modelo",

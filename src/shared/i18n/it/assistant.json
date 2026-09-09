@@ -35,7 +35,7 @@
       },
       "workspaceOpen": {
         "title": "Apri un’area di lavoro",
-        "description": "Passa a un’area di lavoro, e vi crea un documento se richiesto — uno NUOVO ogni volta, quindi non è la via di ritorno verso un documento già aperto. Dai sempre un titolo: senza, si apre una finestra di denominazione e la chiamata attende una persona."
+        "description": "Passa a un’area di lavoro, e vi crea un documento se richiesto — uno NUOVO ogni volta, quindi non è la via di ritorno verso un documento già aperto. Una creazione vuole un titolo, e appartiene alla persona: chiedile il nome invece di inventarne uno. Un titolo che il progetto porta già viene rifiutato."
       },
       "modelsSearch": {
         "title": "Cerca un modello",

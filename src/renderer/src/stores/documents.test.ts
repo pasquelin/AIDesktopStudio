@@ -173,6 +173,19 @@ describe('documents store', () => {
   })
 
   /**
+   * 🛑 The names the STUDIO engenders — an OTIO import, a copy — are freed rather than refused:
+   * importing one montage twice, or copying one document twice, stood two tabs on one file and
+   * each save overwrote the other (2026-09-09). A name a person TYPED is refused instead, at the
+   * naming field and before the assistant's own creation.
+   */
+  it('frees a name a document of that folder already holds', async () => {
+    const { create } = useDocuments.getState()
+    const first = await create('image', { title: 'Montage' })
+
+    expect((await create('image', { title: 'Montage' }))?.path).not.toBe(first?.path)
+  })
+
+  /**
    * The numbering counts blank documents, and an asset-opened one carries the asset's name. Left
    * in the tally, three pictures opened from the shelf made the FIRST untitled document of the
    * space « Sans titre 4 ».

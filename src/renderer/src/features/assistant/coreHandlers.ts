@@ -6,12 +6,12 @@ import { CHOICE_SCOPES } from '@shared/domain/aiOverview'
 import { LANDING_TARGETS } from '@shared/domain/landingTarget'
 import { CAPABILITIES_BY_FAMILY, MODEL_FAMILIES } from '@shared/domain/model'
 import { SCENE_TEMPLATE_IDS } from '@shared/domain/sceneTemplate'
-import { WORKSPACE_IDS } from '@shared/domain/workspace'
+import { WORKSPACE_IDS, type WorkspaceId } from '@shared/domain/workspace'
 import { englishText } from '@shared/i18n'
 import { failureMessageKey } from '@/services/failureMessage'
 import { showWorkspace } from '@/features/shell/components/dockviewApi'
 import { restoreDocument } from '@/features/shell/documentLoad'
-import { createDocumentIn } from '@/features/shell/newDocument'
+import { createNamedDocumentIn } from '@/features/shell/newDocument'
 import { openGeneratorOn } from '@/helpers/openGenerator'
 import { revealTool, toolIsOffered } from '@/helpers/revealPanel'
 import { routeCommand, type CommandRouting } from '@/services/commandRouter'
@@ -156,51 +156,69 @@ async function prepareGenerator(input: Record<string, unknown>): Promise<ActionO
       )
 }
 
-// Waits for the document: the creation puts a name field on screen, and answering before it is
-// filled told a client "done" about one the person then called off.
 async function openWorkspace(input: Record<string, unknown>): Promise<ActionOutcome> {
   const workspace = oneOf(input, 'workspace', WORKSPACE_IDS)
   if (!workspace)
     return refused('badInput', `"workspace" wants one of: ${WORKSPACE_IDS.join(', ')}`)
 
-  if (!boolOf(input, 'createDocument')) {
-    // The tab brought forward may never have been mounted, so nothing has read its file. Waited
-    // for, so the call after this one reads restored content — but never refused on: the space IS
-    // in front, and a front tab whose file will not read would otherwise make it unreachable.
-    const front = showWorkspace(workspace)
-    if (!front) return { ok: true }
+  if (boolOf(input, 'createDocument')) return await madeDocument(workspace, input)
 
-    await restoreDocument(front)
-    return { ok: true, data: { documentId: front } }
-  }
+  // The tab brought forward may never have been mounted, so nothing has read its file. Waited
+  // for, so the call after this one reads restored content — but never refused on: the space IS
+  // in front, and a front tab whose file will not read would otherwise make it unreachable.
+  const front = showWorkspace(workspace)
+  if (!front) return { ok: true }
 
-  // Asked here although the creation asks it too: from there it answers `null`, which is the
-  // person's own refusal — and "you turned that down" for a studio with no project open is a lie.
-  if (!useProject.getState().project)
-    return refused(
-      'noProject',
-      'no project is open, and a document is made inside one — projects.list answers what there is, project.open opens one and project.create makes one',
-    )
+  await restoreDocument(front)
+  return { ok: true, data: { documentId: front } }
+}
+
+/**
+ * A new document of that space, named by the person the studio is working for.
+ *
+ * Waits for it: a scene's template writes its control map, its graph and its script before the
+ * tab holds anything, and answering first told a client "done" about an empty one.
+ */
+async function madeDocument(
+  workspace: WorkspaceId,
+  input: Record<string, unknown>,
+): Promise<ActionOutcome> {
+  // Asked here although the creation asks it too: from there it answers `null`, which says only
+  // that nothing was written — and "the studio would not write it" is no help without the reason.
+  if (!useProject.getState().project) return refused('noProject', NO_PROJECT_TO_WRITE_IN)
 
   const title = textOf(input, 'title')
+  // 🛑 The same gate `project.create` puts on a project's name, and for the same reason: a file
+  // is named by the person who will look for it. Left optional on the field — opening a space
+  // takes no title — so the refusal is what tells a model to ask rather than to invent one.
+  if (title === null) return refused('badInput', WANTS_A_TITLE)
+
   const folder = textOf(input, 'folder')
-  // Only alongside a title, and for the same reason the folder is: with no title the naming
-  // window opens, and what it puts on screen is the person's own choice to make.
   const template = oneOf(input, 'template', SCENE_TEMPLATE_IDS)
-  const created = await createDocumentIn(
-    workspace,
-    title === null
-      ? undefined
-      : {
-          title,
-          ...(folder === null ? {} : { folder }),
-          ...(template === null ? {} : { template }),
-        },
-  )
+  const created = await createNamedDocumentIn(workspace, {
+    title,
+    ...(folder === null ? {} : { folder }),
+    ...(template === null ? {} : { template }),
+  })
+  // The CAUSE, in the words `document.rename` already answers in: told « badInput » alone, a
+  // caller sent the same title straight back — bench pass of 2026-08-26.
+  if (typeof created === 'string') return refused('badInput', `the title "${title}" is ${created}`)
+
+  // `failed` and no longer `declined`: nobody is asked any more, so `null` is the studio unable
+  // to write the file — a name the disk refuses, or a folder it cannot reach.
   return created
     ? { ok: true, data: { documentId: created.id } }
-    : refused('declined', 'the person at the screen turned the new document down')
+    : refused(
+        'failed',
+        'the studio wrote no document under that title — another one may reach the disk',
+      )
 }
+
+const NO_PROJECT_TO_WRITE_IN =
+  'no project is open, and a document is made inside one — projects.list answers what there is, project.open opens one and project.create makes one'
+
+const WANTS_A_TITLE =
+  '"title" is wanted — what to call the new document. It is the person\'s to give: ask them for it rather than choosing one yourself. "folder" says where to put it, and "template" what a scene opens on'
 
 /**
  * Suggestions are written FOR a model — its own vocabulary, its own parameters — so there is no

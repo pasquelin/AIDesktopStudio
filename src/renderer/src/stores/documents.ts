@@ -1,5 +1,5 @@
 import {
-  roleForKind,
+  documentFolderOf,
   isFiledKind,
   kindForWorkspace,
   kindsForWorkspace,
@@ -10,6 +10,7 @@ import {
   checkDocumentName,
   documentFileName,
   documentPathFor,
+  nextFreeDocumentName,
   DOCUMENT_NAME_FAILURES,
   type DocumentNameFailure,
   type NamedDocument,
@@ -17,7 +18,6 @@ import {
 import { foldForFileName, nameFailureOf } from '@shared/domain/fileName'
 import { workshopIdOf } from '@shared/domain/character'
 import { nameOf, parentOf } from '@shared/domain/folder'
-import { DEFAULT_ROLE_PATHS } from '@shared/domain/folderRole'
 import { refFromString } from '@shared/domain/ref'
 import type { WorkspaceId } from '@shared/domain/workspace'
 import { resolveLanguage } from '@shared/i18n'
@@ -27,6 +27,15 @@ import { getBridge } from '@/services/bridge'
 import { newId } from '@/helpers/ids'
 import { useLayouts } from './layouts'
 
+/** What a caller that names its own document brings — the window's answer, an import, a copy. */
+type DocumentCreation = {
+  title: string
+  sourceAssetId?: string
+  folder?: string
+  kind?: DocumentKind
+  path?: string
+}
+
 type DocumentsState = {
   documents: Record<string, DocumentDescriptor>
   activeId: string | null
@@ -34,16 +43,7 @@ type DocumentsState = {
   stored: DocumentDescriptor[]
   relist: (after?: 'own-write') => Promise<void>
   refresh: () => Promise<boolean>
-  create: (
-    workspace: WorkspaceId,
-    of?: {
-      title: string
-      sourceAssetId?: string
-      folder?: string
-      kind?: DocumentKind
-      path?: string
-    },
-  ) => Promise<DocumentDescriptor | null>
+  create: (workspace: WorkspaceId, of?: DocumentCreation) => Promise<DocumentDescriptor | null>
   activate: (id: string | null) => void
   adopt: (document: DocumentDescriptor) => void
   rename: (id: string, title: string) => Promise<DocumentNameFailure | null>
@@ -306,17 +306,14 @@ export const useDocuments = createStore<DocumentsState>()((set, get) => ({
       wanted && kindsForWorkspace(workspace).includes(wanted) ? wanted : kindForWorkspace(workspace)
     if (!kind) return null
 
-    const stored = of ? [] : ((await listed()) ?? [])
+    // Its own listing to name the document itself, the one held where the caller brings a name.
+    const stored = of ? get().stored : ((await listed()) ?? [])
+    const taken = takenDocumentNames(
+      { documents: get().documents, stored },
+      of?.folder ?? documentFolderOf(kind),
+    )
 
-    const title =
-      of?.title ??
-      untitledDocumentName(
-        takenDocumentNames(
-          { documents: get().documents, stored },
-          DEFAULT_ROLE_PATHS[roleForKind(kind)],
-        ),
-        kind,
-      )
+    const title = titleFor(of, kind, taken)
 
     const document: DocumentDescriptor = {
       id: newId(),
@@ -400,6 +397,24 @@ const generations = { relist: 0, refresh: 0 }
 let listing: Promise<DocumentDescriptor[] | null> | null = null
 
 /**
+ * 🛑 Never a name landing on the path another document already holds: importing one montage twice
+ * stood two tabs on one file, each saving over the other (2026-09-09). Freed and not refused —
+ * the name is the studio's own; a name a PERSON typed meets `checkDocumentName` instead.
+ * Exempt: an explicit path, and a view of an ASSET, which wears that asset's name homonyms
+ * included and is told apart by the link (`copyName` frees a copy's own).
+ */
+function titleFor(
+  of: DocumentCreation | undefined,
+  kind: DocumentKind,
+  taken: readonly NamedDocument[],
+): string {
+  const asked = of?.title ?? untitledDocumentName(taken, kind)
+  if (of?.path !== undefined || of?.sourceAssetId !== undefined) return asked
+
+  return nextFreeDocumentName(asked, kind, taken)
+}
+
+/**
  * Every name already spoken for — the folder's and the open tabs' alike.
  *
  * The FILE names, and every document's rather than the blank ones of one workspace: what makes a
@@ -410,6 +425,7 @@ let listing: Promise<DocumentDescriptor[] | null> | null = null
  * The listing is handed in rather than read off the store: `create` has to read the store and
  * write to it in one synchronous run, and it holds a fresher listing than the one `stored` has.
  */
+
 export function takenDocumentNames(
   state: {
     documents: Record<string, DocumentDescriptor>

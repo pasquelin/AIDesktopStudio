@@ -31,7 +31,12 @@ export const CONTEXT_ACTIONS: readonly AssistantAction[] = [
     titleKey: 'assistant.actions.contextWriteProjectCard.title',
     descriptionKey: 'assistant.actions.contextWriteProjectCard.description',
     commitment: 'none',
-    repeatable: true,
+    /**
+     * With no `cardId` this WRITES A NEW CARD, so a second identical call spends one of the few
+     * the project takes on a twin. Two different cards in one turn still pass: their inputs
+     * differ, and so do their keys (2026-09-09).
+     */
+    repeatable: false,
     raises: input => ('title' in input || 'body' in input ? 'files' : 'none'),
     reach: 'mcp',
     fields: [

@@ -28,7 +28,7 @@ export const PROJECT_SCENARIOS: readonly Scenario[] = [
   {
     name: '1.1 names the open project and the open documents',
     said: ['Quel projet est actuellement ouvert et quels documents sont ouverts ?'],
-    setup: scene('Scène 1'),
+    setup: scene(),
     passed: run => read.idle(run) && read.answeredWith(run, 'studio.state'),
   },
   asking(
@@ -49,7 +49,7 @@ export const PROJECT_SCENARIOS: readonly Scenario[] = [
   {
     name: '1.4 names the active document',
     said: ['Quel document est actuellement actif ?'],
-    setup: scene('Scène 1'),
+    setup: scene(),
     passed: read.idle,
   },
   {
