@@ -205,6 +205,7 @@ export type Channels = {
   assistantNote: 'assistant:note'
   assistantSaid: 'assistant:said'
   assistantWindow: 'assistant:window'
+  assistantFindActions: 'assistant:find-actions'
   missionsWatch: 'missions:watch'
   missionsCreate: 'missions:create'
   missionsResume: 'missions:resume'

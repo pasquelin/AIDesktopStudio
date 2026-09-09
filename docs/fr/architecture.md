@@ -394,7 +394,8 @@ une famille par module `*Actions.ts`, leurs champs, **ce que chacune engage** (`
 ici** : il monte à chaque lot, et `exhaustive.test.ts` le tient contre l’union `ActionName`. Il a
 deux lecteurs, et **aucun des deux ne décide** :
 
-- **l’assistant**, dans la fenêtre, à qui le briefing donne **tous les NOMS** et rien d’autre ;
+- **l’assistant**, dans la fenêtre, à qui le briefing donne **tous les NOMS** et les modes
+  d’emploi que l’index désigne ;
 - **`main/mcp/tools.ts`**, qui republie **tout**, champs compris, en outils MCP pour un client
   extérieur.
 
@@ -402,13 +403,16 @@ Le main dérive aussi de ce registre un `ActionIndex` reconstructible dans `<use
 Les actions, leurs champs, le FTS5 et les vecteurs y sont séparés ; une empreinte du corpus évite
 les reconstructions inutiles. Toute lecture SQLite s’exécute dans `actionIndexWorker`. Le service
 réutilise l’unique modèle d’embedding déjà partagé avec la mémoire et retombe sur FTS5 lorsqu’il
-n’y en a pas. Cet index prépare le runtime de missions ; le briefing historique conserve encore
-ses noms jusqu’au raccord complet du nouveau chemin.
+n’y en a pas. **Toute recherche d’action du studio passe par lui** : les candidats d’une mission,
+ceux d’une phrase de discussion (`brainRouted.ts`), l’`actions.find` du modèle et celui d’un client
+MCP. Il n’existe plus de second moteur ; `shared/domain/assistant.ts` en portait un jusqu’au
+2026-09-09.
 
-**Le briefing porte les noms, jamais les modes d’emploi.** Les 283 actions groupées par famille
-coûtent 4 225 caractères, là où leurs descriptions et leurs champs en coûtent 90 994 — que seule la
-porte la plus large tenait, à chaque tour. Ce qu’une action EST et ce qu’elle prend n’est composé
-que pour celles qu’une chaîne a ouvertes (`loaded`).
+**Le briefing porte tous les NOMS et les modes d’emploi que la phrase désigne.** Les noms groupés
+par famille coûtent 5 430 caractères ; les 310 modes d’emploi en coûtent 106 391, et les envoyer
+tous portait un tour de discussion à 117 364 caractères — mesuré le 2026-09-09 sur deepseek-chat.
+L’index en désigne 24 (`CHAT_CANDIDATES`), une mission douze (`CONTEXT_BUDGETS.actions`) ; le reste
+s’ouvre à la demande, par `unloadedIn` ou par `actions.find`.
 
 **Une action nommée sans son mode d’emploi ne coûte plus la réponse : elle l’ouvre.** Le modèle
 écrit son appel, `answeredTurn` (`brainTurn.ts`) voit que les champs manquent, les ajoute au

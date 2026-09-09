@@ -50,7 +50,11 @@ import type { LocalRuntimes } from './ai/localRuntimes'
 import type { AiManager } from './ai/manager'
 import type { LocalModel } from '@shared/domain/localModel'
 import type { AssistantBrain } from './assistant/brainPort'
-import { createActionFinder, type ActionSearchService } from './actionIndex/actionSearchService'
+import {
+  createActionFinder,
+  createActionNames,
+  type ActionSearchService,
+} from './actionIndex/actionSearchService'
 import type { WorkspaceId } from '@shared/domain/workspace'
 import { orElse } from '@shared/promises'
 import { catalogOf } from './provider/modelCatalog'
@@ -91,12 +95,15 @@ export function createAssistantBrains(deps: AssistantDeps) {
     notReady: deps.notReady,
   })
   let snapshot = async (): Promise<StudioSnapshot | null> => null
+  /** One engine, one scope: what `actions.find` answers and what a briefing opens come from here. */
+  const searching = {
+    search: (...search: Parameters<ActionSearchService['search']>) =>
+      deps.actionIndex.search(...search),
+    snapshot: () => snapshot(),
+  }
   const remoteActions = createRemoteActions({
     send: request => sendTo(studioWindow(), EVENTS.assistantAction, request),
-    findActions: createActionFinder({
-      search: (...search) => deps.actionIndex.search(...search),
-      snapshot: () => snapshot(),
-    }),
+    findActions: createActionFinder(searching),
   })
   const visualCapture = createVisualCapturePort({
     send: request => sendTo(studioWindow(), EVENTS.assistantVisualCapture, request),
@@ -127,6 +134,7 @@ export function createAssistantBrains(deps: AssistantDeps) {
       return current ? describeStudio(current) : ''
     },
     memoriesOf: () => deps.memoryVectors.held('project'),
+    findActions: createActionNames(searching),
     foldersOf: () => {
       const { projectsFolder, recentProjects } = deps.settings.read().storage
       return machineFolders(

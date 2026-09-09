@@ -112,7 +112,12 @@ describe('thinking', () => {
       model: () => 'claude-haiku-4-5',
     })
 
-    await brain.think({ utterance: 'create a scene', history: [] })
+    // The search the routed brain hands every turn — `createRoutedBrain`; without it the studio
+    // has no second engine to guess a name with, and says none.
+    await brain.think(
+      { utterance: 'create a scene', history: [] },
+      { discover: () => Promise.resolve(['node.add']) },
+    )
 
     const retry = run.mock.calls[1]?.[0]
     if (!retry) throw new Error('the retry request was not sent')
@@ -138,7 +143,10 @@ describe('thinking', () => {
       model: () => 'claude-haiku-4-5',
     })
 
-    const outcome = await brain.think({ utterance: 'switch to main', history: [] })
+    const outcome = await brain.think(
+      { utterance: 'switch to main', history: [] },
+      { discover: () => Promise.resolve(['git.checkout']) },
+    )
 
     expect(outcome.calls).toEqual([{ action: 'git.checkout', input: { name: 'main' } }])
     expect(outcome.cost).toBe(1.5)
@@ -163,7 +171,10 @@ describe('thinking', () => {
       model: () => 'claude-haiku-4-5',
     })
 
-    const outcome = await brain.think({ utterance: 'switch to main', history: [] })
+    const outcome = await brain.think(
+      { utterance: 'switch to main', history: [] },
+      { discover: () => Promise.resolve(['git.checkout']) },
+    )
 
     expect(outcome.calls).toEqual([{ action: 'git.checkout', input: { name: 'main' } }])
     expect(outcome.loaded).toEqual(['git.checkout'])

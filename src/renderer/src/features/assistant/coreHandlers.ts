@@ -1,4 +1,4 @@
-import { findActions, refused, type ActionOutcome } from '@shared/domain/assistant'
+import { refused, type ActionOutcome } from '@shared/domain/assistant'
 import type { ApiFailure } from '@shared/domain/failure'
 import { commandDescriptor } from '@shared/domain/command'
 import { allRoles, primaryRoleOf } from '@shared/domain/aiRole'
@@ -269,10 +269,11 @@ function describeStyle(): Promise<ActionOutcome> {
 /**
  * The catalogue, searched — how a model shown the short list learns what else there is.
  *
- * English, like the catalogue a model is shown and the tools an MCP client reads: the answer is
- * read by a program, not by the person at the machine.
+ * 🛑 Asked of the MAIN and answered by `actionIndex`: FTS5, vectors and the scope of what is in
+ * front. The window used to rank the query itself, on English descriptions and prefixes alone,
+ * so the same `actions.find` answered one thing here and another to an MCP client.
  */
-function findInCatalogue(input: Record<string, unknown>): ActionOutcome {
+async function findInCatalogue(input: Record<string, unknown>): Promise<ActionOutcome> {
   const query = textOf(input, 'query')
   if (query === null)
     return refused(
@@ -280,17 +281,8 @@ function findInCatalogue(input: Record<string, unknown>): ActionOutcome {
       '"query" is wanted — the words to look for among the studio\'s actions',
     )
 
-  return {
-    ok: true,
-    // The field DESCRIPTORS as they stand, plus their English label: listing the three properties
-    // that seemed useful dropped `repeated`, `min` and `max`, so a client discovering an action
-    // here got a weaker contract than the same tool in `tools/list`.
-    data: findActions(query).map(found => ({
-      name: found.name,
-      description: englishText(found.descriptionKey),
-      fields: found.fields.map(field => ({ ...field, label: englishText(field.labelKey) })),
-    })),
-  }
+  const bridge = getBridge()
+  return bridge ? await bridge.assistant.findActions(query) : ROUTED.noBridge
 }
 
 // A cloud catalogue that answered nothing, said as what to do next — `missing` is the one code a

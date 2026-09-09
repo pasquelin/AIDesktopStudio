@@ -1,7 +1,5 @@
 import { defined } from '../guards'
-import { englishText } from '../i18n'
 import type { Target } from './target'
-import { searchWords } from '../text'
 import { type ActionCommitment, type ActionName, type AssistantAction } from './assistantAction'
 import type { AssistantAsk } from './assistantAsk'
 import type { ActionCapabilities } from './actionCapabilities'
@@ -173,50 +171,6 @@ export const ACTION_REGISTRY: readonly AssistantAction[] = ACTION_FAMILIES.flatM
 export function actionsReaching(reach: ActionReach): readonly AssistantAction[] {
   return ACTION_REGISTRY.filter(entry => entry.reach === 'both' || entry.reach === reach)
 }
-
-/**
- * Every action's own words, folded once for the process: 225 bundle walks and as many regexes,
- * none of which depends on the query — and `actions.find` runs this on the UI thread.
- */
-type Searchable = { readonly action: AssistantAction; readonly words: readonly string[] }
-
-let searchableHeld: readonly Searchable[] | null = null
-
-const searchable = (): readonly Searchable[] =>
-  (searchableHeld ??= ACTION_REGISTRY.filter(entry => entry.name !== DISCOVERY_ACTION).map(
-    action => ({
-      action,
-      // Options too: `scene.duplicate` is a choice of command.runStudioCommand, not an action (25.5).
-      words: searchWords(
-        `${action.name} ${englishText(action.descriptionKey)} ${action.fields.flatMap(field => field.options ?? []).join(' ')}`,
-      ),
-    }),
-  ))
-
-/**
- * The actions a word or two points at, best first — how a model that cannot name what it needs
- * asks for the manuals anyway.
- *
- * Matched on the name and on the ENGLISH description, which is what a model is shown of an
- * action it can already see: one text for both, or a search would find what the catalogue does
- * not describe. Prefix matching rather than equality, so "layer" finds "layers".
- */
-export function findActions(query: string): readonly AssistantAction[] {
-  const wanted = searchWords(query)
-  if (wanted.length === 0) return []
-
-  return (
-    searchable()
-      .map(one => ({ action: one.action, score: scoreOf(wanted, one.words) }))
-      .filter(hit => hit.score > 0)
-      // Stable, so equal scores stay in registry order — the order the families were written in.
-      .sort((first, second) => second.score - first.score)
-      .map(hit => hit.action)
-  )
-}
-
-const scoreOf = (wanted: readonly string[], found: readonly string[]): number =>
-  wanted.filter(word => found.some(one => one.startsWith(word))).length
 
 /**
  * The action a brain answers ITSELF, to open the manuals a WORD points at where the model cannot

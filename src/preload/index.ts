@@ -331,6 +331,7 @@ const bridge: StudioBridge = {
     note: note => ipcRenderer.invoke(CHANNELS.assistantNote, note),
     said: key => ipcRenderer.invoke(CHANNELS.assistantSaid, key),
     window: () => ipcRenderer.invoke(CHANNELS.assistantWindow),
+    findActions: query => ipcRenderer.invoke(CHANNELS.assistantFindActions, query),
   },
   missions: {
     watch: scope => ipcRenderer.invoke(CHANNELS.missionsWatch, scope),

@@ -6,7 +6,6 @@ import {
   ACTION_REGISTRY,
   assistantAction,
   commitmentOfCommand,
-  findActions,
   needsConfirmation,
   refusalKey,
 } from './assistant'
@@ -106,27 +105,6 @@ describe('what an action engages', () => {
       const text = resolve(TRANSLATIONS[code], refusalKey(refusal))
       expect(typeof text === 'string' && text.trim() !== '', refusal).toBe(true)
     }
-  })
-
-  /**
-   * The half of two-step discovery that lives in the registry: what a query finds is what the
-   * model is shown next, so an answer ranked by chance is a briefing about the wrong family.
-   */
-  it('finds an action by its name or its description, the closest first', () => {
-    const found = findActions('checkout branch')
-
-    expect(found[0]?.name).toBe('git.checkout')
-    expect(found.some(one => one.name === 'actions.find')).toBe(false)
-  })
-
-  it('finds nothing on an empty query rather than everything', () => {
-    expect(findActions('   ')).toEqual([])
-  })
-
-  it('finds the action whose field ACCEPTS the word, so a studio command is reachable by name', () => {
-    expect(findActions('duplicate scene').map(action => action.name)).toContain(
-      'command.runStudioCommand',
-    )
   })
 
   /**

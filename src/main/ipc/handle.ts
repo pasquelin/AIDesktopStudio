@@ -222,6 +222,7 @@ type ChannelMethod = {
   [CHANNELS.assistantNote]: StudioBridge['assistant']['note']
   [CHANNELS.assistantSaid]: StudioBridge['assistant']['said']
   [CHANNELS.assistantWindow]: StudioBridge['assistant']['window']
+  [CHANNELS.assistantFindActions]: StudioBridge['assistant']['findActions']
 
   [CHANNELS.aiOverview]: StudioBridge['ai']['overview']
   [CHANNELS.aiChoose]: StudioBridge['ai']['choose']
