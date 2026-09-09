@@ -283,7 +283,7 @@ describe('ce que le harnais mission envoie et répond, comme le produit', () => 
         answered.missions[0]?.plan.steps.find(step => step.kind === 'user_input')?.result,
       ).toBe('Bateau')
       expect(waiting.missions[0]?.state).toBe('waiting_user')
-      expect(waiting.asks).toEqual(['Quel nom ?'])
+      expect(waiting.asks).toEqual([{ question: 'Quel nom ?', many: false }])
     } finally {
       answered.studio.close()
       waiting.studio.close()

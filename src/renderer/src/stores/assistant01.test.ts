@@ -131,6 +131,29 @@ describe('what a turn writes down', () => {
   })
 
   /**
+   * 🛑 The SHAPE is kept on the turn, dismissal included: the bench scores whether the model asked
+   * in a shape that lets several answers through, and a card let go is still a question it asked.
+   */
+  it('keeps on the turn that a question allowed several answers', async () => {
+    const replies = [
+      answer({ ask: { questions: [{ question: 'Lesquels ?', choices: ['a', 'b'], many: true }] } }),
+      answer(),
+    ]
+    installFakeBridge({
+      assistant: { think: () => Promise.resolve(replies.shift() ?? answer()) },
+    })
+
+    const said = useAssistant.getState().say('ferme des documents')
+    await answering(null)
+    await said
+
+    expect(useAssistant.getState().turns.at(-1)?.asks.at(-1)).toMatchObject({
+      many: true,
+      dismissed: true,
+    })
+  })
+
+  /**
    * 🛑 A question the STUDIO opens ticked is answered on its card and nowhere else: read as a
    * label, a sentence typed below matches no answer and settles the card on nothing.
    */

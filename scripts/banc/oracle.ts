@@ -428,6 +428,9 @@ export const askedBack = (run: Run): boolean => /\?/.test(run.said)
 /** It STOPPED and asked — the defect measured is a model that asks and acts in one breath. */
 export const asked = (run: Run): boolean => run.asks.length > 0
 
+/** Asked with `many` — the KEY that lets several answers through, never the wording. */
+export const askedSeveral = (run: Run): boolean => run.asks.some(one => one.many)
+
 /** The data an action answered, for the rare oracle that must read a reply rather than a state. */
 export const answeredWith = (run: Run, action: string): boolean =>
   run.called.some(one => one.action === action && one.answer?.startsWith('refused') === false)

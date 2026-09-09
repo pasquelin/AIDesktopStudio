@@ -159,6 +159,8 @@ function listWithin(items: readonly unknown[]): string {
  */
 export type AssistantAsked = AskedAnswer & {
   question: string
+  /** Whether it allowed several answers — what the bench scores when it measures asking. */
+  many?: true
   /** The card was LET GO rather than this question left blank — see `cameBack`. */
   dismissed?: true
 }
@@ -170,6 +172,7 @@ export const askedOf = (
   dismissed: boolean,
 ): AssistantAsked => ({
   question: asked.question,
+  ...(asked.many === true ? { many: true } : {}),
   answers: given?.answers ?? [],
   ...(given?.note ? { note: given.note } : {}),
   ...(dismissed ? { dismissed: true } : {}),
