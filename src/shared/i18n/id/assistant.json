@@ -1723,6 +1723,8 @@
     "brain": "Siapa yang menjawab",
     "brainHint": "Memilih apa yang membaca kalimat Anda: model di mesin ini, layanan yang Anda pegang kunci, atau studio. Pilihan yang sama yang ditulis pengaturan model AI.",
     "brainNone": "tidak ada yang dipilih",
+    "keepBrain": "Asisten mana yang akan bekerja di proyek baru?",
+    "keepBrainNotice": "Pilihan yang berlaku sekarang milik proyek ini dan tidak ikut. Tanpa jawaban, proyek baru tidak punya asisten sampai satu dipilih di pengaturan.",
     "cloudBrain": "{{cloud}} — {{model}}",
     "groupMachine": "Di mesin ini",
     "groupClouds": "Kunci Anda",

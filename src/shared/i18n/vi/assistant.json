@@ -1723,6 +1723,8 @@
     "brain": "Ai trả lời",
     "brainHint": "Chọn thứ sẽ đọc câu của bạn: một mô hình trên máy này, một dịch vụ mà bạn có khóa, hoặc studio. Cùng lựa chọn mà cài đặt Mô hình AI ghi lại.",
     "brainNone": "chưa chọn gì",
+    "keepBrain": "Trợ lý nào sẽ làm việc trong dự án mới?",
+    "keepBrainNotice": "Lựa chọn hiện thời thuộc về dự án này và sẽ không đi theo. Không trả lời thì dự án mới không có trợ lý cho tới khi chọn một cái trong cài đặt.",
     "cloudBrain": "{{cloud}} — {{model}}",
     "groupMachine": "Trên máy này",
     "groupClouds": "Khóa của bạn",

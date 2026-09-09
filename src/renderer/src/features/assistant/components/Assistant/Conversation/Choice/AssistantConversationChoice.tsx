@@ -1,9 +1,8 @@
 import { useId } from 'react'
 import { useTranslation } from 'react-i18next'
-import { answeredByComposer } from '@shared/domain/assistantAsk'
 import { Button } from '@/components/Button'
 import { HINT_TOP } from '@/helpers/tooltip'
-import { useAssistant, type AssistantChoiceQuestion } from '@/stores/assistant'
+import { composerAnswers, useAssistant, type AssistantChoiceQuestion } from '@/stores/assistant'
 import { AssistantConversationChoiceForm } from './AssistantConversationChoiceForm'
 import { AssistantConversationChoiceList } from './AssistantConversationChoiceList'
 import { CONVERSATION_CARD } from '../conversationStyles'
@@ -12,16 +11,18 @@ import { CONVERSATION_CARD } from '../conversationStyles'
  * What the assistant asked, with the answers it offered — and often none: « quel nom ? » has
  * nothing to press, so the composer below takes the answer and the card says where.
  */
-export function AssistantConversationChoice({ questions }: AssistantChoiceQuestion) {
+export function AssistantConversationChoice(choosing: AssistantChoiceQuestion) {
+  const { questions, opening } = choosing
   const { t } = useTranslation()
   const choose = useAssistant(state => state.choose)
   const named = useId()
   const only = questions[0]
 
   // Anything the composer cannot answer is a form: a line typed below says nothing about which
-  // question it belongs to.
-  if (!only || !answeredByComposer(questions)) {
-    return <AssistantConversationChoiceForm questions={questions} />
+  // question it belongs to. A question the STUDIO opens ticked is one too — answering on the
+  // first tick would settle it before the row already ticked could be left alone.
+  if (!only || !composerAnswers(choosing)) {
+    return <AssistantConversationChoiceForm questions={questions} opening={opening} />
   }
 
   return (

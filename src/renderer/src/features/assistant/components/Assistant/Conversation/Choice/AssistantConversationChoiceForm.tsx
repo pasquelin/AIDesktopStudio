@@ -4,7 +4,7 @@ import type { AskedAnswer, AskedQuestion } from '@shared/domain/assistantAsk'
 import { Button } from '@/components/Button'
 import { TextField } from '@/components/TextField'
 import { HINT_TOP } from '@/helpers/tooltip'
-import { useAssistant } from '@/stores/assistant'
+import { useAssistant, type AssistantChoiceQuestion } from '@/stores/assistant'
 import { AssistantConversationChoiceList } from './AssistantConversationChoiceList'
 import { CONVERSATION_CARD } from '../conversationStyles'
 
@@ -16,16 +16,18 @@ import { CONVERSATION_CARD } from '../conversationStyles'
  */
 export function AssistantConversationChoiceForm({
   questions,
+  opening,
 }: {
   questions: readonly AskedQuestion[]
+  opening?: AssistantChoiceQuestion['opening']
 }) {
   const { t } = useTranslation()
   const choose = useAssistant(state => state.choose)
   // 🛑 Six fields all named « Réponse » say nothing about WHICH question they answer: the group
   // carries the question, which is what a reader is told before the field it holds.
   const named = useId()
-  const [given, setGiven] = useState<readonly AskedAnswer[]>(() =>
-    questions.map(() => ({ answers: [] })),
+  const [given, setGiven] = useState<readonly AskedAnswer[]>(
+    () => opening?.chosen ?? questions.map(() => ({ answers: [] })),
   )
 
   const write = (at: number, written: Partial<AskedAnswer>): void => {
@@ -34,6 +36,9 @@ export function AssistantConversationChoiceForm({
 
   return (
     <div className={CONVERSATION_CARD}>
+      {/* What declining COSTS, said where the answer is given rather than after the fact. */}
+      {opening && <p className="alert alert-info alert-soft m-0 text-xs">{opening.notice}</p>}
+
       {questions.map((one, at) => (
         <div
           key={`${at}-${one.question}`}

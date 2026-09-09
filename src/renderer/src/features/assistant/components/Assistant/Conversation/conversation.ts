@@ -6,7 +6,7 @@ import {
   type ActionRefusal,
   refusalKey,
 } from '@shared/domain/assistant'
-import { type AskedAnswer } from '@shared/domain/assistantAsk'
+import { type AskedAnswer, type AskedQuestion } from '@shared/domain/assistantAsk'
 import { isRecord } from '@shared/guards'
 import { stableKey } from '@shared/hash'
 import { byCodeUnit } from '@shared/text'
@@ -162,6 +162,18 @@ export type AssistantAsked = AskedAnswer & {
   /** The card was LET GO rather than this question left blank — see `cameBack`. */
   dismissed?: true
 }
+
+/** One question and what came back for it, as the thread and the next round both read it. */
+export const askedOf = (
+  asked: AskedQuestion,
+  given: AskedAnswer | undefined,
+  dismissed: boolean,
+): AssistantAsked => ({
+  question: asked.question,
+  answers: given?.answers ?? [],
+  ...(given?.note ? { note: given.note } : {}),
+  ...(dismissed ? { dismissed: true } : {}),
+})
 
 /**
  * One exchange: what was said, what came back, and what it actually did.

@@ -18,13 +18,13 @@ import { narrowTargets, type Target } from '@shared/domain/target'
 import type { ConfirmAnswer, ConfirmRequest } from '@/features/assistant/confirm'
 import type { runConfirmedAction } from '@/features/assistant/executor'
 import {
+  askedOf,
   assistantHistory,
   alreadySettled,
   repeatedRelative,
   repeatKeyOf,
   settledKeyOf,
   resultLine,
-  type AssistantAsked,
   type AssistantStep,
   type AssistantTurn,
 } from '@/features/assistant/components/Assistant/Conversation/conversation'
@@ -53,9 +53,19 @@ type AssistantQuestion = {
   answer: (given: ConfirmAnswer) => void
 }
 
+/**
+ * 🛑 Whether the COMPOSER answers what is on screen. A question the STUDIO opens ticked is never
+ * one of them: a sentence typed below would be read as the label of an answer, match none, and
+ * settle the card on nothing — measured while writing the card that keeps an assistant.
+ */
+export const composerAnswers = (choosing: AssistantChoiceQuestion | null): boolean =>
+  choosing !== null && choosing.opening === undefined && answeredByComposer(choosing.questions)
+
 export type AssistantChoiceQuestion = AssistantAsk & {
   id: number
   answer: (given: readonly AskedAnswer[] | null) => void
+  /** What the STUDIO adds to a question of its own — never the model's. */
+  opening?: { notice: string; chosen: readonly AskedAnswer[] }
 }
 
 type AssistantState = {
@@ -75,7 +85,10 @@ type AssistantState = {
   asked: AssistantQuestion | null
   choosing: AssistantChoiceQuestion | null
   queued: readonly AssistantChoiceQuestion[]
-  askChoice: (questions: readonly AskedQuestion[]) => Promise<readonly AskedAnswer[] | null>
+  askChoice: (
+    questions: readonly AskedQuestion[],
+    opening?: AssistantChoiceQuestion['opening'],
+  ) => Promise<readonly AskedAnswer[] | null>
   choose: (given: readonly AskedAnswer[] | null) => void
   spent: number
   draft: string
@@ -168,9 +181,9 @@ export const useAssistant = create<AssistantState>()((set, get) => ({
       set(state => ({ seen: lastSeen(state), asked }))
     }),
 
-  askChoice: questions =>
+  askChoice: (questions, opening) =>
     new Promise<readonly AskedAnswer[] | null>(resolve => {
-      const asking = { id: (lastAskId += 1), questions, answer: resolve }
+      const asking = { id: (lastAskId += 1), questions, answer: resolve, opening }
       set(state =>
         state.choosing || state.asked
           ? { queued: [...state.queued, asking] }
@@ -214,7 +227,7 @@ export const useAssistant = create<AssistantState>()((set, get) => ({
     if (said === '') return
 
     const choosing = get().choosing
-    if (choosing && answeredByComposer(choosing.questions)) {
+    if (composerAnswers(choosing)) {
       get().choose([{ answers: [said] }])
       return
     }
@@ -369,17 +382,6 @@ async function parkedOn(set: Setter, get: Getter, id: number, ask: AssistantAsk)
   patch(set, id, { ending: 'stopped' })
   return false
 }
-
-const askedOf = (
-  asked: AskedQuestion,
-  given: AskedAnswer | undefined,
-  dismissed: boolean,
-): AssistantAsked => ({
-  question: asked.question,
-  answers: given?.answers ?? [],
-  ...(given?.note ? { note: given.note } : {}),
-  ...(dismissed ? { dismissed: true } : {}),
-})
 
 function alsoSaid(state: AssistantState, id: number, say: string): string {
   const before = state.turns.find(turn => turn.id === id)?.answered ?? ''

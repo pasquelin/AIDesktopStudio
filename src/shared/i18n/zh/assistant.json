@@ -1723,6 +1723,8 @@
     "brain": "由谁回答",
     "brainHint": "选择读取你句子的对象：本机上的模型、你持有密钥的服务，或者工作室。与 AI 模型设置中的选择相同。",
     "brainNone": "未选择",
+    "keepBrain": "新项目里由哪个助手工作？",
+    "keepBrainNotice": "当前的选择属于这个项目，不会跟过去。不作回答的话，新项目就没有助手，要到设置里再选一个。",
     "cloudBrain": "{{cloud}}——{{model}}",
     "groupMachine": "在本机上",
     "groupClouds": "你的密钥",
