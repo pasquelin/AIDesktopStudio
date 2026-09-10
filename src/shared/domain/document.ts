@@ -84,7 +84,9 @@ export type DocumentDescriptor = {
   /**
    * How faithfully that source was read — see `readFidelity.ts`. Held for the session rather than
    * measured on demand: what tells a reduction from a crop is WHO shrank the picture, and only
-   * the read knows that. Absent reads as `unknown`, which refuses to overwrite.
+   * the read knows that. NOT written into the file either — a document opened for an asset writes
+   * that asset and nothing beside it, so what carries this across a crash is the recovery entry.
+   * Absent reads as `unknown`, which refuses to overwrite and says how to clear it.
    */
   sourceFidelity?: ReadFidelity
 }

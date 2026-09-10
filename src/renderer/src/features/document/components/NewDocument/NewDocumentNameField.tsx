@@ -1,5 +1,6 @@
 import { useId } from 'react'
 import { useTranslation } from 'react-i18next'
+import { oneOf } from '@shared/guards'
 import { extensionOfKind, type DocumentKind } from '@shared/domain/document'
 import type { WritableFormat } from '@shared/domain/formatCapability'
 import { Input } from '@/components/Input'
@@ -19,7 +20,7 @@ export type NewDocumentNameFieldProps = {
    */
   formats: readonly WritableFormat[]
   format: WritableFormat | null
-  onFormat: (format: WritableFormat | null) => void
+  onFormat: (format: WritableFormat) => void
   ref: React.Ref<HTMLInputElement>
 }
 
@@ -42,7 +43,9 @@ export function NewDocumentNameField({
   const { t } = useTranslation()
   const nameId = useId()
   const extensionId = useId()
-  const offered = formats.length > 1
+  // The head of the list until one is picked: a `<select>` drawn over nothing shows its first
+  // option while answering none, and the form would submit a format nobody sees.
+  const chosen = format ?? formats[0]
 
   return (
     <div className="flex flex-col gap-1.5">
@@ -61,13 +64,13 @@ export function NewDocumentNameField({
         />
         {/* Offered only where there is a choice — the picture, whose two writers are the flat
             encoder and the container. Every other kind has one file to its name. */}
-        {offered ? (
+        {formats.length > 1 && chosen ? (
           <Select
             id={extensionId}
             data-sc="field:newDocument.format"
             className="shrink-0 text-xs"
-            value={format ?? ''}
-            onChange={event => onFormat(chosenAmong(formats, event.target.value))}
+            value={chosen}
+            onChange={event => onFormat(oneOf(formats, event.target.value, chosen))}
             aria-label={t('documents.formatField')}
           >
             {formats.map(one => (
@@ -84,9 +87,4 @@ export function NewDocumentNameField({
       </div>
     </div>
   )
-}
-
-/** What a `<select>` handed back, held to the list it was drawn from — its value is a string. */
-function chosenAmong(offered: readonly WritableFormat[], value: string): WritableFormat | null {
-  return offered.find(one => one === value) ?? null
 }

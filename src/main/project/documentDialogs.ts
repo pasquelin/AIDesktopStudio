@@ -48,7 +48,7 @@ export async function askCloseChoice(ask: AskUser, title: string): Promise<Close
 /**
  * A yes-or-no. By default Cancel is BOTH the default button and what a dismissed dialog gives
  * back, so neither Return nor Escape reaches the answer that writes; `confirmByDefault` inverts
- * that, and belongs only to a question whose yes destroys nothing.
+ * that, and belongs only to a question whose yes destroys nothing — see `askRestoreRecovery`.
  *
  * Shared, because that button arrangement is the whole of the decision — the questions asked this
  * way sit in different files and would drift apart on which id means yes.
@@ -56,7 +56,7 @@ export async function askCloseChoice(ask: AskUser, title: string): Promise<Close
 export async function askConfirm(
   ask: AskUser,
   wording: { message: string; detail: string; confirm: string; cancel: string },
-  /** Only for a question whose YES destroys nothing — see `askFlattenDocument`. */
+  /** Only for a question whose YES destroys nothing — see `askRestoreRecovery`. */
   confirmByDefault = false,
 ): Promise<boolean> {
   const buttons = confirmByDefault
@@ -106,6 +106,9 @@ export async function askDeleteDocument(ask: AskUser, title: string): Promise<bo
   })
 }
 
+/** The buttons of the question below, in the order they are drawn — the index IS the answer. */
+const FLATTEN_CHOICES: readonly FlattenChoice[] = ['saveAs', 'flatten', 'cancel']
+
 /**
  * What to do with a document its file cannot carry — §5.1.
  *
@@ -130,8 +133,7 @@ export async function askFlattenDocument(
     cancelId: 2,
   })
 
-  if (chosen === 0) return 'saveAs'
-  return chosen === 1 ? 'flatten' : 'cancel'
+  return FLATTEN_CHOICES[chosen] ?? 'cancel'
 }
 
 /**

@@ -18,6 +18,9 @@ import { DOCUMENT_NAME_REFUSALS } from '../../documentName'
 import { NewDocumentNameField } from './NewDocumentNameField'
 import { NewDocumentTemplateField } from './NewDocumentTemplateField'
 
+/** One array for every new document, so the field is never handed a fresh one per keystroke. */
+const NO_FORMATS: readonly WritableFormat[] = []
+
 export type NewDocumentFormProps = {
   kind: DocumentKind
   /** The folder the Explorer pointed at, or `null` to open on this kind's own. */
@@ -165,7 +168,7 @@ export function NewDocumentForm({
         value={draft}
         onChange={setDraft}
         refusalId={refusal ? refusalId : null}
-        formats={saveAs?.formats ?? []}
+        formats={saveAs?.formats ?? NO_FORMATS}
         format={format}
         onFormat={setFormat}
       />

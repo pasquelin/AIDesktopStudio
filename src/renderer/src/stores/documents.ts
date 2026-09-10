@@ -384,23 +384,12 @@ export const useDocuments = createStore<DocumentsState>()((set, get) => ({
     }),
 }))
 
-/**
- * A change to one open document, or the state untouched when no tab holds it.
- *
- * The two callers say the same thing about the READ: `noteSourceFidelity` writes what opening a
- * picture settled — established at the read, since a crop and a reduction leave the same document
- * and only the read tells them apart — and `retarget` moves the destination a Save as… chose,
- * where the fidelity can only be `faithful` because those bytes are what the studio just wrote
- * whole. Neither is carried into the file: a document opened for an asset writes that asset and
- * nothing beside it, so a tab filled from a file rather than from its picture reads `unknown`,
- * which refuses to overwrite and says how to clear it. What carries it across a crash is the
- * recovery entry.
- */
+/** A change to one open document, or nothing at all when no tab holds it. */
 function amended(
   state: Pick<DocumentsState, 'documents'>,
   id: string,
   change: Partial<DocumentDescriptor>,
-): Pick<DocumentsState, 'documents'> | Record<string, never> {
+): Partial<DocumentsState> {
   const document = state.documents[id]
   if (!document) return {}
   return { documents: { ...state.documents, [id]: { ...document, ...change } } }

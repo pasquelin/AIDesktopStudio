@@ -1,5 +1,6 @@
-import type { DocumentKind } from './document'
+import { extensionOfKind, type DocumentKind } from './document'
 import {
+  formatOfFile,
   lossesFor,
   type CapabilityDomain,
   type CapabilityTrait,
@@ -41,29 +42,22 @@ export function nearestEncodableFor(
 }
 
 /**
- * What « Save as » may offer per kind: the formats the studio writes a DOCUMENT into,
- * and reads back.
+ * What « Save as » may offer per kind: the formats the studio writes a DOCUMENT into, and reads
+ * back.
  *
- * Not every format it can produce, and the gap is deliberate. A scene exports to OBJ, PLY and STL
- * and opens none of them; offering one here would hand the tab a destination it could not reopen
- * — « a format you write without knowing how to open it is not delivered ». Only the picture has
- * a real choice, its two writers being the flat encoder and the container.
+ * DERIVED from the extension each kind is filed under, never listed a second time: a third
+ * per-kind table would be free to disagree with `EXTENSIONS_BY_KIND` the day a kind's extension
+ * moves, and the window would then offer a format the tab cannot reopen — the very failure this
+ * answer exists to prevent. `.ui.json` and `.ts` name no writable format, which is the empty
+ * list a kind with nothing to choose gets.
  *
- * Empty for the three kinds with nothing to choose between: an interface is its JSON, a script IS
- * its text, and a character edits the model of the library it was opened on.
+ * The picture is the exception and says so: its two writers are the flat encoder and the
+ * container, flat first — the closest, never the richest (§5.5).
  */
-const DESTINATIONS_BY_KIND: Record<DocumentKind, readonly WritableFormat[]> = {
-  image: ENCODABLE_BY_DOMAIN.picture,
-  scene: ['gltf'],
-  skybox: ['gltf'],
-  sequence: ['otio'],
-  audio: ['otio'],
-  material: ['mtlx'],
-  gui: [],
-  script: [],
-  character: [],
-}
-
 export function destinationFormatsFor(kind: DocumentKind): readonly WritableFormat[] {
-  return DESTINATIONS_BY_KIND[kind]
+  if (kind === 'image') return ENCODABLE_BY_DOMAIN.picture
+  // Asked about a NAME, which is the door the table has: `extensionOf` reads a leading dot as a
+  // hidden file, so the kind's extension is hung on a stem to be looked up.
+  const written = formatOfFile(`document${extensionOfKind(kind) ?? ''}`)
+  return written === null ? [] : [written]
 }

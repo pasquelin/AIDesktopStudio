@@ -24,6 +24,12 @@ export type SavableDocument = {
   io: DocumentIo
 }
 
+/** The io of a kind that writes a document FILE — every kind but the character. */
+export type FileWritingIo = Extract<DocumentIo, { assetOnly?: undefined }>
+
+/** The io of a kind that writes an ASSET instead — the picture alone. */
+export type AssetWritingIo = Extract<DocumentIo, { writeAsset: object }>
+
 /**
  * The document, its io and the bridge — or `null` when there is nothing here to write at all: no
  * project, no tab, a read that failed, a store the editor has not filled yet.
@@ -45,11 +51,7 @@ export function writableDocument(documentId: string): SavableDocument | null {
  * The documents whose asset a save failed to write. Read by the next save, which must then write
  * again even though nothing moved in the document since.
  */
-const assetBehind = new Set<string>()
-
-export const assetIsBehind = (documentId: string): boolean => assetBehind.has(documentId)
-export const markAssetBehind = (documentId: string): void => void assetBehind.add(documentId)
-export const clearAssetBehind = (documentId: string): void => void assetBehind.delete(documentId)
+export const assetBehind = new Set<string>()
 
 /** The captures in flight per document, so a document that goes away takes them with it. */
 const capturing = new Map<string, Set<AbortController>>()
@@ -88,7 +90,7 @@ export function forgetDocument(documentId: string, gone?: DocumentDescriptor): v
 export function forgetDocumentState(documentId: string, document?: DocumentDescriptor): void {
   if (document) IO_BY_KIND[document.kind].forget(document)
   forgetLoadState(documentId)
-  clearAssetBehind(documentId)
+  assetBehind.delete(documentId)
   useMaterialViews.getState().forget(documentId)
   useSkyboxViews.getState().forget(documentId)
   useMonitorPair.getState().forgetMonitorPair(documentId)

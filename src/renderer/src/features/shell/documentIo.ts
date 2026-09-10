@@ -24,15 +24,15 @@ import i18next from 'i18next'
 import { ioOf, type CapturedDraft, type DocumentIo } from './documentIoAdapters'
 import { epochIsCurrent, epochOf, restoreDocument } from './documentLoad'
 import {
-  assetIsBehind,
+  assetBehind,
   beginCapture,
-  clearAssetBehind,
   endCapture,
   forgetDocument,
   forgetDocumentState,
   invalidateDocument,
-  markAssetBehind,
   writableDocument,
+  type AssetWritingIo,
+  type FileWritingIo,
   type SavableDocument,
 } from './documentTab'
 import { documentIsDirty, unsavedDocumentIds } from './documentDirty'
@@ -60,12 +60,8 @@ async function flattenChoice(
     'flatten'
   )
 }
-type WritableSavableDocument = Omit<SavableDocument, 'io'> & {
-  io: Extract<DocumentIo, { assetOnly?: undefined }>
-}
-type CapturedDocument = Awaited<
-  ReturnType<NonNullable<Extract<DocumentIo, { assetOnly?: undefined }>['capture']>>
->
+type WritableSavableDocument = Omit<SavableDocument, 'io'> & { io: FileWritingIo }
+type CapturedDocument = Awaited<ReturnType<NonNullable<FileWritingIo['capture']>>>
 type CaptureResult = { ok: true; captured: CapturedDocument } | { ok: false; error: unknown }
 
 /**
@@ -162,9 +158,7 @@ async function askedBeforeWriting(
   plan: WritePlan,
   byHand: boolean,
 ): Promise<boolean | null> {
-  const { document, io } = savable
-  if (!(io.dirty(document.id) || assetIsBehind(document.id))) return null
-
+  const { document } = savable
   const refusal = sourceWriteRefusal(savable, plan)
   if (refusal) {
     return await offerAnotherDestination(document.id, i18next.t(`documents.${refusal}`), byHand)
@@ -188,14 +182,14 @@ export async function saveDocument(documentId: string, byHand = true): Promise<b
   await io.settled?.(documentId)
   if (io.assetOnly) return await io.saveOwn(documentId)
   const writable: WritableSavableDocument = { ...savable, io }
-  // Walked ONCE per save: `traitsOf` is a walk of the whole layer stack, and the questions and
-  // the write both need the same answer.
   const source = writable.document.sourceAssetId
-  const plan = io.writeAsset && source ? writePlanFor(writable.document, io, source) : null
-  // Awaited only where there is something to ask, which is a document that writes an ASSET: an
-  // await on the way to `capture` puts a microtask between two ⌘S, and the order they reach the
-  // disk in is what `documentIo06` holds.
-  if (plan) {
+  // Walked only where this ⌘S would really rewrite the file — `traitsOf` is a walk of the whole
+  // layer stack, and re-pressing ⌘S on an unchanged picture is the frequent case (`rewriteSource
+  // Asset` holds the same gate). Awaiting is confined to that branch too: an await on the way to
+  // `capture` puts a microtask between two ⌘S, and `documentIo06` holds the order they land in.
+  const rewrites = io.writeAsset && source && (io.dirty(documentId) || assetBehind.has(documentId))
+  if (rewrites) {
+    const plan = writePlanFor(writable.document, io, source)
     const asked = await askedBeforeWriting(writable, plan, byHand)
     if (asked !== null) return asked
   }
@@ -203,12 +197,12 @@ export async function saveDocument(documentId: string, byHand = true): Promise<b
   const controller = beginCapture(documentId)
   const capture = captureForSave(io, documentId, controller)
   return await queueDocumentSave(documentId, async () =>
-    writeCaptured(writable, plan, epoch, controller, await capture, byHand),
+    writeCaptured(writable, epoch, controller, await capture, byHand),
   )
 }
 
 async function captureForSave(
-  io: Extract<DocumentIo, { assetOnly?: undefined }>,
+  io: FileWritingIo,
   documentId: string,
   controller: AbortController,
 ): Promise<CaptureResult> {
@@ -223,7 +217,6 @@ async function captureForSave(
 
 async function writeCaptured(
   savable: WritableSavableDocument,
-  plan: WritePlan | null,
   epoch: number,
   controller: AbortController,
   result: CaptureResult,
@@ -236,7 +229,7 @@ async function writeCaptured(
   document = useDocuments.getState().documents[document.id] ?? document
   const { commit } = captured
 
-  if (!(await writeWhereItBelongs(savable, plan, document, captured, epoch, controller, byHand))) {
+  if (!(await writeWhereItBelongs(savable, document, captured, epoch, controller, byHand))) {
     return false
   }
   if (!epochIsCurrent(document, epoch, controller.signal)) return false
@@ -260,7 +253,6 @@ async function writeCaptured(
  */
 async function writeWhereItBelongs(
   savable: WritableSavableDocument,
-  plan: WritePlan | null,
   document: DocumentDescriptor,
   { draft, wasEdited }: CapturedDocument,
   epoch: number,
@@ -268,8 +260,8 @@ async function writeWhereItBelongs(
   byHand: boolean,
 ): Promise<boolean> {
   const source = document.sourceAssetId
-  if (savable.io.writeAsset && source && plan) {
-    return await rewriteSourceAsset(document, savable.io, source, plan, wasEdited, draft)
+  if (savable.io.writeAsset && source) {
+    return await rewriteSourceAsset(document, savable.io, source, wasEdited, draft)
   }
   const payload = {
     ...draft,
@@ -321,15 +313,17 @@ export function writePlanFor(
 }
 async function rewriteSourceAsset(
   document: DocumentDescriptor,
-  io: Extract<DocumentIo, { writeAsset: object }>,
+  io: AssetWritingIo,
   source: string,
-  { format }: WritePlan,
   wasEdited: boolean,
   captured: CapturedDraft,
 ): Promise<boolean> {
   // Nothing moved since the last save: a re-encode that changes nothing is a file rewritten for
   // no reason, and for a lossy format it is quality spent for no reason (§6.2).
-  if (!wasEdited && !assetIsBehind(document.id)) return true
+  if (!wasEdited && !assetBehind.has(document.id)) return true
+  // Walked HERE and not before the capture: the same gate above turns this save into a no-op far
+  // more often than not, and `traitsOf` is a walk of the whole layer stack.
+  const { format } = writePlanFor(document, io, source)
   try {
     const written = await io.writeAsset(
       document.id,
@@ -337,12 +331,12 @@ async function rewriteSourceAsset(
       captured,
     )
     if (!written) throw localizedError('bakeContentEmpty')
-    clearAssetBehind(document.id)
+    assetBehind.delete(document.id)
     useLivePreviews.getState().revokePreview(source)
     useAssets.getState().invalidate()
     return true
   } catch (error) {
-    markAssetBehind(document.id)
+    assetBehind.add(document.id)
     reportFailure('assets.save', document.title, error)
     return false
   }

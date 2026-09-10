@@ -144,8 +144,12 @@ describe('a refused save, offered another destination', () => {
     if (!created) throw new Error('expected a document')
     useCanvases.getState().ensure(created.id, () => DEFAULT_CANVAS)
     const release = holdCanvas(created.id, () => fakeCanvas({}))
-    useCanvases.getState().runCommand(created.id, renameLayer('layer-1', 'Backdrop'))
     return { documentId: created.id, release }
+  }
+
+  /** What makes the save a real one: a ⌘S over an untouched document writes nothing back. */
+  const touch = (documentId: string): void => {
+    useCanvases.getState().runCommand(documentId, renameLayer('layer-1', 'Backdrop'))
   }
 
   it('writes where the person then chose, and the tab saves there from now on', async () => {
@@ -174,6 +178,7 @@ describe('a refused save, offered another destination', () => {
       },
     })
     const { documentId, release } = await openJpegDocument()
+    touch(documentId)
 
     await expect(saveDocument(documentId)).resolves.toBe(true)
     release()
@@ -187,6 +192,7 @@ describe('a refused save, offered another destination', () => {
     const confirmSaveElsewhere = vi.fn(() => Promise.resolve(true))
     const { entries } = bridgeWatchingLogs({ documents: { confirmSaveElsewhere } })
     const { documentId, release } = await openJpegDocument()
+    touch(documentId)
 
     await expect(saveDocument(documentId, false)).resolves.toBe(false)
     release()
@@ -211,17 +217,9 @@ describe('a refused save, offered another destination', () => {
         confirmSaveElsewhere,
       },
     })
-    useAssets.setState({ items: [{ ...picture(), path: 'Images/hero.jpg' }] })
-    const created = await useDocuments.getState().create('image', {
-      title: 'Gemini 3.1',
-      sourceAssetId: 'asset-1',
-      sourceFidelity: 'faithful',
-    })
-    if (!created) throw new Error('expected a document')
-    useCanvases.getState().ensure(created.id, () => DEFAULT_CANVAS)
-    const release = holdCanvas(created.id, () => fakeCanvas({}))
+    const { documentId, release } = await openJpegDocument()
 
-    await expect(saveDocument(created.id)).resolves.toBe(true)
+    await expect(saveDocument(documentId)).resolves.toBe(true)
     release()
 
     expect(confirmSaveElsewhere).not.toHaveBeenCalled()

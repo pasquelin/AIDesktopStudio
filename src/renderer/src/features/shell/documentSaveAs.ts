@@ -12,13 +12,14 @@ import { projectName } from '@shared/domain/project'
 import type { StudioBridge } from '@shared/ipc'
 import { getBridge } from '@/services/bridge'
 import { openDocument } from './components/dockviewApi'
-import type { CapturedDraft, DocumentIo } from './documentIoAdapters'
+import type { CapturedDraft } from './documentIoAdapters'
 import { createScript } from './createScript'
-import { forgetDocument, writableDocument } from './documentTab'
-
-/** The two shapes of io a Save as… writes through, each with its own destination. */
-type PictureIo = Extract<DocumentIo, { writeAsset: object }>
-type FileIo = Extract<DocumentIo, { assetOnly?: undefined }>
+import {
+  forgetDocument,
+  writableDocument,
+  type AssetWritingIo,
+  type FileWritingIo,
+} from './documentTab'
 
 /**
  * The folder the window opens on: where this document's own file sits.
@@ -40,6 +41,9 @@ async function askWhereToSave(document: DocumentDescriptor): Promise<NamedDocume
   // for a rare, deliberate gesture, and the window it opens costs far more than it does.
   const project = await bridge?.project.current()
   if (!bridge || !project) return null
+  // The folders FIRST, as `askFor` does: what they hold is what a typed name is refused against,
+  // and a field open over a stale listing accepts a name the disk already holds.
+  await useDocuments.getState().relist()
 
   const answer = await bridge.newDocument.ask({
     purpose: {
@@ -67,7 +71,7 @@ async function askWhereToSave(document: DocumentDescriptor): Promise<NamedDocume
  */
 async function intoNewAsset(
   document: DocumentDescriptor,
-  io: PictureIo,
+  io: AssetWritingIo,
   place: NamedDocumentPlace,
   draft: CapturedDraft,
 ): Promise<boolean> {
@@ -87,7 +91,9 @@ async function intoNewAsset(
     // The NAME the row came back with, never the one that was typed: a folder already holding
     // that file frees the name, and a tab titled otherwise would name a file nobody wrote.
     useDocuments.getState().retarget(document.id, written.id, written.name)
-    await useAssets.getState().refresh()
+    // Together: the shelf and the document listing share nothing, and one waiting on the other
+    // is a second round trip in series for a gesture that has already opened a window.
+    await Promise.all([useAssets.getState().refresh(), useDocuments.getState().relist('own-write')])
     return true
   } catch (error) {
     reportFailure('assets.save', document.title, error)
@@ -107,7 +113,7 @@ async function intoNewAsset(
 async function intoNewFile(
   bridge: StudioBridge,
   document: DocumentDescriptor,
-  io: FileIo,
+  io: FileWritingIo,
   place: NamedDocumentPlace,
   draft: CapturedDraft,
 ): Promise<boolean> {
@@ -131,14 +137,11 @@ async function intoNewFile(
   io.install(created.id, draft.content, draft.parts)
   openDocument(created)
   forgetDocument(document.id)
+  await useDocuments.getState().relist('own-write')
   return true
 }
 
-/**
- * A script written where the person chose. Apart from every other kind because its file IS its
- * identity: nothing in a `.ts` can carry a document id, so its path is what names it — the same
- * reason `createScript` writes the file before the tab exists.
- */
+/** A script written where the person chose — `createScript` says why it is its own door. */
 async function intoNewScript(
   document: DocumentDescriptor,
   place: NamedDocumentPlace,
@@ -186,6 +189,5 @@ export async function saveDocumentAs(documentId: string): Promise<boolean> {
   if (!written) return false
 
   commit()
-  void useDocuments.getState().relist('own-write')
   return true
 }

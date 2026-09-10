@@ -16,16 +16,21 @@ type SaveRequestBase = {
   name: string
   /** The asset this one was edited from, so the two stay traceable to each other. */
   derivedFrom?: string
-  /**
-   * The project folder to write into, for the one caller that has been given one: a Save as…,
-   * where a person picked the destination. Absent everywhere else, and then the role decides —
-   * a picture lands with the pictures without anybody naming a folder.
-   *
-   * Refused rather than trusted on the way in: it crosses the frontier as text, so it meets the
-   * same shape and the same ban on the studio's own folders as every other landing folder.
-   */
-  folder?: string
 }
+
+/**
+ * The project folder to write into, for the one gesture that has been given one: a Save as…,
+ * where a person picked the destination. Absent, the role decides — a picture lands with the
+ * pictures without anybody naming a folder.
+ *
+ * On the two PICTURE requests rather than on the base above, because they are the two channels
+ * that honour it: promised by a base every save request extends, it would be a field the audio
+ * and animation channels drop without a word.
+ *
+ * Refused rather than trusted on the way in: it crosses the frontier as text, so it meets the
+ * same shape and the same ban on the studio's own folders as every other landing folder.
+ */
+type ChosenFolder = { folder?: string }
 
 /** An edited take on its way back to disk — see `StudioBridge['assets']['saveAudio']`. */
 export type SaveAudioRequest = SaveRequestBase & {
@@ -42,10 +47,11 @@ export type SaveAudioRequest = SaveRequestBase & {
  * string, `derive` hands back bytes; each sends what it holds rather than paying for a
  * conversion — which on a 4K picture is megabytes copied twice for nothing.
  */
-export type SavePictureRequest = SaveRequestBase & {
-  /** PNG payload, base64 and never a data URL — the prefix is part of the picture otherwise. */
-  png: string
-}
+export type SavePictureRequest = SaveRequestBase &
+  ChosenFolder & {
+    /** PNG payload, base64 and never a data URL — the prefix is part of the picture otherwise. */
+    png: string
+  }
 
 /**
  * A character's own file on its way back to disk, its skeleton written into it.
@@ -114,9 +120,10 @@ export type SaveAnimationThumbnailRequest = {
  * Two channels rather than one taking either: what the main process does with them differs
  * entirely — one writes bytes it was handed, the other assembles a container.
  */
-export type SaveLayeredRequest = SaveRequestBase & {
-  document: OraDocument
-}
+export type SaveLayeredRequest = SaveRequestBase &
+  ChosenFolder & {
+    document: OraDocument
+  }
 
 /**
  * A player module on its way into the project as a glTF of its own — see
