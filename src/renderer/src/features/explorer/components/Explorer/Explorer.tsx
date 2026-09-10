@@ -178,7 +178,8 @@ export function Explorer() {
       history,
       bindings: currentOverrides(),
       t,
-      onImport: () => void useMedia.getState().importMedia(),
+      onImport: () => void useMedia.getState().importMedia(into),
+      onLink: () => void useMedia.getState().linkMedia(),
       run: command => run(command, into),
     })
   }

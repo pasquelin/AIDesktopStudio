@@ -41,7 +41,9 @@
     "fetchHint": "두 번 클릭하여 프로젝트로 가져오고 엽니다",
     "generatingHint": "생성 중 — 애셋은 완료되면 여기에 나타납니다",
     "import": "미디어 가져오기",
-    "importHint": "비디오, 오디오 또는 이미지 파일을 연결합니다",
+    "importHint": "비디오, 오디오 또는 이미지 파일을 이 폴더로 복사합니다",
+    "link": "복사하지 않고 연결…",
+    "linkHint": "파일을 있던 자리에 둔 채 프로젝트에 더합니다",
     "libraryRefused": "라이브러리가 응답하지 않았습니다.",
     "libraryRefusedHint": "원격 라이브러리를 다시 요청합니다",
     "nameEmpty": "애셋에 이름이 필요합니다.",
@@ -111,6 +113,8 @@
     "fewerHint": "필터를 접어 컬렉션 공간을 확보합니다"
   },
   "documents": {
+    "sourceReadReduced": "이 파일의 일부를 읽지 못했습니다. 덮어써 저장하면 그 부분을 잃습니다. 사본으로 저장하세요.",
+    "sourceFormatChange": "저장하면 이 파일의 형식이 바뀝니다. «다른 이름으로 저장»에서 대상을 고르세요.",
     "copyName": "{{name}} 복사",
     "none": "열린 문서가 없습니다",
     "untitled": "{{kind}} {{n}}",

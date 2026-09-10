@@ -163,6 +163,7 @@ export const CHANNELS: Channels = {
   activityRead: 'activity:read',
   mediaAdopt: 'media:adopt',
   mediaIngest: 'media:ingest',
+  mediaLink: 'media:link',
   mediaCancel: 'media:cancel',
   mediaAvailable: 'media:available',
   assistantThink: 'assistant:think',

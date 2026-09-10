@@ -44,7 +44,12 @@ describe('saveDocument', () => {
     ): Promise<{ documentId: string; release: () => void }> => {
       const created = await useDocuments
         .getState()
-        .create('image', sourceAssetId ? { title: 'Gemini 3.1', sourceAssetId } : undefined)
+        .create(
+          'image',
+          sourceAssetId
+            ? { title: 'Gemini 3.1', sourceAssetId, sourceFidelity: 'faithful' }
+            : undefined,
+        )
       if (!created) throw new Error('expected a document')
 
       useCanvases.getState().ensure(created.id, () => DEFAULT_CANVAS)
@@ -216,9 +221,11 @@ describe('saveDocument', () => {
         },
         assets: { savePicture },
       })
-      const created = await useDocuments
-        .getState()
-        .create('image', { title: 'Gemini 3.1', sourceAssetId: 'asset-1' })
+      const created = await useDocuments.getState().create('image', {
+        title: 'Gemini 3.1',
+        sourceAssetId: 'asset-1',
+        sourceFidelity: 'faithful',
+      })
       if (!created) throw new Error('expected a document')
       shelve('Images/hero.png')
       useCanvases.getState().ensure(created.id, () => DEFAULT_CANVAS)

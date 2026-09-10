@@ -22,6 +22,8 @@ import {
   type CapabilityTrait,
   type WritableFormat,
 } from '@shared/domain/formatCapability'
+import { mayOverwriteSource, readFidelityOf, type ReadFidelity } from '@shared/domain/readFidelity'
+import { keepsWrittenFormat } from '@shared/domain/writtenFormat'
 import type { StudioBridge } from '@shared/ipc'
 import i18next from 'i18next'
 import { closePanel, openDocument } from './components/dockviewApi'
@@ -102,6 +104,38 @@ function savableDocument(documentId: string, byHand = true): SavableDocument | n
   }
   return { bridge, document, io }
 }
+/**
+ * Why a save wrote nothing at all. Named rather than boolean: the two say different things to the
+ * person in front of them, and each has its own sentence.
+ */
+export type SaveRefusal = 'sourceReadReduced' | 'sourceFormatChange'
+
+export const SAVE_REFUSALS: readonly SaveRefusal[] = ['sourceReadReduced', 'sourceFormatChange']
+
+/**
+ * The two ways a save is refused before it writes ANYTHING — the protections of §5.7.
+ *
+ * Before, and that is the whole of it: refusing after the document file is written leaves an
+ * `.ora` beside a picture the user never asked to convert, which is the file this refusal exists
+ * to keep off the disk. The document stays modified, and nothing on disk moved.
+ *
+ * `null` when the save may proceed, including for every document that writes no asset at all.
+ */
+function sourceWriteRefusal({ document, io }: WritableSavableDocument): SaveRefusal | null {
+  const source = document.sourceAssetId
+  if (!source || !io.writeAsset) return null
+
+  // P1. Read off the document rather than measured now: what tells a reduction from a crop is
+  // WHO shrank the picture, and only the read knows that.
+  if (!mayOverwriteSource(readFidelityOf(document.sourceFidelity))) return 'sourceReadReduced'
+
+  // P2. Against what the writer PRODUCES, never against the format it was asked for: asked for a
+  // JPEG it hands back a PNG, and `replaceBytes` then renames the file and deletes the original.
+  const path = assetsById(useAssets.getState()).get(source)?.path
+  const { format } = writePlanFor(document, io, source)
+  return keepsWrittenFormat(path, io.writtenExtension(format)) ? null : 'sourceFormatChange'
+}
+
 export async function saveDocument(documentId: string, byHand = true): Promise<boolean> {
   const savable = savableDocument(documentId, byHand)
   if (!savable) return false
@@ -112,6 +146,13 @@ export async function saveDocument(documentId: string, byHand = true): Promise<b
   await io.settled?.(documentId)
   if (io.assetOnly) return await io.saveOwn(documentId)
   const writable: WritableSavableDocument = { ...savable, io }
+  const refusal = sourceWriteRefusal(writable)
+  if (refusal) {
+    // Said every time, even under autosave: a refusal nobody hears is the silence these two
+    // protections were written to end.
+    reportNotice('document.save', i18next.t(`documents.${refusal}`))
+    return false
+  }
   const epoch = epochOf(documentId)
   const controller = beginCapture(documentId)
   const capture = captureForSave(io, documentId, controller)
@@ -151,6 +192,9 @@ async function writeCaptured(
     ...draft,
     title: document.title,
     ...(document.sourceAssetId ? { sourceAssetId: document.sourceAssetId } : {}),
+    // Carried into the file, so a document reopened next session does not regain the right to
+    // overwrite a source this session read reduced.
+    ...(document.sourceFidelity ? { sourceFidelity: document.sourceFidelity } : {}),
   }
   if (!(await writeDraft(savable, document, payload, epoch, controller.signal, byHand)))
     return false
@@ -171,7 +215,7 @@ function capturedOrThrow(result: CaptureResult, signal: AbortSignal): CapturedDo
 async function writeDraft(
   { bridge }: WritableSavableDocument,
   document: DocumentDescriptor,
-  draft: CapturedDraft & { title: string; sourceAssetId?: string },
+  draft: CapturedDraft & { title: string; sourceAssetId?: string; sourceFidelity?: ReadFidelity },
   epoch: number,
   signal: AbortSignal,
   byHand: boolean,
@@ -260,7 +304,11 @@ async function copyDocumentAsset(
     }
     const created = await useDocuments
       .getState()
-      .create(document.workspace, { title: name, sourceAssetId: copy.id })
+      .create(document.workspace, {
+        title: name,
+        sourceAssetId: copy.id,
+        sourceFidelity: 'faithful',
+      })
     if (!created) {
       reportFailure('assets.copy', document.title, localizedError('copyDocumentMissing'))
       return false
@@ -272,6 +320,9 @@ async function copyDocumentAsset(
         ...draft,
         title: name,
         sourceAssetId: copy.id,
+        // The copy IS what the studio holds, written whole: nothing was read to make it, so
+        // nothing was reduced on the way in.
+        sourceFidelity: 'faithful',
       },
       false,
       parentOf(created.path) ?? FOLDER_ROOT,

@@ -130,6 +130,7 @@ const DOM_BOUND = [
   'src/renderer/src/features/shell/documentIo05Split04.test.ts',
   'src/renderer/src/features/shell/documentIo05Split05.test.ts',
   'src/renderer/src/features/shell/documentIo06.test.ts',
+  'src/renderer/src/features/shell/documentIo07.test.ts',
   'src/renderer/src/features/shell/documentLoad.test.ts',
   // The composer makes a canvas per layer to read its pixels back, and a spy has to have
   // something to stand in FOR.

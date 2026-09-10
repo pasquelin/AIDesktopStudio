@@ -41,7 +41,9 @@
     "fetchHint": "Doble clic para traerla al proyecto y abrirla",
     "generatingHint": "Generándose — el recurso aparecerá aquí en cuanto termine",
     "import": "Importar un medio",
-    "importHint": "Vincula un archivo de vídeo, audio o imagen — se queda donde está",
+    "importHint": "Copia un archivo de vídeo, audio o imagen en esta carpeta",
+    "link": "Enlazar sin copiar…",
+    "linkHint": "Añade el archivo al proyecto dejándolo donde está",
     "libraryRefused": "Tu biblioteca no ha respondido.",
     "libraryRefusedHint": "Vuelve a pedir la biblioteca remota",
     "nameEmpty": "Un recurso necesita un nombre.",
@@ -111,6 +113,8 @@
     "fewerHint": "Repliega los filtros para dejar sitio a la colección"
   },
   "documents": {
+    "sourceReadReduced": "Parte de este archivo no se leyó: guardarlo encima la perdería. Guarde una copia.",
+    "sourceFormatChange": "Guardar cambiaría el formato de este archivo. Elija un destino con «Guardar como».",
     "copyName": "{{name}} copia",
     "none": "Ningún documento abierto. Genera o abre un recurso para empezar.",
     "untitled": "{{kind}} {{n}}",

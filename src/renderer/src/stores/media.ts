@@ -6,6 +6,8 @@ import {
   type MediaCapabilities,
 } from '@shared/domain/media'
 import { withoutKey } from '@shared/collections'
+import type { ExternalFileImport } from '@shared/domain/externalFile'
+import type { StudioBridge } from '@shared/ipc'
 import { connectThroughBridge, getBridge } from '@/services/bridge'
 import { reportFailure } from '@/services/diagnostics'
 import { reportImportNotices } from '@/services/externalFiles'
@@ -21,7 +23,8 @@ type MediaState = {
   connect: () => Promise<() => void>
   /** Asks again, after the ffmpeg path was changed — the answer is what that field decides. */
   refreshCapabilities: () => Promise<void>
-  importMedia: () => Promise<void>
+  importMedia: (folder: string) => Promise<void>
+  linkMedia: () => Promise<void>
   cancel: (assetId: string) => Promise<void>
   apply: (progress: IngestProgress) => void
 }
@@ -30,6 +33,23 @@ type MediaState = {
  * Ingest lives in the main process; this replica is what lets the asset browser show a file the
  * moment it is linked, and follow the probing that fills in its duration afterwards.
  */
+async function landPickedMedia(
+  pick: (bridge: StudioBridge) => Promise<ExternalFileImport>,
+): Promise<void> {
+  const bridge = getBridge()
+  if (!bridge) return
+  try {
+    const imported = await pick(bridge)
+    reportImportNotices(imported)
+    // The rows exist as soon as the dialog closes, probe or no probe: the browser shows the
+    // file straight away, and the ingest fills in what it learns.
+    if (imported.assets.length > 0) await useAssets.getState().refresh()
+    await convertArrivedModels(imported.assets)
+  } catch (error) {
+    reportFailure('assets.copy', 'media-picker', error)
+  }
+}
+
 export const useMedia = create<MediaState>()((set, get) => ({
   progress: {},
   capabilities: { ffmpeg: true },
@@ -47,19 +67,11 @@ export const useMedia = create<MediaState>()((set, get) => ({
     if (capabilities) set({ capabilities })
   },
 
-  importMedia: async () => {
-    try {
-      const imported = await getBridge()?.media.ingest()
-      if (!imported) return
-      reportImportNotices(imported)
-      // The rows exist as soon as the dialog closes, probe or no probe: the browser shows the
-      // file straight away, and the ingest fills in what it learns.
-      if (imported.assets.length > 0) await useAssets.getState().refresh()
-      await convertArrivedModels(imported.assets)
-    } catch (error) {
-      reportFailure('assets.copy', 'media-picker', error)
-    }
-  },
+  /** The picker, copying into the folder the menu was raised on — a drop by another name. */
+  importMedia: folder => landPickedMedia(bridge => bridge.media.ingest(folder)),
+
+  /** The picker, leaving every file where it lies. Named on screen, never inferred (R6). */
+  linkMedia: () => landPickedMedia(bridge => bridge.media.link()),
 
   cancel: async assetId => {
     // Dropped locally too: the main process answers with a `cancelled` event, and waiting for

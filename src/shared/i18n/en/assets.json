@@ -41,7 +41,9 @@
     "fetchHint": "Double-click to fetch it into the project and open it",
     "generatingHint": "Generating — the asset will appear here once it finishes",
     "import": "Import media",
-    "importHint": "Link a video, audio or image file — it stays where it is",
+    "importHint": "Copies a video, audio or image file into this folder",
+    "link": "Link without copying…",
+    "linkHint": "Adds the file to the project, leaving it where it is",
     "libraryRefused": "Your library did not answer.",
     "libraryRefusedHint": "Asks for the remote library again",
     "nameEmpty": "An asset needs a name.",
@@ -111,6 +113,8 @@
     "fewerHint": "Folds the filters away, to make room for the collection"
   },
   "documents": {
+    "sourceReadReduced": "Part of this file was not read: saving over it would lose that part. Save a copy instead.",
+    "sourceFormatChange": "Saving would change this file’s format. Choose a destination with Save as.",
     "copyName": "{{name}} copy",
     "none": "No document open. Generate or open an asset to get started.",
     "untitled": "{{kind}} {{n}}",

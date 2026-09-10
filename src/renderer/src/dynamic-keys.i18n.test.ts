@@ -47,6 +47,7 @@ import { ASSET_INTENTS } from '@/helpers/assetIntents'
 import { FOLDER_SORTS } from '@/helpers/folderSort'
 import { TRACK_FLAGS } from '@/features/timeline/components/trackFlags'
 import { DOCUMENT_NAME_REFUSALS } from '@/features/document/documentName'
+import { SAVE_REFUSALS } from '@/features/shell/documentIo'
 import { DOCUMENT_KINDS, isMadeFromNothing } from '@shared/domain/document'
 import { SCENE_TEMPLATE_GROUPS, SCENE_TEMPLATE_IDS } from '@shared/domain/sceneTemplate'
 import { FILE_KINDS } from '@shared/domain/folder'
@@ -161,6 +162,9 @@ const COMPOSED_KEYS: readonly string[] = [
   // The four an interface opens on, in the window that names a new document.
   ...UI_TEMPLATE_IDS.map(id => `documents.uiTemplates.${id}`),
   ...UI_TEMPLATE_IDS.map(id => `documents.uiTemplateHints.${id}`),
+  // Why a save wrote nothing — the two protections of the save path, composed from the refusal
+  // itself. Missing, the one sentence explaining why ⌘S did nothing reads as its own key.
+  ...SAVE_REFUSALS.map(refusal => `documents.${refusal}`),
 
   // Where a generation's source was taken from, written under its thumbnail. An origin with no
   // sentence would put a raw key on the one line saying what the studio is about to send.

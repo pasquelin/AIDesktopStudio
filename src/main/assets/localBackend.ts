@@ -14,6 +14,8 @@ import type { PbrChannel } from '@shared/domain/material'
 import type { ModelTextureUse } from '@shared/domain/modelTextureUse'
 import type { AsyncCatalog } from '@main/project/catalogClient'
 import { log } from '@main/log'
+import { keepsWrittenFormat } from '@shared/domain/writtenFormat'
+import { localizedError } from '@shared/localizedError'
 import { freeAnimationPath, freeAssetPath, safeExtension, withExtension } from './assetFile'
 
 export type Download = (url: string) => Promise<Uint8Array>
@@ -126,8 +128,25 @@ export type LocalBackend = {
     assetId: string,
     bytes: Uint8Array,
     extension: string,
-    probe?: MediaProbe,
+    options?: ReplaceOptions,
   ) => Promise<Asset>
+}
+
+/**
+ * What a caller may say about the bytes it is replacing an asset's file with.
+ *
+ * `converts` is the second protection of §5.7, expressed as its own opposite: an extension that
+ * names a different format than the file already carries is REFUSED here, because this is the one
+ * place that renames a file and deletes what it replaced. Painting on a `.jpg` and saving used to
+ * come back a `.png` with the `.jpg` gone, and nothing said.
+ *
+ * A caller whose job IS the conversion — extracting a model's textures rewrites a glTF as a
+ * binary one — says so, and takes the responsibility with the word. It is deliberately not a
+ * default: the guard has to be the thing one has to opt out of.
+ */
+export type ReplaceOptions = {
+  probe?: MediaProbe
+  converts?: true
 }
 
 /**
@@ -419,9 +438,19 @@ export function createLocalBackend({
 
     importFromFile: (request, sourcePath) => write(request, { from: sourcePath }),
 
-    replaceBytes: async (assetId, bytes, extension, probe) => {
+    replaceBytes: async (assetId, bytes, extension, options) => {
       const existing = await catalog().find(assetId)
       if (!existing) throw new Error(`asset ${assetId} is not in the catalogue`)
+
+      // Before the write, so a refusal leaves no file behind at all — neither the new one nor a
+      // half of it. The renderer asks the same question before it sends anything; this one is
+      // what makes the answer true whatever calls this door.
+      if (!options?.converts && !keepsWrittenFormat(existing.path, extension)) {
+        throw localizedError('assetFormatChangeRefused', {
+          name: existing.name,
+          format: extension,
+        })
+      }
 
       // Written INSIDE the project, always — including for a row that had no file there.
       //
@@ -456,7 +485,7 @@ export function createLocalBackend({
       // A fresh one is derived from the new bytes below, on the same path every other write
       // takes. Nothing used to do that, and applying an edit left every clip of the take
       // waveform-less for good.
-      const rewritten = replacementAsset(existing, relativePath, bytes, now(), probe)
+      const rewritten = replacementAsset(existing, relativePath, bytes, now(), options?.probe)
 
       // The fingerprint follows the bytes for the same reason the waveform does: the one the row
       // carried describes a take that no longer exists, so a rescan would hunt for a file nobody

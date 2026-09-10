@@ -44,6 +44,7 @@ import {
 } from '@shared/domain/document'
 import { type CapabilityTrait, type WritableFormat } from '@shared/domain/formatCapability'
 import { ORA_MERGED_PATH, type OraSurface } from '@shared/domain/openRaster'
+import { ORA_EXTENSION, PNG_EXTENSION } from '@shared/domain/writtenFormat'
 import { otioStudioMetadata } from '@shared/domain/otio'
 import { createSkyboxContent } from '@shared/domain/skybox'
 import type { StudioBridge } from '@shared/ipc'
@@ -136,6 +137,7 @@ type AssetWriting =
   | {
       writeAsset?: undefined
       traitsOf?: undefined
+      writtenExtension?: undefined
     }
   | {
       writeAsset: (
@@ -144,6 +146,14 @@ type AssetWriting =
         captured: CapturedDraft,
       ) => Promise<Asset | null>
       traitsOf: (documentId: string) => CapabilityTrait[]
+      /**
+       * The extension the bytes this io PRODUCES will carry — which is not the extension of the
+       * format it was asked for. `WRITABLE_FORMATS` names `jpeg` and `webp`, and no encoder for
+       * either exists: asked for a JPEG, the picture writer hands back a PNG. A save reads this
+       * to know whether it is about to change a file's format, so it has to be the truth of the
+       * writer rather than the wish of the table.
+       */
+      writtenExtension: (format: WritableFormat) => string
     }
 type TextDocumentCodec<S> = {
   toPayload: (state: S, documentId: string) => unknown
@@ -319,12 +329,6 @@ const IMAGE_IO: DocumentIo = {
     const bridge = getBridge()
     const host = canvasHost(documentId)
     if (!bridge || !host) return null
-    const replaced = target.replaces
-    if (replaced) {
-      void import('@/features/image/assetFidelity')
-        .then(({ reportAssetDrift }) => reportAssetDrift(documentId, replaced, target.name))
-        .catch(() => undefined)
-    }
     const written = await (target.format === 'ora'
       ? layeredAsset(captured, target, bridge)
       : flatAsset(captured, target, bridge))
@@ -333,6 +337,9 @@ const IMAGE_IO: DocumentIo = {
     return written
   },
   traitsOf: documentId => traitsOfCanvas(canvasOf(useCanvases.getState(), documentId)),
+  // Two branches, exactly as `writeAsset` above has: the container, or the single flat encoder
+  // the studio owns. Everything that is not `ora` comes out a PNG whatever it was asked for.
+  writtenExtension: format => (format === 'ora' ? ORA_EXTENSION : PNG_EXTENSION),
   createDefault: documentId => useCanvases.getState().ensure(documentId, () => DEFAULT_CANVAS),
   holds: documentId => canvasStore.hasState(useCanvases.getState(), documentId),
   dirty: documentId => canvasStore.hasUnsavedWork(useCanvases.getState(), documentId),

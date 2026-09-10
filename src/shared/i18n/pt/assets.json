@@ -41,7 +41,9 @@
     "fetchHint": "Clique duas vezes para recuperá-la no projeto e abri-la",
     "generatingHint": "Em geração — o asset aparece aqui assim que terminar",
     "import": "Importar mídia",
-    "importHint": "Vincula um arquivo de vídeo, áudio ou imagem — ele fica onde está",
+    "importHint": "Copia um ficheiro de vídeo, áudio ou imagem para esta pasta",
+    "link": "Ligar sem copiar…",
+    "linkHint": "Adiciona o ficheiro ao projeto deixando-o onde está",
     "libraryRefused": "Sua biblioteca não respondeu.",
     "libraryRefusedHint": "Pede a biblioteca remota de novo",
     "nameEmpty": "Um asset precisa de um nome.",
@@ -111,6 +113,8 @@
     "fewerHint": "Recolhe os filtros, para dar lugar à coleção"
   },
   "documents": {
+    "sourceReadReduced": "Parte deste ficheiro não foi lida: guardar por cima perderia essa parte. Guarde uma cópia.",
+    "sourceFormatChange": "Guardar mudaria o formato deste ficheiro. Escolha um destino com «Guardar como».",
     "copyName": "{{name}} cópia",
     "none": "Nenhum documento aberto. Gere ou abra um asset para começar.",
     "untitled": "{{kind}} {{n}}",

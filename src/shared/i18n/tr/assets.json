@@ -41,7 +41,9 @@
     "fetchHint": "Projeye getirip açmak için çift tıklayın",
     "generatingHint": "Üretiliyor — bitince varlık burada görünecek",
     "import": "Medya içe aktar",
-    "importHint": "Bir video, ses ya da görüntü dosyasını bağlar — dosya olduğu yerde kalır",
+    "importHint": "Bir video, ses veya görüntü dosyasını bu klasöre kopyalar",
+    "link": "Kopyalamadan bağla…",
+    "linkHint": "Dosyayı olduğu yerde bırakarak projeye ekler",
     "libraryRefused": "Kitaplığınız yanıt vermedi.",
     "libraryRefusedHint": "Uzak kitaplığı yeniden ister",
     "nameEmpty": "Bir varlığın bir ada ihtiyacı var.",
@@ -111,6 +113,8 @@
     "fewerHint": "Koleksiyona yer açmak için filtreleri katlar"
   },
   "documents": {
+    "sourceReadReduced": "Bu dosyanın bir bölümü okunmadı: üzerine kaydetmek onu yitirir. Bir kopya kaydedin.",
+    "sourceFormatChange": "Kaydetmek bu dosyanın biçimini değiştirir. «Farklı kaydet» ile bir hedef seçin.",
     "copyName": "{{name}} kopya",
     "none": "Açık belge yok. Başlamak için bir varlık üretin ya da açın.",
     "untitled": "{{kind}} {{n}}",

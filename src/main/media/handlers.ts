@@ -59,7 +59,21 @@ export function registerMediaHandlers({
     return asset && withoutSourcePath(asset)
   })
 
-  handle(CHANNELS.mediaIngest, async () => {
+  /**
+   * The picker, COPYING into the folder that was asked for — the same act as dropping those files
+   * on that folder. It used to link instead, so the same rush imported through the menu and
+   * dropped in the explorer left the project in two different states, and nothing on screen said
+   * which door had done which. Linking is `mediaLink`, and it is a command with a name.
+   */
+  handle(CHANNELS.mediaIngest, async (_event, folder) => {
+    const paths = await pickMedia()
+    if (paths.length === 0) return EMPTY_IMPORT
+    const imported = await importPaths(paths, parseFolderPath(folder), {})
+    return { ...imported, assets: imported.assets.map(withoutSourcePath) }
+  })
+
+  /** The same picker, leaving every file where it lies — see `StudioBridge.media.link`. */
+  handle(CHANNELS.mediaLink, async () => {
     const assets: Asset[] = []
     const models: string[] = []
     let copied = EMPTY_IMPORT
@@ -67,7 +81,7 @@ export function registerMediaHandlers({
     for (const source of await pickMedia()) {
       const type = assetTypeOf(source)
       if (!type) continue
-      // A rush stays where it lies; a 3D file is copied so the conversion can write a `.glb`.
+      // A 3D file cannot be left where it lies: the conversion has a `.glb` to write beside it.
       if (isConvertibleType(type)) {
         models.push(source)
         continue

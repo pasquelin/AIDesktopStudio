@@ -53,7 +53,7 @@ describe('media store', () => {
       },
     })
 
-    await useMedia.getState().importMedia()
+    await useMedia.getState().importMedia('Images')
 
     expect(refresh).toHaveBeenCalledOnce()
   })
@@ -69,7 +69,7 @@ describe('media store', () => {
     }
     installFakeBridge({ media: { ingest: () => Promise.resolve(imported) } })
 
-    await useMedia.getState().importMedia()
+    await useMedia.getState().importMedia('Images')
 
     expect(importedMedia.notices).toHaveBeenCalledWith(imported)
     expect(importedMedia.convert).toHaveBeenCalledWith([mesh])
@@ -80,7 +80,7 @@ describe('media store', () => {
       media: { ingest: () => Promise.reject(new Error('picker unavailable')) },
     })
 
-    await useMedia.getState().importMedia()
+    await useMedia.getState().importMedia('Images')
 
     expect(importedMedia.failure).toHaveBeenCalledWith(
       'assets.copy',

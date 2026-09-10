@@ -82,17 +82,6 @@ export type AssetIntent = {
    * destination offers one, and falls back to `into` where none is needed.
    */
   become?: (documentId: string, asset: Asset) => Promise<void>
-  /**
-   * What this destination has to say when the tab it would open is ALREADY there.
-   *
-   * `openAsset` brings that tab back rather than making a second one, and never resizes it: the
-   * document keeps its size and the work done in it. But a document that drifted from its asset
-   * is one whose ⌘S will shrink the file, so the reopening is the first moment it can be said.
-   *
-   * Absent on every destination but the image, like `become` and for the same reason: the others
-   * do not write their asset's file back at the document's size.
-   */
-  revisit?: (documentId: string, asset: Asset) => Promise<void>
 }
 
 /**
@@ -215,13 +204,6 @@ export const ASSET_INTENTS: readonly AssetIntent[] = [
     workspace: 'image',
     labelKey: 'intents.imageLayer',
     accepts: PICTURES,
-    // Through `import()`, like the two measuring gestures beside it: `eager-graph.test.ts` holds
-    // the opening chunk's reach into the editors at two files, and nothing here runs before a
-    // double-click lands on a picture.
-    revisit: async (documentId, asset) => {
-      const { reportAssetDrift } = await import('@/features/image/assetFidelity')
-      await reportAssetDrift(documentId, asset.id, asset.name)
-    },
     ...inDocument('image', placeAsset, isPaintablePicture, becomeAsset),
   },
   {

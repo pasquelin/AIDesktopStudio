@@ -30,7 +30,12 @@ describe('saveDocument', () => {
     ): Promise<{ documentId: string; release: () => void }> => {
       const created = await useDocuments
         .getState()
-        .create('image', sourceAssetId ? { title: 'Gemini 3.1', sourceAssetId } : undefined)
+        .create(
+          'image',
+          sourceAssetId
+            ? { title: 'Gemini 3.1', sourceAssetId, sourceFidelity: 'faithful' }
+            : undefined,
+        )
       if (!created) throw new Error('expected a document')
 
       useCanvases.getState().ensure(created.id, () => DEFAULT_CANVAS)
@@ -235,9 +240,11 @@ describe('saveDocument', () => {
         assets: { saveLayered: () => Promise.resolve(picture()) },
       })
       shelve('Images/hero.ora')
-      const created = await useDocuments
-        .getState()
-        .create('image', { title: 'Gemini 3.1', sourceAssetId: 'asset-1' })
+      const created = await useDocuments.getState().create('image', {
+        title: 'Gemini 3.1',
+        sourceAssetId: 'asset-1',
+        sourceFidelity: 'faithful',
+      })
       if (!created) throw new Error('expected a document')
       useCanvases.getState().ensure(created.id, () => DEFAULT_CANVAS)
       const release = holdCanvas(created.id, () =>
@@ -285,9 +292,11 @@ describe('saveDocument', () => {
         assets: { saveLayered },
       })
       shelve('Images/hero.ora')
-      const created = await useDocuments
-        .getState()
-        .create('image', { title: 'Gemini 3.1', sourceAssetId: 'asset-1' })
+      const created = await useDocuments.getState().create('image', {
+        title: 'Gemini 3.1',
+        sourceAssetId: 'asset-1',
+        sourceFidelity: 'faithful',
+      })
       if (!created) throw new Error('expected a document')
       useCanvases.getState().ensure(created.id, () => DEFAULT_CANVAS)
       // The engine hands its surfaces over, which is what a layer of the container is made of:
@@ -311,24 +320,6 @@ describe('saveDocument', () => {
         path: 'mergedimage.png',
         png: PNG_HEAD,
       })
-    })
-
-    it('writes OpenRaster rather than guessing, when the source format is not one it writes', async () => {
-      const savePicture = vi.fn(() => Promise.resolve(picture()))
-      const saveLayered = vi.fn((_request: SaveLayeredRequest) => Promise.resolve(picture()))
-      installFakeBridge({
-        documents: { write: () => Promise.resolve<DocumentWrite>('written') },
-        assets: { savePicture, saveLayered },
-      })
-      shelve('Images/scan.tif')
-      const { documentId, release } = await openImage('asset-1')
-      useCanvases.getState().runCommand(documentId, addLayer(pixelLayer('layer-2', 'Layer')))
-
-      await saveDocument(documentId)
-      release()
-
-      expect(saveLayered).toHaveBeenCalled()
-      expect(savePicture).not.toHaveBeenCalled()
     })
 
     it('names what the source file could not have held', async () => {

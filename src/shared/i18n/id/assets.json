@@ -41,7 +41,9 @@
     "fetchHint": "Klik dua kali untuk mengambilnya ke dalam proyek dan membukanya",
     "generatingHint": "Sedang dibuat — aset akan muncul di sini setelah selesai",
     "import": "Impor media",
-    "importHint": "Menautkan file video, audio, atau gambar — file tetap di tempatnya",
+    "importHint": "Menyalin berkas video, audio atau gambar ke folder ini",
+    "link": "Tautkan tanpa menyalin…",
+    "linkHint": "Menambahkan berkas ke proyek tanpa memindahkannya",
     "libraryRefused": "Pustaka Anda tidak menjawab.",
     "libraryRefusedHint": "Meminta ulang pustaka jarak jauh",
     "nameEmpty": "Aset membutuhkan sebuah nama.",
@@ -111,6 +113,8 @@
     "fewerHint": "Melipat filter, untuk memberi ruang bagi koleksi"
   },
   "documents": {
+    "sourceReadReduced": "Sebagian berkas ini tidak terbaca: menyimpan di atasnya akan menghilangkannya. Simpan salinan.",
+    "sourceFormatChange": "Menyimpan akan mengubah format berkas ini. Pilih tujuan lewat «Simpan sebagai».",
     "copyName": "{{name}} salinan",
     "none": "Tidak ada dokumen yang terbuka. Buat atau buka sebuah aset untuk memulai.",
     "untitled": "{{kind}} {{n}}",

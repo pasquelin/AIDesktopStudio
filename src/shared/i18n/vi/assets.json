@@ -41,7 +41,9 @@
     "fetchHint": "Nhấp đúp để tải nó về dự án và mở nó",
     "generatingHint": "Đang tạo — tài nguyên sẽ hiện ở đây khi xong",
     "import": "Nhập phương tiện",
-    "importHint": "Liên kết một tệp video, âm thanh hoặc hình ảnh — nó vẫn ở nguyên chỗ cũ",
+    "importHint": "Sao chép tệp video, âm thanh hoặc hình ảnh vào thư mục này",
+    "link": "Liên kết mà không sao chép…",
+    "linkHint": "Thêm tệp vào dự án và để nguyên vị trí của nó",
     "libraryRefused": "Thư viện của bạn không trả lời.",
     "libraryRefusedHint": "Hỏi lại thư viện từ xa",
     "nameEmpty": "Tài nguyên cần có một cái tên.",
@@ -111,6 +113,8 @@
     "fewerHint": "Gấp các bộ lọc lại, để nhường chỗ cho bộ sưu tập"
   },
   "documents": {
+    "sourceReadReduced": "Một phần tệp này chưa được đọc: ghi đè sẽ làm mất phần đó. Hãy lưu một bản sao.",
+    "sourceFormatChange": "Lưu sẽ đổi định dạng của tệp này. Chọn đích bằng «Lưu thành».",
     "copyName": "{{name}} bản sao",
     "none": "Không có tài liệu nào đang mở. Tạo hoặc mở một tài nguyên để bắt đầu.",
     "untitled": "{{kind}} {{n}}",

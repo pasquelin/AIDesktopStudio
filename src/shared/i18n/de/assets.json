@@ -41,7 +41,9 @@
     "fetchHint": "Doppelklicken, um es in das Projekt zu holen und zu öffnen",
     "generatingHint": "Wird generiert — das Asset erscheint hier, sobald es fertig ist",
     "import": "Medien importieren",
-    "importHint": "Verknüpft eine Video-, Audio- oder Bilddatei — sie bleibt, wo sie ist",
+    "importHint": "Kopiert eine Video-, Audio- oder Bilddatei in diesen Ordner",
+    "link": "Verknüpfen ohne Kopieren…",
+    "linkHint": "Fügt die Datei dem Projekt hinzu und lässt sie, wo sie ist",
     "libraryRefused": "Ihre Bibliothek hat nicht geantwortet.",
     "libraryRefusedHint": "Fragt die entfernte Bibliothek erneut an",
     "nameEmpty": "Ein Asset braucht einen Namen.",
@@ -111,6 +113,8 @@
     "fewerHint": "Klappt die Filter ein, um Platz für die Sammlung zu schaffen"
   },
   "documents": {
+    "sourceReadReduced": "Ein Teil dieser Datei wurde nicht gelesen: Darüberspeichern würde ihn verlieren. Speichern Sie eine Kopie.",
+    "sourceFormatChange": "Das Speichern würde das Format dieser Datei ändern. Wählen Sie ein Ziel mit „Speichern unter“.",
     "copyName": "{{name}} Kopie",
     "none": "Kein Dokument geöffnet. Generieren oder öffnen Sie ein Asset, um zu beginnen.",
     "untitled": "{{kind}} {{n}}",

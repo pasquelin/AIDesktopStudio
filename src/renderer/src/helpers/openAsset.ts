@@ -77,10 +77,6 @@ export async function openAsset(asset: Asset, into?: AssetIntent): Promise<boole
     // The section is not set here: bringing the tab forward is what sets it, so the two cannot
     // disagree — see `DocumentArea`.
     openDocument(already)
-    // The tab is NOT resized to the asset: it keeps its size and the work done in it. But one
-    // that no longer measures its asset writes a smaller file over it on the next ⌘S, so the
-    // destination says so here — the first moment the user can still act on it.
-    await intent?.revisit?.(already.id, asset)
     return true
   }
 

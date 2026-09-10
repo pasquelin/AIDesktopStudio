@@ -21,9 +21,21 @@ import type { DragLike, DropTone } from '@/helpers/drag'
 
 type ExternalAssetReceiver = (asset: Asset) => boolean | void
 
-type WaitingExternalFiles = {
-  offer: ExternalFileOffer
+/**
+ * What a door asks of an arrival, beyond the files themselves.
+ *
+ * `opens` is the one thing that tells the doors apart, and it defaults to OFF: filing a file is
+ * not opening it (R2). Dropping twenty pictures on a folder used to stand twenty tabs up, and a
+ * video dropped on a canvas that refuses videos was imported anyway and then opened in its own
+ * space. Only the door the system opens a file THROUGH — the file association — opens a tab.
+ */
+type ExternalArrival = {
   onImported?: ExternalAssetReceiver
+  opens?: true
+}
+
+type WaitingExternalFiles = ExternalArrival & {
+  offer: ExternalFileOffer
 }
 
 const waiting: WaitingExternalFiles[] = []
@@ -75,7 +87,7 @@ async function chooseProject(): Promise<boolean> {
 
 async function importRequest(
   request: ExternalFileRequest,
-  onImported?: ExternalAssetReceiver,
+  arrival: ExternalArrival,
 ): Promise<void> {
   const bridge = getBridge()
   if (!bridge) return
@@ -91,7 +103,7 @@ async function importRequest(
   // A stop undoes nothing the main already copied and adopted, and its answer is dropped with the
   // race it lost — without this the catalogue holds rows the browser never shows.
   if (!imported) return await useAssets.getState().refresh()
-  await handImported(imported, onImported)
+  await handImported(imported, arrival)
 }
 
 export function reportImportNotices(imported: ExternalFileImport): void {
@@ -103,7 +115,7 @@ export function reportImportNotices(imported: ExternalFileImport): void {
 
 async function handImported(
   imported: ExternalFileImport,
-  onImported?: ExternalAssetReceiver,
+  { onImported, opens }: ExternalArrival,
 ): Promise<void> {
   reportImportNotices(imported)
   if (imported.montages.length > 0) {
@@ -122,16 +134,25 @@ async function handImported(
   await generateAnimationThumbnails(assets)
   if (imported.documents.length > 0) {
     await useDocuments.getState().relist()
-    const { openDocument } = await import('@/features/shell/components/dockviewApi')
-    for (const document of imported.documents) openDocument(document)
+    if (opens) {
+      const { openDocument } = await import('@/features/shell/components/dockviewApi')
+      for (const document of imported.documents) openDocument(document)
+    }
   }
-  if (onImported) {
-    const unhandled = assets.filter(asset => onImported(asset) === false)
-    if (unhandled.length === 0) return
-    await openExternalAssets(unhandled)
-    return
-  }
-  await openExternalAssets(assets)
+  // What a surface would not take is SAID, never opened somewhere else: a video dropped on a
+  // canvas used to be filed and then opened in the video space, which is a tab nobody asked for.
+  const unhandled = onImported ? assets.filter(asset => onImported(asset) === false) : assets
+  if (opens) return await openExternalAssets(unhandled)
+  if (onImported) reportFilesNotPlaced(unhandled.map(asset => asset.name))
+}
+
+/** What a surface would not take, said once for the lot rather than once per file. */
+function reportFilesNotPlaced(names: readonly string[]): void {
+  if (names.length === 0) return
+  reportNotice(
+    'assets.copy',
+    i18next.t('activity.notPlacedFiles', { count: names.length, names: names.join(', ') }),
+  )
 }
 
 async function openExternalAssets(assets: readonly Asset[]): Promise<void> {
@@ -154,7 +175,7 @@ async function drain(): Promise<void> {
       const request = arrival.offer.request
       if (!request) continue
       try {
-        await importRequest(request, arrival.onImported)
+        await importRequest(request, arrival)
       } catch (error) {
         reportFailure('assets.copy', request.id, error)
         // The main holds the authorised paths until the request is claimed or dropped: a failure
@@ -173,15 +194,19 @@ async function drain(): Promise<void> {
 
 export function queueExternalFiles(
   offers: readonly ExternalFileOffer[],
-  onImported?: ExternalAssetReceiver,
+  arrival: ExternalArrival = {},
 ): void {
-  waiting.push(...offers.map(offer => ({ offer, ...(onImported ? { onImported } : {}) })))
+  waiting.push(...offers.map(offer => ({ offer, ...arrival })))
   void drain()
 }
 
+/**
+ * The files the system handed the studio — « Open with », or a double-click in the Finder. The
+ * one door whose whole purpose is to OPEN what it was given.
+ */
 export async function takeExternalFiles(): Promise<void> {
   const requests = await getBridge()?.externalFiles.take()
-  if (requests) queueExternalFiles(requests)
+  if (requests) queueExternalFiles(requests, { opens: true })
 }
 
 export async function offerExternalFiles(
@@ -203,20 +228,35 @@ export async function importExternalFiles(
 ): Promise<void> {
   const offer = await offerExternalFiles(files)
   if (!offer) return
-  queueExternalFiles([externalFileOfferForCurrentProject(offer)], onImported)
+  queueExternalFiles([externalFileOfferForCurrentProject(offer)], { onImported })
 }
 
+/**
+ * A drop ON a surface: only what that surface takes is imported at all.
+ *
+ * Filtered BEFORE the files leave for the main process, and that is the change: a video dropped
+ * on a canvas used to be copied into the project, refused by the canvas, and then opened in the
+ * video space — three things nobody asked for, from one drop. What the surface will not take is
+ * said and left where it lies.
+ */
 export async function importExternalFilesInto(
   files: readonly File[] | FileList,
   accepts: readonly AssetType[],
   onImported: ExternalAssetReceiver,
 ): Promise<void> {
-  const offer = await offerExternalFiles(files)
-  if (!offer) return
-  queueExternalFiles([externalFileOfferForCurrentProject(offer)], asset => {
-    if (!accepts.includes(asset.type)) return false
-    return onImported(asset)
+  const wanted = [...files].filter(file => {
+    const type = importableAssetTypeOf(file.name)
+    return type !== null && accepts.includes(type)
   })
+  reportFilesTheSurfaceRefuses([...files], wanted)
+  if (wanted.length === 0) return
+  const offer = await offerExternalFiles(wanted)
+  if (!offer) return
+  queueExternalFiles([externalFileOfferForCurrentProject(offer)], { onImported })
+}
+
+function reportFilesTheSurfaceRefuses(files: readonly File[], wanted: readonly File[]): void {
+  reportFilesNotPlaced(files.filter(file => !wanted.includes(file)).map(file => file.name))
 }
 
 export function carriesExternalFiles(event: DragLike): boolean {

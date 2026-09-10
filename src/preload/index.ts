@@ -310,7 +310,8 @@ const bridge: StudioBridge = {
   },
   media: {
     adopt: relative => ipcRenderer.invoke(CHANNELS.mediaAdopt, relative),
-    ingest: () => ipcRenderer.invoke(CHANNELS.mediaIngest),
+    ingest: folder => ipcRenderer.invoke(CHANNELS.mediaIngest, folder),
+    link: () => ipcRenderer.invoke(CHANNELS.mediaLink),
     ingestPaths: (requestId, folder, taskId) =>
       ipcRenderer.invoke(CHANNELS.mediaIngestPaths, requestId, folder, taskId),
     importPicked: (role, taskId) => ipcRenderer.invoke(CHANNELS.mediaImportPicked, role, taskId),

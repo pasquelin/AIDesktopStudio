@@ -320,5 +320,6 @@ function descriptorFrom(
     workspace,
     path,
     ...(envelope.sourceAssetId ? { sourceAssetId: envelope.sourceAssetId } : {}),
+    ...(envelope.sourceFidelity ? { sourceFidelity: envelope.sourceFidelity } : {}),
   }
 }

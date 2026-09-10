@@ -1,4 +1,5 @@
 import { extensionOf } from './fileName'
+import type { ReadFidelity } from './readFidelity'
 import { DEFAULT_ROLE_PATHS, type FolderRole } from './folderRole'
 import { SCRIPT_EXTENSION } from './game'
 import type { OraSurface } from './openRaster'
@@ -80,6 +81,12 @@ export type DocumentDescriptor = {
    * whichever tab happens to be of the right kind.
    */
   sourceAssetId?: string
+  /**
+   * How faithfully that source was read — see `readFidelity.ts`. Carried on the descriptor and
+   * not measured on demand: what tells a reduction from a crop is WHO shrank the picture, and
+   * only the read knows that. Absent reads as `unknown`, which refuses to overwrite.
+   */
+  sourceFidelity?: ReadFidelity
 }
 
 /** Last of two same paths wins — the path is the tree's id for a row, not the document id. */
@@ -344,6 +351,11 @@ export type DocumentDraft = {
    * knows which asset it edits, which is what a save back onto that asset will read.
    */
   sourceAssetId?: string
+  /**
+   * And how faithfully that asset was read, carried for the same reason: a document reopened next
+   * session must not regain the right to overwrite a file this one read reduced.
+   */
+  sourceFidelity?: ReadFidelity
   /**
    * The surfaces the container holds beside the stack, for a document one string cannot hold.
    * An image keeps one PNG per layer: the pixels live on the GPU, never in the state, so

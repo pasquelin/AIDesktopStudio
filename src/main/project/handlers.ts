@@ -26,6 +26,7 @@ import { isPngBytes, probePng } from '@main/media/png'
 import { packOpenRaster, unpackOpenRaster } from '@main/assets/openRasterFile'
 import { oraThumbnailOf } from '@main/media/oraThumbnail'
 import { ORA_MERGED_PATH } from '@shared/domain/openRaster'
+import { ORA_EXTENSION, PNG_EXTENSION, WAV_EXTENSION } from '@shared/domain/writtenFormat'
 import { probeWav } from '@main/media/wav'
 import { fileFactsOf } from './fileFacts'
 import { registerAskHandlers } from './askHandlers'
@@ -60,9 +61,6 @@ import {
   parseSaveTexture,
   parseSearchTerm,
 } from './validation'
-const WAV_EXTENSION = '.wav'
-const PNG_EXTENSION = '.png'
-const ORA_EXTENSION = '.ora'
 export function registerProjectHandlers({
   project,
   settings,
@@ -271,7 +269,7 @@ export function registerProjectHandlers({
     const probe = probeWav(request.wav) ?? undefined
     if (request.replaces) {
       return withoutSourcePath(
-        await assets.replaceBytes(request.replaces, request.wav, WAV_EXTENSION, probe),
+        await assets.replaceBytes(request.replaces, request.wav, WAV_EXTENSION, { probe }),
       )
     }
     return withoutSourcePath(
@@ -302,7 +300,9 @@ export function registerProjectHandlers({
       const replaced = await project.catalog().find(request.replaces)
       if (!replaced || !PICTURES.includes(replaced.type))
         throw localizedError('assetNotWritableImage', { name: request.replaces })
-      return withoutSourcePath(await assets.replaceBytes(request.replaces, bytes, extension, probe))
+      return withoutSourcePath(
+        await assets.replaceBytes(request.replaces, bytes, extension, { probe }),
+      )
     }
     const source = request.derivedFrom ? await project.catalog().find(request.derivedFrom) : null
     return withoutSourcePath(

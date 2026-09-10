@@ -76,19 +76,22 @@ describe('local backend', () => {
     expect(await readFile(join(root, 'Audio/Pad.wav'))).toEqual(Buffer.from([4, 5]))
   })
 
-  // An edited take goes back as a wav; leaving it under its old name would hand every reader
-  // a file whose extension lies about what is inside it.
-  it('renames the file when the bytes are no longer of the same kind, and drops the old one', async () => {
+  /**
+   * The second protection of §5.7, at the one door that renames a file and removes what it
+   * replaced. This used to be the opposite promise — the extension followed the bytes — and it is
+   * how a `.jpg` painted on came back a `.png` with the `.jpg` gone, and nothing said. Writing a
+   * wav over an mp3 is the same act on the audio side, one caller away from being taken.
+   */
+  it('refuses bytes that would change the file’s format, and writes nothing', async () => {
     await backend.importFromBytes(
       { id: 'asset_3', name: 'Import', type: 'audio', extension: '.mp3' },
       new Uint8Array([1]),
     )
 
-    const replaced = await backend.replaceBytes('asset_3', new Uint8Array([4, 5]), '.wav')
+    await expect(backend.replaceBytes('asset_3', new Uint8Array([4, 5]), '.wav')).rejects.toThrow()
 
-    expect(replaced.path).toBe('Audio/Import.wav')
-    expect(await readFile(join(root, 'Audio/Import.wav'))).toEqual(Buffer.from([4, 5]))
-    await expect(readFile(join(root, 'Audio/Import.mp3'))).rejects.toThrow()
+    expect(await readFile(join(root, 'Audio/Import.mp3'))).toEqual(Buffer.from([1]))
+    await expect(readFile(join(root, 'Audio/Import.wav'))).rejects.toThrow()
   })
 
   it('refuses to replace an asset the catalogue does not hold', async () => {
@@ -143,6 +146,20 @@ describe('local backend', () => {
     expect(await readFile(linked)).toEqual(Buffer.from([9]))
   })
 
+  /** A caller whose errand IS the conversion says so, and takes the rename with the word. */
+  it('changes the format for a caller that declares the conversion', async () => {
+    await backend.importFromBytes(
+      { id: 'asset_8', name: 'Rig', type: 'mesh', extension: '.gltf' },
+      new Uint8Array([1]),
+    )
+
+    const replaced = await backend.replaceBytes('asset_8', new Uint8Array([4, 5]), '.glb', {
+      converts: true,
+    })
+
+    expect(replaced.path?.endsWith('.glb')).toBe(true)
+  })
+
   it('records what the new bytes say about themselves, and drops the stale waveform', async () => {
     await backend.importFromBytes(
       { id: 'asset_4', name: 'Take', type: 'audio', extension: '.wav' },
@@ -152,10 +169,7 @@ describe('local backend', () => {
     await catalog.add({ ...(await catalog.find('asset_4'))!, peaksPath: '.index/peaks/old.bin' })
 
     const replaced = await backend.replaceBytes('asset_4', new Uint8Array([4, 5]), '.wav', {
-      duration: 6_000_000,
-      codec: 'pcm_s16le',
-      sampleRate: 48_000,
-      channels: 1,
+      probe: { duration: 6_000_000, codec: 'pcm_s16le', sampleRate: 48_000, channels: 1 },
     })
 
     expect(replaced.probe?.duration).toBe(6_000_000)

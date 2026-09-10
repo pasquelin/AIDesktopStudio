@@ -349,13 +349,19 @@ export function createMediaService(deps: MediaServiceDeps): MediaService {
         release()
         running.delete(assetId)
         if (mine) freeHash(mine)
-        if (stage === 'duplicate' || stage === 'unreadable') {
+        if (stage === 'unreadable') {
           try {
             await deps.discard(assetId)
           } catch {
             // The project may have closed while the file was read.
           }
         } else if (stage !== 'queued') {
+          // `duplicate` KEEPS its row now, and says so. Dropping it made an import that had done
+          // exactly what it was asked — the file is where the user pointed — look like an import
+          // that did nothing at all: no row, no tile, no word beyond a dismissable line.
+          // Deciding for the user which of two identical files is the redundant one is not the
+          // studio's to make (R6).
+
           deps.save(assetId, fields)
         }
         const outcome = cancelled() ? 'cancelled' : stage

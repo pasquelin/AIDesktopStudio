@@ -232,12 +232,9 @@ describe('project handlers', () => {
 
       await invoke(CHANNELS.assetsSaveLayered, layered({ replaces: 'asset-1' }))
 
-      expect(assets.replaceBytes).toHaveBeenCalledWith(
-        'asset-1',
-        expect.any(Uint8Array),
-        '.ora',
-        expect.objectContaining({ width: 1024, height: 768 }),
-      )
+      expect(assets.replaceBytes).toHaveBeenCalledWith('asset-1', expect.any(Uint8Array), '.ora', {
+        probe: expect.objectContaining({ width: 1024, height: 768 }),
+      })
     })
 
     /** The dimensions come off the FLATTEN the container carries, which is what a tile shows. */

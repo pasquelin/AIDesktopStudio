@@ -23,6 +23,9 @@ const openDropped = (asset: Asset): void => {
   void import('@/helpers/openAsset').then(module => module.openAsset(asset))
 }
 
+/** A file that fell beside the tabs: filed where the drop asked, and left alone. */
+const fileDropped = (): void => undefined
+
 /**
  * What the tab in front makes true everywhere else: the tool windows read the document, and the
  * rail reads its section.
@@ -113,6 +116,9 @@ export function DocumentArea() {
     <AssetDropTarget
       accepts={ASSET_TYPES}
       onDrop={openDropped}
+      // A FILE dropped here is filed and nothing more: copying is not opening (R2), and a folder
+      // of twenty pictures dropped beside the tabs used to stand twenty tabs up.
+      onFiles={fileDropped}
       // No frame: this surface is the whole middle of the window, so outlining it says nothing
       // the user cannot already see. The pointer carries the answer instead — see `outlined`.
       outlined={false}

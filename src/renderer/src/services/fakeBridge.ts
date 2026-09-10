@@ -278,6 +278,7 @@ const fakeAnimations = (overrides: BridgeOverrides): StudioBridge['animations'] 
 const fakeMedia = (overrides: BridgeOverrides): StudioBridge['media'] => ({
   ingest: () =>
     Promise.resolve({ assets: [], documents: [], montages: [], refused: [], failed: [] }),
+  link: () => Promise.resolve({ assets: [], documents: [], montages: [], refused: [], failed: [] }),
   ingestPaths: () =>
     Promise.resolve({ assets: [], documents: [], montages: [], refused: [], failed: [] }),
   importPicked: () =>

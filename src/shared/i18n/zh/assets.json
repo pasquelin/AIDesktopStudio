@@ -41,7 +41,9 @@
     "fetchHint": "双击可以把它获取到项目里并打开",
     "generatingHint": "正在生成——完成之后资产会出现在这里",
     "import": "导入媒体",
-    "importHint": "链接一个视频、音频或图像文件——它留在原处",
+    "importHint": "把视频、音频或图像文件复制到此文件夹",
+    "link": "链接而不复制…",
+    "linkHint": "把文件加入项目，并让它留在原处",
     "libraryRefused": "你的素材库没有响应。",
     "libraryRefusedHint": "再向远程素材库请求一次",
     "nameEmpty": "资产需要一个名称。",
@@ -111,6 +113,8 @@
     "fewerHint": "把筛选项收起来，给集合腾出地方"
   },
   "documents": {
+    "sourceReadReduced": "此文件有一部分未被读取，覆盖保存会丢失该部分。请另存一份副本。",
+    "sourceFormatChange": "保存会改变此文件的格式。请用「另存为」选择目标。",
     "copyName": "{{name}} 副本",
     "none": "没有打开的文档。生成或打开一项资产来开始。",
     "untitled": "{{kind}} {{n}}",

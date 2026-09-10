@@ -16,6 +16,7 @@ import {
   type NamedDocument,
 } from '@shared/domain/documentName'
 import { foldForFileName, nameFailureOf } from '@shared/domain/fileName'
+import type { ReadFidelity } from '@shared/domain/readFidelity'
 import { workshopIdOf } from '@shared/domain/character'
 import { nameOf, parentOf } from '@shared/domain/folder'
 import { refFromString } from '@shared/domain/ref'
@@ -31,6 +32,7 @@ import { useLayouts } from './layouts'
 type DocumentCreation = {
   title: string
   sourceAssetId?: string
+  sourceFidelity?: ReadFidelity
   folder?: string
   kind?: DocumentKind
   path?: string
@@ -47,6 +49,7 @@ type DocumentsState = {
   activate: (id: string | null) => void
   adopt: (document: DocumentDescriptor) => void
   rename: (id: string, title: string) => Promise<DocumentNameFailure | null>
+  noteSourceFidelity: (id: string, fidelity: ReadFidelity) => void
   close: (id: string) => void
 }
 
@@ -322,6 +325,7 @@ export const useDocuments = createStore<DocumentsState>()((set, get) => ({
       title,
       path: of?.path ?? documentPathFor(title, kind, of?.folder),
       ...(of?.sourceAssetId ? { sourceAssetId: of.sourceAssetId } : {}),
+      ...(of?.sourceFidelity ? { sourceFidelity: of.sourceFidelity } : {}),
     }
 
     set(state => ({ documents: { ...state.documents, [document.id]: document } }))
@@ -365,6 +369,18 @@ export const useDocuments = createStore<DocumentsState>()((set, get) => ({
     }))
     return null
   },
+
+  /**
+   * What the READ settled, written on the descriptor the moment it is known — which is after the
+   * document exists, since the tab is made before its file is opened into it. From here it rides
+   * into the envelope on the next save and comes back with the descriptor next session.
+   */
+  noteSourceFidelity: (id, fidelity) =>
+    set(state => {
+      const document = state.documents[id]
+      if (!document || document.sourceFidelity === fidelity) return state
+      return { documents: { ...state.documents, [id]: { ...document, sourceFidelity: fidelity } } }
+    }),
 
   close: id =>
     set(state => {

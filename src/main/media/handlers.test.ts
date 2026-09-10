@@ -46,7 +46,7 @@ describe('media handlers', () => {
     const injected = deps({ pickMedia: async () => ['/rushes/a.mov', '/takes/b.wav'] })
     registerMediaHandlers(injected)
 
-    const imported = await invoke(CHANNELS.mediaIngest)
+    const imported = await invoke(CHANNELS.mediaLink)
 
     expect(imported).toMatchObject({
       assets: [
@@ -62,7 +62,7 @@ describe('media handlers', () => {
   it('tells the window everything about a linked file except where it is', async () => {
     registerMediaHandlers(deps({ pickMedia: async () => ['/Volumes/Rushes/a.mov'] }))
 
-    const imported = await invoke(CHANNELS.mediaIngest)
+    const imported = await invoke(CHANNELS.mediaLink)
 
     expect(imported).toMatchObject({
       assets: [expect.not.objectContaining({ sourcePath: expect.anything() })],
@@ -73,7 +73,7 @@ describe('media handlers', () => {
     const injected = deps()
     registerMediaHandlers(injected)
 
-    await invoke(CHANNELS.mediaIngest)
+    await invoke(CHANNELS.mediaLink)
 
     // Resolving on the catalogue rows is what puts the file in the browser at once; probing a
     // twenty-minute rush must not hold the dialog open.
@@ -88,7 +88,7 @@ describe('media handlers', () => {
     const injected = deps({ pickMedia: async () => ['/notes.txt', '/rushes/a.mov'] })
     registerMediaHandlers(injected)
 
-    const imported = await invoke(CHANNELS.mediaIngest)
+    const imported = await invoke(CHANNELS.mediaLink)
 
     expect(imported).toMatchObject({ assets: [expect.anything()] })
     expect(injected.link).toHaveBeenCalledOnce()
@@ -113,7 +113,7 @@ describe('media handlers', () => {
     })
     registerMediaHandlers(injected)
 
-    const result = await invoke(CHANNELS.mediaIngest)
+    const result = await invoke(CHANNELS.mediaLink)
 
     expect(importPaths).toHaveBeenCalledWith(['/outside/Robot.fbx'], '', {})
     expect(injected.link).toHaveBeenCalledOnce()
@@ -124,11 +124,33 @@ describe('media handlers', () => {
     })
   })
 
+  /**
+   * The picker copies into the folder it was raised on — the same act as dropping those files
+   * there. It used to link instead, so one rush imported through the menu and dropped in the
+   * explorer left the project in two different states.
+   */
+  it('copies what the picker gave into the folder it was asked for', async () => {
+    const importPaths = vi.fn(async () => ({
+      assets: [],
+      documents: [],
+      montages: [],
+      refused: [],
+      failed: [],
+    }))
+    const injected = deps({ pickMedia: async () => ['/rushes/a.mov'], importPaths })
+    registerMediaHandlers(injected)
+
+    await invoke(CHANNELS.mediaIngest, 'Rushes/Jour 1')
+
+    expect(importPaths).toHaveBeenCalledWith(['/rushes/a.mov'], 'Rushes/Jour 1', {})
+    expect(injected.link).not.toHaveBeenCalled()
+  })
+
   it('answers an empty list when the dialog was dismissed', async () => {
     const injected = deps({ pickMedia: async () => [] })
     registerMediaHandlers(injected)
 
-    await expect(invoke(CHANNELS.mediaIngest)).resolves.toEqual({
+    await expect(invoke(CHANNELS.mediaIngest, '')).resolves.toEqual({
       assets: [],
       documents: [],
       montages: [],
