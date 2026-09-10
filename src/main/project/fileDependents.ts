@@ -1,5 +1,5 @@
 import { orElse } from '@shared/promises'
-import { pathBaseNameOf } from '@shared/domain/fileName'
+import { citationNeedlesOf, contentCites } from './citation'
 import { FOLDER_ROOT, parentOf } from '@shared/domain/folder'
 import type { DocumentDescriptor, DocumentFile } from '@shared/domain/document'
 import type { FileUse } from '@shared/domain/fileUse'
@@ -18,7 +18,8 @@ export type FileDependentsDeps = {
 
 /**
  * Which documents cite a file — the question §11's S3 says nothing could answer, and the one a
- * deletion has to ask before it takes anything away (E-21).
+ * deletion has to ask before it takes anything away (E-21). Its mirror is
+ * `documentDependencies`, and the two spellings of a citation they share live in `citation.ts`.
  *
  * Read on DEMAND rather than kept as a graph, and that is the whole of the decision here: a graph
  * costs a full parse of every document at every opening, and this question is asked by one rare,
@@ -39,10 +40,7 @@ export function createFileDependents({ list, read, idsOf }: FileDependentsDeps):
       const ids = await idsOf(paths)
       const wanted = paths.map(path => ({
         path,
-        // Encoded as well as raw: a scene writes its links as URIs, so a space is `%20`.
-        needles: [pathBaseNameOf(path), encodeURIComponent(pathBaseNameOf(path))].concat(
-          ids.get(path) ?? [],
-        ),
+        needles: citationNeedlesOf(path, ids.get(path) ?? []),
       }))
       const found: FileUse[] = []
       // One at a time, and never an image: a container of ten 4K layers comes back as a hundred
@@ -53,7 +51,7 @@ export function createFileDependents({ list, read, idsOf }: FileDependentsDeps):
         const file = await orElse(read(document.id, document.kind), null)
         if (!file) continue
         const used = wanted
-          .filter(one => one.needles.some(needle => needle !== '' && file.content.includes(needle)))
+          .filter(one => contentCites(file.content, one.needles))
           .map(one => one.path)
         if (used.length > 0) {
           found.push({ title: document.title, path: document.path, kind: document.kind, used })

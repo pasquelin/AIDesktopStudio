@@ -1,7 +1,7 @@
 import type { ActivityDraft, ActivityEntry, ActivityQuery } from '@shared/domain/activity'
 import type { Asset, AssetCounts, AssetQuery } from '@shared/domain/asset'
 import type { CopyGroup } from '@shared/domain/fileCopies'
-import type { AnimationPosterWrite } from './catalogTypes'
+import type { AnimationPosterWrite, FiledAsset } from './catalogTypes'
 import {
   ABANDONED,
   isRescanProgress,
@@ -45,6 +45,13 @@ export type AsyncCatalog = {
   copies: (hash?: string) => Promise<CopyGroup[]>
   /** Forgets where the derived files were, once they have gone. Answers how many rows. */
   clearDerivedPaths: () => Promise<number>
+  /**
+   * Every row that names a file, four columns each and no bound.
+   *
+   * 🛑 NOT `assetsUnder([FOLDER_ROOT])`, which answers NOTHING: « under » is a range scan, and
+   * the root's range is empty — measured. This is the one way to read the whole table.
+   */
+  filed: () => Promise<FiledAsset[]>
   /**
    * The signal is what an abandoned search costs nothing: the thread skips the ones it has not
    * begun, and this side stops waiting for the one it may already be running. Rejects with
@@ -223,6 +230,7 @@ export function createCatalogClient(port: CatalogPort): AsyncCatalog {
 
     copies: hash => send<'copies'>(id => ({ id, op: 'copies', hash })),
     clearDerivedPaths: () => send<'clearDerivedPaths'>(id => ({ id, op: 'clearDerivedPaths' })),
+    filed: () => send<'filed'>(id => ({ id, op: 'filed' })),
 
     search: (query, signal) => send<'search'>(id => ({ id, op: 'search', query }), signal),
 

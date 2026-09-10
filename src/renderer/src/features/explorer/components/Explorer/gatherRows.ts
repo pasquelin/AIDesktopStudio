@@ -5,7 +5,7 @@ import { gatheredCountOf, type GatherReport } from '@shared/domain/gather'
 import { projectName, projectsByCreation, type RecentProject } from '@shared/domain/project'
 import type { ContextMenuRow } from '@/helpers/contextMenu'
 import { getBridge } from '@/services/bridge'
-import { reportFailure, reportNotice } from '@/services/diagnostics'
+import { reportDone, reportFailure, reportNotice } from '@/services/diagnostics'
 
 export type GatherRowsProps = {
   document: DocumentDescriptor | null
@@ -62,14 +62,19 @@ async function gather(document: DocumentDescriptor, destination: string, t: TFun
       kind: document.kind,
       destination,
     })
-    if (report) reportNotice('assets.copy', gatheredLine(report, t))
+    if (report) say(report, t)
   } catch (error) {
     reportFailure('assets.copy', `gather-${document.id}`, error)
   }
 }
 
-function gatheredLine(report: GatherReport, t: TFunction): string {
-  if (report.refused) return t(`explorer.gatherRefused.${report.refused}`)
+/**
+ * Told at the level it deserves: a gathering that went through as asked is not a warning, and
+ * one that left files behind is not a plain success.
+ */
+function say(report: GatherReport, t: TFunction): void {
+  if (report.refused)
+    return reportNotice('assets.copy', t(`explorer.gatherRefused.${report.refused}`))
 
   const refused = gatheredCountOf(report, 'refused')
   const copied = t('explorer.gathered', {
@@ -77,5 +82,6 @@ function gatheredLine(report: GatherReport, t: TFunction): string {
     rows: report.rows,
   })
 
-  return refused === 0 ? copied : `${copied} ${t('explorer.gatherKept', { count: refused })}`
+  if (refused === 0) return reportDone('assets.copy', copied)
+  reportNotice('assets.copy', `${copied} ${t('explorer.gatherKept', { count: refused })}`)
 }

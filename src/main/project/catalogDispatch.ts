@@ -51,6 +51,7 @@ function acrossTheTableValueOf(
         | 'assetsUnder'
         | 'copies'
         | 'clearDerivedPaths'
+        | 'filed'
         | 'appendActivity'
         | 'readActivity'
     }
@@ -69,6 +70,8 @@ function acrossTheTableValueOf(
       return catalog.copies(request.hash)
     case 'clearDerivedPaths':
       return catalog.clearDerivedPaths()
+    case 'filed':
+      return catalog.filed()
     default:
       return journalValueOf(catalog, request)
   }

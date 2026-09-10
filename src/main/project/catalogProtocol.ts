@@ -2,7 +2,7 @@ import type { ActivityDraft, ActivityEntry, ActivityQuery } from '@shared/domain
 import type { Asset, AssetCounts, AssetQuery } from '@shared/domain/asset'
 import type { CopyGroup } from '@shared/domain/fileCopies'
 import type { RescanReport } from './catalogRescan'
-import type { AnimationPosterWrite } from './catalogTypes'
+import type { AnimationPosterWrite, FiledAsset } from './catalogTypes'
 
 /**
  * What the main process and the catalogue worker say to each other.
@@ -20,6 +20,7 @@ export type CatalogRequest =
   | { id: number; op: 'findByRemoteId'; remoteAssetId: string }
   | { id: number; op: 'copies'; hash?: string }
   | { id: number; op: 'clearDerivedPaths' }
+  | { id: number; op: 'filed' }
   | { id: number; op: 'search'; query: AssetQuery }
   | { id: number; op: 'countByType' }
   | { id: number; op: 'remove'; assetId: string }
@@ -38,6 +39,7 @@ export type CatalogResults = {
   findByRemoteId: Asset | null
   copies: CopyGroup[]
   clearDerivedPaths: number
+  filed: FiledAsset[]
   search: Asset[]
   countByType: AssetCounts
   remove: void

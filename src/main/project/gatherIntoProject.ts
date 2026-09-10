@@ -1,5 +1,6 @@
-import { copyFile, mkdir } from 'node:fs/promises'
+import { copyFile, mkdir, stat } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
+import { orElse } from '@shared/promises'
 import type { Asset } from '@shared/domain/asset'
 import { documentPath, type DocumentKind } from '@shared/domain/document'
 import type { GatherReport, GatheredFile } from '@shared/domain/gather'
@@ -36,7 +37,7 @@ export async function gatherIntoProject(
   const { documentId, kind, destination } = request
 
   if (!root) return { files: [], rows: 0, refused: 'no-document' }
-  if (root === destination) return { files: [], rows: 0, refused: 'same-project' }
+  if (await isOneFolder(root, destination)) return { files: [], rows: 0, refused: 'same-project' }
   if (!deps.exists(join(destination, MANIFEST_FILE))) {
     return { files: [], rows: 0, refused: 'not-a-project' }
   }
@@ -44,12 +45,32 @@ export async function gatherIntoProject(
   const cited = await deps.citedBy(documentId, kind)
   const paths = [documentPath(documentId, kind), ...cited.flatMap(one => one.path ?? [])]
   const files: GatheredFile[] = []
-  for (const path of paths) files.push(await placeOne(deps, root, destination, path))
+  // One file's failure is that file's, never the batch's: a disk that fills on the fourth of
+  // six must still report the three that landed, and which one stopped.
+  for (const path of paths) {
+    files.push(await orElse(placeOne(deps, root, destination, path), { path, state: 'refused' }))
+  }
 
   const landed = new Set(files.filter(file => file.state !== 'refused').map(file => file.path))
   const rows = cited.filter(one => one.path !== undefined && landed.has(one.path))
 
   return { files, rows: await fileRows(deps, destination, rows) }
+}
+
+/**
+ * Whether the two paths name the SAME folder, whatever they are spelt as.
+ *
+ * 🛑 By inode and device, not by string: a symlink, a trailing slash and a case-different
+ * spelling on APFS all reach one folder under three names. Compared as text, a « gathering »
+ * into the open project would open a second, uncoordinated connection onto its own catalogue
+ * and replace its rows — `INSERT OR REPLACE` raises nothing — stripping the derived paths the
+ * live window is still using.
+ */
+async function isOneFolder(one: string, other: string): Promise<boolean> {
+  if (one === other) return true
+
+  const [here, there] = await Promise.all([orElse(stat(one), null), orElse(stat(other), null)])
+  return here !== null && there !== null && here.ino === there.ino && here.dev === there.dev
 }
 
 /**
@@ -103,7 +124,12 @@ async function fileRows(
 ): Promise<number> {
   if (rows.length === 0) return 0
 
-  const catalog = await deps.openCatalog(join(destination, CATALOG_FILE))
+  const file = join(destination, CATALOG_FILE)
+  // 🛑 The folder first: `.index/` is git-ignored, so a project cloned again after being opened
+  // elsewhere carries a manifest and no cache — and `better-sqlite3` throws on a missing parent
+  // rather than making one, which would leave the bytes copied and no row to find them by.
+  await mkdir(dirname(file), { recursive: true })
+  const catalog = await deps.openCatalog(file)
   try {
     // The derived files did not travel: they are the destination's to make again, and a row
     // naming a proxy that is not there makes playback open nothing at all.

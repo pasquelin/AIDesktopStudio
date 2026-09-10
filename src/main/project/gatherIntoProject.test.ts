@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import type { Asset } from '@shared/domain/asset'
-import { documentPath } from '@shared/domain/document'
+import { documentPath, type DocumentKind } from '@shared/domain/document'
 import { MANIFEST_FILE } from '@shared/domain/project'
 import type { AsyncCatalog } from './catalogClient'
 import { memoryCatalog } from './catalog-fixtures'
@@ -56,7 +56,11 @@ function deps(source: string, cited: Asset[], overrides: Partial<GatherDeps> = {
   }
 }
 
-const request = { documentId: 'doc', kind: 'scene' as const, destination: '' }
+const request: { documentId: string; kind: DocumentKind; destination: string } = {
+  documentId: 'doc',
+  kind: 'scene',
+  destination: '',
+}
 
 /**
  * A destination catalogue the test can still read afterwards. The gatherer closes what it
@@ -159,5 +163,34 @@ describe('gathering a document into another project', () => {
     const report = await gatherIntoProject(deps(source, []), { ...request, destination: source })
 
     expect(report.refused).toBe('same-project')
+  })
+})
+
+describe('the destination as a folder rather than as a spelling', () => {
+  /**
+   * 🛑 Compared as text, a destination reached by another spelling of the open project passes
+   * for a different one: a second connection opens onto its own catalogue and replaces its
+   * rows, stripping the derived paths the live window is still using.
+   */
+  it('refuses the open project reached under another spelling', async () => {
+    const { source } = await projects()
+
+    const report = await gatherIntoProject(deps(source, []), {
+      ...request,
+      destination: `${source}/`,
+    })
+
+    expect(report.refused).toBe('same-project')
+  })
+
+  /** `.index/` is git-ignored: a project cloned again carries a manifest and no cache. */
+  it('makes the destination’s cache folder before writing its catalogue', async () => {
+    const { source, destination } = await projects()
+    await rm(join(destination, '.index'), { recursive: true, force: true })
+
+    const report = await gatherIntoProject(deps(source, [asset()]), { ...request, destination })
+
+    expect(report.rows).toBe(1)
+    expect(existsSync(join(destination, '.index'))).toBe(true)
   })
 })
