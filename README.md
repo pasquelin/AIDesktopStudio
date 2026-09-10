@@ -19,7 +19,11 @@ Generate and edit images, videos, 3D models, audio, textures and skyboxes — in
 </div>
 
 <div align="center">
-  <img src="site/assets/images/studio-3d.png" alt="AI Desktop Studio in the Modelling workspace: the model catalogue and the project explorer on the left, a generated car standing in the scene viewport in the centre, the scene outliner and the inspector on the right, and across the bottom the timeline with one row per light and object" width="900">
+  <img src="site/assets/images/studio-3d.png" alt="AI Desktop Studio in the Modelling workspace: the asset library and the project explorer on the left, a rigged robot character standing in the model workshop in the centre with its skeleton drawn over it, and the animation timeline across the bottom" width="900">
+</div>
+
+<div align="center">
+  <img src="site/assets/images/studio-scene.png" alt="The same studio with a third-person scene open: a blocked-out platform level in the viewport, the character standing on its starting platform, and the scene timeline below" width="900">
 </div>
 
 ---
