@@ -1,0 +1,19 @@
+{
+  "shipped": {
+    "title": "Mit dem Studio geliefert",
+    "character": "Figur",
+    "characterNote": "Die Figur, die das Studio liefert, in jeder gelieferten Dichte. Ein Skelett für alle vier, wodurch die gelieferten Animationen ohne Raten darauf laufen.",
+    "characterWhere": "Gesetzt landet sie im internen Speicher des Projekts: keine zusätzliche Datei in Ihrem Baum.",
+    "textures": "Arbeitstexturen",
+    "texturesNote": "Ein Raster und ein Schachbrett, je in zwei Dichten. Eine Kachel ist ein Meter, und genau das lässt einen Maßstab beurteilen und eine UV-Dehnung sehen.",
+    "texturesWhere": "Gesetzt landen sie im internen Speicher des Projekts: keine zusätzliche Datei in Ihrem Baum.",
+    "animations": "Animationen",
+    "animationsNote": "Die Bewegungen, die das Studio liefert, spielbar auf seiner Figur wie auf einer importierten, deren Skelett erkannt wird.",
+    "animationsReachable": "Nichts zu setzen: Sie werden bereits überall angeboten, wo eine Bewegung gewählt wird, und der Spiel-Export packt sie mit ein. Eine Kopie im Projekt wäre ein zweites Exemplar derselben Bytes, das nichts einbringt.",
+    "animationsNone": "Diese Installation liefert keine Animation.",
+    "place": "Setzen",
+    "placeAll": "Alle vier setzen",
+    "placed": "Im Projekt gesetzt",
+    "notPlaced": "Noch nicht gesetzt"
+  }
+}

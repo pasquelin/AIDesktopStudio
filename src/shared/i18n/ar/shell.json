@@ -201,7 +201,8 @@
     "sceneDisplay": "وضع العرض",
     "sceneView": "نقطة النظر",
     "sceneCapture": "التقاط المنظر",
-    "copies": "النسخ…"
+    "copies": "النسخ…",
+    "shipped": "يأتي مع الاستوديو…"
   },
   "about": {
     "copyright": "© 2026 Alban Pasquelin"

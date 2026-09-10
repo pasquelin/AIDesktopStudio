@@ -99,6 +99,11 @@ function openAndSaveItems(context: MenuContext): MenuItemConstructorOptions[] {
     },
     ...recentItems(context),
     {
+      label: t.menu.shipped,
+      enabled: options.openProject !== null,
+      click: () => options.actions.openShipped(),
+    },
+    {
       label: t.menu.copies,
       // A diagnosis of the OPEN project. Greyed rather than absent, so the gesture is findable
       // before there is a project to run it on.

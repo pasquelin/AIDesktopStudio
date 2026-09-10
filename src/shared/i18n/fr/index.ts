@@ -22,6 +22,7 @@ import postfx from './postfx.json'
 import scene from './scene.json'
 import settings from './settings.json'
 import shell from './shell.json'
+import shipped from './shipped.json'
 import ui from './ui.json'
 import usage from './usage.json'
 import welcome from './welcome.json'
@@ -59,6 +60,7 @@ export const fr = {
   ...scene,
   ...settings,
   ...shell,
+  ...shipped,
   ...material,
   ...ui,
   ...usage,

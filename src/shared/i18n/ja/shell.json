@@ -201,7 +201,8 @@
     "sceneDisplay": "表示モード",
     "sceneView": "視点",
     "sceneCapture": "ビューをキャプチャ",
-    "copies": "複製…"
+    "copies": "複製…",
+    "shipped": "スタジオに付属…"
   },
   "about": {
     "copyright": "© 2026 Alban Pasquelin"

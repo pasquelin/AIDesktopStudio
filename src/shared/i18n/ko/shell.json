@@ -201,7 +201,8 @@
     "sceneDisplay": "표시 모드",
     "sceneView": "시점",
     "sceneCapture": "뷰 캡처",
-    "copies": "사본…"
+    "copies": "사본…",
+    "shipped": "스튜디오에 포함됨…"
   },
   "about": {
     "copyright": "© 2026 Alban Pasquelin"
