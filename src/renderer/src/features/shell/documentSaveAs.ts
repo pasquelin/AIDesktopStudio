@@ -68,47 +68,6 @@ async function askWhereToSave(
 }
 
 /**
- * A picture written where the person chose, and the tab carried on to it.
- *
- * The document is REPOINTED rather than duplicated: its destination is the asset it edits, so
- * moving that link is the whole of « the new destination becomes the active one » (§5.3). No
- * second tab, no history thrown away, and the file it was opened from is left exactly as it was.
- */
-async function intoNewAsset(
-  document: DocumentDescriptor,
-  io: AssetWritingIo,
-  place: NamedDocumentPlace,
-  draft: CapturedDraft,
-): Promise<boolean> {
-  const format = place.format ?? nearestEncodableFor('picture', io.traitsOf(document.id))
-  try {
-    const written = await io.writeAsset(
-      document.id,
-      {
-        name: place.title,
-        format,
-        folder: place.folder,
-        documentId: document.id,
-        ...(document.sourceAssetId ? { derivedFrom: document.sourceAssetId } : {}),
-      },
-      draft,
-    )
-    if (!written) throw localizedError('bakeContentEmpty')
-    // The ROW that came back, never the name that was typed: a folder already holding that file
-    // frees the name, and a tab titled otherwise would name a file nobody wrote. Its path travels
-    // with it, which is what keeps one file to one document across a catalogue rebuild.
-    useDocuments.getState().retarget(document.id, written)
-    // Together: the shelf and the document listing share nothing, and one waiting on the other
-    // is a second round trip in series for a gesture that has already opened a window.
-    await Promise.all([useAssets.getState().refresh(), useDocuments.getState().relist('own-write')])
-    return true
-  } catch (error) {
-    reportFailure('assets.save', document.title, error)
-    return false
-  }
-}
-
-/**
  * A document file written where the person chose, and the tab moved to it.
  *
  * A NEW document, unlike the picture above, and the file format is what forces it: a document's
@@ -190,16 +149,25 @@ export async function saveDocumentCopy(documentId: string): Promise<boolean> {
   // 🛑 `commit` is NOT called: the document has not been saved, a copy of it has. Marking the
   // work as written would leave the real destination behind with nothing saying so.
   return io.writeAsset
-    ? await copiedAsset(document, io, place, draft)
+    ? await writeAssetWhereChosen(document, io, place, draft, false)
     : await copiedFile(bridge, document, place, draft)
 }
 
-/** The copy of a picture: another row of the library, and the tab stays on the one it edits. */
-async function copiedAsset(
+/**
+ * A picture written where the person chose — the one writer both gestures go through.
+ *
+ * `adopt` is the whole difference between them, and it is one fact rather than two writers: a
+ * « Save as » REPOINTS the document at the row it just wrote, so the tab saves there from then
+ * on (§5.3) and no second tab is opened; a « Save a copy » writes the same bytes and leaves the
+ * tab on the destination it had. Everything else — the format, the request, the refusal of an
+ * empty bake — was written out twice and read the same both times.
+ */
+async function writeAssetWhereChosen(
   document: DocumentDescriptor,
   io: AssetWritingIo,
   place: NamedDocumentPlace,
   draft: CapturedDraft,
+  adopt: boolean,
 ): Promise<boolean> {
   const format = place.format ?? nearestEncodableFor('picture', io.traitsOf(document.id))
   try {
@@ -209,12 +177,25 @@ async function copiedAsset(
         name: place.title,
         format,
         folder: place.folder,
+        // What ties the new row to this document. Absent for a copy, which is a row of its own.
+        ...(adopt ? { documentId: document.id } : {}),
         ...(document.sourceAssetId ? { derivedFrom: document.sourceAssetId } : {}),
       },
       draft,
     )
     if (!written) throw localizedError('bakeContentEmpty')
-    await useAssets.getState().refresh()
+
+    // The ROW that came back, never the name that was typed: a folder already holding that file
+    // frees the name, and a tab titled otherwise would name a file nobody wrote. Its path travels
+    // with it, which is what keeps one file to one document across a catalogue rebuild.
+    if (adopt) useDocuments.getState().retarget(document.id, written)
+
+    // Together, never in series: the two stores share nothing, and one waiting on the other is
+    // a second round trip for a gesture that has already opened a window.
+    await Promise.all([
+      useAssets.getState().refresh(),
+      ...(adopt ? [useDocuments.getState().relist('own-write')] : []),
+    ])
     return true
   } catch (error) {
     reportFailure('assets.save', document.title, error)
@@ -270,7 +251,7 @@ export async function saveDocumentAs(documentId: string): Promise<boolean> {
 
   const { draft, commit } = await io.capture(documentId)
   const written = io.writeAsset
-    ? await intoNewAsset(document, io, place, draft)
+    ? await writeAssetWhereChosen(document, io, place, draft, true)
     : document.kind === 'script'
       ? await intoNewScript(document, place, draft)
       : await intoNewFile(bridge, document, io, place, draft)
