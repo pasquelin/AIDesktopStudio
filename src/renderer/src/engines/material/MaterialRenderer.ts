@@ -19,17 +19,10 @@ import {
   type TextureSource,
 } from '../scene/textureCache'
 import { createSkyBinding, type SkyBinding } from '../viewport/skyBinding'
-import { createEnvironment, type ViewportEnvironment } from '../viewport/environment'
+import { type ViewportEnvironment } from '../viewport/environment'
 import { SCHEME_OF, type NavigationScheme } from '@shared/domain/navigationPreset'
 import { ViewportEngine } from '../viewport/ViewportEngine'
-import {
-  bindUniforms,
-  createUniforms,
-  EDGE_DEFINE,
-  materialFrameOf,
-  patchFragment,
-  syncEdgeTransform,
-} from './materialShader'
+import { createUniforms, EDGE_DEFINE, materialFrameOf, syncEdgeTransform } from './materialShader'
 import { previewGeometry } from './previewGeometry'
 import { DEFAULT_TEXTURE_MATERIAL } from '@shared/domain/material'
 import type { EnvironmentRef } from '@shared/domain/scene'
@@ -147,27 +140,6 @@ export class MaterialRenderer {
     }
     this.viewport.camera.position.set(CAMERA_HOME.x, CAMERA_HOME.y, CAMERA_HOME.z)
     this.viewport.scene.add(this.mesh)
-
-    // Bound once on the material, not per compile: three hands the hook a fresh uniform object
-    // each time the program is rebuilt, and the engine's values have to survive that.
-    this.material.onBeforeCompile = shader => {
-      const { source, missing } = patchFragment(shader.fragmentShader)
-      shader.fragmentShader = source
-      bindUniforms(shader.uniforms, this.uniforms)
-
-      // Once per anchor per engine, and the `Set` is what makes that true: a program is rebuilt
-      // whenever a channel is filled, and a repeated report would bury the journal. A remap that
-      // quietly stopped applying is a slider that looks alive and does nothing.
-      for (const anchor of missing) {
-        if (this.reported.has(anchor)) continue
-        this.reported.add(anchor)
-        reportFailure(
-          'material.shader',
-          anchor,
-          localizedError('shaderAnchorMissing', { name: anchor }),
-        )
-      }
-    }
   }
 
   mount(host: HTMLElement): void {
@@ -176,10 +148,36 @@ export class MaterialRenderer {
     const renderer = this.viewport.gl
     if (!renderer) return
 
-    this.environment = createEnvironment(renderer, this.viewport.scene, this.viewport.requestRender)
+    // At MOUNT and not at construction: how the remaps reach the shader is the driver's, and
+    // which driver is running is settled by the very mount above. The material has drawn
+    // nothing yet, so no program exists that would have to be rebuilt for it.
+    this.viewport.driver.patchMaterial(this.material, this.uniforms, anchor =>
+      this.reportAnchor(anchor),
+    )
+
+    this.environment = this.viewport.driver.createEnvironment(
+      renderer,
+      this.viewport.scene,
+      this.viewport.requestRender,
+    )
     this.environment.setStudio()
     // The studio preset has no picture behind it, so the backdrop is the viewport's own colour.
     this.paintBackground()
+  }
+
+  /**
+   * Once per anchor per engine, and the `Set` is what makes that true: a program is rebuilt
+   * whenever a channel is filled, and a repeated report would bury the journal. A remap that
+   * quietly stopped applying is a slider that looks alive and does nothing.
+   */
+  private reportAnchor(anchor: string): void {
+    if (this.reported.has(anchor)) return
+    this.reported.add(anchor)
+    reportFailure(
+      'material.shader',
+      anchor,
+      localizedError('shaderAnchorMissing', { name: anchor }),
+    )
   }
 
   /** The engine holds no truth: everything it shows comes back through here. */

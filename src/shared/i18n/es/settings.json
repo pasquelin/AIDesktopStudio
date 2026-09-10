@@ -246,6 +246,12 @@
       "title": "Aceleración",
       "help": "Por cuánto se multiplica la velocidad mientras mantienes la tecla de aceleración. En 3 vas tres veces más rápido — suficiente para cruzar una escena grande sin cambiar el ajuste de arriba."
     },
+    "renderEngine": {
+      "title": "Motor de renderizado",
+      "help": "Con qué interfaz gráfica dibuja la vista 3D. Compatible funciona en cualquier configuración y es la opción para compartir ampliamente o para máquinas más antiguas. Avanzado da mejor iluminación y reflejos y pide una tarjeta gráfica reciente. Un panel ya abierto conserva su motor: ciérrelo y vuelva a abrirlo para cambiarlo.",
+      "gl": "Compatible",
+      "gpu": "Avanzado"
+    },
     "shadows": {
       "title": "Sombras proyectadas",
       "help": "Calcula las sombras que proyectan las luces. Cada luz que proyecta una cuesta una pasada de render más por fotograma: desactivar esto es la manera más directa de aligerar una escena cargada."

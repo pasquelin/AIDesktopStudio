@@ -1,8 +1,11 @@
-import { ACESFilmicToneMapping, Color, NoToneMapping, WebGLRenderer } from 'three'
+import { ACESFilmicToneMapping, Color, NoToneMapping, type WebGLRenderer } from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { DEFAULT_RENDER_POLICY } from '@shared/domain/renderPolicy'
+import { traceFailure } from '@/services/diagnostics'
 import { applyShadowPolicy } from '../scene/shadows'
 import { token } from '../core/palette'
+import { askedGpuAdapter, probeGpuAdapter } from '../render/gpuAdapter'
+import { mountRenderer, type RenderDriver } from '../render/renderDriver'
 import { createGpuTimer, isGpuTimerContext } from './gpuTimer'
 import { ViewportMounting } from './ViewportMounting'
 
@@ -46,8 +49,24 @@ export abstract class ViewportSurface extends ViewportMounting {
     return canvas
   }
 
+  /**
+   * The renderer, and the driver that built it. An engine asked for and not available is not an
+   * error a person has to read: the Compatible one draws the same scene, and the journal keeps
+   * the reason. The adapter is asked for in the background, so the NEXT mount can honour it —
+   * a mount cannot wait, and a viewport that waited would show nothing while it did.
+   */
   private rendererFor(canvas: HTMLCanvasElement): WebGLRenderer {
-    const renderer = new WebGLRenderer({ canvas, antialias: true, alpha: this.output.alpha })
+    const wanted = this.options.engine?.() ?? 'gl'
+    if (wanted === 'gpu' && askedGpuAdapter() === null) void probeGpuAdapter()
+
+    const mounted = mountRenderer(
+      { canvas, alpha: this.output.alpha === true },
+      wanted,
+      askedGpuAdapter(),
+      error => traceFailure('render.fallback', wanted, error),
+    )
+    this.renderDriver = mounted.driver
+    const renderer = mounted.renderer
     renderer.setPixelRatio(this.output.pixelRatio ?? window.devicePixelRatio)
     // Clear to nothing rather than to a colour, so a scene drawn for compositing hands back the
     // pixels it painted and nothing else. `setClearAlpha` alone is ignored without `alpha`.
@@ -162,6 +181,15 @@ export abstract class ViewportSurface extends ViewportMounting {
   /** The renderer itself, for the passes and overlays that have to draw with it. */
   get gl(): WebGLRenderer | null {
     return this.renderer
+  }
+
+  /**
+   * What is drawing — the four calls that differ between the two engines. Read rather than
+   * chosen by whoever needs one: the driver is settled at mount, and a caller picking its own
+   * would be free to read pixels with an engine that did not draw them.
+   */
+  get driver(): RenderDriver {
+    return this.renderDriver
   }
 
   get orbit(): OrbitControls | null {

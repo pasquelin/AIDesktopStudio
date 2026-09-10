@@ -16,6 +16,7 @@
     "workerStopped": "la tarea en segundo plano se ha detenido",
     "csgGraphMissing": "no hay ningún grafo CSG registrado para {{name}}",
     "shaderAnchorMissing": "El motor de render ya no proporciona {{name}}",
+    "renderEngineUnavailable": "El motor Avanzado aún no está construido",
     "channelShaderMissing": "ningún shader deriva {{channel}}",
     "channelSourceEmpty": "la fuente de {{channel}} no tiene píxeles",
     "passSourceMissing": "una pasada necesita una fuente que leer",

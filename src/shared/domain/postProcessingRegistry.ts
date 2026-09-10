@@ -6,6 +6,7 @@
  * those may pull three.js in, so nothing here knows a `Pass` exists — `engines/postfx/` is the
  * one folder that does.
  */
+import { GL_ONLY, type RenderEngine } from './renderEngine'
 import type { FieldValue, PropertySpec } from './propertySpec'
 
 /** What a parameter holds. The same four shapes the inspector already renders. */
@@ -95,6 +96,12 @@ export type PostEffectMeta = {
   category: PostCategory
   cost: PostCost
   slot: PostSlot
+  /**
+   * Which engines can actually build it. The SLOT is the same on both sides — a GPU occlusion
+   * occupies the `ao` slot its GL twin occupies, and the exclusivity rule holds unchanged — so
+   * this says nothing about where an effect sits in the chain, only about who can make one.
+   */
+  engines: readonly RenderEngine[]
   /** Whether two of them in one stack mean anything. An anti-aliaser twice does not. */
   duplicable: boolean
   /**
@@ -165,6 +172,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'lighting',
     cost: 'high',
     slot: 'ao',
+    engines: GL_ONLY,
     duplicable: false,
     params: {
       radius: slider(0.01, 2, 0.01, 0.25),
@@ -179,6 +187,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'lighting',
     cost: 'high',
     slot: 'ao',
+    engines: GL_ONLY,
     duplicable: false,
     params: {
       radius: slider(0.01, 32, 0.01, 8),
@@ -190,6 +199,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'aa',
     cost: 'high',
     slot: 'render',
+    engines: GL_ONLY,
     duplicable: false,
     params: { level: number(1, 4, 1, 2) },
   },
@@ -198,6 +208,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'light',
     cost: 'medium',
     slot: 'image',
+    engines: GL_ONLY,
     duplicable: true,
     params: {
       strength: slider(0, 4, 0.01, 0.6),
@@ -210,6 +221,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'lens',
     cost: 'high',
     slot: 'image',
+    engines: GL_ONLY,
     duplicable: false,
     params: {
       focusDistance: number(0.01, 1000, 0.01, 10),
@@ -221,6 +233,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'lens',
     cost: 'low',
     slot: 'image',
+    engines: GL_ONLY,
     duplicable: true,
     params: {
       amount: slider(0, 0.05, 0.0005, 0.003),
@@ -231,6 +244,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'lens',
     cost: 'low',
     slot: 'image',
+    engines: GL_ONLY,
     duplicable: false,
     params: {
       distortion: slider(-0.5, 0.5, 0.005, 0.1),
@@ -243,6 +257,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'lens',
     cost: 'low',
     slot: 'image',
+    engines: GL_ONLY,
     duplicable: true,
     params: {
       amount: slider(0, 0.05, 0.001, 0.008),
@@ -255,6 +270,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'color',
     cost: 'low',
     slot: 'image',
+    engines: GL_ONLY,
     duplicable: true,
     params: {
       exposure: slider(-4, 4, 0.01, 0),
@@ -273,6 +289,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'color',
     cost: 'low',
     slot: 'image',
+    engines: GL_ONLY,
     duplicable: false,
     params: {
       texture: picture(),
@@ -283,6 +300,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'image',
     cost: 'low',
     slot: 'image',
+    engines: GL_ONLY,
     duplicable: true,
     params: { amount: slider(0, 3, 0.01, 0.5) },
   },
@@ -290,6 +308,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'image',
     cost: 'medium',
     slot: 'image',
+    engines: GL_ONLY,
     duplicable: true,
     params: {
       kind: choice(BLUR_KINDS, 'gaussian'),
@@ -301,6 +320,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'image',
     cost: 'medium',
     slot: 'image',
+    engines: GL_ONLY,
     duplicable: true,
     params: {
       amount: slider(0, 1, 0.01, 0.25),
@@ -315,6 +335,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'image',
     cost: 'low',
     slot: 'image',
+    engines: GL_ONLY,
     duplicable: false,
     params: { size: number(1, 64, 1, 6) },
   },
@@ -322,6 +343,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'image',
     cost: 'low',
     slot: 'image',
+    engines: GL_ONLY,
     duplicable: false,
     params: { levels: number(2, 64, 1, 8) },
   },
@@ -329,6 +351,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'image',
     cost: 'low',
     slot: 'image',
+    engines: GL_ONLY,
     duplicable: false,
     params: { amount: slider(0, 1, 0.01, 0.5), levels: number(2, 32, 1, 8) },
   },
@@ -336,6 +359,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'film',
     cost: 'low',
     slot: 'image',
+    engines: GL_ONLY,
     duplicable: true,
     params: {
       offset: slider(0, 3, 0.01, 1),
@@ -347,6 +371,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'film',
     cost: 'low',
     slot: 'image',
+    engines: GL_ONLY,
     duplicable: false,
     params: {
       aspect: slider(1, 3, 0.01, 2.39),
@@ -357,6 +382,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'film',
     cost: 'low',
     slot: 'image',
+    engines: GL_ONLY,
     duplicable: false,
     params: {
       intensity: slider(0, 1, 0.01, 0.3),
@@ -369,6 +395,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'film',
     cost: 'low',
     slot: 'image',
+    engines: GL_ONLY,
     duplicable: false,
     params: {
       intensity: slider(0, 1, 0.01, 0.3),
@@ -379,6 +406,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'stylized',
     cost: 'medium',
     slot: 'image',
+    engines: GL_ONLY,
     duplicable: false,
     params: {
       thickness: slider(0.5, 4, 0.1, 1),
@@ -391,6 +419,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'stylized',
     cost: 'medium',
     slot: 'image',
+    engines: GL_ONLY,
     duplicable: false,
     params: {
       shape: choice(HALFTONE_SHAPES, 'dot'),
@@ -403,6 +432,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'stylized',
     cost: 'low',
     slot: 'image',
+    engines: GL_ONLY,
     duplicable: false,
     params: {
       scale: slider(0.1, 4, 0.05, 0.8),
@@ -414,6 +444,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'stylized',
     cost: 'high',
     slot: 'image',
+    engines: GL_ONLY,
     duplicable: false,
     params: { radius: number(1, 6, 1, 3) },
   },
@@ -421,6 +452,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'stylized',
     cost: 'low',
     slot: 'image',
+    engines: GL_ONLY,
     duplicable: false,
     params: { wild: toggle(false) },
   },
@@ -428,6 +460,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'stylized',
     cost: 'low',
     slot: 'image',
+    engines: GL_ONLY,
     duplicable: true,
     params: {
       amount: slider(0, 0.05, 0.0005, 0.0015),
@@ -438,6 +471,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'stylized',
     cost: 'low',
     slot: 'image',
+    engines: GL_ONLY,
     duplicable: false,
     params: {
       curvature: slider(0, 1, 0.01, 0.25),
@@ -450,6 +484,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'stylized',
     cost: 'low',
     slot: 'image',
+    engines: GL_ONLY,
     duplicable: false,
     params: {
       bleed: slider(0, 0.05, 0.0005, 0.006),
@@ -462,6 +497,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'aa',
     cost: 'low',
     slot: 'aa',
+    engines: GL_ONLY,
     duplicable: false,
     params: {},
   },
@@ -469,6 +505,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'aa',
     cost: 'medium',
     slot: 'aa',
+    engines: GL_ONLY,
     duplicable: false,
     params: {},
   },

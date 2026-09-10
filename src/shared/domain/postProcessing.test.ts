@@ -52,6 +52,15 @@ describe('the catalogue', () => {
     expect(wrong).toEqual([])
   })
 
+  it('names an engine for every effect, and only the Compatible one so far', () => {
+    // The Advanced engine builds none of them yet. A `gpu` appearing here without a factory
+    // behind it is a slot the chain would leave empty with nothing said.
+    const engines = POST_EFFECT_IDS.map(id => POST_EFFECTS[id].engines)
+
+    expect(engines.every(named => named.length > 0)).toBe(true)
+    expect(engines.flat().filter(engine => engine !== 'gl')).toEqual([])
+  })
+
   it('gives a fresh instance the defaults of its own effect', () => {
     expect(defaultParamsOf('vignette')).toEqual({ offset: 1, darkness: 1 })
   })

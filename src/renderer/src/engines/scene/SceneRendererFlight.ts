@@ -12,7 +12,6 @@ import { captureSize, type CaptureQuality } from '@shared/domain/sceneCapture'
 import './bvhPatches'
 import { flightGaze } from './sceneRendererSupport2'
 import { SceneRendererFilm } from './SceneRendererFilm'
-import { readRenderPixels } from './readRenderPixels'
 export abstract class SceneRendererFlight extends SceneRendererFilm {
   protected abstract syncPaneFreeze(): void
   public abstract get flying(): boolean
@@ -77,7 +76,7 @@ export abstract class SceneRendererFlight extends SceneRendererFilm {
         width,
         height,
       })
-      const pixels = readRenderPixels(gl, target, width, height)
+      const pixels = await this.viewport.driver.readPixels(gl, target, width, height)
       return await encodeFilmFrameOffThread(pixels, width, height, composed)
     } finally {
       gl.setRenderTarget(null)

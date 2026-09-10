@@ -16,6 +16,7 @@
     "workerStopped": "tugas latar belakang telah dihentikan",
     "csgGraphMissing": "tidak ada graf CSG yang tercatat untuk {{name}}",
     "shaderAnchorMissing": "Mesin render tidak lagi menyediakan {{name}}",
+    "renderEngineUnavailable": "Mesin Lanjutan belum dibangun",
     "channelShaderMissing": "tidak ada shader yang menurunkan {{channel}}",
     "channelSourceEmpty": "sumber {{channel}} tidak memiliki piksel",
     "passSourceMissing": "sebuah tahap perlu sumber untuk dibaca",

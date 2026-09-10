@@ -14,6 +14,7 @@ import { type GpuPipeline } from '../gpu/gpuPipeline'
 import { type PinchReading } from './pinch'
 import { type Gesture } from './gestures'
 import { type NavigationScheme } from '@shared/domain/navigationPreset'
+import { type RenderEngine } from '@shared/domain/renderEngine'
 import { gazeTargetOf, type PivotMode } from './orbitPivot'
 import { type PaneRect } from './panes'
 
@@ -59,6 +60,12 @@ export type ViewportEngineOptions = {
   onInset?: (camera: ViewportCamera) => () => void
   /** Narrows a requested shadow pass, then restores the scene for off-screen renders. */
   onShadowFrame?: (refreshAll: boolean) => () => void
+  /**
+   * Which engine draws, read at MOUNT and never again: a renderer cannot be handed the context
+   * of another API. Absent is the Compatible one, which is what every viewport but the scene's
+   * has always used.
+   */
+  engine?: () => RenderEngine
   /**
    * Filmic tone mapping. Off by default because it changes how every existing colour lands,
    * and the scene editor was built and reviewed without it; a viewport that judges an HDR

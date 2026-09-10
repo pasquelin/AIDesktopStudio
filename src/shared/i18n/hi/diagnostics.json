@@ -16,6 +16,7 @@
     "workerStopped": "बैकग्राउंड टास्क रोक दिया गया",
     "csgGraphMissing": "{{name}} के लिए कोई CSG ग्राफ़ दर्ज नहीं है",
     "shaderAnchorMissing": "रेंडरर अब {{name}} नहीं देता",
+    "renderEngineUnavailable": "उन्नत इंजन अभी बना नहीं है",
     "channelShaderMissing": "कोई शेडर {{channel}} चैनल नहीं निकालता",
     "channelSourceEmpty": "{{channel}} चैनल के स्रोत में कोई पिक्सेल नहीं है",
     "passSourceMissing": "इस पास को पढ़ने के लिए एक स्रोत चाहिए",

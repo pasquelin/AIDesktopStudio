@@ -16,6 +16,7 @@
     "workerStopped": "ワーカーが停止されました",
     "csgGraphMissing": "{{name}}のCSGグラフが記録されていません",
     "shaderAnchorMissing": "レンダラーは{{name}}を提供しなくなりました",
+    "renderEngineUnavailable": "「上級」エンジンはまだ実装されていません",
     "channelShaderMissing": "{{channel}}チャンネルを導き出せるシェーダーがありません",
     "channelSourceEmpty": "{{channel}}チャンネルのソースにピクセルがありません",
     "passSourceMissing": "パスには読み取るソースが必要です",

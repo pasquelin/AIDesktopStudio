@@ -16,6 +16,7 @@
     "workerStopped": "Tác vụ nền đã được dừng",
     "csgGraphMissing": "Không có đồ thị CSG được ghi lại cho {{name}}",
     "shaderAnchorMissing": "Render không còn cung cấp {{name}}",
+    "renderEngineUnavailable": "Bộ máy Nâng cao chưa được dựng",
     "channelShaderMissing": "Không shader nào lấy nguồn từ kênh {{channel}}",
     "channelSourceEmpty": "Nguồn kênh {{channel}} không chứa pixel",
     "passSourceMissing": "Lệnh này cần một nguồn để đọc",

@@ -92,6 +92,9 @@ export abstract class SceneRendererState {
   protected options!: SceneRendererOptions
 
   protected viewport = new ViewportEngine({
+    // Read at mount and never again: the scene lives inside the renderer's context, so the
+    // choice is settled for as long as this panel is open. See `RenderPolicy.engine`.
+    engine: () => this.view.engine,
     onFrame: delta => this.advance(delta),
     onOverlay: renderer => this.viewHelper?.render(renderer),
     onPane: (index, camera) => this.dressPane(index, camera),

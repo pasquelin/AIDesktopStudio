@@ -16,6 +16,7 @@
     "workerStopped": "l’attività in background è stata arrestata",
     "csgGraphMissing": "nessun grafo CSG registrato per {{name}}",
     "shaderAnchorMissing": "Il motore di rendering non fornisce più {{name}}",
+    "renderEngineUnavailable": "Il motore Avanzato non è ancora costruito",
     "channelShaderMissing": "nessuno shader deriva il canale {{channel}}",
     "channelSourceEmpty": "la sorgente del canale {{channel}} non contiene nessun pixel",
     "passSourceMissing": "una passata ha bisogno di una sorgente da leggere",

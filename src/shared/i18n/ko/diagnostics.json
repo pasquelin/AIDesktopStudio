@@ -16,6 +16,7 @@
     "workerStopped": "워커가 정지되었습니다",
     "csgGraphMissing": "{{name}}에 대해 기록된 CSG 그래프가 없습니다",
     "shaderAnchorMissing": "렌더러가 {{name}} 앵커를 더 이상 제공하지 않습니다",
+    "renderEngineUnavailable": "고급 엔진은 아직 만들어지지 않았습니다",
     "channelShaderMissing": "{{channel}} 채널을 이끌어 내는 셰이더가 없습니다",
     "channelSourceEmpty": "{{channel}} 채널의 소스에 픽셀이 없습니다",
     "passSourceMissing": "패스에는 읽을 소스가 필요합니다",

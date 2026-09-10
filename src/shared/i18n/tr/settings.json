@@ -246,6 +246,12 @@
       "title": "Hızlan",
       "help": "Hızlanma tuşu tutulduğu sürece hız kaç ile çarpılır. 3’te üç kat hızlı gidersiz — yukarıda ayarı değiştirecek kadar geniş sahneyi geçmek."
     },
+    "renderEngine": {
+      "title": "Render motoru",
+      "help": "3B görünümün hangi grafik arabirimiyle çizdiği. Uyumlu her yapılandırmada çalışır; geniş paylaşım ve eski makineler için tutulacak olan budur. Gelişmiş daha iyi aydınlatma ve yansıma verir ve yeni bir ekran kartı ister. Zaten açık bir panel motorunu korur: değiştirmek için kapatıp yeniden açın.",
+      "gl": "Uyumlu",
+      "gpu": "Gelişmiş"
+    },
     "shadows": {
       "title": "Gölge at",
       "help": "Işıkların attığı gölgeleri hesaplar. Gölge atan her ışık kare başına fazladan render geçişi maliyeti: bunu kapatmak ağır sahneyi hafifletmek en doğrudan yoludur."

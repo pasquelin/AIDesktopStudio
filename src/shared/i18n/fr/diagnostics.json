@@ -16,6 +16,7 @@
     "workerStopped": "La tâche d’arrière-plan a été arrêtée",
     "csgGraphMissing": "Aucun graphe CSG enregistré pour {{name}}",
     "shaderAnchorMissing": "Le moteur de rendu ne fournit plus {{name}}",
+    "renderEngineUnavailable": "Le moteur Avancé n’est pas encore construit",
     "channelShaderMissing": "Aucun shader ne permet de dériver le canal {{channel}}",
     "channelSourceEmpty": "La source du canal {{channel}} ne contient aucun pixel",
     "passSourceMissing": "Cette passe nécessite une source à lire",

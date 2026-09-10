@@ -12,7 +12,7 @@ import {
   type TextureCache,
   type TextureSource,
 } from '../scene/textureCache'
-import { createEnvironment, type ViewportEnvironment } from '../viewport/environment'
+import { type ViewportEnvironment } from '../viewport/environment'
 import { createTestObjects, type TestObjects } from '../viewport/testObjects'
 import { aimAlong } from '../viewport/lookAround'
 import { ViewportEngine } from '../viewport/ViewportEngine'
@@ -166,7 +166,11 @@ export class SkyboxRenderer {
     if (!renderer || !canvas) return
 
     this.pipeline = createGpuPipeline(renderer)
-    this.environment = createEnvironment(renderer, this.viewport.scene, this.viewport.requestRender)
+    this.environment = this.viewport.driver.createEnvironment(
+      renderer,
+      this.viewport.scene,
+      this.viewport.requestRender,
+    )
 
     this.pointer.mount()
 

@@ -3,7 +3,6 @@ import { onPaletteChange } from '../core/palette'
 import { type SceneWorld } from '@shared/domain/scene'
 import { springArmRigsOf } from './springArmRigs'
 import type { Vector3 as TurnedVector } from '@shared/domain/transform'
-import { createEnvironment } from '../viewport/environment'
 import type { ViewportCamera } from '../viewport/viewportEngineSupport1'
 import { type SceneNode, type SceneState } from './sceneState'
 import { PostComposer } from '../postfx/PostComposer'
@@ -116,7 +115,9 @@ export abstract class SceneRendererLifecycle extends SceneRendererResources {
       // frame that shows it: the loop is asleep by then.
       onReady: () => this.redraw(),
     })
-    this.environment = createEnvironment(renderer, this.viewport.scene, () => this.redraw())
+    this.environment = this.viewport.driver.createEnvironment(renderer, this.viewport.scene, () =>
+      this.redraw(),
+    )
     this.environment.setStudio()
     // Half strength, unlike the texture preview: image-based light comes from everywhere and
     // is occluded by nothing, so at full intensity it fills the very shadows the lights cast.

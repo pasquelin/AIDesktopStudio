@@ -246,6 +246,12 @@
       "title": "Accelerazione",
       "help": "Per quanto viene moltiplicata la velocità mentre tieni premuto il tasto di accelerazione. A 3 vai tre volte più veloce — abbastanza per attraversare una scena grande senza cambiare l’impostazione qui sopra."
     },
+    "renderEngine": {
+      "title": "Motore di rendering",
+      "help": "Con quale interfaccia grafica disegna la vista 3D. Compatibile funziona su ogni configurazione ed è quello da tenere per condividere ampiamente o per macchine più vecchie. Avanzato dà illuminazione e riflessi migliori e chiede una scheda grafica recente. Un pannello già aperto conserva il suo motore: chiuderlo e riaprirlo per cambiarlo.",
+      "gl": "Compatibile",
+      "gpu": "Avanzato"
+    },
     "shadows": {
       "title": "Ombre proiettate",
       "help": "Calcola le ombre che le luci proiettano. Ogni luce che ne proietta una costa una passata di rendering in più per fotogramma: disattivare questa opzione è il modo più diretto di alleggerire una scena carica."

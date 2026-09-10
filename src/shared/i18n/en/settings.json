@@ -246,6 +246,12 @@
       "title": "Boost",
       "help": "What the speed is multiplied by while you hold the boost key. At 3 you go three times faster — enough to cross a large scene without changing the setting above."
     },
+    "renderEngine": {
+      "title": "Render engine",
+      "help": "Which graphics interface the 3D viewport draws with. Compatible works on every configuration and is the one to keep for sharing widely or for older machines. Advanced gives better lighting and reflections and asks for a recent graphics card. A panel already open keeps the engine it opened with: close and reopen it to change.",
+      "gl": "Compatible",
+      "gpu": "Advanced"
+    },
     "shadows": {
       "title": "Cast shadows",
       "help": "Works out the shadows the lights throw. Every light that casts one costs an extra render pass per frame: turning this off is the most direct way to lighten a heavy scene."

@@ -8,7 +8,6 @@ import { evenSize, frameTimes, type FilmRequest } from './film'
 import { encodeFilmFrameOffThread } from './filmEncodePort'
 import './bvhPatches'
 import { SceneRendererPreview } from './SceneRendererPreview'
-import { readRenderPixels } from './readRenderPixels'
 export abstract class SceneRendererFilm extends SceneRendererPreview {
   protected abstract applyVisibility(): void
   /**
@@ -170,7 +169,7 @@ export abstract class SceneRendererFilm extends SceneRendererPreview {
         loan.frame(camera)
         this.setPlayhead(time)
         const composed = this.drawFilmFrame(camera, cameraAt(time), target, width, height)
-        const pixels = readRenderPixels(gl, target, width, height)
+        const pixels = await this.viewport.driver.readPixels(gl, target, width, height)
         index += 1
         await onFrame(index, await encodeFilmFrameOffThread(pixels, width, height, composed))
       }

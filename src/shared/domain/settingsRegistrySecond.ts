@@ -1,4 +1,5 @@
 import { DICTATION_MODES } from './dictation'
+import { RENDER_ENGINES } from './renderEngine'
 import { LOG_VERBOSITIES } from './settings'
 import { DISPLAY_UNITS, SHADOW_MAP_SIZES, SHADOW_QUALITIES, VIEWPORT_QUALITIES } from './scene'
 import { setting } from './settingDescriptor'
@@ -59,6 +60,17 @@ export const SETTING_REGISTRY_SECOND = [
     min: 0,
     max: 1,
     step: 0.01,
+  }),
+  setting({
+    path: 'three.engine',
+    kind: 'choice',
+    section: 'spaces.three',
+    titleKey: 'settings.renderEngine.title',
+    helpKey: 'settings.renderEngine.help',
+    options: RENDER_ENGINES.map(value => ({
+      value,
+      labelKey: `settings.renderEngine.${value}`,
+    })),
   }),
   setting({
     path: 'three.shadows',

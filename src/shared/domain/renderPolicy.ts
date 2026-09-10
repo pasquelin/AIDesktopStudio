@@ -1,4 +1,5 @@
 import { isRecord, oneOf, readBoolean, readNumber } from '../guards'
+import { RENDER_ENGINES, type RenderEngine } from './renderEngine'
 import { SHADOW_QUALITIES, type ShadowQuality } from './scene'
 import { VIEWPORT_QUALITIES, type ViewportQuality } from './sceneViewport'
 
@@ -11,6 +12,12 @@ import { VIEWPORT_QUALITIES, type ViewportQuality } from './sceneViewport'
  * while an exported game drew none at all and paid the screen's whole pixel ratio.
  */
 export type RenderPolicy = {
+  /**
+   * Which engine draws the frame. Read once, when a viewport builds its renderer: there is no
+   * switching a mounted one, the whole scene living inside a GPU context that cannot be handed
+   * over. A machine with no WebGPU adapter falls back to `gl` and says so — see `renderDriver`.
+   */
+  engine: RenderEngine
   shadows: boolean
   shadowQuality: ShadowQuality
   /** Side of the square map each casting light allocates, before the quality level caps it. */
@@ -61,6 +68,7 @@ export const SCATTER_DISTANCE = VIEW_DISTANCE
  * The viewport's own defaults, so the two sides open on the same picture.
  */
 export const DEFAULT_RENDER_POLICY: RenderPolicy = Object.freeze({
+  engine: 'gl',
   shadows: true,
   shadowQuality: 'soft',
   shadowMapSize: 2048,
@@ -76,6 +84,7 @@ export const DEFAULT_RENDER_POLICY: RenderPolicy = Object.freeze({
  */
 export function renderPolicyOf(view: RenderPolicy): RenderPolicy {
   return {
+    engine: view.engine,
     shadows: view.shadows,
     shadowQuality: view.shadowQuality,
     shadowMapSize: view.shadowMapSize,
@@ -96,6 +105,7 @@ export function renderPolicyOf(view: RenderPolicy): RenderPolicy {
 export function readRenderPolicy(value: unknown): RenderPolicy {
   if (!isRecord(value)) return { ...DEFAULT_RENDER_POLICY }
   return {
+    engine: oneOf(RENDER_ENGINES, value.engine, DEFAULT_RENDER_POLICY.engine),
     shadows: readBoolean(value, 'shadows', DEFAULT_RENDER_POLICY.shadows),
     shadowQuality: oneOf(
       SHADOW_QUALITIES,

@@ -246,6 +246,12 @@
       "title": "Accélération",
       "help": "Par combien la vitesse est multipliée tant que vous maintenez la touche d’accélération. À 3, vous allez trois fois plus vite : de quoi traverser une grande scène sans changer le réglage du dessus."
     },
+    "renderEngine": {
+      "title": "Moteur de rendu",
+      "help": "Avec quelle interface graphique la vue 3D dessine. Compatible fonctionne sur toutes les configurations : c’est celui à garder pour partager largement ou pour les machines plus anciennes. Avancé donne un éclairage et des reflets de meilleure qualité et demande une carte graphique récente. Un panneau déjà ouvert conserve le moteur avec lequel il s’est ouvert : refermez-le et rouvrez-le pour en changer.",
+      "gl": "Compatible",
+      "gpu": "Avancé"
+    },
     "shadows": {
       "title": "Ombres portées",
       "help": "Calcule les ombres que les lumières projettent. Chaque lumière qui en projette une coûte une passe de rendu supplémentaire par image, et couper cette option reste le moyen le plus direct d’alléger une scène chargée."

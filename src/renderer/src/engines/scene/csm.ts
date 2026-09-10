@@ -7,7 +7,13 @@
  * needs a define on every material that receives it — none of which a scene that was authored
  * without cascades may inherit silently.
  */
-import { DirectionalLight, Object3D, PerspectiveCamera, type Camera, type Material } from 'three'
+import {
+  DirectionalLight,
+  PerspectiveCamera,
+  type Camera,
+  type Material,
+  type Object3D,
+} from 'three'
 import { CSM } from 'three/addons/csm/CSM.js'
 import type { RenderPolicy } from '@shared/domain/renderPolicy'
 import { VIEW_DISTANCE } from '@shared/domain/renderPolicy'

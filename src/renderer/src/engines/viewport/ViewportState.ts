@@ -13,6 +13,8 @@ import { emptyGpuStats, type GpuStats } from './gpuStats'
 import type { GpuTimer } from './gpuTimer'
 import { type PaneLayout, type PaneRect } from './panes'
 import { type PointerPosition } from './pointer'
+import { glDriver } from '../render/glDriver'
+import { type RenderDriver } from '../render/renderDriver'
 import { ViewportNavigationTarget } from './ViewportNavigationTarget'
 import {
   ORIGIN,
@@ -55,6 +57,9 @@ export abstract class ViewportState {
   protected projection: ProjectionKind = 'perspective'
 
   protected renderer: WebGLRenderer | null = null
+
+  /** What built that renderer, and therefore what reads its pixels and lights its scene. */
+  protected renderDriver: RenderDriver = glDriver
 
   protected readonly navigationTarget: ViewportNavigationTarget
 
