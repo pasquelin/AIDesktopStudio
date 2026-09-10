@@ -107,7 +107,9 @@ export function createMediaServices(deps: MediaDeps) {
     search: query => deps.project.catalog().search(query),
     write: (request, bytes) => assets.importFromBytes(request, bytes),
     replaceModel: async (source, bytes) => {
-      await assets.replaceBytes(source.id, bytes, '.glb')
+      // The conversion IS the errand: a glTF whose pictures were pulled out comes back binary,
+      // and the row has to follow the file it now names.
+      await assets.replaceBytes(source.id, bytes, '.glb', { converts: true })
     },
     newAssetId: deps.newAssetId,
     record: report => deps.journal.record(report),

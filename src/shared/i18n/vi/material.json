@@ -88,6 +88,8 @@
     "preview": "Xem trước",
     "envRotation": "Quay trời",
     "originGenerated": "Được tạo bởi một mô hình — đóng băng khi đến",
+    "showInExplorer": "Hiện trong Trình duyệt tệp",
+    "showInExplorerHint": "Chuyển tệp đã tính vào thư mục vật liệu, không sao chép",
     "originDerived": "Được tính từ một kênh khác của vật liệu này",
     "originImported": "Tệp riêng của bạn",
     "derive": "Tính từ {{source}}",

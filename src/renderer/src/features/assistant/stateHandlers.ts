@@ -12,12 +12,8 @@ import { briefingName, TARGET_ID_MAX } from '@shared/domain/target'
 import { EXPORT_FORMATS } from '@shared/domain/scene'
 import { MATERIAL_EXPORT_TARGETS } from '@shared/domain/materialExport'
 import type { FolderExportRequest } from '@shared/ipc'
-import {
-  closeDocument,
-  documentIsDirty,
-  dropDocument,
-  saveDocument,
-} from '@/features/shell/documentIo'
+import { closeDocument, dropDocument, saveDocument } from '@/features/shell/documentIo'
+import { documentIsDirty } from '@/features/shell/documentDirty'
 import { openDocument } from '@/features/shell/components/dockviewApi'
 import { ioOf } from '@/features/shell/documentIoAdapters'
 import { restoreDocument } from '@/features/shell/documentLoad'

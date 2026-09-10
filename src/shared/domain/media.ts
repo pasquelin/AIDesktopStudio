@@ -12,7 +12,11 @@ export type IngestStage =
   | 'done'
   | 'cancelled'
   | 'failed'
-  /** The same bytes are already in the catalogue: the row minted for this pick was dropped. */
+  /**
+   * The same bytes are already in the catalogue. The row is KEPT — importing into a folder puts
+   * the file there whatever else the project holds — and this says so, rather than the studio
+   * deciding which of two identical files was the redundant one.
+   */
   | 'duplicate'
   /** ffprobe read the file and refused it — it is not media, whatever its extension says. */
   | 'unreadable'
@@ -55,9 +59,9 @@ export function hasFailed(stage: IngestStage): boolean {
 }
 
 /**
- * Stays on screen until the user clears it, because it is the only trace the import left: a
- * failure, and a file that was already in the project. Five picked with three already there
- * would otherwise leave three rows vanishing in silence, and no new asset to show for them.
+ * Stays on screen until the user clears it: a failure, and a file whose bytes the project
+ * already held somewhere. The second is not an error — the file is where it was asked to go —
+ * and the line is what lets the user go and look.
  */
 export function needsDismissing(stage: IngestStage): boolean {
   return hasFailed(stage) || stage === 'duplicate'

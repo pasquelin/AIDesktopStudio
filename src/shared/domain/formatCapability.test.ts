@@ -7,7 +7,7 @@ import {
   SCENE_TRAITS,
   SKY_TRAITS,
   TRAITS_OF_DOMAIN,
-  WRITABLE_FORMATS,
+  KNOWN_FORMATS,
   capabilityOf,
   carrying,
   formatOfFile,
@@ -94,7 +94,7 @@ describe('the table itself', () => {
     // The defect this guards is the one the module exists to stop. A trait nobody classed would
     // read as carried — and a trait wrongly read as carried is a trait silently lost, which is
     // the whole failure this table was written against.
-    const misclassed = WRITABLE_FORMATS.flatMap(format => {
+    const misclassed = KNOWN_FORMATS.flatMap(format => {
       const { domain, interchange, extended, dropped } = capabilityOf(format)
       const all = [...interchange, ...extended, ...dropped]
 
@@ -109,7 +109,7 @@ describe('the table itself', () => {
   // A format that classed a trait of the other domain would answer « carried » for something it
   // has no field for — an `.otio` claiming to hold a layer mask.
   it('names no trait outside its own domain', () => {
-    const foreign = WRITABLE_FORMATS.flatMap(format => {
+    const foreign = KNOWN_FORMATS.flatMap(format => {
       const { domain, interchange, extended, dropped } = capabilityOf(format)
 
       return [...interchange, ...extended, ...dropped]

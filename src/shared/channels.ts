@@ -65,6 +65,7 @@ export type Channels = {
   projectFolderRoles: 'project:folder-roles'
   projectFolderFor: 'project:folder-for'
   projectFileFacts: 'project:file-facts'
+  projectFileUses: 'project:file-uses'
   projectReadContext: 'project:read-context'
   projectWriteContext: 'project:write-context'
   memoryList: 'memory:list'
@@ -148,6 +149,13 @@ export type Channels = {
   documentConfirmDelete: 'document:confirm-delete'
   documentConfirmOverwrite: 'document:confirm-overwrite'
   documentConfirmFlatten: 'document:confirm-flatten'
+  documentConfirmSaveElsewhere: 'document:confirm-save-elsewhere'
+
+  recoveryWrite: 'recovery:write'
+  recoveryList: 'recovery:list'
+  recoveryRead: 'recovery:read'
+  recoveryClear: 'recovery:clear'
+  recoveryConfirmRestore: 'recovery:confirm-restore'
 
   assetsSearch: 'assets:search'
   assetsCounts: 'assets:counts'
@@ -165,6 +173,8 @@ export type Channels = {
   /** Lands the `.glb` a 3D file was converted into, keeping the original. See `ConvertMeshRequest`. */
   assetsSaveConverted: 'assets:save-converted'
   assetsReadLayered: 'assets:read-layered'
+  assetsShowResource: 'assets:show-resource'
+  assetsHideResource: 'assets:hide-resource'
   assetsSaveTexture: 'assets:save-texture'
   texturesInstallBundled: 'textures:install-bundled'
   charactersInstallBundled: 'characters:install-bundled'
@@ -195,6 +205,7 @@ export type Channels = {
 
   mediaAdopt: 'media:adopt'
   mediaIngest: 'media:ingest'
+  mediaLink: 'media:link'
   mediaCancel: 'media:cancel'
   mediaAvailable: 'media:available'
 

@@ -1,4 +1,5 @@
 import { fillHoles, TRANSLATIONS } from '@shared/i18n'
+import type { FileUse } from '@shared/domain/fileUse'
 import { windowLanguage } from '@main/window/language'
 import { askConfirm, type AskUser } from './documentDialogs'
 
@@ -85,6 +86,25 @@ export async function askTrashFiles(ask: AskUser, count: number): Promise<boolea
   return await askConfirm(ask, {
     message: fillHoles(t.trashTitle, { count }, language),
     detail: t.trashBody,
+    confirm: t.trashConfirm,
+    cancel: t.trashCancel,
+  })
+}
+
+/**
+ * The files a deletion would take out from under a document — §9.2, and the one warning nothing
+ * gave: a texture a scene draws went to the trash without a word.
+ *
+ * The documents are NAMED, never counted: « three documents use it » leaves the person to guess
+ * which, and the whole point is that they can go and look before answering.
+ */
+export async function askTrashUsedFiles(ask: AskUser, uses: readonly FileUse[]): Promise<boolean> {
+  const language = windowLanguage()
+  const t = TRANSLATIONS[language].explorer
+
+  return await askConfirm(ask, {
+    message: fillHoles(t.trashUsedTitle, { count: uses.length }, language),
+    detail: `${t.trashUsedBody}\n${uses.map(use => use.title).join('\n')}`,
     confirm: t.trashConfirm,
     cancel: t.trashCancel,
   })

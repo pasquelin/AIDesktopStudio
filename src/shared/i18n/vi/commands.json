@@ -16,9 +16,13 @@
       "title": "Mở dự án",
       "help": "Chọn một dự án đã có trên đĩa và mở nó thay cho dự án hiện tại. Dự án đang mở được lưu liên tục, nên không có gì phải lưu trước."
     },
+    "documentSaveCopy": {
+      "title": "Lưu một bản sao",
+      "help": "Ghi một bản sao của tài liệu vào nơi bạn yêu cầu và tiếp tục với tài liệu đang mở: đích đến của nó không đổi."
+    },
     "documentSaveAs": {
       "title": "Lưu thành",
-      "help": "Ghi một bản sao của tài nguyên bên cạnh bản gốc và làm việc tiếp trên bản sao. Tài nguyên đang mở giữ nguyên như ở lần lưu cuối."
+      "help": "Chọn một đích, ghi tài liệu vào đó và tiếp tục ở đó: tệp mà nó được mở từ đó vẫn như lần lưu cuối."
     },
     "documentSave": {
       "title": "Lưu tài liệu",

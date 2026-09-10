@@ -3,115 +3,196 @@ import { localizedError } from '@shared/localizedError'
 import { getBridge } from '@/services/bridge'
 import { reportFailure, reportNotice } from '@/services/diagnostics'
 import { assetsById, useAssets } from '@/stores/assets'
-import { takenDocumentNames, useDocuments } from '@/stores/documents'
+import { useDocuments } from '@/stores/documents'
 import { useLivePreviews } from '@/stores/livePreviews'
-import { useMaterialViews } from '@/stores/materialViews'
-import { useMonitorPair } from '@/stores/monitorPair'
-import { usePlayback } from '@/stores/playback'
-import { useSkyboxViews } from '@/stores/skyboxViews'
 import {
-  documentFolderOf,
   type CloseChoice,
   type DocumentDescriptor,
+  type FlattenChoice,
 } from '@shared/domain/document'
-import { nextFreeDocumentName } from '@shared/domain/documentName'
 import { FOLDER_ROOT, parentOf } from '@shared/domain/folder'
+import { nearestEncodableFor } from '@shared/domain/encodableFormat'
 import {
   formatOfFile,
   lossesFor,
   type CapabilityTrait,
-  type WritableFormat,
+  type KnownFormat,
 } from '@shared/domain/formatCapability'
-import type { StudioBridge } from '@shared/ipc'
+import { mayOverwriteSource, readFidelityOf } from '@shared/domain/readFidelity'
+import { keepsWrittenFormat } from '@shared/domain/writtenFormat'
 import i18next from 'i18next'
-import { closePanel, openDocument } from './components/dockviewApi'
-import { IO_BY_KIND, ioOf, type CapturedDraft, type DocumentIo } from './documentIoAdapters'
+import { ioOf, type CapturedDraft, type DocumentIo } from './documentIoAdapters'
+import { epochIsCurrent, epochOf, restoreDocument } from './documentLoad'
 import {
-  epochIsCurrent,
-  epochOf,
-  forgetLoadState,
-  invalidateLoad,
-  isUnreadable,
-  restoreDocument,
-} from './documentLoad'
+  assetBehind,
+  beginCapture,
+  endCapture,
+  forgetDocument,
+  forgetDocumentState,
+  invalidateDocument,
+  writableDocument,
+  type AssetWritingIo,
+  type FileWritingIo,
+  type SavableDocument,
+} from './documentTab'
+import { documentIsDirty, unsavedDocumentIds } from './documentDirty'
 import { queueDocumentSave } from './documentSaveQueue'
-const assetBehind = new Set<string>()
-const flattenAgreed = new Set<string>()
-const capturing = new Map<string, Set<AbortController>>()
-
-function beginCapture(documentId: string): AbortController {
-  const controller = new AbortController()
-  const active = capturing.get(documentId) ?? new Set<AbortController>()
-  active.add(controller)
-  capturing.set(documentId, active)
-  return controller
-}
-
-function endCapture(documentId: string, controller: AbortController): void {
-  const active = capturing.get(documentId)
-  active?.delete(controller)
-  if (active?.size === 0) capturing.delete(documentId)
-}
-
-function invalidateDocument(documentId: string): void {
-  invalidateLoad(documentId)
-  const active = capturing.get(documentId)
-  if (!active) return
-  capturing.delete(documentId)
-  for (const controller of active) controller.abort()
-}
-async function agreedToFlatten(
+/**
+ * Asked at EVERY save, never remembered — §5.1.
+ *
+ * The answer used to be kept for the life of the document, which made the question a one-time
+ * toll rather than a decision: say yes once to a text layer and every ⌘S after it flattened the
+ * file without a word, including the ones where the layer had since been undone. What a save may
+ * destroy is a property of the state it is about to write, and that state changes between saves.
+ *
+ * Three answers and not two, the third being the one §5.1 asks for: a format that cannot carry
+ * the document is a reason to offer ANOTHER destination, not only a reason to destroy what it
+ * cannot hold. `saveAs` is the default button for that reason — the path that loses nothing.
+ */
+async function flattenChoice(
   document: DocumentDescriptor,
-  format: WritableFormat,
+  format: KnownFormat,
   losses: readonly CapabilityTrait[],
-): Promise<boolean> {
-  if (flattenAgreed.has(document.id)) return true
-  const agreed = await askedToFlatten(
-    document.title,
-    format.toUpperCase(),
-    losses.map(trait => i18next.t(`traits.${trait}`)).join(', '),
+): Promise<FlattenChoice> {
+  const lost = losses.map(trait => i18next.t(`traits.${trait}`)).join(', ')
+  return (
+    (await getBridge()?.documents.confirmFlatten(document.title, format.toUpperCase(), lost)) ??
+    'flatten'
   )
-  if (agreed) flattenAgreed.add(document.id)
-  return agreed
 }
-const askedToFlatten = async (title: string, format: string, lost: string): Promise<boolean> =>
-  (await getBridge()?.documents.confirmFlatten(title, format, lost)) ?? true
-type SavableDocument = {
-  bridge: StudioBridge
-  document: DocumentDescriptor
-  io: DocumentIo
-}
-type WritableSavableDocument = Omit<SavableDocument, 'io'> & {
-  io: Extract<DocumentIo, { assetOnly?: undefined }>
-}
-type CapturedDocument = Awaited<
-  ReturnType<NonNullable<Extract<DocumentIo, { assetOnly?: undefined }>['capture']>>
->
+type WritableSavableDocument = Omit<SavableDocument, 'io'> & { io: FileWritingIo }
+type CapturedDocument = Awaited<ReturnType<NonNullable<FileWritingIo['capture']>>>
 type CaptureResult = { ok: true; captured: CapturedDocument } | { ok: false; error: unknown }
 
-function savableDocument(documentId: string, byHand = true): SavableDocument | null {
-  const bridge = getBridge()
-  const document = useDocuments.getState().documents[documentId]
-  const io = ioOf(documentId)
-  if (!bridge || !document || !io) return null
-  if (isUnreadable(documentId) || !io.holds(documentId)) return null
-  const refusal = io.incomplete?.(documentId)
-  if (refusal) {
-    if (byHand) reportNotice('document.save', refusal)
-    return null
+/**
+ * Why a save wrote nothing at all. Named rather than boolean: the two say different things to the
+ * person in front of them, and each has its own sentence.
+ */
+export type SaveRefusal = 'sourceReadReduced' | 'sourceReadUnknown' | 'sourceFormatChange'
+
+export const SAVE_REFUSALS: readonly SaveRefusal[] = [
+  'sourceReadReduced',
+  'sourceReadUnknown',
+  'sourceFormatChange',
+]
+
+/**
+ * The two ways a save is refused before it writes ANYTHING — the protections of §5.7.
+ *
+ * Before, and that is the whole of it: refusing after the document file is written leaves an
+ * `.ora` beside a picture the user never asked to convert, which is the file this refusal exists
+ * to keep off the disk. The document stays modified, and nothing on disk moved.
+ *
+ * `null` when the save may proceed, including for every document that writes no asset at all.
+ */
+function sourceWriteRefusal(
+  { document, io }: WritableSavableDocument,
+  plan: WritePlan | null,
+): SaveRefusal | null {
+  const source = document.sourceAssetId
+  if (!source || !io.writeAsset || !plan) return null
+
+  // P1. Read off the document rather than measured now: what tells a reduction from a crop is
+  // WHO shrank the picture, and only the read knows that.
+  //
+  // The two answers are told apart, because they ask different things of the person: one says
+  // the studio shrank the file on the way in, the other that nothing here knows how it was read
+  // — a document filled from its own container rather than from the picture. Both refuse; only
+  // the second has a gesture that clears it, and its sentence names that gesture.
+  const fidelity = readFidelityOf(document.sourceFidelity)
+  if (!mayOverwriteSource(fidelity)) {
+    return fidelity === 'reduced' ? 'sourceReadReduced' : 'sourceReadUnknown'
   }
-  return { bridge, document, io }
+
+  // P2. Against what the writer PRODUCES, never against the format it was asked for: asked for a
+  // JPEG it hands back a PNG, and `replaceBytes` then renames the file and deletes the original.
+  const path = assetsById(useAssets.getState()).get(source)?.path
+  return keepsWrittenFormat(path, io.writtenExtension(plan.format)) ? null : 'sourceFormatChange'
 }
+
+/**
+ * A refusal with a way out — §5.1 and §5.6.
+ *
+ * A refusal PROTECTS; it does not make the gesture possible, and a save that only says no is the
+ * dead end the five `incomplete` kinds and the two protections of §5.7 all ended in. The reason
+ * is said, and the one destination that is always available is offered with it.
+ *
+ * Nothing is raised under autosave: nobody is at the machine to answer a window, and a question
+ * that answers itself would either write somewhere nobody chose or block the pass.
+ */
+async function offerAnotherDestination(
+  documentId: string,
+  reason: string,
+  byHand: boolean,
+): Promise<boolean> {
+  const document = useDocuments.getState().documents[documentId]
+  const asked =
+    byHand && document
+      ? ((await getBridge()?.documents.confirmSaveElsewhere(document.title, reason)) ?? false)
+      : false
+  if (!asked) {
+    // Said every time, even under autosave: a refusal nobody hears is the silence these
+    // protections were written to end.
+    reportNotice('document.save', reason)
+    return false
+  }
+  return await savedElsewhere(documentId)
+}
+
+/** Through `import()` for the cycle: a Save as… reads the tab module this one reads too. */
+async function savedElsewhere(documentId: string): Promise<boolean> {
+  const { saveDocumentAs } = await import('./documentSaveAs')
+  return await saveDocumentAs(documentId)
+}
+
+/**
+ * Everything asked BEFORE a byte is written, and what it settled — `null` to go ahead, and
+ * otherwise the answer the save itself hands back.
+ *
+ * Nothing is asked at all when nothing moved since the last save: this ⌘S then writes nothing
+ * back over the file — `rewriteSourceAsset` holds the same gate — and a refusal or a flatten
+ * question raised over a write that will not happen is a dialog for a gesture with no effect.
+ */
+async function askedBeforeWriting(
+  savable: WritableSavableDocument,
+  plan: WritePlan,
+  byHand: boolean,
+): Promise<boolean | null> {
+  const { document } = savable
+  const refusal = sourceWriteRefusal(savable, plan)
+  if (refusal) {
+    return await offerAnotherDestination(document.id, i18next.t(`documents.${refusal}`), byHand)
+  }
+  if (plan.losses.length === 0) return null
+
+  const choice = await flattenChoice(document, plan.format, plan.losses)
+  if (choice === 'flatten') return null
+  return choice === 'saveAs' ? await savedElsewhere(document.id) : false
+}
+
 export async function saveDocument(documentId: string, byHand = true): Promise<boolean> {
-  const savable = savableDocument(documentId, byHand)
+  const savable = writableDocument(documentId)
   if (!savable) return false
   const { io } = savable
+  const held = io.incomplete?.(documentId)
+  if (held) return await offerAnotherDestination(documentId, held, byHand)
   // Waited HERE rather than at the doors: `capture` reads the mounted engine, which trails the
   // store by a render — see `createAppliedGate`. One of the seven callers had it, so ⌘S right
   // after an edit still wrote the pixels from before it.
   await io.settled?.(documentId)
   if (io.assetOnly) return await io.saveOwn(documentId)
   const writable: WritableSavableDocument = { ...savable, io }
+  const source = writable.document.sourceAssetId
+  // Walked only where this ⌘S would really rewrite the file — `traitsOf` is a walk of the whole
+  // layer stack, and re-pressing ⌘S on an unchanged picture is the frequent case (`rewriteSource
+  // Asset` holds the same gate). Awaiting is confined to that branch too: an await on the way to
+  // `capture` puts a microtask between two ⌘S, and `documentIo06` holds the order they land in.
+  const rewrites = io.writeAsset && source && (io.dirty(documentId) || assetBehind.has(documentId))
+  if (rewrites) {
+    const plan = writePlanFor(writable.document, io, source)
+    const asked = await askedBeforeWriting(writable, plan, byHand)
+    if (asked !== null) return asked
+  }
   const epoch = epochOf(documentId)
   const controller = beginCapture(documentId)
   const capture = captureForSave(io, documentId, controller)
@@ -121,7 +202,7 @@ export async function saveDocument(documentId: string, byHand = true): Promise<b
 }
 
 async function captureForSave(
-  io: Extract<DocumentIo, { assetOnly?: undefined }>,
+  io: FileWritingIo,
   documentId: string,
   controller: AbortController,
 ): Promise<CaptureResult> {
@@ -146,20 +227,48 @@ async function writeCaptured(
   let { document } = savable
   if (!epochIsCurrent(document, epoch, controller.signal)) return false
   document = useDocuments.getState().documents[document.id] ?? document
-  const { draft, commit, wasEdited } = captured
+  const { commit } = captured
+
+  if (!(await writeWhereItBelongs(savable, document, captured, epoch, controller, byHand))) {
+    return false
+  }
+  if (!epochIsCurrent(document, epoch, controller.signal)) return false
+  commit()
+  // Only what this save COVERS — §9.1, guarantee 3. Asked after the commit and re-read from the
+  // store, so an edit made WHILE the file was being written keeps its entry.
+  const { clearRecoveryCovered } = await import('./documentRecovery')
+  await clearRecoveryCovered(document.id)
+  void useDocuments.getState().relist('own-write')
+  return true
+}
+
+/**
+ * ONE write per ⌘S, into the one destination the document has — §5.3.
+ *
+ * A document opened FOR an asset writes that asset's file and nothing else. It used to write
+ * both: the studio's own `.ora` in the documents folder AND the picture, every single time. That
+ * is where the two files came from, and the second of them was an export nobody asked for (R5).
+ *
+ * Every other document writes its own file, which IS its destination.
+ */
+async function writeWhereItBelongs(
+  savable: WritableSavableDocument,
+  document: DocumentDescriptor,
+  { draft, wasEdited }: CapturedDocument,
+  epoch: number,
+  controller: AbortController,
+  byHand: boolean,
+): Promise<boolean> {
+  const source = document.sourceAssetId
+  if (savable.io.writeAsset && source) {
+    return await rewriteSourceAsset(document, savable.io, source, wasEdited, draft)
+  }
   const payload = {
     ...draft,
     title: document.title,
-    ...(document.sourceAssetId ? { sourceAssetId: document.sourceAssetId } : {}),
+    ...(source ? { sourceAssetId: source } : {}),
   }
-  if (!(await writeDraft(savable, document, payload, epoch, controller.signal, byHand)))
-    return false
-  if (!epochIsCurrent(document, epoch, controller.signal)) return false
-  commit()
-  if (!byHand) return true
-  await rewriteSourceAsset(document, savable.io, wasEdited, draft)
-  void useDocuments.getState().relist('own-write')
-  return true
+  return await writeDraft(savable, document, payload, epoch, controller.signal, byHand)
 }
 
 function capturedOrThrow(result: CaptureResult, signal: AbortSignal): CapturedDocument | null {
@@ -176,124 +285,74 @@ async function writeDraft(
   signal: AbortSignal,
   byHand: boolean,
 ): Promise<boolean> {
-  const folder = parentOf(document.path) ?? FOLDER_ROOT
-  const result = await bridge.documents.write(document.id, document.kind, draft, false, folder)
+  // The document's own destination first — §5.3. A file it was opened ON is written into rather
+  // than beside: without it the writer frees the name against the folder, and a glTF another
+  // application exported grew a `Niveau 2.gltf` at every save instead of being edited in place.
+  const place = document.destination
+    ? { path: document.destination }
+    : { folder: parentOf(document.path) ?? FOLDER_ROOT }
+  const result = await bridge.documents.write(document.id, document.kind, draft, false, place)
   if (result !== 'stale') return true
   if (!byHand || !(await bridge.documents.confirmOverwrite(document.title))) return false
   if (!epochIsCurrent(document, epoch, signal)) return false
-  await bridge.documents.write(document.id, document.kind, draft, true, folder)
+  await bridge.documents.write(document.id, document.kind, draft, true, place)
   return true
 }
 
-function writePlanFor(
+/** What a save is about to write, and what that would destroy — walked once per save. */
+export type WritePlan = { format: KnownFormat; losses: CapabilityTrait[] }
+
+export function writePlanFor(
   document: DocumentDescriptor,
   io: DocumentIo,
   sourceAssetId: string,
-): {
-  format: WritableFormat
-  losses: CapabilityTrait[]
-} {
-  const written =
-    formatOfFile(assetsById(useAssets.getState()).get(sourceAssetId)?.path ?? '') ?? 'ora'
-  if (!io.traitsOf) return { format: written, losses: [] }
-  return { format: written, losses: lossesFor(io.traitsOf(document.id), written) }
+): WritePlan {
+  const path = assetsById(useAssets.getState()).get(sourceAssetId)?.path ?? ''
+  const traits = io.traitsOf?.(document.id) ?? []
+  // A format the studio cannot even name falls back to the CLOSEST one it writes, not to the
+  // richest: a flat `.gif` is offered a PNG, where the fallback used to send it to a container
+  // of layers it holds none of (§5.5).
+  const written = formatOfFile(path) ?? nearestEncodableFor('picture', traits)
+  // No guard on `traitsOf`: an io that has none holds no traits, and `lossesFor([], …)` is empty.
+  return { format: written, losses: lossesFor(traits, written) }
 }
 async function rewriteSourceAsset(
   document: DocumentDescriptor,
-  io: DocumentIo,
+  io: AssetWritingIo,
+  source: string,
   wasEdited: boolean,
   captured: CapturedDraft,
-): Promise<void> {
-  const source = document.sourceAssetId
-  if (!source || !io.writeAsset) return
-  if (!wasEdited && !assetBehind.has(document.id)) return
-  const { format, losses } = writePlanFor(document, io, source)
-  if (losses.length > 0 && !(await agreedToFlatten(document, format, losses))) return
+): Promise<boolean> {
+  // Nothing moved since the last save: a re-encode that changes nothing is a file rewritten for
+  // no reason, and for a lossy format it is quality spent for no reason (§6.2).
+  if (!wasEdited && !assetBehind.has(document.id)) return true
+  // Walked HERE and not before the capture: the same gate above turns this save into a no-op far
+  // more often than not, and `traitsOf` is a walk of the whole layer stack.
+  const { format } = writePlanFor(document, io, source)
   try {
     const written = await io.writeAsset(
       document.id,
-      { replaces: source, name: document.title, format },
+      { replaces: source, name: document.title, format, documentId: document.id },
       captured,
     )
     if (!written) throw localizedError('bakeContentEmpty')
     assetBehind.delete(document.id)
     useLivePreviews.getState().revokePreview(source)
     useAssets.getState().invalidate()
+    return true
   } catch (error) {
     assetBehind.add(document.id)
     reportFailure('assets.save', document.title, error)
-  }
-}
-/**
- * What a copy is called, freed of a name the folder already holds: the store leaves a view of an
- * asset its asset's name, and copying one document twice stood two tabs on one file, each saving
- * over the other (2026-09-09).
- */
-const copyName = (document: DocumentDescriptor): string =>
-  nextFreeDocumentName(
-    i18next.t('documents.copyName', { name: document.title }),
-    document.kind,
-    takenDocumentNames(useDocuments.getState(), documentFolderOf(document.kind)),
-  )
-
-async function copyDocumentAsset(
-  documentId: string,
-  { bridge, document, io }: SavableDocument,
-): Promise<boolean> {
-  const source = document.sourceAssetId
-  if (!source || !io.writeAsset || io.assetOnly) {
-    reportFailure('assets.copy', document.title, localizedError('copyContentEmpty'))
-    return false
-  }
-  const name = copyName(document)
-  const { format, losses } = writePlanFor(document, io, source)
-  try {
-    const { draft } = await io.capture(documentId)
-    const copy = await io.writeAsset(
-      documentId,
-      { derivedFrom: source, name, format: losses.length === 0 ? format : 'ora' },
-      draft,
-    )
-    if (!copy) {
-      reportFailure('assets.copy', document.title, localizedError('bakeContentEmpty'))
-      return false
-    }
-    const created = await useDocuments
-      .getState()
-      .create(document.workspace, { title: name, sourceAssetId: copy.id })
-    if (!created) {
-      reportFailure('assets.copy', document.title, localizedError('copyDocumentMissing'))
-      return false
-    }
-    await bridge.documents.write(
-      created.id,
-      created.kind,
-      {
-        ...draft,
-        title: name,
-        sourceAssetId: copy.id,
-      },
-      false,
-      parentOf(created.path) ?? FOLDER_ROOT,
-    )
-    openDocument(created)
-    await useAssets.getState().refresh()
-    void useDocuments.getState().relist('own-write')
-    return true
-  } catch (error) {
-    reportFailure('assets.copy', document.title, error)
     return false
   }
 }
 
-export async function saveDocumentAs(documentId: string): Promise<boolean> {
-  const savable = savableDocument(documentId)
-  return savable ? await copyDocumentAsset(documentId, savable) : false
+/** Through `import()` for the cycle: the recovery reads this module's own `documentIsDirty`. */
+async function discardRecovery(documentId: string): Promise<void> {
+  const { clearRecoveryOf } = await import('./documentRecovery')
+  await clearRecoveryOf(documentId)
 }
-export function documentIsDirty(documentId: string): boolean {
-  const io = ioOf(documentId)
-  return io !== undefined && io.holds(documentId) && io.dirty(documentId)
-}
+
 let settling = 0
 async function whileSettling<T>(body: () => Promise<T>): Promise<T> {
   settling += 1
@@ -313,18 +372,28 @@ export async function closeDocument(documentId: string): Promise<boolean> {
       const choice = await askAboutUnsavedWork(documentId)
       if (choice === 'cancel') return false
       if (choice === 'save' && !(await saveDocument(documentId))) return false
+      // Purged at the CONFIRMED abandonment and never before — §9.1, guarantee 4.
+      if (choice === 'discard') await discardRecovery(documentId)
     }
     forgetDocument(documentId)
     return true
   })
 }
-export function unsavedDocumentIds(): string[] {
-  return Object.keys(useDocuments.getState().documents).filter(documentIsDirty)
-}
-export async function autosaveOpenDocuments(): Promise<void> {
+/**
+ * The pass that still writes REAL files, and the two kinds left to it.
+ *
+ * `writes` selects the documents this pass still answers for — the ones the recovery area does
+ * not hold, which is the character and the script. For every other kind this used to be the net,
+ * and it wrote the user's own files to be one: opening a video grew an `.otio` beside it, a sky
+ * a `.gltf`, neither asked for. See `documentRecovery.ts`.
+ */
+export async function autosaveOpenDocuments(
+  covers: (documentId: string) => boolean,
+): Promise<void> {
   if (settling > 0) return
   let wrote = false
   for (const documentId of unsavedDocumentIds()) {
+    if (!covers(documentId)) continue
     if (ioOf(documentId)?.autosaves === false) continue
     try {
       wrote = (await saveDocument(documentId, false)) || wrote
@@ -356,6 +425,7 @@ async function settleUnsaved(andForget: boolean): Promise<boolean> {
       // question", and nothing here tells them apart — so it stays silent rather than call a
       // deliberate cancel an error. `closeDocument` has the same line, and the same hole.
       if (choice === 'save' && !(await saveDocument(documentId))) return false
+      if (choice === 'discard') await discardRecovery(documentId)
       if (andForget) forgetDocument(documentId)
     }
     return true
@@ -398,22 +468,4 @@ export async function refreshDocuments(projectPath?: string | null): Promise<boo
   }
   for (const document of Object.values(documents)) void restoreDocument(document.id)
   return answered
-}
-function forgetDocument(documentId: string, gone?: DocumentDescriptor): void {
-  invalidateDocument(documentId)
-  const document = gone ?? useDocuments.getState().documents[documentId]
-  forgetDocumentState(documentId, document)
-  closePanel(documentId)
-  useDocuments.getState().close(documentId)
-}
-
-function forgetDocumentState(documentId: string, document?: DocumentDescriptor): void {
-  if (document) IO_BY_KIND[document.kind].forget(document)
-  forgetLoadState(documentId)
-  assetBehind.delete(documentId)
-  flattenAgreed.delete(documentId)
-  useMaterialViews.getState().forget(documentId)
-  useSkyboxViews.getState().forget(documentId)
-  useMonitorPair.getState().forgetMonitorPair(documentId)
-  usePlayback.getState().clearHead(documentId)
 }

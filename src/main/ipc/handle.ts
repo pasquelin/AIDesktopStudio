@@ -55,6 +55,7 @@ type ChannelMethod = {
   [CHANNELS.projectWalkFolder]: StudioBridge['project']['walkFolder']
   [CHANNELS.projectOpenFile]: StudioBridge['project']['openFile']
   [CHANNELS.projectFileFacts]: StudioBridge['project']['fileFacts']
+  [CHANNELS.projectFileUses]: StudioBridge['project']['fileUses']
   [CHANNELS.projectFolderRoles]: StudioBridge['project']['folderRoles']
   [CHANNELS.projectFolderFor]: StudioBridge['project']['folderFor']
   [CHANNELS.memoryList]: StudioBridge['memory']['list']
@@ -144,6 +145,13 @@ type ChannelMethod = {
   [CHANNELS.documentConfirmDelete]: StudioBridge['documents']['confirmDelete']
   [CHANNELS.documentConfirmOverwrite]: StudioBridge['documents']['confirmOverwrite']
   [CHANNELS.documentConfirmFlatten]: StudioBridge['documents']['confirmFlatten']
+  [CHANNELS.documentConfirmSaveElsewhere]: StudioBridge['documents']['confirmSaveElsewhere']
+
+  [CHANNELS.recoveryWrite]: StudioBridge['recovery']['write']
+  [CHANNELS.recoveryList]: StudioBridge['recovery']['list']
+  [CHANNELS.recoveryRead]: StudioBridge['recovery']['read']
+  [CHANNELS.recoveryClear]: StudioBridge['recovery']['clear']
+  [CHANNELS.recoveryConfirmRestore]: StudioBridge['recovery']['confirmRestore']
 
   [CHANNELS.assetsSearch]: StudioBridge['assets']['search']
   [CHANNELS.assetsCounts]: StudioBridge['assets']['counts']
@@ -159,6 +167,8 @@ type ChannelMethod = {
   [CHANNELS.assetsSaveAnimation]: StudioBridge['assets']['saveAnimation']
   [CHANNELS.assetsReadLayered]: StudioBridge['assets']['readLayered']
   [CHANNELS.assetsSaveTexture]: StudioBridge['assets']['saveTexture']
+  [CHANNELS.assetsShowResource]: StudioBridge['assets']['showResource']
+  [CHANNELS.assetsHideResource]: StudioBridge['assets']['hideResource']
   [CHANNELS.texturesInstallBundled]: StudioBridge['assets']['installBundledTextures']
   [CHANNELS.charactersInstallBundled]: StudioBridge['assets']['installBundledCharacter']
   [CHANNELS.assetsExtractTextures]: StudioBridge['assets']['extractTextures']
@@ -210,6 +220,7 @@ type ChannelMethod = {
 
   [CHANNELS.mediaAdopt]: StudioBridge['media']['adopt']
   [CHANNELS.mediaIngest]: StudioBridge['media']['ingest']
+  [CHANNELS.mediaLink]: StudioBridge['media']['link']
   [CHANNELS.mediaIngestPaths]: StudioBridge['media']['ingestPaths']
   [CHANNELS.mediaImportPicked]: StudioBridge['media']['importPicked']
   [CHANNELS.mediaCancel]: StudioBridge['media']['cancel']

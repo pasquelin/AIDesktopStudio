@@ -79,24 +79,26 @@ vi.mock('@/character/characterSave', async importOriginal => ({
 
 const { rehydrateDocument, restoreDocument } = await import('./documentLoad')
 const {
-  autosaveOpenDocuments,
   closeDocument,
   deleteDocument,
   renamedDocumentProject,
   refreshDocuments,
   saveDocument,
-  saveDocumentAs,
   settleUnsavedWork,
   settleUnsavedWorkForProjectChange,
-  unsavedDocumentIds,
 } = await import('./documentIo')
+const { unsavedDocumentIds } = await import('./documentDirty')
+const { saveDocumentAs, saveDocumentCopy } = await import('./documentSaveAs')
+const { offerRecoveredWork } = await import('./documentRecovery')
+const { keepUnsavedWorkSafe } = await import('./unsavedWork')
 
 /** One bone, so a case can read back what ⌘S wrote into the skeleton of the model. */
 const BONE: RigBone = { name: 'Spine', parent: null, rest: IDENTITY_TRANSFORM }
 const RAISED = { ...IDENTITY_TRANSFORM, position: { x: 0, y: 0.2, z: 0 } }
 
 export {
-  autosaveOpenDocuments,
+  keepUnsavedWorkSafe,
+  offerRecoveredWork,
   BONE,
   box,
   closeDocument,
@@ -115,6 +117,7 @@ export {
   savedFile,
   saveDocument,
   saveDocumentAs,
+  saveDocumentCopy,
   scene,
   settleUnsavedWork,
   settleUnsavedWorkForProjectChange,

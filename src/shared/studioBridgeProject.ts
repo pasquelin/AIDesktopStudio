@@ -1,5 +1,6 @@
 import type { FileFacts } from './domain/fileInfo'
 import type { FileHistory, FileOutcome } from './domain/fileOp'
+import type { FileUse } from './domain/fileUse'
 import type { FolderEntry } from './domain/folder'
 import type { FolderRole, RoleFolders } from './domain/folderRole'
 import type { Project, RescanState } from './domain/project'
@@ -137,6 +138,13 @@ export type StudioBridgeProject = {
      * open while the file it names was moved in the Finder.
      */
     fileFacts: (relative: string) => Promise<FileFacts | null>
+    /**
+     * Which documents cite these files — §11's S3, and what a deletion asks before it takes
+     * anything away (E-21). Read on demand, never kept as a graph: see `fileDependents.ts`, and
+     * its blind spot — a citation is matched on the file's NAME and on its catalogue ids, so it
+     * over-reports rather than under-reports.
+     */
+    fileUses: (paths: readonly string[]) => Promise<FileUse[]>
     /**
      * The project's own context — the world every generation made in it is set in.
      *

@@ -16,9 +16,13 @@
       "title": "Proje aç",
       "help": "Diskinizde hâlihazırda bulunan bir projeyi seçer ve açık olanın yerine açar. Açık proje siz çalışırken kaydedilir, bu yüzden önceden kaydedilecek bir şey yoktur."
     },
+    "documentSaveCopy": {
+      "title": "Bir kopya kaydet",
+      "help": "Belgenin bir kopyasını istediğiniz yere yazar ve açık belgeyle devam eder: hedefi değişmez."
+    },
     "documentSaveAs": {
       "title": "Farklı kaydet",
-      "help": "Varlığın bir kopyasını aslının yanına yazar ve onun üzerinden devam eder. Açık olan varlık son kaydedildiği hâliyle kalır."
+      "help": "Bir hedef seçer, belgeyi oraya yazar ve oradan devam eder: açıldığı dosya son kaydedildiği hâlde kalır."
     },
     "documentSave": {
       "title": "Belgeyi kaydet",

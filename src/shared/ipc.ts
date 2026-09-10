@@ -33,6 +33,7 @@ export type * from './ipcEvents'
 import type { StudioBridgeSettings } from './studioBridgeSettings'
 import type { StudioBridgeProject } from './studioBridgeProject'
 import type { StudioBridgeLibrary } from './studioBridgeLibrary'
+import type { StudioBridgeRecovery } from './studioBridgeRecovery'
 import type { StudioBridgeCreation } from './studioBridgeCreation'
 import type { StudioBridgeShell } from './studioBridgeShell'
 import type { StudioBridgeAutoRig } from './studioBridgeAutoRig'
@@ -41,7 +42,17 @@ import type { StudioBridgeMissions } from './studioBridgeMissions'
 
 type CreationBridge = Omit<StudioBridgeCreation, 'media'> & {
   media: StudioBridgeCreation['media'] & {
-    ingestPaths: (requestId: string, folder: string, taskId: string) => Promise<ExternalFileImport>
+    /**
+     * `internal` files the arrivals as DURABLE INTERNAL resources rather than in the project's
+     * own tree — what a drop INTO a document asks for (§7): a picture that becomes a layer is a
+     * resource of that document, and nothing new appears in the explorer for it.
+     */
+    ingestPaths: (
+      requestId: string,
+      folder: string,
+      taskId: string,
+      internal?: true,
+    ) => Promise<ExternalFileImport>
     importPicked: (role: FolderRole, taskId: string) => Promise<ExternalFileImport>
   }
 }
@@ -58,6 +69,7 @@ type ExternalFilesBridge = {
 export type StudioBridge = StudioBridgeSettings &
   StudioBridgeProject &
   StudioBridgeLibrary &
+  StudioBridgeRecovery &
   CreationBridge &
   StudioBridgeShell &
   StudioBridgeMissions &

@@ -299,6 +299,8 @@ export function createMediaService(deps: MediaServiceDeps): MediaService {
       let stage: IngestStage = 'queued'
       /** The hash this ingest claimed, to be released whatever happens to it. */
       let mine: string | null = null
+      /** Whether the catalogue already held these bytes — the row is kept, and it says so. */
+      let alreadyHeld = false
 
       const advance = (next: IngestStage): void => {
         stage = next
@@ -323,15 +325,17 @@ export function createMediaService(deps: MediaServiceDeps): MediaService {
         const hash = await deps.hash(sourcePath)
         fields.hash = hash
         if (cancelled()) return null
+        // A hash another ingest is holding right now: that one is writing the derived files for
+        // these very bytes, so this row says `duplicate` and derives nothing — deriving on top of
+        // a write in flight would have two processes writing one proxy.
         if (!occupyHash(hash)) {
           stage = 'duplicate'
           return null
         }
         mine = hash
-        if (await deps.duplicateExists(assetId, hash)) {
-          stage = 'duplicate'
-          return null
-        }
+        // Already in the catalogue: the row is KEPT and says so, and it still derives — a poster,
+        // a proxy and a waveform are what make it usable, and a terminal stage never retries.
+        alreadyHeld = await deps.duplicateExists(assetId, hash)
         return cancelled() ? null : hash
       }
 
@@ -349,13 +353,19 @@ export function createMediaService(deps: MediaServiceDeps): MediaService {
         release()
         running.delete(assetId)
         if (mine) freeHash(mine)
-        if (stage === 'duplicate' || stage === 'unreadable') {
+        if (stage === 'unreadable') {
           try {
             await deps.discard(assetId)
           } catch {
             // The project may have closed while the file was read.
           }
         } else if (stage !== 'queued') {
+          // `duplicate` KEEPS its row now, and says so. Dropping it made an import that had done
+          // exactly what it was asked — the file is where the user pointed — look like an import
+          // that did nothing at all: no row, no tile, no word beyond a dismissable line.
+          // Deciding for the user which of two identical files is the redundant one is not the
+          // studio's to make (R6).
+
           deps.save(assetId, fields)
         }
         const outcome = cancelled() ? 'cancelled' : stage
@@ -373,7 +383,9 @@ export function createMediaService(deps: MediaServiceDeps): MediaService {
         if (!hash) return
         await deriveSource(hash)
         if (cancelled()) return
-        stage = 'done'
+        // `duplicate` is terminal too, and it comes AFTER the derivation: the row is kept, and
+        // the line saying the bytes were already here is the only trace the import leaves.
+        stage = alreadyHeld ? 'duplicate' : 'done'
       } catch {
         stage = 'failed'
       } finally {

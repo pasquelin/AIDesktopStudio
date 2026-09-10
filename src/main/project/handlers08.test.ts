@@ -14,6 +14,8 @@ import { noContext } from '@shared/domain/projectContext'
 
 import { CHANNELS } from '@shared/ipc'
 
+import { oraHeadIn } from '@main/assets/openRasterFile'
+
 import { ownFileOf } from '@main/assets/protocol'
 
 import { createTextureExtraction } from '@main/assets/textureExtraction'
@@ -193,6 +195,19 @@ describe('project handlers', () => {
       find: vi.fn(async () => asset({ id: 'asset-1', type: 'image' })),
     })
 
+    /**
+     * The envelope the container written by the first call carries — the bytes are the argument
+     * the two writers differ on: `replaceBytes` takes them second, `importFromBytes` second too
+     * but behind its request.
+     *
+     * `as` twice, and each for the same reason: the fixture's `vi.fn()` declares no parameters,
+     * so its recorded calls are typed as an empty tuple.
+     */
+    const envelopeWritten = (calls: readonly unknown[], at = 1): string => {
+      const recorded = calls[0] as readonly unknown[] | undefined
+      return oraHeadIn(recorded?.[at] as Uint8Array).envelope
+    }
+
     const layered = (over: Record<string, unknown> = {}) => ({
       name: 'Hero',
       document: {
@@ -232,12 +247,9 @@ describe('project handlers', () => {
 
       await invoke(CHANNELS.assetsSaveLayered, layered({ replaces: 'asset-1' }))
 
-      expect(assets.replaceBytes).toHaveBeenCalledWith(
-        'asset-1',
-        expect.any(Uint8Array),
-        '.ora',
-        expect.objectContaining({ width: 1024, height: 768 }),
-      )
+      expect(assets.replaceBytes).toHaveBeenCalledWith('asset-1', expect.any(Uint8Array), '.ora', {
+        probe: expect.objectContaining({ width: 1024, height: 768 }),
+      })
     })
 
     /** The dimensions come off the FLATTEN the container carries, which is what a tile shows. */
@@ -251,6 +263,36 @@ describe('project handlers', () => {
         expect.objectContaining({ extension: '.ora', derivedFrom: 'asset-1', name: 'Hero' }),
         expect.any(Uint8Array),
       )
+    })
+
+    /**
+     * §2.6 — one identity per file. Without the stamp the container was listed under its own file
+     * name with no id of ours, while the tab that wrote it answered to another: two identities
+     * over one file, and a double-click free to open the second of them (E-12, U-1).
+     */
+    it('stamps the document these layers are into the container', async () => {
+      const assets = backend()
+      registerProjectHandlers(deps(holdingPicture(), { assets }))
+
+      await invoke(
+        CHANNELS.assetsSaveLayered,
+        layered({ replaces: 'asset-1', documentId: 'doc-7' }),
+      )
+
+      expect(envelopeWritten(assets.replaceBytes.mock.calls)).toContain('"id":"doc-7"')
+    })
+
+    /**
+     * A copy is a file of its OWN, so it carries no id: stamped with the open document's, two
+     * files would claim one document and the next session could open either.
+     */
+    it('stamps nothing into a container no document claims', async () => {
+      const assets = backend()
+      registerProjectHandlers(deps(holdingPicture(), { assets }))
+
+      await invoke(CHANNELS.assetsSaveLayered, layered({ derivedFrom: 'asset-1' }))
+
+      expect(envelopeWritten(assets.importFromBytes.mock.calls, 1)).toBe('')
     })
 
     /** The same guard `savePicture` carries: an id naming a take would write over a recording. */

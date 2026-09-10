@@ -1,3 +1,4 @@
+import { landingFolderFor } from '@main/media/landingFolder'
 import { orElse } from '@shared/promises'
 import { APP_NAME } from '@shared/constants'
 import { app, net, shell } from 'electron'
@@ -369,7 +370,7 @@ export function createServices(settings: SettingsStore): Services {
           .catalog()
           .add(linkedAsset(source, { id: newAssetId(), type, now: timestamp() })),
       adopt,
-      importPaths: (paths, target, watch) =>
+      importPaths: (paths, target, watch, internal) =>
         project.duringWrite(async (root, catalog) => {
           const heldAdopt = (relative: string): Promise<Asset | null> =>
             adoptInto(root, catalog, relative)
@@ -390,7 +391,7 @@ export function createServices(settings: SettingsStore): Services {
                   { bundles, adopt: heldAdopt, onProgress: bundleWatch.onStep },
                 ),
               roles: () => project.roles(),
-              folderFor: role => project.folderFor(role),
+              folderFor: role => landingFolderFor(project, role, internal),
             },
             watch,
           )

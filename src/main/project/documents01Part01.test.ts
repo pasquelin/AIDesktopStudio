@@ -76,7 +76,7 @@ describe('createDocumentFiles', () => {
       'script',
       { title: 'Walk', content: 'export default 1\n' },
       false,
-      'scripts',
+      { folder: 'scripts' },
     )
 
     expect(await readFile(join(root, 'scripts', 'Walk.ts'), 'utf8')).toBe('export default 1\n')
@@ -92,8 +92,8 @@ describe('createDocumentFiles', () => {
    */
   it('writes a script twice into the one file, its path being its identity', async () => {
     const draft = (content: string) => ({ title: 'Walk', content })
-    await documents.write('Walk', 'script', draft('a\n'), false, 'scripts')
-    await documents.write('Walk', 'script', draft('b\n'), false, 'scripts')
+    await documents.write('Walk', 'script', draft('a\n'), false, { folder: 'scripts' })
+    await documents.write('Walk', 'script', draft('b\n'), false, { folder: 'scripts' })
 
     expect(await readdir(join(root, 'scripts'))).toEqual(['Walk.ts'])
     expect((await documents.read('Walk', 'script'))?.content).toBe('b\n')

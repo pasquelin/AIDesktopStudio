@@ -4,6 +4,7 @@ import {
   askCloseChoice,
   askDeleteDocument,
   askFlattenDocument,
+  askSaveElsewhere,
   type AskUser,
 } from './documentDialogs'
 
@@ -91,22 +92,29 @@ describe('asking before deleting a document', () => {
 
 describe('asking before flattening into the source file', () => {
   /**
-   * The one question of this file whose YES is the default: the document was written first and
-   * holds the whole stack, so what is at stake is a surprise rather than a loss. An inversion of
-   * the button order would make Escape mean « flatten », and no other gate would see it.
+   * Three answers, and the DEFAULT is the one that loses nothing — §5.1. The two-button version
+   * of this question made the destructive answer the only way forward: a picture opened as a
+   * JPEG and given a second layer had « flatten » or nothing at all.
    */
-  it('puts the flatten on both the default and the first button', async () => {
+  it('puts saving elsewhere on the default button, and cancel on the dismissal', async () => {
     const { ask, shown } = asking(0)
     await askFlattenDocument(ask, 'Robot', 'PNG', 'layers')
 
     expect(shown[0]?.defaultId).toBe(0)
-    expect(shown[0]?.cancelId).toBe(1)
-    expect(shown[0]?.buttons[0]).toBe('Flatten and save')
+    expect(shown[0]?.cancelId).toBe(2)
+    expect(shown[0]?.buttons).toEqual(['Save as…', 'Flatten and save', 'Cancel'])
   })
 
-  it('flattens only on that button, and a dismissal declines', async () => {
-    await expect(askFlattenDocument(asking(0).ask, 'Robot', 'PNG', 'layers')).resolves.toBe(true)
-    await expect(askFlattenDocument(asking(1).ask, 'Robot', 'PNG', 'layers')).resolves.toBe(false)
+  it('reads each button as the choice it stands for', async () => {
+    await expect(askFlattenDocument(asking(0).ask, 'Robot', 'PNG', 'layers')).resolves.toBe(
+      'saveAs',
+    )
+    await expect(askFlattenDocument(asking(1).ask, 'Robot', 'PNG', 'layers')).resolves.toBe(
+      'flatten',
+    )
+    await expect(askFlattenDocument(asking(2).ask, 'Robot', 'PNG', 'layers')).resolves.toBe(
+      'cancel',
+    )
   })
 
   it('names the document, the format and what that format cannot hold', async () => {
@@ -116,5 +124,27 @@ describe('asking before flattening into the source file', () => {
     expect(shown[0]?.message).toContain('Robot')
     expect(shown[0]?.detail).toContain('PNG')
     expect(shown[0]?.detail).toContain('layers, live text')
+  })
+})
+
+describe('offering another destination for a refused save', () => {
+  /** Nothing has been written, and the offer is not the gesture that was asked for. */
+  it('makes cancel both the default and the dismissal', async () => {
+    const { ask, shown } = asking(0)
+    await askSaveElsewhere(ask, 'Robot', 'This file was not read whole.')
+
+    expect(shown[0]?.defaultId).toBe(0)
+    expect(shown[0]?.cancelId).toBe(0)
+    expect(shown[0]?.buttons[1]).toBe('Save as…')
+  })
+
+  it('accepts only on the offer, and hands back the refusal already phrased', async () => {
+    const { ask, shown } = asking(1)
+    await expect(askSaveElsewhere(ask, 'Robot', 'This file was not read whole.')).resolves.toBe(
+      true,
+    )
+
+    expect(shown[0]?.message).toContain('Robot')
+    expect(shown[0]?.detail).toBe('This file was not read whole.')
   })
 })

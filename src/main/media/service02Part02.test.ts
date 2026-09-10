@@ -188,20 +188,33 @@ describe('the files a generation gets beside it', () => {
     expect(injected.save).not.toHaveBeenCalled()
   })
 
-  it('drops a second pick of bytes the catalogue already holds', async () => {
+  /**
+   * Kept, and SAID. Dropping the row made an import that had done exactly what it was asked look
+   * like one that did nothing: the file is where the user pointed, and which of two identical
+   * files is the redundant one is not the studio's to decide (R6).
+   */
+  it('keeps a second pick of bytes the catalogue already holds, and says so', async () => {
     const injected = deps({ duplicateExists: vi.fn(async () => true) })
 
     await createMediaService(injected).ingest('asset-2', '/rush.mov', 'video')
 
-    expect(stages(injected.onProgress)).toEqual(['queued', 'probe', 'hash', 'duplicate'])
-    // The row already there keeps its tags, its proxy and its waveform.
-    expect(injected.discard).toHaveBeenCalledWith('asset-2')
-    expect(injected.run).not.toHaveBeenCalled()
+    // It derives like any other row: a poster, a proxy and a waveform are what make it usable,
+    // and `duplicate` is terminal — nothing would come back for them.
+    expect(stages(injected.onProgress)).toEqual([
+      'queued',
+      'probe',
+      'hash',
+      'proxy',
+      'peaks',
+      'duplicate',
+    ])
+    expect(injected.discard).not.toHaveBeenCalled()
+    expect(injected.save).toHaveBeenCalledWith('asset-2', expect.anything())
   })
 
   // Two picks of the same bytes in one batch: the catalogue cannot tell them apart, since a
   // row only gains its hash once its ingest ends — and both would then write the same proxy.
-  it('drops the second of two identical files picked together', async () => {
+  it('keeps both of two identical files picked together, deriving once', async () => {
     const injected = deps({ concurrency: () => 2 })
     const service = createMediaService(injected)
 
@@ -210,19 +223,8 @@ describe('the files a generation gets beside it', () => {
       service.ingest('asset-2', '/A001 copy.mov', 'video'),
     ])
 
-    expect(injected.discard).toHaveBeenCalledTimes(1)
-    expect(injected.save).toHaveBeenCalledTimes(1)
-  })
-
-  it('lets the same bytes through again once the first ingest is over', async () => {
-    const injected = deps()
-    const service = createMediaService(injected)
-
-    await service.ingest('asset-1', '/A001.mov', 'video')
-    await service.ingest('asset-2', '/A001.mov', 'video')
-
-    // Nothing claimed any more: only the catalogue decides now, and this one says no duplicate.
     expect(injected.discard).not.toHaveBeenCalled()
+    expect(injected.save).toHaveBeenCalledTimes(2)
   })
 
   it('leaves an audio-less file without peaks', async () => {

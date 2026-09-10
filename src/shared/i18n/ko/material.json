@@ -88,6 +88,8 @@
     "preview": "미리보기",
     "envRotation": "하늘 회전",
     "originGenerated": "모델이 생성함 — 도착한 그대로 고정됨",
+    "showInExplorer": "탐색기에 보이기",
+    "showInExplorerHint": "계산된 파일을 복사하지 않고 재질 폴더로 옮깁니다",
     "originDerived": "이 머티리얼의 다른 채널에서 계산됨",
     "originImported": "직접 준비한 파일",
     "derive": "{{source}}에서 계산",

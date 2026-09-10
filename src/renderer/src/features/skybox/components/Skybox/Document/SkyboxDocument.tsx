@@ -138,6 +138,7 @@ export function SkyboxDocument({ documentId }: { documentId: string }) {
     <AssetDropTarget
       accepts={PICTURES}
       onDrop={onDrop}
+      filesAreInternal
       // No frame: see `ImageDocument`.
       outlined={false}
       className="relative size-full"

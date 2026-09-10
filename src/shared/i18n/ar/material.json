@@ -88,6 +88,8 @@
     "preview": "معاينة",
     "envRotation": "تدوير السماء",
     "originGenerated": "مولَّد بنموذج — مجمَّد كما وصل",
+    "showInExplorer": "إظهار في المستكشف",
+    "showInExplorerHint": "ينقل الملف المحسوب إلى مجلد المواد، دون نسخه",
     "originDerived": "محسوب من قناة أخرى في هذه الخامة",
     "originImported": "ملفك الخاص",
     "derive": "حساب من {{source}}",

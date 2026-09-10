@@ -24,12 +24,18 @@ import { handle } from '@main/ipc/handle'
 import { peaksFromBytes } from '@main/media/peaks'
 import { isPngBytes, probePng } from '@main/media/png'
 import { packOpenRaster, unpackOpenRaster } from '@main/assets/openRasterFile'
+import { oraEnvelopeFor } from '@main/assets/oraEnvelope'
 import { oraThumbnailOf } from '@main/media/oraThumbnail'
 import { ORA_MERGED_PATH } from '@shared/domain/openRaster'
+import { ORA_EXTENSION, PNG_EXTENSION, WAV_EXTENSION } from '@shared/domain/writtenFormat'
 import { probeWav } from '@main/media/wav'
 import { fileFactsOf } from './fileFacts'
+import { projectFileDependents } from './fileDependents'
+import { registerFileUseHandlers } from './fileUseHandlers'
+import { registerRecoveryHandlers } from './recoveryHandlers'
+import { registerResourceHandlers } from './resourceHandlers'
 import { registerAskHandlers } from './askHandlers'
-import { askLeaveWithJobs, askTrashFiles, askUseOccupiedFolder } from './projectDialogs'
+import { askLeaveWithJobs, askUseOccupiedFolder } from './projectDialogs'
 import { holdsAProject, openFailureKey, orWhenGone } from './store'
 import type { ProjectHandlerDeps } from './handlerTypes'
 export type { ProjectHandlerDeps }
@@ -45,7 +51,7 @@ import {
   parseFolderPaths,
   parseForceWrite,
   parseHiddenShown,
-  parseLandingFolder,
+  parseDocumentPlace,
   parseProjectName,
   parseProjectPath,
   parseProjectTitle,
@@ -57,12 +63,8 @@ import {
   parseSavePicture,
   parseSavePlayerModule,
   parseGame,
-  parseSaveTexture,
   parseSearchTerm,
 } from './validation'
-const WAV_EXTENSION = '.wav'
-const PNG_EXTENSION = '.png'
-const ORA_EXTENSION = '.ora'
 export function registerProjectHandlers({
   project,
   settings,
@@ -186,11 +188,14 @@ export function registerProjectHandlers({
   handle(CHANNELS.projectMoveFiles, async (_event, paths, folderPath) =>
     settled(await files.move(parseFolderPaths(paths), parseFolderPath(folderPath))),
   )
-  handle(CHANNELS.projectTrashFiles, async (_event, paths) => {
-    const wanted = parseFolderPaths(paths)
-    if (wanted.length > 1 && !(await askTrashFiles(askUser, wanted.length)))
-      return { done: [], refused: [], batch: '' }
-    return settled(await files.trash(wanted))
+  registerFileUseHandlers({
+    dependents: projectFileDependents({
+      documents,
+      assetsUnder: folders => project.catalog().assetsUnder(folders),
+    }),
+    trash: paths => files.trash(paths),
+    settled,
+    ask: askUser,
   })
   handle(CHANNELS.projectNewFolder, async (_event, folderPath, name) =>
     settled(await files.createFolder(parseFolderPath(folderPath), parseProjectName(name))),
@@ -271,7 +276,7 @@ export function registerProjectHandlers({
     const probe = probeWav(request.wav) ?? undefined
     if (request.replaces) {
       return withoutSourcePath(
-        await assets.replaceBytes(request.replaces, request.wav, WAV_EXTENSION, probe),
+        await assets.replaceBytes(request.replaces, request.wav, WAV_EXTENSION, { probe }),
       )
     }
     return withoutSourcePath(
@@ -293,6 +298,7 @@ export function registerProjectHandlers({
       name: string
       replaces?: string
       derivedFrom?: string
+      folder?: string
     },
     bytes: Uint8Array,
     extension: string,
@@ -302,7 +308,9 @@ export function registerProjectHandlers({
       const replaced = await project.catalog().find(request.replaces)
       if (!replaced || !PICTURES.includes(replaced.type))
         throw localizedError('assetNotWritableImage', { name: request.replaces })
-      return withoutSourcePath(await assets.replaceBytes(request.replaces, bytes, extension, probe))
+      return withoutSourcePath(
+        await assets.replaceBytes(request.replaces, bytes, extension, { probe }),
+      )
     }
     const source = request.derivedFrom ? await project.catalog().find(request.derivedFrom) : null
     return withoutSourcePath(
@@ -315,6 +323,7 @@ export function registerProjectHandlers({
           ...(probe ? { probe } : {}),
           ...(source?.map ? { map: source.map } : {}),
           ...(request.derivedFrom ? { derivedFrom: request.derivedFrom } : {}),
+          folder: request.folder,
         },
         bytes,
       ),
@@ -345,7 +354,11 @@ export function registerProjectHandlers({
     const request = parseSaveLayered(value)
     const merged = request.document.surfaces.find(one => one.path === ORA_MERGED_PATH)?.png
     if (!merged || !isPngBytes(merged)) throw localizedError('pngPayloadInvalid')
-    const bytes = packOpenRaster(request.document, '', oraThumbnailOf(merged))
+    const bytes = packOpenRaster(
+      request.document,
+      oraEnvelopeFor(request, () => new Date().toISOString()),
+      oraThumbnailOf(merged),
+    )
     const probe = probePng(merged) ?? undefined
     return landPicture(request, bytes, ORA_EXTENSION, probe)
   })
@@ -405,24 +418,7 @@ export function registerProjectHandlers({
       return null // Like a file that is not layered: the guard above answers this same null.
     }
   })
-  handle(CHANNELS.assetsSaveTexture, async (_event, value) => {
-    const request = parseSaveTexture(value)
-    const probe = probePng(request.png) ?? undefined
-    return withoutSourcePath(
-      await assets.importFromBytes(
-        {
-          id: newAssetId(),
-          name: request.name,
-          type: 'image',
-          extension: PNG_EXTENSION,
-          map: request.map,
-          ...(probe ? { probe } : {}),
-          ...(request.derivedFrom ? { derivedFrom: request.derivedFrom } : {}),
-        },
-        request.png,
-      ),
-    )
-  })
+  registerResourceHandlers({ assets, project, newAssetId })
   handle(CHANNELS.assetsExtractTextures, async (_event, value) => {
     const assetId = parseAssetId(value)
     const source = await project.catalog().find(assetId)
@@ -455,16 +451,20 @@ export function registerProjectHandlers({
     })
     return Promise.resolve()
   })
-  handle(CHANNELS.documentRead, (_event, id, kind) =>
-    documents.read(parseDocumentId(id), parseDocumentKind(kind)),
+  handle(CHANNELS.documentRead, (_event, id, kind, path) =>
+    documents.read(
+      parseDocumentId(id),
+      parseDocumentKind(kind),
+      parseDocumentPlace(path === undefined ? undefined : { path })?.path,
+    ),
   )
-  handle(CHANNELS.documentWrite, async (_event, id, kind, draft, force, folder) => {
+  handle(CHANNELS.documentWrite, async (_event, id, kind, draft, force, place) => {
     const written = await documents.write(
       parseDocumentId(id),
       parseDocumentKind(kind),
       parseDocumentDraft(draft),
       parseForceWrite(force),
-      parseLandingFolder(folder),
+      parseDocumentPlace(place),
     )
     if (written === 'written') project.touch()
     return written
@@ -481,6 +481,7 @@ export function registerProjectHandlers({
   handle(CHANNELS.documentRemove, (_event, id, kind) =>
     documents.remove(parseDocumentId(id), parseDocumentKind(kind)),
   )
+  registerRecoveryHandlers(() => project.path())
   // The four routes that only raise a question live apart — see `askHandlers.ts`.
   registerAskHandlers(askUser)
 }

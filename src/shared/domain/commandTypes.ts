@@ -39,6 +39,7 @@ export type CommandId =
   | 'project.open'
   | 'document.save'
   | 'document.saveAs'
+  | 'document.saveCopy'
   | 'document.close'
   | 'layout.reset'
   | 'app.settings'
@@ -212,11 +213,12 @@ export type MenuCheck = CommandId | `scene.display:${DisplayMode}`
  */
 export type MenuAbility =
   /**
-   * The two Save rows. They share one condition — a document in front — and stay two abilities so
-   * that the day one of them refuses on its own, the row it greys is already named.
+   * The three Save rows. They share one condition — a document in front — and stay three
+   * abilities so that the day one of them refuses on its own, the row it greys is already named.
    */
   | 'document.save'
   | 'document.saveAs'
+  | 'document.saveCopy'
   /**
    * ⌘W. Greyed rather than falling back to the window: closing a tab and closing the studio are
    * two gestures, and the row promised the first while doing the second.

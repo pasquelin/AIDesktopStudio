@@ -37,7 +37,8 @@ describe('restoreDocument', () => {
     useDocuments.setState({ documents: { 'doc-1': scene('doc-1') } })
 
     await restoreDocument('doc-1')
-    expect(read).toHaveBeenCalledWith('doc-1', 'scene')
+    // The third argument is the document's own destination — absent for one the listing claims.
+    expect(read).toHaveBeenCalledWith('doc-1', 'scene', undefined)
   })
 
   it('leaves a tab that already holds a scene alone', async () => {

@@ -105,4 +105,11 @@ async function followProject(project: Project | null): Promise<void> {
   // Last, and only on a folder that answered: the reconciliation above is what says which tabs
   // have a document, and a listing that failed says nothing about any of them.
   if (folderAnswered) closeOrphanTabs()
+
+  // After the tabs have settled, so what is offered is what nothing else already holds — and
+  // OFFERED, never taken back in silence (§9.1, guarantee 5).
+  if (project) {
+    const { offerRecoveredWork } = await import('@/features/shell/documentRecovery')
+    await offerRecoveredWork()
+  }
 }

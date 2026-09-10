@@ -1,5 +1,5 @@
 import { vi } from 'vitest'
-import type { CloseChoice, DocumentWrite } from '@shared/domain/document'
+import type { CloseChoice, DocumentWrite, FlattenChoice } from '@shared/domain/document'
 import { emptyAssetCounts } from '@shared/domain/asset'
 import type { FileOutcome } from '@shared/domain/fileOp'
 import { DEFAULT_ROLE_PATHS } from '@shared/domain/folderRole'
@@ -10,14 +10,11 @@ import { DEFAULT_LANGUAGE } from '@shared/i18n/languages'
 import type { LogEntry, StudioBridge, TraceEntry } from '@shared/ipc'
 import { EMPTY_AI_OVERVIEW } from './fakeAiOverview'
 import { fakeBridgeGit } from './fakeBridgeGit'
+import { fakeAuxiliaryWindows } from './fakeBridgeWindows'
+import { fakeBridgeRecovery } from './fakeBridgeRecovery'
 import { fakeBridgeSettings } from './fakeBridgeSettings'
 import { fakeBridgeMissions } from './fakeBridgeMissions'
 import { fakeBridgeUpdates } from './fakeBridgeUpdates'
-const fakeRetargetWindow = (overrides: BridgeOverrides): StudioBridge['retargetWindow'] => ({
-  open: async () => {},
-  focusOrigin: async () => {},
-  ...overrides.retargetWindow,
-})
 const noSubscription = (): (() => void) => () => {}
 const nothingMoved = (): Promise<FileOutcome> =>
   Promise.resolve({ done: [], refused: [], batch: 'batch-fake' })
@@ -98,6 +95,7 @@ const fakeProject = (overrides: BridgeOverrides): StudioBridge['project'] => ({
   folderFor: role => Promise.resolve(DEFAULT_ROLE_PATHS[role]),
   onFolderRoles: noSubscription,
   fileFacts: () => Promise.resolve(null),
+  fileUses: () => Promise.resolve([]),
   readContext: () => Promise.resolve(noContext()),
   writeContext: () => Promise.resolve(noContext()),
   onContextChanged: noSubscription,
@@ -158,9 +156,12 @@ const fakeDocuments = (overrides: BridgeOverrides): StudioBridge['documents'] =>
   remove: () => Promise.resolve(),
   opened: () => Promise.resolve(),
   confirmClose: () => Promise.resolve<CloseChoice>('cancel'),
-  confirmFlatten: () => Promise.resolve(true),
+  // The answer that WRITES, for the same reason `confirmClose` answers `cancel`: a suite that
+  // says nothing about this question is one about a save, not about the dialog.
+  confirmFlatten: () => Promise.resolve<FlattenChoice>('flatten'),
   confirmDelete: () => Promise.resolve(false),
   confirmOverwrite: () => Promise.resolve(false),
+  confirmSaveElsewhere: () => Promise.resolve(false),
   ...overrides.documents,
 })
 
@@ -182,6 +183,8 @@ const fakeAssets = (overrides: BridgeOverrides): StudioBridge['assets'] => ({
   saveAnimationThumbnail: () => Promise.reject(new Error('no project')),
   readLayered: () => Promise.resolve(null),
   saveTexture: () => Promise.reject(new Error('no project')),
+  showResource: () => Promise.reject(new Error('no project')),
+  hideResource: () => Promise.reject(new Error('no project')),
   installBundledTextures: () => Promise.resolve([]),
   installBundledCharacter: () => Promise.resolve(null),
   extractTextures: () => Promise.reject(new Error('no project')),
@@ -278,6 +281,7 @@ const fakeAnimations = (overrides: BridgeOverrides): StudioBridge['animations'] 
 const fakeMedia = (overrides: BridgeOverrides): StudioBridge['media'] => ({
   ingest: () =>
     Promise.resolve({ assets: [], documents: [], montages: [], refused: [], failed: [] }),
+  link: () => Promise.resolve({ assets: [], documents: [], montages: [], refused: [], failed: [] }),
   ingestPaths: () =>
     Promise.resolve({ assets: [], documents: [], montages: [], refused: [], failed: [] }),
   importPicked: () =>
@@ -337,41 +341,12 @@ const fakeDictation = (overrides: BridgeOverrides): StudioBridge['dictation'] =>
   ...overrides.dictation,
 })
 
-const fakeMirror = (overrides: BridgeOverrides): StudioBridge['mirror'] => ({
-  open: () => Promise.resolve(),
-  ...overrides.mirror,
-})
-
-const fakePlayerModuleWindow = (
-  overrides: BridgeOverrides,
-): StudioBridge['playerModuleWindow'] => ({
-  open: () => Promise.resolve(),
-  ...overrides.playerModuleWindow,
-})
-
 const fakeExternalFiles = (overrides: BridgeOverrides): StudioBridge['externalFiles'] => ({
   take: () => Promise.resolve([]),
   offer: () => Promise.resolve({ request: null, refused: [] }),
   discard: () => Promise.resolve(),
   onOpen: noSubscription,
   ...overrides.externalFiles,
-})
-
-const fakeGameWindow = (overrides: BridgeOverrides): StudioBridge['gameWindow'] => ({
-  open: () => Promise.resolve(),
-  close: () => Promise.resolve(),
-  onClosed: () => () => {},
-  ...overrides.gameWindow,
-})
-
-const fakeHelp = (overrides: BridgeOverrides): StudioBridge['help'] => ({
-  open: () => Promise.resolve(),
-  ...overrides.help,
-})
-
-const fakeFileInfo = (overrides: BridgeOverrides): StudioBridge['fileInfo'] => ({
-  open: () => Promise.resolve(),
-  ...overrides.fileInfo,
 })
 
 const fakeNewDocument = (overrides: BridgeOverrides): StudioBridge['newDocument'] => ({
@@ -438,6 +413,7 @@ function fakeBridge(overrides: BridgeOverrides): StudioBridge {
     dialog: fakeDialog(overrides),
     game: fakeGame(overrides),
     documents: fakeDocuments(overrides),
+    recovery: fakeBridgeRecovery(overrides.recovery),
     assets: fakeAssets(overrides),
     smartSelection: fakeSmartSelection(overrides),
     cloud: fakeCloud(overrides),
@@ -459,12 +435,7 @@ function fakeBridge(overrides: BridgeOverrides): StudioBridge {
     ai: fakeAi(overrides),
     autoRig: { run: () => Promise.reject(new Error('no Auto Rig backend')), ...overrides.autoRig },
     dictation: fakeDictation(overrides),
-    mirror: fakeMirror(overrides),
-    retargetWindow: fakeRetargetWindow(overrides),
-    playerModuleWindow: fakePlayerModuleWindow(overrides),
-    gameWindow: fakeGameWindow(overrides),
-    help: fakeHelp(overrides),
-    fileInfo: fakeFileInfo(overrides),
+    ...fakeAuxiliaryWindows(overrides),
     newDocument: fakeNewDocument(overrides),
     window: fakeWindow(overrides),
     diagnostics: fakeDiagnostics(overrides),

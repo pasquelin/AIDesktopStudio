@@ -5,6 +5,7 @@
       "general": "常规",
       "media": "媒体",
       "catalogue": "编目",
+      "uses": "被以下文档使用",
       "git": "Git"
     },
     "gitUnchanged": "没有待处理的更改",
@@ -18,6 +19,8 @@
     "identifier": "标识符",
     "fingerprint": "内容指纹",
     "added": "添加时间",
+    "documents": "文档",
+    "usedByNone": "项目中没有文档引用该文件。",
     "reading": "正在读取文件夹…",
     "missing": "此条目已不在项目文件夹中。"
   }

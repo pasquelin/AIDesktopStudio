@@ -19,6 +19,18 @@ import { NewDocumentNoProject } from './NewDocumentNoProject'
  *
  * None of the ways into a project acts here — the studio owns leaving one. See `NewDocumentAnswer`.
  */
+/**
+ * What the form is titled: the gesture when there is one, the kind being made otherwise.
+ *
+ * « Save as » and « Save a copy » open the same window and promise different things — one moves
+ * the document onto what it writes, the other leaves it where it is (§5.3) — so the heading is
+ * what tells them apart before anything is typed.
+ */
+function headingKey(saveAs: { copy?: true } | null, kind: DocumentKind): string {
+  if (!saveAs) return `documents.newByKind.${kind}`
+  return saveAs.copy ? 'documents.saveCopyTitle' : 'documents.saveAsTitle'
+}
+
 export function NewDocumentWindow() {
   const { t } = useTranslation()
   useAppliedSettings()
@@ -73,8 +85,9 @@ export function NewDocumentWindow() {
   if (!ask) return <WindowShell title={t('documents.new')}>{null}</WindowShell>
 
   const project = ask.projectName
+  const saveAs = ask.purpose?.of === 'saveAs' ? ask.purpose : null
 
-  if (ask.purpose === 'externalFiles') {
+  if (ask.purpose?.of === 'externalFiles') {
     return (
       <WindowShell title={t('documents.importFiles')}>
         <NewDocumentNoProject
@@ -88,6 +101,38 @@ export function NewDocumentWindow() {
       </WindowShell>
     )
   }
+
+  // Written once and framed twice: the two shells differ by their title and by the column of
+  // kinds, which a Save as… has nothing to pick in — everything below is the same form either way.
+  const body =
+    project === null ? (
+      <NewDocumentNoProject
+        recent={ask.recentProjects}
+        onNewProject={() => settle({ answer: 'newProject' })}
+        onOpenProject={() => settle({ answer: 'openProject' })}
+        onOpenRecent={path => settle({ answer: 'recentProject', path })}
+      />
+    ) : (
+      kind && (
+        <div className="flex h-full flex-col">
+          <h2 className="mb-4 text-base font-semibold">{t(headingKey(saveAs, kind))}</h2>
+          {/* Remounted per kind: the suggested name and the starting folder are read once, and
+              reconciling them would leave a name typed for another kind in the field. */}
+          <NewDocumentForm
+            key={kind}
+            kind={kind}
+            picked={ask.picked}
+            projectName={project}
+            open={ask.open}
+            saveAs={saveAs ?? undefined}
+            onCancel={() => settle(null)}
+            onSubmit={place => settle({ answer: 'made', place })}
+          />
+        </div>
+      )
+    )
+
+  if (saveAs) return <WindowShell title={t('documents.saveAsTitle')}>{body}</WindowShell>
 
   return (
     <WindowShell
@@ -103,31 +148,7 @@ export function NewDocumentWindow() {
         />
       }
     >
-      {project === null ? (
-        <NewDocumentNoProject
-          recent={ask.recentProjects}
-          onNewProject={() => settle({ answer: 'newProject' })}
-          onOpenProject={() => settle({ answer: 'openProject' })}
-          onOpenRecent={path => settle({ answer: 'recentProject', path })}
-        />
-      ) : (
-        kind && (
-          <div className="flex h-full flex-col">
-            <h2 className="mb-4 text-base font-semibold">{t(`documents.newByKind.${kind}`)}</h2>
-            {/* Remounted per kind: the suggested name and the starting folder are read once, and
-                reconciling them would leave a name typed for another kind in the field. */}
-            <NewDocumentForm
-              key={kind}
-              kind={kind}
-              picked={ask.picked}
-              projectName={project}
-              open={ask.open}
-              onCancel={() => settle(null)}
-              onSubmit={place => settle({ answer: 'made', place })}
-            />
-          </div>
-        )
-      )}
+      {body}
     </WindowShell>
   )
 }

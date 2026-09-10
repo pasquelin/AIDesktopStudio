@@ -10,13 +10,14 @@ import {
   importExternalFilesInto,
 } from '@/services/externalFiles'
 import {
-  placeTimelineAsset,
+  placeTimelineAssetAt,
   timelineTakesType,
 } from '@/features/video/components/TimelineCanvas/timelineDrop'
+import type { Us } from '@/engines/timeline/timelineState'
 
 const TIMELINE_ASSET_TYPES = ['video', 'audio', 'image'] satisfies readonly AssetType[]
 
-type TimelineDropContext = Parameters<typeof placeTimelineAsset>[0]
+type TimelineDropContext = Parameters<typeof placeTimelineAssetAt>[0]
 type TimelineDropHandlers = {
   onDragOver: DragEventHandler<HTMLCanvasElement>
   onDragLeave: DragEventHandler<HTMLCanvasElement>
@@ -61,8 +62,22 @@ export function useExternalTimelineDrop(
         if (externalFileTargetTone(event, accepted) === 'refused') return
         event.preventDefault()
         event.stopPropagation()
-        void importExternalFilesInto(event.dataTransfer.files, accepted, asset =>
-          placeTimelineAsset(context, asset, point),
+        // End to end from the point the pointer was let go at — V5. One time carried across the
+        // lot, so five rushes dropped together read as a cut rather than as five clips on one
+        // frame; a landing the montage refuses does not move it on.
+        let from: Us | null = null
+        void importExternalFilesInto(
+          event.dataTransfer.files,
+          accepted,
+          asset => {
+            const landed = placeTimelineAssetAt(context, asset, point, from)
+            if (landed === null) return false
+            from = landed
+            return true
+          },
+          // A file dropped INTO a montage is a resource of that montage, not a file of the
+          // project's tree (§7, G-V): a rush that became a clip adds no row to the explorer.
+          true,
         )
       },
     },

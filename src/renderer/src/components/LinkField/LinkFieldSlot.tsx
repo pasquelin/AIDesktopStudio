@@ -45,6 +45,7 @@ export function LinkFieldSlot({
   return (
     <AssetDropTarget
       accepts={accepts}
+      filesAreInternal
       exclusive
       onDrop={onDrop}
       onContextMenu={onContextMenu}

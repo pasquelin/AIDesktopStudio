@@ -1,5 +1,6 @@
 import {
   mdiCloudUploadOutline,
+  mdiCubeOutline,
   mdiFileDocumentOutline,
   mdiImageMultipleOutline,
   mdiImageRefreshOutline,
@@ -12,6 +13,7 @@ import type { Asset } from '@shared/domain/asset'
 import { editorIntent, intentsFor } from '@/helpers/assetIntents'
 import type { ContextMenuAction, ContextMenuRow } from '@/helpers/contextMenu'
 import { editPixelsOf } from '@/helpers/openAsset'
+import { openAssetAsScene, opensAsScene } from '@/helpers/openAsScene'
 import { workspaceById } from '@/helpers/workspaces'
 import { getBridge } from '@/services/bridge'
 import { reportFailure } from '@/services/diagnostics'
@@ -163,6 +165,18 @@ function rowsForKind(asset: Asset | null, t: TFunction): ContextMenuAction[] {
         disabled: asset.location !== 'local',
         onSelect: () => extractTextures(asset),
       },
+      // The correction §2.6 owes case 2: the content proposes, and this is how the proposal is
+      // overridden. Listed only for a glTF, which is the one extension serving two roles.
+      ...(opensAsScene(asset)
+        ? [
+            {
+              label: t('assets.openAsScene'),
+              icon: mdiCubeOutline,
+              tooltip: t('assets.openAsSceneHint'),
+              onSelect: () => void openAssetAsScene(asset),
+            },
+          ]
+        : []),
     ]
 
   // An animation's still is DRAWN rather than taken from the file, and the automatic pass skips

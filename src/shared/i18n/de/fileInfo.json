@@ -5,6 +5,7 @@
       "general": "Allgemein",
       "media": "Medien",
       "catalogue": "Katalog",
+      "uses": "Verwendet von",
       "git": "Git"
     },
     "gitUnchanged": "Keine ausstehenden Änderungen",
@@ -18,6 +19,8 @@
     "identifier": "Kennung",
     "fingerprint": "Fingerabdruck des Inhalts",
     "added": "Hinzugefügt am",
+    "documents": "Dokumente",
+    "usedByNone": "Kein Dokument des Projekts erwähnt diese Datei.",
     "reading": "Ordner wird gelesen…",
     "missing": "Dieser Eintrag ist nicht mehr im Projektordner."
   }

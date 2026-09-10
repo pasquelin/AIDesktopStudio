@@ -11,8 +11,13 @@ export type PictureMeasure = (url: string) => Promise<Size>
  *
  * A surface is document-sized and there is one per layer, so a 12000² photo would ask the GPU
  * for 576 MB before the second layer exists. Capped rather than refused: the picture still
- * opens, at a size the studio can paint on — and `writeAsset` then declines to overwrite it,
- * because a flatten smaller than the asset is not a replacement for it.
+ * opens, at a size the studio can paint on.
+ *
+ * What then keeps a save off the original is NOT this ceiling read back — a crop is a smaller
+ * document too, and refusing one would be an image editor that cannot crop. It is the fidelity
+ * `becomeAsset` writes on the document the moment the ceiling bites: `reduced`, which
+ * `sourceWriteRefusal` reads before anything is written. A refusal built on the CURRENT size was
+ * tried and removed; do not bring it back.
  */
 export const MAX_PICTURE_SIDE = 8192
 

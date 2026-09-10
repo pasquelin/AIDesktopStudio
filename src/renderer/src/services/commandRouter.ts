@@ -1,6 +1,7 @@
 import { commandDescriptor, type CommandId } from '@shared/domain/command'
 import type { StudioBridge } from '@shared/ipc'
-import { saveDocument, saveDocumentAs } from '@/features/shell/documentIo'
+import { saveDocument } from '@/features/shell/documentIo'
+import { saveDocumentAs, saveDocumentCopy } from '@/features/shell/documentSaveAs'
 import {
   closableTabId,
   fileViewSave,
@@ -101,6 +102,12 @@ function runProjectCommand(command: CommandId): CommandRouting | null {
   return null
 }
 
+/** The rows that write a document somewhere — the three of §5.3. */
+type SaveCommand = 'document.save' | 'document.saveAs' | 'document.saveCopy'
+
+const isSaveCommand = (command: CommandId): command is SaveCommand =>
+  command === 'document.save' || command === 'document.saveAs' || command === 'document.saveCopy'
+
 async function runDocumentCommand(command: CommandId): Promise<CommandRouting | null> {
   if (command === 'document.close') {
     const tabId = closableTabId()
@@ -108,7 +115,7 @@ async function runDocumentCommand(command: CommandId): Promise<CommandRouting | 
     closeTab(tabId)
     return 'ran'
   }
-  if (command !== 'document.save' && command !== 'document.saveAs') return null
+  if (!isSaveCommand(command)) return null
   const documentId = useDocuments.getState().activeId
   if (!documentId) return 'noSurface'
   // 🛑 A file view is not in `documents`, so `saveDocument` found nothing and answered `false`
@@ -117,16 +124,21 @@ async function runDocumentCommand(command: CommandId): Promise<CommandRouting | 
   // a file view IS its path, and the menu greys the row rather than failing here.
   if (panelIsFileView(documentId)) {
     const save = fileViewSave(documentId)
-    if (!save || command === 'document.saveAs') return 'noSurface'
+    if (!save || command !== 'document.save') return 'noSurface'
     return await ranOrFailed(save(), error => reportFailure('document.save', documentId, error))
   }
   // The `false` these answer stays `ran`: it says BOTH "nothing to write" and "the person said no
   // to the overwrite question", and calling either one a failure would send a client back to
   // retry a save it was never owed. Only a throw is a failure.
-  return await ranOrFailed(
-    command === 'document.save' ? saveDocument(documentId) : saveDocumentAs(documentId),
-    error => reportFailure('document.save', documentId, error),
+  return await ranOrFailed(savingOf(command, documentId), error =>
+    reportFailure('document.save', documentId, error),
   )
+}
+
+/** The three destinations of §5.3, each behind the row that names it. */
+function savingOf(command: SaveCommand, documentId: string): Promise<boolean> {
+  if (command === 'document.save') return saveDocument(documentId)
+  return command === 'document.saveAs' ? saveDocumentAs(documentId) : saveDocumentCopy(documentId)
 }
 
 /**

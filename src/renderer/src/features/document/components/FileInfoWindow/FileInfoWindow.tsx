@@ -22,25 +22,28 @@ export function FileInfoWindow() {
   useAppliedSettings()
 
   const path = fileInfoPathOf(window.location.hash) ?? ''
-  const { facts, asset, status, reading } = useFileInfo(path)
+  const { facts, asset, status, uses, reading } = useFileInfo(path)
 
   return (
     <WindowShell title={t('fileInfo.title', { name: nameOf(path) })}>
       {facts ? (
         // Git reports FILES: a folder has no line of its own there, and a Git run for one would
         // answer about the project rather than about the entry the right-click named.
-        fileInfoSectionsOf({ asset, versioned: status !== null && facts.kind === 'file' }).map(
-          id => (
-            <FileInfoWindowBody
-              key={id}
-              id={id}
-              path={path}
-              facts={facts}
-              asset={asset}
-              status={status}
-            />
-          ),
-        )
+        fileInfoSectionsOf({
+          asset,
+          versioned: status !== null && facts.kind === 'file',
+          file: facts.kind === 'file',
+        }).map(id => (
+          <FileInfoWindowBody
+            key={id}
+            id={id}
+            path={path}
+            facts={facts}
+            asset={asset}
+            status={status}
+            uses={uses}
+          />
+        ))
       ) : (
         <WindowNote>{reading ? t('fileInfo.reading') : t('fileInfo.missing')}</WindowNote>
       )}

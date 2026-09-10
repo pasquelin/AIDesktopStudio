@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next'
 import type { Asset } from '@shared/domain/asset'
 import type { FileFacts } from '@shared/domain/fileInfo'
 import { nameOf } from '@shared/domain/folder'
+import type { FileUse } from '@shared/domain/fileUse'
 import type { GitStatus } from '@shared/domain/git'
 import { PropertySection } from '@/components/PropertySection'
 import { PropertyRow } from '@/components/PropertyRow'
@@ -18,6 +19,8 @@ export type FileInfoWindowBodyProps = {
   asset: Asset | null
   /** What git says about the whole project, or `null` where it says nothing — see the section. */
   status: GitStatus | null
+  /** The documents citing this file. Empty is an answer, and the section says so in words. */
+  uses: readonly FileUse[]
 }
 
 /**
@@ -27,12 +30,48 @@ export type FileInfoWindowBodyProps = {
  * `RoleField` reads out a domain it cannot correct otherwise, which is the case of every file
  * this window is opened on from outside the project.
  */
-export function FileInfoWindowBody({ id, path, facts, asset, status }: FileInfoWindowBodyProps) {
+export function FileInfoWindowBody({
+  id,
+  path,
+  facts,
+  asset,
+  status,
+  uses,
+}: FileInfoWindowBodyProps) {
   const { t, i18n } = useTranslation()
   if (id === 'git' && status) return gitSection(path, status, t)
   if (id === 'media' && asset) return mediaSection(asset, t)
   if (id === 'catalogue' && asset) return catalogueSection(asset, i18n.language, t)
+  if (id === 'uses') return usesSection(uses, t)
   return generalSection(path, facts, asset, i18n.language, t)
+}
+
+/**
+ * Which documents cite this file — §11's S3, on screen at last (E-19).
+ *
+ * Each row is labelled by the document's KIND and shows its title: what a person needs before
+ * they move or delete the file is which of their own documents would notice.
+ *
+ * 🛑 It over-reports: a citation is matched on the file's name and on its catalogue ids, so two
+ * files of one name in two folders answer for each other. The wording says these documents
+ * MENTION the file rather than that they need it, which is what the answer supports.
+ */
+function usesSection(uses: readonly FileUse[], t: Translate) {
+  return (
+    <PropertySection title={t('fileInfo.sections.uses')} scId="fileInfo.uses">
+      {uses.length === 0 ? (
+        // Its own word rather than the section's title or the Git run's « État »: this window
+        // stacks every run on one page, so a label repeated across two of them names neither.
+        <PropertyRow label={t('fileInfo.documents')}>{t('fileInfo.usedByNone')}</PropertyRow>
+      ) : (
+        uses.map(use => (
+          <PropertyRow key={use.path} label={t(`documents.kinds.${use.kind}`)} shape="path">
+            {use.title}
+          </PropertyRow>
+        ))
+      )}
+    </PropertySection>
+  )
 }
 
 type Translate = ReturnType<typeof useTranslation>['t']

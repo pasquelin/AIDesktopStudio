@@ -172,6 +172,8 @@ export type Services = {
     paths: readonly string[],
     folder: string,
     watch: TaskWatch,
+    /** Files them as durable internal resources — see `MediaHandlerDeps.importPaths`. */
+    internal?: true,
   ) => Promise<ExternalFileImport>
   claimExternalFiles: (id: string) => readonly string[]
   capabilities: () => Promise<MediaCapabilities>

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { materialDefOf, textureSlotsOf } from './gltf'
+import { gltfProposesScene, materialDefOf, textureSlotsOf } from './gltf'
 
 describe('the textures a glTF material asks to wear', () => {
   it('finds the slots of the core specification, however deep they sit', () => {
@@ -66,5 +66,41 @@ describe('the material a glTF document holds at an index', () => {
     expect(materialDefOf({ materials: 'not an array' }, 0)).toBeUndefined()
     expect(materialDefOf(null, 0)).toBeUndefined()
     expect(materialDefOf({ materials: [] }, 3)).toBeUndefined()
+  })
+})
+
+describe('what a glTF proposes to be opened as', () => {
+  // §2.6, case 2: a mesh alone, framed and lit by nothing, is a model.
+  it('proposes a model for a bare mesh', () => {
+    expect(gltfProposesScene(JSON.stringify({ asset: { version: '2.0' }, meshes: [] }))).toBe(false)
+  })
+
+  it('proposes a scene for a file that frames itself', () => {
+    const head = JSON.stringify({ asset: { version: '2.0' }, cameras: [{ type: 'perspective' }] })
+
+    expect(gltfProposesScene(head)).toBe(true)
+  })
+
+  it('proposes a scene for a file that lights itself', () => {
+    const head = JSON.stringify({
+      asset: { version: '2.0' },
+      extensionsUsed: ['KHR_lights_punctual'],
+    })
+
+    expect(gltfProposesScene(head)).toBe(true)
+  })
+
+  // An indented file is the same file: an exporter that pretty-prints must not change the answer.
+  it('reads an indented file as it reads a compact one', () => {
+    const head = JSON.stringify({ asset: { version: '2.0' }, cameras: [{}] }, null, 2)
+
+    expect(gltfProposesScene(head)).toBe(true)
+  })
+
+  // The empty list is what an exporter writes when it carried none: it frames nothing.
+  it('takes an empty camera list for what it is', () => {
+    expect(gltfProposesScene(JSON.stringify({ asset: { version: '2.0' }, cameras: [] }))).toBe(
+      false,
+    )
   })
 })

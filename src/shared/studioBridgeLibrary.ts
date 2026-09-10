@@ -13,7 +13,9 @@ import type {
   DocumentDraft,
   DocumentFile,
   DocumentKind,
+  DocumentPlace,
   DocumentWrite,
+  FlattenChoice,
 } from './domain/document'
 import type {
   GitBranch,
@@ -170,24 +172,28 @@ export type StudioBridgeLibrary = {
   documents: {
     /** Every document the open project holds, read off its folder — the one source of truth. */
     list: () => Promise<DocumentDescriptor[]>
-    /** `null` when nothing has been saved under that id yet. */
-    read: (id: string, kind: DocumentKind) => Promise<DocumentFile | null>
+    /**
+     * `null` when nothing has been saved under that id yet.
+     *
+     * `path` is the document's own destination, for one sitting on a file the listing does not
+     * claim — see `DocumentDescriptor['destination']`.
+     */
+    read: (id: string, kind: DocumentKind, path?: string) => Promise<DocumentFile | null>
     /**
      * The envelope — version, kind, timestamp — is stamped by the main process, not here.
      *
      * Answers `stale` and writes NOTHING when the file changed underneath — see `DocumentWrite`.
      * Ask with `confirmOverwrite`, then write again with `force`.
      *
-     * `folder` is where a document written for the FIRST time lands — the folder its author
-     * picked when they made it. It is read for a document with no file yet and ignored for one
-     * that has: a save never moves what is already filed somewhere.
+     * `place` is where the bytes go — see `DocumentPlace`: a chosen file, or the folder a first
+     * save lands in. A document that already has a file ignores the folder half of it.
      */
     write: (
       id: string,
       kind: DocumentKind,
       draft: DocumentDraft,
       force?: boolean,
-      folder?: string,
+      place?: DocumentPlace,
     ) => Promise<DocumentWrite>
     /**
      * Gives a document another name — which, the file being named after the document, moves it.
@@ -224,15 +230,25 @@ export type StudioBridgeLibrary = {
      */
     confirmOverwrite: (title: string) => Promise<boolean>
     /**
-     * Whether to let the asset behind this document take the FLATTENED picture, its format
-     * carrying no `lost`.
+     * What to do when the file this document sits on cannot carry what it holds — its format
+     * dropping `lost`.
      *
-     * Asked once per document and never again: ⌘S is the most frequent gesture of the studio, and
-     * a question at each one would be unbearable on a picture that keeps its layers. Nothing is
-     * destroyed either way — the document is written first, with the whole stack — so the safe
-     * answer here is the one that writes, unlike every other confirmation of this file.
+     * Asked at EVERY save that would destroy something and never remembered (§5.1): the answer
+     * describes the state about to be written, and that state changes between two saves.
+     *
+     * Three answers, because a format that cannot carry the document is first of all a reason to
+     * write somewhere else: `saveAs` is the default, being the one that loses nothing.
      */
-    confirmFlatten: (title: string, format: string, lost: string) => Promise<boolean>
+    confirmFlatten: (title: string, format: string, lost: string) => Promise<FlattenChoice>
+    /**
+     * Whether to choose another destination for a save that was refused — `reason` being the
+     * refusal, already phrased by whoever raised it.
+     *
+     * What turns every refusal into a way forward (§5.1): a file read reduced, one whose format
+     * the studio's writers cannot keep, one holding more than the studio recomposes. Cancel is
+     * the default and the dismissal: nothing has been written, and nothing is about to be.
+     */
+    confirmSaveElsewhere: (title: string, reason: string) => Promise<boolean>
   }
 
   assets: {
@@ -335,6 +351,22 @@ export type StudioBridgeLibrary = {
      */
     saveTexture: (request: SaveTextureRequest) => Promise<Asset>
     /**
+     * Brings a durable internal resource — a derived channel, an unpacked map — out into the
+     * project's own tree, MOVED and never copied: the project weighs the same afterwards, and
+     * the document that cites it goes on drawing it, citing an identity rather than a path.
+     *
+     * The pair of the hiding, and it has to exist: a resource nothing can bring back out is a
+     * resource the user has lost. Answers the row as it now stands; one already out comes back
+     * unchanged.
+     */
+    showResource: (assetId: string) => Promise<Asset>
+    /**
+     * Takes a file INTO that store, moved rather than copied — what a generation a document
+     * asked for becomes (§6.3, D7). Same shape as the showing: one already in the store comes
+     * back unchanged.
+     */
+    hideResource: (assetId: string) => Promise<Asset>
+    /**
      * Puts the working textures the app ships with into the open project, and answers what they
      * became. Idempotent: a project that already holds them keeps the assets it has, ids
      * included, so a document referencing one goes on resolving.
@@ -414,8 +446,11 @@ export type StudioBridgeLibrary = {
      * Brings assets into the project, bytes and all. Answers what each one did — a download
      * that fails halfway has already written the ones before it, and a rejection would lose
      * that. The rows themselves arrive through the catalogue, which the store re-reads.
+     *
+     * `folder` lands them straight where they were asked for — E-22: a library row dropped on a
+     * folder used to be written to its ROLE's folder and moved from there.
      */
-    pull: (remoteAssetIds: readonly string[]) => Promise<SyncOutcome[]>
+    pull: (remoteAssetIds: readonly string[], folder?: string) => Promise<SyncOutcome[]>
     /** Sends local assets up. Answers what each one did, successes and failures alike. */
     push: (assetIds: readonly string[]) => Promise<SyncOutcome[]>
     /** What a push or a pull would do, before it costs a single request. */

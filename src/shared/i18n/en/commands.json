@@ -16,9 +16,13 @@
       "title": "Open project",
       "help": "Picks a project already on your disk and opens it in place of the current one. The open project is saved as you go, so there is nothing to save first."
     },
+    "documentSaveCopy": {
+      "title": "Save a copy",
+      "help": "Writes a copy of the document where you ask for it and carries on with the open document: its destination does not change."
+    },
     "documentSaveAs": {
       "title": "Save as",
-      "help": "Writes a copy of the asset beside the original and carries on with it. The asset that was open stays as it was at the last save."
+      "help": "Chooses a destination, writes the document there and carries on with it: the file it was opened from stays as it was at the last save."
     },
     "documentSave": {
       "title": "Save document",

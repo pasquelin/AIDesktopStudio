@@ -7,6 +7,7 @@ import {
   mdiFolderOpenOutline,
   mdiFolderPlusOutline,
   mdiInformationOutline,
+  mdiLinkVariant,
   mdiOpenInNew,
   mdiRedo,
   mdiRenameOutline,
@@ -85,6 +86,7 @@ export type RootMenuProps = {
   bindings: BindingOverrides
   t: TFunction
   onImport: () => void
+  onLink: () => void
   run: (command: CommandId) => void
 }
 export function openRootMenu({
@@ -93,6 +95,7 @@ export function openRootMenu({
   bindings,
   t,
   onImport,
+  onLink,
   run,
 }: RootMenuProps): void {
   const row = commandRows(bindings, run)
@@ -102,6 +105,12 @@ export function openRootMenu({
       tooltip: t('assets.importHint'),
       icon: mdiFileImportOutline,
       onSelect: onImport,
+    },
+    {
+      label: t('assets.link'),
+      tooltip: t('assets.linkHint'),
+      icon: mdiLinkVariant,
+      onSelect: onLink,
     },
     { separator: true },
     row('explorer.paste', {

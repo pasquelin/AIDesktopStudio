@@ -1,4 +1,5 @@
 import { extensionOf } from './fileName'
+import type { ReadFidelity } from './readFidelity'
 import { DEFAULT_ROLE_PATHS, type FolderRole } from './folderRole'
 import { SCRIPT_EXTENSION } from './game'
 import type { OraSurface } from './openRaster'
@@ -80,6 +81,31 @@ export type DocumentDescriptor = {
    * whichever tab happens to be of the right kind.
    */
   sourceAssetId?: string
+  /**
+   * Where that asset's file sits, relative to the project folder — the identity the catalogue,
+   * the document listing and this link all share (S1).
+   *
+   * An asset id is minted by the catalogue and is minted AGAIN when `.index/` is rebuilt, so a
+   * link resting on it alone went stale on every rebuild and the next double-click stood a
+   * SECOND document on the same file (U-1). A file's place in the project outlives that.
+   */
+  sourcePath?: string
+  /**
+   * The file this document writes, when it holds one that its listing would not have named.
+   *
+   * `path` says where the document was READ from; this says where it goes. The two agree for
+   * every document the studio wrote, and differ for one sitting on a file of another
+   * application's — which is the whole of what makes such a file editable in place (§2.6, E-24).
+   */
+  destination?: string
+  /**
+   * How faithfully that source was read — see `readFidelity.ts`. Held for the session rather than
+   * measured on demand: what tells a reduction from a crop is WHO shrank the picture, and only
+   * the read knows that. NOT written into the file either — a document opened for an asset writes
+   * that asset and nothing beside it, so what carries this across a crash is the recovery entry.
+   * Absent reads as `unknown`, which refuses to overwrite and says how to clear it.
+   */
+  sourceFidelity?: ReadFidelity
 }
 
 /** Last of two same paths wins — the path is the tree's id for a row, not the document id. */
@@ -358,6 +384,19 @@ export type DocumentDraft = {
   parts?: readonly OraSurface[]
 }
 
+/**
+ * Where a save is to land — §5.3, the destination belongs to the document rather than to its kind.
+ *
+ * `path` is a file somebody CHOSE, taken as it is: no name is freed against the folder, because
+ * freeing one is what turns « write into this file » into « write beside it ». It is what lets a
+ * document sit on a file the listing does not claim — a glTF another application exported (§2.6).
+ *
+ * `folder` is the older half and stays: where a document written for the FIRST time lands, its
+ * name composed from its title. Read for a document with no file yet and ignored for one that has
+ * — a save never moves what is already filed somewhere.
+ */
+export type DocumentPlace = { folder?: string; path?: string }
+
 /** The suffix on a copy being written, before the rename that makes it the document. */
 export const STAGING_SUFFIX = '.tmp'
 
@@ -415,6 +454,15 @@ export type DocumentEnvelope = Omit<DocumentFile, 'content'>
  * it is what a dismissed dialog gives back — a tab must never close because a key was struck.
  */
 export type CloseChoice = 'save' | 'discard' | 'cancel'
+
+/**
+ * The three answers to « this file cannot carry what the document holds » — §5.1.
+ *
+ * `saveAs` is the one that loses nothing, so it is the default button and what a dismissed dialog
+ * used to have no spelling for: the question was a yes-or-no whose yes destroyed the traits the
+ * format drops, which made the destructive path the only way forward.
+ */
+export type FlattenChoice = 'flatten' | 'saveAs' | 'cancel'
 
 /**
  * What a write did, and the reason it is not a `void`.
