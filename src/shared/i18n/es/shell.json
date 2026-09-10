@@ -125,6 +125,16 @@
     "sort": {
       "name": "Nombre, de la A a la Z",
       "nameDesc": "Nombre, de la Z a la A"
+    },
+    "gather": "Reunir en",
+    "gatherHint": "Copia este documento y todo lo que cita en otro proyecto, para que allí se abra tal cual.",
+    "gatherIntoHint": "Reunir este documento en {{name}}",
+    "gathered": "{{files, number}} archivos copiados, {{rows, number}} fichas escritas.",
+    "gatherKept": "{{count, number}} dejados como estaban: el destino ya tenía otros en esas rutas.",
+    "gatherRefused": {
+      "not-a-project": "Ese destino no es un proyecto.",
+      "same-project": "Ese es el proyecto abierto.",
+      "no-document": "Ningún documento que reunir."
     }
   },
   "menu": {

@@ -53,6 +53,7 @@ import { destinationFormatsFor } from '@shared/domain/encodableFormat'
 import { SCENE_TEMPLATE_GROUPS, SCENE_TEMPLATE_IDS } from '@shared/domain/sceneTemplate'
 import { DERIVED_STORES } from '@shared/domain/derivedCache'
 import { COPY_STORES } from '@shared/domain/fileCopies'
+import { GATHER_REFUSALS } from '@shared/domain/gather'
 import { SHIPPED_FAMILIES } from '@shared/domain/shippedResources'
 import { FILE_KINDS } from '@shared/domain/folder'
 import { FILE_INFO_SECTIONS } from '@/features/document/components/FileInfoWindow/sections'
@@ -227,6 +228,8 @@ const COMPOSED_KEYS: readonly string[] = [
   ...DERIVED_STORES.map(store => `copies.stores.${store}`),
   // The heading and the sentence of each shipped family, composed from the list itself.
   ...SHIPPED_FAMILIES.flatMap(family => [`shipped.${family}`, `shipped.${family}Note`]),
+  // Why a gathering did nothing, composed from the reason the main process answers with.
+  ...GATHER_REFUSALS.map(reason => `explorer.gatherRefused.${reason}`),
   // The rail label, built by `workspaceLabelKey` — the most visible string in the window, and
   // the one thing the workspace table does NOT make the compiler demand of a new space.
   ...WORKSPACE_IDS.map(workspace => `workspaces.${workspace}`),

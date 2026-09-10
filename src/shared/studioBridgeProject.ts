@@ -1,5 +1,7 @@
 import type { DerivedCacheReport } from './domain/derivedCache'
+import type { DocumentKind } from './domain/document'
 import type { CopyGroup } from './domain/fileCopies'
+import type { GatherReport } from './domain/gather'
 import type { FileFacts } from './domain/fileInfo'
 import type { FileHistory, FileOutcome } from './domain/fileOp'
 import type { FileUse } from './domain/fileUse'
@@ -155,6 +157,21 @@ export type StudioBridgeProject = {
      * Never paged. A page of candidates would read as « there are no others ».
      */
     fileCopies: (hash?: string) => Promise<CopyGroup[]>
+    /**
+     * Puts a document and everything it cites into ANOTHER project, so that project can open it.
+     *
+     * The catalogue rows travel with the bytes, ids unchanged — a document names its sky, its
+     * clips and its images by id as much as by name, and a destination that minted its own
+     * would resolve none of them.
+     *
+     * Never overwrites: a destination already holding a file at that path keeps it, and the
+     * report says whether those were the same bytes or different ones.
+     */
+    gatherInto: (request: {
+      documentId: string
+      kind: DocumentKind
+      destination: string
+    }) => Promise<GatherReport>
     /** What the four derived stores hold. Reads sizes, writes nothing. */
     derivedCache: () => Promise<DerivedCacheReport>
     /**

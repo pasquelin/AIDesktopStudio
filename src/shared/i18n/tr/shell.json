@@ -125,6 +125,16 @@
     "sort": {
       "name": "Ad: A’dan Z’ye",
       "nameDesc": "Ad: Z’den A’ya"
+    },
+    "gather": "Şuraya topla",
+    "gatherHint": "Bu belgeyi ve andığı her şeyi başka bir projeye kopyalar, orada olduğu gibi açılsın diye.",
+    "gatherIntoHint": "Bu belgeyi {{name}} projesine topla",
+    "gathered": "{{files, number}} dosya kopyalandı, {{rows, number}} kayıt yazıldı.",
+    "gatherKept": "{{count, number}} tanesi olduğu gibi bırakıldı: hedefte bu yollarda zaten başkaları vardı.",
+    "gatherRefused": {
+      "not-a-project": "O hedef bir proje değil.",
+      "same-project": "Bu, açık olan proje.",
+      "no-document": "Toplanacak belge yok."
     }
   },
   "menu": {

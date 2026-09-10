@@ -125,6 +125,16 @@
     "sort": {
       "name": "Name: A to Z",
       "nameDesc": "Name: Z to A"
+    },
+    "gather": "Gather into",
+    "gatherHint": "Copies this document and everything it cites into another project, so it opens there as it is.",
+    "gatherIntoHint": "Gather this document into {{name}}",
+    "gathered": "{{files, number}} files copied, {{rows, number}} records written.",
+    "gatherKept": "{{count, number}} left alone: the destination already had others at those paths.",
+    "gatherRefused": {
+      "not-a-project": "That destination is not a project.",
+      "same-project": "That is the open project.",
+      "no-document": "No document to gather."
     }
   },
   "menu": {

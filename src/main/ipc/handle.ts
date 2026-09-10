@@ -57,6 +57,7 @@ type ChannelMethod = {
   [CHANNELS.projectFileFacts]: StudioBridge['project']['fileFacts']
   [CHANNELS.projectFileUses]: StudioBridge['project']['fileUses']
   [CHANNELS.projectFileCopies]: StudioBridge['project']['fileCopies']
+  [CHANNELS.projectGatherInto]: StudioBridge['project']['gatherInto']
   [CHANNELS.projectDerivedCache]: StudioBridge['project']['derivedCache']
   [CHANNELS.projectPurgeDerivedCache]: StudioBridge['project']['purgeDerivedCache']
   [CHANNELS.projectFolderRoles]: StudioBridge['project']['folderRoles']

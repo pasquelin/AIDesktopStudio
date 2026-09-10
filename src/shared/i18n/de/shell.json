@@ -125,6 +125,16 @@
     "sort": {
       "name": "Name: A bis Z",
       "nameDesc": "Name: Z bis A"
+    },
+    "gather": "Sammeln nach",
+    "gatherHint": "Kopiert dieses Dokument und alles, was es nennt, in ein anderes Projekt, damit es dort so aufgeht, wie es ist.",
+    "gatherIntoHint": "Dieses Dokument nach {{name}} sammeln",
+    "gathered": "{{files, number}} Dateien kopiert, {{rows, number}} Einträge geschrieben.",
+    "gatherKept": "{{count, number}} unangetastet gelassen: das Ziel hatte an diesen Pfaden bereits andere.",
+    "gatherRefused": {
+      "not-a-project": "Dieses Ziel ist kein Projekt.",
+      "same-project": "Das ist das offene Projekt.",
+      "no-document": "Kein Dokument zu sammeln."
     }
   },
   "menu": {

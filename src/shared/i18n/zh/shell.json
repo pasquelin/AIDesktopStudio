@@ -125,6 +125,16 @@
     "sort": {
       "name": "名称：A 到 Z",
       "nameDesc": "名称：Z 到 A"
+    },
+    "gather": "收拢到",
+    "gatherHint": "把这份文档和它提到的一切复制到另一个项目，好让它在那边照原样打开。",
+    "gatherIntoHint": "把这份文档收拢到 {{name}}",
+    "gathered": "复制了 {{files, number}} 个文件，写入 {{rows, number}} 条记录。",
+    "gatherKept": "有 {{count, number}} 个原样留下：目标在那些路径上已经有别的了。",
+    "gatherRefused": {
+      "not-a-project": "该目标不是一个项目。",
+      "same-project": "那是当前打开的项目。",
+      "no-document": "没有可收拢的文档。"
     }
   },
   "menu": {

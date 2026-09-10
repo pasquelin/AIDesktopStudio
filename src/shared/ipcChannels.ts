@@ -60,6 +60,7 @@ export const CHANNELS: Channels = {
   projectFileFacts: 'project:file-facts',
   projectFileUses: 'project:file-uses',
   projectFileCopies: 'project:file-copies',
+  projectGatherInto: 'project:gather-into',
   projectDerivedCache: 'project:derived-cache',
   projectPurgeDerivedCache: 'project:purge-derived-cache',
   projectReadContext: 'project:read-context',
