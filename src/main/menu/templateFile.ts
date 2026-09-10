@@ -98,6 +98,13 @@ function openAndSaveItems(context: MenuContext): MenuItemConstructorOptions[] {
       click: () => options.actions.runCommand('project.open'),
     },
     ...recentItems(context),
+    {
+      label: t.menu.copies,
+      // A diagnosis of the OPEN project. Greyed rather than absent, so the gesture is findable
+      // before there is a project to run it on.
+      enabled: options.openProject !== null,
+      click: () => options.actions.openCopies(),
+    },
     { type: 'separator' },
     {
       label: t.menu.saveDocument,

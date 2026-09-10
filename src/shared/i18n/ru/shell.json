@@ -200,7 +200,8 @@
     "sceneNavigation": "Навигация",
     "sceneDisplay": "Режим отображения",
     "sceneView": "Точка обзора",
-    "sceneCapture": "Сделать снимок вида"
+    "sceneCapture": "Сделать снимок вида",
+    "copies": "Копии…"
   },
   "about": {
     "copyright": "© 2026 Alban Pasquelin"

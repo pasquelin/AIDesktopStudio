@@ -94,7 +94,9 @@ export function needsProxy(probe: MediaProbe): boolean {
 
 const isTimed = (kind: AssetType): boolean => ['video', 'audio'].includes(kind)
 
-const hasWaveform = (probe: MediaProbe): boolean => Boolean(probe.sampleRate) && probe.duration > 0
+/** Whether a waveform is OWED. Read by the catch-up too: a silent rush is owed none. */
+export const hasWaveform = (probe: MediaProbe): boolean =>
+  Boolean(probe.sampleRate) && probe.duration > 0
 
 /** How far along the whole ingest each stage is — announced when the stage starts. */
 const STAGE_RATIO: Record<IngestStage, number> = {

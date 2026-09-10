@@ -22,7 +22,7 @@ export function FileInfoWindow() {
   useAppliedSettings()
 
   const path = fileInfoPathOf(window.location.hash) ?? ''
-  const { facts, asset, status, uses, reading } = useFileInfo(path)
+  const { facts, asset, status, uses, copies, reading } = useFileInfo(path)
 
   return (
     <WindowShell title={t('fileInfo.title', { name: nameOf(path) })}>
@@ -42,6 +42,7 @@ export function FileInfoWindow() {
             asset={asset}
             status={status}
             uses={uses}
+            copies={copies}
           />
         ))
       ) : (

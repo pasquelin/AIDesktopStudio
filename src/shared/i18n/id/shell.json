@@ -200,7 +200,8 @@
     "sceneNavigation": "Navigasi",
     "sceneDisplay": "Mode tampilan",
     "sceneView": "Titik pandang",
-    "sceneCapture": "Tangkap tampilan"
+    "sceneCapture": "Tangkap tampilan",
+    "copies": "Salinan…"
   },
   "about": {
     "copyright": "© 2026 Alban Pasquelin"

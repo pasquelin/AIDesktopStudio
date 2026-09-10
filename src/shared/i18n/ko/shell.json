@@ -200,7 +200,8 @@
     "sceneNavigation": "탐색",
     "sceneDisplay": "표시 모드",
     "sceneView": "시점",
-    "sceneCapture": "뷰 캡처"
+    "sceneCapture": "뷰 캡처",
+    "copies": "사본…"
   },
   "about": {
     "copyright": "© 2026 Alban Pasquelin"

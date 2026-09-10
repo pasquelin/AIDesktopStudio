@@ -1,0 +1,35 @@
+{
+  "copies": {
+    "title": "Kopyalar",
+    "reading": "Proje okunuyor…",
+    "none": "Bu projede hiçbir dosya iki kez bulunmuyor.",
+    "candidates": "İncelenecek adaylar",
+    "candidatesNote": "Bu dosyalar aynı parmak izini taşıyor: baytları özdeş, bu ölçüldü. Bir kopyanın gereksiz olup olmadığı ölçülmedi — burada siz istemeden hiçbir şey kaldırılmaz, her seferinde bir satır.",
+    "sameBytes": "{{count, number}} dosya tam olarak aynı baytları taşıyor",
+    "wouldFree": "Tek bir kopya tutmak {{size}} geri verir",
+    "sizeUnknown": "Boyut bilinmiyor",
+    "store": {
+      "visible": "Sizin dosyanız",
+      "internal": "Stüdyo kaynağı",
+      "machine": "Stüdyo önbelleği"
+    },
+    "added": "{{date}} tarihinde eklendi",
+    "mentions": "Ondan söz eden belgeler: {{count, number}}",
+    "mentionsNone": "Hiçbir belge ondan söz etmiyor",
+    "trash": "Çöp",
+    "cache": "Yeniden üretilebilir depolama",
+    "cacheNote": "Stüdyo bu dosyaları gerektiğinde yeniden üretir. Elle seçilen kareler, kalıcı kaynaklar ve kaydedilmemiş çalışma bunlara dâhil değildir ve asla dokunulmaz.",
+    "cacheTotal": "Toplam",
+    "purge": "Boşalt",
+    "purging": "Boşaltılıyor…",
+    "freed": "{{size}} diske geri verildi.",
+    "forgotten": "Güncellenen kayıtlar: {{count, number}}",
+    "stores": {
+      "thumbnails": "Küçük resimler",
+      "filmstrips": "Film şeritleri",
+      "proxies": "Çalışma kopyaları",
+      "peaks": "Dalga biçimleri"
+    },
+    "storeHeld": "{{count, number}} dosya, {{size}}"
+  }
+}

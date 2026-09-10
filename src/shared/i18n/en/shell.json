@@ -200,7 +200,8 @@
     "sceneNavigation": "Navigation",
     "sceneDisplay": "Display mode",
     "sceneView": "Point of view",
-    "sceneCapture": "Capture the view"
+    "sceneCapture": "Capture the view",
+    "copies": "Copies…"
   },
   "about": {
     "copyright": "© 2026 Alban Pasquelin"

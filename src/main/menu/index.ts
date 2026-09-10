@@ -27,6 +27,7 @@ import {
   openSettingsWindow,
   openUsageWindow,
 } from '@main/window/windows'
+import { openCopiesWindow } from '@main/window/copiesWindow'
 import { openWelcomeWindow } from '@main/window/welcomeWindow'
 import { menuTemplate } from './template'
 
@@ -175,6 +176,7 @@ export function buildMenu(remapped: BindingOverrides = overrides): void {
       openLicences: () => void openLicencesWindow(),
       openManual: () => void openManualWindow(),
       openUsage: () => void openUsageWindow(),
+      openCopies: () => void openCopiesWindow(),
       openWelcome: () => void openWelcomeWindow(),
       toggleFullScreen: () => toggleFullScreen(BrowserWindow.getFocusedWindow()),
       openTool: request => sendToFront(EVENTS.openTool, request),

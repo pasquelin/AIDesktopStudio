@@ -5,7 +5,7 @@ import { holes } from './sqlText'
 import type { SqliteDriver } from './sqlite'
 import { transaction } from './sqlMigrate'
 import { optionalNumber, optionalText, text } from './sqlRow'
-import { activityOf, assetOf, isUnder, withoutTrailingSlash } from './catalogRows'
+import { activityOf, assetOf, copyGroupsOf, isUnder, withoutTrailingSlash } from './catalogRows'
 import { CATALOG_DEFAULT_LIMIT, migrate } from './catalogSchema'
 import type { Catalog } from './catalogTypes'
 import { addAsset } from './catalogMutations'
@@ -75,6 +75,14 @@ export function createCatalog(driver: SqliteDriver): Catalog {
     findByHash: hash => {
       const row = assets.selectByHash.get(hash)
       return row ? assetOf(row, tagsOf(text(row, 'id'))) : null
+    },
+
+    copies: hash =>
+      copyGroupsOf(hash === undefined ? paths.selectCopies.all() : paths.selectCopiesOf.all(hash)),
+
+    clearDerivedPaths: () => {
+      paths.clearDerivedPaths.run()
+      return optionalNumber(paths.rowsChanged.get() ?? {}, 'touched') ?? 0
     },
 
     remove: assetId => {

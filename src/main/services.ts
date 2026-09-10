@@ -5,11 +5,11 @@ import { app, net, shell } from 'electron'
 import { randomUUID } from 'node:crypto'
 import { existsSync } from 'node:fs'
 import { readFile } from 'node:fs/promises'
-import { availableParallelism } from 'node:os'
 import { join } from 'node:path'
 import { setTimeout as sleepFor } from 'node:timers/promises'
 import { ASSET_ID_PREFIX, type Asset } from '@shared/domain/asset'
 import { log } from './log'
+import { spareCores } from './spareCores'
 import { EVENTS } from '@shared/ipc'
 import { isDevelopment } from '@main/environment'
 import { createNewsService } from '@main/news/newsStore'
@@ -63,7 +63,6 @@ import {
 export type { Services } from './serviceTypes'
 import type { Services } from './serviceTypes'
 /** Two cores left to the interface and to whatever else the machine is doing — CLAUDE.md § 6. */
-const spareCores = (): number => Math.max(1, availableParallelism() - 2)
 const timestamp = (): string => new Date().toISOString()
 const newAssetId = (): string => `${ASSET_ID_PREFIX}${randomUUID()}`
 /**

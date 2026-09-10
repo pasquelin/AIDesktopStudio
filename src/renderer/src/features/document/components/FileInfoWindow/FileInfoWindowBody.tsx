@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next'
 import type { Asset } from '@shared/domain/asset'
 import type { FileFacts } from '@shared/domain/fileInfo'
 import { nameOf } from '@shared/domain/folder'
+import type { FileCopy } from '@shared/domain/fileCopies'
 import type { FileUse } from '@shared/domain/fileUse'
 import type { GitStatus } from '@shared/domain/git'
 import { PropertySection } from '@/components/PropertySection'
@@ -21,6 +22,8 @@ export type FileInfoWindowBodyProps = {
   status: GitStatus | null
   /** The documents citing this file. Empty is an answer, and the section says so in words. */
   uses: readonly FileUse[]
+  /** The OTHER files holding these bytes. Empty is an answer here too. */
+  copies: readonly FileCopy[]
 }
 
 /**
@@ -37,11 +40,13 @@ export function FileInfoWindowBody({
   asset,
   status,
   uses,
+  copies,
 }: FileInfoWindowBodyProps) {
   const { t, i18n } = useTranslation()
   if (id === 'git' && status) return gitSection(path, status, t)
   if (id === 'media' && asset) return mediaSection(asset, t)
   if (id === 'catalogue' && asset) return catalogueSection(asset, i18n.language, t)
+  if (id === 'copies') return copiesSection(copies, t)
   if (id === 'uses') return usesSection(uses, t)
   return generalSection(path, facts, asset, i18n.language, t)
 }
@@ -67,6 +72,30 @@ function usesSection(uses: readonly FileUse[], t: Translate) {
         uses.map(use => (
           <PropertyRow key={use.path} label={t(`documents.kinds.${use.kind}`)} shape="path">
             {use.title}
+          </PropertyRow>
+        ))
+      )}
+    </PropertySection>
+  )
+}
+
+/**
+ * The other files carrying these exact bytes — §16, narrowed to the one file this window names.
+ *
+ * The heading says CANDIDATES and the rows say where; nothing here offers to remove anything.
+ * What is established is on the row — the path and the store that owns it. Whether a copy is
+ * redundant is not, and the window does not pretend otherwise: the project-wide diagnosis is
+ * where a person weighs that, with the citations beside it.
+ */
+function copiesSection(copies: readonly FileCopy[], t: Translate) {
+  return (
+    <PropertySection title={t('fileInfo.sections.copies')} scId="fileInfo.copies">
+      {copies.length === 0 ? (
+        <PropertyRow label={t('copies.title')}>{t('fileInfo.copiesNone')}</PropertyRow>
+      ) : (
+        copies.map(copy => (
+          <PropertyRow key={copy.assetId} label={t(`copies.store.${copy.store}`)} shape="path">
+            {copy.path}
           </PropertyRow>
         ))
       )}

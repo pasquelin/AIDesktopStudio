@@ -1,0 +1,35 @@
+{
+  "copies": {
+    "title": "Cópias",
+    "reading": "Lendo o projeto…",
+    "none": "Nenhum arquivo está presente duas vezes neste projeto.",
+    "candidates": "Candidatos a examinar",
+    "candidatesNote": "Estes arquivos têm a mesma impressão: seus bytes são idênticos, e isso está medido. Se uma cópia é dispensável, não — aqui nada é removido sem que você peça, uma linha de cada vez.",
+    "sameBytes": "{{count, number}} arquivos têm exatamente os mesmos bytes",
+    "wouldFree": "Manter uma única cópia devolveria {{size}}",
+    "sizeUnknown": "Tamanho desconhecido",
+    "store": {
+      "visible": "Seu arquivo",
+      "internal": "Recurso do estúdio",
+      "machine": "Cache do estúdio"
+    },
+    "added": "Adicionado em {{date}}",
+    "mentions": "Documentos que o mencionam: {{count, number}}",
+    "mentionsNone": "Nenhum documento o menciona",
+    "trash": "Lixeira",
+    "cache": "Armazenamento reconstruível",
+    "cacheNote": "O estúdio refaz estes arquivos quando precisa deles. As imagens escolhidas à mão, os recursos duradouros e o trabalho não salvo não fazem parte deles e nunca são tocados.",
+    "cacheTotal": "Total",
+    "purge": "Liberar",
+    "purging": "Liberando…",
+    "freed": "{{size}} devolvidos ao disco.",
+    "forgotten": "Fichas atualizadas: {{count, number}}",
+    "stores": {
+      "thumbnails": "Miniaturas",
+      "filmstrips": "Tiras de filme",
+      "proxies": "Cópias de trabalho",
+      "peaks": "Formas de onda"
+    },
+    "storeHeld": "{{count, number}} arquivos, {{size}}"
+  }
+}

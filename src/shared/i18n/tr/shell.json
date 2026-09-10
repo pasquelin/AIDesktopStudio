@@ -200,7 +200,8 @@
     "sceneNavigation": "Gezinti",
     "sceneDisplay": "Görüntü kipi",
     "sceneView": "Görünüş açısı",
-    "sceneCapture": "Görünümü yakala"
+    "sceneCapture": "Görünümü yakala",
+    "copies": "Kopyalar…"
   },
   "about": {
     "copyright": "© 2026 Alban Pasquelin"

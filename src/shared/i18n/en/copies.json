@@ -1,0 +1,35 @@
+{
+  "copies": {
+    "title": "Copies",
+    "reading": "Reading the project…",
+    "none": "No file is present twice in this project.",
+    "candidates": "Candidates to examine",
+    "candidatesNote": "These files carry the same fingerprint: their bytes are identical, and that is measured. Whether a copy is redundant is not — nothing is removed here unless you ask, one row at a time.",
+    "sameBytes": "{{count, number}} files carry exactly the same bytes",
+    "wouldFree": "Keeping a single copy would give back {{size}}",
+    "sizeUnknown": "Size unknown",
+    "store": {
+      "visible": "Your file",
+      "internal": "Studio resource",
+      "machine": "Studio cache"
+    },
+    "added": "Added on {{date}}",
+    "mentions": "Documents mentioning it: {{count, number}}",
+    "mentionsNone": "No document mentions it",
+    "trash": "Trash",
+    "cache": "Rebuildable storage",
+    "cacheNote": "The studio makes these files again when it needs them. Stills picked by hand, durable resources and unsaved work are not among them and are never touched.",
+    "cacheTotal": "Total",
+    "purge": "Free up",
+    "purging": "Freeing…",
+    "freed": "{{size}} given back to the disk.",
+    "forgotten": "Records brought up to date: {{count, number}}",
+    "stores": {
+      "thumbnails": "Thumbnails",
+      "filmstrips": "Filmstrips",
+      "proxies": "Working copies",
+      "peaks": "Waveforms"
+    },
+    "storeHeld": "{{count, number}} files, {{size}}"
+  }
+}

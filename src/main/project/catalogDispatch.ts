@@ -29,18 +29,46 @@ function valueOf(catalog: Catalog, request: CatalogRequest): CatalogResults[Cata
       return catalog.findByHash(request.hash)
     case 'findByRemoteId':
       return catalog.findByRemoteId(request.remoteAssetId)
-    case 'search':
-      return catalog.search(request.query)
-    case 'countByType':
-      return catalog.countByType()
     case 'remove':
       return catalog.remove(request.assetId)
     case 'repath':
       return catalog.repath(request.from, request.to)
+    default:
+      return acrossTheTableValueOf(catalog, request)
+  }
+}
+
+/** What reads or writes ACROSS the table, rather than one row the request names outright. */
+function acrossTheTableValueOf(
+  catalog: Catalog,
+  request: Extract<
+    CatalogRequest,
+    {
+      op:
+        | 'search'
+        | 'countByType'
+        | 'forgetUnder'
+        | 'assetsUnder'
+        | 'copies'
+        | 'clearDerivedPaths'
+        | 'appendActivity'
+        | 'readActivity'
+    }
+  >,
+): CatalogResults[CatalogOp] {
+  switch (request.op) {
+    case 'search':
+      return catalog.search(request.query)
+    case 'countByType':
+      return catalog.countByType()
     case 'forgetUnder':
       return catalog.forgetUnder(request.path)
     case 'assetsUnder':
       return catalog.assetsUnder(request.folders)
+    case 'copies':
+      return catalog.copies(request.hash)
+    case 'clearDerivedPaths':
+      return catalog.clearDerivedPaths()
     default:
       return journalValueOf(catalog, request)
   }

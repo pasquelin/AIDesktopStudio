@@ -5,6 +5,7 @@
       "general": "Chung",
       "media": "Phương tiện",
       "catalogue": "Danh mục",
+      "copies": "Bản sao",
       "uses": "Được dùng bởi",
       "git": "Git"
     },
@@ -22,6 +23,7 @@
     "documents": "Tài liệu",
     "usedByNone": "Không tài liệu nào trong dự án nhắc đến tệp này.",
     "reading": "Đang đọc thư mục…",
-    "missing": "Mục này không còn nằm trong thư mục dự án."
+    "missing": "Mục này không còn nằm trong thư mục dự án.",
+    "copiesNone": "Không tệp nào khác trong dự án mang những byte này."
   }
 }

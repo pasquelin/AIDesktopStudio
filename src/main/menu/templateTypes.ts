@@ -27,6 +27,8 @@ export type MenuActions = {
   openLicences: () => void
   openManual: () => void
   openUsage: () => void
+  /** The copies diagnosis of the open project — see `openCopiesWindow`. */
+  openCopies: () => void
   openWelcome: () => void
   toggleFullScreen: () => void
   openTool: (request: ToolRequest) => void

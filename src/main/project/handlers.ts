@@ -31,6 +31,7 @@ import { ORA_EXTENSION, PNG_EXTENSION, WAV_EXTENSION } from '@shared/domain/writ
 import { probeWav } from '@main/media/wav'
 import { fileFactsOf } from './fileFacts'
 import { projectFileDependents } from './fileDependents'
+import { registerCopiesHandlers } from './copiesHandlers'
 import { registerFileUseHandlers } from './fileUseHandlers'
 import { registerRecoveryHandlers } from './recoveryHandlers'
 import { registerResourceHandlers } from './resourceHandlers'
@@ -481,6 +482,7 @@ export function registerProjectHandlers({
   handle(CHANNELS.documentRemove, (_event, id, kind) =>
     documents.remove(parseDocumentId(id), parseDocumentKind(kind)),
   )
+  registerCopiesHandlers({ project })
   registerRecoveryHandlers(() => project.path())
   // The four routes that only raise a question live apart — see `askHandlers.ts`.
   registerAskHandlers(askUser)

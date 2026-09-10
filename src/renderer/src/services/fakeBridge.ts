@@ -1,6 +1,7 @@
 import { vi } from 'vitest'
 import type { CloseChoice, DocumentWrite, FlattenChoice } from '@shared/domain/document'
 import { emptyAssetCounts } from '@shared/domain/asset'
+import type { DerivedCacheReport } from '@shared/domain/derivedCache'
 import type { FileOutcome } from '@shared/domain/fileOp'
 import { DEFAULT_ROLE_PATHS } from '@shared/domain/folderRole'
 import { noGame } from '@shared/domain/game'
@@ -16,6 +17,7 @@ import { fakeBridgeSettings } from './fakeBridgeSettings'
 import { fakeBridgeMissions } from './fakeBridgeMissions'
 import { fakeBridgeUpdates } from './fakeBridgeUpdates'
 const noSubscription = (): (() => void) => () => {}
+const NO_DERIVED_CACHE: DerivedCacheReport = { stores: [], bytes: 0, clearedRows: 0 }
 const nothingMoved = (): Promise<FileOutcome> =>
   Promise.resolve({ done: [], refused: [], batch: 'batch-fake' })
 export type BridgeOverrides = {
@@ -96,6 +98,9 @@ const fakeProject = (overrides: BridgeOverrides): StudioBridge['project'] => ({
   onFolderRoles: noSubscription,
   fileFacts: () => Promise.resolve(null),
   fileUses: () => Promise.resolve([]),
+  fileCopies: () => Promise.resolve([]),
+  derivedCache: () => Promise.resolve(NO_DERIVED_CACHE),
+  purgeDerivedCache: () => Promise.resolve(NO_DERIVED_CACHE),
   readContext: () => Promise.resolve(noContext()),
   writeContext: () => Promise.resolve(noContext()),
   onContextChanged: noSubscription,

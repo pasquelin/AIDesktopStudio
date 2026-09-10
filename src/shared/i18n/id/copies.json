@@ -1,0 +1,35 @@
+{
+  "copies": {
+    "title": "Salinan",
+    "reading": "Membaca proyek…",
+    "none": "Tidak ada berkas yang hadir dua kali dalam proyek ini.",
+    "candidates": "Kandidat untuk diperiksa",
+    "candidatesNote": "Berkas-berkas ini membawa sidik yang sama: byte-nya identik, dan itu terukur. Apakah sebuah salinan berlebih, tidak — tidak ada yang dihapus di sini tanpa Anda minta, satu baris pada satu waktu.",
+    "sameBytes": "{{count, number}} berkas membawa byte yang persis sama",
+    "wouldFree": "Menyimpan satu salinan saja akan mengembalikan {{size}}",
+    "sizeUnknown": "Ukuran tidak diketahui",
+    "store": {
+      "visible": "Berkas Anda",
+      "internal": "Sumber daya studio",
+      "machine": "Tembolok studio"
+    },
+    "added": "Ditambahkan pada {{date}}",
+    "mentions": "Dokumen yang menyebutnya: {{count, number}}",
+    "mentionsNone": "Tidak ada dokumen yang menyebutnya",
+    "trash": "Tong sampah",
+    "cache": "Penyimpanan yang dapat dibangun ulang",
+    "cacheNote": "Studio membuat ulang berkas-berkas ini ketika membutuhkannya. Gambar diam yang dipilih sendiri, sumber daya tahan lama, dan pekerjaan yang belum disimpan tidak termasuk dan tidak pernah disentuh.",
+    "cacheTotal": "Total",
+    "purge": "Bebaskan",
+    "purging": "Membebaskan…",
+    "freed": "{{size}} dikembalikan ke disk.",
+    "forgotten": "Catatan yang diperbarui: {{count, number}}",
+    "stores": {
+      "thumbnails": "Gambar mini",
+      "filmstrips": "Jalur film",
+      "proxies": "Salinan kerja",
+      "peaks": "Bentuk gelombang"
+    },
+    "storeHeld": "{{count, number}} berkas, {{size}}"
+  }
+}

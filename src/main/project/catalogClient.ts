@@ -1,5 +1,6 @@
 import type { ActivityDraft, ActivityEntry, ActivityQuery } from '@shared/domain/activity'
 import type { Asset, AssetCounts, AssetQuery } from '@shared/domain/asset'
+import type { CopyGroup } from '@shared/domain/fileCopies'
 import type { AnimationPosterWrite } from './catalogTypes'
 import {
   ABANDONED,
@@ -40,6 +41,10 @@ export type AsyncCatalog = {
   findByHash: (hash: string) => Promise<Asset | null>
   /** The local row a generated asset landed in, looked up by its Scenario identifier. */
   findByRemoteId: (remoteAssetId: string) => Promise<Asset | null>
+  /** Every fingerprint this project holds at two live paths, or just one group when asked. */
+  copies: (hash?: string) => Promise<CopyGroup[]>
+  /** Forgets where the derived files were, once they have gone. Answers how many rows. */
+  clearDerivedPaths: () => Promise<number>
   /**
    * The signal is what an abandoned search costs nothing: the thread skips the ones it has not
    * begun, and this side stops waiting for the one it may already be running. Rejects with
@@ -215,6 +220,9 @@ export function createCatalogClient(port: CatalogPort): AsyncCatalog {
     findByHash: hash => send<'findByHash'>(id => ({ id, op: 'findByHash', hash })),
     findByRemoteId: remoteAssetId =>
       send<'findByRemoteId'>(id => ({ id, op: 'findByRemoteId', remoteAssetId })),
+
+    copies: hash => send<'copies'>(id => ({ id, op: 'copies', hash })),
+    clearDerivedPaths: () => send<'clearDerivedPaths'>(id => ({ id, op: 'clearDerivedPaths' })),
 
     search: (query, signal) => send<'search'>(id => ({ id, op: 'search', query }), signal),
 

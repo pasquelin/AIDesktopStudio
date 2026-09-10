@@ -1,5 +1,6 @@
 import type { ActivityDraft, ActivityEntry, ActivityQuery } from '@shared/domain/activity'
 import type { Asset, AssetCounts, AssetQuery } from '@shared/domain/asset'
+import type { CopyGroup } from '@shared/domain/fileCopies'
 
 /**
  * One filed row, as reconciling with the disk reads it — its path, what identifies its bytes,
@@ -64,6 +65,23 @@ export type Catalog = {
   findByRemoteId: (remoteAssetId: string) => Asset | null
   /** The row holding these exact bytes, if the project already imported them once. */
   findByHash: (hash: string) => Asset | null
+  /**
+   * Files this project holds MORE THAN ONCE, grouped by fingerprint — G-P's own question, and
+   * the one `findByHash` cannot answer: it stops at the first row.
+   *
+   * `hash` narrows it to one group, which is what a single file's information asks for. Whole,
+   * it is a diagnosis, and it is NOT paged: a page of candidates is a page of a question, and
+   * the second half would be read as « there are no others ». What bounds it instead is the
+   * query — only fingerprints filed at two distinct live paths come back at all.
+   */
+  copies: (hash?: string) => CopyGroup[]
+  /**
+   * Forgets every `proxy_path` and `peaks_path`, and answers how many rows lost one.
+   *
+   * Its own operation because throwing away the derived files and forgetting where they were
+   * are one gesture: a row still naming a proxy that went makes playback open nothing at all.
+   */
+  clearDerivedPaths: () => number
   search: (query: AssetQuery) => Asset[]
   /**
    * How many rows each kind holds. One grouped query rather than six searches: the home draws

@@ -18,6 +18,8 @@ export function memoryCatalog(file = ':memory:', disk: RescanDisk | null = null)
     setAnimationPoster: async write => catalog.setAnimationPoster(write),
     findByHash: async hash => catalog.findByHash(hash),
     findByRemoteId: async remoteAssetId => catalog.findByRemoteId(remoteAssetId),
+    copies: async hash => catalog.copies(hash),
+    clearDerivedPaths: async () => catalog.clearDerivedPaths(),
     search: async query => catalog.search(query),
     assetsUnder: async folders => catalog.assetsUnder(folders),
     countByType: async () => catalog.countByType(),

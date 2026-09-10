@@ -5,6 +5,7 @@
       "general": "Genel",
       "media": "Medya",
       "catalogue": "Katalog",
+      "copies": "Kopyalar",
       "uses": "Kullanan belgeler",
       "git": "Git"
     },
@@ -22,6 +23,7 @@
     "documents": "Belgeler",
     "usedByNone": "Projedeki hiçbir belge bu dosyadan söz etmiyor.",
     "reading": "Klasör okunuyor…",
-    "missing": "Bu girdi artık proje klasöründe değil."
+    "missing": "Bu girdi artık proje klasöründe değil.",
+    "copiesNone": "Projedeki başka hiçbir dosya bu baytları taşımıyor."
   }
 }

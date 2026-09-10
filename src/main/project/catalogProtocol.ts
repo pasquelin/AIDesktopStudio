@@ -1,5 +1,6 @@
 import type { ActivityDraft, ActivityEntry, ActivityQuery } from '@shared/domain/activity'
 import type { Asset, AssetCounts, AssetQuery } from '@shared/domain/asset'
+import type { CopyGroup } from '@shared/domain/fileCopies'
 import type { RescanReport } from './catalogRescan'
 import type { AnimationPosterWrite } from './catalogTypes'
 
@@ -17,6 +18,8 @@ export type CatalogRequest =
   | { id: number; op: 'find'; assetId: string }
   | { id: number; op: 'findByHash'; hash: string }
   | { id: number; op: 'findByRemoteId'; remoteAssetId: string }
+  | { id: number; op: 'copies'; hash?: string }
+  | { id: number; op: 'clearDerivedPaths' }
   | { id: number; op: 'search'; query: AssetQuery }
   | { id: number; op: 'countByType' }
   | { id: number; op: 'remove'; assetId: string }
@@ -33,6 +36,8 @@ export type CatalogResults = {
   find: Asset | null
   findByHash: Asset | null
   findByRemoteId: Asset | null
+  copies: CopyGroup[]
+  clearDerivedPaths: number
   search: Asset[]
   countByType: AssetCounts
   remove: void

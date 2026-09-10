@@ -1,3 +1,5 @@
+import type { DerivedCacheReport } from './domain/derivedCache'
+import type { CopyGroup } from './domain/fileCopies'
 import type { FileFacts } from './domain/fileInfo'
 import type { FileHistory, FileOutcome } from './domain/fileOp'
 import type { FileUse } from './domain/fileUse'
@@ -145,6 +147,21 @@ export type StudioBridgeProject = {
      * over-reports rather than under-reports.
      */
     fileUses: (paths: readonly string[]) => Promise<FileUse[]>
+    /**
+     * Files this project holds MORE THAN ONCE, grouped by fingerprint — the diagnosis §16 asks
+     * for, and CANDIDATES rather than findings: matching bytes is established, redundancy is
+     * not. `hash` narrows it to the group one file belongs to.
+     *
+     * Never paged. A page of candidates would read as « there are no others ».
+     */
+    fileCopies: (hash?: string) => Promise<CopyGroup[]>
+    /** What the four derived stores hold. Reads sizes, writes nothing. */
+    derivedCache: () => Promise<DerivedCacheReport>
+    /**
+     * Throws the four derived stores away and tells the catalogue. A NAMED command, never a
+     * consequence of anything: nothing in the studio purges on its own (R6).
+     */
+    purgeDerivedCache: () => Promise<DerivedCacheReport>
     /**
      * The project's own context — the world every generation made in it is set in.
      *

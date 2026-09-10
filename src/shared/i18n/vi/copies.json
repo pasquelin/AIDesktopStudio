@@ -1,0 +1,35 @@
+{
+  "copies": {
+    "title": "Bản sao",
+    "reading": "Đang đọc dự án…",
+    "none": "Không tệp nào có mặt hai lần trong dự án này.",
+    "candidates": "Ứng viên cần xem xét",
+    "candidatesNote": "Những tệp này mang cùng một dấu vân: các byte của chúng giống hệt nhau, điều đó đã được đo. Một bản sao có thừa hay không thì chưa — ở đây không có gì bị xoá nếu bạn không yêu cầu, mỗi lần một dòng.",
+    "sameBytes": "{{count, number}} tệp mang đúng cùng những byte",
+    "wouldFree": "Chỉ giữ một bản sao sẽ trả lại {{size}}",
+    "sizeUnknown": "Không rõ kích thước",
+    "store": {
+      "visible": "Tệp của bạn",
+      "internal": "Tài nguyên của xưởng",
+      "machine": "Bộ nhớ đệm của xưởng"
+    },
+    "added": "Đã thêm ngày {{date}}",
+    "mentions": "Tài liệu nhắc đến nó: {{count, number}}",
+    "mentionsNone": "Không tài liệu nào nhắc đến nó",
+    "trash": "Thùng rác",
+    "cache": "Kho có thể dựng lại",
+    "cacheNote": "Xưởng dựng lại những tệp này khi cần. Ảnh tĩnh chọn bằng tay, tài nguyên bền và công việc chưa lưu không nằm trong đó và không bao giờ bị đụng tới.",
+    "cacheTotal": "Tổng cộng",
+    "purge": "Giải phóng",
+    "purging": "Đang giải phóng…",
+    "freed": "Đã trả lại {{size}} cho đĩa.",
+    "forgotten": "Bản ghi đã cập nhật: {{count, number}}",
+    "stores": {
+      "thumbnails": "Ảnh thu nhỏ",
+      "filmstrips": "Dải phim",
+      "proxies": "Bản sao làm việc",
+      "peaks": "Dạng sóng"
+    },
+    "storeHeld": "{{count, number}} tệp, {{size}}"
+  }
+}

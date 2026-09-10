@@ -1,0 +1,35 @@
+{
+  "copies": {
+    "title": "Copie",
+    "reading": "Lettura del progetto…",
+    "none": "Nessun file è presente due volte in questo progetto.",
+    "candidates": "Candidati da esaminare",
+    "candidatesNote": "Questi file portano la stessa impronta: i loro byte sono identici, ed è misurato. Che una copia sia superflua, no — qui non si rimuove nulla senza che lei lo chieda, una riga alla volta.",
+    "sameBytes": "{{count, number}} file portano esattamente gli stessi byte",
+    "wouldFree": "Tenere una sola copia restituirebbe {{size}}",
+    "sizeUnknown": "Dimensione sconosciuta",
+    "store": {
+      "visible": "Il suo file",
+      "internal": "Risorsa dello studio",
+      "machine": "Cache dello studio"
+    },
+    "added": "Aggiunto il {{date}}",
+    "mentions": "Documenti che lo menzionano: {{count, number}}",
+    "mentionsNone": "Nessun documento lo menziona",
+    "trash": "Cestino",
+    "cache": "Archivio ricostruibile",
+    "cacheNote": "Lo studio ricrea questi file quando ne ha bisogno. Le immagini scelte a mano, le risorse durevoli e il lavoro non salvato non ne fanno parte e non vengono mai toccati.",
+    "cacheTotal": "Totale",
+    "purge": "Liberare",
+    "purging": "Liberazione…",
+    "freed": "{{size}} restituiti al disco.",
+    "forgotten": "Schede aggiornate: {{count, number}}",
+    "stores": {
+      "thumbnails": "Miniature",
+      "filmstrips": "Pellicole",
+      "proxies": "Copie di lavoro",
+      "peaks": "Forme d’onda"
+    },
+    "storeHeld": "{{count, number}} file, {{size}}"
+  }
+}

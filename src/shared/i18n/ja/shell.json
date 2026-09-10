@@ -200,7 +200,8 @@
     "sceneNavigation": "ナビゲーション",
     "sceneDisplay": "表示モード",
     "sceneView": "視点",
-    "sceneCapture": "ビューをキャプチャ"
+    "sceneCapture": "ビューをキャプチャ",
+    "copies": "複製…"
   },
   "about": {
     "copyright": "© 2026 Alban Pasquelin"
