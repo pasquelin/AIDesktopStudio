@@ -15,12 +15,8 @@ import type { WorkspaceId } from '@shared/domain/workspace'
 import { useProject } from '@/stores/project'
 import { useSelection } from '@/stores/selection'
 import { sceneOf, useScenes } from '@/stores/scenes'
-import {
-  createDocumentOfKind,
-  createNamedDocumentIn,
-  openNewDocument,
-  type NamedCreation,
-} from './newDocument'
+import { createDocumentOfKind, createNamedDocumentIn, openNewDocument } from './newDocument'
+import type { NamedCreation } from './createScript'
 
 const openDocument = vi.fn()
 vi.mock('./components/dockviewApi', () => ({

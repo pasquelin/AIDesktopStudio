@@ -11,6 +11,10 @@ import type { ReadFidelity } from '@shared/domain/readFidelity'
 import i18next from 'i18next'
 import { describe, expect, it, vi } from 'vitest'
 
+const WHEN = '2026-09-10T00:00:00.000Z'
+
+import type { NewDocumentAnswer } from '@shared/domain/newDocument'
+
 import { picture, saveDocument, unsavedDocumentIds } from './documentIoTest-fixtures'
 
 /**
@@ -121,5 +125,105 @@ describe('a save that would not be faithful', () => {
 
     expect(written.write).not.toHaveBeenCalled()
     expect(written.picture).not.toHaveBeenCalled()
+  })
+})
+
+/**
+ * A refusal is a protection, not an answer — §5.1. It used to be the end of the road: a JPEG
+ * painted on said no and left the person with nothing to do about it. Every one of them now
+ * carries the one destination that is always available with it.
+ */
+describe('a refused save, offered another destination', () => {
+  const openJpegDocument = async (): Promise<{ documentId: string; release: () => void }> => {
+    useAssets.setState({ items: [{ ...picture(), path: 'Images/hero.jpg' }] })
+    const created = await useDocuments.getState().create('image', {
+      title: 'Gemini 3.1',
+      sourceAssetId: 'asset-1',
+      sourceFidelity: 'faithful',
+    })
+    if (!created) throw new Error('expected a document')
+    useCanvases.getState().ensure(created.id, () => DEFAULT_CANVAS)
+    const release = holdCanvas(created.id, () => fakeCanvas({}))
+    useCanvases.getState().runCommand(created.id, renameLayer('layer-1', 'Backdrop'))
+    return { documentId: created.id, release }
+  }
+
+  it('writes where the person then chose, and the tab saves there from now on', async () => {
+    const savePicture = vi.fn(() =>
+      Promise.resolve({ ...picture(), id: 'asset-2', name: 'Affiche' }),
+    )
+    installFakeBridge({
+      documents: {
+        write: () => Promise.resolve<DocumentWrite>('written'),
+        confirmSaveElsewhere: () => Promise.resolve(true),
+      },
+      assets: { savePicture },
+      project: {
+        current: () =>
+          Promise.resolve({
+            path: '/tmp/p',
+            manifest: { version: 1, createdAt: WHEN, updatedAt: WHEN },
+          }),
+      },
+      newDocument: {
+        ask: () =>
+          Promise.resolve<NewDocumentAnswer>({
+            answer: 'made',
+            place: { kind: 'image', title: 'Affiche', folder: 'Images', format: 'png' },
+          }),
+      },
+    })
+    const { documentId, release } = await openJpegDocument()
+
+    await expect(saveDocument(documentId)).resolves.toBe(true)
+    release()
+
+    expect(savePicture).toHaveBeenCalledWith(expect.objectContaining({ name: 'Affiche' }))
+    expect(useDocuments.getState().documents[documentId]?.sourceAssetId).toBe('asset-2')
+  })
+
+  /** Nobody is at the machine to answer a window: the pass says the refusal and writes nothing. */
+  it('raises nothing under autosave, and still says why', async () => {
+    const confirmSaveElsewhere = vi.fn(() => Promise.resolve(true))
+    const { entries } = bridgeWatchingLogs({ documents: { confirmSaveElsewhere } })
+    const { documentId, release } = await openJpegDocument()
+
+    await expect(saveDocument(documentId, false)).resolves.toBe(false)
+    release()
+
+    expect(confirmSaveElsewhere).not.toHaveBeenCalled()
+    expect(entries()).toEqual([
+      expect.objectContaining({
+        message: expect.stringContaining(i18next.t('documents.sourceFormatChange')),
+      }),
+    ])
+  })
+
+  /**
+   * Nothing moved since the last save, so this ⌘S writes nothing back — and a question raised
+   * over a write that will not happen is a dialog for a gesture with no effect.
+   */
+  it('asks nothing at all when the document has not moved', async () => {
+    const confirmSaveElsewhere = vi.fn(() => Promise.resolve(false))
+    installFakeBridge({
+      documents: {
+        write: () => Promise.resolve<DocumentWrite>('written'),
+        confirmSaveElsewhere,
+      },
+    })
+    useAssets.setState({ items: [{ ...picture(), path: 'Images/hero.jpg' }] })
+    const created = await useDocuments.getState().create('image', {
+      title: 'Gemini 3.1',
+      sourceAssetId: 'asset-1',
+      sourceFidelity: 'faithful',
+    })
+    if (!created) throw new Error('expected a document')
+    useCanvases.getState().ensure(created.id, () => DEFAULT_CANVAS)
+    const release = holdCanvas(created.id, () => fakeCanvas({}))
+
+    await expect(saveDocument(created.id)).resolves.toBe(true)
+    release()
+
+    expect(confirmSaveElsewhere).not.toHaveBeenCalled()
   })
 })

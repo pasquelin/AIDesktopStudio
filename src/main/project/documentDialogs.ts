@@ -1,4 +1,4 @@
-import type { CloseChoice } from '@shared/domain/document'
+import type { CloseChoice, FlattenChoice } from '@shared/domain/document'
 import { fillHoles, TRANSLATIONS } from '@shared/i18n'
 import { windowLanguage } from '@main/window/language'
 
@@ -107,30 +107,54 @@ export async function askDeleteDocument(ask: AskUser, title: string): Promise<bo
 }
 
 /**
- * Whether the picture behind this document may take the flatten.
+ * What to do with a document its file cannot carry — §5.1.
  *
- * The one question of this file that DEFAULTS to yes: the document was written first and holds
- * the whole stack, so what is at stake is a surprise rather than a loss.
+ * Three buttons, and « save as » is the DEFAULT: the two-button version of this question made
+ * the destructive answer the only way forward, so a picture opened as a JPEG and given a second
+ * layer had « flatten » or nothing. Escape cancels, as it does everywhere here.
  */
 export async function askFlattenDocument(
   ask: AskUser,
   title: string,
   format: string,
   lost: string,
+): Promise<FlattenChoice> {
+  const language = windowLanguage()
+  const t = TRANSLATIONS[language].documents
+
+  const chosen = await ask({
+    message: fillHoles(t.flattenTitle, { title, format }, language),
+    detail: fillHoles(t.flattenBody, { format, lost }, language),
+    buttons: [t.flattenSaveAs, t.flattenConfirm, t.cancel],
+    defaultId: 0,
+    cancelId: 2,
+  })
+
+  if (chosen === 0) return 'saveAs'
+  return chosen === 1 ? 'flatten' : 'cancel'
+}
+
+/**
+ * Whether a save that was refused should be written somewhere else instead.
+ *
+ * `reason` arrives already phrased, from whoever refused: the five kinds that hold more than the
+ * studio recomposes each have their own sentence, and so do the two protections of §5.7. Cancel
+ * is the default — nothing has been written, and the offer is not the gesture that was asked for.
+ */
+export async function askSaveElsewhere(
+  ask: AskUser,
+  title: string,
+  reason: string,
 ): Promise<boolean> {
   const language = windowLanguage()
   const t = TRANSLATIONS[language].documents
 
-  return await askConfirm(
-    ask,
-    {
-      message: fillHoles(t.flattenTitle, { title, format }, language),
-      detail: fillHoles(t.flattenBody, { format, lost }, language),
-      confirm: t.flattenConfirm,
-      cancel: t.cancel,
-    },
-    true,
-  )
+  return await askConfirm(ask, {
+    message: fillHoles(t.saveElsewhereTitle, { title }, language),
+    detail: reason,
+    confirm: t.saveElsewhereConfirm,
+    cancel: t.cancel,
+  })
 }
 
 /**

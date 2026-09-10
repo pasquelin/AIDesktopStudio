@@ -1,5 +1,5 @@
 import { vi } from 'vitest'
-import type { CloseChoice, DocumentWrite } from '@shared/domain/document'
+import type { CloseChoice, DocumentWrite, FlattenChoice } from '@shared/domain/document'
 import { emptyAssetCounts } from '@shared/domain/asset'
 import type { FileOutcome } from '@shared/domain/fileOp'
 import { DEFAULT_ROLE_PATHS } from '@shared/domain/folderRole'
@@ -155,9 +155,12 @@ const fakeDocuments = (overrides: BridgeOverrides): StudioBridge['documents'] =>
   remove: () => Promise.resolve(),
   opened: () => Promise.resolve(),
   confirmClose: () => Promise.resolve<CloseChoice>('cancel'),
-  confirmFlatten: () => Promise.resolve(true),
+  // The answer that WRITES, for the same reason `confirmClose` answers `cancel`: a suite that
+  // says nothing about this question is one about a save, not about the dialog.
+  confirmFlatten: () => Promise.resolve<FlattenChoice>('flatten'),
   confirmDelete: () => Promise.resolve(false),
   confirmOverwrite: () => Promise.resolve(false),
+  confirmSaveElsewhere: () => Promise.resolve(false),
   ...overrides.documents,
 })
 

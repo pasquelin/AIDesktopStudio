@@ -73,8 +73,30 @@ export function NewDocumentWindow() {
   if (!ask) return <WindowShell title={t('documents.new')}>{null}</WindowShell>
 
   const project = ask.projectName
+  const saveAs = ask.purpose?.of === 'saveAs' ? ask.purpose : null
 
-  if (ask.purpose === 'externalFiles') {
+  // A destination, not a document: the kind is settled, and only where it goes, what it is
+  // called and which format it takes are still open. No column of kinds for that reason.
+  if (saveAs && kind && project !== null) {
+    return (
+      <WindowShell title={t('documents.saveAsTitle')}>
+        <div className="flex h-full flex-col">
+          <h2 className="mb-4 text-base font-semibold">{t('documents.saveAsTitle')}</h2>
+          <NewDocumentForm
+            kind={kind}
+            picked={ask.picked}
+            projectName={project}
+            open={ask.open}
+            saveAs={saveAs}
+            onCancel={() => settle(null)}
+            onSubmit={place => settle({ answer: 'made', place })}
+          />
+        </div>
+      </WindowShell>
+    )
+  }
+
+  if (ask.purpose?.of === 'externalFiles') {
     return (
       <WindowShell title={t('documents.importFiles')}>
         <NewDocumentNoProject

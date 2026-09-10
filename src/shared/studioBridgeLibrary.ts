@@ -14,6 +14,7 @@ import type {
   DocumentFile,
   DocumentKind,
   DocumentWrite,
+  FlattenChoice,
 } from './domain/document'
 import type {
   GitBranch,
@@ -224,15 +225,25 @@ export type StudioBridgeLibrary = {
      */
     confirmOverwrite: (title: string) => Promise<boolean>
     /**
-     * Whether to let the asset behind this document take the FLATTENED picture, its format
-     * carrying no `lost`.
+     * What to do when the file this document sits on cannot carry what it holds — its format
+     * dropping `lost`.
      *
-     * Asked once per document and never again: ⌘S is the most frequent gesture of the studio, and
-     * a question at each one would be unbearable on a picture that keeps its layers. Nothing is
-     * destroyed either way — the document is written first, with the whole stack — so the safe
-     * answer here is the one that writes, unlike every other confirmation of this file.
+     * Asked at EVERY save that would destroy something and never remembered (§5.1): the answer
+     * describes the state about to be written, and that state changes between two saves.
+     *
+     * Three answers, because a format that cannot carry the document is first of all a reason to
+     * write somewhere else: `saveAs` is the default, being the one that loses nothing.
      */
-    confirmFlatten: (title: string, format: string, lost: string) => Promise<boolean>
+    confirmFlatten: (title: string, format: string, lost: string) => Promise<FlattenChoice>
+    /**
+     * Whether to choose another destination for a save that was refused — `reason` being the
+     * refusal, already phrased by whoever raised it.
+     *
+     * What turns every refusal into a way forward (§5.1): a file read reduced, one whose format
+     * the studio's writers cannot keep, one holding more than the studio recomposes. Cancel is
+     * the default and the dismissal: nothing has been written, and nothing is about to be.
+     */
+    confirmSaveElsewhere: (title: string, reason: string) => Promise<boolean>
   }
 
   assets: {

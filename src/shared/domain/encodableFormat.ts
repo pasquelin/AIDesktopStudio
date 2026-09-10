@@ -1,3 +1,4 @@
+import type { DocumentKind } from './document'
 import {
   lossesFor,
   type CapabilityDomain,
@@ -37,4 +38,32 @@ export function nearestEncodableFor(
   const offered = ENCODABLE_BY_DOMAIN[domain]
   const fits = offered.find(format => lossesFor(traits, format).length === 0)
   return fits ?? offered[offered.length - 1] ?? 'png'
+}
+
+/**
+ * What « Save as » may offer per kind: the formats the studio writes a DOCUMENT into,
+ * and reads back.
+ *
+ * Not every format it can produce, and the gap is deliberate. A scene exports to OBJ, PLY and STL
+ * and opens none of them; offering one here would hand the tab a destination it could not reopen
+ * — « a format you write without knowing how to open it is not delivered ». Only the picture has
+ * a real choice, its two writers being the flat encoder and the container.
+ *
+ * Empty for the three kinds with nothing to choose between: an interface is its JSON, a script IS
+ * its text, and a character edits the model of the library it was opened on.
+ */
+const DESTINATIONS_BY_KIND: Record<DocumentKind, readonly WritableFormat[]> = {
+  image: ENCODABLE_BY_DOMAIN.picture,
+  scene: ['gltf'],
+  skybox: ['gltf'],
+  sequence: ['otio'],
+  audio: ['otio'],
+  material: ['mtlx'],
+  gui: [],
+  script: [],
+  character: [],
+}
+
+export function destinationFormatsFor(kind: DocumentKind): readonly WritableFormat[] {
+  return DESTINATIONS_BY_KIND[kind]
 }

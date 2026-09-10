@@ -55,7 +55,7 @@ describe('NewDocumentWindow', () => {
   it('uses the existing project shelf to choose where outside files are imported', async () => {
     open({
       ...ASK,
-      purpose: 'externalFiles',
+      purpose: { of: 'externalFiles' },
       recentProjects: [
         {
           path: '/projects/one',
@@ -291,5 +291,45 @@ describe('NewDocumentWindow', () => {
 
     await screen.findByText('Nouveau document')
     expect(screen.queryByRole('textbox')).toBeNull()
+  })
+
+  /**
+   * A Save as… asks this same window: a destination is a name, a folder and — for the picture
+   * alone — a format. The kind is settled, so no column of kinds is drawn.
+   */
+  describe('choosing a destination for a document already open', () => {
+    const SAVE_AS: NewDocumentAsk = {
+      ...ASK,
+      kind: 'image',
+      purpose: { of: 'saveAs', title: 'Gemini 3.1', formats: ['png', 'ora'] },
+    }
+
+    it('opens on the document own name, there to be changed', async () => {
+      open(SAVE_AS)
+
+      await expect(screen.findByDisplayValue('Gemini 3.1')).resolves.toBeInstanceOf(
+        HTMLInputElement,
+      )
+      expect(screen.queryByRole('navigation')).toBeNull()
+    })
+
+    it('answers with the format that was picked', async () => {
+      open(SAVE_AS)
+
+      const format = await screen.findByRole('combobox', { name: 'Format de fichier' })
+      await userEvent.selectOptions(format, 'ora')
+      await userEvent.click(screen.getByRole('button', { name: 'Enregistrer' }))
+
+      await waitFor(() =>
+        expect(answer).toHaveBeenCalledWith(
+          made({
+            kind: 'image',
+            title: 'Gemini 3.1',
+            folder: 'documents',
+            format: 'ora',
+          }),
+        ),
+      )
+    })
   })
 })

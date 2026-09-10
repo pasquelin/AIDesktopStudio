@@ -144,6 +144,7 @@ type ChannelMethod = {
   [CHANNELS.documentConfirmDelete]: StudioBridge['documents']['confirmDelete']
   [CHANNELS.documentConfirmOverwrite]: StudioBridge['documents']['confirmOverwrite']
   [CHANNELS.documentConfirmFlatten]: StudioBridge['documents']['confirmFlatten']
+  [CHANNELS.documentConfirmSaveElsewhere]: StudioBridge['documents']['confirmSaveElsewhere']
 
   [CHANNELS.recoveryWrite]: StudioBridge['recovery']['write']
   [CHANNELS.recoveryList]: StudioBridge['recovery']['list']

@@ -50,6 +50,7 @@ type DocumentsState = {
   adopt: (document: DocumentDescriptor) => void
   rename: (id: string, title: string) => Promise<DocumentNameFailure | null>
   noteSourceFidelity: (id: string, fidelity: ReadFidelity) => void
+  retarget: (id: string, sourceAssetId: string, title: string) => void
   close: (id: string) => void
 }
 
@@ -370,21 +371,10 @@ export const useDocuments = createStore<DocumentsState>()((set, get) => ({
     return null
   },
 
-  /**
-   * What the READ settled, written on the descriptor the moment it is known — which is after the
-   * document exists, since the tab is made before its file is opened into it.
-   *
-   * It lives for the session and is NOT written into the file: a document opened for an asset
-   * writes that asset and nothing beside it, so there is no envelope of its own to carry it. What
-   * does carry it across a crash is the recovery entry. A document filled from a file rather than
-   * from its picture therefore reads `unknown`, which refuses to overwrite and says how to clear it.
-   */
-  noteSourceFidelity: (id, fidelity) =>
-    set(state => {
-      const document = state.documents[id]
-      if (!document || document.sourceFidelity === fidelity) return state
-      return { documents: { ...state.documents, [id]: { ...document, sourceFidelity: fidelity } } }
-    }),
+  noteSourceFidelity: (id, sourceFidelity) => set(state => amended(state, id, { sourceFidelity })),
+
+  retarget: (id, sourceAssetId, title) =>
+    set(state => amended(state, id, { sourceAssetId, title, sourceFidelity: 'faithful' })),
 
   close: id =>
     set(state => {
@@ -393,6 +383,28 @@ export const useDocuments = createStore<DocumentsState>()((set, get) => ({
       return { documents: remaining, activeId: state.activeId === id ? null : state.activeId }
     }),
 }))
+
+/**
+ * A change to one open document, or the state untouched when no tab holds it.
+ *
+ * The two callers say the same thing about the READ: `noteSourceFidelity` writes what opening a
+ * picture settled — established at the read, since a crop and a reduction leave the same document
+ * and only the read tells them apart — and `retarget` moves the destination a Save as… chose,
+ * where the fidelity can only be `faithful` because those bytes are what the studio just wrote
+ * whole. Neither is carried into the file: a document opened for an asset writes that asset and
+ * nothing beside it, so a tab filled from a file rather than from its picture reads `unknown`,
+ * which refuses to overwrite and says how to clear it. What carries it across a crash is the
+ * recovery entry.
+ */
+function amended(
+  state: Pick<DocumentsState, 'documents'>,
+  id: string,
+  change: Partial<DocumentDescriptor>,
+): Pick<DocumentsState, 'documents'> | Record<string, never> {
+  const document = state.documents[id]
+  if (!document) return {}
+  return { documents: { ...state.documents, [id]: { ...document, ...change } } }
+}
 
 /** The four refusals travel as the error's message; anything else is not one of them. */
 function asNameFailure(error: unknown): DocumentNameFailure {

@@ -220,6 +220,8 @@ const bridge: StudioBridge = {
     confirmOverwrite: title => ipcRenderer.invoke(CHANNELS.documentConfirmOverwrite, title),
     confirmFlatten: (title, format, lost) =>
       ipcRenderer.invoke(CHANNELS.documentConfirmFlatten, title, format, lost),
+    confirmSaveElsewhere: (title, reason) =>
+      ipcRenderer.invoke(CHANNELS.documentConfirmSaveElsewhere, title, reason),
   },
   recovery: {
     write: draft => ipcRenderer.invoke(CHANNELS.recoveryWrite, draft),

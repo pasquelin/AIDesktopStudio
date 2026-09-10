@@ -1,29 +1,22 @@
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react'
-import { Input } from '@/components/Input'
 import { useTranslation } from 'react-i18next'
 import { orElse } from '@shared/promises'
-import {
-  extensionOfKind,
-  roleForKind,
-  type DocumentDescriptor,
-  type DocumentKind,
-} from '@shared/domain/document'
+import { roleForKind, type DocumentDescriptor, type DocumentKind } from '@shared/domain/document'
 import { checkDocumentName } from '@shared/domain/documentName'
 import { DEFAULT_ROLE_PATHS } from '@shared/domain/folderRole'
+import type { WritableFormat } from '@shared/domain/formatCapability'
 import type { DocumentTemplateId, NamedDocumentPlace } from '@shared/domain/newDocument'
 import { DEFAULT_SCENE_TEMPLATE, type SceneTemplateId } from '@shared/domain/sceneTemplate'
 import { DEFAULT_UI_TEMPLATE, type UiTemplateId } from '@shared/domain/uiTemplates'
 import { Button } from '@/components/Button'
 import { FolderPicker } from '@/components/FolderPicker/FolderPicker'
-import { FILE_EXTENSION } from '@/components/styles'
-import { cn } from '@/helpers/cn'
 import { isComposing } from '@/helpers/composition'
 import { getBridge } from '@/services/bridge'
 import { useDocuments } from '@/stores/documents'
 import { takenDocumentNames, untitledDocumentName } from '@/stores/documentNames'
 import { DOCUMENT_NAME_REFUSALS } from '../../documentName'
-import { NewDocumentTemplates } from './NewDocumentTemplates'
-import { NewDocumentUiTemplates } from './NewDocumentUiTemplates'
+import { NewDocumentNameField } from './NewDocumentNameField'
+import { NewDocumentTemplateField } from './NewDocumentTemplateField'
 
 export type NewDocumentFormProps = {
   kind: DocumentKind
@@ -32,6 +25,11 @@ export type NewDocumentFormProps = {
   projectName: string
   /** The documents a tab holds and no file does yet — nowhere on disk for the picker to find. */
   open: readonly DocumentDescriptor[]
+  /**
+   * A Save as…: the name the field opens on, and the formats to choose between. Absent for a new
+   * document, which opens on a free name and has one format per kind to show rather than offer.
+   */
+  saveAs?: { title: string; formats: readonly WritableFormat[] }
   onCancel: () => void
   onSubmit: (place: NamedDocumentPlace) => void
 }
@@ -48,6 +46,7 @@ export function NewDocumentForm({
   picked,
   projectName,
   open,
+  saveAs,
   onCancel,
   onSubmit,
 }: NewDocumentFormProps) {
@@ -55,12 +54,14 @@ export function NewDocumentForm({
 
   const [folder, setFolder] = useState<string | null>(null)
   const [draft, setDraft] = useState('')
+  const [format, setFormat] = useState<WritableFormat | null>(saveAs?.formats[0] ?? null)
   const [template, setTemplate] = useState<SceneTemplateId>(DEFAULT_SCENE_TEMPLATE)
   const [uiTemplate, setUiTemplate] = useState<UiTemplateId>(DEFAULT_UI_TEMPLATE)
   const stored = useDocuments(state => state.stored)
+  // Pulled out of the object so the effect below depends on the NAME rather than on a prop
+  // rebuilt at every render of the window — which would re-seed the field on each keystroke.
+  const saveAsName = saveAs?.title ?? null
   const field = useRef<HTMLInputElement>(null)
-  const nameId = useId()
-  const extensionId = useId()
   const folderId = useId()
   const refusalId = useId()
 
@@ -78,17 +79,19 @@ export function NewDocumentForm({
         ))
 
       setFolder(landing)
-      // Read from the store rather than from the subscription: a listing arriving later must not
-      // re-run this and overwrite a name already being typed.
+      // The document's OWN name for a Save as…: it is there to be changed, not to be stepped
+      // over. Read from the store rather than from the subscription otherwise: a listing arriving
+      // later must not re-run this and overwrite a name already being typed.
       const listed = useDocuments.getState().stored
       setDraft(
-        untitledDocumentName(
-          takenDocumentNames({ documents: {}, stored: [...listed, ...open] }, landing),
-          kind,
-        ),
+        saveAsName ??
+          untitledDocumentName(
+            takenDocumentNames({ documents: {}, stored: [...listed, ...open] }, landing),
+            kind,
+          ),
       )
     })()
-  }, [kind, picked, open])
+  }, [kind, picked, open, saveAsName])
 
   useEffect(() => {
     if (folder === null) return
@@ -135,7 +138,14 @@ export function NewDocumentForm({
    * would be answering with a choice nobody was offered.
    */
   const commit = (): void => {
-    if (!refusal) onSubmit({ kind, title: draft.trim(), folder, ...templateOf() })
+    if (refusal) return
+    onSubmit({
+      kind,
+      title: draft.trim(),
+      folder,
+      ...templateOf(),
+      ...(format ? { format } : {}),
+    })
   }
 
   return (
@@ -149,29 +159,16 @@ export function NewDocumentForm({
         commit()
       }}
     >
-      {/* Labelled where it shows, not by an `aria-label`: two bare fields under one heading leave
-          nothing to tell them apart, for a reader of either kind. */}
-      <div className="flex flex-col gap-1.5">
-        <label htmlFor={nameId} className="text-muted text-xs">
-          {t('documents.nameField')}
-        </label>
-        <div className="flex items-center gap-2">
-          <Input
-            ref={field}
-            data-sc="field:newDocument.name"
-            id={nameId}
-            aria-describedby={refusal ? `${extensionId} ${refusalId}` : extensionId}
-            value={draft}
-            className="flex-1 text-xs"
-            onChange={event => setDraft(event.target.value)}
-          />
-          {/* Read off the kind, and shown rather than offered: one format per kind is the whole
-              of the open-format decision, so there is nothing here to pick between. */}
-          <span id={extensionId} className={cn(FILE_EXTENSION, 'shrink-0 text-xs')}>
-            {extensionOfKind(kind)}
-          </span>
-        </div>
-      </div>
+      <NewDocumentNameField
+        ref={field}
+        kind={kind}
+        value={draft}
+        onChange={setDraft}
+        refusalId={refusal ? refusalId : null}
+        formats={saveAs?.formats ?? []}
+        format={format}
+        onFormat={setFormat}
+      />
 
       {refusal && (
         <p id={refusalId} role="alert" className="text-warning m-0 text-xs">
@@ -181,16 +178,13 @@ export function NewDocumentForm({
 
       {/* Under the name and above the folder, which is the order the questions come in: what it
           is called, what it holds, where it goes. */}
-      {(kind === 'scene' || kind === 'gui') && (
-        <div className="flex flex-col gap-1.5">
-          <span className="text-muted text-xs">{t('documents.templateField')}</span>
-          {kind === 'scene' ? (
-            <NewDocumentTemplates value={template} onChange={setTemplate} />
-          ) : (
-            <NewDocumentUiTemplates value={uiTemplate} onChange={setUiTemplate} />
-          )}
-        </div>
-      )}
+      <NewDocumentTemplateField
+        kind={kind}
+        scene={template}
+        onScene={setTemplate}
+        ui={uiTemplate}
+        onUi={setUiTemplate}
+      />
 
       <div className="flex min-h-0 flex-1 flex-col gap-1.5">
         <span id={folderId} className="text-muted text-xs">
@@ -224,7 +218,7 @@ export function NewDocumentForm({
                 className="shrink-0"
                 disabled={refusal !== null}
               >
-                {t('documents.create')}
+                {t(saveAs ? 'documents.save' : 'documents.create')}
               </Button>
             </>
           }

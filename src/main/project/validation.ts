@@ -100,6 +100,13 @@ export function parseFolderPath(value: unknown): string {
 }
 
 /**
+ * The studio's own folders are refused on top of the shape, which no other path channel needs
+ * to say: the field offering these never lists a hidden folder, so nothing a user can click
+ * reaches here — and a document written into `.index/` would be swept by the next rescan.
+ */
+const landingFolder = folderPath.refine(path => !isPrivatePath(path)).optional()
+
+/**
  * A batch of paths, each held to exactly the rule above.
  *
  * Bounded, like every list this side takes from a window: what a hand selects in a tree is
@@ -212,6 +219,7 @@ const savePicture = z.object({
   replaces: assetId.optional(),
   name: z.string().trim().min(1).max(200),
   derivedFrom: assetId.optional(),
+  folder: landingFolder,
   // The same rule the export applies, for the same reason: a `data:image/png;base64,` prefix
   // reaching the file would be written as part of the picture. That the payload really decodes
   // to a PNG is checked once, by the handler, on the bytes it decodes anyway.
@@ -350,6 +358,7 @@ const saveLayered = z.object({
   replaces: assetId.optional(),
   name: z.string().trim().min(1).max(200),
   derivedFrom: assetId.optional(),
+  folder: landingFolder,
   document: z.object({
     stack: oraStack,
     surfaces: z.array(oraSurface).max(2048),
@@ -379,18 +388,24 @@ export function parseForceWrite(value: unknown): boolean {
 }
 
 /**
- * The studio's own folders are refused on top of the shape, which no other path channel needs
- * to say: the field offering these never lists a hidden folder, so nothing a user can click
- * reaches here — and a document written into `.index/` would be swept by the next rescan.
- */
-const landingFolder = folderPath.refine(path => !isPrivatePath(path)).optional()
-
-/**
  * Where a first save lands, held to the same rule as every other path a window names — absent
  * for a caller that has none to offer, which leaves the writer its own default.
  */
 export function parseLandingFolder(value: unknown): string | undefined {
   return landingFolder.parse(value)
+}
+
+/**
+ * A refusal the window already phrased, on its way into a dialog's detail.
+ *
+ * Its own bound rather than a title's: four of these sentences are a whole paragraph, naming the
+ * parts a file holds and the menu row that writes them out, and a title's 200 characters would
+ * refuse them at the frontier.
+ */
+const refusalReason = z.string().max(2000)
+
+export function parseRefusalReason(value: unknown): string {
+  return refusalReason.parse(value)
 }
 
 export const documentTitle = z.string().max(200)

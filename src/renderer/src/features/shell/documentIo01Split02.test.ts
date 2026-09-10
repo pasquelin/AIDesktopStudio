@@ -8,7 +8,7 @@ import { installFakeBridge } from '@/services/fakeBridge'
 import { useAssets } from '@/stores/assets'
 import { canvasStore, useCanvases } from '@/stores/canvases'
 import { useDocuments } from '@/stores/documents'
-import { type DocumentWrite } from '@shared/domain/document'
+import { type DocumentWrite, type FlattenChoice } from '@shared/domain/document'
 import type { SaveLayeredRequest } from '@shared/ipc'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -159,7 +159,7 @@ describe('saveDocument', () => {
 
     it('writes the flattened picture into a source that cannot hold the stack', async () => {
       const savePicture = vi.fn(() => Promise.resolve(picture()))
-      const confirmFlatten = vi.fn(() => Promise.resolve(true))
+      const confirmFlatten = vi.fn(() => Promise.resolve<FlattenChoice>('flatten'))
       installFakeBridge({
         documents: { write: () => Promise.resolve<DocumentWrite>('written'), confirmFlatten },
         assets: { savePicture },
@@ -181,7 +181,7 @@ describe('saveDocument', () => {
      * flattened the file without a word — including the ones where the layer had been undone.
      */
     it('asks again at each save, the answer belonging to the state being written', async () => {
-      const confirmFlatten = vi.fn(() => Promise.resolve(true))
+      const confirmFlatten = vi.fn(() => Promise.resolve<FlattenChoice>('flatten'))
       installFakeBridge({
         documents: { write: () => Promise.resolve<DocumentWrite>('written'), confirmFlatten },
         assets: { savePicture: () => Promise.resolve(picture()) },
@@ -204,7 +204,7 @@ describe('saveDocument', () => {
       installFakeBridge({
         documents: {
           write: () => Promise.resolve<DocumentWrite>('written'),
-          confirmFlatten: () => Promise.resolve(false),
+          confirmFlatten: () => Promise.resolve<FlattenChoice>('cancel'),
         },
         assets: { savePicture },
       })
@@ -334,7 +334,7 @@ describe('saveDocument', () => {
     })
 
     it('names what the source file could not have held', async () => {
-      const confirmFlatten = vi.fn(() => Promise.resolve(true))
+      const confirmFlatten = vi.fn(() => Promise.resolve<FlattenChoice>('flatten'))
       installFakeBridge({
         documents: { write: () => Promise.resolve<DocumentWrite>('written'), confirmFlatten },
         assets: { savePicture: () => Promise.resolve(picture()) },

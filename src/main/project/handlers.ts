@@ -297,6 +297,7 @@ export function registerProjectHandlers({
       name: string
       replaces?: string
       derivedFrom?: string
+      folder?: string
     },
     bytes: Uint8Array,
     extension: string,
@@ -321,6 +322,7 @@ export function registerProjectHandlers({
           ...(probe ? { probe } : {}),
           ...(source?.map ? { map: source.map } : {}),
           ...(request.derivedFrom ? { derivedFrom: request.derivedFrom } : {}),
+          folder: request.folder,
         },
         bytes,
       ),

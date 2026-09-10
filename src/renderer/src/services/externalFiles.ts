@@ -69,7 +69,7 @@ async function chooseProject(): Promise<boolean> {
   for (;;) {
     const current = useProject.getState().project
     const answer = await bridge.newDocument.ask({
-      purpose: 'externalFiles',
+      purpose: { of: 'externalFiles' },
       kind: null,
       surface: null,
       picked: null,

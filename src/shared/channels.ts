@@ -148,6 +148,7 @@ export type Channels = {
   documentConfirmDelete: 'document:confirm-delete'
   documentConfirmOverwrite: 'document:confirm-overwrite'
   documentConfirmFlatten: 'document:confirm-flatten'
+  documentConfirmSaveElsewhere: 'document:confirm-save-elsewhere'
 
   recoveryWrite: 'recovery:write'
   recoveryList: 'recovery:list'

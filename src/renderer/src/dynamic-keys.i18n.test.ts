@@ -49,6 +49,7 @@ import { TRACK_FLAGS } from '@/features/timeline/components/trackFlags'
 import { DOCUMENT_NAME_REFUSALS } from '@/features/document/documentName'
 import { SAVE_REFUSALS } from '@/features/shell/documentIo'
 import { DOCUMENT_KINDS, isMadeFromNothing } from '@shared/domain/document'
+import { destinationFormatsFor } from '@shared/domain/encodableFormat'
 import { SCENE_TEMPLATE_GROUPS, SCENE_TEMPLATE_IDS } from '@shared/domain/sceneTemplate'
 import { FILE_KINDS } from '@shared/domain/folder'
 import { FILE_INFO_SECTIONS } from '@/features/document/components/FileInfoWindow/sections'
@@ -126,6 +127,11 @@ const COMPOSED_KEYS: readonly string[] = [
   // reads « Envoyé à deepseek » where every other surface says « DeepSeek ».
   ...CLOUD_IDS.map(doorLabelKey),
   doorLabelKey('local'),
+  // Every format a Save as… may offer, named in words rather than by extension — composed from
+  // the same table the window draws its list from.
+  ...DOCUMENT_KINDS.flatMap(kind => destinationFormatsFor(kind)).map(
+    format => `documents.formats.${format}`,
+  ),
   ...ADJUSTMENT_KINDS.map(kind => `adjustment.${kind}`),
   // Every humanoid role, group and side the transfer window names from a template literal: a
   // role lost from a bundle would put its raw key on every row of the bone mapping.

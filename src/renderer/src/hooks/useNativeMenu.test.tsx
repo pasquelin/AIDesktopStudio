@@ -26,7 +26,7 @@ const saveDocumentAs = vi.fn((_documentId: string) => Promise.resolve(true))
 vi.mock('@/features/shell/documentIo', () => ({
   saveDocument: (documentId: string) => saveDocument(documentId),
 }))
-vi.mock('@/features/shell/documentCopy', () => ({
+vi.mock('@/features/shell/documentSaveAs', () => ({
   saveDocumentAs: (documentId: string) => saveDocumentAs(documentId),
 }))
 

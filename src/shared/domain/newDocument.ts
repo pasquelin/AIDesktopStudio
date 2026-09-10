@@ -1,4 +1,5 @@
 import type { DocumentDescriptor, DocumentKind } from './document'
+import type { WritableFormat } from './formatCapability'
 import type { RecentProject } from './project'
 import type { SceneTemplateId } from './sceneTemplate'
 import type { ToolSurface } from './tool'
@@ -11,10 +12,30 @@ export function isNewDocumentRoute(hash: string): boolean {
   return hash.replace(/^#/, '') === NEW_DOCUMENT_ROUTE
 }
 
+/**
+ * What this window was opened FOR, when it is not the plain « what shall I make ».
+ *
+ * A union rather than two optional fields: a Save as… carries a name to open on and the formats
+ * its document may be written in, and neither means anything to a file arrival — carried beside
+ * a bare marker they would be two members free to be filled for the wrong question.
+ */
+type NewDocumentPurpose =
+  | { of: 'externalFiles' }
+  | {
+      of: 'saveAs'
+      /** The name the field opens on — the document's own, there to be changed. */
+      title: string
+      /**
+       * The formats this document may be written in, closest first. One or none leaves nothing to
+       * choose: the form shows the extension instead, as it does for a new document.
+       */
+      formats: readonly WritableFormat[]
+    }
+
 /** What the studio hands the window that names a document about to be made. */
 export type NewDocumentAsk = {
   /** A file arrival only asks where it belongs; it never asks for a document kind or name. */
-  purpose?: 'externalFiles'
+  purpose?: NewDocumentPurpose
   /**
    * What is being made, or `null` to ask that first — the plus button and ⌘N send nothing,
    * a File ▸ New row sends its own kind. A window that already knows opens on the form.
@@ -74,6 +95,11 @@ export type NamedDocumentPlace = {
   title: string
   folder: string
   template?: DocumentTemplateId
+  /**
+   * The format chosen for a Save as…, absent everywhere else. A new document has none to choose:
+   * its kind names one file, and the form shows that extension rather than offering it.
+   */
+  format?: WritableFormat
 }
 
 /**

@@ -424,6 +424,15 @@ export type DocumentEnvelope = Omit<DocumentFile, 'content'>
 export type CloseChoice = 'save' | 'discard' | 'cancel'
 
 /**
+ * The three answers to « this file cannot carry what the document holds » — §5.1.
+ *
+ * `saveAs` is the one that loses nothing, so it is the default button and what a dismissed dialog
+ * used to have no spelling for: the question was a yes-or-no whose yes destroyed the traits the
+ * format drops, which made the destructive path the only way forward.
+ */
+export type FlattenChoice = 'flatten' | 'saveAs' | 'cancel'
+
+/**
  * What a write did, and the reason it is not a `void`.
  *
  * `stale` says the file changed under the studio since it was last read or written — another

@@ -88,6 +88,7 @@ type AssetTarget = {
   derivedFrom?: string
   name: string
   format: WritableFormat
+  folder?: string
 }
 type DocumentFile =
   | {

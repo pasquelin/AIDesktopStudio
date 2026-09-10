@@ -8,13 +8,8 @@ import {
 } from '@shared/domain/document'
 import type { ToolSurface } from '@shared/domain/tool'
 import type { WorkspaceId } from '@shared/domain/workspace'
-import {
-  checkDocumentName,
-  documentPathFor,
-  type DocumentNameFailure,
-} from '@shared/domain/documentName'
+import { checkDocumentName, type DocumentNameFailure } from '@shared/domain/documentName'
 import { parentOf } from '@shared/domain/folder'
-import { SCRIPT_STARTER } from '@shared/domain/game'
 import { DEFAULT_SCENE_TEMPLATE, isSceneTemplateId } from '@shared/domain/sceneTemplate'
 import type {
   DocumentTemplateId,
@@ -25,40 +20,15 @@ import { DEFAULT_UI_TEMPLATE, isUiTemplateId } from '@shared/domain/uiTemplates'
 import { ensureProjectInstalls } from '@/engines/scene/projectInstalls'
 import { seedGuiTemplate } from '@/stores/gui'
 import { seedSceneTemplate } from '@/stores/scenes'
-import { documentAtPath, useDocuments } from '@/stores/documents'
+import { useDocuments } from '@/stores/documents'
 import { takenDocumentNames } from '@/stores/documentNames'
 import { useProject } from '@/stores/project'
 import { useSettings } from '@/stores/settings'
 import { selectedFilePaths, useSelection } from '@/stores/selection'
 import { getBridge } from '@/services/bridge'
 import { openDocument } from './components/dockviewApi'
+import { createScript, type NamedCreation } from './createScript'
 import { projectName } from '@shared/domain/project'
-
-/**
- * The file first, then the tab: `relist` is what gives the document the id its path spells.
- *
- * Exported for the one other thing that makes a script — a generation, which brings its own
- * source where a person's gesture brings the starter.
- */
-export async function createScript(
-  of: NamedCreation | undefined,
-  source: string = SCRIPT_STARTER,
-): Promise<DocumentDescriptor | null> {
-  if (!of) return null
-
-  // Composed like every other kind: from the RAW title, a separator named a file in another
-  // folder, and a name the main process refuses made `writeScript` answer `false` — nothing on
-  // screen, no word.
-  const path = documentPathFor(of.title, 'script', of.folder)
-  // Refused rather than overwritten: this path names a file somebody already has work in.
-  if (documentAtPath(useDocuments.getState(), path)) return null
-  if (!(await orElse(getBridge()?.game.writeScript(path, source), false))) return null
-
-  await useDocuments.getState().relist()
-  const created = documentAtPath(useDocuments.getState(), path)
-  if (created) openDocument(created)
-  return created
-}
 
 /**
  * The folder the Explorer points at, or `null` for the window to fall back on the kind's own.
@@ -151,14 +121,6 @@ export function openNewDocument(surface: ToolSurface | null): Promise<DocumentDe
 export function createDocumentOfKind(kind: DocumentKind): Promise<DocumentDescriptor | null> {
   return made(kind, workspaceForKind(kind)).catch(() => null)
 }
-
-/**
- * What a caller who has nobody to ask already knows. `template` is read for the two kinds that
- * open on one and ignored elsewhere — the assistant names one, and a caller that says nothing
- * takes the default. Narrowed by the kind at the seeding, never trusted on its face: the two
- * families share a field, and `empty` is the only id both of them spell.
- */
-export type NamedCreation = { title: string; folder?: string; template?: DocumentTemplateId }
 
 /**
  * Asks until there is an answer to act on: a way into a project is taken and the question put

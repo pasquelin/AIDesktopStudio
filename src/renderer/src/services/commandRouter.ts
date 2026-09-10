@@ -1,7 +1,7 @@
 import { commandDescriptor, type CommandId } from '@shared/domain/command'
 import type { StudioBridge } from '@shared/ipc'
 import { saveDocument } from '@/features/shell/documentIo'
-import { saveDocumentAs } from '@/features/shell/documentCopy'
+import { saveDocumentAs } from '@/features/shell/documentSaveAs'
 import {
   closableTabId,
   fileViewSave,

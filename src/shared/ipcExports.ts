@@ -16,6 +16,15 @@ type SaveRequestBase = {
   name: string
   /** The asset this one was edited from, so the two stay traceable to each other. */
   derivedFrom?: string
+  /**
+   * The project folder to write into, for the one caller that has been given one: a Save as…,
+   * where a person picked the destination. Absent everywhere else, and then the role decides —
+   * a picture lands with the pictures without anybody naming a folder.
+   *
+   * Refused rather than trusted on the way in: it crosses the frontier as text, so it meets the
+   * same shape and the same ban on the studio's own folders as every other landing folder.
+   */
+  folder?: string
 }
 
 /** An edited take on its way back to disk — see `StudioBridge['assets']['saveAudio']`. */

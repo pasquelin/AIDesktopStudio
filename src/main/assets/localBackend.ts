@@ -99,6 +99,7 @@ export type WriteRequest = Omit<ImportRequest, 'url'> & {
   extension: string
   /** Overrides filing without changing what kind of asset the catalogue records. */
   folderRole?: FolderRole
+  folder?: string
   /**
    * Files this under `.resources/` — what the APP ships, which no surface that browses assets
    * lists. 🛑 A FLAG, never a path: a folder reaching this from a request would write outside the
@@ -333,7 +334,11 @@ export function createLocalBackend({
     if (existing?.path) return withExtension(existing.path, extension)
 
     const role = request.folderRole ?? roleForAsset(request)
-    const folder = request.resource ? resourceFolderOf(role) : await folderFor(role)
+    // A named folder wins over the role and loses to `resource`: a durable internal resource is
+    // never in the tree the explorer shows, so no chosen folder can put it there.
+    const folder = request.resource
+      ? resourceFolderOf(role)
+      : (request.folder ?? (await folderFor(role)))
     if (request.type === 'animation')
       return freeAnimationPath(projectPath(), folder, name, extension)
     return freeAssetPath(projectPath(), folder, name, extension)

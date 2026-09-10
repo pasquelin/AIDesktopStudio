@@ -1,0 +1,191 @@
+import { localizedError } from '@shared/localizedError'
+import i18next from 'i18next'
+import { reportFailure, reportNotice } from '@/services/diagnostics'
+import { assetsById, useAssets } from '@/stores/assets'
+import { useDocuments } from '@/stores/documents'
+import { useSettings } from '@/stores/settings'
+import type { DocumentDescriptor } from '@shared/domain/document'
+import { destinationFormatsFor, nearestEncodableFor } from '@shared/domain/encodableFormat'
+import { parentOf } from '@shared/domain/folder'
+import type { NamedDocumentPlace } from '@shared/domain/newDocument'
+import { projectName } from '@shared/domain/project'
+import type { StudioBridge } from '@shared/ipc'
+import { getBridge } from '@/services/bridge'
+import { openDocument } from './components/dockviewApi'
+import type { CapturedDraft, DocumentIo } from './documentIoAdapters'
+import { createScript } from './createScript'
+import { forgetDocument, writableDocument } from './documentTab'
+
+/** The two shapes of io a Save as… writes through, each with its own destination. */
+type PictureIo = Extract<DocumentIo, { writeAsset: object }>
+type FileIo = Extract<DocumentIo, { assetOnly?: undefined }>
+
+/**
+ * The folder the window opens on: where this document's own file sits.
+ *
+ * The ASSET's folder for a document opened to edit one, and not the document's `path`, which for
+ * such a tab still names the address a document file WOULD have had — a folder nothing is in.
+ */
+function folderOf(document: DocumentDescriptor): string | null {
+  const source = document.sourceAssetId
+  const path = source ? assetsById(useAssets.getState()).get(source)?.path : undefined
+  return parentOf(path ?? document.path)
+}
+
+/** Where the document is to be written, or `null` when the window was closed or cancelled. */
+async function askWhereToSave(document: DocumentDescriptor): Promise<NamedDocumentPlace | null> {
+  const bridge = getBridge()
+  // ASKED, never read off the project store: that store settles unsaved work, so it reaches the
+  // save this module is called from — and the import graph carries no cycle. The round trip is
+  // for a rare, deliberate gesture, and the window it opens costs far more than it does.
+  const project = await bridge?.project.current()
+  if (!bridge || !project) return null
+
+  const answer = await bridge.newDocument.ask({
+    purpose: {
+      of: 'saveAs',
+      title: document.title,
+      formats: destinationFormatsFor(document.kind),
+    },
+    kind: document.kind,
+    surface: null,
+    picked: folderOf(document),
+    projectName: projectName(project.path),
+    recentProjects: useSettings.getState().settings.storage.recentProjects,
+    open: Object.values(useDocuments.getState().documents),
+  })
+
+  return answer?.answer === 'made' ? answer.place : null
+}
+
+/**
+ * A picture written where the person chose, and the tab carried on to it.
+ *
+ * The document is REPOINTED rather than duplicated: its destination is the asset it edits, so
+ * moving that link is the whole of « the new destination becomes the active one » (§5.3). No
+ * second tab, no history thrown away, and the file it was opened from is left exactly as it was.
+ */
+async function intoNewAsset(
+  document: DocumentDescriptor,
+  io: PictureIo,
+  place: NamedDocumentPlace,
+  draft: CapturedDraft,
+): Promise<boolean> {
+  const format = place.format ?? nearestEncodableFor('picture', io.traitsOf(document.id))
+  try {
+    const written = await io.writeAsset(
+      document.id,
+      {
+        name: place.title,
+        format,
+        folder: place.folder,
+        ...(document.sourceAssetId ? { derivedFrom: document.sourceAssetId } : {}),
+      },
+      draft,
+    )
+    if (!written) throw localizedError('bakeContentEmpty')
+    // The NAME the row came back with, never the one that was typed: a folder already holding
+    // that file frees the name, and a tab titled otherwise would name a file nobody wrote.
+    useDocuments.getState().retarget(document.id, written.id, written.name)
+    await useAssets.getState().refresh()
+    return true
+  } catch (error) {
+    reportFailure('assets.save', document.title, error)
+    return false
+  }
+}
+
+/**
+ * A document file written where the person chose, and the tab moved to it.
+ *
+ * A NEW document, unlike the picture above, and the file format is what forces it: a document's
+ * id is written INSIDE its file, so a second file carrying the first one's id would leave two
+ * rows of a listing claiming one document, and the next session free to open either. The file
+ * that was open keeps its id and its last saved bytes; the tab carries on with the new one,
+ * filled from the very draft that was just written.
+ */
+async function intoNewFile(
+  bridge: StudioBridge,
+  document: DocumentDescriptor,
+  io: FileIo,
+  place: NamedDocumentPlace,
+  draft: CapturedDraft,
+): Promise<boolean> {
+  const created = await useDocuments
+    .getState()
+    .create(document.workspace, { kind: document.kind, title: place.title, folder: place.folder })
+  if (!created) return false
+
+  const written = await bridge.documents.write(
+    created.id,
+    created.kind,
+    { ...draft, title: created.title },
+    false,
+    place.folder,
+  )
+  if (written !== 'written') {
+    useDocuments.getState().close(created.id)
+    return false
+  }
+
+  io.install(created.id, draft.content, draft.parts)
+  openDocument(created)
+  forgetDocument(document.id)
+  return true
+}
+
+/**
+ * A script written where the person chose. Apart from every other kind because its file IS its
+ * identity: nothing in a `.ts` can carry a document id, so its path is what names it — the same
+ * reason `createScript` writes the file before the tab exists.
+ */
+async function intoNewScript(
+  document: DocumentDescriptor,
+  place: NamedDocumentPlace,
+  draft: CapturedDraft,
+): Promise<boolean> {
+  const created = await createScript({ title: place.title, folder: place.folder }, draft.content)
+  if (!created) return false
+  forgetDocument(document.id)
+  return true
+}
+
+/**
+ * ⇧⌘S — a destination chosen, written, and made this document's own (§5.3).
+ *
+ * It used to write `<name> copie` beside the file with nothing asked and stand a second tab on
+ * it: a « save a copy AND switch to it », which is neither of the two gestures the menu names.
+ * What it writes now is what was asked for, where it was asked for, in the format that was asked
+ * for — and the tab saves there from now on.
+ *
+ * Not stopped by the refusals a ⌘S meets, and that is the point of it: a file the studio did not
+ * read whole, one whose format its writers cannot keep, one it may not overwrite — each of those
+ * is a reason to write SOMEWHERE ELSE, which is what this does.
+ */
+export async function saveDocumentAs(documentId: string): Promise<boolean> {
+  const savable = writableDocument(documentId)
+  if (!savable) return false
+  const { bridge, document, io } = savable
+  if (io.assetOnly) {
+    // The character has no destination to choose: its tab edits a model of the library, and the
+    // skeleton it writes belongs in that model's own container.
+    reportNotice('document.save', i18next.t('documents.saveAsUnavailable'))
+    return false
+  }
+  await io.settled?.(documentId)
+
+  const place = await askWhereToSave(document)
+  if (!place) return false
+
+  const { draft, commit } = await io.capture(documentId)
+  const written = io.writeAsset
+    ? await intoNewAsset(document, io, place, draft)
+    : document.kind === 'script'
+      ? await intoNewScript(document, place, draft)
+      : await intoNewFile(bridge, document, io, place, draft)
+  if (!written) return false
+
+  commit()
+  void useDocuments.getState().relist('own-write')
+  return true
+}
