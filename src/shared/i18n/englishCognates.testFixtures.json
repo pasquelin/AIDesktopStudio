@@ -294,6 +294,7 @@
     "assetTypes.video",
     "capabilities.rig",
     "commands.canvasEnlarge.title",
+    "copies.storeHeld_one",
     "diagnostics.workerSkinning",
     "dialog.video",
     "documents.kinds.sequence",

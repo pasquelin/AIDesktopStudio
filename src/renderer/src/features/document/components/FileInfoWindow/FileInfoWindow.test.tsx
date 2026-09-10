@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Asset, AssetChanges } from '@shared/domain/asset'
 import { fileInfoRoute, type FileFacts } from '@shared/domain/fileInfo'
+import type { CopyGroup } from '@shared/domain/fileCopies'
 import type { FileUse } from '@shared/domain/fileUse'
 import type { GitRepository } from '@shared/domain/git'
 import { installFakeBridge } from '@/services/fakeBridge'
@@ -13,6 +14,28 @@ import { FileInfoWindow } from './FileInfoWindow'
 const VERSIONED = gitReadyRepository({
   files: [{ path: 'Images/facade.jpg', change: 'modified', stage: 'unstaged' }],
 })
+
+const TWICE: CopyGroup = {
+  hash: 'ab12cd34',
+  copies: [
+    {
+      assetId: 'asset_facade',
+      path: 'Images/facade.jpg',
+      name: 'facade',
+      bytes: 2_097_152,
+      addedAt: '2026-08-16T09:30:00.000Z',
+      store: 'visible',
+    },
+    {
+      assetId: 'asset_twin',
+      path: 'Rushes/facade.jpg',
+      name: 'facade',
+      bytes: 2_097_152,
+      addedAt: '2026-08-17T09:30:00.000Z',
+      store: 'visible',
+    },
+  ],
+}
 
 const FACTS: FileFacts = {
   kind: 'file',
@@ -40,13 +63,18 @@ function open(
   asset: Asset | null = null,
   repository: GitRepository = { kind: 'uninitialised' },
   uses: FileUse[] = [],
+  copies: CopyGroup[] = [],
 ) {
   const update = vi.fn((_assetId: string, changes: AssetChanges) =>
     Promise.resolve({ ...PICTURE, ...changes, tags: [...(changes.tags ?? PICTURE.tags)] }),
   )
   window.location.hash = fileInfoRoute(path)
   installFakeBridge({
-    project: { fileFacts: () => Promise.resolve(facts), fileUses: () => Promise.resolve(uses) },
+    project: {
+      fileFacts: () => Promise.resolve(facts),
+      fileUses: () => Promise.resolve(uses),
+      fileCopies: () => Promise.resolve(copies),
+    },
     // `update` is what `RoleField` calls when a role is corrected — see the case below.
     assets: { search: () => Promise.resolve(asset ? [asset] : []), update },
     git: { read: () => Promise.resolve(repository) },
@@ -211,5 +239,34 @@ describe('FileInfoWindow', () => {
     expect(screen.getByText('Autre')).toBeInTheDocument()
     expect(screen.queryByRole('combobox')).not.toBeInTheDocument()
     expect(screen.queryByRole('textbox')).not.toBeInTheDocument()
+  })
+})
+
+describe('the other files holding these bytes', () => {
+  beforeEach(() => {
+    window.location.hash = ''
+  })
+
+  /**
+   * §16, narrowed to one file. The fingerprint is what makes the question askable at all — so a
+   * `.txt` the catalogue holds no row for gets no run, and a row that HAS one gets an answer
+   * either way: these other paths, or none.
+   */
+  it('names the other files holding these bytes, and says when there are none', async () => {
+    open('Images/facade.jpg', FACTS, PICTURE, { kind: 'uninitialised' }, [], [TWICE])
+
+    render(<FileInfoWindow />)
+
+    // The file this window is open on is not one of « the others »: it is the subject.
+    expect(await screen.findByText('Rushes/facade.jpg')).toBeInTheDocument()
+    expect(screen.queryByText('Aucun autre fichier du projet ne porte ces octets.')).toBeNull()
+  })
+
+  it('asks nothing about the copies of a file no fingerprint identifies', async () => {
+    open('Notes/brief.txt', { ...FACTS, bytes: 4096 })
+    render(<FileInfoWindow />)
+
+    await screen.findByText('Notes/brief.txt')
+    expect(screen.queryByText('Copies')).toBeNull()
   })
 })

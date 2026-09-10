@@ -5,6 +5,7 @@
       "general": "Allgemein",
       "media": "Medien",
       "catalogue": "Katalog",
+      "copies": "Kopien",
       "uses": "Verwendet von",
       "git": "Git"
     },
@@ -22,6 +23,7 @@
     "documents": "Dokumente",
     "usedByNone": "Kein Dokument des Projekts erwähnt diese Datei.",
     "reading": "Ordner wird gelesen…",
-    "missing": "Dieser Eintrag ist nicht mehr im Projektordner."
+    "missing": "Dieser Eintrag ist nicht mehr im Projektordner.",
+    "copiesNone": "Keine andere Datei des Projekts trägt diese Bytes."
   }
 }

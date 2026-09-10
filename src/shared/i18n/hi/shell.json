@@ -200,7 +200,8 @@
     "sceneNavigation": "नेविगेशन",
     "sceneDisplay": "डिस्प्ले मोड",
     "sceneView": "दृष्टिकोण",
-    "sceneCapture": "व्यू कैप्चर करें"
+    "sceneCapture": "व्यू कैप्चर करें",
+    "copies": "प्रतियाँ…"
   },
   "about": {
     "copyright": "© 2026 Alban Pasquelin"

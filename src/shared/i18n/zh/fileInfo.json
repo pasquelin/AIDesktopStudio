@@ -5,6 +5,7 @@
       "general": "常规",
       "media": "媒体",
       "catalogue": "编目",
+      "copies": "副本",
       "uses": "被以下文档使用",
       "git": "Git"
     },
@@ -22,6 +23,7 @@
     "documents": "文档",
     "usedByNone": "项目中没有文档引用该文件。",
     "reading": "正在读取文件夹…",
-    "missing": "此条目已不在项目文件夹中。"
+    "missing": "此条目已不在项目文件夹中。",
+    "copiesNone": "项目中没有其他文件带有这些字节。"
   }
 }

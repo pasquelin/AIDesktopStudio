@@ -5,6 +5,7 @@
       "general": "Général",
       "media": "Média",
       "catalogue": "Catalogue",
+      "copies": "Copies",
       "uses": "Utilisé par",
       "git": "Git"
     },
@@ -22,6 +23,7 @@
     "documents": "Documents",
     "usedByNone": "Aucun document du projet ne cite ce fichier.",
     "reading": "Lecture du dossier…",
-    "missing": "Cette entrée n’est plus dans le dossier du projet."
+    "missing": "Cette entrée n’est plus dans le dossier du projet.",
+    "copiesNone": "Aucun autre fichier du projet ne porte ces octets."
   }
 }

@@ -5,6 +5,7 @@
       "general": "Geral",
       "media": "Mídia",
       "catalogue": "Catálogo",
+      "copies": "Cópias",
       "uses": "Usado por",
       "git": "Git"
     },
@@ -22,6 +23,7 @@
     "documents": "Documentos",
     "usedByNone": "Nenhum documento do projeto menciona este ficheiro.",
     "reading": "Lendo a pasta…",
-    "missing": "Esta entrada não está mais na pasta do projeto."
+    "missing": "Esta entrada não está mais na pasta do projeto.",
+    "copiesNone": "Nenhum outro arquivo do projeto tem estes bytes."
   }
 }

@@ -66,6 +66,15 @@ export type DeriveRequest = {
    * one leaves a notice to dismiss for a file the user never chose.
    */
   announce: boolean
+  /**
+   * The fingerprint the row already carries, when it has one.
+   *
+   * Passed rather than recomputed because the derived files are NAMED by it: the catch-up hands
+   * back rows the pipeline has already read once, and re-reading a twenty-minute rush end to
+   * end, at every project opening, to arrive at the number the row is holding is the cost this
+   * field removes. Absent, it is computed as before.
+   */
+  hash?: string
 }
 
 export type MediaService = {
@@ -80,6 +89,11 @@ export type MediaService = {
    */
   derive: (request: DeriveRequest) => Promise<void>
   cancel: (assetId: string) => void
+  /**
+   * Whether an ingest or a derivation is under way. Read by the cache purge, which must not
+   * delete a proxy an ffmpeg still running is about to name in a row.
+   */
+  deriving: () => boolean
 }
 
 export function webCodecsReads(codec: string | undefined): boolean {
@@ -94,7 +108,9 @@ export function needsProxy(probe: MediaProbe): boolean {
 
 const isTimed = (kind: AssetType): boolean => ['video', 'audio'].includes(kind)
 
-const hasWaveform = (probe: MediaProbe): boolean => Boolean(probe.sampleRate) && probe.duration > 0
+/** Whether a waveform is OWED. Read by the catch-up too: a silent rush is owed none. */
+export const hasWaveform = (probe: MediaProbe): boolean =>
+  Boolean(probe.sampleRate) && probe.duration > 0
 
 /** How far along the whole ingest each stage is — announced when the stage starts. */
 const STAGE_RATIO: Record<IngestStage, number> = {
@@ -393,7 +409,7 @@ export function createMediaService(deps: MediaServiceDeps): MediaService {
       }
     },
 
-    derive: async ({ assetId, path, kind, probe, poster, announce }) => {
+    derive: async ({ assetId, path, kind, probe, poster, announce, hash }) => {
       // Nothing to derive AND nothing to remember: a row stamped here would be read as one the
       // pipeline has been through, and the catch-up that runs once the tool IS resolved would
       // skip it for good. A studio whose ffmpeg is configured later must still catch up.
@@ -419,7 +435,7 @@ export function createMediaService(deps: MediaServiceDeps): MediaService {
       const runDerive = async (): Promise<void> => {
         if (cancelled()) return
         advance('hash')
-        fields.hash = await deps.hash(path)
+        fields.hash = hash ?? (await deps.hash(path))
         if (cancelled()) return
         while (!occupyHash(fields.hash)) await waitForHash(fields.hash)
         mine = fields.hash
@@ -453,6 +469,8 @@ export function createMediaService(deps: MediaServiceDeps): MediaService {
         await finishDerive()
       }
     },
+
+    deriving: () => running.size > 0,
 
     cancel: assetId => {
       running.get(assetId)?.abort()

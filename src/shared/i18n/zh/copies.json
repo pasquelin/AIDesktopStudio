@@ -1,0 +1,39 @@
+{
+  "copies": {
+    "title": "副本",
+    "reading": "正在读取项目…",
+    "none": "该项目中没有任何文件存在两份。",
+    "candidates": "待查看的候选",
+    "candidatesNote": "这些文件带有相同的指纹：它们的字节完全一致，这是测得的。某个副本是否多余则没有测得——除非你要求，这里不会移除任何东西，而且一次只处理一行。",
+    "sameBytes": "{{count, number}} 个文件带有完全相同的字节",
+    "wouldFree": "只保留一个副本可以归还 {{size}}",
+    "sizeUnknown": "大小未知",
+    "store": {
+      "visible": "你的文件",
+      "internal": "工作室资源",
+      "machine": "工作室缓存"
+    },
+    "added": "于 {{date}} 加入",
+    "mentions": "提到它的文档：{{count, number}}",
+    "mentionsNone": "没有文档提到它",
+    "trash": "废纸篓",
+    "cache": "可重建的存储",
+    "cacheNote": "工作室在需要时会重新生成这些文件。手工挑选的静帧、持久资源以及尚未保存的工作不在其中，永远不会被触碰。",
+    "cacheTotal": "合计",
+    "purge": "释放",
+    "purging": "正在释放…",
+    "purgeBusy": "工作室正在生成文件。等导入结束后再试。",
+    "freed": "已向磁盘归还 {{size}}。",
+    "forgotten": "已更新的记录：{{count, number}}",
+    "reopen": "重新打开项目，让工作室重新生成它需要的东西。",
+    "stores": {
+      "thumbnails": "缩略图",
+      "filmstrips": "胶片条",
+      "proxies": "工作副本",
+      "peaks": "波形"
+    },
+    "storeHeld_one": "{{count, number}} 个文件，{{size}}",
+    "storeHeld_many": "{{count, number}} 个文件，{{size}}",
+    "storeHeld_other": "{{count, number}} 个文件，{{size}}"
+  }
+}

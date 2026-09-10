@@ -200,7 +200,8 @@
     "sceneNavigation": "导航",
     "sceneDisplay": "显示模式",
     "sceneView": "视点",
-    "sceneCapture": "捕获视图"
+    "sceneCapture": "捕获视图",
+    "copies": "副本…"
   },
   "about": {
     "copyright": "© 2026 Alban Pasquelin"

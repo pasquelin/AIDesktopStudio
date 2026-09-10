@@ -1,0 +1,39 @@
+{
+  "copies": {
+    "title": "Copies",
+    "reading": "Lecture du projet…",
+    "none": "Aucun fichier n’est présent deux fois dans ce projet.",
+    "candidates": "Candidats à examiner",
+    "candidatesNote": "Ces fichiers portent la même empreinte : leurs octets sont identiques, c’est mesuré. Qu’une copie soit inutile ne l’est pas — rien n’est retiré ici sans que vous le demandiez, une ligne à la fois.",
+    "sameBytes": "{{count, number}} fichiers portent exactement les mêmes octets",
+    "wouldFree": "Une seule copie gardée rendrait {{size}}",
+    "sizeUnknown": "Taille inconnue",
+    "store": {
+      "visible": "Votre fichier",
+      "internal": "Ressource du studio",
+      "machine": "Cache du studio"
+    },
+    "added": "Ajouté le {{date}}",
+    "mentions": "Documents qui le mentionnent : {{count, number}}",
+    "mentionsNone": "Aucun document ne le mentionne",
+    "trash": "Corbeille",
+    "cache": "Stockage reconstructible",
+    "cacheNote": "Le studio refabrique ces fichiers quand il en a besoin. Les images choisies à la main, les ressources durables et le travail non enregistré n’en font pas partie et ne sont jamais touchés.",
+    "cacheTotal": "Total",
+    "purge": "Libérer",
+    "purging": "Libération…",
+    "purgeBusy": "Le studio fabrique des fichiers en ce moment. Réessayez quand les imports seront finis.",
+    "freed": "{{size}} rendus au disque.",
+    "forgotten": "Fiches remises à jour : {{count, number}}",
+    "reopen": "Rouvrez le projet pour que le studio refabrique ce dont il a besoin.",
+    "stores": {
+      "thumbnails": "Vignettes",
+      "filmstrips": "Pellicules",
+      "proxies": "Copies de travail",
+      "peaks": "Formes d’onde"
+    },
+    "storeHeld_one": "{{count, number}} fichier, {{size}}",
+    "storeHeld_many": "{{count, number}} de fichiers, {{size}}",
+    "storeHeld_other": "{{count, number}} fichiers, {{size}}"
+  }
+}

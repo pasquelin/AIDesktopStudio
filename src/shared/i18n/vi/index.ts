@@ -8,6 +8,7 @@ import type * as frCharacter from '../fr/character.json'
 import type * as frCommands from '../fr/commands.json'
 import type * as frCommon from '../fr/common.json'
 import type * as frContext from '../fr/context.json'
+import type * as frCopies from '../fr/copies.json'
 import type * as frEnvironment from '../fr/environment.json'
 import type * as frFileInfo from '../fr/fileInfo.json'
 import type * as frGame from '../fr/game.json'
@@ -34,6 +35,7 @@ import code from './code.json'
 import commands from './commands.json'
 import common from './common.json'
 import context from './context.json'
+import copies from './copies.json'
 import diagnostics from './diagnostics.json'
 import environment from './environment.json'
 import fileInfo from './fileInfo.json'
@@ -76,6 +78,7 @@ export const vi = {
   ...(commands satisfies Section<keyof typeof frCommands>),
   ...(common satisfies Section<keyof typeof frCommon>),
   ...(context satisfies Section<keyof typeof frContext>),
+  ...(copies satisfies Section<keyof typeof frCopies>),
   ...(environment satisfies Section<keyof typeof frEnvironment>),
   ...(fileInfo satisfies Section<keyof typeof frFileInfo>),
   ...(game satisfies Section<keyof typeof frGame>),

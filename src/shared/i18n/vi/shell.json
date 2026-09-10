@@ -200,7 +200,8 @@
     "sceneNavigation": "Điều hướng",
     "sceneDisplay": "Chế độ hiển thị",
     "sceneView": "Điểm nhìn",
-    "sceneCapture": "Chụp khung nhìn"
+    "sceneCapture": "Chụp khung nhìn",
+    "copies": "Bản sao…"
   },
   "about": {
     "copyright": "© 2026 Alban Pasquelin"

@@ -7,6 +7,7 @@ import code from './code.json'
 import commands from './commands.json'
 import common from './common.json'
 import context from './context.json'
+import copies from './copies.json'
 import diagnostics from './diagnostics.json'
 import environment from './environment.json'
 import fileInfo from './fileInfo.json'
@@ -45,6 +46,7 @@ export const fr = {
   ...commands,
   ...common,
   ...context,
+  ...copies,
   ...environment,
   ...fileInfo,
   ...game,

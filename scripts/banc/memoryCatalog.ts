@@ -85,6 +85,8 @@ export function createMemoryCatalog(
     },
     find: assetId => Promise.resolve(rows.find(one => one.id === assetId) ?? null),
     findByHash: () => Promise.resolve(null),
+    copies: () => Promise.resolve([]),
+    clearDerivedPaths: () => Promise.resolve(0),
     findByRemoteId: remoteAssetId =>
       Promise.resolve(rows.find(one => one.remoteAssetId === remoteAssetId) ?? null),
 

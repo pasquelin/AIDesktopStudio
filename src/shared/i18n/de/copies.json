@@ -1,0 +1,39 @@
+{
+  "copies": {
+    "title": "Kopien",
+    "reading": "Projekt wird gelesen…",
+    "none": "Keine Datei liegt in diesem Projekt zweimal vor.",
+    "candidates": "Zu prüfende Kandidaten",
+    "candidatesNote": "Diese Dateien tragen denselben Fingerabdruck: Ihre Bytes sind identisch, das ist gemessen. Ob eine Kopie überflüssig ist, nicht — hier wird nichts entfernt, außer Sie verlangen es, Zeile für Zeile.",
+    "sameBytes": "{{count, number}} Dateien tragen genau dieselben Bytes",
+    "wouldFree": "Nur eine Kopie zu behalten gäbe {{size}} zurück",
+    "sizeUnknown": "Größe unbekannt",
+    "store": {
+      "visible": "Ihre Datei",
+      "internal": "Studio-Ressource",
+      "machine": "Studio-Cache"
+    },
+    "added": "Hinzugefügt am {{date}}",
+    "mentions": "Dokumente, die sie nennen: {{count, number}}",
+    "mentionsNone": "Kein Dokument nennt sie",
+    "trash": "Papierkorb",
+    "cache": "Wiederherstellbarer Speicher",
+    "cacheNote": "Das Studio erzeugt diese Dateien neu, wenn es sie braucht. Von Hand gewählte Standbilder, dauerhafte Ressourcen und ungesicherte Arbeit gehören nicht dazu und werden nie angetastet.",
+    "cacheTotal": "Gesamt",
+    "purge": "Freigeben",
+    "purging": "Wird freigegeben…",
+    "purgeBusy": "Das Studio erzeugt gerade Dateien. Versuchen Sie es erneut, wenn die Importe fertig sind.",
+    "freed": "{{size}} an die Festplatte zurückgegeben.",
+    "forgotten": "Aktualisierte Einträge: {{count, number}}",
+    "reopen": "Öffnen Sie das Projekt erneut, damit das Studio wieder erzeugt, was es braucht.",
+    "stores": {
+      "thumbnails": "Miniaturbilder",
+      "filmstrips": "Filmstreifen",
+      "proxies": "Arbeitskopien",
+      "peaks": "Wellenformen"
+    },
+    "storeHeld_one": "{{count, number}} Datei, {{size}}",
+    "storeHeld_many": "{{count, number}} Dateien, {{size}}",
+    "storeHeld_other": "{{count, number}} Dateien, {{size}}"
+  }
+}
