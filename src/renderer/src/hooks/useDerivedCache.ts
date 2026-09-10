@@ -1,10 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
 import { orElse } from '@shared/promises'
-import type { DerivedCacheReport } from '@shared/domain/derivedCache'
+import { NO_DERIVED_CACHE, type DerivedCacheReport } from '@shared/domain/derivedCache'
 import { getBridge } from '@/services/bridge'
 import { useReloadKey } from './useReloadKey'
-
-const NOTHING: DerivedCacheReport = { stores: [], bytes: 0, clearedRows: 0 }
 
 export type DerivedCacheState = {
   /** What the rebuildable stores hold, or `null` while the first measurement is out. */
@@ -30,21 +28,28 @@ export function useDerivedCache(): DerivedCacheState {
 
   useEffect(() => {
     let live = true
-    void orElse(getBridge()?.project.derivedCache(), NOTHING).then(measured => {
+
+    const measure = async (): Promise<void> => {
+      const measured = await orElse(getBridge()?.project.derivedCache(), NO_DERIVED_CACHE)
       if (live) setReport(measured)
-    })
+    }
+
+    void measure()
+
     return () => {
       live = false
     }
   }, [key])
 
   const purge = useCallback(() => {
-    setPurging(true)
-    void orElse(getBridge()?.project.purgeDerivedCache(), NOTHING).then(done => {
-      setFreed(done)
+    const free = async (): Promise<void> => {
+      setPurging(true)
+      setFreed(await orElse(getBridge()?.project.purgeDerivedCache(), NO_DERIVED_CACHE))
       setPurging(false)
       remeasure()
-    })
+    }
+
+    void free()
   }, [remeasure])
 
   return { report, freed, purging, purge }

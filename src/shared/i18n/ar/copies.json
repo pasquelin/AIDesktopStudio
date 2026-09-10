@@ -22,14 +22,21 @@
     "cacheTotal": "المجموع",
     "purge": "تحرير",
     "purging": "جارٍ التحرير…",
+    "purgeBusy": "الاستوديو ينشئ ملفات الآن. أعد المحاولة بعد انتهاء عمليات الاستيراد.",
     "freed": "أُعيد {{size}} إلى القرص.",
     "forgotten": "السجلات المحدَّثة: {{count, number}}",
+    "reopen": "أعد فتح المشروع كي ينشئ الاستوديو ما يحتاج إليه من جديد.",
     "stores": {
       "thumbnails": "مصغّرات",
       "filmstrips": "شرائط الأفلام",
       "proxies": "نسخ العمل",
       "peaks": "أشكال الموجة"
     },
-    "storeHeld": "{{count, number}} ملفات، {{size}}"
+    "storeHeld_zero": "{{count, number}} ملف، {{size}}",
+    "storeHeld_one": "{{count, number}} ملف، {{size}}",
+    "storeHeld_two": "{{count, number}} ملف، {{size}}",
+    "storeHeld_few": "{{count, number}} ملفات، {{size}}",
+    "storeHeld_many": "{{count, number}} ملفًا، {{size}}",
+    "storeHeld_other": "{{count, number}} ملف، {{size}}"
   }
 }

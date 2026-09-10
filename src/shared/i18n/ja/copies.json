@@ -22,14 +22,18 @@
     "cacheTotal": "合計",
     "purge": "解放",
     "purging": "解放中…",
+    "purgeBusy": "スタジオが今ファイルを作っています。取り込みが終わってからやり直してください。",
     "freed": "{{size}} をディスクに返しました。",
     "forgotten": "更新した記録: {{count, number}}",
+    "reopen": "スタジオが必要なものを作り直せるよう、プロジェクトを開き直してください。",
     "stores": {
       "thumbnails": "サムネイル",
       "filmstrips": "フィルムストリップ",
       "proxies": "作業用複製",
       "peaks": "波形"
     },
-    "storeHeld": "{{count, number}} 個のファイル、{{size}}"
+    "storeHeld_one": "{{count, number}} 個のファイル、{{size}}",
+    "storeHeld_many": "{{count, number}} 個のファイル、{{size}}",
+    "storeHeld_other": "{{count, number}} 個のファイル、{{size}}"
   }
 }

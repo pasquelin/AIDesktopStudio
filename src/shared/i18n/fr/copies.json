@@ -22,14 +22,18 @@
     "cacheTotal": "Total",
     "purge": "Libérer",
     "purging": "Libération…",
+    "purgeBusy": "Le studio fabrique des fichiers en ce moment. Réessayez quand les imports seront finis.",
     "freed": "{{size}} rendus au disque.",
     "forgotten": "Fiches remises à jour : {{count, number}}",
+    "reopen": "Rouvrez le projet pour que le studio refabrique ce dont il a besoin.",
     "stores": {
       "thumbnails": "Vignettes",
       "filmstrips": "Pellicules",
       "proxies": "Copies de travail",
       "peaks": "Formes d’onde"
     },
-    "storeHeld": "{{count, number}} fichiers, {{size}}"
+    "storeHeld_one": "{{count, number}} fichier, {{size}}",
+    "storeHeld_many": "{{count, number}} de fichiers, {{size}}",
+    "storeHeld_other": "{{count, number}} fichiers, {{size}}"
   }
 }

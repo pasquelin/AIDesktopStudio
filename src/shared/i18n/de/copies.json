@@ -22,14 +22,18 @@
     "cacheTotal": "Gesamt",
     "purge": "Freigeben",
     "purging": "Wird freigegeben…",
+    "purgeBusy": "Das Studio erzeugt gerade Dateien. Versuchen Sie es erneut, wenn die Importe fertig sind.",
     "freed": "{{size}} an die Festplatte zurückgegeben.",
     "forgotten": "Aktualisierte Einträge: {{count, number}}",
+    "reopen": "Öffnen Sie das Projekt erneut, damit das Studio wieder erzeugt, was es braucht.",
     "stores": {
       "thumbnails": "Miniaturbilder",
       "filmstrips": "Filmstreifen",
       "proxies": "Arbeitskopien",
       "peaks": "Wellenformen"
     },
-    "storeHeld": "{{count, number}} Dateien, {{size}}"
+    "storeHeld_one": "{{count, number}} Datei, {{size}}",
+    "storeHeld_many": "{{count, number}} Dateien, {{size}}",
+    "storeHeld_other": "{{count, number}} Dateien, {{size}}"
   }
 }

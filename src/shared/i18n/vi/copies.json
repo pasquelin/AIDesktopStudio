@@ -22,14 +22,18 @@
     "cacheTotal": "Tổng cộng",
     "purge": "Giải phóng",
     "purging": "Đang giải phóng…",
+    "purgeBusy": "Xưởng đang tạo tệp. Hãy thử lại khi các lần nhập đã xong.",
     "freed": "Đã trả lại {{size}} cho đĩa.",
     "forgotten": "Bản ghi đã cập nhật: {{count, number}}",
+    "reopen": "Hãy mở lại dự án để xưởng dựng lại những gì nó cần.",
     "stores": {
       "thumbnails": "Ảnh thu nhỏ",
       "filmstrips": "Dải phim",
       "proxies": "Bản sao làm việc",
       "peaks": "Dạng sóng"
     },
-    "storeHeld": "{{count, number}} tệp, {{size}}"
+    "storeHeld_one": "{{count, number}} tệp, {{size}}",
+    "storeHeld_many": "{{count, number}} tệp, {{size}}",
+    "storeHeld_other": "{{count, number}} tệp, {{size}}"
   }
 }

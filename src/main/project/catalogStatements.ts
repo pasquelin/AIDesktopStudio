@@ -44,29 +44,31 @@ export function assetStatements(driver: SqliteDriver) {
   }
 }
 
-/**
- * A row that stands for bytes ON THE DISK, right now: fingerprinted, filed, and not dated as
- * gone. The three halves of that question, spelt once — the copies query asks it twice.
- */
+/** Bytes ON THE DISK right now: fingerprinted, filed, not dated as gone. Asked twice below. */
 const HOLDS_BYTES =
   "hash IS NOT NULL AND hash <> '' AND path IS NOT NULL AND path <> '' AND missing_at IS NULL"
 
 /**
  * Every row whose fingerprint another FILED AT ANOTHER PATH also carries.
  *
- * `COUNT(DISTINCT path)`, never `COUNT(*)`: two rows on one path are two catalogue entries for
- * one file, which is a different defect and not a second copy of anything. What this answers is
- * G-P's question — the same bytes written twice — and a path is what says twice.
+ * `COUNT(DISTINCT path)`, never `COUNT(*)`: two rows on one path are one file the catalogue
+ * holds twice, which is another defect and not a second copy of anything.
  */
-const copiesSql = (oneHash: boolean): string => `
-  SELECT hash, id, name, path, bytes, created_at FROM assets
-  WHERE ${HOLDS_BYTES}${oneHash ? ' AND hash = ?' : ''}
-    AND hash IN (
-      SELECT hash FROM assets WHERE ${HOLDS_BYTES}
-      GROUP BY hash HAVING COUNT(DISTINCT path) > 1
-    )
-  ORDER BY hash, created_at, id
-`
+const copiesSql = (oneHash: boolean): string => {
+  // 🛑 BOTH halves: `COUNT(DISTINCT path)` reads `path` for every row it groups, which no index
+  // answers, so leaving the subquery unfiltered scanned the whole table per window opened.
+  const narrow = oneHash ? ' AND hash = ?' : ''
+
+  return `
+    SELECT hash, id, name, path, bytes, created_at FROM assets
+    WHERE ${HOLDS_BYTES}${narrow}
+      AND hash IN (
+        SELECT hash FROM assets WHERE ${HOLDS_BYTES}${narrow}
+        GROUP BY hash HAVING COUNT(DISTINCT path) > 1
+      )
+    ORDER BY hash, created_at, id
+  `
+}
 
 export function pathStatements(driver: SqliteDriver) {
   return {

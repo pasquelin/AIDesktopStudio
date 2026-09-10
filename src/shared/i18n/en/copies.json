@@ -22,14 +22,18 @@
     "cacheTotal": "Total",
     "purge": "Free up",
     "purging": "Freeing…",
+    "purgeBusy": "The studio is making files right now. Try again once the imports are done.",
     "freed": "{{size}} given back to the disk.",
     "forgotten": "Records brought up to date: {{count, number}}",
+    "reopen": "Reopen the project so the studio makes again what it needs.",
     "stores": {
       "thumbnails": "Thumbnails",
       "filmstrips": "Filmstrips",
       "proxies": "Working copies",
       "peaks": "Waveforms"
     },
-    "storeHeld": "{{count, number}} files, {{size}}"
+    "storeHeld_one": "{{count, number}} file, {{size}}",
+    "storeHeld_many": "{{count, number}} files, {{size}}",
+    "storeHeld_other": "{{count, number}} files, {{size}}"
   }
 }

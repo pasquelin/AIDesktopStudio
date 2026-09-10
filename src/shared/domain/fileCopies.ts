@@ -50,11 +50,17 @@ export type CopyGroup = {
   copies: readonly FileCopy[]
 }
 
-/** How many bytes a group would give back if every copy but one went. Never acted on alone. */
+/**
+ * How many bytes a group would give back if every copy but one went. Never acted on alone.
+ *
+ * Summed rather than multiplied out from the first row: `bytes` is a column of its own, written
+ * at its own moment, so two rows of one fingerprint can disagree — and a figure the surface
+ * calls measured must not be extrapolated from one of them.
+ */
 export function redundantBytesOf(group: CopyGroup): number | null {
   const sized = group.copies.filter(copy => copy.bytes !== null)
   if (sized.length !== group.copies.length || sized.length < 2) return null
-  return (sized[0]?.bytes ?? 0) * (sized.length - 1)
+  return sized.slice(1).reduce((total, copy) => total + (copy.bytes ?? 0), 0)
 }
 
 /** URL fragment the shared bundle reads to render the copies diagnosis. */

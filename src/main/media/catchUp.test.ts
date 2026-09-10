@@ -106,6 +106,20 @@ describe('catching up a project that was opened after the fix', () => {
   })
 
   /**
+   * 🛑 A row coming back for a derived file alone already carries its fingerprint, and the
+   * derived files are NAMED by it: re-reading a twenty-minute rush end to end at every opening,
+   * to arrive at the number the row is holding, is what passing it removes.
+   */
+  it('hands back the fingerprint the row already carries', async () => {
+    const held = asset({ probe, hash: 'abc123' })
+    const injected = deps({ list: async () => [held] })
+
+    await catchUpMedia(injected)
+
+    expect(injected.derive).toHaveBeenCalledWith(expect.objectContaining({ hash: 'abc123' }))
+  })
+
+  /**
    * A take that has been read AND owes nothing more is not touched: no probe, no save, no
    * derive. What « owes nothing » means is the probe's business — a rush the codec reads and
    * whose waveform is on disk. A derive that crashed after a good probe IS retried at the next

@@ -159,6 +159,12 @@ export function base(catalog: AsyncCatalog) {
     trashFolder: vi.fn(async () => {}),
     // None running unless a case says so: no question is raised, which is the ordinary studio.
     runningJobCount: () => 0,
+    media: {
+      ingest: async () => {},
+      derive: async () => {},
+      cancel: () => {},
+      deriving: () => false,
+    },
   }
 }
 

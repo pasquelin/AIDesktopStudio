@@ -22,14 +22,18 @@
     "cacheTotal": "कुल",
     "purge": "खाली करें",
     "purging": "खाली किया जा रहा है…",
+    "purgeBusy": "स्टूडियो इस समय फ़ाइलें बना रहा है। आयात पूरे होने पर फिर से आज़माएँ।",
     "freed": "{{size}} डिस्क को वापस मिले।",
     "forgotten": "अद्यतन प्रविष्टियाँ: {{count, number}}",
+    "reopen": "स्टूडियो को जो चाहिए वह फिर बनाने के लिए परियोजना दोबारा खोलें।",
     "stores": {
       "thumbnails": "थंबनेल",
       "filmstrips": "फ़िल्मस्ट्रिप",
       "proxies": "कार्य प्रतियाँ",
       "peaks": "तरंगरूप"
     },
-    "storeHeld": "{{count, number}} फ़ाइलें, {{size}}"
+    "storeHeld_one": "{{count, number}} फ़ाइल, {{size}}",
+    "storeHeld_many": "{{count, number}} फ़ाइलें, {{size}}",
+    "storeHeld_other": "{{count, number}} फ़ाइलें, {{size}}"
   }
 }

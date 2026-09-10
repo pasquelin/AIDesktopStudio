@@ -1,16 +1,15 @@
-import { FILMSTRIPS_FOLDER, PEAKS_FOLDER, PROXIES_FOLDER, THUMBNAILS_FOLDER } from './project'
+import {
+  FILMSTRIPS_FOLDER,
+  INDEX_FOLDER,
+  PEAKS_FOLDER,
+  POSTERS_FOLDER,
+  PROXIES_FOLDER,
+  THUMBNAILS_FOLDER,
+} from './project'
 
 /**
- * The derived stores a named command may throw away — and only those.
- *
- * 🛑 `POSTERS_FOLDER` is deliberately absent, and the reason is measured rather than cautious:
- * a still is either the one the library sent down with a generation, which no local tool can
- * make again, or the frame a person picked by hand (`setAnimationPoster`, `replace`). Neither
- * is regenerable, so neither is a cache — see the three stores in the file specification.
- *
- * `.index/` holds three more things that are NOT here for the same reason: `catalog.db` carries
- * the prompt, the seed and the lineage, none of which is on the disk anywhere else; the memory
- * index and the pending-files journal are mid-flight state, not derived bytes.
+ * The derived stores a named command may throw away — and only those. What it leaves, and why,
+ * is `KEPT_MACHINE_FOLDERS`; the guard holds the two together against `MACHINE_FOLDERS`.
  */
 export type DerivedStore = 'thumbnails' | 'filmstrips' | 'proxies' | 'peaks'
 
@@ -20,6 +19,22 @@ export const DERIVED_STORES: readonly DerivedStore[] = [
   'proxies',
   'peaks',
 ]
+
+/**
+ * The machine folders a purge deliberately LEAVES, each with the reason it is not a cache.
+ *
+ * Its point is the guard beside it: `MACHINE_FOLDERS` and the two lists here must cover one
+ * another exactly, so a folder cannot join the machine set without someone deciding, in the
+ * same breath, whether throwing it away costs anything.
+ */
+export const KEPT_MACHINE_FOLDERS: Record<string, string> = {
+  // A still is either the one the library sent down with a generation or the frame a person
+  // picked by hand (`setAnimationPoster`, `replace`). Neither can be made again.
+  [POSTERS_FOLDER]: 'a still is chosen or delivered, never derived',
+  // `catalog.db` carries the prompt, the seed and the lineage, none of which is on the disk
+  // anywhere else; the memory index and the pending-files journal are work in flight.
+  [INDEX_FOLDER]: 'holds the only copy of what no file records',
+}
 
 /** Where each store lives, project-relative. The ONE spelling, taken from the folders. */
 export const DERIVED_STORE_FOLDERS: Record<DerivedStore, string> = {
@@ -49,7 +64,17 @@ export type DerivedCacheReport = {
    * nothing was cleared because nothing was thrown away.
    */
   clearedRows: number
+  /**
+   * Set when the purge DID NOT RUN because the pipeline was still deriving.
+   *
+   * 🛑 Its own field rather than a zero: a purge that freed nothing and a purge that never
+   * happened read the same on the surface, and the second one has to be tried again.
+   */
+  refused?: 'deriving'
 }
+
+/** Nothing held and nothing freed — what every reader answers with when there is no project. */
+export const NO_DERIVED_CACHE: DerivedCacheReport = { stores: [], bytes: 0, clearedRows: 0 }
 
 export function derivedBytesOf(stores: readonly DerivedStoreMeasure[]): number {
   return stores.reduce((total, one) => total + one.bytes, 0)

@@ -78,7 +78,10 @@ export function createCatalog(driver: SqliteDriver): Catalog {
     },
 
     copies: hash =>
-      copyGroupsOf(hash === undefined ? paths.selectCopies.all() : paths.selectCopiesOf.all(hash)),
+      copyGroupsOf(
+        // Twice: the fingerprint narrows the outer query AND the grouping behind it.
+        hash === undefined ? paths.selectCopies.all() : paths.selectCopiesOf.all(hash, hash),
+      ),
 
     clearDerivedPaths: () => {
       paths.clearDerivedPaths.run()

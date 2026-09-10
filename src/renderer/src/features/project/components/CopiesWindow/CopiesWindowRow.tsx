@@ -15,15 +15,13 @@ export type CopiesWindowRowProps = {
 }
 
 /**
- * One file of a group: where it is, which store owns it, what it weighs, and who names it.
+ * One file of a group, in two registers: the path, the store, the size and the date are
+ * MEASURED and stated flatly, while the citations over-report — so the line says these
+ * documents MENTION the file.
  *
- * Two registers on purpose. The path, the store, the size and the date are MEASURED and stated
- * flatly. The citations are not: the reader over-reports, so the line says these documents
- * MENTION the file, and the caution under it says why that is not the same as needing it.
- *
- * The trash goes through the ordinary `trashFiles`, one path at a time: it raises the same
- * question every deletion raises, names the documents that would notice, and lands somewhere
- * the system can put back. Nothing here removes a file of the user's on its own.
+ * 🛑 The trash is the ordinary `trashFiles`, which asks only when the file is cited or when
+ * several go at once: a single uncited file leaves without a question, into the SYSTEM trash
+ * it can be pulled back from. `files.undo` does not cover a trash.
  */
 export function CopiesWindowRow({ copy, uses, onTrashed }: CopiesWindowRowProps) {
   const { t, i18n } = useTranslation()
@@ -32,6 +30,10 @@ export function CopiesWindowRow({ copy, uses, onTrashed }: CopiesWindowRowProps)
     const outcome = await getBridge()?.project.trashFiles([copy.path])
     if (outcome && outcome.done.length > 0) onTrashed()
   }
+
+  // The studio's own copies refuse the gesture in the main process (`planTrash`, `isPrivatePath`)
+  // — refused rather than absent, so the row still shows what would happen and why it will not.
+  const mine = copy.store === 'visible'
 
   return (
     <div className={WINDOW_ROW}>
@@ -56,6 +58,7 @@ export function CopiesWindowRow({ copy, uses, onTrashed }: CopiesWindowRowProps)
       <WindowButton
         variant="danger"
         size="row"
+        disabled={!mine}
         onClick={() => {
           void trash()
         }}

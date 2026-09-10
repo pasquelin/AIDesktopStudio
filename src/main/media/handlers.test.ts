@@ -16,6 +16,7 @@ function deps(overrides: Partial<MediaHandlerDeps> = {}): MediaHandlerDeps {
       ingest: vi.fn(async () => undefined),
       derive: vi.fn(async () => undefined),
       cancel: vi.fn(),
+      deriving: () => false,
     },
     link: vi.fn(async (source: string, type: Asset['type']) =>
       linkedAsset(source, {

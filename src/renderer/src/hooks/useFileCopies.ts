@@ -22,14 +22,9 @@ export type FileCopies = {
 }
 
 /**
- * The copies diagnosis, read on demand and never kept.
- *
- * Both reads in ONE pass: the groups first, then the citations of every path they name at once.
- * `usedBy` walks the project's documents once whatever it is asked about, so asking per path
- * would be one full walk per candidate — which is exactly the cost `fileDependents.ts` says a
- * cleanup pass would have to pay, and the reason it is paid here rather than at every opening.
- *
- * `hash` narrows the whole thing to one file's group, which is what a file's information asks.
+ * The copies diagnosis, read on demand and never kept. The citations of every candidate are
+ * asked in ONE call: `usedBy` walks the project's documents once whatever it is handed, so
+ * asking per path would be one full walk per candidate.
  */
 export function useFileCopies(hash?: string): FileCopies {
   const [held, setHeld] = useState<{ groups: CopyGroup[]; uses: Map<string, FileUse[]> } | null>(

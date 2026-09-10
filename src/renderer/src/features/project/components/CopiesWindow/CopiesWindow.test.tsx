@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import type { DerivedCacheReport } from '@shared/domain/derivedCache'
+import { NO_DERIVED_CACHE, type DerivedCacheReport } from '@shared/domain/derivedCache'
 import { COPIES_ROUTE, type CopyGroup } from '@shared/domain/fileCopies'
 import type { FileUse } from '@shared/domain/fileUse'
 import { installFakeBridge } from '@/services/fakeBridge'
@@ -35,13 +35,11 @@ const HELD: DerivedCacheReport = {
   clearedRows: 0,
 }
 
-const EMPTY: DerivedCacheReport = { stores: [], bytes: 0, clearedRows: 0 }
-
 function open(
   groups: CopyGroup[],
   uses: FileUse[] = [],
-  cache: DerivedCacheReport = EMPTY,
-  purged: DerivedCacheReport = EMPTY,
+  cache: DerivedCacheReport = NO_DERIVED_CACHE,
+  purged: DerivedCacheReport = NO_DERIVED_CACHE,
 ) {
   const purgeDerivedCache = vi.fn(() => Promise.resolve(purged))
   const trashFiles = vi.fn(() =>
@@ -135,8 +133,21 @@ describe('CopiesWindow', () => {
     await waitFor(() => expect(screen.getByText(/rendus au disque/)).toBeInTheDocument())
   })
 
+  /** A purge that never ran and a purge that freed nothing must not read the same. */
+  it('says the purge did not run when the pipeline was still deriving', async () => {
+    open([], [], HELD, { ...NO_DERIVED_CACHE, refused: 'deriving' })
+    render(<CopiesWindow />)
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Libérer' }))
+
+    await waitFor(() =>
+      expect(screen.getByText(/Réessayez quand les imports seront finis/)).toBeInTheDocument(),
+    )
+    expect(screen.queryByText(/rendus au disque/)).toBeNull()
+  })
+
   it('offers nothing to free when the stores are empty', async () => {
-    open([], [], EMPTY)
+    open([], [], NO_DERIVED_CACHE)
     render(<CopiesWindow />)
 
     expect(await screen.findByRole('button', { name: 'Libérer' })).toBeDisabled()

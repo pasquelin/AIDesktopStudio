@@ -21,12 +21,14 @@ async function project(): Promise<string> {
   const root = await mkdtemp(join(tmpdir(), 'derived-'))
   roots.push(root)
 
-  for (const [folder, bytes] of [
+  const held: [folder: string, bytes: number][] = [
     [THUMBNAILS_FOLDER, 10],
     [PROXIES_FOLDER, 200],
     [PEAKS_FOLDER, 30],
     [POSTERS_FOLDER, 500],
-  ] as const) {
+  ]
+
+  for (const [folder, bytes] of held) {
     await mkdir(join(root, folder), { recursive: true })
     await writeFile(join(root, folder, 'one.bin'), new Uint8Array(bytes))
   }
@@ -34,11 +36,12 @@ async function project(): Promise<string> {
   return root
 }
 
-const cacheOf = (root: string, clearDerivedPaths = vi.fn(async () => 0)) => ({
+const cacheOf = (root: string, clearDerivedPaths = vi.fn(async () => 0), deriving = false) => ({
   cache: createDerivedCache({
     projectPath: () => root,
     clearDerivedPaths,
     concurrency: () => 2,
+    deriving: () => deriving,
   }),
   clearDerivedPaths,
 })
@@ -101,11 +104,32 @@ describe('the rebuildable stores', () => {
     expect(freed).toMatchObject({ bytes: 240, clearedRows: 7 })
   })
 
+  /**
+   * 🛑 `derive` writes `proxy_path` when ffmpeg RETURNS. A removal landing between the write on
+   * disk and the write in the row leaves a row naming a file that is gone — and nothing repairs
+   * that one, the row having a path. So the purge waits its turn rather than racing.
+   */
+  it('refuses to run while the pipeline is still deriving, and says so', async () => {
+    const root = await project()
+    const { cache, clearDerivedPaths } = cacheOf(
+      root,
+      vi.fn(async () => 0),
+      true,
+    )
+
+    const answer = await cache.purge()
+
+    expect(answer.refused).toBe('deriving')
+    expect(clearDerivedPaths).not.toHaveBeenCalled()
+    expect(await readdir(join(root, PROXIES_FOLDER))).toEqual(['one.bin'])
+  })
+
   it('answers nothing at all when no project is open', async () => {
     const cache = createDerivedCache({
       projectPath: () => null,
       clearDerivedPaths: vi.fn(async () => 0),
       concurrency: () => 2,
+      deriving: () => false,
     })
 
     expect(await cache.measure()).toEqual({ stores: [], bytes: 0, clearedRows: 0 })

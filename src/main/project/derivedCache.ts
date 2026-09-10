@@ -5,6 +5,7 @@ import {
   DERIVED_STORES,
   DERIVED_STORE_FOLDERS,
   derivedBytesOf,
+  NO_DERIVED_CACHE,
   type DerivedCacheReport,
   type DerivedStore,
   type DerivedStoreMeasure,
@@ -17,22 +18,25 @@ export type DerivedCacheDeps = {
   clearDerivedPaths: () => Promise<number>
   /** Bounded like every other walk this process runs — CLAUDE.md § 6. */
   concurrency: () => number
+  /**
+   * Whether the media pipeline is deriving right now.
+   *
+   * 🛑 The purge refuses while it is. `derive` writes `proxy_path` when ffmpeg RETURNS, so a
+   * removal landing between the write on disk and the write in the row leaves a row naming a
+   * file that is gone — and nothing repairs it, the row having a path.
+   */
+  deriving: () => boolean
 }
 
 export type DerivedCache = {
   /** What the four stores hold right now. Reads nothing but sizes; writes nothing at all. */
   measure: () => Promise<DerivedCacheReport>
   /**
-   * Throws the four stores away and tells the catalogue they have gone.
-   *
-   * Answers what it ACTUALLY freed, measured before the removal rather than promised from an
-   * earlier reading: a surface that announces a figure it took a minute ago announces a figure
-   * that was true then.
+   * Throws the stores away and tells the catalogue. Answers what it freed, measured just
+   * before the removal — an earlier reading would announce a figure that WAS true.
    */
   purge: () => Promise<DerivedCacheReport>
 }
-
-const EMPTY: DerivedCacheReport = { stores: [], bytes: 0, clearedRows: 0 }
 
 async function measureStore(
   root: string,
@@ -53,10 +57,7 @@ async function measureStore(
 
 /**
  * The derived stores of the open project, measured and — on a named command — thrown away.
- *
- * Never a folder outside the four: what is not here either cannot be rebuilt (`catalog.db` holds
- * the prompt, the seed and the lineage; a poster may be the one a person chose) or is not
- * derived at all. That list lives in `@shared/domain/derivedCache`, where the surface reads it.
+ * Which folders those are, and why the others are kept, lives in `@shared/domain/derivedCache`.
  */
 export function createDerivedCache(deps: DerivedCacheDeps): DerivedCache {
   const pool = boundedPool(deps.concurrency)
@@ -67,14 +68,15 @@ export function createDerivedCache(deps: DerivedCacheDeps): DerivedCache {
   return {
     measure: async () => {
       const root = deps.projectPath()
-      if (!root) return EMPTY
+      if (!root) return NO_DERIVED_CACHE
       const stores = await measureAll(root)
       return { stores, bytes: derivedBytesOf(stores), clearedRows: 0 }
     },
 
     purge: async () => {
       const root = deps.projectPath()
-      if (!root) return EMPTY
+      if (!root) return NO_DERIVED_CACHE
+      if (deps.deriving()) return { ...NO_DERIVED_CACHE, refused: 'deriving' }
 
       // Measured first: once the folders are gone there is nothing left to count, and the whole
       // point of the answer is to say what the disk gave back.
@@ -89,14 +91,8 @@ export function createDerivedCache(deps: DerivedCacheDeps): DerivedCache {
         await mkdir(folder, { recursive: true })
       }
 
-      /**
-       * Told AFTER the removal, never before: a row cleared while its proxy is still there
-       * leaves a file nothing names and nothing will ever collect. The other order leaves, at
-       * worst, a row naming a file that went — which is what this line repairs.
-       *
-       * Only `proxies` and `peaks` are written into a row; the two others are looked up by
-       * content and by nothing else, so one call covers everything the catalogue points at.
-       */
+      // AFTER the removal, never before: a row cleared while its proxy is still there leaves a
+      // file nothing names and nothing will collect. The other order leaves a row to repair.
       const clearedRows = await deps.clearDerivedPaths()
       return { stores, bytes: derivedBytesOf(stores), clearedRows }
     },

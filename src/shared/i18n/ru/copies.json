@@ -22,14 +22,19 @@
     "cacheTotal": "Всего",
     "purge": "Освободить",
     "purging": "Освобождение…",
+    "purgeBusy": "Студия сейчас создаёт файлы. Повторите, когда импорт закончится.",
     "freed": "Диску возвращено {{size}}.",
     "forgotten": "Обновлено записей: {{count, number}}",
+    "reopen": "Откройте проект заново, чтобы студия создала нужное ей.",
     "stores": {
       "thumbnails": "Миниатюры",
       "filmstrips": "Киноленты",
       "proxies": "Рабочие копии",
       "peaks": "Формы волны"
     },
-    "storeHeld": "Файлов: {{count, number}}, {{size}}"
+    "storeHeld_one": "{{count, number}} файл, {{size}}",
+    "storeHeld_few": "{{count, number}} файла, {{size}}",
+    "storeHeld_many": "{{count, number}} файлов, {{size}}",
+    "storeHeld_other": "{{count, number}} файла, {{size}}"
   }
 }

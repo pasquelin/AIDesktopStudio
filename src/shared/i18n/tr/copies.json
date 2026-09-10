@@ -22,14 +22,18 @@
     "cacheTotal": "Toplam",
     "purge": "Boşalt",
     "purging": "Boşaltılıyor…",
+    "purgeBusy": "Stüdyo şu anda dosya üretiyor. İçe aktarmalar bitince yeniden deneyin.",
     "freed": "{{size}} diske geri verildi.",
     "forgotten": "Güncellenen kayıtlar: {{count, number}}",
+    "reopen": "Stüdyonun gerekeni yeniden üretmesi için projeyi yeniden açın.",
     "stores": {
       "thumbnails": "Küçük resimler",
       "filmstrips": "Film şeritleri",
       "proxies": "Çalışma kopyaları",
       "peaks": "Dalga biçimleri"
     },
-    "storeHeld": "{{count, number}} dosya, {{size}}"
+    "storeHeld_one": "{{count, number}} dosya, {{size}}",
+    "storeHeld_many": "{{count, number}} dosya, {{size}}",
+    "storeHeld_other": "{{count, number}} dosya, {{size}}"
   }
 }

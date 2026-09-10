@@ -22,14 +22,18 @@
     "cacheTotal": "合计",
     "purge": "释放",
     "purging": "正在释放…",
+    "purgeBusy": "工作室正在生成文件。等导入结束后再试。",
     "freed": "已向磁盘归还 {{size}}。",
     "forgotten": "已更新的记录：{{count, number}}",
+    "reopen": "重新打开项目，让工作室重新生成它需要的东西。",
     "stores": {
       "thumbnails": "缩略图",
       "filmstrips": "胶片条",
       "proxies": "工作副本",
       "peaks": "波形"
     },
-    "storeHeld": "{{count, number}} 个文件，{{size}}"
+    "storeHeld_one": "{{count, number}} 个文件，{{size}}",
+    "storeHeld_many": "{{count, number}} 个文件，{{size}}",
+    "storeHeld_other": "{{count, number}} 个文件，{{size}}"
   }
 }

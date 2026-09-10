@@ -22,14 +22,18 @@
     "cacheTotal": "Total",
     "purge": "Bebaskan",
     "purging": "Membebaskan…",
+    "purgeBusy": "Studio sedang membuat berkas. Coba lagi setelah impor selesai.",
     "freed": "{{size}} dikembalikan ke disk.",
     "forgotten": "Catatan yang diperbarui: {{count, number}}",
+    "reopen": "Buka kembali proyek agar studio membuat ulang apa yang dibutuhkannya.",
     "stores": {
       "thumbnails": "Gambar mini",
       "filmstrips": "Jalur film",
       "proxies": "Salinan kerja",
       "peaks": "Bentuk gelombang"
     },
-    "storeHeld": "{{count, number}} berkas, {{size}}"
+    "storeHeld_one": "{{count, number}} berkas, {{size}}",
+    "storeHeld_many": "{{count, number}} berkas, {{size}}",
+    "storeHeld_other": "{{count, number}} berkas, {{size}}"
   }
 }

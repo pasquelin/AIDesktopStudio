@@ -22,14 +22,18 @@
     "cacheTotal": "합계",
     "purge": "비우기",
     "purging": "비우는 중…",
+    "purgeBusy": "스튜디오가 지금 파일을 만들고 있습니다. 가져오기가 끝난 뒤에 다시 시도하세요.",
     "freed": "{{size}}를 디스크에 돌려주었습니다.",
     "forgotten": "갱신한 기록: {{count, number}}",
+    "reopen": "스튜디오가 필요한 것을 다시 만들도록 프로젝트를 다시 여세요.",
     "stores": {
       "thumbnails": "축소판",
       "filmstrips": "필름 스트립",
       "proxies": "작업용 사본",
       "peaks": "파형"
     },
-    "storeHeld": "파일 {{count, number}}개, {{size}}"
+    "storeHeld_one": "파일 {{count, number}}개, {{size}}",
+    "storeHeld_many": "파일 {{count, number}}개, {{size}}",
+    "storeHeld_other": "파일 {{count, number}}개, {{size}}"
   }
 }

@@ -86,6 +86,7 @@ export function registerProjectHandlers({
   askUser,
   trashFolder,
   runningJobCount,
+  media,
 }: ProjectHandlerDeps): void {
   handle(CHANNELS.projectCreate, async (_event, path) => {
     const root = parseProjectPath(path)
@@ -482,7 +483,7 @@ export function registerProjectHandlers({
   handle(CHANNELS.documentRemove, (_event, id, kind) =>
     documents.remove(parseDocumentId(id), parseDocumentKind(kind)),
   )
-  registerCopiesHandlers({ project })
+  registerCopiesHandlers({ project, media })
   registerRecoveryHandlers(() => project.path())
   // The four routes that only raise a question live apart — see `askHandlers.ts`.
   registerAskHandlers(askUser)

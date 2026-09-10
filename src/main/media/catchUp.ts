@@ -113,6 +113,8 @@ export async function catchUpMedia(deps: CatchUpDeps): Promise<number> {
         poster: !asset.posterPath,
         // Maintenance, not an import: these rows would read as files the user never picked.
         announce: false,
+        // Already known for a row coming back for a derived file alone — see `DeriveRequest`.
+        hash: asset.hash,
       })
       done += 1
     }

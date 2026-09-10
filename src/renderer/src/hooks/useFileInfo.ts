@@ -62,17 +62,24 @@ export function useFileInfo(path: string): FileInfo {
 
     const read = async (): Promise<void> => {
       const bridge = getBridge()
-      const [facts, asset, repository, uses] = await Promise.all([
-        bridge?.project.fileFacts(path).catch(() => null) ?? null,
-        assetAt(path),
-        bridge?.git.read().catch(() => null) ?? null,
-        bridge?.project.fileUses([path]).catch(() => []) ?? [],
-      ])
+      // All four leave together; only the copies wait, and only on the row's fingerprint. The
+      // citations walk every document of the project, so chaining behind THEM would have cost
+      // this window a whole walk of latency for a question that never depended on it.
+      const factsAsked = bridge?.project.fileFacts(path).catch(() => null) ?? null
+      const gitAsked = bridge?.git.read().catch(() => null) ?? null
+      const usesAsked = bridge?.project.fileUses([path]).catch(() => []) ?? []
 
-      // Asked SECOND because it needs the fingerprint the row carries, and only for a row that
-      // has one: a `.txt` has no catalogue line, and asking for a group of nothing would be a
-      // round trip per window opened on the most ordinary case there is.
-      const groups = asset?.hash ? await orElse(bridge?.project.fileCopies(asset.hash), []) : []
+      // Only for a row that HAS a fingerprint: a `.txt` has no catalogue line, and an unfiltered
+      // ask would group the whole table for a window opened on the most ordinary case there is.
+      const asset = await assetAt(path)
+      const copiesAsked = asset?.hash ? orElse(bridge?.project.fileCopies(asset.hash), []) : []
+
+      const [facts, repository, uses, groups] = await Promise.all([
+        factsAsked,
+        gitAsked,
+        usesAsked,
+        copiesAsked,
+      ])
       if (!live) return
 
       setRead({
