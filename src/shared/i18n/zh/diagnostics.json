@@ -17,6 +17,7 @@
     "csgGraphMissing": "没有为 {{name}} 记录 CSG 图",
     "shaderAnchorMissing": "渲染器不再提供 {{name}}",
     "renderEngineUnavailable": "高级引擎尚未构建",
+    "renderEngineGradingMissing": "高级引擎按文件里的原样显示已校正的天空",
     "channelShaderMissing": "没有着色器能推导出 {{channel}} 通道",
     "channelSourceEmpty": "{{channel}} 通道的来源不含任何像素",
     "passSourceMissing": "这一道处理需要一个可读取的来源",

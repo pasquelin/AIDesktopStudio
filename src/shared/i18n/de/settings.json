@@ -248,7 +248,7 @@
     },
     "renderEngine": {
       "title": "Render-Engine",
-      "help": "Mit welcher Grafikschnittstelle die 3D-Ansicht zeichnet. Kompatibel läuft auf jeder Konfiguration und ist die Wahl für breites Teilen oder ältere Rechner. Erweitert liefert bessere Beleuchtung und Spiegelungen und verlangt eine aktuelle Grafikkarte. Ein bereits offenes Panel behält seine Engine: schließen und wieder öffnen, um zu wechseln. Die erweiterte Engine ist in dieser Version noch nicht gebaut: Wer sie wählt, zeichnet mit der kompatiblen.",
+      "help": "Mit welcher Grafikschnittstelle die 3D-Ansicht zeichnet. Kompatibel läuft auf jeder Konfiguration und ist die Wahl für breites Teilen oder ältere Rechner. Erweitert liefert bessere Beleuchtung und Spiegelungen und verlangt eine aktuelle Grafikkarte. Ein bereits offenes Panel behält seine Engine: schließen und wieder öffnen, um zu wechseln. Ein Rechner ohne WebGPU-Adapter fällt von selbst auf die kompatible Engine zurück und schreibt es ins Journal.",
       "gl": "Kompatibel",
       "gpu": "Erweitert"
     },

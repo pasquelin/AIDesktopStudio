@@ -142,17 +142,27 @@ async function tiffTexture(bytes: Uint8Array, orientation: PictureOrientation): 
   return texture
 }
 
-/** What of a renderer this reads — narrower than `WebGLRenderer`, which jsdom cannot build. */
-type AnisotropyHolder = { capabilities: { getMaxAnisotropy: () => number } }
+/**
+ * What of a renderer this reads — narrower than either renderer class, which jsdom cannot build.
+ * The two engines put the same answer in two places: under `capabilities` on the Compatible one,
+ * on the renderer itself on the Advanced one.
+ */
+type AnisotropyHolder =
+  { capabilities: { getMaxAnisotropy: () => number } } | { getMaxAnisotropy: () => number }
 
 /**
  * What a card allows, or `1` before there is a card to ask. Read through here by the three
- * engines that build a cache, so none of them has to reach into `capabilities` itself.
+ * engines that build a cache, so none of them has to know where its renderer keeps it.
  */
 export function maxAnisotropyOf(renderer: AnisotropyHolder | null | undefined): number {
+  if (!renderer) return 1
+  const asked =
+    'capabilities' in renderer
+      ? renderer.capabilities.getMaxAnisotropy()
+      : renderer.getMaxAnisotropy()
   // Never under one: three answers 0 — not 1 — on a context without
   // `EXT_texture_filter_anisotropic`, and 0 is not a number of samples.
-  return Math.max(1, renderer?.capabilities.getMaxAnisotropy() ?? 1)
+  return Math.max(1, asked)
 }
 
 export type TextureCache = {

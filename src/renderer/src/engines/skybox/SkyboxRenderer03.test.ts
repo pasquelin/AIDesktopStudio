@@ -7,7 +7,7 @@ import { createSkyboxContent, type SkyboxContent } from '@shared/domain/skybox'
 import type * as AdjustModule from '../gpu/passes/adjust'
 import type { AdjustPass } from '../gpu/passes/adjust'
 import type { GpuPipeline } from '../gpu/gpuPipeline'
-import type * as EnvironmentModule from '../viewport/environment'
+import type * as GlDriverModule from '../render/glDriver'
 import type * as TestObjectsModule from '../viewport/testObjects'
 import type { TestObjects } from '../viewport/testObjects'
 import { fakeEnvironment, fakeRenderer, fakeTextureSource } from '../viewport/viewport-fixtures'
@@ -51,11 +51,12 @@ vi.mock('../viewport/testObjects', async importOriginal => {
   }
 })
 
-vi.mock('../viewport/environment', async importOriginal => ({
-  // Partial: the quiet this engine debounces on is the module's, and a total mock hides it.
-  ...(await importOriginal<typeof EnvironmentModule>()),
-  createEnvironment: () => environment,
-}))
+// Mocked at the DRIVER, which is what makes an environment now: mocking the module below it
+// would still let the driver build a `PMREMGenerator` on a renderer jsdom cannot give.
+vi.mock('../render/glDriver', async importOriginal => {
+  const actual = await importOriginal<typeof GlDriverModule>()
+  return { glDriver: { ...actual.glDriver, createEnvironment: () => environment } }
+})
 vi.mock('../gpu/gpuPipeline', () => ({ createGpuPipeline: () => pipeline }))
 vi.mock('../gpu/passes/adjust', async importOriginal => {
   const actual = await importOriginal<typeof AdjustModule>()

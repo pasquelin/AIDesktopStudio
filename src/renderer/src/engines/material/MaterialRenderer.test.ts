@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import type * as GlDriverModule from '../render/glDriver'
 import { PerspectiveCamera, RepeatWrapping, Vector3 } from 'three'
 import { PBR_CHANNELS, type PbrChannel } from '@shared/domain/material'
 import type { ViewportEnvironment } from '../viewport/environment'
@@ -33,12 +34,20 @@ let environment: ViewportEnvironment
  * context). Stubbing the viewport's mount and its `gl` accessor is enough — nothing here
  * dereferences the renderer, so what the engine decides is reachable and what it draws is not.
  */
-vi.mock('../viewport/environment', () => ({
-  createEnvironment: () => {
-    environment = fakeEnvironment()
-    return environment
-  },
-}))
+// Mocked at the DRIVER, which is what makes an environment now: mocking the module below it
+// would still let the driver build a `PMREMGenerator` on a renderer jsdom cannot give.
+vi.mock('../render/glDriver', async importOriginal => {
+  const actual = await importOriginal<typeof GlDriverModule>()
+  return {
+    glDriver: {
+      ...actual.glDriver,
+      createEnvironment: () => {
+        environment = fakeEnvironment()
+        return environment
+      },
+    },
+  }
+})
 
 const skyOf = (assetId: string): MaterialState => {
   const state = newMaterial()

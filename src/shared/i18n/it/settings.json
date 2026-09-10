@@ -248,7 +248,7 @@
     },
     "renderEngine": {
       "title": "Motore di rendering",
-      "help": "Con quale interfaccia grafica disegna la vista 3D. Compatibile funziona su ogni configurazione ed è quello da tenere per condividere ampiamente o per macchine più vecchie. Avanzato dà illuminazione e riflessi migliori e chiede una scheda grafica recente. Un pannello già aperto conserva il suo motore: chiuderlo e riaprirlo per cambiarlo. Il motore Avanzato non è ancora costruito in questa versione: sceglierlo disegna con il Compatibile.",
+      "help": "Con quale interfaccia grafica disegna la vista 3D. Compatibile funziona su ogni configurazione ed è quello da tenere per condividere ampiamente o per macchine più vecchie. Avanzato dà illuminazione e riflessi migliori e chiede una scheda grafica recente. Un pannello già aperto conserva il suo motore: chiuderlo e riaprirlo per cambiarlo. Una macchina senza adattatore WebGPU torna da sola al motore Compatibile, e lo scrive nel giornale.",
       "gl": "Compatibile",
       "gpu": "Avanzato"
     },

@@ -17,6 +17,7 @@
     "csgGraphMissing": "Không có đồ thị CSG được ghi lại cho {{name}}",
     "shaderAnchorMissing": "Render không còn cung cấp {{name}}",
     "renderEngineUnavailable": "Bộ máy Nâng cao chưa được dựng",
+    "renderEngineGradingMissing": "Bộ máy Nâng cao hiển thị bầu trời đã chỉnh đúng như tệp của nó chứa",
     "channelShaderMissing": "Không shader nào lấy nguồn từ kênh {{channel}}",
     "channelSourceEmpty": "Nguồn kênh {{channel}} không chứa pixel",
     "passSourceMissing": "Lệnh này cần một nguồn để đọc",

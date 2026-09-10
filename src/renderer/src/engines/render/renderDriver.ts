@@ -2,17 +2,29 @@
  * What DRAWS, behind one interface — the seam between the studio's engines and the graphics API
  * underneath them.
  *
- * Four things depend on which API is running, and nothing else does: building the renderer,
- * reading its pixels back, prefiltering an environment, and patching the standard material.
- * Everything else in `engines/` speaks three.js objects, which both APIs share.
+ * Five things depend on which API is running, and nothing else does: building the renderer,
+ * reading its pixels back, composing a stack, prefiltering an environment, and patching the
+ * standard material. Everything else in `engines/` speaks three.js objects, which both APIs
+ * share — a scene, a camera, a light, a geometry and a render target are the same on both sides.
  *
  * The same shape as `game/ports/`: the interface here, each implementation in a file of its own.
  */
-import type { Scene, WebGLRenderer, WebGLRenderTarget } from 'three'
-import type { MeshStandardMaterial } from 'three'
+import type { MeshStandardMaterial, Scene, WebGLRenderer, WebGLRenderTarget } from 'three'
+import type { WebGPURenderer } from 'three/webgpu'
 import type { RenderEngine } from '@shared/domain/renderEngine'
 import type { ViewportEnvironment } from '../viewport/environment'
 import type { MaterialUniforms } from '../material/materialShader'
+import type { PostComposerOptions } from '../postfx/PostComposer'
+import type { SceneComposer } from './sceneComposer'
+
+/**
+ * What the studio draws with, whichever engine built it.
+ *
+ * 🛑 A UNION and not a common base: three declares `WebGLRenderer` and the node renderer apart,
+ * sharing no ancestor. What the studio uses of them is nearly the same surface, and the handful
+ * of places where it is not are exactly what this driver covers.
+ */
+export type StudioRenderer = WebGLRenderer | WebGPURenderer
 
 /** What a canvas is given at construction. The rest a viewport writes onto the renderer itself. */
 export type RendererRequest = {
@@ -23,8 +35,16 @@ export type RendererRequest = {
 
 export type RenderDriver = {
   readonly engine: RenderEngine
-  /** Throws when this engine cannot run here. The caller falls back — see `ViewportSurface`. */
-  createRenderer: (request: RendererRequest) => WebGLRenderer
+  /** Throws when this engine cannot run here. The caller falls back — see `mountRenderer`. */
+  createRenderer: (request: RendererRequest) => StudioRenderer
+  /**
+   * Resolves once the renderer may be drawn with, and `null` when it already can be.
+   *
+   * 🛑 A node renderer THROWS on `render()` before its backend is up — it asks the browser for a
+   * device, which is asynchronous — where a WebGL one draws on the line after `new`. A mount
+   * cannot wait, so the viewport holds its frames until this settles.
+   */
+  ready: (renderer: StudioRenderer) => Promise<void> | null
   /**
    * One disposable RGBA buffer, ready to be transferred without another UI-thread copy.
    *
@@ -33,24 +53,58 @@ export type RenderDriver = {
    * back in every caller. All three of them already sit in an async path.
    */
   readPixels: (
-    renderer: WebGLRenderer,
+    renderer: StudioRenderer,
     target: WebGLRenderTarget,
     width: number,
     height: number,
   ) => Promise<Uint8Array>
+  /** The chain a stack is drawn through: GLSL passes on one side, TSL nodes on the other. */
+  createComposer: (renderer: StudioRenderer, options: PostComposerOptions) => SceneComposer
   createEnvironment: (
-    renderer: WebGLRenderer,
+    renderer: StudioRenderer,
     scene: Scene,
     requestRender: () => void,
   ) => ViewportEnvironment
   /**
    * The three things the standard material does not offer: the roughness and metalness remaps
    * and the cavity mask. `onMissingAnchor` is told once per anchor the shipped shader no longer
-   * carries — an engine that patches by nodes rather than by source never calls it.
+   * carries — the node engine patches no source, so it never calls it.
    */
   patchMaterial: (
     material: MeshStandardMaterial,
     uniforms: MaterialUniforms,
     onMissingAnchor: (anchor: string) => void,
   ) => void
+}
+
+/**
+ * Points a renderer at a target and hands back the call that puts the previous one back.
+ *
+ * 🛑 Written once because the two engines declare the SAME object apart: `getRenderTarget`
+ * answers a `WebGLRenderTarget` on one side and a `RenderTarget` on the other, so a save and
+ * restore written against the union is refused although both accept what both returned.
+ */
+export function drawInto(renderer: StudioRenderer, target: WebGLRenderTarget | null): () => void {
+  const previous: unknown = renderer.getRenderTarget()
+  // `as`: what is put back is exactly what this renderer just handed over, and a renderer takes
+  // back its own target whichever of the two shapes three declares it under.
+  const restore = (): void => renderer.setRenderTarget(previous as WebGLRenderTarget | null)
+  renderer.setRenderTarget(target)
+  return restore
+}
+
+/**
+ * How many samples an off-screen target may be antialiased to.
+ *
+ * The ceiling comes from three rather than from `gl.MAX_SAMPLES`, which the WebGL1 typing has no
+ * name for. ZERO on a node renderer: it sizes the attachments of a render target itself, and has
+ * no context to ask.
+ */
+export function maxSamplesOf(renderer: StudioRenderer): number {
+  if (!('capabilities' in renderer)) return 0
+  const gl = renderer.getContext()
+  return Math.max(
+    0,
+    Math.min(Number(gl.getParameter(gl.SAMPLES) ?? 0), renderer.capabilities.maxSamples),
+  )
 }

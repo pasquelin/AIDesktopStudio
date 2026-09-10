@@ -9,7 +9,7 @@ Machine : Apple M2 Max, macOS 26.5.2 (Darwin 25.6.0), arm64. three.js 0.185.1.
 | --- | --- | --- |
 | 1 — Gains WebGL indépendants | livrée, 1 MUST refusé sur mesure | Cascades, anisotropie et AgX livrés. `PCFSoftShadowMap` n'est pas le mode doux dans cette version de three : appliquer le MUST 1.1 aurait durci les ombres. |
 | 2 — Interface driver + choix moteur | livrée, 1 écart d'emplacement | `RenderDriver`, `glDriver`, `gpuDriver` (stub), repli silencieux, `engines` dans le registre. Le sélecteur est dans les préférences 3D et non à la création de projet — motif plus bas. |
-| 3 — Premier contenu GPU réel | **non livrée** | Le préalable — un `WebGPURenderer` réellement monté — est le port de toute la chaîne de rendu, pas un spike. Chiffré plus bas. Aucun chiffre, aucune capture : rien n'a été mesuré, donc rien n'est affirmé. |
+| 3 — Premier contenu GPU réel | livrée, TRAA écarté | `WebGPURenderer` monté, patch matériau en TSL, GTAO en nœud natif, lecture de pixels GPU, budget qualité partagé. Chiffres mesurés sur cette machine, plus bas. TRAA non porté : motif plus bas. |
 
 ## Étape 1
 
@@ -160,10 +160,9 @@ contrôle. Le verrou « pas de switch en direct » tient **par construction** : 
 montage du viewport et jamais relu ; l'aide le dit. Mettre le choix dans le projet demanderait un
 champ de manifeste et sa validation — hors périmètre de cette étape, à décider.
 
-Deux revues sur trois ont demandé de ne pas livrer le réglage du tout tant qu'Avancé ne dessine
-rien. Le spec le demande à cette étape, donc il est livré — mais son aide dit désormais en toutes
-lettres que le moteur Avancé n'est pas encore construit et que le choisir dessine en Compatible.
-Un réglage qui promet sans tenir est le défaut que ces revues visaient.
+Deux revues sur trois ont demandé de ne pas livrer le réglage tant qu'Avancé ne dessinait rien.
+L'étape 3 l'a rendu caduc : le moteur Avancé dessine. Son aide dit maintenant ce qui reste vrai —
+une machine sans adaptateur WebGPU retombe d'elle-même sur le Compatible et le note au journal.
 
 ### Registre post-processing
 
@@ -172,41 +171,142 @@ Un réglage qui promet sans tenir est le défaut que ces revues visaient.
 tant qu'aucun effet GPU n'existe, et un filtre qu'on ne peut pas voir tourner est un filtre qu'on
 ne peut pas relire.
 
-## Étape 3 — non livrée, et pourquoi
+## Étape 3
 
-Le point 3.1 (patch matériau en TSL), 3.2 (GTAO en TSL), 3.3 (lecture de pixels GPU) et le
-budget qualité `RenderPipeline` sont tous **derrière un préalable** : que `GPUDriver.createRenderer`
-rende un `WebGPURenderer` réellement monté. Ce préalable n'est pas un spike.
+### Ce qui a été mesuré, et sur quoi
 
-Mesuré dans ce dépôt et dans three 0.185 :
+Machine : Apple M2 Max, Electron du dépôt, `navigator.gpu.requestAdapter()` répond. Banc :
+`pnpm engines:bench`, qui pilote `engineBenchmark.browser.ts` par CDP sur `pnpm start:debug`.
+Surface 1280×720, qualité `high`, une pile portant GTAO sur les deux moteurs.
 
-- `EffectComposer` est **WebGL uniquement**, et three le dit dans sa propre documentation :
-  `examples/jsm/postprocessing/EffectComposer.js:18` — « This module can only be used with
-  WebGLRenderer ». Toute la chaîne de composition du studio est construite dessus :
-  **1 941 lignes** dans `engines/postfx/` hors tests, plus **291 lignes** de passes GLSL dans
-  `engines/gpu/`, dont `fuseShader` qui n'a aucun équivalent souhaitable côté TSL.
-- **29 fichiers hors tests** nomment `WebGLRenderer`. `ViewportSurface.gl` est typé
-  `WebGLRenderer | null` et lu par les passes, les overlays, `TransformControls` et `ViewHelper`.
-- Le viewport lit encore `renderer.getContext()` pour la minuterie GPU (`gpuTimer.ts`, extension
-  WebGL2) et `renderer.info.autoReset`, qui n'ont pas le même contrat côté WebGPU.
+**Ce que chaque colonne mesure, et rien de plus** :
 
-Une chaîne `RenderPipeline` parallèle, un typage `Renderer` propagé sur ces 29 fichiers, et une
-seconde implémentation des effets : c'est un chantier, pas une étape. **Il faut le décider, pas le
-commencer en fin de lot.**
+- `submitMs` — ce que le THREAD UI dépense à assembler et enfiler une image, moyenne sur
+  60 images après 10 de chauffe. 🛑 **Pas** le coût de l'image sur la carte : les deux `render()`
+  rendent la main dès les commandes enfilées.
+- `firstReadbackMs` — la PREMIÈRE lecture de pixels. Elle vide la file, donc elle absorbe aussi
+  ce qui restait à compiler.
+- `readbackMs` — la seconde, une fois plus rien à compiler. Ce qu'un export paie par image.
 
-S'ajoute une limite d'environnement, indépendante du volume : les critères d'acceptation de
-l'étape 3 sont un test de non-régression **visuel** GL vs GPU, une **table de chiffres** sur deux
-profils et deux moteurs, et une **capture** d'export. Aucun des trois n'est productible ici — la
-suite tourne sous jsdom, sans WebGPU ni GPU. Les écrire sans les mesurer serait précisément ce que
-le spec interdit.
+| Profil | Moteur | `submitMs` | `firstReadbackMs` | `readbackMs` |
+| --- | --- | ---: | ---: | ---: |
+| Un modèle (4 nœuds) | Compatible | 0,045 | 63,3 | 45,2 |
+| Un modèle (4 nœuds) | Avancé | 0,125 | 640,8 | 41,2 |
+| Monde ouvert C5 (20 000 nœuds) | Compatible | 0,080 | 52,8 | 39,3 |
+| Monde ouvert C5 (20 000 nœuds) | Avancé | 0,122 | 60,1 | 40,4 |
+
+**Ce que ces chiffres disent, sans arrangement** :
+
+- **Le moteur Avancé coûte plus cher côté CPU par image** : 0,12 ms contre 0,045–0,080. C'est
+  1,5 à 2,8 fois, et cela reste très en dessous d'un budget d'image.
+- **Il ne se dégrade pas avec la scène** : 0,125 ms sur 4 nœuds et 0,122 ms sur 20 000, quand le
+  Compatible passe de 0,045 à 0,080. Le coût par objet du renderer de nœuds est plat sur ces deux
+  profils. Une seule machine, deux profils : c'est une observation, pas une loi.
+- **La première lecture de l'Avancé est chère — 640,8 ms** — parce qu'elle paie la compilation
+  de tous les pipelines de nœuds du graphe. Le second profil ne la repaie pas (60,1 ms) : les
+  pipelines sont déjà là. **Ce n'est pas un coût de lecture, et il ne doit pas être lu comme tel.**
+- **À chaud, les deux moteurs lisent au même prix** (~40–45 ms) : la lecture est dominée par la
+  synchronisation, pas par l'API.
+- **Aucun seuil de gain n'est atteint sur ces mesures.** Le moteur Avancé n'est, ici, pas plus
+  rapide que le Compatible. Ce qu'il apporte — la qualité d'éclairage et de reflets — n'est pas
+  ce que ce banc mesure, et n'a été comparé par aucune mesure.
+
+### 3.1 — Patch matériau en TSL
+
+`materialNodes.ts`. Ce n'est pas une traduction du GLSL, et deux écarts sont délibérés :
+
+- **Aucune recompilation quand un canal se remplit.** Le patch GLSL est gardé par
+  `#ifdef USE_ROUGHNESSMAP` : chaque slot rempli reconstruit le programme. Ici un uniforme `has`
+  choisit entre le texel remappé et le facteur nu, et remplir un slot déplace un nombre.
+- **La cavité tombe sur la COULEUR diffuse** et non sur `reflectedLight`, sur quoi un matériau de
+  nœuds n'ouvre aucune couture. Identique pour un diélectrique — le cas où une cavité sert ;
+  sur un métal, dont three tire la teinte spéculaire de cette même couleur, l'Avancé assombrit
+  un peu ce que le Compatible laisse tranquille. **Écart connu, pas une équivalence.**
+
+Les uniformes sont ceux du moteur, partagés : un `Vector2` par référence, un scalaire et une
+texture relus à chaque rendu parce qu'ils sont remplacés et non écrits dedans. Cinq tests tiennent
+ce pont, dont celui qui vérifie que le graphe ne se reconstruit pas quand un canal arrive.
+
+**Non mesuré** : la comparaison visuelle GL/GPU du patch. Elle demande deux rendus de la même
+scène de référence à comparer pixel à pixel, comme `world:validate` le fait déjà entre deux
+représentations — le harnais existe, l'entrée pour les deux moteurs n'a pas été écrite.
+
+### 3.2 — GTAO en TSL
+
+`gpuComposer.ts` construit un `RenderPipeline` dont la passe de scène écrit ses normales en MRT,
+puis multiplie l'occlusion `ao()` — la fonction native de three, pas une réécriture du `GTAOPass`.
+`gtao.engines` devient `['gl', 'gpu']` ; c'est le seul effet des trente dans ce cas.
+
+Aucune logique de fusion façon `fuseShader` : `RenderPipeline` partage déjà profondeur et
+normales entre les nœuds qui les lisent.
+
+### 3.3 — Lecture de pixels GPU
+
+`readRenderTargetPixelsAsync`, derrière la même signature promise des deux côtés — décidée à
+l'étape 2 pour cette raison exacte. Les trois appelants (film, capture de vol, validation)
+étaient déjà asynchrones et n'ont pas bougé.
+
+🛑 Un renderer de nœuds ne relit pas le canevas : la lecture veut une cible. Le studio en passe
+toujours une, donc le chemin d'export est intact — mesuré ci-dessus par `readbackMs`, qui est
+exactement `captureStill`.
+
+### 3.4 — Budget qualité de la chaîne `RenderPipeline`
+
+`gpuPostQuality.ts`, **dérivé** de `postQuality` et jamais une seconde table : un réglage doit
+acheter la même chose sur les deux moteurs. La division de résolution du chaînage GL devient le
+`resolutionScale` du nœud, la part d'échantillons est la même valeur. Cinq tests, dont deux qui
+comparent les deux lectures réglage par réglage.
+
+Une limite honnête : **TRAA n'expose aucun nombre d'échantillons** dans three 0.185 — ses
+échantillons sont des IMAGES, une par gigue d'une séquence fixe. Le seul levier de qualité est
+la correction sous-pixel, et c'est ce que le budget pilote.
+
+### 3.5 — Ce qui a dû être réparé pour que l'Avancé dessine
+
+Trouvés en faisant tourner le banc, pas en lisant le code :
+
+- Le montage demandait au renderer son contexte WebGL2 pour la minuterie GPU. Un renderer de
+  nœuds **lève** si on lui demande son contexte avant que son backend soit prêt.
+- La scène préfiltrait la salle neutre (`setStudio`) dans la foulée du montage : `fromScene`
+  refuse avant l'init. L'éclairage du montage attend désormais `settled()` — et passe tout droit
+  quand le moteur peut déjà dessiner, ce qui est le cas de chaque montage WebGL.
+- Les images sont retenues tant que le backend n'est pas là (`canDraw`), sinon chaque `render()`
+  lève.
+- Le banc lui-même attendait deux `requestAnimationFrame` : une fenêtre qui n'est pas à l'écran
+  n'en reçoit aucun, et le banc restait pendu au lieu de rendre un chiffre.
+
+### 3.6 — TRAA : écarté, avec le motif
+
+Le spec le donne en SHOULD, « si le motif GTAO n'a pas révélé de problème ». Il en a révélé un :
+`traa` n'existe pas côté Compatible, donc l'ajouter au catalogue publierait un effet que la
+moitié des projets ne peuvent pas dessiner — et le rendre visible demanderait une bibliothèque
+d'effets consciente du moteur, c'est-à-dire l'UX que le spec met hors périmètre. Le budget
+qualité prévoit déjà son levier ; l'effet attend son jumeau GL ou une UI par moteur.
+
+### 3.7 — Ce que l'Avancé ne fait pas encore, écrit plutôt que découvert
+
+- **Un ciel corrigé s'affiche tel que son fichier le contient.** La correction est une chaîne de
+  passes GLSL écrites à la main (`skyGrading`) ; il n'y a pas d'équivalent en nœuds. Dit une fois
+  dans le journal, jamais en silence.
+- **Pas de minuterie GPU** : `EXT_disjoint_timer_query_webgl2` est au Compatible.
+- **Pas de porte globale sur la passe d'ombres** : un renderer de nœuds n'a pas
+  `shadowMap.needsUpdate`. Le resserrement lumière par lumière de `limitShadowUpdates` reste,
+  et c'est sur lui que l'éditeur s'appuyait déjà.
+- **L'aperçu incrusté** et les vingt-neuf effets GLSL restent au Compatible : le registre le dit
+  effet par effet, et la chaîne Avancée laisse simplement de côté ce qu'elle ne sait pas bâtir.
 
 ## Ce qui reste ouvert
 
-- Le port WebGPU lui-même (étape 3), à ouvrir comme chantier avec sa propre branche de banc.
-- Le switch en direct du moteur : hors périmètre, et il le reste tant que le patch matériau n'est
-  pas porté en TSL.
+- **La comparaison visuelle GL/GPU**, sur le patch matériau comme sur GTAO. Le harnais de
+  `world:validate` compare déjà deux représentations pixel à pixel ; l'entrée qui compare deux
+  MOTEURS n'est pas écrite. Tant qu'elle ne l'est pas, « visuellement équivalent » n'est affirmé
+  par personne dans ce rapport.
+- **La capture d'export sur un projet `'gpu'`** : le chemin est mesuré (`readbackMs` EST
+  `captureStill`), l'image n'est pas jointe.
+- Les vingt-neuf autres effets, l'aperçu incrusté et la correction de ciel côté Avancé.
+- Le switch en direct du moteur : hors périmètre.
 - SSGI : hors périmètre par décision du spec.
-- TRAA : non porté, l'effet n'existe même pas côté GL dans `PostEffectId`.
+- TRAA : écarté, motif au § 3.6.
 - Le choix du moteur par PROJET plutôt que par application, si le sélecteur doit vraiment vivre à
   la création : demande un champ de manifeste et sa validation.
 - Coût réel des cascades et de l'anisotropie : à mesurer sur un banc GPU, qui n'existe pas encore

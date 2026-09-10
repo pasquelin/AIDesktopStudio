@@ -17,6 +17,7 @@
     "csgGraphMissing": "Für {{name}} ist kein CSG-Graph gespeichert",
     "shaderAnchorMissing": "Der Renderer stellt {{name}} nicht mehr bereit",
     "renderEngineUnavailable": "Die erweiterte Engine ist noch nicht gebaut",
+    "renderEngineGradingMissing": "Die erweiterte Engine zeigt einen korrigierten Himmel so, wie seine Datei ihn enthält",
     "channelShaderMissing": "Kein Shader leitet den Kanal {{channel}} ab",
     "channelSourceEmpty": "Die Quelle des Kanals {{channel}} enthält keine Pixel",
     "passSourceMissing": "Dieser Durchgang benötigt eine Quelle zum Lesen",

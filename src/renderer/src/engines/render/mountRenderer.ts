@@ -5,12 +5,11 @@
  * interface, so a chooser living beside it would close the graph into a cycle — see
  * `main/import-cycles.test.ts`.
  */
-import type { WebGLRenderer } from 'three'
 import type { RenderEngine } from '@shared/domain/renderEngine'
 import { localizedError } from '@shared/localizedError'
 import { glDriver } from './glDriver'
 import { gpuDriver } from './gpuDriver'
-import type { RenderDriver, RendererRequest } from './renderDriver'
+import type { RenderDriver, RendererRequest, StudioRenderer } from './renderDriver'
 
 /** The two implementations, named together so a caller — or a test — can swap either. */
 export type RenderDrivers = { gl: RenderDriver; gpu: RenderDriver }
@@ -23,9 +22,9 @@ const RENDER_DRIVERS: RenderDrivers = { gl: glDriver, gpu: gpuDriver }
 
 /**
  * The driver a policy asks for — the Compatible one whenever the Advanced engine has nothing to
- * draw with. `gpuReady` is what `probeGpuAdapter` found, `null` meaning nobody has asked yet:
- * a mount cannot wait for an adapter, so the first one of a session opens Compatible and the
- * answer is there for the next.
+ * draw with. `gpuReady` is whether `loadGpuModule` has both an adapter and the node bundle in
+ * hand: a mount cannot wait for either, so the first viewport of a session opens Compatible and
+ * the answer is there for the next.
  */
 function driverFor(
   engine: RenderEngine,
@@ -36,7 +35,7 @@ function driverFor(
 }
 
 /** What was mounted, which is not always what was asked for. */
-export type MountedRenderer = { renderer: WebGLRenderer; driver: RenderDriver }
+export type MountedRenderer = { renderer: StudioRenderer; driver: RenderDriver }
 
 /**
  * Builds the renderer, and falls back rather than failing: a driver that throws leaves the

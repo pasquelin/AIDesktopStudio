@@ -1,4 +1,6 @@
-import { MeshBasicMaterial, NoToneMapping, type WebGLRenderer } from 'three'
+import { MeshBasicMaterial, NoToneMapping } from 'three'
+import { oweShadowPassOnce } from '../scene/shadows'
+import type { StudioRenderer } from '../render/renderDriver'
 import { createGpuPipeline } from '../gpu/gpuPipeline'
 import { frameDelta } from './frameClock'
 import { recordFrame } from './gpuStats'
@@ -13,7 +15,7 @@ export class ViewportFrame extends ViewportInset {
    * `GpuPipeline` is the studio's own full-frame quad — the same one every image filter draws
    * through — rather than a second scene and camera written here.
    */
-  protected insetBlitOf(renderer: WebGLRenderer): InsetBlit {
+  protected insetBlitOf(renderer: StudioRenderer): InsetBlit {
     if (this.insetBlit) return this.insetBlit
 
     this.insetBlit = {
@@ -55,7 +57,7 @@ export class ViewportFrame extends ViewportInset {
    * the NEXT one to close, timing two frames as if they were one. Hence the `finally`.
    */
   private drawTimedFrame(
-    renderer: WebGLRenderer,
+    renderer: StudioRenderer,
     panesDrawn: boolean,
     refreshAllShadows: () => void,
   ): boolean {
@@ -79,13 +81,32 @@ export class ViewportFrame extends ViewportInset {
   }
 
   /**
+   * Opens the frame's shadow pass and hands back the call that closes it — narrowed to the
+   * lights that moved, and restored for whatever renders off screen afterwards.
+   */
+  private armShadowPass(renderer: StudioRenderer): () => void {
+    const stale = this.shadowsStale
+    oweShadowPassOnce(renderer, stale)
+    this.shadowsStale = false
+    let restore = stale ? this.options.onShadowFrame?.(this.allShadowsStale) : undefined
+    this.allShadowsStale = false
+    return () => {
+      restore?.()
+      restore = undefined
+    }
+  }
+
+  /**
    * On demand, not on a permanent loop: a studio whose viewport burns a frame at rest heats the
    * machine for nothing. The loop keeps going only while something is actually moving.
    */
   protected readonly renderFrame = (): void => {
     this.frame = null
     const renderer = this.renderer
-    if (!renderer) return
+    // Not until the backend answers: a node renderer throws on `render()` before it does, and
+    // the frames it would have drawn are dropped rather than queued — `settleRenderer` asks
+    // for a fresh one once it can draw.
+    if (!renderer || !this.rendererReady) return
 
     // The engine clears, not three.js — see `autoReset` at mount.
     renderer.info.reset()
@@ -100,23 +121,13 @@ export class ViewportFrame extends ViewportInset {
     const moving = this.options.onFrame?.(delta) ?? false
 
     const settling = this.updateControls()
-    const shadowsStale = this.shadowsStale
-    renderer.shadowMap.needsUpdate = shadowsStale
-    this.shadowsStale = false
-    let restoreShadows = shadowsStale
-      ? this.options.onShadowFrame?.(this.allShadowsStale)
-      : undefined
-    this.allShadowsStale = false
-    const refreshAllShadows = (): void => {
-      restoreShadows?.()
-      restoreShadows = undefined
-    }
+    const refreshAllShadows = this.armShadowPass(renderer)
     const panesDrawn = !this.insetCoversAll()
     const renderStarted = performance.now()
     const timedGpu = this.drawTimedFrame(renderer, panesDrawn, refreshAllShadows)
     recordFrame(renderer.info, this.stats, performance.now() - renderStarted)
     this.stats.gpuFrameMs = timedGpu ? (this.gpuTimer?.read() ?? null) : null
-    renderer.shadowMap.needsUpdate = true
+    oweShadowPassOnce(renderer, true)
     if (moving || settling) {
       this.requestCameraRender()
       return
@@ -132,7 +143,7 @@ export class ViewportFrame extends ViewportInset {
     return settling
   }
 
-  private renderOverlay(renderer: WebGLRenderer): void {
+  private renderOverlay(renderer: StudioRenderer): void {
     const overlay = this.options.onOverlay
     if (!overlay) return
     renderer.autoClear = false

@@ -52,13 +52,14 @@ describe('the catalogue', () => {
     expect(wrong).toEqual([])
   })
 
-  it('names an engine for every effect, and only the Compatible one so far', () => {
-    // The Advanced engine builds none of them yet. A `gpu` appearing here without a factory
-    // behind it is a slot the chain would leave empty with nothing said.
+  // 🛑 A `gpu` written here without a node factory behind it is a slot the Advanced chain
+  // leaves empty with nothing said. The occlusion is the only one that has one.
+  it('names an engine for every effect, and the Advanced one only where a node builds it', () => {
     const engines = POST_EFFECT_IDS.map(id => POST_EFFECTS[id].engines)
+    const advanced = POST_EFFECT_IDS.filter(id => POST_EFFECTS[id].engines.includes('gpu'))
 
     expect(engines.every(named => named.length > 0)).toBe(true)
-    expect(engines.flat().filter(engine => engine !== 'gl')).toEqual([])
+    expect(advanced).toEqual(['gtao'])
   })
 
   it('gives a fresh instance the defaults of its own effect', () => {

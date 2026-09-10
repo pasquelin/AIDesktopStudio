@@ -1,12 +1,12 @@
-import { ACESFilmicToneMapping, Color, NoToneMapping, type WebGLRenderer } from 'three'
+import { ACESFilmicToneMapping, Color, NoToneMapping } from 'three'
+import { loadedGpuModule, loadGpuModule } from '../render/gpuModule'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { DEFAULT_RENDER_POLICY } from '@shared/domain/renderPolicy'
 import { traceFailure } from '@/services/diagnostics'
 import { applyShadowPolicy } from '../scene/shadows'
 import { token } from '../core/palette'
-import { askedGpuAdapter, probeGpuAdapter } from '../render/gpuAdapter'
 import { mountRenderer } from '../render/mountRenderer'
-import { type RenderDriver } from '../render/renderDriver'
+import { type RenderDriver, type StudioRenderer } from '../render/renderDriver'
 import { createGpuTimer, isGpuTimerContext } from './gpuTimer'
 import { ViewportMounting } from './ViewportMounting'
 
@@ -32,8 +32,8 @@ export abstract class ViewportSurface extends ViewportMounting {
     const canvas = this.canvasIn(host)
     const renderer = this.rendererFor(canvas)
     this.renderer = renderer
-    const context = renderer.getContext()
-    this.gpuTimer = isGpuTimerContext(context) ? createGpuTimer(context) : null
+    this.gpuTimer = gpuTimerFor(renderer)
+    this.holdFramesUntilReady(renderer)
     this.mountControls(canvas)
     this.mountNavigation(host)
     this.observeCanvas(canvas)
@@ -56,14 +56,16 @@ export abstract class ViewportSurface extends ViewportMounting {
    * the reason. The adapter is asked for in the background, so the NEXT mount can honour it —
    * a mount cannot wait, and a viewport that waited would show nothing while it did.
    */
-  private rendererFor(canvas: HTMLCanvasElement): WebGLRenderer {
+  private rendererFor(canvas: HTMLCanvasElement): StudioRenderer {
     const wanted = this.options.engine?.() ?? 'gl'
-    if (wanted === 'gpu' && askedGpuAdapter() === null) void probeGpuAdapter()
+    // Asked for in the BACKGROUND: the adapter and the node bundle both arrive a beat later,
+    // and a viewport that waited for them would show nothing while it did.
+    if (wanted === 'gpu' && !loadedGpuModule()) void loadGpuModule()
 
     const mounted = mountRenderer(
       { canvas, alpha: this.output.alpha ?? false },
       wanted,
-      askedGpuAdapter(),
+      loadedGpuModule() !== null,
       error => traceFailure('render.fallback', wanted, error),
     )
     const { renderer, driver } = mounted
@@ -87,6 +89,45 @@ export abstract class ViewportSurface extends ViewportMounting {
     // `render` a second time — left automatic, a frame would report the trihedron alone.
     renderer.info.autoReset = false
     return renderer
+  }
+
+  /**
+   * A node renderer throws on `render()` until its backend is up. The frames it would have drawn
+   * are dropped rather than queued — what a viewport shows is its CURRENT state, and one asked
+   * for again is one asked for now.
+   */
+  private holdFramesUntilReady(renderer: StudioRenderer): void {
+    const settling = this.renderDriver.ready(renderer)
+    if (!settling) {
+      this.rendererReady = true
+      return
+    }
+    this.rendererSettling = this.settleRenderer(settling)
+  }
+
+  /** Whether the renderer may be drawn with at all — false while a node backend comes up. */
+  get canDraw(): boolean {
+    return this.rendererReady
+  }
+
+  /** Resolves once this viewport may draw. Already settled where the engine needs no backend. */
+  settled(): Promise<void> {
+    return this.rendererSettling ?? Promise.resolve()
+  }
+
+  private async settleRenderer(settling: Promise<void>): Promise<void> {
+    try {
+      await settling
+    } catch (error) {
+      // Nothing to fall back to from here: the canvas is built and the scene hangs off this
+      // renderer. The panel stays empty and the journal says why, which beats throwing into a
+      // mount nobody awaited.
+      traceFailure('render.fallback', 'gpu', error)
+      return
+    }
+    this.rendererReady = true
+    this.onResize()
+    this.requestRender()
   }
 
   private mountControls(canvas: HTMLCanvasElement): void {
@@ -165,8 +206,11 @@ export abstract class ViewportSurface extends ViewportMounting {
     this.disposeInset()
 
     const canvas = this.renderer?.domElement
-    this.renderer?.forceContextLoss()
-    this.renderer?.dispose()
+    // The Compatible engine alone can give its context back before it is collected; a node
+    // renderer holds a device the browser reclaims with the page.
+    const renderer = this.renderer
+    if (renderer && 'forceContextLoss' in renderer) renderer.forceContextLoss()
+    renderer?.dispose()
     this.renderer = null
     this.gpuTimer = null
 
@@ -180,12 +224,12 @@ export abstract class ViewportSurface extends ViewportMounting {
   }
 
   /** The renderer itself, for the passes and overlays that have to draw with it. */
-  get gl(): WebGLRenderer | null {
+  get gl(): StudioRenderer | null {
     return this.renderer
   }
 
   /**
-   * What is drawing — the four calls that differ between the two engines. Read rather than
+   * What is drawing — the five calls that differ between the two engines. Read rather than
    * chosen by whoever needs one: the driver is settled at mount, and a caller picking its own
    * would be free to read pixels with an engine that did not draw them.
    */
@@ -240,4 +284,17 @@ export abstract class ViewportSurface extends ViewportMounting {
     this.fitProjection()
     this.requestRender()
   }
+}
+
+/**
+ * The frame timer, where the engine has one.
+ *
+ * 🛑 `EXT_disjoint_timer_query_webgl2` is the Compatible engine's, and asking a node renderer
+ * for its context at all THROWS until its backend is up — which is a beat after the mount that
+ * would ask. A frame drawn on the Advanced engine is therefore untimed for now.
+ */
+function gpuTimerFor(renderer: StudioRenderer): ReturnType<typeof createGpuTimer> | null {
+  if (!('capabilities' in renderer)) return null
+  const context = renderer.getContext()
+  return isGpuTimerContext(context) ? createGpuTimer(context) : null
 }

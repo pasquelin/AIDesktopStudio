@@ -17,6 +17,7 @@
     "csgGraphMissing": "no hay ningún grafo CSG registrado para {{name}}",
     "shaderAnchorMissing": "El motor de render ya no proporciona {{name}}",
     "renderEngineUnavailable": "El motor Avanzado aún no está construido",
+    "renderEngineGradingMissing": "El motor Avanzado muestra un cielo corregido tal como lo contiene su archivo",
     "channelShaderMissing": "ningún shader deriva {{channel}}",
     "channelSourceEmpty": "la fuente de {{channel}} no tiene píxeles",
     "passSourceMissing": "una pasada necesita una fuente que leer",

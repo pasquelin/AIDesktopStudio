@@ -23,6 +23,15 @@ const MAP_TYPES: Record<ShadowQuality, ShadowMapType> = {
 type ShadowMapHolder = { shadowMap: { type: ShadowMapType } }
 
 /**
+ * 🛑 `autoUpdate` is OPTIONAL, and only the Compatible engine has one. A node renderer draws the
+ * shadow maps its LIGHTS ask for and offers no global gate over the pass — `limitShadowUpdates`
+ * still narrows it light by light, which is what the editor actually relies on.
+ */
+type ShadowSwitchHolder = ShadowMapHolder & {
+  shadowMap: { enabled: boolean; autoUpdate?: boolean }
+}
+
+/**
  * Points the renderer at the map type a setting asks for, and nothing more: three.js watches the
  * type itself and recompiles what it has to.
  *
@@ -41,12 +50,26 @@ export function applyShadowQuality(renderer: ShadowMapHolder, quality: ShadowQua
  * editor, `draw` for a game.
  */
 export function applyShadowPolicy(
-  renderer: ShadowMapHolder & { shadowMap: { enabled: boolean; autoUpdate: boolean } },
+  renderer: ShadowSwitchHolder,
   policy: Pick<RenderPolicy, 'shadows' | 'shadowQuality'>,
 ): void {
   renderer.shadowMap.enabled = policy.shadows
   applyShadowQuality(renderer, policy.shadowQuality)
-  renderer.shadowMap.autoUpdate = false
+  if ('autoUpdate' in renderer.shadowMap) renderer.shadowMap.autoUpdate = false
+}
+
+/**
+ * Whether the renderer runs a shadow pass AT ALL this frame.
+ *
+ * 🛑 The Compatible engine alone has this gate. A node renderer draws the maps its LIGHTS ask
+ * for and offers nothing over the pass as a whole, so on the Advanced engine this writes
+ * nothing and `limitShadowUpdates`, which narrows light by light, is the whole of the saving.
+ */
+export function oweShadowPassOnce(
+  renderer: { shadowMap: { enabled: boolean; needsUpdate?: boolean } },
+  owed: boolean,
+): void {
+  if ('needsUpdate' in renderer.shadowMap) renderer.shadowMap.needsUpdate = owed
 }
 
 type ShadowSwitch = { shadowMap: { enabled: boolean } }

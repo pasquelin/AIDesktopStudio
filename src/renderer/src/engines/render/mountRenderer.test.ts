@@ -20,7 +20,11 @@ function drivers(gpu: Partial<RenderDriver> = {}): RenderDrivers {
   const stub = (engine: 'gl' | 'gpu'): RenderDriver => ({
     engine,
     createRenderer: () => rendererStub(engine),
+    ready: () => null,
     readPixels: () => Promise.resolve(new Uint8Array()),
+    createComposer: () => {
+      throw new Error('not asked for')
+    },
     createEnvironment: () => {
       throw new Error('not asked for')
     },

@@ -8,6 +8,8 @@ import {
   Vector3,
   type Vector3 as ThreeVector3,
 } from 'three'
+import type { SceneComposer } from '../render/sceneComposer'
+import type { WebGLRenderer } from 'three'
 import { type ViewHelper } from 'three/addons/helpers/ViewHelper.js'
 import type { MotionId } from '@shared/domain/shortcut'
 import { SCHEME_OF, type NavigationScheme } from '@shared/domain/navigationPreset'
@@ -38,7 +40,6 @@ import { createSkySun, type SkySun } from './skySun'
 import { type GltfSource } from './gltfSource'
 import { SceneAnimations } from './animation'
 import { postAt } from './animationEval'
-import { type PostComposer } from '../postfx/PostComposer'
 import { EMPTY_TIMELINE, type AnimationTimeline } from '@shared/domain/animation'
 import { type ModelCache } from './modelCache'
 import { ownedByAnotherNode } from './shadows'
@@ -96,7 +97,9 @@ export abstract class SceneRendererState {
     // choice is settled for as long as this panel is open. See `RenderPolicy.engine`.
     engine: () => this.view.engine,
     onFrame: delta => this.advance(delta),
-    onOverlay: renderer => this.viewHelper?.render(renderer),
+    // `as`: `ViewHelper` is declared against a `WebGLRenderer` and uses `clearDepth` and
+    // `render`, which both engines have — three types the addon before the node renderer.
+    onOverlay: renderer => this.viewHelper?.render(renderer as WebGLRenderer),
     onPane: (index, camera) => this.dressPane(index, camera),
     // Before `TransformControls` reads the same event — see `onPaneArmed`, which says why the
     // viewport owns this call rather than a listener of this file.
@@ -255,7 +258,7 @@ export abstract class SceneRendererState {
   protected playheadMovesShadows = false
 
   /** Built at mount, when there is a renderer to build passes with. */
-  protected post: PostComposer | null = null
+  protected post: SceneComposer | null = null
 
   /**
    * The temporary comparison — hold to see the frame without its composition.

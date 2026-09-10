@@ -6,9 +6,9 @@ import {
   type PerspectiveCamera,
   type Scene,
   Vector3,
-  type WebGLRenderer,
   type WebGLRenderTarget,
 } from 'three'
+import type { StudioRenderer } from '../render/renderDriver'
 import { type OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { type GpuPipeline } from '../gpu/gpuPipeline'
 import { type PinchReading } from './pinch'
@@ -41,7 +41,7 @@ export type ViewportEngineOptions = {
    */
   onFrame?: (delta: number) => boolean
   /** Drawn after the scene with `autoClear` off — trihedrons and other screen-space overlays. */
-  onOverlay?: (renderer: WebGLRenderer) => void
+  onOverlay?: (renderer: StudioRenderer) => void
   /**
    * Called just before each pane is drawn, so whoever owns the scene can say how THIS view shows
    * it, and answering whether that changed what the scene wears — which is what tells the frame

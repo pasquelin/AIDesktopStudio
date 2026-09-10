@@ -17,6 +17,7 @@
     "csgGraphMissing": "لا يوجد مخطط CSG مسجل للعنصر {{name}}",
     "shaderAnchorMissing": "لم يعد محرّك الرسم يوفر {{name}}",
     "renderEngineUnavailable": "محرّك «متقدّم» لم يُبنَ بعد",
+    "renderEngineGradingMissing": "محرّك «متقدّم» يعرض سماءً مصحَّحة كما يحتويها ملفها",
     "channelShaderMissing": "لا يوجد مظلّل يشتق القناة {{channel}}",
     "channelSourceEmpty": "مصدر القناة {{channel}} لا يحتوي على أي بكسل",
     "passSourceMissing": "تحتاج مرحلة الرسم إلى مصدر تقرأ منه",

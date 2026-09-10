@@ -14,6 +14,7 @@
     "start:debug": "node scripts/fetch-engine.mjs --sources-only && node scripts/dev-app-identity.mjs && electron-vite dev --watch --remoteDebuggingPort 9222",
     "cdp": "node scripts/cdp.mjs",
     "world:validate": "node scripts/run-world-safe-validation.mjs",
+    "engines:bench": "node scripts/run-engine-benchmark.mjs",
     "picking:validate": "electron out/main/pickingValidation.js",
     "build": "pnpm typecheck && electron-vite build && pnpm game:runtime && node scripts/check-artefact.mjs",
     "game:runtime": "vite build --config config/vite.game.config.ts",

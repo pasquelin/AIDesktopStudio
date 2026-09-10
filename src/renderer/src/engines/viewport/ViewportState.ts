@@ -1,12 +1,5 @@
 import { VIEW_DISTANCE } from '@shared/domain/renderPolicy'
-import {
-  Color,
-  OrthographicCamera,
-  PerspectiveCamera,
-  Scene,
-  type WebGLRenderer,
-  type WebGLRenderTarget,
-} from 'three'
+import { Color, OrthographicCamera, PerspectiveCamera, Scene, type WebGLRenderTarget } from 'three'
 import { type OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { type Gesture } from './gestures'
 import { emptyGpuStats, type GpuStats } from './gpuStats'
@@ -14,7 +7,7 @@ import type { GpuTimer } from './gpuTimer'
 import { type PaneLayout, type PaneRect } from './panes'
 import { type PointerPosition } from './pointer'
 import { glDriver } from '../render/glDriver'
-import { type RenderDriver } from '../render/renderDriver'
+import { type RenderDriver, type StudioRenderer } from '../render/renderDriver'
 import { ViewportNavigationTarget } from './ViewportNavigationTarget'
 import {
   ORIGIN,
@@ -56,7 +49,16 @@ export abstract class ViewportState {
 
   protected projection: ProjectionKind = 'perspective'
 
-  protected renderer: WebGLRenderer | null = null
+  protected renderer: StudioRenderer | null = null
+
+  /**
+   * Whether the renderer may be drawn with. False only while a node backend is coming up — a
+   * WebGL one is ready on the line after `new`. See `holdFramesUntilReady`.
+   */
+  protected rendererReady = false
+
+  /** The wait `settled` hands out, so a caller can hold off rather than draw into nothing. */
+  protected rendererSettling: Promise<void> | null = null
 
   /** What built that renderer, and therefore what reads its pixels and lights its scene. */
   protected renderDriver: RenderDriver = glDriver

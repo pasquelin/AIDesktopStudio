@@ -248,7 +248,7 @@
     },
     "renderEngine": {
       "title": "Bộ máy dựng hình",
-      "help": "Giao diện đồ họa nào vẽ khung nhìn 3D. Tương thích chạy trên mọi cấu hình và là lựa chọn để chia sẻ rộng hay cho máy cũ. Nâng cao cho ánh sáng và phản chiếu tốt hơn, và đòi một card đồ họa đời mới. Bảng đã mở vẫn giữ bộ máy của nó: đóng rồi mở lại để đổi. Bộ máy Nâng cao chưa được dựng trong phiên bản này: chọn nó vẫn vẽ bằng bộ Tương thích.",
+      "help": "Giao diện đồ họa nào vẽ khung nhìn 3D. Tương thích chạy trên mọi cấu hình và là lựa chọn để chia sẻ rộng hay cho máy cũ. Nâng cao cho ánh sáng và phản chiếu tốt hơn, và đòi một card đồ họa đời mới. Bảng đã mở vẫn giữ bộ máy của nó: đóng rồi mở lại để đổi. Máy không có bộ điều hợp WebGPU tự quay về bộ Tương thích, và ghi điều đó vào nhật ký.",
       "gl": "Tương thích",
       "gpu": "Nâng cao"
     },

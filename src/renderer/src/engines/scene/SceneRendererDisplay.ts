@@ -1,4 +1,5 @@
 import { type AnimationClip, type Object3D } from 'three'
+import type { RenderEngine } from '@shared/domain/renderEngine'
 import { ViewHelper } from 'three/addons/helpers/ViewHelper.js'
 import {
   type DrawRequest,
@@ -174,6 +175,19 @@ export abstract class SceneRendererDisplay extends SceneRendererExport {
     this.firstPersonBody.sync(body ? this.objects.get(body.id) : undefined, signature =>
       this.retarget.profileOf(signature),
     )
+  }
+
+  /**
+   * Which engine actually mounted — `gl` where `gpu` was asked for and could not run. Read by
+   * the benchmark harness, which must not report a fallback as an Advanced measurement.
+   */
+  get renderEngine(): RenderEngine {
+    return this.viewport.driver.engine
+  }
+
+  /** Resolves once this scene may be drawn — a node backend comes up a beat after the mount. */
+  async settled(): Promise<void> {
+    await this.viewport.settled()
   }
 
   /**

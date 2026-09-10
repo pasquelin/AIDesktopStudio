@@ -17,6 +17,7 @@
     "csgGraphMissing": "no CSG graph recorded for {{name}}",
     "shaderAnchorMissing": "The renderer no longer provides {{name}}",
     "renderEngineUnavailable": "The Advanced engine is not built yet",
+    "renderEngineGradingMissing": "The Advanced engine shows a graded sky as its file holds it",
     "channelShaderMissing": "no shader derives {{channel}}",
     "channelSourceEmpty": "{{channel}} source has no pixels",
     "passSourceMissing": "a pass needs a source to read",
