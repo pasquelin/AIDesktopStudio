@@ -119,6 +119,7 @@
     "recoveryLater": "Mais tarde",
     "recoveryFull": "A área de recuperação está cheia. Nada foi apagado, mas guarde o seu trabalho.",
     "sourceReadReduced": "Parte deste ficheiro não foi lida: guardar por cima perderia essa parte. Guarde uma cópia.",
+    "sourceReadUnknown": "O estúdio não sabe se este ficheiro foi lido por inteiro. Reabra-o no Explorador, ou guarde uma cópia.",
     "sourceFormatChange": "Guardar mudaria o formato deste ficheiro. Escolha um destino com «Guardar como».",
     "copyName": "{{name}} cópia",
     "none": "Nenhum documento aberto. Gere ou abra um asset para começar.",

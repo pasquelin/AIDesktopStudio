@@ -119,6 +119,7 @@
     "recoveryLater": "Để sau",
     "recoveryFull": "Vùng phục hồi đã đầy. Không có gì bị xoá, nhưng hãy lưu công việc của bạn.",
     "sourceReadReduced": "Một phần tệp này chưa được đọc: ghi đè sẽ làm mất phần đó. Hãy lưu một bản sao.",
+    "sourceReadUnknown": "Studio không biết tệp này đã được đọc trọn vẹn hay chưa. Hãy mở lại từ Trình duyệt tệp, hoặc lưu một bản sao.",
     "sourceFormatChange": "Lưu sẽ đổi định dạng của tệp này. Chọn đích bằng «Lưu thành».",
     "copyName": "{{name}} bản sao",
     "none": "Không có tài liệu nào đang mở. Tạo hoặc mở một tài nguyên để bắt đầu.",

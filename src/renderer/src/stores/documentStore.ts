@@ -14,7 +14,11 @@ import {
 export type DocumentStoreState<S> = {
   states: Record<string, S>
   histories: Record<string, History<S>>
-  saved: Record<string, Command<S> | null>
+  /**
+   * Where each document was last written from — the history mark of that moment, `null` for one
+   * never written, and `'unsaved'` for work a restore put back that nobody has written down.
+   */
+  saved: Record<string, Command<S> | null | typeof UNSAVED>
   revisions: Record<string, number>
   incarnations: Record<string, string>
   runCommand: (documentId: string, command: Command<S>) => void
@@ -58,13 +62,12 @@ export type DocumentStore<S> = {
   forgetHistoriesForTests: () => void
 }
 /**
- * A mark no history can hand back: `markOf` answers a command the history holds, or `null`, and
- * this one is neither. Standing in `saved`, it makes `isDirty` true whatever the document's own
- * mark is — and a fresh object each time, so two documents never share one.
+ * What stands in `saved` for work nobody has written down. A word rather than a `Command` that
+ * belongs to no history: the slot is compared by identity, so anything not a mark answers, and a
+ * fake command would carry two dead `apply`/`revert` that a future « back to the last save »
+ * would run.
  */
-function unsavedMark<S>(): Command<S> {
-  return { id: 'recovered', apply: state => state, revert: state => state }
-}
+const UNSAVED = 'unsaved'
 
 const BUILT: {
   resetForTests: () => void
@@ -180,7 +183,7 @@ export function createDocumentStore<S>(defaultState: S): DocumentStore<S> {
       markSaved: (documentId, at) =>
         set(state => ({ saved: { ...state.saved, [documentId]: at } })),
       markUnsaved: documentId =>
-        set(state => ({ saved: { ...state.saved, [documentId]: unsavedMark<S>() } })),
+        set(state => ({ saved: { ...state.saved, [documentId]: UNSAVED } })),
       discardLast: documentId => step(documentId, discardLast),
       forgetThrough: (documentId, commandId) =>
         set(state => ({

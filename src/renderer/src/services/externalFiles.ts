@@ -257,11 +257,14 @@ export async function importExternalFilesInto(
   onImported: ExternalAssetReceiver,
   internal?: true,
 ): Promise<void> {
-  const wanted = [...files].filter(file => {
+  const wanted: File[] = []
+  const refused: string[] = []
+  for (const file of files) {
     const type = importableAssetTypeOf(file.name)
-    return type !== null && accepts.includes(type)
-  })
-  reportFilesTheSurfaceRefuses([...files], wanted)
+    if (type !== null && accepts.includes(type)) wanted.push(file)
+    else refused.push(file.name)
+  }
+  reportFilesNotPlaced(refused)
   if (wanted.length === 0) return
   const offer = await offerExternalFiles(wanted)
   if (!offer) return
@@ -269,10 +272,6 @@ export async function importExternalFilesInto(
     onImported,
     ...(internal ? { internal } : {}),
   })
-}
-
-function reportFilesTheSurfaceRefuses(files: readonly File[], wanted: readonly File[]): void {
-  reportFilesNotPlaced(files.filter(file => !wanted.includes(file)).map(file => file.name))
 }
 
 export function carriesExternalFiles(event: DragLike): boolean {

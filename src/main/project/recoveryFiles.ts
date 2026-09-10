@@ -1,4 +1,4 @@
-import { mkdir, readFile, readdir, rm, stat, writeFile } from 'node:fs/promises'
+import { mkdir, readFile, readdir, rm, stat } from 'node:fs/promises'
 import { join } from 'node:path'
 import {
   RECOVERY_FOLDER,
@@ -7,12 +7,10 @@ import {
   type RecoveryEntry,
   type RecoveryWrite,
 } from '@shared/domain/recovery'
-import { isDocumentKind } from '@shared/domain/document'
-import { isWorkspaceId } from '@shared/domain/workspace'
-import { isRecord } from '@shared/guards'
-import { isReadFidelity } from '@shared/domain/readFidelity'
+import { recoveryEntryOf } from './recoveryValidation'
+import { byCodeUnit } from '@shared/text'
 import { orElse } from '@shared/promises'
-import { exists } from '@main/persistence'
+import { writeAtomic } from '@main/persistence'
 
 const ENTRY_FILE = 'entry.json'
 const CONTENT_FILE = 'content'
@@ -38,46 +36,43 @@ function safeId(documentId: string): string | null {
   return /^[A-Za-z0-9_-]{1,128}$/.test(documentId) ? documentId : null
 }
 
-function entryOf(value: unknown): RecoveryEntry | null {
-  if (!isRecord(value)) return null
-  const { kind, title, workspace, path, savedAt } = value
-  const documentId = typeof value.documentId === 'string' ? safeId(value.documentId) : null
-  if (documentId === null) return null
-  if (!isDocumentKind(kind) || typeof workspace !== 'string' || !isWorkspaceId(workspace)) {
-    return null
-  }
-  if (typeof title !== 'string' || typeof path !== 'string' || typeof savedAt !== 'string') {
-    return null
-  }
-  return {
-    documentId,
-    kind,
-    title,
-    workspace,
-    path,
-    savedAt,
-    ...(typeof value.sourceAssetId === 'string' ? { sourceAssetId: value.sourceAssetId } : {}),
-    ...(isReadFidelity(value.sourceFidelity) ? { sourceFidelity: value.sourceFidelity } : {}),
-  }
-}
-
-/** What the recovery of this project weighs, summed over its entries rather than walked deep. */
-async function usedBytes(root: string): Promise<number> {
+/**
+ * What the recovery of this project weighs, walked ONCE and then kept up to date.
+ *
+ * Walked per write it was a recursive listing plus a `stat` per file, per dirty document, every
+ * thirty seconds — some fourteen hundred syscalls a tick on a project of eight open documents,
+ * to decide whether to show one notice against a two-gigabyte ceiling.
+ */
+async function walkBytes(root: string): Promise<Map<string, number>> {
   const folders = await orElse(readdir(root, { withFileTypes: true }), [])
-  let total = 0
+  const weighed = new Map<string, number>()
   for (const folder of folders) {
     if (!folder.isDirectory()) continue
-    const files = await orElse(readdir(join(root, folder.name), { recursive: true }), [])
+    const files = await orElse(
+      readdir(join(root, folder.name), { recursive: true, withFileTypes: true }),
+      [],
+    )
+    let total = 0
     for (const file of files) {
-      const measured = await orElse(stat(join(root, folder.name, String(file))), null)
-      if (measured?.isFile()) total += measured.size
+      if (!file.isFile()) continue
+      const measured = await orElse(stat(join(file.parentPath, file.name)), null)
+      total += measured?.size ?? 0
     }
+    weighed.set(folder.name, total)
   }
-  return total
+  return weighed
+}
+
+/** What one entry weighs, from the bytes about to be written rather than from the disk. */
+function draftBytes(draft: RecoveryDraft): number {
+  const parts = (draft.parts ?? []).reduce((sum, part) => sum + part.png.byteLength, 0)
+  return Buffer.byteLength(draft.content, 'utf8') + parts
 }
 
 export function createRecoveryFiles(projectPath: () => string): RecoveryFiles {
   const root = (): string => join(projectPath(), RECOVERY_FOLDER)
+  /** Per entry, keyed by folder — `null` until the one walk that seeds it. */
+  let weighed: Map<string, number> | null = null
   const folderOf = (documentId: string): string | null => {
     const id = safeId(documentId)
     return id === null ? null : join(root(), id)
@@ -95,19 +90,20 @@ export function createRecoveryFiles(projectPath: () => string): RecoveryFiles {
 
       const parts = draft.parts ?? []
       for (const [index, part] of parts.entries()) {
-        await writeFile(join(folder, PARTS_FOLDER, `${index}.png`), part.png)
+        await writeAtomic(join(folder, PARTS_FOLDER, `${index}.png`), part.png)
       }
-      await writeFile(
-        join(folder, PARTS_INDEX),
-        JSON.stringify(parts.map(part => part.path)),
-        'utf8',
-      )
-      await writeFile(join(folder, CONTENT_FILE), draft.content, 'utf8')
+      await writeAtomic(join(folder, PARTS_INDEX), JSON.stringify(parts.map(part => part.path)))
+      await writeAtomic(join(folder, CONTENT_FILE), draft.content)
       // Last, so a crash mid-write leaves an entry that names work already on disk rather than
       // one that names work that never arrived.
-      await writeFile(join(folder, ENTRY_FILE), JSON.stringify(draft.entry), 'utf8')
+      // Through `writeAtomic`, like the three above: this module exists to survive a crash, and a
+      // torn `content` would leave an entry naming work that will not parse.
+      await writeAtomic(join(folder, ENTRY_FILE), JSON.stringify(draft.entry))
 
-      return (await usedBytes(root())) > RECOVERY_MAX_BYTES ? 'over-budget' : 'written'
+      weighed ??= await walkBytes(root())
+      weighed.set(draft.entry.documentId, draftBytes(draft))
+      const used = [...weighed.values()].reduce((sum, bytes) => sum + bytes, 0)
+      return used > RECOVERY_MAX_BYTES ? 'over-budget' : 'written'
     },
 
     list: async () => {
@@ -118,23 +114,25 @@ export function createRecoveryFiles(projectPath: () => string): RecoveryFiles {
         const read = await orElse(readFile(join(root(), folder.name, ENTRY_FILE), 'utf8'), null)
         if (read === null) continue
         try {
-          const entry = entryOf(JSON.parse(read))
+          const entry = recoveryEntryOf(JSON.parse(read))
           if (entry) entries.push(entry)
         } catch {
           // A half-written entry is one crash away from ordinary: skipped, never thrown, so one
           // damaged folder does not cost the user every other offer in the list.
         }
       }
-      // ISO 8601 sorts by code point, and these are the studio's own stamps rather than text a
-      // person typed: a collator would be a language brought to bear on a machine format.
-      return entries.sort((one, other) => (one.savedAt < other.savedAt ? 1 : -1))
+      // By code unit: these are the studio's own stamps, not text a person reads, and ISO 8601
+      // orders that way. Newest first, hence the arguments the other way round.
+      return entries.sort((one, other) => byCodeUnit(other.savedAt, one.savedAt))
     },
 
     read: async documentId => {
       const folder = folderOf(documentId)
-      if (folder === null || !exists(join(folder, ENTRY_FILE))) return null
+      if (folder === null) return null
+      // No `exists` before the read: the catch below already answers `null` for an entry that is
+      // not there, and the probe was a syscall whose answer was thrown away.
       try {
-        const entry = entryOf(JSON.parse(await readFile(join(folder, ENTRY_FILE), 'utf8')))
+        const entry = recoveryEntryOf(JSON.parse(await readFile(join(folder, ENTRY_FILE), 'utf8')))
         if (!entry) return null
         const content = await readFile(join(folder, CONTENT_FILE), 'utf8')
         const paths: unknown = JSON.parse(await readFile(join(folder, PARTS_INDEX), 'utf8'))
@@ -155,7 +153,9 @@ export function createRecoveryFiles(projectPath: () => string): RecoveryFiles {
 
     clear: async documentId => {
       const folder = folderOf(documentId)
-      if (folder !== null) await rm(folder, { recursive: true, force: true })
+      if (folder === null) return
+      await rm(folder, { recursive: true, force: true })
+      weighed?.delete(documentId)
     },
   }
 }

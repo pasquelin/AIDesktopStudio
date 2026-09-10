@@ -119,6 +119,7 @@
     "recoveryLater": "Daha sonra",
     "recoveryFull": "Kurtarma alanı dolu. Hiçbir şey silinmedi, ancak çalışmanızı kaydedin.",
     "sourceReadReduced": "Bu dosyanın bir bölümü okunmadı: üzerine kaydetmek onu yitirir. Bir kopya kaydedin.",
+    "sourceReadUnknown": "Stüdyo bu dosyanın bütünüyle okunup okunmadığını bilmiyor. Gezginden yeniden açın ya da bir kopya kaydedin.",
     "sourceFormatChange": "Kaydetmek bu dosyanın biçimini değiştirir. «Farklı kaydet» ile bir hedef seçin.",
     "copyName": "{{name}} kopya",
     "none": "Açık belge yok. Başlamak için bir varlık üretin ya da açın.",

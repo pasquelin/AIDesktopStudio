@@ -119,6 +119,7 @@
     "recoveryLater": "Più tardi",
     "recoveryFull": "L’area di recupero è piena. Non è stato cancellato nulla, ma salva il tuo lavoro.",
     "sourceReadReduced": "Una parte di questo file non è stata letta: salvarci sopra la perderebbe. Salva una copia.",
+    "sourceReadUnknown": "Lo studio non sa se questo file è stato letto per intero. Riaprilo dall’Esploratore, oppure salva una copia.",
     "sourceFormatChange": "Salvare cambierebbe il formato di questo file. Scegli una destinazione con «Salva con nome».",
     "copyName": "{{name}} copia",
     "none": "Nessun documento aperto. Genera o apri un asset per cominciare.",

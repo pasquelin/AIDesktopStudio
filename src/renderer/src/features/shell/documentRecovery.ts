@@ -2,6 +2,7 @@ import i18next from 'i18next'
 import type { DocumentDescriptor } from '@shared/domain/document'
 import type { RecoveryEntry } from '@shared/domain/recovery'
 import type { StudioBridge } from '@shared/ipc'
+import { orElse } from '@shared/promises'
 import { getBridge } from '@/services/bridge'
 import { reportFailure, reportNotice } from '@/services/diagnostics'
 import { useDocuments } from '@/stores/documents'
@@ -21,7 +22,7 @@ import { documentIsDirty, unsavedDocumentIds } from './documentDirty'
  */
 export function recoverableDocument(documentId: string): DocumentIo | null {
   const io = ioOf(documentId)
-  if (!io || io.assetOnly || !io.capture || !io.markUnsaved) return null
+  if (!io || io.assetOnly || io.recovers === false || !io.capture || !io.markUnsaved) return null
   return io.holds(documentId) ? io : null
 }
 
@@ -39,20 +40,28 @@ export async function recoverOpenDocuments(): Promise<void> {
   }
 }
 
+/** The state each document was last written to the recovery area at — see `DocumentIo.markOf`. */
+const written = new Map<string, unknown>()
+
 async function recoverOne(bridge: StudioBridge, documentId: string): Promise<void> {
   const io = recoverableDocument(documentId)
   const document = useDocuments.getState().documents[documentId]
   if (!io?.capture || !document) return
   await io.settled?.(documentId)
+  // Nothing moved since the entry: a picture re-captured on a timer is a GPU readback and a PNG
+  // encode per layer, and a document stays dirty until it is SAVED, not until it stops changing.
+  const mark = io.markOf?.(documentId)
+  if (mark !== undefined && written.get(documentId) === mark) return
   // The capture's `commit` is deliberately NOT called: writing a recovery entry does not save
   // the document, and marking it saved is exactly how a net becomes a save.
   const { draft } = await io.capture(documentId)
-  const written = await bridge.recovery.write({
+  const outcome = await bridge.recovery.write({
     entry: entryFor(document),
     content: draft.content,
     ...(draft.parts ? { parts: draft.parts } : {}),
   })
-  if (written === 'over-budget') reportNotice('document.save', i18next.t('documents.recoveryFull'))
+  if (outcome === 'over-budget') reportNotice('document.save', i18next.t('documents.recoveryFull'))
+  written.set(documentId, mark)
 }
 
 function entryFor(document: DocumentDescriptor): RecoveryEntry {
@@ -82,11 +91,9 @@ export async function clearRecoveryCovered(documentId: string): Promise<void> {
 
 /** Drops one entry outright — what a CONFIRMED discard asks for, and nothing else. */
 export async function clearRecoveryOf(documentId: string): Promise<void> {
-  try {
-    await getBridge()?.recovery.clear(documentId)
-  } catch {
-    // A net that cannot be cleared is a stale offer at the next opening, never a lost file.
-  }
+  written.delete(documentId)
+  // A net that cannot be cleared is a stale offer at the next opening, never a lost file.
+  await orElse(getBridge()?.recovery.clear(documentId), undefined)
 }
 
 /**
@@ -98,21 +105,13 @@ export async function clearRecoveryOf(documentId: string): Promise<void> {
 export async function offerRecoveredWork(): Promise<void> {
   const bridge = getBridge()
   if (!bridge) return
-  const entries = await listRecovered(bridge)
+  // A listing that failed says nothing about the work: no offer, and nothing purged either.
+  const entries = await orElse(bridge.recovery.list(), [])
   const waiting = entries.filter(entry => !documentIsDirty(entry.documentId))
   if (waiting.length === 0) return
   if (!(await bridge.recovery.confirmRestore(waiting.length))) return
 
   for (const entry of waiting) await restoreEntry(entry)
-}
-
-/** A listing that failed says nothing about the work: no offer, and nothing purged either. */
-async function listRecovered(bridge: StudioBridge): Promise<readonly RecoveryEntry[]> {
-  try {
-    return await bridge.recovery.list()
-  } catch {
-    return []
-  }
 }
 
 async function restoreEntry(entry: RecoveryEntry): Promise<void> {

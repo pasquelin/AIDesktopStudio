@@ -119,6 +119,7 @@
     "recoveryLater": "Nanti",
     "recoveryFull": "Area pemulihan penuh. Tidak ada yang dihapus, tetapi simpanlah pekerjaan Anda.",
     "sourceReadReduced": "Sebagian berkas ini tidak terbaca: menyimpan di atasnya akan menghilangkannya. Simpan salinan.",
+    "sourceReadUnknown": "Studio tidak tahu apakah berkas ini terbaca seutuhnya. Buka lagi dari Penjelajah, atau simpan salinan.",
     "sourceFormatChange": "Menyimpan akan mengubah format berkas ini. Pilih tujuan lewat «Simpan sebagai».",
     "copyName": "{{name}} salinan",
     "none": "Tidak ada dokumen yang terbuka. Buat atau buka sebuah aset untuk memulai.",

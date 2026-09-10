@@ -17,7 +17,6 @@ import {
   type DocumentEnvelope,
   type DocumentKind,
 } from '@shared/domain/document'
-import { isReadFidelity, type ReadFidelity } from '@shared/domain/readFidelity'
 import { isPrivatePath } from '@shared/domain/folder'
 import { isFolderRole, type FolderRole } from '@shared/domain/folderRole'
 import { isOraSurfacePath, type OraStack } from '@shared/domain/openRaster'
@@ -419,10 +418,6 @@ const documentDraft = z.object({
   // The asset this document edits. Same reason as `parts`: a field the schema does not name is
   // a field the renderer writes and the disk never sees.
   sourceAssetId: assetId.optional(),
-  // How faithfully that asset was read. Declared for the same reason as `parts` and
-  // `sourceAssetId` above: a field the schema does not name is stripped in silence, and a
-  // document reopened next session would regain the right to overwrite a file read reduced.
-  sourceFidelity: z.custom<ReadFidelity>(isReadFidelity).optional(),
 })
 
 /** A title on its way into a dialog. Capped like the one a draft carries, and for the same reason. */
@@ -464,9 +459,6 @@ const documentEnvelope = z.object({
   // edits none — so an absent field means "not linked" rather than a file to migrate. Unbounded
   // where the draft above bounds it: this reads a file that EXISTS, and a bound would refuse it.
   sourceAssetId: z.string().min(1).optional(),
-  // Absent on every document written before the read fidelity was carried — and absent reads as
-  // `unknown`, which refuses to overwrite rather than assuming the read was whole.
-  sourceFidelity: z.custom<ReadFidelity>(isReadFidelity).optional(),
   // Absent before version 3, where the file name was the id. Declared here or zod STRIPS it and
   // the field is written by the main process and never seen again — the very defect the comment
   // on `parts` records, which cost a save its pixels.

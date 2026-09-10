@@ -13,17 +13,15 @@ const fakeRetargetWindow = (overrides: WindowOverrides): StudioBridge['retargetW
   focusOrigin: async () => {},
   ...overrides.retargetWindow,
 })
-const fakeMirror = (overrides: WindowOverrides): StudioBridge['mirror'] => ({
-  open: () => Promise.resolve(),
-  ...overrides.mirror,
-})
-
-const fakePlayerModuleWindow = (
-  overrides: WindowOverrides,
-): StudioBridge['playerModuleWindow'] => ({
-  open: () => Promise.resolve(),
-  ...overrides.playerModuleWindow,
-})
+/**
+ * The four doors that only OPEN, written once rather than four times over one key. Their `open`
+ * takes different arguments — one names an asset — so the shape is what they share, not the call.
+ */
+const opensOnly = <Held extends { open: (...args: never[]) => Promise<void> }>(
+  overrides: Partial<Held> | undefined,
+): Held =>
+  // `as`: the spread of a `Partial` cannot prove completeness, and `open` is the whole of each.
+  ({ open: () => Promise.resolve(), ...overrides }) as Held
 
 const fakeGameWindow = (overrides: WindowOverrides): StudioBridge['gameWindow'] => ({
   open: () => Promise.resolve(),
@@ -32,26 +30,16 @@ const fakeGameWindow = (overrides: WindowOverrides): StudioBridge['gameWindow'] 
   ...overrides.gameWindow,
 })
 
-const fakeHelp = (overrides: WindowOverrides): StudioBridge['help'] => ({
-  open: () => Promise.resolve(),
-  ...overrides.help,
-})
-
-const fakeFileInfo = (overrides: WindowOverrides): StudioBridge['fileInfo'] => ({
-  open: () => Promise.resolve(),
-  ...overrides.fileInfo,
-})
-
 /** The six windows that only OPEN, grouped so the assembly below reads as one list of doors. */
 export function fakeAuxiliaryWindows(
   overrides: WindowOverrides,
 ): Pick<StudioBridge, AuxiliaryWindow> {
   return {
-    mirror: fakeMirror(overrides),
+    mirror: opensOnly(overrides.mirror),
     retargetWindow: fakeRetargetWindow(overrides),
-    playerModuleWindow: fakePlayerModuleWindow(overrides),
+    playerModuleWindow: opensOnly(overrides.playerModuleWindow),
     gameWindow: fakeGameWindow(overrides),
-    help: fakeHelp(overrides),
-    fileInfo: fakeFileInfo(overrides),
+    help: opensOnly(overrides.help),
+    fileInfo: opensOnly(overrides.fileInfo),
   }
 }

@@ -119,6 +119,7 @@
     "recoveryLater": "稍后",
     "recoveryFull": "恢复区已满。没有删除任何内容，但请保存你的工作。",
     "sourceReadReduced": "此文件有一部分未被读取，覆盖保存会丢失该部分。请另存一份副本。",
+    "sourceReadUnknown": "工作室不知道此文件是否被完整读取。请从资源管理器中重新打开，或另存一份副本。",
     "sourceFormatChange": "保存会改变此文件的格式。请用「另存为」选择目标。",
     "copyName": "{{name}} 副本",
     "none": "没有打开的文档。生成或打开一项资产来开始。",

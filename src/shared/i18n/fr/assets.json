@@ -119,6 +119,7 @@
     "recoveryLater": "Plus tard",
     "recoveryFull": "La zone de récupération est pleine. Rien n’a été effacé, mais enregistrez votre travail.",
     "sourceReadReduced": "Une partie de ce fichier n’a pas été lue : l’enregistrer par-dessus en perdrait. Enregistrez une copie.",
+    "sourceReadUnknown": "Le studio ne sait pas si ce fichier a été lu en entier. Rouvrez-le depuis l’Explorateur, ou enregistrez une copie.",
     "sourceFormatChange": "Enregistrer changerait le format de ce fichier. Choisissez une destination avec « Enregistrer sous ».",
     "copyName": "{{name}} copie",
     "none": "Aucun document ouvert. Générez ou ouvrez un asset pour commencer.",

@@ -35,11 +35,11 @@ const fileOf = (content: string, kind: DocumentDescriptor['kind']): DocumentFile
  * on the module: it over-reports on homonyms, and never under-reports.
  */
 describe('which documents cite a file', () => {
-  const dependents = (bodies: Record<string, string>, ids: readonly string[] = []) =>
+  const dependents = (bodies: Record<string, string>, ids: Record<string, string[]> = {}) =>
     createFileDependents({
       list: () => Promise.resolve([SCENE, MONTAGE]),
       read: id => Promise.resolve(bodies[id] ? fileOf(bodies[id], 'scene') : null),
-      idsOf: () => Promise.resolve(ids),
+      idsOf: () => Promise.resolve(new Map(Object.entries(ids))),
     })
 
   it('names the document that mentions the file', async () => {
@@ -63,9 +63,10 @@ describe('which documents cite a file', () => {
 
   /** The other half a document may cite by: the catalogue id, which travels in the metadata. */
   it('finds a file cited by its catalogue id', async () => {
-    const found = await dependents({ 'doc-cut': '{"assetId":"asset-77"}' }, ['asset-77']).usedBy([
-      'Video/rush.mp4',
-    ])
+    const found = await dependents(
+      { 'doc-cut': '{"assetId":"asset-77"}' },
+      { 'Video/rush.mp4': ['asset-77'] },
+    ).usedBy(['Video/rush.mp4'])
 
     expect(found.map(use => use.title)).toEqual(['Bande annonce'])
   })
@@ -84,7 +85,7 @@ describe('which documents cite a file', () => {
         id === 'doc-scene'
           ? Promise.reject(new Error('unreadable'))
           : Promise.resolve(fileOf('{"uri":"mur.png"}', 'sequence')),
-      idsOf: () => Promise.resolve([]),
+      idsOf: () => Promise.resolve(new Map()),
     }).usedBy(['Images/mur.png'])
 
     expect(found.map(use => use.title)).toEqual(['Bande annonce'])

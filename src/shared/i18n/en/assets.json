@@ -119,6 +119,7 @@
     "recoveryLater": "Later",
     "recoveryFull": "The recovery area is full. Nothing was erased, but do save your work.",
     "sourceReadReduced": "Part of this file was not read: saving over it would lose that part. Save a copy instead.",
+    "sourceReadUnknown": "The studio does not know whether this file was read whole. Reopen it from the Explorer, or save a copy.",
     "sourceFormatChange": "Saving would change this file’s format. Choose a destination with Save as.",
     "copyName": "{{name}} copy",
     "none": "No document open. Generate or open an asset to get started.",

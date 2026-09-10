@@ -121,6 +121,8 @@ export function registerMediaHandlers({
               ratio: taskRatio(done, total),
             }),
         },
+        // Parsed, not trusted: what crosses this boundary is `unknown` whatever the bridge type
+        // says, and this one chooses a folder to write into.
         internal === true ? true : undefined,
       )
       return { ...imported, assets: imported.assets.map(withoutSourcePath) }

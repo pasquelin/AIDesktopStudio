@@ -7,8 +7,13 @@ import type { FileUse } from '@shared/domain/fileUse'
 export type FileDependentsDeps = {
   list: () => Promise<DocumentDescriptor[]>
   read: (id: string, kind: DocumentDescriptor['kind']) => Promise<DocumentFile | null>
-  /** The catalogue ids of a file, when it has any — a document may cite either. */
-  idsOf: (path: string) => Promise<readonly string[]>
+  /**
+   * The catalogue ids of these files, when they have any — a document may cite either.
+   *
+   * The whole selection at once: asked per path it was one round trip each, and each answer
+   * carried every row of the folder to keep at most one of them.
+   */
+  idsOf: (paths: readonly string[]) => Promise<ReadonlyMap<string, readonly string[]>>
 }
 
 /**
@@ -31,18 +36,24 @@ export function createFileDependents({ list, read, idsOf }: FileDependentsDeps):
   return {
     usedBy: async paths => {
       if (paths.length === 0) return []
-      const wanted = await Promise.all(
-        paths.map(async path => ({
-          path,
-          // Encoded as well as raw: a scene writes its links as URIs, so a space is `%20`.
-          needles: [pathBaseNameOf(path), encodeURIComponent(pathBaseNameOf(path))].concat(
-            await idsOf(path),
-          ),
+      const ids = await idsOf(paths)
+      const wanted = paths.map(path => ({
+        path,
+        // Encoded as well as raw: a scene writes its links as URIs, so a space is `%20`.
+        needles: [pathBaseNameOf(path), encodeURIComponent(pathBaseNameOf(path))].concat(
+          ids.get(path) ?? [],
+        ),
+      }))
+      // Read together rather than one at a time: the reads are independent, and a project of
+      // sixty documents held the confirmation dialogue behind sixty sequential decodes.
+      const opened = await Promise.all(
+        (await list()).map(async document => ({
+          document,
+          file: await orElse(read(document.id, document.kind), null),
         })),
       )
       const found: FileUse[] = []
-      for (const document of await list()) {
-        const file = await orElse(read(document.id, document.kind), null)
+      for (const { document, file } of opened) {
         if (!file) continue
         const used = wanted
           .filter(one => one.needles.some(needle => needle !== '' && file.content.includes(needle)))
@@ -69,9 +80,14 @@ export function projectFileDependents(deps: {
   return createFileDependents({
     list: () => deps.documents.list(),
     read: (id, kind) => deps.documents.read(id, kind),
-    idsOf: async path => {
-      const held = await deps.assetsUnder([parentOf(path) ?? FOLDER_ROOT])
-      return held.filter(asset => asset.path === path).map(asset => asset.id)
+    idsOf: async paths => {
+      const folders = [...new Set(paths.map(path => parentOf(path) ?? FOLDER_ROOT))]
+      const held = await deps.assetsUnder(folders)
+      const byPath = new Map<string, string[]>()
+      for (const asset of held) {
+        if (asset.path) byPath.set(asset.path, [...(byPath.get(asset.path) ?? []), asset.id])
+      }
+      return byPath
     },
   })
 }

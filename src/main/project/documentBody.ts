@@ -217,7 +217,6 @@ function envelopeOf({
   updatedAt,
   id,
   sourceAssetId,
-  sourceFidelity,
 }: DocumentFile): DocumentEnvelope {
   return {
     version,
@@ -226,7 +225,6 @@ function envelopeOf({
     updatedAt,
     ...(id ? { id } : {}),
     ...(sourceAssetId ? { sourceAssetId } : {}),
-    ...(sourceFidelity ? { sourceFidelity } : {}),
   }
 }
 

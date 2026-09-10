@@ -119,6 +119,7 @@
     "recoveryLater": "Später",
     "recoveryFull": "Der Wiederherstellungsbereich ist voll. Es wurde nichts gelöscht, speichern Sie aber Ihre Arbeit.",
     "sourceReadReduced": "Ein Teil dieser Datei wurde nicht gelesen: Darüberspeichern würde ihn verlieren. Speichern Sie eine Kopie.",
+    "sourceReadUnknown": "Das Studio weiß nicht, ob diese Datei ganz gelesen wurde. Öffnen Sie sie im Explorer erneut oder speichern Sie eine Kopie.",
     "sourceFormatChange": "Das Speichern würde das Format dieser Datei ändern. Wählen Sie ein Ziel mit „Speichern unter“.",
     "copyName": "{{name}} Kopie",
     "none": "Kein Dokument geöffnet. Generieren oder öffnen Sie ein Asset, um zu beginnen.",

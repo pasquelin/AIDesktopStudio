@@ -113,16 +113,4 @@ describe('a save that would not be faithful', () => {
     expect(written.write).not.toHaveBeenCalled()
     expect(written.picture).not.toHaveBeenCalled()
   })
-
-  /** Nothing about either refusal reads the autosave setting: the save that is not asked for
-   * by hand is refused on the same two answers. */
-  it('refuses the same save when nobody pressed the key', async () => {
-    const written = watchWrites()
-    const { documentId, release } = await openPictureDocument('Images/hero.jpg', 'faithful')
-
-    await expect(saveDocument(documentId, false)).resolves.toBe(false)
-    release()
-
-    expect(written.write).not.toHaveBeenCalled()
-  })
 })

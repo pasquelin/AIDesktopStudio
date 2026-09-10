@@ -18,7 +18,7 @@ import {
   type CapabilityTrait,
   type WritableFormat,
 } from '@shared/domain/formatCapability'
-import { mayOverwriteSource, readFidelityOf, type ReadFidelity } from '@shared/domain/readFidelity'
+import { mayOverwriteSource, readFidelityOf } from '@shared/domain/readFidelity'
 import { keepsWrittenFormat } from '@shared/domain/writtenFormat'
 import type { StudioBridge } from '@shared/ipc'
 import i18next from 'i18next'
@@ -71,14 +71,12 @@ async function agreedToFlatten(
   format: WritableFormat,
   losses: readonly CapabilityTrait[],
 ): Promise<boolean> {
-  return await askedToFlatten(
-    document.title,
-    format.toUpperCase(),
-    losses.map(trait => i18next.t(`traits.${trait}`)).join(', '),
+  const lost = losses.map(trait => i18next.t(`traits.${trait}`)).join(', ')
+  return (
+    (await getBridge()?.documents.confirmFlatten(document.title, format.toUpperCase(), lost)) ??
+    true
   )
 }
-const askedToFlatten = async (title: string, format: string, lost: string): Promise<boolean> =>
-  (await getBridge()?.documents.confirmFlatten(title, format, lost)) ?? true
 export type SavableDocument = {
   bridge: StudioBridge
   document: DocumentDescriptor
@@ -109,9 +107,13 @@ export function savableDocument(documentId: string, byHand = true): SavableDocum
  * Why a save wrote nothing at all. Named rather than boolean: the two say different things to the
  * person in front of them, and each has its own sentence.
  */
-export type SaveRefusal = 'sourceReadReduced' | 'sourceFormatChange'
+export type SaveRefusal = 'sourceReadReduced' | 'sourceReadUnknown' | 'sourceFormatChange'
 
-export const SAVE_REFUSALS: readonly SaveRefusal[] = ['sourceReadReduced', 'sourceFormatChange']
+export const SAVE_REFUSALS: readonly SaveRefusal[] = [
+  'sourceReadReduced',
+  'sourceReadUnknown',
+  'sourceFormatChange',
+]
 
 /**
  * The two ways a save is refused before it writes ANYTHING — the protections of §5.7.
@@ -122,19 +124,29 @@ export const SAVE_REFUSALS: readonly SaveRefusal[] = ['sourceReadReduced', 'sour
  *
  * `null` when the save may proceed, including for every document that writes no asset at all.
  */
-function sourceWriteRefusal({ document, io }: WritableSavableDocument): SaveRefusal | null {
+function sourceWriteRefusal(
+  { document, io }: WritableSavableDocument,
+  plan: WritePlan | null,
+): SaveRefusal | null {
   const source = document.sourceAssetId
-  if (!source || !io.writeAsset) return null
+  if (!source || !io.writeAsset || !plan) return null
 
   // P1. Read off the document rather than measured now: what tells a reduction from a crop is
   // WHO shrank the picture, and only the read knows that.
-  if (!mayOverwriteSource(readFidelityOf(document.sourceFidelity))) return 'sourceReadReduced'
+  //
+  // The two answers are told apart, because they ask different things of the person: one says
+  // the studio shrank the file on the way in, the other that nothing here knows how it was read
+  // — a document filled from its own container rather than from the picture. Both refuse; only
+  // the second has a gesture that clears it, and its sentence names that gesture.
+  const fidelity = readFidelityOf(document.sourceFidelity)
+  if (!mayOverwriteSource(fidelity)) {
+    return fidelity === 'reduced' ? 'sourceReadReduced' : 'sourceReadUnknown'
+  }
 
   // P2. Against what the writer PRODUCES, never against the format it was asked for: asked for a
   // JPEG it hands back a PNG, and `replaceBytes` then renames the file and deletes the original.
   const path = assetsById(useAssets.getState()).get(source)?.path
-  const { format } = writePlanFor(document, io, source)
-  return keepsWrittenFormat(path, io.writtenExtension(format)) ? null : 'sourceFormatChange'
+  return keepsWrittenFormat(path, io.writtenExtension(plan.format)) ? null : 'sourceFormatChange'
 }
 
 export async function saveDocument(documentId: string, byHand = true): Promise<boolean> {
@@ -147,7 +159,11 @@ export async function saveDocument(documentId: string, byHand = true): Promise<b
   await io.settled?.(documentId)
   if (io.assetOnly) return await io.saveOwn(documentId)
   const writable: WritableSavableDocument = { ...savable, io }
-  const refusal = sourceWriteRefusal(writable)
+  // Walked ONCE per save: `traitsOf` is a walk of the whole layer stack, and the refusal and the
+  // write both need the same answer.
+  const source = writable.document.sourceAssetId
+  const plan = io.writeAsset && source ? writePlanFor(writable.document, io, source) : null
+  const refusal = sourceWriteRefusal(writable, plan)
   if (refusal) {
     // Said every time, even under autosave: a refusal nobody hears is the silence these two
     // protections were written to end.
@@ -158,7 +174,7 @@ export async function saveDocument(documentId: string, byHand = true): Promise<b
   const controller = beginCapture(documentId)
   const capture = captureForSave(io, documentId, controller)
   return await queueDocumentSave(documentId, async () =>
-    writeCaptured(writable, epoch, controller, await capture, byHand),
+    writeCaptured(writable, plan, epoch, controller, await capture, byHand),
   )
 }
 
@@ -178,6 +194,7 @@ async function captureForSave(
 
 async function writeCaptured(
   savable: WritableSavableDocument,
+  plan: WritePlan | null,
   epoch: number,
   controller: AbortController,
   result: CaptureResult,
@@ -190,7 +207,7 @@ async function writeCaptured(
   document = useDocuments.getState().documents[document.id] ?? document
   const { commit } = captured
 
-  if (!(await writeWhereItBelongs(savable, document, captured, epoch, controller, byHand))) {
+  if (!(await writeWhereItBelongs(savable, plan, document, captured, epoch, controller, byHand))) {
     return false
   }
   if (!epochIsCurrent(document, epoch, controller.signal)) return false
@@ -214,6 +231,7 @@ async function writeCaptured(
  */
 async function writeWhereItBelongs(
   savable: WritableSavableDocument,
+  plan: WritePlan | null,
   document: DocumentDescriptor,
   { draft, wasEdited }: CapturedDocument,
   epoch: number,
@@ -221,16 +239,13 @@ async function writeWhereItBelongs(
   byHand: boolean,
 ): Promise<boolean> {
   const source = document.sourceAssetId
-  if (savable.io.writeAsset && source) {
-    return await rewriteSourceAsset(document, savable.io, wasEdited, draft)
+  if (savable.io.writeAsset && source && plan) {
+    return await rewriteSourceAsset(document, savable.io, source, plan, wasEdited, draft)
   }
   const payload = {
     ...draft,
     title: document.title,
     ...(source ? { sourceAssetId: source } : {}),
-    // Carried into the file, so a document reopened next session does not regain the right to
-    // overwrite a source this session read reduced.
-    ...(document.sourceFidelity ? { sourceFidelity: document.sourceFidelity } : {}),
   }
   return await writeDraft(savable, document, payload, epoch, controller.signal, byHand)
 }
@@ -244,7 +259,7 @@ function capturedOrThrow(result: CaptureResult, signal: AbortSignal): CapturedDo
 async function writeDraft(
   { bridge }: WritableSavableDocument,
   document: DocumentDescriptor,
-  draft: CapturedDraft & { title: string; sourceAssetId?: string; sourceFidelity?: ReadFidelity },
+  draft: CapturedDraft & { title: string; sourceAssetId?: string },
   epoch: number,
   signal: AbortSignal,
   byHand: boolean,
@@ -258,35 +273,34 @@ async function writeDraft(
   return true
 }
 
+/** What a save is about to write, and what that would destroy — walked once per save. */
+export type WritePlan = { format: WritableFormat; losses: CapabilityTrait[] }
+
 export function writePlanFor(
   document: DocumentDescriptor,
   io: DocumentIo,
   sourceAssetId: string,
-): {
-  format: WritableFormat
-  losses: CapabilityTrait[]
-} {
+): WritePlan {
   const path = assetsById(useAssets.getState()).get(sourceAssetId)?.path ?? ''
   const traits = io.traitsOf?.(document.id) ?? []
   // A format the studio cannot even name falls back to the CLOSEST one it writes, not to the
   // richest: a flat `.gif` is offered a PNG, where the fallback used to send it to a container
   // of layers it holds none of (§5.5).
   const written = formatOfFile(path) ?? nearestEncodableFor('picture', traits)
-  if (!io.traitsOf) return { format: written, losses: [] }
+  // No guard on `traitsOf`: an io that has none holds no traits, and `lossesFor([], …)` is empty.
   return { format: written, losses: lossesFor(traits, written) }
 }
 async function rewriteSourceAsset(
   document: DocumentDescriptor,
-  io: DocumentIo,
+  io: Extract<DocumentIo, { writeAsset: object }>,
+  source: string,
+  { format, losses }: WritePlan,
   wasEdited: boolean,
   captured: CapturedDraft,
 ): Promise<boolean> {
-  const source = document.sourceAssetId
-  if (!source || !io.writeAsset) return true
   // Nothing moved since the last save: a re-encode that changes nothing is a file rewritten for
   // no reason, and for a lossy format it is quality spent for no reason (§6.2).
   if (!wasEdited && !assetBehind.has(document.id)) return true
-  const { format, losses } = writePlanFor(document, io, source)
   // Declining leaves the file alone AND the document modified: nothing was written, so nothing
   // may read as saved.
   if (losses.length > 0 && !(await agreedToFlatten(document, format, losses))) return false
@@ -343,9 +357,10 @@ export async function closeDocument(documentId: string): Promise<boolean> {
 /**
  * The pass that still writes REAL files, and the two kinds left to it.
  *
- * `covers` is what the recovery area could not hold — the character and the script. For every
- * other kind this used to be the net, and it wrote the user's own files to be one: opening a
- * video grew an `.otio` beside it, a sky a `.gltf`, neither asked for. See `documentRecovery.ts`.
+ * `writes` selects the documents this pass still answers for — the ones the recovery area does
+ * not hold, which is the character and the script. For every other kind this used to be the net,
+ * and it wrote the user's own files to be one: opening a video grew an `.otio` beside it, a sky
+ * a `.gltf`, neither asked for. See `documentRecovery.ts`.
  */
 export async function autosaveOpenDocuments(
   covers: (documentId: string) => boolean,

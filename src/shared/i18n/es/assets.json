@@ -119,6 +119,7 @@
     "recoveryLater": "Más tarde",
     "recoveryFull": "El área de recuperación está llena. No se ha borrado nada, pero guarde su trabajo.",
     "sourceReadReduced": "Parte de este archivo no se leyó: guardarlo encima la perdería. Guarde una copia.",
+    "sourceReadUnknown": "El estudio no sabe si este archivo se leyó por completo. Vuelva a abrirlo desde el Explorador, o guarde una copia.",
     "sourceFormatChange": "Guardar cambiaría el formato de este archivo. Elija un destino con «Guardar como».",
     "copyName": "{{name}} copia",
     "none": "Ningún documento abierto. Genera o abre un recurso para empezar.",

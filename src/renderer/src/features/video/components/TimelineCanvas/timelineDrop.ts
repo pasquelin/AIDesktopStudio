@@ -53,7 +53,7 @@ async function dropAsset(event: DragEvent<HTMLCanvasElement>, context: DropConte
   event.stopPropagation()
   const asset = await droppedAsset(event)
   if (!asset) return
-  placeTimelineAsset(context, asset, point)
+  placeTimelineAssetAt(context, asset, point, null)
 }
 
 export function timelineTakesType(
@@ -65,10 +65,6 @@ export function timelineTakesType(
   if (target?.kind === 'ruler') return false
   if (!target) return opensTrackFor(context.sequence, type)
   return trackTakesType(context.sequence, target.trackId, type)
-}
-
-export function placeTimelineAsset(context: DropContext, asset: Asset, point: Point): boolean {
-  return placeTimelineAssetAt(context, asset, point, null) !== null
 }
 
 /**

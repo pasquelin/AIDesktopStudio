@@ -1,7 +1,8 @@
 import { useCallback } from 'react'
 import type { Asset } from '@shared/domain/asset'
+import { byCodeUnit } from '@shared/text'
 import { getBridge } from '@/services/bridge'
-import { NO_ASSETS, useCatalogueAssets } from './useCatalogueAssets'
+import { askOnce, NO_ASSETS, useCatalogueAssets } from './useCatalogueAssets'
 
 /**
  * The rows behind ids a document already holds, asked BY ID.
@@ -14,13 +15,15 @@ import { NO_ASSETS, useCatalogueAssets } from './useCatalogueAssets'
  */
 export function useKnownAssets(ids: readonly string[]): readonly Asset[] {
   // The ids as one string, so the question keeps its identity across renders that rebuild the list.
-  // Sorted by code point rather than by a collator: these are ids the studio minted, not text a
-  // person reads, and this only exists to give the question a stable identity across renders.
-  const key = [...new Set(ids)].sort((one, other) => (one < other ? -1 : 1)).join()
+  // By code unit rather than by a collator: these are ids the studio minted, not text a person
+  // reads, and this only exists to give the question a stable identity across renders.
+  const key = [...new Set(ids)].sort(byCodeUnit).join()
   const ask = useCallback(() => {
     const bridge = getBridge()
     if (key === '' || !bridge) return Promise.resolve(NO_ASSETS)
-    return bridge.assets.search({ ids: key.split(',') })
+    // Through `askOnce`, like every other catalogue hook: several material tabs replay this on
+    // each write to the catalogue, and each replay is a synchronous SQLite pause every window pays.
+    return askOnce(`ids:${key}`, () => bridge.assets.search({ ids: key.split(',') }))
   }, [key])
 
   return useCatalogueAssets(ask)

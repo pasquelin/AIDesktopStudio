@@ -352,11 +352,6 @@ export type DocumentDraft = {
    */
   sourceAssetId?: string
   /**
-   * And how faithfully that asset was read, carried for the same reason: a document reopened next
-   * session must not regain the right to overwrite a file this one read reduced.
-   */
-  sourceFidelity?: ReadFidelity
-  /**
    * The surfaces the container holds beside the stack, for a document one string cannot hold.
    * An image keeps one PNG per layer: the pixels live on the GPU, never in the state, so
    * `content` can only name them.
