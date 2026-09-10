@@ -350,6 +350,7 @@
     "layerTransform": "transformations de calque",
     "blendMode": "modes de fusion",
     "layerOpacity": "opacité de calque",
+    "layerVisibility": "visibilité de calque",
     "clipping": "écrêtage",
     "layerLock": "verrous de calque",
     "guides": "repères"

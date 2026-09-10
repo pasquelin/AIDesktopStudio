@@ -350,6 +350,7 @@
     "layerTransform": "layer transforms",
     "blendMode": "blend modes",
     "layerOpacity": "layer opacity",
+    "layerVisibility": "layer visibility",
     "clipping": "clipping masks",
     "layerLock": "layer locks",
     "guides": "guides"

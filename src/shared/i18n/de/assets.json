@@ -350,6 +350,7 @@
     "layerTransform": "Ebenentransformationen",
     "blendMode": "Mischmodi",
     "layerOpacity": "Ebenendeckkraft",
+    "layerVisibility": "Ebenensichtbarkeit",
     "clipping": "Schnittmasken",
     "layerLock": "Ebenensperren",
     "guides": "Hilfslinien"

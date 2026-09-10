@@ -350,6 +350,7 @@
     "layerTransform": "trasformazioni di livello",
     "blendMode": "metodi di fusione",
     "layerOpacity": "opacità di livello",
+    "layerVisibility": "visibilità del livello",
     "clipping": "maschere di ritaglio",
     "layerLock": "blocchi di livello",
     "guides": "guide"

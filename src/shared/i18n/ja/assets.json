@@ -350,6 +350,7 @@
     "layerTransform": "レイヤーのトランスフォーム",
     "blendMode": "描画モード",
     "layerOpacity": "レイヤーの不透明度",
+    "layerVisibility": "レイヤーの表示",
     "clipping": "クリッピングマスク",
     "layerLock": "レイヤーのロック",
     "guides": "ガイド"

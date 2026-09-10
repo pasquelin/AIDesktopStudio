@@ -27,6 +27,11 @@ export type PictureTrait =
   | 'layerTransform'
   | 'blendMode'
   | 'layerOpacity'
+  /**
+   * A layer the stack HIDES. Flat formats carry no such thing, and the loss is not cosmetic: a
+   * document whose only layer is hidden flattens to nothing at all, and used to do it in silence.
+   */
+  | 'layerVisibility'
   | 'clipping'
   | 'layerLock'
   | 'guides'
@@ -41,6 +46,7 @@ export const PICTURE_TRAITS: readonly PictureTrait[] = [
   'layerTransform',
   'blendMode',
   'layerOpacity',
+  'layerVisibility',
   'clipping',
   'layerLock',
   'guides',
@@ -294,7 +300,7 @@ const FLAT: FormatCapability = carrying('picture', [])
  */
 const OPEN_RASTER: FormatCapability = carrying(
   'picture',
-  ['layers', 'groups', 'blendMode', 'layerOpacity'],
+  ['layers', 'groups', 'blendMode', 'layerOpacity', 'layerVisibility'],
   [
     'layerMask',
     'adjustmentLayer',

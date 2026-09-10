@@ -357,6 +357,7 @@
     "layerTransform": "трансформации слоя",
     "blendMode": "режимы наложения",
     "layerOpacity": "непрозрачность слоя",
+    "layerVisibility": "видимость слоя",
     "clipping": "обтравочные маски",
     "layerLock": "блокировки слоя",
     "guides": "направляющие"

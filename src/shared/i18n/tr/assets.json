@@ -350,6 +350,7 @@
     "layerTransform": "katman dönüşümleri",
     "blendMode": "karışım modları",
     "layerOpacity": "katman opaklığı",
+    "layerVisibility": "katman görünürlüğü",
     "clipping": "kırpma maskeleri",
     "layerLock": "katman kilitleri",
     "guides": "kılavuzlar"

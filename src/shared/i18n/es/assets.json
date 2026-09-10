@@ -350,6 +350,7 @@
     "layerTransform": "transformaciones de capa",
     "blendMode": "modos de fusión",
     "layerOpacity": "opacidad de capa",
+    "layerVisibility": "visibilidad de capa",
     "clipping": "máscaras de recorte",
     "layerLock": "bloqueos de capa",
     "guides": "guías"

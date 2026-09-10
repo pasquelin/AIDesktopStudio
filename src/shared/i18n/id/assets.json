@@ -350,6 +350,7 @@
     "layerTransform": "transformasi lapisan",
     "blendMode": "mode campur",
     "layerOpacity": "opasitas lapisan",
+    "layerVisibility": "visibilitas lapisan",
     "clipping": "masker kliping",
     "layerLock": "kunci lapisan",
     "guides": "garis bantu"

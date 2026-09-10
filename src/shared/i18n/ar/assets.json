@@ -371,6 +371,7 @@
     "layerTransform": "تحويلات الطبقات",
     "blendMode": "أوضاع المزج",
     "layerOpacity": "عتامة الطبقة",
+    "layerVisibility": "ظهور الطبقة",
     "clipping": "أقنعة القصّ",
     "layerLock": "أقفال الطبقات",
     "guides": "خطوط إرشادية"

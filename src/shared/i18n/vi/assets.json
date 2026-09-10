@@ -350,6 +350,7 @@
     "layerTransform": "biến đổi layer",
     "blendMode": "chế độ hòa trộn",
     "layerOpacity": "độ mờ đục layer",
+    "layerVisibility": "hiện ẩn của lớp",
     "clipping": "mặt nạ cắt",
     "layerLock": "khóa layer",
     "guides": "đường gióng"

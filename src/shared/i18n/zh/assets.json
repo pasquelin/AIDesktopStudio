@@ -350,6 +350,7 @@
     "layerTransform": "图层变换",
     "blendMode": "混合模式",
     "layerOpacity": "图层不透明度",
+    "layerVisibility": "图层可见性",
     "clipping": "剪贴蒙版",
     "layerLock": "图层锁定",
     "guides": "参考线"

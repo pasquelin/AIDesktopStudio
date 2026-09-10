@@ -350,6 +350,7 @@
     "layerTransform": "레이어 트랜스폼",
     "blendMode": "혼합 모드",
     "layerOpacity": "레이어 불투명도",
+    "layerVisibility": "레이어 표시",
     "clipping": "클리핑 마스크",
     "layerLock": "레이어 잠금",
     "guides": "안내선"
