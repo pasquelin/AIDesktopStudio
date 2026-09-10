@@ -125,6 +125,16 @@
     "sort": {
       "name": "Nom, de A à Z",
       "nameDesc": "Nom, de Z à A"
+    },
+    "gather": "Rassembler dans",
+    "gatherHint": "Copie ce document et tout ce qu’il cite dans un autre projet, pour qu’il s’y ouvre tel quel.",
+    "gatherIntoHint": "Rassemble ce document dans {{name}}",
+    "gathered": "{{files, number}} fichiers copiés, {{rows, number}} fiches écrites.",
+    "gatherKept": "{{count, number}} laissés en place : la destination en avait déjà d’autres à ces chemins.",
+    "gatherRefused": {
+      "not-a-project": "Cette destination n’est pas un projet.",
+      "same-project": "C’est le projet ouvert.",
+      "no-document": "Aucun document à rassembler."
     }
   },
   "menu": {

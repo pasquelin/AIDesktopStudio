@@ -125,6 +125,16 @@
     "sort": {
       "name": "이름: A에서 Z로",
       "nameDesc": "이름: Z에서 A로"
+    },
+    "gather": "다른 프로젝트로 모으기",
+    "gatherHint": "이 문서와 이 문서가 가리키는 모든 것을 다른 프로젝트로 복사해, 거기서 그대로 열리게 합니다.",
+    "gatherIntoHint": "이 문서를 {{name}}(으)로 모읍니다",
+    "gathered": "파일 {{files, number}}개 복사, 기록 {{rows, number}}건 작성.",
+    "gatherKept": "{{count, number}}개는 그대로 두었습니다. 대상에 같은 경로의 다른 파일이 이미 있었습니다.",
+    "gatherRefused": {
+      "not-a-project": "그 대상은 프로젝트가 아닙니다.",
+      "same-project": "지금 열려 있는 프로젝트입니다.",
+      "no-document": "모을 문서가 없습니다."
     }
   },
   "menu": {

@@ -98,6 +98,7 @@ const fakeProject = (overrides: BridgeOverrides): StudioBridge['project'] => ({
   fileFacts: () => Promise.resolve(null),
   fileUses: () => Promise.resolve([]),
   fileCopies: () => Promise.resolve([]),
+  gatherInto: () => Promise.resolve({ files: [], rows: 0 }),
   derivedCache: () => Promise.resolve(NO_DERIVED_CACHE),
   purgeDerivedCache: () => Promise.resolve(NO_DERIVED_CACHE),
   readContext: () => Promise.resolve(noContext()),

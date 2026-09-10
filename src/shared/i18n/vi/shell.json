@@ -125,6 +125,16 @@
     "sort": {
       "name": "Tên: A đến Z",
       "nameDesc": "Tên: Z đến A"
+    },
+    "gather": "Gom vào",
+    "gatherHint": "Chép tài liệu này và mọi thứ nó nhắc đến sang một dự án khác, để bên đó mở ra y như vậy.",
+    "gatherIntoHint": "Gom tài liệu này vào {{name}}",
+    "gathered": "Đã chép {{files, number}} tệp, ghi {{rows, number}} bản ghi.",
+    "gatherKept": "Để nguyên {{count, number}}: bên đích đã có thứ khác ở những đường dẫn ấy.",
+    "gatherRefused": {
+      "not-a-project": "Đích đó không phải một dự án.",
+      "same-project": "Đó là dự án đang mở.",
+      "no-document": "Không có tài liệu nào để gom."
     }
   },
   "menu": {

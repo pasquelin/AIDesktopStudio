@@ -28,6 +28,8 @@ import type { CommandAnswer } from '@/services/commandBus'
 import { reportFailure } from '@/services/diagnostics'
 import { currentOverrides } from '@/stores/bindings'
 import { useDocuments } from '@/stores/documents'
+import { useProject } from '@/stores/project'
+import { useSettings } from '@/stores/settings'
 import { useMedia } from '@/stores/media'
 import { fileClipboardCut, useFileClipboard } from '@/stores/fileClipboard'
 import { selectedFilePaths, useSelection } from '@/stores/selection'
@@ -160,6 +162,8 @@ export function Explorer() {
       history,
       bindings: currentOverrides(),
       t,
+      recent: useSettings.getState().settings.storage.recentProjects,
+      openProject: useProject.getState().project?.path ?? null,
       onOpen: () => void activate(node),
       onRename: () => setRenaming({ nodeId: node.id, asset }),
       onAsset: action =>

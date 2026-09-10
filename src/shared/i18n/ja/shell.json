@@ -125,6 +125,16 @@
     "sort": {
       "name": "名前、AからZ",
       "nameDesc": "名前、ZからA"
+    },
+    "gather": "別の企画へまとめる",
+    "gatherHint": "この書類と、それが名指すものすべてを別の企画へ複製します。向こうでそのまま開けるようになります。",
+    "gatherIntoHint": "この書類を {{name}} へまとめます",
+    "gathered": "{{files, number}} 個のファイルを複製、{{rows, number}} 件の記録を書きました。",
+    "gatherKept": "{{count, number}} 件はそのままにしました。宛先の同じ場所に別のものがありました。",
+    "gatherRefused": {
+      "not-a-project": "その宛先は企画ではありません。",
+      "same-project": "開いている企画です。",
+      "no-document": "まとめる書類がありません。"
     }
   },
   "menu": {

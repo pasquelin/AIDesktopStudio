@@ -135,6 +135,7 @@ const bridge: StudioBridge = {
     fileFacts: relative => ipcRenderer.invoke(CHANNELS.projectFileFacts, relative),
     fileUses: paths => ipcRenderer.invoke(CHANNELS.projectFileUses, paths),
     fileCopies: hash => ipcRenderer.invoke(CHANNELS.projectFileCopies, hash),
+    gatherInto: request => ipcRenderer.invoke(CHANNELS.projectGatherInto, request),
     derivedCache: () => ipcRenderer.invoke(CHANNELS.projectDerivedCache),
     purgeDerivedCache: () => ipcRenderer.invoke(CHANNELS.projectPurgeDerivedCache),
     readContext: () => ipcRenderer.invoke(CHANNELS.projectReadContext),

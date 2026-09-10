@@ -125,6 +125,16 @@
     "sort": {
       "name": "الاسم: من أ إلى ي",
       "nameDesc": "الاسم: من ي إلى أ"
+    },
+    "gather": "اجمع في",
+    "gatherHint": "ينسخ هذا المستند وكل ما يذكره إلى مشروع آخر، ليُفتح هناك كما هو.",
+    "gatherIntoHint": "اجمع هذا المستند في {{name}}",
+    "gathered": "نُسخ {{files, number}} ملفات، وكُتب {{rows, number}} سجلات.",
+    "gatherKept": "تُرك {{count, number}} كما هو: الوجهة كانت تحمل غيرها في تلك المسارات.",
+    "gatherRefused": {
+      "not-a-project": "هذه الوجهة ليست مشروعًا.",
+      "same-project": "هذا هو المشروع المفتوح.",
+      "no-document": "لا مستند لجمعه."
     }
   },
   "menu": {

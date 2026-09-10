@@ -32,6 +32,7 @@ import { probeWav } from '@main/media/wav'
 import { fileFactsOf } from './fileFacts'
 import { projectFileDependents } from './fileDependents'
 import { registerCopiesHandlers } from './copiesHandlers'
+import { registerGatherHandlers } from './gatherHandlers'
 import { registerFileUseHandlers } from './fileUseHandlers'
 import { registerRecoveryHandlers } from './recoveryHandlers'
 import { registerResourceHandlers } from './resourceHandlers'
@@ -484,6 +485,7 @@ export function registerProjectHandlers({
     documents.remove(parseDocumentId(id), parseDocumentKind(kind)),
   )
   registerCopiesHandlers({ project, media })
+  registerGatherHandlers({ project, documents, exists })
   registerRecoveryHandlers(() => project.path())
   // The four routes that only raise a question live apart — see `askHandlers.ts`.
   registerAskHandlers(askUser)

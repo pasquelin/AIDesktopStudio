@@ -125,6 +125,16 @@
     "sort": {
       "name": "Nama, dari A ke Z",
       "nameDesc": "Nama, dari Z ke A"
+    },
+    "gather": "Kumpulkan ke",
+    "gatherHint": "Menyalin dokumen ini dan semua yang disebutnya ke proyek lain, agar terbuka di sana apa adanya.",
+    "gatherIntoHint": "Kumpulkan dokumen ini ke {{name}}",
+    "gathered": "{{files, number}} berkas disalin, {{rows, number}} catatan ditulis.",
+    "gatherKept": "{{count, number}} dibiarkan: tujuan sudah punya yang lain di jalur itu.",
+    "gatherRefused": {
+      "not-a-project": "Tujuan itu bukan sebuah proyek.",
+      "same-project": "Itu proyek yang sedang terbuka.",
+      "no-document": "Tidak ada dokumen untuk dikumpulkan."
     }
   },
   "menu": {
