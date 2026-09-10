@@ -3,13 +3,15 @@ import type { Point } from '@/engines/core/geometry'
 import type { Asset } from '@shared/domain/asset'
 import { addClips, addClipsOnNewTracks } from '@/engines/timeline/commands'
 import {
+  clipForAsset,
   newTracksForAsset,
   opensTrackFor,
   placementsForAsset,
   trackTakesType,
 } from '@/engines/timeline/insert'
+import { clipEnd } from '@/engines/timeline/timelineState'
 import { hitTest, xToTime, type Viewport } from '@/engines/timeline/timelineGeometry'
-import type { SequenceState } from '@/engines/timeline/timelineState'
+import type { SequenceState, Us } from '@/engines/timeline/timelineState'
 import { assetIdFromDrag, draggedAssetType, droppedAsset } from '@/helpers/assetDrag'
 import { droppedSceneId } from '@/helpers/sceneDrag'
 import { addSceneToSequence, sequenceOf, useSequences } from '@/stores/sequences'
@@ -66,24 +68,41 @@ export function timelineTakesType(
 }
 
 export function placeTimelineAsset(context: DropContext, asset: Asset, point: Point): boolean {
+  return placeTimelineAssetAt(context, asset, point, null) !== null
+}
+
+/**
+ * The same landing, at a time the caller may name — and answering where the clip ENDS.
+ *
+ * What a drop of several files needs: they go in end to end from the point the pointer was let
+ * go at, so five rushes dropped together read as a cut rather than as five clips on one frame.
+ * `null` for a landing the montage refused, which is what tells a lot to stop.
+ */
+export function placeTimelineAssetAt(
+  context: DropContext,
+  asset: Asset,
+  point: Point,
+  from: Us | null,
+): Us | null {
   const target = hitTest(context.sequence, context.viewport, point)
-  if (target?.kind === 'ruler') return false
-  if (!target && !opensTrackFor(context.sequence, asset.type)) return false
+  if (target?.kind === 'ruler') return null
+  if (!target && !opensTrackFor(context.sequence, asset.type)) return null
 
   const store = useSequences.getState()
   const current = sequenceOf(store, context.documentId)
-  const start = xToTime(point.x, context.viewport)
+  const start = from ?? xToTime(point.x, context.viewport)
+  // Measured from the clip the placement itself builds, so the answer is the snapped end rather
+  // than the raw duration: `clipForAsset` is what both branches below lay down.
+  const landed = clipEnd(clipForAsset(asset.id, asset, start, current.settings))
   if (!target?.trackId) {
-    if (newTracksForAsset(current, asset).length > 0) {
-      store.runCommand(context.documentId, addClipsOnNewTracks(asset, asset.id, start))
-      return true
-    }
-    return false
+    if (newTracksForAsset(current, asset).length === 0) return null
+    store.runCommand(context.documentId, addClipsOnNewTracks(asset, asset.id, start))
+    return landed
   }
   const placements = placementsForAsset(current, asset, asset.id, start, target.trackId)
-  if (placements.length === 0) return false
+  if (placements.length === 0) return null
   store.runCommand(context.documentId, addClips(placements))
-  return true
+  return landed
 }
 
 export function createTimelineDropHandler(context: DropContext) {

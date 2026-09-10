@@ -285,9 +285,9 @@
     "compare": "A/B",
     "compareHint": "Fa sentire la sorgente, senza annullare nulla",
     "apply": "Applica",
-    "applyHint": "Crea l’asset modificato e lo usa nel montaggio",
+    "applyHint": "Scrive una copia nella cartella dei suoni e la usa nel montaggio; la sorgente resta intatta",
     "saveAs": "Salva come nuovo",
-    "saveAsHint": "Crea un asset accanto alla sorgente"
+    "saveAsHint": "Scrive una copia nella cartella dei suoni, senza toccare il montaggio"
   },
   "project": {
     "none": "Nessun progetto aperto",

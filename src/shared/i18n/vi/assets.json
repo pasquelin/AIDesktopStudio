@@ -285,9 +285,9 @@
     "compare": "A/B",
     "compareHint": "Nghe bản nguồn, mà không hoàn tác gì",
     "apply": "Áp dụng",
-    "applyHint": "Tạo tài nguyên đã chỉnh và dùng nó trong bản dựng",
+    "applyHint": "Ghi một bản sao vào thư mục âm thanh và dùng nó trong bản dựng; nguồn vẫn nguyên vẹn",
     "saveAs": "Lưu thành bản mới",
-    "saveAsHint": "Tạo một tài nguyên bên cạnh bản nguồn"
+    "saveAsHint": "Ghi một bản sao vào thư mục âm thanh, không đụng đến bản dựng"
   },
   "project": {
     "none": "Chưa mở dự án nào",

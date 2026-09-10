@@ -285,9 +285,9 @@
     "compare": "A/B",
     "compareHint": "Hiçbir şeyi geri almadan kaynağı dinletir",
     "apply": "Uygula",
-    "applyHint": "Düzenlenmiş varlığı oluşturur ve kurguda kullanır",
+    "applyHint": "Seslerin klasörüne bir kopya yazar ve kurguda kullanır; kaynak olduğu gibi kalır",
     "saveAs": "Yeni olarak kaydet",
-    "saveAsHint": "Kaynağın yanında bir varlık oluşturur"
+    "saveAsHint": "Kurguya dokunmadan seslerin klasörüne bir kopya yazar"
   },
   "project": {
     "none": "Açık proje yok",

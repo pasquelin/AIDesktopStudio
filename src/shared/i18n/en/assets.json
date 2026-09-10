@@ -285,9 +285,9 @@
     "compare": "A/B",
     "compareHint": "Hear the source, without undoing anything",
     "apply": "Apply",
-    "applyHint": "Create the edited asset and use it in the edit",
+    "applyHint": "Writes a copy into the sounds folder and uses it in the edit; the source is left alone",
     "saveAs": "Save as new",
-    "saveAsHint": "Create an asset beside the source"
+    "saveAsHint": "Writes a copy into the sounds folder, leaving the edit as it is"
   },
   "project": {
     "none": "No project open",

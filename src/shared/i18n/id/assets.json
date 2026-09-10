@@ -285,9 +285,9 @@
     "compare": "A/B",
     "compareHint": "Mendengarkan sumbernya, tanpa mengurungkan apa pun",
     "apply": "Terapkan",
-    "applyHint": "Membuat aset yang telah disunting dan memakainya di dalam suntingan",
+    "applyHint": "Menulis salinan ke folder suara dan memakainya dalam suntingan; sumbernya tidak disentuh",
     "saveAs": "Simpan sebagai baru",
-    "saveAsHint": "Membuat sebuah aset di samping sumbernya"
+    "saveAsHint": "Menulis salinan ke folder suara, tanpa mengubah suntingan"
   },
   "project": {
     "none": "Tidak ada proyek yang terbuka",

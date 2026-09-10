@@ -285,9 +285,9 @@
     "compare": "A/B",
     "compareHint": "听源素材，不撤销任何东西",
     "apply": "应用",
-    "applyHint": "创建编辑好的资产，并在剪辑中使用它",
+    "applyHint": "在声音文件夹中写入一份副本并用于剪辑；源文件保持不动",
     "saveAs": "存为新资产",
-    "saveAsHint": "在源素材旁边创建一个资产"
+    "saveAsHint": "在声音文件夹中写入一份副本，不改动剪辑"
   },
   "project": {
     "none": "没有打开的项目",

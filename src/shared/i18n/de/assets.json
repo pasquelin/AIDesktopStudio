@@ -285,9 +285,9 @@
     "compare": "A/B",
     "compareHint": "Hört die Quelle, ohne etwas rückgängig zu machen",
     "apply": "Anwenden",
-    "applyHint": "Erstellt das bearbeitete Asset und verwendet es im Schnitt",
+    "applyHint": "Schreibt eine Kopie in den Klangordner und verwendet sie im Schnitt; die Quelle bleibt unberührt",
     "saveAs": "Als neu speichern",
-    "saveAsHint": "Erstellt ein Asset neben der Quelle"
+    "saveAsHint": "Schreibt eine Kopie in den Klangordner, ohne den Schnitt zu ändern"
   },
   "project": {
     "none": "Kein Projekt geöffnet",

@@ -285,9 +285,9 @@
     "compare": "A/B",
     "compareHint": "Reproduce la fuente, sin deshacer nada",
     "apply": "Aplicar",
-    "applyHint": "Crea el recurso editado y lo usa en el montaje",
+    "applyHint": "Escribe una copia en la carpeta de sonidos y la usa en el montaje; la fuente queda intacta",
     "saveAs": "Guardar como nuevo",
-    "saveAsHint": "Crea un recurso junto a la fuente"
+    "saveAsHint": "Escribe una copia en la carpeta de sonidos, sin tocar el montaje"
   },
   "project": {
     "none": "Ningún proyecto abierto",
