@@ -201,7 +201,8 @@
     "sceneDisplay": "Modo de visualización",
     "sceneView": "Punto de vista",
     "sceneCapture": "Capturar la vista",
-    "copies": "Copias…"
+    "copies": "Copias…",
+    "shipped": "Incluido con el estudio…"
   },
   "about": {
     "copyright": "© 2026 Alban Pasquelin"

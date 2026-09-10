@@ -13,6 +13,7 @@ import { isNewDocumentRoute } from '@shared/domain/newDocument'
 import { isPlayerModuleRoute } from '@shared/domain/playerModuleWindow'
 import { isSettingsRoute } from '@shared/domain/settings'
 import { isCopiesRoute } from '@shared/domain/fileCopies'
+import { isShippedRoute } from '@shared/domain/shippedResources'
 import { isUsageRoute } from '@shared/domain/usage'
 import { isWelcomeRoute } from '@shared/domain/welcome'
 import { UNKNOWN_SYSTEM_LANGUAGE } from '@shared/i18n'
@@ -59,6 +60,12 @@ const LicencesWindow = lazy(async () => ({
 /** Split like its neighbours: a diagnosis, opened on purpose and rarely. */
 const CopiesWindow = lazy(async () => ({
   default: (await import('@/features/project/components/CopiesWindow/CopiesWindow')).CopiesWindow,
+}))
+
+/** Split like its neighbours: opened on purpose, and rarely. */
+const ShippedWindow = lazy(async () => ({
+  default: (await import('@/features/project/components/ShippedWindow/ShippedWindow'))
+    .ShippedWindow,
 }))
 
 /** Split like its neighbours: opened on purpose, and rarely. */
@@ -134,6 +141,7 @@ function windowFor(hash: string): ReactNode {
   if (isManualRoute(hash)) return <ManualWindow />
   if (isFileInfoRoute(hash)) return <FileInfoWindow />
   if (isCopiesRoute(hash)) return <CopiesWindow />
+  if (isShippedRoute(hash)) return <ShippedWindow />
   if (isNewDocumentRoute(hash)) return <NewDocumentWindow />
   if (isWelcomeRoute(hash)) return <WelcomeWindow />
   return null

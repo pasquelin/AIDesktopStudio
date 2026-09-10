@@ -201,7 +201,8 @@
     "sceneDisplay": "Режим отображения",
     "sceneView": "Точка обзора",
     "sceneCapture": "Сделать снимок вида",
-    "copies": "Копии…"
+    "copies": "Копии…",
+    "shipped": "Поставляется со студией…"
   },
   "about": {
     "copyright": "© 2026 Alban Pasquelin"

@@ -33,6 +33,7 @@ const FAMILIES: readonly string[] = [
   // One folder rather than the feature: `features/project/` also holds the home's shelf,
   // which is a dock component and wears the docks' vocabulary by right.
   './features/project/components/CopiesWindow/',
+  './features/project/components/ShippedWindow/',
   './features/retarget/components/',
   './features/settings/',
   // Two files rather than a folder: the journal and the licences are one window each, and they

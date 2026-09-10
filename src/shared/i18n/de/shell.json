@@ -201,7 +201,8 @@
     "sceneDisplay": "Anzeigemodus",
     "sceneView": "Blickpunkt",
     "sceneCapture": "Ansicht aufnehmen",
-    "copies": "Kopien…"
+    "copies": "Kopien…",
+    "shipped": "Mit dem Studio geliefert…"
   },
   "about": {
     "copyright": "© 2026 Alban Pasquelin"

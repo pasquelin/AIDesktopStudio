@@ -201,7 +201,8 @@
     "sceneDisplay": "显示模式",
     "sceneView": "视点",
     "sceneCapture": "捕获视图",
-    "copies": "副本…"
+    "copies": "副本…",
+    "shipped": "随工作室提供…"
   },
   "about": {
     "copyright": "© 2026 Alban Pasquelin"

@@ -20,7 +20,8 @@ export const INITIAL_WINDOW_STATE: WindowState = {
  * journal is not. The channel and the action stay `help.openStudioWindow` — an action published on
  * the MCP wire is a name clients hold us to.
  */
-export type WindowPage = 'manual' | 'licences' | 'usage' | 'journal' | 'welcome' | 'copies'
+export type WindowPage =
+  'manual' | 'licences' | 'usage' | 'journal' | 'welcome' | 'copies' | 'shipped'
 
 export const WINDOW_PAGES: readonly WindowPage[] = [
   'manual',
@@ -29,4 +30,5 @@ export const WINDOW_PAGES: readonly WindowPage[] = [
   'journal',
   'welcome',
   'copies',
+  'shipped',
 ]

@@ -1,0 +1,19 @@
+{
+  "shipped": {
+    "title": "Stüdyoyla birlikte gelir",
+    "character": "Karakter",
+    "characterNote": "Stüdyonun verdiği karakter, verdiği her yoğunlukta. Dördü için tek iskelet, ki verilen hareketlerin tahmine gerek kalmadan oynamasını sağlayan budur.",
+    "characterWhere": "Yerleştirilince projenin iç deposuna iner: ağacınızda fazladan dosya olmaz.",
+    "textures": "Çalışma dokuları",
+    "texturesNote": "Bir ızgara ve bir dama, her biri iki yoğunlukta. Bir kare bir metredir; ölçeği yargılamayı ve bir UV’nin gerildiğini görmeyi sağlayan da budur.",
+    "texturesWhere": "Yerleştirilince projenin iç deposuna inerler: ağacınızda fazladan dosya olmaz.",
+    "animations": "Animasyonlar",
+    "animationsNote": "Stüdyonun verdiği hareketler; kendi karakterinde olduğu gibi iskeleti tanınan içe aktarılmış bir karakterde de oynar.",
+    "animationsReachable": "Yerleştirilecek bir şey yok: bir hareketin seçildiği her yerde zaten sunuluyorlar ve oyun dışa aktarımı onları yanına alıyor. Projeye kopyalamak aynı baytların ikinci bir örneği olur ve hiçbir şey kazandırmaz.",
+    "animationsNone": "Bu kurulum hiçbir animasyon getirmiyor.",
+    "place": "Yerleştir",
+    "placeAll": "Dördünü de yerleştir",
+    "placed": "Projeye yerleştirildi",
+    "notPlaced": "Henüz yerleştirilmedi"
+  }
+}

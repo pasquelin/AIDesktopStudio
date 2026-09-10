@@ -1,0 +1,19 @@
+{
+  "shipped": {
+    "title": "Ce que le studio fournit",
+    "character": "Personnage",
+    "characterNote": "Le personnage que le studio fournit, à chaque densité qu’il fournit. Un seul squelette pour les quatre, ce qui laisse les animations fournies s’y jouer sans devinette.",
+    "characterWhere": "Posé, il atterrit dans le stockage interne du projet : aucun fichier de plus dans votre arborescence.",
+    "textures": "Images de travail",
+    "texturesNote": "Une grille et un damier, chacun à deux densités. Une case fait un mètre : c’est ce qui permet de juger une échelle et de voir un UV s’étirer.",
+    "texturesWhere": "Posées, elles atterrissent dans le stockage interne du projet : aucun fichier de plus dans votre arborescence.",
+    "animations": "Animations",
+    "animationsNote": "Les mouvements que le studio fournit, jouables sur son personnage comme sur un personnage importé dont le squelette est reconnu.",
+    "animationsReachable": "Rien à poser : elles sont déjà proposées partout où un mouvement se choisit, et l’export de jeu les embarque. En copier une dans le projet ferait un deuxième exemplaire des mêmes octets, sans rien acheter.",
+    "animationsNone": "Cette installation ne contient aucune animation.",
+    "place": "Poser",
+    "placeAll": "Poser les quatre",
+    "placed": "Posé dans le projet",
+    "notPlaced": "Pas encore posé"
+  }
+}

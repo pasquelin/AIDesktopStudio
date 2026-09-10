@@ -201,7 +201,8 @@
     "sceneDisplay": "Görüntü kipi",
     "sceneView": "Görünüş açısı",
     "sceneCapture": "Görünümü yakala",
-    "copies": "Kopyalar…"
+    "copies": "Kopyalar…",
+    "shipped": "Stüdyoyla birlikte gelir…"
   },
   "about": {
     "copyright": "© 2026 Alban Pasquelin"

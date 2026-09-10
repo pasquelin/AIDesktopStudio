@@ -1,0 +1,19 @@
+{
+  "shipped": {
+    "title": "Disertakan dengan studio",
+    "character": "Tokoh",
+    "characterNote": "Tokoh yang disertakan studio, pada setiap kerapatan yang disertakan. Satu rangka untuk keempatnya, yang membuat animasi bawaan bisa dimainkan tanpa menebak.",
+    "characterWhere": "Setelah diletakkan, ia mendarat di penyimpanan internal proyek: tidak ada berkas tambahan di pohon Anda.",
+    "textures": "Tekstur kerja",
+    "texturesNote": "Sebuah kisi dan sebuah papan catur, masing-masing dalam dua kerapatan. Satu petak adalah satu meter, dan itulah yang membuat skala bisa dinilai dan regangan UV terlihat.",
+    "texturesWhere": "Setelah diletakkan, semuanya mendarat di penyimpanan internal proyek: tidak ada berkas tambahan di pohon Anda.",
+    "animations": "Animasi",
+    "animationsNote": "Gerakan yang disertakan studio, dapat dimainkan pada tokohnya sendiri maupun pada tokoh impor yang rangkanya dikenali.",
+    "animationsReachable": "Tidak ada yang perlu diletakkan: semuanya sudah ditawarkan di mana pun sebuah gerakan dipilih, dan ekspor permainan menyertakannya. Menyalin satu ke proyek hanya akan menjadi salinan kedua dari byte yang sama tanpa manfaat.",
+    "animationsNone": "Pemasangan ini tidak menyertakan animasi.",
+    "place": "Letakkan",
+    "placeAll": "Letakkan keempatnya",
+    "placed": "Diletakkan di proyek",
+    "notPlaced": "Belum diletakkan"
+  }
+}
