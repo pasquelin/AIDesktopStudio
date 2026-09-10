@@ -1,4 +1,6 @@
+import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
+import { SHIPPED_FAMILIES, type ShippedFamily } from '@shared/domain/shippedResources'
 import { PropertySection } from '@/components/PropertySection'
 import { WindowShell } from '@/components/WindowShell'
 import { useAppliedSettings } from '@/hooks/useAppliedSettings'
@@ -9,42 +11,32 @@ import { ShippedWindowTextures } from './ShippedWindowTextures'
 /**
  * What the studio ships with, and how to put it into the open project — E-23.
  *
- * The three families are drawn apart because they are NOT placed alike, and the window says so
- * rather than pretending otherwise: the character and the working textures are copied in, a
- * shipped clip is already reachable everywhere a clip is chosen. See `SHIPPED_PLACEMENT`.
+ * Iterated rather than written out three times: the `Record` refuses to compile without a body
+ * for a family added to the union, which is what keeps a fourth one from arriving unnoticed.
  */
+const BODIES: Record<ShippedFamily, ReactNode> = {
+  character: <ShippedWindowCharacter />,
+  textures: <ShippedWindowTextures />,
+  animations: <ShippedWindowAnimations />,
+}
+
 export function ShippedWindow() {
   const { t } = useTranslation()
   useAppliedSettings()
 
   return (
     <WindowShell title={t('shipped.title')}>
-      <PropertySection
-        title={t('shipped.character')}
-        description={t('shipped.characterNote')}
-        scId="shipped.character"
-        plate
-      >
-        <ShippedWindowCharacter />
-      </PropertySection>
-
-      <PropertySection
-        title={t('shipped.textures')}
-        description={t('shipped.texturesNote')}
-        scId="shipped.textures"
-        plate
-      >
-        <ShippedWindowTextures />
-      </PropertySection>
-
-      <PropertySection
-        title={t('shipped.animations')}
-        description={t('shipped.animationsNote')}
-        scId="shipped.animations"
-        plate
-      >
-        <ShippedWindowAnimations />
-      </PropertySection>
+      {SHIPPED_FAMILIES.map(family => (
+        <PropertySection
+          key={family}
+          title={t(`shipped.${family}`)}
+          description={t(`shipped.${family}Note`)}
+          scId={`shipped.${family}`}
+          plate
+        >
+          {BODIES[family]}
+        </PropertySection>
+      ))}
     </WindowShell>
   )
 }

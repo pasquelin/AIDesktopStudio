@@ -9,6 +9,7 @@ import { PropertyRow } from '@/components/PropertyRow'
 import { WindowButton } from '@/components/WindowButton'
 import { WindowNote } from '@/components/WindowNote'
 import { getBridge } from '@/services/bridge'
+import { reportFailure } from '@/services/diagnostics'
 
 /**
  * The four working textures, and the one gesture that puts them in.
@@ -22,11 +23,17 @@ export function ShippedWindowTextures() {
   const [placed, setPlaced] = useState(false)
   const [placing, setPlacing] = useState(false)
 
+  /** The reset and the report of `ShippedWindowCharacter`, for the same reason it has them. */
   const place = async (): Promise<void> => {
     setPlacing(true)
-    const installed = (await getBridge()?.assets.installBundledTextures()) ?? []
-    setPlacing(false)
-    setPlaced(installed.length > 0)
+    try {
+      const installed = (await getBridge()?.assets.installBundledTextures()) ?? []
+      setPlaced(installed.length > 0)
+    } catch (error) {
+      reportFailure('assets.copy', 'shipped-images', error)
+    } finally {
+      setPlacing(false)
+    }
   }
 
   return (

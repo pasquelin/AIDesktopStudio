@@ -53,6 +53,7 @@ import { destinationFormatsFor } from '@shared/domain/encodableFormat'
 import { SCENE_TEMPLATE_GROUPS, SCENE_TEMPLATE_IDS } from '@shared/domain/sceneTemplate'
 import { DERIVED_STORES } from '@shared/domain/derivedCache'
 import { COPY_STORES } from '@shared/domain/fileCopies'
+import { SHIPPED_FAMILIES } from '@shared/domain/shippedResources'
 import { FILE_KINDS } from '@shared/domain/folder'
 import { FILE_INFO_SECTIONS } from '@/features/document/components/FileInfoWindow/sections'
 import { CHOICE_SCOPES } from '@shared/domain/aiOverview'
@@ -224,6 +225,8 @@ const COMPOSED_KEYS: readonly string[] = [
   // composed from the unions rather than written beside them.
   ...COPY_STORES.map(store => `copies.store.${store}`),
   ...DERIVED_STORES.map(store => `copies.stores.${store}`),
+  // The heading and the sentence of each shipped family, composed from the list itself.
+  ...SHIPPED_FAMILIES.flatMap(family => [`shipped.${family}`, `shipped.${family}Note`]),
   // The rail label, built by `workspaceLabelKey` — the most visible string in the window, and
   // the one thing the workspace table does NOT make the compiler demand of a new space.
   ...WORKSPACE_IDS.map(workspace => `workspaces.${workspace}`),
