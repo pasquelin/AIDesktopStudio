@@ -150,7 +150,9 @@ type AnisotropyHolder = { capabilities: { getMaxAnisotropy: () => number } }
  * engines that build a cache, so none of them has to reach into `capabilities` itself.
  */
 export function maxAnisotropyOf(renderer: AnisotropyHolder | null | undefined): number {
-  return renderer?.capabilities.getMaxAnisotropy() ?? 1
+  // Never under one: three answers 0 — not 1 — on a context without
+  // `EXT_texture_filter_anisotropic`, and 0 is not a number of samples.
+  return Math.max(1, renderer?.capabilities.getMaxAnisotropy() ?? 1)
 }
 
 export type TextureCache = {

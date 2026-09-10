@@ -248,7 +248,7 @@
     },
     "renderEngine": {
       "title": "Mesin render",
-      "help": "Antarmuka grafis mana yang dipakai tampilan 3D untuk menggambar. Kompatibel berjalan di setiap konfigurasi dan itulah yang dipertahankan untuk berbagi luas atau mesin lama. Lanjutan memberi pencahayaan dan pantulan yang lebih baik dan meminta kartu grafis terkini. Panel yang sudah terbuka mempertahankan mesinnya: tutup dan buka lagi untuk berganti.",
+      "help": "Antarmuka grafis mana yang dipakai tampilan 3D untuk menggambar. Kompatibel berjalan di setiap konfigurasi dan itulah yang dipertahankan untuk berbagi luas atau mesin lama. Lanjutan memberi pencahayaan dan pantulan yang lebih baik dan meminta kartu grafis terkini. Panel yang sudah terbuka mempertahankan mesinnya: tutup dan buka lagi untuk berganti. Mesin Lanjutan belum dibangun di versi ini: memilihnya tetap menggambar dengan yang Kompatibel.",
       "gl": "Kompatibel",
       "gpu": "Lanjutan"
     },

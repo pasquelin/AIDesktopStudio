@@ -123,9 +123,34 @@ export abstract class SceneRendererShadows extends SceneRendererModels {
           this.redraw(),
         )
       : null
+    // Whether they arrived or left, the picture moved: three lights come and go with them, and
+    // no other signal of `configure` covers the cascade flag on its own.
+    this.redraw()
     if (!this.cascades) return
     this.cascades.aim(this.shadowThrow)
     this.cascades.dress(this.viewport.scene)
+  }
+
+  /**
+   * Dresses what ARRIVED, never the whole graph: `applyState` runs per play frame with a small
+   * delta, and a full `traverse` there is the very cost `heldShadowBounds` documents removing —
+   * 23.8 ms of 38.7 on 50 000 nodes. The whole scene is walked once, by `syncCascades`.
+   */
+  protected dressCascades(changed: readonly SceneNode[] | null): void {
+    const cascades = this.cascades
+    if (!cascades) return
+    if (!changed) {
+      cascades.dress(this.viewport.scene)
+      return
+    }
+    for (const node of changed) {
+      const object = this.objects.get(node.id)
+      if (object) cascades.dress(object)
+    }
+    // The batches too: `regroupInstances` runs just before this and rebuilds them, and they are
+    // deliberately out of `objects` — undressed, they read the three bands as three ordinary
+    // suns and draw the shadow three times.
+    for (const drawn of this.instances.drawn()) cascades.dress(drawn)
   }
 
   /**

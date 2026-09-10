@@ -117,6 +117,9 @@ export abstract class SceneRendererFilm extends SceneRendererPreview {
     width: number,
     height: number,
   ): boolean {
+    // The bands are cut out of the camera that draws: an off-screen pass never goes through
+    // `dressPane`, and one left fitted to the editor's own view lights this frame from it.
+    this.cascades?.follow(camera)
     return this.viewport.drawScene({
       scene: this.viewport.scene,
       camera,

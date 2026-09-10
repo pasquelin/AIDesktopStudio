@@ -42,6 +42,8 @@ export abstract class SceneRendererLifecycle extends SceneRendererResources {
   public abstract dispose(): void
 
   protected abstract syncCascades(): void
+
+  protected abstract dressCascades(changed: readonly SceneNode[] | null): void
   protected abstract sweepCompositions(state: SceneState): void
   protected abstract syncNode(node: SceneNode): void
   protected abstract release(id: string): void
@@ -216,7 +218,7 @@ export abstract class SceneRendererLifecycle extends SceneRendererResources {
     this.regroupInstances()
     // A mesh that just arrived receives cascades through a define on its material, so it has to
     // be dressed before it draws. Nothing at all while the option is off.
-    this.cascades?.dress(this.viewport.scene)
+    this.dressCascades(changed)
     this.playheadMovesShadows = this.canPlayheadMoveShadows(state.nodes)
     this.reportStats()
     if (allShadowsChanged) this.redraw()

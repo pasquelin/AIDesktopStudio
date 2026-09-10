@@ -61,13 +61,13 @@ export abstract class ViewportSurface extends ViewportMounting {
     if (wanted === 'gpu' && askedGpuAdapter() === null) void probeGpuAdapter()
 
     const mounted = mountRenderer(
-      { canvas, alpha: this.output.alpha === true },
+      { canvas, alpha: this.output.alpha ?? false },
       wanted,
       askedGpuAdapter(),
       error => traceFailure('render.fallback', wanted, error),
     )
-    this.renderDriver = mounted.driver
-    const renderer = mounted.renderer
+    const { renderer, driver } = mounted
+    this.renderDriver = driver
     renderer.setPixelRatio(this.output.pixelRatio ?? window.devicePixelRatio)
     // Clear to nothing rather than to a colour, so a scene drawn for compositing hands back the
     // pixels it painted and nothing else. `setClearAlpha` alone is ignored without `alpha`.

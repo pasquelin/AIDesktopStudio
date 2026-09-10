@@ -248,7 +248,7 @@
     },
     "renderEngine": {
       "title": "Render motoru",
-      "help": "3B görünümün hangi grafik arabirimiyle çizdiği. Uyumlu her yapılandırmada çalışır; geniş paylaşım ve eski makineler için tutulacak olan budur. Gelişmiş daha iyi aydınlatma ve yansıma verir ve yeni bir ekran kartı ister. Zaten açık bir panel motorunu korur: değiştirmek için kapatıp yeniden açın.",
+      "help": "3B görünümün hangi grafik arabirimiyle çizdiği. Uyumlu her yapılandırmada çalışır; geniş paylaşım ve eski makineler için tutulacak olan budur. Gelişmiş daha iyi aydınlatma ve yansıma verir ve yeni bir ekran kartı ister. Zaten açık bir panel motorunu korur: değiştirmek için kapatıp yeniden açın. Gelişmiş motor bu sürümde henüz hazır değil: onu seçmek Uyumlu olanla çizer.",
       "gl": "Uyumlu",
       "gpu": "Gelişmiş"
     },

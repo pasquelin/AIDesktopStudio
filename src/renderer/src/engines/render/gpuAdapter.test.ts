@@ -16,19 +16,16 @@ describe('whether this machine has a WebGPU adapter', () => {
     expect(askedGpuAdapter()).toBe(null)
   })
 
-  it('reads no adapter on a browser that exposes no WebGPU', async () => {
+  it('reads no adapter whether the browser has none, refuses, or throws', async () => {
+    // One answer for the three: none of them can draw, and the caller has one fallback.
     expect(await probeGpuAdapter()).toBe(false)
-  })
 
-  it('reads no adapter when the request is refused', async () => {
+    forgetGpuAdapter()
     gpuAnswering(() => Promise.resolve(null))
-
     expect(await probeGpuAdapter()).toBe(false)
-  })
 
-  it('reads no adapter when the request throws, which is the same answer', async () => {
+    forgetGpuAdapter()
     gpuAnswering(() => Promise.reject(new Error('no device')))
-
     expect(await probeGpuAdapter()).toBe(false)
   })
 

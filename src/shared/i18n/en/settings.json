@@ -248,7 +248,7 @@
     },
     "renderEngine": {
       "title": "Render engine",
-      "help": "Which graphics interface the 3D viewport draws with. Compatible works on every configuration and is the one to keep for sharing widely or for older machines. Advanced gives better lighting and reflections and asks for a recent graphics card. A panel already open keeps the engine it opened with: close and reopen it to change.",
+      "help": "Which graphics interface the 3D viewport draws with. Compatible works on every configuration and is the one to keep for sharing widely or for older machines. Advanced gives better lighting and reflections and asks for a recent graphics card. A panel already open keeps the engine it opened with: close and reopen it to change. The Advanced engine is not built yet in this version: picking it draws with the Compatible one.",
       "gl": "Compatible",
       "gpu": "Advanced"
     },

@@ -143,8 +143,8 @@ export abstract class SceneRendererDisplay extends SceneRendererExport {
     // the shadow maps were drawn without.
     const zoned = this.instances.follow?.(camera, this.shadowThrow) ?? false
     // The bands are cut out of THIS camera's frustum, so they are refitted per pane like the
-    // zone above — and, like it, before the dressing that decides what the pass draws.
-    this.cascades?.follow(camera)
+    // zone above — and, like it, their answer says whether the shadow maps are owed a pass.
+    const cascaded = this.cascades?.follow(camera) ?? false
     this.zonedTo = camera
 
     const mode = this.displays[index] ?? this.displays[0] ?? 'shaded'
@@ -161,6 +161,12 @@ export abstract class SceneRendererDisplay extends SceneRendererExport {
       camera,
       studio => this.environment?.borrowStudio(studio),
     )
+    this.syncFirstPersonBody()
+    return dressed || zoned || cascaded
+  }
+
+  /** The body a played camera looks out of, or none — a pane drawn with the chrome shows all. */
+  private syncFirstPersonBody(): void {
     const body =
       this.options.chrome === false && this.world.play.camera === 'firstPerson'
         ? playerPartsOf(this.documentOrder)?.body
@@ -168,7 +174,6 @@ export abstract class SceneRendererDisplay extends SceneRendererExport {
     this.firstPersonBody.sync(body ? this.objects.get(body.id) : undefined, signature =>
       this.retarget.profileOf(signature),
     )
-    return dressed || zoned
   }
 
   /**

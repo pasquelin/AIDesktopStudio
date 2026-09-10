@@ -32,6 +32,9 @@ export abstract class SceneRendererValidation extends SceneRendererOptimization 
     const target = new WebGLRenderTarget(spec.width, spec.height)
     const restore = this.hideWorkshop(camera)
     try {
+      // The bands are cut out of the camera that draws: an off-screen pass never goes through
+      // `dressPane`, and one left fitted to the editor's own view lights this frame from it.
+      this.cascades?.follow(camera)
       this.viewport.drawScene({
         scene: this.viewport.scene,
         camera,

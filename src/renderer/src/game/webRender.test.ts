@@ -85,6 +85,15 @@ async function stagedGame(policy: Partial<RenderPolicy> = DEFAULT_RENDER_POLICY)
   return { render, renderer, crate }
 }
 
+/** How many lights of a drawn frame cast a shadow — one sun, or one per cascade band. */
+const castersOf = (scene: unknown): number => {
+  let casting = 0
+  ;(scene as Scene).traverse(object => {
+    if ('isDirectionalLight' in object && object.castShadow) casting += 1
+  })
+  return casting
+}
+
 const sunOf = (scene: unknown): { shadow: { camera: { right: number; far: number } } } => {
   let found: Object3D | null = null
   ;(scene as Scene).traverse(object => {
@@ -111,6 +120,19 @@ describe('what an exported game pays for an image', () => {
     expect(renderer.shadowMap.enabled).toBe(true)
     expect(renderer.shadowMap.type).toBe(PCFShadowMap)
     expect(renderer.shadowMap.autoUpdate).toBe(false)
+  })
+
+  // The field travels in the manifest, so it has to be HONOURED here: a project exported with
+  // cascades would otherwise play under one stretched map and nobody would be told.
+  it('builds the cascades the author chose, and none when they chose otherwise', async () => {
+    const withBands = await stagedGame({ ...DEFAULT_RENDER_POLICY, csm: true })
+    const withOne = await stagedGame({ ...DEFAULT_RENDER_POLICY, csm: false })
+    withBands.render.draw()
+    withOne.render.draw()
+
+    expect(castersOf(withBands.renderer.frames[0])).toBeGreaterThan(
+      castersOf(withOne.renderer.frames[0]),
+    )
   })
 
   // 🛑 A manifest is a JSON file on disk: a size somebody typed as a word gave `NaN` for the

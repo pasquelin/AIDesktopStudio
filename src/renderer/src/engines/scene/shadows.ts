@@ -1,5 +1,5 @@
 import { BasicShadowMap, Box3, Light, Object3D, PCFShadowMap, Vector3 } from 'three'
-import type { LightShadow, Matrix4, ShadowMapType } from 'three'
+import type { LightShadow, Material, Matrix4, ShadowMapType } from 'three'
 import type { ShadowQuality } from '@shared/domain/scene'
 import type { RenderPolicy } from '@shared/domain/renderPolicy'
 import { isRecord } from '@shared/guards'
@@ -65,14 +65,22 @@ export function applyShadows(renderer: ShadowSwitch, enabled: boolean, root: Obj
   renderer.shadowMap.enabled = enabled
 
   root.traverse(child => {
-    const material: unknown = Reflect.get(child, 'material')
-    for (const one of Array.isArray(material) ? material : [material]) {
-      if (isMaterial(one)) one.needsUpdate = true
-    }
+    for (const material of materialsOf(child)) material.needsUpdate = true
   })
 }
 
-function isMaterial(value: unknown): value is { needsUpdate: boolean } {
+/**
+ * The materials one object wears — one, several, or none. Read off the SLOT rather than by a
+ * class test: a mesh, a sprite, a line and an instanced batch all carry it without sharing a
+ * base. Shared with `csm.ts`, which marks the very same materials of the same feature.
+ */
+export function materialsOf(object: Object3D): readonly Material[] {
+  const material: unknown = Reflect.get(object, 'material')
+  if (Array.isArray(material)) return material.filter(isMaterial)
+  return isMaterial(material) ? [material] : []
+}
+
+function isMaterial(value: unknown): value is Material {
   return isRecord(value) && 'isMaterial' in value
 }
 

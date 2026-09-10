@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import type { WebGLRenderer } from 'three'
-import { driverFor, mountRenderer, type RenderDrivers } from './mountRenderer'
+import { mountRenderer, type RenderDrivers } from './mountRenderer'
 import type { RenderDriver, RendererRequest } from './renderDriver'
 
 /**
@@ -33,30 +33,20 @@ function rendererStub(engine: 'gl' | 'gpu'): WebGLRenderer {
   return { engine } as unknown as WebGLRenderer
 }
 
-describe('which driver a policy gets', () => {
-  it('draws with the Compatible engine unless the Advanced one is asked for', () => {
+describe('mounting a renderer', () => {
+  it('draws with the Advanced engine once an adapter has answered', () => {
     const two = drivers()
-    expect(driverFor('gl', true, two)).toBe(two.gl)
-  })
 
-  it('draws with the Advanced engine when an adapter answered', () => {
-    const two = drivers()
-    expect(driverFor('gpu', true, two)).toBe(two.gpu)
+    expect(mountRenderer(request, 'gpu', true, vi.fn(), two).driver).toBe(two.gpu)
   })
 
   it('keeps the Compatible engine while nobody has asked the adapter yet', () => {
     // A mount cannot wait on `requestAdapter`, and a viewport that waited would show nothing.
     const two = drivers()
-    expect(driverFor('gpu', null, two)).toBe(two.gl)
+
+    expect(mountRenderer(request, 'gpu', null, vi.fn(), two).driver).toBe(two.gl)
   })
 
-  it('keeps the Compatible engine when the adapter refused', () => {
-    const two = drivers()
-    expect(driverFor('gpu', false, two)).toBe(two.gl)
-  })
-})
-
-describe('mounting a renderer', () => {
   it('falls back to the Compatible engine when the Advanced one throws', () => {
     const two = drivers({
       createRenderer: () => {

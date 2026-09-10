@@ -27,7 +27,7 @@ const RENDER_DRIVERS: RenderDrivers = { gl: glDriver, gpu: gpuDriver }
  * a mount cannot wait for an adapter, so the first one of a session opens Compatible and the
  * answer is there for the next.
  */
-export function driverFor(
+function driverFor(
   engine: RenderEngine,
   gpuReady: boolean | null,
   drivers: RenderDrivers = RENDER_DRIVERS,
@@ -51,11 +51,10 @@ export function mountRenderer(
   drivers: RenderDrivers = RENDER_DRIVERS,
 ): MountedRenderer {
   const wanted = driverFor(engine, gpuReady, drivers)
-  if (wanted === drivers.gl) {
-    // Said even with nothing thrown: choosing Advanced and being handed Compatible is the one
-    // case a reader has to be able to explain, and no adapter throws to explain it.
-    if (engine === 'gpu') onFallback(localizedError('renderEngineUnavailable'))
-    return { renderer: drivers.gl.createRenderer(request), driver: drivers.gl }
+  // Said even when nothing throws: choosing Advanced and being handed Compatible is the one
+  // case a reader has to be able to explain, and a machine with no adapter raises nothing.
+  if (engine === 'gpu' && wanted === drivers.gl) {
+    onFallback(localizedError('renderEngineUnavailable'))
   }
 
   try {

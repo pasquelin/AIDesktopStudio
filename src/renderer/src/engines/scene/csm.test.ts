@@ -1,5 +1,13 @@
-import { DirectionalLight, Mesh, MeshStandardMaterial, PerspectiveCamera, Scene } from 'three'
-import { describe, expect, it } from 'vitest'
+import {
+  DirectionalLight,
+  Mesh,
+  MeshStandardMaterial,
+  PerspectiveCamera,
+  Scene,
+  type WebGLProgramParametersWithUniforms,
+  type WebGLRenderer,
+} from 'three'
+import { describe, expect, it, vi } from 'vitest'
 import { DEFAULT_RENDER_POLICY } from '@shared/domain/renderPolicy'
 import { cascadeSettingsFor, createCascadeShadows } from './csm'
 
@@ -46,21 +54,39 @@ describe('cascaded shadows on a scene', () => {
     expect(sun.castShadow).toBe(false)
   })
 
-  it('gives the sun its own map back when the cascades go', () => {
+  it('stands in for the sun rather than lighting beside it', () => {
+    // Three lights of their own at three's default intensity would add nine units of white on
+    // top of a scene lit by one — the picture jumps the moment the option is switched on.
     const { scene, sun } = litScene()
+    sun.intensity = 2
+    sun.color.set('#ff8800')
+    const shadows = createCascadeShadows(scene, settings, () => {})
+
+    shadows.dress(scene)
+
+    expect(sun.intensity).toBe(0)
+    for (const band of cascadeLightsOf(scene, sun)) {
+      expect(band.intensity).toBe(2)
+      expect(band.color.getHexString()).toBe('ff8800')
+    }
+  })
+
+  it('gives the sun back its light and its map when the cascades go', () => {
+    const { scene, sun } = litScene()
+    sun.intensity = 2
     const shadows = createCascadeShadows(scene, settings, () => {})
     shadows.dress(scene)
 
     shadows.release()
 
+    expect(sun.intensity).toBe(2)
     expect(sun.castShadow).toBe(true)
     expect(scene.children.filter(child => child instanceof DirectionalLight)).toEqual([sun])
   })
 
   it('marks a dressed material for a rebuild: a define alone reaches no program', () => {
     const { scene, mesh } = litScene()
-    const material = mesh.material
-    if (Array.isArray(material)) throw new Error('one material')
+    const material = oneMaterialOf(mesh)
     material.needsUpdate = false
     const shadows = createCascadeShadows(scene, settings, () => {})
 
@@ -70,18 +96,48 @@ describe('cascaded shadows on a scene', () => {
     expect(material.version).toBeGreaterThan(0)
   })
 
-  it('leaves a material that carries a patch of its own alone', () => {
+  it('composes with a material that carries a patch of its own', () => {
+    // The relief splat is the one that does: it rewrites `map_fragment` where cascades read
+    // `lights_fragment_begin`, so terrain must receive both rather than lose either.
     const { scene, mesh } = litScene()
-    const material = mesh.material
-    if (Array.isArray(material)) throw new Error('one material')
-    const patch = () => {}
-    material.onBeforeCompile = patch
+    const material = oneMaterialOf(mesh)
+    const own = vi.fn()
+    material.onBeforeCompile = own
     const shadows = createCascadeShadows(scene, settings, () => {})
 
     shadows.dress(scene)
+    material.onBeforeCompile(shaderStub(), rendererStub())
 
-    expect(material.onBeforeCompile).toBe(patch)
-    expect(material.defines?.USE_CSM).toBeUndefined()
+    expect(own).toHaveBeenCalledOnce()
+    expect(material.defines?.USE_CSM).toBe(1)
+  })
+
+  it('hands that patch back when the cascades go', () => {
+    const { scene, mesh } = litScene()
+    const material = oneMaterialOf(mesh)
+    const own = () => {}
+    material.onBeforeCompile = own
+    const shadows = createCascadeShadows(scene, settings, () => {})
+    shadows.dress(scene)
+
+    shadows.release()
+
+    expect(material.onBeforeCompile).toBe(own)
+  })
+
+  it('dresses a material again once something has rebound its patch', () => {
+    const { scene, mesh } = litScene()
+    const material = oneMaterialOf(mesh)
+    const shadows = createCascadeShadows(scene, settings, () => {})
+    shadows.dress(scene)
+    // What `bindReliefSplat` does when the ground is painted again: it writes over the hook.
+    const rebound = vi.fn()
+    material.onBeforeCompile = rebound
+
+    shadows.dress(scene)
+    material.onBeforeCompile(shaderStub(), rendererStub())
+
+    expect(rebound).toHaveBeenCalledOnce()
   })
 
   it('cuts each band a frustum of its own out of the camera it follows', () => {
@@ -111,6 +167,26 @@ describe('cascaded shadows on a scene', () => {
     expect(aimed?.normalize().y).toBeCloseTo(-1)
   })
 })
+
+function oneMaterialOf(mesh: Mesh): MeshStandardMaterial {
+  const material = mesh.material
+  if (Array.isArray(material) || !(material instanceof MeshStandardMaterial)) {
+    throw new Error('this mesh was built with one standard material')
+  }
+  return material
+}
+
+/**
+ * The two arguments three hands a compile hook. `as` twice: what the hooks under test do with
+ * them is call each other, and neither a program nor a renderer can be built under node.
+ */
+function shaderStub(): WebGLProgramParametersWithUniforms {
+  return { uniforms: {} } as WebGLProgramParametersWithUniforms
+}
+
+function rendererStub(): WebGLRenderer {
+  return {} as WebGLRenderer
+}
 
 /** The lights the cascades brought — everything directional in the scene but the document's sun. */
 function cascadeLightsOf(scene: Scene, sun: DirectionalLight): readonly DirectionalLight[] {

@@ -42,19 +42,46 @@ existant est donc identique, point.
 - trois bandes, `CASCADES = 3`, non réglable : le nombre est un `define` de matériau, le changer
   recompile toute la scène ;
 - la taille des cartes passe par `shadowMapSizeFor`, le même plafond qualité qu'une carte unique ;
-- `dress` parcourt la scène une fois : habille les matériaux standard et **retire le soleil du
-  document du casting** — sans ça la même occlusion serait assombrie deux fois ;
-- `dress` ignore tout matériau portant déjà un `onBeforeCompile` : `setupMaterial` l'écrase et
-  `dispose` le supprime, ce qui coûterait son programme au splat de relief ;
+- `dress` habille les matériaux standard et fait **remplacer** le soleil par les bandes : elles
+  prennent sa couleur et son intensité, il cesse d'éclairer et de projeter. `CSM` ajoute trois
+  lumières à 3 d'intensité chacune ; laissées à côté d'un soleil qui éclaire encore, une scène à
+  1 passait à 10. L'intensité n'est pas divisée par trois pour autant : le chunk n'éclaire un
+  fragment que depuis UNE bande, celle où tombe sa profondeur ;
+- `dress` **compose** avec un matériau qui porte déjà un `onBeforeCompile` au lieu de le sauter.
+  `setupMaterial` écrase ce crochet et `dispose` le supprime ; sauté, le splat de relief — le
+  seul matériau de scène dans ce cas — perdait à la fois les cascades et l'ombre de son soleil,
+  c'est-à-dire exactement le cas que les cascades existent pour servir ;
 - `dress` force `material.needsUpdate` — l'addon ne le fait pas, et un `define` posé sur un
   matériau déjà compilé n'atteint aucun programme ;
-- `release` rend au soleil sa carte, retire les trois lumières et fait recompiler les matériaux.
+- `release` rend au soleil sa lumière et sa carte, rend leur crochet aux matériaux composés,
+  retire les trois lumières et fait recompiler.
 
 Câblage : construction au montage du renderer, reconstruction dans `configure` quand `csm`,
-`shadows` ou la taille des cartes bougent, `follow(camera)` par panneau dans `dressPane` (chaque
-vue d'un quadrant veut ses propres bandes), `aim` depuis `tuneShadows`, libération à la fermeture.
+`shadows` ou la taille des cartes bougent, `follow(camera)` par panneau dans `dressPane` et sur
+chaque rendu hors écran (film, capture, validation), `aim` depuis `tuneShadows`, habillage limité
+aux nœuds qui ont changé plus les lots instanciés, libération à la fermeture.
+
+`follow` répond si les bandes ont bougé, et cette réponse remonte par `dressPane` : c'est ce qui
+dit à la frame que ses cartes d'ombre valent une passe. Sans ça un orbite — qui déplace les
+bandes sans rien changer d'autre — aurait affiché des ombres périmées, la frame ne dessinant la
+passe d'ombres que sur `shadowsStale`.
+
+L'export jeu honore `csm` : `webRender` construit les mêmes cascades quand la politique portée
+par le manifeste le demande. Sans ça un projet exporté aurait perdu ses cascades en silence.
 
 **Non mesuré** : le coût réel des trois passes de profondeur. Aucun banc GPU n'a été lancé.
+
+**Limites connues, écrites plutôt que découvertes plus tard** :
+
+- `CSM._injectInclude` réécrit `ShaderChunk.lights_fragment_begin` pour tout le processus et
+  l'addon ne le restaure jamais. `release` rend la scène, pas le processus. Sans effet visible :
+  le chunk est gardé par `#ifdef USE_CSM`.
+- `CSM.shaders` est une `Map` forte : un matériau habillé y reste jusqu'à la libération, même si
+  son nœud a disparu entre-temps.
+- Le splat de relief et les cascades écrivent tous deux dans `onBeforeCompile`. Les deux se
+  composent — le splat réécrit `map_fragment`, les cascades lisent `lights_fragment_begin` — et
+  `release` ne rend un patch que si celui posé est encore le nôtre. Reste un ordre fragile si
+  `bindReliefSplat` s'exécute pour la première fois APRÈS un habillage.
 
 ### 1.3 — Anisotropie
 
@@ -132,6 +159,11 @@ Le sélecteur est donc dans l'espace 3D des préférences, avec la copie demand�
 contrôle. Le verrou « pas de switch en direct » tient **par construction** : le moteur est lu au
 montage du viewport et jamais relu ; l'aide le dit. Mettre le choix dans le projet demanderait un
 champ de manifeste et sa validation — hors périmètre de cette étape, à décider.
+
+Deux revues sur trois ont demandé de ne pas livrer le réglage du tout tant qu'Avancé ne dessine
+rien. Le spec le demande à cette étape, donc il est livré — mais son aide dit désormais en toutes
+lettres que le moteur Avancé n'est pas encore construit et que le choisir dessine en Compatible.
+Un réglage qui promet sans tenir est le défaut que ces revues visaient.
 
 ### Registre post-processing
 

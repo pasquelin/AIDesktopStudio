@@ -63,6 +63,9 @@ export abstract class SceneRendererFlight extends SceneRendererFilm {
       // Only a perspective one is lent an aspect, and only for the rounding: the size asked for
       // keeps the view's own shape, so an orthographic frustum is already framed for it.
       if (camera instanceof PerspectiveCamera) loan.frame(camera)
+      // The bands are cut out of the camera that draws: an off-screen pass never goes through
+      // `dressPane`, and one left fitted to the editor's own view lights this frame from it.
+      this.cascades?.follow(camera)
       const composed = this.viewport.drawScene({
         scene: this.viewport.scene,
         camera,
