@@ -136,7 +136,7 @@ export type LocalBackend = {
  * What a caller may say about the bytes it is replacing an asset's file with. `converts` is the
  * opt-out of `refuseFormatChange`, and it is deliberately not a default — see that guard.
  */
-export type ReplaceOptions = {
+type ReplaceOptions = {
   probe?: MediaProbe
   converts?: true
 }

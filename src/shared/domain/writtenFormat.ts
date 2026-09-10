@@ -24,7 +24,7 @@ function foldExtension(extension: string): string {
 }
 
 /** The format a file name claims, folded to one spelling per encoding. */
-export function writtenFormatOf(fileName: string): string {
+function writtenFormatOf(fileName: string): string {
   return foldExtension(extensionOf(fileName))
 }
 

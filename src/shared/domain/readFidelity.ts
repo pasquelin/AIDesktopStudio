@@ -13,7 +13,7 @@
  */
 export type ReadFidelity = 'faithful' | 'reduced' | 'unknown'
 
-export const READ_FIDELITIES: readonly ReadFidelity[] = ['faithful', 'reduced', 'unknown']
+const READ_FIDELITIES: readonly ReadFidelity[] = ['faithful', 'reduced', 'unknown']
 
 export function isReadFidelity(value: unknown): value is ReadFidelity {
   return READ_FIDELITIES.some(fidelity => fidelity === value)
