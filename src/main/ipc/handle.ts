@@ -166,6 +166,7 @@ type ChannelMethod = {
   [CHANNELS.assetsSaveAnimation]: StudioBridge['assets']['saveAnimation']
   [CHANNELS.assetsReadLayered]: StudioBridge['assets']['readLayered']
   [CHANNELS.assetsSaveTexture]: StudioBridge['assets']['saveTexture']
+  [CHANNELS.assetsShowResource]: StudioBridge['assets']['showResource']
   [CHANNELS.texturesInstallBundled]: StudioBridge['assets']['installBundledTextures']
   [CHANNELS.charactersInstallBundled]: StudioBridge['assets']['installBundledCharacter']
   [CHANNELS.assetsExtractTextures]: StudioBridge['assets']['extractTextures']

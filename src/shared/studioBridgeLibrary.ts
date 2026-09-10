@@ -27,7 +27,6 @@ import type { GitDiff } from './domain/gitDiff'
 import type { InstalledCheckerTexture } from './domain/checkerTexture'
 import type { GameExportOutcome, GameExportRequest } from './domain/gameExport'
 import type { PathKind } from './domain/settingsRegistry'
-import type { RecoveryDraft, RecoveryEntry, RecoveryWrite } from './domain/recovery'
 import type { SyncOutcome, SyncPlan, SyncPolicy } from './domain/sync'
 import type { Unsubscribe } from './ipcEvents'
 import type {
@@ -166,32 +165,6 @@ export type StudioBridgeLibrary = {
      * a scene points at and the catalogue no longer holds.
      */
     export: (request: GameExportRequest) => Promise<GameExportOutcome | null>
-  }
-
-  /**
-   * Unsaved work, held where a crash cannot take it — see `RECOVERY_FOLDER`.
-   *
-   * A store of its own beside `documents`, and it has to be: what a document WRITE puts on disk is
-   * the user's file, and using it as a net is how simply opening a video came to create an
-   * `.otio` beside it. Nothing written here is ever listed, opened, or taken for the work itself.
-   */
-  recovery: {
-    /**
-     * Writes one document's unsaved state. Answers `over-budget` when the project's recovery has
-     * grown past its ceiling — a SENTENCE, never an eviction: every entry may be the only copy
-     * of somebody's afternoon.
-     */
-    write: (draft: RecoveryDraft) => Promise<RecoveryWrite>
-    /** What is waiting, newest first — enough to offer it without opening anything. */
-    list: () => Promise<RecoveryEntry[]>
-    read: (documentId: string) => Promise<RecoveryDraft | null>
-    /** Drops one entry: what a save that COVERS it asks for, and a confirmed discard. */
-    clear: (documentId: string) => Promise<void>
-    /**
-     * Whether to bring back what is waiting. OFFERED, never taken: a person who says no keeps
-     * every entry — it is still the only copy of that work — and is asked again next time.
-     */
-    confirmRestore: (count: number) => Promise<boolean>
   }
 
   documents: {
@@ -361,6 +334,16 @@ export type StudioBridgeLibrary = {
      * user pointed at would destroy pixels the studio did not author.
      */
     saveTexture: (request: SaveTextureRequest) => Promise<Asset>
+    /**
+     * Brings a durable internal resource — a derived channel, an unpacked map — out into the
+     * project's own tree, MOVED and never copied: the project weighs the same afterwards, and
+     * the document that cites it goes on drawing it, citing an identity rather than a path.
+     *
+     * The pair of the hiding, and it has to exist: a resource nothing can bring back out is a
+     * resource the user has lost. Answers the row as it now stands; one already out comes back
+     * unchanged.
+     */
+    showResource: (assetId: string) => Promise<Asset>
     /**
      * Puts the working textures the app ships with into the open project, and answers what they
      * became. Idempotent: a project that already holds them keeps the assets it has, ids

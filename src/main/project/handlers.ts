@@ -32,6 +32,7 @@ import { fileFactsOf } from './fileFacts'
 import { projectFileDependents } from './fileDependents'
 import { registerFileUseHandlers } from './fileUseHandlers'
 import { registerRecoveryHandlers } from './recoveryHandlers'
+import { registerResourceHandlers } from './resourceHandlers'
 import { registerAskHandlers } from './askHandlers'
 import { askLeaveWithJobs, askUseOccupiedFolder } from './projectDialogs'
 import { holdsAProject, openFailureKey, orWhenGone } from './store'
@@ -61,7 +62,6 @@ import {
   parseSavePicture,
   parseSavePlayerModule,
   parseGame,
-  parseSaveTexture,
   parseSearchTerm,
 } from './validation'
 export function registerProjectHandlers({
@@ -411,24 +411,7 @@ export function registerProjectHandlers({
       return null // Like a file that is not layered: the guard above answers this same null.
     }
   })
-  handle(CHANNELS.assetsSaveTexture, async (_event, value) => {
-    const request = parseSaveTexture(value)
-    const probe = probePng(request.png) ?? undefined
-    return withoutSourcePath(
-      await assets.importFromBytes(
-        {
-          id: newAssetId(),
-          name: request.name,
-          type: 'image',
-          extension: PNG_EXTENSION,
-          map: request.map,
-          ...(probe ? { probe } : {}),
-          ...(request.derivedFrom ? { derivedFrom: request.derivedFrom } : {}),
-        },
-        request.png,
-      ),
-    )
-  })
+  registerResourceHandlers({ assets, project, newAssetId })
   handle(CHANNELS.assetsExtractTextures, async (_event, value) => {
     const assetId = parseAssetId(value)
     const source = await project.catalog().find(assetId)

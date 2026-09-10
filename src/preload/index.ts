@@ -247,6 +247,7 @@ const bridge: StudioBridge = {
     saveAnimationThumbnail: request => ipcRenderer.invoke(CHANNELS.animationThumbnailSave, request),
     readLayered: assetId => ipcRenderer.invoke(CHANNELS.assetsReadLayered, assetId),
     saveTexture: request => ipcRenderer.invoke(CHANNELS.assetsSaveTexture, request),
+    showResource: assetId => ipcRenderer.invoke(CHANNELS.assetsShowResource, assetId),
     installBundledTextures: () => ipcRenderer.invoke(CHANNELS.texturesInstallBundled),
     installBundledCharacter: level => ipcRenderer.invoke(CHANNELS.charactersInstallBundled, level),
     extractTextures: assetId => ipcRenderer.invoke(CHANNELS.assetsExtractTextures, assetId),

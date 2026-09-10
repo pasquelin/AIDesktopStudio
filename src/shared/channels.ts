@@ -172,6 +172,7 @@ export type Channels = {
   /** Lands the `.glb` a 3D file was converted into, keeping the original. See `ConvertMeshRequest`. */
   assetsSaveConverted: 'assets:save-converted'
   assetsReadLayered: 'assets:read-layered'
+  assetsShowResource: 'assets:show-resource'
   assetsSaveTexture: 'assets:save-texture'
   texturesInstallBundled: 'textures:install-bundled'
   charactersInstallBundled: 'characters:install-bundled'
