@@ -22,6 +22,10 @@ Generate and edit images, videos, 3D models, audio, textures and skyboxes — in
   <img src="site/assets/images/studio-3d.png" alt="AI Desktop Studio in the Modelling workspace: the asset library and the project explorer on the left, a rigged robot character standing in the model workshop in the centre with its skeleton drawn over it, and the inspector on the right showing its mesh counts, its skeleton and its attachment points" width="900">
 </div>
 
+<div align="center">
+  <img src="site/assets/images/studio-scene.webp" alt="The same studio with a third-person level open: blocked-out platforms in the viewport, the character selected and drawn in wireframe, and the scene environment, background and post-processing stack in the inspector" width="900">
+</div>
+
 ---
 
 ## Documentation
@@ -60,47 +64,47 @@ to come.
 
 ## The workspaces
 
-**Home** — the project shelf, the tool cards, and a running account of which of the thirty-one operations already have a model on this machine.
+Above: the model workshop, and a scene built from the third-person starter. The rest, one panel
+arrangement per kind of work.
 
-<div align="center">
-  <img src="site/assets/images/studio-accueil.webp" alt="The Home surface: the project shelf on the left, the tool cards in the centre, and panels reporting installed models, connected services and per-workspace coverage" width="900">
-</div>
-
-**Image** — a layered canvas with rulers, selection and the document, layer and transform properties in the inspector.
-
-<div align="center">
-  <img src="site/assets/images/studio-image.webp" alt="The Image workspace: a render of the robot open on a layered canvas over a transparency checkerboard, the tool column on the left, document and layer properties on the right" width="900">
-</div>
-
-**Video** — source and programme viewers side by side, a real timeline underneath, and the generation form on the left.
-
-<div align="center">
-  <img src="site/assets/images/studio-video.webp" alt="The Video workspace: source and programme viewers above a video and audio timeline, with a text-to-video generation form on the left" width="900">
-</div>
-
-**Modelling** — a scene, its lighting, its post-processing stack, and every object reachable from the inspector.
-
-<div align="center">
-  <img src="site/assets/images/studio-scene.webp" alt="The Modelling workspace with a third-person level open: blocked-out platforms in the viewport, the character selected and drawn in wireframe, and the scene environment, background and post-processing stack in the inspector" width="900">
-</div>
-
-**Code** — behaviour written script by script against the runtime, with a model able to rewrite the file in place.
-
-<div align="center">
-  <img src="site/assets/images/studio-code.webp" alt="The Code workspace: a TypeScript player script open in the editor, and a code-rewrite generation panel on the left targeting that same file" width="900">
-</div>
-
-**Audio** — a spectrum, a clip editor and a multitrack montage, working on samples.
-
-<div align="center">
-  <img src="site/assets/images/studio-audio.webp" alt="The Audio workspace: a frequency spectrum above a clip editor, and three audio tracks on the timeline below" width="900">
-</div>
-
-**Skyboxes** — a panorama, the sun that goes with it, and test objects lit by it on the spot.
-
-<div align="center">
-  <img src="site/assets/images/studio-skyboxes.webp" alt="The Skyboxes workspace: a mountain panorama projected around two test spheres, one matte and one mirrored, with sun, adjustment and environment controls in the inspector" width="900">
-</div>
+<table>
+<tr>
+<td width="50%" valign="top">
+<b>Home</b><br>
+<sub>The project shelf, the tools, and what your models already cover.</sub><br><br>
+<img src="site/assets/images/studio-accueil.webp" alt="The Home surface: the project shelf on the left, the tool cards in the centre, and panels reporting installed models, connected services and per-workspace coverage" width="430">
+</td>
+<td width="50%" valign="top">
+<b>Image</b><br>
+<sub>A layered canvas, with document, layer and transform in the inspector.</sub><br><br>
+<img src="site/assets/images/studio-image.webp" alt="The Image workspace: a render of the robot open on a layered canvas over a transparency checkerboard, the tool column on the left, document and layer properties on the right" width="430">
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+<b>Video</b><br>
+<sub>Source and programme viewers, over a timeline that decodes for real.</sub><br><br>
+<img src="site/assets/images/studio-video.webp" alt="The Video workspace: source and programme viewers above a video and audio timeline, with a text-to-video generation form on the left" width="430">
+</td>
+<td width="50%" valign="top">
+<b>Code</b><br>
+<sub>Behaviour written script by script, and rewritten in place by a model.</sub><br><br>
+<img src="site/assets/images/studio-code.webp" alt="The Code workspace: a TypeScript player script open in the editor, and a code-rewrite generation panel on the left targeting that same file" width="430">
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+<b>Audio</b><br>
+<sub>A spectrum, a clip editor and a multitrack montage, working on samples.</sub><br><br>
+<img src="site/assets/images/studio-audio.webp" alt="The Audio workspace: a frequency spectrum above a clip editor, and three audio tracks on the timeline below" width="430">
+</td>
+<td width="50%" valign="top">
+<b>Skyboxes</b><br>
+<sub>A panorama, the sun that goes with it, and test objects lit on the spot.</sub><br><br>
+<img src="site/assets/images/studio-skyboxes.webp" alt="The Skyboxes workspace: a mountain panorama projected around two test spheres, one matte and one mirrored, with sun, adjustment and environment controls in the inspector" width="430">
+</td>
+</tr>
+</table>
 
 ---
 
