@@ -7,7 +7,6 @@ import { applyShadowPolicy } from '../scene/shadows'
 import { token } from '../core/palette'
 import { mountRenderer } from '../render/mountRenderer'
 import { type RenderDriver, type StudioRenderer } from '../render/renderDriver'
-import { createGpuTimer, isGpuTimerContext } from './gpuTimer'
 import { ViewportMounting } from './ViewportMounting'
 
 export abstract class ViewportSurface extends ViewportMounting {
@@ -32,7 +31,7 @@ export abstract class ViewportSurface extends ViewportMounting {
     const canvas = this.canvasIn(host)
     const renderer = this.rendererFor(canvas)
     this.renderer = renderer
-    this.gpuTimer = gpuTimerFor(renderer)
+    this.gpuTimer = this.renderDriver.frameTimer(renderer)
     this.holdFramesUntilReady(renderer)
     this.mountControls(canvas)
     this.mountNavigation(host)
@@ -102,7 +101,16 @@ export abstract class ViewportSurface extends ViewportMounting {
       this.rendererReady = true
       return
     }
-    this.rendererSettling = this.settleRenderer(settling)
+    this.rendererSettling = this.settleRenderer(renderer, settling)
+  }
+
+  /**
+   * How many samples the card may take across a texel's footprint, or `1` before there is a
+   * card to ask. Read here by the three engines that build a texture cache, so none of them
+   * has to know where its renderer keeps the answer.
+   */
+  get anisotropy(): number {
+    return this.renderer ? this.renderDriver.maxAnisotropy(this.renderer) : 1
   }
 
   /** Whether the renderer may be drawn with at all — false while a node backend comes up. */
@@ -110,21 +118,27 @@ export abstract class ViewportSurface extends ViewportMounting {
     return this.rendererReady
   }
 
-  /** Resolves once this viewport may draw. Already settled where the engine needs no backend. */
+  /**
+   * Resolves once the backend has ANSWERED — not once it can draw. A refusal settles too, and
+   * leaves `canDraw` false: whoever waits has to read that before it touches the GPU.
+   */
   settled(): Promise<void> {
     return this.rendererSettling ?? Promise.resolve()
   }
 
-  private async settleRenderer(settling: Promise<void>): Promise<void> {
+  private async settleRenderer(renderer: StudioRenderer, settling: Promise<void>): Promise<void> {
     try {
       await settling
     } catch (error) {
       // Nothing to fall back to from here: the canvas is built and the scene hangs off this
       // renderer. The panel stays empty and the journal says why, which beats throwing into a
-      // mount nobody awaited.
+      // mount nobody awaited. `canDraw` stays false, so nothing draws into a dead backend.
       traceFailure('render.fallback', 'gpu', error)
       return
     }
+    // The one it was waiting for, not whichever is mounted now: a panel closed and reopened
+    // while a backend came up would otherwise arm the NEW renderer on the OLD one's answer.
+    if (this.renderer !== renderer) return
     this.rendererReady = true
     this.onResize()
     this.requestRender()
@@ -206,12 +220,13 @@ export abstract class ViewportSurface extends ViewportMounting {
     this.disposeInset()
 
     const canvas = this.renderer?.domElement
-    // The Compatible engine alone can give its context back before it is collected; a node
-    // renderer holds a device the browser reclaims with the page.
     const renderer = this.renderer
-    if (renderer && 'forceContextLoss' in renderer) renderer.forceContextLoss()
+    if (renderer) this.renderDriver.releaseContext(renderer)
     renderer?.dispose()
     this.renderer = null
+    // Both, or a second mount of this engine would draw on the first renderer's permission.
+    this.rendererReady = false
+    this.rendererSettling = null
     this.gpuTimer = null
 
     // The canvas goes with the engine that made it: left behind, the next mount would stack a
@@ -284,17 +299,4 @@ export abstract class ViewportSurface extends ViewportMounting {
     this.fitProjection()
     this.requestRender()
   }
-}
-
-/**
- * The frame timer, where the engine has one.
- *
- * 🛑 `EXT_disjoint_timer_query_webgl2` is the Compatible engine's, and asking a node renderer
- * for its context at all THROWS until its backend is up — which is a beat after the mount that
- * would ask. A frame drawn on the Advanced engine is therefore untimed for now.
- */
-function gpuTimerFor(renderer: StudioRenderer): ReturnType<typeof createGpuTimer> | null {
-  if (!('capabilities' in renderer)) return null
-  const context = renderer.getContext()
-  return isGpuTimerContext(context) ? createGpuTimer(context) : null
 }

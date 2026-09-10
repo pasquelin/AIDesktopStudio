@@ -6,12 +6,7 @@ import { createRefCache, type RefCache } from '../core/refCache'
 import { createGpuPipeline, type GpuPipeline } from '../gpu/gpuPipeline'
 import { reportFailure } from '@/services/diagnostics'
 import { createTextureBinding, type TextureBinding } from '../scene/textureBinding'
-import {
-  createTextureCache,
-  maxAnisotropyOf,
-  type TextureCache,
-  type TextureSource,
-} from '../scene/textureCache'
+import { createTextureCache, type TextureCache, type TextureSource } from '../scene/textureCache'
 import { type ViewportEnvironment } from '../viewport/environment'
 import { createTestObjects, type TestObjects } from '../viewport/testObjects'
 import { aimAlong } from '../viewport/lookAround'
@@ -125,7 +120,7 @@ export class SkyboxRenderer {
       (assetId, error) => reportFailure('skybox.source', assetId, error),
       options.assetVersion,
       options.livePreview,
-      () => maxAnisotropyOf(this.viewport.gl),
+      () => this.viewport.anisotropy,
     )
     // The reference, the race and the version are all the binding's: written here too, the sky
     // would be the third copy of a rule the studio already keeps in one place.

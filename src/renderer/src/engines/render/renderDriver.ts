@@ -2,10 +2,15 @@
  * What DRAWS, behind one interface — the seam between the studio's engines and the graphics API
  * underneath them.
  *
- * Five things depend on which API is running, and nothing else does: building the renderer,
- * reading its pixels back, composing a stack, prefiltering an environment, and patching the
- * standard material. Everything else in `engines/` speaks three.js objects, which both APIs
+ * Everything that depends on which API is running is HERE, and nothing outside asks: building
+ * the renderer, reading its pixels back, composing a stack, prefiltering an environment,
+ * patching the standard material, and the four capabilities the two engines keep in different
+ * places or not at all. Everything else in `engines/` speaks three.js objects, which both APIs
  * share — a scene, a camera, a light, a geometry and a render target are the same on both sides.
+ *
+ * 🛑 A feature-detect written at a call site is what this exists to prevent: `'capabilities' in
+ * renderer` scattered over the tree is five copies of one question, each with its own comment,
+ * and none of them findable from here.
  *
  * The same shape as `game/ports/`: the interface here, each implementation in a file of its own.
  */
@@ -16,6 +21,7 @@ import type { ViewportEnvironment } from '../viewport/environment'
 import type { MaterialUniforms } from '../material/materialShader'
 import type { PostComposerOptions } from '../postfx/PostComposer'
 import type { SceneComposer } from './sceneComposer'
+import type { GpuTimer } from '../viewport/gpuTimer'
 
 /**
  * What the studio draws with, whichever engine built it.
@@ -75,6 +81,23 @@ export type RenderDriver = {
     uniforms: MaterialUniforms,
     onMissingAnchor: (anchor: string) => void,
   ) => void
+  /**
+   * How many samples an off-screen target may be antialiased to. ZERO on a node renderer: it
+   * sizes the attachments of a render target itself, and has no context to ask.
+   */
+  maxSamples: (renderer: StudioRenderer) => number
+  /**
+   * How many samples the card may take across a texel's footprint. The two engines keep the
+   * same answer in two places — under `capabilities` on one, on the renderer on the other.
+   */
+  maxAnisotropy: (renderer: StudioRenderer) => number
+  /**
+   * The frame timer, or nothing. `EXT_disjoint_timer_query_webgl2` is the Compatible engine's,
+   * and asking a node renderer for its context at all THROWS until its backend is up.
+   */
+  frameTimer: (renderer: StudioRenderer) => GpuTimer | null
+  /** Gives the context back before it is collected. A node renderer holds a device instead. */
+  releaseContext: (renderer: StudioRenderer) => void
 }
 
 /**
@@ -91,20 +114,4 @@ export function drawInto(renderer: StudioRenderer, target: WebGLRenderTarget | n
   const restore = (): void => renderer.setRenderTarget(previous as WebGLRenderTarget | null)
   renderer.setRenderTarget(target)
   return restore
-}
-
-/**
- * How many samples an off-screen target may be antialiased to.
- *
- * The ceiling comes from three rather than from `gl.MAX_SAMPLES`, which the WebGL1 typing has no
- * name for. ZERO on a node renderer: it sizes the attachments of a render target itself, and has
- * no context to ask.
- */
-export function maxSamplesOf(renderer: StudioRenderer): number {
-  if (!('capabilities' in renderer)) return 0
-  const gl = renderer.getContext()
-  return Math.max(
-    0,
-    Math.min(Number(gl.getParameter(gl.SAMPLES) ?? 0), renderer.capabilities.maxSamples),
-  )
 }

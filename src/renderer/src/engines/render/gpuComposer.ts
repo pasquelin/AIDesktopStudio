@@ -10,30 +10,82 @@
  * out rather than refused: a stack carries what a document says, and an engine cannot make a
  * document wrong.
  */
-import type { RenderTarget, Renderer } from 'three/webgpu'
-import { planStack, POST_EFFECTS, type PostEffect } from '@shared/domain/postProcessing'
+import { Vector4, type WebGLRenderTarget } from 'three'
+import type { RenderTarget, WebGPURenderer } from 'three/webgpu'
+import {
+  planStack,
+  POST_EFFECTS,
+  stackShapeKey,
+  type PostEffect,
+} from '@shared/domain/postProcessing'
 import { paramNumber } from '../postfx/uniforms'
 import { heaviestCost } from '../postfx/postPlan'
 import { gpuBudgetFor, gpuSamplesOf, type GpuBudget } from './gpuPostQuality'
 import type { GpuModule } from './gpuModule'
+import { drawInto } from './renderDriver'
 import type { ComposerJob, SceneComposer } from './sceneComposer'
 
 type Occlusion = ReturnType<GpuModule['gtao']['ao']>
 
 /** One built chain, kept per shape of stack and per surface, as the Compatible one keeps its own. */
 type GpuChain = {
+  /**
+   * The camera the pass and the occlusion were BUILT with. A node chain bakes it in where the
+   * GL one rebinds it per draw, so a surface handed another camera — a film whose shot list
+   * changes camera mid-way — needs the chain built again rather than reused.
+   */
+  camera: ComposerJob['camera']
   pipeline: { render: () => void; dispose: () => void }
+  /** The scene pass, freed by hand: `RenderPipeline.dispose` frees its quad material and no target. */
+  pass: { dispose: () => void }
   /** Written before every draw: the nodes read them, so a slider moves a number and nothing else. */
   apply: (effects: readonly PostEffect[], budget: GpuBudget, width: number, height: number) => void
 }
 
-export function createGpuComposer(gpu: GpuModule, renderer: Renderer): SceneComposer {
+export function createGpuComposer(gpu: GpuModule, renderer: WebGPURenderer): SceneComposer {
   const chains = new Map<string, GpuChain>()
+  // Scratch, so a frame allocates nothing: `draw` runs once per surface, per image — the same
+  // reason `PostComposer` keeps its own held rectangles as fields.
+  const heldViewport = new Vector4()
+  const heldScissor = new Vector4()
+
+  /**
+   * Points the renderer at where this job lands, and hands back the call that puts back what
+   * was there. Held and restored around every draw, as `PostComposer.hold`/`restore` does: this
+   * runs INSIDE the pane loop, which has already set a scissor for the pane after this one.
+   */
+  const aimAt = (job: ComposerJob): (() => void) => {
+    renderer.getViewport(heldViewport)
+    renderer.getScissor(heldScissor)
+    const heldScissorTest = renderer.getScissorTest()
+    const restoreTarget = drawInto(renderer, job.target)
+    // 🛑 The OUTPUT target and not only the render target: a `PassNode` sizes its own buffers
+    // from `getOutputRenderTarget()` when there is one and from the DRAWING BUFFER when there
+    // is not. Left unsaid, a film at 1920×1080 would compose out of a G-buffer the size of the
+    // canvas behind it — the GL chain is compiled at the job's own size for the same reason.
+    renderer.setOutputRenderTarget(asNodeTarget(job.target))
+    const restore = (): void => {
+      renderer.setOutputRenderTarget(null)
+      restoreTarget()
+      renderer.setViewport(heldViewport)
+      renderer.setScissor(heldScissor)
+      renderer.setScissorTest(heldScissorTest)
+    }
+    if (!job.rect) return restore
+    renderer.setViewport(job.rect.x, job.rect.y, job.rect.width, job.rect.height)
+    renderer.setScissor(job.rect.x, job.rect.y, job.rect.width, job.rect.height)
+    renderer.setScissorTest(true)
+    return restore
+  }
   /** Which surface draws through which chain, so a closed panel frees what only it was using. */
   const bound = new Map<string, string>()
 
   const free = (key: string): void => {
-    chains.get(key)?.pipeline.dispose()
+    const chain = chains.get(key)
+    chain?.pipeline.dispose()
+    // The MRT the scene pass draws into is a full-frame colour, normal and depth buffer, and
+    // nothing in `RenderPipeline.dispose` reaches it — evicted chains would leak one each.
+    chain?.pass.dispose()
     chains.delete(key)
   }
 
@@ -42,27 +94,37 @@ export function createGpuComposer(gpu: GpuModule, renderer: Renderer): SceneComp
       const plan = planStack(job.stack)
       const effects = plan.effects.filter(runsOnGpu)
       if (effects.length === 0 || job.width < 1 || job.height < 1) {
-        aimAt(renderer, job)
-        renderer.render(job.scene, job.camera)
+        const restore = aimAt(job)
+        try {
+          renderer.render(job.scene, job.camera)
+        } finally {
+          restore()
+        }
         return
       }
 
       // The SURFACE belongs to the key: a node chain holds the pass that draws the scene, and
       // two panes sharing one would each see the other's camera.
-      const key = `${plan.shapeKey}#${job.surface}`
+      const key = `${plan.shapeKey}${SURFACE_MARK}${job.surface}`
+      const held = chains.get(key)
+      if (held && held.camera !== job.camera) free(key)
       const chain = chains.get(key) ?? build(gpu, renderer, job, effects)
       chains.set(key, chain)
       bound.set(job.surface, key)
       chain.apply(effects, gpuBudgetFor(heaviestCost(effects), job.quality), job.width, job.height)
 
-      aimAt(renderer, job)
-      chain.pipeline.render()
+      const restore = aimAt(job)
+      try {
+        chain.pipeline.render()
+      } finally {
+        restore()
+      }
     },
 
     sweep: live => {
-      const shapes = new Set(live.map(stack => planStack(stack).shapeKey))
+      const shapes = new Set(live.map(stackShapeKey))
       for (const key of [...chains.keys()]) {
-        if (!shapes.has(key.split('#')[0] ?? '')) free(key)
+        if (!shapes.has(key.slice(0, key.indexOf(SURFACE_MARK)))) free(key)
       }
     },
 
@@ -88,7 +150,7 @@ export function createGpuComposer(gpu: GpuModule, renderer: Renderer): SceneComp
  */
 function build(
   gpu: GpuModule,
-  renderer: Renderer,
+  renderer: WebGPURenderer,
   job: ComposerJob,
   effects: readonly PostEffect[],
 ): GpuChain {
@@ -110,7 +172,9 @@ function build(
   )
 
   return {
+    camera: job.camera,
     pipeline,
+    pass: scene,
     apply: (held, budget, width, height) => {
       const asked = held.find(one => one.effect === 'gtao')
       if (occlusion && asked) applyOcclusion(occlusion, asked, budget, width, height)
@@ -137,18 +201,18 @@ function applyOcclusion(
   occlusion.setSize(width, height)
 }
 
+/** What tells a shape from the surface it was built for, in a chain key. */
+const SURFACE_MARK = '#'
+
+/**
+ * `as`: the studio allocates `WebGLRenderTarget`, which extends the `RenderTarget` a node
+ * renderer takes — three declares the pair apart and both engines draw into the same object.
+ */
+function asNodeTarget(target: WebGLRenderTarget | null): RenderTarget | null {
+  return target as unknown as RenderTarget | null
+}
+
 /** Whether the Advanced engine can build this one at all — the registry answers, nothing else. */
 function runsOnGpu(effect: PostEffect): boolean {
   return POST_EFFECTS[effect.effect].engines.includes('gpu')
-}
-
-/** Where on the canvas this job lands. Restored by the caller's frame, as on the GL side. */
-function aimAt(renderer: Renderer, job: ComposerJob): void {
-  // `as`: the studio allocates `WebGLRenderTarget`, which extends the `RenderTarget` a node
-  // renderer takes — three declares the pair apart and both engines draw into the same object.
-  renderer.setRenderTarget((job.target as RenderTarget | null) ?? null)
-  if (!job.rect) return
-  renderer.setViewport(job.rect.x, job.rect.y, job.rect.width, job.rect.height)
-  renderer.setScissor(job.rect.x, job.rect.y, job.rect.width, job.rect.height)
-  renderer.setScissorTest(true)
 }

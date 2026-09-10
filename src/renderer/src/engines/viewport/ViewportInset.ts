@@ -1,5 +1,5 @@
 import { LinearSRGBColorSpace, NoToneMapping, SRGBColorSpace, WebGLRenderTarget } from 'three'
-import { maxSamplesOf, type StudioRenderer } from '../render/renderDriver'
+import type { StudioRenderer } from '../render/renderDriver'
 import { aspectLoan } from './aspectLoan'
 import { glRect } from './panes'
 import type { InsetPane, InsetBlit } from './viewportEngineSupport1'
@@ -31,7 +31,8 @@ export abstract class ViewportInset extends ViewportDrawing {
 
     held?.dispose()
     // What the DRAWING BUFFER is antialiased to, held to what the engine can offer.
-    const target = new WebGLRenderTarget(width, height, { samples: maxSamplesOf(renderer) })
+    const samples = this.renderDriver.maxSamples(renderer)
+    const target = new WebGLRenderTarget(width, height, { samples })
     // Linear, which is what a render into a target writes whatever the texture says — three picks
     // the WORKING space for anything but the canvas (`WebGLRenderer`, the `colorSpace` it hands
     // its output pass). Declared rather than left at the default so the quad below does not

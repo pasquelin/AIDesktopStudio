@@ -14,16 +14,23 @@
  *   specular tint three derives from that same colour, the Advanced engine darkens a little of
  *   what the Compatible one leaves alone.
  *
+ * The two remapped maps are read through nodes of our own, so they carry their own placement —
+ * `placedUv`. Left to the default `uv()` they would read untiled while every other map of the
+ * material tiles, and the cavity mask beside them would drift out of step.
+ *
  * The uniforms are the ENGINE's — the very objects `materialShader.createUniforms` builds and the
  * material window writes into. A `Vector2` is shared by reference and needs nothing; a scalar and
  * a texture are replaced rather than written into, so those are read back on every render.
  */
-import { Color, Texture, type MeshStandardMaterial } from 'three'
+import { Matrix3, Texture, type MeshStandardMaterial } from 'three'
 import type { MaterialUniforms } from '../material/materialShader'
 import type { GpuModule } from './gpuModule'
 
-/** What the mask samples where no picture is bound. Its intensity is zero there, so it is unlit. */
+/** What a slot samples where no picture is bound. Its `has` uniform is zero there. */
 const NO_MASK = new Texture()
+
+/** The placement of a map with none — no repeat, no offset, no rotation. */
+const NO_TRANSFORM = new Matrix3()
 
 /**
  * Writes the studio's three additions onto a node material.
@@ -37,7 +44,18 @@ export function applyMaterialNodes(
   material: MeshStandardMaterial,
   uniforms: MaterialUniforms,
 ): void {
-  const { float, mix, texture, uniform, uv, vec3 } = tsl
+  const { float, materialColor, mix, texture, uniform, uv, vec3 } = tsl
+
+  /**
+   * Where a map is READ, matrix included. Every PBR map of the window carries a repeat, an
+   * offset and a rotation (`placeMap`), and three applies them for the maps it owns; these
+   * three are read through nodes of our own, so the matrix has to be carried with them or a
+   * tiled roughness reads untiled while the cavity beside it tiles.
+   */
+  const placedUv = (mapOf: () => Texture | null) => {
+    const matrix = uniform(new Matrix3()).onRenderUpdate(() => transformOf(mapOf()))
+    return matrix.mul(vec3(uv(), 1)).xy
+  }
 
   const roughnessRemap = uniform(uniforms.roughnessRemap.value)
   const metalnessRemap = uniform(uniforms.metalnessRemap.value)
@@ -47,7 +65,6 @@ export function applyMaterialNodes(
 
   const roughness = uniform(0).onRenderUpdate(() => material.roughness)
   const metalness = uniform(0).onRenderUpdate(() => material.metalness)
-  const colour = uniform(new Color()).onRenderUpdate(() => material.color)
   const hasRoughnessMap = uniform(0).onRenderUpdate(() => (material.roughnessMap ? 1 : 0))
   const hasMetalnessMap = uniform(0).onRenderUpdate(() => (material.metalnessMap ? 1 : 0))
   const roughnessTexel = texture(NO_MASK).onRenderUpdate(() => material.roughnessMap ?? NO_MASK)
@@ -55,11 +72,13 @@ export function applyMaterialNodes(
 
   // The channels three itself reads: green for roughness, blue for metalness — an ORM picture
   // packs them that way, and reading red would answer with the occlusion.
+  const roughnessRead = roughnessTexel.sample(placedUv(() => material.roughnessMap))
+  const metalnessRead = metalnessTexel.sample(placedUv(() => material.metalnessMap))
   material.roughnessNode = roughness.mul(
-    mix(float(1), mix(roughnessRemap.x, roughnessRemap.y, roughnessTexel.g), hasRoughnessMap),
+    mix(float(1), mix(roughnessRemap.x, roughnessRemap.y, roughnessRead.g), hasRoughnessMap),
   )
   material.metalnessNode = metalness.mul(
-    mix(float(1), mix(metalnessRemap.x, metalnessRemap.y, metalnessTexel.b), hasMetalnessMap),
+    mix(float(1), mix(metalnessRemap.x, metalnessRemap.y, metalnessRead.b), hasMetalnessMap),
   )
 
   // Its own transform and its own uv: the mask sits in no three slot, so nothing computes a
@@ -67,5 +86,14 @@ export function applyMaterialNodes(
   // that do have one.
   const masked = edgeMap.sample(edgeTransform.mul(vec3(uv(), 1)).xy)
   const cavity = float(1).sub(masked.r.mul(edgeIntensity))
-  material.colorNode = colour.mul(cavity)
+  // `materialColor` and not the material's own colour: it is where three multiplies the base
+  // colour MAP in, and a plain uniform here would render every textured material flat.
+  material.colorNode = materialColor.mul(cavity)
+}
+
+/** A map's placement, refreshed as three does before reading it, or the identity for no map. */
+function transformOf(map: Texture | null): Matrix3 {
+  if (!map) return NO_TRANSFORM
+  map.updateMatrix()
+  return map.matrix
 }

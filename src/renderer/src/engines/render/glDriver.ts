@@ -4,13 +4,14 @@
  * A wrapper and nothing else — every call here forwards to the module that already held that
  * work, so a project on `gl` draws exactly what it drew before the driver existed.
  */
-import { PMREMGenerator, WebGLRenderer, type Scene } from 'three'
+import { PMREMGenerator, WebGLRenderer } from 'three'
 import { PostComposer } from '../postfx/PostComposer'
-import { createEnvironment, type EnvironmentPort } from '../viewport/environment'
+import { createEnvironment, ROOM_SIGMA, type EnvironmentPort } from '../viewport/environment'
 import { readRenderPixels } from '../scene/readRenderPixels'
 import { bindUniforms, patchFragment } from '../material/materialShader'
 import { createSkyGrading, type SkyGrading } from '../gpu/skyGrading'
-import type { RenderDriver } from './renderDriver'
+import { createGpuTimer, isGpuTimerContext } from '../viewport/gpuTimer'
+import type { RenderDriver, StudioRenderer } from './renderDriver'
 
 export const glDriver: RenderDriver = {
   engine: 'gl',
@@ -27,6 +28,27 @@ export const glDriver: RenderDriver = {
 
   createEnvironment: (renderer, scene, requestRender) =>
     createEnvironment(glEnvironmentPort(asWebGL(renderer)), scene, requestRender),
+
+  // The ceiling comes from three rather than from `gl.MAX_SAMPLES`, which the WebGL1 typing has
+  // no name for.
+  maxSamples: renderer => {
+    const gl = asWebGL(renderer).getContext()
+    return Math.max(
+      0,
+      Math.min(Number(gl.getParameter(gl.SAMPLES) ?? 0), capsOf(renderer).maxSamples),
+    )
+  },
+
+  // Never under one: three answers 0 — not 1 — on a context without
+  // `EXT_texture_filter_anisotropic`, and 0 is not a number of samples.
+  maxAnisotropy: renderer => Math.max(1, capsOf(renderer).getMaxAnisotropy()),
+
+  frameTimer: renderer => {
+    const context = asWebGL(renderer).getContext()
+    return isGpuTimerContext(context) ? createGpuTimer(context) : null
+  },
+
+  releaseContext: renderer => asWebGL(renderer).forceContextLoss(),
 
   patchMaterial: (material, uniforms, onMissingAnchor) => {
     // Bound once on the material, not per compile: three hands the hook a fresh uniform object
@@ -54,7 +76,7 @@ function glEnvironmentPort(renderer: WebGLRenderer): EnvironmentPort {
 
   return {
     fromEquirectangular: texture => generator.fromEquirectangular(texture),
-    fromScene: scene => generator.fromScene(scene as Scene, ROOM_SIGMA),
+    fromScene: scene => generator.fromScene(scene, ROOM_SIGMA),
     grade: (given, stack) => (grading ??= createSkyGrading(renderer)).of(given, stack) ?? given,
     dispose: () => {
       grading?.dispose()
@@ -64,13 +86,13 @@ function glEnvironmentPort(renderer: WebGLRenderer): EnvironmentPort {
   }
 }
 
-/** How far the neutral room is blurred as it is prefiltered — three's own value for one. */
-const ROOM_SIGMA = 0.04
-
 /**
  * `as`: this driver is only ever handed the renderer it built itself, which is a `WebGLRenderer`
  * — the interface is widened for the Advanced engine, and narrowing it back is what says so.
  */
-function asWebGL(renderer: object): WebGLRenderer {
+function asWebGL(renderer: StudioRenderer): WebGLRenderer {
   return renderer as WebGLRenderer
 }
+
+const capsOf = (renderer: StudioRenderer): WebGLRenderer['capabilities'] =>
+  asWebGL(renderer).capabilities

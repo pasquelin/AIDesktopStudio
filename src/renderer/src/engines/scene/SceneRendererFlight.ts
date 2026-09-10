@@ -1,6 +1,6 @@
 import { localizedError } from '@shared/localizedError'
 import { PerspectiveCamera, WebGLRenderTarget } from 'three'
-import { maxSamplesOf, type StudioRenderer } from '../render/renderDriver'
+import type { StudioRenderer } from '../render/renderDriver'
 import type { MotionId } from '@shared/domain/shortcut'
 import { anglesFromDirection } from '@shared/domain/angles'
 import { aimAlong, turnBy } from '../viewport/lookAround'
@@ -56,7 +56,7 @@ export abstract class SceneRendererFlight extends SceneRendererFilm {
     // Antialiased, unlike a film's frames: a still is looked at, and the resolve happens at the
     // end of `render` — so the read below already has the resolved texture. Capped at four,
     // which is where the eye stops paying for the memory a 4K target multiplies.
-    const samples = Math.min(4, maxSamplesOf(gl))
+    const samples = Math.min(4, this.viewport.driver.maxSamples(gl))
     const target = new WebGLRenderTarget(width, height, { samples })
     const restore = this.hideWorkshop()
     const loan = aspectLoan(width, height)

@@ -184,32 +184,41 @@ Surface 1280×720, qualité `high`, une pile portant GTAO sur les deux moteurs.
 - `submitMs` — ce que le THREAD UI dépense à assembler et enfiler une image, moyenne sur
   60 images après 10 de chauffe. 🛑 **Pas** le coût de l'image sur la carte : les deux `render()`
   rendent la main dès les commandes enfilées.
-- `firstReadbackMs` — la PREMIÈRE lecture de pixels. Elle vide la file, donc elle absorbe aussi
-  ce qui restait à compiler.
-- `readbackMs` — la seconde, une fois plus rien à compiler. Ce qu'un export paie par image.
+- `firstStillMs` — la PREMIÈRE image fixe : `captureStill` en entier. Elle dessine dans une
+  cible, relit les pixels et encode un PNG hors thread, donc elle vide la file — et absorbe du
+  même coup tout ce qui restait à compiler.
+- `stillMs` — la MOYENNE des suivantes, une fois plus rien à compiler. Ce qu'un export paie par
+  image fixe. 🛑 L'encodage PNG est dedans et il est le même sur les deux moteurs : ce chiffre
+  SOUS-ESTIME l'écart entre eux au lieu de le montrer.
 
-| Profil | Moteur | `submitMs` | `firstReadbackMs` | `readbackMs` |
+| Profil | Moteur | `submitMs` | `firstStillMs` | `stillMs` |
 | --- | --- | ---: | ---: | ---: |
-| Un modèle (4 nœuds) | Compatible | 0,045 | 63,3 | 45,2 |
-| Un modèle (4 nœuds) | Avancé | 0,125 | 640,8 | 41,2 |
-| Monde ouvert C5 (20 000 nœuds) | Compatible | 0,080 | 52,8 | 39,3 |
-| Monde ouvert C5 (20 000 nœuds) | Avancé | 0,122 | 60,1 | 40,4 |
+| Un modèle (4 nœuds) | Compatible | 0,050 | 63,9 | 44,47 |
+| Un modèle (4 nœuds) | Avancé | 0,088 | 48,5 | 45,66 |
+| Monde ouvert C5 (20 000 nœuds) | Compatible | 0,087 | 52,8 | 41,18 |
+| Monde ouvert C5 (20 000 nœuds) | Avancé | 0,122 | 65,9 | 42,63 |
+
+`submitMs` est la moyenne de 60 images, `stillMs` celle de 10 images fixes, `firstStillMs` un
+échantillon unique.
 
 **Ce que ces chiffres disent, sans arrangement** :
 
-- **Le moteur Avancé coûte plus cher côté CPU par image** : 0,12 ms contre 0,045–0,080. C'est
-  1,5 à 2,8 fois, et cela reste très en dessous d'un budget d'image.
-- **Il ne se dégrade pas avec la scène** : 0,125 ms sur 4 nœuds et 0,122 ms sur 20 000, quand le
-  Compatible passe de 0,045 à 0,080. Le coût par objet du renderer de nœuds est plat sur ces deux
-  profils. Une seule machine, deux profils : c'est une observation, pas une loi.
-- **La première lecture de l'Avancé est chère — 640,8 ms** — parce qu'elle paie la compilation
-  de tous les pipelines de nœuds du graphe. Le second profil ne la repaie pas (60,1 ms) : les
-  pipelines sont déjà là. **Ce n'est pas un coût de lecture, et il ne doit pas être lu comme tel.**
-- **À chaud, les deux moteurs lisent au même prix** (~40–45 ms) : la lecture est dominée par la
-  synchronisation, pas par l'API.
-- **Aucun seuil de gain n'est atteint sur ces mesures.** Le moteur Avancé n'est, ici, pas plus
-  rapide que le Compatible. Ce qu'il apporte — la qualité d'éclairage et de reflets — n'est pas
-  ce que ce banc mesure, et n'a été comparé par aucune mesure.
+- **Le moteur Avancé coûte plus cher côté CPU par image** : 0,088 contre 0,050 sur un modèle,
+  0,122 contre 0,087 sur le monde ouvert. Soit 1,4 à 1,8 fois. Les deux restent très en dessous
+  d'un budget d'image.
+- **Il monte moins vite avec la scène** : de 4 à 20 000 nœuds, le Compatible passe de 0,050 à
+  0,087 (+74 %) et l'Avancé de 0,088 à 0,122 (+39 %). Il monte quand même. Une machine, deux
+  profils : c'est une observation, pas une loi, et surtout pas une extrapolation.
+- **À chaud, les deux moteurs sortent une image fixe au même prix** (41 à 46 ms) : l'écart est
+  dans le bruit. L'encodage PNG est dedans, identique des deux côtés, et pèse l'essentiel de
+  ces millisecondes — ce chiffre sous-estime donc l'écart entre les moteurs au lieu de le montrer.
+- **`firstStillMs` n'est pas reproductible d'une exécution à l'autre.** Un premier passage sur
+  cette révision a mesuré **640,8 ms** côté Avancé ; celui du tableau en mesure 48,5. La
+  différence est le cache de pipelines du navigateur, pas le moteur. À lire comme un ordre de
+  grandeur du coût de compilation à froid, jamais comme une comparaison.
+- **Aucun seuil de gain n'est atteint.** Sur ces deux profils, le moteur Avancé n'est plus rapide
+  que le Compatible sur aucune des trois mesures. Ce qu'il apporte — la qualité d'éclairage et de
+  reflets — n'est pas ce que ce banc mesure, et n'a été comparé par aucune mesure de ce chantier.
 
 ### 3.1 — Patch matériau en TSL
 
@@ -257,9 +266,10 @@ acheter la même chose sur les deux moteurs. La division de résolution du chaî
 `resolutionScale` du nœud, la part d'échantillons est la même valeur. Cinq tests, dont deux qui
 comparent les deux lectures réglage par réglage.
 
-Une limite honnête : **TRAA n'expose aucun nombre d'échantillons** dans three 0.185 — ses
-échantillons sont des IMAGES, une par gigue d'une séquence fixe. Le seul levier de qualité est
-la correction sous-pixel, et c'est ce que le budget pilote.
+Une limite honnête pour la suite : **TRAA n'expose aucun nombre d'échantillons** dans
+three 0.185 — ses échantillons sont des IMAGES, une par gigue d'une séquence fixe. Son seul
+levier serait la correction sous-pixel. Rien n'est écrit pour lui tant qu'il n'est pas porté :
+un champ de budget que personne ne lit est un champ qui ment.
 
 ### 3.5 — Ce qui a dû être réparé pour que l'Avancé dessine
 
@@ -275,13 +285,22 @@ Trouvés en faisant tourner le banc, pas en lisant le code :
 - Le banc lui-même attendait deux `requestAnimationFrame` : une fenêtre qui n'est pas à l'écran
   n'en reçoit aucun, et le banc restait pendu au lieu de rendre un chiffre.
 
+Et neuf autres trouvés par la revue adverse, tous dans le chemin GPU — les plus graves :
+la lecture de pixels rendait les lignes **paddées à 256 octets et à l'endroit** là où le
+Compatible les rend serrées et à l'envers (toute capture cisaillée et retournée) ; la chaîne
+gelait la **caméra** avec laquelle elle avait été bâtie (un film qui change de caméra en cours
+continuait sur la première) ; `RenderPipeline.dispose` ne libère que son quad, donc chaque
+chaîne évincée fuyait un G-buffer plein écran ; et `colorNode` écrasait la **carte de couleur**
+de base, ce qui aurait rendu tout matériau texturé plat.
+
 ### 3.6 — TRAA : écarté, avec le motif
 
 Le spec le donne en SHOULD, « si le motif GTAO n'a pas révélé de problème ». Il en a révélé un :
 `traa` n'existe pas côté Compatible, donc l'ajouter au catalogue publierait un effet que la
 moitié des projets ne peuvent pas dessiner — et le rendre visible demanderait une bibliothèque
-d'effets consciente du moteur, c'est-à-dire l'UX que le spec met hors périmètre. Le budget
-qualité prévoit déjà son levier ; l'effet attend son jumeau GL ou une UI par moteur.
+d'effets consciente du moteur, c'est-à-dire l'UX que le spec met hors périmètre. Rien n'a été
+laissé en place pour lui : ni son module de nœuds, ni un champ de budget. L'effet attend son
+jumeau GL ou une UI par moteur.
 
 ### 3.7 — Ce que l'Avancé ne fait pas encore, écrit plutôt que découvert
 
@@ -301,7 +320,7 @@ qualité prévoit déjà son levier ; l'effet attend son jumeau GL ou une UI par
   `world:validate` compare déjà deux représentations pixel à pixel ; l'entrée qui compare deux
   MOTEURS n'est pas écrite. Tant qu'elle ne l'est pas, « visuellement équivalent » n'est affirmé
   par personne dans ce rapport.
-- **La capture d'export sur un projet `'gpu'`** : le chemin est mesuré (`readbackMs` EST
+- **La capture d'export sur un projet `'gpu'`** : le chemin est mesuré (`stillMs` EST
   `captureStill`), l'image n'est pas jointe.
 - Les vingt-neuf autres effets, l'aperçu incrusté et la correction de ciel côté Avancé.
 - Le switch en direct du moteur : hors périmètre.

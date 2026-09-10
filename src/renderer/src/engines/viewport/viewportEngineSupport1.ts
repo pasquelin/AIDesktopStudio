@@ -8,7 +8,7 @@ import {
   Vector3,
   type WebGLRenderTarget,
 } from 'three'
-import type { StudioRenderer } from '../render/renderDriver'
+import type { WebGLRenderer } from 'three'
 import { type OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { type GpuPipeline } from '../gpu/gpuPipeline'
 import { type PinchReading } from './pinch'
@@ -40,8 +40,12 @@ export type ViewportEngineOptions = {
    * keeps the loop alive for another frame; returning false lets the viewport go back to sleep.
    */
   onFrame?: (delta: number) => boolean
-  /** Drawn after the scene with `autoClear` off — trihedrons and other screen-space overlays. */
-  onOverlay?: (renderer: StudioRenderer) => void
+  /**
+   * Drawn after the scene with `autoClear` off — trihedrons and other screen-space overlays.
+   * WebGL only: `ViewHelper` is declared against that renderer, and the Advanced engine draws
+   * no overlay yet — `renderOverlay` skips it there rather than casting.
+   */
+  onOverlay?: (renderer: WebGLRenderer) => void
   /**
    * Called just before each pane is drawn, so whoever owns the scene can say how THIS view shows
    * it, and answering whether that changed what the scene wears — which is what tells the frame

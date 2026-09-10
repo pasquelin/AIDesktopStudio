@@ -11,6 +11,3 @@ export const RENDER_ENGINES: readonly RenderEngine[] = ['gl', 'gpu']
 
 /** What every effect written before the Advanced engine existed runs on, and only that. */
 export const GL_ONLY: readonly RenderEngine[] = ['gl']
-
-/** What an effect both engines can build says. One so far: the ground-truth occlusion. */
-export const BOTH_ENGINES: readonly RenderEngine[] = ['gl', 'gpu']

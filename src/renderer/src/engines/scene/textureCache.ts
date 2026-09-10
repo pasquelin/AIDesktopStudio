@@ -142,29 +142,6 @@ async function tiffTexture(bytes: Uint8Array, orientation: PictureOrientation): 
   return texture
 }
 
-/**
- * What of a renderer this reads — narrower than either renderer class, which jsdom cannot build.
- * The two engines put the same answer in two places: under `capabilities` on the Compatible one,
- * on the renderer itself on the Advanced one.
- */
-type AnisotropyHolder =
-  { capabilities: { getMaxAnisotropy: () => number } } | { getMaxAnisotropy: () => number }
-
-/**
- * What a card allows, or `1` before there is a card to ask. Read through here by the three
- * engines that build a cache, so none of them has to know where its renderer keeps it.
- */
-export function maxAnisotropyOf(renderer: AnisotropyHolder | null | undefined): number {
-  if (!renderer) return 1
-  const asked =
-    'capabilities' in renderer
-      ? renderer.capabilities.getMaxAnisotropy()
-      : renderer.getMaxAnisotropy()
-  // Never under one: three answers 0 — not 1 — on a context without
-  // `EXT_texture_filter_anisotropic`, and 0 is not a number of samples.
-  return Math.max(1, asked)
-}
-
 export type TextureCache = {
   /**
    * Takes a reference on an asset read in a given colour space, loading it if nobody holds it
@@ -219,7 +196,7 @@ export function createTextureCache(
    */
   previewOf: (assetId: string) => ImageBitmap | null = () => null,
   /**
-   * How many samples the GPU may take across a texel's footprint — `maxAnisotropyOf`, asked at
+   * How many samples the GPU may take across a texel's footprint — the DRIVER's answer, asked at
    * each load rather than once, since a cache is built before its viewport has a renderer.
    *
    * Absent leaves three's own `1`, which is what a headless test wants and what the studio

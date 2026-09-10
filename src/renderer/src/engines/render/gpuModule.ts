@@ -5,20 +5,18 @@
  * node system on top. Imported at the head of any module the editor always loads, every session
  * would pay for it — so it is asked for beside the adapter, and the answer is remembered.
  *
- * The four are asked for together because they arrive together: a viewport that has the renderer
+ * The three are asked for together because they arrive together: a viewport that has the renderer
  * but not the occlusion node would build a chain it cannot finish.
  */
 import type * as WebGpuModule from 'three/webgpu'
 import type * as TslModule from 'three/tsl'
 import type * as GtaoModule from 'three/addons/tsl/display/GTAONode.js'
-import type * as TraaModule from 'three/addons/tsl/display/TRAANode.js'
 import { askedGpuAdapter, probeGpuAdapter } from './gpuAdapter'
 
 export type GpuModule = {
   webgpu: typeof WebGpuModule
   tsl: typeof TslModule
   gtao: typeof GtaoModule
-  traa: typeof TraaModule
 }
 
 let held: GpuModule | null = null
@@ -46,12 +44,11 @@ export async function loadGpuModule(): Promise<GpuModule | null> {
 async function importGpuModule(): Promise<GpuModule | null> {
   if (!(await probeGpuAdapter())) return null
 
-  const [webgpu, tsl, gtao, traa] = await Promise.all([
+  const [webgpu, tsl, gtao] = await Promise.all([
     import('three/webgpu'),
     import('three/tsl'),
     import('three/addons/tsl/display/GTAONode.js'),
-    import('three/addons/tsl/display/TRAANode.js'),
   ])
-  held = { webgpu, tsl, gtao, traa }
+  held = { webgpu, tsl, gtao }
   return held
 }

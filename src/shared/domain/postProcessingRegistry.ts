@@ -6,7 +6,7 @@
  * those may pull three.js in, so nothing here knows a `Pass` exists — `engines/postfx/` is the
  * one folder that does.
  */
-import { BOTH_ENGINES, GL_ONLY, type RenderEngine } from './renderEngine'
+import { GL_ONLY, RENDER_ENGINES, type RenderEngine } from './renderEngine'
 import {
   BLUR_KINDS,
   HALFTONE_SHAPES,
@@ -126,7 +126,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     slot: 'ao',
     // The one effect both engines build: GLSL `GTAOPass` on the Compatible side, the native
     // `ao()` node on the Advanced one. Same slot, same exclusivity, same parameters.
-    engines: BOTH_ENGINES,
+    engines: RENDER_ENGINES,
     duplicable: false,
     params: {
       radius: slider(0.01, 2, 0.01, 0.25),

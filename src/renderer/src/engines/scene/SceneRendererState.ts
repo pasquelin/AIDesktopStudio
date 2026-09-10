@@ -9,7 +9,6 @@ import {
   type Vector3 as ThreeVector3,
 } from 'three'
 import type { SceneComposer } from '../render/sceneComposer'
-import type { WebGLRenderer } from 'three'
 import { type ViewHelper } from 'three/addons/helpers/ViewHelper.js'
 import type { MotionId } from '@shared/domain/shortcut'
 import { SCHEME_OF, type NavigationScheme } from '@shared/domain/navigationPreset'
@@ -97,9 +96,7 @@ export abstract class SceneRendererState {
     // choice is settled for as long as this panel is open. See `RenderPolicy.engine`.
     engine: () => this.view.engine,
     onFrame: delta => this.advance(delta),
-    // `as`: `ViewHelper` is declared against a `WebGLRenderer` and uses `clearDepth` and
-    // `render`, which both engines have — three types the addon before the node renderer.
-    onOverlay: renderer => this.viewHelper?.render(renderer as WebGLRenderer),
+    onOverlay: renderer => this.viewHelper?.render(renderer),
     onPane: (index, camera) => this.dressPane(index, camera),
     // Before `TransformControls` reads the same event — see `onPaneArmed`, which says why the
     // viewport owns this call rather than a listener of this file.

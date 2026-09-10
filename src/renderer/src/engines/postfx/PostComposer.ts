@@ -21,8 +21,8 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js'
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js'
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js'
 import { planStack, slotOf, type PostEffect, type PostStack } from '@shared/domain/postProcessing'
-import type { ViewportQuality } from '@shared/domain/scene'
 import { QUAD_VERTEX_SHADER } from '@/engines/gpu/passes/quad'
+import type { ComposerJob, SceneComposer } from '../render/sceneComposer'
 import { onePass, type EffectInstance, type ViewInfo } from './effectInstance'
 import { fuseShader, type FusableChunk } from './fuseShader'
 import { createLutCache, type LutCache, type LutSource } from './lutCache'
@@ -31,32 +31,6 @@ import { PostChainCache, resizePostChain, type PostChain as Chain } from './Post
 import { heaviestCost, stepsOf, wantsFloat, type PostStep } from './postPlan'
 import { fusableFor, fusableKind } from './shaders/fusableChunks'
 import { standaloneFor, type BuildContext } from './standaloneEffects'
-
-/**
- * Where on the CANVAS a composition lands, in CSS pixels — `setViewport` and `setScissor`
- * multiply by the device ratio themselves. The `width`/`height` of the job beside it are device
- * pixels; pre-multiplying this rect too would scissor a pane off screen on any HiDPI display.
- */
-type PostRect = { x: number; y: number; width: number; height: number }
-
-export type PostDrawJob = {
-  /** Stable destination identity, independent of dimensions, cameras and temporary targets. */
-  surface: string
-  scene: Scene
-  camera: Camera
-  stack: PostStack
-  /** `null` draws on the canvas — into `rect` when one is given, over the whole of it when not. */
-  target: WebGLRenderTarget | null
-  rect?: PostRect
-  /** The destination, in pixels. The chain may be built smaller — see `budgetFor`. */
-  width: number
-  height: number
-  quality: ViewportQuality
-  /** Whether the world asks for a tone curve. Decides the precision the chain carries. */
-  toneMapped: boolean
-  /** Seconds. What grain and tape jitter advance on — the playhead during a film. */
-  time: number
-}
 
 export type PostComposerOptions = {
   loadLut?: LutSource
@@ -72,7 +46,7 @@ type Applier = EffectInstance['apply']
 const SCRATCH_SCENE = new Scene()
 const SCRATCH_CAMERA = new Camera()
 
-export class PostComposer {
+export class PostComposer implements SceneComposer {
   private readonly chains = new PostChainCache()
   private readonly luts: LutCache
   private readonly output = new OutputPass()
@@ -106,7 +80,7 @@ export class PostComposer {
    * A stack that plans no pass draws straight — which is what the ON/OFF switch and the bypass
    * come down to: no target allocated, no chain compiled for a composition nobody asks to see.
    */
-  draw(job: PostDrawJob): void {
+  draw(job: ComposerJob): void {
     const plan = planStack(job.stack)
     if (plan.effects.length === 0 || job.width < 1 || job.height < 1) {
       this.drawStraight(job)
@@ -209,7 +183,7 @@ export class PostComposer {
    * to end, so no intermediate buffer has to lie about its colour space — and the copy a blit
    * would cost is the one the output pass was going to make anyway.
    */
-  private finish(job: PostDrawJob, read: WebGLRenderTarget): void {
+  private finish(job: ComposerJob, read: WebGLRenderTarget): void {
     const renderer = this.renderer
     const rect = job.rect
 
@@ -227,7 +201,7 @@ export class PostComposer {
   }
 
   /** No composition to draw: the scene, straight into wherever the job pointed. */
-  private drawStraight(job: PostDrawJob): void {
+  private drawStraight(job: ComposerJob): void {
     const renderer = this.renderer
     this.hold()
     try {

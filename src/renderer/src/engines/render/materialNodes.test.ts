@@ -12,13 +12,12 @@ import type { GpuModule } from './gpuModule'
 let gpu: GpuModule
 
 beforeAll(async () => {
-  const [webgpu, tsl, gtao, traa] = await Promise.all([
+  const [webgpu, tsl, gtao] = await Promise.all([
     import('three/webgpu'),
     import('three/tsl'),
     import('three/addons/tsl/display/GTAONode.js'),
-    import('three/addons/tsl/display/TRAANode.js'),
   ])
-  gpu = { webgpu, tsl, gtao, traa }
+  gpu = { webgpu, tsl, gtao }
 })
 
 /** Every uniform of a built graph, which is where the bridge to the engine's own values shows. */
@@ -40,15 +39,6 @@ const holding = (nodes: ReturnType<typeof uniformsOf>, value: unknown): boolean 
   nodes.some(node => node.value === value)
 
 describe('the material patch as nodes', () => {
-  it('gives the standard material the three slots the studio adds', () => {
-    const material = new MeshStandardMaterial()
-    applyMaterialNodes(gpu, material, createUniforms())
-
-    expect(material.roughnessNode).toBeTruthy()
-    expect(material.metalnessNode).toBeTruthy()
-    expect(material.colorNode).toBeTruthy()
-  })
-
   // 🛑 Shared, never copied: the material window writes into these very objects, and a copy
   // would leave the Advanced engine showing the remap the panel opened on for ever.
   it('reads the remaps out of the objects the Compatible engine writes into', () => {

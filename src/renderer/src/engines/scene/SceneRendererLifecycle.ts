@@ -131,7 +131,9 @@ export abstract class SceneRendererLifecycle extends SceneRendererResources {
    */
   private async lightWhenSettled(): Promise<void> {
     await this.viewport.settled()
-    if (this.environment) this.lightMountedScene()
+    // `canDraw` and not only the environment: a backend that REFUSED settles too, and
+    // prefiltering on it would throw inside a call nobody awaited.
+    if (this.environment && this.viewport.canDraw) this.lightMountedScene()
   }
 
   private lightMountedScene(): void {

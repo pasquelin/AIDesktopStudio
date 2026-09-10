@@ -10,12 +10,14 @@
  * - `submitMs` — what the UI THREAD spends assembling and queueing one frame. 🛑 NOT the frame's
  *   cost on the card: both `render()` calls return once the commands are queued, and a figure
  *   calling itself a frame time would be off by whatever the GPU then does unwatched.
- * - `firstReadbackMs` — the FIRST still drawn and read back. It forces the queue empty, so it
- *   also absorbs whatever the engine had left to compile: on a node chain that is every pipeline
- *   of the graph, and reading it as a readback cost would be reading a compile as a copy.
- * - `readbackMs` — the second one, once nothing is left to compile. What an export actually pays
- *   per frame. Apart from the submit on purpose: WebGL reads synchronously and a node renderer
- *   maps a buffer, so folded together they would hide which half moved.
+ * - `firstStillMs` — the FIRST still: `captureStill`, whole. It draws the scene into a target,
+ *   reads the pixels back and encodes a PNG off the thread, so it forces the queue empty — and
+ *   therefore also absorbs whatever the engine had left to compile. On a node chain that is
+ *   every pipeline of the graph, so reading this as a copy cost would be reading a compile.
+ * - `stillMs` — the MEAN of the stills after it, once nothing is left to compile. What an export
+ *   pays per still. 🛑 Two cautions on this one: the PNG encode is inside it and is the same on
+ *   both engines, so it understates the difference rather than showing it; and a single sample
+ *   swung by a factor of two between runs, which is why it is a mean and not one reading.
  *
  * `failed` where an engine could not be built or drawn at all — a machine with no WebGPU adapter
  * answers that for the Advanced column, and that is a result rather than a crash.
@@ -36,8 +38,8 @@ type EngineMeasure = {
   /** What the viewport ACTUALLY mounted: `gl` here under `gpu` is the silent fallback. */
   drawnWith: RenderEngine
   submitMs: number | null
-  firstReadbackMs: number | null
-  readbackMs: number | null
+  firstStillMs: number | null
+  stillMs: number | null
   /** Why this column is empty, when it is. Never swallowed: an empty column has to explain itself. */
   failed?: string
 }
@@ -48,8 +50,11 @@ type ProfileMeasure = {
   measures: readonly EngineMeasure[]
 }
 
-/** How many frames each figure is the mean of, after the ones that only compile shaders. */
+/** How many frames `submitMs` is the mean of, after the ones that only compile shaders. */
 const MEASURED_FRAMES = 60
+
+/** How many stills `stillMs` is the mean of. One alone swung by a factor of two between runs. */
+const MEASURED_STILLS = 10
 const WARMUP_FRAMES = 10
 
 const OFFSCREEN_HOST_OFFSET_PX = -100_000
@@ -104,13 +109,13 @@ async function measureEngine(engine: RenderEngine, state: SceneState): Promise<E
 
     const cold = performance.now()
     await renderer.captureStill('view')
-    const firstReadbackMs = performance.now() - cold
+    const firstStillMs = performance.now() - cold
 
     const warm = performance.now()
-    await renderer.captureStill('view')
-    const readbackMs = performance.now() - warm
+    for (let still = 0; still < MEASURED_STILLS; still += 1) await renderer.captureStill('view')
+    const stillMs = (performance.now() - warm) / MEASURED_STILLS
 
-    return { engine, drawnWith, submitMs, firstReadbackMs, readbackMs }
+    return { engine, drawnWith, submitMs, firstStillMs, stillMs }
   } catch (error) {
     // A machine with no adapter, or a chain that would not build: that IS the measurement for
     // this column, and the profile beside it still has to be reported — with the reason.
@@ -118,8 +123,8 @@ async function measureEngine(engine: RenderEngine, state: SceneState): Promise<E
       engine,
       drawnWith: engine,
       submitMs: null,
-      firstReadbackMs: null,
-      readbackMs: null,
+      firstStillMs: null,
+      stillMs: null,
       failed: error instanceof Error ? error.message : String(error),
     }
   } finally {

@@ -16,12 +16,13 @@
  */
 import { localizedError } from '@shared/localizedError'
 import { reportFailure } from '@/services/diagnostics'
-import { createEnvironment, type EnvironmentPort } from '../viewport/environment'
+import { createEnvironment, ROOM_SIGMA, type EnvironmentPort } from '../viewport/environment'
 import { createGpuComposer } from './gpuComposer'
 import { loadedGpuModule, type GpuModule } from './gpuModule'
 import { applyMaterialNodes } from './materialNodes'
 import type { RenderDriver, StudioRenderer } from './renderDriver'
-import type { Renderer } from 'three/webgpu'
+import type { WebGLRenderTarget } from 'three'
+import type { RenderTarget, WebGPURenderer } from 'three/webgpu'
 
 export const gpuDriver: RenderDriver = {
   engine: 'gpu',
@@ -30,19 +31,23 @@ export const gpuDriver: RenderDriver = {
     new (loaded().webgpu.WebGPURenderer)({ canvas, antialias: true, alpha }),
 
   // The backend, asked for once per renderer. `render()` throws until it answers.
-  ready: renderer => asNodeRenderer(renderer).init().then(NOTHING),
+  ready: async renderer => {
+    await asNodeRenderer(renderer).init()
+  },
 
   readPixels: async (renderer, target, width, height) => {
-    // `as`: a node renderer takes the `RenderTarget` a `WebGLRenderTarget` extends — three
-    // declares the pair apart and the studio allocates only the latter.
-    const pixels = await asNodeRenderer(renderer).readRenderTargetPixelsAsync(
-      target as unknown as Parameters<Renderer['readRenderTargetPixelsAsync']>[0],
+    const read = await asNodeRenderer(renderer).readRenderTargetPixelsAsync(
+      asNodeTarget(target),
       0,
       0,
       width,
       height,
     )
-    return new Uint8Array(pixels.buffer, pixels.byteOffset, pixels.byteLength)
+    return sameShapeAsGl(
+      new Uint8Array(read.buffer, read.byteOffset, read.byteLength),
+      width,
+      height,
+    )
   },
 
   createComposer: renderer => createGpuComposer(loaded(), asNodeRenderer(renderer)),
@@ -51,6 +56,14 @@ export const gpuDriver: RenderDriver = {
     createEnvironment(gpuEnvironmentPort(loaded(), asNodeRenderer(renderer)), scene, requestRender),
 
   patchMaterial: (material, uniforms) => applyMaterialNodes(loaded(), material, uniforms),
+
+  // A node renderer sizes the attachments of a render target itself, and keeps the card's
+  // sampling ceiling on the renderer rather than under a `capabilities`.
+  maxSamples: () => 0,
+  maxAnisotropy: renderer => Math.max(1, asNodeRenderer(renderer).getMaxAnisotropy()),
+  frameTimer: () => null,
+  // Nothing to give back: the device is the browser's, and it reclaims it with the page.
+  releaseContext: () => {},
 }
 
 /**
@@ -61,7 +74,7 @@ export const gpuDriver: RenderDriver = {
  * FILE holds it. Reported once, under the scope a sky already speaks through — a picture that
  * quietly ignores the dials of the panel beside it is worse than one that says it did.
  */
-function gpuEnvironmentPort(gpu: GpuModule, renderer: Renderer): EnvironmentPort {
+function gpuEnvironmentPort(gpu: GpuModule, renderer: WebGPURenderer): EnvironmentPort {
   const generator = new gpu.webgpu.PMREMGenerator(renderer)
   let said = false
 
@@ -79,9 +92,6 @@ function gpuEnvironmentPort(gpu: GpuModule, renderer: Renderer): EnvironmentPort
   }
 }
 
-/** How far the neutral room is blurred as it is prefiltered — three's own value for one. */
-const ROOM_SIGMA = 0.04
-
 /** Read once per call rather than held: a driver outlives the session that loaded its bundle. */
 function loaded(): GpuModule {
   const held = loadedGpuModule()
@@ -93,9 +103,42 @@ function loaded(): GpuModule {
  * `as`: this driver is only ever handed the renderer it built itself, which is a node renderer —
  * the interface is widened for the Compatible engine, and narrowing it back is what says so.
  */
-function asNodeRenderer(renderer: StudioRenderer): Renderer {
-  return renderer as Renderer
+function asNodeRenderer(renderer: StudioRenderer): WebGPURenderer {
+  return renderer as WebGPURenderer
 }
 
-/** `init` resolves with the renderer; what the caller awaits is that it is up, and nothing more. */
-const NOTHING = (): void => {}
+/**
+ * The buffer a node renderer hands back, laid out the way the Compatible one lays its own out.
+ * The callers encode a PNG from it and assume ONE shape; two would be two readers to keep in
+ * step, and the one that drifted would shear or mirror a whole export.
+ *
+ * 🛑 Two differences, both silent if left alone:
+ *
+ * - **Rows are padded.** WebGPU copies a texture to a buffer at 256-byte row alignment, so a
+ *   width that is not a multiple of 64 pixels comes back with slack at the end of every row.
+ *   Kept, the picture shears a little further to the side on each row down.
+ * - **Rows come top-down**, where `readRenderTargetPixels` answers bottom-up. The film encoder
+ *   flips unconditionally, so left alone every Advanced frame comes out upside down.
+ */
+function sameShapeAsGl(read: Uint8Array, width: number, height: number): Uint8Array {
+  const row = width * 4
+  const padded = Math.ceil(row / BYTES_PER_ROW_ALIGNMENT) * BYTES_PER_ROW_ALIGNMENT
+  const pixels = new Uint8Array(row * height)
+  for (let line = 0; line < height; line += 1) {
+    const from = line * padded
+    // Written bottom-up: the last line read is the first line of what a GL read would give.
+    pixels.set(read.subarray(from, from + row), (height - 1 - line) * row)
+  }
+  return pixels
+}
+
+/** What WebGPU aligns a texture-to-buffer copy to, per row. */
+const BYTES_PER_ROW_ALIGNMENT = 256
+
+/**
+ * `as`: the studio allocates `WebGLRenderTarget`, which extends the `RenderTarget` a node
+ * renderer takes — three declares the pair apart and both engines draw into the same object.
+ */
+function asNodeTarget(target: WebGLRenderTarget): RenderTarget {
+  return target as unknown as RenderTarget
+}

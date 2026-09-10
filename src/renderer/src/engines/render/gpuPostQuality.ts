@@ -19,24 +19,12 @@ export type GpuBudget = {
   resolutionScale: number
   /** What share of the samples a sampling effect asks for it actually takes. */
   samples: number
-  /**
-   * Whether the temporal anti-aliaser pays for subpixel correction.
-   *
-   * 🛑 The one lever TRAA has. `TRAANode` of three 0.185 exposes no sample count — its samples
-   * are FRAMES, taken one per jitter of a fixed sequence — so a quality level cannot buy fewer
-   * of them. What it can drop is the per-pixel correction, which is the expensive half.
-   */
-  subpixel: boolean
 }
 
 /** The same reading as the GL chain's, in the units a node chain takes. */
 export function gpuBudgetFor(heaviest: PostCost | null, quality: ViewportQuality): GpuBudget {
   const budget = budgetFor(heaviest, quality)
-  return {
-    resolutionScale: 1 / budget.divisor,
-    samples: budget.samples,
-    subpixel: quality !== 'performance',
-  }
+  return { resolutionScale: 1 / budget.divisor, samples: budget.samples }
 }
 
 /** A count asked for by a parameter, brought down to what the budget allows. Never below one. */

@@ -4,19 +4,6 @@ import { budgetFor, samplesOf } from '../postfx/postQuality'
 import { gpuBudgetFor, gpuSamplesOf } from './gpuPostQuality'
 
 describe('what the Advanced chain is allowed to spend', () => {
-  it('spends the whole frame at the top setting', () => {
-    expect(gpuBudgetFor('high', 'high')).toEqual({ resolutionScale: 1, samples: 1, subpixel: true })
-  })
-
-  it('works the occlusion out at half the frame where the setting says so', () => {
-    expect(gpuBudgetFor('high', 'performance').resolutionScale).toBe(0.5)
-  })
-
-  it('drops the temporal correction at the cheap end, the one lever TRAA has', () => {
-    expect(gpuBudgetFor('high', 'performance').subpixel).toBe(false)
-    expect(gpuBudgetFor('high', 'balanced').subpixel).toBe(true)
-  })
-
   // 🛑 The point of the module: a setting has to buy the same thing on both engines, or the two
   // pictures cannot be compared and « Performance » means whichever chain happens to be running.
   it('answers the same reading as the Compatible chain, at every setting', () => {

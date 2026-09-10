@@ -8,6 +8,9 @@ import { isNeutral, NEUTRAL_ADJUSTMENTS, type AdjustmentStack } from '@shared/do
  */
 type PrefilteredMap = { texture: Texture; dispose: () => void }
 
+/** How far the neutral room is blurred as it is prefiltered — three's own value for one. */
+export const ROOM_SIGMA = 0.04
+
 /**
  * What an environment needs OF an engine, and the whole of it: prefiltering a picture, prefiltering
  * the neutral room, and grading a sky before either.

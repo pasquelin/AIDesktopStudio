@@ -29,6 +29,10 @@ function drivers(gpu: Partial<RenderDriver> = {}): RenderDrivers {
       throw new Error('not asked for')
     },
     patchMaterial: () => {},
+    maxSamples: () => 0,
+    maxAnisotropy: () => 1,
+    frameTimer: () => null,
+    releaseContext: () => {},
   })
   return { gl: stub('gl'), gpu: { ...stub('gpu'), ...gpu } }
 }

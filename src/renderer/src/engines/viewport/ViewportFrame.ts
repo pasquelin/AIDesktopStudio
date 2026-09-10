@@ -145,7 +145,9 @@ export class ViewportFrame extends ViewportInset {
 
   private renderOverlay(renderer: StudioRenderer): void {
     const overlay = this.options.onOverlay
-    if (!overlay) return
+    // `ViewHelper` is declared against a `WebGLRenderer` and the Advanced engine draws no
+    // overlay yet: skipped there rather than cast into a renderer three never typed it for.
+    if (!overlay || !('capabilities' in renderer)) return
     renderer.autoClear = false
     try {
       overlay(renderer)
