@@ -93,6 +93,8 @@
     "undoHint": "마지막 파일 묶음을 있던 자리로 되돌립니다",
     "redo": "다시 실행",
     "redoHint": "방금 실행 취소한 파일 묶음을 다시 실행합니다",
+    "trashUsedTitle": "휴지통으로 옮길까요? {{count, number}}개의 문서가 사용 중입니다",
+    "trashUsedBody": "다음 문서가 사라질 것을 참조합니다:",
     "trashTitle": "이 {{count, number}}개 항목을 휴지통으로 보냅니다",
     "trashBody": "시스템 휴지통에서 되찾을 수 있습니다. 스튜디오는 이를 직접 되돌리지 못합니다.",
     "trashConfirm": "휴지통으로 이동",

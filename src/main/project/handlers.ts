@@ -29,10 +29,11 @@ import { ORA_MERGED_PATH } from '@shared/domain/openRaster'
 import { ORA_EXTENSION, PNG_EXTENSION, WAV_EXTENSION } from '@shared/domain/writtenFormat'
 import { probeWav } from '@main/media/wav'
 import { fileFactsOf } from './fileFacts'
-import { createRecoveryFiles } from './recoveryFiles'
-import { parseRecoveryDraft } from './recoveryValidation'
+import { projectFileDependents } from './fileDependents'
+import { registerFileUseHandlers } from './fileUseHandlers'
+import { registerRecoveryHandlers } from './recoveryHandlers'
 import { registerAskHandlers } from './askHandlers'
-import { askLeaveWithJobs, askTrashFiles, askUseOccupiedFolder } from './projectDialogs'
+import { askLeaveWithJobs, askUseOccupiedFolder } from './projectDialogs'
 import { holdsAProject, openFailureKey, orWhenGone } from './store'
 import type { ProjectHandlerDeps } from './handlerTypes'
 export type { ProjectHandlerDeps }
@@ -186,11 +187,14 @@ export function registerProjectHandlers({
   handle(CHANNELS.projectMoveFiles, async (_event, paths, folderPath) =>
     settled(await files.move(parseFolderPaths(paths), parseFolderPath(folderPath))),
   )
-  handle(CHANNELS.projectTrashFiles, async (_event, paths) => {
-    const wanted = parseFolderPaths(paths)
-    if (wanted.length > 1 && !(await askTrashFiles(askUser, wanted.length)))
-      return { done: [], refused: [], batch: '' }
-    return settled(await files.trash(wanted))
+  registerFileUseHandlers({
+    dependents: projectFileDependents({
+      documents,
+      assetsUnder: folders => project.catalog().assetsUnder(folders),
+    }),
+    trash: paths => files.trash(paths),
+    settled,
+    ask: askUser,
   })
   handle(CHANNELS.projectNewFolder, async (_event, folderPath, name) =>
     settled(await files.createFolder(parseFolderPath(folderPath), parseProjectName(name))),
@@ -483,13 +487,7 @@ export function registerProjectHandlers({
   handle(CHANNELS.documentRemove, (_event, id, kind) =>
     documents.remove(parseDocumentId(id), parseDocumentKind(kind)),
   )
-  const recovery = createRecoveryFiles(() => project.path())
-  handle(CHANNELS.recoveryWrite, (_event, draft) => recovery.write(parseRecoveryDraft(draft)))
-  handle(CHANNELS.recoveryList, () => orWhenGone(() => recovery.list(), []))
-  handle(CHANNELS.recoveryRead, (_event, documentId) => recovery.read(parseDocumentId(documentId)))
-  handle(CHANNELS.recoveryClear, (_event, documentId) =>
-    recovery.clear(parseDocumentId(documentId)),
-  )
+  registerRecoveryHandlers(() => project.path())
   // The four routes that only raise a question live apart — see `askHandlers.ts`.
   registerAskHandlers(askUser)
 }

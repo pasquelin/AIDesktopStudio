@@ -11,6 +11,7 @@ import { usePlayback } from '@/stores/playback'
 import { useSkyboxViews } from '@/stores/skyboxViews'
 import { type CloseChoice, type DocumentDescriptor } from '@shared/domain/document'
 import { FOLDER_ROOT, parentOf } from '@shared/domain/folder'
+import { nearestEncodableFor } from '@shared/domain/encodableFormat'
 import {
   formatOfFile,
   lossesFor,
@@ -265,10 +266,14 @@ export function writePlanFor(
   format: WritableFormat
   losses: CapabilityTrait[]
 } {
-  const written =
-    formatOfFile(assetsById(useAssets.getState()).get(sourceAssetId)?.path ?? '') ?? 'ora'
+  const path = assetsById(useAssets.getState()).get(sourceAssetId)?.path ?? ''
+  const traits = io.traitsOf?.(document.id) ?? []
+  // A format the studio cannot even name falls back to the CLOSEST one it writes, not to the
+  // richest: a flat `.gif` is offered a PNG, where the fallback used to send it to a container
+  // of layers it holds none of (§5.5).
+  const written = formatOfFile(path) ?? nearestEncodableFor('picture', traits)
   if (!io.traitsOf) return { format: written, losses: [] }
-  return { format: written, losses: lossesFor(io.traitsOf(document.id), written) }
+  return { format: written, losses: lossesFor(traits, written) }
 }
 async function rewriteSourceAsset(
   document: DocumentDescriptor,

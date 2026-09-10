@@ -107,6 +107,7 @@ const fakeProject = (overrides: BridgeOverrides): StudioBridge['project'] => ({
   renameFile: nothingMoved,
   moveFiles: nothingMoved,
   trashFiles: nothingMoved,
+  filesUsedBy: () => Promise.resolve([]),
   newFolder: nothingMoved,
   duplicateFiles: nothingMoved,
   pasteFiles: nothingMoved,

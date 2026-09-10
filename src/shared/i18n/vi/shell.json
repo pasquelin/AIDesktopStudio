@@ -93,6 +93,8 @@
     "undoHint": "Đưa lô tệp gần nhất về chỗ cũ",
     "redo": "Làm lại",
     "redoHint": "Làm lại lô tệp vừa được hoàn tác",
+    "trashUsedTitle": "Chuyển vào thùng rác? {{count, number}} tài liệu đang dùng nó",
+    "trashUsedBody": "Các tài liệu này viện đến thứ sắp bị xoá:",
     "trashTitle": "{{count, number}} mục này sẽ vào thùng rác",
     "trashBody": "Bạn có thể lấy chúng lại từ thùng rác của hệ thống. Bản thân studio không đưa chúng về chỗ cũ được.",
     "trashConfirm": "Bỏ vào thùng rác",

@@ -93,6 +93,8 @@
     "undoHint": "Menempatkan batch file terakhir kembali di mana ia berada",
     "redo": "Ulangi",
     "redoHint": "Melakukan ulang batch file yang baru saja dibatalkan",
+    "trashUsedTitle": "Pindahkan ke tempat sampah? {{count, number}} dokumen memakainya",
+    "trashUsedBody": "Dokumen ini menyebut apa yang akan pergi:",
     "trashTitle": "{{count, number}} item ini akan ke tempat sampah",
     "trashBody": "Anda akan dapat mengambilnya kembali dari tempat sampah sistem. Studio sendiri tidak dapat mengembalikannya.",
     "trashConfirm": "Pindahkan ke tempat sampah",

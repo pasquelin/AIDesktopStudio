@@ -145,6 +145,7 @@ const bridge: StudioBridge = {
     renameFile: (relative, name) => ipcRenderer.invoke(CHANNELS.projectRenameFile, relative, name),
     moveFiles: (paths, folder) => ipcRenderer.invoke(CHANNELS.projectMoveFiles, paths, folder),
     trashFiles: paths => ipcRenderer.invoke(CHANNELS.projectTrashFiles, paths),
+    filesUsedBy: paths => ipcRenderer.invoke(CHANNELS.projectFilesUsedBy, paths),
     newFolder: (folder, name) => ipcRenderer.invoke(CHANNELS.projectNewFolder, folder, name),
     duplicateFiles: paths => ipcRenderer.invoke(CHANNELS.projectDuplicateFiles, paths),
     pasteFiles: (paths, folder, cut) =>

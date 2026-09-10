@@ -93,6 +93,8 @@
     "undoHint": "Rimette l’ultimo lotto di file dov’era",
     "redo": "Ripristina",
     "redoHint": "Rifà il lotto di file appena annullato",
+    "trashUsedTitle": "Spostare nel cestino? {{count, number}} documento/i lo usano",
+    "trashUsedBody": "Questi documenti citano ciò che sta per andarsene:",
     "trashTitle": "Questi {{count, number}} elementi vanno nel cestino",
     "trashBody": "Potrai recuperarli dal cestino di sistema. Lo studio, da sé, non sa rimetterli a posto.",
     "trashConfirm": "Sposta nel cestino",

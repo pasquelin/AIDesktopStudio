@@ -6,6 +6,7 @@ import { useDocuments } from '@/stores/documents'
 import { takenDocumentNames } from '@/stores/documentNames'
 import { documentFolderOf, type DocumentDescriptor } from '@shared/domain/document'
 import { nextFreeDocumentName } from '@shared/domain/documentName'
+import { nearestEncodableFor } from '@shared/domain/encodableFormat'
 import { openDocument } from './components/dockviewApi'
 import { savableDocument, writePlanFor, type SavableDocument } from './documentIo'
 
@@ -32,13 +33,13 @@ async function copyDocumentAsset(
   }
   const name = copyName(document)
   const { format, losses } = writePlanFor(document, io, source)
+  // The closest format that carries what the document holds, never a container by default: a
+  // copy of a flat picture is a picture (§5.5).
+  const into =
+    losses.length === 0 ? format : nearestEncodableFor('picture', io.traitsOf(document.id))
   try {
     const { draft } = await io.capture(documentId)
-    const copy = await io.writeAsset(
-      documentId,
-      { derivedFrom: source, name, format: losses.length === 0 ? format : 'ora' },
-      draft,
-    )
+    const copy = await io.writeAsset(documentId, { derivedFrom: source, name, format: into }, draft)
     if (!copy) {
       reportFailure('assets.copy', document.title, localizedError('bakeContentEmpty'))
       return false

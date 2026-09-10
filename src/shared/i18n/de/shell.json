@@ -93,6 +93,8 @@
     "undoHint": "Setzt den letzten Stapel Dateien dorthin zurück, wo er war",
     "redo": "Wiederholen",
     "redoHint": "Führt den gerade rückgängig gemachten Stapel Dateien erneut aus",
+    "trashUsedTitle": "In den Papierkorb verschieben? {{count, number}} Dokument(e) nutzen es",
+    "trashUsedBody": "Diese Dokumente verweisen auf das, was gehen soll:",
     "trashTitle": "Diese {{count, number}} Elemente wandern in den Papierkorb",
     "trashBody": "Sie können sie aus dem Papierkorb des Systems zurückholen. Das Studio selbst kann sie nicht zurücklegen.",
     "trashConfirm": "In den Papierkorb verschieben",
