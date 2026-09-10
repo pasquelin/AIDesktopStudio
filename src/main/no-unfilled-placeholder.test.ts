@@ -154,13 +154,14 @@ describe('the formatted holes the main process reaches for', () => {
   }
 
   /**
-   * TWO, and named: the trash dialog and the one about generations still running. A list rather
-   * than an empty assertion because the helper only fills this shape — whoever adds a third reads
-   * this line and checks that `fillHoles` still knows the format it carries. A `number` it does;
-   * anything else it leaves whole, deliberately.
+   * THREE, and named: the trash dialog, the one about generations still running, and the offer
+   * to restore unsaved work. A list rather than an empty assertion because the helper only fills
+   * this shape — whoever adds a fourth reads this line and checks that `fillHoles` still knows
+   * the format it carries. A `number` it does; anything else it leaves whole, deliberately.
    */
   it('reaches for exactly the ones the helper was taught to fill', () => {
     expect(reached()).toEqual([
+      'main/project/documentDialogs.ts — documents.recoveryBody',
       'main/project/projectDialogs.ts — project.leaveRunningBody',
       'main/project/projectDialogs.ts — explorer.trashTitle',
     ])

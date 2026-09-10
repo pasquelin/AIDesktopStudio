@@ -113,6 +113,11 @@
     "fewerHint": "Gấp các bộ lọc lại, để nhường chỗ cho bộ sưu tập"
   },
   "documents": {
+    "recoveryTitle": "Lấy lại phần việc chưa lưu?",
+    "recoveryBody": "Studio đã giữ {{count, number}} tài liệu đã sửa mà chưa được lưu. Không có gì bị xoá nếu bạn trả lời sau.",
+    "recoveryConfirm": "Lấy lại",
+    "recoveryLater": "Để sau",
+    "recoveryFull": "Vùng phục hồi đã đầy. Không có gì bị xoá, nhưng hãy lưu công việc của bạn.",
     "sourceReadReduced": "Một phần tệp này chưa được đọc: ghi đè sẽ làm mất phần đó. Hãy lưu một bản sao.",
     "sourceFormatChange": "Lưu sẽ đổi định dạng của tệp này. Chọn đích bằng «Lưu thành».",
     "copyName": "{{name}} bản sao",

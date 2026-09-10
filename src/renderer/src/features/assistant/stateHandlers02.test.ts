@@ -19,12 +19,8 @@ const closeDocument = vi.hoisted(() => vi.fn(async () => true))
 const documentIsDirty = vi.hoisted(() => vi.fn(() => false))
 const saveDocument = vi.hoisted(() => vi.fn(async () => true))
 const dropDocument = vi.hoisted(() => vi.fn(async () => true))
-vi.mock('@/features/shell/documentIo', () => ({
-  closeDocument,
-  documentIsDirty,
-  saveDocument,
-  dropDocument,
-}))
+vi.mock('@/features/shell/documentIo', () => ({ closeDocument, saveDocument, dropDocument }))
+vi.mock('@/features/shell/documentDirty', () => ({ documentIsDirty }))
 
 const WHEN = '2026-08-17T10:00:00.000Z'
 

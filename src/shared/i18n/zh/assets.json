@@ -113,6 +113,11 @@
     "fewerHint": "把筛选项收起来，给集合腾出地方"
   },
   "documents": {
+    "recoveryTitle": "要找回未保存的工作吗？",
+    "recoveryBody": "工作室保留了 {{count, number}} 个尚未保存的已修改文档。稍后回答不会删除任何内容。",
+    "recoveryConfirm": "找回",
+    "recoveryLater": "稍后",
+    "recoveryFull": "恢复区已满。没有删除任何内容，但请保存你的工作。",
     "sourceReadReduced": "此文件有一部分未被读取，覆盖保存会丢失该部分。请另存一份副本。",
     "sourceFormatChange": "保存会改变此文件的格式。请用「另存为」选择目标。",
     "copyName": "{{name}} 副本",

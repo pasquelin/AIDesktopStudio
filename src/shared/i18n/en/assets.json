@@ -113,6 +113,11 @@
     "fewerHint": "Folds the filters away, to make room for the collection"
   },
   "documents": {
+    "recoveryTitle": "Restore unsaved work?",
+    "recoveryBody": "The studio kept {{count, number}} modified document(s) that had not been saved. Nothing is erased if you answer later.",
+    "recoveryConfirm": "Restore",
+    "recoveryLater": "Later",
+    "recoveryFull": "The recovery area is full. Nothing was erased, but do save your work.",
     "sourceReadReduced": "Part of this file was not read: saving over it would lose that part. Save a copy instead.",
     "sourceFormatChange": "Saving would change this file’s format. Choose a destination with Save as.",
     "copyName": "{{name}} copy",

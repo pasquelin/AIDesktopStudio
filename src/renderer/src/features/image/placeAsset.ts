@@ -8,6 +8,7 @@ import { reportFailure } from '@/services/diagnostics'
 import { canvasStore, useCanvases } from '@/stores/canvases'
 import { useDocuments } from '@/stores/documents'
 import type { ReadFidelity } from '@shared/domain/readFidelity'
+import type { Size } from '@/engines/core/geometry'
 import type { PictureMeasure } from './pictureSize'
 
 /**
@@ -44,6 +45,24 @@ export function placeAsset(documentId: string, asset: Asset, targetLayerId?: str
  */
 function noteFidelity(documentId: string, fidelity: ReadFidelity): void {
   useDocuments.getState().noteSourceFidelity(documentId, fidelity)
+}
+
+/**
+ * How faithfully the picture was read — said out loud AND written on the document.
+ *
+ * Out loud EVERY way the document can fail to be the picture, because a save writes the
+ * document's size back over the asset: one opened smaller than it is would be saved smaller than
+ * it was. The ceiling biting was said; the file that would not decode was NOT, and that silence
+ * is how a 4112 × 2658 photo came to sit in a 1024² document and be overwritten by it.
+ */
+function sayHowItWasRead(asset: Asset, measured: Size | null, size: Size): ReadFidelity {
+  if (!measured) {
+    reportFailure('canvas.size', asset.name, localizedError('imageSizeUnknown'))
+    return 'unknown'
+  }
+  if (size.width === measured.width && size.height === measured.height) return 'faithful'
+  reportFailure('canvas.size', asset.name, localizedError('imageOpenedTooSmall'))
+  return 'reduced'
 }
 
 /** A layer that names the asset it draws, so the engine fetches the pixels rather than holding them. */
@@ -121,26 +140,7 @@ export async function becomeAsset(
   const { measureAsset, withinCeiling } = await import('./pictureSize')
   const measured = await measureAsset(asset.id, measure)
   const size = measured ? withinCeiling(measured) : DEFAULT_CANVAS
-  // Said out loud EVERY way the document can fail to be the picture, because ⌘S writes the
-  // document's size back over the asset: one opened smaller than it is would be saved smaller
-  // than it was, and that has to be a thing the user was told rather than one the studio did
-  // quietly. The ceiling biting was said; the file that would not decode was NOT, and that
-  // silence is how a 4112 × 2658 photo came to sit in a 1024² document and be overwritten by it.
-  if (!measured) {
-    reportFailure('canvas.size', asset.name, localizedError('imageSizeUnknown'))
-  } else if (size.width !== measured.width || size.height !== measured.height) {
-    reportFailure('canvas.size', asset.name, localizedError('imageOpenedTooSmall'))
-  }
-  // The same three answers the two warnings above give, in the form a save reads: a file that
-  // would not measure was not read faithfully either, and neither state licenses an overwrite.
-  noteFidelity(
-    documentId,
-    !measured
-      ? 'unknown'
-      : size.width === measured.width && size.height === measured.height
-        ? 'faithful'
-        : 'reduced',
-  )
+  noteFidelity(documentId, sayHowItWasRead(asset, measured, size))
   const layer = sourceLayer(asset)
   const state: CanvasState = {
     ...DEFAULT_CANVAS,

@@ -113,6 +113,11 @@
     "fewerHint": "Recolhe os filtros, para dar lugar à coleção"
   },
   "documents": {
+    "recoveryTitle": "Recuperar o trabalho não guardado?",
+    "recoveryBody": "O estúdio conservou {{count, number}} documento(s) modificados que não tinham sido guardados. Nada é apagado se responder mais tarde.",
+    "recoveryConfirm": "Recuperar",
+    "recoveryLater": "Mais tarde",
+    "recoveryFull": "A área de recuperação está cheia. Nada foi apagado, mas guarde o seu trabalho.",
     "sourceReadReduced": "Parte deste ficheiro não foi lida: guardar por cima perderia essa parte. Guarde uma cópia.",
     "sourceFormatChange": "Guardar mudaria o formato deste ficheiro. Escolha um destino com «Guardar como».",
     "copyName": "{{name}} cópia",

@@ -302,7 +302,7 @@ export function parseOraStack(value: unknown): OraStack {
  * `png` is a `Uint8Array` and never base64: a 4K stack of ten layers is hundreds of megabytes of
  * text otherwise. Its ceiling is the picture ceiling, applied to the bytes themselves.
  */
-const oraSurface = z.object({
+export const oraSurface = z.object({
   path: oraPath,
   png: z.instanceof(Uint8Array).refine(bytes => bytes.byteLength <= MAX_PICTURE_BYTES),
 })
@@ -394,7 +394,7 @@ export function parseLandingFolder(value: unknown): string | undefined {
   return landingFolder.parse(value)
 }
 
-const title = z.string().max(200)
+export const documentTitle = z.string().max(200)
 
 /*
  * Never inspected, and now never parsed either: what a kind stores is its editor's business,
@@ -405,13 +405,13 @@ const title = z.string().max(200)
  */
 const MAX_CONTENT_BYTES = 256 * 1024 * 1024
 
-const content = z.string().max(MAX_CONTENT_BYTES)
+export const documentContent = z.string().max(MAX_CONTENT_BYTES)
 
 const documentDraft = z.object({
   // Trimmed and non-empty, where the envelope's twin is not: a title is now the NAME OF THE
   // FILE, and a document nobody named is a document nothing can be written to.
   title: z.string().trim().min(1).max(200),
-  content,
+  content: documentContent,
   // The surfaces of an image document's container. Declared or the schema STRIPS them in
   // silence, and a save then writes a stack with no pixels under it — the very loss this whole
   // field exists to prevent, and one that has already been paid for once.
@@ -427,7 +427,7 @@ const documentDraft = z.object({
 
 /** A title on its way into a dialog. Capped like the one a draft carries, and for the same reason. */
 export function parseDocumentTitle(value: unknown): string {
-  return title.parse(value)
+  return documentTitle.parse(value)
 }
 
 /**
@@ -458,7 +458,7 @@ const documentEnvelope = z.object({
   // side. Refusing an empty title here would drop the document from the listing altogether —
   // present on disk, absent from every list — where `descriptorOf` instead falls back on the
   // file name. What may be WRITTEN is where the rule belongs.
-  title,
+  title: documentTitle,
   updatedAt: z.string().min(1),
   // Absent on every document written before assets could be opened, and on every document that
   // edits none — so an absent field means "not linked" rather than a file to migrate. Unbounded

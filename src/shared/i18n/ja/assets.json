@@ -113,6 +113,11 @@
     "fewerHint": "フィルターを畳んで、コレクションの表示領域を広げます。"
   },
   "documents": {
+    "recoveryTitle": "保存されていない作業を戻しますか？",
+    "recoveryBody": "スタジオは保存されていなかった変更済みの文書を{{count, number}}件保持しています。あとで答えても何も消えません。",
+    "recoveryConfirm": "戻す",
+    "recoveryLater": "あとで",
+    "recoveryFull": "復元領域がいっぱいです。何も消えていませんが、作業を保存してください。",
     "sourceReadReduced": "このファイルの一部は読み込まれていません。上書きするとその部分が失われます。コピーを保存してください。",
     "sourceFormatChange": "保存するとこのファイルの形式が変わります。「名前を付けて保存」で保存先を選んでください。",
     "copyName": "{{name}}のコピー",

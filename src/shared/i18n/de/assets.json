@@ -113,6 +113,11 @@
     "fewerHint": "Klappt die Filter ein, um Platz für die Sammlung zu schaffen"
   },
   "documents": {
+    "recoveryTitle": "Nicht gespeicherte Arbeit zurückholen?",
+    "recoveryBody": "Das Studio hat {{count, number}} geänderte Dokument(e) bewahrt, die nicht gespeichert waren. Es wird nichts gelöscht, wenn Sie später antworten.",
+    "recoveryConfirm": "Zurückholen",
+    "recoveryLater": "Später",
+    "recoveryFull": "Der Wiederherstellungsbereich ist voll. Es wurde nichts gelöscht, speichern Sie aber Ihre Arbeit.",
     "sourceReadReduced": "Ein Teil dieser Datei wurde nicht gelesen: Darüberspeichern würde ihn verlieren. Speichern Sie eine Kopie.",
     "sourceFormatChange": "Das Speichern würde das Format dieser Datei ändern. Wählen Sie ein Ziel mit „Speichern unter“.",
     "copyName": "{{name}} Kopie",

@@ -113,6 +113,11 @@
     "fewerHint": "Koleksiyona yer açmak için filtreleri katlar"
   },
   "documents": {
+    "recoveryTitle": "Kaydedilmemiş çalışma geri getirilsin mi?",
+    "recoveryBody": "Stüdyo, kaydedilmemiş {{count, number}} değiştirilmiş belgeyi sakladı. Daha sonra yanıtlarsanız hiçbir şey silinmez.",
+    "recoveryConfirm": "Geri getir",
+    "recoveryLater": "Daha sonra",
+    "recoveryFull": "Kurtarma alanı dolu. Hiçbir şey silinmedi, ancak çalışmanızı kaydedin.",
     "sourceReadReduced": "Bu dosyanın bir bölümü okunmadı: üzerine kaydetmek onu yitirir. Bir kopya kaydedin.",
     "sourceFormatChange": "Kaydetmek bu dosyanın biçimini değiştirir. «Farklı kaydet» ile bir hedef seçin.",
     "copyName": "{{name}} kopya",

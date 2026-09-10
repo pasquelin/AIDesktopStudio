@@ -27,6 +27,15 @@ export type DocumentStoreState<S> = {
   forgetThrough: (documentId: string, commandId: string) => void
   ensure: (documentId: string, create: () => S) => void
   markSaved: (documentId: string, at: Command<S> | null) => void
+  /**
+   * Says this document holds work nobody has written down — what a RESTORE from the recovery area
+   * leaves behind.
+   *
+   * `replace` does not touch the history, so a document filled from a recovery entry reads as
+   * saved: its mark and its saved mark are both `null`. Restored that way, the work would be
+   * thrown away by the next close without a question — the very loss the recovery exists for.
+   */
+  markUnsaved: (documentId: string) => void
   undo: (documentId: string) => void
   redo: (documentId: string) => void
   drop: (documentId: string) => void
@@ -48,6 +57,15 @@ export type DocumentStore<S> = {
   resetForTests: () => void
   forgetHistoriesForTests: () => void
 }
+/**
+ * A mark no history can hand back: `markOf` answers a command the history holds, or `null`, and
+ * this one is neither. Standing in `saved`, it makes `isDirty` true whatever the document's own
+ * mark is — and a fresh object each time, so two documents never share one.
+ */
+function unsavedMark<S>(): Command<S> {
+  return { id: 'recovered', apply: state => state, revert: state => state }
+}
+
 const BUILT: {
   resetForTests: () => void
   forgetHistoriesForTests: () => void
@@ -161,6 +179,8 @@ export function createDocumentStore<S>(defaultState: S): DocumentStore<S> {
       },
       markSaved: (documentId, at) =>
         set(state => ({ saved: { ...state.saved, [documentId]: at } })),
+      markUnsaved: documentId =>
+        set(state => ({ saved: { ...state.saved, [documentId]: unsavedMark<S>() } })),
       discardLast: documentId => step(documentId, discardLast),
       forgetThrough: (documentId, commandId) =>
         set(state => ({

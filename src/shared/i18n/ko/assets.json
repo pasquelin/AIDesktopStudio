@@ -113,6 +113,11 @@
     "fewerHint": "필터를 접어 컬렉션 공간을 확보합니다"
   },
   "documents": {
+    "recoveryTitle": "저장되지 않은 작업을 되살릴까요?",
+    "recoveryBody": "스튜디오가 저장되지 않은 수정된 문서 {{count, number}}개를 보관했습니다. 나중에 답해도 아무것도 지워지지 않습니다.",
+    "recoveryConfirm": "되살리기",
+    "recoveryLater": "나중에",
+    "recoveryFull": "복구 영역이 가득 찼습니다. 아무것도 지워지지 않았지만 작업을 저장하세요.",
     "sourceReadReduced": "이 파일의 일부를 읽지 못했습니다. 덮어써 저장하면 그 부분을 잃습니다. 사본으로 저장하세요.",
     "sourceFormatChange": "저장하면 이 파일의 형식이 바뀝니다. «다른 이름으로 저장»에서 대상을 고르세요.",
     "copyName": "{{name}} 복사",

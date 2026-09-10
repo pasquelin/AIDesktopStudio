@@ -221,6 +221,13 @@ const bridge: StudioBridge = {
     confirmFlatten: (title, format, lost) =>
       ipcRenderer.invoke(CHANNELS.documentConfirmFlatten, title, format, lost),
   },
+  recovery: {
+    write: draft => ipcRenderer.invoke(CHANNELS.recoveryWrite, draft),
+    list: () => ipcRenderer.invoke(CHANNELS.recoveryList),
+    read: documentId => ipcRenderer.invoke(CHANNELS.recoveryRead, documentId),
+    clear: documentId => ipcRenderer.invoke(CHANNELS.recoveryClear, documentId),
+    confirmRestore: count => ipcRenderer.invoke(CHANNELS.recoveryConfirmRestore, count),
+  },
   assets: {
     search: query => ipcRenderer.invoke(CHANNELS.assetsSearch, query),
     onChanged: callback => subscribe<readonly Asset[]>(EVENTS.assetsChanged, callback),

@@ -133,20 +133,23 @@ export type LocalBackend = {
 }
 
 /**
- * What a caller may say about the bytes it is replacing an asset's file with.
- *
- * `converts` is the second protection of §5.7, expressed as its own opposite: an extension that
- * names a different format than the file already carries is REFUSED here, because this is the one
- * place that renames a file and deletes what it replaced. Painting on a `.jpg` and saving used to
- * come back a `.png` with the `.jpg` gone, and nothing said.
- *
- * A caller whose job IS the conversion — extracting a model's textures rewrites a glTF as a
- * binary one — says so, and takes the responsibility with the word. It is deliberately not a
- * default: the guard has to be the thing one has to opt out of.
+ * What a caller may say about the bytes it is replacing an asset's file with. `converts` is the
+ * opt-out of `refuseFormatChange`, and it is deliberately not a default — see that guard.
  */
 export type ReplaceOptions = {
   probe?: MediaProbe
   converts?: true
+}
+
+/**
+ * The second protection of §5.7, at the one door that renames a file and removes what it
+ * replaced — and BEFORE the write, so a refusal leaves nothing behind, neither the new file nor
+ * half of it. The renderer asks the same question before it sends anything; this is what makes
+ * the answer true whatever calls this door.
+ */
+function refuseFormatChange(existing: Asset, extension: string, options?: ReplaceOptions): void {
+  if (options?.converts || keepsWrittenFormat(existing.path, extension)) return
+  throw localizedError('assetFormatChangeRefused', { name: existing.name, format: extension })
 }
 
 /**
@@ -441,16 +444,7 @@ export function createLocalBackend({
     replaceBytes: async (assetId, bytes, extension, options) => {
       const existing = await catalog().find(assetId)
       if (!existing) throw new Error(`asset ${assetId} is not in the catalogue`)
-
-      // Before the write, so a refusal leaves no file behind at all — neither the new one nor a
-      // half of it. The renderer asks the same question before it sends anything; this one is
-      // what makes the answer true whatever calls this door.
-      if (!options?.converts && !keepsWrittenFormat(existing.path, extension)) {
-        throw localizedError('assetFormatChangeRefused', {
-          name: existing.name,
-          format: extension,
-        })
-      }
+      refuseFormatChange(existing, extension, options)
 
       // Written INSIDE the project, always — including for a row that had no file there.
       //

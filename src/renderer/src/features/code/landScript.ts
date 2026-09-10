@@ -3,7 +3,8 @@ import { documentFolderOf } from '@shared/domain/document'
 import { getBridge } from '@/services/bridge'
 import { createScript } from '@/features/shell/newDocument'
 import { scriptRefOf, useCode } from '@/stores/code'
-import { takenDocumentNames, untitledDocumentName, useDocuments } from '@/stores/documents'
+import { useDocuments } from '@/stores/documents'
+import { takenDocumentNames, untitledDocumentName } from '@/stores/documentNames'
 
 /**
  * Puts a generated script in the editor it was launched from, or in a tab of its own.

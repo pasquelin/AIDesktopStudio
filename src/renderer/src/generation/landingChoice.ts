@@ -5,13 +5,8 @@ import { reworksItsOutput } from '@shared/domain/aiCapability'
 import { landingOfRole, type LandingTarget } from '@shared/domain/landingTarget'
 import type { ModelFamily } from '@shared/domain/model'
 import type { LandingChoice as LandingPreference } from '@shared/domain/settings'
-import {
-  activeScriptId,
-  documentById,
-  takenDocumentNames,
-  untitledDocumentName,
-  type DocumentsRead,
-} from '@/stores/documents'
+import { activeScriptId, documentById, type DocumentsRead } from '@/stores/documents'
+import { takenDocumentNames, untitledDocumentName } from '@/stores/documentNames'
 
 /**
  * Where a shot lands, and the file each choice names. Read on every render, so everything here

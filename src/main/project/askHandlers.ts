@@ -5,10 +5,15 @@ import {
   askDeleteDocument,
   askFlattenDocument,
   askOverwriteDocument,
+  askRestoreRecovery,
 } from './documentDialogs'
 import { askTrashProject } from './projectDialogs'
 import type { AskUser } from './documentDialogs'
 import { parseDocumentTitle, parseProjectName } from './validation'
+
+/** A count on its way into a sentence: whatever crossed, it is a small whole number here. */
+const parseCount = (value: unknown): number =>
+  typeof value === 'number' && Number.isInteger(value) && value > 0 ? Math.min(value, 9999) : 0
 
 /**
  * The routes that only ASK. They move nothing: each one raises the system's dialog, answers what
@@ -41,5 +46,8 @@ export function registerAskHandlers(ask: AskUser): void {
   )
   handle(CHANNELS.documentConfirmOverwrite, (_event, title) =>
     askOverwriteDocument(ask, parseDocumentTitle(title)),
+  )
+  handle(CHANNELS.recoveryConfirmRestore, (_event, count) =>
+    askRestoreRecovery(ask, parseCount(count)),
   )
 }

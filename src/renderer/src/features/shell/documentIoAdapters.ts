@@ -129,6 +129,13 @@ export type DocumentIo = AssetWriting &
      */
     settled?: (documentId: string) => Promise<void>
     holds: (documentId: string) => boolean
+    /**
+     * Says the document holds work nobody has written down — what a RESTORE leaves behind.
+     *
+     * Absent for the two kinds no recovery entry is written for: the character, whose content is
+     * a model of the library rather than a document, and the script, which IS its own text file.
+     */
+    markUnsaved?: (documentId: string) => void
     incomplete?: (documentId: string) => string | null
     dirty: (documentId: string) => boolean
     forget: (document: DocumentDescriptor) => void
@@ -193,6 +200,7 @@ function textDocumentIo<S>(
     },
     createDefault: documentId => store.use.getState().ensure(documentId, createDefault),
     holds: documentId => store.hasState(store.use.getState(), documentId),
+    markUnsaved: documentId => store.use.getState().markUnsaved(documentId),
     dirty: documentId => store.hasUnsavedWork(store.use.getState(), documentId),
     forget: document => store.use.getState().drop(document.id),
   }
@@ -254,6 +262,10 @@ const AUDIO_IO: DocumentIo = {
     sequenceStore.use.getState().ensure(documentId, () => EMPTY_SOUND_SEQUENCE)
   },
   holds: documentId => audioEditStore.hasState(audioEditStore.use.getState(), documentId),
+  markUnsaved: documentId => {
+    audioEditStore.use.getState().markUnsaved(documentId)
+    sequenceStore.use.getState().markUnsaved(documentId)
+  },
   dirty: audioHasUnsavedWork,
   incomplete: montageIsIncomplete,
   forget: ({ id }) => {
@@ -342,6 +354,7 @@ const IMAGE_IO: DocumentIo = {
   writtenExtension: format => (format === 'ora' ? ORA_EXTENSION : PNG_EXTENSION),
   createDefault: documentId => useCanvases.getState().ensure(documentId, () => DEFAULT_CANVAS),
   holds: documentId => canvasStore.hasState(useCanvases.getState(), documentId),
+  markUnsaved: documentId => useCanvases.getState().markUnsaved(documentId),
   dirty: documentId => canvasStore.hasUnsavedWork(useCanvases.getState(), documentId),
   forget: document => useCanvases.getState().drop(document.id),
 }

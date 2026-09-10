@@ -3,7 +3,8 @@ import { localizedError } from '@shared/localizedError'
 import { getBridge } from '@/services/bridge'
 import { reportFailure, reportNotice } from '@/services/diagnostics'
 import { assetsById, useAssets } from '@/stores/assets'
-import { takenDocumentNames, useDocuments } from '@/stores/documents'
+import { useDocuments } from '@/stores/documents'
+import { takenDocumentNames } from '@/stores/documentNames'
 import { useLivePreviews } from '@/stores/livePreviews'
 import { useMaterialViews } from '@/stores/materialViews'
 import { useMonitorPair } from '@/stores/monitorPair'
@@ -36,9 +37,9 @@ import {
   isUnreadable,
   restoreDocument,
 } from './documentLoad'
+import { documentIsDirty, unsavedDocumentIds } from './documentDirty'
 import { queueDocumentSave } from './documentSaveQueue'
 const assetBehind = new Set<string>()
-const flattenAgreed = new Set<string>()
 const capturing = new Map<string, Set<AbortController>>()
 
 function beginCapture(documentId: string): AbortController {
@@ -62,19 +63,24 @@ function invalidateDocument(documentId: string): void {
   capturing.delete(documentId)
   for (const controller of active) controller.abort()
 }
+/**
+ * Asked at EVERY save, never remembered — §5.1.
+ *
+ * The answer used to be kept for the life of the document, which made the question a one-time
+ * toll rather than a decision: say yes once to a text layer and every ⌘S after it flattened the
+ * file without a word, including the ones where the layer had since been undone. What a save may
+ * destroy is a property of the state it is about to write, and that state changes between saves.
+ */
 async function agreedToFlatten(
   document: DocumentDescriptor,
   format: WritableFormat,
   losses: readonly CapabilityTrait[],
 ): Promise<boolean> {
-  if (flattenAgreed.has(document.id)) return true
-  const agreed = await askedToFlatten(
+  return await askedToFlatten(
     document.title,
     format.toUpperCase(),
     losses.map(trait => i18next.t(`traits.${trait}`)).join(', '),
   )
-  if (agreed) flattenAgreed.add(document.id)
-  return agreed
 }
 const askedToFlatten = async (title: string, format: string, lost: string): Promise<boolean> =>
   (await getBridge()?.documents.confirmFlatten(title, format, lost)) ?? true
@@ -200,6 +206,10 @@ async function writeCaptured(
     return false
   if (!epochIsCurrent(document, epoch, controller.signal)) return false
   commit()
+  // Only what this save COVERS — §9.1, guarantee 3. Asked after the commit and re-read from the
+  // store, so an edit made WHILE the file was being written keeps its entry.
+  const { clearRecoveryCovered } = await import('./documentRecovery')
+  await clearRecoveryCovered(document.id)
   if (!byHand) return true
   await rewriteSourceAsset(document, savable.io, wasEdited, draft)
   void useDocuments.getState().relist('own-write')
@@ -302,49 +312,54 @@ async function copyDocumentAsset(
       reportFailure('assets.copy', document.title, localizedError('bakeContentEmpty'))
       return false
     }
-    const created = await useDocuments
-      .getState()
-      .create(document.workspace, {
-        title: name,
-        sourceAssetId: copy.id,
-        sourceFidelity: 'faithful',
-      })
-    if (!created) {
-      reportFailure('assets.copy', document.title, localizedError('copyDocumentMissing'))
-      return false
-    }
-    await bridge.documents.write(
-      created.id,
-      created.kind,
-      {
-        ...draft,
-        title: name,
-        sourceAssetId: copy.id,
-        // The copy IS what the studio holds, written whole: nothing was read to make it, so
-        // nothing was reduced on the way in.
-        sourceFidelity: 'faithful',
-      },
-      false,
-      parentOf(created.path) ?? FOLDER_ROOT,
-    )
-    openDocument(created)
-    await useAssets.getState().refresh()
-    void useDocuments.getState().relist('own-write')
-    return true
+    return await standUpCopy(bridge, document, name, copy.id, draft)
   } catch (error) {
     reportFailure('assets.copy', document.title, error)
     return false
   }
 }
 
+/**
+ * The tab the copy carries on in. Its fidelity is `faithful` and can be nothing else: the copy IS
+ * what the studio holds, written whole, so nothing was read to make it and nothing reduced.
+ */
+async function standUpCopy(
+  bridge: StudioBridge,
+  document: DocumentDescriptor,
+  name: string,
+  copyId: string,
+  draft: CapturedDraft,
+): Promise<boolean> {
+  const created = await useDocuments
+    .getState()
+    .create(document.workspace, { title: name, sourceAssetId: copyId, sourceFidelity: 'faithful' })
+  if (!created) {
+    reportFailure('assets.copy', document.title, localizedError('copyDocumentMissing'))
+    return false
+  }
+  await bridge.documents.write(
+    created.id,
+    created.kind,
+    { ...draft, title: name, sourceAssetId: copyId, sourceFidelity: 'faithful' },
+    false,
+    parentOf(created.path) ?? FOLDER_ROOT,
+  )
+  openDocument(created)
+  await useAssets.getState().refresh()
+  void useDocuments.getState().relist('own-write')
+  return true
+}
+
 export async function saveDocumentAs(documentId: string): Promise<boolean> {
   const savable = savableDocument(documentId)
   return savable ? await copyDocumentAsset(documentId, savable) : false
 }
-export function documentIsDirty(documentId: string): boolean {
-  const io = ioOf(documentId)
-  return io !== undefined && io.holds(documentId) && io.dirty(documentId)
+/** Through `import()` for the cycle: the recovery reads this module's own `documentIsDirty`. */
+async function discardRecovery(documentId: string): Promise<void> {
+  const { clearRecoveryOf } = await import('./documentRecovery')
+  await clearRecoveryOf(documentId)
 }
+
 let settling = 0
 async function whileSettling<T>(body: () => Promise<T>): Promise<T> {
   settling += 1
@@ -364,18 +379,27 @@ export async function closeDocument(documentId: string): Promise<boolean> {
       const choice = await askAboutUnsavedWork(documentId)
       if (choice === 'cancel') return false
       if (choice === 'save' && !(await saveDocument(documentId))) return false
+      // Purged at the CONFIRMED abandonment and never before — §9.1, guarantee 4.
+      if (choice === 'discard') await discardRecovery(documentId)
     }
     forgetDocument(documentId)
     return true
   })
 }
-export function unsavedDocumentIds(): string[] {
-  return Object.keys(useDocuments.getState().documents).filter(documentIsDirty)
-}
-export async function autosaveOpenDocuments(): Promise<void> {
+/**
+ * The pass that still writes REAL files, and the two kinds left to it.
+ *
+ * `covers` is what the recovery area could not hold — the character and the script. For every
+ * other kind this used to be the net, and it wrote the user's own files to be one: opening a
+ * video grew an `.otio` beside it, a sky a `.gltf`, neither asked for. See `documentRecovery.ts`.
+ */
+export async function autosaveOpenDocuments(
+  covers: (documentId: string) => boolean,
+): Promise<void> {
   if (settling > 0) return
   let wrote = false
   for (const documentId of unsavedDocumentIds()) {
+    if (!covers(documentId)) continue
     if (ioOf(documentId)?.autosaves === false) continue
     try {
       wrote = (await saveDocument(documentId, false)) || wrote
@@ -407,6 +431,7 @@ async function settleUnsaved(andForget: boolean): Promise<boolean> {
       // question", and nothing here tells them apart — so it stays silent rather than call a
       // deliberate cancel an error. `closeDocument` has the same line, and the same hole.
       if (choice === 'save' && !(await saveDocument(documentId))) return false
+      if (choice === 'discard') await discardRecovery(documentId)
       if (andForget) forgetDocument(documentId)
     }
     return true
@@ -462,7 +487,6 @@ function forgetDocumentState(documentId: string, document?: DocumentDescriptor):
   if (document) IO_BY_KIND[document.kind].forget(document)
   forgetLoadState(documentId)
   assetBehind.delete(documentId)
-  flattenAgreed.delete(documentId)
   useMaterialViews.getState().forget(documentId)
   useSkyboxViews.getState().forget(documentId)
   useMonitorPair.getState().forgetMonitorPair(documentId)

@@ -145,6 +145,12 @@ type ChannelMethod = {
   [CHANNELS.documentConfirmOverwrite]: StudioBridge['documents']['confirmOverwrite']
   [CHANNELS.documentConfirmFlatten]: StudioBridge['documents']['confirmFlatten']
 
+  [CHANNELS.recoveryWrite]: StudioBridge['recovery']['write']
+  [CHANNELS.recoveryList]: StudioBridge['recovery']['list']
+  [CHANNELS.recoveryRead]: StudioBridge['recovery']['read']
+  [CHANNELS.recoveryClear]: StudioBridge['recovery']['clear']
+  [CHANNELS.recoveryConfirmRestore]: StudioBridge['recovery']['confirmRestore']
+
   [CHANNELS.assetsSearch]: StudioBridge['assets']['search']
   [CHANNELS.assetsCounts]: StudioBridge['assets']['counts']
   [CHANNELS.assetsPeaks]: StudioBridge['assets']['peaks']

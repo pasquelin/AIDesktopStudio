@@ -29,6 +29,8 @@ import { ORA_MERGED_PATH } from '@shared/domain/openRaster'
 import { ORA_EXTENSION, PNG_EXTENSION, WAV_EXTENSION } from '@shared/domain/writtenFormat'
 import { probeWav } from '@main/media/wav'
 import { fileFactsOf } from './fileFacts'
+import { createRecoveryFiles } from './recoveryFiles'
+import { parseRecoveryDraft } from './recoveryValidation'
 import { registerAskHandlers } from './askHandlers'
 import { askLeaveWithJobs, askTrashFiles, askUseOccupiedFolder } from './projectDialogs'
 import { holdsAProject, openFailureKey, orWhenGone } from './store'
@@ -480,6 +482,13 @@ export function registerProjectHandlers({
   })
   handle(CHANNELS.documentRemove, (_event, id, kind) =>
     documents.remove(parseDocumentId(id), parseDocumentKind(kind)),
+  )
+  const recovery = createRecoveryFiles(() => project.path())
+  handle(CHANNELS.recoveryWrite, (_event, draft) => recovery.write(parseRecoveryDraft(draft)))
+  handle(CHANNELS.recoveryList, () => orWhenGone(() => recovery.list(), []))
+  handle(CHANNELS.recoveryRead, (_event, documentId) => recovery.read(parseDocumentId(documentId)))
+  handle(CHANNELS.recoveryClear, (_event, documentId) =>
+    recovery.clear(parseDocumentId(documentId)),
   )
   // The four routes that only raise a question live apart — see `askHandlers.ts`.
   registerAskHandlers(askUser)

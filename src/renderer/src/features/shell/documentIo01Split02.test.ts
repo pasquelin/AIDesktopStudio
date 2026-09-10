@@ -170,7 +170,12 @@ describe('saveDocument', () => {
       expect(savePicture).toHaveBeenCalled()
     })
 
-    it('asks once for a document, never again', async () => {
+    /**
+     * Asked at every save, never remembered. The answer used to be kept for the life of the
+     * document, which made it a toll rather than a decision: one yes and every ⌘S after it
+     * flattened the file without a word — including the ones where the layer had been undone.
+     */
+    it('asks again at each save, the answer belonging to the state being written', async () => {
       const confirmFlatten = vi.fn(() => Promise.resolve(true))
       installFakeBridge({
         documents: { write: () => Promise.resolve<DocumentWrite>('written'), confirmFlatten },
@@ -185,7 +190,7 @@ describe('saveDocument', () => {
       await saveDocument(documentId)
       release()
 
-      expect(confirmFlatten).toHaveBeenCalledTimes(1)
+      expect(confirmFlatten).toHaveBeenCalledTimes(2)
     })
 
     it('leaves the asset alone when the flatten is declined', async () => {

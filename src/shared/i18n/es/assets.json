@@ -113,6 +113,11 @@
     "fewerHint": "Repliega los filtros para dejar sitio a la colección"
   },
   "documents": {
+    "recoveryTitle": "¿Recuperar el trabajo sin guardar?",
+    "recoveryBody": "El estudio conservó {{count, number}} documento(s) modificados que no se habían guardado. No se borra nada si responde más tarde.",
+    "recoveryConfirm": "Recuperar",
+    "recoveryLater": "Más tarde",
+    "recoveryFull": "El área de recuperación está llena. No se ha borrado nada, pero guarde su trabajo.",
     "sourceReadReduced": "Parte de este archivo no se leyó: guardarlo encima la perdería. Guarde una copia.",
     "sourceFormatChange": "Guardar cambiaría el formato de este archivo. Elija un destino con «Guardar como».",
     "copyName": "{{name}} copia",

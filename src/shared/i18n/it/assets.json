@@ -113,6 +113,11 @@
     "fewerHint": "Richiude i filtri, per lasciare spazio alla collezione"
   },
   "documents": {
+    "recoveryTitle": "Recuperare il lavoro non salvato?",
+    "recoveryBody": "Lo studio ha conservato {{count, number}} documento/i modificati che non erano stati salvati. Non viene cancellato nulla se rispondi più tardi.",
+    "recoveryConfirm": "Recupera",
+    "recoveryLater": "Più tardi",
+    "recoveryFull": "L’area di recupero è piena. Non è stato cancellato nulla, ma salva il tuo lavoro.",
     "sourceReadReduced": "Una parte di questo file non è stata letta: salvarci sopra la perderebbe. Salva una copia.",
     "sourceFormatChange": "Salvare cambierebbe il formato di questo file. Scegli una destinazione con «Salva con nome».",
     "copyName": "{{name}} copia",

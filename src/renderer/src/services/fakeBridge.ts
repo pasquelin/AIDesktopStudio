@@ -10,14 +10,11 @@ import { DEFAULT_LANGUAGE } from '@shared/i18n/languages'
 import type { LogEntry, StudioBridge, TraceEntry } from '@shared/ipc'
 import { EMPTY_AI_OVERVIEW } from './fakeAiOverview'
 import { fakeBridgeGit } from './fakeBridgeGit'
+import { fakeAuxiliaryWindows } from './fakeBridgeWindows'
+import { fakeBridgeRecovery } from './fakeBridgeRecovery'
 import { fakeBridgeSettings } from './fakeBridgeSettings'
 import { fakeBridgeMissions } from './fakeBridgeMissions'
 import { fakeBridgeUpdates } from './fakeBridgeUpdates'
-const fakeRetargetWindow = (overrides: BridgeOverrides): StudioBridge['retargetWindow'] => ({
-  open: async () => {},
-  focusOrigin: async () => {},
-  ...overrides.retargetWindow,
-})
 const noSubscription = (): (() => void) => () => {}
 const nothingMoved = (): Promise<FileOutcome> =>
   Promise.resolve({ done: [], refused: [], batch: 'batch-fake' })
@@ -338,41 +335,12 @@ const fakeDictation = (overrides: BridgeOverrides): StudioBridge['dictation'] =>
   ...overrides.dictation,
 })
 
-const fakeMirror = (overrides: BridgeOverrides): StudioBridge['mirror'] => ({
-  open: () => Promise.resolve(),
-  ...overrides.mirror,
-})
-
-const fakePlayerModuleWindow = (
-  overrides: BridgeOverrides,
-): StudioBridge['playerModuleWindow'] => ({
-  open: () => Promise.resolve(),
-  ...overrides.playerModuleWindow,
-})
-
 const fakeExternalFiles = (overrides: BridgeOverrides): StudioBridge['externalFiles'] => ({
   take: () => Promise.resolve([]),
   offer: () => Promise.resolve({ request: null, refused: [] }),
   discard: () => Promise.resolve(),
   onOpen: noSubscription,
   ...overrides.externalFiles,
-})
-
-const fakeGameWindow = (overrides: BridgeOverrides): StudioBridge['gameWindow'] => ({
-  open: () => Promise.resolve(),
-  close: () => Promise.resolve(),
-  onClosed: () => () => {},
-  ...overrides.gameWindow,
-})
-
-const fakeHelp = (overrides: BridgeOverrides): StudioBridge['help'] => ({
-  open: () => Promise.resolve(),
-  ...overrides.help,
-})
-
-const fakeFileInfo = (overrides: BridgeOverrides): StudioBridge['fileInfo'] => ({
-  open: () => Promise.resolve(),
-  ...overrides.fileInfo,
 })
 
 const fakeNewDocument = (overrides: BridgeOverrides): StudioBridge['newDocument'] => ({
@@ -439,6 +407,7 @@ function fakeBridge(overrides: BridgeOverrides): StudioBridge {
     dialog: fakeDialog(overrides),
     game: fakeGame(overrides),
     documents: fakeDocuments(overrides),
+    recovery: fakeBridgeRecovery(overrides.recovery),
     assets: fakeAssets(overrides),
     smartSelection: fakeSmartSelection(overrides),
     cloud: fakeCloud(overrides),
@@ -460,12 +429,7 @@ function fakeBridge(overrides: BridgeOverrides): StudioBridge {
     ai: fakeAi(overrides),
     autoRig: { run: () => Promise.reject(new Error('no Auto Rig backend')), ...overrides.autoRig },
     dictation: fakeDictation(overrides),
-    mirror: fakeMirror(overrides),
-    retargetWindow: fakeRetargetWindow(overrides),
-    playerModuleWindow: fakePlayerModuleWindow(overrides),
-    gameWindow: fakeGameWindow(overrides),
-    help: fakeHelp(overrides),
-    fileInfo: fakeFileInfo(overrides),
+    ...fakeAuxiliaryWindows(overrides),
     newDocument: fakeNewDocument(overrides),
     window: fakeWindow(overrides),
     diagnostics: fakeDiagnostics(overrides),

@@ -132,13 +132,7 @@ async function handImported(
   // batch first held a dropped `.otioz` behind fifty clips. The pass refreshes again itself.
   const { generateAnimationThumbnails } = await import('./animationThumbnails')
   await generateAnimationThumbnails(assets)
-  if (imported.documents.length > 0) {
-    await useDocuments.getState().relist()
-    if (opens) {
-      const { openDocument } = await import('@/features/shell/components/dockviewApi')
-      for (const document of imported.documents) openDocument(document)
-    }
-  }
+  await listImportedDocuments(imported, opens)
   // What a surface would not take is SAID, never opened somewhere else: a video dropped on a
   // canvas used to be filed and then opened in the video space, which is a tab nobody asked for.
   const unhandled = onImported ? assets.filter(asset => onImported(asset) === false) : assets
@@ -153,6 +147,18 @@ function reportFilesNotPlaced(names: readonly string[]): void {
     'assets.copy',
     i18next.t('activity.notPlacedFiles', { count: names.length, names: names.join(', ') }),
   )
+}
+
+/** The documents that arrived, listed — and put in front only by a door that OPENS (R2). */
+async function listImportedDocuments(
+  imported: ExternalFileImport,
+  opens: true | undefined,
+): Promise<void> {
+  if (imported.documents.length === 0) return
+  await useDocuments.getState().relist()
+  if (!opens) return
+  const { openDocument } = await import('@/features/shell/components/dockviewApi')
+  for (const document of imported.documents) openDocument(document)
 }
 
 async function openExternalAssets(assets: readonly Asset[]): Promise<void> {

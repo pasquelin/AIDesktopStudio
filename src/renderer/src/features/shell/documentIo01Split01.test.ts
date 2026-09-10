@@ -1,13 +1,10 @@
 import { workshopIdOf } from '@shared/domain/character'
-import { DEFAULT_CANVAS, pixelLayer } from '@/engines/canvas/canvasState'
-import { addLayer } from '@/engines/canvas/commands'
 import { setCharacterBoneRest } from '@/engines/character/characterCommands'
 import { addNode } from '@/engines/scene/commands'
 import { createDefaultScene } from '@/engines/scene/defaultScene'
 import { sceneFromGltf } from '@/engines/scene/gltfDocument'
 import { meshNode } from '@/engines/scene/scene-fixtures'
-import { bridgeWatchingLogs, installFakeBridge } from '@/services/fakeBridge'
-import { useCanvases } from '@/stores/canvases'
+import { installFakeBridge } from '@/services/fakeBridge'
 import { characterStore, seedCharacter, useCharacters } from '@/stores/character'
 import { installCharacterDocument } from '@/stores/character-fixtures'
 import { useDocuments } from '@/stores/documents'
@@ -18,14 +15,13 @@ import { documentFolderOf, type DocumentWrite } from '@shared/domain/document'
 import { isGltfDocument } from '@shared/domain/gltf'
 import { DEFAULT_WORLD } from '@shared/domain/scene'
 import { describe, expect, it, vi } from 'vitest'
-import { sceneFromPayloadFile } from './sceneDocument'
 
 // The real one needs a live Dockview; what this file checks is that closing and opening reach it.
 import {
   BONE,
   RAISED,
-  autosaveOpenDocuments,
   box,
+  keepUnsavedWorkSafe,
   closeDocument,
   patched,
   restoreDocument,
@@ -152,31 +148,22 @@ describe('saveDocument', () => {
     expect(forced).toEqual([false, true])
   })
 
-  describe('autosave', () => {
-    it('writes an open document that has work in it', async () => {
+  /**
+   * The net, since 2026-09-10: it writes into the recovery area and no longer into the user's
+   * own files. Writing them WAS how it worked, and it is how opening a video came to leave an
+   * `.otio` beside it — `documentRecovery.test.ts` holds what the net now writes.
+   */
+  describe('the pass that runs on a timer', () => {
+    it('writes no file of the user for a document the recovery holds', async () => {
       const write = vi.fn(() => Promise.resolve<DocumentWrite>('written'))
       installFakeBridge({ documents: { write } })
       const documentId = await openScene()
 
-      await autosaveOpenDocuments()
-
-      expect(write).toHaveBeenCalled()
-      expect(isSceneDirty(useScenes.getState(), documentId)).toBe(false)
-    })
-
-    // The layers are read back off the GPU, and that cost is unmeasured: a save on a timer would
-    // stutter the canvas every half-minute. ⌘S still writes it.
-    it('never writes an image document', async () => {
-      const write = vi.fn(() => Promise.resolve<DocumentWrite>('written'))
-      installFakeBridge({ documents: { write } })
-      const created = await useDocuments.getState().create('image')
-      if (!created) throw new Error('expected a document')
-      useCanvases.getState().ensure(created.id, () => DEFAULT_CANVAS)
-      useCanvases.getState().runCommand(created.id, addLayer(pixelLayer('layer-1', 'Layer')))
-
-      await autosaveOpenDocuments()
+      await keepUnsavedWorkSafe()
 
       expect(write).not.toHaveBeenCalled()
+      // And the work is still unsaved, which is the truth: nothing was written to its file.
+      expect(isSceneDirty(useScenes.getState(), documentId)).toBe(true)
     })
 
     /**
@@ -193,47 +180,11 @@ describe('saveDocument', () => {
       const documentId = await openScene()
 
       const closing = closeDocument(documentId)
-      await autosaveOpenDocuments()
+      await keepUnsavedWorkSafe()
       expect(write).not.toHaveBeenCalled()
 
       answer('discard')
       await closing
-    })
-
-    // A dialog nobody summoned, in front of work someone is in the middle of, is worse than the
-    // save it was trying to make.
-    it('asks nothing when the file changed outside, and leaves it for ⌘S', async () => {
-      const confirmOverwrite = vi.fn(() => Promise.resolve(true))
-      installFakeBridge({
-        documents: { write: () => Promise.resolve<DocumentWrite>('stale'), confirmOverwrite },
-      })
-      const documentId = await openScene()
-
-      await autosaveOpenDocuments()
-
-      expect(confirmOverwrite).not.toHaveBeenCalled()
-      expect(isSceneDirty(useScenes.getState(), documentId)).toBe(true)
-    })
-
-    /**
-     * A refused document is refused on EVERY pass, and `document.save` is a gesture scope, so
-     * nothing deduplicates it: said here, the sentence would land in front of the user every
-     * thirty seconds, for good. The contract this suite holds is the one written on the function
-     * — « neither a refusal nor a failure is reported » — and only ⌘S answers for itself.
-     */
-    it('says nothing when a document refuses, where ⌘S says why', async () => {
-      const { entries } = bridgeWatchingLogs({
-        documents: { write: () => Promise.resolve<DocumentWrite>('written') },
-      })
-      const documentId = await openScene()
-      // The file came back holding meshes, which a save would recompose away.
-      sceneFromPayloadFile({ asset: { version: '2.0' }, meshes: [{ primitives: [] }] }, documentId)
-
-      await autosaveOpenDocuments()
-      expect(entries().filter(entry => entry.scope === 'document.save')).toEqual([])
-
-      await saveDocument(documentId)
-      expect(entries().filter(entry => entry.scope === 'document.save')).toHaveLength(1)
     })
   })
 

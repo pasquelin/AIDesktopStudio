@@ -88,8 +88,10 @@ const {
   saveDocumentAs,
   settleUnsavedWork,
   settleUnsavedWorkForProjectChange,
-  unsavedDocumentIds,
 } = await import('./documentIo')
+const { unsavedDocumentIds } = await import('./documentDirty')
+const { offerRecoveredWork, recoverOpenDocuments } = await import('./documentRecovery')
+const { keepUnsavedWorkSafe } = await import('./unsavedWork')
 
 /** One bone, so a case can read back what ⌘S wrote into the skeleton of the model. */
 const BONE: RigBone = { name: 'Spine', parent: null, rest: IDENTITY_TRANSFORM }
@@ -97,6 +99,9 @@ const RAISED = { ...IDENTITY_TRANSFORM, position: { x: 0, y: 0.2, z: 0 } }
 
 export {
   autosaveOpenDocuments,
+  keepUnsavedWorkSafe,
+  offerRecoveredWork,
+  recoverOpenDocuments,
   BONE,
   box,
   closeDocument,

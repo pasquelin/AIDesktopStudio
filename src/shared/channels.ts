@@ -149,6 +149,12 @@ export type Channels = {
   documentConfirmOverwrite: 'document:confirm-overwrite'
   documentConfirmFlatten: 'document:confirm-flatten'
 
+  recoveryWrite: 'recovery:write'
+  recoveryList: 'recovery:list'
+  recoveryRead: 'recovery:read'
+  recoveryClear: 'recovery:clear'
+  recoveryConfirmRestore: 'recovery:confirm-restore'
+
   assetsSearch: 'assets:search'
   assetsCounts: 'assets:counts'
   assetsPeaks: 'assets:peaks'

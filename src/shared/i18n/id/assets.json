@@ -113,6 +113,11 @@
     "fewerHint": "Melipat filter, untuk memberi ruang bagi koleksi"
   },
   "documents": {
+    "recoveryTitle": "Kembalikan pekerjaan yang belum disimpan?",
+    "recoveryBody": "Studio menyimpan {{count, number}} dokumen yang diubah dan belum disimpan. Tidak ada yang dihapus jika Anda menjawab nanti.",
+    "recoveryConfirm": "Kembalikan",
+    "recoveryLater": "Nanti",
+    "recoveryFull": "Area pemulihan penuh. Tidak ada yang dihapus, tetapi simpanlah pekerjaan Anda.",
     "sourceReadReduced": "Sebagian berkas ini tidak terbaca: menyimpan di atasnya akan menghilangkannya. Simpan salinan.",
     "sourceFormatChange": "Menyimpan akan mengubah format berkas ini. Pilih tujuan lewat «Simpan sebagai».",
     "copyName": "{{name}} salinan",

@@ -132,3 +132,26 @@ export async function askFlattenDocument(
     true,
   )
 }
+
+/**
+ * Whether to bring back work a previous session had not written down.
+ *
+ * Defaults to YES, like the flatten above and for the same shape of reason: saying yes puts the
+ * work back in front of the person who made it and destroys nothing, where saying no keeps every
+ * entry waiting. Nothing is purged either way — an offer declined is not an abandonment (§9.1).
+ */
+export async function askRestoreRecovery(ask: AskUser, count: number): Promise<boolean> {
+  const language = windowLanguage()
+  const t = TRANSLATIONS[language].documents
+
+  return await askConfirm(
+    ask,
+    {
+      message: fillHoles(t.recoveryTitle, { count }, language),
+      detail: t.recoveryBody,
+      confirm: t.recoveryConfirm,
+      cancel: t.recoveryLater,
+    },
+    true,
+  )
+}
