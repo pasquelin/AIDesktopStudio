@@ -57,7 +57,12 @@ describe('saveDocument', () => {
       useAssets.setState({ items: [{ ...picture(), path }] })
     }
 
-    it('writes the asset it edits, after the document', async () => {
+    /**
+     * ONE write, into the one destination the document has — §5.3. It used to write two: the
+     * studio's own `.ora` in the documents folder AND the picture, at every single ⌘S. That is
+     * where the two files came from, and the second was an export nobody asked for.
+     */
+    it('writes the asset it edits, and nothing beside it', async () => {
       const order: string[] = []
       const savePicture = vi.fn(() => {
         order.push('asset')
@@ -88,7 +93,7 @@ describe('saveDocument', () => {
         png: PNG,
         format: 'png',
       })
-      expect(order).toEqual(['document', 'asset'])
+      expect(order).toEqual(['asset'])
     })
 
     it('tells the engine to forget the picture it has just overwritten', async () => {
@@ -193,7 +198,8 @@ describe('saveDocument', () => {
       expect(confirmFlatten).toHaveBeenCalledTimes(2)
     })
 
-    it('leaves the asset alone when the flatten is declined', async () => {
+    /** Nothing was written, so nothing may read as saved: the work is still unsaved work. */
+    it('writes nothing and stays modified when the flatten is declined', async () => {
       const savePicture = vi.fn(() => Promise.resolve(picture()))
       installFakeBridge({
         documents: {
@@ -206,11 +212,11 @@ describe('saveDocument', () => {
       const { documentId, release } = await openImage('asset-1')
       useCanvases.getState().runCommand(documentId, addLayer(pixelLayer('layer-2', 'Layer')))
 
-      await expect(saveDocument(documentId)).resolves.toBe(true)
+      await expect(saveDocument(documentId)).resolves.toBe(false)
       release()
 
       expect(savePicture).not.toHaveBeenCalled()
-      expect(canvasStore.hasUnsavedWork(useCanvases.getState(), documentId)).toBe(false)
+      expect(canvasStore.hasUnsavedWork(useCanvases.getState(), documentId)).toBe(true)
     })
 
     it('writes a stack straight back into a source that can hold one', async () => {

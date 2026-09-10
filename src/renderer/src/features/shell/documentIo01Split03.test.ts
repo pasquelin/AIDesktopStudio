@@ -209,44 +209,35 @@ describe('saveDocument', () => {
       expect(savePicture).toHaveBeenCalledTimes(2)
     })
 
-    it('says so, and retries, when there was nothing to bake yet', async () => {
-      const savePicture = vi.fn(() => Promise.resolve(picture()))
-      let booting = (): void => undefined
+    /**
+     * The debt: a save whose asset write failed comes back at the NEXT save, even though nothing
+     * has changed since. Without it, one failure left the file behind the document for good.
+     */
+    it('carries the debt of a failed asset write to the next save', async () => {
+      const savePicture = vi
+        .fn()
+        .mockRejectedValueOnce(new Error('disk full'))
+        .mockResolvedValue(picture())
       const { entries } = bridgeWatchingLogs({
-        documents: {
-          write: () => {
-            booting()
-            return Promise.resolve<DocumentWrite>('written')
-          },
-        },
+        documents: { write: () => Promise.resolve<DocumentWrite>('written') },
         assets: { savePicture },
       })
-      const created = await useDocuments.getState().create('image', {
-        title: 'Gemini 3.1',
-        sourceAssetId: 'asset-1',
-        sourceFidelity: 'faithful',
-      })
-      if (!created) throw new Error('expected a document')
       shelve('Images/hero.png')
-      useCanvases.getState().ensure(created.id, () => DEFAULT_CANVAS)
+      const { documentId, release } = await openImage('asset-1')
+      editImage(documentId)
 
-      booting = holdCanvas(created.id, () => fakeCanvas())
-      editImage(created.id)
-      await saveDocument(created.id)
-
-      expect(savePicture).not.toHaveBeenCalled()
+      await expect(saveDocument(documentId)).resolves.toBe(false)
       expect(entries()[0]).toMatchObject({ scope: 'assets.save' })
 
-      // The engine is up now, and the debt is what brings the asset back into line.
-      booting = () => undefined
-      const ready = holdCanvas(created.id, () => fakeCanvas())
-      await saveDocument(created.id)
-      ready()
+      // Nothing has changed since, and the save writes all the same.
+      await expect(saveDocument(documentId)).resolves.toBe(true)
+      release()
 
-      expect(savePicture).toHaveBeenCalledTimes(1)
+      expect(savePicture).toHaveBeenCalledTimes(2)
     })
 
-    it('keeps the document written when the asset is refused', async () => {
+    /** The asset IS the destination: a refusal leaves the work unsaved, and says so. */
+    it('leaves the document modified when the asset is refused', async () => {
       const { entries } = bridgeWatchingLogs({
         documents: { write: () => Promise.resolve<DocumentWrite>('written') },
         assets: { savePicture: () => Promise.reject(new Error('disk full')) },
@@ -254,10 +245,10 @@ describe('saveDocument', () => {
       const { documentId, release } = await openImage('asset-1')
       editImage(documentId)
 
-      await expect(saveDocument(documentId)).resolves.toBe(true)
+      await expect(saveDocument(documentId)).resolves.toBe(false)
       release()
 
-      expect(canvasStore.hasUnsavedWork(useCanvases.getState(), documentId)).toBe(false)
+      expect(canvasStore.hasUnsavedWork(useCanvases.getState(), documentId)).toBe(true)
       expect(entries()[0]).toMatchObject({ scope: 'assets.save' })
     })
 

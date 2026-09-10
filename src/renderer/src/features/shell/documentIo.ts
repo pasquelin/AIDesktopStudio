@@ -4,18 +4,12 @@ import { getBridge } from '@/services/bridge'
 import { reportFailure, reportNotice } from '@/services/diagnostics'
 import { assetsById, useAssets } from '@/stores/assets'
 import { useDocuments } from '@/stores/documents'
-import { takenDocumentNames } from '@/stores/documentNames'
 import { useLivePreviews } from '@/stores/livePreviews'
 import { useMaterialViews } from '@/stores/materialViews'
 import { useMonitorPair } from '@/stores/monitorPair'
 import { usePlayback } from '@/stores/playback'
 import { useSkyboxViews } from '@/stores/skyboxViews'
-import {
-  documentFolderOf,
-  type CloseChoice,
-  type DocumentDescriptor,
-} from '@shared/domain/document'
-import { nextFreeDocumentName } from '@shared/domain/documentName'
+import { type CloseChoice, type DocumentDescriptor } from '@shared/domain/document'
 import { FOLDER_ROOT, parentOf } from '@shared/domain/folder'
 import {
   formatOfFile,
@@ -27,7 +21,7 @@ import { mayOverwriteSource, readFidelityOf, type ReadFidelity } from '@shared/d
 import { keepsWrittenFormat } from '@shared/domain/writtenFormat'
 import type { StudioBridge } from '@shared/ipc'
 import i18next from 'i18next'
-import { closePanel, openDocument } from './components/dockviewApi'
+import { closePanel } from './components/dockviewApi'
 import { IO_BY_KIND, ioOf, type CapturedDraft, type DocumentIo } from './documentIoAdapters'
 import {
   epochIsCurrent,
@@ -84,7 +78,7 @@ async function agreedToFlatten(
 }
 const askedToFlatten = async (title: string, format: string, lost: string): Promise<boolean> =>
   (await getBridge()?.documents.confirmFlatten(title, format, lost)) ?? true
-type SavableDocument = {
+export type SavableDocument = {
   bridge: StudioBridge
   document: DocumentDescriptor
   io: DocumentIo
@@ -97,7 +91,7 @@ type CapturedDocument = Awaited<
 >
 type CaptureResult = { ok: true; captured: CapturedDocument } | { ok: false; error: unknown }
 
-function savableDocument(documentId: string, byHand = true): SavableDocument | null {
+export function savableDocument(documentId: string, byHand = true): SavableDocument | null {
   const bridge = getBridge()
   const document = useDocuments.getState().documents[documentId]
   const io = ioOf(documentId)
@@ -193,27 +187,51 @@ async function writeCaptured(
   let { document } = savable
   if (!epochIsCurrent(document, epoch, controller.signal)) return false
   document = useDocuments.getState().documents[document.id] ?? document
-  const { draft, commit, wasEdited } = captured
-  const payload = {
-    ...draft,
-    title: document.title,
-    ...(document.sourceAssetId ? { sourceAssetId: document.sourceAssetId } : {}),
-    // Carried into the file, so a document reopened next session does not regain the right to
-    // overwrite a source this session read reduced.
-    ...(document.sourceFidelity ? { sourceFidelity: document.sourceFidelity } : {}),
-  }
-  if (!(await writeDraft(savable, document, payload, epoch, controller.signal, byHand)))
+  const { commit } = captured
+
+  if (!(await writeWhereItBelongs(savable, document, captured, epoch, controller, byHand))) {
     return false
+  }
   if (!epochIsCurrent(document, epoch, controller.signal)) return false
   commit()
   // Only what this save COVERS — §9.1, guarantee 3. Asked after the commit and re-read from the
   // store, so an edit made WHILE the file was being written keeps its entry.
   const { clearRecoveryCovered } = await import('./documentRecovery')
   await clearRecoveryCovered(document.id)
-  if (!byHand) return true
-  await rewriteSourceAsset(document, savable.io, wasEdited, draft)
   void useDocuments.getState().relist('own-write')
   return true
+}
+
+/**
+ * ONE write per ⌘S, into the one destination the document has — §5.3.
+ *
+ * A document opened FOR an asset writes that asset's file and nothing else. It used to write
+ * both: the studio's own `.ora` in the documents folder AND the picture, every single time. That
+ * is where the two files came from, and the second of them was an export nobody asked for (R5).
+ *
+ * Every other document writes its own file, which IS its destination.
+ */
+async function writeWhereItBelongs(
+  savable: WritableSavableDocument,
+  document: DocumentDescriptor,
+  { draft, wasEdited }: CapturedDocument,
+  epoch: number,
+  controller: AbortController,
+  byHand: boolean,
+): Promise<boolean> {
+  const source = document.sourceAssetId
+  if (savable.io.writeAsset && source) {
+    return await rewriteSourceAsset(document, savable.io, wasEdited, draft)
+  }
+  const payload = {
+    ...draft,
+    title: document.title,
+    ...(source ? { sourceAssetId: source } : {}),
+    // Carried into the file, so a document reopened next session does not regain the right to
+    // overwrite a source this session read reduced.
+    ...(document.sourceFidelity ? { sourceFidelity: document.sourceFidelity } : {}),
+  }
+  return await writeDraft(savable, document, payload, epoch, controller.signal, byHand)
 }
 
 function capturedOrThrow(result: CaptureResult, signal: AbortSignal): CapturedDocument | null {
@@ -239,7 +257,7 @@ async function writeDraft(
   return true
 }
 
-function writePlanFor(
+export function writePlanFor(
   document: DocumentDescriptor,
   io: DocumentIo,
   sourceAssetId: string,
@@ -257,12 +275,16 @@ async function rewriteSourceAsset(
   io: DocumentIo,
   wasEdited: boolean,
   captured: CapturedDraft,
-): Promise<void> {
+): Promise<boolean> {
   const source = document.sourceAssetId
-  if (!source || !io.writeAsset) return
-  if (!wasEdited && !assetBehind.has(document.id)) return
+  if (!source || !io.writeAsset) return true
+  // Nothing moved since the last save: a re-encode that changes nothing is a file rewritten for
+  // no reason, and for a lossy format it is quality spent for no reason (§6.2).
+  if (!wasEdited && !assetBehind.has(document.id)) return true
   const { format, losses } = writePlanFor(document, io, source)
-  if (losses.length > 0 && !(await agreedToFlatten(document, format, losses))) return
+  // Declining leaves the file alone AND the document modified: nothing was written, so nothing
+  // may read as saved.
+  if (losses.length > 0 && !(await agreedToFlatten(document, format, losses))) return false
   try {
     const written = await io.writeAsset(
       document.id,
@@ -273,87 +295,14 @@ async function rewriteSourceAsset(
     assetBehind.delete(document.id)
     useLivePreviews.getState().revokePreview(source)
     useAssets.getState().invalidate()
+    return true
   } catch (error) {
     assetBehind.add(document.id)
     reportFailure('assets.save', document.title, error)
-  }
-}
-/**
- * What a copy is called, freed of a name the folder already holds: the store leaves a view of an
- * asset its asset's name, and copying one document twice stood two tabs on one file, each saving
- * over the other (2026-09-09).
- */
-const copyName = (document: DocumentDescriptor): string =>
-  nextFreeDocumentName(
-    i18next.t('documents.copyName', { name: document.title }),
-    document.kind,
-    takenDocumentNames(useDocuments.getState(), documentFolderOf(document.kind)),
-  )
-
-async function copyDocumentAsset(
-  documentId: string,
-  { bridge, document, io }: SavableDocument,
-): Promise<boolean> {
-  const source = document.sourceAssetId
-  if (!source || !io.writeAsset || io.assetOnly) {
-    reportFailure('assets.copy', document.title, localizedError('copyContentEmpty'))
-    return false
-  }
-  const name = copyName(document)
-  const { format, losses } = writePlanFor(document, io, source)
-  try {
-    const { draft } = await io.capture(documentId)
-    const copy = await io.writeAsset(
-      documentId,
-      { derivedFrom: source, name, format: losses.length === 0 ? format : 'ora' },
-      draft,
-    )
-    if (!copy) {
-      reportFailure('assets.copy', document.title, localizedError('bakeContentEmpty'))
-      return false
-    }
-    return await standUpCopy(bridge, document, name, copy.id, draft)
-  } catch (error) {
-    reportFailure('assets.copy', document.title, error)
     return false
   }
 }
 
-/**
- * The tab the copy carries on in. Its fidelity is `faithful` and can be nothing else: the copy IS
- * what the studio holds, written whole, so nothing was read to make it and nothing reduced.
- */
-async function standUpCopy(
-  bridge: StudioBridge,
-  document: DocumentDescriptor,
-  name: string,
-  copyId: string,
-  draft: CapturedDraft,
-): Promise<boolean> {
-  const created = await useDocuments
-    .getState()
-    .create(document.workspace, { title: name, sourceAssetId: copyId, sourceFidelity: 'faithful' })
-  if (!created) {
-    reportFailure('assets.copy', document.title, localizedError('copyDocumentMissing'))
-    return false
-  }
-  await bridge.documents.write(
-    created.id,
-    created.kind,
-    { ...draft, title: name, sourceAssetId: copyId, sourceFidelity: 'faithful' },
-    false,
-    parentOf(created.path) ?? FOLDER_ROOT,
-  )
-  openDocument(created)
-  await useAssets.getState().refresh()
-  void useDocuments.getState().relist('own-write')
-  return true
-}
-
-export async function saveDocumentAs(documentId: string): Promise<boolean> {
-  const savable = savableDocument(documentId)
-  return savable ? await copyDocumentAsset(documentId, savable) : false
-}
 /** Through `import()` for the cycle: the recovery reads this module's own `documentIsDirty`. */
 async function discardRecovery(documentId: string): Promise<void> {
   const { clearRecoveryOf } = await import('./documentRecovery')

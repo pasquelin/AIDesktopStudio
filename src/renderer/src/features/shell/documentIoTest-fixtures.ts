@@ -85,11 +85,11 @@ const {
   renamedDocumentProject,
   refreshDocuments,
   saveDocument,
-  saveDocumentAs,
   settleUnsavedWork,
   settleUnsavedWorkForProjectChange,
 } = await import('./documentIo')
 const { unsavedDocumentIds } = await import('./documentDirty')
+const { saveDocumentAs } = await import('./documentCopy')
 const { offerRecoveredWork, recoverOpenDocuments } = await import('./documentRecovery')
 const { keepUnsavedWorkSafe } = await import('./unsavedWork')
 
