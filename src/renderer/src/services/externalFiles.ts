@@ -32,6 +32,12 @@ type ExternalAssetReceiver = (asset: Asset) => boolean | void
 type ExternalArrival = {
   onImported?: ExternalAssetReceiver
   opens?: true
+  /**
+   * Files what arrives as a DURABLE INTERNAL resource rather than in the project's tree — what a
+   * drop INTO a document asks for (§7). Nothing new appears in the explorer for a picture that
+   * became a layer, and removing the layer does not leave a file behind.
+   */
+  internal?: true
 }
 
 type WaitingExternalFiles = ExternalArrival & {
@@ -98,7 +104,7 @@ async function importRequest(
   }
 
   const imported = await runTask(i18next.t('activity.importingFiles'), id =>
-    bridge.media.ingestPaths(request.id, request.folder ?? '', id),
+    bridge.media.ingestPaths(request.id, request.folder ?? '', id, arrival.internal),
   )
   // A stop undoes nothing the main already copied and adopted, and its answer is dropped with the
   // race it lost — without this the catalogue holds rows the browser never shows.
@@ -249,6 +255,7 @@ export async function importExternalFilesInto(
   files: readonly File[] | FileList,
   accepts: readonly AssetType[],
   onImported: ExternalAssetReceiver,
+  internal?: true,
 ): Promise<void> {
   const wanted = [...files].filter(file => {
     const type = importableAssetTypeOf(file.name)
@@ -258,7 +265,10 @@ export async function importExternalFilesInto(
   if (wanted.length === 0) return
   const offer = await offerExternalFiles(wanted)
   if (!offer) return
-  queueExternalFiles([externalFileOfferForCurrentProject(offer)], { onImported })
+  queueExternalFiles([externalFileOfferForCurrentProject(offer)], {
+    onImported,
+    ...(internal ? { internal } : {}),
+  })
 }
 
 function reportFilesTheSurfaceRefuses(files: readonly File[], wanted: readonly File[]): void {

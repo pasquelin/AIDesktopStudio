@@ -59,6 +59,10 @@ export function ImageDocumentView(props: ImageDocumentViewProps) {
       <AssetDropTarget
         accepts={PICTURES}
         onDrop={props.onDrop}
+        // A picture dropped here becomes a LAYER: a resource of this document, not a file of the
+        // project (§6.3, D1). The layer names its asset and the engine fetches it by id, so
+        // nothing here reads it off a list the explorer feeds.
+        filesAreInternal
         outlined={false}
         className={cn('relative min-w-0 flex-1 overflow-hidden', props.checker)}
       >

@@ -22,6 +22,12 @@ export type AssetDropTargetProps = {
    */
   onFiles?: (asset: Asset) => boolean | void
   /**
+   * Whether a FILE dropped here becomes a resource of the document rather than a file of the
+   * project's tree (§7, G-V). Set by the surfaces that place what they take INTO a document and
+   * resolve it by identity — a canvas layer names its asset and the engine fetches it by id.
+   */
+  filesAreInternal?: true
+  /**
    * For a target sitting inside another: the surface behind must not LIGHT UP too.
    *
    * Only the outline — the drop itself is consumed by whichever target takes it, always, so a
@@ -57,6 +63,7 @@ export function AssetDropTarget({
   accepts,
   onDrop,
   onFiles,
+  filesAreInternal,
   exclusive,
   outlined = true,
   onContextMenu,
@@ -118,7 +125,12 @@ export function AssetDropTarget({
           // and opened each one in its own space. `importExternalFilesInto` says what it left.
           event.preventDefault()
           event.stopPropagation()
-          void importExternalFilesInto(event.dataTransfer.files, accepts, onFiles ?? onDrop)
+          void importExternalFilesInto(
+            event.dataTransfer.files,
+            accepts,
+            onFiles ?? onDrop,
+            filesAreInternal,
+          )
           return
         }
 

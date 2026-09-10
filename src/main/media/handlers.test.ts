@@ -181,6 +181,7 @@ describe('media handlers', () => {
       ['/outside/model.glb'],
       'Models',
       expect.objectContaining({ signal: expect.any(AbortSignal) }),
+      undefined,
     )
     expect(result).toEqual({
       assets: [expect.not.objectContaining({ sourcePath: expect.anything() })],

@@ -34,6 +34,12 @@ export type MediaHandlerDeps = {
     paths: readonly string[],
     folder: string,
     watch: TaskWatch,
+    /**
+     * Files the arrivals as DURABLE INTERNAL resources rather than in the project's own tree —
+     * what a drop INTO a document asks for (§7). A flag, never a folder: a path reaching this
+     * from a window would write wherever its first `../` pointed.
+     */
+    internal?: true,
   ) => Promise<ExternalFileImport>
   claimExternalFiles: (id: string) => readonly string[]
   running: RunningTasks
@@ -101,17 +107,22 @@ export function registerMediaHandlers({
     return { ...copied, assets }
   })
 
-  handle(CHANNELS.mediaIngestPaths, async (event, requestId, folder, taskId) => {
+  handle(CHANNELS.mediaIngestPaths, async (event, requestId, folder, taskId, internal) => {
     const paths = claimExternalFiles(requestId)
     return await running.run(taskId, async signal => {
-      const imported = await importPaths(paths, parseFolderPath(folder), {
-        signal,
-        onStep: (done, total) =>
-          sendToSender(event.sender, EVENTS.taskProgress, {
-            id: taskId,
-            ratio: taskRatio(done, total),
-          }),
-      })
+      const imported = await importPaths(
+        paths,
+        parseFolderPath(folder),
+        {
+          signal,
+          onStep: (done, total) =>
+            sendToSender(event.sender, EVENTS.taskProgress, {
+              id: taskId,
+              ratio: taskRatio(done, total),
+            }),
+        },
+        internal === true ? true : undefined,
+      )
       return { ...imported, assets: imported.assets.map(withoutSourcePath) }
     })
   })

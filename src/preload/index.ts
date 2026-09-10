@@ -321,8 +321,8 @@ const bridge: StudioBridge = {
     adopt: relative => ipcRenderer.invoke(CHANNELS.mediaAdopt, relative),
     ingest: folder => ipcRenderer.invoke(CHANNELS.mediaIngest, folder),
     link: () => ipcRenderer.invoke(CHANNELS.mediaLink),
-    ingestPaths: (requestId, folder, taskId) =>
-      ipcRenderer.invoke(CHANNELS.mediaIngestPaths, requestId, folder, taskId),
+    ingestPaths: (requestId, folder, taskId, internal) =>
+      ipcRenderer.invoke(CHANNELS.mediaIngestPaths, requestId, folder, taskId, internal),
     importPicked: (role, taskId) => ipcRenderer.invoke(CHANNELS.mediaImportPicked, role, taskId),
     cancel: assetId => ipcRenderer.invoke(CHANNELS.mediaCancel, assetId),
     capabilities: () => ipcRenderer.invoke(CHANNELS.mediaAvailable),
