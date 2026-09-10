@@ -44,16 +44,13 @@ export function createFileDependents({ list, read, idsOf }: FileDependentsDeps):
           ids.get(path) ?? [],
         ),
       }))
-      // Read together rather than one at a time: the reads are independent, and a project of
-      // sixty documents held the confirmation dialogue behind sixty sequential decodes.
-      const opened = await Promise.all(
-        (await list()).map(async document => ({
-          document,
-          file: await orElse(read(document.id, document.kind), null),
-        })),
-      )
       const found: FileUse[] = []
-      for (const { document, file } of opened) {
+      // One at a time, and never an image: a container of ten 4K layers comes back as a hundred
+      // megabytes of surfaces, and `Promise.all` over the project would hold every one of them at
+      // once. An image CITES nothing anyway — it incorporates what it holds.
+      for (const document of await list()) {
+        if (document.kind === 'image') continue
+        const file = await orElse(read(document.id, document.kind), null)
         if (!file) continue
         const used = wanted
           .filter(one => one.needles.some(needle => needle !== '' && file.content.includes(needle)))

@@ -138,6 +138,11 @@ export async function rehydrateDocument(documentId: string): Promise<void> {
   const io = ioOf(documentId)
   if (!bridge || !document || !io?.rehydrate) return
   if (!io.holds(documentId) || unreadable.has(documentId)) return
+  // Work a restore put back comes FIRST: reading the file here would put the last saved pixels
+  // over the recovered stack, which is the loss the recovery area exists to prevent.
+  const { takeRestoredWork } = await import('./documentRecovery')
+  const recovered = takeRestoredWork(documentId)
+  if (recovered) return io.rehydrate(documentId, recovered.content, recovered.parts ?? [])
   try {
     const file = await bridge.documents.read(document.id, document.kind)
     if (file?.parts?.length) return io.rehydrate(documentId, file.content, file.parts)

@@ -8,6 +8,7 @@ import {
   opensTrackFor,
   placementsForAsset,
   trackTakesType,
+  type ClipPlacement,
 } from '@/engines/timeline/insert'
 import { clipEnd } from '@/engines/timeline/timelineState'
 import { hitTest, xToTime, type Viewport } from '@/engines/timeline/timelineGeometry'
@@ -90,15 +91,33 @@ export function placeTimelineAssetAt(
   // Measured from the clip the placement itself builds, so the answer is the snapped end rather
   // than the raw duration: `clipForAsset` is what both branches below lay down.
   const landed = clipEnd(clipForAsset(asset.id, asset, start, current.settings))
-  if (!target?.trackId) {
-    if (newTracksForAsset(current, asset).length === 0) return null
-    store.runCommand(context.documentId, addClipsOnNewTracks(asset, asset.id, start))
+  const placements = landingPlacements(current, asset, start, target?.trackId, from === null)
+  if (placements.length > 0) {
+    store.runCommand(context.documentId, addClips(placements))
     return landed
   }
-  const placements = placementsForAsset(current, asset, asset.id, start, target.trackId)
-  if (placements.length === 0) return null
-  store.runCommand(context.documentId, addClips(placements))
+  if (target?.trackId || newTracksForAsset(current, asset).length === 0) return null
+  store.runCommand(context.documentId, addClipsOnNewTracks(asset, asset.id, start))
   return landed
+}
+
+/**
+ * The rows this clip goes on: the one under the pointer, or — for the rest of a LOT — whichever
+ * row the montage lands this kind on.
+ *
+ * The hit test reads the montage as it was when the drag began, so below the last track it
+ * answers « no row » for every file of the lot: five rushes came out as five new tracks, one clip
+ * each. The FIRST of a lot still opens rows; the rest join them.
+ */
+function landingPlacements(
+  current: SequenceState,
+  asset: Asset,
+  start: Us,
+  aimed: string | undefined,
+  first: boolean,
+): ClipPlacement[] {
+  if (aimed) return placementsForAsset(current, asset, asset.id, start, aimed)
+  return first ? [] : placementsForAsset(current, asset, asset.id, start)
 }
 
 export function createTimelineDropHandler(context: DropContext) {

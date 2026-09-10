@@ -198,11 +198,18 @@ describe('the files a generation gets beside it', () => {
 
     await createMediaService(injected).ingest('asset-2', '/rush.mov', 'video')
 
-    expect(stages(injected.onProgress)).toEqual(['queued', 'probe', 'hash', 'duplicate'])
+    // It derives like any other row: a poster, a proxy and a waveform are what make it usable,
+    // and `duplicate` is terminal — nothing would come back for them.
+    expect(stages(injected.onProgress)).toEqual([
+      'queued',
+      'probe',
+      'hash',
+      'proxy',
+      'peaks',
+      'duplicate',
+    ])
     expect(injected.discard).not.toHaveBeenCalled()
     expect(injected.save).toHaveBeenCalledWith('asset-2', expect.anything())
-    // The derived files are still the first row's: two rows on one fingerprint share them.
-    expect(injected.run).not.toHaveBeenCalled()
   })
 
   // Two picks of the same bytes in one batch: the catalogue cannot tell them apart, since a

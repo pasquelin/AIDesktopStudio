@@ -17,12 +17,11 @@ export type FileUseHandlerDeps = {
 const NOTHING_MOVED: FileOutcome = { done: [], refused: [], batch: '' }
 
 /**
- * The two routes that read « what would this deletion break? » — §9.2, and the answer nothing
- * could give before (E-21): a texture a scene draws went to the trash without a word.
+ * The route that reads « what would this deletion break? » — §9.2, and the answer nothing could
+ * give before (E-21): a texture a scene draws went to the trash without a word.
  *
- * Apart from `handlers.ts` for the reason `askHandlers.ts` gives about the questions, and for one
- * of its own: the question comes BEFORE the deletion, so the two belong to one file or the order
- * is a thing a reader has to reconstruct.
+ * The answer is not exposed on the bridge, and that is deliberate: no surface asks it yet, and a
+ * route nothing calls is a route nothing keeps honest. It comes back the day a surface wants it.
  */
 export function registerFileUseHandlers({
   dependents,
@@ -30,10 +29,6 @@ export function registerFileUseHandlers({
   settled,
   ask,
 }: FileUseHandlerDeps): void {
-  handle(CHANNELS.projectFilesUsedBy, (_event, paths) =>
-    orWhenGone(() => dependents.usedBy(parseFolderPaths(paths)), []),
-  )
-
   handle(CHANNELS.projectTrashFiles, async (_event, paths) => {
     const wanted = parseFolderPaths(paths)
     const uses = await orWhenGone(() => dependents.usedBy(wanted), [])

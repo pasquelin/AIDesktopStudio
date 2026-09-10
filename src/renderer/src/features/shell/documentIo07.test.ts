@@ -64,16 +64,25 @@ describe('a save that would not be faithful', () => {
     expect(unsavedDocumentIds()).toEqual([documentId])
   })
 
-  /** Absent is not permission. A document written before the fidelity travelled carries none. */
-  it('writes nothing when nothing says how the picture was read', async () => {
+  /**
+   * Absent is not permission — and it is not the same refusal either: one says the studio shrank
+   * the file on the way in, the other that nothing here knows how it was read. Only the second
+   * has a gesture that clears it, and its sentence names that gesture.
+   */
+  it('writes nothing, and says so differently, when nothing says how the picture was read', async () => {
     const written = watchWrites()
+    const { entries } = bridgeWatchingLogs()
     const { documentId, release } = await openPictureDocument('Images/hero.png', undefined)
 
     await expect(saveDocument(documentId)).resolves.toBe(false)
     release()
 
     expect(written.write).not.toHaveBeenCalled()
-    expect(written.picture).not.toHaveBeenCalled()
+    expect(entries()).toEqual([
+      expect.objectContaining({
+        message: expect.stringContaining(i18next.t('documents.sourceReadUnknown')),
+      }),
+    ])
   })
 
   it('says why, in the sentence the refusal owns', async () => {

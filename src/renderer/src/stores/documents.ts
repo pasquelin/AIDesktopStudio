@@ -372,8 +372,12 @@ export const useDocuments = createStore<DocumentsState>()((set, get) => ({
 
   /**
    * What the READ settled, written on the descriptor the moment it is known — which is after the
-   * document exists, since the tab is made before its file is opened into it. From here it rides
-   * into the envelope on the next save and comes back with the descriptor next session.
+   * document exists, since the tab is made before its file is opened into it.
+   *
+   * It lives for the session and is NOT written into the file: a document opened for an asset
+   * writes that asset and nothing beside it, so there is no envelope of its own to carry it. What
+   * does carry it across a crash is the recovery entry. A document filled from a file rather than
+   * from its picture therefore reads `unknown`, which refuses to overwrite and says how to clear it.
    */
   noteSourceFidelity: (id, fidelity) =>
     set(state => {

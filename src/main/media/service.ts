@@ -299,6 +299,8 @@ export function createMediaService(deps: MediaServiceDeps): MediaService {
       let stage: IngestStage = 'queued'
       /** The hash this ingest claimed, to be released whatever happens to it. */
       let mine: string | null = null
+      /** Whether the catalogue already held these bytes — the row is kept, and it says so. */
+      let alreadyHeld = false
 
       const advance = (next: IngestStage): void => {
         stage = next
@@ -323,15 +325,17 @@ export function createMediaService(deps: MediaServiceDeps): MediaService {
         const hash = await deps.hash(sourcePath)
         fields.hash = hash
         if (cancelled()) return null
+        // A hash another ingest is holding right now: that one is writing the derived files for
+        // these very bytes, so this row says `duplicate` and derives nothing — deriving on top of
+        // a write in flight would have two processes writing one proxy.
         if (!occupyHash(hash)) {
           stage = 'duplicate'
           return null
         }
         mine = hash
-        if (await deps.duplicateExists(assetId, hash)) {
-          stage = 'duplicate'
-          return null
-        }
+        // Already in the catalogue: the row is KEPT and says so, and it still derives — a poster,
+        // a proxy and a waveform are what make it usable, and a terminal stage never retries.
+        alreadyHeld = await deps.duplicateExists(assetId, hash)
         return cancelled() ? null : hash
       }
 
@@ -379,7 +383,9 @@ export function createMediaService(deps: MediaServiceDeps): MediaService {
         if (!hash) return
         await deriveSource(hash)
         if (cancelled()) return
-        stage = 'done'
+        // `duplicate` is terminal too, and it comes AFTER the derivation: the row is kept, and
+        // the line saying the bytes were already here is the only trace the import leaves.
+        stage = alreadyHeld ? 'duplicate' : 'done'
       } catch {
         stage = 'failed'
       } finally {

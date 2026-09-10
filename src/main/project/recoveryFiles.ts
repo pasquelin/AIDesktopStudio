@@ -71,8 +71,12 @@ function draftBytes(draft: RecoveryDraft): number {
 
 export function createRecoveryFiles(projectPath: () => string): RecoveryFiles {
   const root = (): string => join(projectPath(), RECOVERY_FOLDER)
-  /** Per entry, keyed by folder — `null` until the one walk that seeds it. */
-  let weighed: Map<string, number> | null = null
+  /**
+   * Per entry, keyed by folder — and by the PROJECT it was walked in. Kept across a project
+   * change it still counted the folders of the one being left, and a fresh project could be
+   * called full while holding almost nothing.
+   */
+  let weighed: { of: string; bytes: Map<string, number> } | null = null
   const folderOf = (documentId: string): string | null => {
     const id = safeId(documentId)
     return id === null ? null : join(root(), id)
@@ -100,9 +104,10 @@ export function createRecoveryFiles(projectPath: () => string): RecoveryFiles {
       // torn `content` would leave an entry naming work that will not parse.
       await writeAtomic(join(folder, ENTRY_FILE), JSON.stringify(draft.entry))
 
-      weighed ??= await walkBytes(root())
-      weighed.set(draft.entry.documentId, draftBytes(draft))
-      const used = [...weighed.values()].reduce((sum, bytes) => sum + bytes, 0)
+      const here = root()
+      if (weighed?.of !== here) weighed = { of: here, bytes: await walkBytes(here) }
+      weighed.bytes.set(draft.entry.documentId, draftBytes(draft))
+      const used = [...weighed.bytes.values()].reduce((sum, bytes) => sum + bytes, 0)
       return used > RECOVERY_MAX_BYTES ? 'over-budget' : 'written'
     },
 
@@ -155,7 +160,7 @@ export function createRecoveryFiles(projectPath: () => string): RecoveryFiles {
       const folder = folderOf(documentId)
       if (folder === null) return
       await rm(folder, { recursive: true, force: true })
-      weighed?.delete(documentId)
+      weighed?.bytes.delete(documentId)
     },
   }
 }

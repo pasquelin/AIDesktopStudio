@@ -147,8 +147,9 @@ export async function askRestoreRecovery(ask: AskUser, count: number): Promise<b
   return await askConfirm(
     ask,
     {
-      message: fillHoles(t.recoveryTitle, { count }, language),
-      detail: t.recoveryBody,
+      message: t.recoveryTitle,
+      // Through `fillHoles`, because THIS is the string carrying the hole — the title has none.
+      detail: fillHoles(t.recoveryBody, { count }, language),
       confirm: t.recoveryConfirm,
       cancel: t.recoveryLater,
     },

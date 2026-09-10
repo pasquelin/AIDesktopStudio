@@ -54,7 +54,6 @@ export type Channels = {
   projectRenameFile: 'project:rename-file'
   projectMoveFiles: 'project:move-files'
   projectTrashFiles: 'project:trash-files'
-  projectFilesUsedBy: 'project:files-used-by'
   projectNewFolder: 'project:new-folder'
   projectDuplicateFiles: 'project:duplicate-files'
   projectPasteFiles: 'project:paste-files'

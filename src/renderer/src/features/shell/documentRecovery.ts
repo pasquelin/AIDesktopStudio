@@ -1,6 +1,6 @@
 import i18next from 'i18next'
 import type { DocumentDescriptor } from '@shared/domain/document'
-import type { RecoveryEntry } from '@shared/domain/recovery'
+import type { RecoveryDraft, RecoveryEntry } from '@shared/domain/recovery'
 import type { StudioBridge } from '@shared/ipc'
 import { orElse } from '@shared/promises'
 import { getBridge } from '@/services/bridge'
@@ -42,6 +42,21 @@ export async function recoverOpenDocuments(): Promise<void> {
 
 /** The state each document was last written to the recovery area at — see `DocumentIo.markOf`. */
 const written = new Map<string, unknown>()
+
+/** What a restore is still owed: the pixels its panel will ask for once it mounts. */
+const restored = new Map<string, RecoveryDraft>()
+
+/**
+ * The recovered work a document's panel has yet to be handed, taken as it is read.
+ *
+ * Read ONCE: the pixels belong to the mount that asks for them, and a second mount reads the
+ * file like any other document — by then the work is either saved or gone with the session.
+ */
+export function takeRestoredWork(documentId: string): RecoveryDraft | null {
+  const held = restored.get(documentId)
+  if (held) restored.delete(documentId)
+  return held ?? null
+}
 
 async function recoverOne(bridge: StudioBridge, documentId: string): Promise<void> {
   const io = recoverableDocument(documentId)
@@ -92,6 +107,7 @@ export async function clearRecoveryCovered(documentId: string): Promise<void> {
 /** Drops one entry outright — what a CONFIRMED discard asks for, and nothing else. */
 export async function clearRecoveryOf(documentId: string): Promise<void> {
   written.delete(documentId)
+  restored.delete(documentId)
   // A net that cannot be cleared is a stale offer at the next opening, never a lost file.
   await orElse(getBridge()?.recovery.clear(documentId), undefined)
 }
@@ -124,6 +140,10 @@ async function restoreEntry(entry: RecoveryEntry): Promise<void> {
     useDocuments.getState().adopt(document)
     const io = ioOf(entry.documentId)
     if (!io?.install || !io.markUnsaved) return
+    // Held for the mount that follows: `install` runs before the panel exists, so an image's
+    // surfaces have nothing to be handed to — and `rehydrateDocument` would then read the file
+    // and put the LAST SAVED pixels over the recovered stack.
+    restored.set(entry.documentId, draft)
     io.install(entry.documentId, draft.content, draft.parts)
     // Restored work is UNSAVED work: filled in and left clean, the next close would throw it
     // away without a question — the very loss this whole area exists to prevent.
@@ -134,19 +154,26 @@ async function restoreEntry(entry: RecoveryEntry): Promise<void> {
   }
 }
 
-/** The descriptor the work goes back into: the one the project holds, or the entry's own. */
+/**
+ * The descriptor the work goes back into: the one the project holds, or the entry's own — and in
+ * both cases wearing the LINK the entry carried.
+ *
+ * The link, always: the stored descriptor is read off the file, which knows the asset a document
+ * edits but not how it was read. Taking it as it stands lost the fidelity, so the first ⌘S after
+ * a restore refused to write anything.
+ */
 function documentFor(entry: RecoveryEntry): DocumentDescriptor {
   const { documents, stored } = useDocuments.getState()
-  return (
-    documents[entry.documentId] ??
-    stored.find(one => one.id === entry.documentId) ?? {
+  const known = documents[entry.documentId] ?? stored.find(one => one.id === entry.documentId)
+  return {
+    ...(known ?? {
       id: entry.documentId,
       kind: entry.kind,
       title: entry.title,
       workspace: entry.workspace,
       path: entry.path,
-      ...(entry.sourceAssetId ? { sourceAssetId: entry.sourceAssetId } : {}),
-      ...(entry.sourceFidelity ? { sourceFidelity: entry.sourceFidelity } : {}),
-    }
-  )
+    }),
+    ...(entry.sourceAssetId ? { sourceAssetId: entry.sourceAssetId } : {}),
+    ...(entry.sourceFidelity ? { sourceFidelity: entry.sourceFidelity } : {}),
+  }
 }

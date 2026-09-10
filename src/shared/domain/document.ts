@@ -82,9 +82,9 @@ export type DocumentDescriptor = {
    */
   sourceAssetId?: string
   /**
-   * How faithfully that source was read — see `readFidelity.ts`. Carried on the descriptor and
-   * not measured on demand: what tells a reduction from a crop is WHO shrank the picture, and
-   * only the read knows that. Absent reads as `unknown`, which refuses to overwrite.
+   * How faithfully that source was read — see `readFidelity.ts`. Held for the session rather than
+   * measured on demand: what tells a reduction from a crop is WHO shrank the picture, and only
+   * the read knows that. Absent reads as `unknown`, which refuses to overwrite.
    */
   sourceFidelity?: ReadFidelity
 }

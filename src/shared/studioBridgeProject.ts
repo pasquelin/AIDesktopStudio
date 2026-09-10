@@ -1,6 +1,5 @@
 import type { FileFacts } from './domain/fileInfo'
 import type { FileHistory, FileOutcome } from './domain/fileOp'
-import type { FileUse } from './domain/fileUse'
 import type { FolderEntry } from './domain/folder'
 import type { FolderRole, RoleFolders } from './domain/folderRole'
 import type { Project, RescanState } from './domain/project'
@@ -234,15 +233,6 @@ export type StudioBridgeProject = {
      * belongs to someone else — and this is the one gesture `undoFile` cannot take back.
      */
     trashFiles: (paths: readonly string[]) => Promise<FileOutcome>
-    /**
-     * Which documents CITE these files — the question a deletion asks before it takes anything
-     * away, and the one nothing could answer (§11, S3).
-     *
-     * Read on demand rather than off a graph, and it over-reports: a citation is matched on the
-     * file's name and on its catalogue ids, so two files of one name in two folders answer for
-     * each other. Safe for a warning, not a proof — `fileDependents.ts` writes the blind spot out.
-     */
-    filesUsedBy: (paths: readonly string[]) => Promise<FileUse[]>
     /** One folder, inside `folder` — `''` for the project root itself. */
     newFolder: (folder: string, name: string) => Promise<FileOutcome>
     /** A copy of each beside itself, under the first free name — `Ruelle bleue 2.png`. */

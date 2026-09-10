@@ -50,4 +50,19 @@ describe('a lot of files landing on a montage', () => {
     const clips = sequenceOf(useSequences.getState(), DOCUMENT).tracks[0]?.clips ?? []
     expect(clips.map(clip => clip.start)).toEqual([0, 2 * SECOND])
   })
+  /**
+   * Below the last track the hit test answers « no row » — and it reads the montage as it was
+   * when the drag began, so it answers that for every file of the lot. Each one opened a row of
+   * its own: five rushes came out as five tracks, one clip each.
+   */
+  it('lands the rest of a lot on the rows the first one opened', () => {
+    const under = { ...context, pointAt: () => ({ x: 0, y: 400 }) }
+
+    const first = placeTimelineAssetAt(under, rush('a'), under.pointAt(), null)
+    placeTimelineAssetAt(under, rush('b'), under.pointAt(), first)
+
+    const tracks = sequenceOf(useSequences.getState(), DOCUMENT).tracks
+    expect(tracks).toHaveLength(2)
+    expect(tracks.flatMap(track => track.clips)).toHaveLength(2)
+  })
 })
