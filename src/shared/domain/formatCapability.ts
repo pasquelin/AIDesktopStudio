@@ -252,11 +252,14 @@ export function carrying(
   }
 }
 
-/** A format the studio can write an edited document to. */
-export type WritableFormat =
+/**
+ * A format this table describes, NOT one the studio writes: `jpeg` and `webp` are here because a
+ * file wears them and no encoder for either exists (E-2). It PRODUCES `ENCODABLE_BY_DOMAIN`.
+ */
+export type KnownFormat =
   'png' | 'jpeg' | 'webp' | 'ora' | 'otio' | 'gltf' | 'mtlx' | 'obj' | 'ply' | 'stl'
 
-export const WRITABLE_FORMATS: readonly WritableFormat[] = [
+export const KNOWN_FORMATS: readonly KnownFormat[] = [
   'png',
   'jpeg',
   'webp',
@@ -422,7 +425,7 @@ const NAMED_SHAPES: FormatCapability = carrying('scene', ['nodeName', 'nodePlace
  */
 const TRIANGLE_SOUP: FormatCapability = carrying('scene', ['nodePlacement'])
 
-const CAPABILITY_BY_FORMAT: Record<WritableFormat, FormatCapability> = {
+const CAPABILITY_BY_FORMAT: Record<KnownFormat, FormatCapability> = {
   png: FLAT,
   jpeg: FLAT,
   webp: FLAT,
@@ -435,10 +438,9 @@ const CAPABILITY_BY_FORMAT: Record<WritableFormat, FormatCapability> = {
   stl: TRIANGLE_SOUP,
 }
 
-export const capabilityOf = (format: WritableFormat): FormatCapability =>
-  CAPABILITY_BY_FORMAT[format]
+export const capabilityOf = (format: KnownFormat): FormatCapability => CAPABILITY_BY_FORMAT[format]
 
-const FORMAT_BY_EXTENSION: Record<string, WritableFormat> = {
+const FORMAT_BY_EXTENSION: Record<string, KnownFormat> = {
   '.png': 'png',
   '.jpg': 'jpeg',
   '.jpeg': 'jpeg',
@@ -457,7 +459,7 @@ const FORMAT_BY_EXTENSION: Record<string, WritableFormat> = {
  * `null` is not « no loss »: it is « no answer », and a caller has to tell the two apart — a
  * `.tif` the studio cannot write is not a container that holds everything.
  */
-export function formatOfFile(fileName: string): WritableFormat | null {
+export function formatOfFile(fileName: string): KnownFormat | null {
   return FORMAT_BY_EXTENSION[extensionOf(fileName).toLowerCase()] ?? null
 }
 
@@ -473,13 +475,13 @@ export function formatOfFile(fileName: string): WritableFormat | null {
  */
 export function lossesFor(
   traits: readonly CapabilityTrait[],
-  format: WritableFormat,
+  format: KnownFormat,
 ): CapabilityTrait[] {
   return lossesAgainst(traits, capabilityOf(format))
 }
 
 /**
- * The same answer against a capability that belongs to no writable format — what an EXPORT
+ * The same answer against a capability that belongs to no format of the table — what an EXPORT
  * carries, which is a derivative rather than the document and has no extension to be looked up by.
  */
 export function lossesAgainst(

@@ -206,7 +206,20 @@ export function createDocumentFiles({
     return document
   }
 
-  async function readOne(id: string, kind: DocumentKind): Promise<DocumentFile | null> {
+  async function readOne(
+    id: string,
+    kind: DocumentKind,
+    path?: string,
+  ): Promise<DocumentFile | null> {
+    // A document sitting on a file no listing claims reads THAT file — its destination is its
+    // own (§5.3). `locate` answers by id off the listing, and this one is not in it: a glTF
+    // another application exported, opened as a scene by hand (§2.6, E-24).
+    if (path) {
+      const chosen = context.absoluteOf(path)
+      await context.remember(chosen)
+      return await bodyAt(chosen, kind, id)
+    }
+
     const { file, found } = await locate(id, kind)
 
     // BEFORE the read, never after. A file rewritten while it is being read would otherwise be
@@ -238,17 +251,24 @@ export function createDocumentFiles({
   return {
     list: walk,
 
-    read: (id, kind) => context.queued(id, () => readOne(id, kind)),
+    read: (id, kind, path) => context.queued(id, () => readOne(id, kind, path)),
 
-    write: (id, kind, draft, force = false, folder) =>
+    write: (id, kind, draft, force = false, place) =>
       context.queued(id, async () => {
         // A document already on disk keeps the file it is in — including one written before
         // version 3, still under the uuid it was named after. Renaming those is the user's
-        // gesture, not something a save does behind them. `folder` is read here and nowhere
-        // else, which is what makes a chosen folder a placement rather than a move.
-        const { file: located } = await locate(id, kind)
+        // gesture, not something a save does behind them. `place` is read here and nowhere
+        // else, which is what makes a chosen destination a placement rather than a move.
+        //
+        // A CHOSEN file wins over both, and no name is freed against the folder for it: freeing
+        // one is what turns « write into this file » into « write beside it », which is exactly
+        // what stopped a glTF from another application from being editable in place (§2.6). The
+        // listing is not walked for one either — the destination is the document's own.
+        const chosen = place?.path ? context.absoluteOf(place.path) : null
+        const located = chosen ?? (await locate(id, kind)).file
         const onDisk = await exists(located)
-        const file = onDisk ? located : await freshFile(kind, draft.title, folder)
+        const file =
+          chosen ?? (onDisk ? located : await freshFile(kind, draft.title, place?.folder))
 
         // A document the studio has no clock for is one it cannot claim to have written, so it
         // is not defended — and nothing is stat'd for it either.

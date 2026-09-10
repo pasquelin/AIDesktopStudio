@@ -32,6 +32,8 @@
     "details": "Chi tiết dòng",
     "editPixels": "Sửa hình ảnh",
     "editPixelsHint": "Mở hình ảnh này trong không gian Hình ảnh, nơi ⌘S ghi đè lại chính nó",
+    "openAsScene": "Mở dưới dạng cảnh",
+    "openAsSceneHint": "Mở tệp glTF này dưới dạng cảnh, với cây, máy quay và đèn của nó — lưu sẽ ghi lại vào chính tệp này",
     "extractTextures": "Trích xuất map của mô hình",
     "extractTexturesHint": "Trích xuất các map nhúng của mô hình vào Vật liệu, nơi có thể mở và sửa chúng",
     "fetchActionHint": "Tải các tài nguyên đã chọn từ thư viện từ xa về dự án đang mở",
@@ -201,6 +203,7 @@
     "saveElsewhereTitle": "Lưu “{{title}}” ở nơi khác?",
     "saveElsewhereConfirm": "Lưu thành…",
     "saveAsTitle": "Lưu thành",
+    "saveCopyTitle": "Lưu một bản sao",
     "saveAsUnavailable": "Tài liệu này không có đích khác: nó sửa chính mô hình thư viện đã mở nó.",
     "formatField": "Định dạng tệp",
     "formats": {

@@ -16,6 +16,7 @@ import {
   type DocumentDraft,
   type DocumentEnvelope,
   type DocumentKind,
+  type DocumentPlace,
 } from '@shared/domain/document'
 import { isPrivatePath } from '@shared/domain/folder'
 import { isFolderRole, type FolderRole } from '@shared/domain/folderRole'
@@ -359,6 +360,7 @@ const saveLayered = z.object({
   name: z.string().trim().min(1).max(200),
   derivedFrom: assetId.optional(),
   folder: landingFolder,
+  documentId: pathSegment.optional(),
   document: z.object({
     stack: oraStack,
     surfaces: z.array(oraSurface).max(2048),
@@ -387,12 +389,19 @@ export function parseForceWrite(value: unknown): boolean {
   return forceWrite.parse(value) ?? false
 }
 
-/**
- * Where a first save lands, held to the same rule as every other path a window names — absent
- * for a caller that has none to offer, which leaves the writer its own default.
- */
+/** Where a first save or a download lands; absent leaves the writer its own default. */
 export function parseLandingFolder(value: unknown): string | undefined {
   return landingFolder.parse(value)
+}
+
+/** The same rule, plus a name: an empty path is a folder, not a file to write a document to. */
+const chosenFile = folderPath.refine(path => path.length > 0 && !isPrivatePath(path)).optional()
+
+const documentPlace = z.object({ folder: landingFolder, path: chosenFile }).optional()
+
+/** Where a save lands — see `DocumentPlace`. */
+export function parseDocumentPlace(value: unknown): DocumentPlace | undefined {
+  return documentPlace.parse(value)
 }
 
 /**

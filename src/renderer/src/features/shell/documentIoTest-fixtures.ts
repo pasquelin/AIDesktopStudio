@@ -88,7 +88,7 @@ const {
   settleUnsavedWorkForProjectChange,
 } = await import('./documentIo')
 const { unsavedDocumentIds } = await import('./documentDirty')
-const { saveDocumentAs } = await import('./documentSaveAs')
+const { saveDocumentAs, saveDocumentCopy } = await import('./documentSaveAs')
 const { offerRecoveredWork } = await import('./documentRecovery')
 const { keepUnsavedWorkSafe } = await import('./unsavedWork')
 
@@ -117,6 +117,7 @@ export {
   savedFile,
   saveDocument,
   saveDocumentAs,
+  saveDocumentCopy,
   scene,
   settleUnsavedWork,
   settleUnsavedWorkForProjectChange,

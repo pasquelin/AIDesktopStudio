@@ -82,6 +82,23 @@ export type DocumentDescriptor = {
    */
   sourceAssetId?: string
   /**
+   * Where that asset's file sits, relative to the project folder — the identity the catalogue,
+   * the document listing and this link all share (S1).
+   *
+   * An asset id is minted by the catalogue and is minted AGAIN when `.index/` is rebuilt, so a
+   * link resting on it alone went stale on every rebuild and the next double-click stood a
+   * SECOND document on the same file (U-1). A file's place in the project outlives that.
+   */
+  sourcePath?: string
+  /**
+   * The file this document writes, when it holds one that its listing would not have named.
+   *
+   * `path` says where the document was READ from; this says where it goes. The two agree for
+   * every document the studio wrote, and differ for one sitting on a file of another
+   * application's — which is the whole of what makes such a file editable in place (§2.6, E-24).
+   */
+  destination?: string
+  /**
    * How faithfully that source was read — see `readFidelity.ts`. Held for the session rather than
    * measured on demand: what tells a reduction from a crop is WHO shrank the picture, and only
    * the read knows that. NOT written into the file either — a document opened for an asset writes
@@ -366,6 +383,19 @@ export type DocumentDraft = {
    */
   parts?: readonly OraSurface[]
 }
+
+/**
+ * Where a save is to land — §5.3, the destination belongs to the document rather than to its kind.
+ *
+ * `path` is a file somebody CHOSE, taken as it is: no name is freed against the folder, because
+ * freeing one is what turns « write into this file » into « write beside it ». It is what lets a
+ * document sit on a file the listing does not claim — a glTF another application exported (§2.6).
+ *
+ * `folder` is the older half and stays: where a document written for the FIRST time lands, its
+ * name composed from its title. Read for a document with no file yet and ignored for one that has
+ * — a save never moves what is already filed somewhere.
+ */
+export type DocumentPlace = { folder?: string; path?: string }
 
 /** The suffix on a copy being written, before the rename that makes it the document. */
 export const STAGING_SUFFIX = '.tmp'

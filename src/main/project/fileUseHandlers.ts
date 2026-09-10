@@ -17,11 +17,11 @@ export type FileUseHandlerDeps = {
 const NOTHING_MOVED: FileOutcome = { done: [], refused: [], batch: '' }
 
 /**
- * The route that reads « what would this deletion break? » — §9.2, and the answer nothing could
- * give before (E-21): a texture a scene draws went to the trash without a word.
+ * The two routes that read « what would this deletion break? » — §9.2, and the answer nothing
+ * could give before (E-21): a texture a scene draws went to the trash without a word.
  *
- * The answer is not exposed on the bridge, and that is deliberate: no surface asks it yet, and a
- * route nothing calls is a route nothing keeps honest. It comes back the day a surface wants it.
+ * One asks it on the way to the trash and stops there; the other answers a window that shows it
+ * before anything is asked at all — a file's own information (§11, S3).
  */
 export function registerFileUseHandlers({
   dependents,
@@ -36,6 +36,12 @@ export function registerFileUseHandlers({
       ? settled(await trash(wanted))
       : NOTHING_MOVED
   })
+
+  // Empty rather than a failure when the project has gone: a window left open on a file of a
+  // project that closed says « nothing cites it », which is what an unreadable folder means here.
+  handle(CHANNELS.projectFileUses, (_event, paths) =>
+    orWhenGone(() => dependents.usedBy(parseFolderPaths(paths)), []),
+  )
 }
 
 /**

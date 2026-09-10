@@ -66,12 +66,19 @@ export function useExternalTimelineDrop(
         // lot, so five rushes dropped together read as a cut rather than as five clips on one
         // frame; a landing the montage refuses does not move it on.
         let from: Us | null = null
-        void importExternalFilesInto(event.dataTransfer.files, accepted, asset => {
-          const landed = placeTimelineAssetAt(context, asset, point, from)
-          if (landed === null) return false
-          from = landed
-          return true
-        })
+        void importExternalFilesInto(
+          event.dataTransfer.files,
+          accepted,
+          asset => {
+            const landed = placeTimelineAssetAt(context, asset, point, from)
+            if (landed === null) return false
+            from = landed
+            return true
+          },
+          // A file dropped INTO a montage is a resource of that montage, not a file of the
+          // project's tree (§7, G-V): a rush that became a clip adds no row to the explorer.
+          true,
+        )
       },
     },
   }

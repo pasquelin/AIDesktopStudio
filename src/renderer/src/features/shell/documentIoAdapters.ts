@@ -8,7 +8,6 @@ import { traitsOfCanvas } from '@/engines/canvas/canvasTraits'
 import {
   canvasFromOra,
   canvasFromOraContent,
-  oraStackFromContent,
   oraStackOf,
   oraSurfacesOf,
 } from '@/engines/canvas/oraDocument'
@@ -20,7 +19,6 @@ import {
   type SequenceState,
 } from '@/engines/timeline/timelineState'
 import { canvasHost, canvasHostSettled } from '@/features/image/canvasHosts'
-import { bytesToBase64 } from '@shared/base64'
 import { getBridge } from '@/services/bridge'
 import { audioEditStore } from '@/stores/audioEdits'
 import { canvasOf, canvasStore, useCanvases } from '@/stores/canvases'
@@ -42,12 +40,11 @@ import {
   type DocumentDraft,
   type DocumentKind,
 } from '@shared/domain/document'
-import { type CapabilityTrait, type WritableFormat } from '@shared/domain/formatCapability'
-import { ORA_MERGED_PATH, type OraSurface } from '@shared/domain/openRaster'
+import { type CapabilityTrait, type KnownFormat } from '@shared/domain/formatCapability'
+import { type OraSurface } from '@shared/domain/openRaster'
 import { ORA_EXTENSION, PNG_EXTENSION } from '@shared/domain/writtenFormat'
 import { otioStudioMetadata } from '@shared/domain/otio'
 import { createSkyboxContent } from '@shared/domain/skybox'
-import type { StudioBridge } from '@shared/ipc'
 import { orElse } from '@shared/promises'
 import {
   createDefaultGui,
@@ -68,6 +65,7 @@ import {
   scenePayloadOf,
   sceneRefusesToSave,
 } from './sceneDocument'
+import { flatAsset, layeredAsset, type AssetTarget } from './pictureAsset'
 import { sceneDocumentCodec } from './sceneDocumentCodec'
 import {
   forgetCarriedMetadata,
@@ -83,13 +81,6 @@ import {
   skyRefusesToSave,
 } from './skyboxDocument'
 export type CapturedDraft = Omit<DocumentDraft, 'title'>
-type AssetTarget = {
-  replaces?: string
-  derivedFrom?: string
-  name: string
-  format: WritableFormat
-  folder?: string
-}
 type DocumentFile =
   | {
       assetOnly?: undefined
@@ -162,13 +153,12 @@ type AssetWriting =
       ) => Promise<Asset | null>
       traitsOf: (documentId: string) => CapabilityTrait[]
       /**
-       * The extension the bytes this io PRODUCES will carry — which is not the extension of the
-       * format it was asked for. `WRITABLE_FORMATS` names `jpeg` and `webp`, and no encoder for
-       * either exists: asked for a JPEG, the picture writer hands back a PNG. A save reads this
-       * to know whether it is about to change a file's format, so it has to be the truth of the
-       * writer rather than the wish of the table.
+       * The extension the bytes this io PRODUCES will carry, which is not the extension of the
+       * format it was asked for: asked for a JPEG, the picture writer hands back a PNG. A save
+       * reads it to know whether it is about to change a file's format, so it is the truth of
+       * the writer rather than the wish of `KnownFormat`.
        */
-      writtenExtension: (format: WritableFormat) => string
+      writtenExtension: (format: KnownFormat) => string
     }
 type TextDocumentCodec<S> = {
   toPayload: (state: S, documentId: string) => unknown
@@ -290,27 +280,6 @@ const AUDIO_IO: DocumentIo = {
     sequenceStore.use.getState().drop(id)
     forgetCarriedMetadata(id)
   },
-}
-async function layeredAsset(
-  captured: CapturedDraft,
-  target: AssetTarget,
-  bridge: StudioBridge,
-): Promise<Asset | null> {
-  const stack = oraStackFromContent(captured.content)
-  if (!stack) return null
-  return await bridge.assets.saveLayered({
-    ...target,
-    document: { stack, surfaces: captured.parts ?? [] },
-  })
-}
-async function flatAsset(
-  captured: CapturedDraft,
-  target: AssetTarget,
-  bridge: StudioBridge,
-): Promise<Asset | null> {
-  const merged = captured.parts?.find(one => one.path === ORA_MERGED_PATH)
-  if (!merged) return null
-  return await bridge.assets.savePicture({ ...target, png: bytesToBase64(merged.png) })
 }
 const IMAGE_IO: DocumentIo = {
   autosaves: false,

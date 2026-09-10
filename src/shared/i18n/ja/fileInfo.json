@@ -5,6 +5,7 @@
       "general": "一般",
       "media": "メディア",
       "catalogue": "カタログ",
+      "uses": "使用元",
       "git": "Git"
     },
     "gitUnchanged": "保留中の変更なし",
@@ -18,6 +19,8 @@
     "identifier": "識別子",
     "fingerprint": "内容のフィンガープリント",
     "added": "追加日時",
+    "documents": "ドキュメント",
+    "usedByNone": "このファイルに言及するドキュメントはありません。",
     "reading": "フォルダーを読み込んでいます…",
     "missing": "この項目はプロジェクトフォルダーにありません。"
   }

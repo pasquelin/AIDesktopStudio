@@ -86,9 +86,11 @@ describe('saveDocument', () => {
 
       // `name` rides along because the channel is shaped like `saveAudio`'s; an overwrite keeps
       // the name the asset already has, so this is not ⌘S renaming anything. `format` is the
-      // source file's own, so an overwrite never changes what the file IS.
+      // source file's own, so an overwrite never changes what the file IS. `documentId` says
+      // this file IS the document — §2.6 — which a container is then stamped with.
       expect(savePicture).toHaveBeenCalledWith({
         replaces: 'asset-1',
+        documentId,
         name: 'Gemini 3.1',
         png: PNG,
         format: 'png',
@@ -126,6 +128,7 @@ describe('saveDocument', () => {
 
       expect(savePicture).toHaveBeenCalledWith({
         replaces: 'asset-1',
+        documentId,
         name: 'Gemini 3.1',
         png: PNG,
         format: 'png',

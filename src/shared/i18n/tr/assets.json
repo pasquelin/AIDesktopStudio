@@ -32,6 +32,8 @@
     "details": "Satır ayrıntısı",
     "editPixels": "Görüntüyü düzenle",
     "editPixelsHint": "Bu görüntüyü Görüntü alanında açar; orada ⌘S onu kendi üzerine yeniden yazar",
+    "openAsScene": "Sahne olarak aç",
+    "openAsSceneHint": "Bu glTF dosyasını ağacı, kameraları ve ışıklarıyla birlikte sahne olarak açar — kaydetmek bu dosyanın üzerine yazar",
     "extractTextures": "Model haritalarını çıkar",
     "extractTexturesHint": "Modelin gömülü haritalarını Materyaller bölümüne çıkarır; orada açılıp düzenlenebilirler",
     "fetchActionHint": "Seçilen varlıkları uzak kitaplıktan açık projeye indirir",
@@ -201,6 +203,7 @@
     "saveElsewhereTitle": "“{{title}}” başka bir yere kaydedilsin mi?",
     "saveElsewhereConfirm": "Farklı kaydet…",
     "saveAsTitle": "Farklı kaydet",
+    "saveCopyTitle": "Bir kopya kaydet",
     "saveAsUnavailable": "Bu belgenin başka bir hedefi yok: açıldığı kitaplık modelini düzenler.",
     "formatField": "Dosya biçimi",
     "formats": {

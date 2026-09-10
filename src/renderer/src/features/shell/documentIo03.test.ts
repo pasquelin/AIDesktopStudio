@@ -50,7 +50,7 @@ describe('an image document', () => {
         ],
       }),
       false,
-      documentFolderOf('image'),
+      { folder: documentFolderOf('image') },
     )
   })
 

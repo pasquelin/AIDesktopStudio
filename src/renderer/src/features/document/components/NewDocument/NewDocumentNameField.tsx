@@ -2,7 +2,7 @@ import { useId } from 'react'
 import { useTranslation } from 'react-i18next'
 import { oneOf } from '@shared/guards'
 import { extensionOfKind, type DocumentKind } from '@shared/domain/document'
-import type { WritableFormat } from '@shared/domain/formatCapability'
+import type { KnownFormat } from '@shared/domain/formatCapability'
 import { Input } from '@/components/Input'
 import { Select } from '@/components/Select'
 import { FILE_EXTENSION } from '@/components/styles'
@@ -18,9 +18,9 @@ export type NewDocumentNameFieldProps = {
    * The formats to choose between, and the one chosen. Empty or single leaves nothing to pick: the
    * kind's own extension is shown instead, as it is for a new document.
    */
-  formats: readonly WritableFormat[]
-  format: WritableFormat | null
-  onFormat: (format: WritableFormat) => void
+  formats: readonly KnownFormat[]
+  format: KnownFormat | null
+  onFormat: (format: KnownFormat) => void
   ref: React.Ref<HTMLInputElement>
 }
 

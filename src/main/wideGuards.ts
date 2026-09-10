@@ -44,9 +44,11 @@ import { resolveSpecifier } from './sourceFiles.ts'
  * own gauges against `--sc-control`; 132 against 142 the same day, when
  * `installEngineLibraries` read `engine/pyproject.toml` to tie the embedded torch pin to the
  * `+cu126` build it names; 133 against 143 the same day, `gateCache` reading the tree through git
- * to fingerprint what a link of the gate reads.
+ * to fingerprint what a link of the gate reads; 134 against 144 on 2026-09-10, when
+ * `drops-into-a-document-are-internal` swept the renderer for a drop surface that files what it
+ * takes rather than making a resource of it (G-V).
  */
-export const LEAST_GUARDS = 133
+export const LEAST_GUARDS = 134
 
 /**
  * How far the floor may sit below the real count before it stops meaning anything.

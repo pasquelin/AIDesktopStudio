@@ -114,20 +114,33 @@ export async function droppedAsset(event: DragLike): Promise<Asset | null> {
  * Landing a dragged asset in a folder of the project: the FILE moves there.
  *
  * The whole point of the gesture, and the sentence the studio now tells in one voice — what
- * leaves the shelf becomes a file of the project, and every editor takes it as one. A library
- * asset is fetched first (`droppedAsset` does it) and lands in the folder its kind is written
- * to, so the move is what puts it where the pointer asked.
+ * leaves the shelf becomes a file of the project, and every editor takes it as one. A file the
+ * project already holds MOVES; a library row is DOWNLOADED straight to the folder the pointer
+ * named, which is one write where it used to be a write and a move (E-22).
  *
- * `null` when nothing moved, and two ways to get there: a drag carrying no asset of ours, and
- * an asset the studio holds no file OF — a linked medium lives where the user left it, and
- * moving it is not this gesture's business. **The second is silent**, which is the known cost:
- * the kind cannot be read at hover, so the drop cannot be refused before it happens.
+ * `null` when nothing moved, and three ways to get there: a drag carrying no asset of ours, an
+ * asset the studio holds no file OF — a linked medium lives where the user left it, and moving
+ * it is not this gesture's business — and the download, which lands where it was asked for and
+ * leaves nothing to undo. **The second is silent**, which is the known cost: the kind cannot be
+ * read at hover, so the drop cannot be refused before it happens.
  *
  * Reads the event synchronously, as `droppedAsset` requires.
  */
 export async function landAssetIn(event: DragLike, folder: string): Promise<FileOutcome | null> {
-  const asset = await droppedAsset(event)
-  if (!asset?.path) return null
+  const id = assetIdFromDrag(event)
+  const fromLibrary = LIBRARY.carries(event)
+  if (!id) return null
 
-  return (await getBridge()?.project.moveFiles([asset.path], folder)) ?? null
+  const held = assetsById(useAssets.getState()).get(id) ?? null
+  // Downloaded STRAIGHT to where the pointer asked — E-22. It used to land in the folder its
+  // kind names and be moved out of it, which showed one file in two places for one gesture.
+  // Nothing moved afterwards, so nothing is handed back to undo: the catalogue's own change is
+  // what the explorer redraws on.
+  if (!held && fromLibrary) {
+    await useCloud.getState().fetchOne(id, folder)
+    return null
+  }
+  if (!held?.path) return null
+
+  return (await getBridge()?.project.moveFiles([held.path], folder)) ?? null
 }

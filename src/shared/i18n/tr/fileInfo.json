@@ -5,6 +5,7 @@
       "general": "Genel",
       "media": "Medya",
       "catalogue": "Katalog",
+      "uses": "Kullanan belgeler",
       "git": "Git"
     },
     "gitUnchanged": "Bekleyen değişiklik yok",
@@ -18,6 +19,8 @@
     "identifier": "Tanımlayıcı",
     "fingerprint": "İçerik parmak izi",
     "added": "Eklenme",
+    "documents": "Belgeler",
+    "usedByNone": "Projedeki hiçbir belge bu dosyadan söz etmiyor.",
     "reading": "Klasör okunuyor…",
     "missing": "Bu girdi artık proje klasöründe değil."
   }

@@ -25,6 +25,10 @@ export type AssetDropTargetProps = {
    * Whether a FILE dropped here becomes a resource of the document rather than a file of the
    * project's tree (§7, G-V). Set by the surfaces that place what they take INTO a document and
    * resolve it by identity — a canvas layer names its asset and the engine fetches it by id.
+   *
+   * Every target but the one beside the TABS sets it, which files rather than places (R2), and
+   * `drops-into-a-document-are-internal.test.ts` is what holds them to it: without the flag the
+   * file simply lands in the tree and stays there when what it became is undone (E-14).
    */
   filesAreInternal?: true
   /**

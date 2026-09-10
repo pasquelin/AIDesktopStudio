@@ -14,7 +14,9 @@ import {
   type DocumentNameFailure,
   type NamedDocument,
 } from '@shared/domain/documentName'
+import type { Asset } from '@shared/domain/asset'
 import { nameFailureOf } from '@shared/domain/fileName'
+import { reunitedDocument } from './documentIdentity'
 import type { ReadFidelity } from '@shared/domain/readFidelity'
 import { workshopIdOf } from '@shared/domain/character'
 import { parentOf } from '@shared/domain/folder'
@@ -32,6 +34,8 @@ import { useLayouts } from './layouts'
 type DocumentCreation = {
   title: string
   sourceAssetId?: string
+  sourcePath?: string
+  destination?: string
   sourceFidelity?: ReadFidelity
   folder?: string
   kind?: DocumentKind
@@ -50,7 +54,7 @@ type DocumentsState = {
   adopt: (document: DocumentDescriptor) => void
   rename: (id: string, title: string) => Promise<DocumentNameFailure | null>
   noteSourceFidelity: (id: string, fidelity: ReadFidelity) => void
-  retarget: (id: string, sourceAssetId: string, title: string) => void
+  retarget: (id: string, source: Pick<Asset, 'id' | 'path' | 'name'>) => void
   close: (id: string) => void
 }
 
@@ -118,16 +122,6 @@ export function sceneDocumentNamed(named: string): string {
   if (ref?.kind === 'prefab' || ref?.kind === 'document') return ref.id
 
   return documentNamedOfKind(useDocuments.getState(), 'scene', named) ?? named
-}
-
-export function documentForAsset(
-  state: Pick<DocumentsState, 'documents' | 'stored'>,
-  assetId: string,
-  kind?: DocumentKind,
-): DocumentDescriptor | null {
-  const isIt = (document: DocumentDescriptor): boolean =>
-    document.sourceAssetId === assetId && (kind === undefined || document.kind === kind)
-  return Object.values(state.documents).find(isIt) ?? state.stored.find(isIt) ?? null
 }
 
 /**
@@ -291,8 +285,11 @@ export const useDocuments = createStore<DocumentsState>()((set, get) => ({
 
     const inFolder = found ?? []
     const shown = panelIds(useLayouts.getState().layout)
+    const held = get().documents
     const documents = Object.fromEntries(
-      inFolder.filter(document => shown.has(document.id)).map(document => [document.id, document]),
+      inFolder
+        .filter(document => shown.has(document.id))
+        .map(document => [document.id, reunitedDocument(held[document.id], document)]),
     )
 
     set(state => ({
@@ -326,6 +323,8 @@ export const useDocuments = createStore<DocumentsState>()((set, get) => ({
       title,
       path: of?.path ?? documentPathFor(title, kind, of?.folder),
       ...(of?.sourceAssetId ? { sourceAssetId: of.sourceAssetId } : {}),
+      ...(of?.sourcePath ? { sourcePath: of.sourcePath } : {}),
+      ...(of?.destination ? { destination: of.destination } : {}),
       ...(of?.sourceFidelity ? { sourceFidelity: of.sourceFidelity } : {}),
     }
 
@@ -373,8 +372,17 @@ export const useDocuments = createStore<DocumentsState>()((set, get) => ({
 
   noteSourceFidelity: (id, sourceFidelity) => set(state => amended(state, id, { sourceFidelity })),
 
-  retarget: (id, sourceAssetId, title) =>
-    set(state => amended(state, id, { sourceAssetId, title, sourceFidelity: 'faithful' })),
+  // The path travels with the id: what the document edits from now on is a FILE, and the id the
+  // catalogue minted for it is only this session's name for it — see `sourcePath`.
+  retarget: (id, source) =>
+    set(state =>
+      amended(state, id, {
+        sourceAssetId: source.id,
+        title: source.name,
+        sourceFidelity: 'faithful',
+        ...(source.path ? { sourcePath: source.path } : {}),
+      }),
+    ),
 
   close: id =>
     set(state => {

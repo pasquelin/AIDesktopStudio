@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { Asset } from '@shared/domain/asset'
 import type { FileFacts } from '@shared/domain/fileInfo'
+import type { FileUse } from '@shared/domain/fileUse'
 import type { GitStatus } from '@shared/domain/git'
 import { assetAt } from '@/helpers/assetAt'
 import { getBridge } from '@/services/bridge'
@@ -12,6 +13,11 @@ export type FileInfo = {
   asset: Asset | null
   /** `null` where the project is not under version control, or git could not answer. */
   status: GitStatus | null
+  /**
+   * The documents that cite this file — §11's S3, read on demand. Empty is an answer: nothing
+   * cites it. It over-reports rather than under-reports — see `fileDependents.ts`.
+   */
+  uses: readonly FileUse[]
   reading: boolean
 }
 
@@ -51,13 +57,15 @@ export function useFileInfo(path: string): FileInfo {
         bridge?.project.fileFacts(path).catch(() => null) ?? null,
         assetAt(path),
         bridge?.git.read().catch(() => null) ?? null,
-      ]).then(([facts, asset, repository]) => {
+        bridge?.project.fileUses([path]).catch(() => []) ?? [],
+      ]).then(([facts, asset, repository, uses]) => {
         if (!live) return
         setRead({
           path,
           facts,
           asset,
           status: repository?.kind === 'ready' ? repository.status : null,
+          uses,
           reading: false,
         })
       })
@@ -77,6 +85,7 @@ export function useFileInfo(path: string): FileInfo {
     facts: held?.facts ?? null,
     asset: held?.asset ?? null,
     status: held?.status ?? null,
+    uses: held?.uses ?? [],
     reading: path !== '' && !held,
   }
 }

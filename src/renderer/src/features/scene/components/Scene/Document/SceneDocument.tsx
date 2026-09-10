@@ -244,6 +244,7 @@ export function SceneDocument({ documentId }: { documentId: string }) {
     <AssetDropTarget
       accepts={MESHES}
       onDrop={asset => addModelTo(documentId, asset)}
+      filesAreInternal
       // No frame: see `ImageDocument` — a surface that fills the centre outlines what the user is
       // already looking at.
       outlined={false}

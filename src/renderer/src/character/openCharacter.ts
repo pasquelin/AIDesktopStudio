@@ -4,7 +4,8 @@ import { openDocument } from '@/features/shell/components/dockviewApi'
 import { reportFailure } from '@/services/diagnostics'
 import { convertArrivedModels } from '@/services/meshConversion'
 import { assetsById, useAssets } from '@/stores/assets'
-import { documentForAsset, useDocuments } from '@/stores/documents'
+import { documentForAsset } from '@/stores/documentIdentity'
+import { useDocuments } from '@/stores/documents'
 
 /**
  * Opens a model on a tab of its own, where it is given a skeleton and taught to move.

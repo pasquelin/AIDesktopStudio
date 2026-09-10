@@ -13,6 +13,7 @@ import type {
   DocumentDraft,
   DocumentFile,
   DocumentKind,
+  DocumentPlace,
   DocumentWrite,
   FlattenChoice,
 } from './domain/document'
@@ -171,24 +172,28 @@ export type StudioBridgeLibrary = {
   documents: {
     /** Every document the open project holds, read off its folder — the one source of truth. */
     list: () => Promise<DocumentDescriptor[]>
-    /** `null` when nothing has been saved under that id yet. */
-    read: (id: string, kind: DocumentKind) => Promise<DocumentFile | null>
+    /**
+     * `null` when nothing has been saved under that id yet.
+     *
+     * `path` is the document's own destination, for one sitting on a file the listing does not
+     * claim — see `DocumentDescriptor['destination']`.
+     */
+    read: (id: string, kind: DocumentKind, path?: string) => Promise<DocumentFile | null>
     /**
      * The envelope — version, kind, timestamp — is stamped by the main process, not here.
      *
      * Answers `stale` and writes NOTHING when the file changed underneath — see `DocumentWrite`.
      * Ask with `confirmOverwrite`, then write again with `force`.
      *
-     * `folder` is where a document written for the FIRST time lands — the folder its author
-     * picked when they made it. It is read for a document with no file yet and ignored for one
-     * that has: a save never moves what is already filed somewhere.
+     * `place` is where the bytes go — see `DocumentPlace`: a chosen file, or the folder a first
+     * save lands in. A document that already has a file ignores the folder half of it.
      */
     write: (
       id: string,
       kind: DocumentKind,
       draft: DocumentDraft,
       force?: boolean,
-      folder?: string,
+      place?: DocumentPlace,
     ) => Promise<DocumentWrite>
     /**
      * Gives a document another name — which, the file being named after the document, moves it.
@@ -356,6 +361,12 @@ export type StudioBridgeLibrary = {
      */
     showResource: (assetId: string) => Promise<Asset>
     /**
+     * Takes a file INTO that store, moved rather than copied — what a generation a document
+     * asked for becomes (§6.3, D7). Same shape as the showing: one already in the store comes
+     * back unchanged.
+     */
+    hideResource: (assetId: string) => Promise<Asset>
+    /**
      * Puts the working textures the app ships with into the open project, and answers what they
      * became. Idempotent: a project that already holds them keeps the assets it has, ids
      * included, so a document referencing one goes on resolving.
@@ -435,8 +446,11 @@ export type StudioBridgeLibrary = {
      * Brings assets into the project, bytes and all. Answers what each one did — a download
      * that fails halfway has already written the ones before it, and a rejection would lose
      * that. The rows themselves arrive through the catalogue, which the store re-reads.
+     *
+     * `folder` lands them straight where they were asked for — E-22: a library row dropped on a
+     * folder used to be written to its ROLE's folder and moved from there.
      */
-    pull: (remoteAssetIds: readonly string[]) => Promise<SyncOutcome[]>
+    pull: (remoteAssetIds: readonly string[], folder?: string) => Promise<SyncOutcome[]>
     /** Sends local assets up. Answers what each one did, successes and failures alike. */
     push: (assetIds: readonly string[]) => Promise<SyncOutcome[]>
     /** What a push or a pull would do, before it costs a single request. */

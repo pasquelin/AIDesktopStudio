@@ -5,6 +5,7 @@
       "general": "Général",
       "media": "Média",
       "catalogue": "Catalogue",
+      "uses": "Utilisé par",
       "git": "Git"
     },
     "gitUnchanged": "Aucune modification en attente",
@@ -18,6 +19,8 @@
     "identifier": "Identifiant",
     "fingerprint": "Empreinte du contenu",
     "added": "Ajouté le",
+    "documents": "Documents",
+    "usedByNone": "Aucun document du projet ne cite ce fichier.",
     "reading": "Lecture du dossier…",
     "missing": "Cette entrée n’est plus dans le dossier du projet."
   }

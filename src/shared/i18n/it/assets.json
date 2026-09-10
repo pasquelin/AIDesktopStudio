@@ -32,6 +32,8 @@
     "details": "Dettaglio della riga",
     "editPixels": "Modifica l’immagine",
     "editPixelsHint": "Apre questa immagine nello spazio Immagine, dove ⌘S la riscrive su sé stessa",
+    "openAsScene": "Apri come scena",
+    "openAsSceneHint": "Apre questo glTF come una scena, con il suo albero, le sue telecamere e le sue luci — il salvataggio riscrive questo file",
     "extractTextures": "Estrai le mappe del modello",
     "extractTexturesHint": "Estrae le mappe incorporate del modello in Materiali, dove possono essere aperte e modificate",
     "fetchActionHint": "Scarica gli asset scelti dalla libreria remota nel progetto aperto",
@@ -201,6 +203,7 @@
     "saveElsewhereTitle": "Salvare «{{title}}» altrove?",
     "saveElsewhereConfirm": "Salva con nome…",
     "saveAsTitle": "Salva con nome",
+    "saveCopyTitle": "Salva una copia",
     "saveAsUnavailable": "Questo documento non ha altra destinazione: modifica il modello della libreria con cui è stato aperto.",
     "formatField": "Formato del file",
     "formats": {

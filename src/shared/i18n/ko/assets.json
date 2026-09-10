@@ -32,6 +32,8 @@
     "details": "행 세부 사항",
     "editPixels": "이미지 편집",
     "editPixelsHint": "이 이미지를 이미지 공간에서 열고, ⌘S는 그 위에 다시 씁니다",
+    "openAsScene": "장면으로 열기",
+    "openAsSceneHint": "이 glTF를 트리, 카메라, 조명과 함께 장면으로 엽니다. 저장하면 이 파일에 다시 씁니다",
     "extractTextures": "모델 맵 추출",
     "extractTexturesHint": "모델의 포함된 맵을 머티리얼로 추출하여 열고 편집할 수 있습니다",
     "fetchActionHint": "선택한 애셋을 원격 라이브러리에서 열린 프로젝트로 다운로드합니다",
@@ -201,6 +203,7 @@
     "saveElsewhereTitle": "‘{{title}}’을(를) 다른 곳에 저장할까요?",
     "saveElsewhereConfirm": "다른 이름으로 저장…",
     "saveAsTitle": "다른 이름으로 저장",
+    "saveCopyTitle": "사본 저장",
     "saveAsUnavailable": "이 문서에는 다른 저장 위치가 없습니다. 열었던 라이브러리의 모델을 편집합니다.",
     "formatField": "파일 형식",
     "formats": {

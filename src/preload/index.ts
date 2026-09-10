@@ -133,6 +133,7 @@ const bridge: StudioBridge = {
     folderFor: role => ipcRenderer.invoke(CHANNELS.projectFolderFor, role),
     onFolderRoles: callback => subscribe<RoleFolders>(EVENTS.projectFolderRoles, callback),
     fileFacts: relative => ipcRenderer.invoke(CHANNELS.projectFileFacts, relative),
+    fileUses: paths => ipcRenderer.invoke(CHANNELS.projectFileUses, paths),
     readContext: () => ipcRenderer.invoke(CHANNELS.projectReadContext),
     writeContext: cards => ipcRenderer.invoke(CHANNELS.projectWriteContext, cards),
     onContextChanged: callback => subscribe<ContextState>(EVENTS.projectContext, callback),
@@ -210,9 +211,9 @@ const bridge: StudioBridge = {
   documents: {
     list: () => ipcRenderer.invoke(CHANNELS.documentList),
     opened: (path, kind) => ipcRenderer.invoke(CHANNELS.documentOpened, path, kind),
-    read: (id, kind) => ipcRenderer.invoke(CHANNELS.documentRead, id, kind),
-    write: (id, kind, file, force, folder) =>
-      ipcRenderer.invoke(CHANNELS.documentWrite, id, kind, file, force, folder),
+    read: (id, kind, path) => ipcRenderer.invoke(CHANNELS.documentRead, id, kind, path),
+    write: (id, kind, file, force, place) =>
+      ipcRenderer.invoke(CHANNELS.documentWrite, id, kind, file, force, place),
     rename: (id, kind, title) => ipcRenderer.invoke(CHANNELS.documentRename, id, kind, title),
     remove: (id, kind) => ipcRenderer.invoke(CHANNELS.documentRemove, id, kind),
     confirmClose: title => ipcRenderer.invoke(CHANNELS.documentConfirmClose, title),
@@ -249,6 +250,7 @@ const bridge: StudioBridge = {
     readLayered: assetId => ipcRenderer.invoke(CHANNELS.assetsReadLayered, assetId),
     saveTexture: request => ipcRenderer.invoke(CHANNELS.assetsSaveTexture, request),
     showResource: assetId => ipcRenderer.invoke(CHANNELS.assetsShowResource, assetId),
+    hideResource: assetId => ipcRenderer.invoke(CHANNELS.assetsHideResource, assetId),
     installBundledTextures: () => ipcRenderer.invoke(CHANNELS.texturesInstallBundled),
     installBundledCharacter: level => ipcRenderer.invoke(CHANNELS.charactersInstallBundled, level),
     extractTextures: assetId => ipcRenderer.invoke(CHANNELS.assetsExtractTextures, assetId),
@@ -264,7 +266,8 @@ const bridge: StudioBridge = {
     browse: query => ipcRenderer.invoke(CHANNELS.cloudBrowse, query),
     explore: query => ipcRenderer.invoke(CHANNELS.cloudExplore, query),
     similar: assetId => ipcRenderer.invoke(CHANNELS.cloudSimilar, assetId),
-    pull: remoteAssetIds => ipcRenderer.invoke(CHANNELS.cloudPull, remoteAssetIds),
+    pull: (remoteAssetIds, folder) =>
+      ipcRenderer.invoke(CHANNELS.cloudPull, remoteAssetIds, folder),
     push: assetIds => ipcRenderer.invoke(CHANNELS.cloudPush, assetIds),
     plan: (assetIds, policy) => ipcRenderer.invoke(CHANNELS.cloudPlan, assetIds, policy),
   },

@@ -24,6 +24,7 @@ import { handle } from '@main/ipc/handle'
 import { peaksFromBytes } from '@main/media/peaks'
 import { isPngBytes, probePng } from '@main/media/png'
 import { packOpenRaster, unpackOpenRaster } from '@main/assets/openRasterFile'
+import { oraEnvelopeFor } from '@main/assets/oraEnvelope'
 import { oraThumbnailOf } from '@main/media/oraThumbnail'
 import { ORA_MERGED_PATH } from '@shared/domain/openRaster'
 import { ORA_EXTENSION, PNG_EXTENSION, WAV_EXTENSION } from '@shared/domain/writtenFormat'
@@ -50,7 +51,7 @@ import {
   parseFolderPaths,
   parseForceWrite,
   parseHiddenShown,
-  parseLandingFolder,
+  parseDocumentPlace,
   parseProjectName,
   parseProjectPath,
   parseProjectTitle,
@@ -353,7 +354,11 @@ export function registerProjectHandlers({
     const request = parseSaveLayered(value)
     const merged = request.document.surfaces.find(one => one.path === ORA_MERGED_PATH)?.png
     if (!merged || !isPngBytes(merged)) throw localizedError('pngPayloadInvalid')
-    const bytes = packOpenRaster(request.document, '', oraThumbnailOf(merged))
+    const bytes = packOpenRaster(
+      request.document,
+      oraEnvelopeFor(request, () => new Date().toISOString()),
+      oraThumbnailOf(merged),
+    )
     const probe = probePng(merged) ?? undefined
     return landPicture(request, bytes, ORA_EXTENSION, probe)
   })
@@ -446,16 +451,20 @@ export function registerProjectHandlers({
     })
     return Promise.resolve()
   })
-  handle(CHANNELS.documentRead, (_event, id, kind) =>
-    documents.read(parseDocumentId(id), parseDocumentKind(kind)),
+  handle(CHANNELS.documentRead, (_event, id, kind, path) =>
+    documents.read(
+      parseDocumentId(id),
+      parseDocumentKind(kind),
+      parseDocumentPlace(path === undefined ? undefined : { path })?.path,
+    ),
   )
-  handle(CHANNELS.documentWrite, async (_event, id, kind, draft, force, folder) => {
+  handle(CHANNELS.documentWrite, async (_event, id, kind, draft, force, place) => {
     const written = await documents.write(
       parseDocumentId(id),
       parseDocumentKind(kind),
       parseDocumentDraft(draft),
       parseForceWrite(force),
-      parseLandingFolder(folder),
+      parseDocumentPlace(place),
     )
     if (written === 'written') project.touch()
     return written

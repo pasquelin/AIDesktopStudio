@@ -4,7 +4,7 @@ import { orElse } from '@shared/promises'
 import { roleForKind, type DocumentDescriptor, type DocumentKind } from '@shared/domain/document'
 import { checkDocumentName } from '@shared/domain/documentName'
 import { DEFAULT_ROLE_PATHS } from '@shared/domain/folderRole'
-import type { WritableFormat } from '@shared/domain/formatCapability'
+import type { KnownFormat } from '@shared/domain/formatCapability'
 import type { DocumentTemplateId, NamedDocumentPlace } from '@shared/domain/newDocument'
 import { DEFAULT_SCENE_TEMPLATE, type SceneTemplateId } from '@shared/domain/sceneTemplate'
 import { DEFAULT_UI_TEMPLATE, type UiTemplateId } from '@shared/domain/uiTemplates'
@@ -19,7 +19,7 @@ import { NewDocumentNameField } from './NewDocumentNameField'
 import { NewDocumentTemplateField } from './NewDocumentTemplateField'
 
 /** One array for every new document, so the field is never handed a fresh one per keystroke. */
-const NO_FORMATS: readonly WritableFormat[] = []
+const NO_FORMATS: readonly KnownFormat[] = []
 
 export type NewDocumentFormProps = {
   kind: DocumentKind
@@ -32,7 +32,7 @@ export type NewDocumentFormProps = {
    * A Save as…: the name the field opens on, and the formats to choose between. Absent for a new
    * document, which opens on a free name and has one format per kind to show rather than offer.
    */
-  saveAs?: { title: string; formats: readonly WritableFormat[] }
+  saveAs?: { title: string; formats: readonly KnownFormat[] }
   onCancel: () => void
   onSubmit: (place: NamedDocumentPlace) => void
 }
@@ -57,7 +57,7 @@ export function NewDocumentForm({
 
   const [folder, setFolder] = useState<string | null>(null)
   const [draft, setDraft] = useState('')
-  const [format, setFormat] = useState<WritableFormat | null>(saveAs?.formats[0] ?? null)
+  const [format, setFormat] = useState<KnownFormat | null>(saveAs?.formats[0] ?? null)
   const [template, setTemplate] = useState<SceneTemplateId>(DEFAULT_SCENE_TEMPLATE)
   const [uiTemplate, setUiTemplate] = useState<UiTemplateId>(DEFAULT_UI_TEMPLATE)
   const stored = useDocuments(state => state.stored)

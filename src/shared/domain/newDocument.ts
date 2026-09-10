@@ -1,5 +1,5 @@
 import type { DocumentDescriptor, DocumentKind } from './document'
-import type { WritableFormat } from './formatCapability'
+import type { KnownFormat } from './formatCapability'
 import type { RecentProject } from './project'
 import type { SceneTemplateId } from './sceneTemplate'
 import type { ToolSurface } from './tool'
@@ -23,13 +23,19 @@ type NewDocumentPurpose =
   | { of: 'externalFiles' }
   | {
       of: 'saveAs'
+      /**
+       * Whether the destination being chosen is for a COPY — §5.3, third row: the same question,
+       * and a different promise. « Save as » moves the document onto what it writes; a copy
+       * leaves it where it is, and the window has to say which of the two is about to happen.
+       */
+      copy?: true
       /** The name the field opens on — the document's own, there to be changed. */
       title: string
       /**
        * The formats this document may be written in, closest first. One or none leaves nothing to
        * choose: the form shows the extension instead, as it does for a new document.
        */
-      formats: readonly WritableFormat[]
+      formats: readonly KnownFormat[]
     }
 
 /** What the studio hands the window that names a document about to be made. */
@@ -99,7 +105,7 @@ export type NamedDocumentPlace = {
    * The format chosen for a Save as…, absent everywhere else. A new document has none to choose:
    * its kind names one file, and the form shows that extension rather than offering it.
    */
-  format?: WritableFormat
+  format?: KnownFormat
 }
 
 /**

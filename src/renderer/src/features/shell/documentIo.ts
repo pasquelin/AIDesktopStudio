@@ -16,7 +16,7 @@ import {
   formatOfFile,
   lossesFor,
   type CapabilityTrait,
-  type WritableFormat,
+  type KnownFormat,
 } from '@shared/domain/formatCapability'
 import { mayOverwriteSource, readFidelityOf } from '@shared/domain/readFidelity'
 import { keepsWrittenFormat } from '@shared/domain/writtenFormat'
@@ -51,7 +51,7 @@ import { queueDocumentSave } from './documentSaveQueue'
  */
 async function flattenChoice(
   document: DocumentDescriptor,
-  format: WritableFormat,
+  format: KnownFormat,
   losses: readonly CapabilityTrait[],
 ): Promise<FlattenChoice> {
   const lost = losses.map(trait => i18next.t(`traits.${trait}`)).join(', ')
@@ -285,17 +285,22 @@ async function writeDraft(
   signal: AbortSignal,
   byHand: boolean,
 ): Promise<boolean> {
-  const folder = parentOf(document.path) ?? FOLDER_ROOT
-  const result = await bridge.documents.write(document.id, document.kind, draft, false, folder)
+  // The document's own destination first — §5.3. A file it was opened ON is written into rather
+  // than beside: without it the writer frees the name against the folder, and a glTF another
+  // application exported grew a `Niveau 2.gltf` at every save instead of being edited in place.
+  const place = document.destination
+    ? { path: document.destination }
+    : { folder: parentOf(document.path) ?? FOLDER_ROOT }
+  const result = await bridge.documents.write(document.id, document.kind, draft, false, place)
   if (result !== 'stale') return true
   if (!byHand || !(await bridge.documents.confirmOverwrite(document.title))) return false
   if (!epochIsCurrent(document, epoch, signal)) return false
-  await bridge.documents.write(document.id, document.kind, draft, true, folder)
+  await bridge.documents.write(document.id, document.kind, draft, true, place)
   return true
 }
 
 /** What a save is about to write, and what that would destroy — walked once per save. */
-export type WritePlan = { format: WritableFormat; losses: CapabilityTrait[] }
+export type WritePlan = { format: KnownFormat; losses: CapabilityTrait[] }
 
 export function writePlanFor(
   document: DocumentDescriptor,
@@ -327,7 +332,7 @@ async function rewriteSourceAsset(
   try {
     const written = await io.writeAsset(
       document.id,
-      { replaces: source, name: document.title, format },
+      { replaces: source, name: document.title, format, documentId: document.id },
       captured,
     )
     if (!written) throw localizedError('bakeContentEmpty')

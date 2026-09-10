@@ -13,6 +13,7 @@ import type { StudioBridge } from '@shared/ipc'
 import { getBridge } from '@/services/bridge'
 import { openDocument } from './components/dockviewApi'
 import type { CapturedDraft } from './documentIoAdapters'
+import { newId } from '@/helpers/ids'
 import { createScript } from './createScript'
 import {
   forgetDocument,
@@ -34,7 +35,10 @@ function folderOf(document: DocumentDescriptor): string | null {
 }
 
 /** Where the document is to be written, or `null` when the window was closed or cancelled. */
-async function askWhereToSave(document: DocumentDescriptor): Promise<NamedDocumentPlace | null> {
+async function askWhereToSave(
+  document: DocumentDescriptor,
+  copy?: true,
+): Promise<NamedDocumentPlace | null> {
   const bridge = getBridge()
   // ASKED, never read off the project store: that store settles unsaved work, so it reaches the
   // save this module is called from — and the import graph carries no cycle. The round trip is
@@ -48,6 +52,7 @@ async function askWhereToSave(document: DocumentDescriptor): Promise<NamedDocume
   const answer = await bridge.newDocument.ask({
     purpose: {
       of: 'saveAs',
+      ...(copy ? { copy } : {}),
       title: document.title,
       formats: destinationFormatsFor(document.kind),
     },
@@ -83,14 +88,16 @@ async function intoNewAsset(
         name: place.title,
         format,
         folder: place.folder,
+        documentId: document.id,
         ...(document.sourceAssetId ? { derivedFrom: document.sourceAssetId } : {}),
       },
       draft,
     )
     if (!written) throw localizedError('bakeContentEmpty')
-    // The NAME the row came back with, never the one that was typed: a folder already holding
-    // that file frees the name, and a tab titled otherwise would name a file nobody wrote.
-    useDocuments.getState().retarget(document.id, written.id, written.name)
+    // The ROW that came back, never the name that was typed: a folder already holding that file
+    // frees the name, and a tab titled otherwise would name a file nobody wrote. Its path travels
+    // with it, which is what keeps one file to one document across a catalogue rebuild.
+    useDocuments.getState().retarget(document.id, written)
     // Together: the shelf and the document listing share nothing, and one waiting on the other
     // is a second round trip in series for a gesture that has already opened a window.
     await Promise.all([useAssets.getState().refresh(), useDocuments.getState().relist('own-write')])
@@ -127,7 +134,7 @@ async function intoNewFile(
     created.kind,
     { ...draft, title: created.title },
     false,
-    place.folder,
+    { folder: place.folder },
   )
   if (written !== 'written') {
     useDocuments.getState().close(created.id)
@@ -150,6 +157,87 @@ async function intoNewScript(
   const created = await createScript({ title: place.title, folder: place.folder }, draft.content)
   if (!created) return false
   forgetDocument(document.id)
+  return true
+}
+
+/**
+ * A copy written where the person chose, the document carrying on where it is — §5.3, third row.
+ *
+ * What tells it from « Save as » is the one thing that does not happen: nothing is retargeted.
+ * The tab keeps its destination, its history and its place in the layout, and what is written is
+ * a file of its own — a NEW document id for a file document, since a document's id lives inside
+ * its file and two files may not claim one.
+ *
+ * No tab is opened on it either: a copy is something one makes and goes on working, and the
+ * listing is where it turns up.
+ */
+export async function saveDocumentCopy(documentId: string): Promise<boolean> {
+  const savable = writableDocument(documentId)
+  if (!savable) return false
+  const { bridge, document, io } = savable
+  if (io.assetOnly) {
+    // Same reason as « Save as »: the character's tab edits a model of the library, and its
+    // skeleton belongs in that model's own container.
+    reportNotice('document.save', i18next.t('documents.saveAsUnavailable'))
+    return false
+  }
+  await io.settled?.(documentId)
+
+  const place = await askWhereToSave(document, true)
+  if (!place) return false
+
+  const { draft } = await io.capture(documentId)
+  // 🛑 `commit` is NOT called: the document has not been saved, a copy of it has. Marking the
+  // work as written would leave the real destination behind with nothing saying so.
+  return io.writeAsset
+    ? await copiedAsset(document, io, place, draft)
+    : await copiedFile(bridge, document, place, draft)
+}
+
+/** The copy of a picture: another row of the library, and the tab stays on the one it edits. */
+async function copiedAsset(
+  document: DocumentDescriptor,
+  io: AssetWritingIo,
+  place: NamedDocumentPlace,
+  draft: CapturedDraft,
+): Promise<boolean> {
+  const format = place.format ?? nearestEncodableFor('picture', io.traitsOf(document.id))
+  try {
+    const written = await io.writeAsset(
+      document.id,
+      {
+        name: place.title,
+        format,
+        folder: place.folder,
+        ...(document.sourceAssetId ? { derivedFrom: document.sourceAssetId } : {}),
+      },
+      draft,
+    )
+    if (!written) throw localizedError('bakeContentEmpty')
+    await useAssets.getState().refresh()
+    return true
+  } catch (error) {
+    reportFailure('assets.save', document.title, error)
+    return false
+  }
+}
+
+/** The copy of a document file: its own file, under an id of its own, and no tab on it. */
+async function copiedFile(
+  bridge: StudioBridge,
+  document: DocumentDescriptor,
+  place: NamedDocumentPlace,
+  draft: CapturedDraft,
+): Promise<boolean> {
+  const written = await bridge.documents.write(
+    newId(),
+    document.kind,
+    { ...draft, title: place.title },
+    false,
+    { folder: place.folder },
+  )
+  if (written !== 'written') return false
+  await useDocuments.getState().relist('own-write')
   return true
 }
 

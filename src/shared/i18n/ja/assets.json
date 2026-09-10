@@ -32,6 +32,8 @@
     "details": "行の詳細",
     "editPixels": "画像を編集",
     "editPixelsHint": "この画像を画像スペースで開きます。⌘Sで同じファイルに上書きします。",
+    "openAsScene": "シーンとして開く",
+    "openAsSceneHint": "この glTF をツリー、カメラ、ライトとともにシーンとして開きます。保存するとこのファイルに書き戻します",
     "extractTextures": "モデルのマップを取り出す",
     "extractTexturesHint": "モデルに埋め込まれたマップをマテリアルへ取り出します。そこで開いて編集できます。",
     "fetchActionHint": "選んだアセットをリモートライブラリから開いているプロジェクトにダウンロードします。",
@@ -201,6 +203,7 @@
     "saveElsewhereTitle": "「{{title}}」を別の場所に保存しますか？",
     "saveElsewhereConfirm": "名前を付けて保存…",
     "saveAsTitle": "名前を付けて保存",
+    "saveCopyTitle": "コピーを保存",
     "saveAsUnavailable": "このドキュメントに他の保存先はありません。開いたライブラリのモデルを編集しています。",
     "formatField": "ファイル形式",
     "formats": {

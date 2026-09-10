@@ -405,7 +405,12 @@ describe('what the native menu is told', () => {
     }
 
     /** The three document rows travel with any tab in front, this decor holding one. */
-    const IN_FRONT: MenuAbility[] = ['document.save', 'document.saveAs', 'document.close']
+    const IN_FRONT: MenuAbility[] = [
+      'document.save',
+      'document.saveAs',
+      'document.saveCopy',
+      'document.close',
+    ]
 
     it('offers nothing to export where nothing is picked', () => {
       renderHook(() => useNativeMenu())
@@ -429,7 +434,11 @@ describe('what the native menu is told', () => {
     it('withholds closing the tab while the home covers it', () => {
       useLayouts.setState({ home: true })
       renderHook(() => useNativeMenu())
-      expect(lastPublished().abilities).toEqual(['document.save', 'document.saveAs'])
+      expect(lastPublished().abilities).toEqual([
+        'document.save',
+        'document.saveAs',
+        'document.saveCopy',
+      ])
     })
 
     /** A timeline drag writes the scene on every pointer move, and moves nothing that is picked. */

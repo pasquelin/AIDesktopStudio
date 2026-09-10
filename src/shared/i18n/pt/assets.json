@@ -32,6 +32,8 @@
     "details": "Detalhe da linha",
     "editPixels": "Modificar a imagem",
     "editPixelsHint": "Abre esta imagem no espaço Imagem, onde ⌘S a reescreve sobre ela mesma",
+    "openAsScene": "Abrir como cena",
+    "openAsSceneHint": "Abre este glTF como uma cena, com a sua árvore, as suas câmaras e as suas luzes — guardar reescreve este ficheiro",
     "extractTextures": "Extrair os mapas do modelo",
     "extractTexturesHint": "Extrai os mapas embutidos do modelo para Materiais, onde podem ser abertos e modificados",
     "fetchActionHint": "Baixa os assets escolhidos da biblioteca remota para o projeto aberto",
@@ -201,6 +203,7 @@
     "saveElsewhereTitle": "Salvar “{{title}}” em outro lugar?",
     "saveElsewhereConfirm": "Salvar como…",
     "saveAsTitle": "Salvar como",
+    "saveCopyTitle": "Guardar uma cópia",
     "saveAsUnavailable": "Este documento não tem outro destino: ele edita o modelo da biblioteca com o qual foi aberto.",
     "formatField": "Formato do arquivo",
     "formats": {

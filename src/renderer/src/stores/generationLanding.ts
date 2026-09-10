@@ -3,6 +3,7 @@ import type { DocumentKind } from '@shared/domain/document'
 import { isFinished, type Job } from '@shared/domain/job'
 import type { LandingTarget } from '@shared/domain/landingTarget'
 import type { LogScope } from '@shared/ipc'
+import { orElse } from '@shared/promises'
 import { getBridge } from '@/services/bridge'
 import { reportFailure } from '@/services/diagnostics'
 import { useAssets } from './assets'
@@ -135,20 +136,48 @@ async function openGeneratedAsset(asset: Asset): Promise<void> {
   await openAsset(asset)
 }
 
-function landRows(
+/**
+ * A generation a DOCUMENT claimed becomes a resource of that document — §6.3, D7 and E-26.
+ *
+ * G-V, which the landing broke: a picture generated as a layer was written into the pictures
+ * folder and stayed there even when the layer was undone. Moved rather than written elsewhere,
+ * because the file already exists by the time a job reports success — the collector wrote it.
+ *
+ * Moved BEFORE it lands, and that is the order that matters: a file renamed under a document
+ * already drawing it is a texture fetched from a path nothing is at. The row that comes back is
+ * what lands, so what the document cites is where the file now is.
+ *
+ * A failure is silent and lands the row as it stands: the layer belongs in the document either
+ * way, and a file left visible is a tidiness, not a reason to lose a generation that was paid for.
+ */
+async function landedInDocument(
+  documentId: string,
+  asset: Asset,
+  jobId: string,
+  land: GenerationLanding['land'],
+): Promise<void> {
+  const kept = await orElse(getBridge()?.assets.hideResource(asset.id), asset)
+  land(documentId, kept, jobId)
+  void useAssets.getState().refresh()
+}
+
+async function landRows(
   settled: ReadonlyMap<string, string | null>,
   rows: readonly Asset[],
   accepts: (asset: Asset) => boolean,
   takes: GenerationLanding['takes'],
   land: GenerationLanding['land'],
   onSettled: GenerationLanding['onSettled'],
-): void {
+): Promise<void> {
   for (const [jobId, claimed] of settled) {
     const into = landingInto(claimed)
     for (const asset of rows) {
       if (asset.jobId !== jobId || !accepts(asset)) continue
+      // Awaited, so a batch lands in the order it was generated: each row is moved into the
+      // document's own store before the next one is placed, and `takes: 'every'` gives a canvas
+      // its layers bottom to top rather than in whatever order the moves happened to finish.
       if (into === null) void openGeneratedAsset(asset)
-      else land(into, asset, jobId)
+      else await landedInDocument(into, asset, jobId, land)
       if (takes === 'first') break
     }
     onSettled?.(jobId)
@@ -211,7 +240,7 @@ export function createGenerationLanding({
     // The shelf still has to hear about them: it is what the browser shows.
     void useAssets.getState().refresh()
 
-    landRows(settled, rows, accepts, takes, land, onSettled)
+    await landRows(settled, rows, accepts, takes, land, onSettled)
   }
 
   return {

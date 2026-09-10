@@ -49,6 +49,17 @@ export const GENERAL_COMMANDS: readonly CommandDescriptor[] = [
     defaultBinding: 'Shift+Meta+KeyS',
   }),
   /**
+   * The third destination of §5.3, and the one that leaves the document where it is: « Save as »
+   * moves the tab onto what it wrote, this writes a copy and carries on with the original.
+   */
+  command({
+    id: 'document.saveCopy',
+    scope: 'global',
+    titleKey: 'commands.documentSaveCopy.title',
+    helpKey: 'commands.documentSaveCopy.help',
+    defaultBinding: 'Alt+Shift+Meta+KeyS',
+  }),
+  /**
    * ⌘W closes the TAB, as it does in every document editor. The native `close` role would take
    * the window instead, so this command owns the chord — see `reservedByPlatform`.
    */

@@ -5,6 +5,7 @@
       "general": "Chung",
       "media": "Phương tiện",
       "catalogue": "Danh mục",
+      "uses": "Được dùng bởi",
       "git": "Git"
     },
     "gitUnchanged": "Không có thay đổi nào chờ xử lý",
@@ -18,6 +19,8 @@
     "identifier": "Định danh",
     "fingerprint": "Dấu vân tay nội dung",
     "added": "Thêm vào ngày",
+    "documents": "Tài liệu",
+    "usedByNone": "Không tài liệu nào trong dự án nhắc đến tệp này.",
     "reading": "Đang đọc thư mục…",
     "missing": "Mục này không còn nằm trong thư mục dự án."
   }

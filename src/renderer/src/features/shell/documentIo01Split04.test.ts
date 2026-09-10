@@ -24,6 +24,7 @@ import {
   restoreDocument,
   saveDocument,
   saveDocumentAs,
+  saveDocumentCopy,
   scene,
 } from './documentIoTest-fixtures'
 
@@ -99,6 +100,7 @@ describe('saveDocument', () => {
 
       expect(savePicture).toHaveBeenCalledWith({
         derivedFrom: 'asset-1',
+        documentId,
         name: 'Affiche',
         folder: 'Images/Tirages',
         png: PNG,
@@ -198,12 +200,82 @@ describe('saveDocument', () => {
 
       await expect(saveDocumentAs(documentId)).resolves.toBe(true)
 
-      const [id, kind, draft, force, folder] = write.mock.calls[0] ?? []
-      expect({ kind, force, folder }).toEqual({ kind: 'scene', force: false, folder: 'Scenes' })
+      const [id, kind, draft, force, place] = write.mock.calls[0] ?? []
+      expect({ kind, force, place }).toEqual({
+        kind: 'scene',
+        force: false,
+        place: { folder: 'Scenes' },
+      })
       expect(draft).toMatchObject({ title: 'Repérage' })
       expect(id).not.toBe(documentId)
       // The tab it came from is gone, and the one standing holds what was written.
       expect(Object.keys(useDocuments.getState().documents)).toEqual([id])
+    })
+
+    /**
+     * §5.3, third row — and the whole of what tells it from « Save as »: the copy is written and
+     * the tab stays on what it was editing, destination, history and place in the layout intact.
+     */
+    it('writes a copy of a picture and leaves the tab on the file it edits', async () => {
+      const savePicture = vi.fn(() => Promise.resolve({ ...picture(), id: 'asset-2' }))
+      installFakeBridge({
+        documents: { write: () => Promise.resolve<DocumentWrite>('written') },
+        assets: { savePicture },
+        ...chooses({ title: 'Affiche', folder: 'Images/Tirages', format: 'png' }),
+      })
+      const { documentId, release } = await openLinkedImage()
+
+      await expect(saveDocumentCopy(documentId)).resolves.toBe(true)
+      release()
+
+      // NO `documentId`: a copy is a file of its own, and stamping the open document's identity
+      // into it would leave two files claiming one document.
+      expect(savePicture).toHaveBeenCalledWith({
+        derivedFrom: 'asset-1',
+        name: 'Affiche',
+        folder: 'Images/Tirages',
+        png: PNG,
+        format: 'png',
+      })
+      expect(useDocuments.getState().documents[documentId]).toMatchObject({
+        title: 'Gemini 3.1',
+        sourceAssetId: 'asset-1',
+      })
+    })
+
+    /** A file document's copy is a file of its own, under an id of its own — and no tab on it. */
+    it('writes a copy of a document file without opening a tab on it', async () => {
+      const write = vi.fn<StudioBridge['documents']['write']>(() =>
+        Promise.resolve<DocumentWrite>('written'),
+      )
+      installFakeBridge({
+        documents: { write },
+        ...chooses({ kind: 'scene', title: 'Repérage', folder: 'Scenes' }),
+      })
+      const documentId = await openScene()
+
+      await expect(saveDocumentCopy(documentId)).resolves.toBe(true)
+
+      const [id, , draft] = write.mock.calls[0] ?? []
+      expect(id).not.toBe(documentId)
+      expect(draft).toMatchObject({ title: 'Repérage' })
+      expect(Object.keys(useDocuments.getState().documents)).toEqual([documentId])
+    })
+
+    // A copy is not a save: the document still holds work nothing has written to ITS destination.
+    it('leaves the work unsaved, a copy being no save of the document', async () => {
+      installFakeBridge({
+        documents: { write: () => Promise.resolve<DocumentWrite>('written') },
+        assets: { saveLayered: () => Promise.resolve({ ...picture(), id: 'asset-2' }) },
+        ...chooses({ format: 'ora' }),
+      })
+      const { documentId, release } = await openLinkedImage()
+      useCanvases.getState().runCommand(documentId, addLayer(pixelLayer('layer-1', 'Layer')))
+
+      await expect(saveDocumentCopy(documentId)).resolves.toBe(true)
+      release()
+
+      expect(canvasStore.hasUnsavedWork(useCanvases.getState(), documentId)).toBe(true)
     })
 
     /** A document nothing could read holds nothing to write anywhere. */

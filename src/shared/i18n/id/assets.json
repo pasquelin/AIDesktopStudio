@@ -32,6 +32,8 @@
     "details": "Detail baris",
     "editPixels": "Ubah gambar",
     "editPixelsHint": "Membuka gambar ini di ruang Gambar, tempat ⌘S menuliskannya kembali di tempatnya",
+    "openAsScene": "Buka sebagai adegan",
+    "openAsSceneHint": "Membuka glTF ini sebagai adegan, dengan pohon, kamera, dan cahayanya — menyimpan akan menulis kembali ke berkas ini",
     "extractTextures": "Ekstrak peta model",
     "extractTexturesHint": "Mengekstrak peta yang tertanam dalam model ke Material, tempat peta itu dapat dibuka dan diubah",
     "fetchActionHint": "Mengunduh aset yang dipilih dari pustaka jarak jauh ke proyek yang terbuka",
@@ -201,6 +203,7 @@
     "saveElsewhereTitle": "Simpan “{{title}}” di tempat lain?",
     "saveElsewhereConfirm": "Simpan sebagai…",
     "saveAsTitle": "Simpan sebagai",
+    "saveCopyTitle": "Simpan salinan",
     "saveAsUnavailable": "Dokumen ini tidak punya tujuan lain: ia menyunting model pustaka yang dibukanya.",
     "formatField": "Format berkas",
     "formats": {

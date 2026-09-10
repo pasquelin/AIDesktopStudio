@@ -2,6 +2,7 @@ import { withoutSourcePath } from '@shared/domain/asset'
 import { PNG_EXTENSION } from '@shared/domain/writtenFormat'
 import { CHANNELS } from '@shared/ipc'
 import type { LocalBackend } from '@main/assets/localBackend'
+import { createHideResource } from '@main/assets/hideResource'
 import { createShowResource } from '@main/assets/showResource'
 import { parseAssetId } from '@main/assets/validation'
 import { handle } from '@main/ipc/handle'
@@ -16,7 +17,8 @@ export type ResourceHandlerDeps = {
 }
 
 /**
- * The two routes of the DURABLE INTERNAL store — §6.7 and the pair T4/T7.
+ * The three routes of the DURABLE INTERNAL store — §6.7 and the pair T4/T7, plus the door a
+ * generation a document claimed goes in by (§6.3, D7).
  *
  * A computed channel is necessarily a file: MaterialX references its images by path. Nothing makes
  * it a file the explorer has to show, and it used to be one, written without a word. It lands under
@@ -47,6 +49,16 @@ export function registerResourceHandlers({
       ),
     )
   })
+
+  handle(CHANNELS.assetsHideResource, async (_event, value) =>
+    withoutSourcePath(
+      await createHideResource({
+        projectPath: () => project.path(),
+        find: assetId => project.catalog().find(assetId),
+        repath: (from, to) => project.catalog().repath(from, to),
+      }).hide(parseAssetId(value)),
+    ),
+  )
 
   handle(CHANNELS.assetsShowResource, async (_event, value) =>
     withoutSourcePath(

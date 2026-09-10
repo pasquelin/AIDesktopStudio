@@ -32,6 +32,8 @@
     "details": "行详情",
     "editPixels": "修改图像",
     "editPixelsHint": "在图像工作区中打开这张图像，在那里 ⌘S 会把它原地写回去",
+    "openAsScene": "作为场景打开",
+    "openAsSceneHint": "以场景方式打开该 glTF，包含其节点树、相机与灯光——保存会写回该文件",
     "extractTextures": "提取模型贴图",
     "extractTexturesHint": "把模型内嵌的贴图提取到材质里，在那里可以打开和编辑它们",
     "fetchActionHint": "把选中的资产从远程素材库下载到打开着的项目里",
@@ -201,6 +203,7 @@
     "saveElsewhereTitle": "将“{{title}}”保存到别处？",
     "saveElsewhereConfirm": "另存为…",
     "saveAsTitle": "另存为",
+    "saveCopyTitle": "保存副本",
     "saveAsUnavailable": "此文档没有其他保存位置：它编辑的是打开它时所用的素材库模型。",
     "formatField": "文件格式",
     "formats": {

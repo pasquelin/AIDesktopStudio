@@ -132,6 +132,7 @@ export function MaterialDocument({ documentId }: { documentId: string }) {
     <AssetDropTarget
       accepts={PICTURES}
       onDrop={onDrop}
+      filesAreInternal
       // No frame: see `ImageDocument`. The CHANNEL slots keep theirs — there the frame IS the
       // answer, because it says which of seven places the drop would land in.
       outlined={false}

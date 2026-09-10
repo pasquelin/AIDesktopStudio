@@ -32,6 +32,8 @@
     "details": "Row detail",
     "editPixels": "Edit the image",
     "editPixelsHint": "Opens this image in the Image space, where ⌘S writes it back over itself",
+    "openAsScene": "Open as scene",
+    "openAsSceneHint": "Opens this glTF as a scene, with its tree, cameras and lights — saving writes back into this file",
     "extractTextures": "Extract the model maps",
     "extractTexturesHint": "Extracts the model’s embedded maps into Materials, where they can be opened and edited",
     "fetchActionHint": "Downloads the chosen assets from the remote library into the open project",
@@ -201,6 +203,7 @@
     "saveElsewhereTitle": "Save “{{title}}” somewhere else?",
     "saveElsewhereConfirm": "Save as…",
     "saveAsTitle": "Save as",
+    "saveCopyTitle": "Save a copy",
     "saveAsUnavailable": "This document has no other destination: it edits the model of the library it was opened on.",
     "formatField": "File format",
     "formats": {

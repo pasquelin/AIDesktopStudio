@@ -123,6 +123,14 @@ export type SaveAnimationThumbnailRequest = {
 export type SaveLayeredRequest = SaveRequestBase &
   ChosenFolder & {
     document: OraDocument
+    /**
+     * Which document these layers ARE — stamped into the container, so the file says it itself.
+     *
+     * A `.ora` is a document whichever door opens it (§2.6), and one written without this was
+     * listed under its file name while the tab that wrote it answered to another id: two
+     * identities over one file, and a double-click free to open the second of them (E-12, U-1).
+     */
+    documentId?: string
   }
 
 /**

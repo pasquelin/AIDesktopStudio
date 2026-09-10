@@ -45,8 +45,11 @@ export type CloudBackendDeps = {
 }
 
 export type CloudBackend = {
-  /** Brings a library asset into the project, bytes and all. */
-  pull: (asset: CloudAsset) => Promise<Asset>
+  /**
+   * Brings a library asset into the project, bytes and all. `folder` is where the file lands;
+   * without it, the folder its role names.
+   */
+  pull: (asset: CloudAsset, folder?: string) => Promise<Asset>
   /** Sends a local asset up, and records the twin it became. */
   push: (assetId: string) => Promise<Asset>
 }
@@ -101,7 +104,7 @@ export function createCloudBackend({
   smallUploadLimit,
 }: CloudBackendDeps): CloudBackend {
   return {
-    pull: async cloudAsset => {
+    pull: async (cloudAsset, folder) => {
       // Asked for again rather than reused: the URL an asset arrives with is signed and expires,
       // and a listing held for a minute already carries one that may not last the download.
       const url = await remote().downloadUrl(cloudAsset.id, downloadFormatOf(cloudAsset))
@@ -126,6 +129,9 @@ export function createCloudBackend({
         ...(pulledChannel
           ? { map: pulledChannel.channel, mapInverted: pulledChannel.inverted }
           : {}),
+        // Straight where the gesture pointed — E-22: it used to land in its role's folder and
+        // be moved out of it, which showed the file in one place and then in another.
+        ...(folder === undefined ? {} : { folder }),
         ...(cloudAsset.thumbnailUrl ? { thumbnailUrl: cloudAsset.thumbnailUrl } : {}),
         ...(cloudAsset.ownerId ? { remoteOwnerId: cloudAsset.ownerId } : {}),
         ...(cloudAsset.updatedAt ? { remoteUpdatedAt: cloudAsset.updatedAt } : {}),

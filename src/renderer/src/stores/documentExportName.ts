@@ -1,6 +1,7 @@
 import { workshopAssetOf } from '@shared/domain/character'
 import { safeFileName } from '@shared/domain/fileName'
-import { documentForAsset, type DocumentsRead } from './documents'
+import { documentForAsset } from './documentIdentity'
+import { type DocumentsRead } from './documents'
 
 /**
  * What an export of this document is named — its own title, down to what a file system holds.

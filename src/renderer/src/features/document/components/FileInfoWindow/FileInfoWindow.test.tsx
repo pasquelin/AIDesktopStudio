@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Asset, AssetChanges } from '@shared/domain/asset'
 import { fileInfoRoute, type FileFacts } from '@shared/domain/fileInfo'
+import type { FileUse } from '@shared/domain/fileUse'
 import type { GitRepository } from '@shared/domain/git'
 import { installFakeBridge } from '@/services/fakeBridge'
 import { useGit } from '@/stores/git'
@@ -38,13 +39,14 @@ function open(
   facts: FileFacts | null,
   asset: Asset | null = null,
   repository: GitRepository = { kind: 'uninitialised' },
+  uses: FileUse[] = [],
 ) {
   const update = vi.fn((_assetId: string, changes: AssetChanges) =>
     Promise.resolve({ ...PICTURE, ...changes, tags: [...(changes.tags ?? PICTURE.tags)] }),
   )
   window.location.hash = fileInfoRoute(path)
   installFakeBridge({
-    project: { fileFacts: () => Promise.resolve(facts) },
+    project: { fileFacts: () => Promise.resolve(facts), fileUses: () => Promise.resolve(uses) },
     // `update` is what `RoleField` calls when a role is corrected — see the case below.
     assets: { search: () => Promise.resolve(asset ? [asset] : []), update },
     git: { read: () => Promise.resolve(repository) },
@@ -118,6 +120,45 @@ describe('FileInfoWindow', () => {
     expect(await screen.findByText('Dossier')).toBeInTheDocument()
     expect(screen.queryByText('Type')).not.toBeInTheDocument()
     expect(screen.queryByText('Taille')).not.toBeInTheDocument()
+  })
+
+  /**
+   * §11's S3 on screen: what a person needs before they move or delete a file is which of their
+   * own documents would notice (E-19, E-21).
+   */
+  it('names the documents that cite the file', async () => {
+    open('Images/facade.jpg', FACTS, PICTURE, { kind: 'uninitialised' }, [
+      {
+        title: 'Niveau',
+        path: 'Repérages/Niveau.gltf',
+        kind: 'scene',
+        used: ['Images/facade.jpg'],
+      },
+    ])
+    render(<FileInfoWindow />)
+
+    expect(await screen.findByText('Utilisé par')).toBeInTheDocument()
+    expect(screen.getByText('Niveau')).toBeInTheDocument()
+  })
+
+  // Empty is an ANSWER here, unlike the catalogue run: the question applies to every file.
+  it('says in words that nothing cites the file', async () => {
+    open('Images/facade.jpg', FACTS, PICTURE)
+    render(<FileInfoWindow />)
+
+    expect(
+      await screen.findByText('Aucun document du projet ne cite ce fichier.'),
+    ).toBeInTheDocument()
+  })
+
+  // A folder is cited by nobody, and saying so would read as a fact rather than as a question
+  // that does not apply.
+  it('asks nothing about what cites a folder', async () => {
+    open('Images', { ...FACTS, kind: 'folder' })
+    render(<FileInfoWindow />)
+
+    expect(await screen.findByText('Dossier')).toBeInTheDocument()
+    expect(screen.queryByText('Utilisé par')).not.toBeInTheDocument()
   })
 
   /** The project's own version control, read for THIS file — git's word, not a guess at it. */
