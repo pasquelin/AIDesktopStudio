@@ -32,6 +32,18 @@ function shadowChangeBetween(
   }
 }
 
+/**
+ * Whether the cascades have to be built again. Only what `CSM` reads at CONSTRUCTION: a rebuild
+ * takes its three lights out of the scene and recompiles every material they dressed.
+ */
+function cascadesMoved(
+  held: ViewportOptions,
+  next: ViewportOptions,
+  shadowsResized: boolean,
+): boolean {
+  return next.csm !== held.csm || next.shadows !== held.shadows || shadowsResized
+}
+
 export abstract class SceneRendererAids extends SceneRendererValidation {
   protected abstract applySnap(): void
   protected abstract applyGizmoSize(): void
@@ -82,11 +94,7 @@ export abstract class SceneRendererAids extends SceneRendererValidation {
     // Every light, not only the ones built after the change: a map is allocated per light, and
     // the grid is the floor under the reach a directional one is given.
     if (shadowsResized || gridMoved) this.tuneShadows()
-    // Only on what `CSM` reads at construction: a rebuild takes the three lights out of the
-    // scene and recompiles every material they dressed.
-    if (next.csm !== held.csm || next.shadows !== held.shadows || shadowsResized) {
-      this.syncCascades()
-    }
+    if (cascadesMoved(held, next, shadowsResized)) this.syncCascades()
     if (gridMoved && this.viewport.canvas) this.applyPalette()
     if (aidsMoved(held, next)) this.refreshAids()
     if (helperVisibilityMoved(held, next)) this.showAidsForSelection()

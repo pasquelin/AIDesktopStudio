@@ -10,7 +10,7 @@ import type { GpuPipeline } from '../gpu/gpuPipeline'
 import type * as EnvironmentModule from '../viewport/environment'
 import type * as TestObjectsModule from '../viewport/testObjects'
 import type { TestObjects } from '../viewport/testObjects'
-import { fakeEnvironment, fakeTextureSource } from '../viewport/viewport-fixtures'
+import { fakeEnvironment, fakeRenderer, fakeTextureSource } from '../viewport/viewport-fixtures'
 import { ViewportEngine } from '../viewport/ViewportEngine'
 import { SkyboxRenderer } from './SkyboxRenderer'
 
@@ -104,7 +104,7 @@ describe('the renderer of a skybox', () => {
 
     vi.spyOn(ViewportEngine.prototype, 'mount').mockImplementation(() => {})
     // `as`: neither the pipeline nor the environment is real here, and nothing else reads it.
-    vi.spyOn(ViewportEngine.prototype, 'gl', 'get').mockReturnValue({} as never)
+    vi.spyOn(ViewportEngine.prototype, 'gl', 'get').mockReturnValue(fakeRenderer())
     vi.spyOn(ViewportEngine.prototype, 'canvas', 'get').mockReturnValue(canvas)
     vi.spyOn(ViewportEngine.prototype, 'pointerNdcOf').mockImplementation(function (
       this: ViewportEngine,

@@ -9,7 +9,7 @@ import type { GpuPipeline } from '../gpu/gpuPipeline'
 import type * as EnvironmentModule from '../viewport/environment'
 import type * as TestObjectsModule from '../viewport/testObjects'
 import type { TestObjects } from '../viewport/testObjects'
-import { fakeEnvironment, fakeTextureSource } from '../viewport/viewport-fixtures'
+import { fakeEnvironment, fakeRenderer, fakeTextureSource } from '../viewport/viewport-fixtures'
 import { ViewportEngine } from '../viewport/ViewportEngine'
 import { SkyboxRenderer } from './SkyboxRenderer'
 
@@ -95,7 +95,7 @@ describe('the test objects of a skybox', () => {
     vi.spyOn(ViewportEngine.prototype, 'mount').mockImplementation(function (this: ViewportEngine) {
       painted = vi.spyOn(this, 'requestRender')
     })
-    vi.spyOn(ViewportEngine.prototype, 'gl', 'get').mockReturnValue({} as never)
+    vi.spyOn(ViewportEngine.prototype, 'gl', 'get').mockReturnValue(fakeRenderer())
     vi.spyOn(ViewportEngine.prototype, 'canvas', 'get').mockReturnValue(
       document.createElement('canvas'),
     )
@@ -197,7 +197,7 @@ describe('the views of a skybox', () => {
     vi.clearAllMocks()
     vi.useFakeTimers()
     vi.spyOn(ViewportEngine.prototype, 'mount').mockImplementation(() => {})
-    vi.spyOn(ViewportEngine.prototype, 'gl', 'get').mockReturnValue({} as never)
+    vi.spyOn(ViewportEngine.prototype, 'gl', 'get').mockReturnValue(fakeRenderer())
     vi.spyOn(ViewportEngine.prototype, 'canvas', 'get').mockReturnValue(
       document.createElement('canvas'),
     )

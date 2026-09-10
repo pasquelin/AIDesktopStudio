@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { PerspectiveCamera, RepeatWrapping, Vector3 } from 'three'
 import { PBR_CHANNELS, type PbrChannel } from '@shared/domain/material'
 import type { ViewportEnvironment } from '../viewport/environment'
-import { fakeEnvironment, fakeTextureSource } from '../viewport/viewport-fixtures'
+import { fakeEnvironment, fakeRenderer, fakeTextureSource } from '../viewport/viewport-fixtures'
 import { ViewportEngine } from '../viewport/ViewportEngine'
 import { MaterialRenderer } from './MaterialRenderer'
 import { newMaterial, slotFor, type ChannelMap, type MaterialState } from './materialState'
@@ -62,7 +62,7 @@ beforeEach(() => {
   source = fakeTextureSource()
   vi.spyOn(ViewportEngine.prototype, 'mount').mockImplementation(() => {})
   // The mocked environment never reads the renderer fields.
-  vi.spyOn(ViewportEngine.prototype, 'gl', 'get').mockReturnValue({} as never)
+  vi.spyOn(ViewportEngine.prototype, 'gl', 'get').mockReturnValue(fakeRenderer())
   host = document.createElement('div')
 })
 

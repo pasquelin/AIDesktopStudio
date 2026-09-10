@@ -93,7 +93,9 @@ describe('reading a world back', () => {
 
   it('reads a tone mapping this build knows, and falls back on one it does not', () => {
     expect(readWorld({ toneMapping: 'reinhard' }, undefined).toneMapping).toBe('reinhard')
-    expect(readWorld({ toneMapping: 'agx' }, undefined).toneMapping).toBe('none')
+    // `agx` stood here until three 0.185 was mapped: a word the build LEARNS stops being a
+    // fallback case, and the guard has to keep naming one the build really does not know.
+    expect(readWorld({ toneMapping: 'filmic' }, undefined).toneMapping).toBe('none')
   })
 
   it('opens a document written before layers existed on none', () => {

@@ -282,7 +282,7 @@
     },
     "csm": {
       "title": "Cascaded shadows",
-      "help": "Splits the sun's shadow into three maps, one per depth band of the view, instead of one map stretched over everything the camera sees. What an open landscape needs; a single set gains nothing and pays three depth passes for it."
+      "help": "Splits the sun’s shadow into three maps, one per depth band of the view, instead of one map stretched over everything the camera sees. What an open landscape needs; a single set gains nothing and pays three depth passes for it."
     },
     "snapTranslate": {
       "title": "Move step",

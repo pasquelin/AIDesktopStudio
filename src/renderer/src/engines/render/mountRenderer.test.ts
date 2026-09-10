@@ -1,12 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import type { WebGLRenderer } from 'three'
-import {
-  driverFor,
-  mountRenderer,
-  type RenderDriver,
-  type RenderDrivers,
-  type RendererRequest,
-} from './renderDriver'
+import { driverFor, mountRenderer, type RenderDrivers } from './mountRenderer'
+import type { RenderDriver, RendererRequest } from './renderDriver'
 
 /**
  * The two casts of this file, and their one reason: which driver answered is settled by

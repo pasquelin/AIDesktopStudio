@@ -1,4 +1,4 @@
-import { Texture } from 'three'
+import { Texture, type WebGLRenderer } from 'three'
 import { vi, type Mock } from 'vitest'
 import type { TextureSource } from '../scene/textureCache'
 import type { ViewportEnvironment } from './environment'
@@ -22,6 +22,16 @@ export function fakeEnvironment(): ViewportEnvironment {
     setBackgroundBlur: vi.fn(),
     dispose: vi.fn(),
   }
+}
+
+/**
+ * A renderer for a suite that never draws: jsdom gives no graphics context, and the three 3D
+ * workspaces only ask their renderer what the CARD allows before uploading a texture.
+ *
+ * `as`: a real `WebGLRenderer` cannot be built here, and what an engine reads off one is this.
+ */
+export function fakeRenderer(): WebGLRenderer {
+  return { capabilities: { getMaxAnisotropy: () => 16 } } as WebGLRenderer
 }
 
 export type FakeTextureSource = {
