@@ -108,6 +108,8 @@
     "tone_cineonHint": "フィルムから取られたカーブで、コントラストが強めです。",
     "tone_aces": "ACES",
     "tone_acesHint": "デジタルシネマのカーブです。ハイライトが純白に飛ぶのを防ぎます。",
+    "tone_agx": "AgX",
+    "tone_agxHint": "より新しいフィルムのカーブです。ACES では転んでしまう鮮やかな色を、明るくなっても保ちます。",
     "exposure": "露出",
     "quality": "品質",
     "quality_performance": "パフォーマンス",

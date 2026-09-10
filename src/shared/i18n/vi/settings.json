@@ -274,6 +274,10 @@
       "title": "Độ chi tiết của bóng đổ",
       "help": "Cạnh của map bóng mà mỗi đèn có đổ bóng tính ra, tính bằng pixel. Nhân đôi con số này thì tốn gấp bốn lần bộ nhớ: 2048 là quá đủ cho một cảnh vài đối tượng, 4096 mới đáng dùng khi một đèn phủ cả một phim trường."
     },
+    "csm": {
+      "title": "Bóng đổ phân tầng",
+      "help": "Chia bóng của mặt trời thành ba bản đồ, mỗi bản một lớp chiều sâu của khung nhìn, thay vì một bản trải khắp những gì máy quay thấy. Điều một cảnh mở cần; một bối cảnh đơn lẻ chẳng được gì mà vẫn trả ba lượt chiều sâu."
+    },
     "snapTranslate": {
       "title": "Bước di chuyển",
       "help": "Một đối tượng đi được bao xa trong một bước khi bắt dính đang bật, tính bằng mét. Bản thân việc bắt dính được bật từ thanh công cụ của cảnh; giá trị này chỉ nói nó mịn đến mức nào."

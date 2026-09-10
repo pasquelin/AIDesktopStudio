@@ -19,6 +19,7 @@ import { applyMaterial, applyNegative, applySprite, lightFor, standTarget } from
 import { createMaterialTextures, createSpriteTexture } from './materialTextures'
 import { reportFailure } from '@/services/diagnostics'
 import { limitShadowUpdates, throwsOf, tuneShadowMaps } from './shadows'
+import { cascadeSettingsFor, createCascadeShadows } from './csm'
 import { applyWireOverlay } from './sceneView'
 import './bvhPatches'
 import { isNegative } from '../csg/carve'
@@ -106,6 +107,25 @@ export abstract class SceneRendererShadows extends SceneRendererModels {
       () => ({ bounds: boundsOnce(), floor: this.view.gridSize }),
     )
     this.shadowThrow = tuned && throwsOf(tuned.framed, boundsOnce(), tuned.reach)
+    this.cascades?.aim(this.shadowThrow)
+  }
+
+  /**
+   * Builds the cascades or drops them — the one door `mount` and `configure` both come through.
+   * Rebuilt from scratch rather than adjusted, `CSM` reading its cascade count and its map size
+   * once at construction; the caller is what keeps that to the passes where one of them moved.
+   */
+  protected syncCascades(): void {
+    const wanted = this.view.csm && this.view.shadows && this.viewport.gl !== null
+    this.cascades?.release()
+    this.cascades = wanted
+      ? createCascadeShadows(this.viewport.scene, cascadeSettingsFor(this.view), () =>
+          this.redraw(),
+        )
+      : null
+    if (!this.cascades) return
+    this.cascades.aim(this.shadowThrow)
+    this.cascades.dress(this.viewport.scene)
   }
 
   /**

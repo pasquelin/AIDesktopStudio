@@ -142,6 +142,17 @@ async function tiffTexture(bytes: Uint8Array, orientation: PictureOrientation): 
   return texture
 }
 
+/** What of a renderer this reads — narrower than `WebGLRenderer`, which jsdom cannot build. */
+type AnisotropyHolder = { capabilities: { getMaxAnisotropy: () => number } }
+
+/**
+ * What a card allows, or `1` before there is a card to ask. Read through here by the three
+ * engines that build a cache, so none of them has to reach into `capabilities` itself.
+ */
+export function maxAnisotropyOf(renderer: AnisotropyHolder | null | undefined): number {
+  return renderer?.capabilities.getMaxAnisotropy() ?? 1
+}
+
 export type TextureCache = {
   /**
    * Takes a reference on an asset read in a given colour space, loading it if nobody holds it
@@ -195,6 +206,14 @@ export function createTextureCache(
    * the disk, which is what a workspace with no editor — and every test — wants.
    */
   previewOf: (assetId: string) => ImageBitmap | null = () => null,
+  /**
+   * How many samples the GPU may take across a texel's footprint — `maxAnisotropyOf`, asked at
+   * each load rather than once, since a cache is built before its viewport has a renderer.
+   *
+   * Absent leaves three's own `1`, which is what a headless test wants and what the studio
+   * showed until now: a floor seen at a grazing angle blurred to grey a few metres out.
+   */
+  anisotropyOf: () => number = () => 1,
 ): TextureCache {
   const cache = createRefCache<Texture>({
     load: async key => {
@@ -220,6 +239,11 @@ export function createTextureCache(
       // the sky turns by a node rather than by its UVs, so neither leaves 0..1 behind.
       texture.wrapS = RepeatWrapping
       texture.wrapT = RepeatWrapping
+      // The GPU's own ceiling, never a number of ours: anisotropic sampling costs bandwidth on
+      // the taps it takes and NOT a byte of texture memory — the same mip chain is read more
+      // than once — so a cap below what the card offers buys nothing back. Inert on a texture
+      // with no mip chain, which is what `DataTexture` and every `.exr` come back as.
+      texture.anisotropy = anisotropyOf()
       return texture
     },
     free: texture => texture.dispose(),

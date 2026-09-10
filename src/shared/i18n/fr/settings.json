@@ -274,6 +274,10 @@
       "title": "Finesse des ombres",
       "help": "La taille de la carte d’ombre que calcule chaque lumière qui en projette une, en pixels de côté. Doubler ce nombre quadruple la mémoire utilisée : 2048 suffit à une scène de quelques objets, 4096 sert quand une lumière éclaire un décor entier."
     },
+    "csm": {
+      "title": "Ombres en cascade",
+      "help": "Découpe l’ombre du soleil en trois cartes, une par tranche de profondeur de la vue, au lieu d’une seule étirée sur tout ce que voit la caméra. Ce qu’il faut à un paysage ouvert ; un décor unique n’y gagne rien et paie trois passes de profondeur."
+    },
     "snapTranslate": {
       "title": "Pas de déplacement",
       "help": "De combien un objet avance d’un cran quand le magnétisme est actif, en mètres. Le magnétisme s’allume dans la barre d’outils de la scène ; cette valeur dit seulement à quel point il est fin."

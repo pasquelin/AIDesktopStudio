@@ -5,7 +5,15 @@ import type { RenderPolicy } from '@shared/domain/renderPolicy'
 import { isRecord } from '@shared/guards'
 import type { ShadowThrow } from './grouping'
 
-/** The one place the studio's words meet three.js's map types. */
+/**
+ * The one place the studio's words meet three.js's map types.
+ *
+ * 🛑 `soft` is `PCFShadowMap` and NOT `PCFSoftShadowMap`, which reads backwards and is not:
+ * `WebGLProgram.shadowMapTypeDefines` of three 0.185 names PCF and VSM alone, so anything else
+ * — `PCFSoftShadowMap` included — falls to `SHADOWMAP_TYPE_BASIC`, one unfiltered compare with
+ * `shadow.radius` ignored. `PCFShadowMap` is what compiles the five-tap Vogel disk. Checked in
+ * the shipped source on 2026-09-10; `WelcomeBackdrop` carries the same note.
+ */
 const MAP_TYPES: Record<ShadowQuality, ShadowMapType> = {
   hard: BasicShadowMap,
   soft: PCFShadowMap,

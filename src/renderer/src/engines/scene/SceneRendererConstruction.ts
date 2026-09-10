@@ -15,7 +15,7 @@ import { createSkinWeights } from '../character/skinWeights'
 import { createBvhBuilder } from './bvhBuilder'
 import './bvhPatches'
 import { createCsgEvaluator } from '../csg/csgEvaluator'
-import { createTextureCache, loadTexture } from './textureCache'
+import { createTextureCache, loadTexture, maxAnisotropyOf } from './textureCache'
 import { createReliefSurface } from './reliefSurface'
 import { createScatterSurface } from './scatterSurface'
 import { createReliefBuilder } from './reliefBuilder'
@@ -53,6 +53,7 @@ export class SceneRendererConstruction extends SceneRendererFrame {
       (assetId, error) => reportFailure('scene.texture', assetId, error),
       options.assetVersion,
       options.livePreview,
+      () => maxAnisotropyOf(this.viewport.gl),
     )
     this.buildModelSources()
     this.buildShapeWorkers()

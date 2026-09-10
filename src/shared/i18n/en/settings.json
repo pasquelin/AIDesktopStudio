@@ -274,6 +274,10 @@
       "title": "Shadow detail",
       "help": "The side, in pixels, of the shadow map each shadow-casting light computes. Doubling it costs four times the memory: 2048 is plenty for a scene of a few objects, 4096 earns its keep when one light covers a whole set."
     },
+    "csm": {
+      "title": "Cascaded shadows",
+      "help": "Splits the sun's shadow into three maps, one per depth band of the view, instead of one map stretched over everything the camera sees. What an open landscape needs; a single set gains nothing and pays three depth passes for it."
+    },
     "snapTranslate": {
       "title": "Move step",
       "help": "How far an object travels in one step while snapping is on, in metres. Snapping itself is switched on from the scene toolbar; this only says how fine it is."

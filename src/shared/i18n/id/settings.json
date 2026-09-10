@@ -274,6 +274,10 @@
       "title": "Detail bayangan",
       "help": "Sisi, dalam piksel, peta bayangan setiap cahaya yang melempar bayangan menghitung. Menggandakannya menggandakan empat kali memori: 2048 banyak untuk adegan beberapa objek, 4096 memperoleh yang layaknya ketika satu cahaya mencakup seluruh set."
     },
+    "csm": {
+      "title": "Bayangan bertingkat",
+      "help": "Memecah bayangan matahari menjadi tiga peta, satu per lapis kedalaman tampilan, alih-alih satu peta yang direntang ke seluruh yang dilihat kamera. Yang dibutuhkan lanskap terbuka; satu set tunggal tidak mendapat apa-apa dan membayar tiga lintasan kedalaman."
+    },
     "snapTranslate": {
       "title": "Langkah gerakan",
       "help": "Seberapa jauh objek bepergian dalam satu langkah saat magnet aktif, dalam meter. Magnet itu sendiri beralih dari bilah alat adegan; ini hanya mengatakan seberapa halus itu."

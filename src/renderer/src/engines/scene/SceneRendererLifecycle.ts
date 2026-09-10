@@ -41,6 +41,8 @@ export abstract class SceneRendererLifecycle extends SceneRendererResources {
   protected abstract readonly onPointerUp: (event: PointerEvent) => void
   protected abstract readonly onPointerCancel: (event: PointerEvent) => void
   public abstract dispose(): void
+
+  protected abstract syncCascades(): void
   protected abstract sweepCompositions(state: SceneState): void
   protected abstract syncNode(node: SceneNode): void
   protected abstract release(id: string): void
@@ -123,6 +125,9 @@ export abstract class SceneRendererLifecycle extends SceneRendererResources {
     // procedural studio whatever sky it names. `SkyboxRenderer.mount` replays its own the same way.
     this.lit = null
     this.applyEnvironment(this.world)
+    // After the environment and never before: cascades dress the materials of the scene, and
+    // one built before there is a renderer would have nothing to draw its bands with.
+    this.syncCascades()
   }
 
   private hookInput(canvas: HTMLCanvasElement): void {
@@ -208,6 +213,9 @@ export abstract class SceneRendererLifecycle extends SceneRendererResources {
     // Before the counters and after every placement: the instance matrices are copied from the
     // world matrices, which nothing past here moves.
     this.regroupInstances()
+    // A mesh that just arrived receives cascades through a define on its material, so it has to
+    // be dressed before it draws. Nothing at all while the option is off.
+    this.cascades?.dress(this.viewport.scene)
     this.playheadMovesShadows = this.canPlayheadMoveShadows(state.nodes)
     this.reportStats()
     if (allShadowsChanged) this.redraw()

@@ -91,6 +91,14 @@ export const SETTING_REGISTRY_SECOND = [
     dependsOn: { path: 'three.shadows', equals: true },
   }),
   setting({
+    path: 'three.csm',
+    kind: 'boolean',
+    section: 'spaces.three',
+    titleKey: 'settings.csm.title',
+    helpKey: 'settings.csm.help',
+    dependsOn: { path: 'three.shadows', equals: true },
+  }),
+  setting({
     path: 'three.quality',
     kind: 'choice',
     section: 'spaces.three',

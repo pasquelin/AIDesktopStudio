@@ -274,6 +274,10 @@
       "title": "Detalhe das sombras",
       "help": "O lado, em pixels, do mapa de sombra que cada luz projetora calcula. Dobrá-lo custa quatro vezes a memória: 2048 basta para uma cena de alguns objetos, 4096 vale a pena quando uma luz cobre um cenário inteiro."
     },
+    "csm": {
+      "title": "Sombras em cascata",
+      "help": "Divide a sombra do sol em três mapas, um por faixa de profundidade da vista, em vez de um só esticado sobre tudo o que a câmara vê. O que uma paisagem aberta precisa; um cenário único não ganha nada e paga três passagens de profundidade."
+    },
     "snapTranslate": {
       "title": "Passo de deslocamento",
       "help": "Quanto um objeto percorre em um passo enquanto o encaixe está ativo, em metros. O encaixe em si é ligado na barra de ferramentas da cena; isto só diz o quanto ele é fino."

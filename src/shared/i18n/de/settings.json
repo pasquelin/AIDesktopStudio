@@ -274,6 +274,10 @@
       "title": "Schattendetail",
       "help": "Die Kantenlänge in Pixeln der Shadow-Map, die jedes schattenwerfende Licht berechnet. Sie zu verdoppeln kostet das Vierfache an Speicher: 2048 reicht für eine Szene aus wenigen Objekten, 4096 lohnt sich, wenn ein Licht ein ganzes Set abdeckt."
     },
+    "csm": {
+      "title": "Kaskadierte Schatten",
+      "help": "Teilt den Sonnenschatten in drei Karten auf, eine je Tiefenband der Ansicht, statt einer einzigen über alles, was die Kamera sieht. Was eine offene Landschaft braucht; ein einzelnes Set gewinnt nichts und zahlt drei Tiefendurchgänge dafür."
+    },
     "snapTranslate": {
       "title": "Verschiebeschritt",
       "help": "Wie weit ein Objekt bei aktivem Fang in einem Schritt wandert, in Metern. Der Fang selbst wird in der Werkzeugleiste der Szene eingeschaltet; dieser Wert sagt nur, wie fein er ist."

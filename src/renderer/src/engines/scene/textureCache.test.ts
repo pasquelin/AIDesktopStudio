@@ -195,6 +195,16 @@ describe('createTextureCache', () => {
     expect((await loading)?.colorSpace).toBe(LinearSRGBColorSpace)
   })
 
+  it('reads a texture with everything the card allows across a texel', async () => {
+    const source = deferredSource()
+    const cache = createTextureCache(source.load, silent, undefined, undefined, () => 16)
+
+    const loading = cache.acquire('tex-1', SRGBColorSpace)
+    source.settle('tex-1')
+
+    expect((await loading)?.anisotropy).toBe(16)
+  })
+
   it('frees everything it still holds when the engine goes', async () => {
     const source = deferredSource()
     const cache = createTextureCache(source.load, silent)

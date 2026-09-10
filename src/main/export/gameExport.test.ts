@@ -413,6 +413,7 @@ describe('a game written to run with no studio', () => {
       shadows: true,
       shadowQuality: 'soft',
       shadowMapSize: 1024,
+      csm: false,
       quality: 'performance',
       fieldOfView: 50,
       gridSize: 30,

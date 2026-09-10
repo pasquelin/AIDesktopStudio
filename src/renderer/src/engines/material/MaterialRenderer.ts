@@ -12,7 +12,12 @@ import {
 import { PBR_CHANNELS, type PbrChannel } from '@shared/domain/material'
 import { reportFailure } from '@/services/diagnostics'
 import { createTextureBinding, type TextureBinding } from '../scene/textureBinding'
-import { createTextureCache, type TextureCache, type TextureSource } from '../scene/textureCache'
+import {
+  createTextureCache,
+  maxAnisotropyOf,
+  type TextureCache,
+  type TextureSource,
+} from '../scene/textureCache'
 import { createSkyBinding, type SkyBinding } from '../viewport/skyBinding'
 import { createEnvironment, type ViewportEnvironment } from '../viewport/environment'
 import { SCHEME_OF, type NavigationScheme } from '@shared/domain/navigationPreset'
@@ -129,6 +134,7 @@ export class MaterialRenderer {
       (assetId, error) => reportFailure('material.map', assetId, error),
       options.assetVersion,
       options.livePreview,
+      () => maxAnisotropyOf(this.viewport.gl),
     )
     this.sky = createSkyBinding(this.cache, () => this.paintBackground())
     // One per channel, built with the cache and never after: the reference, the race and the

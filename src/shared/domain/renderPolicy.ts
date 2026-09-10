@@ -15,6 +15,17 @@ export type RenderPolicy = {
   shadowQuality: ShadowQuality
   /** Side of the square map each casting light allocates, before the quality level caps it. */
   shadowMapSize: number
+  /**
+   * Whether a sun's shadow is split into cascades — one map per depth band of the view rather
+   * than one map over the whole set. What an open world needs and a single set never does: the
+   * one map a directional light owns is stretched over the whole frustum, so a distance that
+   * doubles halves the texels a shadow near the camera gets.
+   *
+   * OFF by default, and it is not a taste: cascades replace the sun with three lights of their
+   * own and patch every material that receives them, so a scene that was fine without them must
+   * not inherit them — see `csm.ts`.
+   */
+  csm: boolean
   /** How finely the frame is drawn — it moves `pixelRatio` and caps the shadow maps. */
   quality: ViewportQuality
   /** Vertical field of view, in degrees. The editor reads it off the same setting. */
@@ -53,6 +64,7 @@ export const DEFAULT_RENDER_POLICY: RenderPolicy = Object.freeze({
   shadows: true,
   shadowQuality: 'soft',
   shadowMapSize: 2048,
+  csm: false,
   quality: 'balanced',
   fieldOfView: 60,
   gridSize: 20,
@@ -67,6 +79,7 @@ export function renderPolicyOf(view: RenderPolicy): RenderPolicy {
     shadows: view.shadows,
     shadowQuality: view.shadowQuality,
     shadowMapSize: view.shadowMapSize,
+    csm: view.csm,
     quality: view.quality,
     fieldOfView: view.fieldOfView,
     gridSize: view.gridSize,
@@ -90,6 +103,7 @@ export function readRenderPolicy(value: unknown): RenderPolicy {
       DEFAULT_RENDER_POLICY.shadowQuality,
     ),
     shadowMapSize: readNumber(value, 'shadowMapSize', DEFAULT_RENDER_POLICY.shadowMapSize),
+    csm: readBoolean(value, 'csm', DEFAULT_RENDER_POLICY.csm),
     quality: oneOf(VIEWPORT_QUALITIES, value.quality, DEFAULT_RENDER_POLICY.quality),
     fieldOfView: readNumber(value, 'fieldOfView', DEFAULT_RENDER_POLICY.fieldOfView),
     gridSize: readNumber(value, 'gridSize', DEFAULT_RENDER_POLICY.gridSize),

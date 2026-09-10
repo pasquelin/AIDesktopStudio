@@ -82,6 +82,11 @@ export abstract class SceneRendererAids extends SceneRendererValidation {
     // Every light, not only the ones built after the change: a map is allocated per light, and
     // the grid is the floor under the reach a directional one is given.
     if (shadowsResized || gridMoved) this.tuneShadows()
+    // Only on what `CSM` reads at construction: a rebuild takes the three lights out of the
+    // scene and recompiles every material they dressed.
+    if (next.csm !== held.csm || next.shadows !== held.shadows || shadowsResized) {
+      this.syncCascades()
+    }
     if (gridMoved && this.viewport.canvas) this.applyPalette()
     if (aidsMoved(held, next)) this.refreshAids()
     if (helperVisibilityMoved(held, next)) this.showAidsForSelection()

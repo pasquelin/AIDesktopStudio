@@ -14,8 +14,12 @@ export type ShadowLevel = 'off' | 'fast' | 'standard' | 'high'
 
 export const SHADOW_LEVELS: readonly ShadowLevel[] = ['off', 'fast', 'standard', 'high']
 
-/** The four an export carries too — the lens apart, this IS a render policy. */
-export type ShadowPreference = Omit<RenderPolicy, 'fieldOfView' | 'gridSize'>
+/**
+ * The four an export carries too — the lens apart, this IS a render policy. `csm` is left out
+ * with them: cascades answer how far the set REACHES, not how fine its maps are, so an open
+ * landscape wants them at every level and a single set at none.
+ */
+export type ShadowPreference = Omit<RenderPolicy, 'fieldOfView' | 'gridSize' | 'csm'>
 
 /** What a level writes. The quality is the person's own and is deliberately left where it is. */
 type LevelPatch = Omit<ShadowPreference, 'quality'>

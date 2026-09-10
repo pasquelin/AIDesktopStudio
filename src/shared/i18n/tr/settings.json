@@ -274,6 +274,10 @@
       "title": "Gölge ayrıntısı",
       "help": "Her gölge atan ışık hesapladığı gölge haritasının tarafı, piksel cinsi. Dörtlemek dört katı bellek maliyeti: 2048 birkaç nesnenin sahnesi yeterlidir, 4096 bir ışık tüm seti kapsarken kendi kazancını yapar."
     },
+    "csm": {
+      "title": "Kademeli gölgeler",
+      "help": "Güneşin gölgesini, kameranın gördüğü her şeye tek bir harita germek yerine, görüşün her derinlik dilimi için bir tane olmak üzere üç haritaya böler. Açık bir manzaranın ihtiyacı budur; tek bir dekor bundan hiçbir şey kazanmaz ve üç derinlik geçişi öder."
+    },
     "snapTranslate": {
       "title": "Taşı adımı",
       "help": "Manyetizma açıkken nesne bir adımda meter seyahat ediyor. Manyetizma sahne araç çubuğundan açılır; bu sadece ince olduğunu söyler."

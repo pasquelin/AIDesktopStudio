@@ -274,6 +274,10 @@
       "title": "Detalle de las sombras",
       "help": "El lado, en píxeles, del mapa de sombra que calcula cada luz que proyecta sombra. Doblarlo cuesta cuatro veces más memoria: 2048 basta y sobra para una escena de unos pocos objetos, 4096 se gana su sitio cuando una sola luz cubre todo un decorado."
     },
+    "csm": {
+      "title": "Sombras en cascada",
+      "help": "Divide la sombra del sol en tres mapas, uno por franja de profundidad de la vista, en lugar de uno solo estirado sobre todo lo que ve la cámara. Lo que necesita un paisaje abierto; un decorado único no gana nada y paga tres pasadas de profundidad."
+    },
     "snapTranslate": {
       "title": "Paso de desplazamiento",
       "help": "Cuánto avanza un objeto en un paso mientras el magnetismo está activo, en metros. El magnetismo se enciende desde la barra de herramientas de la escena; esto solo dice lo fino que es."

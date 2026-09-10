@@ -119,10 +119,10 @@ export const DEFAULT_EXP2_FOG: Exp2Fog = Object.freeze({
 })
 
 /**
- * How high dynamic range is brought down to a screen. The five three.js 0.185 actually maps —
- * a sixth word here would be a control that changes nothing.
+ * How high dynamic range is brought down to a screen. The six three.js 0.185 actually maps —
+ * a seventh word here would be a control that changes nothing.
  */
-export type ToneMapping = 'none' | 'linear' | 'reinhard' | 'cineon' | 'aces'
+export type ToneMapping = 'none' | 'linear' | 'reinhard' | 'cineon' | 'aces' | 'agx'
 
 export const TONE_MAPPINGS: readonly ToneMapping[] = [
   'none',
@@ -130,6 +130,7 @@ export const TONE_MAPPINGS: readonly ToneMapping[] = [
   'reinhard',
   'cineon',
   'aces',
+  'agx',
 ]
 
 /**

@@ -274,6 +274,10 @@
       "title": "Finezza delle ombre",
       "help": "Il lato, in pixel, della mappa d’ombra che calcola ogni luce che proietta ombre. Raddoppiarlo costa quattro volte la memoria: 2048 basta e avanza per una scena di pochi oggetti, 4096 si ripaga quando una sola luce copre un intero set."
     },
+    "csm": {
+      "title": "Ombre a cascata",
+      "help": "Divide l’ombra del sole in tre mappe, una per fascia di profondità della vista, invece di una sola stesa su tutto ciò che vede la camera. Quello che serve a un paesaggio aperto; una scena singola non ci guadagna e paga tre passate di profondità."
+    },
     "snapTranslate": {
       "title": "Passo di spostamento",
       "help": "Di quanto un oggetto avanza in un passo mentre il magnetismo è attivo, in metri. Il magnetismo stesso si accende dalla barra degli strumenti della scena; questo dice soltanto quanto è fine."

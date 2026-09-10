@@ -142,6 +142,9 @@ export abstract class SceneRendererDisplay extends SceneRendererExport {
     // Before the dressing, and both answers kept: a cell that just came into the zone is a body
     // the shadow maps were drawn without.
     const zoned = this.instances.follow?.(camera, this.shadowThrow) ?? false
+    // The bands are cut out of THIS camera's frustum, so they are refitted per pane like the
+    // zone above — and, like it, before the dressing that decides what the pass draws.
+    this.cascades?.follow(camera)
     this.zonedTo = camera
 
     const mode = this.displays[index] ?? this.displays[0] ?? 'shaded'
