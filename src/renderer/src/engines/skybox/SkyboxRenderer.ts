@@ -7,7 +7,7 @@ import { createGpuPipeline, type GpuPipeline } from '../gpu/gpuPipeline'
 import { reportFailure } from '@/services/diagnostics'
 import { createTextureBinding, type TextureBinding } from '../scene/textureBinding'
 import { createTextureCache, type TextureCache, type TextureSource } from '../scene/textureCache'
-import { createEnvironment, type ViewportEnvironment } from '../viewport/environment'
+import { type ViewportEnvironment } from '../viewport/environment'
 import { createTestObjects, type TestObjects } from '../viewport/testObjects'
 import { aimAlong } from '../viewport/lookAround'
 import { ViewportEngine } from '../viewport/ViewportEngine'
@@ -120,6 +120,7 @@ export class SkyboxRenderer {
       (assetId, error) => reportFailure('skybox.source', assetId, error),
       options.assetVersion,
       options.livePreview,
+      () => this.viewport.anisotropy,
     )
     // The reference, the race and the version are all the binding's: written here too, the sky
     // would be the third copy of a rule the studio already keeps in one place.
@@ -160,7 +161,11 @@ export class SkyboxRenderer {
     if (!renderer || !canvas) return
 
     this.pipeline = createGpuPipeline(renderer)
-    this.environment = createEnvironment(renderer, this.viewport.scene, this.viewport.requestRender)
+    this.environment = this.viewport.driver.createEnvironment(
+      renderer,
+      this.viewport.scene,
+      this.viewport.requestRender,
+    )
 
     this.pointer.mount()
 

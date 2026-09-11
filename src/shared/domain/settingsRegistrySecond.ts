@@ -1,4 +1,5 @@
 import { DICTATION_MODES } from './dictation'
+import { RENDER_ENGINES } from './renderEngine'
 import { LOG_VERBOSITIES } from './settings'
 import { DISPLAY_UNITS, SHADOW_MAP_SIZES, SHADOW_QUALITIES, VIEWPORT_QUALITIES } from './scene'
 import { setting } from './settingDescriptor'
@@ -61,6 +62,17 @@ export const SETTING_REGISTRY_SECOND = [
     step: 0.01,
   }),
   setting({
+    path: 'three.engine',
+    kind: 'choice',
+    section: 'spaces.three',
+    titleKey: 'settings.renderEngine.title',
+    helpKey: 'settings.renderEngine.help',
+    options: RENDER_ENGINES.map(value => ({
+      value,
+      labelKey: `settings.renderEngine.${value}`,
+    })),
+  }),
+  setting({
     path: 'three.shadows',
     kind: 'boolean',
     section: 'spaces.three',
@@ -88,6 +100,14 @@ export const SETTING_REGISTRY_SECOND = [
     // A list rather than a slider: the values in between are not allowed, and a slider would
     // suggest they are.
     options: SHADOW_MAP_SIZES.map(value => ({ value, label: String(value) })),
+    dependsOn: { path: 'three.shadows', equals: true },
+  }),
+  setting({
+    path: 'three.csm',
+    kind: 'boolean',
+    section: 'spaces.three',
+    titleKey: 'settings.csm.title',
+    helpKey: 'settings.csm.help',
     dependsOn: { path: 'three.shadows', equals: true },
   }),
   setting({

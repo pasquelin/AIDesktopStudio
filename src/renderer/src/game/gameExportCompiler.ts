@@ -16,7 +16,8 @@ import { useProject } from '@/stores/project'
 import { compiledScripts } from '@/stores/play'
 import { loadSceneSource, montageSceneOf } from '@/stores/sceneSources'
 import { compileLossyWorldGeometry } from '@/engines/scene/lossyWorldCompiler'
-import { renderPolicyOf } from '@shared/domain/renderPolicy'
+import type { RenderEngine } from '@shared/domain/renderEngine'
+import { DEFAULT_RENDER_POLICY, renderPolicyOf } from '@shared/domain/renderPolicy'
 import { useSettings } from '@/stores/settings'
 import {
   compileLossyModelTextures,
@@ -148,21 +149,25 @@ export async function exportGameProject(options: GameExportOptions): Promise<Gam
     : projectScenes.scenes[0]
   if (!entry) return { ok: false, reason: 'unknownScene' }
 
-  const { request, troubles } = await compileExportRequest(
-    options,
-    project.path,
-    projectScenes,
-    entry.id,
-  )
+  const { request, troubles } = await compileExportRequest(options, project.path, projectScenes, {
+    id: entry.id,
+    // The ENTRY scene's engine, which is the one the game opens on. A project whose scenes
+    // disagree draws them all under this one: a game holds a single renderer for its lifetime,
+    // exactly as a viewport does. See `SceneWorld.engine`.
+    engine: montageSceneOf(entry.id)?.world.engine ?? DEFAULT_RENDER_POLICY.engine,
+  })
   const outcome = await bridge.game.export(request)
   return outcome ? { ok: true, outcome, troubles } : { ok: false, reason: 'declined' }
 }
+
+/** Which scene a game opens on, and what it is drawn with. */
+type ExportEntry = { id: string; engine: RenderEngine }
 
 async function compileExportRequest(
   options: GameExportOptions,
   projectPath: string,
   projectScenes: CompiledProjectScenes,
-  entryScene: string,
+  entry: ExportEntry,
 ): Promise<{ request: GameExportRequest; troubles: readonly string[] }> {
   const [compiled, textureOverrides, modelTextureOverrides] = await Promise.all([
     compiledScripts(),
@@ -177,7 +182,7 @@ async function compileExportRequest(
     options,
     projectPath,
     projectScenes,
-    entryScene,
+    entry,
     compiled.modules,
     compiled.inputMaps,
     graphsHeldForExport(projectScenes.nodes, compiled.animationGraphs),
@@ -190,7 +195,7 @@ function exportRequestOf(
   options: GameExportOptions,
   projectPath: string,
   projectScenes: CompiledProjectScenes,
-  entryScene: string,
+  entry: ExportEntry,
   modules: Awaited<ReturnType<typeof compiledScripts>>['modules'],
   inputMaps: Awaited<ReturnType<typeof compiledScripts>>['inputMaps'],
   animationGraphs: readonly AnimationGraphModule[],
@@ -198,7 +203,7 @@ function exportRequestOf(
 ): GameExportRequest {
   return {
     title: options.title ?? projectName(projectPath),
-    entryScene,
+    entryScene: entry.id,
     scenes: projectScenes.scenes,
     scripts: modules.map(module => ({ script: module.script, code: module.code })),
     ...(inputMaps.length ? { inputMaps } : {}),
@@ -210,8 +215,9 @@ function exportRequestOf(
       ? { lossyOptimization: options.lossyOptimization }
       : {}),
     // 🛑 Carried rather than defaulted: a game drawn under another policy than the editor is the
-    // same scene lit two ways, and nothing compared the two.
-    render: renderPolicyOf(useSettings.getState().settings.three),
+    // same scene lit two ways, and nothing compared the two. The ENGINE alone comes off the
+    // document rather than the settings.
+    render: renderPolicyOf(useSettings.getState().settings.three, entry.engine),
     ...(assetOverrides?.length ? { assetOverrides } : {}),
     ...(options.folder ? { folder: options.folder } : {}),
   }

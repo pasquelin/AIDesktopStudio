@@ -1,11 +1,19 @@
 import { BasicShadowMap, Box3, Light, Object3D, PCFShadowMap, Vector3 } from 'three'
-import type { LightShadow, Matrix4, ShadowMapType } from 'three'
+import type { LightShadow, Material, Matrix4, ShadowMapType } from 'three'
 import type { ShadowQuality } from '@shared/domain/scene'
 import type { RenderPolicy } from '@shared/domain/renderPolicy'
 import { isRecord } from '@shared/guards'
 import type { ShadowThrow } from './grouping'
 
-/** The one place the studio's words meet three.js's map types. */
+/**
+ * The one place the studio's words meet three.js's map types.
+ *
+ * 🛑 `soft` is `PCFShadowMap` and NOT `PCFSoftShadowMap`, which reads backwards and is not:
+ * `WebGLProgram.shadowMapTypeDefines` of three 0.185 names PCF and VSM alone, so anything else
+ * — `PCFSoftShadowMap` included — falls to `SHADOWMAP_TYPE_BASIC`, one unfiltered compare with
+ * `shadow.radius` ignored. `PCFShadowMap` is what compiles the five-tap Vogel disk. Checked in
+ * the shipped source on 2026-09-10; `WelcomeBackdrop` carries the same note.
+ */
 const MAP_TYPES: Record<ShadowQuality, ShadowMapType> = {
   hard: BasicShadowMap,
   soft: PCFShadowMap,
@@ -13,6 +21,15 @@ const MAP_TYPES: Record<ShadowQuality, ShadowMapType> = {
 
 /** What of a renderer this reads — narrower than `WebGLRenderer`, which jsdom cannot build. */
 type ShadowMapHolder = { shadowMap: { type: ShadowMapType } }
+
+/**
+ * 🛑 `autoUpdate` is OPTIONAL, and only the Compatible engine has one. A node renderer draws the
+ * shadow maps its LIGHTS ask for and offers no global gate over the pass — `limitShadowUpdates`
+ * still narrows it light by light, which is what the editor actually relies on.
+ */
+type ShadowSwitchHolder = ShadowMapHolder & {
+  shadowMap: { enabled: boolean; autoUpdate?: boolean }
+}
 
 /**
  * Points the renderer at the map type a setting asks for, and nothing more: three.js watches the
@@ -33,12 +50,26 @@ export function applyShadowQuality(renderer: ShadowMapHolder, quality: ShadowQua
  * editor, `draw` for a game.
  */
 export function applyShadowPolicy(
-  renderer: ShadowMapHolder & { shadowMap: { enabled: boolean; autoUpdate: boolean } },
+  renderer: ShadowSwitchHolder,
   policy: Pick<RenderPolicy, 'shadows' | 'shadowQuality'>,
 ): void {
   renderer.shadowMap.enabled = policy.shadows
   applyShadowQuality(renderer, policy.shadowQuality)
-  renderer.shadowMap.autoUpdate = false
+  if ('autoUpdate' in renderer.shadowMap) renderer.shadowMap.autoUpdate = false
+}
+
+/**
+ * Whether the renderer runs a shadow pass AT ALL this frame.
+ *
+ * 🛑 The Compatible engine alone has this gate. A node renderer draws the maps its LIGHTS ask
+ * for and offers nothing over the pass as a whole, so on the Advanced engine this writes
+ * nothing and `limitShadowUpdates`, which narrows light by light, is the whole of the saving.
+ */
+export function oweShadowPassOnce(
+  renderer: { shadowMap: { enabled: boolean; needsUpdate?: boolean } },
+  owed: boolean,
+): void {
+  if ('needsUpdate' in renderer.shadowMap) renderer.shadowMap.needsUpdate = owed
 }
 
 type ShadowSwitch = { shadowMap: { enabled: boolean } }
@@ -57,14 +88,22 @@ export function applyShadows(renderer: ShadowSwitch, enabled: boolean, root: Obj
   renderer.shadowMap.enabled = enabled
 
   root.traverse(child => {
-    const material: unknown = Reflect.get(child, 'material')
-    for (const one of Array.isArray(material) ? material : [material]) {
-      if (isMaterial(one)) one.needsUpdate = true
-    }
+    for (const material of materialsOf(child)) material.needsUpdate = true
   })
 }
 
-function isMaterial(value: unknown): value is { needsUpdate: boolean } {
+/**
+ * The materials one object wears — one, several, or none. Read off the SLOT rather than by a
+ * class test: a mesh, a sprite, a line and an instanced batch all carry it without sharing a
+ * base. Shared with `csm.ts`, which marks the very same materials of the same feature.
+ */
+export function materialsOf(object: Object3D): readonly Material[] {
+  const material: unknown = Reflect.get(object, 'material')
+  if (Array.isArray(material)) return material.filter(isMaterial)
+  return isMaterial(material) ? [material] : []
+}
+
+function isMaterial(value: unknown): value is Material {
   return isRecord(value) && 'isMaterial' in value
 }
 

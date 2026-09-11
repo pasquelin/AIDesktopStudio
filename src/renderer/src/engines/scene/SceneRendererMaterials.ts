@@ -96,6 +96,9 @@ export abstract class SceneRendererMaterials extends SceneRendererFlight {
     this.firstPersonBody.dispose()
     for (const id of [...this.objects.keys()]) this.release(id)
     this.sky.release()
+    // Before the materials go: `release` writes the defines it added back off each of them.
+    this.cascades?.release()
+    this.cascades = null
     this.environment?.dispose()
     this.environment = null
     this.animations.clear()

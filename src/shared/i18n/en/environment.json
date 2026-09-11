@@ -117,6 +117,8 @@
     "tone_cineonHint": "A curve taken from film stock, with more contrast",
     "tone_aces": "ACES",
     "tone_acesHint": "The digital cinema curve, the one that keeps a highlight from clipping to pure white",
+    "tone_agx": "AgX",
+    "tone_agxHint": "A newer film curve that holds a saturated colour together as it brightens, where ACES turns it",
     "exposure": "Exposure",
     "quality": "Quality",
     "quality_performance": "Performance",

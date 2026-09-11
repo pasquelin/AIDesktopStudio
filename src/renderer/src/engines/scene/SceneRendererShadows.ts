@@ -19,6 +19,7 @@ import { applyMaterial, applyNegative, applySprite, lightFor, standTarget } from
 import { createMaterialTextures, createSpriteTexture } from './materialTextures'
 import { reportFailure } from '@/services/diagnostics'
 import { limitShadowUpdates, throwsOf, tuneShadowMaps } from './shadows'
+import { cascadeSettingsFor, createCascadeShadows } from './csm'
 import { applyWireOverlay } from './sceneView'
 import './bvhPatches'
 import { isNegative } from '../csg/carve'
@@ -106,6 +107,50 @@ export abstract class SceneRendererShadows extends SceneRendererModels {
       () => ({ bounds: boundsOnce(), floor: this.view.gridSize }),
     )
     this.shadowThrow = tuned && throwsOf(tuned.framed, boundsOnce(), tuned.reach)
+    this.cascades?.aim(this.shadowThrow)
+  }
+
+  /**
+   * Builds the cascades or drops them — the one door `mount` and `configure` both come through.
+   * Rebuilt from scratch rather than adjusted, `CSM` reading its cascade count and its map size
+   * once at construction; the caller is what keeps that to the passes where one of them moved.
+   */
+  protected syncCascades(): void {
+    const wanted = this.view.csm && this.view.shadows && this.viewport.gl !== null
+    this.cascades?.release()
+    this.cascades = wanted
+      ? createCascadeShadows(this.viewport.scene, cascadeSettingsFor(this.view), () =>
+          this.redraw(),
+        )
+      : null
+    // Whether they arrived or left, the picture moved: three lights come and go with them, and
+    // no other signal of `configure` covers the cascade flag on its own.
+    this.redraw()
+    if (!this.cascades) return
+    this.cascades.aim(this.shadowThrow)
+    this.cascades.dress(this.viewport.scene)
+  }
+
+  /**
+   * Dresses what ARRIVED, never the whole graph: `applyState` runs per play frame with a small
+   * delta, and a full `traverse` there is the very cost `heldShadowBounds` documents removing —
+   * 23.8 ms of 38.7 on 50 000 nodes. The whole scene is walked once, by `syncCascades`.
+   */
+  protected dressCascades(changed: readonly SceneNode[] | null): void {
+    const cascades = this.cascades
+    if (!cascades) return
+    if (!changed) {
+      cascades.dress(this.viewport.scene)
+      return
+    }
+    for (const node of changed) {
+      const object = this.objects.get(node.id)
+      if (object) cascades.dress(object)
+    }
+    // The batches too: `regroupInstances` runs just before this and rebuilds them, and they are
+    // deliberately out of `objects` — undressed, they read the three bands as three ordinary
+    // suns and draw the shadow three times.
+    for (const drawn of this.instances.drawn()) cascades.dress(drawn)
   }
 
   /**

@@ -108,6 +108,8 @@
     "tone_cineonHint": "필름에서 가져온 커브로, 대비가 더 강합니다",
     "tone_aces": "ACES",
     "tone_acesHint": "디지털 시네마 커브로, 밝은 부분이 순백으로 뭉개지는 것을 막아 줍니다",
+    "tone_agx": "AgX",
+    "tone_agxHint": "더 새로운 필름 커브로, ACES에서는 색이 틀어지는 지점에서도 진한 색을 그대로 지켜 줍니다",
     "exposure": "노출",
     "quality": "품질",
     "quality_performance": "성능",

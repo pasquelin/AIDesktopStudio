@@ -169,18 +169,26 @@ describe('seedSceneTemplate', () => {
   })
 
   it('fills a new document with what its template opens on', () => {
-    seedSceneTemplate('doc-1', 'topDown')
+    seedSceneTemplate('doc-1', 'topDown', { engine: 'gl' })
     const scene = sceneOf(useScenes.getState(), 'doc-1')
 
     expect(scene.nodes.some(node => node.type === 'camera')).toBe(true)
     expect(scene.world.play.camera).toBe('topDown')
   })
 
+  // The one answer the creation form takes that no template can give, and the document keeps it
+  // for good: nothing hands a mounted viewport to the other graphics API.
+  it('writes the engine the document was created under into its world', () => {
+    seedSceneTemplate('doc-1', 'basic', { engine: 'gpu' })
+
+    expect(sceneOf(useScenes.getState(), 'doc-1').world.engine).toBe('gpu')
+  })
+
   // The tab may already have been restored from disk by the time this runs on a slow machine,
   // and a template written over a saved scene would be the work lost.
   it('never writes over a scene that is already there', () => {
     useScenes.getState().runCommand('doc-1', addNode(box))
-    seedSceneTemplate('doc-1', 'basic')
+    seedSceneTemplate('doc-1', 'basic', { engine: 'gl' })
 
     expect(sceneOf(useScenes.getState(), 'doc-1').nodes).toEqual([box])
   })

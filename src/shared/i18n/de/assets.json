@@ -219,6 +219,10 @@
     "deleteHint": "Entfernt das Dokument aus dem Projekt, seine Datei eingeschlossen",
     "nameField": "Name",
     "templateField": "Ausgangsvorlage",
+    "engines": {
+      "gl": "Kompatibel — zeichnet auf jedem Rechner",
+      "gpu": "Erweitert — bessere Beleuchtung und Spiegelungen, verlangt eine aktuelle Grafikkarte"
+    },
     "templateGroups": {
       "general": "Allgemein",
       "character": "Charakter",

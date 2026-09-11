@@ -1,17 +1,12 @@
-import {
-  LinearSRGBColorSpace,
-  NoToneMapping,
-  SRGBColorSpace,
-  type WebGLRenderer,
-  WebGLRenderTarget,
-} from 'three'
+import { LinearSRGBColorSpace, NoToneMapping, SRGBColorSpace, WebGLRenderTarget } from 'three'
+import type { StudioRenderer } from '../render/renderDriver'
 import { aspectLoan } from './aspectLoan'
 import { glRect } from './panes'
 import type { InsetPane, InsetBlit } from './viewportEngineSupport1'
 import { ViewportDrawing } from './ViewportDrawing'
 
 export abstract class ViewportInset extends ViewportDrawing {
-  protected abstract insetBlitOf(renderer: WebGLRenderer): InsetBlit
+  protected abstract insetBlitOf(renderer: StudioRenderer): InsetBlit
 
   /**
    * The target the preview is drawn into, at the size it is shown — one device pixel per pixel,
@@ -27,7 +22,7 @@ export abstract class ViewportInset extends ViewportDrawing {
    * runs out first.
    */
   protected insetTargetOf(
-    renderer: WebGLRenderer,
+    renderer: StudioRenderer,
     width: number,
     height: number,
   ): WebGLRenderTarget {
@@ -35,13 +30,9 @@ export abstract class ViewportInset extends ViewportDrawing {
     if (held && held.width === width && held.height === height) return held
 
     held?.dispose()
-    // What the DRAWING BUFFER is antialiased to, held to what the context can offer. The ceiling
-    // comes from three rather than from `gl.MAX_SAMPLES`, which the WebGL1 typing has no name for.
-    const gl = renderer.getContext()
-    const samples = Math.max(
-      0,
-      Math.min(Number(gl.getParameter(gl.SAMPLES) ?? 0), renderer.capabilities.maxSamples),
-    )
+    // What the DRAWING BUFFER is antialiased to, which is not the card's ceiling: this target
+    // is blitted onto the canvas, so it matches what the canvas has.
+    const samples = this.renderDriver.drawingBufferSamples(renderer)
     const target = new WebGLRenderTarget(width, height, { samples })
     // Linear, which is what a render into a target writes whatever the texture says — three picks
     // the WORKING space for anything but the canvas (`WebGLRenderer`, the `colorSpace` it hands
@@ -61,7 +52,7 @@ export abstract class ViewportInset extends ViewportDrawing {
 
   /** Draws the preview into its target. The costly half, and the one the cache exists to skip. */
   protected drawInset(
-    renderer: WebGLRenderer,
+    renderer: StudioRenderer,
     inset: InsetPane,
     target: WebGLRenderTarget,
     panesDrawn: boolean,
@@ -119,7 +110,7 @@ export abstract class ViewportInset extends ViewportDrawing {
    * it once, which is the identity.
    */
   protected dressInsetBlit(
-    renderer: WebGLRenderer,
+    renderer: StudioRenderer,
     target: WebGLRenderTarget,
     composed: boolean,
   ): void {
@@ -144,7 +135,7 @@ export abstract class ViewportInset extends ViewportDrawing {
    * This is what a frame costs when only the view moved — one draw call against the second full
    * traversal of the scene the direct pass paid for.
    */
-  protected compositeInset(renderer: WebGLRenderer, inset: InsetPane): void {
+  protected compositeInset(renderer: StudioRenderer, inset: InsetPane): void {
     const surface = renderer.domElement.clientHeight
     const gl = glRect(inset.rect, surface)
     const blit = this.insetBlitOf(renderer)

@@ -179,7 +179,11 @@ describe('a viewport', () => {
     it('leaves them armed for whatever renders between two frames', () => {
       const engine = shadowed()
       const renderer = engine.gl
-      if (!renderer) throw new Error('the viewport mounts a renderer')
+      // The gate belongs to the Compatible engine, which is what this suite mounts: a node
+      // renderer has none, and `oweShadowPassOnce` writes nothing there.
+      if (!renderer || !('needsUpdate' in renderer.shadowMap)) {
+        throw new Error('the viewport mounts a WebGL renderer')
+      }
 
       engine.requestCameraRender()
       drawFrames()

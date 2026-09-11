@@ -1,4 +1,5 @@
 import type { DocumentDescriptor, DocumentKind } from './document'
+import type { RenderEngine } from './renderEngine'
 import type { KnownFormat } from './formatCapability'
 import type { RecentProject } from './project'
 import type { SceneTemplateId } from './sceneTemplate'
@@ -76,6 +77,14 @@ export type NewDocumentAsk = {
    * itself, and a name that exists only in a tab is nowhere on disk for it to find.
    */
   open: readonly DocumentDescriptor[]
+  /**
+   * Which engine the scene field OPENS on — the preference under Settings, and nothing more.
+   * Carried like the recent projects are: this window holds no settings subscription of its own.
+   *
+   * Absent from an ask that draws no such field: a Save as… names an existing document, and a
+   * file arrival asks where a file belongs.
+   */
+  engine?: RenderEngine
 }
 
 /**
@@ -106,6 +115,14 @@ export type NamedDocumentPlace = {
    * its kind names one file, and the form shows that extension rather than offering it.
    */
   format?: KnownFormat
+  /**
+   * The engine a SCENE is made under, absent for every other kind and for a caller that names
+   * its own document — the assistant, the MCP wire — which takes the preference instead.
+   *
+   * Answered here because this is the only moment it can be: the choice is written into the
+   * document's world and a mounted viewport is never handed to the other API.
+   */
+  engine?: RenderEngine
 }
 
 /**

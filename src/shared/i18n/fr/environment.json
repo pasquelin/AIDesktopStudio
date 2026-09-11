@@ -117,6 +117,8 @@
     "tone_cineonHint": "Une courbe issue du cinéma argentique, contrastée",
     "tone_aces": "ACES",
     "tone_acesHint": "La courbe du cinéma numérique, celle qui évite qu’un reflet vire au blanc pur",
+    "tone_agx": "AgX",
+    "tone_agxHint": "Une courbe filmique plus récente, qui tient une couleur saturée quand elle monte, là où ACES la fait virer",
     "exposure": "Exposition",
     "quality": "Qualité",
     "quality_performance": "Performance",

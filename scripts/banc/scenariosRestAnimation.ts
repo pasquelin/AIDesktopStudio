@@ -85,7 +85,10 @@ export const REST_ANIMATION_SCENARIOS: readonly Scenario[] = [
     name: '48.4 puts the render at its highest quality',
     said: ['Passe le rendu en qualité maximale.'],
     setup: cubeScene,
-    passed: run => read.world(run)?.toneMapping !== 'none',
+    // The CALL as well as the state: a scene created since C6 opens on AgX, so « a curve is
+    // active » became true of the decor itself and the oracle measured nothing.
+    passed: run =>
+      read.answeredWith(run, 'world.setToneMapping') && read.world(run)?.toneMapping !== 'none',
   },
   {
     name: '48.5 adds a scatter layer to the world',

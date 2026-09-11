@@ -108,6 +108,8 @@
     "tone_cineonHint": "Sinema filminden alınmış, daha kontrastlı bir eğri",
     "tone_aces": "ACES",
     "tone_acesHint": "Dijital sinema eğrisi; bir yüksek ışığın saf beyaza kırpılmasını önleyen eğri",
+    "tone_agx": "AgX",
+    "tone_agxHint": "Daha yeni bir film eğrisi; doygun bir rengi yükselirken tutar, ACES onu kaydırırken",
     "exposure": "Pozlama",
     "quality": "Kalite",
     "quality_performance": "Performans",

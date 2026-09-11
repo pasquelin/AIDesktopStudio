@@ -25,7 +25,7 @@ import {
   isSceneTemplateId,
   type SceneTemplateId,
 } from '@shared/domain/sceneTemplate'
-import { createDefaultScene } from './defaultScene'
+import { createDefaultScene, NEW_SCENE_WORLD } from './defaultScene'
 import { airfieldNodes } from './airfieldLevel'
 import { carNodes } from './carNodes'
 import { CIRCUIT_START, CIRCUIT_START_YAW, circuitNodes } from './circuitLevel'
@@ -470,7 +470,9 @@ export function sceneFromTemplate(
     nodes: graph ? withAnimatorGraph(template.nodes, graph) : [...template.nodes],
     selectedIds: [],
     world: {
-      ...DEFAULT_WORLD,
+      // The NEW scene's world, never `DEFAULT_WORLD`: this is a creation flow. A template that
+      // names a curve of its own — every environment preset does — still wins over it.
+      ...NEW_SCENE_WORLD,
       ...template.world,
       play: { ...DEFAULT_WORLD.play, ...template.play },
     },

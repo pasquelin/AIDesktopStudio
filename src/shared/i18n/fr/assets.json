@@ -219,6 +219,10 @@
     "deleteHint": "Retire le document du projet, son fichier compris",
     "nameField": "Nom",
     "templateField": "Modèle de départ",
+    "engines": {
+      "gl": "Compatible — dessine sur toutes les machines",
+      "gpu": "Avancé — meilleurs éclairage et reflets, demande une carte graphique récente"
+    },
     "templateGroups": {
       "general": "Général",
       "character": "Personnage",

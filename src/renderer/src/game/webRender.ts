@@ -4,6 +4,7 @@ import {
   Box3,
   Mesh,
   MeshBasicMaterial,
+  type Object3D,
   OrthographicCamera,
   PerspectiveCamera,
   PlaneGeometry,
@@ -19,6 +20,7 @@ import type { CameraView, EntityPlacement, RenderPort } from '@game/ports/render
 import { copyCameraView, NOWHERE, sameCameraView } from '@shared/domain/transform'
 import { applyToneMapping } from '@/engines/scene/worldBinding'
 import { applyShadowPolicy, throwsOf, tuneShadowMaps } from '@/engines/scene/shadows'
+import { cascadeSettingsFor, createCascadeShadows, type CascadeShadows } from '@/engines/scene/csm'
 import type { ShadowThrow } from '@/engines/scene/grouping'
 import { frameOwesDraw, frameOwesShadows } from './gameSceneFrame'
 import { pixelRatioFor, shadowMapSizeFor } from '@/engines/scene/viewportQuality'
@@ -83,6 +85,7 @@ export function createWebRender(
   /** The canvas differs from the next frame for a reason the scene cannot see: size, lens, veil. */
   let pictureStale = true
   let cast: ShadowThrow | null = null
+  let cascades: CascadeShadows | null = null
   const watched: CameraView = { position: { ...NOWHERE }, target: { ...NOWHERE } }
   /** 🛑 Dynamic: its three.js passes are weight every game without effects would carry for nothing. */
   const chain = composerHold(renderer, assets, say)
@@ -112,6 +115,10 @@ export function createWebRender(
       }
 
       held?.dispose()
+      cascades?.release()
+      cascades = cascadesFor(built.scene, policy, () => {
+        pictureStale = true
+      })
       held = built
       pictureStale = true
       // A head the scene that left had already seen: the one that arrived has not.
@@ -219,8 +226,12 @@ export function createWebRender(
       // On the frame the scene lands, and again whenever a caster or a light left its frustum.
       if (settled.reframed && policy.shadows) {
         cast = tuneSceneShadows(held, policy)
+        cascades?.aim(cast)
         if (held.flush(camera, cast).zoned) settled = { ...settled, zoned: true }
       }
+      // The bands follow the EYE, so a camera that moved owes their maps a pass — the very
+      // answer `dressPane` gives the editor's frame.
+      if (cascades?.follow(camera) === true) settled = { ...settled, shadowed: true }
       // 🛑 Nothing changed, nothing drawn — the canvas keeps the frame it shows, as the viewport at
       // rest. A composed frame is drawn regardless: its grain and jitter run on the clock.
       const composer = chain.current()
@@ -235,6 +246,8 @@ export function createWebRender(
     dispose: () => {
       // The build in flight with it: what it lands on has just been thrown away.
       building += 1
+      cascades?.release()
+      cascades = null
       held?.dispose()
       held = null
       veil.dispose()
@@ -305,6 +318,8 @@ function paintHeld(
   if (composer) {
     composer.draw({
       surface: 'game',
+      // A game draws the same chain frame after frame, exactly as a viewport does.
+      oneShot: false,
       scene: held.scene,
       camera,
       stack: held.world.post,
@@ -321,6 +336,22 @@ function paintHeld(
     renderer.render(veil.scene, veil.camera)
     renderer.autoClear = true
   }
+}
+
+/**
+ * The cascades a scene opens under, or nothing. Built per scene and only when the author's
+ * policy asks: the field travels in the export, so a game draws the shadows the editor drew
+ * rather than one map stretched over everything the camera sees.
+ */
+function cascadesFor(
+  scene: Object3D,
+  policy: RenderPolicy,
+  onStale: () => void,
+): CascadeShadows | null {
+  if (!policy.csm || !policy.shadows) return null
+  const cascades = createCascadeShadows(scene, cascadeSettingsFor(policy), onStale)
+  cascades.dress(scene)
+  return cascades
 }
 
 /**

@@ -1,13 +1,17 @@
-import { Color, EquirectangularReflectionMapping, Scene, Texture, type WebGLRenderer } from 'three'
-import type * as ThreeModule from 'three'
+import { Color, EquirectangularReflectionMapping, Scene, Texture } from 'three'
 import { beforeEach, describe, expect, it, vi, type Mock } from 'vitest'
 import { NEUTRAL_ADJUSTMENTS } from '@shared/domain/adjustments'
-import { createEnvironment, PMREM_QUIET_MS, type ViewportEnvironment } from './environment'
+import {
+  createEnvironment,
+  PMREM_QUIET_MS,
+  type EnvironmentPort,
+  type ViewportEnvironment,
+} from './environment'
 
 /**
- * `PMREMGenerator` prefilters by rendering a mip chain, which needs a GL context jsdom cannot
- * give. The stand-in hands back a target carrying a recognisable texture, so the tests can
- * follow which map the scene ends up reading and when the previous one is freed.
+ * Prefiltering renders a mip chain and grading draws a quad: both need a device jsdom cannot
+ * give, and both are what the PORT stands for. The stand-in hands back a target carrying a
+ * recognisable texture, so the tests can follow which map the scene reads and when it is freed.
  */
 type FakeTarget = { texture: Texture; dispose: Mock<() => void>; boundWhenFreed: boolean }
 
@@ -40,23 +44,14 @@ const disposeGenerator = vi.fn()
  * on, for ever, unless something says it was redrawn.
  */
 const graded = Object.assign(new Texture(), { isRenderTargetTexture: true })
-const gradeOf = vi.fn((source: Texture | null) => (source ? graded : null))
-const disposeGrading = vi.fn()
+const gradeOf = vi.fn(() => graded)
 
-/** No GL context in jsdom, and what the pass DOES is `skyGrading.test.ts`. */
-vi.mock('../gpu/skyGrading', () => ({
-  createSkyGrading: () => ({ of: gradeOf, dispose: disposeGrading }),
-}))
-
-vi.mock('three', async importOriginal => ({
-  ...(await importOriginal<typeof ThreeModule>()),
-  PMREMGenerator: class {
-    compileEquirectangularShader(): void {}
-    fromEquirectangular = fromEquirectangular
-    fromScene = fromScene
-    dispose = disposeGenerator
-  },
-}))
+const port: EnvironmentPort = {
+  fromEquirectangular,
+  fromScene,
+  grade: gradeOf,
+  dispose: disposeGenerator,
+}
 
 describe('the environment of a viewport', () => {
   let scene: Scene
@@ -70,9 +65,7 @@ describe('the environment of a viewport', () => {
     requestRender = vi.fn<() => void>()
   })
 
-  // `as`: the generator is mocked above, and it is the only thing the renderer is handed to.
-  const environmentOf = (): ViewportEnvironment =>
-    createEnvironment({} as WebGLRenderer, scene, requestRender)
+  const environmentOf = (): ViewportEnvironment => createEnvironment(port, scene, requestRender)
 
   const withPrefilteredMap = (): ViewportEnvironment => {
     const environment = environmentOf()
@@ -372,14 +365,16 @@ describe('the environment of a viewport', () => {
       expect(scene.environment).toBe(room)
     })
 
-    it('frees the pass it built', () => {
+    // The pass belongs to the ENGINE now, not to the environment: whoever built the port frees
+    // it — see `glDriver`, which owns the grading and the generator together.
+    it('frees the engine port it was built on', () => {
       const environment = environmentOf()
       environment.setTexture(new Texture())
       environment.setAdjustments(GRADED)
 
       environment.dispose()
 
-      expect(disposeGrading).toHaveBeenCalled()
+      expect(disposeGenerator).toHaveBeenCalled()
     })
   })
 

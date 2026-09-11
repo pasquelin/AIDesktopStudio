@@ -108,6 +108,8 @@
     "tone_cineonHint": "Eine Kurve aus dem Filmmaterial, mit mehr Kontrast",
     "tone_aces": "ACES",
     "tone_acesHint": "Die Kurve des digitalen Kinos, die verhindert, dass ein Glanzlicht auf reines Weiß beschnitten wird",
+    "tone_agx": "AgX",
+    "tone_agxHint": "Eine neuere Filmkurve, die eine gesättigte Farbe beim Aufhellen hält, wo ACES sie kippen lässt",
     "exposure": "Belichtung",
     "quality": "Qualität",
     "quality_performance": "Leistung",

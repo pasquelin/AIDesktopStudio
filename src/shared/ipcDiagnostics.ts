@@ -144,9 +144,13 @@ export type TraceScope =
   // The renderer's own SILENCE, whether or not anything awaited: the calls that cross to the main
   // process throw their answer away, so a full disk on a rename reaches no `catch` — and a caught
   // rejection that ends in a state rather than a sentence says nothing either.
-  'shell.dropped'
+  | 'shell.dropped'
+  // A viewport that opened on the Compatible engine after being asked for the Advanced one. A
+  // TRACE and not a scope, deliberately: the picture is right, nothing was lost, and a toast
+  // per panel would report a machine's specification as a failure of the document.
+  | 'render.fallback'
 
-/** No level: a trace is always a failure, and a field with one legal value is a branch to test. */
+/** No level: a trace never reaches a surface, so nothing would read one. */
 export type TraceEntry = { scope: TraceScope; message: string }
 
 export const LOG_LEVELS: readonly LogLevel[] = ['info', 'warn', 'error']

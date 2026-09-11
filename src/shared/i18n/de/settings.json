@@ -246,6 +246,12 @@
       "title": "Beschleunigung",
       "help": "Womit die Geschwindigkeit multipliziert wird, solange Sie die Beschleunigungstaste halten. Bei 3 fliegen Sie dreimal so schnell — genug, um eine große Szene zu durchqueren, ohne die Einstellung darüber zu ändern."
     },
+    "renderEngine": {
+      "title": "Render-Engine",
+      "help": "Womit neue Szenen geöffnet werden. Die Frage wird bei jeder Dokumenterstellung gestellt und die Antwort im Dokument selbst abgelegt: diese Einstellung füllt das Feld nur vor und ändert keine bestehende Szene. Kompatibel läuft auf jedem Rechner; Erweitert liefert bessere Beleuchtung und Spiegelungen und verlangt eine aktuelle Grafikkarte. Ein Rechner ohne WebGPU-Adapter fällt von selbst auf Kompatibel zurück und vermerkt das im Journal.",
+      "gl": "Kompatibel",
+      "gpu": "Erweitert"
+    },
     "shadows": {
       "title": "Schattenwurf",
       "help": "Berechnet die Schatten, die die Lichter werfen. Jedes Licht, das einen wirft, kostet einen zusätzlichen Renderdurchgang pro Frame: diese Option abzuschalten ist der direkteste Weg, eine schwere Szene zu entlasten."
@@ -273,6 +279,10 @@
     "shadowMapSize": {
       "title": "Schattendetail",
       "help": "Die Kantenlänge in Pixeln der Shadow-Map, die jedes schattenwerfende Licht berechnet. Sie zu verdoppeln kostet das Vierfache an Speicher: 2048 reicht für eine Szene aus wenigen Objekten, 4096 lohnt sich, wenn ein Licht ein ganzes Set abdeckt."
+    },
+    "csm": {
+      "title": "Kaskadierte Schatten",
+      "help": "Teilt den Sonnenschatten in drei Karten auf, eine je Tiefenband der Ansicht, statt einer einzigen über alles, was die Kamera sieht. Was eine offene Landschaft braucht; ein einzelnes Set gewinnt nichts und zahlt drei Tiefendurchgänge dafür."
     },
     "snapTranslate": {
       "title": "Verschiebeschritt",

@@ -7,6 +7,7 @@ import { newId } from '@/helpers/ids'
 import { modelNode } from '@/engines/scene/nodeFactory'
 import { EMPTY_SCENE, type SceneState } from '@/engines/scene/sceneState'
 import { sceneFromTemplate } from '@/engines/scene/sceneTemplates'
+import type { RenderEngine } from '@shared/domain/renderEngine'
 import type { SceneTemplateId } from '@shared/domain/sceneTemplate'
 import type { SelectionMode } from '@/helpers/selection'
 import { useAnimationViews } from './animationView'
@@ -21,6 +22,19 @@ export const sceneOf = store.stateOf
 export const sceneHistoryOf = store.historyOf
 export const isSceneDirty = store.isDirty
 
+/** What the creation flow settled that a template cannot answer for itself. */
+export type SeededScene = {
+  /**
+   * The engine the document is MADE under, written into its world and its own from then on —
+   * see `SceneWorld.engine`. Seeded here rather than defaulted by the template because this is
+   * the one moment it can still be chosen.
+   */
+  engine: RenderEngine
+  /** Where the template's modules were written, so its `Script` components name real paths. */
+  scripts?: string
+  graph?: string
+}
+
 /**
  * Fills a freshly made document with what its template opens on, before any editor mounts.
  *
@@ -30,10 +44,12 @@ export const isSceneDirty = store.isDirty
 export function seedSceneTemplate(
   documentId: string,
   template: SceneTemplateId,
-  scriptFolder?: string,
-  graph?: string,
+  seeded: SeededScene,
 ): void {
-  store.use.getState().ensure(documentId, () => sceneFromTemplate(template, scriptFolder, graph))
+  store.use.getState().ensure(documentId, () => {
+    const scene = sceneFromTemplate(template, seeded.scripts, seeded.graph)
+    return { ...scene, world: { ...scene.world, engine: seeded.engine } }
+  })
 }
 
 /**

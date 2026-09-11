@@ -16,6 +16,8 @@
     "workerStopped": "a tarefa em segundo plano foi interrompida",
     "csgGraphMissing": "nenhum grafo CSG registrado para {{name}}",
     "shaderAnchorMissing": "O renderizador não fornece mais {{name}}",
+    "renderEngineUnavailable": "O motor Avançado ainda não está construído",
+    "renderEngineGradingMissing": "O motor Avançado mostra um céu corrigido tal como o seu ficheiro o contém",
     "channelShaderMissing": "nenhum shader deriva {{channel}}",
     "channelSourceEmpty": "a fonte de {{channel}} não tem pixels",
     "passSourceMissing": "uma passagem precisa de uma fonte para ler",

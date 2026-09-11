@@ -3,10 +3,8 @@ import { onPaletteChange } from '../core/palette'
 import { type SceneWorld } from '@shared/domain/scene'
 import { springArmRigsOf } from './springArmRigs'
 import type { Vector3 as TurnedVector } from '@shared/domain/transform'
-import { createEnvironment } from '../viewport/environment'
 import type { ViewportCamera } from '../viewport/viewportEngineSupport1'
 import { type SceneNode, type SceneState } from './sceneState'
-import { PostComposer } from '../postfx/PostComposer'
 import { loadLutTexture } from '../postfx/lutSource'
 import './bvhPatches'
 import { STUDIO_INTENSITY } from './sceneRendererSupport1'
@@ -41,6 +39,10 @@ export abstract class SceneRendererLifecycle extends SceneRendererResources {
   protected abstract readonly onPointerUp: (event: PointerEvent) => void
   protected abstract readonly onPointerCancel: (event: PointerEvent) => void
   public abstract dispose(): void
+
+  protected abstract syncCascades(): void
+
+  protected abstract dressCascades(changed: readonly SceneNode[] | null): void
   protected abstract sweepCompositions(state: SceneState): void
   protected abstract syncNode(node: SceneNode): void
   protected abstract release(id: string): void
@@ -103,26 +105,51 @@ export abstract class SceneRendererLifecycle extends SceneRendererResources {
 
   /** Nothing at all without a renderer: a viewport may be mounted before WebGL answers. */
   private mountRenderer(): void {
-    // Lit before anything is added: a scene with no light of its own still shows its materials,
-    // exactly as the texture viewport does. `apply` replaces this the moment a document says so.
     const renderer = this.viewport.gl
     if (!renderer) return
-    this.post = new PostComposer(renderer, {
+    this.post = this.viewport.driver.createComposer(renderer, {
       loadLut: assetId => loadLutTexture(assetId, this.textureCache.versionOf(assetId)),
       lutStamp: assetId => this.textureCache.versionOf(assetId),
       // A grade that finished loading changes the picture, and nothing else would ask for the
       // frame that shows it: the loop is asleep by then.
       onReady: () => this.redraw(),
     })
-    this.environment = createEnvironment(renderer, this.viewport.scene, () => this.redraw())
-    this.environment.setStudio()
+    this.environment = this.viewport.driver.createEnvironment(renderer, this.viewport.scene, () =>
+      this.redraw(),
+    )
+    // Straight through where the engine can already draw, which is every WebGL mount: the
+    // deferral below is one microtask, and one microtask is enough for `apply` to arrive first
+    // and light the document twice.
+    if (this.viewport.canDraw) this.lightMountedScene()
+    else void this.lightWhenSettled()
+  }
+
+  /**
+   * Prefiltering a map DRAWS, so none of this may run before the backend is up — a node renderer
+   * refuses `fromScene` until then, and refusing is the kind thing: it would otherwise be a map
+   * built out of nothing.
+   */
+  private async lightWhenSettled(): Promise<void> {
+    await this.viewport.settled()
+    // `canDraw` and not only the environment: a backend that REFUSED settles too, and
+    // prefiltering on it would throw inside a call nobody awaited.
+    if (this.environment && this.viewport.canDraw) this.lightMountedScene()
+  }
+
+  private lightMountedScene(): void {
+    // Lit before anything is added: a scene with no light of its own still shows its materials,
+    // exactly as the texture viewport does. `apply` replaces this the moment a document says so.
+    this.environment?.setStudio()
     // Half strength, unlike the texture preview: image-based light comes from everywhere and
     // is occluded by nothing, so at full intensity it fills the very shadows the lights cast.
-    this.environment.setIntensity(STUDIO_INTENSITY)
+    this.environment?.setIntensity(STUDIO_INTENSITY)
     // A document applied before the viewport had a renderer lit none of this: it opened on the
     // procedural studio whatever sky it names. `SkyboxRenderer.mount` replays its own the same way.
     this.lit = null
     this.applyEnvironment(this.world)
+    // After the environment and never before: cascades dress the materials of the scene, and
+    // one built before there is a renderer would have nothing to draw its bands with.
+    this.syncCascades()
   }
 
   private hookInput(canvas: HTMLCanvasElement): void {
@@ -208,6 +235,9 @@ export abstract class SceneRendererLifecycle extends SceneRendererResources {
     // Before the counters and after every placement: the instance matrices are copied from the
     // world matrices, which nothing past here moves.
     this.regroupInstances()
+    // A mesh that just arrived receives cascades through a define on its material, so it has to
+    // be dressed before it draws. Nothing at all while the option is off.
+    this.dressCascades(changed)
     this.playheadMovesShadows = this.canPlayheadMoveShadows(state.nodes)
     this.reportStats()
     if (allShadowsChanged) this.redraw()

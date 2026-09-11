@@ -6,14 +6,15 @@ import {
   type PerspectiveCamera,
   type Scene,
   Vector3,
-  type WebGLRenderer,
   type WebGLRenderTarget,
 } from 'three'
+import type { WebGLRenderer } from 'three'
 import { type OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { type GpuPipeline } from '../gpu/gpuPipeline'
 import { type PinchReading } from './pinch'
 import { type Gesture } from './gestures'
 import { type NavigationScheme } from '@shared/domain/navigationPreset'
+import { type RenderEngine } from '@shared/domain/renderEngine'
 import { gazeTargetOf, type PivotMode } from './orbitPivot'
 import { type PaneRect } from './panes'
 
@@ -39,7 +40,11 @@ export type ViewportEngineOptions = {
    * keeps the loop alive for another frame; returning false lets the viewport go back to sleep.
    */
   onFrame?: (delta: number) => boolean
-  /** Drawn after the scene with `autoClear` off — trihedrons and other screen-space overlays. */
+  /**
+   * Drawn after the scene with `autoClear` off — trihedrons and other screen-space overlays.
+   * WebGL only: `ViewHelper` is declared against that renderer, and the Advanced engine draws
+   * no overlay yet — `renderOverlay` skips it there rather than casting.
+   */
   onOverlay?: (renderer: WebGLRenderer) => void
   /**
    * Called just before each pane is drawn, so whoever owns the scene can say how THIS view shows
@@ -59,6 +64,12 @@ export type ViewportEngineOptions = {
   onInset?: (camera: ViewportCamera) => () => void
   /** Narrows a requested shadow pass, then restores the scene for off-screen renders. */
   onShadowFrame?: (refreshAll: boolean) => () => void
+  /**
+   * Which engine draws, read at MOUNT and never again: a renderer cannot be handed the context
+   * of another API. Absent is the Compatible one, which is what every viewport but the scene's
+   * has always used.
+   */
+  engine?: () => RenderEngine
   /**
    * Filmic tone mapping. Off by default because it changes how every existing colour lands,
    * and the scene editor was built and reviewed without it; a viewport that judges an HDR

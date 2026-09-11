@@ -32,6 +32,7 @@ import './bvhPatches'
 import { type CsgEvaluator } from '../csg/csgEvaluator'
 import { createGeometryCache, type GeometryCache } from './geometryCache'
 import { type InstancedGroups, type ShadowThrow } from './grouping'
+import { type CascadeShadows } from './csm'
 import { type TransformMode, type TransformSpace } from './gizmoTarget'
 import { NOTHING_SNAPPED, type Snapping } from '@shared/domain/snap'
 import type { Marquee } from './sceneRendererSupport1'
@@ -116,6 +117,9 @@ export abstract class SceneRendererResources extends SceneRendererState {
    * screen it takes out of the shadow pass too. `null` when no light throws one.
    */
   protected shadowThrow: ShadowThrow | null = null
+
+  /** Cascades, built only while `view.csm` says so — see `syncCascades`. */
+  protected cascades: CascadeShadows | null = null
 
   /**
    * The camera the zone was last narrowed to. A preview narrows it to ITS own on every frame it

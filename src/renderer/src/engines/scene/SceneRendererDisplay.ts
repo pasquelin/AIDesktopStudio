@@ -1,4 +1,5 @@
 import { type AnimationClip, type Object3D } from 'three'
+import type { RenderEngine } from '@shared/domain/renderEngine'
 import { ViewHelper } from 'three/addons/helpers/ViewHelper.js'
 import {
   type DrawRequest,
@@ -142,6 +143,9 @@ export abstract class SceneRendererDisplay extends SceneRendererExport {
     // Before the dressing, and both answers kept: a cell that just came into the zone is a body
     // the shadow maps were drawn without.
     const zoned = this.instances.follow?.(camera, this.shadowThrow) ?? false
+    // The bands are cut out of THIS camera's frustum, so they are refitted per pane like the
+    // zone above — and, like it, their answer says whether the shadow maps are owed a pass.
+    const cascaded = this.cascades?.follow(camera) ?? false
     this.zonedTo = camera
 
     const mode = this.displays[index] ?? this.displays[0] ?? 'shaded'
@@ -158,6 +162,12 @@ export abstract class SceneRendererDisplay extends SceneRendererExport {
       camera,
       studio => this.environment?.borrowStudio(studio),
     )
+    this.syncFirstPersonBody()
+    return dressed || zoned || cascaded
+  }
+
+  /** The body a played camera looks out of, or none — a pane drawn with the chrome shows all. */
+  private syncFirstPersonBody(): void {
     const body =
       this.options.chrome === false && this.world.play.camera === 'firstPerson'
         ? playerPartsOf(this.documentOrder)?.body
@@ -165,7 +175,19 @@ export abstract class SceneRendererDisplay extends SceneRendererExport {
     this.firstPersonBody.sync(body ? this.objects.get(body.id) : undefined, signature =>
       this.retarget.profileOf(signature),
     )
-    return dressed || zoned
+  }
+
+  /**
+   * Which engine actually mounted — `gl` where `gpu` was asked for and could not run. Read by
+   * the benchmark harness, which must not report a fallback as an Advanced measurement.
+   */
+  get renderEngine(): RenderEngine {
+    return this.viewport.driver.engine
+  }
+
+  /** Resolves once this scene may be drawn — a node backend comes up a beat after the mount. */
+  async settled(): Promise<void> {
+    await this.viewport.settled()
   }
 
   /**
@@ -210,6 +232,8 @@ export abstract class SceneRendererDisplay extends SceneRendererExport {
       // A render is never drawn at the cheap end: what is written out is what the quality
       // setting means at its top, whatever the viewport is set to.
       quality: request.surface === 'offscreen' ? 'high' : this.view.quality,
+      // Every off-screen pass builds its chain, draws one picture and frees it.
+      oneShot: request.surface === 'offscreen',
       toneMapped: this.world.toneMapping !== 'none',
       // The PLAYHEAD, not a wall clock: a film written twice has the same grain twice, and a
       // frame still shows grain because the head moves between them.
