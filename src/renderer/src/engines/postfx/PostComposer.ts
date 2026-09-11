@@ -274,7 +274,13 @@ export class PostComposer implements SceneComposer {
   ): void {
     if (step.kind === 'own') {
       const factory = standaloneFor(step.effect.effect)
-      if (!factory) return
+      // 🛑 An applier per PLANNED effect, even where this engine builds no pass: `draw` walks the
+      // two lists by the same index, and an effect silently skipped here would hand the next
+      // one's parameters to this one's pass. Reachable since an effect can be GPU-only.
+      if (!factory) {
+        appliers.push(() => {})
+        return
+      }
       const instance = factory(context)
       instances.push(instance)
       for (const pass of instance.passes) composer.addPass(pass)
@@ -299,7 +305,11 @@ export class PostComposer implements SceneComposer {
     for (const [index, effect] of step.effects.entries()) {
       const fusable = fusableFor(effect.effect)
       const naming = fused.naming[index]
-      if (!fusable || !naming) continue
+      // Same alignment rule as above: a skipped chunk still owes its slot.
+      if (!fusable || !naming) {
+        appliers.push(() => {})
+        continue
+      }
       // `ShaderPass` CLONES the uniforms it is given, so the objects the applier writes into are
       // the pass's own — read back here, under the effect's own names.
       const own: Record<string, IUniform> = {}

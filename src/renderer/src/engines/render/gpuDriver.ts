@@ -60,6 +60,7 @@ export const gpuDriver: RenderDriver = {
   // A node renderer sizes the attachments of a render target itself, and keeps the card's
   // sampling ceiling on the renderer rather than under a `capabilities`.
   maxSamples: () => 0,
+  drawingBufferSamples: () => 0,
   maxAnisotropy: renderer => Math.max(1, asNodeRenderer(renderer).getMaxAnisotropy()),
   frameTimer: () => null,
   // Nothing to give back: the device is the browser's, and it reclaims it with the page.

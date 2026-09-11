@@ -23,6 +23,22 @@ describe('reading a world back', () => {
     expect(readWorld(undefined, undefined)).toEqual(DEFAULT_WORLD)
   })
 
+  /**
+   * The engine belongs to the DOCUMENT from the day it is created — a file read on a machine
+   * whose preference says otherwise still draws the way its author drew it.
+   */
+  it('opens a document written before the engine was a document member on the Compatible one', () => {
+    expect(readWorld({ toneMapping: 'agx' }, undefined).engine).toBe('gl')
+  })
+
+  it('keeps the engine a document was saved under', () => {
+    expect(readWorld({ engine: 'gpu' }, undefined).engine).toBe('gpu')
+  })
+
+  it('falls back rather than trusting an engine name this build has never heard of', () => {
+    expect(readWorld({ engine: 'vulkan' }, undefined).engine).toBe('gl')
+  })
+
   it('keeps the sky of a document that spelled it at the root', () => {
     // Every scene saved so far: `environment` beside `nodes`, with no `world` at all.
     const held = readWorld(undefined, { kind: 'skybox', assetId: 'sky-1' })

@@ -71,6 +71,32 @@ describe('cascaded shadows on a scene', () => {
     }
   })
 
+  /**
+   * Deleting the sun and adding another is one gesture in the tree, and the bands must follow it:
+   * left standing for a light no document holds, they keep its reading while the new sun keeps
+   * its own, and the scene is lit twice.
+   */
+  it('stands for the sun that REPLACED the one it stood for', () => {
+    const { scene, sun } = litScene()
+    sun.intensity = 2
+    const shadows = createCascadeShadows(scene, settings, () => {})
+    shadows.dress(scene)
+
+    scene.remove(sun)
+    const replacement = new DirectionalLight('#00ff00', 3)
+    replacement.castShadow = true
+    scene.add(replacement)
+    shadows.dress(scene)
+
+    expect(replacement.intensity).toBe(0)
+    expect(sun.intensity).toBe(2)
+    expect(sun.castShadow).toBe(true)
+    for (const band of cascadeLightsOf(scene, replacement)) {
+      expect(band.intensity).toBe(3)
+      expect(band.color.getHexString()).toBe('00ff00')
+    }
+  })
+
   it('gives the sun back its light and its map when the cascades go', () => {
     const { scene, sun } = litScene()
     sun.intensity = 2

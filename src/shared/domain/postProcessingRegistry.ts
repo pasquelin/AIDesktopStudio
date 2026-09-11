@@ -6,7 +6,7 @@
  * those may pull three.js in, so nothing here knows a `Pass` exists — `engines/postfx/` is the
  * one folder that does.
  */
-import { GL_ONLY, RENDER_ENGINES, type RenderEngine } from './renderEngine'
+import { GL_ONLY, GPU_ONLY, RENDER_ENGINES, type RenderEngine } from './renderEngine'
 import {
   BLUR_KINDS,
   HALFTONE_SHAPES,
@@ -90,6 +90,7 @@ export type PostEffectId =
   | 'vhs'
   | 'fxaa'
   | 'smaa'
+  | 'traa'
 
 export type PostEffectMeta = {
   category: PostCategory
@@ -97,12 +98,18 @@ export type PostEffectMeta = {
   slot: PostSlot
   /**
    * Which engines can actually build it. The SLOT is the same on both sides — a GPU occlusion
-   * occupies the `ao` slot its GL twin occupies, and the exclusivity rule holds unchanged — so
-   * this says nothing about where an effect sits in the chain, only about who can make one.
+   * occupies the `ao` slot its GL twin occupies — so this says nothing about where an effect
+   * sits in the chain, only about who can make one.
    */
   engines: readonly RenderEngine[]
   /** Whether two of them in one stack mean anything. An anti-aliaser twice does not. */
   duplicable: boolean
+  /**
+   * Whether it resolves against the FRAMES BEFORE IT, so cannot be built for a surface drawn
+   * once. 🛑 Handed a history it has not filled, such a node draws a FLAT COLOUR — measured
+   * 2026-09-11. See `survivesOneShot`, which `gpuComposer` reads.
+   */
+  temporal?: boolean
   /**
    * Whether it works ABOVE white — a bloom thresholds highlights, a defocus spreads them, an
    * opened exposure pulls values back from over one. On bytes all three read as clipping, so the
@@ -124,8 +131,8 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'lighting',
     cost: 'high',
     slot: 'ao',
-    // The one effect both engines build: GLSL `GTAOPass` on the Compatible side, the native
-    // `ao()` node on the Advanced one. Same slot, same exclusivity, same parameters.
+    // The one effect both engines build: GLSL `GTAOPass` against the native `ao()` node. Same
+    // slot, same exclusivity, same parameters — and `engines:parity` compares the two pictures.
     engines: RENDER_ENGINES,
     duplicable: false,
     params: {
@@ -463,11 +470,29 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     duplicable: false,
     params: {},
   },
+  /**
+   * Temporal reprojection: the picture is jittered by a sub-pixel offset each frame and the
+   * previous frames are reprojected onto it through the scene's velocity. It removes every edge,
+   * including the ones inside a texture that no edge filter can see.
+   *
+   * No sample count, and that is three.js and not an omission: a `TRAANode`'s samples are FRAMES,
+   * one per jitter of a fixed sequence. Its only quality lever is the sub-pixel correction, which
+   * the budget holds — see `gpuPostQuality`.
+   */
+  traa: {
+    category: 'aa',
+    cost: 'medium',
+    slot: 'aa',
+    engines: GPU_ONLY,
+    duplicable: false,
+    // Its whole method: the previous frames are reprojected onto this one.
+    temporal: true,
+    params: {},
+  },
 }
 
-export const POST_EFFECT_IDS: readonly PostEffectId[] = Object.keys(
-  POST_EFFECTS,
-) as readonly PostEffectId[]
+// `as`: `Object.keys` widens to `string[]`, and the object it walks is keyed on the union.
+export const POST_EFFECT_IDS = Object.keys(POST_EFFECTS) as readonly PostEffectId[]
 
 export function isPostEffectId(value: unknown): value is PostEffectId {
   return typeof value === 'string' && value in POST_EFFECTS

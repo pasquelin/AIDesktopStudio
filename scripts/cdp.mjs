@@ -21,6 +21,25 @@ async function rendererTarget() {
   return page.webSocketDebuggerUrl
 }
 
+/**
+ * Charge un harnais du renderer et appelle ce qu'il a posé sur `window`.
+ *
+ * Trois scripts en avaient chacun leur copie : un harnais vit dans le renderer parce que ni les
+ * moteurs ni les mondes ne se mesurent sous node, et le seul moyen de l'atteindre est l'import
+ * dynamique que le serveur de dev sert, suivi de la lecture du handle.
+ */
+export async function harness(modulePath, { handle, timeout = 30_000 }) {
+  return await evaluate(
+    `(async () => {
+      await import(${JSON.stringify(modulePath)})
+      const run = Reflect.get(window, ${JSON.stringify(handle)})
+      if (typeof run !== 'function') throw new Error('harnais absent : ${handle}')
+      return await run()
+    })()`,
+    { timeout },
+  )
+}
+
 export async function evaluate(expression, { timeout = 30_000 } = {}) {
   const socket = new WebSocket(await rendererTarget())
   await new Promise((resolve, reject) => {

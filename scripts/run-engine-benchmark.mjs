@@ -1,16 +1,11 @@
-import { evaluate } from './cdp.mjs'
+import { harness } from './cdp.mjs'
 
 // Le harnais vit dans le renderer : les deux moteurs ont besoin d'un vrai périphérique, et une
 // mesure prise sous node parlerait du chargement des modules, pas d'une image.
-const result = await evaluate(
-  `(async () => {
-    await import('/src/engines/render/engineBenchmark.browser.ts')
-    const bench = Reflect.get(window, '__iaBenchmarkRenderEngines')
-    if (typeof bench !== 'function') throw new Error('le harnais de banc moteur est absent')
-    return await bench()
-  })()`,
-  { timeout: 300_000 },
-)
+const result = await harness('/src/engines/render/engineBenchmark.browser.ts', {
+  handle: '__iaBenchmarkRenderEngines',
+  timeout: 300_000,
+})
 
 console.log(JSON.stringify(result, null, 2))
 

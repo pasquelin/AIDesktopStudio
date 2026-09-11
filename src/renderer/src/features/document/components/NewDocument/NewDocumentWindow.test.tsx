@@ -94,7 +94,13 @@ describe('NewDocumentWindow', () => {
     await userEvent.type(field, 'Niveau{Enter}')
 
     expect(answer).toHaveBeenCalledWith(
-      made({ kind: 'scene', title: 'Niveau', folder: 'documents', template: 'basic' }),
+      made({
+        kind: 'scene',
+        title: 'Niveau',
+        folder: 'documents',
+        template: 'basic',
+        engine: 'gl',
+      }),
     )
   })
 
@@ -105,7 +111,37 @@ describe('NewDocumentWindow', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Créer' }))
 
     expect(answer).toHaveBeenCalledWith(
-      made({ kind: 'scene', title: 'Scène 1', folder: 'documents', template: 'cinematic' }),
+      made({
+        kind: 'scene',
+        title: 'Scène 1',
+        folder: 'documents',
+        template: 'cinematic',
+        engine: 'gl',
+      }),
+    )
+  })
+
+  // The one answer this form takes that its document can never be asked for again.
+  it('opens the engine on the preference it was handed', async () => {
+    open({ ...ASK, engine: 'gpu' })
+
+    expect(await screen.findByLabelText('Moteur de rendu')).toHaveValue('gpu')
+  })
+
+  it('answers the engine that was picked, not the one it opened on', async () => {
+    open(ASK)
+
+    await userEvent.selectOptions(await screen.findByLabelText('Moteur de rendu'), 'gpu')
+    await userEvent.click(screen.getByRole('button', { name: 'Créer' }))
+
+    expect(answer).toHaveBeenCalledWith(
+      made({
+        kind: 'scene',
+        title: 'Scène 1',
+        folder: 'documents',
+        template: 'basic',
+        engine: 'gpu',
+      }),
     )
   })
 
@@ -115,6 +151,8 @@ describe('NewDocumentWindow', () => {
 
     await screen.findByRole('textbox')
     expect(screen.queryByRole('button', { name: 'Base' })).toBeNull()
+    // Nor an engine: the five kinds that are not scenes draw no viewport of their own.
+    expect(screen.queryByLabelText('Moteur de rendu')).toBeNull()
 
     await userEvent.click(screen.getByRole('button', { name: 'Créer' }))
     expect(answer).toHaveBeenCalledWith(
@@ -209,7 +247,13 @@ describe('NewDocumentWindow', () => {
     await userEvent.click(await screen.findByRole('button', { name: 'Créer' }))
 
     expect(answer).toHaveBeenCalledWith(
-      made({ kind: 'scene', title: 'Scène 1', folder: 'Dossiers/scenes', template: 'basic' }),
+      made({
+        kind: 'scene',
+        title: 'Scène 1',
+        folder: 'Dossiers/scenes',
+        template: 'basic',
+        engine: 'gl',
+      }),
     )
   })
 
@@ -224,7 +268,13 @@ describe('NewDocumentWindow', () => {
     await userEvent.keyboard('{Enter}')
 
     expect(answer).toHaveBeenCalledWith(
-      made({ kind: 'scene', title: 'Scène 1', folder: 'documents', template: 'cinematic' }),
+      made({
+        kind: 'scene',
+        title: 'Scène 1',
+        folder: 'documents',
+        template: 'cinematic',
+        engine: 'gl',
+      }),
     )
   })
 

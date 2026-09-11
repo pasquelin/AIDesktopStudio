@@ -232,6 +232,8 @@ export abstract class SceneRendererDisplay extends SceneRendererExport {
       // A render is never drawn at the cheap end: what is written out is what the quality
       // setting means at its top, whatever the viewport is set to.
       quality: request.surface === 'offscreen' ? 'high' : this.view.quality,
+      // Every off-screen pass builds its chain, draws one picture and frees it.
+      oneShot: request.surface === 'offscreen',
       toneMapped: this.world.toneMapping !== 'none',
       // The PLAYHEAD, not a wall clock: a film written twice has the same grain twice, and a
       // frame still shows grain because the head moves between them.

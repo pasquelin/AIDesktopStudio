@@ -92,9 +92,10 @@ export abstract class SceneRendererState {
   protected options!: SceneRendererOptions
 
   protected viewport = new ViewportEngine({
-    // Read at mount and never again: the scene lives inside the renderer's context, so the
-    // choice is settled for as long as this panel is open. See `RenderPolicy.engine`.
-    engine: () => this.view.engine,
+    // The DOCUMENT's engine, read at mount and never again: the scene lives inside the
+    // renderer's context, so the choice is settled for as long as this panel is open. A surface
+    // that draws no scene document falls back on the preference. See `SceneWorld.engine`.
+    engine: () => this.options.engine ?? this.view.engine,
     onFrame: delta => this.advance(delta),
     onOverlay: renderer => this.viewHelper?.render(renderer),
     onPane: (index, camera) => this.dressPane(index, camera),

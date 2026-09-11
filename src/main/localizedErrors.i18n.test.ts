@@ -86,8 +86,14 @@ function parsed(path: string): ts.SourceFile {
   )
 }
 
-// These modules drive validation probes or fake bridges, never user-facing diagnostic text.
-const TECHNICAL_RENDERER = /(?:Validation|visualRegression|fakeBridge)/
+/**
+ * These modules drive validation probes or fake bridges, never user-facing diagnostic text.
+ *
+ * A HARNESS is never imported by the app, only by a script that drives a running window over CDP
+ * (`world:validate`, `engines:bench`, `engines:parity`), and what it throws is read by whoever
+ * ran that script from a terminal — `engineParity` covers the harness and the stage it draws.
+ */
+const TECHNICAL_RENDERER = /(?:Validation|visualRegression|fakeBridge|engineParity)/
 
 // Main-only failures outside these paths can be logs or errors reduced to existing codes.
 const NATIVE_DIAGNOSTICS = [

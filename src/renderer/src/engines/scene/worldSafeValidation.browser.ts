@@ -12,6 +12,7 @@ import {
   validateRuntimeRepresentation,
   type RuntimeRenderCamera,
 } from './runtimeRepresentationValidation'
+import { hasPixelVariation } from './visualRegression'
 import { createSceneRuntimeValidationDriver } from './sceneRuntimeValidationDriver'
 import { benchmarkModel, benchmarkTexture, camerasFor } from './worldBenchmarkBrowserFixtures'
 
@@ -169,16 +170,3 @@ function movedFromStart(
 }
 
 Reflect.set(window, '__iaValidateWorldBenchmarks', validateWorldBenchmarksInBrowser)
-
-function hasPixelVariation(pixels: Uint8Array): boolean {
-  for (let offset = 4; offset < pixels.length; offset += 4) {
-    if (
-      pixels[offset] !== pixels[0] ||
-      pixels[offset + 1] !== pixels[1] ||
-      pixels[offset + 2] !== pixels[2] ||
-      pixels[offset + 3] !== pixels[3]
-    )
-      return true
-  }
-  return false
-}

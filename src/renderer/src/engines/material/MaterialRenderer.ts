@@ -17,7 +17,12 @@ import { createSkyBinding, type SkyBinding } from '../viewport/skyBinding'
 import { type ViewportEnvironment } from '../viewport/environment'
 import { SCHEME_OF, type NavigationScheme } from '@shared/domain/navigationPreset'
 import { ViewportEngine } from '../viewport/ViewportEngine'
-import { createUniforms, EDGE_DEFINE, materialFrameOf, syncEdgeTransform } from './materialShader'
+import {
+  createUniforms,
+  declareEdgeMap,
+  materialFrameOf,
+  syncEdgeTransform,
+} from './materialShader'
 import { previewGeometry } from './previewGeometry'
 import { DEFAULT_TEXTURE_MATERIAL } from '@shared/domain/material'
 import type { EnvironmentRef } from '@shared/domain/scene'
@@ -290,26 +295,11 @@ export class MaterialRenderer {
     this.material.needsUpdate = true
   }
 
-  /**
-   * The define, not just the uniform: an unbound sampler is undefined behaviour on some drivers,
-   * so the cavity code has to be absent from the program rather than merely inert.
-   */
+  /** The define, not just the uniform — `declareEdgeMap` says why, and both engines call it. */
   private setEdgeMap(map: Texture | null): void {
     if (this.uniforms.edgeMap.value === map) return
     this.uniforms.edgeMap.value = map
-
-    const defines = this.material.defines ?? {}
-    if (map) {
-      defines[EDGE_DEFINE] = ''
-      // `vUv` exists only where something asks for it, and no slot asks on this mask's behalf.
-      defines.USE_UV = ''
-    } else {
-      delete defines[EDGE_DEFINE]
-      delete defines.USE_UV
-    }
-
-    this.material.defines = defines
-    this.material.needsUpdate = true
+    declareEdgeMap(this.material, map !== null)
   }
 
   private async applyEnvironment({ preview }: MaterialState): Promise<void> {

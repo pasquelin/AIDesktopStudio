@@ -11,3 +11,6 @@ export const RENDER_ENGINES: readonly RenderEngine[] = ['gl', 'gpu']
 
 /** What every effect written before the Advanced engine existed runs on, and only that. */
 export const GL_ONLY: readonly RenderEngine[] = ['gl']
+
+/** What only a node chain can build. The Compatible engine leaves these out of its catalogue. */
+export const GPU_ONLY: readonly RenderEngine[] = ['gpu']

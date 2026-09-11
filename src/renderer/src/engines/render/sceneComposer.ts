@@ -18,6 +18,13 @@ type ComposerRect = { x: number; y: number; width: number; height: number }
 export type ComposerJob = {
   /** Stable destination identity, independent of dimensions, cameras and temporary targets. */
   surface: string
+  /**
+   * Whether this chain will be built, drawn and freed for ONE picture — a still, a film frame, a
+   * validation capture. Said by the caller rather than guessed from `surface`: what an effect
+   * that resolves against the frames before it needs is FRAMES, and a destination name is a
+   * different fact that happens to correlate. See `survivesOneShot`.
+   */
+  oneShot: boolean
   scene: Scene
   camera: Camera
   stack: PostStack

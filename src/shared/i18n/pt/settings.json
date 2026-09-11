@@ -248,7 +248,7 @@
     },
     "renderEngine": {
       "title": "Motor de renderização",
-      "help": "Com que interface gráfica a vista 3D desenha. Compatível funciona em qualquer configuração e é o que se guarda para partilhar amplamente ou para máquinas mais antigas. Avançado dá melhor iluminação e reflexos e pede uma placa gráfica recente. Um painel já aberto conserva o seu motor: feche-o e volte a abri-lo para mudar. Uma máquina sem adaptador WebGPU volta sozinha ao motor Compatível, e di-lo no diário.",
+      "help": "Com o que as cenas novas abrem. A pergunta é feita a cada criação de documento e a resposta é escrita no próprio documento: este ajuste apenas preenche o campo de antemão e não muda nenhuma cena existente. Compatível funciona em qualquer máquina; Avançado dá melhor iluminação e reflexos e pede uma placa gráfica recente. Uma máquina sem adaptador WebGPU volta sozinha ao Compatível, e diz isso no diário.",
       "gl": "Compatível",
       "gpu": "Avançado"
     },

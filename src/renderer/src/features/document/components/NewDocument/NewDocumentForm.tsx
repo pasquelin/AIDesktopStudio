@@ -6,6 +6,8 @@ import { checkDocumentName } from '@shared/domain/documentName'
 import { DEFAULT_ROLE_PATHS } from '@shared/domain/folderRole'
 import type { KnownFormat } from '@shared/domain/formatCapability'
 import type { DocumentTemplateId, NamedDocumentPlace } from '@shared/domain/newDocument'
+import type { RenderEngine } from '@shared/domain/renderEngine'
+import { DEFAULT_WORLD } from '@shared/domain/scene'
 import { DEFAULT_SCENE_TEMPLATE, type SceneTemplateId } from '@shared/domain/sceneTemplate'
 import { DEFAULT_UI_TEMPLATE, type UiTemplateId } from '@shared/domain/uiTemplates'
 import { Button } from '@/components/Button'
@@ -15,6 +17,7 @@ import { getBridge } from '@/services/bridge'
 import { useDocuments } from '@/stores/documents'
 import { takenDocumentNames, untitledDocumentName } from '@/stores/documentNames'
 import { DOCUMENT_NAME_REFUSALS } from '../../documentName'
+import { NewDocumentEngineField } from './NewDocumentEngineField'
 import { NewDocumentNameField } from './NewDocumentNameField'
 import { NewDocumentTemplateField } from './NewDocumentTemplateField'
 
@@ -33,6 +36,8 @@ export type NewDocumentFormProps = {
    * document, which opens on a free name and has one format per kind to show rather than offer.
    */
   saveAs?: { title: string; formats: readonly KnownFormat[] }
+  /** What the scene's engine field opens on — the preference where one was carried. */
+  engine?: RenderEngine
   onCancel: () => void
   onSubmit: (place: NamedDocumentPlace) => void
 }
@@ -50,6 +55,7 @@ export function NewDocumentForm({
   projectName,
   open,
   saveAs,
+  engine,
   onCancel,
   onSubmit,
 }: NewDocumentFormProps) {
@@ -60,6 +66,7 @@ export function NewDocumentForm({
   const [format, setFormat] = useState<KnownFormat | null>(saveAs?.formats[0] ?? null)
   const [template, setTemplate] = useState<SceneTemplateId>(DEFAULT_SCENE_TEMPLATE)
   const [uiTemplate, setUiTemplate] = useState<UiTemplateId>(DEFAULT_UI_TEMPLATE)
+  const [renderEngine, setRenderEngine] = useState<RenderEngine>(engine ?? DEFAULT_WORLD.engine)
   const stored = useDocuments(state => state.stored)
   // Pulled out of the object so the effect below depends on the NAME rather than on a prop
   // rebuilt at every render of the window — which would re-seed the field on each keystroke.
@@ -129,9 +136,12 @@ export function NewDocumentForm({
     commit()
   }
 
-  /** What this kind answers with, or nothing at all — never the other kind's id. */
-  const templateOf = (): { template?: DocumentTemplateId } => {
-    if (kind === 'scene') return { template }
+  /**
+   * What this kind answers with, or nothing at all — never the other kind's id, and never an
+   * engine for a kind that draws no scene.
+   */
+  const templateOf = (): { template?: DocumentTemplateId; engine?: RenderEngine } => {
+    if (kind === 'scene') return { template, engine: renderEngine }
     if (kind === 'gui') return { template: uiTemplate }
     return {}
   }
@@ -188,6 +198,10 @@ export function NewDocumentForm({
         ui={uiTemplate}
         onUi={setUiTemplate}
       />
+
+      {/* After what the scene HOLDS and before where it goes: the engine is a property of the
+          document being made, and the one answer this form cannot be asked for again. */}
+      <NewDocumentEngineField kind={kind} value={renderEngine} onChange={setRenderEngine} />
 
       <div className="flex min-h-0 flex-1 flex-col gap-1.5">
         <span id={folderId} className="text-muted text-xs">

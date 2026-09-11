@@ -17,7 +17,13 @@ import { budgetFor, samplesOf } from '../postfx/postQuality'
 export type GpuBudget = {
   /** What share of the frame an occlusion is worked out at — `GTAONode.resolutionScale`. */
   resolutionScale: number
-  /** What share of the samples a sampling effect asks for it actually takes. */
+  /**
+   * What share of the samples a sampling effect asks for it actually takes.
+   *
+   * Also what the temporal anti-aliaser reads, there being nothing else to read: three 0.185
+   * exposes no sample COUNT on a `TRAANode` — its samples are frames of a fixed jitter sequence
+   * — so its one lever, the sub-pixel correction, is kept exactly where nothing is being cut.
+   */
   samples: number
 }
 

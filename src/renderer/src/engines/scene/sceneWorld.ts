@@ -63,6 +63,7 @@ import {
   UNLOCKED_TERRAIN,
 } from '@shared/domain/scene'
 import { readStack } from '@shared/domain/postProcessing'
+import { RENDER_ENGINES } from '@shared/domain/renderEngine'
 import { readReliefGrain, readReliefMask, readReliefSculpt } from '@shared/domain/relief'
 import {
   isRecord,
@@ -88,6 +89,9 @@ export function readWorld(value: unknown, legacyEnvironment: unknown): SceneWorl
   const held = isRecord(value) ? value : {}
 
   return {
+    // The engine the document was MADE under, and never the setting: a file opened on a machine
+    // whose preference says otherwise still draws the way its author drew it.
+    engine: oneOf(RENDER_ENGINES, held.engine, DEFAULT_WORLD.engine),
     // The nested one wins when it is there; a file that only has the old root key keeps its sky.
     environment: readEnvironment('environment' in held ? held.environment : legacyEnvironment),
     envIntensity: readBounded(held, 'envIntensity', DEFAULT_WORLD.envIntensity, ENV_INTENSITY),

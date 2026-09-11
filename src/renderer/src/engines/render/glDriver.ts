@@ -31,7 +31,9 @@ export const glDriver: RenderDriver = {
 
   // The ceiling comes from three rather than from `gl.MAX_SAMPLES`, which the WebGL1 typing has
   // no name for.
-  maxSamples: renderer => {
+  maxSamples: renderer => Math.max(0, capsOf(renderer).maxSamples),
+
+  drawingBufferSamples: renderer => {
     const gl = asWebGL(renderer).getContext()
     return Math.max(
       0,

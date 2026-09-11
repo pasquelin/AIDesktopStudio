@@ -248,7 +248,7 @@
     },
     "renderEngine": {
       "title": "Render engine",
-      "help": "Which graphics interface the 3D viewport draws with. Compatible works on every configuration and is the one to keep for sharing widely or for older machines. Advanced gives better lighting and reflections and asks for a recent graphics card. A panel already open keeps the engine it opened with: close and reopen it to change. A machine with no WebGPU adapter falls back to the Compatible engine on its own, and says so in the journal.",
+      "help": "What new scenes open on. The question is put at every document creation and the answer is written into the document itself: this setting only pre-fills the field, and changes no existing scene. Compatible runs on every machine; Advanced gives better lighting and reflections and wants a recent graphics card. A machine with no WebGPU adapter falls back to Compatible on its own, and says so in the journal.",
       "gl": "Compatible",
       "gpu": "Advanced"
     },

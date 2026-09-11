@@ -219,6 +219,10 @@
     "deleteHint": "把文档从项目中移除，包括它的文件",
     "nameField": "名称",
     "templateField": "起始模板",
+    "engines": {
+      "gl": "兼容 — 在所有机器上都能绘制",
+      "gpu": "高级 — 光照和反射更好，需要较新的显卡"
+    },
     "templateGroups": {
       "general": "通用",
       "character": "角色",

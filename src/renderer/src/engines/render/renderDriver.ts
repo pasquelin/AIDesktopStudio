@@ -82,10 +82,18 @@ export type RenderDriver = {
     onMissingAnchor: (anchor: string) => void,
   ) => void
   /**
-   * How many samples an off-screen target may be antialiased to. ZERO on a node renderer: it
-   * sizes the attachments of a render target itself, and has no context to ask.
+   * The CARD's ceiling: how many samples an off-screen target this engine allocates may ask for.
+   * ZERO on a node renderer, which sizes the attachments of a render target itself.
    */
   maxSamples: (renderer: StudioRenderer) => number
+  /**
+   * What the DRAWING BUFFER is actually antialiased to, which is a different question and a
+   * different answer — zero whenever a render target is bound.
+   *
+   * 🛑 The two were one call until 2026-09-11, and a still lost its antialiasing: it asks for a
+   * ceiling and was handed the sample count of whatever framebuffer happened to be bound.
+   */
+  drawingBufferSamples: (renderer: StudioRenderer) => number
   /**
    * How many samples the card may take across a texel's footprint. The two engines keep the
    * same answer in two places — under `capabilities` on one, on the renderer on the other.

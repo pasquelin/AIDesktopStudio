@@ -9,7 +9,8 @@ Machine : Apple M2 Max, macOS 26.5.2 (Darwin 25.6.0), arm64. three.js 0.185.1.
 | --- | --- | --- |
 | 1 — Gains WebGL indépendants | livrée, 1 MUST refusé sur mesure | Cascades, anisotropie et AgX livrés. `PCFSoftShadowMap` n'est pas le mode doux dans cette version de three : appliquer le MUST 1.1 aurait durci les ombres. |
 | 2 — Interface driver + choix moteur | livrée, 1 écart d'emplacement | `RenderDriver`, `glDriver`, `gpuDriver` (stub), repli silencieux, `engines` dans le registre. Le sélecteur est dans les préférences 3D et non à la création de projet — motif plus bas. |
-| 3 — Premier contenu GPU réel | livrée, TRAA écarté | `WebGPURenderer` monté, patch matériau en TSL, GTAO en nœud natif, lecture de pixels GPU, budget qualité partagé. Chiffres mesurés sur cette machine, plus bas. TRAA non porté : motif plus bas. |
+| 3 — Premier contenu GPU réel | livrée | `WebGPURenderer` monté, patch matériau en TSL, GTAO en nœud natif, lecture de pixels GPU, budget qualité partagé. Chiffres mesurés sur cette machine, plus bas. |
+| 4 — Compléments (hors spec) | livrée | Parité visuelle GL/GPU mesurée et tenue par une porte, capture d'export Avancée jointe, moteur choisi à la création du document, TRAA porté et bibliothèque d'effets filtrée par moteur. |
 
 ## Étape 1
 
@@ -154,11 +155,11 @@ s'y opposent :
 2. Créer un projet, c'est choisir un dossier (`stores/project.ts:434`, `createPicked`). Il n'y a
    aucun dialogue de création où poser deux options.
 
-Le sélecteur est donc dans l'espace 3D des préférences, avec la copie demandée
-(« Compatible » / « Avancé »), le nom de l'API dans le texte d'aide faute de sous-titre dans ce
-contrôle. Le verrou « pas de switch en direct » tient **par construction** : le moteur est lu au
-montage du viewport et jamais relu ; l'aide le dit. Mettre le choix dans le projet demanderait un
-champ de manifeste et sa validation — hors périmètre de cette étape, à décider.
+Le sélecteur était donc dans l'espace 3D des préférences, avec la copie demandée
+(« Compatible » / « Avancé »).
+
+**Écart refermé à l'étape 4 : § 4.6.** Le choix est passé dans le monde du document de scène et
+la préférence ne fait plus que pré-remplir le champ de « Nouveau document ».
 
 Deux revues sur trois ont demandé de ne pas livrer le réglage tant qu'Avancé ne dessinait rien.
 L'étape 3 l'a rendu caduc : le moteur Avancé dessine. Son aide dit maintenant ce qui reste vrai —
@@ -167,9 +168,9 @@ une machine sans adaptateur WebGPU retombe d'elle-même sur le Compatible et le 
 ### Registre post-processing
 
 `PostEffectMeta.engines`, les trente effets existants en `['gl']`. Les `PostSlot` et la règle
-`EXCLUSIVE` ne bougent pas. Le filtrage d'un effet par moteur n'est pas écrit : il n'a aucun effet
-tant qu'aucun effet GPU n'existe, et un filtre qu'on ne peut pas voir tourner est un filtre qu'on
-ne peut pas relire.
+`EXCLUSIVE` ne bougent pas. Le filtrage d'un effet par moteur n'était pas écrit à cette étape : il
+n'avait aucun effet tant qu'aucun effet GPU n'existait, et un filtre qu'on ne peut pas voir tourner
+est un filtre qu'on ne peut pas relire. **Écrit à l'étape 4, avec `traa` : § 4.8.**
 
 ## Étape 3
 
@@ -236,9 +237,7 @@ Les uniformes sont ceux du moteur, partagés : un `Vector2` par référence, un 
 texture relus à chaque rendu parce qu'ils sont remplacés et non écrits dedans. Cinq tests tiennent
 ce pont, dont celui qui vérifie que le graphe ne se reconstruit pas quand un canal arrive.
 
-**Non mesuré** : la comparaison visuelle GL/GPU du patch. Elle demande deux rendus de la même
-scène de référence à comparer pixel à pixel, comme `world:validate` le fait déjà entre deux
-représentations — le harnais existe, l'entrée pour les deux moteurs n'a pas été écrite.
+**Mesurée à l'étape 4** : la comparaison visuelle GL/GPU du patch, § 4.1 et § 4.3.
 
 ### 3.2 — GTAO en TSL
 
@@ -268,8 +267,8 @@ comparent les deux lectures réglage par réglage.
 
 Une limite honnête pour la suite : **TRAA n'expose aucun nombre d'échantillons** dans
 three 0.185 — ses échantillons sont des IMAGES, une par gigue d'une séquence fixe. Son seul
-levier serait la correction sous-pixel. Rien n'est écrit pour lui tant qu'il n'est pas porté :
-un champ de budget que personne ne lit est un champ qui ment.
+levier est la correction sous-pixel. **Branchée à l'étape 4**, quand l'effet a été porté :
+`GpuBudget.subpixelCorrection`.
 
 ### 3.5 — Ce qui a dû être réparé pour que l'Avancé dessine
 
@@ -293,14 +292,14 @@ continuait sur la première) ; `RenderPipeline.dispose` ne libère que son quad,
 chaîne évincée fuyait un G-buffer plein écran ; et `colorNode` écrasait la **carte de couleur**
 de base, ce qui aurait rendu tout matériau texturé plat.
 
-### 3.6 — TRAA : écarté, avec le motif
+### 3.6 — TRAA : écarté à l'étape 3, porté à l'étape 4
 
 Le spec le donne en SHOULD, « si le motif GTAO n'a pas révélé de problème ». Il en a révélé un :
-`traa` n'existe pas côté Compatible, donc l'ajouter au catalogue publierait un effet que la
-moitié des projets ne peuvent pas dessiner — et le rendre visible demanderait une bibliothèque
-d'effets consciente du moteur, c'est-à-dire l'UX que le spec met hors périmètre. Rien n'a été
-laissé en place pour lui : ni son module de nœuds, ni un champ de budget. L'effet attend son
-jumeau GL ou une UI par moteur.
+`traa` n'existe pas côté Compatible, donc l'ajouter au catalogue publiait un effet que la moitié
+des projets ne peuvent pas dessiner — et le rendre visible demandait une bibliothèque d'effets
+consciente du moteur, c'est-à-dire l'UX que le spec met hors périmètre.
+
+**Cette UX a été autorisée depuis, et les deux sont livrés ensemble : § 4.8.**
 
 ### 3.7 — Ce que l'Avancé ne fait pas encore, écrit plutôt que découvert
 
@@ -314,19 +313,181 @@ jumeau GL ou une UI par moteur.
 - **L'aperçu incrusté** et les vingt-neuf effets GLSL restent au Compatible : le registre le dit
   effet par effet, et la chaîne Avancée laisse simplement de côté ce qu'elle ne sait pas bâtir.
 
+## Étape 4 — Compléments (hors périmètre du spec, demandés après)
+
+### 4.1 — Parité visuelle GL/GPU : `pnpm engines:parity`
+
+`engineParity.browser.ts`, piloté par CDP sur `pnpm start:debug`, comme `world:validate`. Six cas,
+chacun par la couture que le studio emprunte lui-même — pas une reconstitution.
+
+🛑 **Condition : la fenêtre du studio doit être au premier plan.** Le harnais l'ATTEND (90 s) et
+refuse de mesurer sans elle. Motif mesuré le 11 septembre 2026 : masquée, la même révision
+rapportait 58 % de pixels différents sur une scène qu'elle dessine à l'identique devant. Une
+fenêtre derrière une autre ne reçoit aucune image d'animation ; three fait avancer depuis SA
+boucle d'animation le compteur sur lequel sont gardées les mises à jour `NodeUpdateType.FRAME`
+(GTAO et TRAA en sont), et le moteur Compatible ne redessine une carte d'ombre que sur une image
+qu'il juge périmée — sans image, toute surface reste dans une carte jamais dessinée, c'est-à-dire
+noire.
+
+| Cas | Taille | Pixels différents | Écart max sur un canal |
+| --- | ---: | ---: | ---: |
+| `scene` — la scène nue, sans composition | 128² | **0 %** | 3 |
+| `occlusion` — la même sous GTAO | 128² | 2,76 % | 98 |
+| `still` — `captureStill`, le chemin d'export | 1024² | 0,22 % | 65 |
+| `film` — `renderFilm`, une image | 642 × 362 | **0 %** | 4 |
+| `material` — patch matériau, cartes tuilées | 128² | 24,75 % | 126 |
+| `temporal` — un effet temporel laissé hors d'une image unique | 1024² | 13,61 % | 74 |
+
+Tolérance : 8 niveaux par canal. Les plafonds du runner sont ces mesures arrondies vers le haut,
+jamais des cibles théoriques ; `material` n'en a pas — son écart est CONNU, et transformer une
+divergence documentée en réussite ou en échec serait mentir dans les deux sens.
+
+**Ce que ces chiffres disent, sans arrangement** : sur cette machine, les deux moteurs dessinent
+la même scène. `scene` et `film` sont à zéro pixel différent — pas « proches » : identiques à la
+tolérance d'encodage près. L'export est à 0,22 %.
+
+### 4.2 — Trois défauts que cette comparaison a trouvés, et rien d'autre
+
+1. **L'occlusion sortait ROUGE côté Avancé.** `GTAONode` rend son occlusion dans une cible
+   `RedFormat` ; `getTextureNode()` donne donc `(ao, 0, 0, 1)`, et le multiplier tel quel dans
+   l'image tuait le vert et le bleu. La fiche de three écrit `colour.mul(vec4(vec3(ao.r), 1))`.
+   **Le banc mesurait ce que cette chaîne COÛTE ; personne n'avait regardé ce qu'elle dessine.**
+2. **`blend` ne faisait rien côté Avancé.** Le paramètre est dans la fiche `gtao` et le `GTAOPass`
+   GL l'applique (`blendIntensity`) ; la chaîne de nœuds l'ignorait — un curseur vivant qui ne
+   changeait rien sur la moitié des projets.
+3. **Un effet temporel donnait une image PLATE à l'export.** Un nœud qui résout contre les images
+   précédentes reçoit un historique vide quand la chaîne est bâtie, dessinée puis libérée : une
+   capture d'une scène portant `traa` revenait en un gris uni. `PostEffectMeta.temporal` le
+   déclare et `gpuComposer` laisse ces effets hors de la surface `offscreen`.
+
+Le harnais lui-même en a livré un quatrième, sur lui : une capture prise avant toute image lisait
+des cartes d'ombre jamais dessinées côté Compatible — image noire — et aurait accusé l'autre moteur.
+
+### 4.3 — L'écart connu, mesuré, non corrigé
+
+La cavité tombe sur la couleur diffuse côté nœuds (§ 3.1). Sur un métal, dont three tire la teinte
+spéculaire de cette même couleur, l'Avancé assombrit ce que le Compatible laisse tranquille :
+**24,75 % des pixels, 126 d'écart maximal sur un canal**, sur une sphère à métallicité 0,6 portant
+une rugosité et une métallicité tuilées quatre fois plus une cavité. Images :
+`materiau-compatible.png`, `materiau-avance.png` — la différence se voit sur les faces sombres du
+damier, pas sur sa forme.
+
+### 4.4 — Une divergence antérieure à ce lot, mise au jour par le harnais
+
+`temporal` mesure 13,61 % là où l'on attendrait zéro : les deux côtés sont le moteur Avancé, l'un
+avec une pile dont la chaîne retire tout, l'autre sans pile. **Même image, deux tons.** Le rendu
+droit du composeur passe par `setOutputRenderTarget`, celui du viewport sans composeur n'y passe
+pas, et la transformation de sortie ne suit pas le même chemin. Retirer cette pose empire
+franchement le résultat — 100 % des pixels, la lecture revient linéaire, mesuré le 11/09/2026 —
+donc elle reste.
+
+Cela touche **toute** scène Avancée portant une pile d'effets GLSL que ce moteur ne sait pas bâtir,
+c'est-à-dire le cas courant : c'est antérieur à ce lot et hors de son périmètre. La correction
+propre est que `SceneComposer.draw` RÉPONDE s'il a composé, et que l'appelant dessine droit
+lui-même quand il n'a rien composé — un seul rendu droit dans le dépôt au lieu de trois. À faire
+au lot suivant.
+
+Le plafond de cette ligne est à 20 % pour cette raison : ce qu'elle garde est l'absence du gris
+uni, qui porterait la ligne à 100 %.
+
+### 4.5 — Capture d'export sur un projet Avancé
+
+`capture-avance.png` (1024², `captureStill`) et `film-avance.png` (642 × 362, `renderFilm`),
+toutes deux dessinées par le moteur Avancé, jointes à ce rapport.
+
+642 délibérément : 642 × 4 = 2 568 octets, qui n'est pas un multiple de 256. WebGPU aligne une
+copie texture → tampon sur 256 octets par ligne, et un lecteur qui garde le mou cisaille l'image
+un peu plus à chaque ligne. 1 024 et 640 divisent proprement et ne prouvent rien là-dessus.
+
+### 4.6 — Le moteur vit dans le DOCUMENT
+
+L'écart de l'étape 2 est refermé. `SceneWorld.engine` : choisi à la création du document, écrit
+dans son monde, relu à chaque montage de viewport et porté par l'export jeu (la scène d'ENTRÉE
+décide, un jeu ne tenant qu'un renderer). `Settings.three.engine` ne sert plus qu'à pré-remplir le
+champ ; son aide le dit, dans les quinze langues.
+
+Le verrou « pas de switch après création » est donc vrai au sens fort : changer la préférence ne
+touche aucune scène existante. Un document lu sur une machine dont la préférence dit le contraire
+dessine comme son auteur l'a dessiné. Un fichier écrit avant que ce membre existe lit `gl`, qui est
+ce avec quoi il a été dessiné.
+
+🛑 **Un onglet monte AVANT que son fichier ait atterri** (`restoreDocument` lit le disque). Un
+document enregistré en Avancé ouvre donc en Compatible et **reconstruit son renderer une fois**
+quand son monde arrive — `useMountedSceneRenderer` prend le moteur en dépendance pour cela, au
+prix d'un contexte graphique jeté. Un document neuf est semé avant que son onglet s'ouvre : il
+monte une seule fois.
+
+Attendre l'état plutôt que remonter a été essayé le 11 septembre 2026 et remis en arrière : un
+onglet dont le document n'arrive jamais ne dessinerait alors plus rien du tout, ce qui est pire
+qu'un contexte gâché (dix tests de `SceneDocument` l'ont montré). La correction propre est de
+faire répondre `useRestoredDocument` la prêtitude que `restoreDocument` calcule déjà — à faire au
+lot suivant.
+
+Le champ est dans « Nouveau document », sous le modèle de départ et au-dessus de l'emplacement,
+pour la seule sorte scène. Chaque option porte sa description ; aucune ligne d'aide sous le champ.
+
+### 4.7 — Ce que `/code-review` a trouvé en plus
+
+Neuf points, dont un **haut** : **un document en Avancé n'obtenait jamais le moteur Avancé dans
+la session qui l'ouvre.** Le viewport lançait le chargement du bundle `three/webgpu` et, sur la
+ligne suivante, demandait s'il était là — non — donc montait le Compatible, écrivait un repli au
+journal qui n'en était pas un, et ne redemandait plus. `useRenderEngineReady` retient le montage
+jusqu'à ce que ce chargement ABOUTISSE, y compris sur « cette machine n'a pas d'adaptateur », qui
+est un repli et non une attente : rien ne peut donc rester en suspens.
+
+Les huit autres, tous corrigés :
+
+- `GTAONode` possède une cible plein écran `RedFormat` et un matériau que `RenderPipeline.dispose`
+  n'atteint pas : chaque chaîne évincée en fuyait une ;
+- une surface qui change la forme de sa pile abandonnait sa chaîne précédente jusqu'au balayage ;
+- `maxSamples` répondait à DEUX questions — le plafond de la carte et ce à quoi le tampon de
+  dessin est lissé — et une capture fixe perdait son anticrénelage ;
+- `PostComposer` n'empilait pas d'applicateur pour un effet qu'il ne sait pas bâtir, alors que
+  `draw` parcourt les deux listes par le même index : un effet GPU-only dans un créneau plus haut
+  aurait donné les paramètres de l'un à la passe de l'autre ;
+- supprimer le soleil et en ajouter un autre laissait les cascades debout pour un soleil mort, et
+  la scène éclairée deux fois ;
+- la liste d'effets lisait un registre non réactif dans un mémo, donc gelait ce qu'il disait au
+  premier rendu.
+
+### 4.8 — TRAA, et la bibliothèque filtrée par moteur
+
+`traa()` porté tel quel (`three/addons/tsl/display/TRAANode.js`), catégorie `aa`, créneau `aa`,
+`engines: ['gpu']`, sans paramètre — **trois 0.185 n'expose aucun nombre d'échantillons**, ses
+échantillons étant des IMAGES d'une séquence de gigues fixe. Son seul levier qualité,
+`useSubpixelCorrection`, est branché sur `gpuPostQuality` : le réglage qui coupe des échantillons
+ailleurs coupe la correction ici.
+
+La chaîne ajoute la vélocité au MRT **seulement** quand quelque chose reproject, et bâtit sa passe
+de scène en `samples: 0` — un `PassNode` prend sinon le multi-échantillonnage du renderer, et
+résoudre deux fois étale l'image.
+
+**Ce que TRAA dessine, mesuré** : sur une chaîne persistante rendue une image par image
+d'animation, **403 couleurs distinctes contre 101 sans lui** (sphère de 128², 12 mises à jour,
+historique 128²) — c'est exactement ce qu'un anticrénelage temporel fait, remplir les teintes
+intermédiaires le long des arêtes. Mesuré à la main le 11/09/2026 ; `engines:parity` ne peut pas
+le mesurer, ses captures libérant leur chaîne à chaque image.
+
+**La bibliothèque est filtrée par le moteur du document** (`effectsForEngine`) : un effet que la
+chaîne laisserait tomber n'est plus proposé. Les lignes DÉJÀ dans une pile ne bougent pas — un
+moteur ne rend pas un document faux.
+
+**Angle mort assumé** : le filtre lit le moteur du DOCUMENT, pas celui qui a été monté. Une machine
+sans adaptateur WebGPU retombe sur le Compatible et se voit encore proposer les effets Avancés,
+que la chaîne écarte ensuite. Le repli est au journal ; cette liste dit ce que le document demande.
+
 ## Ce qui reste ouvert
 
-- **La comparaison visuelle GL/GPU**, sur le patch matériau comme sur GTAO. Le harnais de
-  `world:validate` compare déjà deux représentations pixel à pixel ; l'entrée qui compare deux
-  MOTEURS n'est pas écrite. Tant qu'elle ne l'est pas, « visuellement équivalent » n'est affirmé
-  par personne dans ce rapport.
-- **La capture d'export sur un projet `'gpu'`** : le chemin est mesuré (`stillMs` EST
-  `captureStill`), l'image n'est pas jointe.
+- **La transformation de sortie du rendu droit du composeur** contre celle du viewport : 13,6 %
+  d'écart de ton, § 4.4. Antérieure à ce lot, correction nommée, à faire au suivant.
 - Les vingt-neuf autres effets, l'aperçu incrusté et la correction de ciel côté Avancé.
-- Le switch en direct du moteur : hors périmètre.
+- Le switch en direct du moteur : hors périmètre, et désormais impossible par construction.
 - SSGI : hors périmètre par décision du spec.
-- TRAA : écarté, motif au § 3.6.
-- Le choix du moteur par PROJET plutôt que par application, si le sélecteur doit vraiment vivre à
-  la création : demande un champ de manifeste et sa validation.
+- **TRAA à l'export** : laissé de côté hors écran par construction (§ 4.2), y compris sur un film,
+  dont la chaîne vivrait pourtant assez longtemps pour le résoudre à partir de la deuxième image.
+  Distinguer un film d'une image fixe demanderait une surface de plus ; non fait.
+- **La fenêtre de jeu ne suit pas le moteur du document** qu'elle joue, là où un export du même
+  document le suit : son renderer est bâti avant que la scène arrive sur `gameChannel`. Écrit
+  dans `GameWindow.tsx`. La correction est de retenir ce montage jusqu'à la première scène.
 - Coût réel des cascades et de l'anisotropie : à mesurer sur un banc GPU, qui n'existe pas encore
   dans ce dépôt.

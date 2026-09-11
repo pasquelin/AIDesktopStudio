@@ -212,9 +212,10 @@ function standFor(
   light: DirectionalLight,
   stood: StoodFor | null,
 ): StoodFor | null {
-  if (stood && stood.light !== light) return stood
-  const held = stood ?? { light, castShadow: light.castShadow, intensity: light.intensity }
-  if (stood && light.intensity !== 0) held.intensity = light.intensity
+  const previous = releasedIfGone(stood, light)
+  if (previous && previous.light !== light) return previous
+  const held = previous ?? { light, castShadow: light.castShadow, intensity: light.intensity }
+  if (previous && light.intensity !== 0) held.intensity = light.intensity
 
   for (const band of bands) {
     band.color.copy(light.color)
@@ -225,6 +226,22 @@ function standFor(
   light.castShadow = false
   light.intensity = 0
   return held
+}
+
+/**
+ * The sun the bands stand for, or `null` where it has LEFT the document — handed back what it
+ * had on the way out, so a light reused elsewhere is not stuck at zero.
+ *
+ * 🛑 Without it, deleting the sun and adding another lights the scene TWICE: the bands keep the
+ * dead light's colour and intensity while the new sun keeps its own, and `release` then restores
+ * a light no document holds. A second sun standing beside the first is a different case and is
+ * left exactly as the document wrote it.
+ */
+function releasedIfGone(stood: StoodFor | null, light: DirectionalLight): StoodFor | null {
+  if (!stood || stood.light === light || stood.light.parent !== null) return stood
+  stood.light.castShadow = stood.castShadow
+  stood.light.intensity = stood.intensity
+  return null
 }
 
 /** Whether `update` moved a band since the last frame — the reading `placed` is refreshed from. */

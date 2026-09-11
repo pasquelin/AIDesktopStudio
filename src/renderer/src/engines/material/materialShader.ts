@@ -7,7 +7,7 @@
  * it release after release. The anchors were checked against three 0.185 — chunk names move
  * between versions, which is why a missing one is reported rather than silently skipped.
  */
-import { Matrix3, Vector2, type IUniform, type Texture } from 'three'
+import { Matrix3, Vector2, type IUniform, type Material, type Texture } from 'three'
 import type { ValueRange, Vector2 as Vector2Like } from '@shared/domain/material'
 import type { MaterialState } from './materialState'
 
@@ -73,6 +73,33 @@ export function createUniforms(): MaterialUniforms {
     edgeIntensity: { value: 0 },
     edgeTransform: { value: new Matrix3() },
   }
+}
+
+/**
+ * Whether the cavity code is IN the program at all, which is not the same as whether its uniform
+ * holds a picture: an unbound sampler is undefined behaviour on some drivers, so the mask has to
+ * be absent from the source rather than merely inert.
+ *
+ * Written here beside the chunk it guards rather than in the engine that calls it: whoever
+ * patches a material this way needs the same pair of defines, and two copies of a pair is one
+ * copy free to be spelt half.
+ *
+ * 🛑 The node engine reads none of this — a TSL graph carries no preprocessor — and calling it
+ * there is harmless: `applyMaterialNodes` samples a blank texture where nothing is bound.
+ */
+export function declareEdgeMap(material: Material, bound: boolean): void {
+  const defines = material.defines ?? {}
+  if (bound) {
+    defines[EDGE_DEFINE] = ''
+    // `vUv` exists only where something asks for it, and no slot asks on this mask's behalf.
+    defines.USE_UV = ''
+  } else {
+    delete defines[EDGE_DEFINE]
+    delete defines.USE_UV
+  }
+
+  material.defines = defines
+  material.needsUpdate = true
 }
 
 /**

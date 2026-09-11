@@ -318,6 +318,8 @@ function paintHeld(
   if (composer) {
     composer.draw({
       surface: 'game',
+      // A game draws the same chain frame after frame, exactly as a viewport does.
+      oneShot: false,
       scene: held.scene,
       camera,
       stack: held.world.post,

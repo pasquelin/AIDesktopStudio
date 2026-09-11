@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   boundParam,
   defaultParamsOf,
+  effectsForEngine,
   EMPTY_STACK,
   planStack,
   postEffect,
@@ -53,13 +54,14 @@ describe('the catalogue', () => {
   })
 
   // 🛑 A `gpu` written here without a node factory behind it is a slot the Advanced chain
-  // leaves empty with nothing said. The occlusion is the only one that has one.
+  // leaves empty with nothing said. Two have one, both built in `gpuComposer`: the occlusion,
+  // which the Compatible engine builds too, and the temporal anti-aliaser, which it cannot.
   it('names an engine for every effect, and the Advanced one only where a node builds it', () => {
     const engines = POST_EFFECT_IDS.map(id => POST_EFFECTS[id].engines)
     const advanced = POST_EFFECT_IDS.filter(id => POST_EFFECTS[id].engines.includes('gpu'))
 
     expect(engines.every(named => named.length > 0)).toBe(true)
-    expect(advanced).toEqual(['gtao'])
+    expect(advanced).toEqual(['gtao', 'traa'])
   })
 
   it('gives a fresh instance the defaults of its own effect', () => {
@@ -192,5 +194,28 @@ describe('which composition a camera films through', () => {
   it('reads an unreadable camera setting back as inheriting', () => {
     expect(readCameraPost({ mode: 'sometimes' }, mintId)).toEqual({ mode: 'inherit' })
     expect(readCameraPost(null, mintId)).toEqual({ mode: 'inherit' })
+  })
+})
+
+describe('what each engine is offered, and what it is left out of', () => {
+  /**
+   * The library draws this list, and the Advanced chain filters itself by the same call: an
+   * effect one of them offered and the other could not build would be a row that does nothing.
+   */
+  it('leaves an effect out of the engine that cannot build it', () => {
+    expect(effectsForEngine('gl')).not.toContain('traa')
+    expect(effectsForEngine('gpu')).toContain('traa')
+  })
+
+  it('offers the occlusion on both, which is what makes the two comparable at all', () => {
+    expect(effectsForEngine('gl')).toContain('gtao')
+    expect(effectsForEngine('gpu')).toContain('gtao')
+  })
+
+  // The order is what a picker draws; a filter that sorted would reorder the library silently.
+  it('keeps the order the catalogue declares', () => {
+    const offered = effectsForEngine('gl')
+
+    expect(offered).toEqual(POST_EFFECT_IDS.filter(id => offered.includes(id)))
   })
 })

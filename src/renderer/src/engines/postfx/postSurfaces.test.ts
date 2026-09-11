@@ -44,6 +44,7 @@ function composer(): PostComposer {
 function job(surface: string, width: number, height: number): ComposerJob {
   return {
     surface,
+    oneShot: false,
     scene: new Scene(),
     camera: new Camera(),
     stack,

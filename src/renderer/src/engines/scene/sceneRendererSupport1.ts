@@ -12,6 +12,7 @@ import {
 import { type Settings } from '@shared/domain/settings'
 import type { SelectionMode } from '@/helpers/selection'
 import { type NodeMove } from './sceneState'
+import type { RenderEngine } from '@shared/domain/renderEngine'
 import type { Vector3 as PlainVector3 } from '@shared/domain/scene'
 import type { EnvironmentDress } from '@shared/domain/skybox'
 import type { FontLibrary } from '../core/fonts'
@@ -50,6 +51,15 @@ export type PartitionMode = 'off' | 'grid'
 
 export type SceneRendererOptions = {
   optimization?: 'auto' | 'off'
+  /**
+   * Which engine this renderer is built on, taken from the DOCUMENT it draws — see
+   * `SceneWorld.engine`. Absent for a surface that draws no scene document of its own (the
+   * character workshop, a retarget preview), which falls back on the preference.
+   *
+   * An option and not a reading of `view`: it is wanted at `mount`, before `configure` has run
+   * and before any state has been applied.
+   */
+  engine?: RenderEngine
   /**
    * What the click asked for, in the shape `Tree` reports it — a click in the void is an empty
    * list. The mode says what the modifier keys meant; a viewport draws no rows, so never a range.

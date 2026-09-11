@@ -219,6 +219,10 @@
     "deleteHint": "Removes the document from the project, its file included",
     "nameField": "Name",
     "templateField": "Starting template",
+    "engines": {
+      "gl": "Compatible — draws on every machine",
+      "gpu": "Advanced — better lighting and reflections, needs a recent graphics card"
+    },
     "templateGroups": {
       "general": "General",
       "character": "Character",

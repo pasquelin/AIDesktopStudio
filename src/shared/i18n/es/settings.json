@@ -248,7 +248,7 @@
     },
     "renderEngine": {
       "title": "Motor de renderizado",
-      "help": "Con qué interfaz gráfica dibuja la vista 3D. Compatible funciona en cualquier configuración y es la opción para compartir ampliamente o para máquinas más antiguas. Avanzado da mejor iluminación y reflejos y pide una tarjeta gráfica reciente. Un panel ya abierto conserva su motor: ciérrelo y vuelva a abrirlo para cambiarlo. Una máquina sin adaptador WebGPU vuelve sola al motor Compatible, y lo indica en el diario.",
+      "help": "Con qué se abren las escenas nuevas. La pregunta se hace al crear cada documento y la respuesta se escribe en el propio documento: este ajuste solo rellena el campo de antemano y no cambia ninguna escena existente. Compatible funciona en cualquier equipo; Avanzado da mejor iluminación y reflejos y pide una tarjeta gráfica reciente. Un equipo sin adaptador WebGPU vuelve por sí solo a Compatible y lo indica en el registro.",
       "gl": "Compatible",
       "gpu": "Avanzado"
     },

@@ -81,10 +81,17 @@ export const DEFAULT_RENDER_POLICY: RenderPolicy = Object.freeze({
 /**
  * The values, taken off the larger object a viewport reads: an export carries these and not
  * the twenty settings that only mean something in front of an editor.
+ *
+ * `engine` is a PARAMETER because it stopped being a preference the day a scene started carrying
+ * its own: an export names the one its document holds. Spread over the result instead, a third
+ * caller would forget to — see `SceneWorld.engine`.
  */
-export function renderPolicyOf(view: RenderPolicy): RenderPolicy {
+export function renderPolicyOf(
+  view: RenderPolicy,
+  engine: RenderEngine = view.engine,
+): RenderPolicy {
   return {
-    engine: view.engine,
+    engine,
     shadows: view.shadows,
     shadowQuality: view.shadowQuality,
     shadowMapSize: view.shadowMapSize,

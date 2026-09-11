@@ -30,8 +30,9 @@ export abstract class ViewportInset extends ViewportDrawing {
     if (held && held.width === width && held.height === height) return held
 
     held?.dispose()
-    // What the DRAWING BUFFER is antialiased to, held to what the engine can offer.
-    const samples = this.renderDriver.maxSamples(renderer)
+    // What the DRAWING BUFFER is antialiased to, which is not the card's ceiling: this target
+    // is blitted onto the canvas, so it matches what the canvas has.
+    const samples = this.renderDriver.drawingBufferSamples(renderer)
     const target = new WebGLRenderTarget(width, height, { samples })
     // Linear, which is what a render into a target writes whatever the texture says — three picks
     // the WORKING space for anything but the canvas (`WebGLRenderer`, the `colorSpace` it hands

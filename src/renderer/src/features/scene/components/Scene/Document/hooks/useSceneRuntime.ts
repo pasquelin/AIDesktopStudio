@@ -8,7 +8,7 @@ import { assetVersionOf } from '@/stores/assets'
 import { livePreviewOf } from '@/stores/livePreviews'
 import { useModelFiles } from '@/stores/modelFiles'
 import { useProject } from '@/stores/project'
-import { selectIn, useScenes } from '@/stores/scenes'
+import { sceneOf, selectIn, useScenes } from '@/stores/scenes'
 import { useSceneViews } from '@/stores/sceneViews'
 import { skeletonProfilesOf, useSkeletonProfiles } from '@/stores/skeletonProfiles'
 import { environmentDressOf } from '@/features/skybox/components/environmentDress'
@@ -27,15 +27,24 @@ import {
   openPointMenu,
   recordTransform,
 } from '../sceneRuntimeActions'
+import { useRenderEngineReady } from '@/hooks/useRenderEngineReady'
 import { useMountedSceneRenderer, type RuntimeSetters } from './useMountedSceneRenderer'
 import { loadGroundPaint, saveGroundPaint } from '@/features/scene/groundPaintAsset'
 import type { GroundPaint } from '@shared/domain/groundPaint'
+import type { RenderEngine } from '@shared/domain/renderEngine'
 
-function sceneRendererFor(documentId: string, set: RuntimeSetters): SceneRenderer {
+function sceneRendererFor(
+  documentId: string,
+  set: RuntimeSetters,
+  engine: RenderEngine,
+): SceneRenderer {
   const projectPath = useProject.getState().project?.path ?? null
   let pendingGroundPaint: { terrainId: string; paint: GroundPaint } | null = null
   let groundSave: Promise<boolean> = Promise.resolve(true)
   return new SceneRenderer({
+    // The document's own, never the setting's: it is read once here and the renderer is built on
+    // it — see `SceneWorld.engine`.
+    engine,
     onSelect: (ids, mode) => selectIn(documentId, ids, mode),
     onTransform: moves => recordTransform(documentId, moves),
     onReliefSculpt: (terrainId, editId, chunks) =>
@@ -130,7 +139,19 @@ export function useSceneRuntime(documentId: string) {
     }),
     [],
   )
-  useMountedSceneRenderer(documentId, host, engine, setLive, setters, sceneRendererFor)
+  // Subscribed rather than read once: a tab mounts before its file lands, and a document saved
+  // under the Advanced engine says so only when its world arrives — see the mount below.
+  const renderEngine = useScenes(state => sceneOf(state, documentId).world.engine)
+  const ready = useRenderEngineReady(renderEngine)
+  useMountedSceneRenderer(
+    documentId,
+    ready ? renderEngine : null,
+    host,
+    engine,
+    setLive,
+    setters,
+    sceneRendererFor,
+  )
 
   const paneInHand = useCallback(() => engine.current?.activePane() ?? 0, [])
   const canAdd = useCallback(() => !engine.current?.flightHeld, [])

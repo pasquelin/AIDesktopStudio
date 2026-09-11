@@ -30,6 +30,7 @@ function drivers(gpu: Partial<RenderDriver> = {}): RenderDrivers {
     },
     patchMaterial: () => {},
     maxSamples: () => 0,
+    drawingBufferSamples: () => 0,
     maxAnisotropy: () => 1,
     frameTimer: () => null,
     releaseContext: () => {},
