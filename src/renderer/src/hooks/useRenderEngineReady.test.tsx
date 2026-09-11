@@ -1,5 +1,6 @@
 import { renderHook, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import type { RenderEngine } from '@shared/domain/renderEngine'
 import { useRenderEngineReady } from './useRenderEngineReady'
 
 const gpuModule = vi.hoisted(() => ({
@@ -53,12 +54,13 @@ describe('whether a viewport may be built on an engine yet', () => {
    * Advanced engine mount on a bundle nobody had asked for.
    */
   it('holds again when a document turns out to ask for the Advanced engine', () => {
-    const { result, rerender } = renderHook(({ engine }) => useRenderEngineReady(engine), {
-      initialProps: { engine: 'gl' as const },
-    })
+    const { result, rerender } = renderHook(
+      ({ engine }: { engine: RenderEngine }) => useRenderEngineReady(engine),
+      { initialProps: { engine: 'gl' } },
+    )
     expect(result.current).toBe(true)
 
-    rerender({ engine: 'gpu' as unknown as 'gl' })
+    rerender({ engine: 'gpu' })
 
     expect(result.current).toBe(false)
   })
