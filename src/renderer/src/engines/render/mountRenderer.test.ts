@@ -29,6 +29,7 @@ function drivers(gpu: Partial<RenderDriver> = {}): RenderDrivers {
       throw new Error('not asked for')
     },
     patchMaterial: () => {},
+    drawOverlay: () => {},
     maxSamples: () => 0,
     drawingBufferSamples: () => 0,
     maxAnisotropy: () => 1,
@@ -49,13 +50,6 @@ describe('mounting a renderer', () => {
     expect(mountRenderer(request, 'gpu', true, vi.fn(), two).driver).toBe(two.gpu)
   })
 
-  it('keeps the Compatible engine while nobody has asked the adapter yet', () => {
-    // A mount cannot wait on `requestAdapter`, and a viewport that waited would show nothing.
-    const two = drivers()
-
-    expect(mountRenderer(request, 'gpu', null, vi.fn(), two).driver).toBe(two.gl)
-  })
-
   it('falls back to the Compatible engine when the Advanced one throws', () => {
     const two = drivers({
       createRenderer: () => {
@@ -70,7 +64,9 @@ describe('mounting a renderer', () => {
     expect(said).toHaveBeenCalledOnce()
   })
 
-  it('says why when a machine with no adapter was asked for the Advanced engine', () => {
+  // The same branch a mount takes before anybody has asked the adapter: a viewport cannot wait
+  // on `requestAdapter`, and one that waited would show nothing while it did.
+  it('says why when the Advanced bundle is not in hand', () => {
     const said = vi.fn()
 
     mountRenderer(request, 'gpu', false, said, drivers())

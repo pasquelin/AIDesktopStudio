@@ -22,16 +22,16 @@
  * `failed` where an engine could not be built or drawn at all — a machine with no WebGPU adapter
  * answers that for the Advanced column, and that is a result rather than a crash.
  */
-import { DEFAULT_SETTINGS } from '@shared/domain/settings'
+import { messageOf } from '@shared/guards'
 import type { RenderEngine } from '@shared/domain/renderEngine'
 import type { PostStack } from '@shared/domain/postProcessing'
 import { postEffect } from '@shared/domain/postProcessing'
-import { SceneRenderer } from '../scene/SceneRenderer'
 import type { SceneState } from '../scene/sceneState'
 import { createDefaultScene } from '../scene/defaultScene'
 import { meshNode } from '../scene/nodeFactory'
 import { worldBenchmarkScenes } from '../scene/worldBenchmarkScenes.fixture'
 import { loadGpuModule } from './gpuModule'
+import { mountedScene, type MountedScene, type StageShape } from './engineParityStage'
 
 type EngineMeasure = {
   engine: RenderEngine
@@ -55,10 +55,8 @@ const MEASURED_FRAMES = 60
 
 /** How many stills `stillMs` is the mean of. One alone swung by a factor of two between runs. */
 const MEASURED_STILLS = 10
-const WARMUP_FRAMES = 10
-
-const OFFSCREEN_HOST_OFFSET_PX = -100_000
-const SURFACE = { width: 1280, height: 720 }
+/** A viewport-sized surface, warmed enough that nothing is left to compile — see `mountedScene`. */
+const SURFACE: StageShape = { width: 1280, height: 720, warmup: 10 }
 
 /**
  * The occlusion, on both engines: the one effect the Advanced chain builds, so a profile
@@ -88,20 +86,11 @@ async function benchmarkEngines(): Promise<readonly ProfileMeasure[]> {
 }
 
 async function measureEngine(engine: RenderEngine, state: SceneState): Promise<EngineMeasure> {
-  const host = offscreenHost()
-  const renderer = new SceneRenderer({ onSelect: () => {}, onTransform: () => {}, chrome: false })
+  let mounted: MountedScene | null = null
   try {
-    // Before the mount, never after: the engine is read once, when the renderer is built.
-    renderer.configure({ ...DEFAULT_SETTINGS.three, engine, quality: 'high' })
-    renderer.mount(host)
-    // The node backend comes up a beat after the mount: measured before it does, every draw
-    // would throw and the column would report a race rather than an engine.
-    await renderer.settled()
-    renderer.apply({ ...state, world: { ...state.world, post: STACK } })
-    await settled()
-
+    mounted = await mountedScene(engine, state, STACK, SURFACE)
+    const renderer = mounted.renderer
     const drawnWith = renderer.renderEngine
-    for (let frame = 0; frame < WARMUP_FRAMES; frame += 1) renderer.drawFrom(null, 0)
 
     const started = performance.now()
     for (let frame = 0; frame < MEASURED_FRAMES; frame += 1) renderer.drawFrom(null, frame)
@@ -125,24 +114,11 @@ async function measureEngine(engine: RenderEngine, state: SceneState): Promise<E
       submitMs: null,
       firstStillMs: null,
       stillMs: null,
-      failed: error instanceof Error ? error.message : String(error),
+      failed: messageOf(error),
     }
   } finally {
-    renderer.dispose()
-    host.remove()
+    mounted?.release()
   }
-}
-
-/** Off screen and sized like a viewport: what is measured is a frame, not a thumbnail. */
-function offscreenHost(): HTMLElement {
-  const host = document.createElement('div')
-  host.style.position = 'fixed'
-  host.style.left = `${OFFSCREEN_HOST_OFFSET_PX}px`
-  host.style.top = '0'
-  host.style.width = `${SURFACE.width}px`
-  host.style.height = `${SURFACE.height}px`
-  document.body.appendChild(host)
-  return host
 }
 
 /** One model, lit, on the quality the spec judges this profile at. */
@@ -165,23 +141,5 @@ function openWorldScene(): SceneState {
   )
   return widest.state
 }
-
-/**
- * Two frames of quiet — a texture, a worker and a shader all land between them — or a fixed
- * wait, whichever comes first.
- *
- * 🛑 The race is not belt and braces: a window that is not on screen is handed no animation
- * frame at all, and a bench that waited for one hung for as long as the harness allowed rather
- * than reporting anything.
- */
-async function settled(): Promise<void> {
-  await Promise.race([
-    new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))),
-    new Promise(resolve => setTimeout(resolve, SETTLE_MS)),
-  ])
-}
-
-/** How long the quiet above is given when nothing paints — a hidden window paints nothing. */
-const SETTLE_MS = 250
 
 Reflect.set(window, '__iaBenchmarkRenderEngines', benchmarkEngines)

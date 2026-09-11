@@ -10,8 +10,8 @@
  * out rather than refused: a stack carries what a document says, and an engine cannot make a
  * document wrong.
  */
-import { Vector4, type WebGLRenderTarget } from 'three'
-import type { RenderTarget, WebGPURenderer } from 'three/webgpu'
+import { Vector4 } from 'three'
+import type { WebGPURenderer } from 'three/webgpu'
 import {
   planStack,
   runsOnEngine,
@@ -20,10 +20,11 @@ import {
   type PostEffect,
 } from '@shared/domain/postProcessing'
 import { paramNumber } from '../postfx/uniforms'
+import { samplesOf } from '../postfx/postQuality'
 import { heaviestCost } from '../postfx/postPlan'
-import { gpuBudgetFor, gpuSamplesOf, type GpuBudget } from './gpuPostQuality'
+import { gpuBudgetFor, type GpuBudget } from './gpuPostQuality'
 import type { GpuModule } from './gpuModule'
-import { drawInto } from './renderDriver'
+import { asNodeTarget, drawInto } from './renderDriver'
 import type { ComposerJob, SceneComposer } from './sceneComposer'
 
 type Occlusion = ReturnType<GpuModule['gtao']['ao']>
@@ -47,8 +48,11 @@ type GpuChain = {
   apply: (effects: readonly PostEffect[], budget: GpuBudget, width: number, height: number) => void
 }
 
+/** A built chain and the shape of stack it was built for. Kept per SURFACE — see `chainFor`. */
+type HeldChain = { shape: string; chain: GpuChain }
+
 export function createGpuComposer(gpu: GpuModule, renderer: WebGPURenderer): SceneComposer {
-  const chains = new Map<string, GpuChain>()
+  const chains = new Map<string, HeldChain>()
   // Scratch, so a frame allocates nothing: `draw` runs once per surface, per image — the same
   // reason `PostComposer` keeps its own held rectangles as fields.
   const heldViewport = new Vector4()
@@ -88,37 +92,34 @@ export function createGpuComposer(gpu: GpuModule, renderer: WebGPURenderer): Sce
     renderer.setScissorTest(true)
     return restore
   }
-  /** Which surface draws through which chain, so a closed panel frees what only it was using. */
-  const bound = new Map<string, string>()
 
-  const free = (key: string): void => {
-    const chain = chains.get(key)
-    chain?.pipeline.dispose()
+  const free = (surface: string): void => {
+    const held = chains.get(surface)
+    if (!held) return
+    held.chain.pipeline.dispose()
     // The MRT the scene pass draws into is a full-frame colour, normal and depth buffer, and
     // nothing in `RenderPipeline.dispose` reaches it — evicted chains would leak one each.
-    for (const node of chain?.owned ?? []) node.dispose()
-    chains.delete(key)
+    for (const node of held.chain.owned) node.dispose()
+    chains.delete(surface)
   }
 
   /**
-   * The chain this job draws through, built or found, and the one this surface was drawing
-   * through before it freed.
+   * The chain this job draws through, built or found.
    *
-   * The SURFACE belongs to the key: a node chain holds the pass that draws the scene, and two
-   * panes sharing one would each see the other's camera. The previous chain is freed HERE rather
-   * than left for a sweep — a stack whose shape changes would otherwise leave a full-frame MRT
-   * behind on every edit.
+   * ONE per surface: a node chain holds the pass that draws the scene, and two panes sharing one
+   * would each see the other's camera. A surface whose stack changed shape — or that is handed
+   * another camera — frees what it held HERE rather than leaving it for a sweep, which would
+   * otherwise leave a full-frame MRT behind on every edit.
    */
   const chainFor = (job: ComposerJob, effects: readonly PostEffect[], shape: string): GpuChain => {
-    const key = `${shape}${SURFACE_MARK}${job.surface}`
-    const held = chains.get(key)
-    if (held && held.camera !== job.camera) free(key)
-    const chain = chains.get(key) ?? build(gpu, renderer, job, effects)
-    chains.set(key, chain)
+    const held = chains.get(job.surface)
+    // Answered before anything is written: this runs once per surface per IMAGE, and the steady
+    // state — same stack, same camera — has nothing to say.
+    if (held?.shape === shape && held.chain.camera === job.camera) return held.chain
 
-    const previous = bound.get(job.surface)
-    bound.set(job.surface, key)
-    if (previous && previous !== key && ![...bound.values()].includes(previous)) free(previous)
+    if (held) free(job.surface)
+    const chain = build(gpu, renderer, job, effects)
+    chains.set(job.surface, { shape, chain })
     return chain
   }
 
@@ -158,22 +159,13 @@ export function createGpuComposer(gpu: GpuModule, renderer: WebGPURenderer): Sce
 
     sweep: live => {
       const shapes = new Set(live.map(stackShapeKey))
-      for (const key of [...chains.keys()]) {
-        if (!shapes.has(key.slice(0, key.indexOf(SURFACE_MARK)))) free(key)
-      }
+      for (const [surface, held] of [...chains]) if (!shapes.has(held.shape)) free(surface)
     },
 
-    releaseSurface: surface => {
-      const key = bound.get(surface)
-      bound.delete(surface)
-      // Only once nobody else draws through it: a chain is keyed on the surface, but a sweep
-      // may have bound two of them to one shape.
-      if (key && ![...bound.values()].includes(key)) free(key)
-    },
+    releaseSurface: free,
 
     dispose: () => {
-      for (const key of [...chains.keys()]) free(key)
-      bound.clear()
+      for (const surface of [...chains.keys()]) free(surface)
     },
   }
 }
@@ -269,22 +261,11 @@ function applyOcclusion(
   occlusion.distanceExponent.value = paramNumber(effect, 'distanceExponent')
   occlusion.thickness.value = paramNumber(effect, 'thickness')
   occlusion.scale.value = paramNumber(effect, 'scale')
-  occlusion.samples.value = gpuSamplesOf(paramNumber(effect, 'samples'), budget)
+  occlusion.samples.value = samplesOf(paramNumber(effect, 'samples'), budget)
   // Said to the NODE rather than to a target: a node chain carries its own scale, where the GL
   // chain is compiled at a size. The same reading either way — see `gpuPostQuality`.
   occlusion.resolutionScale = budget.resolutionScale
   occlusion.setSize(width, height)
-}
-
-/** What tells a shape from the surface it was built for, in a chain key. */
-const SURFACE_MARK = '#'
-
-/**
- * `as`: the studio allocates `WebGLRenderTarget`, which extends the `RenderTarget` a node
- * renderer takes — three declares the pair apart and both engines draw into the same object.
- */
-function asNodeTarget(target: WebGLRenderTarget | null): RenderTarget | null {
-  return target as unknown as RenderTarget | null
 }
 
 /** Whether the Advanced engine can build this one at all — the registry answers, nothing else. */

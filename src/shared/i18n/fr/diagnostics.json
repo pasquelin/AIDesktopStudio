@@ -18,6 +18,7 @@
     "shaderAnchorMissing": "Le moteur de rendu ne fournit plus {{name}}",
     "renderEngineUnavailable": "Le moteur Avancé n’est pas encore construit",
     "renderEngineGradingMissing": "Le moteur Avancé affiche un ciel corrigé tel que son fichier le contient",
+    "renderEngineCascadesMissing": "Le moteur Avancé ne dessine pas d’ombres en cascade",
     "channelShaderMissing": "Aucun shader ne permet de dériver le canal {{channel}}",
     "channelSourceEmpty": "La source du canal {{channel}} ne contient aucun pixel",
     "passSourceMissing": "Cette passe nécessite une source à lire",

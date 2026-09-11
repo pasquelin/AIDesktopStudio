@@ -18,6 +18,7 @@
     "shaderAnchorMissing": "Render motoru artık şunu sağlamıyor: {{name}}",
     "renderEngineUnavailable": "Gelişmiş motor henüz hazır değil",
     "renderEngineGradingMissing": "Gelişmiş motor, düzeltilmiş bir gökyüzünü dosyasındaki hâliyle gösterir",
+    "renderEngineCascadesMissing": "Gelişmiş motor kademeli gölgeler çizmez",
     "channelShaderMissing": "hiçbir gölgelendirici şu kanalı türetmiyor: {{channel}}",
     "channelSourceEmpty": "{{channel}} kanalının kaynağında piksel yok",
     "passSourceMissing": "bir geçişin okuyacak bir kaynağa ihtiyacı var",

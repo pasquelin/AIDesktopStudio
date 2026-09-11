@@ -20,7 +20,12 @@ import type { CameraView, EntityPlacement, RenderPort } from '@game/ports/render
 import { copyCameraView, NOWHERE, sameCameraView } from '@shared/domain/transform'
 import { applyToneMapping } from '@/engines/scene/worldBinding'
 import { applyShadowPolicy, throwsOf, tuneShadowMaps } from '@/engines/scene/shadows'
-import { cascadeSettingsFor, createCascadeShadows, type CascadeShadows } from '@/engines/scene/csm'
+import {
+  cascadeSettingsFor,
+  cascadesWanted,
+  createCascadeShadows,
+  type CascadeShadows,
+} from '@/engines/scene/csm'
 import type { ShadowThrow } from '@/engines/scene/grouping'
 import { frameOwesDraw, frameOwesShadows } from './gameSceneFrame'
 import { pixelRatioFor, shadowMapSizeFor } from '@/engines/scene/viewportQuality'
@@ -64,6 +69,11 @@ const NEAR = 0.1
  *
  * 🛑 One `apply`-free port: outside the studio nothing edits, so the scene is built once per
  * load and only the entity poses move. That is what makes an exported frame cheap.
+ *
+ * 🛑 The Compatible engine, always: `policy.engine` travels in the manifest and nothing here
+ * reads it, so an exported game draws WebGL whatever its entry scene was made under. The
+ * editor's viewport honours the field and this does not — closing that means carrying the node
+ * bundle into an exported page. Said out loud rather than silently: see `policyOf`.
  */
 export function createWebRender(
   canvas: HTMLCanvasElement,
@@ -73,7 +83,7 @@ export function createWebRender(
   /** Where a fault goes. A game that draws without its grading has to SAY so, not play on. */
   say: LogPort['write'] = () => {},
 ): WebRender {
-  const policy = readRenderPolicy({ ...DEFAULT_RENDER_POLICY, ...carried })
+  const policy = policyOf(carried, say)
   const renderer = new WebGLRenderer({ canvas, antialias: true })
   const gltf = createGltfSource(() => renderer)
   applyShadowPolicy(renderer, policy)
@@ -339,6 +349,22 @@ function paintHeld(
 }
 
 /**
+ * What this game plays under — and, once per load, what it owes its author about it.
+ *
+ * The engine is the one member read nowhere below: a game made on the Advanced engine plays on
+ * WebGL. Said rather than swallowed, on the doctrine `composerHold` already follows — a game
+ * that plays without what its author asked for says so instead of playing on, and nothing else
+ * would ever mention it: the picture is whole, only lit by the other engine.
+ */
+function policyOf(carried: Partial<RenderPolicy>, say: LogPort['write']): RenderPolicy {
+  const policy = readRenderPolicy({ ...DEFAULT_RENDER_POLICY, ...carried })
+  if (policy.engine !== 'gl') {
+    say('warn', `this game was made on the ${policy.engine} engine and plays on WebGL`)
+  }
+  return policy
+}
+
+/**
  * The cascades a scene opens under, or nothing. Built per scene and only when the author's
  * policy asks: the field travels in the export, so a game draws the shadows the editor drew
  * rather than one map stretched over everything the camera sees.
@@ -348,7 +374,10 @@ function cascadesFor(
   policy: RenderPolicy,
   onStale: () => void,
 ): CascadeShadows | null {
-  if (!policy.csm || !policy.shadows) return null
+  // 🛑 The DOCUMENT's engine and not the one drawing: this renderer is always a WebGL one, so
+  // it could build cascades for a scene the editor refuses them to — and the same document
+  // would then be lit two ways, which is the one accident `exportRequestOf` exists to prevent.
+  if (!cascadesWanted(policy, policy.engine)) return null
   const cascades = createCascadeShadows(scene, cascadeSettingsFor(policy), onStale)
   cascades.dress(scene)
   return cascades

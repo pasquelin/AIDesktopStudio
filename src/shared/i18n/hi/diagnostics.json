@@ -18,6 +18,7 @@
     "shaderAnchorMissing": "रेंडरर अब {{name}} नहीं देता",
     "renderEngineUnavailable": "उन्नत इंजन अभी बना नहीं है",
     "renderEngineGradingMissing": "उन्नत इंजन सुधारे हुए आकाश को उसकी फ़ाइल में जैसा है वैसा ही दिखाता है",
+    "renderEngineCascadesMissing": "उन्नत इंजन कैस्केड छायाएँ नहीं बनाता",
     "channelShaderMissing": "कोई शेडर {{channel}} चैनल नहीं निकालता",
     "channelSourceEmpty": "{{channel}} चैनल के स्रोत में कोई पिक्सेल नहीं है",
     "passSourceMissing": "इस पास को पढ़ने के लिए एक स्रोत चाहिए",

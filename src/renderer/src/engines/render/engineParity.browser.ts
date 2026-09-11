@@ -33,6 +33,7 @@
  * number is what a reader compares against the next run.
  */
 import { WebGLRenderTarget } from 'three'
+import { messageOf } from '@shared/guards'
 import type { RenderEngine } from '@shared/domain/renderEngine'
 import { EMPTY_STACK, postEffect, type PostStack } from '@shared/domain/postProcessing'
 import { compareVisualFrames, hasPixelVariation, type VisualFrame } from '../scene/visualRegression'
@@ -142,15 +143,7 @@ async function sceneCase(
  * PICTURES — the bytes differ whatever happens, an encoder being free to pack them how it likes.
  */
 async function stillCase(state: SceneState): Promise<ParityResult> {
-  return await bothEngines('still', async engine => {
-    const mounted = await mountedScene(engine, state, EMPTY_STACK)
-    try {
-      const png = await mounted.renderer.captureStill('view')
-      return { drawnWith: mounted.renderer.renderEngine, frame: await decodePng(png) }
-    } finally {
-      mounted.release()
-    }
-  })
+  return await stillsOf('still', state, engine => ({ engine, post: EMPTY_STACK }))
 }
 
 /**
@@ -171,8 +164,25 @@ async function stillCase(state: SceneState): Promise<ParityResult> {
  * of the result cannot say so; this note does.
  */
 async function temporalCase(state: SceneState): Promise<ParityResult> {
-  return await bothEngines('temporal', async engine => {
-    const mounted = await mountedScene('gpu', state, engine === 'gpu' ? ANTIALIAS : EMPTY_STACK)
+  return await stillsOf('temporal', state, engine => ({
+    engine: 'gpu',
+    post: engine === 'gpu' ? ANTIALIAS : EMPTY_STACK,
+  }))
+}
+
+/**
+ * Two stills of one scene, compared as PICTURES: the PNGs are decoded, the bytes of two encodes
+ * differing whatever happens. What each side MOUNTS and what stack it carries is the caller's,
+ * which is the only thing the two rows above disagree about.
+ */
+async function stillsOf(
+  which: ParityCase,
+  state: SceneState,
+  sideOf: (side: RenderEngine) => { engine: RenderEngine; post: PostStack },
+): Promise<ParityResult> {
+  return await bothEngines(which, async side => {
+    const { engine, post } = sideOf(side)
+    const mounted = await mountedScene(engine, state, post)
     try {
       const png = await mounted.renderer.captureStill('view')
       return { drawnWith: mounted.renderer.renderEngine, frame: await decodePng(png) }
@@ -318,7 +328,7 @@ async function bothEngines(
     // A machine with no adapter, or a chain that would not build: that IS the result for this
     // row, and the rows beside it still have to be reported — with the reason and NO numbers.
     // A ratio invented here reads as a measurement in the JSON the runner prints.
-    return { case: which, failed: error instanceof Error ? error.message : String(error) }
+    return { case: which, failed: messageOf(error) }
   }
 }
 

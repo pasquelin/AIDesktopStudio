@@ -24,6 +24,7 @@ import type { RenderEngine } from '@shared/domain/renderEngine'
 import type { VisualFrame } from '../scene/visualRegression'
 import { flipRows } from '../scene/film'
 import { encodeFilmFrameOffThread } from '../scene/filmEncodePort'
+import { offScreenHost } from '../core/offScreenHost'
 import { SceneRenderer } from '../scene/SceneRenderer'
 import type { SceneState } from '../scene/sceneState'
 import type { RuntimeRenderCamera } from '../scene/runtimeRepresentationValidation'
@@ -35,9 +36,6 @@ import { gpuDriver } from './gpuDriver'
 
 /** Wide enough to compare and small enough to walk on the UI thread — 128² is 16 384 pixels. */
 export const FRAME = 128
-
-/** Far enough off screen that nothing of the harness is ever drawn over the studio. */
-const OFFSCREEN_HOST_OFFSET_PX = -100_000
 
 /** Where both frames of every case are left, for the runner to write beside the report. */
 const FRAMES_HANDLE = '__iaEngineParityFrames'
@@ -83,13 +81,20 @@ async function encodePng(frame: VisualFrame): Promise<Uint8Array> {
 
 export type MountedScene = { renderer: SceneRenderer; release: () => void }
 
+/**
+ * How big the host is and how many frames are drawn into it before anything is read. The bench
+ * measures a viewport-sized frame and warms longer; the parity harness compares a small square.
+ */
+export type StageShape = { width: number; height: number; warmup: number }
+
 /** A scene renderer on the engine asked for, off screen and sized like a viewport. */
 export async function mountedScene(
   engine: RenderEngine,
   state: SceneState,
   post: PostStack,
+  shape: StageShape = PARITY_STAGE,
 ): Promise<MountedScene> {
-  const host = offscreenHost()
+  const host = offScreenHost(shape.width, shape.height)
   const renderer = new SceneRenderer({
     engine,
     onSelect: () => {},
@@ -109,7 +114,7 @@ export async function mountedScene(
   // redraws its shadow maps on a frame it judges stale, so a capture taken before any frame
   // reads maps that have never been drawn — every surface fully in shadow, a black picture, and
   // a comparison that would have blamed the other engine. Measured 2026-09-11.
-  for (let frame = 0; frame < WARMUP_FRAMES; frame += 1) renderer.drawFrom(null, frame)
+  for (let frame = 0; frame < shape.warmup; frame += 1) renderer.drawFrom(null, frame)
 
   return {
     renderer,
@@ -118,17 +123,6 @@ export async function mountedScene(
       host.remove()
     },
   }
-}
-
-function offscreenHost(): HTMLElement {
-  const host = document.createElement('div')
-  host.style.position = 'fixed'
-  host.style.left = `${OFFSCREEN_HOST_OFFSET_PX}px`
-  host.style.top = '0'
-  host.style.width = `${FRAME * 4}px`
-  host.style.height = `${FRAME * 4}px`
-  document.body.appendChild(host)
-  return host
 }
 
 /**
@@ -235,9 +229,6 @@ export async function decodePng(png: Uint8Array): Promise<VisualFrame> {
     if (!context) throw new Error('no 2d context to decode a still with')
     context.drawImage(bitmap, 0, 0)
     const data = context.getImageData(0, 0, bitmap.width, bitmap.height)
-    // Turned over on the way in: a PNG is stored top-down and every other frame in this harness
-    // is a `readPixels` read, which is bottom-up. ONE convention, or the encoder below would put
-    // the stills back upside down while the frames beside them came out right.
     return {
       width: bitmap.width,
       height: bitmap.height,
@@ -279,8 +270,8 @@ async function quiet(): Promise<void> {
   await animationFramesArrive(SETTLE_MS)
 }
 
-/** How many frames are drawn before anything is captured — see `mountedScene`. */
-const WARMUP_FRAMES = 4
+/** What the parity cases open on. The four frames are the shadow warm-up `mountedScene` explains. */
+const PARITY_STAGE: StageShape = { width: FRAME * 4, height: FRAME * 4, warmup: 4 }
 
 export function driverOf(engine: RenderEngine): RenderDriver {
   return engine === 'gpu' ? gpuDriver : glDriver

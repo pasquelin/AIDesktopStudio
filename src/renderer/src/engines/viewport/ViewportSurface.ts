@@ -57,14 +57,15 @@ export abstract class ViewportSurface extends ViewportMounting {
    */
   private rendererFor(canvas: HTMLCanvasElement): StudioRenderer {
     const wanted = this.options.engine?.() ?? 'gl'
+    const held = loadedGpuModule()
     // Asked for in the BACKGROUND: the adapter and the node bundle both arrive a beat later,
     // and a viewport that waited for them would show nothing while it did.
-    if (wanted === 'gpu' && !loadedGpuModule()) void loadGpuModule()
+    if (wanted === 'gpu' && !held) void loadGpuModule()
 
     const mounted = mountRenderer(
       { canvas, alpha: this.output.alpha ?? false },
       wanted,
-      loadedGpuModule() !== null,
+      held !== null,
       error => traceFailure('render.fallback', wanted, error),
     )
     const { renderer, driver } = mounted

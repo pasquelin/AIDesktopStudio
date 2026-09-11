@@ -17,6 +17,7 @@ import {
   type Object3D,
 } from 'three'
 import { CSM } from 'three/addons/csm/CSM.js'
+import type { RenderEngine } from '@shared/domain/renderEngine'
 import type { RenderPolicy } from '@shared/domain/renderPolicy'
 import { VIEW_DISTANCE } from '@shared/domain/renderPolicy'
 import { shadowMapSizeFor } from './viewportQuality'
@@ -32,6 +33,25 @@ export type CascadeSettings = { cascades: number; mapSize: number; maxFar: numbe
  * `CSM_CASCADES` define holds, so moving it recompiles every dressed material.
  */
 const CASCADES = 3
+
+/**
+ * Whether this scene is to be given cascades at all: what the policy asks for, AND what the
+ * engine drawing it can put on screen.
+ *
+ * 🛑 The Compatible engine alone. `CSM` works through `onBeforeCompile`, a hook only
+ * `WebGLRenderer` calls — three 0.185 names it nowhere under `renderers/common` or
+ * `renderers/webgpu`. Built on the Advanced engine the patch would reach no program, while
+ * `dress` would still take the document's sun off lighting and put three bands at its intensity
+ * in its place: the scene lit three times and its shadow gone, which is the very fault the GL
+ * path was fixed for on 2026-09-08. Refused rather than drawn wrong. **Not measured** — what an
+ * Advanced scene under cascades looks like was never rendered, here or in the parity harness.
+ */
+export function cascadesWanted(
+  policy: Pick<RenderPolicy, 'csm' | 'shadows'>,
+  engine: RenderEngine,
+): boolean {
+  return policy.csm && policy.shadows && engine === 'gl'
+}
 
 /**
  * The maps a policy asks for, through the very cap a single shadow map goes through — a quality
@@ -137,9 +157,14 @@ export function createCascadeShadows(
 
     follow: camera => {
       csm.camera = camera
-      // The PROJECTION and not the camera's identity: a quad layout hands four objects sharing
-      // one lens, and identity refitted for each of them — `updateFrustums` walks every dressed
-      // material, so that was the scene's material count, four times a frame, for nothing.
+      // The PROJECTION and not the camera's identity: a zoom or a resize moves the frustum
+      // under the same object, and bands left cut for the previous lens shadow the wrong depths.
+      //
+      // 🛑 A quad layout pays this on EVERY pane: its three extra views own their own cameras
+      // (`ExtraPane`), so the projection differs from the one fitted a moment ago and the bands
+      // are cut again — `updateFrustums` walks every dressed material, and the three maps are
+      // then owed a pass. That is the price of ONE `CSM` shared by four panes, not waste: the
+      // bands have to belong to the camera being drawn. **Not measured.**
       const refitted = !fitted.equals(camera.projectionMatrix)
       if (refitted) {
         csm.updateFrustums()

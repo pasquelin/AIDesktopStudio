@@ -20,20 +20,6 @@ export type RenderDrivers = { gl: RenderDriver; gpu: RenderDriver }
  */
 const RENDER_DRIVERS: RenderDrivers = { gl: glDriver, gpu: gpuDriver }
 
-/**
- * The driver a policy asks for — the Compatible one whenever the Advanced engine has nothing to
- * draw with. `gpuReady` is whether `loadGpuModule` has both an adapter and the node bundle in
- * hand: a mount cannot wait for either, so the first viewport of a session opens Compatible and
- * the answer is there for the next.
- */
-function driverFor(
-  engine: RenderEngine,
-  gpuReady: boolean | null,
-  drivers: RenderDrivers = RENDER_DRIVERS,
-): RenderDriver {
-  return engine === 'gpu' && gpuReady === true ? drivers.gpu : drivers.gl
-}
-
 /** What was mounted, which is not always what was asked for. */
 export type MountedRenderer = { renderer: StudioRenderer; driver: RenderDriver }
 
@@ -41,15 +27,19 @@ export type MountedRenderer = { renderer: StudioRenderer; driver: RenderDriver }
  * Builds the renderer, and falls back rather than failing: a driver that throws leaves the
  * Compatible one to draw the very same scene. SILENT on screen and loud in the journal — a
  * person who chose Advanced on a machine that cannot run it gets a picture, not a black panel.
+ *
+ * `gpuReady` is whether `loadGpuModule` has both an adapter and the node bundle in hand. A mount
+ * cannot wait for either, so the first viewport of a session opens Compatible — false here — and
+ * the answer is there for the next.
  */
 export function mountRenderer(
   request: RendererRequest,
   engine: RenderEngine,
-  gpuReady: boolean | null,
+  gpuReady: boolean,
   onFallback: (error: unknown) => void,
   drivers: RenderDrivers = RENDER_DRIVERS,
 ): MountedRenderer {
-  const wanted = driverFor(engine, gpuReady, drivers)
+  const wanted = engine === 'gpu' && gpuReady ? drivers.gpu : drivers.gl
   // Said even when nothing throws: choosing Advanced and being handed Compatible is the one
   // case a reader has to be able to explain, and a machine with no adapter raises nothing.
   if (engine === 'gpu' && wanted === drivers.gl) {

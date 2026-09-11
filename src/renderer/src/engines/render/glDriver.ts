@@ -29,6 +29,16 @@ export const glDriver: RenderDriver = {
   createEnvironment: (renderer, scene, requestRender) =>
     createEnvironment(glEnvironmentPort(asWebGL(renderer)), scene, requestRender),
 
+  drawOverlay: (renderer, draw) => {
+    const gl = asWebGL(renderer)
+    gl.autoClear = false
+    try {
+      draw(gl)
+    } finally {
+      gl.autoClear = true
+    }
+  },
+
   // The ceiling comes from three rather than from `gl.MAX_SAMPLES`, which the WebGL1 typing has
   // no name for.
   maxSamples: renderer => Math.max(0, capsOf(renderer).maxSamples),

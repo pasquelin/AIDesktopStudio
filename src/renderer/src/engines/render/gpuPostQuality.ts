@@ -12,7 +12,7 @@
  */
 import type { PostCost } from '@shared/domain/postProcessing'
 import type { ViewportQuality } from '@shared/domain/scene'
-import { budgetFor, samplesOf } from '../postfx/postQuality'
+import { budgetFor } from '../postfx/postQuality'
 
 export type GpuBudget = {
   /** What share of the frame an occlusion is worked out at — `GTAONode.resolutionScale`. */
@@ -31,9 +31,4 @@ export type GpuBudget = {
 export function gpuBudgetFor(heaviest: PostCost | null, quality: ViewportQuality): GpuBudget {
   const budget = budgetFor(heaviest, quality)
   return { resolutionScale: 1 / budget.divisor, samples: budget.samples }
-}
-
-/** A count asked for by a parameter, brought down to what the budget allows. Never below one. */
-export function gpuSamplesOf(asked: number, budget: GpuBudget): number {
-  return samplesOf(asked, { divisor: 1 / budget.resolutionScale, samples: budget.samples })
 }
