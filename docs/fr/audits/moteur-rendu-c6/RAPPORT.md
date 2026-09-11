@@ -154,7 +154,7 @@ panneau qui se plaint serait la spécification d'une machine présentée comme u
 session (`gpuAdapter.ts`). `adapter.info` n'entre pas dans le choix. Le montage ne peut pas attendre
 la réponse : le premier viewport d'une session ouvre en Compatible et la réponse est là pour le
 suivant. Quatre tests dans `gpuAdapter.test.ts` couvrent six cas, dont l'adaptateur refusé et
-`requestAdapter` qui lève ; cinq cas de repli par `mountRenderer.test.ts`.
+`requestAdapter` qui lève ; quatre cas de repli par `mountRenderer.test.ts`.
 
 ### Écart assumé : où vit le sélecteur
 
@@ -441,7 +441,7 @@ dessine donc en Compatible quel que soit le moteur de son document.
 
 Corrigé le 11/09/2026 dans ce qui pouvait l'être sans embarquer le bundle de nœuds dans une page
 exportée : **le jeu le DIT** (`sayEngineIgnored`), une fois au chargement, par le port de journal
-que `webRender` ouvre déjà pour la chaîne d'effets qui ne bâtit pas. Même doctrine — un jeu qui
+que `webRender` ouvre déjà pour la chaîne d'effets qui ne bâtit pas (`policyOf`). Même doctrine — un jeu qui
 joue sans ce que son auteur a demandé le dit au lieu de jouer quand même. Honorer le champ pour
 de bon reste ouvert.
 

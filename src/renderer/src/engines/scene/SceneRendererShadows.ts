@@ -17,7 +17,8 @@ import { dressWithRail, type RailColours, helperFor } from './threeFactory'
 import { aimLightMarker, holdMarkerSize } from './markerPose'
 import { applyMaterial, applyNegative, applySprite, lightFor, standTarget } from './threeSync'
 import { createMaterialTextures, createSpriteTexture } from './materialTextures'
-import { reportFailure } from '@/services/diagnostics'
+import { localizedError } from '@shared/localizedError'
+import { reportFailure, traceFailure } from '@/services/diagnostics'
 import { limitShadowUpdates, throwsOf, tuneShadowMaps } from './shadows'
 import { cascadeSettingsFor, cascadesWanted, createCascadeShadows } from './csm'
 import { applyWireOverlay } from './sceneView'
@@ -116,8 +117,14 @@ export abstract class SceneRendererShadows extends SceneRendererModels {
    * once at construction; the caller is what keeps that to the passes where one of them moved.
    */
   protected syncCascades(): void {
-    const wanted =
-      this.viewport.gl !== null && cascadesWanted(this.view, this.viewport.driver.engine)
+    const engine = this.viewport.driver.engine
+    const wanted = this.viewport.gl !== null && cascadesWanted(this.view, engine)
+    // Said and not swallowed: « Cascaded shadows » stays an offered preference, and on a document
+    // this engine cannot cascade it now changes nothing at all. Traced rather than reported — the
+    // picture is whole, as with the fallback itself.
+    if (this.view.csm && this.view.shadows && !wanted && this.viewport.gl !== null) {
+      traceFailure('render.fallback', 'cascades', localizedError('renderEngineCascadesMissing'))
+    }
     this.cascades?.release()
     this.cascades = wanted
       ? createCascadeShadows(this.viewport.scene, cascadeSettingsFor(this.view), () =>

@@ -374,9 +374,10 @@ function cascadesFor(
   policy: RenderPolicy,
   onStale: () => void,
 ): CascadeShadows | null {
-  // `'gl'` in hand rather than `policy.engine`: what draws here is the renderer built above,
-  // which is a WebGL one whatever the manifest asks for.
-  if (!cascadesWanted(policy, 'gl')) return null
+  // 🛑 The DOCUMENT's engine and not the one drawing: this renderer is always a WebGL one, so
+  // it could build cascades for a scene the editor refuses them to — and the same document
+  // would then be lit two ways, which is the one accident `exportRequestOf` exists to prevent.
+  if (!cascadesWanted(policy, policy.engine)) return null
   const cascades = createCascadeShadows(scene, cascadeSettingsFor(policy), onStale)
   cascades.dress(scene)
   return cascades

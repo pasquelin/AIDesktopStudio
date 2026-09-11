@@ -52,10 +52,12 @@ if (frames) {
 if (blank.length > 0) throw new Error(`un côté n’a rien dessiné —\n${blank.join('\n')}`)
 
 /**
- * Ce qu'un cas a le droit de faire bouger, plafonds MESURÉS le 11 septembre 2026 sur cette
- * machine puis arrondis vers le haut — jamais des cibles théoriques. Le cas `material` n'en a
- * pas : l'écart y est CONNU et attendu (la cavité tombe sur la couleur diffuse côté nœuds, donc
- * un métal diffère), il est rapporté et jamais transformé en réussite ou en échec.
+ * Ce qu'un cas a le droit de faire bouger. Ce sont des MARGES posées au-dessus des mesures du
+ * 11 septembre 2026 sur cette machine, et non ces mesures arrondies : elles gardent contre une
+ * image noire ou plate, pas contre une dérive de quelques pour cent — resserrer demanderait
+ * plusieurs exécutions sur plusieurs machines, et aucune n'a été faite. Le cas `material` n'a pas
+ * de plafond : l'écart y est CONNU et attendu (la cavité tombe sur la couleur diffuse côté
+ * nœuds, donc un métal diffère), il est rapporté et jamais transformé en réussite ou en échec.
  */
 // `temporal` est haut, et c'est délibéré : cette ligne garde l'absence de la COULEUR PLATE qu'un
 // nœud temporel donne sur une image unique — un retour en arrière la porterait à 100 %. Les 13,6 %

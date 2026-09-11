@@ -18,6 +18,7 @@
     "shaderAnchorMissing": "Mesin render tidak lagi menyediakan {{name}}",
     "renderEngineUnavailable": "Mesin Lanjutan belum dibangun",
     "renderEngineGradingMissing": "Mesin Lanjutan menampilkan langit terkoreksi seperti isi berkasnya",
+    "renderEngineCascadesMissing": "Mesin Lanjutan tidak menggambar bayangan bertingkat",
     "channelShaderMissing": "tidak ada shader yang menurunkan {{channel}}",
     "channelSourceEmpty": "sumber {{channel}} tidak memiliki piksel",
     "passSourceMissing": "sebuah tahap perlu sumber untuk dibaca",

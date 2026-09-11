@@ -18,6 +18,7 @@
     "shaderAnchorMissing": "レンダラーは{{name}}を提供しなくなりました",
     "renderEngineUnavailable": "「上級」エンジンはまだ実装されていません",
     "renderEngineGradingMissing": "「上級」エンジンは、補正した空をファイルのままの状態で表示します",
+    "renderEngineCascadesMissing": "「上級」エンジンはカスケードシャドウを描きません",
     "channelShaderMissing": "{{channel}}チャンネルを導き出せるシェーダーがありません",
     "channelSourceEmpty": "{{channel}}チャンネルのソースにピクセルがありません",
     "passSourceMissing": "パスには読み取るソースが必要です",

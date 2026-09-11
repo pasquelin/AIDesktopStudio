@@ -18,6 +18,7 @@
     "shaderAnchorMissing": "Render không còn cung cấp {{name}}",
     "renderEngineUnavailable": "Bộ máy Nâng cao chưa được dựng",
     "renderEngineGradingMissing": "Bộ máy Nâng cao hiển thị bầu trời đã chỉnh đúng như tệp của nó chứa",
+    "renderEngineCascadesMissing": "Bộ máy Nâng cao không vẽ bóng đổ phân tầng",
     "channelShaderMissing": "Không shader nào lấy nguồn từ kênh {{channel}}",
     "channelSourceEmpty": "Nguồn kênh {{channel}} không chứa pixel",
     "passSourceMissing": "Lệnh này cần một nguồn để đọc",
