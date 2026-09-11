@@ -113,8 +113,12 @@ export function createGpuComposer(gpu: GpuModule, renderer: WebGPURenderer): Sce
    */
   const chainFor = (job: ComposerJob, effects: readonly PostEffect[], shape: string): GpuChain => {
     const held = chains.get(job.surface)
-    if (held && (held.shape !== shape || held.chain.camera !== job.camera)) free(job.surface)
-    const chain = chains.get(job.surface)?.chain ?? build(gpu, renderer, job, effects)
+    // Answered before anything is written: this runs once per surface per IMAGE, and the steady
+    // state — same stack, same camera — has nothing to say.
+    if (held?.shape === shape && held.chain.camera === job.camera) return held.chain
+
+    if (held) free(job.surface)
+    const chain = build(gpu, renderer, job, effects)
     chains.set(job.surface, { shape, chain })
     return chain
   }
