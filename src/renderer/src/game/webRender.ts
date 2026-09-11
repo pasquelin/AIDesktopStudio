@@ -73,7 +73,7 @@ const NEAR = 0.1
  * 🛑 The Compatible engine, always: `policy.engine` travels in the manifest and nothing here
  * reads it, so an exported game draws WebGL whatever its entry scene was made under. The
  * editor's viewport honours the field and this does not — closing that means carrying the node
- * bundle into an exported page. See the C6 report.
+ * bundle into an exported page. Said out loud rather than silently: see `policyOf`.
  */
 export function createWebRender(
   canvas: HTMLCanvasElement,
@@ -83,7 +83,7 @@ export function createWebRender(
   /** Where a fault goes. A game that draws without its grading has to SAY so, not play on. */
   say: LogPort['write'] = () => {},
 ): WebRender {
-  const policy = readRenderPolicy({ ...DEFAULT_RENDER_POLICY, ...carried })
+  const policy = policyOf(carried, say)
   const renderer = new WebGLRenderer({ canvas, antialias: true })
   const gltf = createGltfSource(() => renderer)
   applyShadowPolicy(renderer, policy)
@@ -346,6 +346,22 @@ function paintHeld(
     renderer.render(veil.scene, veil.camera)
     renderer.autoClear = true
   }
+}
+
+/**
+ * What this game plays under — and, once per load, what it owes its author about it.
+ *
+ * The engine is the one member read nowhere below: a game made on the Advanced engine plays on
+ * WebGL. Said rather than swallowed, on the doctrine `composerHold` already follows — a game
+ * that plays without what its author asked for says so instead of playing on, and nothing else
+ * would ever mention it: the picture is whole, only lit by the other engine.
+ */
+function policyOf(carried: Partial<RenderPolicy>, say: LogPort['write']): RenderPolicy {
+  const policy = readRenderPolicy({ ...DEFAULT_RENDER_POLICY, ...carried })
+  if (policy.engine !== 'gl') {
+    say('warn', `this game was made on the ${policy.engine} engine and plays on WebGL`)
+  }
+  return policy
 }
 
 /**

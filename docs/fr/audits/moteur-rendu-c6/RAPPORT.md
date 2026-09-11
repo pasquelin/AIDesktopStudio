@@ -15,7 +15,7 @@ inchangés.
 | Étape | Statut | Motif |
 | --- | --- | --- |
 | 1 — Gains WebGL indépendants | livrée, 1 MUST refusé sur mesure, 1 critère non tenu | Cascades, anisotropie et AgX livrés. `PCFSoftShadowMap` n'est pas le mode doux dans cette version de three : appliquer le MUST 1.1 aurait durci les ombres. Le critère « un projet existant est visuellement identique » ne tient pas — l'anisotropie maximale change son image, § 1.1. |
-| 2 — Interface driver + choix moteur | livrée, 1 écart d'emplacement | `RenderDriver`, `glDriver`, `gpuDriver` (stub), repli silencieux, `engines` dans le registre. Le sélecteur est dans les préférences 3D et non à la création de projet — motif plus bas. |
+| 2 — Interface driver + choix moteur | livrée, 1 écart d'emplacement, 1 critère non vérifié | `RenderDriver`, `glDriver`, `gpuDriver` (stub), repli silencieux, `engines` dans le registre. Le sélecteur est dans les préférences 3D et non à la création de projet — motif plus bas. Le critère « un projet `'gl'` est bit-identique à avant ce chantier » n'a **jamais été mesuré** : aucun banc du dépôt ne compare une révision à la précédente. |
 | 3 — Premier contenu GPU réel | livrée | `WebGPURenderer` monté, patch matériau en TSL, GTAO en nœud natif, lecture de pixels GPU, budget qualité partagé. Chiffres mesurés sur cette machine, plus bas. |
 | 4 — Compléments (hors spec) | livrée | Parité visuelle GL/GPU mesurée et tenue par une porte, capture d'export Avancée jointe, moteur choisi à la création du document, TRAA porté et bibliothèque d'effets filtrée par moteur. |
 
@@ -437,8 +437,13 @@ pré-remplir le champ ; son aide le dit, dans les quinze langues.
 le moteur de la scène d'ENTRÉE — un jeu ne tenant qu'un renderer — et `readRenderPolicy` le relit à
 l'ouverture, mais `createWebRender` construit un `WebGLRenderer` sans jamais regarder `policy.engine`
 (vérifié le 11/09/2026 : le membre n'est lu nulle part dans le runtime de jeu). Un jeu exporté
-dessine donc en Compatible quel que soit le moteur de son document. Écrit dans `webRender.ts` et
-repris dans « Ce qui reste ouvert ».
+dessine donc en Compatible quel que soit le moteur de son document.
+
+Corrigé le 11/09/2026 dans ce qui pouvait l'être sans embarquer le bundle de nœuds dans une page
+exportée : **le jeu le DIT** (`sayEngineIgnored`), une fois au chargement, par le port de journal
+que `webRender` ouvre déjà pour la chaîne d'effets qui ne bâtit pas. Même doctrine — un jeu qui
+joue sans ce que son auteur a demandé le dit au lieu de jouer quand même. Honorer le champ pour
+de bon reste ouvert.
 
 Le verrou « pas de switch après création » est donc vrai au sens fort : changer la préférence ne
 touche aucune scène existante. Un document lu sur une machine dont la préférence dit le contraire
@@ -525,8 +530,9 @@ que la chaîne écarte ensuite. Le repli est au journal ; cette liste dit ce que
   la fenêtre bâtit son renderer avant que la scène arrive sur `gameChannel` (écrit dans
   `GameWindow.tsx` ; la correction est de retenir ce montage jusqu'à la première scène), et le
   runtime de jeu ne lit `policy.engine` nulle part — `createWebRender` construit toujours un
-  `WebGLRenderer` (écrit là ; la correction demande de porter le bundle de nœuds dans une page
-  exportée, ce qui est un chantier à part). § 4.6.
+  `WebGLRenderer`. Depuis le 11/09/2026 il le DIT au journal au lieu de se taire ; l'honorer
+  demande de porter le bundle de nœuds dans une page exportée, ce qui est un chantier à part.
+  § 4.6.
 - **Les cascades sont refusées au moteur Avancé** plutôt que portées : `CSM` passe par
   `onBeforeCompile`, que seul `WebGLRenderer` appelle. § 3.7.
 - Coût réel des cascades et de l'anisotropie : à mesurer sur un banc GPU, qui n'existe pas encore
