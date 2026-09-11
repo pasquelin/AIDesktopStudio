@@ -29,8 +29,13 @@ export function budgetFor(heaviest: PostCost | null, quality: ViewportQuality): 
   return heaviest === 'high' ? HALF : FEWER_SAMPLES
 }
 
-/** A count asked for by a parameter, brought down to what the budget allows. Never below one. */
-export function samplesOf(asked: number, budget: PostBudget): number {
+/**
+ * A count asked for by a parameter, brought down to what the budget allows. Never below one.
+ *
+ * The SHARE alone: a node chain carries its own resolution scale rather than a divisor, and
+ * asking it to build one back just to be read past would be an invented number.
+ */
+export function samplesOf(asked: number, budget: Pick<PostBudget, 'samples'>): number {
   return Math.max(1, Math.round(asked * budget.samples))
 }
 

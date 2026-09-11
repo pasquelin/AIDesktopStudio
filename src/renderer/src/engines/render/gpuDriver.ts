@@ -20,9 +20,8 @@ import { createEnvironment, ROOM_SIGMA, type EnvironmentPort } from '../viewport
 import { createGpuComposer } from './gpuComposer'
 import { loadedGpuModule, type GpuModule } from './gpuModule'
 import { applyMaterialNodes } from './materialNodes'
-import type { RenderDriver, StudioRenderer } from './renderDriver'
-import type { WebGLRenderTarget } from 'three'
-import type { RenderTarget, WebGPURenderer } from 'three/webgpu'
+import { asNodeTarget, type RenderDriver, type StudioRenderer } from './renderDriver'
+import type { WebGPURenderer } from 'three/webgpu'
 
 export const gpuDriver: RenderDriver = {
   engine: 'gpu',
@@ -56,6 +55,9 @@ export const gpuDriver: RenderDriver = {
     createEnvironment(gpuEnvironmentPort(loaded(), asNodeRenderer(renderer)), scene, requestRender),
 
   patchMaterial: (material, uniforms) => applyMaterialNodes(loaded(), material, uniforms),
+
+  // No overlay on this engine yet, and `ViewHelper` is a `WebGLRenderer` of three's own.
+  drawOverlay: () => {},
 
   // A node renderer sizes the attachments of a render target itself, and keeps the card's
   // sampling ceiling on the renderer rather than under a `capabilities`.
@@ -135,11 +137,3 @@ function sameShapeAsGl(read: Uint8Array, width: number, height: number): Uint8Ar
 
 /** What WebGPU aligns a texture-to-buffer copy to, per row. */
 const BYTES_PER_ROW_ALIGNMENT = 256
-
-/**
- * `as`: the studio allocates `WebGLRenderTarget`, which extends the `RenderTarget` a node
- * renderer takes — three declares the pair apart and both engines draw into the same object.
- */
-function asNodeTarget(target: WebGLRenderTarget): RenderTarget {
-  return target as unknown as RenderTarget
-}

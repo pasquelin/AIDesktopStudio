@@ -15,7 +15,7 @@
  * The same shape as `game/ports/`: the interface here, each implementation in a file of its own.
  */
 import type { MeshStandardMaterial, Scene, WebGLRenderer, WebGLRenderTarget } from 'three'
-import type { WebGPURenderer } from 'three/webgpu'
+import type { RenderTarget, WebGPURenderer } from 'three/webgpu'
 import type { RenderEngine } from '@shared/domain/renderEngine'
 import type { ViewportEnvironment } from '../viewport/environment'
 import type { MaterialUniforms } from '../material/materialShader'
@@ -82,6 +82,12 @@ export type RenderDriver = {
     onMissingAnchor: (anchor: string) => void,
   ) => void
   /**
+   * Draws whatever is laid over a finished frame — trihedrons and other screen-space helpers —
+   * with the clear turned off around it. NOTHING on the Advanced engine, which has no overlay
+   * yet: `ViewHelper` is declared against a `WebGLRenderer` and three types no node equivalent.
+   */
+  drawOverlay: (renderer: StudioRenderer, draw: (renderer: WebGLRenderer) => void) => void
+  /**
    * The CARD's ceiling: how many samples an off-screen target this engine allocates may ask for.
    * ZERO on a node renderer, which sizes the attachments of a render target itself.
    */
@@ -106,6 +112,16 @@ export type RenderDriver = {
   frameTimer: (renderer: StudioRenderer) => GpuTimer | null
   /** Gives the context back before it is collected. A node renderer holds a device instead. */
   releaseContext: (renderer: StudioRenderer) => void
+}
+
+/**
+ * `as`: the studio allocates `WebGLRenderTarget`, which extends the `RenderTarget` a node
+ * renderer takes — three declares the pair apart and both engines draw into the same object.
+ */
+export function asNodeTarget(target: WebGLRenderTarget): RenderTarget
+export function asNodeTarget(target: WebGLRenderTarget | null): RenderTarget | null
+export function asNodeTarget(target: WebGLRenderTarget | null): RenderTarget | null {
+  return target as unknown as RenderTarget | null
 }
 
 /**

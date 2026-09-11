@@ -19,7 +19,7 @@ import { applyMaterial, applyNegative, applySprite, lightFor, standTarget } from
 import { createMaterialTextures, createSpriteTexture } from './materialTextures'
 import { reportFailure } from '@/services/diagnostics'
 import { limitShadowUpdates, throwsOf, tuneShadowMaps } from './shadows'
-import { cascadeSettingsFor, createCascadeShadows } from './csm'
+import { cascadeSettingsFor, cascadesWanted, createCascadeShadows } from './csm'
 import { applyWireOverlay } from './sceneView'
 import './bvhPatches'
 import { isNegative } from '../csg/carve'
@@ -116,7 +116,8 @@ export abstract class SceneRendererShadows extends SceneRendererModels {
    * once at construction; the caller is what keeps that to the passes where one of them moved.
    */
   protected syncCascades(): void {
-    const wanted = this.view.csm && this.view.shadows && this.viewport.gl !== null
+    const wanted =
+      this.viewport.gl !== null && cascadesWanted(this.view, this.viewport.driver.engine)
     this.cascades?.release()
     this.cascades = wanted
       ? createCascadeShadows(this.viewport.scene, cascadeSettingsFor(this.view), () =>

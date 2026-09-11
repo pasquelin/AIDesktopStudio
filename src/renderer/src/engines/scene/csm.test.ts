@@ -9,7 +9,7 @@ import {
 } from 'three'
 import { describe, expect, it, vi } from 'vitest'
 import { DEFAULT_RENDER_POLICY } from '@shared/domain/renderPolicy'
-import { cascadeSettingsFor, createCascadeShadows } from './csm'
+import { cascadeSettingsFor, cascadesWanted, createCascadeShadows } from './csm'
 
 const settings = cascadeSettingsFor(DEFAULT_RENDER_POLICY)
 
@@ -32,6 +32,24 @@ describe('what a policy buys in cascades', () => {
 
   it('never reaches past what the camera draws', () => {
     expect(cascadeSettingsFor(DEFAULT_RENDER_POLICY, 300).maxFar).toBe(300)
+  })
+})
+
+describe('which scenes are given cascades at all', () => {
+  it('gives them to a scene that asks for them and draws shadows', () => {
+    const asked = { ...DEFAULT_RENDER_POLICY, csm: true, shadows: true }
+
+    expect(cascadesWanted(asked, 'gl')).toBe(true)
+    expect(cascadesWanted({ ...asked, shadows: false }, 'gl')).toBe(false)
+    expect(cascadesWanted({ ...asked, csm: false }, 'gl')).toBe(false)
+  })
+
+  // `CSM` patches materials through `onBeforeCompile`, which only `WebGLRenderer` calls. Built on
+  // the Advanced engine it would reach no program while still taking the sun off lighting.
+  it('refuses them to the Advanced engine, which calls no compile hook', () => {
+    expect(cascadesWanted({ ...DEFAULT_RENDER_POLICY, csm: true, shadows: true }, 'gpu')).toBe(
+      false,
+    )
   })
 })
 

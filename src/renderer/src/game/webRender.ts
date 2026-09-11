@@ -20,7 +20,12 @@ import type { CameraView, EntityPlacement, RenderPort } from '@game/ports/render
 import { copyCameraView, NOWHERE, sameCameraView } from '@shared/domain/transform'
 import { applyToneMapping } from '@/engines/scene/worldBinding'
 import { applyShadowPolicy, throwsOf, tuneShadowMaps } from '@/engines/scene/shadows'
-import { cascadeSettingsFor, createCascadeShadows, type CascadeShadows } from '@/engines/scene/csm'
+import {
+  cascadeSettingsFor,
+  cascadesWanted,
+  createCascadeShadows,
+  type CascadeShadows,
+} from '@/engines/scene/csm'
 import type { ShadowThrow } from '@/engines/scene/grouping'
 import { frameOwesDraw, frameOwesShadows } from './gameSceneFrame'
 import { pixelRatioFor, shadowMapSizeFor } from '@/engines/scene/viewportQuality'
@@ -64,6 +69,11 @@ const NEAR = 0.1
  *
  * 🛑 One `apply`-free port: outside the studio nothing edits, so the scene is built once per
  * load and only the entity poses move. That is what makes an exported frame cheap.
+ *
+ * 🛑 The Compatible engine, always: `policy.engine` travels in the manifest and nothing here
+ * reads it, so an exported game draws WebGL whatever its entry scene was made under. The
+ * editor's viewport honours the field and this does not — closing that means carrying the node
+ * bundle into an exported page. See the C6 report.
  */
 export function createWebRender(
   canvas: HTMLCanvasElement,
@@ -348,7 +358,9 @@ function cascadesFor(
   policy: RenderPolicy,
   onStale: () => void,
 ): CascadeShadows | null {
-  if (!policy.csm || !policy.shadows) return null
+  // `'gl'` in hand rather than `policy.engine`: what draws here is the renderer built above,
+  // which is a WebGL one whatever the manifest asks for.
+  if (!cascadesWanted(policy, 'gl')) return null
   const cascades = createCascadeShadows(scene, cascadeSettingsFor(policy), onStale)
   cascades.dress(scene)
   return cascades

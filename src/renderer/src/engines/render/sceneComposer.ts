@@ -12,6 +12,9 @@ import type { ViewportQuality } from '@shared/domain/scene'
 /**
  * Where on the CANVAS a composition lands, in CSS pixels — both renderers multiply by the device
  * ratio themselves, so a rect pre-multiplied here scissors a pane off screen on a HiDPI display.
+ *
+ * The same four members as `PaneRect`, and written apart on purpose: this file is the contract
+ * both chains answer, and a pane is a thing of the editor's viewport that a game does not have.
  */
 type ComposerRect = { x: number; y: number; width: number; height: number }
 

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { VIEWPORT_QUALITIES } from '@shared/domain/scene'
 import { budgetFor, samplesOf } from '../postfx/postQuality'
-import { gpuBudgetFor, gpuSamplesOf } from './gpuPostQuality'
+import { gpuBudgetFor } from './gpuPostQuality'
 
 describe('what the Advanced chain is allowed to spend', () => {
   // 🛑 The point of the module: a setting has to buy the same thing on both engines, or the two
@@ -19,7 +19,7 @@ describe('what the Advanced chain is allowed to spend', () => {
   it('brings a count down exactly as the Compatible chain does', () => {
     for (const quality of VIEWPORT_QUALITIES) {
       const asked = 16
-      expect(gpuSamplesOf(asked, gpuBudgetFor('high', quality))).toBe(
+      expect(samplesOf(asked, gpuBudgetFor('high', quality))).toBe(
         samplesOf(asked, budgetFor('high', quality)),
       )
     }

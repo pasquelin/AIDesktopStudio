@@ -3,11 +3,18 @@
 Date : 10 septembre 2026. Branche `feat/render-engine`, worktree `worktrees/render-engine`.
 Machine : Apple M2 Max, macOS 26.5.2 (Darwin 25.6.0), arm64. three.js 0.185.1.
 
+Relu le 11 septembre 2026 (`feat/c6-relecture`). Cette relecture n'a mesuré ni redessiné quoi que
+ce soit : elle a confronté chaque affirmation au code livré, corrigé six énoncés qui ne tenaient
+pas — noms de fichiers et de colonnes périmés, nombres de tests, plafonds présentés comme des
+arrondis, export jeu présenté comme honorant le moteur — et refusé les cascades au moteur Avancé,
+où elles n'auraient rien dessiné en éteignant le soleil. Les chiffres du 10 et du 11 septembre sont
+inchangés.
+
 ## Verdict
 
 | Étape | Statut | Motif |
 | --- | --- | --- |
-| 1 — Gains WebGL indépendants | livrée, 1 MUST refusé sur mesure | Cascades, anisotropie et AgX livrés. `PCFSoftShadowMap` n'est pas le mode doux dans cette version de three : appliquer le MUST 1.1 aurait durci les ombres. |
+| 1 — Gains WebGL indépendants | livrée, 1 MUST refusé sur mesure, 1 critère non tenu | Cascades, anisotropie et AgX livrés. `PCFSoftShadowMap` n'est pas le mode doux dans cette version de three : appliquer le MUST 1.1 aurait durci les ombres. Le critère « un projet existant est visuellement identique » ne tient pas — l'anisotropie maximale change son image, § 1.1. |
 | 2 — Interface driver + choix moteur | livrée, 1 écart d'emplacement | `RenderDriver`, `glDriver`, `gpuDriver` (stub), repli silencieux, `engines` dans le registre. Le sélecteur est dans les préférences 3D et non à la création de projet — motif plus bas. |
 | 3 — Premier contenu GPU réel | livrée | `WebGPURenderer` monté, patch matériau en TSL, GTAO en nœud natif, lecture de pixels GPU, budget qualité partagé. Chiffres mesurés sur cette machine, plus bas. |
 | 4 — Compléments (hors spec) | livrée | Parité visuelle GL/GPU mesurée et tenue par une porte, capture d'export Avancée jointe, moteur choisi à la création du document, TRAA porté et bibliothèque d'effets filtrée par moteur. |
@@ -32,8 +39,13 @@ une comparaison non filtrée. `WelcomeBackdrop.ts:171` portait déjà cette note
 sur `MAP_TYPES` dans `shadows.ts`, à l'endroit où quelqu'un rouvrirait le sujet.
 
 Conséquence pour le critère d'acceptation « un projet existant est visuellement identique sauf les
-ombres, qui passent en doux » : **les ombres ne changent pas**, elles étaient déjà douces. Un projet
-existant est donc identique, point.
+ombres, qui passent en doux » : **les ombres ne changent pas**, elles étaient déjà douces.
+
+🛑 Le critère n'est pas tenu pour autant, et par un autre MUST de la même étape : le § 1.3 force
+l'anisotropie au maximum de la carte **à l'import de chaque texture**, donc dans les projets
+existants comme dans les neufs. Une surface vue en biais y gagne de la netteté — c'est le but — et
+change donc d'image. **Non mesuré** : aucune capture avant/après n'a été prise, ni ici ni par
+`engines:parity`, qui compare les deux moteurs entre eux et jamais une révision à la précédente.
 
 ### 1.2 — Cascades (CSM)
 
@@ -141,8 +153,8 @@ panneau qui se plaint serait la spécification d'une machine présentée comme u
 `navigator.gpu?.requestAdapter()` est le seul signal qui décide, interrogé une seule fois par
 session (`gpuAdapter.ts`). `adapter.info` n'entre pas dans le choix. Le montage ne peut pas attendre
 la réponse : le premier viewport d'une session ouvre en Compatible et la réponse est là pour le
-suivant. Six cas couverts par `gpuAdapter.test.ts`, dont l'adaptateur refusé et
-`requestAdapter` qui lève ; sept cas de repli par `renderDriver.test.ts`.
+suivant. Quatre tests dans `gpuAdapter.test.ts` couvrent six cas, dont l'adaptateur refusé et
+`requestAdapter` qui lève ; cinq cas de repli par `mountRenderer.test.ts`.
 
 ### Écart assumé : où vit le sélecteur
 
@@ -234,8 +246,8 @@ Surface 1280×720, qualité `high`, une pile portant GTAO sur les deux moteurs.
   un peu ce que le Compatible laisse tranquille. **Écart connu, pas une équivalence.**
 
 Les uniformes sont ceux du moteur, partagés : un `Vector2` par référence, un scalaire et une
-texture relus à chaque rendu parce qu'ils sont remplacés et non écrits dedans. Cinq tests tiennent
-ce pont, dont celui qui vérifie que le graphe ne se reconstruit pas quand un canal arrive.
+texture relus à chaque rendu parce qu'ils sont remplacés et non écrits dedans. Quatre tests
+tiennent ce pont, dont celui qui vérifie que le graphe ne se reconstruit pas quand un canal arrive.
 
 **Mesurée à l'étape 4** : la comparaison visuelle GL/GPU du patch, § 4.1 et § 4.3.
 
@@ -255,20 +267,21 @@ l'étape 2 pour cette raison exacte. Les trois appelants (film, capture de vol, 
 étaient déjà asynchrones et n'ont pas bougé.
 
 🛑 Un renderer de nœuds ne relit pas le canevas : la lecture veut une cible. Le studio en passe
-toujours une, donc le chemin d'export est intact — mesuré ci-dessus par `readbackMs`, qui est
-exactement `captureStill`.
+toujours une, donc le chemin d'export est intact — mesuré ci-dessus par `firstStillMs` et
+`stillMs`, qui sont `captureStill` en entier.
 
 ### 3.4 — Budget qualité de la chaîne `RenderPipeline`
 
 `gpuPostQuality.ts`, **dérivé** de `postQuality` et jamais une seconde table : un réglage doit
 acheter la même chose sur les deux moteurs. La division de résolution du chaînage GL devient le
-`resolutionScale` du nœud, la part d'échantillons est la même valeur. Cinq tests, dont deux qui
-comparent les deux lectures réglage par réglage.
+`resolutionScale` du nœud, la part d'échantillons est la même valeur. Deux tests, qui comparent
+les deux lectures réglage par réglage.
 
 Une limite honnête pour la suite : **TRAA n'expose aucun nombre d'échantillons** dans
 three 0.185 — ses échantillons sont des IMAGES, une par gigue d'une séquence fixe. Son seul
 levier est la correction sous-pixel. **Branchée à l'étape 4**, quand l'effet a été porté :
-`GpuBudget.subpixelCorrection`.
+`GpuBudget.samples` décide de `TRAANode.useSubpixelCorrection` — le budget n'a pas de membre à lui
+pour ça, la correction étant tout ou rien.
 
 ### 3.5 — Ce qui a dû être réparé pour que l'Avancé dessine
 
@@ -310,8 +323,19 @@ consciente du moteur, c'est-à-dire l'UX que le spec met hors périmètre.
 - **Pas de porte globale sur la passe d'ombres** : un renderer de nœuds n'a pas
   `shadowMap.needsUpdate`. Le resserrement lumière par lumière de `limitShadowUpdates` reste,
   et c'est sur lui que l'éditeur s'appuyait déjà.
-- **L'aperçu incrusté** et les vingt-neuf effets GLSL restent au Compatible : le registre le dit
-  effet par effet, et la chaîne Avancée laisse simplement de côté ce qu'elle ne sait pas bâtir.
+- **Les vingt-neuf effets GLSL restent au Compatible** : le registre le dit effet par effet, et la
+  chaîne Avancée laisse simplement de côté ce qu'elle ne sait pas bâtir.
+- **L'aperçu incrusté n'est retenu par rien.** `ViewportDrawing.renderInset` ne regarde pas le
+  moteur, et son quad porte un `MeshBasicMaterial`, que les deux savent dessiner. **Non mesuré** :
+  ce que l'aperçu donne sur une scène Avancée n'a jamais été regardé, `engines:parity` ne l'ouvrant
+  sur aucun de ses six cas.
+- **Les cascades sont refusées au moteur Avancé**, depuis la relecture du 11/09/2026 :
+  `CSM` passe par `onBeforeCompile`, un crochet que seul `WebGLRenderer` appelle — three 0.185 ne
+  le nomme nulle part sous `renderers/common` ni `renderers/webgpu`. Bâties là, le patch n'aurait
+  atteint aucun programme tandis que `dress` aurait quand même éteint le soleil du document et posé
+  trois bandes à son intensité : la scène éclairée trois fois et son ombre perdue, exactement la
+  panne corrigée côté GL le 08/09/2026. `cascadesWanted` refuse plutôt que de dessiner faux.
+  **Non mesuré** : ce que cette combinaison donnait n'a pas été rendu.
 
 ## Étape 4 — Compléments (hors périmètre du spec, demandés après)
 
@@ -338,9 +362,13 @@ noire.
 | `material` — patch matériau, cartes tuilées | 128² | 24,75 % | 126 |
 | `temporal` — un effet temporel laissé hors d'une image unique | 1024² | 13,61 % | 74 |
 
-Tolérance : 8 niveaux par canal. Les plafonds du runner sont ces mesures arrondies vers le haut,
-jamais des cibles théoriques ; `material` n'en a pas — son écart est CONNU, et transformer une
-divergence documentée en réussite ou en échec serait mentir dans les deux sens.
+Tolérance : 8 niveaux par canal. Les plafonds du runner sont des MARGES posées au-dessus de ces
+mesures, et non ces mesures arrondies : 1 % pour `scene` (mesuré 0), 6 % pour `occlusion` (2,76),
+2 % pour `still` (0,22) et pour `film` (0), 20 % pour `temporal` (13,61). Ils gardent contre une
+image noire ou plate, pas contre une dérive de quelques pour cent — un tel resserrement demanderait
+plusieurs exécutions sur plusieurs machines, et **aucune n'a été faite**. `material` n'a pas de
+plafond du tout : son écart est CONNU, et transformer une divergence documentée en réussite ou en
+échec serait mentir dans les deux sens.
 
 **Ce que ces chiffres disent, sans arrangement** : sur cette machine, les deux moteurs dessinent
 la même scène. `scene` et `film` sont à zéro pixel différent — pas « proches » : identiques à la
@@ -402,9 +430,15 @@ un peu plus à chaque ligne. 1 024 et 640 divisent proprement et ne prouvent rie
 ### 4.6 — Le moteur vit dans le DOCUMENT
 
 L'écart de l'étape 2 est refermé. `SceneWorld.engine` : choisi à la création du document, écrit
-dans son monde, relu à chaque montage de viewport et porté par l'export jeu (la scène d'ENTRÉE
-décide, un jeu ne tenant qu'un renderer). `Settings.three.engine` ne sert plus qu'à pré-remplir le
-champ ; son aide le dit, dans les quinze langues.
+dans son monde et relu à chaque montage de viewport. `Settings.three.engine` ne sert plus qu'à
+pré-remplir le champ ; son aide le dit, dans les quinze langues.
+
+🛑 **L'export jeu PORTE le champ et ne l'honore pas.** `gameExportCompiler` écrit dans le manifeste
+le moteur de la scène d'ENTRÉE — un jeu ne tenant qu'un renderer — et `readRenderPolicy` le relit à
+l'ouverture, mais `createWebRender` construit un `WebGLRenderer` sans jamais regarder `policy.engine`
+(vérifié le 11/09/2026 : le membre n'est lu nulle part dans le runtime de jeu). Un jeu exporté
+dessine donc en Compatible quel que soit le moteur de son document. Écrit dans `webRender.ts` et
+repris dans « Ce qui reste ouvert ».
 
 Le verrou « pas de switch après création » est donc vrai au sens fort : changer la préférence ne
 touche aucune scène existante. Un document lu sur une machine dont la préférence dit le contraire
@@ -480,14 +514,39 @@ que la chaîne écarte ensuite. Le repli est au journal ; cette liste dit ce que
 
 - **La transformation de sortie du rendu droit du composeur** contre celle du viewport : 13,6 %
   d'écart de ton, § 4.4. Antérieure à ce lot, correction nommée, à faire au suivant.
-- Les vingt-neuf autres effets, l'aperçu incrusté et la correction de ciel côté Avancé.
+- Les vingt-neuf autres effets et la correction de ciel côté Avancé. L'aperçu incrusté, lui,
+  n'est retenu par rien et n'a jamais été regardé sur une scène Avancée — § 3.7.
 - Le switch en direct du moteur : hors périmètre, et désormais impossible par construction.
 - SSGI : hors périmètre par décision du spec.
 - **TRAA à l'export** : laissé de côté hors écran par construction (§ 4.2), y compris sur un film,
   dont la chaîne vivrait pourtant assez longtemps pour le résoudre à partir de la deuxième image.
   Distinguer un film d'une image fixe demanderait une surface de plus ; non fait.
-- **La fenêtre de jeu ne suit pas le moteur du document** qu'elle joue, là où un export du même
-  document le suit : son renderer est bâti avant que la scène arrive sur `gameChannel`. Écrit
-  dans `GameWindow.tsx`. La correction est de retenir ce montage jusqu'à la première scène.
+- **Ni la fenêtre de jeu ni l'export ne suivent le moteur du document.** Deux causes distinctes :
+  la fenêtre bâtit son renderer avant que la scène arrive sur `gameChannel` (écrit dans
+  `GameWindow.tsx` ; la correction est de retenir ce montage jusqu'à la première scène), et le
+  runtime de jeu ne lit `policy.engine` nulle part — `createWebRender` construit toujours un
+  `WebGLRenderer` (écrit là ; la correction demande de porter le bundle de nœuds dans une page
+  exportée, ce qui est un chantier à part). § 4.6.
+- **Les cascades sont refusées au moteur Avancé** plutôt que portées : `CSM` passe par
+  `onBeforeCompile`, que seul `WebGLRenderer` appelle. § 3.7.
 - Coût réel des cascades et de l'anisotropie : à mesurer sur un banc GPU, qui n'existe pas encore
   dans ce dépôt.
+- **Cinq coûts par image relevés par la relecture du 11/09/2026, tous NON MESURÉS** — aucun banc
+  du dépôt ne les chiffre, et ils sont écrits ici plutôt que corrigés à l'aveugle :
+  1. En vue quadruple avec cascades, chaque pane recoupe les bandes et redoit ses trois cartes
+     d'ombre : les trois vues ajoutées ont leurs propres caméras, donc la projection diffère à
+     chaque pane. C'est le prix d'un seul `CSM` pour quatre panes, pas un gaspillage — le corriger
+     demande une instance par caméra. Écrit dans `csm.ts`.
+  2. `materialNodes.placedUv` refait à la main ce que `TextureNode` fait déjà : un `texture(map)`
+     sans uv porte sa propre matrice (`setUpdateMatrix(uvNode === null)`), et le `.sample(...)`
+     désactive ce chemin pour le réécrire. Lu dans la source de three 0.185, jamais rendu :
+     vérifier demande `pnpm engines:parity` sur une machine WebGPU, fenêtre au premier plan.
+  3. Dix rappels `onRenderUpdate` par matériau sont invoqués à chaque appel de rendu ; huit
+     relisent une valeur qui ne bouge qu'à l'écriture du panneau. Même condition de vérification.
+  4. `dressCascades` rebalaie tous les hôtes instanciés à chaque `applyState`, y compris pour un
+     delta d'un nœud ; après la première passe c'est un no-op complet.
+  5. `gpuComposer.draw` filtre la pile par moteur à chaque image et par surface. La correction
+     est de faire porter le moteur à `planStack`, qui est déjà mémoïsé par pile — c'est la même
+     correction que le bourrage `() => {}` de `PostComposer` et que le champ `oneShot`, et elle
+     règle au passage qu'une pile Compatible portant `traa` recompile toute la chaîne GLSL pour
+     une image identique. Chantier à part.
