@@ -7,7 +7,7 @@
  * two failures.
  */
 
-import { capabilityOf, type CapabilityTrait, type WritableFormat } from './formatCapability'
+import { capabilityOf, type CapabilityTrait, type KnownFormat } from './formatCapability'
 import type { DocumentKind } from './document'
 
 /** A (section, format read) pair. Named for the section first, as the export targets are. */
@@ -25,7 +25,7 @@ export type ImportSource = {
    * again: the same pair of functions writes it and reads it back, and two lists would disagree
    * the day one gains a trait.
    */
-  format: WritableFormat
+  format: KnownFormat
 }
 
 const SOURCES: Record<ImportSourceId, ImportSource> = {

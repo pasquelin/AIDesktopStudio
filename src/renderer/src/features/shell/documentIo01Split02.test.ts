@@ -8,7 +8,7 @@ import { installFakeBridge } from '@/services/fakeBridge'
 import { useAssets } from '@/stores/assets'
 import { canvasStore, useCanvases } from '@/stores/canvases'
 import { useDocuments } from '@/stores/documents'
-import { type DocumentWrite } from '@shared/domain/document'
+import { type DocumentWrite, type FlattenChoice } from '@shared/domain/document'
 import type { SaveLayeredRequest } from '@shared/ipc'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -30,7 +30,12 @@ describe('saveDocument', () => {
     ): Promise<{ documentId: string; release: () => void }> => {
       const created = await useDocuments
         .getState()
-        .create('image', sourceAssetId ? { title: 'Gemini 3.1', sourceAssetId } : undefined)
+        .create(
+          'image',
+          sourceAssetId
+            ? { title: 'Gemini 3.1', sourceAssetId, sourceFidelity: 'faithful' }
+            : undefined,
+        )
       if (!created) throw new Error('expected a document')
 
       useCanvases.getState().ensure(created.id, () => DEFAULT_CANVAS)
@@ -52,7 +57,12 @@ describe('saveDocument', () => {
       useAssets.setState({ items: [{ ...picture(), path }] })
     }
 
-    it('writes the asset it edits, after the document', async () => {
+    /**
+     * ONE write, into the one destination the document has — §5.3. It used to write two: the
+     * studio's own `.ora` in the documents folder AND the picture, at every single ⌘S. That is
+     * where the two files came from, and the second was an export nobody asked for.
+     */
+    it('writes the asset it edits, and nothing beside it', async () => {
       const order: string[] = []
       const savePicture = vi.fn(() => {
         order.push('asset')
@@ -76,14 +86,16 @@ describe('saveDocument', () => {
 
       // `name` rides along because the channel is shaped like `saveAudio`'s; an overwrite keeps
       // the name the asset already has, so this is not ⌘S renaming anything. `format` is the
-      // source file's own, so an overwrite never changes what the file IS.
+      // source file's own, so an overwrite never changes what the file IS. `documentId` says
+      // this file IS the document — §2.6 — which a container is then stamped with.
       expect(savePicture).toHaveBeenCalledWith({
         replaces: 'asset-1',
+        documentId,
         name: 'Gemini 3.1',
         png: PNG,
         format: 'png',
       })
-      expect(order).toEqual(['document', 'asset'])
+      expect(order).toEqual(['asset'])
     })
 
     it('tells the engine to forget the picture it has just overwritten', async () => {
@@ -116,6 +128,7 @@ describe('saveDocument', () => {
 
       expect(savePicture).toHaveBeenCalledWith({
         replaces: 'asset-1',
+        documentId,
         name: 'Gemini 3.1',
         png: PNG,
         format: 'png',
@@ -149,7 +162,7 @@ describe('saveDocument', () => {
 
     it('writes the flattened picture into a source that cannot hold the stack', async () => {
       const savePicture = vi.fn(() => Promise.resolve(picture()))
-      const confirmFlatten = vi.fn(() => Promise.resolve(true))
+      const confirmFlatten = vi.fn(() => Promise.resolve<FlattenChoice>('flatten'))
       installFakeBridge({
         documents: { write: () => Promise.resolve<DocumentWrite>('written'), confirmFlatten },
         assets: { savePicture },
@@ -165,8 +178,13 @@ describe('saveDocument', () => {
       expect(savePicture).toHaveBeenCalled()
     })
 
-    it('asks once for a document, never again', async () => {
-      const confirmFlatten = vi.fn(() => Promise.resolve(true))
+    /**
+     * Asked at every save, never remembered. The answer used to be kept for the life of the
+     * document, which made it a toll rather than a decision: one yes and every ⌘S after it
+     * flattened the file without a word — including the ones where the layer had been undone.
+     */
+    it('asks again at each save, the answer belonging to the state being written', async () => {
+      const confirmFlatten = vi.fn(() => Promise.resolve<FlattenChoice>('flatten'))
       installFakeBridge({
         documents: { write: () => Promise.resolve<DocumentWrite>('written'), confirmFlatten },
         assets: { savePicture: () => Promise.resolve(picture()) },
@@ -180,15 +198,16 @@ describe('saveDocument', () => {
       await saveDocument(documentId)
       release()
 
-      expect(confirmFlatten).toHaveBeenCalledTimes(1)
+      expect(confirmFlatten).toHaveBeenCalledTimes(2)
     })
 
-    it('leaves the asset alone when the flatten is declined', async () => {
+    /** Nothing was written, so nothing may read as saved: the work is still unsaved work. */
+    it('writes nothing and stays modified when the flatten is declined', async () => {
       const savePicture = vi.fn(() => Promise.resolve(picture()))
       installFakeBridge({
         documents: {
           write: () => Promise.resolve<DocumentWrite>('written'),
-          confirmFlatten: () => Promise.resolve(false),
+          confirmFlatten: () => Promise.resolve<FlattenChoice>('cancel'),
         },
         assets: { savePicture },
       })
@@ -196,11 +215,11 @@ describe('saveDocument', () => {
       const { documentId, release } = await openImage('asset-1')
       useCanvases.getState().runCommand(documentId, addLayer(pixelLayer('layer-2', 'Layer')))
 
-      await expect(saveDocument(documentId)).resolves.toBe(true)
+      await expect(saveDocument(documentId)).resolves.toBe(false)
       release()
 
       expect(savePicture).not.toHaveBeenCalled()
-      expect(canvasStore.hasUnsavedWork(useCanvases.getState(), documentId)).toBe(false)
+      expect(canvasStore.hasUnsavedWork(useCanvases.getState(), documentId)).toBe(true)
     })
 
     it('writes a stack straight back into a source that can hold one', async () => {
@@ -235,9 +254,11 @@ describe('saveDocument', () => {
         assets: { saveLayered: () => Promise.resolve(picture()) },
       })
       shelve('Images/hero.ora')
-      const created = await useDocuments
-        .getState()
-        .create('image', { title: 'Gemini 3.1', sourceAssetId: 'asset-1' })
+      const created = await useDocuments.getState().create('image', {
+        title: 'Gemini 3.1',
+        sourceAssetId: 'asset-1',
+        sourceFidelity: 'faithful',
+      })
       if (!created) throw new Error('expected a document')
       useCanvases.getState().ensure(created.id, () => DEFAULT_CANVAS)
       const release = holdCanvas(created.id, () =>
@@ -285,9 +306,11 @@ describe('saveDocument', () => {
         assets: { saveLayered },
       })
       shelve('Images/hero.ora')
-      const created = await useDocuments
-        .getState()
-        .create('image', { title: 'Gemini 3.1', sourceAssetId: 'asset-1' })
+      const created = await useDocuments.getState().create('image', {
+        title: 'Gemini 3.1',
+        sourceAssetId: 'asset-1',
+        sourceFidelity: 'faithful',
+      })
       if (!created) throw new Error('expected a document')
       useCanvases.getState().ensure(created.id, () => DEFAULT_CANVAS)
       // The engine hands its surfaces over, which is what a layer of the container is made of:
@@ -313,26 +336,8 @@ describe('saveDocument', () => {
       })
     })
 
-    it('writes OpenRaster rather than guessing, when the source format is not one it writes', async () => {
-      const savePicture = vi.fn(() => Promise.resolve(picture()))
-      const saveLayered = vi.fn((_request: SaveLayeredRequest) => Promise.resolve(picture()))
-      installFakeBridge({
-        documents: { write: () => Promise.resolve<DocumentWrite>('written') },
-        assets: { savePicture, saveLayered },
-      })
-      shelve('Images/scan.tif')
-      const { documentId, release } = await openImage('asset-1')
-      useCanvases.getState().runCommand(documentId, addLayer(pixelLayer('layer-2', 'Layer')))
-
-      await saveDocument(documentId)
-      release()
-
-      expect(saveLayered).toHaveBeenCalled()
-      expect(savePicture).not.toHaveBeenCalled()
-    })
-
     it('names what the source file could not have held', async () => {
-      const confirmFlatten = vi.fn(() => Promise.resolve(true))
+      const confirmFlatten = vi.fn(() => Promise.resolve<FlattenChoice>('flatten'))
       installFakeBridge({
         documents: { write: () => Promise.resolve<DocumentWrite>('written'), confirmFlatten },
         assets: { savePicture: () => Promise.resolve(picture()) },

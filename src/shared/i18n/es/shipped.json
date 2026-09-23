@@ -1,0 +1,19 @@
+{
+  "shipped": {
+    "title": "Incluido con el estudio",
+    "character": "Personaje",
+    "characterNote": "El personaje que el estudio incluye, en cada densidad que incluye. Un solo esqueleto para los cuatro, lo que deja que las animaciones incluidas se reproduzcan sin adivinar.",
+    "characterWhere": "Colocado, aterriza en el almacén interno del proyecto: ningún archivo de más en su árbol.",
+    "textures": "Texturas de trabajo",
+    "texturesNote": "Una cuadrícula y un damero, cada uno en dos densidades. Una casilla mide un metro, y eso es lo que permite juzgar una escala y ver estirarse un UV.",
+    "texturesWhere": "Colocadas, aterrizan en el almacén interno del proyecto: ningún archivo de más en su árbol.",
+    "animations": "Animaciones",
+    "animationsNote": "Los movimientos que el estudio incluye, reproducibles en su personaje y en uno importado cuyo esqueleto se reconoce.",
+    "animationsReachable": "Nada que colocar: ya se ofrecen dondequiera que se elija un movimiento, y la exportación de juego los incluye. Copiar uno en el proyecto sería un segundo ejemplar de los mismos bytes sin ganar nada.",
+    "animationsNone": "Esta instalación no incluye ninguna animación.",
+    "place": "Colocar",
+    "placeAll": "Colocar las cuatro",
+    "placed": "Colocado en el proyecto",
+    "notPlaced": "Aún sin colocar"
+  }
+}

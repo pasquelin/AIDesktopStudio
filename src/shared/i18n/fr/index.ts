@@ -7,6 +7,7 @@ import code from './code.json'
 import commands from './commands.json'
 import common from './common.json'
 import context from './context.json'
+import copies from './copies.json'
 import diagnostics from './diagnostics.json'
 import environment from './environment.json'
 import fileInfo from './fileInfo.json'
@@ -21,6 +22,7 @@ import postfx from './postfx.json'
 import scene from './scene.json'
 import settings from './settings.json'
 import shell from './shell.json'
+import shipped from './shipped.json'
 import ui from './ui.json'
 import usage from './usage.json'
 import welcome from './welcome.json'
@@ -45,6 +47,7 @@ export const fr = {
   ...commands,
   ...common,
   ...context,
+  ...copies,
   ...environment,
   ...fileInfo,
   ...game,
@@ -57,6 +60,7 @@ export const fr = {
   ...scene,
   ...settings,
   ...shell,
+  ...shipped,
   ...material,
   ...ui,
   ...usage,

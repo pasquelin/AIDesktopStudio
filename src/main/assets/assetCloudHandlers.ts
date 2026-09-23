@@ -23,6 +23,7 @@ import {
 import { remoteTypesFor } from '@main/provider/remoteTypes'
 import { OFFSET_MAX, PAGE_SIZE_MAX } from '@main/provider/limits'
 import type { AsyncCatalog } from '@main/project/catalogClient'
+import { parseLandingFolder } from '@main/project/validation'
 import type { AssetHandlerDeps } from './assetHandlerTypes'
 import { planSync, type SyncSide } from './syncPlan'
 import {
@@ -176,14 +177,20 @@ function sideOf(asset: Asset): SyncSide {
   }
 }
 
-async function pullAssets(deps: AssetHandlerDeps, remoteIds: unknown): Promise<SyncOutcome[]> {
+async function pullAssets(
+  deps: AssetHandlerDeps,
+  remoteIds: unknown,
+  landing: unknown,
+): Promise<SyncOutcome[]> {
   const ids = parseAssetIds(remoteIds)
+  // Where the gesture pointed, held to the same rule every landing folder meets — E-22.
+  const folder = parseLandingFolder(landing)
   const found = await reduced(() => deps.remote().getBulk(ids))
   const outcomes: SyncOutcome[] = []
   const arrived: Asset[] = []
   for (const cloudAsset of found) {
     try {
-      arrived.push(await deps.cloud().pull(cloudAsset))
+      arrived.push(await deps.cloud().pull(cloudAsset, folder))
       outcomes.push({ assetId: cloudAsset.id, ok: true })
     } catch (error) {
       log.error('assets', describeFailure(error))
@@ -253,7 +260,7 @@ export function registerAssetCloudHandlers(deps: AssetHandlerDeps): void {
     const parsed = parseCloudQuery(query)
     return quietlyOr(() => browse(deps.remote(), parsed), EMPTY_PAGE)
   })
-  handle(CHANNELS.cloudPull, (_event, ids) => pullAssets(deps, ids))
+  handle(CHANNELS.cloudPull, (_event, ids, folder) => pullAssets(deps, ids, folder))
   handle(CHANNELS.cloudPush, (_event, ids) => pushAssets(deps, ids))
   handle(CHANNELS.cloudPlan, async (_event, assetIds, policy) => {
     const found = await findMany(deps.catalog, parseAssetIds(assetIds))

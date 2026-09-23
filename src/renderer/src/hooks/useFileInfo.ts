@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react'
 import type { Asset } from '@shared/domain/asset'
+import { orElse } from '@shared/promises'
+import type { FileCopy } from '@shared/domain/fileCopies'
 import type { FileFacts } from '@shared/domain/fileInfo'
+import type { FileUse } from '@shared/domain/fileUse'
 import type { GitStatus } from '@shared/domain/git'
 import { assetAt } from '@/helpers/assetAt'
 import { getBridge } from '@/services/bridge'
@@ -12,6 +15,18 @@ export type FileInfo = {
   asset: Asset | null
   /** `null` where the project is not under version control, or git could not answer. */
   status: GitStatus | null
+  /**
+   * The documents that cite this file — §11's S3, read on demand. Empty is an answer: nothing
+   * cites it. It over-reports rather than under-reports — see `fileDependents.ts`.
+   */
+  uses: readonly FileUse[]
+  /**
+   * The OTHER files carrying these exact bytes — §16, for the one file this window is open on.
+   *
+   * Empty is an answer, and a different one from « no fingerprint »: the section only appears
+   * for a row that has one, so empty here reads as « this project holds these bytes once ».
+   */
+  copies: readonly FileCopy[]
   reading: boolean
 }
 
@@ -45,23 +60,40 @@ export function useFileInfo(path: string): FileInfo {
 
     let live = true
 
-    const refresh = (): void => {
+    const read = async (): Promise<void> => {
       const bridge = getBridge()
-      void Promise.all([
-        bridge?.project.fileFacts(path).catch(() => null) ?? null,
-        assetAt(path),
-        bridge?.git.read().catch(() => null) ?? null,
-      ]).then(([facts, asset, repository]) => {
-        if (!live) return
-        setRead({
-          path,
-          facts,
-          asset,
-          status: repository?.kind === 'ready' ? repository.status : null,
-          reading: false,
-        })
+      // All four leave together; only the copies wait, and only on the row's fingerprint. The
+      // citations walk every document of the project, so chaining behind THEM would have cost
+      // this window a whole walk of latency for a question that never depended on it.
+      const factsAsked = bridge?.project.fileFacts(path).catch(() => null) ?? null
+      const gitAsked = bridge?.git.read().catch(() => null) ?? null
+      const usesAsked = bridge?.project.fileUses([path]).catch(() => []) ?? []
+
+      // Only for a row that HAS a fingerprint: a `.txt` has no catalogue line, and an unfiltered
+      // ask would group the whole table for a window opened on the most ordinary case there is.
+      const asset = await assetAt(path)
+      const copiesAsked = asset?.hash ? orElse(bridge?.project.fileCopies(asset.hash), []) : []
+
+      const [facts, repository, uses, groups] = await Promise.all([
+        factsAsked,
+        gitAsked,
+        usesAsked,
+        copiesAsked,
+      ])
+      if (!live) return
+
+      setRead({
+        path,
+        facts,
+        asset,
+        status: repository?.kind === 'ready' ? repository.status : null,
+        uses,
+        copies: groups.flatMap(group => group.copies).filter(copy => copy.path !== path),
+        reading: false,
       })
     }
+
+    const refresh = (): void => void read()
 
     refresh()
     const stop = getBridge()?.project.onFolderChanged(refresh)
@@ -77,6 +109,8 @@ export function useFileInfo(path: string): FileInfo {
     facts: held?.facts ?? null,
     asset: held?.asset ?? null,
     status: held?.status ?? null,
+    uses: held?.uses ?? [],
+    copies: held?.copies ?? [],
     reading: path !== '' && !held,
   }
 }

@@ -1,12 +1,15 @@
 import { useEffect } from 'react'
 import { useSettings } from '@/stores/settings'
-import { autosaveOpenDocuments } from '@/features/shell/documentIo'
+import { keepUnsavedWorkSafe } from '@/features/shell/unsavedWork'
 
 /** The gap between two passes — and the most work a crash can cost, which the help text names. */
 export const AUTOSAVE_INTERVAL_MS = 30_000
 
 /**
- * Writes open documents back on their own, so a crash costs at most half a minute of work.
+ * Puts unsaved work somewhere a crash cannot take it, so one costs at most half a minute.
+ *
+ * 🛑 It does NOT write the user's files. That is what it used to do, and it is how opening a
+ * video came to leave an `.otio` beside it — see `documentRecovery.ts`.
  *
  * On a timer rather than on each edit: what a document holds changes on every stroke of a
  * pointer, and a save armed by each of them would either fire constantly or need a notion of
@@ -30,7 +33,7 @@ export function useAutosave(): void {
         // Caught here as well as per document inside the pass: what fails here is the schedule
         // itself, and a clock that stops on the first failure would go quiet exactly when the
         // disk is full — which is when the net is worth having.
-        void autosaveOpenDocuments()
+        void keepUnsavedWorkSafe()
           .catch(() => {})
           .finally(() => {
             if (!stopped) arm()

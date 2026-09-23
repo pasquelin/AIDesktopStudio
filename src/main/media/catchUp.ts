@@ -1,23 +1,42 @@
 import type { Asset, MediaProbe } from '@shared/domain/asset'
-import type { DeriveRequest } from './service'
+import { hasWaveform, needsProxy, type DeriveRequest } from './service'
 
 /**
- * Whether a take in the catalogue never met the pipeline that derives what a montage reads.
+ * Whether a take in the catalogue is missing something the pipeline owes it.
  *
- * `probe` is the marker: it is what ffprobe answers, so a timed row without one has not been
- * read by the tool — which is exactly the state a studio whose ffmpeg is not resolved yet leaves
+ * Two ways in. The first is `probe`: it is what ffprobe answers, so a timed row without one has
+ * not been read by the tool — exactly the state a studio whose ffmpeg is not resolved yet leaves
  * every generated take in. It SETTLES, because the pass below writes it down before deriving:
  * once the tool is there, a take is caught up once and never again.
  *
  * It used to be `hash`, and that stopped being true the day an import started fingerprinting the
  * file it wrote: `hashOrNull` is plain `node:fs` and answers whether or not ffmpeg exists, so a
  * rush generated without the tool was stamped as one the pipeline had been through — and skipped
- * for good once the tool arrived. Reading `peaksPath` would not settle either: a silent rush
- * legitimately has no waveform, and would be picked up on every project opened, for ever.
+ * for good once the tool arrived. Reading `peaksPath` ALONE would not settle either: a silent
+ * rush legitimately has no waveform, and would be picked up on every project opened, for ever.
+ * The second way in below is that reading, made to settle by asking the probe what is owed.
  */
 export function needsDeriving(asset: Asset): boolean {
   const timed = asset.type === 'video' || asset.type === 'audio'
-  return timed && asset.location === 'local' && !asset.probe && Boolean(asset.path)
+  if (!timed || asset.location !== 'local' || !asset.path) return false
+  return asset.probe ? owesDerivedFile(asset, asset.probe) : true
+}
+
+/**
+ * A row whose probe says a proxy or a waveform is DUE, and which names neither.
+ *
+ * The second way in, and the reason it is safe where reading `peaksPath` alone never was: the
+ * PROBE is what tells « none was ever made » from « none is owed ». A silent rush has no
+ * `sampleRate`, so it owes no waveform and is not picked up again; a rush WebCodecs reads owes
+ * no proxy. Only a row that owes one and has none comes back.
+ *
+ * What empties those two columns is the named cache purge, which throws the files away in the
+ * same gesture — so this settles at the next opening rather than at every one. It does not
+ * settle on a machine where the derivation itself keeps failing, which is already true of the
+ * probe half above and is the honest answer: the work is genuinely still owed.
+ */
+function owesDerivedFile(asset: Asset, probe: MediaProbe): boolean {
+  return (needsProxy(probe) && !asset.proxyPath) || (hasWaveform(probe) && !asset.peaksPath)
 }
 
 /** How many rows a page of the catalogue holds — its own default, stated rather than inherited. */
@@ -94,6 +113,8 @@ export async function catchUpMedia(deps: CatchUpDeps): Promise<number> {
         poster: !asset.posterPath,
         // Maintenance, not an import: these rows would read as files the user never picked.
         announce: false,
+        // Already known for a row coming back for a derived file alone — see `DeriveRequest`.
+        hash: asset.hash,
       })
       done += 1
     }

@@ -246,6 +246,12 @@
       "title": "Boost",
       "help": "What the speed is multiplied by while you hold the boost key. At 3 you go three times faster — enough to cross a large scene without changing the setting above."
     },
+    "renderEngine": {
+      "title": "Render engine",
+      "help": "What new scenes open on. The question is put at every document creation and the answer is written into the document itself: this setting only pre-fills the field, and changes no existing scene. Compatible runs on every machine; Advanced gives better lighting and reflections and wants a recent graphics card. A machine with no WebGPU adapter falls back to Compatible on its own, and says so in the journal.",
+      "gl": "Compatible",
+      "gpu": "Advanced"
+    },
     "shadows": {
       "title": "Cast shadows",
       "help": "Works out the shadows the lights throw. Every light that casts one costs an extra render pass per frame: turning this off is the most direct way to lighten a heavy scene."
@@ -273,6 +279,10 @@
     "shadowMapSize": {
       "title": "Shadow detail",
       "help": "The side, in pixels, of the shadow map each shadow-casting light computes. Doubling it costs four times the memory: 2048 is plenty for a scene of a few objects, 4096 earns its keep when one light covers a whole set."
+    },
+    "csm": {
+      "title": "Cascaded shadows",
+      "help": "Splits the sun’s shadow into three maps, one per depth band of the view, instead of one map stretched over everything the camera sees. What an open landscape needs; a single set gains nothing and pays three depth passes for it."
     },
     "snapTranslate": {
       "title": "Move step",

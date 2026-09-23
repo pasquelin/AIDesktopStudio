@@ -93,6 +93,8 @@
     "undoHint": "Remet le dernier lot de fichiers là où il était",
     "redo": "Rétablir",
     "redoHint": "Refait le lot de fichiers qui vient d’être annulé",
+    "trashUsedTitle": "Mettre à la corbeille ? {{count, number}} document(s) s’en servent",
+    "trashUsedBody": "Ces documents citent ce qui va partir :",
     "trashTitle": "Ces {{count, number}} éléments partent à la corbeille",
     "trashBody": "Vous pourrez les récupérer depuis la corbeille du système. Le studio, lui, ne sait pas les remettre en place.",
     "trashConfirm": "Mettre à la corbeille",
@@ -123,6 +125,16 @@
     "sort": {
       "name": "Nom, de A à Z",
       "nameDesc": "Nom, de Z à A"
+    },
+    "gather": "Rassembler dans",
+    "gatherHint": "Copie ce document et tout ce qu’il cite dans un autre projet, pour qu’il s’y ouvre tel quel.",
+    "gatherIntoHint": "Rassemble ce document dans {{name}}",
+    "gathered": "{{files, number}} fichiers copiés, {{rows, number}} fiches écrites.",
+    "gatherKept": "{{count, number}} laissés en place : la destination en avait déjà d’autres à ces chemins.",
+    "gatherRefused": {
+      "not-a-project": "Cette destination n’est pas un projet.",
+      "same-project": "C’est le projet ouvert.",
+      "no-document": "Aucun document à rassembler."
     }
   },
   "menu": {
@@ -154,6 +166,7 @@
     "openProject": "Ouvrir un projet…",
     "saveDocument": "Enregistrer",
     "saveDocumentAs": "Enregistrer sous…",
+    "saveDocumentCopy": "Enregistrer une copie…",
     "settings": "Réglages…",
     "tools": "Modules",
     "add": "Ajouter",
@@ -197,7 +210,9 @@
     "sceneNavigation": "Navigation",
     "sceneDisplay": "Mode de rendu",
     "sceneView": "Point de vue",
-    "sceneCapture": "Capturer la vue"
+    "sceneCapture": "Capturer la vue",
+    "copies": "Copies…",
+    "shipped": "Ce que le studio fournit…"
   },
   "about": {
     "copyright": "© 2026 Alban Pasquelin"

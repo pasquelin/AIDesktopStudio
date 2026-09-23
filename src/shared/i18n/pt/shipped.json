@@ -1,0 +1,19 @@
+{
+  "shipped": {
+    "title": "Fornecido com o estúdio",
+    "character": "Personagem",
+    "characterNote": "A personagem que o estúdio fornece, em cada densidade em que a fornece. Um só esqueleto para as quatro, o que deixa as animações fornecidas tocarem nela sem adivinhação.",
+    "characterWhere": "Colocada, ela cai no armazenamento interno do projeto: nenhum arquivo a mais na sua árvore.",
+    "textures": "Texturas de trabalho",
+    "texturesNote": "Uma grade e um xadrez, cada um em duas densidades. Um quadrado tem um metro, e é isso que permite julgar uma escala e ver uma UV esticar.",
+    "texturesWhere": "Colocadas, elas caem no armazenamento interno do projeto: nenhum arquivo a mais na sua árvore.",
+    "animations": "Animações",
+    "animationsNote": "Os movimentos que o estúdio fornece, tocáveis na sua personagem e numa importada cujo esqueleto é reconhecido.",
+    "animationsReachable": "Nada a colocar: já são oferecidos onde quer que um movimento seja escolhido, e a exportação de jogo os embarca. Copiar um para o projeto seria um segundo exemplar dos mesmos bytes sem ganhar nada.",
+    "animationsNone": "Esta instalação não traz nenhuma animação.",
+    "place": "Colocar",
+    "placeAll": "Colocar as quatro",
+    "placed": "Colocado no projeto",
+    "notPlaced": "Ainda não colocado"
+  }
+}

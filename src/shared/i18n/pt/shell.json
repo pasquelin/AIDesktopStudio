@@ -93,6 +93,8 @@
     "undoHint": "Devolve o último lote de arquivos ao lugar onde estava",
     "redo": "Refazer",
     "redoHint": "Refaz o lote de arquivos que acaba de ser desfeito",
+    "trashUsedTitle": "Mover para o lixo? {{count, number}} documento(s) usam-no",
+    "trashUsedBody": "Estes documentos citam o que vai sair:",
     "trashTitle": "Estes {{count, number}} itens vão para a lixeira",
     "trashBody": "Você poderá recuperá-los na lixeira do sistema. O estúdio, esse, não sabe colocá-los de volta.",
     "trashConfirm": "Mover para a lixeira",
@@ -123,6 +125,16 @@
     "sort": {
       "name": "Nome: de A a Z",
       "nameDesc": "Nome: de Z a A"
+    },
+    "gather": "Reunir em",
+    "gatherHint": "Copia este documento e tudo o que ele cita para outro projeto, para que lá abra como está.",
+    "gatherIntoHint": "Reunir este documento em {{name}}",
+    "gathered": "{{files, number}} arquivos copiados, {{rows, number}} fichas escritas.",
+    "gatherKept": "{{count, number}} deixados como estavam: o destino já tinha outros nesses caminhos.",
+    "gatherRefused": {
+      "not-a-project": "Esse destino não é um projeto.",
+      "same-project": "Esse é o projeto aberto.",
+      "no-document": "Nenhum documento a reunir."
     }
   },
   "menu": {
@@ -154,6 +166,7 @@
     "openProject": "Abrir um projeto…",
     "saveDocument": "Salvar",
     "saveDocumentAs": "Salvar como…",
+    "saveDocumentCopy": "Guardar uma cópia…",
     "settings": "Configurações…",
     "tools": "Janelas de ferramentas",
     "add": "Adicionar",
@@ -197,7 +210,9 @@
     "sceneNavigation": "Navegação",
     "sceneDisplay": "Modo de exibição",
     "sceneView": "Ponto de vista",
-    "sceneCapture": "Capturar a vista"
+    "sceneCapture": "Capturar a vista",
+    "copies": "Cópias…",
+    "shipped": "Fornecido com o estúdio…"
   },
   "about": {
     "copyright": "© 2026 Alban Pasquelin"

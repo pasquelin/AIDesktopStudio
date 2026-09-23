@@ -38,6 +38,7 @@ import {
   SHADOW_QUALITIES,
   VIEWPORT_QUALITIES,
 } from '@shared/domain/scene'
+import { RENDER_ENGINES } from '@shared/domain/renderEngine'
 import { HEX_COLOR } from '@shared/domain/color'
 import { localModelSchema } from '@main/ai/localModelSchema'
 import { migratedRoleChoices } from './migratedRoleChoices'
@@ -211,8 +212,10 @@ const three = z.object({
   gizmoSize: z.number().min(handles.min).max(handles.max).optional(),
   snapSurfaceAlign: z.boolean().optional(),
   snapSurfaceOffset: z.number().min(surfaceOffset.min).max(surfaceOffset.max).optional(),
+  engine: z.enum(RENDER_ENGINES).optional(),
   shadows: z.boolean().optional(),
   shadowQuality: z.enum(SHADOW_QUALITIES).optional(),
+  csm: z.boolean().optional(),
   // Read from the shared list, never retyped: what the panel offers and what this refuses have
   // to be the same numbers.
   shadowMapSize: z

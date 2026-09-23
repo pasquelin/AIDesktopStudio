@@ -246,6 +246,12 @@
       "title": "Tăng tốc",
       "help": "Tốc độ được nhân với bao nhiêu khi bạn giữ phím tăng tốc. Ở mức 3, bạn đi nhanh gấp ba — đủ để băng qua một cảnh lớn mà không phải đổi cài đặt phía trên."
     },
+    "renderEngine": {
+      "title": "Bộ máy dựng hình",
+      "help": "Cảnh mới mở bằng gì. Câu hỏi được đặt ở mỗi lần tạo tài liệu và câu trả lời được ghi vào chính tài liệu đó: thiết lập này chỉ điền sẵn ô chọn, và không đổi bất kỳ cảnh nào đã có. Tương thích chạy trên mọi máy; Nâng cao cho ánh sáng và phản chiếu tốt hơn và cần card đồ hoạ đời mới. Máy không có bộ điều hợp WebGPU tự quay về Tương thích, và ghi điều đó vào nhật ký.",
+      "gl": "Tương thích",
+      "gpu": "Nâng cao"
+    },
     "shadows": {
       "title": "Bóng đổ",
       "help": "Tính các bóng mà đèn hắt ra. Mỗi đèn có đổ bóng tốn thêm một lượt render cho mỗi khung hình: tắt tùy chọn này là cách trực tiếp nhất để làm nhẹ một cảnh nặng."
@@ -273,6 +279,10 @@
     "shadowMapSize": {
       "title": "Độ chi tiết của bóng đổ",
       "help": "Cạnh của map bóng mà mỗi đèn có đổ bóng tính ra, tính bằng pixel. Nhân đôi con số này thì tốn gấp bốn lần bộ nhớ: 2048 là quá đủ cho một cảnh vài đối tượng, 4096 mới đáng dùng khi một đèn phủ cả một phim trường."
+    },
+    "csm": {
+      "title": "Bóng đổ phân tầng",
+      "help": "Chia bóng của mặt trời thành ba bản đồ, mỗi bản một lớp chiều sâu của khung nhìn, thay vì một bản trải khắp những gì máy quay thấy. Điều một cảnh mở cần; một bối cảnh đơn lẻ chẳng được gì mà vẫn trả ba lượt chiều sâu."
     },
     "snapTranslate": {
       "title": "Bước di chuyển",

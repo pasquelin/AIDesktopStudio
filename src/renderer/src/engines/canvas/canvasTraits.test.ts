@@ -102,4 +102,13 @@ describe('what a picture document holds', () => {
       'layerOpacity',
     ])
   })
+  /**
+   * The blind spot this closes, and it was a real loss: one layer holds no `layers`, so a stack
+   * of one HIDDEN layer declared nothing at all and flattened to an empty picture in silence.
+   */
+  it('holds the visibility of a layer the stack hides', () => {
+    const state = withLayers({ ...pixelLayer('a', 'A'), visible: false })
+
+    expect(traitsOfCanvas(state)).toContain('layerVisibility')
+  })
 })

@@ -28,6 +28,25 @@ export type StudioBridgeSettings = {
   settings: {
     read: () => Promise<Settings>
     write: (partial: PartialSettings) => Promise<Settings>
+    /**
+     * Drops everything keyed on a project folder, and answers the settings as they now read.
+     *
+     * 🛑 The PATH rather than the new lists: a window composes those from its replica, and
+     * everything this process wrote since the last broadcast goes with them — measured
+     * 2026-09-09, two trashings after an open dropped the open project off the shelf.
+     *
+     * `owned` is a folder that really went to the bin: only then do the account link and the
+     * per-project roles go, `missing` being a drive that is merely unplugged.
+     */
+    forgetProject: (path: string, owned: boolean) => Promise<Settings>
+    /**
+     * Moves everything keyed on a project folder to the folder it now lives in — the shelf row,
+     * the startup pointer, the account link and the per-project roles.
+     *
+     * The two paths rather than the new tables, for the reason `forgetProject` gives: a rename
+     * touches four of them, so a window composing from its replica loses four at once.
+     */
+    moveProject: (from: string, to: string) => Promise<Settings>
     authState: () => Promise<AuthState>
 
     /** Opens the settings window on a section, or focuses it there if it is already up. */

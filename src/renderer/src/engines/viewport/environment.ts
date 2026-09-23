@@ -1,14 +1,34 @@
-import {
-  EquirectangularReflectionMapping,
-  PMREMGenerator,
-  type Scene,
-  type Texture,
-  type WebGLRenderer,
-  type WebGLRenderTarget,
-} from 'three'
+import { EquirectangularReflectionMapping, type Scene, type Texture } from 'three'
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js'
 import { isNeutral, NEUTRAL_ADJUSTMENTS, type AdjustmentStack } from '@shared/domain/adjustments'
-import { createSkyGrading, type SkyGrading } from '../gpu/skyGrading'
+
+/**
+ * A prefiltered map, whichever engine built it. `WebGLRenderTarget` and the node renderer's
+ * `RenderTarget` are declared apart by three and share exactly this much of a shape.
+ */
+type PrefilteredMap = { texture: Texture; dispose: () => void }
+
+/** How far the neutral room is blurred as it is prefiltered — three's own value for one. */
+export const ROOM_SIGMA = 0.04
+
+/**
+ * What an environment needs OF an engine, and the whole of it: prefiltering a picture, prefiltering
+ * the neutral room, and grading a sky before either.
+ *
+ * A port rather than a renderer, for the reason `SqliteDriver` is one: the debounce, the backdrop,
+ * the rotation and the intensity are the same on both engines, and the day they were written twice
+ * is the day a sky graded under one stopped matching the other.
+ */
+export type EnvironmentPort = {
+  fromEquirectangular: (texture: Texture) => PrefilteredMap
+  fromScene: (scene: Scene) => PrefilteredMap
+  /**
+   * The picture as the sky DOCUMENT grades it, or the source itself where an engine has no
+   * grading of its own — see `gpuDriver`, which says what that costs a reader.
+   */
+  grade: (given: Texture, stack: AdjustmentStack) => Texture
+  dispose: () => void
+}
 
 /**
  * Image-based lighting for a viewport: the equirectangular picture behind the scene, and the
@@ -90,26 +110,19 @@ function backdropRedrawn(texture: Texture): void {
 }
 
 export function createEnvironment(
-  renderer: WebGLRenderer,
+  port: EnvironmentPort,
   scene: Scene,
   requestRender: () => void,
 ): ViewportEnvironment {
-  const generator = new PMREMGenerator(renderer)
-  // Compiled up front: the first `fromEquirectangular` would otherwise stall the frame that
-  // asked for it, which is the frame where the user has just chosen a sky.
-  generator.compileEquirectangularShader()
-
   /** What was handed in, before grading — `source` is what is shown and prefiltered. */
   let given: Texture | null = null
   let source: Texture | null = null
   let stack: AdjustmentStack = NEUTRAL_ADJUSTMENTS
-  /** Built on the first stack that is not neutral, and never for a sky nobody has graded. */
-  let grading: SkyGrading | null = null
   let quiet: ReturnType<typeof setTimeout> | null = null
-  let prefiltered: WebGLRenderTarget | null = null
+  let prefiltered: PrefilteredMap | null = null
   let backgroundVisible = true
   /** The neutral room, prefiltered on the first ask and kept — see `borrowStudio`. */
-  let room: WebGLRenderTarget | null = null
+  let room: PrefilteredMap | null = null
   /** What the document asks for, so a borrowed pass has something to give back. */
   let owned: Texture | null = null
   let intensity = 1
@@ -130,8 +143,7 @@ export function createEnvironment(
   }
 
   const regrade = (): void => {
-    if (given && !isNeutral(stack)) grading ??= createSkyGrading(renderer)
-    const shown = grading ? grading.of(given, stack) : given
+    const shown = given && !isNeutral(stack) ? port.grade(given, stack) : given
     // A target redrawn IN PLACE, which is what both engines hand back: three caches the backdrop's
     // cubemap on the texture and expires it never — see `backdropRedrawn`.
     if (shown !== null && shown === source) backdropRedrawn(shown)
@@ -146,7 +158,7 @@ export function createEnvironment(
   const roomMap = (): Texture => {
     if (!room) {
       const built = new RoomEnvironment()
-      room = generator.fromScene(built, 0.04)
+      room = port.fromScene(built)
       // `fromScene` reads the room and leaves it alone: its dozen boxes and materials are ours.
       built.dispose()
     }
@@ -163,7 +175,7 @@ export function createEnvironment(
     cancelQuiet()
 
     const previous = prefiltered
-    prefiltered = source ? generator.fromEquirectangular(source) : null
+    prefiltered = source ? port.fromEquirectangular(source) : null
     owned = prefiltered?.texture ?? null
     scene.environment = owned
     // Disposed after the new one is in place, never before: releasing the target still bound
@@ -263,15 +275,13 @@ export function createEnvironment(
       cancelQuiet()
       scene.background = null
       scene.environment = null
-      grading?.dispose()
-      grading = null
       prefiltered?.dispose()
       prefiltered = null
       // The room outlives every sky, so it is freed here and nowhere else.
       room?.dispose()
       room = null
       owned = null
-      generator.dispose()
+      port.dispose()
     },
   }
 }

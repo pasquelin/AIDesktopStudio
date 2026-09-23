@@ -16,9 +16,13 @@
       "title": "Ouvrir un projet",
       "help": "Choisit un projet déjà existant sur votre disque et l’ouvre à la place de celui en cours. Le projet ouvert est enregistré au fur et à mesure, il n’y a rien à enregistrer avant."
     },
+    "documentSaveCopy": {
+      "title": "Enregistrer une copie",
+      "help": "Écrit une copie du document là où vous la demandez, et continue sur le document ouvert : sa destination ne change pas."
+    },
     "documentSaveAs": {
       "title": "Enregistrer sous",
-      "help": "Écrit une copie de l’asset à côté de l’original et continue sur elle. L’asset ouvert reste tel qu’il était au dernier enregistrement."
+      "help": "Choisit une destination, y écrit le document et continue dessus : le fichier ouvert reste tel qu’il était au dernier enregistrement."
     },
     "documentSave": {
       "title": "Enregistrer le document",

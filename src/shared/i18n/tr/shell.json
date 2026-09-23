@@ -93,6 +93,8 @@
     "undoHint": "Son dosya topluluğunu nerede oldu geri koyar",
     "redo": "Yinele",
     "redoHint": "Hemen geri alınan dosya topluluğunu yeniden yapar",
+    "trashUsedTitle": "Çöpe taşınsın mı? {{count, number}} belge onu kullanıyor",
+    "trashUsedBody": "Bu belgeler gidecek olanı anıyor:",
     "trashTitle": "Bu {{count, number}} öğeler çöp kutusuna gidiyor",
     "trashBody": "Bunları sistem çöp kutusundan geri alabileceksiniz. Stüdyo onları geri koyamaz.",
     "trashConfirm": "Çöp kutusuna taşı",
@@ -123,6 +125,16 @@
     "sort": {
       "name": "Ad: A’dan Z’ye",
       "nameDesc": "Ad: Z’den A’ya"
+    },
+    "gather": "Şuraya topla",
+    "gatherHint": "Bu belgeyi ve andığı her şeyi başka bir projeye kopyalar, orada olduğu gibi açılsın diye.",
+    "gatherIntoHint": "Bu belgeyi {{name}} projesine topla",
+    "gathered": "{{files, number}} dosya kopyalandı, {{rows, number}} kayıt yazıldı.",
+    "gatherKept": "{{count, number}} tanesi olduğu gibi bırakıldı: hedefte bu yollarda zaten başkaları vardı.",
+    "gatherRefused": {
+      "not-a-project": "O hedef bir proje değil.",
+      "same-project": "Bu, açık olan proje.",
+      "no-document": "Toplanacak belge yok."
     }
   },
   "menu": {
@@ -154,6 +166,7 @@
     "openProject": "Projeyi aç…",
     "saveDocument": "Kaydet",
     "saveDocumentAs": "Farklı kaydet…",
+    "saveDocumentCopy": "Bir kopya kaydet…",
     "settings": "Ayarlar…",
     "tools": "Araç pencereleri",
     "add": "Ekle",
@@ -197,7 +210,9 @@
     "sceneNavigation": "Gezinti",
     "sceneDisplay": "Görüntü kipi",
     "sceneView": "Görünüş açısı",
-    "sceneCapture": "Görünümü yakala"
+    "sceneCapture": "Görünümü yakala",
+    "copies": "Kopyalar…",
+    "shipped": "Stüdyoyla birlikte gelir…"
   },
   "about": {
     "copyright": "© 2026 Alban Pasquelin"

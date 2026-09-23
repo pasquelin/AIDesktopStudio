@@ -1,4 +1,4 @@
-import { Container, Graphics, Sprite, Texture, type Application, type TextureSource } from 'pixi.js'
+import { Container, Graphics, Sprite, type Application } from 'pixi.js'
 import { bytesFromBase64 } from '@shared/base64'
 import { createClock, type Clock } from './clock'
 import { createDecoderPool, type DecoderPool, type SinkLike } from './decoderPool'
@@ -21,15 +21,17 @@ import {
 import { followHostSize, mountApplication } from '../core/mount'
 import { tokenAsHex } from '../core/palette'
 import type { Size } from '../core/geometry'
+import { paintDecoded } from './framePainter'
 import {
   clipAt,
   fitInside,
+  fitSprite,
+  place,
   reusePaintedSource,
   spritesOffFrame,
-  swapTexture,
   videoTracksByDepth,
-  type Placement,
 } from './timelinePresentation'
+export { createFrameSink, uploadNow } from './framePainter'
 export {
   clipAt,
   fitInside,
@@ -47,42 +49,9 @@ const BACKDROP_DEPTH = -1
  * list is the row highest in the column, and the one the eye sees on top.
  */
 
-/** Applies a placement to anything Pixi positions and scales. */
-function place(target: Container, placement: Placement): void {
-  target.position.set(placement.x, placement.y)
-  target.scale.set(placement.scale)
-}
-
 /** The sequence canvas, behind every layer — see `--color-monitor`. */
 const CANVAS_TOKEN = '--color-monitor'
 const CANVAS_FALLBACK = 0x000000
-
-/** What a renderer must offer to take a frame now rather than at its next pass. */
-export type TextureUploader = { initSource: (source: TextureSource) => void }
-
-/**
- * Puts a texture on the GPU now, and hands it back. Pixi uploads a source at its next render —
- * by which time the sink has closed the frame behind it, and the monitor paints nothing at all.
- */
-export function uploadNow(texture: Texture, uploader: TextureUploader): Texture {
-  uploader.initSource(texture.source)
-  return texture
-}
-
-export type FrameSink = { push: (frame: VideoFrame) => void }
-
-/** Uploads then closes, always in that order and always both. */
-export function createFrameSink({ upload }: { upload: (frame: VideoFrame) => void }): FrameSink {
-  return {
-    push: frame => {
-      try {
-        upload(frame)
-      } finally {
-        frame.close()
-      }
-    },
-  }
-}
 
 export type TimelineEngineDeps = {
   openSink: (assetId: string) => Promise<SinkLike>
@@ -137,6 +106,11 @@ export class TimelineEngine {
   private state: SequenceState = EMPTY_SEQUENCE
   /** Guards against two seeks interleaving their awaits and painting out of order. */
   private generation = 0
+  /**
+   * Where the transport actually stands. `state.playhead` cannot say: the monitor seeks a head
+   * that moved alone without applying, so the applied one is stale from the first scrub on.
+   */
+  private head: Us = 0
   /** Set for good by `dispose`. A mount that resolves afterwards has nowhere left to attach. */
   private disposed = false
   /** The canvas and screen sizes the frame was last laid out for — see `layout`. */
@@ -183,8 +157,9 @@ export class TimelineEngine {
     // The playhead stops ON the end, where the loop's first test sends it straight back to
     // pause: pressing play there did nothing at all, which reads as a broken transport rather
     // than as a sequence that is over.
-    const from = this.state.playhead >= sequenceDuration(this.state) ? 0 : this.state.playhead
-    if (from !== this.state.playhead) this.deps.onTime?.(from)
+    const from = this.head >= sequenceDuration(this.state) ? 0 : this.head
+    if (from !== this.head) this.deps.onTime?.(from)
+    this.head = from
 
     // Sound first: it wakes the output, and the clock asks that same output whether to follow it
     // — asked before, the answer is always no and the sequence runs on the wall clock instead.
@@ -300,13 +275,14 @@ export class TimelineEngine {
   }
 
   async seek(time: Us): Promise<void> {
+    // Before the guard: a head moved while the application is still starting has still moved.
+    this.head = time
+
     const application = this.application
     if (!application) return
 
     this.generation += 1
     const generation = this.generation
-    let unreadable = false
-    let painted = false
 
     const painting = videoTracksByDepth(this.state)
     for (const sprite of spritesOffFrame(this.sprites, painting)) sprite.visible = false
@@ -343,35 +319,19 @@ export class TimelineEngine {
       return
     }
 
-    asked.forEach(({ sprite, clip, source, trackId, reuse }, index) => {
-      if (reuse) {
-        sprite.visible = true
-        painted = true
-        return
-      }
-
-      const frame = decoded[index]
-      if (!frame) {
-        sprite.visible = false
-        this.painted.delete(trackId)
-        if (clip && this.pool.undecodable(clipSource(clip))) unreadable = true
-        return
-      }
-
-      sprite.visible = true
-      painted = true
-      if (source) this.painted.set(trackId, source)
-      createFrameSink({
-        upload: uploaded =>
-          swapTexture(sprite, uploadNow(Texture.from(uploaded), application.renderer.texture)),
-      }).push(frame)
-      fitSprite(sprite, this.canvas())
-    })
+    const { drew, unreadable } = paintDecoded(
+      asked,
+      decoded,
+      this.pool,
+      this.painted,
+      application.renderer.texture,
+      this.canvas(),
+    )
 
     // Only when the monitor is showing nothing at all: the message covers the whole picture, and
     // laying it over a track that did decode would trade one silence for a worse lie. A layer
     // lost under one that painted stays silent, and that half is still open.
-    this.deps.onUnreadable?.(unreadable && !painted)
+    this.deps.onUnreadable?.(unreadable && !drew)
     this.draw()
   }
 
@@ -444,10 +404,6 @@ function layoutFrame(
   place(frame, fitInside(canvas, screen))
   for (const sprite of sprites) fitSprite(sprite, canvas)
   return shape
-}
-
-function fitSprite(sprite: Sprite, canvas: Size): void {
-  place(sprite, fitInside(sprite.texture, canvas))
 }
 
 function spriteFor(trackId: string, sprites: Map<string, Sprite>, frame: Container): Sprite {

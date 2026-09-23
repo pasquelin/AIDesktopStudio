@@ -81,9 +81,12 @@ export function AssistantConversationChoiceForm({
         <Button
           variant="primary"
           onClick={() => choose(given)}
-          {...HINT_TOP(t('assistant.sendAnswersHint'))}
+          // The count is what a lone question needs: this card holds « quel titre ? » as often as
+          // it holds six questions, and « Envoyer les réponses » over one field reads as a form
+          // half-filled.
+          {...HINT_TOP(t('assistant.sendAnswersHint', { count: questions.length }))}
         >
-          {t('assistant.sendAnswers')}
+          {t('assistant.sendAnswers', { count: questions.length })}
         </Button>
         {/* Dismissing is an ANSWER, and the only one that spends nothing: the chain reads it as
             declined and stops rather than picking for the person. */}

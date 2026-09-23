@@ -2,8 +2,8 @@ import { mdiCompare, mdiRhombus, mdiRhombusOutline } from '@mdi/js'
 import { useCallback, useMemo, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
+  effectsForEngine,
   POST_CATEGORIES,
-  POST_EFFECT_IDS,
   POST_EFFECTS,
   type PostEffectId,
   type PostStack,
@@ -37,6 +37,7 @@ import { newId } from '@/helpers/ids'
 import { sceneKeyingAt } from '@/helpers/sceneKeyingAt'
 import type { SceneEdit } from '@/hooks/useSceneEdit'
 import { sceneEngineOf } from '@/stores/sceneEngines'
+import { sceneOf, useScenes } from '@/stores/scenes'
 import { HINT_LEFT, TIP_LEFT } from '@/helpers/tooltip'
 import { choicesOf } from '../../../shell/components/unionChoices'
 import { DescriptorSection } from '../../../../components/DescriptorSection'
@@ -66,6 +67,7 @@ export function PostProcessingSection({
 }: PostProcessingSectionProps) {
   const { t } = useTranslation()
   const [selectedId, setSelectedId] = useState<string | null>(null)
+  const engine = useScenes(state => sceneOf(state, documentId).world.engine)
 
   const selected = stack.effects.find(effect => effect.id === selectedId) ?? null
   const subject = postSubjectOf(target)
@@ -88,8 +90,18 @@ export function PostProcessingSection({
     return found
   }, [keying.state, selected, target])
 
+  /**
+   * What this DOCUMENT can compose, which is not the whole catalogue: the two engines build
+   * different passes, and offering one the chain would silently leave out is offering nothing.
+   * The rows already in the stack are untouched — a document is never made wrong by an engine.
+   *
+   * 🛑 The document's engine and not the MOUNTED one: what a viewport ended up on is held in a
+   * plain registry nothing re-renders from, so reading it here would freeze whatever it happened
+   * to say on the first render. A machine with no WebGPU adapter therefore still lists the
+   * Advanced effects, which its chain then leaves out — the fallback says so in the journal.
+   */
   const effects = useMemo(() => {
-    const ordered = [...POST_EFFECT_IDS].sort(
+    const ordered = [...effectsForEngine(engine)].sort(
       (left, right) =>
         POST_CATEGORIES.indexOf(POST_EFFECTS[left].category) -
         POST_CATEGORIES.indexOf(POST_EFFECTS[right].category),
@@ -102,7 +114,7 @@ export function PostProcessingSection({
         group: t(`postfx.category_${POST_EFFECTS[option.value].category}`),
       })),
     }
-  }, [t])
+  }, [engine, t])
 
   const run = edit.run
 

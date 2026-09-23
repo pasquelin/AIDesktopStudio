@@ -1,4 +1,4 @@
-import { findActions, refused, type ActionOutcome } from '@shared/domain/assistant'
+import { refused, type ActionOutcome } from '@shared/domain/assistant'
 import type { ApiFailure } from '@shared/domain/failure'
 import { commandDescriptor } from '@shared/domain/command'
 import { allRoles, primaryRoleOf } from '@shared/domain/aiRole'
@@ -6,13 +6,14 @@ import { CHOICE_SCOPES } from '@shared/domain/aiOverview'
 import { LANDING_TARGETS } from '@shared/domain/landingTarget'
 import { CAPABILITIES_BY_FAMILY, MODEL_FAMILIES } from '@shared/domain/model'
 import { SCENE_TEMPLATE_IDS } from '@shared/domain/sceneTemplate'
-import { WORKSPACE_IDS } from '@shared/domain/workspace'
+import { WORKSPACE_IDS, type WorkspaceId } from '@shared/domain/workspace'
 import { englishText } from '@shared/i18n'
 import { failureMessageKey } from '@/services/failureMessage'
 import { showWorkspace } from '@/features/shell/components/dockviewApi'
-import { createDocumentIn } from '@/features/shell/newDocument'
+import { restoreDocument } from '@/features/shell/documentLoad'
+import { createNamedDocumentIn } from '@/features/shell/newDocument'
 import { openGeneratorOn } from '@/helpers/openGenerator'
-import { revealTool } from '@/helpers/revealPanel'
+import { revealTool, toolIsOffered } from '@/helpers/revealPanel'
 import { routeCommand, type CommandRouting } from '@/services/commandRouter'
 import { useJobs } from '@/stores/jobs'
 import { useModels } from '@/stores/models'
@@ -20,7 +21,7 @@ import { useProject } from '@/stores/project'
 import { getBridge } from '@/services/bridge'
 import { withBridge, type ActionHandlers } from './actionHandler'
 import { boolOf, oneOf, recordOf, textOf } from './actionInputs'
-import { mountedGenerator } from './generatorBridge'
+import { generatorMounted, mountedGenerator } from './generatorBridge'
 
 /**
  * The eleven a spoken request needs.
@@ -44,6 +45,7 @@ const ROUTED: Record<CommandRouting, ActionOutcome> = {
     'that command has nothing left to do — what it names already stands the way it asks for',
   ),
   noBridge: refused('noBridge', 'this window is not connected to the studio process'),
+  failed: refused('failed', 'that command was carried out and it failed — the journal holds why'),
 }
 
 /**
@@ -52,7 +54,7 @@ const ROUTED: Record<CommandRouting, ActionOutcome> = {
  * Nothing is decided here: a second copy of that routing is what let ten commands be offered by
  * the tool schema and refused by the handler for as long as the two existed side by side.
  */
-function runCommand(input: Record<string, unknown>): ActionOutcome {
+async function runCommand(input: Record<string, unknown>): Promise<ActionOutcome> {
   const descriptor = commandDescriptor(textOf(input, 'command') ?? '')
   if (!descriptor)
     return refused(
@@ -67,7 +69,7 @@ function runCommand(input: Record<string, unknown>): ActionOutcome {
       `"${descriptor.id}" raises a dialog of the operating system, which nothing here can fill or read back — use the action that takes a path instead: file.open, project.open, document.open or document.export, depending on what was meant`,
     )
 
-  const routed = routeCommand(descriptor.id)
+  const routed = await routeCommand(descriptor.id)
   return typeof routed === 'string' ? ROUTED[routed] : { ok: true, data: routed }
 }
 
@@ -122,7 +124,7 @@ function armedGeneration(): ActionOutcome {
   return { ok: true, data: armed }
 }
 
-function prepareGenerator(input: Record<string, unknown>): ActionOutcome {
+async function prepareGenerator(input: Record<string, unknown>): Promise<ActionOutcome> {
   const family = oneOf(input, 'family', MODEL_FAMILIES)
   const parameters = recordOf(input, 'parameters')
   if (!family || !parameters)
@@ -137,48 +139,86 @@ function prepareGenerator(input: Record<string, unknown>): ActionOutcome {
     parameters,
     textOf(input, 'operation') ?? undefined,
   )
-  return { ok: true }
+  // The arming stands whatever the answer — as it did before there was one: it is what the panel
+  // reads when a space that carries it does come forward.
+  if (!toolIsOffered('generator'))
+    return refused(
+      'wrongSurface',
+      'the space in front carries no generation panel — workspace.open brings one forward that does',
+    )
+
+  // Awaited: the panel declares itself a render later, and the call after this one reads it.
+  return (await generatorMounted())
+    ? { ok: true }
+    : refused(
+        'generatorClosed',
+        'the generation panel was armed and then closed before it could be read — generator.prepare opens it again',
+      )
 }
 
-// Waits for the document: the creation puts a name field on screen, and answering before it is
-// filled told a client "done" about one the person then called off.
 async function openWorkspace(input: Record<string, unknown>): Promise<ActionOutcome> {
   const workspace = oneOf(input, 'workspace', WORKSPACE_IDS)
   if (!workspace)
     return refused('badInput', `"workspace" wants one of: ${WORKSPACE_IDS.join(', ')}`)
 
-  if (!boolOf(input, 'createDocument')) {
-    showWorkspace(workspace)
-    return { ok: true }
-  }
+  if (boolOf(input, 'createDocument')) return await madeDocument(workspace, input)
 
-  // Asked here although the creation asks it too: from there it answers `null`, which is the
-  // person's own refusal — and "you turned that down" for a studio with no project open is a lie.
-  if (!useProject.getState().project)
-    return refused(
-      'noProject',
-      'no project is open, and a document is made inside one — projects.list answers what there is, project.open opens one and project.create makes one',
-    )
+  // The tab brought forward may never have been mounted, so nothing has read its file. Waited
+  // for, so the call after this one reads restored content — but never refused on: the space IS
+  // in front, and a front tab whose file will not read would otherwise make it unreachable.
+  const front = showWorkspace(workspace)
+  if (!front) return { ok: true }
+
+  await restoreDocument(front)
+  return { ok: true, data: { documentId: front } }
+}
+
+/**
+ * A new document of that space, named by the person the studio is working for.
+ *
+ * Waits for it: a scene's template writes its control map, its graph and its script before the
+ * tab holds anything, and answering first told a client "done" about an empty one.
+ */
+async function madeDocument(
+  workspace: WorkspaceId,
+  input: Record<string, unknown>,
+): Promise<ActionOutcome> {
+  // Asked here although the creation asks it too: from there it answers `null`, which says only
+  // that nothing was written — and "the studio would not write it" is no help without the reason.
+  if (!useProject.getState().project) return refused('noProject', NO_PROJECT_TO_WRITE_IN)
 
   const title = textOf(input, 'title')
+  // 🛑 The same gate `project.create` puts on a project's name, and for the same reason: a file
+  // is named by the person who will look for it. Left optional on the field — opening a space
+  // takes no title — so the refusal is what tells a model to ask rather than to invent one.
+  if (title === null) return refused('badInput', WANTS_A_TITLE)
+
   const folder = textOf(input, 'folder')
-  // Only alongside a title, and for the same reason the folder is: with no title the naming
-  // window opens, and what it puts on screen is the person's own choice to make.
   const template = oneOf(input, 'template', SCENE_TEMPLATE_IDS)
-  const created = await createDocumentIn(
-    workspace,
-    title === null
-      ? undefined
-      : {
-          title,
-          ...(folder === null ? {} : { folder }),
-          ...(template === null ? {} : { template }),
-        },
-  )
+  const created = await createNamedDocumentIn(workspace, {
+    title,
+    ...(folder === null ? {} : { folder }),
+    ...(template === null ? {} : { template }),
+  })
+  // The CAUSE, in the words `document.rename` already answers in: told « badInput » alone, a
+  // caller sent the same title straight back — bench pass of 2026-08-26.
+  if (typeof created === 'string') return refused('badInput', `the title "${title}" is ${created}`)
+
+  // `failed` and no longer `declined`: nobody is asked any more, so `null` is the studio unable
+  // to write the file — a name the disk refuses, or a folder it cannot reach.
   return created
     ? { ok: true, data: { documentId: created.id } }
-    : refused('declined', 'the person at the screen turned the new document down')
+    : refused(
+        'failed',
+        'the studio wrote no document under that title — another one may reach the disk',
+      )
 }
+
+const NO_PROJECT_TO_WRITE_IN =
+  'no project is open, and a document is made inside one — projects.list answers what there is, project.open opens one and project.create makes one'
+
+const WANTS_A_TITLE =
+  '"title" is wanted — what to call the new document. It is the person\'s to give: ask them for it rather than choosing one yourself. "folder" says where to put it, and "template" what a scene opens on'
 
 /**
  * Suggestions are written FOR a model — its own vocabulary, its own parameters — so there is no
@@ -229,10 +269,11 @@ function describeStyle(): Promise<ActionOutcome> {
 /**
  * The catalogue, searched — how a model shown the short list learns what else there is.
  *
- * English, like the catalogue a model is shown and the tools an MCP client reads: the answer is
- * read by a program, not by the person at the machine.
+ * 🛑 Asked of the MAIN and answered by `actionIndex`: FTS5, vectors and the scope of what is in
+ * front. The window used to rank the query itself, on English descriptions and prefixes alone,
+ * so the same `actions.find` answered one thing here and another to an MCP client.
  */
-function findInCatalogue(input: Record<string, unknown>): ActionOutcome {
+async function findInCatalogue(input: Record<string, unknown>): Promise<ActionOutcome> {
   const query = textOf(input, 'query')
   if (query === null)
     return refused(
@@ -240,17 +281,8 @@ function findInCatalogue(input: Record<string, unknown>): ActionOutcome {
       '"query" is wanted — the words to look for among the studio\'s actions',
     )
 
-  return {
-    ok: true,
-    // The field DESCRIPTORS as they stand, plus their English label: listing the three properties
-    // that seemed useful dropped `repeated`, `min` and `max`, so a client discovering an action
-    // here got a weaker contract than the same tool in `tools/list`.
-    data: findActions(query).map(found => ({
-      name: found.name,
-      description: englishText(found.descriptionKey),
-      fields: found.fields.map(field => ({ ...field, label: englishText(field.labelKey) })),
-    })),
-  }
+  const bridge = getBridge()
+  return bridge ? await bridge.assistant.findActions(query) : ROUTED.noBridge
 }
 
 // A cloud catalogue that answered nothing, said as what to do next — `missing` is the one code a

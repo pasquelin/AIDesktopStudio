@@ -208,7 +208,13 @@ export function TakeEditor({ documentId }: TakeEditorProps) {
   // replace the take is the very one it stopped accepting.
   if (!clip || unreadable) {
     return (
-      <AssetDropTarget accepts={TAKES} onDrop={takeDrop} outlined={false} className="flex flex-1">
+      <AssetDropTarget
+        accepts={TAKES}
+        onDrop={takeDrop}
+        filesAreInternal
+        outlined={false}
+        className="flex flex-1"
+      >
         <MonitorFrame role={t('audio.takeRole')} toolbar={null}>
           <EmptyState
             icon={mdiMusicNoteOutline}
@@ -223,6 +229,7 @@ export function TakeEditor({ documentId }: TakeEditorProps) {
     <AssetDropTarget
       accepts={TAKES}
       onDrop={takeDrop}
+      filesAreInternal
       // No frame: see `ImageDocument`.
       outlined={false}
       className="flex min-h-0 flex-1"

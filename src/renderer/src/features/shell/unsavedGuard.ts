@@ -1,7 +1,8 @@
 import { getBridge } from '@/services/bridge'
 import { reportFailure } from '@/services/diagnostics'
 import { fileViewsHoldEdits, settleFileViews } from './components/dockviewApi'
-import { settleUnsavedWork, unsavedDocumentIds } from './documentIo'
+import { settleUnsavedWork } from './documentIo'
+import { unsavedDocumentIds } from './documentDirty'
 
 /**
  * Keeps the window from going while a document still holds unsaved work, and says so instead of

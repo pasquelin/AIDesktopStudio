@@ -20,7 +20,7 @@ import { createMissionRuntime, type MissionRuntime } from '@main/mission/runtime
 import { createMissionRevisionReader } from '@main/mission/resourceState'
 import { createMissionStore } from '@main/mission/store'
 import { PROJECT } from './project'
-import type { Called, Run, Scenario } from './run'
+import type { Called, Run, Scenario, AskedShape } from './run'
 import { createStudio } from './studio'
 import type { Studio } from './studioContract'
 import { createMissionTraceRecorder, type MissionTraceRecorder } from './missionTrace'
@@ -50,7 +50,7 @@ const memoryJournal = (): MissionJournal => ({
   flush: async () => {},
 })
 
-const answersOf = (missions: readonly Mission[]): { said: string; asks: readonly string[] } => {
+const answersOf = (missions: readonly Mission[]): { said: string; asks: readonly AskedShape[] } => {
   const answers = missions.flatMap(mission =>
     mission.plan.steps.flatMap(step =>
       typeof step.result === 'object' && step.result !== null ? [step.result] : [],
@@ -68,7 +68,19 @@ const answersOf = (missions: readonly Mission[]): { said: string; asks: readonly
         question !== null &&
         'question' in question &&
         typeof question.question === 'string'
-          ? [question.question]
+          ? [
+              {
+                question: question.question,
+                // As `reply.ts` reads it: « several » of a typed line means nothing, so the key
+                // is kept only where there is something to tick.
+                many:
+                  'many' in question &&
+                  question.many === true &&
+                  'choices' in question &&
+                  Array.isArray(question.choices) &&
+                  question.choices.length > 0,
+              },
+            ]
           : [],
       )
     }),

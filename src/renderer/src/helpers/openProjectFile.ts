@@ -3,6 +3,7 @@ import { opensInStudio } from '@shared/domain/fileRole'
 import { nameOf } from '@shared/domain/folder'
 import { fileViewOf } from '@shared/domain/fileView'
 import { openDocument, openFileView } from '@/features/shell/components/dockviewApi'
+import { restoreDocument } from '@/features/shell/documentLoad'
 import { getBridge } from '@/services/bridge'
 import { reportFailure } from '@/services/diagnostics'
 import { documentAtPath, useDocuments } from '@/stores/documents'
@@ -55,7 +56,10 @@ export async function openProjectFile(path: string): Promise<FileOpening> {
   const document = documentAtPath(useDocuments.getState(), path)
   if (document) {
     openDocument(document)
-    return 'document'
+    // The tab is up; whether it HOLDS the file is what a caller is told. `failed` covers a read
+    // that would not land and one a project change dropped alike — the journal separates them,
+    // and `FileOpening` says one word about a gesture with three destinations.
+    return (await restoreDocument(document.id)).state === 'ready' ? 'document' : 'failed'
   }
 
   const fileView = fileViewOf(path)

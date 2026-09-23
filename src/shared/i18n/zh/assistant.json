@@ -35,7 +35,7 @@
       },
       "workspaceOpen": {
         "title": "打开工作区",
-        "description": "切换到某个工作区，并在被要求时在那里创建一个文档——每次都是一个全新的文档，所以它不是回到某个已打开文档的路。务必给出标题：没有标题就会打开一个命名窗口，调用会一直等一个人来处理。"
+        "description": "切换到某个工作区，并在被要求时在那里创建一个文档——每次都是一个全新的文档，所以它不是回到某个已打开文档的路。创建需要一个标题，而标题属于使用者：向他们询问名字，不要自己编造。项目已有的标题会被拒绝。"
       },
       "modelsSearch": {
         "title": "搜索模型",
@@ -1621,11 +1621,14 @@
     "sendHint": "把这句话发给助手，由它挑选并执行相应动作",
     "tokens": "已读 {{prompt, number}} 个 token · 已写 {{reply, number}} 个",
     "chooseHint": "回答该问题，并让助手继续",
-    "answerBelow": "在下方的输入框中回答",
     "answerLabel": "回答",
     "noteLabel": "笔记",
-    "sendAnswers": "发送回答",
-    "sendAnswersHint": "一次性交回全部回答，并让助手继续",
+    "sendAnswers_many": "发送回答",
+    "sendAnswers_one": "发送回答",
+    "sendAnswers_other": "发送回答",
+    "sendAnswersHint_many": "一次性交回全部回答，并让助手继续",
+    "sendAnswersHint_one": "一次性交回全部回答，并让助手继续",
+    "sendAnswersHint_other": "一次性交回全部回答，并让助手继续",
     "skipChoice": "算了",
     "skipChoiceHint": "不作回答直接关闭问题：助手就此停下",
     "contextOf": "{{read}} / {{window}}",

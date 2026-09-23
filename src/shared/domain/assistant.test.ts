@@ -6,7 +6,6 @@ import {
   ACTION_REGISTRY,
   assistantAction,
   commitmentOfCommand,
-  findActions,
   needsConfirmation,
   refusalKey,
 } from './assistant'
@@ -109,27 +108,6 @@ describe('what an action engages', () => {
   })
 
   /**
-   * The half of two-step discovery that lives in the registry: what a query finds is what the
-   * model is shown next, so an answer ranked by chance is a briefing about the wrong family.
-   */
-  it('finds an action by its name or its description, the closest first', () => {
-    const found = findActions('checkout branch')
-
-    expect(found[0]?.name).toBe('git.checkout')
-    expect(found.some(one => one.name === 'actions.find')).toBe(false)
-  })
-
-  it('finds nothing on an empty query rather than everything', () => {
-    expect(findActions('   ')).toEqual([])
-  })
-
-  it('finds the action whose field ACCEPTS the word, so a studio command is reachable by name', () => {
-    expect(findActions('duplicate scene').map(action => action.name)).toContain(
-      'command.runStudioCommand',
-    )
-  })
-
-  /**
    * 🛑 The five the widening put within a spoken sentence's reach, and the reason `studio`
    * exists: the assistant's model is now shown the whole registry, where before it was shown
    * eleven names. Which account answers decides whose library and whose invoice the next
@@ -188,6 +166,7 @@ describe('what a second identical call can bring', () => {
       // 🛑 A command answers `ok` and nothing of what it did: « duplique-le » ran
       // `scene.duplicate` three times and left four cubes where two were asked for.
       'command.runStudioCommand',
+      'context.writeProjectCard',
       'dictation.start',
       'dictation.stop',
       'document.activate',
@@ -210,6 +189,7 @@ describe('what a second identical call can bring', () => {
       'play.resume',
       'play.start',
       'play.stop',
+      'post.savePreset',
       'project.close',
       'project.create',
       'project.forget',

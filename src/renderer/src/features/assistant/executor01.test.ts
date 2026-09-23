@@ -5,6 +5,7 @@ import { useLayouts } from '@/stores/layouts'
 import { useModels } from '@/stores/models'
 import { useProject } from '@/stores/project'
 import { SCENARIO_CLOUD } from '@shared/domain/aiCloud'
+import type { ActionOutcome } from '@shared/domain/assistant'
 import { aiRoleId } from '@shared/domain/aiRole'
 import type { Job } from '@shared/domain/job'
 import type { ModelSummary } from '@shared/domain/model'
@@ -13,12 +14,13 @@ import { runAction } from './executor'
 import { registerGenerator, type ArmedGeneration, type GeneratorBridge } from './generatorBridge'
 
 const showWorkspace = vi.hoisted(() => vi.fn())
-const createDocumentIn = vi.hoisted(() => vi.fn())
+const createNamedDocumentIn = vi.hoisted(() => vi.fn())
 const revealTool = vi.hoisted(() => vi.fn())
+const toolIsOffered = vi.hoisted(() => vi.fn(() => false))
 
 vi.mock('@/features/shell/components/dockviewApi', () => ({ showWorkspace }))
-vi.mock('@/features/shell/newDocument', () => ({ createDocumentIn }))
-vi.mock('@/helpers/revealPanel', () => ({ revealTool }))
+vi.mock('@/features/shell/newDocument', () => ({ createNamedDocumentIn }))
+vi.mock('@/helpers/revealPanel', () => ({ revealTool, toolIsOffered }))
 
 function onImageDocument(): void {
   useLayouts.setState({ activeWorkspace: 'image', home: false })
@@ -84,37 +86,63 @@ describe('opening a workspace', () => {
         manifest: { version: 1, createdAt: stamp, updatedAt: stamp },
       },
     })
-    createDocumentIn.mockResolvedValue(madeDocument)
+    createNamedDocumentIn.mockResolvedValue(madeDocument)
   })
 
   it('switches to it', async () => {
     expect(await runAction('workspace.open', { workspace: '3d' })).toEqual({ ok: true })
 
     expect(showWorkspace).toHaveBeenCalledWith('3d')
-    expect(createDocumentIn).not.toHaveBeenCalled()
+    expect(createNamedDocumentIn).not.toHaveBeenCalled()
   })
 
   it('makes a document there when asked to', async () => {
-    await runAction('workspace.open', { workspace: '3d', createDocument: true })
+    await runAction('workspace.open', { workspace: '3d', createDocument: true, title: 'Niveau' })
 
-    // Nothing named: the field opens, which is what a person at the window expects.
-    expect(createDocumentIn).toHaveBeenCalledWith('3d', undefined)
+    expect(createNamedDocumentIn).toHaveBeenCalledWith('3d', { title: 'Niveau' })
     expect(showWorkspace).not.toHaveBeenCalled()
   })
 
   /**
-   * The creation puts a name field on screen. Answering before it is filled told a client the
-   * document was there while the person was still deciding — and it stayed "done" when they
-   * pressed Cancel.
+   * The name is the person's, as a project's is. Told to « always give a title », the model made
+   * one up — « 3rd Person » for a sentence naming nothing (2026-09-09). Refused, it asks instead.
    */
+  it('refuses a creation that brings no name, and says the field it wants', async () => {
+    const outcome = await runAction('workspace.open', { workspace: '3d', createDocument: true })
+
+    expect(outcome).toMatchObject({ ok: false, refusal: 'badInput' })
+    expect(createNamedDocumentIn).not.toHaveBeenCalled()
+  })
+
+  // The creation reads a template's files off the disk before it answers, and a client told the
+  // document was there while it was still being seeded went looking for a tab that had no scene.
   it('answers the document it made, and waits for it', async () => {
-    expect(await runAction('workspace.open', { workspace: '3d', createDocument: true })).toEqual({
+    expect(
+      await runAction('workspace.open', { workspace: '3d', createDocument: true, title: 'Niveau' }),
+    ).toEqual({
       ok: true,
       data: { documentId: 'doc-9' },
     })
   })
 
-  // Named by the caller, the creation raises no field — see `createDocumentIn`.
+  /**
+   * Two rounds of one turn sent the same creation and two tabs stood on one file, each saving
+   * over the other (2026-09-09). The CAUSE travels, so the model changes the title rather than
+   * sending it back — the bench measured that on `document.rename` on 2026-08-26.
+   */
+  it('refuses a title the project already holds, and says why', async () => {
+    createNamedDocumentIn.mockResolvedValue('duplicate')
+
+    const outcome = await runAction('workspace.open', {
+      workspace: '3d',
+      createDocument: true,
+      title: 'Niveau',
+    })
+
+    expect(outcome).toMatchObject({ ok: false, refusal: 'badInput' })
+    expect(outcome.ok === false && outcome.detail).toContain('duplicate')
+  })
+
   it('passes on the name and the folder the caller gave', async () => {
     await runAction('workspace.open', {
       workspace: '3d',
@@ -123,23 +151,27 @@ describe('opening a workspace', () => {
       folder: 'Repérages',
     })
 
-    expect(createDocumentIn).toHaveBeenCalledWith('3d', { title: 'Niveau', folder: 'Repérages' })
+    expect(createNamedDocumentIn).toHaveBeenCalledWith('3d', {
+      title: 'Niveau',
+      folder: 'Repérages',
+    })
   })
 
   it('leaves the folder out when only a name was given', async () => {
     await runAction('workspace.open', { workspace: '3d', createDocument: true, title: 'Niveau' })
 
-    expect(createDocumentIn).toHaveBeenCalledWith('3d', { title: 'Niveau' })
+    expect(createNamedDocumentIn).toHaveBeenCalledWith('3d', { title: 'Niveau' })
   })
 
-  it('refuses when the name field is called off', async () => {
-    createDocumentIn.mockResolvedValue(null)
+  // Nobody is asked any more, so nothing written is the studio's own failure to write it.
+  it('refuses when the creation itself came to nothing', async () => {
+    createNamedDocumentIn.mockResolvedValue(null)
 
     expect(
-      await runAction('workspace.open', { workspace: '3d', createDocument: true }),
+      await runAction('workspace.open', { workspace: '3d', createDocument: true, title: 'Niveau' }),
     ).toMatchObject({
       ok: false,
-      refusal: 'declined',
+      refusal: 'failed',
     })
   })
 
@@ -147,12 +179,12 @@ describe('opening a workspace', () => {
     useProject.setState({ project: null })
 
     expect(
-      await runAction('workspace.open', { workspace: '3d', createDocument: true }),
+      await runAction('workspace.open', { workspace: '3d', createDocument: true, title: 'Niveau' }),
     ).toMatchObject({
       ok: false,
       refusal: 'noProject',
     })
-    expect(createDocumentIn).not.toHaveBeenCalled()
+    expect(createNamedDocumentIn).not.toHaveBeenCalled()
   })
 
   it('refuses a workspace the studio has no panel for', async () => {
@@ -262,15 +294,39 @@ describe('choosing and preparing a model', () => {
   })
 
   /**
-   * What a model shown only the short list asks with, and what it gets back: the action, what it
-   * is for, and the fields it takes — enough to call it on the next turn without seeing the rest.
+   * 🛑 The panel is what `generator.readArmedGeneration` and `generator.submit` read, and it is
+   * mounted a render after the store write that reveals it — so `prepare` answered `ok` and the
+   * very next call was refused `generatorClosed` about a panel that was in fact opening. A
+   * surface that carries no generation panel is told so instead of being left waiting for one.
    */
-  it('finds actions the short catalogue never named', async () => {
+  it('refuses when the space in front carries no generation panel', async () => {
+    expect(
+      await runAction('generator.prepare', {
+        family: '3d',
+        modelId: 'model_y',
+        parameters: { prompt: 'a knight helmet' },
+      }),
+    ).toMatchObject({ ok: false, refusal: 'wrongSurface' })
+  })
+
+  /**
+   * 🛑 Asked of the MAIN process, where the SQLite index lives — the window used to rank the query
+   * itself, so the same `actions.find` answered one thing here and another to an MCP client.
+   */
+  it('finds actions the short catalogue never named, through the studio index', async () => {
+    const findActions = vi.fn(() =>
+      Promise.resolve<ActionOutcome>({
+        ok: true,
+        data: [{ name: 'git.checkout', fields: [{}] }],
+      }),
+    )
+    installFakeBridge({ assistant: { findActions } })
+
     const outcome = await runAction('actions.find', { query: 'git branch' })
     const found = outcome.ok ? (outcome.data as { name: string; fields: unknown[] }[]) : []
 
+    expect(findActions).toHaveBeenCalledWith('git branch')
     expect(found.some(one => one.name === 'git.checkout')).toBe(true)
-    expect(found.find(one => one.name === 'git.checkout')?.fields.length).toBeGreaterThan(0)
   })
 
   it('refuses parameters that are not a set of values', async () => {

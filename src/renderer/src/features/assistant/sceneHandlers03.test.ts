@@ -255,6 +255,8 @@ describe('the world of the scene', () => {
     )
 
     const reached: Record<keyof SceneWorld, boolean> = {
+      // Chosen when the document is CREATED — see `SceneWorld.engine`.
+      engine: false,
       environment: written.has('kind'),
       envIntensity: written.has('intensity'),
       envRotation: written.has('rotation'),
@@ -277,10 +279,11 @@ describe('the world of the scene', () => {
       Object.entries(reached)
         .filter(([, held]) => !held)
         .map(([member]) => member),
-      // `post` is written by the composition's own actions — `post.add`, `post.set`, `post.applyPreset`
-      // — which name an effect and a parameter rather than a field of the world. `play` and
+      // `engine` is settled when the DOCUMENT is created and written by nothing after. `post` is
+      // written by the composition's own actions — `post.add`, `post.set`, `post.applyPreset` —
+      // which name an effect and a parameter rather than a field of the world. `play` and
       // `layers` are written by nothing at all yet.
-    ).toEqual(['post', 'play', 'layers'])
+    ).toEqual(['engine', 'post', 'play', 'layers'])
   })
 })
 

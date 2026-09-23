@@ -134,6 +134,8 @@ function registerCreativeIpc(
     journal: () => services.journal,
     transcribe: services.transcribe,
     said: services.said,
+    // The same interception an MCP client's call goes through — `createRemoteActions`.
+    findActions: query => services.remoteActions.run({ action: 'actions.find', input: { query } }),
   })
   registerMemoryHandlers({ host: services.memory, vectors: services.memoryVectors })
   registerAiHandlers({ manager: services.ai, addOwnModel: services.addOwnAiModel, running })

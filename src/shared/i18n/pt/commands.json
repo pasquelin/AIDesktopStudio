@@ -16,9 +16,13 @@
       "title": "Abrir um projeto",
       "help": "Escolhe um projeto que já existe no seu disco e o abre no lugar do atual. O projeto aberto é salvo à medida que você trabalha, então não há nada a salvar antes."
     },
+    "documentSaveCopy": {
+      "title": "Guardar uma cópia",
+      "help": "Escreve uma cópia do documento onde a pedir e continua no documento aberto: o seu destino não muda."
+    },
     "documentSaveAs": {
       "title": "Salvar como",
-      "help": "Escreve uma cópia do asset ao lado do original e continua nela. O asset que estava aberto fica como estava no último salvamento."
+      "help": "Escolhe um destino, escreve o documento aí e continua nele: o ficheiro a partir do qual foi aberto fica como estava na última gravação."
     },
     "documentSave": {
       "title": "Salvar o documento",

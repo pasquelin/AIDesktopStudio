@@ -7,15 +7,32 @@ import { standaloneFor } from './standaloneEffects'
 
 /**
  * The compiler already holds the partition — `STANDALONE_EFFECTS` is typed on
- * `Exclude<PostEffectId, FusedId>`. This says the same thing at RUNTIME, which is what catches
- * the one shape a type cannot: a widened lookup that answers `undefined` where the table has a key.
+ * `Exclude<PostEffectId, FusedId | GpuOnlyEffectId>`. This says the same thing at RUNTIME, which
+ * is what catches the two shapes a type cannot: a widened lookup that answers `undefined` where
+ * the table has a key, and an id excluded from that table by a hand-written union while its
+ * fiche says the Compatible engine builds it.
  */
 describe('the two tables that give an effect its implementation', () => {
-  it('covers every effect of the catalogue exactly once', () => {
-    const uncovered = POST_EFFECT_IDS.filter(id => !fusableFor(id) && !standaloneFor(id))
-    const twice = POST_EFFECT_IDS.filter(id => fusableFor(id) && standaloneFor(id))
+  /** The catalogue the Compatible engine has to answer for — the others have no GLSL to write. */
+  const drawnByGl = POST_EFFECT_IDS.filter(id => POST_EFFECTS[id].engines.includes('gl'))
+
+  it('covers every effect the Compatible engine claims, exactly once', () => {
+    const uncovered = drawnByGl.filter(id => !fusableFor(id) && !standaloneFor(id))
+    const twice = drawnByGl.filter(id => fusableFor(id) && standaloneFor(id))
 
     expect({ uncovered, twice }).toEqual({ uncovered: [], twice: [] })
+  })
+
+  /**
+   * The other half of the same door: an effect the Compatible engine cannot build must be absent
+   * from both tables. Left in one, it would draw under an engine its fiche says it cannot.
+   */
+  it('implements nothing the Compatible engine does not claim', () => {
+    const strays = POST_EFFECT_IDS.filter(
+      id => !POST_EFFECTS[id].engines.includes('gl') && (fusableFor(id) || standaloneFor(id)),
+    )
+
+    expect(strays).toEqual([])
   })
 
   it('builds a chunk with fresh uniforms each time, so two of one effect never collide', () => {

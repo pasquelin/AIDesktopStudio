@@ -7,6 +7,7 @@ import {
   mdiFolderOpenOutline,
   mdiFolderPlusOutline,
   mdiInformationOutline,
+  mdiLinkVariant,
   mdiOpenInNew,
   mdiRedo,
   mdiRenameOutline,
@@ -18,12 +19,14 @@ import type { Asset } from '@shared/domain/asset'
 import { bindingOf, type BindingOverrides, type CommandId } from '@shared/domain/command'
 import type { DocumentDescriptor } from '@shared/domain/document'
 import type { FileHistory } from '@shared/domain/fileOp'
+import type { RecentProject } from '@shared/domain/project'
 import { isPrivatePath } from '@shared/domain/folder'
 import { acceleratorOf } from '@shared/domain/shortcut'
 import { showContextMenu, type ContextMenuRow } from '@/helpers/contextMenu'
 import type { FolderNode } from '@/hooks/useFolderTree'
 import { getBridge } from '@/services/bridge'
 import { actionablePaths, type AssetAction } from './assetActions'
+import { gatherRows } from './gatherRows'
 import { assetMenuGroups } from '../../assetMenu'
 export type EntryMenuProps = {
   node: FolderNode
@@ -35,6 +38,9 @@ export type EntryMenuProps = {
   history: FileHistory
   bindings: BindingOverrides
   t: TFunction
+  /** The shelf, for the destinations « gather into » offers. */
+  recent: readonly RecentProject[]
+  openProject: string | null
   onOpen: () => void
   onRename: () => void
   onAsset: (action: AssetAction) => void
@@ -85,6 +91,7 @@ export type RootMenuProps = {
   bindings: BindingOverrides
   t: TFunction
   onImport: () => void
+  onLink: () => void
   run: (command: CommandId) => void
 }
 export function openRootMenu({
@@ -93,6 +100,7 @@ export function openRootMenu({
   bindings,
   t,
   onImport,
+  onLink,
   run,
 }: RootMenuProps): void {
   const row = commandRows(bindings, run)
@@ -102,6 +110,12 @@ export function openRootMenu({
       tooltip: t('assets.importHint'),
       icon: mdiFileImportOutline,
       onSelect: onImport,
+    },
+    {
+      label: t('assets.link'),
+      tooltip: t('assets.linkHint'),
+      icon: mdiLinkVariant,
+      onSelect: onLink,
     },
     { separator: true },
     row('explorer.paste', {
@@ -207,6 +221,7 @@ function entryMutationRows(
 
 export function openEntryMenu(props: EntryMenuProps): void {
   const { node, selection, document, asset, history, bindings, t, onAsset, run } = props
+  const { recent, openProject } = props
   const renamable = document !== null || asset !== null || !isPrivatePath(node.path)
   const files = actionablePaths(selection).length
   const owned = files < selection.length
@@ -218,6 +233,7 @@ export function openEntryMenu(props: EntryMenuProps): void {
     { separator: true },
     ...entryMutationRows(props, owned, renamable),
     ...assetMenuGroups({ asset, count: files, t, onAsset }),
+    ...gatherRows({ document, recent, openProject, t }),
     ...historyRows(row, t, history),
   ])
 }

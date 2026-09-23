@@ -1,0 +1,19 @@
+{
+  "shipped": {
+    "title": "Fornito con lo studio",
+    "character": "Personaggio",
+    "characterNote": "Il personaggio che lo studio fornisce, a ogni densità in cui lo fornisce. Un solo scheletro per tutti e quattro, ed è ciò che lascia suonare su di esso le animazioni fornite senza indovinare.",
+    "characterWhere": "Posato, atterra nell’archivio interno del progetto: nessun file in più nel suo albero.",
+    "textures": "Texture di lavoro",
+    "texturesNote": "Una griglia e una scacchiera, ciascuna a due densità. Una casella è un metro, ed è questo che permette di giudicare una scala e di vedere una UV allungarsi.",
+    "texturesWhere": "Posate, atterrano nell’archivio interno del progetto: nessun file in più nel suo albero.",
+    "animations": "Animazioni",
+    "animationsNote": "I movimenti che lo studio fornisce, riproducibili sul suo personaggio come su uno importato di cui lo scheletro è riconosciuto.",
+    "animationsReachable": "Niente da posare: sono già offerti ovunque si scelga un movimento, e l’esportazione del gioco li porta con sé. Copiarne uno nel progetto sarebbe un secondo esemplare degli stessi byte senza guadagnare nulla.",
+    "animationsNone": "Questa installazione non fornisce alcuna animazione.",
+    "place": "Posare",
+    "placeAll": "Posare tutte e quattro",
+    "placed": "Posato nel progetto",
+    "notPlaced": "Non ancora posato"
+  }
+}

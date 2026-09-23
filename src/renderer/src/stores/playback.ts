@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import type { Us } from '@shared/domain/time'
-import { withoutKey } from '@/helpers/objects'
+import { withoutKey } from '@shared/collections'
 
 type PlaybackState = {
   /** Keyed by the name a player registered under in `transports`, never by document. */

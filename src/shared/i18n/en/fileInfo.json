@@ -5,6 +5,8 @@
       "general": "General",
       "media": "Media",
       "catalogue": "Catalogue",
+      "copies": "Copies",
+      "uses": "Used by",
       "git": "Git"
     },
     "gitUnchanged": "No pending changes",
@@ -18,7 +20,10 @@
     "identifier": "Identifier",
     "fingerprint": "Content fingerprint",
     "added": "Added",
+    "documents": "Documents",
+    "usedByNone": "No document in the project mentions this file.",
     "reading": "Reading the folder…",
-    "missing": "This entry is no longer in the project folder."
+    "missing": "This entry is no longer in the project folder.",
+    "copiesNone": "No other file in the project carries these bytes."
   }
 }

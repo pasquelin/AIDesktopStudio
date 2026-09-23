@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { taskRatio, type TaskWatch } from '@shared/domain/taskProgress'
 import { newId } from '@/helpers/ids'
-import { withoutKey } from '@/helpers/objects'
+import { withoutKey } from '@shared/collections'
 import { getBridge } from '@/services/bridge'
 
 /** One long task in flight, as the status line reads it. Window state — it crosses nothing. */

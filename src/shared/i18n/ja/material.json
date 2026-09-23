@@ -88,6 +88,8 @@
     "preview": "プレビュー",
     "envRotation": "空の回転",
     "originGenerated": "モデルによる生成（届いたまま固定）",
+    "showInExplorer": "エクスプローラーに表示",
+    "showInExplorerHint": "計算されたファイルを、コピーせずに素材フォルダーへ移します",
     "originDerived": "このマテリアルの別チャンネルから計算",
     "originImported": "自分のファイル",
     "derive": "{{source}}から計算",

@@ -37,3 +37,15 @@ export function withItemAt<T>(items: readonly T[], at: number, item: T | null): 
     ? items.filter((_, index) => index !== at)
     : items.map((one, index) => (index === at ? item : one))
 }
+
+/**
+ * The same record, minus one key. `delete` on a copy, which the stores kept rewriting.
+ *
+ * Shared because both sides drop a key: the window off its own tables, the main process off the
+ * settings it composes for a project that went to the bin or moved.
+ */
+export function withoutKey<T>(record: Record<string, T>, key: string): Record<string, T> {
+  const rest = { ...record }
+  delete rest[key]
+  return rest
+}

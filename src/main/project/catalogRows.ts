@@ -18,6 +18,7 @@ import {
   type AssetType,
   type MediaProbe,
 } from '@shared/domain/asset'
+import { copyStoreOf, type CopyGroup, type FileCopy } from '@shared/domain/fileCopies'
 import { isPbrChannel } from '@shared/domain/material'
 import { MESH_IMPORT_LOSSES } from '@shared/domain/meshImport'
 import { LOG_SCOPES } from '@shared/ipc'
@@ -248,4 +249,40 @@ export function activityOf(row: SqlRow): ActivityEntry {
     messageKey: knownMessageKey(messageKey) ? messageKey : 'activity.unknownMessage',
     ...defined({ params, detail, assetId }),
   }
+}
+
+/**
+ * The rows of the copies query, folded into one group per fingerprint.
+ *
+ * Folded HERE rather than in SQL because SQLite answers rows, not groups, and the alternative —
+ * one query per fingerprint — is the round trip per row this module exists to avoid.
+ *
+ * Two rows filed at ONE path collapse into the first, which the query's `created_at, id` order
+ * makes the oldest: they are one file the catalogue holds twice, which is a defect of the
+ * catalogue and not a second copy of anything. A group left holding a single path afterwards is
+ * therefore dropped — it was never a group.
+ */
+export function copyGroupsOf(rows: readonly SqlRow[]): CopyGroup[] {
+  const grouped = new Map<string, FileCopy[]>()
+
+  for (const row of rows) {
+    const hash = text(row, 'hash')
+    const path = text(row, 'path')
+    const copies = grouped.get(hash) ?? []
+    if (copies.some(copy => copy.path === path)) continue
+
+    copies.push({
+      assetId: text(row, 'id'),
+      path,
+      name: text(row, 'name'),
+      bytes: optionalNumber(row, 'bytes') ?? null,
+      addedAt: text(row, 'created_at'),
+      store: copyStoreOf(path),
+    })
+    grouped.set(hash, copies)
+  }
+
+  return [...grouped]
+    .filter(([, copies]) => copies.length > 1)
+    .map(([hash, copies]) => ({ hash, copies }))
 }

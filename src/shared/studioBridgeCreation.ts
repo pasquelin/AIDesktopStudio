@@ -2,6 +2,7 @@ import type { BundledAnimation } from './domain/animationLibrary'
 import type { WindowNote } from './domain/assistantNote'
 import type { Asset } from './domain/asset'
 import type {
+  ActionOutcome,
   AssistantAnswer,
   AssistantProgress,
   AssistantThought,
@@ -151,11 +152,20 @@ export type StudioBridgeCreation = {
 
   media: {
     /**
-     * Opens the native picker and links what was chosen — the file is never copied, so a
-     * twenty-minute rush costs a catalogue row. Resolves once the assets exist, while their
-     * ingest runs on and reports through `onProgress`.
+     * Opens the native picker and COPIES what was chosen into `folder` — the same act as dropping
+     * those files on that folder, and the same result (R2). Which door was used decides nothing:
+     * this one used to link instead of copying, so importing and dropping the same rush left the
+     * project in two different states.
      */
-    ingest: () => Promise<ExternalFileImport>
+    ingest: (folder: string) => Promise<ExternalFileImport>
+    /**
+     * Opens the same picker and LINKS what was chosen: the bytes stay where the user left them
+     * and the catalogue holds a row pointing at them. A twenty-minute rush costs a row.
+     *
+     * A command of its own, named on screen, because it is the one thing that must never be
+     * decided by the studio: no size, no format and no door turns a copy into a link (R6).
+     */
+    link: () => Promise<ExternalFileImport>
     /**
      * Gives a file the project ALREADY holds a row in the catalogue, so the studio can open it
      * instead of handing it to the system — the explorer's double-click on a `.jpg` somebody
@@ -221,5 +231,13 @@ export type StudioBridgeCreation = {
      * 90 505 characters. `null` for a line older than the ring, or written by another launch.
      */
     said: (key: string) => Promise<string | null>
+    /**
+     * The actions a word or two points at, with their fields — what `actions.find` answers.
+     *
+     * 🛑 Asked of the MAIN and never answered here: the search is one SQLite index of the
+     * registry, ranked by FTS5 and by vectors, and a second one written in the window would
+     * answer the same question differently from the one an MCP client reaches.
+     */
+    findActions: (query: string) => Promise<ActionOutcome>
   }
 }

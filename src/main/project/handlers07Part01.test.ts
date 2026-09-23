@@ -157,6 +157,12 @@ export function base(catalog: AsyncCatalog) {
     trashFolder: vi.fn(async () => {}),
     // None running unless a case says so: no question is raised, which is the ordinary studio.
     runningJobCount: () => 0,
+    media: {
+      ingest: async () => {},
+      derive: async () => {},
+      cancel: () => {},
+      deriving: () => false,
+    },
   }
 }
 
@@ -210,10 +216,7 @@ describe('project handlers', () => {
       })
 
       expect(assets.replaceBytes).toHaveBeenCalledWith('asset-1', PNG, '.png', {
-        duration: 0,
-        codec: 'png',
-        width: 1024,
-        height: 768,
+        probe: { duration: 0, codec: 'png', width: 1024, height: 768 },
       })
       expect(assets.importFromBytes).not.toHaveBeenCalled()
     })
@@ -233,12 +236,9 @@ describe('project handlers', () => {
         png: png(4112, 2658).toString('base64'),
       })
 
-      expect(assets.replaceBytes).toHaveBeenCalledWith(
-        'asset-1',
-        expect.anything(),
-        '.png',
-        expect.objectContaining({ width: 4112, height: 2658 }),
-      )
+      expect(assets.replaceBytes).toHaveBeenCalledWith('asset-1', expect.anything(), '.png', {
+        probe: expect.objectContaining({ width: 4112, height: 2658 }),
+      })
     })
 
     /**
@@ -261,12 +261,9 @@ describe('project handlers', () => {
         png: Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]).toString('base64'),
       })
 
-      expect(assets.replaceBytes).toHaveBeenCalledWith(
-        'asset-1',
-        expect.anything(),
-        '.png',
-        undefined,
-      )
+      expect(assets.replaceBytes).toHaveBeenCalledWith('asset-1', expect.anything(), '.png', {
+        probe: undefined,
+      })
     })
 
     /**

@@ -30,6 +30,10 @@ const FAMILIES: readonly string[] = [
   './features/document/',
   './features/manual/',
   './features/player/',
+  // One folder rather than the feature: `features/project/` also holds the home's shelf,
+  // which is a dock component and wears the docks' vocabulary by right.
+  './features/project/components/CopiesWindow/',
+  './features/project/components/ShippedWindow/',
   './features/retarget/components/',
   './features/settings/',
   // Two files rather than a folder: the journal and the licences are one window each, and they
@@ -45,7 +49,7 @@ const FAMILIES: readonly string[] = [
  * equivalent. It carries captions, rows and actions — no field role, no suffix, no gauge at all.
  */
 const ALLOWED: readonly string[] = [
-  './features/document/components/NewDocument/NewDocumentForm.tsx',
+  './features/document/components/NewDocument/NewDocumentNameField.tsx',
   './features/document/components/NewDocument/NewDocumentTemplateTile.tsx',
   './features/settings/components/Ai/AiCandidateRow.tsx',
   './features/welcome/components/WelcomeModelRow.tsx',

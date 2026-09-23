@@ -6,6 +6,9 @@ import { newId } from '@/helpers/ids'
 import { getBridge } from '@/services/bridge'
 import { reportFailure } from '@/services/diagnostics'
 import { canvasStore, useCanvases } from '@/stores/canvases'
+import { useDocuments } from '@/stores/documents'
+import type { ReadFidelity } from '@shared/domain/readFidelity'
+import type { Size } from '@/engines/core/geometry'
 import type { PictureMeasure } from './pictureSize'
 
 /**
@@ -32,6 +35,36 @@ export function placeAsset(documentId: string, asset: Asset, targetLayerId?: str
   useCanvases.getState().runCommand(documentId, addLayer(layer, targetLayerId))
 }
 
+/**
+ * What the READ settled, written on the document before anything can be saved out of it.
+ *
+ * Here and nowhere else: opening is the only moment that knows whether the studio took the file
+ * whole or brought it under the ceiling, and a later reading of the document's size answers a
+ * different question — a crop shrinks a document without a single pixel having been dropped on
+ * the way in.
+ */
+function noteFidelity(documentId: string, fidelity: ReadFidelity): void {
+  useDocuments.getState().noteSourceFidelity(documentId, fidelity)
+}
+
+/**
+ * How faithfully the picture was read — said out loud AND written on the document.
+ *
+ * Out loud EVERY way the document can fail to be the picture, because a save writes the
+ * document's size back over the asset: one opened smaller than it is would be saved smaller than
+ * it was. The ceiling biting was said; the file that would not decode was NOT, and that silence
+ * is how a 4112 × 2658 photo came to sit in a 1024² document and be overwritten by it.
+ */
+function sayHowItWasRead(asset: Asset, measured: Size | null, size: Size): ReadFidelity {
+  if (!measured) {
+    reportFailure('canvas.size', asset.name, localizedError('imageSizeUnknown'))
+    return 'unknown'
+  }
+  if (size.width === measured.width && size.height === measured.height) return 'faithful'
+  reportFailure('canvas.size', asset.name, localizedError('imageOpenedTooSmall'))
+  return 'reduced'
+}
+
 /** A layer that names the asset it draws, so the engine fetches the pixels rather than holding them. */
 function sourceLayer(asset: Asset) {
   return { ...pixelLayer(newId(), asset.name), source: asset.id }
@@ -55,9 +88,13 @@ async function becomeContainer(documentId: string, asset: Asset): Promise<boolea
   // its full size, which is the very thing the ceiling exists to refuse, and ⌘S then wrote that
   // size back. Said out loud for the same reason the flat path says it.
   const held = withinCeiling(opened)
-  if (held.width !== opened.width || held.height !== opened.height) {
+  const capped = held.width !== opened.width || held.height !== opened.height
+  if (capped) {
     reportFailure('canvas.size', asset.name, localizedError('imageOpenedTooSmall'))
   }
+  // The studio reads a container of its own whole, so the ceiling is the only thing that can
+  // reduce one — and it just answered.
+  noteFidelity(documentId, capped ? 'reduced' : 'faithful')
 
   const canvases = useCanvases.getState()
   canvases.replace(documentId, { ...opened, width: held.width, height: held.height })
@@ -103,16 +140,7 @@ export async function becomeAsset(
   const { measureAsset, withinCeiling } = await import('./pictureSize')
   const measured = await measureAsset(asset.id, measure)
   const size = measured ? withinCeiling(measured) : DEFAULT_CANVAS
-  // Said out loud EVERY way the document can fail to be the picture, because ⌘S writes the
-  // document's size back over the asset: one opened smaller than it is would be saved smaller
-  // than it was, and that has to be a thing the user was told rather than one the studio did
-  // quietly. The ceiling biting was said; the file that would not decode was NOT, and that
-  // silence is how a 4112 × 2658 photo came to sit in a 1024² document and be overwritten by it.
-  if (!measured) {
-    reportFailure('canvas.size', asset.name, localizedError('imageSizeUnknown'))
-  } else if (size.width !== measured.width || size.height !== measured.height) {
-    reportFailure('canvas.size', asset.name, localizedError('imageOpenedTooSmall'))
-  }
+  noteFidelity(documentId, sayHowItWasRead(asset, measured, size))
   const layer = sourceLayer(asset)
   const state: CanvasState = {
     ...DEFAULT_CANVAS,

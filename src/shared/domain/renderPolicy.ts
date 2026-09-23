@@ -1,4 +1,5 @@
 import { isRecord, oneOf, readBoolean, readNumber } from '../guards'
+import { RENDER_ENGINES, type RenderEngine } from './renderEngine'
 import { SHADOW_QUALITIES, type ShadowQuality } from './scene'
 import { VIEWPORT_QUALITIES, type ViewportQuality } from './sceneViewport'
 
@@ -11,10 +12,27 @@ import { VIEWPORT_QUALITIES, type ViewportQuality } from './sceneViewport'
  * while an exported game drew none at all and paid the screen's whole pixel ratio.
  */
 export type RenderPolicy = {
+  /**
+   * Which engine draws the frame. Read once, when a viewport builds its renderer: there is no
+   * switching a mounted one, the whole scene living inside a GPU context that cannot be handed
+   * over. A machine with no WebGPU adapter falls back to `gl` and says so — see `renderDriver`.
+   */
+  engine: RenderEngine
   shadows: boolean
   shadowQuality: ShadowQuality
   /** Side of the square map each casting light allocates, before the quality level caps it. */
   shadowMapSize: number
+  /**
+   * Whether a sun's shadow is split into cascades — one map per depth band of the view rather
+   * than one map over the whole set. What an open world needs and a single set never does: the
+   * one map a directional light owns is stretched over the whole frustum, so a distance that
+   * doubles halves the texels a shadow near the camera gets.
+   *
+   * OFF by default, and it is not a taste: cascades replace the sun with three lights of their
+   * own and patch every material that receives them, so a scene that was fine without them must
+   * not inherit them — see `csm.ts`.
+   */
+  csm: boolean
   /** How finely the frame is drawn — it moves `pixelRatio` and caps the shadow maps. */
   quality: ViewportQuality
   /** Vertical field of view, in degrees. The editor reads it off the same setting. */
@@ -50,9 +68,11 @@ export const SCATTER_DISTANCE = VIEW_DISTANCE
  * The viewport's own defaults, so the two sides open on the same picture.
  */
 export const DEFAULT_RENDER_POLICY: RenderPolicy = Object.freeze({
+  engine: 'gl',
   shadows: true,
   shadowQuality: 'soft',
   shadowMapSize: 2048,
+  csm: false,
   quality: 'balanced',
   fieldOfView: 60,
   gridSize: 20,
@@ -61,12 +81,21 @@ export const DEFAULT_RENDER_POLICY: RenderPolicy = Object.freeze({
 /**
  * The values, taken off the larger object a viewport reads: an export carries these and not
  * the twenty settings that only mean something in front of an editor.
+ *
+ * `engine` is a PARAMETER because it stopped being a preference the day a scene started carrying
+ * its own: an export names the one its document holds. Spread over the result instead, a third
+ * caller would forget to — see `SceneWorld.engine`.
  */
-export function renderPolicyOf(view: RenderPolicy): RenderPolicy {
+export function renderPolicyOf(
+  view: RenderPolicy,
+  engine: RenderEngine = view.engine,
+): RenderPolicy {
   return {
+    engine,
     shadows: view.shadows,
     shadowQuality: view.shadowQuality,
     shadowMapSize: view.shadowMapSize,
+    csm: view.csm,
     quality: view.quality,
     fieldOfView: view.fieldOfView,
     gridSize: view.gridSize,
@@ -83,6 +112,7 @@ export function renderPolicyOf(view: RenderPolicy): RenderPolicy {
 export function readRenderPolicy(value: unknown): RenderPolicy {
   if (!isRecord(value)) return { ...DEFAULT_RENDER_POLICY }
   return {
+    engine: oneOf(RENDER_ENGINES, value.engine, DEFAULT_RENDER_POLICY.engine),
     shadows: readBoolean(value, 'shadows', DEFAULT_RENDER_POLICY.shadows),
     shadowQuality: oneOf(
       SHADOW_QUALITIES,
@@ -90,6 +120,7 @@ export function readRenderPolicy(value: unknown): RenderPolicy {
       DEFAULT_RENDER_POLICY.shadowQuality,
     ),
     shadowMapSize: readNumber(value, 'shadowMapSize', DEFAULT_RENDER_POLICY.shadowMapSize),
+    csm: readBoolean(value, 'csm', DEFAULT_RENDER_POLICY.csm),
     quality: oneOf(VIEWPORT_QUALITIES, value.quality, DEFAULT_RENDER_POLICY.quality),
     fieldOfView: readNumber(value, 'fieldOfView', DEFAULT_RENDER_POLICY.fieldOfView),
     gridSize: readNumber(value, 'gridSize', DEFAULT_RENDER_POLICY.gridSize),

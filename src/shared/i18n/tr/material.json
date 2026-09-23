@@ -88,6 +88,8 @@
     "preview": "Önizleme",
     "envRotation": "Gökyüzü döndürme",
     "originGenerated": "Bir model tarafından üretildi — geldiği gibi donduruldu",
+    "showInExplorer": "Gezginde göster",
+    "showInExplorerHint": "Hesaplanan dosyayı kopyalamadan malzemeler klasörüne taşır",
     "originDerived": "Bu materyalin başka bir kanalından hesaplandı",
     "originImported": "Kendi dosyanız",
     "derive": "Şundan hesapla: {{source}}",

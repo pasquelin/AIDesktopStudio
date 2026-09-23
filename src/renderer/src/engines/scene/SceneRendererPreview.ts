@@ -167,7 +167,8 @@ export abstract class SceneRendererPreview extends SceneRendererSkinning {
   drawFrom(cameraNodeId: string | null, time: Us): HTMLCanvasElement | null {
     const gl = this.viewport.gl
     const canvas = this.viewport.canvas
-    if (!gl || !canvas) return null
+    // `drawScene` guards itself; this one reaches the renderer directly, so it asks too.
+    if (!gl || !canvas || !this.viewport.canDraw) return null
 
     const camera = this.cameraObject(cameraNodeId) ?? this.viewport.perspective
 

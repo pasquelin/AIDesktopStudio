@@ -1,6 +1,5 @@
 import {
   ACTION_REGISTRY,
-  findActions,
   MOST_LOADED,
   type AssistantThought,
   type ActionName,
@@ -90,8 +89,12 @@ export type Briefing = {
   readonly opened: readonly ActionName[]
   /** The same briefing with these manuals opened as well. */
   readonly withLoaded: (names: readonly ActionName[]) => Briefing
-  /** The same briefing with what a query found opened, or nothing once one has been answered. */
-  readonly expand: ((query: string) => Briefing) | null
+  /**
+   * The same briefing with what a query found opened, or nothing once one has been answered.
+   * 🛑 The names are GIVEN, never searched here: one engine, `actionIndex`, answers both this and
+   * the `actions.find` the model calls — written twice, the two ranked the same query differently.
+   */
+  readonly expand: ((query: string, found: readonly ActionName[]) => Briefing) | null
   /**
    * The same parts with the wide rules dropped, for a door that REFUSED this one — a door's room
    * is an assumption about a hand-typed model's window. `null` once they are already dropped.
@@ -296,7 +299,7 @@ function briefingOf(one: Composition): Briefing {
     loaded: written.held,
     opened,
     withLoaded: names => briefingOf(askedFor(one, names)),
-    expand: one.found === undefined ? query => expandedWith(one, query) : null,
+    expand: one.found === undefined ? (query, found) => expandedWith(one, query, found) : null,
     narrow: one.narrow,
   }
 }
@@ -452,8 +455,7 @@ const widestFound = (query: string, matched: readonly ActionName[]): string =>
  * Cut by blocks rather than by characters: half a field line is an action the model cannot call
  * and cannot see is truncated, which is the one failure this whole mechanism exists to avoid.
  */
-function expandedWith(one: Composition, query: string): Briefing {
-  const matched = findActions(query).map(action => action.name)
+function expandedWith(one: Composition, query: string, matched: readonly ActionName[]): Briefing {
   if (matched.length === 0) return briefingOf({ ...one, found: nothingFound(query) })
 
   /**

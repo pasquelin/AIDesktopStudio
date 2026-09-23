@@ -203,7 +203,7 @@ describe('a surface an asset can be dropped onto', () => {
     fireEvent.drop(surface, { dataTransfer: desktopFile('chair.obj') })
 
     await waitFor(() => expect(onDrop).toHaveBeenCalledWith(model))
-    expect(ingestPaths).toHaveBeenCalledWith('request-1', '', expect.any(String))
+    expect(ingestPaths).toHaveBeenCalledWith('request-1', '', expect.any(String), undefined)
   })
 
   it('lets a drag whose names it cannot read through, rather than forbidding the drop', () => {

@@ -46,7 +46,7 @@ describe('external file arrivals', () => {
     await takeExternalFiles()
 
     await vi.waitFor(() =>
-      expect(ingestPaths).toHaveBeenCalledWith('request-1', '', expect.any(String)),
+      expect(ingestPaths).toHaveBeenCalledWith('request-1', '', expect.any(String), undefined),
     )
   })
 
@@ -152,7 +152,7 @@ describe('external file arrivals', () => {
     await takeExternalFiles()
 
     await vi.waitFor(() => expect(ingestPaths).toHaveBeenCalledTimes(2))
-    expect(ingestPaths).toHaveBeenLastCalledWith('request-4', '', expect.any(String))
+    expect(ingestPaths).toHaveBeenLastCalledWith('request-4', '', expect.any(String), undefined)
   })
 
   it('reports unsupported files from a desktop launch instead of dropping them silently', async () => {

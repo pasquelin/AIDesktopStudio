@@ -93,6 +93,8 @@
     "undoHint": "يعيد آخر دفعة من الملفات إلى موضعها",
     "redo": "إعادة",
     "redoHint": "يعيد دفعة الملفات التي تراجعت عنها للتوّ",
+    "trashUsedTitle": "النقل إلى المهملات؟ يستخدمه {{count, number}} مستند",
+    "trashUsedBody": "هذه المستندات تشير إلى ما سيُحذف:",
     "trashTitle": "{{count, number}} من العناصر ذاهبة إلى سلة المهملات",
     "trashBody": "ستتمكن من استرجاعها من سلة مهملات النظام. أما الاستوديو نفسه فلا يعرف كيف يعيدها.",
     "trashConfirm": "نقل إلى سلة المهملات",
@@ -123,6 +125,16 @@
     "sort": {
       "name": "الاسم: من أ إلى ي",
       "nameDesc": "الاسم: من ي إلى أ"
+    },
+    "gather": "اجمع في",
+    "gatherHint": "ينسخ هذا المستند وكل ما يذكره إلى مشروع آخر، ليُفتح هناك كما هو.",
+    "gatherIntoHint": "اجمع هذا المستند في {{name}}",
+    "gathered": "نُسخ {{files, number}} ملفات، وكُتب {{rows, number}} سجلات.",
+    "gatherKept": "تُرك {{count, number}} كما هو: الوجهة كانت تحمل غيرها في تلك المسارات.",
+    "gatherRefused": {
+      "not-a-project": "هذه الوجهة ليست مشروعًا.",
+      "same-project": "هذا هو المشروع المفتوح.",
+      "no-document": "لا مستند لجمعه."
     }
   },
   "menu": {
@@ -154,6 +166,7 @@
     "openProject": "فتح مشروع…",
     "saveDocument": "حفظ",
     "saveDocumentAs": "حفظ باسم…",
+    "saveDocumentCopy": "حفظ نسخة…",
     "settings": "الإعدادات…",
     "tools": "نوافذ الأدوات",
     "add": "إضافة",
@@ -197,7 +210,9 @@
     "sceneNavigation": "تنقل",
     "sceneDisplay": "وضع العرض",
     "sceneView": "نقطة النظر",
-    "sceneCapture": "التقاط المنظر"
+    "sceneCapture": "التقاط المنظر",
+    "copies": "النسخ…",
+    "shipped": "يأتي مع الاستوديو…"
   },
   "about": {
     "copyright": "© 2026 Alban Pasquelin"

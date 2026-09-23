@@ -18,7 +18,6 @@ import {
 } from './sceneRuntimeSnapshot'
 import { nodeIdOf, withEveryLayer } from './sceneRendererSupport2'
 import { SceneRendererOptimization } from './SceneRendererOptimization'
-import { readRenderPixels } from './readRenderPixels'
 
 const VALIDATION_PICK_SAMPLES = 32
 
@@ -33,6 +32,9 @@ export abstract class SceneRendererValidation extends SceneRendererOptimization 
     const target = new WebGLRenderTarget(spec.width, spec.height)
     const restore = this.hideWorkshop(camera)
     try {
+      // The bands are cut out of the camera that draws: an off-screen pass never goes through
+      // `dressPane`, and one left fitted to the editor's own view lights this frame from it.
+      this.cascades?.follow(camera)
       this.viewport.drawScene({
         scene: this.viewport.scene,
         camera,
@@ -44,7 +46,7 @@ export abstract class SceneRendererValidation extends SceneRendererOptimization 
         width: spec.width,
         height: spec.height,
       })
-      const pixels = readRenderPixels(gl, target, spec.width, spec.height)
+      const pixels = await this.viewport.driver.readPixels(gl, target, spec.width, spec.height)
       this.observeRuntimeValidationPicks(spec.id, camera)
       return { width: spec.width, height: spec.height, pixels }
     } finally {

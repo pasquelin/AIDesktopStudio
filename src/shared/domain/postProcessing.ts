@@ -13,6 +13,7 @@ import {
 } from './postProcessingRegistry'
 
 export * from './postProcessingRegistry'
+export * from './postProcessingEngines'
 
 /** One effect placed in a stack. `id` is the INSTANCE — what a keyframe aims at. */
 export type PostEffect = {

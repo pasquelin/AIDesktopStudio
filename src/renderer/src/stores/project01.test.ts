@@ -1,13 +1,38 @@
 import { beforeEach, describe, expect, it, onTestFinished, vi } from 'vitest'
 import { type Project } from '@shared/domain/project'
 import type * as DocumentIo from '@/features/shell/documentIo'
+import { aiOverview, roleRow } from '@shared/domain/aiOverview-fixtures'
+import { ASSISTANT_ROLE } from '@shared/domain/aiRole'
+import { registerStudioAsk } from '@/features/assistant/studioAsk'
+import { EMPTY_AI_OVERVIEW } from '@/services/fakeAiOverview'
 import { installFakeBridge } from '@/services/fakeBridge'
+import { useAiModels } from './aiModels'
 import type { ActivityEntry } from '@shared/domain/activity'
 import { useActivity } from './activity'
 import { assetsById, useAssets } from './assets'
 import { useProject } from './project'
 import { selectedFilePaths, useSelection } from './selection'
 import { useSettings } from './settings'
+
+/** An assistant this project chose for itself: the choice the next project would not inherit. */
+function armedAssistant(): () => void {
+  const held = useAiModels.getState().overview
+  useAiModels.setState({
+    overview: aiOverview({
+      projectPath: '/projects/Summer',
+      roles: [
+        roleRow({
+          role: ASSISTANT_ROLE,
+          clouds: ['deepseek'],
+          provider: { kind: 'cloud', providerId: 'deepseek' },
+          chosen: { app: null, project: { kind: 'cloud', providerId: 'deepseek' } },
+        }),
+      ],
+    }),
+  })
+
+  return () => useAiModels.setState({ overview: held })
+}
 
 const closeOrphanTabs = vi.hoisted(() => vi.fn())
 vi.mock('@/features/shell/orphanTabs', () => ({ closeOrphanTabs }))
@@ -260,7 +285,7 @@ describe('making a project at a path', () => {
   })
 
   it('asks on the way out, then makes the folder into a project', async () => {
-    const create = vi.fn(() => Promise.resolve(made))
+    const create = vi.fn(() => Promise.resolve({ project: made, made: true }))
     installFakeBridge({ project: { create } })
 
     await expect(useProject.getState().createAt('/projects/neuf')).resolves.toEqual(made)
@@ -270,7 +295,7 @@ describe('making a project at a path', () => {
   })
 
   it('makes nothing when the question on the way out is answered no', async () => {
-    const create = vi.fn(() => Promise.resolve(made))
+    const create = vi.fn(() => Promise.resolve({ project: made, made: true }))
     installFakeBridge({ project: { create } })
     settleUnsavedWorkForProjectChange.mockResolvedValue(false)
 
@@ -296,6 +321,7 @@ describe('making a project at a path', () => {
  * and the main process has already written the reason in the journal on its way past.
  */
 describe('picking a folder in the dialog', () => {
+  const PICKED = { path: '/p', manifest: MANIFEST }
   const picking = (folder: string | null) => ({
     dialog: { pickPath: () => Promise.resolve(folder) },
   })
@@ -356,8 +382,48 @@ describe('picking a folder in the dialog', () => {
 
   // The folder chosen IS the project: nothing but its path crosses, and the name comes from it
   // on the other side. Sending a name made a subfolder inside the folder the user had picked.
+  /**
+   * 🛑 What loses the choice is the SWITCH, not the gesture: the assistant's own creation asked
+   * this and the home's button did not, so a project made at the button left with nothing to
+   * answer it. Every creation reaches the same question now.
+   */
+  it('asks which assistant the new project keeps, from the picker as from anywhere', async () => {
+    const asked = vi.fn(async () => null)
+    onTestFinished(registerStudioAsk(asked))
+    onTestFinished(armedAssistant())
+    installFakeBridge({
+      ...picking('/p'),
+      project: { create: () => Promise.resolve({ project: PICKED, made: true }) },
+    })
+
+    await useProject.getState().createPicked()
+
+    expect(asked).toHaveBeenCalledOnce()
+  })
+
+  /**
+   * 🛑 The same channel OPENS a folder that is already a project: read as a creation, the studio
+   * wrote the assistant of the whole application for a switch that never happened.
+   */
+  it('arms nothing when the folder picked was already a project', async () => {
+    const choose = vi.fn(() => Promise.resolve(EMPTY_AI_OVERVIEW))
+    onTestFinished(registerStudioAsk(async questions => [{ answers: questions[0]?.choices ?? [] }]))
+    onTestFinished(armedAssistant())
+    installFakeBridge({
+      ...picking('/p'),
+      ai: { choose },
+      project: { create: () => Promise.resolve({ project: PICKED, made: false }) },
+    })
+
+    await useProject.getState().createPicked()
+
+    expect(choose).not.toHaveBeenCalled()
+  })
+
   it('makes the folder that was picked into the project', async () => {
-    const create = vi.fn(() => Promise.resolve({ path: '/p', manifest: MANIFEST }))
+    const create = vi.fn(() =>
+      Promise.resolve({ project: { path: '/p', manifest: MANIFEST }, made: true }),
+    )
     installFakeBridge({ ...picking('/p'), project: { create } })
 
     await useProject.getState().createPicked()

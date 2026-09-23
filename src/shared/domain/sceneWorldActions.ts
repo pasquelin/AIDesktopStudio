@@ -62,6 +62,8 @@ export const SCENE_WORLD_ACTIONS: readonly AssistantAction[] = [
      * `none` for the reason `command.runStudioCommand scene.capture` already is: the picture lands in the
      * project's own library, which the studio treats as no question asked.
      */
+    // The still is drawn by the engine, which is handed the scene one render after the store.
+    awaitsItsEffect: true,
     name: 'scene.capture',
     titleKey: 'assistant.actions.sceneCapture.title',
     descriptionKey: 'assistant.actions.sceneCapture.description',

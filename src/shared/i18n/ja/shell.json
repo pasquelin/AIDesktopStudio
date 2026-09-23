@@ -93,6 +93,8 @@
     "undoHint": "ファイルの最後のバッチをあった場所に戻す",
     "redo": "やり直し",
     "redoHint": "ちょうど取り消されたファイルのバッチをやり直す",
+    "trashUsedTitle": "ゴミ箱に移動しますか？{{count, number}}件の文書が使っています",
+    "trashUsedBody": "これらの文書が、消えるものを参照しています：",
     "trashTitle": "これらの{{count, number}}アイテムはゴミ箱に行く",
     "trashBody": "システムゴミ箱から取り戻すことができます。スタジオ自体がそれらを戻すことはできません。",
     "trashConfirm": "ゴミ箱に移動",
@@ -123,6 +125,16 @@
     "sort": {
       "name": "名前、AからZ",
       "nameDesc": "名前、ZからA"
+    },
+    "gather": "別の企画へまとめる",
+    "gatherHint": "この書類と、それが名指すものすべてを別の企画へ複製します。向こうでそのまま開けるようになります。",
+    "gatherIntoHint": "この書類を {{name}} へまとめます",
+    "gathered": "{{files, number}} 個のファイルを複製、{{rows, number}} 件の記録を書きました。",
+    "gatherKept": "{{count, number}} 件はそのままにしました。宛先の同じ場所に別のものがありました。",
+    "gatherRefused": {
+      "not-a-project": "その宛先は企画ではありません。",
+      "same-project": "開いている企画です。",
+      "no-document": "まとめる書類がありません。"
     }
   },
   "menu": {
@@ -154,6 +166,7 @@
     "openProject": "プロジェクトを開く…",
     "saveDocument": "保存",
     "saveDocumentAs": "別名で保存…",
+    "saveDocumentCopy": "コピーを保存…",
     "settings": "設定…",
     "tools": "ツールウィンドウ",
     "add": "追加",
@@ -197,7 +210,9 @@
     "sceneNavigation": "ナビゲーション",
     "sceneDisplay": "表示モード",
     "sceneView": "視点",
-    "sceneCapture": "ビューをキャプチャ"
+    "sceneCapture": "ビューをキャプチャ",
+    "copies": "複製…",
+    "shipped": "スタジオに付属…"
   },
   "about": {
     "copyright": "© 2026 Alban Pasquelin"

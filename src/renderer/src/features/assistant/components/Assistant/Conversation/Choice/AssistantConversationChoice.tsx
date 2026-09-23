@@ -8,8 +8,10 @@ import { AssistantConversationChoiceList } from './AssistantConversationChoiceLi
 import { CONVERSATION_CARD } from '../conversationStyles'
 
 /**
- * What the assistant asked, with the answers it offered — and often none: « quel nom ? » has
- * nothing to press, so the composer below takes the answer and the card says where.
+ * What the assistant asked, with the answers it offered — pressed on the spot, nothing to send.
+ *
+ * A question with NOTHING to press is a form instead: « quel titre ? » is written in a field,
+ * like every other naming in the studio — see `answeredByComposer`.
  */
 export function AssistantConversationChoice(choosing: AssistantChoiceQuestion) {
   const { questions, opening } = choosing
@@ -29,19 +31,13 @@ export function AssistantConversationChoice(choosing: AssistantChoiceQuestion) {
     <div className={CONVERSATION_CARD}>
       <p className="text-text m-0 text-xs font-medium">{only.question}</p>
 
-      {only.choices.length === 0 && (
-        <p className="text-muted text-mini m-0">{t('assistant.answerBelow')}</p>
-      )}
-
       {/* Ticking answers on the spot: one question, one answer, nothing to send. */}
-      {only.choices.length > 0 && (
-        <AssistantConversationChoiceList
-          asked={only}
-          chosen={[]}
-          onChange={chosen => choose([{ answers: chosen }])}
-          named={named}
-        />
-      )}
+      <AssistantConversationChoiceList
+        asked={only}
+        chosen={[]}
+        onChange={chosen => choose([{ answers: chosen }])}
+        named={named}
+      />
 
       <div className="flex flex-wrap items-center gap-2">
         {/* Dismissing is an ANSWER, and the only one that spends nothing: the chain reads it as

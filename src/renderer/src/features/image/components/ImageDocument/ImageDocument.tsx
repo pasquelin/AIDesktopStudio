@@ -26,6 +26,7 @@ import {
   selectionShapeFor,
   shapeKindFor,
 } from '../../imageTools'
+import { noteCanvasApplied } from '../../canvasHosts'
 import { placeAsset } from '../../placeAsset'
 import { revealAssets } from '@/helpers/revealPanel'
 import { useLivePreview } from '@/hooks/useLivePreview'
@@ -127,7 +128,9 @@ export function ImageDocument({ documentId }: ImageDocumentProps) {
   // The engine holds the pixels, never the stack: every state change is pushed into it.
   useEffect(() => {
     engine.current?.apply(canvas)
-  }, [canvas, engine])
+    // The one moment the engine is known to carry this stack — see `canvasHostSettled`.
+    noteCanvasApplied(documentId, canvas)
+  }, [canvas, documentId, engine])
 
   useEffect(() => {
     engine.current?.setView(view)

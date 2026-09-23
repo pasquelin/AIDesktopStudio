@@ -35,7 +35,7 @@
       },
       "workspaceOpen": {
         "title": "Einen Arbeitsbereich öffnen",
-        "description": "Wechselt in einen Arbeitsbereich und erstellt dort ein Dokument, wenn darum gebeten wird — jedes Mal ein NEUES, es ist also nicht der Weg zurück zu einem bereits geöffneten Dokument. Geben Sie immer einen Titel an: Ohne ihn öffnet sich ein Fenster zur Namensvergabe, und der Aufruf wartet auf eine Person."
+        "description": "Wechselt in einen Arbeitsbereich und erstellt dort ein Dokument, wenn darum gebeten wird — jedes Mal ein NEUES, es ist also nicht der Weg zurück zu einem bereits geöffneten Dokument. Eine Erstellung will einen Titel, und er gehört der Person: Fragen Sie sie nach dem Namen, statt einen zu erfinden. Ein Titel, den das Projekt schon trägt, wird abgelehnt."
       },
       "modelsSearch": {
         "title": "Ein Modell suchen",
@@ -1621,11 +1621,14 @@
     "sendHint": "Sendet den Satz an den Assistenten, der die Aktionen auswählt und ausführt",
     "tokens": "{{prompt, number}} Token gelesen · {{reply, number}} geschrieben",
     "chooseHint": "Beantwortet die Frage und lässt den Assistenten weiterarbeiten",
-    "answerBelow": "Antworten Sie unten, im Feld",
     "answerLabel": "Antwort",
     "noteLabel": "Notiz",
-    "sendAnswers": "Antworten senden",
-    "sendAnswersHint": "Gibt alle Antworten auf einmal zurück und lässt den Assistenten weiterarbeiten",
+    "sendAnswers_many": "Antworten senden",
+    "sendAnswers_one": "Antwort senden",
+    "sendAnswers_other": "Antworten senden",
+    "sendAnswersHint_many": "Gibt alle Antworten auf einmal zurück und lässt den Assistenten weiterarbeiten",
+    "sendAnswersHint_one": "Gibt die Antwort zurück und lässt den Assistenten weiterarbeiten",
+    "sendAnswersHint_other": "Gibt alle Antworten auf einmal zurück und lässt den Assistenten weiterarbeiten",
     "skipChoice": "Nicht beantworten",
     "skipChoiceHint": "Schließt die Frage ohne Antwort: der Assistent hört dort auf",
     "contextOf": "{{read}} / {{window}}",

@@ -93,6 +93,8 @@
     "undoHint": "Menempatkan batch file terakhir kembali di mana ia berada",
     "redo": "Ulangi",
     "redoHint": "Melakukan ulang batch file yang baru saja dibatalkan",
+    "trashUsedTitle": "Pindahkan ke tempat sampah? {{count, number}} dokumen memakainya",
+    "trashUsedBody": "Dokumen ini menyebut apa yang akan pergi:",
     "trashTitle": "{{count, number}} item ini akan ke tempat sampah",
     "trashBody": "Anda akan dapat mengambilnya kembali dari tempat sampah sistem. Studio sendiri tidak dapat mengembalikannya.",
     "trashConfirm": "Pindahkan ke tempat sampah",
@@ -123,6 +125,16 @@
     "sort": {
       "name": "Nama, dari A ke Z",
       "nameDesc": "Nama, dari Z ke A"
+    },
+    "gather": "Kumpulkan ke",
+    "gatherHint": "Menyalin dokumen ini dan semua yang disebutnya ke proyek lain, agar terbuka di sana apa adanya.",
+    "gatherIntoHint": "Kumpulkan dokumen ini ke {{name}}",
+    "gathered": "{{files, number}} berkas disalin, {{rows, number}} catatan ditulis.",
+    "gatherKept": "{{count, number}} dibiarkan: tujuan sudah punya yang lain di jalur itu.",
+    "gatherRefused": {
+      "not-a-project": "Tujuan itu bukan sebuah proyek.",
+      "same-project": "Itu proyek yang sedang terbuka.",
+      "no-document": "Tidak ada dokumen untuk dikumpulkan."
     }
   },
   "menu": {
@@ -154,6 +166,7 @@
     "openProject": "Buka proyek…",
     "saveDocument": "Simpan",
     "saveDocumentAs": "Simpan sebagai…",
+    "saveDocumentCopy": "Simpan salinan…",
     "settings": "Pengaturan…",
     "tools": "Jendela alat",
     "add": "Tambahkan",
@@ -197,7 +210,9 @@
     "sceneNavigation": "Navigasi",
     "sceneDisplay": "Mode tampilan",
     "sceneView": "Titik pandang",
-    "sceneCapture": "Tangkap tampilan"
+    "sceneCapture": "Tangkap tampilan",
+    "copies": "Salinan…",
+    "shipped": "Disertakan dengan studio…"
   },
   "about": {
     "copyright": "© 2026 Alban Pasquelin"

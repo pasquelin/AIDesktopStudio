@@ -5,8 +5,8 @@ import { escapeXml } from '@shared/domain/xmlText'
 import type { AnimationGraph, AnimationGraphModule } from '@shared/domain/animationGraph'
 import type { ClipSource } from '@shared/domain/sceneModel'
 import { freeName } from '@shared/domain/otioz'
-import { availableParallelism } from 'node:os'
 import { gzip } from 'node:zlib'
+import { spareCores } from '@main/spareCores'
 import { boundedPool, type BoundedPool } from '@main/boundedPool'
 import { compactGlbGeometry } from './glbGeometry'
 import {
@@ -74,7 +74,7 @@ export async function writeExportedGame(
 ): Promise<GameExportReport> {
   const { scenes, scripts } = request
   const taken = new Set<string>()
-  const compression = boundedPool(() => Math.max(1, availableParallelism() - 2))
+  const compression = boundedPool(spareCores)
   const assetResult = await prepareAssets(ports, request, taken, compression)
   const graphs = await bundledGraphs(ports, request.animationGraphs ?? [], taken, assetResult)
   const content = await prepareContent(scenes, scripts, taken, compression)

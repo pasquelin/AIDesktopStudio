@@ -60,7 +60,7 @@ describe('mission briefing', () => {
       { utterance: 'create', history: [], candidates: ['project.create'] },
       200_000,
     )
-    const expanded = briefing.expand?.('git checkout')
+    const expanded = briefing.expand?.('git checkout', ['git.checkout'])
 
     expect(expanded?.loaded).toContain('git.checkout')
     expect(expanded?.text).toContain(manualOf('git.checkout'))

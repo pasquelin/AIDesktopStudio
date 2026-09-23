@@ -155,6 +155,31 @@ export function angleAboutY(rotation: readonly number[]): number {
 }
 
 /**
+ * What a glTF proposes to be opened AS — §2.6, case 2, the one extension that serves two roles.
+ *
+ * The same file may be a model to put in a scene or a scene to open, so the content proposes: a
+ * mesh alone, framed and lit by nothing, is a model; a tree that carries its own cameras or
+ * lights is a scene. Nothing here decides — the studio still shows the answer and lets it be
+ * changed by hand, which is what makes a guess correctable.
+ *
+ * 🛑 Answered on the bounded HEAD a listing reads, so it answers on what it can see. A large
+ * file whose cameras sit past that head reads as a model, which is the safe way round: that is
+ * what every glTF did before this rule, and « Open as scene » is what covers it.
+ */
+export function gltfProposesScene(head: string): boolean {
+  return SCENE_MARKS.some(mark => mark.test(head))
+}
+
+/**
+ * The two the head can be trusted on. `extensionsUsed` and `cameras` are root members, so an
+ * exporter writes them in the first kilobytes; a NODE list of any size sits behind them.
+ */
+const SCENE_MARKS: readonly RegExp[] = [
+  /"cameras"\s*:\s*\[\s*\{/,
+  new RegExp(`"${KHR_LIGHTS_PUNCTUAL}"`),
+]
+
+/**
  * What the studio holds that the standard has no field for, under `STUDIO_METADATA_KEY` in the
  * `extras` of the SCENE — not of the document. A scene's extras are what three carries in
  * `Scene.userData`, so they survive a trip through a loader and an exporter.

@@ -1,5 +1,6 @@
 import { orElse } from '@shared/promises'
 import {
+  documentFolderOf,
   kindForWorkspace,
   workspaceForKind,
   type DocumentDescriptor,
@@ -7,52 +8,23 @@ import {
 } from '@shared/domain/document'
 import type { ToolSurface } from '@shared/domain/tool'
 import type { WorkspaceId } from '@shared/domain/workspace'
-import { documentPathFor } from '@shared/domain/documentName'
+import { checkDocumentName, type DocumentNameFailure } from '@shared/domain/documentName'
 import { parentOf } from '@shared/domain/folder'
-import { SCRIPT_STARTER } from '@shared/domain/game'
 import { DEFAULT_SCENE_TEMPLATE, isSceneTemplateId } from '@shared/domain/sceneTemplate'
-import type {
-  DocumentTemplateId,
-  NewDocumentAnswer,
-  NewDocumentAsk,
-} from '@shared/domain/newDocument'
+import type { NewDocumentAnswer, NewDocumentAsk } from '@shared/domain/newDocument'
 import { DEFAULT_UI_TEMPLATE, isUiTemplateId } from '@shared/domain/uiTemplates'
 import { ensureProjectInstalls } from '@/engines/scene/projectInstalls'
 import { seedGuiTemplate } from '@/stores/gui'
 import { seedSceneTemplate } from '@/stores/scenes'
-import { documentAtPath, useDocuments } from '@/stores/documents'
+import { useDocuments } from '@/stores/documents'
+import { takenDocumentNames } from '@/stores/documentNames'
 import { useProject } from '@/stores/project'
 import { useSettings } from '@/stores/settings'
 import { selectedFilePaths, useSelection } from '@/stores/selection'
 import { getBridge } from '@/services/bridge'
 import { openDocument } from './components/dockviewApi'
+import { createScript, type NamedCreation } from './createScript'
 import { projectName } from '@shared/domain/project'
-
-/**
- * The file first, then the tab: `relist` is what gives the document the id its path spells.
- *
- * Exported for the one other thing that makes a script — a generation, which brings its own
- * source where a person's gesture brings the starter.
- */
-export async function createScript(
-  of: NamedCreation | undefined,
-  source: string = SCRIPT_STARTER,
-): Promise<DocumentDescriptor | null> {
-  if (!of) return null
-
-  // Composed like every other kind: from the RAW title, a separator named a file in another
-  // folder, and a name the main process refuses made `writeScript` answer `false` — nothing on
-  // screen, no word.
-  const path = documentPathFor(of.title, 'script', of.folder)
-  // Refused rather than overwritten: this path names a file somebody already has work in.
-  if (documentAtPath(useDocuments.getState(), path)) return null
-  if (!(await orElse(getBridge()?.game.writeScript(path, source), false))) return null
-
-  await useDocuments.getState().relist()
-  const created = documentAtPath(useDocuments.getState(), path)
-  if (created) openDocument(created)
-  return created
-}
 
 /**
  * The folder the Explorer points at, or `null` for the window to fall back on the kind's own.
@@ -88,6 +60,9 @@ async function askFor(
     // The tabs, which the window cannot read: it lists the project FOLDER for itself, and a
     // document opened and never saved is in no folder to be found.
     open: Object.values(useDocuments.getState().documents),
+    // What the scene field opens on. A DEFAULT and no longer a rule: the value the person leaves
+    // it at is written into the document, and the setting is never read for it again.
+    engine: useSettings.getState().settings.three.engine,
   }
 }
 
@@ -104,17 +79,33 @@ async function enterProject(given: NewDocumentAnswer): Promise<void> {
 }
 
 /**
- * Makes a document of the kind this space opens, and puts it in front.
+ * The same creation for a caller that has nobody to ask — the assistant, the MCP wire — refused
+ * where the title it brings is one this folder already holds, or one the disk would rewrite.
  *
- * Away from `documentIo`, which reaches every engine: the plus button must not import three
- * megabytes to open an empty canvas. Answers `null` for a window called off or a folder that
- * refused — a caller from outside the window is held on the other end of this.
+ * 🛑 `checkDocumentName`, the very guard the naming FIELD answers to: a caller that names its own
+ * file never sees that field, and two tabs stood on `Scenes/3rd Person.gltf` on 2026-09-09, each
+ * saving over the other. It folds case and NFC, which a raw path comparison does not — `niveau`
+ * takes `Niveau.gltf` on APFS and NTFS alike.
  */
-export function createDocumentIn(
+export async function createNamedDocumentIn(
   workspace: WorkspaceId,
-  called?: NamedCreation,
-): Promise<DocumentDescriptor | null> {
-  return made(kindForWorkspace(workspace), workspace, called).catch(() => null)
+  called: NamedCreation,
+): Promise<DocumentDescriptor | DocumentNameFailure | null> {
+  const kind = kindForWorkspace(workspace)
+  if (kind === null) return null
+
+  try {
+    // The folder is listed first, for a file on disk no tab holds — one walk per creation, a
+    // gesture measured in seconds.
+    await useDocuments.getState().relist()
+    const folder = called.folder ?? documentFolderOf(kind)
+    const taken = takenDocumentNames(useDocuments.getState(), folder)
+
+    return checkDocumentName(called.title, kind, taken) ?? (await create(kind, called))
+  } catch {
+    // As `createDocumentIn` answers: nothing was written, and the caller is told only that.
+    return null
+  }
 }
 
 /**
@@ -131,14 +122,6 @@ export function createDocumentOfKind(kind: DocumentKind): Promise<DocumentDescri
 }
 
 /**
- * What a caller who has nobody to ask already knows. `template` is read for the two kinds that
- * open on one and ignored elsewhere — the assistant names one, and a caller that says nothing
- * takes the default. Narrowed by the kind at the seeding, never trusted on its face: the two
- * families share a field, and `empty` is the only id both of them spell.
- */
-export type NamedCreation = { title: string; folder?: string; template?: DocumentTemplateId }
-
-/**
  * Asks until there is an answer to act on: a way into a project is taken and the question put
  * again, so opening one does not cost the gesture that was being made. Every turn either makes a
  * document or reopens a window the person can close.
@@ -146,12 +129,7 @@ export type NamedCreation = { title: string; folder?: string; template?: Documen
 async function made(
   kind: DocumentKind | null,
   surface: ToolSurface | null,
-  called?: NamedCreation,
 ): Promise<DocumentDescriptor | null> {
-  // Already named: no window is opened at all. There is nothing left to ask, and asking would
-  // hold a caller outside the window on a question only the person in front of it can answer.
-  if (called) return kind === null ? null : await create(kind, called)
-
   const namer = getBridge()?.newDocument
   if (!namer) return null
 
@@ -168,10 +146,11 @@ async function made(
 
 async function seedCreated(
   created: DocumentDescriptor,
-  template: DocumentTemplateId | undefined,
+  of: NamedCreation,
   /** Everything the app ships that a template's shapes and modules read — awaited before seeding. */
   shipped: Promise<unknown>,
 ): Promise<void> {
+  const template = of.template
   if (created.kind === 'scene') {
     await shipped
     const scene = isSceneTemplateId(template) ? template : DEFAULT_SCENE_TEMPLATE
@@ -181,7 +160,13 @@ async function seedCreated(
     // The files FIRST: they answer the folder the role resolved to, and the scene's `Script`
     // components must name the very paths that were just written.
     const seeded = await seedTemplateFiles(scene)
-    seedSceneTemplate(created.id, scene, seeded.scripts, seeded.graph)
+    seedSceneTemplate(created.id, scene, {
+      // The preference where nobody was asked — the assistant and the MCP wire name their own
+      // documents and see no field.
+      engine: of.engine ?? useSettings.getState().settings.three.engine,
+      scripts: seeded.scripts,
+      graph: seeded.graph,
+    })
   }
   if (created.kind === 'gui') {
     seedGuiTemplate(created.id, isUiTemplateId(template) ? template : DEFAULT_UI_TEMPLATE)
@@ -209,7 +194,7 @@ async function create(kind: DocumentKind, of: NamedCreation): Promise<DocumentDe
   const created = await useDocuments.getState().create(workspace, { ...of, kind })
   if (!created) return null
 
-  await seedCreated(created, of.template, shipped)
+  await seedCreated(created, of, shipped)
 
   openDocument(created)
   return created

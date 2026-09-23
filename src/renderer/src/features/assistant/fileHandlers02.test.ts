@@ -10,8 +10,19 @@ import type { FileOutcome } from '@shared/domain/fileOp'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { runAction } from './executor'
 
+// Adopts, as the real one does: the opening now waits for the tab's file, and a stand-in that
+// only records the call leaves the store with no document to read.
 const openDocument = vi.hoisted(() => vi.fn())
-vi.mock('@/features/shell/components/dockviewApi', () => ({ openDocument, showWorkspace: vi.fn() }))
+vi.mock('@/features/shell/components/dockviewApi', async () => {
+  const { useDocuments: store } = await import('@/stores/documents')
+  return {
+    openDocument: (document: DocumentDescriptor) => {
+      store.getState().adopt(document)
+      openDocument(document)
+    },
+    showWorkspace: vi.fn(),
+  }
+})
 
 // The editor half of the gesture, held at its own tests: what `file.open` owes a caller is which
 // of the three destinations took the file, not what the destination then did with it.

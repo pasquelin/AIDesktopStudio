@@ -16,6 +16,7 @@ import {
   type DocumentDraft,
   type DocumentEnvelope,
   type DocumentKind,
+  type DocumentPlace,
 } from '@shared/domain/document'
 import { isPrivatePath } from '@shared/domain/folder'
 import { isFolderRole, type FolderRole } from '@shared/domain/folderRole'
@@ -98,6 +99,13 @@ const folderPath = z.string().refine(isProjectRelativeFolder)
 export function parseFolderPath(value: unknown): string {
   return folderPath.parse(value)
 }
+
+/**
+ * The studio's own folders are refused on top of the shape, which no other path channel needs
+ * to say: the field offering these never lists a hidden folder, so nothing a user can click
+ * reaches here — and a document written into `.index/` would be swept by the next rescan.
+ */
+const landingFolder = folderPath.refine(path => !isPrivatePath(path)).optional()
 
 /**
  * A batch of paths, each held to exactly the rule above.
@@ -212,6 +220,7 @@ const savePicture = z.object({
   replaces: assetId.optional(),
   name: z.string().trim().min(1).max(200),
   derivedFrom: assetId.optional(),
+  folder: landingFolder,
   // The same rule the export applies, for the same reason: a `data:image/png;base64,` prefix
   // reaching the file would be written as part of the picture. That the payload really decodes
   // to a PNG is checked once, by the handler, on the bytes it decodes anyway.
@@ -301,7 +310,7 @@ export function parseOraStack(value: unknown): OraStack {
  * `png` is a `Uint8Array` and never base64: a 4K stack of ten layers is hundreds of megabytes of
  * text otherwise. Its ceiling is the picture ceiling, applied to the bytes themselves.
  */
-const oraSurface = z.object({
+export const oraSurface = z.object({
   path: oraPath,
   png: z.instanceof(Uint8Array).refine(bytes => bytes.byteLength <= MAX_PICTURE_BYTES),
 })
@@ -350,6 +359,8 @@ const saveLayered = z.object({
   replaces: assetId.optional(),
   name: z.string().trim().min(1).max(200),
   derivedFrom: assetId.optional(),
+  folder: landingFolder,
+  documentId: pathSegment.optional(),
   document: z.object({
     stack: oraStack,
     surfaces: z.array(oraSurface).max(2048),
@@ -378,22 +389,35 @@ export function parseForceWrite(value: unknown): boolean {
   return forceWrite.parse(value) ?? false
 }
 
-/**
- * The studio's own folders are refused on top of the shape, which no other path channel needs
- * to say: the field offering these never lists a hidden folder, so nothing a user can click
- * reaches here — and a document written into `.index/` would be swept by the next rescan.
- */
-const landingFolder = folderPath.refine(path => !isPrivatePath(path)).optional()
-
-/**
- * Where a first save lands, held to the same rule as every other path a window names — absent
- * for a caller that has none to offer, which leaves the writer its own default.
- */
+/** Where a first save or a download lands; absent leaves the writer its own default. */
 export function parseLandingFolder(value: unknown): string | undefined {
   return landingFolder.parse(value)
 }
 
-const title = z.string().max(200)
+/** The same rule, plus a name: an empty path is a folder, not a file to write a document to. */
+const chosenFile = folderPath.refine(path => path.length > 0 && !isPrivatePath(path)).optional()
+
+const documentPlace = z.object({ folder: landingFolder, path: chosenFile }).optional()
+
+/** Where a save lands — see `DocumentPlace`. */
+export function parseDocumentPlace(value: unknown): DocumentPlace | undefined {
+  return documentPlace.parse(value)
+}
+
+/**
+ * A refusal the window already phrased, on its way into a dialog's detail.
+ *
+ * Its own bound rather than a title's: four of these sentences are a whole paragraph, naming the
+ * parts a file holds and the menu row that writes them out, and a title's 200 characters would
+ * refuse them at the frontier.
+ */
+const refusalReason = z.string().max(2000)
+
+export function parseRefusalReason(value: unknown): string {
+  return refusalReason.parse(value)
+}
+
+export const documentTitle = z.string().max(200)
 
 /*
  * Never inspected, and now never parsed either: what a kind stores is its editor's business,
@@ -404,13 +428,13 @@ const title = z.string().max(200)
  */
 const MAX_CONTENT_BYTES = 256 * 1024 * 1024
 
-const content = z.string().max(MAX_CONTENT_BYTES)
+export const documentContent = z.string().max(MAX_CONTENT_BYTES)
 
 const documentDraft = z.object({
   // Trimmed and non-empty, where the envelope's twin is not: a title is now the NAME OF THE
   // FILE, and a document nobody named is a document nothing can be written to.
   title: z.string().trim().min(1).max(200),
-  content,
+  content: documentContent,
   // The surfaces of an image document's container. Declared or the schema STRIPS them in
   // silence, and a save then writes a stack with no pixels under it — the very loss this whole
   // field exists to prevent, and one that has already been paid for once.
@@ -422,7 +446,7 @@ const documentDraft = z.object({
 
 /** A title on its way into a dialog. Capped like the one a draft carries, and for the same reason. */
 export function parseDocumentTitle(value: unknown): string {
-  return title.parse(value)
+  return documentTitle.parse(value)
 }
 
 /**
@@ -453,7 +477,7 @@ const documentEnvelope = z.object({
   // side. Refusing an empty title here would drop the document from the listing altogether —
   // present on disk, absent from every list — where `descriptorOf` instead falls back on the
   // file name. What may be WRITTEN is where the rule belongs.
-  title,
+  title: documentTitle,
   updatedAt: z.string().min(1),
   // Absent on every document written before assets could be opened, and on every document that
   // edits none — so an absent field means "not linked" rather than a file to migrate. Unbounded

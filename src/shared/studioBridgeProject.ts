@@ -1,10 +1,15 @@
+import type { DerivedCacheReport } from './domain/derivedCache'
+import type { DocumentKind } from './domain/document'
+import type { CopyGroup } from './domain/fileCopies'
+import type { GatherReport } from './domain/gather'
 import type { FileFacts } from './domain/fileInfo'
 import type { FileHistory, FileOutcome } from './domain/fileOp'
+import type { FileUse } from './domain/fileUse'
 import type { FolderEntry } from './domain/folder'
 import type { FolderRole, RoleFolders } from './domain/folderRole'
 import type { Project, RescanState } from './domain/project'
 import type { ContextCard, ContextState } from './domain/projectContext'
-import type { ProjectBinned, Unsubscribe } from './ipcEvents'
+import type { ProjectBinned, ProjectMade, Unsubscribe } from './ipcEvents'
 import type { FolderExportRequest } from './ipcExports'
 import type { InputMap } from './domain/inputMap'
 import type { AnimationGraph } from './domain/animationGraph'
@@ -33,8 +38,12 @@ export type StudioBridgeProject = {
      * is already a project is OPENED, never written over. One sitting inside another project is
      * refused. One holding files of its own asks the user first, and `null` is their "no" — a
      * cancelled gesture, not a failure, so nothing is journalled and nothing changes.
+     *
+     * 🛑 `made` tells the first case from the others: a window that reads the project alone acts
+     * as though it had a NEW one, and the studio wrote the assistant of the whole application for
+     * a switch that never happened.
      */
-    create: (path: string) => Promise<Project | null>
+    create: (path: string) => Promise<ProjectMade | null>
     open: (path: string) => Promise<Project>
     current: () => Promise<Project | null>
     /**
@@ -133,6 +142,43 @@ export type StudioBridgeProject = {
      * open while the file it names was moved in the Finder.
      */
     fileFacts: (relative: string) => Promise<FileFacts | null>
+    /**
+     * Which documents cite these files — §11's S3, and what a deletion asks before it takes
+     * anything away (E-21). Read on demand, never kept as a graph: see `fileDependents.ts`, and
+     * its blind spot — a citation is matched on the file's NAME and on its catalogue ids, so it
+     * over-reports rather than under-reports.
+     */
+    fileUses: (paths: readonly string[]) => Promise<FileUse[]>
+    /**
+     * Files this project holds MORE THAN ONCE, grouped by fingerprint — the diagnosis §16 asks
+     * for, and CANDIDATES rather than findings: matching bytes is established, redundancy is
+     * not. `hash` narrows it to the group one file belongs to.
+     *
+     * Never paged. A page of candidates would read as « there are no others ».
+     */
+    fileCopies: (hash?: string) => Promise<CopyGroup[]>
+    /**
+     * Puts a document and everything it cites into ANOTHER project, so that project can open it.
+     *
+     * The catalogue rows travel with the bytes, ids unchanged — a document names its sky, its
+     * clips and its images by id as much as by name, and a destination that minted its own
+     * would resolve none of them.
+     *
+     * Never overwrites: a destination already holding a file at that path keeps it, and the
+     * report says whether those were the same bytes or different ones.
+     */
+    gatherInto: (request: {
+      documentId: string
+      kind: DocumentKind
+      destination: string
+    }) => Promise<GatherReport>
+    /** What the four derived stores hold. Reads sizes, writes nothing. */
+    derivedCache: () => Promise<DerivedCacheReport>
+    /**
+     * Throws the four derived stores away and tells the catalogue. A NAMED command, never a
+     * consequence of anything: nothing in the studio purges on its own (R6).
+     */
+    purgeDerivedCache: () => Promise<DerivedCacheReport>
     /**
      * The project's own context — the world every generation made in it is set in.
      *

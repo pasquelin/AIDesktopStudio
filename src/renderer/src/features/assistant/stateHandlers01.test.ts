@@ -24,12 +24,8 @@ const closeDocument = vi.hoisted(() => vi.fn(async () => true))
 const documentIsDirty = vi.hoisted(() => vi.fn(() => false))
 const saveDocument = vi.hoisted(() => vi.fn(async () => true))
 const dropDocument = vi.hoisted(() => vi.fn(async () => true))
-vi.mock('@/features/shell/documentIo', () => ({
-  closeDocument,
-  documentIsDirty,
-  saveDocument,
-  dropDocument,
-}))
+vi.mock('@/features/shell/documentIo', () => ({ closeDocument, saveDocument, dropDocument }))
+vi.mock('@/features/shell/documentDirty', () => ({ documentIsDirty }))
 
 const WHEN = '2026-08-17T10:00:00.000Z'
 
@@ -226,7 +222,10 @@ describe('putting a document in front', () => {
   it('activates one that is open', async () => {
     installDocuments({ 'doc-a': '3d', 'doc-b': 'image' }, 'doc-a')
 
-    expect(await runAction('document.activate', { documentId: 'doc-b' })).toEqual({ ok: true })
+    expect(await runAction('document.activate', { documentId: 'doc-b' })).toEqual({
+      ok: true,
+      data: { documentId: 'doc-b' },
+    })
     expect(useDocuments.getState().activeId).toBe('doc-b')
   })
 
@@ -250,6 +249,7 @@ describe('putting a document in front', () => {
 
     expect(await runAction('document.activate', { documentId: 'Planche du château' })).toEqual({
       ok: true,
+      data: { documentId: 'doc-b' },
     })
     expect(useDocuments.getState().activeId).toBe('doc-b')
   })
@@ -277,45 +277,5 @@ describe('putting a document in front', () => {
     })
     expect(useDocuments.getState().activeId).toBe('doc-a')
     expect(openDocument).not.toHaveBeenCalled()
-  })
-
-  it('opens a document of the folder by its path', async () => {
-    installDocuments({}, '')
-    useDocuments.setState({ stored: [stored('doc-shut', 'Repérages/Niveau.gltf')] })
-
-    expect(await runAction('document.open', { path: 'Repérages/Niveau.gltf' })).toEqual({
-      ok: true,
-      data: { documentId: 'doc-shut' },
-    })
-    expect(openDocument).toHaveBeenCalledWith(expect.objectContaining({ id: 'doc-shut' }))
-  })
-
-  /**
-   * A listing a client holds may predate a file that has since arrived — its own generation, or
-   * another program's. Answering "no such document" for one sitting on the disk is the least
-   * useful refusal there is, so the folder is re-read before refusing.
-   */
-  it('re-reads the folder before refusing a path it has not heard of', async () => {
-    installDocuments({}, '')
-    const relist = vi.fn(async () => {
-      useDocuments.setState({ stored: [stored('doc-new', 'Sorties/Rendu.gltf')] })
-    })
-    useDocuments.setState({ relist })
-
-    expect(await runAction('document.open', { path: 'Sorties/Rendu.gltf' })).toMatchObject({
-      ok: true,
-    })
-    expect(relist).toHaveBeenCalled()
-  })
-
-  // `badInput` sent a client back to check a path that was well formed all along, when the only
-  // true answer was that nothing sits there.
-  it('says the document is not there rather than blaming the parameters', async () => {
-    installDocuments({}, '')
-
-    expect(await runAction('document.open', { path: 'Nowhere/Absent.ora' })).toMatchObject({
-      ok: false,
-      refusal: 'notFound',
-    })
   })
 })

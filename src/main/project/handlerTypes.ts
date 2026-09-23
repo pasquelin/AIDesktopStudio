@@ -1,4 +1,5 @@
 import type { LocalBackend } from '@main/assets/localBackend'
+import type { MediaService } from '@main/media/service'
 import type { TextureExtraction } from '@main/assets/textureExtraction'
 import type { SettingsStore } from '@main/settings/store'
 import type { ActivityReport } from './activityLog'
@@ -32,4 +33,6 @@ export type ProjectHandlerDeps = {
   askUser: AskUser
   trashFolder: (path: string) => Promise<void>
   runningJobCount: () => number
+  /** Read by the cache purge alone, to refuse while a derivation is still writing. */
+  media: MediaService
 }

@@ -32,20 +32,33 @@ export const STATE_ACTIONS: readonly AssistantAction[] = [
     fields: [],
   }),
   action({
+    /**
+     * Answers once the tab HOLDS its file, not once the tab is up: the call after an open reads
+     * restored content. `awaitsItsEffect` is what buys that answer its time — measured 2026-09-09, a
+     * reopened scene took about three seconds to come back, where a call asking nobody is given
+     * two before it is told `timedOut`.
+     */
     name: 'document.open',
     titleKey: 'assistant.actions.documentOpen.title',
     descriptionKey: 'assistant.actions.documentOpen.description',
     commitment: 'none',
     repeatable: false,
+    awaitsItsEffect: true,
     reach: 'mcp',
     fields: [{ key: 'path', kind: 'text', labelKey: 'assistant.fields.filePath', required: true }],
   }),
   action({
+    /**
+     * Answers once the tab HOLDS its file, like `document.open` — and it is the sharper case of
+     * the two: Dockview mounts a background tab's panel only when it comes forward, so a document
+     * open behind another has never read anything. Same flag, same measurement.
+     */
     name: 'document.activate',
     titleKey: 'assistant.actions.documentActivate.title',
     descriptionKey: 'assistant.actions.documentActivate.description',
     commitment: 'none',
     repeatable: false,
+    awaitsItsEffect: true,
     reach: 'mcp',
     capabilities: { targets: ['document'] },
     fields: [

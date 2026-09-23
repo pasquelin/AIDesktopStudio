@@ -246,6 +246,12 @@
       "title": "Hızlan",
       "help": "Hızlanma tuşu tutulduğu sürece hız kaç ile çarpılır. 3’te üç kat hızlı gidersiz — yukarıda ayarı değiştirecek kadar geniş sahneyi geçmek."
     },
+    "renderEngine": {
+      "title": "Render motoru",
+      "help": "Yeni sahnelerin neyle açıldığı. Soru her belge oluşturmada sorulur ve yanıt belgenin kendisine yazılır: bu ayar yalnızca alanı önceden doldurur, var olan hiçbir sahneyi değiştirmez. Uyumlu her makinede çalışır; Gelişmiş daha iyi ışık ve yansımalar verir ve güncel bir ekran kartı ister. WebGPU bağdaştırıcısı olmayan bir makine kendiliğinden Uyumlu’ya döner ve bunu günlüğe yazar.",
+      "gl": "Uyumlu",
+      "gpu": "Gelişmiş"
+    },
     "shadows": {
       "title": "Gölge at",
       "help": "Işıkların attığı gölgeleri hesaplar. Gölge atan her ışık kare başına fazladan render geçişi maliyeti: bunu kapatmak ağır sahneyi hafifletmek en doğrudan yoludur."
@@ -273,6 +279,10 @@
     "shadowMapSize": {
       "title": "Gölge ayrıntısı",
       "help": "Her gölge atan ışık hesapladığı gölge haritasının tarafı, piksel cinsi. Dörtlemek dört katı bellek maliyeti: 2048 birkaç nesnenin sahnesi yeterlidir, 4096 bir ışık tüm seti kapsarken kendi kazancını yapar."
+    },
+    "csm": {
+      "title": "Kademeli gölgeler",
+      "help": "Güneşin gölgesini, kameranın gördüğü her şeye tek bir harita germek yerine, görüşün her derinlik dilimi için bir tane olmak üzere üç haritaya böler. Açık bir manzaranın ihtiyacı budur; tek bir dekor bundan hiçbir şey kazanmaz ve üç derinlik geçişi öder."
     },
     "snapTranslate": {
       "title": "Taşı adımı",

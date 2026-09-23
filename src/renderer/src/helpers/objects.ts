@@ -11,13 +11,6 @@ export function changedFields<D extends object>(before: D, after: D): Partial<D>
   return changes
 }
 
-/** The same record, minus one key. `delete` on a copy, which the stores kept rewriting. */
-export function withoutKey<T>(record: Record<string, T>, key: string): Record<string, T> {
-  const rest = { ...record }
-  delete rest[key]
-  return rest
-}
-
 /**
  * Whether two values hold the same thing, nested objects included.
  *

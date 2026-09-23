@@ -184,6 +184,24 @@ describe('what a listing pays per document', () => {
     await expect(scene.readHead(file)).rejects.toThrow()
   })
 
+  /**
+   * §2.6, case 2 — the one extension serving two roles. A file that frames and lights itself is a
+   * scene whoever exported it, so it is listed and openable rather than turned away (E-24). It
+   * carries no id of ours: `descriptorFrom` names it after its file, as a legacy document is.
+   */
+  it('takes in a glTF another application exported that proposes a scene', async () => {
+    const file = await laid(
+      'Niveau.gltf',
+      JSON.stringify({
+        asset: { version: '2.0' },
+        cameras: [{ type: 'perspective' }],
+        scenes: [{ nodes: [0] }],
+      }),
+    )
+
+    expect(await scene.readHead(file)).toMatchObject({ kind: 'scene', title: '' })
+  })
+
   /** A title holding a brace must not end the block the head is matching. */
   it('reads the head of a montage whose name holds a brace', async () => {
     const file = await laid(

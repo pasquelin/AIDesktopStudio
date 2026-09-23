@@ -1,4 +1,4 @@
-import { Texture } from 'pixi.js'
+import { Texture, type Container, type Sprite } from 'pixi.js'
 import type { Size } from '../core/geometry'
 import { clipEnd, type Clip, type SequenceState, type Track, type Us } from './timelineState'
 
@@ -37,6 +37,12 @@ export function swapTexture(target: { texture: Texture }, next: Texture): void {
 
 export type Placement = { x: number; y: number; scale: number }
 
+/** Applies a placement to anything Pixi positions and scales. */
+export function place(target: Container, placement: Placement): void {
+  target.position.set(placement.x, placement.y)
+  target.scale.set(placement.scale)
+}
+
 export function fitInside(source: Size, frame: Size): Placement {
   const usable = source.width > 0 && source.height > 0 && frame.width > 0 && frame.height > 0
   if (!usable) return { x: 0, y: 0, scale: 0 }
@@ -47,4 +53,8 @@ export function fitInside(source: Size, frame: Size): Placement {
     y: (frame.height - source.height * scale) / 2,
     scale,
   }
+}
+
+export function fitSprite(sprite: Sprite, canvas: Size): void {
+  place(sprite, fitInside(sprite.texture, canvas))
 }

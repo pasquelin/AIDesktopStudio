@@ -28,11 +28,11 @@ const tokensOf = (detail: string): readonly string[] =>
 const tokenOf = (detail: string): string => tokensOf(detail)[0] ?? ''
 
 const showWorkspace = vi.hoisted(() => vi.fn())
-const createDocumentIn = vi.hoisted(() => vi.fn())
+const createNamedDocumentIn = vi.hoisted(() => vi.fn())
 const revealTool = vi.hoisted(() => vi.fn())
 
 vi.mock('@/features/shell/components/dockviewApi', () => ({ showWorkspace }))
-vi.mock('@/features/shell/newDocument', () => ({ createDocumentIn }))
+vi.mock('@/features/shell/newDocument', () => ({ createNamedDocumentIn }))
 vi.mock('@/helpers/revealPanel', () => ({ revealTool }))
 
 function onImageDocument(): void {

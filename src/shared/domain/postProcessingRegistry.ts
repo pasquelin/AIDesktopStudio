@@ -6,20 +6,20 @@
  * those may pull three.js in, so nothing here knows a `Pass` exists — `engines/postfx/` is the
  * one folder that does.
  */
-import type { FieldValue, PropertySpec } from './propertySpec'
+import { GL_ONLY, GPU_ONLY, RENDER_ENGINES, type RenderEngine } from './renderEngine'
+import {
+  BLUR_KINDS,
+  HALFTONE_SHAPES,
+  choice,
+  colour,
+  number,
+  picture,
+  slider,
+  toggle,
+  type PostParamSpec,
+} from './postParamSpec'
 
-/** What a parameter holds. The same four shapes the inspector already renders. */
-export type PostParamValue = FieldValue
-
-/**
- * One knob of one effect: how it is shown, what it opens on, and whether the timeline may drive
- * it.
- *
- * A colour is `animatable: false` in this version — a keyframe carries a `Vector3` and a colour
- * is stored as a hexadecimal string, so keying one would need a conversion at both ends that
- * nothing yet asks for.
- */
-export type PostParamSpec = PropertySpec & { default: PostParamValue; animatable: boolean }
+export { HALFTONE_SHAPES, type PostParamSpec, type PostParamValue } from './postParamSpec'
 
 export type PostCategory =
   'lighting' | 'lens' | 'light' | 'color' | 'image' | 'film' | 'stylized' | 'aa'
@@ -90,13 +90,26 @@ export type PostEffectId =
   | 'vhs'
   | 'fxaa'
   | 'smaa'
+  | 'traa'
 
 export type PostEffectMeta = {
   category: PostCategory
   cost: PostCost
   slot: PostSlot
+  /**
+   * Which engines can actually build it. The SLOT is the same on both sides — a GPU occlusion
+   * occupies the `ao` slot its GL twin occupies — so this says nothing about where an effect
+   * sits in the chain, only about who can make one.
+   */
+  engines: readonly RenderEngine[]
   /** Whether two of them in one stack mean anything. An anti-aliaser twice does not. */
   duplicable: boolean
+  /**
+   * Whether it resolves against the FRAMES BEFORE IT, so cannot be built for a surface drawn
+   * once. 🛑 Handed a history it has not filled, such a node draws a FLAT COLOUR — measured
+   * 2026-09-11. See `survivesOneShot`, which `gpuComposer` reads.
+   */
+  temporal?: boolean
   /**
    * Whether it works ABOVE white — a bloom thresholds highlights, a defocus spreads them, an
    * opened exposure pulls values back from over one. On bytes all three read as clipping, so the
@@ -106,53 +119,6 @@ export type PostEffectMeta = {
   hdr?: boolean
   params: Readonly<Record<string, PostParamSpec>>
 }
-
-const slider = (
-  min: number,
-  max: number,
-  step: number,
-  value: number,
-  animatable = true,
-): PostParamSpec => ({ control: 'slider', min, max, step, default: value, animatable })
-
-const number = (min: number, max: number, step: number, value: number): PostParamSpec => ({
-  control: 'number',
-  min,
-  max,
-  step,
-  default: value,
-  animatable: true,
-})
-
-const toggle = (value: boolean): PostParamSpec => ({
-  control: 'toggle',
-  default: value,
-  animatable: false,
-})
-
-const colour = (value: string): PostParamSpec => ({
-  control: 'color',
-  default: value,
-  animatable: false,
-})
-
-const choice = (options: readonly string[], value: string): PostParamSpec => ({
-  control: 'choice',
-  options,
-  labelPrefix: 'postfx.option_',
-  default: value,
-  animatable: false,
-})
-
-const picture = (value = ''): PostParamSpec => ({
-  control: 'asset',
-  assetType: 'image',
-  default: value,
-  animatable: false,
-})
-
-export const HALFTONE_SHAPES: readonly string[] = ['dot', 'ellipse', 'line', 'square']
-const BLUR_KINDS: readonly string[] = ['gaussian', 'box']
 
 /**
  * Every effect the studio knows, and everything a panel needs to draw one.
@@ -165,6 +131,9 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'lighting',
     cost: 'high',
     slot: 'ao',
+    // The one effect both engines build: GLSL `GTAOPass` against the native `ao()` node. Same
+    // slot, same exclusivity, same parameters — and `engines:parity` compares the two pictures.
+    engines: RENDER_ENGINES,
     duplicable: false,
     params: {
       radius: slider(0.01, 2, 0.01, 0.25),
@@ -179,6 +148,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'lighting',
     cost: 'high',
     slot: 'ao',
+    engines: GL_ONLY,
     duplicable: false,
     params: {
       radius: slider(0.01, 32, 0.01, 8),
@@ -190,6 +160,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'aa',
     cost: 'high',
     slot: 'render',
+    engines: GL_ONLY,
     duplicable: false,
     params: { level: number(1, 4, 1, 2) },
   },
@@ -198,6 +169,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'light',
     cost: 'medium',
     slot: 'image',
+    engines: GL_ONLY,
     duplicable: true,
     params: {
       strength: slider(0, 4, 0.01, 0.6),
@@ -210,6 +182,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'lens',
     cost: 'high',
     slot: 'image',
+    engines: GL_ONLY,
     duplicable: false,
     params: {
       focusDistance: number(0.01, 1000, 0.01, 10),
@@ -221,6 +194,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'lens',
     cost: 'low',
     slot: 'image',
+    engines: GL_ONLY,
     duplicable: true,
     params: {
       amount: slider(0, 0.05, 0.0005, 0.003),
@@ -231,6 +205,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'lens',
     cost: 'low',
     slot: 'image',
+    engines: GL_ONLY,
     duplicable: false,
     params: {
       distortion: slider(-0.5, 0.5, 0.005, 0.1),
@@ -243,6 +218,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'lens',
     cost: 'low',
     slot: 'image',
+    engines: GL_ONLY,
     duplicable: true,
     params: {
       amount: slider(0, 0.05, 0.001, 0.008),
@@ -255,6 +231,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'color',
     cost: 'low',
     slot: 'image',
+    engines: GL_ONLY,
     duplicable: true,
     params: {
       exposure: slider(-4, 4, 0.01, 0),
@@ -273,6 +250,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'color',
     cost: 'low',
     slot: 'image',
+    engines: GL_ONLY,
     duplicable: false,
     params: {
       texture: picture(),
@@ -283,6 +261,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'image',
     cost: 'low',
     slot: 'image',
+    engines: GL_ONLY,
     duplicable: true,
     params: { amount: slider(0, 3, 0.01, 0.5) },
   },
@@ -290,6 +269,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'image',
     cost: 'medium',
     slot: 'image',
+    engines: GL_ONLY,
     duplicable: true,
     params: {
       kind: choice(BLUR_KINDS, 'gaussian'),
@@ -301,6 +281,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'image',
     cost: 'medium',
     slot: 'image',
+    engines: GL_ONLY,
     duplicable: true,
     params: {
       amount: slider(0, 1, 0.01, 0.25),
@@ -315,6 +296,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'image',
     cost: 'low',
     slot: 'image',
+    engines: GL_ONLY,
     duplicable: false,
     params: { size: number(1, 64, 1, 6) },
   },
@@ -322,6 +304,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'image',
     cost: 'low',
     slot: 'image',
+    engines: GL_ONLY,
     duplicable: false,
     params: { levels: number(2, 64, 1, 8) },
   },
@@ -329,6 +312,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'image',
     cost: 'low',
     slot: 'image',
+    engines: GL_ONLY,
     duplicable: false,
     params: { amount: slider(0, 1, 0.01, 0.5), levels: number(2, 32, 1, 8) },
   },
@@ -336,6 +320,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'film',
     cost: 'low',
     slot: 'image',
+    engines: GL_ONLY,
     duplicable: true,
     params: {
       offset: slider(0, 3, 0.01, 1),
@@ -347,6 +332,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'film',
     cost: 'low',
     slot: 'image',
+    engines: GL_ONLY,
     duplicable: false,
     params: {
       aspect: slider(1, 3, 0.01, 2.39),
@@ -357,6 +343,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'film',
     cost: 'low',
     slot: 'image',
+    engines: GL_ONLY,
     duplicable: false,
     params: {
       intensity: slider(0, 1, 0.01, 0.3),
@@ -369,6 +356,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'film',
     cost: 'low',
     slot: 'image',
+    engines: GL_ONLY,
     duplicable: false,
     params: {
       intensity: slider(0, 1, 0.01, 0.3),
@@ -379,6 +367,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'stylized',
     cost: 'medium',
     slot: 'image',
+    engines: GL_ONLY,
     duplicable: false,
     params: {
       thickness: slider(0.5, 4, 0.1, 1),
@@ -391,6 +380,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'stylized',
     cost: 'medium',
     slot: 'image',
+    engines: GL_ONLY,
     duplicable: false,
     params: {
       shape: choice(HALFTONE_SHAPES, 'dot'),
@@ -403,6 +393,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'stylized',
     cost: 'low',
     slot: 'image',
+    engines: GL_ONLY,
     duplicable: false,
     params: {
       scale: slider(0.1, 4, 0.05, 0.8),
@@ -414,6 +405,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'stylized',
     cost: 'high',
     slot: 'image',
+    engines: GL_ONLY,
     duplicable: false,
     params: { radius: number(1, 6, 1, 3) },
   },
@@ -421,6 +413,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'stylized',
     cost: 'low',
     slot: 'image',
+    engines: GL_ONLY,
     duplicable: false,
     params: { wild: toggle(false) },
   },
@@ -428,6 +421,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'stylized',
     cost: 'low',
     slot: 'image',
+    engines: GL_ONLY,
     duplicable: true,
     params: {
       amount: slider(0, 0.05, 0.0005, 0.0015),
@@ -438,6 +432,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'stylized',
     cost: 'low',
     slot: 'image',
+    engines: GL_ONLY,
     duplicable: false,
     params: {
       curvature: slider(0, 1, 0.01, 0.25),
@@ -450,6 +445,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'stylized',
     cost: 'low',
     slot: 'image',
+    engines: GL_ONLY,
     duplicable: false,
     params: {
       bleed: slider(0, 0.05, 0.0005, 0.006),
@@ -462,6 +458,7 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'aa',
     cost: 'low',
     slot: 'aa',
+    engines: GL_ONLY,
     duplicable: false,
     params: {},
   },
@@ -469,14 +466,33 @@ export const POST_EFFECTS: Record<PostEffectId, PostEffectMeta> = {
     category: 'aa',
     cost: 'medium',
     slot: 'aa',
+    engines: GL_ONLY,
     duplicable: false,
+    params: {},
+  },
+  /**
+   * Temporal reprojection: the picture is jittered by a sub-pixel offset each frame and the
+   * previous frames are reprojected onto it through the scene's velocity. It removes every edge,
+   * including the ones inside a texture that no edge filter can see.
+   *
+   * No sample count, and that is three.js and not an omission: a `TRAANode`'s samples are FRAMES,
+   * one per jitter of a fixed sequence. Its only quality lever is the sub-pixel correction, which
+   * the budget holds — see `gpuPostQuality`.
+   */
+  traa: {
+    category: 'aa',
+    cost: 'medium',
+    slot: 'aa',
+    engines: GPU_ONLY,
+    duplicable: false,
+    // Its whole method: the previous frames are reprojected onto this one.
+    temporal: true,
     params: {},
   },
 }
 
-export const POST_EFFECT_IDS: readonly PostEffectId[] = Object.keys(
-  POST_EFFECTS,
-) as readonly PostEffectId[]
+// `as`: `Object.keys` widens to `string[]`, and the object it walks is keyed on the union.
+export const POST_EFFECT_IDS = Object.keys(POST_EFFECTS) as readonly PostEffectId[]
 
 export function isPostEffectId(value: unknown): value is PostEffectId {
   return typeof value === 'string' && value in POST_EFFECTS

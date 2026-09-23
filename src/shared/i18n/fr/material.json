@@ -88,6 +88,8 @@
     "preview": "Aperçu",
     "envRotation": "Rotation du ciel",
     "originGenerated": "Généré par un modèle — figé tel qu’il est arrivé",
+    "showInExplorer": "Rendre visible dans l’Explorateur",
+    "showInExplorerHint": "Déplace le fichier calculé dans le dossier des matières, sans le copier",
     "originDerived": "Calculé depuis un autre canal de cette matière",
     "originImported": "Votre propre fichier",
     "derive": "Calculer depuis {{source}}",

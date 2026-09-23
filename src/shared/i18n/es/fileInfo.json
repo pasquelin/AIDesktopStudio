@@ -5,6 +5,8 @@
       "general": "General",
       "media": "Medios",
       "catalogue": "Catálogo",
+      "copies": "Copias",
+      "uses": "Usado por",
       "git": "Git"
     },
     "gitUnchanged": "Ninguna modificación pendiente",
@@ -18,7 +20,10 @@
     "identifier": "Identificador",
     "fingerprint": "Huella del contenido",
     "added": "Añadido",
+    "documents": "Documentos",
+    "usedByNone": "Ningún documento del proyecto menciona este archivo.",
     "reading": "Leyendo la carpeta…",
-    "missing": "Esta entrada ya no está en la carpeta del proyecto."
+    "missing": "Esta entrada ya no está en la carpeta del proyecto.",
+    "copiesNone": "Ningún otro archivo del proyecto lleva estos bytes."
   }
 }

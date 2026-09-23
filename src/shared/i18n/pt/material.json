@@ -88,6 +88,8 @@
     "preview": "Prévia",
     "envRotation": "Rotação do céu",
     "originGenerated": "Gerado por um modelo — congelado como chegou",
+    "showInExplorer": "Mostrar no Explorador",
+    "showInExplorerHint": "Move o ficheiro calculado para a pasta das matérias, sem o copiar",
     "originDerived": "Calculado a partir de outro canal deste material",
     "originImported": "Seu próprio arquivo",
     "derive": "Calcular a partir de {{source}}",

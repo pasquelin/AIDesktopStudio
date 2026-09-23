@@ -77,3 +77,22 @@ function completeFrame(frame: VisualFrame): boolean {
     frame.width > 0 && frame.height > 0 && frame.pixels.length === frame.width * frame.height * 4
   )
 }
+
+/**
+ * Whether a frame holds more than one colour.
+ *
+ * 🛑 What every visual comparison needs beside its ratio: two BLANK frames compare perfectly, so
+ * a side that drew nothing reads as a side that drew the same thing. Alpha is out of it — a frame
+ * read off an opaque target carries 255 everywhere and would never vary.
+ */
+export function hasPixelVariation(pixels: Uint8Array): boolean {
+  for (let offset = 4; offset < pixels.length; offset += 4) {
+    if (
+      pixels[offset] !== pixels[0] ||
+      pixels[offset + 1] !== pixels[1] ||
+      pixels[offset + 2] !== pixels[2]
+    )
+      return true
+  }
+  return false
+}

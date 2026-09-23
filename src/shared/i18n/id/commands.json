@@ -16,9 +16,13 @@
       "title": "Buka proyek",
       "help": "Memilih proyek yang sudah ada di disk Anda dan membukanya di tempat yang sekarang. Proyek yang terbuka disimpan saat Anda bekerja, jadi tidak ada yang perlu disimpan terlebih dahulu."
     },
+    "documentSaveCopy": {
+      "title": "Simpan salinan",
+      "help": "Menulis salinan dokumen di tempat yang Anda minta dan melanjutkan pada dokumen yang terbuka: tujuannya tidak berubah."
+    },
     "documentSaveAs": {
       "title": "Simpan sebagai",
-      "help": "Menulis salinan aset di sebelah aslinya dan melanjutkan dengannya. Aset yang terbuka tetap sesuai dengan yang terakhir disimpan."
+      "help": "Memilih tujuan, menulis dokumen di sana dan melanjutkan padanya: berkas asalnya tetap seperti pada penyimpanan terakhir."
     },
     "documentSave": {
       "title": "Simpan dokumen",

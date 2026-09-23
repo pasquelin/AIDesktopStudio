@@ -208,7 +208,13 @@ export const POST_ACTIONS: readonly AssistantAction[] = [
     titleKey: 'assistant.actions.postSavePreset.title',
     descriptionKey: 'assistant.actions.postSavePreset.description',
     commitment: 'none',
-    repeatable: true,
+    /**
+     * The store APPENDS, and the panel's own field does too, so a second identical call leaves
+     * two presets under one name — which `postPresetNamed` then resolves to whichever comes
+     * first. Refused as a repeat rather than deduplicated in the store: a person is free to keep
+     * two looks under one name, a model asking twice for the same save is a loop (2026-09-09).
+     */
+    repeatable: false,
     reach: 'mcp',
     fields: [
       CAMERA,

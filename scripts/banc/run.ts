@@ -9,6 +9,9 @@ export type Called = {
   answer?: string
 }
 
+/** One question as the bench reads it back: what was asked, and how many answers it allowed. */
+export type AskedShape = { question: string; many: boolean }
+
 export type Run = {
   studio: Studio
   called: readonly Called[]
@@ -18,8 +21,11 @@ export type Run = {
   /**
    * The questions it put to the person, in order — the `ask` half of an answer. What a scenario
    * about asking measures is that the studio STOPPED, not that a sentence carried a `?`.
+   *
+   * 🛑 The SHAPE travels with the text: a question that allows several answers is a different
+   * gesture, and read as a bare sentence no scenario could tell the two apart.
    */
-  asks: readonly string[]
+  asks: readonly AskedShape[]
 }
 
 export type Scenario = {

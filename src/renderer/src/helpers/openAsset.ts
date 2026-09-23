@@ -1,9 +1,11 @@
 import { localizedError, type DiagnosticKey } from '@shared/localizedError'
 import type { Asset } from '@shared/domain/asset'
 import { openDocument } from '@/features/shell/components/dockviewApi'
+import { restoreDocument } from '@/features/shell/documentLoad'
 import { reportFailure } from '@/services/diagnostics'
 import { assetsById, useAssets } from '@/stores/assets'
-import { documentById, documentForAsset, useDocuments } from '@/stores/documents'
+import { documentForAsset, documentForFile } from '@/stores/documentIdentity'
+import { documentById, useDocuments } from '@/stores/documents'
 import { openCharacter } from '@/character/openCharacter'
 import { getBridge } from '@/services/bridge'
 import { useProject } from '@/stores/project'
@@ -32,9 +34,11 @@ function refusalFor(asset: Asset, intent: AssetIntent | null): DiagnosticKey | n
 }
 
 async function createAssetDocument(asset: Asset, intent: AssetIntent): Promise<boolean> {
-  const created = await useDocuments
-    .getState()
-    .create(intent.workspace, { title: asset.name, sourceAssetId: asset.id })
+  const created = await useDocuments.getState().create(intent.workspace, {
+    title: asset.name,
+    sourceAssetId: asset.id,
+    ...(asset.path ? { sourcePath: asset.path } : {}),
+  })
   if (!created) {
     reportFailure('assets.open', asset.name, localizedError('missingDocument'))
     return false
@@ -70,17 +74,22 @@ export async function openAsset(asset: Asset, into?: AssetIntent): Promise<boole
   if (special !== null) return special
 
   const intent = into ?? editorIntent(asset)
-  const already = documentForAsset(useDocuments.getState(), asset.id, intent?.kind)
+  // By the FILE and not by the id alone where nobody named another destination — §2.6. « Send to
+  // a material channel » still lands where it was told to; a double-click comes back to the one
+  // document this file is.
+  const already = into
+    ? documentForAsset(useDocuments.getState(), asset.id, intent?.kind)
+    : documentForFile(useDocuments.getState(), asset, intent?.kind)
   // Back to its own tab rather than a second one onto the same asset: two tabs of one document
   // are two histories of it, and the second save writes over the first.
   if (already) {
     // The section is not set here: bringing the tab forward is what sets it, so the two cannot
     // disagree — see `DocumentArea`.
     openDocument(already)
-    // The tab is NOT resized to the asset: it keeps its size and the work done in it. But one
-    // that no longer measures its asset writes a smaller file over it on the next ⌘S, so the
-    // destination says so here — the first moment the user can still act on it.
-    await intent?.revisit?.(already.id, asset)
+    // Filled from disk, because the answer may come from the FOLDER rather than from a tab: a
+    // panel that was never on screen holds no state to show. Free for one already loaded —
+    // `restoreDocument` answers `ready` without reading anything.
+    await restoreDocument(already.id)
     return true
   }
 

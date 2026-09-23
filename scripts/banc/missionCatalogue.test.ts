@@ -11,7 +11,7 @@ import {
 
 describe('mission runtime bench catalogue', () => {
   it('audits the complete historical catalogue', () => {
-    expect(SCENARIOS).toHaveLength(481)
+    expect(SCENARIOS).toHaveLength(482)
   })
 
   it('keeps the Phase 10.3 baseline unchanged', () => {

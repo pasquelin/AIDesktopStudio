@@ -5,6 +5,8 @@
       "general": "Generale",
       "media": "Media",
       "catalogue": "Catalogo",
+      "copies": "Copie",
+      "uses": "Usato da",
       "git": "Git"
     },
     "gitUnchanged": "Nessuna modifica in sospeso",
@@ -18,7 +20,10 @@
     "identifier": "Identificatore",
     "fingerprint": "Impronta del contenuto",
     "added": "Aggiunto il",
+    "documents": "Documenti",
+    "usedByNone": "Nessun documento del progetto menziona questo file.",
     "reading": "Lettura della cartella…",
-    "missing": "Questa voce non è più nella cartella del progetto."
+    "missing": "Questa voce non è più nella cartella del progetto.",
+    "copiesNone": "Nessun altro file del progetto porta questi byte."
   }
 }

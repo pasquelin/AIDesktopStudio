@@ -98,6 +98,18 @@ function openAndSaveItems(context: MenuContext): MenuItemConstructorOptions[] {
       click: () => options.actions.runCommand('project.open'),
     },
     ...recentItems(context),
+    {
+      label: t.menu.shipped,
+      enabled: options.openProject !== null,
+      click: () => options.actions.openShipped(),
+    },
+    {
+      label: t.menu.copies,
+      // A diagnosis of the OPEN project. Greyed rather than absent, so the gesture is findable
+      // before there is a project to run it on.
+      enabled: options.openProject !== null,
+      click: () => options.actions.openCopies(),
+    },
     { type: 'separator' },
     {
       label: t.menu.saveDocument,
@@ -110,6 +122,12 @@ function openAndSaveItems(context: MenuContext): MenuItemConstructorOptions[] {
       enabled: options.abilities.includes('document.saveAs'),
       ...context.keyOf('document.saveAs'),
       click: () => options.actions.runCommand('document.saveAs'),
+    },
+    {
+      label: t.menu.saveDocumentCopy,
+      enabled: options.abilities.includes('document.saveCopy'),
+      ...context.keyOf('document.saveCopy'),
+      click: () => options.actions.runCommand('document.saveCopy'),
     },
   ]
 }

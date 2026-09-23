@@ -110,6 +110,17 @@ export function reportNotice(scope: LogScope, message: string): void {
 }
 
 /**
+ * Work that went through as asked, told to whoever is watching the log.
+ *
+ * Beside `reportNotice` rather than folded into it: that one's contract is « less than it was
+ * asked for », and a gathering that copied everything is not that. The LEVEL is the difference,
+ * and it is what a reader filters on.
+ */
+export function reportDone(scope: LogScope, message: string): void {
+  send('info', scope, message.slice(0, MAX_LOG_MESSAGE))
+}
+
+/**
  * The rejection is dropped on purpose: this IS the path a failure travels, and a failure to
  * report one has nowhere left to go. Silent with no bridge — tests and a plain browser have none.
  */

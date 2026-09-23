@@ -122,6 +122,12 @@ export const CORE_ACTIONS: readonly AssistantAction[] = [
      * first has already happened — a command meant twice is two turns, or two different ids.
      */
     repeatable: false,
+    /**
+     * The router awaits what it fires — a save, a dictation starting its microphone and its local
+     * model, a settings window. `raises` buys the time only for a command that engages something,
+     * and `app.dictate` engages nothing while taking the longest of them all.
+     */
+    awaitsItsEffect: true,
     raises: input =>
       typeof input.command === 'string' ? commitmentOfCommand(input.command) : 'none',
     reach: 'both',
@@ -147,8 +153,17 @@ export const CORE_ACTIONS: readonly AssistantAction[] = [
     titleKey: 'assistant.actions.workspaceOpen.title',
     descriptionKey: 'assistant.actions.workspaceOpen.description',
     commitment: 'none',
+    /**
+     * 🛑 Left repeatable although two rounds of one turn sent the same creation and stood two tabs
+     * on `Scenes/3rd Person.gltf` (2026-09-09): `alreadySettled` reads this action's own last
+     * call alone, so pinning it refused a space brought forward again after `document.activate`
+     * had put another in front. The taken TITLE is what refuses the second creation, and it holds
+     * at the MCP door too, where a turn does not exist.
+     */
     repeatable: true,
-    asksItself: true,
+    // The creation seeds a template's files and the restore reads one back, both before the
+    // answer. No question of its own is raised any more — a creation with no title is refused.
+    awaitsItsEffect: true,
     reach: 'both',
     fields: [
       {
@@ -164,13 +179,16 @@ export const CORE_ACTIONS: readonly AssistantAction[] = [
         labelKey: 'assistant.fields.createDocument',
         required: false,
       },
-      // Naming it here is what lets a caller outside the window finish the gesture: unnamed, the
-      // creation puts a field on screen that only a person can fill, and the call waits it out.
+      /**
+       * 🛑 The name is the PERSON's, as a project's is: `project.create` requires it and the
+       * model asks for it, where the description above told the model to always give a title —
+       * so it invented « 3rd Person » for a sentence that named nothing (2026-09-09). Optional
+       * here because opening a space alone takes none; the handler requires it for a creation.
+       */
       { key: 'title', kind: 'text', labelKey: 'assistant.fields.title', required: false },
       { key: 'folder', kind: 'text', labelKey: 'assistant.fields.folderPath', required: false },
-      // What a scene opens on. Read only when a title was given: with none the window opens, and
-      // the person in front of it picks the template themselves. Enumerated since 2026-09-06: a
-      // client that was not told `empty` existed emptied a new scene by hand, five objects.
+      // What a scene opens on. Enumerated since 2026-09-06: a client that was not told `empty`
+      // existed emptied a new scene by hand, five objects.
       {
         key: 'template',
         kind: 'choice',
@@ -226,6 +244,9 @@ export const CORE_ACTIONS: readonly AssistantAction[] = [
     ],
   }),
   action({
+    // Answers once the panel is MOUNTED and readable, and its chunk is loaded on first open —
+    // `generator.readArmedGeneration` right after used to be refused on a panel that was opening.
+    awaitsItsEffect: true,
     name: 'generator.prepare',
     titleKey: 'assistant.actions.generatorPrepare.title',
     descriptionKey: 'assistant.actions.generatorPrepare.description',

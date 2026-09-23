@@ -88,6 +88,8 @@
     "preview": "预览",
     "envRotation": "天空旋转",
     "originGenerated": "由模型生成——保持送达时的样子不变",
+    "showInExplorer": "在资源管理器中显示",
+    "showInExplorerHint": "把计算得到的文件移到材质文件夹，而不是复制",
     "originDerived": "根据该材质的另一个通道计算得出",
     "originImported": "你自己的文件",
     "derive": "从 {{source}} 计算",

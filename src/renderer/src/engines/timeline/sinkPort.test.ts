@@ -11,7 +11,9 @@ import type { SinkLike } from './decoderPool'
 /** The demuxer, as far as this suite is concerned: what it answers, and what it was told. */
 const demuxer = vi.hoisted(() => ({
   dispose: vi.fn(),
-  getSample: vi.fn(async (_seconds: number) => null),
+  samples: vi.fn((_from: number): AsyncIterable<never> => ({
+    async *[Symbol.asyncIterator]() {},
+  })),
   track: null as unknown,
   refuses: false,
   sources: new Array<Blob>(),
@@ -32,12 +34,7 @@ vi.mock('mediabunny', () => ({
     }
   },
   VideoSampleSink: class {
-    getSample = demuxer.getSample
-    samplesAtTimestamps = (timestamps: AsyncIterable<number>) => ({
-      async *[Symbol.asyncIterator]() {
-        for await (const time of timestamps) yield await demuxer.getSample(time)
-      },
-    })
+    samples = demuxer.samples
   },
 }))
 
@@ -196,7 +193,7 @@ describe('the browser behind the port', () => {
     const sink = await openAssetSink('a')
     await sink.getSample(2)
 
-    expect(demuxer.getSample).toHaveBeenCalledWith(2)
+    expect(demuxer.samples).toHaveBeenCalledWith(2)
     expect(decode).not.toHaveBeenCalled()
     expect(demuxer.dispose).not.toHaveBeenCalled()
 

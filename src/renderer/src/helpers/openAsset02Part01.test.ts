@@ -1,4 +1,3 @@
-import { localizedError } from '@shared/localizedError'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { type Asset } from '@shared/domain/asset'
 import type { DocumentDescriptor } from '@shared/domain/document'
@@ -7,7 +6,6 @@ import { bridgeWatchingLogs, installFakeBridge } from '@/services/fakeBridge'
 import { useDocuments } from '@/stores/documents'
 import { useLayouts } from '@/stores/layouts'
 import { useProject } from '@/stores/project'
-import { canvasOf, useCanvases } from '@/stores/canvases'
 import { lendPictureMeasure } from '@/features/image/pictureSize'
 import { forgetReportedFailures } from '@/services/diagnostics'
 import { openAsset } from './openAsset'
@@ -37,14 +35,6 @@ const picture = (overrides: Partial<Asset> = {}): Asset =>
 
 let giveBackMeasure: () => void
 
-/** The tab the gesture made. Every case here opens exactly one, which is the promise itself. */
-function opened(): DocumentDescriptor {
-  const documents = Object.values(useDocuments.getState().documents)
-  const made = documents.at(-1)
-  if (!made) throw new Error('expected a document to have been opened')
-  return made
-}
-
 const openedCount = (): number => Object.keys(useDocuments.getState().documents).length
 
 /**
@@ -71,33 +61,6 @@ describe('opening an asset', () => {
   })
 
   afterEach(() => giveBackMeasure())
-
-  it('says so when the tab it comes back to no longer measures its asset', async () => {
-    await openAsset(picture())
-    const { entries } = bridgeWatchingLogs()
-    useCanvases.getState().replace(opened().id, {
-      ...canvasOf(useCanvases.getState(), opened().id),
-      width: 1024,
-      height: 1024,
-    })
-
-    await openAsset(picture())
-
-    expect(entries()).toEqual([
-      expect.objectContaining({
-        message: expect.stringContaining(localizedError('assetSizeMismatch').message),
-      }),
-    ])
-  })
-
-  it('says nothing when the tab it comes back to is still its asset', async () => {
-    await openAsset(picture())
-    const { entries } = bridgeWatchingLogs()
-
-    await openAsset(picture())
-
-    expect(entries()).toHaveLength(0)
-  })
 
   /**
    * The half that matters most, and the one open tabs alone cannot answer: a document saved for

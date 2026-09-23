@@ -37,6 +37,8 @@ export function ContextPictures({ pictures, onChange }: ContextPicturesProps) {
       {pictures.length < CONTEXT_PICTURES_MAX && (
         <AssetDropTarget
           accepts={PICTURES}
+          // The project's own context CITES a picture; it does not file one.
+          filesAreInternal
           outlined
           className={cn(
             FIELD_THUMBNAIL,

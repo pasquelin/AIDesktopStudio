@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
-import { PICTURES } from '@shared/domain/asset'
+import { useMemo } from 'react'
+import { PICTURES, posterUrl, type Asset } from '@shared/domain/asset'
 import { mountedAssetPicker } from '@/features/shell/components/assetPicker'
 import { LinkField, type LinkFieldProps } from '@/components/LinkField/LinkField'
 import { openAssetById } from '@/helpers/openAsset'
@@ -28,6 +29,12 @@ export type PictureFieldProps = {
   scId?: string
   /** Menu rows belonging to the SURFACE rather than to the slot — see `LinkFieldMenu`. */
   menuExtra?: LinkFieldProps['menuExtra']
+  /**
+   * Rows no browsable list carries, so a value naming one still RESOLVES — a computed channel
+   * lives in the durable internal store and is absent from every listing (§6.7). Resolution only:
+   * what the picker offers stays the project's own pictures.
+   */
+  alsoKnown?: readonly Asset[]
 }
 
 /**
@@ -45,9 +52,19 @@ export function PictureField({
   emptyLabel,
   scId,
   menuExtra,
+  alsoKnown,
 }: PictureFieldProps) {
   const { t } = useTranslation()
-  const options = useProjectPictures(PICTURES)
+  const offered = useProjectPictures(PICTURES)
+  const options = useMemo(
+    () => [
+      ...offered,
+      ...(alsoKnown ?? [])
+        .filter(asset => !offered.some(one => one.id === asset.id))
+        .map(asset => ({ id: asset.id, name: asset.name, url: posterUrl(asset) ?? undefined })),
+    ],
+    [offered, alsoKnown],
+  )
   /**
    * Asked for at press time, never at render: the window is mounted by the shell, and a slot that
    * captured it while drawing would hold whatever was mounted when the panel first opened.

@@ -14,6 +14,24 @@ export type AssetDropTargetProps = {
   accepts: readonly AssetType[]
   onDrop: (asset: Asset) => void
   /**
+   * What an EXTERNAL file becomes once it has been filed in the project.
+   *
+   * Absent, it is `onDrop`: a surface takes a file the way it takes a shelf row. The middle of
+   * the window is the exception and passes one that does nothing — copying a file is not opening
+   * it (R2), and dropping twenty pictures beside the tabs used to stand twenty tabs up.
+   */
+  onFiles?: (asset: Asset) => boolean | void
+  /**
+   * Whether a FILE dropped here becomes a resource of the document rather than a file of the
+   * project's tree (§7, G-V). Set by the surfaces that place what they take INTO a document and
+   * resolve it by identity — a canvas layer names its asset and the engine fetches it by id.
+   *
+   * Every target but the one beside the TABS sets it, which files rather than places (R2), and
+   * `drops-into-a-document-are-internal.test.ts` is what holds them to it: without the flag the
+   * file simply lands in the tree and stays there when what it became is undone (E-14).
+   */
+  filesAreInternal?: true
+  /**
    * For a target sitting inside another: the surface behind must not LIGHT UP too.
    *
    * Only the outline — the drop itself is consumed by whichever target takes it, always, so a
@@ -48,6 +66,8 @@ async function handDroppedAsset(
 export function AssetDropTarget({
   accepts,
   onDrop,
+  onFiles,
+  filesAreInternal,
   exclusive,
   outlined = true,
   onContextMenu,
@@ -104,10 +124,17 @@ export function AssetDropTarget({
 
         if (carriesExternalFiles(event)) {
           if (event.dataTransfer.files.length === 0) return
-          if (externalFileTargetTone(event, accepts) === 'refused') return
+          // Consumed even when the surface takes none of them, and that is the fix: a refused
+          // drop used to fall through to the fallback behind, which imported the files anyway
+          // and opened each one in its own space. `importExternalFilesInto` says what it left.
           event.preventDefault()
           event.stopPropagation()
-          void importExternalFilesInto(event.dataTransfer.files, accepts, onDrop)
+          void importExternalFilesInto(
+            event.dataTransfer.files,
+            accepts,
+            onFiles ?? onDrop,
+            filesAreInternal,
+          )
           return
         }
 

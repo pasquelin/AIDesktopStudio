@@ -1,35 +1,19 @@
 import { orElse } from '@shared/promises'
 import { messageOf } from '@shared/guards'
 import { create } from 'zustand'
-import {
-  projectPickerFolder,
-  movedProjectKey,
-  movedRecentProject,
-  withoutProjectDocuments,
-  withoutRecentProject,
-  type Project,
-} from '@shared/domain/project'
-import type { Settings } from '@shared/domain/settings'
-import type { ProjectBinned } from '@shared/ipc'
+import { projectPickerFolder, type Project } from '@shared/domain/project'
+import type { ProjectBinned, ProjectMade } from '@shared/ipc'
 import type { StudioBridge } from '@shared/ipc'
 import {
-  refreshDocuments,
   renamedDocumentProject,
   settleUnsavedWorkForProjectChange,
 } from '@/features/shell/documentIo'
-import { readProjectScripts } from './code'
-import { closeOrphanTabs } from '@/features/shell/orphanTabs'
 import { getBridge } from '@/services/bridge'
-import { withoutKey } from '@/helpers/objects'
-import { forgetReportedFailures, reportFailure } from '@/services/diagnostics'
+import { askKeptAssistant } from '@/features/assistant/keptAssistant'
+import { reportFailure, traceFailure } from '@/services/diagnostics'
 import { useSettings } from './settings'
-import { useActivity } from './activity'
-import { useProjectContext } from './projectContext'
-import { forgetRememberedAssets, useAssets } from './assets'
-import { forgetAssetRevisions } from './assetRevisions'
 import { useLayouts } from './layouts'
-import { useSceneClipboard } from './sceneClipboard'
-import { useSelection } from './selection'
+import { follow, followFirst } from './projectFollow'
 import { settleFileViews } from '@/features/shell/components/dockviewApi'
 
 /** How leaving a project ended. `nothing` is a window that had none open — a second one asking. */
@@ -106,10 +90,11 @@ type ProjectState = {
   /**
    * Gives a project a new name, which MOVES its folder — a project is named by its folder.
    *
-   * Two writes, and they belong together: the main process owns the folder, and this owns
-   * everything keyed on the path it just left — the shelf, `lastProject`, the account link, the
-   * per-project roles and the adopted layout. The folder moves FIRST, so nothing here ever claims
-   * a path the disk refused.
+   * Two writes, and they belong together: the main process owns the folder AND everything keyed
+   * on the path it just left — the shelf, `lastProject`, the account link and the per-project
+   * roles, moved by `settings.moveProject`. What stays here is the adopted layout, which lives in
+   * this window's own storage. The folder moves FIRST, so nothing ever claims a path the disk
+   * refused.
    *
    * Here rather than in the row that offered it, for the same reason the forgetting above is: two
    * surfaces list projects, and a rename wired into one of them would be missing from the other.
@@ -118,53 +103,6 @@ type ProjectState = {
    * announced to the person that no rename was needed — measured 2026-08-31.
    */
   rename: (path: string, name: string) => Promise<ProjectRenamed>
-}
-
-/**
- * What follows the project, in order: the arrangement first, since dropping the layouts of
- * another project is what tells the documents which tabs are still open.
- */
-async function followProject(project: Project | null): Promise<void> {
-  useLayouts.getState().adopt(project?.path ?? null)
-  // A copied model names an asset of the project it came from: pasted into another one, it
-  // would list in the outliner and draw nothing, with no way to tell why.
-  useSceneClipboard.setState({ nodes: [] })
-  // Another project's assets are another story: a file that failed to load in the last one has
-  // nothing to say about this one, and a failure here is news again.
-  forgetReportedFailures()
-  // The journal lives in the project's own catalogue, so it is another project's account of
-  // itself: left alone, its lines and its failure count would carry over into this one. The
-  // toasts too — they never expire, so one raised by the project being left would hang over
-  // the one being opened, naming an asset that is no longer anywhere.
-  useActivity.getState().dismissAll()
-  // Assets and folder rows are named for the project that is being left: a path still picked
-  // resolves inside the new one, so its own explorer highlighted a file nobody chose — and ⌘⌫
-  // would have trashed it.
-  useSelection.getState().selectFiles([])
-  const [, folderAnswered] = await Promise.all([
-    useAssets.getState().refresh(),
-    refreshDocuments(project?.path ?? null),
-    // The scripts belong to the folder, like the context below: nothing else re-reads them now
-    // that the editor is a document rather than a panel with an effect on the open project.
-    readProjectScripts(),
-    useActivity.getState().reload(),
-    // The context belongs to the folder: one left behind would be previewed under the next
-    // project, and added to everything generated in it.
-    useProjectContext.getState().reload(),
-  ])
-
-  // AFTER the catalogue has been read, never before it: the by-id index remembers every asset it
-  // has been shown — so that a browsing facet cannot take the names off an open montage — and
-  // until `refresh` answers, `items` still holds the rows of the project being left. Forgetting
-  // first leaves any render in that window putting them straight back, for the session's life.
-  forgetRememberedAssets()
-  // Another project's stamps say nothing about this one's files, and this map has no other
-  // way to shrink.
-  forgetAssetRevisions()
-
-  // Last, and only on a folder that answered: the reconciliation above is what says which tabs
-  // have a document, and a listing that failed says nothing about any of them.
-  if (folderAnswered) closeOrphanTabs()
 }
 
 /**
@@ -217,20 +155,42 @@ async function pickedProject(
 }
 
 /**
- * The shelf without one folder, and the startup pointer with it when it named that one.
+ * Drops what is keyed on a folder, THROUGH the main process — see `settingsWithoutProject`.
  *
- * 🛑 Shared by `forget` and `trash`: `startup: 'lastProject'` is the default, so a removal that
- * left the pointer behind was undone by the next launch — the project reopened, `withRecentProject`
- * put the row back at the top, and nothing anywhere said why.
+ * 🛑 The path travels, never the new lists: composed here they would be composed from this
+ * window's replica, and everything the main process wrote since the last broadcast would go with
+ * them. Measured 2026-09-09 — two trashings straight after an open dropped the OPEN project off
+ * the shelf, `lastProject` cleared, and reopening the project it still showed repaired nothing.
  */
-function shelfWithout(storage: Settings['storage'], path: string): Partial<Settings['storage']> {
-  return {
-    recentProjects: withoutRecentProject(storage.recentProjects, path),
-    // Its documents go with it: each row would otherwise reopen the project that was just
-    // dropped, which is the one thing forgetting it has to stop.
-    recentDocuments: withoutProjectDocuments(storage.recentDocuments, path),
-    ...(storage.lastProject === path ? { lastProject: undefined } : {}),
+async function forgotten(path: string, owned: boolean): Promise<void> {
+  const settings = await getBridge()?.settings.forgetProject(path, owned)
+  if (settings) useSettings.setState({ settings })
+}
+
+/**
+ * A creation, with the question about the assistant the new project keeps around it.
+ *
+ * 🛑 Here rather than in whichever surface creates: what loses the choice is the SWITCH, not the
+ * gesture — the home's button, the empty centre, the command and the assistant all reach one of
+ * the two creations below. Asked before, armed after: `bridge.project.create` still refuses a
+ * folder that holds files, and a creation turned down there used to leave the whole
+ * application's assistant changed for nothing.
+ */
+async function creating(make: () => Promise<ProjectMade | null>): Promise<Project | null> {
+  const arm = await askKeptAssistant()
+  const created = await make()
+  // 🛑 `made`, never the project alone: the same channel OPENS a folder that is already one, and
+  // arming there would write the whole application's assistant for a switch that never happened.
+  if (created?.made === true && arm) {
+    try {
+      await arm()
+    } catch (error) {
+      // The project EXISTS: a settings write that refused is no reason to undo a creation.
+      traceFailure('shell.dropped', 'assistant kept for a new project', error)
+    }
   }
+
+  return created?.project ?? null
 }
 
 /**
@@ -260,16 +220,13 @@ const projectState: ProjectState = {
     // arrangement: nothing of the previous one may be left showing.
     const stop = bridge.project.onChange(project => {
       announced = true
-      const before = useProject.getState().project?.path
       useProject.setState({ project, known: true })
 
-      /**
-       * Only when ANOTHER FOLDER is in front. A rename moves the folder, so it does follow — and
-       * it must: the layouts, the assets and the documents are all keyed on the path that just
-       * changed. The same folder announcing itself again is a manifest rewritten under it, and
-       * following that would dismiss every toast and refetch three lists to update nothing.
-       */
-      if (project?.path !== before) void followProject(project)
+      // Only when ANOTHER FOLDER is in front, which `follow` decides on what it last followed
+      // rather than on the store: this listener may be the SECOND announcement of one change,
+      // and the store is then already saying the new path. A rename moves the folder, so it does
+      // follow — the layouts, the assets and the documents are all keyed on that path.
+      void follow(project)
     })
 
     // A refusal is an answer too. Left to throw, `connect` never hands back the unsubscribe —
@@ -279,7 +236,7 @@ const projectState: ProjectState = {
     if (announced) return stop
 
     useProject.setState({ project: current, known: true })
-    await followProject(current)
+    await followFirst(current)
     return stop
   },
 
@@ -293,9 +250,9 @@ const projectState: ProjectState = {
     // a project change — `guardUnsavedWork` says so itself, which is why this asks at all.
     if (!(await settleLeaving(bridge))) return false
 
+    let opened
     try {
-      useProject.setState({ project: await bridge.project.open(path), known: true })
-      return true
+      opened = await bridge.project.open(path)
     } catch {
       // Forgotten here rather than by whoever clicked: an opening can fail from anywhere, and a
       // list that only forgets when the home asked it keeps offering a folder nothing can open.
@@ -309,6 +266,12 @@ const projectState: ProjectState = {
 
       return false
     }
+
+    useProject.setState({ project: opened, known: true })
+    // Awaited, so a caller reading the catalogue or the folder next reads THIS project's — and
+    // outside the `catch` above, whose `forget` would un-shelf a project that did open.
+    await follow(opened)
+    return true
   },
 
   close: async () => {
@@ -335,7 +298,10 @@ const projectState: ProjectState = {
     useProject.setState({ project: null })
 
     try {
-      await useSettings.getState().write({ storage: { lastProject: undefined } })
+      await Promise.all([
+        follow(null),
+        useSettings.getState().write({ storage: { lastProject: undefined } }),
+      ])
     } catch (error) {
       // The project IS closed, so rejecting into the `void` of every caller would say nothing.
       // What is lost is the pointer: the next launch reopens what was just closed, and the
@@ -351,19 +317,18 @@ const projectState: ProjectState = {
     if (!bridge) return null
     if (!(await settleLeaving(bridge))) return null
 
-    const created = await bridge.project.create(path)
+    const created = await creating(() => bridge.project.create(path))
     // Created and then opened, because a project nobody is in is a folder. `open` asks nothing a
     // second time: the folder it is handed is the one the main process has already switched to.
     if (!created) return null
 
     useProject.setState({ project: created, known: true })
+    await follow(created)
     return created
   },
 
   forget: async path => {
-    const { settings, write } = useSettings.getState()
-
-    await write({ storage: shelfWithout(settings.storage, path) })
+    await forgotten(path, false)
   },
 
   trash: async path => {
@@ -407,15 +372,8 @@ const projectState: ProjectState = {
      * silent adoption `storage.projectAccounts` was split out to prevent. The shelf ROW still
      * goes: it is a shortcut, and a failed opening already drops it.
      */
-    const { settings, write } = useSettings.getState()
     const trashed = binned === 'trashed'
-    await write({
-      storage: {
-        ...shelfWithout(settings.storage, path),
-        ...(trashed ? { projectAccounts: withoutKey(settings.storage.projectAccounts, path) } : {}),
-      },
-      ...(trashed ? { ai: { projectRoles: withoutKey(settings.ai.projectRoles, path) } } : {}),
-    })
+    await forgotten(path, trashed)
 
     return { ok: true, trashed }
   },
@@ -444,21 +402,18 @@ const projectState: ProjectState = {
     }
 
     /**
-     * 🛑 Everything keyed BY FOLDER moves with it, and the account link above all: orphaned at the
-     * old path, `planProjectAccount` answers `adopt` and the project silently comes back on
-     * whichever key is active — a destructive write nobody asked for.
+     * 🛑 Everything keyed BY FOLDER moves with it, and the main process is what moves it — see
+     * `settingsWithMovedProject`. Composed here it was composed from THIS window's replica, and a
+     * rename touches four tables, so four went stale at once.
      */
-    const { settings, write } = useSettings.getState()
-    await write({
-      storage: {
-        recentProjects: movedRecentProject(settings.storage.recentProjects, path, renamed.path),
-        projectAccounts: movedProjectKey(settings.storage.projectAccounts, path, renamed.path),
-        // The pointer the next launch reopens names a FOLDER: left at the old one the studio
-        // starts on a path nothing answers, and forgets the project on the way.
-        ...(settings.storage.lastProject === path ? { lastProject: renamed.path } : {}),
-      },
-      ai: { projectRoles: movedProjectKey(settings.ai.projectRoles, path, renamed.path) },
-    })
+    try {
+      useSettings.setState({ settings: await bridge.settings.moveProject(path, renamed.path) })
+    } catch (error) {
+      // The FOLDER has already moved, so answering a refusal would be a lie — and the caller
+      // documents that this answers WHY rather than throwing. What is lost is written down: the
+      // shelf still names the old folder, and the account link is orphaned at it.
+      reportFailure('project.rename', path, error)
+    }
 
     // The tabs a person arranged are adopted BY FOLDER too, and `adopt` blanks the layout when the
     // path it holds is not the one in front — the arrangement would be lost at the next opening.
@@ -475,7 +430,9 @@ const projectState: ProjectState = {
   createPicked: async () => {
     // The folder chosen IS the project, and it names itself. What the main process makes of it —
     // a fresh project, the one already there, or a refusal — is its call, not the window's.
-    const picked = await pickedProject((bridge, folder) => bridge.project.create(folder))
+    const picked = await pickedProject((bridge, folder) =>
+      creating(() => bridge.project.create(folder)),
+    )
     if (picked) useProject.setState({ project: picked, known: true })
   },
 }

@@ -1,6 +1,8 @@
 import type { LayerPixels } from '@/engines/canvas/CanvasEngine'
-import type { Rect } from '@/engines/canvas/canvasState'
+import type { CanvasState, Rect } from '@/engines/canvas/canvasState'
+import { canvasOf, useCanvases } from '@/stores/canvases'
 import type { Point } from '@/engines/core/geometry'
+import { createAppliedGate } from '@/helpers/appliedGate'
 import { createHostRegistry } from '@/helpers/hostRegistry'
 
 /** The engine, seen from the disk: it hands its pixels over, and takes them back. */
@@ -50,8 +52,28 @@ export type CanvasHost = {
 
 const registry = createHostRegistry<CanvasHost>()
 
-/** Registers a document's engine. Returns the undo, for the effect that mounted it. */
-export const holdCanvas = registry.hold
+/** What the mounted engine has been handed, against the store — see `createAppliedGate`. */
+const canvasApplied = createAppliedGate<CanvasState>(
+  documentId => registry.get(documentId) !== null,
+  documentId => canvasOf(useCanvases.getState(), documentId),
+)
+
+/**
+ * Registers a document's engine. Returns the undo, for the effect that mounted it — and the wait
+ * goes with the engine, the pairing `forgetSceneEngine` makes on the scene side. Written here
+ * rather than left to the caller: a surface that registered without forgetting kept its whole
+ * stack alive, and a wait outlived the viewport it was waiting on.
+ */
+export function holdCanvas(documentId: string, host: () => CanvasHost | null): () => void {
+  const release = registry.hold(documentId, host)
+
+  return () => {
+    if (release()) canvasApplied.forget(documentId)
+  }
+}
 
 /** `null` when no image document by that id is open — every other kind, and a closed tab. */
 export const canvasHost = registry.get
+
+export const noteCanvasApplied = canvasApplied.note
+export const canvasHostSettled = canvasApplied.settled

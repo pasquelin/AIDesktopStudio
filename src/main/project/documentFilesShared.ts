@@ -6,6 +6,7 @@ import {
   type DocumentDraft,
   type DocumentFile,
   type DocumentKind,
+  type DocumentPlace,
   type DocumentWrite,
   documentExtensionOf,
 } from '@shared/domain/document'
@@ -20,18 +21,23 @@ export type DocumentFiles = {
    * one would show the previous project's tabs.
    */
   list: () => Promise<DocumentDescriptor[]>
-  /** `null` when the document has never been saved — an open tab that holds nothing yet. */
-  read: (id: string, kind: DocumentKind) => Promise<DocumentFile | null>
+  /**
+   * `null` when the document has never been saved — an open tab that holds nothing yet.
+   *
+   * `path` names the file to read when the document sits on one no listing claims; without it
+   * the file is found by id, which is what every document the studio wrote is found by.
+   */
+  read: (id: string, kind: DocumentKind, path?: string) => Promise<DocumentFile | null>
   /**
    * `force` is the caller saying the user was asked about an outside change and said yes.
-   * `folder` is where a FIRST save lands; a document that already has a file ignores it.
+   * `place` is where the bytes go — a chosen file, or the folder a FIRST save lands in.
    */
   write: (
     id: string,
     kind: DocumentKind,
     draft: DocumentDraft,
     force?: boolean,
-    folder?: string,
+    place?: DocumentPlace,
   ) => Promise<DocumentWrite>
   remove: (id: string, kind: DocumentKind) => Promise<void>
   /**

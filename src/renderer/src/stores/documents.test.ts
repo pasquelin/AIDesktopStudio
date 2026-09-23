@@ -6,7 +6,8 @@ import {
 } from '@shared/domain/document'
 import { workshopIdOf } from '@shared/domain/character'
 import { installFakeBridge } from '@/services/fakeBridge'
-import { activeSceneOrWorkshopId, documentForAsset, documentsIn, useDocuments } from './documents'
+import { documentForAsset, documentForFile } from './documentIdentity'
+import { activeSceneOrWorkshopId, documentsIn, useDocuments } from './documents'
 import { showPanels } from './layout-fixtures'
 import { useLayouts } from './layouts'
 
@@ -98,6 +99,35 @@ describe('documents store', () => {
       expect(useDocuments.getState().documents[POSTER.id]).toBeUndefined()
     })
 
+    /**
+     * The folder answers what the FILE says, and three fields are in no file: which asset the tab
+     * edits, where it sits, and how faithfully it was read. Overwritten wholesale, a relist turned
+     * a picture's tab into a document with no destination — and the next ⌘S wrote an `.ora` beside
+     * the picture rather than into it.
+     */
+    it('keeps the links a tab holds that no file carries', async () => {
+      showing(POSTER.id)
+      useDocuments.setState({
+        documents: {
+          [POSTER.id]: {
+            ...POSTER,
+            sourceAssetId: 'asset_42',
+            sourcePath: 'Images/Planche.png',
+            sourceFidelity: 'reduced',
+          },
+        },
+      })
+      installFakeBridge({ documents: { list: () => Promise.resolve([POSTER]) } })
+
+      await useDocuments.getState().refresh()
+
+      expect(useDocuments.getState().documents[POSTER.id]).toMatchObject({
+        sourceAssetId: 'asset_42',
+        sourcePath: 'Images/Planche.png',
+        sourceFidelity: 'reduced',
+      })
+    })
+
     // A tab of the project being left cannot stay in front of the one being opened.
     it('puts nothing in front', async () => {
       useDocuments.setState({ activeId: 'from-the-other-project' })
@@ -170,6 +200,19 @@ describe('documents store', () => {
   it('creates a material document in the materials workspace', async () => {
     const created = await useDocuments.getState().create('materials')
     expect(created?.kind).toBe('material')
+  })
+
+  /**
+   * 🛑 The names the STUDIO engenders — an OTIO import, a copy — are freed rather than refused:
+   * importing one montage twice, or copying one document twice, stood two tabs on one file and
+   * each save overwrote the other (2026-09-09). A name a person TYPED is refused instead, at the
+   * naming field and before the assistant's own creation.
+   */
+  it('frees a name a document of that folder already holds', async () => {
+    const { create } = useDocuments.getState()
+    const first = await create('image', { title: 'Montage' })
+
+    expect((await create('image', { title: 'Montage' }))?.path).not.toBe(first?.path)
   })
 
   /**
@@ -317,6 +360,51 @@ describe('documentForAsset', () => {
     expect(documentForAsset(useDocuments.getState(), 'asset_42')?.id).toBe(open?.id)
   })
 })
+describe('documentForFile', () => {
+  beforeEach(() => {
+    useDocuments.setState({ documents: {}, stored: [], activeId: null })
+    installFakeBridge()
+  })
+
+  const asset = { id: 'asset_42', path: 'Images/Planche.ora' }
+
+  /**
+   * §2.6 — one identity per file. A catalogue rebuilt from the folder mints new asset ids, so a
+   * link resting on the id alone went stale and the next double-click stood a SECOND document on
+   * the file a tab was already holding (U-1).
+   */
+  it('finds the tab editing this file when the asset id has moved on', async () => {
+    const created = await useDocuments
+      .getState()
+      .create('image', { title: 'Planche', sourceAssetId: 'asset_old', sourcePath: asset.path })
+
+    expect(documentForFile(useDocuments.getState(), asset)?.id).toBe(created?.id)
+  })
+
+  // A `.ora` IS a document, whichever door asks: the listing answers for one no tab holds.
+  it('finds the document the file already is, listed and never opened', () => {
+    useDocuments.setState({ stored: [{ ...POSTER, path: asset.path }] })
+
+    expect(documentForFile(useDocuments.getState(), asset)?.id).toBe('from-disk')
+  })
+
+  it('answers nothing for a file no document sits on', () => {
+    useDocuments.setState({ stored: [POSTER] })
+
+    expect(documentForFile(useDocuments.getState(), asset)).toBeNull()
+  })
+
+  // The id is still the exact answer, and it is tried first.
+  it('prefers the asset link over the path', async () => {
+    const linked = await useDocuments
+      .getState()
+      .create('image', { title: 'Planche', sourceAssetId: 'asset_42' })
+    useDocuments.setState({ stored: [{ ...POSTER, path: asset.path }] })
+
+    expect(documentForFile(useDocuments.getState(), asset)?.id).toBe(linked?.id)
+  })
+})
+
 describe('activeSceneOrWorkshopId', () => {
   const inFront = (document: DocumentDescriptor): void =>
     useDocuments.setState({ documents: { [document.id]: document }, activeId: document.id })

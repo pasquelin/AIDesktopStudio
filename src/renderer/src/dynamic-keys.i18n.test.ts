@@ -47,8 +47,14 @@ import { ASSET_INTENTS } from '@/helpers/assetIntents'
 import { FOLDER_SORTS } from '@/helpers/folderSort'
 import { TRACK_FLAGS } from '@/features/timeline/components/trackFlags'
 import { DOCUMENT_NAME_REFUSALS } from '@/features/document/documentName'
+import { SAVE_REFUSALS } from '@/features/shell/documentIo'
 import { DOCUMENT_KINDS, isMadeFromNothing } from '@shared/domain/document'
+import { destinationFormatsFor } from '@shared/domain/encodableFormat'
 import { SCENE_TEMPLATE_GROUPS, SCENE_TEMPLATE_IDS } from '@shared/domain/sceneTemplate'
+import { DERIVED_STORES } from '@shared/domain/derivedCache'
+import { COPY_STORES } from '@shared/domain/fileCopies'
+import { GATHER_REFUSALS } from '@shared/domain/gather'
+import { SHIPPED_FAMILIES } from '@shared/domain/shippedResources'
 import { FILE_KINDS } from '@shared/domain/folder'
 import { FILE_INFO_SECTIONS } from '@/features/document/components/FileInfoWindow/sections'
 import { CHOICE_SCOPES } from '@shared/domain/aiOverview'
@@ -125,6 +131,11 @@ const COMPOSED_KEYS: readonly string[] = [
   // reads « Envoyé à deepseek » where every other surface says « DeepSeek ».
   ...CLOUD_IDS.map(doorLabelKey),
   doorLabelKey('local'),
+  // Every format a Save as… may offer, named in words rather than by extension — composed from
+  // the same table the window draws its list from.
+  ...DOCUMENT_KINDS.flatMap(kind => destinationFormatsFor(kind)).map(
+    format => `documents.formats.${format}`,
+  ),
   ...ADJUSTMENT_KINDS.map(kind => `adjustment.${kind}`),
   // Every humanoid role, group and side the transfer window names from a template literal: a
   // role lost from a bundle would put its raw key on every row of the bone mapping.
@@ -161,6 +172,9 @@ const COMPOSED_KEYS: readonly string[] = [
   // The four an interface opens on, in the window that names a new document.
   ...UI_TEMPLATE_IDS.map(id => `documents.uiTemplates.${id}`),
   ...UI_TEMPLATE_IDS.map(id => `documents.uiTemplateHints.${id}`),
+  // Why a save wrote nothing — the two protections of the save path, composed from the refusal
+  // itself. Missing, the one sentence explaining why ⌘S did nothing reads as its own key.
+  ...SAVE_REFUSALS.map(refusal => `documents.${refusal}`),
 
   // Where a generation's source was taken from, written under its thumbnail. An origin with no
   // sentence would put a raw key on the one line saying what the studio is about to send.
@@ -208,6 +222,14 @@ const COMPOSED_KEYS: readonly string[] = [
   ...FILE_INFO_SECTIONS.map(id => `fileInfo.sections.${id}`),
   // What the disk answers an entry IS — composed from the fact, not written beside it.
   ...FILE_KINDS.map(kind => `fileInfo.kind.${kind}`),
+  // Which of the three stores a copy sits in, and which rebuildable store a line measures —
+  // composed from the unions rather than written beside them.
+  ...COPY_STORES.map(store => `copies.store.${store}`),
+  ...DERIVED_STORES.map(store => `copies.stores.${store}`),
+  // The heading and the sentence of each shipped family, composed from the list itself.
+  ...SHIPPED_FAMILIES.flatMap(family => [`shipped.${family}`, `shipped.${family}Note`]),
+  // Why a gathering did nothing, composed from the reason the main process answers with.
+  ...GATHER_REFUSALS.map(reason => `explorer.gatherRefused.${reason}`),
   // The rail label, built by `workspaceLabelKey` — the most visible string in the window, and
   // the one thing the workspace table does NOT make the compiler demand of a new space.
   ...WORKSPACE_IDS.map(workspace => `workspaces.${workspace}`),

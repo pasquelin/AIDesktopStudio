@@ -4,7 +4,7 @@ import { getBridge } from '@/services/bridge'
 import { reportFailure } from '@/services/diagnostics'
 import { useDocuments } from '@/stores/documents'
 import { documentExportName } from '@/stores/documentExportName'
-import { sceneEngineOf } from '@/stores/sceneEngines'
+import { sceneEngineOf, sceneEngineSettled } from '@/stores/sceneEngines'
 
 /**
  * A still of the view, into the project's pictures. Answers whether it landed: the menu row can
@@ -14,6 +14,10 @@ export async function captureSceneView(
   documentId: string,
   quality: CaptureQuality,
 ): Promise<boolean> {
+  // Waited here rather than at each door: the still is drawn by the ENGINE, which is handed the
+  // scene a render after the store holds it — so a lot that added a node and captured drew the
+  // scene without it. The menu row, the workshop and the assistant all come through here.
+  await sceneEngineSettled(documentId)
   const bridge = getBridge()
   const engine = sceneEngineOf(documentId)
   if (!bridge || !engine) return false

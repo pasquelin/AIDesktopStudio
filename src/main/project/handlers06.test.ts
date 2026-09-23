@@ -159,6 +159,12 @@ export function base(catalog: AsyncCatalog) {
     trashFolder: vi.fn(async () => {}),
     // None running unless a case says so: no question is raised, which is the ordinary studio.
     runningJobCount: () => 0,
+    media: {
+      ingest: async () => {},
+      derive: async () => {},
+      cancel: () => {},
+      deriving: () => false,
+    },
   }
 }
 
@@ -265,8 +271,12 @@ describe('project handlers', () => {
     /**
      * A channel goes in as a picture whose `map` is set, which is what a slot reads of the shelf,
      * and carries its `map` so the catalogue can later be asked which normal maps a project holds.
+     *
+     * A DURABLE INTERNAL resource, not a file of the project's tree — §6.7, T4. It used to land
+     * visible in the materials folder, without a word, and the explorer filled with computed
+     * textures nobody had asked to see.
      */
-    it('files it as a channel of the project, under a new identifier', async () => {
+    it('files it as an internal resource, under a new identifier', async () => {
       const assets = backend()
       registerProjectHandlers(deps(catalog, { assets }))
 
@@ -284,6 +294,7 @@ describe('project handlers', () => {
           type: 'image',
           extension: '.png',
           map: 'normal',
+          resource: true,
           derivedFrom: 'asset-1',
         },
         new Uint8Array([137, 80, 78, 71, 13, 10, 26, 10]),

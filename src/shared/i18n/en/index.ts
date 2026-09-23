@@ -8,6 +8,7 @@ import type * as frCharacter from '../fr/character.json'
 import type * as frCommands from '../fr/commands.json'
 import type * as frCommon from '../fr/common.json'
 import type * as frContext from '../fr/context.json'
+import type * as frCopies from '../fr/copies.json'
 import type * as frEnvironment from '../fr/environment.json'
 import type * as frFileInfo from '../fr/fileInfo.json'
 import type * as frGame from '../fr/game.json'
@@ -20,6 +21,7 @@ import type * as frModels from '../fr/models.json'
 import type * as frPostfx from '../fr/postfx.json'
 import type * as frScene from '../fr/scene.json'
 import type * as frSettings from '../fr/settings.json'
+import type * as frShipped from '../fr/shipped.json'
 import type * as frCode from '../fr/code.json'
 import type * as frShell from '../fr/shell.json'
 import type * as frUi from '../fr/ui.json'
@@ -34,6 +36,7 @@ import code from './code.json'
 import commands from './commands.json'
 import common from './common.json'
 import context from './context.json'
+import copies from './copies.json'
 import diagnostics from './diagnostics.json'
 import environment from './environment.json'
 import fileInfo from './fileInfo.json'
@@ -48,6 +51,7 @@ import postfx from './postfx.json'
 import scene from './scene.json'
 import settings from './settings.json'
 import shell from './shell.json'
+import shipped from './shipped.json'
 import ui from './ui.json'
 import usage from './usage.json'
 import welcome from './welcome.json'
@@ -76,6 +80,7 @@ export const en = {
   ...(commands satisfies Section<keyof typeof frCommands>),
   ...(common satisfies Section<keyof typeof frCommon>),
   ...(context satisfies Section<keyof typeof frContext>),
+  ...(copies satisfies Section<keyof typeof frCopies>),
   ...(environment satisfies Section<keyof typeof frEnvironment>),
   ...(fileInfo satisfies Section<keyof typeof frFileInfo>),
   ...(game satisfies Section<keyof typeof frGame>),
@@ -88,6 +93,7 @@ export const en = {
   ...(scene satisfies Section<keyof typeof frScene>),
   ...(settings satisfies Section<keyof typeof frSettings>),
   ...(shell satisfies Section<keyof typeof frShell>),
+  ...(shipped satisfies Section<keyof typeof frShipped>),
   ...(material satisfies Section<keyof typeof frMaterial>),
   ...(ui satisfies Section<keyof typeof frUi>),
   ...(usage satisfies Section<keyof typeof frUsage>),

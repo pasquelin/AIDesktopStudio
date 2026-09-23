@@ -16,9 +16,13 @@
       "title": "Abrir un proyecto",
       "help": "Elige un proyecto que ya existe en tu disco y lo abre en lugar del actual. El proyecto abierto se guarda sobre la marcha, así que no hay nada que guardar antes."
     },
+    "documentSaveCopy": {
+      "title": "Guardar una copia",
+      "help": "Escribe una copia del documento donde la pidas y continúa con el documento abierto: su destino no cambia."
+    },
     "documentSaveAs": {
       "title": "Guardar como",
-      "help": "Escribe una copia del recurso junto al original y continúa con ella. El recurso que estaba abierto se queda tal como estaba en el último guardado."
+      "help": "Elige un destino, escribe el documento allí y continúa en él: el archivo desde el que se abrió queda como estaba en el último guardado."
     },
     "documentSave": {
       "title": "Guardar el documento",

@@ -1,0 +1,19 @@
+{
+  "shipped": {
+    "title": "Đi kèm với xưởng",
+    "character": "Nhân vật",
+    "characterNote": "Nhân vật mà xưởng cung cấp, ở từng độ dày nó cung cấp. Một bộ xương cho cả bốn, nhờ đó các chuyển động đi kèm chạy được mà không phải đoán.",
+    "characterWhere": "Đặt xong, nó nằm trong kho nội bộ của dự án: không thêm tệp nào vào cây của bạn.",
+    "textures": "Chất liệu làm việc",
+    "texturesNote": "Một lưới và một bàn cờ, mỗi thứ hai độ dày. Một ô là một mét, và đó là điều cho phép đánh giá tỉ lệ và thấy UV bị kéo giãn.",
+    "texturesWhere": "Đặt xong, chúng nằm trong kho nội bộ của dự án: không thêm tệp nào vào cây của bạn.",
+    "animations": "Chuyển động",
+    "animationsNote": "Những chuyển động xưởng cung cấp, chạy được trên nhân vật của nó cũng như trên nhân vật nhập vào có bộ xương được nhận ra.",
+    "animationsReachable": "Không có gì để đặt: chúng đã được đề nghị ở mọi nơi chọn chuyển động, và bản xuất trò chơi mang chúng theo. Chép một bản vào dự án chỉ tạo bản sao thứ hai của cùng những byte mà chẳng được gì.",
+    "animationsNone": "Bản cài này không kèm chuyển động nào.",
+    "place": "Đặt",
+    "placeAll": "Đặt cả bốn",
+    "placed": "Đã đặt vào dự án",
+    "notPlaced": "Chưa đặt"
+  }
+}

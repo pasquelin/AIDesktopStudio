@@ -123,7 +123,7 @@ function publishMenuContext(): void {
   const saving: MenuAbility[] = front.activeId
     ? panelIsFileView(front.activeId)
       ? ['document.save']
-      : ['document.save', 'document.saveAs']
+      : ['document.save', 'document.saveAs', 'document.saveCopy']
     : []
   // The router's own answer, said on the row before it is pressed rather than worked out again.
   const closing: MenuAbility[] = closableTabId() ? ['document.close'] : []

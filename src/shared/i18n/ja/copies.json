@@ -1,0 +1,39 @@
+{
+  "copies": {
+    "title": "複製",
+    "reading": "プロジェクトを読み込んでいます…",
+    "none": "このプロジェクトに二重に存在するファイルはありません。",
+    "candidates": "確認する候補",
+    "candidatesNote": "これらのファイルは同じ指紋を持ちます。バイトが同一であることは計測済みです。どの複製が不要かは計測されていません。ここでは求められない限り何も削除されず、削除は一行ずつです。",
+    "sameBytes": "{{count, number}} 個のファイルがまったく同じバイトを持ちます",
+    "wouldFree": "複製を一つだけ残すと {{size}} が戻ります",
+    "sizeUnknown": "サイズ不明",
+    "store": {
+      "visible": "あなたのファイル",
+      "internal": "スタジオの資材",
+      "machine": "スタジオのキャッシュ"
+    },
+    "added": "{{date}} に追加",
+    "mentions": "参照している書類: {{count, number}}",
+    "mentionsNone": "参照している書類はありません",
+    "trash": "ゴミ箱",
+    "cache": "作り直せる保存領域",
+    "cacheNote": "スタジオは必要になったときにこれらのファイルを作り直します。手で選んだ静止画、持続する資材、未保存の作業は含まれず、決して触れられません。",
+    "cacheTotal": "合計",
+    "purge": "解放",
+    "purging": "解放中…",
+    "purgeBusy": "スタジオが今ファイルを作っています。取り込みが終わってからやり直してください。",
+    "freed": "{{size}} をディスクに返しました。",
+    "forgotten": "更新した記録: {{count, number}}",
+    "reopen": "スタジオが必要なものを作り直せるよう、プロジェクトを開き直してください。",
+    "stores": {
+      "thumbnails": "サムネイル",
+      "filmstrips": "フィルムストリップ",
+      "proxies": "作業用複製",
+      "peaks": "波形"
+    },
+    "storeHeld_one": "{{count, number}} 個のファイル、{{size}}",
+    "storeHeld_many": "{{count, number}} 個のファイル、{{size}}",
+    "storeHeld_other": "{{count, number}} 個のファイル、{{size}}"
+  }
+}

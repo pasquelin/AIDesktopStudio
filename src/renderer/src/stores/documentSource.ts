@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import type { DocumentKind } from '@shared/domain/document'
 import { getBridge } from '@/services/bridge'
 import { reportFailure } from '@/services/diagnostics'
-import { withoutKey } from '@/helpers/objects'
+import { withoutKey } from '@shared/collections'
 
 /** A copy read off disk, and whether that read found everything the file names. */
 type SourceCopy<S, A> = { state: S; whole: boolean; against: A | undefined }

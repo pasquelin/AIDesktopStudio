@@ -36,13 +36,26 @@ describe('what still has to be derived', () => {
     expect(needsDeriving(asset())).toBe(true)
   })
 
+  it('leaves a take the tool has read and that owes nothing more', () => {
+    expect(needsDeriving(asset({ probe, peaksPath: '.index/peaks/a.bin' }))).toBe(false)
+  })
+
   /**
-   * The probe is what ffprobe answers, so it is what says the tool has read this file. Reading
-   * the waveform instead would never settle: a silent rush has none by right, and it would be
-   * picked up again on every project opened.
+   * The second way in, and what makes the cache purge honest: it throws the waveform away and
+   * empties the column, so the take is owed one again and the next opening makes it.
    */
-  it('leaves a take the tool has already read, waveform or not', () => {
-    expect(needsDeriving(asset({ probe }))).toBe(false)
+  it('takes back a read take whose waveform was thrown away', () => {
+    expect(needsDeriving(asset({ probe }))).toBe(true)
+  })
+
+  /**
+   * 🛑 And what makes that SETTLE. Reading the column alone never could: a silent rush has no
+   * waveform by right, and would be picked up on every project opened, for ever. The probe is
+   * what tells « none was ever made » from « none is owed » — no `sampleRate`, nothing owed.
+   */
+  it('leaves a silent rush alone, which owes no waveform at all', () => {
+    const silent: MediaProbe = { duration: 5_000_000, codec: 'avc1', height: 480 }
+    expect(needsDeriving(asset({ probe: silent }))).toBe(false)
   })
 
   /**
@@ -93,14 +106,27 @@ describe('catching up a project that was opened after the fix', () => {
   })
 
   /**
-   * The probe is the marker now, so a take that carries one is a take the tool has read — and the
-   * pass that read it is the one that derived from it. Narrower than the fingerprint it replaces:
-   * a derive that crashed AFTER a good probe is no longer retried on the next opening. That case
-   * needs ffprobe to answer and ffmpeg to fail on the same file, where the fingerprint could no
-   * longer tell a studio without ffmpeg from one that had been through the whole pipeline.
+   * 🛑 A row coming back for a derived file alone already carries its fingerprint, and the
+   * derived files are NAMED by it: re-reading a twenty-minute rush end to end at every opening,
+   * to arrive at the number the row is holding, is what passing it removes.
    */
-  it('leaves alone a take the tool has already read', async () => {
-    const injected = deps({ list: async () => [asset({ probe })] })
+  it('hands back the fingerprint the row already carries', async () => {
+    const held = asset({ probe, hash: 'abc123' })
+    const injected = deps({ list: async () => [held] })
+
+    await catchUpMedia(injected)
+
+    expect(injected.derive).toHaveBeenCalledWith(expect.objectContaining({ hash: 'abc123' }))
+  })
+
+  /**
+   * A take that has been read AND owes nothing more is not touched: no probe, no save, no
+   * derive. What « owes nothing » means is the probe's business — a rush the codec reads and
+   * whose waveform is on disk. A derive that crashed after a good probe IS retried at the next
+   * opening, which is the whole of what the second way into `needsDeriving` buys.
+   */
+  it('leaves alone a take that has been read and owes nothing', async () => {
+    const injected = deps({ list: async () => [asset({ probe, peaksPath: '.index/peaks/a.bin' })] })
 
     await catchUpMedia(injected)
 

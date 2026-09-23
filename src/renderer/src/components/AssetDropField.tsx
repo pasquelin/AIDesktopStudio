@@ -70,6 +70,7 @@ export function AssetDropField({
     <AssetDropTarget
       accepts={ASSET_TYPES}
       onDrop={take}
+      filesAreInternal
       // Ours alone: an editor behind this field must not also receive the drop.
       exclusive
       className="flex min-w-0 items-center gap-2 rounded"

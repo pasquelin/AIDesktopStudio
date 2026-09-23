@@ -51,7 +51,7 @@ describe('the arithmetic a budget drives', () => {
   })
 
   it('cuts a sample count, and never below one sample', () => {
-    expect(samplesOf(16, { divisor: 1, samples: 0.4 })).toBe(6)
-    expect(samplesOf(1, { divisor: 1, samples: 0.4 })).toBe(1)
+    expect(samplesOf(16, { samples: 0.4 })).toBe(6)
+    expect(samplesOf(1, { samples: 0.4 })).toBe(1)
   })
 })

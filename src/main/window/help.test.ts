@@ -24,6 +24,14 @@ vi.mock('./welcomeWindow', () => ({
   openWelcomeWindow: () => void opened.push('welcome'),
 }))
 
+vi.mock('./copiesWindow', () => ({
+  openCopiesWindow: () => void opened.push('copies'),
+}))
+
+vi.mock('./shippedWindow', () => ({
+  openShippedWindow: () => void opened.push('shipped'),
+}))
+
 const { registerHelpWindows } = await import('./help')
 
 describe('the windows a renderer may raise', () => {

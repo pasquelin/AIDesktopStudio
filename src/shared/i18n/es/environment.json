@@ -108,6 +108,8 @@
     "tone_cineonHint": "Una curva tomada de la película fotoquímica, con más contraste",
     "tone_aces": "ACES",
     "tone_acesHint": "La curva del cine digital, la que evita que un reflejo se recorte a blanco puro",
+    "tone_agx": "AgX",
+    "tone_agxHint": "Una curva fílmica más reciente, que sostiene un color saturado al subir, donde ACES lo desvía",
     "exposure": "Exposición",
     "quality": "Calidad",
     "quality_performance": "Rendimiento",

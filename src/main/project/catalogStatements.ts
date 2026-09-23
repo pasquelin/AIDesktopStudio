@@ -44,8 +44,46 @@ export function assetStatements(driver: SqliteDriver) {
   }
 }
 
+/** Bytes ON THE DISK right now: fingerprinted, filed, not dated as gone. Asked twice below. */
+const HOLDS_BYTES =
+  "hash IS NOT NULL AND hash <> '' AND path IS NOT NULL AND path <> '' AND missing_at IS NULL"
+
+/**
+ * Every row whose fingerprint another FILED AT ANOTHER PATH also carries.
+ *
+ * `COUNT(DISTINCT path)`, never `COUNT(*)`: two rows on one path are one file the catalogue
+ * holds twice, which is another defect and not a second copy of anything.
+ */
+const copiesSql = (oneHash: boolean): string => {
+  // 🛑 BOTH halves: `COUNT(DISTINCT path)` reads `path` for every row it groups, which no index
+  // answers, so leaving the subquery unfiltered scanned the whole table per window opened.
+  const narrow = oneHash ? ' AND hash = ?' : ''
+
+  return `
+    SELECT hash, id, name, path, bytes, created_at FROM assets
+    WHERE ${HOLDS_BYTES}${narrow}
+      AND hash IN (
+        SELECT hash FROM assets WHERE ${HOLDS_BYTES}${narrow}
+        GROUP BY hash HAVING COUNT(DISTINCT path) > 1
+      )
+    ORDER BY hash, created_at, id
+  `
+}
+
 export function pathStatements(driver: SqliteDriver) {
   return {
+    selectCopies: driver.prepare(copiesSql(false)),
+    selectCopiesOf: driver.prepare(copiesSql(true)),
+    /**
+     * Forgets where the derived files were, for every row that named one.
+     *
+     * `local_changed_at` is deliberately left alone: it is what the sync reads to decide a row
+     * moved, and throwing away a proxy the studio made is not a change to the asset.
+     */
+    clearDerivedPaths: driver.prepare(
+      'UPDATE assets SET proxy_path = NULL, peaks_path = NULL' +
+        ' WHERE proxy_path IS NOT NULL OR peaks_path IS NOT NULL',
+    ),
     movePaths: driver.prepare(`
       UPDATE assets SET path = ? || substr(path, length(?) + 1) WHERE ${UNDER_PATH}
     `),

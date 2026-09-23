@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import type { ActionOutcome, AssistantCall } from '@shared/domain/assistant'
+import { ACTION_REGISTRY, type ActionOutcome, type AssistantCall } from '@shared/domain/assistant'
 import type { AssistantActionRequest } from '@shared/ipc'
 import { createRemoteActions } from './asking'
 
@@ -99,6 +99,48 @@ describe('asking the window in front to act', () => {
     await vi.advanceTimersByTimeAsync(120_000)
     await expect(lot).resolves.toEqual({ ok: false, refusal: 'timedOut' })
     vi.useRealTimers()
+  })
+
+  /**
+   * 🛑 These WAIT for the effect they announce — a file read, a panel mounted, a render applied —
+   * which the two seconds a reading call gets would cut: measured 2026-09-09, a reopened scene
+   * took about three seconds to come back.
+   */
+  it('gives the long wait to a call that waits on a file', async () => {
+    vi.useFakeTimers()
+    const actions = createRemoteActions({ send: () => true })
+    const opening = actions.run({ action: 'document.open', input: { path: 'Scenes/Pilot.gltf' } })
+
+    await vi.advanceTimersByTimeAsync(READ_WAIT_MS * 2)
+    await expect(Promise.race([opening, Promise.resolve('still waiting')])).resolves.toBe(
+      'still waiting',
+    )
+
+    await vi.advanceTimersByTimeAsync(120_000)
+    await expect(opening).resolves.toEqual({ ok: false, refusal: 'timedOut' })
+    vi.useRealTimers()
+  })
+
+  /**
+   * Named rather than counted, like the flags beside it: a count stays green the day one action
+   * is given the long wait while another that reads a file quietly loses it.
+   */
+  it('names every action whose answer waits on its own effect', () => {
+    const waiting = ACTION_REGISTRY.filter(entry => entry.awaitsItsEffect)
+
+    expect(waiting.map(entry => entry.name).sort()).toEqual([
+      'command.runStudioCommand',
+      'document.activate',
+      'document.open',
+      'file.open',
+      'generator.prepare',
+      'optimization.analyze',
+      'optimization.report',
+      'scene.capture',
+      // Since 2026-09-09: it raises no window of its own any more, and a creation still writes a
+      // template's files and reads a tab back before it answers.
+      'workspace.open',
+    ])
   })
 
   // An answer that arrives after the wait ended, or a window answering twice.

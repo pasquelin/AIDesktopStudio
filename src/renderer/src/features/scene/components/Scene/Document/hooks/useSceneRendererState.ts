@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import type { SceneRenderer, TransformMode } from '@/engines/scene/SceneRenderer'
 import type { sceneOf } from '@/stores/scenes'
 import type { sceneViewChromeOf } from '@/stores/sceneViewChrome'
+import { noteSceneApplied } from '@/stores/sceneEngines'
 import { useSceneViews } from '@/stores/sceneViews'
 
 export function useSceneRendererState(
@@ -12,7 +13,12 @@ export function useSceneRendererState(
   mode: TransformMode,
   documentId: string,
 ): void {
-  useEffect(() => engine.current?.apply(scene), [engine, scene])
+  useEffect(() => {
+    engine.current?.apply(scene)
+    // The one moment the engine is known to carry this state, and what an action reading the
+    // engine rather than the store waits on — see `sceneEngineSettled`.
+    noteSceneApplied(documentId, scene)
+  }, [documentId, engine, scene])
   useEffect(() => engine.current?.configure(viewport), [engine, viewport])
   useEffect(() => engine.current?.setMode(mode), [engine, mode])
   useEffect(() => engine.current?.setSnapping(view.snapping), [engine, view.snapping])

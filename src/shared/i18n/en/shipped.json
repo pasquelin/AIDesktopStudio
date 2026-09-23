@@ -1,0 +1,19 @@
+{
+  "shipped": {
+    "title": "What the studio ships",
+    "character": "Character",
+    "characterNote": "The character the studio ships, at each density it ships at. One skeleton across all four, which is what lets the shipped animations play on it without a guess.",
+    "characterWhere": "Placed, it lands in the project’s internal store: no extra file in your own tree.",
+    "textures": "Working images",
+    "texturesNote": "A grid and a checker, each at two densities. One tile is one metre, which is what lets you judge a scale and see a UV stretch.",
+    "texturesWhere": "Placed, they land in the project’s internal store: no extra file in your own tree.",
+    "animations": "Animations",
+    "animationsNote": "The motions the studio ships, playable on its own character and on an imported one whose skeleton is recognised.",
+    "animationsReachable": "Nothing to place: they are already offered wherever a motion is chosen, and the game export bundles them. Copying one into the project would be a second copy of the same bytes buying nothing.",
+    "animationsNone": "This installation ships no animation.",
+    "place": "Place",
+    "placeAll": "Place all four",
+    "placed": "Placed in the project",
+    "notPlaced": "Not placed yet"
+  }
+}

@@ -12,7 +12,12 @@ import {
   type DocumentFile,
   type DocumentKind,
 } from '@shared/domain/document'
-import { gltfStudioMetadata, isGltfDocument, GLTF_HEAD_LIMIT } from '@shared/domain/gltf'
+import {
+  gltfProposesScene,
+  gltfStudioMetadata,
+  isGltfDocument,
+  GLTF_HEAD_LIMIT,
+} from '@shared/domain/gltf'
 import { isOtioTimeline, otioStudioMetadata } from '@shared/domain/otio'
 import { ORA_HEAD_LIMIT, ORA_MIMETYPE } from '@shared/domain/openRaster'
 import { isRecord, readString } from '@shared/guards'
@@ -260,7 +265,14 @@ const OPEN_SCENE: DocumentBodyFormat = {
     // Either mark: a version 1 document is one object too, and refusing it on the glTF mark alone
     // made every large legacy scene vanish from the listing — present in the folder, unopenable.
     if (!head.includes(STUDIO_MARK) && !head.includes(ENVELOPE_MARK)) {
-      throw new Error('Nothing of the studio where this file begins')
+      // A glTF with nothing of ours is a mesh somebody exported into the project — UNLESS its own
+      // content proposes a scene (§2.6, case 2). One that does is a document like any other from
+      // here on: listed, opened with its tree, and saved into rather than beside. It carries no
+      // id, so `descriptorFrom` names it after its file, exactly as a pre-version-3 document is.
+      if (!gltfProposesScene(head)) {
+        throw new Error('Nothing of the studio where this file begins')
+      }
+      return { version: DOCUMENT_VERSION, kind: 'scene', title: '', updatedAt: '' }
     }
     if (endedInside(bytes, GLTF_HEAD_LIMIT)) return sceneDocument(head)
 

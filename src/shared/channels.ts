@@ -7,6 +7,8 @@
 export type Channels = {
   settingsRead: 'settings:read'
   settingsWrite: 'settings:write'
+  settingsForgetProject: 'settings:forget-project'
+  settingsMoveProject: 'settings:move-project'
   settingsAuthState: 'settings:auth-state'
   settingsOpen: 'settings:open'
   mcpState: 'mcp:state'
@@ -63,6 +65,11 @@ export type Channels = {
   projectFolderRoles: 'project:folder-roles'
   projectFolderFor: 'project:folder-for'
   projectFileFacts: 'project:file-facts'
+  projectFileUses: 'project:file-uses'
+  projectFileCopies: 'project:file-copies'
+  projectGatherInto: 'project:gather-into'
+  projectDerivedCache: 'project:derived-cache'
+  projectPurgeDerivedCache: 'project:purge-derived-cache'
   projectReadContext: 'project:read-context'
   projectWriteContext: 'project:write-context'
   memoryList: 'memory:list'
@@ -146,6 +153,13 @@ export type Channels = {
   documentConfirmDelete: 'document:confirm-delete'
   documentConfirmOverwrite: 'document:confirm-overwrite'
   documentConfirmFlatten: 'document:confirm-flatten'
+  documentConfirmSaveElsewhere: 'document:confirm-save-elsewhere'
+
+  recoveryWrite: 'recovery:write'
+  recoveryList: 'recovery:list'
+  recoveryRead: 'recovery:read'
+  recoveryClear: 'recovery:clear'
+  recoveryConfirmRestore: 'recovery:confirm-restore'
 
   assetsSearch: 'assets:search'
   assetsCounts: 'assets:counts'
@@ -163,6 +177,8 @@ export type Channels = {
   /** Lands the `.glb` a 3D file was converted into, keeping the original. See `ConvertMeshRequest`. */
   assetsSaveConverted: 'assets:save-converted'
   assetsReadLayered: 'assets:read-layered'
+  assetsShowResource: 'assets:show-resource'
+  assetsHideResource: 'assets:hide-resource'
   assetsSaveTexture: 'assets:save-texture'
   texturesInstallBundled: 'textures:install-bundled'
   charactersInstallBundled: 'characters:install-bundled'
@@ -193,6 +209,7 @@ export type Channels = {
 
   mediaAdopt: 'media:adopt'
   mediaIngest: 'media:ingest'
+  mediaLink: 'media:link'
   mediaCancel: 'media:cancel'
   mediaAvailable: 'media:available'
 
@@ -203,6 +220,7 @@ export type Channels = {
   assistantNote: 'assistant:note'
   assistantSaid: 'assistant:said'
   assistantWindow: 'assistant:window'
+  assistantFindActions: 'assistant:find-actions'
   missionsWatch: 'missions:watch'
   missionsCreate: 'missions:create'
   missionsResume: 'missions:resume'

@@ -1,4 +1,4 @@
-import { mdiCogOutline, mdiImageFilterBlackWhite } from '@mdi/js'
+import { mdiCogOutline, mdiEyeOutline, mdiImageFilterBlackWhite } from '@mdi/js'
 import { useTranslation } from 'react-i18next'
 import { MenuRow } from '@/components/MenuRow'
 import { HINT_RIGHT } from '@/helpers/tooltip'
@@ -11,6 +11,11 @@ export type ChannelsSectionMenuRowsProps = {
   /** The channel's own name, already translated — the row reads it once for both of us. */
   channel: string
   onInspect: () => void
+  /**
+   * Brings a channel the studio computed out into the explorer — absent for one that is already
+   * there. The pair of the hiding: a resource nothing can bring out is a resource the user lost.
+   */
+  onShow: (() => void) | null
   onClose: () => void
 }
 
@@ -23,6 +28,7 @@ export function ChannelsSectionMenuRows({
   inspected,
   channel,
   onInspect,
+  onShow,
   onClose,
 }: ChannelsSectionMenuRowsProps) {
   const { t } = useTranslation()
@@ -38,6 +44,18 @@ export function ChannelsSectionMenuRows({
           onClose()
         }}
       />
+
+      {onShow && (
+        <MenuRow
+          label={t('material.showInExplorer')}
+          icon={mdiEyeOutline}
+          tip={HINT_RIGHT(t('material.showInExplorerHint'))}
+          onSelect={() => {
+            onShow()
+            onClose()
+          }}
+        />
+      )}
 
       {derivation && (
         <MenuRow

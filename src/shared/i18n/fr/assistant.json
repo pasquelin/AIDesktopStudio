@@ -35,7 +35,7 @@
       },
       "workspaceOpen": {
         "title": "Ouvrir un espace",
-        "description": "Bascule vers un espace de travail, et y crée un document si on le demande — un NOUVEAU à chaque fois, ce n’est donc pas le chemin de retour vers un document déjà ouvert. Donnez toujours un nom : sans lui, une fenêtre de nommage s’ouvre et l’appel attend une personne."
+        "description": "Bascule vers un espace de travail, et y crée un document si on le demande — un NOUVEAU à chaque fois, ce n’est donc pas le chemin de retour vers un document déjà ouvert. Une création veut un nom, et il appartient à la personne : demandez-le-lui plutôt que d’en inventer un. Un nom que le projet porte déjà est refusé."
       },
       "modelsSearch": {
         "title": "Chercher un modèle",
@@ -1621,11 +1621,14 @@
     "sendHint": "Envoie la phrase à l’assistant, qui choisit les actions et les exécute",
     "tokens": "{{prompt, number}} jetons lus · {{reply, number}} écrits",
     "chooseHint": "Répond à la question et laisse l’assistant continuer",
-    "answerBelow": "Réponds en dessous, dans le champ",
     "answerLabel": "Réponse",
     "noteLabel": "Note",
-    "sendAnswers": "Envoyer les réponses",
-    "sendAnswersHint": "Rend toutes les réponses d’un coup et laisse l’assistant continuer",
+    "sendAnswers_many": "Envoyer les réponses",
+    "sendAnswers_one": "Envoyer la réponse",
+    "sendAnswers_other": "Envoyer les réponses",
+    "sendAnswersHint_many": "Rend toutes les réponses d’un coup et laisse l’assistant continuer",
+    "sendAnswersHint_one": "Rend la réponse et laisse l’assistant continuer",
+    "sendAnswersHint_other": "Rend toutes les réponses d’un coup et laisse l’assistant continuer",
     "skipChoice": "Laisser tomber",
     "skipChoiceHint": "Ferme la question sans répondre : l’assistant s’arrête là",
     "contextOf": "{{read}} / {{window}}",

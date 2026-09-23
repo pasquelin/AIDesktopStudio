@@ -1,4 +1,7 @@
+import type { SceneState } from '@/engines/scene/sceneState'
 import type { SceneRenderer } from '@/engines/scene/SceneRenderer'
+import { createAppliedGate } from '@/helpers/appliedGate'
+import { sceneOf, useScenes } from './scenes'
 
 /**
  * The live engine of each open scene, so a panel that is not the viewport can ask it for
@@ -17,14 +20,30 @@ export function registerSceneEngine(documentId: string, engine: SceneRenderer): 
 
 export function forgetSceneEngine(documentId: string): void {
   engines.delete(documentId)
+  sceneApplied.forget(documentId)
+}
+
+/**
+ * What each mounted engine has been handed, against what the store holds — see `createAppliedGate`.
+ *
+ * 🛑 Noted by BOTH surfaces that drive an engine: the viewport, an effect behind the store, and
+ * the character workshop, which applies straight from its own subscription. A surface that
+ * registers an engine and never notes would leave every reader of it waiting for good.
+ */
+const sceneApplied = createAppliedGate<SceneState>(
+  documentId => engines.has(documentId),
+  documentId => sceneOf(useScenes.getState(), documentId),
+)
+
+export const noteSceneApplied = sceneApplied.note
+export const sceneEngineSettled = sceneApplied.settled
+
+/** Tells every mounted scene that a shared model asset lost its embedded textures. */
+export function detachModelFileTexturesInScenes(assetId: string): void {
+  for (const engine of engines.values()) engine.detachModelFileTextures(assetId)
 }
 
 /** The engine of that document, or nothing — a tab whose viewport is not mounted has none. */
 export function sceneEngineOf(documentId: string): SceneRenderer | undefined {
   return engines.get(documentId)
-}
-
-/** Tells every mounted scene that a shared model asset lost its embedded textures. */
-export function detachModelFileTexturesInScenes(assetId: string): void {
-  for (const engine of engines.values()) engine.detachModelFileTextures(assetId)
 }

@@ -187,12 +187,13 @@ describe('landing a dragged asset in a folder', () => {
   })
 
   /**
-   * A library asset has no file until it is fetched, and `pull` writes it under the folder its
-   * KIND is written to — never the one the pointer asked for. The move is what finishes the
-   * gesture, and it is why this is one function rather than a fetch the caller then follows.
+   * A library asset has no file until it is fetched, and the download is TOLD where to put it —
+   * E-22. It used to be written under the folder its kind names and moved from there, which
+   * showed one file in two places for a gesture that had already named its destination.
    */
-  it('fetches a library asset first, then moves what it became', async () => {
+  it('downloads a library asset straight into the folder it was dropped on', async () => {
     const moves: { paths: readonly string[]; folder: string }[] = []
+    const pulled: (string | undefined)[] = []
     installFakeBridge({
       project: {
         moveFiles: (paths, folder) => {
@@ -201,7 +202,8 @@ describe('landing a dragged asset in a folder', () => {
         },
       },
       cloud: {
-        pull: () => {
+        pull: (_ids, folder) => {
+          pulled.push(folder)
           useAssets.setState({ items: [{ ...row, remoteAssetId: 'asset_remote' }] })
           return Promise.resolve([{ assetId: 'asset_remote', ok: true }])
         },
@@ -213,7 +215,9 @@ describe('landing a dragged asset in a folder', () => {
     startLibraryDrag({ dataTransfer }, { id: 'asset_remote', type: 'image' })
 
     await landAssetIn({ dataTransfer }, 'Croquis')
-    expect(moves).toEqual([{ paths: ['Images/moss.png'], folder: 'Croquis' }])
+    expect(pulled).toEqual(['Croquis'])
+    // Nothing to move afterwards, and so nothing handed back to undo.
+    expect(moves).toEqual([])
   })
 
   it('moves nothing for a drag that carries no asset of ours', async () => {

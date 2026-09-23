@@ -93,6 +93,8 @@
     "undoHint": "Đưa lô tệp gần nhất về chỗ cũ",
     "redo": "Làm lại",
     "redoHint": "Làm lại lô tệp vừa được hoàn tác",
+    "trashUsedTitle": "Chuyển vào thùng rác? {{count, number}} tài liệu đang dùng nó",
+    "trashUsedBody": "Các tài liệu này viện đến thứ sắp bị xoá:",
     "trashTitle": "{{count, number}} mục này sẽ vào thùng rác",
     "trashBody": "Bạn có thể lấy chúng lại từ thùng rác của hệ thống. Bản thân studio không đưa chúng về chỗ cũ được.",
     "trashConfirm": "Bỏ vào thùng rác",
@@ -123,6 +125,16 @@
     "sort": {
       "name": "Tên: A đến Z",
       "nameDesc": "Tên: Z đến A"
+    },
+    "gather": "Gom vào",
+    "gatherHint": "Chép tài liệu này và mọi thứ nó nhắc đến sang một dự án khác, để bên đó mở ra y như vậy.",
+    "gatherIntoHint": "Gom tài liệu này vào {{name}}",
+    "gathered": "Đã chép {{files, number}} tệp, ghi {{rows, number}} bản ghi.",
+    "gatherKept": "Để nguyên {{count, number}}: bên đích đã có thứ khác ở những đường dẫn ấy.",
+    "gatherRefused": {
+      "not-a-project": "Đích đó không phải một dự án.",
+      "same-project": "Đó là dự án đang mở.",
+      "no-document": "Không có tài liệu nào để gom."
     }
   },
   "menu": {
@@ -154,6 +166,7 @@
     "openProject": "Mở dự án…",
     "saveDocument": "Lưu",
     "saveDocumentAs": "Lưu thành…",
+    "saveDocumentCopy": "Lưu một bản sao…",
     "settings": "Cài đặt…",
     "tools": "Cửa sổ công cụ",
     "add": "Thêm",
@@ -197,7 +210,9 @@
     "sceneNavigation": "Điều hướng",
     "sceneDisplay": "Chế độ hiển thị",
     "sceneView": "Điểm nhìn",
-    "sceneCapture": "Chụp khung nhìn"
+    "sceneCapture": "Chụp khung nhìn",
+    "copies": "Bản sao…",
+    "shipped": "Đi kèm với xưởng…"
   },
   "about": {
     "copyright": "© 2026 Alban Pasquelin"

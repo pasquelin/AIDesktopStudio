@@ -50,9 +50,13 @@ import type { LocalRuntimes } from './ai/localRuntimes'
 import type { AiManager } from './ai/manager'
 import type { LocalModel } from '@shared/domain/localModel'
 import type { AssistantBrain } from './assistant/brainPort'
-import { createActionFinder, type ActionSearchService } from './actionIndex/actionSearchService'
+import {
+  createActionFinder,
+  createActionNames,
+  type ActionSearchService,
+} from './actionIndex/actionSearchService'
 import type { WorkspaceId } from '@shared/domain/workspace'
-import { orElse } from '@shared/promises'
+import { coalesced, orElse } from '@shared/promises'
 import { catalogOf } from './provider/modelCatalog'
 
 type AssistantDeps = {
@@ -91,21 +95,27 @@ export function createAssistantBrains(deps: AssistantDeps) {
     notReady: deps.notReady,
   })
   let snapshot = async (): Promise<StudioSnapshot | null> => null
+  /** One engine, one scope: what `actions.find` answers and what a briefing opens come from here. */
+  const searching = {
+    search: (...search: Parameters<ActionSearchService['search']>) =>
+      deps.actionIndex.search(...search),
+    snapshot: () => snapshot(),
+  }
   const remoteActions = createRemoteActions({
     send: request => sendTo(studioWindow(), EVENTS.assistantAction, request),
-    findActions: createActionFinder({
-      search: (...search) => deps.actionIndex.search(...search),
-      snapshot: () => snapshot(),
-    }),
+    findActions: createActionFinder(searching),
   })
   const visualCapture = createVisualCapturePort({
     send: request => sendTo(studioWindow(), EVENTS.assistantVisualCapture, request),
     now: () => new Date().toISOString(),
   })
-  snapshot = async () => {
+  // Coalesced: one turn asks for it twice on the same tick — `stateOf` to describe the studio,
+  // `findActions` to weigh a search by what is in front — and each ask is an IPC round trip plus
+  // a rebuild on the window's UI thread.
+  snapshot = coalesced(async () => {
     const outcome = await remoteActions.run({ action: 'studio.state', input: {} })
     return outcome.ok ? parseSnapshot(outcome.data) : null
-  }
+  })
   const brain = createRoutedBrain({
     providerOf: () => deps.ai.providerOf(ASSISTANT_ROLE),
     modelOf: deps.modelOf,
@@ -127,6 +137,7 @@ export function createAssistantBrains(deps: AssistantDeps) {
       return current ? describeStudio(current) : ''
     },
     memoriesOf: () => deps.memoryVectors.held('project'),
+    findActions: createActionNames(searching),
     foldersOf: () => {
       const { projectsFolder, recentProjects } = deps.settings.read().storage
       return machineFolders(

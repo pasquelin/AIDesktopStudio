@@ -8,7 +8,7 @@ import {
   parseDocumentId,
   parseDocumentKind,
   parseFolderPath,
-  parseLandingFolder,
+  parseDocumentPlace,
   parseManifest,
 } from './validation'
 
@@ -320,20 +320,32 @@ describe('parseFolderPath', () => {
   })
 })
 
-describe('parseLandingFolder', () => {
+describe('parseDocumentPlace', () => {
   it('takes the folder a document was filed in', () => {
-    expect(parseLandingFolder('Images/Croquis')).toBe('Images/Croquis')
+    expect(parseDocumentPlace({ folder: 'Images/Croquis' })?.folder).toBe('Images/Croquis')
   })
 
   // A caller with no folder to offer leaves the writer its own default, which is not the same
   // thing as naming the project root.
   it('takes nothing at all, and the root, apart', () => {
-    expect(parseLandingFolder(undefined)).toBeUndefined()
-    expect(parseLandingFolder('')).toBe('')
+    expect(parseDocumentPlace(undefined)).toBeUndefined()
+    expect(parseDocumentPlace({ folder: '' })?.folder).toBe('')
+  })
+
+  it('takes the file a destination names', () => {
+    expect(parseDocumentPlace({ path: 'Repérages/Niveau.gltf' })?.path).toBe(
+      'Repérages/Niveau.gltf',
+    )
+  })
+
+  // The folder half takes it; the file half does not, a document having to be written to a name.
+  it('refuses an empty file', () => {
+    expect(() => parseDocumentPlace({ path: '' })).toThrow()
   })
 
   it('refuses a walk out of the project, as every path channel does', () => {
-    expect(() => parseLandingFolder('../secrets')).toThrow()
+    expect(() => parseDocumentPlace({ folder: '../secrets' })).toThrow()
+    expect(() => parseDocumentPlace({ path: '../secrets/Niveau.gltf' })).toThrow()
   })
 
   /**
@@ -342,6 +354,7 @@ describe('parseLandingFolder', () => {
    * `.index/` would be swept by the next rescan.
    */
   it.each(['.index', '.index/thumbs', 'Images/.hidden'])('refuses the studio’s own %s', path => {
-    expect(() => parseLandingFolder(path)).toThrow()
+    expect(() => parseDocumentPlace({ folder: path })).toThrow()
+    expect(() => parseDocumentPlace({ path: `${path}/Niveau.gltf` })).toThrow()
   })
 })

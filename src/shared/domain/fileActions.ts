@@ -173,6 +173,8 @@ export const FILE_ACTIONS: readonly AssistantAction[] = [
     descriptionKey: 'assistant.actions.fileOpen.description',
     commitment: 'none',
     repeatable: false,
+    // A path that names a document opens its tab and waits for the file, like `document.open`.
+    awaitsItsEffect: true,
     reach: 'both',
     uses: ['projectFilePaths'],
     fields: [{ key: 'path', kind: 'text', labelKey: 'assistant.fields.filePath', required: true }],

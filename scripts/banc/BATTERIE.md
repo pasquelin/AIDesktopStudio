@@ -697,6 +697,7 @@ Sur un montage vidéo portant deux plans et un fond sonore :
 - [ ] « Ouvre un projet récent. »
 - [ ] « Retire le projet Voilier de mes projets récents. »
 - [ ] « Mets le projet Voilier à la corbeille. »
+- [ ] « Demande-moi lesquels de mes documents je veux fermer. »
 
 ## 42. Fichiers — le reste
 

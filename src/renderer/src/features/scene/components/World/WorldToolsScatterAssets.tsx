@@ -64,6 +64,7 @@ export function WorldToolsScatterAssets({ documentId, scatter }: Props) {
         ))}
         <AssetDropTarget
           accepts={['mesh']}
+          filesAreInternal
           exclusive
           onDrop={asset =>
             run(

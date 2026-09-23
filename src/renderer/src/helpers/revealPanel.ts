@@ -19,14 +19,19 @@ import { panelsStore } from '@/stores/panels'
  * every other surface a question the click never asked.
  */
 export function revealTool(tool: ToolId): boolean {
-  const surface = toolSurface()
-  if (!offeredPlacement(tool, surface, toolStateOf()) || !chassisFollows(surface)) return false
+  if (!toolIsOffered(tool)) return false
 
   panelsStore.getState().show(tool)
   // The same answer `panels.list` gives, rather than the call having been made: `offeredPlacement`
   // reads the stores while the registry follows the shell's render, so the two are a tick apart
   // whenever an answer has just landed — and `show` does nothing for an id it cannot find.
   return toolIsShown(tool)
+}
+
+/** Whether the surface in front carries that panel at all — asked before a gesture arms one. */
+export function toolIsOffered(tool: ToolId): boolean {
+  const surface = toolSurface()
+  return offeredPlacement(tool, surface, toolStateOf()) !== null && chassisFollows(surface)
 }
 
 /**

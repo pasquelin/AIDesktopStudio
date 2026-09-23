@@ -7,7 +7,7 @@ import { forgetReportedFailures } from '@/services/diagnostics'
 import { clearScenes } from '@/stores/scene-fixtures'
 import { useDocuments } from '@/stores/documents'
 import { useScenes } from '@/stores/scenes'
-import { unsavedDocumentIds } from './documentIo'
+import { unsavedDocumentIds } from './documentDirty'
 import { guardUnsavedWork } from './unsavedGuard'
 
 // The real one needs a live Dockview; this file only checks what the guard asks of the document.

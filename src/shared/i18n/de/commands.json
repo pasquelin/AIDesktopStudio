@@ -16,9 +16,13 @@
       "title": "Projekt öffnen",
       "help": "Wählt ein Projekt, das bereits auf Ihrer Festplatte liegt, und öffnet es anstelle des aktuellen. Das geöffnete Projekt wird laufend gespeichert, es ist also vorher nichts zu speichern."
     },
+    "documentSaveCopy": {
+      "title": "Kopie speichern",
+      "help": "Schreibt eine Kopie des Dokuments dorthin, wo Sie sie verlangen, und arbeitet mit dem geöffneten Dokument weiter: sein Ziel ändert sich nicht."
+    },
     "documentSaveAs": {
       "title": "Speichern unter",
-      "help": "Schreibt eine Kopie des Assets neben das Original und arbeitet mit ihr weiter. Das Asset, das offen war, bleibt so, wie es beim letzten Speichern war."
+      "help": "Wählt ein Ziel, schreibt das Dokument dorthin und arbeitet dort weiter: die Datei, aus der es geöffnet wurde, bleibt wie beim letzten Speichern."
     },
     "documentSave": {
       "title": "Dokument speichern",

@@ -1,4 +1,4 @@
-import { memo, useState } from 'react'
+import { memo, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { PICTURES } from '@shared/domain/asset'
 import { PBR_CHANNELS, type PbrChannel } from '@shared/domain/material'
@@ -6,8 +6,11 @@ import { PropertySection } from '@/components/PropertySection'
 import { setChannel } from '@/engines/material/commands'
 import { canDerive, sourceFor } from '@/engines/material/materialState'
 import { editPixelsOf, type EditPixels } from '@/helpers/openAsset'
+import { useKnownAssets } from '@/hooks/useKnownAssets'
 import { useProjectPictureAssets } from '@/hooks/useProjectPictureAssets'
 import { placeMaterialChannel } from '@/features/material/components/placeChannel'
+import { showInternalResource } from '@/features/material/showInternalResource'
+import { isPrivatePath } from '@shared/domain/folder'
 import { inspectedChannel, useMaterialViews } from '@/stores/materialViews'
 import { materialOf, useMaterials } from '@/stores/materials'
 import { ChannelsSectionRow } from './ChannelsSectionRow'
@@ -34,7 +37,22 @@ export const ChannelsSection = memo(function ChannelsSection({ documentId }: Cha
    * is asking for, and the Materials space narrows it to `['image']`. Held as ASSETS
    * because `placeMaterialChannel` keeps what the picture measures.
    */
-  const pictures = useProjectPictureAssets(PICTURES)
+  const offered = useProjectPictureAssets(PICTURES)
+  /**
+   * The channels' own rows, asked by id — the only query that reaches a computed channel, which
+   * lives in the durable internal store and is deliberately absent from every browsable list.
+   * Merged for RESOLUTION alone: what a slot offers to pick stays the project's own pictures.
+   */
+  const held = useKnownAssets(
+    useMemo(
+      () => PBR_CHANNELS.map(one => channels[one]?.assetId ?? '').filter(Boolean),
+      [channels],
+    ),
+  )
+  const pictures = useMemo(
+    () => [...offered, ...held.filter(one => !offered.some(other => other.id === one.id))],
+    [offered, held],
+  )
 
   const run = useMaterials(state => state.runCommand)
   const inspected = useMaterialViews(state => inspectedChannel(state, documentId))
@@ -87,6 +105,20 @@ export const ChannelsSection = memo(function ChannelsSection({ documentId }: Cha
     if (asset) placeMaterialChannel(documentId, asset, channel)
   }
 
+  /**
+   * The gesture that brings a computed channel out of the durable internal store — §6.7, T7.
+   *
+   * `null` for a channel whose file is already in the tree, and for an empty one: an offer that
+   * does nothing is worse than no offer. MOVED by the main process, so the project weighs the
+   * same afterwards and the material goes on drawing it — it cites an id, never a path.
+   */
+  const showableChannel = (channel: PbrChannel): (() => void) | null => {
+    const assetId = channels[channel]?.assetId
+    const asset = assetId ? held.find(one => one.id === assetId) : undefined
+    if (!asset?.path || !isPrivatePath(asset.path)) return null
+    return () => void showInternalResource(asset.id)
+  }
+
   // Derived where both stores are visible, as the document derives it: a channel emptied while it
   // was the one being looked at left its row marked AND unpressable, saying two things at once.
   const shown = inspected && channels[inspected] ? inspected : null
@@ -115,6 +147,8 @@ export const ChannelsSection = memo(function ChannelsSection({ documentId }: Cha
             // The drop hands over the ASSET, so the one refusal a channel has — a cloud row with
             // no file to decode yet — is spoken where it holds the name to say which file.
             onDropAsset={asset => void placeMaterialChannel(documentId, asset, channel)}
+            alsoKnown={held}
+            onShow={showableChannel(channel)}
             // Pressing the one already shown flat goes back to the lit material: one gesture in and
             // out, rather than a second control to find.
             onInspect={() => inspect(documentId, shown === channel ? null : channel)}

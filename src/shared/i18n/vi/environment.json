@@ -108,6 +108,8 @@
     "tone_cineonHint": "Đường cong từ phim quay, có tương phản hơn",
     "tone_aces": "ACES",
     "tone_acesHint": "Đường cong điện ảnh số, cái giữ cho ánh sáng cao khỏi cắt tới trắng thuần",
+    "tone_agx": "AgX",
+    "tone_agxHint": "Đường cong phim mới hơn, giữ được màu bão hòa khi sáng lên, chỗ mà ACES làm nó lệch",
     "exposure": "Phơi sáng",
     "quality": "Chất lượng",
     "quality_performance": "Hiệu suất",

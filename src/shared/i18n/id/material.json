@@ -88,6 +88,8 @@
     "preview": "Pratinjau",
     "envRotation": "Rotasi langit",
     "originGenerated": "Dihasilkan oleh model — dibekukan saat tiba",
+    "showInExplorer": "Tampilkan di Penjelajah",
+    "showInExplorerHint": "Memindahkan berkas hasil hitungan ke folder bahan, tanpa menyalinnya",
     "originDerived": "Dihitung dari saluran lain dari material ini",
     "originImported": "File Anda sendiri",
     "derive": "Hitung dari {{source}}",

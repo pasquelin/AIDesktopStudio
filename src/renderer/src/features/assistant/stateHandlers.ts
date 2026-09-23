@@ -12,13 +12,11 @@ import { briefingName, TARGET_ID_MAX } from '@shared/domain/target'
 import { EXPORT_FORMATS } from '@shared/domain/scene'
 import { MATERIAL_EXPORT_TARGETS } from '@shared/domain/materialExport'
 import type { FolderExportRequest } from '@shared/ipc'
-import {
-  closeDocument,
-  documentIsDirty,
-  dropDocument,
-  saveDocument,
-} from '@/features/shell/documentIo'
+import { closeDocument, dropDocument, saveDocument } from '@/features/shell/documentIo'
+import { documentIsDirty } from '@/features/shell/documentDirty'
 import { openDocument } from '@/features/shell/components/dockviewApi'
+import { ioOf } from '@/features/shell/documentIoAdapters'
+import { restoreDocument } from '@/features/shell/documentLoad'
 import { layerById } from '@/engines/canvas/canvasState'
 import { selectedNodes } from '@/engines/scene/sceneState'
 import { designatedIn } from '@/engines/timeline/timelineState'
@@ -29,7 +27,6 @@ import {
   activeImageId,
   activeMontageId,
   activeSceneId,
-  documentAtPath,
   useDocuments,
   type DocumentsSlice,
 } from '@/stores/documents'
@@ -42,6 +39,7 @@ import { useProject } from '@/stores/project'
 import { sceneOf, sceneStore, useScenes } from '@/stores/scenes'
 import { sequenceOf, sequenceStore, useSequences } from '@/stores/sequences'
 import { withBridge, type ActionHandlers } from './actionHandler'
+import { openByPath, openedOutcome } from './documentOpen'
 import { numberOf, oneOf, textOf } from './actionInputs'
 import { documentRevisionOf, documentStateOf } from './documentStateProviders'
 
@@ -202,33 +200,6 @@ function listDocuments(): ActionOutcome {
       ...Object.values(documents).filter(one => !stored.some(s => s.id === one.id)),
     ].map(one => ({ ...summaryOf(one, activeId), open: open.has(one.id) })),
   }
-}
-
-async function openByPath(input: Record<string, unknown>): Promise<ActionOutcome> {
-  const path = textOf(input, 'path')
-  if (path === null)
-    return refused(
-      'badInput',
-      '"path" is wanted — the path of a document inside the open project, as documents.list answers it',
-    )
-
-  // Re-read first: the listing a client holds may predate a file that has since arrived, and
-  // answering "no such document" for one sitting on the disk is the least useful refusal there is.
-  // `'own-write'` rather than a bare call, which joins a listing already in flight — one that may
-  // have STARTED before the file appeared, and would answer without it.
-  if (!documentAtPath(useDocuments.getState(), path)) {
-    await useDocuments.getState().relist('own-write')
-  }
-
-  const document = documentAtPath(useDocuments.getState(), path)
-  if (!document)
-    return refused(
-      'notFound',
-      `no document at "${path}" in this project — documents.list answers what is there, each with its path`,
-    )
-
-  openDocument(document)
-  return { ok: true, data: { documentId: document.id } }
 }
 
 /**
@@ -445,6 +416,8 @@ async function exportDocument(input: Record<string, unknown>): Promise<ActionOut
       'nothing is in front to export — documents.list answers what is open, and document.activate brings one forward',
     )
 
+  await ioOf(document.id)?.settled?.(document.id)
+
   let request
   try {
     request = await exportOf(document, input)
@@ -480,7 +453,7 @@ export const STATE_HANDLERS: ActionHandlers = {
 
   // The same gesture as opening it: naming the tab in the store alone left an image in front of
   // a sky's panels, which no click can produce — the state this action exists to repair.
-  'document.activate': input => {
+  'document.activate': async input => {
     const document = namedDocument(input)
     if (document === null) return refused('notFound', noDocument(input))
 
@@ -488,7 +461,10 @@ export const STATE_HANDLERS: ActionHandlers = {
     // the state a client reads next would still be describing the document it just left.
     useDocuments.getState().activate(document.id)
     openDocument(document)
-    return { ok: true }
+    // Awaited for the reason `document.open` is: a tab open behind another has never mounted its
+    // panel, so nothing has read its file — and Dockview only mounts one when it comes forward.
+    const named = textOf(input, 'documentId') ?? document.id
+    return openedOutcome(document.id, named, await restoreDocument(document.id))
   },
 
   'activity.recent': input => {

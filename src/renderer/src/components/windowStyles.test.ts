@@ -66,6 +66,7 @@ describe('the line of a list in an app window', () => {
     expect(wearing.sort()).toEqual([
       '../features/document/components/NewDocument/NewDocumentNoProject.tsx',
       '../features/manual/components/ManualWindow/ManualWindowResults.tsx',
+      '../features/project/components/CopiesWindow/CopiesWindowRow.tsx',
       '../features/settings/components/Ai/AiChoiceRow.tsx',
       '../features/settings/components/Ai/AiCloudModel.tsx',
       '../features/settings/components/Ai/AiStudioModel.tsx',

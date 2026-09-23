@@ -4,7 +4,7 @@ import { SceneRenderer } from '@/engines/scene/SceneRenderer'
 import { setNodesOptimization } from '@/engines/scene/commands'
 import { optimizationReport } from '@/engines/scene/worldAnalyzer'
 import { dropCompiledScene } from '@/game/dropCompiledScene'
-import { sceneEngineOf } from '@/stores/sceneEngines'
+import { sceneEngineOf, sceneEngineSettled } from '@/stores/sceneEngines'
 import { useScenes } from '@/stores/scenes'
 import type { ActionHandlers } from './actionHandler'
 import { oneOf, textsOf } from './actionInputs'
@@ -24,6 +24,9 @@ async function optimizationAnalysis(
 ): Promise<ActionOutcome> {
   const open = mounted()
   if (!open) return refused('wrongSurface', NO_SCENE)
+  // The plan is read off the mounted engine, which trails the store by a render — see
+  // `sceneEngineSettled`. The engine built below when none is mounted is given the state itself.
+  await sceneEngineSettled(open.documentId)
   const named = textsOf(input, 'nodeIds')
   const nodes = aimedNodes(open.state, input)
   if (nodes.length !== named.length)

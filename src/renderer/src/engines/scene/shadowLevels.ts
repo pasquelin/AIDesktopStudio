@@ -14,8 +14,12 @@ export type ShadowLevel = 'off' | 'fast' | 'standard' | 'high'
 
 export const SHADOW_LEVELS: readonly ShadowLevel[] = ['off', 'fast', 'standard', 'high']
 
-/** The four an export carries too — the lens apart, this IS a render policy. */
-export type ShadowPreference = Omit<RenderPolicy, 'fieldOfView' | 'gridSize'>
+/**
+ * The four an export carries too — the lens apart, this IS a render policy. `csm` and `engine`
+ * are left out with them: cascades answer how far the set REACHES rather than how fine its maps
+ * are, and which API draws is not a shadow preference at all.
+ */
+export type ShadowPreference = Omit<RenderPolicy, 'fieldOfView' | 'gridSize' | 'csm' | 'engine'>
 
 /** What a level writes. The quality is the person's own and is deliberately left where it is. */
 type LevelPatch = Omit<ShadowPreference, 'quality'>

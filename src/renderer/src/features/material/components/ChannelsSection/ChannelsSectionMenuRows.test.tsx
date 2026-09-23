@@ -12,6 +12,7 @@ const open = (derivation: ChannelDerivation | null = READY, inspected = false): 
         derivation={derivation}
         inspected={inspected}
         channel="Normale"
+        onShow={null}
         onInspect={vi.fn()}
         onClose={vi.fn()}
       />

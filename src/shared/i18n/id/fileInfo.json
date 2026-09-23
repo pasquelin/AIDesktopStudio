@@ -5,6 +5,8 @@
       "general": "Umum",
       "media": "Media",
       "catalogue": "Katalog",
+      "copies": "Salinan",
+      "uses": "Dipakai oleh",
       "git": "Git"
     },
     "gitUnchanged": "Tidak ada perubahan yang tertunda",
@@ -18,7 +20,10 @@
     "identifier": "Pengidentifikasi",
     "fingerprint": "Sidik jari konten",
     "added": "Ditambahkan",
+    "documents": "Dokumen",
+    "usedByNone": "Tidak ada dokumen dalam proyek yang menyebut berkas ini.",
     "reading": "Membaca folder…",
-    "missing": "Entri ini tidak ada lagi di folder proyek."
+    "missing": "Entri ini tidak ada lagi di folder proyek.",
+    "copiesNone": "Tidak ada berkas lain dalam proyek yang membawa byte ini."
   }
 }

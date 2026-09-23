@@ -93,6 +93,8 @@
     "undoHint": "Puts the last batch of files back where it was",
     "redo": "Redo",
     "redoHint": "Redoes the batch of files that was just undone",
+    "trashUsedTitle": "Move to the bin? {{count, number}} document(s) use it",
+    "trashUsedBody": "These documents cite what is about to go:",
     "trashTitle": "These {{count, number}} items are going to the trash",
     "trashBody": "You will be able to get them back from the system trash. The studio itself cannot put them back.",
     "trashConfirm": "Move to trash",
@@ -123,6 +125,16 @@
     "sort": {
       "name": "Name: A to Z",
       "nameDesc": "Name: Z to A"
+    },
+    "gather": "Gather into",
+    "gatherHint": "Copies this document and everything it cites into another project, so it opens there as it is.",
+    "gatherIntoHint": "Gather this document into {{name}}",
+    "gathered": "{{files, number}} files copied, {{rows, number}} records written.",
+    "gatherKept": "{{count, number}} left alone: the destination already had others at those paths.",
+    "gatherRefused": {
+      "not-a-project": "That destination is not a project.",
+      "same-project": "That is the open project.",
+      "no-document": "No document to gather."
     }
   },
   "menu": {
@@ -154,6 +166,7 @@
     "openProject": "Open project…",
     "saveDocument": "Save",
     "saveDocumentAs": "Save as…",
+    "saveDocumentCopy": "Save a copy…",
     "settings": "Settings…",
     "tools": "Tool windows",
     "add": "Add",
@@ -197,7 +210,9 @@
     "sceneNavigation": "Navigation",
     "sceneDisplay": "Display mode",
     "sceneView": "Point of view",
-    "sceneCapture": "Capture the view"
+    "sceneCapture": "Capture the view",
+    "copies": "Copies…",
+    "shipped": "What the studio ships…"
   },
   "about": {
     "copyright": "© 2026 Alban Pasquelin"

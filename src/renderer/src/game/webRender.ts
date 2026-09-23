@@ -4,6 +4,7 @@ import {
   Box3,
   Mesh,
   MeshBasicMaterial,
+  type Object3D,
   OrthographicCamera,
   PerspectiveCamera,
   PlaneGeometry,
@@ -19,6 +20,12 @@ import type { CameraView, EntityPlacement, RenderPort } from '@game/ports/render
 import { copyCameraView, NOWHERE, sameCameraView } from '@shared/domain/transform'
 import { applyToneMapping } from '@/engines/scene/worldBinding'
 import { applyShadowPolicy, throwsOf, tuneShadowMaps } from '@/engines/scene/shadows'
+import {
+  cascadeSettingsFor,
+  cascadesWanted,
+  createCascadeShadows,
+  type CascadeShadows,
+} from '@/engines/scene/csm'
 import type { ShadowThrow } from '@/engines/scene/grouping'
 import { frameOwesDraw, frameOwesShadows } from './gameSceneFrame'
 import { pixelRatioFor, shadowMapSizeFor } from '@/engines/scene/viewportQuality'
@@ -62,6 +69,11 @@ const NEAR = 0.1
  *
  * 🛑 One `apply`-free port: outside the studio nothing edits, so the scene is built once per
  * load and only the entity poses move. That is what makes an exported frame cheap.
+ *
+ * 🛑 The Compatible engine, always: `policy.engine` travels in the manifest and nothing here
+ * reads it, so an exported game draws WebGL whatever its entry scene was made under. The
+ * editor's viewport honours the field and this does not — closing that means carrying the node
+ * bundle into an exported page. Said out loud rather than silently: see `policyOf`.
  */
 export function createWebRender(
   canvas: HTMLCanvasElement,
@@ -71,7 +83,7 @@ export function createWebRender(
   /** Where a fault goes. A game that draws without its grading has to SAY so, not play on. */
   say: LogPort['write'] = () => {},
 ): WebRender {
-  const policy = readRenderPolicy({ ...DEFAULT_RENDER_POLICY, ...carried })
+  const policy = policyOf(carried, say)
   const renderer = new WebGLRenderer({ canvas, antialias: true })
   const gltf = createGltfSource(() => renderer)
   applyShadowPolicy(renderer, policy)
@@ -83,6 +95,7 @@ export function createWebRender(
   /** The canvas differs from the next frame for a reason the scene cannot see: size, lens, veil. */
   let pictureStale = true
   let cast: ShadowThrow | null = null
+  let cascades: CascadeShadows | null = null
   const watched: CameraView = { position: { ...NOWHERE }, target: { ...NOWHERE } }
   /** 🛑 Dynamic: its three.js passes are weight every game without effects would carry for nothing. */
   const chain = composerHold(renderer, assets, say)
@@ -112,6 +125,10 @@ export function createWebRender(
       }
 
       held?.dispose()
+      cascades?.release()
+      cascades = cascadesFor(built.scene, policy, () => {
+        pictureStale = true
+      })
       held = built
       pictureStale = true
       // A head the scene that left had already seen: the one that arrived has not.
@@ -219,8 +236,12 @@ export function createWebRender(
       // On the frame the scene lands, and again whenever a caster or a light left its frustum.
       if (settled.reframed && policy.shadows) {
         cast = tuneSceneShadows(held, policy)
+        cascades?.aim(cast)
         if (held.flush(camera, cast).zoned) settled = { ...settled, zoned: true }
       }
+      // The bands follow the EYE, so a camera that moved owes their maps a pass — the very
+      // answer `dressPane` gives the editor's frame.
+      if (cascades?.follow(camera) === true) settled = { ...settled, shadowed: true }
       // 🛑 Nothing changed, nothing drawn — the canvas keeps the frame it shows, as the viewport at
       // rest. A composed frame is drawn regardless: its grain and jitter run on the clock.
       const composer = chain.current()
@@ -235,6 +256,8 @@ export function createWebRender(
     dispose: () => {
       // The build in flight with it: what it lands on has just been thrown away.
       building += 1
+      cascades?.release()
+      cascades = null
       held?.dispose()
       held = null
       veil.dispose()
@@ -305,6 +328,8 @@ function paintHeld(
   if (composer) {
     composer.draw({
       surface: 'game',
+      // A game draws the same chain frame after frame, exactly as a viewport does.
+      oneShot: false,
       scene: held.scene,
       camera,
       stack: held.world.post,
@@ -321,6 +346,41 @@ function paintHeld(
     renderer.render(veil.scene, veil.camera)
     renderer.autoClear = true
   }
+}
+
+/**
+ * What this game plays under — and, once per load, what it owes its author about it.
+ *
+ * The engine is the one member read nowhere below: a game made on the Advanced engine plays on
+ * WebGL. Said rather than swallowed, on the doctrine `composerHold` already follows — a game
+ * that plays without what its author asked for says so instead of playing on, and nothing else
+ * would ever mention it: the picture is whole, only lit by the other engine.
+ */
+function policyOf(carried: Partial<RenderPolicy>, say: LogPort['write']): RenderPolicy {
+  const policy = readRenderPolicy({ ...DEFAULT_RENDER_POLICY, ...carried })
+  if (policy.engine !== 'gl') {
+    say('warn', `this game was made on the ${policy.engine} engine and plays on WebGL`)
+  }
+  return policy
+}
+
+/**
+ * The cascades a scene opens under, or nothing. Built per scene and only when the author's
+ * policy asks: the field travels in the export, so a game draws the shadows the editor drew
+ * rather than one map stretched over everything the camera sees.
+ */
+function cascadesFor(
+  scene: Object3D,
+  policy: RenderPolicy,
+  onStale: () => void,
+): CascadeShadows | null {
+  // 🛑 The DOCUMENT's engine and not the one drawing: this renderer is always a WebGL one, so
+  // it could build cascades for a scene the editor refuses them to — and the same document
+  // would then be lit two ways, which is the one accident `exportRequestOf` exists to prevent.
+  if (!cascadesWanted(policy, policy.engine)) return null
+  const cascades = createCascadeShadows(scene, cascadeSettingsFor(policy), onStale)
+  cascades.dress(scene)
+  return cascades
 }
 
 /**

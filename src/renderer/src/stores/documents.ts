@@ -1,5 +1,5 @@
 import {
-  roleForKind,
+  documentFolderOf,
   isFiledKind,
   kindForWorkspace,
   kindsForWorkspace,
@@ -8,16 +8,18 @@ import {
 } from '@shared/domain/document'
 import {
   checkDocumentName,
-  documentFileName,
   documentPathFor,
+  nextFreeDocumentName,
   DOCUMENT_NAME_FAILURES,
   type DocumentNameFailure,
   type NamedDocument,
 } from '@shared/domain/documentName'
-import { foldForFileName, nameFailureOf } from '@shared/domain/fileName'
+import type { Asset } from '@shared/domain/asset'
+import { nameFailureOf } from '@shared/domain/fileName'
+import { reunitedDocument } from './documentIdentity'
+import type { ReadFidelity } from '@shared/domain/readFidelity'
 import { workshopIdOf } from '@shared/domain/character'
-import { nameOf, parentOf } from '@shared/domain/folder'
-import { DEFAULT_ROLE_PATHS } from '@shared/domain/folderRole'
+import { parentOf } from '@shared/domain/folder'
 import { refFromString } from '@shared/domain/ref'
 import type { WorkspaceId } from '@shared/domain/workspace'
 import { resolveLanguage } from '@shared/i18n'
@@ -25,7 +27,20 @@ import i18next from 'i18next'
 import { create as createStore } from 'zustand'
 import { getBridge } from '@/services/bridge'
 import { newId } from '@/helpers/ids'
+import { takenDocumentNames, untitledDocumentName } from './documentNames'
 import { useLayouts } from './layouts'
+
+/** What a caller that names its own document brings — the window's answer, an import, a copy. */
+type DocumentCreation = {
+  title: string
+  sourceAssetId?: string
+  sourcePath?: string
+  destination?: string
+  sourceFidelity?: ReadFidelity
+  folder?: string
+  kind?: DocumentKind
+  path?: string
+}
 
 type DocumentsState = {
   documents: Record<string, DocumentDescriptor>
@@ -34,19 +49,12 @@ type DocumentsState = {
   stored: DocumentDescriptor[]
   relist: (after?: 'own-write') => Promise<void>
   refresh: () => Promise<boolean>
-  create: (
-    workspace: WorkspaceId,
-    of?: {
-      title: string
-      sourceAssetId?: string
-      folder?: string
-      kind?: DocumentKind
-      path?: string
-    },
-  ) => Promise<DocumentDescriptor | null>
+  create: (workspace: WorkspaceId, of?: DocumentCreation) => Promise<DocumentDescriptor | null>
   activate: (id: string | null) => void
   adopt: (document: DocumentDescriptor) => void
   rename: (id: string, title: string) => Promise<DocumentNameFailure | null>
+  noteSourceFidelity: (id: string, fidelity: ReadFidelity) => void
+  retarget: (id: string, source: Pick<Asset, 'id' | 'path' | 'name'>) => void
   close: (id: string) => void
 }
 
@@ -114,16 +122,6 @@ export function sceneDocumentNamed(named: string): string {
   if (ref?.kind === 'prefab' || ref?.kind === 'document') return ref.id
 
   return documentNamedOfKind(useDocuments.getState(), 'scene', named) ?? named
-}
-
-export function documentForAsset(
-  state: Pick<DocumentsState, 'documents' | 'stored'>,
-  assetId: string,
-  kind?: DocumentKind,
-): DocumentDescriptor | null {
-  const isIt = (document: DocumentDescriptor): boolean =>
-    document.sourceAssetId === assetId && (kind === undefined || document.kind === kind)
-  return Object.values(state.documents).find(isIt) ?? state.stored.find(isIt) ?? null
 }
 
 /**
@@ -287,8 +285,11 @@ export const useDocuments = createStore<DocumentsState>()((set, get) => ({
 
     const inFolder = found ?? []
     const shown = panelIds(useLayouts.getState().layout)
+    const held = get().documents
     const documents = Object.fromEntries(
-      inFolder.filter(document => shown.has(document.id)).map(document => [document.id, document]),
+      inFolder
+        .filter(document => shown.has(document.id))
+        .map(document => [document.id, reunitedDocument(held[document.id], document)]),
     )
 
     set(state => ({
@@ -306,17 +307,14 @@ export const useDocuments = createStore<DocumentsState>()((set, get) => ({
       wanted && kindsForWorkspace(workspace).includes(wanted) ? wanted : kindForWorkspace(workspace)
     if (!kind) return null
 
-    const stored = of ? [] : ((await listed()) ?? [])
+    // Its own listing to name the document itself, the one held where the caller brings a name.
+    const stored = of ? get().stored : ((await listed()) ?? [])
+    const taken = takenDocumentNames(
+      { documents: get().documents, stored },
+      of?.folder ?? documentFolderOf(kind),
+    )
 
-    const title =
-      of?.title ??
-      untitledDocumentName(
-        takenDocumentNames(
-          { documents: get().documents, stored },
-          DEFAULT_ROLE_PATHS[roleForKind(kind)],
-        ),
-        kind,
-      )
+    const title = titleFor(of, kind, taken)
 
     const document: DocumentDescriptor = {
       id: newId(),
@@ -325,6 +323,9 @@ export const useDocuments = createStore<DocumentsState>()((set, get) => ({
       title,
       path: of?.path ?? documentPathFor(title, kind, of?.folder),
       ...(of?.sourceAssetId ? { sourceAssetId: of.sourceAssetId } : {}),
+      ...(of?.sourcePath ? { sourcePath: of.sourcePath } : {}),
+      ...(of?.destination ? { destination: of.destination } : {}),
+      ...(of?.sourceFidelity ? { sourceFidelity: of.sourceFidelity } : {}),
     }
 
     set(state => ({ documents: { ...state.documents, [document.id]: document } }))
@@ -369,6 +370,20 @@ export const useDocuments = createStore<DocumentsState>()((set, get) => ({
     return null
   },
 
+  noteSourceFidelity: (id, sourceFidelity) => set(state => amended(state, id, { sourceFidelity })),
+
+  // The path travels with the id: what the document edits from now on is a FILE, and the id the
+  // catalogue minted for it is only this session's name for it — see `sourcePath`.
+  retarget: (id, source) =>
+    set(state =>
+      amended(state, id, {
+        sourceAssetId: source.id,
+        title: source.name,
+        sourceFidelity: 'faithful',
+        ...(source.path ? { sourcePath: source.path } : {}),
+      }),
+    ),
+
   close: id =>
     set(state => {
       const remaining = { ...state.documents }
@@ -376,6 +391,17 @@ export const useDocuments = createStore<DocumentsState>()((set, get) => ({
       return { documents: remaining, activeId: state.activeId === id ? null : state.activeId }
     }),
 }))
+
+/** A change to one open document, or nothing at all when no tab holds it. */
+function amended(
+  state: Pick<DocumentsState, 'documents'>,
+  id: string,
+  change: Partial<DocumentDescriptor>,
+): Partial<DocumentsState> {
+  const document = state.documents[id]
+  if (!document) return {}
+  return { documents: { ...state.documents, [id]: { ...document, ...change } } }
+}
 
 /** The four refusals travel as the error's message; anything else is not one of them. */
 function asNameFailure(error: unknown): DocumentNameFailure {
@@ -400,51 +426,21 @@ const generations = { relist: 0, refresh: 0 }
 let listing: Promise<DocumentDescriptor[] | null> | null = null
 
 /**
- * Every name already spoken for — the folder's and the open tabs' alike.
- *
- * The FILE names, and every document's rather than the blank ones of one workspace: what makes a
- * name unusable is that the folder already holds it, whoever holds it. The open tabs count as
- * much as the folder, and one of them is why: a tab opened and not yet typed in writes no file,
- * so a listing alone would hand its name straight out a second time.
- *
- * The listing is handed in rather than read off the store: `create` has to read the store and
- * write to it in one synchronous run, and it holds a fresher listing than the one `stored` has.
+ * 🛑 Never a name landing on the path another document already holds: importing one montage twice
+ * stood two tabs on one file, each saving over the other (2026-09-09). Freed and not refused —
+ * the name is the studio's own; a name a PERSON typed meets `checkDocumentName` instead.
+ * Exempt: an explicit path, and a view of an ASSET, which wears that asset's name homonyms
+ * included and is told apart by the link (`copyName` frees a copy's own).
  */
-export function takenDocumentNames(
-  state: {
-    documents: Record<string, DocumentDescriptor>
-    stored: readonly DocumentDescriptor[]
-  },
-  folder: string,
-): NamedDocument[] {
-  // One folder, never the project: two folders may each hold a `Niveau.gltf` and the disk is
-  // happy with both, so a name taken elsewhere in the tree is not taken here.
-  return [...state.stored, ...Object.values(state.documents)]
-    .filter(document => (parentOf(document.path) ?? '') === folder)
-    .map(({ id, path }) => ({ id, fileName: nameOf(path) }))
-}
-
-/**
- * The next free name for a blank document — « Scène 3 ». What the studio proposes when it makes
- * one, and what the naming dialog opens on.
- *
- * Named after its KIND rather than « Sans titre », and the folder is why: the number is free per
- * FILE name, so the six kinds each held a « Sans titre 1 » a glyph alone told apart.
- */
-export function untitledDocumentName(
-  taken: readonly Pick<NamedDocument, 'fileName'>[],
+function titleFor(
+  of: DocumentCreation | undefined,
   kind: DocumentKind,
+  taken: readonly NamedDocument[],
 ): string {
-  const names = new Set(taken.map(document => foldForFileName(document.fileName)))
-  // Composed, hence `COMPOSED_KEYS` — and read once, the word being the same at every number.
-  const called = i18next.t(`documents.kinds.${kind}`)
+  const asked = of?.title ?? untitledDocumentName(taken, kind)
+  if (of?.path !== undefined || of?.sourceAssetId !== undefined) return asked
 
-  // Ends on the first free one, and there are only ever as many taken as the folder holds. A
-  // document opened for an asset is skipped like any other: « Image 1 » is a name one may wear.
-  for (let n = 1; ; n += 1) {
-    const title = i18next.t('documents.untitled', { kind: called, n })
-    if (!names.has(foldForFileName(documentFileName(title, kind)))) return title
-  }
+  return nextFreeDocumentName(asked, kind, taken)
 }
 
 /**

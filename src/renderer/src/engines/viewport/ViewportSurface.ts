@@ -1,9 +1,12 @@
-import { ACESFilmicToneMapping, Color, NoToneMapping, WebGLRenderer } from 'three'
+import { ACESFilmicToneMapping, Color, NoToneMapping } from 'three'
+import { loadedGpuModule, loadGpuModule } from '../render/gpuModule'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { DEFAULT_RENDER_POLICY } from '@shared/domain/renderPolicy'
+import { traceFailure } from '@/services/diagnostics'
 import { applyShadowPolicy } from '../scene/shadows'
 import { token } from '../core/palette'
-import { createGpuTimer, isGpuTimerContext } from './gpuTimer'
+import { mountRenderer } from '../render/mountRenderer'
+import { type RenderDriver, type StudioRenderer } from '../render/renderDriver'
 import { ViewportMounting } from './ViewportMounting'
 
 export abstract class ViewportSurface extends ViewportMounting {
@@ -28,8 +31,8 @@ export abstract class ViewportSurface extends ViewportMounting {
     const canvas = this.canvasIn(host)
     const renderer = this.rendererFor(canvas)
     this.renderer = renderer
-    const context = renderer.getContext()
-    this.gpuTimer = isGpuTimerContext(context) ? createGpuTimer(context) : null
+    this.gpuTimer = this.renderDriver.frameTimer(renderer)
+    this.holdFramesUntilReady(renderer)
     this.mountControls(canvas)
     this.mountNavigation(host)
     this.observeCanvas(canvas)
@@ -46,8 +49,27 @@ export abstract class ViewportSurface extends ViewportMounting {
     return canvas
   }
 
-  private rendererFor(canvas: HTMLCanvasElement): WebGLRenderer {
-    const renderer = new WebGLRenderer({ canvas, antialias: true, alpha: this.output.alpha })
+  /**
+   * The renderer, and the driver that built it. An engine asked for and not available is not an
+   * error a person has to read: the Compatible one draws the same scene, and the journal keeps
+   * the reason. The adapter is asked for in the background, so the NEXT mount can honour it —
+   * a mount cannot wait, and a viewport that waited would show nothing while it did.
+   */
+  private rendererFor(canvas: HTMLCanvasElement): StudioRenderer {
+    const wanted = this.options.engine?.() ?? 'gl'
+    const held = loadedGpuModule()
+    // Asked for in the BACKGROUND: the adapter and the node bundle both arrive a beat later,
+    // and a viewport that waited for them would show nothing while it did.
+    if (wanted === 'gpu' && !held) void loadGpuModule()
+
+    const mounted = mountRenderer(
+      { canvas, alpha: this.output.alpha ?? false },
+      wanted,
+      held !== null,
+      error => traceFailure('render.fallback', wanted, error),
+    )
+    const { renderer, driver } = mounted
+    this.renderDriver = driver
     renderer.setPixelRatio(this.output.pixelRatio ?? window.devicePixelRatio)
     // Clear to nothing rather than to a colour, so a scene drawn for compositing hands back the
     // pixels it painted and nothing else. `setClearAlpha` alone is ignored without `alpha`.
@@ -67,6 +89,60 @@ export abstract class ViewportSurface extends ViewportMounting {
     // `render` a second time — left automatic, a frame would report the trihedron alone.
     renderer.info.autoReset = false
     return renderer
+  }
+
+  /**
+   * A node renderer throws on `render()` until its backend is up. The frames it would have drawn
+   * are dropped rather than queued — what a viewport shows is its CURRENT state, and one asked
+   * for again is one asked for now.
+   */
+  private holdFramesUntilReady(renderer: StudioRenderer): void {
+    const settling = this.renderDriver.ready(renderer)
+    if (!settling) {
+      this.rendererReady = true
+      return
+    }
+    this.rendererSettling = this.settleRenderer(renderer, settling)
+  }
+
+  /**
+   * How many samples the card may take across a texel's footprint, or `1` before there is a
+   * card to ask. Read here by the three engines that build a texture cache, so none of them
+   * has to know where its renderer keeps the answer.
+   */
+  get anisotropy(): number {
+    return this.renderer ? this.renderDriver.maxAnisotropy(this.renderer) : 1
+  }
+
+  /** Whether the renderer may be drawn with at all — false while a node backend comes up. */
+  get canDraw(): boolean {
+    return this.rendererReady
+  }
+
+  /**
+   * Resolves once the backend has ANSWERED — not once it can draw. A refusal settles too, and
+   * leaves `canDraw` false: whoever waits has to read that before it touches the GPU.
+   */
+  settled(): Promise<void> {
+    return this.rendererSettling ?? Promise.resolve()
+  }
+
+  private async settleRenderer(renderer: StudioRenderer, settling: Promise<void>): Promise<void> {
+    try {
+      await settling
+    } catch (error) {
+      // Nothing to fall back to from here: the canvas is built and the scene hangs off this
+      // renderer. The panel stays empty and the journal says why, which beats throwing into a
+      // mount nobody awaited. `canDraw` stays false, so nothing draws into a dead backend.
+      traceFailure('render.fallback', 'gpu', error)
+      return
+    }
+    // The one it was waiting for, not whichever is mounted now: a panel closed and reopened
+    // while a backend came up would otherwise arm the NEW renderer on the OLD one's answer.
+    if (this.renderer !== renderer) return
+    this.rendererReady = true
+    this.onResize()
+    this.requestRender()
   }
 
   private mountControls(canvas: HTMLCanvasElement): void {
@@ -145,9 +221,13 @@ export abstract class ViewportSurface extends ViewportMounting {
     this.disposeInset()
 
     const canvas = this.renderer?.domElement
-    this.renderer?.forceContextLoss()
-    this.renderer?.dispose()
+    const renderer = this.renderer
+    if (renderer) this.renderDriver.releaseContext(renderer)
+    renderer?.dispose()
     this.renderer = null
+    // Both, or a second mount of this engine would draw on the first renderer's permission.
+    this.rendererReady = false
+    this.rendererSettling = null
     this.gpuTimer = null
 
     // The canvas goes with the engine that made it: left behind, the next mount would stack a
@@ -160,8 +240,17 @@ export abstract class ViewportSurface extends ViewportMounting {
   }
 
   /** The renderer itself, for the passes and overlays that have to draw with it. */
-  get gl(): WebGLRenderer | null {
+  get gl(): StudioRenderer | null {
     return this.renderer
+  }
+
+  /**
+   * What is drawing — the five calls that differ between the two engines. Read rather than
+   * chosen by whoever needs one: the driver is settled at mount, and a caller picking its own
+   * would be free to read pixels with an engine that did not draw them.
+   */
+  get driver(): RenderDriver {
+    return this.renderDriver
   }
 
   get orbit(): OrbitControls | null {

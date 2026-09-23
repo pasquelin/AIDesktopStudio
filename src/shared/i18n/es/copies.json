@@ -1,0 +1,39 @@
+{
+  "copies": {
+    "title": "Copias",
+    "reading": "Leyendo el proyecto…",
+    "none": "Ningún archivo está presente dos veces en este proyecto.",
+    "candidates": "Candidatos por examinar",
+    "candidatesNote": "Estos archivos llevan la misma huella: sus bytes son idénticos, y eso está medido. Que una copia sobre, no — aquí no se retira nada sin que usted lo pida, una línea cada vez.",
+    "sameBytes": "{{count, number}} archivos llevan exactamente los mismos bytes",
+    "wouldFree": "Conservar una sola copia devolvería {{size}}",
+    "sizeUnknown": "Tamaño desconocido",
+    "store": {
+      "visible": "Su archivo",
+      "internal": "Recurso del estudio",
+      "machine": "Caché del estudio"
+    },
+    "added": "Añadido el {{date}}",
+    "mentions": "Documentos que lo mencionan: {{count, number}}",
+    "mentionsNone": "Ningún documento lo menciona",
+    "trash": "Papelera",
+    "cache": "Almacenamiento reconstruible",
+    "cacheNote": "El estudio vuelve a crear estos archivos cuando los necesita. Las imágenes elegidas a mano, los recursos duraderos y el trabajo sin guardar no forman parte de ellos y nunca se tocan.",
+    "cacheTotal": "Total",
+    "purge": "Liberar",
+    "purging": "Liberando…",
+    "purgeBusy": "El estudio está creando archivos ahora mismo. Inténtelo de nuevo cuando terminen las importaciones.",
+    "freed": "{{size}} devueltos al disco.",
+    "forgotten": "Fichas actualizadas: {{count, number}}",
+    "reopen": "Vuelva a abrir el proyecto para que el estudio rehaga lo que necesita.",
+    "stores": {
+      "thumbnails": "Miniaturas",
+      "filmstrips": "Tiras de fotogramas",
+      "proxies": "Copias de trabajo",
+      "peaks": "Formas de onda"
+    },
+    "storeHeld_one": "{{count, number}} archivo, {{size}}",
+    "storeHeld_many": "{{count, number}} de archivos, {{size}}",
+    "storeHeld_other": "{{count, number}} archivos, {{size}}"
+  }
+}

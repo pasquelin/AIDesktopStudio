@@ -19,7 +19,7 @@ export type CloudState = {
   /** What the last push or pull did, kept until the next one starts. */
   outcomes: readonly SyncOutcome[]
   push: (assetIds: readonly string[]) => Promise<void>
-  pull: (remoteAssetIds: readonly string[]) => Promise<void>
+  pull: (remoteAssetIds: readonly string[], folder?: string) => Promise<void>
   /**
    * Brings one library asset in and hands back the catalogue row it became.
    *
@@ -30,7 +30,7 @@ export type CloudState = {
    *
    * `null` when the transfer failed, and never a guess: the journal already says why.
    */
-  fetchOne: (remoteAssetId: string) => Promise<Asset | null>
+  fetchOne: (remoteAssetId: string, folder?: string) => Promise<Asset | null>
   plan: (assetIds: readonly string[], policy: SyncPolicy) => Promise<SyncPlan | null>
   clear: () => void
 }
@@ -131,11 +131,11 @@ export const useCloud = create<CloudState>()((set, get) => ({
 
   push: assetIds => transfer(set, get, assetIds, ids => bridged(bridge => bridge.cloud.push(ids))),
 
-  pull: remoteAssetIds =>
-    transfer(set, get, remoteAssetIds, ids => bridged(bridge => bridge.cloud.pull(ids))),
+  pull: (remoteAssetIds, folder) =>
+    transfer(set, get, remoteAssetIds, ids => bridged(bridge => bridge.cloud.pull(ids, folder))),
 
-  fetchOne: async remoteAssetId => {
-    await get().pull([remoteAssetId])
+  fetchOne: async (remoteAssetId, folder) => {
+    await get().pull([remoteAssetId], folder)
 
     // The transfer ended on an `invalidate`, which ARMS a coalesced read; reading now without
     // disarming it sends a second `assets.searchProjectCatalogue` — a synchronous SQLite query in the main

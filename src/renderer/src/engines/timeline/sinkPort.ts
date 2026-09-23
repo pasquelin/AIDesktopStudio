@@ -91,7 +91,7 @@ async function openVideo(blob: Blob): Promise<SinkLike | null> {
     }
     const sink = new VideoSampleSink(track)
     return createSequentialSink({
-      samplesAtTimestamps: timestamps => sink.samplesAtTimestamps(timestamps),
+      samples: from => sink.samples(from),
       close: () => input.dispose(),
     })
   } catch (error) {
