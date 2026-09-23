@@ -219,6 +219,10 @@
     "deleteHint": "문서를 프로젝트에서 제거합니다",
     "nameField": "이름",
     "templateField": "시작 템플릿",
+    "engines": {
+      "gl": "호환 — 모든 컴퓨터에서 그립니다",
+      "gpu": "고급 — 조명과 반사가 더 좋고, 최신 그래픽 카드가 필요합니다"
+    },
     "templateGroups": {
       "general": "일반",
       "character": "캐릭터",

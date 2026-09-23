@@ -246,6 +246,12 @@
       "title": "Accelerazione",
       "help": "Per quanto viene moltiplicata la velocità mentre tieni premuto il tasto di accelerazione. A 3 vai tre volte più veloce — abbastanza per attraversare una scena grande senza cambiare l’impostazione qui sopra."
     },
+    "renderEngine": {
+      "title": "Motore di rendering",
+      "help": "Con che cosa si aprono le scene nuove. La domanda viene posta a ogni creazione di documento e la risposta è scritta nel documento stesso: questa impostazione si limita a precompilare il campo e non cambia nessuna scena esistente. Compatibile gira su qualsiasi macchina; Avanzato dà illuminazione e riflessi migliori e chiede una scheda grafica recente. Una macchina senza adattatore WebGPU torna da sola a Compatibile, e lo dice nel giornale.",
+      "gl": "Compatibile",
+      "gpu": "Avanzato"
+    },
     "shadows": {
       "title": "Ombre proiettate",
       "help": "Calcola le ombre che le luci proiettano. Ogni luce che ne proietta una costa una passata di rendering in più per fotogramma: disattivare questa opzione è il modo più diretto di alleggerire una scena carica."
@@ -273,6 +279,10 @@
     "shadowMapSize": {
       "title": "Finezza delle ombre",
       "help": "Il lato, in pixel, della mappa d’ombra che calcola ogni luce che proietta ombre. Raddoppiarlo costa quattro volte la memoria: 2048 basta e avanza per una scena di pochi oggetti, 4096 si ripaga quando una sola luce copre un intero set."
+    },
+    "csm": {
+      "title": "Ombre a cascata",
+      "help": "Divide l’ombra del sole in tre mappe, una per fascia di profondità della vista, invece di una sola stesa su tutto ciò che vede la camera. Quello che serve a un paesaggio aperto; una scena singola non ci guadagna e paga tre passate di profondità."
     },
     "snapTranslate": {
       "title": "Passo di spostamento",

@@ -7,6 +7,7 @@
  */
 import {
   ACESFilmicToneMapping,
+  AgXToneMapping,
   CineonToneMapping,
   Fog,
   FogExp2,
@@ -24,6 +25,7 @@ const TONE_MAPPINGS: Record<ToneMapping, ThreeToneMapping> = {
   reinhard: ReinhardToneMapping,
   cineon: CineonToneMapping,
   aces: ACESFilmicToneMapping,
+  agx: AgXToneMapping,
 }
 
 export function toneMappingOf(mapping: ToneMapping): ThreeToneMapping {

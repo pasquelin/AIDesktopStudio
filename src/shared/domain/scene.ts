@@ -1,5 +1,6 @@
 import type { FontRef } from './font'
 import { EMPTY_STACK, type PostStack } from './postProcessing'
+import type { RenderEngine } from './renderEngine'
 import { RELIEF_CHUNK_TEXELS } from './relief'
 import type { Vector3 } from './transform'
 import type { GeometryDescriptor } from './geometry'
@@ -119,10 +120,10 @@ export const DEFAULT_EXP2_FOG: Exp2Fog = Object.freeze({
 })
 
 /**
- * How high dynamic range is brought down to a screen. The five three.js 0.185 actually maps —
- * a sixth word here would be a control that changes nothing.
+ * How high dynamic range is brought down to a screen. The six three.js 0.185 actually maps —
+ * a seventh word here would be a control that changes nothing.
  */
-export type ToneMapping = 'none' | 'linear' | 'reinhard' | 'cineon' | 'aces'
+export type ToneMapping = 'none' | 'linear' | 'reinhard' | 'cineon' | 'aces' | 'agx'
 
 export const TONE_MAPPINGS: readonly ToneMapping[] = [
   'none',
@@ -130,6 +131,7 @@ export const TONE_MAPPINGS: readonly ToneMapping[] = [
   'reinhard',
   'cineon',
   'aces',
+  'agx',
 ]
 
 /**
@@ -259,6 +261,15 @@ export const GRAVITY = Object.freeze({ min: 0, max: 50, step: 0.01 })
  * document written without it changes nothing on screen.
  */
 export type SceneWorld = {
+  /**
+   * Which engine draws this document, chosen when it was CREATED and belonging to it from then
+   * on — the preference under Settings only pre-fills that form.
+   *
+   * Here and not in `Settings.three` because the lock is the point: a whole scene lives inside
+   * one graphics context, so nothing hands a mounted viewport over to the other API. A setting
+   * the studio re-read would promise a switch it cannot make.
+   */
+  engine: RenderEngine
   environment: EnvironmentRef
   /** Multiplies both what the environment lights with and what it draws behind the scene. */
   envIntensity: number
@@ -281,6 +292,9 @@ export type SceneWorld = {
 }
 
 export const DEFAULT_WORLD: SceneWorld = Object.freeze({
+  // Same reasoning as `toneMapping` below: this object is what a document READ falls back to,
+  // and a file that says nothing about its engine was drawn with WebGL.
+  engine: 'gl',
   environment: STUDIO_ENVIRONMENT,
   envIntensity: 1,
   envRotation: 0,

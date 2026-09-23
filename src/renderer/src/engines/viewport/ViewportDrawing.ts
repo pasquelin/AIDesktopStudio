@@ -1,4 +1,6 @@
-import { type WebGLRenderer, type WebGLRenderTarget } from 'three'
+import { type WebGLRenderTarget } from 'three'
+import { oweShadowPassOnce } from '../scene/shadows'
+import type { StudioRenderer } from '../render/renderDriver'
 import { glRect } from './panes'
 import { INSET_CADENCE_MS } from './viewportEngineSupport1'
 import type { DrawRequest, InsetPane } from './viewportEngineSupport1'
@@ -8,13 +10,13 @@ export abstract class ViewportDrawing extends ViewportRenderLoop {
   protected abstract readonly renderFrame: () => void
 
   protected abstract insetTargetOf(
-    renderer: WebGLRenderer,
+    renderer: StudioRenderer,
     width: number,
     height: number,
   ): WebGLRenderTarget
 
   protected abstract drawInset(
-    renderer: WebGLRenderer,
+    renderer: StudioRenderer,
     inset: InsetPane,
     target: WebGLRenderTarget,
     panesDrawn: boolean,
@@ -22,7 +24,7 @@ export abstract class ViewportDrawing extends ViewportRenderLoop {
 
   protected abstract catchUpInset(now: number): void
 
-  protected abstract compositeInset(renderer: WebGLRenderer, inset: InsetPane): void
+  protected abstract compositeInset(renderer: StudioRenderer, inset: InsetPane): void
 
   /** Whether the surface was actually taken: a panel folded to nothing is turned back. */
   protected readonly onResize = (): boolean => {
@@ -68,7 +70,7 @@ export abstract class ViewportDrawing extends ViewportRenderLoop {
    */
   drawScene(request: DrawRequest): boolean {
     const renderer = this.renderer
-    if (!renderer) return false
+    if (!renderer || !this.rendererReady) return false
 
     // BEFORE `onDraw`, and it is the whole contract: a film and a still hand over a target and
     // then read its pixels back, so whoever draws must be pointed at it. Bound here rather than
@@ -88,7 +90,7 @@ export abstract class ViewportDrawing extends ViewportRenderLoop {
    * the same scene, and a consumer GPU drops the oldest context when it runs out. The scissor is
    * what keeps a pane from clearing the three beside it.
    */
-  protected renderPanes(renderer: WebGLRenderer, refreshAllShadows: () => void): void {
+  protected renderPanes(renderer: StudioRenderer, refreshAllShadows: () => void): void {
     const ratio = renderer.getPixelRatio()
 
     if (this.extras.length === 0) {
@@ -113,7 +115,7 @@ export abstract class ViewportDrawing extends ViewportRenderLoop {
         // it: what THIS pane wears is what its maps have to be drawn from.
         if (this.options.onPane?.(index, camera) === true) {
           refreshAllShadows()
-          renderer.shadowMap.needsUpdate = true
+          oweShadowPassOnce(renderer, true)
         }
         this.drawScene({
           scene: this.scene,
@@ -136,13 +138,13 @@ export abstract class ViewportDrawing extends ViewportRenderLoop {
   }
 
   private renderSinglePane(
-    renderer: WebGLRenderer,
+    renderer: StudioRenderer,
     ratio: number,
     refreshAllShadows: () => void,
   ): void {
     if (this.options.onPane?.(0, this.camera) === true) {
       refreshAllShadows()
-      renderer.shadowMap.needsUpdate = true
+      oweShadowPassOnce(renderer, true)
     }
     this.drawScene({
       scene: this.scene,
@@ -169,7 +171,7 @@ export abstract class ViewportDrawing extends ViewportRenderLoop {
    * drawn instead of dividing the surface, and a context per preview is what `scene-stage` pays
    * elsewhere and says why.
    */
-  protected renderInset(renderer: WebGLRenderer, panesDrawn: boolean): void {
+  protected renderInset(renderer: StudioRenderer, panesDrawn: boolean): void {
     const inset = this.inset
     if (!inset) return
 

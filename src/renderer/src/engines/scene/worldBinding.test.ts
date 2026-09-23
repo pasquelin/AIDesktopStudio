@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { ACESFilmicToneMapping, Fog, FogExp2, NoToneMapping } from 'three'
+import { ACESFilmicToneMapping, AgXToneMapping, Fog, FogExp2, NoToneMapping } from 'three'
 import { applyFog, applyToneMapping, toneMappingOf } from './worldBinding'
 
 describe('fog on a scene', () => {
@@ -45,6 +45,10 @@ describe('fog on a scene', () => {
 describe('tone mapping', () => {
   it('leaves the viewport as it has always drawn when the document says none', () => {
     expect(toneMappingOf('none')).toBe(NoToneMapping)
+  })
+
+  it('maps the curve a new scene opens on', () => {
+    expect(toneMappingOf('agx')).toBe(AgXToneMapping)
   })
 
   it('writes the mapping and the exposure together', () => {

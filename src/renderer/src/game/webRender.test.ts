@@ -76,13 +76,23 @@ const CANVAS: HTMLCanvasElement = Object.create(null)
 
 async function stagedGame(policy: Partial<RenderPolicy> = DEFAULT_RENDER_POLICY) {
   const crate = meshNode(BOX, { name: 'Crate', transform: at(1, 0.5, 1) })
-  const render = createWebRender(CANVAS, NOTHING, policy)
+  const said: string[] = []
+  const render = createWebRender(CANVAS, NOTHING, policy, (_level, message) => said.push(message))
   const renderer = fake.renderers[fake.renderers.length - 1]
   if (!renderer) throw new Error('no renderer was built')
   await render.show(sceneOf([crate, lightNode(SUN, { x: 0, y: 4, z: 0 })]))
   render.resize(640, 360)
   render.view({ position: { x: 0, y: 5, z: 10 }, target: { x: 0, y: 0, z: 0 } })
-  return { render, renderer, crate }
+  return { render, renderer, crate, said }
+}
+
+/** How many lights of a drawn frame cast a shadow — one sun, or one per cascade band. */
+const castersOf = (scene: unknown): number => {
+  let casting = 0
+  ;(scene as Scene).traverse(object => {
+    if ('isDirectionalLight' in object && object.castShadow) casting += 1
+  })
+  return casting
 }
 
 const sunOf = (scene: unknown): { shadow: { camera: { right: number; far: number } } } => {
@@ -111,6 +121,29 @@ describe('what an exported game pays for an image', () => {
     expect(renderer.shadowMap.enabled).toBe(true)
     expect(renderer.shadowMap.type).toBe(PCFShadowMap)
     expect(renderer.shadowMap.autoUpdate).toBe(false)
+  })
+
+  // The field travels in the manifest, so it has to be HONOURED here: a project exported with
+  // cascades would otherwise play under one stretched map and nobody would be told.
+  it('builds the cascades the author chose, and none when they chose otherwise', async () => {
+    const withBands = await stagedGame({ ...DEFAULT_RENDER_POLICY, csm: true })
+    const withOne = await stagedGame({ ...DEFAULT_RENDER_POLICY, csm: false })
+    withBands.render.draw()
+    withOne.render.draw()
+
+    expect(castersOf(withBands.renderer.frames[0])).toBeGreaterThan(
+      castersOf(withOne.renderer.frames[0]),
+    )
+  })
+
+  // The field travels in the manifest and nothing here reads it. A game whose author chose the
+  // Advanced engine plays on WebGL, and the one person who would want to know is the author.
+  it('says out loud that it does not draw with the engine its author chose', async () => {
+    const advanced = await stagedGame({ ...DEFAULT_RENDER_POLICY, engine: 'gpu' })
+    const compatible = await stagedGame({ ...DEFAULT_RENDER_POLICY, engine: 'gl' })
+
+    expect(advanced.said.some(one => one.includes('plays on WebGL'))).toBe(true)
+    expect(compatible.said).toEqual([])
   })
 
   // 🛑 A manifest is a JSON file on disk: a size somebody typed as a word gave `NaN` for the

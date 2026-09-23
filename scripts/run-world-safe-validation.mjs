@@ -1,14 +1,9 @@
-import { evaluate } from './cdp.mjs'
+import { harness } from './cdp.mjs'
 
-const result = await evaluate(
-  `(async () => {
-    await import('/src/engines/scene/worldSafeValidation.browser.ts')
-    const validate = Reflect.get(window, '__iaValidateWorldBenchmarks')
-    if (typeof validate !== 'function') throw new Error('le harnais SAFE WebGL est absent')
-    return await validate()
-  })()`,
-  { timeout: 180_000 },
-)
+const result = await harness('/src/engines/scene/worldSafeValidation.browser.ts', {
+  handle: '__iaValidateWorldBenchmarks',
+  timeout: 180_000,
+})
 
 console.log(JSON.stringify(result, null, 2))
 

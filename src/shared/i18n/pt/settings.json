@@ -246,6 +246,12 @@
       "title": "Aceleração",
       "help": "Por quanto a velocidade é multiplicada enquanto você mantém a tecla de aceleração. Em 3 você vai três vezes mais rápido — o bastante para atravessar uma cena grande sem mudar a configuração acima."
     },
+    "renderEngine": {
+      "title": "Motor de renderização",
+      "help": "Com o que as cenas novas abrem. A pergunta é feita a cada criação de documento e a resposta é escrita no próprio documento: este ajuste apenas preenche o campo de antemão e não muda nenhuma cena existente. Compatível funciona em qualquer máquina; Avançado dá melhor iluminação e reflexos e pede uma placa gráfica recente. Uma máquina sem adaptador WebGPU volta sozinha ao Compatível, e diz isso no diário.",
+      "gl": "Compatível",
+      "gpu": "Avançado"
+    },
     "shadows": {
       "title": "Sombras projetadas",
       "help": "Calcula as sombras que as luzes projetam. Cada luz que projeta uma custa uma passagem de renderização a mais por quadro: desligar isto é a maneira mais direta de aliviar uma cena pesada."
@@ -273,6 +279,10 @@
     "shadowMapSize": {
       "title": "Detalhe das sombras",
       "help": "O lado, em pixels, do mapa de sombra que cada luz projetora calcula. Dobrá-lo custa quatro vezes a memória: 2048 basta para uma cena de alguns objetos, 4096 vale a pena quando uma luz cobre um cenário inteiro."
+    },
+    "csm": {
+      "title": "Sombras em cascata",
+      "help": "Divide a sombra do sol em três mapas, um por faixa de profundidade da vista, em vez de um só esticado sobre tudo o que a câmara vê. O que uma paisagem aberta precisa; um cenário único não ganha nada e paga três passagens de profundidade."
     },
     "snapTranslate": {
       "title": "Passo de deslocamento",

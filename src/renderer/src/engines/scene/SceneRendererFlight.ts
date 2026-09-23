@@ -1,5 +1,6 @@
 import { localizedError } from '@shared/localizedError'
-import { PerspectiveCamera, WebGLRenderTarget, type WebGLRenderer } from 'three'
+import { PerspectiveCamera, WebGLRenderTarget } from 'three'
+import type { StudioRenderer } from '../render/renderDriver'
 import type { MotionId } from '@shared/domain/shortcut'
 import { anglesFromDirection } from '@shared/domain/angles'
 import { aimAlong, turnBy } from '../viewport/lookAround'
@@ -12,7 +13,6 @@ import { captureSize, type CaptureQuality } from '@shared/domain/sceneCapture'
 import './bvhPatches'
 import { flightGaze } from './sceneRendererSupport2'
 import { SceneRendererFilm } from './SceneRendererFilm'
-import { readRenderPixels } from './readRenderPixels'
 export abstract class SceneRendererFlight extends SceneRendererFilm {
   protected abstract syncPaneFreeze(): void
   public abstract get flying(): boolean
@@ -25,7 +25,7 @@ export abstract class SceneRendererFlight extends SceneRendererFilm {
    * drawn at the buffer's own: « view size » on a 2× display gave back half the definition.
    */
   private captureShape(
-    gl: WebGLRenderer,
+    gl: StudioRenderer,
     quality: CaptureQuality,
   ): { width: number; height: number } {
     const canvas = gl.domElement
@@ -56,7 +56,7 @@ export abstract class SceneRendererFlight extends SceneRendererFilm {
     // Antialiased, unlike a film's frames: a still is looked at, and the resolve happens at the
     // end of `render` — so the read below already has the resolved texture. Capped at four,
     // which is where the eye stops paying for the memory a 4K target multiplies.
-    const samples = Math.min(4, gl.capabilities.maxSamples)
+    const samples = Math.min(4, this.viewport.driver.maxSamples(gl))
     const target = new WebGLRenderTarget(width, height, { samples })
     const restore = this.hideWorkshop()
     const loan = aspectLoan(width, height)
@@ -64,6 +64,9 @@ export abstract class SceneRendererFlight extends SceneRendererFilm {
       // Only a perspective one is lent an aspect, and only for the rounding: the size asked for
       // keeps the view's own shape, so an orthographic frustum is already framed for it.
       if (camera instanceof PerspectiveCamera) loan.frame(camera)
+      // The bands are cut out of the camera that draws: an off-screen pass never goes through
+      // `dressPane`, and one left fitted to the editor's own view lights this frame from it.
+      this.cascades?.follow(camera)
       const composed = this.viewport.drawScene({
         scene: this.viewport.scene,
         camera,
@@ -77,7 +80,7 @@ export abstract class SceneRendererFlight extends SceneRendererFilm {
         width,
         height,
       })
-      const pixels = readRenderPixels(gl, target, width, height)
+      const pixels = await this.viewport.driver.readPixels(gl, target, width, height)
       return await encodeFilmFrameOffThread(pixels, width, height, composed)
     } finally {
       gl.setRenderTarget(null)

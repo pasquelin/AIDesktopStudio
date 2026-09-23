@@ -124,6 +124,7 @@ export function NewDocumentWindow() {
             picked={ask.picked}
             projectName={project}
             open={ask.open}
+            engine={ask.engine}
             saveAs={saveAs ?? undefined}
             onCancel={() => settle(null)}
             onSubmit={place => settle({ answer: 'made', place })}

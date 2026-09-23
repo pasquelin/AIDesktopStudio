@@ -219,6 +219,10 @@
     "deleteHint": "Retira el documento del proyecto, su archivo incluido",
     "nameField": "Nombre",
     "templateField": "Plantilla de partida",
+    "engines": {
+      "gl": "Compatible — dibuja en cualquier equipo",
+      "gpu": "Avanzado — mejor iluminación y reflejos, requiere una tarjeta gráfica reciente"
+    },
     "templateGroups": {
       "general": "General",
       "character": "Personaje",

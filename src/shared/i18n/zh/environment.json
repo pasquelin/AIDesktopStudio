@@ -108,6 +108,8 @@
     "tone_cineonHint": "取自胶片的曲线，对比更强",
     "tone_aces": "ACES",
     "tone_acesHint": "数字电影的曲线，能避免高光被削平成纯白",
+    "tone_agx": "AgX",
+    "tone_agxHint": "更新的胶片曲线，在 ACES 会让浓郁色彩偏移的地方，它仍能守住这些颜色",
     "exposure": "曝光",
     "quality": "质量",
     "quality_performance": "性能",

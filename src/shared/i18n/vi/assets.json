@@ -219,6 +219,10 @@
     "deleteHint": "Xóa tài liệu khỏi dự án, kể cả tệp của nó",
     "nameField": "Tên",
     "templateField": "Mẫu ban đầu",
+    "engines": {
+      "gl": "Tương thích — vẽ được trên mọi máy",
+      "gpu": "Nâng cao — ánh sáng và phản chiếu tốt hơn, cần card đồ hoạ đời mới"
+    },
     "templateGroups": {
       "general": "Chung",
       "character": "Nhân vật",

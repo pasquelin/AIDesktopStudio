@@ -246,6 +246,12 @@
       "title": "Accélération",
       "help": "Par combien la vitesse est multipliée tant que vous maintenez la touche d’accélération. À 3, vous allez trois fois plus vite : de quoi traverser une grande scène sans changer le réglage du dessus."
     },
+    "renderEngine": {
+      "title": "Moteur de rendu",
+      "help": "Avec quoi les nouvelles scènes s’ouvrent. La question est posée à chaque création de document et la réponse est écrite dans le document lui-même : ce réglage ne fait que pré-remplir le champ, et ne change aucune scène existante. Compatible fonctionne sur toutes les machines ; Avancé donne un éclairage et des reflets de meilleure qualité et demande une carte graphique récente. Une machine sans adaptateur WebGPU retombe d’elle-même sur le Compatible, et le dit dans le journal.",
+      "gl": "Compatible",
+      "gpu": "Avancé"
+    },
     "shadows": {
       "title": "Ombres portées",
       "help": "Calcule les ombres que les lumières projettent. Chaque lumière qui en projette une coûte une passe de rendu supplémentaire par image, et couper cette option reste le moyen le plus direct d’alléger une scène chargée."
@@ -273,6 +279,10 @@
     "shadowMapSize": {
       "title": "Finesse des ombres",
       "help": "La taille de la carte d’ombre que calcule chaque lumière qui en projette une, en pixels de côté. Doubler ce nombre quadruple la mémoire utilisée : 2048 suffit à une scène de quelques objets, 4096 sert quand une lumière éclaire un décor entier."
+    },
+    "csm": {
+      "title": "Ombres en cascade",
+      "help": "Découpe l’ombre du soleil en trois cartes, une par tranche de profondeur de la vue, au lieu d’une seule étirée sur tout ce que voit la caméra. Ce qu’il faut à un paysage ouvert ; un décor unique n’y gagne rien et paie trois passes de profondeur."
     },
     "snapTranslate": {
       "title": "Pas de déplacement",

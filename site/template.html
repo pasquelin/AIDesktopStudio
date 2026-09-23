@@ -57,6 +57,14 @@
     if (!r.classList.contains('fx-ready')) r.classList.remove('js');
   }, 2500);
 </script>
+<!-- Mesure d'audience. Le bandeau de consentement et le chargement de Google Analytics
+     tiennent dans un seul fichier, servi par www.pasquelin.com et partagé par les quatre
+     sites : une correction s'y fait une fois, pas quatre. Rien n'est demandé à Google avant
+     un accord explicite du visiteur, et le panneau emprunte les couleurs de cette page.
+     L'identifiant de mesure n'est pas un secret — il est public dans toute page qui le
+     porte. Source, traductions et tests : dépôt `pasquelin/site`, `public/shared/`. -->
+<script defer src="https://www.pasquelin.com/shared/consent.v1.js" data-ga="G-YRFNHZLMJH"></script>
+
 </head>
 
 <body>

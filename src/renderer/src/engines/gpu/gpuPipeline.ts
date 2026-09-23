@@ -8,8 +8,8 @@ import {
   UnsignedByteType,
   type Material,
   type TextureDataType,
-  type WebGLRenderer,
 } from 'three'
+import { drawInto, type StudioRenderer } from '../render/renderDriver'
 import { WebGLRenderTarget } from 'three'
 
 /**
@@ -48,7 +48,7 @@ const PRECISION_TYPES: Record<TargetPrecision, TextureDataType> = {
   float: HalfFloatType,
 }
 
-export function createGpuPipeline(renderer: WebGLRenderer): GpuPipeline {
+export function createGpuPipeline(renderer: StudioRenderer): GpuPipeline {
   // A 2×2 plane seen by a camera spanning -1..1 covers the frame exactly, so `vUv` runs 0..1
   // across the destination whatever its size.
   const camera = new OrthographicCamera(-1, 1, 1, -1, 0, 1)
@@ -60,14 +60,13 @@ export function createGpuPipeline(renderer: WebGLRenderer): GpuPipeline {
   const draw = (material: Material, target: WebGLRenderTarget | null): void => {
     quad.material = material
 
-    const previous = renderer.getRenderTarget()
-    renderer.setRenderTarget(target)
+    const restore = drawInto(renderer, target)
     try {
       renderer.render(scene, camera)
     } finally {
       // In a `finally`: a throw would otherwise leave the viewport drawing into this target
       // instead of the screen, and the window would freeze on its last frame.
-      renderer.setRenderTarget(previous)
+      restore()
     }
   }
 

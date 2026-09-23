@@ -53,6 +53,7 @@ export class SceneRendererConstruction extends SceneRendererFrame {
       (assetId, error) => reportFailure('scene.texture', assetId, error),
       options.assetVersion,
       options.livePreview,
+      () => this.viewport.anisotropy,
     )
     this.buildModelSources()
     this.buildShapeWorkers()

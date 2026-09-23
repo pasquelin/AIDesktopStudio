@@ -3,6 +3,7 @@ import type { DocumentDescriptor } from '@shared/domain/document'
 import { documentPathFor } from '@shared/domain/documentName'
 import { SCRIPT_STARTER } from '@shared/domain/game'
 import type { DocumentTemplateId } from '@shared/domain/newDocument'
+import type { RenderEngine } from '@shared/domain/renderEngine'
 import { getBridge } from '@/services/bridge'
 import { documentAtPath, useDocuments } from '@/stores/documents'
 import { openDocument } from './components/dockviewApi'
@@ -16,7 +17,13 @@ import { openDocument } from './components/dockviewApi'
  * Here rather than beside the window that fills it: three modules share it now, and a type both
  * halves of a split re-import from the other is exactly how an import cycle appears.
  */
-export type NamedCreation = { title: string; folder?: string; template?: DocumentTemplateId }
+export type NamedCreation = {
+  title: string
+  folder?: string
+  template?: DocumentTemplateId
+  /** A scene's engine, absent for a caller that never saw the field — see `NamedDocumentPlace`. */
+  engine?: RenderEngine
+}
 
 /**
  * The file first, then the tab: `relist` is what gives the document the id its path spells.

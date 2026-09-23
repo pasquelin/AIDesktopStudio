@@ -219,6 +219,10 @@
     "deleteHint": "Belgeyi projeden kaldırır, dosyası dahil",
     "nameField": "Ad",
     "templateField": "Başlangıç şablonu",
+    "engines": {
+      "gl": "Uyumlu — her makinede çizer",
+      "gpu": "Gelişmiş — daha iyi ışık ve yansımalar, güncel bir ekran kartı ister"
+    },
     "templateGroups": {
       "general": "Genel",
       "character": "Karakter",

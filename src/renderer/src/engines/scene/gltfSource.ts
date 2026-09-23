@@ -1,13 +1,7 @@
 import { localizedError } from '@shared/localizedError'
 import { Group, Mesh, MeshStandardMaterial, type Material, type Object3D } from 'three'
-import type {
-  AnimationClip,
-  BufferGeometry,
-  LoadingManager,
-  Skeleton,
-  Texture,
-  WebGLRenderer,
-} from 'three'
+import type { StudioRenderer } from '../render/renderDriver'
+import type { AnimationClip, BufferGeometry, LoadingManager, Skeleton, Texture } from 'three'
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js'
 import { GLTFLoader, type GLTF } from 'three/addons/loaders/GLTFLoader.js'
 import { KTX2Loader } from 'three/addons/loaders/KTX2Loader.js'
@@ -63,7 +57,7 @@ export type GltfSource = {
  * this source is built in the engine's constructor.
  */
 export function createGltfSource(
-  rendererOf: () => WebGLRenderer | null,
+  rendererOf: () => StudioRenderer | null,
   onFailure: (scope: string, error: unknown) => void = () => undefined,
   decoderRoot = DECODER_ROOT,
 ): GltfSource {

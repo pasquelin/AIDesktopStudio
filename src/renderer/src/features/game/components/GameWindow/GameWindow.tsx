@@ -52,6 +52,11 @@ export function GameWindow() {
       prepareModelDress: prepareExtractedModelDress,
       environmentDress: environmentDressOf,
     })
+    // 🛑 This window draws on the studio's DEFAULT engine, not on the one the played document
+    // carries: the engine is read when the renderer is built, and the scene only lands on
+    // `gameChannel` afterwards. An export of that same document honours it (see
+    // `gameExportCompiler`), so the two disagree. Closing it means holding this mount until the
+    // first scene arrives — not done, and written down rather than found. See the C6 report.
     renderer.mount(element)
     engineRef.current = renderer
 

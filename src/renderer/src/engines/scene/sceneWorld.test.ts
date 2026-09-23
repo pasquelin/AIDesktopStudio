@@ -23,6 +23,22 @@ describe('reading a world back', () => {
     expect(readWorld(undefined, undefined)).toEqual(DEFAULT_WORLD)
   })
 
+  /**
+   * The engine belongs to the DOCUMENT from the day it is created — a file read on a machine
+   * whose preference says otherwise still draws the way its author drew it.
+   */
+  it('opens a document written before the engine was a document member on the Compatible one', () => {
+    expect(readWorld({ toneMapping: 'agx' }, undefined).engine).toBe('gl')
+  })
+
+  it('keeps the engine a document was saved under', () => {
+    expect(readWorld({ engine: 'gpu' }, undefined).engine).toBe('gpu')
+  })
+
+  it('falls back rather than trusting an engine name this build has never heard of', () => {
+    expect(readWorld({ engine: 'vulkan' }, undefined).engine).toBe('gl')
+  })
+
   it('keeps the sky of a document that spelled it at the root', () => {
     // Every scene saved so far: `environment` beside `nodes`, with no `world` at all.
     const held = readWorld(undefined, { kind: 'skybox', assetId: 'sky-1' })
@@ -93,7 +109,9 @@ describe('reading a world back', () => {
 
   it('reads a tone mapping this build knows, and falls back on one it does not', () => {
     expect(readWorld({ toneMapping: 'reinhard' }, undefined).toneMapping).toBe('reinhard')
-    expect(readWorld({ toneMapping: 'agx' }, undefined).toneMapping).toBe('none')
+    // `agx` stood here until three 0.185 was mapped: a word the build LEARNS stops being a
+    // fallback case, and the guard has to keep naming one the build really does not know.
+    expect(readWorld({ toneMapping: 'filmic' }, undefined).toneMapping).toBe('none')
   })
 
   it('opens a document written before layers existed on none', () => {

@@ -219,6 +219,10 @@
     "deleteHint": "ドキュメントをファイルごとプロジェクトから削除します。",
     "nameField": "名前",
     "templateField": "元のテンプレート",
+    "engines": {
+      "gl": "互換 — どのマシンでも描画する",
+      "gpu": "上級 — 照明と反射がより高品質、新しいグラフィックスカードが必要"
+    },
     "templateGroups": {
       "general": "一般",
       "character": "キャラクター",

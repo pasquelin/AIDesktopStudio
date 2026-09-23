@@ -6,7 +6,8 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js'
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { GlitchPass } from 'three/addons/postprocessing/GlitchPass.js'
 import { postEffect } from '@shared/domain/postProcessing'
-import { PostComposer, type PostDrawJob } from './PostComposer'
+import { PostComposer } from './PostComposer'
+import type { ComposerJob } from '../render/sceneComposer'
 
 vi.mock('three', async importOriginal => ({
   ...(await importOriginal<typeof Three>()),
@@ -40,9 +41,10 @@ function composer(): PostComposer {
   return result
 }
 
-function job(surface: string, width: number, height: number): PostDrawJob {
+function job(surface: string, width: number, height: number): ComposerJob {
   return {
     surface,
+    oneShot: false,
     scene: new Scene(),
     camera: new Camera(),
     stack,

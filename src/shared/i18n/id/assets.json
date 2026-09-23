@@ -219,6 +219,10 @@
     "deleteHint": "Menghapus dokumen dari proyek, termasuk filenya",
     "nameField": "Nama",
     "templateField": "Templat awal",
+    "engines": {
+      "gl": "Kompatibel — menggambar di semua mesin",
+      "gpu": "Lanjutan — pencahayaan dan pantulan lebih baik, perlu kartu grafis terbaru"
+    },
     "templateGroups": {
       "general": "Umum",
       "character": "Karakter",

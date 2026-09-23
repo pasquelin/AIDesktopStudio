@@ -108,6 +108,8 @@
     "tone_cineonHint": "Kurva yang diambil dari film seluloid, dengan kontras lebih tinggi",
     "tone_aces": "ACES",
     "tone_acesHint": "Kurva sinema digital, yang menjaga bagian terang tidak terpotong menjadi putih murni",
+    "tone_agx": "AgX",
+    "tone_agxHint": "Kurva film yang lebih baru, yang menahan warna jenuh saat menguat, di mana ACES membelokkannya",
     "exposure": "Eksposur",
     "quality": "Kualitas",
     "quality_performance": "Performa",

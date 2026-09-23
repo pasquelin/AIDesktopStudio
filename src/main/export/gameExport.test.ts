@@ -410,9 +410,11 @@ describe('a game written to run with no studio', () => {
   it('writes the render policy it was handed', async () => {
     const { ports, written } = writing()
     const render = {
+      engine: 'gl',
       shadows: true,
       shadowQuality: 'soft',
       shadowMapSize: 1024,
+      csm: false,
       quality: 'performance',
       fieldOfView: 50,
       gridSize: 30,

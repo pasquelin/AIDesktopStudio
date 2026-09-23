@@ -11,11 +11,7 @@ import type { WorkspaceId } from '@shared/domain/workspace'
 import { checkDocumentName, type DocumentNameFailure } from '@shared/domain/documentName'
 import { parentOf } from '@shared/domain/folder'
 import { DEFAULT_SCENE_TEMPLATE, isSceneTemplateId } from '@shared/domain/sceneTemplate'
-import type {
-  DocumentTemplateId,
-  NewDocumentAnswer,
-  NewDocumentAsk,
-} from '@shared/domain/newDocument'
+import type { NewDocumentAnswer, NewDocumentAsk } from '@shared/domain/newDocument'
 import { DEFAULT_UI_TEMPLATE, isUiTemplateId } from '@shared/domain/uiTemplates'
 import { ensureProjectInstalls } from '@/engines/scene/projectInstalls'
 import { seedGuiTemplate } from '@/stores/gui'
@@ -64,6 +60,9 @@ async function askFor(
     // The tabs, which the window cannot read: it lists the project FOLDER for itself, and a
     // document opened and never saved is in no folder to be found.
     open: Object.values(useDocuments.getState().documents),
+    // What the scene field opens on. A DEFAULT and no longer a rule: the value the person leaves
+    // it at is written into the document, and the setting is never read for it again.
+    engine: useSettings.getState().settings.three.engine,
   }
 }
 
@@ -147,10 +146,11 @@ async function made(
 
 async function seedCreated(
   created: DocumentDescriptor,
-  template: DocumentTemplateId | undefined,
+  of: NamedCreation,
   /** Everything the app ships that a template's shapes and modules read — awaited before seeding. */
   shipped: Promise<unknown>,
 ): Promise<void> {
+  const template = of.template
   if (created.kind === 'scene') {
     await shipped
     const scene = isSceneTemplateId(template) ? template : DEFAULT_SCENE_TEMPLATE
@@ -160,7 +160,13 @@ async function seedCreated(
     // The files FIRST: they answer the folder the role resolved to, and the scene's `Script`
     // components must name the very paths that were just written.
     const seeded = await seedTemplateFiles(scene)
-    seedSceneTemplate(created.id, scene, seeded.scripts, seeded.graph)
+    seedSceneTemplate(created.id, scene, {
+      // The preference where nobody was asked — the assistant and the MCP wire name their own
+      // documents and see no field.
+      engine: of.engine ?? useSettings.getState().settings.three.engine,
+      scripts: seeded.scripts,
+      graph: seeded.graph,
+    })
   }
   if (created.kind === 'gui') {
     seedGuiTemplate(created.id, isUiTemplateId(template) ? template : DEFAULT_UI_TEMPLATE)
@@ -188,7 +194,7 @@ async function create(kind: DocumentKind, of: NamedCreation): Promise<DocumentDe
   const created = await useDocuments.getState().create(workspace, { ...of, kind })
   if (!created) return null
 
-  await seedCreated(created, of.template, shipped)
+  await seedCreated(created, of, shipped)
 
   openDocument(created)
   return created

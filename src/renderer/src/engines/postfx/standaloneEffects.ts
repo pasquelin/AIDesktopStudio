@@ -17,7 +17,12 @@ import { SSAARenderPass } from 'three/addons/postprocessing/SSAARenderPass.js'
 import { SSAOPass } from 'three/addons/postprocessing/SSAOPass.js'
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { RGBShiftShader } from 'three/addons/shaders/RGBShiftShader.js'
-import { HALFTONE_SHAPES, type PostEffect, type PostEffectId } from '@shared/domain/postProcessing'
+import {
+  HALFTONE_SHAPES,
+  type GpuOnlyEffectId,
+  type PostEffect,
+  type PostEffectId,
+} from '@shared/domain/postProcessing'
 import type { FusedId } from './shaders/fusableChunks'
 import { onePass, type EffectInstance, type ViewInfo } from './effectInstance'
 import { samplesOf } from './postQuality'
@@ -204,10 +209,17 @@ const passOnly =
     onePass(make(), () => {})
 
 /**
- * The catalogue MINUS what fuses, and typed on that difference: an effect added to `PostEffectId`
- * fails to compile until one of the two tables implements it, and neither may claim it twice.
+ * The catalogue MINUS what fuses and MINUS what only a node chain can build, typed on that
+ * difference: an effect added to `PostEffectId` fails to compile until one of the two tables
+ * implements it, and neither may claim it twice.
+ *
+ * `GpuOnlyEffectId` is the third door and not a hole: an effect the Compatible engine cannot
+ * build has no GLSL pass to write, and `postFactories.test.ts` holds that exclusion to what the
+ * registry's `engines` actually say.
  */
-const OWN_PASS: Readonly<Record<Exclude<PostEffectId, FusedId>, EffectFactory>> = {
+type OwnPassId = Exclude<PostEffectId, FusedId | GpuOnlyEffectId>
+
+const OWN_PASS: Readonly<Record<OwnPassId, EffectFactory>> = {
   gtao,
   ssao,
   ssaa,
